@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Offline delivery gate and workflow-policy regressions; inert package fixtures only."""
 import copy
+import fnmatch
 import importlib.util
 import json
 from pathlib import Path
@@ -341,6 +342,109 @@ class WorkflowPolicy(unittest.TestCase):
         publish_index = next(i for i, run in enumerate(runs) if 'publish-staging --directory' in run)
         self.assertLess(qualify_index, publish_index)
         self.assertNotIn('always()', str(job.get('if', '')))
+
+    def test_changed_inputs_gate_product_jobs_and_manual_runs_force_selection(self):
+        jobs = workflow('opennav-baseline.yml')['jobs']
+        selector = jobs['changes']
+        self.assertEqual(selector['outputs']['product'], '${{ steps.select.outputs.product }}')
+        checkout = next(step for step in selector['steps'] if step.get('uses','').startswith('actions/checkout@'))
+        self.assertEqual(checkout['with']['fetch-depth'], 0)
+        command = '\n'.join(step.get('run','') for step in selector['steps'])
+        self.assertIn('ci_changes.py', command)
+        self.assertIn('--force-product', command)
+        for name in set(staging.REQUIRED_JOBS) - {'publish-staging'}:
+            job = jobs[name]
+            self.assertIn("needs.changes.outputs.product == 'true'", job.get('if',''), name)
+            needed = job.get('needs',[])
+            self.assertIn('changes', [needed] if isinstance(needed,str) else needed, name)
+            self.assertNotIn('always()', job.get('if',''), name)
+
+    def test_helper_changes_have_focused_checks_when_native_jobs_skip(self):
+        data = workflow('skager-delivery-checks.yml')
+        patterns = data['on']['push']['paths']
+        sources = ('ci_changes.py','staging_build_inputs.py','fetch_ci_inputs.py',
+                   'qualify-staging-windows.ps1','retest-staging-windows.py')
+        for source in sources:
+            self.assertTrue(any(fnmatch.fnmatchcase('opennav-x/tools/'+source, pattern)
+                                for pattern in patterns), source)
+        commands = '\n'.join(step.get('run','') for job in data['jobs'].values() for step in job['steps'])
+        for suite in ('test-ci-changes.py','test-staging-build-inputs.py','test-fetch-ci-inputs.py'):
+            self.assertIn(suite, commands)
+        self.assertNotRegex(commands, r'(?im)^\s*(?:python\s+)?[^\n]*[ /]build-pristine-windows\.ps1(?:\s|$)')
+
+    def test_compiled_inputs_are_retained_before_runtime_qualification(self):
+        jobs = workflow('opennav-baseline.yml')['jobs']
+        producer = jobs['windows-integration']
+        self.assertEqual(producer['name'], 'windows-integration')
+        steps = producer['steps']
+        commands = [step.get('run','') for step in steps]
+        seal = next(i for i, text in enumerate(commands) if 'staging_build_inputs.py seal ' in text)
+        upload = next(i for i, step in enumerate(steps) if step.get('uses','').startswith('actions/upload-artifact@')
+                      and step.get('with',{}).get('path') == 'staging-build')
+        self.assertLess(seal, upload)
+        compilers = [text for text in commands if 'build-pristine-windows.ps1' in text]
+        self.assertEqual(len(compilers), 2)
+        for command in compilers:
+            self.assertIn('-DeferRuntimeQualification', command)
+            self.assertIn('-DependencyBundle ', command)
+            self.assertIn('-DependencyBundleProvenance ', command)
+        recovery = next(i for i, text in enumerate(commands) if 'package-preview-windows.ps1' in text)
+        installer = next(i for i, text in enumerate(commands) if 'package-alpha-installer.py' in text)
+        self.assertLess(recovery, seal); self.assertLess(installer, seal)
+        self.assertIn('-DeferRuntimeQualification', commands[recovery])
+        for command in commands:
+            self.assertNotRegex(command, r'smoke-(?:navigation|modes|pilot|portable|installer-windows|charts|preview|user-flows)')
+            self.assertNotIn('--fixture-success', command)
+        downstream = jobs['windows-qualification']
+        self.assertIn('windows-integration', downstream['needs'])
+        restore = next(i for i, step in enumerate(downstream['steps']) if 'staging_build_inputs.py restore ' in step.get('run',''))
+        qualify = next(i for i, step in enumerate(downstream['steps']) if 'qualify-staging-windows.ps1' in step.get('run',''))
+        self.assertLess(restore, qualify)
+
+    def test_qualification_cannot_rebuild_repackage_or_downgrade_required_results(self):
+        jobs = workflow('opennav-baseline.yml')['jobs']
+        qualifier = jobs['windows-qualification']
+        self.assertIn('windows-qualification', staging.REQUIRED_JOBS)
+        self.assertIn('windows-qualification', jobs['publish-staging']['needs'])
+        self.assertNotIn('continue-on-error', qualifier)
+        commands = []
+        for step in qualifier['steps']:
+            self.assertNotIn('continue-on-error', step)
+            commands.append(step.get('run',''))
+        commands.append((TOOLS/'qualify-staging-windows.ps1').read_text())
+        for command in commands:
+            self.assertNotRegex(command, r'(?i)(build-pristine|cmake\s+(?:--build|-S)|msbuild|package-alpha-installer|package-preview|makensis)')
+        runner = commands[-1]
+        for script in ('smoke-installer-selftest.py','smoke-modes-windows.py','smoke-navigation.py',
+                       'smoke-signalk.py','smoke-recording.py','smoke-pilot.py','smoke-recovery.py',
+                       'smoke-user-flows.py','smoke-portable-production.py','smoke-installer-windows.py','smoke-charts.py'):
+            self.assertIn("Check '"+script+"'", runner)
+        self.assertIn("$env:SKAGER_DESIGN_VALIDATION -ceq 'true'", runner)
+        self.assertIn("@('--mode', 'staging')", runner)
+
+    def test_restore_uses_actual_producer_attempt_and_authenticated_digest(self):
+        jobs = workflow('opennav-baseline.yml')['jobs']
+        producer = jobs['windows-integration']
+        for name in ('archive_sha256','artifact_name','producer_attempt'):
+            self.assertIn(name, producer['outputs'])
+        qualifier = jobs['windows-qualification']
+        download = next(step for step in qualifier['steps'] if step.get('uses','').startswith('actions/download-artifact@'))
+        self.assertEqual(download['with']['name'], '${{ needs.windows-integration.outputs.artifact_name }}')
+        restore = next(step for step in qualifier['steps'] if 'staging_build_inputs.py restore ' in step.get('run',''))
+        self.assertEqual(restore['env']['INPUT_SHA256'], '${{ needs.windows-integration.outputs.archive_sha256 }}')
+        self.assertEqual(restore['env']['PRODUCER_ATTEMPT'], '${{ needs.windows-integration.outputs.producer_attempt }}')
+        self.assertIn('--archive-sha256 $env:INPUT_SHA256', restore['run'])
+        self.assertIn('--producer-run-attempt $env:PRODUCER_ATTEMPT', restore['run'])
+        self.assertNotIn('--producer-run-attempt $env:GITHUB_RUN_ATTEMPT', restore['run'])
+
+    def test_publish_retry_downloads_actual_qualification_artifact(self):
+        jobs = workflow('opennav-baseline.yml')['jobs']
+        downloads = [step['with']['name'] for step in jobs['publish-staging']['steps']
+                     if step.get('uses','').startswith('actions/download-artifact@')]
+        self.assertIn('${{ needs.windows-qualification.outputs.candidate_artifact }}', downloads)
+        self.assertIn('candidate_artifact', jobs['windows-qualification'].get('outputs',{}))
+        for name in downloads:
+            self.assertNotIn('github.run_attempt', name)
 
     def test_prototype_is_manual_and_all_jobs_require_explicit_design(self):
         data = workflow('opennav-prototype.yml')

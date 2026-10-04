@@ -13,12 +13,14 @@ import tempfile
 import unittest
 import zipfile
 
+import staging_build_inputs as staging_inputs
+
 SOURCE=Path(__file__).with_name('smoke-installer-windows.py')
 TREE=ast.parse(SOURCE.read_text())
 FUNCTIONS=ast.Module(body=[node for node in TREE.body if isinstance(node,ast.FunctionDef)
-    and node.name in ('arguments','archive_members','prepare_retained','sha')],type_ignores=[])
+    and node.name in ('arguments','archive_members','prepare_retained','prepare_source_engine','prepare_compiled','sha')],type_ignores=[])
 ENV=dict(argparse=argparse,Path=Path,PurePosixPath=PurePosixPath,re=re,hashlib=hashlib,
-         json=json,shutil=shutil,zipfile=zipfile)
+         json=json,shutil=shutil,zipfile=zipfile,staging_inputs=staging_inputs)
 exec(compile(FUNCTIONS,str(SOURCE),'exec'),ENV)
 COMMIT='a'*40
 
@@ -80,6 +82,70 @@ class Promotion(unittest.TestCase):
         self.assertEqual((self.root/'build/xnav-install/wx.dll').read_bytes(),b'original fixture dependency')
         self.assertEqual((self.root/'build/retained-source/installer/windows/Lifecycle.ps1').read_bytes(),b'candidate engine')
         self.assertEqual((self.root/'build/retained-source/tools/test-installer-missing-dll-selftest.ps1').read_text(),'current test helper')
+    def compiled_fixture(self):
+        archive=self.root/'build/developer-preview/SKAGER-Beta2-source.zip'
+        archive.parent.mkdir(parents=True)
+        shutil.copyfile(self.inputs/archive.name,archive)
+        product=self.root/staging_inputs.PACKAGE_ROOT/'docs/PRODUCT_BUILD.json'
+        product.parent.mkdir(parents=True);product.write_text(json.dumps(self.product))
+        executable=self.root/'build/production-install/opencpn.exe'
+        executable.parent.mkdir(parents=True);executable.write_bytes(b'product')
+        self.compiled_receipt=self.root/'evidence/local/staging-inputs.json'
+        self.compiled_receipt.parent.mkdir(parents=True)
+        self.restored=dict(schema=1,kind=staging_inputs.KIND,status='restored',qualification='not-run',
+            producer=staging_inputs.producer(COMMIT,'123','1'),harnessCommit='b'*40,
+            workspaceRoot=str(self.root.resolve()),sourceArchiveSha256=digest(archive.read_bytes()),
+            archiveSha256='c'*64,manifestSha256='d'*64,files=42)
+        self.save_compiled_receipt()
+        return executable
+    def save_compiled_receipt(self):
+        self.compiled_receipt.write_text(json.dumps(self.restored))
+    def prepare_compiled(self):
+        return ENV['prepare_compiled'](self.compiled_receipt,self.root,'b'*40)
+    def test_compiled_retest_preserves_product_engine_and_current_helper_without_binary_restore(self):
+        executable=self.compiled_fixture()
+        before=(executable.read_bytes(),executable.stat().st_mtime_ns)
+        report=self.prepare_compiled()
+        self.assertEqual(report['product_commit'],COMMIT)
+        self.assertEqual((self.root/'build/retained-source/installer/windows/Lifecycle.ps1').read_bytes(),b'candidate engine')
+        self.assertEqual((self.root/'build/retained-source/tools/test-installer-missing-dll-selftest.ps1').read_text(),'current test helper')
+        self.assertEqual((executable.read_bytes(),executable.stat().st_mtime_ns),before)
+        self.assertEqual(report['installer_source_sha256'],digest(b'candidate engine'))
+        self.assertEqual(report['compiled_input_producer'],self.restored['producer'])
+    def test_compiled_receipt_refuses_wrong_root_harness_status_and_producer(self):
+        self.compiled_fixture()
+        for key,bad in (('workspaceRoot',str(self.root.parent)),('harnessCommit','e'*40),
+                        ('status','sealed'),('qualification','passed'),
+                        ('producer',{**self.restored['producer'],'commit':'e'*40})):
+            original=self.restored[key]
+            with self.subTest(key=key):
+                self.restored[key]=bad;self.save_compiled_receipt()
+                with self.assertRaises(ValueError):self.prepare_compiled()
+                self.assertFalse((self.root/'build/retained-source').exists())
+            self.restored[key]=original
+    def test_compiled_source_substitution_is_refused_before_engine_extraction(self):
+        self.compiled_fixture()
+        (self.root/'build/developer-preview/SKAGER-Beta2-source.zip').write_bytes(b'changed archive')
+        with self.assertRaisesRegex(ValueError,'archive checksum'):self.prepare_compiled()
+        self.assertFalse((self.root/'build/retained-source').exists())
+    def test_compiled_source_engine_must_match_its_reference_and_revision(self):
+        self.compiled_fixture()
+        archive=self.root/'build/developer-preview/SKAGER-Beta2-source.zip'
+        for reference in ({**self.reference,'productCommit':'e'*40},
+                          {**self.reference,'files':{self.engine:{'sha256':'f'*64}}}):
+            archive.write_bytes(zipped({self.engine:b'candidate engine',
+                'SOURCE_REFERENCE.json':json.dumps(reference).encode()}))
+            self.restored['sourceArchiveSha256']=digest(archive.read_bytes());self.save_compiled_receipt()
+            with self.assertRaises(ValueError):self.prepare_compiled()
+            self.assertFalse((self.root/'build/retained-source').exists())
+    def test_compiled_input_mode_is_mutually_exclusive_with_release_restore(self):
+        from contextlib import redirect_stderr
+        args=ENV['arguments'](['--compiled-input-receipt','receipt.json'])
+        self.assertEqual(args.compiled_input_receipt,Path('receipt.json'))
+        for arguments in (['--compiled-input-receipt','receipt','--retained-package','release','--expected-commit',COMMIT],
+                          ['--compiled-input-receipt','receipt','--expected-commit',COMMIT],
+                          ['--compiled-input-receipt','receipt','--prepare-only']):
+            with redirect_stderr(io.StringIO()),self.assertRaises(SystemExit):ENV['arguments'](arguments)
     def test_changed_setup_refused_before_restore(self):
         (self.inputs/'SKAGER-Beta2-Setup.exe').write_bytes(b'substituted')
         with self.assertRaisesRegex(ValueError,'checksum'):self.restore()

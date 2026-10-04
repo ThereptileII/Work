@@ -87,15 +87,34 @@ affected downstream jobs so an installer test failure need not restart the
 application build. Cancel superseded development runs, while preserving an
 explicitly frozen qualification candidate. Verified dependency reuse is tracked
 in SCRUM-225 and must retain source/toolchain/configuration integrity checks.
+Cross-run SDK reuse additionally requires authenticated successful producer
+run/job/artifact provenance, the exact source/recipe/configuration/ABI inventory,
+and successful live native toolchain/environment reprobes. A matching cache key
+or artifact name alone is insufficient. Same-job fixture receipts and cross-run
+SDK authority remain distinct; never fabricate or relabel either to bypass a
+failed gate. See [build efficiency](build-efficiency.md) for selection and reuse
+boundaries.
+
+The coordinator integrates one coherent batch and owns its full build and
+release. Parallel tasks have scoped file ownership and run focused checks;
+they do not each trigger a package build. Update documentation for material
+contract, delivery, safety or evidence changes, rather than generating a fresh
+process report for each edit.
 
 This decision does not re-enable endurance testing. The existing explicit
 user-directed skip remains until changed; record it as skipped and disclose
 any remaining release qualification gap. Do not silently start long tests.
+Requested long-running suites run as separate background work with retained
+logs and exact candidate identity. Their pending or skipped results are never
+reported as passes or hidden by a successful build.
 
 ## Workflow responsibilities
 
 - `.github/workflows/opennav-baseline.yml`: ordinary Staging development checks,
   package creation and a versioned draft Staging GitHub Release.
+- `.github/workflows/skager-windows-dependencies.yml`: separate native SDK
+  production or verified reuse proof, without compiling or qualifying the
+  application. Authenticate a successful producer before a consumer uses it.
 - `.github/workflows/skager-production.yml`: manually selected exact-package
   readiness/promotion, only following explicit user instruction. Preserve the
   source Staging identity and hashes, reuse valid evidence and keep the resulting
@@ -104,7 +123,15 @@ any remaining release qualification gap. Do not silently start long tests.
   It is separate from ordinary Staging delivery and Production promotion.
 
 The Staging workflow's ordinary push path selects integration/Staging branches
-and code changes; documentation/evidence-only edits do not request delivery.
+and product/package inputs. The change selector routes ordinary documentation,
+evidence and workflow/test-helper changes to focused checks without requesting
+an application release. Packaged documentation and licenses remain product
+inputs. Dependency-producing recipe changes invalidate SDK reuse; a workflow
+check by itself does not prove a new SDK or application. Unknown paths, renames,
+deletions and unavailable history must not silently suppress required builds.
+A helper-only success neither accepts a new product revision nor transfers an
+older package's source/license acceptance to the helper commit. An explicit
+manual product build may override selection without enabling design review.
 Manual dispatch defaults `extended_tests=false` and
 `design_validation=false`. Neither switch authorizes unrequested design work or
 changes the existing endurance-testing skip.

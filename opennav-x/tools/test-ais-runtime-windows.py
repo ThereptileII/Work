@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Same-job MSVC AIS loopback gate; never dependency, product, WFP or boat qualification."""
+"""MSVC AIS loopback gate with same-job or authenticated bundle dependency inputs.
+
+Neither mode grants product, WFP or boat qualification.
+"""
 import argparse
 import importlib.util
 import json
@@ -15,6 +18,7 @@ import xml.etree.ElementTree as ET
 import windows_dependency_receipt as receipt
 import windows_dependency_reuse as reuse
 import windows_dependency_stage as stage
+import windows_dependency_bundle as bundle_api
 
 ROOT = Path(__file__).resolve().parents[1]
 TARGETS = ('ais_transport_test_client', 'ais_provider_test_client', 'ais_session_native')
@@ -92,15 +96,49 @@ def child_environment(private, runtime):
         OPENSSL_MODULES=str(private / 'openssl/lib/ossl-modules'))
 
 
-def main():
+def arguments(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.parse_args()
+    parser.add_argument('--dependency-bundle', type=Path)
+    parser.add_argument('--dependency-bundle-provenance', type=Path)
+    args = parser.parse_args(argv)
+    if bool(args.dependency_bundle) != bool(args.dependency_bundle_provenance):
+        parser.error('--dependency-bundle and --dependency-bundle-provenance must be supplied together')
+    return args
+
+
+def dependency_inputs(root, bundle=None, provenance=None):
+    """Never relabel cross-run SDK provenance as a same-job fixture receipt."""
+    if bool(bundle) != bool(provenance):
+        raise ValueError('bundle and provenance must be supplied together')
+    if bundle is None:
+        reuse.verify_same_job(root)
+        document = receipt._read_json(root / reuse.RECEIPT)
+        return document['files'], {'mode': 'same-job-receipt'}
+    document = bundle_api.verify_restored(root, bundle, provenance)
+    return document['files'], {'mode': 'cross-run-bundle',
+                              'producer': document['producer'],
+                              'fingerprint': document['fingerprint'],
+                              'toolchainSha256': document['toolchainSha256']}
+
+
+def reprobe_bundle_inputs(bundle, provenance, log):
+    # The maintained build driver creates the exact native parent environment
+    # and reprobes all three producer toolchains without building the GUI. Start
+    # from the workflow's ambient environment; do not prepend Perl/Gettext twice.
+    run(['pwsh', '-NoProfile', '-File', ROOT / 'tools/build-pristine-windows.ps1',
+         '-Architecture', 'Win32', '-Integration', '-VerifyDependencyBundleOnly',
+         '-DependencyBundle', bundle, '-DependencyBundleProvenance', provenance],
+        log, timeout=600)
+
+
+def main():
+    args = arguments()
     if sys.platform != 'win32' or os.environ.get('GITHUB_ACTIONS') != 'true':
         raise ValueError('AIS runtime gate requires disposable native Windows CI')
     api = api_module()
     evidence = ROOT / 'evidence/local/ais-native-runtime'
     evidence.mkdir(parents=True, exist_ok=False)
-    report = {'passed': False, 'scope': 'Same-job actual AIS MSVC Win32 loopback only',
+    report = {'passed': False, 'scope': 'Actual AIS MSVC Win32 loopback only',
               'runId': os.environ.get('GITHUB_RUN_ID'), 'runAttempt': os.environ.get('GITHUB_RUN_ATTEMPT'),
               'commit': os.environ.get('GITHUB_SHA'), 'productAcceptance': False,
               'wfpAcceptance': False, 'boatAcceptance': False, 'dependencyBuilds': False,
@@ -111,11 +149,26 @@ def main():
         return {p.relative_to(directory).as_posix(): api.record(p)
                 for p in sorted(directory.rglob('*')) if p.is_file() and '.git' not in p.parts}
     try:
-        reuse.verify_same_job(ROOT)  # unchanged authority; never recreate/relabel a receipt
-        document = receipt._read_json(ROOT / reuse.RECEIPT)
-        expected = document['files']
-        report['dependencyReceipt'] = api.record(ROOT / reuse.RECEIPT)
-        shutil.copyfile(ROOT / reuse.RECEIPT, evidence / 'same-job-receipt.json')
+        # Authenticate restored bytes before executing their native reprobe.
+        expected, authority = dependency_inputs(ROOT, args.dependency_bundle,
+                                                args.dependency_bundle_provenance)
+        report['dependencyAuthority'] = authority
+        if args.dependency_bundle is None:
+            report['dependencyReceipt'] = api.record(ROOT / reuse.RECEIPT)
+            shutil.copyfile(ROOT / reuse.RECEIPT, evidence / 'same-job-receipt.json')
+        else:
+            authority_files = {'bundle.json': args.dependency_bundle / 'bundle.json',
+                               'bundle-provenance.json': args.dependency_bundle_provenance}
+            report['dependencyBundle'] = {name: api.record(path) for name, path in authority_files.items()}
+            for name, path in authority_files.items():
+                shutil.copyfile(path, evidence / name)
+            save()
+            reprobe_bundle_inputs(args.dependency_bundle, args.dependency_bundle_provenance,
+                                  evidence / 'dependency-native-reprobe.log')
+            observed, observed_authority = dependency_inputs(ROOT, args.dependency_bundle,
+                                                             args.dependency_bundle_provenance)
+            if observed != expected or observed_authority != authority:
+                raise ValueError('Dependency authority changed during native reprobe')
         tracked = subprocess.check_output(['git', 'ls-files'], cwd=ROOT, text=True).splitlines()
         selected = {name for name in tracked if name.startswith(('src/', 'cmake/', 'patches/', 'tests/ais_transport/'))}
         selected.update({'CMakeLists.txt', 'upstream.lock.json', 'tests/ais_session_tests.cpp',
@@ -125,6 +178,8 @@ def main():
             'tools/windows_dependency_stage.py', 'tools/windows_dependency_evidence.py',
             'tools/windows-parent-environment.ps1',
             'tools/test-ais-runtime-gate.py'})
+        if args.dependency_bundle is not None:
+            selected.update({'tools/windows_dependency_bundle.py', 'tools/build-pristine-windows.ps1'})
         local = {name: ROOT / name for name in selected}
         workflow = '.github/workflows/opennav-baseline.yml'
         local[workflow] = ROOT / workflow if (ROOT / workflow).is_file() else ROOT.parent / workflow
@@ -134,7 +189,7 @@ def main():
         # this job already has the prepared tree, so its source bytes are retained.
         upstream = ROOT / 'build/integration-source'
         if not (upstream / 'libs/IXWebSocket/CMakeLists.txt').is_file():
-            raise ValueError('Same-job prepared source is missing')
+            raise ValueError('Pinned prepared source is missing')
         run([sys.executable, ROOT / 'tools/prepare-integration.py'], evidence / 'prepared-source.log')
         report['ixInputs'] = inventory(upstream / 'libs/IXWebSocket')
         private = ROOT / 'build/ais-runtime-inputs'
@@ -255,7 +310,14 @@ def main():
             evidence / 'transport.log', env=child, timeout=180)
         run([sys.executable, ROOT / 'tests/ais_transport/provider_tests.py', '--client', runtime / 'ais_provider_test_client.exe'],
             evidence / 'provider.log', env=child, timeout=180)
-        reuse.verify_same_job(ROOT)
+        observed, observed_authority = dependency_inputs(ROOT, args.dependency_bundle,
+                                                         args.dependency_bundle_provenance)
+        if observed != expected or observed_authority != authority:
+            raise ValueError('Dependency authority changed during AIS runtime checks')
+        if args.dependency_bundle is not None:
+            for name, path in authority_files.items():
+                if api.record(path) != report['dependencyBundle'][name]:
+                    raise ValueError('Bundle authority file changed: ' + name)
         for name, record in {**report['localInputs'], **copies, **report['sources']}.items():
             if api.record(local.get(name, ROOT / name)) != record: raise ValueError('Input changed: ' + name)
         for directory, key in ((runtime, 'runtime'), (upstream / 'libs/IXWebSocket', 'ixInputs'),

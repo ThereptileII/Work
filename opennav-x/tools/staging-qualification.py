@@ -9,7 +9,7 @@ from release_manifest import create
 
 REQUIRED_JOBS = ('contracts', 'boat-maintenance', 'native-restart-transport',
                  'native-restart-broker', 'native-restart-window', 'native-stock-welcome',
-                 'linux-integration', 'windows-integration', 'application-abi', 'stock-prerequisite')
+                 'linux-integration', 'windows-integration', 'windows-qualification', 'application-abi', 'stock-prerequisite')
 
 
 def qualify(directory, results, env):

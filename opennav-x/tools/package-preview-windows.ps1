@@ -1,5 +1,9 @@
+param([switch]$DeferRuntimeQualification)
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
+if ($DeferRuntimeQualification -and $env:GITHUB_ACTIONS -cne 'true') {
+    throw 'Deferred portable qualification requires the explicit CI build job'
+}
 $Root = Split-Path $PSScriptRoot -Parent
 $Vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
 $VS = & $Vswhere -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
@@ -27,5 +31,7 @@ if ($AssemblyExit -ne 0) { throw 'Recovery assembly failed' }
 python (Join-Path $PSScriptRoot 'verify-preview-pe.py') "$Output/SKAGER-Beta2-Portable-Recovery/app" `
     --report "$Root/evidence/local/preview-dll-audit.json"
 if ($LASTEXITCODE -ne 0) { throw 'Recovery dependency closure failed' }
-python (Join-Path $PSScriptRoot 'smoke-portable-production.py') --package "$Output/SKAGER-Beta2-Portable-Recovery.zip"
-if ($LASTEXITCODE -ne 0) { throw 'Extracted production recovery smoke test failed' }
+if (-not $DeferRuntimeQualification) {
+    python (Join-Path $PSScriptRoot 'smoke-portable-production.py') --package "$Output/SKAGER-Beta2-Portable-Recovery.zip"
+    if ($LASTEXITCODE -ne 0) { throw 'Extracted production recovery smoke test failed' }
+}

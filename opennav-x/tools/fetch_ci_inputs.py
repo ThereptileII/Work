@@ -19,6 +19,7 @@ MAX_BYTES = 8 * 1024**3
 
 
 def authenticated_artifact(gh, selection, *, kind):
+    require(kind in {'dependencies', 'staging'}, 'Unsupported input kind')
     required = {'repository', 'runId', 'runAttempt', 'headSha', 'artifactId', 'artifactName', 'artifactDigest'}
     require(set(selection) == required, 'Exact immutable artifact selection required')
     require(selection['repository'] == gh.repo, 'Repository differs')
@@ -41,6 +42,8 @@ def authenticated_artifact(gh, selection, *, kind):
     matches = [entry for entry in jobs if entry.get('name') == job]
     require(len(matches) == 1 and matches[0].get('status') == 'completed' and
             matches[0].get('conclusion') == 'success' and
+            str(matches[0].get('run_id')) == run_id and
+            str(matches[0].get('run_attempt')) == attempt and
             matches[0].get('head_sha') == selection['headSha'], 'Producer job did not pass')
     artifact = gh.api(f"{gh.base}/actions/artifacts/{selection['artifactId']}")
     require(str(artifact.get('id')) == selection['artifactId'] and
@@ -62,7 +65,8 @@ def authenticated_artifact(gh, selection, *, kind):
 
 def unpack(archive, destination, kind):
     """Inspect all ZIP members before writing; Windows-safe paths on all hosts."""
-    require(not destination.exists(), 'Fresh artifact directory required')
+    require(kind in {'dependencies', 'staging'}, 'Unsupported input kind')
+    require(not destination.exists() and not destination.is_symlink(), 'Fresh artifact directory required')
     with zipfile.ZipFile(archive) as stream:
         entries = stream.infolist()
         require(0 < len(entries) <= 100000 and sum(x.file_size for x in entries) <= MAX_BYTES,
@@ -79,7 +83,8 @@ def unpack(archive, destination, kind):
             require(not PurePosixPath(name).is_absolute() and name.casefold() not in seen,
                     'Aliased ZIP member')
             seen.add(name.casefold())
-            require(stat.S_IFMT(item.external_attr >> 16) in {0, stat.S_IFREG}, 'Linked or special ZIP member')
+            require(stat.S_IFMT(item.external_attr >> 16) in {0, stat.S_IFREG} and
+                    not item.flag_bits & 1, 'Linked, special or encrypted ZIP member')
             allowed = (name == 'bundle.json' or name.startswith('payload/')) if kind == 'dependencies' else name in {'STAGING_BUILD_INPUTS.zip', 'receipt.json'}
             require(allowed, 'Unexpected outer artifact member')
         require(('bundle.json' in seen) if kind == 'dependencies' else seen == {'staging_build_inputs.zip','receipt.json'},
@@ -96,7 +101,8 @@ def unpack(archive, destination, kind):
 
 
 def fetch(gh, selection, output, provenance, *, kind):
-    require(not provenance.exists() and not provenance.resolve().is_relative_to(output.resolve()),
+    require(not provenance.exists() and not provenance.is_symlink() and
+            not provenance.resolve().is_relative_to(output.resolve()),
             'Fresh external provenance location required')
     authority = authenticated_artifact(gh, selection, kind=kind)
     with tempfile.TemporaryDirectory(prefix='skager-ci-') as temp:

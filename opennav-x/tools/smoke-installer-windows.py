@@ -18,11 +18,16 @@ import time
 import urllib.request
 import zipfile
 
+import staging_build_inputs as staging_inputs
+
 def arguments(argv=None):
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--mode',choices=('staging','production'),default='staging',
                         help='Staging checks clean installation/startup/profile/rollback; production retains the full lifecycle matrix')
-    parser.add_argument('--retained-package',type=Path,
+    inputs=parser.add_mutually_exclusive_group()
+    inputs.add_argument('--compiled-input-receipt',type=Path,
+                        help='Validated compiled-input restore receipt; use frozen installer source and current test helpers')
+    inputs.add_argument('--retained-package',type=Path,
                         help='Exact downloaded release set plus separately retained Retest-Support ZIP and checksums; never rebuilt')
     parser.add_argument('--prepare-only',action='store_true',
                         help='Verify and restore retained inputs, emit a preparation receipt, and run no lifecycle tests')
@@ -121,27 +126,70 @@ def prepare_retained(directory,root,expected_commit):
     shutil.copy2(directory/names[0],root/'build/beta-installer'/names[0])
     shutil.copy2(directory/names[1],root/'build/developer-preview'/names[1])
     shutil.copy2(directory/names[2],root/'build/developer-preview'/names[2])
-    # Source-owned installer engine remains pinned to the candidate. Current
-    # test helpers may be repaired independently and their revision is recorded.
+    prepare_source_engine(directory/names[2],root,expected_commit)
+    return {'product_commit':expected_commit,'retained_sha256':{name:sums[name] for name in names}}
+
+
+def prepare_source_engine(source_archive,root,expected_commit):
+    """Read candidate engine bytes only; current harness stays independently identified."""
+    target=root/'build/retained-source'
+    if target.exists() or target.is_symlink() or (root/'build').is_symlink():
+        raise ValueError('Retained source requires a fresh, unlinked directory')
     engine_name='opennav-x/installer/windows/Lifecycle.ps1'
-    with zipfile.ZipFile(directory/names[2]) as source:
-        # Corresponding source legitimately retains repository symlinks. Read
-        # only these two regular files; do not extract or follow source links.
+    with zipfile.ZipFile(source_archive) as source:
+        # The source ZIP may contain legitimate repository symlinks elsewhere.
+        # These two identities must each be one exact regular-file entry.
         for name in ('SOURCE_REFERENCE.json',engine_name):
-            selected=[entry for entry in source.infolist() if entry.filename==name]
-            if len(selected)!=1 or (selected[0].external_attr>>16)&0o170000==0o120000:
+            selected=[entry for entry in source.infolist() if entry.filename.casefold()==name.casefold()]
+            if (len(selected)!=1 or selected[0].orig_filename!=name or selected[0].is_dir() or
+                    (selected[0].external_attr>>16)&0o170000 not in (0,0o100000)):
                 raise ValueError('Ambiguous or linked corresponding-source identity')
-        reference=json.loads(source.read('SOURCE_REFERENCE.json'))
+        reference=staging_inputs.strict_json(source.read('SOURCE_REFERENCE.json'))
         if reference['productCommit']!=expected_commit:
             raise ValueError('Corresponding source revision differs from frozen product')
         engine_bytes=source.read(engine_name)
         if hashlib.sha256(engine_bytes).hexdigest()!=reference['files'][engine_name]['sha256']:
             raise ValueError('Corresponding installer source checksum differs')
-    engine=root/'build/retained-source/installer/windows/Lifecycle.ps1'
+    current_helper=staging_inputs.plain_file(root,'tools/test-installer-missing-dll-selftest.ps1')
+    engine=target/'installer/windows/Lifecycle.ps1'
     engine.parent.mkdir(parents=True);engine.write_bytes(engine_bytes)
-    helper=root/'build/retained-source/tools/test-installer-missing-dll-selftest.ps1'
-    helper.parent.mkdir();shutil.copy2(root/'tools'/helper.name,helper)
-    return {'product_commit':expected_commit,'retained_sha256':{name:sums[name] for name in names}}
+    helper=target/'tools'/current_helper.name
+    helper.parent.mkdir();shutil.copy2(current_helper,helper)
+    return {'installer_source_sha256':sha(engine),'installer_helper_sha256':sha(helper)}
+
+
+def prepare_compiled(receipt_path,root,harness_commit):
+    """Consume an authenticated restore's receipt; do not restore/rebuild binaries."""
+    root=root.resolve()
+    if receipt_path.is_symlink() or not receipt_path.is_file():
+        raise ValueError('Compiled input receipt must be a regular restored file')
+    restored=staging_inputs.strict_json(receipt_path.read_bytes())
+    if (type(restored.get('schema')) is not int or restored.get('schema')!=1 or
+            restored.get('kind')!=staging_inputs.KIND or
+            restored.get('status')!='restored' or restored.get('qualification')!='not-run' or
+            restored.get('workspaceRoot')!=str(root) or restored.get('harnessCommit')!=harness_commit):
+        raise ValueError('Compiled input receipt root, harness or restore authority differs')
+    identity=restored.get('producer',{})
+    expected=staging_inputs.producer(identity.get('commit'),identity.get('runId'),
+                                    identity.get('runAttempt'),identity.get('job'))
+    if identity!=expected:
+        raise ValueError('Compiled input producer identity differs')
+    archive=staging_inputs.plain_file(root,'build/developer-preview/SKAGER-Beta2-source.zip')
+    if sha(archive)!=restored.get('sourceArchiveSha256'):
+        raise ValueError('Compiled corresponding-source archive checksum differs')
+    product=staging_inputs.strict_json(staging_inputs.plain_file(
+        root,staging_inputs.PACKAGE_ROOT+'/docs/PRODUCT_BUILD.json').read_bytes())
+    executable=staging_inputs.plain_file(root,'build/production-install/opencpn.exe')
+    if (product.get('commit')!=expected['commit'] or product.get('test_fixtures') is not False or
+            product.get('build_purpose')!='INSTALLED PRODUCT' or
+            product.get('xnav_hardware_output_policy')!='status-only' or
+            product.get('executable_sha256')!=sha(executable)):
+        raise ValueError('Compiled product differs from restored candidate identity')
+    source=prepare_source_engine(archive,root,expected['commit'])
+    return {**source,'product_commit':expected['commit'],
+            'compiled_input_receipt_sha256':sha(receipt_path),'compiled_input_producer':expected,
+            'source_archive_sha256':sha(archive)}
+
 
 
 args=arguments()
@@ -150,7 +198,7 @@ if sys.platform!='win32' or os.environ.get('GITHUB_ACTIONS')!='true':
 ROOT=Path(__file__).resolve().parents[1]
 EVIDENCE=ROOT/'evidence/local';EVIDENCE.mkdir(parents=True,exist_ok=True)
 PACKAGE=ROOT/'build/beta-installer';SETUP=PACKAGE/'SKAGER-Beta2-Setup.exe'
-PRODUCT_SOURCE=ROOT/'build/retained-source' if args.retained_package else ROOT
+PRODUCT_SOURCE=ROOT/'build/retained-source' if (args.retained_package or args.compiled_input_receipt) else ROOT
 INSTALL=Path(os.environ['LOCALAPPDATA'])/'OpenNavXAlpha1'
 STOCK_HASH='7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c'
 SETUP_HASH='e949f55de57611afe2fc0dad5a8ac33795c46ba488cb40ca07b65f639a07b8aa'
@@ -451,6 +499,8 @@ try:
     report['test_source_sha256']=sha(Path(__file__))
     if args.retained_package:
         report.update(prepare_retained(args.retained_package,ROOT,args.expected_commit))
+    elif args.compiled_input_receipt:
+        report.update(prepare_compiled(args.compiled_input_receipt,ROOT,report['harness_commit']))
     product=json.loads((ROOT/'build/developer-preview/SKAGER-Beta2-Portable-Recovery/docs/PRODUCT_BUILD.json').read_text())
     assert product.get('xnav_hardware_output_policy')=='status-only'
     report['product_commit']=product['commit']

@@ -1,5 +1,19 @@
 # SKAGER status — 2026-10-04
 
+## Further delivery streamlining — SCRUM-225 / 292 / 293
+
+Implementation now selects CI from actual changed inputs, retains compiled
+Windows packages before desktop qualification, and supports targeted retesting
+against the original bytes with a separately identified test-helper revision.
+Library reuse is an immutable authenticated producer bundle, with fresh native
+toolchain/source checks; failed or mismatched inputs never fall back silently.
+New packages remain Staging by default. Production and design review still need
+explicit instructions. See [build efficiency](build-efficiency.md).
+
+The native dependency-only cold/reuse proof and focused Linux/Windows delivery
+checks are in progress. No application, boat, design or Production qualification
+is claimed by these helper changes. The installed boat candidate is unchanged.
+
 ## Staging delivery and explicit Production promotion
 
 The user has adopted versioned Staging delivery followed by a separate

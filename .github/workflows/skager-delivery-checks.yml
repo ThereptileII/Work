@@ -4,13 +4,7 @@ on:
     branches: [skager-delivery-workflow, staging, opennav-x-beta2-ui]
     paths:
       - .github/workflows/**
-      - opennav-x/tools/*release*
-      - opennav-x/tools/*qualification*
-      - opennav-x/tools/*delivery*
-      - opennav-x/tools/*installer*
-      - opennav-x/tools/smoke-modes-windows.py
-      - opennav-x/tools/smoke-navigation.py
-      - opennav-x/tools/chart-render-check.py
+      - opennav-x/tools/**
   workflow_dispatch:
 permissions:
   contents: read
@@ -44,7 +38,10 @@ jobs:
           reports = []
           for name in ('test-release-manifest.py', 'test-github-release-delivery.py',
                        'test-delivery-workflows.py', 'test-installer-promotion.py',
-                       'test-installer-completion.py'):
+                       'test-installer-completion.py', 'test-ci-changes.py',
+                       'test-windows-dependency-bundle.py', 'test-fetch-ci-inputs.py',
+                       'test-staging-build-inputs.py', 'test-staging-retest.py',
+                       'test-ais-runtime-gate.py'):
               result = subprocess.run([sys.executable, str(root/'tools'/name), '-v'],
                                       stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
               (out/(name+'.log')).write_text(result.stdout, encoding='utf-8')
@@ -61,7 +58,7 @@ jobs:
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          foreach ($file in @('build-pristine-windows.ps1', 'test-installer-missing-dll-selftest.ps1')) {
+          foreach ($file in @('build-pristine-windows.ps1', 'package-preview-windows.ps1', 'qualify-staging-windows.ps1', 'test-installer-missing-dll-selftest.ps1')) {
             $tokens = $null
             $errors = $null
             $path = (Resolve-Path "opennav-x/tools/$file").Path

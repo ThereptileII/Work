@@ -13,6 +13,7 @@ import release_manifest as manifest
 
 STAGING_WORKFLOW = '.github/workflows/opennav-baseline.yml'
 PRODUCTION_WORKFLOW = '.github/workflows/skager-production.yml'
+STAGING_QUALIFICATION_JOB = 'Qualify retained native Staging inputs'
 RECEIPT = 'PRODUCTION.json'
 require = manifest.require
 
@@ -136,9 +137,11 @@ def local_record(directory):
     support = read_json(directory / 'RETEST_SUPPORT.json')
     require(set(support) == {'artifactName', 'runId', 'runAttempt', 'commit', 'archiveName', 'sha256', 'size'},
             'Unexpected retest support fields')
+    support_attempt = decimal(support['runAttempt'])
+    release_attempt = decimal(record['runAttempt'])
     require(support['commit'] == record['commit'] and support['runId'] == record['runId'] and
-            support['runAttempt'] == record['runAttempt'] and
-            support['artifactName'] == 'staging-retest-' + record['commit'] + '-attempt' + record['runAttempt'] and
+            int(support_attempt) <= int(release_attempt) and
+            support['artifactName'] == 'staging-retest-' + record['commit'] + '-attempt' + support_attempt and
             support['archiveName'] == 'SKAGER-Beta2-Retest-Support.zip', 'Retest support identity differs')
     valid(r'[0-9a-f]{64}', support['sha256'], 'Retest support digest required')
     require(type(support['size']) is int and support['size'] > 0, 'Retest support size required')
@@ -154,6 +157,24 @@ def producer(gh, record, *, complete):
     if complete:
         require(run.get('status') == 'completed' and run.get('conclusion') == 'success',
                 'Staging producer is not completed successfully')
+    return run
+
+
+def support_producer(gh, record, support):
+    # A publish-only retry keeps the successful qualification attempt's support
+    # identity. The older overall run may have failed at publication; only the
+    # exact named qualification job is allowed to supply the retained inputs.
+    if support['runAttempt'] == record['runAttempt']:
+        return
+    earlier = dict(record, runAttempt=support['runAttempt'])
+    run = producer(gh, earlier, complete=False)
+    require(run.get('status') == 'completed', 'Earlier support attempt is not completed')
+    jobs = gh.pages(f'{gh.base}/actions/runs/{decimal(record["runId"])}/'
+                    f'attempts/{decimal(support["runAttempt"])}/jobs')
+    matches = [job for job in jobs if job.get('name') == STAGING_QUALIFICATION_JOB]
+    require(len(matches) == 1 and matches[0].get('status') == 'completed' and
+            matches[0].get('conclusion') == 'success',
+            'Earlier native Staging qualification job did not pass')
 
 
 def inventory_assets(gh, release):
@@ -197,11 +218,12 @@ def retain_release(gh, directory, record, tag, *, production=False, receipt=None
 
 
 def publish_staging(gh, directory):
-    record, _ = local_record(directory)
+    record, support = local_record(directory)
     require(os.environ.get('GITHUB_SHA') == record['commit'] and
             os.environ.get('GITHUB_RUN_ID') == record['runId'] and
             os.environ.get('GITHUB_RUN_ATTEMPT') == record['runAttempt'], 'Current producer identity differs')
     producer(gh, record, complete=False)
+    support_producer(gh, record, support)
     retain_release(gh, directory, record, staging_tag(record))
 
 
@@ -233,6 +255,7 @@ def fetch_staging(gh, tag, directory):
         record, support = local_record(stage)
         require(staging_tag(record) == tag and record['commit'] == commit, 'Staging tag/commit differs')
         producer(gh, record, complete=True)
+        support_producer(gh, record, support)
         directory.mkdir(parents=True, exist_ok=True)
         for path in stage.iterdir():
             with path.open('rb') as src, (directory / path.name).open('xb') as dst:

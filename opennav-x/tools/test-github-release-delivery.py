@@ -31,19 +31,22 @@ class FakeGitHub:
         self.production_run = dict(id=99, run_attempt=2, head_sha=HARNESS,
                                    path=delivery.PRODUCTION_WORKFLOW, event='workflow_dispatch',
                                    status='in_progress', conclusion=None)
+        self.stage_attempts = {}
+        self.stage_jobs = [dict(name=delivery.STAGING_QUALIFICATION_JOB, status='completed', conclusion='success')]
         self.jobs = [dict(name='Qualify retained Windows package', status='completed', conclusion='success')]
 
     def api(self, endpoint):
         self.calls.append(('api', endpoint))
         if '/runs/42/' in endpoint:
-            return self.stage_run
+            attempt = endpoint.split('/attempts/')[1].split('/')[0]
+            return self.stage_attempts.get(attempt, self.stage_run)
         if '/runs/99/' in endpoint:
             return self.production_run
         raise AssertionError(endpoint)
 
     def pages(self, endpoint):
         self.calls.append(('pages', endpoint))
-        return self.jobs
+        return self.stage_jobs if '/runs/42/' in endpoint else self.jobs
 
     def release(self, tag):
         self.calls.append(('release', tag))
@@ -187,6 +190,87 @@ class DeliveryTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     delivery.publish_staging(self.gh, self.root)
                 self.assertEqual(self.gh.calls, [])
+
+    def retry_fixture(self):
+        (self.root / 'RELEASE.json').unlink()
+        self.qualification['runAttempt'] = '3'
+        self.support.update(runAttempt='2', artifactName='staging-retest-' + COMMIT + '-attempt2')
+        (self.root / 'QUALIFICATION.json').write_text(json.dumps(self.qualification))
+        (self.root / 'RETEST_SUPPORT.json').write_text(json.dumps(self.support))
+        self.record = self.fixture.create(run_attempt='3')
+        self.tag = delivery.staging_tag(self.record)
+        self.gh.stage_run['run_attempt'] = 3
+        self.gh.stage_attempts['2'] = dict(self.gh.stage_run, run_attempt=2, conclusion='failure')
+        os.environ['GITHUB_RUN_ATTEMPT'] = '3'
+
+    def test_publish_only_retry_authenticates_prior_qualification_without_relabeling(self):
+        self.retry_fixture()
+        support_bytes = (self.root / 'RETEST_SUPPORT.json').read_bytes()
+        setup_bytes = (self.root / 'SKAGER-Beta2-Setup.exe').read_bytes()
+        delivery.publish_staging(self.gh, self.root)
+        self.assertIn(('pages', self.gh.base + '/actions/runs/42/attempts/2/jobs'), self.gh.calls)
+        self.assertIn('attempt3', self.tag)
+        self.assertEqual((self.root / 'RETEST_SUPPORT.json').read_bytes(), support_bytes)
+        self.assertEqual((self.root / 'SKAGER-Beta2-Setup.exe').read_bytes(), setup_bytes)
+        self.assertEqual(delivery.local_record(self.root)[1]['runAttempt'], '2')
+        self.gh.calls.clear()
+        output = self.work / 'outputs'
+        os.environ['GITHUB_OUTPUT'] = str(output)
+        delivery.fetch_staging(self.gh, self.tag, self.work / 'retry-fetch')
+        self.assertIn(('pages', self.gh.base + '/actions/runs/42/attempts/2/jobs'), self.gh.calls)
+        self.assertIn('support_artifact=' + self.support['artifactName'] + '\n', output.read_text())
+        self.assertEqual((self.work / 'retry-fetch/RETEST_SUPPORT.json').read_bytes(), support_bytes)
+
+    def test_prior_support_rejects_future_noncanonical_and_different_run_or_commit(self):
+        self.retry_fixture()
+        for changes in ({'runAttempt': '4', 'artifactName': 'staging-retest-' + COMMIT + '-attempt4'},
+                        {'runAttempt': '02'}, {'runAttempt': '0'}, {'runAttempt': 2},
+                        {'runId': '41'}, {'commit': HARNESS},
+                        {'artifactName': 'staging-retest-' + COMMIT + '-attempt3'}):
+            with self.subTest(changes=changes):
+                (self.root / 'RELEASE.json').unlink()
+                (self.root / 'RETEST_SUPPORT.json').write_text(json.dumps(dict(self.support, **changes)))
+                self.fixture.create(run_attempt='3')
+                with self.assertRaises(ValueError):
+                    delivery.publish_staging(self.gh, self.root)
+                self.assertEqual(self.gh.calls, [])
+
+    def test_prior_support_hash_tamper_is_rejected_before_network(self):
+        self.retry_fixture()
+        (self.root / 'RETEST_SUPPORT.json').write_text(json.dumps(dict(self.support, sha256='f' * 64)))
+        with self.assertRaises(ValueError):
+            delivery.publish_staging(self.gh, self.root)
+        self.assertEqual(self.gh.calls, [])
+
+    def test_prior_qualification_failure_wrong_identity_or_ambiguous_job_blocks_publish_and_fetch(self):
+        self.retry_fixture()
+        self.publish()
+        original_job = copy.deepcopy(self.gh.stage_jobs)
+        original_run = copy.deepcopy(self.gh.stage_attempts['2'])
+        variants = [('job-failed', 'job', {'conclusion': 'failure'}),
+                    ('job-running', 'job', {'status': 'in_progress'}),
+                    ('job-wrong', 'job', {'name': 'windows-integration'}),
+                    ('wrong-commit', 'run', {'head_sha': HARNESS}),
+                    ('wrong-attempt', 'run', {'run_attempt': 1}),
+                    ('wrong-run', 'run', {'id': 41}),
+                    ('wrong-workflow', 'run', {'path': delivery.PRODUCTION_WORKFLOW}),
+                    ('unfinished', 'run', {'status': 'in_progress'}),
+                    ('duplicate', 'duplicate', {})]
+        for label, kind, changes in variants:
+            with self.subTest(label=label):
+                self.gh.stage_jobs = copy.deepcopy(original_job)
+                self.gh.stage_attempts['2'] = copy.deepcopy(original_run)
+                if kind == 'job': self.gh.stage_jobs[0].update(changes)
+                elif kind == 'run': self.gh.stage_attempts['2'].update(changes)
+                else: self.gh.stage_jobs += copy.deepcopy(original_job)
+                self.gh.calls.clear()
+                with self.assertRaises(ValueError):
+                    delivery.publish_staging(self.gh, self.root)
+                self.assertFalse(any(call[0] in {'create', 'upload'} for call in self.gh.calls))
+                target = self.work / label
+                with self.assertRaises(ValueError):
+                    delivery.fetch_staging(self.gh, self.tag, target)
+                self.assertFalse(target.exists())
 
     def test_fetch_retains_original_assets_and_safe_outputs(self):
         self.publish()

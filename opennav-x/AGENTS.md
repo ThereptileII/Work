@@ -55,12 +55,23 @@ transitions rather than assuming status-category queries identify each column.
 
 Use many small, bounded parallel tasks when the work can be split cleanly.
 The user's latest model instruction is **Astra High** for subagents; it supersedes
-the earlier Luna/Sol allocation. The root agent owns integration decisions. Tie every task
-to its Jira issue and record explicit ownership and acceptance criteria. Keep
-context limited and handoffs concise.
+the earlier Luna/Sol allocation. The root agent is the single coordinator for
+integration, full application builds and releases. Tie every task to its Jira
+issue, assign non-overlapping file ownership and acceptance criteria, and return
+focused test results to the coordinator. Subagents must not independently
+start duplicate full builds, deliveries or boat operations. Integrate a coherent
+batch and inspect the combined change; request one build/delivery when its
+product inputs require it. Keep context limited and handoffs concise.
 
-For reversible, noncritical documentation, copy, layout, or function changes,
-run focused functional checks relevant to the change and a smoke check. Run
+Choose checks from actual build and package inputs, following
+[build efficiency](docs/build-efficiency.md). Ordinary documentation and test
+helper changes need focused checks appropriate to their effect; they do not
+request a new application package or qualify a new product/source revision.
+Packaged release notes, licenses, runtime resources, installer code and build
+recipes are product inputs even when a filename looks like documentation.
+Unknown inputs or unavailable comparison history take the conservative build
+path. For reversible, noncritical copy, layout or function changes, run focused
+functional checks and an applicable smoke check. Run
 design/visual-conformance review only when the user explicitly requests it. Avoid
 redundant broad reruns and tests that only mirror the implementation. Preserve
 all navigation, safety, data-loss, security, authentication, payment,
@@ -69,6 +80,16 @@ and source-compliance gates. Do not remove or weaken existing failure
 assertions. Batch full suites at integration and release milestones instead of
 running them for every minor edit. Keep Jira as the sole backlog; do not create
 a TODO file.
+
+Update documentation when a change materially affects a contract, architecture,
+delivery procedure, safety boundary or recorded evidence. Do not create a new
+status report or rewrite historical specifications for every small edit. Preserve
+failed and incomplete evidence, and record the package revision separately from
+a later helper revision. Retain application outputs before downstream tests so
+a helper repair can retest exact bytes without rebuilding or relabeling them.
+Long-running suites require an explicit request and run as separate background
+work; pending required results remain pending. The existing endurance-test skip
+continues until the user changes it.
 
 `SCRUM-97` governs this workflow. The user's 2026-10-04 decision in
 [docs/delivery-workflow.md](docs/delivery-workflow.md) separates frequent Staging
