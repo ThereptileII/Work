@@ -49,7 +49,11 @@ JOBS = {
     'Actual official OpenCPN portable upgrade caution (en_US)',
     'Fixed guarded mode UI actions on disposable native windows',
     'Actual restart broker with disposable marker-only installation',
+    'Native private chart loader refusal and fallback gate',
     'Native MSVC XNav / Legacy / Safe slice',
+    'Wait for exact same-run native fixture runtime',
+    'Concurrent exact native trip and resource stability',
+    'Join native functional gates and exact endurance before candidate promotion',
     'Publish Beta after both platform and installer gates',
 }
 BOAT_GATES = {

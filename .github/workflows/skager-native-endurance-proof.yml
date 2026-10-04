@@ -1,0 +1,44 @@
+name: SKAGER native endurance handoff contracts
+on:
+  push:
+    branches: [skager-native-endurance-proof]
+    paths: [.github/workflows/skager-native-endurance-proof.yml, 'opennav-x/tools/*endurance*', opennav-x/tools/beta2_handoff.py]
+permissions:
+  contents: read
+jobs:
+  contracts:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2022]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Exercise inert transfer, refusal and promotion boundaries without an application build
+        shell: python
+        run: |
+          import hashlib, json, os, pathlib, subprocess, sys
+          root = pathlib.Path('opennav-x')
+          out = root/'evidence/local/native-endurance-proof'
+          out.mkdir(parents=True)
+          report = {'commit': os.environ['GITHUB_SHA'], 'os': os.environ['RUNNER_OS'],
+                    'run': os.environ['GITHUB_RUN_ID'], 'attempt': os.environ['GITHUB_RUN_ATTEMPT'],
+                    'scope': 'Inert contract tests only; no application, real endurance, boat or release acceptance',
+                    'tests': []}
+          for name in ('test-native-endurance-handoff.py', 'test-wait-native-endurance.py',
+                       'test-promote-endurance-candidate.py', 'test-beta2-handoff.py'):
+              run = subprocess.run([sys.executable, str(root/'tools'/name), '-v'],
+                                   stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=120)
+              (out/(name+'.log')).write_bytes(run.stdout)
+              report['tests'].append({'name': name, 'exit': run.returncode,
+                                     'log_sha256': hashlib.sha256(run.stdout).hexdigest()})
+              print(run.stdout.decode('utf-8', errors='replace'))
+          (out/'result.json').write_text(json.dumps(report, indent=2)+'\n')
+          assert all(test['exit'] == 0 for test in report['tests']), 'Native endurance contract failure'
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: native-endurance-proof-${{ matrix.os }}-${{ github.sha }}
+          path: opennav-x/evidence/local/native-endurance-proof
+          if-no-files-found: error

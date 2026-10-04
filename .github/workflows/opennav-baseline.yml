@@ -106,6 +106,14 @@ jobs:
                              check=True, timeout=120)
       - name: Native version probe stream identity and bounded failure contracts
         run: pwsh -NoProfile -File opennav-x/tools/test-windows-native-probe-version.ps1
+      - name: Concurrent native endurance ownership and promotion contracts
+        shell: python
+        run: |
+          import subprocess, sys
+          for script in ("test-native-endurance-handoff.py", "test-wait-native-endurance.py",
+                         "test-promote-endurance-candidate.py"):
+              subprocess.run([sys.executable, "opennav-x/tools/" + script],
+                             check=True, timeout=120)
       - name: Native version probe contracts in Windows PowerShell 5.1
         if: runner.os == 'Windows'
         shell: powershell
@@ -461,6 +469,9 @@ jobs:
       contents: read
       actions: read
     needs: [contracts, native-restart-window, native-stock-welcome, native-private-chart-loader]
+    outputs:
+      review-artifact-id: ${{ steps.boat_review.outputs.artifact-id }}
+      review-artifact-digest: ${{ steps.boat_review.outputs.artifact-digest }}
     runs-on: windows-2022
     # The first source-built pass retains all upstream tests; the production
     # pass may reuse only its verified closure in this same job.
@@ -572,6 +583,17 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python opennav-x/tools/test-ais-runtime-windows.py
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      # Endurance observes these exact fixture-enabled bytes on another native
+      # worker while this job preserves its same-job production dependency reuse.
+      - name: Prepare immutable fixture runtime for concurrent endurance
+        run: python opennav-x/tools/native-endurance-handoff.py prepare --stage opennav-x/build/native-endurance-runtime
+      - name: Upload immutable fixture runtime for concurrent endurance
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: native-endurance-runtime-${{ github.sha }}-${{ github.run_attempt }}
+          path: opennav-x/build/native-endurance-runtime
+          include-hidden-files: true
+          if-no-files-found: error
       - name: Build native installed product without synthetic data
         id: production
         run: ./opennav-x/tools/build-pristine-windows.ps1 -Architecture Win32 -Integration -Production -ReuseVerifiedDependencies -PrivateOCharts
@@ -672,22 +694,12 @@ jobs:
         if: ${{ success() && steps.installer.conclusion == 'success' && steps.dpi.conclusion == 'success' && steps.restart_qualified.conclusion == 'success' }}
         run: python opennav-x/tools/alpha-artifacts.py --boat-review
       - name: Upload development review only while endurance runs
+        id: boat_review
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: ${{ success() && steps.installer.conclusion == 'success' && steps.dpi.conclusion == 'success' && steps.restart_qualified.conclusion == 'success' }}
         with:
           name: beta2-boat-review-pending-endurance-${{ github.sha }}
           path: opennav-x/build/beta-boat-review
-          if-no-files-found: error
-      - name: Actual elapsed-time native trip and resource stability
-        run: |
-          $Duration = (Get-Content opennav-x/release/qualification.json -Raw | ConvertFrom-Json).enduranceSeconds
-          python opennav-x/tools/soak-runtime.py --seconds $Duration
-      - name: Collect tested Beta downloads and hashes
-        run: python opennav-x/tools/alpha-artifacts.py
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: beta-candidate-${{ github.sha }}
-          path: opennav-x/build/beta-artifacts
           if-no-files-found: error
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
@@ -705,6 +717,106 @@ jobs:
             opennav-x/build/ocharts-native/CMakeFiles/CMakeConfigureLog.yaml
             opennav-x/build/ocharts-native/CMakeCache.txt
             opennav-x/build/ocharts-native/Release/skager-ocharts-adapter.dll
+  native-endurance-ready:
+    name: Wait for exact same-run native fixture runtime
+    needs: [contracts, native-restart-window, native-stock-welcome, native-private-chart-loader]
+    permissions:
+      contents: read
+      actions: read
+    runs-on: ubuntu-24.04
+    timeout-minutes: 195
+    outputs:
+      artifact-id: ${{ steps.ready.outputs.artifact-id }}
+      artifact-digest: ${{ steps.ready.outputs.artifact-digest }}
+      receipt-artifact-id: ${{ steps.receipt.outputs.artifact-id }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Observe bounded same-run fixture readiness without rerunning builds
+        id: ready
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 opennav-x/tools/wait-native-endurance.py --evidence opennav-x/evidence/local/native-endurance-ready
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        id: receipt
+        if: always()
+        with:
+          name: native-endurance-readiness-${{ github.sha }}-${{ github.run_attempt }}
+          path: opennav-x/evidence/local/native-endurance-ready
+          if-no-files-found: error
+  windows-endurance:
+    name: Concurrent exact native trip and resource stability
+    needs: [native-endurance-ready]
+    runs-on: windows-2022
+    timeout-minutes: 225
+    outputs:
+      artifact-id: ${{ steps.evidence.outputs.artifact-id }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Download immutable fixture runtime from this run
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          artifact-ids: ${{ needs.native-endurance-ready.outputs.artifact-id }}
+          merge-multiple: true
+          path: opennav-x/build/native-endurance-runtime
+      - name: Download bound readiness receipt
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          artifact-ids: ${{ needs.native-endurance-ready.outputs.receipt-artifact-id }}
+          merge-multiple: true
+          path: opennav-x/evidence/local/soak/readiness
+      - name: Verify exact runtime and initialize absent test build paths
+        run: python opennav-x/tools/native-endurance-handoff.py verify --stage opennav-x/build/native-endurance-runtime
+      - name: Actual elapsed-time native trip and resource stability
+        run: |
+          $Duration = (Get-Content opennav-x/release/qualification.json -Raw | ConvertFrom-Json).enduranceSeconds
+          python opennav-x/tools/soak-runtime.py --seconds $Duration
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Require unchanged runtime and actual native endurance identity
+        run: python opennav-x/tools/native-endurance-handoff.py result --stage opennav-x/build/native-endurance-runtime --report opennav-x/evidence/local/soak/results.json --output opennav-x/evidence/local/soak/handoff-qualified.json
+      - name: Retain original runtime manifest
+        if: always()
+        shell: python
+        run: |
+          from pathlib import Path
+          import shutil
+          source = Path('opennav-x/build/native-endurance-runtime/manifest.json')
+          if source.is_file():
+              target = Path('opennav-x/evidence/local/soak/runtime-manifest.json')
+              target.parent.mkdir(parents=True, exist_ok=True)
+              shutil.copyfile(source, target)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        id: evidence
+        if: always()
+        with:
+          name: windows-endurance-${{ github.sha }}-${{ github.run_attempt }}
+          path: opennav-x/evidence/local/soak
+          if-no-files-found: error
+  native-candidate:
+    name: Join native functional gates and exact endurance before candidate promotion
+    needs: [windows-integration, windows-endurance]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Download exact functionally tested product set
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          artifact-ids: ${{ needs.windows-integration.outputs.review-artifact-id }}
+          merge-multiple: true
+          path: opennav-x/build/beta-boat-review
+      - name: Download exact native endurance evidence
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          artifact-ids: ${{ needs.windows-endurance.outputs.artifact-id }}
+          merge-multiple: true
+          path: opennav-x/evidence/local/soak
+      - name: Promote byte-identical product files after both native gates
+        run: python3 opennav-x/tools/promote-endurance-candidate.py
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: beta-candidate-${{ github.sha }}
+          path: opennav-x/build/beta-artifacts
+          if-no-files-found: error
   application-abi:
     name: Approved OpenCPN ABI on Windows x64
     runs-on: windows-2022
@@ -719,7 +831,7 @@ jobs:
           }
   publish-beta:
     name: Publish Beta after both platform and installer gates
-    needs: [contracts, boat-maintenance, native-restart-transport, native-restart-broker, native-restart-window, native-stock-welcome, linux, linux-integration, windows-upstream-abi, windows-integration, application-abi, stock-prerequisite, boat-firmware]
+    needs: [contracts, boat-maintenance, native-restart-transport, native-restart-broker, native-restart-window, native-stock-welcome, linux, linux-integration, windows-upstream-abi, windows-integration, windows-endurance, native-candidate, application-abi, stock-prerequisite, boat-firmware]
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
