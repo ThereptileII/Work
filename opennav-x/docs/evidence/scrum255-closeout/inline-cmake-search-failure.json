@@ -1,0 +1,10 @@
+{
+  "command": [
+    "python",
+    "tests/windows_gettext_tests.py",
+    "GettextPrerequisiteTests.test_script_orders_gate_before_every_expensive_step"
+  ],
+  "exitCode": 1,
+  "logSha256": "8dbcb01e0834c417d4ce02caef430a713c490074d141a8e652252aadfaa5e9ba",
+  "testSourceSha256": "d55aa73aab63dcb843a3a03e86094535f16f038d92bfefb680f176bfa119e5fc"
+}

@@ -1,0 +1,11 @@
+{
+  "base": "5d19314fe51d7192ea3cfc2fa55d1674c559f406",
+  "command": [
+    "python",
+    "tests/windows_gettext_tests.py",
+    "GettextPrerequisiteTests.test_script_orders_gate_before_every_expensive_step"
+  ],
+  "exitCode": 1,
+  "logSha256": "857f9baacc86e4e1ec20b7017a307648eef3f8c77469adc335d4ab4b37cabae5",
+  "scope": "one ordering contract; no product execution"
+}

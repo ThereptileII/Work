@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "observed_utc": "2026-10-04T03:53:09.009190+00:00",
+  "source_run": 37164360050,
+  "source_job": 111325149619,
+  "source_commit": "17ab044a1e5222dc71791ac8118454219efe8734",
+  "source_attempt": 1,
+  "collector_commit": "12d705899738ae7a68d2db6a5458e44fa22666ea",
+  "scope": "Read-only log observation; no build, cancellation, rerun or acceptance",
+  "source_status": "in_progress",
+  "source_conclusion": null,
+  "download_exit": 1,
+  "log_state": "unavailable; no cause inferred"
+}

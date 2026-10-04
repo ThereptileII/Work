@@ -172,10 +172,22 @@ class GettextPrerequisiteTests(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError,'installation was not authorized'):self.ensure()
     def test_script_orders_gate_before_every_expensive_step(self):
         source=(ROOT/'tools/build-pristine-windows.ps1').read_text()
-        gate=source.index("'windows_gettext.py'), 'ensure'")
-        for after in ("'test-curl-source-preflight.ps1'",'buildwin\\win_deps.bat',"'build-openssl-windows.ps1'",'--ui'):
+        gate=source.index('$Gettext = Initialize-WindowsGettext')
+        call=source[gate:].splitlines()[0]
+        self.assertIn('-Mode Ensure',call)
+        self.assertIn('-Receipt $GettextReceipt',call)
+        self.assertLess(source.index(". (Join-Path $PSScriptRoot 'windows-parent-environment.ps1')"),gate)
+        helper=(ROOT/'tools/windows-parent-environment.ps1').read_text()
+        self.assertIn('function Initialize-WindowsGettext {',helper)
+        self.assertIn("$Arguments = @((Join-Path $PSScriptRoot 'windows_gettext.py'), $Mode.ToLowerInvariant(), '--receipt', $Receipt)",helper)
+        self.assertIn("if ($Mode -eq 'Ensure') { $Arguments += '--allow-install' }",helper)
+        self.assertIn('& $Python @Arguments',helper)
+        self.assertIn('if ($LASTEXITCODE -ne 0) { throw',helper)
+        for after in ("'test-curl-source-preflight.ps1'",'buildwin\\win_deps.bat',"'build-openssl-windows.ps1'",'--ui',
+                      'if ($PrivateOCharts) { Build-PrivateOCharts'):
             self.assertLess(gate,source.index(after))
-        verify=source.index("'windows_gettext.py'), 'verify'");self.assertLess(verify,source.index('    Run cmake'))
+        verify=source.index("'windows_gettext.py'), 'verify'")
+        self.assertLess(verify,source.index("    Run cmake (@('-S', $Source, '-B', $Build"))
         self.assertIn('-DGETTEXT_MSGFMT_EXECUTABLE=$Gettext/msgfmt.exe',source)
         self.assertIn('-DGETTEXT_MSGMERGE_EXECUTABLE=$Gettext/msgmerge.exe',source)
     def test_native_probe_retains_both_streams_and_status(self):

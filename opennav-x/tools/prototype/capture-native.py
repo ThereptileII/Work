@@ -74,7 +74,7 @@ def main():
     parser.add_argument("--expected-executable-sha256")
     parser.add_argument("--iho-s64", type=Path, help="Exact retained GB4X0000.000; official test geography")
     parser.add_argument("--iho-scene", choices=IHO_SCENES, default="yellow",
-                        help="Named official test view; optional lateral/cardinals/light-fog/sector-rwg require image review, yellow retains exact pixels")
+                        help="Named official test view; optional lateral/cardinals/light-fog/sector-rwg/unknown-rock require image review, yellow retains exact pixels")
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--chart-style", choices=["XNav", "Standard"], default="XNav")
     parser.add_argument("--renderer", choices=["software", "opengl"], default="software")

@@ -1,6 +1,99 @@
 # SKAGER status — 2026-10-04
 
-## Current replacement — 4ddf1f3 native AIS gate failed
+## Current boat-test objective — endurance skipped; native trust harness repair
+
+Frozen local `0a52a6cfe3bd3b4a1e6253d609bd9dc046016bd4` is published as
+`17ab044a1e5222dc71791ac8118454219efe8734` in
+[run 37164360050](https://github.com/ThereptileII/Work/actions/runs/37164360050).
+The [6,658-entry mapped tree](evidence/skager-symbols-0a52-publication.json)
+is independently reconstructed and preserves all eight unrelated root files.
+The reviewed application source is identical to the successful `98d2c45`
+preflight below; only documentation follows it. This one combined candidate
+includes supplied symbol artwork, neutral structural colours, prototype font
+selection, the smaller approved logo, classified light outlines and the compact
+unchanged-trigger warning. It also includes the AIS traversal correction that
+passed its short original-file native proof before this run began.
+
+The [completed contract jobs](evidence/contracts-17ab044/README.md) pass at this
+exact commit: 94 Linux and 91 Windows CTest cases, with no failures or skips.
+Both also pass ten additional executions of the same restart test. Root verified
+the original decoded log identities, result rows and frozen source hashes;
+these counts do not include the ongoing integrated or package gates.
+The [same-run restart prerequisite](evidence/restart-17ab044/README.md) is also
+independently acquired and verified: exact commit/run/attempt, original artifact
+digest/CRC and all four native success values. It explicitly records no boat
+acceptance and does not qualify the eventual application package.
+The original native artifact is now retained and digest/CRC verified. The
+application builds, 139 fixture-enabled tests and 139 production tests pass;
+the maintained-TLS AIS runtime passes. After the actual Downloader/wxCurl probes
+link, the trust harness produces no first-case receipt. Its last certificate
+output is at 02:11:25 UTC; the user-directed cancellation is at 04:16:57 UTC.
+This is not evidence of an application crash. A bounded native diagnostic is
+isolating the owned trust import/first probe before a replacement build.
+No eligible installer or Windows overall acceptance is claimed.
+
+The user explicitly changed the active objective on October 4 to deliver a
+stable SKAGER boat-test candidate quickly and **skip endurance testing**.
+[The narrow policy change](evidence/scrum217-user-directed-endurance-skip.md)
+records endurance as skipped, never passed or shortened. Functional, security,
+installer, chart and recovery gates remain. Named/public release stays withheld.
+SCRUM-287's parallel-endurance preparation is deferred in Idea. The obsolete
+run was cancelled normally; its complete native evidence was preserved.
+
+The [read-only boat connection check](evidence/boat-connection-20261004.json)
+confirms all three remote-access services were running with no navigation
+application running. No installation, launch or retirement occurred in this cycle.
+
+The separate existing package security probes are now ready for SKAGER naming
+and native CMake paths at tooling
+[`70bfda8`](https://github.com/ThereptileII/Work/commit/70bfda826176efe62bc1d588584fe40a617e0f99)
+(local `087cf255`). The complete 1,454-entry mapping is independently verified.
+It preserves the later unsupported-Setup/profile-restoration checks; focused
+adapter/request/path/preservation checks pass. See its
+[readiness evidence](https://github.com/ThereptileII/Work/blob/70bfda826176efe62bc1d588584fe40a617e0f99/opennav-x/docs/evidence/skager-candidate-probe-readiness/README.md).
+No request file or CI run was created, no application input changed, and native
+execution still needs the independently audited original eligible package.
+
+### Completed prior Linux gate
+
+The [original Linux artifact audit](evidence/linux-17ab044/README.md) confirms
+147 fixture-enabled and 147 fixture-free production CTest cases, all passing
+without skips, plus 10800.118 seconds of actual endurance. Both groups are test
+executions of the 147-case integrated suite, not 294 unique tests. Recomputed
+resource deltas are resident memory −223232 bytes, handles 0 and threads 0; average
+CPU is 3.353% of one core. The audit retains 90 dropout recoveries and 765 route
+progress changes. Root reviewed coastlines in start/end and returned software/GL
+images. The GL renderer is llvmpipe; this does not qualify the boat GPU or native
+Windows appearance. One zoom-in observation leaves the scale unchanged with a
+changed centre, so every opposite zoom pair is not claimed to restore its viewport.
+
+The completed Linux endurance above is retained historical evidence. No further
+endurance runs or parallel-endurance infrastructure are required for the current
+user-directed boat-test objective. The earlier
+[read-only collector](evidence/native-log-diagnostic-12d7058/README.md) could not
+retrieve a live log; the terminal original native log is now available and
+bounds the harness delay as described above.
+
+### Bounded build-tool closeouts during this run
+
+SCRUM-255, SCRUM-272 and SCRUM-273 are now Done against their own acceptance
+criteria: [early gettext prerequisite](evidence/scrum255-closeout/README.md),
+[native trust-probe path normalization](evidence/scrum272-closeout/README.md),
+and [duplicate source-cache publication](evidence/scrum273-closeout/README.md).
+Original failures, native proofs and stronger later private-package evidence
+remain linked. The gettext audit also corrected one stale source-order test
+after the shared-helper refactor; its single focused case passes and both
+deliberately wrong orderings are rejected. This later test-only maintenance is
+not in frozen `17ab044`, does not change application inputs, and did not trigger
+another full build. Full maintained-TLS, product/package, chart and boat gates
+remain open; these issue transitions do not qualify the current candidate.
+
+SCRUM-285's [generated-project traversal closeout](evidence/scrum285-closeout/README.md)
+is also Done after root reviewed the original eight-case native proof, unchanged
+frozen execution inputs and the subsequent actual AIS-stage success. Detailed
+runtime artifact audit and the remaining candidate/package/boat gates stay open.
+
+## Prior full candidate — 4ddf1f3 native AIS gate failed
 
 Frozen local `48c2f8b8d5d4103bcbaacc45a18c4e6a238d4c52` maps to remote
 `4ddf1f383e495150551946dd36103cd77cea85eb`, with the

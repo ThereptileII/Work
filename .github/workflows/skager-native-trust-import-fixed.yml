@@ -1,0 +1,25 @@
+name: SKAGER fixed native trust import proof
+on:
+  push:
+    branches: [skager-native-trust-import-fixed]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  trust-import-fixed:
+    name: Actual bounded owned-root trust helper proof
+    runs-on: windows-2022
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Exercise actual import, process bounds and exact cleanup
+        shell: pwsh
+        run: |
+          pwsh -NoProfile -File opennav-x/tools/test-native-trust-import-fixed.ps1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: native-trust-import-fixed-${{ github.sha }}-${{ github.run_attempt }}
+          path: opennav-x/evidence/local/native-trust-import-fixed
+          if-no-files-found: error

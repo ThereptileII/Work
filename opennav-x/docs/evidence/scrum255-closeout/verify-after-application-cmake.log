@@ -1,0 +1,14 @@
+F
+======================================================================
+FAIL: test_script_orders_gate_before_every_expensive_step (gettext_contract.GettextPrerequisiteTests.test_script_orders_gate_before_every_expensive_step)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/standard/Projects/X-nav-worktrees/scrum255-closeout/tests/windows_gettext_tests.py", line 190, in test_script_orders_gate_before_every_expensive_step
+    self.assertLess(verify,source.index("    Run cmake (@('-S', $Source, '-B', $Build"))
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 19692 not less than 18986
+
+----------------------------------------------------------------------
+Ran 1 test in 0.002s
+
+FAILED (failures=1)

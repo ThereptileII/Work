@@ -263,7 +263,11 @@ def verify_disposable_package(receipt):
     return receipt
 
 
-IHO_SCENES = ('yellow', 'lateral', 'cardinals', 'light-fog', 'sector-rwg')
+IHO_SCENES = ('yellow', 'lateral', 'cardinals', 'light-fog', 'sector-rwg', 'unknown-rock')
+IHO_ROCK_SCENES = 'docs/evidence/scrum279282-45d-linux-canvas/collector/scenes.json'
+IHO_ROCK_SCENES_SHA256 = 'daab3f5b1723d5f51838646c55bc26c526519dffd252cd7e54e2adc0d62235fc'
+IHO_ROCK_VIEW = 'docs/evidence/scrum279282-45d-linux-canvas/output/capture-45d73e8-s64-rocks-software-r2/s64-rocks-SKAGER-Day.json'
+IHO_ROCK_VIEW_SHA256 = '07dd81c88df6ab8b61d7d9be04fdd2312fcf6b0d02602578c529b0bc45773962'
 IHO_LIGHT_SCENES = 'docs/evidence/scrum275276-package-scenes/scenes.json'
 IHO_LIGHT_SCENES_SHA256 = 'fee43e336d3d54eb418181c7a35f8c158840b0d1046b3a95898c303415f88ddd'
 IHO_SCENE_INVENTORY = 'docs/evidence/scrum264-public-enc-scenes/scenes.json'
@@ -294,6 +298,26 @@ def iho_scene(name='yellow', root=None):
                                     {'class': 'TOPMAR', 'RCID': 257, 'COLOUR': ['6'], 'TOPSHP': 7}],
                 'source_audit_sha256': '567c4dea09a1d05a11919174e10268b7e75ea9e5ac85c281a10097bd0360e15b'}
     root = Path(root) if root is not None else Path(__file__).resolve().parents[2]
+    if name == 'unknown-rock':
+        inventory, source = _locked_scene_json(root, IHO_ROCK_SCENES, IHO_ROCK_SCENES_SHA256)
+        require(inventory['cell'] == 'GB4X0000.000' and inventory['source_sha256'] == IHO_SHA256 and
+                inventory['coordinate_order'] == 'latitude,longitude', 'IHO rock scene identity differs')
+        selected = [s for s in inventory['scenes'] if s['id'] == 's64-rocks']
+        require(len(selected) == 1, 'IHO rock scene selection differs')
+        selected = selected[0]
+        receipt, observed = _locked_scene_json(root, IHO_ROCK_VIEW, IHO_ROCK_VIEW_SHA256)
+        chart = receipt['runtime']['chart']
+        require([chart['latitude'], chart['longitude']] == selected['center'] and
+                chart['scale_ppm'] == selected['actualScale'], 'Retained rock viewport differs')
+        # Retain original attributes, including the nearby awash object. A camera
+        # does not attest the conditional glyph selected by the native renderer.
+        features = [{'class': f['class'], 'attributes': f['attributes']} for f in selected['features']]
+        return {'scene': name, 'center': selected['center'],
+                'requested_scale_ppm': selected['scalePpm'], 'observed_scale_ppm': chart['scale_ppm'],
+                'pixel_proof': None,
+                'visual_acceptance': 'review-required; no glyph or selected-alias acceptance oracle',
+                'source_features': features, 'source_inventory': source,
+                'observed_viewport_receipt': observed}
     if name in ('light-fog', 'sector-rwg'):
         inventory, source = _locked_scene_json(root, IHO_LIGHT_SCENES, IHO_LIGHT_SCENES_SHA256)
         require(inventory['cell'] == 'GB4X0000.000' and inventory['source_sha256'] == IHO_SHA256 and

@@ -3,5 +3,7 @@
   "publishNamedRelease": false,
   "enduranceSeconds": 10800,
   "acceptedAlphaCommit": "08bc92fc778591a3978e594a54208d672ff9158f",
-  "reason": "Beta 2 named release remains withheld until exact-commit Linux/native Windows gates, production fixture exclusion, installer lifecycle and real boat-PC visual/read-only smoke acceptance. The user-authorized official stock upgrade to exact validated 5.12.4 is verified; real-profile preparation, safe plugin audit and Beta 2 boat acceptance remain pending. A separately labeled development review artifact may be used after native functional gates while endurance continues; it is never release qualification."
+  "reason": "User-directed development boat-test candidate: endurance is explicitly skipped, not passed or shortened. Named/public release remains withheld. Exact-commit Linux/native Windows functional gates, production fixture exclusion, source/license closure, installer lifecycle and real boat-PC visual/read-only smoke acceptance remain required; no boat or release qualification is implied.",
+  "enduranceEnabled": false,
+  "enduranceSkipReason": "User directed on 2026-10-04: deliver a stable SKAGER Windows boat-test candidate as fast as possible; skip endurance testing."
 }

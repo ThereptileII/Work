@@ -1,0 +1,18 @@
+2026-10-04T01:40:43.0987837Z 100% tests passed, 0 tests failed out of 139
+2026-10-04T02:11:10.3467670Z 100% tests passed, 0 tests failed out of 139
+2026-10-04T02:11:10.3468952Z Total Test time (real) =  19.75 sec
+2026-10-04T02:11:24.1682576Z   Building Custom Rule D:/a/Work/Work/opennav-x/tests/downloader_trust/CMakeLists.txt
+2026-10-04T02:11:24.1688566Z   Building Custom Rule D:/a/Work/Work/opennav-x/tests/downloader_trust/CMakeLists.txt
+2026-10-04T02:11:24.1724900Z   downloader-trust-probe.vcxproj -> D:\a\_temp\opennav-downloader-trust-1f3174f78c6f40809093028dd3dda54f\build\Release\downloader-trust-probe.exe
+2026-10-04T02:11:24.1743649Z   wxcurl-trust-probe.vcxproj -> D:\a\_temp\opennav-downloader-trust-1f3174f78c6f40809093028dd3dda54f\build\Release\wxcurl-trust-probe.exe
+2026-10-04T02:11:24.1749343Z   Building Custom Rule D:/a/Work/Work/opennav-x/tests/downloader_trust/CMakeLists.txt
+2026-10-04T02:11:25.2214306Z Certificate request self-signature ok
+2026-10-04T02:11:25.2219526Z subject=CN=localhost
+2026-10-04T02:11:25.3046870Z Certificate request self-signature ok
+2026-10-04T02:11:25.3052088Z subject=CN=wrong.invalid
+2026-10-04T02:11:25.5255324Z Using configuration from D:\a\_temp\opennav-downloader-trust-1f3174f78c6f40809093028dd3dda54f\fixtures\expired-ca.cnf
+2026-10-04T02:11:25.5265801Z Signature ok
+2026-10-04T02:11:25.5299000Z Database updated
+2026-10-04T02:11:25.6251673Z Certificate request self-signature ok
+2026-10-04T02:11:25.6256750Z subject=CN=localhost
+2026-10-04T04:16:57.2167535Z ##[error]The operation was canceled.

@@ -409,6 +409,41 @@ class NamedIhoScenes(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,'scene source changed'):
                 inputs.iho_scene('sector-rwg',root)
 
+    def test_unknown_rock_actual_retained_view_and_refusals(self):
+        selected = inputs.iho_scene('unknown-rock')
+        self.assertEqual(selected['center'],[-32.3766581,61.03512875])
+        self.assertEqual(selected['requested_scale_ppm'],.6)
+        self.assertEqual(selected['observed_scale_ppm'],.5826126536)
+        self.assertEqual([f['attributes']['RCID'] for f in selected['source_features']],[1,2,3,38])
+        self.assertEqual([f['attributes']['WATLEV'] for f in selected['source_features']],[3,3,3,5])
+        self.assertTrue(all('VALSOU' not in f['attributes'] for f in selected['source_features']))
+        self.assertTrue(all('candidateRaster' not in f for f in selected['source_features']))
+        self.assertIsNone(selected['pixel_proof'])
+        self.assertIn('review-required',selected['visual_acceptance'])
+        snapshot = json.loads((ROOT/inputs.IHO_ROCK_VIEW).read_text())
+        inputs.presentation(snapshot,'XNav',True,'unknown-rock')
+        for field,value in [('latitude',61.03512875),('longitude',-32.3766581),
+                            ('scale_ppm',.6),('follow',True),('database_entries',2),('quilt_members',[])]:
+            wrong = copy.deepcopy(snapshot); wrong['runtime']['chart'][field] = value
+            with self.subTest(field=field), self.assertRaises(ValueError):
+                inputs.presentation(wrong,'XNav',True,'unknown-rock')
+        with self.assertRaisesRegex(ValueError,'viewport'):
+            inputs.presentation(snapshot,'XNav',True,'light-fog')
+
+    def test_unknown_rock_source_and_observation_locked_across_checkout_eol(self):
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            for relative in (inputs.IHO_ROCK_SCENES,inputs.IHO_ROCK_VIEW):
+                target = root/relative; target.parent.mkdir(parents=True,exist_ok=True)
+                target.write_bytes((ROOT/relative).read_bytes().replace(b'\r\n',b'\n').replace(b'\n',b'\r\n'))
+            self.assertEqual(inputs.iho_scene('unknown-rock',root)['center'],[-32.3766581,61.03512875])
+            for relative in (inputs.IHO_ROCK_SCENES,inputs.IHO_ROCK_VIEW):
+                target = root/relative; original = target.read_bytes()
+                target.write_bytes(original.replace(b'61.03512875',b'61.03512876'))
+                with self.subTest(input=relative), self.assertRaisesRegex(ValueError,'scene source changed'):
+                    inputs.iho_scene('unknown-rock',root)
+                target.write_bytes(original)
+
     def test_yellow_default_and_collector_dispatch_remain_bounded(self):
         import ast
         yellow = inputs.iho_scene()

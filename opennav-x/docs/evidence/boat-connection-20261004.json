@@ -1,0 +1,13 @@
+{
+  "observedUtc": "2026-10-04T00:14:22.3898059Z",
+  "method": "read-only SSH alias boat, encoded PowerShell",
+  "services": {
+    "RustDesk": "Running",
+    "sshd": "Running",
+    "Tailscale": "Running"
+  },
+  "navigationProcessCount": 0,
+  "installationLaunchCleanupOrAccessChanges": false,
+  "fullProfileOrRecoveryRehash": false,
+  "failedPrecedingProbe": "Nested shell quotation failed on the regex before the corrected encoded read-only probe; no acceptance inferred from that failure."
+}
