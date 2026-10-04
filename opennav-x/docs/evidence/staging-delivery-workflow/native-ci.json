@@ -1,0 +1,150 @@
+{
+  "scope": "Delivery tools only; no application build, no UI acceptance, no boat deployment or product release",
+  "commit": "311ddabafde937ab7764ba1c396730ac2d3e4648",
+  "runId": 37221989304,
+  "url": "https://github.com/ThereptileII/Work/actions/runs/37221989304",
+  "conclusion": "success",
+  "defaultBranchRegistration": "f05ded1741a49c96338142dc658232fde3ae7344",
+  "jobs": [
+    {
+      "name": "Delivery contracts (ubuntu-24.04)",
+      "id": 111494030149,
+      "conclusion": "success",
+      "suites": [
+        {
+          "tests": 16,
+          "seconds": 0.194
+        },
+        {
+          "tests": 16,
+          "seconds": 0.15
+        },
+        {
+          "tests": 16,
+          "seconds": 0.382
+        },
+        {
+          "tests": 15,
+          "seconds": 0.097
+        },
+        {
+          "tests": 12,
+          "seconds": 0.035
+        }
+      ],
+      "totalTests": 75,
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pip install PyYAML==6.0.3",
+          "conclusion": "success"
+        },
+        {
+          "name": "Exercise delivery boundaries with inert fixtures (no application build)",
+          "conclusion": "success"
+        },
+        {
+          "name": "Parse changed Windows scripts without executing a build or installer",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "name": "Delivery contracts (windows-2022)",
+      "id": 111494030328,
+      "conclusion": "success",
+      "suites": [
+        {
+          "tests": 16,
+          "seconds": 0.654
+        },
+        {
+          "tests": 16,
+          "seconds": 1.348
+        },
+        {
+          "tests": 16,
+          "seconds": 0.832
+        },
+        {
+          "tests": 15,
+          "seconds": 0.213
+        },
+        {
+          "tests": 12,
+          "seconds": 0.095
+        }
+      ],
+      "totalTests": 75,
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pip install PyYAML==6.0.3",
+          "conclusion": "success"
+        },
+        {
+          "name": "Exercise delivery boundaries with inert fixtures (no application build)",
+          "conclusion": "success"
+        },
+        {
+          "name": "Parse changed Windows scripts without executing a build or installer",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success"
+        }
+      ]
+    }
+  ]
+}

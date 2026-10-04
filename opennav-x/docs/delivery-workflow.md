@@ -131,12 +131,20 @@ include the run attempt so a retry cannot claim another attempt's evidence.
 
 ## Repository operation
 
+The `staging` branch is the software development/delivery starting point.
+The historical `opennav-x-beta2-ui` branch remains synchronized for existing
+links and integrations; it still produces Staging, never Production by default.
+The monorepo's `main` branch retains the boat firmware and registered workflow
+definitions. Select **staging** in GitHub's “Use workflow from” selector when
+manually requesting a software build or explicitly instructed promotion.
+
 The small `skager-delivery-checks.yml` workflow tests delivery logic on Linux and
 Windows without compiling OpenCPN or performing design review. Run this for
 workflow/helper changes; do not create an application build merely to check them.
 
 GitHub requires manually dispatched workflow files on the repository's default
-branch. Register the reviewed Production workflow there, then explicitly select
+branch. The reviewed workflow definitions are registered there; keep them in
+sync when changing release workflows, then explicitly select
 the software/Staging branch containing the matching helpers when dispatching.
 Do not dispatch a stale firmware-only `main` checkout as a software promotion.
 This registration is infrastructure work, not a Production promotion.

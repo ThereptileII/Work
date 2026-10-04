@@ -22,13 +22,16 @@ installer matrix runs in Production; Staging checks installation/startup,
 profile preservation and rollback. Evidence is bound to both product and test
 helper revisions, package hashes and the original producing run attempt.
 
-Focused local verification passes **73 tests** across release inventory,
+Focused local verification passes **75 tests** across release inventory,
 transport, qualification/workflow policy and installer helper suites. Edited
 workflows pass actionlint and duplicate-key checks; Linux build scripts parse.
 These are delivery-tool results, not application or installer acceptance.
-Native delivery-tool CI and the first real Staging release/promotion execution
-are separate verification records. Repository default-branch registration and
-release token permissions must be correct before those delivery paths can run.
+Native delivery-tool [run 37221989304](https://github.com/ThereptileII/Work/actions/runs/37221989304)
+passes **75 Linux and 75 Windows checks**, including Windows script parsing,
+at `311ddabafde937ab7764ba1c396730ac2d3e4648`. The default-branch workflow
+registration preserves the existing firmware files; `staging` is the software
+starting point. The first real Staging release/promotion execution remains
+separate verification; no application release is claimed from helper CI.
 See [delivery implementation evidence](evidence/staging-delivery-workflow/README.md).
 No application build, design review, Production promotion, boat change or public
 opening was performed for this process update. Historical evidence below retains

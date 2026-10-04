@@ -7,12 +7,12 @@ new SKAGER application, installed boat candidate or public release.
 
 | Suite | Cases | Result |
 |---|---:|---|
-| Immutable release inventory/source/package identity | 15 | PASS |
+| Immutable release inventory/source/package identity | 16 | PASS |
 | GitHub draft transport, permission boundaries and attempt provenance | 16 | PASS |
-| Staging/Production qualification and workflow policy | 15 | PASS |
+| Staging/Production qualification and workflow policy | 16 | PASS |
 | Retained installer inputs and functional chart visibility | 15 | PASS |
 | Existing installer completion behavior | 12 | PASS |
-| Total | 73 | PASS |
+| Total | 75 | PASS |
 
 All are offline deterministic helper checks with inert fixtures. Edited workflow
 files pass actionlint 1.7.12; all workflow YAML passes duplicate-key rejection.
@@ -39,6 +39,22 @@ launch a UI, contact the boat, or create a product release.
   changed in this process increment.
 
 The first real new-format Staging delivery and a user-authorized Production
-promotion remain execution gates. Permission/default-branch setup and expired
+promotion remain execution gates. Missing release permissions and expired
 90-day retest support fail closed. Cross-run dependency reuse remains SCRUM-225;
 this work does not claim that native compilation itself is now fast.
+
+## Native verification history
+
+The first focused run, [37221707154](https://github.com/ThereptileII/Work/actions/runs/37221707154), failed. The local and published monorepo workflow paths differed; Windows also normalizes ZIP member separators and disallows reserved filesystem names. The correction preserves raw ZIP names, rejects normalized names before extraction, and fixes test fixtures without dropping malicious-input cases. The replacement is `311ddabafde937ab7764ba1c396730ac2d3e4648`, [run 37221989304](https://github.com/ThereptileII/Work/actions/runs/37221989304). No application rebuild was performed for either focused run.
+
+The replacement passes **75 cases on Linux and 75 on native Windows**, plus
+PowerShell syntax checks. [Native CI receipt](native-ci.json) records the exact
+jobs and commit. This does not qualify the full installed lifecycle or a new
+application package. Subsequent documentation/registration commits retain these
+identical tested helper/workflow bytes; no replacement application was built.
+
+Default-branch registration is `f05ded1741a49c96338142dc658232fde3ae7344`:
+29 identical software workflow files were added so manual dispatch is available.
+Every pre-existing main file's Git blob/mode was compared and preserved. The
+registration used `[skip ci]`, requests no release or application execution, and
+keeps firmware/main separate from software development on `staging`.
