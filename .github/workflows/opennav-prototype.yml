@@ -1,0 +1,365 @@
+name: OpenNav immutable prototype references
+on:
+  workflow_dispatch:
+    inputs:
+      design_validation:
+        description: User explicitly requested this design review
+        type: boolean
+        required: true
+        default: false
+env:
+  SKAGER_DESIGN_VALIDATION: ${{ inputs.design_validation && 'true' || 'false' }}
+permissions:
+  contents: read
+jobs:
+  native-review-guard:
+    if: ${{ inputs.design_validation == true }}
+    name: Prototype capture guard on disposable Windows surfaces
+    runs-on: windows-2022
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Prepare disposable CI desktop and run the existing display guards plus prototype cases
+        run: |
+          python opennav-x/tools/prepare-stock-review-desktop.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          New-Item -ItemType Directory -Path opennav-x/evidence/local/prototype-review-guard -Force | Out-Null
+          & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -File opennav-x/tools/boat/test-review-window.ps1 2>&1 | Tee-Object opennav-x/evidence/local/prototype-review-guard/policy.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -File opennav-x/tools/test-display-window-native.ps1 -Evidence opennav-x/evidence/local/prototype-review-guard 2>&1 | Tee-Object opennav-x/evidence/local/prototype-review-guard/native.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: prototype-review-guard-Windows-${{ github.sha }}
+          path: opennav-x/evidence/local/prototype-review-guard
+          if-no-files-found: error
+  native-object-flow:
+    if: ${{ inputs.design_validation == true }}
+    name: Native prototype route waypoint AIS pointer regressions (not full release gate)
+    runs-on: windows-2022
+    # Maintained OpenSSL/curl/zlib are built and run their upstream tests first.
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Preserve native Perl for OpenSSL and install curl's POSIX test host
+        shell: pwsh
+        run: |
+          $NativePerl = (Get-Command perl.exe -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source
+          "SKAGER_NATIVE_PERL=$NativePerl" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      - uses: msys2/setup-msys2@66cd2cce69caa17b53920067426061ca1de3a884
+        id: curl_msys
+        with:
+          msystem: MSYS
+          update: false
+          install: perl
+          path-type: inherit
+          cache: false
+      - name: Select explicit curl test Perl
+        shell: pwsh
+        env:
+          SKAGER_MSYS_ROOT: ${{ steps.curl_msys.outputs.msys2-location }}
+        run: |
+          $TestPerl = Join-Path $env:SKAGER_MSYS_ROOT 'usr/bin/perl.exe'
+          if (-not (Test-Path -LiteralPath $TestPerl -PathType Leaf)) { throw 'MSYS2 curl test Perl missing' }
+          "SKAGER_CURL_TEST_PERL=$TestPerl" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      - name: Verify native curl test-host binding before dependency compilation
+        shell: pwsh
+        run: ./opennav-x/tools/test-curl-test-host-binding.ps1 -TestPerl $env:SKAGER_CURL_TEST_PERL -NativePerl $env:SKAGER_NATIVE_PERL -Evidence opennav-x/evidence/local/curl-test-host-binding
+      - name: Fetch and verify pinned baseline
+        run: |
+          git clone --depth 1 --branch Release_5.12.4 https://github.com/OpenCPN/OpenCPN.git opennav-x/upstream/OpenCPN
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python opennav-x/tools/verify-upstream.py
+      - name: Native fixture build and actual object workflow
+        run: ./opennav-x/tools/build-pristine-windows.ps1 -Architecture Win32 -Integration -PrototypeObjectFlow
+      - name: Prototype shared-profile mode regression
+        run: python opennav-x/tools/smoke-modes-windows.py
+      - name: Prototype screens and retained fixture failure-state regressions
+        run: ./opennav-x/tools/test-preview-windows.ps1
+      - name: Retained native DPI alarms touch and restart regressions
+        run: python opennav-x/tools/smoke-dpi-windows.py
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: prototype-object-flow-Windows-${{ github.sha }}
+          path: opennav-x/evidence/local
+          if-no-files-found: error
+  native-composition:
+    if: ${{ inputs.design_validation == true }}
+    name: Native prototype composition development (not release qualification)
+    runs-on: windows-2022
+    # Include source dependency tests and native trust checks without skipping UI gates.
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Preserve native Perl for OpenSSL and install curl's POSIX test host
+        shell: pwsh
+        run: |
+          $NativePerl = (Get-Command perl.exe -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source
+          "SKAGER_NATIVE_PERL=$NativePerl" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      - uses: msys2/setup-msys2@66cd2cce69caa17b53920067426061ca1de3a884
+        id: curl_msys
+        with:
+          msystem: MSYS
+          update: false
+          install: perl
+          path-type: inherit
+          cache: false
+      - name: Select explicit curl test Perl
+        shell: pwsh
+        env:
+          SKAGER_MSYS_ROOT: ${{ steps.curl_msys.outputs.msys2-location }}
+        run: |
+          $TestPerl = Join-Path $env:SKAGER_MSYS_ROOT 'usr/bin/perl.exe'
+          if (-not (Test-Path -LiteralPath $TestPerl -PathType Leaf)) { throw 'MSYS2 curl test Perl missing' }
+          "SKAGER_CURL_TEST_PERL=$TestPerl" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      - name: Verify native curl test-host binding before dependency compilation
+        shell: pwsh
+        run: ./opennav-x/tools/test-curl-test-host-binding.ps1 -TestPerl $env:SKAGER_CURL_TEST_PERL -NativePerl $env:SKAGER_NATIVE_PERL -Evidence opennav-x/evidence/local/curl-test-host-binding
+      - name: Fetch and verify exact supported OpenCPN source
+        run: |
+          git clone --depth 1 --branch Release_5.12.4 https://github.com/OpenCPN/OpenCPN.git opennav-x/upstream/OpenCPN
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python opennav-x/tools/verify-upstream.py
+      - name: Native fixture-free Win32 MSVC build and integrated unit regressions
+        id: native_build
+        run: ./opennav-x/tools/build-pristine-windows.ps1 -Architecture Win32 -Integration -Production
+      - name: Native public Downloader Windows trust and rejection gate
+        run: ./opennav-x/tools/test-downloader-trust-windows.ps1 -Install production-install
+      - name: Verify chart palette provenance and unchanged navigation symbols
+        run: python opennav-x/tests/chart_presentation_resources_tests.py
+      - name: Adversarial TLS and bounded compressed WebSocket tests
+        run: |
+          $env:PATH = (Resolve-Path opennav-x/build/production-install).Path + ";" + $env:PATH
+          python opennav-x/tests/ais_transport/network_tests.py --client opennav-x/build/production-windows/Release/ais_transport_test_client.exe
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Actual provider lifecycle against local TLS server
+        run: |
+          $env:PATH = (Resolve-Path opennav-x/build/production-install).Path + ";" + $env:PATH
+          python opennav-x/tests/ais_transport/provider_tests.py --client opennav-x/build/production-windows/Release/ais_provider_test_client.exe
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Offline populated native AIS and Passage components and comparisons
+        run: |
+          python -m pip install Pillow==11.3.0
+          $env:PATH = (Resolve-Path opennav-x/build/production-install).Path + ";" + $env:PATH
+          python opennav-x/tools/prototype/capture-ais-component.py --client opennav-x/build/production-windows/Release/ais_drawer_test.exe --output opennav-x/evidence/local/ais-component
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python opennav-x/tools/prototype/capture-ais-component.py --component passage --client opennav-x/build/production-windows/Release/passage_drawer_test.exe --output opennav-x/evidence/local/passage-component
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python opennav-x/tools/prototype/capture-ais-component.py --component instruments --client opennav-x/build/production-windows/Release/instrument_panel_test.exe --output opennav-x/evidence/local/instruments-component
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python opennav-x/tools/prototype/capture-ais-component.py --component energy --client opennav-x/build/production-windows/Release/energy_panel_test.exe --output opennav-x/evidence/local/energy-component
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Native preferences component and section interactions
+        run: |
+          $env:PATH = (Resolve-Path opennav-x/build/production-install).Path + ";" + $env:PATH
+          python opennav-x/tools/prototype/capture-ais-component.py --component settings --client opennav-x/build/production-windows/Release/settings_drawer_test.exe --output opennav-x/evidence/local/settings-component
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Native anchor component validity and confirmation interactions
+        run: |
+          $env:PATH = (Resolve-Path opennav-x/build/production-install).Path + ";" + $env:PATH
+          python opennav-x/tools/prototype/capture-ais-component.py --component anchor --client opennav-x/build/production-windows/Release/anchor_drawer_test.exe --output opennav-x/evidence/local/anchor-component
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Native manual pilot validity and confirmation interactions
+        run: |
+          $env:PATH = (Resolve-Path opennav-x/build/production-install).Path + ";" + $env:PATH
+          python opennav-x/tools/prototype/capture-ais-component.py --component autopilot --client opennav-x/build/production-windows/Release/pilot_drawer_test.exe --output opennav-x/evidence/local/pilot-component
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Native alert episode and acknowledgement interactions
+        run: |
+          $env:PATH = (Resolve-Path opennav-x/build/production-install).Path + ";" + $env:PATH
+          python opennav-x/tools/prototype/capture-ais-component.py --component alerts --client opennav-x/build/production-windows/Release/alert_drawer_test.exe --output opennav-x/evidence/local/alert-component
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Exact original Source Health references and native disclosures
+        run: |
+          python -m pip install -r opennav-x/tools/prototype/requirements.txt
+          python -m playwright install chromium
+          python opennav-x/tools/prototype/render.py --output opennav-x/evidence/local/health-reference --states health health-gps
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $env:PATH = (Resolve-Path opennav-x/build/production-install).Path + ";" + $env:PATH
+          python opennav-x/tools/prototype/capture-ais-component.py --component health --reference opennav-x/evidence/local/health-reference --client opennav-x/build/production-windows/Release/health_drawer_test.exe --output opennav-x/evidence/local/health-component
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Native status footer provenance geometry and actual input
+        run: |
+          python opennav-x/tools/prototype/render.py --output opennav-x/evidence/local/footer-reference --states navigation
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cmake --build opennav-x/build/production-windows --config Release --target status_footer_test --parallel 2
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $env:PATH = (Resolve-Path opennav-x/build/production-install).Path + ";" + $env:PATH
+          python opennav-x/tools/prototype/capture-footer-component.py --reference opennav-x/evidence/local/footer-reference --client opennav-x/build/production-windows/Release/status_footer_test.exe --output opennav-x/evidence/local/footer-component
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Native horizon composition and real contextual actions
+        run: |
+          cmake --build opennav-x/build/production-windows --config Release --target horizon_test --parallel 2
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $env:PATH = (Resolve-Path opennav-x/build/production-install).Path + ";" + $env:PATH
+          python opennav-x/tools/prototype/capture-horizon-component.py --reference opennav-x/evidence/local/footer-reference --client opennav-x/build/production-windows/Release/horizon_test.exe --output opennav-x/evidence/local/horizon-component
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Native waypoint sheet touch geometry at display scales
+        run: |
+          cmake --build opennav-x/build/production-windows --config Release --target sheet_field_size_test --parallel 2
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $env:PATH = (Resolve-Path opennav-x/build/production-install).Path + ";" + $env:PATH
+          python -c "import subprocess; subprocess.run(['opennav-x/build/production-windows/Release/sheet_field_size_test.exe'], check=True, timeout=30)"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Native unavailable radar presentation and disabled-control checks
+        run: |
+          $env:PATH = (Resolve-Path opennav-x/build/production-install).Path + ";" + $env:PATH
+          python opennav-x/tools/prototype/capture-ais-component.py --component radar --client opennav-x/build/production-windows/Release/radar_panel_test.exe --output opennav-x/evidence/local/radar-component
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Offline commissioning probe CLI and secret-output guards
+        run: |
+          $env:PATH = (Resolve-Path opennav-x/build/production-install).Path + ";" + $env:PATH
+          python opennav-x/tools/test-aisstream-live-probe.py --client opennav-x/build/production-windows/Release/aisstream_live_probe.exe
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Capture actual application after tests release their REST port
+        id: native_capture
+        if: ${{ !cancelled() && steps.native_build.outcome == 'success' }}
+        run: |
+          python -m pip install Pillow==11.3.0
+          python opennav-x/tools/prototype/capture-native.py --output opennav-x/evidence/local/prototype-native --ais-settings --review-window-guard --health-reference opennav-x/evidence/local/health-reference
+      - name: Retain exact reference current diff without similarity exceptions
+        if: ${{ !cancelled() && steps.native_capture.outcome == 'success' }}
+        run: python opennav-x/tools/prototype/compare.py --reference opennav-x/docs/design/prototype/reference/windows --supplemental-reference opennav-x/evidence/local/health-reference --current opennav-x/evidence/local/prototype-native --output opennav-x/evidence/local/prototype-comparison
+      - name: Public ENC XNav and Standard day dusk night software captures
+        if: ${{ !cancelled() && steps.native_build.outcome == 'success' }}
+        run: |
+          python opennav-x/tools/prototype/capture-native.py --output opennav-x/evidence/local/prototype-enc-xnav --public-enc --navigation-only --chart-style XNav
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python opennav-x/tools/prototype/capture-native.py --output opennav-x/evidence/local/prototype-enc-standard --public-enc --navigation-only --chart-style Standard
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Verify actual Feet Meters and Fathoms ENC indications
+        # Capture every supported upstream depth-unit choice on real ENC first.
+        # These are separate profiles; no normal user setting is touched.
+        # The reference map's illustrative metre labels are not expected values.
+        run: |
+          foreach ($Unit in @('feet','meters','fathoms')) {
+            python opennav-x/tools/prototype/capture-native.py --output "opennav-x/evidence/local/prototype-depth-$Unit" --public-enc --navigation-only --chart-style XNav --depth-unit $Unit
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
+      - name: Actual Windows DPI and injected touch for prototype composition
+        if: ${{ !cancelled() && steps.native_build.outcome == 'success' }}
+        run: |
+          $env:PATH = (Resolve-Path opennav-x/build/production-install).Path + ";" + $env:PATH
+          python opennav-x/tools/prototype/capture-dpi-windows.py --output opennav-x/evidence/local/prototype-dpi
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Package explicit read-only AIS commissioning tool after all native gates
+        run: |
+          python opennav-x/tools/test-source-package.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python opennav-x/tools/test-ais-probe-package.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $Vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          $VS = & $Vswhere -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+          if (-not $VS) { throw 'Licensed native toolchain missing' }
+          $Runtime = Get-ChildItem "$VS\VC\Redist\MSVC\*\x86\Microsoft.VC143.CRT" -Directory | Sort-Object FullName -Descending | Select-Object -First 1
+          if (-not $Runtime) { throw 'Licensed x86 runtime missing' }
+          python opennav-x/tools/package-ais-live-probe.py --runtime $Runtime.FullName --output opennav-x/build/ais-readonly-probe --openssl-source-cache opennav-x/build/dependency-downloads/openssl-3.5.9.tar.gz
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          # The fixture-free settings gate above explicitly established that
+          # this disposable account has no product key. This is a negative,
+          # offline commissioning test; it cannot connect without a key.
+          $Package = (Resolve-Path opennav-x/build/ais-readonly-probe/SKAGER-AIS-ReadOnly-Probe).Path
+          $InfoHash = (Get-FileHash "$Package/BUILD_INFO.json" -Algorithm SHA256).Hash.ToLowerInvariant()
+          $Evidence = Join-Path $PWD 'opennav-x/evidence/local/probe-offline-launch'
+          & powershell -NoProfile -ExecutionPolicy Bypass -File opennav-x/tools/boat/probe-online-ais.ps1 -Package $Package -ExpectedCommit $env:GITHUB_SHA -ExpectedBuildInfoSha256 $InfoHash -Evidence $Evidence
+          if ($LASTEXITCODE -ne 4) { throw 'Expected offline missing-credential result from native commissioning script' }
+          $Result = Get-Content "$Evidence/summary.json" -Raw | ConvertFrom-Json
+          if ($Result.exitCode -ne 4 -or $Result.peakTargetCount -ne 0 -or $Result.subscriptionConfirmed -or -not $Result.disabledAndCleared) { throw 'Offline script result is invalid' }
+          $global:LASTEXITCODE = 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: prototype-ais-read-only-probe-${{ github.sha }}
+          path: |
+            opennav-x/build/ais-readonly-probe/*.zip
+            opennav-x/build/ais-readonly-probe/SHA256SUMS.txt
+          if-no-files-found: error
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: prototype-native-Windows-${{ github.sha }}
+          path: opennav-x/evidence/local
+          if-no-files-found: error
+  ais-network-linux:
+    if: ${{ inputs.design_validation == true }}
+    name: Bounded AIS TLS and provider lifecycle (Linux loopback only)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Fetch pinned library and verify reviewed patches
+        run: |
+          git clone --depth 1 --branch Release_5.12.4 https://github.com/OpenCPN/OpenCPN.git opennav-x/upstream/OpenCPN
+          python opennav-x/tools/prepare-integration.py
+          python opennav-x/tests/chart_presentation_resources_tests.py
+      - name: Build actual library and dedicated test drivers
+        run: |
+          cmake -S opennav-x/tests/ais_transport -B opennav-x/build/ais-transport-tests -DCMAKE_BUILD_TYPE=Release -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DOPENNAV_PINNED_SOURCE="$PWD/opennav-x/build/integration-source"
+          cmake --build opennav-x/build/ais-transport-tests --parallel 2 --target ais_transport_test_client ais_provider_test_client aisstream_live_probe
+      - name: Verify hostile frames and real provider lifecycle
+        run: |
+          set -o pipefail
+          mkdir -p opennav-x/evidence/local/ais-transport
+          python opennav-x/tests/ais_transport/network_tests.py --client opennav-x/build/ais-transport-tests/ais_transport_test_client | tee opennav-x/evidence/local/ais-transport/network.log
+          python opennav-x/tests/ais_transport/provider_tests.py --client opennav-x/build/ais-transport-tests/ais_provider_test_client | tee opennav-x/evidence/local/ais-transport/provider.log
+          python opennav-x/tools/test-aisstream-live-probe.py --client opennav-x/build/ais-transport-tests/aisstream_live_probe | tee opennav-x/evidence/local/ais-transport/probe-offline.log
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: prototype-ais-network-Linux-${{ github.sha }}
+          path: opennav-x/evidence/local/ais-transport
+          if-no-files-found: error
+  ais-foundation:
+    if: ${{ inputs.design_validation == true }}
+    name: Supplemental AIS portable contracts (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2022]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Configure Linux contracts
+        if: runner.os == 'Linux'
+        run: cmake -S opennav-x -B opennav-x/build/prototype-contracts
+      - name: Configure native supported Win32 ABI
+        if: runner.os == 'Windows'
+        run: cmake -S opennav-x -B opennav-x/build/prototype-contracts -G "Visual Studio 17 2022" -A Win32
+      - run: cmake --build opennav-x/build/prototype-contracts --config Release --target online_ais_tests online_ais_chart_tests ais_selection_tests ais_health_tests aisstream_codec_tests ais_credentials_tests ais_session_tests
+      - run: ctest --test-dir opennav-x/build/prototype-contracts -C Release -R 'online_ais_cache_and_precedence|online_ais_chart_presentation|ais_selection_lifetime|ais_report_health|aisstream_untrusted_json_and_subscription|ais_credentials_protected_storage|aisstream_session_lifecycle' --no-tests=error --output-on-failure --output-junit ais-foundation.xml
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: prototype-ais-foundation-${{ runner.os }}-${{ github.sha }}
+          path: opennav-x/build/prototype-contracts/ais-foundation.xml
+          if-no-files-found: error
+  reference:
+    if: ${{ inputs.design_validation == true }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2022]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Install pinned offline renderer
+        run: |
+          python -m pip install -r opennav-x/tools/prototype/requirements.txt
+          python -m playwright install chromium
+      - name: Verify immutable design and native token contract
+        run: python opennav-x/tools/prototype/test_contract.py
+      - name: Capture actual supplied states at 1280x800
+        run: python opennav-x/tools/prototype/render.py --output opennav-x/evidence/local/prototype-reference
+      - name: Measure supplied responsive layouts at 125 and 150 percent
+        run: |
+          python opennav-x/tools/prototype/render.py --output opennav-x/evidence/local/prototype-reference/responsive-125 --scale 1.25 --states navigation settings instruments --themes day night
+          python opennav-x/tools/prototype/render.py --output opennav-x/evidence/local/prototype-reference/responsive-150 --scale 1.5 --states navigation settings instruments --themes day night
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: prototype-reference-${{ runner.os }}-${{ github.sha }}
+          path: opennav-x/evidence/local/prototype-reference
+          if-no-files-found: error

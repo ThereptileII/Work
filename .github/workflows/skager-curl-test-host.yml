@@ -1,0 +1,63 @@
+name: SKAGER native curl test-host diagnosis
+on:
+  push:
+    branches: [skager-curl-test-host]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  host-probe:
+    runs-on: windows-2022
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Record native Perl before installing the POSIX test host
+        shell: pwsh
+        run: |
+          $Perl = (Get-Command perl.exe -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source
+          if (-not (Test-Path -LiteralPath $Perl -PathType Leaf)) { throw 'Native Perl path is invalid' }
+          "SKAGER_NATIVE_PERL=$Perl" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      - uses: msys2/setup-msys2@66cd2cce69caa17b53920067426061ca1de3a884
+        id: msys
+        with:
+          msystem: MSYS
+          update: false
+          install: perl
+          path-type: inherit
+          cache: false
+      - name: Compare actual upstream IPC and process launch on native Windows
+        shell: pwsh
+        env:
+          SKAGER_MSYS_ROOT: ${{ steps.msys.outputs.msys2-location }}
+        run: |
+          $MsysPerl = Join-Path $env:SKAGER_MSYS_ROOT 'usr/bin/perl.exe'
+          if (-not (Test-Path -LiteralPath $MsysPerl)) { throw 'Selected MSYS2 Perl absent' }
+          python opennav-x/tools/test-curl-test-host.py --evidence opennav-x/evidence/local/curl-test-host --native-perl $env:SKAGER_NATIVE_PERL --msys-perl $MsysPerl
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Verify MSYS certificate generation with the explicitly selected host OpenSSL
+        shell: pwsh
+        env:
+          SKAGER_MSYS_ROOT: ${{ steps.msys.outputs.msys2-location }}
+        run: |
+          $MsysPerl = Join-Path $env:SKAGER_MSYS_ROOT 'usr/bin/perl.exe'
+          $OpenSsl = (Get-Command openssl.exe -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source
+          python opennav-x/tools/test-curl-msys-certificates.py --evidence opennav-x/evidence/local/curl-test-host --msys-perl $MsysPerl --openssl $OpenSsl
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Verify native CMake binding and actual producer tool facts
+        shell: pwsh
+        env:
+          SKAGER_MSYS_ROOT: ${{ steps.msys.outputs.msys2-location }}
+        run: |
+          $MsysPerl = Join-Path $env:SKAGER_MSYS_ROOT 'usr/bin/perl.exe'
+          ./opennav-x/tools/test-curl-test-host-binding.ps1 -TestPerl $MsysPerl -NativePerl $env:SKAGER_NATIVE_PERL -Evidence opennav-x/evidence/local/curl-test-host-binding
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: native-curl-test-host-${{ github.sha }}
+          path: |
+            opennav-x/evidence/local/curl-test-host/*.json
+            opennav-x/evidence/local/curl-test-host/*.txt
+            opennav-x/evidence/local/curl-test-host-binding/*.json
+            opennav-x/evidence/local/curl-test-host-binding/cmake-build/CMakeCache.txt
+            opennav-x/evidence/local/curl-test-host-binding/cmake-build/xnav-native-cmake-tools.txt
+          if-no-files-found: error

@@ -1,0 +1,87 @@
+name: SKAGER native curl source preflight
+on:
+  push:
+    branches: [skager-curl-source-preflight]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-probe:
+    runs-on: windows-2022
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: msys2/setup-msys2@66cd2cce69caa17b53920067426061ca1de3a884
+        id: msys
+        with:
+          msystem: MSYS
+          update: false
+          install: perl
+          path-type: inherit
+          cache: false
+      - name: Verify production environment restoration under PowerShell 7
+        shell: pwsh
+        env:
+          SKAGER_MSYS_ROOT: ${{ steps.msys.outputs.msys2-location }}
+        run: |
+          $MsysPerl = Join-Path $env:SKAGER_MSYS_ROOT 'usr/bin/perl.exe'
+          ./opennav-x/tools/test-windows-curl-environment.ps1 -TestPerl $MsysPerl -Evidence opennav-x/evidence/local/curl-environment-pwsh
+      - name: Verify production environment restoration under Windows PowerShell 5.1
+        shell: powershell
+        env:
+          SKAGER_MSYS_ROOT: ${{ steps.msys.outputs.msys2-location }}
+        run: |
+          $MsysPerl = Join-Path $env:SKAGER_MSYS_ROOT 'usr/bin/perl.exe'
+          ./opennav-x/tools/test-windows-curl-environment.ps1 -TestPerl $MsysPerl -Evidence opennav-x/evidence/local/curl-environment-windows-powershell
+      - name: Run unchanged pinned curl source-analysis tests with retained diagnostics
+        shell: pwsh
+        env:
+          SKAGER_MSYS_ROOT: ${{ steps.msys.outputs.msys2-location }}
+        run: |
+          $MsysPerl = Join-Path $env:SKAGER_MSYS_ROOT 'usr/bin/perl.exe'
+          ./opennav-x/tools/test-curl-source-preflight.ps1 -TestPerl $MsysPerl -Evidence opennav-x/evidence/local/curl-source-preflight
+      - name: Verify the early production-only source gate
+        shell: pwsh
+        env:
+          SKAGER_MSYS_ROOT: ${{ steps.msys.outputs.msys2-location }}
+        run: |
+          $MsysPerl = Join-Path $env:SKAGER_MSYS_ROOT 'usr/bin/perl.exe'
+          ./opennav-x/tools/test-curl-source-preflight.ps1 -ProductionOnly -TestPerl $MsysPerl -Archive opennav-x/evidence/local/curl-source-preflight/curl-8.22.0.tar.xz -Evidence opennav-x/evidence/local/curl-source-production-preflight
+      - name: Verify unchanged source tests through the helper under Windows PowerShell 5.1
+        shell: powershell
+        env:
+          SKAGER_MSYS_ROOT: ${{ steps.msys.outputs.msys2-location }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          . ./opennav-x/tools/windows-curl-environment.ps1
+          $MsysPerl = Join-Path $env:SKAGER_MSYS_ROOT 'usr/bin/perl.exe'
+          $Vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          $VisualStudio = & $Vswhere -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+          if ($LASTEXITCODE -ne 0 -or -not $VisualStudio) { throw 'Visual Studio x86 tools unavailable' }
+          $Base = (Resolve-Path opennav-x/evidence/local/curl-source-production-preflight).Path
+          $Evidence = Join-Path $Base 'production-helper-ps51'
+          try {
+            Invoke-WindowsCurlEnvironment -VisualStudio $VisualStudio -TestPerl $MsysPerl -Action {
+              Invoke-WindowsCurlSourceChecks -TestPerl $MsysPerl -Source (Join-Path $Base 'curl-8.22.0') -Build (Join-Path $Base 'build') -Evidence $Evidence
+            }
+          } finally {
+            $Summary = Join-Path $Evidence 'source-analysis.json'
+            if (Test-Path -LiteralPath $Summary) { Get-Content -LiteralPath $Summary }
+          }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: native-curl-source-preflight-${{ github.sha }}
+          path: |
+            opennav-x/evidence/local/curl-environment-*/*.json
+            opennav-x/evidence/local/curl-source-preflight/*.json
+            opennav-x/evidence/local/curl-source-preflight/*.txt
+            opennav-x/evidence/local/curl-source-preflight/*.pm
+            opennav-x/evidence/local/curl-source-preflight/production-helper/*
+            opennav-x/evidence/local/curl-source-production-preflight/*.json
+            opennav-x/evidence/local/curl-source-production-preflight/*.txt
+            opennav-x/evidence/local/curl-source-production-preflight/*.pm
+            opennav-x/evidence/local/curl-source-production-preflight/production-helper/*
+            opennav-x/evidence/local/curl-source-production-preflight/production-helper-ps51/*
+            opennav-x/evidence/local/curl-source-preflight/build/CMakeFiles/CMakeConfigureLog.yaml
+          if-no-files-found: error

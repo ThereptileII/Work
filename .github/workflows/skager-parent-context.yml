@@ -1,0 +1,84 @@
+name: SKAGER native producer parent context
+on:
+  push:
+    branches: [skager-parent-context]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  parent-context:
+    name: Actual parent tool facts with omitted-prefix rejection and restoration
+    runs-on: windows-2022
+    timeout-minutes: 15
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Preserve native Perl for OpenSSL and install curl's POSIX test host
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path opennav-x/evidence/local/windows-parent-context | Out-Null
+          $NativePerl = (Get-Command perl.exe -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source
+          [ordered]@{ githubSha=$env:GITHUB_SHA; nativePerl=$NativePerl; scope='Parent-context prerequisite selection only' } | ConvertTo-Json | Set-Content opennav-x/evidence/local/windows-parent-context/selection.json
+          "SKAGER_NATIVE_PERL=$NativePerl" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      - uses: msys2/setup-msys2@66cd2cce69caa17b53920067426061ca1de3a884
+        id: curl_msys
+        with:
+          msystem: MSYS
+          update: false
+          install: perl
+          path-type: inherit
+          cache: false
+      - name: Select explicit curl test Perl
+        shell: pwsh
+        env:
+          SKAGER_MSYS_ROOT: ${{ steps.curl_msys.outputs.msys2-location }}
+        run: |
+          $TestPerl = Join-Path $env:SKAGER_MSYS_ROOT 'usr/bin/perl.exe'
+          if (-not (Test-Path -LiteralPath $TestPerl -PathType Leaf)) { throw 'MSYS2 curl test Perl missing' }
+          "SKAGER_CURL_TEST_PERL=$TestPerl" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      - name: Prepare only the locked OpenSSL host assembler for the probe
+        shell: python
+        run: |
+          import hashlib, io, json, pathlib, urllib.request, zipfile
+          root = pathlib.Path('opennav-x')
+          lock = json.loads((root / 'tools/windows-openssl.lock.json').read_text())['buildTools']['nasm']
+          if lock['version'] != '3.02' or not lock['url'].startswith('https://www.nasm.us/'):
+              raise SystemExit('Unexpected NASM host-tool lock')
+          request = urllib.request.Request(lock['url'], headers={'User-Agent': 'SKAGER-parent-context'})
+          with urllib.request.urlopen(request, timeout=60) as response:
+              data = response.read(lock['bytes'] + 1)
+          digest = hashlib.sha256(data).hexdigest()
+          if len(data) != lock['bytes'] or digest != lock['sha256']:
+              raise SystemExit('NASM archive differs from the reviewed size or digest')
+          downloads = root / 'build/dependency-downloads'
+          downloads.mkdir(parents=True, exist_ok=True)
+          (downloads / lock['archive']).write_bytes(data)
+          expected = ['nasm-3.02/LICENSE', 'nasm-3.02/nasm.exe', 'nasm-3.02/ndisasm.exe']
+          with zipfile.ZipFile(io.BytesIO(data)) as archive:
+              if sorted(archive.namelist()) != expected:
+                  raise SystemExit('Unexpected NASM archive entries')
+              for name in expected:
+                  info = archive.getinfo(name)
+                  if info.is_dir() or info.file_size > 10 * 1024 * 1024 or (info.external_attr >> 16) & 0o170000 == 0o120000:
+                      raise SystemExit('Unsafe NASM archive entry')
+                  target = root / 'build/dependency-tools' / name
+                  target.parent.mkdir(parents=True, exist_ok=True)
+                  target.write_bytes(archive.read(name))
+          evidence = root / 'evidence/local/windows-parent-context'
+          evidence.mkdir(parents=True, exist_ok=True)
+          (evidence / 'nasm-source.json').write_text(json.dumps({
+              'version': lock['version'], 'archive': lock['archive'],
+              'bytes': len(data), 'sha256': digest, 'status': 'verified',
+              'scope': 'host tool for a focused interpreter probe; not an OpenSSL build'
+          }, indent=2), encoding='utf-8')
+      - name: Prove the native parent context only
+        run: |
+          ./opennav-x/tools/test-windows-parent-context.ps1 -Evidence opennav-x/evidence/local/windows-parent-context 2>&1 | Tee-Object -FilePath opennav-x/evidence/local/windows-parent-context/native-proof.log
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: parent-context-${{ github.sha }}
+          path: opennav-x/evidence/local/windows-parent-context
+          if-no-files-found: error

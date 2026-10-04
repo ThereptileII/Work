@@ -1,0 +1,134 @@
+name: SKAGER focused native changed-unit and Settings proof
+on:
+  push:
+    branches: [skager-windows-changed-units, skager-prototype-proof, skager-chart-module-preflight]
+  workflow_dispatch:
+    inputs:
+      chart_units:
+        description: Compile only changed production chart units (no app link or runtime acceptance)
+        type: boolean
+        default: false
+      floating_surface:
+        description: Run only the floating-surface console link and lifecycle proof
+        type: boolean
+        default: false
+      preferences_touch:
+        description: Run only the isolated native 125% Settings touch proof
+        type: boolean
+        default: false
+      prototype:
+        description: Run the bounded navigation bridge / Search / Settings proof
+        type: boolean
+        default: false
+      chart_presentation:
+        description: Include the tracked chart presentation harness (requires prototype)
+        type: boolean
+        default: false
+      search_reference:
+        description: Capture missing or changed immutable Search reference inputs
+        type: boolean
+        default: false
+      energy_component:
+        description: Include the existing offline Energy component and seven captures (requires prototype)
+        type: boolean
+        default: false
+permissions:
+  contents: read
+jobs:
+  compile:
+    runs-on: windows-2022
+    timeout-minutes: 15
+    env:
+      CHART_UNITS: ${{ inputs.chart_units == true || contains(github.event.head_commit.message, '[chart-units]') }}
+      FLOATING_SURFACE: ${{ inputs.floating_surface == true || contains(github.event.head_commit.message, '[floating-surface]') }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Fetch supported OpenCPN source
+        if: env.FLOATING_SURFACE != 'true'
+        run: |
+          git clone --depth 1 --branch Release_5.12.4 https://github.com/OpenCPN/OpenCPN.git opennav-x/upstream/OpenCPN
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Prove native peer CLI home precondition before GUI startup
+        if: ${{ env.FLOATING_SURFACE != 'true' && env.CHART_UNITS != 'true' && github.ref != 'refs/heads/skager-prototype-proof' && inputs.prototype != true && inputs.preferences_touch != true && !contains(github.event.head_commit.message, '[preferences-touch]') }}
+        run: python opennav-x/tools/test-peer-cli-precondition-windows.py --evidence opennav-x/evidence/local/peer-cli-precondition
+      - name: Install capture dependency
+        if: env.FLOATING_SURFACE != 'true' && env.CHART_UNITS != 'true'
+        run: python -m pip install Pillow==11.3.0
+      - name: Verify component runtime staging guards
+        run: python opennav-x/tests/windows_changed_units_runtime_tests.py
+      - name: Verify strict native drawer geometry oracle
+        if: env.FLOATING_SURFACE != 'true' && env.CHART_UNITS != 'true'
+        run: python opennav-x/tests/windows_ui_layout_tests.py
+      - name: Verify strict chart layout and Layers oracle
+        if: env.FLOATING_SURFACE != 'true' && env.CHART_UNITS != 'true'
+        run: python opennav-x/tests/chart_layout_tests.py
+      - name: Run selected bounded native proof
+        env:
+          PREFERENCES_TOUCH: ${{ inputs.preferences_touch == true || contains(github.event.head_commit.message, '[preferences-touch]') }}
+          PROTOTYPE_PROOF: ${{ github.ref == 'refs/heads/skager-prototype-proof' || inputs.prototype == true }}
+          CHART_COMPONENT: ${{ github.ref == 'refs/heads/skager-prototype-proof' || inputs.chart_presentation == true }}
+          SEARCH_REFERENCE: ${{ inputs.search_reference == true || contains(github.event.head_commit.message, '[search-reference]') }}
+          ENERGY_COMPONENT: ${{ inputs.energy_component == true || contains(github.event.head_commit.message, '[energy-component]') }}
+        run: |
+          if ($env:CHART_UNITS -eq 'true') {
+            if ($env:FLOATING_SURFACE -eq 'true' -or $env:PREFERENCES_TOUCH -eq 'true' -or $env:PROTOTYPE_PROOF -eq 'true' -or $env:CHART_COMPONENT -eq 'true' -or $env:ENERGY_COMPONENT -eq 'true' -or $env:SEARCH_REFERENCE -eq 'true') {
+              throw 'Chart unit preflight cannot combine with component proof modes'
+            }
+            python opennav-x/tests/windows_chart_units_tests.py
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+            python opennav-x/tools/test-windows-changed-units.py --chart-units-only
+            exit $LASTEXITCODE
+          }
+          if ($env:FLOATING_SURFACE -eq 'true') {
+            python opennav-x/tools/test-windows-changed-units.py --floating-surface-only
+            exit $LASTEXITCODE
+          }
+          if ($env:PREFERENCES_TOUCH -eq 'true') {
+            python opennav-x/tests/dpi_preferences_pan_tests.py
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+            python opennav-x/tools/test-windows-changed-units.py --settings-touch-only
+            exit $LASTEXITCODE
+          }
+          if ($env:CHART_COMPONENT -eq 'true' -and $env:PROTOTYPE_PROOF -ne 'true') {
+            throw 'Chart presentation requires prototype proof'
+          }
+          if ($env:ENERGY_COMPONENT -eq 'true' -and $env:PROTOTYPE_PROOF -ne 'true') {
+            throw 'Energy component requires prototype proof'
+          }
+          if ($env:PROTOTYPE_PROOF -eq 'true') {
+            $proofArgs = @('--prototype-proof')
+            if ($env:CHART_COMPONENT -eq 'true') { $proofArgs += '--chart-presentation-component' }
+            if ($env:ENERGY_COMPONENT -eq 'true') { $proofArgs += '--energy-component' }
+            python opennav-x/tools/test-windows-changed-units.py @proofArgs
+          } else {
+            python opennav-x/tools/test-windows-changed-units.py --legacy-control --ui --settings-component
+          }
+          exit $LASTEXITCODE
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: native-changed-units-${{ github.sha }}
+          path: |
+            opennav-x/evidence/local/windows-changed-units
+            opennav-x/evidence/local/peer-cli-precondition
+          if-no-files-found: error
+  search-reference:
+    if: ${{ inputs.chart_units != true && !contains(github.event.head_commit.message, '[chart-units]') && (inputs.search_reference == true || contains(github.event.head_commit.message, '[search-reference]')) }}
+    runs-on: windows-2022
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Install pinned reference renderer
+        run: |
+          python -m pip install -r opennav-x/tools/prototype/requirements.txt
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -m playwright install chromium
+          exit $LASTEXITCODE
+      - name: Capture only the original Search states on Windows
+        run: python opennav-x/tools/prototype/render.py --output opennav-x/evidence/local/search-reference --states search
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: prototype-search-reference-Windows-${{ github.sha }}
+          path: opennav-x/evidence/local/search-reference
+          if-no-files-found: error

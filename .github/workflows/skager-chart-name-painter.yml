@@ -1,0 +1,25 @@
+name: SKAGER native geographic name painter
+on:
+  push:
+    branches: [skager-chart-name-painter]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  painter:
+    name: Native Win32 geographic name alpha diagnosis
+    runs-on: windows-2022
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Replay production painter with failure-safe pixel evidence
+        shell: pwsh
+        run: |
+          python opennav-x/tools/test-chart-name-painter-windows.py --evidence opennav-x/evidence/local/chart-name-painter
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: native-chart-name-painter-${{ github.sha }}
+          path: opennav-x/evidence/local/chart-name-painter
+          if-no-files-found: error

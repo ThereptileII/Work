@@ -1,0 +1,212 @@
+name: OpenNav boat tooling development checks
+on:
+  push:
+    branches: [opennav-x-boat-tools, opennav-x-orphan-recovery, skager-shell-migration, skager-boat-review-composition]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: opennav-boat-tools-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  native-zlib-source:
+    name: Pinned zlib source only (no native build)
+    runs-on: windows-2022
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Exercise exact archive guard with deterministic corrupt fixtures
+        run: |
+          & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -File opennav-x/tools/test-zlib-source-verification.ps1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Download and verify reviewed zlib source without extracting or building
+        run: |
+          & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -File opennav-x/tools/build-zlib-windows.ps1 -VerifySourceOnly
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: native-zlib-source-${{ github.sha }}
+          path: opennav-x/evidence/local/windows-zlib-1.3.2/source-verification.json
+          if-no-files-found: error
+  native-installer-shortcuts:
+    name: Actual COM shortcut migration (${{ matrix.arch }})
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [x64, x86]
+    runs-on: windows-2022
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Exercise actual lifecycle functions with disposable links and registration
+        run: |
+          New-Item -ItemType Directory -Path opennav-x/evidence/local/installer-shortcuts -Force | Out-Null
+          $Folder = if ('${{ matrix.arch }}' -eq 'x86') { 'SysWOW64' } else { 'System32' }
+          & "$env:WINDIR/$Folder/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -File opennav-x/tools/test-installer-shortcuts.ps1 2>&1 | Tee-Object -FilePath opennav-x/evidence/local/installer-shortcuts/native-shortcuts.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: development-installer-shortcuts-${{ matrix.arch }}-${{ github.sha }}
+          path: opennav-x/evidence/local/installer-shortcuts
+          if-no-files-found: error
+  native-desktop-diagnostics:
+    name: Read-only native warning desktop diagnostics
+    runs-on: windows-2022
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Compile exact warning helper and probe read-only desktop APIs without launching an application
+        run: |
+          New-Item -ItemType Directory -Path opennav-x/evidence/local/desktop-diagnostics -Force | Out-Null
+          Get-FileHash opennav-x/tools/boat/StockWelcomeNative.cs, opennav-x/tools/boat/StockWelcome.ps1, opennav-x/tools/boat/test-stock-welcome.ps1 -Algorithm SHA256 | Select-Object Path, Hash | ConvertTo-Json | Set-Content -Encoding UTF8 opennav-x/evidence/local/desktop-diagnostics/helper-hashes.json
+          & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -File opennav-x/tools/boat/test-stock-welcome.ps1 2>&1 | Tee-Object -FilePath opennav-x/evidence/local/desktop-diagnostics/native-read-only-tests.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: development-desktop-diagnostics-${{ github.sha }}
+          path: opennav-x/evidence/local/desktop-diagnostics
+          if-no-files-found: error
+  native-restart-transport:
+    name: Native Win32 commissioning restart process boundary
+    runs-on: windows-2022
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Compile actual restart helper with marker-only test processes
+        run: |
+          cmake -S opennav-x/tests/commissioning-restart -B opennav-x/build/commissioning-restart -G "Visual Studio 17 2022" -A Win32
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cmake --build opennav-x/build/commissioning-restart --config Release --parallel 2
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Exercise native process and pipe boundary without OpenCPN or hardware
+        run: |
+          New-Item -ItemType Directory -Path opennav-x/evidence/local/restart-transport -Force | Out-Null
+          & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -ExecutionPolicy Bypass -File opennav-x/tools/test-commissioning-restart-windows.ps1 -Binaries opennav-x/build/commissioning-restart/Release -Evidence opennav-x/evidence/local/restart-transport 2>&1 | Tee-Object -FilePath opennav-x/evidence/local/restart-transport/native-process-tests.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: development-commissioning-restart-${{ github.sha }}
+          path: opennav-x/evidence/local/restart-transport
+          if-no-files-found: warn
+  native-maintenance:
+    name: Disposable native Windows tooling checks
+    runs-on: windows-2022
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Run every maintenance and visual-review policy suite without boat access
+        run: |
+          New-Item -ItemType Directory -Path opennav-x/evidence/local -Force | Out-Null
+          $Failed = @()
+          foreach ($Suite in @('boat-tools', 'official-upgrade-policy', 'preparation', 'commissioning', 'commissioning-launch', 'review-window', 'review-staging', 'source-checkout', 'restart-commissioning', 'restart-aui-persistence', 'restart-window-review', 'stock-review', 'stock-chart', 'stock-welcome', 'installed-welcome', 'baseline-adoption', 'cold-baseline', 'cold-helper-policy', 'cold-helper-workflow', 'chart-helper-attempts', 'broker-fixture-contracts', 'startup-log', 'renderer-log', 'chart-helper-shutdown', 'orphan-chart-helper')) {
+            & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -File "opennav-x/tools/boat/test-$Suite.ps1" 2>&1 | Tee-Object -FilePath "opennav-x/evidence/local/maintenance-$Suite.log"
+            if ($LASTEXITCODE -ne 0) { $Failed += $Suite }
+          }
+          if ($Failed.Count -ne 0) { throw ('Required tooling suites failed: ' + ($Failed -join ', ')) }
+      - name: Verify closed-copy navigation database audit without user data
+        run: |
+          python opennav-x/tools/boat/test-navigation-copy.py -v 2>&1 | Tee-Object -FilePath opennav-x/evidence/local/maintenance-navigation-copy.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: development-boat-tooling-${{ github.sha }}
+          path: opennav-x/evidence/local/maintenance-*.log
+          if-no-files-found: error
+  native-restart-window:
+    name: Fixed guarded mode UI actions on disposable native windows
+    needs: native-maintenance
+    runs-on: windows-2022
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Prepare only the disposable CI desktop for a fully contained stock frame
+        run: python opennav-x/tools/prepare-stock-review-desktop.py
+      - name: Exercise actual helper against nine marker-only native window cases
+        run: |
+          New-Item -ItemType Directory -Path opennav-x/evidence/local/restart-window -Force | Out-Null
+          & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -ExecutionPolicy Bypass -File opennav-x/tools/test-restart-window-native.ps1 -Evidence opennav-x/evidence/local/restart-window 2>&1 | Tee-Object -FilePath opennav-x/evidence/local/restart-window/native-window-tests.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Exercise fixed display controls against native marker-window cases
+        run: |
+          New-Item -ItemType Directory -Path opennav-x/evidence/local/display-window -Force | Out-Null
+          & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -ExecutionPolicy Bypass -File opennav-x/tools/test-display-window-native.ps1 -Evidence opennav-x/evidence/local/display-window 2>&1 | Tee-Object -FilePath opennav-x/evidence/local/display-window/native-display-tests.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Measure normal close through fresh native process observers
+        run: |
+          New-Item -ItemType Directory -Path opennav-x/evidence/local/stock-close -Force | Out-Null
+          & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -ExecutionPolicy Bypass -File opennav-x/tools/test-stock-close-windows.ps1 -Evidence opennav-x/evidence/local/stock-close 2>&1 | Tee-Object -FilePath opennav-x/evidence/local/stock-close/native-stock-close.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Exercise fixed stock resize on offscreen native marker windows
+        run: |
+          New-Item -ItemType Directory -Path opennav-x/evidence/local/stock-resize -Force | Out-Null
+          & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -ExecutionPolicy Bypass -File opennav-x/tools/test-stock-resize-windows.ps1 -Evidence opennav-x/evidence/local/stock-resize 2>&1 | Tee-Object -FilePath opennav-x/evidence/local/stock-resize/native-stock-resize.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: development-restart-window-${{ github.sha }}
+          path: |
+            opennav-x/evidence/local/restart-window
+            opennav-x/evidence/local/display-window
+            opennav-x/evidence/local/stock-resize
+            opennav-x/evidence/local/stock-close
+          if-no-files-found: error
+  native-stock-welcome:
+    name: Actual official OpenCPN portable upgrade caution (${{ matrix.locale }})
+    strategy:
+      fail-fast: false
+      matrix:
+        locale: [en_US, sv]
+    runs-on: windows-2022
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Prepare only the disposable CI desktop for a fully contained stock frame
+        run: python opennav-x/tools/prepare-stock-review-desktop.py
+      - name: Exercise exact official stock warning and hash-bound Agree in an empty portable profile
+        run: |
+          New-Item -ItemType Directory -Path opennav-x/evidence/local/stock-welcome -Force | Out-Null
+          & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -ExecutionPolicy Bypass -File opennav-x/tools/test-stock-welcome-windows.ps1 -Evidence opennav-x/evidence/local/stock-welcome -Locale ${{ matrix.locale }} 2>&1 | Tee-Object -FilePath opennav-x/evidence/local/stock-welcome/native-stock-warning.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: development-stock-welcome-${{ matrix.locale }}-${{ github.sha }}
+          path: opennav-x/evidence/local/stock-welcome
+          if-no-files-found: error
+  native-restart-broker:
+    name: Actual restart broker with disposable marker-only installation
+    needs: [native-restart-transport, native-maintenance]
+    runs-on: windows-2022
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Compile the same-commit actual helper and marker-only processes
+        run: |
+          cmake -S opennav-x/tests/commissioning-restart -B opennav-x/build/commissioning-restart -G "Visual Studio 17 2022" -A Win32
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cmake --build opennav-x/build/commissioning-restart --config Release --parallel 2
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Exercise the unchanged broker, full audit, refusals and receipt uncertainty
+        run: |
+          New-Item -ItemType Directory -Path opennav-x/evidence/local/restart-broker -Force | Out-Null
+          & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -ExecutionPolicy Bypass -File opennav-x/tools/test-commissioning-broker-windows.ps1 -Binaries opennav-x/build/commissioning-restart/Release -Evidence opennav-x/evidence/local/restart-broker 2>&1 | Tee-Object -FilePath opennav-x/evidence/local/restart-broker/native-broker-tests.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Exercise actual Prepare and scheduled Arm Collect against marker-only fixtures
+        run: |
+          New-Item -ItemType Directory -Path opennav-x/evidence/local/restart-prepare-arm -Force | Out-Null
+          & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -ExecutionPolicy Bypass -File opennav-x/tools/test-commissioning-prepare-arm-windows.ps1 -Binaries opennav-x/build/commissioning-restart/Release -Evidence opennav-x/evidence/local/restart-prepare-arm 2>&1 | Tee-Object -FilePath opennav-x/evidence/local/restart-prepare-arm/native-prepare-arm-tests.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: development-commissioning-broker-${{ github.sha }}
+          path: |
+            opennav-x/evidence/local/restart-broker
+            opennav-x/evidence/local/restart-prepare-arm
+          if-no-files-found: warn

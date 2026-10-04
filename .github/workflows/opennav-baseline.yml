@@ -1,0 +1,852 @@
+name: SKAGER Staging
+on:
+  push:
+    branches: [staging, opennav-x, opennav-x-beta2-ui, opennav-x-beta2-dpi, opennav-x-beta2-refinement, skager-chart-private-candidate]
+    paths:
+      - opennav-x/src/**
+      - opennav-x/include/**
+      - opennav-x/resources/**
+      - opennav-x/integration/**
+      - opennav-x/patches/**
+      - opennav-x/cmake/**
+      - opennav-x/plugins/**
+      - opennav-x/hardware/**
+      - opennav-x/installer/**
+      - opennav-x/tests/**
+      - opennav-x/tools/**
+      - '!opennav-x/tools/prototype/**'
+      - '!opennav-x/tools/*.md'
+      - opennav-x/CMakeLists.txt
+      - opennav-x/upstream.lock.json
+      - opennav-x/release/**
+      - .github/workflows/opennav-baseline.yml
+  workflow_dispatch:
+    inputs:
+      extended_tests:
+        description: Run additional functional scenarios for this staging candidate
+        type: boolean
+        default: false
+      design_validation:
+        description: Explicitly requested design and DPI review (never a promotion prerequisite)
+        type: boolean
+        default: false
+permissions:
+  contents: read
+  actions: read
+env:
+  SKAGER_DESIGN_VALIDATION: ${{ github.event_name == 'workflow_dispatch' && inputs.design_validation && 'true' || 'false' }}
+concurrency:
+  group: skager-staging-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  native-private-chart-loader:
+    name: Native private chart loader refusal and fallback gate
+    runs-on: windows-2022
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Verify adapter preparation and build wiring
+        shell: pwsh
+        run: |
+          $evidence = 'opennav-x/evidence/local/ocharts-loader-contracts'
+          New-Item -ItemType Directory -Force $evidence | Out-Null
+          python opennav-x/tools/test-curl-package.py -v 2>&1 | Tee-Object "$evidence/producer-prefix.log"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python opennav-x/tools/test-ocharts-source-cache.py 2>&1 | Tee-Object "$evidence/source-cache.log"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python opennav-x/tools/test-ocharts-adapter-preparation.py 2>&1 | Tee-Object "$evidence/preparation.log"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          & pwsh -NoProfile -File opennav-x/tools/test-ocharts-build-wiring.ps1 2>&1 | Tee-Object "$evidence/build-wiring.log"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Exercise actual module loading with harmless DLLs
+        run: |
+          python opennav-x/tools/test-ocharts-loader-windows.py --evidence opennav-x/evidence/local/ocharts-loader-guards
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: native-ocharts-loader-guards-${{ github.sha }}
+          path: |
+            opennav-x/evidence/local/ocharts-loader-guards
+            opennav-x/evidence/local/ocharts-loader-contracts
+          if-no-files-found: error
+  boat-firmware:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.extended_tests }}
+    name: Boat C6 producer expiry compile (no flashing)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Compile hash-pinned producer with reviewed expiry patch
+        run: |
+          mkdir -p opennav-x/evidence/local
+          python3 opennav-x/tools/build-boat-firmware-linux.py > opennav-x/evidence/local/boat-firmware-compile.log 2>&1
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: boat-firmware-${{ github.sha }}
+          path: opennav-x/evidence/local
+  stock-prerequisite:
+    name: Official OpenCPN installation prerequisite
+    runs-on: windows-2022
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Install the exact official release in a disposable directory
+        run: |
+          $Fixture = Join-Path $env:RUNNER_TEMP 'OpenNav stock prerequisite'
+          New-Item -ItemType Directory -Path $Fixture -Force | Out-Null
+          $Setup = Join-Path $Fixture 'official-setup.exe'
+          Invoke-WebRequest -Uri 'https://github.com/OpenCPN/OpenCPN/releases/download/Release_5.12.4/opencpn_5.12.4-0%2B3720.37fd0cd_setup.exe' -OutFile $Setup
+          New-Item -ItemType Directory -Path opennav-x/evidence/local -Force | Out-Null
+          python opennav-x/tools/install-official-opencpn-windows.py $Setup (Join-Path $Fixture 'stock OpenCPN') opennav-x/evidence/local/official-prerequisite.json
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Capture stock prerequisite failure dialog
+        if: failure()
+        run: python opennav-x/tools/inspect-official-installer-windows.py "$env:RUNNER_TEMP/OpenNav stock prerequisite/official-setup.exe" opennav-x/evidence/local
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: official-prerequisite-${{ github.sha }}
+          path: opennav-x/evidence/local
+  contracts:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2022]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Verify published distribution inputs before compilation
+        run: python opennav-x/tools/verify-distribution-inputs.py
+      - name: Verify corresponding-source archive structure and integrity
+        run: |
+          python opennav-x/tools/test-source-package.py
+          python opennav-x/tools/test-openssl-package.py
+          python opennav-x/tools/test-curl-package.py
+      - name: Same-job dependency evidence, tamper refusal and cache staging contracts
+        shell: python
+        run: |
+          import subprocess, sys
+          for script in ("test-windows-dependency-receipt.py",
+                         "test-windows-dependency-evidence.py",
+                         "test-windows-dependency-reuse.py",
+                         "test-windows-dependency-stage.py"):
+              subprocess.run([sys.executable, "opennav-x/tools/" + script],
+                             check=True, timeout=120)
+      - name: Native version probe stream identity and bounded failure contracts
+        run: pwsh -NoProfile -File opennav-x/tools/test-windows-native-probe-version.ps1
+      - name: Native version probe contracts in Windows PowerShell 5.1
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: ./opennav-x/tools/test-windows-native-probe-version.ps1
+      - name: Peer boundary monitor rejects tampering and filters listeners by process
+        run: python opennav-x/tools/test-peer-boundary.py
+      - name: Preserve reviewed notice bytes through Windows Git checkout
+        run: python opennav-x/tools/test-third-party-notice-checkout.py
+      - name: Verify relocated installer completion and failed fixture retention
+        run: python opennav-x/tools/test-installer-completion.py
+      - name: Installer rejects unqualified XNav output policies
+        run: pwsh -NoProfile -File opennav-x/tools/test-hardware-output-installer.ps1
+      - name: Staged installer normal and delay import closure fixtures
+        run: pwsh -NoProfile -File opennav-x/tools/test-installer-pe.ps1
+      - name: Verify the exact boat translator parser for host interoperability tests
+        run: python opennav-x/tools/fetch-st4000-oracle.py opennav-x/build/st4000-firmware
+      - name: Prepare reviewed boat producer expiry and actual codec oracle
+        run: python opennav-x/tools/prepare-boat-firmware.py
+      - name: Installer filesystem contracts in native Windows PowerShell 5.1
+        if: runner.os == 'Windows'
+        run: |
+          & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -File opennav-x/tools/test-installer-pe.ps1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          & "$env:WINDIR/SysWOW64/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -File opennav-x/tools/test-installer-pe.ps1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -File opennav-x/tools/test-installer-filesystem.ps1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          & "$env:WINDIR/SysWOW64/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -File opennav-x/tools/test-installer-filesystem.ps1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -File opennav-x/tools/test-hardware-output-installer.ps1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          & "$env:WINDIR/SysWOW64/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -File opennav-x/tools/test-hardware-output-installer.ps1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Portable maintenance refusal and recovery identity contracts
+        if: runner.os == 'Linux'
+        run: |
+          pwsh -NoProfile -File opennav-x/tools/boat/test-boat-tools.ps1 -PortableContracts
+          pwsh -NoProfile -File opennav-x/tools/boat/test-startup-log.ps1
+          pwsh -NoProfile -File opennav-x/tools/boat/test-renderer-log.ps1
+          pwsh -NoProfile -File opennav-x/tools/boat/test-baseline-adoption.ps1 -PortableContracts
+          pwsh -NoProfile -File opennav-x/tools/boat/test-broker-fixture-contracts.ps1
+          python3 opennav-x/tools/boat/test-navigation-copy.py -v
+      - name: Configure Linux contracts
+        if: runner.os == 'Linux'
+        run: cmake -S opennav-x -B opennav-x/build/contracts -DOPENNAV_ST4000_ORACLE="${{ github.workspace }}/opennav-x/build/st4000-firmware" -DOPENNAV_BOAT_ORACLE="${{ github.workspace }}/opennav-x/build/boat-firmware/Nissan_ev_to_NMEA_and_wifi"
+      - name: Configure contracts for the supported Windows application ABI
+        if: runner.os == 'Windows'
+        run: cmake -S opennav-x -B opennav-x/build/contracts -G "Visual Studio 17 2022" -A Win32 -DOPENNAV_ST4000_ORACLE="${{ github.workspace }}/opennav-x/build/st4000-firmware" -DOPENNAV_BOAT_ORACLE="${{ github.workspace }}/opennav-x/build/boat-firmware/Nissan_ev_to_NMEA_and_wifi"
+      - run: cmake --build opennav-x/build/contracts --config Release
+      - run: ctest --test-dir opennav-x/build/contracts -C Release --output-on-failure
+      - name: Repeat the restart handoff with deliberately delayed result publication
+        run: ctest --test-dir opennav-x/build/contracts -C Release -R restart_lifecycle_contract --repeat until-fail:10 --output-on-failure
+  boat-maintenance:
+    name: Native boat recovery and commissioning contracts
+    runs-on: windows-2022
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Exercise disposable maintenance transactions in Windows PowerShell 5.1
+        run: |
+          New-Item -ItemType Directory -Path opennav-x/evidence/local -Force | Out-Null
+          $Failed = @()
+          foreach ($Suite in @('boat-tools', 'official-upgrade-policy', 'preparation', 'commissioning', 'commissioning-launch', 'review-window', 'review-staging', 'source-checkout', 'ais-credential-import', 'restart-commissioning', 'restart-aui-persistence', 'stock-review', 'stock-chart', 'startup-log', 'renderer-log', 'baseline-adoption', 'broker-fixture-contracts', 'restart-window-review', 'stock-welcome', 'installed-welcome')) {
+            & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -File "opennav-x/tools/boat/test-$Suite.ps1" 2>&1 | Tee-Object -FilePath "opennav-x/evidence/local/maintenance-$Suite.log"
+            if ($LASTEXITCODE -ne 0) { $Failed += $Suite }
+          }
+          if ($Failed.Count -ne 0) { throw ('Required maintenance suites failed: ' + ($Failed -join ', ')) }
+      - name: Verify closed navigation copies without vessel data
+        run: |
+          python opennav-x/tools/boat/test-navigation-copy.py -v 2>&1 | Tee-Object -FilePath opennav-x/evidence/local/maintenance-navigation-copy.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: boat-maintenance-${{ github.sha }}
+          path: opennav-x/evidence/local/maintenance-*.log
+          if-no-files-found: error
+  native-restart-transport:
+    name: Native Win32 commissioning restart process boundary
+    runs-on: windows-2022
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Compile actual restart helper with marker-only test processes
+        run: |
+          cmake -S opennav-x/tests/commissioning-restart -B opennav-x/build/commissioning-restart -G "Visual Studio 17 2022" -A Win32
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cmake --build opennav-x/build/commissioning-restart --config Release --parallel 2
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Exercise native process and pipe boundary without OpenCPN or hardware
+        run: |
+          New-Item -ItemType Directory -Path opennav-x/evidence/local/restart-transport -Force | Out-Null
+          & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -ExecutionPolicy Bypass -File opennav-x/tools/test-commissioning-restart-windows.ps1 -Binaries opennav-x/build/commissioning-restart/Release -Evidence opennav-x/evidence/local/restart-transport 2>&1 | Tee-Object -FilePath opennav-x/evidence/local/restart-transport/native-process-tests.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: commissioning-restart-${{ github.sha }}
+          path: opennav-x/evidence/local/restart-transport
+          if-no-files-found: warn
+  native-restart-window:
+    name: Fixed guarded mode UI actions on disposable native windows
+    needs: boat-maintenance
+    runs-on: windows-2022
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Prepare only the disposable CI desktop for a fully contained stock frame
+        run: python opennav-x/tools/prepare-stock-review-desktop.py
+      - name: Exercise actual helper against nine marker-only native window cases
+        run: |
+          New-Item -ItemType Directory -Path opennav-x/evidence/local/restart-window -Force | Out-Null
+          & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -ExecutionPolicy Bypass -File opennav-x/tools/test-restart-window-native.ps1 -Evidence opennav-x/evidence/local/restart-window 2>&1 | Tee-Object -FilePath opennav-x/evidence/local/restart-window/native-window-tests.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Exercise fixed display controls against native marker-window cases
+        run: |
+          New-Item -ItemType Directory -Path opennav-x/evidence/local/display-window -Force | Out-Null
+          & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -ExecutionPolicy Bypass -File opennav-x/tools/test-display-window-native.ps1 -Evidence opennav-x/evidence/local/display-window 2>&1 | Tee-Object -FilePath opennav-x/evidence/local/display-window/native-display-tests.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Verify fresh Get-Process normal close and measured exit status on inert windows
+        run: |
+          New-Item -ItemType Directory -Path opennav-x/evidence/local/stock-close -Force | Out-Null
+          & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -ExecutionPolicy Bypass -File opennav-x/tools/test-stock-close-windows.ps1 -Evidence opennav-x/evidence/local/stock-close 2>&1 | Tee-Object -FilePath opennav-x/evidence/local/stock-close/native-stock-close.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Exercise fixed stock resize on offscreen native marker windows
+        run: |
+          New-Item -ItemType Directory -Path opennav-x/evidence/local/stock-resize -Force | Out-Null
+          & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -ExecutionPolicy Bypass -File opennav-x/tools/test-stock-resize-windows.ps1 -Evidence opennav-x/evidence/local/stock-resize 2>&1 | Tee-Object -FilePath opennav-x/evidence/local/stock-resize/native-stock-resize.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: restart-window-${{ github.sha }}
+          path: |
+            opennav-x/evidence/local/restart-window
+            opennav-x/evidence/local/display-window
+            opennav-x/evidence/local/stock-resize
+            opennav-x/evidence/local/stock-close
+          if-no-files-found: error
+  native-stock-welcome:
+    name: Actual official OpenCPN portable upgrade caution (${{ matrix.locale }})
+    strategy:
+      fail-fast: false
+      matrix:
+        locale: [en_US, sv]
+    needs: boat-maintenance
+    runs-on: windows-2022
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Prepare only the disposable CI desktop for a fully contained stock frame
+        run: python opennav-x/tools/prepare-stock-review-desktop.py
+      - name: Exercise exact official stock warning and hash-bound Agree in an empty portable profile
+        run: |
+          New-Item -ItemType Directory -Path opennav-x/evidence/local/stock-welcome -Force | Out-Null
+          & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -ExecutionPolicy Bypass -File opennav-x/tools/test-stock-welcome-windows.ps1 -Evidence opennav-x/evidence/local/stock-welcome -Locale ${{ matrix.locale }} 2>&1 | Tee-Object -FilePath opennav-x/evidence/local/stock-welcome/native-stock-warning.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: stock-welcome-${{ matrix.locale }}-${{ github.sha }}
+          path: opennav-x/evidence/local/stock-welcome
+          if-no-files-found: error
+  native-restart-broker:
+    name: Actual restart broker with disposable marker-only installation
+    needs: [native-restart-transport, boat-maintenance]
+    runs-on: windows-2022
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Compile the same-commit actual helper and marker-only processes
+        run: |
+          cmake -S opennav-x/tests/commissioning-restart -B opennav-x/build/commissioning-restart -G "Visual Studio 17 2022" -A Win32
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cmake --build opennav-x/build/commissioning-restart --config Release --parallel 2
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Exercise the unchanged broker, full audit, refusals and receipt uncertainty
+        id: broker
+        run: |
+          New-Item -ItemType Directory -Path opennav-x/evidence/local/restart-broker -Force | Out-Null
+          & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -ExecutionPolicy Bypass -File opennav-x/tools/test-commissioning-broker-windows.ps1 -Binaries opennav-x/build/commissioning-restart/Release -Evidence opennav-x/evidence/local/restart-broker 2>&1 | Tee-Object -FilePath opennav-x/evidence/local/restart-broker/native-broker-tests.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Exercise actual Prepare and scheduled Arm Collect against marker-only fixtures
+        id: prepare_arm
+        run: |
+          New-Item -ItemType Directory -Path opennav-x/evidence/local/restart-prepare-arm -Force | Out-Null
+          & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -ExecutionPolicy Bypass -File opennav-x/tools/test-commissioning-prepare-arm-windows.ps1 -Binaries opennav-x/build/commissioning-restart/Release -Evidence opennav-x/evidence/local/restart-prepare-arm 2>&1 | Tee-Object -FilePath opennav-x/evidence/local/restart-prepare-arm/native-prepare-arm-tests.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: commissioning-broker-${{ github.sha }}
+          path: |
+            opennav-x/evidence/local/restart-broker
+            opennav-x/evidence/local/restart-prepare-arm
+          if-no-files-found: warn
+      - name: Attest same-run restart gates after native tests and evidence upload
+        env:
+          TRANSPORT_RESULT: ${{ needs.native-restart-transport.result }}
+          MAINTENANCE_RESULT: ${{ needs.boat-maintenance.result }}
+          BROKER_RESULT: ${{ steps.broker.conclusion }}
+          PREPARE_ARM_RESULT: ${{ steps.prepare_arm.conclusion }}
+        run: |
+          if ($env:TRANSPORT_RESULT -cne 'success' -or $env:MAINTENANCE_RESULT -cne 'success' -or $env:BROKER_RESULT -cne 'success' -or $env:PREPARE_ARM_RESULT -cne 'success') { throw 'Native commissioning gates did not all pass' }
+          New-Item -ItemType Directory -Path opennav-x/evidence/local/restart-gates -Force | Out-Null
+          @{ schema = 1; owner = 'OpenNavX.CI.RestartGates.1'; commit = $env:GITHUB_SHA;
+             runId = $env:GITHUB_RUN_ID; runAttempt = $env:GITHUB_RUN_ATTEMPT;
+             transport = $env:TRANSPORT_RESULT; maintenance = $env:MAINTENANCE_RESULT;
+             broker = $env:BROKER_RESULT; prepareArm = $env:PREPARE_ARM_RESULT; actualBoat = $false } |
+            ConvertTo-Json | Set-Content -LiteralPath opennav-x/evidence/local/restart-gates/qualified.json -Encoding UTF8
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: commissioning-restart-qualified-${{ github.sha }}
+          path: opennav-x/evidence/local/restart-gates/qualified.json
+          if-no-files-found: error
+  linux:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.extended_tests }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Fetch pinned pristine source
+        run: |
+          git clone --depth 1 --branch Release_5.12.4 https://github.com/OpenCPN/OpenCPN.git opennav-x/upstream/OpenCPN
+          python3 opennav-x/tools/verify-upstream.py
+      - name: Install upstream build dependencies
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y equivs devscripts ninja-build
+          sudo mk-build-deps --install --remove --tool='apt-get -y --no-install-recommends' opennav-x/upstream/OpenCPN/ci/control
+          sudo locale-gen sv_SE.UTF-8 en_US.UTF-8
+          if sudo modprobe vcan; then
+            sudo ip link add dev vcan0 type vcan
+            sudo ip link set dev vcan0 up
+          else
+            echo 'Hosted kernel has no vcan module; CAN environment remains unavailable.'
+          fi
+          mkdir -p "$HOME/.opencpn"
+      - name: Build and test pristine Linux baseline
+        run: bash opennav-x/tools/build-pristine-linux.sh
+      - name: Capture isolated Linux development baseline
+        if: ${{ inputs.design_validation == true }}
+        run: |
+          sudo apt-get install -y xvfb xdotool imagemagick
+          bash opennav-x/tools/capture-pristine-linux.sh
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: linux-pristine-${{ github.sha }}
+          path: opennav-x/evidence/local
+  linux-integration:
+    name: Linux integrated regression gate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Fetch pinned source and install dependencies
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          git clone --depth 1 --branch Release_5.12.4 https://github.com/OpenCPN/OpenCPN.git opennav-x/upstream/OpenCPN
+          sudo apt-get update
+          sudo apt-get install -y equivs devscripts ninja-build xvfb xdotool imagemagick
+          sudo mk-build-deps --install --remove --tool='apt-get -y --no-install-recommends' opennav-x/upstream/OpenCPN/ci/control
+          sudo locale-gen sv_SE.UTF-8 en_US.UTF-8
+          mkdir -p "$HOME/.opencpn"
+      - name: Reject untrusted public downloads using actual pinned Downloader
+        run: |
+          mkdir -p opennav-x/evidence/local
+          python3 opennav-x/tools/test-downloader-trust.py > opennav-x/evidence/local/downloader-trust-linux.json
+      - name: Actual WXCURL trust and bounded peer-response regressions
+        run: |
+          python3 opennav-x/tools/test-wxcurl-trust.py > opennav-x/evidence/local/wxcurl-trust-linux.log 2>&1
+          python3 opennav-x/tools/test-peer-buffer.py > opennav-x/evidence/local/peer-buffer-linux.log 2>&1
+      - name: Build integrated application and run regressions without exceptions
+        run: bash opennav-x/tools/build-integration-linux.sh
+      - name: Restore GTK chart controls after startup hide, resize and owner recapture
+        shell: bash
+        env:
+          GDK_BACKEND: x11
+        run: |
+          mkdir -p opennav-x/evidence/local
+          timeout 30s xvfb-run -a -s '-screen 0 1280x800x24 -nolisten tcp' opennav-x/build/xnav-linux/floating_surface_test 2>&1 | tee opennav-x/evidence/local/floating-surface-linux.log
+          timeout 60s python3 opennav-x/tools/verify-frame-recapture.py --skip-lifecycle --wx-config "$(command -v wx-config)" --wx-prefix "$(wx-config --prefix)" --output opennav-x/evidence/local/frame-recapture
+      - name: Installed peer CLI refuses key changes in a disposable profile
+        run: python3 opennav-x/tools/test-peer-cli.py --cli opennav-x/build/xnav-install/bin/opencpn-cmd
+      - name: Staged loader check without profile initialization
+        run: python3 opennav-x/tools/smoke-installer-selftest.py --expect-test-loopback --app opennav-x/build/xnav-install/bin/opencpn
+      - name: Retain real harmonic sources across installed generation changes
+        run: xvfb-run -a -s '-screen 0 1280x800x24 -nolisten tcp' python3 opennav-x/tools/smoke-installed-resources-linux.py
+      - name: Exercise shared profile mode cycle and IPC shutdown
+        run: python3 opennav-x/tools/smoke-modes-linux.py
+      - name: Exercise real OpenCPN input with synthetic loopback NMEA
+        run: python3 opennav-x/tools/smoke-navigation.py
+      - name: Record and replay normalized vessel state through the real UI
+        run: python3 opennav-x/tools/smoke-recording.py
+      - name: Observe normal upstream route progress with isolated synthetic routes
+        run: python3 opennav-x/tools/smoke-navigation.py --route-fixture
+      - name: Marine instrument input through the upstream loopback connection
+        run: python3 opennav-x/tools/smoke-navigation.py --instruments
+      - name: Marine N2K commissioning inputs and loss of data
+        run: python3 opennav-x/tools/smoke-navigation.py --n2k
+      - name: Boat-specific N2K mapping and independent producer expiry
+        run: python3 opennav-x/tools/smoke-navigation.py --boat
+      - name: Live Signal K and malformed WebSocket input recovery
+        run: python3 opennav-x/tools/smoke-signalk.py
+      - name: Manual pilot through actual OpenCPN TCP and loopback feedback
+        run: python3 opennav-x/tools/smoke-pilot.py
+      - name: Navigation objects, AIS and anchor integration in a non-UTC timezone
+        env:
+          TZ: Europe/Stockholm
+        run: python3 opennav-x/tools/smoke-navigation.py --objects
+      - name: Mouse chart gestures, waypoint Go To and route creation
+        run: python3 opennav-x/tools/smoke-user-flows.py
+      - name: Crash-loop recovery with real disposable processes
+        run: python3 opennav-x/tools/smoke-recovery.py
+      - name: Exercise preview pages and all demo scenarios
+        if: ${{ inputs.extended_tests == true }}
+        run: python3 opennav-x/tools/smoke-preview.py
+      - name: Public ENC chart and plugin rendering gate
+        run: python3 opennav-x/tools/smoke-charts.py
+      - name: Apply Linux endurance policy (explicit user-directed skip)
+        shell: python
+        run: |
+          import json, os, subprocess, sys
+          from pathlib import Path
+          root = Path('opennav-x')
+          policy = json.loads((root/'release/qualification.json').read_text())
+          assert type(policy['enduranceEnabled']) is bool
+          if policy['enduranceEnabled']:
+              subprocess.run([sys.executable, str(root/'tools/soak-runtime.py'),
+                              '--seconds', str(policy['enduranceSeconds'])], check=True)
+          else:
+              assert policy['publishNamedRelease'] is False
+              report = {'status': 'skipped', 'reason': policy['enduranceSkipReason'],
+                        'commit': os.environ['GITHUB_SHA'], 'runId': os.environ['GITHUB_RUN_ID'],
+                        'runAttempt': os.environ['GITHUB_RUN_ATTEMPT'], 'release_duration': False}
+              target = root/'evidence/local/soak/results.json'
+              target.parent.mkdir(parents=True, exist_ok=True)
+              target.write_text(json.dumps(report, indent=2) + '\n')
+              print('Endurance SKIPPED by user direction; no endurance pass or release qualification.')
+      - name: Build fixture-free Linux product and run its loader check
+        run: bash opennav-x/tools/build-production-linux.sh
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: linux-integration-${{ github.sha }}
+          path: opennav-x/evidence/local
+  windows-upstream-abi:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.extended_tests }}
+    name: Native MSVC upstream Win32 ABI on Windows x64
+    runs-on: windows-2022
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Fetch pinned pristine source
+        run: |
+          git clone --depth 1 --branch Release_5.12.4 https://github.com/OpenCPN/OpenCPN.git opennav-x/upstream/OpenCPN
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python opennav-x/tools/verify-upstream.py
+      - name: Build and test supported upstream ABI
+        run: ./opennav-x/tools/build-pristine-windows.ps1 -Architecture Win32
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: windows-pristine-${{ github.sha }}
+          path: opennav-x/evidence/local
+  windows-integration:
+    name: Native MSVC XNav / Legacy / Safe slice
+    permissions:
+      contents: read
+      actions: read
+    needs: [contracts, native-restart-window, native-stock-welcome, native-private-chart-loader]
+    runs-on: windows-2022
+    # The first source-built pass retains all upstream tests; the production
+    # pass may reuse only its verified closure in this same job.
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Preserve native Perl for OpenSSL and install curl's POSIX test host
+        shell: pwsh
+        run: |
+          $NativePerl = (Get-Command perl.exe -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source
+          "SKAGER_NATIVE_PERL=$NativePerl" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      - uses: msys2/setup-msys2@66cd2cce69caa17b53920067426061ca1de3a884
+        id: curl_msys
+        with:
+          msystem: MSYS
+          update: false
+          install: perl
+          path-type: inherit
+          cache: false
+      - name: Select explicit curl test Perl
+        shell: pwsh
+        env:
+          SKAGER_MSYS_ROOT: ${{ steps.curl_msys.outputs.msys2-location }}
+        run: |
+          $TestPerl = Join-Path $env:SKAGER_MSYS_ROOT 'usr/bin/perl.exe'
+          if (-not (Test-Path -LiteralPath $TestPerl -PathType Leaf)) { throw 'MSYS2 curl test Perl missing' }
+          "SKAGER_CURL_TEST_PERL=$TestPerl" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      - name: Verify native curl test-host binding before dependency compilation
+        shell: pwsh
+        run: ./opennav-x/tools/test-curl-test-host-binding.ps1 -TestPerl $env:SKAGER_CURL_TEST_PERL -NativePerl $env:SKAGER_NATIVE_PERL -Evidence opennav-x/evidence/local/curl-test-host-binding
+      - name: Fetch pinned source
+        run: |
+          git clone --depth 1 --branch Release_5.12.4 https://github.com/OpenCPN/OpenCPN.git opennav-x/upstream/OpenCPN
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Build and exercise integrated modes
+        id: integrated
+        run: ./opennav-x/tools/build-pristine-windows.ps1 -Architecture Win32 -Integration -VerifyPeerCli -PrivateOCharts
+      - name: Verify packaged source reproduces the curl certificate-tool patch
+        if: ${{ success() && steps.integrated.conclusion == 'success' }}
+        run: |
+          python opennav-x/tools/test-curl-patch-source-package.py --archive opennav-x/build/dependency-downloads/curl-8.22.0.tar.xz -v
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      # Preserve the candidate probe's named prerequisite, but validate the
+      # positive early-test receipt instead of revisiting the GUI-created home.
+      - name: Installed native peer CLI refuses key changes on the disposable runner
+        run: python opennav-x/tools/peer-cli-receipt.py verify --cli opennav-x/build/xnav-install/opencpn-cmd.exe --receipt opennav-x/evidence/local/windows-peer-cli-receipt.json
+      - name: Staged native loader check without profile initialization
+        if: ${{ !cancelled() && steps.integrated.conclusion == 'success' }}
+        run: python opennav-x/tools/smoke-installer-selftest.py --expect-test-loopback --app opennav-x/build/xnav-install/opencpn.exe
+      - name: Native pointer chart gestures, waypoint Go To and route creation
+        id: user_flows
+        if: ${{ !cancelled() && steps.integrated.conclusion == 'success' }}
+        run: python opennav-x/tools/smoke-user-flows.py
+      - name: Preserve failed native chart interaction evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: ${{ !cancelled() && steps.user_flows.conclusion == 'failure' }}
+        with:
+          name: windows-user-flows-failure-${{ github.sha }}
+          path: |
+            opennav-x/evidence/local/flow-*
+            opennav-x/evidence/local/user-flows-*
+          if-no-files-found: error
+      - name: Repeat native crash-recovery returns with separate evidence
+        if: ${{ inputs.extended_tests == true && !cancelled() && steps.integrated.conclusion == 'success' }}
+        run: |
+          New-Item -ItemType Directory -Path opennav-x/evidence/local/recovery-repeat-0 | Out-Null
+          Get-ChildItem opennav-x/evidence/local -Filter 'recovery-*' | Where-Object { $_.Name -notlike 'recovery-repeat-*' } | Move-Item -Destination opennav-x/evidence/local/recovery-repeat-0
+          foreach ($Attempt in 1..2) {
+            python opennav-x/tools/smoke-recovery.py
+            $Result = $LASTEXITCODE
+            $Capture = "opennav-x/evidence/local/recovery-repeat-$Attempt"
+            New-Item -ItemType Directory -Path $Capture | Out-Null
+            Get-ChildItem opennav-x/evidence/local -Filter 'recovery-*' | Where-Object { $_.Name -notlike 'recovery-repeat-*' } | Move-Item -Destination $Capture
+            if ($Result -ne 0) { exit $Result }
+          }
+      - name: Retain complete fixture UI and scenario regression suite
+        id: fixture_ui
+        if: ${{ inputs.extended_tests == true && !cancelled() && steps.integrated.conclusion == 'success' }}
+        run: ./opennav-x/tools/test-preview-windows.ps1
+      - name: Preserve first fixture failure before independent display checks
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: ${{ !cancelled() && steps.fixture_ui.conclusion == 'failure' }}
+        with:
+          name: windows-fixture-failure-${{ github.sha }}
+          path: opennav-x/evidence/local/preview-*
+          if-no-files-found: error
+      - name: Capture successful same-job Windows dependency closure
+        if: ${{ success() && steps.integrated.conclusion == 'success' }}
+        run: |
+          Write-Output "Dependency receipt capture begin: $([DateTime]::UtcNow.ToString('o'))"
+          python opennav-x/tools/windows_dependency_reuse.py capture --root opennav-x --fixture-success
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          Write-Output "Dependency receipt capture passed: $([DateTime]::UtcNow.ToString('o'))"
+      - name: Native AIS observation and transport with same-job maintained TLS
+        id: ais_runtime
+        run: |
+          python opennav-x/tools/test-ais-runtime-gate.py 2>&1 | Tee-Object opennav-x/evidence/local/ais-runtime-guards.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python opennav-x/tools/windows_dependency_reuse.py verify --root opennav-x 2>&1 | Tee-Object opennav-x/evidence/local/ais-runtime-receipt-check.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $ParentPython = & python -c 'import pathlib,sys; print(pathlib.Path(sys.executable).resolve())'
+          if ($LASTEXITCODE -ne 0) { throw 'Cannot identify AIS parent Python' }
+          . ./opennav-x/tools/windows-parent-environment.ps1
+          Initialize-WindowsNativePerl
+          $null = Initialize-WindowsGettext -Python $ParentPython -Receipt ./opennav-x/evidence/local/windows-gettext-xnav.json -Mode Verify -Log ./opennav-x/evidence/local/ais-runtime-gettext-check.log
+          ./opennav-x/tools/build-openssl-windows.ps1 -IntegrationSource opennav-x/build/integration-source -VerifyToolFactsOnly 2>&1 | Tee-Object opennav-x/evidence/local/ais-runtime-openssl-tool-check.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          ./opennav-x/tools/build-zlib-windows.ps1 -VerifyToolFactsOnly 2>&1 | Tee-Object opennav-x/evidence/local/ais-runtime-zlib-tool-check.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python opennav-x/tools/test-ais-runtime-windows.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Build native installed product without synthetic data
+        id: production
+        run: ./opennav-x/tools/build-pristine-windows.ps1 -Architecture Win32 -Integration -Production -ReuseVerifiedDependencies -PrivateOCharts
+      - name: Preserve failed production transcript before independent display checks
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: ${{ !cancelled() && steps.production.conclusion == 'failure' }}
+        with:
+          name: windows-production-failure-${{ github.sha }}
+          path: |
+            opennav-x/evidence/local/windows-production-*
+            opennav-x/evidence/local/windows-native-output.log
+            opennav-x/evidence/local/ocharts-private-wxcurl-trust-windows
+          if-no-files-found: error
+      - name: Resolve private chart imports in the real host without plugin initialization
+        id: private_module
+        run: |
+          python opennav-x/tools/test-chart-module-windows.py --install opennav-x/build/production-install --evidence opennav-x/evidence/local/ocharts-real-host-module 2>&1 | Tee-Object opennav-x/evidence/local/ocharts-real-host-module-output.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Preserve failed private-module check before independent display checks
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: ${{ !cancelled() && steps.private_module.conclusion == 'failure' }}
+        with:
+          name: windows-private-module-failure-${{ github.sha }}
+          path: |
+            opennav-x/evidence/local/ocharts-real-host-module
+            opennav-x/evidence/local/ocharts-real-host-module-output.log
+          if-no-files-found: error
+      - name: Native public Downloader Windows trust and rejection gate
+        id: downloader_trust
+        if: ${{ !cancelled() && steps.production.conclusion == 'success' }}
+        run: ./opennav-x/tools/test-downloader-trust-windows.ps1 -Install production-install
+      - name: Exact peer response buffer on native MSVC Win32
+        id: peer_buffer
+        if: ${{ !cancelled() && steps.production.conclusion == 'success' }}
+        run: |
+          python opennav-x/tools/test-peer-buffer.py > opennav-x/evidence/local/peer-buffer-windows.log 2>&1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Package and test the fixture-free recovery distribution
+        id: portable
+        if: ${{ !cancelled() && steps.production.conclusion == 'success' && steps.private_module.conclusion == 'success' && steps.downloader_trust.conclusion == 'success' && steps.peer_buffer.conclusion == 'success' }}
+        run: ./opennav-x/tools/package-preview-windows.ps1
+      - name: Preserve failed portable interaction evidence immediately
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: ${{ !cancelled() && steps.portable.conclusion == 'failure' }}
+        with:
+          name: windows-portable-failure-${{ github.sha }}
+          path: |
+            opennav-x/evidence/local/preview-*
+            opennav-x/evidence/local/production-recovery-*
+            opennav-x/evidence/local/recovery-*
+          if-no-files-found: error
+      - name: Build installer and exercise staging install startup preservation and rollback
+        env:
+          OPENNAV_ARTIFACT_TOKEN: ${{ github.token }}
+        id: installer
+        if: ${{ !cancelled() && steps.portable.conclusion == 'success' }}
+        run: |
+          $Candidate = @()
+          $Compatibility = Get-Content opennav-x/installer/windows/compatibility.json -Raw | ConvertFrom-Json
+          if ($Compatibility.supportedOpenCpn.Count -eq 0) { $Candidate = @('--candidate') }
+          python opennav-x/tools/package-alpha-installer.py --preview opennav-x/build/developer-preview/SKAGER-Beta2-Portable-Recovery --output opennav-x/build/beta-installer @Candidate
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python opennav-x/tools/verify-skager-pe-brand.py --application opennav-x/build/developer-preview/SKAGER-Beta2-Portable-Recovery/app/opencpn.exe --setup opennav-x/build/beta-installer/SKAGER-Beta2-Setup.exe --report opennav-x/evidence/local/installer-skager-pe-brand.json
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python opennav-x/tools/smoke-installer-windows.py --mode staging
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Preserve failed installer transaction before remaining UI checks
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: ${{ !cancelled() && steps.installer.conclusion == 'failure' }}
+        with:
+          name: windows-installer-failure-${{ github.sha }}
+          path: opennav-x/evidence/local/installer-*
+          if-no-files-found: error
+      # Failed qualification must never publish a candidate. Preserve the
+      # already-built inputs separately so a test-harness correction can be
+      # verified against the same bytes without recompiling the application.
+      - name: Inventory unqualified installer retest inputs
+        id: retest_inputs
+        if: ${{ !cancelled() && steps.installer.conclusion == 'failure' }}
+        shell: python
+        run: |
+          import hashlib, json, os
+          from pathlib import Path
+          root = Path('opennav-x')
+          inputs = [root/'build/beta-installer', root/'build/xnav-install',
+                    root/'build/production-install', root/'build/production-windows/include/config.h',
+                    root/'build/developer-preview/SKAGER-Beta2-Portable-Recovery/docs/PRODUCT_BUILD.json',
+                    root/'build/developer-preview/SKAGER-Beta2-Portable-Recovery.zip',
+                    root/'build/developer-preview/SKAGER-Beta2-source.zip']
+          files = []
+          for item in inputs:
+              assert item.exists(), f'Missing diagnostic retest input: {item}'
+              for path in sorted(item.rglob('*')) if item.is_dir() else [item]:
+                  assert not path.is_symlink(), f'Unexpected linked input: {path}'
+                  if path.is_file():
+                      with path.open('rb') as stream:
+                          digest = hashlib.file_digest(stream, 'sha256').hexdigest()
+                      files.append({'path': path.relative_to(root).as_posix(),
+                                    'bytes': path.stat().st_size,
+                                    'sha256': digest})
+          report = {'schema': 1, 'qualification': 'FAILED - diagnostic retest inputs only; not for installation or delivery',
+                    'commit': os.environ['GITHUB_SHA'], 'runId': os.environ['GITHUB_RUN_ID'],
+                    'runAttempt': os.environ['GITHUB_RUN_ATTEMPT'], 'files': files}
+          (root/'evidence/local/unqualified-installer-inputs.json').write_text(json.dumps(report, indent=2)+'\n')
+      - name: Retain unqualified binaries for exact-byte installer diagnosis
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: ${{ !cancelled() && steps.installer.conclusion == 'failure' && steps.retest_inputs.conclusion == 'success' }}
+        with:
+          name: unqualified-windows-installer-inputs-${{ github.sha }}
+          path: |
+            opennav-x/evidence/local/unqualified-installer-inputs.json
+            opennav-x/build/beta-installer
+            opennav-x/build/xnav-install
+            opennav-x/build/production-install
+            opennav-x/build/production-windows/include/config.h
+            opennav-x/build/developer-preview/SKAGER-Beta2-Portable-Recovery/docs/PRODUCT_BUILD.json
+            opennav-x/build/developer-preview/SKAGER-Beta2-Portable-Recovery.zip
+            opennav-x/build/developer-preview/SKAGER-Beta2-source.zip
+          compression-level: 0
+          if-no-files-found: error
+      - name: Native 100 / 125 / 150 percent DPI and touch interactions
+        id: dpi
+        if: ${{ inputs.design_validation == true && !cancelled() && steps.integrated.conclusion == 'success' }}
+        run: python opennav-x/tools/smoke-dpi-windows.py
+      - name: Preserve failed DPI interaction evidence immediately
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: ${{ !cancelled() && steps.dpi.conclusion == 'failure' }}
+        with:
+          name: windows-dpi-failure-${{ github.sha }}
+          path: opennav-x/evidence/local/dpi-*
+          if-no-files-found: error
+      - name: Public ENC chart and plugin rendering gate
+        if: ${{ !cancelled() && steps.integrated.conclusion == 'success' }}
+        run: python opennav-x/tools/smoke-charts.py
+      - name: Require same-run restart qualification before delivering any product artifact
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: commissioning-restart-qualified-${{ github.sha }}
+          path: opennav-x/evidence/local/restart-gates
+      - name: Verify exact restart qualification identity
+        id: restart_qualified
+        shell: python
+        run: |
+          import json, os
+          from pathlib import Path
+          report = json.loads(Path('opennav-x/evidence/local/restart-gates/qualified.json').read_text(encoding='utf-8-sig'))
+          assert type(report.get('schema')) is int and report['schema'] == 1, report
+          assert report.get('owner') == 'OpenNavX.CI.RestartGates.1', report
+          assert report.get('commit') == os.environ['GITHUB_SHA'], report
+          assert report.get('runId') == os.environ['GITHUB_RUN_ID'], report
+          assert report.get('runAttempt') == os.environ['GITHUB_RUN_ATTEMPT'], report
+          assert all(report.get(key) == 'success' for key in ('transport', 'maintenance', 'broker', 'prepareArm')), report
+          assert report.get('actualBoat') is False, report
+          print('Exact same-run native restart qualification verified; no boat acceptance implied')
+      - name: Assemble immutable staging payloads and retained qualification inputs
+        run: |
+          python opennav-x/tools/alpha-artifacts.py --channel staging
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python opennav-x/tools/retain-release-inputs.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: staging-retest-${{ github.sha }}-attempt${{ github.run_attempt }}
+          path: opennav-x/build/release-retest/SKAGER-Beta2-Retest-Support.zip
+          compression-level: 0
+          if-no-files-found: error
+          retention-days: 90
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: staging-candidate-${{ github.sha }}-attempt${{ github.run_attempt }}
+          path: opennav-x/build/beta-artifacts
+          if-no-files-found: error
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: windows-integration-${{ github.sha }}
+          path: |
+            opennav-x/evidence/local
+            opennav-x/build/ocharts-package
+            opennav-x/build/ocharts-chart-style/v1
+            opennav-x/build/ocharts-prepared/resources
+            opennav-x/build/xnav-windows/opennav-chart-style/v1
+            opennav-x/build/production-windows/opennav-chart-style/v1
+            opennav-x/build/xnav-windows/CMakeCache.txt
+            opennav-x/build/production-windows/CMakeCache.txt
+            opennav-x/build/ocharts-native/CMakeFiles/CMakeConfigureLog.yaml
+            opennav-x/build/ocharts-native/CMakeCache.txt
+            opennav-x/build/ocharts-native/Release/skager-ocharts-adapter.dll
+  application-abi:
+    name: Approved OpenCPN ABI on Windows x64
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Verify approved application architecture
+        shell: pwsh
+        run: |
+          $lock = Get-Content opennav-x/upstream.lock.json | ConvertFrom-Json
+          if ($lock.approvedApplicationArchitecture -ne 'x86' -or $lock.requiredWindowsHostArchitecture -ne 'x64') {
+            throw 'This pipeline validates the approved x86 application ABI on Windows x64 only.'
+          }
+  publish-staging:
+    name: Record versioned Staging Release
+    needs: [contracts, boat-maintenance, native-restart-transport, native-restart-broker, native-restart-window, native-stock-welcome, linux-integration, windows-integration, application-abi, stock-prerequisite]
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: staging-candidate-${{ github.sha }}-attempt${{ github.run_attempt }}
+          path: staging-release
+      - name: Bind passed staging jobs to the exact download set
+        env:
+          STAGING_RESULTS: ${{ toJSON(needs) }}
+        run: python3 opennav-x/tools/staging-qualification.py --directory staging-release
+      - name: Verify and create draft Staging Release (public access remains closed)
+        env:
+          GH_TOKEN: ${{ secrets.SKAGER_RELEASE_TOKEN || github.token }}
+        run: python3 opennav-x/tools/github_release_delivery.py publish-staging --directory staging-release
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: staging-release-${{ github.sha }}
+          path: staging-release
+          if-no-files-found: error
+          retention-days: 90

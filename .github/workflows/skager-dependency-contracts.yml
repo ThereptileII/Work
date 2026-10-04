@@ -1,0 +1,38 @@
+name: SKAGER dependency reuse contracts
+on:
+  push:
+    branches: [skager-dependency-contracts]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  contracts:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2022]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Verify receipt, producer evidence, reuse and restaging
+        shell: python
+        run: |
+          import pathlib, subprocess, sys
+          out = pathlib.Path('opennav-x/evidence/local/dependency-contracts')
+          out.mkdir(parents=True, exist_ok=True)
+          failed = False
+          for name in ('receipt', 'evidence', 'reuse', 'stage'):
+              with (out / (name + '.log')).open('wb') as log:
+                  result = subprocess.run([sys.executable, 'opennav-x/tools/test-windows-dependency-' + name + '.py'],
+                                          stdout=log, stderr=subprocess.STDOUT, timeout=120)
+              failed |= result.returncode != 0
+              print(name, 'PASS' if result.returncode == 0 else 'FAIL', flush=True)
+          if failed:
+              raise SystemExit(1)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: dependency-contracts-${{ matrix.os }}-${{ github.sha }}
+          path: opennav-x/evidence/local/dependency-contracts
+          if-no-files-found: error

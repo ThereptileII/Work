@@ -1,0 +1,135 @@
+name: SKAGER Production promotion
+on:
+  workflow_dispatch:
+    inputs:
+      staging_release:
+        description: Exact skager-staging release tag to qualify (never latest)
+        type: string
+        required: true
+      confirmation:
+        description: Type PROMOTE followed by a space and the exact staging tag
+        type: string
+        required: true
+      instruction:
+        description: Reference to the user's explicit production promotion instruction
+        type: string
+        required: true
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: skager-production-${{ inputs.staging_release }}
+  cancel-in-progress: false
+env:
+  SKAGER_DESIGN_VALIDATION: 'false'
+  PYTHONUTF8: '1'
+jobs:
+  inspect:
+    name: Verify explicit instruction and frozen Staging release
+    runs-on: ubuntu-24.04
+    outputs:
+      commit: ${{ steps.source.outputs.commit }}
+      run_id: ${{ steps.source.outputs.run_id }}
+      support_artifact: ${{ steps.source.outputs.support_artifact }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Require the explicit named promotion before doing qualification work
+        env:
+          STAGING_TAG: ${{ inputs.staging_release }}
+          CONFIRMATION: ${{ inputs.confirmation }}
+          INSTRUCTION: ${{ inputs.instruction }}
+        shell: python
+        run: |
+          import os
+          import sys
+          sys.path.insert(0,'opennav-x/tools')
+          from github_release_delivery import check_tag
+          check_tag(os.environ['STAGING_TAG'])
+          assert os.environ['GITHUB_EVENT_NAME'] == 'workflow_dispatch'
+          assert os.environ['CONFIRMATION'] == 'PROMOTE ' + os.environ['STAGING_TAG']
+          assert 1 <= len(os.environ['INSTRUCTION'].strip()) <= 2000
+          assert all(ord(c) >= 32 for c in os.environ['INSTRUCTION'])
+      - name: Fetch exact verified draft Staging release
+        id: source
+        env:
+          GH_TOKEN: ${{ secrets.SKAGER_RELEASE_TOKEN || github.token }}
+          STAGING_TAG: ${{ inputs.staging_release }}
+        run: python3 opennav-x/tools/github_release_delivery.py fetch-staging --tag "$STAGING_TAG" --directory retained-release
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: retained-staging-${{ github.run_id }}-attempt${{ github.run_attempt }}
+          path: retained-release
+          compression-level: 0
+          if-no-files-found: error
+  qualify:
+    name: Qualify retained Windows package
+    needs: inspect
+    runs-on: windows-2022
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: retained-staging-${{ github.run_id }}-attempt${{ github.run_attempt }}
+          path: retained-release
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: ${{ needs.inspect.outputs.support_artifact }}
+          run-id: ${{ needs.inspect.outputs.run_id }}
+          github-token: ${{ github.token }}
+          path: retained-support
+      - name: Verify support archive and preserve the published package bytes
+        run: python opennav-x/tools/prepare-release-retest.py --release retained-release --support retained-support --output retained-retest
+      - name: Full installer lifecycle against the retained package (no build)
+        env:
+          OPENNAV_ARTIFACT_TOKEN: ${{ github.token }}
+          PRODUCT_COMMIT: ${{ needs.inspect.outputs.commit }}
+        run: python opennav-x/tools/smoke-installer-windows.py --mode production --retained-package retained-retest --expected-commit $env:PRODUCT_COMMIT
+      - name: Functional navigation and lifecycle against retained fixtures
+        run: python opennav-x/tools/qualify-retained-functional.py --release retained-release
+      - name: Verify extracted recovery product and real chart content
+        env:
+          PRODUCT_COMMIT: ${{ needs.inspect.outputs.commit }}
+        run: python opennav-x/tools/smoke-portable-production.py --package retained-release/SKAGER-Beta2-Portable-Recovery.zip --expected-commit $env:PRODUCT_COMMIT
+      - name: Bind readiness results to exact package and harness revisions
+        run: python opennav-x/tools/production-qualification.py --directory retained-release --evidence opennav-x/evidence/local --output production-qualified.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: production-qualified-${{ github.run_id }}-attempt${{ github.run_attempt }}
+          path: production-qualified.json
+          if-no-files-found: error
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: production-readiness-${{ github.run_id }}-attempt${{ github.run_attempt }}
+          path: opennav-x/evidence/local
+          if-no-files-found: error
+  promote:
+    name: Record explicitly requested Production Release
+    needs: [inspect, qualify]
+    environment: production
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: retained-staging-${{ github.run_id }}-attempt${{ github.run_attempt }}
+          path: retained-release
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: production-qualified-${{ github.run_id }}-attempt${{ github.run_attempt }}
+          path: qualification
+      - name: Retain the exact qualified bytes as a draft Production Release
+        env:
+          GH_TOKEN: ${{ secrets.SKAGER_RELEASE_TOKEN || github.token }}
+          STAGING_TAG: ${{ inputs.staging_release }}
+          CONFIRMATION: ${{ inputs.confirmation }}
+          INSTRUCTION: ${{ inputs.instruction }}
+        run: >-
+          python3 opennav-x/tools/github_release_delivery.py publish-production
+          --directory retained-release --staging-tag "$STAGING_TAG"
+          --confirmation "$CONFIRMATION" --instruction "$INSTRUCTION"
+          --report qualification/production-qualified.json --qualify-run-id "$GITHUB_RUN_ID"
