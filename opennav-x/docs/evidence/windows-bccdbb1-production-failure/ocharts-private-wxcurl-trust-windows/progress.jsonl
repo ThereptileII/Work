@@ -1,0 +1,11 @@
+{"utc":"2026-10-04T06:36:44.3114827Z","stage":"trust-import","name":"LocalMachine-Root","state":"before","detail":""}
+{"utc":"2026-10-04T06:36:44.5989333Z","stage":"process","name":"owned-ca-import","state":"before","detail":""}
+{"utc":"2026-10-04T06:36:44.9438083Z","stage":"process","name":"owned-ca-import","state":"after","detail":"exit=0"}
+{"utc":"2026-10-04T06:36:44.9762245Z","stage":"trust-import","name":"LocalMachine-Root","state":"after","detail":""}
+{"utc":"2026-10-04T06:36:44.9813332Z","stage":"server","name":"valid","state":"before","detail":""}
+{"utc":"2026-10-04T06:36:45.1754057Z","stage":"server","name":"valid","state":"after","detail":"port=51490"}
+{"utc":"2026-10-04T06:36:45.1865606Z","stage":"downloader-case","name":"valid","state":"before","detail":""}
+{"utc":"2026-10-04T06:36:45.1922942Z","stage":"process","name":"downloader-valid","state":"before","detail":""}
+{"utc":"2026-10-04T06:37:15.1899848Z","stage":"process","name":"downloader-valid","state":"timeout","detail":"Exceeded 30 seconds; terminating owned process tree"}
+{"utc":"2026-10-04T06:37:15.2150026Z","stage":"process","name":"downloader-valid","state":"failure","detail":"downloader-valid exceeded the 30-second native probe limit"}
+{"utc":"2026-10-04T06:37:15.2172069Z","stage":"downloader-case","name":"valid","state":"failure","detail":"downloader-valid exceeded the 30-second native probe limit"}

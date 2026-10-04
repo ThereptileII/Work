@@ -1,0 +1,2 @@
+# Preserve the original downloaded receipt bytes, including CRLF.
+qualified.json -text whitespace=cr-at-eol

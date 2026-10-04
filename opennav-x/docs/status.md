@@ -1,8 +1,73 @@
 # SKAGER status — 2026-10-04
 
-## Current boat-test candidate — bccdbb1 running, endurance skipped
+## Current boat-test candidate — native probe failure, endurance skipped
 
-The single replacement candidate is
+The single replacement is `d29da372af86c01cb2817f932891fd9408d882fe`
+(frozen local `615118f351abdea7b79a042db63e58fe0a635e0a`),
+[run 37184477492](https://github.com/ThereptileII/Work/actions/runs/37184477492).
+Its complete 6,781-entry mapped tree
+`06beb1e9a06af7d7ee30abf32556a08602a165b6` is independently reconstructed.
+The native production step has failed; the remaining independent display checks
+are retaining evidence. This candidate is ineligible for installation. The
+[original failure audit](evidence/windows-d29da37-production-failure/README.md)
+confirms 139 passing production cases and a successful owned-CA import, followed
+by Downloader probe exit `0xC0000005` after GET/HEAD return. The former timeout is
+gone, but no structured result or completed TLS case is produced. There is no
+eligible installer. A bounded probe-lifecycle investigation is underway before
+another application build; this artifact alone does not establish its cause.
+Its [completed contracts](evidence/contracts-d29da37/README.md) pass 94 Linux
+and 91 Windows cases, with zero failures/skips, plus ten additional executions
+of the existing restart test per platform. The independently verified
+[same-run restart receipt](evidence/restart-d29da37/README.md) binds the exact
+commit/run/attempt and all four required success values. These close package
+prerequisites, not integrated application, TLS, installer or boat acceptance.
+
+The [exact replacement Linux integration audit](evidence/linux-d29da37/README.md)
+now verifies the original 19,751,200-byte artifact and all 4,251 ZIP entries.
+Fixture and fixture-free builds each pass the same 147-case suite with zero
+failures/skips; the actual Downloader's 12 and core wxCurl's 13 cases also pass.
+Production is status-only with zero pilot output, and endurance is explicitly
+skipped. Native Windows production qualification failed as described above. Linux does not exercise the
+Windows console helper, native trust store or private wxCurl integration.
+
+The preceding `bccdbb1` run completed with a native production-gate failure;
+it produced no eligible installer. Its [original failure evidence](evidence/windows-bccdbb1-production-failure/README.md)
+contains 139 passing production cases followed by the bounded 30-second
+`downloader-valid` timeout. The earlier owned-certificate import passed in
+0.34 seconds. No navigation-application crash is established by this timeout.
+
+The [small native console proof](evidence/scrum211-native-console/README.md)
+then reproduced a visible wx logging message box in a standalone process.
+The shared explicit stderr logger/initialization passes file staging/rename;
+an actual assertion exits 86 with its diagnostic, rather than blocking for UI.
+Both Windows TLS probes now use that helper and flushed stage messages.
+Production Downloader, wxCurl and certificate-verification behavior are
+unchanged. The helper is included in the private adapter's source-input manifest.
+Focused local checks pass: 17 preparation cases and 12 actual Downloader cases.
+One combined replacement will run the existing functional/security/package
+gates. Endurance remains explicitly skipped. The native proof is not TLS or
+boat acceptance, and the previous full run will not be retried unchanged.
+
+The [retained native visual review](evidence/native-visual-bccdbb1/README.md)
+shows neutral structural paint, prototype font fallback and the smaller logo.
+Both chart phases actually used software rendering, and the private adapter
+was unavailable. Individual symbol recognition, actual private ENC, boat GPU,
+fonts and physical display remain required checks; complete fidelity is not
+claimed from these screenshots.
+
+The [fresh boat font inventory](evidence/scrum263-boat-fonts-20261004/README.md)
+confirms the prototype's preferred families are installed; actual native glyphs
+remain a visual gate. The [separately qualified review tools](evidence/scrum289-native-review-tools/README.md)
+pass 75 native fixed-action cases and are now staged as one verified 117-file
+bundle at `C:\XNav\scripts\review-47c0a789967c29a618db1f0249a42ade756bf460`.
+This adds the real prototype zoom and System/recovery paths without widening
+the action boundary. No application was installed or launched by that staging.
+The saved older launch attestations remain expired; fresh post-install
+commissioning is required for the replacement generation.
+
+### Preceding bccdbb1 candidate
+
+The preceding candidate is
 `bccdbb11cef827d3b63731fe1e874bc72bf47d2d` (local frozen
 `1a6733a1cbcc817aa0f13fa5acc41aac62a54146`),
 [run 37177738716](https://github.com/ThereptileII/Work/actions/runs/37177738716).
@@ -84,7 +149,8 @@ profile-restoration checks. Its exact owned-certificate helper also passes the
 [separate native proof](evidence/scrum288-native-trust-import/README.md#separate-candidate-package-helper),
 including refusal and exact trust cleanup. No candidate request exists yet:
 actual packaged PluginHandler TLS/peer and profile-preservation acceptance still
-requires the original eligible bccdbb1 artifact. This test-tool update changes no
+requires an original eligible replacement artifact. The failed bccdbb1 run is
+ineligible. This test-tool update changes no
 application input and caused no replacement application build.
 The [exact producer-label comparison](evidence/scrum211-candidate-prerequisite-label.json)
 also corrects one stale upload-step name after the endurance policy change;

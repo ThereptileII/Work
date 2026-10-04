@@ -7,9 +7,17 @@ or sends a vessel command. It is not an alternative to the existing limited-user
 launch audit, and it does not claim physical bus silence.
 
 The exact stock 5.12.4 executable, recovered working INI, interactive account and
-current installed generation must match. The fixed INI baseline is
+current installed generation must match. The original default INI baseline was
 `a2e416b7d35d6d2f82dcf6b3a97136a8fba5a133435c2047e07e09022426aef9` (21,380 bytes).
-The earlier zero-filled corrupt file is never an undo baseline.
+It is historical, not the current boat profile. New sessions must explicitly
+select the reviewed completed cold/adopted baseline with `-BaselineRecord` and
+`-ExpectedBaselineSha256` on both `Inventory` and `Prepare`; subsequent actions
+use the returned prepared record. See the
+[current baseline selection procedure](skager-boat-tool-composition.md#conditional-deployment-and-review-sequence)
+and the [qualified staged review tools](../evidence/scrum289-native-review-tools/README.md).
+The reader verifies the selected baseline's lineage and preserved bytes; a newer
+filename or matching current profile hash alone cannot approve it. The earlier
+zero-filled corrupt file is never an undo baseline.
 
 ## Source boundary
 

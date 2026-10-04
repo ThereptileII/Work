@@ -137,7 +137,7 @@ def main():
         report['executable'] = api.record(executable)
         report['runtime'] = api.stage_native_runtime(executable, wx,
             ('wxbase32u_vc14x.dll', 'wxmsw32u_core_vc14x.dll'))
-        for mode in ('original-log', 'fixed', 'fixed-assert'):
+        for mode in ('original-log', 'startup-log-ownership', 'fixed', 'fixed-lifecycle', 'fixed-assert'):
             record, stdout, stderr, destination = probe(executable, mode, evidence)
             report['cases'].append(record)
             if mode == 'original-log':
@@ -149,6 +149,26 @@ def main():
                         'probe_stage=before-original-log' not in stderr or
                         'probe_stage=after-original-log' in stderr or stdout):
                     raise ValueError('Original no-init log did not reproduce exact owned Message dialog')
+            elif mode == 'startup-log-ownership':
+                stages = ('probe_stage=before-wx-initialization',
+                          'probe_stage=startup-log-destroyed-by-wx',
+                          'probe_stage=after-wx-initialization',
+                          'probe_stage=former-owner-would-delete-again')
+                if (record['timedOut'] or record['exitCode'] != 87 or
+                        any(stderr.count(stage) != 1 for stage in stages) or
+                        [stderr.index(stage) for stage in stages] !=
+                        sorted(stderr.index(stage) for stage in stages)):
+                    raise ValueError('Native wx startup ownership deletion was not observed')
+            elif mode == 'fixed-lifecycle':
+                teardown = ('probe_stage=console-logger-delete-begin',
+                            'probe_stage=console-logger-delete-complete',
+                            'probe_stage=console-wx-cleanup-complete',
+                            'probe_stage=fixed-scope-destroyed')
+                if (record['timedOut'] or record['exitCode'] != 0 or
+                        [line for line in stderr.splitlines() if line.startswith('probe_stage=')] !=
+                        list(teardown) * 16 or
+                        stderr.count('native-fixed-lifecycle ') != 16):
+                    raise ValueError('Repeated actual helper lifecycle failed')
             elif mode == 'fixed':
                 if (record['timedOut'] or record['exitCode'] != 0 or
                         any(value not in stderr for value in ('native-fixed-message', 'native-fixed-warning',

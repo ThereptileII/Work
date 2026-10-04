@@ -14,14 +14,17 @@ class TrustProbeConsole {
  public:
   TrustProbeConsole()
       : previous_assert_(wxSetAssertHandler(&FailAssertion)),
+        initializer_(new wxInitializer),
         logger_(new wxLogStderr(stderr)),
-        previous_log_(wxLog::SetActiveTarget(logger_.get())),
-        initializer_(new wxInitializer) {}
+        previous_log_(wxLog::SetActiveTarget(logger_.get())) {}
   ~TrustProbeConsole() {
     wxLog::FlushActive();
     wxLog::SetActiveTarget(previous_log_);
+    Stage("console-logger-delete-begin");
     logger_.reset();
+    Stage("console-logger-delete-complete");
     initializer_.reset();
+    Stage("console-wx-cleanup-complete");
     wxSetAssertHandler(previous_assert_);
   }
   TrustProbeConsole(const TrustProbeConsole&) = delete;
@@ -44,8 +47,11 @@ class TrustProbeConsole {
     std::_Exit(86);
   }
   wxAssertHandler_t previous_assert_;
+  // wxEntryStart deletes the active startup log target on success. Establish
+  // wx first, then own/install the persistent target; otherwise this unique_ptr
+  // would retain a logger already deleted by wx initialization.
+  std::unique_ptr<wxInitializer> initializer_;
   std::unique_ptr<wxLogStderr> logger_;
   wxLog* previous_log_;
-  std::unique_ptr<wxInitializer> initializer_;
 };
 }  // namespace opennav

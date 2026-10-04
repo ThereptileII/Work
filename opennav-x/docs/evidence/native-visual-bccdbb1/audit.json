@@ -1,0 +1,593 @@
+{
+  "schema": 1,
+  "issues": [
+    "SCRUM-15",
+    "SCRUM-279",
+    "SCRUM-283",
+    "SCRUM-263",
+    "SCRUM-264",
+    "SCRUM-265"
+  ],
+  "identity": {
+    "local_commit": "1a6733a1cbcc817aa0f13fa5acc41aac62a54146",
+    "remote_commit": "bccdbb11cef827d3b63731fe1e874bc72bf47d2d",
+    "run_id": 37177738716,
+    "artifact_id": 11295783837,
+    "identity_origin": "Root-provided API identity; this audit independently verified the original archive bytes"
+  },
+  "archive": {
+    "sha256": "aac540c4cb27c3340b2284ea04708184be4ba5cf34106bbe344d8dc4802adb5a",
+    "bytes": 77133138,
+    "entries": 19697,
+    "all_crc_valid": true,
+    "safe_unique_nonlink_paths": true
+  },
+  "retained_original_members": {
+    "chart-software-01-loaded.png": {
+      "archive_path": "evidence/local/chart-software-01-loaded.png",
+      "sha256": "c667d0e1e365fae810d247661d8bd6642b672cdecb187578782921b8ba368c0b",
+      "bytes": 116900
+    },
+    "chart-software-05-legacy.png": {
+      "archive_path": "evidence/local/chart-software-05-legacy.png",
+      "sha256": "6f8b53583ba7618a63c9abcf7352fd46ecd3ce5ce7dd88a8c2903ed82e2d5cd1",
+      "bytes": 147515
+    },
+    "chart-names-production.png": {
+      "archive_path": "evidence/local/chart-names-production.png",
+      "sha256": "0c3a14c28934c631ea4b98b6a67ed4f6fc0d96f6777371b7e78ab89d94b42b66",
+      "bytes": 13341
+    },
+    "chart-lights-production.png": {
+      "archive_path": "evidence/local/chart-lights-production.png",
+      "sha256": "7b46210252d259665ad8240bb8c056f22fbd5bb1971b8618c469e0dec10f9e72",
+      "bytes": 14622
+    },
+    "skager-wordmark-production.png": {
+      "archive_path": "evidence/local/skager-wordmark-production.png",
+      "sha256": "1c12662472ce92a088f537851e6a86aef878ab4a34f1bdc53471b44af5fa1c47",
+      "bytes": 125503
+    },
+    "charts-results.json": {
+      "archive_path": "evidence/local/charts-results.json",
+      "sha256": "8dcdbf25520c6aab038dd5ef25eaea713014f54485026fb3b8d8149477041580",
+      "bytes": 58532
+    },
+    "chart-resource-manifest.json": {
+      "archive_path": "build/ocharts-chart-style/v1/manifest.json",
+      "sha256": "cecfd92eff1b2c9a9c2aa2e64e9a16968a84bdcdee14b77eba337a9277c07185",
+      "bytes": 117713
+    },
+    "ocharts-package-manifest.json": {
+      "archive_path": "build/ocharts-package/manifest.json",
+      "sha256": "c9062b5db8b5697fb3a85dfdc24be67fe1093b2f7424258e816c1867cd625766",
+      "bytes": 13201
+    }
+  },
+  "additional_viewed_original_members": {
+    "evidence/local/chart-software-02-zoom.png": {
+      "sha256": "a8fbeaf57fa12d9f5a550bea456c4f8a8d5015d23f82afe445db70c5e65ba041",
+      "bytes": 66093,
+      "retained_here": false
+    },
+    "evidence/local/chart-opengl-01-loaded.png": {
+      "sha256": "aa08c2362f7c7643dd9599933544f0b5ab3e2dd32a0e0f8a67a8c87042903121",
+      "bytes": 118559,
+      "retained_here": false
+    },
+    "build/ocharts-chart-style/v1/rastersymbols-day.png": {
+      "sha256": "74e332990cd723e562e1d499b230ec7240be995f395405a468a5f7674beb1377",
+      "bytes": 201601,
+      "retained_here": false
+    }
+  },
+  "resources": {
+    "build/xnav-windows/opennav-chart-style/v1": {
+      "manifest_sha256": "cecfd92eff1b2c9a9c2aa2e64e9a16968a84bdcdee14b77eba337a9277c07185",
+      "files": {
+        "chartsymbols.xml": {
+          "sha256": "4526efc49f463d70e7698e083c7f4557d1b442eb5491ff2a4fd65c197ac2068f",
+          "bytes": 2247431
+        },
+        "S52RAZDS.RLE": {
+          "sha256": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26",
+          "bytes": 1305627
+        },
+        "rastersymbols-day.png": {
+          "sha256": "74e332990cd723e562e1d499b230ec7240be995f395405a468a5f7674beb1377",
+          "bytes": 201601
+        },
+        "rastersymbols-dusk.png": {
+          "sha256": "04f525eff51b9ac2677a7d632196f2c40f801cde476825a8887551fd01f551ff",
+          "bytes": 175933
+        },
+        "rastersymbols-dark.png": {
+          "sha256": "687f9774edb190b2cc9d75a8dd4088e545eec0987f5c4d54fbc84a0783e158d1",
+          "bytes": 171187
+        }
+      }
+    },
+    "build/production-windows/opennav-chart-style/v1": {
+      "manifest_sha256": "cecfd92eff1b2c9a9c2aa2e64e9a16968a84bdcdee14b77eba337a9277c07185",
+      "files": {
+        "chartsymbols.xml": {
+          "sha256": "4526efc49f463d70e7698e083c7f4557d1b442eb5491ff2a4fd65c197ac2068f",
+          "bytes": 2247431
+        },
+        "S52RAZDS.RLE": {
+          "sha256": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26",
+          "bytes": 1305627
+        },
+        "rastersymbols-day.png": {
+          "sha256": "74e332990cd723e562e1d499b230ec7240be995f395405a468a5f7674beb1377",
+          "bytes": 201601
+        },
+        "rastersymbols-dusk.png": {
+          "sha256": "04f525eff51b9ac2677a7d632196f2c40f801cde476825a8887551fd01f551ff",
+          "bytes": 175933
+        },
+        "rastersymbols-dark.png": {
+          "sha256": "687f9774edb190b2cc9d75a8dd4088e545eec0987f5c4d54fbc84a0783e158d1",
+          "bytes": 171187
+        }
+      }
+    },
+    "build/ocharts-chart-style/v1": {
+      "manifest_sha256": "cecfd92eff1b2c9a9c2aa2e64e9a16968a84bdcdee14b77eba337a9277c07185",
+      "files": {
+        "chartsymbols.xml": {
+          "sha256": "4526efc49f463d70e7698e083c7f4557d1b442eb5491ff2a4fd65c197ac2068f",
+          "bytes": 2247431
+        },
+        "S52RAZDS.RLE": {
+          "sha256": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26",
+          "bytes": 1305627
+        },
+        "rastersymbols-day.png": {
+          "sha256": "74e332990cd723e562e1d499b230ec7240be995f395405a468a5f7674beb1377",
+          "bytes": 201601
+        },
+        "rastersymbols-dusk.png": {
+          "sha256": "04f525eff51b9ac2677a7d632196f2c40f801cde476825a8887551fd01f551ff",
+          "bytes": 175933
+        },
+        "rastersymbols-dark.png": {
+          "sha256": "687f9774edb190b2cc9d75a8dd4088e545eec0987f5c4d54fbc84a0783e158d1",
+          "bytes": 171187
+        }
+      }
+    }
+  },
+  "frozen_sources_sha256": {
+    "src/ui/Shell.cpp": "ed022b04450b0a24fec10cb3303551f35ab7e8dd01161918d18daa3ce322ad02",
+    "src/ui/SkagerWordmark.h": "c2fc3d1afdf88bfd2e884d541e7b3ad4463702cece09057e38f4d496deda9928",
+    "src/integration/ChartCaAllRound.h": "51c45116e0de22d6f824b1458e3fb8c1f8b70445d9f70c800df9a6eec40480e8",
+    "src/integration/ChartTextFace.h": "4c1b0c41e29ecdac9af7a6fd7446863714539777c1904fa598679ba3ec49b3ab",
+    "resources/chart-style/v1/definition.json": "72395a6b199e15c81780002de684f36ff8b17838639c44c401a842abfd89b0cd",
+    "tools/generate-xnav-chart-style.py": "6781520d7ef818046b93b59030eee8908d6c152ec00b06ddc64872ada14468a7",
+    "docs/design/prototype/src/chart-marker-art.js": "be2c7f44817c29d3714412c7974d3cf07e238f65c7131958b0cb8ff6fbd7816d",
+    "docs/design/prototype/src/seamarks.json": "78377f9622f82b6e2e16b6709fe62056863389ae5f6cc21bc6da9de3ed9cdfd9",
+    "docs/design/prototype/src/style.css": "f943f5c91e2b260067e97a80d47fc923b64c3bb715c73a58ce1d4a6bf7a1bb46",
+    "tests/chart_name_text_test.cpp": "01dea2264e7136f70d0684bdcf3136f33f2c18d67a5c6a4e5ffd6965afe3b629",
+    "tests/ui_font_resolution_test.cpp": "06b9708e947d188d6208bba822e8e4141d0512faf30a1dd3d2535a6d06421656"
+  },
+  "private_package_input_bindings": {
+    "tools/ocharts-adapter-source.lock.json": {
+      "frozen_blob_sha256": "0aaab29b5ad626f2215e5787b64ec7e3153f6a75223976370dbebb3967557353",
+      "native_sha256": "0aaab29b5ad626f2215e5787b64ec7e3153f6a75223976370dbebb3967557353",
+      "native_bytes": 30171,
+      "matching_line_endings": [
+        "LF"
+      ]
+    },
+    "cmake/ocharts-adapter/CMakeLists.txt": {
+      "frozen_blob_sha256": "f68ca2a54abc5d4b81c3f8be01ca356298027df0a14fcb0e7d675a26ea611c0e",
+      "native_sha256": "f68ca2a54abc5d4b81c3f8be01ca356298027df0a14fcb0e7d675a26ea611c0e",
+      "native_bytes": 509,
+      "matching_line_endings": [
+        "LF"
+      ]
+    },
+    "cmake/ocharts-adapter/PreparedPath.cmake": {
+      "frozen_blob_sha256": "d1627b157d95ffdeeebcad95260434c8137d4a59a31fb9298a99208f65895d4a",
+      "native_sha256": "d1627b157d95ffdeeebcad95260434c8137d4a59a31fb9298a99208f65895d4a",
+      "native_bytes": 284,
+      "matching_line_endings": [
+        "LF"
+      ]
+    },
+    "cmake/ocharts-adapter/Targets.cmake": {
+      "frozen_blob_sha256": "de944c6c0b99cbf94da8282264274b57ca69dd11202be166a030579cc35b3325",
+      "native_sha256": "de944c6c0b99cbf94da8282264274b57ca69dd11202be166a030579cc35b3325",
+      "native_bytes": 3328,
+      "matching_line_endings": [
+        "LF"
+      ]
+    },
+    "tools/prepare-ocharts-adapter.py": {
+      "frozen_blob_sha256": "0153c953a39f5f6927dd42ea78d6532d9d44bae0f68d30b10e4c468232fdfe39",
+      "native_sha256": "0153c953a39f5f6927dd42ea78d6532d9d44bae0f68d30b10e4c468232fdfe39",
+      "native_bytes": 17159,
+      "matching_line_endings": [
+        "LF"
+      ]
+    },
+    "tools/verify-ocharts-adapter-package.py": {
+      "frozen_blob_sha256": "85d4925907316b2f3ed48b0e70947d948b3345c4e6906a851fce2c2a0453bbf4",
+      "native_sha256": "85d4925907316b2f3ed48b0e70947d948b3345c4e6906a851fce2c2a0453bbf4",
+      "native_bytes": 12976,
+      "matching_line_endings": [
+        "LF"
+      ]
+    },
+    "tools/windows-wx.lock.json": {
+      "frozen_blob_sha256": "d8ceb7b75af2803eae6aca8adb2ea404b695dc573416d3f7899b80ecaf089d28",
+      "native_sha256": "d8ceb7b75af2803eae6aca8adb2ea404b695dc573416d3f7899b80ecaf089d28",
+      "native_bytes": 992,
+      "matching_line_endings": [
+        "LF"
+      ]
+    },
+    "tools/windows-curl.lock.json": {
+      "frozen_blob_sha256": "e3c2f9346cc3b793bca1813840e1d81148eaaba7a202421cf0e44dcf307ed888",
+      "native_sha256": "e3c2f9346cc3b793bca1813840e1d81148eaaba7a202421cf0e44dcf307ed888",
+      "native_bytes": 398,
+      "matching_line_endings": [
+        "LF"
+      ]
+    },
+    "tools/windows-zlib.lock.json": {
+      "frozen_blob_sha256": "9b1bc99c1ed47647744d523d65f4fb18f2a52d96aab24c85acf5c334c0dc0fb5",
+      "native_sha256": "9b1bc99c1ed47647744d523d65f4fb18f2a52d96aab24c85acf5c334c0dc0fb5",
+      "native_bytes": 394,
+      "matching_line_endings": [
+        "LF"
+      ]
+    },
+    "tools/windows-openssl.lock.json": {
+      "frozen_blob_sha256": "df596603e33a205e62e04c3418a2d6f157ea989d50936700d440c2678b40ae23",
+      "native_sha256": "df596603e33a205e62e04c3418a2d6f157ea989d50936700d440c2678b40ae23",
+      "native_bytes": 786,
+      "matching_line_endings": [
+        "LF"
+      ]
+    },
+    "tools/curl_package.py": {
+      "frozen_blob_sha256": "fa9f82a96840c277e2c95b510b66a8d8f02ab900cb1fd539c52880124963f90a",
+      "native_sha256": "fa9f82a96840c277e2c95b510b66a8d8f02ab900cb1fd539c52880124963f90a",
+      "native_bytes": 12564,
+      "matching_line_endings": [
+        "LF"
+      ]
+    },
+    "tools/openssl_package.py": {
+      "frozen_blob_sha256": "5bb8a1fd4f68ea80dbe4e1c49fb0d2f3fa20584d1bfa8748a0eac9fdeca64063",
+      "native_sha256": "5bb8a1fd4f68ea80dbe4e1c49fb0d2f3fa20584d1bfa8748a0eac9fdeca64063",
+      "native_bytes": 9803,
+      "matching_line_endings": [
+        "LF"
+      ]
+    },
+    "tools/test-downloader-trust-windows.ps1": {
+      "frozen_blob_sha256": "05141bd0d1c02f5485754e304396de5703c89d044470b50353427b59ba380720",
+      "native_sha256": "05141bd0d1c02f5485754e304396de5703c89d044470b50353427b59ba380720",
+      "native_bytes": 23877,
+      "matching_line_endings": [
+        "LF"
+      ]
+    },
+    "tests/downloader_trust/CMakeLists.txt": {
+      "frozen_blob_sha256": "cb8bcf65e98722c2d81310aa0aa34b58c4fb140a5b1de3dcca04bd1398710c72",
+      "native_sha256": "cb8bcf65e98722c2d81310aa0aa34b58c4fb140a5b1de3dcca04bd1398710c72",
+      "native_bytes": 1926,
+      "matching_line_endings": [
+        "LF"
+      ]
+    },
+    "tests/downloader_trust/InputPaths.cmake": {
+      "frozen_blob_sha256": "a910b1da3a9a3f51fa80358f032916acca91fb11cf7b993f26bfb56d93727f17",
+      "native_sha256": "a910b1da3a9a3f51fa80358f032916acca91fb11cf7b993f26bfb56d93727f17",
+      "native_bytes": 589,
+      "matching_line_endings": [
+        "LF"
+      ]
+    },
+    "tests/downloader_trust/Targets.cmake": {
+      "frozen_blob_sha256": "5f8f4fb7be86cf3cfd1dd6293819d2659327cca1016a440365b0641a27897f4e",
+      "native_sha256": "5f8f4fb7be86cf3cfd1dd6293819d2659327cca1016a440365b0641a27897f4e",
+      "native_bytes": 1558,
+      "matching_line_endings": [
+        "LF"
+      ]
+    },
+    "tools/wxcurl-trust-probe.cpp": {
+      "frozen_blob_sha256": "06807b802164ca71f90384cd322fcf3d64fa4717e87ee44af80ba17d3f3d5463",
+      "native_sha256": "06807b802164ca71f90384cd322fcf3d64fa4717e87ee44af80ba17d3f3d5463",
+      "native_bytes": 2031,
+      "matching_line_endings": [
+        "LF"
+      ]
+    },
+    "tools/downloader-trust-probe.cpp": {
+      "frozen_blob_sha256": "9b72de42e87940e7a57eefce4a82de1ce7b15b64f22e1605ba6db5e73c42ff3d",
+      "native_sha256": "9b72de42e87940e7a57eefce4a82de1ce7b15b64f22e1605ba6db5e73c42ff3d",
+      "native_bytes": 1469,
+      "matching_line_endings": [
+        "LF"
+      ]
+    },
+    "tools/downloader-trust-server.py": {
+      "frozen_blob_sha256": "1b3b2134be4d89cd8ceee9e66eb4e318b5b4b55545543f5fdaf6c12b861fd3ff",
+      "native_sha256": "1b3b2134be4d89cd8ceee9e66eb4e318b5b4b55545543f5fdaf6c12b861fd3ff",
+      "native_bytes": 2522,
+      "matching_line_endings": [
+        "LF"
+      ]
+    },
+    "patches/ocharts-skager-presentation.patch": {
+      "frozen_blob_sha256": "82222245b55526b00db330a84ff678a4cc1320e18093c466779db431c8fd9bf6",
+      "native_sha256": "82222245b55526b00db330a84ff678a4cc1320e18093c466779db431c8fd9bf6",
+      "native_bytes": 57698,
+      "matching_line_endings": [
+        "LF"
+      ]
+    },
+    "patches/ocharts-wxcurl-trust.patch": {
+      "frozen_blob_sha256": "e68b0a767f6a27d0136fa7e6b82ca96eac69f934f5fe54a13b314750bbb3d567",
+      "native_sha256": "e68b0a767f6a27d0136fa7e6b82ca96eac69f934f5fe54a13b314750bbb3d567",
+      "native_bytes": 3458,
+      "matching_line_endings": [
+        "LF"
+      ]
+    },
+    "patches/ocharts-private-hazard-association.patch": {
+      "frozen_blob_sha256": "c7d007de282e4f0c955b41c520ad31ed597ffafd03ef08d57472d13fd8f4d4ff",
+      "native_sha256": "c7d007de282e4f0c955b41c520ad31ed597ffafd03ef08d57472d13fd8f4d4ff",
+      "native_bytes": 3299,
+      "matching_line_endings": [
+        "LF"
+      ]
+    },
+    "src/plugin-adapters/ChartPresentationBindingV1.h": {
+      "frozen_blob_sha256": "72a9e19e8d457cdfc543cd0ec6571bf6b6eb30a4a6f4c547f0f047c631e8967f",
+      "native_sha256": "72a9e19e8d457cdfc543cd0ec6571bf6b6eb30a4a6f4c547f0f047c631e8967f",
+      "native_bytes": 3096,
+      "matching_line_endings": [
+        "LF"
+      ]
+    },
+    "src/plugin-adapters/ocharts/ChartPresentationAdapter.h": {
+      "frozen_blob_sha256": "7fcc05c31c82fa29818fe4ea90c352c1f96874b65b2aff7bcb41ad9f97a87ae2",
+      "native_sha256": "7fcc05c31c82fa29818fe4ea90c352c1f96874b65b2aff7bcb41ad9f97a87ae2",
+      "native_bytes": 354,
+      "matching_line_endings": [
+        "LF"
+      ]
+    },
+    "src/plugin-adapters/ocharts/ChartPresentationAdapter.cpp": {
+      "frozen_blob_sha256": "c7f8077b7b445b63dca339c749790f8c1e6ed573e632bd8ed135b882f6285831",
+      "native_sha256": "c7f8077b7b445b63dca339c749790f8c1e6ed573e632bd8ed135b882f6285831",
+      "native_bytes": 6148,
+      "matching_line_endings": [
+        "LF"
+      ]
+    },
+    "src/plugin-adapters/ocharts/BindingState.h": {
+      "frozen_blob_sha256": "82e4f94910c7af63772d90d23771f5328d4c0543b94390d35be8a2d04cf07e5c",
+      "native_sha256": "82e4f94910c7af63772d90d23771f5328d4c0543b94390d35be8a2d04cf07e5c",
+      "native_bytes": 3994,
+      "matching_line_endings": [
+        "LF"
+      ]
+    },
+    "src/plugin-adapters/ocharts/PointStyleObservation.h": {
+      "frozen_blob_sha256": "9174f3077c8007263414994b7067fe1fcabacf4f9aed001d017df6de5c2b0ddf",
+      "native_sha256": "9174f3077c8007263414994b7067fe1fcabacf4f9aed001d017df6de5c2b0ddf",
+      "native_bytes": 1496,
+      "matching_line_endings": [
+        "LF"
+      ]
+    },
+    "src/plugin-adapters/ocharts/OwnedPresentationValidation.h": {
+      "frozen_blob_sha256": "002d63e03dac37ebd4a4b4f2b4510706b3777635f04dfc9d84ad0b893021888f",
+      "native_sha256": "002d63e03dac37ebd4a4b4f2b4510706b3777635f04dfc9d84ad0b893021888f",
+      "native_bytes": 1674,
+      "matching_line_endings": [
+        "LF"
+      ]
+    },
+    "src/plugin-adapters/ocharts/ResourceVerification.h": {
+      "frozen_blob_sha256": "7b6b6e6b430cbc9e0a275653261ba056face4c04b1d9c0fd9f167fb8e5be587c",
+      "native_sha256": "7b6b6e6b430cbc9e0a275653261ba056face4c04b1d9c0fd9f167fb8e5be587c",
+      "native_bytes": 1363,
+      "matching_line_endings": [
+        "LF"
+      ]
+    },
+    "src/integration/ChartNameTypography.h": {
+      "frozen_blob_sha256": "23688fca7f9ed456e7458fe1228e0bf9908660a953732cb6e6749c5838e1f4d9",
+      "native_sha256": "23688fca7f9ed456e7458fe1228e0bf9908660a953732cb6e6749c5838e1f4d9",
+      "native_bytes": 943,
+      "matching_line_endings": [
+        "LF"
+      ]
+    },
+    "src/integration/ChartNameText.h": {
+      "frozen_blob_sha256": "da096196bd661f5e5bb47fdab0946a8987f707cf961f5eb9197090355a140635",
+      "native_sha256": "da096196bd661f5e5bb47fdab0946a8987f707cf961f5eb9197090355a140635",
+      "native_bytes": 2307,
+      "matching_line_endings": [
+        "LF"
+      ]
+    },
+    "src/integration/ChartTextFace.h": {
+      "frozen_blob_sha256": "4c1b0c41e29ecdac9af7a6fd7446863714539777c1904fa598679ba3ec49b3ab",
+      "native_sha256": "4c1b0c41e29ecdac9af7a6fd7446863714539777c1904fa598679ba3ec49b3ab",
+      "native_bytes": 802,
+      "matching_line_endings": [
+        "LF"
+      ]
+    },
+    "src/integration/ChartFishingPattern.h": {
+      "frozen_blob_sha256": "ea50046c24edd0c5ee4723c6a40af4802155fc14f0e493b1fd4b11ec29848630",
+      "native_sha256": "ea50046c24edd0c5ee4723c6a40af4802155fc14f0e493b1fd4b11ec29848630",
+      "native_bytes": 3848,
+      "matching_line_endings": [
+        "LF"
+      ]
+    },
+    "src/integration/ChartNameSpacing.h": {
+      "frozen_blob_sha256": "2f37a592dd4c311a371441cc42560a68286d65cb442a061a739dbcce9e5cd6f6",
+      "native_sha256": "2f37a592dd4c311a371441cc42560a68286d65cb442a061a739dbcce9e5cd6f6",
+      "native_bytes": 1241,
+      "matching_line_endings": [
+        "LF"
+      ]
+    },
+    "src/integration/ChartNameAlphaWindows.cpp": {
+      "frozen_blob_sha256": "01d26462e5b2cd9b54cfc9f138c7b4f2f2b0842c07c535906e0f871105d826f6",
+      "native_sha256": "01d26462e5b2cd9b54cfc9f138c7b4f2f2b0842c07c535906e0f871105d826f6",
+      "native_bytes": 925,
+      "matching_line_endings": [
+        "LF"
+      ]
+    },
+    "src/integration/ChartLightLabel.h": {
+      "frozen_blob_sha256": "64d1fa48773369339402acd12d0be91847a5c69e145b8a072268c752a579e9ee",
+      "native_sha256": "64d1fa48773369339402acd12d0be91847a5c69e145b8a072268c752a579e9ee",
+      "native_bytes": 4969,
+      "matching_line_endings": [
+        "LF"
+      ]
+    },
+    "src/integration/ChartLightSymbol.h": {
+      "frozen_blob_sha256": "c3d52a12d12562f601eae930f59ea4ebefa62925975f51ec05c875f0687a5b04",
+      "native_sha256": "c3d52a12d12562f601eae930f59ea4ebefa62925975f51ec05c875f0687a5b04",
+      "native_bytes": 1011,
+      "matching_line_endings": [
+        "LF"
+      ]
+    },
+    "src/integration/ChartCaLightPoint.h": {
+      "frozen_blob_sha256": "9bd5b3a03422d5b920a9a978e6ee49f4bc6db94fbd5f3b59621f7841d9a05e0d",
+      "native_sha256": "9bd5b3a03422d5b920a9a978e6ee49f4bc6db94fbd5f3b59621f7841d9a05e0d",
+      "native_bytes": 11549,
+      "matching_line_endings": [
+        "LF"
+      ]
+    },
+    "src/integration/ChartCaFan.h": {
+      "frozen_blob_sha256": "8b556366c360e6ebe60fb17d8e27f8898cb1e00bb8d18f11f730086343728193",
+      "native_sha256": "8b556366c360e6ebe60fb17d8e27f8898cb1e00bb8d18f11f730086343728193",
+      "native_bytes": 17598,
+      "matching_line_endings": [
+        "LF"
+      ]
+    },
+    "src/integration/ChartCaAllRound.h": {
+      "frozen_blob_sha256": "51c45116e0de22d6f824b1458e3fb8c1f8b70445d9f70c800df9a6eec40480e8",
+      "native_sha256": "51c45116e0de22d6f824b1458e3fb8c1f8b70445d9f70c800df9a6eec40480e8",
+      "native_bytes": 2958,
+      "matching_line_endings": [
+        "LF"
+      ]
+    },
+    "src/integration/ChartCableWave.h": {
+      "frozen_blob_sha256": "6f61208b428e9bd99a04157af887f3735d055df89116885de79a4dac2d0539bf",
+      "native_sha256": "6f61208b428e9bd99a04157af887f3735d055df89116885de79a4dac2d0539bf",
+      "native_bytes": 4917,
+      "matching_line_endings": [
+        "LF"
+      ]
+    },
+    "src/integration/ChartSpecialBuoySymbol.h": {
+      "frozen_blob_sha256": "24e1af5d565b522d00f5d8103c14b5bcadfb0075a3c4fcebcf2e832e22e8c8c4",
+      "native_sha256": "24e1af5d565b522d00f5d8103c14b5bcadfb0075a3c4fcebcf2e832e22e8c8c4",
+      "native_bytes": 2449,
+      "matching_line_endings": [
+        "LF"
+      ]
+    },
+    "src/integration/ChartYellowBuoySymbol.h": {
+      "frozen_blob_sha256": "feb82319b1b2d372d2b512ff9a7775bca7b752bcf09e64919482152a6405549d",
+      "native_sha256": "feb82319b1b2d372d2b512ff9a7775bca7b752bcf09e64919482152a6405549d",
+      "native_bytes": 4615,
+      "matching_line_endings": [
+        "LF"
+      ]
+    },
+    "src/integration/ChartSoundingFont.h": {
+      "frozen_blob_sha256": "02d27cb56d7af4f292640e59ec0326ba7b6555406956e6419a367b5bab124021",
+      "native_sha256": "02d27cb56d7af4f292640e59ec0326ba7b6555406956e6419a367b5bab124021",
+      "native_bytes": 1134,
+      "matching_line_endings": [
+        "LF"
+      ]
+    },
+    "src/integration/ChartCanvasInk.h": {
+      "frozen_blob_sha256": "cc1a4d94131f932f2bbd40d330d9003d0086dfc1237449b4215b509377c39f66",
+      "native_sha256": "cc1a4d94131f932f2bbd40d330d9003d0086dfc1237449b4215b509377c39f66",
+      "native_bytes": 638,
+      "matching_line_endings": [
+        "LF"
+      ]
+    },
+    "src/ui/Theme.h": {
+      "frozen_blob_sha256": "b28adb1f519ec5a1f9b7e2bfab6ec2ab1c7f06656bd129316e9e453ef1ec0776",
+      "native_sha256": "b28adb1f519ec5a1f9b7e2bfab6ec2ab1c7f06656bd129316e9e453ef1ec0776",
+      "native_bytes": 4009,
+      "matching_line_endings": [
+        "LF"
+      ]
+    }
+  },
+  "source_report_hashes": {
+    "evidence/local/windows-production-Win32.log": "9a25cf37f54e0440c85d8be7a568e2d4d3de777ff7e705e918b2fc5a823046c0",
+    "evidence/local/dpi-results.json": "dbeb502ccfd9b8c00f2fc81b1ad07d6f3a51cb22f656c585fbd882bed261fd79"
+  },
+  "dpi_observations": [
+    {
+      "percent": 100,
+      "GetDpiForWindow": 96,
+      "wxDpi": 96
+    },
+    {
+      "percent": 125,
+      "GetDpiForWindow": 120,
+      "wxDpi": 120
+    },
+    {
+      "percent": 150,
+      "GetDpiForWindow": 144,
+      "wxDpi": 144
+    }
+  ],
+  "renderer_observations": [
+    {
+      "requested": "software",
+      "actual_opengl_enabled": false,
+      "private_available": false,
+      "presentation_status": "SKAGER presentation v1 / pinned symbols; o-charts: no SKAGER adapter loaded",
+      "gl_status": null
+    },
+    {
+      "requested": "opengl",
+      "actual_opengl_enabled": false,
+      "private_available": false,
+      "presentation_status": "SKAGER presentation v1 / pinned symbols; o-charts: no SKAGER adapter loaded",
+      "gl_status": "host rejected OpenGL; verified upstream software fallback; hardware GL gate remains open"
+    }
+  ],
+  "qualification": "Scoped retained-image and source/resource audit only; no application run, native GPU/private-chart/boat/package acceptance.",
+  "viewed_prototype_reference": {
+    "path": "docs/design/prototype/reference/windows/navigation-day.png",
+    "sha256": "02c4d8f6bb0536fdeeb9ff0a3c58d707660139565dcebc891bca326326897089",
+    "scope": "Unchanged supplied prototype Windows reference; illustrative chart and mock data"
+  },
+  "retained_log_excerpt": {
+    "path": "production-observations.txt",
+    "sha256": "3d4b2caede08adb9c9cf26bb8fae07b19c1d9d4bd4d471e96096cadd61a865ab",
+    "source": "evidence/local/windows-production-Win32.log",
+    "scope": "Exact original lines with added line-range headings"
+  }
+}

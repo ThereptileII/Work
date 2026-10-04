@@ -1,0 +1,348 @@
+{
+  "schema": 1,
+  "kind": "skager-ocharts-adapter",
+  "bindingVersion": 1,
+  "source": {
+    "repository": "bdbcat/o-charts_pi",
+    "commit": "c98bf5f0654a6aee52cd9a6b9fabc0d1cf8047e8",
+    "gitlinkCommit": "38762f4e7b8faf39133cc40efc99b12b5200f04b",
+    "manifestSha256": "0aaab29b5ad626f2215e5787b64ec7e3153f6a75223976370dbebb3967557353"
+  },
+  "inputs": {
+    "tools/ocharts-adapter-source.lock.json": {
+      "sha256": "0aaab29b5ad626f2215e5787b64ec7e3153f6a75223976370dbebb3967557353",
+      "bytes": 30171
+    },
+    "cmake/ocharts-adapter/CMakeLists.txt": {
+      "sha256": "f68ca2a54abc5d4b81c3f8be01ca356298027df0a14fcb0e7d675a26ea611c0e",
+      "bytes": 509
+    },
+    "cmake/ocharts-adapter/PreparedPath.cmake": {
+      "sha256": "d1627b157d95ffdeeebcad95260434c8137d4a59a31fb9298a99208f65895d4a",
+      "bytes": 284
+    },
+    "cmake/ocharts-adapter/Targets.cmake": {
+      "sha256": "de944c6c0b99cbf94da8282264274b57ca69dd11202be166a030579cc35b3325",
+      "bytes": 3328
+    },
+    "tools/prepare-ocharts-adapter.py": {
+      "sha256": "0153c953a39f5f6927dd42ea78d6532d9d44bae0f68d30b10e4c468232fdfe39",
+      "bytes": 17159
+    },
+    "tools/verify-ocharts-adapter-package.py": {
+      "sha256": "85d4925907316b2f3ed48b0e70947d948b3345c4e6906a851fce2c2a0453bbf4",
+      "bytes": 12976
+    },
+    "tools/windows-wx.lock.json": {
+      "sha256": "d8ceb7b75af2803eae6aca8adb2ea404b695dc573416d3f7899b80ecaf089d28",
+      "bytes": 992
+    },
+    "tools/windows-curl.lock.json": {
+      "sha256": "e3c2f9346cc3b793bca1813840e1d81148eaaba7a202421cf0e44dcf307ed888",
+      "bytes": 398
+    },
+    "tools/windows-zlib.lock.json": {
+      "sha256": "9b1bc99c1ed47647744d523d65f4fb18f2a52d96aab24c85acf5c334c0dc0fb5",
+      "bytes": 394
+    },
+    "tools/windows-openssl.lock.json": {
+      "sha256": "df596603e33a205e62e04c3418a2d6f157ea989d50936700d440c2678b40ae23",
+      "bytes": 786
+    },
+    "tools/curl_package.py": {
+      "sha256": "fa9f82a96840c277e2c95b510b66a8d8f02ab900cb1fd539c52880124963f90a",
+      "bytes": 12564
+    },
+    "tools/openssl_package.py": {
+      "sha256": "5bb8a1fd4f68ea80dbe4e1c49fb0d2f3fa20584d1bfa8748a0eac9fdeca64063",
+      "bytes": 9803
+    },
+    "tools/test-downloader-trust-windows.ps1": {
+      "sha256": "05141bd0d1c02f5485754e304396de5703c89d044470b50353427b59ba380720",
+      "bytes": 23877
+    },
+    "tests/downloader_trust/CMakeLists.txt": {
+      "sha256": "cb8bcf65e98722c2d81310aa0aa34b58c4fb140a5b1de3dcca04bd1398710c72",
+      "bytes": 1926
+    },
+    "tests/downloader_trust/InputPaths.cmake": {
+      "sha256": "a910b1da3a9a3f51fa80358f032916acca91fb11cf7b993f26bfb56d93727f17",
+      "bytes": 589
+    },
+    "tests/downloader_trust/Targets.cmake": {
+      "sha256": "5f8f4fb7be86cf3cfd1dd6293819d2659327cca1016a440365b0641a27897f4e",
+      "bytes": 1558
+    },
+    "tools/wxcurl-trust-probe.cpp": {
+      "sha256": "06807b802164ca71f90384cd322fcf3d64fa4717e87ee44af80ba17d3f3d5463",
+      "bytes": 2031
+    },
+    "tools/downloader-trust-probe.cpp": {
+      "sha256": "9b72de42e87940e7a57eefce4a82de1ce7b15b64f22e1605ba6db5e73c42ff3d",
+      "bytes": 1469
+    },
+    "tools/downloader-trust-server.py": {
+      "sha256": "1b3b2134be4d89cd8ceee9e66eb4e318b5b4b55545543f5fdaf6c12b861fd3ff",
+      "bytes": 2522
+    },
+    "patches/ocharts-skager-presentation.patch": {
+      "sha256": "82222245b55526b00db330a84ff678a4cc1320e18093c466779db431c8fd9bf6",
+      "bytes": 57698
+    },
+    "patches/ocharts-wxcurl-trust.patch": {
+      "sha256": "e68b0a767f6a27d0136fa7e6b82ca96eac69f934f5fe54a13b314750bbb3d567",
+      "bytes": 3458
+    },
+    "patches/ocharts-private-hazard-association.patch": {
+      "sha256": "c7d007de282e4f0c955b41c520ad31ed597ffafd03ef08d57472d13fd8f4d4ff",
+      "bytes": 3299
+    },
+    "src/plugin-adapters/ChartPresentationBindingV1.h": {
+      "sha256": "72a9e19e8d457cdfc543cd0ec6571bf6b6eb30a4a6f4c547f0f047c631e8967f",
+      "bytes": 3096
+    },
+    "src/plugin-adapters/ocharts/ChartPresentationAdapter.h": {
+      "sha256": "7fcc05c31c82fa29818fe4ea90c352c1f96874b65b2aff7bcb41ad9f97a87ae2",
+      "bytes": 354
+    },
+    "src/plugin-adapters/ocharts/ChartPresentationAdapter.cpp": {
+      "sha256": "c7f8077b7b445b63dca339c749790f8c1e6ed573e632bd8ed135b882f6285831",
+      "bytes": 6148
+    },
+    "src/plugin-adapters/ocharts/BindingState.h": {
+      "sha256": "82e4f94910c7af63772d90d23771f5328d4c0543b94390d35be8a2d04cf07e5c",
+      "bytes": 3994
+    },
+    "src/plugin-adapters/ocharts/PointStyleObservation.h": {
+      "sha256": "9174f3077c8007263414994b7067fe1fcabacf4f9aed001d017df6de5c2b0ddf",
+      "bytes": 1496
+    },
+    "src/plugin-adapters/ocharts/OwnedPresentationValidation.h": {
+      "sha256": "002d63e03dac37ebd4a4b4f2b4510706b3777635f04dfc9d84ad0b893021888f",
+      "bytes": 1674
+    },
+    "src/plugin-adapters/ocharts/ResourceVerification.h": {
+      "sha256": "7b6b6e6b430cbc9e0a275653261ba056face4c04b1d9c0fd9f167fb8e5be587c",
+      "bytes": 1363
+    },
+    "src/integration/ChartNameTypography.h": {
+      "sha256": "23688fca7f9ed456e7458fe1228e0bf9908660a953732cb6e6749c5838e1f4d9",
+      "bytes": 943
+    },
+    "src/integration/ChartNameText.h": {
+      "sha256": "da096196bd661f5e5bb47fdab0946a8987f707cf961f5eb9197090355a140635",
+      "bytes": 2307
+    },
+    "src/integration/ChartTextFace.h": {
+      "sha256": "4c1b0c41e29ecdac9af7a6fd7446863714539777c1904fa598679ba3ec49b3ab",
+      "bytes": 802
+    },
+    "src/integration/ChartFishingPattern.h": {
+      "sha256": "ea50046c24edd0c5ee4723c6a40af4802155fc14f0e493b1fd4b11ec29848630",
+      "bytes": 3848
+    },
+    "src/integration/ChartNameSpacing.h": {
+      "sha256": "2f37a592dd4c311a371441cc42560a68286d65cb442a061a739dbcce9e5cd6f6",
+      "bytes": 1241
+    },
+    "src/integration/ChartNameAlphaWindows.cpp": {
+      "sha256": "01d26462e5b2cd9b54cfc9f138c7b4f2f2b0842c07c535906e0f871105d826f6",
+      "bytes": 925
+    },
+    "src/integration/ChartLightLabel.h": {
+      "sha256": "64d1fa48773369339402acd12d0be91847a5c69e145b8a072268c752a579e9ee",
+      "bytes": 4969
+    },
+    "src/integration/ChartLightSymbol.h": {
+      "sha256": "c3d52a12d12562f601eae930f59ea4ebefa62925975f51ec05c875f0687a5b04",
+      "bytes": 1011
+    },
+    "src/integration/ChartCaLightPoint.h": {
+      "sha256": "9bd5b3a03422d5b920a9a978e6ee49f4bc6db94fbd5f3b59621f7841d9a05e0d",
+      "bytes": 11549
+    },
+    "src/integration/ChartCaFan.h": {
+      "sha256": "8b556366c360e6ebe60fb17d8e27f8898cb1e00bb8d18f11f730086343728193",
+      "bytes": 17598
+    },
+    "src/integration/ChartCaAllRound.h": {
+      "sha256": "51c45116e0de22d6f824b1458e3fb8c1f8b70445d9f70c800df9a6eec40480e8",
+      "bytes": 2958
+    },
+    "src/integration/ChartCableWave.h": {
+      "sha256": "6f61208b428e9bd99a04157af887f3735d055df89116885de79a4dac2d0539bf",
+      "bytes": 4917
+    },
+    "src/integration/ChartSpecialBuoySymbol.h": {
+      "sha256": "24e1af5d565b522d00f5d8103c14b5bcadfb0075a3c4fcebcf2e832e22e8c8c4",
+      "bytes": 2449
+    },
+    "src/integration/ChartYellowBuoySymbol.h": {
+      "sha256": "feb82319b1b2d372d2b512ff9a7775bca7b752bcf09e64919482152a6405549d",
+      "bytes": 4615
+    },
+    "src/integration/ChartSoundingFont.h": {
+      "sha256": "02d27cb56d7af4f292640e59ec0326ba7b6555406956e6419a367b5bab124021",
+      "bytes": 1134
+    },
+    "src/integration/ChartCanvasInk.h": {
+      "sha256": "cc1a4d94131f932f2bbd40d330d9003d0086dfc1237449b4215b509377c39f66",
+      "bytes": 638
+    },
+    "src/ui/Theme.h": {
+      "sha256": "b28adb1f519ec5a1f9b7e2bfab6ec2ab1c7f06656bd129316e9e453ef1ec0776",
+      "bytes": 4009
+    }
+  },
+  "chartResourceManifest": {
+    "sha256": "cecfd92eff1b2c9a9c2aa2e64e9a16968a84bdcdee14b77eba337a9277c07185",
+    "bytes": 117713
+  },
+  "chartResourceHeader": {
+    "sha256": "88c476674faecb65fe2d48e2a7c6735b8771a1dd42c46b46c4408cc9f120fcfc",
+    "bytes": 934
+  },
+  "dll": {
+    "sha256": "1585a71948ada336b9af1e8f11b8d8b0638ab3c573f888bb8c4e67e5b4dacd8b",
+    "bytes": 1367552,
+    "name": "skager-ocharts-adapter.dll",
+    "machine": "I386"
+  },
+  "imports": [
+    "advapi32.dll",
+    "api-ms-win-crt-convert-l1-1-0.dll",
+    "api-ms-win-crt-heap-l1-1-0.dll",
+    "api-ms-win-crt-math-l1-1-0.dll",
+    "api-ms-win-crt-runtime-l1-1-0.dll",
+    "api-ms-win-crt-stdio-l1-1-0.dll",
+    "api-ms-win-crt-string-l1-1-0.dll",
+    "api-ms-win-crt-time-l1-1-0.dll",
+    "api-ms-win-crt-utility-l1-1-0.dll",
+    "gdiplus.dll",
+    "glew32.dll",
+    "glu32.dll",
+    "kernel32.dll",
+    "libcurl.dll",
+    "msvcp140.dll",
+    "opencpn.exe",
+    "opengl32.dll",
+    "shell32.dll",
+    "vcruntime140.dll",
+    "wxbase32u_net_vc14x.dll",
+    "wxbase32u_vc14x.dll",
+    "wxmsw32u_core_vc14x.dll",
+    "wxmsw32u_html_vc14x.dll",
+    "zlib1.dll"
+  ],
+  "exports": [
+    "create_pi",
+    "destroy_pi",
+    "skager_bind_chart_presentation_v1",
+    "skager_chart_point_style_v1",
+    "skager_chart_presentation_status_v1"
+  ],
+  "dependencies": {
+    "curl": {
+      "version": "8.22.0",
+      "source": {
+        "url": "https://curl.se/download/curl-8.22.0.tar.xz",
+        "archive": "curl-8.22.0.tar.xz",
+        "sha256": "f7ef3ae8a22e521f289803fe93543eb64c329b58aa73a9e224dfd915a2a5f4f7",
+        "bytes": 2953092,
+        "signingPrimaryFingerprint": "27EDEAF22F3ABCEB50DB9A125CC908FDB71E12C2"
+      },
+      "outputs": {
+        "bin/libcurl.dll": {
+          "sha256": "3be858c41c9b1fb6f83baa82d2cdba5ad121ebdb958936f8459388ce119c65aa",
+          "bytes": 638464
+        },
+        "lib/libcurl.lib": {
+          "sha256": "2263c0caca0a57f82f1c2539d1b15b8bd310a250932dba87d04408083711dd40",
+          "bytes": 22760
+        },
+        "include/curl/curl.h": {
+          "sha256": "9ec2e9040d8d95545a4c331461c54748651edc3852a6ceca0672f858103e0528",
+          "bytes": 136595
+        },
+        "include/curl/curlver.h": {
+          "sha256": "c4ed114da4eca953a328fa2efa8128308fc32879f15b58c245b2592f4bfaf9dc",
+          "bytes": 3052
+        },
+        "include/curl/easy.h": {
+          "sha256": "f101da02dd373151ea7b00082cb62c9d6e482361ab26b6d430ee96aab1b71565",
+          "bytes": 4000
+        },
+        "include/curl/header.h": {
+          "sha256": "e92525a91bb1119034dd45dd42d255ff9b6a49d964ca7105964e0107671b3395",
+          "bytes": 2922
+        },
+        "include/curl/mprintf.h": {
+          "sha256": "a79657fa15db71e732bcb58bc4645ab65bdb3222767f34be5bab56aa0d4f4cc9",
+          "bytes": 3078
+        },
+        "include/curl/multi.h": {
+          "sha256": "0466a7c91067cb11c98f37e16103b992b66e84221467c2a70ef951877502f77a",
+          "bytes": 21154
+        },
+        "include/curl/options.h": {
+          "sha256": "32fe87f843367d25a9db91a47386652402f08c9668617b4c51295ef31d93f8b0",
+          "bytes": 2402
+        },
+        "include/curl/stdcheaders.h": {
+          "sha256": "d7588b86814a35ffc3766ff6242e6f6705e04401fc9c208a195caff3503af81c",
+          "bytes": 1362
+        },
+        "include/curl/system.h": {
+          "sha256": "edb2c507a084448a5e3c7e2b9c65c408e22ffeaca5ab0c1ee2e76d82a21113fa",
+          "bytes": 14943
+        },
+        "include/curl/typecheck-gcc.h": {
+          "sha256": "62bf346ae4dc33bc61cd99a9e935c62dfbcd8120399cdbd5874d15897a57e681",
+          "bytes": 58092
+        },
+        "include/curl/urlapi.h": {
+          "sha256": "d888326d5bdebb84b5fe133d7ef7703d4e88732757ce4d6b0476f0c668d38a6e",
+          "bytes": 5870
+        },
+        "include/curl/websockets.h": {
+          "sha256": "05b70dbce5274aa6e360703bb17d67a0390fea18bf4437745a25b08b55d6962b",
+          "bytes": 3197
+        }
+      }
+    },
+    "zlib": {
+      "version": "1.3.2",
+      "source": {
+        "url": "https://github.com/madler/zlib/releases/download/v1.3.2/zlib-1.3.2.tar.gz",
+        "archive": "zlib-1.3.2.tar.gz",
+        "sha256": "bb329a0a2cd0274d05519d61c667c062e06990d72e125ee2dfa8de64f0119d16",
+        "bytes": 1502830,
+        "signingPrimaryFingerprint": "5ED46A6721D365587791E2AA783FCD8E58BCAFBA"
+      },
+      "outputs": {
+        "include/zlib.h": {
+          "sha256": "818667d6ab6a37fe7469cb06a7f0cb2c2cb2f2c948a03e5accf1a4a74bf3020a",
+          "bytes": 103848
+        },
+        "include/zconf.h": {
+          "sha256": "019fd0df6247f5af904564806485913c0c274ff08df87757875464a63abeda90",
+          "bytes": 17584
+        },
+        "lib/zlib1.lib": {
+          "sha256": "732487db2642911719150a0f575f3e4f10217ef5295f3eb88811943796eb6e31",
+          "bytes": 19128
+        },
+        "bin/zlib1.dll": {
+          "sha256": "dc6b420f39712ec4771bc33c3c4e28d60b2ca48b7fdcb10e364dabac53ee61c8",
+          "bytes": 73216
+        }
+      }
+    }
+  },
+  "correspondingSource": {
+    "sha256": "c8b11856d05a7f7722fede0d388c759aba4fea1ee6424e43a83ffefbfd47b595",
+    "bytes": 5700310,
+    "path": "corresponding-source.zip"
+  },
+  "qualification": "identity-only; native TLS, lifecycle, rendering and licensing gates remain"
+}

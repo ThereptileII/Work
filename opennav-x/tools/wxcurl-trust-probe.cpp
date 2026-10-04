@@ -41,7 +41,7 @@ int main(int argc, char** argv) {
     if (std::string(argv[1]) != "--configure") return 2;
     ProbeHTTP configured;
     const bool ok = configured.ConfigureOnly(url);
-    std::cout << "configure_ok=" << (ok ? "true" : "false") << "\n";
+    std::cout << "configure_ok=" << (ok ? "true" : "false") << "\n" << std::flush;
     return ok ? 0 : 1;
   }
   ProbeHTTP guard;
@@ -64,6 +64,6 @@ int main(int argc, char** argv) {
             << "get_detail=" << get_detail << "\n"
             << "head_ok=" << (head_ok ? "true" : "false") << "\n"
             << "head_error=" << http.GetErrorString() << "\n"
-            << "head_detail=" << http.GetDetailedErrorString() << "\n";
+            << "head_detail=" << http.GetDetailedErrorString() << "\n" << std::flush;
   return bad_option_blocked && get_ok && head_ok ? 0 : 1;
 }

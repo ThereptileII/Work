@@ -50,7 +50,7 @@ int main(int argc, char** argv) {
             << "download_message=" << download_message << "\n"
             << "head_size=" << size << "\n"
             << "head_error=" << downloader.last_errorcode() << "\n"
-            << "head_message=" << downloader.last_error() << "\n";
+            << "head_message=" << downloader.last_error() << "\n" << std::flush;
   curl_global_cleanup();
   return ok ? 0 : 1;
 }

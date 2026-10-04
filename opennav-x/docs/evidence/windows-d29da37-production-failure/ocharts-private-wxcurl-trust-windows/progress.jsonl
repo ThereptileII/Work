@@ -1,0 +1,10 @@
+{"utc":"2026-10-04T08:56:15.4106091Z","stage":"trust-import","name":"LocalMachine-Root","state":"before","detail":""}
+{"utc":"2026-10-04T08:56:15.7589672Z","stage":"process","name":"owned-ca-import","state":"before","detail":""}
+{"utc":"2026-10-04T08:56:16.0327582Z","stage":"process","name":"owned-ca-import","state":"after","detail":"exit=0"}
+{"utc":"2026-10-04T08:56:16.0670734Z","stage":"trust-import","name":"LocalMachine-Root","state":"after","detail":""}
+{"utc":"2026-10-04T08:56:16.0723873Z","stage":"server","name":"valid","state":"before","detail":""}
+{"utc":"2026-10-04T08:56:16.2650048Z","stage":"server","name":"valid","state":"after","detail":"port=60607"}
+{"utc":"2026-10-04T08:56:16.2764701Z","stage":"downloader-case","name":"valid","state":"before","detail":""}
+{"utc":"2026-10-04T08:56:16.2822493Z","stage":"process","name":"downloader-valid","state":"before","detail":""}
+{"utc":"2026-10-04T08:56:17.5503973Z","stage":"process","name":"downloader-valid","state":"after","detail":"exit=-1073741819"}
+{"utc":"2026-10-04T08:56:17.5635821Z","stage":"downloader-case","name":"valid","state":"failure","detail":"valid probe output omitted download_ok: \nstage: curl initialization\r\nstage: download begin\r\nstage: download returned; HEAD begin\r\n08:56:16: filesize https://localhost:60607/payload: 36 bytes\r\nstage: HEAD returned\r\n"}

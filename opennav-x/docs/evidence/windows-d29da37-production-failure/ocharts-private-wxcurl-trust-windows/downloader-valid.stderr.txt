@@ -1,0 +1,6 @@
+stage: curl initialization
+stage: download begin
+stage: download returned; HEAD begin
+08:56:16: filesize https://localhost:60607/payload: 36 bytes
+stage: HEAD returned
+
