@@ -1,0 +1,25 @@
+name: SKAGER native trust import diagnostic
+on:
+  push:
+    branches: [skager-native-trust-import-diagnostic]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  trust-import:
+    name: Bounded Windows certificate-store owned-root import diagnostic
+    runs-on: windows-2022
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Diagnose owned-root certificate import without application build or endurance
+        shell: pwsh
+        run: |
+          pwsh -NoProfile -File opennav-x/tools/test-native-trust-import.ps1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: native-trust-import-diagnostic-${{ github.sha }}-${{ github.run_attempt }}
+          path: opennav-x/evidence/local/native-trust-import
+          if-no-files-found: error
