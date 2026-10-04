@@ -63,6 +63,25 @@ SDK producer stay unchanged. Documentation-only follow-ups do not retrigger
 the focused workflow. All 11 launcher/runtime helper tests pass, including
 refusal of changed interpreter bytes or changed captured facts.
 
-Replacement native evidence will be linked after the run. Native
-application/boat acceptance remains required before SCRUM-301 can be Done.
-The installed boat version and public release state are unchanged.
+Replacement native result: **PASS** at
+`e4273b68d4024ed1d38a3fcc3f5550221135a11a`,
+[run 37237278099, attempt 1](https://github.com/ThereptileII/Work/actions/runs/37237278099).
+The provider implementation and concurrency fixtures are unchanged from the
+Linux-tested increment. Native MSVC Win32 builds all three bounded clients;
+8 provider TLS lifecycles, 18 adversarial transport scenarios, 178 session
+checks and 11 helper tests pass. No dependency or full application rebuild.
+
+Downloaded and reviewed artifact:
+`ais-native-runtime-e4273b68d4024ed1d38a3fcc3f5550221135a11a-run37237278099-attempt1`,
+ID `11315648301`, SHA-256
+`e102566af392460ba5fa6fb4f4a37d94d980d9b7072101de0f0dab7ff04e35fd`.
+The archive hash, report commit and retained compiled provider/test-client
+sources match. Actual provider, transport and session logs were reviewed.
+Dependency authority remains producer `37230581131` /
+`1b25542aea3f9ab62c83c5d7a3ecdac9652f7d3e`, using OpenSSL 3.5.9 and zlib 1.3.2;
+the runner retains exact native tool, import and runtime inventories.
+
+Native application/boat acceptance remains required before SCRUM-301 can be
+Done. The increment stays on `skager-ais-freeze`, ready for the next coherent
+Staging candidate. The installed boat version and public release state are
+unchanged.

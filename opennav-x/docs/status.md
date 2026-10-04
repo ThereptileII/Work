@@ -10,11 +10,16 @@ changes and newer enable/disable intent.
 
 All **8 Linux provider TLS lifecycle scenarios pass**, including two new
 send-concurrency cases. The old provider fails the same reentrant-read test by
-the expected bounded timeout. Nine existing AIS runtime-gate helper tests pass.
-The focused native Windows workflow reuses the authenticated dependency SDK and
-builds only AIS test clients. Native results and integrated boat reproduction
-remain pending; this is not yet a confirmed resolution of the user's boat
-symptom. See [focused evidence](evidence/2026-10-04-ais-freeze.md).
+the expected bounded timeout. The corrected launcher/runtime helper suite
+passes 11 tests on both platforms. The focused native Windows
+[run 37237278099](https://github.com/ThereptileII/Work/actions/runs/37237278099)
+passes at `e4273b68d4024ed1d38a3fcc3f5550221135a11a`: MSVC Win32 build,
+8 provider TLS lifecycles, 18 adversarial transport scenarios and 178 session
+checks. Downloaded evidence and compiled-source identities were verified.
+It reuses the authenticated SDK and builds only AIS test clients.
+Integrated application/boat reproduction remains pending; this is not yet a
+confirmed resolution of the user's boat symptom. SCRUM-301 remains Testing.
+See [focused evidence](evidence/2026-10-04-ais-freeze.md).
 
 This increment does not request a full application build, deployment, design
 review or Production promotion. The installed boat candidate is unchanged.
