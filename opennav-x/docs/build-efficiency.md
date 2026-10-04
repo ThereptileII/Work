@@ -142,3 +142,12 @@ missing retained inputs stop reuse with a clear failure. They require a new
 verified producer; they do not authorize a weaker fallback. Future Staging runs
 still have to pass their application, native desktop and installer gates before
 creating a candidate Release.
+
+## Measured workflow verification
+
+The [2026-10-04 evidence](evidence/2026-10-04-delivery-efficiency.md) records
+190 focused checks per platform and the first authenticated cross-run SDK proof.
+In that measured pair, dependency production took 50m30s and verified reuse took
+1m14s; the entire warm job took 2m11s. This does not qualify a new application or
+promise the same time for every runner. The next real Staging candidate retains
+its application, native functional, installer and exact-source gates.
