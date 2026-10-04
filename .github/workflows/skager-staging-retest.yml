@@ -1,0 +1,48 @@
+name: SKAGER retained Staging checks
+on:
+  workflow_dispatch:
+    inputs:
+      build_run:
+        description: Original Staging run containing the successful windows-integration build job
+        type: string
+        required: true
+      build_attempt:
+        description: Original successful build attempt (never the retry attempt)
+        type: string
+        required: true
+      scope:
+        description: Relevant checks to repeat; never rebuild or publish
+        type: choice
+        options: [installer, all]
+        default: installer
+permissions:
+  contents: read
+  actions: read
+env:
+  SKAGER_DESIGN_VALIDATION: 'false'
+  PYTHONUTF8: '1'
+concurrency:
+  group: skager-staging-retest-${{ inputs.build_run }}-${{ inputs.build_attempt }}
+  cancel-in-progress: false
+jobs:
+  retest:
+    runs-on: windows-2022
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Authenticate successful producer and restore exact retained inputs
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BUILD_RUN: ${{ inputs.build_run }}
+          BUILD_ATTEMPT: ${{ inputs.build_attempt }}
+        run: python opennav-x/tools/retest-staging-windows.py prepare --producer-run-id $env:BUILD_RUN --producer-run-attempt $env:BUILD_ATTEMPT
+      - name: Run selected checks without compiler or download credentials
+        env:
+          RETEST_SCOPE: ${{ inputs.scope }}
+        run: python opennav-x/tools/retest-staging-windows.py test --scope $env:RETEST_SCOPE
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: staging-retest-evidence-${{ inputs.build_run }}-attempt${{ inputs.build_attempt }}-harness${{ github.sha }}-run${{ github.run_id }}-attempt${{ github.run_attempt }}
+          path: opennav-x/evidence/local
+          if-no-files-found: error
