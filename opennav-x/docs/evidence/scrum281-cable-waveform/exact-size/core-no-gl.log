@@ -1,0 +1,15 @@
+In file included from /home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/.local/painter-qualified-2/core/no-gl.cpp:37:
+/home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/.local/painter-qualified-2/core/cable-methods.inc: In member function ‘void s52plib::draw_lc_poly(wxDC*, wxColour&, int, wxPoint*, int*, int, float, float, Rule*)’:
+/home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/.local/painter-qualified-2/core/cable-methods.inc:181:17: warning: variable ‘xst2’ set but not used [-Wunused-but-set-variable=]
+  181 |           float xst2, yst2;
+      |                 ^~~~
+/home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/.local/painter-qualified-2/core/cable-methods.inc:181:23: warning: variable ‘yst2’ set but not used [-Wunused-but-set-variable=]
+  181 |           float xst2, yst2;
+      |                       ^~~~
+/home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/.local/painter-qualified-2/core/cable-methods.inc: In member function ‘void s52plib::stock_lc_poly(wxDC*, wxColour&, int, wxPoint*, int*, int, float, float, Rule*)’:
+/home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/.local/painter-qualified-2/core/cable-methods.inc:488:17: warning: variable ‘xst2’ set but not used [-Wunused-but-set-variable=]
+  488 |           float xst2, yst2;
+      |                 ^~~~
+/home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/.local/painter-qualified-2/core/cable-methods.inc:488:23: warning: variable ‘yst2’ set but not used [-Wunused-but-set-variable=]
+  488 |           float xst2, yst2;
+      |                       ^~~~

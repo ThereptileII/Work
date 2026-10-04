@@ -1,0 +1,5 @@
+/home/standard/Projects/X-nav-worktrees/scrum286-overzoom-warning/tests/overzoom_warning_test.cpp: In function ‘int main(int, char**)’:
+/home/standard/Projects/X-nav-worktrees/scrum286-overzoom-warning/tests/overzoom_warning_test.cpp:122:26: error: operands to ‘?:’ have different types ‘wxString’ and ‘const char*’
+  122 |    translation=refusal==2?wxString('W',150):refusal==5?"":"OverZoom";
+      |                ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/standard/Projects/X-nav-worktrees/scrum286-overzoom-warning/tests/overzoom_warning_test.cpp:122:26: note:   and each type can be converted to the other

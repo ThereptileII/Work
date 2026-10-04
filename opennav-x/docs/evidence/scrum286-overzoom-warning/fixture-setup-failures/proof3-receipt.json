@@ -1,0 +1,50 @@
+{
+  "command": [
+    "c++",
+    "-std=c++17",
+    "-O2",
+    "-DOPENNAV_X",
+    "-DocpnUSE_GL",
+    "-DocpnUSE_GLSL",
+    "-I/home/standard/Projects/X-nav/.local/sysroot/usr/include",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum286-overzoom-warning/src",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum286-overzoom-warning/.local/proof3",
+    "-I/home/standard/Projects/X-nav-worktrees/skager-product-fidelity/upstream/OpenCPN/libs/s52plib/src",
+    "-I/home/standard/Projects/X-nav-worktrees/skager-product-fidelity/upstream/OpenCPN/libs/geoprim/src",
+    "/home/standard/Projects/X-nav-worktrees/scrum286-overzoom-warning/tests/overzoom_warning_test.cpp",
+    "-I/home/standard/Projects/X-nav/.local/sysroot/usr/lib/wx/include/gtk3-unicode-3.2",
+    "-I/home/standard/Projects/X-nav/.local/sysroot/usr/include/wx-3.2",
+    "-DWXUSINGDLL",
+    "-D__WXGTK3__",
+    "-D__WXGTK__",
+    "-D_FILE_OFFSET_BITS=64",
+    "-L/home/standard/Projects/X-nav/.local/sysroot/usr/lib",
+    "-lwx_gtk3u_core-3.2",
+    "-lwx_baseu-3.2",
+    "-lwx_gtk3u_gl-3.2",
+    "-lGL",
+    "-lGLEW",
+    "-o",
+    "/home/standard/Projects/X-nav-worktrees/scrum286-overzoom-warning/.local/proof3/test"
+  ],
+  "exit": 1,
+  "unchangedSourceMethods": {
+    "emboss_data *ChartCanvas::EmbossOverzoomIndicator(": "72aa1b366676d70cf2c4dd573394a6aab0219d19cf6627285c429041a3e91615",
+    "void ChartCanvas::SetOverzoomFont(": "8cf09b048922c05f5fdfc2711140858c7603f3539bbbd0ed70bfba2e0f847a16",
+    "void ChartCanvas::CreateOZEmbossMapData(": "4e9b46f8e1285373cf70021b2ead2c804603b8db8ea5fc137b0c2204b2136fc0"
+  },
+  "files": {
+    "/home/standard/Projects/X-nav-worktrees/scrum286-overzoom-warning/src/integration/ChartPresentation.cpp": "c7671a92eb7f6957a442f2687a4b4087d7cdd249ead20a2299df3fa309d67ec6",
+    "/home/standard/Projects/X-nav-worktrees/scrum286-overzoom-warning/tests/overzoom_warning_test.cpp": "7e191d609c0dbcd2848766a4fe50a39aae724f77964fb5a04b7d735bbbaa43f3",
+    "/home/standard/Projects/X-nav-worktrees/scrum286-overzoom-warning/.local/proof3/trigger.inc": "72aa1b366676d70cf2c4dd573394a6aab0219d19cf6627285c429041a3e91615",
+    "/home/standard/Projects/X-nav-worktrees/scrum286-overzoom-warning/.local/proof3/chcanv-caller.inc": "832ec54466c592007651f7eed23e9a997afb6ae63a43286aa54cb1a37488d8a1",
+    "/home/standard/Projects/X-nav-worktrees/scrum286-overzoom-warning/.local/proof3/caller-test.inc": "2fa8fc4c2abb055995d17acd92e4fa45d5c1f701072ca1c50c3282ceb9dbf38c",
+    "/home/standard/Projects/X-nav-worktrees/scrum286-overzoom-warning/.local/proof3/glChartCanvas-caller.inc": "d13ebd474d822857c896032f571161a704c56a48e3aae34b1dc9b4c7f95d121a",
+    "/home/standard/Projects/X-nav-worktrees/scrum286-overzoom-warning/.local/proof3/warning.inc": "397010800cbcb78cdb7e571a5fa4ba93401f8b30ee94fae7546902495e2fc3f2",
+    "/home/standard/Projects/X-nav-worktrees/scrum286-overzoom-warning/.local/proof3/font.inc": "2b6e5f034ed043ae53db4c68518a67872b945fe4028fd767dba44329bafd664a",
+    "/home/standard/Projects/X-nav-worktrees/scrum286-overzoom-warning/.local/proof3/dc.inc": "0ca8e40a02caac3a267cf0c030f4fa6810af7c5907adb93f83001c4cfc5a67da",
+    "/home/standard/Projects/X-nav-worktrees/scrum286-overzoom-warning/.local/proof3/shader-class.inc": "a16ad91d806ffbb0f63d2844facd375ec22c904859e0d45b4a026c82e4f119c2",
+    "/home/standard/Projects/X-nav-worktrees/scrum286-overzoom-warning/.local/proof3/shaders.inc": "335bf7ab1419c237578b6327d143e0383505bee940e440a76c09994211f4e98f",
+    "/home/standard/Projects/X-nav-worktrees/scrum286-overzoom-warning/.local/proof3/test": "8237b6dd8ea7f6d7a5cb0ade79b0dcb727c791f9dfdac91d0abe57b82c1129e7"
+  }
+}

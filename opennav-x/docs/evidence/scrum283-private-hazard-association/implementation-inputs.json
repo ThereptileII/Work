@@ -1,0 +1,8 @@
+{
+  "patches/ocharts-private-hazard-association.patch": "c7d007de282e4f0c955b41c520ad31ed597ffafd03ef08d57472d13fd8f4d4ff",
+  "tools/prepare-ocharts-adapter.py": "43bb156f1b8843755ac54c079e2bf664ea4bb8b4a281085a1a62f45a9cbd229b",
+  "tools/verify-private-hazard-association.py": "3b58b15726c4b3c5b5b54df751629a61089b1a2e37b1e8f0bc893ec4a8086fed",
+  "tests/private_hazard_association_test.cpp": "2edb292b03cbf7e95d4d37f25d21aac4b841c5790ce9c4f04eb9f53dfa31ac2b",
+  "tests/private_hazard_allocation_test.cpp": "c560e1da318a576250873e2bba7d04306e59e41af92f544817f9026cbf07950f",
+  "tests/private_hazard_cases.inc": "83d525df08f0e8b4c30cabd7f1a890b6f4caf95d55c06bd602882f4e0d71b21b"
+}

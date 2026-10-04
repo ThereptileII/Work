@@ -1,0 +1,157 @@
+[
+  {
+    "path": "README.md",
+    "bytes": 2394,
+    "sha256": "9911b3035ba3e5acdb2f301527725b949e6a939aa8ea41708f3df67c77a6ee7b"
+  },
+  {
+    "path": "artifact-index.json",
+    "bytes": 4702,
+    "sha256": "f7b1fd64c442b5b595451ec112dbf030e12015f6f91203a9d2ba290834671983"
+  },
+  {
+    "path": "audit.json",
+    "bytes": 2611,
+    "sha256": "0288fa22e0684e1915bf3fa8beefac2171be28e85ad113462728f7afaeaca802"
+  },
+  {
+    "path": "github.json",
+    "bytes": 4433,
+    "sha256": "85537b29a76589dc515eaa1de6290d748496cfac3558c934c164cb61b0a36194"
+  },
+  {
+    "path": "job.log",
+    "bytes": 30639,
+    "sha256": "371888936af56491e42c620e0eaecbc824cbf61f08ffb7b0ea5c4707035a74ed"
+  },
+  {
+    "path": "original/captured-parent.json",
+    "bytes": 3885,
+    "sha256": "fa1b46748f7c50ae4d7c637e61f50a8cb3cc6d2cba8467b9c04175cecb1f2773"
+  },
+  {
+    "path": "original/captured-parent.json.observed.json",
+    "bytes": 3885,
+    "sha256": "01a96584a51ba3b0bcd7291e02607bc3ff9b698672a09510c432bf13f3d43c2f"
+  },
+  {
+    "path": "original/expected-rejection.txt",
+    "bytes": 41,
+    "sha256": "2d499455004e4fe85128f03547c965fe5074b0ee1038e47d8913a31ac36622e1"
+  },
+  {
+    "path": "original/gettext.log",
+    "bytes": 164,
+    "sha256": "fa18fbc2b7df84aa76030d72ab9af9b243b48de57ad96de0fe119f678d8296e7"
+  },
+  {
+    "path": "original/nasm-source.json",
+    "bytes": 267,
+    "sha256": "7889522138a7a49ff08e67625cc538fc611dba4b57c90cefd5c6abccc089cc50"
+  },
+  {
+    "path": "original/native-proof.log",
+    "bytes": 414,
+    "sha256": "15d904a384c85ad79a3509de2640bfb48b7f118705df1369e44a60343338ff0b"
+  },
+  {
+    "path": "original/producer-local-setup.ps1",
+    "bytes": 2273,
+    "sha256": "dc6b184a18f728b98db4cf0ac522b4edb5495cffc8a037eacc3194483fd59749"
+  },
+  {
+    "path": "original/result.json",
+    "bytes": 3926,
+    "sha256": "6cbab33f9928be87738b0fcc5a8b915f84e054376722de87ea35c4ed4dffb544"
+  },
+  {
+    "path": "original/selection.json",
+    "bytes": 179,
+    "sha256": "0c7a78493d7857b05022cb1ce4afcd92f8588c3210625f24ba1db2e27f844ede"
+  },
+  {
+    "path": "original/windows-gettext-xnav-logs/after-install-1/0/msgfmt.json",
+    "bytes": 448,
+    "sha256": "047ae85ff3b3a5ff492336868c0b5a20ef3b189b54a342ebbc4a86acf9719628"
+  },
+  {
+    "path": "original/windows-gettext-xnav-logs/after-install-1/0/msgfmt.stderr.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "original/windows-gettext-xnav-logs/after-install-1/0/msgfmt.stdout.log",
+    "bytes": 324,
+    "sha256": "1ff07d323b071b52af7511b8e9fade3e1552dd1510974d77eacf12af45cbc63b"
+  },
+  {
+    "path": "original/windows-gettext-xnav-logs/after-install-1/0/msgmerge.json",
+    "bytes": 450,
+    "sha256": "386b2f0cb43d423558db114eee3c4b43af6e377226e68ff1dd532facd68188ab"
+  },
+  {
+    "path": "original/windows-gettext-xnav-logs/after-install-1/0/msgmerge.stderr.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "original/windows-gettext-xnav-logs/after-install-1/0/msgmerge.stdout.log",
+    "bytes": 324,
+    "sha256": "c92f18c21ba59ffa2f05a485c35f51e29337c651215f02b3cfa07441eb9f1746"
+  },
+  {
+    "path": "original/windows-gettext-xnav-logs/install-1.json",
+    "bytes": 623,
+    "sha256": "c683369e3855e7a3d64a4d79166cf514cc1e3426fb20f3d988365d5ce741eec0"
+  },
+  {
+    "path": "original/windows-gettext-xnav-logs/install-1.stderr.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "original/windows-gettext-xnav-logs/install-1.stdout.log",
+    "bytes": 1257,
+    "sha256": "28aa9d747a4591a65a66c42c4b9d41601643918595e7f7f978b0587a131fc001"
+  },
+  {
+    "path": "original/windows-gettext-xnav-logs/verify/msgfmt.json",
+    "bytes": 448,
+    "sha256": "ac42f1b6b252e7fc7956b345e78cd748c235ea41601eb6e2a6fd79dd3749dd32"
+  },
+  {
+    "path": "original/windows-gettext-xnav-logs/verify/msgfmt.stderr.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "original/windows-gettext-xnav-logs/verify/msgfmt.stdout.log",
+    "bytes": 324,
+    "sha256": "1ff07d323b071b52af7511b8e9fade3e1552dd1510974d77eacf12af45cbc63b"
+  },
+  {
+    "path": "original/windows-gettext-xnav-logs/verify/msgmerge.json",
+    "bytes": 450,
+    "sha256": "0a55a2b91743d37df3f063947f3944fa10551abd08e06a0bba56e3740875a5d0"
+  },
+  {
+    "path": "original/windows-gettext-xnav-logs/verify/msgmerge.stderr.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "original/windows-gettext-xnav-logs/verify/msgmerge.stdout.log",
+    "bytes": 324,
+    "sha256": "c92f18c21ba59ffa2f05a485c35f51e29337c651215f02b3cfa07441eb9f1746"
+  },
+  {
+    "path": "original/windows-gettext-xnav.json",
+    "bytes": 2167,
+    "sha256": "96fa7bc77a7e2afb86db1143c2016807ff558ce6f30ab100b2ef624bf4b45106"
+  },
+  {
+    "path": "original-artifact.zip",
+    "bytes": 14720,
+    "sha256": "8ffb32dfee1f54b8131e9e206d5ed59ffcce6bfc9f8f903e29456514b8b97593"
+  }
+]

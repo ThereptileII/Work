@@ -143,7 +143,7 @@ def compile_chart_units(args, evidence, api):
         'tools/windows-chart-headers.lock.json', 'tools/windows-prototype-headers.lock.json',
         'tools/windows-wx.lock.json', 'tools/windows-curl.lock.json',
         'tools/generate-xnav-chart-style.py', 'tools/chart_raster_ink.py', 'tools/chart_day_neutral_ink.py', 'tools/chart_anchor_art.py',
-        'tools/chart_cable_paint.py', 'tools/chart_structure_paint.py', 'tools/chart_building_point.py', 'tools/derive-building-point.py', 'tools/chart_construction_hatch.py', 'tools/chart_service_art.py', 'tools/chart_cardinal_art.py', 'tools/chart_seamark_art.py', 'tools/chart_special_buoy_art.py', 'tools/derive-special-buoy-art.py', 'tools/chart_yellow_buoy_art.py', 'tools/derive-yellow-buoy-art.py',
+        'tools/chart_cable_paint.py', 'tools/chart_structure_paint.py', 'tools/chart_building_point.py', 'tools/derive-building-point.py', 'tools/chart_construction_hatch.py', 'tools/chart_service_art.py', 'tools/chart_hazard_art.py', 'tools/derive-hazard-art.py', 'tools/chart_fishing_pattern.py', 'tools/chart_cardinal_art.py', 'tools/chart_seamark_art.py', 'tools/chart_special_buoy_art.py', 'tools/derive-special-buoy-art.py', 'tools/chart_yellow_buoy_art.py', 'tools/derive-yellow-buoy-art.py',
         'docs/design/prototype-tokens.json', 'docs/design/prototype/src/chart-marker-art.js',
         'tools/chart_generic_beacon_art.py', 'tools/derive-generic-beacon-art.py',
         'docs/design/prototype/src/chart-symbols.js', 'docs/design/prototype/src/chart-symbols.css',

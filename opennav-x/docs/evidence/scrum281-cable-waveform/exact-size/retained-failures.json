@@ -1,0 +1,22 @@
+{
+  "failed-painter-core-compile.log": {
+    "sha256": "42aac7e309ae4ca89327c2e6a4ca683968578446ac96eb9a34194cd9dbc6b3f1",
+    "bytes": 5553
+  },
+  "failed-painter-2-core-compile.log": {
+    "sha256": "29713f781cee7d79e0ffe6f0d053f38f5f2f6589b9d5024dca8e2e6f27b732e0",
+    "bytes": 755
+  },
+  "failed-painter-3-private-compile.log": {
+    "sha256": "da1c500f5326152e5602cbdba1b937e242284630ddd9fe4b6c8dfa86fe51c86e",
+    "bytes": 502
+  },
+  "failed-painter-4-core-run.log": {
+    "sha256": "8e78b7871db54f89e29d398af57262afff6bc978724f0d5fa03a0ceda9863849",
+    "bytes": 155
+  },
+  "failed-painter-qualified-private-no-gl.log": {
+    "sha256": "cc5ace188085d55c6e0a8c2500aca26b154d74be536a44eec57894aa41e80afd",
+    "bytes": 694
+  }
+}

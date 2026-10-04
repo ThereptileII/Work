@@ -1,0 +1,9 @@
+{
+  "src/integration/ChartPresentation.cpp": "c7671a92eb7f6957a442f2687a4b4087d7cdd249ead20a2299df3fa309d67ec6",
+  "src/integration/ChartPresentation.h": "3e60d644e342873033735c1f6919009c38ffb50ddbee1eb10c937e422e81fe13",
+  "patches/opencpn-5.12.4-chart-presentation.patch": "af7358443fa4f568f24ec2c3fb98630364a78781d80b8d75c31845ab57f95167",
+  "tests/overzoom_warning_test.cpp": "9f12c44d060c822fe2d9981ff0a2e2b842bc59d274ae678b98ee1f9d3c0de46e",
+  "tools/test-overzoom-warning.py": "859c63ec4a86d92b3ec1ba371b0ac99fca59a118ab1c0cc96108af6669b6f141",
+  "src/ui/Controls.cpp": "2910036a24c3473c3d3c9b82ca5b37cf2cfcc37e6e5242c99a0e5c36a5e5eb0d",
+  "src/ui/Theme.h": "b28adb1f519ec5a1f9b7e2bfab6ec2ab1c7f06656bd129316e9e453ef1ec0776"
+}

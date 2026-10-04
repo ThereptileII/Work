@@ -24,7 +24,7 @@ def verify_day_neutral(source, output, metadata, check):
     check([(k,v) for k,v in before_chunks if k != b'IDAT'] ==
           [(k,v) for k,v in after_chunks if k != b'IDAT'])
     # Only existing separately verified transparent artwork slots are reversed.
-    for x,w,h in [(20,20,20),(52,24,24),(84,24,24),
+    for x,w,h in [(20,20,20),(52,24,24),(84,24,24),(820,24,24),
                   (116,24,28),(148,24,28),(180,24,28),(212,24,28)]:
         for y in range(1160,1160+h):
             i=(y*1500+x)*4;after[i:i+w*4]=before[i:i+w*4]
@@ -66,6 +66,9 @@ def verify_day_neutral(source, output, metadata, check):
         _,old_pixels=decode((source/name).read_bytes())
         chunks,current_pixels=decode((output/name).read_bytes())
         restore_tiles(old_pixels,current_pixels)
+        # SCRUM-279 service tile is separately checked; preserve this older golden.
+        for y in range(1160,1184):
+            i=(y*1500+820)*4;current_pixels[i:i+96]=old_pixels[i:i+96]
         check(hashlib.sha256(encode(chunks,current_pixels)).hexdigest() == digest)
     from chart_day_neutral_ink import derive_day
     xml=(source/'chartsymbols.xml').read_bytes();png=(source/'rastersymbols-day.png').read_bytes()

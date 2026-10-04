@@ -1,0 +1,1170 @@
+{
+  "advance-patched-source.py": {
+    "sha256": "20514a0138e857b87e7a860f452e32b3357dce9fbede7f3ca8c5720def8a0852",
+    "bytes": 2411
+  },
+  "run-build.sh": {
+    "sha256": "b11f5db6649fc5f2313f51eb27b4915e13f7f84336d015c9f5d15fc14efeeded",
+    "bytes": 1938
+  },
+  "source-advance.json": {
+    "sha256": "3662062b395d609f31d8bce8b0dac049cf14de1f312105b1db70ebe353450f64",
+    "bytes": 525
+  },
+  "build-prefix.sh": {
+    "sha256": "1bef3520173ae87fd8acda2c9b418b8600d7cde38dd7c4976d1d6e3493cc31b2",
+    "bytes": 1207
+  },
+  "run-setup.sh": {
+    "sha256": "8f20f5a52aa3d852a7bd33b796ae1f520f1f9103b59e2dce966d50bae6f37a70",
+    "bytes": 1245
+  },
+  "run-capture.sh": {
+    "sha256": "ca130c5820e081ad960d001f60af8b35997a7c63c85576a1e29153f4502c49ed",
+    "bytes": 2128
+  },
+  "resume-j1.sh": {
+    "sha256": "f3d65516988a18086acb5c81b7826f6b0e6b3f70b057f3fc55238e52bc52ed4c",
+    "bytes": 1331
+  },
+  "resume-j1-actual.sh": {
+    "sha256": "baede2b757422602ee1e4efd0500d100c7bd30e4ec7bc965d5124137babe5b33",
+    "bytes": 1347
+  },
+  "run-capture-r1.sh": {
+    "sha256": "3c19b1e93275401961ab1b4a9c3ed02042236b7ecbd0f5d2c4ff096720b2e58e",
+    "bytes": 2143
+  },
+  "run-capture-r2.sh": {
+    "sha256": "37e05ffc4cd63b1e47a483485e9cf790ebbe4687bd1b6bf76eee58ec9695005a",
+    "bytes": 2143
+  },
+  "matrix-32-seal.json": {
+    "sha256": "590572a866422239d0164752f1025105f50ad2e14b1b3c19b52950f6ff1f0a1f",
+    "bytes": 7242
+  },
+  "run-standard.sh": {
+    "sha256": "5f4847dd86d47f757b2ab7b99c46405cd330e4e8730a03de9eb936a8da0810aa",
+    "bytes": 2218
+  },
+  "audit.json": {
+    "sha256": "48ffc92d643491278292554a850f288c36e53a61e9d6a16dd40ad8727b8e85c7",
+    "bytes": 3685
+  },
+  "README.md": {
+    "sha256": "f950e18e2bc8ed4a25d108550f12c791b19680c12b69fee6633aee1bcbaa0af0",
+    "bytes": 5394
+  },
+  "build/build.log": {
+    "sha256": "3f8c7b38d49c275b32d61f5a784ecb6aab8aca5d76882b7ce7f8aaa5a5b2bc54",
+    "bytes": 18966
+  },
+  "build/xnav-linux-configure.log": {
+    "sha256": "b332b591d3b4bcd5016bf5d27e7db10ff0c4dd4bee56df82156c95728ed49048",
+    "bytes": 7364
+  },
+  "build/xnav-linux-build.log": {
+    "sha256": "6b7fa5a432ee74da22b64c7c6bc3a1cb2c0c3c3af5e556c8781728e11d2b4c2a",
+    "bytes": 10958
+  },
+  "build/build.exit": {
+    "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+    "bytes": 2
+  },
+  "build/first-build-failure.json": {
+    "sha256": "1a44980a8fa468297485b5e8042ce6420fc87f3a7e65031793315fbf68300c1b",
+    "bytes": 630
+  },
+  "build/post-failure-memory.txt": {
+    "sha256": "574e715d120f1af63acca7521a1f0c49380a6ab6ad58d71355d6d0004a656f37",
+    "bytes": 207
+  },
+  "build/resume-j1.log": {
+    "sha256": "07cf7e8a2e8e5ac27154af846703c486f96b9702b1796cbe787ee74d6112fd1d",
+    "bytes": 55
+  },
+  "build/resume-j1.exit": {
+    "sha256": "743c7850cccfba5e53a9002663ec1ddd1079315a98bdbfdde10e6044f56abefe",
+    "bytes": 4
+  },
+  "build/resume-j1-actual.log": {
+    "sha256": "044e9ad8538046652929e175b4b5af917a4e6b789c18170a695380c5ecdae661",
+    "bytes": 129758
+  },
+  "build/resume-decision.json": {
+    "sha256": "43a8b767ce38a9f4f6a2aa9c9a8b8b936cef5a7d91201e8272028cf4275f83d3",
+    "bytes": 959
+  },
+  "build/resume-j1-actual.exit": {
+    "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "bytes": 2
+  },
+  "build/collector-fan-construction.diff": {
+    "sha256": "1a7757da2d9539476eec950043a001cb90c9b04a2e3e8b8545f09474022cdd49",
+    "bytes": 911
+  },
+  "build/collector-scene-trace-selection.diff": {
+    "sha256": "b4df7feae94f4492d22eee52bb215479987b3f8dc3ef015d175d8b3cc94c4c4a",
+    "bytes": 868
+  },
+  "collector/cache-inputs-readonly.py": {
+    "sha256": "0528801cfb7b27faa8027869ad8ee5ab07b6475e27544c6bf93f04e6e8c1750d",
+    "bytes": 4630
+  },
+  "collector/seal-inputs.py": {
+    "sha256": "484fcc8747ac9440919cea64353761683d2069f2dafcacc08ef569de531d8cb2",
+    "bytes": 3100
+  },
+  "collector/compile-layout.py": {
+    "sha256": "e258c114c1d6794aca8067fcefd9f5e9caa98b49b06b6e94dca18a7f8819168e",
+    "bytes": 1576
+  },
+  "collector/layout.cpp": {
+    "sha256": "a915c35d6a72eec8b5c0dc4f52cc23e4f6499a350d6930bebaa090aaaef3e877",
+    "bytes": 1085
+  },
+  "collector/capture-s64.py": {
+    "sha256": "0c1cd1d026f48e7352ebcc0f5e7af86eddf1b644d239502de63f851ffb4eb513",
+    "bytes": 24249
+  },
+  "collector/render-probe.gdb": {
+    "sha256": "b2528c9b7e9daeac3bb080ed55c678bcedaeb9ff50f6826c0e6d31185b7b9b08",
+    "bytes": 7027
+  },
+  "collector/scenes.json": {
+    "sha256": "daab3f5b1723d5f51838646c55bc26c526519dffd252cd7e54e2adc0d62235fc",
+    "bytes": 9643
+  },
+  "collector/layout.json": {
+    "sha256": "a6b0e18c60e741a607129f15e02e22da341e0bc9a91b2dceebf443fab38b2bfe",
+    "bytes": 639
+  },
+  "collector/capture-standard.py": {
+    "sha256": "a0295395f7ca6729bbf6b83ebadb361a4bf4feffaea1472e3993ef7ee52d6488",
+    "bytes": 24447
+  },
+  "inputs/frozen-inputs.json": {
+    "sha256": "003c21184ebc1600e8be3c16a9ae2ba34e21f0725865b541f1ef77e3a83b2a58",
+    "bytes": 1158
+  },
+  "inputs/staged-inputs.json": {
+    "sha256": "0c6f91ad94cfa57359232cd259aa202cfe9f14c0f99c497a406ebd14bfbb5b9f",
+    "bytes": 6899
+  },
+  "output/setup.log": {
+    "sha256": "400dfa8204018f6d9fbc972153567586739492584aa1d0581e0658d63db553c6",
+    "bytes": 7657
+  },
+  "output/layout-compile-final.log": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  "output/layout-receipt.json": {
+    "sha256": "8e3cbece1b4395b850e15b8b5b312fb7545a55b2efa5419e2c7856cb985f9769",
+    "bytes": 7763
+  },
+  "output/setup.exit": {
+    "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "bytes": 2
+  },
+  "output/software-s64-light-fog.log": {
+    "sha256": "3bfce266cc0fa813b40d3a029c656cb9eee76a104f5f4802cd06d045bb73e53e",
+    "bytes": 883
+  },
+  "output/software-s64-light-fog.exit": {
+    "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+    "bytes": 2
+  },
+  "output/software-s64-light-fog-r1.log": {
+    "sha256": "4f1aa0e93ea4302a7d89ddd5bd28a5d592e856281187f83704a9fb91a2c97b22",
+    "bytes": 1026
+  },
+  "output/software-s64-light-fog-r1.exit": {
+    "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+    "bytes": 2
+  },
+  "output/software-s64-light-fog-r2.log": {
+    "sha256": "3d293314e296f04703d2c0fbbda6e966bca840a0e9dfefc60378f74d7f97cf07",
+    "bytes": 1682
+  },
+  "output/software-s64-light-fog-r2.exit": {
+    "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "bytes": 2
+  },
+  "output/opengl-s64-light-fog-r2.log": {
+    "sha256": "91d1108b6ceb7397558409fa38174428879b4cdb926ef3ad66e1148c0ed0c0a5",
+    "bytes": 1680
+  },
+  "output/opengl-s64-light-fog-r2.exit": {
+    "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "bytes": 2
+  },
+  "output/software-s64-rocks-r2.log": {
+    "sha256": "a6cb3e4283e96274820af625636df6361240b3217259e7fd6d599785bf71de4d",
+    "bytes": 1674
+  },
+  "output/software-s64-rocks-r2.exit": {
+    "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "bytes": 2
+  },
+  "output/opengl-s64-rocks-r2.log": {
+    "sha256": "44386bddb61f747c90c41545d169dc2909ced73b51d0cf92e870bf1970ef1689",
+    "bytes": 1672
+  },
+  "output/opengl-s64-rocks-r2.exit": {
+    "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "bytes": 2
+  },
+  "output/software-s64-wreck-r2.log": {
+    "sha256": "6660b54765ba7ffe886a3b259250f429e7c91f453fd2ee7db62e192fe5d4da1d",
+    "bytes": 1674
+  },
+  "output/software-s64-wreck-r2.exit": {
+    "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "bytes": 2
+  },
+  "output/opengl-s64-wreck-r2.log": {
+    "sha256": "76d2d0a9bda89d1b10852419af9518e48e5b7fdb5c24396f938ad839a341fe78",
+    "bytes": 1672
+  },
+  "output/opengl-s64-wreck-r2.exit": {
+    "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "bytes": 2
+  },
+  "output/software-seattle-r2.log": {
+    "sha256": "ecd872db9a7525c8f2b84f9212c7892d00e8edbf8f84e5b5f69a702d60814520",
+    "bytes": 1670
+  },
+  "output/software-seattle-r2.exit": {
+    "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "bytes": 2
+  },
+  "output/opengl-seattle-r2.log": {
+    "sha256": "034d4b72618ae431768256c72ab8a47a8b319a71e8cd11b4ae569b6dd6e0d609",
+    "bytes": 1668
+  },
+  "output/opengl-seattle-r2.exit": {
+    "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "bytes": 2
+  },
+  "output/software-s64-light-fog-standard-control.log": {
+    "sha256": "1e9b6f40e1a02d4436db26308d89343e83f88ff157c6257fe5da71a92133e8fb",
+    "bytes": 1718
+  },
+  "output/software-s64-light-fog-standard-control.exit": {
+    "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "bytes": 2
+  },
+  "output/opengl-s64-light-fog-standard-control.log": {
+    "sha256": "eab7d97d3e6efbc99a31f0bc9de45dc634dbf00e88b7162242db6ead3beff36f",
+    "bytes": 1716
+  },
+  "output/opengl-s64-light-fog-standard-control.exit": {
+    "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "bytes": 2
+  },
+  "output/capture-45d73e8-s64-light-fog-software/loader-selftest.json": {
+    "sha256": "45e4d99f284703f20ae867e2784160de7e6092f86ac2fb33123a31b0b1ab40d9",
+    "bytes": 715
+  },
+  "output/capture-45d73e8-s64-light-fog-software/s64-light-fog-SKAGER-launch.log": {
+    "sha256": "6a2d57e283a7ef1ba87790a42ae6cd2e73d94897c2402c7b3b34dfcc6e473a45",
+    "bytes": 406
+  },
+  "output/capture-45d73e8-s64-light-fog-software/failure-canvas.png": {
+    "sha256": "f3bdcc59f1a08b8f599bc2d653ce1bdeaafc2bfdc23eaa6d15fe20b7bd6f5101",
+    "bytes": 263
+  },
+  "output/capture-45d73e8-s64-light-fog-software/controlled-input.json": {
+    "sha256": "b8a80e079d9c87a939425ee33fa21c677e3643bf3defdaddbc3cff25ebec9b7b",
+    "bytes": 149
+  },
+  "output/capture-45d73e8-s64-light-fog-software/report.json": {
+    "sha256": "507833876ea6ecc4fb3283b76598c3f6064088b63a127d17d7e196d28bf189cb",
+    "bytes": 15186
+  },
+  "output/capture-45d73e8-s64-light-fog-software-r1/loader-selftest.json": {
+    "sha256": "45e4d99f284703f20ae867e2784160de7e6092f86ac2fb33123a31b0b1ab40d9",
+    "bytes": 715
+  },
+  "output/capture-45d73e8-s64-light-fog-software-r1/s64-light-fog-SKAGER-launch.log": {
+    "sha256": "d6702acc7224e6780acb112e8efaccbeff87f0b6977c51d1b599fc86e9704ff7",
+    "bytes": 7131
+  },
+  "output/capture-45d73e8-s64-light-fog-software-r1/s64-light-fog-SKAGER-trace.jsonl": {
+    "sha256": "2fbe1e9cfdfd20149d80b8adb6d068e3fc7478631a3dea66fb8383ab184e6bb7",
+    "bytes": 3698
+  },
+  "output/capture-45d73e8-s64-light-fog-software-r1/failure-canvas.png": {
+    "sha256": "c866583099f1e73e2d6ae810552e8fbebc4a2932cc96f4af4dd53950d8a053d7",
+    "bytes": 174395
+  },
+  "output/capture-45d73e8-s64-light-fog-software-r1/controlled-input.json": {
+    "sha256": "ce03e94370d976dfc7fb94c354e6509c1e8fa08785a5e8fe10f3fcf66c9975f1",
+    "bytes": 924
+  },
+  "output/capture-45d73e8-s64-light-fog-software-r1/report.json": {
+    "sha256": "fdce065e398ed5be4b30860076ea4d85e21b8e9861405a1bf90846416940af20",
+    "bytes": 15196
+  },
+  "output/capture-45d73e8-s64-light-fog-software-r2/loader-selftest.json": {
+    "sha256": "45e4d99f284703f20ae867e2784160de7e6092f86ac2fb33123a31b0b1ab40d9",
+    "bytes": 715
+  },
+  "output/capture-45d73e8-s64-light-fog-software-r2/s64-light-fog-SKAGER-launch.log": {
+    "sha256": "0b7a156df3ea511a1fddeb4d8c370ebd29f353edcd8928caa19002c5574c2ba9",
+    "bytes": 8303
+  },
+  "output/capture-45d73e8-s64-light-fog-software-r2/s64-light-fog-SKAGER-trace.jsonl": {
+    "sha256": "9d59f03fb97ae0d33977cd74b2bc0f5d1c09f35fcc17c6570e242eb87cef74a8",
+    "bytes": 3219
+  },
+  "output/capture-45d73e8-s64-light-fog-software-r2/s64-light-fog-SKAGER-Day.png": {
+    "sha256": "e0169d797a79dee0d62a78121653027231e3dce82f56e9480726a416ec0ae57c",
+    "bytes": 176947
+  },
+  "output/capture-45d73e8-s64-light-fog-software-r2/s64-light-fog-SKAGER-Day-FOGSIG-33.png": {
+    "sha256": "ec44e7e21e9a6db1c02c51a5b0c8c011349a64e0e95c676f6455fdda254c8890",
+    "bytes": 2115
+  },
+  "output/capture-45d73e8-s64-light-fog-software-r2/s64-light-fog-SKAGER-Day-LIGHTS-32.png": {
+    "sha256": "ec44e7e21e9a6db1c02c51a5b0c8c011349a64e0e95c676f6455fdda254c8890",
+    "bytes": 2115
+  },
+  "output/capture-45d73e8-s64-light-fog-software-r2/s64-light-fog-SKAGER-Day-BUISGL-35.png": {
+    "sha256": "70408ecafbad632d2008533cf02526495823984242cde33b0d5f5db56d997184",
+    "bytes": 2106
+  },
+  "output/capture-45d73e8-s64-light-fog-software-r2/s64-light-fog-SKAGER-Day-BUISGL-36.png": {
+    "sha256": "5dcbe97a3f7e81bfb48d9824a2657af7a46c6a9450982f08654c1529ca29646b",
+    "bytes": 1139
+  },
+  "output/capture-45d73e8-s64-light-fog-software-r2/s64-light-fog-SKAGER-Day.json": {
+    "sha256": "366f0384c5e0cc48aa39510de5a838b6364005b134342e6888a5eb3aca1a8018",
+    "bytes": 28663
+  },
+  "output/capture-45d73e8-s64-light-fog-software-r2/s64-light-fog-SKAGER-Dusk.png": {
+    "sha256": "5be04d599c9410d832b7c0988b6699489ee080fa851bbf64972136d48f45f4e9",
+    "bytes": 162411
+  },
+  "output/capture-45d73e8-s64-light-fog-software-r2/s64-light-fog-SKAGER-Dusk-FOGSIG-33.png": {
+    "sha256": "4f784b58681d3a2de67abac13606cd15c5264738492d7b11ab77815bff594fb7",
+    "bytes": 2048
+  },
+  "output/capture-45d73e8-s64-light-fog-software-r2/s64-light-fog-SKAGER-Dusk-LIGHTS-32.png": {
+    "sha256": "4f784b58681d3a2de67abac13606cd15c5264738492d7b11ab77815bff594fb7",
+    "bytes": 2048
+  },
+  "output/capture-45d73e8-s64-light-fog-software-r2/s64-light-fog-SKAGER-Dusk-BUISGL-35.png": {
+    "sha256": "1ce15f72de64b452175d5f69e47c1ef94abf89dac04753f6ed022b34e1732aea",
+    "bytes": 1958
+  },
+  "output/capture-45d73e8-s64-light-fog-software-r2/s64-light-fog-SKAGER-Dusk-BUISGL-36.png": {
+    "sha256": "07127d98dac43f77aea175d758e3bdcefa996e93b8b90e81fd5a16b692d3d8c4",
+    "bytes": 1079
+  },
+  "output/capture-45d73e8-s64-light-fog-software-r2/s64-light-fog-SKAGER-Dusk.json": {
+    "sha256": "86dd1ad75eb8f1ee845b2f8d9df04bb757d948a45f8366e2305146b1672f0088",
+    "bytes": 31555
+  },
+  "output/capture-45d73e8-s64-light-fog-software-r2/s64-light-fog-SKAGER-Night.png": {
+    "sha256": "e276af05641c3d08bc420f4070d684f79c6a95c6abbb8945bb05e1770de447a6",
+    "bytes": 154503
+  },
+  "output/capture-45d73e8-s64-light-fog-software-r2/s64-light-fog-SKAGER-Night-FOGSIG-33.png": {
+    "sha256": "2c1748484003dbb63903cb896c77ce94b0636c9c964c1023472bae5abdf0853b",
+    "bytes": 1948
+  },
+  "output/capture-45d73e8-s64-light-fog-software-r2/s64-light-fog-SKAGER-Night-LIGHTS-32.png": {
+    "sha256": "2c1748484003dbb63903cb896c77ce94b0636c9c964c1023472bae5abdf0853b",
+    "bytes": 1948
+  },
+  "output/capture-45d73e8-s64-light-fog-software-r2/s64-light-fog-SKAGER-Night-BUISGL-35.png": {
+    "sha256": "41382801e675731f837944a38cdf58fb99301605ce4ec46ffcc08e7ac988d852",
+    "bytes": 1728
+  },
+  "output/capture-45d73e8-s64-light-fog-software-r2/s64-light-fog-SKAGER-Night-BUISGL-36.png": {
+    "sha256": "be2b1b3a563dc587f9d851cdd2e9b51007a81c791e17175e66a186bbb3667cad",
+    "bytes": 992
+  },
+  "output/capture-45d73e8-s64-light-fog-software-r2/s64-light-fog-SKAGER-Night.json": {
+    "sha256": "482c7e18601e5c9390e119c09fa10e39f1cb22f970583647399759ba22c936d5",
+    "bytes": 31552
+  },
+  "output/capture-45d73e8-s64-light-fog-software-r2/s64-light-fog-SKAGER-Day-return.png": {
+    "sha256": "5d5389547c781d56b6f9465fa4e860384a050f9d897159b08ec98590e7883616",
+    "bytes": 177303
+  },
+  "output/capture-45d73e8-s64-light-fog-software-r2/s64-light-fog-SKAGER-Day-return-FOGSIG-33.png": {
+    "sha256": "ec44e7e21e9a6db1c02c51a5b0c8c011349a64e0e95c676f6455fdda254c8890",
+    "bytes": 2115
+  },
+  "output/capture-45d73e8-s64-light-fog-software-r2/s64-light-fog-SKAGER-Day-return-LIGHTS-32.png": {
+    "sha256": "ec44e7e21e9a6db1c02c51a5b0c8c011349a64e0e95c676f6455fdda254c8890",
+    "bytes": 2115
+  },
+  "output/capture-45d73e8-s64-light-fog-software-r2/s64-light-fog-SKAGER-Day-return-BUISGL-35.png": {
+    "sha256": "70408ecafbad632d2008533cf02526495823984242cde33b0d5f5db56d997184",
+    "bytes": 2106
+  },
+  "output/capture-45d73e8-s64-light-fog-software-r2/s64-light-fog-SKAGER-Day-return-BUISGL-36.png": {
+    "sha256": "5dcbe97a3f7e81bfb48d9824a2657af7a46c6a9450982f08654c1529ca29646b",
+    "bytes": 1139
+  },
+  "output/capture-45d73e8-s64-light-fog-software-r2/s64-light-fog-SKAGER-Day-return.json": {
+    "sha256": "6ccd182c6d117fa94ecb80422a8e57fb27484af99ca8ec711a4bc7c92706bc3c",
+    "bytes": 31553
+  },
+  "output/capture-45d73e8-s64-light-fog-software-r2/controlled-input.json": {
+    "sha256": "4d6c14ce80c1ddf971858d390abd68b32590ab0e7481ad8a3a0b8941b12902ac",
+    "bytes": 4620
+  },
+  "output/capture-45d73e8-s64-light-fog-software-r2/report.json": {
+    "sha256": "40bc4bc46f60a55e7e47b3c9cd052961afc41a8f7d31ff55aab28e5b3c0e72aa",
+    "bytes": 57222
+  },
+  "output/capture-45d73e8-s64-light-fog-opengl-r2/mesa-renderer.txt": {
+    "sha256": "b1559fc321899b52fcbd1fc3c50593ad76c7dedce3396588c51189124b98bebd",
+    "bytes": 1691
+  },
+  "output/capture-45d73e8-s64-light-fog-opengl-r2/loader-selftest.json": {
+    "sha256": "45e4d99f284703f20ae867e2784160de7e6092f86ac2fb33123a31b0b1ab40d9",
+    "bytes": 715
+  },
+  "output/capture-45d73e8-s64-light-fog-opengl-r2/s64-light-fog-SKAGER-launch.log": {
+    "sha256": "f93d8547639c3e6b74d9dd8d0d5118a35242722abcb0a366d82f181ff7c7cd42",
+    "bytes": 8949
+  },
+  "output/capture-45d73e8-s64-light-fog-opengl-r2/s64-light-fog-SKAGER-trace.jsonl": {
+    "sha256": "9d59f03fb97ae0d33977cd74b2bc0f5d1c09f35fcc17c6570e242eb87cef74a8",
+    "bytes": 3219
+  },
+  "output/capture-45d73e8-s64-light-fog-opengl-r2/s64-light-fog-SKAGER-Day.png": {
+    "sha256": "3e3b6061643d9c6187ab0c9006625824bd7ec3692cd535d9e9dcd0b66158a085",
+    "bytes": 123546
+  },
+  "output/capture-45d73e8-s64-light-fog-opengl-r2/s64-light-fog-SKAGER-Day-FOGSIG-33.png": {
+    "sha256": "7a95eafccb57ac2f1af37f6b2cf7d590e540eecc5d2f3f9cc1833d13e2a3541d",
+    "bytes": 1894
+  },
+  "output/capture-45d73e8-s64-light-fog-opengl-r2/s64-light-fog-SKAGER-Day-LIGHTS-32.png": {
+    "sha256": "7a95eafccb57ac2f1af37f6b2cf7d590e540eecc5d2f3f9cc1833d13e2a3541d",
+    "bytes": 1894
+  },
+  "output/capture-45d73e8-s64-light-fog-opengl-r2/s64-light-fog-SKAGER-Day-BUISGL-35.png": {
+    "sha256": "9f9f49dbb0e0d96675b38052599ff43870e5b5cc95f3141ab87f063409ccdfa0",
+    "bytes": 1941
+  },
+  "output/capture-45d73e8-s64-light-fog-opengl-r2/s64-light-fog-SKAGER-Day-BUISGL-36.png": {
+    "sha256": "0534f0ca26ce84b21df6b4bad4875e1d5cc6b61778daba085a0f1fd97b33898f",
+    "bytes": 863
+  },
+  "output/capture-45d73e8-s64-light-fog-opengl-r2/s64-light-fog-SKAGER-Day.json": {
+    "sha256": "8cbf9168441bcc2f27ceba6d1b4161302768cec06a0e3c40e027d746996b65ac",
+    "bytes": 28663
+  },
+  "output/capture-45d73e8-s64-light-fog-opengl-r2/s64-light-fog-SKAGER-Dusk.png": {
+    "sha256": "2dc0d5ffdd257d9a3103b70faf2c47d870d6adbf015cf6063385b4f62679cef3",
+    "bytes": 113036
+  },
+  "output/capture-45d73e8-s64-light-fog-opengl-r2/s64-light-fog-SKAGER-Dusk-FOGSIG-33.png": {
+    "sha256": "3caca48f9223913b2e860d667d923a55bd493cbec11a850ef00bdcef0be5aeb7",
+    "bytes": 1830
+  },
+  "output/capture-45d73e8-s64-light-fog-opengl-r2/s64-light-fog-SKAGER-Dusk-LIGHTS-32.png": {
+    "sha256": "3caca48f9223913b2e860d667d923a55bd493cbec11a850ef00bdcef0be5aeb7",
+    "bytes": 1830
+  },
+  "output/capture-45d73e8-s64-light-fog-opengl-r2/s64-light-fog-SKAGER-Dusk-BUISGL-35.png": {
+    "sha256": "16d898085bb19f28571694d77bbf1fca25590ee0e3646ea0d46c90a2df9dc1e9",
+    "bytes": 1813
+  },
+  "output/capture-45d73e8-s64-light-fog-opengl-r2/s64-light-fog-SKAGER-Dusk-BUISGL-36.png": {
+    "sha256": "dd2213457104b7f0ebba8b0df69d5422d1a72d5d1e1cde612426a5e715fdb74a",
+    "bytes": 791
+  },
+  "output/capture-45d73e8-s64-light-fog-opengl-r2/s64-light-fog-SKAGER-Dusk.json": {
+    "sha256": "3e0ea48908dc912d2d6cc7e4f57277eb58c04e7115c1c132e33b2ecc9b00c8ad",
+    "bytes": 31549
+  },
+  "output/capture-45d73e8-s64-light-fog-opengl-r2/s64-light-fog-SKAGER-Night.png": {
+    "sha256": "186421a88ff23bc66f3f28a44c1abf9a0b241970774f7ab9ea85bc834391e9f7",
+    "bytes": 108989
+  },
+  "output/capture-45d73e8-s64-light-fog-opengl-r2/s64-light-fog-SKAGER-Night-FOGSIG-33.png": {
+    "sha256": "0b96f7a45056ae3164332974fc1e49fb9307f95782454eee198c438252bd18e1",
+    "bytes": 1753
+  },
+  "output/capture-45d73e8-s64-light-fog-opengl-r2/s64-light-fog-SKAGER-Night-LIGHTS-32.png": {
+    "sha256": "0b96f7a45056ae3164332974fc1e49fb9307f95782454eee198c438252bd18e1",
+    "bytes": 1753
+  },
+  "output/capture-45d73e8-s64-light-fog-opengl-r2/s64-light-fog-SKAGER-Night-BUISGL-35.png": {
+    "sha256": "f213bdf07528d6111c739954c203bcca75f01088b44745a6eddd4a3d904c6fbd",
+    "bytes": 1604
+  },
+  "output/capture-45d73e8-s64-light-fog-opengl-r2/s64-light-fog-SKAGER-Night-BUISGL-36.png": {
+    "sha256": "a859105af1d66387c4ac62147f0f2d1cc58f5ce35ecd82b26e26fd6282de6689",
+    "bytes": 711
+  },
+  "output/capture-45d73e8-s64-light-fog-opengl-r2/s64-light-fog-SKAGER-Night.json": {
+    "sha256": "90868ec6782542a2392b9c59c13cab65094406242bde927482f8222182e7f8b5",
+    "bytes": 31556
+  },
+  "output/capture-45d73e8-s64-light-fog-opengl-r2/s64-light-fog-SKAGER-Day-return.png": {
+    "sha256": "5a04f83f3fe9828c1b0b5aba826f4ef14af6bfb7663f3ff25dbab8c2b28cff23",
+    "bytes": 123547
+  },
+  "output/capture-45d73e8-s64-light-fog-opengl-r2/s64-light-fog-SKAGER-Day-return-FOGSIG-33.png": {
+    "sha256": "7a95eafccb57ac2f1af37f6b2cf7d590e540eecc5d2f3f9cc1833d13e2a3541d",
+    "bytes": 1894
+  },
+  "output/capture-45d73e8-s64-light-fog-opengl-r2/s64-light-fog-SKAGER-Day-return-LIGHTS-32.png": {
+    "sha256": "7a95eafccb57ac2f1af37f6b2cf7d590e540eecc5d2f3f9cc1833d13e2a3541d",
+    "bytes": 1894
+  },
+  "output/capture-45d73e8-s64-light-fog-opengl-r2/s64-light-fog-SKAGER-Day-return-BUISGL-35.png": {
+    "sha256": "9f9f49dbb0e0d96675b38052599ff43870e5b5cc95f3141ab87f063409ccdfa0",
+    "bytes": 1941
+  },
+  "output/capture-45d73e8-s64-light-fog-opengl-r2/s64-light-fog-SKAGER-Day-return-BUISGL-36.png": {
+    "sha256": "0534f0ca26ce84b21df6b4bad4875e1d5cc6b61778daba085a0f1fd97b33898f",
+    "bytes": 863
+  },
+  "output/capture-45d73e8-s64-light-fog-opengl-r2/s64-light-fog-SKAGER-Day-return.json": {
+    "sha256": "44593071899c4738d72f6fce51a7dff4a420de70627e2afc863d9cba11e7ae53",
+    "bytes": 31552
+  },
+  "output/capture-45d73e8-s64-light-fog-opengl-r2/controlled-input.json": {
+    "sha256": "d90d5e925681b1080278968608adf1becfe352f4c29ba390c3df804e2b732014",
+    "bytes": 4894
+  },
+  "output/capture-45d73e8-s64-light-fog-opengl-r2/report.json": {
+    "sha256": "5593b25a4dd6fb022355df06d96c1610eefb4cbcc3897de8c2ffbe149d098823",
+    "bytes": 58965
+  },
+  "output/capture-45d73e8-s64-rocks-software-r2/loader-selftest.json": {
+    "sha256": "45e4d99f284703f20ae867e2784160de7e6092f86ac2fb33123a31b0b1ab40d9",
+    "bytes": 715
+  },
+  "output/capture-45d73e8-s64-rocks-software-r2/s64-rocks-SKAGER-launch.log": {
+    "sha256": "e5ca06657b3875523738e66445ead96c93d4a5f3e0384be2aacfe614c3b38531",
+    "bytes": 8303
+  },
+  "output/capture-45d73e8-s64-rocks-software-r2/s64-rocks-SKAGER-trace.jsonl": {
+    "sha256": "d3134ff04359e27fd1ffb25d0897709379d665594fbe47052713dd04314758a0",
+    "bytes": 3391
+  },
+  "output/capture-45d73e8-s64-rocks-software-r2/s64-rocks-SKAGER-Day.png": {
+    "sha256": "ac718eef8c638620a9df7ab9c7b7fc55e22e2bf1115024249ba0ea06ee2b5095",
+    "bytes": 173189
+  },
+  "output/capture-45d73e8-s64-rocks-software-r2/s64-rocks-SKAGER-Day-UWTROC-1.png": {
+    "sha256": "8ee0a60515ea8aa15b7136b18003814c1e046041318ec369de682627f4345552",
+    "bytes": 1472
+  },
+  "output/capture-45d73e8-s64-rocks-software-r2/s64-rocks-SKAGER-Day-UWTROC-2.png": {
+    "sha256": "e17e42af19997a9f715b9057bec71ddc69376808d67e1054fc59696d6dc38344",
+    "bytes": 1278
+  },
+  "output/capture-45d73e8-s64-rocks-software-r2/s64-rocks-SKAGER-Day-UWTROC-3.png": {
+    "sha256": "3a6829fe0e3cd700b6dd23e484d0dccd1f15fafe9ac68f0bd46d30e018d8b7d8",
+    "bytes": 1236
+  },
+  "output/capture-45d73e8-s64-rocks-software-r2/s64-rocks-SKAGER-Day-UWTROC-38.png": {
+    "sha256": "9aa78d9aa28f74424b43d9047cbd2638c33185215637cbfc2f068c1e7d506a95",
+    "bytes": 1156
+  },
+  "output/capture-45d73e8-s64-rocks-software-r2/s64-rocks-SKAGER-Day.json": {
+    "sha256": "07dd81c88df6ab8b61d7d9be04fdd2312fcf6b0d02602578c529b0bc45773962",
+    "bytes": 28656
+  },
+  "output/capture-45d73e8-s64-rocks-software-r2/s64-rocks-SKAGER-Dusk.png": {
+    "sha256": "62d9c4100c0506d7de92b0ca427353650204867d75a9516de701a1545a3bfb98",
+    "bytes": 158593
+  },
+  "output/capture-45d73e8-s64-rocks-software-r2/s64-rocks-SKAGER-Dusk-UWTROC-1.png": {
+    "sha256": "ee3370b26a7d965d92e12177b8496feccc0b82af1bb1c210f3e00d5e83a984fa",
+    "bytes": 824
+  },
+  "output/capture-45d73e8-s64-rocks-software-r2/s64-rocks-SKAGER-Dusk-UWTROC-2.png": {
+    "sha256": "2147a979bbbb7e38b4383f1b3cecbf7b3bb799b9904f7cdbc3e3f0ede9b1812e",
+    "bytes": 836
+  },
+  "output/capture-45d73e8-s64-rocks-software-r2/s64-rocks-SKAGER-Dusk-UWTROC-3.png": {
+    "sha256": "7fcd2a7091287e91477897b86ae01e39488d01b1d245b1a1a29e9b443cd64afd",
+    "bytes": 796
+  },
+  "output/capture-45d73e8-s64-rocks-software-r2/s64-rocks-SKAGER-Dusk-UWTROC-38.png": {
+    "sha256": "b522f1eee56427a4f3881a256de19250e2a91348c0c25218be44b457f5b3936b",
+    "bytes": 1140
+  },
+  "output/capture-45d73e8-s64-rocks-software-r2/s64-rocks-SKAGER-Dusk.json": {
+    "sha256": "03c6b8953e843b13beeb116247a67bee8140d2055811353bb271b56a7550f358",
+    "bytes": 31552
+  },
+  "output/capture-45d73e8-s64-rocks-software-r2/s64-rocks-SKAGER-Night.png": {
+    "sha256": "4f45c5bb7a15fe68941579f6afcadf19608ab060f08883740b106a6ed981c401",
+    "bytes": 151421
+  },
+  "output/capture-45d73e8-s64-rocks-software-r2/s64-rocks-SKAGER-Night-UWTROC-1.png": {
+    "sha256": "6a506785dd7f4f06a37783314c5a998645ee3177fe2ac789c80faa489a75bc7c",
+    "bytes": 766
+  },
+  "output/capture-45d73e8-s64-rocks-software-r2/s64-rocks-SKAGER-Night-UWTROC-2.png": {
+    "sha256": "cbf92cea31a1fd1634c4e42f568223c551ba0dab34a8285b1122a2011b4746be",
+    "bytes": 790
+  },
+  "output/capture-45d73e8-s64-rocks-software-r2/s64-rocks-SKAGER-Night-UWTROC-3.png": {
+    "sha256": "c4d2f85a3b4a737ba522468327778a3f8d6068bdbc6d08edfc2a013bcba8c329",
+    "bytes": 760
+  },
+  "output/capture-45d73e8-s64-rocks-software-r2/s64-rocks-SKAGER-Night-UWTROC-38.png": {
+    "sha256": "d8587f9f8e0594c4a4defe91763b4c27f6b62adfe6e2da92fed31cddad1539da",
+    "bytes": 1161
+  },
+  "output/capture-45d73e8-s64-rocks-software-r2/s64-rocks-SKAGER-Night.json": {
+    "sha256": "c1b674ac90c77ba5234253d8e6e30e4ad07114e6763596bca3b6396d1a2311b2",
+    "bytes": 31553
+  },
+  "output/capture-45d73e8-s64-rocks-software-r2/s64-rocks-SKAGER-Day-return.png": {
+    "sha256": "15518c14ca8f13fc2a703c06f3649e86385a9144ecdba80dc7e8b8196613f953",
+    "bytes": 173127
+  },
+  "output/capture-45d73e8-s64-rocks-software-r2/s64-rocks-SKAGER-Day-return-UWTROC-1.png": {
+    "sha256": "8ee0a60515ea8aa15b7136b18003814c1e046041318ec369de682627f4345552",
+    "bytes": 1472
+  },
+  "output/capture-45d73e8-s64-rocks-software-r2/s64-rocks-SKAGER-Day-return-UWTROC-2.png": {
+    "sha256": "e17e42af19997a9f715b9057bec71ddc69376808d67e1054fc59696d6dc38344",
+    "bytes": 1278
+  },
+  "output/capture-45d73e8-s64-rocks-software-r2/s64-rocks-SKAGER-Day-return-UWTROC-3.png": {
+    "sha256": "3a6829fe0e3cd700b6dd23e484d0dccd1f15fafe9ac68f0bd46d30e018d8b7d8",
+    "bytes": 1236
+  },
+  "output/capture-45d73e8-s64-rocks-software-r2/s64-rocks-SKAGER-Day-return-UWTROC-38.png": {
+    "sha256": "9aa78d9aa28f74424b43d9047cbd2638c33185215637cbfc2f068c1e7d506a95",
+    "bytes": 1156
+  },
+  "output/capture-45d73e8-s64-rocks-software-r2/s64-rocks-SKAGER-Day-return.json": {
+    "sha256": "12ab5b8a3e2b84b4662003cce8fe10bb2157aec1d137ae99ec7814470632765f",
+    "bytes": 31550
+  },
+  "output/capture-45d73e8-s64-rocks-software-r2/controlled-input.json": {
+    "sha256": "af5e16610d298f96e51841a98f2ab188d6da75fe4709ff08b5596df69c943c98",
+    "bytes": 4616
+  },
+  "output/capture-45d73e8-s64-rocks-software-r2/report.json": {
+    "sha256": "41c00706c6f871dcc436af316e56d422d5b47ce2878753036052fbe21346c348",
+    "bytes": 59698
+  },
+  "output/capture-45d73e8-s64-rocks-opengl-r2/mesa-renderer.txt": {
+    "sha256": "bf5ec73d358b05e2b16bae5c1728424222da5b33a6d3683dc372aaf3362e85f6",
+    "bytes": 1691
+  },
+  "output/capture-45d73e8-s64-rocks-opengl-r2/loader-selftest.json": {
+    "sha256": "45e4d99f284703f20ae867e2784160de7e6092f86ac2fb33123a31b0b1ab40d9",
+    "bytes": 715
+  },
+  "output/capture-45d73e8-s64-rocks-opengl-r2/s64-rocks-SKAGER-launch.log": {
+    "sha256": "666017cf2496bc47418a5e76569c7b07ad9adc72389ac1d1661e507ab36ad844",
+    "bytes": 8902
+  },
+  "output/capture-45d73e8-s64-rocks-opengl-r2/s64-rocks-SKAGER-trace.jsonl": {
+    "sha256": "68442fd5a22bc9b79d0ae4159461c87ce444d233e6d1bf8db614946f110aeb4f",
+    "bytes": 3391
+  },
+  "output/capture-45d73e8-s64-rocks-opengl-r2/s64-rocks-SKAGER-Day.png": {
+    "sha256": "7d8bcb55ca551062db5141506b31a45e91c77c34e494d3e73f52332da719effe",
+    "bytes": 121468
+  },
+  "output/capture-45d73e8-s64-rocks-opengl-r2/s64-rocks-SKAGER-Day-UWTROC-1.png": {
+    "sha256": "bc0446a5f2b562699c01858d17b2b1af1e45e334f2645f5879f88aa5b61a754e",
+    "bytes": 1269
+  },
+  "output/capture-45d73e8-s64-rocks-opengl-r2/s64-rocks-SKAGER-Day-UWTROC-2.png": {
+    "sha256": "719a2d85a287280963a446ad268faac28b0d4c405cb1da65c9c9ba3b989bef9e",
+    "bytes": 1174
+  },
+  "output/capture-45d73e8-s64-rocks-opengl-r2/s64-rocks-SKAGER-Day-UWTROC-3.png": {
+    "sha256": "767b263d09cdbec8d1f517e04956397f8433fa078949aabff42998cb96dfc347",
+    "bytes": 1260
+  },
+  "output/capture-45d73e8-s64-rocks-opengl-r2/s64-rocks-SKAGER-Day-UWTROC-38.png": {
+    "sha256": "c9f23741e912952c87a91148d6091b9aebfb3928b732d4542bdfbf8c99b34e3a",
+    "bytes": 1098
+  },
+  "output/capture-45d73e8-s64-rocks-opengl-r2/s64-rocks-SKAGER-Day.json": {
+    "sha256": "26d31378b53c6a977dcc5a772935eea6e9bc0bb5d16e291915876838811859de",
+    "bytes": 28660
+  },
+  "output/capture-45d73e8-s64-rocks-opengl-r2/s64-rocks-SKAGER-Dusk.png": {
+    "sha256": "b80dd4d71586152840ca404e93b1664ac7458e3c62e42250b7e325c0df6f38a2",
+    "bytes": 111429
+  },
+  "output/capture-45d73e8-s64-rocks-opengl-r2/s64-rocks-SKAGER-Dusk-UWTROC-1.png": {
+    "sha256": "a9b1aaba6712908b4f46c440cdb59f3990cd9fc68a0136704d3125290dbf49e6",
+    "bytes": 743
+  },
+  "output/capture-45d73e8-s64-rocks-opengl-r2/s64-rocks-SKAGER-Dusk-UWTROC-2.png": {
+    "sha256": "310e57bfcbfc7a0391c6b94b17faa3aaf5552981b4dcf1b8ad3f79f7645c8795",
+    "bytes": 760
+  },
+  "output/capture-45d73e8-s64-rocks-opengl-r2/s64-rocks-SKAGER-Dusk-UWTROC-3.png": {
+    "sha256": "7b5cb8317fae896f11b4a8bdfc99f5ee78d47ecc843f0c4443b19105b4f9e3ad",
+    "bytes": 856
+  },
+  "output/capture-45d73e8-s64-rocks-opengl-r2/s64-rocks-SKAGER-Dusk-UWTROC-38.png": {
+    "sha256": "a28dbafa843c05fe88e647f838ea30c33a2db8e80418ef37552b1fbd175be34d",
+    "bytes": 1079
+  },
+  "output/capture-45d73e8-s64-rocks-opengl-r2/s64-rocks-SKAGER-Dusk.json": {
+    "sha256": "595cc50d370857201fccf53312b842eb3b978a9e7e2f42fdf73594e1e60358eb",
+    "bytes": 31551
+  },
+  "output/capture-45d73e8-s64-rocks-opengl-r2/s64-rocks-SKAGER-Night.png": {
+    "sha256": "0b8f167713a8281d168c9757182d3881df5569fc640bf817b5ad440fda615e3c",
+    "bytes": 107978
+  },
+  "output/capture-45d73e8-s64-rocks-opengl-r2/s64-rocks-SKAGER-Night-UWTROC-1.png": {
+    "sha256": "9d277e6e7aa70bf2206ed9cdc1fedef442d684042ca95895e9ec8d0e08afe401",
+    "bytes": 696
+  },
+  "output/capture-45d73e8-s64-rocks-opengl-r2/s64-rocks-SKAGER-Night-UWTROC-2.png": {
+    "sha256": "d7cb24b48806137b2abba2a7308e767587ceca04e45bc5e3eedbcbf14907373c",
+    "bytes": 724
+  },
+  "output/capture-45d73e8-s64-rocks-opengl-r2/s64-rocks-SKAGER-Night-UWTROC-3.png": {
+    "sha256": "c7e1983261f8abca2edc4c9fd135c2240597c6353e483c2b148ec78363e5ec6b",
+    "bytes": 804
+  },
+  "output/capture-45d73e8-s64-rocks-opengl-r2/s64-rocks-SKAGER-Night-UWTROC-38.png": {
+    "sha256": "7a7af0d0c19e45c488568d15c47373987740adf2621fce717b2060a75e7c276a",
+    "bytes": 1118
+  },
+  "output/capture-45d73e8-s64-rocks-opengl-r2/s64-rocks-SKAGER-Night.json": {
+    "sha256": "28ab1ac0516855b2d594cee2a4a9ca4df5ef49b0abf97912ce8f40c8f2bcc852",
+    "bytes": 31554
+  },
+  "output/capture-45d73e8-s64-rocks-opengl-r2/s64-rocks-SKAGER-Day-return.png": {
+    "sha256": "80c2dd7f0ba9b9b3254b783cd4cff134ef515c3715ebd07387a7712db03d83f6",
+    "bytes": 121476
+  },
+  "output/capture-45d73e8-s64-rocks-opengl-r2/s64-rocks-SKAGER-Day-return-UWTROC-1.png": {
+    "sha256": "bc0446a5f2b562699c01858d17b2b1af1e45e334f2645f5879f88aa5b61a754e",
+    "bytes": 1269
+  },
+  "output/capture-45d73e8-s64-rocks-opengl-r2/s64-rocks-SKAGER-Day-return-UWTROC-2.png": {
+    "sha256": "719a2d85a287280963a446ad268faac28b0d4c405cb1da65c9c9ba3b989bef9e",
+    "bytes": 1174
+  },
+  "output/capture-45d73e8-s64-rocks-opengl-r2/s64-rocks-SKAGER-Day-return-UWTROC-3.png": {
+    "sha256": "767b263d09cdbec8d1f517e04956397f8433fa078949aabff42998cb96dfc347",
+    "bytes": 1260
+  },
+  "output/capture-45d73e8-s64-rocks-opengl-r2/s64-rocks-SKAGER-Day-return-UWTROC-38.png": {
+    "sha256": "c9f23741e912952c87a91148d6091b9aebfb3928b732d4542bdfbf8c99b34e3a",
+    "bytes": 1098
+  },
+  "output/capture-45d73e8-s64-rocks-opengl-r2/s64-rocks-SKAGER-Day-return.json": {
+    "sha256": "923c5e4af438f1c91b9f07455d43b6f94140a257b5975b981dc3c8b66b186274",
+    "bytes": 31550
+  },
+  "output/capture-45d73e8-s64-rocks-opengl-r2/controlled-input.json": {
+    "sha256": "db796889102836e15ec8ecb054ac34701a5caa1ac7ea14a05908c8030d66352f",
+    "bytes": 4623
+  },
+  "output/capture-45d73e8-s64-rocks-opengl-r2/report.json": {
+    "sha256": "fdd94c8e790ad9962f5252298a236649053e230ab0f3ebec888d0a6680c5f7d9",
+    "bytes": 61449
+  },
+  "output/capture-45d73e8-s64-wreck-software-r2/loader-selftest.json": {
+    "sha256": "45e4d99f284703f20ae867e2784160de7e6092f86ac2fb33123a31b0b1ab40d9",
+    "bytes": 715
+  },
+  "output/capture-45d73e8-s64-wreck-software-r2/s64-wreck-SKAGER-launch.log": {
+    "sha256": "348b62cb1b2d4fe58edd0554878b6a2370cddda1ae630c49878c5629574145c2",
+    "bytes": 8244
+  },
+  "output/capture-45d73e8-s64-wreck-software-r2/s64-wreck-SKAGER-trace.jsonl": {
+    "sha256": "632c8e1938ba99515910bd4478a24ec34078e18d3798d66898667975f51fbf38",
+    "bytes": 1719
+  },
+  "output/capture-45d73e8-s64-wreck-software-r2/s64-wreck-SKAGER-Day.png": {
+    "sha256": "64f415f12aea2e4f742ef2231c9aeb6762f4b7c07c26f009987675becd852ce7",
+    "bytes": 83673
+  },
+  "output/capture-45d73e8-s64-wreck-software-r2/s64-wreck-SKAGER-Day-WRECKS-998.png": {
+    "sha256": "bf416fe5bf8e1758d7dd93f4f6749247ade35c18b87aa18777ef8798582286c8",
+    "bytes": 676
+  },
+  "output/capture-45d73e8-s64-wreck-software-r2/s64-wreck-SKAGER-Day.json": {
+    "sha256": "d53753752910d6f7800a5d7a6e6136daa239cd7a976c9f246454617c748de7fa",
+    "bytes": 28655
+  },
+  "output/capture-45d73e8-s64-wreck-software-r2/s64-wreck-SKAGER-Dusk.png": {
+    "sha256": "9f482d482e0a4e742b2f507413a2ec95a1835df8b0094007974d853f6c446688",
+    "bytes": 83807
+  },
+  "output/capture-45d73e8-s64-wreck-software-r2/s64-wreck-SKAGER-Dusk-WRECKS-998.png": {
+    "sha256": "8f2b843aa12596a2e418c0b09b5fcdd3cffea3b19d77d9c3a380b9422b446810",
+    "bytes": 695
+  },
+  "output/capture-45d73e8-s64-wreck-software-r2/s64-wreck-SKAGER-Dusk.json": {
+    "sha256": "95810a9244fdc27c6f38c4ff200a221e73bbafe1b20ed13c1b23104120aa84ea",
+    "bytes": 31551
+  },
+  "output/capture-45d73e8-s64-wreck-software-r2/s64-wreck-SKAGER-Night.png": {
+    "sha256": "fcec904ec22160f52be96268017e6c0b695ec0f1803ca4d9e103d1792756d9c8",
+    "bytes": 82327
+  },
+  "output/capture-45d73e8-s64-wreck-software-r2/s64-wreck-SKAGER-Night-WRECKS-998.png": {
+    "sha256": "3721cdc5e3b8f54dd59904042a0582b716cc5691496f0899bbe4902212ba5056",
+    "bytes": 668
+  },
+  "output/capture-45d73e8-s64-wreck-software-r2/s64-wreck-SKAGER-Night.json": {
+    "sha256": "d76ac02c899552a881e3279cfb5e6ab42f4335204094d86d5939fd285538efcb",
+    "bytes": 31549
+  },
+  "output/capture-45d73e8-s64-wreck-software-r2/s64-wreck-SKAGER-Day-return.png": {
+    "sha256": "64f415f12aea2e4f742ef2231c9aeb6762f4b7c07c26f009987675becd852ce7",
+    "bytes": 83673
+  },
+  "output/capture-45d73e8-s64-wreck-software-r2/s64-wreck-SKAGER-Day-return-WRECKS-998.png": {
+    "sha256": "bf416fe5bf8e1758d7dd93f4f6749247ade35c18b87aa18777ef8798582286c8",
+    "bytes": 676
+  },
+  "output/capture-45d73e8-s64-wreck-software-r2/s64-wreck-SKAGER-Day-return.json": {
+    "sha256": "cffcfd73d54efb42903e484c5eefa6fe02f2a044b160e945a821c6af32ce1a1b",
+    "bytes": 31549
+  },
+  "output/capture-45d73e8-s64-wreck-software-r2/controlled-input.json": {
+    "sha256": "40b3355e9458a15ae3c6c5841e086b5c38255e1acc21287014c0d2bb964d9fc9",
+    "bytes": 4622
+  },
+  "output/capture-45d73e8-s64-wreck-software-r2/report.json": {
+    "sha256": "237786b797c022ef1b8244b4306a15143436fa36fba0ec5c629d51775fa40478",
+    "bytes": 33554
+  },
+  "output/capture-45d73e8-s64-wreck-opengl-r2/mesa-renderer.txt": {
+    "sha256": "fb746534a68aaa163967f130a44a4533e74ce17eed8f233c957f9d29cf4b3d04",
+    "bytes": 1691
+  },
+  "output/capture-45d73e8-s64-wreck-opengl-r2/loader-selftest.json": {
+    "sha256": "45e4d99f284703f20ae867e2784160de7e6092f86ac2fb33123a31b0b1ab40d9",
+    "bytes": 715
+  },
+  "output/capture-45d73e8-s64-wreck-opengl-r2/s64-wreck-SKAGER-launch.log": {
+    "sha256": "23a174520ae524e594a5866f2d226d14cdc565dde8bb862c33433809690cd022",
+    "bytes": 8902
+  },
+  "output/capture-45d73e8-s64-wreck-opengl-r2/s64-wreck-SKAGER-trace.jsonl": {
+    "sha256": "632c8e1938ba99515910bd4478a24ec34078e18d3798d66898667975f51fbf38",
+    "bytes": 1719
+  },
+  "output/capture-45d73e8-s64-wreck-opengl-r2/s64-wreck-SKAGER-Day.png": {
+    "sha256": "48ca2279179e4b8afc3ce3da5d73542afb594cb240766e756cd51f7bf4d912fc",
+    "bytes": 74503
+  },
+  "output/capture-45d73e8-s64-wreck-opengl-r2/s64-wreck-SKAGER-Day-WRECKS-998.png": {
+    "sha256": "efab8ed5b237f14687e1f42fb5a9e2f88e296de8d0a831d17d4531481cbaa68a",
+    "bytes": 670
+  },
+  "output/capture-45d73e8-s64-wreck-opengl-r2/s64-wreck-SKAGER-Day.json": {
+    "sha256": "1a8bba96c7bb0ef53419fae5fb0b4e9bced1559318772955031d196cbfd55f31",
+    "bytes": 28659
+  },
+  "output/capture-45d73e8-s64-wreck-opengl-r2/s64-wreck-SKAGER-Dusk.png": {
+    "sha256": "495c53316768175aa52d09cf56dd3db2738a206fd190812f158c945ba3ff1eb4",
+    "bytes": 73578
+  },
+  "output/capture-45d73e8-s64-wreck-opengl-r2/s64-wreck-SKAGER-Dusk-WRECKS-998.png": {
+    "sha256": "6146bf68b7cd2584eaca687790da570c613ec62e8eac5b750f74e9abab223385",
+    "bytes": 684
+  },
+  "output/capture-45d73e8-s64-wreck-opengl-r2/s64-wreck-SKAGER-Dusk.json": {
+    "sha256": "11b485707a96f8c48f827a8bc26cd4a9f02ac33302115902a62d063a505d0559",
+    "bytes": 31551
+  },
+  "output/capture-45d73e8-s64-wreck-opengl-r2/s64-wreck-SKAGER-Night.png": {
+    "sha256": "226265ffcd9723f8ee5683bfc9821dfaa846d4ab959867c244c9c07465d41598",
+    "bytes": 72320
+  },
+  "output/capture-45d73e8-s64-wreck-opengl-r2/s64-wreck-SKAGER-Night-WRECKS-998.png": {
+    "sha256": "9427ec9ac66716b8f66acaa2024951030929184368628944b4a10d8edac77c00",
+    "bytes": 665
+  },
+  "output/capture-45d73e8-s64-wreck-opengl-r2/s64-wreck-SKAGER-Night.json": {
+    "sha256": "fa80342a0c435faa5a0c25d9c324ecc490a21f5ab2a0cc23d9dfd1b5bd0a9c9e",
+    "bytes": 31553
+  },
+  "output/capture-45d73e8-s64-wreck-opengl-r2/s64-wreck-SKAGER-Day-return.png": {
+    "sha256": "91a5d3835bc2b0faf5a1d243834de624c9b0b80e8140257219f792908f326080",
+    "bytes": 74517
+  },
+  "output/capture-45d73e8-s64-wreck-opengl-r2/s64-wreck-SKAGER-Day-return-WRECKS-998.png": {
+    "sha256": "efab8ed5b237f14687e1f42fb5a9e2f88e296de8d0a831d17d4531481cbaa68a",
+    "bytes": 670
+  },
+  "output/capture-45d73e8-s64-wreck-opengl-r2/s64-wreck-SKAGER-Day-return.json": {
+    "sha256": "e5cfc78cec53b8160dd9aff144990bb418847816bb6268faa2f71b83dc28aea8",
+    "bytes": 31549
+  },
+  "output/capture-45d73e8-s64-wreck-opengl-r2/controlled-input.json": {
+    "sha256": "67b288559f8275df82bded997475329001f8dc88d5f9c1949919e20de5667a3a",
+    "bytes": 4619
+  },
+  "output/capture-45d73e8-s64-wreck-opengl-r2/report.json": {
+    "sha256": "1ad320dfef1e61a24eff7fa3f031a16a027b6116371a8be64defc9bc2be77f7a",
+    "bytes": 35309
+  },
+  "output/capture-45d73e8-seattle-software-r2/loader-selftest.json": {
+    "sha256": "45e4d99f284703f20ae867e2784160de7e6092f86ac2fb33123a31b0b1ab40d9",
+    "bytes": 715
+  },
+  "output/capture-45d73e8-seattle-software-r2/seattle-SKAGER-launch.log": {
+    "sha256": "668c92dc043974d27894c7b0bf9eb152d23b6e239c09f5a0733306edfdf36e4e",
+    "bytes": 8370
+  },
+  "output/capture-45d73e8-seattle-software-r2/seattle-SKAGER-trace.jsonl": {
+    "sha256": "b5b841067283791b50f5b536767eacb7f16281e3863b316254786513f07ff6fd",
+    "bytes": 1153
+  },
+  "output/capture-45d73e8-seattle-software-r2/seattle-SKAGER-Day.png": {
+    "sha256": "025eacabeba27f87c0cc72182bf947d6a585e0498518e13987c5260804284462",
+    "bytes": 241527
+  },
+  "output/capture-45d73e8-seattle-software-r2/seattle-SKAGER-Day.json": {
+    "sha256": "f998b771e7551356e889945b77e8f6e5b6c094f0ba38fa0171a30d9bf35f4bf8",
+    "bytes": 28642
+  },
+  "output/capture-45d73e8-seattle-software-r2/seattle-SKAGER-Dusk.png": {
+    "sha256": "7dea1992de78a981e6ec6bedfcf5896e075871ab6c5afbfa25a30d30f56c1529",
+    "bytes": 239297
+  },
+  "output/capture-45d73e8-seattle-software-r2/seattle-SKAGER-Dusk.json": {
+    "sha256": "2aca92a3e5ca2ba4e5c46c5cfe707ad2385ae60f8c2f0d0b2fe9ded7e2a6e588",
+    "bytes": 31538
+  },
+  "output/capture-45d73e8-seattle-software-r2/seattle-SKAGER-Night.png": {
+    "sha256": "65986017c77907207b1d7a85dcea71433d09492e83c762a9299f66e8bdb9c8c9",
+    "bytes": 232950
+  },
+  "output/capture-45d73e8-seattle-software-r2/seattle-SKAGER-Night.json": {
+    "sha256": "81e3406ad9397be29c43e4384c9974df7c7c1799dd9697c0b7f67390b1e90d81",
+    "bytes": 31539
+  },
+  "output/capture-45d73e8-seattle-software-r2/seattle-SKAGER-Day-return.png": {
+    "sha256": "1314d5367c61e5d7338ecca13dfe313f27595e9892ac37a0e94e96d4b98566bc",
+    "bytes": 241707
+  },
+  "output/capture-45d73e8-seattle-software-r2/seattle-SKAGER-Day-return.json": {
+    "sha256": "3dd5d8a4c54ae4d76306fdb04fa9c4ae5df02923aed0b2b46100754caff7594e",
+    "bytes": 31536
+  },
+  "output/capture-45d73e8-seattle-software-r2/controlled-input.json": {
+    "sha256": "624f57f7ba1e5e72dd857671b2426792cbe4fe430db64a7a8473f162e8f10723",
+    "bytes": 4893
+  },
+  "output/capture-45d73e8-seattle-software-r2/report.json": {
+    "sha256": "1c18d5dcef41eb0be59d3b1e84b506776d93e8151cc9e723cbc51d4d2c228f06",
+    "bytes": 25368
+  },
+  "output/capture-45d73e8-seattle-opengl-r2/mesa-renderer.txt": {
+    "sha256": "2843bece5b168e1ea7bed8898b75ce3cf171d86c1c67b42824743ee5b735ac6b",
+    "bytes": 1691
+  },
+  "output/capture-45d73e8-seattle-opengl-r2/loader-selftest.json": {
+    "sha256": "45e4d99f284703f20ae867e2784160de7e6092f86ac2fb33123a31b0b1ab40d9",
+    "bytes": 715
+  },
+  "output/capture-45d73e8-seattle-opengl-r2/seattle-SKAGER-launch.log": {
+    "sha256": "69c5c59eed32d41ddfc50b5a68d2180905e5996541ff9bedd1ae7452005a1c5f",
+    "bytes": 8981
+  },
+  "output/capture-45d73e8-seattle-opengl-r2/seattle-SKAGER-trace.jsonl": {
+    "sha256": "b5b841067283791b50f5b536767eacb7f16281e3863b316254786513f07ff6fd",
+    "bytes": 1153
+  },
+  "output/capture-45d73e8-seattle-opengl-r2/seattle-SKAGER-Day.png": {
+    "sha256": "bb1b2a7d3b5e7217809ad0ac7fee8868e1d5e8d398f4cea0024d125564c6c82d",
+    "bytes": 197852
+  },
+  "output/capture-45d73e8-seattle-opengl-r2/seattle-SKAGER-Day.json": {
+    "sha256": "2846e33dc1a17790ba9392e92aca22495a9c0c64efa4dc2982f73dad4b90fafb",
+    "bytes": 28645
+  },
+  "output/capture-45d73e8-seattle-opengl-r2/seattle-SKAGER-Dusk.png": {
+    "sha256": "78c1871412b6a0ede059e6a42665403d4311eb7450cde18e6d282479f3cef170",
+    "bytes": 195150
+  },
+  "output/capture-45d73e8-seattle-opengl-r2/seattle-SKAGER-Dusk.json": {
+    "sha256": "dec4c4f27c77ba97da55b1ca7210de6c1eba50c1e9d0853480a67220c8a405d0",
+    "bytes": 31532
+  },
+  "output/capture-45d73e8-seattle-opengl-r2/seattle-SKAGER-Night.png": {
+    "sha256": "dfd55cf5d52a169d5d0a54d07a26f4d2b76a9b321e3358254c8f0b993bc24157",
+    "bytes": 191169
+  },
+  "output/capture-45d73e8-seattle-opengl-r2/seattle-SKAGER-Night.json": {
+    "sha256": "cd6ae30c42d2d08f7ef4075deb8303a2d07fa0e254d5bd6e266413472ef58d4e",
+    "bytes": 31531
+  },
+  "output/capture-45d73e8-seattle-opengl-r2/seattle-SKAGER-Day-return.png": {
+    "sha256": "8c1bded6a2f6de409a8b60f1ef242b7ead4689df23c2fa81ef71cf7136b3d1bc",
+    "bytes": 197614
+  },
+  "output/capture-45d73e8-seattle-opengl-r2/seattle-SKAGER-Day-return.json": {
+    "sha256": "8a111d02f809a0a9cc9b02d2792da7494eb2f0752c07001ea006680eaf212f07",
+    "bytes": 31533
+  },
+  "output/capture-45d73e8-seattle-opengl-r2/controlled-input.json": {
+    "sha256": "1f7b856c65024dfe62a772238fa4671a0fbccdbfb609c845670321be1e4af8c7",
+    "bytes": 4892
+  },
+  "output/capture-45d73e8-seattle-opengl-r2/report.json": {
+    "sha256": "034ba14ae4d0b8758f96a83c75929f23069b1446f57842b90e4980cd4e065898",
+    "bytes": 27107
+  },
+  "output/capture-45d73e8-s64-light-fog-software-standard-control/loader-selftest.json": {
+    "sha256": "45e4d99f284703f20ae867e2784160de7e6092f86ac2fb33123a31b0b1ab40d9",
+    "bytes": 715
+  },
+  "output/capture-45d73e8-s64-light-fog-software-standard-control/s64-light-fog-Standard-launch.log": {
+    "sha256": "0f374dda7d7589f2c73cbd2efaca9bfc1e5e2ad4da38a476224c07d98a963335",
+    "bytes": 8303
+  },
+  "output/capture-45d73e8-s64-light-fog-software-standard-control/s64-light-fog-Standard-trace.jsonl": {
+    "sha256": "830e0be0a94913dd3a1b19d4dee2861e1035ab0abcfdafdc3f96a403e7e68cc6",
+    "bytes": 2135
+  },
+  "output/capture-45d73e8-s64-light-fog-software-standard-control/s64-light-fog-Standard-Day.png": {
+    "sha256": "7ad366be9be5d490058e53df9cba021f8a16401c5ecb4117303060aeb622e691",
+    "bytes": 188687
+  },
+  "output/capture-45d73e8-s64-light-fog-software-standard-control/s64-light-fog-Standard-Day-FOGSIG-33.png": {
+    "sha256": "dcb68dbc918aaf0d709b904f3cf1081ebbe76dee83cfb4f96c0d9e3ff5826066",
+    "bytes": 1668
+  },
+  "output/capture-45d73e8-s64-light-fog-software-standard-control/s64-light-fog-Standard-Day.json": {
+    "sha256": "735abf915420c2d24053bbf071b9c5cc9b0c8cfe19b9d96f5405f5241fccf425",
+    "bytes": 28651
+  },
+  "output/capture-45d73e8-s64-light-fog-software-standard-control/s64-light-fog-Standard-Dusk.png": {
+    "sha256": "3191bb3a83c974199ff43c1008b3fa69a7cae35812bbd1eb4ed65c67238d049a",
+    "bytes": 152766
+  },
+  "output/capture-45d73e8-s64-light-fog-software-standard-control/s64-light-fog-Standard-Dusk-FOGSIG-33.png": {
+    "sha256": "f59a8537e1acdde3c043b5679deac5629cae4a7a0e232fe7e631024d25cc185d",
+    "bytes": 1345
+  },
+  "output/capture-45d73e8-s64-light-fog-software-standard-control/s64-light-fog-Standard-Dusk.json": {
+    "sha256": "1b3dd6fcac7d4a3df8a64f7a9392aaafdbb937adffc80a398610b6420c8dd1a0",
+    "bytes": 31545
+  },
+  "output/capture-45d73e8-s64-light-fog-software-standard-control/s64-light-fog-Standard-Night.png": {
+    "sha256": "3fe90e5a76866be5d1da0d52fc9d8b1f9caea0a36f218dd4e717929d78da2cab",
+    "bytes": 146628
+  },
+  "output/capture-45d73e8-s64-light-fog-software-standard-control/s64-light-fog-Standard-Night-FOGSIG-33.png": {
+    "sha256": "517ca69e636375208376d4e362dac133d05d47e37e4d82399fbaddbad0a54bb9",
+    "bytes": 1312
+  },
+  "output/capture-45d73e8-s64-light-fog-software-standard-control/s64-light-fog-Standard-Night.json": {
+    "sha256": "6f65b8f12414051d55ebad1de848e958937c006b7f0136e674f724ddd18518aa",
+    "bytes": 31551
+  },
+  "output/capture-45d73e8-s64-light-fog-software-standard-control/s64-light-fog-Standard-Day-return.png": {
+    "sha256": "d090b96def121803dd53f5df4cf66e97b64cc091e6bfad3d05b626ceccbe955b",
+    "bytes": 188702
+  },
+  "output/capture-45d73e8-s64-light-fog-software-standard-control/s64-light-fog-Standard-Day-return-FOGSIG-33.png": {
+    "sha256": "dcb68dbc918aaf0d709b904f3cf1081ebbe76dee83cfb4f96c0d9e3ff5826066",
+    "bytes": 1668
+  },
+  "output/capture-45d73e8-s64-light-fog-software-standard-control/s64-light-fog-Standard-Day-return.json": {
+    "sha256": "f8fdb577b6739d899329f077c00bb8ff2b74528e3a8f8756ac0ef4d819f1b684",
+    "bytes": 31546
+  },
+  "output/capture-45d73e8-s64-light-fog-software-standard-control/controlled-input.json": {
+    "sha256": "1c1c174cdb1b46f48e5d4028cd5569ace4f19ef983e5600e6b2c399372a329f6",
+    "bytes": 4620
+  },
+  "output/capture-45d73e8-s64-light-fog-software-standard-control/report.json": {
+    "sha256": "5759f893a5a7db81a04afb2e4530d6c61b0f643036367327c4922795aa58dc7e",
+    "bytes": 38316
+  },
+  "output/capture-45d73e8-s64-light-fog-opengl-standard-control/mesa-renderer.txt": {
+    "sha256": "0ea02fcc3730454248f4faac271d25acd46e56f6e87c6d1e7667d096cefceca5",
+    "bytes": 1691
+  },
+  "output/capture-45d73e8-s64-light-fog-opengl-standard-control/loader-selftest.json": {
+    "sha256": "45e4d99f284703f20ae867e2784160de7e6092f86ac2fb33123a31b0b1ab40d9",
+    "bytes": 715
+  },
+  "output/capture-45d73e8-s64-light-fog-opengl-standard-control/s64-light-fog-Standard-launch.log": {
+    "sha256": "c67429ede0652d97425d4453e0a8083591c55a1d536c261db7ee72557a0e5020",
+    "bytes": 8890
+  },
+  "output/capture-45d73e8-s64-light-fog-opengl-standard-control/s64-light-fog-Standard-trace.jsonl": {
+    "sha256": "830e0be0a94913dd3a1b19d4dee2861e1035ab0abcfdafdc3f96a403e7e68cc6",
+    "bytes": 2135
+  },
+  "output/capture-45d73e8-s64-light-fog-opengl-standard-control/s64-light-fog-Standard-Day.png": {
+    "sha256": "a253ab3d35d8e210b8bfddc0b2c767784eb71b2980941ae023d456f60acf055b",
+    "bytes": 128832
+  },
+  "output/capture-45d73e8-s64-light-fog-opengl-standard-control/s64-light-fog-Standard-Day-FOGSIG-33.png": {
+    "sha256": "c3e5d398198937781524e7a5a56612424b66314c81f0870a1e32788da7f9d3f2",
+    "bytes": 1289
+  },
+  "output/capture-45d73e8-s64-light-fog-opengl-standard-control/s64-light-fog-Standard-Day.json": {
+    "sha256": "7b3b178998f1441f6cba1aab7d72f87094eefd3273f10dfa03542550b237442d",
+    "bytes": 28658
+  },
+  "output/capture-45d73e8-s64-light-fog-opengl-standard-control/s64-light-fog-Standard-Dusk.png": {
+    "sha256": "9560c39f15070014b8f898b5a88fc64972c3b1c1f28512042485042275f61887",
+    "bytes": 111942
+  },
+  "output/capture-45d73e8-s64-light-fog-opengl-standard-control/s64-light-fog-Standard-Dusk-FOGSIG-33.png": {
+    "sha256": "caea1648aa73b3a8e5d8b51b7c9727dc37d19c55b9d6e3d98c6edbe6c859f114",
+    "bytes": 1097
+  },
+  "output/capture-45d73e8-s64-light-fog-opengl-standard-control/s64-light-fog-Standard-Dusk.json": {
+    "sha256": "5b3499b92a13f18f696c4d68187567aa2dea16864bcb43205f12f9eebc85936e",
+    "bytes": 31549
+  },
+  "output/capture-45d73e8-s64-light-fog-opengl-standard-control/s64-light-fog-Standard-Night.png": {
+    "sha256": "c678a30c04f44b7d209afd4c93bd72ce78bb59b6cbd7099c2d8c8baac3b575e7",
+    "bytes": 105324
+  },
+  "output/capture-45d73e8-s64-light-fog-opengl-standard-control/s64-light-fog-Standard-Night-FOGSIG-33.png": {
+    "sha256": "075df01ba73acffefa979acd5644c0bf891c56a2f3f6d791d85faefffd3404d1",
+    "bytes": 983
+  },
+  "output/capture-45d73e8-s64-light-fog-opengl-standard-control/s64-light-fog-Standard-Night.json": {
+    "sha256": "e9101cb65dd20a0649baadb9cdfcb0d7a5faf9b67832d1352c8df8350ee9d1d4",
+    "bytes": 31547
+  },
+  "output/capture-45d73e8-s64-light-fog-opengl-standard-control/s64-light-fog-Standard-Day-return.png": {
+    "sha256": "6c7262c8ed46922a1c599601cdaf44aea9f28d655d5ddadd1b9652b868eb30e3",
+    "bytes": 128770
+  },
+  "output/capture-45d73e8-s64-light-fog-opengl-standard-control/s64-light-fog-Standard-Day-return-FOGSIG-33.png": {
+    "sha256": "c3e5d398198937781524e7a5a56612424b66314c81f0870a1e32788da7f9d3f2",
+    "bytes": 1289
+  },
+  "output/capture-45d73e8-s64-light-fog-opengl-standard-control/s64-light-fog-Standard-Day-return.json": {
+    "sha256": "490a5e497fb8a5d154163ef6b8cf5cddacb6bd66535f65cd5c2dae6fdacbe68e",
+    "bytes": 31539
+  },
+  "output/capture-45d73e8-s64-light-fog-opengl-standard-control/controlled-input.json": {
+    "sha256": "6abe15c71e9d3d21e90af201ada6714f895c3d49687515947e6b0a22f711deb5",
+    "bytes": 4760
+  },
+  "output/capture-45d73e8-s64-light-fog-opengl-standard-control/report.json": {
+    "sha256": "1a8e4beed45c7a5d9d22d218ed2b37f37a9796c53436b019bbaf6a478ad20af9",
+    "bytes": 40059
+  }
+}

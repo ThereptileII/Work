@@ -1,0 +1,4 @@
+/home/standard/Projects/X-nav-worktrees/scrum286-overzoom-warning/tests/overzoom_warning_test.cpp:1:10: fatal error: GL/glew.h: No such file or directory
+    1 | #include <GL/glew.h>
+      |          ^~~~~~~~~~~
+compilation terminated.

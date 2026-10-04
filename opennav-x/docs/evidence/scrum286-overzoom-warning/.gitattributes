@@ -1,0 +1,3 @@
+# Preserve exact extracted source and original output bytes.
+*.inc -text -whitespace
+*.log -text -whitespace

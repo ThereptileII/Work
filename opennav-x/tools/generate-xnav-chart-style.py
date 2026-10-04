@@ -18,6 +18,7 @@ from chart_raster_ink import decode, derive
 import chart_anchor_art
 import chart_cable_paint
 import chart_service_art
+import chart_hazard_art
 import chart_cardinal_art
 import chart_seamark_art
 import chart_special_buoy_art
@@ -27,6 +28,7 @@ import chart_day_neutral_ink
 import chart_structure_paint
 import chart_construction_hatch
 import chart_building_point
+import chart_fishing_pattern
 
 ROOT=Path(__file__).resolve().parents[1]
 ALLOWED={'LANDA','CSTLN','DEPDW','DEPMD','DEPMS','DEPVS','DEPIT','DEPCN','DEPSC','SNDG1','SNDG2','CHBLK','CHGRD'}
@@ -53,6 +55,8 @@ def geographic_ink(name, instruction):
 
 def styled_instruction(lookup):
     instruction=chart_cable_paint.area_instruction(lookup)
+    if lookup.get('id') == '65':
+        instruction=chart_fishing_pattern.instruction(lookup)
     if lookup.get('id') in chart_structure_paint.RULES:
         instruction=chart_structure_paint.instruction(lookup)
     if lookup.get('id') in chart_seamark_art.SELECTORS:
@@ -108,6 +112,8 @@ def validate_resource_changes(original, styled, colors):
     chart_cable_paint.restore_for_validation(before, after)
     chart_construction_hatch.restore_for_validation(before, after)
     chart_service_art.restore_bitmap_for_validation(before, after)
+    chart_hazard_art.restore_bitmap_for_validation(before, after)
+    chart_fishing_pattern.restore_for_validation(before, after)
     chart_cardinal_art.restore_bitmap_for_validation(before, after)
     chart_special_buoy_art.restore_for_validation(before, after)
     chart_generic_beacon_art.restore_for_validation(before, after)
@@ -185,12 +191,14 @@ def generate(source, output):
     xml=chart_structure_paint.recolor(xml)
     xml=chart_structure_paint.recolor_outlines(xml)
     xml=chart_service_art.relocate(xml)
+    xml=chart_hazard_art.relocate(xml)
     xml=chart_cardinal_art.relocate(xml)
     xml=chart_seamark_art.relocate(xml)
     xml=chart_special_buoy_art.relocate(xml)
     xml=chart_generic_beacon_art.relocate(xml)
     xml=chart_yellow_buoy_art.relocate(xml)
     xml=chart_building_point.relocate(xml)
+    xml=chart_fishing_pattern.relocate(xml)
     validate_resource_changes(original['chartsymbols.xml'],xml,colors)
     result=dict(original);result['chartsymbols.xml']=xml.encode('utf-8')
     # Pinned Day ink identifies neutral CHBLK/CHGRD pixels. Theme sheets use
@@ -208,6 +216,7 @@ def generate(source, output):
         original['chartsymbols.xml'], original['rastersymbols-day.png'], colors['DAY_BRIGHT']['CHBLK'])
     anchor_art = {}
     service_art = {}
+    hazard_art = {}
     cardinal_art = {}
     seamark_art = {}
     construction_hatch = {}
@@ -215,17 +224,20 @@ def generate(source, output):
     generic_beacon = {}
     yellow_buoy = {}
     building_point = {}
+    fishing_pattern = {}
     for table, name in [('DAY_BRIGHT','rastersymbols-day.png'),
                         ('DUSK','rastersymbols-dusk.png'),
                         ('NIGHT','rastersymbols-dark.png')]:
         result[name], anchor_art[name] = chart_anchor_art.paint(result[name], table)
         result[name], service_art[name] = chart_service_art.paint(result[name], table)
+        result[name], hazard_art[name] = chart_hazard_art.paint(result[name], table)
         result[name], cardinal_art[name] = chart_cardinal_art.paint(result[name], table)
         result[name], seamark_art[name] = chart_seamark_art.paint(result[name], table)
         result[name], special_buoy[name] = chart_special_buoy_art.paint(result[name], table)
         result[name], generic_beacon[name] = chart_generic_beacon_art.paint(result[name], table)
         result[name], yellow_buoy[name] = chart_yellow_buoy_art.paint(result[name], table)
         result[name], building_point[name] = chart_building_point.paint(result[name], table, colors[table])
+        result[name], fishing_pattern[name] = chart_fishing_pattern.paint(result[name], table)
         result[name], construction_hatch[name] = chart_construction_hatch.paint(result[name], table, colors[table][chart_construction_hatch.COLOR])
     output.mkdir(parents=True,exist_ok=True)
     def write(path,content):
@@ -238,6 +250,7 @@ def generate(source, output):
                              'retainedSafetyInk':sorted(NIGHT_SAFETY_ROLES)},
               'anchorageArtwork':anchor_art,
               'serviceArtwork':service_art,
+              'hazardArtwork':hazard_art,
               'cardinalArtwork':cardinal_art,
               'seamarkArtwork':seamark_art,
               'constructionHatch':construction_hatch,
@@ -245,11 +258,18 @@ def generate(source, output):
               'genericBeaconArtwork':generic_beacon,
               'yellowBuoyArtwork':yellow_buoy,
               'buildingPointArtwork':building_point,
+              'fishingPatternArtwork':fishing_pattern,
               'geographicNameLookups':geography_count,
               'structuralAreaPaint':{'color':'XNSTR','lookupIds':sorted(chart_structure_paint.RULES),
                                      'outlineColor':'XNSHR','outlineLookupIds':sorted(chart_structure_paint.OUTLINE_RULES),
                                      'unchangedWidthsSelectorsAndLabels':True},
-              'submarineCablePaint':{'name':'CBLSUB06','RCID':'2012','color':'XNCBL','unchangedHPGL':True},
+              'submarineCablePaint':{'name':'CBLSUB06','RCID':'2012','color':'XNCBL','unchangedHPGL':False,
+                  'waveform':{'sourcePath':chart_cable_paint.WAVE_PATH,
+                              'sourceSha256':chart_cable_paint.ART_SHA256,
+                              'segments':64,'scaleNumerator':635,'scaleDenominator':24,
+                              'origin':[0,0],'vectorBox':[0,-84,635,168],'pivot':[0,0],
+                              'repeatHpgl':635,'nominalDpi':96,
+                              'stroke':'Verified exact quadratic RGBA hook:1.3CSS/round; integer SW1 resource fallback'}},
               'areaLinePaint':{'color':'XNARE','ferryLineRCID':'2019','plainCableLookupRCID':'32061',
                                'unchangedGeometryAndRestrictions':True},
               'files':{n:{'sha256':hashlib.sha256(c).hexdigest(),'bytes':len(c)} for n,c in result.items()}}

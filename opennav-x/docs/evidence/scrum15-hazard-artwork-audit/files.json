@@ -1,0 +1,17 @@
+[
+  {
+    "path": "README.md",
+    "bytes": 7121,
+    "sha256": "98b983920f88d3548a346ebe80f309971b2235bf5c02e49971a0184ce59f2770"
+  },
+  {
+    "path": "prototype-computed.json",
+    "bytes": 10851,
+    "sha256": "28799f597a3f085e4b3a8bda5d27f124b684375dce4e304f811a83c1d7d22bbe"
+  },
+  {
+    "path": "source-inventory.json",
+    "bytes": 29294,
+    "sha256": "3c2758ab7e916c3805ba36aac357295a8ca42332a92910eec586f26c1cbafaf9"
+  }
+]

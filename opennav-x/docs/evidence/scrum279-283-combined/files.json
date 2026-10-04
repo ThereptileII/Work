@@ -1,0 +1,18 @@
+{
+  "check-composition.py": {
+    "sha256": "b31be2987995ddcc8c150ce3059217fa09a7d729be686b8296e703ddaa19dcb0",
+    "bytes": 4797
+  },
+  "composition.json": {
+    "sha256": "56c645402687910e76c3fb4d7f61a054e4a4b9cb7483f72c67815a8060bf2579",
+    "bytes": 1072
+  },
+  "composition.log": {
+    "sha256": "c116c9b56fae2deb36863300942075fe2745f596304e3e88bb064a1a221e34f3",
+    "bytes": 303
+  },
+  "earlier-local-cancel.json": {
+    "sha256": "b810feb8efba1d13e8945f8e9cefc54b0e45037548d7bb0b0e0ea3b400601449",
+    "bytes": 550
+  }
+}

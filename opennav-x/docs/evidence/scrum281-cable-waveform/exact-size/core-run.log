@@ -1,0 +1,5 @@
+scale=1 angleRange=0..pi maxPixels=650 averageBuildUs=43.124 slowestBuildUs=117.661 averageMesaUploadFinishUs=39.0493
+scale=8 angleRange=0..pi maxPixels=28598 averageBuildUs=575.053 slowestBuildUs=1494.57 averageMesaUploadFinishUs=399.082
+original shortSWMeanUs=3.03928
+disabledHook shortSWMeanUs=4.43151
+554 actual traversal/helper/Mesa checks passed; fallback HPGL is call-observed, not raster-qualified

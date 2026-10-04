@@ -1,0 +1,13 @@
+DAY_BRIGHT ppmm=3 cell=106x65 old_center=10.06,3.415 new_center=10.5,4.5 inset=0,1 occupied=7,0-13,8
+DAY_BRIGHT ppmm=3.77953 cell=133x82 old_center=12.4142,4.04252 new_center=12,5 inset=0,1 occupied=8,0-15,9
+DAY_BRIGHT ppmm=4.72441 cell=166x102 old_center=15.2677,4.80315 new_center=15,7 inset=0,2 occupied=9,0-20,13
+DAY_BRIGHT ppmm=5.66929 cell=199x123 old_center=18.1213,5.56378 new_center=18,8 inset=0,2 occupied=10,0-25,15
+DUSK ppmm=3 cell=106x65 old_center=10.06,3.415 new_center=10.5,4.5 inset=0,1 occupied=7,0-13,8
+DUSK ppmm=3.77953 cell=133x82 old_center=12.4142,4.04252 new_center=12,5 inset=0,1 occupied=8,0-15,9
+DUSK ppmm=4.72441 cell=166x102 old_center=15.2677,4.80315 new_center=15,7 inset=0,2 occupied=9,0-20,13
+DUSK ppmm=5.66929 cell=199x123 old_center=18.1213,5.56378 new_center=18,8 inset=0,2 occupied=10,0-25,15
+NIGHT ppmm=3 cell=106x65 old_center=10.06,3.415 new_center=10.5,4.5 inset=0,1 occupied=7,0-13,8
+NIGHT ppmm=3.77953 cell=133x82 old_center=12.4142,4.04252 new_center=12,5 inset=0,1 occupied=8,0-15,9
+NIGHT ppmm=4.72441 cell=166x102 old_center=15.2677,4.80315 new_center=15,7 inset=0,2 occupied=9,0-20,13
+NIGHT ppmm=5.66929 cell=199x123 old_center=18.1213,5.56378 new_center=18,8 inset=0,2 occupied=10,0-25,15
+1048119 actual loader/cell/alpha/fallback checks passed; no polygon or GL draw

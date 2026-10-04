@@ -1,0 +1,81 @@
+{
+  "run": {
+    "id": 37162505696,
+    "head_sha": "ab92dc78cd99e945a08b7a00d2b8166a5841f954",
+    "head_branch": "skager-ais-project-closure",
+    "run_attempt": 1,
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-10-03T23:40:15Z",
+    "updated_at": "2026-10-03T23:40:54Z",
+    "html_url": "https://github.com/ThereptileII/Work/actions/runs/37162505696"
+  },
+  "tree": "89a3b50b8ef965089648aa03faadbb922b1e1c2f",
+  "artifact": {
+    "id": 11288127267,
+    "name": "ais-project-closure-ab92dc78cd99e945a08b7a00d2b8166a5841f954",
+    "size_in_bytes": 27576,
+    "url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/11288127267",
+    "archive_download_url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/11288127267/zip",
+    "expired": false,
+    "created_at": "2026-10-03T23:40:50Z",
+    "expires_at": "2027-01-01T23:40:15Z",
+    "updated_at": "2026-10-03T23:40:50Z",
+    "digest": "sha256:4af23ff5417a38c1a9a916af4145e68e15673f5df1b28faaeeb36cc93f5943f0",
+    "workflow_run": {
+      "id": 37162505696,
+      "repository_id": 864043804,
+      "head_repository_id": 864043804,
+      "head_branch": "skager-ais-project-closure",
+      "head_sha": "ab92dc78cd99e945a08b7a00d2b8166a5841f954"
+    }
+  },
+  "jobs": [
+    {
+      "id": 111318683379,
+      "name": "Retained actual MSBuild closure, no dependency or application build",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 37162505696,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Authenticate original failure artifact and verify real project edges",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        }
+      ]
+    }
+  ]
+}

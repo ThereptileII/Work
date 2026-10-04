@@ -46,6 +46,9 @@ bool DrawChartOwnship(ocpnDC &dc, ChartCanvas &canvas, double x, double y,
 // Returns true only after drawing the upstream-resolved chart depth unit.
 // False preserves the stock emboss path, including Standard/Legacy/Safe.
 bool DrawChartDepthUnit(ocpnDC &dc, ChartCanvas &canvas);
+// Paint only after the original overzoom indicator returns its current map.
+// False preserves that same stock map; this never decides warning visibility.
+bool DrawChartOverzoomWarning(ocpnDC &dc, ChartCanvas &canvas, int x, int y);
 bool ChartScaleGeometry(ChartCanvas &canvas, int &x, int &y, int &reference_width);
 bool DrawChartScale(ocpnDC &dc, ChartCanvas &canvas, const wxString &label,
                     int x, int y, int length, wxRect &bounds);

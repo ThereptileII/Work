@@ -1,0 +1,11 @@
+{
+  "status": "cancelled-by-root",
+  "error": "",
+  "elapsed": 476.03014745800465,
+  "testSha256": "441403d449034e7515e9e89d9eb4141ee2489ffaca2764893b26636842132045",
+  "reason": "Broad local resource suite stopped before completion to avoid repeating unchanged tests per increment. Replaced by focused combined XML/pixel composition; full CI gate remains unchanged.",
+  "exitCode": 130,
+  "assertionFailureObserved": false,
+  "noPassClaim": true,
+  "interruption": "KeyboardInterrupt while decoding the unchanged special-buoy resource comparison"
+}

@@ -1,0 +1,126 @@
+{
+  "run": {
+    "id": 37155593528,
+    "name": "SKAGER native producer parent context",
+    "head_branch": "skager-parent-context",
+    "head_sha": "4ddf1f383e495150551946dd36103cd77cea85eb",
+    "path": ".github/workflows/skager-parent-context.yml",
+    "status": "completed",
+    "conclusion": "success",
+    "run_attempt": 1,
+    "created_at": "2026-10-03T21:34:48Z",
+    "updated_at": "2026-10-03T21:35:50Z",
+    "html_url": "https://github.com/ThereptileII/Work/actions/runs/37155593528",
+    "head_commit": {
+      "id": "4ddf1f383e495150551946dd36103cd77cea85eb",
+      "tree_id": "82ccd6efcd61cbb6bce07bbbd3786c14729149f7",
+      "message": "fix: align native qualification context and refine SKAGER chart presentation\n\nMapped local source 48c2f8b8d5d4103bcbaacc45a18c4e6a238d4c52.\nPreserve exact parent facts, bind Gettext receipt, and prove restoration before full qualification.\nIncludes independently checked chart metric and neutral building alias corrections.",
+      "timestamp": "2026-10-03T21:34:09Z",
+      "author": {
+        "name": "ThereptileII",
+        "email": "swedishcountrysideliving@gmail.com"
+      },
+      "committer": {
+        "name": "ThereptileII",
+        "email": "swedishcountrysideliving@gmail.com"
+      }
+    }
+  },
+  "jobs": {
+    "jobs": [
+      {
+        "id": 111298215075,
+        "name": "Actual parent tool facts with omitted-prefix rejection and restoration",
+        "status": "completed",
+        "conclusion": "success",
+        "run_id": 37155593528,
+        "logs_url": null,
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1
+          },
+          {
+            "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2
+          },
+          {
+            "name": "Preserve native Perl for OpenSSL and install curl's POSIX test host",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3
+          },
+          {
+            "name": "Run msys2/setup-msys2@66cd2cce69caa17b53920067426061ca1de3a884",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4
+          },
+          {
+            "name": "Select explicit curl test Perl",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5
+          },
+          {
+            "name": "Prepare only the locked OpenSSL host assembler for the probe",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6
+          },
+          {
+            "name": "Prove the native parent context only",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7
+          },
+          {
+            "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8
+          },
+          {
+            "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 16
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 17
+          }
+        ]
+      }
+    ]
+  },
+  "artifacts": {
+    "artifacts": [
+      {
+        "id": 11285546611,
+        "name": "parent-context-4ddf1f383e495150551946dd36103cd77cea85eb",
+        "size_in_bytes": 14720,
+        "url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/11285546611",
+        "archive_download_url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/11285546611/zip",
+        "expired": false,
+        "created_at": "2026-10-03T21:35:46Z",
+        "expires_at": "2027-01-01T21:34:48Z",
+        "updated_at": "2026-10-03T21:35:46Z",
+        "digest": "sha256:8ffb32dfee1f54b8131e9e206d5ed59ffcce6bfc9f8f903e29456514b8b97593",
+        "workflow_run": {
+          "id": 37155593528,
+          "repository_id": 864043804,
+          "head_repository_id": 864043804,
+          "head_branch": "skager-parent-context",
+          "head_sha": "4ddf1f383e495150551946dd36103cd77cea85eb"
+        }
+      }
+    ]
+  }
+}

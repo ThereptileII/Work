@@ -1,0 +1,11 @@
+/tmp/skager-capture-saxof52u/s64-light-fog-Standard
+/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/overzoom-98d2c45/iho/capture-standard.py:201: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/overzoom-98d2c45/iho/capture-standard.py:201: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/overzoom-98d2c45/iho/capture-standard.py:201: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/overzoom-98d2c45/iho/capture-standard.py:201: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+Verified private clean application 98d2c459ae0120070a2fa59b87dfa1c004e19394 and exact upstream result of nine patches
+Four exact-build SKAGER source-scene captures passed: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/overzoom-98d2c45/iho/output/capture-98d2c45-s64-light-fog-opengl-standard-control

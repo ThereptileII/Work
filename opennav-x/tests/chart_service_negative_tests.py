@@ -20,7 +20,7 @@ def reject(action):
     else:raise AssertionError('Invalid service artwork accepted')
 
 xml=(a.source/'chartsymbols.xml').read_text()
-for x,y in [(52,1160),(50,1158),(84,1160)]:
+for x,y in [(52,1160),(50,1158),(84,1160),(820,1160),(818,1158)]:
     tree=ET.fromstring(xml)
     tree.find('.//bitmap/graphics-location').attrib={'x':str(x),'y':str(y)}
     reject(lambda:art.relocate(ET.tostring(tree,encoding='unicode')))
@@ -32,12 +32,12 @@ for x in (20,52):
     with patch.object(art,'SYMBOLS',changed):reject(lambda:art.relocate(chart_anchor_art.relocate(xml)))
 # A source mask/SVG change is refused before painting, without mutating files.
 read=Path.read_bytes
-for target in ('PILBOP02.svg','RTPBCN02-alpha.json'):
+for target in ('PILBOP02.svg','RTPBCN02-alpha.json','SMCFAC02.svg','SMCFAC02-alpha.json'):
     with patch.object(Path,'read_bytes',lambda self:read(self)+(b'changed' if self.name==target else b'')):
         reject(art.coverage)
 # An occupied pixel in either tile or its sampling moat must be rejected.
 chunks,pixels=decode((a.source/'rastersymbols-day.png').read_bytes())
-for x,y in ((52,1160),(82,1158)):
+for x,y in ((52,1160),(82,1158),(820,1160),(818,1158)):
     damaged=bytearray(pixels);damaged[(y*1500+x)*4+3]=1
     content=encode(chunks,damaged)
     reject(lambda:art.paint(content,'DAY_BRIGHT'))

@@ -1442,3 +1442,114 @@ Existing manifest/header copying carries the new resource into the private
 adapter package. [Source, inverse proof and explicit night limitations](evidence/scrum265-building-point-alias/README.md)
 precede actual canvas/native/boat review; this is not claimed as supplied custom
 building artwork.
+
+### SCRUM-279/280: supplied marina and hazard raster artwork
+
+The owned resource generator changes the effective bitmap metadata of SMCFAC02,
+UWTROC03, UWTROC04 and WRECKS05 to four isolated 24-pixel tiles. Original lookup
+selection, conditional procedures, HPGL and stock resources remain unchanged.
+These shared names also affect their existing Paper/area consumers; this is not
+a Simplified-only claim. No new renderer hook is introduced. The source-locked
+SVGs and alpha masks preserve their geographic anchors. Focused resource and
+actual-loader evidence is under `scrum279-marina` and `scrum280-hazard-glyphs`;
+hazard recognition and actual chart/native/boat acceptance remain open.
+
+### SCRUM-281: exact supplied cable waveform
+
+Only owned CBLSUB06/RCID2012 receives new physical motif metadata and a bounded
+HPGL fallback. The supplied 24-pixel motif is 635 HPGL units at nominal 96 DPI;
+the prior 2293-unit width was rejected as visibly oversized. Two existing
+`draw_lc_poly` HPGL calls per renderer gain a verified-owned-rule branch using
+the exact quadratic stroke. Original vertices, tangents, masking, traversal,
+clipping and straight remainders remain unchanged. CATCBL6 and other symbols
+remain stock. The existing transient RGBA uploader accepts optional original
+line-shader matrices; its CA-light defaults remain unchanged. Core/private
+owner macros are distinct, with explicit inactive-guard negative coverage.
+
+The helper retains no chart pointers or GL objects after the synchronous call,
+caps tile work and restores touched GL state. Refusal uses the existing HPGL
+renderer with the owned fallback resource. Dense cable upload cost, actual ENC
+rendering and native/boat acceptance remain open. See
+`docs/evidence/scrum281-cable-waveform/INCREMENT.md`.
+
+### SCRUM-282: supplied fishing-area motif with native repeat spacing
+
+Only Plain FSHFAC lookup65/RCID32101/CATFIF1 redirects AP(FSHFAC03) to owned
+XNFISH03/RCID60017. The original same-name point symbol and stock area pattern
+remain unchanged. `CreatePatternBufferSpec` gains one core/private owned-alias
+branch which composes the supplied diamond/cross in the original vector-derived
+cell. Spacing, stagger, polygon anchor and outer SW/GL renderers are unchanged.
+The minimum glyph inset is bounded and measured across the three target DPIs;
+it does not recenter or enlarge the repeat lattice.
+
+Invalid identity, unsupported scale, clipping or failed RGB/alpha allocation
+declines to the retained HPGL pattern. The private hook uses its actual
+`SKAGER_OCHARTS_ADAPTER` guard, corrected after root review caught an initially
+inactive host-only guard. Actual private object compilation and distinct-guard
+fixtures are recorded under `scrum282-fishing-pattern/private-guard`; full
+polygon, native DLL and boat acceptance are still separate gates.
+
+### SCRUM-283: private associated-area isolated-danger query
+
+The third ordered private patch appends one adapter-only callback to the private
+chart context, binds it at the existing active initializer and initializes the
+borrowed object context to null before attachment. A file-local RAII bridge calls
+the unchanged private `GetAssociatedObjects` query and returns an owned list of
+borrowed chart objects to the original synchronous `_UDWHAZ03` consumer. No host
+API17 structure/export or original query/selection geometry changes. The original
+stock-private path remains under the disabled adapter macro.
+
+The two retained failing point cases now select ISODGR51/DisplayBase in focused
+actual-source fixtures. Null/refusal, exceptions, conversion allocation failure
+and lifetime boundaries have focused coverage. Unavailable evaluation is not a
+safe-area assertion. The original reference-point/first-matching-area limitation
+for line/area features remains documented. Evidence and original failure are in
+`docs/evidence/scrum283-private-hazard-association/`; native private-DLL and boat
+qualification must pass before the safety issue is closed.
+
+### SCRUM-281 supplied submarine-cable waveform
+
+The core/private chart-presentation patches add only two guarded motif paint
+calls inside existing `draw_lc_poly`. Exact owned CBLSUB06 metadata/HPGL and the
+verified-presentation flag select a24CSS-unit quadratic motif and1.3 round
+stroke. Existing traversal, masks, tangents, clipping and straight remainders
+remain upstream. Shared RGBA upload accepts optional actual line-shader matrices;
+existing CA defaults are unchanged. The owned definition explicitly changes
+repeat density to635HPGL units; Standard/Legacy resources and CATCBL6 stay exact.
+See [scope, failed experiments and focused proof](evidence/scrum281-cable-waveform/INCREMENT.md).
+
+### SCRUM-284: ordinary all-round light outline
+
+The existing core/private CARC methods gain an outline-only branch for the exact
+ordinary Simplified LIGHTS lookup, known positive range and white/red/green
+full-circle signature. Both object attributes and actual conditional CA output
+must match. Original classification, per-renderer center/radius, bounds and
+visibility remain unchanged. Special, uncertain, directional and unsupported
+objects retain stock portrayal. The prototype's finite-sector arc paint supplies
+width 1.2 and opacity .8; it supplies no physical tower or exact full-circle asset.
+The shared bounded tile/uploader retains no chart objects and falls back on
+allocation/identity refusal. Standard and Legacy remain stock.
+
+[Focused core/private proof](evidence/scrum284-all-round-light/README.md) and
+[actual Linux chart comparison](evidence/scrum284-fc6348a-linux-canvas/README.md)
+record unchanged Standard pixels and SKAGER differences confined to the old ring.
+Native private-DLL and boat recognition remain separate gates.
+
+### SCRUM-286: existing overzoom warning presentation
+
+The software and GL overlay callers still obtain the original
+`EmbossOverzoomIndicator` exactly once. For a non-null result, a verified active
+SKAGER presentation may draw its translated warning using existing prototype
+warning-callout roles at the upstream coordinates. Every refusal passes the same
+map to original `DrawEmboss`. The indicator, stock font/map creation, 3.9 threshold,
+quilt/MBTiles behavior and toolbar offset are byte-identical. Standard/Legacy/Safe
+and resource failure retain the stock path. No navigation or warning trigger is
+changed, and the warning cannot be dismissed by this helper.
+
+The complete translated label must fit, without elision, before painting.
+Font/pen/brush/text state is restored; no new texture cache is added. This is an
+explicit required-warning extension because the supplied prototype has no literal
+overzoom asset. [Focused source/painter proof](evidence/scrum286-overzoom-warning/README.md)
+passes. The [actual core application comparison](evidence/scrum286-98d2c45-linux-canvas/README.md)
+also passes, with changes confined to the old warning region and identical
+Standard chart controls. Native Windows and boat readability remain separate.

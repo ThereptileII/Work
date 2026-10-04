@@ -1,0 +1,6 @@
+{
+  "cases": 26,
+  "result": "Exact conditional output and display-category parity except explicitly retained original private Wk alignment; cases18/19 additionally assert DisplayBase",
+  "originalPrivateNegative": "original-private/required-repair-negative.log",
+  "scope": "Actual conditional bodies and bridge with deterministic associated-list fixture; original geographic query not simulated or accepted"
+}

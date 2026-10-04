@@ -1,0 +1,300 @@
+{
+  "source": "45d73e831409d602e8205f32fcba08947ea370bc",
+  "captures": 32,
+  "cleanExits": 8,
+  "strictDayReturns": 8,
+  "reports": [
+    {
+      "report": "iho/output/capture-45d73e8-s64-light-fog-software-r2/report.json",
+      "sha256": "40bc4bc46f60a55e7e47b3c9cd052961afc41a8f7d31ff55aab28e5b3c0e72aa",
+      "renderer": "software",
+      "scene": "s64-light-fog",
+      "captures": 4,
+      "dayReturn": [
+        {
+          "image": "s64-light-fog-SKAGER-Day-return",
+          "bounds": [
+            80,
+            68,
+            1094,
+            634
+          ],
+          "equal": true,
+          "mask": null
+        }
+      ],
+      "conditional": []
+    },
+    {
+      "report": "iho/output/capture-45d73e8-s64-light-fog-opengl-r2/report.json",
+      "sha256": "5593b25a4dd6fb022355df06d96c1610eefb4cbcc3897de8c2ffbe149d098823",
+      "renderer": "opengl",
+      "scene": "s64-light-fog",
+      "captures": 4,
+      "dayReturn": [
+        {
+          "image": "s64-light-fog-SKAGER-Day-return",
+          "bounds": [
+            80,
+            68,
+            1094,
+            634
+          ],
+          "equal": true,
+          "mask": null
+        }
+      ],
+      "conditional": []
+    },
+    {
+      "report": "iho/output/capture-45d73e8-s64-rocks-software-r2/report.json",
+      "sha256": "41c00706c6f871dcc436af316e56d422d5b47ce2878753036052fbe21346c348",
+      "renderer": "software",
+      "scene": "s64-rocks",
+      "captures": 4,
+      "dayReturn": [
+        {
+          "image": "s64-rocks-SKAGER-Day-return",
+          "bounds": [
+            80,
+            68,
+            1094,
+            634
+          ],
+          "equal": true,
+          "mask": null
+        }
+      ],
+      "conditional": [
+        {
+          "source_rcid": 1,
+          "class": "UWTROC",
+          "candidate": "UWTROC03",
+          "selected_symbols": [
+            "UWTROC03"
+          ],
+          "painted_symbols": [
+            "UWTROC03"
+          ],
+          "candidate_reached": true
+        },
+        {
+          "source_rcid": 2,
+          "class": "UWTROC",
+          "candidate": "UWTROC03",
+          "selected_symbols": [
+            "UWTROC03"
+          ],
+          "painted_symbols": [
+            "UWTROC03"
+          ],
+          "candidate_reached": true
+        },
+        {
+          "source_rcid": 3,
+          "class": "UWTROC",
+          "candidate": "UWTROC03",
+          "selected_symbols": [
+            "UWTROC03"
+          ],
+          "painted_symbols": [
+            "UWTROC03"
+          ],
+          "candidate_reached": true
+        },
+        {
+          "source_rcid": 38,
+          "class": "UWTROC",
+          "candidate": "UWTROC04",
+          "selected_symbols": [
+            "ISODGR51"
+          ],
+          "painted_symbols": [
+            "ISODGR51"
+          ],
+          "candidate_reached": false
+        }
+      ]
+    },
+    {
+      "report": "iho/output/capture-45d73e8-s64-rocks-opengl-r2/report.json",
+      "sha256": "fdd94c8e790ad9962f5252298a236649053e230ab0f3ebec888d0a6680c5f7d9",
+      "renderer": "opengl",
+      "scene": "s64-rocks",
+      "captures": 4,
+      "dayReturn": [
+        {
+          "image": "s64-rocks-SKAGER-Day-return",
+          "bounds": [
+            80,
+            68,
+            1094,
+            634
+          ],
+          "equal": true,
+          "mask": null
+        }
+      ],
+      "conditional": [
+        {
+          "source_rcid": 1,
+          "class": "UWTROC",
+          "candidate": "UWTROC03",
+          "selected_symbols": [
+            "UWTROC03"
+          ],
+          "painted_symbols": [
+            "UWTROC03"
+          ],
+          "candidate_reached": true
+        },
+        {
+          "source_rcid": 2,
+          "class": "UWTROC",
+          "candidate": "UWTROC03",
+          "selected_symbols": [
+            "UWTROC03"
+          ],
+          "painted_symbols": [
+            "UWTROC03"
+          ],
+          "candidate_reached": true
+        },
+        {
+          "source_rcid": 3,
+          "class": "UWTROC",
+          "candidate": "UWTROC03",
+          "selected_symbols": [
+            "UWTROC03"
+          ],
+          "painted_symbols": [
+            "UWTROC03"
+          ],
+          "candidate_reached": true
+        },
+        {
+          "source_rcid": 38,
+          "class": "UWTROC",
+          "candidate": "UWTROC04",
+          "selected_symbols": [
+            "ISODGR51"
+          ],
+          "painted_symbols": [
+            "ISODGR51"
+          ],
+          "candidate_reached": false
+        }
+      ]
+    },
+    {
+      "report": "iho/output/capture-45d73e8-s64-wreck-software-r2/report.json",
+      "sha256": "237786b797c022ef1b8244b4306a15143436fa36fba0ec5c629d51775fa40478",
+      "renderer": "software",
+      "scene": "s64-wreck",
+      "captures": 4,
+      "dayReturn": [
+        {
+          "image": "s64-wreck-SKAGER-Day-return",
+          "bounds": [
+            80,
+            68,
+            1094,
+            634
+          ],
+          "equal": true,
+          "mask": null
+        }
+      ],
+      "conditional": [
+        {
+          "source_rcid": 998,
+          "class": "WRECKS",
+          "candidate": "WRECKS05",
+          "selected_symbols": [
+            "ISODGR51"
+          ],
+          "painted_symbols": [
+            "ISODGR51"
+          ],
+          "candidate_reached": false
+        }
+      ]
+    },
+    {
+      "report": "iho/output/capture-45d73e8-s64-wreck-opengl-r2/report.json",
+      "sha256": "1ad320dfef1e61a24eff7fa3f031a16a027b6116371a8be64defc9bc2be77f7a",
+      "renderer": "opengl",
+      "scene": "s64-wreck",
+      "captures": 4,
+      "dayReturn": [
+        {
+          "image": "s64-wreck-SKAGER-Day-return",
+          "bounds": [
+            80,
+            68,
+            1094,
+            634
+          ],
+          "equal": true,
+          "mask": null
+        }
+      ],
+      "conditional": [
+        {
+          "source_rcid": 998,
+          "class": "WRECKS",
+          "candidate": "WRECKS05",
+          "selected_symbols": [
+            "ISODGR51"
+          ],
+          "painted_symbols": [
+            "ISODGR51"
+          ],
+          "candidate_reached": false
+        }
+      ]
+    },
+    {
+      "report": "iho/output/capture-45d73e8-seattle-software-r2/report.json",
+      "sha256": "1c18d5dcef41eb0be59d3b1e84b506776d93e8151cc9e723cbc51d4d2c228f06",
+      "renderer": "software",
+      "scene": "seattle",
+      "captures": 4,
+      "dayReturn": [
+        {
+          "image": "seattle-SKAGER-Day-return",
+          "bounds": [
+            80,
+            68,
+            1094,
+            634
+          ],
+          "equal": true,
+          "mask": null
+        }
+      ],
+      "conditional": []
+    },
+    {
+      "report": "iho/output/capture-45d73e8-seattle-opengl-r2/report.json",
+      "sha256": "034ba14ae4d0b8758f96a83c75929f23069b1446f57842b90e4980cd4e065898",
+      "renderer": "opengl",
+      "scene": "seattle",
+      "captures": 4,
+      "dayReturn": [
+        {
+          "image": "seattle-SKAGER-Day-return",
+          "bounds": [
+            80,
+            68,
+            1094,
+            634
+          ],
+          "equal": true,
+          "mask": null
+        }
+      ],
+      "conditional": []
+    }
+  ]
+}

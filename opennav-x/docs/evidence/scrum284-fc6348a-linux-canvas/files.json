@@ -1,0 +1,570 @@
+{
+  "README.md": {
+    "sha256": "c66c5d64ed22d2d0512d15fa433e75ba071b163b566826330291906c6390d8aa",
+    "bytes": 4188
+  },
+  "advance-patched-source.py": {
+    "sha256": "de4b9c5521b894a9183545f62c8c85c5349cd2a41c2380a2ca239cf0abeb8404",
+    "bytes": 2411
+  },
+  "audit.json": {
+    "sha256": "39cca0202c4c135ad7dc6ed4b86f510cbdba9a16b0d2e273c34d7454ab12d9bb",
+    "bytes": 2901
+  },
+  "build-prefix.sh": {
+    "sha256": "c1c29a12bbd75ca48d02a617415f6eada603a699d366c9332757bcf2f4818a6a",
+    "bytes": 1177
+  },
+  "collector/cache-inputs-readonly.py": {
+    "sha256": "0528801cfb7b27faa8027869ad8ee5ab07b6475e27544c6bf93f04e6e8c1750d",
+    "bytes": 4630
+  },
+  "collector/capture-s64.py": {
+    "sha256": "0c1cd1d026f48e7352ebcc0f5e7af86eddf1b644d239502de63f851ffb4eb513",
+    "bytes": 24249
+  },
+  "collector/capture-standard.py": {
+    "sha256": "a0295395f7ca6729bbf6b83ebadb361a4bf4feffaea1472e3993ef7ee52d6488",
+    "bytes": 24447
+  },
+  "collector/compile-layout.py": {
+    "sha256": "e258c114c1d6794aca8067fcefd9f5e9caa98b49b06b6e94dca18a7f8819168e",
+    "bytes": 1576
+  },
+  "collector/layout.cpp": {
+    "sha256": "a915c35d6a72eec8b5c0dc4f52cc23e4f6499a350d6930bebaa090aaaef3e877",
+    "bytes": 1085
+  },
+  "collector/layout.json": {
+    "sha256": "a6b0e18c60e741a607129f15e02e22da341e0bc9a91b2dceebf443fab38b2bfe",
+    "bytes": 639
+  },
+  "collector/render-probe.gdb": {
+    "sha256": "b2528c9b7e9daeac3bb080ed55c678bcedaeb9ff50f6826c0e6d31185b7b9b08",
+    "bytes": 7027
+  },
+  "collector/scenes.json": {
+    "sha256": "daab3f5b1723d5f51838646c55bc26c526519dffd252cd7e54e2adc0d62235fc",
+    "bytes": 9643
+  },
+  "collector/seal-inputs.py": {
+    "sha256": "484fcc8747ac9440919cea64353761683d2069f2dafcacc08ef569de531d8cb2",
+    "bytes": 3100
+  },
+  "compare-circles.py": {
+    "sha256": "c5776efb64d3d0825dcfc5f667308d2e6c49bfd113203480913c005fe1e0383e",
+    "bytes": 2578
+  },
+  "comparison/opengl-s64-light-fog-SKAGER-Day-return.png": {
+    "sha256": "581027f3dc310f508038e256195a6ed280ef021b41d8eb0658d05d63a1b1516e",
+    "bytes": 14254
+  },
+  "comparison/opengl-s64-light-fog-SKAGER-Day.png": {
+    "sha256": "581027f3dc310f508038e256195a6ed280ef021b41d8eb0658d05d63a1b1516e",
+    "bytes": 14254
+  },
+  "comparison/opengl-s64-light-fog-SKAGER-Dusk.png": {
+    "sha256": "e0cb4b44f7b484c9218413115ce87de006334b1754984dd24f26daa13816a795",
+    "bytes": 13386
+  },
+  "comparison/opengl-s64-light-fog-SKAGER-Night.png": {
+    "sha256": "b71698c565fbe34556800539755c012bf1e020d167efe03e924fd40f595ccb59",
+    "bytes": 12347
+  },
+  "comparison/software-s64-light-fog-SKAGER-Day-return.png": {
+    "sha256": "c584035859132ac02036fc899127bd3a8d41342ae1c2b3415c03d75b3b26de2c",
+    "bytes": 13367
+  },
+  "comparison/software-s64-light-fog-SKAGER-Day.png": {
+    "sha256": "c584035859132ac02036fc899127bd3a8d41342ae1c2b3415c03d75b3b26de2c",
+    "bytes": 13367
+  },
+  "comparison/software-s64-light-fog-SKAGER-Dusk.png": {
+    "sha256": "08db5b8512f4edcef2fe753e26ad925eec42c13a06fcbe8b38405530ff80e50b",
+    "bytes": 12479
+  },
+  "comparison/software-s64-light-fog-SKAGER-Night.png": {
+    "sha256": "40e1b0b8fb971bbc505c90485ec68c24b2a9bb4f9281676520a08ba8f3dfe7b9",
+    "bytes": 11562
+  },
+  "comparison.json": {
+    "sha256": "8c05f6df5d45230c5cfd3c7659898f123338e820dfdfb672e5b72cfabb2a2528",
+    "bytes": 9017
+  },
+  "inputs/frozen-inputs.json": {
+    "sha256": "238267149370be97594b7c7da7d3d97be4f90256ae9f96943a7aaab93a0c199d",
+    "bytes": 1158
+  },
+  "inputs/staged-inputs.json": {
+    "sha256": "c6a497e09725fe92e1fe8a6dfdc5519a6fa115fce1fe8856d58bfd1ba77ed075",
+    "bytes": 7008
+  },
+  "output/build.exit": {
+    "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "bytes": 2
+  },
+  "output/build.log": {
+    "sha256": "1f247668450fad81883005555848af4c26eb3bcdb63f67b0347c9843940b4f4f",
+    "bytes": 130326
+  },
+  "output/capture-fc6348a-s64-light-fog-opengl-r2/controlled-input.json": {
+    "sha256": "504d11252bdbe31965bcb699b589f87f6847eeaf4caaf6b8f1170aece57b300a",
+    "bytes": 4621
+  },
+  "output/capture-fc6348a-s64-light-fog-opengl-r2/loader-selftest.json": {
+    "sha256": "05f875e5c3c77d6c4e1799b579eb9a9e6498a7ab6db37384dbef74eea3248bed",
+    "bytes": 715
+  },
+  "output/capture-fc6348a-s64-light-fog-opengl-r2/mesa-renderer.txt": {
+    "sha256": "e64d27b6f57e1e93f47756deda650174fd3cb446b0ee53264869cbb34c5c6d3b",
+    "bytes": 1691
+  },
+  "output/capture-fc6348a-s64-light-fog-opengl-r2/report.json": {
+    "sha256": "cf727e23a7b4af0435cbe56f62b5643af49d61f79e620d7c7254b98184ddd71c",
+    "bytes": 59070
+  },
+  "output/capture-fc6348a-s64-light-fog-opengl-r2/s64-light-fog-SKAGER-Day-BUISGL-35.png": {
+    "sha256": "90ed9e5cb4f60caaf070dfdbe4f427305a5f592778a18dceb3bb5bddf481b14a",
+    "bytes": 1260
+  },
+  "output/capture-fc6348a-s64-light-fog-opengl-r2/s64-light-fog-SKAGER-Day-BUISGL-36.png": {
+    "sha256": "819d4c41abf72046b7e2db4067b5bc7953248ddef34b4b000b1ec2b038d36595",
+    "bytes": 718
+  },
+  "output/capture-fc6348a-s64-light-fog-opengl-r2/s64-light-fog-SKAGER-Day-FOGSIG-33.png": {
+    "sha256": "7a95eafccb57ac2f1af37f6b2cf7d590e540eecc5d2f3f9cc1833d13e2a3541d",
+    "bytes": 1894
+  },
+  "output/capture-fc6348a-s64-light-fog-opengl-r2/s64-light-fog-SKAGER-Day-LIGHTS-32.png": {
+    "sha256": "7a95eafccb57ac2f1af37f6b2cf7d590e540eecc5d2f3f9cc1833d13e2a3541d",
+    "bytes": 1894
+  },
+  "output/capture-fc6348a-s64-light-fog-opengl-r2/s64-light-fog-SKAGER-Day-return-BUISGL-35.png": {
+    "sha256": "90ed9e5cb4f60caaf070dfdbe4f427305a5f592778a18dceb3bb5bddf481b14a",
+    "bytes": 1260
+  },
+  "output/capture-fc6348a-s64-light-fog-opengl-r2/s64-light-fog-SKAGER-Day-return-BUISGL-36.png": {
+    "sha256": "819d4c41abf72046b7e2db4067b5bc7953248ddef34b4b000b1ec2b038d36595",
+    "bytes": 718
+  },
+  "output/capture-fc6348a-s64-light-fog-opengl-r2/s64-light-fog-SKAGER-Day-return-FOGSIG-33.png": {
+    "sha256": "7a95eafccb57ac2f1af37f6b2cf7d590e540eecc5d2f3f9cc1833d13e2a3541d",
+    "bytes": 1894
+  },
+  "output/capture-fc6348a-s64-light-fog-opengl-r2/s64-light-fog-SKAGER-Day-return-LIGHTS-32.png": {
+    "sha256": "7a95eafccb57ac2f1af37f6b2cf7d590e540eecc5d2f3f9cc1833d13e2a3541d",
+    "bytes": 1894
+  },
+  "output/capture-fc6348a-s64-light-fog-opengl-r2/s64-light-fog-SKAGER-Day-return.json": {
+    "sha256": "2e989d2dd694804a3d6e184593d339f49672d3513eb9971a2d8bac23223b2295",
+    "bytes": 31554
+  },
+  "output/capture-fc6348a-s64-light-fog-opengl-r2/s64-light-fog-SKAGER-Day-return.png": {
+    "sha256": "e2048fead19bd3dbedeff88ff0f03af9959e28017a58ebcb339861ee643f0114",
+    "bytes": 119060
+  },
+  "output/capture-fc6348a-s64-light-fog-opengl-r2/s64-light-fog-SKAGER-Day.json": {
+    "sha256": "ce8deaf3419925c97c1a0da80db6225c44b294677d41203ae67b9e2598bfd378",
+    "bytes": 28663
+  },
+  "output/capture-fc6348a-s64-light-fog-opengl-r2/s64-light-fog-SKAGER-Day.png": {
+    "sha256": "246333e1c30b047a173423137ce90e542591a653427057349fbb672b116c5deb",
+    "bytes": 119052
+  },
+  "output/capture-fc6348a-s64-light-fog-opengl-r2/s64-light-fog-SKAGER-Dusk-BUISGL-35.png": {
+    "sha256": "1896f7372377e718d9928f08d46a4dfeebd99cfe59bd525dbc9545661e8e6093",
+    "bytes": 1225
+  },
+  "output/capture-fc6348a-s64-light-fog-opengl-r2/s64-light-fog-SKAGER-Dusk-BUISGL-36.png": {
+    "sha256": "c668891d0e3ca0faeb505e3cfeb5f228553d36adc08f030d3ac702a123ffac83",
+    "bytes": 697
+  },
+  "output/capture-fc6348a-s64-light-fog-opengl-r2/s64-light-fog-SKAGER-Dusk-FOGSIG-33.png": {
+    "sha256": "3caca48f9223913b2e860d667d923a55bd493cbec11a850ef00bdcef0be5aeb7",
+    "bytes": 1830
+  },
+  "output/capture-fc6348a-s64-light-fog-opengl-r2/s64-light-fog-SKAGER-Dusk-LIGHTS-32.png": {
+    "sha256": "3caca48f9223913b2e860d667d923a55bd493cbec11a850ef00bdcef0be5aeb7",
+    "bytes": 1830
+  },
+  "output/capture-fc6348a-s64-light-fog-opengl-r2/s64-light-fog-SKAGER-Dusk.json": {
+    "sha256": "a8579aa39dfc5eb7f6d84af807dbf13fe51382aec9e0f5ebcba781d8d0d2c81f",
+    "bytes": 31555
+  },
+  "output/capture-fc6348a-s64-light-fog-opengl-r2/s64-light-fog-SKAGER-Dusk.png": {
+    "sha256": "a6d0ff46514525a63c5c13726593f631567f609a449a0df35ba957ce57a4c3d7",
+    "bytes": 108723
+  },
+  "output/capture-fc6348a-s64-light-fog-opengl-r2/s64-light-fog-SKAGER-Night-BUISGL-35.png": {
+    "sha256": "a95af6986f7b9698e053b0c5cf0d20fe487ece3ad94ef7e991d8cfec2347d415",
+    "bytes": 1160
+  },
+  "output/capture-fc6348a-s64-light-fog-opengl-r2/s64-light-fog-SKAGER-Night-BUISGL-36.png": {
+    "sha256": "7d71233ced4d0bc63aebe3b2d634baa6ea8ca8ce23830adb1ed3eaa871f828e2",
+    "bytes": 646
+  },
+  "output/capture-fc6348a-s64-light-fog-opengl-r2/s64-light-fog-SKAGER-Night-FOGSIG-33.png": {
+    "sha256": "0b96f7a45056ae3164332974fc1e49fb9307f95782454eee198c438252bd18e1",
+    "bytes": 1753
+  },
+  "output/capture-fc6348a-s64-light-fog-opengl-r2/s64-light-fog-SKAGER-Night-LIGHTS-32.png": {
+    "sha256": "0b96f7a45056ae3164332974fc1e49fb9307f95782454eee198c438252bd18e1",
+    "bytes": 1753
+  },
+  "output/capture-fc6348a-s64-light-fog-opengl-r2/s64-light-fog-SKAGER-Night.json": {
+    "sha256": "8c187aa69c73a159de2350977b3bd6679990a8fe6c2d69b35a3c4e75c6f55481",
+    "bytes": 31549
+  },
+  "output/capture-fc6348a-s64-light-fog-opengl-r2/s64-light-fog-SKAGER-Night.png": {
+    "sha256": "1a7880cd5e6b73310ffc913ef3ee61b2b35f16917fe02e5f24e8c73093615d6e",
+    "bytes": 105534
+  },
+  "output/capture-fc6348a-s64-light-fog-opengl-r2/s64-light-fog-SKAGER-launch.log": {
+    "sha256": "40f433aba8ac9d8a4fc7f1c3c22643262a954a211be0d4d0e9a8df36c7baf52e",
+    "bytes": 8981
+  },
+  "output/capture-fc6348a-s64-light-fog-opengl-r2/s64-light-fog-SKAGER-trace.jsonl": {
+    "sha256": "9d59f03fb97ae0d33977cd74b2bc0f5d1c09f35fcc17c6570e242eb87cef74a8",
+    "bytes": 3219
+  },
+  "output/capture-fc6348a-s64-light-fog-opengl-standard-control/controlled-input.json": {
+    "sha256": "c1b93cd36d421a7ddc378ed804bba6e7f85b203ca4a52a2647bbb71734f344ef",
+    "bytes": 4890
+  },
+  "output/capture-fc6348a-s64-light-fog-opengl-standard-control/loader-selftest.json": {
+    "sha256": "05f875e5c3c77d6c4e1799b579eb9a9e6498a7ab6db37384dbef74eea3248bed",
+    "bytes": 715
+  },
+  "output/capture-fc6348a-s64-light-fog-opengl-standard-control/mesa-renderer.txt": {
+    "sha256": "c0ef2244b33b03e92eddedb8a4ac88934e20583acf6be0e772528098b12aa75c",
+    "bytes": 1691
+  },
+  "output/capture-fc6348a-s64-light-fog-opengl-standard-control/report.json": {
+    "sha256": "1d39a300dfbcf36a317263fee74d9c40ad2962abc45d620227480c86ac2ebaca",
+    "bytes": 40164
+  },
+  "output/capture-fc6348a-s64-light-fog-opengl-standard-control/s64-light-fog-Standard-Day-FOGSIG-33.png": {
+    "sha256": "c3e5d398198937781524e7a5a56612424b66314c81f0870a1e32788da7f9d3f2",
+    "bytes": 1289
+  },
+  "output/capture-fc6348a-s64-light-fog-opengl-standard-control/s64-light-fog-Standard-Day-return-FOGSIG-33.png": {
+    "sha256": "c3e5d398198937781524e7a5a56612424b66314c81f0870a1e32788da7f9d3f2",
+    "bytes": 1289
+  },
+  "output/capture-fc6348a-s64-light-fog-opengl-standard-control/s64-light-fog-Standard-Day-return.json": {
+    "sha256": "c44a162e45cadc7490f959c62ae3afc2c6a24f7b535dd7d271fd85b1ff05df70",
+    "bytes": 31544
+  },
+  "output/capture-fc6348a-s64-light-fog-opengl-standard-control/s64-light-fog-Standard-Day-return.png": {
+    "sha256": "f7da2e6014dc3421770fe45688b560e61298f90764677dc124a1f96f66a6cf3b",
+    "bytes": 128805
+  },
+  "output/capture-fc6348a-s64-light-fog-opengl-standard-control/s64-light-fog-Standard-Day.json": {
+    "sha256": "6c9fc64e3c7af874923880eb8b3d0ac1482d9d45b5a14941a4b29585208cf546",
+    "bytes": 28658
+  },
+  "output/capture-fc6348a-s64-light-fog-opengl-standard-control/s64-light-fog-Standard-Day.png": {
+    "sha256": "e8c58316d0344352d0857287c4cb4a740a6c9e6e639606cb3299f5f9e0480acb",
+    "bytes": 128801
+  },
+  "output/capture-fc6348a-s64-light-fog-opengl-standard-control/s64-light-fog-Standard-Dusk-FOGSIG-33.png": {
+    "sha256": "caea1648aa73b3a8e5d8b51b7c9727dc37d19c55b9d6e3d98c6edbe6c859f114",
+    "bytes": 1097
+  },
+  "output/capture-fc6348a-s64-light-fog-opengl-standard-control/s64-light-fog-Standard-Dusk.json": {
+    "sha256": "6eb9cf8941ced11dfbd6c1d73ac3f4ce11225e0b8aec357f96c0a4cef02fdc92",
+    "bytes": 31545
+  },
+  "output/capture-fc6348a-s64-light-fog-opengl-standard-control/s64-light-fog-Standard-Dusk.png": {
+    "sha256": "30d06876f070d27965e05199ad82bec8f27bfade044652428d1054338e28c3a8",
+    "bytes": 111916
+  },
+  "output/capture-fc6348a-s64-light-fog-opengl-standard-control/s64-light-fog-Standard-Night-FOGSIG-33.png": {
+    "sha256": "075df01ba73acffefa979acd5644c0bf891c56a2f3f6d791d85faefffd3404d1",
+    "bytes": 983
+  },
+  "output/capture-fc6348a-s64-light-fog-opengl-standard-control/s64-light-fog-Standard-Night.json": {
+    "sha256": "972c71bcc23c99fbb07c12cbe0dbd5e9a6ba4309502d52dd08994172232497a3",
+    "bytes": 31544
+  },
+  "output/capture-fc6348a-s64-light-fog-opengl-standard-control/s64-light-fog-Standard-Night.png": {
+    "sha256": "a7563f5c79f79e2df5b4b145926f4cd0101634931f90143dfa5df4eb1fb0c0b8",
+    "bytes": 105657
+  },
+  "output/capture-fc6348a-s64-light-fog-opengl-standard-control/s64-light-fog-Standard-launch.log": {
+    "sha256": "ab3711c3d262fa444834e9b158c95df824f869652a0d9781634ac0a606c1a8c2",
+    "bytes": 8949
+  },
+  "output/capture-fc6348a-s64-light-fog-opengl-standard-control/s64-light-fog-Standard-trace.jsonl": {
+    "sha256": "830e0be0a94913dd3a1b19d4dee2861e1035ab0abcfdafdc3f96a403e7e68cc6",
+    "bytes": 2135
+  },
+  "output/capture-fc6348a-s64-light-fog-software-r2/controlled-input.json": {
+    "sha256": "83ee2bf51b8b89a0a5cdbdd772b18b7da3f7a1ebebdac1055905613ba6bcfaaf",
+    "bytes": 4622
+  },
+  "output/capture-fc6348a-s64-light-fog-software-r2/loader-selftest.json": {
+    "sha256": "05f875e5c3c77d6c4e1799b579eb9a9e6498a7ab6db37384dbef74eea3248bed",
+    "bytes": 715
+  },
+  "output/capture-fc6348a-s64-light-fog-software-r2/report.json": {
+    "sha256": "537e0db391383077f57c78a3bc5e8058cd389f389ff54ff52d7dc7c311298f41",
+    "bytes": 57327
+  },
+  "output/capture-fc6348a-s64-light-fog-software-r2/s64-light-fog-SKAGER-Day-BUISGL-35.png": {
+    "sha256": "24fe2823277b27d002d31e44938e9295e407974b66e0dfc074e02b8ac1a79017",
+    "bytes": 1686
+  },
+  "output/capture-fc6348a-s64-light-fog-software-r2/s64-light-fog-SKAGER-Day-BUISGL-36.png": {
+    "sha256": "2550cb83b134f1d39d5e0885630722faa73c257cb4cc677c91e00dfba2b803d2",
+    "bytes": 1057
+  },
+  "output/capture-fc6348a-s64-light-fog-software-r2/s64-light-fog-SKAGER-Day-FOGSIG-33.png": {
+    "sha256": "ec44e7e21e9a6db1c02c51a5b0c8c011349a64e0e95c676f6455fdda254c8890",
+    "bytes": 2115
+  },
+  "output/capture-fc6348a-s64-light-fog-software-r2/s64-light-fog-SKAGER-Day-LIGHTS-32.png": {
+    "sha256": "ec44e7e21e9a6db1c02c51a5b0c8c011349a64e0e95c676f6455fdda254c8890",
+    "bytes": 2115
+  },
+  "output/capture-fc6348a-s64-light-fog-software-r2/s64-light-fog-SKAGER-Day-return-BUISGL-35.png": {
+    "sha256": "24fe2823277b27d002d31e44938e9295e407974b66e0dfc074e02b8ac1a79017",
+    "bytes": 1686
+  },
+  "output/capture-fc6348a-s64-light-fog-software-r2/s64-light-fog-SKAGER-Day-return-BUISGL-36.png": {
+    "sha256": "2550cb83b134f1d39d5e0885630722faa73c257cb4cc677c91e00dfba2b803d2",
+    "bytes": 1057
+  },
+  "output/capture-fc6348a-s64-light-fog-software-r2/s64-light-fog-SKAGER-Day-return-FOGSIG-33.png": {
+    "sha256": "ec44e7e21e9a6db1c02c51a5b0c8c011349a64e0e95c676f6455fdda254c8890",
+    "bytes": 2115
+  },
+  "output/capture-fc6348a-s64-light-fog-software-r2/s64-light-fog-SKAGER-Day-return-LIGHTS-32.png": {
+    "sha256": "ec44e7e21e9a6db1c02c51a5b0c8c011349a64e0e95c676f6455fdda254c8890",
+    "bytes": 2115
+  },
+  "output/capture-fc6348a-s64-light-fog-software-r2/s64-light-fog-SKAGER-Day-return.json": {
+    "sha256": "fc0720d1f7fca34b257401d686b3fe7964d63f15183172ace68b1a42e9a524aa",
+    "bytes": 31553
+  },
+  "output/capture-fc6348a-s64-light-fog-software-r2/s64-light-fog-SKAGER-Day-return.png": {
+    "sha256": "faa6e8bb650d51a1c4577dfb6470b880dabeaef9863d3e0b80b072888bd6ef50",
+    "bytes": 174922
+  },
+  "output/capture-fc6348a-s64-light-fog-software-r2/s64-light-fog-SKAGER-Day.json": {
+    "sha256": "d9f0d22ceecf853e3d1d743073a2341ea99a367986344127485e030785b84a35",
+    "bytes": 28663
+  },
+  "output/capture-fc6348a-s64-light-fog-software-r2/s64-light-fog-SKAGER-Day.png": {
+    "sha256": "a1abb46031dde06f52cec7d0abb4f3e8b055f6c348e198ffdca2e84886f1ba96",
+    "bytes": 174869
+  },
+  "output/capture-fc6348a-s64-light-fog-software-r2/s64-light-fog-SKAGER-Dusk-BUISGL-35.png": {
+    "sha256": "f0cd95b6daef1c9e03dd7dd17b7f0815d3cf0f0fc3d3dd10c62a695d673a68af",
+    "bytes": 1660
+  },
+  "output/capture-fc6348a-s64-light-fog-software-r2/s64-light-fog-SKAGER-Dusk-BUISGL-36.png": {
+    "sha256": "39c3617f3918688a682216dacc3ef5a86d6686560653c93d7693b2d1487b01d7",
+    "bytes": 1045
+  },
+  "output/capture-fc6348a-s64-light-fog-software-r2/s64-light-fog-SKAGER-Dusk-FOGSIG-33.png": {
+    "sha256": "4f784b58681d3a2de67abac13606cd15c5264738492d7b11ab77815bff594fb7",
+    "bytes": 2048
+  },
+  "output/capture-fc6348a-s64-light-fog-software-r2/s64-light-fog-SKAGER-Dusk-LIGHTS-32.png": {
+    "sha256": "4f784b58681d3a2de67abac13606cd15c5264738492d7b11ab77815bff594fb7",
+    "bytes": 2048
+  },
+  "output/capture-fc6348a-s64-light-fog-software-r2/s64-light-fog-SKAGER-Dusk.json": {
+    "sha256": "dc3175a929039885fd1884550037a7f7f0b599b8ee2724e2d9fddcbbe7e40096",
+    "bytes": 31549
+  },
+  "output/capture-fc6348a-s64-light-fog-software-r2/s64-light-fog-SKAGER-Dusk.png": {
+    "sha256": "f3539752d2f65da88ef906bfc92e23546695b1be543c85cd636fa73b83198a2e",
+    "bytes": 160701
+  },
+  "output/capture-fc6348a-s64-light-fog-software-r2/s64-light-fog-SKAGER-Night-BUISGL-35.png": {
+    "sha256": "7263d81d49a988f834961f8d189ff4bdd0767aa63efc2ca8ea3d852d7308db8e",
+    "bytes": 1530
+  },
+  "output/capture-fc6348a-s64-light-fog-software-r2/s64-light-fog-SKAGER-Night-BUISGL-36.png": {
+    "sha256": "03878fa1de5d6b767b70e6c994835ba0de692fa8f2f357750413f3f6bff53d49",
+    "bytes": 962
+  },
+  "output/capture-fc6348a-s64-light-fog-software-r2/s64-light-fog-SKAGER-Night-FOGSIG-33.png": {
+    "sha256": "2c1748484003dbb63903cb896c77ce94b0636c9c964c1023472bae5abdf0853b",
+    "bytes": 1948
+  },
+  "output/capture-fc6348a-s64-light-fog-software-r2/s64-light-fog-SKAGER-Night-LIGHTS-32.png": {
+    "sha256": "2c1748484003dbb63903cb896c77ce94b0636c9c964c1023472bae5abdf0853b",
+    "bytes": 1948
+  },
+  "output/capture-fc6348a-s64-light-fog-software-r2/s64-light-fog-SKAGER-Night.json": {
+    "sha256": "36781fa7425ddff3f3e7e1d6b44085c1d3b1273f87ca5637223afce2242beaeb",
+    "bytes": 31554
+  },
+  "output/capture-fc6348a-s64-light-fog-software-r2/s64-light-fog-SKAGER-Night.png": {
+    "sha256": "b593d03b6a900672969f080762d32c773a3941807f3529ba48ed7d610621473d",
+    "bytes": 153543
+  },
+  "output/capture-fc6348a-s64-light-fog-software-r2/s64-light-fog-SKAGER-launch.log": {
+    "sha256": "06403cd5e5a8e61860c8b340b4e249592178bb017fda206a68240bc699ed7a04",
+    "bytes": 8303
+  },
+  "output/capture-fc6348a-s64-light-fog-software-r2/s64-light-fog-SKAGER-trace.jsonl": {
+    "sha256": "9d59f03fb97ae0d33977cd74b2bc0f5d1c09f35fcc17c6570e242eb87cef74a8",
+    "bytes": 3219
+  },
+  "output/capture-fc6348a-s64-light-fog-software-standard-control/controlled-input.json": {
+    "sha256": "86788c90596c979cdd1fe69b4a32a21359a23b25373597ad51bdc863085fe009",
+    "bytes": 4480
+  },
+  "output/capture-fc6348a-s64-light-fog-software-standard-control/loader-selftest.json": {
+    "sha256": "05f875e5c3c77d6c4e1799b579eb9a9e6498a7ab6db37384dbef74eea3248bed",
+    "bytes": 715
+  },
+  "output/capture-fc6348a-s64-light-fog-software-standard-control/report.json": {
+    "sha256": "6b6bb20cfe155434f294c24390004a1c9895f92de99084ca46228538530eb25a",
+    "bytes": 38429
+  },
+  "output/capture-fc6348a-s64-light-fog-software-standard-control/s64-light-fog-Standard-Day-FOGSIG-33.png": {
+    "sha256": "dcb68dbc918aaf0d709b904f3cf1081ebbe76dee83cfb4f96c0d9e3ff5826066",
+    "bytes": 1668
+  },
+  "output/capture-fc6348a-s64-light-fog-software-standard-control/s64-light-fog-Standard-Day-return-FOGSIG-33.png": {
+    "sha256": "dcb68dbc918aaf0d709b904f3cf1081ebbe76dee83cfb4f96c0d9e3ff5826066",
+    "bytes": 1668
+  },
+  "output/capture-fc6348a-s64-light-fog-software-standard-control/s64-light-fog-Standard-Day-return.json": {
+    "sha256": "07ae3ba2ff13326897ae3e217cce8a948a21a9ec49895cd58b144bb37836a262",
+    "bytes": 31548
+  },
+  "output/capture-fc6348a-s64-light-fog-software-standard-control/s64-light-fog-Standard-Day-return.png": {
+    "sha256": "a11bf926a33cc58d9c7f0a27aa825361843324c1605dd7e5c7cc0ac5a501550d",
+    "bytes": 188730
+  },
+  "output/capture-fc6348a-s64-light-fog-software-standard-control/s64-light-fog-Standard-Day.json": {
+    "sha256": "b690ff9f12c49799b425eeafb678505517c676714405eaabde77169c000c26e5",
+    "bytes": 28654
+  },
+  "output/capture-fc6348a-s64-light-fog-software-standard-control/s64-light-fog-Standard-Day.png": {
+    "sha256": "fef65a777509724c5faa6e67a15c11dd7d5fd6b3a14cfbdc35fa89cde7269503",
+    "bytes": 188718
+  },
+  "output/capture-fc6348a-s64-light-fog-software-standard-control/s64-light-fog-Standard-Dusk-FOGSIG-33.png": {
+    "sha256": "f59a8537e1acdde3c043b5679deac5629cae4a7a0e232fe7e631024d25cc185d",
+    "bytes": 1345
+  },
+  "output/capture-fc6348a-s64-light-fog-software-standard-control/s64-light-fog-Standard-Dusk.json": {
+    "sha256": "1778994356765c83f50fd33196d06eabb39f154a39e4c9cc9c396d0701774b14",
+    "bytes": 31548
+  },
+  "output/capture-fc6348a-s64-light-fog-software-standard-control/s64-light-fog-Standard-Dusk.png": {
+    "sha256": "8d3fe53f081a4a82db33d919c6cb3fa50441d331714cd4192d1040c0d2aed28a",
+    "bytes": 152819
+  },
+  "output/capture-fc6348a-s64-light-fog-software-standard-control/s64-light-fog-Standard-Night-FOGSIG-33.png": {
+    "sha256": "517ca69e636375208376d4e362dac133d05d47e37e4d82399fbaddbad0a54bb9",
+    "bytes": 1312
+  },
+  "output/capture-fc6348a-s64-light-fog-software-standard-control/s64-light-fog-Standard-Night.json": {
+    "sha256": "390668300e838b3c1335dfec53fdbd60b8403aa37cae838c9c0e3036e1558c3c",
+    "bytes": 31552
+  },
+  "output/capture-fc6348a-s64-light-fog-software-standard-control/s64-light-fog-Standard-Night.png": {
+    "sha256": "5df9a3fdf3a69aa53643e57a6ec5725f170da83e8361a614bf42e4ed15ca0727",
+    "bytes": 146686
+  },
+  "output/capture-fc6348a-s64-light-fog-software-standard-control/s64-light-fog-Standard-launch.log": {
+    "sha256": "126114d34c5e6f3307c1608923150e27b0ca80c8bf1569b5cbf1a10f6f27396a",
+    "bytes": 8244
+  },
+  "output/capture-fc6348a-s64-light-fog-software-standard-control/s64-light-fog-Standard-trace.jsonl": {
+    "sha256": "830e0be0a94913dd3a1b19d4dee2861e1035ab0abcfdafdc3f96a403e7e68cc6",
+    "bytes": 2135
+  },
+  "output/comparison.log": {
+    "sha256": "83dec132f4c60e9a640a35fb01d6b14d0d86c1336ecf2374912a3b67e0267730",
+    "bytes": 504
+  },
+  "output/layout-compile-final.log": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  "output/layout-receipt.json": {
+    "sha256": "552f10bc83a8c000c141723307e971fabf8b9cd0cf24a6c13066852212008f16",
+    "bytes": 7743
+  },
+  "output/opengl-s64-light-fog-r2.exit": {
+    "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "bytes": 2
+  },
+  "output/opengl-s64-light-fog-r2.log": {
+    "sha256": "aa6f74a1ae788bba7490a1c8ae053432163448cee9e62a45f0b8f4c459cf2c5d",
+    "bytes": 1630
+  },
+  "output/opengl-s64-light-fog-standard-control.exit": {
+    "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "bytes": 2
+  },
+  "output/opengl-s64-light-fog-standard-control.log": {
+    "sha256": "f6b4cbbe6696572293acfb94a604a5a382fe98df4e720d3dc86ffe8645fd1f12",
+    "bytes": 1666
+  },
+  "output/setup.exit": {
+    "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "bytes": 2
+  },
+  "output/setup.log": {
+    "sha256": "a244e0969832e3d9ca6057a29077d93b68d1f9024c413c5e1bb4c928b7c65f6a",
+    "bytes": 7766
+  },
+  "output/software-s64-light-fog-r2.exit": {
+    "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "bytes": 2
+  },
+  "output/software-s64-light-fog-r2.log": {
+    "sha256": "512c2884e1f7421a36c2fbf5e8079aeda03126dd02d165002ce92320d1bb2ca5",
+    "bytes": 1632
+  },
+  "output/software-s64-light-fog-standard-control.exit": {
+    "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "bytes": 2
+  },
+  "output/software-s64-light-fog-standard-control.log": {
+    "sha256": "e224e97cafd4d607df628d55ef4aa74e6ad93c5fc3dea55d2f8c2d2fc331d643",
+    "bytes": 1668
+  },
+  "output/xnav-linux-build.log": {
+    "sha256": "e31a127c21e2780d84ce7ad0f1e6d41a0eea9b320003b55d58c8b9852fa6e676",
+    "bytes": 3782
+  },
+  "output/xnav-linux-configure.log": {
+    "sha256": "05940d690a916d3dd2d1b4d62ab2c5d24e1186d4227e45e75716e0ae62e428da",
+    "bytes": 6990
+  },
+  "output/xnav-linux-install.log": {
+    "sha256": "5dfdca61c3c26f55463af8fc55e518e57108f0c3161b9dea957de95aefa2fa6d",
+    "bytes": 118910
+  },
+  "run-build.sh": {
+    "sha256": "3d9d0ab1fb8050c4e72a46064bf27df5cea97218388a629bdee6f172c8fff90c",
+    "bytes": 1916
+  },
+  "run-capture-r2.sh": {
+    "sha256": "b02408c9eaf5a8261b89261c9a09b084702b04eae3ea97b150405a1c0dd6e217",
+    "bytes": 2112
+  },
+  "run-setup.sh": {
+    "sha256": "8ff840bd8899e70607834c4366d95be49a2647d28b20da32781d8b036814f388",
+    "bytes": 1214
+  },
+  "run-standard.sh": {
+    "sha256": "429ac8e515461ed0890c8d740e6230662cdab880133f33ef16a4e5d4d6c621c5",
+    "bytes": 2187
+  },
+  "source-advance.json": {
+    "sha256": "73857baceeaec595611789242beb26a20526a2007e16140c9cbddc59b13f5536",
+    "bytes": 525
+  }
+}

@@ -1,0 +1,6 @@
+Native tool facts captured: openssl-parent
+Native tool facts verifyd: openssl-parent
+Original initialized context captured once and verified with actual tools
+Omitted-prefix control rejected; only PATHSha256 differs, including identical selected tool paths and hashes
+Native tool facts verifyd: openssl-parent
+Shared Verify initialization restored exact original facts without replacing either retained JSON

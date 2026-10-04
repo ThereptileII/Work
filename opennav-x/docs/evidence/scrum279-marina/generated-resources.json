@@ -1,0 +1,272 @@
+{
+  "upstreamCommit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "files": {
+    "chartsymbols.xml": {
+      "sha256": "4d207ca4300781f363ca89e6c451e95e3de5d9be3004e9d6914bdb6a490cf3ec",
+      "bytes": 2246139
+    },
+    "S52RAZDS.RLE": {
+      "sha256": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26",
+      "bytes": 1305627
+    },
+    "rastersymbols-day.png": {
+      "sha256": "c29e61637a69e341ff4d176387f63bd0451e6635210c1711a698c1bdd1e3f2c1",
+      "bytes": 200919
+    },
+    "rastersymbols-dusk.png": {
+      "sha256": "37e1ca576fbc93cd169e7ba10eb2f566f3fd1c94da268ab1df3309d94c8515f1",
+      "bytes": 175246
+    },
+    "rastersymbols-dark.png": {
+      "sha256": "dc4fad72ec32cabccf42781cae86ed5bcd621d6aa5df8dcf897b13b642fec2bb",
+      "bytes": 170538
+    }
+  },
+  "priorFiles": {
+    "chartsymbols.xml": {
+      "sha256": "a4f7d248d2b64c245b56e3dca7114ead7fcf3644df91ea06d0924ac907cdfd62",
+      "bytes": 2246138
+    },
+    "S52RAZDS.RLE": {
+      "sha256": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26",
+      "bytes": 1305627
+    },
+    "rastersymbols-day.png": {
+      "sha256": "106696b1169b0bf00990b9d2a2bb133269b1a835e02f1346340f278d252e76dd",
+      "bytes": 200625
+    },
+    "rastersymbols-dusk.png": {
+      "sha256": "ff9be20135a9aa2a0e1d37e11209d4e43777de6931854de6456b8f3d5277990e",
+      "bytes": 174947
+    },
+    "rastersymbols-dark.png": {
+      "sha256": "5af009cc4cab653df44e26dc6661fc773502dbabe3f857d28bd9a246373ac6d6",
+      "bytes": 170254
+    }
+  },
+  "serviceArtwork": {
+    "rastersymbols-day.png": {
+      "PILBOP02": {
+        "effectiveRcid": 1,
+        "tile": [
+          52,
+          1160,
+          24,
+          24
+        ],
+        "pivot": [
+          12,
+          12
+        ],
+        "alphaSha256": "a5939fe16a9ceab9bdd44e5b0182c76407b6c3b0800d5429ce39f510e7f9bc86",
+        "changedPixels": 148,
+        "serviceRgb": [
+          124,
+          133,
+          138
+        ],
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      },
+      "RTPBCN02": {
+        "effectiveRcid": 2259,
+        "tile": [
+          84,
+          1160,
+          24,
+          24
+        ],
+        "pivot": [
+          12,
+          12
+        ],
+        "alphaSha256": "4e8e9899f67b94972331aac087f52726aaf53ca4644e6da4d316104e91472ba6",
+        "changedPixels": 156,
+        "serviceRgb": [
+          124,
+          133,
+          138
+        ],
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      },
+      "SMCFAC02": {
+        "effectiveRcid": 2108,
+        "tile": [
+          820,
+          1160,
+          24,
+          24
+        ],
+        "pivot": [
+          12,
+          12
+        ],
+        "alphaSha256": "b26100fff9af4b66ba98b6dcd6cbd2fa453c921f46ca05480ba84e8a9b6b0bf6",
+        "changedPixels": 152,
+        "serviceRgb": [
+          124,
+          133,
+          138
+        ],
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      }
+    },
+    "rastersymbols-dusk.png": {
+      "PILBOP02": {
+        "effectiveRcid": 1,
+        "tile": [
+          52,
+          1160,
+          24,
+          24
+        ],
+        "pivot": [
+          12,
+          12
+        ],
+        "alphaSha256": "a5939fe16a9ceab9bdd44e5b0182c76407b6c3b0800d5429ce39f510e7f9bc86",
+        "changedPixels": 148,
+        "serviceRgb": [
+          168,
+          187,
+          183
+        ],
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      },
+      "RTPBCN02": {
+        "effectiveRcid": 2259,
+        "tile": [
+          84,
+          1160,
+          24,
+          24
+        ],
+        "pivot": [
+          12,
+          12
+        ],
+        "alphaSha256": "4e8e9899f67b94972331aac087f52726aaf53ca4644e6da4d316104e91472ba6",
+        "changedPixels": 156,
+        "serviceRgb": [
+          168,
+          187,
+          183
+        ],
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      },
+      "SMCFAC02": {
+        "effectiveRcid": 2108,
+        "tile": [
+          820,
+          1160,
+          24,
+          24
+        ],
+        "pivot": [
+          12,
+          12
+        ],
+        "alphaSha256": "b26100fff9af4b66ba98b6dcd6cbd2fa453c921f46ca05480ba84e8a9b6b0bf6",
+        "changedPixels": 152,
+        "serviceRgb": [
+          168,
+          187,
+          183
+        ],
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      }
+    },
+    "rastersymbols-dark.png": {
+      "PILBOP02": {
+        "effectiveRcid": 1,
+        "tile": [
+          52,
+          1160,
+          24,
+          24
+        ],
+        "pivot": [
+          12,
+          12
+        ],
+        "alphaSha256": "a5939fe16a9ceab9bdd44e5b0182c76407b6c3b0800d5429ce39f510e7f9bc86",
+        "changedPixels": 148,
+        "serviceRgb": [
+          98,
+          115,
+          108
+        ],
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      },
+      "RTPBCN02": {
+        "effectiveRcid": 2259,
+        "tile": [
+          84,
+          1160,
+          24,
+          24
+        ],
+        "pivot": [
+          12,
+          12
+        ],
+        "alphaSha256": "4e8e9899f67b94972331aac087f52726aaf53ca4644e6da4d316104e91472ba6",
+        "changedPixels": 156,
+        "serviceRgb": [
+          98,
+          115,
+          108
+        ],
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      },
+      "SMCFAC02": {
+        "effectiveRcid": 2108,
+        "tile": [
+          820,
+          1160,
+          24,
+          24
+        ],
+        "pivot": [
+          12,
+          12
+        ],
+        "alphaSha256": "b26100fff9af4b66ba98b6dcd6cbd2fa453c921f46ca05480ba84e8a9b6b0bf6",
+        "changedPixels": 152,
+        "serviceRgb": [
+          98,
+          115,
+          108
+        ],
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      }
+    }
+  },
+  "manifestSha256": "01369433c32ed91750a21a2fe16aecc71b17ebe0c1648d9112ae55f398a5acdf"
+}

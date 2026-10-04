@@ -1,6 +1,121 @@
-# SKAGER status — 2026-10-03
+# SKAGER status — 2026-10-04
 
-## SCRUM-278 — focused Windows environment proof prepared
+## Current replacement — 4ddf1f3 native AIS gate failed
+
+Frozen local `48c2f8b8d5d4103bcbaacc45a18c4e6a238d4c52` maps to remote
+`4ddf1f383e495150551946dd36103cd77cea85eb`, with the
+[5,662-entry tree independently reconstructed](evidence/skager-parent-context-publication.json).
+The [short native proof](https://github.com/ThereptileII/Work/actions/runs/37155593528)
+passed; its [original artifact and audit](evidence/scrum278-native-parent-context/README.md)
+retain the negative rejection and successful exact restoration. Root independently
+verified the archive, all 25 CRCs and unchanged receipts. Both negative/positive
+PATH hashes exactly reproduce the original 63c1029 failure pair; only that field
+differs. This proves the parent-context correction, not AIS or TLS acceptance.
+
+The full branch now uses that **same source SHA**, with no intervening changes,
+in [run 37155858878](https://github.com/ThereptileII/Work/actions/runs/37155858878).
+It includes the previously checked chart metric consistency and neutral building
+alias corrections below. Actual AIS runtime, remaining product/package gates and
+boat qualification are pending. No eligible package or boat modification is claimed.
+
+At 23:21 UTC on October 3, the same run's Linux integrated functional stages
+have passed through the public ENC/plugin rendering gate; its actual elapsed-time
+endurance stage is running. The native Windows application build and integrated
+mode checks passed, followed by source reproduction, installed peer-key refusal
+and staged-loader checks. Actual chart gestures, repeated crash recovery, fixture
+UI and same-job dependency capture passed. Native AIS step18 then failed;
+fixture-free production, TLS and package stages19–27 were skipped. Independent
+DPI and public ENC checks subsequently passed. The original artifact now proves
+OpenSSL/zlib parent and child checks and AIS configuration passed, then the AIS
+wrapper raised `KeyError: 'Include'` while treating MSBuild configuration metadata
+as a project dependency. AIS compilation/runtime never began. SCRUM-285's narrow
+ItemGroup traversal repair and [retained-project checks](evidence/scrum285-native-ais-project-closure/README.md)
+are integrated. Its [short native proof](evidence/scrum285-native-ais-project-closure/native-ab92dc7/README.md)
+passed all eight cases in run 37162505696 at exact `ab92dc7`; root verified the
+original artifact, all CRCs and execution-input identities. This qualifies the
+parser correction before a replacement build, not actual AIS compilation or TLS
+runtime. A bounded downstream review of the original eight projects, 55 source
+paths, expected JSON headers and 155 retained dependency files found no further
+concrete setup defect. It did not execute native binaries or reuse producer
+receipts across jobs.
+This is a separate wrapper defect, not the earlier PATH mismatch or an observed
+application crash. The separate pristine
+Linux/native Windows baselines, recovery/restart/guarded-mode prerequisites and
+both contract jobs passed. The [terminal contract evidence](evidence/contracts-4ddf1f3/README.md)
+records 94 Linux and 91 Windows CTest cases; these are not the still-pending
+integrated application or package totals. No duplicate full build was dispatched.
+
+Supplied artwork is integrated on the separate symbol-completion branch, without
+changing this candidate: SCRUM-279 marina, SCRUM-280 rock/wreck, SCRUM-281 cable
+waveform and SCRUM-282 fishing-stake area. The [combined resource proof](evidence/scrum279-283-combined/README.md)
+passes: exactly 505 new pixels per theme, all other RGBA/PNG metadata unchanged,
+and complete prior XML recovered after only the reviewed transformations.
+The [combined source/object review](evidence/scrum281282-combined-review/README.md)
+proves ordered patch composition and normal optimized core/private compilation.
+Root reviewed the three-theme glyph/painter comparisons. The [combined actual
+Linux canvas evidence](evidence/scrum279282-45d-linux-canvas/README.md) now passes
+40 captures, ten clean sessions and ten exact unmasked whole-chart Day returns;
+root verified all 292 retained file identities and independently recomputed those
+returns. Actual unknown-depth rock selection is proven. The sampled awash rock
+and wreck correctly retain OpenCPN's isolated-danger symbol; they do not qualify
+the alternative supplied glyphs. The retained charts contain no matching marina
+or fishing-stake polygon. Native Windows, private DLL and boat acceptance remain
+open. The oversized cable
+experiment was rejected; the final 24-pixel-equivalent waveform is implemented.
+The fishing motif retains native repeat spacing and now uses the actual private
+adapter compile guard. These changes are not present in `4ddf1f3`.
+
+SCRUM-283 is a newly observed private-chart safety qualification blocker. Focused
+execution of original pinned conditional procedures shows that private
+`_UDWHAZ03` does not call the chart's associated-depth-area query, while core
+OpenCPN does. The retained negative case has UWTROC/WATLEV3 with missing VALSOU,
+a 5 m safety contour and an associated 10 m DEPARE: core selects ISODGR51 and
+DisplayBase; the original private branch differs. This source-level result is
+inherited, not caused by the new artwork and not yet an observed boat-chart
+failure. The original failure remains evidence; per-source resource preservation
+must not be reported as core/private safety parity. The narrow adapter-only
+callback correction is now integrated, with [actual-source safety and lifetime checks](evidence/scrum283-private-hazard-association/README.md)
+passing. Both original failed point cases now select ISODGR51/DisplayBase. The
+original private reference-point/first-area limitation remains explicit; native
+private-DLL and boat qualification are still required before closing SCRUM-283.
+The running `4ddf1f3` build remains development evidence, not final private-chart
+navigation qualification.
+
+SCRUM-284 separately addresses the remaining heavy ordinary all-round light arc.
+The prototype has no custom all-round/tower glyph; any treatment must preserve
+the upstream full-circle/range-band meaning while applying its paint hierarchy.
+The [outline-only refinement](evidence/scrum284-all-round-light/README.md) is now
+integrated as `fc6348a`: 339 actual-method assertions per core/private renderer
+and both complete optimized renderer objects pass. Root reviewed its 36 controlled
+images and verified 75 evidence identities. The [actual `fc6348a` chart comparison](evidence/scrum284-fc6348a-linux-canvas/README.md)
+now passes: normal 29-step incremental build/link/install, 16 captures, four
+clean sessions and four exact Day returns. All eight Standard chart images are
+unchanged; SKAGER differences occur only around the old light ring. Root inspected
+Day/Night comparisons and verified all 142 retained file identities. Native/boat
+conformance is not claimed.
+
+SCRUM-286's [compact OverZoom warning](evidence/scrum286-overzoom-warning/README.md)
+is integrated as `98d2c45`. The original warning trigger and stock fallback remain
+unchanged; the new presentation uses existing prototype warning-callout roles.
+Its 260 focused assertions, eight controlled images and three optimized actual
+production units pass. Root reviewed the source and verified 45 evidence files.
+The [actual `98d2c45` application comparison](evidence/scrum286-98d2c45-linux-canvas/README.md)
+now passes: normal 38-step single-job incremental build/link/install, 16 captures,
+four exact whole-chart Day returns and four clean exits. All eight Standard chart
+controls remain identical to `fc6348a`; SKAGER changes are confined to the old
+top-left warning region. Root inspected Day/Night comparisons and the complete
+Day chart, and verified all 143 evidence file identities. The combined source is
+ready for one full native replacement; no eligible Windows package is claimed yet.
+
+The [current identity audit](evidence/scrum246-15-identity-33f9fd1/README.md)
+confirms the 124-DIP approved logo, nine-size Windows icon and customer SKAGER
+captions. The original native `4dd` font probe resolves Segoe UI because that
+host lacks Variable Display, as permitted by the prototype's stack. The boat's
+HTML reference resolves Variable Display; actual native boat typography still
+needs review. Internal compatibility identifiers and immutable design evidence
+retain their original names.
+
+## SCRUM-278 — focused Windows environment correction
 
 The shared parent setup is integrated as `970671d`, with the existing Gettext
 receipt bound to dependency reuse in `7568bf7`. Build and AIS callers preserve
@@ -8,15 +123,12 @@ the same native-Perl/Gettext prefix order; AIS verifies existing tools without
 installing them or rewriting captured identities. The 13 helper checks, 12
 initial receipt/order cases and one additional receipt-tamper case pass locally.
 
-`eab2e95` adds a [short native proof](evidence/scrum278-parent-context-proof/README.md)
-on its own CI branch. It uses the actual unchanged tool-facts helper and exact
-producer setup span, requiring omitted-prefix rejection and byte-exact restored
-facts. Thirteen preparation checks pass; native execution is still pending.
-This is not a dependency/application rebuild or AIS runtime acceptance. The
-full candidate branch stays at failed `63c1029` until this focused proof passes.
-No boat changes have been made.
+`eab2e95` adds the short native proof on its own CI branch, using the actual
+unchanged tool-facts helper and exact producer setup span. Thirteen preparation
+checks passed before the successful native run. The full candidate was held at
+failed `63c1029` until that focused native evidence was verified.
 
-## Current full qualification — 63c1029 native AIS gate failed
+## Prior full qualification — 63c1029 native AIS gate failed
 
 Frozen local **`d18da7ccc94b175d1f4a09a0019ab7e4b4f55d31`** is published as
 **`63c1029584a325a961fa89794071cbf053c2e966`** in

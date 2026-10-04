@@ -1,5 +1,9 @@
-"""Pinned cable/ferry/area paint roles; no HPGL/layout changes."""
+"""Pinned cable waveform and ferry/area paint; only the cable motif owns new physical metadata."""
 import re
+import hashlib
+from fractions import Fraction
+from pathlib import Path
+from chart_seamark_art import canonical
 import xml.etree.ElementTree as ET
 
 COLOR='XNCBL'
@@ -8,6 +12,46 @@ RCID='2012'
 AREA_COLOR='XNARE'
 AREA_ORIGINAL='SY(CBLARE51);LS(DASH,2,CHMGD);CS(RESTRN01)'
 AREA_STYLED='SY(CBLARE51);LS(DASH,2,XNARE);CS(RESTRN01)'
+
+# Source-locked SCRUM-281 centerline increment. Integer HPGL strokes are NOT
+# equivalent to the prototype stroke. The verified renderer hook paints the
+# exact curve; this approximation is its bounded resource fallback.
+WAVE_PATH = 'M-12 0q3-5 6 0t6 0t6 0t6 0'
+ART_SHA256 = 'be2c7f44817c29d3714412c7974d3cf07e238f65c7131958b0cb8ff6fbd7816d'
+NODE_SHA256 = '60b0c817180a355b16eb37b037258aadd7a760de34fdb28ba578825c265b1db9'
+LOOKUP_SHA256 = {'710':'f66bceaa1e6193dfb007061f0104b457fe17d7998a36554b60d3061ba12fd6a4',
+                 '709':'4a99d275fc242fc36b7afacfa24d01785968aede8423974f6c91a738812f99a9'}
+
+def waveform_points():
+    # One24CSS-unit motif is6.35mm at nominal96DPI:635 HPGL units.
+    # Original navigation geometry is separate. Owned origin/pivot x0 yields
+    # the same635 repeat in modern and legacy formulas; density is explicit.
+    scale=Fraction(635,24)
+    points=[]
+    for segment in range(4):
+        for step in range(17):
+            if segment and step==0: continue
+            t=Fraction(step,16)
+            x=scale*(6*segment+6*t)
+            y=scale*((-10 if segment%2==0 else 10)*t*(1-t))
+            points.append((round(x),round(y)))
+    return points
+
+def waveform_hpgl():
+    points=waveform_points()
+    return 'SPA;SW1;PU%d,%d;'%points[0]+''.join('PD%d,%d;'%p for p in points[1:])
+
+def waveform_source(tree):
+    art=(Path(__file__).resolve().parents[1]/'docs/design/prototype/src/chart-marker-art.js').read_bytes().replace(b'\r\n',b'\n')
+    assert hashlib.sha256(art).hexdigest()==ART_SHA256, 'Supplied cable artwork changed'
+    assert ("'line:CBLSUB06':'<path d=\""+WAVE_PATH+"\"/>'").encode() in art
+    result=node(tree)
+    assert hashlib.sha256(canonical(result)).hexdigest()==NODE_SHA256, 'Pinned cable definition changed'
+    for key,expected in LOOKUP_SHA256.items():
+        matches=tree.findall("lookups/lookup[@id='"+key+"']")
+        assert len(matches)==1 and hashlib.sha256(canonical(matches[0])).hexdigest()==expected, 'Pinned cable lookup changed'
+    return result
+
 
 def area_instruction(lookup):
     instruction=lookup.findtext('instruction')
@@ -40,14 +84,18 @@ def node(tree):
     return result
 
 def recolor(xml):
-    original=node(ET.fromstring(xml))
+    original=waveform_source(ET.fromstring(xml))
     assert original.findtext('color-ref')=='ACHMGD', 'Pinned cable paint changed'
     pattern=r'(<line-style RCID="2012">)(.*?)(</line-style>)'
     matches=list(re.finditer(pattern,xml,re.S))
     assert len(matches)==1 and '<name>CBLSUB06</name>' in matches[0][2]
     assert matches[0][2].count('<color-ref>ACHMGD</color-ref>')==1
     xml=re.sub(pattern,lambda m:m[1]+m[2].replace(
-        '<color-ref>ACHMGD</color-ref>','<color-ref>AXNCBL</color-ref>')+m[3],xml,flags=re.S)
+        '<color-ref>ACHMGD</color-ref>','<color-ref>AXNCBL</color-ref>').replace(
+        '<HPGL>'+original.findtext('HPGL')+'</HPGL>', '<HPGL>'+waveform_hpgl()+'</HPGL>').replace(
+        '<vector width="2293" height="500">', '<vector width="635" height="168">').replace(
+        '<pivot x="448" y="1274" />', '<pivot x="0" y="0" />').replace(
+        '<origin x="692" y="1050" />', '<origin x="0" y="-84" />')+m[3],xml,flags=re.S)
     tree=ET.fromstring(xml)
     assert ferry_node(tree).findtext('color-ref')=='ACHMGD'
     lookups=tree.findall("lookups/lookup[@id='25']")
@@ -64,7 +112,16 @@ def recolor(xml):
     return xml
 
 def restore_for_validation(before, after):
-    stock,styled=node(before),node(after)
+    stock,styled=waveform_source(before),node(after)
+    hpgl=styled.find('HPGL')
+    assert hpgl is not None and hpgl.text==waveform_hpgl() and not hpgl.attrib and len(hpgl)==0, 'Unexpected cable waveform mutation'
+    hpgl.text=stock.findtext('HPGL')
+    vector=styled.find('vector')
+    assert vector.attrib=={'width':'635','height':'168'}
+    assert vector.find('pivot').attrib=={'x':'0','y':'0'}
+    assert vector.find('origin').attrib=={'x':'0','y':'-84'}
+    vector.attrib=dict(stock.find('vector').attrib)
+    for tag in ('pivot','origin'):vector.find(tag).attrib=dict(stock.find('vector/'+tag).attrib)
     assert stock.findtext('color-ref')=='ACHMGD'
     paint=styled.find('color-ref')
     assert paint.text=='AXNCBL' and not paint.attrib and len(paint)==0, 'Unexpected cable paint mutation'
@@ -75,4 +132,4 @@ def restore_for_validation(before, after):
     assert paint.text=='AXNARE' and not paint.attrib and len(paint)==0, 'Unexpected ferry paint mutation'
     paint.text=stock.findtext('color-ref')
     # The caller then compares the entire restored resource tree, including
-    # HPGL, SW widths, origin/pivot, lookup order/category, and all other nodes.
+    # restored exact HPGL, origin/pivot, lookup order/category, and all other nodes.

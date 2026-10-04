@@ -1,0 +1,20 @@
+{
+  "sourceCommit": "45d73e831409d602e8205f32fcba08947ea370bc",
+  "authorization": "Root approved one unchanged single-job target resume after original killed compiler; no other active compilers observed.",
+  "originalFailure": "first-build-failure.json",
+  "cause": "Unconfirmed external termination; do not claim OOM.",
+  "cgroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/app-org.chromium.Chromium-3110.scope",
+  "cgroupMemoryEvents": {
+    "low": 0,
+    "high": 0,
+    "max": 0,
+    "oom": 0,
+    "oom_kill": 0,
+    "oom_group_kill": 0
+  },
+  "cgroupMemoryMax": "max",
+  "postFailureAvailableMiB": 3770,
+  "measurementWrapper": "resume-j1.log exit127: /usr/bin/time missing before compile. Corrected wrapper uses Bash builtin time.",
+  "actualResume": "resume-j1-actual.log; same directory and target, --parallel1; no reconfigure, changed compiler flags, source changes or assertion changes.",
+  "failedUnitRecompiledSuccessfully": true
+}

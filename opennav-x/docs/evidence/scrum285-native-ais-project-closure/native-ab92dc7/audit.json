@@ -1,0 +1,199 @@
+{
+  "sourceMapping": {
+    "localBase": "48c2f8b8d5d4103bcbaacc45a18c4e6a238d4c52",
+    "remoteBase": "4ddf1f383e495150551946dd36103cd77cea85eb",
+    "localProof": "c552f6158fda4ccdb995f05d876a6bf6107e326d",
+    "remoteProof": "ab92dc78cd99e945a08b7a00d2b8166a5841f954",
+    "remoteTree": "89a3b50b8ef965089648aa03faadbb922b1e1c2f",
+    "rootVerifiedMappedEntries": 5678,
+    "localDeltaFiles": 17,
+    "wholeTreeMappingAuthority": "Parent independently verified publication; this audit verifies all10reported execution input identities plus all8original project byte identities"
+  },
+  "runId": 37162505696,
+  "jobId": 111318683379,
+  "attempt": 1,
+  "artifactId": 11288127267,
+  "artifact": {
+    "bytes": 27576,
+    "sha256": "4af23ff5417a38c1a9a916af4145e68e15673f5df1b28faaeeb36cc93f5943f0"
+  },
+  "allZipCrcPassed": true,
+  "zipEntries": 11,
+  "members": {
+    "report.json": {
+      "bytes": 3748,
+      "crc32": "4abdb019",
+      "sha256": "13e0405577773d51089da0c8bd10be13f3153348f556d285b66ec28b830e7f91"
+    },
+    "focused-result.json": {
+      "bytes": 483,
+      "crc32": "070a715d",
+      "sha256": "932e473e64b126b07a54cb5cf23838bc4d01102888be9143dceea628748242f3"
+    },
+    "focused.log": {
+      "bytes": 1080,
+      "crc32": "e8ac1366",
+      "sha256": "7580ea3fa8c599ddef7c1006f25bc6647c995e13dd3423a8e729d8e47fd9298e"
+    },
+    "projects/ais_provider_test_client.vcxproj": {
+      "bytes": 30006,
+      "crc32": "e63e724d",
+      "sha256": "b68fa8de7bb3d79f7bfe876905cc9e2cceb6d41d6c2cfbf8df6c2ca2f885be25"
+    },
+    "projects/ais_session_native.vcxproj": {
+      "bytes": 63017,
+      "crc32": "e5efc000",
+      "sha256": "7f9eae02e9f83a151e576c9c5c9220abb3a643bcd98491607bba061464f4a36e"
+    },
+    "projects/ais_transport_test_client.vcxproj": {
+      "bytes": 27092,
+      "crc32": "4e86a788",
+      "sha256": "417dc3425fbd5f75f4a0ac0b06f8a131e61b5f7af562e1e723a13f55cb3f02bc"
+    },
+    "projects/ixwebsocket.vcxproj": {
+      "bytes": 35580,
+      "crc32": "4ceed441",
+      "sha256": "d86b397efb6f0b1b10f2f87847550b71da187f6eaf532e3c01e74f6e9f997ff0"
+    },
+    "projects/opennav_ais.vcxproj": {
+      "bytes": 24334,
+      "crc32": "e3d50e11",
+      "sha256": "47fd1ce7918146cbabe096dc9ec1dcba104db05867813b0c22f3d8d3e083ebcd"
+    },
+    "projects/opennav_ais_codec.vcxproj": {
+      "bytes": 26051,
+      "crc32": "8ed9f77b",
+      "sha256": "fd7ba35565eef66dafc6dc41c74b3db8027900514c6e8b551bb90ab040c55b0f"
+    },
+    "projects/opennav_ais_credentials.vcxproj": {
+      "bytes": 23535,
+      "crc32": "8ea88829",
+      "sha256": "37d8096e147e217097ba9aecdf2b3526c16fc43f550903f968b4be7c8cc1b4de"
+    },
+    "projects/opennav_vessel.vcxproj": {
+      "bytes": 24280,
+      "crc32": "f7269768",
+      "sha256": "f1163f344bef6e404d32bbbcfe58a465f4c0dda2bd39ae1af18aed3914ceb9f9"
+    }
+  },
+  "inputs": {
+    "tools/test-ais-runtime-windows.py": {
+      "localSource": {
+        "bytes": 16500,
+        "sha256": "8689934a1cb9abe0ef14faa8fe4ef82e5a4df7599d489a967a67c357c133837e"
+      },
+      "nativeReported": {
+        "bytes": 16775,
+        "sha256": "f8bdd319581e942592f4ab87a1c301740e3e2c81ce29168f32919b0d9a20371c"
+      },
+      "matchingCheckoutEncoding": "WindowsCRLF"
+    },
+    "tools/test-ais-project-closure.py": {
+      "localSource": {
+        "bytes": 8040,
+        "sha256": "1b0a29c6652d1ba0d1efd42536fb4e1c534d429009a705c8c09c81daffe7b706"
+      },
+      "nativeReported": {
+        "bytes": 8196,
+        "sha256": "144da6266ee553c6cbe7356631b44b6934cbb87822b8b5e1af48dc9c6289bb03"
+      },
+      "matchingCheckoutEncoding": "WindowsCRLF"
+    },
+    "tools/test-ais-projects-native.py": {
+      "localSource": {
+        "bytes": 10131,
+        "sha256": "9b1166923904f64a9a746e15d4ccacbfcfc2694a0b365f3acb6d7593b09e2d19"
+      },
+      "nativeReported": {
+        "bytes": 10313,
+        "sha256": "2d7cfb27b58958731c927def27d813948dab29fd18a3b357a0abbb2e0146174e"
+      },
+      "matchingCheckoutEncoding": "WindowsCRLF"
+    },
+    "tools/windows_dependency_receipt.py": {
+      "localSource": {
+        "bytes": 11184,
+        "sha256": "74457dce87d6529773b743be4c7afa9059cd8182662dcbfebea6f8b07142d350"
+      },
+      "nativeReported": {
+        "bytes": 11440,
+        "sha256": "7755c98d421a860331a73b43929d5c3d0677a797d68dfab4b0187d0e2462a3c4"
+      },
+      "matchingCheckoutEncoding": "WindowsCRLF"
+    },
+    "tools/windows_dependency_reuse.py": {
+      "localSource": {
+        "bytes": 8625,
+        "sha256": "4c653c5d787345effcac91c54bd27753c58a1e9430e8a8ef0bbf137e7b162ea7"
+      },
+      "nativeReported": {
+        "bytes": 8825,
+        "sha256": "1fad985f94b0493511810d25a8323555b0d30468d0b71b46fd9bcdcb43dcf113"
+      },
+      "matchingCheckoutEncoding": "WindowsCRLF"
+    },
+    "tools/windows_dependency_stage.py": {
+      "localSource": {
+        "bytes": 7858,
+        "sha256": "1c009a9bd10ef56df87bcd6912c364ac024b0640a7f5087996665a8b05140bec"
+      },
+      "nativeReported": {
+        "bytes": 8035,
+        "sha256": "c50166c999ccb81241fd53d83f60523b55e01ca82ff23562b9d52195821c0546"
+      },
+      "matchingCheckoutEncoding": "WindowsCRLF"
+    },
+    "tools/windows_dependency_evidence.py": {
+      "localSource": {
+        "bytes": 11203,
+        "sha256": "9d3c6656d85f22e5e8a29761e0bc79e8ed7b95f2fa5c5c44d8ab9acb1a9942ef"
+      },
+      "nativeReported": {
+        "bytes": 11416,
+        "sha256": "cb073d5f2fc18984074fc171a10a6cdf5dc875ef418fc03c3dbc52f58f0379b5"
+      },
+      "matchingCheckoutEncoding": "WindowsCRLF"
+    },
+    "tests/fixtures/ais-projects-4dd/manifest.json": {
+      "localSource": {
+        "bytes": 2471,
+        "sha256": "dcb85ac5237621586f8f54d7ef447f72c9b95b110fe2aff1a2404d77c773688a"
+      },
+      "nativeReported": {
+        "bytes": 2528,
+        "sha256": "149f26bf918b314af9904685cfa2c5db348fa41c3199595377e5a3181f1a224d"
+      },
+      "matchingCheckoutEncoding": "WindowsCRLF"
+    },
+    "tests/fixtures/ais-projects-4dd/projects.zip": {
+      "localSource": {
+        "bytes": 25840,
+        "sha256": "b4ef8b4e2109d6f19c58677eb4f86ca25358620694f9fc7d474c4695a437da01"
+      },
+      "nativeReported": {
+        "bytes": 25840,
+        "sha256": "b4ef8b4e2109d6f19c58677eb4f86ca25358620694f9fc7d474c4695a437da01"
+      },
+      "matchingCheckoutEncoding": "original"
+    },
+    ".github/workflows/skager-ais-project-closure.yml": {
+      "localSource": {
+        "bytes": 1231,
+        "sha256": "d8fa426eba2173cd35a92c15b5c1541806af44a72232ffe4965eaa8446a8267d"
+      },
+      "nativeReported": {
+        "bytes": 1264,
+        "sha256": "69db6aee3f7f6e0a45936fed11999714d794b3dddbbedc78afb4740706db3e2a"
+      },
+      "matchingCheckoutEncoding": "WindowsCRLF"
+    }
+  },
+  "currentRootHelperByteIdentical": true,
+  "tests": 8,
+  "skips": 0,
+  "reportedPlatform": "Windows-2022Server-10.0.20348-SP0",
+  "reportedPython": "3.12.10",
+  "runtimeExecutableHashIsCIReceiptOnly": true,
+  "actualAISRuntime": false,
+  "packageAcceptance": false
+}

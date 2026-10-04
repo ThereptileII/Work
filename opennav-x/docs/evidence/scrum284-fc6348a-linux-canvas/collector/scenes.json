@@ -1,0 +1,395 @@
+{
+  "cell": "GB4X0000.000",
+  "source_sha256": "c70d9e0f53e149270f85900f8576082db86781d64fbb71aa7d5ceb4af4aa22e3",
+  "coordinate_order": "latitude,longitude",
+  "scope": "Official IHO S-64 presentation-test geography, not operational ENC",
+  "decoder": "pyogrio/GDAL, UPDATES=APPLY, point WKB decoded with Shapely; all non-null attributes retained; absent/null fields omitted",
+  "scale_basis": "Requested .6 -> expected .5826126536 reuses retained canonical 1014x566 IHO viewport calibration; this is not a newly observed sector-rwg capture",
+  "scenes": [
+    {
+      "id": "s64-light-fog",
+      "center": [
+        -32.3760351,
+        61.0307025
+      ],
+      "scalePpm": 0.6,
+      "themes": [
+        "Day",
+        "Dusk",
+        "Night",
+        "Day"
+      ],
+      "features": [
+        {
+          "class": "FOGSIG",
+          "attributes": {
+            "RCID": 33,
+            "PRIM": 1,
+            "GRUP": 2,
+            "OBJL": 58,
+            "RVER": 1,
+            "AGEN": 540,
+            "FIDN": 29142480,
+            "FIDS": 1,
+            "LNAM": "021C01BCADD00001",
+            "CATFOG": 2,
+            "SIGGRP": "(2)",
+            "latitude": -32.3760351,
+            "longitude": 61.0307025
+          },
+          "expectedRaster": "FOGSIG01"
+        },
+        {
+          "class": "LIGHTS",
+          "attributes": {
+            "RCID": 32,
+            "PRIM": 1,
+            "GRUP": 2,
+            "OBJL": 75,
+            "RVER": 1,
+            "AGEN": 540,
+            "FIDN": 29142479,
+            "FIDS": 1,
+            "LNAM": "021C01BCADCF0001",
+            "LNAM_REFS": [
+              "021C01BCADD00001"
+            ],
+            "FFPT_RIND": [
+              2
+            ],
+            "COLOUR": [
+              "1"
+            ],
+            "HEIGHT": 55.0,
+            "LITCHR": 2,
+            "SIGGRP": "(1)",
+            "SIGPER": 30.0,
+            "VALNMR": 20.0,
+            "latitude": -32.3760351,
+            "longitude": 61.0307025
+          },
+          "expectedRaster": "XNLIT013"
+        },
+        {
+          "class": "BUISGL",
+          "attributes": {
+            "RCID": 35,
+            "PRIM": 1,
+            "GRUP": 2,
+            "OBJL": 12,
+            "RVER": 1,
+            "AGEN": 540,
+            "FIDN": 29142482,
+            "FIDS": 1,
+            "LNAM": "021C01BCADD20001",
+            "latitude": -32.3768207,
+            "longitude": 61.0311125
+          },
+          "expectedRaster": "XNBLDG01"
+        },
+        {
+          "class": "BUISGL",
+          "attributes": {
+            "RCID": 36,
+            "PRIM": 1,
+            "GRUP": 2,
+            "OBJL": 12,
+            "RVER": 1,
+            "AGEN": 540,
+            "FIDN": 29142483,
+            "FIDS": 1,
+            "LNAM": "021C01BCADD30001",
+            "latitude": -32.3772903,
+            "longitude": 61.0310718
+          },
+          "expectedRaster": "XNBLDG01"
+        }
+      ],
+      "source_features": [
+        {
+          "class": "FOGSIG",
+          "position_lat_lon": [
+            -32.3760351,
+            61.0307025
+          ],
+          "attributes": {
+            "RCID": 33,
+            "PRIM": 1,
+            "GRUP": 2,
+            "OBJL": 58,
+            "RVER": 1,
+            "AGEN": 540,
+            "FIDN": 29142480,
+            "FIDS": 1,
+            "LNAM": "021C01BCADD00001",
+            "CATFOG": 2,
+            "SIGGRP": "(2)"
+          }
+        },
+        {
+          "class": "LIGHTS",
+          "position_lat_lon": [
+            -32.3760351,
+            61.0307025
+          ],
+          "attributes": {
+            "RCID": 32,
+            "PRIM": 1,
+            "GRUP": 2,
+            "OBJL": 75,
+            "RVER": 1,
+            "AGEN": 540,
+            "FIDN": 29142479,
+            "FIDS": 1,
+            "LNAM": "021C01BCADCF0001",
+            "LNAM_REFS": [
+              "021C01BCADD00001"
+            ],
+            "FFPT_RIND": [
+              2
+            ],
+            "COLOUR": [
+              "1"
+            ],
+            "HEIGHT": 55.0,
+            "LITCHR": 2,
+            "SIGGRP": "(1)",
+            "SIGPER": 30.0,
+            "VALNMR": 20.0
+          }
+        }
+      ],
+      "expectedCA": [
+        [
+          "LITYW",
+          0.0,
+          360.0
+        ]
+      ],
+      "buildingCoverage": "All source BUISGL points projected inside unchanged viewport: RCID35 and36, both generic default without CONVIS/function. No CONVIS1/specialized building coverage exists in this scene.",
+      "cell": "GB4X0000.000",
+      "nativeScale": 52000,
+      "actualScale": 0.5826126536
+    },
+    {
+      "id": "s64-rocks",
+      "center": [
+        -32.3766581,
+        61.03512875
+      ],
+      "scalePpm": 0.6,
+      "actualScale": 0.5826126536,
+      "cell": "GB4X0000.000",
+      "nativeScale": 52000,
+      "themes": [
+        "Day",
+        "Dusk",
+        "Night",
+        "Day"
+      ],
+      "expectedCA": [],
+      "features": [
+        {
+          "class": "UWTROC",
+          "attributes": {
+            "RCID": 1,
+            "PRIM": 1,
+            "GRUP": 2,
+            "OBJL": 153,
+            "RVER": 1,
+            "AGEN": 540,
+            "FIDN": 29142467,
+            "FIDS": 1,
+            "LNAM": "021C01BCADC30001",
+            "NATSUR": [
+              "9"
+            ],
+            "QUASOU": [
+              "2"
+            ],
+            "WATLEV": 3,
+            "longitude": 61.033202,
+            "latitude": -32.3734615
+          },
+          "candidateRaster": "UWTROC03"
+        },
+        {
+          "class": "UWTROC",
+          "attributes": {
+            "RCID": 2,
+            "PRIM": 1,
+            "GRUP": 2,
+            "OBJL": 153,
+            "RVER": 1,
+            "AGEN": 540,
+            "FIDN": 29142469,
+            "FIDS": 1,
+            "LNAM": "021C01BCADC50001",
+            "NATSUR": [
+              "9"
+            ],
+            "QUASOU": [
+              "2"
+            ],
+            "WATLEV": 3,
+            "longitude": 61.028529,
+            "latitude": -32.3787712
+          },
+          "candidateRaster": "UWTROC03"
+        },
+        {
+          "class": "UWTROC",
+          "attributes": {
+            "RCID": 3,
+            "PRIM": 1,
+            "GRUP": 2,
+            "OBJL": 153,
+            "RVER": 1,
+            "AGEN": 540,
+            "FIDN": 29142468,
+            "FIDS": 1,
+            "LNAM": "021C01BCADC40001",
+            "NATSUR": [
+              "9"
+            ],
+            "QUASOU": [
+              "2"
+            ],
+            "WATLEV": 3,
+            "longitude": 61.0350686,
+            "latitude": -32.3790962
+          },
+          "candidateRaster": "UWTROC03"
+        },
+        {
+          "class": "UWTROC",
+          "attributes": {
+            "RCID": 38,
+            "PRIM": 1,
+            "GRUP": 2,
+            "OBJL": 153,
+            "RVER": 1,
+            "AGEN": 540,
+            "FIDN": 29143535,
+            "FIDS": 1,
+            "LNAM": "021C01BCB1EF0001",
+            "EXPSOU": 2.0,
+            "QUASOU": [
+              "2"
+            ],
+            "WATLEV": 5,
+            "longitude": 61.0417285,
+            "latitude": -32.3798547
+          },
+          "candidateRaster": "UWTROC04"
+        }
+      ]
+    },
+    {
+      "id": "s64-wreck",
+      "center": [
+        -32.5319467,
+        61.0135909
+      ],
+      "scalePpm": 0.6,
+      "actualScale": 0.5826126536,
+      "cell": "GB4X0000.000",
+      "nativeScale": 52000,
+      "themes": [
+        "Day",
+        "Dusk",
+        "Night",
+        "Day"
+      ],
+      "expectedCA": [],
+      "features": [
+        {
+          "class": "WRECKS",
+          "attributes": {
+            "RCID": 998,
+            "PRIM": 1,
+            "GRUP": 2,
+            "OBJL": 159,
+            "RVER": 1,
+            "AGEN": 540,
+            "FIDN": 29142559,
+            "FIDS": 1,
+            "LNAM": "021C01BCAE1F0001",
+            "CATWRK": 2,
+            "QUASOU": [
+              "2"
+            ],
+            "WATLEV": 3,
+            "longitude": 61.0135909,
+            "latitude": -32.5319467
+          },
+          "candidateRaster": "WRECKS05"
+        }
+      ]
+    },
+    {
+      "id": "seattle",
+      "center": [
+        47.6,
+        -122.36
+      ],
+      "scalePpm": 0.15,
+      "actualScale": 0.150000006,
+      "cell": "US5SEAFL.000",
+      "nativeScale": 12000,
+      "themes": [
+        "Day",
+        "Dusk",
+        "Night",
+        "Day"
+      ],
+      "expectedCA": [],
+      "features": [],
+      "sourceCable": [
+        {
+          "ogrFid": 1569,
+          "attributes": {
+            "RCID": 1571,
+            "PRIM": 2,
+            "GRUP": 2,
+            "OBJL": 22,
+            "RVER": 2,
+            "AGEN": 550,
+            "FIDN": -1564374074,
+            "FIDS": 6435,
+            "LNAM": "0226A2C18BC61923",
+            "CATCBL": 1,
+            "SCAMIN": 29999,
+            "SORDAT": "20240611",
+            "SORIND": "US,US,reprt,L-242-2024"
+          },
+          "geometryType": "LineString",
+          "bounds": [
+            -122.349421,
+            47.5985222,
+            -122.3402692,
+            47.6092584
+          ]
+        }
+      ]
+    }
+  ],
+  "source_files": {
+    "US5SEAFL": {
+      "US5SEAFL.000": {
+        "bytes": 841005,
+        "sha256": "7e474bea96e7a84c6f3ee6b44ff7db4288029fa47ac2a285594e18469dbf518c"
+      },
+      "US5SEAFL.001": {
+        "bytes": 8709,
+        "sha256": "504440d201453548aae160c4c5340d55d480bd39cd57061b7fc03262968e062d"
+      }
+    },
+    "GB4X0000": {
+      "GB4X0000.000": {
+        "bytes": 945697,
+        "sha256": "c70d9e0f53e149270f85900f8576082db86781d64fbb71aa7d5ceb4af4aa22e3"
+      }
+    }
+  }
+}

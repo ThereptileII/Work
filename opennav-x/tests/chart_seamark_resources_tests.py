@@ -16,6 +16,11 @@ SELECTED=('XNCON066','XNCON067','XNCAN072','XNCAN073','XNCAN072','XNCAN073','XNC
           'XNLAT014','XNLAT013','XNLAT024','XNLAT023','XNLAT024','XNLAT023','XNLAT014','XNLAT013')
 
 def restore_tiles(before,after):
+    from chart_hazard_resources_tests import restore_hazards
+    restore_hazards(before,after)
+    # Separately verified SCRUM-282 AP source-art tile.
+    for y in range(1160,1184):
+        i=(y*1500+948)*4;after[i:i+96]=before[i:i+96]
     from chart_building_point_resources_tests import restore_building
     restore_building(before,after)
     from chart_generic_beacon_resources_tests import restore_generic_beacon
@@ -113,7 +118,7 @@ def verify_seamarks(source,output,metadata,check):
         if neutral:raw,_=derive(day,raw,neutral,metadata['palette'][table]['CHBLK'])
         ca,before=decode(raw);cb,after=decode((output/file).read_bytes())
         check([(k,v) for k,v in ca if k!=b'IDAT']==[(k,v) for k,v in cb if k!=b'IDAT'])
-        for x,w,h in ((20,20,20),(52,24,24),(84,24,24),(116,24,28),(148,24,28),(180,24,28),(212,24,28)):
+        for x,w,h in ((20,20,20),(52,24,24),(84,24,24),(820,24,24),(116,24,28),(148,24,28),(180,24,28),(212,24,28)):
             for y in range(1160,1160+h):
                 start=(y*1500+x)*4;after[start:start+w*4]=before[start:start+w*4]
         for i,name in enumerate(NAMES):

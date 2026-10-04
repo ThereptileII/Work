@@ -3026,3 +3026,237 @@ diff --git a/gui/include/gui/notification_manager_gui.h b/gui/include/gui/notifi
  
        int w, h;
        f_cache->GetTextExtent(ptext->frmtd, &w, &h);
+
+--- a/libs/s52plib/src/s52plib.cpp
++++ b/libs/s52plib/src/s52plib.cpp
+@@ -71,6 +71,7 @@
+ #ifdef OPENNAV_X
+ #include "integration/ChartLightSymbol.h"
+ #include "integration/ChartCaFan.h"
++#include "integration/ChartFishingPattern.h"
+ #include "integration/ChartSpecialBuoySymbol.h"
+ #include "integration/ChartYellowBuoySymbol.h"
+ #endif
+@@ -9247,8 +9248,18 @@
+ 
+   wxColour local_unused_wxColor = m_unused_wxColor;
+ 
++  bool presentation_pattern = false;
++#ifdef OPENNAV_X
++  if (opennav::integration::FishingPatternEligible(m_presentationLightSymbols, prule)) {
++    presentation_pattern = opennav::integration::ComposeFishingPattern(
++        canvas_pix_per_mm, m_chartSymbols.GetImage("XNFISH03"), Image);
++  }
++#endif
++
+   //      Create a wxImage of the pattern drawn on an "unused_color" field
+-  if (prule->definition.SYDF == 'R') {
++  if (presentation_pattern) {
++    // Exact owned artwork, original vector lattice and safe alpha already composed.
++  } else if (prule->definition.SYDF == 'R') {
+     Image = m_chartSymbols.GetImage(prule->name.PANM);
+   }
+ 
+@@ -9451,7 +9462,7 @@
+ 
+ #if defined(__WXMAC__) || defined(__WXQT__)
+ 
+-  if (prule->definition.SYDF == 'V') {
++  if (prule->definition.SYDF == 'V' && !presentation_pattern) {
+     b_use_alpha = true;
+     imgAlpha = NULL;
+   }
+@@ -9465,7 +9476,7 @@
+   bool b_filter = false;
+ #if defined(__WXMAC__) || defined(__WXGTK3__)
+   S52color *primary_color = 0;
+-  if (prule->definition.SYDF == 'V') {
++  if (prule->definition.SYDF == 'V' && !presentation_pattern) {
+     b_filter = true;
+     char *col = prule->colRef.LCRF;
+     primary_color = getColor(col + 1);
+
+--- a/libs/s52plib/src/s52plib.cpp
++++ b/libs/s52plib/src/s52plib.cpp
+@@ -71,7 +71,8 @@
+ #ifdef OPENNAV_X
+ #include "integration/ChartLightSymbol.h"
+ #include "integration/ChartCaFan.h"
+ #include "integration/ChartFishingPattern.h"
++#include "integration/ChartCableWave.h"
+ #include "integration/ChartSpecialBuoySymbol.h"
+ #include "integration/ChartYellowBuoySymbol.h"
+ #endif
+@@ -5572,6 +5573,12 @@
+ void s52plib::draw_lc_poly(wxDC *pdc, wxColor &color, int width, wxPoint *ptp,
+                            int *mask, int npt, float sym_len, float sym_factor,
+                            Rule *draw_rule) {
++#ifdef OPENNAV_X
++  const bool cableWave = opennav::integration::CableWaveRule(
++      m_presentationLightSymbols, draw_rule);
++  opennav::integration::CableWaveTile cableTile;
++#endif
++
+   if (npt < 2) return;
+ 
+   wxPoint r;
+@@ -5666,10 +5673,18 @@
+             wxPoint pivot(draw_rule->pos.line.pivot_x.LICL,
+                           draw_rule->pos.line.pivot_y.LIRW);
+ 
++#ifdef OPENNAV_X
++            if (!(cableWave &&
++                  cableTile.Prepare(GetPPMM() / (96.0 / 25.4) * g_scaminScale,
++                                    theta, color, r) &&
++                  cableTile.tile.Draw(*pdc)))
++#endif
++            {
+             HPGL->SetTargetDC(pdc);
+             HPGL->SetVP(&vp_plib);
+             HPGL->Render(str, col, r, pivot, pivot, 1.0, theta * 180. / PI,
+                          false);
++            }
+ 
+             xs += sym_len * dx / seg_len * sym_factor;
+             ys += sym_len * dy / seg_len * sym_factor;
+@@ -5802,11 +5817,22 @@
+             wxPoint pivot(draw_rule->pos.line.pivot_x.LICL,
+                           draw_rule->pos.line.pivot_y.LIRW);
+ 
++            theta = atan2f(dy, dx);
++#if defined(OPENNAV_X) && defined(ocpnUSE_GL)
++            if (!(cableWave &&
++                  cableTile.Prepare(GetPPMM() / (96.0 / 25.4) * g_scaminScale,
++                                    theta, color, r) &&
++                  opennav::integration::DrawCableWaveGL(
++                    cableTile.tile, S52texture_2D_shader_program,
++                    pCcolor_tri_shader_program[0]->programId(),
++                    vp_plib.pix_width, vp_plib.pix_height)))
++#endif
++            {
+             HPGL->SetTargetOpenGl();
+             HPGL->SetVP(&vp_plib);
+-            theta = atan2f(dy, dx);
+             HPGL->Render(str, col, r, pivot, pivot, 1.0, theta * 180. / PI,
+                          false);
++            }
+ 
+             xs += sym_len * dx / seg_len * sym_factor;
+             ys += sym_len * dy / seg_len * sym_factor;
+--- a/libs/s52plib/src/s52plib.cpp
++++ b/libs/s52plib/src/s52plib.cpp
+@@ -71,6 +71,7 @@
+ #ifdef OPENNAV_X
+ #include "integration/ChartLightSymbol.h"
+ #include "integration/ChartCaFan.h"
++#include "integration/ChartCaAllRound.h"
+ #include "integration/ChartFishingPattern.h"
+ #include "integration/ChartCableWave.h"
+ #include "integration/ChartSpecialBuoySymbol.h"
+@@ -6142,6 +6143,13 @@
+       outline_width == 4 && arc_width == 2 && sector_radius > 0 &&
+       arc_color == (fanColor == 3 ? "LITRD" : fanColor == 4 ? "LITGN" : "LITYW") &&
+       opennav::integration::CaFanColors(fanColor, m_ColorScheme, fanPaint);
++  const auto roundStyle = opennav::integration::CaAllRoundLight(
++      PresentationCaLightsEnabled(), rzRules);
++  opennav::integration::CaFanPaint roundPaint;
++  const bool roundEligible = opennav::integration::CaAllRoundInstruction(
++      roundStyle, outline_color, outline_width, arc_color, arc_width,
++      sectr1, sectr2, radius, sector_radius) &&
++      opennav::integration::CaFanColors(roundStyle.color, m_ColorScheme, roundPaint);
+ #endif
+ 
+ 
+@@ -6207,6 +6215,20 @@
+   point.x = (int)xp + vp_plib.pix_width / 2;
+   point.y = (int)yp + vp_plib.pix_height / 2;
+ #ifdef OPENNAV_X
++  if (!m_pdc && roundEligible) {
++    opennav::integration::CaFanTile tile;
++    if (tile.BuildAllRound(point, rad, m_ContentScaleFactor / m_dipfactor, roundPaint) &&
++        opennav::integration::DrawCaFanGL(tile, S52texture_2D_shader_program,
++                                         vp_plib.pix_width, vp_plib.pix_height)) {
++      // Same original all-round radius/center and bounding-box convention.
++      double latmin, lonmin, latmax, lonmax;
++      GetPixPointSingleNoRotate(r.x - rad, r.y + rad, &latmin, &lonmin);
++      GetPixPointSingleNoRotate(r.x + rad, r.y - rad, &latmax, &lonmax);
++      LLBBox box; box.Set(latmin, lonmin, latmax, lonmax);
++      rzRules->obj->BBObj.Expand(box);
++      return 1;
++    }
++  }
+   if (!m_pdc && fanEligible) {
+     const int leg_len = (int)sec_rad;
+     float a = (sectr1 - 90) * PI / 180;
+@@ -6472,6 +6494,13 @@
+       outline_width == 4 && arc_width == 2 && sector_radius > 0 &&
+       arc_color == (fanColor == 3 ? "LITRD" : fanColor == 4 ? "LITGN" : "LITYW") &&
+       opennav::integration::CaFanColors(fanColor, m_ColorScheme, fanPaint);
++  const auto roundStyle = opennav::integration::CaAllRoundLight(
++      PresentationCaLightsEnabled(), rzRules);
++  opennav::integration::CaFanPaint roundPaint;
++  const bool roundEligible = opennav::integration::CaAllRoundInstruction(
++      roundStyle, outline_color, outline_width, arc_color, arc_width,
++      sectr1, sectr2, radius, sector_radius) &&
++      opennav::integration::CaFanColors(roundStyle.color, m_ColorScheme, roundPaint);
+ #endif
+ 
+   carc_hash += slong;
+@@ -6537,6 +6566,23 @@
+ 
+   if (m_pdc) {  // DC rendering
+ #ifdef OPENNAV_X
++    if (roundEligible) {
++      wxPoint center;
++      GetPointPixSingle(rzRules, rzRules->obj->y, rzRules->obj->x, &center);
++      const int roundRadius = (int)(radius * canvas_pix_per_mm);
++      opennav::integration::CaFanTile tile;
++      if (tile.BuildAllRound(center, roundRadius, m_ContentScaleFactor / m_dipfactor,
++                             roundPaint) && tile.Draw(*m_pdc)) {
++        // The stock full-circle bitmap has four pixels of border fluff.
++        const int extent = roundRadius + 4;
++        double latmin, lonmin, latmax, lonmax;
++        GetPixPointSingleNoRotate(center.x - extent, center.y + extent, &latmin, &lonmin);
++        GetPixPointSingleNoRotate(center.x + extent, center.y - extent, &latmax, &lonmax);
++        LLBBox box; box.Set(latmin, lonmin, latmax, lonmax);
++        rzRules->obj->BBObj.Expand(box);
++        return 1;
++      }
++    }
+     if (fanEligible) {
+       wxPoint center;
+       GetPointPixSingle(rzRules, rzRules->obj->y, rzRules->obj->x, &center);
+--- a/gui/src/chcanv.cpp
++++ b/gui/src/chcanv.cpp
+@@ -12555,7 +12555,14 @@
+   if (!opennav::integration::DrawChartDepthUnit(dc, *this))
+ #endif
+     DrawEmboss(dc, EmbossDepthScale());
++#ifdef OPENNAV_X
++  auto *overzoom = EmbossOverzoomIndicator(dc);
++  if (!overzoom || !opennav::integration::DrawChartOverzoomWarning(
++          dc, *this, overzoom->x, overzoom->y))
++    DrawEmboss(dc, overzoom);
++#else
+   DrawEmboss(dc, EmbossOverzoomIndicator(dc));
++#endif
+   if (g_pi_manager) {
+     g_pi_manager->RenderAllCanvasOverlayPlugIns(dc, GetVP(), m_canvasIndex,
+                                                 OVERLAY_OVER_EMBOSS);
+--- a/gui/src/glChartCanvas.cpp
++++ b/gui/src/glChartCanvas.cpp
+@@ -4575,7 +4575,14 @@
+   if (!opennav::integration::DrawChartDepthUnit(m_gldc, *m_pParentCanvas))
+ #endif
+     DrawEmboss(m_gldc, m_pParentCanvas->EmbossDepthScale());
++#ifdef OPENNAV_X
++  auto *overzoom = m_pParentCanvas->EmbossOverzoomIndicator(gldc);
++  if (!overzoom || !opennav::integration::DrawChartOverzoomWarning(
++          m_gldc, *m_pParentCanvas, overzoom->x, overzoom->y))
++    DrawEmboss(m_gldc, overzoom);
++#else
+   DrawEmboss(m_gldc, m_pParentCanvas->EmbossOverzoomIndicator(gldc));
++#endif
+ 
+   if (g_pi_manager) {
+     ViewPort &vp = m_pParentCanvas->GetVP();

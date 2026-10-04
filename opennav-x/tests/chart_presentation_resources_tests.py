@@ -60,6 +60,10 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
     verify_building_point(source,output,check)
     from chart_cardinal_resources_tests import verify_cardinals
     verify_cardinals(source,output,data,check)
+    from chart_hazard_resources_tests import verify_hazards
+    verify_hazards(source,output,check)
+    from chart_fishing_pattern_tests import verify_fishing
+    verify_fishing(source,output,check)
     from chart_service_resources_tests import verify_services
     verify_services(source,output,data,check)
     from chart_anchor_resources_tests import verify_anchor
@@ -75,7 +79,7 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
             start=(y*1500+20)*4
             after[start:start+80]=before[start:start+80]
         for y in range(1160,1184):
-            for x in (52,84):
+            for x in (52,84,820):
                 start=(y*1500+x)*4
                 after[start:start+96]=before[start:start+96]
         # SCRUM-256 cardinal tiles have a separate full-pixel/semantic proof.
@@ -99,6 +103,10 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
     changed=[];geographic=[]
     for stock,styled in zip(a.find('lookups'),b.find('lookups')):
         expected=stock.findtext('instruction')
+        if stock.get('id')=='65':
+            check(stock.attrib=={'id':'65','RCID':'32101','name':'FSHFAC'})
+            check(expected=='AP(FSHFAC03);LS(DASH,1,CHGRD)')
+            expected='AP(XNFISH03);LS(DASH,1,CHGRD)'
         if stock.get('id')=='1091':
             check(stock.attrib=={'id':'1091','RCID':'31143','name':'BUISGL'} and stock.findtext('table-name')=='Simplified' and stock.findtext('type')=='Point')
             check(expected=='SY(BUISGL01)' and styled.findtext('instruction')=='SY(XNBLDG01)')
@@ -140,23 +148,30 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
     styled=b.findall("symbols/symbol[name='ACHARE51']")[-1].find('bitmap')
     styled.attrib=stock.attrib.copy()
     for tag in ('pivot','graphics-location'):styled.find(tag).attrib=stock.find(tag).attrib.copy()
-    for name in ('PILBOP02','RTPBCN02','BOYCAR01','BOYCAR02','BOYCAR03','BOYCAR04','BOYISD12','BOYSAW12'):
+    for name in ('UWTROC03','UWTROC04','WRECKS05','PILBOP02','RTPBCN02','SMCFAC02','BOYCAR01','BOYCAR02','BOYCAR03','BOYCAR04','BOYSAW12','BOYISD12'):
         stock=a.findall("symbols/symbol[name='"+name+"']")[-1].find('bitmap')
         styled=b.findall("symbols/symbol[name='"+name+"']")[-1].find('bitmap')
         styled.attrib=stock.attrib.copy()
         for tag in ('pivot','graphics-location'):styled.find(tag).attrib=stock.find(tag).attrib.copy()
     for name in (*ALIASES,'XNSPPW01','XNBCNG01','XNSPPY01','XNSPPT01','XNBLDG01'):b.find('symbols').remove(b.find("symbols/symbol[name='"+name+"']"))
-    # Independently undo only the cable paint reference before whole-tree proof.
+    # Independently prove/undo the exact cable waveform before whole-tree proof.
     cables=b.findall("line-styles/line-style[name='CBLSUB06']")
     check(len(cables)==1 and cables[0].attrib=={'RCID':'2012'})
     check(cables[0].findtext('color-ref')=='AXNCBL')
     cables[0].find('color-ref').text='ACHMGD'
+    from chart_cable_waveform_tests import verify_waveform_node
+    verify_waveform_node(a, b, check)
+    cables[0].find('HPGL').text=a.find("line-styles/line-style[name='CBLSUB06']/HPGL").text
+    stock_vector=a.find("line-styles/line-style[name='CBLSUB06']/vector")
+    for tag in ('', '/pivot', '/origin'):
+        cables[0].find('vector'+tag).attrib=dict(stock_vector.attrib if not tag else stock_vector.find(tag[1:]).attrib)
     ferry=b.find("line-styles/line-style[name='FERYRT01']")
     check(ferry.attrib=={'RCID':'2019'} and ferry.findtext('color-ref')=='AXNARE')
     ferry.find('color-ref').text='ACHMGD'
     hatch=b.find("patterns/pattern[name='CROSSX01']")
     check(hatch.get('RCID')=='3' and hatch.findtext('color-ref')=='AXNHAT')
     hatch.find('color-ref').text='ACHBRN'
+    b.find('patterns').remove(b.find("patterns/pattern[name='XNFISH03']"))
     for section in ['lookups','line-styles','patterns','symbols']:
         check(ET.tostring(a.find(section))==ET.tostring(b.find(section)))
     for stock,styled in zip(a.find('color-tables'),b.find('color-tables')):
@@ -258,7 +273,7 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
     reject(lambda t:t.findall("symbols/symbol[name='ACHARE51']")[0].find('bitmap/pivot').set('x','11'))
     reject(lambda t:t.findall("symbols/symbol[name='ACHARE51']")[-1].find('bitmap/origin').set('x','1'))
     reject(lambda t:t.findall("symbols/symbol[name='ACHARE51']")[-1].find('bitmap').set('width','21'))
-    for symbol in ('PILBOP02','RTPBCN02'):
+    for symbol in ('PILBOP02','RTPBCN02','SMCFAC02'):
         for tag,attr,value in [('bitmap','width','25'),('bitmap/pivot','x','13'),('bitmap/graphics-location','x','20'),('bitmap/origin','y','1')]:
             reject(lambda t:t.findall("symbols/symbol[name='"+symbol+"']")[-1].find(tag).set(attr,value))
     reject(lambda t:t.findall("symbols/symbol[name='PILBOP02']")[0].find('bitmap/pivot').set('x','12'))

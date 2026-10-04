@@ -1,0 +1,22 @@
+{
+  "core9PatchTree": "76fa53d05fb55966b0e07245ba06397d41ba7c71",
+  "private2PatchFiles": {
+    "libs/s52plib/src/DepthFont.cpp": "4013054dc8e35202bfd928c363b0e3a70f6decca544582e30622aee25f0b7095",
+    "libs/s52plib/src/DepthFont.h": "a9afa157bfdcba571613b8d07a007492338d307255eb2893fae92b0b0cf6ab35",
+    "libs/s52plib/src/chartsymbols.cpp": "ca74f61ca58510fb83081f46434cf95ca1a7536235f2fbf5d087e8ee4e7fd355",
+    "libs/s52plib/src/chartsymbols.h": "5e55ee3c8450679fb9ac8d32a862733d296b1421381ee7e7163796fed804937a",
+    "libs/s52plib/src/s52plib.cpp": "d858736062e4595ade95991a389901e1a796b0f71cd630d1bf859f1212246838",
+    "libs/s52plib/src/s52plib.h": "ffd4ca75e1e244bae323ccc9083d5aa021e38e63fdba0cbad1f870b3f13470fa",
+    "libs/s52plib/src/s52s57.h": "261f7b2f0aaa79d7cd6084ad2921d565638e35e8b3fb0237a7760c2ed16d36fd",
+    "libs/wxcurl/src/base.cpp": "318b7b9ce3f57574f41179d2a88d50eeb349a09df49a8c93a5f0ff6e4b2cde55",
+    "libs/wxcurl/src/wx/curl/base.h": "11518959b97f0bf296b0f851fa74665b1de9ea3ca755c0eba42feee89d8d350a",
+    "src/eSENCChart.cpp": "661960997768cfe3c485e3f82e442c965ac57b6336e525c38c61475602bf473d",
+    "src/o-charts_pi.cpp": "4ca4224a54b4cc1c2740fbdd10695ef883572827698ac448a2532666c01f8e4c"
+  },
+  "unchangedResourceFiles": {
+    "S52RAZDS.RLE": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26",
+    "rastersymbols-day.png": "106696b1169b0bf00990b9d2a2bb133269b1a835e02f1346340f278d252e76dd",
+    "rastersymbols-dusk.png": "ff9be20135a9aa2a0e1d37e11209d4e43777de6931854de6456b8f3d5277990e",
+    "rastersymbols-dark.png": "5af009cc4cab653df44e26dc6661fc773502dbabe3f857d28bd9a246373ac6d6"
+  }
+}

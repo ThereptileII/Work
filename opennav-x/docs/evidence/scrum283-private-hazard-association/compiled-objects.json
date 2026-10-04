@@ -1,0 +1,15 @@
+{
+  "private-s52cnsy.o": {
+    "sha256": "54c999cffd54cdf26a81d215e00ac5e7b4d83519dc7708118be61ee61ffdaea1",
+    "bytes": 256296
+  },
+  "private-eSENCChart.o": {
+    "sha256": "21d5a837181d241b6b7541f7566eac1a3ae93e769c1aeb6d312fd7c4646cd215",
+    "bytes": 616544
+  },
+  "config.h": {
+    "sha256": "573a4ff2748b437aa3a9b54867cb05d5e6766a2464647c5a8b66160c8600679d",
+    "bytes": 777,
+    "reproduction": "compile-units.py from locked original config.h.in"
+  }
+}

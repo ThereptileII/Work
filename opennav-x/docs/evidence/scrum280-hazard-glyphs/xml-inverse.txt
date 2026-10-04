@@ -1,0 +1,1 @@
+1 independent full prior-SKAGER XML inverse passed: only three effective bitmap metadata sets differ. All lookups, conditional instructions, vector/HPGL, colors and remaining definitions are identical.

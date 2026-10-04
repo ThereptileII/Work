@@ -1,0 +1,10 @@
+{
+  "sourceCommit": "45d73e831409d602e8205f32fcba08947ea370bc",
+  "buildExit": 1,
+  "firstFailedObject": "CMakeFiles/opencpn.dir/gui/src/chartdb.cpp.o",
+  "error": "c++: fatal error: Killed signal terminated program cc1plus",
+  "logSha256": "3f8c7b38d49c275b32d61f5a784ecb6aab8aca5d76882b7ce7f8aaa5a5b2bc54",
+  "logBytes": 18966,
+  "manifestSha256": "cecfd92eff1b2c9a9c2aa2e64e9a16968a84bdcdee14b77eba337a9277c07185",
+  "diagnosis": "Compiler received a kill signal. No source compilation diagnostic. Memory pressure is a hypothesis; available kernel query returned no corroborating OOM records. No retry or capture performed."
+}

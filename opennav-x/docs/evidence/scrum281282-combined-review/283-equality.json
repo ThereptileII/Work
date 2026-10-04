@@ -1,0 +1,14 @@
+{
+  "src/eSENCChart.cpp": "7348b32423c2d686ffac817db08559e174f1bf35097a13a5e6b4acb9d6b2fc82",
+  "libs/s52plib/src/s52cnsy.cpp": "bf6a638248f296742ff618375b4b1e08699350f801dcac9e10452963c2107754",
+  "libs/s52plib/src/s52s57.h": "a07900f6ae506f23d3f9d38449956a2171b7ee0b63bcafc241cd8968bb8ed24e",
+  "api17ReadOnlyInputs": {
+    "CMakeLists.txt": "adab9d8c2184cbf86aa4de5a4ad03dc7d80dcc07153e27e8caf2ba2b3e0cc63f",
+    "msvc-wx32/opencpn.lib": "942c1c320e1941d0f72b08dfc9514f4ef5d33d6a87e027d373217361fc366e47",
+    "ocpn_plugin.h": "eb5e76d2989eed657cabfafa7f785d082dea415a3fc00bab7ccbcae720b2a493"
+  },
+  "sameProductBytesAs": "af69c5e",
+  "checkoutDifferenceFromRoot": {
+    "docs/upstream-patches.md": "parent documentation-only append not cherry-picked"
+  }
+}

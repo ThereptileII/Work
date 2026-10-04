@@ -1,0 +1,4 @@
+/home/standard/Projects/X-nav-worktrees/scrum286-overzoom-warning/tests/overzoom_warning_test.cpp:13:10: fatal error: linmath.h: No such file or directory
+   13 | #include "linmath.h"
+      |          ^~~~~~~~~~~
+compilation terminated.

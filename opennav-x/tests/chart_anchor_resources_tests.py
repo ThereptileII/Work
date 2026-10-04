@@ -59,7 +59,7 @@ def verify_anchor(source, output, metadata, check):
         check([(k,v) for k,v in before_chunks if k != b'IDAT'] == [(k,v) for k,v in after_chunks if k != b'IDAT'])
         # Separately verified SCRUM-254 tiles are excluded from this anchor-only proof.
         for y in range(1160,1184):
-            for x in (52,84):
+            for x in (52,84,820):
                 i=(y*1500+x)*4;after[i:i+96]=before[i:i+96]
         # Independently verified cardinal tiles are not part of anchor-only delta.
         for y in range(1160,1188):

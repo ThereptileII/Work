@@ -1,0 +1,55 @@
+{
+  "baseCommit": "48c2f8b8d5d4103bcbaacc45a18c4e6a238d4c52",
+  "prototypePath": "docs/design/prototype/index.html",
+  "prototypeSha256": "b04573b920b6bccd16afd22f54a909e48afcfd502ce9cd7c69fdf5b6dd895447",
+  "effectiveRcid": 2108,
+  "oldRect": [
+    940,
+    239,
+    21,
+    21
+  ],
+  "oldPivot": [
+    10,
+    10
+  ],
+  "newRect": [
+    820,
+    1160,
+    24,
+    24
+  ],
+  "newPivot": [
+    12,
+    12
+  ],
+  "lookupsUnchanged": 10,
+  "changedPixelsPerTheme": 152,
+  "atlasDimensions": [
+    1500,
+    1200
+  ],
+  "prototypeScale": 0.84375,
+  "strokeWidth": 1.3,
+  "strokeWidthAtScale": 1.096875,
+  "nightBrightness": 0.78,
+  "images": {
+    "DAY_BRIGHT-reference.png": "507f91957e2790ba3186dd0e77a401a529e4a211b212d302cabbc65d986f138e",
+    "DAY_BRIGHT-prior.png": "de9fe4b6b14f7b95296d8a434919dd790cf509f4e1370a833087b3a32e44f05d",
+    "DAY_BRIGHT-current.png": "09e2363c34dd6fc34570c57106a33612ad6904d1411c489197dfd70581ec45bd",
+    "DUSK-reference.png": "91c514981a7fdbc7519cdef4c2f7534101d0e21e3445540db008d6a1c627a0c6",
+    "DUSK-prior.png": "0a8b51467e8067d1bc954ee89791868aaa5a4bd0c843cd9c5e7d0dad2acaa881",
+    "DUSK-current.png": "1c1aec625e31b4187ea4d25137c0691e73c80e1c62ac37063d23b131abfa3dae",
+    "NIGHT-reference.png": "7ae2862738deedbd55c945eea6e356c7315ffb4a932aad6492cbbffcd90ff0e9",
+    "NIGHT-prior.png": "fefd64bd48abfd378f4c21f5b37c95cbf39a28a78e43ca0b3de55b22d7524a7d",
+    "NIGHT-current.png": "f2b3c231d6aa5dc015794391cd5100ba2ec3ab047c86927e97d39d00c3d827b6",
+    "three-theme-comparison.png": "640a962164ab1c34fe4dc934413fd0fdae446f80198fe10b15df0cca36e5aa94"
+  },
+  "priorManifestSha256": "15a6bb831392088990737d688bc7716efa42f1d950f051c7a0dd909ee3065e2d",
+  "currentManifestSha256": "01369433c32ed91750a21a2fe16aecc71b17ebe0c1648d9112ae55f398a5acdf",
+  "limits": [
+    "Generated/actual-loader glyphs only, not an ENC canvas",
+    "No GL draw, native Windows or boat acceptance",
+    "Generic service depiction; no physical building assertion"
+  ]
+}

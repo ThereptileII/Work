@@ -1,0 +1,28 @@
+Installing the following packages:
+poedit
+By installing, you accept licenses for the packages.
+Downloading package from source 'https://community.chocolatey.org/api/v2/'
+
+chocolatey-os-dependency.extension v0.0.1 [Approved]
+chocolatey-os-dependency.extension package files install completed. Performing other installation steps.
+ Installed/updated chocolatey-os-dependency extensions.
+ The install of chocolatey-os-dependency.extension was successful.
+  Deployed to 'C:\ProgramData\chocolatey\extensions\chocolatey-os-dependency'
+Downloading package from source 'https://community.chocolatey.org/api/v2/'
+
+poedit v3.9.1 [Approved]
+poedit package files install completed. Performing other installation steps.
+OS Dependency Check: OSMajor = 10 OSBuild = 20348 Minimum Required Build = 10240
+Downloading poedit 64 bit
+  from 'https://download.poedit.com/Poedit-3.9.1-setup.exe'
+
+Download of Poedit-3.9.1-setup.exe (19.11 MB) completed.
+Hashes match.
+Installing poedit...
+poedit has been installed.
+  poedit can be automatically uninstalled.
+ The install of poedit was successful.
+  Deployed to 'C:\Program Files\Poedit\'
+
+Chocolatey installed 2/2 packages. 
+ See the log for details (C:\ProgramData\chocolatey\logs\chocolatey.log).

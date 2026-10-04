@@ -1,0 +1,24 @@
+[
+  {
+    "name": "core-s52plib",
+    "macros": {
+      "OPENNAV_X": true,
+      "SKAGER_OCHARTS_ADAPTER": false,
+      "ocpnUSE_GL": true,
+      "ocpnUSE_GLSL": true
+    },
+    "preprocessedSha256": "80fd3a3bbf78d334d76b52684d75d32026e6aca9a065bcd3cced42aef7a139d7",
+    "combinedFeatureCallsPresent": true
+  },
+  {
+    "name": "private-s52plib",
+    "macros": {
+      "OPENNAV_X": false,
+      "SKAGER_OCHARTS_ADAPTER": true,
+      "ocpnUSE_GL": true,
+      "ocpnUSE_GLSL": true
+    },
+    "preprocessedSha256": "26aef84a4393ffcd660fb1e633c550528864c293d0f900f568195db9f8c11aa4",
+    "combinedFeatureCallsPresent": true
+  }
+]

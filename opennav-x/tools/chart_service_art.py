@@ -1,4 +1,4 @@
-"""SCRUM-254: exact pilot-boarding/radar-beacon art in isolated atlas tiles.
+"""SCRUM-254/279: exact pilot/radar/marina service art in isolated atlas tiles.
 
 The source-locked coverage is derived from the immutable prototype SVG paths.
 Only effective raster metadata and new artwork pixels change; generation uses
@@ -18,6 +18,7 @@ ASSETS = ROOT/'resources/chart-style/v1/services'
 SYMBOLS = {
     'PILBOP02': (1, 2, (736, 778, 17, 17), (8, 8), (52, 1160, 24, 24)),
     'RTPBCN02': (2259, 1, (816, 239, 20, 19), (10, 9), (84, 1160, 24, 24)),
+    'SMCFAC02': (2108, 1, (940, 239, 21, 21), (10, 10), (820, 1160, 24, 24)),
 }
 PIVOT = (12, 12)
 

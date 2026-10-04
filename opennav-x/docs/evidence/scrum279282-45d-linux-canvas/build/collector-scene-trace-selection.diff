@@ -1,0 +1,14 @@
+--- r1-render-probe.gdb
++++ r2-render-probe.gdb
+@@ -9,9 +9,9 @@
+ assert layout['pointerBytes']==8
+ last_arc=None
+ all_wanted={(f['class'],round(f['attributes']['latitude'],6),round(f['attributes']['longitude'],6)) for f in scene['features']}
+-wanted={'RenderSY':{k for k in all_wanted if k[0]!='LIGHTS'},
++wanted={'RenderSY':{k for k in all_wanted if k[0]=='FOGSIG' or (not scene['expectedCA'] and k[0]!='LIGHTS')},
+         'RenderCARC':{k for k in all_wanted if k[0]=='LIGHTS'},
+-        'RenderRasterSymbol':{k for k in all_wanted if k[0]!='LIGHTS' or os.environ['SKAGER_SEAMARK_STYLE']=='XNav'}}
++        'RenderRasterSymbol':{k for k in all_wanted if k[0]=='FOGSIG' or (not scene['expectedCA'] and k[0]!='LIGHTS') or os.environ['SKAGER_SEAMARK_STYLE']=='XNav'}}
+ def emit(value):
+  with open(path,'a') as f:f.write(json.dumps(value)+'\n')
+ def mem(address,size):

@@ -1,0 +1,1214 @@
+{
+  "text_data": [
+    {
+      "name": "Gear",
+      "quality": "UNAVAILABLE",
+      "observed_monotonic_ms": "0",
+      "validity": "Invalid",
+      "source": ""
+    },
+    {
+      "name": "Regeneration",
+      "quality": "UNAVAILABLE",
+      "observed_monotonic_ms": "0",
+      "validity": "Invalid",
+      "source": ""
+    },
+    {
+      "name": "Connectivity",
+      "quality": "UNAVAILABLE",
+      "observed_monotonic_ms": "0",
+      "validity": "Invalid",
+      "source": ""
+    }
+  ],
+  "evaluation_scope": "Selected vessel data, route and energy; runtime and candidate health collected separately",
+  "clock": "live monotonic clock",
+  "version": "0.4.0-beta2",
+  "data_mode": "OPENCPN selected navigation",
+  "build_info": [
+    "SKAGER Beta 2 / 0.4.0-beta2 / Interface: SKAGER",
+    "OpenCPN 5.12.4 / 37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+    "Build: 45d73e831409d602e8205f32fcba08947ea370bc",
+    "Build purpose: DEVELOPER TEST BUILD",
+    "SKAGER equipment output: test-loopback-only",
+    "Compiler: GNU 16.2.1 / 8 byte pointers",
+    "Built: 2026-10-03T23:06:25Z / CI: local development",
+    "OS: Linux 7.2.5-3-omarchy x86_64 / DPI: 96",
+    "Profile: /tmp/skager-capture-lsk0wgtm/seattle-SKAGER"
+  ],
+  "build_commit": "45d73e831409d602e8205f32fcba08947ea370bc",
+  "route": {
+    "waypoint": "",
+    "revision": "1",
+    "quality": "UNAVAILABLE",
+    "id": "",
+    "state": "NoActiveRoute",
+    "observed_monotonic_ms": "124683080",
+    "waypoint_count": 0,
+    "revision_scope": "SKAGER session 124671927910873",
+    "unit": "nautical miles",
+    "position_monotonic_ms": "124682788",
+    "position_source": "OpenCPN selected navigation (sensor identity unavailable)",
+    "source": "OpenCPN 5.12.4 normal route progress: active range + subsequent stored legs (NM)"
+  },
+  "publication_monotonic_ms": "124683253",
+  "source_candidates_evaluation_monotonic_ms": "124683253",
+  "test_fixtures": true,
+  "publication_clock": "live monotonic clock",
+  "settings": {
+    "instruments": [
+      "sog",
+      "cog",
+      "heading",
+      "stw",
+      "aws",
+      "awa",
+      "tws",
+      "twa",
+      "depth",
+      "water_temp",
+      "pressure",
+      "rudder",
+      "heel"
+    ],
+    "signal_k_mappings": [],
+    "capacity_kwh": "",
+    "consumption": "Measured whole pack",
+    "data_rail": [
+      "sog",
+      "depth",
+      "aws",
+      "heading"
+    ],
+    "curve_source": "",
+    "reserve_percent": "",
+    "battery_device": ""
+  },
+  "energy": {
+    "model": "",
+    "arrival_input": "Selected battery identity",
+    "arrival_validity": "Selected battery identity unavailable",
+    "range_input": "Selected battery identity",
+    "range_quality": "UNAVAILABLE",
+    "arrival_quality": "UNAVAILABLE"
+  },
+  "evaluation_monotonic_ms": "124683243",
+  "xnav_hardware_output_policy": "test-loopback-only",
+  "data": [
+    {
+      "device_id": "",
+      "stale_after_ms": 5000,
+      "name": "Latitude",
+      "quality": "LIVE",
+      "observed_monotonic_ms": "124683100",
+      "validity": "Measured",
+      "value": 47.6,
+      "aging_after_ms": 2000,
+      "unit": "deg",
+      "age_ms": 143,
+      "source": "OpenCPN selected navigation (sensor identity unavailable)"
+    },
+    {
+      "device_id": "",
+      "stale_after_ms": 5000,
+      "name": "Longitude",
+      "quality": "LIVE",
+      "observed_monotonic_ms": "124683100",
+      "validity": "Measured",
+      "value": -122.36,
+      "aging_after_ms": 2000,
+      "unit": "deg",
+      "age_ms": 143,
+      "source": "OpenCPN selected navigation (sensor identity unavailable)"
+    },
+    {
+      "device_id": "",
+      "stale_after_ms": 5000,
+      "name": "Speed over ground",
+      "quality": "LIVE",
+      "observed_monotonic_ms": "124683100",
+      "validity": "Measured",
+      "value": 3,
+      "aging_after_ms": 2000,
+      "unit": "kn",
+      "age_ms": 143,
+      "source": "OpenCPN selected navigation (sensor identity unavailable)"
+    },
+    {
+      "device_id": "",
+      "stale_after_ms": 5000,
+      "name": "Course over ground",
+      "quality": "LIVE",
+      "observed_monotonic_ms": "124683100",
+      "validity": "Measured",
+      "value": 90,
+      "aging_after_ms": 2000,
+      "unit": "deg true",
+      "age_ms": 143,
+      "source": "OpenCPN selected navigation (sensor identity unavailable)"
+    },
+    {
+      "device_id": "",
+      "stale_after_ms": 5000,
+      "name": "Heading",
+      "quality": "UNAVAILABLE",
+      "observed_monotonic_ms": "0",
+      "validity": "Invalid",
+      "aging_after_ms": 2000,
+      "unit": "deg true",
+      "source": ""
+    },
+    {
+      "device_id": "",
+      "stale_after_ms": 5000,
+      "name": "Speed through water",
+      "quality": "UNAVAILABLE",
+      "observed_monotonic_ms": "0",
+      "validity": "Invalid",
+      "aging_after_ms": 2000,
+      "unit": "kn",
+      "source": ""
+    },
+    {
+      "device_id": "",
+      "stale_after_ms": 5000,
+      "name": "Apparent wind speed",
+      "quality": "UNAVAILABLE",
+      "observed_monotonic_ms": "0",
+      "validity": "Invalid",
+      "aging_after_ms": 2000,
+      "unit": "kn",
+      "source": ""
+    },
+    {
+      "device_id": "",
+      "stale_after_ms": 5000,
+      "name": "Apparent wind angle",
+      "quality": "UNAVAILABLE",
+      "observed_monotonic_ms": "0",
+      "validity": "Invalid",
+      "aging_after_ms": 2000,
+      "unit": "deg",
+      "source": ""
+    },
+    {
+      "device_id": "",
+      "stale_after_ms": 5000,
+      "name": "True wind speed",
+      "quality": "UNAVAILABLE",
+      "observed_monotonic_ms": "0",
+      "validity": "Invalid",
+      "aging_after_ms": 2000,
+      "unit": "kn",
+      "source": ""
+    },
+    {
+      "device_id": "",
+      "stale_after_ms": 5000,
+      "name": "True wind angle",
+      "quality": "UNAVAILABLE",
+      "observed_monotonic_ms": "0",
+      "validity": "Invalid",
+      "aging_after_ms": 2000,
+      "unit": "deg",
+      "source": ""
+    },
+    {
+      "device_id": "",
+      "stale_after_ms": 5000,
+      "name": "Depth below transducer",
+      "quality": "UNAVAILABLE",
+      "observed_monotonic_ms": "0",
+      "validity": "Invalid",
+      "aging_after_ms": 2000,
+      "unit": "m",
+      "source": ""
+    },
+    {
+      "device_id": "",
+      "stale_after_ms": 5000,
+      "name": "Water temperature",
+      "quality": "UNAVAILABLE",
+      "observed_monotonic_ms": "0",
+      "validity": "Invalid",
+      "aging_after_ms": 2000,
+      "unit": "C",
+      "source": ""
+    },
+    {
+      "device_id": "",
+      "stale_after_ms": 5000,
+      "name": "Atmospheric pressure",
+      "quality": "UNAVAILABLE",
+      "observed_monotonic_ms": "0",
+      "validity": "Invalid",
+      "aging_after_ms": 2000,
+      "unit": "hPa",
+      "source": ""
+    },
+    {
+      "device_id": "",
+      "stale_after_ms": 5000,
+      "name": "Rudder",
+      "quality": "UNAVAILABLE",
+      "observed_monotonic_ms": "0",
+      "validity": "Invalid",
+      "aging_after_ms": 2000,
+      "unit": "deg",
+      "source": ""
+    },
+    {
+      "device_id": "",
+      "stale_after_ms": 5000,
+      "name": "Heel",
+      "quality": "UNAVAILABLE",
+      "observed_monotonic_ms": "0",
+      "validity": "Invalid",
+      "aging_after_ms": 2000,
+      "unit": "deg",
+      "source": ""
+    },
+    {
+      "device_id": "",
+      "stale_after_ms": 5000,
+      "name": "Motor electrical power",
+      "quality": "UNAVAILABLE",
+      "observed_monotonic_ms": "0",
+      "validity": "Invalid",
+      "aging_after_ms": 2000,
+      "unit": "kW",
+      "source": ""
+    },
+    {
+      "device_id": "",
+      "stale_after_ms": 5000,
+      "name": "Shaft power",
+      "quality": "UNAVAILABLE",
+      "observed_monotonic_ms": "0",
+      "validity": "Invalid",
+      "aging_after_ms": 2000,
+      "unit": "kW",
+      "source": ""
+    },
+    {
+      "device_id": "",
+      "stale_after_ms": 5000,
+      "name": "Motor speed",
+      "quality": "UNAVAILABLE",
+      "observed_monotonic_ms": "0",
+      "validity": "Invalid",
+      "aging_after_ms": 2000,
+      "unit": "RPM",
+      "source": ""
+    },
+    {
+      "device_id": "",
+      "stale_after_ms": 5000,
+      "name": "Transmission gear",
+      "quality": "UNAVAILABLE",
+      "observed_monotonic_ms": "0",
+      "validity": "Invalid",
+      "aging_after_ms": 2000,
+      "unit": "0 forward / 1 neutral / 2 reverse",
+      "source": ""
+    },
+    {
+      "device_id": "",
+      "stale_after_ms": 5000,
+      "name": "Regeneration setting",
+      "quality": "UNAVAILABLE",
+      "observed_monotonic_ms": "0",
+      "validity": "Invalid",
+      "aging_after_ms": 2000,
+      "unit": "0 off / 1 one bar / 2 two bars",
+      "source": ""
+    },
+    {
+      "device_id": "",
+      "stale_after_ms": 5000,
+      "name": "Motor temperature",
+      "quality": "UNAVAILABLE",
+      "observed_monotonic_ms": "0",
+      "validity": "Invalid",
+      "aging_after_ms": 2000,
+      "unit": "C",
+      "source": ""
+    },
+    {
+      "device_id": "",
+      "stale_after_ms": 5000,
+      "name": "Engine coolant temperature",
+      "quality": "UNAVAILABLE",
+      "observed_monotonic_ms": "0",
+      "validity": "Invalid",
+      "aging_after_ms": 2000,
+      "unit": "C",
+      "source": ""
+    },
+    {
+      "device_id": "",
+      "stale_after_ms": 5000,
+      "name": "Battery voltage",
+      "quality": "UNAVAILABLE",
+      "observed_monotonic_ms": "0",
+      "validity": "Invalid",
+      "aging_after_ms": 2000,
+      "unit": "V",
+      "source": ""
+    },
+    {
+      "device_id": "",
+      "stale_after_ms": 5000,
+      "name": "Battery current (+ discharge)",
+      "quality": "UNAVAILABLE",
+      "observed_monotonic_ms": "0",
+      "validity": "Invalid",
+      "aging_after_ms": 2000,
+      "unit": "A",
+      "source": ""
+    },
+    {
+      "device_id": "",
+      "stale_after_ms": 5000,
+      "name": "Battery current (source convention)",
+      "quality": "UNAVAILABLE",
+      "observed_monotonic_ms": "0",
+      "validity": "Invalid",
+      "aging_after_ms": 2000,
+      "unit": "A",
+      "source": ""
+    },
+    {
+      "device_id": "",
+      "stale_after_ms": 5000,
+      "name": "Battery SOC",
+      "quality": "UNAVAILABLE",
+      "observed_monotonic_ms": "0",
+      "validity": "Invalid",
+      "aging_after_ms": 2000,
+      "unit": "%",
+      "source": ""
+    },
+    {
+      "device_id": "",
+      "stale_after_ms": 5000,
+      "name": "Battery SOH",
+      "quality": "UNAVAILABLE",
+      "observed_monotonic_ms": "0",
+      "validity": "Invalid",
+      "aging_after_ms": 2000,
+      "unit": "%",
+      "source": ""
+    },
+    {
+      "device_id": "",
+      "stale_after_ms": 5000,
+      "name": "Usable pack capacity",
+      "quality": "UNAVAILABLE",
+      "observed_monotonic_ms": "0",
+      "validity": "Invalid",
+      "aging_after_ms": 2000,
+      "unit": "kWh",
+      "source": ""
+    },
+    {
+      "device_id": "",
+      "stale_after_ms": 5000,
+      "name": "Whole-pack net discharge",
+      "quality": "UNAVAILABLE",
+      "observed_monotonic_ms": "0",
+      "validity": "Invalid",
+      "aging_after_ms": 2000,
+      "unit": "kW",
+      "source": ""
+    },
+    {
+      "device_id": "",
+      "stale_after_ms": 5000,
+      "name": "Fresh water tank",
+      "quality": "UNAVAILABLE",
+      "observed_monotonic_ms": "0",
+      "validity": "Invalid",
+      "aging_after_ms": 2000,
+      "unit": "%",
+      "source": ""
+    },
+    {
+      "device_id": "",
+      "stale_after_ms": 5000,
+      "name": "Fuel tank",
+      "quality": "UNAVAILABLE",
+      "observed_monotonic_ms": "0",
+      "validity": "Invalid",
+      "aging_after_ms": 2000,
+      "unit": "%",
+      "source": ""
+    },
+    {
+      "device_id": "",
+      "stale_after_ms": 5000,
+      "name": "Waste tank",
+      "quality": "UNAVAILABLE",
+      "observed_monotonic_ms": "0",
+      "validity": "Invalid",
+      "aging_after_ms": 2000,
+      "unit": "%",
+      "source": ""
+    },
+    {
+      "device_id": "",
+      "stale_after_ms": 5000,
+      "name": "Other fluid tank",
+      "quality": "UNAVAILABLE",
+      "observed_monotonic_ms": "0",
+      "validity": "Invalid",
+      "aging_after_ms": 2000,
+      "unit": "%",
+      "source": ""
+    },
+    {
+      "device_id": "",
+      "stale_after_ms": 5000,
+      "name": "Input rate",
+      "quality": "UNAVAILABLE",
+      "observed_monotonic_ms": "0",
+      "validity": "Invalid",
+      "aging_after_ms": 2000,
+      "unit": "msg/s",
+      "source": ""
+    }
+  ],
+  "build_purpose": "DEVELOPER TEST BUILD",
+  "ui_page": "Navigation",
+  "runtime": {
+    "chart": {
+      "canvas_pixels": {
+        "height": 566,
+        "width": 1014
+      },
+      "latitude": 47.6,
+      "database_entries": 1,
+      "follow": false,
+      "quilt_members": [
+        {
+          "type": 5,
+          "native_scale": 12000,
+          "file": "US5SEAFL.000",
+          "index": 0
+        }
+      ],
+      "opengl_enabled": true,
+      "quilt_reference": 0,
+      "scale_bar": {
+        "height": 29,
+        "y": 505,
+        "width": 25,
+        "x": 191
+      },
+      "depth_unit_type": 1,
+      "quilt": true,
+      "scale_ppm": 0.150000006,
+      "longitude": -122.36,
+      "depth_units_visible": true
+    },
+    "recording": {
+      "error": "",
+      "published": 0,
+      "active": false,
+      "captured": 0
+    },
+    "pilot": {
+      "adapter": "Translator not configured; control OFF / Configured OpenCPN N2K connection unavailable / display-only permission",
+      "command_id": "0",
+      "mode": "UNAVAILABLE",
+      "connection_epoch": "0",
+      "feedback_sequence": "0",
+      "locked_heading_quality": "UNAVAILABLE",
+      "command_state": "None",
+      "command_detail": "",
+      "output_unavailable": false,
+      "fresh": false,
+      "simulated": false,
+      "wind_capability": false,
+      "control_capability": false,
+      "actual_heading_quality": "UNAVAILABLE",
+      "enabled": false,
+      "source": "",
+      "track_capability": false
+    },
+    "replay": {
+      "active": false,
+      "allows_hardware_control": true
+    },
+    "smartnav": {
+      "route_valid": false,
+      "ais_event_count": 0,
+      "reason": "Route guidance unavailable. Check the active route and GPS.",
+      "event_count": 0
+    },
+    "display": {
+      "can_scroll_down": false,
+      "product_regions": [],
+      "product_controls": [],
+      "rail_regions": [
+        {
+          "height": 136,
+          "y": 110,
+          "visible": true,
+          "width": 186,
+          "x": 1094,
+          "label": "sog",
+          "enabled": true
+        },
+        {
+          "height": 135,
+          "y": 246,
+          "visible": true,
+          "width": 186,
+          "x": 1094,
+          "label": "depth",
+          "enabled": true
+        },
+        {
+          "height": 136,
+          "y": 381,
+          "visible": true,
+          "width": 186,
+          "x": 1094,
+          "label": "aws",
+          "enabled": true
+        },
+        {
+          "height": 135,
+          "y": 517,
+          "visible": true,
+          "width": 186,
+          "x": 1094,
+          "label": "heading",
+          "enabled": true
+        }
+      ],
+      "footer_region": {
+        "height": 34,
+        "y": 766,
+        "width": 1280,
+        "x": 0
+      },
+      "route_creation_active": false,
+      "horizon_full_passage": {
+        "height": 22,
+        "y": 648,
+        "width": 79,
+        "x": 989
+      },
+      "minimum_value_height_dip": 0,
+      "light": "Day",
+      "horizon_events": [
+        {
+          "height": 53,
+          "y": 693,
+          "width": 191,
+          "x": 105
+        },
+        {
+          "height": 53,
+          "y": 693,
+          "width": 267,
+          "x": 296
+        },
+        {
+          "height": 0,
+          "y": 0,
+          "width": 0,
+          "x": 0
+        },
+        {
+          "height": 0,
+          "y": 0,
+          "width": 0,
+          "x": 0
+        }
+      ],
+      "footer_middle_visible": true,
+      "page_scroll_px": 0,
+      "horizon_region": {
+        "height": 132,
+        "y": 634,
+        "width": 1013,
+        "x": 80
+      },
+      "can_scroll_up": false,
+      "chart_region": {
+        "height": 566,
+        "y": 68,
+        "width": 1014,
+        "x": 80
+      },
+      "horizon_heading": {
+        "height": 22,
+        "y": 648,
+        "width": 963,
+        "x": 105
+      },
+      "interaction_controls": [
+        {
+          "height": 44,
+          "y": 12,
+          "visible": true,
+          "width": 120,
+          "accessible_name": "Inspect source health",
+          "x": 923,
+          "label": "OpenCPN navigation",
+          "enabled": true
+        },
+        {
+          "height": 20,
+          "y": 0,
+          "visible": false,
+          "width": 20,
+          "accessible_name": "Scroll page up",
+          "x": 0,
+          "label": "Up",
+          "enabled": false
+        },
+        {
+          "height": 20,
+          "y": 0,
+          "visible": false,
+          "width": 20,
+          "accessible_name": "Scroll page down",
+          "x": 0,
+          "label": "Down",
+          "enabled": false
+        },
+        {
+          "height": 44,
+          "y": 12,
+          "visible": true,
+          "width": 44,
+          "accessible_name": "Search saved routes and waypoints",
+          "x": 1127,
+          "label": "Search",
+          "enabled": true
+        },
+        {
+          "height": 44,
+          "y": 12,
+          "visible": true,
+          "width": 44,
+          "accessible_name": "Cycle day, dusk and night palettes",
+          "x": 1179,
+          "label": "Day",
+          "enabled": true
+        },
+        {
+          "height": 44,
+          "y": 12,
+          "visible": true,
+          "width": 44,
+          "accessible_name": "Inspect active alerts",
+          "x": 1231,
+          "label": "Alerts",
+          "enabled": true
+        },
+        {
+          "height": 61,
+          "y": 82,
+          "visible": true,
+          "width": 61,
+          "accessible_name": "Navigation",
+          "x": 9,
+          "label": "Chart",
+          "enabled": true
+        },
+        {
+          "height": 61,
+          "y": 148,
+          "visible": true,
+          "width": 61,
+          "accessible_name": "Route",
+          "x": 9,
+          "label": "Passage",
+          "enabled": true
+        },
+        {
+          "height": 61,
+          "y": 214,
+          "visible": true,
+          "width": 61,
+          "accessible_name": "AIS targets",
+          "x": 9,
+          "label": "Traffic",
+          "enabled": true
+        },
+        {
+          "height": 61,
+          "y": 300,
+          "visible": true,
+          "width": 61,
+          "accessible_name": "Energy",
+          "x": 9,
+          "label": "Energy",
+          "enabled": true
+        },
+        {
+          "height": 61,
+          "y": 366,
+          "visible": true,
+          "width": 61,
+          "accessible_name": "Vessel instruments",
+          "x": 9,
+          "label": "Instruments",
+          "enabled": true
+        },
+        {
+          "height": 61,
+          "y": 432,
+          "visible": true,
+          "width": 61,
+          "accessible_name": "Anchor watch",
+          "x": 9,
+          "label": "Anchor",
+          "enabled": true
+        },
+        {
+          "height": 61,
+          "y": 498,
+          "visible": true,
+          "width": 61,
+          "accessible_name": "Radar availability",
+          "x": 9,
+          "label": "Radar",
+          "enabled": true
+        },
+        {
+          "height": 61,
+          "y": 645,
+          "visible": true,
+          "width": 61,
+          "accessible_name": "Open navigation menu",
+          "x": 9,
+          "label": "Settings",
+          "enabled": true
+        },
+        {
+          "height": 32,
+          "y": 719,
+          "visible": true,
+          "width": 32,
+          "accessible_name": "Vessel profile / name not configured",
+          "x": 24,
+          "label": "Vessel profile",
+          "enabled": true
+        },
+        {
+          "height": 44,
+          "y": 549,
+          "visible": true,
+          "width": 44,
+          "accessible_name": "Measure chart distance",
+          "x": 887,
+          "label": "Measure",
+          "enabled": true
+        },
+        {
+          "height": 44,
+          "y": 549,
+          "visible": true,
+          "width": 44,
+          "accessible_name": "Waypoint at chart position",
+          "x": 931,
+          "label": "Waypoint",
+          "enabled": true
+        },
+        {
+          "height": 44,
+          "y": 549,
+          "visible": true,
+          "width": 44,
+          "accessible_name": "Zoom chart in",
+          "x": 980,
+          "label": "+",
+          "enabled": true
+        },
+        {
+          "height": 44,
+          "y": 549,
+          "visible": true,
+          "width": 44,
+          "accessible_name": "Zoom chart out",
+          "x": 1024,
+          "label": "\u2212",
+          "enabled": true
+        },
+        {
+          "height": 90,
+          "y": 90,
+          "visible": true,
+          "width": 68,
+          "accessible_name": "Chart orientation: North up",
+          "x": 1004,
+          "label": "North",
+          "enabled": true
+        },
+        {
+          "height": 44,
+          "y": 190,
+          "visible": true,
+          "width": 44,
+          "accessible_name": "Chart layers",
+          "x": 1016,
+          "label": "Layers",
+          "enabled": true
+        },
+        {
+          "height": 44,
+          "y": 553,
+          "visible": true,
+          "width": 142,
+          "accessible_name": "Center chart on boat and follow position",
+          "x": 108,
+          "label": "Follow boat",
+          "enabled": true
+        },
+        {
+          "height": 40,
+          "y": 69,
+          "visible": true,
+          "width": 40,
+          "accessible_name": "Choose the four rail values",
+          "x": 1234,
+          "label": "Configure instruments",
+          "enabled": true
+        },
+        {
+          "height": 87,
+          "y": 665,
+          "visible": true,
+          "width": 149,
+          "accessible_name": "Autopilot: Unavailable / No current feedback",
+          "x": 1113,
+          "label": "Autopilot",
+          "enabled": true
+        },
+        {
+          "height": 20,
+          "y": 68,
+          "visible": false,
+          "width": 20,
+          "accessible_name": "Manual STANDBY / requires enabled control",
+          "x": 1094,
+          "label": "STBY",
+          "enabled": false
+        },
+        {
+          "height": 13,
+          "y": 776,
+          "visible": true,
+          "width": 164,
+          "accessible_name": "Footer source health",
+          "x": 1096,
+          "label": "Source health",
+          "enabled": true
+        },
+        {
+          "height": 22,
+          "y": 648,
+          "visible": true,
+          "width": 79,
+          "accessible_name": "Full passage",
+          "x": 989,
+          "label": "Full passage",
+          "enabled": true
+        },
+        {
+          "height": 53,
+          "y": 693,
+          "visible": true,
+          "width": 191,
+          "accessible_name": "Horizon now",
+          "x": 105,
+          "label": "Horizon now",
+          "enabled": true
+        },
+        {
+          "height": 53,
+          "y": 693,
+          "visible": true,
+          "width": 267,
+          "accessible_name": "Horizon event 1",
+          "x": 296,
+          "label": "Horizon event 1",
+          "enabled": false
+        },
+        {
+          "height": 53,
+          "y": 693,
+          "visible": false,
+          "width": 267,
+          "accessible_name": "Horizon event 2",
+          "x": 563,
+          "label": "Horizon event 2",
+          "enabled": false
+        },
+        {
+          "height": 53,
+          "y": 693,
+          "visible": false,
+          "width": 238,
+          "accessible_name": "Horizon event 3",
+          "x": 830,
+          "label": "Horizon event 3",
+          "enabled": false
+        },
+        {
+          "height": 20,
+          "y": 634,
+          "visible": false,
+          "width": 20,
+          "accessible_name": "Name and save this route",
+          "x": 80,
+          "label": "Done",
+          "enabled": true
+        },
+        {
+          "height": 20,
+          "y": 634,
+          "visible": false,
+          "width": 20,
+          "accessible_name": "Undo last route point",
+          "x": 80,
+          "label": "Undo",
+          "enabled": false
+        },
+        {
+          "height": 20,
+          "y": 634,
+          "visible": false,
+          "width": 20,
+          "accessible_name": "Cancel route creation",
+          "x": 80,
+          "label": "Cancel",
+          "enabled": true
+        },
+        {
+          "height": 20,
+          "y": 0,
+          "visible": false,
+          "width": 20,
+          "accessible_name": "Close this page",
+          "x": 0,
+          "label": "Close",
+          "enabled": true
+        },
+        {
+          "height": 48,
+          "y": 20,
+          "visible": false,
+          "width": 0,
+          "accessible_name": "Back",
+          "x": 16,
+          "label": "Back",
+          "enabled": true
+        },
+        {
+          "height": 52,
+          "y": 131,
+          "visible": false,
+          "width": 0,
+          "accessible_name": "Routes",
+          "x": 16,
+          "label": "Routes",
+          "enabled": true
+        },
+        {
+          "height": 52,
+          "y": 191,
+          "visible": false,
+          "width": 0,
+          "accessible_name": "Waypoints",
+          "x": 16,
+          "label": "Waypoints",
+          "enabled": true
+        },
+        {
+          "height": 52,
+          "y": 251,
+          "visible": false,
+          "width": 0,
+          "accessible_name": "AIS targets",
+          "x": 16,
+          "label": "AIS targets",
+          "enabled": true
+        },
+        {
+          "height": 52,
+          "y": 311,
+          "visible": false,
+          "width": 0,
+          "accessible_name": "Vessel instruments",
+          "x": 16,
+          "label": "Vessel instruments",
+          "enabled": true
+        },
+        {
+          "height": 52,
+          "y": 371,
+          "visible": false,
+          "width": 0,
+          "accessible_name": "SmartNav advisories",
+          "x": 16,
+          "label": "SmartNav advisories",
+          "enabled": true
+        },
+        {
+          "height": 52,
+          "y": 431,
+          "visible": false,
+          "width": 0,
+          "accessible_name": "Manual autopilot",
+          "x": 16,
+          "label": "Manual autopilot",
+          "enabled": true
+        },
+        {
+          "height": 52,
+          "y": 491,
+          "visible": false,
+          "width": 0,
+          "accessible_name": "Anchor watch",
+          "x": 16,
+          "label": "Anchor watch",
+          "enabled": true
+        },
+        {
+          "height": 52,
+          "y": 551,
+          "visible": false,
+          "width": 0,
+          "accessible_name": "Alerts",
+          "x": 16,
+          "label": "Alerts",
+          "enabled": true
+        },
+        {
+          "height": 52,
+          "y": 611,
+          "visible": false,
+          "width": 0,
+          "accessible_name": "Settings",
+          "x": 16,
+          "label": "Settings",
+          "enabled": true
+        },
+        {
+          "height": 52,
+          "y": 671,
+          "visible": false,
+          "width": 0,
+          "accessible_name": "Propulsion & energy",
+          "x": 16,
+          "label": "Propulsion & energy",
+          "enabled": true
+        },
+        {
+          "height": 52,
+          "y": 731,
+          "visible": false,
+          "width": 0,
+          "accessible_name": "System & diagnostics",
+          "x": 16,
+          "label": "System & diagnostics",
+          "enabled": true
+        }
+      ],
+      "native_caption_themed": false
+    },
+    "test_fixtures": true,
+    "ui_update": {
+      "timer_period_ms": 250,
+      "mean_ms": 9.1804988,
+      "scope": "Shell update callback including diagnostics; excludes asynchronous chart painting",
+      "maximum_ms": 77.662814,
+      "ticks": "35",
+      "last_ms": 0.894191
+    },
+    "ais_selected_mmsi": 0,
+    "plugins": [
+      {
+        "version": "1.4",
+        "name": "ChartDownloader",
+        "api": 113,
+        "file": "libchartdldr_pi.so",
+        "initialized": false,
+        "enabled": false
+      },
+      {
+        "version": "1.2",
+        "name": "Dashboard",
+        "api": 108,
+        "file": "libdashboard_pi.so",
+        "initialized": false,
+        "enabled": false
+      },
+      {
+        "version": "5.0",
+        "name": "GRIB",
+        "api": 116,
+        "file": "libgrib_pi.so",
+        "initialized": false,
+        "enabled": false
+      },
+      {
+        "version": "1.1",
+        "name": "WMM",
+        "api": 108,
+        "file": "libwmm_pi.so",
+        "initialized": false,
+        "enabled": false
+      }
+    ],
+    "alerts": [],
+    "online_ais": {
+      "connection_state": 0,
+      "chart_marks": 0,
+      "reconnects": "0",
+      "rejected": "0",
+      "subscription_confirmed": false,
+      "credential_present": false,
+      "targets": 0,
+      "accepted": "0",
+      "enabled": false
+    },
+    "build_purpose": "DEVELOPER TEST BUILD",
+    "boat_bridge": {
+      "status": "Boat propulsion mapping unconfigured"
+    },
+    "navigation_footer": {
+      "health_state": "Current",
+      "navigation_state": "EXPLORING",
+      "position_state": "Current",
+      "health_summary": "1 live signal",
+      "cog_state": "Current",
+      "cog": "090\u00b0",
+      "xte": "\u2014",
+      "historical": false,
+      "position": "47\u00b0 36.000\u2032 N   122\u00b0 21.600\u2032 W",
+      "health_source": "Vessel data"
+    },
+    "test_workspace_perspective": "layout2|name=ChartCanvas;caption=;state=768;dir=5;layer=0;row=0;pos=0;prop=100000;bestw=5;besth=5;minw=256;minh=800;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=OpenNavTop;caption=;state=131580;dir=1;layer=10;row=0;pos=0;prop=100000;bestw=-1;besth=68;minw=-1;minh=68;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=OpenNavTools;caption=;state=131580;dir=4;layer=5;row=0;pos=0;prop=100000;bestw=80;besth=-1;minw=80;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=OpenNavData;caption=;state=131580;dir=2;layer=5;row=0;pos=0;prop=100000;bestw=186;besth=-1;minw=186;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=OpenNavActions;caption=;state=508;dir=3;layer=10;row=0;pos=0;prop=100000;bestw=-1;besth=34;minw=-1;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=OpenNavHorizon;caption=;state=131580;dir=3;layer=1;row=0;pos=0;prop=100000;bestw=-1;besth=132;minw=-1;minh=132;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=OpenNavPage;caption=;state=258;dir=5;layer=0;row=0;pos=0;prop=100000;bestw=20;besth=20;minw=-1;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=OpenNavProduct;caption=;state=258;dir=5;layer=0;row=0;pos=0;prop=100000;bestw=20;besth=20;minw=-1;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|dock_size(5,0,0)=258|dock_size(1,10,0)=68|dock_size(4,5,0)=80|dock_size(2,5,0)=186|dock_size(3,10,0)=34|dock_size(3,1,0)=132|",
+    "chart_presentation": {
+      "status": "SKAGER presentation v1 / pinned symbols; o-charts: no SKAGER adapter loaded",
+      "private_ocharts": {
+        "available": false
+      },
+      "requested": "XNav",
+      "core": {
+        "available": true,
+        "saved_point_style": 76,
+        "effective_point_style": 76
+      }
+    }
+  }
+}

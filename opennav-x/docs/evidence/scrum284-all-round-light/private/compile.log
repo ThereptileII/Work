@@ -1,0 +1,9 @@
+In file included from /home/standard/Projects/X-nav-worktrees/scrum284-all-round-light/tests/chart_ca_all_round_test.cpp:61:
+/home/standard/Projects/X-nav-worktrees/scrum284-all-round-light/.local/final/private/fan-methods.inc: In member function ‘int s52plib::RenderCARC_VBO(ObjRazRules*, Rules*)’:
+/home/standard/Projects/X-nav-worktrees/scrum284-all-round-light/.local/final/private/fan-methods.inc:428:9: warning: unused variable ‘nominal_arc_width_pix’ [-Wunused-variable]
+  428 |   float nominal_arc_width_pix = wxMax(
+      |         ^~~~~~~~~~~~~~~~~~~~~
+/home/standard/Projects/X-nav-worktrees/scrum284-all-round-light/.local/final/private/fan-methods.inc: In member function ‘int s52plib::StockCARC_VBO(ObjRazRules*, Rules*)’:
+/home/standard/Projects/X-nav-worktrees/scrum284-all-round-light/.local/final/private/fan-methods.inc:1087:9: warning: unused variable ‘nominal_arc_width_pix’ [-Wunused-variable]
+ 1087 |   float nominal_arc_width_pix = wxMax(
+      |         ^~~~~~~~~~~~~~~~~~~~~

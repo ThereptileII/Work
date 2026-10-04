@@ -91,6 +91,13 @@ class CaFanTile {
   wxImage image;
   wxRect bounds;
   bool Build(const CaFanGeometry& g,const CaFanPaint& paint) {
+    return BuildImpl(g,paint,false);
+  }
+  bool BuildAllRound(wxPoint center,double radius,double pixelScale,const CaFanPaint& paint) {
+    return BuildImpl({center,center,center,radius,0,360,pixelScale},paint,true);
+  }
+ private:
+  bool BuildImpl(const CaFanGeometry& g,const CaFanPaint& paint,bool outlineOnly) {
     image.Destroy();bounds={};
     if(!std::isfinite(g.radius) || !std::isfinite(g.start) || !std::isfinite(g.end) ||
        !std::isfinite(g.pixelScale) || g.radius<=0 || g.radius>32768 ||
@@ -102,7 +109,7 @@ class CaFanTile {
        !coordinate(g.leg2.x)||!coordinate(g.leg2.y))return false;
     double start=g.start,end=g.end;
     if(end<=start)end+=360;
-    if(end-start<1 || end-start>=360)return false;
+    if(outlineOnly ? end-start!=360 : end-start<1 || end-start>=360)return false;
     const double padding=std::ceil(1.3*g.pixelScale)+2;
     const int left=int(std::floor(std::min({double(g.center.x)-g.radius,double(g.leg1.x),double(g.leg2.x)})-padding));
     const int top=int(std::floor(std::min({double(g.center.y)-g.radius,double(g.leg1.y),double(g.leg2.y)})-padding));
@@ -112,13 +119,15 @@ class CaFanTile {
     if(w<=0 || h<=0 || w>2048 || h>2048 || size_t(w)*h>kMaxPixels)return false;
     try {
       wxImage built(w,h,true);if(!built.IsOk())return false;
-      built.InitAlpha();std::memset(built.GetAlpha(),0,size_t(w)*h);
+      built.InitAlpha();if(!built.GetData() || !built.GetAlpha())return false;
+      std::memset(built.GetAlpha(),0,size_t(w)*h);
       // Obtain native antialias coverage with opaque white masks, then compose
       // straight RGBA ourselves. Drawing low-alpha RGB directly into wxImage
       // loses several RGB levels during Cairo's premultiply/unpremultiply.
-      for(unsigned layer=0;layer<3;++layer) {
+      for(unsigned layer=outlineOnly?2:0;layer<3;++layer) {
         wxImage mask(w,h,true);if(!mask.IsOk())return false;
-        mask.InitAlpha();std::memset(mask.GetAlpha(),0,size_t(w)*h);
+        mask.InitAlpha();if(!mask.GetData() || !mask.GetAlpha())return false;
+        std::memset(mask.GetAlpha(),0,size_t(w)*h);
         {
           std::unique_ptr<wxGraphicsContext> gc(wxGraphicsContext::Create(mask));
           if(!gc || !gc->SetCompositionMode(wxCOMPOSITION_OVER))return false;
@@ -138,7 +147,8 @@ class CaFanTile {
               if(!Boundary(path,g))return false;
               gc->SetBrush(*wxWHITE_BRUSH);gc->FillPath(path,wxWINDING_RULE);
             } else {
-              path.AddArc(g.center.x,g.center.y,g.radius,a,b,true);
+              if(outlineOnly)path.AddCircle(g.center.x,g.center.y,g.radius);
+              else path.AddArc(g.center.x,g.center.y,g.radius,a,b,true);
               gc->SetPen(gc->CreatePen(wxGraphicsPenInfo(*wxWHITE).Width(1.2*g.pixelScale).Cap(wxCAP_BUTT)));
               gc->StrokePath(path);
             }
@@ -159,6 +169,7 @@ class CaFanTile {
       image=built;bounds=wxRect(left,top,w,h);return true;
     } catch(const std::bad_alloc&) {return false;}
   }
+ public:
   static bool Boundary(wxGraphicsPath& path,const CaFanGeometry& g) {
     struct P {double x,y;};
     const double x1=g.center.x-g.leg1.x,y1=g.center.y-g.leg1.y;
@@ -199,7 +210,8 @@ class CaFanTile {
 #ifdef ocpnUSE_GL
 // No program or texture persists. The existing texture shader is borrowed with
 // all changed uniforms/state restored; its source and shared caches stay intact.
-inline bool DrawCaFanGL(const CaFanTile& tile,GLuint shader,int width,int height) {
+inline bool DrawCaFanGL(const CaFanTile& tile,GLuint shader,int width,int height,
+                        const GLfloat* projection=nullptr,const GLfloat* transformMatrix=nullptr) {
 #ifdef USE_ANDROID_GLES2
   return false; // Desktop GL state/texture proof only; preserve original GLES path.
 #else
@@ -281,7 +293,7 @@ inline bool DrawCaFanGL(const CaFanTile& tile,GLuint shader,int width,int height
   GLfloat vertices[]={left,top,right,top,left,bottom,right,bottom},coords[]={0,0,1,0,0,1,1,1};
   GLfloat ortho[]={2.f/width,0,0,0, 0,-2.f/height,0,0, 0,0,1,0, -1,1,0,1};
   GLfloat identity[]={1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1};
-  glUseProgram(shader);glUniformMatrix4fv(mv,1,GL_FALSE,ortho);glUniformMatrix4fv(transform,1,GL_FALSE,identity);glUniform1i(sampler,0);
+  glUseProgram(shader);glUniformMatrix4fv(mv,1,GL_FALSE,projection?projection:ortho);glUniformMatrix4fv(transform,1,GL_FALSE,transformMatrix?transformMatrix:identity);glUniform1i(sampler,0);
   glBindBuffer(GL_ARRAY_BUFFER,0);glVertexAttribPointer(pos,2,GL_FLOAT,GL_FALSE,0,vertices);glVertexAttribPointer(uv,2,GL_FLOAT,GL_FALSE,0,coords);
   glEnableVertexAttribArray(pos);glEnableVertexAttribArray(uv);glEnable(GL_BLEND);glDisable(GL_CULL_FACE);
   glBlendFuncSeparate(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA,GL_ONE,GL_ONE_MINUS_SRC_ALPHA);glBlendEquationSeparate(GL_FUNC_ADD,GL_FUNC_ADD);

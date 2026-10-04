@@ -1,0 +1,731 @@
+{
+  "pinned": {
+    "path": "/home/standard/Projects/X-nav-worktrees/skager-product-fidelity/build/integration-source/data/s57data/chartsymbols.xml",
+    "sha256": "84f93522576ed5872b24865cf6161872ed0b4b634f77c64ca697a04d3568e886",
+    "symbols": {
+      "WRECKS05": [
+        "<symbol RCID=\"2038\">\n            <name>WRECKS05</name>\n            <description>dangerous wreck, depth unknown</description>\n            <bitmap width=\"19\" height=\"13\">\n                <distance min=\"0\" max=\"0\" />\n                <pivot x=\"9\" y=\"6\" />\n                <origin x=\"0\" y=\"0\" />\n                <graphics-location x=\"35\" y=\"358\" />\n            </bitmap>\n            <color-ref>ADEPVSCCHBLK</color-ref>\n            <vector width=\"590\" height=\"410\">\n                <distance min=\"0\" max=\"0\" />\n                <pivot x=\"750\" y=\"750\" />\n                <origin x=\"453\" y=\"540\" />\n                <HPGL>SPA;SW1;ST0;PU453,700;PM0;PD512,625;PD600,575;PD687,550;PD800,540;PD900,575;PD981,625;PD1040,700;PD1040,800;PD987,859;PD900,915;PD800,950;PD700,950;PD600,915;PD525,865;PD453,800;PD453,700;PM2;FP;SPC;SW1;PU600,650;PD600,850;SPC;SW1;PU900,650;PD900,850;SPC;SW1;PU500,750;PD1000,750;SPC;SW1;PU750,600;PD750,900;SPC;SW1;PU453,700;PD;SPC;SW1;PU512,625;PD;SPC;SW1;PU600,575;PD;SPC;SW1;PU687,550;PD;SPC;SW1;PU800,540;PD;SPC;SW1;PU900,575;PD;SPC;SW1;PU981,625;PD;SPC;SW1;PU1040,700;PD;SPC;SW1;PU453,800;PD;SPC;SW1;PU525,865;PD;SPC;SW1;PU600,915;PD;SPC;SW1;PU700,950;PD;SPC;SW1;PU800,950;PD;SPC;SW1;PU900,915;PD;SPC;SW1;PU987,859;PD;SPC;SW1;PU1043,793;PD;</HPGL>\n            </vector>\n            <definition>V</definition>\n        </symbol>"
+      ],
+      "UWTROC04": [
+        "<symbol RCID=\"3164\">\n            <name>UWTROC04</name>\n            <description>rock which covers and uncovers or is awash at low water</description>\n            <bitmap width=\"13\" height=\"11\">\n                <distance min=\"0\" max=\"0\" />\n                <pivot x=\"6\" y=\"5\" />\n                <origin x=\"0\" y=\"0\" />\n                <graphics-location x=\"973\" y=\"307\" />\n            </bitmap>\n            <color-ref>ACHBLK</color-ref>\n            <vector width=\"400\" height=\"325\">\n                <distance min=\"0\" max=\"0\" />\n                <pivot x=\"1500\" y=\"1500\" />\n                <origin x=\"1297\" y=\"1336\" />\n                <HPGL>SPA;SW1;PU1697,1500;PD1297,1500;SPA;SW1;PU1614,1337;PD1379,1661;SPA;SW1;PU1614,1655;PD1374,1336;</HPGL>\n            </vector>\n            <definition>V</definition>\n        </symbol>"
+      ],
+      "UWTROC03": [
+        "<symbol RCID=\"2249\">\n            <name>UWTROC03</name>\n            <description>dangerous underwater rock of uncertain depth</description>\n            <bitmap width=\"13\" height=\"13\">\n                <distance min=\"0\" max=\"0\" />\n                <pivot x=\"6\" y=\"6\" />\n                <origin x=\"0\" y=\"0\" />\n                <graphics-location x=\"950\" y=\"307\" />\n            </bitmap>\n            <color-ref>ADEPVSBCHBLK</color-ref>\n            <vector width=\"402\" height=\"402\">\n                <distance min=\"0\" max=\"0\" />\n                <pivot x=\"1500\" y=\"1500\" />\n                <origin x=\"1299\" y=\"1299\" />\n                <HPGL>SPA;SW1;ST0;PU1500,1500;PM0;CI201;PM2;FP;SPB;SW1;PU1500,1300;PD;SPB;SW1;PU1500,1700;PD;SPB;SW1;PU1700,1500;PD;SPB;SW1;PU1300,1500;PD;SPB;SW1;PU1580,1310;PD;SPB;SW1;PU1640,1360;PD;SPB;SW1;PU1685,1425;PD;SPB;SW1;PU1675,1585;PD;SPB;SW1;PU1640,1640;PD;SPB;SW1;PU1575,1680;PD;SPB;SW1;PU1420,1680;PD;SPB;SW1;PU1360,1635;PD;SPB;SW1;PU1315,1570;PD;SPB;SW1;PU1320,1420;PD;SPB;SW1;PU1355,1355;PD;SPB;SW1;PU1420,1315;PD;SPB;SW1;PU1502,1371;PD1502,1648;SPB;SW1;PU1364,1505;PD1637,1506;</HPGL>\n            </vector>\n            <definition>V</definition>\n        </symbol>"
+      ]
+    },
+    "lookups": [
+      {
+        "id": "1276",
+        "RCID": "31328",
+        "class": "UWTROC",
+        "type": "Point",
+        "table-name": "Simplified",
+        "instruction": "CS(OBSTRN04)",
+        "disp-prio": "Point Symbol",
+        "radar-prio": "On Top",
+        "display-cat": "Other",
+        "attributes": []
+      },
+      {
+        "id": "1296",
+        "RCID": "31348",
+        "class": "WRECKS",
+        "type": "Point",
+        "table-name": "Simplified",
+        "instruction": "SY(FOULGND1)",
+        "disp-prio": "Point Symbol",
+        "radar-prio": "On Top",
+        "display-cat": "Other",
+        "attributes": [
+          "CATWRK3",
+          "VALSOU"
+        ]
+      },
+      {
+        "id": "1297",
+        "RCID": "31349",
+        "class": "WRECKS",
+        "type": "Point",
+        "table-name": "Simplified",
+        "instruction": "SY(FOULGND1)",
+        "disp-prio": "Point Symbol",
+        "radar-prio": "On Top",
+        "display-cat": "Other",
+        "attributes": [
+          "CATWRK3"
+        ]
+      },
+      {
+        "id": "1298",
+        "RCID": "31350",
+        "class": "WRECKS",
+        "type": "Point",
+        "table-name": "Simplified",
+        "instruction": "CS(WRECKS02)",
+        "disp-prio": "Point Symbol",
+        "radar-prio": "On Top",
+        "display-cat": "Other",
+        "attributes": []
+      },
+      {
+        "id": "1680",
+        "RCID": "31732",
+        "class": "$CSYMB",
+        "type": "Point",
+        "table-name": "Simplified",
+        "instruction": "SY(UWTROC03)",
+        "disp-prio": "Point Symbol",
+        "radar-prio": "On Top",
+        "display-cat": "Other",
+        "attributes": [
+          "$SCODEUWTROC03"
+        ]
+      },
+      {
+        "id": "1681",
+        "RCID": "31733",
+        "class": "$CSYMB",
+        "type": "Point",
+        "table-name": "Simplified",
+        "instruction": "SY(UWTROC04)",
+        "disp-prio": "Point Symbol",
+        "radar-prio": "On Top",
+        "display-cat": "Other",
+        "attributes": [
+          "$SCODEUWTROC04"
+        ]
+      },
+      {
+        "id": "1693",
+        "RCID": "31745",
+        "class": "$CSYMB",
+        "type": "Point",
+        "table-name": "Simplified",
+        "instruction": "SY(WRECKS05)",
+        "disp-prio": "Point Symbol",
+        "radar-prio": "On Top",
+        "display-cat": "Other",
+        "attributes": [
+          "$SCODEWRECKS05"
+        ]
+      },
+      {
+        "id": "2509",
+        "RCID": "30580",
+        "class": "UWTROC",
+        "type": "Point",
+        "table-name": "Paper",
+        "instruction": "CS(OBSTRN04)",
+        "disp-prio": "Point Symbol",
+        "radar-prio": "On Top",
+        "display-cat": "Other",
+        "attributes": []
+      },
+      {
+        "id": "2529",
+        "RCID": "30600",
+        "class": "WRECKS",
+        "type": "Point",
+        "table-name": "Paper",
+        "instruction": "SY(FOULGND1)",
+        "disp-prio": "Point Symbol",
+        "radar-prio": "On Top",
+        "display-cat": "Other",
+        "attributes": [
+          "CATWRK3",
+          "VALSOU"
+        ]
+      },
+      {
+        "id": "2530",
+        "RCID": "30601",
+        "class": "WRECKS",
+        "type": "Point",
+        "table-name": "Paper",
+        "instruction": "SY(FOULGND1)",
+        "disp-prio": "Point Symbol",
+        "radar-prio": "On Top",
+        "display-cat": "Other",
+        "attributes": [
+          "CATWRK3"
+        ]
+      },
+      {
+        "id": "2531",
+        "RCID": "30602",
+        "class": "WRECKS",
+        "type": "Point",
+        "table-name": "Paper",
+        "instruction": "CS(WRECKS02)",
+        "disp-prio": "Point Symbol",
+        "radar-prio": "On Top",
+        "display-cat": "Other",
+        "attributes": []
+      },
+      {
+        "id": "2953",
+        "RCID": "30981",
+        "class": "$CSYMB",
+        "type": "Point",
+        "table-name": "Paper",
+        "instruction": "SY(UWTROC03)",
+        "disp-prio": "Point Symbol",
+        "radar-prio": "On Top",
+        "display-cat": "Other",
+        "attributes": [
+          "$SCODEUWTROC03"
+        ]
+      },
+      {
+        "id": "2954",
+        "RCID": "30982",
+        "class": "$CSYMB",
+        "type": "Point",
+        "table-name": "Paper",
+        "instruction": "SY(UWTROC04)",
+        "disp-prio": "Point Symbol",
+        "radar-prio": "On Top",
+        "display-cat": "Other",
+        "attributes": [
+          "$SCODEUWTROC04"
+        ]
+      },
+      {
+        "id": "2966",
+        "RCID": "30994",
+        "class": "$CSYMB",
+        "type": "Point",
+        "table-name": "Paper",
+        "instruction": "SY(WRECKS05)",
+        "disp-prio": "Point Symbol",
+        "radar-prio": "On Top",
+        "display-cat": "Other",
+        "attributes": [
+          "$SCODEWRECKS05"
+        ]
+      }
+    ]
+  },
+  "effective": {
+    "path": "/home/standard/Projects/X-nav-worktrees/scrum275-linux-e6ef384/build/xnav-linux/opennav-chart-style/v1/chartsymbols.xml",
+    "sha256": "a4f7d248d2b64c245b56e3dca7114ead7fcf3644df91ea06d0924ac907cdfd62",
+    "symbols": {
+      "WRECKS05": [
+        "<symbol RCID=\"2038\">\n            <name>WRECKS05</name>\n            <description>dangerous wreck, depth unknown</description>\n            <bitmap width=\"19\" height=\"13\">\n                <distance min=\"0\" max=\"0\" />\n                <pivot x=\"9\" y=\"6\" />\n                <origin x=\"0\" y=\"0\" />\n                <graphics-location x=\"35\" y=\"358\" />\n            </bitmap>\n            <color-ref>ADEPVSCCHBLK</color-ref>\n            <vector width=\"590\" height=\"410\">\n                <distance min=\"0\" max=\"0\" />\n                <pivot x=\"750\" y=\"750\" />\n                <origin x=\"453\" y=\"540\" />\n                <HPGL>SPA;SW1;ST0;PU453,700;PM0;PD512,625;PD600,575;PD687,550;PD800,540;PD900,575;PD981,625;PD1040,700;PD1040,800;PD987,859;PD900,915;PD800,950;PD700,950;PD600,915;PD525,865;PD453,800;PD453,700;PM2;FP;SPC;SW1;PU600,650;PD600,850;SPC;SW1;PU900,650;PD900,850;SPC;SW1;PU500,750;PD1000,750;SPC;SW1;PU750,600;PD750,900;SPC;SW1;PU453,700;PD;SPC;SW1;PU512,625;PD;SPC;SW1;PU600,575;PD;SPC;SW1;PU687,550;PD;SPC;SW1;PU800,540;PD;SPC;SW1;PU900,575;PD;SPC;SW1;PU981,625;PD;SPC;SW1;PU1040,700;PD;SPC;SW1;PU453,800;PD;SPC;SW1;PU525,865;PD;SPC;SW1;PU600,915;PD;SPC;SW1;PU700,950;PD;SPC;SW1;PU800,950;PD;SPC;SW1;PU900,915;PD;SPC;SW1;PU987,859;PD;SPC;SW1;PU1043,793;PD;</HPGL>\n            </vector>\n            <definition>V</definition>\n        </symbol>"
+      ],
+      "UWTROC04": [
+        "<symbol RCID=\"3164\">\n            <name>UWTROC04</name>\n            <description>rock which covers and uncovers or is awash at low water</description>\n            <bitmap width=\"13\" height=\"11\">\n                <distance min=\"0\" max=\"0\" />\n                <pivot x=\"6\" y=\"5\" />\n                <origin x=\"0\" y=\"0\" />\n                <graphics-location x=\"973\" y=\"307\" />\n            </bitmap>\n            <color-ref>ACHBLK</color-ref>\n            <vector width=\"400\" height=\"325\">\n                <distance min=\"0\" max=\"0\" />\n                <pivot x=\"1500\" y=\"1500\" />\n                <origin x=\"1297\" y=\"1336\" />\n                <HPGL>SPA;SW1;PU1697,1500;PD1297,1500;SPA;SW1;PU1614,1337;PD1379,1661;SPA;SW1;PU1614,1655;PD1374,1336;</HPGL>\n            </vector>\n            <definition>V</definition>\n        </symbol>"
+      ],
+      "UWTROC03": [
+        "<symbol RCID=\"2249\">\n            <name>UWTROC03</name>\n            <description>dangerous underwater rock of uncertain depth</description>\n            <bitmap width=\"13\" height=\"13\">\n                <distance min=\"0\" max=\"0\" />\n                <pivot x=\"6\" y=\"6\" />\n                <origin x=\"0\" y=\"0\" />\n                <graphics-location x=\"950\" y=\"307\" />\n            </bitmap>\n            <color-ref>ADEPVSBCHBLK</color-ref>\n            <vector width=\"402\" height=\"402\">\n                <distance min=\"0\" max=\"0\" />\n                <pivot x=\"1500\" y=\"1500\" />\n                <origin x=\"1299\" y=\"1299\" />\n                <HPGL>SPA;SW1;ST0;PU1500,1500;PM0;CI201;PM2;FP;SPB;SW1;PU1500,1300;PD;SPB;SW1;PU1500,1700;PD;SPB;SW1;PU1700,1500;PD;SPB;SW1;PU1300,1500;PD;SPB;SW1;PU1580,1310;PD;SPB;SW1;PU1640,1360;PD;SPB;SW1;PU1685,1425;PD;SPB;SW1;PU1675,1585;PD;SPB;SW1;PU1640,1640;PD;SPB;SW1;PU1575,1680;PD;SPB;SW1;PU1420,1680;PD;SPB;SW1;PU1360,1635;PD;SPB;SW1;PU1315,1570;PD;SPB;SW1;PU1320,1420;PD;SPB;SW1;PU1355,1355;PD;SPB;SW1;PU1420,1315;PD;SPB;SW1;PU1502,1371;PD1502,1648;SPB;SW1;PU1364,1505;PD1637,1506;</HPGL>\n            </vector>\n            <definition>V</definition>\n        </symbol>"
+      ]
+    },
+    "lookups": [
+      {
+        "id": "1276",
+        "RCID": "31328",
+        "class": "UWTROC",
+        "type": "Point",
+        "table-name": "Simplified",
+        "instruction": "CS(OBSTRN04)",
+        "disp-prio": "Point Symbol",
+        "radar-prio": "On Top",
+        "display-cat": "Other",
+        "attributes": []
+      },
+      {
+        "id": "1296",
+        "RCID": "31348",
+        "class": "WRECKS",
+        "type": "Point",
+        "table-name": "Simplified",
+        "instruction": "SY(FOULGND1)",
+        "disp-prio": "Point Symbol",
+        "radar-prio": "On Top",
+        "display-cat": "Other",
+        "attributes": [
+          "CATWRK3",
+          "VALSOU"
+        ]
+      },
+      {
+        "id": "1297",
+        "RCID": "31349",
+        "class": "WRECKS",
+        "type": "Point",
+        "table-name": "Simplified",
+        "instruction": "SY(FOULGND1)",
+        "disp-prio": "Point Symbol",
+        "radar-prio": "On Top",
+        "display-cat": "Other",
+        "attributes": [
+          "CATWRK3"
+        ]
+      },
+      {
+        "id": "1298",
+        "RCID": "31350",
+        "class": "WRECKS",
+        "type": "Point",
+        "table-name": "Simplified",
+        "instruction": "CS(WRECKS02)",
+        "disp-prio": "Point Symbol",
+        "radar-prio": "On Top",
+        "display-cat": "Other",
+        "attributes": []
+      },
+      {
+        "id": "1680",
+        "RCID": "31732",
+        "class": "$CSYMB",
+        "type": "Point",
+        "table-name": "Simplified",
+        "instruction": "SY(UWTROC03)",
+        "disp-prio": "Point Symbol",
+        "radar-prio": "On Top",
+        "display-cat": "Other",
+        "attributes": [
+          "$SCODEUWTROC03"
+        ]
+      },
+      {
+        "id": "1681",
+        "RCID": "31733",
+        "class": "$CSYMB",
+        "type": "Point",
+        "table-name": "Simplified",
+        "instruction": "SY(UWTROC04)",
+        "disp-prio": "Point Symbol",
+        "radar-prio": "On Top",
+        "display-cat": "Other",
+        "attributes": [
+          "$SCODEUWTROC04"
+        ]
+      },
+      {
+        "id": "1693",
+        "RCID": "31745",
+        "class": "$CSYMB",
+        "type": "Point",
+        "table-name": "Simplified",
+        "instruction": "SY(WRECKS05)",
+        "disp-prio": "Point Symbol",
+        "radar-prio": "On Top",
+        "display-cat": "Other",
+        "attributes": [
+          "$SCODEWRECKS05"
+        ]
+      },
+      {
+        "id": "2509",
+        "RCID": "30580",
+        "class": "UWTROC",
+        "type": "Point",
+        "table-name": "Paper",
+        "instruction": "CS(OBSTRN04)",
+        "disp-prio": "Point Symbol",
+        "radar-prio": "On Top",
+        "display-cat": "Other",
+        "attributes": []
+      },
+      {
+        "id": "2529",
+        "RCID": "30600",
+        "class": "WRECKS",
+        "type": "Point",
+        "table-name": "Paper",
+        "instruction": "SY(FOULGND1)",
+        "disp-prio": "Point Symbol",
+        "radar-prio": "On Top",
+        "display-cat": "Other",
+        "attributes": [
+          "CATWRK3",
+          "VALSOU"
+        ]
+      },
+      {
+        "id": "2530",
+        "RCID": "30601",
+        "class": "WRECKS",
+        "type": "Point",
+        "table-name": "Paper",
+        "instruction": "SY(FOULGND1)",
+        "disp-prio": "Point Symbol",
+        "radar-prio": "On Top",
+        "display-cat": "Other",
+        "attributes": [
+          "CATWRK3"
+        ]
+      },
+      {
+        "id": "2531",
+        "RCID": "30602",
+        "class": "WRECKS",
+        "type": "Point",
+        "table-name": "Paper",
+        "instruction": "CS(WRECKS02)",
+        "disp-prio": "Point Symbol",
+        "radar-prio": "On Top",
+        "display-cat": "Other",
+        "attributes": []
+      },
+      {
+        "id": "2953",
+        "RCID": "30981",
+        "class": "$CSYMB",
+        "type": "Point",
+        "table-name": "Paper",
+        "instruction": "SY(UWTROC03)",
+        "disp-prio": "Point Symbol",
+        "radar-prio": "On Top",
+        "display-cat": "Other",
+        "attributes": [
+          "$SCODEUWTROC03"
+        ]
+      },
+      {
+        "id": "2954",
+        "RCID": "30982",
+        "class": "$CSYMB",
+        "type": "Point",
+        "table-name": "Paper",
+        "instruction": "SY(UWTROC04)",
+        "disp-prio": "Point Symbol",
+        "radar-prio": "On Top",
+        "display-cat": "Other",
+        "attributes": [
+          "$SCODEUWTROC04"
+        ]
+      },
+      {
+        "id": "2966",
+        "RCID": "30994",
+        "class": "$CSYMB",
+        "type": "Point",
+        "table-name": "Paper",
+        "instruction": "SY(WRECKS05)",
+        "disp-prio": "Point Symbol",
+        "radar-prio": "On Top",
+        "display-cat": "Other",
+        "attributes": [
+          "$SCODEWRECKS05"
+        ]
+      }
+    ]
+  },
+  "prototypeVendor": {
+    "path": "/home/standard/Projects/X-nav-worktrees/scrum15-hazard-artwork-audit/docs/design/prototype/vendor/opencpn/chartsymbols.xml",
+    "sha256": "66d2dffad07499811fdbe10ae992c01a220fed7d0163654dd02f14d3f74007b7",
+    "symbols": {
+      "WRECKS05": [
+        "<symbol RCID=\"2038\">\n            <name>WRECKS05</name>\n            <description>dangerous wreck, depth unknown</description>\n            <bitmap width=\"19\" height=\"13\">\n                <distance min=\"0\" max=\"0\" />\n                <pivot x=\"9\" y=\"6\" />\n                <origin x=\"0\" y=\"0\" />\n                <graphics-location x=\"35\" y=\"358\" />\n            </bitmap>\n            <color-ref>ADEPVSCCHBLK</color-ref>\n            <vector width=\"590\" height=\"410\">\n                <distance min=\"0\" max=\"0\" />\n                <pivot x=\"750\" y=\"750\" />\n                <origin x=\"453\" y=\"540\" />\n                <HPGL>SPA;SW1;ST0;PU453,700;PM0;PD512,625;PD600,575;PD687,550;PD800,540;PD900,575;PD981,625;PD1040,700;PD1040,800;PD987,859;PD900,915;PD800,950;PD700,950;PD600,915;PD525,865;PD453,800;PD453,700;PM2;FP;SPC;SW1;PU600,650;PD600,850;SPC;SW1;PU900,650;PD900,850;SPC;SW1;PU500,750;PD1000,750;SPC;SW1;PU750,600;PD750,900;SPC;SW1;PU453,700;PD;SPC;SW1;PU512,625;PD;SPC;SW1;PU600,575;PD;SPC;SW1;PU687,550;PD;SPC;SW1;PU800,540;PD;SPC;SW1;PU900,575;PD;SPC;SW1;PU981,625;PD;SPC;SW1;PU1040,700;PD;SPC;SW1;PU453,800;PD;SPC;SW1;PU525,865;PD;SPC;SW1;PU600,915;PD;SPC;SW1;PU700,950;PD;SPC;SW1;PU800,950;PD;SPC;SW1;PU900,915;PD;SPC;SW1;PU987,859;PD;SPC;SW1;PU1043,793;PD;</HPGL>\n            </vector>\n            <definition>V</definition>\n        </symbol>"
+      ],
+      "UWTROC04": [
+        "<symbol RCID=\"3164\">\n            <name>UWTROC04</name>\n            <description>rock which covers and uncovers or is awash at low water</description>\n            <bitmap width=\"13\" height=\"11\">\n                <distance min=\"0\" max=\"0\" />\n                <pivot x=\"6\" y=\"5\" />\n                <origin x=\"0\" y=\"0\" />\n                <graphics-location x=\"973\" y=\"307\" />\n            </bitmap>\n            <color-ref>ACHBLK</color-ref>\n            <vector width=\"400\" height=\"325\">\n                <distance min=\"0\" max=\"0\" />\n                <pivot x=\"1500\" y=\"1500\" />\n                <origin x=\"1297\" y=\"1336\" />\n                <HPGL>SPA;SW1;PU1697,1500;PD1297,1500;SPA;SW1;PU1614,1337;PD1379,1661;SPA;SW1;PU1614,1655;PD1374,1336;</HPGL>\n            </vector>\n            <definition>V</definition>\n        </symbol>"
+      ],
+      "UWTROC03": [
+        "<symbol RCID=\"2249\">\n            <name>UWTROC03</name>\n            <description>dangerous underwater rock of uncertain depth</description>\n            <bitmap width=\"13\" height=\"13\">\n                <distance min=\"0\" max=\"0\" />\n                <pivot x=\"6\" y=\"6\" />\n                <origin x=\"0\" y=\"0\" />\n                <graphics-location x=\"950\" y=\"307\" />\n            </bitmap>\n            <color-ref>ADEPVSBCHBLK</color-ref>\n            <vector width=\"402\" height=\"402\">\n                <distance min=\"0\" max=\"0\" />\n                <pivot x=\"1500\" y=\"1500\" />\n                <origin x=\"1299\" y=\"1299\" />\n                <HPGL>SPA;SW1;ST0;PU1500,1500;PM0;CI201;PM2;FP;SPB;SW1;PU1500,1300;PD;SPB;SW1;PU1500,1700;PD;SPB;SW1;PU1700,1500;PD;SPB;SW1;PU1300,1500;PD;SPB;SW1;PU1580,1310;PD;SPB;SW1;PU1640,1360;PD;SPB;SW1;PU1685,1425;PD;SPB;SW1;PU1675,1585;PD;SPB;SW1;PU1640,1640;PD;SPB;SW1;PU1575,1680;PD;SPB;SW1;PU1420,1680;PD;SPB;SW1;PU1360,1635;PD;SPB;SW1;PU1315,1570;PD;SPB;SW1;PU1320,1420;PD;SPB;SW1;PU1355,1355;PD;SPB;SW1;PU1420,1315;PD;SPB;SW1;PU1502,1371;PD1502,1648;SPB;SW1;PU1364,1505;PD1637,1506;</HPGL>\n            </vector>\n            <definition>V</definition>\n        </symbol>"
+      ]
+    },
+    "lookups": [
+      {
+        "id": "1276",
+        "RCID": "31328",
+        "class": "UWTROC",
+        "type": "Point",
+        "table-name": "Simplified",
+        "instruction": "CS(OBSTRN04)",
+        "disp-prio": "Point Symbol",
+        "radar-prio": "On Top",
+        "display-cat": "Other",
+        "attributes": []
+      },
+      {
+        "id": "1296",
+        "RCID": "31348",
+        "class": "WRECKS",
+        "type": "Point",
+        "table-name": "Simplified",
+        "instruction": "SY(FOULGND1)",
+        "disp-prio": "Point Symbol",
+        "radar-prio": "On Top",
+        "display-cat": "Other",
+        "attributes": [
+          "CATWRK3",
+          "VALSOU"
+        ]
+      },
+      {
+        "id": "1297",
+        "RCID": "31349",
+        "class": "WRECKS",
+        "type": "Point",
+        "table-name": "Simplified",
+        "instruction": "SY(FOULGND1)",
+        "disp-prio": "Point Symbol",
+        "radar-prio": "On Top",
+        "display-cat": "Other",
+        "attributes": [
+          "CATWRK3"
+        ]
+      },
+      {
+        "id": "1298",
+        "RCID": "31350",
+        "class": "WRECKS",
+        "type": "Point",
+        "table-name": "Simplified",
+        "instruction": "CS(WRECKS02)",
+        "disp-prio": "Point Symbol",
+        "radar-prio": "On Top",
+        "display-cat": "Other",
+        "attributes": []
+      },
+      {
+        "id": "1680",
+        "RCID": "31732",
+        "class": "$CSYMB",
+        "type": "Point",
+        "table-name": "Simplified",
+        "instruction": "SY(UWTROC03)",
+        "disp-prio": "Point Symbol",
+        "radar-prio": "On Top",
+        "display-cat": "Other",
+        "attributes": [
+          "$SCODEUWTROC03"
+        ]
+      },
+      {
+        "id": "1681",
+        "RCID": "31733",
+        "class": "$CSYMB",
+        "type": "Point",
+        "table-name": "Simplified",
+        "instruction": "SY(UWTROC04)",
+        "disp-prio": "Point Symbol",
+        "radar-prio": "On Top",
+        "display-cat": "Other",
+        "attributes": [
+          "$SCODEUWTROC04"
+        ]
+      },
+      {
+        "id": "1693",
+        "RCID": "31745",
+        "class": "$CSYMB",
+        "type": "Point",
+        "table-name": "Simplified",
+        "instruction": "SY(WRECKS05)",
+        "disp-prio": "Point Symbol",
+        "radar-prio": "On Top",
+        "display-cat": "Other",
+        "attributes": [
+          "$SCODEWRECKS05"
+        ]
+      },
+      {
+        "id": "2509",
+        "RCID": "30580",
+        "class": "UWTROC",
+        "type": "Point",
+        "table-name": "Paper",
+        "instruction": "CS(OBSTRN04)",
+        "disp-prio": "Point Symbol",
+        "radar-prio": "On Top",
+        "display-cat": "Other",
+        "attributes": []
+      },
+      {
+        "id": "2529",
+        "RCID": "30600",
+        "class": "WRECKS",
+        "type": "Point",
+        "table-name": "Paper",
+        "instruction": "SY(FOULGND1)",
+        "disp-prio": "Point Symbol",
+        "radar-prio": "On Top",
+        "display-cat": "Other",
+        "attributes": [
+          "CATWRK3",
+          "VALSOU"
+        ]
+      },
+      {
+        "id": "2530",
+        "RCID": "30601",
+        "class": "WRECKS",
+        "type": "Point",
+        "table-name": "Paper",
+        "instruction": "SY(FOULGND1)",
+        "disp-prio": "Point Symbol",
+        "radar-prio": "On Top",
+        "display-cat": "Other",
+        "attributes": [
+          "CATWRK3"
+        ]
+      },
+      {
+        "id": "2531",
+        "RCID": "30602",
+        "class": "WRECKS",
+        "type": "Point",
+        "table-name": "Paper",
+        "instruction": "CS(WRECKS02)",
+        "disp-prio": "Point Symbol",
+        "radar-prio": "On Top",
+        "display-cat": "Other",
+        "attributes": []
+      },
+      {
+        "id": "2953",
+        "RCID": "30981",
+        "class": "$CSYMB",
+        "type": "Point",
+        "table-name": "Paper",
+        "instruction": "SY(UWTROC03)",
+        "disp-prio": "Point Symbol",
+        "radar-prio": "On Top",
+        "display-cat": "Other",
+        "attributes": [
+          "$SCODEUWTROC03"
+        ]
+      },
+      {
+        "id": "2954",
+        "RCID": "30982",
+        "class": "$CSYMB",
+        "type": "Point",
+        "table-name": "Paper",
+        "instruction": "SY(UWTROC04)",
+        "disp-prio": "Point Symbol",
+        "radar-prio": "On Top",
+        "display-cat": "Other",
+        "attributes": [
+          "$SCODEUWTROC04"
+        ]
+      },
+      {
+        "id": "2966",
+        "RCID": "30994",
+        "class": "$CSYMB",
+        "type": "Point",
+        "table-name": "Paper",
+        "instruction": "SY(WRECKS05)",
+        "disp-prio": "Point Symbol",
+        "radar-prio": "On Top",
+        "display-cat": "Other",
+        "attributes": [
+          "$SCODEWRECKS05"
+        ]
+      }
+    ]
+  },
+  "source": {
+    "/home/standard/Projects/X-nav-worktrees/skager-product-fidelity/build/integration-source/libs/s52plib/src/s52cnsy.cpp": "b27ece30ace23032d0b916c392230d1523e734cbf51a47338085a04a80fc2a7e",
+    "/home/standard/Projects/X-nav-worktrees/skager-product-fidelity/build/integration-source/libs/s52plib/src/chartsymbols.cpp": "81249b229533e602e7d9a6bb04982c3b160be7e5d3e200444970bf4f2e481752",
+    "docs/design/prototype/index.html": "b04573b920b6bccd16afd22f54a909e48afcfd502ce9cd7c69fdf5b6dd895447"
+  },
+  "rasterTiles": {
+    "rastersymbols-day.png": {
+      "UWTROC03": {
+        "unchangedFromPinned": true,
+        "rgbaSha256": "31cbcad8f47d47e168de464e56b0af4becd7de187a3e3cca92be232c8632ce5a",
+        "bounds": [
+          950,
+          307,
+          13,
+          13
+        ]
+      },
+      "UWTROC04": {
+        "unchangedFromPinned": true,
+        "rgbaSha256": "487da364c40aa05e170fdf1ef3d74f8317a99f30d2270b32611d35e5cfcebbcc",
+        "bounds": [
+          973,
+          307,
+          13,
+          11
+        ]
+      },
+      "WRECKS05": {
+        "unchangedFromPinned": true,
+        "rgbaSha256": "012d1115df232e3e63ce0a711666cfecc1ca8090a410297ab33d179a8949cd11",
+        "bounds": [
+          35,
+          358,
+          19,
+          13
+        ]
+      }
+    },
+    "rastersymbols-dusk.png": {
+      "UWTROC03": {
+        "unchangedFromPinned": true,
+        "rgbaSha256": "3f2e7e5499a304b3f5db88d7bc51f5e79e5718f146421499474b943025e706b5",
+        "bounds": [
+          950,
+          307,
+          13,
+          13
+        ]
+      },
+      "UWTROC04": {
+        "unchangedFromPinned": true,
+        "rgbaSha256": "be04d2be00e3f0c0b5e7f79a1e15ec59bc3cd8a975139e43773c4181c15d0ec3",
+        "bounds": [
+          973,
+          307,
+          13,
+          11
+        ]
+      },
+      "WRECKS05": {
+        "unchangedFromPinned": true,
+        "rgbaSha256": "161a8b8cd2e6c7e220c5ca0783ef3676713f989ba24fe80a5045e822b7cf584e",
+        "bounds": [
+          35,
+          358,
+          19,
+          13
+        ]
+      }
+    },
+    "rastersymbols-dark.png": {
+      "UWTROC03": {
+        "unchangedFromPinned": true,
+        "rgbaSha256": "06ecbfabb4a600a21e0687c5820e6db46cd194b165e59102aa7b431e8645b1b7",
+        "bounds": [
+          950,
+          307,
+          13,
+          13
+        ]
+      },
+      "UWTROC04": {
+        "unchangedFromPinned": true,
+        "rgbaSha256": "231733fc5f3f292ad999ba408657577464cb349c20035d60ffacd719978c5d4d",
+        "bounds": [
+          973,
+          307,
+          13,
+          11
+        ]
+      },
+      "WRECKS05": {
+        "unchangedFromPinned": true,
+        "rgbaSha256": "3616e7a4288d8e055557204a7b9e51ea479b7fc3892a8aef644b2f7bae1a6b32",
+        "bounds": [
+          35,
+          358,
+          19,
+          13
+        ]
+      }
+    }
+  },
+  "privateConsumer": {
+    "path": "/home/standard/Projects/X-nav-worktrees/scrum259-adapter-preparation/.local/pinned-source/libs/s52plib/src/s52cnsy.cpp",
+    "sha256": "9a6194f9eb488ac5f25b67ef8e96b97d27acfc5b5748bb0e18e60adb998c9e50",
+    "scope": "Original pinned private consumer inspected; separate native private rendering acceptance remains open"
+  }
+}

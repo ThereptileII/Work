@@ -1,0 +1,6 @@
+In file included from /home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/.local/private/libs/s52plib/src/Cs52_shaders.h:32,
+                 from /home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/tests/chart_cable_wave_test.cpp:9:
+/home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/.local/private/libs/s52plib/src/s52plibGL.h:34:10: fatal error: config.h: No such file or directory
+   34 | #include "config.h"
+      |          ^~~~~~~~~~
+compilation terminated.

@@ -1,0 +1,16 @@
+{
+  "pinnedCoreBlob": "03dda4915fc1765b1a84370b2476148ce9553134",
+  "pinnedPrivateBlob": "72356a432ace97dec3cb05eb060effa1a9908786",
+  "outerRendererBodiesUnchanged": {
+    "core": {
+      "int s52plib::RenderToBufferAP(": "cd981a7f268bf9a91777246b988a8f739db40389250acb89ceb89688b77dc654",
+      "int s52plib::RenderToGLAP_GLSL(": "8c5636cc8614ee289ee274ab7a18ef5e2f72791a21034a7d1da61e4bb0dcd12f"
+    },
+    "private": {
+      "int s52plib::RenderToBufferAP(": "cd981a7f268bf9a91777246b988a8f739db40389250acb89ceb89688b77dc654",
+      "int s52plib::RenderToGLAP_GLSL(": "2f126745f67f54c5efb98be6a43c23abb88c6890c594880b56a47f65e9e4a6bc"
+    }
+  },
+  "coreResultSha256": "034970c275aeb48b2f00cdfa7189743cb10388fca76f7b55a81a671bfccc2a79",
+  "privateResultSha256": "56edba836dbc247fb7912b13cce0c35d63e6e1eaa6a46db2d8e499cd6e5adb77"
+}

@@ -1,0 +1,59 @@
+{
+  "status": "passed",
+  "scope": "native parent context only",
+  "localSource": "48c2f8b8d5d4103bcbaacc45a18c4e6a238d4c52",
+  "remoteSource": "4ddf1f383e495150551946dd36103cd77cea85eb",
+  "artifactSha256": "8ffb32dfee1f54b8131e9e206d5ed59ffcce6bfc9f8f903e29456514b8b97593",
+  "sourceMatches": [
+    {
+      "path": "D:\\a\\Work\\Work\\opennav-x\\tools\\test-windows-parent-context.ps1",
+      "match": "CRLF checkout",
+      "sha256": "c0d4acf71db20b9917dba4ca26f33ea6f4dafaba1cca6ebeaa48733510f41ea2"
+    },
+    {
+      "path": "D:\\a\\Work\\Work\\opennav-x\\tools\\build-openssl-windows.ps1",
+      "match": "CRLF checkout",
+      "sha256": "a57a2a468999daf8ba655c2328fd645d002c184ce370ca916d99cf5cc43dabc7"
+    },
+    {
+      "path": "D:\\a\\Work\\Work\\opennav-x\\tools\\windows-native-tool-facts.ps1",
+      "match": "CRLF checkout",
+      "sha256": "909d5aca764ae461618d02a58592bf0d6f3d7a6846e4b5483aad818aa04e6cd0"
+    },
+    {
+      "path": "D:\\a\\Work\\Work\\opennav-x\\tools\\windows-parent-environment.ps1",
+      "match": "CRLF checkout",
+      "sha256": "b84f945ddde6d343529446193360dd228b4c6b6ca8390fd0d35fb12a92e5f6b1"
+    },
+    {
+      "path": "D:\\a\\Work\\Work\\opennav-x\\tools\\windows-openssl.lock.json",
+      "match": "CRLF checkout",
+      "sha256": "dd26041ec5b5f85a76010b4e45716d8dc46c85ccb032815aab8059c49e6bc99d"
+    },
+    {
+      "path": "D:\\a\\Work\\Work\\opennav-x\\tools\\windows_gettext.py",
+      "match": "CRLF checkout",
+      "sha256": "1f86e71f42766f3c0b730ec07dd32abdfd8cdee218aa1c1d8f8b2c786754ef36"
+    },
+    {
+      "path": "D:\\a\\Work\\Work\\.github\\workflows\\skager-parent-context.yml",
+      "match": "CRLF checkout",
+      "sha256": "f4613a00a3077e7e28d14f4fa88ce5e5ad624804ea58e06be3bc5cde6e75c1bb"
+    },
+    {
+      "path": "D:\\a\\Work\\Work\\opennav-x\\evidence\\local\\windows-parent-context\\nasm-source.json",
+      "match": "artifact",
+      "sha256": "7889522138a7a49ff08e67625cc538fc611dba4b57c90cefd5c6abccc089cc50"
+    }
+  ],
+  "changedFields": [
+    "environment.PATHSha256"
+  ],
+  "capturedHash": "fa1b46748f7c50ae4d7c637e61f50a8cb3cc6d2cba8467b9c04175cecb1f2773",
+  "negativeHash": "01a96584a51ba3b0bcd7291e02607bc3ff9b698672a09510c432bf13f3d43c2f",
+  "gettextHash": "96fa7bc77a7e2afb86db1143c2016807ff558ce6f30ab100b2ef624bf4b45106",
+  "producerSpanHash": "dc6b184a18f728b98db4cf0ac522b4edb5495cffc8a037eacc3194483fd59749",
+  "capturedPathHash": "585ef513a45a58368b1d08ef9e0ebafd5fe73ec383c016a5db38a86c8f7289c5",
+  "omittedPathHash": "4830bf6b621083bb5bb49d50de71423796d98418c92dc0fdc24e885b45231d23",
+  "originalReceiptsIntact": true
+}

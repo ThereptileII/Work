@@ -12,7 +12,8 @@ def verify_services(source, output, metadata, check):
     root = Path(__file__).resolve().parents[1]
     art = (root/'docs/design/prototype/src/chart-marker-art.js').read_text()
     fixtures = [('PILBOP02',1,2,52,148,'a5939fe16a9ceab9bdd44e5b0182c76407b6c3b0800d5429ce39f510e7f9bc86'),
-                ('RTPBCN02',2259,1,84,156,'4e8e9899f67b94972331aac087f52726aaf53ca4644e6da4d316104e91472ba6')]
+                ('RTPBCN02',2259,1,84,156,'4e8e9899f67b94972331aac087f52726aaf53ca4644e6da4d316104e91472ba6'),
+                ('SMCFAC02',2108,1,820,152,'b26100fff9af4b66ba98b6dcd6cbd2fa453c921f46ca05480ba84e8a9b6b0bf6')]
     stock = ET.parse(source/'chartsymbols.xml').getroot()
     current = ET.parse(output/'chartsymbols.xml').getroot()
     for name,rcid,count,x,pixels,digest in fixtures:
@@ -62,7 +63,7 @@ def verify_services(source, output, metadata, check):
         from chart_seamark_resources_tests import restore_tiles
         restore_tiles(before,after)
         changed=[i for i in range(0,len(before),4) if before[i:i+4]!=after[i:i+4]]
-        check(len(changed)==304)
+        check(len(changed)==456)
         for symbol,rcid,count,x,pixels,digest in fixtures:
             changes=[i for i in changed if x<=i//4%1500<x+24 and 1160<=i//4//1500<1184]
             check(len(changes)==pixels)

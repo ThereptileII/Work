@@ -55,7 +55,7 @@ def verify_cardinals(source,output,metadata,check):
         ca,before=decode(raw);cb,after=decode((output/file).read_bytes())
         check([(k,v) for k,v in ca if k!=b'IDAT']==[(k,v) for k,v in cb if k!=b'IDAT'])
         # Existing anchor/service deltas have independent proofs; remove only their tiles.
-        for x,w,h in [(20,20,20),(52,24,24),(84,24,24)]:
+        for x,w,h in [(20,20,20),(52,24,24),(84,24,24),(820,24,24)]:
             for y in range(1160,1160+h):
                 start=(y*1500+x)*4;after[start:start+w*4]=before[start:start+w*4]
         from chart_seamark_resources_tests import restore_tiles

@@ -31,9 +31,16 @@ from a successful in-application mode switch.
 
 ## Navigation and visual checks
 
-Start at the boat's **1280×800** resolution and current Windows scaling. Exercise
-125%/150% in the disposable Windows test environment; change the boat's display
-configuration only with a recoverable local test plan.
+Start with the boat PC's existing resolution and Windows scaling; record both.
+The primary design target is **1280×800**, with **1920×1080** also included in
+qualification. Check both sizes in a disposable Windows test environment,
+including 100%/125%/150% scaling. Do not change the boat's display configuration
+remotely just to match a screenshot.
+
+Record the actual application window size and DPI from Diagnostics where
+available. Screen resolution alone does not establish the application's usable
+space or text size. Try the controls with physical touch when aboard; a remote
+mouse pass does not count as a physical touchscreen test.
 
 - Check chart pan, zoom, chart switching and ownship following when GPS is valid.
 - Check the four primary data-rail values stay visible when an alert appears.

@@ -1,0 +1,131 @@
+-- cmake version: 4.4.3
+Device "vcan0" does not exist.
+-- tests using vcan0 are NOT available: ""
+-- *** Host Build Architecture is x86_64
+-- Setting C++17 standard via cmake standard mechanism
+-- Final compiler options:
+-- CMAKE_CXX_FLAGS: 
+-- CMAKE_CXX_FLAGS_DEBUG: -g
+-- CMAKE_CXX_FLAGS_MINSIZEREL: -Os -DNDEBUG
+-- CMAKE_CXX_FLAGS_RELEASE: -O3 -DNDEBUG
+-- CMAKE_CXX_FLAGS_RELWITHDEBINFO: -O2 -g -DNDEBUG
+-- Building version 5.12.4
+-- *** Staging to build opencpn 5.12.4 ***
+-- *** Package will NOT include documentation ***
+-- Building against GTK3...
+-- Found OpenGL....
+--     GL Lib: /usr/lib/libGL.so/usr/lib/libGLU.so
+--     GL Include: /usr/include
+--     Revised GL Lib: /usr/lib/libGL.so
+-- Found wxWidgets: -L/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/.local/sysroot/usr/lib;;-lwx_gtk3u_gl-3.2;-lwx_baseu_net-3.2;-lwx_baseu_xml-3.2;-lwx_gtk3u_html-3.2;-lwx_gtk3u_aui-3.2;-lwx_gtk3u_core-3.2;-lwx_baseu-3.2;-lwx_gtk3u_richtext-3.2 (found version "3.2.11")
+-- Could not find wxWidgets webview add-on
+-- Found wxWidgets...
+--  wxWidgets Include: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/.local/sysroot/usr/lib/wx/include/gtk3-unicode-3.2;/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/.local/sysroot/usr/include/wx-3.2
+--  wxWidgets Libraries: -L/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/.local/sysroot/usr/lib;;-lwx_gtk3u_gl-3.2;-lwx_baseu_net-3.2;-lwx_baseu_xml-3.2;-lwx_gtk3u_html-3.2;-lwx_gtk3u_aui-3.2;-lwx_gtk3u_core-3.2;-lwx_baseu-3.2;-lwx_gtk3u_richtext-3.2
+--  Revised wxWidgets Libraries: -L/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/.local/sysroot/usr/lib;-lwx_gtk3u_gl-3.2;-lwx_baseu_net-3.2;-lwx_baseu_xml-3.2;-lwx_gtk3u_html-3.2;-lwx_gtk3u_aui-3.2;-lwx_gtk3u_core-3.2;-lwx_baseu-3.2;-lwx_gtk3u_richtext-3.2
+-- Found wxWidgets_VERSION_STRING: 3.2.11
+-- 
+-- *** Staging to build opencpn  ***
+-- *** Build type: Release
+-- *** Will install to /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install  ***
+-- GarminHost is enabled.
+-- selected config gtk3-unicode-3.2
+
+-- Found OpenGL....
+--     GL Lib: 
+--     GL Include: /usr/include
+-- Using system shapelib 
+PatchFileCpp: using patched sources at /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-linux/b2681f8
+-- Applying patch 0001-ShapeFileReader-Fix-annoying-name-clash-add-accessor.patch
+-- Applying patch 0002-Point-Fix-gcc-initializer-ordering-warning.patch
+-- Applying patch 0003-ShapeFileReader-Fix-signedness-gcc-warning.patch
+-- Applying patch 0004-cmake-Only-build-the-lib-directory.patch
+-- Using patched libdnet at /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-linux/libdnet
+-- Could NOT find TinyXML (missing: TINYXML_INCLUDE_DIR TINYXML_LIBRARIES) 
+-- SVG support enabled...
+-- wxWidgets 3.1.6+ detected, using wxBitmapBundle for SVG
+-- Using new serial library...
+--     Adding local GLU
+--     Revised GL Lib (with local): GLU_static/usr/lib/libGL.so/usr/lib/libGLU.so
+--     Adding local LIBTESS2
+-- Could NOT find TinyXML (missing: TINYXML_INCLUDE_DIR TINYXML_LIBRARIES) 
+-- Building with bundled tinyxml
+--     Adding local wxserverdisc
+-- S57 ENC support: enabled
+-- Garmin Host Mode support: enabled
+-- Building with system lz4
+-- mipmap SSE support enabled
+-- Building with system lz4
+-- Building for target (Platform; version; arch): n/a-x86_64; n/a; x86_64
+-- asciidoc not found, cannot rebuild authors.html
+-- TLS configured to use openssl
+-- OpenSSL found   /usr/include /usr/lib/libssl.so;/usr/lib/libcrypto.so
+-- Found OpenGL....
+--     GL Lib: /usr/lib/libGL.so/usr/lib/libGLU.so
+--     GL Include: /usr/include
+-- OpenSSL found   /usr/include /usr/lib/libssl.so;/usr/lib/libcrypto.so
+-- Using downloaded rapidjson at /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-linux/_deps/rapidjson_src-src/include
+-- Applying patch 0010-rapidjson-1.1.0-c++20.patch
+-- Applying patch 0011-do_not_include_gtest_src_dir.patch
+-- Applying patch 0012-Fix-Wclass-memaccess-warnings-errors.patch
+-- Applying patch 0013-gcc7.patch
+CMake Error at build/integration-source/libs/rapidjson/cmake/PatchFile.cmake:29 (message):
+  Failed to apply
+  /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/rapidjson/patches/0013-gcc7.patch
+  in
+  /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-linux/_deps/rapidjson_src-src
+  using /usr/bin/patch
+
+
+-- Using systrem SQLite library version 3053004.
+-- CMAKE_SYSTEM_NAME: Linux
+-- Found Portaudio: /usr/lib/libportaudio.so
+-- CLI sound command: "/usr/bin/aplay \"%s\""
+-- Portaudio Found
+-- libsndfile Found
+-- CMAKE_BINARY_DIR: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-linux
+-- *** Staging to build PlugIns ***
+-- Libarchive version: 3.8.9
+-- *** Staging to build chartdldr_pi ***
+-- Found OpenGL...
+--     Lib: /usr/lib/libGL.so/usr/lib/libGLU.so
+--     Include: /usr/include
+-- chartdldr_pi: Building without wxDATAVIEWLISTCTRL chart listing
+-- Checking for one of the modules 'libunarr;unarr'
+-- chartdldr_pi: using libarchive for rar files
+-- *** Added plugin: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/plugins/chartdldr_pi
+-- 
+-- *** Staging to build dashboard_pi ***
+-- *** Added plugin: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/plugins/dashboard_pi
+-- *** Staging to build grib_pi ***
+-- Using system jasper library...
+-- *** Added plugin: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/plugins/grib_pi
+-- Build type: Release
+-- *** Staging to build wmm_pi ***
+-- Found OpenGL...
+--     Lib: /usr/lib/libGL.so/usr/lib/libGLU.so
+--     Include: /usr/include
+-- Found OpenGL...
+--     Lib: /usr/lib/libGL.so/usr/lib/libGLU.so
+--     Include: /usr/include
+-- *** Added plugin: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/plugins/wmm_pi
+-- *** Package will include tide and current data ***
+-- ocpn: using external curl libraries...
+--   curl includes: /usr/include
+--   curl libraries: /usr/lib/libcurl.so
+-- Checking for one of the modules 'libwxcurl;wxcurl'
+-- Building with bundled wxcurl
+-- OpenSSL found /usr/include /usr/lib/libssl.so;/usr/lib/libcrypto.so
+-- Building with lzma support: /usr/lib/liblzma.so
+-- Found LibELF...
+--     ELF Lib: /usr/include
+--     ELF Include: /usr/lib/libelf.so
+-- OpenNav build purpose: DEVELOPER TEST BUILD (not an installable product)
+-- Found wxWidgets: -L/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/.local/sysroot/usr/lib;;-lwx_gtk3u_core-3.2;-lwx_baseu-3.2;-lwx_gtk3u_aui-3.2 (found suitable version "3.2.11", minimum required is "3.2")
+Approved source, wordmark, embedded bytes and nine Windows icon sizes verified
+Verified pinned resources; generated three chart palettes, bounded structural fill/outline and geographic-name ink, isolated anchor/service/cardinal and classified seamark artwork, cable/ferry paint and resource hashes; other navigation rules unchanged
+-- Using system gtest libraries
+-- Building tests
+-- Configuring done (137.2s)
+-- Generating done (0.7s)
+-- Build files have been written to: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-linux

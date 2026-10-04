@@ -49,14 +49,14 @@ int main(int argc, char **argv) {
     loader.ProcessColorTables(tables);
     auto definitions = doc.child("chartsymbols").child("symbols");
     loader.ProcessSymbols(definitions);
-    const char *names[] = {"PILBOP02", "RTPBCN02"};
-    const int rcids[] = {1,2259}, xs[] = {52,84}, counts[] = {148,156};
+    const char *names[] = {"PILBOP02", "RTPBCN02", "SMCFAC02"};
+    const int rcids[] = {1,2259,2108}, xs[] = {52,84,820}, counts[] = {148,156,152};
     const char *themes[] = {"DAY_BRIGHT", "DUSK", "NIGHT"};
     const int ink[3][3] = {{124,133,138},{168,187,183},{98,115,108}};
     wxRect rect;
     loader.GetGLTextureRect(rect,"ACHARE51");
     Check(rect == wxRect(20,1160,20,20));
-    for (int n=0; n<2; ++n) {
+    for (int n=0; n<3; ++n) {
       auto rule = symbols.at(names[n]);
       Check(rule->RCID == rcids[n] && rule->definition.SYDF == 'R');
       Check(rule->pos.symb.pivot_x.SYCL == 12 && rule->pos.symb.pivot_y.SYRW == 12);

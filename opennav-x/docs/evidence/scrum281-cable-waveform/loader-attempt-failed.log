@@ -1,0 +1,12 @@
+/home/standard/Projects/X-nav/upstream/OpenCPN/libs/pugixml/pugixml.cpp: In member function ‘void pugi::xml_document::_move(pugi::xml_document&)’:
+/home/standard/Projects/X-nav/upstream/OpenCPN/libs/pugixml/pugixml.cpp:468:66: error: ‘*other.pugi::impl::{anonymous}::xml_document_struct::pugi::xml_node_struct.pugi::xml_node_struct::header’ may be used uninitialized [-Werror=maybe-uninitialized]
+  468 |         #define PUGI_IMPL_GETPAGE(n) PUGI_IMPL_GETPAGE_IMPL((n)->header)
+      |                                                             ~~~~~^~~~~~
+/home/standard/Projects/X-nav/upstream/OpenCPN/libs/pugixml/pugixml.cpp:465:169: note: in definition of macro ‘PUGI_IMPL_GETPAGE_IMPL’
+  465 |         #define PUGI_IMPL_GETPAGE_IMPL(header) static_cast<impl::xml_memory_page*>(const_cast<void*>(static_cast<const void*>(reinterpret_cast<const char*>(&header) - (header >> 8))))
+      |                                                                                                                                                                         ^~~~~~
+/home/standard/Projects/X-nav/upstream/OpenCPN/libs/pugixml/pugixml.cpp:7365:55: note: in expansion of macro ‘PUGI_IMPL_GETPAGE’
+ 7365 |                 new (other) impl::xml_document_struct(PUGI_IMPL_GETPAGE(other));
+      |                                                       ^~~~~~~~~~~~~~~~~
+cc1plus: all warnings being treated as errors
+

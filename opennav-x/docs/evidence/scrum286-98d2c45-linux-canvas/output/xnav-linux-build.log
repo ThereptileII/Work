@@ -1,0 +1,39 @@
+[1/38] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/ShapefileReader.cpp.o
+[2/38] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/Schema.cpp.o
+[3/38] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/FeatureIterator.cpp.o
+[4/38] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/GeometryType.cpp.o
+[5/38] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/Bounds.cpp.o
+[6/38] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/Geometry.cpp.o
+[7/38] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/Point.cpp.o
+[8/38] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/Line.cpp.o
+[9/38] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/Ring.cpp.o
+[10/38] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/Polygon.cpp.o
+[11/38] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/MultiPoint.cpp.o
+[12/38] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/MultiLine.cpp.o
+[13/38] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/MultiPolygon.cpp.o
+[14/38] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/Feature.cpp.o
+[15/38] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/FieldType.cpp.o
+[16/38] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/Field.cpp.o
+[17/38] cd /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-linux/libs/libdnet && /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/.local/sysroot/usr/bin/cmake -E echo Built\ the\ libdnet\ library
+Built the libdnet library
+[18/38] Building CXX object CMakeFiles/opencpn.dir/gui/src/chartdbs.cpp.o
+[19/38] Building CXX object CMakeFiles/opencpn.dir/gui/src/chcanv.cpp.o
+[20/38] Building CXX object CMakeFiles/opencpn.dir/gui/src/color_handler.cpp.o
+[21/38] Building CXX object CMakeFiles/opencpn.dir/gui/src/gshhs.cpp.o
+[22/38] Building CXX object CMakeFiles/opencpn.dir/gui/src/ocpn_plugin_gui.cpp.o
+[23/38] Building CXX object CMakeFiles/opencpn.dir/gui/src/ocpn_frame.cpp.o
+[24/38] Building CXX object CMakeFiles/opencpn.dir/gui/src/piano.cpp.o
+[25/38] Building CXX object CMakeFiles/opencpn.dir/gui/src/route_gui.cpp.o
+[26/38] Building CXX object CMakeFiles/opencpn.dir/gui/src/shapefile_basemap.cpp.o
+[27/38] Building CXX object CMakeFiles/opencpn.dir/gui/src/glChartCanvas.cpp.o
+[28/38] Building CXX object CMakeFiles/opencpn.dir/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/src/integration/OpenCPNIntegration.cpp.o
+[29/38] Building CXX object CMakeFiles/opencpn.dir/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/src/integration/OnlineAisOverlay.cpp.o
+[30/38] Building CXX object CMakeFiles/opencpn.dir/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/src/integration/OnboardAisPresentation.cpp.o
+[31/38] Building CXX object CMakeFiles/opencpn.dir/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/src/integration/PreviewDiagnostics.cpp.o
+[32/38] Building CXX object CMakeFiles/opencpn.dir/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/src/integration/InstallerSelfTest.cpp.o
+[33/38] Building CXX object CMakeFiles/opencpn.dir/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/src/integration/ChartPresentation.cpp.o
+[34/38] Building CXX object CMakeFiles/opencpn.dir/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/src/integration/OChartsPresentation.cpp.o
+[35/38] Building CXX object CMakeFiles/opencpn.dir/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/src/integration/ChartRouteWaypoint.cpp.o
+[36/38] Building CXX object CMakeFiles/opencpn.dir/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/src/integration/ChartRouteUnderlay.cpp.o
+[37/38] Linking CXX static library libs/ShapefileCpp/libShapefileCppLib.a
+[38/38] Linking CXX executable opencpn
