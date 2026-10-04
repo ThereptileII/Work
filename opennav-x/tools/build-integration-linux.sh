@@ -21,11 +21,13 @@ cmake -S build/integration-source -B build/xnav-linux "${args[@]}" \
 cmake --build build/xnav-linux --parallel "${OPENNAV_BUILD_JOBS:-2}" \
   2>&1 | tee evidence/local/xnav-linux-build.log
 cmake --install build/xnav-linux 2>&1 | tee evidence/local/xnav-linux-install.log
+if [[ "${SKAGER_DESIGN_VALIDATION:-false}" == "true" ]]; then
 xvfb-run -a build/xnav-linux/chart_name_text_test evidence/local/chart-names-xnav.png
 xvfb-run -a build/xnav-linux/chart_light_label_test evidence/local/chart-lights-xnav.png
 xvfb-run -a build/xnav-linux/skager_wordmark_test evidence/local/skager-wordmark-xnav.png
 xvfb-run -a build/xnav-linux/chart_route_label_test evidence/local/chart-route-labels-xnav.png
 xvfb-run -a build/xnav-linux/onboard_ais_body_test evidence/local/onboard-ais-xnav.png
+fi
 dbus-run-session -- ctest --test-dir build/xnav-linux/test --output-on-failure \
   --no-tests=error -E '^tests$' --timeout 90 --output-junit "$root/evidence/local/xnav-linux-tests.xml" \
   2>&1 | tee evidence/local/xnav-linux-tests.log

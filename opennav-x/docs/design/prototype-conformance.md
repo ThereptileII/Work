@@ -2,19 +2,19 @@
 
 ## Current qualification and review boundaries
 
-The current frozen candidate is local `1a6733a` / published `bccdbb11`
-([CI run 37177738716](https://github.com/ThereptileII/Work/actions/runs/37177738716)).
-This documentation update does not claim completion of that run or an eligible
-installer. Native visual/private-renderer and boat acceptance remain pending.
-The `src/`, `resources/` and `patches/` trees are unchanged from frozen `0a52a6c`;
-the newer candidate retains the combined supplied-symbol increments, thin
-ordinary all-round outline and compact unchanged-trigger warning described
-below. It adds the [proven bounded native trust-harness correction](../evidence/scrum288-native-trust-import/README.md),
-which does not change application TLS assertions or chart paint. Earlier
-[17ab044 native results](../evidence/windows-17ab044/README.md) retain successful
-application tests, actual maintained-TLS AIS and fixture UI gates, but the job
-was cancelled at the trust import boundary and produced no eligible package.
-Those partial passes are not a completed result for the replacement candidate.
+The active build is identified in [status.md](../status.md) and its exact
+publication record. The test-only `0da2c643` replacement follows the
+[55ef51e native results](../evidence/windows-55ef51e/README.md): actual chart-module
+binding, application tests, TLS, AIS, recovery, DPI and public ENC checks passed,
+but the installer harness stopped at the earlier correct missing-import
+rejection. No eligible package or completed boat acceptance follows.
+The [original native visual review](reviews/native55-chart-font-logo.json)
+records image hashes and scope: neutral structural palette, smaller wordmark,
+Day/Dusk/Night text roles, and actual production recovery with no Demo controls.
+Hosted Windows lacks Segoe UI Variable Display and measures Segoe UI fallback
+at 96 DPI; no 144-DPI actual font-face proof or boat-font acceptance is inferred.
+Requested hosted OpenGL fell back to software. Native private-chart, close
+symbol-family and boat GPU/display acceptance remain pending.
 The candidate also retains the 124-DIP
 SKAGER wordmark, prototype font stack, classified buoy/light artwork, neutral
 structural paint and compact ordinary sector fans. See the

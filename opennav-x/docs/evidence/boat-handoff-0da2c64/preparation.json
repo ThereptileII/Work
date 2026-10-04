@@ -1,0 +1,61 @@
+{
+  "schema": 1,
+  "candidateCommit": "0da2c64379d5a9cc4b9b2bd068de6e0b69816577",
+  "version": "0.4.0-beta2",
+  "stockVersion": "5.12.4 x86 on 64-bit Windows",
+  "stockExeSha256": "7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c",
+  "verifiedStagedToolCount": 117,
+  "setupSha256": "db5e2c4647b400c5fc5e8629a472a5133eb3f3fc2a5f4b65a3018d44248ba0b5",
+  "installation": "passed after reversible exclusion of incompatible inherited RTL-SDR plugin from new candidate",
+  "priorInstallation": "preserved",
+  "rtlCompatibility": {
+    "reason": "legacy wxbase312u_vc_custom.dll import missing; installer refused before commit",
+    "rootCopies": 2,
+    "filesPerCopy": 26,
+    "bytesPerCopy": 10342624,
+    "completeHashesCompared": true,
+    "backupAndIntentJournal": true,
+    "originalCopiesRestoredBeforeCommissioning": true,
+    "newCandidateDoesNotIncludeIncompatiblePlugin": true
+  },
+  "installedPackageFilesVerified": 966,
+  "preparation": {
+    "allPluginCandidates": 13,
+    "retainedCandidates": 9,
+    "isolatedCandidates": 4,
+    "actualLaunchCandidates": 5,
+    "existingPluginRootTreesUnchangedBeforeCommissioning": [
+      80,
+      40
+    ],
+    "newPluginRootFilesEqualPackage": 42,
+    "profileChange": "one reviewed COM8 direction byte to input-only; navigation data preserved",
+    "baselineIniSha256": "d891d88c62657139e1b1c6ff7d9e8acdae726a4e116dbc844126992a39adbdb6",
+    "inputOnlyIniSha256": "2a2f1858a1a169ee9417d15652d9465940c6a12c2104cec0cd46b781fcb743af",
+    "preparedSha256": "36c5b14ef34a7b94291ce1272accce5a48d592b510221e8462ed7a3e7d94fc1a",
+    "appliedSha256": "3efc7f2b3b56d6b08daae295be678e817f4eb85a7f124a72b47ae106b90a4ab2"
+  },
+  "safety": "status-only product, output-capable plugins isolated, normal gateway management and chart/licensing IPC remain; no actuator commands authorized",
+  "remoteAccessChanges": false,
+  "privatePathsAndNavigationContentPublished": false,
+  "startup": "launched and responsive at upstream welcome warning; initialization not complete",
+  "handoff": {
+    "state": "left open for user",
+    "pid": 9580,
+    "processStartedUtc": "2026-10-04T16:25:56.1394543Z",
+    "commit": "0da2c64379d5a9cc4b9b2bd068de6e0b69816577",
+    "executableSha256": "2d05dc2153273424a3849ec0bd4a3ea3618ad2a4049ac6cbbbaf615c2fc208b8",
+    "interactiveResponsiveObserved": true,
+    "normalNavigationStartupComplete": false,
+    "reason": "Windows feature-update reminder overlays the pinned upstream OpenCPN welcome warning. No acknowledgement sent. User can select Remind me later, then Acceptera.",
+    "readOnlyCommissioningLeftApplied": true,
+    "restorationDeferred": true,
+    "hardwareCommandsSent": 0,
+    "windowsUpdateOrRebootPerformed": false,
+    "additionalChartVisualTests": 0,
+    "enduranceRun": false,
+    "diagnosticStartupCaptures": 1,
+    "captureScope": "Startup obstruction only; no prototype/chart visual acceptance or screenshots published.",
+    "normalStartupObserverCorrection": "SSH service-session MainWindowHandle is zero. Interactive observation confirms the actual PID/window is responsive; the log has current start marker but no current Finalize Canvases marker."
+  }
+}

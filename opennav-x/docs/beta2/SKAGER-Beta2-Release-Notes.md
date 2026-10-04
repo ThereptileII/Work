@@ -6,7 +6,11 @@ SKAGER adds a navigation workspace to the supported OpenCPN installation,
 with access to its familiar Legacy interface and a Safe Mode recovery path.
 Beta 2 is not approved for navigation or production use. A package or successful
 build is not proof that its Windows, boat-display or release checks have passed.
-Public release remains disabled until the exact candidate is accepted.
+Public release remains disabled until the exact candidate is accepted and the
+user separately authorizes public opening. Standard delivery is a versioned
+GitHub Release, kept in draft while access is closed. Development defaults to
+STAGING; Production promotion requires explicit user instruction and preserves
+the selected package bytes and embedded version.
 
 ## Changes in this candidate
 
@@ -19,7 +23,9 @@ Public release remains disabled until the exact candidate is accepted.
 - Display preferences with 100%, 125% and 150% interface scale, Balanced,
   Chart focus and Instrument focus layouts, and an explicit Apply action.
   Interface scale is separate from Windows display scaling. The primary
-  1280×800 layout and additional 1920×1080 layout require native and boat review.
+  1280×800 layout and additional 1920×1080 layout retain native/boat evidence
+  requirements when design review is explicitly requested. Functional usability
+  remains a relevant qualification requirement.
 - A minimum 48-DIP single-line waypoint/route editor field at the default
   interface scale, with larger fields at the two higher interface scales.
 - Maintained OpenSSL, curl and zlib dependencies, verified HTTPS downloads and
@@ -56,8 +62,11 @@ original names and hashes; they are never relabeled or repackaged.
   first-start commissioning flow remain incomplete. Missing warnings never
   establish safe water.
 - Native typography, layout, 100/125/150% Windows DPI, physical touch and the
-  actual boat GPU/display require their own evidence. Component checks and
-  injected touch are not physical-device acceptance; smaller responsive layouts
+  actual boat GPU/display require their own evidence within the applicable review
+  scope. Design-only validation is scheduled only on explicit user request;
+  functional rendering, control usability and data validity remain required.
+  Component checks and injected touch are not physical-device acceptance;
+  smaller responsive layouts
   are not generally qualified.
 - Setup is unsigned. Verify the complete download against `SHA256SUMS.txt` and
   use only the exact package supplied for the authorized review.
@@ -67,5 +76,7 @@ additional boundaries. Its `docs/PRODUCT_BUILD.json` and `docs/BUILD_INFO.md`
 identify the exact executable commit and build. The corresponding-source ZIP
 contains the same notes and source identity; the installer carries the same
 notes in its generation documentation. The outer `QUALIFICATION.txt` describes
-build-time candidate status. A pending-endurance development artifact remains
-pending; later acceptance requires a separate exact-commit review record.
+build-time candidate status. Preserve that status with the exact artifact;
+subsequent qualification belongs in its release record. Endurance testing remains
+explicitly skipped until the user changes that instruction; disclose the gap and
+never report it as passed. Channel promotion does not rewrite package evidence.

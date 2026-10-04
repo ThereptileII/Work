@@ -1,0 +1,76 @@
+name: SKAGER delivery workflow checks
+on:
+  push:
+    branches: [skager-delivery-workflow, staging, opennav-x-beta2-ui]
+    paths:
+      - .github/workflows/**
+      - opennav-x/tools/*release*
+      - opennav-x/tools/*qualification*
+      - opennav-x/tools/*delivery*
+      - opennav-x/tools/*installer*
+      - opennav-x/tools/smoke-modes-windows.py
+      - opennav-x/tools/smoke-navigation.py
+      - opennav-x/tools/chart-render-check.py
+  workflow_dispatch:
+permissions:
+  contents: read
+env:
+  PYTHONUTF8: '1'
+concurrency:
+  group: skager-delivery-checks-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  delivery:
+    name: Delivery contracts (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2022]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - run: python -m pip install PyYAML==6.0.3
+      - name: Exercise delivery boundaries with inert fixtures (no application build)
+        shell: python
+        run: |
+          import json, os, pathlib, subprocess, sys
+          root = pathlib.Path('opennav-x')
+          out = root/'evidence/local/delivery-workflow'
+          out.mkdir(parents=True)
+          reports = []
+          for name in ('test-release-manifest.py', 'test-github-release-delivery.py',
+                       'test-delivery-workflows.py', 'test-installer-promotion.py',
+                       'test-installer-completion.py'):
+              result = subprocess.run([sys.executable, str(root/'tools'/name), '-v'],
+                                      stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+              (out/(name+'.log')).write_text(result.stdout, encoding='utf-8')
+              print(result.stdout, flush=True)
+              reports.append({'suite': name, 'exitCode': result.returncode})
+          failed = any(item['exitCode'] for item in reports)
+          (out/'result.json').write_text(json.dumps({
+              'status': 'failed' if failed else 'passed', 'commit': os.environ['GITHUB_SHA'],
+              'platform': sys.platform, 'suites': reports,
+              'scope': 'Delivery helper contracts only; no application or release qualification'
+          }, indent=2)+'\n', encoding='utf-8')
+          sys.exit(1 if failed else 0)
+      - name: Parse changed Windows scripts without executing a build or installer
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          foreach ($file in @('build-pristine-windows.ps1', 'test-installer-missing-dll-selftest.ps1')) {
+            $tokens = $null
+            $errors = $null
+            $path = (Resolve-Path "opennav-x/tools/$file").Path
+            [void][System.Management.Automation.Language.Parser]::ParseFile($path, [ref]$tokens, [ref]$errors)
+            if ($errors.Count) { throw ($errors | Out-String) }
+          }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: delivery-checks-${{ runner.os }}-${{ github.sha }}-attempt${{ github.run_attempt }}
+          path: opennav-x/evidence/local/delivery-workflow
+          if-no-files-found: error

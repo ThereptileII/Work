@@ -1,8 +1,14 @@
 name: SKAGER audited Windows package chart review
 on:
-  push:
-    branches: [skager-chart-package-review]
   workflow_dispatch:
+    inputs:
+      design_validation:
+        description: User explicitly requested this design review
+        type: boolean
+        required: true
+        default: false
+env:
+  SKAGER_DESIGN_VALIDATION: ${{ inputs.design_validation && 'true' || 'false' }}
 permissions:
   contents: read
   actions: read
@@ -11,6 +17,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   native-chart-package:
+    if: ${{ inputs.design_validation == true }}
     name: Existing production payload, native chart captures only
     runs-on: windows-2022
     timeout-minutes: 30

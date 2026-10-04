@@ -1,0 +1,31 @@
+{
+  "localFrozenCommit": "f1ea102cb362ed719cef50bb2c2506f1c470dd12",
+  "publishedCommit": "0da2c64379d5a9cc4b9b2bd068de6e0b69816577",
+  "remoteTree": "866e83613c0f3e3b19fcab267b2d288b15db017a",
+  "mappedEntries": 6881,
+  "fullTreeIndependentlyReconstructed": true,
+  "branch": "opennav-x-beta2-ui",
+  "runId": 37207119257,
+  "runAttempt": 1,
+  "runUrl": "https://github.com/ThereptileII/Work/actions/runs/37207119257",
+  "publishedAt": "2026-10-04T13:51:29Z",
+  "predecessor": "55ef51e4944e8570f6a391dad20b0db8447a7443",
+  "predecessorQualification": "correct damaged-package preflight rejected by obsolete test expectation; no eligible delivery",
+  "changedExecutionInputs": [
+    "tools/smoke-installer-windows.py",
+    "tools/test-installer-missing-dll-selftest.ps1",
+    ".github/workflows/opennav-baseline.yml"
+  ],
+  "applicationInstallerChartUiOrTlsPolicyChanged": false,
+  "focusedChecks": {
+    "existingInstallerCompletionTests": 12,
+    "pythonAndWorkflowSyntax": "passed",
+    "helperWindowsPowerShell51Parse": "passed; read-only SSH, not executed",
+    "nativeHelperExecution": "pending"
+  },
+  "endurance": "explicitly skipped by user direction",
+  "packageAcceptance": "pending",
+  "boatAcceptance": "pending",
+  "boatInstallationChanged": false,
+  "publicRelease": false
+}

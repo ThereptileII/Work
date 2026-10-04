@@ -43,6 +43,18 @@ All previously accepted ownership, reparse, payload-bound, concurrent transactio
 locked-file, interrupted-copy, atomic-publication and modified-file retention
 protections remain mandatory.
 
+## Delivery channel
+
+Development defaults to **STAGING** under the later
+[delivery policy](../delivery-workflow.md). Standard handoff uses a versioned
+GitHub Release containing the exact package, corresponding source, hashes and
+build/source identity. Releases in both channels remain draft while public access
+is closed. Production readiness/promotion requires explicit user instruction,
+reuses the selected Staging package bytes and records its channel separately
+from the immutable package version. Promotion does not authorize public opening
+or a design review. The installer term “staging” above means temporary transaction
+files; it does not select the STAGING delivery channel.
+
 ## Qualification
 
 The prior-release fixture now fetches **the actual accepted Beta 1 Setup**, using

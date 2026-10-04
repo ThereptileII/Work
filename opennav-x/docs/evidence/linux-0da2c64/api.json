@@ -1,0 +1,283 @@
+{
+  "retrievedUtc": "2026-10-04T14:35:41.808Z",
+  "job": {
+    "id": 111450516745,
+    "run_id": 37207119257,
+    "workflow_name": "SKAGER Beta 2",
+    "head_branch": "opennav-x-beta2-ui",
+    "run_url": "https://api.github.com/repos/ThereptileII/Work/actions/runs/37207119257",
+    "run_attempt": 1,
+    "node_id": "CR_kwDOM4BDHM8AAAAZ8vftCQ",
+    "head_sha": "0da2c64379d5a9cc4b9b2bd068de6e0b69816577",
+    "url": "https://api.github.com/repos/ThereptileII/Work/actions/jobs/111450516745",
+    "html_url": "https://github.com/ThereptileII/Work/actions/runs/37207119257/job/111450516745",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-10-04T13:51:32Z",
+    "started_at": "2026-10-04T13:51:34Z",
+    "completed_at": "2026-10-04T14:34:53Z",
+    "name": "Linux integrated regression gate",
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1,
+        "started_at": "2026-10-04T13:51:35Z",
+        "completed_at": "2026-10-04T13:51:36Z"
+      },
+      {
+        "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2,
+        "started_at": "2026-10-04T13:51:36Z",
+        "completed_at": "2026-10-04T13:51:43Z"
+      },
+      {
+        "name": "Fetch pinned source and install dependencies",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3,
+        "started_at": "2026-10-04T13:51:43Z",
+        "completed_at": "2026-10-04T13:54:22Z"
+      },
+      {
+        "name": "Reject untrusted public downloads using actual pinned Downloader",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 4,
+        "started_at": "2026-10-04T13:54:22Z",
+        "completed_at": "2026-10-04T13:54:27Z"
+      },
+      {
+        "name": "Actual WXCURL trust and bounded peer-response regressions",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 5,
+        "started_at": "2026-10-04T13:54:27Z",
+        "completed_at": "2026-10-04T13:54:37Z"
+      },
+      {
+        "name": "Build integrated application and run regressions without exceptions",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 6,
+        "started_at": "2026-10-04T13:54:37Z",
+        "completed_at": "2026-10-04T14:08:49Z"
+      },
+      {
+        "name": "Restore GTK chart controls after startup hide, resize and owner recapture",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 7,
+        "started_at": "2026-10-04T14:08:49Z",
+        "completed_at": "2026-10-04T14:08:56Z"
+      },
+      {
+        "name": "Installed peer CLI refuses key changes in a disposable profile",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 8,
+        "started_at": "2026-10-04T14:08:56Z",
+        "completed_at": "2026-10-04T14:08:56Z"
+      },
+      {
+        "name": "Staged loader check without profile initialization",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 9,
+        "started_at": "2026-10-04T14:08:56Z",
+        "completed_at": "2026-10-04T14:08:57Z"
+      },
+      {
+        "name": "Retain real harmonic sources across installed generation changes",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 10,
+        "started_at": "2026-10-04T14:08:57Z",
+        "completed_at": "2026-10-04T14:09:06Z"
+      },
+      {
+        "name": "Exercise shared profile mode cycle and IPC shutdown",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 11,
+        "started_at": "2026-10-04T14:09:06Z",
+        "completed_at": "2026-10-04T14:09:56Z"
+      },
+      {
+        "name": "Exercise real OpenCPN input with synthetic loopback NMEA",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 12,
+        "started_at": "2026-10-04T14:09:56Z",
+        "completed_at": "2026-10-04T14:10:21Z"
+      },
+      {
+        "name": "Record and replay normalized vessel state through the real UI",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 13,
+        "started_at": "2026-10-04T14:10:21Z",
+        "completed_at": "2026-10-04T14:11:50Z"
+      },
+      {
+        "name": "Observe normal upstream route progress with isolated synthetic routes",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 14,
+        "started_at": "2026-10-04T14:11:50Z",
+        "completed_at": "2026-10-04T14:12:22Z"
+      },
+      {
+        "name": "Marine instrument input through the upstream loopback connection",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 15,
+        "started_at": "2026-10-04T14:12:22Z",
+        "completed_at": "2026-10-04T14:12:39Z"
+      },
+      {
+        "name": "Marine N2K commissioning inputs and loss of data",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 16,
+        "started_at": "2026-10-04T14:12:39Z",
+        "completed_at": "2026-10-04T14:13:01Z"
+      },
+      {
+        "name": "Boat-specific N2K mapping and independent producer expiry",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 17,
+        "started_at": "2026-10-04T14:13:01Z",
+        "completed_at": "2026-10-04T14:13:18Z"
+      },
+      {
+        "name": "Live Signal K and malformed WebSocket input recovery",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 18,
+        "started_at": "2026-10-04T14:13:18Z",
+        "completed_at": "2026-10-04T14:13:35Z"
+      },
+      {
+        "name": "Manual pilot through actual OpenCPN TCP and loopback feedback",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 19,
+        "started_at": "2026-10-04T14:13:35Z",
+        "completed_at": "2026-10-04T14:14:08Z"
+      },
+      {
+        "name": "Navigation objects, AIS and anchor integration in a non-UTC timezone",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 20,
+        "started_at": "2026-10-04T14:14:08Z",
+        "completed_at": "2026-10-04T14:15:25Z"
+      },
+      {
+        "name": "Mouse chart gestures, waypoint Go To and route creation",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 21,
+        "started_at": "2026-10-04T14:15:25Z",
+        "completed_at": "2026-10-04T14:16:20Z"
+      },
+      {
+        "name": "Crash-loop recovery with real disposable processes",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 22,
+        "started_at": "2026-10-04T14:16:20Z",
+        "completed_at": "2026-10-04T14:16:34Z"
+      },
+      {
+        "name": "Exercise preview pages and all demo scenarios",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 23,
+        "started_at": "2026-10-04T14:16:34Z",
+        "completed_at": "2026-10-04T14:19:19Z"
+      },
+      {
+        "name": "Public ENC chart and plugin rendering gate",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 24,
+        "started_at": "2026-10-04T14:19:19Z",
+        "completed_at": "2026-10-04T14:20:34Z"
+      },
+      {
+        "name": "Apply Linux endurance policy (explicit user-directed skip)",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 25,
+        "started_at": "2026-10-04T14:20:34Z",
+        "completed_at": "2026-10-04T14:20:34Z"
+      },
+      {
+        "name": "Build fixture-free Linux product and run its loader check",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 26,
+        "started_at": "2026-10-04T14:20:34Z",
+        "completed_at": "2026-10-04T14:34:47Z"
+      },
+      {
+        "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 27,
+        "started_at": "2026-10-04T14:34:47Z",
+        "completed_at": "2026-10-04T14:34:52Z"
+      },
+      {
+        "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 54,
+        "started_at": "2026-10-04T14:34:52Z",
+        "completed_at": "2026-10-04T14:34:52Z"
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 55,
+        "started_at": "2026-10-04T14:34:52Z",
+        "completed_at": "2026-10-04T14:34:52Z"
+      }
+    ],
+    "check_run_url": "https://api.github.com/repos/ThereptileII/Work/check-runs/111450516745",
+    "labels": [
+      "ubuntu-24.04"
+    ],
+    "runner_id": 1000003490,
+    "runner_name": "GitHub Actions 1000003490",
+    "runner_group_id": 0,
+    "runner_group_name": "GitHub Actions"
+  },
+  "artifact": {
+    "id": 11306012140,
+    "name": "linux-integration-0da2c64379d5a9cc4b9b2bd068de6e0b69816577",
+    "size_in_bytes": 19736872,
+    "url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/11306012140",
+    "archive_download_url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/11306012140/zip",
+    "expired": false,
+    "created_at": "2026-10-04T14:34:52Z",
+    "expires_at": "2027-01-02T13:51:31Z",
+    "updated_at": "2026-10-04T14:34:52Z",
+    "digest": "sha256:1359c2eca6972caa25b8984c77bba4a493d92fe08799ebb8a465d050ec5a06a3",
+    "workflow_run": {
+      "id": 37207119257,
+      "repository_id": 864043804,
+      "head_repository_id": 864043804,
+      "head_branch": "opennav-x-beta2-ui",
+      "head_sha": "0da2c64379d5a9cc4b9b2bd068de6e0b69816577"
+    }
+  },
+  "frozenLocal": "f1ea102cb362ed719cef50bb2c2506f1c470dd12"
+}

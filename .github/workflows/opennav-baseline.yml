@@ -1,13 +1,42 @@
-name: SKAGER Beta 2
+name: SKAGER Staging
 on:
   push:
-    branches: [opennav-x, opennav-x-beta2-ui, opennav-x-beta2-dpi, opennav-x-beta2-refinement, skager-chart-private-candidate]
-    paths: ['opennav-x/**', '.github/workflows/opennav-baseline.yml']
+    branches: [staging, opennav-x, opennav-x-beta2-ui, opennav-x-beta2-dpi, opennav-x-beta2-refinement, skager-chart-private-candidate]
+    paths:
+      - opennav-x/src/**
+      - opennav-x/include/**
+      - opennav-x/resources/**
+      - opennav-x/integration/**
+      - opennav-x/patches/**
+      - opennav-x/cmake/**
+      - opennav-x/plugins/**
+      - opennav-x/hardware/**
+      - opennav-x/installer/**
+      - opennav-x/tests/**
+      - opennav-x/tools/**
+      - '!opennav-x/tools/prototype/**'
+      - '!opennav-x/tools/*.md'
+      - opennav-x/CMakeLists.txt
+      - opennav-x/upstream.lock.json
+      - opennav-x/release/**
+      - .github/workflows/opennav-baseline.yml
   workflow_dispatch:
+    inputs:
+      extended_tests:
+        description: Run additional functional scenarios for this staging candidate
+        type: boolean
+        default: false
+      design_validation:
+        description: Explicitly requested design and DPI review (never a promotion prerequisite)
+        type: boolean
+        default: false
 permissions:
   contents: read
+  actions: read
+env:
+  SKAGER_DESIGN_VALIDATION: ${{ github.event_name == 'workflow_dispatch' && inputs.design_validation && 'true' || 'false' }}
 concurrency:
-  group: opennav-beta-${{ github.ref }}-${{ github.sha }}
+  group: skager-staging-${{ github.ref }}
   cancel-in-progress: true
 jobs:
   native-private-chart-loader:
@@ -42,6 +71,7 @@ jobs:
             opennav-x/evidence/local/ocharts-loader-contracts
           if-no-files-found: error
   boat-firmware:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.extended_tests }}
     name: Boat C6 producer expiry compile (no flashing)
     runs-on: ubuntu-24.04
     timeout-minutes: 30
@@ -322,6 +352,7 @@ jobs:
           path: opennav-x/evidence/local/restart-gates/qualified.json
           if-no-files-found: error
   linux:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.extended_tests }}
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     steps:
@@ -348,6 +379,7 @@ jobs:
       - name: Build and test pristine Linux baseline
         run: bash opennav-x/tools/build-pristine-linux.sh
       - name: Capture isolated Linux development baseline
+        if: ${{ inputs.design_validation == true }}
         run: |
           sudo apt-get install -y xvfb xdotool imagemagick
           bash opennav-x/tools/capture-pristine-linux.sh
@@ -423,6 +455,7 @@ jobs:
       - name: Crash-loop recovery with real disposable processes
         run: python3 opennav-x/tools/smoke-recovery.py
       - name: Exercise preview pages and all demo scenarios
+        if: ${{ inputs.extended_tests == true }}
         run: python3 opennav-x/tools/smoke-preview.py
       - name: Public ENC chart and plugin rendering gate
         run: python3 opennav-x/tools/smoke-charts.py
@@ -454,6 +487,7 @@ jobs:
           name: linux-integration-${{ github.sha }}
           path: opennav-x/evidence/local
   windows-upstream-abi:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.extended_tests }}
     name: Native MSVC upstream Win32 ABI on Windows x64
     runs-on: windows-2022
     timeout-minutes: 60
@@ -540,7 +574,7 @@ jobs:
             opennav-x/evidence/local/user-flows-*
           if-no-files-found: error
       - name: Repeat native crash-recovery returns with separate evidence
-        if: ${{ !cancelled() && steps.integrated.conclusion == 'success' }}
+        if: ${{ inputs.extended_tests == true && !cancelled() && steps.integrated.conclusion == 'success' }}
         run: |
           New-Item -ItemType Directory -Path opennav-x/evidence/local/recovery-repeat-0 | Out-Null
           Get-ChildItem opennav-x/evidence/local -Filter 'recovery-*' | Where-Object { $_.Name -notlike 'recovery-repeat-*' } | Move-Item -Destination opennav-x/evidence/local/recovery-repeat-0
@@ -554,7 +588,7 @@ jobs:
           }
       - name: Retain complete fixture UI and scenario regression suite
         id: fixture_ui
-        if: ${{ !cancelled() && steps.integrated.conclusion == 'success' }}
+        if: ${{ inputs.extended_tests == true && !cancelled() && steps.integrated.conclusion == 'success' }}
         run: ./opennav-x/tools/test-preview-windows.ps1
       - name: Preserve first fixture failure before independent display checks
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -639,7 +673,7 @@ jobs:
             opennav-x/evidence/local/production-recovery-*
             opennav-x/evidence/local/recovery-*
           if-no-files-found: error
-      - name: Build and exercise candidate Beta installer
+      - name: Build installer and exercise staging install startup preservation and rollback
         env:
           OPENNAV_ARTIFACT_TOKEN: ${{ github.token }}
         id: installer
@@ -652,7 +686,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python opennav-x/tools/verify-skager-pe-brand.py --application opennav-x/build/developer-preview/SKAGER-Beta2-Portable-Recovery/app/opencpn.exe --setup opennav-x/build/beta-installer/SKAGER-Beta2-Setup.exe --report opennav-x/evidence/local/installer-skager-pe-brand.json
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          python opennav-x/tools/smoke-installer-windows.py
+          python opennav-x/tools/smoke-installer-windows.py --mode staging
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Preserve failed installer transaction before remaining UI checks
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -710,7 +744,7 @@ jobs:
           if-no-files-found: error
       - name: Native 100 / 125 / 150 percent DPI and touch interactions
         id: dpi
-        if: ${{ !cancelled() && steps.integrated.conclusion == 'success' }}
+        if: ${{ inputs.design_validation == true && !cancelled() && steps.integrated.conclusion == 'success' }}
         run: python opennav-x/tools/smoke-dpi-windows.py
       - name: Preserve failed DPI interaction evidence immediately
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -742,52 +776,22 @@ jobs:
           assert all(report.get(key) == 'success' for key in ('transport', 'maintenance', 'broker', 'prepareArm')), report
           assert report.get('actualBoat') is False, report
           print('Exact same-run native restart qualification verified; no boat acceptance implied')
-      - name: Prepare development boat review after native functional gates
-        if: ${{ success() && steps.installer.conclusion == 'success' && steps.dpi.conclusion == 'success' && steps.restart_qualified.conclusion == 'success' }}
-        run: python opennav-x/tools/alpha-artifacts.py --boat-review
-      - name: Upload development review with endurance qualification pending
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        if: ${{ success() && steps.installer.conclusion == 'success' && steps.dpi.conclusion == 'success' && steps.restart_qualified.conclusion == 'success' }}
-        with:
-          name: beta2-boat-review-pending-endurance-${{ github.sha }}
-          path: opennav-x/build/beta-boat-review
-          if-no-files-found: error
-      - name: Apply native endurance policy (explicit user-directed skip)
-        shell: python
+      - name: Assemble immutable staging payloads and retained qualification inputs
         run: |
-          import json, os, subprocess, sys
-          from pathlib import Path
-          root = Path('opennav-x')
-          policy = json.loads((root/'release/qualification.json').read_text())
-          assert type(policy['enduranceEnabled']) is bool
-          if policy['enduranceEnabled']:
-              subprocess.run([sys.executable, str(root/'tools/soak-runtime.py'),
-                              '--seconds', str(policy['enduranceSeconds'])], check=True)
-          else:
-              assert policy['publishNamedRelease'] is False
-              report = {'status': 'skipped', 'reason': policy['enduranceSkipReason'],
-                        'commit': os.environ['GITHUB_SHA'], 'runId': os.environ['GITHUB_RUN_ID'],
-                        'runAttempt': os.environ['GITHUB_RUN_ATTEMPT'], 'release_duration': False}
-              target = root/'evidence/local/soak/results.json'
-              target.parent.mkdir(parents=True, exist_ok=True)
-              target.write_text(json.dumps(report, indent=2) + '\n')
-              print('Endurance SKIPPED by user direction; no endurance pass or release qualification.')
-      - name: Collect tested development boat-test downloads and hashes
-        shell: python
-        run: |
-          import json, subprocess, sys
-          from pathlib import Path
-          root = Path('opennav-x')
-          subprocess.run([sys.executable, str(root/'tools/alpha-artifacts.py')], check=True)
-          policy = json.loads((root/'release/qualification.json').read_text())
-          if policy['enduranceEnabled'] is False:
-              target = root/'build/beta-artifacts/QUALIFICATION.txt'
-              target.write_text('DEVELOPMENT BOAT-TEST CANDIDATE: endurance SKIPPED by user direction.\n'
-                                'No endurance pass, boat acceptance or named/public release qualification.\n'
-                                + target.read_text())
+          python opennav-x/tools/alpha-artifacts.py --channel staging
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python opennav-x/tools/retain-release-inputs.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: beta-candidate-${{ github.sha }}
+          name: staging-retest-${{ github.sha }}-attempt${{ github.run_attempt }}
+          path: opennav-x/build/release-retest/SKAGER-Beta2-Retest-Support.zip
+          compression-level: 0
+          if-no-files-found: error
+          retention-days: 90
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: staging-candidate-${{ github.sha }}-attempt${{ github.run_attempt }}
           path: opennav-x/build/beta-artifacts
           if-no-files-found: error
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -818,42 +822,31 @@ jobs:
           if ($lock.approvedApplicationArchitecture -ne 'x86' -or $lock.requiredWindowsHostArchitecture -ne 'x64') {
             throw 'This pipeline validates the approved x86 application ABI on Windows x64 only.'
           }
-  publish-beta:
-    name: Publish Beta after both platform and installer gates
-    needs: [contracts, boat-maintenance, native-restart-transport, native-restart-broker, native-restart-window, native-stock-welcome, linux, linux-integration, windows-upstream-abi, windows-integration, application-abi, stock-prerequisite, boat-firmware]
+  publish-staging:
+    name: Record versioned Staging Release
+    needs: [contracts, boat-maintenance, native-restart-transport, native-restart-broker, native-restart-window, native-stock-welcome, linux-integration, windows-integration, application-abi, stock-prerequisite]
     runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      actions: read
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
-      - name: Require an accepted compatibility configuration
-        id: qualification
-        run: |
-          python3 - <<'PY'
-          import json, os
-          with open('opennav-x/installer/windows/compatibility.json') as f:
-              accepted = bool(json.load(f)['supportedOpenCpn'])
-          with open('opennav-x/release/qualification.json') as f:
-              accepted = accepted and json.load(f)['publishNamedRelease']
-          with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
-              f.write('accepted=' + str(accepted).lower() + '\n')
-          PY
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
-          name: beta-candidate-${{ github.sha }}
-          path: beta
-      - name: Verify every native Beta download hash
-        working-directory: beta
-        run: sha256sum --check SHA256SUMS.txt
+          name: staging-candidate-${{ github.sha }}-attempt${{ github.run_attempt }}
+          path: staging-release
+      - name: Bind passed staging jobs to the exact download set
+        env:
+          STAGING_RESULTS: ${{ toJSON(needs) }}
+        run: python3 opennav-x/tools/staging-qualification.py --directory staging-release
+      - name: Verify and create draft Staging Release (public access remains closed)
+        env:
+          GH_TOKEN: ${{ secrets.SKAGER_RELEASE_TOKEN || github.token }}
+        run: python3 opennav-x/tools/github_release_delivery.py publish-staging --directory staging-release
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        if: steps.qualification.outputs.accepted == 'true'
+        if: always()
         with:
-          name: SKAGER-Beta2-Windows
-          path: |
-            beta/SKAGER-Beta2-Portable-Recovery.zip
-            beta/SKAGER-Beta2-Setup.exe
-            beta/SKAGER-Beta2-Test-Guide.md
-            beta/SKAGER-Beta2-Install-Guide.md
-            beta/SKAGER-Beta2-Release-Notes.md
-            beta/SHA256SUMS.txt
-            beta/SKAGER-Beta2-source.zip
+          name: staging-release-${{ github.sha }}
+          path: staging-release
           if-no-files-found: error
           retention-days: 90

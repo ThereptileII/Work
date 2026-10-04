@@ -95,6 +95,23 @@ acceptance.
 
 ## Development boat test versus release acceptance
 
+For the current October 4 handoff, the user additionally requests installation,
+successful startup and a responsive SKAGER window left open, with no additional
+visual review or endurance run. Use the qualified `run-xnav.ps1` launcher after
+the exact installed-build/profile/plugin/helper read-only audit. Check the
+returned PID/start time/executable, normal window, `Responding`, and a fresh
+completed-startup log marker. Do not use `smoke-test.ps1` for this handoff: it
+captures an image and closes the application in its `finally` block.
+
+The 24-hour launch audit and optional four-hour restart session refuse later
+guarded actions when expired; neither closes the running application nor restores
+outputs. A restart session is unnecessary when no mode-switch review is requested.
+Leave the applied read-only commissioning state and private recovery journals
+intact, and record the deliberately deferred restoration. Restoration requires
+closed applications and explicit inspection; never restore output-capable
+configuration behind the running application. This startup-only development
+handoff does not close broader visual, hardware, security or release gates.
+
 On October 4 the user explicitly directed that the current stable boat-test
 candidate **skip endurance testing**. CI records this as skipped, never passed;
 `release/qualification.json` retains named/public release as disabled. Functional,

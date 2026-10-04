@@ -1,9 +1,13 @@
 {
-  "stage": "beta2-development",
+  "stage": "staging",
   "publishNamedRelease": false,
   "enduranceSeconds": 10800,
   "acceptedAlphaCommit": "08bc92fc778591a3978e594a54208d672ff9158f",
-  "reason": "User-directed development boat-test candidate: endurance is explicitly skipped, not passed or shortened. Named/public release remains withheld. Exact-commit Linux/native Windows functional gates, production fixture exclusion, source/license closure, installer lifecycle and real boat-PC visual/read-only smoke acceptance remain required; no boat or release qualification is implied.",
+  "reason": "Default versioned Staging draft releases. Production promotion requires explicit instruction and readiness checks against identical bytes. Design review is opt-in. Public access remains closed until separate GO/NO-GO. Endurance remains explicitly skipped, never passed.",
   "enduranceEnabled": false,
-  "enduranceSkipReason": "User directed on 2026-10-04: deliver a stable SKAGER Windows boat-test candidate as fast as possible; skip endurance testing."
+  "enduranceSkipReason": "User directed on 2026-10-04: deliver a stable SKAGER Windows boat-test candidate as fast as possible; skip endurance testing.",
+  "defaultChannel": "staging",
+  "productionRequiresExplicitInstruction": true,
+  "designValidationDefault": false,
+  "releaseVisibility": "draft"
 }

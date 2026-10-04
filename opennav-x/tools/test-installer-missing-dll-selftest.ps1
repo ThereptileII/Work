@@ -19,7 +19,8 @@ if ($errors.Count) { throw 'Production Lifecycle.ps1 does not parse.' }
 # Load only definitions, never the production transaction. Successful execution
 # is forbidden here: the missing import must stop SelfTest before ReadJson and
 # its later product/policy/profile checks. Those functions are not substituted.
-$names=@('PlainPath','PeArchitecture','SelfTest')
+# Production Hash uses .NET: inherited PSModulePath may omit Get-FileHash.
+$names=@('Hash','PlainPath','PeArchitecture','SelfTest')
 $definitions=@($ast.FindAll({param($node)
   $node -is [Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -in $names
 },$true))
@@ -38,7 +39,7 @@ if ((Test-Path -LiteralPath $Report) -or $Report.StartsWith($Stage+'\',[StringCo
   throw 'Require a new receipt outside the failed stage.'
 }
 $exe=PlainPath (Join-Path $Stage 'app\opencpn.exe')
-if ((Get-FileHash -LiteralPath $exe -Algorithm SHA256).Hash.ToLowerInvariant() -cne $ExpectedExecutableSha256 -or
+if ((Hash $exe) -cne $ExpectedExecutableSha256 -or
     (Test-Path -LiteralPath (Join-Path $Stage ('app\'+$MissingDependency)))) { throw 'Failed-stage identity or missing import differs.' }
 if (@(Get-ChildItem -LiteralPath $Stage -Filter 'loader-*.json').Count) { throw 'Failed stage already contains loader output.' }
 Add-Type -TypeDefinition @'
@@ -51,7 +52,7 @@ public static class MissingDllProofErrorMode {
 # Remove inherited suppression only in this proof process; production SelfTest
 # must establish and restore its own error mode around its actual child launch.
 $inheritedMode=[MissingDllProofErrorMode]::SetErrorMode(0)
-$receipt=[ordered]@{status='failed';sourceSha256=(Get-FileHash -LiteralPath $source -Algorithm SHA256).Hash.ToLowerInvariant();
+$receipt=[ordered]@{status='failed';sourceSha256=(Hash $source);
   executableSha256=$ExpectedExecutableSha256;stage=$Stage;missingDependency=$MissingDependency;
   initialErrorMode=[MissingDllProofErrorMode]::GetErrorMode();restoredErrorMode=$null;error=$null;
   scope='Actual production SelfTest missing-DLL loader refusal only; no installer guard bypass or product qualification'}
@@ -65,7 +66,7 @@ try {
   if ($receipt.initialErrorMode -ne 0 -or $receipt.restoredErrorMode -ne 0) { throw 'SelfTest did not restore error mode.' }
   if (@(Get-ChildItem -LiteralPath $Stage -Filter 'loader-*.json').Count -or
       (Test-Path -LiteralPath (Join-Path $Stage 'ownership.json')) -or
-      (Get-FileHash -LiteralPath $exe -Algorithm SHA256).Hash.ToLowerInvariant() -cne $ExpectedExecutableSha256) {
+      (Hash $exe) -cne $ExpectedExecutableSha256) {
     throw 'Failed loader produced output or changed the executable/stage ownership.'
   }
   $receipt.status='passed'

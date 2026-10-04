@@ -1,0 +1,67 @@
+{
+  "producer": "55ef51e4944e8570f6a391dad20b0db8447a7443",
+  "run": 37199379614,
+  "artifact": 11305580491,
+  "artifactSha256": "747e38e8d88c4e49fca6b6efb181101db10824ac87cf55f6e0be80011e8bec7a",
+  "imagesReviewed": [
+    {
+      "member": "evidence/local/recovery-navigation-day.png",
+      "sha256": "3ba98685225c7e0bbf5988e2b5ec012c431a8768e096830ef6d444e75db22c32"
+    },
+    {
+      "member": "evidence/local/recovery-navigation-day-restored.png",
+      "sha256": "7db4e93855dd1f021aaea6b5933513101152c061c14d0158838fd3d2c3e85383"
+    },
+    {
+      "member": "evidence/local/chart-software-01-loaded.png",
+      "sha256": "e67b7b1091756d666ee2ad260171978b6c2e130c9c34490eb2fbe93e7af9f621"
+    },
+    {
+      "member": "evidence/local/chart-software-06-returned.png",
+      "sha256": "b822e2185a3fdf7b5d02a5798a5f995105a1a90a265d618b44820e4cb9d83b15"
+    },
+    {
+      "member": "evidence/local/chart-lights-production.png",
+      "sha256": "7b46210252d259665ad8240bb8c056f22fbd5bb1971b8618c469e0dec10f9e72"
+    },
+    {
+      "member": "evidence/local/chart-names-production.png",
+      "sha256": "0c3a14c28934c631ea4b98b6a67ed4f6fc0d96f6777371b7e78ab89d94b42b66"
+    },
+    {
+      "member": "evidence/local/chart-route-labels-production.png",
+      "sha256": "4bd580b576580aaf757eae82daed5b1d4c7824ab2779fda4c2bfe8492a6ba60f"
+    },
+    {
+      "member": "evidence/local/skager-wordmark-production.png",
+      "sha256": "1c12662472ce92a088f537851e6a86aef878ab4a34f1bdc53471b44af5fa1c47"
+    },
+    {
+      "member": "evidence/local/dpi-100-01-navigation-day.png",
+      "sha256": "7bf93b1fb3567d88f7a0d3a38d0082e2e3618d9d9eb9bf5cd2d6cb67ce2c2f19"
+    },
+    {
+      "member": "evidence/local/dpi-150-01-navigation-day.png",
+      "sha256": "238f1c0a0785d8dc2ba413d6c63ec3827a80962719cc9ca2f30880f898f113ed"
+    }
+  ],
+  "observed": [
+    "Production recovery Day and Day-return retain coastline, unavailable values and no Demo controls.",
+    "Public ENC software images retain neutral land/coastline palette, supplied point symbols where selected, and smaller SKAGER wordmark.",
+    "Actual wx wordmark specimen compares 148 and 124 DIP at 100/125/150 percent; chart capture uses 124 DIP.",
+    "Native light/name/route-label specimens show Day/Dusk/Night roles.",
+    "Hosted logs report Segoe UI Variable Display unavailable and actual GDI Segoe UI fallback at 96 DPI.",
+    "150 percent direct capture uses compact metric sizing; native tooltip is separate from application font helper."
+  ],
+  "limitations": [
+    "No complete-screen or all-symbol prototype pass.",
+    "Public ENC software screen uses fixture application; two production recovery screens are separate.",
+    "Requested hosted OpenGL rejected, software fallback only.",
+    "No actual 144-DPI GDI face receipt; glyph appearance alone does not prove family substitution.",
+    "Exact preferred font, close symbol families, private ENC and GPU still require boat review.",
+    "Producer installer qualification failed; no eligible delivery."
+  ],
+  "replacement": "0da2c64379d5a9cc4b9b2bd068de6e0b69816577",
+  "replacementChangesChartFontsOrLogo": false,
+  "boatAcceptance": false
+}

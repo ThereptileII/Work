@@ -90,6 +90,88 @@ def navigation_layout(display, frame, client):
             'unspecified_controls_do_not_cover_chart': True}
 
 
+def functional_layout(display, frame, client):
+    """Visibility, containment and non-overlap without prototype geometry."""
+    def valid(rect):
+        return all(isinstance(rect.get(k),int) for k in ('x','y','width','height')) and rect['width']>0 and rect['height']>0
+    def contains(outer,inner):
+        return (outer['x']<=inner['x'] and outer['y']<=inner['y'] and
+                inner['x']+inner['width']<=outer['x']+outer['width'] and
+                inner['y']+inner['height']<=outer['y']+outer['height'])
+    def overlaps(a,b):
+        return (a['x']<b['x']+b['width'] and b['x']<a['x']+a['width'] and
+                a['y']<b['y']+b['height'] and b['y']<a['y']+a['height'])
+    assert valid(frame) and valid(client) and contains(frame,client), 'Actual client must fit its native frame'
+    chart=display.get('chart_region',{})
+    assert valid(chart) and contains(client,chart), 'Chart must fit the actual client'
+    rail=display.get('rail_regions',[])
+    assert len(rail)==4 and len({r['label'] for r in rail})==4, 'Four distinct primary rail values required'
+    for i,region in enumerate(rail):
+        assert valid(region) and region.get('visible') and contains(client,region), 'Primary values must remain visible inside the client'
+        assert region['height']>=48 and region['width']>=48, 'Primary values must remain readable'
+        assert not overlaps(chart,region) and all(not overlaps(region,other) for other in rail[:i]), 'Chart and primary values must not overlap'
+    controls=[c for c in display.get('interaction_controls',[]) if c.get('visible')]
+    orientation=[c for c in controls if c['label'] in ('North','Course','Head')]
+    assert len(orientation)==1, 'One chart orientation control required'
+    floating={'Measure','Waypoint','+','−','Follow boat','Layers',orientation[0]['label']}
+    for label in floating:
+        assert sum(c['label']==label for c in controls)==1, 'Each chart control must be unique and visible'
+    for control in controls:
+        assert valid(control) and contains(client,control), 'Visible control must fit the client'
+        if control['label'] in floating:
+            assert contains(chart,control), 'Floating chart controls must fit the chart'
+        else:
+            assert not overlaps(chart,control), 'Permanent controls must not cover the chart'
+    floating_controls=[c for c in controls if c['label'] in floating]
+    for i,control in enumerate(floating_controls):
+        assert all(not overlaps(control,other) for other in floating_controls[:i]), 'Chart controls must not obstruct one another'
+    footer=display.get('footer_region',{})
+    assert valid(footer) and contains(client,footer) and not overlaps(chart,footer), 'Status footer must remain visible outside the chart'
+    assert display.get('footer_middle_visible') is True, 'Primary view must retain navigation footer information'
+    health=[c for c in controls if c['label']=='Source health']
+    assert len(health)==1 and health[0].get('enabled') and contains(footer,health[0]), 'Source health must remain visible and actionable'
+    for label in ('Chart','Settings'):
+        required=[c for c in controls if c['label']==label]
+        assert len(required)==1 and required[0].get('enabled'), 'Navigation and Settings recovery must remain uniquely accessible'
+    return {'frame':frame,'client':client,'chart':chart,'footer':footer,
+            'primary_rail_values_visible':4,'source_health_visible':True,
+            'recovery_access':'Settings','scope':'Functional visibility and non-overlap; no prototype geometry'}
+
+
+def route_visibility(rgb, points, offset=(0,0)):
+    """A continuous contrasting stroke at upstream-projected route samples.
+
+    Compare each center patch with perpendicular flank patches, then require a
+    common visible stroke ink at every sample. Never accept a uniform canvas or
+    choose an expected color from the design prototype.
+    """
+    import math
+    assert len(rgb)==1280*800*3
+    common=None;samples=[]
+    def patch(x,y,radius):
+        assert radius<=x<1280-radius and radius<=y<800-radius, 'Projected route sample offscreen'
+        return Counter(tuple(rgb[(py*1280+px)*3:(py*1280+px)*3+3])
+                       for py in range(y-radius,y+radius+1) for px in range(x-radius,x+radius+1))
+    for a,b in zip(points,points[1:]):
+        dx,dy=b['x']-a['x'],b['y']-a['y'];length=math.hypot(dx,dy)
+        assert length>0, 'Projected route segment must have a visible extent'
+        nx,ny=-dy/length*10,dx/length*10
+        for fraction in (.2,.35,.5,.65,.8):
+            x=round(a['x']+dx*fraction)-offset[0];y=round(a['y']+dy*fraction)-offset[1]
+            center=patch(x,y,3)
+            flanks=[patch(round(x+sign*nx),round(y+sign*ny),1) for sign in (-1,1)]
+            backgrounds=[flank.most_common(1)[0][0] for flank in flanks]
+            candidates={ink for ink,count in center.items() if count>=2 and
+                        all(max(abs(c-bg) for c,bg in zip(ink,background))>=8 for background in backgrounds)}
+            common=candidates if common is None else common & candidates
+            assert common, 'Visible route stroke missing or indistinguishable at an upstream projected sample'
+            samples.append({'x':x,'y':y})
+    assert samples, 'Route requires projected segments'
+    return {'samples':samples,'stroke_inks':[list(c) for c in sorted(common)],
+            'projection':'pinned ChartCanvas::GetCanvasPointPix',
+            'scope':'Visible contrasting route stroke; no prototype palette comparison'}
+
+
 def interior(rgb):
     assert len(rgb) == 1280 * 800 * 3
     return Counter(bytes(rgb[(y * 1280 + x) * 3:(y * 1280 + x) * 3 + 3])
@@ -117,6 +199,20 @@ def night(rgb, day_colors, phase):
     """Pinned GSHHS SetColorScheme NIGHT multiplies land and water by 0.25."""
     colors = [bytes(int(channel * .25) for channel in color) for color in day_colors]
     return check(rgb, colors, phase)
+
+
+def functional(rgb, style, light, phase):
+    """Require visible land/water areas without comparing a design palette.
+
+    The disconnected coastline fixture fixes geographic extent. Require two
+    substantial, distinguishable chart inks in its interior; a blank/water-only
+    canvas fails. Native startup and navigation-data checks remain separate.
+    """
+    colors=reference(rgb)
+    assert max(abs(a-b) for a,b in zip(*colors))>=8, 'Land and water must remain distinguishable'
+    result=check(rgb,colors,phase)
+    result.update(style=style,light=light,source='Functional chart interior coverage and contrast; no design palette comparison')
+    return result
 
 
 def presentation(rgb, style, light, phase):

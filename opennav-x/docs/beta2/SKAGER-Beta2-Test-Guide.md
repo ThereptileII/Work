@@ -29,13 +29,17 @@ restart procedure. Do not bypass a refused transition with an unreviewed direct
 launch. An ordinary close followed by another shortcut is recorded separately
 from a successful in-application mode switch.
 
-## Navigation and visual checks
+## Navigation and functional usability checks
 
 Start with the boat PC's existing resolution and Windows scaling; record both.
-The primary design target is **1280×800**, with **1920×1080** also included in
-qualification. Check both sizes in a disposable Windows test environment,
-including 100%/125%/150% scaling. Do not change the boat's display configuration
-remotely just to match a screenshot.
+Exercise the relevant controls and data at the configuration needed to verify
+functional behavior. A concrete clipping or inaccessible-control defect may need
+a targeted resolution/DPI check. The primary design target is **1280×800**, with
+**1920×1080** also in the design scope, but broad design comparisons and
+100%/125%/150% design-only sweeps require an explicit user request under the later
+[delivery policy](https://github.com/ThereptileII/Work/blob/opennav-x-beta2-ui/opennav-x/docs/delivery-workflow.md). Record unrequested design review as
+**Not requested**. Do not change the boat's display configuration remotely just
+to match a screenshot.
 
 Record the actual application window size and DPI from Diagnostics where
 available. Screen resolution alone does not establish the application's usable
@@ -44,10 +48,9 @@ mouse pass does not count as a physical touchscreen test.
 
 - Check chart pan, zoom, chart switching and ownship following when GPS is valid.
 - Check the four primary data-rail values stay visible when an alert appears.
-- Try Day, Dusk and Night on navigation, instruments, energy, AIS, anchor,
-  autopilot, settings and diagnostics. Hover Menu and the data rail: Day hints
-  may appear; primary Dusk/Night controls should not create bright hover windows.
-  Record bright native/Legacy dialogs separately.
+- Check that data, alerts and controls remain readable in the theme relevant to
+  the functional change or reported defect. A full theme/appearance review needs
+  an explicit design-review request.
 - Open/close contextual sheets with their Back/Cancel actions and Escape.
 - Review route/waypoint browsing and selection, AIS selection/details, settings
   categories, and source-health details. Note any clipped or unreachable control.

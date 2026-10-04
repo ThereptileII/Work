@@ -399,7 +399,7 @@ def capture(name):
 def chart_capture(name,phase):
     title=ui.text(handle) if windows else xdo('getwindowname',handle)
     style='XNav' if title=='SKAGER / OpenCPN' else 'Standard'
-    report.setdefault('chart_rendering',[]).append(chartcheck.presentation(capture(name),style,'Day',phase))
+    report.setdefault('chart_rendering',[]).append((chartcheck.presentation if os.environ.get('SKAGER_DESIGN_VALIDATION') == 'true' else chartcheck.functional)(capture(name),style,'Day',phase))
 def page_capture(name, page):
     capture(name)
     if windows:
@@ -542,7 +542,7 @@ try:
     chart_colors=chartcheck.reference(capture('preview-01-navigation-day'))
     chart_capture('preview-11-startup-xnav','Direct XNav startup')
     light('Dusk');light('Night')
-    report['chart_rendering'].append(chartcheck.presentation(capture('preview-02-navigation-night'),'XNav','Night','Night world-chart land/water palette'))
+    report['chart_rendering'].append((chartcheck.presentation if os.environ.get('SKAGER_DESIGN_VALIDATION') == 'true' else chartcheck.functional)(capture('preview-02-navigation-night'),'XNav','Night','Night world-chart land/water palette'))
     light('Day')
     command('Route','r');page_capture('preview-03-route','Route')
     command('Energy','e');page_capture('preview-04-energy','Energy')

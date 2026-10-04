@@ -77,7 +77,7 @@ try:
         state=(profile/'opennav-startup.state').read_text()
         assert 'pending 1' in state and f'failures {count-1}' in state,state
         if count==1:
-            report['chart_rendering'].append(chart.presentation(
+            report['chart_rendering'].append((chart.presentation if os.environ.get('SKAGER_DESIGN_VALIDATION') == 'true' else chart.functional)(
                 capture('recovery-01-xnav'),'XNav','Day','Initial XNav before crash'))
         app.kill();app.wait(timeout=15);owned.discard(app.pid)
         assert fixtures.snapshot(profile)==expected,'Abrupt stop lost navigation/configuration'
@@ -99,7 +99,7 @@ try:
     assert 'failures 2' in state and 'pending 0' in state,state
     # Safe deliberately uses stock OpenCPN presentation. Require the pinned
     # stock land AND water colors, never the XNav palette learned on startup.
-    report['chart_rendering'].append(chart.presentation(
+    report['chart_rendering'].append((chart.presentation if os.environ.get('SKAGER_DESIGN_VALIDATION') == 'true' else chart.functional)(
         capture('recovery-02-safe'),'Standard','Day','Automatic Safe recovery'))
     assert fixtures.snapshot(profile)==expected
     report['checks'].append('Third explicit XNav launch automatically starts Safe; recovery notice and disabled plugin verified')
@@ -114,7 +114,7 @@ try:
     state=(profile/'opennav-startup.state').read_text()
     assert 'failures 0' in state and 'pending 1' in state,state
     assert list(profile.glob('opennav-startup.state.retry-*')),'Retry evidence not retained'
-    report['chart_rendering'].append(chart.presentation(
+    report['chart_rendering'].append((chart.presentation if os.environ.get('SKAGER_DESIGN_VALIDATION') == 'true' else chart.functional)(
         capture('recovery-03-retry'),'XNav','Day','Human-requested XNav retry'))
     if windows:
         process=ui.monitor_process(pid);ui.close(handle);ui.wait_clean_exit(process)

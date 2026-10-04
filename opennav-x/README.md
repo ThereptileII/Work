@@ -14,6 +14,14 @@ is the sole backlog. The [current objective](PROJECT_GOAL.md),
 [Technical status and evidence](docs/status.md) record results and open gates;
 qualification is specific to an exact revision and its artifacts.
 
+The later [delivery policy](docs/delivery-workflow.md) governs channel selection
+and design-validation scheduling where older source documents differ.
+Development defaults to **STAGING**. Both Staging and Production are delivered as
+versioned GitHub Releases; releases remain **draft** while public access is closed.
+Production readiness/promotion requires an explicit user instruction and reuses
+the exact selected Staging package. Design review requires an explicit request;
+promotion alone does not trigger it or authorize public publication.
+
 The native application integrates the real OpenCPN chart canvas with passage
 and waypoint workflows, AIS views, configurable instruments, energy prediction,
 SmartNav advisories, anchor watch, settings and diagnostics. OpenCPN owns charts,
@@ -35,8 +43,10 @@ require qualification for the exact integrated revision.
 
 The application preserves OpenCPN 5.12.4's **x86/Win32 application and plugin ABI
 on a Windows x64 host**. Native Windows MSVC, rendering, DPI, plugin loading,
-installer and actual boat-display evidence remain authoritative gates. Linux
-builds and component checks support development and do not replace those gates.
+installer and actual boat functional evidence remain authoritative within their
+applicable qualification scope. Design-only rendering/DPI review is scheduled
+only on explicit request under the delivery policy. Linux builds and component
+checks support development and do not replace native functional gates.
 Internal OpenNav/XNav identifiers remain where needed for compatibility;
 customer-facing product identity is SKAGER / SKAGER App.
 
@@ -71,6 +81,12 @@ hashes and the same-revision [installation guide](docs/beta2/SKAGER-Beta2-Instal
 [test guide](docs/beta2/SKAGER-Beta2-Test-Guide.md) and
 [release notes](docs/beta2/SKAGER-Beta2-Release-Notes.md).
 Read [known limitations](docs/beta2/KNOWN_LIMITATIONS.md) before testing.
-A generated package or passing build does not establish public-beta acceptance.
+Use the selected versioned GitHub Release and verify its package identity and
+hashes. `opennav-baseline.yml` serves Staging delivery; manual
+`skager-production.yml` serves exact-package promotion; `opennav-prototype.yml`
+is for explicitly requested design review. A release channel is separate from
+the immutable package version. CI artifacts provide build evidence and
+intermediate outputs. A generated package or passing build does not establish
+public-beta acceptance.
 Earlier releases and their exact artifacts remain recorded in historical
 [evidence](docs/status.md); their acceptance cannot be transferred to a new build.

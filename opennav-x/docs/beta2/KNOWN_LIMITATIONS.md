@@ -25,14 +25,21 @@ building this ZIP alone does not establish acceptance.
 - Live chart-corridor hazard queries and the custom Pathfinder radar receive/control
   integration remain incomplete. Lack of a detected hazard never means safe water.
 - Native OpenCPN/Legacy/plugin dialogs may retain their desktop styling and bright
-  surfaces. SKAGER primary flows receive separate Night/DPI/touch review.
+  surfaces. Design-only Night/DPI review requires an explicit request. Functional
+  readability, usable controls and physical touch retain their relevant gates.
 - Physical touch, actual GPU/OpenGL behavior and boat-source observations must be
   measured on the target machine. CI mouse/injected-touch evidence is additional,
   not a replacement for those checks.
-- Setup is unsigned. Obtain it from the supplied exact CI run and verify its hash.
+- Setup is unsigned. Obtain it from the supplied versioned GitHub Release and
+  verify its hash. Development defaults to STAGING; both channels remain draft
+  while public downloads are closed. Production promotion requires explicit user
+  instruction and preserves the selected package bytes.
 - Repair/uninstall preserve unknown or modified files and recovery diagnostics.
   Inspect retained files rather than deleting a folder based only on its name.
 
 Outstanding target-specific visual or functional findings belong in the final
-same-commit review and handoff. They must not be hidden by substituting CI images
-for actual boat screenshots.
+same-commit review and handoff. Design validation is not requested unless the user
+explicitly asks for it; it must not be recorded as passed or silently added to
+promotion. Retain known findings. When visual review is requested, CI images do
+not substitute for actual boat screenshots. The later
+[delivery policy](https://github.com/ThereptileII/Work/blob/opennav-x-beta2-ui/opennav-x/docs/delivery-workflow.md) controls review scheduling.

@@ -1,6 +1,7 @@
 """Real native Windows mode-cycle interaction against a disposable shared profile."""
 import importlib.util
 import json
+import os
 from pathlib import Path
 import shutil
 import subprocess
@@ -46,7 +47,7 @@ def data(predicate=lambda d:True):
 
 def capture_chart(name,style='XNav',light='Day'):
     rgb=ui.capture(handle,evidence/name)
-    report.setdefault('chart_rendering',[]).append(charts.presentation(rgb,style,light,name))
+    report.setdefault('chart_rendering',[]).append((charts.presentation if os.environ.get('SKAGER_DESIGN_VALIDATION')=='true' else charts.functional)(rgb,style,light,name))
 
 def ready(expected_count):
     deadline = time.monotonic() + 60

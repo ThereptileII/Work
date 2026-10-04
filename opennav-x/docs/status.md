@@ -1,8 +1,114 @@
 # SKAGER status — 2026-10-04
 
-## Current boat-test candidate — chart binding passes, installer test correction
+## Staging delivery and explicit Production promotion
 
-The single active replacement is `55ef51e4944e8570f6a391dad20b0db8447a7443`
+The user has adopted versioned Staging delivery followed by a separate
+Production-readiness flow. Promotion must perform only release-readiness work;
+design validation, prototype comparisons, aesthetic refinement and design
+screenshot/DPI review sets require explicit user instruction. Older blanket
+visual-promotion requirements do not override this decision. Functional,
+navigation/data-validity, security, installer/profile-preservation, recovery and
+package/source checks remain. Unrequested design review is not recorded as a
+pass. See [the delivery policy](delivery-workflow.md) and
+[SCRUM-290](https://swedishcountrysideliving.atlassian.net/browse/SCRUM-290).
+The workflow split and release tooling are implemented under SCRUM-290:
+ordinary delivery defaults to Staging; both channels create versioned draft
+GitHub Releases while public access is closed. Production is manual-only,
+requires a named Staging release and the user's instruction, and qualifies the
+retained application/package without recompilation. Installer readiness,
+profile preservation, recovery, navigation and security remain functional gates.
+Prototype comparisons and design-only DPI/painter runs are opt-in. The complete
+installer matrix runs in Production; Staging checks installation/startup,
+profile preservation and rollback. Evidence is bound to both product and test
+helper revisions, package hashes and the original producing run attempt.
+
+Focused local verification passes **73 tests** across release inventory,
+transport, qualification/workflow policy and installer helper suites. Edited
+workflows pass actionlint and duplicate-key checks; Linux build scripts parse.
+These are delivery-tool results, not application or installer acceptance.
+Native delivery-tool CI and the first real Staging release/promotion execution
+are separate verification records. Repository default-branch registration and
+release token permissions must be correct before those delivery paths can run.
+See [delivery implementation evidence](evidence/staging-delivery-workflow/README.md).
+No application build, design review, Production promotion, boat change or public
+opening was performed for this process update. Historical evidence below retains
+its original outcomes and the installed candidate is unchanged.
+
+## Boat candidate installed and left open
+
+The exact **0.4.0-beta2 / 0da2c64379d5a9cc4b9b2bd068de6e0b69816577**
+candidate is now installed on the boat PC and launched through the audited
+read-only path. The process is responsive and left open for the user.
+**Startup still awaits the OpenCPN welcome acknowledgement**, obscured by a
+Windows feature-update reminder: select **Remind me later**, then **Acceptera**.
+No normal navigation frame/fresh canvas-completion marker is claimed yet.
+The incompatible inherited RTL-SDR plugin was safely excluded from the new
+candidate; original files and the previous installation remain recoverable.
+Read-only commissioning remains applied and physical output remains disabled.
+No additional visual/endurance tests, Windows update or reboot were performed.
+See [the precise handoff record](evidence/boat-handoff-0da2c64/README.md).
+The full CI/installer and release gates remain open.
+
+## Current user handoff instruction
+
+The user now requests: finish the current Windows build, install the candidate
+on the boat, verify that SKAGER starts and responds, and leave it running for
+manual testing. Do not start additional visual, chart-comparison or endurance
+runs. Do not dispatch the prepared supplementary package-review workflows for
+this handoff. Existing in-flight CI remains the package producer; this direction
+does not qualify unperformed visual, security, hardware or public-release gates.
+Verify the downloaded package identity, compatibility, recovery backup and
+read-only launch boundary before installation/startup. Keep the safe read-only
+configuration while leaving the application open; do not restore output-capable
+configuration behind a running application. Record the exact installed build and
+handoff state. Broader acceptance issues remain open, rather than being marked
+Done from successful startup alone.
+
+## Current replacement — installer test boundary correction
+
+The active frozen replacement is `0da2c64379d5a9cc4b9b2bd068de6e0b69816577`
+(local `f1ea102cb362ed719cef50bb2c2506f1c470dd12`),
+[run 37207119257](https://github.com/ThereptileII/Work/actions/runs/37207119257).
+Its [6,881-entry mapped tree](evidence/skager-installer-test-f1ea-publication.json)
+is independently reconstructed. Only the installer harness and failure-only
+binary retention change execution behavior. Application, production installer,
+chart resources, typography, logo and TLS policy are unchanged. Twelve existing
+completion tests pass; the actual Windows helper parses without execution.
+The [replacement contracts](evidence/contracts-0da2c64/README.md) now pass
+94 Linux and 91 Windows cases (94 unique), plus 20 existing lifecycle repeat
+executions. The [original same-run restart receipt](evidence/restart-0da2c64/README.md)
+passes independent hash/CRC and exact commit/run/attempt checks, with actual boat
+acceptance false. The [exact Linux integrated artifact](evidence/linux-0da2c64/README.md)
+now passes independent original digest/CRC verification and byte comparison of
+all 27 retained reports. Both fixture and fixture-free builds pass the same 147
+cases (294 executions); actual core Downloader/wxCurl pass 12/13 cases. Four
+unchanged chart captures show coastline/ENC content after mode return in software
+and llvmpipe OpenGL. Their glyph rasterization differs; neither individual symbol
+families nor Windows/boat font conformance is accepted by this wide-view check.
+The exact native fixture-free application build passed at 15:30:24 UTC, followed
+by successful real-host private-module loading, Windows Downloader trust and
+peer-buffer checks. The fixture navigation/restart/scenario and AIS transport
+steps and recovery packaging also pass. The installer suite stopped at 15:52:38
+UTC after 35 completed checks because the new standalone test helper uses
+`Get-FileHash`, unavailable in its inherited PowerShell environment. Its error
+occurs before the separate `SelfTest` call. The exact candidate's clean install,
+Beta 1 upgrade/startup, profile preservation, modes, rollback/repair and missing
+import guard had passed. The [helper-only correction](evidence/installer-selftest-hash-0da2c64/README.md)
+reuses the unchanged production `Hash` function; native execution of that repair
+and the rest of the suite remain unverified. The CI run is not qualified.
+
+Under the user's startup-only handoff instruction above, recover the unchanged
+original Setup/recovery/source from the failure-retention artifact for the
+limited boat test, after exact byte/source verification and read-only preparation.
+The 700,027,780-byte original exceeds the connector's 512 MiB limit, so a
+transfer-only workflow will retain a smaller selection of unchanged payloads.
+It does not rebuild, retest or turn the failed qualification into a pass. Broader
+installer/security/visual/public-release gates remain open. Endurance stays
+skipped. The later installation/handoff above supersedes this earlier pending state.
+
+## Preceding 55ef51e — chart binding passes, installer test correction
+
+The preceding replacement is `55ef51e4944e8570f6a391dad20b0db8447a7443`
 (frozen local `e768b06bf5c130038abfd6e1166da0078037cb5b`),
 [run 37199379614](https://github.com/ThereptileII/Work/actions/runs/37199379614).
 Its [complete 6,862-entry mapped tree](evidence/skager-chart-mutex-e768-publication.json)

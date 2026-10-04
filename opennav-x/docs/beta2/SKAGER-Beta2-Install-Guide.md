@@ -11,8 +11,11 @@ for evaluation; it is not approved for navigation or production use.
 - Back up your OpenCPN profile and any separately stored charts. Keep a copy
   somewhere other than the computer being tested.
 - Close OpenCPN, SKAGER, Legacy and Safe Mode, including any older portable copy.
-- Download the complete Beta 2 artifact from the provided accepted CI run.
-  Check `SHA256SUMS.txt` when validating a transferred download.
+- Obtain the complete package from the supplied versioned GitHub Release and
+  check `SHA256SUMS.txt` when validating a transferred download. Development
+  delivery defaults to STAGING. Releases remain draft and require repository
+  access until public downloads are separately approved; a Production channel
+  label does not by itself authorize navigation use or public access.
 
 If Setup says your OpenCPN is unsupported, stop. Do not rename executables,
 overwrite OpenCPN manually or bypass the check. Installing/upgrading the OpenCPN

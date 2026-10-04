@@ -53,6 +53,15 @@ Never launch a development build against a real navigation profile by default.
 
 ## Windows validation
 
+The current [delivery policy](delivery-workflow.md) supersedes older workflow
+scheduling descriptions below. Ordinary development uses STAGING and versioned
+draft GitHub Releases from `opennav-baseline.yml`; Production promotion is a
+separate manual `skager-production.yml` flow requiring explicit user instruction.
+`opennav-prototype.yml` runs design review only when explicitly requested. The
+historical build and screenshot observations below remain evidence of their
+recorded revisions, not instructions to repeat design validation for every
+Staging delivery or promotion. Public access remains separately gated.
+
 Workflow: `.github/workflows/opennav-baseline.yml` on the `opennav-x` branch
 of https://github.com/ThereptileII/Work. The workflow lives at repository root;
 project files live under `opennav-x/`. Both platform jobs use the same commit.

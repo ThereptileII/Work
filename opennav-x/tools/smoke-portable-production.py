@@ -22,13 +22,17 @@ from restart_capability import verified_restart_protocol
 ROOT = Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser()
 parser.add_argument('--package', required=True, type=Path)
+parser.add_argument('--expected-commit', default=os.environ.get('GITHUB_SHA'),
+                    help='Frozen product revision when the harness is newer than the retained package')
 args = parser.parse_args()
 if sys.platform != 'win32' or os.environ.get('GITHUB_ACTIONS') != 'true':
     raise SystemExit('Production ZIP smoke requires disposable native Windows CI')
 EVIDENCE = ROOT / 'evidence/local'
 EVIDENCE.mkdir(parents=True, exist_ok=True)
 report = {'status': 'running', 'authority': 'Native Windows; exact extracted product ZIP; fixtures OFF',
-          'checks': [], 'screenshots': [], 'chart_rendering': []}
+          'checks': [], 'screenshots': [], 'chart_rendering': [],
+          'design_validation': 'requested' if os.environ.get('SKAGER_DESIGN_VALIDATION')=='true' else 'not requested',
+          'harness_commit': subprocess.check_output(['git','-C',str(ROOT),'rev-parse','HEAD'],text=True).strip()}
 
 def module(name):
     spec = importlib.util.spec_from_file_location(name, ROOT / 'tools' / (name + '.py'))
@@ -38,6 +42,7 @@ def module(name):
 
 ui = module('windows-ui')
 charts = module('chart-render-check')
+chart_visibility = charts.presentation if os.environ.get('SKAGER_DESIGN_VALIDATION')=='true' else charts.functional
 startup_log = module('startup-log')
 report['display'] = ui.ensure_desktop(1440,900)
 normal_locations = []
@@ -124,7 +129,7 @@ def capture(name, chart=True):
     report['screenshots'].append(path.name)
     if chart and 'colors' in globals():
         style='XNav' if ui.text(handle)=='SKAGER / OpenCPN' else 'Standard'
-        report['chart_rendering'].append(charts.presentation(rgb,style,'Day',name))
+        report['chart_rendering'].append(chart_visibility(rgb,style,'Day',name))
     return rgb
 
 def no_demo_controls():
@@ -205,7 +210,7 @@ try:
     identity = json.loads(selftest.read_text())
     assert identity.get('xnav_hardware_output_policy') == 'status-only'
     assert identity['test_fixtures'] is False and identity['build_purpose'] == 'INSTALLED PRODUCT'
-    assert identity['version'] == '0.4.0-beta2' and identity['commit'] == os.environ['GITHUB_SHA']
+    assert identity['version'] == '0.4.0-beta2' and identity['commit'] == args.expected_commit
     assert not identity['profile_initialized'] and not identity['plugins_loaded']
     helper_probe = subprocess.run([str(helper), '--commissioning-protocol-self-test'],
                                   cwd=helper.parent, env=env, capture_output=True, timeout=10)
@@ -235,7 +240,7 @@ try:
         data(lambda value: value['runtime']['display']['light'] == mode)
         rgb = capture('navigation-' + ('day-restored' if mode == 'Day' else mode.lower()), chart=mode == 'Day')
         if mode == 'Night':
-            report['chart_rendering'].append(charts.presentation(rgb,'XNav','Night','Product Night coastline'))
+            report['chart_rendering'].append(chart_visibility(rgb,'XNav','Night','Product Night coastline'))
     ui.click_text(pid, 'Energy')
     data(lambda value: value['ui_page'] == 'Energy')
     capture('energy-unavailable', chart=False)

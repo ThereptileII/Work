@@ -331,8 +331,8 @@ try {
             '--cli', (Join-Path $Install 'opencpn-cmd.exe'),
             '--receipt', (Join-Path $Evidence 'windows-peer-cli-receipt.json'))
     }
-    if ($Integration) {
-        # Offline painter processes; no chart/profile/input or hardware output.
+    if ($Integration -and $env:SKAGER_DESIGN_VALIDATION -ceq 'true') {
+        # Explicitly requested offline painter processes; no chart/profile/input or hardware output.
         Run (Join-Path $Build 'Release/chart_name_text_test.exe') @((Join-Path $Evidence "chart-names-$Variant.png"))
         Run (Join-Path $Build 'Release/chart_light_label_test.exe') @((Join-Path $Evidence "chart-lights-$Variant.png"))
         Run (Join-Path $Build 'Release/skager_wordmark_test.exe') @((Join-Path $Evidence "skager-wordmark-$Variant.png"))
@@ -376,12 +376,14 @@ try {
         Run python @((Join-Path $PSScriptRoot 'smoke-pilot.py'))
         Run python @((Join-Path $PSScriptRoot 'smoke-navigation.py'), '--objects')
         Run python @((Join-Path $PSScriptRoot 'smoke-recovery.py'))
-        & (Join-Path $PSScriptRoot 'capture-pristine-windows.ps1') -Variant xnav -Mode legacy -Name '11-legacy-mode'
-        & (Join-Path $PSScriptRoot 'capture-pristine-windows.ps1') -Variant xnav -Mode safe-mode -Name '12-safe-mode'
+        if ($env:SKAGER_DESIGN_VALIDATION -ceq 'true') {
+            & (Join-Path $PSScriptRoot 'capture-pristine-windows.ps1') -Variant xnav -Mode legacy -Name '11-legacy-mode'
+            & (Join-Path $PSScriptRoot 'capture-pristine-windows.ps1') -Variant xnav -Mode safe-mode -Name '12-safe-mode'
+        }
         }
     } elseif ($Production) {
         Run python @((Join-Path $PSScriptRoot 'smoke-pilot.py'), '--production')
-    } else {
+    } elseif ($env:SKAGER_DESIGN_VALIDATION -ceq 'true') {
         & (Join-Path $PSScriptRoot 'capture-pristine-windows.ps1')
     }
 } finally { Stop-Transcript }

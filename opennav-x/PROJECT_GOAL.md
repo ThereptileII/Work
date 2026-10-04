@@ -12,6 +12,17 @@ compliance, privacy/security, operations and launch material. Completion means
 the entire customer journey is qualified, not merely that existing navigation
 features compile.
 
+The user's later 2026-10-04 [delivery policy](docs/delivery-workflow.md) governs
+Staging/Production delivery: development defaults to **STAGING**, and both
+channels use versioned GitHub Releases. Production readiness/promotion requires
+an explicit user instruction and reuses the exact qualified Staging package.
+Keep channel identity separate from the immutable package version. Releases in
+both channels stay draft until the separate public-access GO is given.
+Promotion performs release-readiness work only; design validation requires its
+own explicit request. This later policy takes precedence over older delivery and
+blanket visual-promotion requirements in the preserved source documents without
+changing functional, security or data-preservation gates.
+
 [Navigare / SCRUM](https://swedishcountrysideliving.atlassian.net/jira/software/projects/SCRUM/boards/1)
 is the authoritative and sole backlog. Select work, record dependencies and
 priorities, and track acceptance there according to [AGENTS.md](AGENTS.md) and

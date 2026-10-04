@@ -1,0 +1,395 @@
+{
+  "retrievedUtc": "2026-10-04T16:01:30.649Z",
+  "job": {
+    "id": 111451739631,
+    "run_id": 37207119257,
+    "workflow_name": "SKAGER Beta 2",
+    "head_branch": "opennav-x-beta2-ui",
+    "run_url": "https://api.github.com/repos/ThereptileII/Work/actions/runs/37207119257",
+    "run_attempt": 1,
+    "node_id": "CR_kwDOM4BDHM8AAAAZ8wqV7w",
+    "head_sha": "0da2c64379d5a9cc4b9b2bd068de6e0b69816577",
+    "url": "https://api.github.com/repos/ThereptileII/Work/actions/jobs/111451739631",
+    "html_url": "https://github.com/ThereptileII/Work/actions/runs/37207119257/job/111451739631",
+    "status": "completed",
+    "conclusion": "failure",
+    "created_at": "2026-10-04T13:58:16Z",
+    "started_at": "2026-10-04T13:58:18Z",
+    "completed_at": "2026-10-04T16:00:17Z",
+    "name": "Native MSVC XNav / Legacy / Safe slice",
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1,
+        "started_at": "2026-10-04T13:58:18Z",
+        "completed_at": "2026-10-04T13:58:20Z"
+      },
+      {
+        "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2,
+        "started_at": "2026-10-04T13:58:20Z",
+        "completed_at": "2026-10-04T13:58:30Z"
+      },
+      {
+        "name": "Preserve native Perl for OpenSSL and install curl's POSIX test host",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3,
+        "started_at": "2026-10-04T13:58:30Z",
+        "completed_at": "2026-10-04T13:58:31Z"
+      },
+      {
+        "name": "Run msys2/setup-msys2@66cd2cce69caa17b53920067426061ca1de3a884",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 4,
+        "started_at": "2026-10-04T13:58:31Z",
+        "completed_at": "2026-10-04T13:58:42Z"
+      },
+      {
+        "name": "Select explicit curl test Perl",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 5,
+        "started_at": "2026-10-04T13:58:42Z",
+        "completed_at": "2026-10-04T13:58:42Z"
+      },
+      {
+        "name": "Verify native curl test-host binding before dependency compilation",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 6,
+        "started_at": "2026-10-04T13:58:42Z",
+        "completed_at": "2026-10-04T13:59:04Z"
+      },
+      {
+        "name": "Fetch pinned source",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 7,
+        "started_at": "2026-10-04T13:59:04Z",
+        "completed_at": "2026-10-04T13:59:10Z"
+      },
+      {
+        "name": "Build and exercise integrated modes",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 8,
+        "started_at": "2026-10-04T13:59:10Z",
+        "completed_at": "2026-10-04T15:10:24Z"
+      },
+      {
+        "name": "Verify packaged source reproduces the curl certificate-tool patch",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 9,
+        "started_at": "2026-10-04T15:10:24Z",
+        "completed_at": "2026-10-04T15:10:25Z"
+      },
+      {
+        "name": "Installed native peer CLI refuses key changes on the disposable runner",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 10,
+        "started_at": "2026-10-04T15:10:25Z",
+        "completed_at": "2026-10-04T15:10:26Z"
+      },
+      {
+        "name": "Staged native loader check without profile initialization",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 11,
+        "started_at": "2026-10-04T15:10:26Z",
+        "completed_at": "2026-10-04T15:10:26Z"
+      },
+      {
+        "name": "Native pointer chart gestures, waypoint Go To and route creation",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 12,
+        "started_at": "2026-10-04T15:10:26Z",
+        "completed_at": "2026-10-04T15:11:23Z"
+      },
+      {
+        "name": "Preserve failed native chart interaction evidence",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 13,
+        "started_at": "2026-10-04T15:11:23Z",
+        "completed_at": "2026-10-04T15:11:23Z"
+      },
+      {
+        "name": "Repeat native crash-recovery returns with separate evidence",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 14,
+        "started_at": "2026-10-04T15:11:23Z",
+        "completed_at": "2026-10-04T15:11:58Z"
+      },
+      {
+        "name": "Retain complete fixture UI and scenario regression suite",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 15,
+        "started_at": "2026-10-04T15:11:58Z",
+        "completed_at": "2026-10-04T15:15:08Z"
+      },
+      {
+        "name": "Preserve first fixture failure before independent display checks",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 16,
+        "started_at": "2026-10-04T15:15:08Z",
+        "completed_at": "2026-10-04T15:15:08Z"
+      },
+      {
+        "name": "Capture successful same-job Windows dependency closure",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 17,
+        "started_at": "2026-10-04T15:15:08Z",
+        "completed_at": "2026-10-04T15:15:09Z"
+      },
+      {
+        "name": "Native AIS observation and transport with same-job maintained TLS",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 18,
+        "started_at": "2026-10-04T15:15:09Z",
+        "completed_at": "2026-10-04T15:17:38Z"
+      },
+      {
+        "name": "Build native installed product without synthetic data",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 19,
+        "started_at": "2026-10-04T15:17:38Z",
+        "completed_at": "2026-10-04T15:30:24Z"
+      },
+      {
+        "name": "Preserve failed production transcript before independent display checks",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 20,
+        "started_at": "2026-10-04T15:30:24Z",
+        "completed_at": "2026-10-04T15:30:24Z"
+      },
+      {
+        "name": "Resolve private chart imports in the real host without plugin initialization",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 21,
+        "started_at": "2026-10-04T15:30:24Z",
+        "completed_at": "2026-10-04T15:30:26Z"
+      },
+      {
+        "name": "Preserve failed private-module check before independent display checks",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 22,
+        "started_at": "2026-10-04T15:30:26Z",
+        "completed_at": "2026-10-04T15:30:26Z"
+      },
+      {
+        "name": "Native public Downloader Windows trust and rejection gate",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 23,
+        "started_at": "2026-10-04T15:30:26Z",
+        "completed_at": "2026-10-04T15:30:37Z"
+      },
+      {
+        "name": "Exact peer response buffer on native MSVC Win32",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 24,
+        "started_at": "2026-10-04T15:30:37Z",
+        "completed_at": "2026-10-04T15:30:41Z"
+      },
+      {
+        "name": "Package and test the fixture-free recovery distribution",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 25,
+        "started_at": "2026-10-04T15:30:41Z",
+        "completed_at": "2026-10-04T15:32:03Z"
+      },
+      {
+        "name": "Preserve failed portable interaction evidence immediately",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 26,
+        "started_at": "2026-10-04T15:32:03Z",
+        "completed_at": "2026-10-04T15:32:03Z"
+      },
+      {
+        "name": "Build and exercise candidate Beta installer",
+        "status": "completed",
+        "conclusion": "failure",
+        "number": 27,
+        "started_at": "2026-10-04T15:32:03Z",
+        "completed_at": "2026-10-04T15:52:38Z"
+      },
+      {
+        "name": "Preserve failed installer transaction before remaining UI checks",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 28,
+        "started_at": "2026-10-04T15:52:38Z",
+        "completed_at": "2026-10-04T15:52:39Z"
+      },
+      {
+        "name": "Inventory unqualified installer retest inputs",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 29,
+        "started_at": "2026-10-04T15:52:39Z",
+        "completed_at": "2026-10-04T15:52:40Z"
+      },
+      {
+        "name": "Retain unqualified binaries for exact-byte installer diagnosis",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 30,
+        "started_at": "2026-10-04T15:52:40Z",
+        "completed_at": "2026-10-04T15:52:45Z"
+      },
+      {
+        "name": "Native 100 / 125 / 150 percent DPI and touch interactions",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 31,
+        "started_at": "2026-10-04T15:52:45Z",
+        "completed_at": "2026-10-04T15:58:23Z"
+      },
+      {
+        "name": "Preserve failed DPI interaction evidence immediately",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 32,
+        "started_at": "2026-10-04T15:58:23Z",
+        "completed_at": "2026-10-04T15:58:23Z"
+      },
+      {
+        "name": "Public ENC chart and plugin rendering gate",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 33,
+        "started_at": "2026-10-04T15:58:23Z",
+        "completed_at": "2026-10-04T15:59:52Z"
+      },
+      {
+        "name": "Require same-run restart qualification before delivering any product artifact",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 34,
+        "started_at": "2026-10-04T15:59:52Z",
+        "completed_at": "2026-10-04T15:59:52Z"
+      },
+      {
+        "name": "Verify exact restart qualification identity",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 35,
+        "started_at": "2026-10-04T15:59:52Z",
+        "completed_at": "2026-10-04T15:59:52Z"
+      },
+      {
+        "name": "Prepare development boat review after native functional gates",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 36,
+        "started_at": "2026-10-04T15:59:52Z",
+        "completed_at": "2026-10-04T15:59:52Z"
+      },
+      {
+        "name": "Upload development review with endurance qualification pending",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 37,
+        "started_at": "2026-10-04T15:59:52Z",
+        "completed_at": "2026-10-04T15:59:52Z"
+      },
+      {
+        "name": "Apply native endurance policy (explicit user-directed skip)",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 38,
+        "started_at": "2026-10-04T15:59:52Z",
+        "completed_at": "2026-10-04T15:59:52Z"
+      },
+      {
+        "name": "Collect tested development boat-test downloads and hashes",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 39,
+        "started_at": "2026-10-04T15:59:52Z",
+        "completed_at": "2026-10-04T15:59:52Z"
+      },
+      {
+        "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 40,
+        "started_at": "2026-10-04T15:59:52Z",
+        "completed_at": "2026-10-04T15:59:52Z"
+      },
+      {
+        "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 41,
+        "started_at": "2026-10-04T15:59:52Z",
+        "completed_at": "2026-10-04T16:00:13Z"
+      },
+      {
+        "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 82,
+        "started_at": "2026-10-04T16:00:13Z",
+        "completed_at": "2026-10-04T16:00:14Z"
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 83,
+        "started_at": "2026-10-04T16:00:14Z",
+        "completed_at": "2026-10-04T16:00:14Z"
+      }
+    ],
+    "check_run_url": "https://api.github.com/repos/ThereptileII/Work/check-runs/111451739631",
+    "labels": [
+      "windows-2022"
+    ],
+    "runner_id": 1000003501,
+    "runner_name": "GitHub Actions 1000003501",
+    "runner_group_id": 0,
+    "runner_group_name": "GitHub Actions"
+  },
+  "artifact": {
+    "id": 11307908360,
+    "name": "windows-integration-0da2c64379d5a9cc4b9b2bd068de6e0b69816577",
+    "size_in_bytes": 84139404,
+    "url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/11307908360",
+    "archive_download_url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/11307908360/zip",
+    "expired": false,
+    "created_at": "2026-10-04T16:00:13Z",
+    "expires_at": "2027-01-02T13:51:31Z",
+    "updated_at": "2026-10-04T16:00:13Z",
+    "digest": "sha256:37e1fc5dc333c91f1e7cd32c5bae1ee73e5a4862427a451781dad7d77f8a12e7",
+    "workflow_run": {
+      "id": 37207119257,
+      "repository_id": 864043804,
+      "head_repository_id": 864043804,
+      "head_branch": "opennav-x-beta2-ui",
+      "head_sha": "0da2c64379d5a9cc4b9b2bd068de6e0b69816577"
+    }
+  },
+  "frozenLocal": "f1ea102cb362ed719cef50bb2c2506f1c470dd12"
+}
