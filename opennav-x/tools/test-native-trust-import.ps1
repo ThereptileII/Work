@@ -131,7 +131,7 @@ Stage 'child-success'
 '@
   Set-Content -LiteralPath $Child -Value $ChildText -Encoding utf8
   Copy-Item -LiteralPath $Child -Destination (Join-Path $Evidence 'instrumented-import-child.ps1')
-  $OpenSsl = (Get-Command openssl.exe -CommandType Application).Source
+  $OpenSsl = (Get-Command openssl.exe -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source
   Write-Json (Join-Path $Evidence 'identity.json') @{
     repository=$env:GITHUB_REPOSITORY;commit=$env:GITHUB_SHA;run_id=$env:GITHUB_RUN_ID;run_attempt=$env:GITHUB_RUN_ATTEMPT;job=$env:GITHUB_JOB
     powershell=$PSVersionTable.PSVersion.ToString();original_trust_script_sha256=(Hash $Source);diagnostic_sha256=(Hash $PSCommandPath)
