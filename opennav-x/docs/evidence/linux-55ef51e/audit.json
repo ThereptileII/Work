@@ -1,0 +1,678 @@
+{
+  "candidate": "55ef51e4944e8570f6a391dad20b0db8447a7443",
+  "run": 37199379614,
+  "attempt": 1,
+  "job": 111427724333,
+  "jobStartedAt": "2026-10-04T11:37:40Z",
+  "jobCompletedAt": "2026-10-04T12:16:54Z",
+  "frozenLocal": "e768b06bf5c130038abfd6e1166da0078037cb5b",
+  "mappingBasis": "Frozen local identity supplied by root; exact published workflow/CMake match independently retained in contracts-55ef51e; full tree not reconstructed here.",
+  "archive": {
+    "artifactId": 11302478957,
+    "bytes": 19740329,
+    "sha256": "a5a4b6ebeb030d9a6387dcada13ad6cf1911063e75b792cfd5da1f3ae767010e",
+    "zipEntries": 4251,
+    "crc": "all passed",
+    "safePaths": "unique relative/case-fold names; no traversal, drive paths, backslashes, encrypted entries or symlinks/special files"
+  },
+  "xml": {
+    "xnav-linux-tests.xml": {
+      "uniqueCases": 147,
+      "executions": 147,
+      "failed": 0,
+      "errors": 0,
+      "disabled": 0,
+      "skipped": 0,
+      "reportedSeconds": "13",
+      "logSeconds": 13.59,
+      "timestamp": "2026-10-04T11:52:04",
+      "sha256": "bca2e67eeaaecf7171a678db264d724ef81ba220740674383ab5fab6ad08a5f5"
+    },
+    "production-linux-tests.xml": {
+      "uniqueCases": 147,
+      "executions": 147,
+      "failed": 0,
+      "errors": 0,
+      "disabled": 0,
+      "skipped": 0,
+      "reportedSeconds": "13",
+      "logSeconds": 13.11,
+      "timestamp": "2026-10-04T12:16:12",
+      "sha256": "52298914b6ba51f9a80577f57e62aad6c7fc1f5eb5608a2f28559f0778bfc0db"
+    }
+  },
+  "uniqueTestsAcrossBuilds": 147,
+  "totalBuildExecutions": 294,
+  "productionLoader": {
+    "status": "passed",
+    "checks": 5,
+    "loader": {
+      "upstream": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+      "commissioning_restart_protocol": 0,
+      "version": "0.4.0-beta2",
+      "commit": "55ef51e4944e8570f6a391dad20b0db8447a7443",
+      "compiler": "GNU 13.3.0 / 8 byte pointers",
+      "plugins_loaded": false,
+      "test_fixtures": false,
+      "resources": {
+        "gshhs/poly-c-1.dat": true,
+        "s57data/s57objectclasses.csv": true,
+        "uidata/styles.xml": true,
+        "s57data/chartsymbols.xml": true
+      },
+      "normal_config_directory": "/etc",
+      "passed": true,
+      "xnav_hardware_output_policy": "status-only",
+      "build_purpose": "INSTALLED PRODUCT",
+      "profile_initialized": false,
+      "contract": "OpenNavX.LoaderSelfTest.1"
+    },
+    "app_sha256": "94c7d4d8fea7da807630e336d44666fedd263cb354131d7af7136d9f0f4bb4a9"
+  },
+  "productionExecutableIndependentlyRehashed": false,
+  "productPilot": {
+    "authority": "Linux development",
+    "hardware": "NONE; loopback simulated translator",
+    "checks": [
+      "Control OFF disables AUTO; physical click creates no request or output",
+      "Saved manual permission cannot enable product output",
+      "Every displayed command and enable action disabled despite fresh compatible feedback",
+      "Zero wire output including identity discovery across loss/reconnect",
+      "Passive observed pilot status survives reconnection"
+    ],
+    "screenshots": [
+      "pilot-01-status-only-linux.png",
+      "pilot-product-disabled-linux.png"
+    ],
+    "pilot_drawer": {
+      "height": 674,
+      "y": 80,
+      "width": 398,
+      "x": 682
+    },
+    "course_labels": [
+      "+10\u00b0",
+      "+1\u00b0",
+      "\u221210\u00b0",
+      "\u22121\u00b0"
+    ],
+    "result": "passed; screenshot review required",
+    "sent": [],
+    "wire_output": [],
+    "received_bytes": 0,
+    "transport_failures": []
+  },
+  "endurance": {
+    "status": "skipped",
+    "reason": "User directed on 2026-10-04: deliver a stable SKAGER Windows boat-test candidate as fast as possible; skip endurance testing.",
+    "commit": "55ef51e4944e8570f6a391dad20b0db8447a7443",
+    "runId": "37199379614",
+    "runAttempt": "1",
+    "release_duration": false
+  },
+  "trust": {
+    "downloader": {
+      "status": "passed",
+      "cases": [
+        {
+          "case": "valid",
+          "accepted": true,
+          "downloadError": 0,
+          "headError": 0
+        },
+        {
+          "case": "https_redirect",
+          "accepted": true,
+          "downloadError": 0,
+          "headError": 0
+        },
+        {
+          "case": "http_downgrade",
+          "accepted": false,
+          "downloadError": 1,
+          "headError": 1
+        },
+        {
+          "case": "local_file_redirect",
+          "accepted": false,
+          "downloadError": 1,
+          "headError": 1
+        },
+        {
+          "case": "partial_transfer",
+          "accepted": false,
+          "downloadError": 18,
+          "headError": 0
+        },
+        {
+          "case": "wrong_host",
+          "accepted": false,
+          "downloadError": 60,
+          "headError": 60
+        },
+        {
+          "case": "untrusted",
+          "accepted": false,
+          "downloadError": 60,
+          "headError": 60
+        },
+        {
+          "case": "expired",
+          "accepted": false,
+          "downloadError": 60,
+          "headError": 60
+        },
+        {
+          "case": "write_exception",
+          "accepted": false,
+          "downloadError": 23,
+          "headError": 0
+        },
+        {
+          "case": "valid_different_cwd",
+          "accepted": true,
+          "downloadError": 0,
+          "headError": 0
+        },
+        {
+          "case": "initial_http",
+          "accepted": false,
+          "downloadError": 1,
+          "headError": 1
+        },
+        {
+          "case": "missing_trust",
+          "accepted": false,
+          "downloadError": 77,
+          "headError": 77
+        }
+      ]
+    },
+    "wxCurl": {
+      "status": "passed",
+      "cases": [
+        {
+          "case": "valid",
+          "accepted": true,
+          "getError": "No error",
+          "headError": "No error"
+        },
+        {
+          "case": "https_redirect",
+          "accepted": true,
+          "getError": "No error",
+          "headError": "No error"
+        },
+        {
+          "case": "http_downgrade",
+          "accepted": false,
+          "getError": "Unsupported protocol",
+          "headError": "Unsupported protocol"
+        },
+        {
+          "case": "local_file_redirect",
+          "accepted": false,
+          "getError": "Unsupported protocol",
+          "headError": "Unsupported protocol"
+        },
+        {
+          "case": "valid_different_cwd",
+          "accepted": true,
+          "getError": "No error",
+          "headError": "No error"
+        },
+        {
+          "case": "plain_http",
+          "accepted": true,
+          "getError": "No error",
+          "headError": "No error"
+        },
+        {
+          "case": "http_to_https",
+          "accepted": true,
+          "getError": "No error",
+          "headError": "No error"
+        },
+        {
+          "case": "ftp_configuration",
+          "accepted": true
+        },
+        {
+          "case": "telnet_configuration",
+          "accepted": true
+        },
+        {
+          "case": "wrong_host",
+          "accepted": false,
+          "getError": "SSL peer certificate or SSH remote key was not OK",
+          "headError": "SSL peer certificate or SSH remote key was not OK"
+        },
+        {
+          "case": "untrusted",
+          "accepted": false,
+          "getError": "SSL peer certificate or SSH remote key was not OK",
+          "headError": "SSL peer certificate or SSH remote key was not OK"
+        },
+        {
+          "case": "expired",
+          "accepted": false,
+          "getError": "SSL peer certificate or SSH remote key was not OK",
+          "headError": "SSL peer certificate or SSH remote key was not OK"
+        },
+        {
+          "case": "missing_trust",
+          "accepted": false,
+          "getError": "Problem with the SSL CA cert (path? access rights?)",
+          "headError": "Problem with the SSL CA cert (path? access rights?)"
+        }
+      ]
+    },
+    "scope": "Actual patched core sources with loopback test CA macros. FTP/telnet are configuration-only. No Windows native trust/console or private o-charts path exercised."
+  },
+  "reports": {
+    "boat-input-results.json": {
+      "status": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+      "checks": 5,
+      "sha256": "ae4f4059bd1f597ee11d2e3b191cf4c934f1970278e1ee46722a7c3fd4a0fb5c"
+    },
+    "charts-results.json": {
+      "status": "passed; native screenshot review and physical GPU gate remain separate",
+      "checks": null,
+      "sha256": "e75fa84f99335dc54c2e74ec9a6359941be1077209a7de2751acc36415910e74"
+    },
+    "instruments-input-results.json": {
+      "status": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+      "checks": 4,
+      "sha256": "8912b54ade9ee1484b5d07ac434f221c1014c01d35836d948d8d09a581d52d1b"
+    },
+    "linux-mode-cycle-results.json": {
+      "status": "interaction and persistence passed; screenshot review required",
+      "checks": null,
+      "sha256": "3bbd071dad1a3fc1ad4e29779e0015b82e04da7fc3c728f6c7e00cab512d809d"
+    },
+    "n2k-input-results.json": {
+      "status": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+      "checks": 7,
+      "sha256": "5bebcb3d322461d6cb59f7564979048df553d6f51ffcbe7cd74972b8ad24d5aa"
+    },
+    "navigation-input-results.json": {
+      "status": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+      "checks": null,
+      "sha256": "0afc0c66cf30d18b02f8380fb4f53ee58b6086ca514ac68e4c065c543a8e0922"
+    },
+    "objects-input-results.json": {
+      "status": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+      "checks": 3,
+      "sha256": "01b104d35f3dc50dde8fa46f48be4dc6a6a74d5dc4b4f37f6ae42c2de3a226c4"
+    },
+    "pilot-results.json": {
+      "status": "passed; screenshot review required",
+      "checks": 6,
+      "sha256": "de8a643f19339698c5386f725318a0c717ae299f09092a67ddbaf41276fdc91e"
+    },
+    "preview-linux-results.json": {
+      "status": "passed; screenshot review required",
+      "checks": 8,
+      "sha256": "b5a3033a0bfe1ca4622be8092ef2e3aa7b2af1ceb5de30851b6e95fe3c85e3cc"
+    },
+    "recording-results.json": {
+      "status": "passed; screenshot review required",
+      "checks": 4,
+      "sha256": "33eb80300edd2267c1bf129463b52ad5b12e60f9bf58f854031ef3e96af8d7b2"
+    },
+    "recovery-linux-results.json": {
+      "status": "passed; native screenshot review required",
+      "checks": 4,
+      "sha256": "26d3ac6c6108e81ba24cfe577227376952f8cd9a5811f365cc1a02dc35a83e85"
+    },
+    "route-input-results.json": {
+      "status": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+      "checks": null,
+      "sha256": "c036f13d40dedab855604216423a7b453eec2077b06420c1d21e253280dd6b81"
+    },
+    "route-progress-results.json": {
+      "status": "passed",
+      "checks": 26,
+      "sha256": "605b0b04ce61380a3b19188987669668ca45c5a0dd29730f5f693f77e170594a"
+    },
+    "signalk-results.json": {
+      "status": "passed",
+      "checks": 5,
+      "sha256": "e04aad1996453bba0420af3b2f2a4d19ebef23799ae9182480afd9804bf8430b"
+    },
+    "user-flows-results.json": {
+      "status": "passed; native screenshots require review",
+      "checks": 8,
+      "sha256": "73eebf79f0bb83c22afea1fa1e5fc61cd18688f2b9687d2fe57f18b106362f63"
+    }
+  },
+  "modeCycle": {
+    "steps": [
+      {
+        "step": "XNav to Legacy",
+        "persistence": "pass"
+      },
+      {
+        "step": "Legacy to XNav",
+        "persistence": "pass"
+      },
+      {
+        "step": "Final IPC close",
+        "persistence": "pass"
+      },
+      {
+        "step": "Safe override and close",
+        "persistence": "pass"
+      },
+      {
+        "step": "Persisted XNav after Safe Mode",
+        "persistence": "pass"
+      }
+    ],
+    "launches": [
+      {
+        "phase": "01-xnav-and-controlled-restarts",
+        "pid": 16498,
+        "stdout": "linux-mode-cycle-01-xnav-and-controlled-restarts.stdout.log",
+        "stderr": "linux-mode-cycle-01-xnav-and-controlled-restarts.stderr.log",
+        "return_code_before_cleanup": 0
+      },
+      {
+        "phase": "02-xnav-quit",
+        "pid": 16759,
+        "stdout": "linux-mode-cycle-02-xnav-quit.stdout.log",
+        "stderr": "linux-mode-cycle-02-xnav-quit.stderr.log",
+        "return_code_before_cleanup": 0
+      },
+      {
+        "phase": "03-safe",
+        "pid": 16776,
+        "stdout": "linux-mode-cycle-03-safe.stdout.log",
+        "stderr": "linux-mode-cycle-03-safe.stderr.log",
+        "return_code_before_cleanup": 0
+      },
+      {
+        "phase": "04-safe-quit",
+        "pid": 16820,
+        "stdout": "linux-mode-cycle-04-safe-quit.stdout.log",
+        "stderr": "linux-mode-cycle-04-safe-quit.stderr.log",
+        "return_code_before_cleanup": 0
+      },
+      {
+        "phase": "05-normal-after-safe",
+        "pid": 16835,
+        "stdout": "linux-mode-cycle-05-normal-after-safe.stdout.log",
+        "stderr": "linux-mode-cycle-05-normal-after-safe.stderr.log",
+        "return_code_before_cleanup": 0
+      },
+      {
+        "phase": "06-normal-quit",
+        "pid": 16883,
+        "stdout": "linux-mode-cycle-06-normal-quit.stdout.log",
+        "stderr": "linux-mode-cycle-06-normal-quit.stderr.log",
+        "return_code_before_cleanup": 0
+      }
+    ],
+    "peerBoundary": [
+      {
+        "profile_preserved": true,
+        "pid": 16498,
+        "owned_tcp_listener_ports": []
+      },
+      {
+        "profile_preserved": true,
+        "pid": 16657,
+        "owned_tcp_listener_ports": []
+      },
+      {
+        "profile_preserved": true,
+        "pid": 16704,
+        "owned_tcp_listener_ports": []
+      },
+      {
+        "profile_preserved": true,
+        "pid": 16776,
+        "owned_tcp_listener_ports": []
+      },
+      {
+        "profile_preserved": true,
+        "pid": 16835,
+        "owned_tcp_listener_ports": []
+      }
+    ]
+  },
+  "fixtureExecutable": {
+    "reportedSha256": "1e29921879888a4b3d2f94e7d0d4d962fb234a29b890d84a18cf0a9609225dfa",
+    "independentlyRehashed": false
+  },
+  "separateChecks": {
+    "peerBufferCTest": 1,
+    "floatingSurface": 17,
+    "GTKFrameRecapture": 34
+  },
+  "sourceBindings": {
+    "source": "e768b06bf5c130038abfd6e1166da0078037cb5b",
+    "files": {
+      "tools/TrustProbeConsole.h": {
+        "bytes": 2113,
+        "sha256": "9f78cfb60b40454fdbeaf4fc4a868b3f82e55f8aa94f565665f50fda42764edc"
+      },
+      "tools/downloader-trust-probe.cpp": {
+        "bytes": 1858,
+        "sha256": "3c78d53caa9286f68867aeff955dca91145b87aeb241badbced9af61ecb7f5de"
+      },
+      "tools/wxcurl-trust-probe.cpp": {
+        "bytes": 2424,
+        "sha256": "9d23cc2f2f69909d462e56b4cee8eb773849ca8205ffbcb53c20a1c506b241ee"
+      },
+      "tools/test-downloader-trust.py": {
+        "bytes": 9144,
+        "sha256": "5bc4d97b9a233a5d2da17984741bd5df44b506cffaa8ba0803b671f85df0c8de"
+      },
+      "tools/test-wxcurl-trust.py": {
+        "bytes": 9292,
+        "sha256": "74007a5bb14469489bfc4cca7fa2e9e61f7b7f13ab8aedf29de1c308a5372d23"
+      },
+      "tools/prepare-ocharts-adapter.py": {
+        "bytes": 17198,
+        "sha256": "600794d5d31bc33732057e01871e02c331f04c66a5094ae8c0670270a12d74df"
+      },
+      "tools/build-production-linux.sh": {
+        "bytes": 2164,
+        "sha256": "09db96685e0b7892055dfde32c99ff9a5ead41dcaca23d6c3a3325a08b209f0a"
+      },
+      ".github/workflows/opennav-baseline.yml": {
+        "bytes": 50790,
+        "sha256": "29894c4471453ef0b183513a4dba3b80c20c27b7b2fac0a3980515c61c8a1a8d"
+      },
+      "release/qualification.json": {
+        "bytes": 746,
+        "sha256": "2ccd0a025b1cf3ad6f2cf1f2aeeaf55becae28d58fa4973a1d352e6838741c90"
+      },
+      "patches/opencpn-5.12.4-download-trust.patch": {
+        "bytes": 12103,
+        "sha256": "04763cb038ad088a722e76d4f85bde7e356489b697a373458195336d4278412b"
+      },
+      "patches/opencpn-5.12.4-wxcurl-trust.patch": {
+        "bytes": 4944,
+        "sha256": "f3ad76fc07b80e6f2c01331894ce5e685f6aa4456a2a3c761e3115c8c21f3d6b"
+      }
+    },
+    "scope": "Git source identities; not independently recovered executable hashes"
+  },
+  "chartReviewHandoff": {
+    "images": {
+      "chart-software-01-loaded-linux.png": {
+        "bytes": 247181,
+        "sha256": "5b5c9100f2d6c359012ddbc641589c107ad6e0186f86d5722871e164c8aa8d80",
+        "pixels": [
+          1280,
+          800
+        ]
+      },
+      "chart-software-06-returned-linux.png": {
+        "bytes": 247507,
+        "sha256": "df58503d89e9168c034681d1d6ebe84cb9e1a9f0588f0ff5ef218f25711df328",
+        "pixels": [
+          1280,
+          800
+        ]
+      },
+      "chart-opengl-01-loaded-linux.png": {
+        "bytes": 203626,
+        "sha256": "7aeee08a6519f576b6ac4d3eef3f78345aecb17608a9f112d3e8dd9b7ca71abc",
+        "pixels": [
+          1280,
+          800
+        ]
+      },
+      "chart-opengl-06-returned-linux.png": {
+        "bytes": 203994,
+        "sha256": "81b60ef704abdd77469d7e1cbbb7fb8f0d57fe19249c2ee9451891dadd883098",
+        "pixels": [
+          1280,
+          800
+        ]
+      }
+    },
+    "phases": [
+      {
+        "requested": "software",
+        "actualOpenGL": false,
+        "glStatus": null
+      },
+      {
+        "requested": "opengl",
+        "actualOpenGL": true,
+        "glStatus": "enabled; inspect renderer log"
+      }
+    ],
+    "renderers": [
+      "llvmpipe (LLVM 20.1.2, 256 bits)"
+    ],
+    "sourceReport": "charts-results.json",
+    "visualAcceptanceClaimed": false
+  },
+  "selectedOriginalReports": {
+    "count": 27,
+    "bytes": 63071,
+    "sha256": "d3db5223051fabf4aaab03542eb0cdd9f0eb0d7bc5ad9ec526eb523a6fde9830",
+    "members": {
+      "boat-input-results.json": {
+        "bytes": 1367,
+        "sha256": "ae4f4059bd1f597ee11d2e3b191cf4c934f1970278e1ee46722a7c3fd4a0fb5c"
+      },
+      "charts-results.json": {
+        "bytes": 63502,
+        "sha256": "e75fa84f99335dc54c2e74ec9a6359941be1077209a7de2751acc36415910e74"
+      },
+      "downloader-trust-linux.json": {
+        "bytes": 1438,
+        "sha256": "753f0837fc897271f78ab3e20414f9d9da1e7b7ac5f422ff3d5844a1fe9f7fd0"
+      },
+      "floating-surface-linux.log": {
+        "bytes": 404,
+        "sha256": "e350c5380ee499c65aae8ed0381c4724963fb1379c5d1a46523efed5603bad00"
+      },
+      "frame-recapture/result.json": {
+        "bytes": 2649,
+        "sha256": "49da200014ee8cc79bcb75e3fd28a1b3218109a5bf3fe68da9b3fcc11c7ea4ae"
+      },
+      "installer-loader-selftest.json": {
+        "bytes": 842,
+        "sha256": "dd630cd04c6f00c54082a6bd176d4bd8c5ca6ce47ac76aef1cb242153934f478"
+      },
+      "instruments-input-results.json": {
+        "bytes": 1253,
+        "sha256": "8912b54ade9ee1484b5d07ac434f221c1014c01d35836d948d8d09a581d52d1b"
+      },
+      "linux-mode-cycle-results.json": {
+        "bytes": 4293,
+        "sha256": "3bbd071dad1a3fc1ad4e29779e0015b82e04da7fc3c728f6c7e00cab512d809d"
+      },
+      "n2k-input-results.json": {
+        "bytes": 1388,
+        "sha256": "5bebcb3d322461d6cb59f7564979048df553d6f51ffcbe7cd74972b8ad24d5aa"
+      },
+      "navigation-input-results.json": {
+        "bytes": 5574,
+        "sha256": "0afc0c66cf30d18b02f8380fb4f53ee58b6086ca514ac68e4c065c543a8e0922"
+      },
+      "objects-input-results.json": {
+        "bytes": 26180,
+        "sha256": "01b104d35f3dc50dde8fa46f48be4dc6a6a74d5dc4b4f37f6ae42c2de3a226c4"
+      },
+      "peer-buffer-linux.log": {
+        "bytes": 1014,
+        "sha256": "b7bf875f5708b71b48a262f777f3260030c52dc1a79abd2cbfe00d66915312f1"
+      },
+      "pilot-results.json": {
+        "bytes": 3040,
+        "sha256": "de8a643f19339698c5386f725318a0c717ae299f09092a67ddbaf41276fdc91e"
+      },
+      "pilot-status-only/pilot-results.json": {
+        "bytes": 900,
+        "sha256": "795a593b0b02456e0d8e900216c4f739f7a6fe0d468e9006bd89d29b3f0707e6"
+      },
+      "preview-linux-results.json": {
+        "bytes": 44492,
+        "sha256": "b5a3033a0bfe1ca4622be8092ef2e3aa7b2af1ceb5de30851b6e95fe3c85e3cc"
+      },
+      "production-linux-tests.log": {
+        "bytes": 27504,
+        "sha256": "246cbcf21e7dff93a6d0c59929afe5a8e4f7911090c31e2abfd24126a1159171"
+      },
+      "production-linux-tests.xml": {
+        "bytes": 127527,
+        "sha256": "52298914b6ba51f9a80577f57e62aad6c7fc1f5eb5608a2f28559f0778bfc0db"
+      },
+      "recording-results.json": {
+        "bytes": 891,
+        "sha256": "33eb80300edd2267c1bf129463b52ad5b12e60f9bf58f854031ef3e96af8d7b2"
+      },
+      "recovery-linux-results.json": {
+        "bytes": 1635,
+        "sha256": "26d3ac6c6108e81ba24cfe577227376952f8cd9a5811f365cc1a02dc35a83e85"
+      },
+      "route-input-results.json": {
+        "bytes": 26254,
+        "sha256": "c036f13d40dedab855604216423a7b453eec2077b06420c1d21e253280dd6b81"
+      },
+      "route-progress-results.json": {
+        "bytes": 20993,
+        "sha256": "605b0b04ce61380a3b19188987669668ca45c5a0dd29730f5f693f77e170594a"
+      },
+      "signalk-results.json": {
+        "bytes": 671,
+        "sha256": "e04aad1996453bba0420af3b2f2a4d19ebef23799ae9182480afd9804bf8430b"
+      },
+      "soak/results.json": {
+        "bytes": 299,
+        "sha256": "d1ee7427063cd4c1431505662f4308221de3e72e136d44d216020460acafe199"
+      },
+      "user-flows-results.json": {
+        "bytes": 30967,
+        "sha256": "73eebf79f0bb83c22afea1fa1e5fc61cd18688f2b9687d2fe57f18b106362f63"
+      },
+      "wxcurl-trust-linux.log": {
+        "bytes": 11625,
+        "sha256": "d7ca06992140a4d283c3a067c25604b986bebdc48703adcef1a2ea5194e04344"
+      },
+      "xnav-linux-tests.log": {
+        "bytes": 27492,
+        "sha256": "32b81a36c364511e1a2ea7dcc5654d1f1a77e9c5d4cf1a362d64fd2e709ddc9f"
+      },
+      "xnav-linux-tests.xml": {
+        "bytes": 126669,
+        "sha256": "bca2e67eeaaecf7171a678db264d724ef81ba220740674383ab5fab6ad08a5f5"
+      }
+    }
+  },
+  "limitations": [
+    "Linux development only; no Windows/boat/installer/release qualification.",
+    "Numeric/stale/screenshot review caveats remain. No new captures or screenshot acceptance.",
+    "Endurance explicitly skipped, not passed.",
+    "Fixture simulated pilot sends seven commands; separate product status-only report records zero output.",
+    "No app binary in archive for independent hashing."
+  ]
+}

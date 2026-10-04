@@ -691,24 +691,60 @@ try:
         setup('Update',original,expected=1,failure='during-extraction')
         unchanged();assert not (INSTALL/'transaction.json').exists()
         check('Interrupted extraction never publishes incomplete generation or changes active state')
-        # Deliberately trusted CI package with one dependency absent: valid ZIP
-        # and manifest hashes are insufficient; the real staged loader must fail.
+        # Valid ZIP/manifest hashes are insufficient: dependency closure must
+        # reject this unpublished stage before invoking the application loader.
         manifest=json.loads((PACKAGE/'package.json').read_text())
-        dependency=next(f['path'] for f in manifest['files'] if f['path'].lower().startswith('app/wxbase') and f['path'].endswith('.dll'))
+        # Use the base library, not whichever optional wx library sorts first,
+        # so the separate real-loader check below also has a required import.
+        dependencies=[f['path'] for f in manifest['files'] if f['path'].lower()=='app/wxbase32u_vc14x.dll']
+        assert len(dependencies)==1,dependencies
+        dependency=dependencies[0]
         with zipfile.ZipFile(PACKAGE/'payload.zip') as source, zipfile.ZipFile(damaged_package/'payload.zip','w',zipfile.ZIP_DEFLATED) as target:
             for entry in source.infolist():
                 if entry.filename!=dependency:target.writestr(entry,source.read(entry.filename))
         manifest['files']=[f for f in manifest['files'] if f['path']!=dependency]
         manifest['payloadSha256']=sha(damaged_package/'payload.zip')
         (damaged_package/'package.json').write_text(json.dumps(manifest))
-        # The production loader boundary must suppress its own OS error UI;
-        # an ambient Python error-mode override cannot qualify the installer.
+        stages_before=set((INSTALL/'generations').iterdir())
         failure=package_engine(damaged_package,original)
-        assert failure['error'].startswith('Staged executable self-test failed:'),failure
+        stages_after=set((INSTALL/'generations').iterdir())-stages_before
+        assert len(stages_after)==1,stages_after
+        stage=stages_after.pop().resolve()
+        assert stage.is_dir() and len(stage.name)==32 and all(c in '0123456789abcdef' for c in stage.name)
+        assert not (stage/'ownership.json').exists() and not (INSTALL/'transaction.json').exists()
+        prefix='Missing app-local PE import '+Path(dependency).name.lower()+' in '
+        assert failure['status']=='failed' and failure['action']=='Update' and failure['error'].startswith(prefix),failure
+        importer=Path(failure['error'][len(prefix):]).resolve()
+        assert importer.is_file() and importer.is_relative_to(stage/'app'),failure
+        assert not (stage/dependency).exists()
         for _ in range(10):
             assert not any(title=='opencpn.exe - System Error' for _,_,title in ui.windows()),'Loader failure left an operating-system modal dialog'
             time.sleep(.1)
-        unchanged();check('Missing required wx DLL exits with loader failure before commit, without OS modal residue')
+        unchanged();check('Exact missing wx base import rejected before loader or commit, without OS modal residue')
+        # Exercise the unchanged production SelfTest separately on this private
+        # failed stage. Never bypass dependency closure in the installer path.
+        loader_report=EVIDENCE/'installer-missing-dll-selftest.json'
+        helper=ROOT/'tools/test-installer-missing-dll-selftest.ps1'
+        with (EVIDENCE/'installer-missing-dll-selftest.log').open('wb') as output:
+            child=subprocess.Popen([str(PS),'-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass',
+                '-File',str(helper),'-Stage',str(stage),'-ExpectedExecutableSha256',sha(ROOT/'build/production-install/opencpn.exe'),
+                '-MissingDependency',Path(dependency).name,'-Commit',manifest['commit'],'-Version',manifest['version'],
+                '-Report',str(loader_report)],stdout=output,stderr=subprocess.STDOUT)
+            try:code=child.wait(timeout=90)
+            except subprocess.TimeoutExpired:
+                subprocess.run(['taskkill','/PID',str(child.pid),'/T','/F'],capture_output=True,timeout=15)
+                child.wait(timeout=10)
+                raise
+        assert code==0,'Missing-DLL SelfTest proof failed; inspect retained log/receipt'
+        loader=json.loads(loader_report.read_text(encoding='utf-8-sig'))
+        assert loader['status']=='passed' and loader['error']=='Staged executable self-test failed: -1073741515',loader
+        assert loader['sourceSha256']==sha(ROOT/'installer/windows/Lifecycle.ps1') and loader['executableSha256']==sha(ROOT/'build/production-install/opencpn.exe'),loader
+        assert loader['initialErrorMode']==0 and loader['restoredErrorMode']==0,loader
+        for _ in range(10):
+            assert not any(title=='opencpn.exe - System Error' for _,_,title in ui.windows()),'SelfTest left an operating-system modal dialog'
+            time.sleep(.1)
+        unchanged();assert not (stage/'ownership.json').exists() and not (INSTALL/'transaction.json').exists()
+        check('Actual production SelfTest suppresses missing-DLL OS dialog and restores error mode in separate failed-stage process')
         # A correctly hashed fixture-enabled executable is still forbidden in
         # the installed product. Exercise the actual native loader identity,
         # not merely a package label or cache option.

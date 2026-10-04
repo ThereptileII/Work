@@ -661,6 +661,53 @@ jobs:
           name: windows-installer-failure-${{ github.sha }}
           path: opennav-x/evidence/local/installer-*
           if-no-files-found: error
+      # Failed qualification must never publish a candidate. Preserve the
+      # already-built inputs separately so a test-harness correction can be
+      # verified against the same bytes without recompiling the application.
+      - name: Inventory unqualified installer retest inputs
+        id: retest_inputs
+        if: ${{ !cancelled() && steps.installer.conclusion == 'failure' }}
+        shell: python
+        run: |
+          import hashlib, json, os
+          from pathlib import Path
+          root = Path('opennav-x')
+          inputs = [root/'build/beta-installer', root/'build/xnav-install',
+                    root/'build/production-install', root/'build/production-windows/include/config.h',
+                    root/'build/developer-preview/SKAGER-Beta2-Portable-Recovery/docs/PRODUCT_BUILD.json',
+                    root/'build/developer-preview/SKAGER-Beta2-Portable-Recovery.zip',
+                    root/'build/developer-preview/SKAGER-Beta2-source.zip']
+          files = []
+          for item in inputs:
+              assert item.exists(), f'Missing diagnostic retest input: {item}'
+              for path in sorted(item.rglob('*')) if item.is_dir() else [item]:
+                  assert not path.is_symlink(), f'Unexpected linked input: {path}'
+                  if path.is_file():
+                      with path.open('rb') as stream:
+                          digest = hashlib.file_digest(stream, 'sha256').hexdigest()
+                      files.append({'path': path.relative_to(root).as_posix(),
+                                    'bytes': path.stat().st_size,
+                                    'sha256': digest})
+          report = {'schema': 1, 'qualification': 'FAILED - diagnostic retest inputs only; not for installation or delivery',
+                    'commit': os.environ['GITHUB_SHA'], 'runId': os.environ['GITHUB_RUN_ID'],
+                    'runAttempt': os.environ['GITHUB_RUN_ATTEMPT'], 'files': files}
+          (root/'evidence/local/unqualified-installer-inputs.json').write_text(json.dumps(report, indent=2)+'\n')
+      - name: Retain unqualified binaries for exact-byte installer diagnosis
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: ${{ !cancelled() && steps.installer.conclusion == 'failure' && steps.retest_inputs.conclusion == 'success' }}
+        with:
+          name: unqualified-windows-installer-inputs-${{ github.sha }}
+          path: |
+            opennav-x/evidence/local/unqualified-installer-inputs.json
+            opennav-x/build/beta-installer
+            opennav-x/build/xnav-install
+            opennav-x/build/production-install
+            opennav-x/build/production-windows/include/config.h
+            opennav-x/build/developer-preview/SKAGER-Beta2-Portable-Recovery/docs/PRODUCT_BUILD.json
+            opennav-x/build/developer-preview/SKAGER-Beta2-Portable-Recovery.zip
+            opennav-x/build/developer-preview/SKAGER-Beta2-source.zip
+          compression-level: 0
+          if-no-files-found: error
       - name: Native 100 / 125 / 150 percent DPI and touch interactions
         id: dpi
         if: ${{ !cancelled() && steps.integrated.conclusion == 'success' }}

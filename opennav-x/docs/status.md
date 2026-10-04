@@ -1,8 +1,49 @@
 # SKAGER status — 2026-10-04
 
-## Current boat-test candidate — native-proven ownership repair, endurance skipped
+## Current boat-test candidate — chart binding passes, installer test correction
 
-The single replacement is `ecf7e0c46609cf4cb29141964d7c4bde98b002b7`
+The single active replacement is `55ef51e4944e8570f6a391dad20b0db8447a7443`
+(frozen local `e768b06bf5c130038abfd6e1166da0078037cb5b`),
+[run 37199379614](https://github.com/ThereptileII/Work/actions/runs/37199379614).
+Its [complete 6,862-entry mapped tree](evidence/skager-chart-mutex-e768-publication.json)
+is independently reconstructed. Publication followed the bounded native
+before/after mutex proof and independent review. The private adapter now uses
+the pinned host's existing MSVC compatibility definition; explicit early-check
+stages retain diagnostics if loading fails. Chart artwork, UI, typography and
+TLS policy are unchanged. Independent trust/peer checks can finish after a
+successful production build even if the module check fails, but packaging still
+requires every original gate. Exact-commit Linux qualification has passed as
+recorded below. The actual native product/module, trust, peer, recovery-package,
+DPI and chart gates now pass. The installer test stopped after 34 checks when
+its intentionally missing DLL was correctly refused by the earlier PE-import
+guard: the test still expected a later loader error. No eligible delivery was
+produced and no boat installation has changed. The [test correction](evidence/scrum217-installer-dependency-gate.md)
+requires the exact missing import and retains a separate actual missing-DLL
+loader check. Application and installer implementation remain unchanged.
+Endurance is explicitly skipped.
+
+The replacement's [completed contracts](evidence/contracts-55ef51e/README.md)
+pass 94 Linux and 91 Windows cases, with no failures or skips, plus ten additional
+executions of the existing restart test on each platform. Its independently
+verified [same-run restart receipt](evidence/restart-55ef51e/README.md) retains
+the exact source/run/attempt and all four prerequisite successes. These do not
+replace the native application or the required package/boat gates.
+
+The [exact replacement Linux artifact](evidence/linux-55ef51e/README.md) now
+passes independent original size/digest and 4,251-entry CRC verification. Both
+fixture and fixture-free applications pass 147 cases; actual core Downloader
+and wxCurl pass 12 and 13 cases respectively. Product reports fixtures disabled,
+status-only and zero loopback output. Endurance is explicitly skipped. Four
+original chart captures retain ENC/coastline after Legacy return in software
+and llvmpipe OpenGL. Their glyph forms differ; no actual preferred font face,
+individual symbol family, physical GPU or private-chart acceptance is inferred.
+The original native Windows artifact is retained as `11305580491`, SHA-256
+`747e38e8d88c4e49fca6b6efb181101db10824ac87cf55f6e0be80011e8bec7a`.
+Installer completion, eligible delivery and boat review remain open.
+
+### Preceding ecf7e0c candidate and verified chart binding correction
+
+The preceding replacement is `ecf7e0c46609cf4cb29141964d7c4bde98b002b7`
 (frozen local `1988df7a8a0ae8ddc6365ca46026d32fccfa0bdc`),
 [run 37191400051](https://github.com/ThereptileII/Work/actions/runs/37191400051).
 Its [complete 6,833-entry mapped tree](evidence/skager-console-ownership-1988-publication.json)

@@ -1,14 +1,17 @@
 # XNav chart presentation — source inspection and palette contract
 
-Current frozen candidate local `1988df7a8a0ae8ddc6365ca46026d32fccfa0bdc` /
-published `ecf7e0c46609cf4cb29141964d7c4bde98b002b7` retains the combined
+Current frozen candidate local `e768b06bf5c130038abfd6e1166da0078037cb5b` /
+published `55ef51e4944e8570f6a391dad20b0db8447a7443` retains the combined
 symbol, font, neutral structural paint, 124-DIP logo and warning changes below.
-Its [verified publication receipt](../evidence/skager-console-ownership-1988-publication.json)
-binds [run 37191400051](https://github.com/ThereptileII/Work/actions/runs/37191400051).
-The [original Linux evidence](../evidence/linux-ecf7e0c/README.md) passes its
+Its [verified publication receipt](../evidence/skager-chart-mutex-e768-publication.json)
+binds [run 37199379614](https://github.com/ThereptileII/Work/actions/runs/37199379614).
+That exact-commit qualification is pending. The preceding candidate's
+[original Linux evidence](../evidence/linux-ecf7e0c/README.md) passes its
 integrated gates and retains software/Mesa chart content after Legacy return.
-Native Windows qualification stopped at the real-host private-module check
-after the fixture-free product build passed. Close-symbol, private-chart,
+Its native Windows qualification stopped at the real-host private-module check
+after the fixture-free product build passed. The replacement follows an
+[independently verified native mutex compatibility proof](../evidence/scrum259-native-binding-runtime/README.md)
+and changes no chart paint or typography. Close-symbol, private-chart,
 physical-GPU and boat-font acceptance remain open; the Linux images do not
 establish complete prototype conformance. Endurance is explicitly skipped.
 

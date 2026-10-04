@@ -1,0 +1,930 @@
+{
+  "retrievedUtc": "2026-10-04T11:45:01.653Z",
+  "run": {
+    "id": 37199379614,
+    "name": "SKAGER Beta 2",
+    "node_id": "WFR_kwLOM4BDHM8AAAAIqUF8ng",
+    "head_branch": "opennav-x-beta2-ui",
+    "head_sha": "55ef51e4944e8570f6a391dad20b0db8447a7443",
+    "path": ".github/workflows/opennav-baseline.yml",
+    "display_title": "fix: align private chart binding runtime with the pinned host",
+    "run_number": 164,
+    "event": "push",
+    "status": "in_progress",
+    "conclusion": null,
+    "workflow_id": 363438225,
+    "check_suite_id": 100759832241,
+    "check_suite_node_id": "CS_kwDOM4BDHM8AAAAXdcEGsQ",
+    "url": "https://api.github.com/repos/ThereptileII/Work/actions/runs/37199379614",
+    "html_url": "https://github.com/ThereptileII/Work/actions/runs/37199379614",
+    "pull_requests": [],
+    "created_at": "2026-10-04T11:37:38Z",
+    "updated_at": "2026-10-04T11:37:43Z",
+    "actor": {
+      "login": "ThereptileII",
+      "id": 183085704,
+      "node_id": "U_kgDOCumqiA",
+      "avatar_url": "https://avatars.githubusercontent.com/u/183085704?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/ThereptileII",
+      "html_url": "https://github.com/ThereptileII",
+      "followers_url": "https://api.github.com/users/ThereptileII/followers",
+      "following_url": "https://api.github.com/users/ThereptileII/following{/other_user}",
+      "gists_url": "https://api.github.com/users/ThereptileII/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/ThereptileII/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/ThereptileII/subscriptions",
+      "organizations_url": "https://api.github.com/users/ThereptileII/orgs",
+      "repos_url": "https://api.github.com/users/ThereptileII/repos",
+      "events_url": "https://api.github.com/users/ThereptileII/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/ThereptileII/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "run_attempt": 1,
+    "referenced_workflows": [],
+    "run_started_at": "2026-10-04T11:37:38Z",
+    "triggering_actor": {
+      "login": "ThereptileII",
+      "id": 183085704,
+      "node_id": "U_kgDOCumqiA",
+      "avatar_url": "https://avatars.githubusercontent.com/u/183085704?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/ThereptileII",
+      "html_url": "https://github.com/ThereptileII",
+      "followers_url": "https://api.github.com/users/ThereptileII/followers",
+      "following_url": "https://api.github.com/users/ThereptileII/following{/other_user}",
+      "gists_url": "https://api.github.com/users/ThereptileII/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/ThereptileII/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/ThereptileII/subscriptions",
+      "organizations_url": "https://api.github.com/users/ThereptileII/orgs",
+      "repos_url": "https://api.github.com/users/ThereptileII/repos",
+      "events_url": "https://api.github.com/users/ThereptileII/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/ThereptileII/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "jobs_url": "https://api.github.com/repos/ThereptileII/Work/actions/runs/37199379614/jobs",
+    "logs_url": "https://api.github.com/repos/ThereptileII/Work/actions/runs/37199379614/logs",
+    "check_suite_url": "https://api.github.com/repos/ThereptileII/Work/check-suites/100759832241",
+    "artifacts_url": "https://api.github.com/repos/ThereptileII/Work/actions/runs/37199379614/artifacts",
+    "cancel_url": "https://api.github.com/repos/ThereptileII/Work/actions/runs/37199379614/cancel",
+    "rerun_url": "https://api.github.com/repos/ThereptileII/Work/actions/runs/37199379614/rerun",
+    "previous_attempt_url": null,
+    "workflow_url": "https://api.github.com/repos/ThereptileII/Work/actions/workflows/363438225",
+    "head_commit": {
+      "id": "55ef51e4944e8570f6a391dad20b0db8447a7443",
+      "tree_id": "626cd31db4349b46ec98d7ad7534b789833ec15b",
+      "message": "fix: align private chart binding runtime with the pinned host\n\nMapped local e768b06bf5c130038abfd6e1166da0078037cb5b. Native BindingState before/after proof passed before publication; retain all actual host, package and boat gates. Endurance explicitly skipped.",
+      "timestamp": "2026-10-04T11:32:48Z",
+      "author": {
+        "name": "ThereptileII",
+        "email": "swedishcountrysideliving@gmail.com"
+      },
+      "committer": {
+        "name": "ThereptileII",
+        "email": "swedishcountrysideliving@gmail.com"
+      }
+    },
+    "repository": {
+      "id": 864043804,
+      "node_id": "R_kgDOM4BDHA",
+      "name": "Work",
+      "full_name": "ThereptileII/Work",
+      "private": false,
+      "owner": {
+        "login": "ThereptileII",
+        "id": 183085704,
+        "node_id": "U_kgDOCumqiA",
+        "avatar_url": "https://avatars.githubusercontent.com/u/183085704?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/ThereptileII",
+        "html_url": "https://github.com/ThereptileII",
+        "followers_url": "https://api.github.com/users/ThereptileII/followers",
+        "following_url": "https://api.github.com/users/ThereptileII/following{/other_user}",
+        "gists_url": "https://api.github.com/users/ThereptileII/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/ThereptileII/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/ThereptileII/subscriptions",
+        "organizations_url": "https://api.github.com/users/ThereptileII/orgs",
+        "repos_url": "https://api.github.com/users/ThereptileII/repos",
+        "events_url": "https://api.github.com/users/ThereptileII/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/ThereptileII/received_events",
+        "type": "User",
+        "user_view_type": "public",
+        "site_admin": false
+      },
+      "html_url": "https://github.com/ThereptileII/Work",
+      "description": "Random work enteties",
+      "fork": false,
+      "url": "https://api.github.com/repos/ThereptileII/Work",
+      "forks_url": "https://api.github.com/repos/ThereptileII/Work/forks",
+      "keys_url": "https://api.github.com/repos/ThereptileII/Work/keys{/key_id}",
+      "collaborators_url": "https://api.github.com/repos/ThereptileII/Work/collaborators{/collaborator}",
+      "teams_url": "https://api.github.com/repos/ThereptileII/Work/teams",
+      "hooks_url": "https://api.github.com/repos/ThereptileII/Work/hooks",
+      "issue_events_url": "https://api.github.com/repos/ThereptileII/Work/issues/events{/number}",
+      "events_url": "https://api.github.com/repos/ThereptileII/Work/events",
+      "assignees_url": "https://api.github.com/repos/ThereptileII/Work/assignees{/user}",
+      "branches_url": "https://api.github.com/repos/ThereptileII/Work/branches{/branch}",
+      "tags_url": "https://api.github.com/repos/ThereptileII/Work/tags",
+      "blobs_url": "https://api.github.com/repos/ThereptileII/Work/git/blobs{/sha}",
+      "git_tags_url": "https://api.github.com/repos/ThereptileII/Work/git/tags{/sha}",
+      "git_refs_url": "https://api.github.com/repos/ThereptileII/Work/git/refs{/sha}",
+      "trees_url": "https://api.github.com/repos/ThereptileII/Work/git/trees{/sha}",
+      "statuses_url": "https://api.github.com/repos/ThereptileII/Work/statuses/{sha}",
+      "languages_url": "https://api.github.com/repos/ThereptileII/Work/languages",
+      "stargazers_url": "https://api.github.com/repos/ThereptileII/Work/stargazers",
+      "contributors_url": "https://api.github.com/repos/ThereptileII/Work/contributors",
+      "subscribers_url": "https://api.github.com/repos/ThereptileII/Work/subscribers",
+      "subscription_url": "https://api.github.com/repos/ThereptileII/Work/subscription",
+      "commits_url": "https://api.github.com/repos/ThereptileII/Work/commits{/sha}",
+      "git_commits_url": "https://api.github.com/repos/ThereptileII/Work/git/commits{/sha}",
+      "comments_url": "https://api.github.com/repos/ThereptileII/Work/comments{/number}",
+      "issue_comment_url": "https://api.github.com/repos/ThereptileII/Work/issues/comments{/number}",
+      "contents_url": "https://api.github.com/repos/ThereptileII/Work/contents/{+path}",
+      "compare_url": "https://api.github.com/repos/ThereptileII/Work/compare/{base}...{head}",
+      "merges_url": "https://api.github.com/repos/ThereptileII/Work/merges",
+      "archive_url": "https://api.github.com/repos/ThereptileII/Work/{archive_format}{/ref}",
+      "downloads_url": "https://api.github.com/repos/ThereptileII/Work/downloads",
+      "issues_url": "https://api.github.com/repos/ThereptileII/Work/issues{/number}",
+      "pulls_url": "https://api.github.com/repos/ThereptileII/Work/pulls{/number}",
+      "milestones_url": "https://api.github.com/repos/ThereptileII/Work/milestones{/number}",
+      "notifications_url": "https://api.github.com/repos/ThereptileII/Work/notifications{?since,all,participating}",
+      "labels_url": "https://api.github.com/repos/ThereptileII/Work/labels{/name}",
+      "releases_url": "https://api.github.com/repos/ThereptileII/Work/releases{/id}",
+      "deployments_url": "https://api.github.com/repos/ThereptileII/Work/deployments"
+    },
+    "head_repository": {
+      "id": 864043804,
+      "node_id": "R_kgDOM4BDHA",
+      "name": "Work",
+      "full_name": "ThereptileII/Work",
+      "private": false,
+      "owner": {
+        "login": "ThereptileII",
+        "id": 183085704,
+        "node_id": "U_kgDOCumqiA",
+        "avatar_url": "https://avatars.githubusercontent.com/u/183085704?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/ThereptileII",
+        "html_url": "https://github.com/ThereptileII",
+        "followers_url": "https://api.github.com/users/ThereptileII/followers",
+        "following_url": "https://api.github.com/users/ThereptileII/following{/other_user}",
+        "gists_url": "https://api.github.com/users/ThereptileII/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/ThereptileII/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/ThereptileII/subscriptions",
+        "organizations_url": "https://api.github.com/users/ThereptileII/orgs",
+        "repos_url": "https://api.github.com/users/ThereptileII/repos",
+        "events_url": "https://api.github.com/users/ThereptileII/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/ThereptileII/received_events",
+        "type": "User",
+        "user_view_type": "public",
+        "site_admin": false
+      },
+      "html_url": "https://github.com/ThereptileII/Work",
+      "description": "Random work enteties",
+      "fork": false,
+      "url": "https://api.github.com/repos/ThereptileII/Work",
+      "forks_url": "https://api.github.com/repos/ThereptileII/Work/forks",
+      "keys_url": "https://api.github.com/repos/ThereptileII/Work/keys{/key_id}",
+      "collaborators_url": "https://api.github.com/repos/ThereptileII/Work/collaborators{/collaborator}",
+      "teams_url": "https://api.github.com/repos/ThereptileII/Work/teams",
+      "hooks_url": "https://api.github.com/repos/ThereptileII/Work/hooks",
+      "issue_events_url": "https://api.github.com/repos/ThereptileII/Work/issues/events{/number}",
+      "events_url": "https://api.github.com/repos/ThereptileII/Work/events",
+      "assignees_url": "https://api.github.com/repos/ThereptileII/Work/assignees{/user}",
+      "branches_url": "https://api.github.com/repos/ThereptileII/Work/branches{/branch}",
+      "tags_url": "https://api.github.com/repos/ThereptileII/Work/tags",
+      "blobs_url": "https://api.github.com/repos/ThereptileII/Work/git/blobs{/sha}",
+      "git_tags_url": "https://api.github.com/repos/ThereptileII/Work/git/tags{/sha}",
+      "git_refs_url": "https://api.github.com/repos/ThereptileII/Work/git/refs{/sha}",
+      "trees_url": "https://api.github.com/repos/ThereptileII/Work/git/trees{/sha}",
+      "statuses_url": "https://api.github.com/repos/ThereptileII/Work/statuses/{sha}",
+      "languages_url": "https://api.github.com/repos/ThereptileII/Work/languages",
+      "stargazers_url": "https://api.github.com/repos/ThereptileII/Work/stargazers",
+      "contributors_url": "https://api.github.com/repos/ThereptileII/Work/contributors",
+      "subscribers_url": "https://api.github.com/repos/ThereptileII/Work/subscribers",
+      "subscription_url": "https://api.github.com/repos/ThereptileII/Work/subscription",
+      "commits_url": "https://api.github.com/repos/ThereptileII/Work/commits{/sha}",
+      "git_commits_url": "https://api.github.com/repos/ThereptileII/Work/git/commits{/sha}",
+      "comments_url": "https://api.github.com/repos/ThereptileII/Work/comments{/number}",
+      "issue_comment_url": "https://api.github.com/repos/ThereptileII/Work/issues/comments{/number}",
+      "contents_url": "https://api.github.com/repos/ThereptileII/Work/contents/{+path}",
+      "compare_url": "https://api.github.com/repos/ThereptileII/Work/compare/{base}...{head}",
+      "merges_url": "https://api.github.com/repos/ThereptileII/Work/merges",
+      "archive_url": "https://api.github.com/repos/ThereptileII/Work/{archive_format}{/ref}",
+      "downloads_url": "https://api.github.com/repos/ThereptileII/Work/downloads",
+      "issues_url": "https://api.github.com/repos/ThereptileII/Work/issues{/number}",
+      "pulls_url": "https://api.github.com/repos/ThereptileII/Work/pulls{/number}",
+      "milestones_url": "https://api.github.com/repos/ThereptileII/Work/milestones{/number}",
+      "notifications_url": "https://api.github.com/repos/ThereptileII/Work/notifications{?since,all,participating}",
+      "labels_url": "https://api.github.com/repos/ThereptileII/Work/labels{/name}",
+      "releases_url": "https://api.github.com/repos/ThereptileII/Work/releases{/id}",
+      "deployments_url": "https://api.github.com/repos/ThereptileII/Work/deployments"
+    }
+  },
+  "attemptJobCount": 16,
+  "jobs": {
+    "linux": {
+      "id": 111427724099,
+      "run_id": 37199379614,
+      "workflow_name": "SKAGER Beta 2",
+      "head_branch": "opennav-x-beta2-ui",
+      "run_url": "https://api.github.com/repos/ThereptileII/Work/actions/runs/37199379614",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOM4BDHM8AAAAZ8ZwjQw",
+      "head_sha": "55ef51e4944e8570f6a391dad20b0db8447a7443",
+      "url": "https://api.github.com/repos/ThereptileII/Work/actions/jobs/111427724099",
+      "html_url": "https://github.com/ThereptileII/Work/actions/runs/37199379614/job/111427724099",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-04T11:37:38Z",
+      "started_at": "2026-10-04T11:37:41Z",
+      "completed_at": "2026-10-04T11:40:36Z",
+      "name": "contracts (ubuntu-24.04)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-04T11:37:42Z",
+          "completed_at": "2026-10-04T11:37:42Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-04T11:37:42Z",
+          "completed_at": "2026-10-04T11:37:49Z"
+        },
+        {
+          "name": "Verify published distribution inputs before compilation",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-04T11:37:49Z",
+          "completed_at": "2026-10-04T11:37:49Z"
+        },
+        {
+          "name": "Verify corresponding-source archive structure and integrity",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-04T11:37:49Z",
+          "completed_at": "2026-10-04T11:37:50Z"
+        },
+        {
+          "name": "Same-job dependency evidence, tamper refusal and cache staging contracts",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-04T11:37:50Z",
+          "completed_at": "2026-10-04T11:37:56Z"
+        },
+        {
+          "name": "Native version probe stream identity and bounded failure contracts",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-04T11:37:56Z",
+          "completed_at": "2026-10-04T11:38:36Z"
+        },
+        {
+          "name": "Native version probe contracts in Windows PowerShell 5.1",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 7,
+          "started_at": "2026-10-04T11:38:36Z",
+          "completed_at": "2026-10-04T11:38:36Z"
+        },
+        {
+          "name": "Peer boundary monitor rejects tampering and filters listeners by process",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-04T11:38:36Z",
+          "completed_at": "2026-10-04T11:38:37Z"
+        },
+        {
+          "name": "Preserve reviewed notice bytes through Windows Git checkout",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-04T11:38:37Z",
+          "completed_at": "2026-10-04T11:38:37Z"
+        },
+        {
+          "name": "Verify relocated installer completion and failed fixture retention",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-10-04T11:38:37Z",
+          "completed_at": "2026-10-04T11:38:37Z"
+        },
+        {
+          "name": "Installer rejects unqualified XNav output policies",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-10-04T11:38:37Z",
+          "completed_at": "2026-10-04T11:38:38Z"
+        },
+        {
+          "name": "Staged installer normal and delay import closure fixtures",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-10-04T11:38:38Z",
+          "completed_at": "2026-10-04T11:38:39Z"
+        },
+        {
+          "name": "Verify the exact boat translator parser for host interoperability tests",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-10-04T11:38:39Z",
+          "completed_at": "2026-10-04T11:38:40Z"
+        },
+        {
+          "name": "Prepare reviewed boat producer expiry and actual codec oracle",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14,
+          "started_at": "2026-10-04T11:38:40Z",
+          "completed_at": "2026-10-04T11:38:40Z"
+        },
+        {
+          "name": "Installer filesystem contracts in native Windows PowerShell 5.1",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 15,
+          "started_at": "2026-10-04T11:38:40Z",
+          "completed_at": "2026-10-04T11:38:40Z"
+        },
+        {
+          "name": "Portable maintenance refusal and recovery identity contracts",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-10-04T11:38:40Z",
+          "completed_at": "2026-10-04T11:38:49Z"
+        },
+        {
+          "name": "Configure Linux contracts",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-10-04T11:38:49Z",
+          "completed_at": "2026-10-04T11:38:53Z"
+        },
+        {
+          "name": "Configure contracts for the supported Windows application ABI",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 18,
+          "started_at": "2026-10-04T11:38:53Z",
+          "completed_at": "2026-10-04T11:38:53Z"
+        },
+        {
+          "name": "Run cmake --build opennav-x/build/contracts --config Release",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-10-04T11:38:53Z",
+          "completed_at": "2026-10-04T11:40:07Z"
+        },
+        {
+          "name": "Run ctest --test-dir opennav-x/build/contracts -C Release --output-on-failure",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 20,
+          "started_at": "2026-10-04T11:40:07Z",
+          "completed_at": "2026-10-04T11:40:14Z"
+        },
+        {
+          "name": "Repeat the restart handoff with deliberately delayed result publication",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21,
+          "started_at": "2026-10-04T11:40:14Z",
+          "completed_at": "2026-10-04T11:40:33Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 42,
+          "started_at": "2026-10-04T11:40:33Z",
+          "completed_at": "2026-10-04T11:40:34Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 43,
+          "started_at": "2026-10-04T11:40:34Z",
+          "completed_at": "2026-10-04T11:40:34Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/ThereptileII/Work/check-runs/111427724099",
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "runner_id": 1000003470,
+      "runner_name": "GitHub Actions 1000003470",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    "windows": {
+      "id": 111427724201,
+      "run_id": 37199379614,
+      "workflow_name": "SKAGER Beta 2",
+      "head_branch": "opennav-x-beta2-ui",
+      "run_url": "https://api.github.com/repos/ThereptileII/Work/actions/runs/37199379614",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOM4BDHM8AAAAZ8ZwjqQ",
+      "head_sha": "55ef51e4944e8570f6a391dad20b0db8447a7443",
+      "url": "https://api.github.com/repos/ThereptileII/Work/actions/jobs/111427724201",
+      "html_url": "https://github.com/ThereptileII/Work/actions/runs/37199379614/job/111427724201",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-04T11:37:38Z",
+      "started_at": "2026-10-04T11:37:41Z",
+      "completed_at": "2026-10-04T11:42:25Z",
+      "name": "contracts (windows-2022)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-04T11:37:41Z",
+          "completed_at": "2026-10-04T11:37:42Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-04T11:37:42Z",
+          "completed_at": "2026-10-04T11:37:51Z"
+        },
+        {
+          "name": "Verify published distribution inputs before compilation",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-04T11:37:51Z",
+          "completed_at": "2026-10-04T11:37:52Z"
+        },
+        {
+          "name": "Verify corresponding-source archive structure and integrity",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-04T11:37:52Z",
+          "completed_at": "2026-10-04T11:38:01Z"
+        },
+        {
+          "name": "Same-job dependency evidence, tamper refusal and cache staging contracts",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-04T11:38:01Z",
+          "completed_at": "2026-10-04T11:38:30Z"
+        },
+        {
+          "name": "Native version probe stream identity and bounded failure contracts",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-04T11:38:30Z",
+          "completed_at": "2026-10-04T11:39:02Z"
+        },
+        {
+          "name": "Native version probe contracts in Windows PowerShell 5.1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-04T11:39:02Z",
+          "completed_at": "2026-10-04T11:39:37Z"
+        },
+        {
+          "name": "Peer boundary monitor rejects tampering and filters listeners by process",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-04T11:39:37Z",
+          "completed_at": "2026-10-04T11:39:37Z"
+        },
+        {
+          "name": "Preserve reviewed notice bytes through Windows Git checkout",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-04T11:39:37Z",
+          "completed_at": "2026-10-04T11:39:38Z"
+        },
+        {
+          "name": "Verify relocated installer completion and failed fixture retention",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-10-04T11:39:38Z",
+          "completed_at": "2026-10-04T11:39:39Z"
+        },
+        {
+          "name": "Installer rejects unqualified XNav output policies",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-10-04T11:39:39Z",
+          "completed_at": "2026-10-04T11:39:39Z"
+        },
+        {
+          "name": "Staged installer normal and delay import closure fixtures",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-10-04T11:39:39Z",
+          "completed_at": "2026-10-04T11:39:40Z"
+        },
+        {
+          "name": "Verify the exact boat translator parser for host interoperability tests",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-10-04T11:39:40Z",
+          "completed_at": "2026-10-04T11:39:41Z"
+        },
+        {
+          "name": "Prepare reviewed boat producer expiry and actual codec oracle",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14,
+          "started_at": "2026-10-04T11:39:41Z",
+          "completed_at": "2026-10-04T11:39:42Z"
+        },
+        {
+          "name": "Installer filesystem contracts in native Windows PowerShell 5.1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-10-04T11:39:42Z",
+          "completed_at": "2026-10-04T11:40:28Z"
+        },
+        {
+          "name": "Portable maintenance refusal and recovery identity contracts",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 16,
+          "started_at": "2026-10-04T11:40:28Z",
+          "completed_at": "2026-10-04T11:40:28Z"
+        },
+        {
+          "name": "Configure Linux contracts",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 17,
+          "started_at": "2026-10-04T11:40:28Z",
+          "completed_at": "2026-10-04T11:40:28Z"
+        },
+        {
+          "name": "Configure contracts for the supported Windows application ABI",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-10-04T11:40:28Z",
+          "completed_at": "2026-10-04T11:40:46Z"
+        },
+        {
+          "name": "Run cmake --build opennav-x/build/contracts --config Release",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-10-04T11:40:46Z",
+          "completed_at": "2026-10-04T11:41:56Z"
+        },
+        {
+          "name": "Run ctest --test-dir opennav-x/build/contracts -C Release --output-on-failure",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 20,
+          "started_at": "2026-10-04T11:41:56Z",
+          "completed_at": "2026-10-04T11:42:02Z"
+        },
+        {
+          "name": "Repeat the restart handoff with deliberately delayed result publication",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21,
+          "started_at": "2026-10-04T11:42:02Z",
+          "completed_at": "2026-10-04T11:42:22Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 42,
+          "started_at": "2026-10-04T11:42:22Z",
+          "completed_at": "2026-10-04T11:42:23Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 43,
+          "started_at": "2026-10-04T11:42:23Z",
+          "completed_at": "2026-10-04T11:42:23Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/ThereptileII/Work/check-runs/111427724201",
+      "labels": [
+        "windows-2022"
+      ],
+      "runner_id": 1000003471,
+      "runner_name": "GitHub Actions 1000003471",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    "transport": {
+      "id": 111427724248,
+      "run_id": 37199379614,
+      "workflow_name": "SKAGER Beta 2",
+      "head_branch": "opennav-x-beta2-ui",
+      "run_url": "https://api.github.com/repos/ThereptileII/Work/actions/runs/37199379614",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOM4BDHM8AAAAZ8Zwj2A",
+      "head_sha": "55ef51e4944e8570f6a391dad20b0db8447a7443",
+      "url": "https://api.github.com/repos/ThereptileII/Work/actions/jobs/111427724248",
+      "html_url": "https://github.com/ThereptileII/Work/actions/runs/37199379614/job/111427724248",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-04T11:37:38Z",
+      "started_at": "2026-10-04T11:37:40Z",
+      "completed_at": "2026-10-04T11:39:00Z",
+      "name": "Native Win32 commissioning restart process boundary",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-04T11:37:41Z",
+          "completed_at": "2026-10-04T11:37:42Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-04T11:37:42Z",
+          "completed_at": "2026-10-04T11:37:53Z"
+        },
+        {
+          "name": "Compile actual restart helper with marker-only test processes",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-04T11:37:53Z",
+          "completed_at": "2026-10-04T11:38:18Z"
+        },
+        {
+          "name": "Exercise native process and pipe boundary without OpenCPN or hardware",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-04T11:38:18Z",
+          "completed_at": "2026-10-04T11:38:57Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-04T11:38:57Z",
+          "completed_at": "2026-10-04T11:38:58Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-10-04T11:38:58Z",
+          "completed_at": "2026-10-04T11:38:59Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-10-04T11:38:59Z",
+          "completed_at": "2026-10-04T11:38:59Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/ThereptileII/Work/check-runs/111427724248",
+      "labels": [
+        "windows-2022"
+      ],
+      "runner_id": 1000003478,
+      "runner_name": "GitHub Actions 1000003478",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    "maintenance": {
+      "id": 111427724254,
+      "run_id": 37199379614,
+      "workflow_name": "SKAGER Beta 2",
+      "head_branch": "opennav-x-beta2-ui",
+      "run_url": "https://api.github.com/repos/ThereptileII/Work/actions/runs/37199379614",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOM4BDHM8AAAAZ8Zwj3g",
+      "head_sha": "55ef51e4944e8570f6a391dad20b0db8447a7443",
+      "url": "https://api.github.com/repos/ThereptileII/Work/actions/jobs/111427724254",
+      "html_url": "https://github.com/ThereptileII/Work/actions/runs/37199379614/job/111427724254",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-04T11:37:38Z",
+      "started_at": "2026-10-04T11:37:42Z",
+      "completed_at": "2026-10-04T11:40:46Z",
+      "name": "Native boat recovery and commissioning contracts",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-04T11:37:43Z",
+          "completed_at": "2026-10-04T11:37:44Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-04T11:37:44Z",
+          "completed_at": "2026-10-04T11:38:00Z"
+        },
+        {
+          "name": "Exercise disposable maintenance transactions in Windows PowerShell 5.1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-04T11:38:00Z",
+          "completed_at": "2026-10-04T11:40:36Z"
+        },
+        {
+          "name": "Verify closed navigation copies without vessel data",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-04T11:40:36Z",
+          "completed_at": "2026-10-04T11:40:40Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-04T11:40:40Z",
+          "completed_at": "2026-10-04T11:40:42Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-10-04T11:40:42Z",
+          "completed_at": "2026-10-04T11:40:44Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-10-04T11:40:44Z",
+          "completed_at": "2026-10-04T11:40:44Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/ThereptileII/Work/check-runs/111427724254",
+      "labels": [
+        "windows-2022"
+      ],
+      "runner_id": 1000003473,
+      "runner_name": "GitHub Actions 1000003473",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    "broker": {
+      "id": 111428222250,
+      "run_id": 37199379614,
+      "workflow_name": "SKAGER Beta 2",
+      "head_branch": "opennav-x-beta2-ui",
+      "run_url": "https://api.github.com/repos/ThereptileII/Work/actions/runs/37199379614",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOM4BDHM8AAAAZ8aO9Kg",
+      "head_sha": "55ef51e4944e8570f6a391dad20b0db8447a7443",
+      "url": "https://api.github.com/repos/ThereptileII/Work/actions/jobs/111428222250",
+      "html_url": "https://github.com/ThereptileII/Work/actions/runs/37199379614/job/111428222250",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-04T11:40:46Z",
+      "started_at": "2026-10-04T11:40:49Z",
+      "completed_at": "2026-10-04T11:43:34Z",
+      "name": "Actual restart broker with disposable marker-only installation",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-04T11:40:50Z",
+          "completed_at": "2026-10-04T11:40:52Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-04T11:40:52Z",
+          "completed_at": "2026-10-04T11:41:03Z"
+        },
+        {
+          "name": "Compile the same-commit actual helper and marker-only processes",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-04T11:41:03Z",
+          "completed_at": "2026-10-04T11:41:28Z"
+        },
+        {
+          "name": "Exercise the unchanged broker, full audit, refusals and receipt uncertainty",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-04T11:41:28Z",
+          "completed_at": "2026-10-04T11:42:33Z"
+        },
+        {
+          "name": "Exercise actual Prepare and scheduled Arm Collect against marker-only fixtures",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-04T11:42:33Z",
+          "completed_at": "2026-10-04T11:43:29Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-04T11:43:29Z",
+          "completed_at": "2026-10-04T11:43:30Z"
+        },
+        {
+          "name": "Attest same-run restart gates after native tests and evidence upload",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-04T11:43:30Z",
+          "completed_at": "2026-10-04T11:43:30Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-04T11:43:30Z",
+          "completed_at": "2026-10-04T11:43:31Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-10-04T11:43:31Z",
+          "completed_at": "2026-10-04T11:43:33Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-10-04T11:43:33Z",
+          "completed_at": "2026-10-04T11:43:33Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/ThereptileII/Work/check-runs/111428222250",
+      "labels": [
+        "windows-2022"
+      ],
+      "runner_id": 1000003483,
+      "runner_name": "GitHub Actions 1000003483",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    }
+  }
+}
