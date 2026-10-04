@@ -1,0 +1,1790 @@
+{
+  "chart_origin": "https://www.charts.noaa.gov/ENCs/US5SEAFL.zip",
+  "chart_sha256": "b027e029dc7b76595381d89e3718145eb5069e5a03917e78bada4f8ebe8c84e4",
+  "agreement": "https://charts.noaa.gov/ENCs/ENC_Agreement.shtml",
+  "scope": "Disposable rendering fixture; not redistributed as a navigation product",
+  "authority": "native Windows",
+  "phases": [
+    {
+      "requested_rendering": "software",
+      "runtime": {
+        "smartnav": {
+          "route_valid": false,
+          "reason": "Route guidance unavailable. Check the active route and GPS.",
+          "ais_event_count": 0,
+          "event_count": 0
+        },
+        "online_ais": {
+          "credential_present": false,
+          "accepted": "0",
+          "connection_state": 0,
+          "rejected": "0",
+          "chart_marks": 0,
+          "targets": 0,
+          "subscription_confirmed": false,
+          "reconnects": "0",
+          "enabled": false
+        },
+        "alerts": [],
+        "chart_presentation": {
+          "requested": "XNav",
+          "core": {
+            "saved_point_style": 82,
+            "effective_point_style": 76,
+            "available": true
+          },
+          "status": "SKAGER presentation v1 / pinned symbols; o-charts: no SKAGER adapter loaded",
+          "private_ocharts": {
+            "available": false
+          }
+        },
+        "display": {
+          "native_caption_themed": false,
+          "footer_region": {
+            "x": 8,
+            "height": 34,
+            "width": 1328,
+            "y": 686
+          },
+          "rail_regions": [
+            {
+              "x": 1150,
+              "height": 116,
+              "width": 186,
+              "label": "sog",
+              "y": 124,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1150,
+              "height": 117,
+              "width": 186,
+              "label": "depth",
+              "y": 240,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1150,
+              "height": 116,
+              "width": 186,
+              "label": "aws",
+              "y": 357,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1150,
+              "height": 116,
+              "width": 186,
+              "label": "heading",
+              "y": 473,
+              "visible": true,
+              "enabled": true
+            }
+          ],
+          "product_regions": [],
+          "footer_middle_visible": true,
+          "chart_region": {
+            "x": 88,
+            "height": 483,
+            "width": 1062,
+            "y": 91
+          },
+          "horizon_heading": {
+            "x": 113,
+            "height": 22,
+            "width": 1011,
+            "y": 584
+          },
+          "horizon_region": {
+            "x": 88,
+            "height": 112,
+            "width": 1061,
+            "y": 574
+          },
+          "minimum_value_height_dip": 0,
+          "horizon_full_passage": {
+            "x": 1046,
+            "height": 22,
+            "width": 78,
+            "y": 584
+          },
+          "product_controls": [],
+          "can_scroll_down": false,
+          "horizon_events": [
+            {
+              "x": 113,
+              "height": 41,
+              "width": 200,
+              "y": 625
+            },
+            {
+              "x": 313,
+              "height": 41,
+              "width": 280,
+              "y": 625
+            },
+            {
+              "x": 0,
+              "height": 0,
+              "width": 0,
+              "y": 0
+            },
+            {
+              "x": 0,
+              "height": 0,
+              "width": 0,
+              "y": 0
+            }
+          ],
+          "can_scroll_up": false,
+          "page_scroll_px": 0,
+          "route_creation_active": false,
+          "light": "Day",
+          "interaction_controls": [
+            {
+              "x": 979,
+              "height": 44,
+              "accessible_name": "Inspect source health",
+              "width": 120,
+              "label": "OpenCPN navigation",
+              "y": 39,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 8,
+              "height": 20,
+              "accessible_name": "Scroll page up",
+              "width": 20,
+              "label": "Up",
+              "y": 31,
+              "visible": false,
+              "enabled": false
+            },
+            {
+              "x": 8,
+              "height": 20,
+              "accessible_name": "Scroll page down",
+              "width": 20,
+              "label": "Down",
+              "y": 31,
+              "visible": false,
+              "enabled": false
+            },
+            {
+              "x": 1183,
+              "height": 44,
+              "accessible_name": "Search saved routes and waypoints",
+              "width": 44,
+              "label": "Search",
+              "y": 39,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1235,
+              "height": 44,
+              "accessible_name": "Cycle day, dusk and night palettes",
+              "width": 44,
+              "label": "Day",
+              "y": 39,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1287,
+              "height": 44,
+              "accessible_name": "Inspect active alerts",
+              "width": 44,
+              "label": "Alerts",
+              "y": 39,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 51,
+              "accessible_name": "Navigation",
+              "width": 61,
+              "label": "Chart",
+              "y": 99,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 51,
+              "accessible_name": "Route",
+              "width": 61,
+              "label": "Passage",
+              "y": 151,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 51,
+              "accessible_name": "AIS targets",
+              "width": 61,
+              "label": "Traffic",
+              "y": 203,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 51,
+              "accessible_name": "Energy",
+              "width": 61,
+              "label": "Energy",
+              "y": 267,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 51,
+              "accessible_name": "Vessel instruments",
+              "width": 61,
+              "label": "Instruments",
+              "y": 319,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 51,
+              "accessible_name": "Anchor watch",
+              "width": 61,
+              "label": "Anchor",
+              "y": 371,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 51,
+              "accessible_name": "Radar availability",
+              "width": 61,
+              "label": "Radar",
+              "y": 423,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 51,
+              "accessible_name": "Open navigation menu",
+              "width": 61,
+              "label": "Settings",
+              "y": 585,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 32,
+              "height": 32,
+              "accessible_name": "Vessel profile / name not configured",
+              "width": 32,
+              "label": "Vessel profile",
+              "y": 645,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 943,
+              "height": 44,
+              "accessible_name": "Measure chart distance",
+              "width": 44,
+              "label": "Measure",
+              "y": 489,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 987,
+              "height": 44,
+              "accessible_name": "Waypoint at chart position",
+              "width": 44,
+              "label": "Waypoint",
+              "y": 489,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1036,
+              "height": 44,
+              "accessible_name": "Zoom chart in",
+              "width": 44,
+              "label": "+",
+              "y": 489,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1080,
+              "height": 44,
+              "accessible_name": "Zoom chart out",
+              "width": 44,
+              "label": "\u2212",
+              "y": 489,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1060,
+              "height": 90,
+              "accessible_name": "Chart orientation: North up",
+              "width": 68,
+              "label": "North",
+              "y": 113,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1072,
+              "height": 44,
+              "accessible_name": "Chart layers",
+              "width": 44,
+              "label": "Layers",
+              "y": 213,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 116,
+              "height": 44,
+              "accessible_name": "Center chart on boat and follow position",
+              "width": 142,
+              "label": "Follow boat",
+              "y": 493,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1290,
+              "height": 33,
+              "accessible_name": "Choose the four rail values",
+              "width": 40,
+              "label": "Configure instruments",
+              "y": 91,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1169,
+              "height": 74,
+              "accessible_name": "Autopilot: Unavailable / No current feedback",
+              "width": 149,
+              "label": "Autopilot",
+              "y": 598,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1150,
+              "height": 20,
+              "accessible_name": "Manual STANDBY / requires enabled control",
+              "width": 20,
+              "label": "STBY",
+              "y": 91,
+              "visible": false,
+              "enabled": false
+            },
+            {
+              "x": 1157,
+              "height": 14,
+              "accessible_name": "Footer source health",
+              "width": 159,
+              "label": "Source health",
+              "y": 696,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1046,
+              "height": 22,
+              "accessible_name": "Full passage",
+              "width": 78,
+              "label": "Full passage",
+              "y": 584,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 113,
+              "height": 41,
+              "accessible_name": "Horizon now",
+              "width": 200,
+              "label": "Horizon now",
+              "y": 625,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 313,
+              "height": 41,
+              "accessible_name": "Horizon event 1",
+              "width": 280,
+              "label": "Horizon event 1",
+              "y": 625,
+              "visible": true,
+              "enabled": false
+            },
+            {
+              "x": 593,
+              "height": 41,
+              "accessible_name": "Horizon event 2",
+              "width": 281,
+              "label": "Horizon event 2",
+              "y": 625,
+              "visible": false,
+              "enabled": true
+            },
+            {
+              "x": 874,
+              "height": 41,
+              "accessible_name": "Horizon event 3",
+              "width": 250,
+              "label": "Horizon event 3",
+              "y": 625,
+              "visible": false,
+              "enabled": true
+            },
+            {
+              "x": 88,
+              "height": 20,
+              "accessible_name": "Name and save this route",
+              "width": 20,
+              "label": "Done",
+              "y": 574,
+              "visible": false,
+              "enabled": true
+            },
+            {
+              "x": 88,
+              "height": 20,
+              "accessible_name": "Undo last route point",
+              "width": 20,
+              "label": "Undo",
+              "y": 574,
+              "visible": false,
+              "enabled": false
+            },
+            {
+              "x": 88,
+              "height": 20,
+              "accessible_name": "Cancel route creation",
+              "width": 20,
+              "label": "Cancel",
+              "y": 574,
+              "visible": false,
+              "enabled": true
+            },
+            {
+              "x": 8,
+              "height": 20,
+              "accessible_name": "Close this page",
+              "width": 20,
+              "label": "Close",
+              "y": 31,
+              "visible": false,
+              "enabled": true
+            }
+          ]
+        },
+        "navigation_footer": {
+          "position_state": "Current",
+          "position": "47\u00b0 36.000\u2032 N   122\u00b0 21.600\u2032 W",
+          "cog_state": "Current",
+          "health_summary": "1 live signal",
+          "historical": false,
+          "health_state": "Current",
+          "health_source": "Vessel data",
+          "cog": "090\u00b0",
+          "navigation_state": "EXPLORING",
+          "xte": "\u2014"
+        },
+        "pilot": {
+          "wind_capability": false,
+          "locked_heading_quality": "UNAVAILABLE",
+          "output_unavailable": false,
+          "track_capability": false,
+          "fresh": false,
+          "feedback_sequence": "0",
+          "adapter": "Translator not configured; control OFF / Configured OpenCPN N2K connection unavailable / display-only permission",
+          "control_capability": false,
+          "simulated": false,
+          "command_detail": "",
+          "actual_heading_quality": "UNAVAILABLE",
+          "command_id": "0",
+          "command_state": "None",
+          "connection_epoch": "0",
+          "source": "",
+          "mode": "UNAVAILABLE",
+          "enabled": false
+        },
+        "replay": {
+          "allows_hardware_control": true,
+          "active": false
+        },
+        "test_fixtures": true,
+        "plugins": [
+          {
+            "name": "ChartDownloader",
+            "api": 113,
+            "version": "1.4",
+            "initialized": false,
+            "file": "chartdldr_pi.dll",
+            "enabled": false
+          },
+          {
+            "name": "Dashboard",
+            "api": 108,
+            "version": "1.2",
+            "initialized": true,
+            "file": "dashboard_pi.dll",
+            "enabled": true
+          },
+          {
+            "name": "GRIB",
+            "api": 116,
+            "version": "5.0",
+            "initialized": true,
+            "file": "grib_pi.dll",
+            "enabled": true
+          },
+          {
+            "name": "WMM",
+            "api": 108,
+            "version": "1.1",
+            "initialized": true,
+            "file": "wmm_pi.dll",
+            "enabled": true
+          }
+        ],
+        "ui_update": {
+          "last_ms": 0.501,
+          "ticks": "10",
+          "scope": "Shell update callback including diagnostics; excludes asynchronous chart painting",
+          "mean_ms": 7.74862,
+          "timer_period_ms": 250,
+          "maximum_ms": 30.6087
+        },
+        "chart": {
+          "longitude": -122.36,
+          "quilt": true,
+          "follow": false,
+          "scale_bar": {
+            "x": 191,
+            "height": 30,
+            "width": 25,
+            "y": 421
+          },
+          "depth_units_visible": true,
+          "quilt_members": [
+            {
+              "index": 0,
+              "native_scale": 12000,
+              "type": 5,
+              "file": "US5SEAFL.000"
+            }
+          ],
+          "depth_unit_type": 1,
+          "latitude": 47.6,
+          "database_entries": 2,
+          "quilt_reference": 0,
+          "opengl_enabled": false,
+          "scale_ppm": 0.150000006,
+          "canvas_pixels": {
+            "height": 483,
+            "width": 1062
+          }
+        },
+        "build_purpose": "DEVELOPER TEST BUILD",
+        "boat_bridge": {
+          "status": "Boat propulsion mapping unconfigured"
+        },
+        "test_workspace_perspective": "layout2|name=ChartCanvas;caption=;state=768;dir=5;layer=0;row=0;pos=0;prop=100000;bestw=5;besth=5;minw=265;minh=689;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=OpenNavTop;caption=;state=131580;dir=1;layer=10;row=0;pos=0;prop=100000;bestw=-1;besth=60;minw=-1;minh=60;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=OpenNavTools;caption=;state=131580;dir=4;layer=5;row=0;pos=0;prop=100000;bestw=80;besth=-1;minw=80;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=OpenNavData;caption=;state=131580;dir=2;layer=5;row=0;pos=0;prop=100000;bestw=186;besth=-1;minw=186;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=OpenNavActions;caption=;state=508;dir=3;layer=10;row=0;pos=0;prop=100000;bestw=-1;besth=34;minw=-1;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=OpenNavHorizon;caption=;state=131580;dir=3;layer=1;row=0;pos=0;prop=100000;bestw=-1;besth=112;minw=-1;minh=112;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=OpenNavPage;caption=;state=258;dir=5;layer=0;row=0;pos=0;prop=100000;bestw=20;besth=20;minw=-1;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=OpenNavProduct;caption=;state=258;dir=5;layer=0;row=0;pos=0;prop=100000;bestw=20;besth=20;minw=-1;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=OpenNavTestHiddenDashboard;caption=SIMULATED hidden instruments;state=2098127;dir=4;layer=0;row=0;pos=8;prop=43210;bestw=180;besth=180;minw=150;minh=80;maxw=-1;maxh=-1;floatx=940;floaty=180;floatw=180;floath=180|name=OpenNavTestDashboard;caption=SIMULATED workspace persistence;state=2098127;dir=4;layer=0;row=0;pos=7;prop=73121;bestw=220;besth=220;minw=150;minh=80;maxw=-1;maxh=-1;floatx=820;floaty=120;floatw=220;floath=220|dock_size(5,0,0)=1280|dock_size(1,10,0)=60|dock_size(4,5,0)=80|dock_size(2,5,0)=186|dock_size(3,10,0)=34|dock_size(3,1,0)=112|",
+        "ais_selected_mmsi": 0,
+        "recording": {
+          "captured": 0,
+          "published": 0,
+          "error": "",
+          "active": false
+        }
+      },
+      "startup_to_enc_seconds": 5.657,
+      "captures": [
+        {
+          "screenshot": "chart-software-01-loaded.png",
+          "interior_colors": 949,
+          "non_background_fraction": 0.11680952380952381
+        },
+        {
+          "screenshot": "chart-software-02-zoom.png",
+          "interior_colors": 221,
+          "non_background_fraction": 0.022
+        },
+        {
+          "screenshot": "chart-software-03-follow.png",
+          "interior_colors": 951,
+          "non_background_fraction": 0.11677380952380953
+        },
+        {
+          "screenshot": "chart-software-03a-adjacent-cell.png",
+          "interior_colors": 302,
+          "non_background_fraction": 0.029952380952380953
+        },
+        {
+          "screenshot": "chart-software-03b-returned-cell.png",
+          "interior_colors": 942,
+          "non_background_fraction": 0.1155952380952381
+        },
+        {
+          "screenshot": "chart-software-04-restored.png",
+          "interior_colors": 942,
+          "non_background_fraction": 0.1155952380952381
+        },
+        {
+          "screenshot": "chart-created-route-before-edit.png",
+          "interior_colors": 1023,
+          "non_background_fraction": 0.12114285714285715
+        },
+        {
+          "screenshot": "chart-created-and-edited-route.png",
+          "interior_colors": 1026,
+          "non_background_fraction": 0.12088095238095238
+        },
+        {
+          "screenshot": "chart-software-05-legacy.png",
+          "interior_colors": 708,
+          "non_background_fraction": 0.14010714285714285
+        },
+        {
+          "screenshot": "chart-software-06-returned.png",
+          "interior_colors": 1026,
+          "non_background_fraction": 0.12088095238095238
+        }
+      ],
+      "workspace_startup": {
+        "name": "OpenNavTestDashboard",
+        "caption": "SIMULATED workspace persistence",
+        "state": "2098127",
+        "dir": "4",
+        "layer": "0",
+        "row": "0",
+        "pos": "7",
+        "prop": "73121",
+        "bestw": "220",
+        "besth": "220",
+        "minw": "150",
+        "minh": "80",
+        "maxw": "-1",
+        "maxh": "-1",
+        "floatx": "820",
+        "floaty": "120",
+        "floatw": "220",
+        "floath": "220"
+      },
+      "workspace_native_startup": {
+        "native_window_present": false,
+        "plugin_loaded": true
+      },
+      "performance": {
+        "idle_live_input_seconds": 10.0,
+        "cpu_percent_one_core": 2.1875,
+        "resident_bytes": 123543552,
+        "shell_update": {
+          "last_ms": 0.3573,
+          "ticks": "54",
+          "scope": "Shell update callback including diagnostics; excludes asynchronous chart painting",
+          "mean_ms": 4.664459259,
+          "timer_period_ms": 250,
+          "maximum_ms": 30.6087
+        },
+        "scope": "CI desktop / two loaded NOAA ENCs / 3 plugins / 3.3 Hz RMC; not target navigation PC"
+      },
+      "chart_switch": {
+        "synthetic_position_jump": true,
+        "adjacent": {
+          "longitude": -122.447,
+          "quilt": true,
+          "follow": true,
+          "scale_bar": {
+            "x": 191,
+            "height": 30,
+            "width": 25,
+            "y": 465
+          },
+          "depth_units_visible": true,
+          "quilt_members": [
+            {
+              "index": 1,
+              "native_scale": 12000,
+              "type": 5,
+              "file": "US5SEAFK.000"
+            }
+          ],
+          "depth_unit_type": 1,
+          "latitude": 47.59,
+          "database_entries": 2,
+          "quilt_reference": 1,
+          "opengl_enabled": false,
+          "scale_ppm": 0.1500150114,
+          "canvas_pixels": {
+            "height": 527,
+            "width": 998
+          }
+        },
+        "returned": {
+          "longitude": -122.360017,
+          "quilt": true,
+          "follow": true,
+          "scale_bar": {
+            "x": 191,
+            "height": 30,
+            "width": 25,
+            "y": 465
+          },
+          "depth_units_visible": true,
+          "quilt_members": [
+            {
+              "index": 0,
+              "native_scale": 12000,
+              "type": 5,
+              "file": "US5SEAFL.000"
+            }
+          ],
+          "depth_unit_type": 1,
+          "latitude": 47.6000188,
+          "database_entries": 2,
+          "quilt_reference": 0,
+          "opengl_enabled": false,
+          "scale_ppm": 0.1500150114,
+          "canvas_pixels": {
+            "height": 527,
+            "width": 998
+          }
+        }
+      },
+      "plugin_manager_interior_colors": 632,
+      "plugin_manager_painted_buttons": [
+        "ok",
+        "cancel",
+        "apply"
+      ],
+      "route_geometry": "Native chart gestures created and named a three-point route; Save opened its detail page; Navigation restored the same viewport; point move persisted with unchanged identities",
+      "plugin_manager": "native manager opened and listed Dashboard/WMM",
+      "workspace_after_xnav_close": {
+        "name": "OpenNavTestDashboard",
+        "caption": "SIMULATED workspace persistence",
+        "state": "2098125",
+        "dir": "4",
+        "layer": "0",
+        "row": "0",
+        "pos": "7",
+        "prop": "73121",
+        "bestw": "220",
+        "besth": "220",
+        "minw": "150",
+        "minh": "80",
+        "maxw": "-1",
+        "maxh": "-1",
+        "floatx": "820",
+        "floaty": "120",
+        "floatw": "220",
+        "floath": "220"
+      },
+      "workspace_native_legacy": {
+        "screenshot": "chart-software-dashboard-legacy.png",
+        "native_window_present": true
+      },
+      "workspace_after_legacy_close": {
+        "name": "OpenNavTestDashboard",
+        "caption": "SIMULATED workspace persistence",
+        "state": "2098125",
+        "dir": "4",
+        "layer": "0",
+        "row": "0",
+        "pos": "7",
+        "prop": "73121",
+        "bestw": "220",
+        "besth": "220",
+        "minw": "150",
+        "minh": "80",
+        "maxw": "-1",
+        "maxh": "-1",
+        "floatx": "820",
+        "floaty": "120",
+        "floatw": "220",
+        "floath": "220"
+      },
+      "workspace_returned": {
+        "name": "OpenNavTestDashboard",
+        "caption": "SIMULATED workspace persistence",
+        "state": "2098127",
+        "dir": "4",
+        "layer": "0",
+        "row": "0",
+        "pos": "7",
+        "prop": "73121",
+        "bestw": "220",
+        "besth": "220",
+        "minw": "150",
+        "minh": "80",
+        "maxw": "-1",
+        "maxh": "-1",
+        "floatx": "820",
+        "floaty": "120",
+        "floatw": "220",
+        "floath": "220"
+      },
+      "workspace_native_returned": {
+        "native_window_present": false,
+        "plugin_loaded": true
+      },
+      "workspace_final": {
+        "name": "OpenNavTestDashboard",
+        "caption": "SIMULATED workspace persistence",
+        "state": "2098125",
+        "dir": "4",
+        "layer": "0",
+        "row": "0",
+        "pos": "7",
+        "prop": "73121",
+        "bestw": "220",
+        "besth": "220",
+        "minw": "150",
+        "minh": "80",
+        "maxw": "-1",
+        "maxh": "-1",
+        "floatx": "820",
+        "floaty": "120",
+        "floatw": "220",
+        "floath": "220"
+      }
+    },
+    {
+      "requested_rendering": "opengl",
+      "runtime": {
+        "smartnav": {
+          "route_valid": false,
+          "reason": "Route guidance unavailable. Check the active route and GPS.",
+          "ais_event_count": 0,
+          "event_count": 0
+        },
+        "online_ais": {
+          "credential_present": false,
+          "accepted": "0",
+          "connection_state": 0,
+          "rejected": "0",
+          "chart_marks": 0,
+          "targets": 0,
+          "subscription_confirmed": false,
+          "reconnects": "0",
+          "enabled": false
+        },
+        "alerts": [],
+        "chart_presentation": {
+          "requested": "XNav",
+          "core": {
+            "saved_point_style": 82,
+            "effective_point_style": 76,
+            "available": true
+          },
+          "status": "SKAGER presentation v1 / pinned symbols; o-charts: no SKAGER adapter loaded",
+          "private_ocharts": {
+            "available": false
+          }
+        },
+        "display": {
+          "native_caption_themed": false,
+          "footer_region": {
+            "x": 8,
+            "height": 34,
+            "width": 1264,
+            "y": 758
+          },
+          "rail_regions": [
+            {
+              "x": 1086,
+              "height": 126,
+              "width": 186,
+              "label": "sog",
+              "y": 141,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1086,
+              "height": 126,
+              "width": 186,
+              "label": "depth",
+              "y": 267,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1086,
+              "height": 125,
+              "width": 186,
+              "label": "aws",
+              "y": 393,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1086,
+              "height": 126,
+              "width": 186,
+              "label": "heading",
+              "y": 518,
+              "visible": true,
+              "enabled": true
+            }
+          ],
+          "product_regions": [],
+          "footer_middle_visible": true,
+          "chart_region": {
+            "x": 88,
+            "height": 527,
+            "width": 998,
+            "y": 99
+          },
+          "horizon_heading": {
+            "x": 113,
+            "height": 22,
+            "width": 947,
+            "y": 640
+          },
+          "horizon_region": {
+            "x": 88,
+            "height": 132,
+            "width": 997,
+            "y": 626
+          },
+          "minimum_value_height_dip": 0,
+          "horizon_full_passage": {
+            "x": 982,
+            "height": 22,
+            "width": 78,
+            "y": 640
+          },
+          "product_controls": [],
+          "can_scroll_down": false,
+          "horizon_events": [
+            {
+              "x": 113,
+              "height": 53,
+              "width": 188,
+              "y": 685
+            },
+            {
+              "x": 301,
+              "height": 53,
+              "width": 262,
+              "y": 685
+            },
+            {
+              "x": 0,
+              "height": 0,
+              "width": 0,
+              "y": 0
+            },
+            {
+              "x": 0,
+              "height": 0,
+              "width": 0,
+              "y": 0
+            }
+          ],
+          "can_scroll_up": false,
+          "page_scroll_px": 0,
+          "route_creation_active": false,
+          "light": "Day",
+          "interaction_controls": [
+            {
+              "x": 915,
+              "height": 44,
+              "accessible_name": "Inspect source health",
+              "width": 120,
+              "label": "OpenCPN navigation",
+              "y": 43,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 8,
+              "height": 20,
+              "accessible_name": "Scroll page up",
+              "width": 20,
+              "label": "Up",
+              "y": 31,
+              "visible": false,
+              "enabled": false
+            },
+            {
+              "x": 8,
+              "height": 20,
+              "accessible_name": "Scroll page down",
+              "width": 20,
+              "label": "Down",
+              "y": 31,
+              "visible": false,
+              "enabled": false
+            },
+            {
+              "x": 1119,
+              "height": 44,
+              "accessible_name": "Search saved routes and waypoints",
+              "width": 44,
+              "label": "Search",
+              "y": 43,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1171,
+              "height": 44,
+              "accessible_name": "Cycle day, dusk and night palettes",
+              "width": 44,
+              "label": "Day",
+              "y": 43,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1223,
+              "height": 44,
+              "accessible_name": "Inspect active alerts",
+              "width": 44,
+              "label": "Alerts",
+              "y": 43,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 61,
+              "accessible_name": "Navigation",
+              "width": 61,
+              "label": "Chart",
+              "y": 113,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 61,
+              "accessible_name": "Route",
+              "width": 61,
+              "label": "Passage",
+              "y": 179,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 61,
+              "accessible_name": "AIS targets",
+              "width": 61,
+              "label": "Traffic",
+              "y": 245,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 61,
+              "accessible_name": "Energy",
+              "width": 61,
+              "label": "Energy",
+              "y": 331,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 61,
+              "accessible_name": "Vessel instruments",
+              "width": 61,
+              "label": "Instruments",
+              "y": 397,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 61,
+              "accessible_name": "Anchor watch",
+              "width": 61,
+              "label": "Anchor",
+              "y": 463,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 61,
+              "accessible_name": "Radar availability",
+              "width": 61,
+              "label": "Radar",
+              "y": 529,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 17,
+              "height": 61,
+              "accessible_name": "Open navigation menu",
+              "width": 61,
+              "label": "Settings",
+              "y": 637,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 32,
+              "height": 32,
+              "accessible_name": "Vessel profile / name not configured",
+              "width": 32,
+              "label": "Vessel profile",
+              "y": 711,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 879,
+              "height": 44,
+              "accessible_name": "Measure chart distance",
+              "width": 44,
+              "label": "Measure",
+              "y": 541,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 923,
+              "height": 44,
+              "accessible_name": "Waypoint at chart position",
+              "width": 44,
+              "label": "Waypoint",
+              "y": 541,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 972,
+              "height": 44,
+              "accessible_name": "Zoom chart in",
+              "width": 44,
+              "label": "+",
+              "y": 541,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1016,
+              "height": 44,
+              "accessible_name": "Zoom chart out",
+              "width": 44,
+              "label": "\u2212",
+              "y": 541,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 996,
+              "height": 90,
+              "accessible_name": "Chart orientation: North up",
+              "width": 68,
+              "label": "North",
+              "y": 121,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1008,
+              "height": 44,
+              "accessible_name": "Chart layers",
+              "width": 44,
+              "label": "Layers",
+              "y": 221,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 116,
+              "height": 44,
+              "accessible_name": "Center chart on boat and follow position",
+              "width": 142,
+              "label": "Follow boat",
+              "y": 545,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1226,
+              "height": 40,
+              "accessible_name": "Choose the four rail values",
+              "width": 40,
+              "label": "Configure instruments",
+              "y": 100,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1105,
+              "height": 87,
+              "accessible_name": "Autopilot: Unavailable / No current feedback",
+              "width": 149,
+              "label": "Autopilot",
+              "y": 657,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 1086,
+              "height": 20,
+              "accessible_name": "Manual STANDBY / requires enabled control",
+              "width": 20,
+              "label": "STBY",
+              "y": 99,
+              "visible": false,
+              "enabled": false
+            },
+            {
+              "x": 1093,
+              "height": 14,
+              "accessible_name": "Footer source health",
+              "width": 159,
+              "label": "Source health",
+              "y": 768,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 982,
+              "height": 22,
+              "accessible_name": "Full passage",
+              "width": 78,
+              "label": "Full passage",
+              "y": 640,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 113,
+              "height": 53,
+              "accessible_name": "Horizon now",
+              "width": 188,
+              "label": "Horizon now",
+              "y": 685,
+              "visible": true,
+              "enabled": true
+            },
+            {
+              "x": 301,
+              "height": 53,
+              "accessible_name": "Horizon event 1",
+              "width": 262,
+              "label": "Horizon event 1",
+              "y": 685,
+              "visible": true,
+              "enabled": false
+            },
+            {
+              "x": 563,
+              "height": 53,
+              "accessible_name": "Horizon event 2",
+              "width": 263,
+              "label": "Horizon event 2",
+              "y": 685,
+              "visible": false,
+              "enabled": true
+            },
+            {
+              "x": 826,
+              "height": 53,
+              "accessible_name": "Horizon event 3",
+              "width": 234,
+              "label": "Horizon event 3",
+              "y": 685,
+              "visible": false,
+              "enabled": true
+            },
+            {
+              "x": 88,
+              "height": 20,
+              "accessible_name": "Name and save this route",
+              "width": 20,
+              "label": "Done",
+              "y": 626,
+              "visible": false,
+              "enabled": true
+            },
+            {
+              "x": 88,
+              "height": 20,
+              "accessible_name": "Undo last route point",
+              "width": 20,
+              "label": "Undo",
+              "y": 626,
+              "visible": false,
+              "enabled": false
+            },
+            {
+              "x": 88,
+              "height": 20,
+              "accessible_name": "Cancel route creation",
+              "width": 20,
+              "label": "Cancel",
+              "y": 626,
+              "visible": false,
+              "enabled": true
+            },
+            {
+              "x": 8,
+              "height": 20,
+              "accessible_name": "Close this page",
+              "width": 20,
+              "label": "Close",
+              "y": 31,
+              "visible": false,
+              "enabled": true
+            }
+          ]
+        },
+        "navigation_footer": {
+          "position_state": "Current",
+          "position": "47\u00b0 36.000\u2032 N   122\u00b0 21.600\u2032 W",
+          "cog_state": "Current",
+          "health_summary": "1 live signal",
+          "historical": false,
+          "health_state": "Current",
+          "health_source": "Vessel data",
+          "cog": "090\u00b0",
+          "navigation_state": "EXPLORING",
+          "xte": "\u2014"
+        },
+        "pilot": {
+          "wind_capability": false,
+          "locked_heading_quality": "UNAVAILABLE",
+          "output_unavailable": false,
+          "track_capability": false,
+          "fresh": false,
+          "feedback_sequence": "0",
+          "adapter": "Translator not configured; control OFF / Configured OpenCPN N2K connection unavailable / display-only permission",
+          "control_capability": false,
+          "simulated": false,
+          "command_detail": "",
+          "actual_heading_quality": "UNAVAILABLE",
+          "command_id": "0",
+          "command_state": "None",
+          "connection_epoch": "0",
+          "source": "",
+          "mode": "UNAVAILABLE",
+          "enabled": false
+        },
+        "replay": {
+          "allows_hardware_control": true,
+          "active": false
+        },
+        "test_fixtures": true,
+        "plugins": [
+          {
+            "name": "ChartDownloader",
+            "api": 113,
+            "version": "1.4",
+            "initialized": false,
+            "file": "chartdldr_pi.dll",
+            "enabled": false
+          },
+          {
+            "name": "Dashboard",
+            "api": 108,
+            "version": "1.2",
+            "initialized": true,
+            "file": "dashboard_pi.dll",
+            "enabled": true
+          },
+          {
+            "name": "GRIB",
+            "api": 116,
+            "version": "5.0",
+            "initialized": true,
+            "file": "grib_pi.dll",
+            "enabled": true
+          },
+          {
+            "name": "WMM",
+            "api": 108,
+            "version": "1.1",
+            "initialized": true,
+            "file": "wmm_pi.dll",
+            "enabled": true
+          }
+        ],
+        "ui_update": {
+          "last_ms": 0.5156,
+          "ticks": "8",
+          "scope": "Shell update callback including diagnostics; excludes asynchronous chart painting",
+          "mean_ms": 6.7679375,
+          "timer_period_ms": 250,
+          "maximum_ms": 35.7037
+        },
+        "chart": {
+          "longitude": -122.36,
+          "quilt": true,
+          "follow": false,
+          "scale_bar": {
+            "x": 191,
+            "height": 30,
+            "width": 25,
+            "y": 465
+          },
+          "depth_units_visible": true,
+          "quilt_members": [
+            {
+              "index": 0,
+              "native_scale": 12000,
+              "type": 5,
+              "file": "US5SEAFL.000"
+            }
+          ],
+          "depth_unit_type": 1,
+          "latitude": 47.6,
+          "database_entries": 2,
+          "quilt_reference": 0,
+          "opengl_enabled": false,
+          "scale_ppm": 0.1500149965,
+          "canvas_pixels": {
+            "height": 527,
+            "width": 998
+          }
+        },
+        "build_purpose": "DEVELOPER TEST BUILD",
+        "boat_bridge": {
+          "status": "Boat propulsion mapping unconfigured"
+        },
+        "test_workspace_perspective": "layout2|name=ChartCanvas;caption=;state=768;dir=5;layer=0;row=0;pos=0;prop=100000;bestw=5;besth=5;minw=252;minh=761;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=OpenNavTop;caption=;state=131580;dir=1;layer=10;row=0;pos=0;prop=100000;bestw=-1;besth=68;minw=-1;minh=68;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=OpenNavTools;caption=;state=131580;dir=4;layer=5;row=0;pos=0;prop=100000;bestw=80;besth=-1;minw=80;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=OpenNavData;caption=;state=131580;dir=2;layer=5;row=0;pos=0;prop=100000;bestw=186;besth=-1;minw=186;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=OpenNavActions;caption=;state=508;dir=3;layer=10;row=0;pos=0;prop=100000;bestw=-1;besth=34;minw=-1;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=OpenNavHorizon;caption=;state=131580;dir=3;layer=1;row=0;pos=0;prop=100000;bestw=-1;besth=132;minw=-1;minh=132;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=OpenNavPage;caption=;state=258;dir=5;layer=0;row=0;pos=0;prop=100000;bestw=20;besth=20;minw=-1;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=OpenNavProduct;caption=;state=258;dir=5;layer=0;row=0;pos=0;prop=100000;bestw=20;besth=20;minw=-1;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=OpenNavTestHiddenDashboard;caption=SIMULATED hidden instruments;state=2098127;dir=4;layer=0;row=0;pos=8;prop=43210;bestw=180;besth=180;minw=150;minh=80;maxw=-1;maxh=-1;floatx=940;floaty=180;floatw=180;floath=180|name=OpenNavTestDashboard;caption=SIMULATED workspace persistence;state=2098127;dir=4;layer=0;row=0;pos=7;prop=73121;bestw=220;besth=220;minw=150;minh=80;maxw=-1;maxh=-1;floatx=820;floaty=120;floatw=220;floath=220|dock_size(5,0,0)=1280|dock_size(1,10,0)=68|dock_size(4,5,0)=80|dock_size(2,5,0)=186|dock_size(3,10,0)=34|dock_size(3,1,0)=132|",
+        "ais_selected_mmsi": 0,
+        "recording": {
+          "captured": 0,
+          "published": 0,
+          "error": "",
+          "active": false
+        }
+      },
+      "startup_to_enc_seconds": 4.937,
+      "captures": [
+        {
+          "screenshot": "chart-opengl-01-loaded.png",
+          "interior_colors": 1026,
+          "non_background_fraction": 0.12088095238095238
+        },
+        {
+          "screenshot": "chart-opengl-02-zoom.png",
+          "interior_colors": 303,
+          "non_background_fraction": 0.028428571428571428
+        },
+        {
+          "screenshot": "chart-opengl-03-follow.png",
+          "interior_colors": 1030,
+          "non_background_fraction": 0.12096428571428572
+        },
+        {
+          "screenshot": "chart-opengl-03a-adjacent-cell.png",
+          "interior_colors": 302,
+          "non_background_fraction": 0.03001190476190476
+        },
+        {
+          "screenshot": "chart-opengl-03b-returned-cell.png",
+          "interior_colors": 1038,
+          "non_background_fraction": 0.11996428571428572
+        },
+        {
+          "screenshot": "chart-opengl-04-restored.png",
+          "interior_colors": 1038,
+          "non_background_fraction": 0.11996428571428572
+        },
+        {
+          "screenshot": "chart-opengl-05-legacy.png",
+          "interior_colors": 699,
+          "non_background_fraction": 0.14004761904761906
+        },
+        {
+          "screenshot": "chart-opengl-06-returned.png",
+          "interior_colors": 1030,
+          "non_background_fraction": 0.12096428571428572
+        }
+      ],
+      "workspace_startup": {
+        "name": "OpenNavTestDashboard",
+        "caption": "SIMULATED workspace persistence",
+        "state": "2098127",
+        "dir": "4",
+        "layer": "0",
+        "row": "0",
+        "pos": "7",
+        "prop": "73121",
+        "bestw": "220",
+        "besth": "220",
+        "minw": "150",
+        "minh": "80",
+        "maxw": "-1",
+        "maxh": "-1",
+        "floatx": "820",
+        "floaty": "120",
+        "floatw": "220",
+        "floath": "220"
+      },
+      "gl_status": "host rejected OpenGL; verified upstream software fallback; hardware GL gate remains open",
+      "workspace_native_startup": {
+        "native_window_present": false,
+        "plugin_loaded": true
+      },
+      "performance": {
+        "idle_live_input_seconds": 10.01600000000144,
+        "cpu_percent_one_core": 0.7800019968049996,
+        "resident_bytes": 122286080,
+        "shell_update": {
+          "last_ms": 0.5519,
+          "ticks": "49",
+          "scope": "Shell update callback including diagnostics; excludes asynchronous chart painting",
+          "mean_ms": 4.025706122,
+          "timer_period_ms": 250,
+          "maximum_ms": 35.7037
+        },
+        "scope": "CI desktop / two loaded NOAA ENCs / 3 plugins / 3.3 Hz RMC; not target navigation PC"
+      },
+      "chart_switch": {
+        "synthetic_position_jump": true,
+        "adjacent": {
+          "longitude": -122.447,
+          "quilt": true,
+          "follow": true,
+          "scale_bar": {
+            "x": 191,
+            "height": 30,
+            "width": 25,
+            "y": 465
+          },
+          "depth_units_visible": true,
+          "quilt_members": [
+            {
+              "index": 1,
+              "native_scale": 12000,
+              "type": 5,
+              "file": "US5SEAFK.000"
+            }
+          ],
+          "depth_unit_type": 1,
+          "latitude": 47.59,
+          "database_entries": 2,
+          "quilt_reference": 1,
+          "opengl_enabled": false,
+          "scale_ppm": 0.150030002,
+          "canvas_pixels": {
+            "height": 527,
+            "width": 998
+          }
+        },
+        "returned": {
+          "longitude": -122.3600257,
+          "quilt": true,
+          "follow": true,
+          "scale_bar": {
+            "x": 191,
+            "height": 30,
+            "width": 25,
+            "y": 465
+          },
+          "depth_units_visible": true,
+          "quilt_members": [
+            {
+              "index": 0,
+              "native_scale": 12000,
+              "type": 5,
+              "file": "US5SEAFL.000"
+            }
+          ],
+          "depth_unit_type": 1,
+          "latitude": 47.6000178,
+          "database_entries": 2,
+          "quilt_reference": 0,
+          "opengl_enabled": false,
+          "scale_ppm": 0.150030002,
+          "canvas_pixels": {
+            "height": 527,
+            "width": 998
+          }
+        }
+      },
+      "workspace_after_xnav_close": {
+        "name": "OpenNavTestDashboard",
+        "caption": "SIMULATED workspace persistence",
+        "state": "2098125",
+        "dir": "4",
+        "layer": "0",
+        "row": "0",
+        "pos": "7",
+        "prop": "73121",
+        "bestw": "220",
+        "besth": "220",
+        "minw": "150",
+        "minh": "80",
+        "maxw": "-1",
+        "maxh": "-1",
+        "floatx": "820",
+        "floaty": "120",
+        "floatw": "220",
+        "floath": "220"
+      },
+      "workspace_native_legacy": {
+        "screenshot": "chart-opengl-dashboard-legacy.png",
+        "native_window_present": true
+      },
+      "workspace_after_legacy_close": {
+        "name": "OpenNavTestDashboard",
+        "caption": "SIMULATED workspace persistence",
+        "state": "2098125",
+        "dir": "4",
+        "layer": "0",
+        "row": "0",
+        "pos": "7",
+        "prop": "73121",
+        "bestw": "220",
+        "besth": "220",
+        "minw": "150",
+        "minh": "80",
+        "maxw": "-1",
+        "maxh": "-1",
+        "floatx": "820",
+        "floaty": "120",
+        "floatw": "220",
+        "floath": "220"
+      },
+      "workspace_returned": {
+        "name": "OpenNavTestDashboard",
+        "caption": "SIMULATED workspace persistence",
+        "state": "2098127",
+        "dir": "4",
+        "layer": "0",
+        "row": "0",
+        "pos": "7",
+        "prop": "73121",
+        "bestw": "220",
+        "besth": "220",
+        "minw": "150",
+        "minh": "80",
+        "maxw": "-1",
+        "maxh": "-1",
+        "floatx": "820",
+        "floaty": "120",
+        "floatw": "220",
+        "floath": "220"
+      },
+      "workspace_native_returned": {
+        "native_window_present": false,
+        "plugin_loaded": true
+      },
+      "workspace_final": {
+        "name": "OpenNavTestDashboard",
+        "caption": "SIMULATED workspace persistence",
+        "state": "2098125",
+        "dir": "4",
+        "layer": "0",
+        "row": "0",
+        "pos": "7",
+        "prop": "73121",
+        "bestw": "220",
+        "besth": "220",
+        "minw": "150",
+        "minh": "80",
+        "maxw": "-1",
+        "maxh": "-1",
+        "floatx": "820",
+        "floaty": "120",
+        "floatw": "220",
+        "floath": "220"
+      }
+    }
+  ],
+  "screenshots": [
+    "chart-software-01-loaded.png",
+    "chart-software-02-zoom.png",
+    "chart-software-03-follow.png",
+    "chart-software-03a-adjacent-cell.png",
+    "chart-software-03b-returned-cell.png",
+    "chart-software-overlay.png",
+    "chart-software-04-restored.png",
+    "chart-plugin-manager.png",
+    "chart-created-route-before-edit.png",
+    "chart-created-and-edited-route.png",
+    "chart-software-05-legacy.png",
+    "chart-software-dashboard-legacy.png",
+    "chart-software-06-returned.png",
+    "chart-opengl-01-loaded.png",
+    "chart-opengl-02-zoom.png",
+    "chart-opengl-03-follow.png",
+    "chart-opengl-03a-adjacent-cell.png",
+    "chart-opengl-03b-returned-cell.png",
+    "chart-opengl-overlay.png",
+    "chart-opengl-04-restored.png",
+    "chart-opengl-05-legacy.png",
+    "chart-opengl-dashboard-legacy.png",
+    "chart-opengl-06-returned.png"
+  ],
+  "adjacent_chart": {
+    "origin": "https://www.charts.noaa.gov/ENCs/US5SEAFK.zip",
+    "sha256": "99c9b55d49828503666668e956f91444ee79b434db4bdf65f3104c3e42c32d51",
+    "switch_position": [
+      47.59,
+      -122.447
+    ]
+  },
+  "display": {
+    "before": [
+      1920,
+      1080,
+      32
+    ],
+    "after": [
+      1920,
+      1080,
+      32
+    ]
+  },
+  "result": "passed; native screenshot review and physical GPU gate remain separate",
+  "renderer_log": [
+    "06:43:58.393 WARNING fileconf.cpp:631 file 'C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\opennav charts j6xcflul\\profile\\opencpn.conf', line 670: key 'OpenGL' was first found at line 135.",
+    "06:43:58.393 WARNING fileconf.cpp:1835 entry 'OpenGL' appears more than once in group '/Settings'",
+    "06:43:58.503 MESSAGE OCPNPlatform.cpp:923 Starting OpenGL test...",
+    "06:43:58.503 MESSAGE OCPNPlatform.cpp:733 Starting OpenGL test utility: \"D:\\a\\Work\\Work\\opennav-x\\build\\xnav-install\\opencpn-glutil.exe\" opengl-info \"C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\opennav charts j6xcflul\\profile\\gl_caps.json\"",
+    "06:43:58.738 MESSAGE OCPNPlatform.cpp:778 OpenGL test utility reports that OpenGL is not usable.",
+    "06:43:58.738 MESSAGE OCPNPlatform.cpp:930 OpenGL test complete.",
+    "06:44:00.656 MESSAGE OCPNPlatform.cpp:923 Starting OpenGL test...",
+    "06:44:00.656 MESSAGE OCPNPlatform.cpp:923 Starting OpenGL test...",
+    "06:44:27.058 WARNING fileconf.cpp:631 file 'C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\opennav charts j6xcflul\\profile\\opencpn.conf', line 670: key 'OpenGL' was first found at line 135.",
+    "06:44:27.058 WARNING fileconf.cpp:1835 entry 'OpenGL' appears more than once in group '/Settings'",
+    "06:44:27.137 MESSAGE OCPNPlatform.cpp:923 Starting OpenGL test...",
+    "06:44:27.137 MESSAGE OCPNPlatform.cpp:733 Starting OpenGL test utility: \"D:\\a\\Work\\Work\\opennav-x\\build\\xnav-install\\opencpn-glutil.exe\" opengl-info \"C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\opennav charts j6xcflul\\profile\\gl_caps.json\"",
+    "06:44:27.278 MESSAGE OCPNPlatform.cpp:778 OpenGL test utility reports that OpenGL is not usable.",
+    "06:44:27.278 MESSAGE OCPNPlatform.cpp:930 OpenGL test complete.",
+    "06:44:29.035 MESSAGE OCPNPlatform.cpp:923 Starting OpenGL test...",
+    "06:44:29.035 MESSAGE OCPNPlatform.cpp:923 Starting OpenGL test...",
+    "06:44:32.311 WARNING fileconf.cpp:631 file 'C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\opennav charts j6xcflul\\profile\\opencpn.conf', line 670: key 'OpenGL' was first found at line 135.",
+    "06:44:32.311 WARNING fileconf.cpp:1835 entry 'OpenGL' appears more than once in group '/Settings'",
+    "06:44:32.436 MESSAGE OCPNPlatform.cpp:923 Starting OpenGL test...",
+    "06:44:32.436 MESSAGE OCPNPlatform.cpp:733 Starting OpenGL test utility: \"D:\\a\\Work\\Work\\opennav-x\\build\\xnav-install\\opencpn-glutil.exe\" opengl-info \"C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\opennav charts j6xcflul\\profile\\gl_caps.json\"",
+    "06:44:32.577 MESSAGE OCPNPlatform.cpp:778 OpenGL test utility reports that OpenGL is not usable.",
+    "06:44:32.577 MESSAGE OCPNPlatform.cpp:930 OpenGL test complete.",
+    "06:44:34.458 MESSAGE OCPNPlatform.cpp:923 Starting OpenGL test...",
+    "06:44:34.458 MESSAGE OCPNPlatform.cpp:923 Starting OpenGL test..."
+  ]
+}

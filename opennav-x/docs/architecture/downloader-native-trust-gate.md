@@ -34,3 +34,15 @@ have a 30-second limit with progress/output receipts and exact-owned cleanup.
 
 Native MSVC execution is an acceptance gate. Linux parsing or review of this
 harness cannot satisfy it.
+
+The subsequent bccdbb1 run passed the bounded trust import but its standalone
+Downloader child timed out. wxWidgets 3.2.8 routes a log to a native Message
+dialog when no application traits exist; the old standalone Downloader probe
+had no wx initialization or explicit log target. Both native probes now share
+an explicit wx lifecycle and stderr logger. Assertions report to stderr and
+exit nonzero rather than opening unattended dialogs. Flushed phase markers
+distinguish initialization, GET and HEAD. This changes test processes only;
+the actual Downloader/wxCurl sources and certificate checks remain unchanged.
+The small native console proof requires reproducing the original owned dialog,
+successful logging and file staging/rename with the shared helper, and a
+nonzero assertion result. Passing it alone does not qualify TLS or a package.

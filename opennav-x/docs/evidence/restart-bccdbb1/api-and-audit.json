@@ -1,0 +1,287 @@
+{
+  "scope": "Same-run native restart prerequisite, disposable marker-only fixtures; no application package or actual boat acceptance",
+  "run": {
+    "id": 37177738716,
+    "head_sha": "bccdbb11cef827d3b63731fe1e874bc72bf47d2d",
+    "head_branch": "opennav-x-beta2-ui",
+    "run_attempt": 1,
+    "status": "in_progress",
+    "conclusion": null,
+    "event": "push",
+    "path": ".github/workflows/opennav-baseline.yml",
+    "html_url": "https://github.com/ThereptileII/Work/actions/runs/37177738716",
+    "created_at": "2026-10-04T04:41:38Z",
+    "updated_at": "2026-10-04T04:48:12Z"
+  },
+  "artifact": {
+    "id": 11293278829,
+    "name": "commissioning-restart-qualified-bccdbb11cef827d3b63731fe1e874bc72bf47d2d",
+    "size_in_bytes": 336,
+    "url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/11293278829",
+    "archive_download_url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/11293278829/zip",
+    "expired": false,
+    "created_at": "2026-10-04T04:47:00Z",
+    "expires_at": "2027-01-02T04:41:38Z",
+    "updated_at": "2026-10-04T04:47:00Z",
+    "digest": "sha256:dfb40182835244d9fedd4e7cfd5b93740e79a1885bbedc72b3209cee75b5d8f2",
+    "workflow_run": {
+      "id": 37177738716,
+      "repository_id": 864043804,
+      "head_repository_id": 864043804,
+      "head_branch": "opennav-x-beta2-ui",
+      "head_sha": "bccdbb11cef827d3b63731fe1e874bc72bf47d2d"
+    }
+  },
+  "jobs": [
+    {
+      "id": 111363797693,
+      "name": "Native Win32 commissioning restart process boundary",
+      "run_id": 37177738716,
+      "run_attempt": 1,
+      "head_sha": "bccdbb11cef827d3b63731fe1e874bc72bf47d2d",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-04T04:41:41Z",
+      "completed_at": "2026-10-04T04:43:02Z",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-04T04:41:42Z",
+          "completed_at": "2026-10-04T04:41:42Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-04T04:41:42Z",
+          "completed_at": "2026-10-04T04:41:53Z"
+        },
+        {
+          "name": "Compile actual restart helper with marker-only test processes",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-04T04:41:53Z",
+          "completed_at": "2026-10-04T04:42:18Z"
+        },
+        {
+          "name": "Exercise native process and pipe boundary without OpenCPN or hardware",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-04T04:42:18Z",
+          "completed_at": "2026-10-04T04:42:57Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-04T04:42:57Z",
+          "completed_at": "2026-10-04T04:42:59Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-10-04T04:42:59Z",
+          "completed_at": "2026-10-04T04:43:01Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-10-04T04:43:01Z",
+          "completed_at": "2026-10-04T04:43:01Z"
+        }
+      ]
+    },
+    {
+      "id": 111363797680,
+      "name": "Native boat recovery and commissioning contracts",
+      "run_id": 37177738716,
+      "run_attempt": 1,
+      "head_sha": "bccdbb11cef827d3b63731fe1e874bc72bf47d2d",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-04T04:41:41Z",
+      "completed_at": "2026-10-04T04:44:35Z",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-04T04:41:41Z",
+          "completed_at": "2026-10-04T04:41:42Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-04T04:41:42Z",
+          "completed_at": "2026-10-04T04:41:51Z"
+        },
+        {
+          "name": "Exercise disposable maintenance transactions in Windows PowerShell 5.1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-04T04:41:51Z",
+          "completed_at": "2026-10-04T04:44:25Z"
+        },
+        {
+          "name": "Verify closed navigation copies without vessel data",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-04T04:44:25Z",
+          "completed_at": "2026-10-04T04:44:31Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-04T04:44:31Z",
+          "completed_at": "2026-10-04T04:44:32Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-10-04T04:44:32Z",
+          "completed_at": "2026-10-04T04:44:33Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-10-04T04:44:33Z",
+          "completed_at": "2026-10-04T04:44:33Z"
+        }
+      ]
+    },
+    {
+      "id": 111364202746,
+      "name": "Actual restart broker with disposable marker-only installation",
+      "run_id": 37177738716,
+      "run_attempt": 1,
+      "head_sha": "bccdbb11cef827d3b63731fe1e874bc72bf47d2d",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-04T04:44:37Z",
+      "completed_at": "2026-10-04T04:47:03Z",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-04T04:44:37Z",
+          "completed_at": "2026-10-04T04:44:38Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-04T04:44:38Z",
+          "completed_at": "2026-10-04T04:44:50Z"
+        },
+        {
+          "name": "Compile the same-commit actual helper and marker-only processes",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-04T04:44:50Z",
+          "completed_at": "2026-10-04T04:45:13Z"
+        },
+        {
+          "name": "Exercise the unchanged broker, full audit, refusals and receipt uncertainty",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-04T04:45:13Z",
+          "completed_at": "2026-10-04T04:46:08Z"
+        },
+        {
+          "name": "Exercise actual Prepare and scheduled Arm Collect against marker-only fixtures",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-04T04:46:08Z",
+          "completed_at": "2026-10-04T04:46:58Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-04T04:46:58Z",
+          "completed_at": "2026-10-04T04:46:59Z"
+        },
+        {
+          "name": "Attest same-run restart gates after native tests and evidence upload",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-04T04:46:59Z",
+          "completed_at": "2026-10-04T04:46:59Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-04T04:46:59Z",
+          "completed_at": "2026-10-04T04:47:00Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-10-04T04:47:00Z",
+          "completed_at": "2026-10-04T04:47:02Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-10-04T04:47:02Z",
+          "completed_at": "2026-10-04T04:47:02Z"
+        }
+      ]
+    }
+  ],
+  "independentVerification": {
+    "archiveSha256": "dfb40182835244d9fedd4e7cfd5b93740e79a1885bbedc72b3209cee75b5d8f2",
+    "archiveBytes": 336,
+    "zipEntries": 1,
+    "crc": "passed",
+    "entry": "qualified.json",
+    "receiptSha256": "2f8a172559bd5d88bf57af8ca804d56aa7876dbd574d393d2bbf52e5af4d04f9",
+    "receiptBytes": 301,
+    "receiptIdentityAndFourSuccesses": "passed",
+    "actualBoat": false,
+    "producerUploadLogArtifactIdBytesDigestMatch": true,
+    "producerLogDecodedUtf8Sha256": "896ea93033fac3264660d5f3908be05f38e109c9723e9b7e154104c6fab2e7f1",
+    "producerLogDecodedUtf8Bytes": 26411
+  },
+  "frozenWorkflow": {
+    "sha256": "f52c3e7a7a350cd09a1cc67b1b47ae36bbcd6b7be59c14d864b515d91d35898e",
+    "bytes": 50048,
+    "remoteBytesEqualMappedLocal": true
+  }
+}

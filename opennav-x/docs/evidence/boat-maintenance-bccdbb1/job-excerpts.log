@@ -1,0 +1,28 @@
+Selected exact original decoded job-log lines, prefixed with original line number. Full-log identity in audit.json.
+11: 2026-10-04T04:41:41.8163978Z Microsoft Windows Server 2022
+78: 2026-10-04T04:41:45.9689980Z [command]"C:\Program Files\Git\bin\git.exe" -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +bccdbb11cef827d3b63731fe1e874bc72bf47d2d:refs/remotes/origin/opennav-x-beta2-ui
+80: 2026-10-04T04:41:49.1346306Z  * [new ref]         bccdbb11cef827d3b63731fe1e874bc72bf47d2d -> origin/opennav-x-beta2-ui
+158: 2026-10-04T04:41:51.5680068Z bccdbb11cef827d3b63731fe1e874bc72bf47d2d
+159: 2026-10-04T04:41:51.6018322Z ##[group]Run New-Item -ItemType Directory -Path opennav-x/evidence/local -Force | Out-Null
+160: 2026-10-04T04:41:51.6019099Z [36;1mNew-Item -ItemType Directory -Path opennav-x/evidence/local -Force | Out-Null[0m
+161: 2026-10-04T04:41:51.6019529Z [36;1m$Failed = @()[0m
+162: 2026-10-04T04:41:51.6021095Z [36;1mforeach ($Suite in @('boat-tools', 'official-upgrade-policy', 'preparation', 'commissioning', 'commissioning-launch', 'review-window', 'review-staging', 'source-checkout', 'ais-credential-import', 'restart-commissioning', 'restart-aui-persistence', 'stock-review', 'stock-chart', 'startup-log', 'renderer-log', 'baseline-adoption', 'broker-fixture-contracts', 'restart-window-review', 'stock-welcome', 'installed-welcome')) {[0m
+163: 2026-10-04T04:41:51.6023503Z [36;1m  & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -File "opennav-x/tools/boat/test-$Suite.ps1" 2>&1 | Tee-Object -FilePath "opennav-x/evidence/local/maintenance-$Suite.log"[0m
+164: 2026-10-04T04:41:51.6024400Z [36;1m  if ($LASTEXITCODE -ne 0) { $Failed += $Suite }[0m
+165: 2026-10-04T04:41:51.6024685Z [36;1m}[0m
+166: 2026-10-04T04:41:51.6025058Z [36;1mif ($Failed.Count -ne 0) { throw ('Required maintenance suites failed: ' + ($Failed -join ', ')) }[0m
+167: 2026-10-04T04:41:51.6142330Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+168: 2026-10-04T04:41:51.6142775Z ##[endgroup]
+169: 2026-10-04T04:42:01.6444720Z {
+170: 2026-10-04T04:42:01.6448277Z     "status":  "passed",
+1501: 2026-10-04T04:44:31.0694749Z [31;1mtest_symlink_refused (__main__.NavigationCopy.test_symlink_refused) ... ok[0m
+1502: 2026-10-04T04:44:31.0709121Z [31;1m[0m
+1503: 2026-10-04T04:44:31.0714577Z [31;1m----------------------------------------------------------------------[0m
+1504: 2026-10-04T04:44:31.0726990Z [31;1mRan 11 tests in 3.422s[0m
+1505: 2026-10-04T04:44:31.0733017Z [31;1m[0m
+1506: 2026-10-04T04:44:31.0739182Z [31;1mOK[0m
+1509: 2026-10-04T04:44:31.1762559Z   name: boat-maintenance-bccdbb11cef827d3b63731fe1e874bc72bf47d2d
+1525: 2026-10-04T04:44:31.8254072Z SHA256 digest of uploaded artifact zip is 8c4be1c6b09d4e2faaff466d7733fcf0c1afc27d5567ff8b499c1df68bfc604a
+1527: 2026-10-04T04:44:32.0438018Z Artifact boat-maintenance-bccdbb11cef827d3b63731fe1e874bc72bf47d2d.zip successfully finalized. Artifact ID 11293129075
+1528: 2026-10-04T04:44:32.0439731Z Artifact boat-maintenance-bccdbb11cef827d3b63731fe1e874bc72bf47d2d has been successfully uploaded! Final size is 25160 bytes. Artifact ID is 11293129075
+1544: 2026-10-04T04:44:33.6879580Z Cleaning up orphan processes

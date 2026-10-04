@@ -1,0 +1,42 @@
+Original lines 3689-3696
+-- Installing: D:/a/Work/Work/opennav-x/build/production-install/./opennav/chart-style/v1/manifest.json
+renderer=gdiplus ppi=96,96 bitmapDepth=24
+theme=0 waterOrigin=16,85 waterExtent=145,19 font=Arial pointSize=12 pixelSize=16
+theme=1 waterOrigin=376,85 waterExtent=145,19 font=Arial pointSize=12 pixelSize=16
+theme=2 waterOrigin=736,85 waterExtent=145,19 font=Arial pointSize=12 pixelSize=16
+2452 geographic name painter checks passed
+theme 0 first raster 864us
+theme 0 10000 cache hits 542us
+
+Original lines 3777-3786
+189932 wordmark checks passed; 18 native before/after theme/size drawings
+available: Segoe UI Variable Display=0
+available: Segoe UI=1
+available: Arial=1
+system-font: Segoe UI
+production: px=11 weight=400 selected=Segoe UI GDI-face=Segoe UI dpi=96
+production: px=23 weight=650 selected=Segoe UI GDI-face=Segoe UI dpi=96
+production: px=48 weight=400 selected=Segoe UI GDI-face=Segoe UI dpi=96
+ordinary-chart-policy: selected=Segoe UI GDI-face=Segoe UI dpi=96
+Production family/weight checks passed; native Windows/boat DPI review remains required
+
+Original lines 4153-4170
+2026-10-04T06:36:44.9762245Z trust-import/LocalMachine-Root after
+2026-10-04T06:36:44.9813332Z server/valid before
+2026-10-04T06:36:45.1754057Z server/valid after port=51490
+2026-10-04T06:36:45.1865606Z downloader-case/valid before
+2026-10-04T06:36:45.1922942Z process/downloader-valid before
+2026-10-04T06:37:15.1899848Z process/downloader-valid timeout Exceeded 30 seconds; terminating owned process tree
+2026-10-04T06:37:15.2150026Z process/downloader-valid failure downloader-valid exceeded the 30-second native probe limit
+2026-10-04T06:37:15.2172069Z downloader-case/valid failure downloader-valid exceeded the 30-second native probe limit
+Exception: D:\a\Work\Work\opennav-x\tools\test-downloader-trust-windows.ps1:80
+Line |
+  80 |  … ($TimedOut){throw "$Name exceeded the $TimeoutSeconds-second native p …
+     |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     | downloader-valid exceeded the 30-second native probe limit
+PS>TerminatingError(): "pwsh failed with exit code 1"
+**********************
+PowerShell transcript end
+End time: 20261004063715
+**********************
+

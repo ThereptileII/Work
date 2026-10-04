@@ -1,6 +1,52 @@
 # SKAGER status — 2026-10-04
 
-## Current boat-test objective — endurance skipped; native trust harness repair
+## Current boat-test candidate — verified console repair, endurance skipped
+
+The preceding `bccdbb1` run completed with a native production-gate failure;
+it produced no eligible installer. Its [original failure evidence](evidence/windows-bccdbb1-production-failure/README.md)
+contains 139 passing production cases followed by the bounded 30-second
+`downloader-valid` timeout. The earlier owned-certificate import passed in
+0.34 seconds. No navigation-application crash is established by this timeout.
+
+The [small native console proof](evidence/scrum211-native-console/README.md)
+then reproduced a visible wx logging message box in a standalone process.
+The shared explicit stderr logger/initialization passes file staging/rename;
+an actual assertion exits 86 with its diagnostic, rather than blocking for UI.
+Both Windows TLS probes now use that helper and flushed stage messages.
+Production Downloader, wxCurl and certificate-verification behavior are
+unchanged. The helper is included in the private adapter's source-input manifest.
+Focused local checks pass: 17 preparation cases and 12 actual Downloader cases.
+One combined replacement will run the existing functional/security/package
+gates. Endurance remains explicitly skipped. The native proof is not TLS or
+boat acceptance, and the previous full run will not be retried unchanged.
+
+The [retained native visual review](evidence/native-visual-bccdbb1/README.md)
+shows neutral structural paint, prototype font fallback and the smaller logo.
+Both chart phases actually used software rendering, and the private adapter
+was unavailable. Individual symbol recognition, actual private ENC, boat GPU,
+fonts and physical display remain required checks; complete fidelity is not
+claimed from these screenshots.
+
+### Preceding bccdbb1 candidate
+
+The preceding candidate is
+`bccdbb11cef827d3b63731fe1e874bc72bf47d2d` (local frozen
+`1a6733a1cbcc817aa0f13fa5acc41aac62a54146`),
+[run 37177738716](https://github.com/ThereptileII/Work/actions/runs/37177738716).
+The complete 6,709-entry mapped tree
+`ffd4c39e28dfaa29caaaa16619da32a2752e9158` is independently verified.
+Application and chart inputs remain the reviewed 17ab044 source. Execution
+changes repair the proven unattended certificate prompt, bound probe subprocesses,
+and skip endurance by explicit user direction. Native functional, actual TLS,
+package and boat acceptance remain pending. No duplicate full run was started.
+The [same-commit contract audit](evidence/contracts-bccdbb1/README.md) now
+confirms 94 Linux and 91 Windows cases, with no failures/skips, and ten additional
+executions of one existing restart test per platform. The
+[same-run restart receipt](evidence/restart-bccdbb1/README.md) is independently
+verified against its original artifact. Integrated application/package and boat
+acceptance remain separate; these counts do not qualify the whole candidate.
+
+## Preceding 17ab044 evidence and proven blocker repair
 
 Frozen local `0a52a6cfe3bd3b4a1e6253d609bd9dc046016bd4` is published as
 `17ab044a1e5222dc71791ac8118454219efe8734` in
@@ -48,16 +94,54 @@ run was cancelled normally; its complete native evidence was preserved.
 The [read-only boat connection check](evidence/boat-connection-20261004.json)
 confirms all three remote-access services were running with no navigation
 application running. No installation, launch or retirement occurred in this cycle.
+The [read-only source-review preparation](evidence/boat-source-review-preparation-bccdbb1.json)
+now verifies the 14 retained review-note copies and the unchanged current stock
+and managed DLL identities. Four built-in plugin sources and all three Dashboard
+bridge files match their prior review. The private adapter adds presentation and
+owned observation behavior, with its existing closed vendor-helper boundary
+explicitly retained. This reuses equal source evidence; it is not a fresh launch
+attestation or candidate binary acceptance. Post-install inventory and boat
+rendering still require the new package.
 
-The separate existing package security probes are now ready for SKAGER naming
-and native CMake paths at tooling
-[`70bfda8`](https://github.com/ThereptileII/Work/commit/70bfda826176efe62bc1d588584fe40a617e0f99)
-(local `087cf255`). The complete 1,454-entry mapping is independently verified.
-It preserves the later unsupported-Setup/profile-restoration checks; focused
-adapter/request/path/preservation checks pass. See its
-[readiness evidence](https://github.com/ThereptileII/Work/blob/70bfda826176efe62bc1d588584fe40a617e0f99/opennav-x/docs/evidence/skager-candidate-probe-readiness/README.md).
-No request file or CI run was created, no application input changed, and native
-execution still needs the independently audited original eligible package.
+The separate package-security tooling is now ready at
+[`f288b03`](https://github.com/ThereptileII/Work/commit/f288b031fa83990cc1ad3986e545581651ac9908)
+(local `f6b7dff`), with its complete 1,457-entry mapping independently verified.
+It preserves the SKAGER naming/native-path fixes and later unsupported-Setup/
+profile-restoration checks. Its exact owned-certificate helper also passes the
+[separate native proof](evidence/scrum288-native-trust-import/README.md#separate-candidate-package-helper),
+including refusal and exact trust cleanup. No candidate request exists yet:
+actual packaged PluginHandler TLS/peer and profile-preservation acceptance still
+requires an original eligible replacement artifact. The failed bccdbb1 run is
+ineligible. This test-tool update changes no
+application input and caused no replacement application build.
+The [exact producer-label comparison](evidence/scrum211-candidate-prerequisite-label.json)
+also corrects one stale upload-step name after the endurance policy change;
+all 19 required names match the frozen producer and actual native job. Nine
+adapter cases and two request cases pass, including rejection of the old label.
+Strict success, commit/run/attempt, digest and restart requirements are unchanged.
+
+### Current native prerequisites verified
+
+The [original native maintenance artifact](evidence/boat-maintenance-bccdbb1/README.md)
+contains 20 passing PowerShell suite receipts and 11 unique Python navigation-copy
+tests. Nested assertion totals are retained separately. The
+[original private-loader artifact](evidence/native-ocharts-loader-bccdbb1/README.md)
+contains 38 passing native groups using inert DLLs. Root verified both original
+archives and their frozen-source identities. These are completed same-candidate
+prerequisites, not actual product/boat runtime or visual acceptance. No test was
+rerun to produce these documentary audits.
+
+### Current Linux gate passed
+
+The [original bccdbb1 Linux audit](evidence/linux-bccdbb1/README.md) verifies
+artifact `11295011188` against its API/upload digest and all 4,251 ZIP CRCs.
+Both fixture-enabled and fixture-free production builds pass the same 147-case
+suite, with zero failures/skips: 294 executions, not 294 unique cases.
+Functional inputs, modes/persistence, charts, recovery and production status-only
+output checks pass. Root verified the original bytes, unchanged report subset,
+production identity and explicit endurance-skipped receipt; returned software
+and llvmpipe chart captures retain coastlines. This closes the Linux gate for
+this candidate. Native Windows, package/security and boat acceptance remain open.
 
 ### Completed prior Linux gate
 

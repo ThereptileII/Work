@@ -1,0 +1,27 @@
+name: SKAGER native downloader console proof
+on:
+  push:
+    branches: [skager-downloader-console]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  console:
+    runs-on: windows-2022
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Reproduce native wx logging modal and verify explicit console lifecycle
+        shell: pwsh
+        run: |
+          python opennav-x/tools/test-native-downloader-console.py --evidence opennav-x/evidence/local/native-downloader-console
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: native-downloader-console-${{ github.sha }}
+          path: |
+            opennav-x/evidence/local/native-downloader-console/*.json
+            opennav-x/evidence/local/native-downloader-console/*.txt
+            opennav-x/evidence/local/native-downloader-console/*.log
+          if-no-files-found: error
