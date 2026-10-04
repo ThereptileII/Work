@@ -1,0 +1,31 @@
+name: SKAGER retained SDK diagnostic
+on:
+  push:
+    branches: [skager-dependency-diagnostic]
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+env:
+  PYTHONUTF8: '1'
+jobs:
+  diagnostic:
+    runs-on: windows-2022
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Authenticate original successful SDK
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python opennav-x/tools/fetch_ci_inputs.py dependencies --selection opennav-x/tools/windows-dependency-bundle.lock.json --output dependency-bundle --provenance dependency-provenance.json
+      - name: Verify original bytes and compare actual version output
+        shell: pwsh
+        run: |
+          python opennav-x/tools/windows_dependency_bundle.py restore --root opennav-x --bundle dependency-bundle --provenance dependency-provenance.json
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $Prefix = Join-Path $env:GITHUB_WORKSPACE 'opennav-x/build/windows-openssl-3.5.9/install'
+          $Manifest = Get-Content (Join-Path $Prefix 'openssl-build.json') -Raw | ConvertFrom-Json
+          $Actual = & (Join-Path $Prefix 'bin/openssl.exe') version -a 2>&1 | Out-String
+          if ($LASTEXITCODE -ne 0) { throw 'OpenSSL version command failed' }
+          @{expected=$Manifest.versionOutput; actual=$Actual.Trim()} | ConvertTo-Json -Depth 3
+          Compare-Object ($Manifest.versionOutput -split '\r?\n') ($Actual.Trim() -split '\r?\n') -CaseSensitive | Format-List
