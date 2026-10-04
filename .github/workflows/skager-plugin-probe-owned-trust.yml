@@ -1,0 +1,25 @@
+name: SKAGER plugin probe owned trust proof
+on:
+  push:
+    branches: [skager-plugin-probe-owned-trust]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  plugin-owned-trust:
+    name: Actual plugin helper machine-root ownership proof
+    runs-on: windows-2022
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Prove exact import, receipt refusal and cleanup
+        shell: pwsh
+        run: |
+          pwsh -NoProfile -File opennav-x/tools/test-plugin-probe-owned-trust.ps1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: plugin-probe-owned-trust-${{ github.sha }}-${{ github.run_attempt }}
+          path: opennav-x/evidence/local/plugin-probe-owned-trust
+          if-no-files-found: error
