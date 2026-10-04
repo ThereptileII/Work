@@ -1,0 +1,14 @@
+F
+======================================================================
+FAIL: test_script_orders_gate_before_every_expensive_step (gettext_contract.GettextPrerequisiteTests.test_script_orders_gate_before_every_expensive_step)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/standard/Projects/X-nav-worktrees/scrum255-closeout/tests/windows_gettext_tests.py", line 188, in test_script_orders_gate_before_every_expensive_step
+    self.assertLess(gate,source.index(after))
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 10096 not less than 9956
+
+----------------------------------------------------------------------
+Ran 1 test in 0.003s
+
+FAILED (failures=1)

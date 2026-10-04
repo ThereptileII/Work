@@ -2,15 +2,18 @@
 
 ## Current qualification and review boundaries
 
-The current frozen Windows candidate is local `48c2f8b` / published `4ddf1f3`
-([CI](https://github.com/ThereptileII/Work/actions/runs/37155858878));
-[its complete source mapping](../evidence/skager-parent-context-publication.json)
-is verified. Application, interaction, DPI and public ENC gates passed, but
-native qualification failed at the AIS wrapper's generated-project traversal
-before AIS compilation/runtime. SCRUM-285 owns its focused correction. The
-parent-context proof and exact same-job reprobes passed. The preceding `63c1029` failed before AIS runtime because
-its verification caller omitted the original tool PATH prefixes; this was not
-an observed application crash. The replacement includes the 124-DIP
+The current frozen candidate is local `0a52a6c` / published `17ab044`
+([CI](https://github.com/ThereptileII/Work/actions/runs/37164360050));
+[its complete source mapping](../evidence/skager-symbols-0a52-publication.json)
+independently verifies all 6,658 mapped entries. Linux and native Windows
+qualification remain pending; no eligible installer, accepted private renderer
+or boat visual result is claimed. The application inputs match the successful
+`98d2c45` Linux preflight. This candidate includes the combined supplied-symbol
+increments, thin ordinary all-round outline and compact unchanged-trigger
+warning described below, plus SCRUM-285's AIS traversal correction. Its
+[focused native parser proof](../evidence/scrum285-native-ais-project-closure/native-ab92dc7/README.md)
+passed before publication; this is not actual AIS/TLS runtime acceptance.
+The candidate also retains the 124-DIP
 SKAGER wordmark, prototype font stack, classified buoy/light artwork, neutral
 structural paint and compact ordinary sector fans. See the
 [explicit supplied-artwork coverage](reviews/scrum264265-current-artwork-coverage.md)
@@ -38,10 +41,11 @@ generic-versus-conspicuous contrast still needs native/boat recognition review.
 The prototype does not supply a replacement physical lighthouse tower or
 all-round range circle; [the exact source boundary](reviews/scrum264-all-round-light-boundary.md)
 records those visible differences. The supplied rock/wreck/marina/fishing paths
-and cable waveform are now integrated separately at `45d73e8`, with
-[source-locked combined resource proof](../evidence/scrum279-283-combined/README.md)
+and cable waveform were integrated at `45d73e8` and are included in current
+`17ab044`, with [source-locked combined resource proof](../evidence/scrum279-283-combined/README.md)
 and [optimized core/private object review](../evidence/scrum281282-combined-review/README.md).
-They are not in `4ddf1f3`. The [actual 45d Linux canvas review](../evidence/scrum279282-45d-linux-canvas/README.md)
+They were absent from the former `4ddf1f3` candidate. The
+[actual 45d Linux canvas review](../evidence/scrum279282-45d-linux-canvas/README.md)
 now retains 40 captures, ten exact Day returns and ten clean sessions. It proves
 UWTROC03 selection and source-backed cable coverage, while sampled awash rock
 and wreck correctly select ISODGR51. UWTROC04/WRECKS05 and the absent exact
@@ -70,6 +74,16 @@ accepted font selection on every target. No complete glyph, Windows or boat
 screen row is marked PASS from these bounded results.
 
 ## Retained earlier qualification history
+
+The former frozen Windows candidate was local `48c2f8b` / published `4ddf1f3`
+([CI](https://github.com/ThereptileII/Work/actions/runs/37155858878));
+[its complete source mapping](../evidence/skager-parent-context-publication.json)
+is verified. Application, interaction, DPI and public ENC gates passed, but
+native qualification failed at the AIS wrapper's generated-project traversal
+before AIS compilation/runtime. SCRUM-285 owns its focused correction. The
+parent-context proof and exact same-job reprobes passed. The preceding `63c1029`
+failed before AIS runtime because its verification caller omitted the original
+tool PATH prefixes; this was not an observed application crash.
 
 The preceding frozen candidate was local `96c0c27` / published `15452e5`
 ([CI](https://github.com/ThereptileII/Work/actions/runs/37136712793)); its

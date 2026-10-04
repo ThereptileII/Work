@@ -426,10 +426,26 @@ jobs:
         run: python3 opennav-x/tools/smoke-preview.py
       - name: Public ENC chart and plugin rendering gate
         run: python3 opennav-x/tools/smoke-charts.py
-      - name: Actual elapsed-time trip and resource stability
+      - name: Apply Linux endurance policy (explicit user-directed skip)
+        shell: python
         run: |
-          Duration=$(python3 -c 'import json; print(json.load(open("opennav-x/release/qualification.json"))["enduranceSeconds"])')
-          python3 opennav-x/tools/soak-runtime.py --seconds "$Duration"
+          import json, os, subprocess, sys
+          from pathlib import Path
+          root = Path('opennav-x')
+          policy = json.loads((root/'release/qualification.json').read_text())
+          assert type(policy['enduranceEnabled']) is bool
+          if policy['enduranceEnabled']:
+              subprocess.run([sys.executable, str(root/'tools/soak-runtime.py'),
+                              '--seconds', str(policy['enduranceSeconds'])], check=True)
+          else:
+              assert policy['publishNamedRelease'] is False
+              report = {'status': 'skipped', 'reason': policy['enduranceSkipReason'],
+                        'commit': os.environ['GITHUB_SHA'], 'runId': os.environ['GITHUB_RUN_ID'],
+                        'runAttempt': os.environ['GITHUB_RUN_ATTEMPT'], 'release_duration': False}
+              target = root/'evidence/local/soak/results.json'
+              target.parent.mkdir(parents=True, exist_ok=True)
+              target.write_text(json.dumps(report, indent=2) + '\n')
+              print('Endurance SKIPPED by user direction; no endurance pass or release qualification.')
       - name: Build fixture-free Linux product and run its loader check
         run: bash opennav-x/tools/build-production-linux.sh
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -671,19 +687,46 @@ jobs:
       - name: Prepare development boat review after native functional gates
         if: ${{ success() && steps.installer.conclusion == 'success' && steps.dpi.conclusion == 'success' && steps.restart_qualified.conclusion == 'success' }}
         run: python opennav-x/tools/alpha-artifacts.py --boat-review
-      - name: Upload development review only while endurance runs
+      - name: Upload development review with endurance qualification pending
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: ${{ success() && steps.installer.conclusion == 'success' && steps.dpi.conclusion == 'success' && steps.restart_qualified.conclusion == 'success' }}
         with:
           name: beta2-boat-review-pending-endurance-${{ github.sha }}
           path: opennav-x/build/beta-boat-review
           if-no-files-found: error
-      - name: Actual elapsed-time native trip and resource stability
+      - name: Apply native endurance policy (explicit user-directed skip)
+        shell: python
         run: |
-          $Duration = (Get-Content opennav-x/release/qualification.json -Raw | ConvertFrom-Json).enduranceSeconds
-          python opennav-x/tools/soak-runtime.py --seconds $Duration
-      - name: Collect tested Beta downloads and hashes
-        run: python opennav-x/tools/alpha-artifacts.py
+          import json, os, subprocess, sys
+          from pathlib import Path
+          root = Path('opennav-x')
+          policy = json.loads((root/'release/qualification.json').read_text())
+          assert type(policy['enduranceEnabled']) is bool
+          if policy['enduranceEnabled']:
+              subprocess.run([sys.executable, str(root/'tools/soak-runtime.py'),
+                              '--seconds', str(policy['enduranceSeconds'])], check=True)
+          else:
+              assert policy['publishNamedRelease'] is False
+              report = {'status': 'skipped', 'reason': policy['enduranceSkipReason'],
+                        'commit': os.environ['GITHUB_SHA'], 'runId': os.environ['GITHUB_RUN_ID'],
+                        'runAttempt': os.environ['GITHUB_RUN_ATTEMPT'], 'release_duration': False}
+              target = root/'evidence/local/soak/results.json'
+              target.parent.mkdir(parents=True, exist_ok=True)
+              target.write_text(json.dumps(report, indent=2) + '\n')
+              print('Endurance SKIPPED by user direction; no endurance pass or release qualification.')
+      - name: Collect tested development boat-test downloads and hashes
+        shell: python
+        run: |
+          import json, subprocess, sys
+          from pathlib import Path
+          root = Path('opennav-x')
+          subprocess.run([sys.executable, str(root/'tools/alpha-artifacts.py')], check=True)
+          policy = json.loads((root/'release/qualification.json').read_text())
+          if policy['enduranceEnabled'] is False:
+              target = root/'build/beta-artifacts/QUALIFICATION.txt'
+              target.write_text('DEVELOPMENT BOAT-TEST CANDIDATE: endurance SKIPPED by user direction.\n'
+                                'No endurance pass, boat acceptance or named/public release qualification.\n'
+                                + target.read_text())
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: beta-candidate-${{ github.sha }}

@@ -1,0 +1,77 @@
+{
+  "candidate": "17ab044a1e5222dc71791ac8118454219efe8734",
+  "run": 37164360050,
+  "attempt": 1,
+  "localSourceMapping": "0a52a6cfe3bd3b4a1e6253d609bd9dc046016bd4",
+  "evidenceWorktreeBase": "1f86d993e6777c8b459cff14b0fc3059d01b242d",
+  "jobs": {
+    "linux": {
+      "id": 111324138073,
+      "status": "completed",
+      "conclusion": "success",
+      "originalDecodedLogUtf8Bytes": 92938,
+      "originalDecodedLogUtf8Sha256": "64ba2292fbb2191b8cafa4371fb864f4496407196dff78740848ecbd5a5c9f10",
+      "logCompleteThroughCleanup": true,
+      "mainCTest": {
+        "passed": 94,
+        "failed": 0,
+        "skipped": 0,
+        "timeSeconds": 4.02,
+        "individualResults": "linux-excerpts.log",
+        "resultRowCount": 94
+      },
+      "restartRepeat": {
+        "distinctTests": 1,
+        "additionalExecutions": 10,
+        "passedExecutions": 10,
+        "failedExecutions": 0,
+        "skippedExecutions": 0,
+        "timeSeconds": 19.31
+      },
+      "platformConditionalStepsSkipped": [
+        "Native version probe contracts in Windows PowerShell 5.1",
+        "Installer filesystem contracts in native Windows PowerShell 5.1",
+        "Configure contracts for the supported Windows application ABI"
+      ]
+    },
+    "windows": {
+      "id": 111324138106,
+      "status": "completed",
+      "conclusion": "success",
+      "originalDecodedLogUtf8Bytes": 130992,
+      "originalDecodedLogUtf8Sha256": "d5d031fb7b6553e784e400068dde496d83db43983c663991e888efb1d4c9e001",
+      "logCompleteThroughCleanup": true,
+      "mainCTest": {
+        "passed": 91,
+        "failed": 0,
+        "skipped": 0,
+        "timeSeconds": 6.44,
+        "individualResults": "windows-excerpts.log",
+        "resultRowCount": 91
+      },
+      "restartRepeat": {
+        "distinctTests": 1,
+        "additionalExecutions": 10,
+        "passedExecutions": 10,
+        "failedExecutions": 0,
+        "skippedExecutions": 0,
+        "timeSeconds": 19.98
+      },
+      "platformConditionalStepsSkipped": [
+        "Portable maintenance refusal and recovery identity contracts",
+        "Configure Linux contracts"
+      ]
+    }
+  },
+  "scope": "Completed standalone contracts only; integrated application, package, native AIS and boat remain separate gates.",
+  "linuxOnlyCTestNames": [
+    "early_startup_fixtures_isolation",
+    "early_startup_msw_excluded_isolation",
+    "early_startup_product_isolation"
+  ],
+  "windowsOnlyCTestNames": [],
+  "sourceFiles": {
+    ".github/workflows/opennav-baseline.yml": "e63dfed1f88054a71152331e420ca36a20b24004c2418a4d8627f5518c0a195c",
+    "CMakeLists.txt": "caf60fdf2f0f47ac7a08b355357ea004ad522ecc5a9d95efbef69ac0d85f153e"
+  }
+}

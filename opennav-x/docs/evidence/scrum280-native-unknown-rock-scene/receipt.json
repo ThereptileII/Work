@@ -1,0 +1,14 @@
+{
+  "baseCommit": "b0e05b89c60fef47067a7cdbdf8f15e345269e46",
+  "scope": "Collector-only optional historical IHO view; no application execution",
+  "files": {
+    "tools/prototype/capture-native.py": "30a5dc17c65e7c0f257af85ab5436d867778985ee15615bbeea5bf580fff3b77",
+    "tools/prototype/recovery_capture_inputs.py": "f10b1e628d065c5eb1cf784981025a693a9030e4f3f434fd5568379cae4dd2cc",
+    "tests/recovery_capture_inputs_tests.py": "7fe4e735068488481c51b7a52de356c45e9178ee6def6963bc6eb486c6259e28",
+    ".github/workflows/skager-chart-package-review.yml": "4576c5319c927b37a577b186904454a6bc7b55b9273f298d4b0e94de430acc05"
+  },
+  "testLogSha256": "d13c022bdc61288dab149c63d8a9b31100319e8222ae049dfbf0e5929661e7a9",
+  "testsPassed": 28,
+  "nativeRuntimeClaim": false,
+  "artifactTargetCreated": false
+}

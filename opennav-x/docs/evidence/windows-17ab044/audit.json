@@ -1,0 +1,254 @@
+{
+  "runId": 37164360050,
+  "runAttempt": 1,
+  "nativeJobId": 111325149619,
+  "commit": "17ab044a1e5222dc71791ac8118454219efe8734",
+  "artifact": {
+    "id": 11293866599,
+    "bytes": 66715913,
+    "sha256": "5895a38e5bfd474d2969d831a9fa7fe922a5eaf8b7d7194643382aa1303d1ed8",
+    "matchesRootAuthenticatedMetadata": true,
+    "entryCount": 17974
+  },
+  "overallResult": "cancelled; private chart TLS trust gate incomplete; no eligible installer",
+  "xml": {
+    "windows-xnav-tests.xml": {
+      "attributes": {
+        "name": "(empty)",
+        "tests": "139",
+        "failures": "0",
+        "disabled": "0",
+        "skipped": "0",
+        "hostname": "",
+        "time": "19",
+        "timestamp": "2026-10-04T01:40:23"
+      },
+      "caseCount": 139,
+      "uniqueCases": 139,
+      "caseStatusCounts": {
+        "run": 139
+      },
+      "failureNodes": 0,
+      "errorNodes": 0,
+      "skippedNodes": 0
+    },
+    "windows-production-tests.xml": {
+      "attributes": {
+        "name": "(empty)",
+        "tests": "139",
+        "failures": "0",
+        "disabled": "0",
+        "skipped": "0",
+        "hostname": "",
+        "time": "19",
+        "timestamp": "2026-10-04T02:10:50"
+      },
+      "caseCount": 139,
+      "uniqueCases": 139,
+      "caseStatusCounts": {
+        "run": 139
+      },
+      "failureNodes": 0,
+      "errorNodes": 0,
+      "skippedNodes": 0
+    }
+  },
+  "buildFixtureFlags": {
+    "xnav": {
+      "OPENNAV_ENABLE_ROUTE_SCENARIO": "ON",
+      "XNAV_ENABLE_TEST_FIXTURES": "ON",
+      "XNAV_ENABLE_PILOT_LOOPBACK_TESTS": "ON"
+    },
+    "production": {
+      "OPENNAV_ENABLE_ROUTE_SCENARIO": "OFF",
+      "XNAV_ENABLE_TEST_FIXTURES": "OFF",
+      "XNAV_ENABLE_PILOT_LOOPBACK_TESTS": "OFF"
+    }
+  },
+  "ais": {
+    "passed": true,
+    "scope": "Same-job actual AIS MSVC Win32 loopback only",
+    "runId": "37164360050",
+    "runAttempt": "1",
+    "commit": "17ab044a1e5222dc71791ac8118454219efe8734",
+    "productAcceptance": false,
+    "wfpAcceptance": false,
+    "boatAcceptance": false,
+    "runtimeRehash": {
+      "ais_provider_test_client.exe": true,
+      "ais_session_native.exe": true,
+      "ais_transport_test_client.exe": true,
+      "concrt140.dll": true,
+      "libcrypto-3.dll": true,
+      "libssl-3.dll": true,
+      "msvcp140.dll": true,
+      "msvcp140_1.dll": true,
+      "msvcp140_2.dll": true,
+      "msvcp140_atomic_wait.dll": true,
+      "msvcp140_codecvt_ids.dll": true,
+      "vccorlib140.dll": true,
+      "vcruntime140.dll": true,
+      "vcruntime140_threads.dll": true,
+      "zlib1.dll": true
+    },
+    "sameJobReceiptRehash": true,
+    "frozenWrapperMatchesRecordedCRLF": true,
+    "actualSessionLog": "178 session checks passed",
+    "actualTransportPassedRows": 18,
+    "actualTransportSummary": "18 TLS/transport scenarios passed",
+    "actualProviderLifecycles": [
+      "normal IPv4",
+      "disable-enable IPv4",
+      "credential-change IPv4",
+      "open-disable-enable IPv4",
+      "open-credential-change IPv4",
+      "normal IPv6"
+    ],
+    "actualProviderPassedRows": 6,
+    "actualServerPassedRows": 6,
+    "projects": [
+      "ais_session_native",
+      "opennav_vessel",
+      "opennav_ais_codec",
+      "opennav_ais",
+      "ais_provider_test_client",
+      "opennav_ais_credentials",
+      "ixwebsocket",
+      "ais_transport_test_client"
+    ],
+    "runtimeImports": {
+      "evidence\\local\\ais-native-runtime\\build\\bin\\Release\\ais_provider_test_client.exe": [
+        "CRYPT32.dll",
+        "KERNEL32.dll",
+        "MSVCP140.dll",
+        "VCRUNTIME140.dll",
+        "WS2_32.dll",
+        "WSOCK32.dll",
+        "api-ms-win-crt-convert-l1-1-0.dll",
+        "api-ms-win-crt-heap-l1-1-0.dll",
+        "api-ms-win-crt-locale-l1-1-0.dll",
+        "api-ms-win-crt-math-l1-1-0.dll",
+        "api-ms-win-crt-runtime-l1-1-0.dll",
+        "api-ms-win-crt-stdio-l1-1-0.dll",
+        "api-ms-win-crt-string-l1-1-0.dll",
+        "api-ms-win-crt-time-l1-1-0.dll",
+        "libcrypto-3.dll",
+        "libssl-3.dll",
+        "zlib1.dll"
+      ],
+      "evidence\\local\\ais-native-runtime\\build\\bin\\Release\\ais_transport_test_client.exe": [
+        "CRYPT32.dll",
+        "KERNEL32.dll",
+        "MSVCP140.dll",
+        "VCRUNTIME140.dll",
+        "WS2_32.dll",
+        "WSOCK32.dll",
+        "api-ms-win-crt-convert-l1-1-0.dll",
+        "api-ms-win-crt-heap-l1-1-0.dll",
+        "api-ms-win-crt-locale-l1-1-0.dll",
+        "api-ms-win-crt-math-l1-1-0.dll",
+        "api-ms-win-crt-runtime-l1-1-0.dll",
+        "api-ms-win-crt-stdio-l1-1-0.dll",
+        "api-ms-win-crt-string-l1-1-0.dll",
+        "libcrypto-3.dll",
+        "libssl-3.dll",
+        "zlib1.dll"
+      ]
+    },
+    "opensslVersion": [
+      "OpenSSL 3.5.9 29 Sep 2026 (Library: OpenSSL 3.5.9 29 Sep 2026)",
+      "built on: Sun Oct  4 00:29:23 2026 UTC",
+      "platform: VC-WIN32"
+    ]
+  },
+  "preview": {
+    "authority": "native Windows fixture-enabled disposable test tree",
+    "result": "passed; screenshot review required",
+    "higher_dpi": "Not exercised by this hosted desktop; manual validation remains open",
+    "executable_sha256": "cffb49eb1e7487711d3f613a86ce3313cc25992482b9ab20388260e9bb1004ad",
+    "checkCount": 19
+  },
+  "privateTls": {
+    "retainedFiles": [
+      "prerequisites.json"
+    ],
+    "completedResultPresent": false
+  },
+  "selectedOriginalFiles": {
+    "evidence/local/windows-xnav-tests.xml": {
+      "bytes": 122072,
+      "sha256": "2f54a23f06adaf85fb869c268e962544b91de11e0326e16bd908e4a9f159ecdd",
+      "extractedMatchesOriginal": true
+    },
+    "evidence/local/windows-production-tests.xml": {
+      "bytes": 122955,
+      "sha256": "bb2bae0ecced5ed0e0ffe8e88efcd0c527a0223b3eb87a43e283e6cb393fc774",
+      "extractedMatchesOriginal": true
+    },
+    "evidence/local/preview-results.json": {
+      "bytes": 48125,
+      "sha256": "40009207952c0b586a876750f8de24d5bf64d8a7497bdd9c116380b6a026d6e5",
+      "extractedMatchesOriginal": true
+    },
+    "evidence/local/ais-native-runtime/report.json": {
+      "bytes": 190684,
+      "sha256": "1624d440a9881c79f7059b520a09b3b25ebf102e24067b6e052b7a4c1274f1aa",
+      "extractedMatchesOriginal": true
+    },
+    "evidence/local/ais-native-runtime/same-job-receipt.json": {
+      "bytes": 43729,
+      "sha256": "f5f797050aef5adbdf0eb2960c96b99a5f58f28e4031568a6849ce17d3e52ff1",
+      "extractedMatchesOriginal": true
+    },
+    "evidence/local/ais-native-runtime/session.log": {
+      "bytes": 27,
+      "sha256": "403d5b5a86828321936cc288c0d8938696ae4771ea42175b498556f75248af66",
+      "extractedMatchesOriginal": true
+    },
+    "evidence/local/ais-native-runtime/transport.log": {
+      "bytes": 1412,
+      "sha256": "5e3c665083cca4724c7db8f35789abbf508438b3475ccdcbda80bbac271a3807",
+      "extractedMatchesOriginal": true
+    },
+    "evidence/local/ais-native-runtime/provider.log": {
+      "bytes": 2620,
+      "sha256": "f61177c7757fc2213fe495edb45872fa3c45ed1b66b00dd27183dda1ac550e36",
+      "extractedMatchesOriginal": true
+    },
+    "evidence/local/ais-native-runtime/openssl-version.log": {
+      "bytes": 833,
+      "sha256": "f9308fdefd77f02142db9ba51d8989f233ebbaa1ae2c198ee8983810076cb8a8",
+      "extractedMatchesOriginal": true
+    },
+    "build/xnav-windows/CMakeCache.txt": {
+      "bytes": 95127,
+      "sha256": "40c6a42861ea72c86f7ca03564bec86d549b504f2210ae4c7fd1a3cadd67e361",
+      "extractedMatchesOriginal": true
+    },
+    "build/production-windows/CMakeCache.txt": {
+      "bytes": 95268,
+      "sha256": "c35e89e9cb821aabbeeb26c9ad6c80dd9a21e8cf2be8997dbcfb598b9bcdfdd9",
+      "extractedMatchesOriginal": true
+    },
+    "evidence/local/preview-01-navigation-day.png": {
+      "bytes": 60773,
+      "sha256": "a846402182ede8cbb13679e1a9d136d1908f0f7fdd883d1f52e5f975da6dfef4",
+      "extractedMatchesOriginal": true
+    },
+    "evidence/local/preview-09-returned-xnav.png": {
+      "bytes": 54545,
+      "sha256": "ff836599c67f5f675a06215f8db328c4a19f5579fd9b946407ba807f93fb0ba0",
+      "extractedMatchesOriginal": true
+    }
+  },
+  "selectedReportsArchive": {
+    "bytes": 117410,
+    "sha256": "5e0f4a77376974bfd5b3110952412861543b352bdff3896ae75248eff82bb6a4"
+  },
+  "limits": [
+    "No overall native Windows pass or eligible installer; cancellation/private TLS gate remain blocking",
+    "AIS loopback success is not live provider, WFP, product or boat acceptance",
+    "Viewed two native 1280x800 coarse-basemap screenshots and route-label component fixture; no completed ENC/private-chart/boat typography acceptance",
+    "No tests, binaries, installers, charts, CI operations or downloads executed"
+  ]
+}

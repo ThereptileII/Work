@@ -1,0 +1,88 @@
+{
+  "scope": "Read-only retained-evidence and source comparison; no tests, builds, CI polling, or Jira mutation.",
+  "revisions": {
+    "provenLocal": "1c4d817c373b85838bc7c1b5d97d11bd026b3454",
+    "provenRemote": "71470d07d8dd9ac6a3050e2b64093e0892473c97",
+    "frozenLocal": "0a52a6cfe3bd3b4a1e6253d609bd9dc046016bd4",
+    "reviewBase": "5d19314fe51d7192ea3cfc2fa55d1674c559f406",
+    "fullPreparationLocal": "96c0c2705aacae511b6f8c22afaa6618dbabceff",
+    "fullPreparationRemote": "15452e512fd073090b1a4cea7c9010eac0874118"
+  },
+  "nativeRun": "37135967220",
+  "nativeArtifact": {
+    "bytes": 536550,
+    "sha256": "49c8ddee500f6f881099010dac432a24eff5f492224a3a8a0e3f987624174572",
+    "crcEntries": 171,
+    "reportAndCacheLogMatchRetainedFiles": true
+  },
+  "nativeReport": {
+    "sha256": "34e1ee98d1942d10ed83237a44fa2f2558fc2020e083a7c86964f56a5543b61b",
+    "passed": true,
+    "privateOriginalCount": 219,
+    "privatePatchedCount": 219,
+    "objectCount": 10,
+    "packageAcceptance": false,
+    "runtimeAcceptance": false,
+    "tlsAcceptance": false
+  },
+  "sourceCacheLog": {
+    "sha256": "78edc8ca6dac7b405cf968fae5e43b772baf8db02193c645732effe3bae676f2",
+    "sixCasesPassed": true
+  },
+  "unchangedFunctionTextSha256": {
+    "safe_path": "ed0286eb499cc8a1f678931f1b330be7abfe7499371cb2f2c3908444f202a28f",
+    "blob_ok": "9d3e01ff09aaf7031c80f2f80798e705bdd9e96525cb5e4474adca93affa9146",
+    "fetch_sources": "71e12ea3f86840c4e192664860da49227f9911a5edb65ebaa98eb7d0e8b4c245",
+    "apply_patches": "a365704d5b5dcfa9815be03848cbc810dcf0a9c7c51643b0e65ae3b493f8cb78",
+    "verify_prepared": "a7e70d4d25558c945bcdf9ed9f8f9e7a7aacdb810f4f5aec63e27344fe26a621",
+    "verify_producer_dependencies": "cab7e5661d3049b57967738b72715a039b17edc8678327f0441ce6673e7442a5",
+    "prepare": "76ce5fe94e1d21e599b93ca58bc7667189e065b776853edc78ff66d5edbb01d1",
+    "package_dll": "983b653f2f4d87899efe4ace6f8034171b3ebac9d6b04c673d15f02c51352c7c"
+  },
+  "files": {
+    "tools/prepare-ocharts-adapter.py": {
+      "sha256LFAtProvenRevision": "3e87a750d2cae902e5cef3c882041598ce930ded2d7bcc1d2f4984e771e00bac",
+      "nativeReceiptMatchesExactCRLFExpansion": true,
+      "sameCompleteFileAtAllFourRevisions": false
+    },
+    "tools/test-ocharts-source-cache.py": {
+      "sha256LFAtProvenRevision": "d280899559c172d712e3550bb2150affad1d94afcc1bf90178e210c52f00a1a9",
+      "nativeReceiptMatchesExactCRLFExpansion": true,
+      "sameCompleteFileAtAllFourRevisions": true
+    },
+    "tools/ocharts-adapter-source.lock.json": {
+      "sha256LFAtProvenRevision": "0aaab29b5ad626f2215e5787b64ec7e3153f6a75223976370dbebb3967557353",
+      "nativeReceiptMatchesExactCRLFExpansion": true,
+      "sameCompleteFileAtAllFourRevisions": true
+    },
+    "tools/verify-ocharts-adapter-package.py": {
+      "sha256LFAtProvenRevision": "85d4925907316b2f3ed48b0e70947d948b3345c4e6906a851fce2c2a0453bbf4",
+      "nativeReceiptMatchesExactCRLFExpansion": true,
+      "sameCompleteFileAtAllFourRevisions": true
+    },
+    "tools/test-trust-compile-windows.py": {
+      "sha256LFAtProvenRevision": "53f462985d08b135819d4fb92c18a9113e0c8d5c385ed9646f8f699bb67e04ac",
+      "nativeReceiptMatchesExactCRLFExpansion": true,
+      "sameCompleteFileAtAllFourRevisions": true
+    },
+    "tools/package-preview.py": {
+      "sha256LFAtProvenRevision": "3568a88d3c05c91269e13c892fae63fe9bf3272aa05ae1256e60f957adc73c40",
+      "nativeReceiptMatchesExactCRLFExpansion": "not in short-preflight receipt",
+      "sameCompleteFileAtAllFourRevisions": true
+    },
+    "cmake/ocharts-adapter/CMakeLists.txt": {
+      "sha256LFAtProvenRevision": "f68ca2a54abc5d4b81c3f8be01ca356298027df0a14fcb0e7d675a26ea611c0e",
+      "nativeReceiptMatchesExactCRLFExpansion": true,
+      "sameCompleteFileAtAllFourRevisions": true
+    }
+  },
+  "unchangedBuildPrivateOChartsBodySha256": "051d455060be5ce7a26d46ca6a1c5ed43723cada9791188191b320cec41dbc00",
+  "lockedSourceCounts": {
+    "paths": 219,
+    "duplicateIdentities": 14,
+    "licenseBlob": {
+      "gitBlob": "7d5393a1212da0841e28e2f74883cb40fbd75a1f",
+      "bytes": 15170
+    }
+  }
+}

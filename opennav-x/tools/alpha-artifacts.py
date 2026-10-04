@@ -17,6 +17,9 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--boat-review', action='store_true',
                     help='Separate development review bundle; endurance and boat acceptance remain pending')
 args = parser.parse_args()
+policy = json.loads((ROOT / 'release/qualification.json').read_text())
+endurance_state = ('skipped by user direction' if policy.get('enduranceEnabled') is False
+                   else 'pending')
 gates = {}
 for name in ('production-recovery-results.json', 'installer-lifecycle.json'):
     record = json.loads((ROOT / 'evidence/local' / name).read_text())
@@ -50,7 +53,7 @@ for source in files:
     checks.append(hashlib.sha256(target.read_bytes()).hexdigest() + '  ' + target.name)
 (output / 'SHA256SUMS.txt').write_text('\n'.join(checks) + '\n')
 (output / 'QUALIFICATION.txt').write_text(
-    ('DEVELOPMENT BOAT REVIEW ONLY: endurance and release qualification are pending.\n'
+    (f'DEVELOPMENT BOAT REVIEW ONLY: endurance {endurance_state}; release qualification pending.\n'
      if args.boat_review else 'Beta 2 candidate product: native package and installer gates passed.\n') +
     'Native package and installer lifecycle gates passed for these exact payload hashes.\n'
     'Release acceptance additionally requires same-commit complete CI and boat-PC evidence.\n'

@@ -1,5 +1,12 @@
 # XNav chart presentation — source inspection and palette contract
 
+Current frozen candidate local `0a52a6c` / published `17ab044` includes the
+combined symbol and warning increments below. Its
+[verified publication receipt](../evidence/skager-symbols-0a52-publication.json)
+binds [run 37164360050](https://github.com/ThereptileII/Work/actions/runs/37164360050).
+Linux/native qualification remains pending; no eligible package, private-chart
+runtime or boat acceptance is claimed.
+
 The integrated SCRUM-279–282 follow-on at `45d73e8` adds the supplied marina,
 UWTROC03/UWTROC04 rock and WRECKS05 wreck artwork, fishing-area motif and cable
 waveform. The [combined resource proof](../evidence/scrum279-283-combined/README.md)
@@ -19,20 +26,25 @@ wash, sector rays or geographically scaled nominal-range boundary. This is an
 explicit full-circle paint extension: the prototype supplies neither an exact
 all-round glyph nor a replacement physical tower. Unknown, special, obscured,
 directional and unsupported classifications retain stock paint. Focused actual
-core/private methods and optimized units pass; actual integrated chart,
-native/boat acceptance remains separate.
+core/private methods and optimized units pass. The
+[actual Linux application comparison](../evidence/scrum284-fc6348a-linux-canvas/README.md)
+passes 16 captures and four exact Day returns, with all eight Standard controls
+unchanged; native/private-renderer and boat acceptance remain separate.
 
 SCRUM-286's [compact overzoom warning](../evidence/scrum286-overzoom-warning/README.md)
 retains the exact upstream 3.9 trigger, quilt/MBTiles/single-chart behavior and
 translated warning. Its 12px/550 prototype warning-callout roles replace only
 SKAGER paint, with the same stock map on refusal. There is no supplied OverZoom
 asset; this is a necessary warning extension, not an invented navigation state.
-Eight controlled software/Mesa images and both exact Day returns pass; actual
-application, native/DPI and boat review remain open. Standard/Legacy/Safe retain
+Eight controlled software/Mesa images and both exact fixture Day returns pass.
+The [actual Linux application review](../evidence/scrum286-98d2c45-linux-canvas/README.md)
+also passes 16 captures and four exact Day returns; only the warning region
+changes and all Standard chart controls remain identical. Native/DPI, private
+renderer and boat review remain open. Standard/Legacy/Safe retain
 the original warning. These follow-ons do not alter the existing approved
-124-DIP SKAGER wordmark or ordered prototype UI font stack, and are not included
-in the frozen `4ddf1f3` Windows source. No complete glyph or screen conformance
-is established by their integration.
+124-DIP SKAGER wordmark or ordered prototype UI font stack. They were absent
+from former `4ddf1f3` and are now included in frozen `17ab044`. No complete glyph
+or screen conformance is established by their integration.
 
 Current generic-building follow-on: the [observed IHO brown square](../evidence/scrum265-lighthouse-building-audit/README.md)
 is BUISGL36. Only its pinned default Simplified rule 1091 now selects the

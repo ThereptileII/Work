@@ -1,0 +1,48 @@
+{
+  "localCommit": "0a52a6cfe3bd3b4a1e6253d609bd9dc046016bd4",
+  "publishedCommit": "17ab044a1e5222dc71791ac8118454219efe8734",
+  "tree": "ff9780a2f3e5ddb8e769b341feb36ddcdec50101",
+  "mappedEntries": 6658,
+  "independentlyReconstructed": true,
+  "unrelatedRootEntriesPreserved": 8,
+  "omittedGitlink": {
+    "path": "upstream/OpenCPN",
+    "sha": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7"
+  },
+  "parentPublishedCommit": "ab92dc78cd99e945a08b7a00d2b8166a5841f954",
+  "previousFullBranchCommit": "4ddf1f383e495150551946dd36103cd77cea85eb",
+  "branch": "opennav-x-beta2-ui",
+  "force": false,
+  "ciRun": 37164360050,
+  "ciUrl": "https://github.com/ThereptileII/Work/actions/runs/37164360050",
+  "ciStatusAtPublication": "in_progress",
+  "preflightSource": "98d2c459ae0120070a2fa59b87dfa1c004e19394",
+  "productionInputsUnchangedAfterPreflight": true,
+  "sourceBuild": "normal single-job Linux configure/build/link/install,38steps,exit0",
+  "warningCanvas": {
+    "captures": 16,
+    "cleanSessions": 4,
+    "exactWholeChartDayReturns": 4,
+    "standardControlsUnchanged": 8,
+    "mask": null
+  },
+  "nativeParserPrerequisite": {
+    "commit": "ab92dc78cd99e945a08b7a00d2b8166a5841f954",
+    "run": 37162505696,
+    "testsPassed": 8,
+    "runtimeNotQualified": true
+  },
+  "publicationMethod": "hash-checked blobs; two mapped tree stages; full tree reconstructed before commit/ref update",
+  "prestage": {
+    "local": "b694561691321c83e3d6e7c9ee834e6a7bde866d",
+    "tree": "8311d2a74b110d1f91d2f26303dcbe6efee70a0e",
+    "changedEntries": 863,
+    "finalDeltaEntries": 148
+  },
+  "publicationRetries": [
+    "GitHub rejected the863-entry tree request with422 timeout;150-entry batches succeeded, then exact full-tree verification passed.",
+    "Initial ref call missed branch_name schema field and made no ref update; corrected request succeeded without force."
+  ],
+  "packageAccepted": false,
+  "boatChanged": false
+}
