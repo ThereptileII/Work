@@ -108,6 +108,17 @@ class PreparationTests(unittest.TestCase):
         self.assertEqual(probe.eligibility(run, artifact, jobs, receipt, COMMIT, '123'),
                          'candidate-complete-ci')
 
+    def test_current_upload_label_is_required_and_old_label_rejected(self):
+        run, artifact, jobs, receipt = self.eligibility_fixture()
+        upload = next(step for step in jobs[0]['steps']
+                      if step['name'].startswith('Upload development review'))
+        upload['name'] = 'Upload development review with endurance qualification pending'
+        self.assertEqual(probe.eligibility(run, artifact, jobs, receipt, COMMIT, '123'),
+                         'pending-endurance-development-only')
+        upload['name'] = 'Upload development review only while endurance runs'
+        with self.assertRaisesRegex(ValueError, 'required native prerequisite not successful'):
+            probe.eligibility(run, artifact, jobs, receipt, COMMIT, '123')
+
     def test_eligibility_rejects_failed_missing_stale_or_wrong_identity(self):
         changes = (
             lambda r, a, j, q: r.update(conclusion='failure'),

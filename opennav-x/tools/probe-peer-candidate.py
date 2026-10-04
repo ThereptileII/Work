@@ -181,7 +181,7 @@ PREREQUISITES = (
     'Require same-run restart qualification before delivering any product artifact',
     'Verify exact restart qualification identity',
     'Prepare development boat review after native functional gates',
-    'Upload development review only while endurance runs',
+    'Upload development review with endurance qualification pending',
 )
 
 
