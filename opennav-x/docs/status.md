@@ -10,9 +10,20 @@ toolchain/source checks; failed or mismatched inputs never fall back silently.
 New packages remain Staging by default. Production and design review still need
 explicit instructions. See [build efficiency](build-efficiency.md).
 
-The native dependency-only cold/reuse proof and focused Linux/Windows delivery
-checks are in progress. No application, boat, design or Production qualification
-is claimed by these helper changes. The installed boat candidate is unchanged.
+Focused delivery checks pass **190 tests on Linux and 190 on native Windows**
+at `0e6ee68aa70f82a5d29561cf8de346e0b28d7422`
+([run 37235438463](https://github.com/ThereptileII/Work/actions/runs/37235438463)).
+Native dependency-only production and cross-run reuse both pass. The measured
+SDK stage drops from **50m30s** cold to **1m14s** authenticated reuse, with fresh
+native tool/source checks. This is a dependency-stage measurement, not a full
+application-build timing. The retained archive's timestamp defect is corrected
+and tested across forced clock changes.
+
+SCRUM-292/293 helper gates pass; SCRUM-225 and the complete Staging delivery gate
+remain Testing pending the next real consuming application candidate. No extra
+application build is requested merely to close those gates. No boat, design or
+Production qualification is claimed. The installed boat candidate is unchanged.
+See the [delivery-efficiency evidence](evidence/2026-10-04-delivery-efficiency.md).
 
 ## Staging delivery and explicit Production promotion
 

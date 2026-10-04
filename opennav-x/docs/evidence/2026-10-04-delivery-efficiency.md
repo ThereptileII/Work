@@ -6,12 +6,13 @@ No application build, boat action or Production promotion was requested here.
 
 ## Focused qualification
 
-Code: `eccc6214b6664d83ac9a6f19e709ee3d29845e1a`.
-[Run 37232599642](https://github.com/ThereptileII/Work/actions/runs/37232599642)
-passed **168 Linux checks and 168 native Windows checks**. Windows also parsed
+Code: `0e6ee68aa70f82a5d29561cf8de346e0b28d7422`.
+[Run 37235438463](https://github.com/ThereptileII/Work/actions/runs/37235438463)
+passed **190 Linux checks and 190 native Windows checks**. Windows also parsed
 `build-pristine-windows.ps1`, `package-preview-windows.ps1`,
-`qualify-staging-windows.ps1` and the installer self-test script. Job wall time
-was 17 seconds on Linux and 46 seconds on Windows, including setup/upload.
+`qualify-staging-windows.ps1`, the installer self-test script and
+`verify-curl-bundle.ps1`. Job wall time was 19 seconds on Linux and 48 seconds
+on Windows, including setup/upload.
 
 | Suite | Checks per platform |
 | --- | ---: |
@@ -21,11 +22,13 @@ was 17 seconds on Linux and 46 seconds on Windows, including setup/upload.
 | Installer retained-source and functional policies | 20 |
 | Installer process completion | 12 |
 | Changed-input selection using actual Git histories | 17 |
-| Immutable SDK bundle / native metadata selection | 19 |
+| Immutable SDK bundle / native metadata selection / exact consumer compatibility | 23 |
 | Authenticated Actions downloads and ZIP boundaries | 16 |
 | Retained compiled inputs | 13 |
 | Exact-attempt retest selection | 2 |
 | AIS dependency authority and native-runtime guard | 9 |
+| OpenSSL immutable identity / live CPU separation | 5 |
+| Existing same-job receipt and shared native setup | 13 |
 
 The retained-input fixtures exercise exact-byte restoration on both platforms,
 original product/source identity, independent helper identity, failed evidence,
@@ -44,6 +47,14 @@ installer jobs; neither is waived by these results.
 - [37228280158](https://github.com/ThereptileII/Work/actions/runs/37228280158):
   an AIS test fixture lacked the newly required unchanged verifier record.
   The complete fixture now exercises the same tampered-prefix rejection.
+
+- [37235243723](https://github.com/ThereptileII/Work/actions/runs/37235243723):
+  190 Linux checks passed; Windows passed 189 and exposed a nondeterministic
+  retained-archive manifest timestamp. Original payload entries had a fixed ZIP
+  timestamp but the manifest used wall time. Both now use the same fixed metadata.
+  The existing test was strengthened to force different clocks/source mtimes and
+  compare full bytes, hashes and all member metadata; it fails before the repair
+  and passes afterwards. No assertion was removed.
 
 These corrections reran the small helper workflow, not an application build.
 
@@ -94,7 +105,26 @@ receipts, compares all non-CPU version fields exactly, and records CPU state
 separately with overrides refused. A narrowly pinned two-file consumer-only
 compatibility record applies to this successful producer; the obsolete failed-
 producer exception remains removed. No library is rebuilt for this correction.
-Corrected warm proof remains pending; no savings are claimed yet.
+Corrected warm proof [37235349391](https://github.com/ThereptileII/Work/actions/runs/37235349391)
+passed with consumer `a2f8815ed2cb7d43f12184dd597c339c5a1ba71f` against the
+unchanged original SDK. Authentication/download took 9 seconds; fresh native
+verification/restaging took 65 seconds: **1m14s**, compared with the cold
+producer's **50m30s**. Whole warm job was **2m11s** including setup and evidence
+upload. This saves **49m16s in the dependency stage** in this measured pair;
+it is not a measurement of the full application build.
+
+The producer build step was skipped. Full inventory/hash/provenance checks,
+OpenSSL parent/child, zlib parent/child and curl native tool reprobes passed.
+Original build/test receipts remain unchanged; current CPU observations are
+retained separately. Evidence artifact `11314943893` SHA-256:
+`d86b5ee093ef3f13714bcc9ccb6028a542eaa2e91c77228291f50bb82a998721`.
+The later helper commit changes only deterministic retained-archive metadata;
+its dependency-consumer inputs are identical to the successful warm revision.
+
+SCRUM-225 remains **Testing** until the next genuine application candidate consumes
+and qualifies these inputs. No extra application build is scheduled solely to
+close that broader gate. SCRUM-292 and SCRUM-293 helper acceptance is complete;
+SCRUM-290's first complete Staging candidate remains separate verification.
 
 ## Workflow registration and preserved boundaries
 
@@ -105,6 +135,8 @@ files remain untouched. Follow-up registration
 workflow to retain failed producer outputs. Registration
 `a8525595f11273ebb942461c2487569514164f3b` changes only the baseline/helper
 workflows to remove duplicate automatic builds from mirrored branches.
+Registration `bd5ff5702f70ebf3249ff3eab86199f3ab96021d` changes only the
+focused helper workflow to include current consumer and same-job boundary checks.
 Software work uses the `staging` branch.
 
 Staging remains the default delivery channel, with draft versioned Releases.
