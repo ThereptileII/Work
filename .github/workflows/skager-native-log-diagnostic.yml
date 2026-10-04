@@ -1,0 +1,70 @@
+name: SKAGER read-only exact native log diagnostic
+on:
+  push:
+    branches: [skager-native-log-diagnostic]
+    paths: [.github/workflows/skager-native-log-diagnostic.yml]
+permissions:
+  contents: read
+  actions: read
+jobs:
+  collect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Read exact candidate metadata and original current job log
+        shell: python
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          import datetime, hashlib, json, os, pathlib, re, subprocess
+          repo = 'ThereptileII/Work'
+          run_id, job_id = 37164360050, 111325149619
+          commit = '17ab044a1e5222dc71791ac8118454219efe8734'
+          assert os.environ['GITHUB_REPOSITORY'] == repo
+          out = pathlib.Path('native-log-diagnostic')
+          out.mkdir()
+          def metadata(endpoint, name):
+              data = subprocess.check_output(['gh', 'api', '--method', 'GET', endpoint], timeout=45)
+              parsed = json.loads(data)
+              (out / name).write_bytes(data)
+              return parsed
+          run = metadata(f'repos/{repo}/actions/runs/{run_id}', 'source-run.json')
+          job = metadata(f'repos/{repo}/actions/jobs/{job_id}', 'source-job.json')
+          assert run['head_sha'] == commit and run['run_attempt'] == 1
+          assert run['event'] == 'push' and run['path'] == '.github/workflows/opennav-baseline.yml'
+          assert job['run_id'] == run_id and job['head_sha'] == commit
+          receipt = {'schema': 1, 'observed_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                     'source_run': run_id, 'source_job': job_id, 'source_commit': commit,
+                     'source_attempt': 1, 'collector_commit': os.environ['GITHUB_SHA'],
+                     'scope': 'Read-only log observation; no build, cancellation, rerun or acceptance',
+                     'source_status': job['status'], 'source_conclusion': job['conclusion']}
+          raw = out / 'original-job.log'
+          try:
+              with raw.open('xb') as stream:
+                  result = subprocess.run(['gh', 'api', '--method', 'GET',
+                      f'repos/{repo}/actions/jobs/{job_id}/logs'], stdout=stream,
+                      stderr=subprocess.PIPE, timeout=90)
+              receipt['download_exit'] = result.returncode
+              if result.returncode:
+                  receipt['log_state'] = 'unavailable; no cause inferred'
+              else:
+                  assert raw.stat().st_size <= 128 * 1024 * 1024, 'Unexpectedly large log'
+                  content = raw.read_bytes()
+                  lines = content.decode('utf-8', errors='replace').splitlines()
+                  timestamps = [line[:30] for line in lines if re.match(r'^\d{4}-\d\d-\d\dT', line)]
+                  receipt.update(log_state='observed; may be an incomplete live prefix',
+                      bytes=len(content), sha256=hashlib.sha256(content).hexdigest(),
+                      last_log_timestamp=timestamps[-1] if timestamps else None)
+                  (out / 'tail.txt').write_text('\n'.join(lines[-300:]) + '\n', encoding='utf-8')
+          except subprocess.TimeoutExpired:
+              receipt['log_state'] = 'observation timed out; target job state unchanged'
+          finally:
+              (out / 'receipt.json').write_text(json.dumps(receipt, indent=2) + '\n')
+          print(json.dumps(receipt, indent=2))
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: native-log-diagnostic-${{ github.sha }}
+          path: native-log-diagnostic
+          if-no-files-found: error
+          retention-days: 7
