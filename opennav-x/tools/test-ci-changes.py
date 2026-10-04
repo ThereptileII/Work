@@ -21,7 +21,8 @@ class ClassificationTests(unittest.TestCase):
                      'installer/windows/Lifecycle.ps1', 'docs/beta2/Release.md',
                      'docs/third-party/curl/COPYING', 'LICENSE', 'CMakeLists.txt',
                      'tools/source_package.py', 'tools/package-preview.py',
-                     'tools/chart_building_point.py'):
+                     'tools/chart_building_point.py', 'tests/support/VesselFixture.cpp',
+                     'tests/vessel_state_tests.cpp', 'tests/installer_welcome_tests.py'):
             with self.subTest(path=path):
                 self.expect([path], ['product'])
 
@@ -30,7 +31,7 @@ class ClassificationTests(unittest.TestCase):
                      'docs/evidence/test.json', 'docs/design/prototype/index.html'], ['docs'])
 
     def test_helpers_do_not_build_application(self):
-        for path in ('tests/installer_welcome_tests.py', 'tools/smoke-navigation.py',
+        for path in ('tools/smoke-navigation.py',
                      'tools/test-ci-changes.py', 'tools/ci_changes.py',
                      'tools/github_release_delivery.py', 'tools/staging_build_inputs.py',
                      'tools/fetch_ci_inputs.py', 'tools/qualify-staging-windows.ps1',

@@ -89,7 +89,10 @@ def classify_path(raw: str, layout: str) -> tuple[str, str]:
     if raw.startswith('web/'):
         return 'other', 'independent web project; its own checks apply'
     if raw.startswith('tests/'):
-        return 'helpers', 'focused test source or fixture'
+        # tests/support is linked into the fixture executable; other compiled
+        # tests need their build targets. Until dedicated targets are selected,
+        # this directory cannot safely use the delivery-helper-only path.
+        return 'product', 'compiled test/fixture scope requires application build checks'
     if raw.startswith('tools/'):
         name = path.name
         if raw.startswith(('tools/boat/', 'tools/prototype/', 'tools/fixtures/',

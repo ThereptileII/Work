@@ -34,6 +34,7 @@ or ambiguous history and unreviewed paths select the conservative build path.
 | Ordinary docs or recorded evidence | Relevant content checks; no new application package or release. |
 | Workflow or test/retest helper | Focused contract/helper checks; reuse exact retained candidate bytes when needed. |
 | Application, installer, runtime resources or packaging recipe | Build a new candidate and run relevant functional/package gates. |
+| `tests/**` | Conservatively select product/build checks: fixture support is linked into executables and compiled tests need build targets; dedicated narrower targets are not yet selected. |
 | `docs/beta2/`, third-party notices or `LICENSE` | Treat as packaged product inputs, even though they are documentation. |
 | Dependency producer, source lock or ABI/configuration input | Invalidate affected SDK reuse and require a verified matching producer before consumption. |
 | Producer workflow alone | Check the workflow and invalidate its reuse fingerprint; do not build the application just to verify scheduling. |
@@ -100,3 +101,30 @@ producer evidence and SDK files remain exact. Restoration keeps the verified
 current helper; the original artifact and manifest stay unchanged. This avoids
 recompiling identical libraries for a stricter consumer-only boundary. The native
 cross-run proof still has to pass before this producer is selected for Staging.
+
+## Actions operation
+
+Use the **staging** source branch in GitHub's “Use workflow from” selector; the
+repository's default branch also contains a separate firmware project.
+
+- **SKAGER Staging**: ordinarily automatic for product inputs; manual dispatch
+  forces a Staging build. The change selector prints why each check was selected.
+- **SKAGER verified Windows dependencies**: `produce` builds/tests and uploads
+  a new SDK only. Select its exact successful run/attempt/artifact digest in
+  `tools/windows-dependency-bundle.lock.json`, then run `verify` from the consumer
+  revision before relying on it. Never select “latest” or a partial failed SDK.
+- **Re-run failed jobs**: a desktop-qualification failure inherits the completed
+  build's original artifact and attempt. The successful compiler job stays done.
+- **SKAGER retained Staging checks**: for a corrected test helper, choose its
+  source branch, original build run and attempt, and `installer` or `all` scope.
+  This authenticates/downloads the original compiled inputs, uses the candidate's
+  installer engine and records the new helper revision. It creates diagnostic
+  evidence, never a new executable or an automatically accepted release.
+- **SKAGER Production**: remains the separate explicit named-candidate promotion
+  flow. No design review, rebranding or application compilation is added to it.
+
+Expired SDKs, a changed native image/toolchain, a changed producer recipe, or
+missing retained inputs stop reuse with a clear failure. They require a new
+verified producer; they do not authorize a weaker fallback. Future Staging runs
+still have to pass their application, native desktop and installer gates before
+creating a candidate Release.
