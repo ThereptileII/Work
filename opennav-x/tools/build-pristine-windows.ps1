@@ -250,9 +250,9 @@ try {
             $BeforeCurlPath = $env:PATH
             try {
                 $env:PATH = "$(Split-Path $env:SKAGER_CURL_TEST_PERL -Parent);$env:PATH"
-                & (Join-Path $PSScriptRoot 'build-curl-windows.ps1') -IntegrationSource $Source `
-                    -OpenSslPrefix $OpenSslPrefix -ZlibPrefix $ZlibPrefix -ZlibManifest $ZlibManifestPath `
-                    -VerifyToolFactsOnly
+                & (Join-Path $PSScriptRoot 'verify-curl-bundle.ps1') `
+                    -DependencyBundle $DependencyBundle -DependencyBundleProvenance $DependencyBundleProvenance `
+                    -Python $BuildPython
             } finally { $env:PATH = $BeforeCurlPath }
             Run python (@((Join-Path $PSScriptRoot 'windows_dependency_bundle.py'), 'stage') + $BundleArguments)
             Write-Output "Cross-run dependency live reprobe and stage passed: $([DateTime]::UtcNow.ToString('o'))"

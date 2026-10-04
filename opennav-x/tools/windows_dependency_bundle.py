@@ -29,6 +29,9 @@ import windows_dependency_stage as stage
 
 WORKFLOW = '.github/workflows/skager-windows-dependencies.yml'
 JOB = 'windows-dependencies'
+CONSUMER_COMPATIBILITY = 'tools/windows-dependency-consumer-compatibility.json'
+COMPATIBLE_PRODUCER = '1b25542aea3f9ab62c83c5d7a3ecdac9652f7d3e'
+CONSUMER_FILES = frozenset({'tools/windows_dependency_bundle.py', 'tools/build-pristine-windows.ps1'})
 ABI = {'architecture': 'Win32', 'abi': 'x86', 'runtime': 'MultiThreadedDLL (/MD)',
        'openssl': '3.5.9', 'zlib': '1.3.2', 'curl': '8.22.0'}
 # Only producer-relevant bytes: application/UI patches do not invalidate this
@@ -242,6 +245,47 @@ def seal(root: Path, output: Path, *, producer_success: bool):
                       'fingerprint': document['fingerprint']['sha256'], 'producer': identity}))
 
 
+def _consumer_compatibility(root: Path, document: dict) -> dict:
+    """Approve only exact reviewed consumer changes; never rewrite evidence."""
+    current = {}
+    for name in CONSUMER_FILES:
+        path = receipt._plain_path(root, name)
+        current[name] = {'bytes': path.stat().st_size, 'sha256': receipt._digest(path)}
+    if all(current[name] == document['files'][name] for name in CONSUMER_FILES):
+        return {}
+    if document['producer']['headSha'] != COMPATIBLE_PRODUCER:
+        raise ValueError('consumer correction is not approved for this producer commit')
+    policy = evidence._strict_json(receipt._plain_path(root, CONSUMER_COMPATIBILITY))
+    if (set(policy) != {'schemaVersion', 'entries'} or type(policy['schemaVersion']) is not int or
+            policy['schemaVersion'] != 1 or not isinstance(policy['entries'], list)):
+        raise ValueError('invalid exact consumer compatibility policy')
+    matches = []
+    for entry in policy['entries']:
+        if (not isinstance(entry, dict) or set(entry) != {'producerCommit', 'files', 'reason'} or
+                entry['producerCommit'] != COMPATIBLE_PRODUCER or
+                not isinstance(entry['reason'], str) or not entry['reason'] or
+                not isinstance(entry['files'], dict) or set(entry['files']) != CONSUMER_FILES):
+            raise ValueError('unreviewed consumer compatibility scope')
+        for name, value in entry['files'].items():
+            if (not isinstance(value, dict) or set(value) != {'originalSha256', 'currentSha256'} or
+                    any(not isinstance(digest, str) or not receipt.SHA256.fullmatch(digest)
+                        for digest in value.values())):
+                raise ValueError('invalid exact consumer compatibility hash')
+        if all(entry['files'][name] == {
+                'originalSha256': document['files'][name]['sha256'],
+                'currentSha256': current[name]['sha256']} for name in CONSUMER_FILES):
+            matches.append(entry)
+    if len(matches) != 1:
+        raise ValueError('current consumer differs without exact reviewed compatibility')
+    return current
+
+
+def _expected_current_files(root: Path, document: dict) -> dict:
+    # The original document remains truthful and unchanged. Current helper
+    # records are used solely when checking this explicitly reviewed consumer.
+    return {**document['files'], **_consumer_compatibility(root, document)}
+
+
 def verify_bundle(root: Path, bundle: Path, provenance: Path) -> dict:
     root = receipt._workspace_root(root)
     bundle = receipt._workspace_root(bundle)
@@ -279,7 +323,14 @@ def verify_bundle(root: Path, bundle: Path, provenance: Path) -> dict:
         raise ValueError('current Windows runner image differs; fresh producer required')
     if document['python'] != _python_identity():
         raise ValueError('current Python build-helper toolchain differs')
-    if document['fingerprint'] != fingerprint(root):
+    current_fingerprint = fingerprint(root)
+    compatibility = _consumer_compatibility(root, document)
+    if compatibility:
+        for name in compatibility:
+            current_fingerprint['inputs'][name] = document['files'][name]['sha256']
+        comparable = {key: value for key, value in current_fingerprint.items() if key != 'sha256'}
+        current_fingerprint['sha256'] = hashlib.sha256(_encode(comparable)).hexdigest()
+    if document['fingerprint'] != current_fingerprint:
         raise ValueError('dependency source/recipe/configuration/ABI inputs changed')
     payload = receipt._plain_path(bundle, 'payload')
     # Derive allowed payload roots from the actual verified metadata, never
@@ -301,6 +352,8 @@ def verify_bundle(root: Path, bundle: Path, provenance: Path) -> dict:
 
 def restore(root: Path, bundle: Path, provenance: Path):
     document = verify_bundle(root, bundle, provenance)
+    expected_current = _expected_current_files(root, document)
+    compatibility = _consumer_compatibility(root, document)
     # Validate every destination before copying. Refuse conflicting existing
     # files; routine current checkout notices may already have identical bytes.
     for name, record in document['files'].items():
@@ -308,17 +361,17 @@ def restore(root: Path, bundle: Path, provenance: Path):
             continue  # Current authoritative workflow was checked by fingerprint.
         destination = stage._safe_destination(root, name)
         if destination.exists():
-            curl_package.verify_file(destination, record)
+            curl_package.verify_file(destination, expected_current[name])
     for name, record in document['files'].items():
-        if name == WORKFLOW:
-            continue  # Current authoritative workflow was checked by fingerprint.
+        if name == WORKFLOW or name in compatibility:
+            continue  # Preserve independently verified current consumer helpers.
         destination = stage._safe_destination(root, name)
         destination.parent.mkdir(parents=True, exist_ok=True)
         if not destination.exists():
             with destination.open('xb') as output, receipt._plain_path(bundle / 'payload', name).open('rb') as source:
                 shutil.copyfileobj(source, output)
         curl_package.verify_file(destination, record)
-    if _current_inventory(root, document['roots']) != document['files']:
+    if _current_inventory(root, document['roots']) != _expected_current_files(root, document):
         raise ValueError('restored dependency inventory differs')
     verify_producers(root)
     print('Immutable dependency payload verified and restored; live native reprobes still required')
@@ -326,7 +379,7 @@ def restore(root: Path, bundle: Path, provenance: Path):
 
 def verify_restored(root: Path, bundle: Path, provenance: Path) -> dict:
     document = verify_bundle(root, bundle, provenance)
-    if _current_inventory(root, document['roots']) != document['files']:
+    if _current_inventory(root, document['roots']) != _expected_current_files(root, document):
         raise ValueError('dependency payload changed before staging')
     verify_producers(root)
     return document
@@ -358,7 +411,7 @@ def stage_bundle(root: Path, bundle: Path, provenance: Path):
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('mode', choices=('fingerprint', 'seal', 'verify', 'restore', 'stage'))
+    parser.add_argument('mode', choices=('fingerprint', 'seal', 'verify', 'verify-restored', 'restore', 'stage'))
     parser.add_argument('--root', type=Path, required=True)
     parser.add_argument('--output', type=Path)
     parser.add_argument('--bundle', type=Path)
@@ -375,7 +428,7 @@ def main(argv=None):
         else:
             if not args.bundle or not args.provenance:
                 raise ValueError('--bundle and --provenance required')
-            {'verify': verify_bundle, 'restore': restore, 'stage': stage_bundle}[args.mode](
+            {'verify': verify_bundle, 'verify-restored': verify_restored, 'restore': restore, 'stage': stage_bundle}[args.mode](
                 args.root, args.bundle, args.provenance)
     except (OSError, ValueError, TypeError, KeyError, subprocess.CalledProcessError) as error:
         print(f'Immutable Windows dependency bundle rejected: {error}', file=sys.stderr)

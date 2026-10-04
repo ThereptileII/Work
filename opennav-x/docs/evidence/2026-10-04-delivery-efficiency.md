@@ -6,22 +6,22 @@ No application build, boat action or Production promotion was requested here.
 
 ## Focused qualification
 
-Code: `56e97c4d31c006c39b065fc2f75a8b93dea101c8`.
-[Run 37228811378](https://github.com/ThereptileII/Work/actions/runs/37228811378)
-passed **167 Linux checks and 167 native Windows checks**. Windows also parsed
+Code: `eccc6214b6664d83ac9a6f19e709ee3d29845e1a`.
+[Run 37232599642](https://github.com/ThereptileII/Work/actions/runs/37232599642)
+passed **168 Linux checks and 168 native Windows checks**. Windows also parsed
 `build-pristine-windows.ps1`, `package-preview-windows.ps1`,
 `qualify-staging-windows.ps1` and the installer self-test script. Job wall time
-was 22 seconds on Linux and 47 seconds on Windows, including setup/upload.
+was 17 seconds on Linux and 46 seconds on Windows, including setup/upload.
 
 | Suite | Checks per platform |
 | --- | ---: |
 | Release inventory | 16 |
 | Authenticated release delivery / publish retry | 20 |
-| Workflow and qualification policies | 23 |
+| Workflow and qualification policies | 24 |
 | Installer retained-source and functional policies | 20 |
 | Installer process completion | 12 |
 | Changed-input selection using actual Git histories | 17 |
-| Immutable SDK bundle / approved verifier correction | 19 |
+| Immutable SDK bundle / native metadata selection | 19 |
 | Authenticated Actions downloads and ZIP boundaries | 16 |
 | Retained compiled inputs | 13 |
 | Exact-attempt retest selection | 2 |
@@ -64,18 +64,48 @@ The selector correction must preserve missing/ambiguous authoritative-metadata
 refusal. Future failures separately retain unqualified original native outputs
 for investigation; these cannot be selected as a successful SDK.
 
+Three obsolete exception-specific tests were replaced by three tests for nested
+compiler metadata, ambiguous authoritative metadata and missing authoritative
+metadata; the suite remains 19 checks.
+
 The unused verifier-compatibility exception for the failed producer is removed:
 there is no eligible bundle requiring an exception. Exact current verifier bytes
 remain required; the corrected Windows short-path boundary stays in place.
-Native producer completion, authenticated cross-run reuse and measured time
-savings remain pending. The selected SDK lock will only reference a successful
-complete producer.
+Replacement producer [37230581131](https://github.com/ThereptileII/Work/actions/runs/37230581131)
+passed at `1b25542aea3f9ab62c83c5d7a3ecdac9652f7d3e`:
+OpenSSL 4,283, zlib 13 and curl 1,569 tests. The producer step took **50m30s**;
+whole job 51m28s. SDK artifact `11314817073` contains 117,979,890 bytes and has
+SHA-256 `27f689d55a6827e52826fb64f7f1c5081e17ee19ab35beaa219d406b43bfaf2e`.
+The original bundle manifest SHA-256 is
+`ec7cf8fae8f179bb8695f0352516db7dbe2ca97dd7cf8ad48644165822884d32`.
+
+First cross-run attempt [37234040385](https://github.com/ThereptileII/Work/actions/runs/37234040385)
+authenticated/restored the original bundle and passed OpenSSL/zlib native
+reprobes, then failed curl's full version-output comparison. Diagnostic
+[37234440416](https://github.com/ThereptileII/Work/actions/runs/37234440416)
+executed the same verified OpenSSL binary and proved that **only CPUINFO differed**
+on the second processor. OpenSSL 3.5.9
+[version.c](https://raw.githubusercontent.com/openssl/openssl/openssl-3.5.9/apps/version.c)
+and [info.c](https://raw.githubusercontent.com/openssl/openssl/openssl-3.5.9/crypto/info.c)
+identify this as a live CPU observation. It is not an immutable build property.
+
+An independent consumer probe now preserves original producer scripts and
+receipts, compares all non-CPU version fields exactly, and records CPU state
+separately with overrides refused. A narrowly pinned two-file consumer-only
+compatibility record applies to this successful producer; the obsolete failed-
+producer exception remains removed. No library is rebuilt for this correction.
+Corrected warm proof remains pending; no savings are claimed yet.
 
 ## Workflow registration and preserved boundaries
 
 Default-branch registration `771d0419aaa08c4de6757fa0e6699b382cc8660f`
 changes only four `.github/workflows/` files. All existing firmware/project
-files remain untouched. Software work uses the `staging` branch.
+files remain untouched. Follow-up registration
+`2677b0661a92dd3435df1472fb77c9db1f0adc38` changes only the dependency
+workflow to retain failed producer outputs. Registration
+`a8525595f11273ebb942461c2487569514164f3b` changes only the baseline/helper
+workflows to remove duplicate automatic builds from mirrored branches.
+Software work uses the `staging` branch.
 
 Staging remains the default delivery channel, with draft versioned Releases.
 Production requires the explicit selected-candidate instruction. Design review

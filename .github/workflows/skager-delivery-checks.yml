@@ -41,7 +41,8 @@ jobs:
                        'test-installer-completion.py', 'test-ci-changes.py',
                        'test-windows-dependency-bundle.py', 'test-fetch-ci-inputs.py',
                        'test-staging-build-inputs.py', 'test-staging-retest.py',
-                       'test-ais-runtime-gate.py'):
+                       'test-ais-runtime-gate.py', 'test-openssl-runtime.py',
+                       'test-windows-dependency-reuse.py'):
               result = subprocess.run([sys.executable, str(root/'tools'/name), '-v'],
                                       stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
               (out/(name+'.log')).write_text(result.stdout, encoding='utf-8')
@@ -58,7 +59,7 @@ jobs:
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          foreach ($file in @('build-pristine-windows.ps1', 'package-preview-windows.ps1', 'qualify-staging-windows.ps1', 'test-installer-missing-dll-selftest.ps1')) {
+          foreach ($file in @('build-pristine-windows.ps1', 'package-preview-windows.ps1', 'qualify-staging-windows.ps1', 'test-installer-missing-dll-selftest.ps1', 'verify-curl-bundle.ps1')) {
             $tokens = $null
             $errors = $null
             $path = (Resolve-Path "opennav-x/tools/$file").Path

@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "entries": [
+    {
+      "producerCommit": "1b25542aea3f9ab62c83c5d7a3ecdac9652f7d3e",
+      "files": {
+        "tools/windows_dependency_bundle.py": {
+          "originalSha256": "c9301e3cfbcd25f68c10fa1ae1c3f0af37e1b583721310955f7cad8c3687b6ae",
+          "currentSha256": "859f37dd2917b9c74e7e824673866166be31274ebd44ae73a77ae8b4cf3992da"
+        },
+        "tools/build-pristine-windows.ps1": {
+          "originalSha256": "232c452bbded83b413dbf91c2e5a3686a9c32590180532345b0aa3ed5ea10064",
+          "currentSha256": "3e8f5c35520ea3d6295c20823caa2a8dca427eba77de928cd0f9aaa35495ff9a"
+        }
+      },
+      "reason": "Exact LF checkout pair for the consumer-only OpenSSL runtime CPUINFO correction established by diagnostic run 37234440416. Original dependency producer scripts, compiler inputs, binaries, manifests, native tool receipts, artifact bytes and workflow remain unchanged. Keep these current consumer helpers during restore and run the independent native curl consumer probe with the original producer identity. No line-ending normalization during verification."
+    },
+    {
+      "producerCommit": "1b25542aea3f9ab62c83c5d7a3ecdac9652f7d3e",
+      "files": {
+        "tools/windows_dependency_bundle.py": {
+          "originalSha256": "5938c907570e872571b96f9e95b5d25edfe9dca1860efaa16405545aea14b9f3",
+          "currentSha256": "8c8277072b008e8a70af565a03f48605041fe85961c9cdc68337951d8856096f"
+        },
+        "tools/build-pristine-windows.ps1": {
+          "originalSha256": "2a1fd321ade8c6603f318be6367363bffddf06d1679045f248825038a29f7ada",
+          "currentSha256": "23f90a989546768c4101f4e8cb8cdaaaaf22e0b4bf3361c055f3e5093c2b9c27"
+        }
+      },
+      "reason": "Exact CRLF checkout pair for the consumer-only OpenSSL runtime CPUINFO correction established by diagnostic run 37234440416. Original dependency producer scripts, compiler inputs, binaries, manifests, native tool receipts, artifact bytes and workflow remain unchanged. Keep these current consumer helpers during restore and run the independent native curl consumer probe with the original producer identity. No line-ending normalization during verification."
+    }
+  ]
+}

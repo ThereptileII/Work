@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import ast
 import json
 import os
 from pathlib import Path
@@ -29,22 +30,47 @@ class SameJobReuseReceiptTests(unittest.TestCase):
             reuse.verify_same_job(self.root)
         self.assertEqual(path.read_bytes(), tampered)  # Verification never refreshes it.
 
-    def test_build_and_ais_share_parent_setup_before_producer(self):
+    def test_build_and_ais_share_authenticated_bundle_parent_setup(self):
         root = Path(__file__).resolve().parents[1]
         build = (root / 'tools/build-pristine-windows.ps1').read_text()
         workflow = root / '.github/workflows/opennav-baseline.yml'
         if not workflow.is_file():
             workflow = root.parent / '.github/workflows/opennav-baseline.yml'
-        ais = workflow.read_text().split('id: ais_runtime', 1)[1].split('      - name:', 1)[0]
-        for text in (build, ais):
-            self.assertIn('windows-parent-environment.ps1', text)
-            self.assertLess(text.index('Initialize-WindowsNativePerl'), text.index('Initialize-WindowsGettext'))
-            self.assertLess(text.index('Initialize-WindowsGettext'), text.index('build-openssl-windows.ps1'))
+        jobs = dict(re.findall(r'^  ([\w-]+):\n(.*?)(?=^  [\w-]+:|\Z)',
+                               workflow.read_text(), re.MULTILINE | re.DOTALL))
+        producer, qualification = jobs['windows-integration'], jobs['windows-qualification']
+        self.assertIn('windows-parent-environment.ps1', build)
+        self.assertLess(build.index('Initialize-WindowsNativePerl'), build.index('Initialize-WindowsGettext'))
+        self.assertLess(build.index('Initialize-WindowsGettext'), build.index('build-openssl-windows.ps1'))
         self.assertIn('-Mode Ensure', build)
-        self.assertIn('-Mode Verify', ais)
-        self.assertIn('windows-gettext-xnav.json', ais)
-        self.assertNotIn('-Mode Ensure', ais)
-        self.assertNotIn('--allow-install', ais)
+        # AIS now delegates the exact parent setup to the build driver's
+        # verification-only mode, using authenticated cross-run inputs rather
+        # than claiming that the deferred GUI fixture gate already succeeded.
+        ais = (root / 'tools/test-ais-runtime-windows.py').read_text()
+        functions = {node.name: ast.get_source_segment(ais, node)
+                     for node in ast.parse(ais).body if isinstance(node, ast.FunctionDef)}
+        reprobe = functions['reprobe_bundle_inputs']
+        for required in ('build-pristine-windows.ps1', '-VerifyDependencyBundleOnly',
+                         '-DependencyBundle', '-DependencyBundleProvenance'):
+            self.assertIn(required, reprobe)
+        for forbidden in ('Initialize-WindowsNativePerl', 'Initialize-WindowsGettext',
+                          '--allow-install', 'fixture-success'):
+            self.assertNotIn(forbidden, reprobe)
+        self.assertIn('bundle_api.verify_restored(root, bundle, provenance)', functions['dependency_inputs'])
+        self.assertIn('reuse.verify_same_job(root)', functions['dependency_inputs'])
+        main = functions['main']
+        before, after = main.split('reprobe_bundle_inputs(', 1)
+        self.assertIn('dependency_inputs(', before)
+        self.assertIn('dependency_inputs(', after)
+        self.assertIn('observed != expected or observed_authority != authority', after)
+        command = ('test-ais-runtime-windows.py --dependency-bundle dependency-bundle '
+                   '--dependency-bundle-provenance dependency-provenance.json')
+        self.assertIn(command, producer)
+        self.assertLess(producer.index(command), producer.index('staging_build_inputs.py seal'))
+        self.assertNotIn('--fixture-success', producer)
+        self.assertNotIn('test-ais-runtime-windows.py', qualification)
+        self.assertIn('staging_build_inputs.py restore', qualification)
+        self.assertIn('qualify-staging-windows.ps1', qualification)
 
     def test_parent_initialization_source_is_bound(self):
         name = 'tools/windows-parent-environment.ps1'

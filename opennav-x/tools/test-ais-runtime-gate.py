@@ -66,8 +66,11 @@ class DependencyAuthorityTests(unittest.TestCase):
             verifier = root / 'tools/windows_dependency_bundle.py'
             verifier.parent.mkdir(parents=True)
             verifier.write_text('inert unchanged verifier')
+            driver = root / 'tools/build-pristine-windows.ps1'
+            driver.write_text('inert unchanged orchestration')
             roots = [prefix.relative_to(root).as_posix(), GATE.bundle_api.WORKFLOW,
-                     'tools/windows_dependency_bundle.py']
+                     'tools/windows_dependency_bundle.py',
+                     'tools/build-pristine-windows.ps1']
             expected = GATE.receipt._inventory(root, roots)
             document = {'roots': roots, 'files': expected}
             source.write_text('modified')

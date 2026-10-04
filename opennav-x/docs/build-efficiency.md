@@ -98,6 +98,24 @@ producer status. Recovery requires independent investigation and qualification;
 there is no automatic fallback to those files. This keeps a sealing-helper
 failure from discarding the completed native outputs.
 
+## Live processor observations during reuse
+
+OpenSSL 3.5.9 `version -a` includes live `CPUINFO`, so identical verified binaries
+can report different CPU capabilities on different hosted Windows machines.
+The read-only consumer probe compares every other version/build/configuration
+field exactly and retains both original and current CPU observations separately.
+It rejects malformed, missing, duplicate or overridden CPU fields; it never sets
+`OPENSSL_ia32cap` to imitate another machine. The original producer manifest and
+test evidence stay unchanged. Original curl producer/native-tool-fact scripts
+remain byte-identical and their native environment reprobe still runs.
+
+The first successful SDK uses an explicit two-file compatibility record for the
+reviewed consumer-only orchestration/verifier change. It is bound to exact
+producer commit and old/current file hashes, including separate LF/CRLF checkout
+bytes; any unreviewed change fails. Compiler recipes, native receipts, library
+source, options, ABI and binary hashes are not exempted. This enables a corrected
+consumer check without rebuilding the already verified libraries.
+
 ## Actions operation
 
 Use the **staging** source branch in GitHub's “Use workflow from” selector; the

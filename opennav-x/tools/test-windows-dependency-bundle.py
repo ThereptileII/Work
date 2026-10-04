@@ -235,12 +235,90 @@ class BundleTests(fixtures.WindowsDependencyEvidenceTests):
             with self.assertRaisesRegex(ValueError, 'Python'):
                 bundle.verify_bundle(self.root, self.output, self.authority)
 
+    def consumer_upgrade(self):
+        self.identity['headSha'] = bundle.COMPATIBLE_PRODUCER
+        document = self.seal()
+        current = {}
+        records = {}
+        for name in bundle.CONSUMER_FILES:
+            path = self.root / name
+            current[name] = path.read_bytes() + b'\n# owned consumer correction fixture\n'
+            path.write_bytes(current[name])
+            records[name] = {'originalSha256': document['files'][name]['sha256'],
+                             'currentSha256': receipt._digest(path)}
+        policy = {'schemaVersion': 1, 'entries': [{
+            'producerCommit': bundle.COMPATIBLE_PRODUCER, 'files': records,
+            'reason': 'owned consumer-only runtime validation correction'}]}
+        self._write_json(self.root / bundle.CONSUMER_COMPATIBILITY, policy)
+        return document, policy, current
+
+    def test_exact_consumer_correction_preserves_original_sdk_and_current_helpers(self):
+        document, policy, current = self.consumer_upgrade()
+        manifest_bytes = (self.output / 'bundle.json').read_bytes()
+        originals = {name: (self.output / 'payload' / name).read_bytes() for name in bundle.CONSUMER_FILES}
+        shutil.rmtree(self.root / bundle.evidence.PREFIXES['openssl'])
+        bundle.restore(self.root, self.output, self.authority)
+        self.assertEqual(bundle.verify_restored(self.root, self.output, self.authority), document)
+        self.assertEqual((self.output / 'bundle.json').read_bytes(), manifest_bytes)
+        for name in bundle.CONSUMER_FILES:
+            self.assertEqual((self.root / name).read_bytes(), current[name])
+            self.assertEqual((self.output / 'payload' / name).read_bytes(), originals[name])
+        (self.root / bundle.stage.CACHE).mkdir(parents=True)
+        bundle.stage_bundle(self.root, self.output, self.authority)
+
+    def test_consumer_correction_rejects_other_commit_hash_or_input(self):
+        document, policy, current = self.consumer_upgrade()
+        wrong_commit = {**document, 'producer': {**document['producer'], 'headSha': 'b' * 40}}
+        with self.assertRaisesRegex(ValueError, 'producer commit'):
+            bundle._consumer_compatibility(self.root, wrong_commit)
+        for name in sorted(bundle.CONSUMER_FILES):
+            for field in ('originalSha256', 'currentSha256'):
+                changed = json.loads(json.dumps(policy))
+                changed['entries'][0]['files'][name][field] = 'c' * 64
+                self._write_json(self.root / bundle.CONSUMER_COMPATIBILITY, changed)
+                with self.assertRaisesRegex(ValueError, 'exact reviewed compatibility'):
+                    bundle.verify_bundle(self.root, self.output, self.authority)
+        self._write_json(self.root / bundle.CONSUMER_COMPATIBILITY, policy)
+        helper = self.root / 'tools/windows_dependency_bundle.py'
+        helper.write_bytes(current['tools/windows_dependency_bundle.py'] + b'# unapproved\n')
+        with self.assertRaisesRegex(ValueError, 'exact reviewed compatibility'):
+            bundle.verify_bundle(self.root, self.output, self.authority)
+        helper.write_bytes(current['tools/windows_dependency_bundle.py'])
+        producer = self.root / 'tools/build-curl-windows.ps1'
+        producer.write_bytes(producer.read_bytes() + b'# actual producer changed\n')
+        with self.assertRaisesRegex(ValueError, 'inputs changed'):
+            bundle.verify_bundle(self.root, self.output, self.authority)
+
+    def test_consumer_correction_cannot_expand_to_producer_scripts(self):
+        document, policy, current = self.consumer_upgrade()
+        policy['entries'][0]['files']['tools/build-curl-windows.ps1'] = {
+            'originalSha256': 'c' * 64, 'currentSha256': 'd' * 64}
+        self._write_json(self.root / bundle.CONSUMER_COMPATIBILITY, policy)
+        with self.assertRaisesRegex(ValueError, 'unreviewed consumer compatibility scope'):
+            bundle.verify_bundle(self.root, self.output, self.authority)
+
+    def test_repository_policy_pins_current_consumer_bytes(self):
+        source = Path(__file__).resolve().parent.parent
+        policy = json.loads((source / bundle.CONSUMER_COMPATIBILITY).read_text())
+        actual = {name: receipt._digest(source / name) for name in bundle.CONSUMER_FILES}
+        matches = [entry for entry in policy['entries'] if all(
+            entry['files'][name]['currentSha256'] == actual[name] for name in bundle.CONSUMER_FILES)]
+        self.assertEqual(len(matches), 1)
+        self.assertEqual(matches[0]['producerCommit'], bundle.COMPATIBLE_PRODUCER)
+
     def test_live_tool_reprobe_is_required_in_orchestrator(self):
         text = Path(__file__).with_name('build-pristine-windows.ps1').read_text()
         branch = text.split('if ($BundleRequested) {\n            $BundleArguments', 1)[1].split('} elseif ($ReuseVerifiedDependencies)', 1)[0]
         self.assertLess(branch.index("'restore'"), branch.index('-VerifyToolFactsOnly'))
-        self.assertEqual(branch.count('-VerifyToolFactsOnly'), 3)
-        self.assertLess(branch.rindex('-VerifyToolFactsOnly'), branch.index("'stage'"))
+        self.assertEqual(branch.count('-VerifyToolFactsOnly'), 2)
+        self.assertLess(branch.rindex('-VerifyToolFactsOnly'), branch.index('verify-curl-bundle.ps1'))
+        self.assertLess(branch.index('verify-curl-bundle.ps1'), branch.index("'stage'"))
+        probe = Path(__file__).with_name('verify-curl-bundle.ps1').read_text()
+        self.assertEqual(probe.count('Checked-Python $VerificationArguments'), 2)
+        self.assertIn("'build-curl-windows.ps1'", probe)
+        self.assertIn('-Mode Verify -Kind curl-parent -Output $Facts -ProducerScript $ProducerScript', probe)
+        self.assertNotIn('-Mode Capture', probe)
+
 
 
 def load_tests(loader, tests, pattern):
