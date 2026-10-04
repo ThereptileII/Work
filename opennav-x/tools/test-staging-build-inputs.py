@@ -3,9 +3,11 @@
 import hashlib
 import io
 import json
+import os
 from pathlib import Path
 import tempfile
 import unittest
+from unittest import mock
 import zipfile
 import staging_build_inputs as inputs
 
@@ -100,9 +102,25 @@ class Boundary(unittest.TestCase):
             self.assertEqual((self.consumer / name).read_bytes(), (self.producer / name).read_bytes())
 
     def test_sealing_is_deterministic(self):
-        first = self.seal()
-        other = inputs.seal(self.producer, self.base / 'second', PRODUCER)
+        # Force different ZIP clock ticks without sleeping. A filename passed
+        # directly to writestr otherwise inherits wall time and makes this test
+        # pass accidentally when both seals finish within the same two seconds.
+        with mock.patch.object(zipfile.time, 'localtime',
+                               return_value=(2025, 1, 2, 3, 4, 6, 3, 2, 0)):
+            first = self.seal()
+        for name in inputs.inventory(self.producer):
+            os.utime(self.producer / name, (1800000000, 1800000000))
+        with mock.patch.object(zipfile.time, 'localtime',
+                               return_value=(2026, 7, 8, 9, 10, 12, 2, 189, 0)):
+            other = inputs.seal(self.producer, self.base / 'second', PRODUCER)
         self.assertEqual(first['archiveSha256'], other['archiveSha256'])
+        self.assertEqual((self.output / inputs.ARCHIVE).read_bytes(),
+                         (self.base / 'second' / inputs.ARCHIVE).read_bytes())
+        with zipfile.ZipFile(self.output / inputs.ARCHIVE) as archive:
+            for entry in archive.infolist():
+                self.assertEqual(entry.date_time, (1980, 1, 1, 0, 0, 0))
+                self.assertEqual(entry.create_system, 3)
+                self.assertEqual(entry.external_attr, 0o100644 << 16)
 
     def test_corrupted_download_is_refused_before_restore(self):
         sealed = self.seal()

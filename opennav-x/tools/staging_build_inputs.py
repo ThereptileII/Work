@@ -232,6 +232,16 @@ def validate_content(root, names, expected):
                 require(metadata == product, 'Recovery archive differs from extracted product identity')
 
 
+def archive_entry(name):
+    # Apply the same canonical metadata to payloads AND the generated manifest.
+    # writestr(name, ...) otherwise inserts the current local timestamp.
+    entry = zipfile.ZipInfo(name, date_time=(1980, 1, 1, 0, 0, 0))
+    entry.create_system = 3
+    entry.external_attr = (stat.S_IFREG | 0o644) << 16
+    entry.compress_type = zipfile.ZIP_STORED if name.endswith('.zip') else zipfile.ZIP_DEFLATED
+    return entry
+
+
 def seal(root, output, expected):
     require(not Path(root).is_symlink(), 'Seal root must be regular')
     root, output = Path(root).resolve(), Path(output).resolve()
@@ -251,9 +261,7 @@ def seal(root, output, expected):
                 require(0 <= before.st_size <= MAX_FILE, 'Retained input exceeds individual bound')
                 total += before.st_size
                 require(total <= MAX_TOTAL, 'Retained inputs exceed total bound')
-                entry = zipfile.ZipInfo(name)
-                entry.external_attr = (stat.S_IFREG | 0o644) << 16
-                entry.compress_type = zipfile.ZIP_STORED if name.endswith('.zip') else zipfile.ZIP_DEFLATED
+                entry = archive_entry(name)
                 digest = hashlib.sha256()
                 with source.open('rb') as stream, target.open(entry, 'w', force_zip64=True) as destination:
                     for block in iter(lambda: stream.read(1024 * 1024), b''):
@@ -266,7 +274,7 @@ def seal(root, output, expected):
             manifest = dict(schema=1, kind=KIND, producer=expected, qualification='not-run', files=records)
             encoded = canonical(manifest)
             require(len(encoded) <= MAX_MANIFEST, 'Manifest exceeds bound')
-            target.writestr(MANIFEST, encoded)
+            target.writestr(archive_entry(MANIFEST), encoded, compresslevel=1)
         receipt = dict(schema=1, kind=KIND, status='sealed', qualification='not-run', producer=expected,
                        archive=ARCHIVE, archiveSha256=sha(archive),
                        manifestSha256=hashlib.sha256(encoded).hexdigest(), files=len(records), bytes=total)
