@@ -49,6 +49,20 @@ it does not directly inject the stale failed-send return branch.
 The new `SKAGER native AIS loopback` workflow runs the existing three-client
 MSVC Win32 harness and all eight provider scenarios against the authenticated
 immutable SDK. It never builds the complete application or promotes a release.
-Native evidence will be linked after the run. Native application/boat acceptance
-remains required before SCRUM-301 can be Done. The installed boat version and
-public release state are unchanged.
+First focused attempt:
+[37236808641](https://github.com/ThereptileII/Work/actions/runs/37236808641),
+source `32f6840fec9c3c20d648f4993e6f6967c12e0ce4`. It stopped before AIS
+compilation during the strict SDK reprobe. The only native-fact difference was
+the parent interpreter path spelling (`pwsh.EXE` versus `pwsh.exe`); its hash,
+size, versions, PATH hash and all compiler/tool records matched. The downloaded
+failure artifact SHA-256 is
+`af56b2849ee99cecacce55f209c19f70c29c4ec6e72c70f2df079315214b1496`.
+The launcher correction selects the exact authenticated captured interpreter
+path and checks its current bytes before execution. Strict comparisons and the
+SDK producer stay unchanged. Documentation-only follow-ups do not retrigger
+the focused workflow. All 11 launcher/runtime helper tests pass, including
+refusal of changed interpreter bytes or changed captured facts.
+
+Replacement native evidence will be linked after the run. Native
+application/boat acceptance remains required before SCRUM-301 can be Done.
+The installed boat version and public release state are unchanged.

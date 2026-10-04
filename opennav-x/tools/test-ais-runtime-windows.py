@@ -121,11 +121,24 @@ def dependency_inputs(root, bundle=None, provenance=None):
                               'toolchainSha256': document['toolchainSha256']}
 
 
-def reprobe_bundle_inputs(bundle, provenance, log):
+def reprobe_bundle_inputs(bundle, provenance, log, expected):
+    # dependency_inputs authenticated these captured facts before this call.
+    # Preserve the producer's interpreter spelling: native facts include the
+    # process image path verbatim, including pwsh.EXE versus pwsh.exe.
+    name = reuse.PRODUCER_FACTS['openssl-parent']
+    if receipt._inventory(ROOT, [name]) != {name: expected[name]}:
+        raise ValueError('Authenticated native parent facts changed before reprobe')
+    facts = receipt._read_json(ROOT / name)
+    interpreter = facts['powerShell']['file']
+    path = Path(interpreter['path'])
+    if (not path.is_absolute() or not path.is_file() or
+            path.stat().st_size != interpreter['bytes'] or
+            receipt._digest(path) != interpreter['sha256']):
+        raise ValueError('Authenticated PowerShell interpreter bytes changed')
     # The maintained build driver creates the exact native parent environment
     # and reprobes all three producer toolchains without building the GUI. Start
     # from the workflow's ambient environment; do not prepend Perl/Gettext twice.
-    run(['pwsh', '-NoProfile', '-File', ROOT / 'tools/build-pristine-windows.ps1',
+    run([interpreter['path'], '-NoProfile', '-File', ROOT / 'tools/build-pristine-windows.ps1',
          '-Architecture', 'Win32', '-Integration', '-VerifyDependencyBundleOnly',
          '-DependencyBundle', bundle, '-DependencyBundleProvenance', provenance],
         log, timeout=600)
@@ -164,7 +177,7 @@ def main():
                 shutil.copyfile(path, evidence / name)
             save()
             reprobe_bundle_inputs(args.dependency_bundle, args.dependency_bundle_provenance,
-                                  evidence / 'dependency-native-reprobe.log')
+                                  evidence / 'dependency-native-reprobe.log', expected)
             observed, observed_authority = dependency_inputs(ROOT, args.dependency_bundle,
                                                              args.dependency_bundle_provenance)
             if observed != expected or observed_authority != authority:

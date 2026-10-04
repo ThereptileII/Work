@@ -3,6 +3,7 @@ on:
   workflow_dispatch:
   push:
     branches: [skager-ais-freeze]
+    paths-ignore: [opennav-x/docs/**]
 permissions:
   contents: read
   actions: read

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Offline AIS authority/runtime guards; these are not native runtime proof."""
 import importlib.util
+import json
 import os
 from pathlib import Path
 import struct
@@ -96,17 +97,55 @@ class DependencyAuthorityTests(unittest.TestCase):
 
     def test_native_reprobe_uses_driver_verify_only_without_gui_options(self):
         bundle, provenance, log = map(Path, ('/bundle', '/authority', '/reprobe.log'))
-        with patch.object(GATE, 'run') as run:
-            GATE.reprobe_bundle_inputs(bundle, provenance, log)
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            interpreter, expected = self.parent_facts(root)
+            with patch.object(GATE, 'ROOT', root), patch.object(GATE, 'run') as run:
+                GATE.reprobe_bundle_inputs(bundle, provenance, log, expected)
         command = run.call_args.args[0]
-        self.assertEqual(command[:3], ['pwsh', '-NoProfile', '-File'])
-        self.assertEqual(command[3], GATE.ROOT / 'tools/build-pristine-windows.ps1')
+        self.assertEqual(command[:3], [str(interpreter), '-NoProfile', '-File'])
+        self.assertTrue(command[0].endswith('pwsh.EXE'))
+        self.assertEqual(command[3], root / 'tools/build-pristine-windows.ps1')
         self.assertIn('-VerifyDependencyBundleOnly', command)
         self.assertIn('-Integration', command)
         self.assertNotIn('-Production', command)
         self.assertNotIn('-ReuseVerifiedDependencies', command)
         self.assertEqual(command[-4:], ['-DependencyBundle', bundle,
                                         '-DependencyBundleProvenance', provenance])
+
+    @staticmethod
+    def parent_facts(root):
+        interpreter = root / 'PowerShell' / 'pwsh.EXE'
+        interpreter.parent.mkdir()
+        interpreter.write_bytes(b'captured interpreter')
+        facts = root / GATE.reuse.PRODUCER_FACTS['openssl-parent']
+        facts.parent.mkdir(parents=True)
+        facts.write_text(json.dumps({'powerShell': {'file': {
+            'path': str(interpreter), 'bytes': interpreter.stat().st_size,
+            'sha256': GATE.receipt._digest(interpreter)}}}))
+        expected = GATE.receipt._inventory(root, [GATE.reuse.PRODUCER_FACTS['openssl-parent']])
+        return interpreter, expected
+
+    def test_native_reprobe_refuses_changed_interpreter_before_execution(self):
+        for changed in (b'changed! interpreter', b'different length'):
+            with self.subTest(changed=changed), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                interpreter, expected = self.parent_facts(root)
+                interpreter.write_bytes(changed)
+                with patch.object(GATE, 'ROOT', root), patch.object(GATE, 'run') as run:
+                    with self.assertRaisesRegex(ValueError, 'interpreter bytes changed'):
+                        GATE.reprobe_bundle_inputs(Path('/bundle'), Path('/authority'), Path('/log'), expected)
+                    run.assert_not_called()
+
+    def test_native_reprobe_refuses_changed_parent_facts_before_execution(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            _, expected = self.parent_facts(root)
+            (root / GATE.reuse.PRODUCER_FACTS['openssl-parent']).write_text('{}')
+            with patch.object(GATE, 'ROOT', root), patch.object(GATE, 'run') as run:
+                with self.assertRaisesRegex(ValueError, 'parent facts changed'):
+                    GATE.reprobe_bundle_inputs(Path('/bundle'), Path('/authority'), Path('/log'), expected)
+                run.assert_not_called()
 
 
 class GateTests(unittest.TestCase):
