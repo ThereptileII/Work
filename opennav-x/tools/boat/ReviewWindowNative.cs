@@ -97,8 +97,8 @@ namespace OpenNavX {
       foreach(var label in actual)if(!remaining.Remove(label))return false;
       return remaining.Count==0;
     }
-    // Signatures authorize capture only. They never authorize clicking a sheet
-    // control (in particular key storage, route changes or hardware commands).
+    // Surface signatures alone authorize capture. Clicking additionally requires
+    // one fixed source-reviewed action and its exact control hierarchy below.
     public static bool IsPrototypeSurface(string title,string[] directLabels,string[] headingLabels) {
       switch(title) {
         case "SKAGER chart layers":return SameLabels(directLabels,"Layers") && SameLabels(headingLabels);
@@ -342,7 +342,8 @@ namespace OpenNavX {
         case "Display":return new string[]{"DISPLAY"};case "ToggleFullscreen":return new string[]{"Fullscreen / window"};
         case "ToggleOrientation":return new string[]{"North","Course"};
         case "Energy":return new string[]{"Energy"};case "Diagnostics":return new string[]{"Diagnostics"};
-        case "System":return new string[]{"System"};case "Alerts":return new string[]{"Alerts"};
+        case "System":return new string[]{"System"};
+        case "RevealInterfaceRecovery":case "InterfaceRecovery":return new string[]{"Interface & recovery"};case "Alerts":return new string[]{"Alerts"};
         case "CyclePalette":return new string[]{"Day","Dusk","Night"};
         case "ZoomIn":return new string[]{"+"};case "ZoomOut":return new string[]{"\u2212"};
         case "Center":return new string[]{"Follow boat"};case "PageUp":return new string[]{"Up"};case "PageDown":return new string[]{"Down"};
@@ -353,6 +354,8 @@ namespace OpenNavX {
       ActionLabels(action); // Unknown actions have no context, even without a window.
       switch(action) {
         case "Layers":return "SKAGER chart layers";case "RevealChartPalettePreference":case "ChartPalettePreferences":return "Chart presentation";
+        case "System":case "RevealInterfaceRecovery":case "InterfaceRecovery":return "SKAGER preferences";
+        case "ZoomIn":case "ZoomOut":return "SKAGER chart tools";
         case "Display":return "SKAGER product page: Settings";
         case "ToggleFullscreen":return "SKAGER product page: Display";
         case "ToggleOrientation":return "Navigation chart tools";
@@ -429,6 +432,39 @@ namespace OpenNavX {
       for(var parent=GetParent(button);parent!=IntPtr.Zero && parent!=frame;parent=GetParent(parent))if(!Contains(Bounds(parent),bounds))throw new InvalidOperationException("Expose the clipped palette navigation control normally before review.");
       return button;
     }
+    private static IntPtr ResolvePrototypeAction(IntPtr frame,int pid,string action,bool allowClipped=false) {
+      if(action!="ZoomIn" && action!="ZoomOut" && action!="System" && action!="InterfaceRecovery")throw new InvalidOperationException("Unknown prototype review action.");
+      var info=AssertFrame(frame,pid);AssertCapture(frame,pid,info);
+      if(info.Shell!="prototype")throw new InvalidOperationException("Prototype shell required for this navigation.");
+      IntPtr surface=IntPtr.Zero;
+      foreach(var item in info.Surfaces)if(item.Title==ActionContext(action))surface=new IntPtr(item.Handle);
+      if(surface==IntPtr.Zero)throw new InvalidOperationException("Exact owned source-reviewed navigation surface required.");
+      IntPtr scope=surface;
+      if(action=="System" || action=="InterfaceRecovery") {
+        var tabs=new List<IntPtr>();
+        foreach(var h in Children(surface))if(Owner(h)==(uint)pid &&
+            SameLabels(DirectLabels(h,pid),"Vessel","Navigation","Sensors","Autopilot","Radar","Display","System","Help"))tabs.Add(h);
+        if(tabs.Count!=1)throw new InvalidOperationException("Unique complete SettingsDrawer tab signature required.");
+        var body=GetParent(tabs[0]);
+        if(body==IntPtr.Zero || GetParent(body)!=surface || Owner(body)!=(uint)pid || !IsWindowEnabled(body) ||
+            !Contains(Bounds(surface),Bounds(body)))throw new InvalidOperationException("Exact direct preferences body required.");
+        scope=action=="System"?tabs[0]:body;
+        if(action=="InterfaceRecovery" && !SameLabels(DirectLabels(body,pid),
+            "Installation & recovery","Updates","Backups","Diagnostics","Plugins","Help & guides",
+            "About & licenses","Run vessel setup","Interface & recovery","Advanced / Legacy Settings"))
+          throw new InvalidOperationException("Exact SettingsDrawer System links required.");
+      }
+      var matches=new List<IntPtr>();
+      foreach(var h in Children(surface))if(Owner(h)==(uint)pid && Class(h)!="Static" && Text(h)==ActionLabels(action)[0])matches.Add(h);
+      if(matches.Count!=1 || GetParent(matches[0])!=scope || !IsWindowVisible(matches[0]) || !IsWindowEnabled(matches[0]))
+        throw new InvalidOperationException("Unique enabled fixed prototype navigation control required.");
+      var button=matches[0];var bounds=Bounds(button);
+      if(allowClipped && action=="InterfaceRecovery")return button;
+      if(!Contains(info.Bounds,bounds))throw new InvalidOperationException("Prototype navigation lies outside frame.");
+      for(var parent=GetParent(button);parent!=IntPtr.Zero && parent!=frame;parent=GetParent(parent))
+        if(!IsWindowEnabled(parent) || !Contains(Bounds(parent),bounds))throw new InvalidOperationException("Expose the clipped prototype navigation control normally before review.");
+      return button;
+    }
     [StructLayout(LayoutKind.Sequential)] private struct ScrollInfo {public uint Size,Mask;public int Min,Max;public uint Page;public int Pos,TrackPos;}
     [DllImport("user32.dll")] private static extern bool GetScrollInfo(IntPtr h,int bar,ref ScrollInfo info);
     private static ScrollInfo PaletteScroll(IntPtr body) {
@@ -440,30 +476,45 @@ namespace OpenNavX {
       var r=Bounds(button);
       return Contains(Bounds(frame),r) && Contains(Bounds(body),r);
     }
-    // Only the existing Chart presentation body's native vertical page scroll.
+    // Only the two fixed reviewed drawer bodies' native vertical page scroll.
     // No arbitrary HWND/key/wheel amount or product-setting action is exposed.
-    public static void RevealChartPalettePreference(IntPtr frame,int pid) {
-      var target=ResolvePaletteNavigation(frame,pid,"ChartPalettePreferences",true);var body=GetParent(target);var surface=GetParent(body);
-      if(body==IntPtr.Zero || surface==IntPtr.Zero || Text(surface)!="Chart presentation" || GetWindow(surface,4)!=frame ||
-         Owner(body)!=(uint)pid || !IsWindowEnabled(body) || !Contains(Bounds(surface),Bounds(body)))throw new InvalidOperationException("Exact direct scrolled palette body required.");
+    public static void RevealChartPalettePreference(IntPtr frame,int pid) {RevealDrawerNavigation(frame,pid,false);}
+    public static void RevealInterfaceRecovery(IntPtr frame,int pid) {RevealDrawerNavigation(frame,pid,true);}
+    private static void RevealDrawerNavigation(IntPtr frame,int pid,bool recovery) {
+      Func<bool,IntPtr> resolve=delegate(bool clipped){return recovery?ResolvePrototypeAction(frame,pid,"InterfaceRecovery",clipped):ResolvePaletteNavigation(frame,pid,"ChartPalettePreferences",clipped);};
+      var target=resolve(true);var body=GetParent(target);var surface=GetParent(body);
+      if(body==IntPtr.Zero || surface==IntPtr.Zero || Text(surface)!=(recovery?"SKAGER preferences":"Chart presentation") || GetWindow(surface,4)!=frame ||
+         Owner(body)!=(uint)pid || !IsWindowEnabled(body) || !Contains(Bounds(surface),Bounds(body)))throw new InvalidOperationException("Exact direct scrolled reviewed drawer body required.");
       string kind=Class(body);var geometry=Bounds(body);
       for(int attempt=0;attempt<16;attempt++) {
         var info=AssertFrame(frame,pid);AssertCapture(frame,pid,info);
-        if(ResolvePaletteNavigation(frame,pid,"ChartPalettePreferences",true)!=target || GetParent(target)!=body || GetParent(body)!=surface ||
-           Class(body)!=kind || !SameRect(Bounds(body),geometry) || Owner(body)!=(uint)pid)throw new InvalidOperationException("Palette body changed during reveal.");
-        if(PaletteTargetVisible(frame,body,target)){ResolvePaletteNavigation(frame,pid,"ChartPalettePreferences");return;}
-        var before=PaletteScroll(body);if(before.Pos>=before.Max-(int)before.Page+1)throw new InvalidOperationException("Palette target still clipped at end of scroll range.");
-        UIntPtr result;if(SendMessageTimeoutW(body,0x115,new UIntPtr(3),IntPtr.Zero,0x2,1000,out result)==IntPtr.Zero)throw new InvalidOperationException("Palette page scroll uncertain; no retry.");
+        if(resolve(true)!=target || GetParent(target)!=body || GetParent(body)!=surface ||
+           Class(body)!=kind || !SameRect(Bounds(body),geometry) || Owner(body)!=(uint)pid)throw new InvalidOperationException("Reviewed drawer body changed during reveal.");
+        if(PaletteTargetVisible(frame,body,target)){resolve(false);return;}
+        var before=PaletteScroll(body);if(before.Pos>=before.Max-(int)before.Page+1)throw new InvalidOperationException("Drawer target still clipped at end of scroll range.");
+        UIntPtr result;if(SendMessageTimeoutW(body,0x115,new UIntPtr(3),IntPtr.Zero,0x2,1000,out result)==IntPtr.Zero)throw new InvalidOperationException("Drawer page scroll uncertain; no retry.");
         Thread.Sleep(100);
         var current=AssertFrame(frame,pid);AssertCapture(frame,pid,current);
-        if(ResolvePaletteNavigation(frame,pid,"ChartPalettePreferences",true)!=target || GetParent(target)!=body || GetParent(body)!=surface ||
-           Class(body)!=kind || !SameRect(Bounds(body),geometry) || Owner(body)!=(uint)pid)throw new InvalidOperationException("Palette body changed after scroll.");
-        var after=PaletteScroll(body);if(after.Pos<=before.Pos || after.Min!=before.Min || after.Max!=before.Max || after.Page!=before.Page)throw new InvalidOperationException("Palette scroll made no bounded progress or range changed.");
+        if(resolve(true)!=target || GetParent(target)!=body || GetParent(body)!=surface ||
+           Class(body)!=kind || !SameRect(Bounds(body),geometry) || Owner(body)!=(uint)pid)throw new InvalidOperationException("Reviewed drawer body changed after scroll.");
+        var after=PaletteScroll(body);if(after.Pos<=before.Pos || after.Min!=before.Min || after.Max!=before.Max || after.Page!=before.Page)throw new InvalidOperationException("Drawer scroll made no bounded progress or range changed.");
       }
-      throw new InvalidOperationException("Palette reveal bound exceeded; target not clicked.");
+      throw new InvalidOperationException("Drawer reveal bound exceeded; target not clicked.");
     }
     public static void Click(IntPtr frame,int pid,string action) {
       if(action=="RevealChartPalettePreference"){RevealChartPalettePreference(frame,pid);return;}
+      if(action=="RevealInterfaceRecovery"){RevealInterfaceRecovery(frame,pid);return;}
+      if(action=="InterfaceRecovery" || ((action=="ZoomIn" || action=="ZoomOut" || action=="System") && AssertFrame(frame,pid).Shell=="prototype")) {
+        var target=ResolvePrototypeAction(frame,pid,action);
+        ClickReviewedButton(frame,pid,target,delegate{return ResolvePrototypeAction(frame,pid,action);},true);
+        if(action=="InterfaceRecovery") {
+          var pages=VisiblePageLabels(frame);var current=AssertFrame(frame,pid);
+          if(pages.Length!=1 || pages[0]!="SKAGER product page: System")throw new InvalidOperationException("Interface navigation did not reach the actual product System page; no retry.");
+          foreach(var item in current.Surfaces)if(item.Title=="SKAGER preferences")throw new InvalidOperationException("Preferences remained visible after interface navigation; no retry.");
+        } else if(action=="System")ResolvePrototypeAction(frame,pid,"InterfaceRecovery",true);
+        else ResolvePrototypeAction(frame,pid,action);
+        return;
+      }
       if(action=="Layers" || action=="ChartPalettePreferences") {
         var target=ResolvePaletteNavigation(frame,pid,action);
         ClickReviewedButton(frame,pid,target,delegate{return ResolvePaletteNavigation(frame,pid,action);},true);return;

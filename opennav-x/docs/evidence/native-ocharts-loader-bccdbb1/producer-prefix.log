@@ -1,0 +1,22 @@
+test_absent_or_altered_source_archive_is_rejected (__main__.CurlPackageBoundaryTests.test_absent_or_altered_source_archive_is_rejected) ... ok
+test_certificate_patch_tool_and_probe_tampering_are_rejected (__main__.CurlPackageBoundaryTests.test_certificate_patch_tool_and_probe_tampering_are_rejected) ... ok
+test_changed_or_missing_output_dll_is_rejected (__main__.CurlPackageBoundaryTests.test_changed_or_missing_output_dll_is_rejected) ... ok
+test_curl_test_host_identity_is_required (__main__.CurlPackageBoundaryTests.test_curl_test_host_identity_is_required) ... ok
+test_failed_or_zero_upstream_tests_are_rejected (__main__.CurlPackageBoundaryTests.test_failed_or_zero_upstream_tests_are_rejected) ... ok
+test_malformed_or_missing_output_inventory_is_rejected (__main__.CurlPackageBoundaryTests.test_malformed_or_missing_output_inventory_is_rejected) ... ok
+test_nested_legacy_ssl_runtime_is_rejected (__main__.CurlPackageBoundaryTests.test_nested_legacy_ssl_runtime_is_rejected) ... ok
+test_post_copy_overwrite_is_rejected (__main__.CurlPackageBoundaryTests.test_post_copy_overwrite_is_rejected) ... ok
+test_producer_missing_changed_manifests_and_outputs_rejected (__main__.CurlPackageBoundaryTests.test_producer_missing_changed_manifests_and_outputs_rejected) ... ok
+test_producer_no_colocated_decoy_or_relative_prefix_fallback (__main__.CurlPackageBoundaryTests.test_producer_no_colocated_decoy_or_relative_prefix_fallback) ... ok
+test_producer_wrong_expected_or_recorded_prefix_rejected (__main__.CurlPackageBoundaryTests.test_producer_wrong_expected_or_recorded_prefix_rejected) ... ok
+test_reviewed_zlib_lock_manifest_is_accepted_and_source_mutations_rejected (__main__.CurlPackageBoundaryTests.test_reviewed_zlib_lock_manifest_is_accepted_and_source_mutations_rejected) ... ok
+test_separate_producer_prefixes_and_default_package_refusal (__main__.CurlPackageBoundaryTests.test_separate_producer_prefixes_and_default_package_refusal) ... ok
+test_valid_bom_manifests_and_inputs (__main__.CurlPackageBoundaryTests.test_valid_bom_manifests_and_inputs) ... ok
+test_wrong_architecture_is_rejected_even_when_hash_matches (__main__.CurlPackageBoundaryTests.test_wrong_architecture_is_rejected_even_when_hash_matches) ... ok
+test_wrong_dependency_manifest_hash_is_rejected (__main__.CurlPackageBoundaryTests.test_wrong_dependency_manifest_hash_is_rejected) ... ok
+test_wrong_notice_is_rejected (__main__.CurlPackageBoundaryTests.test_wrong_notice_is_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 17 tests in 0.702s
+
+OK

@@ -1,7 +1,8 @@
 # Supplied artwork integration: marina, hazards, cable and fishing area
 
-These increments follow the original prototype, not the prior Beta styling.
-They are developed separately from the frozen `4ddf1f3` Windows candidate.
+These increments followed the original prototype, not the prior Beta styling.
+They were developed separately from the then-frozen `4ddf1f3` Windows candidate
+and are now integrated in frozen local `1a6733a` / published `bccdbb11`.
 The original HTML and symbol package remain unchanged. This record does not
 qualify a Windows binary or a boat screenshot.
 
@@ -62,12 +63,28 @@ acceptance remain open, including the original line/area query limitation.
 
 ## Existing user-requested corrections
 
-The frozen candidate already contains the 124-DIP SKAGER wordmark, prototype
-font selection, neutral building/area paint and classified buoy/light work.
-The new symbols do not replace those changes. Ordinary all-round light circles,
-unmapped physical tower variants and the white/orange Dusk buoy fallback remain
-explicit visual gaps. The prototype's symbol catalogue includes stock symbols;
-it is not evidence of a custom replacement for every one of them.
+The current frozen candidate, local `1a6733a` / published `bccdbb11`, contains
+the 124-DIP SKAGER wordmark, prototype font selection, neutral building/area
+paint and classified buoy/light work. It also includes the later
+[SCRUM-284 ordinary all-round outline](../../evidence/scrum284-all-round-light/README.md):
+`ChartCaAllRound.h` and the core/private CARC hooks extend the prototype's sector
+arc paint to a thin full circle, preserving the original centre, radius and
+conditional classification. This is an explicit design extension, not a supplied
+full-circle asset. The [actual fc6348a Linux canvas comparison](../../evidence/scrum284-fc6348a-linux-canvas/README.md)
+retains 16 captures, four exact Day returns and eight unchanged Standard chart
+controls. It covers the ordinary white/yellow scene, not actual red/green scenes
+or native/private/boat acceptance.
+
+The earlier listing of ordinary all-round circles as a remaining current visual
+gap is superseded by that source and evidence. Historical captures retain their
+original appearance. Special, directional, obscured, uncertain, malformed,
+unknown-range and other unsupported light cases still use stock portrayal;
+Paper, Standard and Legacy remain stock. Unmapped physical tower variants and
+the white/orange Dusk buoy fallback also remain explicit differences. The
+prototype's symbol catalogue includes stock symbols; it is not evidence of a
+custom replacement for every one of them. SCRUM-15/263/264/265 retain the
+screen, typography, classified-symbol and structural-paint review gates in the
+[current conformance summary](../prototype-conformance.md#native-review-inputs-for-the-current-candidate).
 
 No global brown-color substitution is introduced. Each removed brown feature
 has an identified portrayal; obscured lights and above-water hazard states must

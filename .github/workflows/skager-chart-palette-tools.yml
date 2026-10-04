@@ -1,7 +1,7 @@
 name: SKAGER guarded chart palette tooling
 on:
   push:
-    branches: [skager-chart-palette-tools]
+    branches: [skager-chart-palette-tools, skager-boat-prototype-review]
   workflow_dispatch:
 permissions:
   contents: read
@@ -34,7 +34,7 @@ jobs:
           path: opennav-x/evidence/local/palette269-policy
           if-no-files-found: error
   window:
-    name: Fixed mode and sixteen palette HWND cases
+    name: Fixed mode, palette and prototype display HWND cases
     runs-on: windows-2022
     timeout-minutes: 10
     steps:
@@ -46,6 +46,8 @@ jobs:
           $Out = 'opennav-x/evidence/local/palette269-window'
           New-Item -ItemType Directory -Path $Out -Force | Out-Null
           & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -ExecutionPolicy Bypass -File opennav-x/tools/test-restart-window-native.ps1 -Evidence $Out 2>&1 | Tee-Object -FilePath "$Out/native-window-tests.log"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -ExecutionPolicy Bypass -File opennav-x/tools/test-display-window-native.ps1 -Evidence $Out 2>&1 | Tee-Object -FilePath "$Out/native-display-tests.log"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python opennav-x/tools/qualify-boat-palette-tools.py --gate window --evidence $Out
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

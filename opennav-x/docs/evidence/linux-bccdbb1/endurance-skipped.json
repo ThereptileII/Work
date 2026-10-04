@@ -1,0 +1,8 @@
+{
+  "status": "skipped",
+  "reason": "User directed on 2026-10-04: deliver a stable SKAGER Windows boat-test candidate as fast as possible; skip endurance testing.",
+  "commit": "bccdbb11cef827d3b63731fe1e874bc72bf47d2d",
+  "runId": "37177738716",
+  "runAttempt": "1",
+  "release_duration": false
+}

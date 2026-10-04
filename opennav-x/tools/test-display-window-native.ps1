@@ -1,6 +1,6 @@
 # Disposable native display controls only. Never loads a navigation application.
 [CmdletBinding()]
-param([Parameter(Mandatory=$true)][string]$Evidence,[switch]$IsolatedLocal)
+param([Parameter(Mandatory=$true)][string]$Evidence,[switch]$IsolatedLocal,[switch]$PrototypePathsOnly)
 Set-StrictMode -Version Latest;$ErrorActionPreference='Stop'
 if([Environment]::OSVersion.Platform -ne 'Win32NT' -or ($env:GITHUB_ACTIONS -cne 'true' -and -not $IsolatedLocal)){throw 'Native CI or explicit disposable local desktop required.'}
 if(@(Get-Process -Name opencpn -ErrorAction SilentlyContinue).Count){throw 'Display fixtures refuse coexistence with any navigation application.'}
@@ -19,7 +19,21 @@ $results=New-Object 'Collections.Generic.List[object]';$errorText=$null;$cleanup
 $oldDpi=[OpenNavX.ReviewWindowNative]::SetThreadDpiAwarenessContext([IntPtr](-4))
 if($oldDpi -eq [IntPtr]::Zero){throw 'Physical-pixel DPI context unavailable.'}
 try {
- foreach($spec in @(
+ $prototypePathCases=@(
+  @('ZoomIn','prototype-normal','+'),@('ZoomOut','prototype-normal',([string][char]0x2212)),
+  @('ZoomIn','prototype-zoom-wrong-owner',''),@('ZoomIn','prototype-zoom-wrong-pid',''),
+  @('ZoomIn','prototype-duplicate',''),@('ZoomIn','prototype-zoom-hidden',''),
+  @('ZoomIn','prototype-zoom-occluded',''),@('ZoomIn','prototype-zoom-wrong-surface',''),
+  @('ZoomIn','prototype-zoom-replace-on-down',''),
+  @('System','prototype-system-normal','System'),@('System','prototype-system-duplicate',''),
+  @('System','prototype-system-hidden',''),@('System','prototype-system-wrong-owner',''),
+  @('RevealInterfaceRecovery','prototype-recovery-normal','REVEALED'),
+  @('RevealInterfaceRecovery','prototype-recovery-hidden',''),@('RevealInterfaceRecovery','prototype-recovery-duplicate',''),
+  @('RevealInterfaceRecovery','prototype-recovery-no-progress',''),@('RevealInterfaceRecovery','prototype-recovery-changed-body',''),
+  @('RevealInterfaceRecovery','prototype-recovery-wrong-owner',''),
+  @('InterfaceRecovery','prototype-recovery-reveal','Interface & recovery'),
+  @('InterfaceRecovery','prototype-recovery-clipped',''),@('InterfaceRecovery','prototype-recovery-wrong-surface',''))
+ $existingCases=@(
   @('Display','normal','DISPLAY'),@('ToggleFullscreen','normal','Fullscreen / window'),@('ToggleFullscreen','return','Fullscreen / window'),
   @('ToggleOrientation','normal','North'),@('ToggleOrientation','course','Course'),@('CyclePalette','normal','Status Day'),
   @('Display','wrong-page',''),@('ToggleFullscreen','wrong-page',''),@('ToggleOrientation','wrong-page',''),
@@ -40,7 +54,9 @@ try {
   @('Capture','prototype-rail-duplicate',''),@('Capture','prototype-modal',''),
   @('Navigation','prototype-normal','Chart'),@('Route','prototype-normal','Passage'),
   @('AIS','prototype-normal','Traffic'),@('Instruments','prototype-normal','Instruments'),
-  @('CyclePalette','prototype-normal','Status Day'))) {
+  @('CyclePalette','prototype-normal','Status Day'))
+ $cases=if($PrototypePathsOnly){$prototypePathCases}else{@($existingCases)+@($prototypePathCases)}
+ foreach($spec in $cases) {
   $directory=Join-Path ([IO.Path]::GetTempPath()) ('opennav-display-window-'+[guid]::NewGuid().ToString('N'));$null=New-Item -ItemType Directory -Path $directory
   $fixtureCase=if($spec[1] -cin @('missing-diagnostics','stale-diagnostics','wrong-commit')){'normal'}else{$spec[1]}
   [IO.File]::WriteAllText((Join-Path $directory 'fixture.json'),(@{owner='OpenNavX.NativeDisplayWindow.Fixture.1';action=$spec[0];case=$fixtureCase}|ConvertTo-Json -Compress))
@@ -48,7 +64,7 @@ try {
   $start.FileName=Join-Path ([Environment]::GetFolderPath('System')) 'WindowsPowerShell\v1.0\powershell.exe'
   $start.Arguments='-NoProfile -STA -ExecutionPolicy Bypass -File "'+$fixture+'" -Directory "'+$directory+'"'
   $start.UseShellExecute=$false;$start.CreateNoWindow=$true
-  $process=[Diagnostics.Process]::Start($start);$null=$process.Handle
+  $process=[Diagnostics.Process]::Start($start);$null=$process.Handle;$caseResult=$null
   try {
    $deadline=[datetime]::UtcNow.AddSeconds(10);$readyPath=Join-Path $directory 'ready.json'
    while(-not (Test-Path -LiteralPath $readyPath) -and -not $process.HasExited -and [datetime]::UtcNow -lt $deadline){Start-Sleep -Milliseconds 50}
@@ -90,28 +106,45 @@ try {
       if($spec[1] -ceq 'stale-diagnostics'){[IO.File]::SetLastWriteTimeUtc($diagnostic,[datetime]::UtcNow.AddSeconds(-10))}
      }
      Invoke-WindowReviewPan ([IntPtr]$ready.handle) $process.Id $directory $commit
-    } else {[OpenNavX.ReviewWindowNative]::Click([IntPtr]$ready.handle,$process.Id,$spec[0])}
+    } else {
+     if($spec[0] -ceq 'InterfaceRecovery' -and $spec[1] -ceq 'prototype-recovery-reveal') {
+      [OpenNavX.ReviewWindowNative]::Click([IntPtr]$ready.handle,$process.Id,'RevealInterfaceRecovery')
+     }
+     $reviewPid=if($spec[1] -ceq 'prototype-zoom-wrong-pid'){$PID}else{$process.Id}
+     [OpenNavX.ReviewWindowNative]::Click([IntPtr]$ready.handle,$reviewPid,$spec[0])
+    }
     $after=[OpenNavX.ReviewWindowNative]::AssertFrame([IntPtr]$ready.handle,$process.Id)
     }
    } catch {$refused=$true;$reason=$_.Exception.Message}
    $clickPath=Join-Path $directory 'clicks.txt';[string[]]$clicks=@()
    if(Test-Path -LiteralPath $clickPath){$clicks=@(Get-Content -LiteralPath $clickPath)}
+   [string[]]$scrolls=@();$scrollPath=Join-Path $directory 'scrolls.txt'
+   if(Test-Path -LiteralPath $scrollPath){$scrolls=@(Get-Content -LiteralPath $scrollPath)}
+   if($scrolls.Count -gt 16 -or @($scrolls|Where-Object {$_ -cne 'PAGE_DOWN'}).Count){throw 'Recovery fixture received an unbounded or unsupported scroll command.'}
    if($spec[2] -ceq 'CAPTURE') {
     if($refused -or @($clicks).Count -or $before.Shell -cne 'prototype' -or $before.Surfaces.Count -lt 3){throw ('Native prototype capture failed: '+$spec[1]+': '+$reason)}
    } elseif($spec[2] -ceq 'RESIZED'){
     if($refused -or @($clicks).Count -or $after.Maximized -or $after.Bounds.Width -ne 1280 -or $after.Bounds.Height -ne 800){throw ('Native fixed resize failed: '+$spec[1]+': '+$reason)}
     if($spec[1] -ceq 'maximized-offscreen' -and (-not $resize.RestoreRequested -or -not $before.Maximized)){throw 'Oversized restore fixture did not actually maximize first.'}
+   } elseif($spec[2] -ceq 'REVEALED') {
+    if($refused -or $clicks.Count -or $scrolls.Count -lt 1){throw ('Recovery reveal must make bounded native scroll progress without clicking: '+$reason)}
    } elseif($spec[2]){
     if($refused -or (@($clicks) -join ',') -cne $spec[2]){throw ('Native display action failed: '+$spec[0]+'/'+$spec[1]+': '+$reason)}
     if($spec[0] -ceq 'Display' -and [OpenNavX.ReviewWindowNative]::VisiblePageLabels([IntPtr]$ready.handle) -cnotcontains 'SKAGER product page: Display'){throw 'Display action did not enter its page.'}
     if($spec[0] -ceq 'ToggleFullscreen' -and ($before.Maximized -eq $after.Maximized -or $after.Maximized -ne ($spec[1] -ceq 'normal'))){throw 'Fullscreen/window fixture did not change actual frame state.'}
+    if($spec[0] -ceq 'InterfaceRecovery' -and ($scrolls.Count -lt 1 -or [OpenNavX.ReviewWindowNative]::VisiblePageLabels([IntPtr]$ready.handle) -cnotcontains 'SKAGER product page: System')){throw 'Fixed recovery link did not enter the System product page after normal reveal.'}
    } elseif(-not $refused -or @($clicks).Count){throw 'Unsafe/ambiguous native display fixture received a callback.'}
-   $results.Add(@{action=$spec[0];case=$spec[1];refused=$refused;refusal=$reason;clicks=@($clicks);before=$before;after=$after;pid=$process.Id;createdFiletime=$ready.createdFiletime})
+   if($spec[1] -cin @('prototype-recovery-no-progress','prototype-recovery-changed-body') -and $scrolls.Count -ne 1){throw 'Recovery mutation must refuse immediately after its first page-down.'}
+   if($spec[0] -ceq 'System' -and $scrolls.Count){throw 'System tab action unexpectedly scrolled the drawer.'}
+   $caseResult=@{action=$spec[0];case=$spec[1];refused=$refused;refusal=$reason;clicks=@($clicks);scrolls=@($scrolls);before=$before;after=$after;pid=$process.Id;createdFiletime=$ready.createdFiletime}
+   $results.Add($caseResult)
   } finally {
    try {
     [IO.File]::WriteAllText((Join-Path $directory 'release'),'release fixed display marker')
     if(-not $process.WaitForExit(30000)){throw 'Native display marker did not exit within its bound; no force termination.'}
-    $process.Dispose();Remove-Item -LiteralPath $directory -Recurse -Force
+    $exitCode=$process.ExitCode;if($null -ne $caseResult){$caseResult.fixtureExitCode=$exitCode}
+    $process.Dispose();if($exitCode -ne 0){throw ('Native display marker did not exit normally: '+$exitCode)}
+    Remove-Item -LiteralPath $directory -Recurse -Force
    } catch {$cleanupErrors.Add($_.Exception.Message)}
   }
  }

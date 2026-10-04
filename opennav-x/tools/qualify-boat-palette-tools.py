@@ -15,9 +15,58 @@ LOCK = ROOT / 'tools/boat-review-composition.json'
 GATES = {
     'policy': ['restart-commissioning.json', 'restart-window-review.json',
                'review-window.json', 'broker-fixture-contracts.json', 'review-staging.json'],
-    'window': ['native-window-results.json', 'chart-palette/native-palette-results.json'],
+    'window': ['native-window-results.json', 'chart-palette/native-palette-results.json',
+               'native-display-results.json'],
     'broker': ['broker/broker-result.json', 'prepare-arm/prepare-arm-result.json'],
 }
+DISPLAY_SOURCES = {
+    'nativeHelperSha256': 'tools/boat/ReviewWindowNative.cs',
+    'fixtureSha256': 'tests/display-review/window-fixture.ps1',
+}
+DISPLAY_REQUIRED_CASES = {
+    ('Capture', 'prototype-normal'), ('Navigation', 'prototype-normal'),
+    ('PanRight', 'normal'), ('Resize1280x800', 'normal'),
+    ('CyclePalette', 'prototype-normal'),
+    ('ZoomIn', 'prototype-normal'), ('ZoomOut', 'prototype-normal'),
+    *(('ZoomIn', name) for name in (
+        'prototype-zoom-wrong-owner', 'prototype-zoom-wrong-pid', 'prototype-duplicate',
+        'prototype-zoom-hidden', 'prototype-zoom-occluded', 'prototype-zoom-wrong-surface',
+        'prototype-zoom-replace-on-down')),
+    *(('System', name) for name in (
+        'prototype-system-normal', 'prototype-system-duplicate',
+        'prototype-system-hidden', 'prototype-system-wrong-owner')),
+    *(('RevealInterfaceRecovery', name) for name in (
+        'prototype-recovery-normal', 'prototype-recovery-hidden',
+        'prototype-recovery-duplicate', 'prototype-recovery-no-progress',
+        'prototype-recovery-changed-body', 'prototype-recovery-wrong-owner')),
+    *(('InterfaceRecovery', name) for name in (
+        'prototype-recovery-reveal', 'prototype-recovery-clipped',
+        'prototype-recovery-wrong-surface')),
+}
+
+def verify_display_report(report):
+    if (report.get('status') != 'passed' or report.get('error') is not None or
+            report.get('cleanupErrors') != [] or report.get('productLaunched') is not False or
+            report.get('physicalOutput') is not False):
+        raise ValueError('Actual display fixture must pass without cleanup or scope errors')
+    for field, name in DISPLAY_SOURCES.items():
+        actual = (ROOT / name).read_bytes()
+        prefix = git('rev-parse', '--show-prefix').decode().strip()
+        source = git('show', 'HEAD:' + prefix + name)
+        if actual.replace(b'\r\n', b'\n') != source.replace(b'\r\n', b'\n'):
+            raise ValueError('Uncommitted display qualification source: ' + name)
+        if report.get(field) != digest(actual):
+            raise ValueError('Display fixture/source provenance differs: ' + field)
+    cases = report.get('cases')
+    if not isinstance(cases, list) or not cases:
+        raise ValueError('Actual display case matrix missing')
+    identities = [(case.get('action'), case.get('case')) for case in cases]
+    if (len(set(identities)) != len(identities) or
+            any(type(case.get('fixtureExitCode')) is not int or case['fixtureExitCode'] != 0
+                for case in cases)):
+        raise ValueError('All distinct display fixtures must exit normally')
+    if not DISPLAY_REQUIRED_CASES.issubset(identities):
+        raise ValueError('Required prototype display success/refusal cases missing')
 
 def digest(data):
     return hashlib.sha256(data).hexdigest()
@@ -89,6 +138,7 @@ def verify_reports(gate, directory):
         cases = read(directory / GATES[gate][1])['cases']
         if len(cases) != 16 or any(x.get('fixtureExitCode') != 0 for x in cases):
             raise ValueError('All 16 actual palette windows must exit normally')
+        verify_display_report(read(directory / 'native-display-results.json'))
     if gate == 'broker':
         report = read(directory / GATES[gate][0])
         expected = {'success', 'output-connection', 'plugin-bytes', 'expired', 'consumed',

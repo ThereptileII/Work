@@ -130,7 +130,7 @@ foreach($field in @('Id','Path','SessionId','MainWindowHandle','HasExited','Star
 }
 Pass 'All pointer labels resolve to actual current source controls' {
   $root=[IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..').Replace('\',[IO.Path]::DirectorySeparatorChar))
-  $source='';foreach($name in @('Shell.cpp','ProductPanel.cpp','ProductSettings.cpp','ChartPresentationDrawer.cpp','Theme.h')){$source+=[IO.File]::ReadAllText((Join-Path $root ('src/ui/'+$name)))}
+  $source='';foreach($name in @('Shell.cpp','ProductPanel.cpp','ProductSettings.cpp','ChartPresentationDrawer.cpp','SettingsDrawer.cpp','Theme.h')){$source+=[IO.File]::ReadAllText((Join-Path $root ('src/ui/'+$name)))}
   $source+=[IO.File]::ReadAllText((Join-Path $root 'src/integration/OpenCPNIntegration.cpp'))
   foreach($action in Get-WindowReviewActions | Where-Object {$_ -cnotin @('Capture','Resize1280x800','Escape','PanRight','SelectFirstVisibleWaypoint','SelectFirstVisibleAis')}) {
     foreach($label in [OpenNavX.ReviewWindowNative]::ActionLabels($action)) {

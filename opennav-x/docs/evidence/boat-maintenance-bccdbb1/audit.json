@@ -1,0 +1,468 @@
+{
+  "candidate": "bccdbb11cef827d3b63731fe1e874bc72bf47d2d",
+  "run": 37177738716,
+  "attempt": 1,
+  "job": 111363797680,
+  "frozenMappedLocal": "1a6733a1cbcc817aa0f13fa5acc41aac62a54146",
+  "scope": "Native Windows runner; disposable filesystem/policy fixtures and read-only metadata only as detailed per receipt. No application/boat acceptance.",
+  "archive": {
+    "artifactId": 11293129075,
+    "bytes": 25160,
+    "sha256": "8c4be1c6b09d4e2faaff466d7733fcf0c1afc27d5567ff8b499c1df68bfc604a",
+    "members": 21,
+    "allCrcs": "passed",
+    "safeMemberPaths": "passed; unique relative paths; no traversal, absolute/drive/backslash paths or symlinks"
+  },
+  "suites": {
+    "ais-credential-import": {
+      "member": "maintenance-ais-credential-import.log",
+      "originalBytes": 80,
+      "originalSha256": "0dd263e27fc9fa7e684369300b8b07ae56d70ca700e637eeb350acd762967736",
+      "entrypoint": "tools/boat/test-ais-credential-import.ps1",
+      "status": "passed",
+      "reportedCheckCount": 17,
+      "scopeAndFlags": {
+        "passed": true,
+        "native": true,
+        "productionCredentialAccessed": false
+      },
+      "countComponents": {},
+      "topLevelNamedChecks": null
+    },
+    "baseline-adoption": {
+      "member": "maintenance-baseline-adoption.log",
+      "originalBytes": 21194,
+      "originalSha256": "aee03f83be5a611536a7d11ef401334847e2d30f982ff6c62040e43a4b2e8df3",
+      "entrypoint": "tools/boat/test-baseline-adoption.ps1",
+      "status": "passed",
+      "reportedCheckCount": 178,
+      "scopeAndFlags": {
+        "environment": "native-disposable-filesystem",
+        "applicationLaunched": false,
+        "boatAccess": false,
+        "physicalOutput": false,
+        "nativeTransactionAcceptance": true
+      },
+      "countComponents": {
+        "policy": 127,
+        "nativeStock": 25,
+        "nativeInstalledResources": 26
+      },
+      "topLevelNamedChecks": 127
+    },
+    "boat-tools": {
+      "member": "maintenance-boat-tools.log",
+      "originalBytes": 4063,
+      "originalSha256": "8caa54e89d8a7ef674d2fd27c437c52a38ad461f7b63b8c181e94b4197c4dcca",
+      "entrypoint": "tools/boat/test-boat-tools.ps1",
+      "status": "passed",
+      "reportedCheckCount": 31,
+      "scopeAndFlags": {
+        "environment": "native-windows-ci-filesystem",
+        "scope": "Unique temporary files only; no application, real profile, registry, service or hardware operations"
+      },
+      "countComponents": {},
+      "topLevelNamedChecks": 31
+    },
+    "broker-fixture-contracts": {
+      "member": "maintenance-broker-fixture-contracts.log",
+      "originalBytes": 2893,
+      "originalSha256": "7a9cb9995e59dfbc58b47c6acd9fd996432ad2cf49d8d5ec6e3a836bf6961a89",
+      "entrypoint": "tools/boat/test-broker-fixture-contracts.ps1",
+      "status": "passed",
+      "reportedCheckCount": 29,
+      "scopeAndFlags": {
+        "applicationLaunched": false,
+        "boatAccess": false
+      },
+      "countComponents": {},
+      "topLevelNamedChecks": 29
+    },
+    "commissioning-launch": {
+      "member": "maintenance-commissioning-launch.log",
+      "originalBytes": 1481,
+      "originalSha256": "47e2690ed75119964e24eb835d430001703147fd24c202013cd50ceecf260819",
+      "entrypoint": "tools/boat/test-commissioning-launch.ps1",
+      "status": "passed",
+      "reportedCheckCount": 11,
+      "scopeAndFlags": {
+        "identity": "installed",
+        "environment": "native-windows-disposable-filesystem",
+        "boatAccess": false,
+        "applicationLaunched": false,
+        "hardwareCommands": false,
+        "productOrBoatAcceptance": false
+      },
+      "countComponents": {},
+      "topLevelNamedChecks": 11
+    },
+    "commissioning": {
+      "member": "maintenance-commissioning.log",
+      "originalBytes": 2755,
+      "originalSha256": "6ec421f2fe9a57c2d61d7b982a1776a2e5e1bec62b4550850f53e0567f974b74",
+      "entrypoint": "tools/boat/test-commissioning.ps1",
+      "status": "passed",
+      "reportedCheckCount": 21,
+      "scopeAndFlags": {
+        "environment": "native-windows-disposable-filesystem",
+        "boatAccess": false,
+        "applicationLaunched": false,
+        "productOrBoatAcceptance": false
+      },
+      "countComponents": {},
+      "topLevelNamedChecks": 21
+    },
+    "installed-welcome": {
+      "member": "maintenance-installed-welcome.log",
+      "originalBytes": 8975,
+      "originalSha256": "0de2c9f4b9bc6c3c2b0d309a97e40cabd54aee1e22fe6b19643ba3b4288cd23b",
+      "entrypoint": "tools/boat/test-installed-welcome.ps1",
+      "status": "passed",
+      "reportedCheckCount": 114,
+      "scopeAndFlags": {
+        "windowsApisInvoked": false,
+        "applicationLaunched": false,
+        "boatAccess": false,
+        "hardwareCommands": false,
+        "actualInstalledModalAcceptance": false
+      },
+      "countComponents": {
+        "policyCount": 85,
+        "runtimeCount": 29
+      },
+      "topLevelNamedChecks": 85
+    },
+    "navigation-copy": {
+      "member": "maintenance-navigation-copy.log",
+      "originalBytes": 1174,
+      "originalSha256": "0afdc03ec10756e5a1fca4125f80a554fcc7fadb43790f740c2ea4646c84d9d8",
+      "entrypoint": "tools/boat/test-navigation-copy.py",
+      "status": "passed",
+      "uniquePythonTests": 11,
+      "executions": 11,
+      "failed": 0,
+      "skipped": 0,
+      "timeSeconds": 3.422,
+      "testNames": [
+        "test_corruption_refused",
+        "test_duplicate_row_detected",
+        "test_hash_mismatch_refused",
+        "test_live_journal_refused",
+        "test_missing_navigation_table_refused",
+        "test_non_utf8_text_preserved_without_decode",
+        "test_row_order_does_not_change_content",
+        "test_same_count_changed_value_detected",
+        "test_schema_change_detected",
+        "test_storage_type_change_detected",
+        "test_symlink_refused"
+      ]
+    },
+    "official-upgrade-policy": {
+      "member": "maintenance-official-upgrade-policy.log",
+      "originalBytes": 5856,
+      "originalSha256": "8243df3ce4b5b38eb79319c9c27908e7a17e32f62c2ca1655ce0eefa9de3225b",
+      "entrypoint": "tools/boat/test-official-upgrade-policy.ps1",
+      "status": "passed",
+      "reportedCheckCount": 86,
+      "scopeAndFlags": {
+        "nativeWizardExecuted": false
+      },
+      "countComponents": {},
+      "topLevelNamedChecks": null
+    },
+    "preparation": {
+      "member": "maintenance-preparation.log",
+      "originalBytes": 4412,
+      "originalSha256": "372f86f3ce96e7b2daf56b416ca7c9e8d6dc10ab5e2f40df64e353f85ee63dda",
+      "entrypoint": "tools/boat/test-preparation.ps1",
+      "status": "passed",
+      "reportedCheckCount": 34,
+      "scopeAndFlags": {
+        "environment": "native-windows-disposable-filesystem",
+        "boatAccess": false,
+        "applicationLaunched": false,
+        "nativeFileSystemContracts": true,
+        "productOrBoatAcceptance": false
+      },
+      "countComponents": {},
+      "topLevelNamedChecks": 34
+    },
+    "renderer-log": {
+      "member": "maintenance-renderer-log.log",
+      "originalBytes": 221,
+      "originalSha256": "b8f6699545a7163269134b50b2236466888814bed3a3fbeb320e4c5935c2a378",
+      "entrypoint": "tools/boat/test-renderer-log.ps1",
+      "status": "passed",
+      "reportedCheckCount": 66,
+      "scopeAndFlags": {
+        "nativeInput": false,
+        "rawMarineLogUsed": false,
+        "applicationLaunched": false,
+        "boatAccess": false,
+        "hardwareAccelerationAcceptance": false
+      },
+      "countComponents": {},
+      "topLevelNamedChecks": null
+    },
+    "restart-aui-persistence": {
+      "member": "maintenance-restart-aui-persistence.log",
+      "originalBytes": 148,
+      "originalSha256": "4f7540a25975f42e930bf7471dc86d2cd1bc3b1cbc378bd9ba23717089024abf",
+      "entrypoint": "tools/boat/test-restart-aui-persistence.ps1",
+      "status": "passed",
+      "reportedCheckCount": 77,
+      "scopeAndFlags": {
+        "suite": "pure restart AUI and Dashboard persistence",
+        "applicationLaunched": false
+      },
+      "countComponents": {},
+      "topLevelNamedChecks": null
+    },
+    "restart-commissioning": {
+      "member": "maintenance-restart-commissioning.log",
+      "originalBytes": 181,
+      "originalSha256": "d0d0d9826694178af235cd0bb92994cf60515def309eb025538f6dccb663bbb9",
+      "entrypoint": "tools/boat/test-restart-commissioning.ps1",
+      "status": "passed",
+      "reportedCheckCount": 313,
+      "scopeAndFlags": {
+        "environment": "CI",
+        "nativePipeExecuted": false,
+        "applicationLaunched": false,
+        "physicalOutput": false
+      },
+      "countComponents": {},
+      "topLevelNamedChecks": null
+    },
+    "restart-window-review": {
+      "member": "maintenance-restart-window-review.log",
+      "originalBytes": 184,
+      "originalSha256": "8bad8a79372dd29b98ff21fc2e403f6413cf9413b49fda1ab54af502887990de",
+      "entrypoint": "tools/boat/test-restart-window-review.ps1",
+      "status": "passed",
+      "reportedCheckCount": 187,
+      "scopeAndFlags": {
+        "nativeWindowExecuted": false,
+        "applicationLaunched": false,
+        "boatTouched": false,
+        "physicalOutput": false
+      },
+      "countComponents": {},
+      "topLevelNamedChecks": null
+    },
+    "review-staging": {
+      "member": "maintenance-review-staging.log",
+      "originalBytes": 604,
+      "originalSha256": "a7aa78fffecb98147cd3913c7d476f7b84a0b1a2ee0d71720aea89345046fc02",
+      "entrypoint": "tools/boat/test-review-staging.ps1",
+      "status": "passed",
+      "reportedCheckCount": 12,
+      "scopeAndFlags": {
+        "boatAccess": false,
+        "applicationLaunched": false,
+        "hardwareCommands": false
+      },
+      "countComponents": {},
+      "topLevelNamedChecks": 12
+    },
+    "review-window": {
+      "member": "maintenance-review-window.log",
+      "originalBytes": 18141,
+      "originalSha256": "d9007457e6966e973e261abe1407e7250c220ab82162494baa26c5989d050441",
+      "entrypoint": "tools/boat/test-review-window.ps1",
+      "status": "passed",
+      "reportedCheckCount": 233,
+      "scopeAndFlags": {
+        "nativeInteropCompiled": true,
+        "nativeActionsExecuted": false,
+        "boatAccess": false,
+        "hardwareCommands": false
+      },
+      "countComponents": {},
+      "topLevelNamedChecks": 233
+    },
+    "source-checkout": {
+      "member": "maintenance-source-checkout.log",
+      "originalBytes": 2395,
+      "originalSha256": "0c76928637abbdaa11bf303efccd44d533dd502bd8648c0456723f86df599fe5",
+      "entrypoint": "tools/boat/test-source-checkout.ps1",
+      "status": "passed",
+      "reportedCheckCount": 16,
+      "scopeAndFlags": {
+        "environment": "native-windows-disposable-git",
+        "networkAccess": false,
+        "boatAccess": false,
+        "applicationChanged": false
+      },
+      "countComponents": {},
+      "topLevelNamedChecks": 16
+    },
+    "startup-log": {
+      "member": "maintenance-startup-log.log",
+      "originalBytes": 180,
+      "originalSha256": "b25d79bef7fcd830fcfb809b7f86747f8d56d5bb997dcfca7cc72a033b91a923",
+      "entrypoint": "tools/boat/test-startup-log.ps1",
+      "status": "passed",
+      "reportedCheckCount": 16,
+      "scopeAndFlags": {
+        "suite": "fresh startup across append and rotation",
+        "rawMarineDataRead": false,
+        "applicationLaunched": false
+      },
+      "countComponents": {},
+      "topLevelNamedChecks": null
+    },
+    "stock-chart": {
+      "member": "maintenance-stock-chart.log",
+      "originalBytes": 5700,
+      "originalSha256": "7d4ad3aacddcd5ab6af82671599c43dcb26df99a0f53761e1bc33605e5739fb2",
+      "entrypoint": "tools/boat/test-stock-chart.ps1",
+      "status": "passed",
+      "reportedCheckCount": 61,
+      "scopeAndFlags": {
+        "nativeInteropCompiled": true,
+        "nativeApisInvoked": false,
+        "boatAccess": false,
+        "applicationLaunched": false
+      },
+      "countComponents": {},
+      "topLevelNamedChecks": 61
+    },
+    "stock-review": {
+      "member": "maintenance-stock-review.log",
+      "originalBytes": 6706,
+      "originalSha256": "72b55d8bb1e97260d1572e01b560ea84d1a4104c7907359bb5d49848cc578809",
+      "entrypoint": "tools/boat/test-stock-review.ps1",
+      "status": "passed",
+      "reportedCheckCount": 90,
+      "scopeAndFlags": {
+        "nativeInteropCompiled": true,
+        "applicationLaunched": false,
+        "boatAccess": false,
+        "hardwareCommands": false,
+        "stockOrProductAcceptance": false
+      },
+      "countComponents": {
+        "policyCount": 78,
+        "transactionCount": 12
+      },
+      "topLevelNamedChecks": 78
+    },
+    "stock-welcome": {
+      "member": "maintenance-stock-welcome.log",
+      "originalBytes": 14691,
+      "originalSha256": "1ec0011fdb178e217e9a6da0c3e0bb3c65acf330824ee7b114a1c06bfd36c190",
+      "entrypoint": "tools/boat/test-stock-welcome.ps1",
+      "status": "passed",
+      "reportedCheckCount": 149,
+      "scopeAndFlags": {
+        "nativeInteropCompiled": true,
+        "windowsApisInvoked": true,
+        "applicationLaunched": false,
+        "boatAccess": false,
+        "hardwareCommands": false,
+        "actualStockModalAcceptance": false
+      },
+      "countComponents": {},
+      "topLevelNamedChecks": 149
+    }
+  },
+  "countInterpretation": "20 PowerShell suite receipts give assertion/check counts, including nested execution in baseline/stock/installed suites. They are not counts of unique independent scenarios. Navigation-copy separately has 11 unique Python tests. No combined unique-test total is claimed.",
+  "sources": {
+    "workflowSha256": "f52c3e7a7a350cd09a1cc67b1b47ae36bbcd6b7be59c14d864b515d91d35898e",
+    "toolsBoatGitTree": "aadbdce396d7f1cf2428fa39b02c3cff8854ab4c",
+    "entrypoints": {
+      "tools/boat/test-ais-credential-import.ps1": {
+        "bytes": 2557,
+        "sha256": "a5201695145d79a041e0e3cc79360bd96885ed225179f5959634ec7e7f7c6a31"
+      },
+      "tools/boat/test-baseline-adoption.ps1": {
+        "bytes": 29020,
+        "sha256": "6074476adcd84bfc2bea620b40541b96ab92f94497d28cfaa625131ef7a1cc53"
+      },
+      "tools/boat/test-boat-tools.ps1": {
+        "bytes": 34405,
+        "sha256": "f0e8383d3fabe2f538b452bcc99b356a585976cee13045a64ebe126d1ad4410a"
+      },
+      "tools/boat/test-broker-fixture-contracts.ps1": {
+        "bytes": 7378,
+        "sha256": "9a2e5136258afd357888017c7954a84d97cda93cbb130f5f8af4d84ebbc9f79f"
+      },
+      "tools/boat/test-commissioning-launch.ps1": {
+        "bytes": 21584,
+        "sha256": "6e0e5099e037d54ac9800f76ec0c493ac4586623ea7024ce62e3f6837f626b95"
+      },
+      "tools/boat/test-commissioning.ps1": {
+        "bytes": 33174,
+        "sha256": "e027d95c4d7cd7b2319346e0d7d7e32d5229efde524da29d5c38d70c8155650d"
+      },
+      "tools/boat/test-installed-welcome.ps1": {
+        "bytes": 12058,
+        "sha256": "f92bdafae24fa023f2945e826bc3d9919c90827184561913c77f2dc7006fdf39"
+      },
+      "tools/boat/test-navigation-copy.py": {
+        "bytes": 4097,
+        "sha256": "5b5e1871b98c437b168731a452a77618cec00bd7e87dcbf79ba430f14f3d0ad0"
+      },
+      "tools/boat/test-official-upgrade-policy.ps1": {
+        "bytes": 13829,
+        "sha256": "8d23190782297ae70af59e2c311522615e6de6db78e8cc081a667614a3e43779"
+      },
+      "tools/boat/test-preparation.ps1": {
+        "bytes": 29791,
+        "sha256": "af0f83427c500bd4c4c18c18baddf448c34416652c2887250efb015052a37509"
+      },
+      "tools/boat/test-renderer-log.ps1": {
+        "bytes": 11716,
+        "sha256": "c2b94ac12aa5d47a5fb5ecc2a304a85950ccd11822c9bb171b94132d67b3cf67"
+      },
+      "tools/boat/test-restart-aui-persistence.ps1": {
+        "bytes": 5306,
+        "sha256": "19235c8c0701925a8f51d711908c06cb3516dda84bb7bc2b60ae6122c15f6dc9"
+      },
+      "tools/boat/test-restart-commissioning.ps1": {
+        "bytes": 27684,
+        "sha256": "6f66d882551c34afb67b21ac4d0c859f160dab303704df2a69ac7eb24837a1d1"
+      },
+      "tools/boat/test-restart-window-review.ps1": {
+        "bytes": 19525,
+        "sha256": "5e390d81d3e3b2e1658aea23b4e6d94b20bf71c4e2ae8e6fa8cce205796fe31c"
+      },
+      "tools/boat/test-review-staging.ps1": {
+        "bytes": 4798,
+        "sha256": "41ecd103220eeff13b4490651b3ab44fea822e8b71269d367e2acbaec6b09f62"
+      },
+      "tools/boat/test-review-window.ps1": {
+        "bytes": 18001,
+        "sha256": "10ea519e4d22d916a34fd8194498f050958c83538b9f3b5fb3d1842af9ad1889"
+      },
+      "tools/boat/test-source-checkout.ps1": {
+        "bytes": 13653,
+        "sha256": "1216196fe36c2703d6fe5358f21ef7657eb367118433f55e152f8f9b7ccf3bd8"
+      },
+      "tools/boat/test-startup-log.ps1": {
+        "bytes": 3002,
+        "sha256": "1eb316818c4afdda6d9fe70b181baeb3efdf3b2994a61971b1efb65ccb30d469"
+      },
+      "tools/boat/test-stock-chart.ps1": {
+        "bytes": 4552,
+        "sha256": "77c28a533bd1ab8f686552042a8cd2bf533bba258d9f0a0b5922bc1f27151d79"
+      },
+      "tools/boat/test-stock-review.ps1": {
+        "bytes": 7284,
+        "sha256": "9c63d074d52aba24b6ba6bdd2058298dd9e59ba142d14b6ea353383edca05831"
+      },
+      "tools/boat/test-stock-welcome.ps1": {
+        "bytes": 31966,
+        "sha256": "876782fa509e38453aa8c5f2752172475e7a671b8614bbd63e866315f2e825d0"
+      }
+    },
+    "mappingBoundary": "Authenticated exact remote checkout and root publication mapping bind remote candidate to frozen local. Local entrypoint and tools/boat tree identities independently checked; no new full publication mapping or runner script-byte attestation."
+  },
+  "originalDecodedLog": {
+    "bytes": 159065,
+    "sha256": "e3afd7911aacf1f8d75434f50e025e652e1c3a4302b73dac4d83dd265aa4ad6d",
+    "throughCleanup": true,
+    "uploadIdSizeDigestMatch": true
+  }
+}

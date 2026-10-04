@@ -7,8 +7,8 @@ if(-not $root.StartsWith([IO.Path]::GetTempPath(),[StringComparison]::OrdinalIgn
    [IO.Path]::GetFileName($root) -cnotmatch '^opennav-display-window-[a-f0-9]{32}$'){throw 'Unique temporary display fixture required.'}
 $record=Get-Content -LiteralPath (Join-Path $root 'fixture.json') -Raw|ConvertFrom-Json
 if($record.owner -cne 'OpenNavX.NativeDisplayWindow.Fixture.1' -or
-   $record.action -cnotin @('Display','ToggleFullscreen','ToggleOrientation','CyclePalette','PanRight','Resize1280x800','Capture','Navigation','Route','AIS','Instruments') -or
-   $record.case -cnotin @('normal','return','course','wrong-page','wrong-geometry','canvas-child','ambiguous','replace-on-down','rename-on-down','move-on-down','duplicate-on-down','modal','maximized-offscreen','partial-offscreen','entirely-offscreen','minimized','demo','wrong-pid','prototype-normal','prototype-anchor','prototype-pilot','prototype-alerts','prototype-preferences','prototype-two-sheets','prototype-passage','prototype-traffic','prototype-back','prototype-unknown','prototype-wrong-owner','prototype-duplicate','prototype-clipped','prototype-signature','prototype-moved','prototype-rail-duplicate','prototype-modal')){throw 'Unknown fixed fixture.'}
+   $record.action -cnotin @('Display','ToggleFullscreen','ToggleOrientation','CyclePalette','PanRight','Resize1280x800','Capture','Navigation','Route','AIS','Instruments','ZoomIn','ZoomOut','System','RevealInterfaceRecovery','InterfaceRecovery') -or
+   $record.case -cnotin @('normal','return','course','wrong-page','wrong-geometry','canvas-child','ambiguous','replace-on-down','rename-on-down','move-on-down','duplicate-on-down','modal','maximized-offscreen','partial-offscreen','entirely-offscreen','minimized','demo','wrong-pid','prototype-normal','prototype-anchor','prototype-pilot','prototype-alerts','prototype-preferences','prototype-two-sheets','prototype-passage','prototype-traffic','prototype-back','prototype-unknown','prototype-wrong-owner','prototype-duplicate','prototype-clipped','prototype-signature','prototype-moved','prototype-rail-duplicate','prototype-modal','prototype-zoom-wrong-owner','prototype-zoom-wrong-pid','prototype-zoom-hidden','prototype-zoom-occluded','prototype-zoom-wrong-surface','prototype-zoom-replace-on-down','prototype-system-normal','prototype-system-duplicate','prototype-system-hidden','prototype-system-wrong-owner','prototype-recovery-normal','prototype-recovery-hidden','prototype-recovery-duplicate','prototype-recovery-no-progress','prototype-recovery-changed-body','prototype-recovery-wrong-owner','prototype-recovery-reveal','prototype-recovery-clipped','prototype-recovery-wrong-surface')){throw 'Unknown fixed fixture.'}
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -TypeDefinition @'
 using System;
@@ -26,6 +26,17 @@ public sealed class OpenNavPanFixtureCanvas : Panel {
  protected override void WndProc(ref Message m) {
   if(m.WParam.ToInt64()==0x27 && (m.Msg==0x100 || m.Msg==0x101))
    File.AppendAllText(Output,m.Msg==0x100 ? "PAN_RIGHT_DOWN\n" : "PAN_RIGHT_UP\n");
+  base.WndProc(ref m);
+ }
+}
+public sealed class OpenNavRecoveryFixtureBody : Panel {
+ public string Output;
+ public bool FreezeScroll;
+ protected override void WndProc(ref Message m) {
+  if(m.Msg==0x115) {
+   File.AppendAllText(Output,m.WParam.ToInt64()==3 ? "PAGE_DOWN\n" : "UNEXPECTED_SCROLL\n");
+   if(FreezeScroll)return;
+  }
   base.WndProc(ref m);
  }
 }
@@ -128,6 +139,51 @@ function Surface([string]$Title,[int]$X,[int]$Y,[int]$Width,[int]$Height,[string
  if($Unowned){$surface.TopMost=$true;$surface.Show()}else{$surface.Show($form)}
  $script:surfaces.Add($surface)
 }
+function SystemFixtureLinks {
+ $intro=New-Object Windows.Forms.Panel;$intro.Location=New-Object Drawing.Point(22,122);$intro.Size=New-Object Drawing.Size(386,156);$script:settingsBody.Controls.Add($intro)
+ $links=@('Installation & recovery','Updates','Backups','Diagnostics','Plugins','Help & guides','About & licenses','Run vessel setup','Interface & recovery','Advanced / Legacy Settings')
+ for($i=0;$i -lt $links.Count;$i++) {
+  $link=Button $script:settingsBody $links[$i] 22 (278+72*$i) 386;$link.Height=72
+  if($links[$i] -ceq 'Interface & recovery') {
+   $script:recoveryTarget=$link
+   $link.Add_Click({SaveClick 'Interface & recovery';$script:preferences.Hide();$null=[OpenNavDisplayFixtureLabel]::SetWindowTextW($panel.Handle,'SKAGER product page: System')})
+  } else {$link.Add_Click({SaveClick 'UNSAFE_SYSTEM_LINK'})}
+  if($links[$i] -cin @('Installation & recovery','Updates','Backups','About & licenses','Run vessel setup')){$link.Enabled=$false}
+ }
+ if($record.case -ceq 'prototype-recovery-hidden'){$script:recoveryTarget.Hide()}
+ if($record.case -ceq 'prototype-recovery-duplicate'){$duplicate=Button $script:settingsBody 'Interface & recovery' 22 1040 386;$duplicate.Height=72;$duplicate.Add_Click({SaveClick 'UNSAFE_DUPLICATE'})}
+ if($record.case -ceq 'prototype-recovery-changed-body'){$script:settingsBody.Add_Scroll({param($sender,$event) $sender.Width-=1})}
+}
+function SettingsSurface {
+ # Frozen SettingsDrawer.cpp/Drawer.cpp: direct heading and scroll body;
+ # all eight 37-DIP tabs in one body child; 72-DIP links directly in the body.
+ $script:preferences=New-Object Windows.Forms.Form;$script:preferences.Text='SKAGER preferences'
+ $script:preferences.FormBorderStyle='None';$script:preferences.ShowInTaskbar=$false;$script:preferences.StartPosition='Manual'
+ $script:preferences.Location=New-Object Drawing.Point(360,100);$script:preferences.Size=New-Object Drawing.Size(432,460)
+ if($record.case -ceq 'prototype-recovery-wrong-surface'){$script:preferences.Text='Chart presentation'}
+ $heading=New-Object Windows.Forms.Panel;$heading.Location=New-Object Drawing.Point(1,1);$heading.Size=New-Object Drawing.Size(430,89);$script:preferences.Controls.Add($heading)
+ $close=Button $heading 'Close' 336 18 86;$close.Height=44
+ $script:settingsBody=New-Object OpenNavRecoveryFixtureBody;$script:settingsBody.Output=Join-Path $root 'scrolls.txt'
+ $script:settingsBody.FreezeScroll=$record.case -ceq 'prototype-recovery-no-progress'
+ $script:settingsBody.Location=New-Object Drawing.Point(1,90);$script:settingsBody.Size=New-Object Drawing.Size(430,369)
+ $script:settingsBody.AutoScroll=$true;$script:preferences.Controls.Add($script:settingsBody)
+ $tabs=New-Object Windows.Forms.Panel;$tabs.Location=New-Object Drawing.Point(22,20);$tabs.Size=New-Object Drawing.Size(386,79);$script:settingsBody.Controls.Add($tabs)
+ $labels=@('Vessel','Navigation','Sensors','Autopilot','Radar','Display','System','Help');$widths=@(57,86,70,76,58,68,68,48);$x=0;$y=0
+ for($i=0;$i -lt $labels.Count;$i++) {
+  if($x -and $x+$widths[$i] -gt $tabs.Width){$x=0;$y+=42}
+  $tab=Button $tabs $labels[$i] $x $y $widths[$i];$tab.Height=37;$x+=$widths[$i]+5
+  if($labels[$i] -ceq 'System') {
+   $tab.Add_Click({SaveClick 'System';SystemFixtureLinks})
+   if($record.case -ceq 'prototype-system-hidden'){$tab.Hide()}
+  }
+ }
+ if($record.case -ceq 'prototype-system-duplicate'){$duplicate=Button $tabs 'System' 280 42 68;$duplicate.Height=37;$duplicate.Add_Click({SaveClick 'UNSAFE_DUPLICATE'})}
+ # The System action must create its content through the actual click callback;
+ # reveal/link cases instead start on the already-selected System section.
+ if($record.action -cne 'System'){SystemFixtureLinks}
+ if($record.case -cin @('prototype-system-wrong-owner','prototype-recovery-wrong-owner')){$script:preferences.TopMost=$true;$script:preferences.Show()}else{$script:preferences.Show($form)}
+ $script:surfaces.Add($script:preferences)
+}
 $started=[datetime]::UtcNow;$timer=New-Object Windows.Forms.Timer;$timer.Interval=100
 $timer.Add_Tick({
  if($record.case -ceq 'prototype-moved' -and (Test-Path -LiteralPath (Join-Path $root 'mutate')) -and -not (Test-Path -LiteralPath (Join-Path $root 'mutated'))) {
@@ -145,6 +201,18 @@ $form.Add_Shown({
  if($prototype) {
   $last=if($record.case -ceq 'prototype-signature'){'AUTO'}else{[string][char]0x2212}
   Surface 'SKAGER chart tools' 150 100 190 64 @('Measure','Waypoint','+',$last)
+  if($record.action -cin @('ZoomIn','ZoomOut')) {
+   # Shell.cpp: 4+44+44+5+44+44+4 wide; 44-high buttons with 4-DIP top/bottom.
+   $tools=$script:surfaces[0];$tools.Size=New-Object Drawing.Size(189,52);$positions=@(4,48,97,141)
+   for($i=0;$i -lt $tools.Controls.Count;$i++){$b=$tools.Controls[$i];$b.Location=New-Object Drawing.Point($positions[$i],4);$b.Size=New-Object Drawing.Size(44,44)}
+   $target=@($tools.Controls|Where-Object {$_.Text -ceq $(if($record.action -ceq 'ZoomIn'){'+'}else{[string][char]0x2212})})[0]
+   $target.Add_Click({param($sender,$event) SaveClick $sender.Text})
+   if($record.case -ceq 'prototype-zoom-wrong-owner'){$tools.Owner=$null;$tools.TopMost=$true}
+   if($record.case -ceq 'prototype-zoom-wrong-surface'){$tools.Text='Unknown chart tools'}
+   if($record.case -ceq 'prototype-zoom-hidden'){$target.Hide()}
+   if($record.case -ceq 'prototype-zoom-occluded'){$cover=New-Object Windows.Forms.Panel;$cover.Location=$target.Location;$cover.Size=$target.Size;$tools.Controls.Add($cover);$cover.BringToFront()}
+   if($record.case -ceq 'prototype-zoom-replace-on-down'){$target.Add_MouseDown({param($sender,$event) $parent=$sender.Parent;$location=$sender.Location;$size=$sender.Size;$sender.Dispose();$replacement=Button $parent '+' $location.X $location.Y $size.Width;$replacement.Height=$size.Height;$replacement.Add_Click({SaveClick 'UNSAFE_REPLACEMENT'})})}
+  }
   Surface 'SKAGER chart orientation' 150 180 68 90 @('North')
   Surface 'SKAGER follow boat' 150 290 142 56 @('Follow boat')
   if($record.case -ceq 'prototype-two-sheets'){
@@ -161,6 +229,7 @@ $form.Add_Shown({
   if($record.case -ceq 'prototype-wrong-owner'){Surface 'SKAGER passage' 390 100 398 460 @('Close') -Heading -Unowned}
   if($record.case -ceq 'prototype-duplicate'){Surface 'SKAGER chart tools' 390 100 190 64 @('Measure','Waypoint','+',[string][char]0x2212)}
   if($record.case -ceq 'prototype-clipped'){$script:surfaces[0].Left=$form.Right-20}
+  if($record.action -cin @('System','RevealInterfaceRecovery','InterfaceRecovery')){SettingsSurface}
  }
  $chart=$panel.RectangleToScreen($panel.ClientRectangle)
  [IO.File]::WriteAllText((Join-Path $root 'ready.json'),(@{pid=$PID;handle=$form.Handle.ToInt64();createdFiletime=[Diagnostics.Process]::GetCurrentProcess().StartTime.ToUniversalTime().ToFileTimeUtc().ToString();chart=@{left=$chart.Left;top=$chart.Top;right=$chart.Right;bottom=$chart.Bottom}}|ConvertTo-Json -Depth 4 -Compress))
