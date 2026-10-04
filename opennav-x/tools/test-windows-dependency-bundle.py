@@ -203,6 +203,63 @@ class BundleTests(fixtures.WindowsDependencyEvidenceTests):
             bundle.restore(self.root, self.output, self.authority)
         self.assertEqual(target.read_bytes(), b'current changed file')
 
+    def verifier_upgrade(self):
+        document = self.seal()
+        current = self.root / bundle.VERIFIER
+        upgraded = current.read_bytes() + b'\n# owned stricter consumer fixture\n'
+        current.write_bytes(upgraded)
+        policy = {'schemaVersion': 1, 'entries': [{
+            'producerCommit': self.identity['headSha'],
+            'originalVerifierSha256': document['files'][bundle.VERIFIER]['sha256'],
+            'currentVerifierSha256': receipt._digest(current),
+            'reason': 'owned consumer-boundary fixture; no binary recipe changes'}]}
+        self._write_json(self.root / bundle.COMPATIBILITY, policy)
+        return document, policy, upgraded
+
+    def test_exact_consumer_compatibility_preserves_original_and_current_bytes(self):
+        document, policy, upgraded = self.verifier_upgrade()
+        immutable = (self.output / 'bundle.json').read_bytes()
+        original = (self.output / 'payload' / bundle.VERIFIER).read_bytes()
+        prefix = self.root / bundle.evidence.PREFIXES['curl']
+        shutil.rmtree(prefix)
+        bundle.restore(self.root, self.output, self.authority)
+        verified = bundle.verify_restored(self.root, self.output, self.authority)
+        self.assertEqual(verified, document)
+        self.assertEqual((self.root / bundle.VERIFIER).read_bytes(), upgraded)
+        self.assertEqual((self.output / 'payload' / bundle.VERIFIER).read_bytes(), original)
+        self.assertEqual((self.output / 'bundle.json').read_bytes(), immutable)
+        (self.root / bundle.stage.CACHE).mkdir(parents=True)
+        bundle.stage_bundle(self.root, self.output, self.authority)
+
+    def test_compatibility_rejects_any_unapproved_commit_hash_or_recipe(self):
+        document, policy, upgraded = self.verifier_upgrade()
+        for key, value in (('producerCommit', 'b' * 40),
+                           ('originalVerifierSha256', 'b' * 64),
+                           ('currentVerifierSha256', 'b' * 64)):
+            with self.subTest(key=key):
+                changed = {'schemaVersion': 1, 'entries': [{**policy['entries'][0], key: value}]}
+                self._write_json(self.root / bundle.COMPATIBILITY, changed)
+                with self.assertRaisesRegex(ValueError, 'exact reviewed compatibility'):
+                    bundle.verify_bundle(self.root, self.output, self.authority)
+        self._write_json(self.root / bundle.COMPATIBILITY, policy)
+        helper = self.root / bundle.VERIFIER
+        helper.write_bytes(upgraded + b'\n# unapproved further change\n')
+        with self.assertRaisesRegex(ValueError, 'exact reviewed compatibility'):
+            bundle.verify_bundle(self.root, self.output, self.authority)
+        helper.write_bytes(upgraded)
+        recipe = self.root / 'tools/build-curl-windows.ps1'
+        recipe.write_bytes(recipe.read_bytes() + b'\n# recipe change\n')
+        with self.assertRaisesRegex(ValueError, 'inputs changed'):
+            bundle.verify_bundle(self.root, self.output, self.authority)
+
+    def test_repository_policy_pins_current_verifier_bytes(self):
+        source = Path(__file__).resolve().parent.parent
+        policy = json.loads((source / bundle.COMPATIBILITY).read_text())
+        current = receipt._digest(source / bundle.VERIFIER)
+        matches = [entry for entry in policy['entries'] if entry['currentVerifierSha256'] == current]
+        self.assertEqual(len(matches), 1)
+        self.assertEqual(matches[0]['producerCommit'], '966e7832ac326aaaf397046ea1dc9c2cff19569d')
+
     def test_changed_native_image_or_python_toolchain_rejects(self):
         self.seal()
         with mock.patch.dict(os.environ, {'ImageVersion': '20261002.1.0'}):

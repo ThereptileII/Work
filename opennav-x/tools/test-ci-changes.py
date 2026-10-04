@@ -111,6 +111,25 @@ class GitRangeTests(unittest.TestCase):
         self.run_git('commit', '-qm', 'fixture')
         return self.run_git('rev-parse', 'HEAD')
 
+    def commit_unusual_path(self, name, content):
+        # Windows cannot create newline filenames. Keep this real Git history
+        # fixture in the object database, without checking it out or relying on
+        # filesystem/index path acceptance. NUL records preserve the exact name.
+        def object_command(*args, data):
+            return subprocess.check_output(['git', '-C', str(self.repo), *args],
+                                           input=data, stderr=subprocess.PIPE).decode().strip()
+        object_id = object_command('hash-object', '-w', '--stdin', data=content)
+        mode, kind = '100644', 'blob'
+        parts = name.split('/')
+        for position in range(len(parts) - 1, -1, -1):
+            record = f'{mode} {kind} {object_id}\t{parts[position]}\0'.encode()
+            if position == 0:
+                readme = self.run_git('rev-parse', self.initial + ':README.md')
+                record += f'100644 blob {readme}\tREADME.md\0'.encode()
+            object_id = object_command('mktree', '-z', data=record)
+            mode, kind = '040000', 'tree'
+        return self.run_git('commit-tree', object_id, '-p', self.initial, '-m', 'unusual-path fixture')
+
     def test_docs_range_and_empty_range(self):
         self.write('docs/notes.md', 'ordinary docs\n')
         head = self.commit()
@@ -131,10 +150,10 @@ class GitRangeTests(unittest.TestCase):
         self.assertIn('README-renamed.md', result['changed_paths'])
 
     def test_delete_packaged_notice_and_unusual_filename(self):
-        self.write('docs/beta2/line\nbreak.md', 'packaged\n')
-        base = self.commit()
-        self.run_git('rm', 'docs/beta2/line\nbreak.md')
-        result = ci.select(self.repo, base, self.commit())
+        base = self.commit_unusual_path('docs/beta2/line\nbreak.md', b'packaged\n')
+        original_tree = self.run_git('rev-parse', self.initial + '^{tree}')
+        head = self.run_git('commit-tree', original_tree, '-p', base, '-m', 'delete packaged notice')
+        result = ci.select(self.repo, base, head)
         self.assertTrue(result['product'])
         self.assertEqual(result['changed_paths'], ['docs/beta2/line\nbreak.md'])
 
@@ -175,8 +194,7 @@ class GitRangeTests(unittest.TestCase):
             self.assertTrue(result['dependencies'])
 
     def test_cli_boolean_outputs_are_stable_and_json_paths_are_escaped(self):
-        self.write('docs/a\nb.md', 'docs\n')
-        head = self.commit()
+        head = self.commit_unusual_path('docs/a\nb.md', b'docs\n')
         output = self.repo / 'github-output'
         command = [sys.executable, str(Path(ci.__file__).resolve()), '--repo', str(self.repo),
                    '--base', self.initial, '--head', head, '--github-output', str(output)]

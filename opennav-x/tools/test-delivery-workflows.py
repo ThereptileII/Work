@@ -214,7 +214,7 @@ class PackageGates(unittest.TestCase):
         with self.assertRaises(ValueError):
             production.qualify(self.directory, self.evidence, self.env)
 
-    def retain_support(self):
+    def retain_support(self, support_attempt='1'):
         root = self.work / 'source'
         for name in ('build/beta-installer/package.json', 'build/beta-installer/payload.zip',
                      'build/production-windows/include/config.h', 'build/xnav-windows/include/config.h',
@@ -223,7 +223,7 @@ class PackageGates(unittest.TestCase):
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_bytes(b'Inert retained input: ' + name.encode())
         (root / 'build/beta-artifacts').mkdir(parents=True)
-        receipt = retention.retain(root, COMMIT, '42', '1')
+        receipt = retention.retain(root, COMMIT, '42', support_attempt)
         (self.directory / 'RETEST_SUPPORT.json').write_text(json.dumps(receipt))
         self.stage()
         return root / 'build/release-retest', receipt
@@ -240,6 +240,23 @@ class PackageGates(unittest.TestCase):
         self.assertEqual((output / 'SKAGER-Beta2-Setup.exe').read_bytes(), original['SKAGER-Beta2-Setup.exe'])
         self.assertIn(receipt['sha256'] + '  ' + receipt['archiveName'], (output / 'SHA256SUMS.txt').read_text())
         release_manifest.verify(self.directory)
+
+    def test_retained_support_prior_qualification_attempt_survives_publish_retry(self):
+        self.env['GITHUB_RUN_ATTEMPT'] = '3'
+        support, receipt = self.retain_support(support_attempt='2')
+        original = snapshot(self.directory)
+        output = self.work / 'prior-attempt-retest'
+        result = preparation.prepare(self.directory, support, output)
+        self.assertEqual(result['runAttempt'], '3')
+        self.assertEqual(snapshot(self.directory), original)
+        retained = json.loads((output / 'RETEST_SUPPORT.json').read_text())
+        self.assertEqual(retained['runAttempt'], '2')
+        self.assertEqual(retained['artifactName'], 'staging-retest-' + COMMIT + '-attempt2')
+        self.assertEqual(retained['sha256'], receipt['sha256'])
+        self.assertEqual((output / receipt['archiveName']).read_bytes(),
+                         (support / receipt['archiveName']).read_bytes())
+        for name in release_manifest.PRODUCT_FILES | {'RELEASE.json', 'RETEST_SUPPORT.json'}:
+            self.assertEqual((output / name).read_bytes(), original[name])
 
     def test_retained_support_same_size_tamper_refused_before_copy(self):
         support, receipt = self.retain_support()

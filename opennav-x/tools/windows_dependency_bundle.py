@@ -29,6 +29,8 @@ import windows_dependency_stage as stage
 
 WORKFLOW = '.github/workflows/skager-windows-dependencies.yml'
 JOB = 'windows-dependencies'
+VERIFIER = 'tools/windows_dependency_bundle.py'
+COMPATIBILITY = 'tools/windows-dependency-verifier-compatibility.json'
 ABI = {'architecture': 'Win32', 'abi': 'x86', 'runtime': 'MultiThreadedDLL (/MD)',
        'openssl': '3.5.9', 'zlib': '1.3.2', 'curl': '8.22.0'}
 # Only producer-relevant bytes: application/UI patches do not invalidate this
@@ -238,10 +240,47 @@ def seal(root: Path, output: Path, *, producer_success: bool):
                       'fingerprint': document['fingerprint']['sha256'], 'producer': identity}))
 
 
+def _verifier_compatibility(root: Path, document: dict) -> dict:
+    """Return the one explicitly reviewed current verifier record, if needed.
+
+    Producer receipts always retain the original verifier bytes. This exception
+    authorizes a stricter consumer boundary; it never changes compiler recipes,
+    producer evidence, SDK files, or the original artifact fingerprint.
+    """
+    actual = receipt._plain_path(root, VERIFIER)
+    record = {'bytes': actual.stat().st_size, 'sha256': receipt._digest(actual)}
+    recorded = document['files'][VERIFIER]
+    if record == recorded:
+        return {}
+    policy = evidence._strict_json(receipt._plain_path(root, COMPATIBILITY))
+    if (set(policy) != {'schemaVersion', 'entries'} or type(policy['schemaVersion']) is not int or
+            policy['schemaVersion'] != 1 or not isinstance(policy['entries'], list)):
+        raise ValueError('invalid explicit verifier compatibility policy')
+    matches = []
+    for entry in policy['entries']:
+        if (not isinstance(entry, dict) or set(entry) != {
+                'producerCommit', 'originalVerifierSha256', 'currentVerifierSha256', 'reason'} or
+                not re.fullmatch(r'[0-9a-f]{40}', entry['producerCommit']) or
+                any(not receipt.SHA256.fullmatch(entry[key]) for key in
+                    ('originalVerifierSha256', 'currentVerifierSha256')) or not entry['reason']):
+            raise ValueError('invalid explicit verifier compatibility entry')
+        if (entry['producerCommit'] == document['producer']['headSha'] and
+                entry['originalVerifierSha256'] == recorded['sha256'] and
+                entry['currentVerifierSha256'] == record['sha256']):
+            matches.append(entry)
+    if len(matches) != 1:
+        raise ValueError('current verifier differs without exact reviewed compatibility')
+    return {VERIFIER: record}
+
+
+def _expected_current_files(root: Path, document: dict) -> dict:
+    return {**document['files'], **_verifier_compatibility(root, document)}
+
+
 def verify_bundle(root: Path, bundle: Path, provenance: Path) -> dict:
     root = receipt._workspace_root(root)
     bundle = receipt._workspace_root(bundle)
-    if provenance.resolve().is_relative_to(bundle):
+    if provenance.resolve().is_relative_to(bundle.resolve()):
         raise ValueError('provenance must be authenticated outside the artifact')
     authority = evidence._strict_json(provenance)
     expected_keys = {'schemaVersion', 'repository', 'workflowPath', 'runId', 'runAttempt',
@@ -275,7 +314,15 @@ def verify_bundle(root: Path, bundle: Path, provenance: Path) -> dict:
         raise ValueError('current Windows runner image differs; fresh producer required')
     if document['python'] != _python_identity():
         raise ValueError('current Python build-helper toolchain differs')
-    if document['fingerprint'] != fingerprint(root):
+    current_fingerprint = fingerprint(root)
+    compatibility = _verifier_compatibility(root, document)
+    if compatibility:
+        # Compare every actual binary-producing input normally; substitute only
+        # the exact authenticated original verifier identity for this comparison.
+        current_fingerprint['inputs'][VERIFIER] = document['files'][VERIFIER]['sha256']
+        comparable = {key: value for key, value in current_fingerprint.items() if key != 'sha256'}
+        current_fingerprint['sha256'] = hashlib.sha256(_encode(comparable)).hexdigest()
+    if document['fingerprint'] != current_fingerprint:
         raise ValueError('dependency source/recipe/configuration/ABI inputs changed')
     payload = receipt._plain_path(bundle, 'payload')
     # Derive allowed payload roots from the actual verified metadata, never
@@ -297,6 +344,8 @@ def verify_bundle(root: Path, bundle: Path, provenance: Path) -> dict:
 
 def restore(root: Path, bundle: Path, provenance: Path):
     document = verify_bundle(root, bundle, provenance)
+    expected_current = _expected_current_files(root, document)
+    compatibility = _verifier_compatibility(root, document)
     # Validate every destination before copying. Refuse conflicting existing
     # files; routine current checkout notices may already have identical bytes.
     for name, record in document['files'].items():
@@ -304,17 +353,17 @@ def restore(root: Path, bundle: Path, provenance: Path):
             continue  # Current authoritative workflow was checked by fingerprint.
         destination = stage._safe_destination(root, name)
         if destination.exists():
-            curl_package.verify_file(destination, record)
+            curl_package.verify_file(destination, expected_current[name])
     for name, record in document['files'].items():
-        if name == WORKFLOW:
-            continue  # Current authoritative workflow was checked by fingerprint.
+        if name == WORKFLOW or name in compatibility:
+            continue  # Keep the independently verified current workflow/verifier.
         destination = stage._safe_destination(root, name)
         destination.parent.mkdir(parents=True, exist_ok=True)
         if not destination.exists():
             with destination.open('xb') as output, receipt._plain_path(bundle / 'payload', name).open('rb') as source:
                 shutil.copyfileobj(source, output)
         curl_package.verify_file(destination, record)
-    if _current_inventory(root, document['roots']) != document['files']:
+    if _current_inventory(root, document['roots']) != _expected_current_files(root, document):
         raise ValueError('restored dependency inventory differs')
     verify_producers(root)
     print('Immutable dependency payload verified and restored; live native reprobes still required')
@@ -322,7 +371,7 @@ def restore(root: Path, bundle: Path, provenance: Path):
 
 def verify_restored(root: Path, bundle: Path, provenance: Path) -> dict:
     document = verify_bundle(root, bundle, provenance)
-    if _current_inventory(root, document['roots']) != document['files']:
+    if _current_inventory(root, document['roots']) != _expected_current_files(root, document):
         raise ValueError('dependency payload changed before staging')
     verify_producers(root)
     return document

@@ -5,17 +5,14 @@ import hashlib
 import json
 from pathlib import Path
 import shutil
-from release_manifest import verify
+from github_release_delivery import local_record
 
 
 def prepare(release, support, output):
-    manifest = verify(release)
-    receipt = json.loads((release/'RETEST_SUPPORT.json').read_text())
-    if (receipt.get('archiveName') != 'SKAGER-Beta2-Retest-Support.zip' or
-            receipt.get('artifactName') != 'staging-retest-' + manifest['commit'] + '-attempt' + manifest['runAttempt'] or
-            receipt.get('commit') != manifest['commit'] or receipt.get('runId') != manifest['runId'] or
-            receipt.get('runAttempt') != manifest['runAttempt']):
-        raise ValueError('Retest inputs are not bound to this release')
+    # fetch-staging authenticates any earlier support-producing qualification
+    # job. Reuse its central local binding rules here: same run/commit, canonical
+    # support attempt no later than release attempt, original artifact identity.
+    manifest, receipt = local_record(release)
     archive = support/receipt['archiveName']
     if archive.is_symlink() or not archive.is_file() or archive.stat().st_size != receipt.get('size'):
         raise ValueError('Retest archive identity differs')

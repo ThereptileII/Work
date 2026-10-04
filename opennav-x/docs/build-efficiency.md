@@ -61,8 +61,8 @@ Reject mismatched, missing, expired, tampered or relocated inputs. Select or bui
 a valid SDK explicitly rather than silently accepting partial restoration.
 Keep same-job fixture-success receipts separate from cross-run SDK provenance.
 The AIS runtime gate accepts either authority explicitly, reprobes a reused SDK,
-and preserves the existing compiled TLS, transport and session checks before the
-GUI build. SDK verification alone grants no application or boat acceptance.
+and preserves the existing compiled TLS, transport and session checks before desktop
+qualification. SDK verification alone grants no application or boat acceptance.
 
 ## Retain once, test the same bytes
 
@@ -82,3 +82,21 @@ failure assertions and native Windows/boat evidence boundaries. Requested
 long-running suites run as separate background work with retained logs; report
 pending, failed and skipped gates truthfully. The user-directed endurance skip
 continues until explicitly changed.
+
+## Reviewed verifier correction for the first producer
+
+The first immutable producer at `966e7832ac326aaaf397046ea1dc9c2cff19569d`
+runs its native library work with the original bundle verifier. Native
+helper tests then found a consumer path-boundary error: a Windows short path and
+its resolved long spelling could bypass the explicit embedded-provenance check.
+The corrected verifier resolves both paths. The authenticated downloader already
+keeps provenance outside the artifact; that outer boundary remains unchanged.
+
+`tools/windows-dependency-verifier-compatibility.json` permits only this reviewed
+producer commit and exact old/current verifier byte hashes (separate LF/CRLF
+checkout pairs). It does not normalize line endings or authorize arbitrary
+future helper changes. All other recipe/workflow inputs, runner/tool facts,
+producer evidence and SDK files remain exact. Restoration keeps the verified
+current helper; the original artifact and manifest stay unchanged. This avoids
+recompiling identical libraries for a stricter consumer-only boundary. The native
+cross-run proof still has to pass before this producer is selected for Staging.
