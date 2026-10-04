@@ -42,7 +42,7 @@ def archive_members(archive):
     entries={}; folded=set()
     for entry in archive.infolist():
         name=entry.filename; path=PurePosixPath(name)
-        if (not name or '\\' in name or ':' in name or path.is_absolute() or
+        if (entry.orig_filename!=name or not name or '\\' in name or ':' in name or path.is_absolute() or
                 '..' in path.parts or any(part.endswith((' ','.')) for part in path.parts) or
                 any(re.fullmatch(r'(?i)(con|prn|aux|nul|com[1-9]|lpt[1-9])(?:\..*)?',part) for part in path.parts) or
                 path.as_posix()!=name.rstrip('/') or

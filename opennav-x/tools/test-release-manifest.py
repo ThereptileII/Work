@@ -7,6 +7,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 import warnings
 import zipfile
 
@@ -129,13 +130,24 @@ class ManifestTests(unittest.TestCase):
                 path.write_bytes(content)
 
     def test_extra_case_collision_and_unsafe_paths(self):
-        for name in ['extra.txt', 'skager-beta2-setup.exe', '.hidden', 'bad\\path', 'CON.txt']:
+        for name in ['extra.txt', '.hidden']:
             with self.subTest(name=name):
                 path = self.root / name
                 path.write_text('extra')
                 with self.assertRaises(ValueError):
                     self.create()
                 path.unlink()
+        # Windows cannot create these names as single regular files. Exercise
+        # the same basename boundary without relying on host filesystem rules.
+        for name in ['bad\\path', 'CON.txt']:
+            with self.subTest(name=name), self.assertRaises(ValueError):
+                release.safe_name(name)
+        # A case-insensitive filesystem cannot hold both names. Supply the
+        # conflicting directory listing without overwriting the Setup fixture.
+        entries = [*self.root.iterdir(), self.root / 'skager-beta2-setup.exe']
+        with patch.object(Path, 'iterdir', return_value=iter(entries)):
+            with self.assertRaisesRegex(ValueError, 'Case-colliding'):
+                self.create()
         (self.root / 'folder').mkdir()
         with self.assertRaises(ValueError):
             self.create()
@@ -245,15 +257,35 @@ class ManifestTests(unittest.TestCase):
                 self.create()
             target[key] = previous
 
+    def test_windows_zip_separator_normalization_is_rejected(self):
+        entry = zipfile.ZipInfo()
+        entry.filename = entry.orig_filename = 'back\\path'
+        self.archives([(entry, 'extra')])
+        # Exercise the Windows stdlib behavior even on the Linux test runner.
+        with patch.object(zipfile.os, 'sep', '\\'):
+            with zipfile.ZipFile(self.root / 'SKAGER-Beta2-Portable-Recovery.zip') as archive:
+                normalized = archive.infolist()[-1]
+                self.assertEqual(normalized.orig_filename, 'back\\path')
+                self.assertEqual(normalized.filename, 'back/path')
+                with self.assertRaisesRegex(ValueError, 'Normalized archive path'):
+                    release.archive_records(archive)
+
     def test_malicious_archive_names_and_links(self):
         prefix = 'SKAGER-Beta2-Portable-Recovery/'
         for name in ('../outside', '/absolute', 'back\\path', prefix + 'app/opencpn.exe',
-                     prefix + 'app/OPENCPN.EXE', prefix + './extra'):
-            with warnings.catch_warnings():
-                warnings.simplefilter('ignore', UserWarning)
-                self.archives([(name, 'extra')])
-            with self.assertRaises(ValueError):
-                self.create()
+                     prefix + 'app/OPENCPN.EXE', prefix + './extra', prefix + 'nul\0hidden'):
+            with self.subTest(name=name):
+                # ZipInfo(name) normalizes Windows separators and truncates
+                # NULs. Assign afterwards to preserve the malicious wire name.
+                entry = zipfile.ZipInfo()
+                entry.filename = entry.orig_filename = name
+                with warnings.catch_warnings():
+                    warnings.simplefilter('ignore', UserWarning)
+                    self.archives([(entry, 'extra')])
+                with zipfile.ZipFile(self.root / 'SKAGER-Beta2-Portable-Recovery.zip') as archive:
+                    self.assertEqual(archive.infolist()[-1].orig_filename, name)
+                with self.assertRaises(ValueError):
+                    self.create()
         link = zipfile.ZipInfo(prefix + 'link')
         link.create_system = 3
         link.external_attr = 0o120777 << 16

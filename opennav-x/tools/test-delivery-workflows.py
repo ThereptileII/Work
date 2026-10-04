@@ -13,6 +13,18 @@ import release_manifest
 
 ROOT = Path(__file__).resolve().parents[1]
 TOOLS = ROOT / 'tools'
+
+
+def workflow_directory(root):
+    # Local checkouts keep workflows beside tools; published checkouts nest
+    # this project under opennav-x/ while workflows remain at repository root.
+    for directory in (root / '.github/workflows', root.parent / '.github/workflows'):
+        if directory.is_dir():
+            return directory
+    raise FileNotFoundError('Delivery workflow directory missing from project and repository roots')
+
+
+WORKFLOWS = workflow_directory(ROOT)
 COMMIT = '1' * 40
 HARNESS = '2' * 40
 
@@ -53,7 +65,7 @@ StrictLoader.add_implicit_resolver('tag:yaml.org,2002:bool', re.compile(r'^(?:tr
 
 
 def workflow(name):
-    return yaml.load((ROOT / '.github/workflows' / name).read_text(), Loader=StrictLoader)
+    return yaml.load((WORKFLOWS / name).read_text(), Loader=StrictLoader)
 
 
 def snapshot(directory):
@@ -264,6 +276,20 @@ class PackageGates(unittest.TestCase):
 
 
 class WorkflowPolicy(unittest.TestCase):
+    def test_workflow_directory_supports_local_and_published_layouts_and_refuses_missing(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            repository = Path(temporary)
+            project = repository / 'opennav-x'
+            project.mkdir()
+            with self.assertRaises(FileNotFoundError):
+                workflow_directory(project)
+            published = repository / '.github/workflows'
+            published.mkdir(parents=True)
+            self.assertEqual(workflow_directory(project), published)
+            local = project / '.github/workflows'
+            local.mkdir(parents=True)
+            self.assertEqual(workflow_directory(project), local)
+
     def test_strict_yaml_rejects_duplicate_security_keys(self):
         for sample in ('permissions:\n  contents: read\n  contents: write\n',
                        'on:\n  push:\n  push:\n', 'jobs:\n  promote:\n    if: false\n    if: true\n'):
@@ -272,7 +298,9 @@ class WorkflowPolicy(unittest.TestCase):
         parsed = yaml.load('on:\n  workflow_dispatch:\n    default: false\n', Loader=StrictLoader)
         self.assertIn('on', parsed)
         self.assertIs(parsed['on']['workflow_dispatch']['default'], False)
-        for path in (ROOT / '.github/workflows').glob('*.yml'):
+        paths = list(WORKFLOWS.glob('*.yml'))
+        self.assertTrue(paths, 'Delivery workflow directory contains no YAML workflows')
+        for path in paths:
             with self.subTest(workflow=path.name):
                 yaml.load(path.read_text(), Loader=StrictLoader)
 

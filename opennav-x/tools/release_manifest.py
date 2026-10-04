@@ -113,6 +113,7 @@ def archive_records(archive):
     names = set()
     for entry in archive.infolist():
         name = entry.filename
+        require(entry.orig_filename == name, 'Normalized archive path refused')
         path = PurePosixPath(name)
         require(name and not path.is_absolute() and '\\' not in name and ':' not in name and
                 '..' not in path.parts and path.as_posix() == name.rstrip('/') and

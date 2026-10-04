@@ -26,7 +26,12 @@ def digest(data):return hashlib.sha256(data).hexdigest()
 def zipped(entries):
     output=io.BytesIO()
     with zipfile.ZipFile(output,'w') as archive:
-        for name,data in entries.items():archive.writestr(name,data)
+        for name,data in entries.items():
+            # ZipInfo's constructor normalizes Windows backslashes. Assign
+            # afterwards so malformed-member tests retain their actual bytes.
+            entry=zipfile.ZipInfo()
+            entry.filename=name
+            archive.writestr(entry,data)
     return output.getvalue()
 
 class Promotion(unittest.TestCase):
@@ -98,6 +103,7 @@ class Promotion(unittest.TestCase):
     def test_windows_unsafe_archive_names_are_refused(self):
         for name in ('../outside','app\\evil','C:/escape','app/trailing.','/absolute','app/./ambiguous','app/NUL.txt'):
             with self.subTest(name=name),zipfile.ZipFile(io.BytesIO(zipped({name:b'bad'}))) as archive:
+                self.assertEqual(archive.infolist()[0].orig_filename,name)
                 with self.assertRaisesRegex(ValueError,'Unsafe'):ENV['archive_members'](archive)
     def test_case_collisions_and_symlinks_are_refused(self):
         with zipfile.ZipFile(io.BytesIO(zipped({'app/A':b'a','app/a':b'b'}))) as archive:
