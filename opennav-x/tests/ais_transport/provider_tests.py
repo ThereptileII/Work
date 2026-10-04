@@ -48,7 +48,7 @@ def subscription(stream, inflater):
     return data['BoundingBoxes']
 
 
-def run_case(client, scenario, ipv6=False):
+def run_case(client, scenario, ipv6=False, timeout=25):
     with tempfile.TemporaryDirectory(prefix='xnav-provider-') as directory:
         path=Path(directory);cert,key=path/'cert.pem',path/'key.pem'
         subprocess.run(['openssl','req','-x509','-newkey','rsa:2048','-nodes','-days','1',
@@ -58,12 +58,14 @@ def run_case(client, scenario, ipv6=False):
         server=socket.socket(socket.AF_INET6 if ipv6 else socket.AF_INET);server.bind(('::1' if ipv6 else '127.0.0.1',0));server.listen(2);server.settimeout(15)
         port=server.getsockname()[1];errors=[];observations=[];endpoints=[]
         delayed_open=scenario.startswith('open-')
+        delayed_send=scenario=='send-disable-enable'
+        discarded_connection=delayed_open or delayed_send
         discarded=[]
         def serve():
             try:
                 previous=None;disconnected=None
-                for connection_index in range(3 if delayed_open else 2):
-                    attempt=connection_index-int(delayed_open)
+                for connection_index in range(3 if discarded_connection else 2):
+                    attempt=connection_index-int(discarded_connection)
                     conn,_=server.accept()
                     endpoints.append((conn.getpeername(), conn.getsockname()))
                     if disconnected is not None:
@@ -81,8 +83,12 @@ def run_case(client, scenario, ipv6=False):
                             accept=base64.b64encode(hashlib.sha1(wskey+b'258EAFA5-E914-47DA-95CA-C5AB0DC85B11').digest())
                             stream.sendall(b'HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: '+accept+b'\r\nSec-WebSocket-Extensions: permessage-deflate\r\n\r\n')
                             if attempt < 0:
-                                # A genuine 101/TLS connection is paused at the client's
-                                # Open callback. It must close without an AIS subscription.
+                                if delayed_send:
+                                    # The first complete subscription is in flight
+                                    # while the application disables and reenables.
+                                    subscription(stream,zlib.decompressobj(wbits=-15))
+                                # Open-gated connections must send no subscription;
+                                # send-gated connections may send only the one above.
                                 while True:
                                     head=read(stream,2);length=head[1]&127
                                     assert length < 126, 'Unexpected discarded-connection payload'
@@ -93,7 +99,8 @@ def run_case(client, scenario, ipv6=False):
                                     if opcode==8:
                                         stream.sendall(frame(struct.pack('!H',1000),opcode=8))
                                         break
-                                discarded.append('successful upgrade, no subscription')
+                                discarded.append('one in-flight subscription' if delayed_send else
+                                                 'successful upgrade, no subscription')
                                 continue
                             opened=time.monotonic();inflater=zlib.decompressobj(wbits=-15)
                             area=subscription(stream,inflater)
@@ -107,6 +114,7 @@ def run_case(client, scenario, ipv6=False):
                             if not attempt:
                                 previous=subscription(stream,inflater)
                                 assert previous!=area,'Viewport change was not sent'
+                                assert previous==[[[39.85,9.85],[41.15,11.15]]], 'Wrong replacement viewport'
                                 assert time.monotonic()-opened>=4.8, 'Viewport replacement storm'
                                 stream.sendall(frame(b'{"MessageType":"SubscriptionConfirmation","Message":{"CompressionEnabled":true}}'))
                                 stream.sendall(frame(struct.pack('!H',1000),opcode=8))
@@ -117,13 +125,13 @@ def run_case(client, scenario, ipv6=False):
             except Exception as error:errors.append(type(error).__name__+': '+str(error))
             finally:server.close()
         worker=threading.Thread(target=serve);worker.start()
-        run=subprocess.run([str(client.resolve()),f'wss://localhost:{port}/',str(cert),scenario],capture_output=True,text=True,timeout=25)
+        run=subprocess.run([str(client.resolve()),f'wss://localhost:{port}/',str(cert),scenario],capture_output=True,text=True,timeout=timeout)
         worker.join(15)
         assert not worker.is_alive() and not errors and run.returncode==0, f'{run.returncode} {run.stdout} {run.stderr} {errors}'
         assert len(observations)==2
         actual=[list(map(int,line.split()[1:])) for line in run.stdout.splitlines() if line.startswith('OBS ')]
-        assert len(discarded)==int(delayed_open)
-        expected_endpoints=endpoints[1:] if delayed_open else endpoints
+        assert len(discarded)==int(discarded_connection)
+        expected_endpoints=endpoints[1:] if discarded_connection else endpoints
         assert len(actual)==len(expected_endpoints)==2, 'Missing/extra provider connection observations'
         for values,(local,remote) in zip(actual,expected_endpoints):
             _,family,local_port,remote_port,local_scope,remote_scope,*addresses=values
@@ -139,9 +147,15 @@ def run_case(client, scenario, ipv6=False):
         print('PASS server: complete prompt subscriptions, compression, 5s pan cadence, bounded reconnect, key never logged')
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('--client',type=Path,required=True);args=p.parse_args()
-    for scenario in ('normal', 'disable-enable', 'credential-change', 'open-disable-enable', 'open-credential-change'):
-        run_case(args.client, scenario)
-    run_case(args.client, 'normal', ipv6=True)
+    scenarios=('normal', 'disable-enable', 'credential-change', 'open-disable-enable',
+               'open-credential-change', 'send-viewport', 'send-disable-enable')
+    p=argparse.ArgumentParser();p.add_argument('--client',type=Path,required=True)
+    p.add_argument('--scenario',choices=scenarios,help='Run one IPv4 scenario only')
+    p.add_argument('--timeout',type=float,default=25,help='Per-client deadline in seconds (default: 25)')
+    args=p.parse_args()
+    if args.timeout<=0:p.error('--timeout must be positive')
+    for scenario in (args.scenario,) if args.scenario else scenarios:
+        run_case(args.client, scenario, timeout=args.timeout)
+    if not args.scenario:run_case(args.client, 'normal', ipv6=True, timeout=args.timeout)
 
 if __name__=='__main__':main()

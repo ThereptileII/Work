@@ -1,5 +1,25 @@
 # SKAGER status — 2026-10-04
 
+## Online AIS freeze: first narrow repair — SCRUM-301
+
+The provider no longer holds its UI/state lock while sending a subscription.
+Pinned IX can synchronously call back after a write failure; the old lock scope
+could deadlock both the worker and the next UI read. Subscription reservation
+now precedes the unlocked send, preserving immediate confirmation, viewport
+changes and newer enable/disable intent.
+
+All **8 Linux provider TLS lifecycle scenarios pass**, including two new
+send-concurrency cases. The old provider fails the same reentrant-read test by
+the expected bounded timeout. Nine existing AIS runtime-gate helper tests pass.
+The focused native Windows workflow reuses the authenticated dependency SDK and
+builds only AIS test clients. Native results and integrated boat reproduction
+remain pending; this is not yet a confirmed resolution of the user's boat
+symptom. See [focused evidence](evidence/2026-10-04-ais-freeze.md).
+
+This increment does not request a full application build, deployment, design
+review or Production promotion. The installed boat candidate is unchanged.
+Missing AIS targets/radius and list scrolling remain separate Jira work.
+
 ## Further delivery streamlining — SCRUM-225 / 292 / 293
 
 Implementation now selects CI from actual changed inputs, retains compiled

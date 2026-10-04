@@ -187,16 +187,24 @@ private:
           auto wire = AisStreamSubscription(key.View(), area);
           if (!wire)
             session_.CredentialMissing(now);
-          else {
-            // The small complete subscription is sent as one message. Keeping
-            // the state lock here makes viewport selection and Sent coherent.
+          else if (session_.SubscriptionSent(now)) {
+            // Reserve this exact area before releasing the state lock: a pan
+            // during send must remain pending, and an immediate confirmation
+            // must see the subscription already in flight. This is not a
+            // connection confirmation; only the service's reply can provide it.
+            const auto sent_generation = generation_;
+            lock.unlock();
+            // IX can synchronously deliver Close from a failed send. It also
+            // takes transport locks shared with its callbacks, so never hold
+            // the provider/UI state lock across this call.
             const auto sent = socket->sendText(*wire);
             Erase(*wire);
-            if (sent.success && !sent.compressionError)
-              session_.SubscriptionSent(vessel::Clock::now());
-            else
+            lock.lock();
+            if (!stop_ && sent_generation == generation_ &&
+                (!sent.success || sent.compressionError))
               session_.Disconnected(vessel::Clock::now(), Entropy());
-          }
+          } else
+            Erase(*wire);
         }
       }
       changed_.wait_for(lock, std::chrono::milliseconds(100),

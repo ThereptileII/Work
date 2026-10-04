@@ -4,6 +4,27 @@ AISStream is supplemental traffic information; OpenCPN onboard AIS remains
 the navigation authority. Provider snapshots own their values and retain
 provenance. No socket, decoder or credential object crosses into Vessel Data.
 
+## Subscription-send concurrency — SCRUM-301
+
+The provider must never hold its state mutex across `IXWebSocket::sendText`.
+The pinned transport can synchronously deliver a Close callback after a socket
+write failure; that callback needs the same provider mutex. Holding it across
+send can deadlock the worker and the next UI read.
+
+Reserve the exact pending subscription under the state lock, then release it
+before sending. Reservation means unconfirmed/Subscribing, not Connected.
+Only the service confirmation establishes Connected. This ordering also allows
+an immediate reply and preserves a chart pan that arrives while the earlier
+subscription is being sent. After sending, apply failure only if the original
+connection generation is still current and shutdown has not begun. A later
+disable, re-enable or credential change takes precedence.
+
+Offline provider tests exercise reentrant reading, confirmation/report receipt,
+viewport replacement and disable/re-enable during a held real IX send. The
+pre-fix provider must fail the bounded reentrant-read test. This establishes a
+reachable deadlock and its repair; it does not establish the exact trigger of
+the user's boat freeze. Native product and boat acceptance remain separate.
+
 The onboard target summary uses the retained upstream report observation epoch,
 matching the copied position fields. The enclosing container's copy timestamp
 is not report freshness. The integrated actual-model scenario verifies 64

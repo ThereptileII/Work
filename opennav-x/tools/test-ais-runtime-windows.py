@@ -142,7 +142,7 @@ def main():
               'runId': os.environ.get('GITHUB_RUN_ID'), 'runAttempt': os.environ.get('GITHUB_RUN_ATTEMPT'),
               'commit': os.environ.get('GITHUB_SHA'), 'productAcceptance': False,
               'wfpAcceptance': False, 'boatAcceptance': False, 'dependencyBuilds': False,
-              'requestedChecks': {'providerTlsLifecycles': 6, 'transportCases': 18, 'sessionChecks': 178}}
+              'requestedChecks': {'providerTlsLifecycles': 8, 'transportCases': 18, 'sessionChecks': 178}}
     def save():
         (evidence / 'report.json').write_text(json.dumps(report, indent=2) + '\n')
     def inventory(directory):
