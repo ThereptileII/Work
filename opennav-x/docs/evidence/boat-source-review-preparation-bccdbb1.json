@@ -1,0 +1,48 @@
+{
+  "schema": "SKAGER.BoatReviewPreparation.1",
+  "candidateCommit": "bccdbb11cef827d3b63731fe1e874bc72bf47d2d",
+  "frozenLocalCommit": "1a6733a1cbcc817aa0f13fa5acc41aac62a54146",
+  "currentDllObservationUtc": "2026-10-04T06:04:05.3469558Z",
+  "historicalReview": {
+    "preparedRecordSha256": "d7fa4061e1c7d01e5e1cd410cf1f52e1d20b8c5815d839a114799247da666d88",
+    "planSha256": "446f87d955e7e44efdf9deaa39cb4ed5b9a3b62b69a17bd7af716c767e39372b",
+    "noteCopiesVerified": 14,
+    "uniqueNoteHashes": 13,
+    "retainedDecisions": 9,
+    "quarantineDecisions": 5,
+    "quarantinePluginKinds": 4,
+    "isFreshLaunchAttestation": false
+  },
+  "currentFiles": {
+    "unchangedStockDlls": 5,
+    "unchangedManagedDlls": 4,
+    "currentInstalledGeneration": "Beta 1; separate from future candidate",
+    "fullDependencyTreesRehashed": false
+  },
+  "frozenSourceReuse": {
+    "upstreamCommit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+    "builtinSourceFilesEqualHistorical": 4,
+    "dashboardBridgeFilesEqualHistorical": 3,
+    "privateVendorCommit": "c98bf5f0654a6aee52cd9a6b9fabc0d1cf8047e8",
+    "ownedLoaderBindingFilesEqualPriorReview": 10,
+    "adapterPreparationInputsIndependentlyHashChecked": 46,
+    "addedEquipmentOutputIdentified": false,
+    "qualification": "Source-level scope only. No added marine transmit/helper start identified in reviewed changes; existing closed vendor helper, licensing and dongle behavior remains."
+  },
+  "pending": [
+    "Exact candidate package and rebuilt DLL identities/native runtime",
+    "Fresh complete post-install plugin/dependency/helper inventory and source binding",
+    "Journaled input-only commissioning and newly bound launch/shutdown audits",
+    "Actual boat chart/renderer, UI, mode and data acceptance"
+  ],
+  "remoteChanges": false,
+  "applicationLaunches": 0,
+  "testsOrBuildsStarted": 0,
+  "privateEvidenceSha256": {
+    "boat-review-evidence-direct.json": "5f93fabaed09d91b3dced74b863c8fbb71dd00bcacb5b0fb7dafb64aec7c83c4",
+    "boat-prior-plan-direct.json": "37c9947975a4ebb7d60fe865f6f79ee132f9ca858a4c337471a272041c1f0873",
+    "boat-current-dlls-20261004.json": "d6bb58f8003f33a98e329e7a48320a9278848684270759365288f5e8a5184823",
+    "frozen-plugin-source-equality-1a6733a.json": "ca83a560b93f40bd803e1f7a112da223bb0a1471718db106f0488dcd16c3328d",
+    "boat-adapter-source-reuse-bccdbb1.json": "5569f5c18ba048f6d6ac2ab466ad0565d628007a3420e06ce9d26e48a5d82a99"
+  }
+}

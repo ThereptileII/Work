@@ -1,0 +1,704 @@
+{
+  "candidate": "bccdbb11cef827d3b63731fe1e874bc72bf47d2d",
+  "run": 37177738716,
+  "attempt": 1,
+  "frozenLocal": "1a6733a1cbcc817aa0f13fa5acc41aac62a54146",
+  "archive": {
+    "artifactId": 11295011188,
+    "bytes": 19746445,
+    "sha256": "2ffb8c778e425493ea005e609d4275211c7a3fba7dbdb41e624b1280a7e43c17",
+    "zipEntries": 4251,
+    "crc": "all passed",
+    "safePaths": "all passed; unique relative paths, no parent traversal, drive paths, backslashes or symlinks"
+  },
+  "xml": {
+    "xnav-linux-tests.xml": {
+      "uniqueCases": 147,
+      "executions": 147,
+      "passed": 147,
+      "failed": 0,
+      "errors": 0,
+      "disabled": 0,
+      "skipped": 0,
+      "reportedSeconds": "14",
+      "timestamp": "2026-10-04T04:58:29",
+      "sha256": "2c20a97819834b47ecefa7bd2c4b6a8319b8f6ecc450ad1f4c30ee08897fefeb"
+    },
+    "production-linux-tests.xml": {
+      "uniqueCases": 147,
+      "executions": 147,
+      "passed": 147,
+      "failed": 0,
+      "errors": 0,
+      "disabled": 0,
+      "skipped": 0,
+      "reportedSeconds": "14",
+      "timestamp": "2026-10-04T05:24:23",
+      "sha256": "83550a4f3985583f043bd8ddc3a4dfcb6b4c3c3f8f22df8c30d7df722ae10fd6"
+    }
+  },
+  "xmlUniqueNamesAcrossBothBuilds": 147,
+  "xmlTotalBuildExecutions": 294,
+  "endurance": {
+    "status": "skipped",
+    "reason": "User directed on 2026-10-04: deliver a stable SKAGER Windows boat-test candidate as fast as possible; skip endurance testing.",
+    "commit": "bccdbb11cef827d3b63731fe1e874bc72bf47d2d",
+    "runId": "37177738716",
+    "runAttempt": "1",
+    "release_duration": false
+  },
+  "productionLoader": {
+    "status": "passed",
+    "checks": 5,
+    "loader": {
+      "upstream": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+      "commissioning_restart_protocol": 0,
+      "version": "0.4.0-beta2",
+      "commit": "bccdbb11cef827d3b63731fe1e874bc72bf47d2d",
+      "compiler": "GNU 13.3.0 / 8 byte pointers",
+      "plugins_loaded": false,
+      "test_fixtures": false,
+      "resources": {
+        "gshhs/poly-c-1.dat": true,
+        "s57data/s57objectclasses.csv": true,
+        "uidata/styles.xml": true,
+        "s57data/chartsymbols.xml": true
+      },
+      "normal_config_directory": "/etc",
+      "passed": true,
+      "xnav_hardware_output_policy": "status-only",
+      "build_purpose": "INSTALLED PRODUCT",
+      "profile_initialized": false,
+      "contract": "OpenNavX.LoaderSelfTest.1"
+    },
+    "app_sha256": "301d7b6d64fe561b4da14a2a5a7df9bec9fca5a9f0faca1e158804713b16382f"
+  },
+  "productPilot": {
+    "checks": [
+      "Control OFF disables AUTO; physical click creates no request or output",
+      "Saved manual permission cannot enable product output",
+      "Every displayed command and enable action disabled despite fresh compatible feedback",
+      "Zero wire output including identity discovery across loss/reconnect",
+      "Passive observed pilot status survives reconnection"
+    ],
+    "result": "passed; screenshot review required",
+    "receivedBytes": 0,
+    "sent": [],
+    "wireOutput": [],
+    "hardware": "NONE; loopback simulated translator"
+  },
+  "fixtureExecutable": {
+    "reportedSha256": "71ecf21f93b721d1523e868ce636c96513d67c65c87abcab7f9375be9c40c033",
+    "buildCommit": "bccdbb11cef827d3b63731fe1e874bc72bf47d2d",
+    "source": "mode-cycle report; preview reports same hash",
+    "independentlyRehashedExecutable": false
+  },
+  "productionExecutableIndependentlyRehashed": false,
+  "chartDiagnosticsIdentity": {
+    "build_commit": "bccdbb11cef827d3b63731fe1e874bc72bf47d2d",
+    "test_fixtures": true,
+    "build_purpose": "DEVELOPER TEST BUILD",
+    "xnav_hardware_output_policy": "test-loopback-only",
+    "build_info": [
+      "SKAGER Beta 2 / 0.4.0-beta2 / Interface: SKAGER",
+      "OpenCPN 5.12.4 / 37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+      "Build: bccdbb11cef827d3b63731fe1e874bc72bf47d2d",
+      "Build purpose: DEVELOPER TEST BUILD",
+      "SKAGER equipment output: test-loopback-only",
+      "Compiler: GNU 13.3.0 / 8 byte pointers",
+      "Built: 2026-10-04T04:44:32Z / CI: 37177738716",
+      "OS: Linux 6.17.0-1022-azure x86_64 / DPI: 96",
+      "Profile: /tmp/opennav charts e08z2yp4/profile"
+    ]
+  },
+  "reports": {
+    "boat-input-results.json": {
+      "status": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+      "authority": "Linux development",
+      "checks": 5,
+      "screenshots": 3,
+      "transportErrors": {
+        "transport_errors": []
+      }
+    },
+    "charts-results.json": {
+      "status": "passed; native screenshot review and physical GPU gate remain separate",
+      "authority": "Linux development",
+      "checks": null,
+      "screenshots": 20,
+      "transportErrors": {}
+    },
+    "instruments-input-results.json": {
+      "status": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+      "authority": "Linux development",
+      "checks": 4,
+      "screenshots": 4,
+      "transportErrors": {
+        "transport_errors": []
+      }
+    },
+    "linux-mode-cycle-results.json": {
+      "status": "interaction and persistence passed; screenshot review required",
+      "authority": "Linux development only",
+      "checks": null,
+      "screenshots": 0,
+      "transportErrors": {}
+    },
+    "n2k-input-results.json": {
+      "status": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+      "authority": "Linux development",
+      "checks": 7,
+      "screenshots": 3,
+      "transportErrors": {
+        "transport_errors": []
+      }
+    },
+    "navigation-input-results.json": {
+      "status": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+      "authority": "Linux development",
+      "checks": null,
+      "screenshots": 6,
+      "transportErrors": {
+        "transport_errors": []
+      }
+    },
+    "objects-input-results.json": {
+      "status": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+      "authority": "Linux development",
+      "checks": 3,
+      "screenshots": 26,
+      "transportErrors": {
+        "transport_errors": []
+      }
+    },
+    "pilot-results.json": {
+      "status": "passed; screenshot review required",
+      "authority": "Linux development",
+      "checks": 6,
+      "screenshots": 6,
+      "transportErrors": {
+        "transport_failures": []
+      }
+    },
+    "preview-linux-results.json": {
+      "status": "passed; screenshot review required",
+      "authority": "Linux development",
+      "checks": 8,
+      "screenshots": 44,
+      "transportErrors": {}
+    },
+    "recording-results.json": {
+      "status": "passed; screenshot review required",
+      "authority": "Linux development",
+      "checks": 4,
+      "screenshots": 8,
+      "transportErrors": {}
+    },
+    "recovery-linux-results.json": {
+      "status": "passed; native screenshot review required",
+      "authority": "Linux development",
+      "checks": 4,
+      "screenshots": 3,
+      "transportErrors": {}
+    },
+    "route-input-results.json": {
+      "status": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+      "authority": "Linux development",
+      "checks": null,
+      "screenshots": 2,
+      "transportErrors": {
+        "transport_errors": []
+      }
+    },
+    "route-progress-results.json": {
+      "status": "passed",
+      "authority": null,
+      "checks": 26,
+      "screenshots": 0,
+      "transportErrors": {}
+    },
+    "signalk-results.json": {
+      "status": "passed",
+      "authority": "Linux development",
+      "checks": 5,
+      "screenshots": 0,
+      "transportErrors": {
+        "transport_errors": []
+      }
+    },
+    "user-flows-results.json": {
+      "status": "passed; native screenshots require review",
+      "authority": "Linux development",
+      "checks": 8,
+      "screenshots": 9,
+      "transportErrors": {
+        "transport_errors": []
+      }
+    },
+    "installer-loader-selftest.json": {
+      "status": "passed",
+      "authority": null,
+      "checks": 5,
+      "screenshots": 0,
+      "transportErrors": {}
+    },
+    "soak/results.json": {
+      "status": "skipped",
+      "authority": null,
+      "checks": null,
+      "screenshots": 0,
+      "transportErrors": {}
+    },
+    "pilot-status-only/pilot-results.json": {
+      "status": "passed; screenshot review required",
+      "authority": "Linux development",
+      "checks": 5,
+      "screenshots": 2,
+      "transportErrors": {
+        "transport_failures": []
+      }
+    },
+    "installed-resource-runtime/result.json": {
+      "status": "passed",
+      "authority": "Linux development; actual application/harmonic loader, synthetic stock-locator identity",
+      "checks": null,
+      "screenshots": 0,
+      "transportErrors": {}
+    },
+    "frame-recapture/result.json": {
+      "status": null,
+      "authority": "Offline Linux Xvfb native GTK surfaces; not full application, Windows or boat acceptance",
+      "checks": null,
+      "screenshots": 0,
+      "transportErrors": {}
+    },
+    "downloader-trust-linux.json": {
+      "status": "passed",
+      "authority": null,
+      "checks": null,
+      "screenshots": 0,
+      "transportErrors": {}
+    }
+  },
+  "chartPhases": [
+    {
+      "requestedRendering": "software",
+      "startupToEncSeconds": 3.639,
+      "performance": {
+        "idle_live_input_seconds": 10.000403580000011,
+        "cpu_percent_one_core": 3.0998748952489725,
+        "resident_bytes": 267816960,
+        "shell_update": {
+          "timer_period_ms": 250,
+          "mean_ms": 6.121639333,
+          "scope": "Shell update callback including diagnostics; excludes asynchronous chart painting",
+          "maximum_ms": 122.58809,
+          "ticks": "51",
+          "last_ms": 1.321736
+        },
+        "scope": "CI desktop / two loaded NOAA ENCs / 3 plugins / 3.3 Hz RMC; not target navigation PC"
+      },
+      "chartSwitch": {
+        "synthetic_position_jump": true,
+        "adjacent": {
+          "canvas_pixels": {
+            "height": 566,
+            "width": 1014
+          },
+          "latitude": 47.59,
+          "database_entries": 2,
+          "follow": true,
+          "quilt_members": [
+            {
+              "type": 5,
+              "native_scale": 12000,
+              "file": "US5SEAFK.000",
+              "index": 1
+            }
+          ],
+          "opengl_enabled": false,
+          "quilt_reference": 1,
+          "scale_bar": {
+            "height": 29,
+            "y": 505,
+            "width": 25,
+            "x": 191
+          },
+          "depth_unit_type": 1,
+          "quilt": true,
+          "scale_ppm": 0.1500150114,
+          "longitude": -122.447,
+          "depth_units_visible": true
+        },
+        "returned": {
+          "canvas_pixels": {
+            "height": 566,
+            "width": 1014
+          },
+          "latitude": 47.6000188,
+          "database_entries": 2,
+          "follow": true,
+          "quilt_members": [
+            {
+              "type": 5,
+              "native_scale": 12000,
+              "file": "US5SEAFL.000",
+              "index": 0
+            }
+          ],
+          "opengl_enabled": false,
+          "quilt_reference": 0,
+          "scale_bar": {
+            "height": 29,
+            "y": 505,
+            "width": 25,
+            "x": 191
+          },
+          "depth_unit_type": 1,
+          "quilt": true,
+          "scale_ppm": 0.1500150114,
+          "longitude": -122.360017,
+          "depth_units_visible": true
+        }
+      },
+      "captures": [
+        {
+          "screenshot": "chart-software-01-loaded-linux.png",
+          "interior_colors": 3025,
+          "non_background_fraction": 0.1725952380952381
+        },
+        {
+          "screenshot": "chart-software-02-zoom-linux.png",
+          "interior_colors": 722,
+          "non_background_fraction": 0.03592857142857143
+        },
+        {
+          "screenshot": "chart-software-03-follow-linux.png",
+          "interior_colors": 2975,
+          "non_background_fraction": 0.17273809523809525
+        },
+        {
+          "screenshot": "chart-software-03a-adjacent-cell-linux.png",
+          "interior_colors": 1279,
+          "non_background_fraction": 0.050666666666666665
+        },
+        {
+          "screenshot": "chart-software-03b-returned-cell-linux.png",
+          "interior_colors": 2989,
+          "non_background_fraction": 0.17213095238095238
+        },
+        {
+          "screenshot": "chart-software-04-restored-linux.png",
+          "interior_colors": 3000,
+          "non_background_fraction": 0.17270238095238094
+        },
+        {
+          "screenshot": "chart-software-05-legacy-linux.png",
+          "interior_colors": 3286,
+          "non_background_fraction": 0.20107142857142857
+        },
+        {
+          "screenshot": "chart-software-06-returned-linux.png",
+          "interior_colors": 2975,
+          "non_background_fraction": 0.17273809523809525
+        }
+      ]
+    },
+    {
+      "requestedRendering": "opengl",
+      "startupToEncSeconds": 6.714,
+      "performance": {
+        "idle_live_input_seconds": 10.00033102899988,
+        "cpu_percent_one_core": 3.4998841436852226,
+        "resident_bytes": 376250368,
+        "shell_update": {
+          "timer_period_ms": 250,
+          "mean_ms": 4.18177158,
+          "scope": "Shell update callback including diagnostics; excludes asynchronous chart painting",
+          "maximum_ms": 39.380899,
+          "ticks": "50",
+          "last_ms": 1.060138
+        },
+        "scope": "CI desktop / two loaded NOAA ENCs / 3 plugins / 3.3 Hz RMC; not target navigation PC"
+      },
+      "chartSwitch": {
+        "synthetic_position_jump": true,
+        "adjacent": {
+          "canvas_pixels": {
+            "height": 566,
+            "width": 1014
+          },
+          "latitude": 47.59,
+          "database_entries": 2,
+          "follow": true,
+          "quilt_members": [
+            {
+              "type": 5,
+              "native_scale": 12000,
+              "file": "US5SEAFK.000",
+              "index": 1
+            }
+          ],
+          "opengl_enabled": true,
+          "quilt_reference": 1,
+          "scale_bar": {
+            "height": 29,
+            "y": 505,
+            "width": 25,
+            "x": 191
+          },
+          "depth_unit_type": 1,
+          "quilt": true,
+          "scale_ppm": 0.150030002,
+          "longitude": -122.447,
+          "depth_units_visible": true
+        },
+        "returned": {
+          "canvas_pixels": {
+            "height": 566,
+            "width": 1014
+          },
+          "latitude": 47.6,
+          "database_entries": 2,
+          "follow": true,
+          "quilt_members": [
+            {
+              "type": 5,
+              "native_scale": 12000,
+              "file": "US5SEAFL.000",
+              "index": 0
+            }
+          ],
+          "opengl_enabled": true,
+          "quilt_reference": 0,
+          "scale_bar": {
+            "height": 29,
+            "y": 505,
+            "width": 25,
+            "x": 191
+          },
+          "depth_unit_type": 1,
+          "quilt": true,
+          "scale_ppm": 0.150030002,
+          "longitude": -122.36,
+          "depth_units_visible": true
+        }
+      },
+      "captures": [
+        {
+          "screenshot": "chart-opengl-01-loaded-linux.png",
+          "interior_colors": 1431,
+          "non_background_fraction": 0.15046428571428572
+        },
+        {
+          "screenshot": "chart-opengl-02-zoom-linux.png",
+          "interior_colors": 336,
+          "non_background_fraction": 0.02917857142857143
+        },
+        {
+          "screenshot": "chart-opengl-03-follow-linux.png",
+          "interior_colors": 1433,
+          "non_background_fraction": 0.15041666666666667
+        },
+        {
+          "screenshot": "chart-opengl-03a-adjacent-cell-linux.png",
+          "interior_colors": 449,
+          "non_background_fraction": 0.03654761904761905
+        },
+        {
+          "screenshot": "chart-opengl-03b-returned-cell-linux.png",
+          "interior_colors": 1433,
+          "non_background_fraction": 0.15041666666666667
+        },
+        {
+          "screenshot": "chart-opengl-04-restored-linux.png",
+          "interior_colors": 1433,
+          "non_background_fraction": 0.15041666666666667
+        },
+        {
+          "screenshot": "chart-opengl-05-legacy-linux.png",
+          "interior_colors": 1289,
+          "non_background_fraction": 0.1676904761904762
+        },
+        {
+          "screenshot": "chart-opengl-06-returned-linux.png",
+          "interior_colors": 1433,
+          "non_background_fraction": 0.15041666666666667
+        }
+      ]
+    }
+  ],
+  "rendererLines": [
+    "05:09:56.581 MESSAGE glChartCanvas.cpp:1089 OpenGL-> Renderer String: llvmpipe (LLVM 20.1.2, 256 bits)",
+    "05:10:24.047 MESSAGE glChartCanvas.cpp:1089 OpenGL-> Renderer String: llvmpipe (LLVM 20.1.2, 256 bits)",
+    "05:10:29.439 MESSAGE glChartCanvas.cpp:1089 OpenGL-> Renderer String: llvmpipe (LLVM 20.1.2, 256 bits)"
+  ],
+  "standaloneTrustAndSurface": {
+    "downloaderCases": 12,
+    "wxcurlCases": 13,
+    "peerBufferCTestCases": 1,
+    "floatingSurfaceChecks": 17,
+    "separateFrom147CaseSuites": true,
+    "frameRecaptureChecks": 34,
+    "frameRecaptureExitCode": 0
+  },
+  "sourceSha256": {
+    ".github/workflows/opennav-baseline.yml": "f52c3e7a7a350cd09a1cc67b1b47ae36bbcd6b7be59c14d864b515d91d35898e",
+    "tools/build-integration-linux.sh": "ad8de8d20e8b0f3fdfe83255fce08f81880c670e0a76dbd41caae3766e7c39d4",
+    "tools/build-production-linux.sh": "09db96685e0b7892055dfde32c99ff9a5ead41dcaca23d6c3a3325a08b209f0a",
+    "tools/smoke-charts.py": "d11a0e764d933397e08d867b97266b3899ded7d375337e2249afcc4ba87dc5d2",
+    "tools/smoke-preview.py": "2cd07e98e4c4e99effbe42c8656ea1aaa04c4f76ae8eaa3d10bbba55747e6af3",
+    "tools/smoke-modes-linux.py": "7fd70ba5f3318775abe706be57f70a36962640e29a6a59f53b3b0b06df1e3070",
+    "tools/smoke-installer-selftest.py": "cba2393689b59fac1cc2281eb8989b2abbe27f4801aa2db1dff2872e3c8bf8ee",
+    "tools/smoke-pilot.py": "a7bf46914c0f0e1031d24fa5a6115a588d1f7ddfc263a86989b2ed4515b42c5f",
+    "release/qualification.json": "2ccd0a025b1cf3ad6f2cf1f2aeeaf55becae28d58fa4973a1d352e6838741c90"
+  },
+  "visuallyReviewedScreenshots": {
+    "chart-software-01-loaded-linux.png": {
+      "bytes": 247324,
+      "sha256": "e48018394c3cf72e1debd8f55cd20b91eb945833c283d043d0fe359cbd35ff51",
+      "observation": "1280x800; coastlines, distinct land/water and chart details remain visible; no Windows/boat visual acceptance"
+    },
+    "chart-software-06-returned-linux.png": {
+      "bytes": 247448,
+      "sha256": "1b83b46eee1787c3da2ff7c8cd6a80f1f554ed42d456d92cf51cbf42d3c51b98",
+      "observation": "1280x800; coastlines, distinct land/water and chart details remain visible; no Windows/boat visual acceptance"
+    },
+    "chart-opengl-01-loaded-linux.png": {
+      "bytes": 203416,
+      "sha256": "22e446ce4e347007d3afedaffa8ddb3e587f54ff43369f02a45eebfe0dd28a9e",
+      "observation": "1280x800; coastlines, distinct land/water and chart details remain visible; no Windows/boat visual acceptance"
+    },
+    "chart-opengl-06-returned-linux.png": {
+      "bytes": 203763,
+      "sha256": "c3a83d69b61d5d8373b76eb6a253fb4f34d21a5a88c5f32cdfb150019f892e3d",
+      "observation": "1280x800; coastlines, distinct land/water and chart details remain visible; no Windows/boat visual acceptance"
+    }
+  },
+  "retainedOriginalMembers": {
+    "boat-input-results.json": {
+      "bytes": 1367,
+      "sha256": "ae4f4059bd1f597ee11d2e3b191cf4c934f1970278e1ee46722a7c3fd4a0fb5c"
+    },
+    "charts-results.json": {
+      "bytes": 63501,
+      "sha256": "a678ba88bd7b889072f9c72868189db161c1d318c135d2dffe02458419a52725"
+    },
+    "instruments-input-results.json": {
+      "bytes": 1253,
+      "sha256": "39b3af30eed50dcb345460f77ec79c9b16be5d907320589b96946adea34c928e"
+    },
+    "linux-mode-cycle-results.json": {
+      "bytes": 4293,
+      "sha256": "650f6e5fcfd5dadbb16437e2f91ec2260e39cecb4c36d48f8bce2a0e03997163"
+    },
+    "n2k-input-results.json": {
+      "bytes": 1388,
+      "sha256": "5bebcb3d322461d6cb59f7564979048df553d6f51ffcbe7cd74972b8ad24d5aa"
+    },
+    "navigation-input-results.json": {
+      "bytes": 5578,
+      "sha256": "7f581bfa171e1002dbd62cd56127c84286beb57c1096c77145176a848c541bbf"
+    },
+    "objects-input-results.json": {
+      "bytes": 26180,
+      "sha256": "a2255a1848b5d951b3a310d6727c3feb5645111c77f0b6cbd04e18d0eb7194c8"
+    },
+    "pilot-results.json": {
+      "bytes": 3040,
+      "sha256": "91e5e1c463adf02d26a2a7c02909da2027d54cdba5ff79f4e05b127981697f47"
+    },
+    "preview-linux-results.json": {
+      "bytes": 44492,
+      "sha256": "535196ef7ef9d727b75a7d39e3a8fa863f5916a71376d056a3d198b1a3cdec73"
+    },
+    "recording-results.json": {
+      "bytes": 891,
+      "sha256": "0753c516c19478ded1574cea2a73dd532235d2ba5e862343c8d20e6074337079"
+    },
+    "recovery-linux-results.json": {
+      "bytes": 1635,
+      "sha256": "26d3ac6c6108e81ba24cfe577227376952f8cd9a5811f365cc1a02dc35a83e85"
+    },
+    "route-input-results.json": {
+      "bytes": 26254,
+      "sha256": "d89a576d9d092b37958cb247cda23ce2f098174d9a07a52fca73bc0b9d48c4cf"
+    },
+    "route-progress-results.json": {
+      "bytes": 20993,
+      "sha256": "061583f8b63838f5d1d8f76b1dc8730ed7e3ddb73cdcb08b623fc3edc0a836cb"
+    },
+    "signalk-results.json": {
+      "bytes": 671,
+      "sha256": "c43f0ac85cd27955156b7af3ddff3a96a439e5ac2980a1e1235ec39145b205d9"
+    },
+    "user-flows-results.json": {
+      "bytes": 30952,
+      "sha256": "ee8e320e942cb6efe9573115b98f71a28a2a0aa08bb98db9decbe367f74b0d12"
+    },
+    "installer-loader-selftest.json": {
+      "bytes": 842,
+      "sha256": "b001160213e18fad7800e2bb1a4fd56a39546cc63b6970839e9c384de68538b5"
+    },
+    "soak/results.json": {
+      "bytes": 299,
+      "sha256": "f059ebf04fcb5476fc421df33cebdf1f8a9c8eda91d44389ca001c320414beb0"
+    },
+    "pilot-status-only/pilot-results.json": {
+      "bytes": 900,
+      "sha256": "795a593b0b02456e0d8e900216c4f739f7a6fe0d468e9006bd89d29b3f0707e6"
+    },
+    "installed-resource-runtime/result.json": {
+      "bytes": 511,
+      "sha256": "35baa7cd789e0da42e1f6b41dcbc00727ea3288d888d7bcc4a445edff488c3a9"
+    },
+    "frame-recapture/result.json": {
+      "bytes": 2649,
+      "sha256": "c078efc06650a20f178cdc5a009eccff2fbe4ead3c49f3e3a35766ce3e006815"
+    },
+    "downloader-trust-linux.json": {
+      "bytes": 1438,
+      "sha256": "753f0837fc897271f78ab3e20414f9d9da1e7b7ac5f422ff3d5844a1fe9f7fd0"
+    },
+    "xnav-linux-tests.xml": {
+      "bytes": 126670,
+      "sha256": "2c20a97819834b47ecefa7bd2c4b6a8319b8f6ecc450ad1f4c30ee08897fefeb"
+    },
+    "production-linux-tests.xml": {
+      "bytes": 127530,
+      "sha256": "83550a4f3985583f043bd8ddc3a4dfcb6b4c3c3f8f22df8c30d7df722ae10fd6"
+    },
+    "xnav-linux-tests.log": {
+      "bytes": 27492,
+      "sha256": "857198f32035dd6d41d479365a22d9ac1d55900c70e8d1e05e48ed5d3b165ec6"
+    },
+    "production-linux-tests.log": {
+      "bytes": 27504,
+      "sha256": "c9543dd2446ca4f7db9b6c47ad29bf5058d79eb44c41afac9b61a16ee4946196"
+    },
+    "wxcurl-trust-linux.log": {
+      "bytes": 11625,
+      "sha256": "81a2da962a7c28daaa4591e4b3a2c4b7d26571d8e60133d8407a28c933a13970"
+    },
+    "peer-buffer-linux.log": {
+      "bytes": 1014,
+      "sha256": "6962f6ccd504a2400a7eec8276b78152fd6a153e5eeedb4844787b0f3e4b5e70"
+    },
+    "floating-surface-linux.log": {
+      "bytes": 404,
+      "sha256": "31cd296482d22c38ae28ca5dd4816743fe9b46adf0fac0d62c632d9ce04294ee"
+    }
+  },
+  "originalDecodedLog": {
+    "bytes": 973849,
+    "sha256": "95386eeab0dd91488ace09a2a7689ffd4e4e445e0fcbce1aa5dc9838b69198d5",
+    "completeThroughCleanup": true,
+    "uploadIdDigestBytesMatch": true
+  },
+  "selectedArchive": {
+    "bytes": 63638,
+    "sha256": "ef9d760c542188127b586b9519f52e7ccea4ada3f97cfadfa93fcaa5d2ba3288",
+    "members": 28,
+    "scope": "New documentary subset; unchanged original report/log/XML bytes only; no chart datasets, profiles or vessel files"
+  }
+}

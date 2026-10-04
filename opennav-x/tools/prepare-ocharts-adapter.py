@@ -37,6 +37,7 @@ INPUTS = (LOCK, RECIPE, 'cmake/ocharts-adapter/PreparedPath.cmake',
           'tools/test-downloader-trust-windows.ps1', 'tests/downloader_trust/CMakeLists.txt',
           'tests/downloader_trust/InputPaths.cmake', 'tests/downloader_trust/Targets.cmake',
           'tools/wxcurl-trust-probe.cpp', 'tools/downloader-trust-probe.cpp',
+          'tools/TrustProbeConsole.h',
           'tools/downloader-trust-server.py') + PATCHES + LOCAL
 
 

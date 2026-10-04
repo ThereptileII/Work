@@ -2,23 +2,27 @@
 
 ## Current qualification and review boundaries
 
-The current frozen candidate is local `0a52a6c` / published `17ab044`
-([CI](https://github.com/ThereptileII/Work/actions/runs/37164360050));
-[its complete source mapping](../evidence/skager-symbols-0a52-publication.json)
-independently verifies all 6,658 mapped entries. Linux and native Windows
-qualification remain pending; no eligible installer, accepted private renderer
-or boat visual result is claimed. The application inputs match the successful
-`98d2c45` Linux preflight. This candidate includes the combined supplied-symbol
-increments, thin ordinary all-round outline and compact unchanged-trigger
-warning described below, plus SCRUM-285's AIS traversal correction. Its
-[focused native parser proof](../evidence/scrum285-native-ais-project-closure/native-ab92dc7/README.md)
-passed before publication; this is not actual AIS/TLS runtime acceptance.
+The current frozen candidate is local `1a6733a` / published `bccdbb11`
+([CI run 37177738716](https://github.com/ThereptileII/Work/actions/runs/37177738716)).
+This documentation update does not claim completion of that run or an eligible
+installer. Native visual/private-renderer and boat acceptance remain pending.
+The `src/`, `resources/` and `patches/` trees are unchanged from frozen `0a52a6c`;
+the newer candidate retains the combined supplied-symbol increments, thin
+ordinary all-round outline and compact unchanged-trigger warning described
+below. It adds the [proven bounded native trust-harness correction](../evidence/scrum288-native-trust-import/README.md),
+which does not change application TLS assertions or chart paint. Earlier
+[17ab044 native results](../evidence/windows-17ab044/README.md) retain successful
+application tests, actual maintained-TLS AIS and fixture UI gates, but the job
+was cancelled at the trust import boundary and produced no eligible package.
+Those partial passes are not a completed result for the replacement candidate.
 The candidate also retains the 124-DIP
 SKAGER wordmark, prototype font stack, classified buoy/light artwork, neutral
 structural paint and compact ordinary sector fans. See the
-[explicit supplied-artwork coverage](reviews/scrum264265-current-artwork-coverage.md)
-for unmapped variants; catalogue availability does not mean every stock glyph
-has a redesigned counterpart.
+[historical supplied-artwork audit](reviews/scrum264265-current-artwork-coverage.md)
+with the [later integration review](reviews/scrum279-283-symbol-integration.md):
+its earlier unimplemented rock/wreck/marina/fishing/cable entries have been
+superseded, while unmapped variants remain. Catalogue availability does not mean
+every stock glyph has a redesigned counterpart.
 
 [Actual combined326 Linux canvas evidence](../evidence/scrum275276-326-linux-canvas/README.md)
 qualifies 24 software/Mesa captures and retains the separate failed elevation-label
@@ -39,10 +43,11 @@ classification and conspicuous/Paper variants remain unchanged. The Night
 generic-versus-conspicuous contrast still needs native/boat recognition review.
 
 The prototype does not supply a replacement physical lighthouse tower or
-all-round range circle; [the exact source boundary](reviews/scrum264-all-round-light-boundary.md)
-records those visible differences. The supplied rock/wreck/marina/fishing paths
+all-round range circle; [the historical source boundary](reviews/scrum264-all-round-light-boundary.md)
+records that absence. It does not mean the later ordinary-circle paint extension
+below is still unimplemented. The supplied rock/wreck/marina/fishing paths
 and cable waveform were integrated at `45d73e8` and are included in current
-`17ab044`, with [source-locked combined resource proof](../evidence/scrum279-283-combined/README.md)
+`bccdbb11`, with [source-locked combined resource proof](../evidence/scrum279-283-combined/README.md)
 and [optimized core/private object review](../evidence/scrum281282-combined-review/README.md).
 They were absent from the former `4ddf1f3` candidate. The
 [actual 45d Linux canvas review](../evidence/scrum279282-45d-linux-canvas/README.md)
@@ -73,7 +78,41 @@ boat readability remain separate gates. The approved
 accepted font selection on every target. No complete glyph, Windows or boat
 screen row is marked PASS from these bounded results.
 
+## Native review inputs for the current candidate
+
+This is the existing SCRUM-15/263/264/265 review, not new implementation scope.
+Use the current candidate's original `evidence/local/` members and report identity
+when they are available; the filenames below are existing collector outputs,
+not a claim that the in-progress run has produced or passed them.
+
+| User request | Exact existing outputs to inspect | Required interpretation |
+| --- | --- | --- |
+| Smaller logo and typeface, main shell | `preview-01-navigation-day.png`, `preview-09-returned-xnav.png`, `preview-results.json`; `dpi-100-01-navigation-day.png`, `dpi-100-navigation-dusk.png`, `dpi-100-02-navigation-night.png`, `dpi-125-01-navigation-day.png`, `dpi-150-02-navigation-night.png`, `dpi-100-1920-navigation-day.png`, `dpi-results.json` | Check the approved 124-DIP SKAGER/APP artwork, clipping, hierarchy and actual DPI. Preview/DPI basemaps do not qualify ENC glyphs. The 1920 capture is Day only. |
+| Native face and component paint | `skager-wordmark-production.png`, `chart-names-production.png`, `chart-lights-production.png`, `windows-production-Win32.log` (the same collectors also emit `*-xnav.png` and `windows-xnav-Win32.log`) | Wordmark/name/light PNGs are component drawings. Read the actual selected/GDI font and DPI in the log; a correct font request alone is insufficient, and these images do not replace application review. |
+| Symbols and brown structural paint in real ENC | `chart-software-01-loaded.png`, `chart-software-02-zoom.png`, `chart-software-04-restored.png`, `chart-software-05-legacy.png`, `chart-software-06-returned.png`; corresponding `chart-opengl-*` files and `charts-results.json` | Bind chart identity and effective presentation to the report. Verify actual `opengl_enabled`; a filename is not GL proof. Seattle views do not resolve every guarded light, structure or supplied glyph, and do not provide the missing private/IHO all-round scene coverage. |
+
+The [15452e5 retained receipt](../evidence/scrum263-264-native-154/receipt.json)
+already binds nine original PNGs, including the six DPI views listed above,
+loaded/zoomed software ENC and the production wordmark drawing. Its
+[font excerpt](../evidence/scrum263-264-native-154/recorded-font-and-wordmark.txt)
+records Segoe UI fallback at 96 DPI. These are historical references, not current
+candidate pixels. The [17ab044 review](../evidence/windows-17ab044/README.md)
+retains the two preview views above, but no completed native ENC/private symbol
+qualification. Neither record closes physical boat readability or same-machine
+HTML/native typography comparison. Unsupported semantic light variants,
+unmapped towers and the white/orange Dusk fallback remain explicitly open.
+
 ## Retained earlier qualification history
+
+The former frozen candidate was local `0a52a6c` / published `17ab044`
+([CI](https://github.com/ThereptileII/Work/actions/runs/37164360050)). Its
+[complete source mapping](../evidence/skager-symbols-0a52-publication.json)
+independently verifies all 6,658 mapped entries. The retained
+[Linux audit](../evidence/linux-17ab044/README.md) and
+[native Windows audit](../evidence/windows-17ab044/README.md) preserve their actual
+results and limitations. Windows cancellation at the subsequently reproduced
+CurrentUser trust prompt did not invalidate the earlier partial passes or make
+that candidate an eligible package. Historical images remain unchanged.
 
 The former frozen Windows candidate was local `48c2f8b` / published `4ddf1f3`
 ([CI](https://github.com/ThereptileII/Work/actions/runs/37155858878));

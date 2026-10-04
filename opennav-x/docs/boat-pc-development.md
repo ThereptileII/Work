@@ -93,21 +93,21 @@ No script clicks pilot commands, activates routes, injects sensor input or creat
 synthetic AIS/radar. Native/boat visual review is separate from hardware control
 acceptance.
 
-## Early development review versus release acceptance
+## Development boat test versus release acceptance
 
-After native functional, fixture-free package, installer lifecycle, DPI/touch
-and public chart/plugin gates pass, CI may upload
-`beta2-boat-review-pending-endurance-<commit>`. This is a separate development
-bundle with explicit pending-qualification text, the same tested payload hashes
-and source artifact. It allows supervised read-only boat iteration while the
-three-hour endurance gate continues. It does not bypass compatibility, backups,
-the real-profile plugin/output audit or the user prohibition on physical commands.
+On October 4 the user explicitly directed that the current stable boat-test
+candidate **skip endurance testing**. CI records this as skipped, never passed;
+`release/qualification.json` retains named/public release as disabled. Functional,
+security, fixture-free package, installer lifecycle, DPI/touch, chart and recovery
+gates remain required. This user direction supersedes the earlier policy to wait
+for or continue a three-hour run during development review.
 
-Record any such deployment as **development review**, including all gates still
-pending. Never use it as release acceptance. The final candidate artifact and
-named Beta 2 publication remain gated on complete same-commit CI and actual boat
-evidence. A failed endurance or other remaining gate invalidates qualification
-even if an earlier development review package exists.
+The existing `beta2-boat-review-pending-endurance-<commit>` artifact identifier is
+retained for tool compatibility. Its qualification file states the actual skipped
+policy. The `beta-candidate-<commit>` set is likewise explicitly a development
+boat-test candidate. Neither bundle is public-release acceptance. Deploy only
+the exact tested hashes after compatibility, backup and real-profile plugin/output
+audits, and preserve the prohibition on physical actuator commands.
 
 Boat recovery, official-upgrade policy, profile preparation and read-only
 commissioning contracts run in their own mandatory native Windows CI job.

@@ -1,0 +1,119 @@
+{
+  "scope": "Exact prerequisite-name comparison only; no runtime, artifact eligibility or prerequisite success claim",
+  "frozen_local_commit": "1a6733a1cbcc817aa0f13fa5acc41aac62a54146",
+  "producer_workflow": ".github/workflows/opennav-baseline.yml",
+  "producer_workflow_sha256": "f52c3e7a7a350cd09a1cc67b1b47ae36bbcd6b7be59c14d864b515d91d35898e",
+  "actual_job_names_source": "GitHub connector fetch_workflow_run_jobs",
+  "repository": "ThereptileII/Work",
+  "run_id": 37177738716,
+  "job_id": 111364702973,
+  "job_name": "Native MSVC XNav / Legacy / Safe slice",
+  "corrected_stale_label": "Upload development review only while endurance runs",
+  "prerequisites": [
+    {
+      "name": "Build and exercise integrated modes",
+      "frozen_workflow_occurrences": 1,
+      "actual_job_occurrences": 1
+    },
+    {
+      "name": "Verify packaged source reproduces the curl certificate-tool patch",
+      "frozen_workflow_occurrences": 1,
+      "actual_job_occurrences": 1
+    },
+    {
+      "name": "Installed native peer CLI refuses key changes on the disposable runner",
+      "frozen_workflow_occurrences": 1,
+      "actual_job_occurrences": 1
+    },
+    {
+      "name": "Staged native loader check without profile initialization",
+      "frozen_workflow_occurrences": 1,
+      "actual_job_occurrences": 1
+    },
+    {
+      "name": "Native pointer chart gestures, waypoint Go To and route creation",
+      "frozen_workflow_occurrences": 1,
+      "actual_job_occurrences": 1
+    },
+    {
+      "name": "Repeat native crash-recovery returns with separate evidence",
+      "frozen_workflow_occurrences": 1,
+      "actual_job_occurrences": 1
+    },
+    {
+      "name": "Retain complete fixture UI and scenario regression suite",
+      "frozen_workflow_occurrences": 1,
+      "actual_job_occurrences": 1
+    },
+    {
+      "name": "Capture successful same-job Windows dependency closure",
+      "frozen_workflow_occurrences": 1,
+      "actual_job_occurrences": 1
+    },
+    {
+      "name": "Build native installed product without synthetic data",
+      "frozen_workflow_occurrences": 1,
+      "actual_job_occurrences": 1
+    },
+    {
+      "name": "Native public Downloader Windows trust and rejection gate",
+      "frozen_workflow_occurrences": 1,
+      "actual_job_occurrences": 1
+    },
+    {
+      "name": "Exact peer response buffer on native MSVC Win32",
+      "frozen_workflow_occurrences": 1,
+      "actual_job_occurrences": 1
+    },
+    {
+      "name": "Package and test the fixture-free recovery distribution",
+      "frozen_workflow_occurrences": 1,
+      "actual_job_occurrences": 1
+    },
+    {
+      "name": "Build and exercise candidate Beta installer",
+      "frozen_workflow_occurrences": 1,
+      "actual_job_occurrences": 1
+    },
+    {
+      "name": "Native 100 / 125 / 150 percent DPI and touch interactions",
+      "frozen_workflow_occurrences": 1,
+      "actual_job_occurrences": 1
+    },
+    {
+      "name": "Public ENC chart and plugin rendering gate",
+      "frozen_workflow_occurrences": 1,
+      "actual_job_occurrences": 1
+    },
+    {
+      "name": "Require same-run restart qualification before delivering any product artifact",
+      "frozen_workflow_occurrences": 1,
+      "actual_job_occurrences": 1
+    },
+    {
+      "name": "Verify exact restart qualification identity",
+      "frozen_workflow_occurrences": 1,
+      "actual_job_occurrences": 1
+    },
+    {
+      "name": "Prepare development boat review after native functional gates",
+      "frozen_workflow_occurrences": 1,
+      "actual_job_occurrences": 1
+    },
+    {
+      "name": "Upload development review with endurance qualification pending",
+      "frozen_workflow_occurrences": 1,
+      "actual_job_occurrences": 1
+    }
+  ],
+  "other_name_drift": [],
+  "focused_tests": {
+    "test-probe-peer-candidate.py": {
+      "passed": 9
+    },
+    "test-peer-candidate-request.py": {
+      "passed": 2
+    }
+  },
+  "limits": "Unit fixtures are inert. Candidate ownership, SHA/digest, strict successful steps, restart receipt and final revalidation remain unchanged."
+}

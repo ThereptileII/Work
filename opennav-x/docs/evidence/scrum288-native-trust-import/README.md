@@ -44,3 +44,18 @@ root before import and accepts the exact root afterward. Exact cleanup restores
 the original machine-root inventory. No test certificate or trust policy is
 installed on the boat. The full actual TLS matrix and package gates remain
 required in the replacement candidate; this proof does not qualify the app.
+
+## Separate candidate-package helper
+
+The prepared PluginHandler package probe contained the same CurrentUser import.
+Only its test tooling was updated; the application candidate was not rebuilt.
+Actual helper proof [37178442525](https://github.com/ThereptileII/Work/actions/runs/37178442525)
+passes at `023944a5e498ba33909c8aaf10dadd82b2db3fba` (local `ec82254`).
+Original artifact **11294151190**, 2912 bytes, SHA-256
+`4d02d1cd9885a7cfa603be575845ff76ac42693c9fa91e4abc2d5ba8eda90542`.
+Root verified original digest/CRCs and both native-CRLF script hashes.
+Three cases prove exact import/Windows-chain trust, refusal to overwrite an
+existing receipt, and refusal of removal using another receipt. Exact cleanup
+restores the original machine-root inventory. Import took 0.3091662 seconds.
+This qualifies that helper only; actual packaged PluginHandler TLS/peer and
+profile-preservation gates still require the eventual eligible installer.

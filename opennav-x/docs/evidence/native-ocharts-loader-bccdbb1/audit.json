@@ -1,0 +1,310 @@
+{
+  "scope": "Read-only original-artifact audit; no new test/build execution",
+  "candidate": "bccdbb11cef827d3b63731fe1e874bc72bf47d2d",
+  "local_source": "1a6733a1cbcc817aa0f13fa5acc41aac62a54146",
+  "run": 37177738716,
+  "job": 111363797689,
+  "artifact": 11293353341,
+  "original_zip": {
+    "bytes": 17496,
+    "sha256": "4f4f1023c471b8a9f83369e832c2ba60f52ab967ae01079768a50887afd9dea1"
+  },
+  "api_identity_and_digest_match": true,
+  "zip_crc_safe_paths_unique_case_names_passed": 36,
+  "source_matches": {
+    "src/integration/OChartsModuleLoader.cpp": {
+      "local_path": "src/integration/OChartsModuleLoader.cpp",
+      "line_endings": "CRLF",
+      "bytes": 7868,
+      "sha256": "3d0afe5241f42b7acb0e6f702c1258b9afaa02bb81be0102d2584d3cca24ed47"
+    },
+    "src/integration/OChartsModuleLoader.h": {
+      "local_path": "src/integration/OChartsModuleLoader.h",
+      "line_endings": "CRLF",
+      "bytes": 1296,
+      "sha256": "38cdda23e1a8c9c516b5b53b9a5ee8d76285adf520395418332bf51327690896"
+    },
+    "src/integration/PluginPresentationLoader.cpp": {
+      "local_path": "src/integration/PluginPresentationLoader.cpp",
+      "line_endings": "CRLF",
+      "bytes": 427,
+      "sha256": "a06d7e0d430172ab4e829416bcb882a27300a6d857dd2858c859280832cd1df4"
+    },
+    "src/integration/PluginPresentationLoader.h": {
+      "local_path": "src/integration/PluginPresentationLoader.h",
+      "line_endings": "CRLF",
+      "bytes": 709,
+      "sha256": "e25cc7ea7856768c41951a16edaf4ea9386213be4a0fdfafa4907764b0764213"
+    },
+    "src/integration/PluginPresentationFallback.h": {
+      "local_path": "src/integration/PluginPresentationFallback.h",
+      "line_endings": "CRLF",
+      "bytes": 1721,
+      "sha256": "a4ba741c17df9a73f70dae515c3bc363088d397b34cc429a9fc4eb68b72fd525"
+    },
+    "src/plugin-adapters/ChartPresentationBindingV1.h": {
+      "local_path": "src/plugin-adapters/ChartPresentationBindingV1.h",
+      "line_endings": "CRLF",
+      "bytes": 3172,
+      "sha256": "b19186376a4aa357ba7625d2e7c26d3ad4a526d120ea61d36a857f52f3266dde"
+    },
+    "src/plugin-adapters/ocharts/BindingState.h": {
+      "local_path": "src/plugin-adapters/ocharts/BindingState.h",
+      "line_endings": "CRLF",
+      "bytes": 4088,
+      "sha256": "c10e46310dc72621d3fac2ac272ed282aab1feb5c565db412ebb2c23062fc870"
+    },
+    "tests/windows_ocharts_loader/CMakeLists.txt": {
+      "local_path": "tests/windows_ocharts_loader/CMakeLists.txt",
+      "line_endings": "CRLF",
+      "bytes": 2177,
+      "sha256": "08b985909e533fdf10d25d0f16ddddef3d4bbea2c6a2fdde732148fdb485d114"
+    },
+    "tests/windows_ocharts_loader/fixture.cpp": {
+      "local_path": "tests/windows_ocharts_loader/fixture.cpp",
+      "line_endings": "CRLF",
+      "bytes": 3507,
+      "sha256": "618751e07b73799478ee3b90d2e5edff3d1f7bf34f2142522f0104d8ccc93f35"
+    },
+    "tests/windows_ocharts_loader/loader_test.cpp": {
+      "local_path": "tests/windows_ocharts_loader/loader_test.cpp",
+      "line_endings": "CRLF",
+      "bytes": 18523,
+      "sha256": "5238ae39e8f4cba7095908fc3773687e1d18904693c884b45208737a3ba1aa00"
+    },
+    "tests/windows_ocharts_loader/inputs.lock.json": {
+      "local_path": "tests/windows_ocharts_loader/inputs.lock.json",
+      "line_endings": "CRLF",
+      "bytes": 1183,
+      "sha256": "7520333aba2a38f2bca5f4316a5faa8b229dbbb057e84dc1a57e8882bc53feae"
+    },
+    "tools/test-ocharts-loader-windows.py": {
+      "local_path": "tools/test-ocharts-loader-windows.py",
+      "line_endings": "CRLF",
+      "bytes": 9980,
+      "sha256": "d4b9f25705ca2d440c171adaeacc91b351c462fe1d149294c700527f938a6100"
+    },
+    "tools/test-windows-changed-units.py": {
+      "local_path": "tools/test-windows-changed-units.py",
+      "line_endings": "CRLF",
+      "bytes": 37232,
+      "sha256": "f7a3084410a11700bb06670222b71d78c9bcc1f417599dcb030c71a56714b180"
+    },
+    "tools/windows-wx.lock.json": {
+      "local_path": "tools/windows-wx.lock.json",
+      "line_endings": "CRLF",
+      "bytes": 1017,
+      "sha256": "2fb563c4de7819d4b10d7a567e59510cd033c3b9cb55ce4ebb654964da60267f"
+    },
+    "../.github/workflows/skager-ocharts-loader.yml": {
+      "local_path": ".github/workflows/skager-ocharts-loader.yml",
+      "line_endings": "CRLF",
+      "bytes": 3490,
+      "sha256": "3dbb11ef46d3dfb87499f2bc58f31e54b038d59458e2a3917b9678723f4e8032"
+    }
+  },
+  "native_groups": [
+    "copied status matrix",
+    "unavailable",
+    "safe",
+    "not-main",
+    "standard-empty-resources",
+    "wrong-original-name",
+    "actual worker thread",
+    "wrong-original-hash",
+    "wrong-adapter-hash",
+    "wrong-adapter-size",
+    "missing-adapter",
+    "relative-original",
+    "unc-original",
+    "original-reparse-parent",
+    "adapter-reparse-parent",
+    "exclusive-original-lock",
+    "exclusive-adapter-lock",
+    "changed-adapter-after-compatibility",
+    "changed-original-after-compatibility",
+    "compatibility refused",
+    "compatibility missing",
+    "invalid PE load refused",
+    "over-capacity-utf8-resource",
+    "no_bind",
+    "no_status",
+    "no_create",
+    "no_destroy",
+    "binding-rejected",
+    "status-return",
+    "status-size",
+    "status-version",
+    "status-reserved",
+    "status-reason",
+    "status-selected",
+    "status-unknown",
+    "single bound module and lock lifetime",
+    "actual null/forwarded callback and residue-safe fallback",
+    "injected invalid-handle refusal retains ownership"
+  ],
+  "original_contract_tests": {
+    "producer-prefix": 17,
+    "source-cache": 6,
+    "preparation": 17
+  },
+  "build_wiring": {
+    "status": "passed",
+    "rejection_cases": 17,
+    "other_cases": "parse/order, first build, exact reuse; not a native adapter compile"
+  },
+  "inert_fixture_dlls_reported": 5,
+  "binary_hashes": "Runner observations only; executable/runtime/fixture/vendor binary payloads are not in this archive and were not independently rehashed here",
+  "limitations": [
+    "real adapter OpenCPN import ABI and renderer integration",
+    "full app Standard/Safe selection and plugin lifecycle",
+    "genuine loaded-module unload refusal; fault test uses a reserved non-module address",
+    "encrypted-chart rendering, licensing and physical hardware"
+  ],
+  "members": {
+    "ocharts-loader-guards/adapter-junction.command.json": {
+      "bytes": 237,
+      "sha256": "b5fdb3da5d1cf630da097de595820496ae3fbd673a830cfc458c6a9554b5db23"
+    },
+    "ocharts-loader-guards/adapter-junction.log": {
+      "bytes": 184,
+      "sha256": "63ff7992e77b574fb951d289f9e61fe7ba706330e3c78ddba9f73e728519aca2"
+    },
+    "ocharts-loader-guards/compile.command.json": {
+      "bytes": 196,
+      "sha256": "01df2f4825e07c37d9005ac325141fedff6b5972e713c6b70a8b588ac4ed0e70"
+    },
+    "ocharts-loader-guards/compile.log": {
+      "bytes": 27441,
+      "sha256": "6aff2905d44736473daba84c4515449bf4d49149d0357c9343d19a0afc82052f"
+    },
+    "ocharts-loader-guards/configure.command.json": {
+      "bytes": 587,
+      "sha256": "e0dfe3f1138f5bfacfe42e2af239d8a74586ab91661eb04d0222d3506ce8387a"
+    },
+    "ocharts-loader-guards/configure.log": {
+      "bytes": 1535,
+      "sha256": "531cd713624fa760e3d8cec4bc02ab0dd7bb277adcb2f630820f1219a955f63a"
+    },
+    "ocharts-loader-guards/dll-events/bound-success.log": {
+      "bytes": 55,
+      "sha256": "61c3906393f22c8cedefbd9f092b45dd54b0330f64ab54196128b1a205356317"
+    },
+    "ocharts-loader-guards/dll-events/binding-rejected.log": {
+      "bytes": 48,
+      "sha256": "71bb5533853095d83a907de835df20bf56e0312541b98f54af58c374b79c4dba"
+    },
+    "ocharts-loader-guards/dll-events/callback-and-fallback.log": {
+      "bytes": 14,
+      "sha256": "ec72b758bb29d757a3ed6a3de5e5bc5c6eb067aa51d60e4627b3e511354703fa"
+    },
+    "ocharts-loader-guards/dll-events/no_bind.log": {
+      "bytes": 14,
+      "sha256": "ec72b758bb29d757a3ed6a3de5e5bc5c6eb067aa51d60e4627b3e511354703fa"
+    },
+    "ocharts-loader-guards/dll-events/no_create.log": {
+      "bytes": 14,
+      "sha256": "ec72b758bb29d757a3ed6a3de5e5bc5c6eb067aa51d60e4627b3e511354703fa"
+    },
+    "ocharts-loader-guards/dll-events/no_destroy.log": {
+      "bytes": 14,
+      "sha256": "ec72b758bb29d757a3ed6a3de5e5bc5c6eb067aa51d60e4627b3e511354703fa"
+    },
+    "ocharts-loader-guards/dll-events/no_status.log": {
+      "bytes": 14,
+      "sha256": "ec72b758bb29d757a3ed6a3de5e5bc5c6eb067aa51d60e4627b3e511354703fa"
+    },
+    "ocharts-loader-guards/dll-events/status-reason.log": {
+      "bytes": 55,
+      "sha256": "61c3906393f22c8cedefbd9f092b45dd54b0330f64ab54196128b1a205356317"
+    },
+    "ocharts-loader-guards/dll-events/status-reserved.log": {
+      "bytes": 55,
+      "sha256": "61c3906393f22c8cedefbd9f092b45dd54b0330f64ab54196128b1a205356317"
+    },
+    "ocharts-loader-guards/dll-events/status-return.log": {
+      "bytes": 55,
+      "sha256": "61c3906393f22c8cedefbd9f092b45dd54b0330f64ab54196128b1a205356317"
+    },
+    "ocharts-loader-guards/dll-events/status-selected.log": {
+      "bytes": 55,
+      "sha256": "61c3906393f22c8cedefbd9f092b45dd54b0330f64ab54196128b1a205356317"
+    },
+    "ocharts-loader-guards/dll-events/status-size.log": {
+      "bytes": 55,
+      "sha256": "61c3906393f22c8cedefbd9f092b45dd54b0330f64ab54196128b1a205356317"
+    },
+    "ocharts-loader-guards/dll-events/status-unknown.log": {
+      "bytes": 55,
+      "sha256": "61c3906393f22c8cedefbd9f092b45dd54b0330f64ab54196128b1a205356317"
+    },
+    "ocharts-loader-guards/dll-events/status-version.log": {
+      "bytes": 55,
+      "sha256": "61c3906393f22c8cedefbd9f092b45dd54b0330f64ab54196128b1a205356317"
+    },
+    "ocharts-loader-guards/native-tests.command.json": {
+      "bytes": 671,
+      "sha256": "45a084fb9b1dbee792defe9cf92aa8a59d2e7029783e01972236970991c960ce"
+    },
+    "ocharts-loader-guards/native-tests.json": {
+      "bytes": 146,
+      "sha256": "e0be17a9fb981456c1da74a2ce08f9b2c0497113a7fc97c36eb0a3781f1be1f6"
+    },
+    "ocharts-loader-guards/native-tests.log": {
+      "bytes": 1996,
+      "sha256": "f97d224aafc62ef298a5ea5cc0c9776051e413c3bcd2eef0f310ee91708dfce0"
+    },
+    "ocharts-loader-guards/original-junction.log": {
+      "bytes": 187,
+      "sha256": "f58461fdcac4e1501d43c53254b819bdd05c8a6a87818bd0b2aba229f4f3f1ca"
+    },
+    "ocharts-loader-guards/original-junction.command.json": {
+      "bytes": 240,
+      "sha256": "c4c2e464b7ade4550d1f798f2af06d510537aec37f67a8962bf4e8f59f0b56d9"
+    },
+    "ocharts-loader-guards/summary.json": {
+      "bytes": 9435,
+      "sha256": "24803070a77f2e2d0326b9496708a9c492aace799f0c71c63af9b69e1eef6251"
+    },
+    "ocharts-loader-guards/wxMSW-3.2.8_vc14x_Dev.7z.command.json": {
+      "bytes": 217,
+      "sha256": "a51c0c8441f9bfadc3f8ee8fccacd99a7f22cbc881db2bcfe1cf22932861ecb4"
+    },
+    "ocharts-loader-guards/wxMSW-3.2.8_vc14x_Dev.7z.log": {
+      "bytes": 550,
+      "sha256": "b8df3b4c6627a125ef79151781c436abff44a2260c4f65b8c5f5bbc65baca842"
+    },
+    "ocharts-loader-guards/wxMSW-3.2.8_vc14x_ReleaseDLL.7z.command.json": {
+      "bytes": 224,
+      "sha256": "974b8df36ec1aa77641bd7aa56224253862ce10918dae9e2fe24a82263bf2e4f"
+    },
+    "ocharts-loader-guards/wxMSW-3.2.8_vc14x_ReleaseDLL.7z.log": {
+      "bytes": 549,
+      "sha256": "8792347bd81c14ba88a5318eaf6a3b6471bda2a3121583f9b13fb29015e97db5"
+    },
+    "ocharts-loader-guards/wxWidgets-3.2.8-headers.7z.command.json": {
+      "bytes": 219,
+      "sha256": "6b3d38f4553a0b964a8e989057e9272bb73ef43cdc0596c95a8ef7fbe5a5e570"
+    },
+    "ocharts-loader-guards/wxWidgets-3.2.8-headers.7z.log": {
+      "bytes": 553,
+      "sha256": "d3346cc181b3a143e8e11a752b1be3bcc57e77f060db9a845d9ede0deee74b07"
+    },
+    "ocharts-loader-contracts/build-wiring.log": {
+      "bytes": 131,
+      "sha256": "d2070977e12af1720a70bcada3eca1020c27f4f7086dd5e0fd3b9fbad3b50865"
+    },
+    "ocharts-loader-contracts/preparation.log": {
+      "bytes": 121,
+      "sha256": "218a410703cccf475d6bdab3f464de997a130eed2a13600b574e6a555b456f4e"
+    },
+    "ocharts-loader-contracts/producer-prefix.log": {
+      "bytes": 2590,
+      "sha256": "2155e5e8c81836f9d8460a16594c6ddcd7fe1ec04b39a438ae27a21b7a08508a"
+    },
+    "ocharts-loader-contracts/source-cache.log": {
+      "bytes": 109,
+      "sha256": "b3ddb4e476595ba37d9e7bb8c13ae323d2b683c29a1bba8db122b6c09d213b31"
+    }
+  }
+}

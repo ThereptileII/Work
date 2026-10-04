@@ -5,6 +5,9 @@
 #include <curl/curl.h>
 
 #include "model/downloader.h"
+#ifdef _WIN32
+#include "TrustProbeConsole.h"
+#endif
 
 class RefusingBuffer : public std::streambuf {
  protected:
@@ -19,10 +22,16 @@ class ProbeDownloader : public Downloader {
 
 int main(int argc, char** argv) {
   if (argc != 3 && argc != 4) return 2;
+#ifdef _WIN32
+  opennav::TrustProbeConsole console;
+  if (!console.IsOk()) return 3;
+#endif
+  std::cerr << "stage: curl initialization" << std::endl;
   if (curl_global_init(CURL_GLOBAL_DEFAULT) != CURLE_OK) return 3;
   std::string path(argv[2]);
   ProbeDownloader downloader(argv[1]);
   bool ok;
+  std::cerr << "stage: download begin" << std::endl;
   if (argc == 4 && std::string(argv[3]) == "--reject-stream") {
     RefusingBuffer buffer;
     std::ostream refusing(&buffer);
@@ -33,7 +42,9 @@ int main(int argc, char** argv) {
   }
   const int download_error = downloader.last_errorcode();
   const std::string download_message = downloader.last_error();
+  std::cerr << "stage: download returned; HEAD begin" << std::endl;
   const long size = downloader.filesize();
+  std::cerr << "stage: HEAD returned" << std::endl;
   std::cout << "download_ok=" << (ok ? "true" : "false") << "\n"
             << "download_error=" << download_error << "\n"
             << "download_message=" << download_message << "\n"
