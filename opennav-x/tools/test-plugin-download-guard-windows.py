@@ -221,9 +221,9 @@ def main():
             shutil.copyfile(curl_import, evidence / 'probe-libcurl.lib')
             build = work / 'build'
             run(['cmake', '-S', ROOT / 'tests/plugin_download_guard', '-B', build, '-G', 'Visual Studio 17 2022', '-A', 'Win32',
-                 '-DSOURCE_DIR=' + str(source), '-DTOOLS_DIR=' + str(ROOT / 'tools'), '-DCURL_INCLUDE=' + str(curl / 'include'),
-                 '-DCURL_IMPORT=' + str(curl_import), '-DARCHIVE_INCLUDE=' + str(archive_root / 'include'), '-DARCHIVE_IMPORT=' + str(archive_root / 'archive.lib'),
-                 '-DwxWidgets_ROOT_DIR=' + str(wx), '-DwxWidgets_LIB_DIR=' + str(wx / 'lib/vc14x_dll'), '-DwxWidgets_CONFIGURATION=mswu'], evidence / 'configure.log')
+                 '-DSOURCE_DIR:PATH=' + source.as_posix(), '-DTOOLS_DIR:PATH=' + (ROOT / 'tools').as_posix(), '-DCURL_INCLUDE:PATH=' + (curl / 'include').as_posix(),
+                 '-DCURL_IMPORT:FILEPATH=' + curl_import.as_posix(), '-DARCHIVE_INCLUDE:PATH=' + (archive_root / 'include').as_posix(), '-DARCHIVE_IMPORT:FILEPATH=' + (archive_root / 'archive.lib').as_posix(),
+                 '-DwxWidgets_ROOT_DIR:PATH=' + wx.as_posix(), '-DwxWidgets_LIB_DIR:PATH=' + (wx / 'lib/vc14x_dll').as_posix(), '-DwxWidgets_CONFIGURATION=mswu'], evidence / 'configure.log')
             run(['cmake', '--build', build, '--config', 'Release', '--parallel', '2'], evidence / 'build.log', timeout=300)
             execution = work / 'runtime'
             execution.mkdir()

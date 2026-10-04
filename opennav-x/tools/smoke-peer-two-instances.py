@@ -144,7 +144,7 @@ def run(args):
             for process, profile, *_ in processes:
                 if os.name == "nt":
                     ui = load("windows-ui")
-                    handle, observed_pid = ui.wait_window("OpenNav X / OpenCPN", process.pid)
+                    handle, observed_pid = ui.wait_window("SKAGER / OpenCPN", process.pid)
                     assert observed_pid == process.pid
                     ui.close(handle)
                 else:

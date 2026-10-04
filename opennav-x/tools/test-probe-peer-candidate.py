@@ -16,7 +16,8 @@ COMMIT = 'a' * 40
 
 
 class PreparationTests(unittest.TestCase):
-    def fixture(self, root, marker=False, config=None, different_runtime=False):
+    def fixture(self, root, marker=False, config=None, different_runtime=False,
+                recovery_prefix='SKAGER-Beta2-Portable-Recovery/'):
         files = {'app/opencpn.exe': b'inert executable fixture', 'app/plugins/dashboard_pi.dll': b'inert plugin fixture'}
         product = {'commit': COMMIT, 'test_fixtures': False, 'build_purpose': 'INSTALLED PRODUCT',
                    'xnav_hardware_output_policy': 'status-only',
@@ -32,10 +33,10 @@ class PreparationTests(unittest.TestCase):
         (root / 'package.json').write_text(json.dumps(package))
         with zipfile.ZipFile(root / 'recovery.zip', 'w') as z:
             for name, data in files.items():
-                z.writestr(probe.PREFIX + name, b'different' if different_runtime and name == 'app/opencpn.exe' else data)
+                z.writestr(recovery_prefix + name, b'different' if different_runtime and name == 'app/opencpn.exe' else data)
             if not marker:
-                z.writestr(probe.PREFIX + 'app/OPENNAV_PORTABLE_PREVIEW', b'original marker')
-            z.writestr(probe.PREFIX + 'profile/opencpn.conf', config or '[Settings]\r\nConfigVersionString=Version 5.12.4+37fd0cd Build 2026-10-02\r\n')
+                z.writestr(recovery_prefix + 'app/OPENNAV_PORTABLE_PREVIEW', b'original marker')
+            z.writestr(recovery_prefix + 'profile/opencpn.conf', config or '[Settings]\r\nConfigVersionString=Version 5.12.4+37fd0cd Build 2026-10-02\r\n')
 
     def test_preserves_complete_runtime_and_derives_header(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -66,6 +67,13 @@ class PreparationTests(unittest.TestCase):
             with (root / 'payload.zip').open('ab') as stream:
                 stream.write(b'tampered')
             with self.assertRaisesRegex(ValueError, 'digest mismatch'):
+                probe.prepare(root, root / 'recovery.zip', root / 'out', COMMIT)
+
+    def test_previous_product_recovery_identity_is_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self.fixture(root, recovery_prefix='OpenNavX-Beta2-Portable-Recovery/')
+            with self.assertRaisesRegex(ValueError, 'recovery marker missing'):
                 probe.prepare(root, root / 'recovery.zip', root / 'out', COMMIT)
 
     def test_unsafe_names(self):

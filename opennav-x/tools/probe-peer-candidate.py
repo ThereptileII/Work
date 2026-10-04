@@ -20,11 +20,11 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 REPO = 'ThereptileII/Work'
-SETUP = 'OpenNavX-Beta2-Setup.exe'
-RECOVERY = 'OpenNavX-Beta2-Portable-Recovery.zip'
-PREFIX = 'OpenNavX-Beta2-Portable-Recovery/'
+SETUP = 'SKAGER-Beta2-Setup.exe'
+RECOVERY = 'SKAGER-Beta2-Portable-Recovery.zip'
+PREFIX = 'SKAGER-Beta2-Portable-Recovery/'
 LIMIT = 2 * 1024**3
-HARNESS_SHA = '0fce57bf823bf98a4a1e385f8b9ddbd5978588baf1ab649e77ad037fd7544091'
+HARNESS_SHA = '7cfe340b3fc2949773a72d8e79017315e237f21b0aca6c80c8cd09699c45da0b'
 
 
 def require(ok, message):
@@ -297,7 +297,8 @@ def main(args):
             'tools/test-plugin-download-guard-windows.py', 'tools/test-plugin-download-guard.py',
             'tools/plugin-download-guard-probe.cpp', 'tools/plugin-download-guard-server.py',
             'tools/plugin-probe-owned-trust.ps1', 'tools/windows-plugin-archive-sdk.lock.json',
-            'tests/plugin_download_guard/CMakeLists.txt')}
+            'tests/plugin_download_guard/CMakeLists.txt',
+            'tests/plugin_download_guard/InputPaths.cmake')}
         plugin_result = subprocess.run([sys.executable, str(plugin_helper),
             '--runtime-dir', str(workspace / 'runtime'), '--package-manifest-path', str(plugin_manifest),
             '--expected-manifest-sha256', sha(plugin_manifest), '--expected-commit', args.commit,
