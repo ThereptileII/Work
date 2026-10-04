@@ -1,22 +1,22 @@
-name: SKAGER read-only exact native log diagnostic
+name: SKAGER controlled cancellation and exact native log diagnostic
 on:
   push:
     branches: [skager-native-log-diagnostic]
     paths: [.github/workflows/skager-native-log-diagnostic.yml]
 permissions:
   contents: read
-  actions: read
+  actions: write
 jobs:
   collect:
     runs-on: ubuntu-24.04
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
-      - name: Read exact candidate metadata and original current job log
+      - name: Stop superseded qualification and retain its exact native log
         shell: python
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          import datetime, hashlib, json, os, pathlib, re, subprocess
+          import datetime, hashlib, json, os, pathlib, re, subprocess, time
           repo = 'ThereptileII/Work'
           run_id, job_id = 37164360050, 111325149619
           commit = '17ab044a1e5222dc71791ac8118454219efe8734'
@@ -33,11 +33,28 @@ jobs:
           assert run['head_sha'] == commit and run['run_attempt'] == 1
           assert run['event'] == 'push' and run['path'] == '.github/workflows/opennav-baseline.yml'
           assert job['run_id'] == run_id and job['head_sha'] == commit
+          assert run['head_branch'] == 'opennav-x-beta2-ui'
+          assert job['name'] == 'Native MSVC XNav / Legacy / Safe slice'
           receipt = {'schema': 1, 'observed_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
                      'source_run': run_id, 'source_job': job_id, 'source_commit': commit,
                      'source_attempt': 1, 'collector_commit': os.environ['GITHUB_SHA'],
-                     'scope': 'Read-only log observation; no build, cancellation, rerun or acceptance',
+                     'scope': 'User-directed endurance skip: controlled cancellation of exact superseded run for diagnosis; no rerun, build or acceptance',
                      'source_status': job['status'], 'source_conclusion': job['conclusion']}
+          if run['status'] != 'completed':
+              cancel = subprocess.run(['gh', 'api', '--method', 'POST',
+                  f'repos/{repo}/actions/runs/{run_id}/cancel'],
+                  stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=45)
+              receipt['cancel_request_exit'] = cancel.returncode
+              # Normal cancellation only. Never force-stop or retry a mutation.
+              deadline = time.monotonic() + 360
+              while time.monotonic() < deadline:
+                  job = metadata(f'repos/{repo}/actions/jobs/{job_id}', 'source-job-final.json')
+                  assert job['run_id'] == run_id and job['head_sha'] == commit
+                  if job['status'] == 'completed':
+                      break
+                  time.sleep(10)
+              receipt['final_job_status'] = job['status']
+              receipt['final_job_conclusion'] = job['conclusion']
           raw = out / 'original-job.log'
           try:
               with raw.open('xb') as stream:
