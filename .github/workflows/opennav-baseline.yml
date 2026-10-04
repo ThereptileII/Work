@@ -1,7 +1,7 @@
 name: SKAGER Staging
 on:
   push:
-    branches: [staging, opennav-x, opennav-x-beta2-ui, opennav-x-beta2-dpi, opennav-x-beta2-refinement, skager-chart-private-candidate]
+    branches: [staging]
     paths:
       - opennav-x/**
       - .github/workflows/**

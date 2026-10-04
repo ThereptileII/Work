@@ -12,6 +12,9 @@ The coordinator assigns bounded parallel tasks with explicit file ownership,
 integrates their changes and focused checks, and owns the full application build
 and release. Check the combined changes before requesting that build. A subtask
 completion does not independently request another build, release or boat action.
+Automatic application delivery runs only on `staging`; mirroring a commit to a
+historical branch must not create a second build or a duplicate draft Release.
+Manual dispatch remains available for an explicitly selected historical branch.
 Update documentation only when contracts, architecture, delivery, safety or
 material evidence change. Preserve historical specifications and failed evidence.
 

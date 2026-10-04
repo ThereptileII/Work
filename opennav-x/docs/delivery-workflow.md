@@ -122,8 +122,10 @@ reported as passes or hidden by a successful build.
 - `.github/workflows/opennav-prototype.yml`: explicitly requested design review.
   It is separate from ordinary Staging delivery and Production promotion.
 
-The Staging workflow's ordinary push path selects integration/Staging branches
-and product/package inputs. The change selector routes ordinary documentation,
+The Staging workflow's ordinary push path selects only the `staging` branch
+and product/package inputs. Historical and feature branches require an explicit
+manual dispatch to request an application build; synchronizing them does not
+request another build or release. The change selector routes ordinary documentation,
 evidence and workflow/test-helper changes to focused checks without requesting
 an application release. Packaged documentation and licenses remain product
 inputs. Dependency-producing recipe changes invalidate SDK reuse; a workflow
@@ -160,7 +162,10 @@ include the run attempt so a retry cannot claim another attempt's evidence.
 
 The `staging` branch is the software development/delivery starting point.
 The historical `opennav-x-beta2-ui` branch remains synchronized for existing
-links and integrations; it still produces Staging, never Production by default.
+links and integrations, without automatic application builds or releases. A
+manually dispatched application build from a historical branch still produces
+Staging; it never requests Production. Only `staging` automatically delivers
+product changes, so mirroring a coherent batch does not duplicate its full build.
 The monorepo's `main` branch retains the boat firmware and registered workflow
 definitions. Select **staging** in GitHub's “Use workflow from” selector when
 manually requesting a software build or explicitly instructed promotion.
@@ -168,6 +173,9 @@ manually requesting a software build or explicitly instructed promotion.
 The small `skager-delivery-checks.yml` workflow tests delivery logic on Linux and
 Windows without compiling OpenCPN or performing design review. Run this for
 workflow/helper changes; do not create an application build merely to check them.
+Its automatic push branches are `staging` and the dedicated lightweight
+`skager-delivery-workflow` branch. Historical mirrors use manual dispatch when
+focused checks are needed, without duplicating checks on every synchronization.
 
 GitHub requires manually dispatched workflow files on the repository's default
 branch. The reviewed workflow definitions are registered there; keep them in

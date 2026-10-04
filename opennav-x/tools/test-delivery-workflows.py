@@ -342,6 +342,23 @@ class WorkflowPolicy(unittest.TestCase):
                 self.assertNotIn('continue-on-error', step)
                 self.assertNotIn('gh release', run)
 
+    def test_automatic_delivery_has_one_branch_and_historical_builds_remain_manual(self):
+        baseline = workflow('opennav-baseline.yml')
+        helpers = workflow('skager-delivery-checks.yml')
+        self.assertEqual(baseline['on']['push']['branches'], ['staging'])
+        self.assertEqual(set(helpers['on']['push']['branches']),
+                         {'staging', 'skager-delivery-workflow'})
+        for data in (baseline, helpers):
+            self.assertIn('workflow_dispatch', data['on'])
+            self.assertNotIn('branches-ignore', data['on']['push'])
+        # Manual selection on a historical source branch still forces the same
+        # Staging product gates; the branch restriction applies only to pushes.
+        selector = baseline['jobs']['changes']
+        step = next(item for item in selector['steps'] if item.get('id') == 'select')
+        self.assertEqual(step['env']['MANUAL'],
+                         "${{ github.event_name == 'workflow_dispatch' && 'true' || 'false' }}")
+        self.assertIn("if os.environ['MANUAL'] == 'true': command.append('--force-product')", step['run'])
+
     def test_staging_defaults_and_required_dependencies_keep_design_opt_in(self):
         data = workflow('opennav-baseline.yml')
         inputs = data['on']['workflow_dispatch']['inputs']

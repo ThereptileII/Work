@@ -1,7 +1,7 @@
 name: SKAGER delivery workflow checks
 on:
   push:
-    branches: [skager-delivery-workflow, staging, opennav-x-beta2-ui]
+    branches: [skager-delivery-workflow, staging]
     paths:
       - .github/workflows/**
       - opennav-x/tools/**
