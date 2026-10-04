@@ -1,10 +1,39 @@
 param([ValidateSet('Win32', 'x64')][string]$Architecture = 'Win32', [switch]$Integration, [switch]$Production,
-      [switch]$PrototypeObjectFlow, [switch]$ReuseVerifiedDependencies, [switch]$VerifyPeerCli, [switch]$PrivateOCharts)
+      [switch]$PrototypeObjectFlow, [switch]$ReuseVerifiedDependencies, [switch]$VerifyPeerCli, [switch]$PrivateOCharts,
+      [switch]$DependenciesOnly, [string]$SealDependencyBundle = '',
+      [string]$DependencyBundle = '', [string]$DependencyBundleProvenance = '',
+      [switch]$VerifyDependencyBundleOnly, [switch]$ReusePrivateOCharts, [switch]$DeferRuntimeQualification)
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 $Root = Split-Path $PSScriptRoot -Parent
 $Source = Join-Path $Root 'upstream/OpenCPN'
 if ($Production -and -not $Integration) { throw 'Production requires Integration' }
+if ($DeferRuntimeQualification -and (-not $Integration -or $env:GITHUB_ACTIONS -cne 'true')) {
+    throw 'Deferred runtime qualification requires the explicit native CI integration build'
+}
+$BundleRequested = -not [string]::IsNullOrEmpty($DependencyBundle)
+if ($DependenciesOnly -and (-not $Integration -or $Production -or $PrivateOCharts -or
+    $ReuseVerifiedDependencies -or $BundleRequested -or -not $SealDependencyBundle -or
+    $env:GITHUB_ACTIONS -cne 'true' -or $env:GITHUB_JOB -cne 'windows-dependencies')) {
+    throw 'Dependency-only sealing requires the dedicated fresh native CI producer'
+}
+if ($SealDependencyBundle -and -not $DependenciesOnly) {
+    throw 'Bundle sealing is restricted to the dependency-only producer'
+}
+if ($BundleRequested -and (-not $Integration -or $ReuseVerifiedDependencies -or
+    -not $DependencyBundleProvenance -or $env:GITHUB_ACTIONS -cne 'true')) {
+    throw 'Cross-run reuse requires explicit authenticated native CI dependency inputs'
+}
+if (($DependencyBundleProvenance -or $VerifyDependencyBundleOnly) -and -not $BundleRequested) {
+    throw 'Bundle provenance/reprobe mode requires a dependency bundle'
+}
+if ($VerifyDependencyBundleOnly -and ($PrivateOCharts -or $Production)) {
+    throw 'Dependency-only reprobe cannot request application/private build flags'
+}
+if ($ReusePrivateOCharts -and (-not $PrivateOCharts -or -not $Production -or -not $BundleRequested)) {
+    throw 'Private adapter reuse requires the production bundle invocation and original same-job receipt'
+}
+
 if ($VerifyPeerCli -and (-not $Integration -or $Production)) {
     throw 'Peer CLI isolation verification requires the initial integrated fixture build'
 }
@@ -160,11 +189,13 @@ try {
             '-ProductionOnly', '-TestPerl', $env:SKAGER_CURL_TEST_PERL, '-Evidence', $CurlPreflight)
         # Fail on a changed zlib source before the costly OpenSSL build. The
         # normal zlib build below repeats the same guard and upstream tests.
-        & (Join-Path $PSScriptRoot 'build-zlib-windows.ps1') -VerifySourceOnly
+        if (-not $BundleRequested) {
+            & (Join-Path $PSScriptRoot 'build-zlib-windows.ps1') -VerifySourceOnly
+        }
         # Also verify the producer/consumer lock contract before building dependencies.
         & (Join-Path $PSScriptRoot 'test-zlib-source-verification.ps1')
     }
-    if ($Integration) {
+    if ($Integration -and -not $DependenciesOnly -and -not $VerifyDependencyBundleOnly) {
         Run python @((Join-Path $PSScriptRoot 'prepare-integration.py'))
         $Source = Join-Path $Root 'build/integration-source'
         if (-not $ReuseVerifiedDependencies) {
@@ -174,6 +205,10 @@ try {
                 '--ui', '--evidence', (Join-Path $Evidence "windows-changed-units-$Variant"))
         }
     }
+    if ($DependenciesOnly -or $VerifyDependencyBundleOnly) {
+        $Source = Join-Path $Root 'build/integration-source'
+        New-Item -ItemType Directory -Force (Join-Path $Source 'cache/buildwin') | Out-Null
+    } else {
     # Upstream's batch file can continue after a failed wget/7z operation.
     # Prepopulate the exact supported wx bundle with checked, retryable fetches.
     $Wx = Join-Path $Source 'cache/wxWidgets-3.2.8'
@@ -197,6 +232,7 @@ try {
     try {
         Run cmd @('/c', 'buildwin\win_deps.bat')
     } finally { Pop-Location }
+    }
     if ($Integration) {
         # Replace the stock dependency bundle only in the disposable integrated
         # tree. Each consumer runs only after its producer manifest and output
@@ -204,7 +240,23 @@ try {
         $ZlibPrefix = Join-Path $Root 'build/windows-zlib-1.3.2/install'
         $ZlibManifestPath = Join-Path $ZlibPrefix 'zlib-build.json'
         $OpenSslPrefix = Join-Path $Root 'build/windows-openssl-3.5.9/install'
-        if ($ReuseVerifiedDependencies) {
+        if ($BundleRequested) {
+            $BundleArguments = @('--root', $Root, '--bundle', $DependencyBundle,
+                '--provenance', $DependencyBundleProvenance)
+            Write-Output "Cross-run dependency verification begin: $([DateTime]::UtcNow.ToString('o'))"
+            Run python (@((Join-Path $PSScriptRoot 'windows_dependency_bundle.py'), 'restore') + $BundleArguments)
+            & (Join-Path $PSScriptRoot 'build-openssl-windows.ps1') -IntegrationSource $Source -VerifyToolFactsOnly
+            & (Join-Path $PSScriptRoot 'build-zlib-windows.ps1') -VerifyToolFactsOnly
+            $BeforeCurlPath = $env:PATH
+            try {
+                $env:PATH = "$(Split-Path $env:SKAGER_CURL_TEST_PERL -Parent);$env:PATH"
+                & (Join-Path $PSScriptRoot 'build-curl-windows.ps1') -IntegrationSource $Source `
+                    -OpenSslPrefix $OpenSslPrefix -ZlibPrefix $ZlibPrefix -ZlibManifest $ZlibManifestPath `
+                    -VerifyToolFactsOnly
+            } finally { $env:PATH = $BeforeCurlPath }
+            Run python (@((Join-Path $PSScriptRoot 'windows_dependency_bundle.py'), 'stage') + $BundleArguments)
+            Write-Output "Cross-run dependency live reprobe and stage passed: $([DateTime]::UtcNow.ToString('o'))"
+        } elseif ($ReuseVerifiedDependencies) {
             Write-Output "Same-job dependency reuse verification begin: $([DateTime]::UtcNow.ToString('o'))"
             # The normal source/consumer and stock dependency preflights have
             # already run. Verify immutable producer evidence before reading
@@ -277,7 +329,14 @@ try {
                 (Join-Path $Source "cache/buildwin/$CacheOutput") "cached $CacheOutput"
         }
     }
-    if ($PrivateOCharts) { Build-PrivateOCharts ([bool]$ReuseVerifiedDependencies) }
+    if ($DependenciesOnly) {
+        # Seal successful upstream evidence before any application/private work.
+        Run python @((Join-Path $PSScriptRoot 'windows_dependency_bundle.py'), 'seal',
+            '--root', $Root, '--output', $SealDependencyBundle, '--producer-success')
+        return
+    }
+    if ($VerifyDependencyBundleOnly) { return }
+    if ($PrivateOCharts) { Build-PrivateOCharts ([bool]($ReuseVerifiedDependencies -or $ReusePrivateOCharts)) }
     $Wx = Join-Path $Source 'cache/wxWidgets-3.2.8'
     $Build = Join-Path $Root "build/$Variant-windows"
     $Install = Join-Path $Root "build/$Variant-install"
@@ -331,7 +390,7 @@ try {
             '--cli', (Join-Path $Install 'opencpn-cmd.exe'),
             '--receipt', (Join-Path $Evidence 'windows-peer-cli-receipt.json'))
     }
-    if ($Integration -and $env:SKAGER_DESIGN_VALIDATION -ceq 'true') {
+    if ($Integration -and -not $DeferRuntimeQualification -and $env:SKAGER_DESIGN_VALIDATION -ceq 'true') {
         # Explicitly requested offline painter processes; no chart/profile/input or hardware output.
         Run (Join-Path $Build 'Release/chart_name_text_test.exe') @((Join-Path $Evidence "chart-names-$Variant.png"))
         Run (Join-Path $Build 'Release/chart_light_label_test.exe') @((Join-Path $Evidence "chart-lights-$Variant.png"))
@@ -351,6 +410,10 @@ try {
         Run pwsh @('-NoLogo', '-NoProfile', '-File', (Join-Path $PSScriptRoot 'test-downloader-trust-windows.ps1'),
             '-IntegrationSource', $Source, '-Install', 'production-install',
             '-OChartsPrepared', (Join-Path $Root 'build/ocharts-prepared'))
+    }
+    if ($DeferRuntimeQualification) {
+        Write-Output 'Compilation, CTest and installed security checks complete; runtime qualification is pending in the separate downstream job.'
+        return
     }
     if ($Integration -and -not $Production) {
         if ($PrototypeObjectFlow) {
