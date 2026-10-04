@@ -1,0 +1,27 @@
+name: SKAGER native chart binding runtime proof
+on:
+  push:
+    branches: [skager-chart-binding-runtime]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  binding-runtime:
+    runs-on: windows-2022
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Compare actual binding mutex with the recorded native runtime
+        shell: pwsh
+        run: |
+          python opennav-x/tools/test-native-chart-binding-runtime.py --evidence opennav-x/evidence/local/native-chart-binding-runtime
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: native-chart-binding-runtime-${{ github.sha }}
+          path: |
+            opennav-x/evidence/local/native-chart-binding-runtime/*.json
+            opennav-x/evidence/local/native-chart-binding-runtime/*.txt
+            opennav-x/evidence/local/native-chart-binding-runtime/*.log
+          if-no-files-found: error
