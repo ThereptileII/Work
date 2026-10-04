@@ -117,9 +117,11 @@ try {
     }
    } catch {$refused=$true;$reason=$_.Exception.Message}
    $clickPath=Join-Path $directory 'clicks.txt';[string[]]$clicks=@()
-   if(Test-Path -LiteralPath $clickPath){$clicks=@(Get-Content -LiteralPath $clickPath)}
+   if(Test-Path -LiteralPath $clickPath){$clicks=@([IO.File]::ReadAllLines($clickPath,[Text.Encoding]::UTF8))}
    [string[]]$scrolls=@();$scrollPath=Join-Path $directory 'scrolls.txt'
-   if(Test-Path -LiteralPath $scrollPath){$scrolls=@(Get-Content -LiteralPath $scrollPath)}
+   if(Test-Path -LiteralPath $scrollPath){$scrolls=@([IO.File]::ReadAllLines($scrollPath,[Text.Encoding]::UTF8))}
+   $caseResult=@{action=$spec[0];case=$spec[1];refused=$refused;refusal=$reason;clicks=@($clicks);scrolls=@($scrolls);before=$before;after=$after;pid=$process.Id;createdFiletime=$ready.createdFiletime}
+   $results.Add($caseResult)
    if($scrolls.Count -gt 16 -or @($scrolls|Where-Object {$_ -cne 'PAGE_DOWN'}).Count){throw 'Recovery fixture received an unbounded or unsupported scroll command.'}
    if($spec[2] -ceq 'CAPTURE') {
     if($refused -or @($clicks).Count -or $before.Shell -cne 'prototype' -or $before.Surfaces.Count -lt 3){throw ('Native prototype capture failed: '+$spec[1]+': '+$reason)}
@@ -136,8 +138,6 @@ try {
    } elseif(-not $refused -or @($clicks).Count){throw 'Unsafe/ambiguous native display fixture received a callback.'}
    if($spec[1] -cin @('prototype-recovery-no-progress','prototype-recovery-changed-body') -and $scrolls.Count -ne 1){throw 'Recovery mutation must refuse immediately after its first page-down.'}
    if($spec[0] -ceq 'System' -and $scrolls.Count){throw 'System tab action unexpectedly scrolled the drawer.'}
-   $caseResult=@{action=$spec[0];case=$spec[1];refused=$refused;refusal=$reason;clicks=@($clicks);scrolls=@($scrolls);before=$before;after=$after;pid=$process.Id;createdFiletime=$ready.createdFiletime}
-   $results.Add($caseResult)
   } finally {
    try {
     [IO.File]::WriteAllText((Join-Path $directory 'release'),'release fixed display marker')
