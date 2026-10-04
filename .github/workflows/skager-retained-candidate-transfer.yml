@@ -1,0 +1,188 @@
+name: Transfer retained unqualified SKAGER bytes
+on:
+  push:
+    branches: [skager-retained-candidate-transfer]
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  transfer:
+    if: github.repository == 'ThereptileII/Work'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      # No checkout and no downloaded code execution. This is byte transfer only.
+      - name: Verify original archive and retain unchanged selected files
+        shell: python
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          import hashlib, json, os, re, shutil, stat, subprocess, urllib.error, urllib.request, zipfile
+          from pathlib import Path, PurePosixPath
+          REPO = 'ThereptileII/Work'
+          HEAD = '0da2c64379d5a9cc4b9b2bd068de6e0b69816577'
+          RUN, ATTEMPT, ARTIFACT = 37207119257, 1, 11307907593
+          SIZE = 700027780
+          DIGEST = '50efe1704bd8641ca199d623f0496fb532fa8c5005e4bb2749c3532e1aa1ccda'
+          NAME = 'unqualified-windows-installer-inputs-' + HEAD
+          FAILED = 'FAILED - diagnostic retest inputs only; not for installation or delivery'
+          OUTPUT_LIMIT = 450 * 1024 * 1024
+          output = Path('transfer'); output.mkdir()
+          def require(condition, message):
+              if not condition: raise RuntimeError(message)
+          def sha(path):
+              with path.open('rb') as stream: return hashlib.file_digest(stream, 'sha256').hexdigest()
+          def api(path):
+              result = subprocess.run(['gh', 'api', '-H', 'Accept: application/vnd.github+json',
+                                       '-H', 'X-GitHub-Api-Version: 2022-11-28', path],
+                                      capture_output=True, timeout=60)
+              require(result.returncode == 0, 'GitHub metadata request failed')
+              return json.loads(result.stdout)
+          artifact = api(f'repos/{REPO}/actions/artifacts/{ARTIFACT}')
+          run = api(f'repos/{REPO}/actions/runs/{RUN}/attempts/{ATTEMPT}')
+          require(run['id'] == RUN and run['run_attempt'] == ATTEMPT and run['head_sha'] == HEAD,
+                  'Producer run/head/attempt mismatch')
+          require(run['repository']['full_name'] == REPO and run['head_repository']['full_name'] == REPO,
+                  'Producer repository mismatch')
+          require(run['event'] == 'push' and run['path'] == '.github/workflows/opennav-baseline.yml',
+                  'Producer workflow/event mismatch')
+          require(artifact['id'] == ARTIFACT and artifact['name'] == NAME and
+                  artifact['size_in_bytes'] == SIZE and artifact['digest'] == 'sha256:' + DIGEST and
+                  artifact['expired'] is False, 'Original artifact identity/size/digest/expiry mismatch')
+          identity = artifact['workflow_run']
+          require(identity['id'] == RUN and identity['head_sha'] == HEAD and
+                  identity['repository_id'] == run['repository']['id'] and
+                  identity['head_repository_id'] == run['head_repository']['id'], 'Artifact producer mismatch')
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self, request, fp, code, message, headers, newurl): return None
+          request = urllib.request.Request(f'https://api.github.com/repos/{REPO}/actions/artifacts/{ARTIFACT}/zip',
+              headers={'Authorization': 'Bearer ' + os.environ['GH_TOKEN'],
+                       'Accept': 'application/vnd.github+json', 'User-Agent': 'SKAGER-byte-transfer',
+                       'X-GitHub-Api-Version': '2022-11-28'})
+          try:
+              urllib.request.build_opener(NoRedirect).open(request, timeout=60)
+          except urllib.error.HTTPError as error:
+              require(error.code == 302, 'Artifact redirect request failed')
+              location = error.headers.get('Location', '')
+          except Exception:
+              raise RuntimeError('Artifact redirect transport failed') from None
+          else:
+              raise RuntimeError('Expected artifact download redirect')
+          require(location.startswith('https://') and not any(c in location for c in '\r\n"\\'),
+                  'Unsafe artifact download location')
+          # Signed URL goes only through stdin; never command arguments or logs.
+          environment = {k:v for k,v in os.environ.items() if k not in ('GH_TOKEN', 'GITHUB_TOKEN')}
+          downloaded = subprocess.run(['curl', '--config', '-', '--fail', '--silent', '--show-error',
+              '--proto', '=https', '--connect-timeout', '30', '--max-time', '480',
+              '--max-filesize', str(SIZE), '--output', 'original.zip'],
+              input='url = "' + location + '"\n', text=True, capture_output=True,
+              env=environment, timeout=500)
+          require(downloaded.returncode == 0, 'Original artifact download failed')
+          archive = Path('original.zip')
+          require(archive.stat().st_size == SIZE and sha(archive) == DIGEST, 'Original archive bytes differ')
+          def safe_members(source, allow_source_links=False):
+              names, total = set(), 0
+              require(len(source.infolist()) <= 100000, 'ZIP entry count exceeds bound')
+              for entry in source.infolist():
+                  name = entry.filename; portable = PurePosixPath(name)
+                  require(name and '\\' not in name and ':' not in name and '\x00' not in name and
+                      not portable.is_absolute() and '..' not in portable.parts and
+                      portable.as_posix() == name.rstrip('/') and name.casefold() not in names,
+                      'Unsafe or duplicate ZIP member')
+                  names.add(name.casefold())
+                  kind = stat.S_IFMT(entry.external_attr >> 16)
+                  require(kind in (0, stat.S_IFREG, stat.S_IFDIR) or
+                          (allow_source_links and kind == stat.S_IFLNK), 'Unexpected ZIP file type')
+                  require(not entry.flag_bits & 1, 'Encrypted ZIP member refused')
+                  total += entry.file_size
+                  require(entry.file_size <= 1024**3 and total <= 3 * 1024**3, 'ZIP size exceeds bound')
+              return total
+          def bounded_read(source, name, limit):
+              entry = source.getinfo(name)
+              require(entry.file_size <= limit and not entry.is_dir() and
+                      stat.S_IFMT(entry.external_attr >> 16) in (0, stat.S_IFREG), 'Invalid selected member')
+              return source.read(entry)
+          selected = {
+              'build/beta-installer/SKAGER-Beta2-Setup.exe': 'SKAGER-Beta2-Setup.exe',
+              'build/beta-installer/package.json': 'package.json',
+              'build/developer-preview/SKAGER-Beta2-Portable-Recovery.zip': 'SKAGER-Beta2-Portable-Recovery.zip',
+              'build/developer-preview/SKAGER-Beta2-source.zip': 'SKAGER-Beta2-source.zip',
+          }
+          transferred = []
+          with zipfile.ZipFile(archive) as source:
+              original_expanded_bytes = safe_members(source)
+              original_entries = len(source.infolist())
+              # Drain every bounded member to validate actual decompression and CRC.
+              for entry in source.infolist():
+                  count = 0
+                  with source.open(entry) as stream:
+                      while block := stream.read(1024 * 1024):
+                          count += len(block)
+                          require(count <= entry.file_size, 'ZIP member exceeds declared size')
+                  require(count == entry.file_size, 'ZIP member length mismatch')
+              raw = bounded_read(source, 'evidence/local/unqualified-installer-inputs.json', 16 * 1024**2)
+              inventory = json.loads(raw)
+              require(inventory['schema'] == 1 and inventory['qualification'] == FAILED and
+                      inventory['commit'] == HEAD and str(inventory['runId']) == str(RUN) and
+                      str(inventory['runAttempt']) == str(ATTEMPT), 'Retention inventory identity mismatch')
+              records = {}
+              for record in inventory['files']:
+                  require(record['path'] not in records, 'Duplicate inventory path')
+                  require(type(record['bytes']) is int and record['bytes'] >= 0 and
+                          re.fullmatch('[0-9a-f]{64}', record['sha256']), 'Invalid inventory record')
+                  records[record['path']] = record
+              require(sum(records[name]['bytes'] for name in selected) + len(raw) < OUTPUT_LIMIT,
+                      'Selected byte bundle exceeds transfer bound')
+              (output/'unqualified-installer-inputs.json').write_bytes(raw)
+              for member, name in selected.items():
+                  record = records[member]; entry = source.getinfo(member)
+                  require(entry.file_size == record['bytes'], 'Selected size differs from inventory')
+                  target = output/name
+                  with source.open(entry) as stream, target.open('wb') as destination:
+                      shutil.copyfileobj(stream, destination, 1024 * 1024)
+                  require(sha(target) == record['sha256'], 'Selected bytes differ from inventory')
+                  transferred.append({'path': name, 'originalMember': member, 'bytes': target.stat().st_size,
+                                      'sha256': sha(target)})
+          package = json.loads((output/'package.json').read_bytes())
+          require(package['commit'] == HEAD, 'Installer package commit mismatch')
+          # Lifecycle is not separately retained in beta-installer. Read its
+          # exact checkout bytes from the already-verified corresponding source.
+          lifecycle_member = 'opennav-x/installer/windows/Lifecycle.ps1'
+          with zipfile.ZipFile(output/'SKAGER-Beta2-source.zip') as source:
+              safe_members(source, allow_source_links=True)
+              reference = json.loads(bounded_read(source, 'SOURCE_REFERENCE.json', 32 * 1024**2))
+              require(reference['productCommit'] == HEAD, 'Corresponding-source identity mismatch')
+              lifecycle = bounded_read(source, lifecycle_member, 2 * 1024**2)
+              require(hashlib.sha256(lifecycle).hexdigest() == reference['files'][lifecycle_member]['sha256'],
+                      'Lifecycle source hash mismatch')
+              (output/'Lifecycle.ps1').write_bytes(lifecycle)
+              transferred.append({'path': 'Lifecycle.ps1', 'originalMember': lifecycle_member,
+                  'container': 'SKAGER-Beta2-source.zip', 'bytes': len(lifecycle),
+                  'sha256': hashlib.sha256(lifecycle).hexdigest()})
+          transferred.append({'path': 'unqualified-installer-inputs.json',
+              'originalMember': 'evidence/local/unqualified-installer-inputs.json',
+              'bytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest()})
+          receipt = {'schema': 1, 'operation': 'verified transfer of unchanged retained bytes only',
+              'qualification': FAILED, 'installerSuite': 'FAILED; no qualification override',
+              'execution': 'No application, installer, helper, test or downloaded code executed',
+              'producer': {'repository': REPO, 'commit': HEAD, 'runId': RUN, 'runAttempt': ATTEMPT,
+                           'workflow': run['path'], 'event': run['event']},
+              'originalArtifact': {'id': ARTIFACT, 'name': NAME, 'bytes': SIZE, 'sha256': DIGEST,
+                  'expired': False, 'expiresAt': artifact['expires_at'],
+                  'entries': original_entries, 'expandedBytes': original_expanded_bytes,
+                  'allMemberCrcVerified': True, 'safeUniqueRegularPaths': True},
+              'transferRun': {'runId': os.environ['GITHUB_RUN_ID'], 'runAttempt': os.environ['GITHUB_RUN_ATTEMPT'],
+                              'workflowCommit': os.environ['GITHUB_SHA']},
+              'files': transferred}
+          (output/'transfer-receipt.json').write_text(json.dumps(receipt, indent=2)+'\n')
+          require(sum(p.stat().st_size for p in output.iterdir()) < OUTPUT_LIMIT, 'Final transfer bound exceeded')
+          print(json.dumps({'status': 'byte-transfer complete; installer qualification remains FAILED',
+                            'files': transferred}, indent=2))
+      - name: Upload unchanged unqualified bytes and transfer receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: transferred-unqualified-skager-0da2c64379d5a9cc4b9b2bd068de6e0b69816577
+          path: transfer/
+          compression-level: 0
+          if-no-files-found: error
