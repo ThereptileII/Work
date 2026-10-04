@@ -23,6 +23,10 @@ include_directories(BEFORE "${P}/opencpn-libs/api-17" "${CMAKE_BINARY_DIR}/inclu
   "${SKAGER_PREPARED}/sdk/glew/include/glew")
 add_compile_definitions(UNICODE _UNICODE ocpnUSE_GL ocpnUSE_GLSL __OCPN_USE_GLEW__
   __OCPN_USE_CURL__ SKAGER_OCHARTS_ADAPTER _CRT_NONSTDC_NO_DEPRECATE _CRT_SECURE_NO_DEPRECATE)
+# Match the pinned OpenCPN host's MSVC mutex ABI policy (CMakeLists.txt:431-440).
+# Its staged VC runtime predates constexpr mutex construction. Apply the same
+# guard to every private C++ target, including BindingState's first mutex lock.
+add_compile_definitions(_DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR)
 # API17 otherwise dllexports host API classes and their generated methods.
 # The .def owns create/destroy; private copied-data exports are explicit.
 add_compile_definitions("DECL_EXP=")

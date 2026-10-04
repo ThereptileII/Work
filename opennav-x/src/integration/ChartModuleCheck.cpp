@@ -12,10 +12,25 @@
 #include <wx/filename.h>
 #include <wx/thread.h>
 #include <array>
+#include <cstring>
 #include <windows.h>
 #include <tlhelp32.h>
 #endif
 namespace opennav::integration {
+#ifdef __WXMSW__
+namespace {
+// Only the explicit early diagnostic calls this path. Write directly to its
+// inherited stderr pipe: preserve the last completed stage even if DLL startup
+// faults before the final JSON report, without a wx logging window or profile.
+void ModuleCheckStage(const char* text) {
+  const auto pipe=GetStdHandle(STD_ERROR_HANDLE);
+  if(pipe && pipe!=INVALID_HANDLE_VALUE) {
+    DWORD written=0;
+    WriteFile(pipe,text,static_cast<DWORD>(std::strlen(text)),&written,nullptr);
+  }
+}
+} // namespace
+#endif
 bool CheckChartModule(const wxString& original, const wxString& install,
                       wxJSONValue& report) {
   report["contract"]=wxString("SKAGER.ChartModuleCheck.1");
@@ -25,6 +40,7 @@ bool CheckChartModule(const wxString& original, const wxString& install,
   report["original_dll_executed"]=false;
   report["passed"]=false;
 #ifdef __WXMSW__
+  ModuleCheckStage("SKAGER module check: begin\n");
   // This early-only process will not enter normal application startup. Enforce
   // no child creation before any private module code, including CRT startup.
   PROCESS_MITIGATION_CHILD_PROCESS_POLICY policy{};
@@ -54,6 +70,7 @@ bool CheckChartModule(const wxString& original, const wxString& install,
     }
   }
   report["resources_verified"]=true;
+  ModuleCheckStage("SKAGER module check: resources verified\n");
   if(GetModuleHandleW(L"o-charts_pi.dll") ||
      GetModuleHandleW(L"skager-ocharts-adapter.dll") ||
      GetModuleHandleW(L"opencpn.exe")!=GetModuleHandleW(nullptr)) {
@@ -69,12 +86,14 @@ bool CheckChartModule(const wxString& original, const wxString& install,
   request.main_thread=wxIsMainThread();request.safe_mode=false;
   std::vector<std::string> imports;
   wxDynamicLibrary library;
+  ModuleCheckStage("SKAGER module check: load and bind begin\n");
   const auto result=LoadOChartsModule(library,request,[&](const wxString& path) {
     wxFFile file(path,"rb");
     if(!file.IsOpened() || file.Length()<=0 || file.Length()>128ll*1024*1024)return false;
     std::vector<unsigned char> bytes(static_cast<std::size_t>(file.Length()));
     return file.Read(bytes.data(),bytes.size())==bytes.size() && ChartModulePe(bytes,imports);
   });
+  ModuleCheckStage("SKAGER module check: load and bind returned\n");
   report["module_loaded"]=result.loaded;
   report["original_sha256"]=wxString::FromUTF8(OriginalOChartsSha256);
   report["adapter_sha256"]=wxString::FromUTF8(skager_ocharts::sha256);
@@ -89,6 +108,7 @@ bool CheckChartModule(const wxString& original, const wxString& install,
     auto query=reinterpret_cast<SkagerGetChartPresentationStatusV1>(library.GetSymbol(SKAGER_CHART_STATUS_EXPORT));
     SkagerChartPresentationStatusV1 state{};state.structBytes=sizeof(state);state.version=SKAGER_CHART_BINDING_VERSION;
     const bool copied=query && query(&state)==1 && ValidOChartsStatus(state);
+    ModuleCheckStage("SKAGER module check: binding status queried\n");
     report["binding_state"]=int(state.state);report["binding_reason"]=int(state.reason);
     valid=valid && copied && state.state==SKAGER_CHART_BOUND_PENDING_INITIALIZATION;
     const auto observe=reinterpret_cast<SkagerGetChartPointStyleV1>(
@@ -97,6 +117,7 @@ bool CheckChartModule(const wxString& original, const wxString& install,
     point.version=SKAGER_CHART_POINT_STYLE_VERSION;
     const bool unavailable=observe && observe(&point)==1 &&
         ValidOChartsPointStyle(point) && !point.available;
+    ModuleCheckStage("SKAGER module check: point style queried\n");
     report["point_style_unavailable_before_init"]=unavailable;
     valid=valid && unavailable;
     report["imports"]=wxJSONValue(wxJSONTYPE_ARRAY);
@@ -122,7 +143,9 @@ bool CheckChartModule(const wxString& original, const wxString& install,
     report["loaded_modules_observed"]=observed;
     valid=valid && observed;
   } else report["reason"]=wxString::FromUTF8(result.reason.empty()?"Module request refused":result.reason);
+  ModuleCheckStage("SKAGER module check: unload begin\n");
   const bool unloaded=UnloadPluginModuleChecked(library);
+  ModuleCheckStage("SKAGER module check: unload returned\n");
   report["unload_succeeded"]=unloaded;
   valid=valid && unloaded && !GetModuleHandleW(L"skager-ocharts-adapter.dll") && !GetModuleHandleW(L"o-charts_pi.dll");
   report["passed"]=valid;

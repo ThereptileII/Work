@@ -7,6 +7,28 @@ The plugin vendors its own S52 library; the `opencpn-libs` gitlink
 Preparation/build/package qualification is separate from this source port.
 The adapter must never be named `*_pi.dll` or be independently discovered.
 
+## MSVC runtime compatibility
+
+The standalone private target uses the pinned host's
+`_DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR` definition for all its C++ objects. The
+host already uses this policy in OpenCPN 5.12.4 `CMakeLists.txt:431–440`; the
+private build must not silently use newer inline mutex construction against
+the host's older staged runtime. Microsoft documents the constructor/runtime
+compatibility boundary in its [VS 2022 17.10 STL release notes](https://github.com/microsoft/STL/releases/tag/vs-2022-17.10).
+This preserves the existing ABI and binding locks; it does not replace any
+installed runtime or make an older runtime a supported general deployment
+choice. The recovery packager separately supplies the licensed current x86
+toolchain runtime.
+
+The first actual host/module check in candidate `ecf7e0c` exited with an access
+violation before its report. The [bounded native BindingState comparison](../../../docs/evidence/scrum259-native-binding-runtime/README.md)
+reproduces the unguarded first-lock access violation and completes the guarded
+binding lifecycle against the same exact staged CRT. It does not locate the
+earlier full-host fault instruction or rule out an additional defect. Actual
+host import/bind/status/unload and boat chart acceptance remain separate gates.
+The early-only module diagnostic now retains flushed stderr stages through
+the inherited Windows pipe without opening a log dialog or a user profile.
+
 ## Presentation boundary
 
 The patch changes one renderer initialization call, preserving its stock CSV

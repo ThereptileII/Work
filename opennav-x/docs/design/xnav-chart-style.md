@@ -1,11 +1,25 @@
 # XNav chart presentation — source inspection and palette contract
 
-Current frozen candidate local `0a52a6c` / published `17ab044` includes the
-combined symbol and warning increments below. Its
-[verified publication receipt](../evidence/skager-symbols-0a52-publication.json)
-binds [run 37164360050](https://github.com/ThereptileII/Work/actions/runs/37164360050).
-Linux/native qualification remains pending; no eligible package, private-chart
-runtime or boat acceptance is claimed.
+Current frozen candidate local `1988df7a8a0ae8ddc6365ca46026d32fccfa0bdc` /
+published `ecf7e0c46609cf4cb29141964d7c4bde98b002b7` retains the combined
+symbol, font, neutral structural paint, 124-DIP logo and warning changes below.
+Its [verified publication receipt](../evidence/skager-console-ownership-1988-publication.json)
+binds [run 37191400051](https://github.com/ThereptileII/Work/actions/runs/37191400051).
+The [original Linux evidence](../evidence/linux-ecf7e0c/README.md) passes its
+integrated gates and retains software/Mesa chart content after Legacy return.
+Native Windows qualification stopped at the real-host private-module check
+after the fixture-free product build passed. Close-symbol, private-chart,
+physical-GPU and boat-font acceptance remain open; the Linux images do not
+establish complete prototype conformance. Endurance is explicitly skipped.
+
+For symbol comparisons use the unchanged executable HTML, not an older
+development screenshot. Its SHA-256 is
+`b04573b920b6bccd16afd22f54a909e48afcfd502ce9cd7c69fdf5b6dd895447`.
+The final embedded `lighthouseArtwork()` defines the small circle and four
+rays also present in `src/chart-marker-art.js`; the historical
+`screenshots/v7/lighthouse-detail.png` shows a tower illustration which that
+final function no longer supplies. This distinction does not authorize
+substituting a generic light glyph for an ENC object's physical tower type.
 
 The integrated SCRUM-279–282 follow-on at `45d73e8` adds the supplied marina,
 UWTROC03/UWTROC04 rock and WRECKS05 wreck artwork, fishing-area motif and cable

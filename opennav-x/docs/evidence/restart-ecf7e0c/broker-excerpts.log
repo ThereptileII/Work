@@ -1,0 +1,81 @@
+78: 2026-10-04T09:15:28.7086587Z [command]"C:\Program Files\Git\bin\git.exe" -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +ecf7e0c46609cf4cb29141964d7c4bde98b002b7:refs/remotes/origin/opennav-x-beta2-ui
+80: 2026-10-04T09:15:36.3582322Z  * [new ref]         ecf7e0c46609cf4cb29141964d7c4bde98b002b7 -> origin/opennav-x-beta2-ui
+163: 2026-10-04T09:15:38.9057189Z ecf7e0c46609cf4cb29141964d7c4bde98b002b7
+204: 2026-10-04T09:16:03.4641002Z ##[group]Run New-Item -ItemType Directory -Path opennav-x/evidence/local/restart-broker -Force | Out-Null
+205: 2026-10-04T09:16:03.4641879Z [36;1mNew-Item -ItemType Directory -Path opennav-x/evidence/local/restart-broker -Force | Out-Null[0m
+206: 2026-10-04T09:16:03.4643600Z [36;1m& "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -ExecutionPolicy Bypass -File opennav-x/tools/test-commissioning-broker-windows.ps1 -Binaries opennav-x/build/commissioning-restart/Release -Evidence opennav-x/evidence/local/restart-broker 2>&1 | Tee-Object -FilePath opennav-x/evidence/local/restart-broker/native-broker-tests.log[0m
+207: 2026-10-04T09:16:03.4645142Z [36;1mif ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }[0m
+208: 2026-10-04T09:16:03.4688343Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+209: 2026-10-04T09:16:03.4688698Z ##[endgroup]
+210: 2026-10-04T09:17:06.0683102Z ##[group]Run New-Item -ItemType Directory -Path opennav-x/evidence/local/restart-prepare-arm -Force | Out-Null
+211: 2026-10-04T09:17:06.0683998Z [36;1mNew-Item -ItemType Directory -Path opennav-x/evidence/local/restart-prepare-arm -Force | Out-Null[0m
+212: 2026-10-04T09:17:06.0685806Z [36;1m& "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -ExecutionPolicy Bypass -File opennav-x/tools/test-commissioning-prepare-arm-windows.ps1 -Binaries opennav-x/build/commissioning-restart/Release -Evidence opennav-x/evidence/local/restart-prepare-arm 2>&1 | Tee-Object -FilePath opennav-x/evidence/local/restart-prepare-arm/native-prepare-arm-tests.log[0m
+213: 2026-10-04T09:17:06.0687399Z [36;1mif ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }[0m
+214: 2026-10-04T09:17:06.0727258Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+215: 2026-10-04T09:17:06.0727634Z ##[endgroup]
+216: 2026-10-04T09:18:03.6706694Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+217: 2026-10-04T09:18:03.6707149Z with:
+218: 2026-10-04T09:18:03.6707457Z   name: commissioning-broker-ecf7e0c46609cf4cb29141964d7c4bde98b002b7
+219: 2026-10-04T09:18:03.6708121Z   path: opennav-x/evidence/local/restart-broker
+220: opennav-x/evidence/local/restart-prepare-arm
+222: 2026-10-04T09:18:03.6708594Z   if-no-files-found: warn
+223: 2026-10-04T09:18:03.6708813Z   compression-level: 6
+224: 2026-10-04T09:18:03.6709014Z   overwrite: false
+225: 2026-10-04T09:18:03.6709215Z   include-hidden-files: false
+226: 2026-10-04T09:18:03.6709436Z ##[endgroup]
+227: 2026-10-04T09:18:03.8487968Z (node:5268) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+228: 2026-10-04T09:18:03.8488685Z (Use `node --trace-deprecation ...` to show where the warning was created)
+229: 2026-10-04T09:18:03.8746467Z Multiple search paths detected. Calculating the least common ancestor of all paths
+230: 2026-10-04T09:18:03.8749707Z The least common ancestor is D:\a\Work\Work\opennav-x\evidence\local. This will be the root directory of the artifact
+231: 2026-10-04T09:18:03.8750885Z With the provided path, there will be 65 files uploaded
+232: 2026-10-04T09:18:03.8756054Z Artifact name is valid!
+233: 2026-10-04T09:18:03.8758437Z Root directory input is valid!
+234: 2026-10-04T09:18:04.2482944Z Beginning upload of artifact content to blob storage
+235: 2026-10-04T09:18:04.3341773Z (node:5268) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+236: 2026-10-04T09:18:04.6660493Z Uploaded bytes 28240
+237: 2026-10-04T09:18:04.7395395Z Finished uploading artifact content to blob storage!
+238: 2026-10-04T09:18:04.7396861Z SHA256 digest of uploaded artifact zip is d2f2b7901cf49b35e93adb40ddf4a0bd4c728ef70747c96b3ece0f03f316537d
+239: 2026-10-04T09:18:04.7399077Z Finalizing artifact upload
+240: 2026-10-04T09:18:05.0733879Z Artifact commissioning-broker-ecf7e0c46609cf4cb29141964d7c4bde98b002b7.zip successfully finalized. Artifact ID 11298579390
+241: 2026-10-04T09:18:05.0735884Z Artifact commissioning-broker-ecf7e0c46609cf4cb29141964d7c4bde98b002b7 has been successfully uploaded! Final size is 28240 bytes. Artifact ID is 11298579390
+242: 2026-10-04T09:18:05.0743371Z Artifact download URL: https://github.com/ThereptileII/Work/actions/runs/37191400051/artifacts/11298579390
+243: 2026-10-04T09:18:05.0977805Z ##[group]Run if ($env:TRANSPORT_RESULT -cne 'success' -or $env:MAINTENANCE_RESULT -cne 'success' -or $env:BROKER_RESULT -cne 'success' -or $env:PREPARE_ARM_RESULT -cne 'success') { throw 'Native commissioning gates did not all pass' }
+244: 2026-10-04T09:18:05.0979436Z [36;1mif ($env:TRANSPORT_RESULT -cne 'success' -or $env:MAINTENANCE_RESULT -cne 'success' -or $env:BROKER_RESULT -cne 'success' -or $env:PREPARE_ARM_RESULT -cne 'success') { throw 'Native commissioning gates did not all pass' }[0m
+245: 2026-10-04T09:18:05.0981295Z [36;1mNew-Item -ItemType Directory -Path opennav-x/evidence/local/restart-gates -Force | Out-Null[0m
+246: 2026-10-04T09:18:05.0981941Z [36;1m@{ schema = 1; owner = 'OpenNavX.CI.RestartGates.1'; commit = $env:GITHUB_SHA;[0m
+247: 2026-10-04T09:18:05.0982443Z [36;1m   runId = $env:GITHUB_RUN_ID; runAttempt = $env:GITHUB_RUN_ATTEMPT;[0m
+248: 2026-10-04T09:18:05.0982932Z [36;1m   transport = $env:TRANSPORT_RESULT; maintenance = $env:MAINTENANCE_RESULT;[0m
+249: 2026-10-04T09:18:05.0983586Z [36;1m   broker = $env:BROKER_RESULT; prepareArm = $env:PREPARE_ARM_RESULT; actualBoat = $false } |[0m
+250: 2026-10-04T09:18:05.0984342Z [36;1m  ConvertTo-Json | Set-Content -LiteralPath opennav-x/evidence/local/restart-gates/qualified.json -Encoding UTF8[0m
+251: 2026-10-04T09:18:05.1022890Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+252: 2026-10-04T09:18:05.1023231Z env:
+253: 2026-10-04T09:18:05.1023414Z   TRANSPORT_RESULT: success
+254: 2026-10-04T09:18:05.1023651Z   MAINTENANCE_RESULT: success
+255: 2026-10-04T09:18:05.1023905Z   BROKER_RESULT: success
+256: 2026-10-04T09:18:05.1024125Z   PREPARE_ARM_RESULT: success
+257: 2026-10-04T09:18:05.1024340Z ##[endgroup]
+258: 2026-10-04T09:18:05.4973543Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+259: 2026-10-04T09:18:05.4974021Z with:
+260: 2026-10-04T09:18:05.4974392Z   name: commissioning-restart-qualified-ecf7e0c46609cf4cb29141964d7c4bde98b002b7
+261: 2026-10-04T09:18:05.4974924Z   path: opennav-x/evidence/local/restart-gates/qualified.json
+262: 2026-10-04T09:18:05.4975269Z   if-no-files-found: error
+263: 2026-10-04T09:18:05.4975496Z   compression-level: 6
+264: 2026-10-04T09:18:05.4975703Z   overwrite: false
+265: 2026-10-04T09:18:05.4975913Z   include-hidden-files: false
+266: 2026-10-04T09:18:05.4976141Z ##[endgroup]
+267: 2026-10-04T09:18:05.6828423Z (node:3144) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+268: 2026-10-04T09:18:05.6829183Z (Use `node --trace-deprecation ...` to show where the warning was created)
+269: 2026-10-04T09:18:05.6884239Z With the provided path, there will be 1 file uploaded
+270: 2026-10-04T09:18:05.6890036Z Artifact name is valid!
+271: 2026-10-04T09:18:05.6892534Z Root directory input is valid!
+272: 2026-10-04T09:18:06.0792567Z Beginning upload of artifact content to blob storage
+273: 2026-10-04T09:18:06.0993204Z (node:3144) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+274: 2026-10-04T09:18:06.3729825Z Uploaded bytes 333
+275: 2026-10-04T09:18:06.4488452Z Finished uploading artifact content to blob storage!
+276: 2026-10-04T09:18:06.4490040Z SHA256 digest of uploaded artifact zip is de93c30393b4516b31ca1056ba6b65c22d4eb88516704871969d5b8e55ba4c95
+277: 2026-10-04T09:18:06.4492456Z Finalizing artifact upload
+278: 2026-10-04T09:18:06.7293173Z Artifact commissioning-restart-qualified-ecf7e0c46609cf4cb29141964d7c4bde98b002b7.zip successfully finalized. Artifact ID 11298888538
+279: 2026-10-04T09:18:06.7294887Z Artifact commissioning-restart-qualified-ecf7e0c46609cf4cb29141964d7c4bde98b002b7 has been successfully uploaded! Final size is 333 bytes. Artifact ID is 11298888538
+280: 2026-10-04T09:18:06.7302500Z Artifact download URL: https://github.com/ThereptileII/Work/actions/runs/37191400051/artifacts/11298888538
+281: 2026-10-04T09:18:06.7586483Z Post job cleanup.
+295: 2026-10-04T09:18:08.4249626Z Cleaning up orphan processes

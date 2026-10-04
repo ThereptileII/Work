@@ -1,8 +1,64 @@
 # SKAGER status — 2026-10-04
 
-## Current boat-test candidate — native probe failure, endurance skipped
+## Current boat-test candidate — native-proven ownership repair, endurance skipped
 
-The single replacement is `d29da372af86c01cb2817f932891fd9408d882fe`
+The single replacement is `ecf7e0c46609cf4cb29141964d7c4bde98b002b7`
+(frozen local `1988df7a8a0ae8ddc6365ca46026d32fccfa0bdc`),
+[run 37191400051](https://github.com/ThereptileII/Work/actions/runs/37191400051).
+Its [complete 6,833-entry mapped tree](evidence/skager-console-ownership-1988-publication.json)
+is independently reconstructed. The narrow logger ownership repair has passed
+its native before/after proof and independent source review. Only the console
+helper, probe-result flushing and focused proof changed; application, chart and
+TLS policy inputs remain unchanged. The existing functional, security, package,
+installer and boat gates remain required. Endurance is explicitly skipped.
+The native fixture-free product build passed at 11:07:29 UTC. The following
+real-host private chart-module check failed at 11:07:33 UTC. The run has now
+completed with failure. Its [original Windows artifact](evidence/windows-ecf7e0c/README.md)
+is independently digest/CRC verified: 139 fixture and 139 production cases,
+12 actual Downloader and nine private wxCurl cases pass. The repaired console
+helper completes teardown. The positive private-module child exits
+`0xC0000005`, before its JSON report; there is no retained faulting instruction.
+Default/invalid-option early checks pass, and profiles are unchanged. Public
+Downloader, recovery-package and installer gates were skipped, so this run
+cannot produce an eligible candidate. Independent DPI/chart checks pass with
+software fallback, not an actual OpenGL result. No package or boat acceptance
+is claimed.
+
+The private adapter omits the mutex compatibility definition used by pinned
+OpenCPN while its first binding call locks a global mutex against the older
+staged MSVC runtime. SCRUM-259's [small native before/after proof](evidence/scrum259-native-binding-runtime/README.md)
+now reproduces the first binding lock's access violation against the exact
+14.12.25810.0 CRT and passes the full guarded binding lifecycle. The original
+13-member artifact and all seven source identities are independently verified.
+The guard matches upstream; explicit early-check stderr stages preserve
+diagnostics if module loading still fails. Neither change replaces stock or
+boat runtime files. SCRUM-217's next workflow also retains module failures
+immediately and permits independent trust/peer checks to finish; packaging
+still requires every original gate. One combined replacement follows this
+bounded native proof and independent review; full-host acceptance remains open.
+Endurance remains skipped.
+
+The exact replacement's [contract audit](evidence/contracts-ecf7e0c/README.md)
+passes 94 Linux and 91 Windows cases with no failures or skips, plus ten
+additional executions of the existing restart test on each platform. Its
+[same-run restart prerequisite](evidence/restart-ecf7e0c/README.md) is verified
+against the original artifact and all four required success values. These
+results qualify prerequisites only; the integrated application, actual TLS,
+package and boat gates remain separate.
+
+The [current Linux integrated artifact](evidence/linux-ecf7e0c/README.md) is now
+independently digest/CRC verified: both builds pass the same 147 cases, and the
+actual core Downloader/wxCurl suites pass 12/13 cases respectively. The product
+loader identifies this exact commit, fixtures disabled and status-only output;
+its loopback pilot record contains zero output. Endurance is explicitly skipped.
+Four retained Day/Legacy-return captures show ENC/coastline content, neutral
+structural colours and the smaller logo. Linux software/OpenGL chart glyphs
+differ; native Windows/boat typography remains unaccepted. Linux OpenGL uses
+llvmpipe, so this is not physical-GPU evidence. Windows and boat gates remain open.
+
+### Preceding d29da37 candidate and verified ownership correction
+
+The preceding candidate is `d29da372af86c01cb2817f932891fd9408d882fe`
 (frozen local `615118f351abdea7b79a042db63e58fe0a635e0a`),
 [run 37184477492](https://github.com/ThereptileII/Work/actions/runs/37184477492).
 Its complete 6,781-entry mapped tree

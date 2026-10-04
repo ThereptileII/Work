@@ -604,13 +604,24 @@ jobs:
       - name: Resolve private chart imports in the real host without plugin initialization
         id: private_module
         run: |
-          python opennav-x/tools/test-chart-module-windows.py --install opennav-x/build/production-install --evidence opennav-x/evidence/local/ocharts-real-host-module
+          python opennav-x/tools/test-chart-module-windows.py --install opennav-x/build/production-install --evidence opennav-x/evidence/local/ocharts-real-host-module 2>&1 | Tee-Object opennav-x/evidence/local/ocharts-real-host-module-output.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Preserve failed private-module check before independent display checks
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: ${{ !cancelled() && steps.private_module.conclusion == 'failure' }}
+        with:
+          name: windows-private-module-failure-${{ github.sha }}
+          path: |
+            opennav-x/evidence/local/ocharts-real-host-module
+            opennav-x/evidence/local/ocharts-real-host-module-output.log
+          if-no-files-found: error
       - name: Native public Downloader Windows trust and rejection gate
         id: downloader_trust
+        if: ${{ !cancelled() && steps.production.conclusion == 'success' }}
         run: ./opennav-x/tools/test-downloader-trust-windows.ps1 -Install production-install
       - name: Exact peer response buffer on native MSVC Win32
         id: peer_buffer
+        if: ${{ !cancelled() && steps.production.conclusion == 'success' }}
         run: |
           python opennav-x/tools/test-peer-buffer.py > opennav-x/evidence/local/peer-buffer-windows.log 2>&1
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
