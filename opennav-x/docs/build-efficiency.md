@@ -84,23 +84,16 @@ long-running suites run as separate background work with retained logs; report
 pending, failed and skipped gates truthfully. The user-directed endurance skip
 continues until explicitly changed.
 
-## Reviewed verifier correction for the first producer
+## Preserve failed producer outputs
 
-The first immutable producer at `966e7832ac326aaaf397046ea1dc9c2cff19569d`
-runs its native library work with the original bundle verifier. Native
-helper tests then found a consumer path-boundary error: a Windows short path and
-its resolved long spelling could bypass the explicit embedded-provenance check.
-The corrected verifier resolves both paths. The authenticated downloader already
-keeps provenance outside the artifact; that outer boundary remains unchanged.
-
-`tools/windows-dependency-verifier-compatibility.json` permits only this reviewed
-producer commit and exact old/current verifier byte hashes (separate LF/CRLF
-checkout pairs). It does not normalize line endings or authorize arbitrary
-future helper changes. All other recipe/workflow inputs, runner/tool facts,
-producer evidence and SDK files remain exact. Restoration keeps the verified
-current helper; the original artifact and manifest stay unchanged. This avoids
-recompiling identical libraries for a stricter consumer-only boundary. The native
-cross-run proof still has to pass before this producer is selected for Staging.
+A failed producer never becomes an eligible SDK. If compilation/tests complete
+but final verification or sealing fails, retain a separately named
+`unqualified-dependency-recovery-*` artifact containing original recipes,
+source archives, installed dependency outputs, native metadata and evidence.
+It is recovery material only: the normal downloader rejects its name and failed
+producer status. Recovery requires independent investigation and qualification;
+there is no automatic fallback to those files. This keeps a sealing-helper
+failure from discarding the completed native outputs.
 
 ## Actions operation
 

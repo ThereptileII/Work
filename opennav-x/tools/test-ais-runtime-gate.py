@@ -63,11 +63,11 @@ class DependencyAuthorityTests(unittest.TestCase):
             workflow = root / GATE.bundle_api.WORKFLOW
             workflow.parent.mkdir(parents=True)
             workflow.write_text('inert producer workflow')
-            verifier = root / GATE.bundle_api.VERIFIER
+            verifier = root / 'tools/windows_dependency_bundle.py'
             verifier.parent.mkdir(parents=True)
             verifier.write_text('inert unchanged verifier')
             roots = [prefix.relative_to(root).as_posix(), GATE.bundle_api.WORKFLOW,
-                     GATE.bundle_api.VERIFIER]
+                     'tools/windows_dependency_bundle.py']
             expected = GATE.receipt._inventory(root, roots)
             document = {'roots': roots, 'files': expected}
             source.write_text('modified')
