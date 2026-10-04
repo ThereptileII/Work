@@ -1,0 +1,5 @@
+
+Algorithm : SHA256
+Hash      : 3A4D81DC7A4136D4AEE940474DDABE84D8A128FFBF9F1F6BAA64B5B94C8FAC0A
+Path      : D:\a\Work\Work\opennav-x\build\production-windows\Release\opencpn.exe
+

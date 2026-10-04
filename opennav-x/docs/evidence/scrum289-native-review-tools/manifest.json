@@ -1,0 +1,825 @@
+{
+  "schema": 1,
+  "commit": "47c0a789967c29a618db1f0249a42ade756bf460",
+  "files": [
+    {
+      "name": "AisCredentialImport.cs",
+      "sha256": "b8eede6d8a06d95a48dce28a3e59c192dc5849ff32a185c3013756d3d19219c5",
+      "sourceSha256": "e0372f9216d2e48bc94b33d85c82937434b1fb037e299bb2c88c5fe719cdc16f",
+      "size": 4606,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "AisCredentialPipe.cs",
+      "sha256": "81d1f2f5307c9b5e0a6cf0eebe2bc2543c5877930b2a95484b0a065937267bb2",
+      "sourceSha256": "94fedf74b01448cf24e96e834cddf8550ac6432dd62d57c6ab28b326f9d6e46e",
+      "size": 3776,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "ChartHelperShutdown.ps1",
+      "sha256": "784452fe456aff4905ba0768652275e6d9b5041610eec6b47c19b7222acebb12",
+      "sourceSha256": "2ad84a9826b28dcfed4f554920c587d6066669caf104617bdd6bbfd1b379f9ff",
+      "size": 7791,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "ChartHelperShutdownNative.cs",
+      "sha256": "552d4739cdcaf42030c5d7d63de23eb3597ef430dd19daad995b15c963410742",
+      "sourceSha256": "d7a97ade5fc6ea633941f2963efb2ffeccfe9cdb3b45a4f93a4c79bf455be8bb",
+      "size": 8788,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "ColdBaseline.ps1",
+      "sha256": "c786506ece071ad609b1236f82189e7f2ccbbabee0ed1098a519c75b214bc34f",
+      "sourceSha256": "bad08971ecb2b42affd3027b0c2bcaf1faad2fd16da14230a734d40f847dcc6f",
+      "size": 6801,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "ColdChartHelper.ps1",
+      "sha256": "b7eb09c0eb68793e693dbdb3927dd50dd05667e390fa5967bab754afcbbf68e6",
+      "sourceSha256": "4ad506897a21f3890cf3830430c47c3877ccbf26572606e5bb3ad3656e466c6d",
+      "size": 6579,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "Commissioning.ps1",
+      "sha256": "acec289a8347adcd56ed1e307d644d21753b69697f3f0b7b20f85824034bae76",
+      "sourceSha256": "60f97ca9238e68373054b6e223d8d32acbb8e96b7776ad5b6a31f46acf89e2b2",
+      "size": 12214,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "CommissioningBaseline.ps1",
+      "sha256": "89c83b1b92799dd6d3865181899596c5be63b934633d1cef96c207a719b70b86",
+      "sourceSha256": "10e67791b04fe16b151247eb6b2d975f0325b1170ddd30ae05e2152b9da633b7",
+      "size": 23857,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "Common.ps1",
+      "sha256": "5b62c3bc3ed1324c947355c31279fcbfdb964f5c7339b9fc8a75044d7e92ebb0",
+      "sourceSha256": "a14cfe12c5bda956018b92ce385cb66f09c4ef77c0c4adccfb0ea3e0934c657a",
+      "size": 18460,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "InstalledResourceReview.ps1",
+      "sha256": "e3e8e47745c2c98fe22a50fe14fd41dcddc4601dab116bf11a2591e16d94edc9",
+      "sourceSha256": "a749af337c65317d0ae32d87ecbc6dda6e8abecbaf10afe9e37c97b82e5ba15a",
+      "size": 4398,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "InstalledWelcome.ps1",
+      "sha256": "2cdb1b6a3c7c80aa5eb277c1fb3a7b49668b1bf10c9abf792bdf1781971c4a1d",
+      "sourceSha256": "c21f9a6fbda08aaeb992443b65c3cb8a645b6816caf62f087ea8830442b892ab",
+      "size": 19364,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "InteractiveJob.ps1",
+      "sha256": "761cb3f18142aa321f3bc9d3aee746aa7ad681969f38f7a8b374488086289086",
+      "sourceSha256": "92297e9e0a0937a5740192226835b72e34551f95f0e47f738a0c3d3e03fae11e",
+      "size": 10565,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "OfficialUpgradePolicy.ps1",
+      "sha256": "439a64b183256ac37585e7958d883e5d89a1338780c5003924967f8ed22b7f81",
+      "sourceSha256": "2d5b3e24112ee1135674c5869efbeca1f6c2ac17cc9d66e8da93fa1d74440ba5",
+      "size": 7993,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "OfficialWizardNative.cs",
+      "sha256": "1ab91584b1e002f6610e0b637e2fa0d20931fceb45f4a9e241352940a373d1cd",
+      "sourceSha256": "f6ef2183e14f13826783061cf4218873caf5b7eeacb78e464e906c5603068fcd",
+      "size": 12279,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "OrphanChartHelper.ps1",
+      "sha256": "23d0cc79f19d72982cf7f07ab77d8c03b6ae2b52850a8127a9e6cd4bd3d7abf4",
+      "sourceSha256": "83b374f4889cd7cb27f832d49018f99524b986f3763364fc382465eb0f88dc1d",
+      "size": 4732,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "PortableReview.ps1",
+      "sha256": "ecd3637439dc4a1634771fe51e4585da5d21e78dfbece3261bf1262ae119145c",
+      "sourceSha256": "98c3136c002e0392226a259a4fc0570a659e349329302319130212e57646515a",
+      "size": 9941,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "Preparation.ps1",
+      "sha256": "97fad3888d33de482b87a42f2f1054012aef68915a7df8cae67f5a173e162313",
+      "sourceSha256": "62b423e73b8abb1cba4ef03839c684ae23db044586d935b567465060fc5912c1",
+      "size": 21540,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "RendererLog.ps1",
+      "sha256": "11b0e0c48970f5e2dcb164856505ea358139edeeec85165d707d70d9a2c900aa",
+      "sourceSha256": "ca0b8ceca4218b854a50bdc8c957bb0f417807c5b869bb12c51f4e05d6842813",
+      "size": 11161,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "RestartAuiPersistence.ps1",
+      "sha256": "b26f0fb5d2c2749b729cbfe66b8428264d6a5e377bb254787a3c62e1898a7338",
+      "sourceSha256": "761e55996fe306a87a3ce61c2455b318599ccd07b4050105f26bd6479dfd7e52",
+      "size": 5678,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "RestartCommissioning.ps1",
+      "sha256": "398055841cb6e50b14617273b6860bb48a27475bee54765908fa8821f62378d3",
+      "sourceSha256": "236112451d9d0e9f43160888dc10a61809db14ccdc0088f2ecc71d2034268188",
+      "size": 26002,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "RestartCommissioningArm.ps1",
+      "sha256": "8987dce363b10c7b1a28b34c5e6f92d98cc388a5c23692068ea2eb20e4998cc9",
+      "sourceSha256": "b5e8244d3b24d344b820ca2cb2fdac8092c7aae596d31bc2b5bff6a31261fb58",
+      "size": 5606,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "RestartCommissioningBroker.ps1",
+      "sha256": "eee59c1c8d555fbb03072072d3ad975cf9f432dd65e9da57157dac9e63ae5358",
+      "sourceSha256": "812f9db855db20048ba450cbb404d267c347e8c15e2fd9c831fcf067339e5280",
+      "size": 9409,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "RestartCommissioningNative.cs",
+      "sha256": "9c988862d2139dcde9688c877e1f0bf348ab8209a8f43dcfd5b3c63c6a7d9806",
+      "sourceSha256": "0f614f08f8e129b5242603a55b860188d095fd6b8c32c4d98e38c2c95c764aab",
+      "size": 9221,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "RestartCommissioningPolicy.ps1",
+      "sha256": "6240dbbc1018f014e9e471226b57bd9097c020a3cb34242900e11b158a2c8117",
+      "sourceSha256": "4dd5756e55ca2879ee3076bd6b7f4d0a5c686af883d34c023176d97c903394af",
+      "size": 13152,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "RestartCommissioningPrepare.ps1",
+      "sha256": "bbc25e3933ef8e085484c7ff3203d452258ab6609504ae285eaa0875af8f31f9",
+      "sourceSha256": "078657992c0075a17c9fb25079383f6a9d4046b5808d4a53d04b5da387c43d46",
+      "size": 3738,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "RestartDashboardPersistence.ps1",
+      "sha256": "130436add5990cd810a3661237f85ea62bb0d9e86c5d26f7b639dbbb2fd279be",
+      "sourceSha256": "8028e648827eac93c5c7f50523cef804c37c245d250b6499141a23fd7d320957",
+      "size": 1342,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "RestartWindowNative.cs",
+      "sha256": "6fe184897b77fcddcbf007743507f11afbdf318589f744fca4ae684de7ccf56a",
+      "sourceSha256": "6790936228ea73c7e555c715cc9e34a58d4228ca27a69546b71b9d5a7adb531c",
+      "size": 25420,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "RestartWindowReview.ps1",
+      "sha256": "7558ef6de428075d16d729d999d7d85572e0e4f91350b46dc22d3db4f7b673ce",
+      "sourceSha256": "0ce0e2c96066b9f04850c8b1c106bd0eb2704024c1296f21af9076886fe8444f",
+      "size": 14234,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "RetirementPolicy.ps1",
+      "sha256": "d6111884aa9313ac7d6f7f49814e78a678546937085232c63e016ac819c39da1",
+      "sourceSha256": "bbf12377046b6fb7fa6996f3fe7840a85cc3dcac55510e0003832bfbebef73dc",
+      "size": 798,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "ReviewWindow.ps1",
+      "sha256": "88063ef732fc9c9adae81dc0d1a27b9f28caa46bf0d4f4d7757968a77c33c5ef",
+      "sourceSha256": "b217c0d42a6c698e8686915413f67b8224c1888b08e03436b24d6ff0700d0f6d",
+      "size": 11626,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "ReviewWindowNative.cs",
+      "sha256": "4c547cd1b6ac49ff355df3bc75bd035d66b8505df467038d9ea864829db33aa3",
+      "sourceSha256": "686f77cb6d18ebffbc893c2829b61c7521afe0033583882f4c0995cdf79e1eae",
+      "size": 49051,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "SourceCheckout.ps1",
+      "sha256": "d39de3c22f782cc89966a91f56779b330b0dafd87b1a68cbb7cc1f5b559f1d22",
+      "sourceSha256": "0590ae7073979686f2902ab9e936fd1d5a20832e0c3a6dafdad2d4ad989b796c",
+      "size": 9485,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "StartupLog.ps1",
+      "sha256": "2049591bbef2af874f869ea81bcbb302a2cf0e4fd7fbaa624d7ab688a8ec85f0",
+      "sourceSha256": "4d0e088b1deb54cad8423c51d7251f363152eacce6be53a492df9c960b83fbe9",
+      "size": 1540,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "StockReview.ps1",
+      "sha256": "38a837ef45b0dc475145cf30d9dbef98af9a64762371dbdb4bb64c5e7d56e3c6",
+      "sourceSha256": "5475e2982926fc3a56da987f95db31de1c7cbbc2cdb6946d38bf2ae701d45e00",
+      "size": 16642,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "StockReviewNative.cs",
+      "sha256": "f9acd2b98ca28d3a8d85a78c3626c5ebd2dca46b397bd6d594cddffd5e7734a5",
+      "sourceSha256": "a86261ef6d80914123228b256cb9a77179ea79bdc83d046afda933dd33ede9ac",
+      "size": 20370,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "StockWelcome.ps1",
+      "sha256": "b3b97a5e94078c8f2cc54d5725a8470d027794c5be3c640756cec59330d6ca75",
+      "sourceSha256": "d3269f7e4f354bda3447b97748b0b2c515e4e6380e9346d795f4d505f6c9bbe1",
+      "size": 14718,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "StockWelcomeNative.cs",
+      "sha256": "e903471fca3fb5f96b03e98572c1549ab7a7fb9d2e641af4deea291167ddf330",
+      "sourceSha256": "228646c8a5093ebc0dfcb9848808699a913c8787375b0579c0e3476e051a2b66",
+      "size": 31789,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "audit-navigation-copy.py",
+      "sha256": "df90fff4586b0a7c9537f0613aa669b2f028b7c8d9dce7952e314107842db429",
+      "sourceSha256": "9afde2d95061174ced7902a455177232ed7a9dbd596f05012f5ad6a0b7f23938",
+      "size": 5941,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "backup-environment.ps1",
+      "sha256": "b756a5753787226ded1a6e9ffe584f2fa6e7c18777d8950d0cbf3a390a368073",
+      "sourceSha256": "9ef49b3e0d81a58dfda79cc3d61484f4fdc7405ae6a7edff8ab3ab1e9ad4b270",
+      "size": 5644,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "backup-managed-plugins.ps1",
+      "sha256": "b0abab1297e1ddae1b0d29bc9231defd2b941e6e0ca72a9db193ec7a7fe77abb",
+      "sourceSha256": "f4ab2441aa5483248af1ac0ac7c190544177f8c539c9064d44b8bb21136ea615",
+      "size": 3793,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "boat-target.example.json",
+      "sha256": "bde3d3b88f8676308006ae9e08357bc7e26627f4222efdc5ca22b2d859d6e87b",
+      "sourceSha256": "495bf42eddc3bf3c67c7706dfe0691fbca8a00809f21ab7ae712408be31e9d03",
+      "size": 941,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "build.ps1",
+      "sha256": "d9f9be8eaa1ebc62c6681fa501f8210c71760944ca2dec7a441078273cdbf5e0",
+      "sourceSha256": "6ee5a128ac526af9a0eb58e4ab287620759c959d282ca4ee3a10cadd6080e09a",
+      "size": 1220,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "cancel-visible-firewall.ps1",
+      "sha256": "9a34b5af34beee4676080e7b5055bd37f80f2ac1a6f55f514abe13792fc7e53e",
+      "sourceSha256": "54691e2ed5a89ebb4cc633c6472b0784868c735337533c5a6521a3277d2e212b",
+      "size": 7604,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "capture-cold-baseline.ps1",
+      "sha256": "09b58cdbc0084d31232e1ce287608594fdfd92e748f74b8378b093df0c9304c4",
+      "sourceSha256": "b016a0d04ddcb12a8c0dcb612bd40a5408be38b364f120e7457a17b3887b4921",
+      "size": 11355,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "capture-ui.ps1",
+      "sha256": "56652084114f56884c1588b602e85827134d0e9d276423d804a9e3c5662a7df0",
+      "sourceSha256": "a740140e47e11a224fc270c9e4cb4d5b6f0fab8e7ada0374712bce18ccbea67c",
+      "size": 705,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "collect-logs.ps1",
+      "sha256": "728746b0461b8cee2421af47592c9f838b4f80c44b977b9bff07f715b742d2b7",
+      "sourceSha256": "ab263080167577a126679109fd4dc2aef87a023b37977a837ca0933fda484c4e",
+      "size": 1366,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "commission-read-only.ps1",
+      "sha256": "1e40919c39b35bdf1df3100b18b6d02ef8e3c29c83f8ad606b4c5517136b27a3",
+      "sourceSha256": "3ee1727baa2badb960f95107502e9bcab51b270fbec8c8003b67a864c6afdb2e",
+      "size": 21160,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "dismiss-windows-firewall.ps1",
+      "sha256": "3a6563752add76a066740414d564ff47615db02b9874d518b3388bf04edcefae",
+      "sourceSha256": "b7fdc0cf5bb8f6bc2bc3eaedaf3241e3faac5218089ee88337f9ac365fe191ce",
+      "size": 5991,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "import-ais-credential.ps1",
+      "sha256": "b51d9fac3b419ef13dfe10b57b1ece4cc2d93d2cc8690a0b8f22b1b653687962",
+      "sourceSha256": "2ecc123a9c9777c7729946e1aaa15802bcc1270d09831b1613dd52c1af734052",
+      "size": 764,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "import-ais-desktop-credential.ps1",
+      "sha256": "d479654ee165f6a2687a96b5bc39f0f67a2e48713d82a51347fea8c3ae79013d",
+      "sourceSha256": "c4ef506d4a22bbdc5022292e9baf767030a397f683399b8c4133a12da41eb714",
+      "size": 5291,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "initialize-target.ps1",
+      "sha256": "75d777f0d0104582b5e7bfc80d58a60e5f626fc36b3fe984b947c6e01e5deb51",
+      "sourceSha256": "1894244edfd294179929ef56b8eac3141da10193f46a55079fbd318be71a2b7c",
+      "size": 1106,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "inspect-chart-inputs.ps1",
+      "sha256": "62a0bd334ae4149e70c34d2c55643c606c195a396371098153ec630528259bcc",
+      "sourceSha256": "0cb46bbe3ace4d2dd064343a4d1cdf7b3485b3c91dce9af76aa8118183263e70",
+      "size": 1539,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "inspect-partial-backup.ps1",
+      "sha256": "0b04b6c5e99dbefbb84c462dcd9bd222647c7f3d85ddd17d88f775c22dacd291",
+      "sourceSha256": "daeee0b7b01981fa73e0b997cb9a11e80b28beebcc60ecdf99876bf14b902ae7",
+      "size": 1743,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "inspect-windows-prompt.ps1",
+      "sha256": "40b4893a1e2709854514a4942fb0ad7b084c10cd7231d9b1b81b27b2914ab2f4",
+      "sourceSha256": "34fa89829735130a1f62a3a7c2dde2a616aadb9159e8e2a592246aea33760280",
+      "size": 10551,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "inspect.ps1",
+      "sha256": "9585c850306d6e68182288d99d7f0808a10685cd7d9f41ab8876104279849ff5",
+      "sourceSha256": "168e81cea129706a29182e2bfcc38044053b66707c405c9d5d3f214ce13a128c",
+      "size": 4052,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "install.ps1",
+      "sha256": "e9ab2f2ba5209c0129cb946e6eedf89f8b77e791187c23a875ad1d368b1f791c",
+      "sourceSha256": "8d6dd67c9cd3eed61efdf3b4057b8aac374f263d6b37d36688e0a54ab2532822",
+      "size": 2840,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "maintain.ps1",
+      "sha256": "045f655105b8f0770c2ff8ac056eed9a90e772a15859fb3c8ebb1ff0e492b00b",
+      "sourceSha256": "194045d6a16d01ea57dd7330ffdd842b547e5ac5ff16b7d7e1d1c8a4b8c0a067",
+      "size": 1784,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "observe-stock-renderer.ps1",
+      "sha256": "dae13f9bf889e59321e94d38f9a0a37e0de343aada94fc2b4d96dbe6c431f7f5",
+      "sourceSha256": "ddb6e436bbf9ab98449dd1b527e445a735d19142b2a44bcf1ef8ef2a6ac9d8e5",
+      "size": 4742,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "portable-review.ps1",
+      "sha256": "919a887aa0c9cde8f5385058e1cbf46b527ada12d92e6a66dc999895fb2d76ff",
+      "sourceSha256": "364ea823c0d9861803882b044b8f59111453d2d6e2725a9896ef5e3bd7be6f5c",
+      "size": 2286,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "prepare-baseline-adoption.ps1",
+      "sha256": "022107bb8d6ce0164e88e0b7f887e03771208313889e4731267e7030fc926cad",
+      "sourceSha256": "56d5d288532a0a598cec7449aee313d661874781870e3eecdd132de80145553d",
+      "size": 6085,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "prepare-portable-review.ps1",
+      "sha256": "55726ec3c5ee01cdedc112b9a6788fdbc973d84c9445b063b38f77dca4d46292",
+      "sourceSha256": "5731ac4cd718fb621fb18dbc4b24c956650e7b39b596564ca8a06ed4af2164e2",
+      "size": 5235,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "probe-online-ais-desktop.ps1",
+      "sha256": "b6553c85ef0f68a2f4c2d9d58cb5dc0c70a3aea9cf1624a730d80949ba662a89",
+      "sourceSha256": "b62b46a542e43ee192024cd6254efa22da068810b65b8f7d33f04bef22f40ef6",
+      "size": 2924,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "probe-online-ais.ps1",
+      "sha256": "b1e7704c2ce8ed5788434817971096276e149071a9e8721e526d2bde38025937",
+      "sourceSha256": "37652ac4fbc3a4a378aa5f1dd4b5b6fbad5969cd903a9316406ae6b025e8605c",
+      "size": 5347,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "recover-cold-chart-helpers.ps1",
+      "sha256": "a63f2db7b72287e89079fdd5de199205d858b2688391163ed3dfb7006e8a0dfa",
+      "sourceSha256": "aff8b033385862b719cbf9a94b1356d105116c3ac8dc65f84c69832a024da9f4",
+      "size": 7357,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "recover-zero-profile.ps1",
+      "sha256": "a0421b5037d378cb40aa85cce96db2257c66c267c75f7772382f5929c8d6590b",
+      "sourceSha256": "b934cec38e1d6b0d9541acf75379d1cae64233c2c16e4f63b5c45978d3edd9f0",
+      "size": 5970,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "repair.ps1",
+      "sha256": "e4bb1d7e9d41b811b10198051c6f0d9a317558f6fe61f501a11f76c30399ea14",
+      "sourceSha256": "0a287360a7b3f5b5ee323133444000c54235c00a68bfcb0393e27edb80ce59f7",
+      "size": 139,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "retire-download.ps1",
+      "sha256": "851c64154cf8bad0fbdd5d21e3c0b936e24be1e24ac26e963a9b66cab4ea01a5",
+      "sourceSha256": "3c5722603991a001a6bcca6d6584400d3abd56883d641c45c7f86a538dd9844b",
+      "size": 2662,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "retire-portable.ps1",
+      "sha256": "d907d30669f8b29983f691e2df11f628b3812e9b747f52a8502d50cf63d7f298",
+      "sourceSha256": "1a46cbf1d981500f142ef8d29e37f9cbc28744965bcb5f185d041b8a762283b1",
+      "size": 3407,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "review-installed-welcome.ps1",
+      "sha256": "32da41ea367f0ab7b02dab26fbd59525761abdaabbe241c40dea9c3197672f13",
+      "sourceSha256": "4a8d9e488ffeb5ec050fa7bbad2661a2ba326c9adae169d9cad7bf590f53c7de",
+      "size": 2170,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "review-restart-window.ps1",
+      "sha256": "7a63580ecb1a2915dc5d105ebe8129b5f83f63c73c906c9147e62086b92417fc",
+      "sourceSha256": "f5b41c678e4b489eb8cd105ec576c308047bcd9897630f91e7773dbbcc0c7bf5",
+      "size": 3545,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "review-stock.ps1",
+      "sha256": "96f76ce8ab778f5e010d8726a57ffaf122edf8ab4c74fb780dc364a27cb0b6e4",
+      "sourceSha256": "fc62ae30822d91df4eb89f4ba4929119987c7de2839377544f2201496e2cdf90",
+      "size": 2583,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "review-window.ps1",
+      "sha256": "788ca13a42abf1a1b3495ef2cddda29361febe186e263e05d5249b9be74da3ce",
+      "sourceSha256": "30740a645a738e8dfe0b7ccaed317fb0ef0dc902e4d500ff0f0ffcb5452e4632",
+      "size": 1973,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "rollback.ps1",
+      "sha256": "0123ceb1d4fd2e37700b280b500c298a6a4bd1b5f0b4d80cadcc0fcfb4b43c65",
+      "sourceSha256": "002db30aeb76e666ec92fd7a6c86d34cb1c93365a808170d22e3346abba7b300",
+      "size": 141,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "run-legacy.ps1",
+      "sha256": "684e7969d0796cb5797c2685c1baf6f609e11dd731d8c53c7d14768ba29ee040",
+      "sourceSha256": "e4ba6e3ca35d7e955e0a0fe0f824b9b99bb24afa77c86632f1a24d7b674708bd",
+      "size": 137,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "run-mode.ps1",
+      "sha256": "984011177381ab6e3e50f9d5f2d5967f5a6f6414dc6f97664ce6349b9103e2c7",
+      "sourceSha256": "68e5596d7b3587239391f2e80010433c7633bee75cace0a404dbc940ce0b2491",
+      "size": 940,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "run-safe.ps1",
+      "sha256": "eafd61f5a2158fe118eb51d4b5f1ff1f0d34e99408d144d8ed273eaf3add23cb",
+      "sourceSha256": "d35b2955afc043ae2f37d85a586419f648207af53e30b1b8e3abeddde49bf9b7",
+      "size": 135,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "run-stock.ps1",
+      "sha256": "ad94d0cdd01e8338d195db0f6b6e8f5040f7638c8da871c06a99af335a0c837c",
+      "sourceSha256": "67e4fac2d5a323057215ad3c057c9a85eada53ae23c7fc48c2ca7993eef755f1",
+      "size": 493,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "run-xnav.ps1",
+      "sha256": "c5420148815f8cf86ea811895c7360583aa556f7f946b5135f686936dca7df79",
+      "sourceSha256": "a7b7bd7357a9336add3d39049572ff3eae82719a277f39ecba7f7ae867582f72",
+      "size": 135,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "smoke-test.ps1",
+      "sha256": "aef2707b18ebcdccfe057c53c56cb2a48d4fb984665f523ab17ae8ffaf6ef142",
+      "sourceSha256": "fe9c5ea91b42ddfb68c1ab013accd993f1d691dc1ba47062ff900c5a309809f4",
+      "size": 2698,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "stage-review-tools.ps1",
+      "sha256": "b0eebe2fb8539e2ffa599cc0b10e0503b4f5d679bf7b8388b7594d3559e24b29",
+      "sourceSha256": "701e03e6ae84137b9b173804393e9b5247b797b5bccd429a42858ab20a548574",
+      "size": 3275,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "start-official-upgrade.ps1",
+      "sha256": "afaa23393762cd60b3799220d4ff85a3fc824fb3d0625e12699c120f41ab3758",
+      "sourceSha256": "e0cbf741b065658fc4b339cf5193bb196d0027b5b276b7fb42a6635f6f3d2597",
+      "size": 8268,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "stop-chart-helper.ps1",
+      "sha256": "420735d77b9811d083873d1b11ae18141e42e6989f95788b0c6bc2f9d25f55e2",
+      "sourceSha256": "224e4f0c682f6597e2072e923920b20be77cbebdbd77a16a0dafddf5d9e64720",
+      "size": 2729,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "stop-orphan-chart-helper.ps1",
+      "sha256": "342988efa7af3dafac9f18642765067339e70c4fab1e74dfe38e360e8c1b5137",
+      "sourceSha256": "e8e41ef569c7426aad82541485194e650cc8b1674711ac3a72b360da300948db",
+      "size": 2404,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "stop.ps1",
+      "sha256": "2775ec6c5c263e4e258e7775c44db58201d2fc760fae7470f01ca5b4e403b00f",
+      "sourceSha256": "c3009ea84b22c850fa7cb26b8e476d3b37b366bcacaf6d2f681fdaaf891376d3",
+      "size": 370,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "test-ais-credential-import.ps1",
+      "sha256": "a3290a4c5fe92b680a342b7aebc09e46fd510a14196797100c82bef4ab84a5ca",
+      "sourceSha256": "a5201695145d79a041e0e3cc79360bd96885ed225179f5959634ec7e7f7c6a31",
+      "size": 2596,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "test-baseline-adoption.ps1",
+      "sha256": "52d79374f973573223ff2baab8048c1883cacbaee661261a34ddc8875fab5825",
+      "sourceSha256": "6074476adcd84bfc2bea620b40541b96ab92f94497d28cfaa625131ef7a1cc53",
+      "size": 29282,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "test-boat-tools.ps1",
+      "sha256": "f2d7fd3c76ff1469dae56cac83cd926d35e904c3839eb0c68922830e0e1a1076",
+      "sourceSha256": "f0e8383d3fabe2f538b452bcc99b356a585976cee13045a64ebe126d1ad4410a",
+      "size": 34800,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "test-broker-fixture-contracts.ps1",
+      "sha256": "dda7e7e29a12f72b779f7e2868105c41414ee4aaa9d20f2061caac0c27b5b35e",
+      "sourceSha256": "9a2e5136258afd357888017c7954a84d97cda93cbb130f5f8af4d84ebbc9f79f",
+      "size": 7468,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "test-chart-helper-attempts.ps1",
+      "sha256": "d241f928f34e6a8786d477319ff7abfd57fa747e8e205e9f07ae5cc643452167",
+      "sourceSha256": "e9477a3b287e97f867b8aa3ea239a90fc096f1793fa6a59259a6e9af6eab6cd8",
+      "size": 19282,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "test-chart-helper-shutdown.ps1",
+      "sha256": "d626db8fb3181c04dfb0eeb89a03cb945db4cd5569cc1b7cba5cc254eb9df9a2",
+      "sourceSha256": "8261e131f1694c217af3179390393921f104a97cd86438285c59ec2ca1a680e4",
+      "size": 8061,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "test-cold-baseline.ps1",
+      "sha256": "caf8b0810b27a48a3505201cbad0a16f2d0e653f599ff10489d19d94c4a90f55",
+      "sourceSha256": "edf3f77e2478bd43ed3606219c9beec58db44c1d6a223786930e17f927c53e7f",
+      "size": 34039,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "test-cold-helper-policy.ps1",
+      "sha256": "49706ddf018ee6fa99abe223d27a9f457217d1be06664b9a965d448e8df7de47",
+      "sourceSha256": "43b41292ee046761eccd998b105308ab73df42db92dd456fba34d8addfb651f2",
+      "size": 6646,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "test-cold-helper-workflow.ps1",
+      "sha256": "7e22fed1e4cec1956e13466a70c09b7cd0a0fff1579f6eff081e64ac20978c34",
+      "sourceSha256": "bb3aa243055f419fcd2eb499f178f6ccf584693949b271d0809b30295985579c",
+      "size": 13802,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "test-commissioning-launch.ps1",
+      "sha256": "be4a245085fdce5d329e3528c7d0bb0eae7e5f6c7a3eb85bdf83e0fe9ceb51c0",
+      "sourceSha256": "6e0e5099e037d54ac9800f76ec0c493ac4586623ea7024ce62e3f6837f626b95",
+      "size": 21877,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "test-commissioning.ps1",
+      "sha256": "a01fb321f5af32eda103595f0b8646927633f22f62badd0b5624a7369e45c4df",
+      "sourceSha256": "e027d95c4d7cd7b2319346e0d7d7e32d5229efde524da29d5c38d70c8155650d",
+      "size": 33498,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "test-installed-welcome.ps1",
+      "sha256": "d79bee039eae3cd874de86d62fa84abaa7cee286635acbc3003900dabc87e7d1",
+      "sourceSha256": "f92bdafae24fa023f2945e826bc3d9919c90827184561913c77f2dc7006fdf39",
+      "size": 12148,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "test-navigation-copy.py",
+      "sha256": "ffbe3e40ee8e15b5598dd2cf394a41d3ac28a276632519d6ecb987461f15d40f",
+      "sourceSha256": "5b5e1871b98c437b168731a452a77618cec00bd7e87dcbf79ba430f14f3d0ad0",
+      "size": 4208,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "test-official-upgrade-policy.ps1",
+      "sha256": "43fc384b49b4ee7fb84a9f92f7aa7f426231e7b7f8bf1cc22fcaeb0aa6f82232",
+      "sourceSha256": "8d23190782297ae70af59e2c311522615e6de6db78e8cc081a667614a3e43779",
+      "size": 13958,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "test-orphan-chart-helper.ps1",
+      "sha256": "6bc2fb56133ec97b414aee5edcc5d1b2775680ea4861dd00fcb272e35527b398",
+      "sourceSha256": "fa9f07932282a850cc5304d5ae1064db213eabe880c212114c7bfe57cc0acb2e",
+      "size": 3331,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "test-preparation.ps1",
+      "sha256": "47bd275e7d59b6172719982ad85eb290635fc7a356cbd4ff7812943ecb513a71",
+      "sourceSha256": "af0f83427c500bd4c4c18c18baddf448c34416652c2887250efb015052a37509",
+      "size": 30170,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "test-renderer-log.ps1",
+      "sha256": "d9ed59f5598d17403290e09c9d9fe7fe02abed76673c3c3a6b6ab0cfc4c06a4d",
+      "sourceSha256": "c2b94ac12aa5d47a5fb5ecc2a304a85950ccd11822c9bb171b94132d67b3cf67",
+      "size": 11821,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "test-restart-aui-persistence.ps1",
+      "sha256": "01ba823499334ec0a308e90c857cb9157ad5155eb832f27af8c0fa525a94e60a",
+      "sourceSha256": "19235c8c0701925a8f51d711908c06cb3516dda84bb7bc2b60ae6122c15f6dc9",
+      "size": 5367,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "test-restart-commissioning.ps1",
+      "sha256": "deba2886a77a1eeee279676f2b405ecbf55aab4b5d113a7ba9f7dad8a417ad22",
+      "sourceSha256": "6f66d882551c34afb67b21ac4d0c859f160dab303704df2a69ac7eb24837a1d1",
+      "size": 27913,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "test-restart-window-review.ps1",
+      "sha256": "e1c59f2d850d39e36534277514f491925106b0cbb8dbd816f15cf448d30a0016",
+      "sourceSha256": "5e390d81d3e3b2e1658aea23b4e6d94b20bf71c4e2ae8e6fa8cce205796fe31c",
+      "size": 19714,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "test-review-staging.ps1",
+      "sha256": "ffab4066f4e2bef82837d402b40c9776e91b0daf3e7143c9db826bef71ceeded",
+      "sourceSha256": "41ecd103220eeff13b4490651b3ab44fea822e8b71269d367e2acbaec6b09f62",
+      "size": 4856,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "test-review-window.ps1",
+      "sha256": "597b12e759181fe0d4e8f81d391355094522e00e9a6e40aab5e352d116cee7b9",
+      "sourceSha256": "882cc4d84b178d8f56d98f1609fa5c44ca1c6265654cbc42812a11e608d8ba0f",
+      "size": 18253,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "test-source-checkout.ps1",
+      "sha256": "be206f8cdd0efacd82613c9b2bb40b857acac05a3425693f565c9468564af77d",
+      "sourceSha256": "1216196fe36c2703d6fe5358f21ef7657eb367118433f55e152f8f9b7ccf3bd8",
+      "size": 13821,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "test-startup-log.ps1",
+      "sha256": "af2ead78858b68d4e5e8e6ec0c72334a3874eb0161e7c01d70c14426e5bbc238",
+      "sourceSha256": "1eb316818c4afdda6d9fe70b181baeb3efdf3b2994a61971b1efb65ccb30d469",
+      "size": 3040,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "test-stock-chart.ps1",
+      "sha256": "f479f6f1acb8b701a6854cec1de29c732dd027f0c6aba537622753c172e7de53",
+      "sourceSha256": "77c28a533bd1ab8f686552042a8cd2bf533bba258d9f0a0b5922bc1f27151d79",
+      "size": 4600,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "test-stock-review.ps1",
+      "sha256": "b55820862e5d92ace54da31abcda9b4a8bb50b56b04134bcb0bd754e50954fe9",
+      "sourceSha256": "9c63d074d52aba24b6ba6bdd2058298dd9e59ba142d14b6ea353383edca05831",
+      "size": 7339,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "test-stock-welcome.ps1",
+      "sha256": "4874270ddab23e89f963da20c3f270e10c4c617a617e7dc5dd0e89697c707c2f",
+      "sourceSha256": "876782fa509e38453aa8c5f2752172475e7a671b8614bbd63e866315f2e825d0",
+      "size": 32337,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "uninstall.ps1",
+      "sha256": "a8441a602e748e15fb48a4daa9eda8b78349cf6a1c4acb695adb20413d58b1b6",
+      "sourceSha256": "7da0188bd63309e4fc30914c1f16ba9c33b7b62a86f1ea7a1082cb4fb9af0816",
+      "size": 142,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "update-source.ps1",
+      "sha256": "03ad67a570d2974c5c60f2b8dd30b523fce2950120ae2262552f6afe4c6f5f26",
+      "sourceSha256": "6668fcd52651bfb2af48a7914c4b24bdc0e6401c9c12e1ae84514db2321a4762",
+      "size": 333,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "update.ps1",
+      "sha256": "2d2ad9214472c24c10f781fb282d2c04a30368e2f5dc7ad78e93fa1bb9e42ee3",
+      "sourceSha256": "cfd74e589f7e4cbe242ded39d4899f0d88fbcb85ef1b365b67ef97c5cdaa94e9",
+      "size": 337,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "upgrade-official-opencpn.ps1",
+      "sha256": "46ef09cc1b98180c0f63213e7cdb4341c8a1205fc9c3532b9c76d25cf82d0435",
+      "sourceSha256": "5f2f96d21ba126f8fdd0bf542927a45534d1209a4735e794074662a770415c21",
+      "size": 16200,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "upgrade-stock.ps1",
+      "sha256": "89d732f3931eddb6e138d0464bc765a4636a4f9b16f609bdb7aed6aacb7d6aff",
+      "sourceSha256": "86f35e3f5801b082f89a9fc1302f3a5dc9c8da3c4fdd0996b6a75f1a48093e89",
+      "size": 17177,
+      "lineEndingsDiffer": true
+    },
+    {
+      "name": "verify-commissioning-launch.ps1",
+      "sha256": "01c456eb379b04d032863ab4311c23a76607e2d20519eeb56970ce9f75a05705",
+      "sourceSha256": "4591400aabb008c99b95532ad891ac7429de16992c09f1bb9bb5446eecdb453b",
+      "size": 8285,
+      "lineEndingsDiffer": true
+    }
+  ]
+}

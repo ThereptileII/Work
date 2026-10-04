@@ -1,0 +1,39 @@
+Original windows-production-Win32.log lines 4076-4077
+100% tests passed, 0 tests failed out of 139
+
+
+Original windows-production-Win32.log lines 4112-4112
+  downloader-trust-probe.vcxproj -> D:\a\_temp\opennav-downloader-trust-10a574958ca84bc3875886b9dfbd4a45\build\Release\downloader-trust-probe.exe
+
+Original windows-production-Win32.log lines 4115-4115
+  wxcurl-trust-probe.vcxproj -> D:\a\_temp\opennav-downloader-trust-10a574958ca84bc3875886b9dfbd4a45\build\Release\wxcurl-trust-probe.exe
+
+Original windows-production-Win32.log lines 4150-4176
+2026-10-04T08:56:15.4106091Z trust-import/LocalMachine-Root before
+2026-10-04T08:56:15.7589672Z process/owned-ca-import before
+2026-10-04T08:56:16.0327582Z process/owned-ca-import after exit=0
+2026-10-04T08:56:16.0670734Z trust-import/LocalMachine-Root after
+2026-10-04T08:56:16.0723873Z server/valid before
+2026-10-04T08:56:16.2650048Z server/valid after port=60607
+2026-10-04T08:56:16.2764701Z downloader-case/valid before
+2026-10-04T08:56:16.2822493Z process/downloader-valid before
+2026-10-04T08:56:17.5503973Z process/downloader-valid after exit=-1073741819
+2026-10-04T08:56:17.5635821Z downloader-case/valid failure valid probe output omitted download_ok:
+stage: curl initialization
+stage: download begin
+stage: download returned; HEAD begin
+08:56:16: filesize https://localhost:60607/payload: 36 bytes
+stage: HEAD returned
+
+Exception: D:\a\Work\Work\opennav-x\tools\test-downloader-trust-windows.ps1:173
+Line |
+ 173 |  … iredField)){throw "$Name probe output omitted $RequiredField`: $Outpu …
+     |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     | valid probe output omitted download_ok:  stage: curl initialization stage: download begin stage: download
+     | returned; HEAD begin 08:56:16: filesize https://localhost:60607/payload: 36 bytes stage: HEAD returned
+PS>TerminatingError(): "pwsh failed with exit code 1"
+**********************
+PowerShell transcript end
+End time: 20261004085617
+**********************
+
