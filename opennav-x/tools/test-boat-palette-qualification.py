@@ -39,12 +39,46 @@ class QualificationTests(unittest.TestCase):
                 q.validate_gate_set(changed,self.identity,self.files,'b'*64)
 
     def test_retained_names_and_actual_git_blob_mapping(self):
-        self.assertEqual(117,len(q.composition()))
+        self.assertEqual(119,len(q.composition()))
         files=q.inventory()
         self.assertEqual(set(q.composition()),{x['name'] for x in files})
         self.assertNotIn('inspect-fonts.ps1',q.composition())
         for item in files:
             self.assertEqual(item['sha256'],q.digest((q.ROOT/'tools/boat'/item['name']).read_bytes()))
+
+    def test_startup_helper_requires_fresh_native_source_bound_report(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp);folder=root/'reports';folder.mkdir()
+            source=root/'tools/boat';source.mkdir(parents=True)
+            identities=[]
+            for name in ('StartupLauncher.ps1','test-startup-launcher.ps1'):
+                data=('inert '+name).encode();(source/name).write_bytes(data)
+                identities.append(dict(path='tools/boat/'+name,sha256=q.digest(data)))
+            for name in q.GATES['policy']:
+                if name != 'startup-launcher.json':q.write(folder/name,dict(status='passed'))
+            path=folder/'startup-launcher.json'
+            record=dict(schema=1,status='passed',environment='native-windows-inert-process',
+                        nativeObservation='passed',installedBootstrap='pending',signedOffersAndRollback='pending',
+                        checks=['fixture check '+str(i) for i in range(45)],count=45,sourceFiles=identities)
+            with patch.object(q,'ROOT',root):
+                with self.assertRaises(FileNotFoundError):q.verify_reports('policy',folder)
+                q.write(path,record)
+                self.assertIn('startup-launcher.json',[r['path'] for r in q.verify_reports('policy',folder)])
+                for key,value in [('schema',2),('status','failed'),('environment','linux-portable-contracts'),
+                                  ('nativeObservation','pending'),('installedBootstrap','passed'),
+                                  ('signedOffersAndRollback','passed'),('checks',[]),('count',44),('sourceFiles',[])]:
+                    with self.subTest(field=key):
+                        path.write_text(json.dumps(dict(record,**{key:value})))
+                        with self.assertRaises(ValueError):q.verify_reports('policy',folder)
+                path.write_text(json.dumps(record));(source/'StartupLauncher.ps1').write_bytes(b'changed')
+                with self.assertRaisesRegex(ValueError,'exact tested source bytes'):q.verify_reports('policy',folder)
+
+    def test_workflow_runs_focused_startup_before_policy_seal_and_keeps_other_gates(self):
+        workflow=(q.ROOT/'.github/workflows/skager-chart-palette-tools.yml').read_text()
+        self.assertIn("'review-staging','startup-launcher'",workflow)
+        self.assertLess(workflow.index("'startup-launcher'"),workflow.index('--gate policy'))
+        self.assertIn('needs: [policy, window, broker]',workflow)
+        for gate in q.GATES:self.assertIn('--gate '+gate,workflow)
 
     def test_window_receipt_requires_all_normal_exits(self):
         with tempfile.TemporaryDirectory() as temp:

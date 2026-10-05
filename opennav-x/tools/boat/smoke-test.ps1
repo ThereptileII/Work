@@ -1,18 +1,19 @@
 # Read-only application smoke. No route edits, synthetic input, command controls
 # or actuator output are exercised. A fresh audited real profile is mandatory.
 [CmdletBinding()]
-param([string]$Workspace='C:\XNav',[ValidateRange(5,60)][int]$ObserveSeconds=15)
+param([string]$Workspace='C:\XNav',[ValidateRange(5,60)][int]$ObserveSeconds=15,[switch]$UseStartupLauncher)
 . (Join-Path $PSScriptRoot 'Common.ps1')
 . (Join-Path $PSScriptRoot 'StartupLog.ps1')
 $config=Get-Target $Workspace;$installed=Get-Installed
 $null=Assert-ReadOnlyAudit $config $installed $Workspace
+if($UseStartupLauncher){. (Join-Path $PSScriptRoot 'StartupLauncher.ps1');$null=Get-StartupLauncherContext $installed}
 $directory=New-RunDirectory $Workspace 'smoke'
 $record=@{status='running';commit=$installed.ownership.commit;startedUtc=[DateTime]::UtcNow.ToString('o');actuatorCommandsAttempted=0;syntheticInputs=0;chartReview='pending native screenshot review';closedCleanly=$false}
 $running=$null
 $log=Assert-LocalPath (Join-Path $config.profileDirectory 'opencpn.log')
 $beforeLog=Read-StartupLogBytes $log
 try {
-  $running=Invoke-InteractiveJob $Workspace ([pscustomobject]@{action='Launch';executable=$installed.executable;executableSha256=(Get-Digest $installed.executable);mode='--xnav'})
+  $running=Invoke-InteractiveJob $Workspace ([pscustomobject]@{action=$(if($UseStartupLauncher){'LaunchStartup'}else{'Launch'});executable=$installed.executable;executableSha256=(Get-Digest $installed.executable);mode='--xnav'}) -TimeoutSeconds $(if($UseStartupLauncher){150}else{90})
   Start-Sleep -Seconds $ObserveSeconds
   $process=Get-Process -Id $running.pid -ErrorAction Stop
   try {

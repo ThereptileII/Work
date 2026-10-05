@@ -120,3 +120,21 @@ for a package hash.
 Native qualification, downloaded proof, hash-verified staging and actual fresh
 commissioning are still open; the portable result does not close SCRUM-258 or
 qualify an application release or physical boat operation.
+
+## Guarded startup helper addition — SCRUM-23
+
+The current composition adds `StartupLauncher.ps1` and
+`test-startup-launcher.ps1`, bringing the named closure to 119 files. The lock's
+qualified-base commit, run and manifest still describe the original 117 files;
+that historical qualification does not cover this addition or changed callers.
+Before producing a new stageable archive, the existing
+`skager-chart-palette-tools.yml` workflow requires all three same-run native
+policy, window and broker gates. Its policy gate additionally requires the
+startup helper's native inert-process report, matching the exact helper/test
+hashes. A portable report, absent report or earlier composition receipt refuses.
+The existing boat-tools suite also invokes this focused test.
+
+This is tooling qualification only. Installed bootstrap, signed update offers
+and rollback remain pending in the focused report; no application or boat
+acceptance follows from these helper tests. The qualified archive is still
+unstaged and must pass the existing explicit hash-verified staging procedure.
