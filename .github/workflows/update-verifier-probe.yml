@@ -8,6 +8,7 @@ on:
       - opennav-x/tools/update-verifier/**
       - .github/workflows/update-verifier-probe.yml
   workflow_dispatch:
+  workflow_call:
 
 permissions:
   contents: read
@@ -34,21 +35,41 @@ jobs:
         with:
           go-version-file: opennav-x/tools/update-verifier/go.mod
           cache-dependency-path: opennav-x/tools/update-verifier/go.sum
-      - run: go test -count=1 -json ./... > verifier-tests.json
+      - name: Verify signed trust, custody and launcher contracts
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p ../../build/updater-native
+          go test -count=1 -json ./... | tee ../../build/updater-native/verifier-tests.json
       - run: go vet ./...
-      - name: Native authenticated startup and interruption records
+      - name: Verify updater source package rules
+        shell: python
+        run: |
+          import subprocess, sys
+          for script in ('../test-package-update-launcher.py', '../test-updater-package.py'):
+              subprocess.run([sys.executable, script], check=True, timeout=60)
+      - name: Compile native launcher with exact dependency sources
         if: runner.os == 'Windows'
         shell: powershell
         run: |
-          & ../test-update-transaction.ps1 *>&1 | Tee-Object -FilePath transaction-tests.log
+          New-Item -ItemType Directory -Path ../../build/updater-native/install -Force | Out-Null
+          python ../package-update-launcher.py --install ../../build/updater-native/install
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -c "import os,sys; from pathlib import Path; sys.path.insert(0,'..'); from updater_package import verify_updater_package; verify_updater_package(Path('../../build/updater-native/install'), os.environ['GITHUB_SHA'])"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Native authenticated startup and interruption records
+        if: always() && runner.os == 'Windows'
+        shell: powershell
+        run: |
+          & ../test-update-transaction.ps1 *>&1 | Tee-Object -FilePath ../../build/updater-native/transaction-tests.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          & ../test-updater-installer-integration.ps1 *>&1 | Tee-Object -FilePath ../../build/updater-native/installer-transaction-tests.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
           name: update-verifier-${{ matrix.os }}-${{ matrix.arch }}-${{ github.sha }}
-          path: |
-            opennav-x/tools/update-verifier/verifier-tests.json
-            opennav-x/tools/update-verifier/transaction-tests.log
+          path: opennav-x/build/updater-native
           if-no-files-found: error
 
   startup-popup:
@@ -59,6 +80,9 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - name: Build only the startup model and native popup
         run: python opennav-x/tools/test-startup-update-windows.py --evidence opennav-x/build/startup-update-native-evidence
+      - name: Native updater shortcut preservation
+        shell: powershell
+        run: ./opennav-x/tools/test-installer-shortcuts.ps1
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:

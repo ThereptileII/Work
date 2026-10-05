@@ -55,6 +55,11 @@ int RunInstallerSelfTest() {
   report["version"] = wxString::FromUTF8(application::Version);
   report["build_purpose"] = wxString::FromUTF8(BuildPurpose().data());
   report["test_fixtures"] = TestFixturesEnabled();
+#ifdef __WXMSW__
+  report["update_startup_health"] = 1;
+#else
+  report["update_startup_health"] = 0;
+#endif
   report["xnav_hardware_output_policy"] = wxString::FromUTF8(HardwareOutputPolicy().data());
   report["upstream"] = wxString("37fd0cddb7334fe489e9f18aa163977a9c5c84f7");
   report["compiler"] = wxString(OPENNAV_BUILD_COMPILER);

@@ -117,6 +117,49 @@ func VerifyReleaseInState(directory string, c TrustConfig) (releasepolicy.Policy
 	return verifyReleaseInState(directory, c, nil)
 }
 
+// ValidateState is a read-only installer check. It never contacts a server,
+// recreates missing state, adopts a cache generation, or resets a trust floor.
+func ValidateState(directory string, c TrustConfig) error {
+	want, err := trustIdentity(c)
+	if err != nil {
+		return err
+	}
+	if err := plainStatePath(directory); err != nil {
+		return err
+	}
+	if err := assertPrivateStateDirectory(directory); err != nil {
+		return err
+	}
+	unlock, err := lockState(directory)
+	if err != nil {
+		return err
+	}
+	defer unlock()
+	if _, err := os.Lstat(filepath.Join(directory, "refresh.pending")); !os.IsNotExist(err) {
+		return errors.New("interrupted update trust refresh; explicit recovery required")
+	}
+	s, err := readState(directory, want)
+	if err != nil {
+		return err
+	}
+	files, err := readStateMetadata(filepath.Join(directory, s.Generation))
+	if err != nil {
+		return err
+	}
+	if len(files) != len(s.Metadata) {
+		return errors.New("retained update metadata inventory changed")
+	}
+	for name, data := range files {
+		if s.Metadata[name] != stateDigest(data) {
+			return errors.New("retained update metadata changed")
+		}
+	}
+	if _, ok := files["root.json"]; !ok {
+		return errors.New("retained update root missing")
+	}
+	return nil
+}
+
 func verifyReleaseInState(directory string, c TrustConfig, client *http.Client) (releasepolicy.Policy, error) {
 	var empty releasepolicy.Policy
 	want, err := trustIdentity(c)

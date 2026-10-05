@@ -8,8 +8,26 @@ add_executable(startup_update_tests ../startup_update_tests.cpp
 add_executable(startup_update_dialog_test ../startup_update_dialog_test.cpp
   ../../src/application/StartupUpdate.cpp ../../src/ui/StartupUpdateDialog.cpp
   ../../src/ui/Controls.cpp ../../src/vessel/VesselState.cpp)
-foreach(target startup_update_tests startup_update_dialog_test)
+set(OPENNAV_BUILD_COMMIT "0123456789012345678901234567890123456789")
+set(OPENNAV_BUILD_RUN "standalone receipt fixture")
+set(OPENNAV_BUILD_DATE "fixture")
+configure_file(../../src/integration/OpenNavBuild.h.in
+  "${CMAKE_CURRENT_BINARY_DIR}/generated/OpenNavBuild.h" @ONLY)
+add_executable(update_startup_receipt_tests ../update_startup_receipt_tests.cpp
+  ../../src/integration/UpdateStartupReceipt.cpp)
+set(fixture_targets startup_update_tests startup_update_dialog_test update_startup_receipt_tests)
+if(WIN32)
+  add_executable(update_startup_receipt_native_test ../update_startup_receipt_native_test.cpp
+    ../../src/integration/UpdateStartupReceipt.cpp)
+  add_executable(skager-update-prompt WIN32 ../../src/platform/windows/StartupUpdatePrompt.cpp
+    ../../src/application/StartupUpdate.cpp ../../src/ui/StartupUpdateDialog.cpp
+    ../../src/ui/Controls.cpp ../../src/vessel/VesselState.cpp)
+  target_link_libraries(skager-update-prompt PRIVATE ${wxWidgets_LIBRARIES} dwrite)
+  list(APPEND fixture_targets update_startup_receipt_native_test skager-update-prompt)
+endif()
+foreach(target ${fixture_targets})
   target_include_directories(${target} PRIVATE ../../src)
+  target_include_directories(${target} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/generated")
   target_compile_features(${target} PRIVATE cxx_std_17)
   if(MSVC)
     target_compile_options(${target} PRIVATE /utf-8 /W4)
@@ -29,4 +47,5 @@ endif()
 enable_testing()
 add_test(NAME startup_update_policy COMMAND startup_update_tests)
 add_test(NAME startup_update_dialog COMMAND startup_update_dialog_test)
-set_tests_properties(startup_update_policy startup_update_dialog PROPERTIES TIMEOUT 30)
+add_test(NAME update_startup_receipt_policy COMMAND update_startup_receipt_tests)
+set_tests_properties(startup_update_policy startup_update_dialog update_startup_receipt_policy PROPERTIES TIMEOUT 30)

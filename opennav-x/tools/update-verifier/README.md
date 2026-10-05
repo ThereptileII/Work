@@ -1,4 +1,13 @@
-# TUF update verification spike (SCRUM-25)
+# Secure startup update verifier (SCRUM-25)
+
+The original verify-only probe below is historical evidence. Current code adds
+protected persistent trust, verified artifact custody, explicit native startup
+consent and transactional installed-generation recovery. See the current
+[secure updater contract](../../docs/installer/secure-updater.md). The pinned
+dependency graph and original probe results do not by themselves qualify this
+integrated updater. No production trust root or update endpoint is provisioned.
+
+## Original probe evidence
 
 This is an isolated, verify-only feasibility probe. It does not provision a production root, name a production endpoint, select an installer, download an executable package, or integrate with the current installer. `Verify` requires a caller-provided trusted root and durable protected metadata cache, refreshes all top-level TUF metadata, checks the selected channel's target, and returns only verified bytes plus version and commit from signed target metadata. The placeholder Go module path denotes this boundary.
 

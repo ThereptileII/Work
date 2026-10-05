@@ -5,6 +5,8 @@ import json
 import os
 from pathlib import Path
 import struct
+import subprocess
+import sys
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -87,13 +89,65 @@ class DependencyAuthorityTests(unittest.TestCase):
         self.assertIsNone(args.dependency_bundle_provenance)
         args = GATE.arguments(['--dependency-bundle', 'bundle',
                                '--dependency-bundle-provenance', 'authority'])
-        self.assertEqual(args.dependency_bundle, Path('bundle'))
+        self.assertEqual(args.dependency_bundle, Path.cwd() / 'bundle')
+        self.assertEqual(args.dependency_bundle_provenance, Path.cwd() / 'authority')
         for argv in (['--dependency-bundle', 'bundle'],
                      ['--dependency-bundle-provenance', 'authority']):
             with self.subTest(argv=argv), patch('sys.stderr'), self.assertRaises(SystemExit):
                 GATE.arguments(argv)
         with self.assertRaisesRegex(ValueError, 'supplied together'):
             GATE.dependency_inputs(Path('/workspace'), Path('/bundle'))
+
+    def test_caller_paths_survive_native_reprobe_child_working_directory(self):
+        with tempfile.TemporaryDirectory() as directory:
+            workspace = Path(directory)
+            project = workspace / 'opennav-x'
+            project.mkdir()
+            bundle = workspace / 'dependency-bundle'
+            bundle.mkdir()
+            (bundle / 'bundle.json').write_text('caller bundle')
+            provenance = workspace / 'dependency-provenance.json'
+            provenance.write_text('caller authority')
+            # A wrong-cwd lookup must not silently consume different inputs.
+            (project / 'dependency-bundle').mkdir()
+            (project / 'dependency-bundle/bundle.json').write_text('wrong bundle')
+            (project / 'dependency-provenance.json').write_text('wrong authority')
+            _, expected = self.parent_facts(project)
+            previous = Path.cwd()
+            try:
+                cases = ((workspace, 'dependency-bundle', 'dependency-provenance.json'),
+                         (project, '../dependency-bundle', '../dependency-provenance.json'),
+                         (project, str(bundle), str(provenance)))
+                for caller, bundle_arg, provenance_arg in cases:
+                    with self.subTest(caller=caller, bundle=bundle_arg):
+                        os.chdir(caller)
+                        args = GATE.arguments(['--dependency-bundle', bundle_arg,
+                            '--dependency-bundle-provenance', provenance_arg])
+
+                        def child_probe(command, log, *, timeout):
+                            passed_bundle = command[command.index('-DependencyBundle') + 1]
+                            passed_provenance = command[command.index('-DependencyBundleProvenance') + 1]
+                            self.assertTrue(passed_bundle.is_absolute())
+                            self.assertTrue(passed_provenance.is_absolute())
+                            self.assertIn('-VerifyDependencyBundleOnly', command)
+                            self.assertEqual(timeout, 600)
+                            # Exercise the actual cwd transition and file opens,
+                            # substituting only the native PowerShell program.
+                            output = subprocess.check_output([sys.executable, '-c',
+                                'from pathlib import Path; import json,sys; '
+                                'print(json.dumps([(Path(sys.argv[1])/"bundle.json").read_text(), '
+                                'Path(sys.argv[2]).read_text()]))',
+                                str(passed_bundle), str(passed_provenance)],
+                                cwd=project, text=True)
+                            self.assertEqual(json.loads(output), ['caller bundle', 'caller authority'])
+
+                        with patch.object(GATE, 'ROOT', project), \
+                                patch.object(GATE, 'run', side_effect=child_probe) as run:
+                            GATE.reprobe_bundle_inputs(args.dependency_bundle,
+                                args.dependency_bundle_provenance, project / 'reprobe.log', expected)
+                            run.assert_called_once()
+            finally:
+                os.chdir(previous)
 
     def test_native_reprobe_uses_driver_verify_only_without_gui_options(self):
         bundle, provenance, log = map(Path, ('/bundle', '/authority', '/reprobe.log'))

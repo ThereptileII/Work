@@ -18,6 +18,7 @@
 #include "diagnostics/TestUiTrace.h"
 #include "integration/PreviewResources.h"
 #include "integration/RecoveryStore.h"
+#include "integration/UpdateStartupReceipt.h"
 #include "integration/RoutePassWatch.h"
 #include "integration/RuntimeDiagnostics.h"
 #include "integration/SettingsStore.h"
@@ -193,6 +194,7 @@ void AddCommandLine(wxCmdLineParser& parser) {
 }
 
 bool ParseCommandLine(wxCmdLineParser& parser) {
+  integration::CaptureUpdateStartupReceipt();
   if (integration::ParseInstallerSelfTest(parser)) return true;
   flags = {parser.Found("xnav"), parser.Found("legacy"),
            parser.Found("safe-mode") || parser.Found("safe_mode")};
@@ -985,8 +987,11 @@ bool LoadPersistentPerspective(wxAuiManager &manager, const wxString &perspectiv
 }
 
 void AfterAnchorWatch(){
-  if (recovery && IsXNav())
-    recovery->ObserveHealthy(g_bDeferredInitDone, vessel::Clock::now());
+  if (recovery && IsXNav()) {
+    const auto now = vessel::Clock::now();
+    integration::ObserveUpdateStartupHealth(g_bDeferredInitDone && shell && host, now);
+    recovery->ObserveHealthy(g_bDeferredInitDone, now);
+  }
   if(!navigation)return;
   auto current=integration::ObserveAnchor(selected_navigation.navigation,vessel::Clock::now());
   application::RetainAnchorHistory(current,anchor_state);

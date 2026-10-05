@@ -50,6 +50,10 @@ jobs:
                      '--github-output', os.environ['GITHUB_OUTPUT']]
           if os.environ['MANUAL'] == 'true': command.append('--force-product')
           subprocess.run(command, check=True)
+  updater-contracts:
+    if: ${{ needs.changes.outputs.product == 'true' }}
+    needs: changes
+    uses: ./.github/workflows/update-verifier-probe.yml
   native-private-chart-loader:
     if: ${{ needs.changes.outputs.product == 'true' }}
     needs: changes
@@ -550,7 +554,7 @@ jobs:
     permissions:
       contents: read
       actions: read
-    needs: [changes, contracts, native-restart-window, native-stock-welcome, native-private-chart-loader]
+    needs: [changes, contracts, native-restart-window, native-stock-welcome, native-private-chart-loader, updater-contracts]
     runs-on: windows-2022
     timeout-minutes: 240
     outputs:
@@ -559,6 +563,10 @@ jobs:
       producer_attempt: ${{ steps.identity.outputs.producer_attempt }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+        with:
+          go-version-file: opennav-x/tools/update-verifier/go.mod
+          cache-dependency-path: opennav-x/tools/update-verifier/go.sum
       - name: Preserve native Perl for OpenSSL and install curl's POSIX test host
         shell: pwsh
         run: |
@@ -633,6 +641,8 @@ jobs:
         run: |
           python opennav-x/tools/test-peer-buffer.py > opennav-x/evidence/local/peer-buffer-windows.log 2>&1
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Build verified startup updater and retain dependency source/licenses
+        run: python opennav-x/tools/package-update-launcher.py --install opennav-x/build/production-install
       - name: Package fixture-free recovery before desktop qualification
         run: ./opennav-x/tools/package-preview-windows.ps1 -DeferRuntimeQualification
       - name: Compile exact installer without running its desktop qualification yet
@@ -755,7 +765,7 @@ jobs:
           }
   publish-staging:
     name: Record versioned Staging Release
-    needs: [contracts, boat-maintenance, native-restart-transport, native-restart-broker, native-restart-window, native-stock-welcome, linux-integration, windows-integration, windows-qualification, application-abi, stock-prerequisite]
+    needs: [contracts, boat-maintenance, native-restart-transport, native-restart-broker, native-restart-window, native-stock-welcome, linux-integration, windows-integration, windows-qualification, application-abi, stock-prerequisite, updater-contracts]
     runs-on: ubuntu-24.04
     permissions:
       contents: write

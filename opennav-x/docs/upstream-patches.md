@@ -621,6 +621,18 @@ storage, AIS calculation, autopilot output or plugin ABI method changes. See
 commands are used through the integration action service rather than new hooks
 for every toolbar control.
 
+## Authenticated update startup receipt
+
+The secure updater reuses the existing command-line and main-thread health
+integration hooks; it adds no new direct OpenCPN patch. `ParseCommandLine`
+captures and clears the bounded update challenge before plugin startup.
+The existing XNav shell readiness observation and successful durable
+`RecoveryStore` checkpoint feed an owned one-shot receipt. A separate worker
+writes to the supervisor's local pipe without retaining application pointers.
+Legacy/Safe cannot acknowledge XNav health. See
+[the secure updater contract](installer/secure-updater.md). Native fixture
+evidence and actual installed-application qualification remain distinct.
+
 ## Alpha startup recovery
 
 The existing `ocpn_app.cpp` patch adds one guarded call to

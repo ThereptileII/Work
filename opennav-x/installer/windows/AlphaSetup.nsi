@@ -17,6 +17,7 @@ VIAddVersionKey "FileVersion" "0.4.0-beta2"
 VIAddVersionKey "LegalCopyright" "OpenCPN and SKAGER contributors; GPL"
 Var StockPath
 Var Action
+Var SupervisedArgument
 Var ReportPath
 Var FailurePoint
 Var StockControl
@@ -69,6 +70,7 @@ Function .onInit
   StrCpy $StockPath ""
   StrCpy $ReportPath ""
   StrCpy $FailurePoint ""
+  StrCpy $SupervisedArgument ""
   ${GetParameters} $0
   ${GetOptions} $0 "/ACTION=" $Action
   ${If} ${Errors}
@@ -81,8 +83,15 @@ Function .onInit
   ${GetOptions} $0 "/OPENCPN=" $StockPath
   ${GetOptions} $0 "/REPORT=" $ReportPath
   ${GetOptions} $0 "/FAILURE=" $FailurePoint
+  StrCpy $1 ""
+  ${GetOptions} $0 "/SUPERVISED=" $1
+  ${If} $1 == "1"
+    StrCpy $SupervisedArgument "-SupervisedUpdate"
+  ${EndIf}
   SetOutPath "$PLUGINSDIR"
   File /oname=Lifecycle.ps1 "${ENGINE}"
+  File /oname=UpdateTransaction.ps1 "${UPDATE_TRANSACTION}"
+  File /oname=UpdateSupervisor.ps1 "${UPDATE_SUPERVISOR}"
   File /oname=package.json "${PACKAGE}\package.json"
   File /oname=payload.zip "${PACKAGE}\payload.zip"
   WriteUninstaller "$PLUGINSDIR\Maintain.exe"
@@ -205,7 +214,7 @@ Function ReadyPage
   nsDialogs::Show
 FunctionEnd
 Section "SKAGER Beta integration"
-  nsExec::ExecToLog '"$SYSDIR\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -NonInteractive -ExecutionPolicy Bypass -File "$PLUGINSDIR\Lifecycle.ps1" -Action "$Action" -OpenCpn "$StockPath" -PackageDirectory "$PLUGINSDIR" -ManifestSha256 "${MANIFEST_SHA256}" -Report "$ReportPath" -FailurePoint "$FailurePoint" -ShortcutModes "$ShortcutModes"'
+  nsExec::ExecToLog '"$SYSDIR\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -NonInteractive -ExecutionPolicy Bypass -File "$PLUGINSDIR\Lifecycle.ps1" -Action "$Action" -OpenCpn "$StockPath" -PackageDirectory "$PLUGINSDIR" -ManifestSha256 "${MANIFEST_SHA256}" -Report "$ReportPath" -FailurePoint "$FailurePoint" -ShortcutModes "$ShortcutModes" $SupervisedArgument'
   Pop $Result
   ${If} $Result != 0
     SetErrorLevel 1

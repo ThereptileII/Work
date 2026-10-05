@@ -103,6 +103,12 @@ def arguments(argv=None):
     args = parser.parse_args(argv)
     if bool(args.dependency_bundle) != bool(args.dependency_bundle_provenance):
         parser.error('--dependency-bundle and --dependency-bundle-provenance must be supplied together')
+    if args.dependency_bundle is not None:
+        # Freeze the caller's paths before run() moves its child into ROOT.
+        # Do not resolve links: the existing verifier must still inspect and
+        # reject redirected path components itself.
+        args.dependency_bundle = args.dependency_bundle.absolute()
+        args.dependency_bundle_provenance = args.dependency_bundle_provenance.absolute()
     return args
 
 

@@ -34,7 +34,7 @@ test-zlib-source-verification.ps1 prepare-ocharts-adapter.py
 windows_dependency_bundle.py build-windows-dependency-bundle.ps1
 '''.split())
 PRODUCT_TOOLS = frozenset('''
-source_package.py hardware_output_policy.py release_manifest.py
+source_package.py hardware_output_policy.py release_manifest.py updater_package.py
 arch-gcc-compat.cmake local-env.sh wx-config-local
 verify-distribution-inputs.py verify-preview-pe.py verify-skager-brand.py
 verify-skager-pe-brand.py verify-ocharts-adapter-package.py
@@ -95,6 +95,8 @@ def classify_path(raw: str, layout: str) -> tuple[str, str]:
         return 'product', 'compiled test/fixture scope requires application build checks'
     if raw.startswith('tools/'):
         name = path.name
+        if raw.startswith('tools/update-verifier/'):
+            return 'product', 'installed secure startup updater and its pinned source'
         if raw.startswith(('tools/boat/', 'tools/prototype/', 'tools/fixtures/',
                            'tools/diagnostics/', 'tools/downloader-trust-shim/')):
             return 'helpers', 'focused test/retest helper; retain candidate identity'

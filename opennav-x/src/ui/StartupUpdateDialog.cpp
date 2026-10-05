@@ -57,11 +57,13 @@ std::optional<application::StartupUpdateCandidate> ShowStartupUpdateDialog(
   }
   later->SetRole(ButtonRole::Quiet);
   install->SetRole(ButtonRole::Primary);
-  // Custom controls queue commands. A burst may still drain after the first
-  // event ended the modal loop; preserve that first choice and never EndModal
-  // twice (which asserts on native wx ports).
-  const auto finish = [&dialog](int choice) {
-    if (dialog.IsModal()) dialog.EndModal(choice);
+  // Native MSW can still report IsModal while queued commands drain after
+  // EndModal. Latch the first explicit decision independently of that state.
+  std::optional<int> first_choice;
+  const auto finish = [&dialog, &first_choice](int choice) {
+    if (first_choice || !dialog.IsModal()) return;
+    first_choice = choice;
+    dialog.EndModal(choice);
   };
   later->Bind(wxEVT_BUTTON, [finish](wxCommandEvent&) {
     finish(wxID_CANCEL);
@@ -84,7 +86,8 @@ std::optional<application::StartupUpdateCandidate> ShowStartupUpdateDialog(
   dialog.Centre();
   // Enter cannot inadvertently approve installation as the dialog opens.
   later->SetFocus();
-  if (dialog.ShowModal() == wxID_OK) return update.UpdateNow();
+  dialog.ShowModal();
+  if (first_choice && *first_choice == wxID_OK) return update.UpdateNow();
   update.Later();
   return {};
 }

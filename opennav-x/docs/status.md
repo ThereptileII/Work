@@ -1,5 +1,33 @@
 # SKAGER status — 2026-10-05
 
+## Secure startup updater — implementation and focused qualification
+
+SCRUM-23/25/26 are In Progress. The new installed launcher composes retained
+signed trust, measured OpenCPN compatibility, explicit Update Now/Later consent,
+verified installer custody and the existing transactional lifecycle. Candidate
+acceptance requires an authenticated live-process startup receipt and a durable
+recovery checkpoint; failed/interrupted startup restores the verified previous
+generation. Legacy, Safe and portable recovery keep their direct startup paths.
+See [the implementation contract](installer/secure-updater.md).
+
+The first focused native run,
+[37294573113](https://github.com/ThereptileII/Work/actions/runs/37294573113),
+at `891acf93408a8d094811f144bd3373337f4865b9` passed Linux Go tests but
+found an elevated-Windows directory-owner mismatch and a queued popup-choice
+race. Both have source corrections; that failed run is not acceptance of the
+corrections. Local combined Go checks and actual PowerShell contract checks pass;
+native authenticated pipe/ACL/process, installer and actual application gates
+remain pending. No product trust root, signing secret or public update endpoint
+is invented or bundled. Production activation remains a separate gate.
+
+The frozen boat-feedback Staging run
+[37283380247](https://github.com/ThereptileII/Work/actions/runs/37283380247)
+failed before application compilation because relative dependency paths changed
+meaning in a child process. The narrowly scoped helper correction passes twelve
+focused tests. See [the retained failure evidence](evidence/2026-10-05-boat-feedback/dependency-reprobe-path-defect.md).
+The boat installation has not been changed by updater development. No Production
+promotion, broad design review or endurance run is scheduled.
+
 ## Remaining boat feedback — coordinated Staging batch
 
 All 16 reported items have been investigated; **15 code fixes are implemented**
@@ -62,6 +90,18 @@ orchestration failure, not evidence of an application crash or TLS failure.
 The producer SDK remains unchanged. A focused repeated-reprobe correction must
 pass native Windows before the next application build. The AIS security gate
 is moved before expensive application compilation so it fails early.
+
+The repeated native correction now passes at `7397e057` in
+[run 37282487804](https://github.com/ThereptileII/Work/actions/runs/37282487804).
+The downloaded, hash-verified artifact contains two completed native reprobes
+and passing AIS results: 8 provider TLS lifecycles, 18 transport scenarios and
+216 actual session checks. Earlier run 37277511537 passed only one native
+invocation because its first invocation was skipped; it is not repeated-native
+proof. The corrected workflow explicitly requires both success transcripts.
+See [the receipt](evidence/2026-10-05-boat-feedback/dependency-reprobe-native.json).
+Staging selects the same `7397e057` revision for integrated packaging. The
+preceding `982a2b54` Linux job completed both variants with 152/152 CTests each;
+this does not qualify the replacement. No boat application change is claimed.
 
 Separate helper corrections pass 199 delivery-policy checks on each platform
 and 64 inert native window cases, including modern AIS row selection. Their

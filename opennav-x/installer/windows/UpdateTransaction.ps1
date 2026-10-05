@@ -25,7 +25,7 @@ function New-UpdatePendingRecord($Candidate, $Previous) {
   Assert-UpdateIdentity $Candidate
   Assert-UpdateIdentity $Previous
   $record = [pscustomobject]@{schema=1; owner='SKAGER.UpdateStartup.1'; transaction=[guid]::NewGuid().ToString('N');
-    candidate=$Candidate; previous=$Previous; attempts=0; session=''}
+    candidate=$Candidate; previous=$Previous; attempts=0; session=''; processId=0; processStartTicks=''}
   Assert-UpdatePendingRecord $record
   return $record
 }
@@ -97,6 +97,9 @@ namespace Skager {
   readonly NamedPipeServerStream pipe;
   readonly DateTime created = DateTime.UtcNow;
   bool consumed;
+  public string VerifiedFrame { get; private set; }
+  public string VerifiedImage { get; private set; }
+  public string VerifiedHash { get; private set; }
   public UpdateStartupPipe(string name) {
    IntPtr descriptor = IntPtr.Zero; uint size;
    var sid = WindowsIdentity.GetCurrent().User.Value;
@@ -147,7 +150,9 @@ namespace Skager {
     }
     if(used!=wanted.Length) return false;
     for(int i=0;i<used;i++) if(buffer[i]!=wanted[i]) return false;
-    return elapsed.ElapsedMilliseconds<=timeoutMs && ExactProcess(process,ticks,image,hash);
+    if(elapsed.ElapsedMilliseconds>timeoutMs || !ExactProcess(process,ticks,image,hash)) return false;
+    VerifiedFrame=expected; VerifiedImage=Path.GetFullPath(image); VerifiedHash=hash;
+    return true;
    } catch { return false; }
    finally { pipe.Dispose(); }
   }
@@ -163,9 +168,10 @@ namespace Skager {
     Add-Type -TypeDefinition $source
   } finally { [Environment]::CurrentDirectory = $previous; Pop-Location }
 }
-function New-UpdateStartupSession($Record) {
-  Assert-UpdatePendingRecord $Record
-  if ($Record.attempts -ne 0) { throw 'An update candidate gets one startup attempt; recovery never retries it automatically.' }
+function New-UpdateHealthSession($Identity, [string]$Transaction = '') {
+  Assert-UpdateIdentity $Identity
+  if (-not $Transaction) { $Transaction = [guid]::NewGuid().ToString('N') }
+  if ($Transaction -cnotmatch '^[a-f0-9]{32}$') { throw 'Invalid startup transaction.' }
   Initialize-UpdatePipeType
   $session = [guid]::NewGuid().ToString('N')
   $bytes = New-Object byte[] 32
@@ -174,16 +180,74 @@ function New-UpdateStartupSession($Record) {
   $challenge = ([BitConverter]::ToString($bytes)).Replace('-','').ToLowerInvariant()
   $name = 'Skager.Update.' + $session
   $server = New-Object Skager.UpdateStartupPipe($name)
+  return [pscustomobject]@{server=$server; pipe=$name; challenge=$challenge; session=$session; transaction=$Transaction}
+}
+function New-UpdateStartupSession($Record) {
+  Assert-UpdatePendingRecord $Record
+  if ($Record.attempts -ne 0) { throw 'An update candidate gets one startup attempt; recovery never retries it automatically.' }
+  $session = New-UpdateHealthSession $Record.candidate $Record.transaction
   $Record.attempts = 1
-  $Record.session = $session
+  $Record.session = $session.session
   # The caller must durably write this modified record before process creation.
-  return [pscustomobject]@{server=$server; pipe=$name; challenge=$challenge; session=$session; transaction=$Record.transaction}
+  return $session
+}
+function Get-UpdateReadyFrame($Identity, $Session) {
+  Assert-UpdateIdentity $Identity
+  if ($Session.challenge -cnotmatch '^[a-f0-9]{64}$' -or $Session.session -cnotmatch '^[a-f0-9]{32}$') { throw 'Invalid startup session.' }
+  return 'SKAGER-UPDATE-READY/1 ' + $Identity.generation + ' ' + $Identity.commit + ' ' + $Session.challenge + "`n"
+}
+function Wait-UpdateGenerationStartupSuccess($Identity, $Session, [Diagnostics.Process]$Process, [string]$ExecutablePath, [int]$TimeoutMilliseconds=90000) {
+  $ExecutablePath = Assert-UpdateRecordPath $ExecutablePath
+  $expected = Get-UpdateReadyFrame $Identity $Session
+  return $Session.server.Receive($Process,$ExecutablePath,$Identity.executableSha256,$expected,$TimeoutMilliseconds)
 }
 function Wait-UpdateStartupSuccess($Record, $Session, [Diagnostics.Process]$Process, [string]$ExecutablePath, [int]$TimeoutMilliseconds=90000) {
   Assert-UpdatePendingRecord $Record
-  if ($Record.attempts -ne 1 -or $Record.session -cne $Session.session -or $Record.transaction -cne $Session.transaction -or
-      $Session.challenge -cnotmatch '^[a-f0-9]{64}$') { throw 'Startup session does not match pending update.' }
+  if ($Record.attempts -ne 1 -or $Record.session -cne $Session.session -or $Record.transaction -cne $Session.transaction) { throw 'Startup session does not match pending update.' }
+  return Wait-UpdateGenerationStartupSuccess $Record.candidate $Session $Process $ExecutablePath $TimeoutMilliseconds
+}
+function Test-UpdateIdentityEqual($Left, $Right) {
+  Assert-UpdateIdentity $Left
+  Assert-UpdateIdentity $Right
+  return $Left.generation -ceq $Right.generation -and $Left.commit -ceq $Right.commit -and
+    $Left.packageSha256 -ceq $Right.packageSha256 -and $Left.executableSha256 -ceq $Right.executableSha256
+}
+function Write-UpdateReceiptBytes([string]$Path, [byte[]]$Bytes) {
+  $Path = Assert-UpdateRecordPath $Path
+  $temporary = $Path + '.' + [guid]::NewGuid().ToString('N') + '.tmp'
+  try {
+    $file = New-Object IO.FileStream($temporary, [IO.FileMode]::CreateNew, [IO.FileAccess]::Write, [IO.FileShare]::None)
+    try { $file.Write($Bytes,0,$Bytes.Length); $file.Flush($true) } finally { $file.Dispose() }
+    if ([IO.File]::Exists($Path)) { [IO.File]::Replace($temporary,$Path,[Management.Automation.Language.NullString]::Value) }
+    else { [IO.File]::Move($temporary,$Path) }
+  } finally { if ([IO.File]::Exists($temporary)) { [IO.File]::Delete($temporary) } }
+}
+function Write-UpdateKnownGoodReceipt([string]$Path, $Identity, $Session, [string]$ExecutablePath) {
+  Assert-UpdateIdentity $Identity
+  if ([Environment]::OSVersion.Platform -ne [PlatformID]::Win32NT) { throw 'Known-good startup proof requires native Windows.' }
   $ExecutablePath = Assert-UpdateRecordPath $ExecutablePath
-  $expected = 'SKAGER-UPDATE-READY/1 ' + $Record.candidate.generation + ' ' + $Record.candidate.commit + ' ' + $Session.challenge + "`n"
-  return $Session.server.Receive($Process,$ExecutablePath,$Record.candidate.executableSha256,$expected,$TimeoutMilliseconds)
+  if ($Session.server -isnot [Skager.UpdateStartupPipe] -or
+      $Session.server.VerifiedFrame -cne (Get-UpdateReadyFrame $Identity $Session) -or
+      $Session.server.VerifiedHash -cne $Identity.executableSha256 -or
+      -not [string]::Equals($Session.server.VerifiedImage,$ExecutablePath,[StringComparison]::OrdinalIgnoreCase)) { throw 'No authenticated live startup proof for this generation.' }
+  $record = [pscustomobject]@{schema=1; owner='SKAGER.KnownGoodStartup.1'; identity=$Identity; session=$Session.session;
+    confirmedUtc=[DateTime]::UtcNow.ToString('o'); protocol='SKAGER-UPDATE-READY/1'}
+  $bytes = [Text.Encoding]::UTF8.GetBytes(($record | ConvertTo-Json -Depth 6 -Compress))
+  Add-Type -AssemblyName System.Security
+  $protected = [Security.Cryptography.ProtectedData]::Protect($bytes,[Text.Encoding]::UTF8.GetBytes('SKAGER.KnownGoodStartup.1'),[Security.Cryptography.DataProtectionScope]::CurrentUser)
+  Write-UpdateReceiptBytes $Path $protected
+}
+function Assert-UpdateKnownGoodReceipt([string]$Path, $Identity) {
+  Assert-UpdateIdentity $Identity
+  $Path = Assert-UpdateRecordPath $Path
+  if (-not [IO.File]::Exists($Path) -or (Get-Item -LiteralPath $Path).Length -notin 1..8192) { throw 'No authenticated known-good startup receipt; qualify the current generation first.' }
+  if ([Environment]::OSVersion.Platform -ne [PlatformID]::Win32NT) { throw 'Known-good startup proof requires native Windows.' }
+  Add-Type -AssemblyName System.Security
+  try {
+    $plain = [Security.Cryptography.ProtectedData]::Unprotect([IO.File]::ReadAllBytes($Path),[Text.Encoding]::UTF8.GetBytes('SKAGER.KnownGoodStartup.1'),[Security.Cryptography.DataProtectionScope]::CurrentUser)
+    if ($plain.Length -gt 4096) { throw 'Oversized known-good receipt.' }
+    $record = [Text.Encoding]::UTF8.GetString($plain) | ConvertFrom-Json
+    if ($record.schema -ne 1 -or $record.owner -cne 'SKAGER.KnownGoodStartup.1' -or $record.protocol -cne 'SKAGER-UPDATE-READY/1' -or
+        $record.session -cnotmatch '^[a-f0-9]{32}$' -or -not (Test-UpdateIdentityEqual $record.identity $Identity)) { throw 'Known-good receipt identity mismatch.' }
+  } catch { throw ('Known-good startup receipt could not be authenticated: ' + $_.Exception.Message) }
 }

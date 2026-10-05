@@ -45,7 +45,7 @@ foreach($badLayout in @('', 'OpenNavX.NeutralStartMenu.2', 'opennavx.neutralstar
   Check $refused 'Present invalid layout marker never falls back to a guessed group'
 }
 if($PolicyOnly){Write-Host "$Checks shell-layout policy checks passed; no COM, registry or filesystem mutation.";return}
-function FixtureGeneration([string]$id,[string]$version,[switch]$Neutral,[switch]$Skager) {
+function FixtureGeneration([string]$id,[string]$version,[switch]$Neutral,[switch]$Skager,[int]$StartupHealth=-1) {
   $d=Generation $id;$null=[IO.Directory]::CreateDirectory((Join-Path $d 'app'))
   [IO.File]::WriteAllText((Join-Path $d 'app/opencpn.exe'),'inert target '+$id,$Utf8)
   [IO.File]::WriteAllText((Join-Path $d 'Maintain.exe'),'inert maintainer '+$id,$Utf8)
@@ -54,6 +54,11 @@ function FixtureGeneration([string]$id,[string]$version,[switch]$Neutral,[switch
     @{path='Maintain.exe';sha256=(Hash (Join-Path $d 'Maintain.exe'))})}
   if($Neutral){$record.shellLayout='OpenNavX.NeutralStartMenu.1'}
   if($Skager){$record.shellLayout='OpenNavX.SkagerStartMenu.1'}
+  if($StartupHealth -ge 0){$record.updateStartupHealth=$StartupHealth}
+  if($StartupHealth -eq 1){
+    [IO.File]::WriteAllText((Join-Path $d 'app/skager-start.exe'),'inert launcher '+$id,$Utf8)
+    $record.managedFiles+=@{path='app/skager-start.exe';sha256=(Hash (Join-Path $d 'app/skager-start.exe'))}
+  }
   AtomicJson (Join-Path $d 'ownership.json') $record
   return [pscustomobject]@{owner=$Owner;schema=1;current=$id;previous='';stock=@{path=(Join-Path $Fixture 'stock/opencpn.exe')};shortcutModes=@('xnav','legacy','safe')}
 }
@@ -65,7 +70,7 @@ function CheckGroup($state,[string]$version) {
   Check ($files.Count -eq (@($state.shortcutModes).Count+1)) 'Only requested shortcuts plus maintenance'
   foreach($f in $files){
     AssertShortcut $f.FullName $shell
-    $s=ShortcutSpec $f.Name;$link=$shell.CreateShortcut($f.FullName)
+    $s=ShortcutSpec $f.Name (ReadGeneration $state.current);$link=$shell.CreateShortcut($f.FullName)
     Check ([string]::Equals($link.TargetPath,(RelativePath (Generation $state.current) $s.target),[StringComparison]::OrdinalIgnoreCase)) ('Current generation '+$f.Name)
   }
   Check ((Get-ItemProperty -LiteralPath $Registry).ModifyPath -ceq ('"'+(Join-Path (Generation $state.current) 'Maintain.exe')+'"')) 'Registry maintenance points to the exact selected generation'
@@ -78,6 +83,29 @@ try {
   $next=FixtureGeneration ('b'*32) '0.4.0-beta2' -Neutral
   $early=FixtureGeneration ('d'*32) '0.4.0-beta2'
   $skager=FixtureGeneration ('e'*32) '0.4.0-beta2' -Skager
+  $health=FixtureGeneration ('f'*32) '0.4.0-beta2' -Skager -StartupHealth 1
+  $health0=FixtureGeneration ('1'*32) '0.4.0-beta2' -Skager -StartupHealth 0
+  $shell=New-Object -ComObject WScript.Shell
+  foreach($selected in @($skager,$health0,$health)) {
+    PublishShell $selected;CheckGroup $selected 'startup-health publication'
+    $group=ShortcutGroup (ReadGeneration $selected.current)
+    $expected=if($selected.current -ceq $health.current){'app/skager-start.exe'}else{'app/opencpn.exe'}
+    $link=$shell.CreateShortcut((Join-Path $group 'Skager.lnk'))
+    Check ($link.TargetPath -ieq (Join-Path (Generation $selected.current) $expected)) 'Only startup-health 1 selects the update launcher'
+    foreach($name in @('OpenCPN Legacy.lnk','Skager Safe Mode.lnk')) {
+      Check ($shell.CreateShortcut((Join-Path $group $name)).TargetPath -ieq (Join-Path (Generation $selected.current) 'app/opencpn.exe')) 'Legacy and Safe remain direct app launches'
+    }
+    Remove-Item -LiteralPath (Join-Path $group 'Skager.lnk')
+    PublishShell $selected;CheckGroup $selected 'repair restores selected startup target'
+  }
+  foreach($prior in @($health0,$skager)) {
+    PublishShell $health
+    AtomicJson (Join-Path $Root 'state.json') $prior
+    AtomicJson (Join-Path $Root 'transaction.json') @{owner=$Owner;action='Rollback';before=$health;after=$prior}
+    Recover;CheckGroup $prior 'historical SKAGER rollback recovery'
+    Check ($shell.CreateShortcut((Join-Path (Join-Path $Programs 'SKAGER') 'Skager.lnk')).TargetPath -ieq (Join-Path (Generation $prior.current) 'app/opencpn.exe')) 'Health0 or absent health marker recovery restores direct launch'
+  }
+  RemoveShell
   PublishShell $next;CheckGroup $next '0.4.0-beta2'
   Check ((Get-ItemProperty -LiteralPath $Registry).DisplayName -ceq 'OpenNav X Beta 2') 'Beta 2 display name has no Alpha label'
   RemoveShell

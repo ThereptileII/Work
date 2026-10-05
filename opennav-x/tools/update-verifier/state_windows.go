@@ -19,6 +19,17 @@ func makePrivateStateDirectory(path string) error {
 	if err != nil {
 		return err
 	}
+	// Elevated Windows tokens may default new object ownership to the
+	// Administrators group. The per-user store must explicitly belong to the
+	// current user, under both elevated CI and ordinary unelevated installs.
+	u, err := windows.GetCurrentProcessToken().GetTokenUser()
+	if err != nil {
+		return err
+	}
+	sd, err = windows.SecurityDescriptorFromString("O:" + u.User.Sid.String() + sd.String())
+	if err != nil {
+		return err
+	}
 	p, err := windows.UTF16PtrFromString(path)
 	if err != nil {
 		return err

@@ -10,7 +10,9 @@ param(
   [string]$FailurePoint = '',
   [ValidatePattern('^(|xnav(?:,legacy)?(?:,safe)?)$')]
   [string]$ShortcutModes = '',
-  [string]$SummaryPath = ''
+  [string]$SummaryPath = '',
+  [switch]$SupervisedUpdate,
+  [ValidatePattern('^(|[a-f0-9]{32})$')][string]$UpdateTransaction = ''
 )
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
@@ -22,6 +24,11 @@ $Utf8 = New-Object System.Text.UTF8Encoding($false)
 $SessionLog = New-Object System.Collections.Generic.List[string]
 $TransactionLock = $null
 $OwnsRoot = $false
+$LastStartupHealth = 0
+$RecoveredSupervised = $false
+. (Join-Path $PSScriptRoot 'UpdateSupervisor.ps1')
+if ($SupervisedUpdate -and $Action -ne 'Update') { throw 'Supervised startup is only valid for an update.' }
+if ($UpdateTransaction -and $Action -ne 'Rollback') { throw 'Update recovery identity is only valid for rollback.' }
 
 function Log([string]$Message) {
   $line = [DateTime]::UtcNow.ToString('o') + ' ' + $Message
@@ -262,6 +269,8 @@ namespace OpenNav {
     if ($process.ExitCode -ne 0) { throw "Staged executable self-test failed: $($process.ExitCode)" }
   } finally { if ($process) { $process.Dispose() } }
   $result = ReadJson $reportPath
+  $script:LastStartupHealth = 0
+  if ($result.PSObject.Properties['update_startup_health'] -and $result.update_startup_health -is [int] -and $result.update_startup_health -eq 1) { $script:LastStartupHealth = 1 }
   if (-not $result.passed -or $result.commit -cne $Commit -or $result.version -cne $Version -or $result.profile_initialized -or $result.plugins_loaded) { throw 'Executable identity/self-test report mismatch.' }
   # Keep fixture rejection independently observable even when the same test
   # executable also declares a disallowed loopback output policy. Both checks
@@ -312,7 +321,10 @@ function ShortcutNames([string]$Group) {
   }
   throw 'Unknown shortcut group; preserve and inspect it.'
 }
-function ShortcutSpec([string]$Name) {
+function ShortcutSpec([string]$Name, $GenerationRecord = $null) {
+  if ($Name -ceq 'Skager.lnk' -and $GenerationRecord -and $GenerationRecord.PSObject.Properties['updateStartupHealth'] -and $GenerationRecord.updateStartupHealth -eq 1) {
+    return @{target='app/skager-start.exe'; arguments='--xnav'; work='app'; mode='xnav'}
+  }
   switch -CaseSensitive ($Name) {
     'OpenNav X.lnk'        { return @{target='app/opencpn.exe'; arguments='--xnav'; work='app'; mode='xnav'} }
     'Skager.lnk'           { return @{target='app/opencpn.exe'; arguments='--xnav'; work='app'; mode='xnav'} }
@@ -337,9 +349,11 @@ function AssertShortcut([string]$Path, $Shell) {
   $base = (PlainPath (Join-Path $Root 'generations')) + '\'
   if (-not $target.StartsWith($base, [StringComparison]::OrdinalIgnoreCase)) { throw 'Shortcut does not target a SKAGER-owned generation.' }
   $relative = $target.Substring($base.Length).Replace('\','/')
-  if ($relative -cnotmatch '^([a-f0-9]{32})/(.+)$' -or $Matches[2] -cne $spec.target) { throw 'Unexpected SKAGER shortcut target.' }
-  $id = $Matches[1]
+  if ($relative -cnotmatch '^([a-f0-9]{32})/(.+)$') { throw 'Unexpected SKAGER shortcut target.' }
+  $id = $Matches[1]; $targetRelative = $Matches[2]
   $record = ReadGeneration $id
+  $spec = ShortcutSpec $item.Name $record
+  if ($targetRelative -cne $spec.target) { throw 'Unexpected SKAGER shortcut target.' }
   $owned = @($record.managedFiles | Where-Object { $_.path -ceq $spec.target -and $_.sha256 -cmatch '^[a-f0-9]{64}$' })
   if ($owned.Count -ne 1) { throw 'Shortcut target lacks unique generation ownership.' }
   $directory = Generation $id
@@ -401,7 +415,7 @@ function PublishShell($State) {
   if ($State.PSObject.Properties['shortcutModes']) { $selected = @($State.shortcutModes) }
   elseif ($State -is [Collections.IDictionary] -and $State.Contains('shortcutModes')) { $selected = @($State.shortcutModes) }
   foreach ($name in @(ShortcutNames $group)) {
-    $spec = ShortcutSpec $name
+    $spec = ShortcutSpec $name $generation
     $path = Join-Path $group $name
     if (Test-Path -LiteralPath $path) { AssertShortcut $path $shell }
     if ($spec.mode -ne 'maintenance' -and $spec.mode -notin $selected) {
@@ -767,9 +781,23 @@ try {
       $OwnsRoot = $true
     }
     $TransactionLock = [IO.File]::Open((Join-Path $Root 'transaction.lock'), [IO.FileMode]::OpenOrCreate, [IO.FileAccess]::ReadWrite, [IO.FileShare]::None)
+    # The installed launcher holds this same lock across its current-generation
+    # check and process creation. Recheck under the lock before any recovery/write.
+    AssertClosed
     Recover
     $state = ReadState
-    if ($Action -in @('Install','Update','Repair')) {
+    if (Test-Path -LiteralPath (Join-Path $Root 'update-pending.json')) {
+      if ($Action -ne 'Rollback') { throw 'Resolve the pending supervised update before maintenance.' }
+      if (-not $UpdateTransaction) { $UpdateTransaction = (Read-UpdatePendingRecord (Join-Path $Root 'update-pending.json')).transaction }
+      $pendingContext = Get-ValidatedUpdatePending -InstallationRoot $Root -Transaction $UpdateTransaction
+      if ($pendingContext.decision -ceq 'retain-previous') {
+        Complete-SupervisedRollback -InstallationRoot $Root -Transaction $UpdateTransaction -Lock $TransactionLock
+        $RecoveredSupervised = $true
+      } else { $null = Assert-SupervisedRollback -InstallationRoot $Root -Transaction $UpdateTransaction -Lock $TransactionLock }
+    } elseif ($UpdateTransaction) { throw 'Pending update recovery is no longer current.' }
+    if ($RecoveredSupervised) {
+      Log 'Interrupted supervised recovery reconciled the already-selected previous generation.'
+    } elseif ($Action -in @('Install','Update','Repair')) {
       if ($Action -eq 'Repair' -and -not $state) { throw 'Repair requires an installed generation.' }
       $modes = @('xnav','legacy','safe')
       if ($ShortcutModes) { $modes = @($ShortcutModes.Split(',')) }
@@ -793,11 +821,18 @@ try {
       $locator = Join-Path $stage 'app\OPENNAV_INSTALLED_STOCK'
       [IO.File]::WriteAllText($locator, $stock.path, $Utf8)
       Copy-Item -LiteralPath $PSCommandPath -Destination (Join-Path $stage 'Lifecycle.ps1')
+      foreach ($helper in @('UpdateTransaction.ps1','UpdateSupervisor.ps1')) {
+        Copy-Item -LiteralPath (Join-Path $PSScriptRoot $helper) -Destination (Join-Path $stage $helper)
+      }
       Copy-Item -LiteralPath (Join-Path $PackageDirectory 'Maintain.exe') -Destination (Join-Path $stage 'Maintain.exe')
       $maintenance = Join-Path $stage 'maintenance'
       $null = New-Item -ItemType Directory -Path $maintenance
       foreach ($name in @('package.json','payload.zip','Maintain.exe')) {
         Copy-Item -LiteralPath (Join-Path $PackageDirectory $name) -Destination (Join-Path $maintenance $name)
+      }
+
+      foreach ($name in @('UpdateTransaction.ps1','UpdateSupervisor.ps1')) {
+        Copy-Item -LiteralPath (Join-Path $PSScriptRoot $name) -Destination (Join-Path $maintenance $name)
       }
 
       # Unbundled installed plugins stay beside the integrated executable, retaining names/resources.
@@ -812,9 +847,20 @@ try {
       AssertCandidateTlsRuntime $stage
       $recordedRepair = $Action -eq 'Repair' -and $state -and (Test-ExactRepairPackage (ReadGeneration $state.current) $package $ManifestSha256)
       $outputPolicy = SelfTest $stage $package.commit $package.version $recordedRepair
-      AtomicJson (Join-Path $stage 'ownership.json') @{owner=$Owner; version=$package.version; commit=$package.commit; packageSha256=$ManifestSha256; xnavHardwareOutputPolicy=$outputPolicy; shellLayout='OpenNavX.SkagerStartMenu.1'; shortcutModes=$modes; files=@(FileRecords $stage); managedFiles=@(FileRecords $maintenance | ForEach-Object { [pscustomobject]@{path=('maintenance/'+$_.path);sha256=$_.sha256} }) + @($package.files) + @([pscustomobject]@{path='Lifecycle.ps1';sha256=(Hash (Join-Path $stage 'Lifecycle.ps1'))}, [pscustomobject]@{path='Maintain.exe';sha256=(Hash (Join-Path $stage 'Maintain.exe'))}, [pscustomobject]@{path='app/OPENNAV_INSTALLED_STOCK';sha256=(Hash $locator)}); importedPlugins=$retained}
+      $startupHealth = $LastStartupHealth
+      if ($startupHealth -eq 1) {
+        foreach ($helper in @('app/skager-start.exe','app/skager-update-prompt.exe')) {
+          $matches = @($package.files | Where-Object { $_.path -ceq $helper })
+          if ($matches.Count -ne 1 -or (Hash (RelativePath $stage $helper)) -cne $matches[0].sha256) { throw 'Startup update helper is not part of the exact package.' }
+        }
+      } elseif ($SupervisedUpdate) { throw 'Candidate does not support authenticated startup.' }
+      AtomicJson (Join-Path $stage 'ownership.json') @{owner=$Owner; version=$package.version; commit=$package.commit; packageSha256=$ManifestSha256; xnavHardwareOutputPolicy=$outputPolicy; shellLayout='OpenNavX.SkagerStartMenu.1'; updateStartupHealth=$startupHealth; shortcutModes=$modes; files=@(FileRecords $stage); managedFiles=@(FileRecords $maintenance | ForEach-Object { [pscustomobject]@{path=('maintenance/'+$_.path);sha256=$_.sha256} }) + @($package.files) + @([pscustomobject]@{path='UpdateTransaction.ps1';sha256=(Hash (Join-Path $stage 'UpdateTransaction.ps1'))}, [pscustomobject]@{path='UpdateSupervisor.ps1';sha256=(Hash (Join-Path $stage 'UpdateSupervisor.ps1'))}, [pscustomobject]@{path='Lifecycle.ps1';sha256=(Hash (Join-Path $stage 'Lifecycle.ps1'))}, [pscustomobject]@{path='Maintain.exe';sha256=(Hash (Join-Path $stage 'Maintain.exe'))}, [pscustomobject]@{path='app/OPENNAV_INSTALLED_STOCK';sha256=(Hash $locator)}); importedPlugins=$retained}
       $previous = ''; if ($state) { $previous = $state.current }
       $next = @{owner=$Owner;schema=1;stock=$stock;current=$id;previous=$previous;shortcutModes=$modes}
+      if ($SupervisedUpdate) {
+        if (-not $state) { throw 'Supervised update requires a known-good installed version.' }
+        $null = New-SupervisedUpdatePending -InstallationRoot $Root -CandidateGeneration $id -PreviousGeneration $previous -Lock $TransactionLock
+      }
       AtomicJson (Join-Path $Root 'transaction.json') @{owner=$Owner;action=$Action;before=$state;after=$next}
       Failure 'before-commit'
       AssertShellOwnership
@@ -822,6 +868,17 @@ try {
       Failure 'after-commit'
       PublishShell $next
       Remove-Item -LiteralPath (Join-Path $Root 'transaction.json')
+      if ($startupHealth -eq 1) {
+        $provision = New-Object Diagnostics.ProcessStartInfo
+        $provision.FileName = Join-Path $stage 'app\skager-start.exe'
+        $provision.Arguments = '--initialize-trust'
+        $provision.UseShellExecute = $false; $provision.CreateNoWindow = $true
+        $init = [Diagnostics.Process]::Start($provision)
+        try {
+          if (-not $init.WaitForExit(15000)) { throw 'Update trust provisioning did not finish; current installed app remains recoverable.' }
+          if ($init.ExitCode -ne 0) { throw 'Update trust requires explicit recovery; no network update is permitted.' }
+        } finally { $init.Dispose() }
+      }
       Log "$Action committed generation $id; original OpenCPN and shared profile untouched."
     } elseif ($Action -eq 'Rollback' -and $state.previous) {
       $old = ReadGeneration $state.previous
@@ -832,15 +889,17 @@ try {
       AssertShellOwnership
       AtomicJson (Join-Path $Root 'transaction.json') @{owner=$Owner;action=$Action;before=$state;after=$next}
       # The old maintainer reads the committed state at startup. Eliminate
-      # the group it cannot recognize before committing an old generation,
+      # the group or newer launcher target it cannot recognize before committing an old generation,
       # including a crash immediately after that commit.
-      if ((ShortcutGroup $old) -ine (Join-Path $Programs 'SKAGER')) {
+      if ((ShortcutGroup $old) -ine (Join-Path $Programs 'SKAGER') -or
+          -not $old.PSObject.Properties['updateStartupHealth'] -or $old.updateStartupHealth -ne 1) {
         RemoveShortcutGroup (Join-Path $Programs 'SKAGER')
       }
       AtomicJson (Join-Path $Root 'state.json') $next
       Failure 'after-commit'
       PublishShell $next
       Remove-Item -LiteralPath (Join-Path $Root 'transaction.json')
+      if ($UpdateTransaction) { Complete-SupervisedRollback -InstallationRoot $Root -Transaction $UpdateTransaction -Lock $TransactionLock }
       Log 'Rollback restored prior exact application generation; newer navigation data retained.'
     } elseif ($Action -in @('Uninstall','Rollback')) {
       AtomicJson (Join-Path $Root 'transaction.json') @{owner=$Owner;action='Uninstall';before=$state;after=$null}

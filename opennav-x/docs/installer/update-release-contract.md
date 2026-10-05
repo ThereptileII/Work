@@ -1,5 +1,11 @@
 # Release policy contract (SCRUM-24)
 
+The policy/parser semantics below remain authoritative. Their original
+verify-only integration description is superseded by the
+[secure startup updater](secure-updater.md), which adds protected state,
+native consent, artifact custody and startup-supervised transactions. Production
+trust provisioning and exact installed qualification remain separate gates.
+
 `tools/update-verifier/releasepolicy` defines a backend-independent, schema 1 JSON declaration for a candidate SKAGER update. Parsing and evaluation are pure checks. They do not fetch a release, authorize an install, alter OpenCPN, or run code.
 
 The declaration names `schema: 1`, `product: "skager"`, `channel: "beta"` or `"stable"`, a strict [SemVer 2.0](https://semver.org/) `version`, and a 40-character lowercase hexadecimal `commit`. `0.4.0-beta2` is a valid beta version. Stable policy rejects a prerelease version. `releaseNotes`, `installer`, `recovery`, `correspondingSource`, and `notices` each require `path`, `url`, `sha256`, and `bytes`. The URL must be HTTPS and its path must match the safe relative artifact path. Byte counts must be positive and at most 4 GiB. The JSON declaration is at most 32 KiB, versions are at most 128 characters, and there are at most 16 supported OpenCPN identities. Field spelling is exact, including case. Unknown or duplicate keys, malformed UTF-8, nesting beyond 16 levels, and trailing JSON fail parsing. Artifact paths reject Windows reserved device basenames, traversal, alternate separators and trailing dots.

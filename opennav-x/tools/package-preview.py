@@ -18,6 +18,7 @@ from hardware_output_policy import require_status_only
 from restart_capability import verified_restart_protocol
 from openssl_package import verify_openssl_package_inputs, verify_packaged_openssl
 from curl_package import verify_curl_package_inputs, verify_packaged_curl
+from updater_package import verify_updater_package
 
 ROOT = Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser()
@@ -114,6 +115,9 @@ def build_value(key):
     return re.search(r'#define ' + key + r' "([^"]+)"', build_header).group(1)
 if build_value('OPENNAV_BUILD_COMMIT') != commit:
     raise SystemExit('Executable build commit does not match package commit')
+updater_source = verify_updater_package(app, commit)
+if not (app / 'skager-update-prompt.exe').is_file():
+    raise SystemExit('Native startup update prompt missing from CMake install')
 if product_version != '0.4.0-beta2':
     raise SystemExit('Beta 2 packaging requires the exact Beta 2 product version')
 selftest_path = args.output.resolve() / 'production-package-selftest.json'
@@ -141,7 +145,7 @@ require_status_only(actual)
 if (actual.get('passed') is not True or actual.get('test_fixtures') is not False or
         actual.get('build_purpose') != 'INSTALLED PRODUCT' or actual.get('commit') != commit or
         actual.get('version') != product_version or actual.get('profile_initialized') is not False or
-        actual.get('plugins_loaded') is not False):
+        actual.get('plugins_loaded') is not False or actual.get('update_startup_health') != 1):
     raise SystemExit('Packaged executable is not the exact verified fixture-free product')
 if helper_checked.returncode != 0 or len(helper_checked.stdout) > 4096 or helper_checked.stderr:
     raise SystemExit('Packaged restart helper capability query failed')
@@ -164,7 +168,9 @@ for file in destination.rglob('*'):
     'xnav_hardware_output_policy': actual['xnav_hardware_output_policy'],
     'executable_sha256': hashlib.sha256((app / 'opencpn.exe').read_bytes()).hexdigest(),
     'restart_helper_sha256': hashlib.sha256((app / 'opennav-restart.exe').read_bytes()).hexdigest(),
-    'commissioning_restart_protocol': restart_protocol
+    'commissioning_restart_protocol': restart_protocol,
+    'update_startup_health': 1,
+    'startup_launcher_sha256': hashlib.sha256((app / 'skager-start.exe').read_bytes()).hexdigest()
 }, indent=2) + '\n')
 
 info = f'''# Build information
@@ -216,6 +222,9 @@ If the private o-charts presentation adapter is included, its exact original
 sources, reviewed patches, build recipe and notices are supplied in
 `app/opennav/third-party/ocharts/corresponding-source.zip` and in the standalone
 source artifact. Licensed charts and closed helpers are not distributed.
+The updater's exact source, Go standard-library source and dependency notices
+are in `app/opennav/third-party/updater/updater-source.zip` and the standalone
+source artifact. `build.json` binds that archive and launcher to this commit.
 See `licenses/`
 for bundled OpenCPN/library notices and the installed application's license files.
 
@@ -238,5 +247,5 @@ with zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED, compresslevel=6) as z:
 # Complete exact source plus root CI recipe, not an expiring download offer.
 from source_package import create_source_archive
 create_source_archive(ROOT, commit, args.output / 'SKAGER-Beta2-source.zip',
-                      [openssl_source['sourceBundle']] + curl_sources['sourceBundles'] + adapter_sources)
+                      [openssl_source['sourceBundle']] + curl_sources['sourceBundles'] + adapter_sources + [updater_source])
 print(archive)

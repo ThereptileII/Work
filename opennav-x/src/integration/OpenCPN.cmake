@@ -35,7 +35,8 @@ target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/OpenCPNP
 target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/NavigationObjects.cpp"
   "${OPENNAV_ROOT}/src/integration/NavigationActions.cpp"
   "${OPENNAV_ROOT}/src/integration/SettingsStore.cpp"
-  "${OPENNAV_ROOT}/src/integration/RecoveryStore.cpp")
+  "${OPENNAV_ROOT}/src/integration/RecoveryStore.cpp"
+  "${OPENNAV_ROOT}/src/integration/UpdateStartupReceipt.cpp")
 target_link_libraries(${PACKAGE_NAME} PRIVATE opennav_marine)
 set(OPENNAV_BUILD_COMMIT "$ENV{GITHUB_SHA}")
 if(NOT OPENNAV_BUILD_COMMIT)
@@ -97,11 +98,13 @@ if(WIN32 AND OCPN_BUILD_TEST)
     target_link_libraries(opennav-test-dpi PRIVATE user32)
 endif()
 if(WIN32)
-  install(TARGETS opennav-restart RUNTIME DESTINATION .)
+  install(TARGETS opennav-restart skager-update-prompt RUNTIME DESTINATION .)
   add_custom_command(TARGET ${PACKAGE_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-      $<TARGET_FILE:opennav-restart> $<TARGET_FILE_DIR:${PACKAGE_NAME}>)
-  add_dependencies(${PACKAGE_NAME} opennav-restart)
+      $<TARGET_FILE:opennav-restart> $<TARGET_FILE_DIR:${PACKAGE_NAME}>
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+      $<TARGET_FILE:skager-update-prompt> $<TARGET_FILE_DIR:${PACKAGE_NAME}>)
+  add_dependencies(${PACKAGE_NAME} opennav-restart skager-update-prompt)
 endif()
 
 # The upstream test target is declared after this optional integration hook.
@@ -190,9 +193,10 @@ function(opennav_attach_route_tests)
       "${OPENNAV_ROOT}/src/integration/OnlineAis.cpp"
       "${OPENNAV_ROOT}/tests/recovery_store_upstream_tests.cpp"
       "${OPENNAV_ROOT}/src/integration/RecoveryStore.cpp"
+      "${OPENNAV_ROOT}/src/integration/UpdateStartupReceipt.cpp"
       "${OPENNAV_ROOT}/src/integration/SettingsStore.cpp"
       "${OPENNAV_ROOT}/src/integration/OpenCPNRouteReader.cpp")
-    target_include_directories(tests PRIVATE "${OPENNAV_ROOT}/src")
+    target_include_directories(tests PRIVATE "${OPENNAV_ROOT}/src" "${CMAKE_BINARY_DIR}/include")
     target_link_libraries(tests PRIVATE opennav_integration opennav_marine opennav_application)
     target_link_libraries(tests PRIVATE opennav_ais opennav_ais_credentials)
     if(LINUX AND TARGET ocpn::libudev)

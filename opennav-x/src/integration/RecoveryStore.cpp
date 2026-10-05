@@ -1,4 +1,5 @@
 #include "integration/RecoveryStore.h"
+#include "integration/UpdateStartupReceipt.h"
 #include <filesystem>
 #include <wx/file.h>
 #include <wx/filename.h>
@@ -72,6 +73,7 @@ void RecoveryStore::ObserveHealthy(bool ready, vessel::Time now) {
     attempt_ = false;
     wxLogMessage("SKAGER startup healthy after 30 seconds of normal "
                  "application processing");
+    NotifyUpdateStartupHealthy();
   }
 }
 void RecoveryStore::CleanClose() {
