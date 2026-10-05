@@ -1,0 +1,43 @@
+name: SKAGER closed-session profile preservation
+on:
+  push:
+    branches: [skager-profile-preservation]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: skager-profile-preservation-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  preservation:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2022]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Focused preservation and existing adoption contracts
+        shell: pwsh
+        run: |
+          $Evidence = 'opennav-x/evidence/local/session-preservation'
+          New-Item -ItemType Directory -Path $Evidence -Force | Out-Null
+          $Portable = if ($env:RUNNER_OS -eq 'Windows') { @() } else { @('-PortableContracts') }
+          $Engine = if ($env:RUNNER_OS -eq 'Windows') { "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" } else { 'pwsh' }
+          foreach ($Suite in @('session-preservation', 'baseline-adoption')) {
+            & $Engine -NoProfile -File "opennav-x/tools/boat/test-$Suite.ps1" @Portable 2>&1 | Tee-Object "$Evidence/$Suite.log"
+            if ($LASTEXITCODE -ne 0) { throw "Preservation prerequisite failed: $Suite" }
+          }
+      - name: Actual disposable closed-session transaction and interruptions
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -File opennav-x/tools/boat/test-commissioning.ps1 -PreservationFixture 2>&1 | Tee-Object opennav-x/evidence/local/session-preservation/transaction.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: session-preservation-${{ matrix.os }}-${{ github.sha }}
+          path: opennav-x/evidence/local/session-preservation
+          if-no-files-found: error

@@ -8,11 +8,14 @@ param(
   [string]$Inspection,[string]$ExpectedInspectionSha256,
   [string]$ReviewedCurrentIniSha256,
   [string]$BaselineRecord,[string]$ExpectedBaselineSha256,
-  [string]$AdoptionProposal,[string]$ExpectedAdoptionSha256
+  [string]$AdoptionProposal,[string]$ExpectedAdoptionSha256,
+  [string]$PreservationProposal,[string]$ExpectedPreservationSha256
 )
 . (Join-Path $PSScriptRoot 'Commissioning.ps1')
 if(($BaselineRecord -or $ExpectedBaselineSha256) -and $Action -cnotin @('Inventory','Prepare')){throw 'Baseline selection belongs only to a new Inventory/Prepare.'}
 if(($AdoptionProposal -or $ExpectedAdoptionSha256) -and $Action -cnotin @('InspectRestore','Restore')){throw 'Adoption belongs only to explicit inspected restoration.'}
+if(($PreservationProposal -or $ExpectedPreservationSha256) -and $Action -cnotin @('InspectRestore','Restore')){throw 'Preservation belongs only to explicit inspected restoration.'}
+if(($PreservationProposal -or $ExpectedPreservationSha256) -and ($AdoptionProposal -or $ExpectedAdoptionSha256)){throw 'Choose one exact restoration policy; preservation and migration cannot be combined.'}
 $context=Get-CommissioningContext $Workspace
 $ini=Join-Path $context.profile 'opencpn.ini'
 $active=Join-Path $context.workspace 'commissioning-active.json'
@@ -158,16 +161,23 @@ if ($Action -ceq 'Apply') {
   [pscustomobject]@{status='input-only-prepared';verification=$applied;verificationSha256=(Get-Digest $applied);profileSha256=(Get-Digest $ini);applicationLaunched=$false;launchAuditStillRequired=$true} | ConvertTo-Json
   return
 }
+$restoreLock=Open-CommissioningRestoreLock $directory
+try {
 $activeRecord=Read-Record $active
 if ($activeRecord.schema -ne 1 -or $activeRecord.owner -cne $script:CommissioningOwner -or $activeRecord.record -ine $recordPath -or $activeRecord.recordSha256 -cne $ExpectedRecordSha256) { throw 'Active transaction ownership mismatch.' }
 Assert-ClosedCommissioning
 Assert-CommissioningTrees $inventory.trees $prepared.quarantine -AllowMoved
-$adoption=$null;$restoreSource=$original;$restoreHash=$baselineInfo.sha256;$restoreBytes=$baselineInfo.bytes
+$preservation=$null;$adoption=$null;$restoreSource=$original;$restoreHash=$baselineInfo.sha256;$restoreBytes=$baselineInfo.bytes
 if($AdoptionProposal -or $ExpectedAdoptionSha256) {
   $adoption=Read-CommissioningAdoptionProposal $context.workspace $AdoptionProposal $ExpectedAdoptionSha256 $recordPath $ExpectedRecordSha256
   $restoreSource=$adoption.baseline;$restoreHash=$adoption.value.baselineSha256;$restoreBytes=$adoption.value.baselineBytes
 }
-Assert-CommissioningRestoreTarget $directory $ExpectedRecordSha256 $restoreHash $(if($adoption){$adoption.sha256}else{''})
+if($PreservationProposal -or $ExpectedPreservationSha256) {
+  $preservation=Read-SessionPreservationProposal $context.workspace $PreservationProposal $ExpectedPreservationSha256 $recordPath $ExpectedRecordSha256
+  Assert-SessionPreservationLiveState $preservation $context
+  $restoreSource=$preservation.baseline;$restoreHash=$preservation.value.baselineSha256;$restoreBytes=$preservation.value.baselineBytes
+}
+Assert-CommissioningRestoreTarget $directory $ExpectedRecordSha256 $restoreHash $(if($adoption){$adoption.sha256}else{''}) $(if($preservation){$preservation.sha256}else{''})
 if ($Action -ceq 'InspectRestore') {
   $currentHash=Get-Digest $ini
   Assert-PreparationAcl $prepared.originalAcl (Get-Acl -LiteralPath $ini).Sddl -AllowDaclAutoInherited
@@ -196,19 +206,22 @@ $inspected=Read-PinnedCommissioningRecord $inspectionPath $ExpectedInspectionSha
 if ($inspected.recordSha256 -cne $ExpectedRecordSha256 -or $ReviewedCurrentIniSha256 -cnotmatch '^[a-f0-9]{64}$' -or
     $ReviewedCurrentIniSha256 -cne $inspected.currentIniSha256 -or (Get-Digest $ini) -cne $ReviewedCurrentIniSha256 -or (Get-Digest $inspected.savedIni) -cne $ReviewedCurrentIniSha256) { throw 'Restore requires exact operator-reviewed current bytes; unexpected changes are never overwritten.' }
 Assert-CommissioningContext $inspected.context $context
-if ($inspected.PSObject.Properties['resourceProof'] -and $inspected.resourceProof -and -not $adoption) {
+if ($inspected.PSObject.Properties['resourceProof'] -and $inspected.resourceProof -and -not $adoption -and -not $preservation) {
   throw 'An installed resource default requires explicit source-reviewed adoption, not erasure by original-baseline restore.'
 }
 Assert-PreparationTree $inspected.profileBeforeRestore
 Assert-PreparationAcl $inspected.currentAcl (Get-Acl -LiteralPath $ini).Sddl
 Assert-PreparationAcl $prepared.originalAcl $inspected.currentAcl -AllowDaclAutoInherited
+if($preservation -and $ReviewedCurrentIniSha256 -cne $preservation.value.currentIniSha256 -and $ReviewedCurrentIniSha256 -cne $restoreHash){throw 'Only preserved current bytes or the same already-published recovery target may resume.'}
 $restore=Join-Path $directory ('restore-intent-'+[guid]::NewGuid().ToString('N')+'.json')
 if($adoption -and $ReviewedCurrentIniSha256 -cne $adoption.value.currentIniSha256 -and $ReviewedCurrentIniSha256 -cne $restoreHash){throw 'Only the exact migrated or already-published adopted bytes may resume adoption.'}
-Write-Record $restore @{schema=1;owner=$script:CommissioningOwner;recordSha256=$ExpectedRecordSha256;inspectionSha256=$ExpectedInspectionSha256;beforeSha256=$ReviewedCurrentIniSha256;afterSha256=$restoreHash;adoptionProposalSha256=$(if($adoption){$adoption.sha256}else{$null});applicationLaunched=$false}
+Write-Record $restore @{schema=1;owner=$script:CommissioningOwner;recordSha256=$ExpectedRecordSha256;inspectionSha256=$ExpectedInspectionSha256;beforeSha256=$ReviewedCurrentIniSha256;afterSha256=$restoreHash;adoptionProposalSha256=$(if($adoption){$adoption.sha256}else{$null});preservationProposalSha256=$(if($preservation){$preservation.sha256}else{$null});applicationLaunched=$false}
 Assert-ClosedCommissioning
+if($preservation){Assert-SessionPreservationLiveState $preservation (Get-CommissioningContext $Workspace)}
 if ($ReviewedCurrentIniSha256 -cne $restoreHash) { Publish-PreparedProfile $ini $restoreSource $ReviewedCurrentIniSha256 $restoreHash $restoreBytes $restore }
 foreach ($item in @($prepared.quarantine)) {
   Assert-ClosedCommissioning
+  if($preservation){Assert-SessionPreservationLiveState $preservation (Get-CommissioningContext $Workspace)}
   Assert-CommissioningTrees $inventory.trees $prepared.quarantine -AllowMoved
   if ([IO.File]::Exists($item.destination)) {
     Assert-PreparationAcl $item.acl (Get-Acl -LiteralPath $item.destination).Sddl
@@ -226,8 +239,9 @@ if ($iniEntry.Count -ne 1) { throw 'Ambiguous profile inventory.' }
 $iniEntry[0].sha256=$restoreHash;$iniEntry[0].bytes=$restoreBytes
 Assert-PreparationTree $expected
 Assert-ClosedCommissioning
+if($preservation){Assert-SessionPreservationLiveState $preservation (Get-CommissioningContext $Workspace)}
 $complete=Join-Path $directory ('restored-'+[guid]::NewGuid().ToString('N')+'.json')
-Write-Record $complete @{schema=1;owner=$script:CommissioningOwner;status='restored';recordSha256=$ExpectedRecordSha256;inspectionSha256=$ExpectedInspectionSha256;profileSha256=$restoreHash;adoptionProposalSha256=$(if($adoption){$adoption.sha256}else{$null});pluginInventoryRestored=$true;otherProfileFilesPreserved=$true;applicationLaunched=$false;originalOutputConfigurationRestored=$true;doNotAutoLaunch=$true}
+Write-Record $complete @{schema=1;owner=$script:CommissioningOwner;status='restored';recordSha256=$ExpectedRecordSha256;inspectionSha256=$ExpectedInspectionSha256;profileSha256=$restoreHash;adoptionProposalSha256=$(if($adoption){$adoption.sha256}else{$null});preservationProposalSha256=$(if($preservation){$preservation.sha256}else{$null});pluginInventoryRestored=$true;otherProfileFilesPreserved=$true;applicationLaunched=$false;originalOutputConfigurationRestored=$true;doNotAutoLaunch=$true}
 $adoptedRecord=$null
 if($adoption) {
   $adoptedRecord=Join-Path $adoption.directory 'adopted-baseline.json'
@@ -238,7 +252,18 @@ if($adoption) {
   }
   $null=Read-CommissioningBaseline $context.workspace $adoptedRecord (Get-Digest $adoptedRecord)
 }
+if($preservation) {
+  $adoptedRecord=Join-Path $preservation.directory 'preserved-baseline.json'
+  if(-not (Test-Path -LiteralPath $adoptedRecord)) {
+    Write-Record $adoptedRecord @{schema=1;owner=$script:SessionPreservationOwner;status='preserved';createdUtc=[datetime]::UtcNow.ToString('o');
+      parentPrepared=$recordPath;parentPreparedSha256=$ExpectedRecordSha256;proposalSha256=$preservation.sha256;baselineSha256=$restoreHash;baselineBytes=$restoreBytes;
+      restoreCompletion=$complete;restoreCompletionSha256=(Get-Digest $complete);provenance='current-user-state;origin-unverified';launchPermission=$false;sourceReviewStillRequired=$true;applicationLaunched=$false}
+  }
+  $null=Read-CommissioningBaseline $context.workspace $adoptedRecord (Get-Digest $adoptedRecord)
+}
 # Only remove our exact short-lived ownership marker after durable completion.
 if ((Read-Record $active).recordSha256 -cne $ExpectedRecordSha256) { throw 'Active ownership changed before completion.' }
 Remove-Item -LiteralPath $active
 [pscustomobject]@{status='restored';verification=$complete;verificationSha256=(Get-Digest $complete);baselineRecord=$adoptedRecord;baselineRecordSha256=$(if($adoptedRecord){Get-Digest $adoptedRecord}else{$null});applicationLaunched=$false;doNotAutoLaunch=$true} | ConvertTo-Json
+
+} finally {$restoreLock.Dispose()}

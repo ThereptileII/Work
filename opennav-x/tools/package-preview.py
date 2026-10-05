@@ -18,7 +18,8 @@ from hardware_output_policy import require_status_only
 from restart_capability import verified_restart_protocol
 from openssl_package import verify_openssl_package_inputs, verify_packaged_openssl
 from curl_package import verify_curl_package_inputs, verify_packaged_curl
-from updater_package import verify_updater_package
+from updater_package import verify_updater_package, select_update_trust, copy_selected_update_trust
+from product_version import read_product_version
 
 ROOT = Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser()
@@ -30,9 +31,19 @@ parser.add_argument('--openssl-source-cache', type=Path, required=True,
                     help='Preverified upstream source tar; packaging never downloads it')
 parser.add_argument('--dependency-source-cache', type=Path, required=True,
                     help='Preverified curl and zlib source archives; no packaging downloads')
+parser.add_argument('--update-trust-config', type=Path,
+                    help='Explicit committed installer/windows/staging-update-trust.json selection')
+parser.add_argument('--update-trust-validator', type=Path,
+                    help='Trusted same-commit native skager-repository validator from producer CI')
 args = parser.parse_args()
 if os.name != 'nt':
     raise SystemExit('Recovery packaging and executable verification require native Windows')
+if bool(args.update_trust_config) != bool(args.update_trust_validator):
+    raise SystemExit('Public trust selection requires both source and trusted validator')
+product_version = read_product_version(ROOT / 'src/application/Version.h')
+commit = os.environ.get('GITHUB_SHA') or subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
+selected_trust = (select_update_trust(ROOT, commit, args.update_trust_config, args.update_trust_validator)
+                  if args.update_trust_config else None)
 openssl_source = verify_openssl_package_inputs(
     args.install, ROOT / 'tools/windows-openssl.lock.json', args.openssl_source_cache,
     ROOT / 'docs/third-party/OpenSSL-3.5.9')
@@ -106,9 +117,6 @@ if not (ROOT / 'docs/beta2/SKAGER-Beta2-Release-Notes.md').is_file():
     raise SystemExit('Beta 2 release notes are required in every recovery/installer package')
 for file in (ROOT / 'docs/beta2').glob('*.md'):
     shutil.copy2(file, destination / 'docs' / file.name)
-version_header = (ROOT / 'src/application/Version.h').read_text()
-product_version = re.search(r'Version\[\] = "([^"]+)"', version_header).group(1)
-commit = os.environ.get('GITHUB_SHA') or subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
 run = 'https://github.com/' + os.environ.get('GITHUB_REPOSITORY', 'ThereptileII/Work') + '/actions/runs/' + os.environ.get('GITHUB_RUN_ID', 'local')
 build_header = (args.build / 'include/OpenNavBuild.h').read_text()
 def build_value(key):
@@ -116,10 +124,11 @@ def build_value(key):
 if build_value('OPENNAV_BUILD_COMMIT') != commit:
     raise SystemExit('Executable build commit does not match package commit')
 updater_source = verify_updater_package(app, commit)
+if selected_trust is not None:
+    copy_selected_update_trust(app, selected_trust)
+    updater_source = verify_updater_package(app, commit, expected_trust=selected_trust)
 if not (app / 'skager-update-prompt.exe').is_file():
     raise SystemExit('Native startup update prompt missing from CMake install')
-if product_version != '0.4.0-beta2':
-    raise SystemExit('Beta 2 packaging requires the exact Beta 2 product version')
 selftest_path = args.output.resolve() / 'production-package-selftest.json'
 if selftest_path.exists():
     raise SystemExit('Use a fresh package output: self-test evidence already exists')
@@ -170,7 +179,8 @@ for file in destination.rglob('*'):
     'restart_helper_sha256': hashlib.sha256((app / 'opennav-restart.exe').read_bytes()).hexdigest(),
     'commissioning_restart_protocol': restart_protocol,
     'update_startup_health': 1,
-    'startup_launcher_sha256': hashlib.sha256((app / 'skager-start.exe').read_bytes()).hexdigest()
+    'startup_launcher_sha256': hashlib.sha256((app / 'skager-start.exe').read_bytes()).hexdigest(),
+    **({'update_trust': selected_trust.provenance()} if selected_trust is not None else {})
 }, indent=2) + '\n')
 
 info = f'''# Build information

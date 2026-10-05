@@ -190,6 +190,7 @@ function Read-CommissioningBaseline([string]$Workspace,[string]$Record,[string]$
     return [pscustomobject]@{sha256=$value.baselineSha256;bytes=$value.baselineBytes;record=$record;recordSha256=$Sha256;
       sid=$capture.context.sid;profile=$capture.context.profile}
   }
+  if([IO.Path]::GetFileName($record) -ceq 'preserved-baseline.json'){return Read-CompletedSessionPreservation $Workspace $record $Sha256 $Depth}
   if([IO.Path]::GetFileName($record) -cne 'adopted-baseline.json' -or [IO.Path]::GetDirectoryName($directory) -ine (Join-Path $Workspace 'runs') -or
      [IO.Path]::GetFileName($directory) -cnotmatch '^\d{8}-\d{6}-baseline-adoption-[a-f0-9]{8}$' -or (Get-Digest $record) -cne $Sha256){throw 'Expected immutable completed baseline lineage below this workspace.'}
   $value=Read-Record $record
@@ -249,12 +250,221 @@ function Read-CommissioningAdoptionProposal([string]$Workspace,[string]$Path,[st
 
 # Once restoration has a durable intent, retries must keep that exact target.
 # An omitted adoption argument cannot silently reset a migrated profile to a2e4.
-function Assert-CommissioningRestoreTarget([string]$Directory,[string]$RecordHash,[string]$TargetHash,[string]$AdoptionHash) {
+function Assert-CommissioningRestoreTarget([string]$Directory,[string]$RecordHash,[string]$TargetHash,[string]$AdoptionHash,[string]$PreservationHash='') {
   foreach($file in @(Get-ChildItem -LiteralPath $Directory -Filter 'restore-intent-*.json' -File -Force)) {
     $intent=Read-Record (Assert-LocalPath $file.FullName)
     $recordedAdoption=if($intent.PSObject.Properties['adoptionProposalSha256']){[string]$intent.adoptionProposalSha256}else{''}
+    $recordedPreservation=if($intent.PSObject.Properties['preservationProposalSha256']){[string]$intent.preservationProposalSha256}else{''}
     if($intent.schema -ne 1 -or $intent.owner -cne $script:CommissioningOwner -or
        $intent.recordSha256 -cne $RecordHash -or $intent.afterSha256 -cne $TargetHash -or
-       $recordedAdoption -cne $AdoptionHash){throw 'Restoration already has a different or malformed durable target; resume its exact reviewed choice.'}
+       $recordedAdoption -cne $AdoptionHash -or $recordedPreservation -cne $PreservationHash){throw 'Restoration already has a different or malformed durable target; resume its exact reviewed choice.'}
   }
+}
+
+# SCRUM-310: current user-state preservation is separate from startup migration.
+# These records never establish provenance, launch permission or source safety.
+$script:SessionPreservationOwner='OpenNavX.SessionPreservation.1'
+function Open-CommissioningRestoreLock([string]$Directory) {
+  $path=Assert-LocalPath (Join-Path $Directory 'restoration.lock')
+  try {return [IO.File]::Open($path,[IO.FileMode]::OpenOrCreate,[IO.FileAccess]::ReadWrite,[IO.FileShare]::None)}
+  catch {throw 'Another inspection/restoration owns this transaction; no mutation attempted.'}
+}
+function Assert-PreservedAlphaSettings([string]$Value) {
+  # Settings.cpp EncodeSettings and wxFileConfig's literal newline encoding.
+  # Deliberately exclude pilot/bridge, sensor mappings, calibration and unknown
+  # fields. This validates this small base-model shape, not arbitrary settings.
+  if($Value.Length -gt 4096){throw 'Vessel settings exceed preservation bound.'}
+  $lines=$Value.Split([string[]]@('\n'),[StringSplitOptions]::None)
+  if($lines.Count -ne 16 -or $lines[0] -cne 'OpenNavXSettings 1' -or $lines[-1] -cne ''){throw 'Unknown vessel settings encoding.'}
+  $fields=[Collections.Generic.Dictionary[string,string]]::new([StringComparer]::Ordinal)
+  foreach($line in $lines[1..14]){
+    if($line -cnotmatch '^"([a-z_.]+)" "([^"\\\x00-\x1f]*)"$' -or $fields.ContainsKey($Matches[1])){throw 'Ambiguous vessel settings field.'}
+    $fields.Add($Matches[1],$Matches[2])
+  }
+  $required=@('battery','capacity','consumption','corridor','current','display.instruments','display.rail','draft','efficiency','hotel','margin','minimum_speed','model_source','reserve')
+  foreach($key in $required){if(-not $fields.ContainsKey($key)){throw 'Unknown protected vessel settings field set.'}}
+  if($fields['battery'] -cne '' -or $fields['model_source'] -cne '' -or $fields['consumption'] -cne 'measured' -or
+      $fields['current'] -cnotin @('unconfigured','charge','discharge')){throw 'Source binding or calibrated model needs separate preservation policy.'}
+  $bounds=@{capacity=@(.001,100000);reserve=@(0,100);minimum_speed=@(.1,20);hotel=@(0,10000);efficiency=@(.001,1);draft=@(0,100);margin=@(0,100);corridor=@(1,10000)}
+  foreach($key in $bounds.Keys){
+    $value=$fields[$key]
+    if($value -ceq '' -and $key -cne 'minimum_speed'){continue}
+    if($value.Length -gt 64 -or $value -cnotmatch '^[0-9]+(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?$'){throw 'Invalid preserved model scalar.'}
+    $number=[double]::Parse($value,[Globalization.CultureInfo]::InvariantCulture)
+    if([double]::IsInfinity($number) -or [double]::IsNaN($number) -or $number -lt $bounds[$key][0] -or $number -gt $bounds[$key][1]){throw 'Preserved model scalar outside its source bounds.'}
+  }
+  $known=@('sog','cog','heading','stw','aws','awa','tws','twa','depth','water_temp','pressure','rudder','heel','soc','voltage','current','pack_power','motor_power','rpm','motor_temp','fresh_water','fuel','waste')
+  foreach($key in @('display.rail','display.instruments')){
+    $items=$fields[$key].Split(',');$maximum=if($key -ceq 'display.rail'){6}else{23}
+    if($items.Count -lt 1 -or $items.Count -gt $maximum -or @($items|Sort-Object -Unique).Count -ne $items.Count){throw 'Invalid preserved display selection.'}
+    foreach($item in $items){if($item -cnotin $known){throw 'Unknown preserved display item.'}}
+  }
+}
+function Assert-SessionPreservationReview([string]$Before,[string]$After,$Review,[datetime]$At=[datetime]::UtcNow,[string]$InstalledBasemapDefault='') {
+  if($Review.schema -ne 1 -or $Review.owner -cne 'OpenNavX.SessionPreservationReview.1' -or
+      $Review.beforeSha256 -cne (Get-Digest $Before) -or $Review.afterSha256 -cne (Get-Digest $After) -or
+      $Review.provenance -cne 'current-user-state;origin-unverified' -or
+      $Review.preservationOnly -isnot [bool] -or -not $Review.preservationOnly -or
+      $Review.launchPermission -isnot [bool] -or $Review.launchPermission){throw 'Exact preservation-only independent review required.'}
+  $reviewed=[datetime]::Parse($Review.reviewedUtc).ToUniversalTime()
+  if($reviewed -gt $At -or ($At-$reviewed).TotalHours -gt 24){throw 'Preservation review expired or future-dated.'}
+  $old=Read-ProfileForAudit $Before;$new=Read-ProfileForAudit $After
+  Assert-CommissioningProtectedValues $old $new $InstalledBasemapDefault
+  # Navigation source priorities, route persistence and all unknown plugin
+  # settings remain fixed. The one explicit WMM switch below is preservation,
+  # not approval to load a DLL. Every future launch needs a new plugin audit.
+  foreach($key in @(@($old.Keys)+@($new.Keys)|Sort-Object -Unique)){
+    if($old[$key] -cne $new[$key] -and $key -cmatch '^(Settings/CommPriority/|Settings/PersistActiveRoute$|OpenNav/(?:Autopilot|Sources|BoatBridge)|PlugIns/)' -and
+        $key -cne 'PlugIns/wmm_pi.dll/bEnabled'){throw 'Protected source, route-persistence or plugin settings changed.'}
+  }
+  $changes=@(Get-CommissioningIniDiff $Before $After);$entries=@($Review.changes)
+  if($changes.Count -lt 1 -or $changes.Count -gt 64 -or $entries.Count -ne $changes.Count){throw 'Every bounded current-profile difference requires review.'}
+  $display=Get-RestartDisplayKeys
+  foreach($change in $changes){
+    $key=$change.key;$match=@($entries|Where-Object{$_.key -ceq $key})
+    if($match.Count -ne 1 -or $match[0].before -cne $change.before -or $match[0].after -cne $change.after -or
+        $match[0].origin -cne 'unverified' -or $match[0].decision -cne 'preserve-current' -or
+        [string]::IsNullOrWhiteSpace($match[0].reason) -or $match[0].reason.Length -gt 1024){throw 'Missing, duplicate or changed preservation decision.'}
+    if($display.ContainsKey($key)){
+      Assert-RestartScalar $display[$key] $change.after
+      if($null -ne $change.before){Assert-RestartScalar $display[$key] $change.before}
+    }elseif($key -ceq 'OpenNav/AlphaSettings'){
+      Assert-PreservedAlphaSettings $change.after
+      if($null -ne $change.before){Assert-PreservedAlphaSettings $change.before}
+    }elseif($key -ceq 'OpenNav/OnlineAIS/v1/Enabled' -or $key -ceq 'PlugIns/wmm_pi.dll/bEnabled'){
+      if($change.after -cnotin @('0','1') -or ($null -ne $change.before -and $change.before -cnotin @('0','1'))){throw 'Preserved enable flag must be an exact boolean.'}
+    }elseif($key -ceq 'Settings/ActiveRoute'){
+      if($old['Settings/PersistActiveRoute'] -cne '0' -or $new['Settings/PersistActiveRoute'] -cne '0'){throw 'Route persistence requires separate policy; no navigation changes made.'}
+      foreach($value in @($change.before,$change.after)){
+        if($null -ne $value -and $value -cne '' -and $value -cnotmatch '^[a-fA-F0-9]{8}-(?:[a-fA-F0-9]{4}-){3}[a-fA-F0-9]{12}$'){throw 'Unrecognized stored route identifier.'}
+      }
+    }elseif($key -ceq 'Settings/ConfigVersionString'){
+      foreach($value in @($change.before,$change.after)){
+        if($value -cnotmatch '^Version 5\.12\.4(?:-0)?\+37fd0cd Build 20[0-9]{2}-[0-9]{2}-[0-9]{2}$' -or
+            [datetime]::ParseExact($value.Substring($value.Length-10),'yyyy-MM-dd',[Globalization.CultureInfo]::InvariantCulture) -gt $At.Date){throw 'Unknown preserved build marker.'}
+      }
+    }elseif($key -ceq 'Settings/GPUTextureMemSize'){
+      if($change.before -cnotin @('64','128') -or $change.after -cnotin @('64','128')){throw 'Unreviewed texture setting.'}
+    }elseif($key -ceq 'Settings/MSWFonts/sv-00c6075a' -and $null -eq $change.after){
+      Assert-CommissioningStockUpgradeDelta $key $old $new
+    }elseif($key -ceq 'Settings/MSWFonts/sv-6f52a406'){
+      if($old['Settings/Locale'] -cne 'sv' -or $new['Settings/Locale'] -cne 'sv' -or $old['Settings/LocaleOverride'] -cne 'sv_SE' -or $new['Settings/LocaleOverride'] -cne 'sv_SE'){throw 'Font locale changed.'}
+      foreach($value in @($change.before,$change.after)){
+        if($null -eq $value){continue}
+        if($value.Length -gt 256 -or $value -cnotmatch '^[^:;\r\n]{1,64}:(?:-?[0-9]+;){15}[^:;\r\n]{1,64}:rgb\(([0-9]{1,3}), ?([0-9]{1,3}), ?([0-9]{1,3})\)$'){throw 'Unknown preserved menu font encoding.'}
+        foreach($component in @($Matches[1],$Matches[2],$Matches[3])){if([int]$component -gt 255){throw 'Invalid preserved font color.'}}
+      }
+    }elseif($key -ceq 'Directories/BaseShapefileDir' -and $InstalledBasemapDefault -and $change.before -ceq '' -and $change.after -ceq $InstalledBasemapDefault){
+      # Existing hash-bound resource proof; never an arbitrary chart path.
+    }else{throw ('Current-state preservation needs a separate key policy: '+$key)}
+  }
+  $null=Get-CommissioningOutputBytes ([IO.File]::ReadAllBytes($After))
+  return $changes
+}
+function Read-SessionPreservationProposal([string]$Workspace,[string]$Path,[string]$Hash,[string]$ParentRecord,[string]$ParentHash) {
+  $path=Assert-LocalPath $Path;$directory=[IO.Path]::GetDirectoryName($path)
+  if($Hash -cnotmatch '^[a-f0-9]{64}$' -or [IO.Path]::GetFileName($path) -cne 'proposal.json' -or
+      [IO.Path]::GetDirectoryName($directory) -ine (Join-Path $Workspace 'runs') -or
+      [IO.Path]::GetFileName($directory) -cnotmatch '^\d{8}-\d{6}-session-preservation-[a-f0-9]{8}$' -or (Get-Digest $path) -cne $Hash){throw 'Exact private session-preservation proposal required.'}
+  $value=Read-Record $path;$parent=Read-SessionPreservationParent $ParentRecord $ParentHash;$parentDir=[IO.Path]::GetDirectoryName($ParentRecord)
+  if($value.schema -ne 1 -or $value.owner -cne $script:SessionPreservationOwner -or $value.status -cne 'proposed' -or
+      $value.parentPrepared -ine $ParentRecord -or $value.parentPreparedSha256 -cne $ParentHash -or (Get-Digest $ParentRecord) -cne $ParentHash -or
+      $value.provenance -cne 'current-user-state;origin-unverified' -or $value.launchPermission -isnot [bool] -or $value.launchPermission -or
+      $value.baselineSha256 -cnotmatch '^[a-f0-9]{64}$' -or $value.baselineBytes -le 0 -or $value.baselineBytes -gt 4194304){throw 'Preservation proposal belongs to another parent or claims authority.'}
+  Assert-ColdPrivateEvidence $directory $parent.context.sid
+  $inspectionPath=Assert-LocalPath $value.inspection;$inspection=Read-Record $inspectionPath
+  if([IO.Path]::GetDirectoryName($inspectionPath) -ine $parentDir -or (Get-Digest $inspectionPath) -cne $value.inspectionSha256 -or
+      $inspection.owner -cne 'OpenNavX.ReadOnlyCommissioning.RestoreInspection.1' -or $inspection.recordSha256 -cne $ParentHash -or
+      $inspection.currentIniSha256 -cne $value.currentIniSha256 -or (Get-Digest $inspection.savedIni) -cne $value.currentIniSha256){throw 'Exact original closed-session inspection changed.'}
+  Assert-CommissioningContext $parent.context $inspection.context
+  $saved=Join-Path $directory 'post-session.ini';$baseline=Join-Path $directory 'baseline.ini';$review=Join-Path $directory 'preservation-review.json'
+  $backup=Get-PreparationTree (Join-Path $directory 'profile-backup')
+  if(($backup.entries|ConvertTo-Json -Depth 8 -Compress) -cne ($inspection.profileBeforeRestore.entries|ConvertTo-Json -Depth 8 -Compress) -or
+      (Get-Digest $saved) -cne $value.currentIniSha256 -or (Get-Digest $review) -cne $value.reviewSha256 -or
+      (Get-Digest $baseline) -cne $value.baselineSha256 -or (Get-Item -LiteralPath $baseline).Length -ne $value.baselineBytes -or
+      (Get-CommissioningHash (Get-CommissioningOutputBytes ([IO.File]::ReadAllBytes($saved)))) -cne $value.baselineSha256){throw 'Preserved full profile or exact one-byte recovery target changed.'}
+  $approval=Read-Record $review
+  if($approval.parentPreparedSha256 -cne $ParentHash -or $approval.inspectionSha256 -cne $value.inspectionSha256){throw 'Preservation review belongs to another inspection.'}
+  $resourceProof=if($inspection.PSObject.Properties['resourceProof']){$inspection.resourceProof}else{$null}
+  $default=Assert-CommissioningResourceProof $parent $resourceProof
+  $changes=@(Assert-SessionPreservationReview (Join-Path $parentDir 'input-only.ini') $saved $approval ([datetime]::Parse($value.createdUtc).ToUniversalTime()) $default)
+  if($changes.Count -ne $value.changedKeys){throw 'Preservation review count differs.'}
+  return [pscustomobject]@{value=$value;directory=$directory;baseline=$baseline;sha256=$Hash}
+}
+function Read-CompletedSessionPreservation([string]$Workspace,[string]$Record,[string]$Hash,[int]$Depth) {
+  $directory=[IO.Path]::GetDirectoryName($Record)
+  if([IO.Path]::GetDirectoryName($directory) -ine (Join-Path $Workspace 'runs') -or
+      [IO.Path]::GetFileName($directory) -cnotmatch '^\d{8}-\d{6}-session-preservation-[a-f0-9]{8}$' -or (Get-Digest $Record) -cne $Hash){throw 'Exact completed preservation lineage required.'}
+  $value=Read-Record $Record
+  if($value.schema -ne 1 -or $value.owner -cne $script:SessionPreservationOwner -or $value.status -cne 'preserved' -or
+      $value.provenance -cne 'current-user-state;origin-unverified' -or $value.launchPermission -isnot [bool] -or $value.launchPermission){throw 'Preservation is incomplete or claims launch permission.'}
+  $parentPath=Assert-LocalPath $value.parentPrepared;$parentDir=[IO.Path]::GetDirectoryName($parentPath)
+  if([IO.Path]::GetDirectoryName($parentDir) -ine (Join-Path $Workspace 'runs') -or [IO.Path]::GetFileName($parentPath) -cne 'prepared.json' -or
+      $value.parentPreparedSha256 -cnotmatch '^[a-f0-9]{64}$' -or (Get-Digest $parentPath) -cne $value.parentPreparedSha256){throw 'Preserved parent lineage changed.'}
+  $parent=Read-Record $parentPath;$null=Get-PreparedCommissioningBaseline $parent $parentDir $Workspace ($Depth+1)
+  $proof=Read-SessionPreservationProposal $Workspace (Join-Path $directory 'proposal.json') $value.proposalSha256 $parentPath $value.parentPreparedSha256
+  $completePath=Assert-LocalPath $value.restoreCompletion;$complete=Read-Record $completePath
+  if([IO.Path]::GetDirectoryName($completePath) -ine $parentDir -or (Get-Digest $completePath) -cne $value.restoreCompletionSha256 -or
+      $complete.owner -cne $script:CommissioningOwner -or $complete.status -cne 'restored' -or $complete.recordSha256 -cne $value.parentPreparedSha256 -or
+      $complete.preservationProposalSha256 -cne $value.proposalSha256 -or $complete.profileSha256 -cne $proof.value.baselineSha256 -or
+      $value.baselineSha256 -cne $proof.value.baselineSha256 -or $value.baselineBytes -ne $proof.value.baselineBytes){throw 'Preservation lacks exact durable original restoration.'}
+  foreach($flag in @('pluginInventoryRestored','otherProfileFilesPreserved','originalOutputConfigurationRestored','doNotAutoLaunch')){Assert-TrueBoolean $complete.$flag ('Preservation completion '+$flag)}
+  if($complete.applicationLaunched -isnot [bool] -or $complete.applicationLaunched){throw 'Unexpected launch claim.'}
+  # Historical proof deliberately does not require its old generation current.
+  return [pscustomobject]@{sha256=$value.baselineSha256;bytes=$value.baselineBytes;record=$Record;recordSha256=$Hash;sid=$parent.context.sid;profile=$parent.context.profile}
+}
+function Get-SessionPreservationAcls($Trees,$Quarantine) {
+  $result=New-Object 'Collections.Generic.List[object]'
+  foreach($tree in @($Trees)){
+    if(-not $tree.exists){continue}
+    foreach($path in @($tree.root)+@($tree.entries|ForEach-Object {Join-Path $tree.root $_.path})){
+      $actual=Assert-LocalPath $path
+      $moved=@($Quarantine|Where-Object {$_.path -ieq $path})
+      if($moved.Count -gt 1){throw 'Ambiguous plugin ACL mapping.'}
+      if($moved.Count -eq 1 -and -not(Test-Path -LiteralPath $actual)){$actual=Assert-LocalPath $moved[0].destination}
+      $result.Add([pscustomobject]@{path=$path;sddl=(Get-PreparationAccessAcl $actual)})
+    }
+  }
+  return @($result.ToArray()|Sort-Object path)
+}
+function Assert-SessionPreservationAcls($Expected,$Actual,[string]$Ini) {
+  if(@($Expected).Count -ne @($Actual).Count){throw 'Preserved ACL inventory changed.'}
+  for($i=0;$i -lt @($Expected).Count;$i++){
+    if($Expected[$i].path -cne $Actual[$i].path){throw 'Preserved ACL path changed.'}
+    Assert-PreparationAcl $Expected[$i].sddl $Actual[$i].sddl -AllowDaclAutoInherited:($Expected[$i].path -ieq $Ini)
+  }
+}
+function Assert-SessionPreservationLiveState($Proof,$Context) {
+  $parent=Read-SessionPreservationParent $Proof.value.parentPrepared $Proof.value.parentPreparedSha256;$parentDir=[IO.Path]::GetDirectoryName($Proof.value.parentPrepared)
+  Assert-CommissioningContext $parent.context $Context
+  $inspection=Read-Record $Proof.value.inspection
+  $snapshot=$inspection.profileBeforeRestore|ConvertTo-Json -Depth 8|ConvertFrom-Json
+  $ini=Join-Path $Context.profile 'opencpn.ini';$current=Get-Digest $ini
+  if($current -cnotin @($Proof.value.currentIniSha256,$Proof.value.baselineSha256)){throw 'Current bytes are neither preserved input nor exact recovery target.'}
+  $entry=@($snapshot.entries|Where-Object {$_.path -ceq 'opencpn.ini'})
+  if($entry.Count -ne 1){throw 'Ambiguous preserved profile inventory.'}
+  $entry[0].sha256=$current;$entry[0].bytes=(Get-Item -LiteralPath $ini).Length
+  Assert-PreparationTree $snapshot
+  $inventory=Read-Record (Join-Path $parentDir 'inventory.json')
+  if((Get-Digest (Join-Path $parentDir 'inventory.json')) -cne $parent.inventorySha256){throw 'Prepared plugin inventory changed.'}
+  Assert-CommissioningInventory $inventory $Context
+  Assert-CommissioningTrees $inventory.trees $parent.quarantine -AllowMoved
+  foreach($item in @($parent.quarantine)){
+    $path=if([IO.File]::Exists($item.path)){$item.path}else{$item.destination}
+    Assert-PreparationAcl $item.acl (Get-PreparationAccessAcl $path)
+  }
+  $actual=Get-SessionPreservationAcls (@($snapshot)+@($inventory.trees)) $parent.quarantine
+  Assert-SessionPreservationAcls $Proof.value.acls $actual $ini
+}
+function Read-SessionPreservationParent([string]$Path,[string]$Hash) {
+  if($Hash -cnotmatch '^[a-f0-9]{64}$' -or (Get-Digest $Path) -cne $Hash){throw 'Original prepared transaction changed.'}
+  $parent=Read-Record $Path;$directory=[IO.Path]::GetDirectoryName($Path)
+  if((Get-Digest (Join-Path $directory 'review-plan.json')) -cne $parent.planSha256){throw 'Original source review plan changed.'}
+  foreach($evidence in @($parent.evidence)){
+    if((Get-Digest $evidence.path) -cne $evidence.sha256){throw 'Saved original source evidence changed.'}
+  }
+  foreach($item in @($parent.quarantine)){
+    if((Get-Digest $item.backup) -cne $item.sha256){throw 'Saved original plugin backup changed.'}
+  }
+  return $parent
 }

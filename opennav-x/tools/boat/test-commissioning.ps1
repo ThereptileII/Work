@@ -1,10 +1,11 @@
 # Disposable contracts only. Does not inspect actual boat/profile/plugin state.
 [CmdletBinding()]
-param([switch]$PortableContracts,[switch]$IsolatedLocal,[switch]$AdoptionFixture,[switch]$ResourceAdoptionFixture)
+param([switch]$PortableContracts,[switch]$IsolatedLocal,[switch]$AdoptionFixture,[switch]$ResourceAdoptionFixture,[switch]$PreservationFixture)
 Set-StrictMode -Version Latest
 $ErrorActionPreference='Stop'
 $native=[Environment]::OSVersion.Platform -eq 'Win32NT'
 $originalTestSearchPath=$env:PATH
+if($PreservationFixture -and ($AdoptionFixture -or $ResourceAdoptionFixture)){throw 'Preservation and migration fixtures run independently.'}
 if (-not $native -and -not $PortableContracts) { throw 'Native Windows required unless portable contracts are explicitly requested.' }
 if ($native -and -not $IsolatedLocal -and $env:GITHUB_ACTIONS -ne 'true') { throw 'Use disposable CI or explicitly choose isolated temporary-file tests.' }
 . (Join-Path $PSScriptRoot 'Commissioning.ps1')
@@ -318,6 +319,93 @@ try {
       $null=& $invoke -Action Restore @nextArguments -Inspection $nextInspection.inspection -ExpectedInspectionSha256 $nextInspection.inspectionSha256 -ReviewedCurrentIniSha256 $nextInspection.currentIniSha256
       if((Get-Digest $fixtureIni) -cne $resolved.sha256){throw 'New transaction reset migrated baseline'}
       $checks.Add('Native subsequent Inventory/Prepare requires explicit lineage and fresh source plan; Apply/Restore preserves the adopted configuration')
+    }
+    if($PreservationFixture) {
+      $preservationBase=[IO.File]::ReadAllBytes($fixtureIni)
+      $navFixture=Join-Path $profileDirectory 'navobj.xml';[IO.File]::WriteAllText($navFixture,'<gpx>inert unchanged route fixture</gpx>',$encoding)
+      $navHash=Get-Digest $navFixture
+      $fixtureContext.installation=[pscustomobject]@{generation='inert-old-generation';commit=('a'*40)}
+      $preserveBody=[IO.File]::ReadAllText((Join-Path $PSScriptRoot 'prepare-session-preservation.ps1')).Replace(". (Join-Path `$PSScriptRoot 'Commissioning.ps1')",'')
+      $preparePreservation=[scriptblock]::Create($preserveBody)
+      function New-PreservationFixture {
+        [IO.File]::WriteAllBytes($fixtureIni,$preservationBase)
+        $transactionArgs=New-FixtureTransaction;$null=& $invoke -Action Apply @transactionArgs
+        $alpha='OpenNavXSettings 1\n"battery" ""\n"capacity" "20"\n"consumption" "measured"\n"corridor" "50"\n"current" "unconfigured"\n"display.instruments" "sog,depth"\n"display.rail" "sog,heading"\n"draft" "1"\n"efficiency" ""\n"hotel" ""\n"margin" "1"\n"minimum_speed" "1"\n"model_source" ""\n"reserve" "20"\n'
+        $currentText=[IO.File]::ReadAllText($fixtureIni).Replace('PersistActiveRoute=0',"PersistActiveRoute=0`r`nActiveRoute=11111111-2222-3333-4444-555555555555")
+        $currentText+="[OpenNav]`r`nAlphaSettings=$alpha`r`n[OpenNav/OnlineAIS/v1]`r`nEnabled=1`r`n[PlugIns/wmm_pi.dll]`r`nbEnabled=1`r`n[Settings/GlobalState]`r`nFrameWinX=1280`r`n"
+        [IO.File]::WriteAllText($fixtureIni,$currentText,$encoding)
+        $seen=(& $invoke -Action InspectRestore @transactionArgs)|ConvertFrom-Json
+        $inspected=Read-Record $seen.inspection;$parent=[IO.Path]::GetDirectoryName($transactionArgs.Record)
+        $review=Join-Path $workspace ('preservation-review-'+[guid]::NewGuid().ToString('N')+'.json')
+        $entries=@(Get-CommissioningIniDiff (Join-Path $parent 'input-only.ini') $inspected.savedIni|ForEach-Object{@{key=$_.key;before=$_.before;after=$_.after;origin='unverified';decision='preserve-current';reason='Synthetic current user settings; no source or launch authority'}})
+        Write-Record $review @{schema=1;owner='OpenNavX.SessionPreservationReview.1';parentPreparedSha256=$transactionArgs.ExpectedRecordSha256;inspectionSha256=$seen.inspectionSha256;
+          beforeSha256=(Get-Digest (Join-Path $parent 'input-only.ini'));afterSha256=$seen.currentIniSha256;reviewedUtc=[datetime]::UtcNow.ToString('o');
+          provenance='current-user-state;origin-unverified';preservationOnly=$true;launchPermission=$false;changes=$entries}
+        $proposed=(& $preparePreservation @transactionArgs -Inspection $seen.inspection -ExpectedInspectionSha256 $seen.inspectionSha256 -PreservationReview $review -ExpectedReviewSha256 (Get-Digest $review))|ConvertFrom-Json
+        return @{arguments=$transactionArgs;inspection=$seen;proposal=$proposed;choice=@{PreservationProposal=$proposed.proposal;ExpectedPreservationSha256=$proposed.proposalSha256};
+          target=(Get-CommissioningHash (Get-CommissioningOutputBytes ([IO.File]::ReadAllBytes($fixtureIni))))}
+      }
+      function Restore-PreservationFixture($Fixture) {
+        $transactionArgs=$Fixture.arguments;$choice=$Fixture.choice
+        $seen=(& $invoke -Action InspectRestore @transactionArgs @choice)|ConvertFrom-Json
+        $result=(& $invoke -Action Restore @transactionArgs @choice -Inspection $seen.inspection -ExpectedInspectionSha256 $seen.inspectionSha256 -ReviewedCurrentIniSha256 $seen.currentIniSha256)|ConvertFrom-Json
+        if((Get-Digest $fixtureIni) -cne $Fixture.target -or (Get-Digest $navFixture) -cne $navHash -or
+            -not [IO.File]::Exists($unsafe) -or -not [IO.File]::Exists($unsafeSecond) -or (Test-Path (Join-Path $workspace 'commissioning-active.json'))){throw 'Preservation did not restore exact settings/plugins/navigation without active ownership.'}
+        $resolved=Read-CommissioningBaseline $workspace $result.baselineRecord $result.baselineRecordSha256
+        if($resolved.sha256 -cne $Fixture.target -or -not $result.doNotAutoLaunch -or $result.applicationLaunched){throw 'Preservation lineage or no-launch result differs.'}
+        return $result
+      }
+      $fixture=New-PreservationFixture;$arguments=$fixture.arguments;$choice=$fixture.choice
+      $parentDir=[IO.Path]::GetDirectoryName($arguments.Record)
+      $before=Get-Digest $fixtureIni;$quarantineState=Read-Record $arguments.Record
+      Reject {Read-CommissioningBaseline $workspace $fixture.proposal.proposal $fixture.proposal.proposalSha256} 'proposed preservation is not a usable baseline'
+      $lock=Open-CommissioningRestoreLock $parentDir
+      try {Reject {& $invoke -Action InspectRestore @arguments @choice} 'concurrent restore lock';Reject {& $invoke -Action Restore @arguments -Inspection $fixture.inspection.inspection -ExpectedInspectionSha256 $fixture.inspection.inspectionSha256 -ReviewedCurrentIniSha256 $fixture.inspection.currentIniSha256} 'legacy and preservation restore share the same lock'}finally{$lock.Dispose()}
+      if((Get-Digest $fixtureIni) -cne $before -or [IO.File]::Exists($unsafe)){throw 'Blocked concurrent entry changed originals.'}
+      $checks.Add('Native preservation proposal makes no original changes and shared exclusive lock refuses competing restore variants')
+      foreach($path in @($fixtureIni,$navFixture,$quarantineState.quarantine[0].destination)) {
+        $saved=[IO.File]::ReadAllBytes($path);[IO.File]::AppendAllText($path,' late mutation')
+        Reject {& $invoke -Action InspectRestore @arguments @choice} 'late profile/navigation/plugin mutation cannot be re-inspected into approval'
+        [IO.File]::WriteAllBytes($path,$saved)
+      }
+      $originalAcl=(Get-Acl -LiteralPath $navFixture).Sddl
+      $changedAcl=New-Object Security.AccessControl.FileSecurity
+      $changedAcl.SetSecurityDescriptorSddlForm($originalAcl)
+      $changedAcl.AddAccessRule((New-Object Security.AccessControl.FileSystemAccessRule('S-1-1-0','Read','Allow')))
+      Set-Acl -LiteralPath $navFixture -AclObject $changedAcl
+      try {Reject {& $invoke -Action InspectRestore @arguments @choice} 'late other-profile ACL mutation'}finally{
+        $restoreAcl=New-Object Security.AccessControl.FileSecurity;$restoreAcl.SetSecurityDescriptorSddlForm($originalAcl);Set-Acl -LiteralPath $navFixture -AclObject $restoreAcl
+      }
+      $fixtureContext.session=2;Reject {& $invoke -Action InspectRestore @arguments @choice} 'changed actual session';$fixtureContext.session=1
+      $checks.Add('Native preservation refuses late INI/navigation/plugin bytes, unrelated profile ACL and actual session changes')
+      $null=Restore-PreservationFixture $fixture
+      $checks.Add('Native explicit preservation keeps substantive settings, route data and every other byte, reverses only COM8 and restores both original DLLs')
+      $intentLine=@($body -split "`n"|Where-Object{$_ -like 'Write-Record $restore @*'})
+      if($intentLine.Count -ne 1){throw 'Actual restoration intent boundary changed.'}
+      foreach($boundary in @($intentLine[0],
+        'Publish-PreparedProfile $ini $restoreSource $ReviewedCurrentIniSha256 $restoreHash $restoreBytes $restore',
+        '[IO.File]::Move($item.destination,$item.path)',
+        '# Only remove our exact short-lived ownership marker after durable completion.')) {
+        if(-not $body.Contains($boundary)){throw 'Preservation fault boundary missing.'}
+        $fixture=New-PreservationFixture;$arguments=$fixture.arguments;$choice=$fixture.choice;$seen=$fixture.inspection
+        $fault=[scriptblock]::Create($body.Replace($boundary,$boundary+"`nthrow 'Disposable preservation interruption'"))
+        Reject {& $fault -Action Restore @arguments @choice -Inspection $seen.inspection -ExpectedInspectionSha256 $seen.inspectionSha256 -ReviewedCurrentIniSha256 $seen.currentIniSha256} 'injected preservation interruption'
+        if(-not(Test-Path (Join-Path $workspace 'commissioning-active.json'))){throw 'Interrupted preservation lost active ownership.'}
+        Reject {& $invoke -Action InspectRestore @arguments} 'omission cannot select old baseline after preservation intent'
+        Reject {& $invoke -Action InspectRestore @arguments -AdoptionProposal $fixture.proposal.proposal -ExpectedAdoptionSha256 $fixture.proposal.proposalSha256} 'preservation cannot be relabelled migration'
+        $restored=Restore-PreservationFixture $fixture
+      }
+      $checks.Add('Native preservation resumes exact target after intent, INI publication, first DLL return and durable completion; legacy fallback refused')
+      $fixtureContext.installation=[pscustomobject]@{generation='inert-new-generation';commit=('b'*40)}
+      $baselineArgs=@{BaselineRecord=$restored.baselineRecord;ExpectedBaselineSha256=$restored.baselineRecordSha256}
+      $nextInventory=(& $invoke -Action Inventory -Workspace $workspace @baselineArgs)|ConvertFrom-Json
+      $nextData=Read-Record $nextInventory.record
+      $decisions=@($nextData.plugins|ForEach-Object{@{path=$_.path;sha256=$_.sha256;decision=$(if($_.path -eq $safe){'retain'}else{'quarantine'});reason='Fresh isolated preservation source review';sourceBoundary='Fixture only';sourceRevision=$(if($_.path -eq $safe){'1'*40}else{$null});startupAndIdleReadOnly=($_.path -eq $safe);evidencePath=$evidence;evidenceSha256=(Get-Digest $evidence)}})
+      $freshPlan=Join-Path $workspace ('preserved-plan-'+[guid]::NewGuid().ToString('N')+'.json')
+      Write-Record $freshPlan @{schema=1;owner='OpenNavX.ReadOnlyCommissioning.Plan.1';inventoryPath=$nextInventory.record;inventorySha256=$nextInventory.recordSha256;reviewedUtc=[datetime]::UtcNow.ToString('o');plugins=$decisions}
+      $next=(& $invoke -Action Prepare -Workspace $workspace -Plan $freshPlan -ExpectedPlanSha256 (Get-Digest $freshPlan) @baselineArgs)|ConvertFrom-Json
+      if((Get-Digest $fixtureIni) -cne $fixture.target -or (Test-Path (Join-Path $workspace 'commissioning-active.json'))){throw 'Fresh Prepare changed preserved settings or active ownership.'}
+      $checks.Add('Native preserved historical lineage supports fresh Inventory/Prepare after generation change without launching or altering settings')
     }
   }
   [pscustomobject]@{status='passed';environment=$(if($native){'native-windows-disposable-filesystem'}else{'linux-powershell-portable-contracts'});count=$checks.Count;checks=@($checks);boatAccess=$false;applicationLaunched=$false;productOrBoatAcceptance=$false} | ConvertTo-Json -Depth 6

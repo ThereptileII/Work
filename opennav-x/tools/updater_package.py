@@ -1,6 +1,7 @@
 """Verify the copied launcher/source pair before installed or recovery packaging."""
 import argparse
 import base64
+from dataclasses import dataclass, field
 import hashlib
 import json
 import os
@@ -8,7 +9,9 @@ from pathlib import Path, PurePosixPath
 import re
 import stat
 import struct
+import subprocess
 import tempfile
+from urllib.parse import urlsplit
 
 GO_VERSION = 'go1.27.1'
 MAIN_MODULE = 'example.com/opennav-update-verifier'
@@ -19,6 +22,138 @@ MAX_BINARY_BYTES = 128 << 20
 MAX_ARCHIVE_BYTES = 256 << 20
 SHA256 = re.compile(r'[a-f0-9]{64}\Z')
 COMMIT = re.compile(r'[a-f0-9]{40}\Z')
+TRUST_SOURCE = 'installer/windows/staging-update-trust.json'
+MAX_TRUST_BYTES = 576 << 10
+STOCK_SHA256 = '7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c'
+UPSTREAM_COMMIT = '37fd0cddb7334fe489e9f18aa163977a9c5c84f7'
+
+
+@dataclass(frozen=True)
+class SelectedUpdateTrust:
+    """Explicit caller trust: created from reviewed committed public source only."""
+    data: bytes = field(repr=False)
+    commit: str
+    git_path: str
+    git_blob: str
+    git_blob_sha256: str
+
+    def provenance(self):
+        return {'schema': 1, 'productCommit': self.commit, 'sourcePath': 'opennav-x/' + TRUST_SOURCE,
+                'gitPath': self.git_path, 'gitBlob': self.git_blob, 'gitBlobSha256': self.git_blob_sha256,
+                'sourceSha256': hashlib.sha256(self.data).hexdigest(),
+                'configSha256': hashlib.sha256(self.data).hexdigest(), 'channel': 'beta'}
+
+
+def validate_public_update_trust(data):
+    """Reject secrets/unknown fields locally; real TUF crypto is delegated below."""
+    if not isinstance(data, bytes) or not 0 < len(data) <= MAX_TRUST_BYTES:
+        raise ValueError('Public update trust exceeds bound')
+    config = json.loads(data.decode('utf-8'), object_pairs_hook=_unique)
+    _keys(config, ('schema', 'bootstrapRoot', 'metadataUrl', 'artifactOrigin', 'channel',
+                   'localCompatibilityAllowlist'))
+    if type(config['schema']) is not int or config['schema'] != 1 or config['channel'] != 'beta':
+        raise ValueError('Only explicit beta update trust is supported')
+    for name in ('metadataUrl', 'artifactOrigin'):
+        value = config[name]
+        if not isinstance(value, str) or not 0 < len(value) <= 2048 or any(c in value for c in '\\?#') or any(ord(c) <= 32 or ord(c) == 127 for c in value):
+            raise ValueError('Invalid public update endpoint')
+        endpoint = urlsplit(value)
+        if (endpoint.scheme != 'https' or not endpoint.hostname or endpoint.username is not None or
+                endpoint.password is not None or endpoint.port == 0 or
+                (name == 'artifactOrigin' and endpoint.path)):
+            raise ValueError('Public update endpoints require HTTPS without credentials')
+    if config['localCompatibilityAllowlist'] != [{'version': '5.12.4', 'arch': 'x86',
+            'executableSha256': STOCK_SHA256, 'upstreamCommit': UPSTREAM_COMMIT}]:
+        raise ValueError('Public update trust requires the reviewed official OpenCPN identity')
+    root = config['bootstrapRoot']
+    _keys(root, ('signed', 'signatures'))
+    signed = root['signed']
+    _keys(signed, ('_type', 'spec_version', 'version', 'expires', 'consistent_snapshot', 'keys', 'roles'))
+    if (signed['_type'] != 'root' or signed['spec_version'] != '1.0.31' or
+            type(signed['version']) is not int or signed['version'] != 1 or
+            signed['consistent_snapshot'] is not True or not isinstance(signed['expires'], str)):
+        raise ValueError('Unsupported public bootstrap root')
+    if not isinstance(signed['keys'], dict) or len(signed['keys']) != 4:
+        raise ValueError('Four distinct public role keys are required')
+    for ident, key in signed['keys'].items():
+        _digest(ident); _keys(key, ('keytype', 'scheme', 'keyval')); _keys(key['keyval'], ('public',))
+        if key['keytype'] != 'ed25519' or key['scheme'] != 'ed25519':
+            raise ValueError('Only public Ed25519 bootstrap keys are supported')
+        _digest(key['keyval']['public'])
+    _keys(signed['roles'], ('root', 'targets', 'snapshot', 'timestamp'))
+    roles = []
+    for role in signed['roles'].values():
+        _keys(role, ('keyids', 'threshold'))
+        if (type(role['threshold']) is not int or role['threshold'] != 1 or
+                not isinstance(role['keyids'], list) or len(role['keyids']) != 1 or
+                not isinstance(role['keyids'][0], str) or role['keyids'][0] not in signed['keys']):
+            raise ValueError('Invalid bootstrap role declaration')
+        roles.extend(role['keyids'])
+    signatures = root['signatures']
+    if len(set(roles)) != 4 or not isinstance(signatures, list) or len(signatures) != 1:
+        raise ValueError('Bootstrap requires independent roles and one root signature')
+    _keys(signatures[0], ('keyid', 'sig'))
+    if (signatures[0]['keyid'] != signed['roles']['root']['keyids'][0] or
+            not isinstance(signatures[0]['sig'], str) or not re.fullmatch('[a-f0-9]{128}', signatures[0]['sig'])):
+        raise ValueError('Invalid public root signature declaration')
+    return config
+
+
+def select_update_trust(root, commit, source, validator):
+    """Select exact committed public bytes; never download, sign or build tools.
+
+    The caller provisions a trusted same-commit validator from native producer CI.
+    Git CRLF checkout conversion is the only tolerated source-byte difference.
+    Both Git source and actually packaged byte hashes are recorded explicitly.
+    """
+    root = _plain(root); source = _file(source, MAX_TRUST_BYTES)
+    validator = _file(validator, MAX_BINARY_BYTES)
+    if source != root / TRUST_SOURCE or not isinstance(commit, str) or not COMMIT.fullmatch(commit):
+        raise ValueError('Only the explicitly selected committed staging trust file is supported')
+    def git(*arguments):
+        try:
+            return subprocess.check_output(['git', '-C', str(root), *arguments], stderr=subprocess.PIPE)
+        except subprocess.CalledProcessError as error:
+            raise ValueError('Cannot verify committed trust source') from error
+    if git('rev-parse', 'HEAD').decode().strip() != commit:
+        raise ValueError('Trust source commit differs from product')
+    prefix = git('rev-parse', '--show-prefix').decode().strip()
+    git_path = prefix + TRUST_SOURCE
+    entries = git('ls-tree', '--full-tree', '-z', commit, '--', git_path).split(b'\0')
+    # ls-tree paths are repository-relative even when invoked below its root.
+    if len(entries) != 2 or entries[1] or b'\t' not in entries[0]:
+        raise ValueError('Trust source must be tracked at the exact product commit')
+    metadata, name = entries[0].split(b'\t', 1)
+    mode, kind, blob = metadata.decode().split()
+    if mode != '100644' or kind != 'blob' or name.decode() != git_path:
+        raise ValueError('Trust source must be one regular committed file')
+    original = git('cat-file', 'blob', blob)
+    data = source.read_bytes()
+    if data != original and not (b'\r' not in original and data == original.replace(b'\n', b'\r\n')):
+        raise ValueError('Selected trust bytes differ from committed source')
+    validate_public_update_trust(data)
+    try:
+        checked = subprocess.run([str(validator), 'validate-trust', '--config', str(source)],
+                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=30, check=False)
+    except (OSError, subprocess.TimeoutExpired) as error:
+        raise ValueError('Public trust validator unavailable or timed out') from error
+    if checked.returncode != 0 or checked.stderr or len(checked.stdout) > 4096:
+        raise ValueError('Public trust cryptographic validation failed')
+    result = json.loads(checked.stdout.decode('utf-8'), object_pairs_hook=_unique)
+    expected = {'schema': 1, 'status': 'valid', 'configSha256': hashlib.sha256(data).hexdigest(), 'channel': 'beta'}
+    if result != expected or type(result.get('schema')) is not int or source.read_bytes() != data:
+        raise ValueError('Public trust validation did not bind unchanged selected bytes')
+    return SelectedUpdateTrust(data, commit, git_path, blob, hashlib.sha256(original).hexdigest())
+
+
+def copy_selected_update_trust(app, selection):
+    """Exclusive packaging copy; never overwrite an accidental pre-existing file."""
+    if not isinstance(selection, SelectedUpdateTrust):
+        raise ValueError('Explicit reviewed trust selection required')
+    validate_public_update_trust(selection.data)
+    destination = _plain(Path(app) / 'update-trust.json', allow_missing=True)
+    with destination.open('xb') as output:
+        output.write(selection.data); output.flush(); os.fsync(output.fileno())
 
 
 def _plain(path, *, allow_missing=False):
@@ -147,11 +282,12 @@ def _pe32(path):
         raise ValueError('Updater launcher must use Win32 x86 PE32')
 
 
-def verify_updater_package(app, commit):
+def verify_updater_package(app, commit, *, expected_trust=None):
     """Return source_package's descriptor for the exact copied package bytes.
 
-    Trust provisioning is a separate authorized operation. The default product
-    must not accidentally ship the development repository's update-trust.json.
+    The default product must not accidentally ship update-trust.json. Only an
+    explicit selection validated from committed public source may authorize it.
+    Launcher-only producer artifacts and transfers deliberately use the default.
     Source contents were already checked by the producer; here the complete ZIP
     hash binds those contents without expanding every dependency again.
     """
@@ -163,9 +299,17 @@ def verify_updater_package(app, commit):
     try:
         (app / 'update-trust.json').lstat()
     except FileNotFoundError:
-        pass
+        if expected_trust is not None:
+            raise ValueError('Selected public update trust is missing from package')
     else:
-        raise ValueError('Default product must not bundle update trust configuration')
+        if expected_trust is None:
+            raise ValueError('Default product must not bundle update trust configuration')
+        if not isinstance(expected_trust, SelectedUpdateTrust) or expected_trust.commit != commit:
+            raise ValueError('Explicit same-commit public trust selection required')
+        actual = _file(app / 'update-trust.json', MAX_TRUST_BYTES).read_bytes()
+        if actual != expected_trust.data:
+            raise ValueError('Packaged update trust differs from selected committed bytes')
+        validate_public_update_trust(actual)
     record_path = _file(app / 'opennav/third-party/updater/build.json', MAX_RECORD_BYTES)
     record = json.loads(record_path.read_text(encoding='utf-8'), object_pairs_hook=_unique)
     _keys(record, ('schema', 'productCommit', 'goVersion', 'binary', 'sourceBundle', 'buildInfo'))

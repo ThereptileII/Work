@@ -7,12 +7,30 @@ import json
 import os
 from pathlib import Path
 import struct
+import subprocess
 import tempfile
 import unittest
 from unittest import mock
 import zipfile
 
 from updater_package import copy_verified_updater_package, verify_updater_package, GO_VERSION, MAIN_MODULE, SOURCE_RELATIVE, BUNDLE_PATH
+from updater_package import (select_update_trust, copy_selected_update_trust, validate_public_update_trust,
+                             TRUST_SOURCE, STOCK_SHA256, UPSTREAM_COMMIT)
+
+
+def public_config():
+    # Inert structural fixture. Crypto is tested by the real Go validator suite;
+    # these tests exercise the trusted subprocess handoff, source and copy binding.
+    roles = dict(zip(('root', 'targets', 'snapshot', 'timestamp'), ('1'*64, '2'*64, '3'*64, '4'*64)))
+    return {'schema': 1, 'channel': 'beta', 'metadataUrl': 'https://updates.example.test/beta/metadata',
+            'artifactOrigin': 'https://updates.example.test',
+            'localCompatibilityAllowlist': [{'version': '5.12.4', 'arch': 'x86',
+                'executableSha256': STOCK_SHA256, 'upstreamCommit': UPSTREAM_COMMIT}],
+            'bootstrapRoot': {'signed': {'_type': 'root', 'spec_version': '1.0.31', 'version': 1,
+                'expires': '2030-01-01T00:00:00Z', 'consistent_snapshot': True,
+                'keys': {key: {'keytype': 'ed25519', 'scheme': 'ed25519', 'keyval': {'public': key}} for key in roles.values()},
+                'roles': {name: {'keyids': [key], 'threshold': 1} for name, key in roles.items()}},
+                'signatures': [{'keyid': roles['root'], 'sig': '0'*128}]}}
 
 
 class UpdaterPackageTests(unittest.TestCase):
@@ -219,6 +237,118 @@ class UpdaterPackageTests(unittest.TestCase):
         self.record_file.write_bytes(b'x' * ((1 << 20) + 1))
         with self.assertRaisesRegex(ValueError, 'type or size'):
             verify_updater_package(self.app, self.commit)
+
+    def trust_source(self, *, monorepo=False):
+        repository = self.destination()
+        root = repository/'opennav-x' if monorepo else repository
+        source = root/TRUST_SOURCE; source.parent.mkdir(parents=True)
+        source.write_text(json.dumps(public_config(), indent=2)+'\n', encoding='utf-8', newline='\n')
+        def git(*args):
+            return subprocess.check_output(['git', '-C', str(repository), *args], stderr=subprocess.PIPE).decode().strip()
+        git('init', '--quiet'); git('config', 'user.name', 'Disposable Fixture')
+        git('config', 'user.email', 'fixture@example.invalid'); git('config', 'core.autocrlf', 'false')
+        git('add', '.'); git('commit', '--quiet', '-m', 'Public trust fixture')
+        self.commit = git('rev-parse', 'HEAD')
+        self.record['productCommit'] = self.commit
+        self.record['sourceBundle']['reference']['productCommit'] = self.commit
+        self.record['buildInfo'] = self.record['buildInfo'].replace('a'*40, self.commit); self.write()
+        validator = self.destination()/'skager-repository.exe'; validator.write_bytes(b'inert validator placeholder')
+        return root, source, validator, git
+
+    @staticmethod
+    def validator_result(command, **kwargs):
+        if 'validate-trust' not in command:
+            return subprocess.run(command, **kwargs)
+        data = Path(command[-1]).read_bytes()
+        return subprocess.CompletedProcess(command, 0, json.dumps({'schema': 1, 'status': 'valid',
+            'configSha256': hashlib.sha256(data).hexdigest(), 'channel': 'beta'}).encode(), b'')
+
+    def select(self, root, source, validator):
+        original_run = subprocess.run
+        def result(command, **kwargs):
+            if 'validate-trust' not in command:
+                return original_run(command, **kwargs)
+            self.assertEqual(command, [str(validator), 'validate-trust', '--config', str(source)])
+            self.assertEqual(kwargs['timeout'], 30)
+            return self.validator_result(command, **kwargs)
+        with mock.patch('updater_package.subprocess.run', side_effect=result):
+            return select_update_trust(root, self.commit, source, validator)
+
+    def test_explicit_trust_binds_committed_source_and_exact_copied_bytes(self):
+        root, source, validator, _ = self.trust_source(monorepo=True)
+        selection = self.select(root, source, validator)
+        self.assertEqual(selection.git_path, 'opennav-x/'+TRUST_SOURCE)
+        self.assertEqual(selection.provenance()['configSha256'], self.sha(source))
+        with self.assertRaisesRegex(ValueError, 'missing'):
+            verify_updater_package(self.app, self.commit, expected_trust=selection)
+        copy_selected_update_trust(self.app, selection)
+        self.assertEqual((self.app/'update-trust.json').read_bytes(), source.read_bytes())
+        verify_updater_package(self.app, self.commit, expected_trust=selection)
+        with self.assertRaisesRegex(ValueError, 'must not bundle update trust'):
+            verify_updater_package(self.app, self.commit)
+        with self.assertRaises(FileExistsError):
+            copy_selected_update_trust(self.app, selection)
+        (self.app/'update-trust.json').write_bytes(selection.data+b' ')
+        with self.assertRaisesRegex(ValueError, 'selected committed bytes'):
+            verify_updater_package(self.app, self.commit, expected_trust=selection)
+
+    def test_trust_source_crlf_is_explicit_but_other_edits_and_untracked_refuse(self):
+        root, source, validator, git = self.trust_source()
+        original = source.read_bytes(); source.write_bytes(original.replace(b'\n', b'\r\n'))
+        selection = self.select(root, source, validator)
+        self.assertEqual(selection.git_blob_sha256, hashlib.sha256(original).hexdigest())
+        self.assertNotEqual(selection.git_blob_sha256, selection.provenance()['configSha256'])
+        self.assertEqual(selection.provenance()['sourceSha256'], selection.provenance()['configSha256'])
+        source.write_bytes(original+b' ')
+        with self.assertRaisesRegex(ValueError, 'committed source'):
+            self.select(root, source, validator)
+        source.write_bytes(original)
+        git('rm', '--cached', TRUST_SOURCE); git('commit', '--quiet', '-m', 'Remove selection')
+        self.commit = git('rev-parse', 'HEAD')
+        with self.assertRaisesRegex(ValueError, 'tracked'):
+            self.select(root, source, validator)
+
+    def test_bad_validator_changed_file_and_wrong_receipt_refuse(self):
+        root, source, validator, _ = self.trust_source()
+        original = source.read_bytes(); run = subprocess.run
+        for scenario in ('exit', 'stderr', 'hash', 'changed', 'timeout'):
+            source.write_bytes(original)
+            def result(command, **kwargs):
+                if 'validate-trust' not in command:
+                    return run(command, **kwargs)
+                checked = self.validator_result(command, **kwargs)
+                if scenario == 'exit': checked.returncode = 1
+                if scenario == 'stderr': checked.stderr = b'private diagnostic must not leak'
+                if scenario == 'hash': checked.stdout = checked.stdout.replace(self.sha(source).encode(), b'f'*64)
+                if scenario == 'changed': source.write_bytes(original+b' ')
+                if scenario == 'timeout': raise subprocess.TimeoutExpired(command, 30)
+                return checked
+            with self.subTest(scenario=scenario), mock.patch('updater_package.subprocess.run', side_effect=result):
+                with self.assertRaises(ValueError) as error:
+                    select_update_trust(root, self.commit, source, validator)
+                self.assertNotIn('private diagnostic', str(error.exception))
+
+    def test_secret_unknown_schema_and_endpoint_or_allowlist_changes_refuse(self):
+        original = public_config()
+        changes = [lambda c:c.update(token='secret'), lambda c:c.update(schema=True),
+            lambda c:c.update(channel='stable'), lambda c:c.update(metadataUrl='http://updates.example.test'),
+            lambda c:c.update(metadataUrl='https://user:secret@updates.example.test'),
+            lambda c:c.update(metadataUrl='https://updates.example.test?token=secret'),
+            lambda c:c.update(artifactOrigin='https://updates.example.test/artifacts'),
+            lambda c:c['localCompatibilityAllowlist'][0].update(executableSha256='f'*64),
+            lambda c:c['localCompatibilityAllowlist'][0].update(unknown='secret'),
+            lambda c:c['bootstrapRoot']['signed'].update(private='secret'),
+            lambda c:c['bootstrapRoot']['signed']['keys']['1'*64]['keyval'].update(private='secret'),
+            lambda c:c['bootstrapRoot']['signed']['roles']['targets'].update(keyids=['1'*64]),
+            lambda c:c['bootstrapRoot'].update(extra='secret')]
+        validate_public_update_trust(json.dumps(original).encode())
+        for change in changes:
+            config = copy.deepcopy(original); change(config)
+            with self.subTest(config=config), self.assertRaises(ValueError):
+                validate_public_update_trust(json.dumps(config).encode())
+        duplicate = b'{"schema":1,'+json.dumps(original).encode()[1:]
+        with self.assertRaisesRegex(ValueError, 'Duplicate'):
+            validate_public_update_trust(duplicate)
 
 
 if __name__ == '__main__':
