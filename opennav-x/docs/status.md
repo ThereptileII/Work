@@ -2,7 +2,7 @@
 
 ## Secure startup updater — implementation and focused qualification
 
-SCRUM-23/25/26 are In Progress. The new installed launcher composes retained
+SCRUM-23/25/26 are Testing. The new installed launcher composes retained
 signed trust, measured OpenCPN compatibility, explicit Update Now/Later consent,
 verified installer custody and the existing transactional lifecycle. Candidate
 acceptance requires an authenticated live-process startup receipt and a durable
@@ -46,12 +46,23 @@ sender/receiver scenarios, 305 shortcut checks and 46 actual-Lifecycle checks.
 Native launcher/source packaging and the inert signing boundary pass as well.
 Downloaded evidence hashes are recorded in the linked receipt.
 
-The next combined Staging candidate adds real packaged launcher bootstrap,
+The combined Staging candidate `4bdae3d5873adc94b9ea98651a6888b63d3c861c`
+([run 37302067258](https://github.com/ThereptileII/Work/actions/runs/37302067258))
+adds real packaged launcher bootstrap,
 supervised installation, authenticated application startup and an explicitly
 faulted disposable candidate's guarded rollback to installer smoke. Those
 integrated results and boat acceptance remain pending. No product trust root,
 signing secret or public update endpoint is invented or bundled. Production
 activation remains a separate gate.
+
+This Staging attempt stopped before Windows application compilation: early Go
+setup changed `PATH`, so the immutable dependency reprobe correctly rejected
+the environment. The retained OpenSSL facts differ only in `PATHSha256`; all
+recorded tool binaries, versions and other fields match. Go setup is moved after
+the existing dependency/application checks, immediately before updater packaging.
+A focused ordering regression passes; no SDK identity check is relaxed and the
+approved dependency bundle is unchanged. Native confirmation precedes another
+Staging attempt. No Windows package was produced by this failed attempt.
 
 The frozen boat-feedback Staging run
 [37283380247](https://github.com/ThereptileII/Work/actions/runs/37283380247)

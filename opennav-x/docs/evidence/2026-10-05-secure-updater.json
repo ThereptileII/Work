@@ -97,5 +97,22 @@
       }
     ]
   },
-  "packagedApplicationAcceptance": "pending"
+  "packagedApplicationAcceptance": "pending",
+  "integratedStagingAttempt": {
+    "url": "https://github.com/ThereptileII/Work/actions/runs/37302067258",
+    "commit": "4bdae3d5873adc94b9ea98651a6888b63d3c861c",
+    "windows": "failed before application compilation",
+    "updaterContracts": "passed",
+    "reason": "Consumer setup-go introduced PATH entries before immutable dependency reprobe",
+    "onlyChangedOpenSslFact": "environment.PATHSha256",
+    "capturedPathSha256": "585ef513a45a58368b1d08ef9e0ebafd5fe73ec383c016a5db38a86c8f7289c5",
+    "observedPathSha256": "db67c2e952e147b68b619896531c65992b7aae0754f58267e0a873165831cca6",
+    "downloadedArtifact": {
+      "id": 11342121983,
+      "sha256": "6e3fc4b35bf121364bb435773c4129d82acd51757637afb04bd47d2014f7ea4f"
+    },
+    "correctionLocalCommit": "e3abd7d",
+    "validatorOrSdkChanged": false,
+    "nativeCorrectionVerified": false
+  }
 }

@@ -563,10 +563,6 @@ jobs:
       producer_attempt: ${{ steps.identity.outputs.producer_attempt }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
-      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
-        with:
-          go-version-file: opennav-x/tools/update-verifier/go.mod
-          cache-dependency-path: opennav-x/tools/update-verifier/go.sum
       - name: Preserve native Perl for OpenSSL and install curl's POSIX test host
         shell: pwsh
         run: |
@@ -641,6 +637,12 @@ jobs:
         run: |
           python opennav-x/tools/test-peer-buffer.py > opennav-x/evidence/local/peer-buffer-windows.log 2>&1
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      # Dependency reprobes require the original producer PATH byte-for-byte.
+      # Provision Go only after both application passes and their reprobes.
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+        with:
+          go-version-file: opennav-x/tools/update-verifier/go.mod
+          cache-dependency-path: opennav-x/tools/update-verifier/go.sum
       - name: Build verified startup updater and retain dependency source/licenses
         run: python opennav-x/tools/package-update-launcher.py --install opennav-x/build/production-install
       - name: Package fixture-free recovery before desktop qualification
