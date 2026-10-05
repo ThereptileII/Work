@@ -128,6 +128,9 @@ void LossAndRecovery() {
   pilot.Observe(Mode(start + 4003ms), start + 4003ms);
   Check(pilot.GetState(start + 4003ms).mode == adapters::PilotMode::Unavailable,
         "A new connection requires a newly observed identity");
+  Check(pilot.Description(start + 4003ms).find("without a verified address claim") !=
+            std::string::npos,
+        "New mode traffic after reconnect explains the missing claim despite old feedback history");
   pilot.Observe(Claim(start + 4004ms), start + 4004ms);
   pilot.Observe(Mode(start + 4005ms), start + 4005ms);
   Check(pilot.GetState(start + 4005ms).mode == adapters::PilotMode::Auto,
@@ -152,7 +155,103 @@ void Ambiguity() {
   conflict.Observe(Mode(start + 3ms), start + 3ms);
   Check(conflict.GetState(start + 3ms).mode == adapters::PilotMode::Unavailable,
         "Conflicting claims cannot retain available status");
+  const auto diagnostics = conflict.GetDiagnostics(start + 3ms);
+  Check(diagnostics.identity_conflicts == 1 &&
+            diagnostics.verified_identities == 0 &&
+            diagnostics.conflict_source ==
+                "existing-opencpn/NAME-" + adapters::FormatPilotName(identity),
+        "Conflict diagnostics identify the actual interface and NAME");
+  Check(conflict.Description(start + 3ms).find("address/NAME conflict") !=
+            std::string::npos,
+        "A known conflict must not be hidden behind generic feedback loss");
+  ++transport.connection.epoch;
+  conflict.Poll(start + 4ms);
+  conflict.Observe(Claim(start + 5ms), start + 5ms);
+  conflict.Observe(Mode(start + 6ms), start + 6ms);
+  Check(conflict.GetDiagnostics(start + 6ms).identity_conflicts == 1 &&
+            conflict.GetState(start + 6ms).mode == adapters::PilotMode::Unavailable,
+        "Reconnect and repeated claims cannot silently reset a conflict");
   Check(transport.sends == 0, "Ambiguity must not trigger discovery output");
+  integration::PilotStatusDiscovery unconfirmed_conflict(transport);
+  unconfirmed_conflict.Observe(Claim(start), start);
+  unconfirmed_conflict.Observe(Claim(start + 1ms, 205), start + 1ms);
+  Check(unconfirmed_conflict.Description(start + 1ms).find("address/NAME conflict") !=
+            std::string::npos &&
+            !unconfirmed_conflict.GetState(start + 1ms).sequence,
+        "Conflict before any physical feedback is explicit rather than generic waiting");
+}
+void TrafficDiagnostics() {
+  Transport transport;
+  integration::PilotStatusDiscovery pilot(transport);
+  Check(pilot.GetDiagnostics(start).fresh_mode_sources_without_identity == 0 &&
+            pilot.GetDiagnostics(start).verified_identities == 0,
+        "No received traffic cannot imply either mode or identity");
+  // Joining an already running bus may miss its earlier address claim.
+  pilot.Observe(Mode(start), start);
+  auto diagnostics = pilot.GetDiagnostics(start);
+  Check(diagnostics.fresh_mode_sources_without_identity == 1 &&
+            diagnostics.verified_identities == 0 &&
+            pilot.Description(start).find("without a verified address claim") !=
+                std::string::npos &&
+            pilot.GetState(start).mode == adapters::PilotMode::Unavailable,
+        "Mode-only startup explains missing identity without claiming availability");
+  pilot.Observe(Claim(start + 1ms, 204, identity, "other-interface"), start + 1ms);
+  Check(pilot.GetDiagnostics(start + 1ms).fresh_mode_sources_without_identity == 1,
+        "A claim on another interface cannot identify this mode source");
+  Check(pilot.GetDiagnostics(start + 3s).fresh_mode_sources_without_identity == 0 &&
+            pilot.GetDiagnostics(start + 3s).stale_mode_sources == 1,
+        "Mode diagnostics expire at the same strict three-second boundary");
+  ++transport.connection.epoch;
+  pilot.Poll(start + 3001ms);
+  Check(pilot.GetDiagnostics(start + 3001ms).stale_mode_sources == 0 &&
+            pilot.GetDiagnostics(start + 3001ms).verified_identities == 0,
+        "An old connection cannot contribute current identity or traffic diagnostics");
+  pilot.Observe(Mode(start + 3002ms), start + 3002ms);
+  pilot.Observe(Claim(start + 3003ms), start + 3003ms);
+  Check(pilot.GetDiagnostics(start + 3003ms).verified_identities == 1 &&
+            pilot.GetDiagnostics(start + 3003ms).fresh_mode_sources_without_identity == 0 &&
+            pilot.Description(start + 3003ms).find("waiting for valid physical") !=
+                std::string::npos &&
+            pilot.GetState(start + 3003ms).mode == adapters::PilotMode::Unavailable,
+        "A claim explains identity discovery but does not retroactively accept earlier mode");
+  pilot.Observe(Mode(start + 3004ms), start + 3004ms);
+  Check(pilot.GetState(start + 3004ms).mode == adapters::PilotMode::Auto,
+        "Only subsequent verified physical feedback establishes availability");
+  transport.connection.connected = false;
+  pilot.Poll(start + 3005ms);
+  Check(pilot.GetDiagnostics(start + 3005ms).verified_identities == 0 &&
+            pilot.GetDiagnostics(start + 3005ms).fresh_mode_sources_without_identity == 0,
+        "Disconnected transport cannot contribute fresh diagnostics");
+  Check(transport.sends == 0, "Diagnostic discovery remains entirely passive");
+}
+void InvalidTrafficDiagnostics() {
+  for (int invalid = 0; invalid < 8; ++invalid) {
+    Transport transport;
+    integration::PilotStatusDiscovery pilot(transport);
+    auto frame = Mode(start);
+    if (invalid == 0) frame.data.pop_back();
+    if (invalid == 1) frame.data[0] = 0;
+    if (invalid == 2) frame.data[2] = frame.data[3] = 255;
+    if (invalid == 3) frame.source = 254;
+    if (invalid == 4) frame.observed_at = start + 1ms;
+    if (invalid == 5) frame.observed_at = start - 3s;
+    if (invalid == 6) frame.interface_id = "bad\ninterface";
+    if (invalid == 7) transport.connection.connected = false;
+    pilot.Observe(frame, start);
+    Check(pilot.GetDiagnostics(start).fresh_mode_sources_without_identity == 0 &&
+              pilot.GetDiagnostics(start).stale_mode_sources == 0,
+          "Malformed, future, stale and disconnected traffic cannot supply diagnostics");
+    Check(transport.sends == 0, "Invalid diagnostics never cause output");
+  }
+  Transport transport;
+  integration::PilotStatusDiscovery bounded(transport);
+  for (unsigned source = 0; source < 33; ++source)
+    bounded.Observe(Mode(start, source), start);
+  const auto diagnostics = bounded.GetDiagnostics(start);
+  Check(diagnostics.fresh_mode_sources_without_identity == 32 &&
+            diagnostics.traffic_limit_exceeded &&
+            bounded.GetState(start).mode == adapters::PilotMode::Unavailable,
+        "Unidentified traffic storage is bounded and never grants availability");
 }
 }
 int main() {
@@ -161,6 +260,8 @@ int main() {
     Rejection();
     LossAndRecovery();
     Ambiguity();
+    TrafficDiagnostics();
+    InvalidTrafficDiagnostics();
     std::cout << "Passive pilot discovery and status tests passed\n";
     return 0;
   } catch (const std::exception &error) {

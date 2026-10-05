@@ -1,4 +1,4 @@
-# OpenNav X Beta 1 boat commissioning
+# SKAGER boat commissioning
 
 Physical acceptance remains open. Match the package build to its published
 software qualification record before beginning; this checklist is not evidence
@@ -50,13 +50,20 @@ trips. The estimate is advisory, not a guaranteed range.
 
 ## Phase C — autopilot status only
 
-Leave control OFF. Identify the translator by interface and device identity.
-In **Menu → Manual autopilot → Translator configuration**, bind the exact
-observed interface and hexadecimal NAME. Saving identity always selects
-display-only. The currently qualified PC output path is a bidirectional OpenCPN
-TCP connection using Actisense complete-PGN ASCII. Serial, UDP and SeaSmart
-remain status-only in this Beta integration; do not assume physical delivery
-from a transport description. Confirm the complete gateway path before commands.
+Leave control OFF. SKAGER passively uses the existing OpenCPN NMEA 2000 receive
+connection, as AutoTrack does; a second connection or manual NAME-entry wizard
+is not required in the normal product. Status requires a compatible observed
+address claim followed by fresh physical feedback. The bridge's address claim
+is event/request driven: opening the PC application after the bridge is already
+running does not guarantee another claim. Do not guess its identity from a
+heading source address or a previously saved plugin preference.
+
+The installed product remains status-only. The previously exercised TCP
+loopback path is an isolated test boundary, **not** a qualified physical output
+path. The boat's actual Actisense serial transport still needs the separate
+SCRUM-313 qualification; the old instructions to enable a translator through
+the product settings did not describe an available product capability.
+See [current inspection and limitations](pilot-boat-integration.md).
 Compare reported STANDBY/AUTO and actual/commanded magnetic heading with the
 physical ST4000. Change state **at the physical pilot** and verify fresh feedback
 at the PC. Disconnect communications: PC state must become unavailable/stale.
@@ -65,12 +72,18 @@ unavailable until that complete path is specifically validated.
 
 ## Phase D — deliberate manual commands
 
-Only after status tests pass, in a secured vessel/safe environment with a person
-at physical STANDBY and the drive safe for testing:
+This phase is **pending**, not executable using the current status-only product.
+First qualify the actual transport, command permissions, feedback and reconnect
+barriers under SCRUM-313. Then obtain separate explicit authorization for the
+specific live test, with a secured vessel/safe environment, a person at physical
+STANDBY and the steering gear clear. Do not enable a plugin, change the receive
+connection to bidirectional, or bypass the product output gate to force this test.
 
-1. In translator configuration, deliberately save manual-control permission for
-   that verified identity. Return to the panel and enable this session. Saved
-   permission alone never starts an enabled session.
+For a subsequently qualified manual-control build only:
+
+1. Deliberately enable manual control for the freshly verified pilot and current
+   connection/session using that build's documented commissioning procedure.
+   Saved preferences alone must never start an enabled control session.
 2. Test STANDBY alone and compare physical feedback.
 3. Test AUTO alone; verify target/actual heading, physical mode and confirmation.
 4. Test +1, −1, +10 and −10 individually. Wait for physical feedback and the

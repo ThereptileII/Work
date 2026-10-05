@@ -67,6 +67,7 @@ class CurlPatchSourcePackageTests(unittest.TestCase):
             "opencpn-5.12.4-wxcurl-trust.patch",
             "opencpn-5.12.4-peer-response-buffer.patch",
             "opencpn-5.12.4-peer-unavailable.patch",
+            "opencpn-5.12.4-pilot-serial.patch",
         ):
             self._write(self.product / "patches" / name, b"fixture patch bytes\n")
         self._git(self.checkout, "add", ".")

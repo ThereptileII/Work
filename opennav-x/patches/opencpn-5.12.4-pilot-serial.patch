@@ -1,0 +1,94 @@
+diff --git a/model/src/comm_drv_n2k_serial.cpp b/model/src/comm_drv_n2k_serial.cpp
+--- a/model/src/comm_drv_n2k_serial.cpp
++++ b/model/src/comm_drv_n2k_serial.cpp
+@@ -374,10 +374,21 @@
+ #ifndef ANDROID
+ 
+   auto msg_n2k = std::dynamic_pointer_cast<const Nmea2000Msg>(msg);
+-  std::vector<uint8_t> load = msg_n2k->payload;
++  auto destination_address = std::dynamic_pointer_cast<const NavAddr2000>(addr);
++  // Null retains the existing broadcast default. A non-null destination must
++  // be a numeric N2K address, not a NAME-only address with no address value.
++  if (!msg_n2k ||
++      (addr && (!destination_address ||
++                destination_address->bus != NavAddr::Bus::N2000 ||
++                destination_address->name.value.Name != 0)))
++    return false;
++  const auto& load = msg_n2k->payload;
++  if (load.empty() || load.size() > tN2kMsg::MaxDataLen ||
++      msg_n2k->PGN.pgn > 0x3ffff || msg_n2k->priority < 0 ||
++      msg_n2k->priority > 7)
++    return false;
+ 
+   uint64_t _pgn = msg_n2k->PGN.pgn;
+-  auto destination_address = std::static_pointer_cast<const NavAddr2000>(addr);
+ 
+   tN2kMsg N2kMsg;  // automatically sets destination 255
+   N2kMsg.SetPGN(_pgn);
+@@ -388,15 +399,18 @@
+ 
+   const std::vector<uint8_t> acti_pkg = BufferToActisenseFormat(N2kMsg);
+ 
+-  // Create the internal message for all N2K listeners
++  // Preserve the 0x94 transmit notification for existing listeners. It is not
++  // a 0x93 received frame or physical feedback. Arbitrary PGN data is not a
++  // NAME (and may be shorter than eight bytes); retain only interface identity.
+   std::vector<unsigned char> msg_payload;
+   for (size_t i = 2; i < acti_pkg.size() - 2; i++)
+     msg_payload.push_back(acti_pkg[i]);
+-  auto name = PayloadToName(load);
++  auto source =
++      std::make_shared<NavAddr2000>(iface, static_cast<unsigned char>(254));
+   auto msg_all =
+-      std::make_shared<const Nmea2000Msg>(1, msg_payload, GetAddress(name));
++      std::make_shared<const Nmea2000Msg>(1, msg_payload, source);
+   auto msg_internal =
+-      std::make_shared<const Nmea2000Msg>(_pgn, msg_payload, GetAddress(name));
++      std::make_shared<const Nmea2000Msg>(_pgn, msg_payload, source);
+ 
+   // Notify listeners
+   m_listener.Notify(std::move(msg_internal));
+@@ -406,6 +420,7 @@
+     if (IsSecThreadActive()) {
+       int retry = 10;
+       while (retry) {
++        // Success reports queue acceptance only, never delivery or feedback.
+         if (GetSecondaryThread()->SetOutMsg(acti_pkg))
+           return true;
+         else
+@@ -416,7 +431,7 @@
+       return false;
+   }
+ #endif
+-  return true;
++  return false;
+ }
+ 
+ void CommDriverN2KSerial::ProcessManagementPacket(
+@@ -1146,15 +1161,22 @@
+ // Actisense Format:
+ // <10><02><93><length (1)><priority (1)><PGN (3)><destination (1)><source
+ // (1)><time (4)><len (1)><data (len)><CRC (1)><10><03>
+-#define MaxActisenseMsgBuf 400
++// Every application/checksum byte may need DLE escaping, plus four framing
++// bytes. The complete legal fast-packet payload must not wrap an 8-bit index.
++#define MaxActisenseMsgBuf (2 * (tN2kMsg::MaxDataLen + 9) + 4)
+ #define MsgTypeN2kTX 0x94
+ 
+-void AddByteEscapedToBuf(unsigned char byteToAdd, uint8_t& idx,
+-                         unsigned char* buf, int& byteSum);
++static void AddByteEscapedToBuf(unsigned char byteToAdd, size_t& idx,
++                                unsigned char* buf, int& byteSum) {
++  if (byteToAdd == ESCAPE) buf[idx++] = ESCAPE;
++  buf[idx++] = byteToAdd;
++  byteSum += byteToAdd;
++}
+ 
+ std::vector<unsigned char> BufferToActisenseFormat(tN2kMsg& msg) {
++  if (msg.DataLen < 0 || msg.DataLen > tN2kMsg::MaxDataLen) return {};
+   unsigned long _PGN = msg.PGN;
+-  uint8_t msgIdx = 0;
++  size_t msgIdx = 0;
+   int byteSum = 0;
+   uint8_t CheckSum;
+   unsigned char ActisenseMsgBuf[MaxActisenseMsgBuf];

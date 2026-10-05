@@ -1,0 +1,140 @@
+name: SKAGER focused pilot contracts and native controls
+on:
+  push:
+    branches: [skager-pilot-focus]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: skager-pilot-focus-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  portable:
+    name: Current pilot contracts and pinned firmware oracle
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    defaults:
+      run:
+        shell: bash
+        working-directory: opennav-x
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Prepare hash-pinned host-only firmware sources
+        run: |
+          set -euo pipefail
+          mkdir -p evidence/local/pilot-portable
+          git rev-parse HEAD > evidence/local/pilot-portable/commit.txt
+          python tools/fetch-st4000-oracle.py build/pilot-firmware 2>&1 | tee evidence/local/pilot-portable/oracle.log
+      - name: Build only pilot contract executables
+        run: |
+          set -euo pipefail
+          cmake -S . -B build/pilot-contracts -DCMAKE_BUILD_TYPE=Release -DOPENNAV_BUILD_UI_COMPONENTS=OFF -DOPENNAV_ST4000_ORACLE="$PWD/build/pilot-firmware" 2>&1 | tee evidence/local/pilot-portable/configure.log
+          cmake --build build/pilot-contracts --parallel 2 --target pilot_status_tests pilot_traffic_tests st4000_tests st4000_firmware_tests adapter_tests pilot_output_product_tests pilot_output_loopback_tests settings_tests 2>&1 | tee evidence/local/pilot-portable/compile.log
+      - name: Exercise feedback, identity, commands and refusal policy without equipment
+        run: |
+          set -euo pipefail
+          ctest --test-dir build/pilot-contracts --output-on-failure --no-tests=error --timeout 30 --output-junit "$PWD/evidence/local/pilot-portable/tests.xml" -R '^(pilot_status_discovery|pilot_traffic_diagnostics|pilot_output_.*_policy|st4000_.*|autopilot_.*|settings_pilot_permission)$' 2>&1 | tee evidence/local/pilot-portable/tests.log
+          sha256sum build/pilot-contracts/{pilot_status_tests,pilot_traffic_tests,st4000_tests,st4000_firmware_tests,adapter_tests,pilot_output_product_tests,pilot_output_loopback_tests,settings_tests} > evidence/local/pilot-portable/executables.sha256
+          sha256sum build/pilot-firmware/src/BridgeCore.cpp build/pilot-firmware/include/{BridgeCore.h,Config.h} > evidence/local/pilot-portable/oracle.sha256
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: pilot-portable-${{ github.sha }}-attempt${{ github.run_attempt }}
+          path: opennav-x/evidence/local/pilot-portable
+          if-no-files-found: error
+  native:
+    name: Win32 pilot contracts, drawer, presentation and serial bounds
+    runs-on: windows-2022
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Prepare disposable CI display only
+        shell: pwsh
+        run: |
+          python opennav-x/tools/prepare-stock-review-desktop.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Build and exercise only offline native pilot components
+        shell: pwsh
+        run: |
+          python opennav-x/tools/test-pilot-component-windows.py --evidence opennav-x/evidence/local/pilot-component-native
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Prepare pinned firmware oracle for native portable contracts
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $Out = 'opennav-x/evidence/local/pilot-contracts-native'
+          New-Item -ItemType Directory -Path $Out -ErrorAction Stop | Out-Null
+          $Revision = git -C opennav-x rev-parse HEAD
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $Revision | Set-Content "$Out/commit.txt"
+          python opennav-x/tools/fetch-st4000-oracle.py opennav-x/build/pilot-firmware-native 2>&1 | Tee-Object "$Out/oracle.log"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Build only Win32 pilot contract executables
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $Out = 'opennav-x/evidence/local/pilot-contracts-native'
+          $Oracle = (Resolve-Path 'opennav-x/build/pilot-firmware-native').Path
+          cmake -S opennav-x -B opennav-x/build/pilot-contracts-native -G 'Visual Studio 17 2022' -A Win32 -DOPENNAV_BUILD_UI_COMPONENTS=OFF "-DOPENNAV_ST4000_ORACLE=$Oracle" 2>&1 | Tee-Object "$Out/configure.log"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cmake --build opennav-x/build/pilot-contracts-native --config Release --parallel 2 --target pilot_status_tests pilot_traffic_tests st4000_tests st4000_firmware_tests adapter_tests pilot_output_product_tests pilot_output_loopback_tests settings_tests 2>&1 | Tee-Object "$Out/compile.log"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $Executables = @{}
+          foreach ($Name in @('pilot_status_tests', 'pilot_traffic_tests', 'st4000_tests', 'st4000_firmware_tests', 'adapter_tests', 'pilot_output_product_tests', 'pilot_output_loopback_tests', 'settings_tests')) {
+            $File = Get-Item "opennav-x/build/pilot-contracts-native/Release/$Name.exe"
+            $Executables[$Name] = @{bytes=$File.Length; sha256=(Get-FileHash $File.FullName -Algorithm SHA256).Hash.ToLowerInvariant()}
+          }
+          $Executables | ConvertTo-Json -Depth 3 | Set-Content "$Out/executables.json"
+          $Sources = @{}
+          foreach ($Name in @('src/BridgeCore.cpp', 'include/BridgeCore.h', 'include/Config.h')) {
+            $Sources[$Name] = (Get-FileHash "$Oracle/$Name" -Algorithm SHA256).Hash.ToLowerInvariant()
+          }
+          $Sources | ConvertTo-Json | Set-Content "$Out/oracle-hashes.json"
+      - name: Run the same fourteen pilot contracts on native Windows
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $Out = (Resolve-Path 'opennav-x/evidence/local/pilot-contracts-native').Path
+          ctest --test-dir opennav-x/build/pilot-contracts-native -C Release --output-on-failure --no-tests=error --timeout 30 --output-junit "$Out/tests.xml" -R '^(pilot_status_discovery|pilot_traffic_diagnostics|pilot_output_.*_policy|st4000_.*|autopilot_.*|settings_pilot_permission)$' 2>&1 | Tee-Object "$Out/tests.log"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          [xml]$Results = Get-Content -Raw "$Out/tests.xml"
+          if (@($Results.SelectNodes('//testcase')).Count -ne 14) { throw 'Expected all fourteen pilot contract tests' }
+          $Before = Get-Content -Raw "$Out/executables.json" | ConvertFrom-Json
+          foreach ($Entry in $Before.PSObject.Properties) {
+            $File = Get-Item "opennav-x/build/pilot-contracts-native/Release/$($Entry.Name).exe"
+            if ($File.Length -ne $Entry.Value.bytes -or (Get-FileHash $File.FullName -Algorithm SHA256).Hash.ToLowerInvariant() -ne $Entry.Value.sha256) {
+              throw "Contract executable changed during tests: $($Entry.Name)"
+            }
+          }
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          repository: OpenCPN/OpenCPN
+          ref: 37fd0cddb7334fe489e9f18aa163977a9c5c84f7
+          path: pilot-pinned-upstream
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /model/src/comm_drv_n2k_serial.cpp
+            /libs/N2KParser/src/N2kMsg.cpp
+            /libs/N2KParser/include/N2kMsg.h
+            /libs/N2KParser/include/N2kDef.h
+      - name: Native Win32 serial bounds without equipment or sanitizers
+        env:
+          CMAKE_GENERATOR: Visual Studio 17 2022
+          CMAKE_GENERATOR_PLATFORM: Win32
+        shell: pwsh
+        run: |
+          python opennav-x/tests/pilot_serial_bounds/run.py --upstream pilot-pinned-upstream --build-dir opennav-x/evidence/local/pilot-serial-native 2>&1 | Tee-Object opennav-x/evidence/local/pilot-serial-native.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: pilot-component-native-${{ github.sha }}-attempt${{ github.run_attempt }}
+          path: |
+            opennav-x/evidence/local/pilot-component-native/*.json
+            opennav-x/evidence/local/pilot-component-native/*.log
+            opennav-x/evidence/local/pilot-component-native/captures
+            opennav-x/evidence/local/pilot-serial-native.log
+            opennav-x/evidence/local/pilot-serial-native/evidence.json
+            opennav-x/evidence/local/pilot-serial-native/build/Testing/Temporary/LastTest.log
+            opennav-x/evidence/local/pilot-contracts-native
+          if-no-files-found: error

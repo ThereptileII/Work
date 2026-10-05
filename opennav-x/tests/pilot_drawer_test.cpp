@@ -142,6 +142,11 @@ private:
   void Click(const wxString &label) {
     auto *button = Button(label);
     Check(button && button->IsEnabled(), "requested action enabled");
+    Dispatch(label);
+  }
+  void Dispatch(const wxString &label) {
+    auto *button = Button(label);
+    Check(button != nullptr, "requested button exists");
     wxCommandEvent click(wxEVT_BUTTON, button->GetId());
     click.SetEventObject(button);
     button->GetEventHandler()->ProcessEvent(click);
@@ -210,6 +215,8 @@ private:
               "explicit session enable");
         Check(!Button("Track")->IsEnabled() && !Button("Wind")->IsEnabled(),
               "unsupported modes remain disabled");
+        Dispatch("Track");
+        Dispatch("Wind");
         Click("Auto");
         break;
       case 9:
@@ -249,7 +256,9 @@ private:
         Click(wxString::FromUTF8("+1°"));
         break;
       case 14:
-        Check(commands_ == 3 && pilot_.command.request.delta_deg == 1.,
+        Check(commands_ == 3 &&
+                  pilot_.command.request.action == adapters::PilotAction::AlterCourse &&
+                  pilot_.command.request.delta_deg == 1.,
               "duplicate queued input sends once");
         Check(drawer_->View().heading_magnetic_deg == 145.,
               "pending increment cannot invent heading");
@@ -263,10 +272,50 @@ private:
                   drawer_->View().heading_magnetic_deg == 146.,
               "measured confirmed heading is displayed");
         Capture("autopilot-auto-day");
+        Click(wxString::FromUTF8("−10°"));
+        Click(wxString::FromUTF8("−10°"));
+        break;
+      case 16:
+      case 18:
+      case 20: {
+        const int index = (step_ - 17) / 2;
+        const double deltas[] = {-10., -1., 10.};
+        const double headings[] = {146., 136., 135.};
+        Check(commands_ == 4 + index &&
+                  pilot_.command.request.action == adapters::PilotAction::AlterCourse &&
+                  pilot_.command.request.delta_deg == deltas[index],
+              "each labeled course button dispatches its exact delta once");
+        Check(drawer_->View().heading_magnetic_deg == headings[index],
+              "every pending course request retains the observed heading");
+        for (const auto *label : {"−10°", "−1°", "+1°", "+10°"}) {
+          const auto text = wxString::FromUTF8(label);
+          Check(!Button(text)->IsEnabled(), "all course buttons disabled while pending");
+          Dispatch(text);
+        }
+        Check(commands_ == 4 + index,
+              "synthetic disabled course events cannot bypass pending guard");
+        pilot_.feedback.locked_heading_magnetic_deg.value =
+            headings[index] + deltas[index];
+        ++pilot_.feedback.sequence;
+        pilot_.command.state = adapters::CommandState::Confirmed;
+        Feed();
+        break;
+      }
+      case 17:
+        Click(wxString::FromUTF8("−1°"));
+        Click(wxString::FromUTF8("−1°"));
+        break;
+      case 19:
+        Click(wxString::FromUTF8("+10°"));
+        Click(wxString::FromUTF8("+10°"));
+        break;
+      case 21:
+        Check(drawer_->View().heading_magnetic_deg == 145.,
+              "all course button results follow supplied feedback");
         pilot_.command.state = adapters::CommandState::TimedOut;
         Feed(stamp + 4s);
         break;
-      case 16:
+      case 22:
         Check(!drawer_->View().heading_magnetic_deg &&
                   !Button("Auto")->IsEnabled(),
               "loss of feedback suppresses dial and Auto");
@@ -278,7 +327,7 @@ private:
         state_.replayed = true;
         Feed();
         break;
-      case 17:
+      case 23:
         Check(!Button("Enable control")->IsEnabled() &&
                   !Button("Standby")->IsEnabled(),
               "replay disables all hardware actions");
@@ -289,17 +338,21 @@ private:
         pilot_.output_unavailable = true;
         Feed();
         break;
-      case 18: {
+      case 24: {
         Check(drawer_->View().output_unavailable && !drawer_->View().can_toggle,
               "product output restriction is explicit in owned presentation");
         Check(Button("Control unavailable") && !Button("Enable control"),
               "unavailable control cannot promise an enable path");
         Check(!Button("Control unavailable")->IsEnabled(),
               "old enabled permission cannot activate product toggle");
-        Check(drawer_->View().heading_magnetic_deg == 146.,
+        Check(drawer_->View().heading_magnetic_deg == 145.,
               "status-only product retains measured pilot heading");
-        for (const auto *label : {"Standby", "Auto", "Track", "Wind"})
-          Check(!Button(label)->IsEnabled(), "all product commands unavailable");
+        for (const auto *label : {"Standby", "Auto", "Track", "Wind",
+                                  "−10°", "−1°", "+1°", "+10°"}) {
+          Check(!Button(wxString::FromUTF8(label))->IsEnabled(),
+                "all product commands unavailable");
+          Dispatch(wxString::FromUTF8(label));
+        }
         auto *toggle = Button("Control unavailable");
         wxCommandEvent event(wxEVT_BUTTON, toggle->GetId());
         event.SetEventObject(toggle);
@@ -309,8 +362,8 @@ private:
         Feed();
         break;
       }
-      case 19:
-        Check(enables_ == 1 && commands_ == 3,
+      case 25:
+        Check(enables_ == 1 && commands_ == 6,
               "disabled product event cannot invoke an enable or command callback");
         Capture("autopilot-status-only-night");
         drawer_->Dismiss();

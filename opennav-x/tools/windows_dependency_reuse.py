@@ -37,6 +37,7 @@ PATCHES = (
     "opencpn-5.12.4-wxcurl-trust.patch",
     "opencpn-5.12.4-peer-response-buffer.patch",
     "opencpn-5.12.4-peer-unavailable.patch",
+    "opencpn-5.12.4-pilot-serial.patch",
 )
 # In the published checkout, this module runs from opennav-x while the workflow
 # lives at the repository root. The workflow bytes are already bound by the

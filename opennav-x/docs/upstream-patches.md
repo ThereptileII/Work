@@ -1,5 +1,31 @@
 # Direct OpenCPN Upstream Modifications
 
+## Actual serial pilot boundary — SCRUM-313
+
+The tenth reviewed patch file, `patches/opencpn-5.12.4-pilot-serial.patch`,
+changes only `model/src/comm_drv_n2k_serial.cpp` at the pinned 5.12.4 revision.
+It removes an outgoing eight-byte payload read which overran a three-byte
+ISO address-claim request. Arbitrary transmitted data is no longer interpreted
+as a source NAME. Existing transmit notifications retain type `0x94`, an unknown
+NAME and null source address; they cannot constitute received physical feedback.
+Message/address type, payload length, priority and PGN are checked before use.
+The serializer's index/storage now handles the full legal 223-byte payload,
+including escaped bytes. No worker means failure; a successful return means
+queue acceptance only.
+
+The isolated `tests/pilot_serial_bounds` target extracts the actual patched
+writer and serializer and links the pinned `N2kMsg.cpp`. Its queue/listener are
+fakes: no port is opened. The original exact source reproduces the short-request
+overread under ASan; the patched source passes ASan/UBSan locally. Native results
+are recorded separately. Source archives and Windows source-reconstruction
+inventories include the new patch; no existing history/evidence is rewritten.
+
+This patch does **not** qualify serial hardware control. Queued messages across
+reconnects, physical write failures, receive timestamps, connection generations
+and explicit per-session permission remain separate SCRUM-313 requirements.
+No plugin output permission, connection direction or automatic pilot control is
+changed. See [the boat integration inspection](pilot-boat-integration.md).
+
 ## Boat feedback integration — SCRUM-291 / 294–300 / 303–309
 
 The existing reviewed hooks remain pinned to OpenCPN 5.12.4. This batch adds:

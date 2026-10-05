@@ -878,6 +878,48 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
       pilot["command_detail"] = wxString::FromUTF8(view.command.detail);
       pilot["command_id"] = wxString::Format("%llu", static_cast<unsigned long long>(view.command.request.id));
       pilot["adapter"] = wxString::FromUTF8(state.simulated ? "DEMO" : pilots->hardware.Description());
+      if (!state.simulated) {
+        const auto discovery = pilots->hardware.DiscoveryDiagnostics(now);
+        auto &observed = pilot["discovery"];
+        observed["verified_identities"] = static_cast<int>(discovery.verified_identities);
+        observed["fresh_mode_sources_without_identity"] =
+            static_cast<int>(discovery.fresh_mode_sources_without_identity);
+        observed["stale_mode_sources"] = static_cast<int>(discovery.stale_mode_sources);
+        observed["identity_conflicts"] = static_cast<int>(discovery.identity_conflicts);
+        observed["traffic_limit_exceeded"] = discovery.traffic_limit_exceeded;
+        observed["conflict_source"] = wxString::FromUTF8(discovery.conflict_source);
+        const auto traffic = pilots->hardware.TrafficDiagnostics();
+        auto &receive = pilot["receive_diagnostics"];
+        receive["scope"] = "Passive received envelopes; not pilot identity or command confirmation";
+        const auto count = [](std::uint64_t value) {
+          return wxString::Format("%llu", static_cast<unsigned long long>(value));
+        };
+        receive["accepted_count"] = count(traffic.accepted_count);
+        receive["sources"] = wxJSONValue(wxJSONTYPE_ARRAY);
+        for (const auto &source : traffic.sources) {
+          wxJSONValue entry;
+          entry["interface"] = wxString::FromUTF8(source.interface_id);
+          entry["pgn"] = static_cast<int>(source.pgn);
+          entry["address"] = static_cast<int>(source.source);
+          entry["count"] = count(source.accepted_count);
+          entry["age_ms"] = count(static_cast<std::uint64_t>(
+              std::chrono::duration_cast<std::chrono::milliseconds>(
+                  now - source.last_observed).count()));
+          receive["sources"].Append(entry);
+        }
+        auto &rejected = receive["rejected"];
+        rejected["unsupported_pgn"] = count(traffic.rejected.unsupported_pgn);
+        rejected["invalid_interface"] = count(traffic.rejected.invalid_interface);
+        rejected["invalid_type"] = count(traffic.rejected.invalid_type);
+        rejected["invalid_length"] = count(traffic.rejected.invalid_length);
+        rejected["pgn_mismatch"] = count(traffic.rejected.pgn_mismatch);
+        rejected["invalid_source"] = count(traffic.rejected.invalid_source);
+        rejected["invalid_time"] = count(traffic.rejected.invalid_time);
+        rejected["future"] = count(traffic.rejected.future);
+        rejected["stale"] = count(traffic.rejected.stale);
+        rejected["out_of_order"] = count(traffic.rejected.out_of_order);
+        rejected["capacity"] = count(traffic.rejected.capacity);
+      }
       const auto target = vessel::Assess(view.feedback.locked_heading_magnetic_deg, now);
       const auto heading = vessel::Assess(view.feedback.heading_magnetic_deg, now);
       pilot["locked_heading_quality"] = wxString::FromUTF8(vessel::QualityName(target.quality));

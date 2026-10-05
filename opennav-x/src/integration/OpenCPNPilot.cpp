@@ -52,12 +52,20 @@ OpenCPNPilot::OpenCPNPilot(std::function<bool()> allowed)
                   Poll(vessel::Clock::now());
                 });
   listeners_.push_back(std::move(changes));
-  for (const auto pgn : {60928u, 65379u, 65360u, 127250u}) {
+  for (const auto pgn : {60928u, 65379u, 65360u, 127250u, 65359u, 126720u}) {
     auto listener = std::make_unique<ObsListener>();
     listener->Init(Nmea2000Msg(pgn), [this, pgn](ObservedEvt &event) {
       const auto m = UnpackEvtPointer<Nmea2000Msg>(event);
-      if (!m || !m->source ||
-          m->payload.size() != 22 || m->payload[0] != 0x93 ||
+      if (!m || !m->source) return;
+      const auto now = vessel::Clock::now();
+      const auto age = std::chrono::system_clock::now() - m->created_at;
+      const auto at =
+          now - std::chrono::duration_cast<vessel::Clock::duration>(age);
+      // Passive commissioning counters include AutoTrack's compatibility PGNs.
+      // They do not create a pilot identity, mode, acknowledgement or permission.
+      traffic_.Observe(m->source->iface, pgn, m->payload, at, now);
+      if (pgn == 65359 || pgn == 126720) return;
+      if (m->payload.size() != 22 || m->payload[0] != 0x93 ||
           m->payload[12] != 8 || m->payload[7] >= 254)
         return;
       const auto encoded_pgn = unsigned(m->payload[3]) |
@@ -65,13 +73,9 @@ OpenCPNPilot::OpenCPNPilot(std::function<bool()> allowed)
                                (unsigned(m->payload[5]) << 16);
       if (encoded_pgn != pgn)
         return;
-      const auto now = vessel::Clock::now();
-      const auto age = std::chrono::system_clock::now() - m->created_at;
       if (age < std::chrono::system_clock::duration::zero() ||
           age >= std::chrono::seconds(3))
         return;
-      const auto at =
-          now - std::chrono::duration_cast<vessel::Clock::duration>(age);
       if (const auto *network =
               dynamic_cast<CommDriverN2KNet *>(Driver(m->source->iface)))
         if (at < network->GetConnectionChangedAt())
@@ -100,6 +104,15 @@ std::string OpenCPNPilot::Description() const {
   MainThread();
   return PilotLoopbackTestsEnabled() ? pilot_.Status()
                                    : status_.Description(vessel::Clock::now());
+}
+PilotStatusDiscovery::Diagnostics
+OpenCPNPilot::DiscoveryDiagnostics(vessel::Time now) const {
+  MainThread();
+  return status_.GetDiagnostics(now);
+}
+PilotTrafficDiagnostics::Snapshot OpenCPNPilot::TrafficDiagnostics() const {
+  MainThread();
+  return traffic_.GetSnapshot();
 }
 void OpenCPNPilot::Poll(vessel::Time now) {
   MainThread();

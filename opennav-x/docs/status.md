@@ -1,5 +1,32 @@
 # SKAGER status — 2026-10-05
 
+## Autopilot follow-up — not yet physically qualified
+
+SCRUM-295/307/313 are being investigated against the actual existing AutoTrack /
+OpenCPN Actisense serial connection. Read-only boat inspection confirms live
+marine input, but the installed `c0d8d85` candidate has no accepted pilot identity
+or mode feedback and its product control sink remains closed. No physical
+commands, plugin restoration, connection-direction change or app restart was
+performed. The current application is left running.
+
+Source inspection establishes an event-driven address-claim discovery gap when
+joining an already-running bridge. New bounded passive diagnostics distinguish
+missing identity, vendor traffic, rejected envelopes and stale/conflicting
+feedback, without manufacturing identity or enabling output. A focused serial
+patch corrects an ASan-reproduced short-request memory overread and escaped
+payload bounds. It does not qualify serial reconnect, queued output or physical
+delivery. Six manual command encodings are tested against the actual pinned
+bridge parser; all button events and disabled-state boundaries are exercised in
+an isolated component. TRACK/WIND remain unavailable.
+
+Focused Linux checks pass; native Windows checks are pending for this increment.
+These source/test changes are not yet a new installed product. Physical
+STANDBY/AUTO/course tests require the user's separately requested secured-vessel
+confirmation and a qualified transport; neither is inferred from simulated
+results. See [inspection and scope](pilot-boat-integration.md) and the corrected
+[commissioning procedure](boat-commissioning.md). Jira retains the remaining
+acceptance gates; no pilot issue is marked Done on these results alone.
+
 ## Secure startup updater — implementation and focused qualification
 
 Current Staging candidate `c0d8d85fb602e86d40e2f3f1be32307919702408`

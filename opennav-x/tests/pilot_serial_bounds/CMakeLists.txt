@@ -1,0 +1,26 @@
+cmake_minimum_required(VERSION 3.20)
+project(pilot_serial_bounds LANGUAGES CXX)
+find_package(Python3 REQUIRED COMPONENTS Interpreter)
+if(NOT EXISTS "${OPENCPN_SOURCE_DIR}/model/src/comm_drv_n2k_serial.cpp")
+  message(FATAL_ERROR "OPENCPN_SOURCE_DIR must name the patched pinned source")
+endif()
+set(serial_source "${OPENCPN_SOURCE_DIR}/model/src/comm_drv_n2k_serial.cpp")
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${serial_source}")
+execute_process(COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/extract.py"
+  "${serial_source}" "${CMAKE_CURRENT_BINARY_DIR}/actual_writer.inc"
+  COMMAND_ERROR_IS_FATAL ANY)
+add_executable(pilot_serial_bounds probe.cpp
+  "${OPENCPN_SOURCE_DIR}/libs/N2KParser/src/N2kMsg.cpp")
+target_include_directories(pilot_serial_bounds PRIVATE "${CMAKE_CURRENT_BINARY_DIR}"
+  "${OPENCPN_SOURCE_DIR}/libs/N2KParser/include")
+target_compile_features(pilot_serial_bounds PRIVATE cxx_std_17)
+option(PILOT_SERIAL_SANITIZE "Run with AddressSanitizer and UBSan (GCC/Clang)" OFF)
+if(PILOT_SERIAL_SANITIZE)
+  if(MSVC)
+    message(FATAL_ERROR "Use an ordinary native MSVC run; this sanitizer option is GCC/Clang only")
+  endif()
+  target_compile_options(pilot_serial_bounds PRIVATE -fsanitize=address,undefined -fno-omit-frame-pointer)
+  target_link_options(pilot_serial_bounds PRIVATE -fsanitize=address,undefined)
+endif()
+enable_testing()
+add_test(NAME pilot_serial_bounds COMMAND pilot_serial_bounds)
