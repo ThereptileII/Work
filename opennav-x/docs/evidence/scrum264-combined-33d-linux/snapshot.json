@@ -1,0 +1,29 @@
+{
+  "source": "/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29",
+  "destination": "/home/standard/Projects/X-nav-worktrees/scrum264-combined-linux-33d90c3",
+  "base": "d5d71356d806ea8c3518644d10728a24f1334d1d",
+  "combined": "33d90c38cd1a628c21d0ca159647012d98649d2e",
+  "reflink": true,
+  "frozenFiles": {
+    ".git": {
+      "sha256": "14047a439287ad33f5ff1e2577bffa0b43974993af007dfdf77eed41242db78b",
+      "mtime_ns": 1791000060948031511
+    },
+    "build/integration-source/.git": {
+      "sha256": "3b73496a1f74ecdc508881974792d0eb5bf0fd63475e8d14fdf60b6defe12ef6",
+      "mtime_ns": 1791000353288421663
+    },
+    "build/xnav-linux/CMakeCache.txt": {
+      "sha256": "f8d4538b4616449a3ee3680f0f50c44a994f2ac93ddf757c8d35acd412450185",
+      "mtime_ns": 1791006163472377665
+    },
+    "build/xnav-linux/opencpn": {
+      "sha256": "3e723b11a3af9e6ba25d7991fb5bb969a5bd3dfb927dd1ee8908b4f996cc37c0",
+      "mtime_ns": 1791020945597123053
+    },
+    "build/xnav-install/bin/opencpn": {
+      "sha256": "99dcf961483882f7053186a6b4d2fb904308f38ef7e9874547bca070d07a8559",
+      "mtime_ns": 1791020945000000000
+    }
+  }
+}

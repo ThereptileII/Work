@@ -1,0 +1,47 @@
+MSBuild version 17.14.60+43b635718 for .NET Framework
+Build started 10/3/2026 3:45:11 AM.
+
+Project "D:\a\Work\Work\opennav-x\evidence\local\chart-name-painter\build\chart_name_text_test.vcxproj" on node 1 (default targets).
+Project "D:\a\Work\Work\opennav-x\evidence\local\chart-name-painter\build\chart_name_text_test.vcxproj" (1) is building "D:\a\Work\Work\opennav-x\evidence\local\chart-name-painter\build\ZERO_CHECK.vcxproj" (2) on node 1 (default targets).
+PrepareForBuild:
+  Creating directory "Win32\Release\ZERO_CHECK\".
+  Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+  Creating directory "D:\a\Work\Work\opennav-x\evidence\local\chart-name-painter\build\Release\".
+  Creating directory "Win32\Release\ZERO_CHECK\ZERO_CHECK.tlog\".
+InitializeBuildStatus:
+  Creating "Win32\Release\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+  Touching "Win32\Release\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild".
+CustomBuild:
+  1>Checking Build System
+FinalizeBuildStatus:
+  Deleting file "Win32\Release\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild".
+  Touching "Win32\Release\ZERO_CHECK\ZERO_CHECK.tlog\ZERO_CHECK.lastbuildstate".
+Done Building Project "D:\a\Work\Work\opennav-x\evidence\local\chart-name-painter\build\ZERO_CHECK.vcxproj" (default targets).
+PrepareForBuild:
+  Creating directory "chart_name_text_test.dir\Release\".
+  Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+  Creating directory "chart_name_text_test.dir\Release\chart_na.3281D039.tlog\".
+InitializeBuildStatus:
+  Creating "chart_name_text_test.dir\Release\chart_na.3281D039.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+  Touching "chart_name_text_test.dir\Release\chart_na.3281D039.tlog\unsuccessfulbuild".
+CustomBuild:
+  Building Custom Rule D:/a/Work/Work/opennav-x/tests/windows_chart_name_painter/CMakeLists.txt
+ClCompile:
+  C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\bin\HostX64\x86\CL.exe /c /I"D:\a\Work\Work\opennav-x\src" /nologo /W1 /WX- /diagnostics:column /O2 /Ob2 /Oy- /D _UNICODE /D UNICODE /D WIN32 /D _WINDOWS /D NDEBUG /D WXUSINGDLL /D UNICODE /D _UNICODE /D "CMAKE_INTDIR=\"Release\"" /EHsc /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /std:c++17 /Fo"chart_name_text_test.dir\Release\\" /Fd"chart_name_text_test.dir\Release\vc143.pdb" /external:W0 /Gd /TP /analyze- /errorReport:queue  /external:I "D:/a/Work/Work/opennav-x/build/windows-chart-name-sdk/wx/lib/vc14x_dll/mswu" /external:I "D:/a/Work/Work/opennav-x/build/windows-chart-name-sdk/wx/include" /utf-8 "D:\a\Work\Work\opennav-x\tests\chart_name_text_test.cpp" "D:\a\Work\Work\opennav-x\src\integration\ChartNameAlphaWindows.cpp"
+  chart_name_text_test.cpp
+  ChartNameAlphaWindows.cpp
+  Generating Code...
+Link:
+  C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\bin\HostX64\x86\link.exe /ERRORREPORT:QUEUE /OUT:"D:\a\Work\Work\opennav-x\evidence\local\chart-name-painter\build\Release\chart_name_text_test.exe" /INCREMENTAL:NO /NOLOGO "D:\a\Work\Work\opennav-x\build\windows-chart-name-sdk\wx\lib\vc14x_dll\wxbase32u.lib" "D:\a\Work\Work\opennav-x\build\windows-chart-name-sdk\wx\lib\vc14x_dll\wxmsw32u_core.lib" "D:\a\Work\Work\opennav-x\build\windows-chart-name-sdk\wx\lib\vc14x_dll\wxpng.lib" "D:\a\Work\Work\opennav-x\build\windows-chart-name-sdk\wx\lib\vc14x_dll\wxtiff.lib" "D:\a\Work\Work\opennav-x\build\windows-chart-name-sdk\wx\lib\vc14x_dll\wxjpeg.lib" "D:\a\Work\Work\opennav-x\build\windows-chart-name-sdk\wx\lib\vc14x_dll\wxzlib.lib" "D:\a\Work\Work\opennav-x\build\windows-chart-name-sdk\wx\lib\vc14x_dll\wxregexu.lib" "D:\a\Work\Work\opennav-x\build\windows-chart-name-sdk\wx\lib\vc14x_dll\wxexpat.lib" gdiplus.lib msimg32.lib winmm.lib comctl32.lib uuid.lib oleacc.lib uxtheme.lib rpcrt4.lib shlwapi.lib version.lib wsock32.lib gdiplus.lib msimg32.lib winmm.lib comctl32.lib uuid.lib oleacc.lib uxtheme.lib rpcrt4.lib shlwapi.lib version.lib wsock32.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:"D:/a/Work/Work/opennav-x/evidence/local/chart-name-painter/build/Release/chart_name_text_test.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:/a/Work/Work/opennav-x/evidence/local/chart-name-painter/build/Release/chart_name_text_test.lib" /MACHINE:X86 /SAFESEH  /machine:X86 chart_name_text_test.dir\Release\chart_name_text_test.obj
+  chart_name_text_test.dir\Release\ChartNameAlphaWindows.obj
+  chart_name_text_test.vcxproj -> D:\a\Work\Work\opennav-x\evidence\local\chart-name-painter\build\Release\chart_name_text_test.exe
+FinalizeBuildStatus:
+  Deleting file "chart_name_text_test.dir\Release\chart_na.3281D039.tlog\unsuccessfulbuild".
+  Touching "chart_name_text_test.dir\Release\chart_na.3281D039.tlog\chart_name_text_test.lastbuildstate".
+Done Building Project "D:\a\Work\Work\opennav-x\evidence\local\chart-name-painter\build\chart_name_text_test.vcxproj" (default targets).
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:07.03

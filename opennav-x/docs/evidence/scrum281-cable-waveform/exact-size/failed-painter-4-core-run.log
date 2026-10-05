@@ -1,0 +1,5 @@
+ERROR::SHADER::COMPILATION_FAILED
+0:5(1): error: illegal use of reserved word `precision'
+0:5(1): error: syntax error, unexpected ERROR_TOK
+
+line fragment

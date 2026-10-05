@@ -1,0 +1,171 @@
+{
+  "baselineSource": "1356fd1603aacbea04d7081d16331e9a181180bb",
+  "baselineExecutableSha256": "0aaaf2238828fcf4b42d02c8b7dad7191781ead1bf2ece0c2a9384c1fdc726bf",
+  "implementationSourceSha256": {
+    "src/ui/FloatingSurface.cpp": "5f9629577d3a5dadbe6292eb3055069ab64ab1f6a7b33e6806bb1b6d81c1b439",
+    "src/ui/FloatingSurface.h": "138666087fdadc0edbaead939db2079d6ea06fde242c6fb4c9c4dfa2b0f72ffe",
+    "src/ui/Shell.cpp": "fb97de45c42d5fb65fd93bdf74e6e2a4faad412b7c5d5b9ba1f806e1d30b85cd",
+    "src/ui/Shell.h": "79473e3ee5b5754af8885f873e45490fe60f291bfda2174bbbd9cc2490193e61",
+    "src/integration/OpenCPNIntegration.cpp": "e05145a6cd84ac1b8c82e35aa019f180e4879285cf9a700b439755ab053b986b",
+    "src/integration/OpenCPNIntegration.h": "a3e410e1b8797a654b2826d7b7f884aed4207fa9793f4309988f716aefca2a5d",
+    "patches/opencpn-5.12.4-xnav.patch": "dfbacadf42502d1d0366745b3a187d256e620b0d2ea7dba9e8912c46e999e0b3",
+    "tests/frame_recapture_test.cpp": "1cebb36b2903920f2acd9b717ef1bd8344f073a1adc9a5ba15c8e616afa738c3",
+    "tools/verify-frame-recapture.py": "b58634fe6c5a852f6b2d2635bc953161c5a542edacb5c4d5c341f68138e46082"
+  },
+  "scope": "Exact unchanged baseline application trace plus offline real GTK callback regression and four production objects. No rebuilt full application, native Windows, boat or release acceptance.",
+  "traceHelperCommand": "g++ -shared -fPIC -O0 -g $(wx-config --cxxflags) stack-trace.cpp -o stack-trace.so -ldl; exact wx prefix /home/standard/Projects/X-nav/.local/sysroot/usr",
+  "files": {
+    "attributed-baseline/attributed2-run.log": {
+      "bytes": 250,
+      "sha256": "91893692055a3fc3072be0fa8cdefbe50287bac2c21fc99b17da0d13c5e6d73b"
+    },
+    "attributed-baseline/compile-production.py": {
+      "bytes": 2791,
+      "sha256": "702dad401ba7b5da191b9b9470574a70794ba53158617702da02af086f030d05"
+    },
+    "attributed-baseline/run-trace.sh": {
+      "bytes": 1075,
+      "sha256": "0505a2c0a300e969215a95fbeda94287f18b5ab1d4c73890f5af57b33d9690d7"
+    },
+    "attributed-baseline/smoke-navigation-stack-trace.py": {
+      "bytes": 70552,
+      "sha256": "e14902d90367a2a1481134865036c5cd006d0873440f1a43d7247587efa3fddb"
+    },
+    "attributed-baseline/stack-trace.cpp": {
+      "bytes": 2375,
+      "sha256": "c301f33a2b636f9a51ae8a4cfceb191841095121392b60c17899535f731f33b2"
+    },
+    "attributed-baseline/stack-trace.log": {
+      "bytes": 44889,
+      "sha256": "5a3cb45c6f3559753705264ad8990715cc53eb999696597afc920c7852a2f067"
+    },
+    "attributed-baseline/stale-stack-attributed2-route-opengl-input-results.json": {
+      "bytes": 26396,
+      "sha256": "e03f03efee662b116cd835a54775920591f966b32fe22c6afd2f869dda96fbe7"
+    },
+    "attributed-baseline/stale-stack-attributed2-route-opengl-progress-results.json": {
+      "bytes": 21071,
+      "sha256": "8471032a8f5597a9fc265de84692e36af61816117e97c84cfe1ce3d5bdcea4c7"
+    },
+    "attributed-baseline/stale-stack-attributed2-route-opengl-stale-burst-0-before-windows.json": {
+      "bytes": 3707,
+      "sha256": "5aa3f7c655188a74313cf8b35357e5bda27355f71179499706a4b81ce9d069f1"
+    },
+    "attributed-baseline/stale-stack-attributed2-route-opengl-stale-burst-0-windows.json": {
+      "bytes": 3707,
+      "sha256": "7bf368603ebed8d2d466ca0b131d04316530fabcc1e4d369d143099edd392bd0"
+    },
+    "attributed-baseline/stale-stack-attributed2-route-opengl-stale-burst-0.json": {
+      "bytes": 28385,
+      "sha256": "16f071b01495b000180c432bc5db26b2b27e71c3cf1e1256668752427cf2737c"
+    },
+    "attributed-baseline/stale-stack-attributed2-route-opengl-stale-burst-0.png": {
+      "bytes": 68171,
+      "sha256": "61ac45cf69a241d823c1a47e85bdd2189753020924441da093b88bc2fd81d292"
+    },
+    "attributed-baseline/x11_readonly.py": {
+      "bytes": 1850,
+      "sha256": "75453b37b63b42d4dd7c5bd6a02d82578d486985e80f05ece973654b62d60a7d"
+    },
+    "failed-tracer-child/explanation.txt": {
+      "bytes": 572,
+      "sha256": "56d150b42031578bdcf234072b25e81a611ca669b9b32bfe010a11acdd293eda"
+    },
+    "failed-tracer-child/runner.log": {
+      "bytes": 393,
+      "sha256": "e061cb1c03bf87dedd6916d2b8546365c1c825110a8b465b928e7ff87ef27445"
+    },
+    "failed-tracer-child/stale-stack-attributed-route-opengl-input-launch.log": {
+      "bytes": 1316,
+      "sha256": "a75de27b342f1ce54e6d5a55c717fbca23ebb46682857f0e2ecc3a03bfb02b3f"
+    },
+    "failed-tracer-child/stale-stack-attributed-route-opengl-input-results.json": {
+      "bytes": 376,
+      "sha256": "bad519265b8e1e1fc8ccecd9c1b4f03a5ae3e71859eb20ddc40d790e4db1be13"
+    },
+    "fixed/after-repair.png": {
+      "bytes": 1420,
+      "sha256": "75d2bdd173d146985c537f8a4677e47608f67388d12cc6ac69f10d80be15aa82"
+    },
+    "fixed/before-repair.png": {
+      "bytes": 2741,
+      "sha256": "671b2b3dcecc9c02453107fe554484dfc92ab4e6b280f181689fa5c17c26a54a"
+    },
+    "fixed/floating_surface_test-compile.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "fixed/frame-recapture.inc": {
+      "bytes": 452,
+      "sha256": "934985fcb1bba9c812cd20ce76fe9e87dc0dbffe6e7909167378d1db1736e3cb"
+    },
+    "fixed/frame_recapture_test-compile.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "fixed/integration-recapture.inc": {
+      "bytes": 111,
+      "sha256": "494e0350eabdf7f1b181338fb6220de4ce6b3a01400407b02984acddab168eb8"
+    },
+    "fixed/result.json": {
+      "bytes": 5045,
+      "sha256": "983411fe8f36e69231e3066eddd68477756ae7acfe9f0d5fa286865882905103"
+    },
+    "fixed/shell-restack.inc": {
+      "bytes": 149,
+      "sha256": "a39a56b5f4a3d687110fe40c59aadd68e7a55403d898068e464c214c3446277d"
+    },
+    "negative/before-repair.png": {
+      "bytes": 2741,
+      "sha256": "671b2b3dcecc9c02453107fe554484dfc92ab4e6b280f181689fa5c17c26a54a"
+    },
+    "negative/floating_surface_test-compile.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "negative/frame-recapture.inc": {
+      "bytes": 454,
+      "sha256": "9463b5966ea31c7b6dd793d06f108aaa781b5f0cdf8d3505579893ed7e62f4a6"
+    },
+    "negative/frame_recapture_test-compile.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "negative/integration-recapture.inc": {
+      "bytes": 111,
+      "sha256": "494e0350eabdf7f1b181338fb6220de4ce6b3a01400407b02984acddab168eb8"
+    },
+    "negative/result.json": {
+      "bytes": 5085,
+      "sha256": "0112025a6d2689bee9b7c19f445e8f6e7fadbde06f08ecc4f0ac1b0b3d3c83f4"
+    },
+    "negative/shell-restack.inc": {
+      "bytes": 149,
+      "sha256": "a39a56b5f4a3d687110fe40c59aadd68e7a55403d898068e464c214c3446277d"
+    },
+    "production/FloatingSurface.cpp.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "production/OpenCPNIntegration.cpp.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "production/Shell.cpp.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "production/ocpn_frame.cpp.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "production/patch.log": {
+      "bytes": 37,
+      "sha256": "993f575c81f4f857c824fc9a90d0418e8064deb31e21c0a439a8c8e16df0e82f"
+    },
+    "production/result.json": {
+      "bytes": 23037,
+      "sha256": "240a7d43fd880c101bbda03250b7f5bdfc880354f6969fee498f6916c040c1bf"
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "authority": "Linux development",
+  "fixture": "Synthetic NMEA over loopback; no external devices or production profile",
+  "expected": {
+    "sog_kn": 6.3,
+    "cog_deg": 147,
+    "wind": "unavailable",
+    "depth": "unavailable"
+  },
+  "screenshots": [],
+  "visual_review": "required",
+  "sent": {
+    "rmc": 0,
+    "gga": 0,
+    "ais": 0
+  },
+  "transport_errors": []
+}

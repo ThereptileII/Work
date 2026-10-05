@@ -1,0 +1,31 @@
+{
+  "baseCommit": "ef266211e214c9ad57b14c7283b3ecd2fe71c67a",
+  "files": {
+    "src/integration/ChartCaLightPoint.h": {
+      "sha256": "5ea525fbe5e3cd69621bbb7d5d73f56082686646e9898a3690eddbc7d5ac140b",
+      "bytes": 10508
+    },
+    "tests/chart_ca_light_point_test.cpp": {
+      "sha256": "a501da49d4d9fd90007819e02ad6d0beaec4021cdabd4c18073f5fc7633c07af",
+      "bytes": 14894
+    },
+    "tools/test-ca-light-point.py": {
+      "sha256": "1467ed5e69af1177a8df933539788f5f370d96b00eb1fef56c5b2f8394e07484",
+      "bytes": 3911
+    },
+    "patches/opencpn-5.12.4-chart-presentation.patch": {
+      "sha256": "732178e171766cf19dc791b3b2c1009f0517f8a3096a2b1b13637d3713f59f59",
+      "bytes": 112236
+    },
+    "patches/ocharts-skager-presentation.patch": {
+      "sha256": "37519712666151ff0f14c78128673e8c0be21cbdebf33765b6ffeda5b530c488",
+      "bytes": 43610
+    },
+    "patches/ocharts-wxcurl-trust.patch": {
+      "sha256": "e68b0a767f6a27d0136fa7e6b82ca96eac69f934f5fe54a13b314750bbb3d567",
+      "bytes": 3458
+    }
+  },
+  "painterAndCallerPatchChanges": false,
+  "previousEvidenceChanged": false
+}

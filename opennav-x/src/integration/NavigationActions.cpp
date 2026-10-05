@@ -1,4 +1,5 @@
 #include "integration/NavigationActions.h"
+#include "application/NavigationNaming.h"
 #include "chcanv.h"
 #include "integration/NavigationObjects.h"
 #include "model/navobj_db.h"
@@ -18,7 +19,7 @@ namespace opennav::integration {
 application::NavigationActions
 MakeNavigationActions(MyFrame &frame,
                       std::function<vessel::Navigation()> position,
-                      std::function<application::AnchorState()> anchor) {
+                      std::function<application::AnchorState(vessel::Time)> anchor) {
   application::NavigationActions a;
   auto result = [&frame](application::CommandResult r) {
     frame.InvalidateAllGL();
@@ -27,9 +28,16 @@ MakeNavigationActions(MyFrame &frame,
       pRouteManagerDialog->UpdateRouteListCtrl();
       pRouteManagerDialog->UpdateWptListCtrl();
     }
-    wxLogMessage("OpenNav navigation action: %s",
+    wxLogMessage("SKAGER navigation action: %s",
                  wxString::FromUTF8(r.message));
     return r;
+  };
+  a.chart_presentation = [&frame] { return CopyChartPresentation(frame); };
+  a.set_chart_ais = [&frame](bool show) { return SetChartAis(frame, show); };
+  a.set_chart_enc_text = [&frame](bool show) { return SetChartEncText(frame, show); };
+  a.set_chart_soundings = [&frame](bool show) { return SetChartSoundings(frame, show); };
+  a.set_chart_orientation = [&frame](application::ChartOrientation mode) {
+    return SetChartOrientation(frame, mode);
   };
   a.catalog = CopyNavigationCatalog;
   a.route = CopyNavigationRoute;
@@ -38,6 +46,27 @@ MakeNavigationActions(MyFrame &frame,
   };
   a.ais = [position](vessel::Time now) { return CopyAisState(position(), now); };
   a.anchor = std::move(anchor);
+  a.anchor_watches = CopyAnchorWatchSelection;
+  a.suggest_waypoint_name = [&frame](application::Coordinate position) {
+    return CopyNavigationNameSuggestion(frame, position, false);
+  };
+  a.suggest_route_name = [&frame] {
+    auto *canvas = frame.GetPrimaryCanvas();
+    auto *route = canvas ? canvas->m_pMouseRoute : nullptr;
+    if (!canvas || !canvas->m_routeState || !route || !pRouteList)
+      return application::NavigationNameSuggestion{"Route", false};
+    bool registered = false;
+    for (auto *node = pRouteList->GetFirst(); node; node = node->GetNext())
+      registered |= node->GetData() == route;
+    if (!registered || route->GetnPoints() < 1)
+      return application::NavigationNameSuggestion{"Route", false};
+    // Never replace a user-provided name, even when chart context changes.
+    if (!route->m_RouteNameString.empty())
+      return application::NavigationNameSuggestion{route->m_RouteNameString.ToStdString(wxConvUTF8), false};
+    const auto *destination = route->GetPoint(route->GetnPoints());
+    return destination ? CopyNavigationNameSuggestion(frame, {destination->m_lat, destination->m_lon}, true)
+                       : application::NavigationNameSuggestion{"Route", false};
+  };
   a.view_ais = [&frame, position](int mmsi) {
     const auto now = vessel::Clock::now();
     const auto copied = CopyAisState(position(), now);
@@ -57,6 +86,9 @@ MakeNavigationActions(MyFrame &frame,
   };
   a.activate = [position, result](const auto &r) {
     return result(ActivateRoute(r, position()));
+  };
+  a.activate_after_anchor = [position, result](const auto &r, const auto &watch) {
+    return result(ActivateRouteAfterAnchor(r, position(), watch));
   };
   a.deactivate = [result](const auto &r) { return result(StopRoute(r)); };
   a.reverse = [result](const auto &r) { return result(ReverseRoute(r)); };
@@ -158,8 +190,8 @@ MakeNavigationActions(MyFrame &frame,
     if (!registered || identity.empty() || identities != 1)
       return application::CommandResult{false, "Route changed; review before saving"};
     const auto title = wxString::FromUTF8(name), detail = wxString::FromUTF8(description);
-    if (name.empty() || name.size() > 128 || description.size() > 2048 ||
-        name.find('\0') != std::string::npos || description.find('\0') != std::string::npos ||
+    if (!application::ValidNavigationName(name) || description.size() > 2048 ||
+        description.find('\0') != std::string::npos ||
         title.empty() || (!description.empty() && detail.empty()))
       return application::CommandResult{false, "Enter a route name of 1–128 bytes"};
     const auto old_name = route->m_RouteNameString, old_description = route->m_RouteDescription;

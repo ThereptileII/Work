@@ -3,7 +3,7 @@
 . (Join-Path $PSScriptRoot 'Preparation.ps1')
 . (Join-Path $PSScriptRoot 'RestartCommissioningPolicy.ps1')
 $script:RestartOwner='OpenNavX.ReadOnlyRestart.Session.1'
-$script:RestartDependencies=@('Common.ps1','InteractiveJob.ps1','run-mode.ps1','Preparation.ps1','Commissioning.ps1','InstalledResourceReview.ps1','CommissioningBaseline.ps1','verify-commissioning-launch.ps1','RestartCommissioningPolicy.ps1','RestartAuiPersistence.ps1','RestartDashboardPersistence.ps1','RestartCommissioning.ps1','RestartCommissioningNative.cs','RestartCommissioningPrepare.ps1','RestartCommissioningBroker.ps1','RestartCommissioningArm.ps1')
+$script:RestartDependencies=@('Common.ps1','InteractiveJob.ps1','run-mode.ps1','Preparation.ps1','Commissioning.ps1','InstalledResourceReview.ps1','CommissioningBaseline.ps1','ColdBaseline.ps1','verify-commissioning-launch.ps1','RestartCommissioningPolicy.ps1','RestartAuiPersistence.ps1','RestartDashboardPersistence.ps1','RestartCommissioning.ps1','RestartCommissioningNative.cs','RestartCommissioningPrepare.ps1','RestartCommissioningBroker.ps1','RestartCommissioningArm.ps1')
 function Initialize-RestartNative {
   if(-not ('OpenNavX.RestartCommissioningNative' -as [type])){Add-Type -Path (Join-Path $PSScriptRoot 'RestartCommissioningNative.cs')}
 }
@@ -130,6 +130,27 @@ function Read-RestartIni([string]$Path) {
   if(-not $sections.Contains('Settings')){throw 'Missing OpenCPN settings.'}
   return ,$values
 }
+function Read-RestartPaletteProof([string]$Directory,$Session,$Parent,[string]$Mode,[string]$ChartPalette,[string]$BeforeSha256,$Expected=$null) {
+  Assert-RestartChartPalette $Mode $ChartPalette
+  if(-not $ChartPalette){throw 'Explicit palette proof required.'}
+  $armPath=Join-Path ([IO.Path]::GetDirectoryName($Directory)) ('arm-'+$Parent.pid+'-'+$Parent.createdFiletime+'.json')
+  $readyPath=Join-Path $Directory 'ready.json';$intentPath=Join-Path $Directory 'ui-intent-consumed.json'
+  $proof=[pscustomobject]@{armSha256=(Get-Digest $armPath);readySha256=(Get-Digest $readyPath);intentSha256=(Get-Digest $intentPath)}
+  if($Expected){foreach($key in @('armSha256','readySha256','intentSha256')){if($Expected.$key -cne $proof.$key){throw 'Palette intent chain changed after permit.'}}}
+  $arm=Read-Record $armPath;$ready=Read-Record $readyPath;$intent=Read-Record $intentPath
+  foreach($item in @($arm,$ready,$intent)) {
+    if($item.session -cne $Session.session -or $item.recordSha256 -cne $Session.recordSha256 -or $item.mode -cne $Mode -or
+       (Get-RestartChartPalette $item) -cne $ChartPalette){throw 'Palette intent differs from the immutable session/choice.'}
+  }
+  if($arm.owner -cne $script:RestartOwner -or $ready.owner -cne $script:RestartOwner -or
+     $arm.transition -cne $Directory -or $arm.parentPid -cne $Parent.pid -or $arm.parentCreatedFiletime -cne $Parent.createdFiletime -or
+     $ready.parent.pid -cne $Parent.pid -or $ready.parent.createdFiletime -cne $Parent.createdFiletime -or
+     $intent.owner -cne 'OpenNavX.GuardedModeIntent.1' -or $intent.status -cne 'consumed-before-ui-action' -or $intent.fromMode -cne '--xnav' -or
+     $intent.parent.pid -cne $Parent.pid -or $intent.parent.createdFiletime -cne $Parent.createdFiletime -or
+     $ready.beforeSha256 -cne $BeforeSha256 -or $intent.command.Palette -cne $ChartPalette -or
+     $intent.armSha256 -cne $proof.armSha256 -or $intent.readySha256 -cne $proof.readySha256){throw 'Palette choice requires the exact consumed one-shot parent intent.'}
+  return $proof
+}
 function Get-RestartBaseline($Session,[string]$Record,$Parent,[switch]$ReviewOnly,[string]$PendingDirectory='') {
   if($PendingDirectory -and -not $ReviewOnly){throw 'Pending transition inspection is read-only only.'}
   $directory=[IO.Path]::GetDirectoryName($Record)
@@ -174,7 +195,9 @@ function Get-RestartBaseline($Session,[string]$Record,$Parent,[switch]$ReviewOnl
     if($receipt['status'] -cne 'started'){throw 'Previous restart did not produce a verified child; cold review required.'}
     $next=Join-Path $path 'post-close.ini'
     if((Get-Digest $next) -cne $permit.profileSha256){throw 'Previous post-close profile proof changed.'}
-    $null=Assert-RestartIniDelta (Read-RestartIni $baseline) (Read-RestartIni $next) $permit.mode
+    $palette=Get-RestartChartPalette $permit
+    if($palette){$null=Read-RestartPaletteProof $path $Session $identity $permit.mode $palette $permit.beforeSha256 $permit.paletteProof}
+    $null=Assert-RestartIniDelta (Read-RestartIni $baseline) (Read-RestartIni $next) $permit.mode $palette
     $baseline=$next;$hash=$permit.profileSha256
     $expectedChild=[pscustomobject]@{pid=$receipt['childPid'];createdFiletime=$receipt['childCreatedFiletime']}
     if($ReviewOnly -and ($completion.child.pid -cne $expectedChild.pid -or $completion.child.createdFiletime -cne $expectedChild.createdFiletime)){throw 'Completed child identity differs from the native receipt.'}

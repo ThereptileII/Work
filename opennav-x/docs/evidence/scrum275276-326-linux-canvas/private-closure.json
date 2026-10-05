@@ -1,0 +1,115 @@
+{
+  "source": "326daf73cdbeb0e7219ccb47b88967bc6a67ceaf",
+  "scope": "read-only locked cache originals into private disposable preparation; no DLL build",
+  "lockedOriginalPaths": 219,
+  "patches": {
+    "patches/ocharts-skager-presentation.patch": {
+      "bytes": 48752,
+      "sha256": "1f0865912b45fe24b01641cb0887fdccfcdc86577aad795fb986d06fc8608d9f"
+    },
+    "patches/ocharts-wxcurl-trust.patch": {
+      "bytes": 3458,
+      "sha256": "e68b0a767f6a27d0136fa7e6b82ca96eac69f934f5fe54a13b314750bbb3d567"
+    }
+  },
+  "localInputs": {
+    "src/plugin-adapters/ChartPresentationBindingV1.h": {
+      "bytes": 3096,
+      "sha256": "72a9e19e8d457cdfc543cd0ec6571bf6b6eb30a4a6f4c547f0f047c631e8967f"
+    },
+    "src/plugin-adapters/ocharts/ChartPresentationAdapter.h": {
+      "bytes": 354,
+      "sha256": "7fcc05c31c82fa29818fe4ea90c352c1f96874b65b2aff7bcb41ad9f97a87ae2"
+    },
+    "src/plugin-adapters/ocharts/ChartPresentationAdapter.cpp": {
+      "bytes": 6148,
+      "sha256": "c7f8077b7b445b63dca339c749790f8c1e6ed573e632bd8ed135b882f6285831"
+    },
+    "src/plugin-adapters/ocharts/BindingState.h": {
+      "bytes": 3994,
+      "sha256": "82e4f94910c7af63772d90d23771f5328d4c0543b94390d35be8a2d04cf07e5c"
+    },
+    "src/plugin-adapters/ocharts/PointStyleObservation.h": {
+      "bytes": 1496,
+      "sha256": "9174f3077c8007263414994b7067fe1fcabacf4f9aed001d017df6de5c2b0ddf"
+    },
+    "src/plugin-adapters/ocharts/OwnedPresentationValidation.h": {
+      "bytes": 1674,
+      "sha256": "002d63e03dac37ebd4a4b4f2b4510706b3777635f04dfc9d84ad0b893021888f"
+    },
+    "src/plugin-adapters/ocharts/ResourceVerification.h": {
+      "bytes": 1363,
+      "sha256": "7b6b6e6b430cbc9e0a275653261ba056face4c04b1d9c0fd9f167fb8e5be587c"
+    },
+    "src/integration/ChartNameTypography.h": {
+      "bytes": 943,
+      "sha256": "23688fca7f9ed456e7458fe1228e0bf9908660a953732cb6e6749c5838e1f4d9"
+    },
+    "src/integration/ChartNameText.h": {
+      "bytes": 2307,
+      "sha256": "da096196bd661f5e5bb47fdab0946a8987f707cf961f5eb9197090355a140635"
+    },
+    "src/integration/ChartTextFace.h": {
+      "bytes": 802,
+      "sha256": "4c1b0c41e29ecdac9af7a6fd7446863714539777c1904fa598679ba3ec49b3ab"
+    },
+    "src/integration/ChartNameSpacing.h": {
+      "bytes": 1241,
+      "sha256": "2f37a592dd4c311a371441cc42560a68286d65cb442a061a739dbcce9e5cd6f6"
+    },
+    "src/integration/ChartNameAlphaWindows.cpp": {
+      "bytes": 925,
+      "sha256": "01d26462e5b2cd9b54cfc9f138c7b4f2f2b0842c07c535906e0f871105d826f6"
+    },
+    "src/integration/ChartLightLabel.h": {
+      "bytes": 4969,
+      "sha256": "64d1fa48773369339402acd12d0be91847a5c69e145b8a072268c752a579e9ee"
+    },
+    "src/integration/ChartLightSymbol.h": {
+      "bytes": 1011,
+      "sha256": "c3d52a12d12562f601eae930f59ea4ebefa62925975f51ec05c875f0687a5b04"
+    },
+    "src/integration/ChartCaLightPoint.h": {
+      "bytes": 11549,
+      "sha256": "9bd5b3a03422d5b920a9a978e6ee49f4bc6db94fbd5f3b59621f7841d9a05e0d"
+    },
+    "src/integration/ChartCaFan.h": {
+      "bytes": 16873,
+      "sha256": "18f57fd41fa2503412ac96f0571793e8de38d6b7f7a7b5547d219fe7113b7dc8"
+    },
+    "src/integration/ChartSpecialBuoySymbol.h": {
+      "bytes": 2449,
+      "sha256": "24e1af5d565b522d00f5d8103c14b5bcadfb0075a3c4fcebcf2e832e22e8c8c4"
+    },
+    "src/integration/ChartYellowBuoySymbol.h": {
+      "bytes": 4615,
+      "sha256": "feb82319b1b2d372d2b512ff9a7775bca7b752bcf09e64919482152a6405549d"
+    },
+    "src/integration/ChartSoundingFont.h": {
+      "bytes": 1134,
+      "sha256": "02d27cb56d7af4f292640e59ec0326ba7b6555406956e6419a367b5bab124021"
+    },
+    "src/integration/ChartCanvasInk.h": {
+      "bytes": 638,
+      "sha256": "cc1a4d94131f932f2bbd40d330d9003d0086dfc1237449b4215b509377c39f66"
+    },
+    "src/ui/Theme.h": {
+      "bytes": 4009,
+      "sha256": "b28adb1f519ec5a1f9b7e2bfab6ec2ab1c7f06656bd129316e9e453ef1ec0776"
+    }
+  },
+  "outputs": {
+    "libs/s52plib/src/s52plib.cpp": {
+      "bytes": 348692,
+      "sha256": "4cf8ce47816bfb021b832879f9ea9463d0b1450764b49b24649abee66de9d499"
+    },
+    "libs/s52plib/src/s52plib.h": {
+      "bytes": 25726,
+      "sha256": "ffd4ca75e1e244bae323ccc9083d5aa021e38e63fdba0cbad1f870b3f13470fa"
+    },
+    "src/eSENCChart.cpp": {
+      "bytes": 351401,
+      "sha256": "661960997768cfe3c485e3f82e442c965ac57b6336e525c38c61475602bf473d"
+    }
+  }
+}

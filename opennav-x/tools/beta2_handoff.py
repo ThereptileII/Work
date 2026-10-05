@@ -20,11 +20,24 @@ import zipfile
 REPOSITORY = 'ThereptileII/Work'
 UPSTREAM = '37fd0cddb7334fe489e9f18aa163977a9c5c84f7'
 VERSION = '0.4.0-beta2'
+RELEASE_NOTES = 'SKAGER-Beta2-Release-Notes.md'
 FILES = {
-    'OpenNavX-Beta2-Setup.exe', 'OpenNavX-Beta2-Portable-Recovery.zip',
-    'OpenNavX-Beta2-source.zip', 'OpenNavX-Beta2-Install-Guide.md',
-    'OpenNavX-Beta2-Test-Guide.md',
+    'SKAGER-Beta2-Setup.exe', 'SKAGER-Beta2-Portable-Recovery.zip',
+    'SKAGER-Beta2-source.zip', 'SKAGER-Beta2-Install-Guide.md',
+    'SKAGER-Beta2-Test-Guide.md', RELEASE_NOTES,
 }
+LEGACY_FILES = {name.replace('SKAGER-Beta2-', 'OpenNavX-Beta2-') for name in FILES}
+
+
+def bundle_prefix(record):
+    names = set(record.get('payloadSha256', {}))
+    if names == FILES:
+        return 'SKAGER-Beta2-'
+    if names == LEGACY_FILES:
+        return 'OpenNavX-Beta2-'
+    raise ValueError('All six reviewed payload hashes required in one current or historical bundle; mixed names refused')
+
+
 JOBS = {
     'contracts (windows-2022)', 'contracts (ubuntu-24.04)',
     'Native Win32 commissioning restart process boundary',
@@ -78,8 +91,9 @@ def validate_acceptance(record, root):
             artifact['bytes'] <= MAX_ARCHIVE and sha(artifact.get('sha256')),
             'Exact downloaded candidate artifact identity required')
     hashes = record.get('payloadSha256', {})
-    require(set(hashes) == FILES and all(sha(value) for value in hashes.values()),
-            'All five reviewed payload hashes required')
+    bundle_prefix(record)
+    require(all(sha(value) for value in hashes.values()),
+            'All six reviewed payload hashes required')
     gates = record.get('boatGates', {})
     require(set(gates) == BOAT_GATES, 'Incomplete boat review coverage')
     root = Path(root).resolve()
@@ -121,10 +135,12 @@ def validate_ci(record, run, jobs, artifact):
 
 
 def verify_payload(record, archive):
+    name_prefix = bundle_prefix(record)
+    release_notes = name_prefix + 'Release-Notes.md'
     require(len(archive) == record['artifact']['bytes'] and
             digest(archive) == record['artifact']['sha256'], 'Downloaded artifact hash/size differs')
     with zipfile.ZipFile(io.BytesIO(archive)) as outer:
-        expected = FILES | {'SHA256SUMS.txt', 'QUALIFICATION.txt'}
+        expected = set(record['payloadSha256']) | {'SHA256SUMS.txt', 'QUALIFICATION.txt'}
         require(len(outer.infolist()) == len(expected) and set(outer.namelist()) == expected,
                 'Unexpected, duplicate or nested artifact entries')
         require(sum(entry.file_size for entry in outer.infolist()) <= MAX_ARCHIVE,
@@ -141,18 +157,28 @@ def verify_payload(record, archive):
     require(sums == record['payloadSha256'], 'Checksum manifest differs from reviewed payloads')
     require(all(digest(payload[name]) == value for name, value in sums.items()),
             'A payload differs from the reviewed bytes')
-    with zipfile.ZipFile(io.BytesIO(payload['OpenNavX-Beta2-Portable-Recovery.zip'])) as portable:
-        prefix = 'OpenNavX-Beta2-Portable-Recovery/'
+    with zipfile.ZipFile(io.BytesIO(payload[name_prefix + 'Portable-Recovery.zip'])) as portable:
+        prefix = name_prefix + 'Portable-Recovery/'
         require(len(portable.namelist()) == len(set(portable.namelist())), 'Duplicate portable entry')
+        notes_path = 'docs/' + release_notes
+        require(prefix + notes_path in portable.namelist(), 'Portable release notes missing')
+        require(portable.read(prefix + notes_path) == payload[release_notes], 'Portable release notes differ')
+        file_hashes = json.loads(portable.read(prefix + 'FILE_SHA256.json'))
+        require(file_hashes.get(notes_path) == digest(payload[release_notes]), 'Portable release notes hash differs')
         build = json.loads(portable.read(prefix + 'docs/PRODUCT_BUILD.json'))
         require(build.get('version') == VERSION and build.get('commit') == record['commit'] and
                 build.get('test_fixtures') is False and build.get('build_purpose') == 'INSTALLED PRODUCT',
                 'Portable is not the exact fixture-free product')
         require(digest(portable.read(prefix + 'app/opencpn.exe')) == build.get('executable_sha256'),
                 'Portable executable identity differs')
-    with zipfile.ZipFile(io.BytesIO(payload['OpenNavX-Beta2-source.zip'])) as source:
+    with zipfile.ZipFile(io.BytesIO(payload[name_prefix + 'source.zip'])) as source:
         require(len(source.namelist()) == len(set(source.namelist())), 'Duplicate source entry')
         reference = json.loads(source.read('SOURCE_REFERENCE.json'))
+        notes_path = 'opennav-x/docs/beta2/' + release_notes
+        require(notes_path in source.namelist(), 'Corresponding-source release notes missing')
+        require(source.read(notes_path) == payload[release_notes], 'Corresponding-source release notes differ')
+        require(reference.get('files', {}).get(notes_path, {}).get('sha256') == digest(payload[release_notes]),
+                'Corresponding-source release notes hash differs')
         require(reference.get('productCommit') == record['commit'] and
                 reference.get('upstreamCommit') == UPSTREAM and reference.get('openCpnVersion') == '5.12.4',
                 'Corresponding source identity differs')
@@ -214,15 +240,15 @@ def main():
         for name, data in payload.items():
             (temporary / name).write_bytes(data)
         (temporary / 'BETA2_ACCEPTANCE.json').write_text(json.dumps(record, indent=2) + '\n')
-        (temporary / 'ACCEPTANCE.md').write_text(
-            '# OpenNav X Beta 2 test package\n\n'
-            'Download **OpenNavX-Beta2-Windows** from the linked Actions run. '
+        (temporary / 'ACCEPTANCE.md').write_text((
+            '# SKAGER Beta 2 test package\n\n'
+            'Download **SKAGER Windows test package** from the linked Actions run. '
             'Extract that outer download first; it contains the files below.\n\n'
-            '1. Close OpenCPN and older XNav copies.\n'
-            '2. Read OpenNavX-Beta2-Install-Guide.md.\n'
-            '3. Run **OpenNavX-Beta2-Setup.exe** for the real OpenCPN installation.\n'
-            '4. Follow OpenNavX-Beta2-Test-Guide.md.\n\n'
-            '**OpenNavX-Beta2-Portable-Recovery.zip** is inside this download. '
+            '1. Close OpenCPN and older SKAGER/OpenNav copies.\n'
+            '2. Read SKAGER-Beta2-Release-Notes.md and SKAGER-Beta2-Install-Guide.md.\n'
+            '3. Run **SKAGER-Beta2-Setup.exe** for the real OpenCPN installation.\n'
+            '4. Follow SKAGER-Beta2-Test-Guide.md.\n\n'
+            '**SKAGER-Beta2-Portable-Recovery.zip** is inside this download. '
             'Extract it separately only for isolated recovery/testing; it does '
             'not automatically use your normal charts or connections.\n\n'
             'The payloads are unchanged from complete CI run %d, commit `%s`.\n\n'
@@ -231,7 +257,7 @@ def main():
             'later acceptance record accompanies it without rewriting tested files.\n\n'
             'This Beta is not approved for navigation or production use. '
             'No physical actuator command was part of remote validation.\n' %
-            (record['runId'], record['commit']))
+            (record['runId'], record['commit'])).replace('SKAGER-Beta2-', bundle_prefix(record)))
         temporary.rename(args.output)
     finally:
         if temporary.exists():

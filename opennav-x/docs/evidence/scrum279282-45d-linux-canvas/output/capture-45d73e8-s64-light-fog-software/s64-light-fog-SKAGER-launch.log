@@ -1,0 +1,3 @@
+Python Exception <class 'gdb.error'>: No symbol "_ZN7opennav11integration11DrawCaFanGLERKNS0_9CaFanTileEjii" in current context.
+/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/combined-symbols-45d73e8/iho/render-probe.gdb:125: Error in sourced command file:
+Error occurred in Python: No symbol "_ZN7opennav11integration11DrawCaFanGLERKNS0_9CaFanTileEjii" in current context.

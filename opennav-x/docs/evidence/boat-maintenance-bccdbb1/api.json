@@ -1,0 +1,91 @@
+{
+  "job": {
+    "id": 111363797680,
+    "name": "Native boat recovery and commissioning contracts",
+    "run_id": 37177738716,
+    "run_attempt": 1,
+    "head_sha": "bccdbb11cef827d3b63731fe1e874bc72bf47d2d",
+    "status": "completed",
+    "conclusion": "success",
+    "started_at": "2026-10-04T04:41:41Z",
+    "completed_at": "2026-10-04T04:44:35Z",
+    "html_url": "https://github.com/ThereptileII/Work/actions/runs/37177738716/job/111363797680",
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1,
+        "started_at": "2026-10-04T04:41:41Z",
+        "completed_at": "2026-10-04T04:41:42Z"
+      },
+      {
+        "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2,
+        "started_at": "2026-10-04T04:41:42Z",
+        "completed_at": "2026-10-04T04:41:51Z"
+      },
+      {
+        "name": "Exercise disposable maintenance transactions in Windows PowerShell 5.1",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3,
+        "started_at": "2026-10-04T04:41:51Z",
+        "completed_at": "2026-10-04T04:44:25Z"
+      },
+      {
+        "name": "Verify closed navigation copies without vessel data",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 4,
+        "started_at": "2026-10-04T04:44:25Z",
+        "completed_at": "2026-10-04T04:44:31Z"
+      },
+      {
+        "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 5,
+        "started_at": "2026-10-04T04:44:31Z",
+        "completed_at": "2026-10-04T04:44:32Z"
+      },
+      {
+        "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 10,
+        "started_at": "2026-10-04T04:44:32Z",
+        "completed_at": "2026-10-04T04:44:33Z"
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 11,
+        "started_at": "2026-10-04T04:44:33Z",
+        "completed_at": "2026-10-04T04:44:33Z"
+      }
+    ]
+  },
+  "artifact": {
+    "id": 11293129075,
+    "name": "boat-maintenance-bccdbb11cef827d3b63731fe1e874bc72bf47d2d",
+    "size_in_bytes": 25160,
+    "url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/11293129075",
+    "archive_download_url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/11293129075/zip",
+    "expired": false,
+    "created_at": "2026-10-04T04:44:31Z",
+    "expires_at": "2027-01-02T04:41:38Z",
+    "updated_at": "2026-10-04T04:44:31Z",
+    "digest": "sha256:8c4be1c6b09d4e2faaff466d7733fcf0c1afc27d5567ff8b499c1df68bfc604a",
+    "workflow_run": {
+      "id": 37177738716,
+      "repository_id": 864043804,
+      "head_repository_id": 864043804,
+      "head_branch": "opennav-x-beta2-ui",
+      "head_sha": "bccdbb11cef827d3b63731fe1e874bc72bf47d2d"
+    }
+  }
+}

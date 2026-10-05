@@ -1,0 +1,15 @@
+seamarks 45116
+verify_anchor 46578
+verify_services 49227
+verify_cardinals 57935
+Traceback (most recent call last):
+  File "/home/standard/Projects/X-nav-worktrees/scrum264-symbol-family-audit/.local/seamark-proof/affected-checks.py", line 18, in <module>
+    test(source,output,data,check);print(test.__name__,checks,flush=True)
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/standard/Projects/X-nav-worktrees/scrum264-symbol-family-audit/tests/chart_day_neutral_resources_tests.py", line 19, in verify_day_neutral
+    check(metadata['palette']['DAY_BRIGHT']['CHBLK'] == (83, 100, 95))
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/standard/Projects/X-nav-worktrees/scrum264-symbol-family-audit/.local/seamark-proof/affected-checks.py", line 9, in check
+    assert value,checks
+           ^^^^^
+AssertionError: 57937

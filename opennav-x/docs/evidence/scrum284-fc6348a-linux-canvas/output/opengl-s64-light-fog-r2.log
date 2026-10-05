@@ -1,0 +1,11 @@
+/tmp/skager-capture-q15lj3pg/s64-light-fog-SKAGER
+/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/circle-fc6348a/iho/capture-s64.py:199: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/circle-fc6348a/iho/capture-s64.py:199: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/circle-fc6348a/iho/capture-s64.py:199: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/circle-fc6348a/iho/capture-s64.py:199: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+Verified private clean application fc6348a6df8374878802b3e051a3670d83ed9a56 and exact upstream result of nine patches
+Four exact-build SKAGER source-scene captures passed: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/circle-fc6348a/iho/output/capture-fc6348a-s64-light-fog-opengl-r2

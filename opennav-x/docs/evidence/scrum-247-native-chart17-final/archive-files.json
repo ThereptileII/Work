@@ -1,0 +1,2037 @@
+{
+  "windows-changed-units/build/ALL_BUILD.vcxproj": {
+    "bytes": 49902,
+    "sha256": "a7d683c2e8ff6f8bad7237d895e1b84f9919d7ed4dc88c4faa6f507a1a315859",
+    "crc32": "7317d32f"
+  },
+  "windows-changed-units/build/ALL_BUILD.vcxproj.filters": {
+    "bytes": 307,
+    "sha256": "3d08ac0f10d9cd1143b07be71a68cb94a7e753ba507acf0126a7a0c6fe6482b7",
+    "crc32": "9e120762"
+  },
+  "windows-changed-units/build/check_chart_ais.dir/Release/ais.obj": {
+    "bytes": 415099,
+    "sha256": "d4513e84ff427151fb666e2f1d695324e7d3d82c4e103ab92d4faf162bfaef25",
+    "crc32": "433fc132"
+  },
+  "windows-changed-units/build/check_chart_ais.dir/Release/check_chart_ais.lib": {
+    "bytes": 469582,
+    "sha256": "adc906afd02838e2ef466bfa7f1a9d7aff6040f2ddae85d39fc71bc4064b4dca",
+    "crc32": "759a4489"
+  },
+  "windows-changed-units/build/check_chart_ais.dir/Release/check_chart_ais.lib.recipe": {
+    "bytes": 329,
+    "sha256": "f2f087ec925ea5262fb2557605456ae3ce9cf623db28fe729e808a129df9b13f",
+    "crc32": "51a1e10f"
+  },
+  "windows-changed-units/build/check_chart_ais.dir/Release/check_chart_ais.tlog/check_chart_ais.lastbuildstate": {
+    "bytes": 201,
+    "sha256": "6c180073806c99979c3d91ed2d31738774d8030934fb95e9b16ef7dd16109fb3",
+    "crc32": "b63fbfe0"
+  },
+  "windows-changed-units/build/check_chart_ais.dir/Release/check_chart_ais.tlog/CL.command.1.tlog": {
+    "bytes": 9286,
+    "sha256": "3be435c7bb8dab6b6fb1c569570bcf7d89d1c20ecdfed0afe9b516354875267b",
+    "crc32": "b869a307"
+  },
+  "windows-changed-units/build/check_chart_ais.dir/Release/check_chart_ais.tlog/Cl.items.tlog": {
+    "bytes": 171,
+    "sha256": "9ad37d02c332fcbe4bebb15b2b9caeb85485e1d0cea09d54f071123cd87e9a6e",
+    "crc32": "a690d1c5"
+  },
+  "windows-changed-units/build/check_chart_ais.dir/Release/check_chart_ais.tlog/CL.read.1.tlog": {
+    "bytes": 130110,
+    "sha256": "3629609c4a63c231398c2e36e86c7c38d2e3e10e841a46ba27408e6569554b49",
+    "crc32": "913f2c56"
+  },
+  "windows-changed-units/build/check_chart_ais.dir/Release/check_chart_ais.tlog/CL.write.1.tlog": {
+    "bytes": 348,
+    "sha256": "8b935855fdd3651538922b80c60c2c63e83ed3cc123ae992b357f8a7d390666e",
+    "crc32": "c2854c28"
+  },
+  "windows-changed-units/build/check_chart_ais.dir/Release/check_chart_ais.tlog/CustomBuild.command.1.tlog": {
+    "bytes": 531,
+    "sha256": "ff9cd6b27c7fb69216f5942b52e2e7b212f697d9d63d8aec6d0a386b7b02bff1",
+    "crc32": "150ee96c"
+  },
+  "windows-changed-units/build/check_chart_ais.dir/Release/check_chart_ais.tlog/CustomBuild.read.1.tlog": {
+    "bytes": 8023,
+    "sha256": "323f1e962719f278d5f962fd495e548542b4df1d0eab13e6280d0b72b8e08f31",
+    "crc32": "28863ee3"
+  },
+  "windows-changed-units/build/check_chart_ais.dir/Release/check_chart_ais.tlog/Lib-link.read.1.tlog": {
+    "bytes": 486,
+    "sha256": "62f65de97c958fc96e1b19b632753e156205679789b8d03715a014a29c522ce7",
+    "crc32": "6049a5f0"
+  },
+  "windows-changed-units/build/check_chart_ais.dir/Release/check_chart_ais.tlog/CustomBuild.write.1.tlog": {
+    "bytes": 165,
+    "sha256": "10ca61b3af5bad34d96b51d8ba7e4038783733f6042712a2d5b662bcfefd0a17",
+    "crc32": "a4cd95f8"
+  },
+  "windows-changed-units/build/check_chart_ais.dir/Release/check_chart_ais.tlog/Lib-link.write.1.tlog": {
+    "bytes": 448,
+    "sha256": "b65163c51f3bfea998dc880d5a216b8caba4c2c2db27153978140721dade0350",
+    "crc32": "1e9f2ba2"
+  },
+  "windows-changed-units/build/check_chart_ais.dir/Release/check_chart_ais.tlog/Lib.command.1.tlog": {
+    "bytes": 468,
+    "sha256": "cfe7789f7eb02034d8f36dffc30081ecb3773c345a9c379155598a68f2fe74fb",
+    "crc32": "c2f69d9e"
+  },
+  "windows-changed-units/build/check_chart_ais.dir/Release/check_chart_ais.vcxproj.FileListAbsolute.txt": {
+    "bytes": 117,
+    "sha256": "8f8be5bad9a248847671c626669e06a2246748c04d324ecc85eae3f897777ad4",
+    "crc32": "0a141852"
+  },
+  "windows-changed-units/build/check_chart_ais.vcxproj": {
+    "bytes": 95117,
+    "sha256": "f23debc7203b19ee66d4421e5b6fcaa7aeb52a4ea47567516a79a049b0cc4b77",
+    "crc32": "e864caaf"
+  },
+  "windows-changed-units/build/check_chart_ais.vcxproj.filters": {
+    "bytes": 621,
+    "sha256": "1c38a65b9f8798769459a15e48cbc7863bc7d4f3cd5a9da3dd107fc73d3a69e4",
+    "crc32": "3733e975"
+  },
+  "windows-changed-units/build/check_chart_ChartPresentation.dir/Release/ChartPresentation.obj": {
+    "bytes": 395457,
+    "sha256": "b76dc108bfbe32e7ccc1c3ddfe1607d9ed2c5bccdb8c831d620f0378a4215186",
+    "crc32": "d0eaba05"
+  },
+  "windows-changed-units/build/check_chart_ChartPresentation.dir/Release/check_ch.B693498E.tlog/check_chart_ChartPresentation.lastbuildstate": {
+    "bytes": 201,
+    "sha256": "6c180073806c99979c3d91ed2d31738774d8030934fb95e9b16ef7dd16109fb3",
+    "crc32": "b63fbfe0"
+  },
+  "windows-changed-units/build/check_chart_ChartPresentation.dir/Release/check_ch.B693498E.tlog/CL.command.1.tlog": {
+    "bytes": 9358,
+    "sha256": "8467b3e1e39a3a7aea5ac9ddb09edc6b242ea707a27edec9f4ab52bf2027e20e",
+    "crc32": "a995497e"
+  },
+  "windows-changed-units/build/check_chart_ChartPresentation.dir/Release/check_ch.B693498E.tlog/Cl.items.tlog": {
+    "bytes": 196,
+    "sha256": "22398a9503a93cb4829e0bb8182bf83b1d103b27d7191bc398393d7da7acf84a",
+    "crc32": "d6c759fe"
+  },
+  "windows-changed-units/build/check_chart_ChartPresentation.dir/Release/check_ch.B693498E.tlog/CL.write.1.tlog": {
+    "bytes": 398,
+    "sha256": "d6d08309613b87c4a05cc8a7a84d1a512c4182306e99fabb90e78567737f13c8",
+    "crc32": "7568626d"
+  },
+  "windows-changed-units/build/check_chart_ChartPresentation.dir/Release/check_ch.B693498E.tlog/CL.read.1.tlog": {
+    "bytes": 120368,
+    "sha256": "b4dcb0e4e3e3b8c1f455b7c2aaaab43df724c8441b02272fbeb8845c871814c7",
+    "crc32": "e987a4c0"
+  },
+  "windows-changed-units/build/check_chart_ChartPresentation.dir/Release/check_ch.B693498E.tlog/CustomBuild.command.1.tlog": {
+    "bytes": 531,
+    "sha256": "ff9cd6b27c7fb69216f5942b52e2e7b212f697d9d63d8aec6d0a386b7b02bff1",
+    "crc32": "150ee96c"
+  },
+  "windows-changed-units/build/check_chart_ChartPresentation.dir/Release/check_ch.B693498E.tlog/CustomBuild.read.1.tlog": {
+    "bytes": 8023,
+    "sha256": "323f1e962719f278d5f962fd495e548542b4df1d0eab13e6280d0b72b8e08f31",
+    "crc32": "28863ee3"
+  },
+  "windows-changed-units/build/check_chart_ChartPresentation.dir/Release/check_ch.B693498E.tlog/CustomBuild.write.1.tlog": {
+    "bytes": 165,
+    "sha256": "10ca61b3af5bad34d96b51d8ba7e4038783733f6042712a2d5b662bcfefd0a17",
+    "crc32": "a4cd95f8"
+  },
+  "windows-changed-units/build/check_chart_ChartPresentation.dir/Release/check_ch.B693498E.tlog/Lib-link.read.1.tlog": {
+    "bytes": 598,
+    "sha256": "ae7ceeca40717a3e25f6176e8192dbf91b1cfff07a02022f0d95146ab94923dc",
+    "crc32": "6075d1a1"
+  },
+  "windows-changed-units/build/check_chart_ChartPresentation.dir/Release/check_ch.B693498E.tlog/Lib-link.write.1.tlog": {
+    "bytes": 560,
+    "sha256": "8ed8cce822a8bf19071e0e17ddd13df9a614d658fcd5f19a84effca4e9e3cc9f",
+    "crc32": "a17c91fa"
+  },
+  "windows-changed-units/build/check_chart_ChartPresentation.dir/Release/check_ch.B693498E.tlog/Lib.command.1.tlog": {
+    "bytes": 636,
+    "sha256": "f9e5941bdcbdd12a2ff2f48fc3616db663ce673b22db96becfb9c0e845df28f2",
+    "crc32": "cdf0f617"
+  },
+  "windows-changed-units/build/check_chart_ChartPresentation.dir/Release/check_chart_ChartPresentation.lib": {
+    "bytes": 466942,
+    "sha256": "5c06cab4ce9c881988d81096352c8f5677123966e78ae88e8a016787d7251ee5",
+    "crc32": "51bbd566"
+  },
+  "windows-changed-units/build/check_chart_ChartPresentation.dir/Release/check_chart_ChartPresentation.lib.recipe": {
+    "bytes": 329,
+    "sha256": "f2f087ec925ea5262fb2557605456ae3ce9cf623db28fe729e808a129df9b13f",
+    "crc32": "51a1e10f"
+  },
+  "windows-changed-units/build/check_chart_ChartPresentation.dir/Release/check_chart_ChartPresentation.vcxproj.FileListAbsolute.txt": {
+    "bytes": 145,
+    "sha256": "cdd7a3e2bc31173e81300ebfa8f1395ed69fc39d1ecdfee2b7a07c6d2300d5ce",
+    "crc32": "b39e63a8"
+  },
+  "windows-changed-units/build/check_chart_ChartPresentation.vcxproj": {
+    "bytes": 95296,
+    "sha256": "ef1cf5b524e4ab91fec561cd5b8d3da1bdaf519eaedbd10f75501d37342de85e",
+    "crc32": "a012069a"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteLabel.dir/Release/ChartRouteLabel.obj": {
+    "bytes": 246055,
+    "sha256": "a5cac647dac138a3ec58e8bca3e6d5e3a3881427eeddae82b97accc43b9ba47a",
+    "crc32": "61477b9f"
+  },
+  "windows-changed-units/build/check_chart_ChartPresentation.vcxproj.filters": {
+    "bytes": 618,
+    "sha256": "323f826a2d1918eac867240bd04aeb238b045617546d38595ba474b062a3ba9d",
+    "crc32": "fff21cbe"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteLabel.dir/Release/check_ch.9F69841B.tlog/check_chart_ChartRouteLabel.lastbuildstate": {
+    "bytes": 201,
+    "sha256": "6c180073806c99979c3d91ed2d31738774d8030934fb95e9b16ef7dd16109fb3",
+    "crc32": "b63fbfe0"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteLabel.dir/Release/check_ch.9F69841B.tlog/CL.command.1.tlog": {
+    "bytes": 9338,
+    "sha256": "9008f71b664b020d47937b3ad410c30be3aa97cb7faf149ba44c2ba5e9d2029e",
+    "crc32": "b8ef880c"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteLabel.dir/Release/check_ch.9F69841B.tlog/CL.read.1.tlog": {
+    "bytes": 118176,
+    "sha256": "72d52e1e4a7b46ef291d275c9ae5428b3e5dc7ecb93de88817f44c062c1d6028",
+    "crc32": "d36721aa"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteLabel.dir/Release/check_ch.9F69841B.tlog/Cl.items.tlog": {
+    "bytes": 190,
+    "sha256": "564c0aa745917143bc715488257ac1b9a2a5a24f932162fcaf377181adf012c2",
+    "crc32": "f9713b9e"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteLabel.dir/Release/check_ch.9F69841B.tlog/CL.write.1.tlog": {
+    "bytes": 386,
+    "sha256": "5141b6720a23c6efa48322af58b592b52d77d201ec7fabbadad84b9cd703a50d",
+    "crc32": "3e4057e5"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteLabel.dir/Release/check_ch.9F69841B.tlog/CustomBuild.command.1.tlog": {
+    "bytes": 531,
+    "sha256": "ff9cd6b27c7fb69216f5942b52e2e7b212f697d9d63d8aec6d0a386b7b02bff1",
+    "crc32": "150ee96c"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteLabel.dir/Release/check_ch.9F69841B.tlog/CustomBuild.read.1.tlog": {
+    "bytes": 8023,
+    "sha256": "323f1e962719f278d5f962fd495e548542b4df1d0eab13e6280d0b72b8e08f31",
+    "crc32": "28863ee3"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteLabel.dir/Release/check_ch.9F69841B.tlog/CustomBuild.write.1.tlog": {
+    "bytes": 165,
+    "sha256": "10ca61b3af5bad34d96b51d8ba7e4038783733f6042712a2d5b662bcfefd0a17",
+    "crc32": "a4cd95f8"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteLabel.dir/Release/check_ch.9F69841B.tlog/Lib-link.read.1.tlog": {
+    "bytes": 582,
+    "sha256": "7cbb6ac2bc851e3cd2db83a367bce24a8507d965a28292287eab9935735e0fde",
+    "crc32": "93e6564d"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteLabel.dir/Release/check_ch.9F69841B.tlog/Lib-link.write.1.tlog": {
+    "bytes": 544,
+    "sha256": "da19af01d2db4cc410c403e326ff253f954f1d29b627feb025c0a6aa5b79c812",
+    "crc32": "c9841e2c"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteLabel.dir/Release/check_ch.9F69841B.tlog/Lib.command.1.tlog": {
+    "bytes": 612,
+    "sha256": "0dbb00bcb5424984853a018a723bbd0d71258f87fbf2b51d51d61b0ef9d94e9c",
+    "crc32": "cf8bed63"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteLabel.dir/Release/check_chart_ChartRouteLabel.lib": {
+    "bytes": 284342,
+    "sha256": "8b2d9c1b9c233231abae395d9452e3fc220aefecd4aba3e07632b7b4bb33836e",
+    "crc32": "1fbb5f60"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteLabel.dir/Release/check_chart_ChartRouteLabel.lib.recipe": {
+    "bytes": 329,
+    "sha256": "f2f087ec925ea5262fb2557605456ae3ce9cf623db28fe729e808a129df9b13f",
+    "crc32": "51a1e10f"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteLabel.dir/Release/check_chart_ChartRouteLabel.vcxproj.FileListAbsolute.txt": {
+    "bytes": 141,
+    "sha256": "d17fe72f8713c76b643a87d524e87a1024c8e31a59647487bb24936563b8f79c",
+    "crc32": "96b76cf0"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteLabel.vcxproj": {
+    "bytes": 95268,
+    "sha256": "f029c2bac47bd27b5869cea4815575e6a2646e4fcc6ed6a7efd107fc41e0ae37",
+    "crc32": "f8b8008d"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteLabel.vcxproj.filters": {
+    "bytes": 616,
+    "sha256": "84c9efab26479651d37a824d3dc621040d4cb8fa50c64d577c202407f0f805e7",
+    "crc32": "fe6e068d"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteUnderlay.dir/Release/ChartRouteUnderlay.obj": {
+    "bytes": 69719,
+    "sha256": "7a3dab04d6b3156dba8dc1ab3dee9d3daff0995b8d4c8ba3a6c3883926438aa0",
+    "crc32": "c89e3539"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteUnderlay.dir/Release/check_ch.EFF2E01B.tlog/check_chart_ChartRouteUnderlay.lastbuildstate": {
+    "bytes": 201,
+    "sha256": "6c180073806c99979c3d91ed2d31738774d8030934fb95e9b16ef7dd16109fb3",
+    "crc32": "b63fbfe0"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteUnderlay.dir/Release/check_ch.EFF2E01B.tlog/CL.command.1.tlog": {
+    "bytes": 9368,
+    "sha256": "5574d201fe610c4bf9967ee2b99643f2462d43c1f02e57bb536d96963e6058b8",
+    "crc32": "29833b1e"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteUnderlay.dir/Release/check_ch.EFF2E01B.tlog/Cl.items.tlog": {
+    "bytes": 199,
+    "sha256": "d520570e8975c03a4e77044a7ab68a33aa7cf7cd06c88264268afacba8b24706",
+    "crc32": "120be47e"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteUnderlay.dir/Release/check_ch.EFF2E01B.tlog/CL.read.1.tlog": {
+    "bytes": 108642,
+    "sha256": "7bd479f0998b0012ec97d87b5e9603ccb59daefee1035d8aaa827f8f9cc5eaeb",
+    "crc32": "e4862358"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteUnderlay.dir/Release/check_ch.EFF2E01B.tlog/CL.write.1.tlog": {
+    "bytes": 404,
+    "sha256": "bd864e170c61c7cc14ff8eac0b294ebaab19e2dc5c94ac7fced71d7ce879cb7f",
+    "crc32": "cc1bcd66"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteUnderlay.dir/Release/check_ch.EFF2E01B.tlog/CustomBuild.command.1.tlog": {
+    "bytes": 531,
+    "sha256": "ff9cd6b27c7fb69216f5942b52e2e7b212f697d9d63d8aec6d0a386b7b02bff1",
+    "crc32": "150ee96c"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteUnderlay.dir/Release/check_ch.EFF2E01B.tlog/CustomBuild.read.1.tlog": {
+    "bytes": 8023,
+    "sha256": "323f1e962719f278d5f962fd495e548542b4df1d0eab13e6280d0b72b8e08f31",
+    "crc32": "28863ee3"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteUnderlay.dir/Release/check_ch.EFF2E01B.tlog/CustomBuild.write.1.tlog": {
+    "bytes": 165,
+    "sha256": "10ca61b3af5bad34d96b51d8ba7e4038783733f6042712a2d5b662bcfefd0a17",
+    "crc32": "a4cd95f8"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteUnderlay.dir/Release/check_ch.EFF2E01B.tlog/Lib-link.read.1.tlog": {
+    "bytes": 606,
+    "sha256": "38fadba888692d44a214e3199eaddfaf0979b38e988feadf368634184d799c6f",
+    "crc32": "dbacd8e4"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteUnderlay.dir/Release/check_ch.EFF2E01B.tlog/Lib-link.write.1.tlog": {
+    "bytes": 568,
+    "sha256": "9266b1fd8462869edce68148a5c1e5153d653a3ad87ae68b846d421d8e74bfb1",
+    "crc32": "287faed0"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteUnderlay.dir/Release/check_ch.EFF2E01B.tlog/Lib.command.1.tlog": {
+    "bytes": 648,
+    "sha256": "9a7ba698264ae6ef560ab8a44d895d40f27e3fa5e370c6392516e5d82df534c5",
+    "crc32": "1d8a13d3"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteUnderlay.dir/Release/check_chart_ChartRouteUnderlay.lib": {
+    "bytes": 88496,
+    "sha256": "d25c4177042b31026f8068ac5988c68fe43f6e86229dc66696d0d437b4d19010",
+    "crc32": "7d9e8ef0"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteUnderlay.dir/Release/check_chart_ChartRouteUnderlay.lib.recipe": {
+    "bytes": 329,
+    "sha256": "f2f087ec925ea5262fb2557605456ae3ce9cf623db28fe729e808a129df9b13f",
+    "crc32": "51a1e10f"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteUnderlay.dir/Release/check_chart_ChartRouteUnderlay.vcxproj.FileListAbsolute.txt": {
+    "bytes": 147,
+    "sha256": "e444da4be7aaf9862ebfd4ae3ae487739fceb703eec15943f1c8cfef21e5b4a6",
+    "crc32": "523c5c49"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteUnderlay.vcxproj": {
+    "bytes": 95310,
+    "sha256": "7cf4e0b286ff7a58aff00f8bf2bf87c7684144dc90b3049ae19e15e74b666ca5",
+    "crc32": "f899d8f5"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteUnderlay.vcxproj.filters": {
+    "bytes": 619,
+    "sha256": "045340e19e178163abae868a0efa0b22031fc5738f863172f7fa79bf70699580",
+    "crc32": "bf9a121c"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteUnderlayGeometry.dir/Release/ChartRouteUnderlayGeometry.obj": {
+    "bytes": 104231,
+    "sha256": "8d5b4ce4e5a3f8797d2c78b6311ddd7f5164fbb7d9fa7c2fc81b3d5030a7f2f2",
+    "crc32": "38b8ce2e"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteUnderlayGeometry.dir/Release/check_ch.63F9B6C9.tlog/check_chart_ChartRouteUnderlayGeometry.lastbuildstate": {
+    "bytes": 201,
+    "sha256": "6c180073806c99979c3d91ed2d31738774d8030934fb95e9b16ef7dd16109fb3",
+    "crc32": "b63fbfe0"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteUnderlayGeometry.dir/Release/check_ch.63F9B6C9.tlog/CL.command.1.tlog": {
+    "bytes": 9448,
+    "sha256": "ff011ca5c55f0b3eb36e090e2f161a6465931c426c40f66babfedcd74a131011",
+    "crc32": "dab5dcd4"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteUnderlayGeometry.dir/Release/check_ch.63F9B6C9.tlog/Cl.items.tlog": {
+    "bytes": 223,
+    "sha256": "3ba8f70e3b434495eebae004e9d4f07c9455fbbd8d537ed5b7f18a675f3133e1",
+    "crc32": "fe90368e"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteUnderlayGeometry.dir/Release/check_ch.63F9B6C9.tlog/CL.read.1.tlog": {
+    "bytes": 20152,
+    "sha256": "d9da9dd17da48c970d36e52cb1bc8349e6e6e225e97412f57a71ca23f4b752e5",
+    "crc32": "f6952afd"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteUnderlayGeometry.dir/Release/check_ch.63F9B6C9.tlog/CL.write.1.tlog": {
+    "bytes": 452,
+    "sha256": "5dfc88acc5677fe8b9fad09d1ad4734dbdf45a2e8f19d70052435b6c6301d494",
+    "crc32": "b0876963"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteUnderlayGeometry.dir/Release/check_ch.63F9B6C9.tlog/CustomBuild.command.1.tlog": {
+    "bytes": 531,
+    "sha256": "ff9cd6b27c7fb69216f5942b52e2e7b212f697d9d63d8aec6d0a386b7b02bff1",
+    "crc32": "150ee96c"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteUnderlayGeometry.dir/Release/check_ch.63F9B6C9.tlog/CustomBuild.read.1.tlog": {
+    "bytes": 8023,
+    "sha256": "323f1e962719f278d5f962fd495e548542b4df1d0eab13e6280d0b72b8e08f31",
+    "crc32": "28863ee3"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteUnderlayGeometry.dir/Release/check_ch.63F9B6C9.tlog/CustomBuild.write.1.tlog": {
+    "bytes": 165,
+    "sha256": "10ca61b3af5bad34d96b51d8ba7e4038783733f6042712a2d5b662bcfefd0a17",
+    "crc32": "a4cd95f8"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteUnderlayGeometry.dir/Release/check_ch.63F9B6C9.tlog/Lib-link.read.1.tlog": {
+    "bytes": 670,
+    "sha256": "0dd35d20ec3589efc0491a281fbd28316fc80ce2abaaab3df97cf49eeccbc120",
+    "crc32": "7df5ea53"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteUnderlayGeometry.dir/Release/check_ch.63F9B6C9.tlog/Lib-link.write.1.tlog": {
+    "bytes": 632,
+    "sha256": "904ef66a15a5589fdc772ab264807b7c2429ef3b2ccfb90034c8e2e39b77a7ed",
+    "crc32": "c603cfca"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteUnderlayGeometry.dir/Release/check_ch.63F9B6C9.tlog/Lib.command.1.tlog": {
+    "bytes": 744,
+    "sha256": "736ef21ce1479b59e222859012ead19eaed7a8e199d3ce1ed1f409cc67edc018",
+    "crc32": "13f31421"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteUnderlayGeometry.dir/Release/check_chart_ChartRouteUnderlayGeometry.lib": {
+    "bytes": 131204,
+    "sha256": "770428721fc9e437d221e4758ff5020c5d2e1665ee93488aa804d498107b8ce6",
+    "crc32": "d547d725"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteUnderlayGeometry.dir/Release/check_chart_ChartRouteUnderlayGeometry.lib.recipe": {
+    "bytes": 329,
+    "sha256": "f2f087ec925ea5262fb2557605456ae3ce9cf623db28fe729e808a129df9b13f",
+    "crc32": "51a1e10f"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteUnderlayGeometry.dir/Release/check_chart_ChartRouteUnderlayGeometry.vcxproj.FileListAbsolute.txt": {
+    "bytes": 163,
+    "sha256": "4b648b19702d83c42a51cfd94d96e1b701f1c5165c88233d9a6edc9273ae409f",
+    "crc32": "8a64441d"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteUnderlayGeometry.vcxproj": {
+    "bytes": 95422,
+    "sha256": "1fcdfbeb71bd523ffb2552e3291bdc5da52b479889824010cfe03e531536f81d",
+    "crc32": "0e8c043d"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteUnderlayGeometry.vcxproj.filters": {
+    "bytes": 627,
+    "sha256": "e945142e00abac8c8ee16673992043c16bc5993b819ca76fa1d4ecb8f9e2eb4b",
+    "crc32": "91e2ce25"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteWaypoint.dir/Release/ChartRouteWaypoint.obj": {
+    "bytes": 262810,
+    "sha256": "86203d1cd0e269fe4e7d0add3c23eaed794b224512e5a9ed75125bdd00b9d8f2",
+    "crc32": "bd5d9dbb"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteWaypoint.dir/Release/check_ch.9872A83B.tlog/check_chart_ChartRouteWaypoint.lastbuildstate": {
+    "bytes": 201,
+    "sha256": "6c180073806c99979c3d91ed2d31738774d8030934fb95e9b16ef7dd16109fb3",
+    "crc32": "b63fbfe0"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteWaypoint.dir/Release/check_ch.9872A83B.tlog/CL.command.1.tlog": {
+    "bytes": 9368,
+    "sha256": "3b49ce145adef3e25a278721ac8165e21c7537f8955c44a5fff43c39a88226c5",
+    "crc32": "ca2d1137"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteWaypoint.dir/Release/check_ch.9872A83B.tlog/Cl.items.tlog": {
+    "bytes": 199,
+    "sha256": "ecd6bce2e511cdc9a23798321cb76639233ac727dae04637790b8b39409c1a42",
+    "crc32": "f7cd35cd"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteWaypoint.dir/Release/check_ch.9872A83B.tlog/CL.read.1.tlog": {
+    "bytes": 115246,
+    "sha256": "9f1649a7aa84afbc19127c8fbdf14a5ce7a89b9a0986a9b2d61e23def8e55847",
+    "crc32": "25cff516"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteWaypoint.dir/Release/check_ch.9872A83B.tlog/CL.write.1.tlog": {
+    "bytes": 404,
+    "sha256": "fbfdf11c238ee9539d56a43cf8bdf849d87f4a996d659ef28ffbc6038b58aac0",
+    "crc32": "0af140d1"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteWaypoint.dir/Release/check_ch.9872A83B.tlog/CustomBuild.command.1.tlog": {
+    "bytes": 531,
+    "sha256": "ff9cd6b27c7fb69216f5942b52e2e7b212f697d9d63d8aec6d0a386b7b02bff1",
+    "crc32": "150ee96c"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteWaypoint.dir/Release/check_ch.9872A83B.tlog/CustomBuild.read.1.tlog": {
+    "bytes": 8023,
+    "sha256": "323f1e962719f278d5f962fd495e548542b4df1d0eab13e6280d0b72b8e08f31",
+    "crc32": "28863ee3"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteWaypoint.dir/Release/check_ch.9872A83B.tlog/CustomBuild.write.1.tlog": {
+    "bytes": 165,
+    "sha256": "10ca61b3af5bad34d96b51d8ba7e4038783733f6042712a2d5b662bcfefd0a17",
+    "crc32": "a4cd95f8"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteWaypoint.dir/Release/check_ch.9872A83B.tlog/Lib-link.read.1.tlog": {
+    "bytes": 606,
+    "sha256": "bd6329ac69c53032f4436180cf0496424d9762fb4dc8d81d1da15436e69b9aaa",
+    "crc32": "dee3e6de"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteWaypoint.dir/Release/check_ch.9872A83B.tlog/Lib-link.write.1.tlog": {
+    "bytes": 568,
+    "sha256": "fc003565d72a136b0e9bb380125d83f504944da18e85e6fbd9dfc2576e7c55a0",
+    "crc32": "c2a44b55"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteWaypoint.dir/Release/check_ch.9872A83B.tlog/Lib.command.1.tlog": {
+    "bytes": 648,
+    "sha256": "179475be901e6a715ccff84ecf56b56373f97f103e5aa836c528f316afe1837f",
+    "crc32": "f50fd96c"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteWaypoint.dir/Release/check_chart_ChartRouteWaypoint.lib": {
+    "bytes": 311390,
+    "sha256": "dda206619e808b6883dfb49707190038368038bbad4f0dbc3841c9864a74b89d",
+    "crc32": "b28e9918"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteWaypoint.dir/Release/check_chart_ChartRouteWaypoint.lib.recipe": {
+    "bytes": 329,
+    "sha256": "f2f087ec925ea5262fb2557605456ae3ce9cf623db28fe729e808a129df9b13f",
+    "crc32": "51a1e10f"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteWaypoint.dir/Release/check_chart_ChartRouteWaypoint.vcxproj.FileListAbsolute.txt": {
+    "bytes": 147,
+    "sha256": "19c111bf713a179266d2001b4fb5eb16d7edd42c2f008f27869c57c5a107b5dc",
+    "crc32": "313ee9c5"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteWaypoint.vcxproj": {
+    "bytes": 95310,
+    "sha256": "14dc94115a85d770540c8f4f107eb80eb0d8b7868858bc4dbdfe92e3d816857a",
+    "crc32": "e25f2035"
+  },
+  "windows-changed-units/build/check_chart_ChartRouteWaypoint.vcxproj.filters": {
+    "bytes": 619,
+    "sha256": "296b63ced38de8c1dc132455ebfe1989acfa75064680f66109d8c3991ea700f1",
+    "crc32": "bf3ee9bc"
+  },
+  "windows-changed-units/build/check_chart_chartsymbols.dir/Release/chartsymbols.obj": {
+    "bytes": 178112,
+    "sha256": "3a3ebb720cf9d866ce87c30d39406482cba920ad7f2b13b05a33e8b10c156d6f",
+    "crc32": "cc8aa5db"
+  },
+  "windows-changed-units/build/check_chart_chartsymbols.dir/Release/check_ch.388AB754.tlog/check_chart_chartsymbols.lastbuildstate": {
+    "bytes": 201,
+    "sha256": "6c180073806c99979c3d91ed2d31738774d8030934fb95e9b16ef7dd16109fb3",
+    "crc32": "b63fbfe0"
+  },
+  "windows-changed-units/build/check_chart_chartsymbols.dir/Release/check_ch.388AB754.tlog/CL.command.1.tlog": {
+    "bytes": 9412,
+    "sha256": "0611610336589be22aca07a8fa02e037915acf15dbb99978e794f445aa4ac056",
+    "crc32": "30f8e9b3"
+  },
+  "windows-changed-units/build/check_chart_chartsymbols.dir/Release/check_ch.388AB754.tlog/Cl.items.tlog": {
+    "bytes": 207,
+    "sha256": "912458c93b73e1518a5d1a761f0b1f45a28cd054a9efdeb9f896892ef5d321f2",
+    "crc32": "2f85ecdb"
+  },
+  "windows-changed-units/build/check_chart_chartsymbols.dir/Release/check_ch.388AB754.tlog/CL.read.1.tlog": {
+    "bytes": 93122,
+    "sha256": "c75ad70b1018d519a79c34d6cf33eef3a7515eb377ff3e86b04477d6ccd971bf",
+    "crc32": "48cdcbdc"
+  },
+  "windows-changed-units/build/check_chart_chartsymbols.dir/Release/check_ch.388AB754.tlog/CL.write.1.tlog": {
+    "bytes": 420,
+    "sha256": "e903e07e83ab1f2b89f03ac9cee1d7ca30589b45a7806ef60b8caf0ba48960fa",
+    "crc32": "4c2b26d5"
+  },
+  "windows-changed-units/build/check_chart_chartsymbols.dir/Release/check_ch.388AB754.tlog/CustomBuild.command.1.tlog": {
+    "bytes": 531,
+    "sha256": "ff9cd6b27c7fb69216f5942b52e2e7b212f697d9d63d8aec6d0a386b7b02bff1",
+    "crc32": "150ee96c"
+  },
+  "windows-changed-units/build/check_chart_chartsymbols.dir/Release/check_ch.388AB754.tlog/CustomBuild.read.1.tlog": {
+    "bytes": 8023,
+    "sha256": "323f1e962719f278d5f962fd495e548542b4df1d0eab13e6280d0b72b8e08f31",
+    "crc32": "28863ee3"
+  },
+  "windows-changed-units/build/check_chart_chartsymbols.dir/Release/check_ch.388AB754.tlog/CustomBuild.write.1.tlog": {
+    "bytes": 165,
+    "sha256": "10ca61b3af5bad34d96b51d8ba7e4038783733f6042712a2d5b662bcfefd0a17",
+    "crc32": "a4cd95f8"
+  },
+  "windows-changed-units/build/check_chart_chartsymbols.dir/Release/check_ch.388AB754.tlog/Lib-link.read.1.tlog": {
+    "bytes": 558,
+    "sha256": "94d1ac28068a6771cea6e7ffdf9d90af5c40f66ad6e621f04551ed2fc63bc076",
+    "crc32": "94d06cf8"
+  },
+  "windows-changed-units/build/check_chart_chartsymbols.dir/Release/check_ch.388AB754.tlog/Lib-link.write.1.tlog": {
+    "bytes": 520,
+    "sha256": "e1871ce6423ceba29d5e07c657435e77476af8c7b9f747e0f1df6bb1e4082d38",
+    "crc32": "e1feda8a"
+  },
+  "windows-changed-units/build/check_chart_chartsymbols.dir/Release/check_ch.388AB754.tlog/Lib.command.1.tlog": {
+    "bytes": 576,
+    "sha256": "198e6a78304af56a45733ad9d51000d882288b7324e572e38efefc4c50538171",
+    "crc32": "2cd8cb99"
+  },
+  "windows-changed-units/build/check_chart_chartsymbols.dir/Release/check_chart_chartsymbols.lib": {
+    "bytes": 204442,
+    "sha256": "212f4f5ddbd0699b8b17ad2fc2be9ff3436660339e016f534c9958db97500069",
+    "crc32": "4213ed40"
+  },
+  "windows-changed-units/build/check_chart_chartsymbols.dir/Release/check_chart_chartsymbols.lib.recipe": {
+    "bytes": 329,
+    "sha256": "f2f087ec925ea5262fb2557605456ae3ce9cf623db28fe729e808a129df9b13f",
+    "crc32": "51a1e10f"
+  },
+  "windows-changed-units/build/check_chart_chartsymbols.dir/Release/check_chart_chartsymbols.vcxproj.FileListAbsolute.txt": {
+    "bytes": 135,
+    "sha256": "0b8850d9dc2b53e4b1965979c1483569cb006739107729df1a20cf54f44bb8b4",
+    "crc32": "bae7ff44"
+  },
+  "windows-changed-units/build/check_chart_chartsymbols.vcxproj": {
+    "bytes": 95252,
+    "sha256": "4c458bd2027a695544d779bf01119d5b521bf5d6fe70ec457f5f3968363217fc",
+    "crc32": "7009c14f"
+  },
+  "windows-changed-units/build/check_chart_chartsymbols.vcxproj.filters": {
+    "bytes": 639,
+    "sha256": "49d3955205861b40ebf051d6eb88347458c3783e6829b57787a362af09326235",
+    "crc32": "78b44232"
+  },
+  "windows-changed-units/build/check_chart_chcanv.dir/Release/check_ch.8BDA860A.tlog/check_chart_chcanv.lastbuildstate": {
+    "bytes": 201,
+    "sha256": "6c180073806c99979c3d91ed2d31738774d8030934fb95e9b16ef7dd16109fb3",
+    "crc32": "b63fbfe0"
+  },
+  "windows-changed-units/build/check_chart_chcanv.dir/Release/chcanv.obj": {
+    "bytes": 1150473,
+    "sha256": "7c54c87cd4fa0262afdeea8f93fba2a23669920ed6c7c7e9ed999d52077fc2c8",
+    "crc32": "8b989ccf"
+  },
+  "windows-changed-units/build/check_chart_chcanv.dir/Release/check_ch.8BDA860A.tlog/CL.command.1.tlog": {
+    "bytes": 9316,
+    "sha256": "799a17019bcdc7e74c1457c4960ac0c7d9db31bc017e7b24ca2f50db73e01a4a",
+    "crc32": "7e1137c9"
+  },
+  "windows-changed-units/build/check_chart_chcanv.dir/Release/check_ch.8BDA860A.tlog/Cl.items.tlog": {
+    "bytes": 180,
+    "sha256": "83b37f0a58237a6e87bba911167d255845938a3a57c2c6e2855ddf0f557f7a61",
+    "crc32": "1ba18a1c"
+  },
+  "windows-changed-units/build/check_chart_chcanv.dir/Release/check_ch.8BDA860A.tlog/CL.read.1.tlog": {
+    "bytes": 165922,
+    "sha256": "b8c388839f1e7488492a740ec14e03a10d5d93528fc8dd00abccaaba1deeab8c",
+    "crc32": "8d2a37ab"
+  },
+  "windows-changed-units/build/check_chart_chcanv.dir/Release/check_ch.8BDA860A.tlog/CL.write.1.tlog": {
+    "bytes": 366,
+    "sha256": "cfcf81c3841a8dbb483682f5579057dcc164d8e9d5aec027d0880a8661c32656",
+    "crc32": "a707f482"
+  },
+  "windows-changed-units/build/check_chart_chcanv.dir/Release/check_ch.8BDA860A.tlog/CustomBuild.command.1.tlog": {
+    "bytes": 531,
+    "sha256": "ff9cd6b27c7fb69216f5942b52e2e7b212f697d9d63d8aec6d0a386b7b02bff1",
+    "crc32": "150ee96c"
+  },
+  "windows-changed-units/build/check_chart_chcanv.dir/Release/check_ch.8BDA860A.tlog/CustomBuild.read.1.tlog": {
+    "bytes": 8023,
+    "sha256": "323f1e962719f278d5f962fd495e548542b4df1d0eab13e6280d0b72b8e08f31",
+    "crc32": "28863ee3"
+  },
+  "windows-changed-units/build/check_chart_chcanv.dir/Release/check_ch.8BDA860A.tlog/CustomBuild.write.1.tlog": {
+    "bytes": 165,
+    "sha256": "10ca61b3af5bad34d96b51d8ba7e4038783733f6042712a2d5b662bcfefd0a17",
+    "crc32": "a4cd95f8"
+  },
+  "windows-changed-units/build/check_chart_chcanv.dir/Release/check_ch.8BDA860A.tlog/Lib-link.read.1.tlog": {
+    "bytes": 510,
+    "sha256": "b8ed40fb4df29d1a0cda9045fe5b0ecd74800d4867f6e294b64a969437d0660e",
+    "crc32": "b9985fee"
+  },
+  "windows-changed-units/build/check_chart_chcanv.dir/Release/check_ch.8BDA860A.tlog/Lib-link.write.1.tlog": {
+    "bytes": 472,
+    "sha256": "0ab2b2dc9bd7d5f02b316aa24171e7e6f343963efeb13bb60f0acdd5301d9ea4",
+    "crc32": "fd0b63e8"
+  },
+  "windows-changed-units/build/check_chart_chcanv.dir/Release/check_ch.8BDA860A.tlog/Lib.command.1.tlog": {
+    "bytes": 504,
+    "sha256": "7f4c5b141f030ca93327052099fe09b2e1e37ea3f5e026c2a0f262d5fbbb0dab",
+    "crc32": "c56f460e"
+  },
+  "windows-changed-units/build/check_chart_chcanv.dir/Release/check_chart_chcanv.lib": {
+    "bytes": 1326694,
+    "sha256": "1718462a7c40b743ca7ed41a1ebfade222b43526d2b576b8c6022f0b39bbe1b8",
+    "crc32": "3dd76377"
+  },
+  "windows-changed-units/build/check_chart_chcanv.dir/Release/check_chart_chcanv.lib.recipe": {
+    "bytes": 329,
+    "sha256": "f2f087ec925ea5262fb2557605456ae3ce9cf623db28fe729e808a129df9b13f",
+    "crc32": "51a1e10f"
+  },
+  "windows-changed-units/build/check_chart_chcanv.dir/Release/check_chart_chcanv.vcxproj.FileListAbsolute.txt": {
+    "bytes": 123,
+    "sha256": "a6fb89e6311495f9498ed615a0660f9a4a776b382a14eabff286deddfc008fb6",
+    "crc32": "d7e3bf86"
+  },
+  "windows-changed-units/build/check_chart_chcanv.vcxproj": {
+    "bytes": 95159,
+    "sha256": "41142d61872e64d647d47351c96699176b759604b464bd21561fa5bb32f31939",
+    "crc32": "e2218125"
+  },
+  "windows-changed-units/build/check_chart_chcanv.vcxproj.filters": {
+    "bytes": 624,
+    "sha256": "062491b5a3d373fb009dc133d96bd63d1c4681d6a7a2f6b51d759fd2080d7643",
+    "crc32": "fab4f6eb"
+  },
+  "windows-changed-units/build/check_chart_DepthFont.dir/Release/check_ch.AAA41D7D.tlog/check_chart_DepthFont.lastbuildstate": {
+    "bytes": 201,
+    "sha256": "6c180073806c99979c3d91ed2d31738774d8030934fb95e9b16ef7dd16109fb3",
+    "crc32": "b63fbfe0"
+  },
+  "windows-changed-units/build/check_chart_DepthFont.dir/Release/check_ch.AAA41D7D.tlog/CL.command.1.tlog": {
+    "bytes": 9382,
+    "sha256": "f2a01b5ffdb9a9f81cd9dcd11c56de0dd951d68b348824131060bdc46be93c10",
+    "crc32": "f7c1b273"
+  },
+  "windows-changed-units/build/check_chart_DepthFont.dir/Release/check_ch.AAA41D7D.tlog/Cl.items.tlog": {
+    "bytes": 198,
+    "sha256": "4bfba2af91f1b8dd811ca3b02135b52bc10c16dadc70b35d6a6e83d8b69d528a",
+    "crc32": "1829e3cf"
+  },
+  "windows-changed-units/build/check_chart_DepthFont.dir/Release/check_ch.AAA41D7D.tlog/CL.read.1.tlog": {
+    "bytes": 89886,
+    "sha256": "492b102bf3862ab6f78174d1f18a720b7edc6e9022b6702f5e96412a8da26226",
+    "crc32": "c8e3323b"
+  },
+  "windows-changed-units/build/check_chart_DepthFont.dir/Release/check_ch.AAA41D7D.tlog/CL.write.1.tlog": {
+    "bytes": 402,
+    "sha256": "18de6d5e6dacc59b68d4bfe709fc3c63ce9500531122e66aa6961aeda57f0d5d",
+    "crc32": "40d32055"
+  },
+  "windows-changed-units/build/check_chart_DepthFont.dir/Release/check_ch.AAA41D7D.tlog/CustomBuild.command.1.tlog": {
+    "bytes": 531,
+    "sha256": "ff9cd6b27c7fb69216f5942b52e2e7b212f697d9d63d8aec6d0a386b7b02bff1",
+    "crc32": "150ee96c"
+  },
+  "windows-changed-units/build/check_chart_DepthFont.dir/Release/check_ch.AAA41D7D.tlog/CustomBuild.read.1.tlog": {
+    "bytes": 8023,
+    "sha256": "323f1e962719f278d5f962fd495e548542b4df1d0eab13e6280d0b72b8e08f31",
+    "crc32": "28863ee3"
+  },
+  "windows-changed-units/build/check_chart_DepthFont.dir/Release/check_ch.AAA41D7D.tlog/Lib-link.read.1.tlog": {
+    "bytes": 534,
+    "sha256": "a873a5be78ba0a1eaf27c69fdb65974cba14d1b5835abf8909fa31a0ddc4e5a5",
+    "crc32": "3f473717"
+  },
+  "windows-changed-units/build/check_chart_DepthFont.dir/Release/check_ch.AAA41D7D.tlog/CustomBuild.write.1.tlog": {
+    "bytes": 165,
+    "sha256": "10ca61b3af5bad34d96b51d8ba7e4038783733f6042712a2d5b662bcfefd0a17",
+    "crc32": "a4cd95f8"
+  },
+  "windows-changed-units/build/check_chart_DepthFont.dir/Release/check_ch.AAA41D7D.tlog/Lib-link.write.1.tlog": {
+    "bytes": 496,
+    "sha256": "d916637a54831ec93cbf9c3356f3160ce1d558e73d1b934cfd0829c708558a59",
+    "crc32": "1077d19e"
+  },
+  "windows-changed-units/build/check_chart_DepthFont.dir/Release/check_ch.AAA41D7D.tlog/Lib.command.1.tlog": {
+    "bytes": 540,
+    "sha256": "70e79d579d7ceb0f071e65f32acb98ac2e72e645d6de4d57970a7d58dd1e6138",
+    "crc32": "2f57d77f"
+  },
+  "windows-changed-units/build/check_chart_DepthFont.dir/Release/check_chart_DepthFont.lib": {
+    "bytes": 199006,
+    "sha256": "376a199a8c1918ab34abf04a36d9a2c835f7bc90004e5b6a3c9335156faec874",
+    "crc32": "dbec8c17"
+  },
+  "windows-changed-units/build/check_chart_DepthFont.dir/Release/check_chart_DepthFont.lib.recipe": {
+    "bytes": 329,
+    "sha256": "f2f087ec925ea5262fb2557605456ae3ce9cf623db28fe729e808a129df9b13f",
+    "crc32": "51a1e10f"
+  },
+  "windows-changed-units/build/check_chart_DepthFont.dir/Release/check_chart_DepthFont.vcxproj.FileListAbsolute.txt": {
+    "bytes": 129,
+    "sha256": "40dffa18b734a61c76323fe659b1e9f4a8f0a03f4183c920e5e6837333ceba73",
+    "crc32": "686309ea"
+  },
+  "windows-changed-units/build/check_chart_DepthFont.dir/Release/DepthFont.obj": {
+    "bytes": 173198,
+    "sha256": "c6e37fde08f8ed4fd8520adb83478bf93823bd56b06b085ae12d6aac32192b10",
+    "crc32": "fb60dea0"
+  },
+  "windows-changed-units/build/check_chart_DepthFont.vcxproj": {
+    "bytes": 95210,
+    "sha256": "d836b3ef0a54ef89404838595ec0c2dd03b7c6f0f56856d0490c980bea311c54",
+    "crc32": "cea26057"
+  },
+  "windows-changed-units/build/check_chart_glChartCanvas.dir/Release/check_ch.26F2F4ED.tlog/check_chart_glChartCanvas.lastbuildstate": {
+    "bytes": 201,
+    "sha256": "6c180073806c99979c3d91ed2d31738774d8030934fb95e9b16ef7dd16109fb3",
+    "crc32": "b63fbfe0"
+  },
+  "windows-changed-units/build/check_chart_DepthFont.vcxproj.filters": {
+    "bytes": 636,
+    "sha256": "3a9a8aa90bf20d107b66d7b2ce217fc2fc68def5ff30e613ea7a9c28aebbe576",
+    "crc32": "d91af558"
+  },
+  "windows-changed-units/build/check_chart_glChartCanvas.dir/Release/check_ch.26F2F4ED.tlog/CL.command.1.tlog": {
+    "bytes": 9386,
+    "sha256": "edaee06d3ff3817ee153c6343fd383fb44bab00ff2524598335fae8c6d1f5456",
+    "crc32": "023a11d1"
+  },
+  "windows-changed-units/build/check_chart_glChartCanvas.dir/Release/check_ch.26F2F4ED.tlog/Cl.items.tlog": {
+    "bytes": 201,
+    "sha256": "5292f592aee6816b51a73663454b67f1a5d9fa71ad771cba5dc911a39d25cfc1",
+    "crc32": "44cca111"
+  },
+  "windows-changed-units/build/check_chart_glChartCanvas.dir/Release/check_ch.26F2F4ED.tlog/CL.read.1.tlog": {
+    "bytes": 154198,
+    "sha256": "101f7809e68bbe6f0800305201e7b3412b163a1652206933d333839580b2fc34",
+    "crc32": "d5571aae"
+  },
+  "windows-changed-units/build/check_chart_glChartCanvas.dir/Release/check_ch.26F2F4ED.tlog/CL.write.1.tlog": {
+    "bytes": 408,
+    "sha256": "af93605e6647c0274294decbbf4b3589ed88c54b970b5d92581db3eee9bc0103",
+    "crc32": "53e0da33"
+  },
+  "windows-changed-units/build/check_chart_glChartCanvas.dir/Release/check_ch.26F2F4ED.tlog/CustomBuild.command.1.tlog": {
+    "bytes": 531,
+    "sha256": "ff9cd6b27c7fb69216f5942b52e2e7b212f697d9d63d8aec6d0a386b7b02bff1",
+    "crc32": "150ee96c"
+  },
+  "windows-changed-units/build/check_chart_glChartCanvas.dir/Release/check_ch.26F2F4ED.tlog/CustomBuild.read.1.tlog": {
+    "bytes": 8023,
+    "sha256": "323f1e962719f278d5f962fd495e548542b4df1d0eab13e6280d0b72b8e08f31",
+    "crc32": "28863ee3"
+  },
+  "windows-changed-units/build/check_chart_glChartCanvas.dir/Release/check_ch.26F2F4ED.tlog/CustomBuild.write.1.tlog": {
+    "bytes": 165,
+    "sha256": "10ca61b3af5bad34d96b51d8ba7e4038783733f6042712a2d5b662bcfefd0a17",
+    "crc32": "a4cd95f8"
+  },
+  "windows-changed-units/build/check_chart_glChartCanvas.dir/Release/check_ch.26F2F4ED.tlog/Lib-link.read.1.tlog": {
+    "bytes": 566,
+    "sha256": "0038cf5d3cc059f9cb5e123a62332b47cf6a178b65cb6eafcf2e19dbdf9d75a8",
+    "crc32": "4fe34e21"
+  },
+  "windows-changed-units/build/check_chart_glChartCanvas.dir/Release/check_ch.26F2F4ED.tlog/Lib-link.write.1.tlog": {
+    "bytes": 528,
+    "sha256": "05e42352a18fa37bccad2b0517e6e3b09b9e1b43303c2ac83b1b68971af21c8b",
+    "crc32": "780deddd"
+  },
+  "windows-changed-units/build/check_chart_glChartCanvas.dir/Release/check_ch.26F2F4ED.tlog/Lib.command.1.tlog": {
+    "bytes": 588,
+    "sha256": "66fdfab122f9e9b2e3a7e1a0543dba8e70729409114f7fdff7e9dc11a3f813f4",
+    "crc32": "077690e3"
+  },
+  "windows-changed-units/build/check_chart_glChartCanvas.dir/Release/check_chart_glChartCanvas.lib": {
+    "bytes": 829466,
+    "sha256": "a27e546581f141044fac61855e5cdf17a91858f53564cf62f536bb965c72b711",
+    "crc32": "aa6a55d8"
+  },
+  "windows-changed-units/build/check_chart_glChartCanvas.dir/Release/check_chart_glChartCanvas.lib.recipe": {
+    "bytes": 329,
+    "sha256": "f2f087ec925ea5262fb2557605456ae3ce9cf623db28fe729e808a129df9b13f",
+    "crc32": "51a1e10f"
+  },
+  "windows-changed-units/build/check_chart_glChartCanvas.dir/Release/check_chart_glChartCanvas.vcxproj.FileListAbsolute.txt": {
+    "bytes": 137,
+    "sha256": "a42aff7a30238f0227a60c0309ecee786952805f1d03b53ef19038205baaea75",
+    "crc32": "bd048e07"
+  },
+  "windows-changed-units/build/check_chart_glChartCanvas.dir/Release/glChartCanvas.obj": {
+    "bytes": 699878,
+    "sha256": "294faea065d98cf297656fdcafb2981556b083c5b058a5284e95b22ea0f2f776",
+    "crc32": "dceb9d41"
+  },
+  "windows-changed-units/build/check_chart_glChartCanvas.vcxproj": {
+    "bytes": 95257,
+    "sha256": "6f5f79cdcae869cb2b537abdc357b506d40ba8c299b4a88f071f28f5f88cc0bb",
+    "crc32": "540560bf"
+  },
+  "windows-changed-units/build/check_chart_glChartCanvas.vcxproj.filters": {
+    "bytes": 631,
+    "sha256": "c93c2502cfafec7ee18db768c25f1d76b4b0144637cc13b9f1f5f38930c9ab69",
+    "crc32": "886259b9"
+  },
+  "windows-changed-units/build/check_chart_OnboardAisPresentation.dir/Release/check_ch.3853463C.tlog/check_chart_OnboardAisPresentation.lastbuildstate": {
+    "bytes": 201,
+    "sha256": "6c180073806c99979c3d91ed2d31738774d8030934fb95e9b16ef7dd16109fb3",
+    "crc32": "b63fbfe0"
+  },
+  "windows-changed-units/build/check_chart_OnboardAisPresentation.dir/Release/check_ch.3853463C.tlog/CL.command.1.tlog": {
+    "bytes": 9408,
+    "sha256": "c951a3fe649cd8b90818688a1aefbc2b53a0806a5a7b2387b39bf6aa738b49a8",
+    "crc32": "ac904c58"
+  },
+  "windows-changed-units/build/check_chart_OnboardAisPresentation.dir/Release/check_ch.3853463C.tlog/Cl.items.tlog": {
+    "bytes": 211,
+    "sha256": "346fc59bd5c92ffac39e957e3a5c087103af9d883572b03b1654c1e5fcc80d28",
+    "crc32": "4f751263"
+  },
+  "windows-changed-units/build/check_chart_OnboardAisPresentation.dir/Release/check_ch.3853463C.tlog/CL.read.1.tlog": {
+    "bytes": 109838,
+    "sha256": "fcf8fd5644897d52a92234ef59c4ff866b4c516d68acac8d01c534d39db29f17",
+    "crc32": "26667985"
+  },
+  "windows-changed-units/build/check_chart_OnboardAisPresentation.dir/Release/check_ch.3853463C.tlog/CL.write.1.tlog": {
+    "bytes": 428,
+    "sha256": "f376dc33a1dc4c4717a621a7aa4200a9ec36616e113015c2d6a3f97bbc8f7b78",
+    "crc32": "681ac4a3"
+  },
+  "windows-changed-units/build/check_chart_OnboardAisPresentation.dir/Release/check_ch.3853463C.tlog/CustomBuild.command.1.tlog": {
+    "bytes": 531,
+    "sha256": "ff9cd6b27c7fb69216f5942b52e2e7b212f697d9d63d8aec6d0a386b7b02bff1",
+    "crc32": "150ee96c"
+  },
+  "windows-changed-units/build/check_chart_OnboardAisPresentation.dir/Release/check_ch.3853463C.tlog/CustomBuild.read.1.tlog": {
+    "bytes": 8023,
+    "sha256": "323f1e962719f278d5f962fd495e548542b4df1d0eab13e6280d0b72b8e08f31",
+    "crc32": "28863ee3"
+  },
+  "windows-changed-units/build/check_chart_OnboardAisPresentation.dir/Release/check_ch.3853463C.tlog/CustomBuild.write.1.tlog": {
+    "bytes": 165,
+    "sha256": "10ca61b3af5bad34d96b51d8ba7e4038783733f6042712a2d5b662bcfefd0a17",
+    "crc32": "a4cd95f8"
+  },
+  "windows-changed-units/build/check_chart_OnboardAisPresentation.dir/Release/check_ch.3853463C.tlog/Lib-link.read.1.tlog": {
+    "bytes": 638,
+    "sha256": "e05bb7bbca069599281a9a9122a1f769e6bdfbd3e4284d805afb638e6de32d68",
+    "crc32": "1f572cb6"
+  },
+  "windows-changed-units/build/check_chart_OnboardAisPresentation.dir/Release/check_ch.3853463C.tlog/Lib-link.write.1.tlog": {
+    "bytes": 600,
+    "sha256": "87307180c50b9c93cbdcf72944595b02e37999a5eeda70e962dc9e3e771e04fc",
+    "crc32": "52d15686"
+  },
+  "windows-changed-units/build/check_chart_OnboardAisPresentation.dir/Release/check_ch.3853463C.tlog/Lib.command.1.tlog": {
+    "bytes": 696,
+    "sha256": "c4943c45a8b0b6a01e59aa63e5e8c76a1fcca266524b29f75c9cd0922462ca52",
+    "crc32": "c07e9c59"
+  },
+  "windows-changed-units/build/check_chart_OnboardAisPresentation.dir/Release/check_chart_OnboardAisPresentation.lib": {
+    "bytes": 127240,
+    "sha256": "02dd9f117164789af6c30651e34c3b71145649ee2bd6e7d7afaa86196ea57df5",
+    "crc32": "6979dee0"
+  },
+  "windows-changed-units/build/check_chart_OnboardAisPresentation.dir/Release/check_chart_OnboardAisPresentation.lib.recipe": {
+    "bytes": 329,
+    "sha256": "f2f087ec925ea5262fb2557605456ae3ce9cf623db28fe729e808a129df9b13f",
+    "crc32": "51a1e10f"
+  },
+  "windows-changed-units/build/check_chart_OnboardAisPresentation.dir/Release/check_chart_OnboardAisPresentation.vcxproj.FileListAbsolute.txt": {
+    "bytes": 155,
+    "sha256": "2417966cc7a3d20c1f1ea80ea827cfc2eb4c9864479fd16d045d67a92b0ee155",
+    "crc32": "612e042c"
+  },
+  "windows-changed-units/build/check_chart_OnboardAisPresentation.dir/Release/OnboardAisPresentation.obj": {
+    "bytes": 98337,
+    "sha256": "47dc6cf31e4d32550326214fb1992be4788605f6c7ab58bb6b97ab35c3b4fa1a",
+    "crc32": "7d2d1080"
+  },
+  "windows-changed-units/build/check_chart_OnboardAisPresentation.vcxproj.filters": {
+    "bytes": 623,
+    "sha256": "c9d18644e049f36e1c869faba3e7e952da84107dfff97fbe0999ad637dcd1f1c",
+    "crc32": "e61c618b"
+  },
+  "windows-changed-units/build/check_chart_OnboardAisPresentation.vcxproj": {
+    "bytes": 95366,
+    "sha256": "3deb3f762a06ef3032dabf80194c42ef9f064eb1fdf64ad3965843dc4779c196",
+    "crc32": "bf95d85a"
+  },
+  "windows-changed-units/build/check_chart_OnlineAisOverlay.dir/Release/check_ch.24AF2403.tlog/check_chart_OnlineAisOverlay.lastbuildstate": {
+    "bytes": 201,
+    "sha256": "6c180073806c99979c3d91ed2d31738774d8030934fb95e9b16ef7dd16109fb3",
+    "crc32": "b63fbfe0"
+  },
+  "windows-changed-units/build/check_chart_OnlineAisOverlay.dir/Release/check_ch.24AF2403.tlog/CL.command.1.tlog": {
+    "bytes": 9348,
+    "sha256": "57b02941ab4f8ab7800b84d5498baecd7ac1a604f368a97c34b35b1f46d7a467",
+    "crc32": "6fd97b54"
+  },
+  "windows-changed-units/build/check_chart_OnlineAisOverlay.dir/Release/check_ch.24AF2403.tlog/CL.read.1.tlog": {
+    "bytes": 109430,
+    "sha256": "c2928c355b562dd01cb4a3d2a3ac5b5d155165d58ae7278148fcec1fbec5b4bc",
+    "crc32": "beca3766"
+  },
+  "windows-changed-units/build/check_chart_OnlineAisOverlay.dir/Release/check_ch.24AF2403.tlog/Cl.items.tlog": {
+    "bytes": 193,
+    "sha256": "51be0166b0149b0e938e546569ad1298425ae14932618bb575cb889a2d6f7b0e",
+    "crc32": "898f4963"
+  },
+  "windows-changed-units/build/check_chart_OnlineAisOverlay.dir/Release/check_ch.24AF2403.tlog/CL.write.1.tlog": {
+    "bytes": 392,
+    "sha256": "6a61b2091af585313e6529b4d5611f7f0f5d06df4e54e011b3d1243d3210d747",
+    "crc32": "ef2745b9"
+  },
+  "windows-changed-units/build/check_chart_OnlineAisOverlay.dir/Release/check_ch.24AF2403.tlog/CustomBuild.command.1.tlog": {
+    "bytes": 531,
+    "sha256": "ff9cd6b27c7fb69216f5942b52e2e7b212f697d9d63d8aec6d0a386b7b02bff1",
+    "crc32": "150ee96c"
+  },
+  "windows-changed-units/build/check_chart_OnlineAisOverlay.dir/Release/check_ch.24AF2403.tlog/CustomBuild.read.1.tlog": {
+    "bytes": 8023,
+    "sha256": "323f1e962719f278d5f962fd495e548542b4df1d0eab13e6280d0b72b8e08f31",
+    "crc32": "28863ee3"
+  },
+  "windows-changed-units/build/check_chart_OnlineAisOverlay.dir/Release/check_ch.24AF2403.tlog/CustomBuild.write.1.tlog": {
+    "bytes": 165,
+    "sha256": "10ca61b3af5bad34d96b51d8ba7e4038783733f6042712a2d5b662bcfefd0a17",
+    "crc32": "a4cd95f8"
+  },
+  "windows-changed-units/build/check_chart_OnlineAisOverlay.dir/Release/check_ch.24AF2403.tlog/Lib-link.read.1.tlog": {
+    "bytes": 590,
+    "sha256": "f0ab286a1a9d23d70a65410e58b963b58654cfc889267ae5c918c387e31b6b07",
+    "crc32": "2b78fa6e"
+  },
+  "windows-changed-units/build/check_chart_OnlineAisOverlay.dir/Release/check_ch.24AF2403.tlog/Lib-link.write.1.tlog": {
+    "bytes": 552,
+    "sha256": "88b1d19bbfb4fee971d7cd6fc015510bf36065e3ebbb7f1e4ce05417f42e2686",
+    "crc32": "7619218f"
+  },
+  "windows-changed-units/build/check_chart_OnlineAisOverlay.dir/Release/check_ch.24AF2403.tlog/Lib.command.1.tlog": {
+    "bytes": 624,
+    "sha256": "1841e7c79fb515092a05bc1a13547cca272976149e657df536bf803b3d3f1a95",
+    "crc32": "e3859cad"
+  },
+  "windows-changed-units/build/check_chart_OnlineAisOverlay.dir/Release/check_chart_OnlineAisOverlay.lib": {
+    "bytes": 118626,
+    "sha256": "2368df09683e13b17f31ab3ba6f0dbcd98ba8f128c5a7cce0ca922e8f912b9be",
+    "crc32": "5c68dc7b"
+  },
+  "windows-changed-units/build/check_chart_OnlineAisOverlay.dir/Release/check_chart_OnlineAisOverlay.lib.recipe": {
+    "bytes": 329,
+    "sha256": "f2f087ec925ea5262fb2557605456ae3ce9cf623db28fe729e808a129df9b13f",
+    "crc32": "51a1e10f"
+  },
+  "windows-changed-units/build/check_chart_OnlineAisOverlay.dir/Release/check_chart_OnlineAisOverlay.vcxproj.FileListAbsolute.txt": {
+    "bytes": 143,
+    "sha256": "be217cdcfa5dc23ce9770545a6b9eb3c4b3412d4eac418cf30db1fc0687bf653",
+    "crc32": "13eac20e"
+  },
+  "windows-changed-units/build/check_chart_OnlineAisOverlay.dir/Release/OnlineAisOverlay.obj": {
+    "bytes": 100686,
+    "sha256": "51407bc1aa6d46cb37821b7363bcb83473d49d14f8f5329f63d3c6991b99d3ac",
+    "crc32": "7e6dae0a"
+  },
+  "windows-changed-units/build/check_chart_OnlineAisOverlay.vcxproj": {
+    "bytes": 95282,
+    "sha256": "49c70794547581deaafabceecc80afb31408b54d2856182faacc03e39cb11ecd",
+    "crc32": "4d15fc04"
+  },
+  "windows-changed-units/build/check_chart_OnlineAisOverlay.vcxproj.filters": {
+    "bytes": 617,
+    "sha256": "cca619aea2096fde1aff332d18975b851a7d73d9b04cee14de2267b6072c9068",
+    "crc32": "56fa35ef"
+  },
+  "windows-changed-units/build/check_chart_piano.dir/Release/check_ch.5094723E.tlog/check_chart_piano.lastbuildstate": {
+    "bytes": 201,
+    "sha256": "6c180073806c99979c3d91ed2d31738774d8030934fb95e9b16ef7dd16109fb3",
+    "crc32": "b63fbfe0"
+  },
+  "windows-changed-units/build/check_chart_piano.dir/Release/check_ch.5094723E.tlog/CL.command.1.tlog": {
+    "bytes": 9306,
+    "sha256": "d661c95ea7af1e5bce7a0ed581cab8c41e8b6279f3d0e7c38f03a0309756ce46",
+    "crc32": "935f591b"
+  },
+  "windows-changed-units/build/check_chart_piano.dir/Release/check_ch.5094723E.tlog/Cl.items.tlog": {
+    "bytes": 177,
+    "sha256": "2c7e04ef32a1a948f624c6ad47bf94b3a910de9e7023978767da65f361cf42a2",
+    "crc32": "261b5638"
+  },
+  "windows-changed-units/build/check_chart_piano.dir/Release/check_ch.5094723E.tlog/CL.read.1.tlog": {
+    "bytes": 117068,
+    "sha256": "42f47efe89beae17573347eb5173a311e2d440f046a2c5b3c25e22ee85dbb090",
+    "crc32": "6a70555c"
+  },
+  "windows-changed-units/build/check_chart_piano.dir/Release/check_ch.5094723E.tlog/CL.write.1.tlog": {
+    "bytes": 360,
+    "sha256": "079a7e871a1b91ae4528579476b8b30cc898eaa649f31a87f7a1bad29faeeb43",
+    "crc32": "05db04b9"
+  },
+  "windows-changed-units/build/check_chart_piano.dir/Release/check_ch.5094723E.tlog/CustomBuild.read.1.tlog": {
+    "bytes": 8023,
+    "sha256": "323f1e962719f278d5f962fd495e548542b4df1d0eab13e6280d0b72b8e08f31",
+    "crc32": "28863ee3"
+  },
+  "windows-changed-units/build/check_chart_piano.dir/Release/check_ch.5094723E.tlog/CustomBuild.command.1.tlog": {
+    "bytes": 531,
+    "sha256": "ff9cd6b27c7fb69216f5942b52e2e7b212f697d9d63d8aec6d0a386b7b02bff1",
+    "crc32": "150ee96c"
+  },
+  "windows-changed-units/build/check_chart_piano.dir/Release/check_ch.5094723E.tlog/CustomBuild.write.1.tlog": {
+    "bytes": 165,
+    "sha256": "10ca61b3af5bad34d96b51d8ba7e4038783733f6042712a2d5b662bcfefd0a17",
+    "crc32": "a4cd95f8"
+  },
+  "windows-changed-units/build/check_chart_piano.dir/Release/check_ch.5094723E.tlog/Lib-link.read.1.tlog": {
+    "bytes": 502,
+    "sha256": "86fae1c5f3e23e2e2d0fa4dd4cc424090ac41ee65b37200f13d9cf1f35e73dfc",
+    "crc32": "4773be56"
+  },
+  "windows-changed-units/build/check_chart_piano.dir/Release/check_ch.5094723E.tlog/Lib-link.write.1.tlog": {
+    "bytes": 464,
+    "sha256": "a8d99246a4f8450760536cc84ef6300b519206f623b0e9fdb4c780c950a8ca5a",
+    "crc32": "4abf04b1"
+  },
+  "windows-changed-units/build/check_chart_piano.dir/Release/check_ch.5094723E.tlog/Lib.command.1.tlog": {
+    "bytes": 492,
+    "sha256": "f98a97a4ddd49f08dd2922e401872cbdd01d0b8607a5a103f73ea0765bf25342",
+    "crc32": "347de464"
+  },
+  "windows-changed-units/build/check_chart_piano.dir/Release/check_chart_piano.lib": {
+    "bytes": 350618,
+    "sha256": "bdbfc138ab795b2b7c2e4ea74439d6688c1b292e5db74bad7f70f692c734d50f",
+    "crc32": "4fddb634"
+  },
+  "windows-changed-units/build/check_chart_piano.dir/Release/check_chart_piano.lib.recipe": {
+    "bytes": 329,
+    "sha256": "f2f087ec925ea5262fb2557605456ae3ce9cf623db28fe729e808a129df9b13f",
+    "crc32": "51a1e10f"
+  },
+  "windows-changed-units/build/check_chart_piano.dir/Release/check_chart_piano.vcxproj.FileListAbsolute.txt": {
+    "bytes": 121,
+    "sha256": "834d802d0865cd5acf098705b236a523bb028a45c238e96d5b0f74076e479616",
+    "crc32": "2dcd0442"
+  },
+  "windows-changed-units/build/check_chart_piano.dir/Release/piano.obj": {
+    "bytes": 304230,
+    "sha256": "8536199dda8992388f2001c1e6fcdfb672a0df4d20cd6fdf03ec99ad8252a027",
+    "crc32": "ec510240"
+  },
+  "windows-changed-units/build/check_chart_piano.vcxproj": {
+    "bytes": 95145,
+    "sha256": "dd0077743966e26cb93dae973ed85632393c1852b149f32b11893ef63ba98804",
+    "crc32": "e860b3ff"
+  },
+  "windows-changed-units/build/check_chart_piano.vcxproj.filters": {
+    "bytes": 623,
+    "sha256": "3335ae8225fc3429cdbc598f48570c06b09da1e8c92997486288467aff84deb0",
+    "crc32": "e074f587"
+  },
+  "windows-changed-units/build/check_chart_route_gui.dir/Release/check_ch.E8D7349D.tlog/check_chart_route_gui.lastbuildstate": {
+    "bytes": 201,
+    "sha256": "6c180073806c99979c3d91ed2d31738774d8030934fb95e9b16ef7dd16109fb3",
+    "crc32": "b63fbfe0"
+  },
+  "windows-changed-units/build/check_chart_route_gui.dir/Release/check_ch.E8D7349D.tlog/CL.command.1.tlog": {
+    "bytes": 9346,
+    "sha256": "2fb9d001e5d199a8e2701909dc5a7f019b271a2ac415e4b8c2a75124ad8eb489",
+    "crc32": "a12135b7"
+  },
+  "windows-changed-units/build/check_chart_route_gui.dir/Release/check_ch.E8D7349D.tlog/Cl.items.tlog": {
+    "bytes": 189,
+    "sha256": "b2745145e98c483418ddb0086d2228e9825fa0c781e9affbd9d6927427ee4ebf",
+    "crc32": "5830011a"
+  },
+  "windows-changed-units/build/check_chart_route_gui.dir/Release/check_ch.E8D7349D.tlog/CL.read.1.tlog": {
+    "bytes": 120250,
+    "sha256": "e086fa894baa593d4bae2042e8ae0a663537c349337784ce238e801c827b7c1f",
+    "crc32": "1e4fca0c"
+  },
+  "windows-changed-units/build/check_chart_route_gui.dir/Release/check_ch.E8D7349D.tlog/CL.write.1.tlog": {
+    "bytes": 384,
+    "sha256": "2f9ade2fd7f0f8768579b1bf3d22c89dbae91c732aeb07ba7ae015cab196f07a",
+    "crc32": "8c249125"
+  },
+  "windows-changed-units/build/check_chart_route_gui.dir/Release/check_ch.E8D7349D.tlog/CustomBuild.command.1.tlog": {
+    "bytes": 531,
+    "sha256": "ff9cd6b27c7fb69216f5942b52e2e7b212f697d9d63d8aec6d0a386b7b02bff1",
+    "crc32": "150ee96c"
+  },
+  "windows-changed-units/build/check_chart_route_gui.dir/Release/check_ch.E8D7349D.tlog/CustomBuild.read.1.tlog": {
+    "bytes": 8023,
+    "sha256": "323f1e962719f278d5f962fd495e548542b4df1d0eab13e6280d0b72b8e08f31",
+    "crc32": "28863ee3"
+  },
+  "windows-changed-units/build/check_chart_route_gui.dir/Release/check_ch.E8D7349D.tlog/CustomBuild.write.1.tlog": {
+    "bytes": 165,
+    "sha256": "10ca61b3af5bad34d96b51d8ba7e4038783733f6042712a2d5b662bcfefd0a17",
+    "crc32": "a4cd95f8"
+  },
+  "windows-changed-units/build/check_chart_route_gui.dir/Release/check_ch.E8D7349D.tlog/Lib-link.read.1.tlog": {
+    "bytes": 534,
+    "sha256": "f4609b15f86e64e88a77724a92325b7a794db541cffebef0077fc223dfb480f1",
+    "crc32": "0a9bdd2b"
+  },
+  "windows-changed-units/build/check_chart_route_gui.dir/Release/check_ch.E8D7349D.tlog/Lib-link.write.1.tlog": {
+    "bytes": 496,
+    "sha256": "de3fbcd85e8be001088010faef2d87f88edc8c8727ad04863afa2067f64e279e",
+    "crc32": "75ac3fd9"
+  },
+  "windows-changed-units/build/check_chart_route_gui.dir/Release/check_ch.E8D7349D.tlog/Lib.command.1.tlog": {
+    "bytes": 540,
+    "sha256": "b0caf1ed1a3e43dcf78b5df5e7fa996521cbece1662ec87bed006d001bac4c01",
+    "crc32": "416a673d"
+  },
+  "windows-changed-units/build/check_chart_route_gui.dir/Release/check_chart_route_gui.lib": {
+    "bytes": 395146,
+    "sha256": "726d9d9ccf2c6674d6d704e3839871fdff06a65e92cf78d12163dde7b44a4917",
+    "crc32": "ab25d34d"
+  },
+  "windows-changed-units/build/check_chart_route_gui.dir/Release/check_chart_route_gui.lib.recipe": {
+    "bytes": 329,
+    "sha256": "f2f087ec925ea5262fb2557605456ae3ce9cf623db28fe729e808a129df9b13f",
+    "crc32": "51a1e10f"
+  },
+  "windows-changed-units/build/check_chart_route_gui.dir/Release/check_chart_route_gui.vcxproj.FileListAbsolute.txt": {
+    "bytes": 129,
+    "sha256": "c6173d0ff8f98de42fba3f1ef1327230140c5871a433f20498bd2c6d3de1279b",
+    "crc32": "b5f02742"
+  },
+  "windows-changed-units/build/check_chart_route_gui.dir/Release/route_gui.obj": {
+    "bytes": 333343,
+    "sha256": "8ce313096d93cc5e60cad618018e34ec41ea994f752ec48a3d52031033befada",
+    "crc32": "76bb0432"
+  },
+  "windows-changed-units/build/check_chart_route_gui.vcxproj": {
+    "bytes": 95201,
+    "sha256": "272c43738b5ba9a7ca14853f2b373b472c3fb8bbe87c53ad41b536c378494c3a",
+    "crc32": "c01a1027"
+  },
+  "windows-changed-units/build/check_chart_route_gui.vcxproj.filters": {
+    "bytes": 627,
+    "sha256": "559a45cbf5c42b3729c4b8a35236eeb63e637a350f6238aaecacfd4be7584ad4",
+    "crc32": "c9bd7720"
+  },
+  "windows-changed-units/build/check_chart_route_point_gui.dir/Release/check_ch.C062F7D6.tlog/check_chart_route_point_gui.lastbuildstate": {
+    "bytes": 201,
+    "sha256": "6c180073806c99979c3d91ed2d31738774d8030934fb95e9b16ef7dd16109fb3",
+    "crc32": "b63fbfe0"
+  },
+  "windows-changed-units/build/check_chart_route_point_gui.dir/Release/check_ch.C062F7D6.tlog/CL.command.1.tlog": {
+    "bytes": 9406,
+    "sha256": "e5ebc6f4ec480caa7e9597882aa05c76c04c721ea8afae91d41cb2cf18371523",
+    "crc32": "dbcf20de"
+  },
+  "windows-changed-units/build/check_chart_route_point_gui.dir/Release/check_ch.C062F7D6.tlog/Cl.items.tlog": {
+    "bytes": 207,
+    "sha256": "60c44778b83c3d4dbae136aa89f2988a2bbb6548775ff4ce2c6e108eebce433e",
+    "crc32": "05b6bc81"
+  },
+  "windows-changed-units/build/check_chart_route_point_gui.dir/Release/check_ch.C062F7D6.tlog/CL.read.1.tlog": {
+    "bytes": 124688,
+    "sha256": "406e6db29081af841d091b5cd33f5f7ad51654b94bf330b5f1ca8f08d2e5e0fa",
+    "crc32": "98629640"
+  },
+  "windows-changed-units/build/check_chart_route_point_gui.dir/Release/check_ch.C062F7D6.tlog/CL.write.1.tlog": {
+    "bytes": 420,
+    "sha256": "87092deccd54355b9f10f11f4151fbabe18e200b9a1a6add4ecc58ea309b0814",
+    "crc32": "71b7aa93"
+  },
+  "windows-changed-units/build/check_chart_route_point_gui.dir/Release/check_ch.C062F7D6.tlog/CustomBuild.command.1.tlog": {
+    "bytes": 531,
+    "sha256": "ff9cd6b27c7fb69216f5942b52e2e7b212f697d9d63d8aec6d0a386b7b02bff1",
+    "crc32": "150ee96c"
+  },
+  "windows-changed-units/build/check_chart_route_point_gui.dir/Release/check_ch.C062F7D6.tlog/CustomBuild.read.1.tlog": {
+    "bytes": 8023,
+    "sha256": "323f1e962719f278d5f962fd495e548542b4df1d0eab13e6280d0b72b8e08f31",
+    "crc32": "28863ee3"
+  },
+  "windows-changed-units/build/check_chart_route_point_gui.dir/Release/check_ch.C062F7D6.tlog/CustomBuild.write.1.tlog": {
+    "bytes": 165,
+    "sha256": "10ca61b3af5bad34d96b51d8ba7e4038783733f6042712a2d5b662bcfefd0a17",
+    "crc32": "a4cd95f8"
+  },
+  "windows-changed-units/build/check_chart_route_point_gui.dir/Release/check_ch.C062F7D6.tlog/Lib-link.read.1.tlog": {
+    "bytes": 582,
+    "sha256": "b06ddd27f979327c4730e20087744bdcfb5e77e4304a9a4b3abb1a96eb4de1a3",
+    "crc32": "2e8e7a44"
+  },
+  "windows-changed-units/build/check_chart_route_point_gui.dir/Release/check_ch.C062F7D6.tlog/Lib-link.write.1.tlog": {
+    "bytes": 544,
+    "sha256": "206b4a9ec68ce0455332a534378948e056ec4331daf4ceab6194125fd93d0f9b",
+    "crc32": "89cfc308"
+  },
+  "windows-changed-units/build/check_chart_route_point_gui.dir/Release/check_ch.C062F7D6.tlog/Lib.command.1.tlog": {
+    "bytes": 612,
+    "sha256": "a7ce65fd78dc3a08e2980f381abbccca726782cf2e4462ca3fd888a2725b5db3",
+    "crc32": "e2402ac2"
+  },
+  "windows-changed-units/build/check_chart_route_point_gui.dir/Release/check_chart_route_point_gui.lib": {
+    "bytes": 390622,
+    "sha256": "ad414b11ddb94a63130f5e123ebc3079e5efff0e4c8e77e57d38770137921743",
+    "crc32": "a9d3a525"
+  },
+  "windows-changed-units/build/check_chart_route_point_gui.dir/Release/check_chart_route_point_gui.lib.recipe": {
+    "bytes": 329,
+    "sha256": "f2f087ec925ea5262fb2557605456ae3ce9cf623db28fe729e808a129df9b13f",
+    "crc32": "51a1e10f"
+  },
+  "windows-changed-units/build/check_chart_route_point_gui.dir/Release/check_chart_route_point_gui.vcxproj.FileListAbsolute.txt": {
+    "bytes": 141,
+    "sha256": "89f44aff6bc5bc3a1248be37f2108f34e4bba108523d36900dc3b7a97875b932",
+    "crc32": "9ea816a6"
+  },
+  "windows-changed-units/build/check_chart_route_point_gui.dir/Release/route_point_gui.obj": {
+    "bytes": 332568,
+    "sha256": "b6b71cf864573c73afdf47ce1722ed695851eabd671ed47119dfc9c65d9c338e",
+    "crc32": "7ef2aebc"
+  },
+  "windows-changed-units/build/check_chart_route_point_gui.vcxproj": {
+    "bytes": 95285,
+    "sha256": "67a901dbc6212f6003ac6ee04e93e72e2389a832e7eaa2a2e9381e6a613e1e72",
+    "crc32": "db3f0d14"
+  },
+  "windows-changed-units/build/check_chart_route_point_gui.vcxproj.filters": {
+    "bytes": 633,
+    "sha256": "4e36455292c2237478f421438cddf552d8d8822c48d8c4ece89ecaee9bd24518",
+    "crc32": "07dcd205"
+  },
+  "windows-changed-units/build/check_chart_s52plib.dir/Release/check_ch.EFC4DF6F.tlog/check_chart_s52plib.lastbuildstate": {
+    "bytes": 201,
+    "sha256": "6c180073806c99979c3d91ed2d31738774d8030934fb95e9b16ef7dd16109fb3",
+    "crc32": "b63fbfe0"
+  },
+  "windows-changed-units/build/check_chart_s52plib.dir/Release/check_ch.EFC4DF6F.tlog/CL.command.1.tlog": {
+    "bytes": 9362,
+    "sha256": "f3e146a452ae3a59c61d97bf39dfd9ce9195a60bb66dc36ebd141124d3164960",
+    "crc32": "24a07039"
+  },
+  "windows-changed-units/build/check_chart_s52plib.dir/Release/check_ch.EFC4DF6F.tlog/Cl.items.tlog": {
+    "bytes": 192,
+    "sha256": "525a70ac4abe9a76457634949f8c74f267a913dd2bb6c35e2f8f579aa9fdf5b2",
+    "crc32": "1dc854dd"
+  },
+  "windows-changed-units/build/check_chart_s52plib.dir/Release/check_ch.EFC4DF6F.tlog/CL.read.1.tlog": {
+    "bytes": 95760,
+    "sha256": "ec3603ec7c41160f061601d224c9d896d42d3d2b21fe72fb55dd0655379b7ee4",
+    "crc32": "bec7dc3f"
+  },
+  "windows-changed-units/build/check_chart_s52plib.dir/Release/check_ch.EFC4DF6F.tlog/CL.write.1.tlog": {
+    "bytes": 390,
+    "sha256": "c149deddbd814001e9a4aabfc6ec7494b0abd1f22955f37817528b2273d13bb5",
+    "crc32": "06762319"
+  },
+  "windows-changed-units/build/check_chart_s52plib.dir/Release/check_ch.EFC4DF6F.tlog/CustomBuild.command.1.tlog": {
+    "bytes": 531,
+    "sha256": "ff9cd6b27c7fb69216f5942b52e2e7b212f697d9d63d8aec6d0a386b7b02bff1",
+    "crc32": "150ee96c"
+  },
+  "windows-changed-units/build/check_chart_s52plib.dir/Release/check_ch.EFC4DF6F.tlog/CustomBuild.read.1.tlog": {
+    "bytes": 8023,
+    "sha256": "323f1e962719f278d5f962fd495e548542b4df1d0eab13e6280d0b72b8e08f31",
+    "crc32": "28863ee3"
+  },
+  "windows-changed-units/build/check_chart_s52plib.dir/Release/check_ch.EFC4DF6F.tlog/CustomBuild.write.1.tlog": {
+    "bytes": 165,
+    "sha256": "10ca61b3af5bad34d96b51d8ba7e4038783733f6042712a2d5b662bcfefd0a17",
+    "crc32": "a4cd95f8"
+  },
+  "windows-changed-units/build/check_chart_s52plib.dir/Release/check_ch.EFC4DF6F.tlog/Lib-link.read.1.tlog": {
+    "bytes": 518,
+    "sha256": "57171425ef194a8a1689308687759c17ac468c19eb70eec77b7af8d5f5ddb9ce",
+    "crc32": "cdbdec3a"
+  },
+  "windows-changed-units/build/check_chart_s52plib.dir/Release/check_ch.EFC4DF6F.tlog/Lib-link.write.1.tlog": {
+    "bytes": 480,
+    "sha256": "292dbc1779f55041fb7b6731569fec692066acd94b40d352b19970184df545d7",
+    "crc32": "bd797bdf"
+  },
+  "windows-changed-units/build/check_chart_s52plib.dir/Release/check_ch.EFC4DF6F.tlog/Lib.command.1.tlog": {
+    "bytes": 516,
+    "sha256": "481884130205f9b771a36da7738a0f83685c93d5e128441d9597f8ad0a1165c5",
+    "crc32": "6ad949a7"
+  },
+  "windows-changed-units/build/check_chart_s52plib.dir/Release/check_chart_s52plib.lib": {
+    "bytes": 749304,
+    "sha256": "bbce8d353092e780f4d1ef43e985687efe11e841e7e96c90b23d0d49b69a682a",
+    "crc32": "fd24f5c2"
+  },
+  "windows-changed-units/build/check_chart_s52plib.dir/Release/check_chart_s52plib.lib.recipe": {
+    "bytes": 329,
+    "sha256": "f2f087ec925ea5262fb2557605456ae3ce9cf623db28fe729e808a129df9b13f",
+    "crc32": "51a1e10f"
+  },
+  "windows-changed-units/build/check_chart_s52plib.dir/Release/check_chart_s52plib.vcxproj.FileListAbsolute.txt": {
+    "bytes": 125,
+    "sha256": "081244aaa3d1a348f45ab0eee34e74400f71863d85d0cc858077d9c901a30266",
+    "crc32": "6f2925bf"
+  },
+  "windows-changed-units/build/check_chart_s52plib.dir/Release/s52plib.obj": {
+    "bytes": 642180,
+    "sha256": "5db72d62f1ee57966616894458ea57f96c5c51e8eeb927b61be2efcadbdaa736",
+    "crc32": "38171ebc"
+  },
+  "windows-changed-units/build/check_chart_s52plib.vcxproj": {
+    "bytes": 95182,
+    "sha256": "de2372fcc382f762d106acbfc724bc219e0d2f56c801a83e441d77f90f499f3d",
+    "crc32": "7646f336"
+  },
+  "windows-changed-units/build/check_chart_s52plib.vcxproj.filters": {
+    "bytes": 634,
+    "sha256": "c054d044fedf10abb29262d4afce19d01ccb4253a4b18b8d5a130a246ab6c317",
+    "crc32": "d9614f80"
+  },
+  "windows-changed-units/build/check_chart_waypointman_gui.dir/Release/check_ch.B271E022.tlog/check_chart_waypointman_gui.lastbuildstate": {
+    "bytes": 201,
+    "sha256": "6c180073806c99979c3d91ed2d31738774d8030934fb95e9b16ef7dd16109fb3",
+    "crc32": "b63fbfe0"
+  },
+  "windows-changed-units/build/check_chart_waypointman_gui.dir/Release/check_ch.B271E022.tlog/CL.command.1.tlog": {
+    "bytes": 9406,
+    "sha256": "9551559f0ef8f39b27f188e17a049aa05246e314a62b29da5b633c7b7aac4766",
+    "crc32": "af107edf"
+  },
+  "windows-changed-units/build/check_chart_waypointman_gui.dir/Release/check_ch.B271E022.tlog/Cl.items.tlog": {
+    "bytes": 207,
+    "sha256": "468a5f1372cbf439327e114f2b66db7e0122036a3fd8c919a8f6f4315cde104c",
+    "crc32": "b4cf84d1"
+  },
+  "windows-changed-units/build/check_chart_waypointman_gui.dir/Release/check_ch.B271E022.tlog/CL.read.1.tlog": {
+    "bytes": 106098,
+    "sha256": "33d2210ca98f13b75f3f8e3b845951b688b6f3da3386003ec11b8aa1c6cb8bda",
+    "crc32": "29b51f03"
+  },
+  "windows-changed-units/build/check_chart_waypointman_gui.dir/Release/check_ch.B271E022.tlog/CL.write.1.tlog": {
+    "bytes": 420,
+    "sha256": "dda43140dccdb36ed3dabc119790fd416f4e56b1dc0afefaec4d2da2be3d09fb",
+    "crc32": "8d1d1a03"
+  },
+  "windows-changed-units/build/check_chart_waypointman_gui.dir/Release/check_ch.B271E022.tlog/CustomBuild.command.1.tlog": {
+    "bytes": 531,
+    "sha256": "ff9cd6b27c7fb69216f5942b52e2e7b212f697d9d63d8aec6d0a386b7b02bff1",
+    "crc32": "150ee96c"
+  },
+  "windows-changed-units/build/check_chart_waypointman_gui.dir/Release/check_ch.B271E022.tlog/CustomBuild.read.1.tlog": {
+    "bytes": 8023,
+    "sha256": "323f1e962719f278d5f962fd495e548542b4df1d0eab13e6280d0b72b8e08f31",
+    "crc32": "28863ee3"
+  },
+  "windows-changed-units/build/check_chart_waypointman_gui.dir/Release/check_ch.B271E022.tlog/Lib-link.read.1.tlog": {
+    "bytes": 582,
+    "sha256": "acc5a6756e963565305a49981abafc1936b220041833b6bb0ae116afc4a1df89",
+    "crc32": "50054a47"
+  },
+  "windows-changed-units/build/check_chart_waypointman_gui.dir/Release/check_ch.B271E022.tlog/CustomBuild.write.1.tlog": {
+    "bytes": 165,
+    "sha256": "10ca61b3af5bad34d96b51d8ba7e4038783733f6042712a2d5b662bcfefd0a17",
+    "crc32": "a4cd95f8"
+  },
+  "windows-changed-units/build/check_chart_waypointman_gui.dir/Release/check_ch.B271E022.tlog/Lib-link.write.1.tlog": {
+    "bytes": 544,
+    "sha256": "b094614f39484d7dcc60318229318f991422cb669205b3b573651bd114d3c83e",
+    "crc32": "e00e5526"
+  },
+  "windows-changed-units/build/check_chart_waypointman_gui.dir/Release/check_ch.B271E022.tlog/Lib.command.1.tlog": {
+    "bytes": 612,
+    "sha256": "aa3c41da029ebc9900f5ddc630c974b7c18b6eaeb8e323f4de3852388d8e9bcb",
+    "crc32": "4f77585b"
+  },
+  "windows-changed-units/build/check_chart_waypointman_gui.dir/Release/check_chart_waypointman_gui.lib": {
+    "bytes": 453056,
+    "sha256": "49187cff7041719832a856c77913c7e1c4a123600e32f7993b5b2fd5b854a8e0",
+    "crc32": "1ae316bd"
+  },
+  "windows-changed-units/build/check_chart_waypointman_gui.dir/Release/check_chart_waypointman_gui.lib.recipe": {
+    "bytes": 329,
+    "sha256": "f2f087ec925ea5262fb2557605456ae3ce9cf623db28fe729e808a129df9b13f",
+    "crc32": "51a1e10f"
+  },
+  "windows-changed-units/build/check_chart_waypointman_gui.dir/Release/check_chart_waypointman_gui.vcxproj.FileListAbsolute.txt": {
+    "bytes": 141,
+    "sha256": "079090949ea82645764753aaadcb47a7b107c28bf086c8d1900daa1cb4e54f85",
+    "crc32": "5c5ebfb9"
+  },
+  "windows-changed-units/build/check_chart_waypointman_gui.dir/Release/waypointman_gui.obj": {
+    "bytes": 380321,
+    "sha256": "a5cd285e86dcd79520111e62e33f719f241f34c36eb18a5a9c36db414674ff27",
+    "crc32": "3bdbd950"
+  },
+  "windows-changed-units/build/check_chart_waypointman_gui.vcxproj": {
+    "bytes": 95285,
+    "sha256": "cc196f099fa0adfe8c14df0eb698dda2b15852fa1619e8e671319723dcfc8a9c",
+    "crc32": "01f7d0c2"
+  },
+  "windows-changed-units/build/check_chart_waypointman_gui.vcxproj.filters": {
+    "bytes": 633,
+    "sha256": "47f588a34b85733d20229b3b73d4b3de893d3c6f960f744e8544fba19ed2360e",
+    "crc32": "7f51b8f9"
+  },
+  "windows-changed-units/build/CMakeFiles/09833ffb5cf6596898b23f1cb241a556/generate.stamp.rule": {
+    "bytes": 24,
+    "sha256": "6d2663216bb5708992dad2784a833f449113afd00fd431274ca956fb2530d391",
+    "crc32": "49aace5a"
+  },
+  "windows-changed-units/build/CMakeCache.txt": {
+    "bytes": 25027,
+    "sha256": "aece9092c2794be34f8c1cdc5e52b80be9ecc8875f254dab0542447190680b1d",
+    "crc32": "c75431b1"
+  },
+  "windows-changed-units/build/CMakeFiles/3.31.6/CMakeDetermineCompilerABI_CXX.bin": {
+    "bytes": 38912,
+    "sha256": "6b362634a61c767a85ed8d4abc20b9cc64dcbc8639fa889bc3cbb48eb08574d8",
+    "crc32": "d0cca550"
+  },
+  "windows-changed-units/build/CMakeFiles/3.31.6/CMakeCXXCompiler.cmake": {
+    "bytes": 6407,
+    "sha256": "227bcfccb68e07faa7313503c3cd4e85f199b075c08358606960459b3128c4a6",
+    "crc32": "e2444df8"
+  },
+  "windows-changed-units/build/CMakeFiles/3.31.6/CMakeSystem.cmake": {
+    "bytes": 395,
+    "sha256": "e531f61d9969fec504e790fb974d3c87d36e6cc243a6d2c58b3fcd3c5b5038a0",
+    "crc32": "16e12b81"
+  },
+  "windows-changed-units/build/CMakeFiles/3.31.6/CMakeRCCompiler.cmake": {
+    "bytes": 212,
+    "sha256": "85223e3627ab66035651f1bc87d7ab01c67bccd4c1132ea0ebcf6fd87de0c7d1",
+    "crc32": "a706fa52"
+  },
+  "windows-changed-units/build/CMakeFiles/3.31.6/CompilerIdCXX/CompilerIdCXX.exe": {
+    "bytes": 12800,
+    "sha256": "0784beff46c962c054b530df36c565c091b4883b95fbdc065101938bf777622a",
+    "crc32": "4ef830fd"
+  },
+  "windows-changed-units/build/CMakeFiles/3.31.6/CompilerIdCXX/CMakeCXXCompilerId.cpp": {
+    "bytes": 29376,
+    "sha256": "889dac6c9713176b009c4e2662f38728ec305d6f8fa8d308392f53ff7237fc1c",
+    "crc32": "3f8c9d5e"
+  },
+  "windows-changed-units/build/CMakeFiles/3.31.6/CompilerIdCXX/Debug/CMakeCXXCompilerId.obj": {
+    "bytes": 1995,
+    "sha256": "b641836a0cd75f6ab750450e8b59e458bc3a52da42a09c88fded374b13666a0e",
+    "crc32": "760d039f"
+  },
+  "windows-changed-units/build/CMakeFiles/3.31.6/CompilerIdCXX/CompilerIdCXX.vcxproj": {
+    "bytes": 2820,
+    "sha256": "20bb9b2175d81890fe6f79923bf53576b09a6f883bb7af8abfd1e50c0306998c",
+    "crc32": "cc83b28f"
+  },
+  "windows-changed-units/build/CMakeFiles/3.31.6/CompilerIdCXX/Debug/CompilerIdCXX.tlog/CL.command.1.tlog": {
+    "bytes": 902,
+    "sha256": "79c8ee2be91b2bbd15d1a95731081e393a22627cc8755b06198be6e90b6fa537",
+    "crc32": "742dea5c"
+  },
+  "windows-changed-units/build/CMakeFiles/3.31.6/CompilerIdCXX/Debug/CompilerIdCXX.exe.recipe": {
+    "bytes": 360,
+    "sha256": "00467bf83e6216a9a50c6dad9baa9fb809cc4d27f0e2f97c78d24a87ee443d65",
+    "crc32": "ad847572"
+  },
+  "windows-changed-units/build/CMakeFiles/3.31.6/CompilerIdCXX/Debug/CompilerIdCXX.tlog/Cl.items.tlog": {
+    "bytes": 253,
+    "sha256": "32200f48d40c72aefaf0de85be1a8776eb12323611add6194a07998b375cb927",
+    "crc32": "cd7da36d"
+  },
+  "windows-changed-units/build/CMakeFiles/3.31.6/CompilerIdCXX/Debug/CompilerIdCXX.tlog/CL.read.1.tlog": {
+    "bytes": 642,
+    "sha256": "8132a7c4a1b0336f1fe0ed3dd3efa990dd7dc301218e9532655948880ed5356f",
+    "crc32": "9987fc93"
+  },
+  "windows-changed-units/build/CMakeFiles/3.31.6/CompilerIdCXX/Debug/CompilerIdCXX.tlog/CL.write.1.tlog": {
+    "bytes": 512,
+    "sha256": "30ab3e92e596cb8890ec9316da1b9053e2732adf3ef1d98ca9ef32fb839c4ff1",
+    "crc32": "ed451f9b"
+  },
+  "windows-changed-units/build/CMakeFiles/3.31.6/CompilerIdCXX/Debug/CompilerIdCXX.tlog/CompilerIdCXX.lastbuildstate": {
+    "bytes": 231,
+    "sha256": "bdb71b4fc8e2dc7f9dcb52a27a0a6a5a326d9608b9054ae1802b8cadc7b52013",
+    "crc32": "eac9eec9"
+  },
+  "windows-changed-units/build/CMakeFiles/3.31.6/CompilerIdCXX/Debug/CompilerIdCXX.tlog/link.command.1.tlog": {
+    "bytes": 1120,
+    "sha256": "e8a37cc90f7c2d155d187ba568106aace5235296f9cb02214b142eb8fad9123f",
+    "crc32": "9dd3df06"
+  },
+  "windows-changed-units/build/CMakeFiles/3.31.6/CompilerIdCXX/Debug/CompilerIdCXX.tlog/link.read.1.tlog": {
+    "bytes": 3510,
+    "sha256": "820fa5a5efd86d002372979d1a08ff550fb9f4497f8154ccd7746acfb80a830c",
+    "crc32": "c9ea634e"
+  },
+  "windows-changed-units/build/CMakeFiles/3.31.6/CompilerIdCXX/Debug/CompilerIdCXX.tlog/link.secondary.1.tlog": {
+    "bytes": 131,
+    "sha256": "2d5c061d9835ca522c345fdbd55ce3ad068a715f5743ff592af079013c0b427f",
+    "crc32": "cd47cfc0"
+  },
+  "windows-changed-units/build/CMakeFiles/3.31.6/CompilerIdCXX/Debug/CompilerIdCXX.tlog/link.write.1.tlog": {
+    "bytes": 502,
+    "sha256": "95da7e82bcef8e1dd352fa67e812c551de1b6bdf6b91defa5244da8d919f7341",
+    "crc32": "ed374544"
+  },
+  "windows-changed-units/build/CMakeFiles/3.31.6/VCTargetsPath/Debug/VCTargetsPath.recipe": {
+    "bytes": 348,
+    "sha256": "ac0aaeec4f400a625930646d0425ed339cd07313b196624afdd7e8f606b8ba86",
+    "crc32": "65ba48b4"
+  },
+  "windows-changed-units/build/CMakeFiles/3.31.6/VCTargetsPath.txt": {
+    "bytes": 84,
+    "sha256": "d9dce948965e55780823e45d6df196e309fc0bb0e28974f63897e0293a2f12c8",
+    "crc32": "2e282452"
+  },
+  "windows-changed-units/build/CMakeFiles/3.31.6/VCTargetsPath/Debug/VCTargetsPath.tlog/VCTargetsPath.lastbuildstate": {
+    "bytes": 217,
+    "sha256": "524e6fda5f6bf55157c9183293473a1ac7c3e8c75553c8ba6c305ffd13e2c91b",
+    "crc32": "bb09a3fc"
+  },
+  "windows-changed-units/build/CMakeFiles/3.31.6/VCTargetsPath.vcxproj": {
+    "bytes": 1261,
+    "sha256": "cbbf02bf68c0913e0ad83d3b98b00819b455b7da91f3e239652196fda9774626",
+    "crc32": "0e6e1416"
+  },
+  "windows-changed-units/build/CMakeFiles/CMakeConfigureLog.yaml": {
+    "bytes": 10891,
+    "sha256": "63b68f8c127806fea808c860adaf20091c801e7083bc163568e2ffce32139ac3",
+    "crc32": "b7d96dfa"
+  },
+  "windows-changed-units/build/CMakeFiles/cmake.check_cache": {
+    "bytes": 86,
+    "sha256": "95079b44bcef481d601432c2fd3c654d7fe85b9c8386c355f2874502b47441d7",
+    "crc32": "741e88bf"
+  },
+  "windows-changed-units/build/CMakeFiles/generate.stamp": {
+    "bytes": 55,
+    "sha256": "302f7e9a0c863c04b740065ade01d243c7587d7272fc79fb002870128a9558eb",
+    "crc32": "aa041036"
+  },
+  "windows-changed-units/build/CMakeFiles/generate.stamp.depend": {
+    "bytes": 8078,
+    "sha256": "65d36a50b86bd911458cd2be3ebf5477b980be5b19d7f7a20b4de364762e83ce",
+    "crc32": "82031971"
+  },
+  "windows-changed-units/build/CMakeFiles/generate.stamp.list": {
+    "bytes": 95,
+    "sha256": "12cc12f58ebba4f8ae2cc43d09a995e7184752bfc642fdf9d2c26952fcbe1853",
+    "crc32": "448b7809"
+  },
+  "windows-changed-units/build/CMakeFiles/TargetDirectories.txt": {
+    "bytes": 2064,
+    "sha256": "18778b4d250a69a012a752fc77a6f211ba97bb979e6a0dad96d63f01833e5a3e",
+    "crc32": "58190c46"
+  },
+  "windows-changed-units/build/cmake_install.cmake": {
+    "bytes": 2020,
+    "sha256": "0f4beeb306754ae0f97aad893982d37c02df8ab4bce67e02a1958c2998d73f46",
+    "crc32": "d380025c"
+  },
+  "windows-changed-units/build/include/snd_config.h": {
+    "bytes": 183,
+    "sha256": "a4bc8456d74cddbf3771c42cc56d15993f630e719dfc8e1bc7768b210a162c9b",
+    "crc32": "a7fda841"
+  },
+  "windows-changed-units/build/include/config.h": {
+    "bytes": 1790,
+    "sha256": "5f4d2ce9be0df4dc5bc044ed3cab1182bd5a5c65fe15002f0907984684c2a1a4",
+    "crc32": "0eac6da2"
+  },
+  "windows-changed-units/build/opennav_windows_changed_units.sln": {
+    "bytes": 20696,
+    "sha256": "0bf23731d0c7f50f4d0b4b3f8ce60b9d88da08840449a78d16de24cad69da9cf",
+    "crc32": "c72be388"
+  },
+  "windows-changed-units/build/Win32/Release/ZERO_CHECK/ZERO_CHECK.recipe": {
+    "bytes": 329,
+    "sha256": "f2f087ec925ea5262fb2557605456ae3ce9cf623db28fe729e808a129df9b13f",
+    "crc32": "51a1e10f"
+  },
+  "windows-changed-units/build/Win32/Release/ZERO_CHECK/ZERO_CHECK.tlog/CustomBuild.read.1.tlog": {
+    "bytes": 8156,
+    "sha256": "193d6005ff005b337c1c47059e29db9dba1947600ce7d5fde443baf358284c54",
+    "crc32": "5dea0caf"
+  },
+  "windows-changed-units/build/Win32/Release/ZERO_CHECK/ZERO_CHECK.tlog/CustomBuild.command.1.tlog": {
+    "bytes": 653,
+    "sha256": "ec71548366f10ef3c8f4b7f9512450a8f4bc7d838cb424c169ca313dec54cf8b",
+    "crc32": "2799cd9e"
+  },
+  "windows-changed-units/build/Win32/Release/ZERO_CHECK/ZERO_CHECK.tlog/CustomBuild.write.1.tlog": {
+    "bytes": 229,
+    "sha256": "4e1d6a522bcaef6a5e8d427292037c35bea271eb9e06e94232c1cd7c738b2bf0",
+    "crc32": "4d9ad260"
+  },
+  "windows-changed-units/build/Win32/Release/ZERO_CHECK/ZERO_CHECK.tlog/ZERO_CHECK.lastbuildstate": {
+    "bytes": 201,
+    "sha256": "6c180073806c99979c3d91ed2d31738774d8030934fb95e9b16ef7dd16109fb3",
+    "crc32": "b63fbfe0"
+  },
+  "windows-changed-units/build/ZERO_CHECK.vcxproj.filters": {
+    "bytes": 559,
+    "sha256": "6cdd2a8b4fd452b38bc0b1ea5c9f4735b594df307af5c7fa2ba9970b154e2384",
+    "crc32": "dd3464cf"
+  },
+  "windows-changed-units/build/ZERO_CHECK.vcxproj": {
+    "bytes": 43531,
+    "sha256": "443f74536620a16086ad217b632714bfc09911b68b2179402b3b03aa1951287d",
+    "crc32": "adc011cc"
+  },
+  "windows-changed-units/chart-inputs.json": {
+    "bytes": 537192,
+    "sha256": "50e5caeefad68a520651ee2b858ba7641e345fd6795ce46559052a4d024ddb5a",
+    "crc32": "96842041"
+  },
+  "windows-changed-units/chart-resources/chartsymbols.xml": {
+    "bytes": 2232050,
+    "sha256": "d4e9274e379b30368ac355f90e5c9786e86f7c979fb82c524ebddf366dc6fba9",
+    "crc32": "d56aff67"
+  },
+  "windows-changed-units/chart-resources/manifest.json": {
+    "bytes": 24210,
+    "sha256": "03533971dfba1bb3cb2cba6ab52b1528a56b4f27c8b4fc118b4b503c25b4bdde",
+    "crc32": "8d2c6d4a"
+  },
+  "windows-changed-units/chart-resources/rastersymbols-dark.png": {
+    "bytes": 167654,
+    "sha256": "9c91273e3dbe9563d79b2d2b0a757bb83207aa0db9183e8aecc1112070ead724",
+    "crc32": "b1bc62f3"
+  },
+  "windows-changed-units/chart-resources/rastersymbols-dusk.png": {
+    "bytes": 172357,
+    "sha256": "201f0663bd786d5e1d8ba09d8d43b106df164d5a282f60860258d226adadb6c9",
+    "crc32": "b25bf1ae"
+  },
+  "windows-changed-units/chart-resources/rastersymbols-day.png": {
+    "bytes": 197801,
+    "sha256": "a737bdb7d372077c2bfe806c5f020f45b4517029c0b43913084720664c520ea3",
+    "crc32": "2d8323f4"
+  },
+  "windows-changed-units/chart-resources/S52RAZDS.RLE": {
+    "bytes": 1305627,
+    "sha256": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26",
+    "crc32": "abbde850"
+  },
+  "windows-changed-units/chart-resources/XNavChartResources.h": {
+    "bytes": 934,
+    "sha256": "8671e6048b569f5fc4d6c0015b955c301f547a6f04d689016fc6b426d815d13d",
+    "crc32": "ae4e9ed2"
+  },
+  "windows-changed-units/compile.log": {
+    "bytes": 135196,
+    "sha256": "0a89eb48ceba56bca5c8cc8dab2a9aaf41ac7a0807e79915fd921543d630e34b",
+    "crc32": "e62ae3e2"
+  },
+  "windows-changed-units/compile.command.json": {
+    "bytes": 762,
+    "sha256": "bdfcf4696a7366c68127dcd31bcdc660ebcb78f277f2b9732aa4929a3ea4feb1",
+    "crc32": "0b9ed3f5"
+  },
+  "windows-changed-units/configure.command.json": {
+    "bytes": 1374,
+    "sha256": "f3823c306b98f4a685caa7997ce8b1d18ab9f58d2bc90f1b978b5c1bd99c2d47",
+    "crc32": "90e57be9"
+  },
+  "windows-changed-units/configure.log": {
+    "bytes": 2127,
+    "sha256": "0e339bf262690e3f3b14d3abe50ec194d321a4bd477bcd5ccc9b29af83e4d1f9",
+    "crc32": "0e0697ac"
+  },
+  "windows-changed-units/header-patches/rapidjson/0010-rapidjson-1.1.0-c++20.patch": {
+    "bytes": 1851,
+    "sha256": "2dd3844abd7fdc55073830156963369b12ba7faa07706768809fde936eaf575e",
+    "crc32": "cbf05323"
+  },
+  "windows-changed-units/header-patches/rapidjson/0011-do_not_include_gtest_src_dir.patch": {
+    "bytes": 632,
+    "sha256": "609af9f96753d8efeecdcbc9b0464a92493b8d7874112b6893140af4e11e0b89",
+    "crc32": "40de8a14"
+  },
+  "windows-changed-units/header-patches/rapidjson/0012-Fix-Wclass-memaccess-warnings-errors.patch": {
+    "bytes": 2388,
+    "sha256": "4334c9671927cc944a7a055975708ea1c3298a5d37511b95929d27f942630f4e",
+    "crc32": "78da34b9"
+  },
+  "windows-changed-units/header-patches/rapidjson/0013-gcc7.patch": {
+    "bytes": 674,
+    "sha256": "4b67576f33475086b67bf119aa58545d066ceba0685ce74a499bdbcd381e8004",
+    "crc32": "5e7853b4"
+  },
+  "windows-changed-units/header-patches/ShapefileCpp/0001-ShapeFileReader-Fix-annoying-name-clash-add-accessor.patch": {
+    "bytes": 3711,
+    "sha256": "bf9d7991f41fdf29537af1f85d79f2855f61c65fef528ac1ba0ceb2967bb710f",
+    "crc32": "854cdb3e"
+  },
+  "windows-changed-units/header-patches/ShapefileCpp/0002-Point-Fix-gcc-initializer-ordering-warning.patch": {
+    "bytes": 705,
+    "sha256": "7be19eedc813546b21a0028eb8dd300f552c96abf3928d3cf50d6f64edaa9e74",
+    "crc32": "c7bc3737"
+  },
+  "windows-changed-units/header-patches/ShapefileCpp/0003-ShapeFileReader-Fix-signedness-gcc-warning.patch": {
+    "bytes": 2681,
+    "sha256": "8e8755c39b003f2ec0f70b49e7d72aa7372438e9e0ddd93857246d061618c6b8",
+    "crc32": "16770a2c"
+  },
+  "windows-changed-units/header-patches/ShapefileCpp/0004-cmake-Only-build-the-lib-directory.patch": {
+    "bytes": 1017,
+    "sha256": "5b8f6e1d36eb5eff8a3aecd356e0fac4de3cc1231b7608ec582fdf9be485708b",
+    "crc32": "64f3c5c4"
+  },
+  "windows-changed-units/header-patches/shapelib/0001-cmake-Add-guard-for-multiple-inclusions.patch": {
+    "bytes": 899,
+    "sha256": "d9718fd7d4836ec707b4e78c7ef4b24d8bd63b80fd3ef381704f3322ac3f837d",
+    "crc32": "3b3f5089"
+  },
+  "windows-changed-units/header-patches/shapelib/0002-cmake-Make-BUILD_TESTING-an-option.patch": {
+    "bytes": 767,
+    "sha256": "5e4e6c318dd428e2e71596c59520882a201194ee15b08c2910cdf6609c3aacc7",
+    "crc32": "cb41fb17"
+  },
+  "windows-changed-units/header-patches/shapelib/0003-shapefil.h-Use-correct-include-gdal-cpol.h-path.patch": {
+    "bytes": 535,
+    "sha256": "660cf441e357c045c08b10ac24d60e54a602d8ba038e5b9fcf4381a870288d41",
+    "crc32": "ca1e4682"
+  },
+  "windows-changed-units/prepare.command.json": {
+    "bytes": 138,
+    "sha256": "5f5fb7805791c0719c36c690aff10ad9527dff0798e3a1fe47b03d9db5a11425",
+    "crc32": "fc13ef8d"
+  },
+  "windows-changed-units/prepare.log": {
+    "bytes": 2211,
+    "sha256": "bed5ad2b0d7ad2b77bd7a6a5d6c5a6ccf88d09219bfe1cc5e6d361d2db63e5c4",
+    "crc32": "460c8aed"
+  },
+  "windows-changed-units/rapidjson-0010-rapidjson-1.1.0-c++20.patch.command.json": {
+    "bytes": 348,
+    "sha256": "2d6ea5c369624ede92de88c140ce3ca89f61be4d8c2dcef28e2b984bf2486b80",
+    "crc32": "9f8cfe2a"
+  },
+  "windows-changed-units/rapidjson-0010-rapidjson-1.1.0-c++20.patch.log": {
+    "bytes": 125,
+    "sha256": "9a621e84316067cae9835efe9b015f1f6945908f0b63df2462526c8d474a9528",
+    "crc32": "10e4ee43"
+  },
+  "windows-changed-units/rapidjson-0011-do_not_include_gtest_src_dir.patch.command.json": {
+    "bytes": 355,
+    "sha256": "634d8edaeb5885cce265831b4064f82d793a39e656b29810579a08713ace20fc",
+    "crc32": "30a2ef37"
+  },
+  "windows-changed-units/rapidjson-0011-do_not_include_gtest_src_dir.patch.log": {
+    "bytes": 116,
+    "sha256": "6b91d9dbeb6032d00ff3ee9aae0fd3f322cf140b34463d201d8784c9c7e34e21",
+    "crc32": "7766de22"
+  },
+  "windows-changed-units/rapidjson-0012-Fix-Wclass-memaccess-warnings-errors.patch.command.json": {
+    "bytes": 363,
+    "sha256": "3897979b2cb0ea98983a7a90d8f52208c57662e8df520b7f4c3e2ca1739464d8",
+    "crc32": "01eea9a5"
+  },
+  "windows-changed-units/rapidjson-0012-Fix-Wclass-memaccess-warnings-errors.patch.log": {
+    "bytes": 125,
+    "sha256": "9a621e84316067cae9835efe9b015f1f6945908f0b63df2462526c8d474a9528",
+    "crc32": "10e4ee43"
+  },
+  "windows-changed-units/rapidjson-0013-gcc7.patch.command.json": {
+    "bytes": 331,
+    "sha256": "7dc63e1c70553d34d38b6841cec0d28c8c9390b9dcd9031ca576787ffa2bb5eb",
+    "crc32": "d88625bf"
+  },
+  "windows-changed-units/rapidjson-0013-gcc7.patch.log": {
+    "bytes": 131,
+    "sha256": "5c54602ff9ed764b500a4cc4e9ea4ed5871e0f1a2311cd5f2e58ea63ce1143af",
+    "crc32": "b8c6801a"
+  },
+  "windows-changed-units/resources.command.json": {
+    "bytes": 343,
+    "sha256": "61d0e27b970d9faf0235dc94ae42c41f1a73a20662515e7c34b35927dfc1323d",
+    "crc32": "670ee2f6"
+  },
+  "windows-changed-units/resources.log": {
+    "bytes": 234,
+    "sha256": "ff8b69dabfd52e45fbd4c1b55c46c82c299d3a2cd4f01f91a9c8e5827ca54015",
+    "crc32": "4d4d2e65"
+  },
+  "windows-changed-units/ShapefileCpp-0001-ShapeFileReader-Fix-annoying-name-clash-add-accessor.patch.command.json": {
+    "bytes": 385,
+    "sha256": "551d388df69530bac7c15a434bf2191850577c7cfb80e79be5cb8c1639e0fed1",
+    "crc32": "eb543795"
+  },
+  "windows-changed-units/ShapefileCpp-0001-ShapeFileReader-Fix-annoying-name-clash-add-accessor.patch.log": {
+    "bytes": 82,
+    "sha256": "0ac8de2efc5d50c6fbf1e0bdeef370a52ea8db059364f85d41ea8684426b54ec",
+    "crc32": "b28171fd"
+  },
+  "windows-changed-units/ShapefileCpp-0002-Point-Fix-gcc-initializer-ordering-warning.patch.command.json": {
+    "bytes": 375,
+    "sha256": "a8073f6a355c06dc7ba697908c47e14d65f3fd4dbfe01158ec54b72ad3653185",
+    "crc32": "6afe28a4"
+  },
+  "windows-changed-units/ShapefileCpp-0002-Point-Fix-gcc-initializer-ordering-warning.patch.log": {
+    "bytes": 82,
+    "sha256": "0ac8de2efc5d50c6fbf1e0bdeef370a52ea8db059364f85d41ea8684426b54ec",
+    "crc32": "b28171fd"
+  },
+  "windows-changed-units/ShapefileCpp-0003-ShapeFileReader-Fix-signedness-gcc-warning.patch.command.json": {
+    "bytes": 375,
+    "sha256": "d27c0d9401c8d22109391747cef9c489e50246b56647498bf0a43a98d5090b78",
+    "crc32": "00b49315"
+  },
+  "windows-changed-units/ShapefileCpp-0004-cmake-Only-build-the-lib-directory.patch.command.json": {
+    "bytes": 367,
+    "sha256": "b77f6a99129acc54db7ddb9d7f25e609a1cc8744fc395cb29684ae7589fb3b12",
+    "crc32": "f2e8bb2d"
+  },
+  "windows-changed-units/ShapefileCpp-0003-ShapeFileReader-Fix-signedness-gcc-warning.patch.log": {
+    "bytes": 82,
+    "sha256": "0ac8de2efc5d50c6fbf1e0bdeef370a52ea8db059364f85d41ea8684426b54ec",
+    "crc32": "b28171fd"
+  },
+  "windows-changed-units/ShapefileCpp-0004-cmake-Only-build-the-lib-directory.patch.log": {
+    "bytes": 82,
+    "sha256": "0ac8de2efc5d50c6fbf1e0bdeef370a52ea8db059364f85d41ea8684426b54ec",
+    "crc32": "b28171fd"
+  },
+  "windows-changed-units/shapelib-0001-cmake-Add-guard-for-multiple-inclusions.patch.command.json": {
+    "bytes": 363,
+    "sha256": "d909237392420aa0114b427354c3a058ba446b94b6b4a3874d0d4fa5f3a4eab3",
+    "crc32": "3ca30b13"
+  },
+  "windows-changed-units/shapelib-0001-cmake-Add-guard-for-multiple-inclusions.patch.log": {
+    "bytes": 111,
+    "sha256": "c09d1570527e0366a1ae42ad59d485feeb9162b7a270deaa0088505e29c1a111",
+    "crc32": "c072dd37"
+  },
+  "windows-changed-units/shapelib-0002-cmake-Make-BUILD_TESTING-an-option.patch.command.json": {
+    "bytes": 358,
+    "sha256": "c27ceef5b965c71ea4ff87b0a1ecd66ad3894e12577937a028cd79b033f26bc7",
+    "crc32": "c8f4fbda"
+  },
+  "windows-changed-units/shapelib-0002-cmake-Make-BUILD_TESTING-an-option.patch.log": {
+    "bytes": 111,
+    "sha256": "c09d1570527e0366a1ae42ad59d485feeb9162b7a270deaa0088505e29c1a111",
+    "crc32": "c072dd37"
+  },
+  "windows-changed-units/shapelib-0003-shapefil.h-Use-correct-include-gdal-cpol.h-path.patch.command.json": {
+    "bytes": 371,
+    "sha256": "7c2bd67942d62bc7c8a5fab7853596d266bc2870dffa1a6891cd337ba9500bd3",
+    "crc32": "43acf5ac"
+  },
+  "windows-changed-units/shapelib-0003-shapefil.h-Use-correct-include-gdal-cpol.h-path.patch.log": {
+    "bytes": 107,
+    "sha256": "cd60c99456a803d6aee8cf68107d2d09d780101289cc50e76f5ec1d57544c711",
+    "crc32": "8ecf705d"
+  },
+  "windows-changed-units/source/gui/src/ais.cpp": {
+    "bytes": 79079,
+    "sha256": "23e2556bf8e50f527aa16882104d3383dee469e0de2998c072d0644b59d8b13e",
+    "crc32": "39a455cf"
+  },
+  "windows-changed-units/source/gui/src/chcanv.cpp": {
+    "bytes": 510696,
+    "sha256": "68d9d399eb1d616115bcb8986341de054e9c2d9348d8f239dc1cbde30580c190",
+    "crc32": "df648bcd"
+  },
+  "windows-changed-units/source/gui/src/glChartCanvas.cpp": {
+    "bytes": 195622,
+    "sha256": "444ab6b16ddec76078c49cd8ab4f84a254b4b36033ce1d310861b80f90519c8c",
+    "crc32": "d4052530"
+  },
+  "windows-changed-units/source/gui/src/piano.cpp": {
+    "bytes": 34337,
+    "sha256": "d81e92056f99aa0a6f94c715ab396811a2983ec816f2417c804aed3197c3de91",
+    "crc32": "9e3e951f"
+  },
+  "windows-changed-units/source/gui/src/route_gui.cpp": {
+    "bytes": 27487,
+    "sha256": "3214e7df3d4a37662a07992b3a9eecc54b5fd16f92162af94e8fe6d5298ad04c",
+    "crc32": "7ff700fb"
+  },
+  "windows-changed-units/source/gui/src/route_point_gui.cpp": {
+    "bytes": 33583,
+    "sha256": "84cead696a6f286a601c77aa0dcd8868f196a74a70f634643fa15cb07f61c96c",
+    "crc32": "94560841"
+  },
+  "windows-changed-units/source/gui/src/waypointman_gui.cpp": {
+    "bytes": 30190,
+    "sha256": "a18c6812176b9b90d70c6ce077197014517c017ebeb9632e7c34f396eb195c5f",
+    "crc32": "87a981a4"
+  },
+  "windows-changed-units/source/libs/s52plib/src/DepthFont.cpp": {
+    "bytes": 5728,
+    "sha256": "9316dae8624cd8d4795b93a41c48073a5d0861cd4b7e5e6355c6c01568761b93",
+    "crc32": "b4c19e06"
+  },
+  "windows-changed-units/source/libs/s52plib/src/chartsymbols.cpp": {
+    "bytes": 30985,
+    "sha256": "4f00aa44fbb3401ced74cf6f0d396c5441596b61fc5de349b68fcc8f786393a6",
+    "crc32": "810962ee"
+  },
+  "windows-changed-units/source/libs/s52plib/src/s52plib.cpp": {
+    "bytes": 354380,
+    "sha256": "b2794d882f4332c04aaa0a5bd6ebbf8a81d1d406f44444f40dd0cbb1a7892524",
+    "crc32": "cfd851ef"
+  },
+  "windows-changed-units/source/product/src/integration/ChartPresentation.cpp": {
+    "bytes": 24099,
+    "sha256": "947feedc7b4b10fd9424f649436ae6cf5f79524f56fe0ca25d8281651136f416",
+    "crc32": "a74c15ff"
+  },
+  "windows-changed-units/source/product/src/integration/ChartRouteUnderlay.cpp": {
+    "bytes": 4005,
+    "sha256": "49e58bacb206dfdd066cc1fe47b1d8102edf7234f44492c6677f2a60ad03877e",
+    "crc32": "f827eee0"
+  },
+  "windows-changed-units/source/product/src/integration/ChartRouteLabel.cpp": {
+    "bytes": 6358,
+    "sha256": "6fe52a22e8cb2eb40326d7971af02086edddf4f348e2201b3a8d9a1d584f3ec8",
+    "crc32": "6c5e77a9"
+  },
+  "windows-changed-units/source/product/src/integration/ChartRouteUnderlayGeometry.cpp": {
+    "bytes": 9508,
+    "sha256": "190e46a1bf4f59e79e40a097a1c2ad1b8c1091ac17b8e99946b0dbe82ebb467b",
+    "crc32": "70bd9a85"
+  },
+  "windows-changed-units/source/product/src/integration/ChartRouteWaypoint.cpp": {
+    "bytes": 7500,
+    "sha256": "3c38e9c9bfbf0ffd129d962b5a7eb053412c7912255dc873f7812dee9186e937",
+    "crc32": "00050f20"
+  },
+  "windows-changed-units/source/product/src/integration/OnlineAisOverlay.cpp": {
+    "bytes": 6924,
+    "sha256": "09898ed7b5f3548249bb857fdb17a3aa306b0ddc82cd8365d97ed8fd249afd31",
+    "crc32": "458f43c9"
+  },
+  "windows-changed-units/source/product/src/integration/OnboardAisPresentation.cpp": {
+    "bytes": 3187,
+    "sha256": "7d525b456ebf3dbe47562d3a92ec80ba1be5864a824aca7744112f6362592f6a",
+    "crc32": "3773a8ad"
+  },
+  "windows-changed-units/summary.json": {
+    "bytes": 564527,
+    "sha256": "733a6e6036fb309ad6d6e36d025d843b99d99c84e9a6a2ee70419681d59d0216",
+    "crc32": "7b73a11d"
+  },
+  "windows-changed-units/verify-source.command.json": {
+    "bytes": 138,
+    "sha256": "5f5fb7805791c0719c36c690aff10ad9527dff0798e3a1fe47b03d9db5a11425",
+    "crc32": "fc13ef8d"
+  },
+  "windows-changed-units/verify-source.log": {
+    "bytes": 521,
+    "sha256": "bd2de8032acc307ab3fc6e0aef079dc5f33bedd0ba74664afb361f0612106b13",
+    "crc32": "307c203d"
+  },
+  "windows-changed-units/wxMSW-3.2.8_vc14x_Dev.7z.command.json": {
+    "bytes": 193,
+    "sha256": "139ded5b00065c8b0529704c608f0c1082c6908ffd07403133170c7429cd114e",
+    "crc32": "69a4d977"
+  },
+  "windows-changed-units/wxMSW-3.2.8_vc14x_Dev.7z.log": {
+    "bytes": 528,
+    "sha256": "5db264d6237316546c81b76002a9a7b4d0faf37dd4a1234acca03837080ded80",
+    "crc32": "1bf6c0af"
+  },
+  "windows-changed-units/wxMSW-3.2.8_vc14x_ReleaseDLL.7z.command.json": {
+    "bytes": 200,
+    "sha256": "4910985bbd2c6e0477c04c4183132674d4ec65dac0f868c90ff19ecad12bc219",
+    "crc32": "b358f84f"
+  },
+  "windows-changed-units/wxMSW-3.2.8_vc14x_ReleaseDLL.7z.log": {
+    "bytes": 527,
+    "sha256": "ba7d7617f3810ae5a9bb306e706568ab9a6ac4aeebd3e1216fcd17efc228c006",
+    "crc32": "acdc75ff"
+  },
+  "windows-changed-units/wxWidgets-3.2.8-headers.7z.command.json": {
+    "bytes": 195,
+    "sha256": "561f87ead07bbc16d156c98587967b5e853f9559d85a8cbe544b4d2d098ccde9",
+    "crc32": "0af5c608"
+  },
+  "windows-changed-units/wxWidgets-3.2.8-headers.7z.log": {
+    "bytes": 531,
+    "sha256": "cd0a6edbdf3103514995668ba4a450f18036ef9527e1aa531dae3cadeb1ec7b3",
+    "crc32": "b5fa0bae"
+  }
+}

@@ -1,0 +1,362 @@
+{
+  "version": 1,
+  "upstreamCommit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "prototypeSha256": "b04573b920b6bccd16afd22f54a909e48afcfd502ce9cd7c69fdf5b6dd895447",
+  "palette": {
+    "DAY_BRIGHT": {
+      "LANDA": [
+        238,
+        238,
+        226
+      ],
+      "XNBUA": [
+        175,
+        191,
+        174
+      ],
+      "XNGEO": [
+        104,
+        123,
+        122
+      ],
+      "CSTLN": [
+        175,
+        191,
+        174
+      ],
+      "DEPDW": [
+        213,
+        229,
+        229
+      ],
+      "CHBLK": [
+        7,
+        7,
+        7
+      ],
+      "CHGRD": [
+        7,
+        7,
+        7
+      ],
+      "DEPMD": [
+        199,
+        220,
+        221
+      ],
+      "DEPMS": [
+        173,
+        203,
+        206
+      ],
+      "DEPVS": [
+        134,
+        172,
+        182
+      ],
+      "DEPIT": [
+        181,
+        201,
+        171
+      ],
+      "DEPCN": [
+        173,
+        203,
+        206
+      ],
+      "DEPSC": [
+        104,
+        123,
+        122
+      ],
+      "SNDG1": [
+        104,
+        123,
+        122
+      ],
+      "SNDG2": [
+        35,
+        62,
+        62
+      ]
+    },
+    "DUSK": {
+      "LANDA": [
+        78,
+        97,
+        93
+      ],
+      "XNBUA": [
+        116,
+        135,
+        121
+      ],
+      "XNGEO": [
+        173,
+        187,
+        177
+      ],
+      "CSTLN": [
+        116,
+        135,
+        121
+      ],
+      "DEPDW": [
+        52,
+        79,
+        89
+      ],
+      "CHBLK": [
+        225,
+        229,
+        216
+      ],
+      "CHGRD": [
+        225,
+        229,
+        216
+      ],
+      "DEPMD": [
+        66,
+        95,
+        105
+      ],
+      "DEPMS": [
+        86,
+        120,
+        128
+      ],
+      "DEPVS": [
+        113,
+        140,
+        147
+      ],
+      "DEPIT": [
+        98,
+        118,
+        107
+      ],
+      "DEPCN": [
+        86,
+        120,
+        128
+      ],
+      "DEPSC": [
+        173,
+        187,
+        177
+      ],
+      "SNDG1": [
+        173,
+        187,
+        177
+      ],
+      "SNDG2": [
+        225,
+        229,
+        216
+      ]
+    },
+    "NIGHT": {
+      "LANDA": [
+        37,
+        52,
+        47
+      ],
+      "XNBUA": [
+        70,
+        87,
+        74
+      ],
+      "XNGEO": [
+        117,
+        133,
+        121
+      ],
+      "CSTLN": [
+        70,
+        87,
+        74
+      ],
+      "DEPDW": [
+        18,
+        30,
+        36
+      ],
+      "CHBLK": [
+        117,
+        133,
+        121
+      ],
+      "CHGRD": [
+        117,
+        133,
+        121
+      ],
+      "DEPMD": [
+        28,
+        45,
+        53
+      ],
+      "DEPMS": [
+        42,
+        65,
+        73
+      ],
+      "DEPVS": [
+        61,
+        85,
+        96
+      ],
+      "DEPIT": [
+        51,
+        68,
+        59
+      ],
+      "DEPCN": [
+        42,
+        65,
+        73
+      ],
+      "DEPSC": [
+        117,
+        133,
+        121
+      ],
+      "SNDG1": [
+        117,
+        133,
+        121
+      ],
+      "SNDG2": [
+        182,
+        195,
+        175
+      ]
+    }
+  },
+  "neutralRasterInk": {
+    "rastersymbols-dusk.png": {
+      "sourceRgb": [
+        54,
+        54,
+        54
+      ],
+      "targetRgb": [
+        225,
+        229,
+        216
+      ],
+      "changedPixels": 42100,
+      "alphaAndGeometryPreserved": true
+    },
+    "rastersymbols-dark.png": {
+      "sourceRgb": [
+        27,
+        27,
+        27
+      ],
+      "targetRgb": [
+        117,
+        133,
+        121
+      ],
+      "changedPixels": 42100,
+      "alphaAndGeometryPreserved": true
+    }
+  },
+  "anchorageArtwork": {
+    "rastersymbols-day.png": {
+      "tile": [
+        20,
+        1160,
+        20,
+        20
+      ],
+      "pivot": [
+        10,
+        10
+      ],
+      "serviceRgb": [
+        124,
+        133,
+        138
+      ],
+      "changedPixels": 126,
+      "alphaSha256": "a814de453f8c9158f6767a1ba25a496fae762535f1a79f2edbd116dc4a2a3c83",
+      "atlasDimensionsUnchanged": [
+        1500,
+        1200
+      ]
+    },
+    "rastersymbols-dusk.png": {
+      "tile": [
+        20,
+        1160,
+        20,
+        20
+      ],
+      "pivot": [
+        10,
+        10
+      ],
+      "serviceRgb": [
+        168,
+        187,
+        183
+      ],
+      "changedPixels": 126,
+      "alphaSha256": "a814de453f8c9158f6767a1ba25a496fae762535f1a79f2edbd116dc4a2a3c83",
+      "atlasDimensionsUnchanged": [
+        1500,
+        1200
+      ]
+    },
+    "rastersymbols-dark.png": {
+      "tile": [
+        20,
+        1160,
+        20,
+        20
+      ],
+      "pivot": [
+        10,
+        10
+      ],
+      "serviceRgb": [
+        98,
+        115,
+        108
+      ],
+      "changedPixels": 126,
+      "alphaSha256": "a814de453f8c9158f6767a1ba25a496fae762535f1a79f2edbd116dc4a2a3c83",
+      "atlasDimensionsUnchanged": [
+        1500,
+        1200
+      ]
+    }
+  },
+  "geographicNameLookups": 18,
+  "files": {
+    "chartsymbols.xml": {
+      "sha256": "e5007a2d85b7d6713b7034511bf2079b38245c1bdb9a4b61bbae89da945d4bb6",
+      "bytes": 2231879
+    },
+    "S52RAZDS.RLE": {
+      "sha256": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26",
+      "bytes": 1305627
+    },
+    "rastersymbols-day.png": {
+      "sha256": "d847198e91a2ce40602f6794af935a5453c10f9ba7328f48640f46707373be79",
+      "bytes": 196057
+    },
+    "rastersymbols-dusk.png": {
+      "sha256": "91f3d3ce06856c4c3da870d998e9a4ff8055f74c7af8a778e05e08bdc4192cc8",
+      "bytes": 170665
+    },
+    "rastersymbols-dark.png": {
+      "sha256": "563bd959efd4eb23b092a0eda5866560cc9474b94c0c9e8a7fb6156a98910b5a",
+      "bytes": 165755
+    }
+  }
+}

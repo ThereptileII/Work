@@ -1,0 +1,9 @@
+/home/standard/Projects/X-nav-worktrees/scrum275-linux-e6ef384/evidence/local/scrum265-27e93e4/compare-canvas.py:19: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  diff=ImageChops.difference(before,after);nonchart=diff.copy();ImageDraw.Draw(nonchart).rectangle((x,y,x+w-1,y+h-1),fill=(0,0,0));chart_diff=diff.crop(chart);full_count=sum(v!=(0,0,0) for v in chart_diff.getdata());outside=chart_diff.copy();points=[]
+/home/standard/Projects/X-nav-worktrees/scrum275-linux-e6ef384/evidence/local/scrum265-27e93e4/compare-canvas.py:23: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  changed=sum(v!=(0,0,0) for v in diff.crop(rect).getdata());assert changed>0
+/home/standard/Projects/X-nav-worktrees/scrum275-linux-e6ef384/evidence/local/scrum265-27e93e4/compare-canvas.py:29: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  outside_count=sum(v!=(0,0,0) for v in outside.getdata())
+/home/standard/Projects/X-nav-worktrees/scrum275-linux-e6ef384/evidence/local/scrum265-27e93e4/compare-canvas.py:30: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  records.append({'name':name,'prior':str(prior/(name+'.png')),'priorSha256':hashlib.sha256((prior/(name+'.png')).read_bytes()).hexdigest(),'currentSha256':hashlib.sha256((current/(name+'.png')).read_bytes()).hexdigest(),'chartBounds':chart,'outsideChartChangedPixels':sum(v!=(0,0,0) for v in nonchart.getdata()),'outsideChartDifferenceBounds':nonchart.getbbox(),'changedChartPixels':full_count,'outsideBuildingTileChangedPixels':outside_count,'points':points})
+software all4 charts differ only within actual BUISGL35/36 tiles; whole-chart returns remain exact

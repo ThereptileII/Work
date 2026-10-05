@@ -1,0 +1,68 @@
+/tmp/skager-capture-g276cpl6/SKAGER
+/home/standard/Projects/X-nav-worktrees/scrum264-real-enc-scenes/.local/combined264267/coast/capture-final.py:200: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  edge_top = list(image.crop((690,68,1094,76)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum264-real-enc-scenes/.local/combined264267/coast/capture-final.py:201: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  edge_bottom = list(image.crop((690,626,1094,634)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum264-real-enc-scenes/.local/combined264267/coast/capture-final.py:211: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum264-real-enc-scenes/.local/combined264267/coast/capture-final.py:135: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  bbox=difference.getbbox();ink=sum(p!=(0,0,0) for p in difference.getdata())
+/home/standard/Projects/X-nav-worktrees/scrum264-real-enc-scenes/.local/combined264267/coast/capture-final.py:200: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  edge_top = list(image.crop((690,68,1094,76)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum264-real-enc-scenes/.local/combined264267/coast/capture-final.py:201: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  edge_bottom = list(image.crop((690,626,1094,634)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum264-real-enc-scenes/.local/combined264267/coast/capture-final.py:211: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum264-real-enc-scenes/.local/combined264267/coast/capture-final.py:135: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  bbox=difference.getbbox();ink=sum(p!=(0,0,0) for p in difference.getdata())
+/home/standard/Projects/X-nav-worktrees/scrum264-real-enc-scenes/.local/combined264267/coast/capture-final.py:200: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  edge_top = list(image.crop((690,68,1094,76)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum264-real-enc-scenes/.local/combined264267/coast/capture-final.py:201: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  edge_bottom = list(image.crop((690,626,1094,634)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum264-real-enc-scenes/.local/combined264267/coast/capture-final.py:211: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum264-real-enc-scenes/.local/combined264267/coast/capture-final.py:135: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  bbox=difference.getbbox();ink=sum(p!=(0,0,0) for p in difference.getdata())
+/home/standard/Projects/X-nav-worktrees/scrum264-real-enc-scenes/.local/combined264267/coast/capture-final.py:200: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  edge_top = list(image.crop((690,68,1094,76)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum264-real-enc-scenes/.local/combined264267/coast/capture-final.py:201: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  edge_bottom = list(image.crop((690,626,1094,634)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum264-real-enc-scenes/.local/combined264267/coast/capture-final.py:211: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum264-real-enc-scenes/.local/combined264267/coast/capture-final.py:135: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  bbox=difference.getbbox();ink=sum(p!=(0,0,0) for p in difference.getdata())
+/tmp/skager-capture-g276cpl6/Standard
+/home/standard/Projects/X-nav-worktrees/scrum264-real-enc-scenes/.local/combined264267/coast/capture-final.py:200: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  edge_top = list(image.crop((690,68,1094,76)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum264-real-enc-scenes/.local/combined264267/coast/capture-final.py:201: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  edge_bottom = list(image.crop((690,626,1094,634)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum264-real-enc-scenes/.local/combined264267/coast/capture-final.py:211: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum264-real-enc-scenes/.local/combined264267/coast/capture-final.py:135: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  bbox=difference.getbbox();ink=sum(p!=(0,0,0) for p in difference.getdata())
+/home/standard/Projects/X-nav-worktrees/scrum264-real-enc-scenes/.local/combined264267/coast/capture-final.py:200: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  edge_top = list(image.crop((690,68,1094,76)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum264-real-enc-scenes/.local/combined264267/coast/capture-final.py:201: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  edge_bottom = list(image.crop((690,626,1094,634)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum264-real-enc-scenes/.local/combined264267/coast/capture-final.py:211: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum264-real-enc-scenes/.local/combined264267/coast/capture-final.py:135: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  bbox=difference.getbbox();ink=sum(p!=(0,0,0) for p in difference.getdata())
+/home/standard/Projects/X-nav-worktrees/scrum264-real-enc-scenes/.local/combined264267/coast/capture-final.py:200: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  edge_top = list(image.crop((690,68,1094,76)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum264-real-enc-scenes/.local/combined264267/coast/capture-final.py:201: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  edge_bottom = list(image.crop((690,626,1094,634)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum264-real-enc-scenes/.local/combined264267/coast/capture-final.py:211: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum264-real-enc-scenes/.local/combined264267/coast/capture-final.py:135: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  bbox=difference.getbbox();ink=sum(p!=(0,0,0) for p in difference.getdata())
+/home/standard/Projects/X-nav-worktrees/scrum264-real-enc-scenes/.local/combined264267/coast/capture-final.py:200: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  edge_top = list(image.crop((690,68,1094,76)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum264-real-enc-scenes/.local/combined264267/coast/capture-final.py:201: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  edge_bottom = list(image.crop((690,626,1094,634)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum264-real-enc-scenes/.local/combined264267/coast/capture-final.py:211: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum264-real-enc-scenes/.local/combined264267/coast/capture-final.py:135: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  bbox=difference.getbbox();ink=sum(p!=(0,0,0) for p in difference.getdata())
+Verified private clean application 9632421f701c5ec74d7a1360bc713c0034faf9af and exact upstream result of nine patches
+Eight exact-build real-ENC theme-cycle captures passed: /home/standard/Projects/X-nav-worktrees/scrum264-real-enc-scenes/.local/combined264267/coast/output/capture-coast-9632421-opengl

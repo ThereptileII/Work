@@ -1,0 +1,20 @@
+{
+  "command": [
+    "C:\\Program Files\\Poedit\\GettextTools\\bin\\msgfmt.exe",
+    "--check",
+    "--output-file=D:\\a\\Work\\Work\\opennav-x\\evidence\\local\\windows-gettext-native\\sample.mo",
+    "D:\\a\\Work\\Work\\opennav-x\\evidence\\local\\windows-gettext-native\\merged.po"
+  ],
+  "exitCode": 0,
+  "timedOut": false,
+  "timeoutSeconds": 30,
+  "ownedProcessCleanup": null,
+  "stdout": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "stderr": {
+    "bytes": 947,
+    "sha256": "58fcd31b00f1b6d935028ee4b9b27a5dbd26e2c8f1133e7f86ed4e3af7d5930f"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "base": "58e7e16de8e1774917e6635acac03a8447795e73",
+  "upstream": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "resourceChecks": 19417,
+  "nativeLoaderChecks": 11790,
+  "negativeControls": 14,
+  "preflightGuardTests": 7,
+  "dependencyDeclarations": 30,
+  "newPixelsPerTheme": 404,
+  "nativeGLContext": false,
+  "fullAppBuild": false,
+  "WindowsOrBoatAcceptance": false,
+  "generatedManifestSha256": "03533971dfba1bb3cb2cba6ab52b1528a56b4f27c8b4fc118b4b503c25b4bdde"
+}

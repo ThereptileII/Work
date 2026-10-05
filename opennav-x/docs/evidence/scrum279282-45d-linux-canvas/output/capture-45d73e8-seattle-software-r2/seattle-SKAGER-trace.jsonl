@@ -1,0 +1,5 @@
+{"kind": "trace_disabled", "probe": "RenderSY", "reason": "all_requested_geometry_observed", "hits": 0}
+{"kind": "trace_disabled", "probe": "RenderCARC", "reason": "all_requested_geometry_observed", "hits": 0}
+{"kind": "trace_disabled", "probe": "RenderRasterSymbol", "reason": "all_requested_geometry_observed", "hits": 0}
+{"kind": "abi", "machine": "x86-64 SysV", "argument_boundary": "Exact mangled symbol entry before prologue", "layout": {"CaFanGeometry.center": 0, "CaFanGeometry.leg1": 8, "CaFanGeometry.leg2": 16, "CaFanGeometry.radius": 24, "CaFanGeometry.start": 32, "CaFanGeometry.end": 40, "CaFanGeometry.pixelScale": 48, "s52plib.vp_plib": 2408, "s52plib.m_nSymbolStyle": 0, "VPointCompat.pix_width": 0, "VPointCompat.pix_height": 4, "ObjRazRules.obj": 8, "ObjRazRules.LUP": 0, "S57Obj.att_array": 16, "S57Obj.n_attr": 32, "S57Obj.FeatureName": 0, "S57Obj.Index": 40, "S57Obj.m_lat": 152, "S57Obj.m_lon": 160, "Rules.razRule": 16, "Rules.INSTstr": 8, "Rule.name": 4, "Rule.definition": 12, "LUPrec.TNAM": 24, "LUPrec.RCID": 0, "LUPrec.DPRI": 16, "wxPoint.x": 0, "wxPoint.y": 4, "pointerBytes": 8}}
+{"kind": "inferior_exit", "exit_code": 0}

@@ -1,0 +1,185 @@
+{
+  "base": "1356fd1603aacbea04d7081d16331e9a181180bb",
+  "nightCanvas": {
+    "brightness": 0.78,
+    "roles": {
+      "LANDA": {
+        "raw": [
+          37,
+          52,
+          47
+        ],
+        "effective": [
+          29,
+          41,
+          37
+        ]
+      },
+      "XNBUA": {
+        "raw": [
+          70,
+          87,
+          74
+        ],
+        "effective": [
+          55,
+          68,
+          58
+        ]
+      },
+      "XNGEO": {
+        "raw": [
+          117,
+          133,
+          121
+        ],
+        "effective": [
+          91,
+          104,
+          94
+        ]
+      },
+      "CSTLN": {
+        "raw": [
+          70,
+          87,
+          74
+        ],
+        "effective": [
+          55,
+          68,
+          58
+        ]
+      },
+      "DEPDW": {
+        "raw": [
+          18,
+          30,
+          36
+        ],
+        "effective": [
+          14,
+          23,
+          28
+        ]
+      },
+      "DEPMD": {
+        "raw": [
+          28,
+          45,
+          53
+        ],
+        "effective": [
+          22,
+          35,
+          41
+        ]
+      },
+      "DEPMS": {
+        "raw": [
+          42,
+          65,
+          73
+        ],
+        "effective": [
+          33,
+          51,
+          57
+        ]
+      },
+      "DEPVS": {
+        "raw": [
+          61,
+          85,
+          96
+        ],
+        "effective": [
+          48,
+          66,
+          75
+        ]
+      },
+      "DEPIT": {
+        "raw": [
+          51,
+          68,
+          59
+        ],
+        "effective": [
+          40,
+          53,
+          46
+        ]
+      },
+      "DEPCN": {
+        "raw": [
+          42,
+          65,
+          73
+        ],
+        "effective": [
+          33,
+          51,
+          57
+        ]
+      }
+    },
+    "retainedSafetyInk": [
+      "CHBLK",
+      "CHGRD",
+      "DEPSC",
+      "SNDG1",
+      "SNDG2"
+    ]
+  },
+  "safetyContrast": {
+    "DEPDW": 4.652412028587724,
+    "DEPVS": 2.6849355319777892,
+    "LANDA": 3.8588682186180314
+  },
+  "unchangedResourceBytes": [
+    "S52RAZDS.RLE",
+    "rastersymbols-day.png",
+    "rastersymbols-dusk.png",
+    "rastersymbols-dark.png"
+  ],
+  "dayDuskPaletteExact": true,
+  "xmlOutsideTenNightRolesExact": true,
+  "generated": {
+    "chartsymbols.xml": {
+      "sha256": "0e3d0b4b16e428858ac7f28948a8c78ac48d30d192f12b0af6ce9ad900271b6d",
+      "bytes": 2232038
+    },
+    "S52RAZDS.RLE": {
+      "sha256": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26",
+      "bytes": 1305627
+    },
+    "rastersymbols-day.png": {
+      "sha256": "d847198e91a2ce40602f6794af935a5453c10f9ba7328f48640f46707373be79",
+      "bytes": 196057
+    },
+    "rastersymbols-dusk.png": {
+      "sha256": "91f3d3ce06856c4c3da870d998e9a4ff8055f74c7af8a778e05e08bdc4192cc8",
+      "bytes": 170665
+    },
+    "rastersymbols-dark.png": {
+      "sha256": "563bd959efd4eb23b092a0eda5866560cc9474b94c0c9e8a7fb6156a98910b5a",
+      "bytes": 165755
+    }
+  },
+  "sources": {
+    "tools/generate-xnav-chart-style.py": "30045673f93a75b028e3fba3530d39d18f9ed6072cdd0a6b55e62bc7765271c2",
+    "src/integration/ChartCanvasInk.h": "cc1a4d94131f932f2bbd40d330d9003d0086dfc1237449b4215b509377c39f66",
+    "src/integration/ChartPresentation.cpp": "9e26a9b5b5dabe603d14cff54c203f39b669270af88bd7a13705b037c6c859a4",
+    "src/integration/ChartRouteUnderlay.cpp": "6185f66ddf38a4bdacf573b27260f9c49f84c6fef0bad304fb1254effc691eae",
+    "src/integration/OnlineAisOverlay.cpp": "23f2977b670f035167b889e35673e78b2c3c06874db5f0606389a78c6e95a991",
+    "patches/opencpn-5.12.4-chart-presentation.patch": "f40aa7589569ddc4f40a403e3369a5b3bfd25c11a3075882cc5d5948f83188a1",
+    "tests/chart_canvas_ink_tests.cpp": "1464f55e14763a6c52e67b7611c70040ddf91dc18ba33b4cf8ab904eacec206c",
+    "tests/chart_presentation_resources_tests.py": "cb7478d142873429f6ea267dc8e438864b6ae2739c22064356226c3d043f9e5a",
+    "tools/test-chart-night-inputs.py": "24ec97ffb3d12da944af551e97ffb541270d5619f164cf1d213db03630c22ed9"
+  },
+  "focusedExecutables": {
+    ".local/night-check/inputs/night-inputs": "984364e0213ffb556962608e272a6ca08507e3559fb504ae94079071517d0908",
+    ".local/night-check/chart_canvas_ink_tests": "6b87baf097eeede2cbf697496b47799f28da3740a627a47cc97e2326c3732d01"
+  }
+}

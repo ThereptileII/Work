@@ -1,8 +1,10 @@
 #include "ui/ProductPanel.h"
 #include "ui/DisplaySizing.h"
 #include "ui/Sheet.h"
+#include "ui/NameEditor.h"
 #include "ui/ContextCard.h"
 #include "ui/PrototypeGeometry.h"
+#include "application/AnchorRouteTransition.h"
 #include "integration/BuildFeatures.h"
 #include <wx/dcbuffer.h>
 #include <wx/dialog.h>
@@ -489,7 +491,9 @@ void ProductPanel::Update(const ProductState &state, LightMode mode) {
   if (page_ == ProductPage::WaypointDetail && IsShownOnScreen() &&
       std::chrono::steady_clock::now() - point_refreshed_at_ >= std::chrono::seconds(1))
     rebuild_pending_ |= RefreshWaypoint();
-  if (rebuild_pending_) {
+  const bool name_draft = XNavNameEditor::PreserveDrafts(
+      *this, mode_, !state_.vessel.simulated && !state_.vessel.replayed);
+  if (rebuild_pending_ && !name_draft) {
     auto *focus=wxWindow::FindFocus();
     const bool restore_focus=focus && (focus==this || IsDescendant(focus));
     const auto scroll = GetViewStart();
@@ -520,12 +524,14 @@ void ProductPanel::CreateMark() {
     Result({false, "Chart position unavailable", {}});
     return;
   }
-  auto fields = EditSheet(
+  const auto suggestion = actions_.navigation.suggest_waypoint_name
+      ? actions_.navigation.suggest_waypoint_name(*location)
+      : application::SuggestNavigationName(*location, false, {});
+  auto fields = EditNavigationNameSheet(
       *this, mode_, "Create waypoint",
       wxString::Format("At chart center %.6f, %.6f. Saves a real OpenCPN mark.",
                        location->latitude_deg, location->longitude_deg),
-      {{"Name", "New waypoint", 128}, {"Description", "", 2048}},
-      "Create waypoint");
+      suggestion.name, "", "Create waypoint", interface_scale_);
   if (fields && actions_.navigation.create_waypoint)
     Result(actions_.navigation.create_waypoint(*location, (*fields)[0],
                                                (*fields)[1]));
@@ -543,6 +549,13 @@ void ProductPanel::RouteActions() {
           route_.active
               ? "Active passage"
               : "Saved route");
+  auto *name_editor = new XNavNameEditor(*this, "Route name", selected.name,
+      mode_, interface_scale_, selected.editable && bool(actions_.navigation.edit_route),
+      [this, selected](const std::string &name) {
+        return actions_.navigation.edit_route(selected, name, selected.description);
+      }, [this](application::CommandResult result) { Result(result); });
+  name_editor->Present(mode_, !state_.vessel.simulated && !state_.vessel.replayed);
+  body_->Add(name_editor, 0, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, FromDIP(16));
   Visual("Passage overview", 168, [this](XNavPainter &p, wxDC &, int width) {
     const int split = width / 2;
     p.Card(0, 0, width, 164, "DESTINATION");
@@ -590,6 +603,19 @@ void ProductPanel::RouteActions() {
   auto *navigate = Action(
       route_.active ? "Stop navigation" : "Activate route",
       [this, selected] {
+        if (!selected.active) {
+          const auto result = application::ConfirmRouteActivation(
+              selected, actions_.navigation, [this](bool stops_anchor) {
+                return ConfirmSheet(*this, mode_,
+                    stops_anchor ? "Stop anchor watch and activate route?" : "Activate route",
+                    stops_anchor
+                        ? "Anchor monitoring will stop. Your anchor mark is kept. Start navigating this route?"
+                        : "This changes OpenCPN navigation. Existing configured OpenCPN output connections retain their normal behavior.",
+                    stops_anchor ? "Stop watch & activate" : "Activate");
+              });
+          if (result) Result(*result);
+          return;
+        }
         if (ConfirmSheet(
                 *this, mode_,
                 selected.active ? "Stop navigation" : "Activate route",
@@ -634,10 +660,9 @@ void ProductPanel::RouteActions() {
   Action(
       "Edit route name / description",
       [this, selected] {
-        auto f = EditSheet(*this, mode_, "Edit route",
+        auto f = EditNavigationNameSheet(*this, mode_, "Edit route",
                            "Change the saved route name and description.",
-                           {{"Name", W(selected.name), 128},
-                            {"Description", W(selected.description), 2048}});
+                           selected.name, selected.description, "Save", interface_scale_);
         if (f)
           Result(actions_.navigation.edit_route(selected, (*f)[0], (*f)[1]));
       },
@@ -685,6 +710,13 @@ void ProductPanel::PointActions() {
     Text(point_.editable ? "GO TO needs a current vessel position." : "This waypoint is read-only here.");
   const auto selected = point_;
   const bool live = !state_.vessel.simulated && !state_.vessel.replayed;
+  auto *name_editor = new XNavNameEditor(*this, "Waypoint name", selected.name,
+      mode_, interface_scale_, selected.editable && bool(actions_.navigation.edit_waypoint),
+      [this, selected](const std::string &name) {
+        return actions_.navigation.edit_waypoint(selected, name, selected.description);
+      }, [this](application::CommandResult result) { Result(result); });
+  name_editor->Present(mode_, live);
+  body_->Add(name_editor, 0, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, FromDIP(16));
   const auto command = [this, selected](ContextAction action) {
     RefreshWaypoint();
     if (!point_available_ || point_.revision != selected.revision ||
@@ -755,14 +787,14 @@ void ProductPanel::Build() {
   body_->Add(notice_, 0, wxEXPAND | wxALL, FromDIP(12));
   notice_->Hide();
   SetName("OpenNav product page");
-  SetLabel("OpenNav product page: " + W(PageTitle()));
+  SetLabel("SKAGER product page: " + W(PageTitle()));
   if (page_ == ProductPage::Alerts) {
     Heading("Alerts", "Open the notification centre from the status bar.");
   } else if (page_ == ProductPage::System) {
     Heading("System", "Interface, recovery and diagnostics");
     BeginActions(2);
     Action("Open Legacy OpenCPN",actions_.legacy);
-    Action("Restart XNav",actions_.restart_xnav);
+    Action("Restart SKAGER",actions_.restart_xnav);
     Action("Safe Mode",actions_.safe);
     Action("Diagnostics",actions_.diagnostics);
     Action("Open diagnostics folder",actions_.diagnostics_folder);
@@ -776,7 +808,7 @@ void ProductPanel::Build() {
   } else if (page_ == ProductPage::Commissioning) {
     CommissioningPanel();
   } else if (page_ == ProductPage::Home) {
-    Heading("Navigate with OpenNav X", "Beta / Chart, vessel and passage");
+    Heading("Navigate with SKAGER", "Beta / Chart, vessel and passage");
     BeginActions(3);
     for (const auto &p : std::vector<std::pair<wxString, ProductPage>>{
              {"Routes", ProductPage::Routes},

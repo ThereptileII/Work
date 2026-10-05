@@ -3,6 +3,7 @@
 #include "model/route_point.h"
 #include "model/routeman.h"
 #include "model/own_ship.h"
+#include "model/navutil_base.h"
 #include <wx/thread.h>
 #include <stdexcept>
 
@@ -54,6 +55,10 @@ RouteRead ReadRouteProgress(const vessel::Navigation& position) {
       g_pRouteMan->m_bDataValid) {
     r.range_to_active_nm = g_pRouteMan->GetCurrentRngToActivePoint();
     r.bearing_to_active_true_deg = g_pRouteMan->GetCurrentBrgToActivePoint();
+    r.cross_track_error_nm = g_pRouteMan->GetCurrentXTEToActivePoint();
+    r.cross_track_direction = g_pRouteMan->GetXTEDir();
+    r.distance_units_per_nm = toUsrDistance(1.);
+    r.distance_unit = getUsrDistanceUnit().ToStdString(wxConvUTF8);
   }
   return r;
 }

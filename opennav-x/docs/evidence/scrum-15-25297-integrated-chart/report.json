@@ -1,0 +1,335 @@
+{
+  "authority": "Linux Xvfb/software; not Windows/boat acceptance",
+  "binary_sha256": "08c39661aa695775a506157d29755fa4700fc8cd380f230a909d42ef63db9f39",
+  "captures": [
+    {
+      "name": "XNav-Day",
+      "image_sha256": "08d5d4335450d3c773fec07f48a6b09b764db0b5a772267b1ce55365f930fefc",
+      "build_commit": "25297e3ef88682ad6d85438f762e314ef9fec8d6",
+      "chart": {
+        "canvas_pixels": {
+          "height": 566,
+          "width": 1014
+        },
+        "latitude": 47.6,
+        "database_entries": 1,
+        "follow": false,
+        "quilt_members": [
+          {
+            "type": 5,
+            "native_scale": 12000,
+            "file": "US5SEAFL.000",
+            "index": 0
+          }
+        ],
+        "opengl_enabled": false,
+        "quilt_reference": 0,
+        "scale_bar": {
+          "height": 29,
+          "y": 505,
+          "width": 25,
+          "x": 191
+        },
+        "depth_unit_type": 1,
+        "quilt": true,
+        "scale_ppm": 0.150000006,
+        "longitude": -122.36,
+        "depth_units_visible": true
+      },
+      "presentation": {
+        "status": "XNav presentation v1 / pinned symbols",
+        "requested": "XNav"
+      }
+    },
+    {
+      "name": "XNav-Dusk",
+      "image_sha256": "1ed5d21629cc04c9b70bc5cd6c0efd8b8f474bd4578fa7e09e1070df3bcf769c",
+      "build_commit": "25297e3ef88682ad6d85438f762e314ef9fec8d6",
+      "chart": {
+        "canvas_pixels": {
+          "height": 566,
+          "width": 1014
+        },
+        "latitude": 47.6,
+        "database_entries": 1,
+        "follow": false,
+        "quilt_members": [
+          {
+            "type": 5,
+            "native_scale": 12000,
+            "file": "US5SEAFL.000",
+            "index": 0
+          }
+        ],
+        "opengl_enabled": false,
+        "quilt_reference": 0,
+        "scale_bar": {
+          "height": 29,
+          "y": 505,
+          "width": 25,
+          "x": 191
+        },
+        "depth_unit_type": 1,
+        "quilt": true,
+        "scale_ppm": 0.150000006,
+        "longitude": -122.36,
+        "depth_units_visible": true
+      },
+      "presentation": {
+        "status": "XNav presentation v1 / pinned symbols",
+        "requested": "XNav"
+      }
+    },
+    {
+      "name": "XNav-Night",
+      "image_sha256": "425a30b64958a2c3ac39e8ba83ce3307b9cb7a27e9077317d4ca7e32d688ee4b",
+      "build_commit": "25297e3ef88682ad6d85438f762e314ef9fec8d6",
+      "chart": {
+        "canvas_pixels": {
+          "height": 566,
+          "width": 1014
+        },
+        "latitude": 47.6,
+        "database_entries": 1,
+        "follow": false,
+        "quilt_members": [
+          {
+            "type": 5,
+            "native_scale": 12000,
+            "file": "US5SEAFL.000",
+            "index": 0
+          }
+        ],
+        "opengl_enabled": false,
+        "quilt_reference": 0,
+        "scale_bar": {
+          "height": 29,
+          "y": 505,
+          "width": 25,
+          "x": 191
+        },
+        "depth_unit_type": 1,
+        "quilt": true,
+        "scale_ppm": 0.150000006,
+        "longitude": -122.36,
+        "depth_units_visible": true
+      },
+      "presentation": {
+        "status": "XNav presentation v1 / pinned symbols",
+        "requested": "XNav"
+      }
+    }
+  ],
+  "app_pid_in_private_namespace": 7,
+  "observations": [
+    {
+      "theme": "Day",
+      "water_pixels": 341793,
+      "built_area_pixels": 90593,
+      "ownship_ink_pixels": 111,
+      "ownship_center": [
+        587,
+        351
+      ],
+      "center_pixel": [
+        248,
+        4,
+        4
+      ],
+      "owned_values": {
+        "Latitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Latitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "27670047",
+          "validity": "Measured",
+          "value": 47.6,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 247,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Longitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Longitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "27670047",
+          "validity": "Measured",
+          "value": -122.36,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 247,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Speed over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Speed over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "27670047",
+          "validity": "Measured",
+          "value": 3,
+          "aging_after_ms": 2000,
+          "unit": "kn",
+          "age_ms": 247,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Course over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Course over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "27670047",
+          "validity": "Measured",
+          "value": 90,
+          "aging_after_ms": 2000,
+          "unit": "deg true",
+          "age_ms": 247,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        }
+      }
+    },
+    {
+      "theme": "Dusk",
+      "water_pixels": 342129,
+      "built_area_pixels": 90576,
+      "ownship_ink_pixels": 111,
+      "ownship_center": [
+        587,
+        351
+      ],
+      "center_pixel": [
+        253,
+        7,
+        6
+      ],
+      "owned_values": {
+        "Latitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Latitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "27671095",
+          "validity": "Measured",
+          "value": 47.6,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 508,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Longitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Longitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "27671095",
+          "validity": "Measured",
+          "value": -122.36,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 508,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Speed over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Speed over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "27671095",
+          "validity": "Measured",
+          "value": 3,
+          "aging_after_ms": 2000,
+          "unit": "kn",
+          "age_ms": 508,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Course over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Course over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "27671095",
+          "validity": "Measured",
+          "value": 90,
+          "aging_after_ms": 2000,
+          "unit": "deg true",
+          "age_ms": 508,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        }
+      }
+    },
+    {
+      "theme": "Night",
+      "water_pixels": 342205,
+      "built_area_pixels": 90639,
+      "ownship_ink_pixels": 111,
+      "ownship_center": [
+        587,
+        351
+      ],
+      "center_pixel": [
+        251,
+        5,
+        4
+      ],
+      "owned_values": {
+        "Latitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Latitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "27674702",
+          "validity": "Measured",
+          "value": 47.6,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 188,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Longitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Longitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "27674702",
+          "validity": "Measured",
+          "value": -122.36,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 188,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Speed over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Speed over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "27674702",
+          "validity": "Measured",
+          "value": 3,
+          "aging_after_ms": 2000,
+          "unit": "kn",
+          "age_ms": 188,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Course over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Course over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "27674702",
+          "validity": "Measured",
+          "value": 90,
+          "aging_after_ms": 2000,
+          "unit": "deg true",
+          "age_ms": 188,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        }
+      }
+    }
+  ],
+  "status": "passed",
+  "clean_exit": true
+}

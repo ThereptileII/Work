@@ -12,12 +12,15 @@ in [prototype conformance](prototype-conformance.md).
 | `.nav-btn` | Native navigation control | Icon over label, selected strip and subtle mint background |
 | `.profile-btn` | `XNavButton::SetVesselProfile` | 32px round vessel shortcut; exact bottom-group spacing; hidden below 600px desktop height |
 | `.dashboard-card`, `.floating` | `XNavPainter` / card component | Distinct panel vs chart-floating surface, correct radius/shadow |
-| `.drawer`, `.drawer-head`, `.drawer-body` | `XNavDrawer` / AIS, Passage and Settings drawers | 398px AIS/Passage; 432px Preferences, 410px at <=1100 logical width; current shell workspace, bounded body scroll, one contextual return; remaining sheets pending |
-| `.metric`, `.metric-value` | `XNavDataValue` / `XNavDataRail` | Four values, light 48px numbers; actual provenance/freshness |
+| `.drawer`, `.drawer-head`, `.drawer-body` | `XNavDrawer` / AIS, Passage, Search, Chart Presentation and Settings drawers | 398px standard drawer; 432px Preferences, 410px at <=1100 logical width; current shell workspace, bounded body scroll, one contextual return; screen acceptance remains pending |
+| `.metric`, `.metric-value`, `.metric-label .icon` | `XNavDataValue` / `XNavDataRail` | Four values, light 48px numbers; actual provenance/freshness; supplied 16px metric icons selected by the configured quantity |
 | `.sensor-details`, `.sensor-details summary` | `XNavHealthDrawer` / `XNavButton::SetDisclosure` | Independent signal disclosures; exact collapsed rows, owned quality/provenance, separate onboard and online AIS |
 | `.status-dot`, `.tag` | Status indicator | Meaningful state color and text; no inferred connectivity |
 | `.toggle`, `.segment` | Native toggle / segmented control | Explicit selected state, keyboard input, unavailable semantics |
+| Display `.segment` | Settings light track / `XNavButton::SetSegmentInTrack` | Surface track, 9px radius, 4px inset/gaps, 40px buttons with 6px radius and 10px/400 text; separate applied Display preferences |
 | `.list-card`, `.suite-link`, `.row` | `XNavListView` / remaining list migrations | AIS list paints visible rows only, identity-bound selection; shared alignment and separation |
+| Search field / Search `.list-card` | `XNavSearchDrawer` / owned `SearchMatch` | 44px input, 66px result rows, 100-result bound; real saved-object scope and deferred-selection lifetime checks |
+| Layers format / `.toggle` / orientation `.segment` | `XNavChartPresentationDrawer` / copied `ChartPresentationState` | Observed format only; explicit upstream actions with readback; managed safety presentation and unavailable capabilities remain truthful |
 | `.next-turn` | Navigation summary | Valid upstream progress and advisory turn only |
 | `.timeline`, `.timeline-heading`, `.timeline-events`, `.timeline-event` | `XNavHorizon` / owned `HorizonView` | Exact fractional grid, native text/event buttons, independent advice validity and contextual action availability; existing SmartNav event order/calculations |
 | `.critical-banner`, alert drawer | Alert layer | Does not displace rail or hide behind sheets |
@@ -75,11 +78,11 @@ external light changes as well as their own clicks. The drawer has no actuator
 methods; unavailable capabilities remain disabled or absent. See
 [Preferences review](reviews/prototype-settings-in-progress.md).
 
-The lower profile action opens the real Vessel settings section. Current
-configuration has no vessel-name field, so its initial and status dot remain
-unavailable instead of copying the prototype's fictional name/green state.
-Adding a persisted vessel identity and the remaining inline forms is separate
-migration work. The action does not alter navigation or issue equipment commands.
+The lower profile action opens the real Vessel settings section. The current
+Vessel form reads and saves the actual configured vessel name through its
+validated settings callback. It must not copy the prototype's fictional name
+or infer a green data-health state from a saved name. The shortcut itself does
+not alter navigation or issue equipment commands.
 
 Notification centre: `case 'alerts'` → `XNavAlertDrawer`; `.callout` → shared
 `XNavPainter::Callout` with critical semantic ink; `.action-row .btn` →

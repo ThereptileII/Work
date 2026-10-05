@@ -1,0 +1,34 @@
+{
+  "utc": "2026-10-03T02:47:45.2716430Z",
+  "profileSha256": "d891d88c62657139e1b1c6ff7d9e8acdae726a4e116dbc844126992a39adbdb6",
+  "chartDirectories": [
+    {
+      "folderCount": 443,
+      "pathsDisclosed": false,
+      "fileCount": 1344,
+      "bounded": false,
+      "skippedRedirects": 0,
+      "state": "available",
+      "extensions": {
+        ".txt": 760,
+        ".oesu": 581,
+        ".html": 1,
+        ".xml": 2
+      }
+    },
+    {
+      "folderCount": 1,
+      "pathsDisclosed": false,
+      "fileCount": 2,
+      "bounded": false,
+      "skippedRedirects": 0,
+      "state": "available",
+      "extensions": {
+        ".mbtiles": 2
+      }
+    }
+  ],
+  "chartContentsRead": false,
+  "applicationLaunched": false,
+  "configurationChanged": false
+}

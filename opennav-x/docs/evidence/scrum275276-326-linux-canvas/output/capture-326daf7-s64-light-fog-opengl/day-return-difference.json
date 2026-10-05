@@ -1,0 +1,20 @@
+{
+  "source": "326daf73cdbeb0e7219ccb47b88967bc6a67ceaf",
+  "scope": "offline unmasked actual saved-image comparison",
+  "scene": "light-fog",
+  "renderer": "opengl",
+  "style": "SKAGER",
+  "chartBounds": [
+    80,
+    68,
+    1094,
+    634
+  ],
+  "changedPixels": 355,
+  "chartRelativeBbox": [
+    967,
+    112,
+    1010,
+    125
+  ]
+}

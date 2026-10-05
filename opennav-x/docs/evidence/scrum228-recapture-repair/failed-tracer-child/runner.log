@@ -1,0 +1,6 @@
+/tmp/opennav input kgon96ft/profile
+Traceback (most recent call last):
+  File "/home/standard/Projects/X-nav-worktrees/scrum15-gl-framebuffer-sync/.local/stale-overlay-probe/smoke-navigation-stack-trace.py", line 267, in <module>
+    assert app.poll() is None, 'Application exited during navigation test'
+           ^^^^^^^^^^^^^^^^^^
+AssertionError: Application exited during navigation test

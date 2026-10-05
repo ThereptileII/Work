@@ -42,7 +42,7 @@ void ProductPanel::ExportFieldReport(bool include_recording) {
     std::optional<std::string> recording;
     if (include_recording) {
       wxFileDialog file(this, "Explicitly select recording to share", {}, {},
-                        "OpenNav recording (*.onxr)|*.onxr",
+                        "SKAGER recording (*.onxr)|*.onxr",
                         wxFD_OPEN | wxFD_FILE_MUST_EXIST);
       if (file.ShowModal() != wxID_OK)
         return;
@@ -61,7 +61,7 @@ void ProductPanel::ExportFieldReport(bool include_recording) {
       recording = diagnostics::EncodeRecording(r);
     }
     wxFileDialog save(this, "Export Diagnostic Bundle", {},
-                      "OpenNavX-Field-Report.zip", "ZIP archive (*.zip)|*.zip",
+                      "SKAGER-Field-Report.zip", "ZIP archive (*.zip)|*.zip",
                       wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
     if (save.ShowModal() != wxID_OK)
       return;

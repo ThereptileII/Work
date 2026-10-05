@@ -1,0 +1,201 @@
+{
+  "xml_sha256": "84f93522576ed5872b24865cf6161872ed0b4b634f77c64ca697a04d3568e886",
+  "consumers": [
+    {
+      "attributes": {
+        "id": "77",
+        "RCID": "32113",
+        "name": "HRBFAC"
+      },
+      "children": {
+        "type": "Area",
+        "disp-prio": "Point Symbol",
+        "radar-prio": "Suppressed",
+        "table-name": "Plain",
+        "instruction": "SY(SMCFAC02)",
+        "display-cat": "Other",
+        "comment": "32410"
+      },
+      "attrib_codes": [
+        "CATHAF5"
+      ],
+      "xml_sha256": "a8e13a9318e88f5675414389479a3357ddb21fa8d8fbeea8aa204e740c5e1863"
+    },
+    {
+      "attributes": {
+        "id": "190",
+        "RCID": "32225",
+        "name": "SMCFAC"
+      },
+      "children": {
+        "type": "Area",
+        "disp-prio": "Point Symbol",
+        "radar-prio": "Suppressed",
+        "table-name": "Plain",
+        "instruction": "AC(CHBRN);SY(SMCFAC02);LS(SOLD,1,LANDF)",
+        "display-cat": "Other",
+        "comment": "38210"
+      },
+      "attrib_codes": [],
+      "xml_sha256": "adb387dc8cb6b0dcc3f533ec22056fbe5f33e330fcd3f726d61bdcf0143bcb00"
+    },
+    {
+      "attributes": {
+        "id": "260",
+        "RCID": "32295",
+        "name": "hrbare"
+      },
+      "children": {
+        "type": "Area",
+        "disp-prio": "No data",
+        "radar-prio": "Suppressed",
+        "table-name": "Plain",
+        "instruction": "SY(SMCFAC02);TX(OBJNAM,1,2,3,'15106',0,0,CHBLK,28);LS(DASH,1,CHGRD)",
+        "display-cat": "Other",
+        "comment": "36020"
+      },
+      "attrib_codes": [
+        "cathbr3"
+      ],
+      "xml_sha256": "93e1b54c7814a21777f799f418f79dbe3b201e35539d9f13b62cd36531c4c8f6"
+    },
+    {
+      "attributes": {
+        "id": "269",
+        "RCID": "32304",
+        "name": "hrbfac"
+      },
+      "children": {
+        "type": "Area",
+        "disp-prio": "Area 1",
+        "radar-prio": "Suppressed",
+        "table-name": "Plain",
+        "instruction": "SY(SMCFAC02);LS(DASH,1,CHGRD)",
+        "display-cat": "Other",
+        "comment": "36020"
+      },
+      "attrib_codes": [
+        "cathaf5"
+      ],
+      "xml_sha256": "1efd27d2845c05ff426cea5b866609af21ed5e06861e642a328a8fbae7ef556b"
+    },
+    {
+      "attributes": {
+        "id": "417",
+        "RCID": "32452",
+        "name": "HRBFAC"
+      },
+      "children": {
+        "type": "Area",
+        "disp-prio": "Point Symbol",
+        "radar-prio": "Suppressed",
+        "table-name": "Symbolized",
+        "instruction": "SY(SMCFAC02)",
+        "display-cat": "Other",
+        "comment": "32410"
+      },
+      "attrib_codes": [
+        "CATHAF5"
+      ],
+      "xml_sha256": "c5af07312d8925539946681322bf3404b6dcb04d35e4b999e1d2fa08458b0f6e"
+    },
+    {
+      "attributes": {
+        "id": "531",
+        "RCID": "32566",
+        "name": "SMCFAC"
+      },
+      "children": {
+        "type": "Area",
+        "disp-prio": "Point Symbol",
+        "radar-prio": "Suppressed",
+        "table-name": "Symbolized",
+        "instruction": "AC(CHBRN);SY(SMCFAC02);LS(SOLD,1,LANDF)",
+        "display-cat": "Other",
+        "comment": "38210"
+      },
+      "attrib_codes": [],
+      "xml_sha256": "93c452916ef02e49465f50aa3feaab226e729451c09233be5087ff50b86c15aa"
+    },
+    {
+      "attributes": {
+        "id": "607",
+        "RCID": "32642",
+        "name": "hrbare"
+      },
+      "children": {
+        "type": "Area",
+        "disp-prio": "No data",
+        "radar-prio": "Suppressed",
+        "table-name": "Symbolized",
+        "instruction": "SY(SMCFAC02);TX(OBJNAM,1,2,3,'15106',0,0,CHBLK,28);LS(DASH,1,CHGRD)",
+        "display-cat": "Other",
+        "comment": "36020"
+      },
+      "attrib_codes": [
+        "cathbr3"
+      ],
+      "xml_sha256": "19d301dcfd179d71a22328e1a6d3e25d5d67b69069028e7a23a57675b6fc17fc"
+    },
+    {
+      "attributes": {
+        "id": "616",
+        "RCID": "32651",
+        "name": "hrbfac"
+      },
+      "children": {
+        "type": "Area",
+        "disp-prio": "Area 1",
+        "radar-prio": "Suppressed",
+        "table-name": "Symbolized",
+        "instruction": "SY(SMCFAC02);LS(DASH,1,CHGRD)",
+        "display-cat": "Other",
+        "comment": "36020"
+      },
+      "attrib_codes": [
+        "cathaf5"
+      ],
+      "xml_sha256": "4729f20b159ef2296bc2059dbf2a6ca92876f0c8b8021e629a9c98e7fdb98fcb"
+    },
+    {
+      "attributes": {
+        "id": "1127",
+        "RCID": "31179",
+        "name": "HRBFAC"
+      },
+      "children": {
+        "type": "Point",
+        "disp-prio": "Point Symbol",
+        "radar-prio": "On Top",
+        "table-name": "Simplified",
+        "instruction": "SY(SMCFAC02)",
+        "display-cat": "Other",
+        "comment": "32410"
+      },
+      "attrib_codes": [
+        "CATHAF5"
+      ],
+      "xml_sha256": "9a6d00e6b91a6f6e1e9d6153c646849c825026c1353d67e6d847e45fe2f1016d"
+    },
+    {
+      "attributes": {
+        "id": "2194",
+        "RCID": "30374",
+        "name": "HRBFAC"
+      },
+      "children": {
+        "type": "Point",
+        "disp-prio": "Point Symbol",
+        "radar-prio": "On Top",
+        "table-name": "Paper",
+        "instruction": "SY(SMCFAC02)",
+        "display-cat": "Other",
+        "comment": "32410"
+      },
+      "attrib_codes": [
+        "CATHAF5"
+      ],
+      "xml_sha256": "23af42cf6118fd1c4d72f4b6142935e2f0715f6c1590d4d399a9f402360af203"
+    }
+  ]
+}

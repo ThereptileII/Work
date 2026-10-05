@@ -1,12 +1,13 @@
 param(
   [string]$IntegrationSource = '',
+  [string]$OChartsPrepared = '',
   [ValidateSet('production-install','xnav-install')][string]$Install = 'production-install'
 )
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 
-if ($env:GITHUB_ACTIONS -cne 'true' -or $env:RUNNER_OS -cne 'Windows' -or -not $IsWindows) {
-  throw 'This trust-store test is restricted to a disposable GitHub Actions Windows runner'
+if ($env:GITHUB_ACTIONS -cne 'true' -or $env:RUNNER_OS -cne 'Windows' -or -not $IsWindows -or $env:RUNNER_ENVIRONMENT -cne 'github-hosted' -or $env:GITHUB_REPOSITORY -cne 'ThereptileII/Work') {
+  throw 'This trust-store test is restricted to a disposable GitHub-hosted Windows runner in ThereptileII/Work'
 }
 if (-not [Environment]::Is64BitOperatingSystem) { throw 'A Windows x64 runner host is required' }
 
@@ -17,7 +18,19 @@ $InstallRoot = (Resolve-Path -LiteralPath (Join-Path $Root "build/$Install")).Pa
 $Cache = Join-Path $IntegrationSource 'cache/buildwin'
 $Wx = Join-Path $IntegrationSource 'cache/wxWidgets-3.2.8'
 $ManifestPath = Join-Path $Cache 'curl-build.json'
-$Evidence = Join-Path $Root 'evidence/local/downloader-trust-windows'
+$Evidence = Join-Path $Root $(if($OChartsPrepared){'evidence/local/ocharts-private-wxcurl-trust-windows'}else{'evidence/local/downloader-trust-windows'})
+$WxCurlRoot = Join-Path $IntegrationSource 'libs/wxcurl'
+$WxCurlInclude = Join-Path $WxCurlRoot 'include'
+$AdapterArgs = @()
+if($OChartsPrepared) {
+  $OChartsPrepared = (Resolve-Path -LiteralPath $OChartsPrepared).Path
+  & python (Join-Path $Root 'tools/prepare-ocharts-adapter.py') --verify-prepared $OChartsPrepared
+  if($LASTEXITCODE -ne 0){throw 'Private adapter preparation verification failed'}
+  $WxCurlRoot = Join-Path $OChartsPrepared 'source/libs/wxcurl'
+  $WxCurlInclude = Join-Path $WxCurlRoot 'src'
+  $Wx = Join-Path $OChartsPrepared 'sdk/wx'
+  $AdapterArgs = @("-DSKAGER_OCHARTS_PREPARED=$OChartsPrepared")
+}
 $Work = Join-Path $env:RUNNER_TEMP ("opennav-downloader-trust-" + [guid]::NewGuid().ToString('N'))
 $Build = Join-Path $Work 'build'
 $Fixtures = Join-Path $Work 'fixtures'
@@ -38,6 +51,47 @@ function Run([string]$Program,[string[]]$Arguments) {
   if ($LASTEXITCODE -ne 0) { throw "$Program failed with exit code $LASTEXITCODE" }
 }
 function OpenSsl([string[]]$Arguments) { Run 'openssl.exe' $Arguments }
+function Write-TrustProgress([string]$Stage,[string]$Name,[string]$State,[string]$Detail='') {
+  $Event=[ordered]@{utc=[DateTime]::UtcNow.ToString('o');stage=$Stage;name=$Name;state=$State;detail=$Detail}
+  $Event|ConvertTo-Json -Compress|Add-Content -LiteralPath (Join-Path $Evidence 'progress.jsonl') -Encoding utf8
+  Write-Host "$($Event.utc) $Stage/$Name $State $Detail"
+}
+function Invoke-BoundedProbe([string]$Name,[string]$Program,[string[]]$Arguments,[ValidateRange(1,30)][int]$TimeoutSeconds=30) {
+  $Start=[Diagnostics.ProcessStartInfo]::new($Program)
+  $Start.UseShellExecute=$false;$Start.RedirectStandardOutput=$true;$Start.RedirectStandardError=$true
+  $Start.WorkingDirectory=(Get-Location).Path
+  foreach($Argument in $Arguments){$Start.ArgumentList.Add($Argument)}
+  $Process=$null;$Watch=[Diagnostics.Stopwatch]::StartNew()
+  Write-TrustProgress 'process' $Name 'before'
+  try {
+    $Process=[Diagnostics.Process]::Start($Start)
+    $Stdout=$Process.StandardOutput.ReadToEndAsync();$Stderr=$Process.StandardError.ReadToEndAsync()
+    $TimedOut=-not $Process.WaitForExit($TimeoutSeconds * 1000)
+    if($TimedOut){
+      Write-TrustProgress 'process' $Name 'timeout' "Exceeded $TimeoutSeconds seconds; terminating owned process tree"
+      if(-not $Process.HasExited){$Process.Kill($true)}
+      if(-not $Process.WaitForExit(5000)){throw "$Name process tree did not terminate"}
+    }
+    if(-not $Stdout.Wait(5000) -or -not $Stderr.Wait(5000)){throw "$Name output pipes did not close"}
+    $Stdout.Result|Set-Content -LiteralPath (Join-Path $Evidence "$Name.stdout.txt") -Encoding utf8
+    $Stderr.Result|Set-Content -LiteralPath (Join-Path $Evidence "$Name.stderr.txt") -Encoding utf8
+    $Record=[ordered]@{processId=$Process.Id;exitCode=$Process.ExitCode;timedOut=$TimedOut;timeoutSeconds=$TimeoutSeconds;elapsedSeconds=$Watch.Elapsed.TotalSeconds}
+    $Record|ConvertTo-Json|Set-Content -LiteralPath (Join-Path $Evidence "$Name.process.json") -Encoding utf8
+    if($TimedOut){throw "$Name exceeded the $TimeoutSeconds-second native probe limit"}
+    Write-TrustProgress 'process' $Name 'after' "exit=$($Process.ExitCode)"
+    return @{output=($Stdout.Result+"`n"+$Stderr.Result);exitCode=$Process.ExitCode}
+  } catch {
+    Write-TrustProgress 'process' $Name 'failure' $_.Exception.Message
+    throw
+  } finally {
+    if($Process){
+      try {
+        if(-not $Process.HasExited){$Process.Kill($true)}
+        if(-not $Process.WaitForExit(5000)){throw "$Name owned process remains after cleanup"}
+      } finally { $Process.Dispose() }
+    }
+  }
+}
 function Assert-InstalledDependency([object]$CurlManifest,[string]$InstallRoot,[string]$ManifestName,[string]$DllName,[string]$OutputName,[string]$DependencyName) {
   $DependencyManifestPath=Require-File (Join-Path $InstallRoot $ManifestName) "installed $ManifestName producer manifest"
   if((Digest $DependencyManifestPath)-cne $CurlManifest.dependencies.($DependencyName).manifestSha256){throw "$ManifestName is not the manifest bound into curl"}
@@ -48,22 +102,32 @@ function Assert-InstalledDependency([object]$CurlManifest,[string]$InstallRoot,[
 }
 function Remove-OwnedTrust {
   if (-not $script:TrustedThumbprint) { return }
-  $Path = "Cert:\CurrentUser\Root\$($script:TrustedThumbprint)"
+  $Path = "Cert:\LocalMachine\Root\$($script:TrustedThumbprint)"
   if (Test-Path -LiteralPath $Path) { Remove-Item -LiteralPath $Path -Force }
-  if (Test-Path -LiteralPath $Path) { throw "Failed to remove owned CurrentUser Root certificate $($script:TrustedThumbprint)" }
+  if (Test-Path -LiteralPath $Path) { throw "Failed to remove owned LocalMachine Root certificate $($script:TrustedThumbprint)" }
 }
 function Import-OwnedTrust([string]$Certificate) {
+  Write-TrustProgress 'trust-import' 'LocalMachine-Root' 'before'
+  try {
   $Candidate = [Security.Cryptography.X509Certificates.X509Certificate2]::new($Certificate)
   $CandidateThumbprint = $Candidate.Thumbprint
-  $Path = "Cert:\CurrentUser\Root\$CandidateThumbprint"
-  if (Test-Path -LiteralPath $Path) { throw 'Generated CA thumbprint unexpectedly already exists in CurrentUser Root' }
+  $Path = "Cert:\LocalMachine\Root\$CandidateThumbprint"
+  if (Test-Path -LiteralPath $Path) { throw 'Generated CA thumbprint unexpectedly already exists in LocalMachine Root' }
   # From this point onward cleanup owns this exact, previously absent identity,
-  # including when Import-Certificate throws after a partial import.
+  # including when the bounded import fails after a partial import.
   $script:TrustedThumbprint = $CandidateThumbprint
-  $Imported = Import-Certificate -FilePath $Certificate -CertStoreLocation 'Cert:\CurrentUser\Root'
-  if ($Imported.Thumbprint -cne $script:TrustedThumbprint -or -not (Test-Path -LiteralPath $Path)) {
-    throw 'Owned CA import could not be verified by exact thumbprint'
+  # CurrentUser root imports display a modal Security Warning on hosted Windows.
+  # Use the disposable runner's machine store; never alter user/machine policy.
+  $Import = Invoke-BoundedProbe 'owned-ca-import' (Join-Path $env:SystemRoot 'System32/certutil.exe') @('-f','-addstore','Root',$Certificate)
+  if ($Import.exitCode -ne 0 -or -not (Test-Path -LiteralPath $Path)) {
+    throw 'Owned CA import failed or its exact thumbprint is absent'
   }
+  $Imported = Get-Item -LiteralPath $Path
+  if ($Imported.Thumbprint -cne $script:TrustedThumbprint -or [Convert]::ToBase64String($Imported.RawData) -cne [Convert]::ToBase64String($Candidate.RawData)) {
+    throw 'Owned CA import differs from the exact generated certificate'
+  }
+  Write-TrustProgress 'trust-import' 'LocalMachine-Root' 'after'
+  } catch { Write-TrustProgress 'trust-import' 'LocalMachine-Root' 'failure' $_.Exception.Message; throw }
 }
 function New-Ca([string]$Name) {
   $Key = Join-Path $Fixtures "$Name.key"; $Cert = Join-Path $Fixtures "$Name.pem"
@@ -79,7 +143,7 @@ function New-Leaf([string]$Name,[string]$CaKey,[string]$CaCert,[string]$Dns,[swi
     OpenSsl @('x509','-req','-in',$Csr,'-CA',$CaCert,'-CAkey',$CaKey,'-CAcreateserial','-days','1','-extfile',$Ext,'-out',$Cert)
   } else {
     $Index=Join-Path $Fixtures "$Name-index.txt"; $Serial=Join-Path $Fixtures "$Name-serial"; $NewCerts=Join-Path $Fixtures "$Name-newcerts"; $Config=Join-Path $Fixtures "$Name-ca.cnf"
-    Set-Content -LiteralPath $Index -Value '' -Encoding ascii; Set-Content -LiteralPath $Serial -Value '1000' -Encoding ascii; $null=New-Item -ItemType Directory $NewCerts
+    [IO.File]::WriteAllBytes($Index, [byte[]]::new(0)); Set-Content -LiteralPath $Serial -Value '1000' -Encoding ascii; $null=New-Item -ItemType Directory $NewCerts
     $Index=$Index.Replace('\','/');$Serial=$Serial.Replace('\','/');$NewCerts=$NewCerts.Replace('\','/');$CaCert=$CaCert.Replace('\','/');$CaKey=$CaKey.Replace('\','/')
     @("[ca]","default_ca=local","[local]","database=$Index","serial=$Serial","new_certs_dir=$NewCerts","certificate=$CaCert","private_key=$CaKey","default_md=sha256","policy=policy","x509_extensions=server","[policy]","commonName=supplied","[server]","subjectAltName=DNS:$Dns","extendedKeyUsage=serverAuth") | Set-Content -LiteralPath $Config -Encoding ascii
     OpenSsl @('ca','-batch','-config',$Config,'-in',$Csr,'-out',$Cert,'-startdate','20200101000000Z','-enddate','20200102000000Z')
@@ -87,19 +151,24 @@ function New-Leaf([string]$Name,[string]$CaKey,[string]$CaCert,[string]$Dns,[swi
   @($Key,$Cert)
 }
 function Start-Server([string]$Name,[string]$Cert,[string]$Key) {
+  Write-TrustProgress 'server' $Name 'before'
+  try {
   $PortFile=Join-Path $Fixtures "$Name.port.json"
   $Start=[Diagnostics.ProcessStartInfo]::new();$Start.FileName='python';$Start.UseShellExecute=$false;$Start.CreateNoWindow=$true
   foreach($Argument in @((Join-Path $Root 'tools/downloader-trust-server.py'),$Cert,$Key,$PortFile)){$Start.ArgumentList.Add($Argument)}
   $P=[Diagnostics.Process]::Start($Start)
   $Servers.Add($P)
-  foreach($i in 1..100) { if(Test-Path -LiteralPath $PortFile){ return (Get-Content -LiteralPath $PortFile -Raw|ConvertFrom-Json).port }; if($P.HasExited){throw "$Name TLS server exited"}; Start-Sleep -Milliseconds 50 }
+  foreach($i in 1..100) { if(Test-Path -LiteralPath $PortFile){ $Port=(Get-Content -LiteralPath $PortFile -Raw|ConvertFrom-Json).port;Write-TrustProgress 'server' $Name 'after' "port=$Port";return $Port }; if($P.HasExited){throw "$Name TLS server exited"}; Start-Sleep -Milliseconds 50 }
   throw "$Name TLS server did not publish its port"
+  } catch { Write-TrustProgress 'server' $Name 'failure' $_.Exception.Message; throw }
 }
 function Invoke-Case([string]$Name,[string]$Url,[bool]$Expected,[switch]$RejectStream,[switch]$DifferentCwd) {
+  Write-TrustProgress 'downloader-case' $Name 'before'
+  try {
   $Destination=Join-Path $Fixtures "$Name.output"; [IO.File]::WriteAllBytes($Destination,[Text.Encoding]::ASCII.GetBytes("pre-existing destination`n"))
   $Args=@($Url,$Destination); if($RejectStream){$Args+='--reject-stream'}
   $Old=(Get-Location).Path; if($DifferentCwd){$Cwd=Join-Path $Work 'unrelated-cwd';$null=New-Item -ItemType Directory -Force $Cwd;Set-Location $Cwd}
-  try { $Output=& (Join-Path $Runtime 'downloader-trust-probe.exe') @Args 2>&1 | Out-String; $Exit=$LASTEXITCODE } finally { if($DifferentCwd){Set-Location $Old} }
+  try { $Probe=Invoke-BoundedProbe "downloader-$Name" (Join-Path $Runtime 'downloader-trust-probe.exe') $Args; $Output=$Probe.output; $Exit=$Probe.exitCode } finally { if($DifferentCwd){Set-Location $Old} }
   $Fields=@{}; foreach($Line in ($Output -split "`r?`n")){if($Line -match '^([^=]+)=(.*)$'){$Fields[$Matches[1]]=$Matches[2]}}
   foreach($RequiredField in @('download_ok','download_error','head_size','head_error')){if(-not $Fields.ContainsKey($RequiredField)){throw "$Name probe output omitted $RequiredField`: $Output"}}
   $Accepted=($Exit -eq 0 -and $Fields.download_ok -ceq 'true')
@@ -114,9 +183,13 @@ function Invoke-Case([string]$Name,[string]$Url,[bool]$Expected,[switch]$RejectS
   $Record=[ordered]@{case=$Name;accepted=$Accepted;exitCode=$Exit;downloadError=[int]$Fields.download_error;headError=[int]$Fields.head_error;output=$Output.Trim()}
   $Record|ConvertTo-Json -Depth 4|Set-Content -LiteralPath (Join-Path $Evidence "$Name.json") -Encoding utf8
   $Results.Add($Record)
+  Write-TrustProgress 'downloader-case' $Name 'after'
+  } catch { Write-TrustProgress 'downloader-case' $Name 'failure' $_.Exception.Message; throw }
 }
 function Invoke-WxCurlCase([string]$Name,[string]$Url,[bool]$Expected) {
-  $Output=& (Join-Path $Runtime 'wxcurl-trust-probe.exe') $Url 2>&1|Out-String;$Exit=$LASTEXITCODE
+  Write-TrustProgress 'wxcurl-case' $Name 'before'
+  try {
+  $Probe=Invoke-BoundedProbe "wxcurl-$Name" (Join-Path $Runtime 'wxcurl-trust-probe.exe') @($Url);$Output=$Probe.output;$Exit=$Probe.exitCode
   $Fields=@{};foreach($Line in ($Output -split "`r?`n")){if($Line -match '^([^=]+)=(.*)$'){$Fields[$Matches[1]]=$Matches[2]}}
   foreach($RequiredField in @('bad_option_blocked','get_ok','get_bytes','get_error','head_ok','head_error')){if(-not $Fields.ContainsKey($RequiredField)){throw "$Name wxCurl output omitted $RequiredField`: $Output"}}
   if($Fields.bad_option_blocked -cne 'true'){throw "$Name wxCurl performed after a rejected option: $Output"}
@@ -128,6 +201,8 @@ function Invoke-WxCurlCase([string]$Name,[string]$Url,[bool]$Expected) {
   $Record=[ordered]@{case=$Name;accepted=$GetOk;headAccepted=$HeadOk;badOptionBlocked=$true;exitCode=$Exit;getBytes=[int64]$Fields.get_bytes;getError=$Fields.get_error;headError=$Fields.head_error;output=$Output.Trim()}
   $Record|ConvertTo-Json -Depth 4|Set-Content -LiteralPath (Join-Path $Evidence "wxcurl-$Name.json") -Encoding utf8
   $WxCurlResults.Add($Record)
+  Write-TrustProgress 'wxcurl-case' $Name 'after'
+  } catch { Write-TrustProgress 'wxcurl-case' $Name 'failure' $_.Exception.Message; throw }
 }
 
 $CleanupFailures=[Collections.Generic.List[string]]::new()
@@ -141,6 +216,10 @@ try {
     $Path=Require-File (Join-Path $Cache $Property.Name) "curl $($Property.Name)"
     if((Digest $Path)-cne $Property.Value.sha256 -or (Get-Item -LiteralPath $Path).Length -ne $Property.Value.bytes){throw "curl manifest mismatch: $($Property.Name)"}
   }
+  if($OChartsPrepared) {
+    $PreparedManifest=Require-File (Join-Path $OChartsPrepared 'sdk/curl-build.json') 'prepared curl manifest'
+    if((Digest $PreparedManifest)-cne (Digest $ManifestPath)){throw 'Private wxCurl probe dependency differs from the prepared adapter'}
+  }
   $InstalledCurl=Require-File (Join-Path $InstallRoot 'libcurl.dll') 'installed production libcurl DLL'
   if((Digest $InstalledCurl)-cne $Manifest.cacheBuildwin.'libcurl.dll'.sha256){throw 'Installed libcurl.dll differs from its maintained producer manifest'}
   foreach($Dependency in @(@('openssl-build.json','libssl-3.dll','bin/libssl-3.dll','openssl'),@('openssl-build.json','libcrypto-3.dll','bin/libcrypto-3.dll','openssl'),@('zlib-build.json','zlib1.dll','bin/zlib1.dll','zlib'))){
@@ -150,15 +229,23 @@ try {
   $SourceHeader=Require-File (Join-Path $IntegrationSource 'model/include/model/downloader.h') 'actual integrated downloader header'
   if((Get-Content -LiteralPath $SourceCpp -Raw) -notmatch 'CURLSSLOPT_NATIVE_CA'){throw 'Integrated Downloader does not contain the Windows native CA path'}
   if((Get-Content -LiteralPath $SourceCpp -Raw) -match '#define\s+OPENNAV_DOWNLOADER_TLS_TEST'){throw 'Integrated source forces the test-only CA injection path'}
-  $WxCurlSource=Require-File (Join-Path $IntegrationSource 'libs/wxcurl/src/base.cpp') 'actual integrated wxCurl source'
+  $WxCurlSource=Require-File (Join-Path $WxCurlRoot 'src/base.cpp') 'actual selected wxCurl source'
+  $WxCurlHeader=Require-File (Join-Path $WxCurlInclude 'wx/curl/base.h') 'actual selected wxCurl header'
   if((Get-Content -LiteralPath $WxCurlSource -Raw) -notmatch 'CURLSSLOPT_NATIVE_CA'){throw 'Integrated wxCurl does not contain the Windows native CA path'}
   if((Get-Content -LiteralPath $WxCurlSource -Raw) -match '#define\s+OPENNAV_WXCURL_TLS_TEST'){throw 'Integrated wxCurl source forces the test-only CA injection path'}
-  Run cmake @('-S',(Join-Path $Root 'tests/downloader_trust'),'-B',$Build,'-G','Visual Studio 17 2022','-A','Win32',"-DOPENNAV_SOURCE_DIR=$IntegrationSource","-DOPENNAV_TOOLS_DIR=$(Join-Path $Root 'tools')","-DCURL_ROOT=$Cache","-DwxWidgets_ROOT_DIR=$Wx","-DwxWidgets_LIB_DIR=$(Join-Path $Wx 'lib/vc14x_dll')",'-DwxWidgets_CONFIGURATION=mswu')
+  Run cmake (@('-S',(Join-Path $Root 'tests/downloader_trust'),'-B',$Build,'-G','Visual Studio 17 2022','-A','Win32',"-DOPENNAV_SOURCE_DIR=$IntegrationSource","-DOPENNAV_TOOLS_DIR=$(Join-Path $Root 'tools')","-DCURL_ROOT=$Cache","-DwxWidgets_ROOT_DIR=$Wx","-DwxWidgets_LIB_DIR=$(Join-Path $Wx 'lib/vc14x_dll')",'-DwxWidgets_CONFIGURATION=mswu') + $AdapterArgs)
   Run cmake @('--build',$Build,'--config','Release','--parallel','2')
   Copy-Item -LiteralPath (Join-Path $Build 'Release/downloader-trust-probe.exe') -Destination $Runtime
   Copy-Item -LiteralPath (Join-Path $Build 'Release/wxcurl-trust-probe.exe') -Destination $Runtime
   foreach($Dll in (Get-ChildItem -LiteralPath $InstallRoot -Filter '*.dll' -File)){Copy-Item -LiteralPath $Dll.FullName -Destination $Runtime}
-  $Prereqs=[ordered]@{integrationSource=$IntegrationSource;downloaderCppSha256=Digest $SourceCpp;downloaderHeaderSha256=Digest $SourceHeader;probeSha256=Digest (Join-Path $Runtime 'downloader-trust-probe.exe');wxCurlBaseSha256=Digest $WxCurlSource;wxCurlHttpSha256=Digest (Join-Path $IntegrationSource 'libs/wxcurl/src/http.cpp');wxCurlProbeSha256=Digest (Join-Path $Runtime 'wxcurl-trust-probe.exe');curlManifestSha256=Digest $ManifestPath;runtimeDlls=[ordered]@{}}
+  if($OChartsPrepared) {
+    foreach($Dll in (Get-ChildItem -LiteralPath $Runtime -Filter 'wx*.dll' -File)) {
+      $PreparedDll=Require-File (Join-Path $Wx "lib/vc14x_dll/$($Dll.Name)") 'prepared wxWidgets runtime'
+      if((Digest $PreparedDll)-cne (Digest $Dll.FullName)){throw "Private wxCurl runtime differs from locked wxWidgets: $($Dll.Name)"}
+    }
+  }
+  $Prereqs=[ordered]@{integrationSource=$IntegrationSource;downloaderCppSha256=Digest $SourceCpp;downloaderHeaderSha256=Digest $SourceHeader;probeSha256=Digest (Join-Path $Runtime 'downloader-trust-probe.exe');wxCurlBaseSha256=Digest $WxCurlSource;wxCurlHttpSha256=Digest (Join-Path $WxCurlRoot 'src/http.cpp');wxCurlHeaderSha256=Digest $WxCurlHeader;wxCurlSourceKind=$(if($OChartsPrepared){'verified-private-ocharts'}else{'integrated-core'});wxCurlProbeSha256=Digest (Join-Path $Runtime 'wxcurl-trust-probe.exe');curlManifestSha256=Digest $ManifestPath;runtimeDlls=[ordered]@{}}
+  if($OChartsPrepared){$Prereqs['ochartsPreparationSha256']=Digest (Join-Path $OChartsPrepared 'preparation.json')}
   foreach($Dll in (Get-ChildItem -LiteralPath $Runtime -Filter '*.dll' -File|Sort-Object Name)){$Prereqs.runtimeDlls[$Dll.Name]=Digest $Dll.FullName}
   $Prereqs|ConvertTo-Json -Depth 5|Set-Content -LiteralPath (Join-Path $Evidence 'prerequisites.json') -Encoding utf8
   $Trusted=New-Ca 'opennav-scrum211-owned-ca';$Other=New-Ca 'opennav-scrum211-untrusted-ca'
@@ -190,7 +277,7 @@ try {
     catch { $CleanupFailures.Add($_.Exception.Message) }
   }
   try { Remove-OwnedTrust } catch { $CleanupFailures.Add($_.Exception.Message) }
-  try { if($TrustedThumbprint -and (Test-Path -LiteralPath "Cert:\CurrentUser\Root\$TrustedThumbprint")){throw 'Owned CA remains in CurrentUser Root after cleanup'} } catch { $CleanupFailures.Add($_.Exception.Message) }
+  try { if($TrustedThumbprint -and (Test-Path -LiteralPath "Cert:\LocalMachine\Root\$TrustedThumbprint")){throw 'Owned CA remains in LocalMachine Root after cleanup'} } catch { $CleanupFailures.Add($_.Exception.Message) }
   try { if(Test-Path -LiteralPath $Work){Remove-Item -LiteralPath $Work -Recurse -Force} } catch { $CleanupFailures.Add($_.Exception.Message) }
   if($CleanupFailures.Count){throw "Native trust cleanup failed: $($CleanupFailures -join '; ')"}
 }

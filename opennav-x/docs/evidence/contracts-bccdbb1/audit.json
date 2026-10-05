@@ -1,0 +1,109 @@
+{
+  "candidate": "bccdbb11cef827d3b63731fe1e874bc72bf47d2d",
+  "run": 37177738716,
+  "attempt": 1,
+  "localSourceMapping": "1a6733a1cbcc817aa0f13fa5acc41aac62a54146",
+  "evidenceWorktreeBase": "543ab192a5419367c48a99bc01b08798367871fc",
+  "sourceFiles": {
+    ".github/workflows/opennav-baseline.yml": {
+      "sha256": "f52c3e7a7a350cd09a1cc67b1b47ae36bbcd6b7be59c14d864b515d91d35898e",
+      "bytes": 50048,
+      "remoteBytesEqualMappedLocal": true
+    },
+    "CMakeLists.txt": {
+      "sha256": "caf60fdf2f0f47ac7a08b355357ea004ad522ecc5a9d95efbef69ac0d85f153e",
+      "bytes": 33478,
+      "remoteBytesEqualMappedLocal": true
+    }
+  },
+  "jobs": {
+    "linux": {
+      "id": 111363797659,
+      "status": "completed",
+      "conclusion": "success",
+      "originalDecodedLogUtf8Bytes": 92935,
+      "originalDecodedLogUtf8Sha256": "47b790b5b50d704ef44a90ff345ad6fab45435cd658289cb55ac167e33647c02",
+      "logCompleteThroughCleanup": true,
+      "mainCTest": {
+        "uniqueTests": 94,
+        "passed": 94,
+        "failed": 0,
+        "skipped": 0,
+        "timeSeconds": 5.98
+      },
+      "restartRepeat": {
+        "distinctTests": 1,
+        "additionalExecutions": 10,
+        "passedExecutions": 10,
+        "failedExecutions": 0,
+        "skippedExecutions": 0,
+        "timeSeconds": 19.46
+      },
+      "otherPythonSuiteCountsInExecutionOrder": [
+        11,
+        9,
+        17,
+        15,
+        14,
+        13,
+        4,
+        7,
+        12,
+        11
+      ],
+      "platformConditionalStepsSkipped": [
+        "Native version probe contracts in Windows PowerShell 5.1",
+        "Installer filesystem contracts in native Windows PowerShell 5.1",
+        "Configure contracts for the supported Windows application ABI"
+      ]
+    },
+    "windows": {
+      "id": 111363797728,
+      "status": "completed",
+      "conclusion": "success",
+      "originalDecodedLogUtf8Bytes": 131056,
+      "originalDecodedLogUtf8Sha256": "5eb31f4df4cc6fa6618cd89a48167db7d357c6037c8b44542d70056375cb99c8",
+      "logCompleteThroughCleanup": true,
+      "mainCTest": {
+        "uniqueTests": 91,
+        "passed": 91,
+        "failed": 0,
+        "skipped": 0,
+        "timeSeconds": 6.53
+      },
+      "restartRepeat": {
+        "distinctTests": 1,
+        "additionalExecutions": 10,
+        "passedExecutions": 10,
+        "failedExecutions": 0,
+        "skippedExecutions": 0,
+        "timeSeconds": 19.96
+      },
+      "otherPythonSuiteCountsInExecutionOrder": [
+        11,
+        9,
+        17,
+        15,
+        14,
+        13,
+        4,
+        7,
+        12
+      ],
+      "platformConditionalStepsSkipped": [
+        "Portable maintenance refusal and recovery identity contracts",
+        "Configure Linux contracts"
+      ]
+    }
+  },
+  "linuxOnlyCTestNames": [
+    "early_startup_fixtures_isolation",
+    "early_startup_msw_excluded_isolation",
+    "early_startup_product_isolation"
+  ],
+  "windowsOnlyCTestNames": [],
+  "uniqueCTestNamesAcrossPlatforms": 94,
+  "mainCTestPlatformExecutions": 185,
+  "additionalRepeatedExecutions": 20,
+  "contractArtifact": "No upload step in frozen contracts job; original job logs are primary evidence."
+}

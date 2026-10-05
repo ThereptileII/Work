@@ -1,0 +1,8 @@
+{
+  "status": "passed",
+  "checks": 309,
+  "environment": "portable Linux",
+  "nativePipeExecuted": false,
+  "applicationLaunched": false,
+  "physicalOutput": false
+}

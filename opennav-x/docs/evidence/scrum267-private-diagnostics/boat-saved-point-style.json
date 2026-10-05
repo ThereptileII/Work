@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "observedAt": "2026-10-03T15:09:55.1930296Z",
+  "scope": "read-only saved presentation preference; no effective renderer or visual acceptance",
+  "profileSha256": "d891d88c62657139e1b1c6ff7d9e8acdae726a4e116dbc844126992a39adbdb6",
+  "section": "Settings/GlobalState",
+  "nSymbolStyle": 82,
+  "nBoundaryStyle": 78,
+  "unchanged": true,
+  "applicationLaunched": false,
+  "sourceBoundary": "Pinned s52s57.h: SIMPLIFIED=L (76), PAPER_CHART=R (82), PLAIN_BOUNDARIES=N (78)",
+  "candidate": "442960ba55277845e171f9b95a38838f66c23981",
+  "nextObservation": "Read actual core/private effective selection after initialization; saved preference alone cannot prove selected renderer style."
+}

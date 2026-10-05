@@ -1,0 +1,22 @@
+2026-10-03T21:39:22.6674002Z Image: windows-2022
+2026-10-03T21:39:26.7443018Z [command]"C:\Program Files\Git\bin\git.exe" -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +4ddf1f383e495150551946dd36103cd77cea85eb:refs/remotes/origin/opennav-x-beta2-ui
+2026-10-03T21:39:39.9100633Z  * [new ref]         4ddf1f383e495150551946dd36103cd77cea85eb -> origin/opennav-x-beta2-ui
+2026-10-03T21:39:42.0637007Z 4ddf1f383e495150551946dd36103cd77cea85eb
+2026-10-03T21:45:29.8256141Z ##[group]Run ctest --test-dir opennav-x/build/contracts -C Release --output-on-failure
+2026-10-03T21:45:36.7955306Z 60/91 Test #60: restart_lifecycle_contract .....................   Passed    2.00 sec
+2026-10-03T21:45:37.0728406Z 100% tests passed, 0 tests failed out of 91
+2026-10-03T21:45:37.0728811Z Total Test time (real) =   6.54 sec
+2026-10-03T21:45:37.2172591Z ##[group]Run ctest --test-dir opennav-x/build/contracts -C Release -R restart_lifecycle_contract --repeat until-fail:10 --output-on-failure
+2026-10-03T21:45:39.4626893Z     Test #60: restart_lifecycle_contract .......   Passed    1.99 sec
+2026-10-03T21:45:41.4572691Z     Test #60: restart_lifecycle_contract .......   Passed    1.99 sec
+2026-10-03T21:45:43.4518598Z     Test #60: restart_lifecycle_contract .......   Passed    1.99 sec
+2026-10-03T21:45:45.4480389Z     Test #60: restart_lifecycle_contract .......   Passed    2.00 sec
+2026-10-03T21:45:47.4423796Z     Test #60: restart_lifecycle_contract .......   Passed    1.99 sec
+2026-10-03T21:45:49.4550468Z     Test #60: restart_lifecycle_contract .......   Passed    2.01 sec
+2026-10-03T21:45:51.4679071Z     Test #60: restart_lifecycle_contract .......   Passed    2.01 sec
+2026-10-03T21:45:53.4811429Z     Test #60: restart_lifecycle_contract .......   Passed    2.01 sec
+2026-10-03T21:45:55.4745411Z     Test #60: restart_lifecycle_contract .......   Passed    1.99 sec
+2026-10-03T21:45:57.4688062Z 1/1 Test #60: restart_lifecycle_contract .......   Passed    1.99 sec
+2026-10-03T21:45:57.4697991Z 100% tests passed, 0 tests failed out of 1
+2026-10-03T21:45:57.4698361Z Total Test time (real) =  20.01 sec
+2026-10-03T21:45:57.5764619Z Post job cleanup.

@@ -1,0 +1,194 @@
+[
+  {
+    "path": "adapter-junction.command.json",
+    "bytes": 237,
+    "crc32": "ab515745",
+    "sha256": "b5fdb3da5d1cf630da097de595820496ae3fbd673a830cfc458c6a9554b5db23"
+  },
+  {
+    "path": "adapter-junction.log",
+    "bytes": 184,
+    "crc32": "b9eec43f",
+    "sha256": "63ff7992e77b574fb951d289f9e61fe7ba706330e3c78ddba9f73e728519aca2"
+  },
+  {
+    "path": "compile.command.json",
+    "bytes": 196,
+    "crc32": "25a4401e",
+    "sha256": "01df2f4825e07c37d9005ac325141fedff6b5972e713c6b70a8b588ac4ed0e70"
+  },
+  {
+    "path": "compile.log",
+    "bytes": 27491,
+    "crc32": "a50c80aa",
+    "sha256": "cf318bbf114379f91498c6b607971da4be790a2861c48a082381c1cee5b7d782"
+  },
+  {
+    "path": "configure.command.json",
+    "bytes": 587,
+    "crc32": "3786629c",
+    "sha256": "e0dfe3f1138f5bfacfe42e2af239d8a74586ab91661eb04d0222d3506ce8387a"
+  },
+  {
+    "path": "configure.log",
+    "bytes": 1535,
+    "crc32": "824d97ba",
+    "sha256": "f0e74b4ec642e4e1b04476f8c188085e67b3713aa72280bf37ff0bc6f0d37838"
+  },
+  {
+    "path": "dll-events/binding-rejected.log",
+    "bytes": 48,
+    "crc32": "cd87f5d4",
+    "sha256": "71bb5533853095d83a907de835df20bf56e0312541b98f54af58c374b79c4dba"
+  },
+  {
+    "path": "dll-events/bound-success.log",
+    "bytes": 55,
+    "crc32": "8ae741f0",
+    "sha256": "61c3906393f22c8cedefbd9f092b45dd54b0330f64ab54196128b1a205356317"
+  },
+  {
+    "path": "dll-events/callback-and-fallback.log",
+    "bytes": 14,
+    "crc32": "eff12f40",
+    "sha256": "ec72b758bb29d757a3ed6a3de5e5bc5c6eb067aa51d60e4627b3e511354703fa"
+  },
+  {
+    "path": "dll-events/no_bind.log",
+    "bytes": 14,
+    "crc32": "eff12f40",
+    "sha256": "ec72b758bb29d757a3ed6a3de5e5bc5c6eb067aa51d60e4627b3e511354703fa"
+  },
+  {
+    "path": "dll-events/no_create.log",
+    "bytes": 14,
+    "crc32": "eff12f40",
+    "sha256": "ec72b758bb29d757a3ed6a3de5e5bc5c6eb067aa51d60e4627b3e511354703fa"
+  },
+  {
+    "path": "dll-events/no_destroy.log",
+    "bytes": 14,
+    "crc32": "eff12f40",
+    "sha256": "ec72b758bb29d757a3ed6a3de5e5bc5c6eb067aa51d60e4627b3e511354703fa"
+  },
+  {
+    "path": "dll-events/no_status.log",
+    "bytes": 14,
+    "crc32": "eff12f40",
+    "sha256": "ec72b758bb29d757a3ed6a3de5e5bc5c6eb067aa51d60e4627b3e511354703fa"
+  },
+  {
+    "path": "dll-events/status-reason.log",
+    "bytes": 55,
+    "crc32": "8ae741f0",
+    "sha256": "61c3906393f22c8cedefbd9f092b45dd54b0330f64ab54196128b1a205356317"
+  },
+  {
+    "path": "dll-events/status-reserved.log",
+    "bytes": 55,
+    "crc32": "8ae741f0",
+    "sha256": "61c3906393f22c8cedefbd9f092b45dd54b0330f64ab54196128b1a205356317"
+  },
+  {
+    "path": "dll-events/status-return.log",
+    "bytes": 55,
+    "crc32": "8ae741f0",
+    "sha256": "61c3906393f22c8cedefbd9f092b45dd54b0330f64ab54196128b1a205356317"
+  },
+  {
+    "path": "dll-events/status-selected.log",
+    "bytes": 55,
+    "crc32": "8ae741f0",
+    "sha256": "61c3906393f22c8cedefbd9f092b45dd54b0330f64ab54196128b1a205356317"
+  },
+  {
+    "path": "dll-events/status-size.log",
+    "bytes": 55,
+    "crc32": "8ae741f0",
+    "sha256": "61c3906393f22c8cedefbd9f092b45dd54b0330f64ab54196128b1a205356317"
+  },
+  {
+    "path": "dll-events/status-version.log",
+    "bytes": 55,
+    "crc32": "8ae741f0",
+    "sha256": "61c3906393f22c8cedefbd9f092b45dd54b0330f64ab54196128b1a205356317"
+  },
+  {
+    "path": "dll-events/status-unknown.log",
+    "bytes": 55,
+    "crc32": "8ae741f0",
+    "sha256": "61c3906393f22c8cedefbd9f092b45dd54b0330f64ab54196128b1a205356317"
+  },
+  {
+    "path": "native-tests.command.json",
+    "bytes": 671,
+    "crc32": "11d9d761",
+    "sha256": "45a084fb9b1dbee792defe9cf92aa8a59d2e7029783e01972236970991c960ce"
+  },
+  {
+    "path": "native-tests.json",
+    "bytes": 146,
+    "crc32": "5eca5f14",
+    "sha256": "e0be17a9fb981456c1da74a2ce08f9b2c0497113a7fc97c36eb0a3781f1be1f6"
+  },
+  {
+    "path": "native-tests.log",
+    "bytes": 1996,
+    "crc32": "800a7d31",
+    "sha256": "c0779fe5dc67acd43720cabe6422d913155226dd9becedaaad8a50f0b470bfac"
+  },
+  {
+    "path": "original-junction.command.json",
+    "bytes": 240,
+    "crc32": "b4b523cb",
+    "sha256": "c4c2e464b7ade4550d1f798f2af06d510537aec37f67a8962bf4e8f59f0b56d9"
+  },
+  {
+    "path": "original-junction.log",
+    "bytes": 187,
+    "crc32": "ceabb75a",
+    "sha256": "f58461fdcac4e1501d43c53254b819bdd05c8a6a87818bd0b2aba229f4f3f1ca"
+  },
+  {
+    "path": "summary.json",
+    "bytes": 9434,
+    "crc32": "9b4ca6e1",
+    "sha256": "71bc1be7cb3f96f964ce39bd2b6a54bf6f26fc0c723b5753ef25302d2325c647"
+  },
+  {
+    "path": "wxMSW-3.2.8_vc14x_Dev.7z.command.json",
+    "bytes": 217,
+    "crc32": "9a2a9767",
+    "sha256": "a51c0c8441f9bfadc3f8ee8fccacd99a7f22cbc881db2bcfe1cf22932861ecb4"
+  },
+  {
+    "path": "wxMSW-3.2.8_vc14x_Dev.7z.log",
+    "bytes": 550,
+    "crc32": "55c96dfa",
+    "sha256": "b8df3b4c6627a125ef79151781c436abff44a2260c4f65b8c5f5bbc65baca842"
+  },
+  {
+    "path": "wxMSW-3.2.8_vc14x_ReleaseDLL.7z.log",
+    "bytes": 549,
+    "crc32": "afa0f219",
+    "sha256": "8792347bd81c14ba88a5318eaf6a3b6471bda2a3121583f9b13fb29015e97db5"
+  },
+  {
+    "path": "wxMSW-3.2.8_vc14x_ReleaseDLL.7z.command.json",
+    "bytes": 224,
+    "crc32": "7bd1b827",
+    "sha256": "974b8df36ec1aa77641bd7aa56224253862ce10918dae9e2fe24a82263bf2e4f"
+  },
+  {
+    "path": "wxWidgets-3.2.8-headers.7z.command.json",
+    "bytes": 219,
+    "crc32": "d1534b40",
+    "sha256": "6b3d38f4553a0b964a8e989057e9272bb73ef43cdc0596c95a8ef7fbe5a5e570"
+  },
+  {
+    "path": "wxWidgets-3.2.8-headers.7z.log",
+    "bytes": 553,
+    "crc32": "06576ebd",
+    "sha256": "d3346cc181b3a143e8e11a752b1be3bcc57e77f060db9a845d9ede0deee74b07"
+  }
+]

@@ -1,0 +1,2 @@
+0000000000000000 W opennav::integration::ComposeFishingPattern(double, wxImage const&, wxImage&, opennav::integration::FishingPatternPlacement*)
+0000000000000000 W bool opennav::integration::FishingPatternEligible<_Rule>(bool, _Rule const*)

@@ -1,0 +1,41 @@
+{
+  "runId": 37145287262,
+  "jobId": 111267837693,
+  "remoteCommit": "a191102c6f150f47980bdb1c774878483c203b99",
+  "localSource": "827cf9b40f57a7159614727d9ae616d3fc42c75e",
+  "artifact": {
+    "id": 11281538973,
+    "bytes": 8315,
+    "sha256": "fc2f6fa6b4fa44fa87c067fa5373a8d31f43874336776e2dad6562facfc88040",
+    "crcEntriesPassed": 8
+  },
+  "matchedSourceInputs": {
+    "tools/test-downloader-trust-windows.ps1": "exact Windows CRLF bytes",
+    "tools/test-downloader-certificate-fixtures.ps1": "exact Windows CRLF bytes",
+    ".github/workflows/skager-certificate-fixtures.yml": "exact Windows CRLF bytes"
+  },
+  "nativeChecks": [
+    "Original actual helper fails at index parser",
+    "Original Windows index is one CRLF blank line",
+    "Actual expired issuer began with zero-byte database",
+    "Actual expired issuer wrote a certificate database row",
+    "Issued valid localhost certificate verifies",
+    "Issued expired localhost certificate rejected specifically for expiry",
+    "Expired fixture retains original fixed 2020 validity interval"
+  ],
+  "nativeProvider": {
+    "path": "C:\\Program Files\\OpenSSL\\bin\\openssl.exe",
+    "identity": {
+      "bytes": 817664,
+      "sha256": "670bf9086a4f553dac14646091713614fc5ec47b94f4725023b1cf6af7838fe0"
+    },
+    "version": "OpenSSL 3.6.4 25 Aug 2026 (Library: OpenSSL 3.6.4 25 Aug 2026)",
+    "details": "OpenSSL 3.6.4 25 Aug 2026 (Library: OpenSSL 3.6.4 25 Aug 2026)\r\nbuilt on: Tue Aug 25 15:28:50 2026 UTC\r\nplatform: VC-WIN64A\r\noptions:  bn(64,64)\r\ncompiler: cl  /Z7 /Fdossl_static.pdb /Gs0 /GF /Gy /MD /W3 /wd4090 /nologo /O2 -DL_ENDIAN -DOPENSSL_PIC -D\"OPENSSL_BUILDING_OPENSSL\" -D\"OPENSSL_SYS_WIN32\" -D\"WIN32_LEAN_AND_MEAN\" -D\"UNICODE\" -D\"_UNICODE\" -D\"_CRT_SECURE_NO_DEPRECATE\" -D\"_WINSOCK_DEPRECATED_NO_WARNINGS\" -D\"NDEBUG\" -D_WINSOCK_DEPRECATED_NO_WARNINGS -D_WIN32_WINNT=0x0502\r\nOPENSSLDIR: \"C:\\Program Files\\Common Files\\SSL\"\r\nENGINESDIR: \"C:\\Program Files\\OpenSSL\\lib\\engines-3\"\r\nMODULESDIR: \"C:\\Program Files\\OpenSSL\\lib\\ossl-modules\"\r\nSeeding source: os-specific\r\nCPUINFO: OPENSSL_ia32cap=0xfefa3203078bffff:0x00405fc6f1bf07a9:0x0000003000000110:0x0000000000000000:0x0000000000000000",
+    "maintainedProducerVersion": "3.5.9",
+    "producerQualification": false
+  },
+  "independentCertificateAudit": "Retained valid certificate verifies; retained expired certificate fails specifically error10 under local OpenSSL with explicit retained CAfile/hostname/serverAuth; no trust import or server",
+  "tlsAcceptance": false,
+  "maintainedProducerAcceptance": false,
+  "nativeFixtureCorrectionAccepted": true
+}

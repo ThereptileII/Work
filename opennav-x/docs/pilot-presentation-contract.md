@@ -11,6 +11,27 @@ heading and 127250 measured magnetic heading through OpenCPN observers. The
 source/transport and `St4000Pilot` contracts are unchanged. No upstream hook or
 new protocol path is introduced.
 
+## Passive discovery (SCRUM-295 / SCRUM-307)
+
+Installed SKAGER observes existing OpenCPN receive connections without a second
+pilot setup wizard. A compatible NAME from PGN 60928 and fresh physical feedback
+must both pass the existing strict ST4000 bridge parser. A unique live candidate
+supplies status independently of old saved SKAGER bindings. Multiple live pilots,
+conflicting claims, invalid feedback, stale observations and connection-epoch
+changes cannot silently select a pilot. The cache is bounded to 32 identities.
+An observed loss is shown as degraded rather than masked by the status-only notice.
+
+This covers the inspected boat bridge's 65379, 65360 and 127250 feedback contract;
+it does not claim support for every AutoTrack device. Without a received address
+claim this session, status remains unavailable. Discovery sends no identity
+requests or equipment commands. Production output and its UI remain unavailable;
+the existing explicitly isolated developer loopback path is separate. Connection
+and plugin configuration remain in OpenCPN preferences.
+
+Focused coverage includes discovery without a separate binding, malformed/stale
+identity, wrong source/vendor, feedback loss/recovery, ambiguity, and zero output.
+Native integration and read-only boat acceptance remain separate gates.
+
 The large dial shows measured locked magnetic heading in confirmed AUTO and
 measured actual magnetic heading otherwise. The label explicitly says M. It
 never substitutes COG, true heading, requested heading or an optimistic increment.

@@ -1,0 +1,440 @@
+{
+  "scope": "One actual app repeat; two prelaunch infrastructure failures retained separately. X server and app stopped. No product edits.",
+  "window_tree_note": "XQueryTree siblings ordered bottom to top. XGetWindowAttributes map_state=2 means IsViewable, not unobscured. Monotonic_ns is start of snapshot; helper completed_monotonic_ns was evaluated before traversal and must not be used as completion timestamp.",
+  "regions_xywh": {
+    "orientation": [
+      1004,
+      90,
+      68,
+      90
+    ],
+    "layers": [
+      1016,
+      190,
+      44,
+      44
+    ],
+    "tools": [
+      883,
+      545,
+      189,
+      52
+    ],
+    "follow": [
+      108,
+      553,
+      142,
+      44
+    ]
+  },
+  "observations": [
+    {
+      "burst": 0,
+      "before_monotonic_ns": 40619380471404,
+      "after_monotonic_ns": 40619546599538,
+      "before_bottom_to_top": [
+        "SKAGER / OpenCPN",
+        "SKAGER follow boat",
+        "SKAGER chart layers",
+        "SKAGER chart orientation",
+        "SKAGER chart tools"
+      ],
+      "after_bottom_to_top": [
+        "SKAGER follow boat",
+        "SKAGER chart layers",
+        "SKAGER chart orientation",
+        "SKAGER chart tools",
+        "SKAGER / OpenCPN"
+      ],
+      "controls": [
+        {
+          "height": 44,
+          "y": 549,
+          "visible": true,
+          "width": 44,
+          "accessible_name": "Measure chart distance",
+          "x": 887,
+          "label": "Measure",
+          "enabled": true
+        },
+        {
+          "height": 90,
+          "y": 90,
+          "visible": true,
+          "width": 68,
+          "accessible_name": "Chart orientation: North up",
+          "x": 1004,
+          "label": "North",
+          "enabled": true
+        },
+        {
+          "height": 44,
+          "y": 190,
+          "visible": true,
+          "width": 44,
+          "accessible_name": "Chart layers",
+          "x": 1016,
+          "label": "Layers",
+          "enabled": true
+        },
+        {
+          "height": 44,
+          "y": 553,
+          "visible": true,
+          "width": 142,
+          "accessible_name": "Center chart on boat and follow position",
+          "x": 108,
+          "label": "Follow boat",
+          "enabled": true
+        }
+      ],
+      "build_commit": "1356fd1603aacbea04d7081d16331e9a181180bb",
+      "control_rectangle_changed_pixels_vs_active": {
+        "orientation": 0,
+        "layers": 0,
+        "tools": 0,
+        "follow": 0
+      }
+    },
+    {
+      "burst": 1,
+      "before_monotonic_ns": 40620048373059,
+      "after_monotonic_ns": 40620244224475,
+      "before_bottom_to_top": [
+        "SKAGER / OpenCPN",
+        "SKAGER follow boat",
+        "SKAGER chart layers",
+        "SKAGER chart orientation",
+        "SKAGER chart tools"
+      ],
+      "after_bottom_to_top": [
+        "SKAGER / OpenCPN",
+        "SKAGER follow boat",
+        "SKAGER chart layers",
+        "SKAGER chart orientation",
+        "SKAGER chart tools"
+      ],
+      "controls": [
+        {
+          "height": 44,
+          "y": 549,
+          "visible": true,
+          "width": 44,
+          "accessible_name": "Measure chart distance",
+          "x": 887,
+          "label": "Measure",
+          "enabled": true
+        },
+        {
+          "height": 90,
+          "y": 90,
+          "visible": true,
+          "width": 68,
+          "accessible_name": "Chart orientation: North up",
+          "x": 1004,
+          "label": "North",
+          "enabled": true
+        },
+        {
+          "height": 44,
+          "y": 190,
+          "visible": true,
+          "width": 44,
+          "accessible_name": "Chart layers",
+          "x": 1016,
+          "label": "Layers",
+          "enabled": true
+        },
+        {
+          "height": 44,
+          "y": 553,
+          "visible": true,
+          "width": 142,
+          "accessible_name": "Center chart on boat and follow position",
+          "x": 108,
+          "label": "Follow boat",
+          "enabled": true
+        }
+      ],
+      "build_commit": "1356fd1603aacbea04d7081d16331e9a181180bb",
+      "control_rectangle_changed_pixels_vs_active": {
+        "orientation": 0,
+        "layers": 0,
+        "tools": 0,
+        "follow": 0
+      }
+    },
+    {
+      "burst": 2,
+      "before_monotonic_ns": 40620747451178,
+      "after_monotonic_ns": 40620924553413,
+      "before_bottom_to_top": [
+        "SKAGER / OpenCPN",
+        "SKAGER follow boat",
+        "SKAGER chart layers",
+        "SKAGER chart orientation",
+        "SKAGER chart tools"
+      ],
+      "after_bottom_to_top": [
+        "SKAGER / OpenCPN",
+        "SKAGER follow boat",
+        "SKAGER chart layers",
+        "SKAGER chart orientation",
+        "SKAGER chart tools"
+      ],
+      "controls": [
+        {
+          "height": 44,
+          "y": 549,
+          "visible": true,
+          "width": 44,
+          "accessible_name": "Measure chart distance",
+          "x": 887,
+          "label": "Measure",
+          "enabled": true
+        },
+        {
+          "height": 90,
+          "y": 90,
+          "visible": true,
+          "width": 68,
+          "accessible_name": "Chart orientation: North up",
+          "x": 1004,
+          "label": "North",
+          "enabled": true
+        },
+        {
+          "height": 44,
+          "y": 190,
+          "visible": true,
+          "width": 44,
+          "accessible_name": "Chart layers",
+          "x": 1016,
+          "label": "Layers",
+          "enabled": true
+        },
+        {
+          "height": 44,
+          "y": 553,
+          "visible": true,
+          "width": 142,
+          "accessible_name": "Center chart on boat and follow position",
+          "x": 108,
+          "label": "Follow boat",
+          "enabled": true
+        }
+      ],
+      "build_commit": "1356fd1603aacbea04d7081d16331e9a181180bb",
+      "control_rectangle_changed_pixels_vs_active": {
+        "orientation": 0,
+        "layers": 0,
+        "tools": 0,
+        "follow": 0
+      }
+    },
+    {
+      "burst": 3,
+      "before_monotonic_ns": 40621426309153,
+      "after_monotonic_ns": 40621595381112,
+      "before_bottom_to_top": [
+        "SKAGER / OpenCPN",
+        "SKAGER follow boat",
+        "SKAGER chart layers",
+        "SKAGER chart orientation",
+        "SKAGER chart tools"
+      ],
+      "after_bottom_to_top": [
+        "SKAGER / OpenCPN",
+        "SKAGER follow boat",
+        "SKAGER chart layers",
+        "SKAGER chart orientation",
+        "SKAGER chart tools"
+      ],
+      "controls": [
+        {
+          "height": 44,
+          "y": 549,
+          "visible": true,
+          "width": 44,
+          "accessible_name": "Measure chart distance",
+          "x": 887,
+          "label": "Measure",
+          "enabled": true
+        },
+        {
+          "height": 90,
+          "y": 90,
+          "visible": true,
+          "width": 68,
+          "accessible_name": "Chart orientation: North up",
+          "x": 1004,
+          "label": "North",
+          "enabled": true
+        },
+        {
+          "height": 44,
+          "y": 190,
+          "visible": true,
+          "width": 44,
+          "accessible_name": "Chart layers",
+          "x": 1016,
+          "label": "Layers",
+          "enabled": true
+        },
+        {
+          "height": 44,
+          "y": 553,
+          "visible": true,
+          "width": 142,
+          "accessible_name": "Center chart on boat and follow position",
+          "x": 108,
+          "label": "Follow boat",
+          "enabled": true
+        }
+      ],
+      "build_commit": "1356fd1603aacbea04d7081d16331e9a181180bb",
+      "control_rectangle_changed_pixels_vs_active": {
+        "orientation": 0,
+        "layers": 0,
+        "tools": 0,
+        "follow": 0
+      }
+    },
+    {
+      "burst": 4,
+      "before_monotonic_ns": 40622099382681,
+      "after_monotonic_ns": 40622267536323,
+      "before_bottom_to_top": [
+        "SKAGER / OpenCPN",
+        "SKAGER follow boat",
+        "SKAGER chart layers",
+        "SKAGER chart orientation",
+        "SKAGER chart tools"
+      ],
+      "after_bottom_to_top": [
+        "SKAGER / OpenCPN",
+        "SKAGER follow boat",
+        "SKAGER chart layers",
+        "SKAGER chart orientation",
+        "SKAGER chart tools"
+      ],
+      "controls": [
+        {
+          "height": 44,
+          "y": 549,
+          "visible": true,
+          "width": 44,
+          "accessible_name": "Measure chart distance",
+          "x": 887,
+          "label": "Measure",
+          "enabled": true
+        },
+        {
+          "height": 90,
+          "y": 90,
+          "visible": true,
+          "width": 68,
+          "accessible_name": "Chart orientation: North up",
+          "x": 1004,
+          "label": "North",
+          "enabled": true
+        },
+        {
+          "height": 44,
+          "y": 190,
+          "visible": true,
+          "width": 44,
+          "accessible_name": "Chart layers",
+          "x": 1016,
+          "label": "Layers",
+          "enabled": true
+        },
+        {
+          "height": 44,
+          "y": 553,
+          "visible": true,
+          "width": 142,
+          "accessible_name": "Center chart on boat and follow position",
+          "x": 108,
+          "label": "Follow boat",
+          "enabled": true
+        }
+      ],
+      "build_commit": "1356fd1603aacbea04d7081d16331e9a181180bb",
+      "control_rectangle_changed_pixels_vs_active": {
+        "orientation": 0,
+        "layers": 0,
+        "tools": 0,
+        "follow": 0
+      }
+    },
+    {
+      "burst": 5,
+      "before_monotonic_ns": 40622769391370,
+      "after_monotonic_ns": 40622931288989,
+      "before_bottom_to_top": [
+        "SKAGER / OpenCPN",
+        "SKAGER follow boat",
+        "SKAGER chart layers",
+        "SKAGER chart orientation",
+        "SKAGER chart tools"
+      ],
+      "after_bottom_to_top": [
+        "SKAGER / OpenCPN",
+        "SKAGER follow boat",
+        "SKAGER chart layers",
+        "SKAGER chart orientation",
+        "SKAGER chart tools"
+      ],
+      "controls": [
+        {
+          "height": 44,
+          "y": 549,
+          "visible": true,
+          "width": 44,
+          "accessible_name": "Measure chart distance",
+          "x": 887,
+          "label": "Measure",
+          "enabled": true
+        },
+        {
+          "height": 90,
+          "y": 90,
+          "visible": true,
+          "width": 68,
+          "accessible_name": "Chart orientation: North up",
+          "x": 1004,
+          "label": "North",
+          "enabled": true
+        },
+        {
+          "height": 44,
+          "y": 190,
+          "visible": true,
+          "width": 44,
+          "accessible_name": "Chart layers",
+          "x": 1016,
+          "label": "Layers",
+          "enabled": true
+        },
+        {
+          "height": 44,
+          "y": 553,
+          "visible": true,
+          "width": 142,
+          "accessible_name": "Center chart on boat and follow position",
+          "x": 108,
+          "label": "Follow boat",
+          "enabled": true
+        }
+      ],
+      "build_commit": "1356fd1603aacbea04d7081d16331e9a181180bb",
+      "control_rectangle_changed_pixels_vs_active": {
+        "orientation": 0,
+        "layers": 0,
+        "tools": 0,
+        "follow": 0
+      }
+    }
+  ]
+}

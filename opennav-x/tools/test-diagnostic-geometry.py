@@ -6,6 +6,7 @@ import importlib.util
 from pathlib import Path
 from types import SimpleNamespace
 import unittest
+from unittest.mock import patch
 
 spec = importlib.util.spec_from_file_location('diagnostic_geometry', Path(__file__).with_name('diagnostic-geometry.py'))
 geometry = importlib.util.module_from_spec(spec)
@@ -91,6 +92,71 @@ class LayoutObservation(unittest.TestCase):
             assert 0 <= region['x'] < region['x']+region['width'] <= 1280
 
 
+class MainButtonGeometry(unittest.TestCase):
+    """Exercise the actual gate against immutable-HTML desktop measurements.
+
+    Native 488fbbdf fullscreen was correctly 69px at 1920x1080; the old
+    height-only oracle rejected it as 61px. These fakes check oracle selection
+    and refusal behavior, not native rendering, DPI or touch acceptance.
+    """
+    def check_buttons(self, width, height, scale, nav, pilot=87, mutate=None):
+        source=Path(__file__).with_name('smoke-dpi-windows.py')
+        tree=ast.parse(source.read_text(encoding='utf-8'))
+        function=next(n for n in tree.body if isinstance(n,ast.FunctionDef)
+                      and n.name=='main_buttons')
+        factor=scale/100
+        controls=[dict(label=label,x=9*factor,y=90*factor,width=69*factor,
+                       height=nav*factor,visible=True,enabled=True)
+                  for label in ('Chart','Passage','Traffic','Energy','Instruments',
+                                'Anchor','Radar','Settings')]
+        controls += [dict(label=label,x=100*factor,y=90*factor,width=44*factor,
+                          height=h*factor,visible=True,enabled=True)
+                     for label,h in [('Autopilot',pilot),('Day',44),('+',44),
+                                     ('−',44),('Follow boat',44)]]
+        footer=dict(x=0,y=height-34*factor,width=width,height=34*factor)
+        controls.append(dict(label='Source health',x=0,y=footer['y'],
+                             width=44*factor,height=34*factor,visible=True,enabled=True))
+        if mutate:mutate(controls)
+        display=dict(light='Day',interaction_controls=controls,footer_region=footer,
+                     footer_middle_visible=width/factor>1100)
+        def rect():return SimpleNamespace(left=0,top=0,right=width,bottom=height)
+        ui=SimpleNamespace(W=SimpleNamespace(RECT=rect),GetWindowRect=lambda *_:True,
+                           GetClientRect=lambda *_:True,
+                           children=lambda _:[(2,'SKAGER status footer')])
+        namespace=dict(ui=ui,C=SimpleNamespace(byref=lambda r:r),handle=1,
+                       current_layout_observation=lambda:{'runtime':{'display':display}},
+                       bounds=lambda _:SimpleNamespace(left=0,top=footer['y'],
+                                                       right=width,bottom=height))
+        exec(compile(ast.Module(body=[function],type_ignores=[]),str(source),'exec'),namespace)
+        return namespace['main_buttons'](scale)
+
+    def test_html_width_boundary_and_compact_cascade(self):
+        # Measured from unchanged HTML at DPR1; includes both sides of each rule.
+        for width,height,nav,pilot in [(1280,800,61,87),(1499,1080,61,87),
+                (1500,1080,69,87),(1920,1080,69,87),(1920,741,69,87),
+                (1920,740,51,74),(1920,601,51,74),(1920,600,43,66)]:
+            with self.subTest(width=width,height=height):
+                self.check_buttons(width,height,100,nav,pilot)
+
+    def test_width_breakpoint_uses_logical_client_pixels_at_actual_scale(self):
+        for width,height,scale,nav,pilot in [(1920,1080,125,69,87),
+                (1920,1080,150,51,74),(1874,1000,125,61,87),
+                (1875,1000,125,69,87),(2250,1200,150,69,87)]:
+            # 1920 / 1.25 = 1536; 1920 / 1.5 = 1280, height=720.
+            with self.subTest(width=width,scale=scale):
+                self.check_buttons(width,height,scale,nav,pilot)
+
+    def test_wrong_geometry_still_fails_exact_gate(self):
+        for width,nav in [(1920,61),(1499,69),(1920,71)]:
+            with self.subTest(width=width,nav=nav),self.assertRaises(AssertionError):
+                self.check_buttons(width,1080,100,nav)
+
+    def test_clipped_control_still_fails(self):
+        with self.assertRaises(AssertionError):
+            self.check_buttons(1920,1080,100,69,
+                               mutate=lambda controls:controls[0].update(x=-1))
+
+
 class PreferencesTouch(unittest.TestCase):
     """Exercise the actual Windows harness function with native observations.
 
@@ -99,9 +165,17 @@ class PreferencesTouch(unittest.TestCase):
     """
     def setUp(self):
         source=Path(__file__).with_name('smoke-dpi-windows.py')
-        tree=ast.parse(source.read_text())
+        tree=ast.parse(source.read_text(encoding='utf-8'))
         function=next(n for n in tree.body if isinstance(n,ast.FunctionDef)
                       and n.name=='touch_preferences_action')
+        # The production gate delegates to this shared helper. Exercise that
+        # actual module as well as the wrapper, rather than an obsolete copied
+        # body or a stub which would hide missing integration dependencies.
+        helper_spec=importlib.util.spec_from_file_location(
+            'preferences_touch',source.with_name('preferences-touch.py'))
+        preferences_touch=importlib.util.module_from_spec(helper_spec)
+        helper_spec.loader.exec_module(preferences_touch)
+        preferences_touch.time=SimpleNamespace(sleep=lambda _:None)
         self.rects=[(120,410,480,482),(120,220,480,292)]
         self.index=0;self.pans=[];self.taps=[]
         self.enabled=True;self.visible_override=None
@@ -132,9 +206,11 @@ class PreferencesTouch(unittest.TestCase):
             W=SimpleNamespace(HWND=int,POINT=lambda x,y:SimpleNamespace(x=x,y=y)),
             declare=lambda *args:lambda:20,SetForegroundWindow=lambda _:True,
             IsWindowEnabled=lambda _:self.enabled,GetParent=lambda h:{22:21,21:20}[h],
-            WindowFromPoint=hit,IsChild=lambda parent,child:parent==21 and child==22)
+            WindowFromPoint=hit,IsChild=lambda parent,child:parent==21 and child==22,
+            GetClassNameW=lambda handle,buffer,size:
+                setattr(buffer,'value','wxWindowNR' if handle==21 else 'Button') or 10)
         namespace=dict(ui=ui,pid=7,bounds=bounds,preferences_observation=observation,
-                       dpi=inject,time=SimpleNamespace(sleep=lambda _:None))
+                       dpi=inject,preferences_touch=preferences_touch,report={})
         exec(compile(ast.Module(body=[function],type_ignores=[]),str(source),'exec'),namespace)
         self.action=namespace['touch_preferences_action']
 
@@ -186,6 +262,23 @@ class PreferencesTouch(unittest.TestCase):
         self.pan_overlay=True
         self.reject()
         self.assertEqual(self.pans,[])
+
+
+class SourceEncoding(unittest.TestCase):
+    def test_ast_reads_preserve_unicode_with_legacy_windows_default(self):
+        original = Path.read_text
+        implicit_reads = []
+        def legacy_read_text(path, encoding=None, errors=None):
+            if encoding is None:
+                implicit_reads.append(path)
+            return original(path, encoding=encoding or 'cp1252', errors=errors)
+        with patch.object(Path, 'read_text', legacy_read_text):
+            sizes = MainButtonGeometry().check_buttons(1920, 1080, 100, 69)
+            self.assertEqual(sizes['−'], [44, 44])
+            touch = PreferencesTouch()
+            touch.setUp()
+            touch.test_visible_action_does_not_scroll()
+        self.assertEqual(implicit_reads, [], 'AST source must not use the system code page')
 
 
 if __name__ == '__main__':

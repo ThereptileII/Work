@@ -33,7 +33,16 @@ namespace OpenNavX {
     public sealed class SelectionRow {
       public long Handle;public string Label;public int Top,Left;
       public bool Enabled,Visible,DirectChild;
+      public bool Prototype;public int SelectedMmsi;public long SurfaceHandle;
     }
+    [ComImport,Guid("618736e0-3c3d-11cf-810c-00aa00389b71"),InterfaceType(ComInterfaceType.InterfaceIsIDispatch)]
+    private interface AccessibleNameObject {
+      [DispId(-5003)] string this[[In,MarshalAs(UnmanagedType.Struct)] object child] {
+        [return:MarshalAs(UnmanagedType.BStr)] get;
+      }
+    }
+    [DllImport("oleacc.dll")] private static extern int AccessibleObjectFromWindow(IntPtr window,uint objectId,
+      ref Guid iid,[MarshalAs(UnmanagedType.Interface)] out AccessibleNameObject accessible);
     private delegate bool EnumCallback(IntPtr window,IntPtr parameter);
     [DllImport("user32.dll")] private static extern bool EnumChildWindows(IntPtr parent,EnumCallback callback,IntPtr parameter);
     [DllImport("user32.dll")] private static extern bool EnumWindows(EnumCallback callback,IntPtr parameter);
@@ -66,6 +75,17 @@ namespace OpenNavX {
 
     private static string Text(IntPtr h) { var text=new StringBuilder(2048);GetWindowTextW(h,text,text.Capacity);return text.ToString(); }
     private static string Class(IntPtr h) { var text=new StringBuilder(128);GetClassNameW(h,text,text.Capacity);return text.ToString(); }
+    private static string AccessibleName(IntPtr h) {
+      AccessibleNameObject accessible=null;var iid=new Guid("618736e0-3c3d-11cf-810c-00aa00389b71");
+      try {
+        if(AccessibleObjectFromWindow(h,unchecked((uint)-4),ref iid,out accessible)!=0 || accessible==null)
+          throw new InvalidOperationException("Reviewed traffic accessibility unavailable.");
+        var name=accessible[0];
+        if(name==null || name.Length>128)throw new InvalidOperationException("Reviewed traffic accessibility name unavailable.");
+        return name;
+      } catch(Exception error) {throw new InvalidOperationException("Reviewed traffic accessibility refused.",error);}
+      finally {if(accessible!=null && Marshal.IsComObject(accessible))Marshal.ReleaseComObject(accessible);}
+    }
     private static uint Owner(IntPtr h) { uint pid;GetWindowThreadProcessId(h,out pid);return pid; }
     private static Rect Bounds(IntPtr h) {
       Rect rect;
@@ -101,16 +121,18 @@ namespace OpenNavX {
     // control (in particular key storage, route changes or hardware commands).
     public static bool IsPrototypeSurface(string title,string[] directLabels,string[] headingLabels) {
       switch(title) {
-        case "OpenNav chart tools":return SameLabels(directLabels,"Measure","Waypoint","+","\u2212");
-        case "OpenNav chart orientation":return SameLabels(directLabels,"North") || SameLabels(directLabels,"Course");
-        case "OpenNav follow boat":return SameLabels(directLabels,"Follow boat");
-        case "OpenNav anchor watch":
-        case "OpenNav alerts":
-        case "OpenNav source health":
-        case "OpenNav autopilot":
-        case "OpenNav preferences":return SameLabels(directLabels) && SameLabels(headingLabels,"Close");
-        case "OpenNav passage":return SameLabels(directLabels) && SameLabels(headingLabels,"Close");
-        case "OpenNav vessel traffic":return SameLabels(directLabels) && (SameLabels(headingLabels,"Close") || SameLabels(headingLabels,"Back"));
+        case "SKAGER chart layers":return SameLabels(directLabels,"Layers") && SameLabels(headingLabels);
+        case "Chart presentation":return SameLabels(directLabels) && SameLabels(headingLabels,"Close");
+        case "SKAGER chart tools":return SameLabels(directLabels,"Measure","Waypoint","+","\u2212");
+        case "SKAGER chart orientation":return SameLabels(directLabels,"North") || SameLabels(directLabels,"Course");
+        case "SKAGER follow boat":return SameLabels(directLabels,"Follow boat");
+        case "SKAGER anchor watch":
+        case "SKAGER alerts":
+        case "SKAGER source health":
+        case "SKAGER autopilot":
+        case "SKAGER preferences":return SameLabels(directLabels) && SameLabels(headingLabels,"Close");
+        case "SKAGER passage":return SameLabels(directLabels) && SameLabels(headingLabels,"Close");
+        case "SKAGER vessel traffic":return SameLabels(directLabels) && (SameLabels(headingLabels,"Close") || SameLabels(headingLabels,"Back"));
         default:return false;
       }
     }
@@ -136,7 +158,7 @@ namespace OpenNavX {
         try {
           if(!IsWindowVisible(h) || IsIconic(h) || GetWindow(h,4)!=frame || Owner(h)!=(uint)pid || IsChild(frame,h))return true;
           var title=Text(h);
-          if(title!="OpenNav chart tools" && title!="OpenNav chart orientation" && title!="OpenNav follow boat" && title!="OpenNav passage" && title!="OpenNav vessel traffic" && title!="OpenNav preferences" && title!="OpenNav anchor watch" && title!="OpenNav autopilot" && title!="OpenNav alerts" && title!="OpenNav source health")return true;
+          if(title!="SKAGER chart layers" && title!="Chart presentation" && title!="SKAGER chart tools" && title!="SKAGER chart orientation" && title!="SKAGER follow boat" && title!="SKAGER passage" && title!="SKAGER vessel traffic" && title!="SKAGER preferences" && title!="SKAGER anchor watch" && title!="SKAGER autopilot" && title!="SKAGER alerts" && title!="SKAGER source health")return true;
           var direct=DirectLabels(h,pid);var heading=new List<string>();
           foreach(var child in Children(h))if(GetParent(child)==h && Owner(child)==(uint)pid)
             foreach(var label in DirectLabels(child,pid))if(label=="Close" || label=="Back")heading.Add(label);
@@ -148,7 +170,7 @@ namespace OpenNavX {
                signature=IsPrototypeSurface(title,direct,heading.ToArray());
           if(!unique || !enabled || !sameDpi || !size || !contained || !signature)
             throw new InvalidOperationException(String.Format("Owned prototype surface {0} refused: unique={1}, enabled={2}, dpi={3}, size={4}, contained={5}, signature={6}.",title,unique,enabled,sameDpi,size,contained,signature));
-          if((title=="OpenNav passage" || title=="OpenNav vessel traffic" || title=="OpenNav preferences" || title=="OpenNav anchor watch" || title=="OpenNav autopilot" || title=="OpenNav alerts" || title=="OpenNav source health") && ++drawers>1)throw new InvalidOperationException("More than one prototype sheet is visible.");
+          if((title=="Chart presentation" || title=="SKAGER passage" || title=="SKAGER vessel traffic" || title=="SKAGER preferences" || title=="SKAGER anchor watch" || title=="SKAGER autopilot" || title=="SKAGER alerts" || title=="SKAGER source health") && ++drawers>1)throw new InvalidOperationException("More than one prototype sheet is visible.");
           Array.Sort(direct,StringComparer.Ordinal);heading.Sort(StringComparer.Ordinal);
           result.Add(new SurfaceInfo{Handle=h.ToInt64(),Title=title,Signature=String.Join("|",direct)+"/"+String.Join("|",heading.ToArray()),Dpi=dpi,Bounds=rect});
           return true;
@@ -164,7 +186,7 @@ namespace OpenNavX {
     }
     private static WindowInfo FrameIdentity(IntPtr frame,int pid,bool requireForeground) {
       if(frame==IntPtr.Zero || Owner(frame)!=(uint)pid || GetParent(frame)!=IntPtr.Zero ||
-         IsIconic(frame) || !IsWindowVisible(frame) || !IsWindowEnabled(frame))throw new InvalidOperationException("Exact reviewed XNav frame must be foreground and enabled; dismiss other windows manually.");
+         IsIconic(frame) || !IsWindowVisible(frame) || !IsWindowEnabled(frame))throw new InvalidOperationException("Exact reviewed SKAGER frame must be foreground and enabled; dismiss other windows manually.");
       int menu=0,navigation=0;
       foreach(var child in Children(frame)) {
         var text=Text(child);
@@ -173,7 +195,7 @@ namespace OpenNavX {
         if(text=="Navigation" && Class(child)!="Static")navigation++;
       }
       bool prototype=PrototypeNavigation(frame,pid)!=IntPtr.Zero;
-      if((prototype && (menu!=0 || navigation!=0)) || (!prototype && (menu!=1 || navigation!=1)))throw new InvalidOperationException("Normal installed XNav shell was not uniquely identified.");
+      if((prototype && (menu!=0 || navigation!=0)) || (!prototype && (menu!=1 || navigation!=1)))throw new InvalidOperationException("Normal installed SKAGER shell was not uniquely identified.");
       var rect=Bounds(frame);
       if(rect.Width<100 || rect.Height<100 || rect.Width>7680 || rect.Height>4320)throw new InvalidOperationException("Reviewed frame dimensions are outside bounded display geometry.");
       var dpi=GetDpiForWindow(frame);
@@ -271,7 +293,7 @@ namespace OpenNavX {
           throw new InvalidOperationException("Application did not accept exactly 1280x800 physical pixels in the pinned work area; no resize retry.");
         return result;
       } catch(Exception error) {
-        throw new InvalidOperationException("Fixed XNav resize refused at "+stage+"; before="+Geometry(result.Before)+"; restored="+Geometry(result.Restored)+"; after="+Geometry(result.After)+"; current="+CurrentGeometry(frame,pid)+". "+error.Message,error);
+        throw new InvalidOperationException("Fixed SKAGER resize refused at "+stage+"; before="+Geometry(result.Before)+"; restored="+Geometry(result.Restored)+"; after="+Geometry(result.After)+"; current="+CurrentGeometry(frame,pid)+". "+error.Message,error);
       }
     }
     public static void Escape(IntPtr frame,int pid) {
@@ -336,6 +358,7 @@ namespace OpenNavX {
         case "Advice":return new string[]{"SmartNav advisories"};case "PilotView":return new string[]{"Autopilot"};
         case "Anchor":return new string[]{"Anchor watch"};case "Settings":return new string[]{"Settings"};
         case "Sources":return new string[]{"SENSORS"};case "Route":return new string[]{"Route"};
+        case "Layers":return new string[]{"Layers"};case "RevealChartPalettePreference":case "ChartPalettePreferences":return new string[]{"Chart palette preferences"};
         case "Display":return new string[]{"DISPLAY"};case "ToggleFullscreen":return new string[]{"Fullscreen / window"};
         case "ToggleOrientation":return new string[]{"North","Course"};
         case "Energy":return new string[]{"Energy"};case "Diagnostics":return new string[]{"Diagnostics"};
@@ -349,8 +372,9 @@ namespace OpenNavX {
     public static string ActionContext(string action) {
       ActionLabels(action); // Unknown actions have no context, even without a window.
       switch(action) {
-        case "Display":return "OpenNav product page: Settings";
-        case "ToggleFullscreen":return "OpenNav product page: Display";
+        case "Layers":return "SKAGER chart layers";case "RevealChartPalettePreference":case "ChartPalettePreferences":return "Chart presentation";
+        case "Display":return "SKAGER product page: Settings";
+        case "ToggleFullscreen":return "SKAGER product page: Display";
         case "ToggleOrientation":return "Navigation chart tools";
         case "CyclePalette":return "Navigation status bar";
         default:return "Installed XNav shell";
@@ -411,13 +435,65 @@ namespace OpenNavX {
       if(matches.Count!=1 || !ScopedButton(frame,pid,matches[0],action))throw new InvalidOperationException("Reviewed button must be unique, enabled, fully visible and in its exact source-reviewed page or chart rail.");
       return matches[0];
     }
+    private static IntPtr ResolvePaletteNavigation(IntPtr frame,int pid,string action,bool allowClipped=false) {
+      if(action!="Layers" && action!="ChartPalettePreferences")throw new InvalidOperationException("Unknown palette navigation.");
+      var info=AssertFrame(frame,pid);AssertCapture(frame,pid,info);IntPtr surface=IntPtr.Zero;
+      foreach(var item in info.Surfaces)if(item.Title==ActionContext(action)){if(surface!=IntPtr.Zero)throw new InvalidOperationException("Duplicate palette surface.");surface=new IntPtr(item.Handle);}
+      if(surface==IntPtr.Zero)throw new InvalidOperationException("Exact owned source-reviewed palette surface required.");
+      var matches=new List<IntPtr>();string caption=ActionLabels(action)[0];
+      foreach(var h in Children(surface))if(Owner(h)==(uint)pid && Text(h)==caption && Class(h)!="Static")matches.Add(h);
+      if(matches.Count!=1 || !IsWindowVisible(matches[0]) || !IsWindowEnabled(matches[0]) || (action=="Layers" && GetParent(matches[0])!=surface))throw new InvalidOperationException("Unique visible fixed palette navigation action required.");
+      var button=matches[0];var bounds=Bounds(button);
+      if(allowClipped)return button;
+      if(!Contains(info.Bounds,bounds))throw new InvalidOperationException("Palette navigation lies outside frame.");
+      for(var parent=GetParent(button);parent!=IntPtr.Zero && parent!=frame;parent=GetParent(parent))if(!Contains(Bounds(parent),bounds))throw new InvalidOperationException("Expose the clipped palette navigation control normally before review.");
+      return button;
+    }
+    [StructLayout(LayoutKind.Sequential)] private struct ScrollInfo {public uint Size,Mask;public int Min,Max;public uint Page;public int Pos,TrackPos;}
+    [DllImport("user32.dll")] private static extern bool GetScrollInfo(IntPtr h,int bar,ref ScrollInfo info);
+    private static ScrollInfo PaletteScroll(IntPtr body) {
+      var info=new ScrollInfo();info.Size=(uint)Marshal.SizeOf(typeof(ScrollInfo));info.Mask=0x17;
+      if(!GetScrollInfo(body,1,ref info) || info.Min!=0 || info.Max<0 || info.Max>100000 || info.Page<1 || info.Page>100000 || info.Pos<0 || info.Pos>info.Max)throw new InvalidOperationException("Bounded native palette body scroll state required.");
+      return info;
+    }
+    private static bool PaletteTargetVisible(IntPtr frame,IntPtr body,IntPtr button) {
+      var r=Bounds(button);
+      return Contains(Bounds(frame),r) && Contains(Bounds(body),r);
+    }
+    // Only the existing Chart presentation body's native vertical page scroll.
+    // No arbitrary HWND/key/wheel amount or product-setting action is exposed.
+    public static void RevealChartPalettePreference(IntPtr frame,int pid) {
+      var target=ResolvePaletteNavigation(frame,pid,"ChartPalettePreferences",true);var body=GetParent(target);var surface=GetParent(body);
+      if(body==IntPtr.Zero || surface==IntPtr.Zero || Text(surface)!="Chart presentation" || GetWindow(surface,4)!=frame ||
+         Owner(body)!=(uint)pid || !IsWindowEnabled(body) || !Contains(Bounds(surface),Bounds(body)))throw new InvalidOperationException("Exact direct scrolled palette body required.");
+      string kind=Class(body);var geometry=Bounds(body);
+      for(int attempt=0;attempt<16;attempt++) {
+        var info=AssertFrame(frame,pid);AssertCapture(frame,pid,info);
+        if(ResolvePaletteNavigation(frame,pid,"ChartPalettePreferences",true)!=target || GetParent(target)!=body || GetParent(body)!=surface ||
+           Class(body)!=kind || !SameRect(Bounds(body),geometry) || Owner(body)!=(uint)pid)throw new InvalidOperationException("Palette body changed during reveal.");
+        if(PaletteTargetVisible(frame,body,target)){ResolvePaletteNavigation(frame,pid,"ChartPalettePreferences");return;}
+        var before=PaletteScroll(body);if(before.Pos>=before.Max-(int)before.Page+1)throw new InvalidOperationException("Palette target still clipped at end of scroll range.");
+        UIntPtr result;if(SendMessageTimeoutW(body,0x115,new UIntPtr(3),IntPtr.Zero,0x2,1000,out result)==IntPtr.Zero)throw new InvalidOperationException("Palette page scroll uncertain; no retry.");
+        Thread.Sleep(100);
+        var current=AssertFrame(frame,pid);AssertCapture(frame,pid,current);
+        if(ResolvePaletteNavigation(frame,pid,"ChartPalettePreferences",true)!=target || GetParent(target)!=body || GetParent(body)!=surface ||
+           Class(body)!=kind || !SameRect(Bounds(body),geometry) || Owner(body)!=(uint)pid)throw new InvalidOperationException("Palette body changed after scroll.");
+        var after=PaletteScroll(body);if(after.Pos<=before.Pos || after.Min!=before.Min || after.Max!=before.Max || after.Page!=before.Page)throw new InvalidOperationException("Palette scroll made no bounded progress or range changed.");
+      }
+      throw new InvalidOperationException("Palette reveal bound exceeded; target not clicked.");
+    }
     public static void Click(IntPtr frame,int pid,string action) {
+      if(action=="RevealChartPalettePreference"){RevealChartPalettePreference(frame,pid);return;}
+      if(action=="Layers" || action=="ChartPalettePreferences") {
+        var target=ResolvePaletteNavigation(frame,pid,action);
+        ClickReviewedButton(frame,pid,target,delegate{return ResolvePaletteNavigation(frame,pid,action);},true);return;
+      }
       var button=ResolveButton(frame,pid,action);
       ClickReviewedButton(frame,pid,button,delegate{return ResolveButton(frame,pid,action);});
     }
-    private static void ClickReviewedButton(IntPtr frame,int pid,IntPtr button,Func<IntPtr> resolve=null) {
+    private static void ClickReviewedButton(IntPtr frame,int pid,IntPtr button,Func<IntPtr> resolve=null,bool ownedPaletteSurface=false) {
       AssertFrame(frame,pid);
-      if(!IsWindowVisible(button) || !IsWindowEnabled(button) || Owner(button)!=(uint)pid || !IsChild(frame,button))
+      if(!IsWindowVisible(button) || !IsWindowEnabled(button) || Owner(button)!=(uint)pid || (!IsChild(frame,button) && !ownedPaletteSurface))
         throw new InvalidOperationException("Reviewed button identity changed before press.");
       Rect screen,client;
       if(!GetWindowRect(button,out screen) || !GetClientRect(button,out client) || client.Width<24 || client.Height<24)throw new InvalidOperationException("Reviewed button geometry unavailable.");
@@ -430,7 +506,7 @@ namespace OpenNavX {
       var down=SendMessageTimeoutW(button,0x201,new UIntPtr(1),position,0x2,1000,out result);
       if(down==IntPtr.Zero)throw new InvalidOperationException("Reviewed press result uncertain; no release or retry to an unverified control.");
       AssertFrame(frame,pid);Rect heldScreen,heldClient;
-      if(!IsWindowVisible(button) || !IsWindowEnabled(button) || Owner(button)!=(uint)pid || !IsChild(frame,button) ||
+      if(!IsWindowVisible(button) || !IsWindowEnabled(button) || Owner(button)!=(uint)pid || (!IsChild(frame,button) && !ownedPaletteSurface) ||
           GetParent(button)!=parent || Text(button)!=caption || Class(button)!=kind || Text(parent)!=parentCaption ||
           !GetWindowRect(button,out heldScreen) || !GetClientRect(button,out heldClient) ||
           heldScreen.Left!=screen.Left || heldScreen.Top!=screen.Top || heldScreen.Right!=screen.Right || heldScreen.Bottom!=screen.Bottom ||
@@ -444,8 +520,8 @@ namespace OpenNavX {
     }
     public static string SelectionPage(string action) {
       switch(action) {
-        case "SelectFirstVisibleWaypoint":return "OpenNav product page: Waypoints";
-        case "SelectFirstVisibleAis":return "OpenNav product page: AIS targets";
+        case "SelectFirstVisibleWaypoint":return "SKAGER product page: Waypoints";
+        case "SelectFirstVisibleAis":return "SKAGER product page: AIS targets";
         default:throw new InvalidOperationException("Unsupported read-only row selection.");
       }
     }
@@ -474,6 +550,7 @@ namespace OpenNavX {
     }
     public static SelectionRow SelectRow(IntPtr frame,int pid,string action) {
       var pageLabel=SelectionPage(action);var root=AssertFrame(frame,pid);var pages=new List<IntPtr>();
+      if(action=="SelectFirstVisibleAis" && root.Shell=="prototype")return SelectPrototypeAis(frame,pid);
       foreach(var h in Children(frame))
         if(Text(h)==pageLabel && Owner(h)==(uint)pid && IsWindowEnabled(h))pages.Add(h);
       if(pages.Count!=1)throw new InvalidOperationException("Exactly one reviewed waypoint/AIS list page must be visible.");
@@ -495,14 +572,97 @@ namespace OpenNavX {
           final.Top!=chosen.Top || final.Left!=chosen.Left || !Contains(pageBounds,final) || !Contains(root.Bounds,final))
         throw new InvalidOperationException("Selected list/page changed before interaction; no retry.");
       ClickReviewedButton(frame,pid,button);
-      var expected=action=="SelectFirstVisibleWaypoint"?"OpenNav product page: Waypoint detail":"OpenNav product page: AIS target";
+      var expected=action=="SelectFirstVisibleWaypoint"?"SKAGER product page: Waypoint detail":"SKAGER product page: AIS target";
       if(Array.IndexOf(VisiblePageLabels(frame),expected)<0)
         throw new InvalidOperationException("Selection did not expose its read-only detail page; inspect saved before image without retrying.");
       return chosen;
     }
+    private sealed class TrafficList {
+      public IntPtr Surface,Body,List;public Rect SurfaceBounds,BodyBounds,ListBounds,Client;
+      public uint Dpi;public string SurfaceClass,BodyClass,ListClass;
+    }
+    private static IntPtr NamedDirectChild(IntPtr parent,int pid,string name) {
+      var found=IntPtr.Zero;
+      foreach(var h in Children(parent)) {
+        if(GetParent(h)!=parent || Owner(h)!=(uint)pid)continue;
+        if(AccessibleName(h)!=name)continue;
+        if(found!=IntPtr.Zero || !IsWindowEnabled(h))throw new InvalidOperationException("Reviewed traffic control is ambiguous or disabled.");
+        found=h;
+      }
+      if(found==IntPtr.Zero)throw new InvalidOperationException("Exact reviewed traffic control missing.");
+      return found;
+    }
+    private static TrafficList ResolveTrafficList(IntPtr frame,int pid) {
+      var root=AssertFrame(frame,pid);AssertCapture(frame,pid,root);
+      if(root.Shell!="prototype" || VisiblePageLabels(frame).Length!=0)throw new InvalidOperationException("Reviewed prototype chart and traffic list required.");
+      var surface=IntPtr.Zero;
+      foreach(var s in root.Surfaces)if(s.Title=="SKAGER vessel traffic") {
+        if(surface!=IntPtr.Zero || s.Signature!="/Close")throw new InvalidOperationException("Exact traffic list heading required.");
+        surface=new IntPtr(s.Handle);
+      }
+      if(surface==IntPtr.Zero || GetWindow(surface,4)!=frame)throw new InvalidOperationException("Reviewed owned traffic drawer missing.");
+      var body=NamedDirectChild(surface,pid,"AIS scroll body");
+      var list=NamedDirectChild(body,pid,"Vessel traffic list");
+      Rect client;if(!GetClientRect(list,out client))throw new InvalidOperationException("Traffic client unavailable.");
+      var result=new TrafficList{Surface=surface,Body=body,List=list,SurfaceBounds=Bounds(surface),BodyBounds=Bounds(body),
+        ListBounds=Bounds(list),Client=client,Dpi=root.Dpi,SurfaceClass=Class(surface),BodyClass=Class(body),ListClass=Class(list)};
+      if(!IsWindowEnabled(surface) || !IsWindowEnabled(body) || !IsWindowEnabled(list) ||
+         GetDpiForWindow(surface)!=root.Dpi || GetDpiForWindow(body)!=root.Dpi || GetDpiForWindow(list)!=root.Dpi ||
+         !Contains(result.SurfaceBounds,result.BodyBounds) || !Contains(result.BodyBounds,result.ListBounds) ||
+         client.Left!=0 || client.Top!=0 || client.Width<24 || client.Height<24 || client.Width>32767 || client.Height>32767)
+        throw new InvalidOperationException("Bounded fully visible same-DPI traffic list required.");
+      return result;
+    }
+    private static bool SameTrafficList(TrafficList a,TrafficList b) {
+      return a.Surface==b.Surface && a.Body==b.Body && a.List==b.List && a.Dpi==b.Dpi &&
+        a.SurfaceClass==b.SurfaceClass && a.BodyClass==b.BodyClass && a.ListClass==b.ListClass &&
+        SameRect(a.SurfaceBounds,b.SurfaceBounds) && SameRect(a.BodyBounds,b.BodyBounds) &&
+        SameRect(a.ListBounds,b.ListBounds) && SameRect(a.Client,b.Client);
+    }
+    private static void TrafficHit(TrafficList list,int pid) {
+      // ListView::RowAt uses (y + private offset) / FromDIP(71). y=0 always
+      // addresses the first visible row, even when its remainder is one pixel.
+      // It is a borderless custom control, not a collection of HWND row buttons.
+      var point=new Point{X=list.Client.Width/2,Y=0};
+      if(!ClientToScreen(list.List,ref point) || Owner(list.List)!=(uint)pid || WindowFromPoint(point)!=list.List)
+        throw new InvalidOperationException("First visible traffic row is obscured or unavailable.");
+    }
+    private static SelectionRow SelectPrototypeAis(IntPtr frame,int pid) {
+      var list=ResolveTrafficList(frame,pid);TrafficHit(list,pid);
+      var position=new IntPtr(list.Client.Width/2);UIntPtr result;
+      if(!SameTrafficList(list,ResolveTrafficList(frame,pid)))throw new InvalidOperationException("Traffic list changed before press.");
+      if(SendMessageTimeoutW(list.List,0x201,new UIntPtr(1),position,0x2,1000,out result)==IntPtr.Zero)
+        throw new InvalidOperationException("Traffic press uncertain; no retry.");
+      if(!SameTrafficList(list,ResolveTrafficList(frame,pid)))throw new InvalidOperationException("Traffic list changed during press; no release or retry.");
+      TrafficHit(list,pid);
+      if(SendMessageTimeoutW(list.List,0x202,UIntPtr.Zero,position,0x2,1000,out result)==IntPtr.Zero)
+        throw new InvalidOperationException("Traffic release uncertain; no retry.");
+      Thread.Sleep(300);
+      AssertPrototypeAisDetail(frame,pid);
+      var after=AssertFrame(frame,pid);bool sameSurface=false;
+      foreach(var surface in after.Surfaces)if(surface.Title=="SKAGER vessel traffic" && surface.Handle==list.Surface.ToInt64())sameSurface=true;
+      if(!sameSurface)throw new InvalidOperationException("Traffic drawer changed after selection.");
+      return new SelectionRow{Handle=list.List.ToInt64(),Label="First visible AIS target",Top=list.ListBounds.Top,
+        Left=list.ListBounds.Left,Enabled=true,Visible=true,DirectChild=true,Prototype=true,SurfaceHandle=list.Surface.ToInt64()};
+    }
+    public static void AssertPrototypeAisDetail(IntPtr frame,int pid) {
+      var root=AssertFrame(frame,pid);AssertCapture(frame,pid,root);int details=0;
+      if(root.Shell!="prototype" || VisiblePageLabels(frame).Length!=0)throw new InvalidOperationException("Prototype AIS detail required.");
+      foreach(var surface in root.Surfaces)if(surface.Title=="SKAGER vessel traffic") {
+        if(surface.Signature!="/Back")throw new InvalidOperationException("Traffic selection did not expose its detail heading; no retry.");
+        var body=NamedDirectChild(new IntPtr(surface.Handle),pid,"AIS scroll body");int charts=0;
+        foreach(var h in Children(body))if(GetParent(h)==body && Owner(h)==(uint)pid) {
+          if(AccessibleName(h)=="Vessel traffic list")throw new InvalidOperationException("Traffic list remains visible after selection.");
+          if(Text(h)=="Show on chart")charts++;
+        }
+        if(charts!=1)throw new InvalidOperationException("Exact read-only AIS target detail action missing.");
+        details++;
+      }
+      if(details!=1)throw new InvalidOperationException("One visible owned AIS target detail required.");
+    }
     public static string[] VisiblePageLabels(IntPtr frame) {
       var result=new List<string>();foreach(var h in Children(frame)) {
-        var text=Text(h);if(text.StartsWith("OpenNav product page:",StringComparison.Ordinal) || text.StartsWith("OpenNav page:",StringComparison.Ordinal))result.Add(text);
+        var text=Text(h);if(text.StartsWith("SKAGER product page:",StringComparison.Ordinal) || text.StartsWith("SKAGER page:",StringComparison.Ordinal))result.Add(text);
       }return result.ToArray();
     }
   }

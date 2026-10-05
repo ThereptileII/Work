@@ -1,0 +1,20 @@
+test_delay_import (__main__.Guards.test_delay_import) ... ok
+test_exact_pe (__main__.Guards.test_exact_pe) ... ok
+test_forwarded_export (__main__.Guards.test_forwarded_export) ... ok
+test_legacy_extra_dependency (__main__.Guards.test_legacy_extra_dependency) ... ok
+test_native_private_tls_source_selection_and_alpha_closure (__main__.Guards.test_native_private_tls_source_selection_and_alpha_closure) ... ok
+test_no_extra_package (__main__.Guards.test_no_extra_package) ... ok
+test_not_dll (__main__.Guards.test_not_dll) ... ok
+test_package_roundtrip_and_tampering (__main__.Guards.test_package_roundtrip_and_tampering) ... ok
+test_patch_isolated_from_parent_git_and_crlf (__main__.Guards.test_patch_isolated_from_parent_git_and_crlf) ... ok
+test_path_and_blob_negative (__main__.Guards.test_path_and_blob_negative) ... ok
+test_prepared_owned_include_closure (__main__.Guards.test_prepared_owned_include_closure) ... ok
+test_truncated (__main__.Guards.test_truncated) ... ok
+test_trust_patch_policy (__main__.Guards.test_trust_patch_policy) ... ok
+test_wrong_arch (__main__.Guards.test_wrong_arch) ... ok
+test_wrong_export (__main__.Guards.test_wrong_export) ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 0.086s
+
+OK

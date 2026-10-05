@@ -1,0 +1,51 @@
+{
+  "prototypeSha256": "b04573b920b6bccd16afd22f54a909e48afcfd502ce9cd7c69fdf5b6dd895447",
+  "roles": {
+    "Day": {
+      "ink": [
+        236,
+        196,
+        140
+      ],
+      "backing": [
+        29,
+        41,
+        42
+      ],
+      "contrast": 9.1536704471752
+    },
+    "Dusk": {
+      "ink": [
+        207,
+        172,
+        132
+      ],
+      "backing": [
+        36,
+        46,
+        49
+      ],
+      "contrast": 6.547164360088077
+    },
+    "Night": {
+      "ink": [
+        170,
+        145,
+        112
+      ],
+      "backing": [
+        20,
+        23,
+        25
+      ],
+      "contrast": 5.995967881021285
+    }
+  },
+  "fontPixels": 12,
+  "weight": 550,
+  "padding": [
+    13,
+    15
+  ],
+  "note": "Composed warning heading extension; rounded8 plus left2 follows existing owned Callout, not a new literal prototype component."
+}

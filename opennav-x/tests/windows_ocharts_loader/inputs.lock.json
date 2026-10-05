@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "vendorReadOnly": {
+    "file": "o-charts-2.0.0.49_msvc-wx32-10-win32.tar.gz",
+    "url": "https://dl.cloudsmith.io/public/opencpn/o-charts-prod/raw/names/o-charts-2.0-msvc-wx32-10-tarball/versions/2.0.0.49/o-charts-2.0.0.49_msvc-wx32-10-win32.tar.gz",
+    "bytes": 1049179,
+    "sha256": "83153e5cc5ebce978f7e0af6f07f50b86cfb957e9b7432780cd899fe5012fda5",
+    "member": "o-charts-2.0-msvc-wx32-10/plugins/o-charts_pi.dll",
+    "dllBytes": 2088960,
+    "dllSha256": "99edcfd4419d606ef5c3fd554759e853cfda1fe4f38c05e26266f335a5a5b875",
+    "sourceCommit": "c98bf5f0654a6aee52cd9a6b9fabc0d1cf8047e8",
+    "provenance": "Accepted source/package audit: evidence/local/boat-beta2/plugin-audit/o-charts_pi.dll.source-review.json; archive metadata points to AppVeyor build 46966676. Only this DLL is extracted as a hash input; no vendor module or helper is executed."
+  },
+  "picosha2": {
+    "file": "picosha2.h",
+    "url": "https://raw.githubusercontent.com/OpenCPN/OpenCPN/37fd0cddb7334fe489e9f18aa163977a9c5c84f7/libs/picosha2/picosha2.h",
+    "bytes": 13017,
+    "sha256": "9df7a5696f37981f75ad1b7854cc833176ae48debf3ee4bfc024fe9dfc8b8624"
+  }
+}

@@ -80,7 +80,7 @@ def main():
             if log.exists() and "OnInitTimer...Finalize Canvases" in log.read_text(errors="replace"): break
             time.sleep(.2)
         else: raise RuntimeError("Initialization did not complete")
-        windows = xd("search", "--all", "--onlyvisible", "--pid", app.pid, "--name", "^OpenNav X / OpenCPN$").splitlines()
+        windows = xd("search", "--all", "--onlyvisible", "--pid", app.pid, "--name", "^SKAGER / OpenCPN$").splitlines()
         assert len(windows)==1
         window = windows[0]
         for index, (width, height, reference) in enumerate([

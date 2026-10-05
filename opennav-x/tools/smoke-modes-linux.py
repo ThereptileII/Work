@@ -150,6 +150,23 @@ def observe(predicate=lambda d: True):
         time.sleep(.1)
     raise AssertionError('Current mode-cycle UI state did not arrive')
 
+def reveal_preferences(label):
+    last_y=None
+    for _ in range(32):
+        current=observe();display=current['runtime']['display'];drawer=display.get('drawer',{})
+        assert current['ui_page']=='Settings' and drawer, 'Preferences drawer closed during scroll'
+        matches=[c for c in display['interaction_controls'] if c['label']==label and c['enabled']]
+        assert len(matches)==1, ('Unique Preferences action required',label,matches)
+        c=matches[0]
+        contained=(drawer['x']<=c['x'] and c['x']+c['width']<=drawer['x']+drawer['width']
+                   and drawer['y']<=c['y'] and c['y']+c['height']<=drawer['y']+drawer['height'])
+        if c['visible'] and contained:return current
+        assert c['y']!=last_y, ('Preferences scroll did not move the action',label)
+        last_y=c['y'];ticks=int(current['runtime']['ui_update']['ticks'])
+        click(drawer['x']+drawer['width']//2,drawer['y']+drawer['height']//2,5)
+        observe(lambda d:int(d['runtime']['ui_update']['ticks'])>=ticks+3)
+    raise AssertionError(('Bounded Preferences scroll could not reach action',label))
+
 def action(label, light=None, page=None):
     before=observe();ticks=int(before['runtime']['ui_update']['ticks'])
     matches=[c for c in before['runtime']['display']['interaction_controls']
@@ -182,7 +199,7 @@ def wait_exit(pid):
 try:
     time.sleep(1)
     app = launch('01-xnav-and-controlled-restarts', '--no_opengl', '--xnav')
-    handle, pid = window('OpenNav X / OpenCPN', app)
+    handle, pid = window('SKAGER / OpenCPN', app)
     ready(1)
     capture('01-xnav-unavailable')
     action('Day',light='Dusk')
@@ -194,6 +211,7 @@ try:
     action('−')
     action('Settings',page='Settings')
     action('System',page='Settings')
+    reveal_preferences('Interface & recovery')
     action('Interface & recovery',page='System')
     capture('07-system')
     system_ticks = int(observe(lambda d:d['ui_page']=='System')['runtime']['ui_update']['ticks'])
@@ -201,6 +219,9 @@ try:
     # Escape queues Back() to the Settings drawer. Observe that transition
     # before sending another pointer action; a retained System publication
     # does not mean its asynchronous navigation/focus work has completed.
+    observe(lambda d:int(d['runtime']['ui_update']['ticks'])>=system_ticks+3
+            and d['ui_page']=='Settings' and bool(d['runtime']['display'].get('drawer')))
+    reveal_preferences('Interface & recovery')
     returned = observe(lambda d:int(d['runtime']['ui_update']['ticks'])>=system_ticks+3
                        and d['ui_page']=='Settings'
                        and bool(d['runtime']['display'].get('drawer'))
@@ -220,7 +241,7 @@ try:
     xdo('key', 'ctrl+shift+l')
     assert app.wait(timeout=30) == 0, 'Initial XNav exit failed'
     owned_pids.discard(app.pid)
-    handle, pid = window('OpenCPN / Legacy')
+    handle, pid = window('SKAGER Legacy / OpenCPN')
     assert pid != app.pid
     ready(2)
     saved('XNav to Legacy')
@@ -229,7 +250,7 @@ try:
     click(600, 400, 3)
     xdo('key', 'End', 'Return')
     wait_exit(pid)
-    handle, pid = window('OpenNav X / OpenCPN')
+    handle, pid = window('SKAGER / OpenCPN')
     ready(3)
     saved('Legacy to XNav')
     capture('06-xnav-after-legacy')
@@ -238,7 +259,7 @@ try:
     wait_exit(pid)
     saved('Final IPC close')
     safe = launch('03-safe', '--no_opengl', '--xnav', '--legacy', '--safe-mode')
-    handle, pid = window('OpenNav Safe Mode / OpenCPN', safe)
+    handle, pid = window('SKAGER Safe Mode / OpenCPN', safe)
     ready(4)
     capture('12-safe-shared-profile')
     remote_quit('04-safe-quit')
@@ -246,7 +267,7 @@ try:
     owned_pids.discard(safe.pid)
     saved('Safe override and close')
     normal = launch('05-normal-after-safe', '--no_opengl')
-    handle, pid = window('OpenNav X / OpenCPN', normal)
+    handle, pid = window('SKAGER / OpenCPN', normal)
     ready(5)
     remote_quit('06-normal-quit')
     assert normal.wait(timeout=30) == 0

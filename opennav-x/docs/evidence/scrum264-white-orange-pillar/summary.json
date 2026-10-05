@@ -1,0 +1,22 @@
+{
+  "checks": 2235,
+  "baselineManifestSha256": "beff73cae53211c4ef0b0c3fa2ed83e5290680f19f48781646e1f1d0d4f88e53",
+  "manifestSha256": "12cfbce4686fce9a89e15f45105195c9f09a51ae4e3e9932aa7ba803ae205a52",
+  "changedPixelsPerTheme": 50,
+  "wholeXmlInverse": true,
+  "wholeRgbaInverse": true,
+  "negativeXmlCases": 6,
+  "nightSolidContrastAtLeast": 3,
+  "duskDispatch": "stock Rule; lifted cream rejected",
+  "actualLoaderChecks": 38809,
+  "actualRenderSyNegativeControls": 5,
+  "privatePreparationTests": 15,
+  "compiledProductionObjects": 3,
+  "base": "5c05eb55c15b67d4014df55896d95452e9cc9d64",
+  "fixtureExecutableSha256": "5e5415e64b32901c24b27a1480c81d1bf060a8acee990d61bfe82872341cfea6",
+  "limits": [
+    "Dusk original stock Rule by explicit readability decision",
+    "No actual chart canvas or GL drawing in fixture",
+    "No full app build, native Windows, CI, or boat acceptance"
+  ]
+}

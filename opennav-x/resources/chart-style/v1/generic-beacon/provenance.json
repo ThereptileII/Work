@@ -1,0 +1,82 @@
+{
+  "issue": "SCRUM-264",
+  "sourceSymbol": "point:BCNGEN01",
+  "tile": [
+    724,
+    1160,
+    24,
+    28
+  ],
+  "pivot": [
+    12,
+    14
+  ],
+  "prototypeScale": 0.84375,
+  "nightBrightness": 0.78,
+  "rasterizer": "rsvg-convert version 2.62.3\n\nlibraries used:\n  cairo 1.18.4\n  pango 1.58.2\n  harfbuzz 14.4.0\n  fontconfig 2.18.3",
+  "selection": "Only original Simplified generic selections1696/31748 and1708/31760; no classified/Paper replacement.",
+  "themes": {
+    "DAY_BRIGHT": {
+      "rgbaSha256": "bf6b4c347463f7fcf478c76ae0c5782f6573ddd8e40c1e57847b7637f95d9c9f",
+      "changedPixels": 102,
+      "colors": {
+        "--chart-text": [
+          104,
+          123,
+          122
+        ],
+        "--mark-service": [
+          124,
+          133,
+          138
+        ]
+      }
+    },
+    "DUSK": {
+      "rgbaSha256": "913ef3d496a5d537ff10df890664f6773e4ed2b31a559b6a257c952639824b49",
+      "changedPixels": 102,
+      "colors": {
+        "--chart-text": [
+          173,
+          187,
+          177
+        ],
+        "--mark-service": [
+          168,
+          187,
+          183
+        ]
+      }
+    },
+    "NIGHT": {
+      "rgbaSha256": "7c2a83aab224b0b07523294f4368de9279c82b5dc98273b11ccad42b9e033982",
+      "changedPixels": 102,
+      "colors": {
+        "--chart-text": [
+          91,
+          104,
+          94
+        ],
+        "--mark-service": [
+          98,
+          115,
+          108
+        ]
+      }
+    }
+  },
+  "sources": {
+    "docs/design/prototype/src/chart-marker-art.js": "be2c7f44817c29d3714412c7974d3cf07e238f65c7131958b0cb8ff6fbd7816d",
+    "docs/design/prototype/src/chart-symbols.css": "ca7ec18b38bf682600b6c3c39c5798c94b00bbaddd5589119d5fcb77ad599cb3",
+    "docs/design/prototype/src/seamarks.json": "78377f9622f82b6e2e16b6709fe62056863389ae5f6cc21bc6da9de3ed9cdfd9",
+    "docs/design/prototype/src/style.css": "f943f5c91e2b260067e97a80d47fc923b64c3bb715c73a58ce1d4a6bf7a1bb46",
+    "docs/design/prototype-tokens.json": "111ee35527a974b2df6c2c4af0afd04e5aebdf14bad3004a98be9064aef790c6",
+    "tools/derive-generic-beacon-art.py": "ea26e721223398c908d410caf0a0b8e55c3899bae695dd3402a259ecf98a7587",
+    "resources/chart-style/v1/generic-beacon/XNBCNG01-DAY_BRIGHT-rgba.json": "8555e62126ab47c187a1f38626a181511ca982d79def65ee96f9376e826161ea",
+    "resources/chart-style/v1/generic-beacon/XNBCNG01-DAY_BRIGHT.svg": "57cf2b3fa24ba1ed50cb94fa57fcd3599fcf7bce49614ece99faea86157a8e17",
+    "resources/chart-style/v1/generic-beacon/XNBCNG01-DUSK-rgba.json": "98846a5e074fcb2f5f227634bbe798da5ac4310b80fa86205fed42a30cb2cc81",
+    "resources/chart-style/v1/generic-beacon/XNBCNG01-DUSK.svg": "d510e96e7df0898f383a76c6a034b253746c68dd103e2d10387e81d979de8bbc",
+    "resources/chart-style/v1/generic-beacon/XNBCNG01-NIGHT-rgba.json": "ee8323c16811c5199646467f463f421d5fbcd36508ac222a653500a849d244f2",
+    "resources/chart-style/v1/generic-beacon/XNBCNG01-NIGHT.svg": "5826afe80d83b3870c3ac3fd75d10c327c9f3728bf5cab785ffcfe17d68fc5fc"
+  }
+}

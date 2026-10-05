@@ -1,0 +1,101 @@
+{
+  "commit": "c95d3a091bb2a0ce0e19d0146ab28dc848ef5290",
+  "run": 37017351644,
+  "job": 110871376020,
+  "artifact": 11242857451,
+  "bytes": 19167233,
+  "sha256": "1d730d44842898637ef056a1173e6fa06b225a78adc5150485cfd0d3b7bda4b3",
+  "entries": 4245,
+  "job_result": "success",
+  "tests": {
+    "xnav-linux-tests.xml": {
+      "tests": 146,
+      "failures": 0,
+      "skipped": 0,
+      "disabled": 0,
+      "sha256": "d1bd45af21edad4b43b14e87e22ffe663c4aad70453d422482236fe4fc1f96a1"
+    },
+    "production-linux-tests.xml": {
+      "tests": 146,
+      "failures": 0,
+      "skipped": 0,
+      "disabled": 0,
+      "sha256": "4de48853a1ab6da5538d07bfe8090b9483b1046b9c760a230480a5d269543a22"
+    }
+  },
+  "soak": {
+    "status": "passed",
+    "requested_seconds": 10800,
+    "release_duration": true,
+    "authority": "Linux development",
+    "scope": "Actual process, DEMO vessel/route/AIS, software chart, repeated UI and dropout recovery; no hardware commands",
+    "samples": 1080,
+    "screenshots": [
+      "start.png",
+      "end.png"
+    ],
+    "build_commit": "c95d3a091bb2a0ce0e19d0146ab28dc848ef5290",
+    "startup_seconds": 3.52606348900008,
+    "elapsed_seconds": 10800.171256237,
+    "resource_growth": {
+      "resident_bytes": -106496.0,
+      "handles": 0.0,
+      "threads": 0.0
+    },
+    "growth_limits": {
+      "resident_bytes": 134217728,
+      "private_bytes": 134217728,
+      "handles": 32,
+      "gdi_objects": 64,
+      "user_objects": 64,
+      "threads": 8
+    },
+    "cpu_percent_one_core": 2.583176704840546,
+    "maximum_page_observation_seconds": 1.3534434709999914,
+    "ui_observation_limit_seconds": 8,
+    "route_progress_samples": 765
+  },
+  "loader": {
+    "status": "passed",
+    "checks": 5,
+    "loader": {
+      "upstream": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+      "commissioning_restart_protocol": 0,
+      "version": "0.4.0-beta2",
+      "commit": "c95d3a091bb2a0ce0e19d0146ab28dc848ef5290",
+      "compiler": "GNU 13.3.0 / 8 byte pointers",
+      "plugins_loaded": false,
+      "test_fixtures": false,
+      "resources": {
+        "gshhs/poly-c-1.dat": true,
+        "s57data/s57objectclasses.csv": true,
+        "uidata/styles.xml": true,
+        "s57data/chartsymbols.xml": true
+      },
+      "normal_config_directory": "/etc",
+      "passed": true,
+      "xnav_hardware_output_policy": "status-only",
+      "build_purpose": "INSTALLED PRODUCT",
+      "profile_initialized": false,
+      "contract": "OpenNavX.LoaderSelfTest.1"
+    },
+    "app_sha256": "cfbeaf7d471fef15398fbf87a0bd8994650284d6a5a440605ccb3cd5618553aa"
+  },
+  "product_acceptance": false,
+  "boat_acceptance": false,
+  "chart_end_review": "UNACCEPTED: the final soak capture is all water. Final scale is 1.214488149 pixels/metre compared with configured initial0.003; longitude18.80452289 versus initial18.5. Start capture has coastline. Numeric process/resource endurance passed, but end capture does not prove chart-content continuity. Cause under source investigation; do not infer rendering failure or success.",
+  "limitations": [
+    "Older c95 source only; does not qualify ffe.",
+    "Linux software-rendering endurance with explicit test data; no hardware commands.",
+    "Native c95 qualification failed separately.",
+    "Dedicated public ENC renderer checks reported pass but do not establish boat GPU or final soak viewport correctness."
+  ],
+  "source_review": {
+    "smooth_zoom_cause": "Not established: global default false and existing-config path skip brand-new default override; soak final config was not retained. false ZoomCanvas argument disables cursor centering, not smoothing.",
+    "actual_zoom_pairs": 90,
+    "final_to_initial_scale_ratio": 404.82938299999995,
+    "longitude_delta_degrees": 0.3045228900000012,
+    "conclusion": "Substantially changed viewport, cause unresolved. Numeric endurance passes; final chart-content continuity unaccepted.",
+    "follow_up": "Bounded per-gesture viewport trace and retained disposable config; no product zoom change inferred."
+  }
+}

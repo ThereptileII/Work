@@ -1,0 +1,288 @@
+{
+  "sourceLocal": "1356fd1603aacbea04d7081d16331e9a181180bb",
+  "sourceRemote": "9fcd3db54ee6913cc144ecfc09ec2152078a6eff",
+  "summaryPassed": true,
+  "nativeProductAcceptance": false,
+  "reconstructedPatchedUpstreamTree": "c1b15a7acb912a143d6a62ae2f17e96ae1f28682",
+  "localInputs": {
+    "total": 297,
+    "exact": 21,
+    "gitCrlfOnly": 276
+  },
+  "upstreamInputs": {
+    "total": 1438,
+    "exact": 16,
+    "gitCrlfOnly": 1422
+  },
+  "copiedProductionUnitsMatched": 16,
+  "generatedResourcesRehashed": 7,
+  "generatedConfigHeadersRehashed": 2,
+  "msvcProjectsRehashed": 16,
+  "objects": {
+    "check_chart_ais": {
+      "bytes": 415099,
+      "sha256": "5a952d2fdf4e257e3eca4e4060c9e30aca87dc630e06a84a1bfbe08c9543160f",
+      "coffMachine": "0x014c",
+      "name": "ais.obj"
+    },
+    "check_chart_ChartPresentation": {
+      "bytes": 395360,
+      "sha256": "634246bfb4a6959927b0a16b7c29317749a3287143759359ca27f9917e43a0d2",
+      "coffMachine": "0x014c",
+      "name": "ChartPresentation.obj"
+    },
+    "check_chart_ChartRouteUnderlay": {
+      "bytes": 69613,
+      "sha256": "db1b62e03258d746f280574ba5a2c30ed4b45a082a556615dd1238fe36e445e4",
+      "coffMachine": "0x014c",
+      "name": "ChartRouteUnderlay.obj"
+    },
+    "check_chart_ChartRouteUnderlayGeometry": {
+      "bytes": 104231,
+      "sha256": "78e62f44ef39fa431b1c80eb76cb53728c951692eef0dd64721c9cbb7829f64b",
+      "coffMachine": "0x014c",
+      "name": "ChartRouteUnderlayGeometry.obj"
+    },
+    "check_chart_ChartRouteWaypoint": {
+      "bytes": 262361,
+      "sha256": "1f2c6166846ab59540a60628f9f0158c961d29d58ac73ba38fe28d14983957d8",
+      "coffMachine": "0x014c",
+      "name": "ChartRouteWaypoint.obj"
+    },
+    "check_chart_chartsymbols": {
+      "bytes": 178112,
+      "sha256": "6f7f8eec5d6bec6373d69634a14e355086e2e63d7ec50f5c82c0ee0910d6b735",
+      "coffMachine": "0x014c",
+      "name": "chartsymbols.obj"
+    },
+    "check_chart_chcanv": {
+      "bytes": 1150473,
+      "sha256": "2b16b15d535bc31246d2f7e1e47c2d9137b3b4c36ecfd85701a23bba6df1e518",
+      "coffMachine": "0x014c",
+      "name": "chcanv.obj"
+    },
+    "check_chart_DepthFont": {
+      "bytes": 173198,
+      "sha256": "2a191efafc4dc009d9ebdca274b83e4149c29ce7367cad27c33ea349e482387d",
+      "coffMachine": "0x014c",
+      "name": "DepthFont.obj"
+    },
+    "check_chart_glChartCanvas": {
+      "bytes": 699878,
+      "sha256": "a7c538412c7b0b101299cc0823819787a6bbe707413e5e9ac6ea5d2e117d1d45",
+      "coffMachine": "0x014c",
+      "name": "glChartCanvas.obj"
+    },
+    "check_chart_OnboardAisPresentation": {
+      "bytes": 98337,
+      "sha256": "b3fa6c770179b0402b5ee206e7b570c96c12376be893a2faf4ed7906cdec4ca7",
+      "coffMachine": "0x014c",
+      "name": "OnboardAisPresentation.obj"
+    },
+    "check_chart_OnlineAisOverlay": {
+      "bytes": 99780,
+      "sha256": "89055487ca7a6ec3042e58b832f6cd5bd5a6c47e5d292f04b2dc8bee6291c059",
+      "coffMachine": "0x014c",
+      "name": "OnlineAisOverlay.obj"
+    },
+    "check_chart_piano": {
+      "bytes": 304230,
+      "sha256": "84f05792c3a8f087237df6d51ded65caa3c4c2d6874dee3a6b091544aab3a7ed",
+      "coffMachine": "0x014c",
+      "name": "piano.obj"
+    },
+    "check_chart_route_gui": {
+      "bytes": 333343,
+      "sha256": "9d2a4851aad4db557fe587184ebad1be18f771ac13a644be2cca9c2c43970212",
+      "coffMachine": "0x014c",
+      "name": "route_gui.obj"
+    },
+    "check_chart_route_point_gui": {
+      "bytes": 331994,
+      "sha256": "a7fb7eb8276eb116928401fbd192ad6c4939eaa7aff9c602dbdebb89e0c11bcd",
+      "coffMachine": "0x014c",
+      "name": "route_point_gui.obj"
+    },
+    "check_chart_s52plib": {
+      "bytes": 641812,
+      "sha256": "7c1549213d0643f35445c357deca5d2f74a4329bffcf0fb559e091dc9cda8f2e",
+      "coffMachine": "0x014c",
+      "name": "s52plib.obj"
+    },
+    "check_chart_waypointman_gui": {
+      "bytes": 380321,
+      "sha256": "8ee0bf0cf8765a125f3aaf6c0d3954ad68c12f948b8a7d4760d7d14c437ebd52",
+      "coffMachine": "0x014c",
+      "name": "waypointman_gui.obj"
+    }
+  },
+  "policy": {
+    "testFixtures": false,
+    "pilotLoopback": false,
+    "openglCompiled": true,
+    "dependencyBuilds": false,
+    "applicationLinked": false
+  },
+  "limits": [
+    "Compile only: no application/dependency link or runtime/visual/DPI/installer/boat acceptance",
+    "SDK headers are recorded by the original locked staging manifest; headers were not uploaded for independent byte rehash"
+  ],
+  "github": {
+    "artifact": {
+      "id": 11257159820,
+      "name": "native-changed-units-9fcd3db54ee6913cc144ecfc09ec2152078a6eff",
+      "size_in_bytes": 4606157,
+      "url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/11257159820",
+      "archive_download_url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/11257159820/zip",
+      "expired": false,
+      "created_at": "2026-10-02T23:52:14Z",
+      "expires_at": "2026-12-31T23:50:26Z",
+      "updated_at": "2026-10-02T23:52:14Z",
+      "digest": "sha256:78d63ba3fa7b104e5f6a171811a72d6c5e7ccbf7445add36d5381970234f9dd0",
+      "workflow_run": {
+        "id": 37079442345,
+        "repository_id": 864043804,
+        "head_repository_id": 864043804,
+        "head_branch": "skager-windows-changed-units",
+        "head_sha": "9fcd3db54ee6913cc144ecfc09ec2152078a6eff"
+      }
+    },
+    "job": {
+      "id": 111076503274,
+      "name": "compile",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 37079442345,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Fetch supported OpenCPN source",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Prove native peer CLI home precondition before GUI startup",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 4
+        },
+        {
+          "name": "Install capture dependency",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 5
+        },
+        {
+          "name": "Verify component runtime staging guards",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Verify strict native drawer geometry oracle",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 7
+        },
+        {
+          "name": "Verify strict chart layout and Layers oracle",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 8
+        },
+        {
+          "name": "Run selected bounded native proof",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 20
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21
+        }
+      ]
+    }
+  },
+  "archive": {
+    "bytes": 4606157,
+    "sha256": "78d63ba3fa7b104e5f6a171811a72d6c5e7ccbf7445add36d5381970234f9dd0",
+    "zipEntries": 389,
+    "allCrcPassed": true
+  },
+  "compileLog": {
+    "actualClCompileCommands": 16,
+    "successfulTargetBuilds": 16,
+    "compiler": "MSVC 14.44.35207 HostX64/x86",
+    "perTargetElapsed": [
+      "00:00:06.50",
+      "00:00:02.69",
+      "00:00:02.40",
+      "00:00:00.84",
+      "00:00:02.40",
+      "00:00:02.40",
+      "00:00:04.70",
+      "00:00:03.72",
+      "00:00:02.54",
+      "00:00:02.70",
+      "00:00:02.31",
+      "00:00:03.28",
+      "00:00:02.65",
+      "00:00:02.76",
+      "00:00:01.92",
+      "00:00:01.70"
+    ]
+  },
+  "retainedArtifactHashes": {
+    "summary.json": {
+      "bytes": 557191,
+      "sha256": "02331daa091cfca14324e3f9aef692bc9fbcc44e7f4eab083f576d8a9a0bbcf2"
+    },
+    "chart-inputs.json": {
+      "bytes": 530178,
+      "sha256": "0382cd324e34bd523704172cd6207e99bcfb4662ec7f5b8b2adabfae7fab1253"
+    },
+    "compile.log": {
+      "bytes": 127334,
+      "sha256": "6e3ab7399f17393b69cd148a211305bec73fd85c5aa67fc156db7d1792379018"
+    },
+    "configure.log": {
+      "bytes": 2127,
+      "sha256": "ef62d21f988a3a3a66ba30c6b1dc515d0f525e4a2b8d6d3899e350fc9265a2f0"
+    },
+    "prepare.log": {
+      "bytes": 825,
+      "sha256": "ec3d88d384ff08477cd5bc47f537662a9a668e8e0ab47be90677da7fc8a84874"
+    },
+    "verify-source.log": {
+      "bytes": 521,
+      "sha256": "bd2de8032acc307ab3fc6e0aef079dc5f33bedd0ba74664afb361f0612106b13"
+    }
+  }
+}

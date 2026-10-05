@@ -226,7 +226,7 @@ try:
   start=time.monotonic()
   with (evidence/'charts-launch.log').open('a') as out:
    app=subprocess.Popen([str(exe),'--configdir',str(profile),'--xnav','--rebuild_chart_db']+(['--no_opengl'] if rendering=='software' else []),env=env,stdout=out,stderr=out)
-  owned.add(app.pid);count+=1;handle,pid=window('OpenNav X / OpenCPN');ready()
+  owned.add(app.pid);count+=1;handle,pid=window('SKAGER / OpenCPN');ready()
   if windows:ui.size_window(handle)
   else:xdo('windowsize',handle,1280,800,'windowmove',handle,0,0)
   d=data(enc);entry={'requested_rendering':rendering,'runtime':d['runtime'],'startup_to_enc_seconds':round(time.monotonic()-start,3),'captures':[]}
@@ -368,15 +368,15 @@ try:
   else:xdo('key','ctrl+shift+l')
   assert app.wait(timeout=40)==0;owned.discard(pid);count+=1
   entry['workspace_after_xnav_close']=workspace.saved(profile)
-  handle,pid=window('OpenCPN / Legacy');owned.add(pid);ready();entry['captures'].append(capture('chart-'+rendering+'-05-legacy'))
+  handle,pid=window('SKAGER Legacy / OpenCPN');owned.add(pid);ready();entry['captures'].append(capture('chart-'+rendering+'-05-legacy'))
   entry['workspace_native_legacy']=capture_workspace('chart-'+rendering+'-dashboard-legacy')
   if windows:
-   p=ui.monitor_process(pid);ui.click_menu(handle,'Switch to XNav');ui.wait_clean_exit(p)
+   p=ui.monitor_process(pid);ui.click_menu(handle,'Switch to SKAGER');ui.wait_clean_exit(p)
   else:
    xdo('windowfocus',handle,'mousemove',600,400,'click',3);time.sleep(.3);xdo('key','End','Return')
    child,status=os.waitpid(pid,0);assert os.waitstatus_to_exitcode(status)==0
   entry['workspace_after_legacy_close']=workspace.saved(profile)
-  owned.discard(pid);count+=1;handle,pid=window('OpenNav X / OpenCPN');owned.add(pid);ready();returned=data(enc)
+  owned.discard(pid);count+=1;handle,pid=window('SKAGER / OpenCPN');owned.add(pid);ready();returned=data(enc)
   entry['workspace_returned']=workspace.assert_restored(returned['runtime']['test_workspace_perspective'],suppressed=True)
   assert all(row['visible'] for row in returned['runtime']['display']['rail_regions']), 'Mode cycle lost XNav rail'
   entry['captures'].append(capture('chart-'+rendering+'-06-returned'))

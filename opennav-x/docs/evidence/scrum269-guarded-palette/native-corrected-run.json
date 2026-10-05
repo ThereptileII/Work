@@ -1,0 +1,88 @@
+{
+  "schema": 1,
+  "status": "independently-verified-native-tooling",
+  "repository": "ThereptileII/Work",
+  "runId": 37124439890,
+  "runAttempt": 1,
+  "publishedCommit": "70537545011ef3fd2ecb288a404ae3dc94d5d019",
+  "mappedLocalRootSource": "db73de2d02a1829c543101b6d60ca6c3db0509d3",
+  "mappedTree": "0556b13b4f55a6bc952441462d21b7427c789241",
+  "jobs": {
+    "policy": 111206790421,
+    "window": 111206790536,
+    "broker": 111206790500,
+    "bundle": 111207212277
+  },
+  "allJobConclusions": "success",
+  "artifacts": [
+    {
+      "id": 11274543345,
+      "kind": "window",
+      "sha256": "0f22edc5d9f4dbfed3847df49c3a5fa4704adc8177506877a08e9c748d3b2db5"
+    },
+    {
+      "id": 11274508811,
+      "kind": "bundle",
+      "sha256": "6cb6d8a3e8efedb3d1bc06395d85d34a698c17e83cece1a8f7b3773c716e06ef"
+    },
+    {
+      "id": 11274139457,
+      "kind": "policy",
+      "sha256": "0bc06b21a3897b364399ce23a9bad94dd0e6099340eeafb5a444ecd9e7e1f3fa"
+    },
+    {
+      "id": 11273474932,
+      "kind": "broker",
+      "sha256": "b8f65e26fef97aff27f0e4653cdeade356017b301774b68a09b179839c22c928"
+    }
+  ],
+  "bundle": {
+    "operatorFiles": 117,
+    "archiveSha256": "096a6743074e19bf185fcbf33cfbd26bda95d278c5f4f8a5ea806f0acc85a42d",
+    "manifestSha256": "a24b13ef4c912b6e82e6e392d8b3ac8d6bfb1f515a61604c3ab9d3b1785f877d",
+    "qualificationSha256": "dac4971efade657890710f07fa907135cb083ce4df4d0088248c3c69dee0bc2a",
+    "compositionSha256": "2cf768ff8b93191d2c99d2379c9a05776dcfd860b7eb1e45de2bb58b46b04e24",
+    "gates": [
+      {
+        "gate": "broker",
+        "receiptSha256": "286a2428fe7a5c23baba78e5259735ee7ff70675159b68c48710581752ba98ed"
+      },
+      {
+        "gate": "policy",
+        "receiptSha256": "5341bcdd14d7f84d358681f11fe38df5f496c6ef029ea522b50aa045ccfd25f8"
+      },
+      {
+        "gate": "window",
+        "receiptSha256": "85df8bfb4b293c5877cb2ef9872b9cfa3a4a87f648630a057c29f53423506ba5"
+      }
+    ]
+  },
+  "independentAudit": {
+    "allTransportAndReportHashesMatch": true,
+    "exactCommitRunAttemptMatch": true,
+    "exact117SourceAndWindowsCheckoutHashesMatch": true,
+    "strictGitCrLfMappingOnly": true,
+    "archiveEntriesMatchManifest": true,
+    "production117FilesIdenticalToFirstRun": true,
+    "policyChecks": {
+      "restartCommissioning": 313,
+      "restartWindowReview": 187,
+      "reviewWindow": 233,
+      "brokerFixtureContracts": 29,
+      "reviewStaging": 12
+    },
+    "modeHwndCases": 14,
+    "paletteHwndCases": 16,
+    "paletteFixtureZeroExits": 16,
+    "actualBrokerCases": 13,
+    "prepareArmCases": 5,
+    "successfulScheduledTaskExit": 0,
+    "cleanupErrors": []
+  },
+  "scope": "Bounded native tooling delta: harmless HWND and marker/helper fixtures. Broker palette UI intent is synthetic; actual HWND actions are proved separately. No whole historical bundle gate rerun, real application or boat acceptance.",
+  "priorFailedRunPreserved": 37124017315,
+  "actualBoat": false,
+  "staged": false,
+  "applicationChanged": false,
+  "applicationAcceptance": false
+}

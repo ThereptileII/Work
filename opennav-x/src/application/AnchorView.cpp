@@ -87,6 +87,14 @@ AnchorView PresentAnchor(const AnchorState &watch,
       watch.vessel_position->position.longitude_deg == *lon.value) {
     v.distance_m = watch.distance_m.value;
     v.vessel_position = watch.vessel_position;
+    const double factor = watch.distance_units_per_m;
+    if (std::isfinite(factor) && factor > 0 && !watch.distance_unit.empty() &&
+        std::isfinite(*v.distance_m * factor)) {
+      v.display_distance = *v.distance_m * factor;
+      v.distance_unit = watch.distance_unit;
+      // Keep metre-scale movement readable in nautical/statute miles and km.
+      v.distance_decimals = factor < .01 ? 3 : factor < 1 ? 1 : 0;
+    }
   } else
     v.reason = "Position unavailable or changed; watch needs attention.";
   vessel::Time last{};

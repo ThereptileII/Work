@@ -1,0 +1,27 @@
+{
+  "core9PatchTree": "89258f60eb3676eb919e969ecba6bd3ddc4cda12",
+  "private3PatchFiles": {
+    "libs/s52plib/src/DepthFont.cpp": "4013054dc8e35202bfd928c363b0e3a70f6decca544582e30622aee25f0b7095",
+    "libs/s52plib/src/DepthFont.h": "a9afa157bfdcba571613b8d07a007492338d307255eb2893fae92b0b0cf6ab35",
+    "libs/s52plib/src/chartsymbols.cpp": "ca74f61ca58510fb83081f46434cf95ca1a7536235f2fbf5d087e8ee4e7fd355",
+    "libs/s52plib/src/chartsymbols.h": "5e55ee3c8450679fb9ac8d32a862733d296b1421381ee7e7163796fed804937a",
+    "libs/s52plib/src/s52cnsy.cpp": "bf6a638248f296742ff618375b4b1e08699350f801dcac9e10452963c2107754",
+    "libs/s52plib/src/s52plib.cpp": "792df9535351fc42f9254095c18d609072a3296b91d9467ca0c17631697d1a8e",
+    "libs/s52plib/src/s52plib.h": "ffd4ca75e1e244bae323ccc9083d5aa021e38e63fdba0cbad1f870b3f13470fa",
+    "libs/s52plib/src/s52s57.h": "a07900f6ae506f23d3f9d38449956a2171b7ee0b63bcafc241cd8968bb8ed24e",
+    "libs/wxcurl/src/base.cpp": "318b7b9ce3f57574f41179d2a88d50eeb349a09df49a8c93a5f0ff6e4b2cde55",
+    "libs/wxcurl/src/wx/curl/base.h": "11518959b97f0bf296b0f851fa74665b1de9ea3ca755c0eba42feee89d8d350a",
+    "src/eSENCChart.cpp": "7348b32423c2d686ffac817db08559e174f1bf35097a13a5e6b4acb9d6b2fc82",
+    "src/o-charts_pi.cpp": "4ca4224a54b4cc1c2740fbdd10695ef883572827698ac448a2532666c01f8e4c"
+  },
+  "privateOwnedHeaderSha256": "51c45116e0de22d6f824b1458e3fb8c1f8b70445d9f70c800df9a6eec40480e8",
+  "unchangedMethods": {
+    "core:void s52plib::draw_lc_poly(": "9243094fb36bc5864fff6decf948e849ce4c377e3e12d75155e92e59d10a4fad",
+    "core:render_canvas_parms *s52plib::CreatePatternBufferSpec(": "d49d056785ffb8c68d6270c75615cde44703297ec0d9e3f0fadb2e38eae479f3",
+    "core:int s52plib::RenderCARC(": "0efc5413ff8c2c12ca0706a8c7fd6b6b8c5e675be7302fa5c8f33bfd9a005cc4",
+    "private:void s52plib::draw_lc_poly(": "489bcf69adef1117615594d10781604b9f651490186ec158a08422920f463c5a",
+    "private:render_canvas_parms *s52plib::CreatePatternBufferSpec(": "cf0739d66d803cb99a97fdd30c6a847fdfdfe01955741581609b5c868cadc392",
+    "private:int s52plib::RenderCARC(": "8f9ecc5d15a3d593dd33777f9596a3ac7c1b0e7a44322fcea70dd9ebd2a02b52"
+  },
+  "scope": "Ordered source/owned-header closure; no application or private DLL build"
+}

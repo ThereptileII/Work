@@ -1,0 +1,15 @@
+# Native 442 production trust-probe configure failure
+
+[Run 37126951293, native job 111215213199](https://github.com/ThereptileII/Work/actions/runs/37126951293/job/111215213199) used exact local `8a0ed1f646e2551a55639c1cc3fb609cc2652464`, published as `442960ba55277845e171f9b95a38838f66c23981` (tree `3b74065f9f9886ebe73f33f85b71ca8bb469865e`). This remains a failed candidate with no deployable review package.
+
+**First cause:** at 15:30:28 UTC the private downloader-trust probe's CMake configure failed in `tests/downloader_trust/CMakeLists.txt:46–48`. PowerShell supplied backslash paths through `OPENNAV_SOURCE_DIR` and `OPENNAV_TOOLS_DIR`; source arguments including `D:\a\Work\Work\opennav-x\build\integration-source/model/src/downloader.cpp` and `D:\a\Work\Work\opennav-x\tools/downloader-trust-probe.cpp` produced `Invalid character escape '\a'`. `test-downloader-trust-windows.ps1:51` propagated CMake exit 1, then `build-pristine-windows.ps1:41` propagated the probe failure. No TLS assertion ran. The raw production transcript and exact first-error excerpt are retained.
+
+This is downstream of the actual fixture-free application's successful compile/link/install and **139/139 production CTests**. The fixture build's 139 tests, complete corrected preview suite, pointer interactions, crash recovery and same-job dependency receipt capture also passed. Independent native DPI and public ENC checks subsequently passed. The frozen verifier accepted the retained I386 private DLL, all five exports, exact corresponding source/input closure and production chart resources. All four resource directories (private generation, private prepared, fixture host and production host) contain the same seven files byte-for-byte.
+
+Artifact **11278370208** was independently downloaded: 65,649,384 bytes, SHA256 `f22449f1b34f74ccf0aaad25c33b1a9e450951ab23d6aaea140b4b789640c7dd`; all 18,448 ZIP entries passed CRC validation. The ZIP remains local. `audit.json` records exact report/resource identities and retained-file hashes.
+
+The archive contains **no application or setup executable, and no downloader/wxCurl probe executable**. Its only six EXEs are CMake compiler-identification probes. The private DLL is retained, but this is insufficient for a standalone real-host/runtime replay. The successful same-job receipt is retained as evidence; it does not authorize cross-run producer reuse or substitute for absent payloads.
+
+Current renderer evidence explicitly reports `opengl_enabled=false` for both the software and requested-OpenGL phases. The public ENC pass therefore includes software fallback and does **not** establish native GL acceptance.
+
+The real-host private-module check, fixture-free portable/setup checks, early development artifact and Windows endurance were skipped. No boat actions, rerun, source changes or assertion relaxation were performed in this audit. A bounded correction should normalize path-valued inputs at the native trust-probe CMake boundary and prove both core/private configure paths with spaces/backslashes before another full candidate.

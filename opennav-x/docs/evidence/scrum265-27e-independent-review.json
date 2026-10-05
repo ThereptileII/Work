@@ -1,0 +1,67 @@
+{
+  "applicationSource": "27e93e40709e2d9d2044cb9f6d58979042ff6234",
+  "importCommit": "08afe0e",
+  "retainedFileIdentitiesVerified": 146,
+  "comparisonsIndependentlyRecomputed": [
+    {
+      "renderer": "software",
+      "image": "s64-light-fog-SKAGER-Day",
+      "changedChartPixels": 124,
+      "outsideBuildingTiles": 0
+    },
+    {
+      "renderer": "software",
+      "image": "s64-light-fog-SKAGER-Dusk",
+      "changedChartPixels": 124,
+      "outsideBuildingTiles": 0
+    },
+    {
+      "renderer": "software",
+      "image": "s64-light-fog-SKAGER-Night",
+      "changedChartPixels": 124,
+      "outsideBuildingTiles": 0
+    },
+    {
+      "renderer": "software",
+      "image": "s64-light-fog-SKAGER-Day-return",
+      "changedChartPixels": 124,
+      "outsideBuildingTiles": 0
+    },
+    {
+      "renderer": "opengl",
+      "image": "s64-light-fog-SKAGER-Day",
+      "changedChartPixels": 112,
+      "outsideBuildingTiles": 0
+    },
+    {
+      "renderer": "opengl",
+      "image": "s64-light-fog-SKAGER-Dusk",
+      "changedChartPixels": 112,
+      "outsideBuildingTiles": 0
+    },
+    {
+      "renderer": "opengl",
+      "image": "s64-light-fog-SKAGER-Night",
+      "changedChartPixels": 112,
+      "outsideBuildingTiles": 0
+    },
+    {
+      "renderer": "opengl",
+      "image": "s64-light-fog-SKAGER-Day-return",
+      "changedChartPixels": 112,
+      "outsideBuildingTiles": 0
+    }
+  ],
+  "rootFullImageReview": [
+    "software Day",
+    "software Night",
+    "Mesa OpenGL Day",
+    "Mesa OpenGL Night"
+  ],
+  "reviewEnvironment": "Existing capture Python runtime; default host Python lacks Pillow, so no image comparison ran in the first invocation. No installation or application rerun.",
+  "limits": [
+    "Existing all-round light circle remains upstream",
+    "No CONVIS1 visibility or relative hierarchy acceptance",
+    "No native Windows/private-DLL/boat qualification"
+  ]
+}

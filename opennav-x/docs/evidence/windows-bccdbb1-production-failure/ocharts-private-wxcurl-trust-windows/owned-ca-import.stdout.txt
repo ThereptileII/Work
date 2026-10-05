@@ -1,0 +1,5 @@
+Root "Trusted Root Certification Authorities"
+Signature matches Public Key
+Certificate "opennav-scrum211-owned-ca" added to store.
+CertUtil: -addstore command completed successfully.
+

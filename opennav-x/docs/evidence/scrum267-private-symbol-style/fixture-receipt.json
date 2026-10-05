@@ -1,0 +1,42 @@
+{
+  "sourceReverseEquality": true,
+  "effectiveReads": {
+    "eSENCChart": 7,
+    "UpdateMarinerParams": 1
+  },
+  "unchangedOtherSourceFiles": true,
+  "command": [
+    "c++",
+    "-std=c++17",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum267-private-symbol-style/.local/symbol-style/fixture",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum267-private-symbol-style/.local/symbol-style/source/libs/s52plib/src",
+    "/home/standard/Projects/X-nav-worktrees/scrum267-private-symbol-style/src/plugin-adapters/ocharts/tests/symbol_style_test.cpp",
+    "/home/standard/Projects/X-nav-worktrees/scrum267-private-symbol-style/.local/symbol-style/source/libs/s52plib/src/s52utils.cpp",
+    "-I/home/standard/Projects/X-nav/.local/sysroot/usr/lib/wx/include/gtk3-unicode-3.2",
+    "-I/home/standard/Projects/X-nav/.local/sysroot/usr/include/wx-3.2",
+    "-DWXUSINGDLL",
+    "-D__WXGTK3__",
+    "-D__WXGTK__",
+    "-D_FILE_OFFSET_BITS=64",
+    "-L/home/standard/Projects/X-nav/.local/sysroot/usr/lib",
+    "-lwx_gtk3u_xrc-3.2",
+    "-lwx_gtk3u_html-3.2",
+    "-lwx_gtk3u_qa-3.2",
+    "-lwx_gtk3u_core-3.2",
+    "-lwx_baseu_xml-3.2",
+    "-lwx_baseu_net-3.2",
+    "-lwx_baseu-3.2",
+    "-Wl,-rpath,/home/standard/Projects/X-nav/.local/sysroot/usr/lib",
+    "-o",
+    "/home/standard/Projects/X-nav-worktrees/scrum267-private-symbol-style/.local/symbol-style/fixture/symbol-style"
+  ],
+  "fixtureExit": 0,
+  "missingOverrideNegativeExit": 1,
+  "sourceHashes": {
+    "libs/s52plib/src/s52plib.h": "a1c05624586696ad27682f96558e30c05dc59bd007bc10a9034eb720689762c1",
+    "libs/s52plib/src/s52plib.cpp": "b2960b71973b1e298cea72511e0c65040e67464e38ad3c83ab48d2be4937c404",
+    "src/eSENCChart.cpp": "69457c981abb382c2370f2686e1180c1b2e89da92de9e23a72c0c7e80c130282"
+  },
+  "actualMethodsSha256": "75ddbfb1074db30c3f24cba36b16452b2a19e092e8a0f607c4bd05802db8b8ef",
+  "limits": "Method fixture and Linux objects only; no plugin, chart, helper, native Windows or boat execution."
+}

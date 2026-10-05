@@ -2,7 +2,7 @@
 import re
 from pathlib import Path, PureWindowsPath
 
-from openssl_package import _read_json, _sha256, _require_win32_pe
+from openssl_package import _read_json, _sha256, _require_win32_pe, OPENSSL_OUTPUTS
 
 SOURCES = {
     'curl': {
@@ -52,7 +52,13 @@ def verify_file(path, record):
         raise ValueError('Missing or changed dependency file: ' + path.name)
 
 
-def verify_manifest(install, library):
+def verify_manifest(install, library, *, dependency_prefixes=None):
+    # Packaging remains co-located by default. Only an explicit producer caller
+    # may supply both expected roots; recorded prefixes never select roots alone.
+    if dependency_prefixes is not None:
+        if library != 'curl' or not isinstance(dependency_prefixes, dict) or set(dependency_prefixes) != {'openssl', 'zlib'}:
+            raise ValueError('Producer verification requires exact OpenSSL/zlib prefixes')
+        dependency_prefixes = {name: Path(path).resolve(strict=True) for name, path in dependency_prefixes.items()}
     manifest = _read_json(install / (library + '-build.json'), library + ' build manifest')
     pin = SOURCES[library]
     keys = BASE_KEYS | ({'dependencies', 'options', 'versionOutput', 'importOutput',
@@ -104,12 +110,22 @@ def verify_manifest(install, library):
         dependencies = manifest['dependencies']
         if not isinstance(dependencies, dict) or set(dependencies) != {'openssl', 'zlib'}:
             raise ValueError('curl dependency identity missing')
+        dependency_manifests = {}
         for dep, version in (('openssl', '3.5.9'), ('zlib', '1.3.2')):
             value = dependencies[dep]
             if (not isinstance(value, dict) or
                     set(value) != {'version', 'manifestSha256', 'prefix'} or
-                    value['version'] != version or
-                    value['manifestSha256'] != _sha256(install / (dep + '-build.json'))):
+                    value['version'] != version):
+                raise ValueError('curl linked dependency manifest differs: ' + dep)
+            prefix = dependency_prefixes[dep] if dependency_prefixes is not None else install
+            if dependency_prefixes is not None:
+                recorded = value['prefix']
+                if (not isinstance(recorded, str) or not Path(recorded).is_absolute() or
+                        Path(recorded).resolve(strict=True) != prefix):
+                    raise ValueError('curl producer dependency prefix differs: ' + dep)
+            manifest_path = prefix / (dep + '-build.json')
+            dependency_manifests[dep] = _read_json(manifest_path, dep + ' build manifest')
+            if value['manifestSha256'] != _sha256(manifest_path):
                 raise ValueError('curl linked dependency manifest differs: ' + dep)
         patch = steps.get('certificatePatch')
         helper = Path(__file__).with_name('patch-curl-test-openssl.py')
@@ -120,7 +136,7 @@ def verify_manifest(install, library):
             raise ValueError('curl certificate-generator patch or probe provenance differs')
         tool = steps.get('certificateTool')
         expected_tool = Path(dependencies['openssl']['prefix']) / 'bin/openssl.exe'
-        openssl_manifest = _read_json(install / 'openssl-build.json', 'OpenSSL build manifest')
+        openssl_manifest = dependency_manifests['openssl']
         openssl_outputs = openssl_manifest.get('outputs')
         if (not isinstance(tool, dict) or set(tool) != {'path', 'sha256', 'bytes', 'versionOutput'} or
                 not isinstance(tool['path'], str) or Path(tool['path']) != expected_tool or
@@ -133,6 +149,16 @@ def verify_manifest(install, library):
             raise ValueError('curl certificate tool differs from the verified OpenSSL producer')
         verify_file(expected_tool, {'sha256': tool['sha256'], 'bytes': tool['bytes']})
         _require_win32_pe(expected_tool)
+        if dependency_prefixes is not None:
+            # Same producer receipts must still describe the current outputs.
+            # The upstream build/test gates remain mandatory before this caller.
+            if set(openssl_outputs) != set(OPENSSL_OUTPUTS):
+                raise ValueError('OpenSSL producer output inventory differs')
+            for name, record in openssl_outputs.items():
+                verify_file(dependency_prefixes['openssl'] / name, record)
+            zlib = verify_manifest(dependency_prefixes['zlib'], 'zlib')
+            for name, record in zlib['outputs'].items():
+                verify_file(dependency_prefixes['zlib'] / name, record)
     return manifest
 
 

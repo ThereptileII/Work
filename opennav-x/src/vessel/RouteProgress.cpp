@@ -53,6 +53,13 @@ RouteAssessment AssessRoute(const RouteProgressSnapshot& s, Time now, Freshness 
     a.quality = p.quality == Quality::Aging || o.quality == Quality::Aging
                     ? Quality::Aging : Quality::Live;
     a.remaining_distance_nm = s.remaining_distance_nm;
+    if (s.cross_track_error_nm && std::isfinite(*s.cross_track_error_nm) &&
+        *s.cross_track_error_nm >= 0 && s.cross_track_direction &&
+        (*s.cross_track_direction == CrossTrackDirection::Left ||
+         *s.cross_track_direction == CrossTrackDirection::Right)) {
+      a.cross_track_error_nm = s.cross_track_error_nm;
+      a.cross_track_direction = s.cross_track_direction;
+    }
   }
   return a;
 }

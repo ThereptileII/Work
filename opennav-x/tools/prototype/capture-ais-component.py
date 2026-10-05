@@ -17,6 +17,31 @@ import time
 ROOT = Path(__file__).resolve().parents[2]
 
 
+# These identities come from the actual Settings component state machine.
+# The applied-125 state is still Night; its name ends in the layout, not theme.
+SETTINGS_CAPTURE_THEMES = {
+    "settings-day": "day", "settings-dusk": "dusk", "settings-night": "night",
+    "sensors-day": "day", "sensors-dusk": "dusk", "sensors-night": "night",
+    "display-day": "day", "display-150-chart-night": "night",
+    "display-applied-125-chart": "night", "display-dusk": "dusk",
+    "display-night": "night", "system-night": "night",
+    "settings-radar-night": "night", "settings-autopilot-night": "night",
+}
+
+
+def validate_capture_names(component, names, expected_count):
+    assert len(names) == len(set(names)), "Duplicate component capture identity"
+    assert len(names) == expected_count, ("Missing/unexpected component captures", names)
+    if component == "settings":
+        assert set(names) == set(SETTINGS_CAPTURE_THEMES), ("Missing/unexpected Settings evidence", names)
+
+
+def capture_theme(component, name):
+    if component == "settings":
+        return SETTINGS_CAPTURE_THEMES[name]
+    return name.rsplit("-", 1)[-1]
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--client", type=Path, required=True)
@@ -72,9 +97,9 @@ def main():
             marker = b"TEST-ONLY-NOT-A-SERVICE-KEY"
             assert marker not in result.stdout + result.stderr
             assert marker not in (args.output / "result.json").read_bytes()
-        minimum, images = {"ais": (151, 12), "passage": (26, 5), "instruments": (41, 5), "energy": (44, 7), "settings": (90, 12), "anchor": (30, 5), "autopilot": (94, 9), "alerts": (50, 7), "radar": (64, 6), "health": (49, 6)}[args.component]
+        minimum, images = {"ais": (151, 12), "passage": (26, 5), "instruments": (41, 5), "energy": (44, 7), "settings": (90, 14), "anchor": (30, 5), "autopilot": (94, 9), "alerts": (50, 7), "radar": (64, 6), "health": (49, 6)}[args.component]
         assert record["passed"] and record["checks"] >= minimum
-        assert len(record["captures"]) == images
+        validate_capture_names(args.component, record["captures"], images)
         record["source_commit"] = subprocess.check_output(
             ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
         record["executable_sha256"] = hashlib.sha256(args.client.read_bytes()).hexdigest()
@@ -97,7 +122,7 @@ def main():
             record["screenshots"][name] = hashlib.sha256(image_path.read_bytes()).hexdigest()
             with Image.open(image_path) as current:
                 assert current.size == (1280, 800)
-                theme = name.rsplit("-", 1)[-1]
+                theme = capture_theme(args.component, name)
                 background = {"day": (21, 35, 38), "dusk": (29, 40, 46),
                               "night": (12, 17, 21)}[theme]
                 sample = (95, 230) if args.component in {"instruments", "energy", "radar"} else (695, 230)

@@ -1,0 +1,93 @@
+name: SKAGER native AIS loopback
+on:
+  workflow_dispatch:
+  push:
+    branches: [skager-ais-freeze]
+    paths-ignore: [opennav-x/docs/**]
+permissions:
+  contents: read
+  actions: read
+env:
+  PYTHONUTF8: '1'
+concurrency:
+  group: skager-ais-runtime-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  native-ais-runtime:
+    runs-on: windows-2022
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Preserve native Perl before installing the curl test host
+        shell: pwsh
+        run: |
+          $NativePerl = (Get-Command perl.exe -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source
+          "SKAGER_NATIVE_PERL=$NativePerl" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      - uses: msys2/setup-msys2@66cd2cce69caa17b53920067426061ca1de3a884
+        id: curl_msys
+        with:
+          msystem: MSYS
+          update: false
+          install: perl
+          path-type: inherit
+          cache: false
+      - name: Select explicit curl test Perl
+        shell: pwsh
+        env:
+          SKAGER_MSYS_ROOT: ${{ steps.curl_msys.outputs.msys2-location }}
+        run: |
+          $TestPerl = Join-Path $env:SKAGER_MSYS_ROOT 'usr/bin/perl.exe'
+          if (-not (Test-Path -LiteralPath $TestPerl -PathType Leaf)) { throw 'MSYS2 curl test Perl missing' }
+          "SKAGER_CURL_TEST_PERL=$TestPerl" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      - name: Fetch and prepare pinned source
+        shell: pwsh
+        run: |
+          git clone --depth 1 --branch Release_5.12.4 https://github.com/OpenCPN/OpenCPN.git opennav-x/upstream/OpenCPN
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python opennav-x/tools/prepare-integration.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Authenticate selected immutable dependency SDK
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python opennav-x/tools/fetch_ci_inputs.py dependencies --selection opennav-x/tools/windows-dependency-bundle.lock.json --output dependency-bundle --provenance dependency-provenance.json
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Restore authenticated dependency inputs
+        shell: pwsh
+        run: |
+          python opennav-x/tools/windows_dependency_bundle.py restore --root opennav-x --bundle "$env:GITHUB_WORKSPACE/dependency-bundle" --provenance "$env:GITHUB_WORKSPACE/dependency-provenance.json"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Verify SDK once before the AIS consumer repeats verification
+        shell: pwsh
+        run: |
+          & pwsh -NoProfile -File opennav-x/tools/test-dependency-reprobe-evidence.ps1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          ./opennav-x/tools/build-pristine-windows.ps1 -Architecture Win32 -Integration -VerifyDependencyBundleOnly -DependencyBundle "$env:GITHUB_WORKSPACE/dependency-bundle" -DependencyBundleProvenance "$env:GITHUB_WORKSPACE/dependency-provenance.json"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Reprobe SDK and build only native AIS test clients
+        shell: pwsh
+        run: |
+          python opennav-x/tools/test-ais-runtime-gate.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python opennav-x/tools/test-ais-runtime-windows.py --dependency-bundle "$env:GITHUB_WORKSPACE/dependency-bundle" --dependency-bundle-provenance "$env:GITHUB_WORKSPACE/dependency-provenance.json"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Require two separately retained native reprobes
+        shell: pwsh
+        run: |
+          $Probes = @(Get-ChildItem opennav-x/evidence/local -Directory -Filter 'dependency-reprobe-*')
+          if ($Probes.Count -ne 2) { throw 'Both native verification invocations must have executed' }
+          foreach ($Probe in $Probes) {
+            $Transcript = Get-Content (Join-Path $Probe.FullName 'windows-xnav-Win32.log') -Raw
+            if (-not $Transcript.Contains('Cross-run dependency live reprobe and stage passed:')) { throw 'Native reprobe success evidence missing' }
+          }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: ais-native-runtime-${{ github.sha }}-run${{ github.run_id }}-attempt${{ github.run_attempt }}
+          path: |
+            .github/workflows/skager-ais-runtime.yml
+            opennav-x/evidence/local
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 30

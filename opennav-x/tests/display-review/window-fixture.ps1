@@ -7,8 +7,8 @@ if(-not $root.StartsWith([IO.Path]::GetTempPath(),[StringComparison]::OrdinalIgn
    [IO.Path]::GetFileName($root) -cnotmatch '^opennav-display-window-[a-f0-9]{32}$'){throw 'Unique temporary display fixture required.'}
 $record=Get-Content -LiteralPath (Join-Path $root 'fixture.json') -Raw|ConvertFrom-Json
 if($record.owner -cne 'OpenNavX.NativeDisplayWindow.Fixture.1' -or
-   $record.action -cnotin @('Display','ToggleFullscreen','ToggleOrientation','CyclePalette','PanRight','Resize1280x800','Capture','Navigation','Route','AIS','Instruments') -or
-   $record.case -cnotin @('normal','return','course','wrong-page','wrong-geometry','canvas-child','ambiguous','replace-on-down','rename-on-down','move-on-down','duplicate-on-down','modal','maximized-offscreen','partial-offscreen','entirely-offscreen','minimized','demo','wrong-pid','prototype-normal','prototype-anchor','prototype-pilot','prototype-alerts','prototype-preferences','prototype-two-sheets','prototype-passage','prototype-traffic','prototype-back','prototype-unknown','prototype-wrong-owner','prototype-duplicate','prototype-clipped','prototype-signature','prototype-moved','prototype-rail-duplicate','prototype-modal')){throw 'Unknown fixed fixture.'}
+   $record.action -cnotin @('Display','ToggleFullscreen','ToggleOrientation','CyclePalette','PanRight','Resize1280x800','Capture','Navigation','Route','AIS','Instruments','SelectFirstVisibleAis') -or
+   $record.case -cnotin @('normal','return','course','wrong-page','wrong-geometry','canvas-child','ambiguous','replace-on-down','rename-on-down','move-on-down','duplicate-on-down','modal','maximized-offscreen','partial-offscreen','entirely-offscreen','minimized','demo','wrong-pid','prototype-normal','prototype-anchor','prototype-pilot','prototype-alerts','prototype-preferences','prototype-two-sheets','prototype-passage','prototype-traffic','prototype-back','prototype-unknown','prototype-wrong-owner','prototype-duplicate','prototype-clipped','prototype-signature','prototype-moved','prototype-rail-duplicate','prototype-modal','prototype-ais-list','prototype-ais-empty','prototype-ais-wrong-name','prototype-ais-duplicate-list','prototype-ais-clipped-list','prototype-ais-overlay','prototype-ais-rename-down','prototype-ais-replace-down','prototype-ais-move-down','prototype-ais-no-identity','prototype-ais-old-tick')){throw 'Unknown fixed fixture.'}
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -TypeDefinition @'
 using System;
@@ -31,7 +31,7 @@ public sealed class OpenNavPanFixtureCanvas : Panel {
 }
 '@
 $form=New-Object Windows.Forms.Form
-$form.Text='OpenNav X / OpenCPN';$form.StartPosition='Manual'
+$form.Text='SKAGER / OpenCPN';$form.StartPosition='Manual'
 $form.Location=New-Object Drawing.Point(20,20);$form.Size=New-Object Drawing.Size(900,640)
 $form.BackColor=[Drawing.Color]::FromArgb(10,24,32)
 function Button($Parent,[string]$Label,[int]$X,[int]$Y,[int]$Width=180) {
@@ -50,15 +50,15 @@ $panel=if($record.action -ceq 'PanRight'){New-Object OpenNavPanFixtureCanvas}els
 if($record.action -ceq 'PanRight'){$panel.Output=Join-Path $root 'clicks.txt'}
 $panel.Location=New-Object Drawing.Point(10,72);$panel.Size=New-Object Drawing.Size(840,430);$form.Controls.Add($panel)
 $null=$panel.Handle
-$pageLabel=switch($record.action){'Display'{'OpenNav product page: Settings'};'ToggleFullscreen'{'OpenNav product page: Display'};'CyclePalette'{'OpenNav product page: Display'};default{''}}
-if($record.case -ceq 'wrong-page'){$pageLabel='OpenNav product page: Autopilot configuration'}
+$pageLabel=switch($record.action){'Display'{'SKAGER product page: Settings'};'ToggleFullscreen'{'SKAGER product page: Display'};'CyclePalette'{'SKAGER product page: Display'};default{''}}
+if($record.case -ceq 'wrong-page'){$pageLabel='SKAGER product page: Autopilot configuration'}
 $null=[OpenNavDisplayFixtureLabel]::SetWindowTextW($panel.Handle,$pageLabel)
 $script:full=$false
 $script:button=$null
 switch($record.action) {
  'Display' {
   $script:button=Button $panel 'DISPLAY' 20 20 260
-  $script:button.Add_Click({SaveClick 'DISPLAY';$null=[OpenNavDisplayFixtureLabel]::SetWindowTextW($panel.Handle,'OpenNav product page: Display')})
+  $script:button.Add_Click({SaveClick 'DISPLAY';$null=[OpenNavDisplayFixtureLabel]::SetWindowTextW($panel.Handle,'SKAGER product page: Display')})
  }
  'ToggleFullscreen' {
   $script:button=Button $panel 'Fullscreen / window' 20 20 300
@@ -128,6 +128,59 @@ function Surface([string]$Title,[int]$X,[int]$Y,[int]$Width,[int]$Height,[string
  if($Unowned){$surface.TopMost=$true;$surface.Show()}else{$surface.Show($form)}
  $script:surfaces.Add($surface)
 }
+function AisObservation([string]$Page,[int]$Selected,[string]$Tick) {
+ $logs=Join-Path $root 'opennav-logs';$null=New-Item -ItemType Directory -Path $logs -Force
+ $data=@{build_commit=('a'*40);build_purpose='INSTALLED PRODUCT';data_mode='OPENCPN selected navigation';ui_page=$Page;
+   runtime=@{ais_selected_mmsi=$Selected;ui_update=@{ticks=$Tick};display=@{route_creation_active=$false}}}
+ [IO.File]::WriteAllText((Join-Path $logs 'opennav-diagnostics.json'),($data|ConvertTo-Json -Depth 6 -Compress))
+}
+function TrafficListFixture {
+ Surface 'SKAGER vessel traffic' 390 100 398 460 @('Close') -Heading
+ $surface=$script:surfaces[$script:surfaces.Count-1]
+ $script:trafficHeading=$surface.Controls[0];$script:trafficHeading.AccessibleName='heading'
+ $script:trafficBody=New-Object Windows.Forms.Panel;$script:trafficBody.AccessibleName='AIS scroll body'
+ $script:trafficBody.Location=New-Object Drawing.Point(0,89);$script:trafficBody.Size=New-Object Drawing.Size(398,371)
+ $surface.Controls.Add($script:trafficBody)
+ $script:trafficList=New-Object Windows.Forms.Panel;$script:trafficList.AccessibleName='Vessel traffic list'
+ $script:trafficList.Location=New-Object Drawing.Point(22,20);$script:trafficList.Size=New-Object Drawing.Size(354,300)
+ $script:trafficBody.Controls.Add($script:trafficList)
+ $null=$script:trafficList.Handle
+ # The wx custom control has an accessible name, not a native text caption or
+ # child HWND per painted row. Keep this native fixture equally captionless.
+ $null=[OpenNavDisplayFixtureLabel]::SetWindowTextW($script:trafficList.Handle,'')
+ if($record.case -ceq 'prototype-ais-wrong-name'){$script:trafficList.AccessibleName='Other list'}
+ if($record.case -ceq 'prototype-ais-clipped-list'){$script:trafficList.Top=100}
+ if($record.case -ceq 'prototype-ais-duplicate-list'){
+  $copy=New-Object Windows.Forms.Panel;$copy.AccessibleName='Vessel traffic list';$copy.Size=$script:trafficList.Size
+  $script:trafficBody.Controls.Add($copy)
+ }
+ if($record.case -ceq 'prototype-ais-overlay'){
+  $cover=New-Object Windows.Forms.Panel;$cover.AccessibleName='Obscuring control';$cover.Location=$script:trafficList.Location;$cover.Size=$script:trafficList.Size
+  $script:trafficBody.Controls.Add($cover);$cover.BringToFront()
+ }
+ $script:trafficPressed=$false
+ $script:trafficList.Add_MouseDown({param($sender,$event)
+  if($event.Y -ne 0 -or $event.X -ne [int][Math]::Floor($sender.ClientSize.Width/2)){SaveClick 'UNSAFE_ROW_POINT';return}
+  $script:trafficPressed=$true
+  switch($record.case) {
+   'prototype-ais-rename-down' {$sender.AccessibleName='Changed traffic list'}
+   'prototype-ais-move-down' {$sender.Left+=1}
+   'prototype-ais-replace-down' {
+    $sender.Hide();$replacement=New-Object Windows.Forms.Panel;$replacement.AccessibleName='Vessel traffic list'
+    $replacement.Location=$sender.Location;$replacement.Size=$sender.Size;$script:trafficBody.Controls.Add($replacement)
+    $replacement.Add_MouseUp({SaveClick 'UNSAFE_REPLACEMENT'})
+   }
+  }
+ })
+ $script:trafficList.Add_MouseUp({param($sender,$event)
+  if(-not $script:trafficPressed -or $record.case -ceq 'prototype-ais-empty'){return}
+  if($event.Y -ne 0 -or $event.X -ne [int][Math]::Floor($sender.ClientSize.Width/2)){SaveClick 'UNSAFE_ROW_POINT';return}
+  SaveClick 'AIS_FIRST_VISIBLE_ROW';$sender.Hide();$script:trafficHeading.Controls[0].Text='Back'
+  $null=Button $script:trafficBody 'Show on chart' 22 40 200
+  AisObservation 'AIS target' $(if($record.case -ceq 'prototype-ais-no-identity'){0}else{265000001}) $(if($record.case -ceq 'prototype-ais-old-tick'){'10'}else{'11'})
+ })
+ AisObservation 'AIS targets' 0 '10'
+}
 $started=[datetime]::UtcNow;$timer=New-Object Windows.Forms.Timer;$timer.Interval=100
 $timer.Add_Tick({
  if($record.case -ceq 'prototype-moved' -and (Test-Path -LiteralPath (Join-Path $root 'mutate')) -and -not (Test-Path -LiteralPath (Join-Path $root 'mutated'))) {
@@ -144,22 +197,23 @@ $form.Add_Shown({
  if($record.case -ceq 'return'){$form.FormBorderStyle='None';$form.WindowState='Maximized';$script:full=$true}
  if($prototype) {
   $last=if($record.case -ceq 'prototype-signature'){'AUTO'}else{[string][char]0x2212}
-  Surface 'OpenNav chart tools' 150 100 190 64 @('Measure','Waypoint','+',$last)
-  Surface 'OpenNav chart orientation' 150 180 68 90 @('North')
-  Surface 'OpenNav follow boat' 150 290 142 56 @('Follow boat')
+  Surface 'SKAGER chart tools' 150 100 190 64 @('Measure','Waypoint','+',$last)
+  Surface 'SKAGER chart orientation' 150 180 68 90 @('North')
+  Surface 'SKAGER follow boat' 150 290 142 56 @('Follow boat')
   if($record.case -ceq 'prototype-two-sheets'){
-   Surface 'OpenNav preferences' 360 100 432 460 @('Close') -Heading
-   Surface 'OpenNav passage' 390 100 398 460 @('Close') -Heading
+   Surface 'SKAGER preferences' 360 100 432 460 @('Close') -Heading
+   Surface 'SKAGER passage' 390 100 398 460 @('Close') -Heading
   }
-  if($record.case -ceq 'prototype-anchor'){Surface 'OpenNav anchor watch' 390 100 398 460 @('Close') -Heading}
-  if($record.case -ceq 'prototype-pilot'){Surface 'OpenNav autopilot' 390 100 398 460 @('Close') -Heading}
-  if($record.case -ceq 'prototype-alerts'){Surface 'OpenNav alerts' 390 100 398 460 @('Close') -Heading}
-  if($record.case -ceq 'prototype-preferences'){Surface 'OpenNav preferences' 360 100 432 460 @('Close') -Heading}
-  if($record.case -ceq 'prototype-passage'){Surface 'OpenNav passage' 390 100 398 460 @('Close') -Heading}
-  if($record.case -cin @('prototype-traffic','prototype-back')){Surface 'OpenNav vessel traffic' 390 100 398 460 @($(if($record.case -ceq 'prototype-back'){'Back'}else{'Close'})) -Heading}
+  if($record.case -ceq 'prototype-anchor'){Surface 'SKAGER anchor watch' 390 100 398 460 @('Close') -Heading}
+  if($record.case -ceq 'prototype-pilot'){Surface 'SKAGER autopilot' 390 100 398 460 @('Close') -Heading}
+  if($record.case -ceq 'prototype-alerts'){Surface 'SKAGER alerts' 390 100 398 460 @('Close') -Heading}
+  if($record.case -ceq 'prototype-preferences'){Surface 'SKAGER preferences' 360 100 432 460 @('Close') -Heading}
+  if($record.case -ceq 'prototype-passage'){Surface 'SKAGER passage' 390 100 398 460 @('Close') -Heading}
+  if($record.case -cin @('prototype-traffic','prototype-back')){Surface 'SKAGER vessel traffic' 390 100 398 460 @($(if($record.case -ceq 'prototype-back'){'Back'}else{'Close'})) -Heading}
+  if($record.case.StartsWith('prototype-ais-',[StringComparison]::Ordinal)){TrafficListFixture}
   if($record.case -ceq 'prototype-unknown'){Surface 'Unknown plugin popup' 390 100 240 200 @('Close')}
-  if($record.case -ceq 'prototype-wrong-owner'){Surface 'OpenNav passage' 390 100 398 460 @('Close') -Heading -Unowned}
-  if($record.case -ceq 'prototype-duplicate'){Surface 'OpenNav chart tools' 390 100 190 64 @('Measure','Waypoint','+',[string][char]0x2212)}
+  if($record.case -ceq 'prototype-wrong-owner'){Surface 'SKAGER passage' 390 100 398 460 @('Close') -Heading -Unowned}
+  if($record.case -ceq 'prototype-duplicate'){Surface 'SKAGER chart tools' 390 100 190 64 @('Measure','Waypoint','+',[string][char]0x2212)}
   if($record.case -ceq 'prototype-clipped'){$script:surfaces[0].Left=$form.Right-20}
  }
  $chart=$panel.RectangleToScreen($panel.ClientRectangle)

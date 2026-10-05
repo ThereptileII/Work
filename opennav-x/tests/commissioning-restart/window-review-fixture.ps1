@@ -17,16 +17,16 @@ public static class OpenNavModeFixtureLabel {
 }
 '@
 $form=New-Object Windows.Forms.Form
-$form.Text=switch($record.mode){'--xnav'{'OpenNav X / OpenCPN'};'--legacy'{'OpenCPN / Legacy'};'--safe-mode'{'OpenNav Safe Mode / OpenCPN'}}
+$form.Text=switch($record.mode){'--xnav'{'SKAGER / OpenCPN'};'--legacy'{'SKAGER Legacy / OpenCPN'};'--safe-mode'{'SKAGER Safe Mode / OpenCPN'}}
 $form.StartPosition='Manual';$form.Location=New-Object Drawing.Point(20,20);$form.Size=New-Object Drawing.Size(900,640)
 $form.BackColor=[Drawing.Color]::FromArgb(10,24,32)
 $script:controls=New-Object 'Collections.Generic.List[object]'
 function SaveClick([string]$Caption){[IO.File]::AppendAllText((Join-Path $root 'clicks.txt'),$Caption+"`n")}
 if($record.mode -ceq '--xnav') {
  $panel=New-Object Windows.Forms.Panel;$panel.Location=New-Object Drawing.Point(20,50);$panel.Size=New-Object Drawing.Size(820,450);$form.Controls.Add($panel)
- $null=$panel.Handle;$null=[OpenNavModeFixtureLabel]::SetWindowTextW($panel.Handle,'OpenNav product page: System')
+ $null=$panel.Handle;$null=[OpenNavModeFixtureLabel]::SetWindowTextW($panel.Handle,'SKAGER product page: System')
  $y=20
- foreach($caption in @('Open Legacy OpenCPN','Restart XNav','Safe Mode','STBY')) {
+ foreach($caption in @('Open Legacy OpenCPN','Restart SKAGER','Safe Mode','STBY')) {
   $button=New-Object Windows.Forms.Button;$button.Text=$caption;$button.Size=New-Object Drawing.Size(300,60);$button.Location=New-Object Drawing.Point(20,$y);$y+=75
   $button.Add_Click({param($sender,$event) SaveClick $sender.Text});$panel.Controls.Add($button);$script:controls.Add($button)
  }
@@ -43,7 +43,7 @@ if($record.mode -ceq '--xnav') {
  }
 } elseif($record.case -cne 'hidden-menu') {
  $menu=New-Object Windows.Forms.MainMenu;$group=New-Object Windows.Forms.MenuItem('&Tools')
- $entry=New-Object Windows.Forms.MenuItem('Switch to XNav');$entry.Add_Click({SaveClick 'Switch to XNav'});$null=$group.MenuItems.Add($entry)
+ $entry=New-Object Windows.Forms.MenuItem('Switch to SKAGER');$entry.Add_Click({SaveClick 'Switch to SKAGER'});$null=$group.MenuItems.Add($entry)
  $other=New-Object Windows.Forms.MenuItem('Activate route');$other.Add_Click({SaveClick 'UNSAFE_ROUTE'});$null=$group.MenuItems.Add($other)
  $null=$menu.MenuItems.Add($group);$form.Menu=$menu
 }

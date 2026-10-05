@@ -1,0 +1,68 @@
+{
+  "coreSourceSha256": "b27ece30ace23032d0b916c392230d1523e734cbf51a47338085a04a80fc2a7e",
+  "bodies": {
+    "bool GetIntAttr(S57Obj *obj,": "bccd41c4680115a9cebd2af40953796f46f9792527f5c58a9d2d136242307f23",
+    "bool GetDoubleAttr(S57Obj *obj,": "8b6265dac68354442f997323d69402c74109ad739bf1bef5ffff29e66c8f9dc6",
+    "wxString *GetStringAttrWXS(": "d64d5a78e3fa0c3e509d904c8f531025a80494c52d17aa3ab5342d954627cc9a",
+    "static int _parseList(": "ced9b3c05e34beefcbca7f060d1eb7f77368e6517037a5d09c766b77ad6ff077",
+    "static double _DEPVAL01(": "db75a8dc6a18e1c8b2b42859e59895aca8b2139fd52351660d4b1726274e62d0",
+    "static wxString *_UDWHAZ03(": "d0d372b8b66a1dcfbecce6d3a161211e1b9aa1d4a0954a2d0dce1f3309cbfb81",
+    "wxString *CSQUAPNT01(S57Obj *obj)\n": "8bcfd3c3d01eb5732d8050cf300c5e113bd26e3f72b8e794fba300117f7117be",
+    "wxString SNDFRM02(S57Obj *obj, double depth_value_in)": "42d58963d38486a3d9a55f94bf890e76e08ff4ca1e8a0fd7e6fbd714bd14b5c6",
+    "static void *OBSTRN04(void *param)\n": "eeb5f71482d1273e5890b771cac8a5a6177e0647cacabc8edcd87cd0d7a2d30c",
+    "static void *WRECKS02(void *param)\n": "c65c071fcf99ef50a84334ccca09e4e871ad485126b7d2fdb104d3afa59d0931"
+  },
+  "privateBodies": {
+    "bool GetIntAttr(S57Obj *obj,": {
+      "coreSha256": "bccd41c4680115a9cebd2af40953796f46f9792527f5c58a9d2d136242307f23",
+      "privateSha256": "bccd41c4680115a9cebd2af40953796f46f9792527f5c58a9d2d136242307f23",
+      "identical": true
+    },
+    "bool GetDoubleAttr(S57Obj *obj,": {
+      "coreSha256": "8b6265dac68354442f997323d69402c74109ad739bf1bef5ffff29e66c8f9dc6",
+      "privateSha256": "8b6265dac68354442f997323d69402c74109ad739bf1bef5ffff29e66c8f9dc6",
+      "identical": true
+    },
+    "wxString *GetStringAttrWXS(": {
+      "coreSha256": "d64d5a78e3fa0c3e509d904c8f531025a80494c52d17aa3ab5342d954627cc9a",
+      "privateSha256": "d64d5a78e3fa0c3e509d904c8f531025a80494c52d17aa3ab5342d954627cc9a",
+      "identical": true
+    },
+    "static int _parseList(": {
+      "coreSha256": "ced9b3c05e34beefcbca7f060d1eb7f77368e6517037a5d09c766b77ad6ff077",
+      "privateSha256": "ced9b3c05e34beefcbca7f060d1eb7f77368e6517037a5d09c766b77ad6ff077",
+      "identical": true
+    },
+    "static double _DEPVAL01(": {
+      "coreSha256": "db75a8dc6a18e1c8b2b42859e59895aca8b2139fd52351660d4b1726274e62d0",
+      "privateSha256": "db75a8dc6a18e1c8b2b42859e59895aca8b2139fd52351660d4b1726274e62d0",
+      "identical": true
+    },
+    "static wxString *_UDWHAZ03(": {
+      "coreSha256": "d0d372b8b66a1dcfbecce6d3a161211e1b9aa1d4a0954a2d0dce1f3309cbfb81",
+      "privateSha256": "3c1854d9616c859f7de5b1b63e1edb717790cb3abfd760186dccdfd5a014d718",
+      "identical": false
+    },
+    "wxString *CSQUAPNT01(S57Obj *obj)\n": {
+      "coreSha256": "8bcfd3c3d01eb5732d8050cf300c5e113bd26e3f72b8e794fba300117f7117be",
+      "privateSha256": "8bcfd3c3d01eb5732d8050cf300c5e113bd26e3f72b8e794fba300117f7117be",
+      "identical": true
+    },
+    "wxString SNDFRM02(S57Obj *obj, double depth_value_in)": {
+      "coreSha256": "42d58963d38486a3d9a55f94bf890e76e08ff4ca1e8a0fd7e6fbd714bd14b5c6",
+      "privateSha256": "42d58963d38486a3d9a55f94bf890e76e08ff4ca1e8a0fd7e6fbd714bd14b5c6",
+      "identical": true
+    },
+    "static void *OBSTRN04(void *param)\n": {
+      "coreSha256": "eeb5f71482d1273e5890b771cac8a5a6177e0647cacabc8edcd87cd0d7a2d30c",
+      "privateSha256": "d213e784462974ff667d8d9fc9d7d4e55441771097279f66ecc1a9cc2ae36e04",
+      "identical": false
+    },
+    "static void *WRECKS02(void *param)\n": {
+      "coreSha256": "c65c071fcf99ef50a84334ccca09e4e871ad485126b7d2fdb104d3afa59d0931",
+      "privateSha256": "c838bc79817b74e7301af266e834bc910804fb44e2160feed7e8c4d38dd73a26",
+      "identical": false
+    }
+  },
+  "fixtureBoundary": "Actual attribute access, OBSTRN04/WRECKS02, UDWHAZ03, QUAPNT01 and SNDFRM02; deterministic associated-area list and mariner settings, no chart engine/canvas."
+}

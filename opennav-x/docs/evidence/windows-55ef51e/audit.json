@@ -1,0 +1,2769 @@
+{
+  "candidate": "55ef51e4944e8570f6a391dad20b0db8447a7443",
+  "frozenLocal": "e768b06bf5c130038abfd6e1166da0078037cb5b",
+  "run": 37199379614,
+  "attempt": 1,
+  "job": 111428607683,
+  "conclusion": "failure",
+  "archive": {
+    "artifactId": 11305580491,
+    "bytes": 84042991,
+    "sha256": "747e38e8d88c4e49fca6b6efb181101db10824ac87cf55f6e0be80011e8bec7a",
+    "entries": 20127,
+    "CRC": "all passed",
+    "safePaths": "unique relative/case-fold paths; no traversal/drive/backslash/encryption/symlinks/special files"
+  },
+  "module": {
+    "status": "passed",
+    "cases": [
+      {
+        "name": "option-without-selftest",
+        "exit": 2,
+        "expected": 2
+      },
+      {
+        "name": "default",
+        "exit": 0,
+        "expected": 0
+      },
+      {
+        "name": "module",
+        "exit": 0,
+        "expected": 0
+      },
+      {
+        "name": "wrong-original",
+        "exit": 1,
+        "expected": 1
+      }
+    ],
+    "stages": [
+      "SKAGER module check: begin",
+      "SKAGER module check: resources verified",
+      "SKAGER module check: load and bind begin",
+      "SKAGER module check: load and bind returned",
+      "SKAGER module check: binding status queried",
+      "SKAGER module check: point style queried",
+      "SKAGER module check: unload begin",
+      "SKAGER module check: unload returned"
+    ],
+    "profilesUnchanged": true,
+    "nativeProductAcceptance": false,
+    "chartModule": {
+      "binding_reason": 0,
+      "plugin_initialized": false,
+      "passed": true,
+      "unload_succeeded": true,
+      "module_loaded": true,
+      "child_process_creation_blocked": true,
+      "adapter_bytes": "1363968",
+      "original_dll_executed": false,
+      "binding_state": 1,
+      "point_style_unavailable_before_init": true,
+      "module_path": "D:\\a\\Work\\Work\\opennav-x\\build\\production-install\\skager-ocharts-adapter.dll",
+      "adapter_sha256": "73647285f59bcf3575e0adc9abfa4d8812da4a4732718acb3ff439924ed37ba7",
+      "contract": "SKAGER.ChartModuleCheck.1",
+      "host_imports_resolved": true,
+      "factory_called": false,
+      "scope": "DLL imports/binding/unload only; no renderer or chart acceptance",
+      "original_sha256": "99edcfd4419d606ef5c3fd554759e853cfda1fe4f38c05e26266f335a5a5b875",
+      "resources_verified": true,
+      "imports": [
+        "wxbase32u_vc14x.dll",
+        "wxmsw32u_core_vc14x.dll",
+        "wxbase32u_net_vc14x.dll",
+        "wxmsw32u_html_vc14x.dll",
+        "opengl32.dll",
+        "glu32.dll",
+        "gdiplus.dll",
+        "zlib1.dll",
+        "glew32.dll",
+        "opencpn.exe",
+        "libcurl.dll",
+        "kernel32.dll",
+        "shell32.dll",
+        "advapi32.dll",
+        "msvcp140.dll",
+        "vcruntime140.dll",
+        "api-ms-win-crt-runtime-l1-1-0.dll",
+        "api-ms-win-crt-stdio-l1-1-0.dll",
+        "api-ms-win-crt-heap-l1-1-0.dll",
+        "api-ms-win-crt-string-l1-1-0.dll",
+        "api-ms-win-crt-convert-l1-1-0.dll",
+        "api-ms-win-crt-math-l1-1-0.dll",
+        "api-ms-win-crt-time-l1-1-0.dll",
+        "api-ms-win-crt-utility-l1-1-0.dll"
+      ],
+      "loaded_modules_observed": true
+    },
+    "recordedHost": {
+      "opencpn.exe": {
+        "bytes": 14987264,
+        "sha256": "20b454904958dfb86c3689d63a3486b3ed4e14a297295e19aa2582243ba9ee3f"
+      },
+      "skager-ocharts-adapter.dll": {
+        "bytes": 1363968,
+        "sha256": "73647285f59bcf3575e0adc9abfa4d8812da4a4732718acb3ff439924ed37ba7"
+      }
+    },
+    "binaryIndependentlyRehashed": false
+  },
+  "xml": {
+    "windows-xnav-tests.xml": {
+      "executions": 139,
+      "uniqueCases": 139,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "disabled": 0,
+      "reportedSeconds": "19",
+      "timestamp": "2026-10-04T12:51:32"
+    },
+    "windows-production-tests.xml": {
+      "executions": 139,
+      "uniqueCases": 139,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "disabled": 0,
+      "reportedSeconds": "20",
+      "timestamp": "2026-10-04T13:18:27"
+    }
+  },
+  "uniqueTestsAcrossBuilds": 139,
+  "totalExecutions": 278,
+  "productionLoader": {
+    "commissioning_restart_protocol": 1,
+    "commit": "55ef51e4944e8570f6a391dad20b0db8447a7443",
+    "passed": true,
+    "resources": {
+      "uidata/styles.xml": true,
+      "s57data/s57objectclasses.csv": true,
+      "s57data/chartsymbols.xml": true,
+      "gshhs/poly-c-1.dat": true
+    },
+    "version": "0.4.0-beta2",
+    "profile_initialized": false,
+    "normal_config_directory": "C:\\ProgramData\\opencpn",
+    "test_fixtures": false,
+    "contract": "OpenNavX.LoaderSelfTest.1",
+    "plugins_loaded": false,
+    "build_purpose": "INSTALLED PRODUCT",
+    "compiler": "MSVC 19.44.35229.0 / 4 byte pointers",
+    "upstream": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+    "xnav_hardware_output_policy": "status-only"
+  },
+  "productionPilot": {
+    "authority": "native Windows",
+    "hardware": "NONE; loopback simulated translator",
+    "checks": [
+      "Control OFF disables AUTO; physical click creates no request or output",
+      "Saved manual permission cannot enable product output",
+      "Every displayed command and enable action disabled despite fresh compatible feedback",
+      "Zero wire output including identity discovery across loss/reconnect",
+      "Passive observed pilot status survives reconnection"
+    ],
+    "screenshots": [
+      "pilot-01-status-only.png",
+      "pilot-product-disabled.png"
+    ],
+    "display": {
+      "before": [
+        1920,
+        1080,
+        32
+      ],
+      "after": [
+        1920,
+        1080,
+        32
+      ]
+    },
+    "pilot_drawer": {
+      "x": 738,
+      "height": 571,
+      "width": 398,
+      "y": 103
+    },
+    "course_labels": [
+      "+10\u00b0",
+      "+1\u00b0",
+      "\u221210\u00b0",
+      "\u22121\u00b0"
+    ],
+    "result": "passed; screenshot review required",
+    "sent": [],
+    "wire_output": [],
+    "received_bytes": 0,
+    "transport_failures": []
+  },
+  "trust": {
+    "downloader-trust-windows": {
+      "status": "passed",
+      "cleanup": "verified",
+      "downloader": [
+        {
+          "case": "valid",
+          "accepted": true,
+          "exitCode": 0,
+          "downloadError": 0,
+          "headError": 0
+        },
+        {
+          "case": "https_redirect",
+          "accepted": true,
+          "exitCode": 0,
+          "downloadError": 0,
+          "headError": 0
+        },
+        {
+          "case": "http_downgrade",
+          "accepted": false,
+          "exitCode": 1,
+          "downloadError": 1,
+          "headError": 1
+        },
+        {
+          "case": "local_file_redirect",
+          "accepted": false,
+          "exitCode": 1,
+          "downloadError": 1,
+          "headError": 1
+        },
+        {
+          "case": "partial_transfer",
+          "accepted": false,
+          "exitCode": 1,
+          "downloadError": 56,
+          "headError": 0
+        },
+        {
+          "case": "wrong_host",
+          "accepted": false,
+          "exitCode": 1,
+          "downloadError": 60,
+          "headError": 60
+        },
+        {
+          "case": "expired",
+          "accepted": false,
+          "exitCode": 1,
+          "downloadError": 60,
+          "headError": 60
+        },
+        {
+          "case": "untrusted",
+          "accepted": false,
+          "exitCode": 1,
+          "downloadError": 60,
+          "headError": 60
+        },
+        {
+          "case": "write_exception",
+          "accepted": false,
+          "exitCode": 1,
+          "downloadError": 23,
+          "headError": 0
+        },
+        {
+          "case": "valid_unrelated_cwd",
+          "accepted": true,
+          "exitCode": 0,
+          "downloadError": 0,
+          "headError": 0
+        },
+        {
+          "case": "initial_http",
+          "accepted": false,
+          "exitCode": 1,
+          "downloadError": 1,
+          "headError": 1
+        },
+        {
+          "case": "trust_removed",
+          "accepted": false,
+          "exitCode": 1,
+          "downloadError": 60,
+          "headError": 60
+        }
+      ],
+      "wxCurl": [
+        {
+          "case": "valid",
+          "accepted": true,
+          "headAccepted": true,
+          "badOptionBlocked": true,
+          "exitCode": 0,
+          "getBytes": 36,
+          "getError": "No error",
+          "headError": "No error"
+        },
+        {
+          "case": "https_redirect",
+          "accepted": true,
+          "headAccepted": true,
+          "badOptionBlocked": true,
+          "exitCode": 0,
+          "getBytes": 36,
+          "getError": "No error",
+          "headError": "No error"
+        },
+        {
+          "case": "http_downgrade",
+          "accepted": false,
+          "headAccepted": false,
+          "badOptionBlocked": true,
+          "exitCode": 1,
+          "getBytes": 0,
+          "getError": "Unsupported protocol",
+          "headError": "Unsupported protocol"
+        },
+        {
+          "case": "local_file_redirect",
+          "accepted": false,
+          "headAccepted": false,
+          "badOptionBlocked": true,
+          "exitCode": 1,
+          "getBytes": 0,
+          "getError": "Unsupported protocol",
+          "headError": "Unsupported protocol"
+        },
+        {
+          "case": "wrong_host",
+          "accepted": false,
+          "headAccepted": false,
+          "badOptionBlocked": true,
+          "exitCode": 1,
+          "getBytes": 0,
+          "getError": "SSL peer certificate or SSH remote key was not OK",
+          "headError": "SSL peer certificate or SSH remote key was not OK"
+        },
+        {
+          "case": "expired",
+          "accepted": false,
+          "headAccepted": false,
+          "badOptionBlocked": true,
+          "exitCode": 1,
+          "getBytes": 0,
+          "getError": "SSL peer certificate or SSH remote key was not OK",
+          "headError": "SSL peer certificate or SSH remote key was not OK"
+        },
+        {
+          "case": "untrusted",
+          "accepted": false,
+          "headAccepted": false,
+          "badOptionBlocked": true,
+          "exitCode": 1,
+          "getBytes": 0,
+          "getError": "SSL peer certificate or SSH remote key was not OK",
+          "headError": "SSL peer certificate or SSH remote key was not OK"
+        },
+        {
+          "case": "valid_unrelated_cwd",
+          "accepted": true,
+          "headAccepted": true,
+          "badOptionBlocked": true,
+          "exitCode": 0,
+          "getBytes": 36,
+          "getError": "No error",
+          "headError": "No error"
+        },
+        {
+          "case": "trust_removed",
+          "accepted": false,
+          "headAccepted": false,
+          "badOptionBlocked": true,
+          "exitCode": 1,
+          "getBytes": 0,
+          "getError": "SSL peer certificate or SSH remote key was not OK",
+          "headError": "SSL peer certificate or SSH remote key was not OK"
+        }
+      ],
+      "processes": {
+        "downloader-trust-windows/downloader-valid.process.json": {
+          "processId": 6784,
+          "exitCode": 0,
+          "timedOut": false,
+          "timeoutSeconds": 30,
+          "elapsedSeconds": 0.1556954
+        },
+        "downloader-trust-windows/downloader-https_redirect.process.json": {
+          "processId": 7148,
+          "exitCode": 0,
+          "timedOut": false,
+          "timeoutSeconds": 30,
+          "elapsedSeconds": 0.2002581
+        },
+        "downloader-trust-windows/downloader-http_downgrade.process.json": {
+          "processId": 5016,
+          "exitCode": 1,
+          "timedOut": false,
+          "timeoutSeconds": 30,
+          "elapsedSeconds": 0.1130212
+        },
+        "downloader-trust-windows/downloader-local_file_redirect.process.json": {
+          "processId": 6952,
+          "exitCode": 1,
+          "timedOut": false,
+          "timeoutSeconds": 30,
+          "elapsedSeconds": 0.1111449
+        },
+        "downloader-trust-windows/downloader-partial_transfer.process.json": {
+          "processId": 7744,
+          "exitCode": 1,
+          "timedOut": false,
+          "timeoutSeconds": 30,
+          "elapsedSeconds": 0.1107693
+        },
+        "downloader-trust-windows/downloader-wrong_host.process.json": {
+          "processId": 3984,
+          "exitCode": 1,
+          "timedOut": false,
+          "timeoutSeconds": 30,
+          "elapsedSeconds": 0.1101393
+        },
+        "downloader-trust-windows/downloader-expired.process.json": {
+          "processId": 5704,
+          "exitCode": 1,
+          "timedOut": false,
+          "timeoutSeconds": 30,
+          "elapsedSeconds": 0.1100694
+        },
+        "downloader-trust-windows/downloader-untrusted.process.json": {
+          "processId": 796,
+          "exitCode": 1,
+          "timedOut": false,
+          "timeoutSeconds": 30,
+          "elapsedSeconds": 0.1103266
+        },
+        "downloader-trust-windows/downloader-write_exception.process.json": {
+          "processId": 3244,
+          "exitCode": 1,
+          "timedOut": false,
+          "timeoutSeconds": 30,
+          "elapsedSeconds": 0.1118811
+        },
+        "downloader-trust-windows/downloader-valid_unrelated_cwd.process.json": {
+          "processId": 1932,
+          "exitCode": 0,
+          "timedOut": false,
+          "timeoutSeconds": 30,
+          "elapsedSeconds": 0.115753
+        },
+        "downloader-trust-windows/downloader-initial_http.process.json": {
+          "processId": 1612,
+          "exitCode": 1,
+          "timedOut": false,
+          "timeoutSeconds": 30,
+          "elapsedSeconds": 0.0711983
+        },
+        "downloader-trust-windows/downloader-trust_removed.process.json": {
+          "processId": 5984,
+          "exitCode": 1,
+          "timedOut": false,
+          "timeoutSeconds": 30,
+          "elapsedSeconds": 0.1099735
+        },
+        "downloader-trust-windows/wxcurl-valid.process.json": {
+          "processId": 4428,
+          "exitCode": 0,
+          "timedOut": false,
+          "timeoutSeconds": 30,
+          "elapsedSeconds": 0.1201953
+        },
+        "downloader-trust-windows/wxcurl-https_redirect.process.json": {
+          "processId": 5592,
+          "exitCode": 0,
+          "timedOut": false,
+          "timeoutSeconds": 30,
+          "elapsedSeconds": 0.2156606
+        },
+        "downloader-trust-windows/wxcurl-http_downgrade.process.json": {
+          "processId": 3732,
+          "exitCode": 1,
+          "timedOut": false,
+          "timeoutSeconds": 30,
+          "elapsedSeconds": 0.1114764
+        },
+        "downloader-trust-windows/wxcurl-local_file_redirect.process.json": {
+          "processId": 4196,
+          "exitCode": 1,
+          "timedOut": false,
+          "timeoutSeconds": 30,
+          "elapsedSeconds": 0.1087188
+        },
+        "downloader-trust-windows/wxcurl-wrong_host.process.json": {
+          "processId": 1532,
+          "exitCode": 1,
+          "timedOut": false,
+          "timeoutSeconds": 30,
+          "elapsedSeconds": 0.1102605
+        },
+        "downloader-trust-windows/wxcurl-expired.process.json": {
+          "processId": 2804,
+          "exitCode": 1,
+          "timedOut": false,
+          "timeoutSeconds": 30,
+          "elapsedSeconds": 0.1164176
+        },
+        "downloader-trust-windows/wxcurl-untrusted.process.json": {
+          "processId": 5352,
+          "exitCode": 1,
+          "timedOut": false,
+          "timeoutSeconds": 30,
+          "elapsedSeconds": 0.1094384
+        },
+        "downloader-trust-windows/wxcurl-valid_unrelated_cwd.process.json": {
+          "processId": 1100,
+          "exitCode": 0,
+          "timedOut": false,
+          "timeoutSeconds": 30,
+          "elapsedSeconds": 0.1119045
+        },
+        "downloader-trust-windows/wxcurl-trust_removed.process.json": {
+          "processId": 3872,
+          "exitCode": 1,
+          "timedOut": false,
+          "timeoutSeconds": 30,
+          "elapsedSeconds": 0.1322469
+        }
+      },
+      "allConsoleCleanupComplete": true
+    },
+    "ocharts-private-wxcurl-trust-windows": {
+      "status": "passed",
+      "cleanup": "verified",
+      "downloader": [
+        {
+          "case": "valid",
+          "accepted": true,
+          "exitCode": 0,
+          "downloadError": 0,
+          "headError": 0
+        },
+        {
+          "case": "https_redirect",
+          "accepted": true,
+          "exitCode": 0,
+          "downloadError": 0,
+          "headError": 0
+        },
+        {
+          "case": "http_downgrade",
+          "accepted": false,
+          "exitCode": 1,
+          "downloadError": 1,
+          "headError": 1
+        },
+        {
+          "case": "local_file_redirect",
+          "accepted": false,
+          "exitCode": 1,
+          "downloadError": 1,
+          "headError": 1
+        },
+        {
+          "case": "partial_transfer",
+          "accepted": false,
+          "exitCode": 1,
+          "downloadError": 56,
+          "headError": 0
+        },
+        {
+          "case": "wrong_host",
+          "accepted": false,
+          "exitCode": 1,
+          "downloadError": 60,
+          "headError": 60
+        },
+        {
+          "case": "expired",
+          "accepted": false,
+          "exitCode": 1,
+          "downloadError": 60,
+          "headError": 60
+        },
+        {
+          "case": "untrusted",
+          "accepted": false,
+          "exitCode": 1,
+          "downloadError": 60,
+          "headError": 60
+        },
+        {
+          "case": "write_exception",
+          "accepted": false,
+          "exitCode": 1,
+          "downloadError": 23,
+          "headError": 0
+        },
+        {
+          "case": "valid_unrelated_cwd",
+          "accepted": true,
+          "exitCode": 0,
+          "downloadError": 0,
+          "headError": 0
+        },
+        {
+          "case": "initial_http",
+          "accepted": false,
+          "exitCode": 1,
+          "downloadError": 1,
+          "headError": 1
+        },
+        {
+          "case": "trust_removed",
+          "accepted": false,
+          "exitCode": 1,
+          "downloadError": 60,
+          "headError": 60
+        }
+      ],
+      "wxCurl": [
+        {
+          "case": "valid",
+          "accepted": true,
+          "headAccepted": true,
+          "badOptionBlocked": true,
+          "exitCode": 0,
+          "getBytes": 36,
+          "getError": "No error",
+          "headError": "No error"
+        },
+        {
+          "case": "https_redirect",
+          "accepted": true,
+          "headAccepted": true,
+          "badOptionBlocked": true,
+          "exitCode": 0,
+          "getBytes": 36,
+          "getError": "No error",
+          "headError": "No error"
+        },
+        {
+          "case": "http_downgrade",
+          "accepted": false,
+          "headAccepted": false,
+          "badOptionBlocked": true,
+          "exitCode": 1,
+          "getBytes": 0,
+          "getError": "Unsupported protocol",
+          "headError": "Unsupported protocol"
+        },
+        {
+          "case": "local_file_redirect",
+          "accepted": false,
+          "headAccepted": false,
+          "badOptionBlocked": true,
+          "exitCode": 1,
+          "getBytes": 0,
+          "getError": "Unsupported protocol",
+          "headError": "Unsupported protocol"
+        },
+        {
+          "case": "wrong_host",
+          "accepted": false,
+          "headAccepted": false,
+          "badOptionBlocked": true,
+          "exitCode": 1,
+          "getBytes": 0,
+          "getError": "SSL peer certificate or SSH remote key was not OK",
+          "headError": "SSL peer certificate or SSH remote key was not OK"
+        },
+        {
+          "case": "expired",
+          "accepted": false,
+          "headAccepted": false,
+          "badOptionBlocked": true,
+          "exitCode": 1,
+          "getBytes": 0,
+          "getError": "SSL peer certificate or SSH remote key was not OK",
+          "headError": "SSL peer certificate or SSH remote key was not OK"
+        },
+        {
+          "case": "untrusted",
+          "accepted": false,
+          "headAccepted": false,
+          "badOptionBlocked": true,
+          "exitCode": 1,
+          "getBytes": 0,
+          "getError": "SSL peer certificate or SSH remote key was not OK",
+          "headError": "SSL peer certificate or SSH remote key was not OK"
+        },
+        {
+          "case": "valid_unrelated_cwd",
+          "accepted": true,
+          "headAccepted": true,
+          "badOptionBlocked": true,
+          "exitCode": 0,
+          "getBytes": 36,
+          "getError": "No error",
+          "headError": "No error"
+        },
+        {
+          "case": "trust_removed",
+          "accepted": false,
+          "headAccepted": false,
+          "badOptionBlocked": true,
+          "exitCode": 1,
+          "getBytes": 0,
+          "getError": "SSL peer certificate or SSH remote key was not OK",
+          "headError": "SSL peer certificate or SSH remote key was not OK"
+        }
+      ],
+      "processes": {
+        "ocharts-private-wxcurl-trust-windows/downloader-valid.process.json": {
+          "processId": 6724,
+          "exitCode": 0,
+          "timedOut": false,
+          "timeoutSeconds": 30,
+          "elapsedSeconds": 0.1685105
+        },
+        "ocharts-private-wxcurl-trust-windows/downloader-https_redirect.process.json": {
+          "processId": 7200,
+          "exitCode": 0,
+          "timedOut": false,
+          "timeoutSeconds": 30,
+          "elapsedSeconds": 0.1993771
+        },
+        "ocharts-private-wxcurl-trust-windows/downloader-http_downgrade.process.json": {
+          "processId": 5920,
+          "exitCode": 1,
+          "timedOut": false,
+          "timeoutSeconds": 30,
+          "elapsedSeconds": 0.109613
+        },
+        "ocharts-private-wxcurl-trust-windows/downloader-local_file_redirect.process.json": {
+          "processId": 2472,
+          "exitCode": 1,
+          "timedOut": false,
+          "timeoutSeconds": 30,
+          "elapsedSeconds": 0.1414113
+        },
+        "ocharts-private-wxcurl-trust-windows/downloader-partial_transfer.process.json": {
+          "processId": 1956,
+          "exitCode": 1,
+          "timedOut": false,
+          "timeoutSeconds": 30,
+          "elapsedSeconds": 0.1119974
+        },
+        "ocharts-private-wxcurl-trust-windows/downloader-wrong_host.process.json": {
+          "processId": 2112,
+          "exitCode": 1,
+          "timedOut": false,
+          "timeoutSeconds": 30,
+          "elapsedSeconds": 0.1094963
+        },
+        "ocharts-private-wxcurl-trust-windows/downloader-expired.process.json": {
+          "processId": 8036,
+          "exitCode": 1,
+          "timedOut": false,
+          "timeoutSeconds": 30,
+          "elapsedSeconds": 0.1459551
+        },
+        "ocharts-private-wxcurl-trust-windows/downloader-untrusted.process.json": {
+          "processId": 6016,
+          "exitCode": 1,
+          "timedOut": false,
+          "timeoutSeconds": 30,
+          "elapsedSeconds": 0.1118962
+        },
+        "ocharts-private-wxcurl-trust-windows/downloader-write_exception.process.json": {
+          "processId": 3436,
+          "exitCode": 1,
+          "timedOut": false,
+          "timeoutSeconds": 30,
+          "elapsedSeconds": 0.1785524
+        },
+        "ocharts-private-wxcurl-trust-windows/downloader-valid_unrelated_cwd.process.json": {
+          "processId": 6184,
+          "exitCode": 0,
+          "timedOut": false,
+          "timeoutSeconds": 30,
+          "elapsedSeconds": 0.1111538
+        },
+        "ocharts-private-wxcurl-trust-windows/downloader-initial_http.process.json": {
+          "processId": 4428,
+          "exitCode": 1,
+          "timedOut": false,
+          "timeoutSeconds": 30,
+          "elapsedSeconds": 0.016749
+        },
+        "ocharts-private-wxcurl-trust-windows/downloader-trust_removed.process.json": {
+          "processId": 4828,
+          "exitCode": 1,
+          "timedOut": false,
+          "timeoutSeconds": 30,
+          "elapsedSeconds": 0.1083075
+        },
+        "ocharts-private-wxcurl-trust-windows/wxcurl-valid.process.json": {
+          "processId": 7428,
+          "exitCode": 0,
+          "timedOut": false,
+          "timeoutSeconds": 30,
+          "elapsedSeconds": 0.1172743
+        },
+        "ocharts-private-wxcurl-trust-windows/wxcurl-https_redirect.process.json": {
+          "processId": 4636,
+          "exitCode": 0,
+          "timedOut": false,
+          "timeoutSeconds": 30,
+          "elapsedSeconds": 0.2100789
+        },
+        "ocharts-private-wxcurl-trust-windows/wxcurl-http_downgrade.process.json": {
+          "processId": 2572,
+          "exitCode": 1,
+          "timedOut": false,
+          "timeoutSeconds": 30,
+          "elapsedSeconds": 0.1110069
+        },
+        "ocharts-private-wxcurl-trust-windows/wxcurl-local_file_redirect.process.json": {
+          "processId": 2876,
+          "exitCode": 1,
+          "timedOut": false,
+          "timeoutSeconds": 30,
+          "elapsedSeconds": 0.1104351
+        },
+        "ocharts-private-wxcurl-trust-windows/wxcurl-wrong_host.process.json": {
+          "processId": 1616,
+          "exitCode": 1,
+          "timedOut": false,
+          "timeoutSeconds": 30,
+          "elapsedSeconds": 0.1358976
+        },
+        "ocharts-private-wxcurl-trust-windows/wxcurl-expired.process.json": {
+          "processId": 7080,
+          "exitCode": 1,
+          "timedOut": false,
+          "timeoutSeconds": 30,
+          "elapsedSeconds": 0.1117261
+        },
+        "ocharts-private-wxcurl-trust-windows/wxcurl-untrusted.process.json": {
+          "processId": 1768,
+          "exitCode": 1,
+          "timedOut": false,
+          "timeoutSeconds": 30,
+          "elapsedSeconds": 0.1133856
+        },
+        "ocharts-private-wxcurl-trust-windows/wxcurl-valid_unrelated_cwd.process.json": {
+          "processId": 1408,
+          "exitCode": 0,
+          "timedOut": false,
+          "timeoutSeconds": 30,
+          "elapsedSeconds": 0.1080102
+        },
+        "ocharts-private-wxcurl-trust-windows/wxcurl-trust_removed.process.json": {
+          "processId": 2556,
+          "exitCode": 1,
+          "timedOut": false,
+          "timeoutSeconds": 30,
+          "elapsedSeconds": 0.1078138
+        }
+      },
+      "allConsoleCleanupComplete": true
+    }
+  },
+  "recovery": {
+    "status": "passed",
+    "authority": "Native Windows; exact extracted product ZIP; fixtures OFF",
+    "checks": [
+      "Exact extracted package inventory/hash and actual fixture-free executable identity verified",
+      "Extracted app/helper execute matching guarded-restart capability probes without profile initialization",
+      "Out-of-box product shows real unavailable state, no Demo controls and Day/Dusk/Night chart content",
+      "Legacy launcher and Legacy-to-XNav retain real coastline and isolated profile",
+      "Product XNav-to-Legacy-to-XNav controlled restart preserves coastline",
+      "Safe launcher and return to XNav render real chart content with clean process exits",
+      "External-profile override refused; normal installed files and profile canary unchanged"
+    ],
+    "screenshots": [
+      "recovery-navigation-day.png",
+      "recovery-navigation-dusk.png",
+      "recovery-navigation-night.png",
+      "recovery-navigation-day-restored.png",
+      "recovery-energy-unavailable.png",
+      "recovery-preferences.png",
+      "recovery-system.png",
+      "recovery-diagnostics.png",
+      "recovery-navigation-return.png",
+      "recovery-legacy-start.png",
+      "recovery-legacy-to-xnav.png",
+      "recovery-xnav-before-legacy.png",
+      "recovery-xnav-to-legacy.png",
+      "recovery-xnav-legacy-xnav.png",
+      "recovery-safe.png",
+      "recovery-safe-to-xnav.png"
+    ],
+    "chart_rendering": [
+      {
+        "phase": "Product Night coastline",
+        "reference_color_fractions": {
+          "1d2925": 0.3257510729613734,
+          "0e171c": 0.6184191702432046
+        },
+        "coastline_visible": true,
+        "style": "XNav",
+        "light": "Night",
+        "source": "immutable HTML effective chart-canvas colors"
+      },
+      {
+        "phase": "navigation-day-restored",
+        "reference_color_fractions": {
+          "eeeee2": 0.3257510729613734,
+          "d5e5e5": 0.6184191702432046
+        },
+        "coastline_visible": true,
+        "style": "XNav",
+        "light": "Day",
+        "source": "immutable HTML effective chart-canvas colors"
+      },
+      {
+        "phase": "navigation-return",
+        "reference_color_fractions": {
+          "eeeee2": 0.3257510729613734,
+          "d5e5e5": 0.6184191702432046
+        },
+        "coastline_visible": true,
+        "style": "XNav",
+        "light": "Day",
+        "source": "immutable HTML effective chart-canvas colors"
+      },
+      {
+        "phase": "legacy-start",
+        "reference_color_fractions": {
+          "aaaf50": 0.4363376251788269,
+          "aac3f0": 0.5636623748211731
+        },
+        "coastline_visible": true,
+        "style": "Standard",
+        "light": "Day",
+        "source": "pinned software GSHHSChart::SetColorScheme"
+      },
+      {
+        "phase": "legacy-to-xnav",
+        "reference_color_fractions": {
+          "eeeee2": 0.3257510729613734,
+          "d5e5e5": 0.6184191702432046
+        },
+        "coastline_visible": true,
+        "style": "XNav",
+        "light": "Day",
+        "source": "immutable HTML effective chart-canvas colors"
+      },
+      {
+        "phase": "xnav-before-legacy",
+        "reference_color_fractions": {
+          "eeeee2": 0.3257510729613734,
+          "d5e5e5": 0.6184191702432046
+        },
+        "coastline_visible": true,
+        "style": "XNav",
+        "light": "Day",
+        "source": "immutable HTML effective chart-canvas colors"
+      },
+      {
+        "phase": "xnav-to-legacy",
+        "reference_color_fractions": {
+          "aaaf50": 0.4363376251788269,
+          "aac3f0": 0.5636623748211731
+        },
+        "coastline_visible": true,
+        "style": "Standard",
+        "light": "Day",
+        "source": "pinned software GSHHSChart::SetColorScheme"
+      },
+      {
+        "phase": "xnav-legacy-xnav",
+        "reference_color_fractions": {
+          "eeeee2": 0.3257510729613734,
+          "d5e5e5": 0.6184191702432046
+        },
+        "coastline_visible": true,
+        "style": "XNav",
+        "light": "Day",
+        "source": "immutable HTML effective chart-canvas colors"
+      },
+      {
+        "phase": "safe",
+        "reference_color_fractions": {
+          "aaaf50": 0.4363376251788269,
+          "aac3f0": 0.5636623748211731
+        },
+        "coastline_visible": true,
+        "style": "Standard",
+        "light": "Day",
+        "source": "pinned software GSHHSChart::SetColorScheme"
+      },
+      {
+        "phase": "safe-to-xnav",
+        "reference_color_fractions": {
+          "eeeee2": 0.3257510729613734,
+          "d5e5e5": 0.6184191702432046
+        },
+        "coastline_visible": true,
+        "style": "XNav",
+        "light": "Day",
+        "source": "immutable HTML effective chart-canvas colors"
+      }
+    ],
+    "display": {
+      "before": [
+        1920,
+        1080,
+        32
+      ],
+      "after": [
+        1920,
+        1080,
+        32
+      ]
+    },
+    "restart_capability": {
+      "protocol": 1,
+      "helper": {
+        "contract": "OpenNavX.RestartCapability.1",
+        "role": "restart-helper",
+        "commissioning_restart_protocol": 1,
+        "profile_accessed": false,
+        "child_started": false
+      },
+      "helper_sha256": "322a6873cd0a3d36f6b09217307b6c5e089b8a91972256ba0ca9a2dfb196e49b"
+    },
+    "build": {
+      "version": "0.4.0-beta2",
+      "commit": "55ef51e4944e8570f6a391dad20b0db8447a7443",
+      "test_fixtures": false,
+      "build_purpose": "INSTALLED PRODUCT",
+      "xnav_hardware_output_policy": "status-only",
+      "executable_sha256": "20b454904958dfb86c3689d63a3486b3ed4e14a297295e19aa2582243ba9ee3f",
+      "restart_helper_sha256": "322a6873cd0a3d36f6b09217307b6c5e089b8a91972256ba0ca9a2dfb196e49b",
+      "commissioning_restart_protocol": 1
+    },
+    "package_sha256": "18fbab979dbc2f73042b62a18fce12594152d89eb939f103efcc67b678f21c33",
+    "files_verified": 1015,
+    "normal_files_audited": 0
+  },
+  "installer": {
+    "status": "failed",
+    "completedChecks": [
+      "Official supported OpenCPN installed and exact PE executable SHA-256 verified",
+      "Registry discovery handles the official build-suffixed key and verifies its exact hash without modification",
+      "Conventional wizard opens without command-line options; default Install and path input work; Cancel changes no installation",
+      "A foreign SKAGER Start-menu group is refused before root creation; its same-name shortcut and stock remain unchanged",
+      "Unknown installation ownership refused without adding logs or changing files",
+      "Unknown executable hash refused; rejected tree and existing profile unchanged; install root and all shortcut groups absent",
+      "Fresh install refuses each unmanaged stock plugin legacy TLS DLL and preserves stock/profile without publication",
+      "Actual Beta 2 wizard detection, recovery, shortcuts, ready, validation and Finish pass without command-line options",
+      "Exact candidate clean install and first-install rollback preserve stock/profile; real coastline and candidate hash verified",
+      "Exact historical-layout Beta 2 updates and rolls back with byte-identical old engine; original Maintain diagnostics and uninstall leave neither group",
+      "Expected candidate-to-beta1 safety notice captured and acknowledged through its visible Agree button",
+      "Accepted Beta 1 release installs and opens real coastline with shared fixtures",
+      "Accepted Beta 1 updates to the exact Beta 2 candidate executable; stock/profile unchanged",
+      "Versioned recovery record identifies exact Beta 1 generation, stock hash and Beta 2 target before update",
+      "Genuine Beta 1 rollback restores its historical group and unchanged original maintainer; native diagnostics work",
+      "Genuine Beta 1 to Beta 2 interrupted group migration recovers from committed state and removes only old owned links",
+      "Owned maintenance wizard has version-neutral title, Repair default and non-mutating Cancel",
+      "Expected beta1-to-candidate safety notice captured and acknowledged through its visible Agree button",
+      "Installed XNav starts against normal wx profile; coastline and navigation fixtures preserved",
+      "Installed Legacy and Safe start with charts and shared navigation/config/plugin preferences",
+      "Installed XNav to Legacy to XNav controlled restart retains real coastline",
+      "Repair replaces corrupt owned resources in a new generation; original damaged backup and custom additions retained",
+      "Optional shortcuts respect explicit choices; retained-package repair preserves preferences",
+      "Legacy and Safe shortcuts can be restored without altering shared navigation data",
+      "Update preserves shared profile and user plugin additions; prior generation backed up",
+      "Unknown explicit rollback layout refuses before state/journal publication; owned generations, shortcuts and user data remain unchanged",
+      "Rollback refuses an unowned portable marker in the previous generation without altering either generation, state or user data",
+      "Rollback restores exact prior generation with an unmanaged legacy TLS addition and leaves navigation data unchanged",
+      "Update/repair refuse each stock or active unmanaged legacy TLS DLL; current installation and source bytes survive",
+      "Update/repair reject inherited portable marker, Demo launcher and route fixture before publication; prior generation/state/stock/profile unchanged",
+      "Concurrent transaction lock refuses update; active executable/state/profile/stock remain exact",
+      "Actual NTFS permission denial during staging preserves active installation; ACL restored",
+      "Corrupt payload fails SHA-256 preflight without changing active installation",
+      "Interrupted extraction never publishes incomplete generation or changes active state"
+    ],
+    "error": "AssertionError({'status': 'failed', 'error': 'Missing app-local PE import wxbase32u_net_vc14x.dll in C:\\\\Users\\\\runneradmin\\\\AppData\\\\Local\\\\OpenNavXAlpha1\\\\generations\\\\670fe31d23ab49038930f8cce3b5e428\\\\app\\\\opencpn-cmd.exe', 'action': 'Update', 'log': ['2026-10-04T13:38:36.4648711Z Supported OpenCPN 5.12.4 x86 SHA-256 7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c', '2026-10-04T13:38:36.5274040Z Recovery record durable; verified original OpenCPN and previous integration remain available.', '2026-10-04T13:39:00.9540342Z FAILED: Missing app-local PE import wxbase32u_net_vc14x.dll in C:\\\\Users\\\\runneradmin\\\\AppData\\\\Local\\\\OpenNavXAlpha1\\\\generations\\\\670fe31d23ab49038930f8cce3b5e428\\\\app\\\\opencpn-cmd.exe']})",
+    "reportedSetup": {
+      "name": "SKAGER-Beta2-Setup.exe",
+      "bytes": 47266310,
+      "sha256": "735d035261438ce29c3e00893bf91395db8f6411750b86a8bb33e4ec79e4cfb7",
+      "groups": [
+        {
+          "id": 103,
+          "language": 1033,
+          "frames": {
+            "16": "daf3f922ce278397e3b2013d4d6babfd902150571cc67fec4c575bd7d5491067",
+            "20": "abf6cfb1c99e9cedee80dc5057ec60e696d88105cdf801cd147d97707e6b079c",
+            "24": "b8f70907fc996dc6ea3353065f1a8786883b1a0841a76a471e2c7d9f204c955e",
+            "32": "c89cf972d24d49dc8deb1e2c683d0c90065ea39ed20d72e6fc56604a765de828",
+            "40": "56d428e31fb303cbf5f759482812d645869a1369b8923e8e5b1db932d1c1f779",
+            "48": "cbc6241280ddecd5aa2a721594229aff5409516f3d0b2c072a35ccbd5978cf6f",
+            "64": "c76d4ec4d7b2f5a158eba962edcf79c2e75b8c44374cd39a78e2e19c885f7046",
+            "128": "9c15c03761054830d4b3d45e7c76dbec8796980368fd0714938e5aa37ebd387a",
+            "256": "aed0bcb82af6b1e138233aba927bae99febf2d09279785e158761ae04c014559"
+          }
+        }
+      ],
+      "versions": [
+        {
+          "id": 1,
+          "language": 1033,
+          "fields": {
+            "ProductName": [
+              "SKAGER Beta 2"
+            ],
+            "FileDescription": [
+              "Version-gated SKAGER Beta setup"
+            ]
+          }
+        }
+      ]
+    },
+    "unsupportedBuildPreservation": {
+      "status": "passed",
+      "setup_sha256": "735d035261438ce29c3e00893bf91395db8f6411750b86a8bb33e4ec79e4cfb7",
+      "test_source_sha256": "af256d151a702da3e1112bc45ce53e7641e7aa4ec493b87acf00e9dc39700f02",
+      "package_manifest_sha256": "35c76d4f8c361243f002760cbb4adb8a3b59e9d897740a85c39d00b634e850ca",
+      "rejected_tree_files": 2,
+      "profile_files": 4,
+      "rejected_tree_before_sha256": "d805d9de304b9244a1c66599b59958f14a1bcceac56594b0b5a4f371651a05a3",
+      "rejected_tree_after_sha256": "d805d9de304b9244a1c66599b59958f14a1bcceac56594b0b5a4f371651a05a3",
+      "profile_before_sha256": "4ae2a043f5ec53e51d78169cf9d168d72f7f3365f57b9312549a4d6e90632d53",
+      "profile_after_sha256": "4ae2a043f5ec53e51d78169cf9d168d72f7f3365f57b9312549a4d6e90632d53",
+      "install_root_absent": true,
+      "all_shortcut_groups_absent": true
+    },
+    "interpretation": "Damaged-package operation rejected a deliberately omitted DLL; lifecycle assertion failed. No clean-package dependency defect or installer pass inferred."
+  },
+  "AIS": {
+    "actualSessionChecks": 178,
+    "actualTransportPassRows": 18,
+    "actualProviderLifecyclePasses": 6,
+    "runtimeRehashed": {
+      "ais_provider_test_client.exe": {
+        "bytes": 245248,
+        "sha256": "5130e8919cd81b779fecf393562fbc480dad3ceaea26d7d2b81610601b77f228",
+        "verifiedMember": "evidence/local/ais-native-runtime/build/bin/Release/ais_provider_test_client.exe"
+      },
+      "ais_session_native.exe": {
+        "bytes": 91136,
+        "sha256": "dcb5e8ea53975f46851dc9d9a3b0b4f3aeca65f124650baef377def6368b437c",
+        "verifiedMember": "evidence/local/ais-native-runtime/build/bin/Release/ais_session_native.exe"
+      },
+      "ais_transport_test_client.exe": {
+        "bytes": 171520,
+        "sha256": "9046bdbcca233d05cb21656d76a788a8113af82ddf975b9abadb1dd91c04e942",
+        "verifiedMember": "evidence/local/ais-native-runtime/build/bin/Release/ais_transport_test_client.exe"
+      },
+      "concrt140.dll": {
+        "bytes": 259688,
+        "sha256": "a2b04c69868b08a600518ebbad1661d38de4dd0e0a8e638c22d4641d410e50b1",
+        "verifiedMember": "evidence/local/ais-native-runtime/build/bin/Release/concrt140.dll"
+      },
+      "libcrypto-3.dll": {
+        "bytes": 4491776,
+        "sha256": "dffeb4da33c323690ee616fc7b11fb4c06db64fb2091faec3b4fc942a1bda590",
+        "verifiedMember": "evidence/local/ais-native-runtime/build/bin/Release/libcrypto-3.dll"
+      },
+      "libssl-3.dll": {
+        "bytes": 1067520,
+        "sha256": "7d37d65d4c5abb51297a68a6dfceb00ac16838305d32897f1910570f500244d6",
+        "verifiedMember": "evidence/local/ais-native-runtime/build/bin/Release/libssl-3.dll"
+      },
+      "msvcp140.dll": {
+        "bytes": 447616,
+        "sha256": "97e71a3c697fb1ab3af777db39009e4602525e8c3aff0837ecc7031cba188165",
+        "verifiedMember": "evidence/local/ais-native-runtime/build/bin/Release/msvcp140.dll"
+      },
+      "msvcp140_1.dll": {
+        "bytes": 33896,
+        "sha256": "01a58552686d0c6b9fd67a7ac81169fc0013aedf59a8efdc611f94907489a31c",
+        "verifiedMember": "evidence/local/ais-native-runtime/build/bin/Release/msvcp140_1.dll"
+      },
+      "msvcp140_2.dll": {
+        "bytes": 294992,
+        "sha256": "2a5365e03cc6e78b408dfca81537f3734bf3d7cf9cc13ae33204dfbc641dbe43",
+        "verifiedMember": "evidence/local/ais-native-runtime/build/bin/Release/msvcp140_2.dll"
+      },
+      "msvcp140_atomic_wait.dll": {
+        "bytes": 47240,
+        "sha256": "c4a2bae74e008a5bb2445f9078c14df9dcb03267248dfa64e7d04cdc8af5208e",
+        "verifiedMember": "evidence/local/ais-native-runtime/build/bin/Release/msvcp140_atomic_wait.dll"
+      },
+      "msvcp140_codecvt_ids.dll": {
+        "bytes": 30824,
+        "sha256": "a5cbecfd9b8892ec9a60e30fef7ef2158032c6d91efdfbaca87c082bcd48bfa9",
+        "verifiedMember": "evidence/local/ais-native-runtime/build/bin/Release/msvcp140_codecvt_ids.dll"
+      },
+      "vccorlib140.dll": {
+        "bytes": 287360,
+        "sha256": "89ed5a6877a87ec3ec9fe4a0fb14dc950599f0b67318e746084a0c333a6c865f",
+        "verifiedMember": "evidence/local/ais-native-runtime/build/bin/Release/vccorlib140.dll"
+      },
+      "vcruntime140.dll": {
+        "bytes": 91216,
+        "sha256": "a9d7732a3c3de09f0601a7fa2555093dcb49f08e2fc62a86091461f0f38393ed",
+        "verifiedMember": "evidence/local/ais-native-runtime/build/bin/Release/vcruntime140.dll"
+      },
+      "vcruntime140_threads.dll": {
+        "bytes": 36000,
+        "sha256": "bb2b1d16187562376fc888059e2cbbf26c5404f6a4bb7197d1d01b970f199667",
+        "verifiedMember": "evidence/local/ais-native-runtime/build/bin/Release/vcruntime140_threads.dll"
+      },
+      "zlib1.dll": {
+        "bytes": 73216,
+        "sha256": "df82c9e88930c45b86a124f6bdd2b7373d6cfcbaafe5f461b40242a6c19334e5",
+        "verifiedMember": "evidence/local/ais-native-runtime/build/bin/Release/zlib1.dll"
+      }
+    },
+    "sameJobReceiptRehashed": {
+      "bytes": 43729,
+      "sha256": "cf5161fe6895809e7deb1bd99378e0fc8fade3fa377375e224976383ae2c307f"
+    },
+    "productAcceptance": false,
+    "wfpAcceptance": false,
+    "boatAcceptance": false
+  },
+  "DPI": {
+    "result": "passed; native visual review required",
+    "scales": [
+      {
+        "percent": 100,
+        "GetDpiForWindow": 96,
+        "wxDpi": 96
+      },
+      {
+        "percent": 125,
+        "GetDpiForWindow": 120,
+        "wxDpi": 120
+      },
+      {
+        "percent": 150,
+        "GetDpiForWindow": 144,
+        "wxDpi": 144
+      }
+    ],
+    "restored": {
+      "before_percent": 150,
+      "percent": 100,
+      "source_id": 0,
+      "minimum_relative": 0,
+      "maximum_relative": 3
+    }
+  },
+  "ENC": {
+    "result": "passed; native screenshot review and physical GPU gate remain separate",
+    "phases": [
+      {
+        "requested": "software",
+        "actualOpenGL": false,
+        "glStatus": null
+      },
+      {
+        "requested": "opengl",
+        "actualOpenGL": false,
+        "glStatus": "host rejected OpenGL; verified upstream software fallback; hardware GL gate remains open"
+      }
+    ],
+    "visualAcceptanceClaimed": false
+  },
+  "functionalReports": {
+    "evidence/local/boat-input-results.json": {
+      "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+      "checks": 5
+    },
+    "evidence/local/charts-results.json": {
+      "result": "passed; native screenshot review and physical GPU gate remain separate",
+      "checks": null
+    },
+    "evidence/local/dpi-results.json": {
+      "result": "passed; native visual review required",
+      "checks": null
+    },
+    "evidence/local/instruments-input-results.json": {
+      "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+      "checks": 4
+    },
+    "evidence/local/mode-cycle-results.json": {
+      "result": "interaction and fixture persistence passed; visual review required",
+      "checks": null
+    },
+    "evidence/local/n2k-input-results.json": {
+      "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+      "checks": 7
+    },
+    "evidence/local/navigation-input-results.json": {
+      "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+      "checks": null
+    },
+    "evidence/local/objects-input-profile/objects-fixture-results.json": {
+      "result": "passed",
+      "checks": 27
+    },
+    "evidence/local/objects-input-results.json": {
+      "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+      "checks": 3
+    },
+    "evidence/local/pilot-results.json": {
+      "result": "passed; screenshot review required",
+      "checks": 6
+    },
+    "evidence/local/pilot-status-only/pilot-results.json": {
+      "result": "passed; screenshot review required",
+      "checks": 5
+    },
+    "evidence/local/preview-results.json": {
+      "result": "passed; screenshot review required",
+      "checks": 19
+    },
+    "evidence/local/production-recovery-results.json": {
+      "result": "passed",
+      "checks": 7
+    },
+    "evidence/local/recording-results.json": {
+      "result": "passed; screenshot review required",
+      "checks": 6
+    },
+    "evidence/local/recovery-repeat-0/recovery-results.json": {
+      "result": "passed; native screenshot review required",
+      "checks": 5
+    },
+    "evidence/local/recovery-repeat-1/recovery-results.json": {
+      "result": "passed; native screenshot review required",
+      "checks": 5
+    },
+    "evidence/local/recovery-repeat-2/recovery-results.json": {
+      "result": "passed; native screenshot review required",
+      "checks": 5
+    },
+    "evidence/local/route-input-profile/route-fixture-results.json": {
+      "result": "passed",
+      "checks": 26
+    },
+    "evidence/local/route-input-results.json": {
+      "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+      "checks": null
+    },
+    "evidence/local/route-progress-results.json": {
+      "result": "passed",
+      "checks": 26
+    },
+    "evidence/local/route-standard-progress-results.json": {
+      "result": "passed",
+      "checks": 26
+    },
+    "evidence/local/route-standard-input-results.json": {
+      "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+      "checks": null
+    },
+    "evidence/local/route-standard-input-profile/route-fixture-results.json": {
+      "result": "passed",
+      "checks": 26
+    },
+    "evidence/local/signalk-results.json": {
+      "result": "passed",
+      "checks": 5
+    },
+    "evidence/local/user-flows-results.json": {
+      "result": "passed; native screenshots require review",
+      "checks": 8
+    }
+  },
+  "sourceBindings": {
+    "frozen": "e768b06bf5c130038abfd6e1166da0078037cb5b",
+    "moduleHarnessSources": {
+      "tools/test-chart-module-windows.py": {
+        "bytes": 9654,
+        "sha256": "a466485c48178c22c22fb6625455a6bf794b1930f8930a439c6270f3661f4fe8",
+        "representation": "CRLF"
+      },
+      "tools/test-ocharts-loader-windows.py": {
+        "bytes": 9980,
+        "sha256": "d4b9f25705ca2d440c171adaeacc91b351c462fe1d149294c700527f938a6100",
+        "representation": "CRLF"
+      },
+      "tools/test-windows-changed-units.py": {
+        "bytes": 37232,
+        "sha256": "f7a3084410a11700bb06670222b71d78c9bcc1f417599dcb030c71a56714b180",
+        "representation": "CRLF"
+      },
+      "tests/windows_ocharts_loader/inputs.lock.json": {
+        "bytes": 1183,
+        "sha256": "7520333aba2a38f2bca5f4316a5faa8b229dbbb057e84dc1a57e8882bc53feae",
+        "representation": "CRLF"
+      },
+      "src/integration/InstallerSelfTest.cpp": {
+        "bytes": 3886,
+        "sha256": "c8c1e1396c48d135ee2f806ca5589ea082c9cac4faf00f148c1fdbff529e9995",
+        "representation": "CRLF"
+      },
+      "src/integration/InstallerSelfTest.h": {
+        "bytes": 546,
+        "sha256": "519f2b8d48fd3525c018e4f1009429fcf5de2356da482da46ae7d1a56e5bfc4a",
+        "representation": "CRLF"
+      },
+      "src/integration/ChartModuleCheck.cpp": {
+        "bytes": 8235,
+        "sha256": "73483043e64b89e552b64da3fa2712b15d93ac2e8158a1c05dbe595b4042995d",
+        "representation": "CRLF"
+      },
+      "src/integration/ChartModuleCheck.h": {
+        "bytes": 373,
+        "sha256": "b1b84296cde72d6272d0b2b37200e04c6ecd4fb092f6c90b29391e5e1018a5e7",
+        "representation": "CRLF"
+      },
+      "src/integration/ChartModulePe.h": {
+        "bytes": 5171,
+        "sha256": "cbf00ecc8b71b9ec29fa3c88e1b657b660d65885c561c9f8b4081f6aedbe336e",
+        "representation": "CRLF"
+      },
+      "src/integration/OChartsPointStyle.h": {
+        "bytes": 1034,
+        "sha256": "34adccfdc6d9572da3139988ff0e50cf7dd5509248db8da9e3e75ad58a180f8b",
+        "representation": "CRLF"
+      },
+      "src/integration/OChartsModuleLoader.cpp": {
+        "bytes": 7868,
+        "sha256": "3d0afe5241f42b7acb0e6f702c1258b9afaa02bb81be0102d2584d3cca24ed47",
+        "representation": "CRLF"
+      },
+      "src/integration/OChartsModuleLoader.h": {
+        "bytes": 1296,
+        "sha256": "38cdda23e1a8c9c516b5b53b9a5ee8d76285adf520395418332bf51327690896",
+        "representation": "CRLF"
+      },
+      "src/integration/PluginPresentationFallback.h": {
+        "bytes": 1721,
+        "sha256": "a4ba741c17df9a73f70dae515c3bc363088d397b34cc429a9fc4eb68b72fd525",
+        "representation": "CRLF"
+      },
+      "src/integration/SkagerOChartsPackage.h.in": {
+        "bytes": 253,
+        "sha256": "67b2f06231676c3554310ae3f26aeca5c0625b571e782d84a9871ac4b6d30641",
+        "representation": "CRLF"
+      },
+      "src/integration/OpenCPN.cmake": {
+        "bytes": 33454,
+        "sha256": "3a29a67479790b9a82f99ef2616f354abf33588dacc94a442d5389ba59021c11",
+        "representation": "CRLF"
+      },
+      "src/plugin-adapters/ChartPresentationBindingV1.h": {
+        "bytes": 3172,
+        "sha256": "b19186376a4aa357ba7625d2e7c26d3ad4a526d120ea61d36a857f52f3266dde",
+        "representation": "CRLF"
+      },
+      "src/plugin-adapters/ocharts/ChartPresentationAdapter.cpp": {
+        "bytes": 6274,
+        "sha256": "db1968182d895e160ea724e9dfb3bfc1221848e61d3159c6678dc5ad5776bda3",
+        "representation": "CRLF"
+      },
+      "src/plugin-adapters/ocharts/BindingState.h": {
+        "bytes": 4088,
+        "sha256": "c10e46310dc72621d3fac2ac272ed282aab1feb5c565db412ebb2c23062fc870",
+        "representation": "CRLF"
+      },
+      "src/plugin-adapters/ocharts/PointStyleObservation.h": {
+        "bytes": 1532,
+        "sha256": "7c11b25cc4912f0ff5ba06bf918efc27d8c71954ea909ed73befe42e898e0ae2",
+        "representation": "CRLF"
+      },
+      "patches/opencpn-5.12.4-xnav.patch": {
+        "bytes": 40721,
+        "sha256": "dfbacadf42502d1d0366745b3a187d256e620b0d2ea7dba9e8912c46e999e0b3",
+        "representation": "Git"
+      },
+      ".github/workflows/opennav-baseline.yml": {
+        "bytes": 51602,
+        "sha256": "d168f7a5273923de04402e86deee2465d06099a9a9c9bae27c3ab4e20598bbc2",
+        "representation": "CRLF"
+      }
+    }
+  },
+  "skippedGates": [
+    {
+      "number": 13,
+      "name": "Preserve failed native chart interaction evidence"
+    },
+    {
+      "number": 16,
+      "name": "Preserve first fixture failure before independent display checks"
+    },
+    {
+      "number": 20,
+      "name": "Preserve failed production transcript before independent display checks"
+    },
+    {
+      "number": 22,
+      "name": "Preserve failed private-module check before independent display checks"
+    },
+    {
+      "number": 26,
+      "name": "Preserve failed portable interaction evidence immediately"
+    },
+    {
+      "number": 30,
+      "name": "Preserve failed DPI interaction evidence immediately"
+    },
+    {
+      "number": 32,
+      "name": "Require same-run restart qualification before delivering any product artifact"
+    },
+    {
+      "number": 33,
+      "name": "Verify exact restart qualification identity"
+    },
+    {
+      "number": 34,
+      "name": "Prepare development boat review after native functional gates"
+    },
+    {
+      "number": 35,
+      "name": "Upload development review with endurance qualification pending"
+    },
+    {
+      "number": 36,
+      "name": "Apply native endurance policy (explicit user-directed skip)"
+    },
+    {
+      "number": 37,
+      "name": "Collect tested development boat-test downloads and hashes"
+    },
+    {
+      "number": 38,
+      "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02"
+    }
+  ],
+  "packageEligibility": false,
+  "recordedRecoveryPackageSHA256": "18fbab979dbc2f73042b62a18fce12594152d89eb939f103efcc67b678f21c33",
+  "recordedSetupSHA256": "735d035261438ce29c3e00893bf91395db8f6411750b86a8bb33e4ec79e4cfb7",
+  "payloadHashesIndependentlyRecomputed": false,
+  "endurance": "Policy step skipped after installer failure; no native soak/results.json receipt in this artifact.",
+  "compactInstallerFailure": {
+    "api": {
+      "id": 11304975518,
+      "name": "windows-installer-failure-55ef51e4944e8570f6a391dad20b0db8447a7443",
+      "size_in_bytes": 571655,
+      "url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/11304975518",
+      "archive_download_url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/11304975518/zip",
+      "expired": false,
+      "created_at": "2026-10-04T13:39:02Z",
+      "expires_at": "2027-01-02T11:37:38Z",
+      "updated_at": "2026-10-04T13:39:02Z",
+      "digest": "sha256:10b2b26391bab2ce33631f8891f29ecee087c6531a0486dcdd650a258fcf8b6c",
+      "workflow_run": {
+        "id": 37199379614,
+        "repository_id": 864043804,
+        "head_repository_id": 864043804,
+        "head_branch": "opennav-x-beta2-ui",
+        "head_sha": "55ef51e4944e8570f6a391dad20b0db8447a7443"
+      }
+    },
+    "localArchiveBytes": 571655,
+    "localArchiveSHA256": "10b2b26391bab2ce33631f8891f29ecee087c6531a0486dcdd650a258fcf8b6c",
+    "entries": 121,
+    "CRC": "all passed",
+    "safePaths": "verified",
+    "membersIdenticalToFinal": 121
+  },
+  "selectedOriginalReports": {
+    "count": 299,
+    "bytes": 434684,
+    "sha256": "4a82bf12f54d48d0017f14e3e74c8728cf813475e9957fbe6bccdcdc01e3e22d",
+    "members": {
+      "build/production-windows/CMakeCache.txt": {
+        "bytes": 95268,
+        "sha256": "c35e89e9cb821aabbeeb26c9ad6c80dd9a21e8cf2be8997dbcfb598b9bcdfdd9"
+      },
+      "build/xnav-windows/CMakeCache.txt": {
+        "bytes": 95127,
+        "sha256": "40c6a42861ea72c86f7ca03564bec86d549b504f2210ae4c7fd1a3cadd67e361"
+      },
+      "evidence/local/ais-native-runtime/openssl-version.log": {
+        "bytes": 833,
+        "sha256": "9462ad4ba27d216e3817610b9b8c7d96a4072f64ba659f8d2fa11040ccd58172"
+      },
+      "evidence/local/ais-native-runtime/provider.log": {
+        "bytes": 2620,
+        "sha256": "1124d6cdc4ed2b5bb9ab259bb32664f01cf346dd3f81c55759b6b24dbdd8ff47"
+      },
+      "evidence/local/ais-native-runtime/report.json": {
+        "bytes": 190684,
+        "sha256": "ba6d6268f33ffdb4636ba7a867f78006d7aef3a6fed9c422d083012eca1d0822"
+      },
+      "evidence/local/ais-native-runtime/same-job-receipt.json": {
+        "bytes": 43729,
+        "sha256": "cf5161fe6895809e7deb1bd99378e0fc8fade3fa377375e224976383ae2c307f"
+      },
+      "evidence/local/ais-native-runtime/session.log": {
+        "bytes": 27,
+        "sha256": "403d5b5a86828321936cc288c0d8938696ae4771ea42175b498556f75248af66"
+      },
+      "evidence/local/ais-native-runtime/transport.log": {
+        "bytes": 1412,
+        "sha256": "5e3c665083cca4724c7db8f35789abbf508438b3475ccdcbda80bbac271a3807"
+      },
+      "evidence/local/boat-input-results.json": {
+        "bytes": 1958,
+        "sha256": "1be514ddf7b3cc2b096072031ed1192c14372c6cbc4bec136872c5bc0fab36c2"
+      },
+      "evidence/local/charts-results.json": {
+        "bytes": 58500,
+        "sha256": "3c2ea4ad3b230cd332510c4b4a83b3d2080f1da6b7a17230fc0622aef6412557"
+      },
+      "evidence/local/downloader-trust-windows/downloader-expired.process.json": {
+        "bytes": 124,
+        "sha256": "d0d31d6e3844fd7da6328e2bb59ee91e5e6a6304712120021d51ed28fd9343aa"
+      },
+      "evidence/local/downloader-trust-windows/downloader-expired.stderr.txt": {
+        "bytes": 438,
+        "sha256": "94c3acc795f7ddf7ed34653c6e1b6c978d8f7b9017c5428f869359b2ecdc5c0c"
+      },
+      "evidence/local/downloader-trust-windows/downloader-expired.stdout.txt": {
+        "bytes": 236,
+        "sha256": "48aec95ffe670d172890db3f2a708c861a32f7224d3d856a92ed6fd6f1e6b35e"
+      },
+      "evidence/local/downloader-trust-windows/downloader-http_downgrade.process.json": {
+        "bytes": 124,
+        "sha256": "474ee620c23dacd21996a48ebe600694792197a66237ceae9d1e707921001612"
+      },
+      "evidence/local/downloader-trust-windows/downloader-http_downgrade.stderr.txt": {
+        "bytes": 416,
+        "sha256": "7e00b1a6c5d9513356175854a7591d7a10187ad50f9c15290f18fe2a17092c0f"
+      },
+      "evidence/local/downloader-trust-windows/downloader-http_downgrade.stdout.txt": {
+        "bytes": 182,
+        "sha256": "a4f1442641f5031fb2827dde1b04e0b6b41aec4cce769ec338d505a448984209"
+      },
+      "evidence/local/downloader-trust-windows/downloader-https_redirect.process.json": {
+        "bytes": 124,
+        "sha256": "fd0e494ac5148ac9507817251177322b4b8a66148722f23cbd1cedf153a49e91"
+      },
+      "evidence/local/downloader-trust-windows/downloader-https_redirect.stderr.txt": {
+        "bytes": 302,
+        "sha256": "51f52b2988de50f239e017ef751e95daa6668323f8cf32714b84c4a77db1344f"
+      },
+      "evidence/local/downloader-trust-windows/downloader-https_redirect.stdout.txt": {
+        "bytes": 100,
+        "sha256": "276d555549bfa57017e80d9f42bf6bae229317be8e2c1095d24dc89cab39ef65"
+      },
+      "evidence/local/downloader-trust-windows/downloader-initial_http.process.json": {
+        "bytes": 124,
+        "sha256": "12dc0894c36d7a862ff70e9981e382ebaefbe5c3896dfd130585ee77e08333f8"
+      },
+      "evidence/local/downloader-trust-windows/downloader-initial_http.stderr.txt": {
+        "bytes": 239,
+        "sha256": "441c1360c24534086c0e32809d11787ae1ed18d0c8ef9e3e2d8b08f4a9f1f81d"
+      },
+      "evidence/local/downloader-trust-windows/downloader-initial_http.stdout.txt": {
+        "bytes": 168,
+        "sha256": "1910178d98da49b1691e45286fbb3e51b63cdb82b69e17126198a37a150617a9"
+      },
+      "evidence/local/downloader-trust-windows/downloader-local_file_redirect.process.json": {
+        "bytes": 124,
+        "sha256": "cce09a3fedfb8501909a839878de964fc87eae46060d3dc2606bec572bd7fff1"
+      },
+      "evidence/local/downloader-trust-windows/downloader-local_file_redirect.stderr.txt": {
+        "bytes": 418,
+        "sha256": "37b42e9a6c24ba35236e7c9f32c8089740f156d2d70c66bc9bdb8b5b3d826170"
+      },
+      "evidence/local/downloader-trust-windows/downloader-local_file_redirect.stdout.txt": {
+        "bytes": 182,
+        "sha256": "9c0bf706facaa1982845cadbc48ba9864b0a55113a93be8743dece131df9aff9"
+      },
+      "evidence/local/downloader-trust-windows/downloader-partial_transfer.process.json": {
+        "bytes": 124,
+        "sha256": "b0ff64d36dace5632a9d9a0ec1711a5b65171c92e4d03311f12f200d0dbdde06"
+      },
+      "evidence/local/downloader-trust-windows/downloader-partial_transfer.stderr.txt": {
+        "bytes": 471,
+        "sha256": "729833a4146d7040586409e92cb75181d82863f97c8dae887af4f385b0ac4a48"
+      },
+      "evidence/local/downloader-trust-windows/downloader-partial_transfer.stdout.txt": {
+        "bytes": 201,
+        "sha256": "9259bca83ce3ac45bdb3e41134c60fa70900e24116bfca89f4cc58ef83bdaa85"
+      },
+      "evidence/local/downloader-trust-windows/downloader-trust_removed.process.json": {
+        "bytes": 124,
+        "sha256": "ba88ced4dd832ade8d330e959c7428693df2eaa4a1f0a1c2d772748e85a7760f"
+      },
+      "evidence/local/downloader-trust-windows/downloader-trust_removed.stderr.txt": {
+        "bytes": 453,
+        "sha256": "8479a82ac75565dfe44717af99bd7c1594430c844f58b1825ce36fdd7779dec8"
+      },
+      "evidence/local/downloader-trust-windows/downloader-trust_removed.stdout.txt": {
+        "bytes": 266,
+        "sha256": "71fa3f86c728287e7572107e0d3d5408d6aa09c8dc2cfbc23eb18fd9d6d78143"
+      },
+      "evidence/local/downloader-trust-windows/downloader-untrusted.process.json": {
+        "bytes": 123,
+        "sha256": "1e9aa53022bfd1e6acbe674a8df86381f7bd8e0e1e6dbeb658249f98c166c993"
+      },
+      "evidence/local/downloader-trust-windows/downloader-untrusted.stderr.txt": {
+        "bytes": 453,
+        "sha256": "8b79955f3fb3961fbb9e523047550600b8b6f007b691b81496c941b6cef86fc2"
+      },
+      "evidence/local/downloader-trust-windows/downloader-untrusted.stdout.txt": {
+        "bytes": 266,
+        "sha256": "71fa3f86c728287e7572107e0d3d5408d6aa09c8dc2cfbc23eb18fd9d6d78143"
+      },
+      "evidence/local/downloader-trust-windows/downloader-valid.process.json": {
+        "bytes": 124,
+        "sha256": "b968af52a46d5fe20d61fd17814f9480fc33f6c630b38f197f4c0d59935e13a8"
+      },
+      "evidence/local/downloader-trust-windows/downloader-valid.stderr.txt": {
+        "bytes": 301,
+        "sha256": "006b711478ea75bd8b38cb6fdb8549c598eeee9f73c0485116c376666dcd017a"
+      },
+      "evidence/local/downloader-trust-windows/downloader-valid.stdout.txt": {
+        "bytes": 100,
+        "sha256": "276d555549bfa57017e80d9f42bf6bae229317be8e2c1095d24dc89cab39ef65"
+      },
+      "evidence/local/downloader-trust-windows/downloader-valid_unrelated_cwd.process.json": {
+        "bytes": 123,
+        "sha256": "9bb009fd6b9ca3ca4d9cb6d31a44a4988f317825891728a26f89793843be8d32"
+      },
+      "evidence/local/downloader-trust-windows/downloader-valid_unrelated_cwd.stderr.txt": {
+        "bytes": 301,
+        "sha256": "0fa6d64c0c7f2ce762eceda7846478367102bd4bd512695e0c702f4a0c51350a"
+      },
+      "evidence/local/downloader-trust-windows/downloader-valid_unrelated_cwd.stdout.txt": {
+        "bytes": 100,
+        "sha256": "276d555549bfa57017e80d9f42bf6bae229317be8e2c1095d24dc89cab39ef65"
+      },
+      "evidence/local/downloader-trust-windows/downloader-write_exception.process.json": {
+        "bytes": 124,
+        "sha256": "7662bf9ba8a5a22ac13475404eb5ac31f58d1bf85d60fbd375c6e79fad76f499"
+      },
+      "evidence/local/downloader-trust-windows/downloader-write_exception.stderr.txt": {
+        "bytes": 431,
+        "sha256": "7f171f1f03012ba2644678b1b24fbdf64da9b32062b68fd24c93847be40992fb"
+      },
+      "evidence/local/downloader-trust-windows/downloader-write_exception.stdout.txt": {
+        "bytes": 161,
+        "sha256": "8c4705126b9103616bc1787e6c02e541b3424f66e6aea64619d14fd367cb2132"
+      },
+      "evidence/local/downloader-trust-windows/downloader-wrong_host.process.json": {
+        "bytes": 124,
+        "sha256": "b7cf8b252c55677b3b9d4e328111e9d743ab9523fe1bedd0c84c112602f66401"
+      },
+      "evidence/local/downloader-trust-windows/downloader-wrong_host.stderr.txt": {
+        "bytes": 451,
+        "sha256": "4931aff9ad13f70645728ca0e26ba0dedfa98f8e5ca8ebacc84ed5ab30a2d84f"
+      },
+      "evidence/local/downloader-trust-windows/downloader-wrong_host.stdout.txt": {
+        "bytes": 262,
+        "sha256": "482175a0e81418462d8456d00697e6bd4db1cc30ff66171953ea75d839a4b981"
+      },
+      "evidence/local/downloader-trust-windows/expired.json": {
+        "bytes": 826,
+        "sha256": "faa5044704d0e8dace905c332f3984783e517b61781121b1e8ff9d3b288de28c"
+      },
+      "evidence/local/downloader-trust-windows/http_downgrade.json": {
+        "bytes": 761,
+        "sha256": "0daaf9c7f3f70dd0f4e2d9d37408f37cee6df7e517d61bcfb520ec95a9739868"
+      },
+      "evidence/local/downloader-trust-windows/https_redirect.json": {
+        "bytes": 556,
+        "sha256": "2292dd3d65500b14badcb0d5d3eaaf67c932ad12d4317e4a82423e12fa3c6bc5"
+      },
+      "evidence/local/downloader-trust-windows/initial_http.json": {
+        "bytes": 558,
+        "sha256": "d9c62a79de0b2d2bbfbab9742440a32745a26ed96f85dced6b8a5a1028f2f114"
+      },
+      "evidence/local/downloader-trust-windows/local_file_redirect.json": {
+        "bytes": 768,
+        "sha256": "2ba50244445be46a410eda268a6a6c4e11af9c0bc6c72e81dceb6b85c23b96cf"
+      },
+      "evidence/local/downloader-trust-windows/owned-ca-import.process.json": {
+        "bytes": 124,
+        "sha256": "8ea836897fa09b11e92a97ced7e8e8c35430ff909b5ef54e20b26dd079706dae"
+      },
+      "evidence/local/downloader-trust-windows/owned-ca-import.stderr.txt": {
+        "bytes": 2,
+        "sha256": "7eb70257593da06f682a3ddda54a9d260d4fc514f645237f5ca74b08f8da61a6"
+      },
+      "evidence/local/downloader-trust-windows/owned-ca-import.stdout.txt": {
+        "bytes": 189,
+        "sha256": "84ad8432796a685c8981d5d401e9663bc2e738e9f3d33a6042702c88dcb3c9be"
+      },
+      "evidence/local/downloader-trust-windows/partial_transfer.json": {
+        "bytes": 832,
+        "sha256": "af2c95eadc16bd2f158facca6bb0047a47d4b6189e2c9021dab6e7db2514de3e"
+      },
+      "evidence/local/downloader-trust-windows/prerequisites.json": {
+        "bytes": 8410,
+        "sha256": "5e46c15fe8779f11d83566e2e0df5978dae2a4bb2f7abb84f3ef7dcf78015bc8"
+      },
+      "evidence/local/downloader-trust-windows/progress.jsonl": {
+        "bytes": 11270,
+        "sha256": "95e4e4873802bd89cc226e6a3fa7fa3c5b0b7a97083701f13bd8b9691d176c9b"
+      },
+      "evidence/local/downloader-trust-windows/summary.json": {
+        "bytes": 16955,
+        "sha256": "d7861957314bf77a6e73fc73efbc0382446e2a2a909b254750d8a779dc886855"
+      },
+      "evidence/local/downloader-trust-windows/trust_removed.json": {
+        "bytes": 877,
+        "sha256": "40a039264bf05baf1b5563a169987b055280b18c437278d4fbb2af93a8d1832f"
+      },
+      "evidence/local/downloader-trust-windows/untrusted.json": {
+        "bytes": 873,
+        "sha256": "f80e19f0f5468178a9a8ec22c150d1391d81babd813d5fd5f9e86d628a7df50b"
+      },
+      "evidence/local/downloader-trust-windows/valid.json": {
+        "bytes": 546,
+        "sha256": "3d1da3511d6f763743cd36d6cf8dfaaee9e9f81577212ef700d89d5dff87da46"
+      },
+      "evidence/local/downloader-trust-windows/valid_unrelated_cwd.json": {
+        "bytes": 560,
+        "sha256": "fd01cf44e9d06413b17cac94de9d8c67755509b3558d9615903019c4b0320b9d"
+      },
+      "evidence/local/downloader-trust-windows/write_exception.json": {
+        "bytes": 751,
+        "sha256": "366e6b0a3edc7ae120dc7c09f76eebb42f57b5b0b4d4b166e5a1cefe355f7bef"
+      },
+      "evidence/local/downloader-trust-windows/wrong_host.json": {
+        "bytes": 868,
+        "sha256": "39c673cf03e2eb91d4723e451ba4496b8aea0633c427d9bd4fa1bedc00c0f26e"
+      },
+      "evidence/local/downloader-trust-windows/wxcurl-expired.json": {
+        "bytes": 923,
+        "sha256": "90a92c75cd35895789c7033b6763099cd9fe0b4e575d20e8a233afe82a62e19e"
+      },
+      "evidence/local/downloader-trust-windows/wxcurl-expired.process.json": {
+        "bytes": 124,
+        "sha256": "a548a4caf5aaccacec71be5ed7f5d61160ea6e02f1925554273c18cc1d3c21e8"
+      },
+      "evidence/local/downloader-trust-windows/wxcurl-expired.stderr.txt": {
+        "bytes": 252,
+        "sha256": "28280401d740f0b1afceed6b3c6359fd118ebf37ed24ab138cf29315ac638220"
+      },
+      "evidence/local/downloader-trust-windows/wxcurl-expired.stdout.txt": {
+        "bytes": 353,
+        "sha256": "b09c8fae9522ee4c878482361acd5664c3d5b5e5e2db66585d8308ddd249f137"
+      },
+      "evidence/local/downloader-trust-windows/wxcurl-http_downgrade.json": {
+        "bytes": 766,
+        "sha256": "27333bc7db160142dee63655c478c53fa053a78441013398e6be33daa8ca6556"
+      },
+      "evidence/local/downloader-trust-windows/wxcurl-http_downgrade.process.json": {
+        "bytes": 124,
+        "sha256": "6583f3484252a89bddfaf8dd01a81cb8532c6a5a8ca0382e7958f61cfbf4914d"
+      },
+      "evidence/local/downloader-trust-windows/wxcurl-http_downgrade.stderr.txt": {
+        "bytes": 252,
+        "sha256": "28280401d740f0b1afceed6b3c6359fd118ebf37ed24ab138cf29315ac638220"
+      },
+      "evidence/local/downloader-trust-windows/wxcurl-http_downgrade.stdout.txt": {
+        "bytes": 243,
+        "sha256": "0a2663e74de26a2bdc332f5a73bdb23d81f128fe2b26f664f5d4630168d647ae"
+      },
+      "evidence/local/downloader-trust-windows/wxcurl-https_redirect.json": {
+        "bytes": 630,
+        "sha256": "9761fe2fa8badb1d7d129194bc0e5111c0ae98e42a1c17b3e371f2f9bde9da12"
+      },
+      "evidence/local/downloader-trust-windows/wxcurl-https_redirect.process.json": {
+        "bytes": 124,
+        "sha256": "6e7e0716cdd59b4ac2b902a5ac60340e6e9a5fcc0cdbbec176b45f26b5f60b90"
+      },
+      "evidence/local/downloader-trust-windows/wxcurl-https_redirect.stderr.txt": {
+        "bytes": 252,
+        "sha256": "28280401d740f0b1afceed6b3c6359fd118ebf37ed24ab138cf29315ac638220"
+      },
+      "evidence/local/downloader-trust-windows/wxcurl-https_redirect.stdout.txt": {
+        "bytes": 136,
+        "sha256": "db1a84283d112d5946712c1336728795b91f7bf012c07f22d4dff245efe53b69"
+      },
+      "evidence/local/downloader-trust-windows/wxcurl-local_file_redirect.json": {
+        "bytes": 771,
+        "sha256": "8fb57e40dadfd3f18cf9a29ab639ad07da7ee2846463441027c6102edabae0f8"
+      },
+      "evidence/local/downloader-trust-windows/wxcurl-local_file_redirect.process.json": {
+        "bytes": 124,
+        "sha256": "96ee120ce55893ea6d864d596136ccff8c11fd78d7ef4cf5aa066da99b695361"
+      },
+      "evidence/local/downloader-trust-windows/wxcurl-local_file_redirect.stderr.txt": {
+        "bytes": 252,
+        "sha256": "28280401d740f0b1afceed6b3c6359fd118ebf37ed24ab138cf29315ac638220"
+      },
+      "evidence/local/downloader-trust-windows/wxcurl-local_file_redirect.stdout.txt": {
+        "bytes": 243,
+        "sha256": "327507d75c747845f59c359bfb4c24b0a2bd5503fbc70740c976a65a739c1ac4"
+      },
+      "evidence/local/downloader-trust-windows/wxcurl-trust_removed.json": {
+        "bytes": 959,
+        "sha256": "0f32b6e590a77002f9ad2db9fc161938082f74e6ca3f6a35989485f7fe119d2f"
+      },
+      "evidence/local/downloader-trust-windows/wxcurl-trust_removed.process.json": {
+        "bytes": 124,
+        "sha256": "69fad845037d44036e86c5ce97da4bac7c69775b3a18fe54edae0a59a96c1801"
+      },
+      "evidence/local/downloader-trust-windows/wxcurl-trust_removed.stderr.txt": {
+        "bytes": 252,
+        "sha256": "28280401d740f0b1afceed6b3c6359fd118ebf37ed24ab138cf29315ac638220"
+      },
+      "evidence/local/downloader-trust-windows/wxcurl-trust_removed.stdout.txt": {
+        "bytes": 383,
+        "sha256": "614a07f8c44f79bbdcb6877623a457e21f42495f583f0dd515f2131866677e7a"
+      },
+      "evidence/local/downloader-trust-windows/wxcurl-untrusted.json": {
+        "bytes": 955,
+        "sha256": "bdd9d61e6f8ca0d5263b84110bacc25c8a4bb0b7c8c329d5717d443f59b64121"
+      },
+      "evidence/local/downloader-trust-windows/wxcurl-untrusted.process.json": {
+        "bytes": 124,
+        "sha256": "e6c20a118df892e9c43685eb7777d8fae4d831aa791001c4d0a66612290c3762"
+      },
+      "evidence/local/downloader-trust-windows/wxcurl-untrusted.stderr.txt": {
+        "bytes": 252,
+        "sha256": "28280401d740f0b1afceed6b3c6359fd118ebf37ed24ab138cf29315ac638220"
+      },
+      "evidence/local/downloader-trust-windows/wxcurl-untrusted.stdout.txt": {
+        "bytes": 383,
+        "sha256": "614a07f8c44f79bbdcb6877623a457e21f42495f583f0dd515f2131866677e7a"
+      },
+      "evidence/local/downloader-trust-windows/wxcurl-valid.json": {
+        "bytes": 621,
+        "sha256": "6d92bf5acc5c0ae277e46d22619f3b6b59c3e81d2ca57f361daeea5c704d4ac1"
+      },
+      "evidence/local/downloader-trust-windows/wxcurl-valid.process.json": {
+        "bytes": 124,
+        "sha256": "f590ca97a647f02db13f6cb8693a4327532b1c2457dd57ce7ea4829cb946bea7"
+      },
+      "evidence/local/downloader-trust-windows/wxcurl-valid.stderr.txt": {
+        "bytes": 252,
+        "sha256": "28280401d740f0b1afceed6b3c6359fd118ebf37ed24ab138cf29315ac638220"
+      },
+      "evidence/local/downloader-trust-windows/wxcurl-valid.stdout.txt": {
+        "bytes": 136,
+        "sha256": "db1a84283d112d5946712c1336728795b91f7bf012c07f22d4dff245efe53b69"
+      },
+      "evidence/local/downloader-trust-windows/wxcurl-valid_unrelated_cwd.json": {
+        "bytes": 635,
+        "sha256": "10bd16825ce82018f766fdd72527c7872cf7d56ad7a878e5fecbc19d8f7ef287"
+      },
+      "evidence/local/downloader-trust-windows/wxcurl-valid_unrelated_cwd.process.json": {
+        "bytes": 124,
+        "sha256": "bac5f2bc003db93d8a8d8034483057ce08983ffcdc59b535f71da5b22d1a5eda"
+      },
+      "evidence/local/downloader-trust-windows/wxcurl-valid_unrelated_cwd.stderr.txt": {
+        "bytes": 252,
+        "sha256": "28280401d740f0b1afceed6b3c6359fd118ebf37ed24ab138cf29315ac638220"
+      },
+      "evidence/local/downloader-trust-windows/wxcurl-valid_unrelated_cwd.stdout.txt": {
+        "bytes": 136,
+        "sha256": "db1a84283d112d5946712c1336728795b91f7bf012c07f22d4dff245efe53b69"
+      },
+      "evidence/local/downloader-trust-windows/wxcurl-wrong_host.json": {
+        "bytes": 952,
+        "sha256": "1bc50cdf6d9353b20124b88659ed4d47d8d722a47f01e6955a63206c2616f97a"
+      },
+      "evidence/local/downloader-trust-windows/wxcurl-wrong_host.process.json": {
+        "bytes": 124,
+        "sha256": "935eac57e12197ccad16131de461ef33b91001005630aa51997360540aae7022"
+      },
+      "evidence/local/downloader-trust-windows/wxcurl-wrong_host.stderr.txt": {
+        "bytes": 252,
+        "sha256": "28280401d740f0b1afceed6b3c6359fd118ebf37ed24ab138cf29315ac638220"
+      },
+      "evidence/local/downloader-trust-windows/wxcurl-wrong_host.stdout.txt": {
+        "bytes": 379,
+        "sha256": "b27e2356153aa4d73cca6359277e8e089463104ff61e5d0c5b1083e3e6fb9856"
+      },
+      "evidence/local/dpi-results.json": {
+        "bytes": 122956,
+        "sha256": "1077742a0920bd4a72579fe3c5ee7bb0b923bb966c12e572af576a6a5637a949"
+      },
+      "evidence/local/installer-00-Preflight.json": {
+        "bytes": 346,
+        "sha256": "01928fc15ed097884163100766eb16ad8bcda26ad25238611e29006d8c4075a3"
+      },
+      "evidence/local/installer-00-clean-candidate.json": {
+        "bytes": 198,
+        "sha256": "77cb0d565786b2bfca0ee39559477390e1c02b3ce36b1d17cce4ec5b49052789"
+      },
+      "evidence/local/installer-00-prior-test-version-welcome.json": {
+        "bytes": 209,
+        "sha256": "9d0f5c6cf707cdf18a824f981a83ad8d46cb8a86afce1819a13243ff495d390b"
+      },
+      "evidence/local/installer-00-prior-test-version.json": {
+        "bytes": 201,
+        "sha256": "d097417afeccb7a941c68bac4fa3b953a08d41484afb7b7af55934efe05b6054"
+      },
+      "evidence/local/installer-01-Install.json": {
+        "bytes": 327,
+        "sha256": "58073701c6c25258f025a25e1db6db00a7cf661074d191adfe90929beac8364c"
+      },
+      "evidence/local/installer-01-xnav-welcome.json": {
+        "bytes": 209,
+        "sha256": "9d0f5c6cf707cdf18a824f981a83ad8d46cb8a86afce1819a13243ff495d390b"
+      },
+      "evidence/local/installer-01-xnav.json": {
+        "bytes": 198,
+        "sha256": "77cb0d565786b2bfca0ee39559477390e1c02b3ce36b1d17cce4ec5b49052789"
+      },
+      "evidence/local/installer-02-Install.json": {
+        "bytes": 209,
+        "sha256": "882e595c461e31491d5fb9b2441b9621be055964a101460e5e1c0957a139ecc1"
+      },
+      "evidence/local/installer-02-legacy.json": {
+        "bytes": 205,
+        "sha256": "4a1785c6eb7daa256e33ab4da752eafcb8b4735ef19308bed1fbb4f5254db78f"
+      },
+      "evidence/local/installer-02-safe.json": {
+        "bytes": 208,
+        "sha256": "7d29a0d49599dd6beb3f52db8ba2bcd581343b47edb294944ba7150c4f20ea61"
+      },
+      "evidence/local/installer-03-Install.json": {
+        "bytes": 459,
+        "sha256": "01a3dcbf4bbc8b144e9c98dde5cde9c507eedb9e79a358c1e15fd6465575de0c"
+      },
+      "evidence/local/installer-03-before-switch.json": {
+        "bytes": 198,
+        "sha256": "77cb0d565786b2bfca0ee39559477390e1c02b3ce36b1d17cce4ec5b49052789"
+      },
+      "evidence/local/installer-03-switched-legacy.json": {
+        "bytes": 205,
+        "sha256": "4a1785c6eb7daa256e33ab4da752eafcb8b4735ef19308bed1fbb4f5254db78f"
+      },
+      "evidence/local/installer-04-Install.json": {
+        "bytes": 827,
+        "sha256": "826d3a52c75548a5f7356a4512072f147f544eb5cc613c50533aaac410fddf1f"
+      },
+      "evidence/local/installer-04-returned-xnav.json": {
+        "bytes": 198,
+        "sha256": "77cb0d565786b2bfca0ee39559477390e1c02b3ce36b1d17cce4ec5b49052789"
+      },
+      "evidence/local/installer-05-Install.json": {
+        "bytes": 827,
+        "sha256": "a0b5f9bebb2bc3d89b2a6343db8900a6ab965b49e760e1c8cbb7070ea1987e05"
+      },
+      "evidence/local/installer-06-Rollback.json": {
+        "bytes": 275,
+        "sha256": "f158ab00ebb569a09ff435f4fc72f5bc3140a2e92ea13ee28c5734440a60e3ce"
+      },
+      "evidence/local/installer-07-Install.json": {
+        "bytes": 789,
+        "sha256": "00be0aca52fbe139916cc9318203416bb287f81df6a84326b4508614d4c28b08"
+      },
+      "evidence/local/installer-08-Update.json": {
+        "bytes": 787,
+        "sha256": "0303941cb132caca0bf2f45623f7fd1b1070ccda14c61170d9db0c73dae870dc"
+      },
+      "evidence/local/installer-09-Rollback.json": {
+        "bytes": 663,
+        "sha256": "9e459f16f7ed0e245f08e6532eeaef0211385a1ecab9404763b2d90628907931"
+      },
+      "evidence/local/installer-10-Maintain-Diagnostics.json": {
+        "bytes": 312352,
+        "sha256": "6103bd80e6ca018f045ecc67c29685aa3cfe9a8f5832646a69d9dbeca01823af"
+      },
+      "evidence/local/installer-11-Maintain-Uninstall.json": {
+        "bytes": 373,
+        "sha256": "ac9e9f5b58fddd62c4ef84bc7faac5b79631d9199b197c51621e2e42132a9888"
+      },
+      "evidence/local/installer-12-Install.json": {
+        "bytes": 523,
+        "sha256": "8535fc53aa431f702a0d3cad6ce09a85a50254dbcf81960363b6fd92ccb3e124"
+      },
+      "evidence/local/installer-13-Update.json": {
+        "bytes": 787,
+        "sha256": "9c0972bf298456595c1d8bf2508df8fb18fb63f4ea7cbb645a7d7d8d77efeeed"
+      },
+      "evidence/local/installer-14-Rollback.json": {
+        "bytes": 647,
+        "sha256": "40c609bdeb17fa47f9123a14d94113fe0349da448269ea6d95db4045391755a5"
+      },
+      "evidence/local/installer-15-Maintain-Diagnostics.json": {
+        "bytes": 314870,
+        "sha256": "128405a3d2f52882f7eaf9bdf78bd9784d4aa3b24b640296f9990361625dc83f"
+      },
+      "evidence/local/installer-16-Update.json": {
+        "bytes": 786,
+        "sha256": "2b37ec8fcf8f84733580beae2c901cdd9825751c6f10f0e457ea73fe848109ff"
+      },
+      "evidence/local/installer-17-Repair.json": {
+        "bytes": 882,
+        "sha256": "1c278c5fc32153999e495fab1a100bd033974ca0bd26cd5b1398f3e02a31ac5d"
+      },
+      "evidence/local/installer-18-Repair.json": {
+        "bytes": 787,
+        "sha256": "edd3c0bcf891a4a4e9277dd78e51a3a1121dae0f99084566567b53a4b88fa11c"
+      },
+      "evidence/local/installer-19-Repair.json": {
+        "bytes": 787,
+        "sha256": "87a902e7783bc177c60c98d78934899274712d9b81e8cb0eeba02892963e7821"
+      },
+      "evidence/local/installer-20-Repair.json": {
+        "bytes": 787,
+        "sha256": "66b7807e701174cb246aceb0b463924d027f468de448fa3d678b7a16557ac528"
+      },
+      "evidence/local/installer-21-Repair.json": {
+        "bytes": 787,
+        "sha256": "241fe1f2dc11c75d1c7a4ab9eebae78d50e0123526e5d439b783c44eaf9b0671"
+      },
+      "evidence/local/installer-22-Update.json": {
+        "bytes": 787,
+        "sha256": "9cce1e9a45630eb103f5847a6370aa163cd34225f21a9ff9027c49a8acd91248"
+      },
+      "evidence/local/installer-23-Rollback.json": {
+        "bytes": 288,
+        "sha256": "9e0d021c1a693ebbba2e2deefab78d863215d7256bc333202029a8883cf59c58"
+      },
+      "evidence/local/installer-24-Rollback.json": {
+        "bytes": 300,
+        "sha256": "d2318ed25c3672405573667e48b1916575fb2aeeec6d75bdc3bba052b5c577bf"
+      },
+      "evidence/local/installer-25-Rollback.json": {
+        "bytes": 472,
+        "sha256": "d5d0217de8b39a147c90c8c6f78e5fd9811e494de30363ace71f46905ce7b424"
+      },
+      "evidence/local/installer-26-Update.json": {
+        "bytes": 826,
+        "sha256": "74b8b2d8edee62ab21cc317850976764b823205ffc6f58f89606522b8b6ab86e"
+      },
+      "evidence/local/installer-27-Repair.json": {
+        "bytes": 826,
+        "sha256": "55bae1fd59e281b536bcd53dfc3eae6256670d1ec07653065c1aa5f39e583d6f"
+      },
+      "evidence/local/installer-28-Update.json": {
+        "bytes": 826,
+        "sha256": "f47fae8050987a3396223b2984f4813c907ed00cb1553940d7c832d5de63a5d8"
+      },
+      "evidence/local/installer-29-Repair.json": {
+        "bytes": 826,
+        "sha256": "50dc84152b59110a63549088eac3248d5c63ee8e7920281cb6d89a67fe5348fb"
+      },
+      "evidence/local/installer-30-Update.json": {
+        "bytes": 826,
+        "sha256": "e73e74b3eba2a79c412a8111e73fa19bd5641a8c21ff5014e2d213bb5cfe054a"
+      },
+      "evidence/local/installer-31-Repair.json": {
+        "bytes": 826,
+        "sha256": "2ba97287bfe540d037a6ca22211a668cf566b97fb66f8f7b0b8b00c0fc5512e4"
+      },
+      "evidence/local/installer-32-Update.json": {
+        "bytes": 826,
+        "sha256": "5fafbc61f5849933fc47e4ad7cd7dea322ba1f5401ae7e96a13d407c3abe9b14"
+      },
+      "evidence/local/installer-33-Repair.json": {
+        "bytes": 826,
+        "sha256": "c61817c0edd05d22555e9a68226bd54bafbc3186d83f1450423507f7eed02a15"
+      },
+      "evidence/local/installer-34-Update.json": {
+        "bytes": 592,
+        "sha256": "4a526822465a5fce0fd8f706b21ef5b4f8ae35d23f8cb67bc2209145dc3ca0e0"
+      },
+      "evidence/local/installer-35-Repair.json": {
+        "bytes": 618,
+        "sha256": "cf9a15ff00cd0768239c2270a43c2893d4755baa21420c035117592bbb5fb9e4"
+      },
+      "evidence/local/installer-36-Update.json": {
+        "bytes": 634,
+        "sha256": "eafd26ff0ea540ba582f0914a312abff47802342ff84901a660430cfaa686ea0"
+      },
+      "evidence/local/installer-37-Update.json": {
+        "bytes": 751,
+        "sha256": "3f63ea28f23861715438dd4b331f2a7c862ebccf455a65405c1e6f2c10009484"
+      },
+      "evidence/local/installer-38-Update.json": {
+        "bytes": 604,
+        "sha256": "4f259d6a24e1c9cf092beb81d06ac93eede16c7289990b04537dd93867dd6a18"
+      },
+      "evidence/local/installer-39-damaged-package.json": {
+        "bytes": 232,
+        "sha256": "4d070de521f333cc59e46c34869be0860fc1b8719d88aefc76536864b02cc329"
+      },
+      "evidence/local/installer-40-Update.json": {
+        "bytes": 540,
+        "sha256": "403fdea6891756643eb6d16d007d811b9cd4078198399da6a4c21260b62162f7"
+      },
+      "evidence/local/installer-41-damaged-package.json": {
+        "bytes": 812,
+        "sha256": "6e3e8b49d1e263096c205825ff6257a709a9c609acfb7a71a59ac6357917fe2b"
+      },
+      "evidence/local/installer-lifecycle.json": {
+        "bytes": 13948,
+        "sha256": "56ec3eecff2486bd03654731d73cc2083c99911d6a051a6437143293e8cfadfb"
+      },
+      "evidence/local/installer-loader-selftest.json": {
+        "bytes": 905,
+        "sha256": "9aadf2ffbde08d49f848e2a339c477c3bfd59457190fc41a0e19545d7e14111e"
+      },
+      "evidence/local/installer-maintenance-title.json": {
+        "bytes": 209,
+        "sha256": "caae448bf1caf8c191f77b835ea74c142b1a458085d8f0da907be1ca0c535ade"
+      },
+      "evidence/local/installer-official-prerequisite.json": {
+        "bytes": 38274,
+        "sha256": "e65db1c117c5db94e966a20305671344c8b631df0b3d611f1fc5089ead4bda98"
+      },
+      "evidence/local/installer-prior-beta2-layout.json": {
+        "bytes": 689,
+        "sha256": "9bdbf1ffff5c3639d922e8a5fabeb2735bac0a784ca5c6a90607255762cf1c5d"
+      },
+      "evidence/local/installer-prior-release.json": {
+        "bytes": 587,
+        "sha256": "820b54ef26c71958c9eff17033875cc97c449f134d0299b57e5c64f08b1b92cd"
+      },
+      "evidence/local/installer-skager-pe-brand.json": {
+        "bytes": 3211,
+        "sha256": "fc187f17dda583ee3a53cbef9446fa4ad231df59e2ce4eb2c3b10fd5bea8c663"
+      },
+      "evidence/local/installer-wizard-backup.json": {
+        "bytes": 210,
+        "sha256": "c11de045653a3a6da892abe461072873c98941ac5d7d0dfcffe6d6a0d71ae7d1"
+      },
+      "evidence/local/installer-wizard-installed.json": {
+        "bytes": 211,
+        "sha256": "9b775e6c1e33ab60b02059321bee9f4efebf9348467a5477b329bc71c616109d"
+      },
+      "evidence/local/installer-wizard-options.json": {
+        "bytes": 210,
+        "sha256": "c11de045653a3a6da892abe461072873c98941ac5d7d0dfcffe6d6a0d71ae7d1"
+      },
+      "evidence/local/installer-wizard-ready.json": {
+        "bytes": 210,
+        "sha256": "c11de045653a3a6da892abe461072873c98941ac5d7d0dfcffe6d6a0d71ae7d1"
+      },
+      "evidence/local/installer-wizard-selection.json": {
+        "bytes": 210,
+        "sha256": "c11de045653a3a6da892abe461072873c98941ac5d7d0dfcffe6d6a0d71ae7d1"
+      },
+      "evidence/local/installer-wizard-welcome.json": {
+        "bytes": 210,
+        "sha256": "c11de045653a3a6da892abe461072873c98941ac5d7d0dfcffe6d6a0d71ae7d1"
+      },
+      "evidence/local/instruments-input-results.json": {
+        "bytes": 1845,
+        "sha256": "2176a2d52bff7287da191b119b2132fcb4bbe4fd1b706823e53d4f098deef754"
+      },
+      "evidence/local/mode-cycle-results.json": {
+        "bytes": 5012,
+        "sha256": "d352f4c4a6e33fef2fb1cd7ce54a44b8e8e01cafec32e9c2177d0eb2d8fd4573"
+      },
+      "evidence/local/n2k-input-results.json": {
+        "bytes": 1977,
+        "sha256": "6d68baf9e082babeeff79063fb022897150687547eb9750ea3c67ea06ee9db2b"
+      },
+      "evidence/local/navigation-input-results.json": {
+        "bytes": 8057,
+        "sha256": "5ca2abda95ea069a5eab154ce77e1118d1a7e811ad35c56abbf776c4b9098b9a"
+      },
+      "evidence/local/objects-input-profile/objects-fixture-results.json": {
+        "bytes": 4215,
+        "sha256": "3a123146f5304c15358cb4c6d3c87c303b15d65bbf21711c028a509f8c32e666"
+      },
+      "evidence/local/objects-input-results.json": {
+        "bytes": 26456,
+        "sha256": "89288d3e3ea3a00ddf1c25dc2a110ab023a57bf06570b9ebc8662cea36462567"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/downloader-expired.process.json": {
+        "bytes": 124,
+        "sha256": "7c04f16954824ffcde2a277a56694afeedf240afc90e271f4590ef4670fa8a7b"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/downloader-expired.stderr.txt": {
+        "bytes": 438,
+        "sha256": "2f409dfcd140dc76f95b2e3bb37f4181bfee513d0728c9d091ca59c1aef28ddc"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/downloader-expired.stdout.txt": {
+        "bytes": 236,
+        "sha256": "48aec95ffe670d172890db3f2a708c861a32f7224d3d856a92ed6fd6f1e6b35e"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/downloader-http_downgrade.process.json": {
+        "bytes": 123,
+        "sha256": "506654e8c1c94faf0f3e7efaa219bdae7b711fd15e921ab964d9cb11e7ac8f1a"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/downloader-http_downgrade.stderr.txt": {
+        "bytes": 416,
+        "sha256": "c1137dc2923def3eb35dc72656e543c21e865de00ee2fbb196590cbfc75a0cdf"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/downloader-http_downgrade.stdout.txt": {
+        "bytes": 182,
+        "sha256": "a4f1442641f5031fb2827dde1b04e0b6b41aec4cce769ec338d505a448984209"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/downloader-https_redirect.process.json": {
+        "bytes": 124,
+        "sha256": "aabdb58462a137d316cb74fad334cf1391f06f4a2a0145147eb3207f83a0d63f"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/downloader-https_redirect.stderr.txt": {
+        "bytes": 302,
+        "sha256": "0fc616c11d2a14c2f9f711f7fca64c381d27c509860a5b50754a46c0b6a9518c"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/downloader-https_redirect.stdout.txt": {
+        "bytes": 100,
+        "sha256": "276d555549bfa57017e80d9f42bf6bae229317be8e2c1095d24dc89cab39ef65"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/downloader-initial_http.process.json": {
+        "bytes": 123,
+        "sha256": "99ce7a053acf979a78ccb1f931633e1d00df44e4db481ce6d8404ead2c5e183c"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/downloader-initial_http.stderr.txt": {
+        "bytes": 239,
+        "sha256": "441c1360c24534086c0e32809d11787ae1ed18d0c8ef9e3e2d8b08f4a9f1f81d"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/downloader-initial_http.stdout.txt": {
+        "bytes": 168,
+        "sha256": "1910178d98da49b1691e45286fbb3e51b63cdb82b69e17126198a37a150617a9"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/downloader-local_file_redirect.process.json": {
+        "bytes": 124,
+        "sha256": "194e28014289178826e34f0b7660aa49289bb9a3a4fd71ce00c4d99d50a343dc"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/downloader-local_file_redirect.stderr.txt": {
+        "bytes": 418,
+        "sha256": "bb29d0462191a300d493db0041b04debf1e6824c8f0035cec720ce85dacdb2bd"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/downloader-local_file_redirect.stdout.txt": {
+        "bytes": 182,
+        "sha256": "9c0bf706facaa1982845cadbc48ba9864b0a55113a93be8743dece131df9aff9"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/downloader-partial_transfer.process.json": {
+        "bytes": 124,
+        "sha256": "50a88747c511e182d4fcf14e0a9e193faff383112222cdcee1b0b9033160995c"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/downloader-partial_transfer.stderr.txt": {
+        "bytes": 471,
+        "sha256": "b9d1115c113e006f05320f3d643b93365f014dffad60e2fe471620272bc6db83"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/downloader-partial_transfer.stdout.txt": {
+        "bytes": 201,
+        "sha256": "9259bca83ce3ac45bdb3e41134c60fa70900e24116bfca89f4cc58ef83bdaa85"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/downloader-trust_removed.process.json": {
+        "bytes": 124,
+        "sha256": "63cd014dfd6c7c3df10983d0e033d69d95c01e96bc20bb732832844e344b289a"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/downloader-trust_removed.stderr.txt": {
+        "bytes": 453,
+        "sha256": "e6d0df483af3133aee4e4c27d6d9610647079b44074bb18e90bcd9766a8912ce"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/downloader-trust_removed.stdout.txt": {
+        "bytes": 266,
+        "sha256": "71fa3f86c728287e7572107e0d3d5408d6aa09c8dc2cfbc23eb18fd9d6d78143"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/downloader-untrusted.process.json": {
+        "bytes": 124,
+        "sha256": "ddff9570c4ba84fbaf0a43dd4a51640f01fb0b5094c541208bd194e6d71e5619"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/downloader-untrusted.stderr.txt": {
+        "bytes": 453,
+        "sha256": "0677e578e96d055f753de9871d01fa2a15480af25811f7f4eb4526fc4386c335"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/downloader-untrusted.stdout.txt": {
+        "bytes": 266,
+        "sha256": "71fa3f86c728287e7572107e0d3d5408d6aa09c8dc2cfbc23eb18fd9d6d78143"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/downloader-valid.process.json": {
+        "bytes": 124,
+        "sha256": "bbdc70916d746b8138747c4f33387f4e2c4eab740247cf7ce8016f30b2370fe5"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/downloader-valid.stderr.txt": {
+        "bytes": 301,
+        "sha256": "f21617873a8f55c9de5a94e2003e4e297f4b2e5386a4d5d734bdd625a5b57452"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/downloader-valid.stdout.txt": {
+        "bytes": 100,
+        "sha256": "276d555549bfa57017e80d9f42bf6bae229317be8e2c1095d24dc89cab39ef65"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/downloader-valid_unrelated_cwd.process.json": {
+        "bytes": 124,
+        "sha256": "6ab46938647c3cf0ad66dd4612d8981bcf847f52c98635ee23592a086f8affda"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/downloader-valid_unrelated_cwd.stderr.txt": {
+        "bytes": 301,
+        "sha256": "68c9313b09c265a71c4dcc07dcb91913c7949a123ef2190eb44ef7929af87623"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/downloader-valid_unrelated_cwd.stdout.txt": {
+        "bytes": 100,
+        "sha256": "276d555549bfa57017e80d9f42bf6bae229317be8e2c1095d24dc89cab39ef65"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/downloader-write_exception.process.json": {
+        "bytes": 124,
+        "sha256": "52f1846242457c9074afdcd663f337d3dc8b1e101baec52f0de4798212cc8d90"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/downloader-write_exception.stderr.txt": {
+        "bytes": 431,
+        "sha256": "6c308be419396ddf0702a5167c5b9a1398198a2f9665920fb1a1e034da9995cc"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/downloader-write_exception.stdout.txt": {
+        "bytes": 161,
+        "sha256": "8c4705126b9103616bc1787e6c02e541b3424f66e6aea64619d14fd367cb2132"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/downloader-wrong_host.process.json": {
+        "bytes": 124,
+        "sha256": "dba7cde128160df30cc99a9e1cec98343c5571ac17b61a29f148df56037f6e97"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/downloader-wrong_host.stderr.txt": {
+        "bytes": 451,
+        "sha256": "92a8b628426d5b87e124c1c21c01a74da34a753e6afee35c37220889522524f1"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/downloader-wrong_host.stdout.txt": {
+        "bytes": 262,
+        "sha256": "482175a0e81418462d8456d00697e6bd4db1cc30ff66171953ea75d839a4b981"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/expired.json": {
+        "bytes": 826,
+        "sha256": "3a182a3ea41c5ad593e527601cdc5c63f2a2bf3b4e325cfadc6b7289ed40e16d"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/http_downgrade.json": {
+        "bytes": 761,
+        "sha256": "734ab29805b92d35beeda643a673302376b1cfaa5ac8ff5ffc84e4a1881bf5b9"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/https_redirect.json": {
+        "bytes": 556,
+        "sha256": "84e0b24ac35442124ccccac1ba71fc01b3fbfc5ed5ba8430faf048fa133fe386"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/initial_http.json": {
+        "bytes": 558,
+        "sha256": "d9c62a79de0b2d2bbfbab9742440a32745a26ed96f85dced6b8a5a1028f2f114"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/local_file_redirect.json": {
+        "bytes": 768,
+        "sha256": "0676dae7e68820e2d3158410c29f007a23768cb5392a9bb01fd53a6e4d5392b1"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/owned-ca-import.process.json": {
+        "bytes": 124,
+        "sha256": "8146f5e7eeb6d7a570aaea40e941b561721f4459cbf193e9c2491cf468581fdf"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/owned-ca-import.stderr.txt": {
+        "bytes": 2,
+        "sha256": "7eb70257593da06f682a3ddda54a9d260d4fc514f645237f5ca74b08f8da61a6"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/owned-ca-import.stdout.txt": {
+        "bytes": 189,
+        "sha256": "84ad8432796a685c8981d5d401e9663bc2e738e9f3d33a6042702c88dcb3c9be"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/partial_transfer.json": {
+        "bytes": 832,
+        "sha256": "536612c0007d5162083c3e612e284b6475e50fb4232317c8433dca2d76e22115"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/prerequisites.json": {
+        "bytes": 8518,
+        "sha256": "2b9459310dbe3e3de73c30557a4c645e549640a56d1c867264323afc402d8c16"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/progress.jsonl": {
+        "bytes": 11270,
+        "sha256": "f696e03c8c26407751cd4cb4b10ee70632903b959584d21e43d8d8cb49c935fe"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/summary.json": {
+        "bytes": 16955,
+        "sha256": "9f8a875ddb1f86460dd360330e788505c876010cde86eddc1a31dff6905f5916"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/trust_removed.json": {
+        "bytes": 877,
+        "sha256": "692c06985c45fb8f40dd596bb5daf2eee59d3c3d8d6193d76635f2023bc5c6eb"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/untrusted.json": {
+        "bytes": 873,
+        "sha256": "dc2fc5e6dd8a22f8874798cd66caae271f8963dd1386d3956ed045fa336e3785"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/valid.json": {
+        "bytes": 546,
+        "sha256": "2eac1c6cd600b862e84a4de6849785ebf18ca456661901a1a7c867ae39dfa1de"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/valid_unrelated_cwd.json": {
+        "bytes": 560,
+        "sha256": "1dc71446c972b1abdb42ead01aaba0830ac8cda9abc23f584956021a913d3549"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/write_exception.json": {
+        "bytes": 751,
+        "sha256": "d13012d4273e7e7c2ca24790c4de8fe0f9e619b5d610bcf0498828b2393f5223"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/wrong_host.json": {
+        "bytes": 868,
+        "sha256": "50c4ebabe39814f8f67fd87c12e1dcc636e907172b90e4e5ffb22d576fa07bc6"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/wxcurl-expired.json": {
+        "bytes": 923,
+        "sha256": "90a92c75cd35895789c7033b6763099cd9fe0b4e575d20e8a233afe82a62e19e"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/wxcurl-expired.process.json": {
+        "bytes": 124,
+        "sha256": "753abc4b6efbe56844c241797860a8114fa61d39a9a476c34dfbb052fbeb0529"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/wxcurl-expired.stderr.txt": {
+        "bytes": 252,
+        "sha256": "28280401d740f0b1afceed6b3c6359fd118ebf37ed24ab138cf29315ac638220"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/wxcurl-expired.stdout.txt": {
+        "bytes": 353,
+        "sha256": "b09c8fae9522ee4c878482361acd5664c3d5b5e5e2db66585d8308ddd249f137"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/wxcurl-http_downgrade.json": {
+        "bytes": 766,
+        "sha256": "27333bc7db160142dee63655c478c53fa053a78441013398e6be33daa8ca6556"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/wxcurl-http_downgrade.process.json": {
+        "bytes": 124,
+        "sha256": "1359dff86df09e113a8cd1265b850cb58a847d92666304a61acc98abfb77f54f"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/wxcurl-http_downgrade.stderr.txt": {
+        "bytes": 252,
+        "sha256": "28280401d740f0b1afceed6b3c6359fd118ebf37ed24ab138cf29315ac638220"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/wxcurl-http_downgrade.stdout.txt": {
+        "bytes": 243,
+        "sha256": "0a2663e74de26a2bdc332f5a73bdb23d81f128fe2b26f664f5d4630168d647ae"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/wxcurl-https_redirect.json": {
+        "bytes": 630,
+        "sha256": "9761fe2fa8badb1d7d129194bc0e5111c0ae98e42a1c17b3e371f2f9bde9da12"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/wxcurl-https_redirect.process.json": {
+        "bytes": 124,
+        "sha256": "22eefefeca4197f1d296ba63c71cf9ddfad73646f4ebf1b6f169b7bfada12006"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/wxcurl-https_redirect.stderr.txt": {
+        "bytes": 252,
+        "sha256": "28280401d740f0b1afceed6b3c6359fd118ebf37ed24ab138cf29315ac638220"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/wxcurl-https_redirect.stdout.txt": {
+        "bytes": 136,
+        "sha256": "db1a84283d112d5946712c1336728795b91f7bf012c07f22d4dff245efe53b69"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/wxcurl-local_file_redirect.json": {
+        "bytes": 771,
+        "sha256": "8fb57e40dadfd3f18cf9a29ab639ad07da7ee2846463441027c6102edabae0f8"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/wxcurl-local_file_redirect.process.json": {
+        "bytes": 124,
+        "sha256": "1b77efe027f9deec0d898c0a08571efc501504cda592692dbb5a221b98984374"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/wxcurl-local_file_redirect.stderr.txt": {
+        "bytes": 252,
+        "sha256": "28280401d740f0b1afceed6b3c6359fd118ebf37ed24ab138cf29315ac638220"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/wxcurl-local_file_redirect.stdout.txt": {
+        "bytes": 243,
+        "sha256": "327507d75c747845f59c359bfb4c24b0a2bd5503fbc70740c976a65a739c1ac4"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/wxcurl-trust_removed.json": {
+        "bytes": 959,
+        "sha256": "0f32b6e590a77002f9ad2db9fc161938082f74e6ca3f6a35989485f7fe119d2f"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/wxcurl-trust_removed.process.json": {
+        "bytes": 124,
+        "sha256": "e12e810749192451a275bccf6a53ca1ec4118d343d356bcced1bc688a4b47a89"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/wxcurl-trust_removed.stderr.txt": {
+        "bytes": 252,
+        "sha256": "28280401d740f0b1afceed6b3c6359fd118ebf37ed24ab138cf29315ac638220"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/wxcurl-trust_removed.stdout.txt": {
+        "bytes": 383,
+        "sha256": "614a07f8c44f79bbdcb6877623a457e21f42495f583f0dd515f2131866677e7a"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/wxcurl-untrusted.json": {
+        "bytes": 955,
+        "sha256": "bdd9d61e6f8ca0d5263b84110bacc25c8a4bb0b7c8c329d5717d443f59b64121"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/wxcurl-untrusted.process.json": {
+        "bytes": 124,
+        "sha256": "4c14103446d127ce36155562514d91f41743684e0c7b292773e8e6eaf86bf541"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/wxcurl-untrusted.stderr.txt": {
+        "bytes": 252,
+        "sha256": "28280401d740f0b1afceed6b3c6359fd118ebf37ed24ab138cf29315ac638220"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/wxcurl-untrusted.stdout.txt": {
+        "bytes": 383,
+        "sha256": "614a07f8c44f79bbdcb6877623a457e21f42495f583f0dd515f2131866677e7a"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/wxcurl-valid.json": {
+        "bytes": 621,
+        "sha256": "6d92bf5acc5c0ae277e46d22619f3b6b59c3e81d2ca57f361daeea5c704d4ac1"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/wxcurl-valid.process.json": {
+        "bytes": 124,
+        "sha256": "2cf4cb4c3f6ac1428d6e1c455748c44fe703aa6b5467d138efb7ac33433f73d4"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/wxcurl-valid.stderr.txt": {
+        "bytes": 252,
+        "sha256": "28280401d740f0b1afceed6b3c6359fd118ebf37ed24ab138cf29315ac638220"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/wxcurl-valid.stdout.txt": {
+        "bytes": 136,
+        "sha256": "db1a84283d112d5946712c1336728795b91f7bf012c07f22d4dff245efe53b69"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/wxcurl-valid_unrelated_cwd.json": {
+        "bytes": 635,
+        "sha256": "10bd16825ce82018f766fdd72527c7872cf7d56ad7a878e5fecbc19d8f7ef287"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/wxcurl-valid_unrelated_cwd.process.json": {
+        "bytes": 124,
+        "sha256": "8e396717ed33420d7cb9bf013397f90b8ba5e6ba740845b3335aeb07f2177bd9"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/wxcurl-valid_unrelated_cwd.stderr.txt": {
+        "bytes": 252,
+        "sha256": "28280401d740f0b1afceed6b3c6359fd118ebf37ed24ab138cf29315ac638220"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/wxcurl-valid_unrelated_cwd.stdout.txt": {
+        "bytes": 136,
+        "sha256": "db1a84283d112d5946712c1336728795b91f7bf012c07f22d4dff245efe53b69"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/wxcurl-wrong_host.json": {
+        "bytes": 952,
+        "sha256": "1bc50cdf6d9353b20124b88659ed4d47d8d722a47f01e6955a63206c2616f97a"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/wxcurl-wrong_host.process.json": {
+        "bytes": 124,
+        "sha256": "16a753c7eb0c56ba9da57a24043dc1152b26d7a0090b9eb5ddf895cfb777f189"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/wxcurl-wrong_host.stderr.txt": {
+        "bytes": 252,
+        "sha256": "28280401d740f0b1afceed6b3c6359fd118ebf37ed24ab138cf29315ac638220"
+      },
+      "evidence/local/ocharts-private-wxcurl-trust-windows/wxcurl-wrong_host.stdout.txt": {
+        "bytes": 379,
+        "sha256": "b27e2356153aa4d73cca6359277e8e089463104ff61e5d0c5b1083e3e6fb9856"
+      },
+      "evidence/local/ocharts-real-host-module/default.command.json": {
+        "bytes": 198,
+        "sha256": "c2c44cca09a0499ea3e8932906cd7799eaec4adf6f5f41fa8b7384b4fb45ca8a"
+      },
+      "evidence/local/ocharts-real-host-module/default.json": {
+        "bytes": 734,
+        "sha256": "4ef26c58d88f2f04884b93f084d953e6ac08db005a88265a40cd1827c7708abc"
+      },
+      "evidence/local/ocharts-real-host-module/default.stderr.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "evidence/local/ocharts-real-host-module/default.stdout.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "evidence/local/ocharts-real-host-module/loaded-runtime-identities.json": {
+        "bytes": 11161,
+        "sha256": "80fc9a9dea2f326ec5e49bb75908a68329c82561edf732d6ab79f4013f2f07e3"
+      },
+      "evidence/local/ocharts-real-host-module/module.command.json": {
+        "bytes": 325,
+        "sha256": "18d1dad9643ac2c9b339edcd937a1d726621e643ad031dc60f2b0f635463e233"
+      },
+      "evidence/local/ocharts-real-host-module/module.json": {
+        "bytes": 6762,
+        "sha256": "45ff52ebb030e6e51dfd8c7bba9a058916fd307b99c1f7e47371bcecac2d861b"
+      },
+      "evidence/local/ocharts-real-host-module/module.stderr.txt": {
+        "bytes": 308,
+        "sha256": "d700759aa5f24bbee863a7e6c37d3e68f31584b775945fc8fc2464fcf56b71d3"
+      },
+      "evidence/local/ocharts-real-host-module/module.stdout.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "evidence/local/ocharts-real-host-module/option-without-selftest.command.json": {
+        "bytes": 208,
+        "sha256": "d9c8e7004d1459cadbe7cc664edbdf30b7c3b43b7831556ee047b32a3069ab1a"
+      },
+      "evidence/local/ocharts-real-host-module/option-without-selftest.stderr.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "evidence/local/ocharts-real-host-module/option-without-selftest.stdout.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "evidence/local/ocharts-real-host-module/source-identities.json": {
+        "bytes": 3282,
+        "sha256": "738d3c49890b4059e8a86f4c6e34405219045ae92724c6f5aace002401423653"
+      },
+      "evidence/local/ocharts-real-host-module/summary.json": {
+        "bytes": 16344,
+        "sha256": "ef497a6c51256e6701a3b66c1476a205de14312a4149e0228243fe36185d2c93"
+      },
+      "evidence/local/ocharts-real-host-module/wrong-original.command.json": {
+        "bytes": 333,
+        "sha256": "c5d6b80cc36556cb6d22f9cdb2ea0c537b7917bbee20918ca23d821112301bbd"
+      },
+      "evidence/local/ocharts-real-host-module/wrong-original.json": {
+        "bytes": 1535,
+        "sha256": "82a938fd44f525ebbf3968d79b5c3e7696c98a4a1980ed471f13d979aa7c5c22"
+      },
+      "evidence/local/ocharts-real-host-module/wrong-original.stderr.txt": {
+        "bytes": 223,
+        "sha256": "51dcde429ade446dc85dc52c9ffe0f816ab39edfbb9f63c9e1678e3d79f0f115"
+      },
+      "evidence/local/ocharts-real-host-module/wrong-original.stdout.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "evidence/local/pilot-results.json": {
+        "bytes": 2559,
+        "sha256": "70bab946829dcb26c47b8d729ee59d3f030b81e4d6b7970ee77a4b99bc70d5b7"
+      },
+      "evidence/local/pilot-status-only/pilot-results.json": {
+        "bytes": 1060,
+        "sha256": "7b662d30e8c8638550d183798a4e9c650a8ae2ae8032a07743312109fe0caa84"
+      },
+      "evidence/local/preview-results.json": {
+        "bytes": 48119,
+        "sha256": "b38742809a3ce97858bad87c0ee5c7a14cd838cf173d8131a736e064aaff51fc"
+      },
+      "evidence/local/production-recovery-results.json": {
+        "bytes": 5745,
+        "sha256": "33e5b1d0f100c9f458f91923d548ebe441cd63535e9a3f96c01dc00b3de3df0e"
+      },
+      "evidence/local/recording-results.json": {
+        "bytes": 8202,
+        "sha256": "9f13fcd57854cfcada708047299a75dc06274108281c30f79245ae5b037e7757"
+      },
+      "evidence/local/recovery-repeat-0/recovery-results.json": {
+        "bytes": 1894,
+        "sha256": "d965277d1819ea656560790efbd6d832d54d81bbc43d80523974e6cb78ef176c"
+      },
+      "evidence/local/recovery-repeat-1/recovery-results.json": {
+        "bytes": 1895,
+        "sha256": "c565ab6166e5b112a5501522e9fe1877cad555516637674a55ef69d945f9bec8"
+      },
+      "evidence/local/recovery-repeat-2/recovery-results.json": {
+        "bytes": 1895,
+        "sha256": "c565ab6166e5b112a5501522e9fe1877cad555516637674a55ef69d945f9bec8"
+      },
+      "evidence/local/route-input-profile/route-fixture-results.json": {
+        "bytes": 24079,
+        "sha256": "59165398aa83267e73796b7fad6a70f4a785b4837890d09713e534b1735d8c8c"
+      },
+      "evidence/local/route-input-results.json": {
+        "bytes": 27709,
+        "sha256": "23bca88356af82992ae5e375305f9b7621ed26ed9027f07955aad9556c618b1f"
+      },
+      "evidence/local/route-progress-results.json": {
+        "bytes": 21742,
+        "sha256": "f16e35cde58c1a0792e86d7091ec525ecf5c42517a76e9c22fc6f07e2033dd20"
+      },
+      "evidence/local/route-standard-input-profile/route-fixture-results.json": {
+        "bytes": 24079,
+        "sha256": "d68ddef85fab777a2c4d6d1c4f921c08370593068e7061f42771cbf92ccd6b46"
+      },
+      "evidence/local/route-standard-input-results.json": {
+        "bytes": 27715,
+        "sha256": "7f89818a5617a968c0e24fc9c109a1c2be1ec07ee2d469d6319aeaf20650ce66"
+      },
+      "evidence/local/route-standard-progress-results.json": {
+        "bytes": 21742,
+        "sha256": "388d3fe77623647beed90cc0a79c4ceff09ef468e5c694820162030abf9d32e4"
+      },
+      "evidence/local/signalk-results.json": {
+        "bytes": 683,
+        "sha256": "50f275113b87cd8b05fccd1ce83b3bf4a9d65c41003f34233ebff51dca76d5a9"
+      },
+      "evidence/local/user-flows-results.json": {
+        "bytes": 33120,
+        "sha256": "d273d4090ee1b6d7f14d9297175f451f3675daa1a7f27d14991a28cbed45fd89"
+      },
+      "evidence/local/windows-dependency-first-success-receipt.json": {
+        "bytes": 43729,
+        "sha256": "cf5161fe6895809e7deb1bd99378e0fc8fade3fa377375e224976383ae2c307f"
+      },
+      "evidence/local/windows-production-tests.xml": {
+        "bytes": 122959,
+        "sha256": "bef72ecb288497d36ae23a48e12f615da3b8312b725a296b3c4e84c258d6682c"
+      },
+      "evidence/local/windows-xnav-tests.xml": {
+        "bytes": 122077,
+        "sha256": "bc408bae76c2793c861ceb318762896a9c0eb3214235dc20f5fcec1b3b0e88ca"
+      }
+    }
+  }
+}

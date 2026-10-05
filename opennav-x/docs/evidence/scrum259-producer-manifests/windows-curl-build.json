@@ -1,0 +1,242 @@
+{
+  "schemaVersion": 1,
+  "library": "curl",
+  "version": "8.22.0",
+  "configuration": "Win32 shared OpenSSL",
+  "architecture": "Win32",
+  "abi": "x86",
+  "runtime": "MultiThreadedDLL (/MD)",
+  "source": {
+    "url": "https://curl.se/download/curl-8.22.0.tar.xz",
+    "archive": "curl-8.22.0.tar.xz",
+    "sha256": "f7ef3ae8a22e521f289803fe93543eb64c329b58aa73a9e224dfd915a2a5f4f7",
+    "bytes": 2953092,
+    "signingPrimaryFingerprint": "27EDEAF22F3ABCEB50DB9A125CC908FDB71E12C2"
+  },
+  "dependencies": {
+    "openssl": {
+      "version": "3.5.9",
+      "manifestSha256": "7d09a6e3d7a0f15468ab2544c742a6981ea87558eca7d2519bf4cb6d9c6deb60",
+      "prefix": "D:\\a\\Work\\Work\\opennav-x\\build\\windows-openssl-3.5.9\\install"
+    },
+    "zlib": {
+      "version": "1.3.2",
+      "manifestSha256": "965009bb5210694ae69b5037b832297f0113fae449f5568ef19f715faa064bed",
+      "prefix": "D:\\a\\Work\\Work\\opennav-x\\build\\windows-zlib-1.3.2\\install"
+    }
+  },
+  "options": [
+    "-S",
+    "D:\\a\\Work\\Work\\opennav-x\\build\\windows-curl-8.22.0\\curl-8.22.0",
+    "-B",
+    "D:\\a\\Work\\Work\\opennav-x\\build\\windows-curl-8.22.0\\build",
+    "-G",
+    "Visual Studio 17 2022",
+    "-A",
+    "Win32",
+    "-DCMAKE_INSTALL_PREFIX=D:\\a\\Work\\Work\\opennav-x\\build\\windows-curl-8.22.0\\install",
+    "-DCMAKE_PROJECT_INCLUDE=D:/a/Work/Work/opennav-x/tools/windows-native-tool-facts.cmake;D:/a/Work/Work/opennav-x/tools/windows-curl-import-layout.cmake",
+    "-DPERL_EXECUTABLE:FILEPATH=D:\\a\\_temp\\msys64\\usr\\bin\\perl.exe",
+    "-DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreadedDLL",
+    "-DBUILD_SHARED_LIBS=ON",
+    "-DBUILD_STATIC_LIBS=OFF",
+    "-DBUILD_CURL_EXE=ON",
+    "-DBUILD_TESTING=ON",
+    "-DIMPORT_LIB_SUFFIX:STRING=",
+    "-DBUILD_EXAMPLES=OFF",
+    "-DBUILD_LIBCURL_DOCS=OFF",
+    "-DBUILD_MISC_DOCS=OFF",
+    "-DCURL_USE_OPENSSL=ON",
+    "-DCURL_USE_SCHANNEL=OFF",
+    "-DCURL_STATIC_CRT=OFF",
+    "-DCURL_USE_CMAKECONFIG=OFF",
+    "-DOPENSSL_ROOT_DIR=D:\\a\\Work\\Work\\opennav-x\\build\\windows-openssl-3.5.9\\install",
+    "-DOPENSSL_INCLUDE_DIR=D:\\a\\Work\\Work\\opennav-x\\build\\windows-openssl-3.5.9\\install/include",
+    "-DOPENSSL_SSL_LIBRARY=D:\\a\\Work\\Work\\opennav-x\\build\\windows-openssl-3.5.9\\install\\lib\\libssl.lib",
+    "-DOPENSSL_CRYPTO_LIBRARY=D:\\a\\Work\\Work\\opennav-x\\build\\windows-openssl-3.5.9\\install\\lib\\libcrypto.lib",
+    "-DCURL_ZLIB=ON",
+    "-DZLIB_INCLUDE_DIR=D:\\a\\Work\\Work\\opennav-x\\build\\windows-zlib-1.3.2\\install/include",
+    "-DZLIB_LIBRARY=D:\\a\\Work\\Work\\opennav-x\\build\\windows-zlib-1.3.2\\install\\lib\\zlib1.lib",
+    "-DCURL_USE_LIBPSL=OFF",
+    "-DCURL_USE_LIBSSH2=OFF",
+    "-DCURL_USE_LIBSSH=OFF",
+    "-DUSE_NGHTTP2=OFF",
+    "-DCURL_BROTLI=OFF",
+    "-DCURL_ZSTD=OFF",
+    "-DENABLE_ARES=OFF",
+    "-DCURL_USE_GSSAPI=OFF",
+    "-DUSE_WIN32_IDN=ON",
+    "-DCURL_DISABLE_FORM_API=OFF",
+    "-DHTTP_ONLY=OFF",
+    "-DCURL_CA_BUNDLE=none",
+    "-DCURL_CA_PATH=none",
+    "-DCURL_CA_FALLBACK=OFF",
+    "-DCURL_DISABLE_CA_SEARCH=ON",
+    "-DCURL_CA_SEARCH_SAFE=OFF"
+  ],
+  "buildSteps": {
+    "configure": "passed",
+    "compile": "passed",
+    "test": "passed",
+    "install": "passed",
+    "testTarget": "tests",
+    "testsPassed": 1569,
+    "testsReported": 1569,
+    "testHost": {
+      "path": "D:\\a\\_temp\\msys64\\usr\\bin\\perl.exe",
+      "sha256": "8679db320f05c37d004c70ee5196d0bf8e9029aea49b9abc2f5cab8e9da810c5",
+      "bytes": 14278,
+      "os": "cygwin",
+      "runtimePath": "D:\\a\\_temp\\msys64\\usr\\bin\\msys-2.0.dll",
+      "runtimeSha256": "80817f159a33b8f641e6a15de73d1efcc9af3a7557a69121e4798c99930152f1",
+      "runtimeBytes": 3366529
+    },
+    "certificatePatch": {
+      "source": "tests/certs/genserv.pl",
+      "originalSha256": "d737cbe77e23e275b4fcfcec36e62d49d1d59d9d9fd0013a428b7143ee75c982",
+      "patchedSha256": "4c176ec6a1556f519d6c0c02d17c40caadb9a542894fedc9f2055b7a48ce9ab3",
+      "helperSha256": "499f27be5a3ed25a15d82d1cf9e3338257ae26dc7beb9f674dde6c13cffcc771"
+    },
+    "certificateTool": {
+      "path": "D:\\a\\Work\\Work\\opennav-x\\build\\windows-openssl-3.5.9\\install\\bin\\openssl.exe",
+      "sha256": "25473c74252a9c7d23e1d9c5061505e356b66a4105cf73c57f73d6c29c2a3117",
+      "bytes": 722944,
+      "versionOutput": "OpenSSL 3.5.9 29 Sep 2026 (Library: OpenSSL 3.5.9 29 Sep 2026)\r\nbuilt on: Sat Oct  3 05:53:48 2026 UTC\r\nplatform: VC-WIN32\r\noptions:  bn(64,32)\r\ncompiler: cl  /Zi /Fdossl_static.pdb /GF /Gy /MD /W3 /wd4090 /nologo /O2 -DL_ENDIAN -DOPENSSL_PIC -D\"OPENSSL_BUILDING_OPENSSL\" -D\"OPENSSL_SYS_WIN32\" -D\"WIN32_LEAN_AND_MEAN\" -D\"UNICODE\" -D\"_UNICODE\" -D\"_CRT_SECURE_NO_DEPRECATE\" -D\"_WINSOCK_DEPRECATED_NO_WARNINGS\" -D\"NDEBUG\"\r\nOPENSSLDIR: \"D:\\a\\Work\\Work\\opennav-x\\build\\windows-openssl-3.5.9\\install\\ssl\"\r\nENGINESDIR: \"D:\\a\\Work\\Work\\opennav-x\\build\\windows-openssl-3.5.9\\install\\lib\\engines-3\"\r\nMODULESDIR: \"D:\\a\\Work\\Work\\opennav-x\\build\\windows-openssl-3.5.9\\install\\lib\\ossl-modules\"\r\nSeeding source: os-specific\r\nCPUINFO: OPENSSL_ia32cap=0xfeda3203078bffff:0x00400684219c07a9:0x0000000000000010:0x0000000000000000:0x0000000000000000"
+    },
+    "certificateProbe": "passed",
+    "log": "evidence/local/windows-curl-native-output.log",
+    "logSha256": "c42c2c11d7a961578529f5ddf6dfb5cbb99fe0b4ace34d0ef002b1187dc4b2fb"
+  },
+  "versionOutput": "curl 8.22.0 (Windows) libcurl/8.22.0 OpenSSL/3.5.9 zlib/1.3.2 WinIDN WinLDAP\r\nRelease-Date: 2026-09-02\r\nProtocols: dict file ftp ftps gopher gophers http https imap imaps ipfs ipns ldap ldaps mqtt mqtts pop3 pop3s rtsp smtp smtps telnet tftp ws wss\r\nFeatures: alt-svc AsynchDNS HSTS HTTPS-proxy IDN IPv6 Largefile libz SSL threadsafe UnixSockets",
+  "importOutput": "Microsoft (R) COFF/PE Dumper Version 14.44.35229.0\r\nCopyright (C) Microsoft Corporation.  All rights reserved.\r\n\r\n\r\nDump of file D:\\a\\Work\\Work\\opennav-x\\build\\windows-curl-8.22.0\\install\\bin\\libcurl.dll\r\n\r\nFile Type: DLL\r\n\r\n  Image has the following dependencies:\r\n\r\n    libssl-3.dll\r\n    libcrypto-3.dll\r\n    zlib1.dll\r\n    WLDAP32.dll\r\n    Normaliz.dll\r\n    CRYPT32.dll\r\n    WS2_32.dll\r\n    IPHLPAPI.DLL\r\n    KERNEL32.dll\r\n    VCRUNTIME140.dll\r\n    api-ms-win-crt-stdio-l1-1-0.dll\r\n    api-ms-win-crt-filesystem-l1-1-0.dll\r\n    api-ms-win-crt-time-l1-1-0.dll\r\n    api-ms-win-crt-string-l1-1-0.dll\r\n    api-ms-win-crt-utility-l1-1-0.dll\r\n    api-ms-win-crt-math-l1-1-0.dll\r\n    api-ms-win-crt-runtime-l1-1-0.dll\r\n    api-ms-win-crt-heap-l1-1-0.dll\r\n    api-ms-win-crt-environment-l1-1-0.dll\r\n    api-ms-win-crt-multibyte-l1-1-0.dll\r\n    api-ms-win-crt-convert-l1-1-0.dll\r\n\r\n  Summary\r\n\r\n        1000 .data\r\n       19000 .rdata\r\n        6000 .reloc\r\n        1000 .rsrc\r\n       7E000 .text",
+  "outputs": {
+    "bin/libcurl.dll": {
+      "sha256": "832021a32bc078fe5b9135d769fd89c432ebd8b0f10cc39648cf79aa17f97783",
+      "bytes": 638464
+    },
+    "lib/libcurl.lib": {
+      "sha256": "2263c0caca0a57f82f1c2539d1b15b8bd310a250932dba87d04408083711dd40",
+      "bytes": 22760
+    },
+    "include/curl/curl.h": {
+      "sha256": "9ec2e9040d8d95545a4c331461c54748651edc3852a6ceca0672f858103e0528",
+      "bytes": 136595
+    },
+    "include/curl/curlver.h": {
+      "sha256": "c4ed114da4eca953a328fa2efa8128308fc32879f15b58c245b2592f4bfaf9dc",
+      "bytes": 3052
+    },
+    "include/curl/easy.h": {
+      "sha256": "f101da02dd373151ea7b00082cb62c9d6e482361ab26b6d430ee96aab1b71565",
+      "bytes": 4000
+    },
+    "include/curl/header.h": {
+      "sha256": "e92525a91bb1119034dd45dd42d255ff9b6a49d964ca7105964e0107671b3395",
+      "bytes": 2922
+    },
+    "include/curl/mprintf.h": {
+      "sha256": "a79657fa15db71e732bcb58bc4645ab65bdb3222767f34be5bab56aa0d4f4cc9",
+      "bytes": 3078
+    },
+    "include/curl/multi.h": {
+      "sha256": "0466a7c91067cb11c98f37e16103b992b66e84221467c2a70ef951877502f77a",
+      "bytes": 21154
+    },
+    "include/curl/options.h": {
+      "sha256": "32fe87f843367d25a9db91a47386652402f08c9668617b4c51295ef31d93f8b0",
+      "bytes": 2402
+    },
+    "include/curl/stdcheaders.h": {
+      "sha256": "d7588b86814a35ffc3766ff6242e6f6705e04401fc9c208a195caff3503af81c",
+      "bytes": 1362
+    },
+    "include/curl/system.h": {
+      "sha256": "edb2c507a084448a5e3c7e2b9c65c408e22ffeaca5ab0c1ee2e76d82a21113fa",
+      "bytes": 14943
+    },
+    "include/curl/typecheck-gcc.h": {
+      "sha256": "62bf346ae4dc33bc61cd99a9e935c62dfbcd8120399cdbd5874d15897a57e681",
+      "bytes": 58092
+    },
+    "include/curl/urlapi.h": {
+      "sha256": "d888326d5bdebb84b5fe133d7ef7703d4e88732757ce4d6b0476f0c668d38a6e",
+      "bytes": 5870
+    },
+    "include/curl/websockets.h": {
+      "sha256": "05b70dbce5274aa6e360703bb17d67a0390fea18bf4437745a25b08b55d6962b",
+      "bytes": 3197
+    }
+  },
+  "cacheBuildwin": {
+    "libcurl.dll": {
+      "source": "bin/libcurl.dll",
+      "sha256": "832021a32bc078fe5b9135d769fd89c432ebd8b0f10cc39648cf79aa17f97783",
+      "bytes": 638464
+    },
+    "libcurl.lib": {
+      "source": "lib/libcurl.lib",
+      "sha256": "2263c0caca0a57f82f1c2539d1b15b8bd310a250932dba87d04408083711dd40",
+      "bytes": 22760
+    },
+    "include/curl/curl.h": {
+      "source": "include/curl/curl.h",
+      "sha256": "9ec2e9040d8d95545a4c331461c54748651edc3852a6ceca0672f858103e0528",
+      "bytes": 136595
+    },
+    "include/curl/curlver.h": {
+      "source": "include/curl/curlver.h",
+      "sha256": "c4ed114da4eca953a328fa2efa8128308fc32879f15b58c245b2592f4bfaf9dc",
+      "bytes": 3052
+    },
+    "include/curl/easy.h": {
+      "source": "include/curl/easy.h",
+      "sha256": "f101da02dd373151ea7b00082cb62c9d6e482361ab26b6d430ee96aab1b71565",
+      "bytes": 4000
+    },
+    "include/curl/header.h": {
+      "source": "include/curl/header.h",
+      "sha256": "e92525a91bb1119034dd45dd42d255ff9b6a49d964ca7105964e0107671b3395",
+      "bytes": 2922
+    },
+    "include/curl/mprintf.h": {
+      "source": "include/curl/mprintf.h",
+      "sha256": "a79657fa15db71e732bcb58bc4645ab65bdb3222767f34be5bab56aa0d4f4cc9",
+      "bytes": 3078
+    },
+    "include/curl/multi.h": {
+      "source": "include/curl/multi.h",
+      "sha256": "0466a7c91067cb11c98f37e16103b992b66e84221467c2a70ef951877502f77a",
+      "bytes": 21154
+    },
+    "include/curl/options.h": {
+      "source": "include/curl/options.h",
+      "sha256": "32fe87f843367d25a9db91a47386652402f08c9668617b4c51295ef31d93f8b0",
+      "bytes": 2402
+    },
+    "include/curl/stdcheaders.h": {
+      "source": "include/curl/stdcheaders.h",
+      "sha256": "d7588b86814a35ffc3766ff6242e6f6705e04401fc9c208a195caff3503af81c",
+      "bytes": 1362
+    },
+    "include/curl/system.h": {
+      "source": "include/curl/system.h",
+      "sha256": "edb2c507a084448a5e3c7e2b9c65c408e22ffeaca5ab0c1ee2e76d82a21113fa",
+      "bytes": 14943
+    },
+    "include/curl/typecheck-gcc.h": {
+      "source": "include/curl/typecheck-gcc.h",
+      "sha256": "62bf346ae4dc33bc61cd99a9e935c62dfbcd8120399cdbd5874d15897a57e681",
+      "bytes": 58092
+    },
+    "include/curl/urlapi.h": {
+      "source": "include/curl/urlapi.h",
+      "sha256": "d888326d5bdebb84b5fe133d7ef7703d4e88732757ce4d6b0476f0c668d38a6e",
+      "bytes": 5870
+    },
+    "include/curl/websockets.h": {
+      "source": "include/curl/websockets.h",
+      "sha256": "05b70dbce5274aa6e360703bb17d67a0390fea18bf4437745a25b08b55d6962b",
+      "bytes": 3197
+    }
+  }
+}

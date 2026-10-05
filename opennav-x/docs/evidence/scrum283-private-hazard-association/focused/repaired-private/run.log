@@ -1,0 +1,30 @@
+context layout 88 76
+case 1 UWTROC: ;SY(UWTROC04)<US><US> /category=79
+case 2 UWTROC: ;SY(UWTROC04)<US><US> /category=79
+case 3 UWTROC: ;SY(LNDARE01)<US><US> /category=79
+case 4 UWTROC: ;SY(UWTROC03)<US><US> /category=79
+case 5 UWTROC: ;SY(UWTROC04)<US><US> /category=79
+case 6 UWTROC: ;SY(UWTROC04)<US><US> /category=79
+case 7 UWTROC: ;SY(UWTROC04)<US><US> /category=79
+case 8 UWTROC: ;SY(DANGER51);SY(SOUNDS13);SY(SOUNDS52)<US><US><US> /category=79
+case 9 UWTROC: ;SY(UWTROC04)<US><US> /category=79
+case 10 UWTROC: ;SY(UWTROC04)<US><US> /category=79
+case 11 UWTROC: ;SY(DANGER52);SY(SOUNDG22);SY(SOUNDG11)<US><US><US> /category=79
+case 12 WRECKS: ;SY(WRECKS04)<US><US> /category=79
+case 13 WRECKS: ;SY(WRECKS05)<US><US> /category=79
+case 14 WRECKS: ;SY(WRECKS01)<US><US> /category=79
+case 15 WRECKS: ;SY(WRECKS01)<US><US> /category=79
+case 16 WRECKS: <US><US> /category=79
+case 17 WRECKS: <US><US> /category=79
+case 18 UWTROC: ;SY(ISODGR51)<US><US> /category=68
+case 19 WRECKS: ;SY(ISODGR51)<US><US> /category=68
+case 20 UWTROC: ;SY(UWTROC03);SY(QUAPOS01)<US><US> /category=79
+case 21 UWTROC: ;SY(UWTROC03);SY(QUAPOS02)<US><US> /category=79
+case 22 UWTROC: ;SY(UWTROC03);SY(QUAPOS03)<US><US> /category=79
+case 23 UWTROC: ;SY(UWTROC03);SY(QUAPOS03)<US><US> /category=79
+case 24 UWTROC: ;SY(UWTROC03);SY(LOWACC03)<US><US> /category=79
+case 25 WRECKS: ;SY(DANGER51);TX('Wk',2,1,2,'15110',1,0,CHBLK,21);SY(WRECKS07);SY(SOUNDS13);SY(SOUNDS52)<US><US><US> /category=79
+case 26 OBSTRN: ;SY(OBSTRN01)<US><US> /category=79
+26 actual conditional cases retained this source's missing/depth/quality and isolated-danger behavior
+null/no-callback/nonowned/mismatched/empty/unavailable/error and synchronous borrowed lifetime checks passed; unavailable is NOT safe qualification
+55 focused checks passed

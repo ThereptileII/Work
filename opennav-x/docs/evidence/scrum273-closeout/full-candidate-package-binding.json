@@ -1,0 +1,66 @@
+{
+  "scope": "Read-only retained full-candidate package records; no verifier, test, build or CI rerun. Prior audit records static verifier pass.",
+  "localCommit": "96c0c2705aacae511b6f8c22afaa6618dbabceff",
+  "remoteCommit": "15452e512fd073090b1a4cea7c9010eac0874118",
+  "run": "37136712793",
+  "artifact": {
+    "bytes": 65648702,
+    "sha256": "1fa9660cbf99b68893cd96b49c6fee22d92dd9f4a4d0d39f3660f970cba43f3b"
+  },
+  "firstBuildReceipt": {
+    "identity": {
+      "run": "37136712793",
+      "attempt": "1",
+      "job": "windows-integration",
+      "commit": "15452e512fd073090b1a4cea7c9010eac0874118",
+      "script": "6cb148d2f0d18babf96877239c403b4a8b8d2b4dfb4eccfe2cf98cda6c56d09c",
+      "python": "C:\\hostedtoolcache\\windows\\Python\\3.12.10\\x64\\python.exe",
+      "pythonSha256": "4d6f5f81a4bca11191c4c7c6b43632694d0a4ce74e068619d8fdc161d469859a"
+    },
+    "package": {
+      "manifest.json": {
+        "bytes": 12236,
+        "sha256": "f8465521da7306428c3a5bfb19422f90df8b69241a4d9ecc0fb08c810988049b"
+      },
+      "skager-ocharts-adapter.dll": {
+        "bytes": 1328640,
+        "sha256": "9af282c0e24ccc6ce91e314eb710d915331e932e9a597cb91957089023eb8e41"
+      },
+      "corresponding-source.zip": {
+        "bytes": 5632547,
+        "sha256": "99ee27c9b70129cc12ac0b24ab676bad29f57b0f01a1d6509e0f0537384f622a"
+      }
+    },
+    "preparation": {
+      "bytes": 338287,
+      "sha256": "3b992034df28376f445ed4746a9c396a2a6e6fa559ade0e845bfa54534db5157"
+    }
+  },
+  "receiptPackageRecordsMatchActualArchiveEntries": true,
+  "receiptBuildScriptMatchesFrozenCRLFCheckout": true,
+  "correspondingSource": {
+    "productFilesMatchFrozenSource": 40,
+    "originalLockedBlobsMatch": 219,
+    "crcPassed": true
+  },
+  "actualProductionResources": {
+    "manifestMatchesPackage": true,
+    "headerMatchesPackage": true,
+    "manifestFilesMatch": 5
+  },
+  "transcripts": {
+    "windows-xnav-Win32.log": {
+      "bytes": 6475429,
+      "sha256": "5a82a9ac8c443d15de02ef72c83954bb19845ca79f078803a1662fe97d2f279c"
+    },
+    "windows-production-Win32.log": {
+      "bytes": 1120252,
+      "sha256": "d1717335629b19544ae229720b8420d641fda8b253d8f05731704c8a49f69d86"
+    }
+  },
+  "productionTranscriptMatchesRetainedGzip": true,
+  "priorAudit": "../scrum272-native-154-expired-fixture/audit.json",
+  "priorPrivatePackageStaticVerifier": "passed with frozen tools and actual production resource set",
+  "terminalProductPackageAcceptance": false,
+  "boatAcceptance": false
+}

@@ -1,0 +1,396 @@
+{
+  "schema": 1,
+  "commit": "e14de49f444c56de28465416a83337838ad84413",
+  "binary_sha256": "3b64b0958733accbe56cfa73512d984e3940bd916a7a9eab9ef9bf6df4b0e243",
+  "build_flags": {
+    "OCPN_BUILD_TEST": "ON",
+    "OPENNAV_ENABLE_ROUTE_SCENARIO": "ON",
+    "XNAV_ENABLE_PILOT_LOOPBACK_TESTS": "ON",
+    "XNAV_ENABLE_TEST_FIXTURES": "ON"
+  },
+  "manifest_sha256": "114f3065decb60bd03b137f7660e1bee67c736d828f633c032fec77d867d37cc",
+  "resource_files": {
+    "chartsymbols.xml": {
+      "sha256": "e5007a2d85b7d6713b7034511bf2079b38245c1bdb9a4b61bbae89da945d4bb6",
+      "bytes": 2231879
+    },
+    "S52RAZDS.RLE": {
+      "sha256": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26",
+      "bytes": 1305627
+    },
+    "rastersymbols-day.png": {
+      "sha256": "d847198e91a2ce40602f6794af935a5453c10f9ba7328f48640f46707373be79",
+      "bytes": 196057
+    },
+    "rastersymbols-dusk.png": {
+      "sha256": "91f3d3ce06856c4c3da870d998e9a4ff8055f74c7af8a778e05e08bdc4192cc8",
+      "bytes": 170665
+    },
+    "rastersymbols-dark.png": {
+      "sha256": "563bd959efd4eb23b092a0eda5866560cc9474b94c0c9e8a7fb6156a98910b5a",
+      "bytes": 165755
+    }
+  },
+  "source_evidence": {
+    "src/integration/ChartNameTypography.h": "23688fca7f9ed456e7458fe1228e0bf9908660a953732cb6e6749c5838e1f4d9",
+    "src/integration/ChartCogPredictor.h": "3e7841bb311bb9d4951be082a669f4737ee978dd426df4899a22bc9971033c90",
+    "src/integration/ChartPresentation.cpp": "0b0b09493c62cf51f8ac19296fdc4d68c3a638a5e89f32aec4da0744ba0024b3",
+    "patches/opencpn-5.12.4-xnav.patch": "0cfbde6fdaaa8dfbb0563aa10e9ffc5e4e03e5ee0e2a72c92492879c7967a2c3",
+    "patches/opencpn-5.12.4-chart-presentation.patch": "aa2e51acbb6b926e9b3d0c960a274c1572352a3564d54c655431c9cc20c2c959",
+    "resources/chart-style/v1/definition.json": "57719cf7dd907d467058fdfc7d29bd12551fc25a11fb7fc22a319fbafd85d6d0",
+    "docs/design/prototype-tokens.json": "111ee35527a974b2df6c2c4af0afd04e5aebdf14bad3004a98be9064aef790c6",
+    "src/application/SkagerBrandAsset.h": "cc9f469181717b4fb80986b9406d2d6d078bfdb5971d2e68f6b4072b8dcd2019",
+    "resources/branding/provenance.json": "f639aa4ffa1194fb527388b15b2f9880746829d4120e30b4ddca32b0326557a6"
+  },
+  "authority": "Linux Xvfb/software development visuals only; not Windows, production, OpenGL or boat acceptance",
+  "runtime_identity": "Must be confirmed by loader self-test and capture diagnostics before accepting images",
+  "scope": "Public real ENC with controlled simulated loopback RMC; no private boat profile, hardware, Demo or scenario activation",
+  "chart_source_files": {
+    "CATALOG.031": "6f127353e5e20788574b6183962b023e4191cc52f431f3a33ba3bb4ff9ce7d76",
+    "README.TXT": "c202a13afaebd80a89433fda9466cb09d60e2f8345202ecb302b855daa50b573",
+    "US5SEAFL/US419FLA.TXT": "71837814a9b696ef71d84638bcf44dd87eef438a9852f1f03e17aa54198f1927",
+    "US5SEAFL/US419FLB.TXT": "2f670f03807112f993c8372e9d276b5cc06e27c15eb69349d78a13475b65bba6",
+    "US5SEAFL/US5SEAFL.000": "7e474bea96e7a84c6f3ee6b44ff7db4288029fa47ac2a285594e18469dbf518c",
+    "US5SEAFL/US5SEAFL.001": "504440d201453548aae160c4c5340d55d480bd39cd57061b7fc03262968e062d",
+    "USERAGREEMENT.TXT": "27b503af0727216809c8cc9cd73a8895073f43535f4e1bdba8b0b14c599f848f"
+  },
+  "captures": [
+    {
+      "name": "SKAGER-Day",
+      "image_sha256": "2f35cb6b8d0d739a389fc20b02201321ae1c8f3563b58d8af7e8c644934735a8",
+      "build_commit": "e14de49f444c56de28465416a83337838ad84413",
+      "chart": {
+        "canvas_pixels": {
+          "height": 566,
+          "width": 1014
+        },
+        "latitude": 47.6,
+        "database_entries": 1,
+        "follow": false,
+        "quilt_members": [
+          {
+            "type": 5,
+            "native_scale": 12000,
+            "file": "US5SEAFL.000",
+            "index": 0
+          }
+        ],
+        "opengl_enabled": false,
+        "quilt_reference": 0,
+        "scale_bar": {
+          "height": 29,
+          "y": 505,
+          "width": 25,
+          "x": 191
+        },
+        "depth_unit_type": 1,
+        "quilt": true,
+        "scale_ppm": 0.150000006,
+        "longitude": -122.36,
+        "depth_units_visible": true
+      },
+      "presentation": {
+        "status": "SKAGER presentation v1 / pinned symbols",
+        "requested": "XNav"
+      },
+      "water_pixels": 342946,
+      "water_color_counts": {
+        "(213, 229, 229)": 342946
+      },
+      "built_area_pixels": 90868,
+      "owned_values": {
+        "Latitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Latitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "36903399",
+          "validity": "Measured",
+          "value": 47.6,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 185,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Longitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Longitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "36903399",
+          "validity": "Measured",
+          "value": -122.36,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 185,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Speed over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Speed over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "36903399",
+          "validity": "Measured",
+          "value": 3,
+          "aging_after_ms": 2000,
+          "unit": "kn",
+          "age_ms": 185,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Course over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Course over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "36903399",
+          "validity": "Measured",
+          "value": 90,
+          "aging_after_ms": 2000,
+          "unit": "deg true",
+          "age_ms": 185,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        }
+      },
+      "latest_owned_input_monotonic": 36904.753877127
+    },
+    {
+      "name": "SKAGER-Dusk",
+      "image_sha256": "8f4ace06311b02dd4b5e57aca1115a7aee0407472723f17417e1c895c0593346",
+      "build_commit": "e14de49f444c56de28465416a83337838ad84413",
+      "chart": {
+        "canvas_pixels": {
+          "height": 566,
+          "width": 1014
+        },
+        "latitude": 47.6,
+        "database_entries": 1,
+        "follow": false,
+        "quilt_members": [
+          {
+            "type": 5,
+            "native_scale": 12000,
+            "file": "US5SEAFL.000",
+            "index": 0
+          }
+        ],
+        "opengl_enabled": false,
+        "quilt_reference": 0,
+        "scale_bar": {
+          "height": 29,
+          "y": 505,
+          "width": 25,
+          "x": 191
+        },
+        "depth_unit_type": 1,
+        "quilt": true,
+        "scale_ppm": 0.150000006,
+        "longitude": -122.36,
+        "depth_units_visible": true
+      },
+      "presentation": {
+        "status": "SKAGER presentation v1 / pinned symbols",
+        "requested": "XNav"
+      },
+      "water_pixels": 343247,
+      "water_color_counts": {
+        "(52, 79, 89)": 343247
+      },
+      "built_area_pixels": 90848,
+      "owned_values": {
+        "Latitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Latitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "36906555",
+          "validity": "Measured",
+          "value": 47.6,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 298,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Longitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Longitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "36906555",
+          "validity": "Measured",
+          "value": -122.36,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 298,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Speed over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Speed over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "36906555",
+          "validity": "Measured",
+          "value": 3,
+          "aging_after_ms": 2000,
+          "unit": "kn",
+          "age_ms": 298,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Course over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Course over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "36906555",
+          "validity": "Measured",
+          "value": 90,
+          "aging_after_ms": 2000,
+          "unit": "deg true",
+          "age_ms": 298,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        }
+      },
+      "latest_owned_input_monotonic": 36907.156044958
+    },
+    {
+      "name": "SKAGER-Night",
+      "image_sha256": "1923c9648a6a1705e68248e06e94cecdb4e9d98786ba73b1fce231295e3fa046",
+      "build_commit": "e14de49f444c56de28465416a83337838ad84413",
+      "chart": {
+        "canvas_pixels": {
+          "height": 566,
+          "width": 1014
+        },
+        "latitude": 47.6,
+        "database_entries": 1,
+        "follow": false,
+        "quilt_members": [
+          {
+            "type": 5,
+            "native_scale": 12000,
+            "file": "US5SEAFL.000",
+            "index": 0
+          }
+        ],
+        "opengl_enabled": false,
+        "quilt_reference": 0,
+        "scale_bar": {
+          "height": 29,
+          "y": 505,
+          "width": 25,
+          "x": 191
+        },
+        "depth_unit_type": 1,
+        "quilt": true,
+        "scale_ppm": 0.150000006,
+        "longitude": -122.36,
+        "depth_units_visible": true
+      },
+      "presentation": {
+        "status": "SKAGER presentation v1 / pinned symbols",
+        "requested": "XNav"
+      },
+      "water_pixels": 343376,
+      "water_color_counts": {
+        "(18, 30, 36)": 343376
+      },
+      "built_area_pixels": 90913,
+      "owned_values": {
+        "Latitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Latitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "36909258",
+          "validity": "Measured",
+          "value": 47.6,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 20,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Longitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Longitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "36909258",
+          "validity": "Measured",
+          "value": -122.36,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 20,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Speed over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Speed over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "36909258",
+          "validity": "Measured",
+          "value": 3,
+          "aging_after_ms": 2000,
+          "unit": "kn",
+          "age_ms": 20,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Course over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Course over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "36909258",
+          "validity": "Measured",
+          "value": 90,
+          "aging_after_ms": 2000,
+          "unit": "deg true",
+          "age_ms": 20,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        }
+      },
+      "latest_owned_input_monotonic": 36909.935733135
+    }
+  ],
+  "status": "failed",
+  "clean_exit": false,
+  "font_evidence": {
+    "policy_source_sha256": "0b0b09493c62cf51f8ac19296fdc4d68c3a638a5e89f32aec4da0744ba0024b3",
+    "note": "Source policy and Linux fontconfig inventory recorded; this does not establish native Windows glyph metrics",
+    "Segoe UI Variable Display": {
+      "exit_code": 0,
+      "linux_fontconfig_match": "Liberation Sans\n/usr/share/fonts/liberation/LiberationSans-Regular.ttf"
+    },
+    "Segoe UI": {
+      "exit_code": 0,
+      "linux_fontconfig_match": "Liberation Sans\n/usr/share/fonts/liberation/LiberationSans-Regular.ttf"
+    },
+    "Arial": {
+      "exit_code": 0,
+      "linux_fontconfig_match": "Liberation Sans\n/usr/share/fonts/liberation/LiberationSans-Regular.ttf"
+    }
+  },
+  "loader_selftest": {
+    "upstream": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+    "commissioning_restart_protocol": 0,
+    "version": "0.4.0-beta2",
+    "commit": "e14de49f444c56de28465416a83337838ad84413",
+    "compiler": "GNU 16.2.1 / 8 byte pointers",
+    "plugins_loaded": false,
+    "test_fixtures": true,
+    "resources": {
+      "gshhs/poly-c-1.dat": true,
+      "s57data/s57objectclasses.csv": true,
+      "uidata/styles.xml": true,
+      "s57data/chartsymbols.xml": true
+    },
+    "normal_config_directory": "/etc",
+    "passed": true,
+    "xnav_hardware_output_policy": "test-loopback-only",
+    "build_purpose": "DEVELOPER TEST BUILD",
+    "profile_initialized": false,
+    "contract": "OpenNavX.LoaderSelfTest.1"
+  },
+  "failure": "Command '['/home/standard/Projects/X-nav-worktrees/skager-product-fidelity/.local/integrated-fidelity/install/bin/opencpn', '--configdir', '/home/standard/Projects/X-nav-worktrees/skager-product-fidelity/.local/integrated-fidelity/capture-e14de49-software/SKAGER-profile', '--remote', '--quit']' timed out after 15 seconds"
+}

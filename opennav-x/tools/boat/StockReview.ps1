@@ -7,13 +7,13 @@ function Get-StockTarget([string]$Workspace) {
   $local=Assert-LocalPath ([Environment]::GetFolderPath('LocalApplicationData'))
   if (-not $env:LOCALAPPDATA -or (Assert-LocalPath $env:LOCALAPPDATA) -ine $local) { throw 'Stock plugin account is ambiguous.' }
   foreach ($name in @('state.json','transaction.json')) {
-    if (Test-Path -LiteralPath (Join-Path (Join-Path $local 'OpenNavXAlpha1') $name)) { throw 'Remove/resolve the installed OpenNav integration before stock coexistence review.' }
+    if (Test-Path -LiteralPath (Join-Path (Join-Path $local 'OpenNavXAlpha1') $name)) { throw 'Remove/resolve the installed SKAGER integration before stock coexistence review.' }
   }
   foreach ($view in @([Microsoft.Win32.RegistryView]::Registry32,[Microsoft.Win32.RegistryView]::Registry64)) {
     $base=[Microsoft.Win32.RegistryKey]::OpenBaseKey([Microsoft.Win32.RegistryHive]::CurrentUser,$view)
     try {
       $key=$base.OpenSubKey('Software\Microsoft\Windows\CurrentVersion\Uninstall\OpenNavXAlpha1')
-      if ($key) { $key.Dispose();throw 'OpenNav uninstall registration remains; no stock coexistence claim.' }
+      if ($key) { $key.Dispose();throw 'SKAGER uninstall registration remains; no stock coexistence claim.' }
     } finally { $base.Dispose() }
   }
   $profile=Assert-LocalPath (Join-Path ([Environment]::GetFolderPath('CommonApplicationData')) 'opencpn')
@@ -33,7 +33,7 @@ function Assert-StockRequest($Job) {
       $Job.arguments -isnot [string] -or $Job.arguments.Length -ne 0 -or
       $Job.executableSha256 -cne '7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c') { throw 'Stock launch requires the exact official binary with empty arguments.' }
   foreach ($field in @('restartReview','restartBinding','restartSessionRecord','restartSessionSha256')) {
-    if ($Job.PSObject.Properties[$field]) { throw 'Stock launch cannot arm an OpenNav restart broker.' }
+    if ($Job.PSObject.Properties[$field]) { throw 'Stock launch cannot arm a SKAGER restart broker.' }
   }
 }
 function Assert-StockReviewPolicy($Job,$Launch,$Request,[datetime]$Now) {
@@ -176,7 +176,7 @@ function Invoke-StockLaunch($Job) {
   if ((Assert-LocalPath $environment.workingDirectory) -ine [IO.Path]::GetDirectoryName($Job.executable)) { throw 'Stock working directory differs from reviewed context.' }
   if (@(Get-Process -Name opencpn -ErrorAction SilentlyContinue).Count) { throw 'Close existing OpenCPN normally before stock launch.' }
   foreach ($key in @('OPENNAV_COMMISSIONING_RESTART_SESSION','OPENNAV_COMMISSIONING_RESTART_RECORD_SHA256')) {
-    if ([Environment]::GetEnvironmentVariables().Contains($key)) { throw 'Stock launch cannot inherit an OpenNav restart session.' }
+    if ([Environment]::GetEnvironmentVariables().Contains($key)) { throw 'Stock launch cannot inherit a SKAGER restart session.' }
   }
   $null=Get-StockTarget $Job.workspace
   if ((Get-Digest (Join-Path $Job.workspace 'boat-target.json')) -cne $Job.targetSha256) { throw 'Stock target changed during full commissioning verification.' }

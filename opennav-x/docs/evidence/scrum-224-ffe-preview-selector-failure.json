@@ -1,0 +1,38 @@
+{
+  "commit": "ffe4ecf11f43a916098fefe8f17071c63867a838",
+  "run": 37041103887,
+  "job": 110951154103,
+  "artifact": 11243630817,
+  "bytes": 11081778,
+  "sha256": "1bcc1b764aa33352995fc95c44d7a29548dcc38fabae08724fe8ec86e47f0153",
+  "entries": 3785,
+  "status": "failed-preview-selector",
+  "failure": "AssertionError(('Diagnostics', 'unique Preferences action', [{'height': 52, 'y': 261, 'visible': False, 'width': 487, 'accessible_name': 'Diagnostics', 'x': 591, 'label': 'Diagnostics', 'enabled': True}, {'height': 72, 'y': 664, 'visible': True, 'width': 386, 'accessible_name': 'Diagnostics', 'x': 671, 'label': 'Diagnostics', 'enabled': True}]))",
+  "product_crash_reported": false,
+  "acceptance": false,
+  "scope": "Retained Linux full-candidate failure after integrated tests and navigation, data, recording, gestures and recovery checks passed.",
+  "matching_controls": [
+    {
+      "height": 52,
+      "y": 261,
+      "visible": false,
+      "width": 487,
+      "accessible_name": "Diagnostics",
+      "x": 591,
+      "label": "Diagnostics",
+      "enabled": true
+    },
+    {
+      "height": 72,
+      "y": 664,
+      "visible": true,
+      "width": 386,
+      "accessible_name": "Diagnostics",
+      "x": 671,
+      "label": "Diagnostics",
+      "enabled": true
+    }
+  ],
+  "screenshot": "scrum-224-ffe-preview-selector-failure.png",
+  "review": "Actual System drawer and coastline render. The copied control inventory contains a hidden previous ProductPanel Diagnostics action and one visible Settings action. Preview harness asserts uniqueness before rejecting the hidden action. No full-candidate or boat acceptance."
+}

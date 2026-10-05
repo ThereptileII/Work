@@ -1,0 +1,20 @@
+{
+  "commit": "9632421f701c5ec74d7a1360bc713c0034faf9af",
+  "trackedStatus": "",
+  "binary": {
+    "path": "/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/bin/opencpn",
+    "sha256": "55b5f9f707be6188bf283c4ece5e992caa43352d77c4a7639a195f60d52e27a3"
+  },
+  "manifest": {
+    "path": "/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/opennav/chart-style/v1/manifest.json",
+    "sha256": "4af8f1245a59d2280fd74b563fd24f98401dfeb4ff8cdabf927352e5df856fc6"
+  },
+  "fixtureSha256": "c70d9e0f53e149270f85900f8576082db86781d64fbb71aa7d5ceb4af4aa22e3",
+  "actualLayoutHeaders": {
+    "build/integration-source/libs/s52plib/src/s52plib.h": "1e4a374d13f3a8c4329c46ef3178958dd3ef44ada2d8df6104151ce8a887e180",
+    "build/integration-source/libs/s52plib/src/s52s57.h": "05ff57005854196159bf65cb5386305d7fdb89a8bd3efa3d0184070c7c46ceeb",
+    "build/integration-source/gui/include/gui/s57chart.h": "679194a56a4e246b77e3be7e7d224d65861145a445f69787f81234760ecef315"
+  },
+  "layoutHelperSha256": "b3d267bc8d6e79bdea9e817d9b0b8052e2e6f3cb1f90459774beccade6015518",
+  "compiler": "c++ (GCC) 16.2.1 20260810"
+}

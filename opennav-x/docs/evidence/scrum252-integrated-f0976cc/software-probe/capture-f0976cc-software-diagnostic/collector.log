@@ -1,0 +1,11 @@
+/tmp/sr252-k7ufazna/profile
+Traceback (most recent call last):
+  File "/home/standard/Projects/X-nav-worktrees/scrum252-route-labels/.local/route252-probe/smoke-navigation-route252.py", line 308, in <module>
+    handle = subprocess.check_output(['xdotool', 'search', '--all', '--onlyvisible', '--pid', str(app.pid),
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/standard/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 466, in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/standard/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['xdotool', 'search', '--all', '--onlyvisible', '--pid', '7', '--name', '^SKAGER / OpenCPN$']' returned non-zero exit status 1.

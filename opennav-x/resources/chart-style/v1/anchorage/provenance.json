@@ -1,0 +1,45 @@
+{
+  "issue": "SCRUM-244",
+  "symbol": "ACHARE51",
+  "effectiveRcid": 1105,
+  "tile": [
+    20,
+    1160,
+    20,
+    20
+  ],
+  "pivot": [
+    10,
+    10
+  ],
+  "prototypeScale": 0.84375,
+  "prototypeStrokeWidth": 1.3,
+  "rasterizer": "rsvg-convert version 2.62.3\n\nlibraries used:\n  cairo 1.18.4\n  pango 1.58.2\n  harfbuzz 14.4.0\n  fontconfig 2.18.3",
+  "serviceRgb": {
+    "DAY_BRIGHT": [
+      124,
+      133,
+      138
+    ],
+    "DUSK": [
+      168,
+      187,
+      183
+    ],
+    "NIGHT": [
+      98,
+      115,
+      108
+    ]
+  },
+  "nightBrightness": 0.78,
+  "alphaSha256": "a814de453f8c9158f6767a1ba25a496fae762535f1a79f2edbd116dc4a2a3c83",
+  "sources": {
+    "docs/design/prototype/src/chart-marker-art.js": "be2c7f44817c29d3714412c7974d3cf07e238f65c7131958b0cb8ff6fbd7816d",
+    "docs/design/prototype/src/chart-symbols.js": "d88ffe6f7566fb5fddcb49488cf28e2267e6a76a7ffabda7e53fb3751b7cc1b3",
+    "docs/design/prototype/src/chart-symbols.css": "ca7ec18b38bf682600b6c3c39c5798c94b00bbaddd5589119d5fcb77ad599cb3",
+    "docs/design/prototype/src/style.css": "f943f5c91e2b260067e97a80d47fc923b64c3bb715c73a58ce1d4a6bf7a1bb46",
+    "resources/chart-style/v1/anchorage/ACHARE51.svg": "8c585e0fcccd62b53b39974d3a12ff3a43997f14728fbc8df6bb4fc27367a23e",
+    "resources/chart-style/v1/anchorage/ACHARE51-alpha.json": "850dae40d31781f086f69098a7d8e1a70e26293cf0420db15e8451841f1ed3a4"
+  }
+}

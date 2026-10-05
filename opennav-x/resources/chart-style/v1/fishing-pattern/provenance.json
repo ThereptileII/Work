@@ -1,0 +1,40 @@
+{
+  "issue": "SCRUM-282",
+  "patternSha256": "a839490017a9905e0e790a8e422a785eac43f67c99229ada32be1b265a0fed1a",
+  "lookupSha256": "d2b48e2099d8fddcb80d2006efd671694c031ce8f086918c9090417f50730cea",
+  "alphaSha256": "6fd32cd07301655501afc6e16ebb9e40f072a771bb5c604f4959425e1cc5c6fb",
+  "pixels": 48,
+  "tile": [
+    948,
+    1160,
+    24,
+    24
+  ],
+  "sourceScale": 0.53125,
+  "strokeWidth": 1.3,
+  "nightBrightness": 0.78,
+  "ink": {
+    "DAY_BRIGHT": [
+      156,
+      134,
+      150
+    ],
+    "DUSK": [
+      184,
+      160,
+      177
+    ],
+    "NIGHT": [
+      113,
+      99,
+      110
+    ]
+  },
+  "sources": {
+    "resources/chart-style/v1/fishing-pattern/XNFISH03.svg": "80c3dab237b3c332dd6a008f7e1e6d749c7fa18d7cc2fe7597f81429bbc88137",
+    "resources/chart-style/v1/fishing-pattern/XNFISH03-alpha.json": "ac16b7033d53baa3ed067e719a09ef8439a1c8a531a2bf4c2a207c21b1a4c117",
+    "docs/design/prototype/src/chart-marker-art.js": "be2c7f44817c29d3714412c7974d3cf07e238f65c7131958b0cb8ff6fbd7816d",
+    "docs/design/prototype/src/chart-symbols.css": "ca7ec18b38bf682600b6c3c39c5798c94b00bbaddd5589119d5fcb77ad599cb3",
+    "docs/design/prototype/src/style.css": "f943f5c91e2b260067e97a80d47fc923b64c3bb715c73a58ce1d4a6bf7a1bb46"
+  }
+}

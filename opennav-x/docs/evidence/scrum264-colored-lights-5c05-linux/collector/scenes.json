@@ -1,0 +1,228 @@
+{
+  "fixtureSha256": "c70d9e0f53e149270f85900f8576082db86781d64fbb71aa7d5ceb4af4aa22e3",
+  "featureAuditSha256": "567c4dea09a1d05a11919174e10268b7e75ea9e5ac85c281a10097bd0360e15b",
+  "preferredChannelGap": "No CATLAM3/4 or banded preferred-channel BOYLAT in GB4X0000; GB4X0001 also has only two ordinary single-color BOYLAT.",
+  "scenes": [
+    {
+      "id": "s64-lateral",
+      "cell": "GB4X0000",
+      "kind": "official IHO S-64 test geography, not real-world",
+      "center": [
+        -32.5186315,
+        61.0216421
+      ],
+      "scalePpm": 0.3,
+      "features": [
+        {
+          "class": "BOYLAT",
+          "attributes": {
+            "RCID": 219,
+            "PRIM": 1,
+            "GRUP": 2,
+            "OBJL": 17,
+            "RVER": 1,
+            "AGEN": 540,
+            "FIDN": 29141115,
+            "FIDS": 1,
+            "LNAM": "021C01BCA87B0001",
+            "BOYSHP": 1,
+            "CATLAM": 2,
+            "COLOUR": [
+              "4"
+            ],
+            "OBJNAM": "S7",
+            "ogrFid": 218,
+            "longitude": 61.0192483,
+            "latitude": -32.5237974
+          },
+          "expectedPinnedLookup": {
+            "id": "1038",
+            "RCID": "31090",
+            "class": "BOYLAT",
+            "type": "Point",
+            "table": "Simplified",
+            "attributes": [
+              "BOYSHP1",
+              "COLOUR4"
+            ],
+            "instruction": "SY(BOYLAT13);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)",
+            "displayPriority": "Hazards",
+            "radarPriority": "On Top",
+            "displayCategory": "Standard"
+          },
+          "expectedSymbols": {
+            "Standard": "BOYLAT13",
+            "XNav": "XNLAT013"
+          },
+          "related": []
+        },
+        {
+          "class": "BOYLAT",
+          "attributes": {
+            "RCID": 224,
+            "PRIM": 1,
+            "GRUP": 2,
+            "OBJL": 17,
+            "RVER": 1,
+            "AGEN": 540,
+            "FIDN": 29140975,
+            "FIDS": 1,
+            "LNAM": "021C01BCA7EF0001",
+            "LNAM_REFS": [
+              "021C01BCA7F00001"
+            ],
+            "FFPT_RIND": [
+              2
+            ],
+            "BOYSHP": 2,
+            "CATLAM": 1,
+            "COLOUR": [
+              "3"
+            ],
+            "OBJNAM": "S6",
+            "ogrFid": 223,
+            "longitude": 61.0240359,
+            "latitude": -32.5134656
+          },
+          "expectedPinnedLookup": {
+            "id": "1039",
+            "RCID": "31091",
+            "class": "BOYLAT",
+            "type": "Point",
+            "table": "Simplified",
+            "attributes": [
+              "BOYSHP2",
+              "COLOUR3"
+            ],
+            "instruction": "SY(BOYLAT24);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)",
+            "displayPriority": "Hazards",
+            "radarPriority": "On Top",
+            "displayCategory": "Standard"
+          },
+          "expectedSymbols": {
+            "Standard": "BOYLAT24",
+            "XNav": "XNLAT024"
+          },
+          "related": [
+            {
+              "class": "LIGHTS",
+              "attributes": {
+                "RCID": 223,
+                "PRIM": 1,
+                "GRUP": 2,
+                "OBJL": 75,
+                "RVER": 1,
+                "AGEN": 540,
+                "FIDN": 29140976,
+                "FIDS": 1,
+                "LNAM": "021C01BCA7F00001",
+                "COLOUR": [
+                  "3"
+                ],
+                "LITCHR": 2,
+                "SIGGRP": "(1)",
+                "SIGPER": 5.0,
+                "ogrFid": 222,
+                "longitude": 61.0240359,
+                "latitude": -32.5134656
+              }
+            }
+          ]
+        },
+        {
+          "class": "BOYLAT",
+          "attributes": {
+            "RCID": 228,
+            "PRIM": 1,
+            "GRUP": 2,
+            "OBJL": 17,
+            "RVER": 1,
+            "AGEN": 540,
+            "FIDN": 29140968,
+            "FIDS": 1,
+            "LNAM": "021C01BCA7E80001",
+            "LNAM_REFS": [
+              "021C01BCA7E90001"
+            ],
+            "FFPT_RIND": [
+              2
+            ],
+            "BOYSHP": 1,
+            "CATLAM": 2,
+            "COLOUR": [
+              "4"
+            ],
+            "OBJNAM": "S5",
+            "ogrFid": 227,
+            "longitude": 61.017694,
+            "latitude": -32.5146737
+          },
+          "expectedPinnedLookup": {
+            "id": "1038",
+            "RCID": "31090",
+            "class": "BOYLAT",
+            "type": "Point",
+            "table": "Simplified",
+            "attributes": [
+              "BOYSHP1",
+              "COLOUR4"
+            ],
+            "instruction": "SY(BOYLAT13);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)",
+            "displayPriority": "Hazards",
+            "radarPriority": "On Top",
+            "displayCategory": "Standard"
+          },
+          "expectedSymbols": {
+            "Standard": "BOYLAT13",
+            "XNav": "XNLAT013"
+          },
+          "related": [
+            {
+              "class": "LIGHTS",
+              "attributes": {
+                "RCID": 227,
+                "PRIM": 1,
+                "GRUP": 2,
+                "OBJL": 75,
+                "RVER": 1,
+                "AGEN": 540,
+                "FIDN": 29140969,
+                "FIDS": 1,
+                "LNAM": "021C01BCA7E90001",
+                "COLOUR": [
+                  "4"
+                ],
+                "LITCHR": 2,
+                "SIGGRP": "(1)",
+                "SIGPER": 5.0,
+                "ogrFid": 226,
+                "longitude": 61.017694,
+                "latitude": -32.5146737
+              }
+            }
+          ]
+        }
+      ],
+      "exactSelectedFeatureBoundsWSEN": [
+        61.0192483,
+        -32.5237974,
+        61.0240359,
+        -32.5134656
+      ],
+      "symbolTable": "Simplified (nSymbolStyle=76)",
+      "classification": "Expected pinned lookup from supplied attributes; actual emitted paint not yet observed",
+      "sourceFiles": {
+        "GB4X0000.000": {
+          "bytes": 945697,
+          "sha256": "c70d9e0f53e149270f85900f8576082db86781d64fbb71aa7d5ceb4af4aa22e3"
+        }
+      },
+      "scope": "Official IHO S-64 presentation-test geometry, not operational nautical coverage. No object insertion.",
+      "themes": [
+        "Day",
+        "Night",
+        "Day"
+      ]
+    }
+  ]
+}

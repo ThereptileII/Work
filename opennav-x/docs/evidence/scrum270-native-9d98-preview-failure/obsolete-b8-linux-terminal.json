@@ -1,0 +1,190 @@
+{
+  "remote_source": "b8cfbf809450208f723095ffb4e00d7800b619a5",
+  "local_source": "d5d71356d806ea8c3518644d10728a24f1334d1d",
+  "scope": "API terminal result only; no attribution to current1835/9d98 and no exhaustive obsolete artifact audit",
+  "url": "https://github.com/ThereptileII/Work/actions/runs/37114216075/job/111177754810",
+  "job": {
+    "id": 111177754810,
+    "name": "Linux integrated regression gate",
+    "status": "completed",
+    "conclusion": "success",
+    "run_id": 37114216075,
+    "logs_url": null,
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1
+      },
+      {
+        "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2
+      },
+      {
+        "name": "Fetch pinned source and install dependencies",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3
+      },
+      {
+        "name": "Reject untrusted public downloads using actual pinned Downloader",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 4
+      },
+      {
+        "name": "Actual WXCURL trust and bounded peer-response regressions",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 5
+      },
+      {
+        "name": "Build integrated application and run regressions without exceptions",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 6
+      },
+      {
+        "name": "Restore GTK chart controls after startup hide, resize and owner recapture",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 7
+      },
+      {
+        "name": "Installed peer CLI refuses key changes in a disposable profile",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 8
+      },
+      {
+        "name": "Staged loader check without profile initialization",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 9
+      },
+      {
+        "name": "Retain real harmonic sources across installed generation changes",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 10
+      },
+      {
+        "name": "Exercise shared profile mode cycle and IPC shutdown",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 11
+      },
+      {
+        "name": "Exercise real OpenCPN input with synthetic loopback NMEA",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 12
+      },
+      {
+        "name": "Record and replay normalized vessel state through the real UI",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 13
+      },
+      {
+        "name": "Observe normal upstream route progress with isolated synthetic routes",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 14
+      },
+      {
+        "name": "Marine instrument input through the upstream loopback connection",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 15
+      },
+      {
+        "name": "Marine N2K commissioning inputs and loss of data",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 16
+      },
+      {
+        "name": "Boat-specific N2K mapping and independent producer expiry",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 17
+      },
+      {
+        "name": "Live Signal K and malformed WebSocket input recovery",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 18
+      },
+      {
+        "name": "Manual pilot through actual OpenCPN TCP and loopback feedback",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 19
+      },
+      {
+        "name": "Navigation objects, AIS and anchor integration in a non-UTC timezone",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 20
+      },
+      {
+        "name": "Mouse chart gestures, waypoint Go To and route creation",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 21
+      },
+      {
+        "name": "Crash-loop recovery with real disposable processes",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 22
+      },
+      {
+        "name": "Exercise preview pages and all demo scenarios",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 23
+      },
+      {
+        "name": "Public ENC chart and plugin rendering gate",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 24
+      },
+      {
+        "name": "Actual elapsed-time trip and resource stability",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 25
+      },
+      {
+        "name": "Build fixture-free Linux product and run its loader check",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 26
+      },
+      {
+        "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 27
+      },
+      {
+        "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 54
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 55
+      }
+    ]
+  }
+}

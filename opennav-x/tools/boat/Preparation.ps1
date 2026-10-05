@@ -54,7 +54,7 @@ function Assert-PreparationStock($Context) {
 }
 function Assert-PreparationProcesses($Processes,[string[]]$Roots) {
   foreach ($process in @($Processes)) {
-    if ($process.Name -match '^(?i:opencpn|oeserver\w*|oexserver\w*|rtl_ais|rtl_fm|aisdecoder|ais-?catcher|hackrf_transfer)\.exe$') { throw 'Close OpenCPN/XNav and plugin helper processes normally before preparation.' }
+    if ($process.Name -match '^(?i:opencpn|oeserver\w*|oexserver\w*|rtl_ais|rtl_fm|aisdecoder|ais-?catcher|hackrf_transfer)\.exe$') { throw 'Close OpenCPN/SKAGER and plugin helper processes normally before preparation.' }
     if (-not $process.ExecutablePath) { continue }
     foreach ($root in $Roots) {
       if ($process.ExecutablePath.StartsWith($root+'\',[StringComparison]::OrdinalIgnoreCase)) { throw 'A process is running from an application/plugin tree.' }

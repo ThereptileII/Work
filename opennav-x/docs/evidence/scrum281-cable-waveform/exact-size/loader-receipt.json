@@ -1,0 +1,52 @@
+{
+  "coreSourceSha256": "8eec8029788264f9e0bf6583b4bdc13947865e21c62981b77942f470e589a6ed",
+  "privateSourceSha256": "a88dd1739236032b23548a70e45bf9b8c649118678b36743ee5e754b47e6c208",
+  "privateGitBlob": "30ae2477b4b8ba748a8cd6f046079e8607b8151f",
+  "identicalExecutedMethods": {
+    "ProcessVectorTag": "a22b8e15ddd5f1ab1e88dc44780d60f6b26e6df7e0b9a82ba0e29dac4b733ded",
+    "ProcessLinestyles": "4ac3984f0a9f2b017e131a9fbda967c41f958cc3e5ccffd6db53b1e95dd52a11",
+    "BuildLineStyle": "79a767fe5b54df0c64ff6926ac6a891b0486c84eda35c36a8ad98801f6817aa5"
+  },
+  "commands": [
+    {
+      "stage": "compile",
+      "exit": 0,
+      "command": [
+        "c++",
+        "-std=c++17",
+        "-O0",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-Wno-unused-parameter",
+        "-Wno-deprecated-copy",
+        "-I/home/standard/Projects/X-nav/.local/sysroot/usr/lib/wx/include/gtk3-unicode-3.2",
+        "-I/home/standard/Projects/X-nav/.local/sysroot/usr/include/wx-3.2",
+        "-DWXUSINGDLL",
+        "-D__WXGTK3__",
+        "-D__WXGTK__",
+        "-D_FILE_OFFSET_BITS=64",
+        "-I/home/standard/Projects/X-nav/upstream/OpenCPN/libs/s52plib/src",
+        "-I/home/standard/Projects/X-nav/upstream/OpenCPN/libs/geoprim/src",
+        "-I/home/standard/Projects/X-nav/upstream/OpenCPN/libs/pugixml",
+        "/home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/.local/small-loader/fixture.cpp",
+        "/home/standard/Projects/X-nav/upstream/OpenCPN/libs/pugixml/pugixml.cpp",
+        "-L/home/standard/Projects/X-nav/.local/sysroot/usr/lib",
+        "-lwx_gtk3u_core-3.2",
+        "-lwx_baseu-3.2",
+        "-o",
+        "/home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/.local/small-loader/loader"
+      ]
+    },
+    {
+      "stage": "execute",
+      "exit": 0,
+      "command": [
+        "/home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/.local/small-loader/loader",
+        "/home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/.local/exact-resource/resources/chartsymbols.xml"
+      ]
+    }
+  ],
+  "generatedXmlSha256": "87c6ba738fd8c3ffccc44b8aca6c31922f5ca2633356e9e6f886bcbf9d11a9a0",
+  "scope": "Real shared loader methods and actual core headers. Private bodies byte-identical. Container/constructor fixture only; no actual private DLL or DC/GL painter executed."
+}

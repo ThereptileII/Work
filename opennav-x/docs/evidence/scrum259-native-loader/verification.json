@@ -1,0 +1,171 @@
+{
+  "status": "passed",
+  "localSource": "6dafd29db791c773793c2b1155c358cc81452fc2",
+  "remoteCommit": "4609f31dba3e970802e6ba3fbe3438e129ab9aad",
+  "sourceReceipts": [
+    {
+      "recordedPath": "src/integration/OChartsModuleLoader.cpp",
+      "localPath": "src/integration/OChartsModuleLoader.cpp",
+      "matches": "checkoutCRLF",
+      "bytes": 7868,
+      "sha256": "3d0afe5241f42b7acb0e6f702c1258b9afaa02bb81be0102d2584d3cca24ed47"
+    },
+    {
+      "recordedPath": "src/integration/OChartsModuleLoader.h",
+      "localPath": "src/integration/OChartsModuleLoader.h",
+      "matches": "checkoutCRLF",
+      "bytes": 1296,
+      "sha256": "38cdda23e1a8c9c516b5b53b9a5ee8d76285adf520395418332bf51327690896"
+    },
+    {
+      "recordedPath": "src/integration/PluginPresentationLoader.cpp",
+      "localPath": "src/integration/PluginPresentationLoader.cpp",
+      "matches": "checkoutCRLF",
+      "bytes": 427,
+      "sha256": "a06d7e0d430172ab4e829416bcb882a27300a6d857dd2858c859280832cd1df4"
+    },
+    {
+      "recordedPath": "src/integration/PluginPresentationLoader.h",
+      "localPath": "src/integration/PluginPresentationLoader.h",
+      "matches": "checkoutCRLF",
+      "bytes": 709,
+      "sha256": "e25cc7ea7856768c41951a16edaf4ea9386213be4a0fdfafa4907764b0764213"
+    },
+    {
+      "recordedPath": "src/integration/PluginPresentationFallback.h",
+      "localPath": "src/integration/PluginPresentationFallback.h",
+      "matches": "checkoutCRLF",
+      "bytes": 1721,
+      "sha256": "a4ba741c17df9a73f70dae515c3bc363088d397b34cc429a9fc4eb68b72fd525"
+    },
+    {
+      "recordedPath": "src/plugin-adapters/ChartPresentationBindingV1.h",
+      "localPath": "src/plugin-adapters/ChartPresentationBindingV1.h",
+      "matches": "checkoutCRLF",
+      "bytes": 2315,
+      "sha256": "4f8b4e10d8e302c868e20b9b72241a8215cceac3d8fad9ad9e8c62634492ef7e"
+    },
+    {
+      "recordedPath": "src/plugin-adapters/ocharts/BindingState.h",
+      "localPath": "src/plugin-adapters/ocharts/BindingState.h",
+      "matches": "checkoutCRLF",
+      "bytes": 4088,
+      "sha256": "c10e46310dc72621d3fac2ac272ed282aab1feb5c565db412ebb2c23062fc870"
+    },
+    {
+      "recordedPath": "tests/windows_ocharts_loader/CMakeLists.txt",
+      "localPath": "tests/windows_ocharts_loader/CMakeLists.txt",
+      "matches": "checkoutCRLF",
+      "bytes": 2177,
+      "sha256": "08b985909e533fdf10d25d0f16ddddef3d4bbea2c6a2fdde732148fdb485d114"
+    },
+    {
+      "recordedPath": "tests/windows_ocharts_loader/fixture.cpp",
+      "localPath": "tests/windows_ocharts_loader/fixture.cpp",
+      "matches": "checkoutCRLF",
+      "bytes": 3507,
+      "sha256": "618751e07b73799478ee3b90d2e5edff3d1f7bf34f2142522f0104d8ccc93f35"
+    },
+    {
+      "recordedPath": "tests/windows_ocharts_loader/loader_test.cpp",
+      "localPath": "tests/windows_ocharts_loader/loader_test.cpp",
+      "matches": "checkoutCRLF",
+      "bytes": 18523,
+      "sha256": "5238ae39e8f4cba7095908fc3773687e1d18904693c884b45208737a3ba1aa00"
+    },
+    {
+      "recordedPath": "tests/windows_ocharts_loader/inputs.lock.json",
+      "localPath": "tests/windows_ocharts_loader/inputs.lock.json",
+      "matches": "checkoutCRLF",
+      "bytes": 1183,
+      "sha256": "7520333aba2a38f2bca5f4316a5faa8b229dbbb057e84dc1a57e8882bc53feae"
+    },
+    {
+      "recordedPath": "tools/test-ocharts-loader-windows.py",
+      "localPath": "tools/test-ocharts-loader-windows.py",
+      "matches": "checkoutCRLF",
+      "bytes": 9980,
+      "sha256": "d4b9f25705ca2d440c171adaeacc91b351c462fe1d149294c700527f938a6100"
+    },
+    {
+      "recordedPath": "tools/test-windows-changed-units.py",
+      "localPath": "tools/test-windows-changed-units.py",
+      "matches": "checkoutCRLF",
+      "bytes": 37232,
+      "sha256": "f7a3084410a11700bb06670222b71d78c9bcc1f417599dcb030c71a56714b180"
+    },
+    {
+      "recordedPath": "tools/windows-wx.lock.json",
+      "localPath": "tools/windows-wx.lock.json",
+      "matches": "checkoutCRLF",
+      "bytes": 1017,
+      "sha256": "2fb563c4de7819d4b10d7a567e59510cd033c3b9cb55ce4ebb654964da60267f"
+    },
+    {
+      "recordedPath": "../.github/workflows/skager-ocharts-loader.yml",
+      "localPath": ".github/workflows/skager-ocharts-loader.yml",
+      "matches": "checkoutCRLF",
+      "bytes": 947,
+      "sha256": "040dfdb8093e92b54979400e2454625c03e947e90134bf06a9b7c08e8d7b2a16"
+    }
+  ],
+  "zipEntries": 32,
+  "allZipCrcsVerified": true,
+  "groupCount": 38,
+  "expectedInvalidHandleError": 126,
+  "unexpectedDllEvents": false,
+  "runtimeReceipts": {
+    "count": 11,
+    "checkedByExactCiWrapperBeforeAndAfter": true,
+    "independentlyRehashedCurrentRunBinaries": false,
+    "reason": "The small artifact intentionally contains receipts and logs, not executable, fixture or runtime binaries."
+  },
+  "fixturePeReceipts": {
+    "fixture_good.dll": {
+      "bytes": 16384,
+      "sha256": "a0bd6d02742130fcad864602edc44c670225250768588ab324910197b70bc6c0",
+      "pe": {
+        "machine": "I386",
+        "optionalHeader": "PE32",
+        "dll": true
+      }
+    },
+    "fixture_no_bind.dll": {
+      "bytes": 14848,
+      "sha256": "7380545d8e33ba6aa4e515d46d22c95a63c03ffec7555c065abadecd1eb4a2fb",
+      "pe": {
+        "machine": "I386",
+        "optionalHeader": "PE32",
+        "dll": true
+      }
+    },
+    "fixture_no_status.dll": {
+      "bytes": 15360,
+      "sha256": "4ad5d36200eb1cbea44ff5cb4e10798b4df9f4280d5a5b0f81b6aa86ddaf3ee2",
+      "pe": {
+        "machine": "I386",
+        "optionalHeader": "PE32",
+        "dll": true
+      }
+    },
+    "fixture_no_create.dll": {
+      "bytes": 16384,
+      "sha256": "7af034c04e859450a3c0c3eae97d23b7ae440090729158c3c471f0f3a16c5f91",
+      "pe": {
+        "machine": "I386",
+        "optionalHeader": "PE32",
+        "dll": true
+      }
+    },
+    "fixture_no_destroy.dll": {
+      "bytes": 16384,
+      "sha256": "f3fa99efb7f8a784b03228139da8f20184584763e3f061ffd30b355ab0829132",
+      "pe": {
+        "machine": "I386",
+        "optionalHeader": "PE32",
+        "dll": true
+      }
+    }
+  },
+  "nativeProductAcceptance": false
+}

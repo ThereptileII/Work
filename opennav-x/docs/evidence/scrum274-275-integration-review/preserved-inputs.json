@@ -1,0 +1,53 @@
+{
+  "20ee0b566527ceab5d46663df348d3f96fd905e8": {
+    "docs/evidence/scrum274-connection-observation/README.md": "8e50e59fa4fe0260ebcfd199129bfb7e4163753838986d99b624e6f2e5996635",
+    "docs/evidence/scrum274-connection-observation/local-proof.json": "05fb519484fa422e12d54fc3f1f8a3ca9f5ca950435eaa3ce99fa9aba009ef56",
+    "docs/evidence/scrum274-connection-observation/provider-production.command.json": "e9060137cc62af96af6adba208adcfc160ff3eccd195da76a9c602d2d5f0c7d8",
+    "docs/evidence/scrum274-connection-observation/provider-tests.log": "408c9ee38b2a0c931f4940743a9476000bc459d541d8f5c4c7fa3b9a15ae5736",
+    "docs/evidence/scrum274-connection-observation/session-tests.log": "71d56d705ec361ea8a0652dd1f77e8b7285458f947063ec529d6c6635dc604c4",
+    "docs/evidence/scrum274-connection-observation/transport-tests.log": "479c1bc7ce5bfdef4d97234b7d3499157c6851c3f5f6e2d7ea29f14971c362b2",
+    "patches/opencpn-5.12.4-ais-transport.patch": "ee6689b8943284347fadca9564892b31db4c43db2a007412ac3fdc2072d07fd7",
+    "src/ais/AisStreamProvider.cpp": "1b7d713f3e832119c02150f8aa283a1aae482daf2f1408b5cbcf21449963768b",
+    "src/ais/AisStreamProvider.h": "01c503d89e3e4332b1e992545c324dc13ae4be4bdadc1dc8ed5ac12ddd604b16",
+    "src/ais/AisStreamSession.cpp": "5f715a56a9aefdecbadf9faf297b833d9f76d322bb76443fdcdc4a907af883dc",
+    "src/ais/AisStreamSession.h": "fcaf050125d3847b85f8487563d61c61bd8445a70686d3cc6a23c365563f63ac",
+    "src/ais/Provider.h": "cbbf30f2d55bec7b1be3a6b8acf73c17976986e08c4aa33d088f4dc34d75c210",
+    "tests/ais_session_tests.cpp": "d3d15b9ca0a9ed45dcde0cac229ee4cebea44cead91b2592666e6a1890ce7c6e",
+    "tests/ais_transport/client.cpp": "1f0a9fb3628a296f26732f476163f429f6b5c2f242ba61d59a07de8adf36fc00",
+    "tests/ais_transport/provider_client.cpp": "f3d7c4288c160a432939b45c92e5102ca34767ad365a28c43b6aca1d1862bb9f",
+    "tests/ais_transport/provider_tests.py": "7a316e5b02d35a31ce42b78bba9c0e99065e73e27c100aa6ca0399c9cce3007c"
+  },
+  "e4400d8acabf10e012398caf164d0e9973567b46": {
+    ".github/workflows/opennav-baseline.yml": "043ff433685ccc47fd42310c77e39cca8331a128cf117d42834b7913ca317d77",
+    "docs/evidence/scrum274-connection-observation/native-gate.md": "946560a6e1769382790c07d6b03af881633bf869a6790ed440dacfc24c352010",
+    "tests/windows_ais_runtime/CMakeLists.txt": "a6f418624bf3c159cdce6a189cc96ee8bafde00e1d297ee3c4d8a67b55b224ac",
+    "tools/test-ais-runtime-gate.py": "d9b12ace026099336734e30c339ff9ce162eb8c25f2c4b4ae99265f0a3468854",
+    "tools/test-ais-runtime-windows.py": "29a72ae6412c6e24686de306cda97cc5e0b57ebec6dad96cd6fcb523c0ac1240"
+  },
+  "ef266211e214c9ad57b14c7283b3ecd2fe71c67a": {
+    "docs/evidence/scrum275-ca-light-point/README.md": "3b259338ba3f0736f7b493b5ce55f406555fbe8f25ade743b049e7787486209b",
+    "docs/evidence/scrum275-ca-light-point/compile-changed.py": "ccc9d170a3b81c822f31f26a1b93b7252e01677f6dc154c7b7f726e278327f34",
+    "docs/evidence/scrum275-ca-light-point/compile-commands.json": "cb10023c56e5846e10fd8a283baf0665be4fc6eefb5a66d30d98ed8966d2088a",
+    "docs/evidence/scrum275-ca-light-point/core-s52plib.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/evidence/scrum275-ca-light-point/core-s57chart.log": "7fd7405824a0ad118ee78e261948166f2293324a414283d9d3b9666e4c01d91c",
+    "docs/evidence/scrum275-ca-light-point/count-source-points.py": "d241af412ae8ae2ad8b6f210b5f1d9d09a9417d95e5e766105140bafcebc2c70",
+    "docs/evidence/scrum275-ca-light-point/inspect-source-cases.py": "1722cdcdae1bb50320e41f577aa69ba21b58555153ddf438d9797956bde85fb9",
+    "docs/evidence/scrum275-ca-light-point/method-receipt.json": "6f2b0105b1a3741dcf679ac9f33e04ad3ea23bc6b0f065683f08a6e06344732c",
+    "docs/evidence/scrum275-ca-light-point/objects.json": "49b1043e83d12986659cc5dfbf67f7760d8682a4cdd1197da75c53a02945e079",
+    "docs/evidence/scrum275-ca-light-point/private-disabled.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/evidence/scrum275-ca-light-point/private-eSENCChart.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/evidence/scrum275-ca-light-point/private-s52plib.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/evidence/scrum275-ca-light-point/source-cases.json": "8806e98853d104e94a698e5924b6916fec15d81611a57e186c90699dbc14da19",
+    "docs/evidence/scrum275-ca-light-point/source-point-counts.json": "6ad0edb49a5067cdef3fe90689fbaf61057b417020d5f9d2b4a8e8e75050f300",
+    "docs/evidence/scrum275-ca-light-point/source-proof.json": "4b84190269a5348c384cca4a6db97e78402b9f13ff61b828356220b07931166c",
+    "docs/evidence/scrum275-ca-light-point/verify-source.py": "90342e995392d7b4595ef7b47aa1437c5f6311799d3b45509a93350055968243",
+    "patches/ocharts-skager-presentation.patch": "37519712666151ff0f14c78128673e8c0be21cbdebf33765b6ffeda5b530c488",
+    "patches/opencpn-5.12.4-chart-presentation.patch": "732178e171766cf19dc791b3b2c1009f0517f8a3096a2b1b13637d3713f59f59",
+    "src/integration/ChartCaLightPoint.h": "ec43bd225b4574c5dc02a4c18c94a8ef670894919e5cd4efb05a899230bd9376",
+    "tests/chart_ca_light_point_test.cpp": "4a76f74dbf603b4fc29685225e7a3107fa6727105a2cd76276f7a75040048e67",
+    "tests/windows_chart_units_tests.py": "82400164f3710901e80f6e8e686033043d50e3e87182e4386bb9471a97444fc7",
+    "tools/prepare-ocharts-adapter.py": "4034c39b1ef1790cdb6f741808de1ebbffdf17aae8cc57d128bc8584a3794b25",
+    "tools/test-ca-light-point.py": "1467ed5e69af1177a8df933539788f5f370d96b00eb1fef56c5b2f8394e07484",
+    "tools/windows_chart_units.py": "500e5be7072286d552cefe3d9307ee2c91f581059331a94a7ef859b1a2ade6a8"
+  }
+}

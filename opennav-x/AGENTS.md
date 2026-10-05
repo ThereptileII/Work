@@ -4,6 +4,12 @@ The authoritative product specification is:
 
 `OpenNavX_Codex_Project_Specification.md`
 
+The later user-approved [delivery policy](docs/delivery-workflow.md) takes
+precedence over older delivery/channel and design-validation scheduling rules in
+that original specification and the public-beta contract. Preserve both supplied
+source documents and their historical evidence; do not rewrite them as if they
+originally contained the later policy.
+
 The authoritative visual reference is the unchanged supplied HTML prototype:
 
 `docs/design/prototype/index.html`
@@ -47,14 +53,26 @@ transitions rather than assuming status-category queries identify each column.
 
 ## Development strategy and task sizing
 
-Use many small, bounded tasks when the work can be split cleanly: GPT-5.6-Luna
-handles straightforward tasks, GPT-5.6-Sol handles heavier tasks, and the root
-agent handles exceptional complexity and integration decisions. Tie every task
-to its Jira issue and record explicit ownership and acceptance criteria. Keep
-context limited and handoffs concise.
+Use many small, bounded parallel tasks when the work can be split cleanly.
+The user's latest model instruction is **Astra High** for subagents; it supersedes
+the earlier Luna/Sol allocation. The root agent is the single coordinator for
+integration, full application builds and releases. Tie every task to its Jira
+issue, assign non-overlapping file ownership and acceptance criteria, and return
+focused test results to the coordinator. Subagents must not independently
+start duplicate full builds, deliveries or boat operations. Integrate a coherent
+batch and inspect the combined change; request one build/delivery when its
+product inputs require it. Keep context limited and handoffs concise.
 
-For reversible, noncritical documentation, copy, layout, or function changes,
-run focused checks relevant to the change and a smoke or visual review. Avoid
+Choose checks from actual build and package inputs, following
+[build efficiency](docs/build-efficiency.md). Ordinary documentation and test
+helper changes need focused checks appropriate to their effect; they do not
+request a new application package or qualify a new product/source revision.
+Packaged release notes, licenses, runtime resources, installer code and build
+recipes are product inputs even when a filename looks like documentation.
+Unknown inputs or unavailable comparison history take the conservative build
+path. For reversible, noncritical copy, layout or function changes, run focused
+functional checks and an applicable smoke check. Run
+design/visual-conformance review only when the user explicitly requests it. Avoid
 redundant broad reruns and tests that only mirror the implementation. Preserve
 all navigation, safety, data-loss, security, authentication, payment,
 installer, updater, recovery, exact-revision, native Windows, boat, release,
@@ -63,8 +81,36 @@ assertions. Batch full suites at integration and release milestones instead of
 running them for every minor edit. Keep Jira as the sole backlog; do not create
 a TODO file.
 
-`SCRUM-97` governs this workflow. `SCRUM-14`, `SCRUM-15` and `SCRUM-16` retain
-the existing prototype, chart-presentation and Online AIS acceptance gates.
+Update documentation when a change materially affects a contract, architecture,
+delivery procedure, safety boundary or recorded evidence. Do not create a new
+status report or rewrite historical specifications for every small edit. Preserve
+failed and incomplete evidence, and record the package revision separately from
+a later helper revision. Retain application outputs before downstream tests so
+a helper repair can retest exact bytes without rebuilding or relabeling them.
+Long-running suites require an explicit request and run as separate background
+work; pending required results remain pending. The existing endurance-test skip
+continues until the user changes it.
+
+`SCRUM-97` governs this workflow. The user's 2026-10-04 decision in
+[docs/delivery-workflow.md](docs/delivery-workflow.md) separates frequent Staging
+delivery from Production readiness; `SCRUM-290` tracks its CI implementation.
+Development/default delivery is **STAGING**. Standard delivery in both channels
+uses versioned GitHub Releases. Start Production readiness/promotion only on an
+explicit user instruction for a selected candidate. Promote its exact qualified
+package bytes, with channel identity separate from the embedded package version.
+Keep both Staging and Production releases **draft** while public access is closed;
+Production promotion does not authorize public publication. Use
+`opennav-baseline.yml` for Staging, manual `skager-production.yml` for promotion,
+and `opennav-prototype.yml` only for explicitly requested design review.
+Production promotion must not initiate design validation, prototype comparisons,
+aesthetic refinement, screenshot review sets or design-only DPI sweeps unless
+the user explicitly requests that work. This supersedes older blanket visual
+promotion requirements. Functional chart rendering, usable controls, navigation
+correctness, data preservation and security remain required. Do not reclassify
+design review as a functional gate to bypass this instruction.
+`SCRUM-14`, `SCRUM-15` and `SCRUM-16` retain their documented work and evidence;
+unperformed design acceptance is not a pass and is not an automatic promotion
+blocker under this decision. Functional/safety blockers remain blockers.
 The approved public identity in `SCRUM-89` is **SKAGER / SKAGER App** with
 `skager.app` selected; domain control and legal clearance remain separate gates.
 Preserve internal XNav/OpenNav namespaces where renaming adds technical risk,
@@ -116,6 +162,10 @@ full readiness report is reviewed and the user explicitly gives GO.
 
 ## Visual development
 
+This section defines how to perform an explicitly requested design review.
+It does not authorize automatic visual validation during Staging delivery or
+Production promotion. The 2026-10-04 delivery policy above controls scheduling.
+
 Reference resolution: **1280×800**.
 
 Also qualify **1920×1080**, as requested by the user on 2026-10-01. Preserve
@@ -131,8 +181,9 @@ current implementation. Match exact computed values and interactions; do not
 redesign the prototype. Its illustrative values/geography and simulated
 equipment behavior are not production data or navigation semantics.
 
-Native Windows and the boat display remain visual acceptance gates. Linux font
-fallback screenshots do not qualify Windows typography. Keep the UI native.
+When design validation is requested, native Windows and the boat display remain
+the visual acceptance authorities. Linux font fallback screenshots do not
+qualify Windows typography. Keep the UI native.
 
 Do not approximate XNav using visibly native desktop controls where the design specifies an XNav component.
 

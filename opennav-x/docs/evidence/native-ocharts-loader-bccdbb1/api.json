@@ -1,0 +1,66 @@
+{
+  "artifact": {
+    "id": 11293353341,
+    "name": "native-ocharts-loader-guards-bccdbb11cef827d3b63731fe1e874bc72bf47d2d",
+    "size_in_bytes": 17496,
+    "url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/11293353341",
+    "archive_download_url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/11293353341/zip",
+    "expired": false,
+    "created_at": "2026-10-04T04:42:48Z",
+    "expires_at": "2027-01-02T04:41:38Z",
+    "updated_at": "2026-10-04T04:42:48Z",
+    "digest": "sha256:4f4f1023c471b8a9f83369e832c2ba60f52ab967ae01079768a50887afd9dea1",
+    "workflow_run": {
+      "id": 37177738716,
+      "repository_id": 864043804,
+      "head_repository_id": 864043804,
+      "head_branch": "opennav-x-beta2-ui",
+      "head_sha": "bccdbb11cef827d3b63731fe1e874bc72bf47d2d"
+    }
+  },
+  "job_id": 111363797689,
+  "steps": [
+    {
+      "name": "Set up job",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 1
+    },
+    {
+      "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 2
+    },
+    {
+      "name": "Verify adapter preparation and build wiring",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 3
+    },
+    {
+      "name": "Exercise actual module loading with harmless DLLs",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 4
+    },
+    {
+      "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 5
+    },
+    {
+      "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 10
+    },
+    {
+      "name": "Complete job",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 11
+    }
+  ]
+}

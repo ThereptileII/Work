@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "commit": "78eccb8b7f21b260ded57d3ba763f884d60c8180",
+  "binary_sha256": "a58256d8c824a43d7d74b90deb6ad6697a2ba1dabbf47b13c4e8057dd4738ffb",
+  "build_flags": {
+    "OCPN_BUILD_TEST": "ON",
+    "OPENNAV_ENABLE_ROUTE_SCENARIO": "ON",
+    "XNAV_ENABLE_PILOT_LOOPBACK_TESTS": "ON",
+    "XNAV_ENABLE_TEST_FIXTURES": "ON"
+  },
+  "manifest_sha256": "03533971dfba1bb3cb2cba6ab52b1528a56b4f27c8b4fc118b4b503c25b4bdde",
+  "resource_files": {
+    "chartsymbols.xml": {
+      "sha256": "d4e9274e379b30368ac355f90e5c9786e86f7c979fb82c524ebddf366dc6fba9",
+      "bytes": 2232050
+    },
+    "S52RAZDS.RLE": {
+      "sha256": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26",
+      "bytes": 1305627
+    },
+    "rastersymbols-day.png": {
+      "sha256": "a737bdb7d372077c2bfe806c5f020f45b4517029c0b43913084720664c520ea3",
+      "bytes": 197801
+    },
+    "rastersymbols-dusk.png": {
+      "sha256": "201f0663bd786d5e1d8ba09d8d43b106df164d5a282f60860258d226adadb6c9",
+      "bytes": 172357
+    },
+    "rastersymbols-dark.png": {
+      "sha256": "9c91273e3dbe9563d79b2d2b0a757bb83207aa0db9183e8aecc1112070ead724",
+      "bytes": 167654
+    }
+  },
+  "source_evidence": {
+    "src/integration/ChartNameTypography.h": "23688fca7f9ed456e7458fe1228e0bf9908660a953732cb6e6749c5838e1f4d9",
+    "src/integration/ChartCogPredictor.h": "3e7841bb311bb9d4951be082a669f4737ee978dd426df4899a22bc9971033c90",
+    "src/integration/ChartPresentation.cpp": "9e26a9b5b5dabe603d14cff54c203f39b669270af88bd7a13705b037c6c859a4",
+    "patches/opencpn-5.12.4-xnav.patch": "dfbacadf42502d1d0366745b3a187d256e620b0d2ea7dba9e8912c46e999e0b3",
+    "patches/opencpn-5.12.4-chart-presentation.patch": "6525f9b389d53d3882fab77f86158fe5921f58cd6d8519f10b65cd417894bba4",
+    "resources/chart-style/v1/definition.json": "4c91c3bd0c74d09343c185ddd956b32e818a1f82b5fb27569dc1732b846e45ed",
+    "docs/design/prototype-tokens.json": "111ee35527a974b2df6c2c4af0afd04e5aebdf14bad3004a98be9064aef790c6",
+    "src/application/SkagerBrandAsset.h": "cc9f469181717b4fb80986b9406d2d6d078bfdb5971d2e68f6b4072b8dcd2019",
+    "resources/branding/provenance.json": "f639aa4ffa1194fb527388b15b2f9880746829d4120e30b4ddca32b0326557a6"
+  },
+  "authority": "Private Linux development staging only; not a production, native Windows or boat qualification",
+  "runtime_identity": "Must be confirmed by loader self-test and capture diagnostics before accepting images"
+}

@@ -1,6 +1,7 @@
 """Pure geometry contracts; these do not claim native rendering acceptance."""
 import copy
 import importlib.util
+import json
 from pathlib import Path
 
 spec = importlib.util.spec_from_file_location('chartcheck', Path(__file__).resolve().parents[1] / 'tools/chart-render-check.py')
@@ -33,6 +34,7 @@ def composition(client):
              rect(tx+97,ty+4,44,44,'+'),rect(tx+141,ty+4,44,44,'−'),
              rect(right-90,y+90,68,90,'North'),
              rect(x+108,bottom-81,142,44,'Follow boat'),
+             rect(right-78,y+190,44,44,'Layers'),
              rect(x+w-180,y+h-24,164,14,'Source health')],
     }
 
@@ -95,12 +97,30 @@ for change in ('chart-outside', 'rail-hidden', 'rail-clipped', 'rail-overlap',
     reject(bad)
 print('Prototype native-client/outer and Linux composition pass; 29 small/unsettled/clipped/overlapping/obsolete layouts rejected')
 
+# Retain only the layout fields consumed by the oracle from the failed native
+# Linux CI capture, not the complete profile or unrelated diagnostic data.
+retained = json.loads((Path(__file__).parent / 'fixtures/chart-layout-88-layers.json').read_text())
+actual = retained['display']
+assert chartcheck.navigation_layout(actual, retained['frame'], retained['client'])['prototype_floating_controls'] == 7
+for change in ('missing', 'hidden', 'duplicate', 'identity', 'x', 'y', 'width', 'height', 'arbitrary'):
+    bad = copy.deepcopy(actual)
+    controls = bad['interaction_controls']
+    layers = next(c for c in controls if c['label'] == 'Layers')
+    if change == 'missing': controls.remove(layers)
+    elif change == 'hidden': layers['visible'] = False
+    elif change == 'duplicate': controls.append(copy.deepcopy(layers))
+    elif change == 'identity': layers['label'] = 'Unspecified overlay'
+    elif change == 'arbitrary': controls.append(rect(500,300,44,44,'Unspecified overlay'))
+    else: layers[change] += 2  # Exceed the unchanged one-pixel rounding allowance.
+    reject(bad, retained['frame'], retained['client'])
+print('Retained Linux Layers capture passes; 9 missing/hidden/duplicate/misidentified/moved/oversized/arbitrary controls rejected')
+
 # Independent exact ink fixtures: failure must not relearn a water-only canvas
 # or accept a Standard palette while XNav is requested (or the reverse).
 palettes={
     ('XNav','Day'):('eeeee2','d5e5e5'),
     ('XNav','Dusk'):('4e615d','344f59'),
-    ('XNav','Night'):('25342f','121e24'),
+    ('XNav','Night'):('1d2925','0e171c'),
     ('Standard','Day'):('aaaf50','aac3f0'),
     ('Standard','Dusk'):('555728','556178'),
     ('Standard','Night'):('2a2b14','2a303c'),

@@ -28,6 +28,11 @@ struct RouteRead {
   double upstream_latitude_deg = 0, upstream_longitude_deg = 0;
   std::optional<double> range_to_active_nm;
   std::optional<double> bearing_to_active_true_deg{};
+  std::optional<double> cross_track_error_nm;
+  // Raw pinned GetXTEDir: -1 steers left, +1 right. Unknown stays absent.
+  std::optional<int> cross_track_direction;
+  double distance_units_per_nm = 1.;
+  std::string distance_unit = "NM";
 };
 
 bool SameRoute(const RouteCopy& a, const RouteCopy& b);  // geometry, order, IDs

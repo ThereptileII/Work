@@ -1,0 +1,65 @@
+{
+  "base": "585fd0f",
+  "upstream": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "checks": 90,
+  "elapsedSeconds": 32.97901055999682,
+  "palette": {
+    "DAY_BRIGHT": [
+      238,
+      238,
+      226
+    ],
+    "DUSK": [
+      78,
+      97,
+      93
+    ],
+    "NIGHT": [
+      29,
+      41,
+      37
+    ]
+  },
+  "contrasts": {
+    "DAY_BRIGHT": {
+      "LANDA": 17.23122056497134,
+      "DEPDW": 15.509329915590696,
+      "DEPVS": 8.240006811059887
+    },
+    "DUSK": {
+      "LANDA": 5.13829005113611,
+      "DEPDW": 6.809102092715479,
+      "DEPVS": 2.7917731837538264
+    },
+    "NIGHT": {
+      "LANDA": 3.8588682186180314,
+      "DEPDW": 4.652412028587724,
+      "DEPVS": 2.6849355319777892
+    }
+  },
+  "restoredXmlSha256": "83499e60211dad17233fb2e82add703c449944aa2b5e4e345c892886928c0b33",
+  "baselineXmlSha256": "83499e60211dad17233fb2e82add703c449944aa2b5e4e345c892886928c0b33",
+  "generatedFiles": {
+    "chartsymbols.xml": {
+      "sha256": "980eb621e5c8cc52815bb25e3e288daf71ca9a8551b9509b65b7447e03b54d7c",
+      "bytes": 2232038
+    },
+    "S52RAZDS.RLE": {
+      "sha256": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26",
+      "bytes": 1305627
+    },
+    "rastersymbols-day.png": {
+      "sha256": "c2b8a3b646a15d1483b060a4df1a470af278221db0f219a31f18963a94c9979f",
+      "bytes": 196751
+    },
+    "rastersymbols-dusk.png": {
+      "sha256": "1beac21361321e7b71c8270c3430decd2a27954e5eddd987bba79494ad1c8b4a",
+      "bytes": 171356
+    },
+    "rastersymbols-dark.png": {
+      "sha256": "bdf132c9799214470fab355af467768b43f26b86ee6483d9b2363e91714ca434",
+      "bytes": 166498
+    }
+  },
+  "scope": "One generation; exact three-role reverse equality, affected existing assertions, contrasts and three negative semantic cases. No app/CI/boat."
+}

@@ -1,17 +1,18 @@
-name: OpenNav X Beta 2 accepted test package
+name: SKAGER Beta 2 accepted test package
 on:
-  push:
-    branches: [opennav-x-beta2-handoff]
-    paths:
-      - opennav-x/release/beta2-acceptance.json
-      - opennav-x/tools/beta2_handoff.py
-      - opennav-x/tools/test-beta2-handoff.py
-      - .github/workflows/opennav-beta2-handoff.yml
+  workflow_dispatch:
+    inputs:
+      historical_recovery:
+        description: Explicit recovery of the historical accepted Beta2 package; use Staging Releases for new versions
+        type: boolean
+        required: true
+        default: false
 permissions:
   contents: read
   actions: read
 jobs:
   handoff:
+    if: ${{ inputs.historical_recovery == true }}
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
@@ -27,7 +28,7 @@ jobs:
           --output accepted-beta2
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: OpenNavX-Beta2-Windows
+          name: SKAGER-Beta2-Windows
           path: accepted-beta2
           if-no-files-found: error
           retention-days: 90

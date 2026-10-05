@@ -1,0 +1,25 @@
+{
+  "stockXML": "84f93522576ed5872b24865cf6161872ed0b4b634f77c64ca697a04d3568e886",
+  "styledXML": "d98f6667b0d6241f8783206db8faee3302a27e198b57973573a28f2c0fa0bbcb",
+  "ferryNodeRCID": "2019",
+  "hpgl": "SPA;SW1;PU1374,890;PD1275,934;PD869,933;PD869,774;PD1275,774;PD1374,819;PD1374,890;SPA;SW1;PU1602,853;PD1894,853;SPA;SW1;PU697,853;PD387,853;SPA;SW1;PU2094,853;PD2386,853;",
+  "inks": {
+    "DAY_BRIGHT": {
+      "before": "#c545c3",
+      "after": "#9c8696",
+      "background": "#d5e5e5"
+    },
+    "DUSK": {
+      "before": "#4a3a51",
+      "after": "#b8a0b1",
+      "background": "#344f59"
+    },
+    "NIGHT": {
+      "before": "#341234",
+      "after": "#71636e",
+      "background": "#0e171c"
+    }
+  },
+  "geometry": "actual ferry HPGL; illustrative straight cable-area boundary comparison only",
+  "nativeAcceptance": false
+}

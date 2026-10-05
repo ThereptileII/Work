@@ -19,14 +19,16 @@ bool AisStreamSession::Advance(vessel::Time now) {
   return true;
 }
 void AisStreamSession::State(Connection state, vessel::Time now) {
+  if (state != Connection::Subscribing && state != Connection::Connected)
+    connection_ = {};
   if (health_.connection != state) {
     health_.connection = state;
     health_.state_since = now;
   }
 }
-void AisStreamSession::Enable(bool enabled, vessel::Time now) {
+bool AisStreamSession::Enable(bool enabled, vessel::Time now) {
   if (!Advance(now) || enabled == enabled_)
-    return;
+    return false;
   enabled_ = enabled;
   failures_ = 0;
   health_.subscription_confirmed = false;
@@ -35,6 +37,7 @@ void AisStreamSession::Enable(bool enabled, vessel::Time now) {
   if (!enabled)
     cache_ = TargetCache{}; // explicit user disable removes online targets
   State(enabled ? Connection::Offline : Connection::Disabled, now);
+  return true;
 }
 bool AisStreamSession::ObserveViewport(Viewport viewport) {
   return subscription_.ObserveViewport(viewport);
@@ -51,13 +54,19 @@ bool AisStreamSession::Connecting(vessel::Time now) {
   State(Connection::Connecting, now);
   return true;
 }
-void AisStreamSession::Opened(vessel::Time now) {
+bool AisStreamSession::Opened(vessel::Time now, ConnectionObservation connection) {
   if (!Advance(now) || !enabled_ ||
       health_.connection != Connection::Connecting)
-    return;
+    return false;
   new_connection_ = true;
   health_.subscription_confirmed = false;
   State(Connection::Subscribing, now);
+  // An unavailable observation never prevents normal connection/subscription.
+  if ((connection.family == AddressFamily::IPv4 || connection.family == AddressFamily::IPv6) &&
+      connection.local.port && connection.remote.port && connection.generation &&
+      connection.captured_at > vessel::Time{} && connection.captured_at <= now)
+    connection_ = connection;
+  return true;
 }
 void AisStreamSession::CredentialMissing(vessel::Time now) {
   if (!Advance(now) || !enabled_)
@@ -98,6 +107,7 @@ void AisStreamSession::Receive(const std::string &message, vessel::Time now,
       (health_.connection != Connection::Subscribing &&
        health_.connection != Connection::Connected))
     return;
+  Increment(health_.received_messages);
   const auto decoded = DecodeAisStream(message, now, wall);
   if (decoded.kind == DecodeKind::ServiceError) {
     Increment(health_.rejected);
@@ -130,6 +140,8 @@ void AisStreamSession::Receive(const std::string &message, vessel::Time now,
     Increment(accepted ? health_.accepted : health_.rejected);
   } else if (decoded.kind == DecodeKind::Invalid)
     Increment(health_.rejected);
+  else if (decoded.kind == DecodeKind::Ignored)
+    Increment(health_.ignored_messages);
 }
 void AisStreamSession::Disconnected(vessel::Time now, unsigned entropy) {
   if (!Advance(now) || !enabled_ || health_.connection == Connection::Backoff ||
@@ -162,10 +174,18 @@ bool AisStreamSession::ShouldClose() const {
 ProviderSnapshot AisStreamSession::Read(vessel::Time now) const {
   ProviderSnapshot snapshot;
   snapshot.health = health_;
+  snapshot.connection = connection_;
   snapshot.health.compression_enabled = compression_;
   snapshot.health.retry_at = retry_at_;
+  const bool active = health_.connection == Connection::Subscribing ||
+                      health_.connection == Connection::Connected;
+  snapshot.health.subscription_pending = enabled_ && subscription_.HasDesiredArea() &&
+      (!active || new_connection_ || subscription_.HasPendingChange());
+  snapshot.health.subscription_awaiting_confirmation = enabled_ && active &&
+      !new_connection_ && subscription_.AwaitingConfirmation();
   if (enabled_)
     snapshot.targets = cache_.Read(now);
+  snapshot.cached_position_count = static_cast<std::uint32_t>(snapshot.targets.targets.size());
   return snapshot;
 }
 } // namespace opennav::ais

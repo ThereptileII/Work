@@ -1,0 +1,272 @@
+[
+  {
+    "class": "BUISGL",
+    "observedGeometryCounts": {
+      "Polygon": 69
+    },
+    "possiblePinnedLANDFRules": [
+      {
+        "id": "18",
+        "RCID": "32054",
+        "type": "Area",
+        "table": "Plain",
+        "selectors": [
+          "FUNCTN33"
+        ],
+        "instruction": "AC(CHBRN);TX(OBJNAM,1,2,2,'15110',0,0,CHBLK,26);LS(SOLD,1,LANDF)"
+      },
+      {
+        "id": "20",
+        "RCID": "32056",
+        "type": "Area",
+        "table": "Plain",
+        "selectors": [],
+        "instruction": "AC(CHBRN);LS(SOLD,1,LANDF)"
+      },
+      {
+        "id": "358",
+        "RCID": "32393",
+        "type": "Area",
+        "table": "Symbolized",
+        "selectors": [
+          "FUNCTN33"
+        ],
+        "instruction": "AC(CHBRN);TX(OBJNAM,1,2,2,'15110',0,0,CHBLK,26);LS(SOLD,1,LANDF)"
+      },
+      {
+        "id": "360",
+        "RCID": "32395",
+        "type": "Area",
+        "table": "Symbolized",
+        "selectors": [],
+        "instruction": "AC(CHBRN);LS(SOLD,1,LANDF)"
+      }
+    ]
+  },
+  {
+    "class": "BUAARE",
+    "observedGeometryCounts": {
+      "Polygon": 2
+    },
+    "possiblePinnedLANDFRules": [
+      {
+        "id": "16",
+        "RCID": "32052",
+        "type": "Area",
+        "table": "Plain",
+        "selectors": [],
+        "instruction": "AC(CHBRN);TX(OBJNAM,1,2,3,'16120',0,0,CHBLK,26);LS(SOLD,1,LANDF)"
+      },
+      {
+        "id": "356",
+        "RCID": "32391",
+        "type": "Area",
+        "table": "Symbolized",
+        "selectors": [],
+        "instruction": "AC(CHBRN);TX(OBJNAM,1,2,3,'16120',0,0,CHBLK,26);LS(SOLD,1,LANDF)"
+      }
+    ]
+  },
+  {
+    "class": "CRANES",
+    "observedGeometryCounts": {
+      "Point": 2
+    },
+    "possiblePinnedLANDFRules": [
+      {
+        "id": "33",
+        "RCID": "32069",
+        "type": "Area",
+        "table": "Plain",
+        "selectors": [],
+        "instruction": "AC(CHBRN);LS(SOLD,1,LANDF)"
+      },
+      {
+        "id": "373",
+        "RCID": "32408",
+        "type": "Area",
+        "table": "Symbolized",
+        "selectors": [],
+        "instruction": "AC(CHBRN);LS(SOLD,1,LANDF)"
+      }
+    ]
+  },
+  {
+    "class": "LNDMRK",
+    "observedGeometryCounts": {
+      "Point": 6
+    },
+    "possiblePinnedLANDFRules": [
+      {
+        "id": "86",
+        "RCID": "32122",
+        "type": "Area",
+        "table": "Plain",
+        "selectors": [
+          "CATLMK17",
+          "FUNCTN33"
+        ],
+        "instruction": "AC(CHBRN);TX(OBJNAM,1,2,2,'15110',0,0,CHBLK,26);LS(SOLD,1,LANDF)"
+      },
+      {
+        "id": "88",
+        "RCID": "32124",
+        "type": "Area",
+        "table": "Plain",
+        "selectors": [],
+        "instruction": "AC(CHBRN);LS(SOLD,1,LANDF)"
+      },
+      {
+        "id": "426",
+        "RCID": "32461",
+        "type": "Area",
+        "table": "Symbolized",
+        "selectors": [
+          "CATLMK17",
+          "FUNCTN33"
+        ],
+        "instruction": "AC(CHBRN);TX(OBJNAM,1,2,2,'15110',0,0,CHBLK,26);LS(SOLD,1,LANDF)"
+      },
+      {
+        "id": "428",
+        "RCID": "32463",
+        "type": "Area",
+        "table": "Symbolized",
+        "selectors": [],
+        "instruction": "AC(CHBRN);LS(SOLD,1,LANDF)"
+      },
+      {
+        "id": "763",
+        "RCID": "31839",
+        "type": "Line",
+        "table": "Lines",
+        "selectors": [],
+        "instruction": "LS(SOLD,1,LANDF)"
+      }
+    ]
+  },
+  {
+    "class": "PRDARE",
+    "observedGeometryCounts": {
+      "Point": 7
+    },
+    "possiblePinnedLANDFRules": [
+      {
+        "id": "140",
+        "RCID": "32176",
+        "type": "Area",
+        "table": "Plain",
+        "selectors": [
+          "CATPRA1"
+        ],
+        "instruction": "SY(QUARRY01);LS(DASH,1,LANDF)"
+      },
+      {
+        "id": "141",
+        "RCID": "32177",
+        "type": "Area",
+        "table": "Plain",
+        "selectors": [
+          "CATPRA5"
+        ],
+        "instruction": "SY(RFNERY01);LS(DASH,1,LANDF)"
+      },
+      {
+        "id": "142",
+        "RCID": "32178",
+        "type": "Area",
+        "table": "Plain",
+        "selectors": [
+          "CATPRA6"
+        ],
+        "instruction": "SY(TMBYRD01);LS(DASH,1,LANDF)"
+      },
+      {
+        "id": "143",
+        "RCID": "32179",
+        "type": "Area",
+        "table": "Plain",
+        "selectors": [
+          "CATPRA8"
+        ],
+        "instruction": "SY(TNKFRM01);LS(DASH,1,LANDF)"
+      },
+      {
+        "id": "144",
+        "RCID": "32180",
+        "type": "Area",
+        "table": "Plain",
+        "selectors": [
+          "CATPRA9"
+        ],
+        "instruction": "SY(WNDFRM51);LS(DASH,1,LANDF)"
+      },
+      {
+        "id": "145",
+        "RCID": "32181",
+        "type": "Area",
+        "table": "Plain",
+        "selectors": [],
+        "instruction": "LS(DASH,1,LANDF)"
+      },
+      {
+        "id": "482",
+        "RCID": "32517",
+        "type": "Area",
+        "table": "Symbolized",
+        "selectors": [
+          "CATPRA1"
+        ],
+        "instruction": "SY(QUARRY01);LS(DASH,1,LANDF)"
+      },
+      {
+        "id": "483",
+        "RCID": "32518",
+        "type": "Area",
+        "table": "Symbolized",
+        "selectors": [
+          "CATPRA5"
+        ],
+        "instruction": "SY(RFNERY01);LS(DASH,1,LANDF)"
+      },
+      {
+        "id": "484",
+        "RCID": "32519",
+        "type": "Area",
+        "table": "Symbolized",
+        "selectors": [
+          "CATPRA6"
+        ],
+        "instruction": "SY(TMBYRD01);LS(DASH,1,LANDF)"
+      },
+      {
+        "id": "485",
+        "RCID": "32520",
+        "type": "Area",
+        "table": "Symbolized",
+        "selectors": [
+          "CATPRA8"
+        ],
+        "instruction": "SY(TNKFRM01);LS(DASH,1,LANDF)"
+      },
+      {
+        "id": "486",
+        "RCID": "32521",
+        "type": "Area",
+        "table": "Symbolized",
+        "selectors": [
+          "CATPRA9"
+        ],
+        "instruction": "SY(WNDFRM51);LS(DASH,1,LANDF)"
+      },
+      {
+        "id": "487",
+        "RCID": "32522",
+        "type": "Area",
+        "table": "Symbolized",
+        "selectors": [],
+        "instruction": "LS(DASH,1,LANDF)"
+      }
+    ]
+  }
+]

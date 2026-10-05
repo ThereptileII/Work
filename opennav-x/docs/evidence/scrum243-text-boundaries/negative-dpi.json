@@ -1,0 +1,44 @@
+{
+  "actualSourceSha256": "ea164fb91ff2622c5bbbec6f18d94baa77947971e2c8cb06ccd168bc30271311",
+  "actualMethods": [
+    "S52_TextC::S52_TextC()",
+    "S52_TextC::~S52_TextC()",
+    "static void rotate(wxRect *r,",
+    "bool s52plib::RenderText(",
+    "bool s52plib::CheckTextRectList("
+  ],
+  "callerRegistrationVerbatim": true,
+  "extractedSha256": "419571e23ca1c3d5574172d16d90d95481430198ca51aa8616a4e74ff05ac972",
+  "compileCommand": [
+    "g++",
+    "-std=c++17",
+    "-Wall",
+    "-Werror",
+    "-Wno-unused-variable",
+    "-DOPENNAV_X",
+    "-DocpnUSE_GL",
+    "-I/home/standard/Projects/X-nav/.local/sysroot/usr/lib/wx/include/gtk3-unicode-3.2",
+    "-I/home/standard/Projects/X-nav/.local/sysroot/usr/include/wx-3.2",
+    "-DWXUSINGDLL",
+    "-D__WXGTK3__",
+    "-D__WXGTK__",
+    "-D_FILE_OFFSET_BITS=64",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum243-text-boundary-fixes/src",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum243-text-boundary-fixes/.local/text-review/wrong-dpi/result",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum243-text-boundary-fixes/.local/text-review/wrong-dpi/source/libs/s52plib/src",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum243-text-boundary-fixes/.local/text-review/wrong-dpi/source/libs/geoprim/src",
+    "/home/standard/Projects/X-nav-worktrees/scrum243-text-boundary-fixes/tests/chart_name_render_boundary_test.cpp",
+    "-L/home/standard/Projects/X-nav/.local/sysroot/usr/lib",
+    "-lwx_gtk3u_core-3.2",
+    "-lwx_baseu-3.2",
+    "-o",
+    "/home/standard/Projects/X-nav-worktrees/scrum243-text-boundary-fixes/.local/text-review/wrong-dpi/result/chart-name-boundary-test"
+  ],
+  "exitCode": 1,
+  "output": "GL ink bounds must match software at every DPI\n",
+  "limitations": [
+    "GL calls record uploads; no actual GL context or driver draw",
+    "Viewport and text-owner containers are fixtures",
+    "Linux font raster; native Windows and boat acceptance remain open"
+  ]
+}

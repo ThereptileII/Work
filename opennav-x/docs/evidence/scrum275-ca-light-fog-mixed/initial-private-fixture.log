@@ -1,0 +1,5 @@
+/home/standard/Projects/X-nav-worktrees/scrum275-ca-light-point/tests/chart_ca_light_point_test.cpp: In function ‘int main()’:
+/home/standard/Projects/X-nav-worktrees/scrum275-ca-light-point/tests/chart_ca_light_point_test.cpp:158:44: error: ISO C++ forbids converting a string constant to ‘std::vector<char*>::value_type’ {aka ‘char*’} [-Werror=write-strings]
+  158 |       case 9:fog.lookup.ATTArray.push_back("CATFOG1");break;
+      |                                            ^~~~~~~~~
+cc1plus: all warnings being treated as errors

@@ -1,0 +1,11 @@
+/tmp/skager-capture-qxafmj_t/s64-light-fog-SKAGER
+Verified private clean application 45d73e831409d602e8205f32fcba08947ea370bc and exact upstream result of nine patches
+Traceback (most recent call last):
+  File "/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/combined-symbols-45d73e8/iho/capture-s64.py", line 182, in <module>
+    trace_proof=check_trace(trace_records(trace),scene,style)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/combined-symbols-45d73e8/iho/capture-s64.py", line 123, in check_trace
+    i.require(draws and all(r['class']=='FOGSIG' and r['symbol']=='FOGSIG01' and r['lookup_rcid']==31164 for r in draws),'Original fog lookup missing')
+  File "/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/combined-symbols-45d73e8/iho/cache-inputs-readonly.py", line 21, in require
+    raise RuntimeError(message)
+RuntimeError: Original fog lookup missing

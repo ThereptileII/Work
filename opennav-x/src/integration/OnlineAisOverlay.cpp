@@ -1,4 +1,7 @@
 #include "integration/OnlineAisOverlay.h"
+#include "integration/ChartPresentation.h"
+#include "integration/ChartCanvasInk.h"
+#include "integration/OnlineAisLabels.h"
 #include "ui/Theme.h"
 #include "chcanv.h"
 #include "ocpndc.h"
@@ -54,14 +57,33 @@ void OnlineAisOverlay::Draw(ocpnDC &dc, ViewPort &vp, ChartCanvas &canvas) const
   if(!wxIsMainThread()||!canvas.GetShowAIS())return;
   const auto mode=global_color_scheme==GLOBAL_COLOR_SCHEME_NIGHT?ui::LightMode::Night:
       global_color_scheme==GLOBAL_COLOR_SCHEME_DUSK?ui::LightMode::Dusk:ui::LightMode::Day;
-  const auto colors=ui::OnlineChartTheme(mode);
+  auto colors=ui::OnlineChartTheme(mode);
+  wxColour night_land,night_water;
+  if(mode==ui::LightMode::Night && ChartBackground(canvas.GetColorScheme(),night_land,night_water)) {
+    // Only the verified SKAGER chart owns these raw body roles. Standard's
+    // supplemental overlay and stale/lost safety ink stay unchanged.
+    colors.stroke=ChartCanvasInk(mode,colors.stroke);
+    colors.fill=ChartCanvasInk(mode,colors.fill);
+    colors.selected=ChartCanvasInk(mode,colors.selected);
+  }
   const auto pen=dc.GetPen();const auto brush=dc.GetBrush();
   const double scale=canvas.FromDIP(100)/100.0;
   const auto now=vessel::Clock::now();
+  std::vector<OnlineAisLabelTarget> positioned;
   for(const auto &stored:targets_) {
     const auto current=ais::CurrentChartMark(stored,now);if(!current)continue;
-    const auto &t=*current;
-    wxPoint point;if(!Project(canvas,vp,t,point))continue;
+    wxPoint point;if(Project(canvas,vp,*current,point))positioned.push_back({*current,point});
+  }
+  // Labels are only part of verified XNav chart presentation. Standard keeps
+  // its existing supplemental symbols, with no new label styling.
+  wxColour land,water;
+  if(ChartBackground(canvas.GetColorScheme(),land,water)) {
+    DrawOnlineAisLabels(dc,canvas,mode,{vp.pix_width,vp.pix_height},positioned);
+  }
+  // Symbols, age/provenance marks and selection rings stay above their own
+  // optional labels. Labels never enlarge the existing native target hit area.
+  for(const auto &p:positioned) {
+    const auto &t=p.mark;const auto point=p.point;
     const bool old=t.age==ais::TargetAge::Stale||t.age==ais::TargetAge::Lost;
     const auto stroke=Color(old?colors.stale:colors.stroke);
     dc.SetPen(wxPen(stroke,canvas.FromDIP(2),
@@ -70,7 +92,9 @@ void OnlineAisOverlay::Draw(ocpnDC &dc, ViewPort &vp, ChartCanvas &canvas) const
     const auto angle=Direction(canvas,vp,t,point);
     if(angle) {
       // Exact reference path M0-12 6 9 0 5-6 9Z, scaled only by Windows DPI.
-      wxPoint vertices[4];const int x[4]={0,6,0,-6},y[4]={-12,9,5,9};
+      // Start at starboard so pinned ocpnDC's 0,1,3,2 GL strip uses the
+      // notch-to-bow diagonal. This cyclic shift preserves the software path.
+      wxPoint vertices[4];const int x[4]={6,0,-6,0},y[4]={9,5,9,-12};
       for(int i=0;i<4;++i)vertices[i]={point.x+wxRound(scale*(x[i]*std::cos(*angle)-y[i]*std::sin(*angle))),
         point.y+wxRound(scale*(x[i]*std::sin(*angle)+y[i]*std::cos(*angle)))};
       dc.DrawPolygon(4,vertices);

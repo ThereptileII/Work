@@ -1,7 +1,13 @@
 {
-  "stage": "beta2-development",
+  "stage": "staging",
   "publishNamedRelease": false,
   "enduranceSeconds": 10800,
   "acceptedAlphaCommit": "08bc92fc778591a3978e594a54208d672ff9158f",
-  "reason": "Beta 2 named release remains withheld until exact-commit Linux/native Windows gates, production fixture exclusion, installer lifecycle and real boat-PC visual/read-only smoke acceptance. The user-authorized official stock upgrade to exact validated 5.12.4 is verified; real-profile preparation, safe plugin audit and Beta 2 boat acceptance remain pending. A separately labeled development review artifact may be used after native functional gates while endurance continues; it is never release qualification."
+  "reason": "Default versioned Staging draft releases. Production promotion requires explicit instruction and readiness checks against identical bytes. Design review is opt-in. Public access remains closed until separate GO/NO-GO. Endurance remains explicitly skipped, never passed.",
+  "enduranceEnabled": false,
+  "enduranceSkipReason": "User directed on 2026-10-04: deliver a stable SKAGER Windows boat-test candidate as fast as possible; skip endurance testing.",
+  "defaultChannel": "staging",
+  "productionRequiresExplicitInstruction": true,
+  "designValidationDefault": false,
+  "releaseVisibility": "draft"
 }

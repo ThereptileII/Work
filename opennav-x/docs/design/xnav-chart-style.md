@@ -1,5 +1,86 @@
 # XNav chart presentation — source inspection and palette contract
 
+Current frozen candidate local `e768b06bf5c130038abfd6e1166da0078037cb5b` /
+published `55ef51e4944e8570f6a391dad20b0db8447a7443` retains the combined
+symbol, font, neutral structural paint, 124-DIP logo and warning changes below.
+Its [verified publication receipt](../evidence/skager-chart-mutex-e768-publication.json)
+binds [run 37199379614](https://github.com/ThereptileII/Work/actions/runs/37199379614).
+That exact-commit qualification is pending. The preceding candidate's
+[original Linux evidence](../evidence/linux-ecf7e0c/README.md) passes its
+integrated gates and retains software/Mesa chart content after Legacy return.
+Its native Windows qualification stopped at the real-host private-module check
+after the fixture-free product build passed. The replacement follows an
+[independently verified native mutex compatibility proof](../evidence/scrum259-native-binding-runtime/README.md)
+and changes no chart paint or typography. Close-symbol, private-chart,
+physical-GPU and boat-font acceptance remain open; the Linux images do not
+establish complete prototype conformance. Endurance is explicitly skipped.
+
+For symbol comparisons use the unchanged executable HTML, not an older
+development screenshot. Its SHA-256 is
+`b04573b920b6bccd16afd22f54a909e48afcfd502ce9cd7c69fdf5b6dd895447`.
+The final embedded `lighthouseArtwork()` defines the small circle and four
+rays also present in `src/chart-marker-art.js`; the historical
+`screenshots/v7/lighthouse-detail.png` shows a tower illustration which that
+final function no longer supplies. This distinction does not authorize
+substituting a generic light glyph for an ENC object's physical tower type.
+
+SCRUM-308 adds a [classified light-support tower ink extension](reviews/scrum308-light-support-tower.md).
+Only exact Simplified LNDMRK CATLMK17/FUNCTN33 representations receive owned
+Day/Dusk/Night inks. The effective ordinary/conspicuous tower shapes, alpha,
+14×26 size and 6,22 geographic pivot remain unchanged; no generic LIGHTS glyph
+replaces a physical tower. Unknown/special/Paper/Standard cases remain stock.
+This closes a supported theme gap, not exact tower-artwork conformance or proof
+of the boat object's identity. Native/boat acceptance remains open.
+
+The integrated SCRUM-279–282 follow-on at `45d73e8` adds the supplied marina,
+UWTROC03/UWTROC04 rock and WRECKS05 wreck artwork, fishing-area motif and cable
+waveform. The [combined resource proof](../evidence/scrum279-283-combined/README.md)
+recovers the complete prior XML and all pixels outside the five isolated tiles.
+The [actual Linux review](../evidence/scrum279282-45d-linux-canvas/README.md)
+retains 32 SKAGER captures plus eight Standard controls, ten exact Day returns
+and ten clean sessions. Actual UWTROC03 selection is proven; the sampled awash
+rock and wreck select unchanged ISODGR51, so they do not exercise UWTROC04 or
+WRECKS05. The cells lack the exact marina/fishing-area selections. These limits,
+[conditional boundaries and recognition concerns](reviews/scrum279-283-symbol-integration.md)
+remain explicit; native/private-DLL and boat acceptance are open.
+
+SCRUM-284's [ordinary all-round outline](../evidence/scrum284-all-round-light/README.md)
+uses the existing prototype arc ink, 1.2px weight and .8 opacity, while retaining
+the original full circle, range-band radius, center and visibility. It adds no
+wash, sector rays or geographically scaled nominal-range boundary. This is an
+explicit full-circle paint extension: the prototype supplies neither an exact
+all-round glyph nor a replacement physical tower. Unknown, special, obscured,
+directional and unsupported classifications retain stock paint. Focused actual
+core/private methods and optimized units pass. The
+[actual Linux application comparison](../evidence/scrum284-fc6348a-linux-canvas/README.md)
+passes 16 captures and four exact Day returns, with all eight Standard controls
+unchanged; native/private-renderer and boat acceptance remain separate.
+
+SCRUM-286's [compact overzoom warning](../evidence/scrum286-overzoom-warning/README.md)
+retains the exact upstream 3.9 trigger, quilt/MBTiles/single-chart behavior and
+translated warning. Its 12px/550 prototype warning-callout roles replace only
+SKAGER paint, with the same stock map on refusal. There is no supplied OverZoom
+asset; this is a necessary warning extension, not an invented navigation state.
+Eight controlled software/Mesa images and both exact fixture Day returns pass.
+The [actual Linux application review](../evidence/scrum286-98d2c45-linux-canvas/README.md)
+also passes 16 captures and four exact Day returns; only the warning region
+changes and all Standard chart controls remain identical. Native/DPI, private
+renderer and boat review remain open. Standard/Legacy/Safe retain
+the original warning. These follow-ons do not alter the existing approved
+124-DIP SKAGER wordmark or ordered prototype UI font stack. They were absent
+from former `4ddf1f3` and are now included in frozen `17ab044`. No complete glyph
+or screen conformance is established by their integration.
+
+Current generic-building follow-on: the [observed IHO brown square](../evidence/scrum265-lighthouse-building-audit/README.md)
+is BUISGL36. Only its pinned default Simplified rule 1091 now selects the
+[isolated neutral building alias](../evidence/scrum265-building-point-alias/README.md).
+This preserves the 9×9 shape, alpha, classification and original Standard/Paper/
+conspicuous rules. Prototype service/neutral inks are a documented role mapping;
+the prototype has no dedicated custom building drawing. The [27e Linux canvas comparison](../evidence/scrum265-27e-linux-canvas/README.md)
+passes; native/boat recognition remains open, particularly the brighter generic
+Dusk/Night tile beside preserved conspicuous artwork. No blanket brown filter
+or full conformance claim follows from this change.
+
 The native chart remains OpenCPN 5.12.4, pinned to
 `37fd0cddb7334fe489e9f18aa163977a9c5c84f7`. The prototype is fictional geography,
 not chart data. Its symbol vendor snapshot is `1bf728e17feaae05fddad3aad5be677e15c1e89c`;
@@ -15,12 +96,23 @@ application's pinned S-52 resources.
 | Contour / depth detail | #adcbce | #567880 | #2a4149 |
 | Active route | #267c76 | #b0dfc8 | #91bca2 |
 
+These are raw CSS tokens. The final prototype additionally applies
+`brightness(.78)` to its Night chart canvas. SCRUM-253 now normalizes owned
+Night surfaces/ordinary contours, geographic names and eligible overlay paint
+once at their inputs; water becomes #0e171c and land #1d2925. Already-normalized
+roles are unchanged. Safety ink, safety contour, soundings and light descriptions
+remain brighter under explicit navigation-readability exceptions. See the
+[exact role mapping and retained contrast checks](../evidence/scrum-253-night-canvas/README.md).
+Standard, floating controls and raster chart content are not recolored by this
+rule. Actual combined renderer and boat acceptance remain open.
+
 Chart depth units are an actual navigation label, not the prototype's fictional
 location/depth metadata. The native presentation uses the final `.map-disclaimer`
 8px typography, 22px right inset and floating muted ink. It states `Chart depths`
 and OpenCPN's resolved Feet/Meters/Fathoms; this is separate from measured depth
-at the transducer in the vessel rail. Stock chart-selector space is respected
-while its redesign remains pending. No quilt unit, sounding or user preference
+at the transducer in the vessel rail. Stock chart-selector space is respected;
+[SCRUM-246](reviews/scrum246-chart-selector.md) applies a bounded prototype-token
+palette to its vector keys. A broader redesign remains pending. No quilt unit, sounding or user preference
 is converted by this label. Mixed/unknown units fall through to stock behavior.
 The large emboss stays in Standard, Legacy and Safe Mode. This is an in-progress
 presentation correction, not accepted chart conformance.
@@ -52,8 +144,14 @@ Final HTML marker variables (from the appended stylesheet, not the earlier
 | Area | #9c8696 | #b8a0b1 | #917f8d |
 
 These are design targets, not an accepted recoloring of navigation marks.
-The current bounded ink pass retains pinned chromatic pixels and uses the
-reviewed general-ink contrast roles below for neutral symbols.
+The current bounded ink pass retains pinned chromatic pixels. SCRUM-261 uses
+the exact Day marker-black token for CHBLK/CHGRD, with unchanged 4/2/3 contrast
+guards and an independently verified 40,482-pixel bitmap ownership mask.
+All sounding rectangles and shared/unknown/off-palette raster roles are excluded.
+[Exact mask and remaining limits](reviews/scrum261-day-neutral-ink.md).
+SCRUM-260 additionally uses the exact area hue for only the FERYRT01 pen and
+Plain CBLARE boundary; all geometry, restrictions and other CHMGD uses remain
+unchanged. [Exact mapping](../evidence/scrum260-area-ink/README.md).
 
 The final SVG route stroke is 2.6 CSS px with round joins. Prototype AIS paths
 use #916477 stroke, 1.6px; selected fill #cb9cb1; vector line 1px dashed 4/4;
@@ -68,13 +166,21 @@ software, incremental-segment and OpenGL drawing paths. It uses the exact
 `--route` values above only with verified XNav presentation. Standard uses the
 upstream active pen. This changes local paint state, never a stored route color
 or the route model. Upstream selection remains visible using its existing
-appearance; selected/inactive routes, waypoints, ownship, tracks, MOB, anchor
-radius and the complete route-state visual hierarchy remain unfinished.
+appearance; selected/inactive routes, waypoints, tracks, MOB, anchor radius and
+the complete route-state visual hierarchy remain unfinished. The bounded
+default-ownship increment below has separate evidence and open release gates.
 
-The prototype's 2.6px stroke and joins are not yet reproduced: this first
-increment preserves configured upstream width/style and needs a separate
-default-presentation decision that does not overwrite user preferences. Do not
-claim overall route conformance from matching the three ink values.
+SCRUM-237 adds a bounded default foreground: 2.6 logical pixels, round interior
+joins and butt route ends through a shared software/GL vector mesh. It applies
+only to untouched default active-route presentation; explicit/global custom
+width, explicit style/color, selection, highlight, editing and MOB keep upstream
+behavior. It changes no stored preference, route geometry or navigation state.
+[SCRUM-241](reviews/scrum241-route-underlay.md) adds the bounded 6px/.6-opacity
+whole-union understroke, with explicit tiny-leg/workload fallbacks. The 32px
+illustrative context and integrated software, actual GL, native Windows and boat
+acceptance remain pending; see also
+[the foreground review](reviews/scrum237-route-foreground.md).
+Do not claim full route conformance from this increment.
 
 The test-only route driver returns upstream-projected screen positions. Tests
 sample multiple interior points of both actual route legs, require exact ink
@@ -148,7 +254,9 @@ an illustrative map, not a claim that the prototype defines those extra colors.
 Generation verifies every stock input hash against `source-lock.json`, changes
 only the allowed RGB attributes in DAY_BRIGHT/DUSK/NIGHT, preserves every symbol,
 lookup, line style and pattern definition, and emits a resource hash header.
-Day sprites and the RLE resource remain byte-identical. Dusk/Night sprites now
+The RLE resource remains byte-identical. The initial Day atlas was unchanged;
+the separately reviewed owned tiles and SCRUM-261 mask now alter only their
+documented regions. Dusk/Night sprites
 derive only neutral pixels matching the Day neutral RGB, the pinned theme's
 neutral RGB and identical nonzero alpha: 42,100 pixels per sheet. Every other
 pixel, all alpha values and PNG metadata remain unchanged. This preserves
@@ -175,8 +283,8 @@ Real ENC appearance, hazards, OpenGL/software rendering, style/mode cycles and
 boat display remain pending. Route, ownship and AIS overlay restyling is a
 separate unfinished part of this workstream.
 
-The second ink pass adds CHBLK after actual native ENC review found monochrome
-text nearly invisible at Night. Day retains the pinned #070707 rather than
+The historical second ink pass added CHBLK after actual native ENC review found
+monochrome text nearly invisible at Night. At that stage Day retained #070707 rather than
 substituting low-contrast muted text over shallow water. Dusk uses the existing
 prototype floating text token; Night uses its chart-text token. Numeric contrast
 checks cover deep water, very-shallow water and land independently. These checks
@@ -189,3 +297,182 @@ difference. This is a known defect, not accepted parity. The large embossed
 "Feet" overlay is OpenCPN's real chart depth unit, not a place label; it must
 remain semantically visible if its presentation is changed.
 See the [contrast investigation](reviews/chart-ink-contrast-investigation.md).
+SCRUM-261 supersedes that historical Day decision with the actual marker-black
+token, rather than the previously rejected chart-text token; its independent
+contrast measurements retain the same thresholds. This is still subject to
+actual Windows/ENC and boat readability review.
+
+## SCRUM-231 built-up areas (qualification pending)
+
+The hash-pinned US5SEAFL chart identifies Seattle and West Seattle as BUAARE
+polygons. Their stock CHBRN fill produced the large mustard regions in the
+retained native XNav capture even though LANDA was correctly themed.
+The separate XNBUA color now uses the exact prototype `--land` fill
+(Day #eeeee2, Dusk #4e615d, effective Night #1d2925). This supersedes the
+earlier shore-green mapping: the user's exact prototype requirement takes
+precedence over the former separate built-up fill shade. BUAARE remains
+classified and bounded, while its fill intentionally matches ordinary land. Only the fill token in pinned
+BUAARE Area lookups 16/32052 (Plain) and 356/32391 (Symbolized) changes.
+Their boundaries, text, classification, priorities and geometry remain intact.
+This narrowly enumerated exception supersedes the earlier blanket statement
+that every lookup is byte-identical. Point BUAARE symbols stay unchanged.
+
+CHBRN remains unchanged because the same stock role paints structures,
+above-water obstructions/wrecks and obscured light sectors. No conditional
+symbology, depth role, chromatic symbol, source chart or Standard resource is
+modified. The generator rejects any other rule change, including label changes
+inside the two allowed lookups. Runtime verification and controlled style
+restart retain their existing behavior. This increment does not qualify the
+remaining ownship, symbol, label-density or chart-presentation work.
+
+## Default ownship and online AIS names (qualification pending)
+
+SCRUM-232 adds the immutable prototype chevron for the default, accurate,
+fixed-size ownship only. Shared drawing uses upstream position/rotation and
+retains user-size scaling; custom images, scaled hulls and inaccurate states
+remain stock. The [ownship review](reviews/scrum232-ownship-chevron.md) records
+exact path, theme colors, GL topology, DPI scope and safety boundaries.
+Day/Dusk/Night now have a short integrated Linux real-ENC capture, with fresh
+controlled loopback navigation and clean exit. It is not native Windows,
+actual OpenGL, physical touch or boat acceptance.
+
+SCRUM-233 adds available online AIS names at the prototype baseline and theme
+ink through owned snapshots. Freshness, selected-target priority, collisions,
+viewport bounds and bounded workload remain explicit. Stale/lost marks have no
+current name label; target details still carry their source state. Saturated
+500-pixel upstream text metrics cause omission, never falsely accepted bounds.
+The [AIS-label review](reviews/scrum233-online-ais-labels.md) scopes its fixture
+and production-object evidence. Standard receives no new labels.
+
+The [combined comparison](reviews/scrum15-chart-comparison-20261002.md) records
+remaining visual differences, including text density, stock chart symbols and
+course-predictor artwork. These increments do not accept the complete chart.
+See [bounded review](reviews/scrum231-built-area-style.md).
+
+
+## SKAGER identity and geographic text (2026-10-02, pending visual gates)
+
+The selected style is presented to the user as SKAGER; the saved `XNav` value is
+retained for configuration compatibility. The immutable HTML is not renamed.
+The [geographic-name policy](reviews/scrum238-geographic-names.md) applies the
+prototype's 12px regular land /16px italic water hierarchy and chart-text ink
+to geographic names only. It preserves stored OpenCPN font settings for Standard
+and all navigation labels/soundings. The full strict resource guard now covers
+18 geographic ink substitutions in addition to two built-area fills.
+
+The [active-route foreground](reviews/scrum237-route-foreground.md) now uses
+shared 2.6px fractional geometry and round joins for factory-equivalent active
+route appearance. [SCRUM-241](reviews/scrum241-route-underlay.md) adds the
+translucent 6px whole-union underlay for supported geometry, with an atomic
+underlay-only fallback for delicate short joins and bounded workload. A 32px decorative halo cannot stand in for the prototype's meaningful
+route-corridor setting. These bounded changes and the current source/branding
+batch require fresh integrated/native/boat comparisons; no conformance PASS is
+added by this record.
+
+### Healthy factory-equivalent COG predictor increment (SCRUM-239)
+
+The shared software/GL ownship-indicator path can paint the existing COG line
+with route ink, 1.2 logical pixels, 5/5 dash and .65 opacity. Its real projected
+geometry, time horizon, validity/visibility and endpoint remain upstream.
+SKAGER presentation explicitly owns factory-equivalent width/style/color;
+startup capture precedes upstream density mutation and observed runtime custom
+changes revoke ownership. Nonfactory/custom/degraded states, HDT and endpoint
+markers keep stock appearance. No configuration is rewritten. Saved defaults
+cannot reveal identical-value user intent; density-raised persisted widths are
+conservatively stock on a later startup. See
+[the bounded predictor review](reviews/scrum239-cog-predictor.md). Actual GL,
+native Windows, boat and full ownship conformance remain pending.
+
+## Geographic label tracking and opacity (SCRUM-243, pending qualification)
+
+Geographic land names now use the prototype's 1px tracking; water names use
+5px tracking and .36 opacity. The existing S-52 placement and declutter boxes
+account for their measured widths. Precomposed Latin names use native glyph
+advances; combining sequences and complex scripts retain native whole-string
+shaping to prevent detached accents or broken text. No chart name is rewritten.
+The GL path reuses cached native whole-label textures with per-label scale/ink
+invalidation; software uses native drawing and alpha. Other label classes,
+soundings, user preferences and Standard remain intact. The
+[focused review](reviews/scrum243-chart-name-spacing.md) records a corrected
+Latin/Unicode Day/Dusk/Night fixture. Native Windows/GL/boat acceptance is open.
+
+## SCRUM-248 light descriptions (qualification pending)
+
+Proven normal generated LIGHTS descriptions now map factory-equivalent appearance
+to the prototype's 8px regular symbol-label font, .12px tracking, chart-text ink
+and 3.5px round water halo. Both native software and GL texture upload consume
+the same bounded cached label raster. Actual text, chart preferences, visibility,
+light sectors and symbols remain upstream; custom appearance and out-of-bound
+raster requests retain stock presentation. The native raster approximates SVG
+stroke edges and rounds glyph placement. Small default-size readability,
+Windows/DPI, actual GL driver and boat review remain open. See
+[scope, guards and evidence](reviews/scrum248-light-description-typography.md).
+## SCRUM-251 submarine cable paint (qualification pending)
+
+Only pinned line-style RCID2012/CBLSUB06 selects new XNCBL ink instead of CHMGD:
+prototype area hue Day#9c8696, Dusk#b8a0b1, Night#71636e after its chart brightness.
+Its HPGL, widths, geographic geometry and lookups remain unchanged. Global
+magenta, cable-area restrictions, ferry lines, dumping-ground boundaries and
+information symbols retain their meanings and rendering. Reverse equality and
+negative resource tests constrain this one node. See
+[real-chart audit and scope](reviews/scrum251-submarine-cable-paint.md).
+
+SCRUM-252 adds the bounded default active-route name treatment documented in
+[the route label review](reviews/scrum252-route-labels.md). It preserves actual
+names and name visibility, every SCRUM-242 eligibility fallback, custom Marks
+appearance and offsets, and stock navigation geometry. Its Night-only label
+palette includes the immutable chart ancestor brightness. Native/real-route/
+boat acceptance remains open.
+
+### SCRUM-264: classified prototype seamark artwork
+
+The owned resource derivative now maps the sixteen exact Simplified marine
+BOYLAT selectors 1029–1044 to eight private ordinary/preferred-channel glyphs,
+and gives BOYISD12/BOYSAW12 the supplied prototype Simplified artwork. Verified
+core/private presentation instances select XNLIT011/012/013 compact light aliases
+only when the actual LIGHTS object has no ORIENT attribute. The original
+LIGHTS11/12/13 vectors, pivots and bounds remain stock, including the correction
+to the earlier unconditional LIGHTS13 bitmap preference. Any ORIENT presence
+(including malformed/non-finite values) retains upstream vector/angle handling;
+this guard does not validate or sanitize the attribute. Missing/invalid aliases,
+Standard and disabled integrations retain the original Rule.
+
+The supplied package maps LIGHTS13 only. Red/green are explicit derivatives of
+its exact circle/rays geometry using prototype --mark-red/--mark-green for the
+rays; neutral point fill/ring and 25/32 scale remain identical. No global
+LITRD/LITGN recoloring occurs. Color/sector/range conditional procedures and
+co-located buoy/TOPMAR composition remain unchanged. Source lookup
+order, physical TOPMAR, unknown/inland/Paper Chart users and original glyphs are
+preserved. All owned colors apply the prototype Night brightness exactly once.
+
+BOYSPP11 is never globally replaced because its selectors do not prove yellow.
+An additional bounded `XNSPPW01` derivative is selected only for inspected
+white/orange horizontal-band pillar attributes (BOYSHP4, COLOUR1,11,
+COLPAT1, CATSPM27), Simplified lookup and verified SKAGER presentation. It uses
+the supplied stem/base geometry without inventing an X or physical topmark.
+ORIENT, direct TOPSHP, missing/duplicate/malformed attributes and unknown schemes
+retain the original Rule. Day keeps stock orange, Night uses the documented
+owned legibility lift, and Dusk retains stock after the brighter trial lost
+orange recognition. See [scope and focused evidence](../evidence/scrum264-white-orange-pillar/README.md).
+The supplied generic beacon now has owned `XNBCNG01` artwork for the existing
+Simplified generic `_bcngn` and `_slgto` fallback selections only; exact original
+definitions, classified and Paper consumers remain unchanged. See the
+[generic-beacon resource proof](../evidence/scrum264-generic-beacon/README.md).
+The supplied yellow special-mark body now maps only proven yellow BOYSPP11
+selections to `XNSPPY01`. Its X is separate `XNSPPT01` artwork and requires an
+explicit typed yellow TOPSHP7 on a unique eligible co-located same-chart buoy.
+Only the original empty Simplified TOPMAR fallback is extended, after normal
+upstream visibility checks; no inferred topmark, changed lookup, Paper override
+or temporary renderer-rule ownership is introduced. The
+[yellow body/head proof](../evidence/scrum264-yellow-special/README.md) records
+the exact classification, fallback and actual-method boundaries. The three
+follow-up aliases occupy disjoint atlas tiles and retain the upstream coordinate
+and scale handling.
+Remaining Paper Chart art and actual native/private-chart display
+qualification remain open. See `docs/evidence/scrum264-seamark-art/README.md`
+and the complete preceding family audit for exact boundaries and evidence.
+
+The orientation correction and focused core/private source evidence are in
+`docs/evidence/scrum264-oriented-light-aliases/README.md`. Actual revised
+red/green ENC captures pass in the bounded [Linux review](../evidence/scrum264-colored-lights-5c05-linux/README.md);
+native/private-chart/boat qualification remains open.

@@ -38,14 +38,20 @@ def apply(patch, *options, env=None):
                    input=patch.read_bytes().replace(b'\r\n', b'\n'),
                    env=env, check=True)
 
-# A temporary index describes the exact reviewed result without touching the
-# worktree's real index. This catches extra edits, even with identical line counts.
-if not subprocess.check_output(['git', '-C', str(target), 'status', '--porcelain', '--untracked-files=no'], text=True).strip():
-    for patch in patches:
-        apply(patch, '--check')
-        apply(patch)
+# A temporary index supplies pinned file modes during mutation and describes the
+# exact reviewed result without touching the worktree's real index. On Windows
+# (core.filemode=false), repeated diff sections without mode metadata followed by
+# an explicit mode can otherwise produce git-apply "wrong type" errors.
 with tempfile.TemporaryDirectory(prefix='opennav-index-') as directory:
     env = dict(os.environ, GIT_INDEX_FILE=str(Path(directory) / 'index'))
+    subprocess.run(['git', '-C', str(target), 'read-tree', lock['commit']], env=env, check=True)
+    if not subprocess.check_output(['git', '-C', str(target), 'status', '--porcelain', '--untracked-files=no'], text=True).strip():
+        subprocess.run(['git', '-C', str(target), 'update-index', '--refresh'], env=env, check=True)
+        for patch in patches:
+            apply(patch, '--check', '--index', env=env)
+            apply(patch, '--index', env=env)
+    # Reconstruct independently: neither a successful application nor its index
+    # is accepted as evidence that the final worktree exactly matches all hooks.
     subprocess.run(['git', '-C', str(target), 'read-tree', lock['commit']], env=env, check=True)
     for patch in patches:
         apply(patch, '--cached', env=env)

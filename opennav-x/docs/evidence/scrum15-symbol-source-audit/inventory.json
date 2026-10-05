@@ -1,0 +1,1530 @@
+{
+  "source_sha256": "84f93522576ed5872b24865cf6161872ed0b4b634f77c64ca697a04d3568e886",
+  "symbols": [
+    {
+      "id": "line:CBLSUB06",
+      "effective_rcid": "2012",
+      "effective_renderer": "V",
+      "definitions": [
+        {
+          "RCID": "2012",
+          "definition": null,
+          "description": "submarine cable",
+          "prefer_bitmap": null,
+          "bitmap": null,
+          "color_ref": "ACHMGD"
+        }
+      ],
+      "direct_lookups": [
+        {
+          "rcid": "31786",
+          "class": "CBLSUB",
+          "type": "Line",
+          "table": "Lines",
+          "attrs": [],
+          "instruction": "LC(CBLSUB06)"
+        }
+      ]
+    },
+    {
+      "id": "pattern:FSHFAC03",
+      "effective_rcid": "2001",
+      "effective_renderer": "V",
+      "definitions": [
+        {
+          "RCID": "2001",
+          "definition": "V",
+          "description": "pattern of symbols for an area with fishing stakes",
+          "prefer_bitmap": null,
+          "bitmap": null,
+          "color_ref": "ACHGRD"
+        }
+      ],
+      "direct_lookups": [
+        {
+          "rcid": "32101",
+          "class": "FSHFAC",
+          "type": "Area",
+          "table": "Plain",
+          "attrs": [
+            "CATFIF1"
+          ],
+          "instruction": "AP(FSHFAC03);LS(DASH,1,CHGRD)"
+        }
+      ]
+    },
+    {
+      "id": "point:ACHARE51",
+      "effective_rcid": "1105",
+      "effective_renderer": "R",
+      "definitions": [
+        {
+          "RCID": "1228",
+          "definition": "V",
+          "description": "anchorage area",
+          "prefer_bitmap": null,
+          "bitmap": "<bitmap width=\"36\" height=\"38\">\n                <distance min=\"0\" max=\"0\" />\n                <pivot x=\"18\" y=\"22\" />\n                <origin x=\"0\" y=\"0\" />\n                <graphics-location x=\"33\" y=\"10\" />\n            </bitmap>\n            ",
+          "color_ref": "JCHMGF"
+        },
+        {
+          "RCID": "1105",
+          "definition": "R",
+          "description": "centred symbol for an anchorage area, full-chart and simplified",
+          "prefer_bitmap": null,
+          "bitmap": "<bitmap width=\"25\" height=\"29\">\n                <distance min=\"0\" max=\"0\" />\n                <pivot x=\"18\" y=\"1\" />\n                <origin x=\"0\" y=\"0\" />\n                <graphics-location x=\"373\" y=\"415\" />\n            </bitmap>\n            ",
+          "color_ref": "ADEPMDBCHMGD"
+        }
+      ],
+      "direct_lookups": [
+        {
+          "rcid": "32038",
+          "class": "ACHARE",
+          "type": "Area",
+          "table": "Plain",
+          "attrs": [],
+          "instruction": "SY(ACHARE51);LS(DASH,2,CHMGF);CS(RESTRN01)"
+        },
+        {
+          "rcid": "32377",
+          "class": "ACHARE",
+          "type": "Area",
+          "table": "Symbolized",
+          "attrs": [],
+          "instruction": "SY(ACHARE51);LC(ACHARE51);CS(RESARE01)"
+        }
+      ]
+    },
+    {
+      "id": "point:BCNGEN01",
+      "effective_rcid": "11",
+      "effective_renderer": "R",
+      "definitions": [
+        {
+          "RCID": "1238",
+          "definition": "V",
+          "description": "beacon in general, paper-chart",
+          "prefer_bitmap": null,
+          "bitmap": "<bitmap width=\"10\" height=\"16\">\n                <distance min=\"0\" max=\"0\" />\n                <pivot x=\"4\" y=\"13\" />\n                <origin x=\"0\" y=\"0\" />\n                <graphics-location x=\"596\" y=\"10\" />\n            </bitmap>\n            ",
+          "color_ref": "CCHBLK"
+        },
+        {
+          "RCID": "11",
+          "definition": "R",
+          "description": "beacon in general, full-chart",
+          "prefer_bitmap": null,
+          "bitmap": "<bitmap width=\"10\" height=\"18\">\n                <distance min=\"0\" max=\"0\" />\n                <pivot x=\"4\" y=\"15\" />\n                <origin x=\"0\" y=\"0\" />\n                <graphics-location x=\"147\" y=\"415\" />\n            </bitmap>\n            ",
+          "color_ref": "ADEPMDBCHBLK"
+        }
+      ],
+      "direct_lookups": [
+        {
+          "rcid": "31748",
+          "class": "_bcngn",
+          "type": "Point",
+          "table": "Simplified",
+          "attrs": [],
+          "instruction": "SY(BCNGEN01);TE('%s','OBJNAM',2,1,2,'15110',-1,-2,CHBLK,21)"
+        },
+        {
+          "rcid": "31760",
+          "class": "_slgto",
+          "type": "Point",
+          "table": "Simplified",
+          "attrs": [],
+          "instruction": "SY(BCNGEN01);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+        },
+        {
+          "rcid": "30016",
+          "class": "BCNCAR",
+          "type": "Point",
+          "table": "Paper",
+          "attrs": [
+            "BCNSHP5"
+          ],
+          "instruction": "SY(BCNGEN01);TE('%s','OBJNAM',2,1,2,'15110',-1,-2,CHBLK,21)"
+        },
+        {
+          "rcid": "30017",
+          "class": "BCNCAR",
+          "type": "Point",
+          "table": "Paper",
+          "attrs": [
+            "BCNSHP7"
+          ],
+          "instruction": "SY(BCNGEN01);TE('%s','OBJNAM',2,1,2,'15110',-1,-2,CHBLK,21)"
+        },
+        {
+          "rcid": "30024",
+          "class": "BCNISD",
+          "type": "Point",
+          "table": "Paper",
+          "attrs": [
+            "BCNSHP5"
+          ],
+          "instruction": "SY(BCNGEN01);TE('%s','OBJNAM',2,1,2,'15110',-1,-2,CHBLK,21)"
+        },
+        {
+          "rcid": "30025",
+          "class": "BCNISD",
+          "type": "Point",
+          "table": "Paper",
+          "attrs": [
+            "BCNSHP7"
+          ],
+          "instruction": "SY(BCNGEN01);TE('%s','OBJNAM',2,1,2,'15110',-1,-2,CHBLK,21)"
+        },
+        {
+          "rcid": "30044",
+          "class": "BCNLAT",
+          "type": "Point",
+          "table": "Paper",
+          "attrs": [
+            "BCNSHP5",
+            "CATLAM1"
+          ],
+          "instruction": "SY(BCNGEN01);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+        },
+        {
+          "rcid": "30045",
+          "class": "BCNLAT",
+          "type": "Point",
+          "table": "Paper",
+          "attrs": [
+            "BCNSHP5",
+            "CATLAM2"
+          ],
+          "instruction": "SY(BCNGEN01);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+        },
+        {
+          "rcid": "30055",
+          "class": "BCNLAT",
+          "type": "Point",
+          "table": "Paper",
+          "attrs": [
+            "BCNSHP5"
+          ],
+          "instruction": "SY(BCNGEN01);TE('%s','OBJNAM',2,1,2,'15110',-1,-2,CHBLK,21)"
+        },
+        {
+          "rcid": "30057",
+          "class": "BCNLAT",
+          "type": "Point",
+          "table": "Paper",
+          "attrs": [
+            "BCNSHP7"
+          ],
+          "instruction": "SY(BCNGEN01);TE('bn %s','OBJNAM',2,1,2,'15110',-1,-2,CHBLK,21)"
+        },
+        {
+          "rcid": "30060",
+          "class": "BCNLAT",
+          "type": "Point",
+          "table": "Paper",
+          "attrs": [],
+          "instruction": "SY(BCNGEN01);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+        },
+        {
+          "rcid": "30066",
+          "class": "BCNSAW",
+          "type": "Point",
+          "table": "Paper",
+          "attrs": [
+            "BCNSHP5"
+          ],
+          "instruction": "SY(BCNGEN01);TE('%s','OBJNAM',2,1,2,'15110',-1,-2,CHBLK,21)"
+        },
+        {
+          "rcid": "30067",
+          "class": "BCNSAW",
+          "type": "Point",
+          "table": "Paper",
+          "attrs": [
+            "BCNSHP7"
+          ],
+          "instruction": "SY(BCNGEN01);TE('%s','OBJNAM',2,1,2,'15110',-1,-2,CHBLK,21)"
+        },
+        {
+          "rcid": "30092",
+          "class": "BCNSPP",
+          "type": "Point",
+          "table": "Paper",
+          "attrs": [
+            "CATSPM44"
+          ],
+          "instruction": "SY(BCNGEN01);TE('%s','OBJNAM',2,1,2,'15110',-1,-2,CHBLK,21)"
+        },
+        {
+          "rcid": "30097",
+          "class": "BCNSPP",
+          "type": "Point",
+          "table": "Paper",
+          "attrs": [
+            "BCNSHP5"
+          ],
+          "instruction": "SY(BCNGEN01);TE('%s','OBJNAM',2,1,2,'15110',-1,-2,CHBLK,21)"
+        },
+        {
+          "rcid": "30099",
+          "class": "BCNSPP",
+          "type": "Point",
+          "table": "Paper",
+          "attrs": [
+            "BCNSHP7"
+          ],
+          "instruction": "SY(BCNGEN01);TE('%s','OBJNAM',2,1,2,'15110',-1,-2,CHBLK,21)"
+        },
+        {
+          "rcid": "30105",
+          "class": "BCNSPP",
+          "type": "Point",
+          "table": "Paper",
+          "attrs": [],
+          "instruction": "SY(BCNGEN01);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+        },
+        {
+          "rcid": "30611",
+          "class": "bcnlat",
+          "type": "Point",
+          "table": "Paper",
+          "attrs": [
+            "BCNSHP5"
+          ],
+          "instruction": "SY(BCNGEN01);TX(OBJNAM,2,1,2,'14106',-1,-1,CHBLK,21)"
+        },
+        {
+          "rcid": "30613",
+          "class": "bcnlat",
+          "type": "Point",
+          "table": "Paper",
+          "attrs": [
+            "BCNSHP7"
+          ],
+          "instruction": "SY(BCNGEN01);TX(OBJNAM,2,1,2,'14106',-1,-1,CHBLK,21)"
+        },
+        {
+          "rcid": "30997",
+          "class": "_bcngn",
+          "type": "Point",
+          "table": "Paper",
+          "attrs": [],
+          "instruction": "SY(BCNGEN01);TE('%s','OBJNAM',2,1,2,'15110',-1,-2,CHBLK,21)"
+        },
+        {
+          "rcid": "31009",
+          "class": "_slgto",
+          "type": "Point",
+          "table": "Paper",
+          "attrs": [],
+          "instruction": "SY(BCNGEN01);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+        }
+      ]
+    },
+    {
+      "id": "point:BOYCAN72",
+      "effective_rcid": "26",
+      "effective_renderer": "R",
+      "definitions": [
+        {
+          "RCID": "26",
+          "definition": "R",
+          "description": "can buoy,lateral rgr,full-chart",
+          "prefer_bitmap": null,
+          "bitmap": "<bitmap width=\"19\" height=\"15\">\n                <distance min=\"0\" max=\"0\" />\n                <pivot x=\"9\" y=\"11\" />\n                <origin x=\"0\" y=\"0\" />\n                <graphics-location x=\"805\" y=\"701\" />\n            </bitmap>\n            ",
+          "color_ref": "ADEPMDBCHBLKCCHREDDCHGRN"
+        }
+      ],
+      "direct_lookups": [
+        {
+          "rcid": "30172",
+          "class": "BOYLAT",
+          "type": "Point",
+          "table": "Paper",
+          "attrs": [
+            "BOYSHP2",
+            "COLOUR3,4,3"
+          ],
+          "instruction": "SY(BOYCAN72);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+        },
+        {
+          "rcid": "30641",
+          "class": "boywtw",
+          "type": "Point",
+          "table": "Paper",
+          "attrs": [
+            "catwwm13",
+            "COLOUR3,4,3"
+          ],
+          "instruction": "SY(BOYCAN72);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)"
+        },
+        {
+          "rcid": "30643",
+          "class": "boywtw",
+          "type": "Point",
+          "table": "Paper",
+          "attrs": [
+            "catwwm15",
+            "COLOUR3,4,3"
+          ],
+          "instruction": "SY(BOYCAN72);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)"
+        },
+        {
+          "rcid": "30645",
+          "class": "boywtw",
+          "type": "Point",
+          "table": "Paper",
+          "attrs": [
+            "catwwm17",
+            "COLOUR3,4,3"
+          ],
+          "instruction": "SY(BOYCAN72);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)"
+        },
+        {
+          "rcid": "30647",
+          "class": "boywtw",
+          "type": "Point",
+          "table": "Paper",
+          "attrs": [
+            "catwwm7",
+            "COLOUR3,4,3"
+          ],
+          "instruction": "SY(BOYCAN72);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)"
+        },
+        {
+          "rcid": "30649",
+          "class": "boywtw",
+          "type": "Point",
+          "table": "Paper",
+          "attrs": [
+            "catwwm9",
+            "COLOUR3,4,3"
+          ],
+          "instruction": "SY(BOYCAN72);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)"
+        },
+        {
+          "rcid": "3063007",
+          "class": "boylat",
+          "type": "Point",
+          "table": "Paper",
+          "attrs": [
+            "BOYSHP2",
+            "COLOUR3,4,3",
+            "COLPAT1"
+          ],
+          "instruction": "SY(BOYCAN72);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+        }
+      ]
+    },
+    {
+      "id": "point:BOYCAN73",
+      "effective_rcid": "26",
+      "effective_renderer": "R",
+      "definitions": [
+        {
+          "RCID": "26",
+          "definition": "R",
+          "description": "can buoy,lateral grg,full-chart",
+          "prefer_bitmap": null,
+          "bitmap": "<bitmap width=\"19\" height=\"15\">\n                <distance min=\"0\" max=\"0\" />\n                <pivot x=\"9\" y=\"11\" />\n                <origin x=\"0\" y=\"0\" />\n                <graphics-location x=\"834\" y=\"701\" />\n            </bitmap>\n            ",
+          "color_ref": "ADEPMDBCHBLKCCHGRNDCHRED"
+        }
+      ],
+      "direct_lookups": [
+        {
+          "rcid": "30162",
+          "class": "BOYLAT",
+          "type": "Point",
+          "table": "Paper",
+          "attrs": [
+            "BOYSHP2",
+            "COLOUR4,3,4",
+            "COLPAT1"
+          ],
+          "instruction": "SY(BOYCAN73);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+        }
+      ]
+    },
+    {
+      "id": "point:BOYCAR01",
+      "effective_rcid": "1270",
+      "effective_renderer": "R",
+      "definitions": [
+        {
+          "RCID": "1270",
+          "definition": "V",
+          "description": "cardinal buoy, north, simplified",
+          "prefer_bitmap": null,
+          "bitmap": "<bitmap width=\"13\" height=\"19\">\n                <distance min=\"0\" max=\"0\" />\n                <pivot x=\"8\" y=\"9\" />\n                <origin x=\"0\" y=\"0\" />\n                <graphics-location x=\"984\" y=\"10\" />\n            </bitmap>\n            ",
+          "color_ref": "HCHYLWmOUTLW"
+        }
+      ],
+      "direct_lookups": [
+        {
+          "rcid": "31074",
+          "class": "BOYCAR",
+          "type": "Point",
+          "table": "Simplified",
+          "attrs": [
+            "CATCAM1"
+          ],
+          "instruction": "SY(BOYCAR01);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+        }
+      ]
+    },
+    {
+      "id": "point:BOYCAR02",
+      "effective_rcid": "1271",
+      "effective_renderer": "R",
+      "definitions": [
+        {
+          "RCID": "1271",
+          "definition": "V",
+          "description": "cardinal buoy, east, simplified",
+          "prefer_bitmap": null,
+          "bitmap": "<bitmap width=\"12\" height=\"20\">\n                <distance min=\"0\" max=\"0\" />\n                <pivot x=\"5\" y=\"10\" />\n                <origin x=\"0\" y=\"0\" />\n                <graphics-location x=\"1007\" y=\"10\" />\n            </bitmap>\n            ",
+          "color_ref": "mOUTLWHCHYLW"
+        }
+      ],
+      "direct_lookups": [
+        {
+          "rcid": "31075",
+          "class": "BOYCAR",
+          "type": "Point",
+          "table": "Simplified",
+          "attrs": [
+            "CATCAM2"
+          ],
+          "instruction": "SY(BOYCAR02);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+        }
+      ]
+    },
+    {
+      "id": "point:BOYCAR03",
+      "effective_rcid": "1272",
+      "effective_renderer": "R",
+      "definitions": [
+        {
+          "RCID": "1272",
+          "definition": "V",
+          "description": "cardinal buoy, south, simplified",
+          "prefer_bitmap": null,
+          "bitmap": "<bitmap width=\"13\" height=\"19\">\n                <distance min=\"0\" max=\"0\" />\n                <pivot x=\"3\" y=\"9\" />\n                <origin x=\"0\" y=\"0\" />\n                <graphics-location x=\"1029\" y=\"10\" />\n            </bitmap>\n            ",
+          "color_ref": "mOUTLWHCHYLW"
+        }
+      ],
+      "direct_lookups": [
+        {
+          "rcid": "31076",
+          "class": "BOYCAR",
+          "type": "Point",
+          "table": "Simplified",
+          "attrs": [
+            "CATCAM3"
+          ],
+          "instruction": "SY(BOYCAR03);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+        }
+      ]
+    },
+    {
+      "id": "point:BOYCAR04",
+      "effective_rcid": "1273",
+      "effective_renderer": "R",
+      "definitions": [
+        {
+          "RCID": "1273",
+          "definition": "V",
+          "description": "cardinal buoy, west, simplified",
+          "prefer_bitmap": null,
+          "bitmap": "<bitmap width=\"19\" height=\"19\">\n                <distance min=\"0\" max=\"0\" />\n                <pivot x=\"9\" y=\"9\" />\n                <origin x=\"0\" y=\"0\" />\n                <graphics-location x=\"1052\" y=\"10\" />\n            </bitmap>\n            ",
+          "color_ref": "mOUTLWHCHYLW"
+        }
+      ],
+      "direct_lookups": [
+        {
+          "rcid": "31077",
+          "class": "BOYCAR",
+          "type": "Point",
+          "table": "Simplified",
+          "attrs": [
+            "CATCAM4"
+          ],
+          "instruction": "SY(BOYCAR04);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+        }
+      ]
+    },
+    {
+      "id": "point:BOYCON66",
+      "effective_rcid": "31",
+      "effective_renderer": "R",
+      "definitions": [
+        {
+          "RCID": "31",
+          "definition": "R",
+          "description": "conical buoy,lateral-rgr,full-chart",
+          "prefer_bitmap": null,
+          "bitmap": "<bitmap width=\"19\" height=\"16\">\n                <distance min=\"0\" max=\"0\" />\n                <pivot x=\"9\" y=\"12\" />\n                <origin x=\"0\" y=\"0\" />\n                <graphics-location x=\"891\" y=\"701\" />\n            </bitmap>\n            ",
+          "color_ref": "ADEPMDBCHBLKCCHREDDCHGRN"
+        }
+      ],
+      "direct_lookups": [
+        {
+          "rcid": "30161",
+          "class": "BOYLAT",
+          "type": "Point",
+          "table": "Paper",
+          "attrs": [
+            "BOYSHP1",
+            "COLOUR3,4,3",
+            "COLPAT1"
+          ],
+          "instruction": "SY(BOYCON66);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+        },
+        {
+          "rcid": "3063006",
+          "class": "boylat",
+          "type": "Point",
+          "table": "Paper",
+          "attrs": [
+            "BOYSHP1",
+            "COLOUR3,4,3",
+            "COLPAT1"
+          ],
+          "instruction": "SY(BOYCON66);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+        }
+      ]
+    },
+    {
+      "id": "point:BOYCON67",
+      "effective_rcid": "31",
+      "effective_renderer": "R",
+      "definitions": [
+        {
+          "RCID": "31",
+          "definition": "R",
+          "description": "conical buoy,lateral-grg,full-chart",
+          "prefer_bitmap": null,
+          "bitmap": "<bitmap width=\"19\" height=\"16\">\n                <distance min=\"0\" max=\"0\" />\n                <pivot x=\"9\" y=\"12\" />\n                <origin x=\"0\" y=\"0\" />\n                <graphics-location x=\"920\" y=\"701\" />\n            </bitmap>\n            ",
+          "color_ref": "ADEPMDBCHBLKCCHGRNDCHRED"
+        }
+      ],
+      "direct_lookups": [
+        {
+          "rcid": "30171",
+          "class": "BOYLAT",
+          "type": "Point",
+          "table": "Paper",
+          "attrs": [
+            "BOYSHP1",
+            "COLOUR4,3,4"
+          ],
+          "instruction": "SY(BOYCON67);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+        },
+        {
+          "rcid": "30640",
+          "class": "boywtw",
+          "type": "Point",
+          "table": "Paper",
+          "attrs": [
+            "catwwm10",
+            "COLOUR4,3,4"
+          ],
+          "instruction": "SY(BOYCON67);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)"
+        },
+        {
+          "rcid": "30642",
+          "class": "boywtw",
+          "type": "Point",
+          "table": "Paper",
+          "attrs": [
+            "catwwm14",
+            "COLOUR4,3,4"
+          ],
+          "instruction": "SY(BOYCON67);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)"
+        },
+        {
+          "rcid": "30644",
+          "class": "boywtw",
+          "type": "Point",
+          "table": "Paper",
+          "attrs": [
+            "catwwm16",
+            "COLOUR4,3,4"
+          ],
+          "instruction": "SY(BOYCON67);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)"
+        },
+        {
+          "rcid": "30646",
+          "class": "boywtw",
+          "type": "Point",
+          "table": "Paper",
+          "attrs": [
+            "catwwm18",
+            "COLOUR4,3,4"
+          ],
+          "instruction": "SY(BOYCON67);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)"
+        },
+        {
+          "rcid": "30648",
+          "class": "boywtw",
+          "type": "Point",
+          "table": "Paper",
+          "attrs": [
+            "catwwm8",
+            "COLOUR4,3,4"
+          ],
+          "instruction": "SY(BOYCON67);TX(OBJNAM,2,1,2,'15110',-1,-1,CHBLK,21)"
+        },
+        {
+          "rcid": "3063005",
+          "class": "boylat",
+          "type": "Point",
+          "table": "Paper",
+          "attrs": [
+            "BOYSHP1",
+            "COLOUR4,3,4",
+            "COLPAT1"
+          ],
+          "instruction": "SY(BOYCON67);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+        }
+      ]
+    },
+    {
+      "id": "point:BOYISD12",
+      "effective_rcid": "2049",
+      "effective_renderer": "R",
+      "definitions": [
+        {
+          "RCID": "2049",
+          "definition": "V",
+          "description": "isolated danger buoy, simplified",
+          "prefer_bitmap": null,
+          "bitmap": "<bitmap width=\"12\" height=\"17\">\n                <distance min=\"0\" max=\"0\" />\n                <pivot x=\"5\" y=\"8\" />\n                <origin x=\"0\" y=\"0\" />\n                <graphics-location x=\"1210\" y=\"10\" />\n            </bitmap>\n            ",
+          "color_ref": "AOUTLWCCHRED"
+        }
+      ],
+      "direct_lookups": [
+        {
+          "rcid": "31080",
+          "class": "BOYISD",
+          "type": "Point",
+          "table": "Simplified",
+          "attrs": [],
+          "instruction": "SY(BOYISD12);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+        }
+      ]
+    },
+    {
+      "id": "point:BOYLAT13",
+      "effective_rcid": "2050",
+      "effective_renderer": "R",
+      "definitions": [
+        {
+          "RCID": "2050",
+          "definition": "V",
+          "description": "conical lateral buoy, green, simplified",
+          "prefer_bitmap": null,
+          "bitmap": "<bitmap width=\"14\" height=\"14\">\n                <distance min=\"0\" max=\"0\" />\n                <pivot x=\"9\" y=\"9\" />\n                <origin x=\"0\" y=\"0\" />\n                <graphics-location x=\"1232\" y=\"10\" />\n            </bitmap>\n            ",
+          "color_ref": "ACHGRNBOUTLW"
+        }
+      ],
+      "direct_lookups": [
+        {
+          "rcid": "31082",
+          "class": "BOYLAT",
+          "type": "Point",
+          "table": "Simplified",
+          "attrs": [
+            "BOYSHP1",
+            "COLOUR4,3,4"
+          ],
+          "instruction": "SY(BOYLAT13);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+        },
+        {
+          "rcid": "31088",
+          "class": "BOYLAT",
+          "type": "Point",
+          "table": "Simplified",
+          "attrs": [
+            "CATLAM4",
+            "COLOUR4,3,4"
+          ],
+          "instruction": "SY(BOYLAT13);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+        },
+        {
+          "rcid": "31090",
+          "class": "BOYLAT",
+          "type": "Point",
+          "table": "Simplified",
+          "attrs": [
+            "BOYSHP1",
+            "COLOUR4"
+          ],
+          "instruction": "SY(BOYLAT13);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+        },
+        {
+          "rcid": "31096",
+          "class": "BOYLAT",
+          "type": "Point",
+          "table": "Simplified",
+          "attrs": [
+            "CATLAM2",
+            "COLOUR4"
+          ],
+          "instruction": "SY(BOYLAT13);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+        },
+        {
+          "rcid": "31386",
+          "class": "boylat",
+          "type": "Point",
+          "table": "Simplified",
+          "attrs": [
+            "catlam4",
+            "COLOUR4,3,4"
+          ],
+          "instruction": "SY(BOYLAT13);TE('by %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+        },
+        {
+          "rcid": "31395",
+          "class": "boylat",
+          "type": "Point",
+          "table": "Simplified",
+          "attrs": [
+            "catlam2",
+            "COLOUR4"
+          ],
+          "instruction": "SY(BOYLAT13);TE('by %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+        },
+        {
+          "rcid": "31397",
+          "class": "boylat",
+          "type": "Point",
+          "table": "Simplified",
+          "attrs": [
+            "catlam8",
+            "COLOUR4"
+          ],
+          "instruction": "SY(BOYLAT13);TE('by %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+        }
+      ]
+    },
+    {
+      "id": "point:BOYLAT14",
+      "effective_rcid": "2051",
+      "effective_renderer": "R",
+      "definitions": [
+        {
+          "RCID": "2051",
+          "definition": "V",
+          "description": "conical lateral buoy, red, simplified",
+          "prefer_bitmap": null,
+          "bitmap": "<bitmap width=\"14\" height=\"14\">\n                <distance min=\"0\" max=\"0\" />\n                <pivot x=\"9\" y=\"9\" />\n                <origin x=\"0\" y=\"0\" />\n                <graphics-location x=\"1256\" y=\"10\" />\n            </bitmap>\n            ",
+          "color_ref": "ACHREDbOUTLW"
+        }
+      ],
+      "direct_lookups": [
+        {
+          "rcid": "31081",
+          "class": "BOYLAT",
+          "type": "Point",
+          "table": "Simplified",
+          "attrs": [
+            "BOYSHP1",
+            "COLOUR3,4,3"
+          ],
+          "instruction": "SY(BOYLAT14);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+        },
+        {
+          "rcid": "31087",
+          "class": "BOYLAT",
+          "type": "Point",
+          "table": "Simplified",
+          "attrs": [
+            "CATLAM4",
+            "COLOUR3,4,3"
+          ],
+          "instruction": "SY(BOYLAT14);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+        },
+        {
+          "rcid": "31089",
+          "class": "BOYLAT",
+          "type": "Point",
+          "table": "Simplified",
+          "attrs": [
+            "BOYSHP1",
+            "COLOUR3"
+          ],
+          "instruction": "SY(BOYLAT14);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+        },
+        {
+          "rcid": "31095",
+          "class": "BOYLAT",
+          "type": "Point",
+          "table": "Simplified",
+          "attrs": [
+            "CATLAM2",
+            "COLOUR3"
+          ],
+          "instruction": "SY(BOYLAT14);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+        },
+        {
+          "rcid": "31385",
+          "class": "boylat",
+          "type": "Point",
+          "table": "Simplified",
+          "attrs": [
+            "catlam4",
+            "COLOUR3,4,3"
+          ],
+          "instruction": "SY(BOYLAT14);TE('by %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+        },
+        {
+          "rcid": "31394",
+          "class": "boylat",
+          "type": "Point",
+          "table": "Simplified",
+          "attrs": [
+            "catlam2",
+            "COLOUR3"
+          ],
+          "instruction": "SY(BOYLAT14);TE('by %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+        }
+      ]
+    },
+    {
+      "id": "point:BOYLAT23",
+      "effective_rcid": "2052",
+      "effective_renderer": "R",
+      "definitions": [
+        {
+          "RCID": "2052",
+          "definition": "V",
+          "description": "can shape lateral buoy, green, simplified",
+          "prefer_bitmap": null,
+          "bitmap": "<bitmap width=\"16\" height=\"13\">\n                <distance min=\"0\" max=\"0\" />\n                <pivot x=\"8\" y=\"6\" />\n                <origin x=\"0\" y=\"0\" />\n                <graphics-location x=\"1280\" y=\"10\" />\n            </bitmap>\n            ",
+          "color_ref": "ACHGRNBOUTLW"
+        }
+      ],
+      "direct_lookups": [
+        {
+          "rcid": "31084",
+          "class": "BOYLAT",
+          "type": "Point",
+          "table": "Simplified",
+          "attrs": [
+            "BOYSHP2",
+            "COLOUR4,3,4"
+          ],
+          "instruction": "SY(BOYLAT23);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+        },
+        {
+          "rcid": "31086",
+          "class": "BOYLAT",
+          "type": "Point",
+          "table": "Simplified",
+          "attrs": [
+            "CATLAM3",
+            "COLOUR4,3,4"
+          ],
+          "instruction": "SY(BOYLAT23);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+        },
+        {
+          "rcid": "31092",
+          "class": "BOYLAT",
+          "type": "Point",
+          "table": "Simplified",
+          "attrs": [
+            "BOYSHP2",
+            "COLOUR4"
+          ],
+          "instruction": "SY(BOYLAT23);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+        },
+        {
+          "rcid": "31094",
+          "class": "BOYLAT",
+          "type": "Point",
+          "table": "Simplified",
+          "attrs": [
+            "CATLAM1",
+            "COLOUR4"
+          ],
+          "instruction": "SY(BOYLAT23);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+        },
+        {
+          "rcid": "31384",
+          "class": "boylat",
+          "type": "Point",
+          "table": "Simplified",
+          "attrs": [
+            "catlam3",
+            "COLOUR4,3,4"
+          ],
+          "instruction": "SY(BOYLAT23);TE('by %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+        },
+        {
+          "rcid": "31393",
+          "class": "boylat",
+          "type": "Point",
+          "table": "Simplified",
+          "attrs": [
+            "catlam1",
+            "COLOUR4"
+          ],
+          "instruction": "SY(BOYLAT23);TE('by %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+        }
+      ]
+    },
+    {
+      "id": "point:BOYLAT24",
+      "effective_rcid": "2053",
+      "effective_renderer": "R",
+      "definitions": [
+        {
+          "RCID": "2053",
+          "definition": "V",
+          "description": "can shape lateral buoy, red, simplified",
+          "prefer_bitmap": null,
+          "bitmap": "<bitmap width=\"16\" height=\"13\">\n                <distance min=\"0\" max=\"0\" />\n                <pivot x=\"8\" y=\"6\" />\n                <origin x=\"0\" y=\"0\" />\n                <graphics-location x=\"1306\" y=\"10\" />\n            </bitmap>\n            ",
+          "color_ref": "ACHREDbOUTLW"
+        }
+      ],
+      "direct_lookups": [
+        {
+          "rcid": "31083",
+          "class": "BOYLAT",
+          "type": "Point",
+          "table": "Simplified",
+          "attrs": [
+            "BOYSHP2",
+            "COLOUR3,4,3"
+          ],
+          "instruction": "SY(BOYLAT24);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+        },
+        {
+          "rcid": "31085",
+          "class": "BOYLAT",
+          "type": "Point",
+          "table": "Simplified",
+          "attrs": [
+            "CATLAM3",
+            "COLOUR3,4,3"
+          ],
+          "instruction": "SY(BOYLAT24);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+        },
+        {
+          "rcid": "31091",
+          "class": "BOYLAT",
+          "type": "Point",
+          "table": "Simplified",
+          "attrs": [
+            "BOYSHP2",
+            "COLOUR3"
+          ],
+          "instruction": "SY(BOYLAT24);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+        },
+        {
+          "rcid": "31093",
+          "class": "BOYLAT",
+          "type": "Point",
+          "table": "Simplified",
+          "attrs": [
+            "CATLAM1",
+            "COLOUR3"
+          ],
+          "instruction": "SY(BOYLAT24);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+        },
+        {
+          "rcid": "31383",
+          "class": "boylat",
+          "type": "Point",
+          "table": "Simplified",
+          "attrs": [
+            "catlam3",
+            "COLOUR3,4,3"
+          ],
+          "instruction": "SY(BOYLAT24);TE('by %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+        },
+        {
+          "rcid": "31392",
+          "class": "boylat",
+          "type": "Point",
+          "table": "Simplified",
+          "attrs": [
+            "catlam1",
+            "COLOUR3"
+          ],
+          "instruction": "SY(BOYLAT24);TE('by %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+        },
+        {
+          "rcid": "31396",
+          "class": "boylat",
+          "type": "Point",
+          "table": "Simplified",
+          "attrs": [
+            "catlam7",
+            "COLOUR3"
+          ],
+          "instruction": "SY(BOYLAT24);TE('by %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+        }
+      ]
+    },
+    {
+      "id": "point:BOYSAW12",
+      "effective_rcid": "1294",
+      "effective_renderer": "R",
+      "definitions": [
+        {
+          "RCID": "1294",
+          "definition": "V",
+          "description": "safe water buoy, simplified",
+          "prefer_bitmap": null,
+          "bitmap": "<bitmap width=\"13\" height=\"13\">\n                <distance min=\"0\" max=\"0\" />\n                <pivot x=\"6\" y=\"6\" />\n                <origin x=\"0\" y=\"0\" />\n                <graphics-location x=\"1451\" y=\"10\" />\n            </bitmap>\n            ",
+          "color_ref": "CCHREDmOUTLW"
+        }
+      ],
+      "direct_lookups": [
+        {
+          "rcid": "31098",
+          "class": "BOYSAW",
+          "type": "Point",
+          "table": "Simplified",
+          "attrs": [],
+          "instruction": "SY(BOYSAW12);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+        }
+      ]
+    },
+    {
+      "id": "point:BOYSPP11",
+      "effective_rcid": "1297",
+      "effective_renderer": "R",
+      "definitions": [
+        {
+          "RCID": "1297",
+          "definition": "V",
+          "description": "special purpose buoy, simplified",
+          "prefer_bitmap": null,
+          "bitmap": "<bitmap width=\"13\" height=\"13\">\n                <distance min=\"0\" max=\"0\" />\n                <pivot x=\"6\" y=\"6\" />\n                <origin x=\"0\" y=\"0\" />\n                <graphics-location x=\"37\" y=\"78\" />\n            </bitmap>\n            ",
+          "color_ref": "HCHYLWmOUTLW"
+        }
+      ],
+      "direct_lookups": [
+        {
+          "rcid": "31103",
+          "class": "BOYSPP",
+          "type": "Point",
+          "table": "Simplified",
+          "attrs": [
+            "CATSPM54",
+            "BOYSHP4"
+          ],
+          "instruction": "SY(BOYSPP11);TE('by %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+        },
+        {
+          "rcid": "31104",
+          "class": "BOYSPP",
+          "type": "Point",
+          "table": "Simplified",
+          "attrs": [
+            "CATSPM54",
+            "BOYSHP5"
+          ],
+          "instruction": "SY(BOYSPP11);TE('by %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+        },
+        {
+          "rcid": "31109",
+          "class": "BOYSPP",
+          "type": "Point",
+          "table": "Simplified",
+          "attrs": [
+            "BOYSHP3"
+          ],
+          "instruction": "SY(BOYSPP11);TE('by %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+        },
+        {
+          "rcid": "31110",
+          "class": "BOYSPP",
+          "type": "Point",
+          "table": "Simplified",
+          "attrs": [
+            "BOYSHP4"
+          ],
+          "instruction": "SY(BOYSPP11);TE('by %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+        },
+        {
+          "rcid": "31111",
+          "class": "BOYSPP",
+          "type": "Point",
+          "table": "Simplified",
+          "attrs": [
+            "BOYSHP5"
+          ],
+          "instruction": "SY(BOYSPP11);TE('by %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+        },
+        {
+          "rcid": "31112",
+          "class": "BOYSPP",
+          "type": "Point",
+          "table": "Simplified",
+          "attrs": [
+            "BOYSHP6"
+          ],
+          "instruction": "SY(BOYSPP11);TE('by %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+        },
+        {
+          "rcid": "31114",
+          "class": "BOYSPP",
+          "type": "Point",
+          "table": "Simplified",
+          "attrs": [
+            "BOYSHP8"
+          ],
+          "instruction": "SY(BOYSPP11);TE('by %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+        },
+        {
+          "rcid": "31116",
+          "class": "BOYSPP",
+          "type": "Point",
+          "table": "Simplified",
+          "attrs": [],
+          "instruction": "SY(BOYSPP11);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)"
+        }
+      ]
+    },
+    {
+      "id": "point:LIGHTS13",
+      "effective_rcid": "1398",
+      "effective_renderer": "V",
+      "definitions": [
+        {
+          "RCID": "1398",
+          "definition": "V",
+          "description": "light flare, white or yellow",
+          "prefer_bitmap": "no",
+          "bitmap": "<bitmap width=\"22\" height=\"22\">\n                <distance min=\"0\" max=\"0\" />\n                <pivot x=\"0\" y=\"0\" />\n                <origin x=\"0\" y=\"0\" />\n                <graphics-location x=\"278\" y=\"175\" />\n            </bitmap>\n            ",
+          "color_ref": "PLITYW^CHBLK"
+        }
+      ],
+      "direct_lookups": []
+    },
+    {
+      "id": "point:PILBOP02",
+      "effective_rcid": "1",
+      "effective_renderer": "R",
+      "definitions": [
+        {
+          "RCID": "1423",
+          "definition": "V",
+          "description": "pilot boarding place",
+          "prefer_bitmap": null,
+          "bitmap": "<bitmap width=\"16\" height=\"16\">\n                <distance min=\"0\" max=\"0\" />\n                <pivot x=\"7\" y=\"8\" />\n                <origin x=\"0\" y=\"0\" />\n                <graphics-location x=\"1094\" y=\"175\" />\n            </bitmap>\n            ",
+          "color_ref": "JCHMGD"
+        },
+        {
+          "RCID": "1",
+          "definition": "R",
+          "description": "Pilot boarding place",
+          "prefer_bitmap": null,
+          "bitmap": "<bitmap width=\"17\" height=\"17\">\n                <distance min=\"0\" max=\"0\" />\n                <pivot x=\"8\" y=\"8\" />\n                <origin x=\"0\" y=\"0\" />\n                <graphics-location x=\"736\" y=\"778\" />\n            </bitmap>\n            ",
+          "color_ref": "ADEPDWBCHBLKCDEPMDDCHMGD"
+        }
+      ],
+      "direct_lookups": [
+        {
+          "rcid": "32166",
+          "class": "PILBOP",
+          "type": "Area",
+          "table": "Plain",
+          "attrs": [],
+          "instruction": "SY(PILBOP02);LS(DASH,2,TRFCF)"
+        },
+        {
+          "rcid": "32507",
+          "class": "PILBOP",
+          "type": "Area",
+          "table": "Symbolized",
+          "attrs": [],
+          "instruction": "SY(PILBOP02);LC(CTYARE51)"
+        },
+        {
+          "rcid": "31253",
+          "class": "PILBOP",
+          "type": "Point",
+          "table": "Simplified",
+          "attrs": [],
+          "instruction": "SY(PILBOP02);TE('Plt %s','OBJNAM',3,1,2,'15110',1,-1,CHBLK,21)"
+        },
+        {
+          "rcid": "30476",
+          "class": "PILBOP",
+          "type": "Point",
+          "table": "Paper",
+          "attrs": [],
+          "instruction": "SY(PILBOP02);TE('Plt %s','OBJNAM',3,1,2,'15110',1,-1,CHBLK,21)"
+        }
+      ]
+    },
+    {
+      "id": "point:RTPBCN02",
+      "effective_rcid": "2259",
+      "effective_renderer": "R",
+      "definitions": [
+        {
+          "RCID": "2259",
+          "definition": "V",
+          "description": "radar transponder beacon",
+          "prefer_bitmap": null,
+          "bitmap": "<bitmap width=\"20\" height=\"19\">\n                <distance min=\"0\" max=\"0\" />\n                <pivot x=\"10\" y=\"9\" />\n                <origin x=\"0\" y=\"0\" />\n                <graphics-location x=\"816\" y=\"239\" />\n            </bitmap>\n            ",
+          "color_ref": "ACHMGD"
+        }
+      ],
+      "direct_lookups": [
+        {
+          "rcid": "31289",
+          "class": "RTPBCN",
+          "type": "Point",
+          "table": "Simplified",
+          "attrs": [],
+          "instruction": "SY(RTPBCN02)"
+        },
+        {
+          "rcid": "30512",
+          "class": "RTPBCN",
+          "type": "Point",
+          "table": "Paper",
+          "attrs": [],
+          "instruction": "SY(RTPBCN02)"
+        }
+      ]
+    },
+    {
+      "id": "point:SMCFAC02",
+      "effective_rcid": "2108",
+      "effective_renderer": "R",
+      "definitions": [
+        {
+          "RCID": "2108",
+          "definition": "V",
+          "description": "yacht harbour, marina",
+          "prefer_bitmap": null,
+          "bitmap": "<bitmap width=\"21\" height=\"21\">\n                <distance min=\"0\" max=\"0\" />\n                <pivot x=\"10\" y=\"10\" />\n                <origin x=\"0\" y=\"0\" />\n                <graphics-location x=\"940\" y=\"239\" />\n            </bitmap>\n            ",
+          "color_ref": "ACHMGD"
+        }
+      ],
+      "direct_lookups": [
+        {
+          "rcid": "32113",
+          "class": "HRBFAC",
+          "type": "Area",
+          "table": "Plain",
+          "attrs": [
+            "CATHAF5"
+          ],
+          "instruction": "SY(SMCFAC02)"
+        },
+        {
+          "rcid": "32225",
+          "class": "SMCFAC",
+          "type": "Area",
+          "table": "Plain",
+          "attrs": [],
+          "instruction": "AC(CHBRN);SY(SMCFAC02);LS(SOLD,1,LANDF)"
+        },
+        {
+          "rcid": "32295",
+          "class": "hrbare",
+          "type": "Area",
+          "table": "Plain",
+          "attrs": [
+            "cathbr3"
+          ],
+          "instruction": "SY(SMCFAC02);TX(OBJNAM,1,2,3,'15106',0,0,CHBLK,28);LS(DASH,1,CHGRD)"
+        },
+        {
+          "rcid": "32304",
+          "class": "hrbfac",
+          "type": "Area",
+          "table": "Plain",
+          "attrs": [
+            "cathaf5"
+          ],
+          "instruction": "SY(SMCFAC02);LS(DASH,1,CHGRD)"
+        },
+        {
+          "rcid": "32452",
+          "class": "HRBFAC",
+          "type": "Area",
+          "table": "Symbolized",
+          "attrs": [
+            "CATHAF5"
+          ],
+          "instruction": "SY(SMCFAC02)"
+        },
+        {
+          "rcid": "32566",
+          "class": "SMCFAC",
+          "type": "Area",
+          "table": "Symbolized",
+          "attrs": [],
+          "instruction": "AC(CHBRN);SY(SMCFAC02);LS(SOLD,1,LANDF)"
+        },
+        {
+          "rcid": "32642",
+          "class": "hrbare",
+          "type": "Area",
+          "table": "Symbolized",
+          "attrs": [
+            "cathbr3"
+          ],
+          "instruction": "SY(SMCFAC02);TX(OBJNAM,1,2,3,'15106',0,0,CHBLK,28);LS(DASH,1,CHGRD)"
+        },
+        {
+          "rcid": "32651",
+          "class": "hrbfac",
+          "type": "Area",
+          "table": "Symbolized",
+          "attrs": [
+            "cathaf5"
+          ],
+          "instruction": "SY(SMCFAC02);LS(DASH,1,CHGRD)"
+        },
+        {
+          "rcid": "31179",
+          "class": "HRBFAC",
+          "type": "Point",
+          "table": "Simplified",
+          "attrs": [
+            "CATHAF5"
+          ],
+          "instruction": "SY(SMCFAC02)"
+        },
+        {
+          "rcid": "30374",
+          "class": "HRBFAC",
+          "type": "Point",
+          "table": "Paper",
+          "attrs": [
+            "CATHAF5"
+          ],
+          "instruction": "SY(SMCFAC02)"
+        }
+      ]
+    },
+    {
+      "id": "point:UWTROC03",
+      "effective_rcid": "2249",
+      "effective_renderer": "R",
+      "definitions": [
+        {
+          "RCID": "2249",
+          "definition": "V",
+          "description": "dangerous underwater rock of uncertain depth",
+          "prefer_bitmap": null,
+          "bitmap": "<bitmap width=\"13\" height=\"13\">\n                <distance min=\"0\" max=\"0\" />\n                <pivot x=\"6\" y=\"6\" />\n                <origin x=\"0\" y=\"0\" />\n                <graphics-location x=\"950\" y=\"307\" />\n            </bitmap>\n            ",
+          "color_ref": "ADEPVSBCHBLK"
+        }
+      ],
+      "direct_lookups": [
+        {
+          "rcid": "31732",
+          "class": "$CSYMB",
+          "type": "Point",
+          "table": "Simplified",
+          "attrs": [
+            "$SCODEUWTROC03"
+          ],
+          "instruction": "SY(UWTROC03)"
+        },
+        {
+          "rcid": "30981",
+          "class": "$CSYMB",
+          "type": "Point",
+          "table": "Paper",
+          "attrs": [
+            "$SCODEUWTROC03"
+          ],
+          "instruction": "SY(UWTROC03)"
+        }
+      ]
+    },
+    {
+      "id": "point:UWTROC04",
+      "effective_rcid": "3164",
+      "effective_renderer": "R",
+      "definitions": [
+        {
+          "RCID": "3164",
+          "definition": "V",
+          "description": "rock which covers and uncovers or is awash at low water",
+          "prefer_bitmap": null,
+          "bitmap": "<bitmap width=\"13\" height=\"11\">\n                <distance min=\"0\" max=\"0\" />\n                <pivot x=\"6\" y=\"5\" />\n                <origin x=\"0\" y=\"0\" />\n                <graphics-location x=\"973\" y=\"307\" />\n            </bitmap>\n            ",
+          "color_ref": "ACHBLK"
+        }
+      ],
+      "direct_lookups": [
+        {
+          "rcid": "31733",
+          "class": "$CSYMB",
+          "type": "Point",
+          "table": "Simplified",
+          "attrs": [
+            "$SCODEUWTROC04"
+          ],
+          "instruction": "SY(UWTROC04)"
+        },
+        {
+          "rcid": "30982",
+          "class": "$CSYMB",
+          "type": "Point",
+          "table": "Paper",
+          "attrs": [
+            "$SCODEUWTROC04"
+          ],
+          "instruction": "SY(UWTROC04)"
+        }
+      ]
+    },
+    {
+      "id": "point:WRECKS05",
+      "effective_rcid": "2038",
+      "effective_renderer": "R",
+      "definitions": [
+        {
+          "RCID": "2038",
+          "definition": "V",
+          "description": "dangerous wreck, depth unknown",
+          "prefer_bitmap": null,
+          "bitmap": "<bitmap width=\"19\" height=\"13\">\n                <distance min=\"0\" max=\"0\" />\n                <pivot x=\"9\" y=\"6\" />\n                <origin x=\"0\" y=\"0\" />\n                <graphics-location x=\"35\" y=\"358\" />\n            </bitmap>\n            ",
+          "color_ref": "ADEPVSCCHBLK"
+        }
+      ],
+      "direct_lookups": [
+        {
+          "rcid": "31745",
+          "class": "$CSYMB",
+          "type": "Point",
+          "table": "Simplified",
+          "attrs": [
+            "$SCODEWRECKS05"
+          ],
+          "instruction": "SY(WRECKS05)"
+        },
+        {
+          "rcid": "30994",
+          "class": "$CSYMB",
+          "type": "Point",
+          "table": "Paper",
+          "attrs": [
+            "$SCODEWRECKS05"
+          ],
+          "instruction": "SY(WRECKS05)"
+        }
+      ]
+    }
+  ],
+  "upstream_commit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "lookup_resolution": "Last RCID within table replaces earlier; instruction operator is namespace-qualified SY/LC/AP. Conditional procedures are reviewed in the companion document.",
+  "symbol_resolution": "Points: last named definition; line/pattern mapped entries each have one definition. Bitmap wins by default when present unless prefer-bitmap=no/false.",
+  "prototype_sources": {
+    "docs/design/prototype/src/chart-marker-art.js": "be2c7f44817c29d3714412c7974d3cf07e238f65c7131958b0cb8ff6fbd7816d",
+    "docs/design/prototype/src/seamarks.json": "78377f9622f82b6e2e16b6709fe62056863389ae5f6cc21bc6da9de3ed9cdfd9",
+    "docs/design/prototype/src/chart-symbols.css": "ca7ec18b38bf682600b6c3c39c5798c94b00bbaddd5589119d5fcb77ad599cb3"
+  }
+}

@@ -1,0 +1,118 @@
+[
+  {
+    "name": "core",
+    "sourceSha256": "659c19b41b63d3ed7518abc10e17b738d3235f4da32ed919e5b078008d0b14e7",
+    "stockSourceSha256": "127af268948a5cd9144241aa573d82b11019c9df8db18402ef5469cb86a3e0b0",
+    "stockMethods": {
+      "void s52plib::draw_lc_poly(": "b90125cff15d6716937e25428cba7a08da62fcc94379753f73e0bcc4c634f595"
+    },
+    "matrixPrefixSha256": "5fb94466a599bfa5568728225fd03d6d532c17b3f64ee9beab0d675a5358c948",
+    "helperSha256": "6f61208b428e9bd99a04157af887f3735d055df89116885de79a4dac2d0539bf",
+    "uploadHelperSha256": "2f31ef44ec71c8be79dc2f544f59504cc2fb46ccf99246fff822d0c77293aed1",
+    "fixtureSha256": "af44cf9cc8c1088f996bca19d8e170b08b22dfd67c33c4a3bbab34cde4dbaa32",
+    "methods": {
+      "void s52plib::draw_lc_poly(": "9243094fb36bc5864fff6decf948e849ce4c377e3e12d75155e92e59d10a4fad"
+    },
+    "shaderMethods": {
+      "S52texture_2D_vertex_shader_source": "c6e06a1e2fa0c1df9342ccd90a26f33f73c24069d5cd749257e3fc6309b15761",
+      "S52texture_2D_fragment_shader_source": "8b6ed406621c6b793a1bc62fc75d93f6d7065c2b4461357cd3a45912f7462e34",
+      "S52color_tri_vertex_shader_source": "f7e65b602e87a5522494d7c157644d4247c2f91073e14abf88e75edd2808f228",
+      "S52color_tri_fragment_shader_source": "448da3b0712c18b86fc99476ee72699ceef36773d003528a90b4621b0927fc15"
+    },
+    "command": [
+      "c++",
+      "-std=c++17",
+      "-O3",
+      "-Wall",
+      "-Wextra",
+      "-Wno-unused-parameter",
+      "-Wno-deprecated-copy",
+      "-DOPENNAV_X",
+      "-DocpnUSE_GL",
+      "-I/home/standard/Projects/X-nav/.local/sysroot/usr/lib/wx/include/gtk3-unicode-3.2",
+      "-I/home/standard/Projects/X-nav/.local/sysroot/usr/include/wx-3.2",
+      "-DWXUSINGDLL",
+      "-D__WXGTK3__",
+      "-D__WXGTK__",
+      "-D_FILE_OFFSET_BITS=64",
+      "-I/home/standard/Projects/X-nav/.local/sysroot/usr/include",
+      "-I/home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/src",
+      "-I/home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/.local/painter-qualified-2/core",
+      "-I/home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/build/integration-source/libs/s52plib/src",
+      "-I/home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/build/integration-source/libs/geoprim/src",
+      "-I/home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/build/integration-source/libs/pugixml",
+      "-I/home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/build/integration-source/libs/glu",
+      "/home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/tests/chart_cable_wave_test.cpp",
+      "/home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/build/integration-source/libs/geoprim/src/line_clip.cpp",
+      "-L/home/standard/Projects/X-nav/.local/sysroot/usr/lib",
+      "-lwx_gtk3u_core-3.2",
+      "-lwx_baseu-3.2",
+      "-lwx_gtk3u_gl-3.2",
+      "-lGL",
+      "-lGLEW",
+      "-o",
+      "/home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/.local/painter-qualified-2/core/cable-test"
+    ],
+    "exit": 0,
+    "stdout": "scale=1 angleRange=0..pi maxPixels=650 averageBuildUs=43.124 slowestBuildUs=117.661 averageMesaUploadFinishUs=39.0493\nscale=8 angleRange=0..pi maxPixels=28598 averageBuildUs=575.053 slowestBuildUs=1494.57 averageMesaUploadFinishUs=399.082\noriginal shortSWMeanUs=3.03928\ndisabledHook shortSWMeanUs=4.43151\n554 actual traversal/helper/Mesa checks passed; fallback HPGL is call-observed, not raster-qualified\n",
+    "executableSha256": "1a2027bfdb637d35f2e3f2ff860c6a7472c38802b945271eb6f92be28ff9c2e7"
+  },
+  {
+    "name": "private",
+    "sourceSha256": "d858736062e4595ade95991a389901e1a796b0f71cd630d1bf859f1212246838",
+    "stockSourceSha256": "b6810e842c1a109b3ce26078d213d0b6eda23f0c2ca3795bb9e28a328185af53",
+    "stockMethods": {
+      "void s52plib::draw_lc_poly(": "55b711d9f9862c45081abd4c745c763f15c7bc85b5d2f6d41da7722fd23a0272"
+    },
+    "matrixPrefixSha256": "5fb94466a599bfa5568728225fd03d6d532c17b3f64ee9beab0d675a5358c948",
+    "helperSha256": "6f61208b428e9bd99a04157af887f3735d055df89116885de79a4dac2d0539bf",
+    "uploadHelperSha256": "2f31ef44ec71c8be79dc2f544f59504cc2fb46ccf99246fff822d0c77293aed1",
+    "fixtureSha256": "af44cf9cc8c1088f996bca19d8e170b08b22dfd67c33c4a3bbab34cde4dbaa32",
+    "methods": {
+      "void s52plib::draw_lc_poly(": "489bcf69adef1117615594d10781604b9f651490186ec158a08422920f463c5a"
+    },
+    "shaderMethods": {
+      "S52texture_2D_vertex_shader_source": "c6e06a1e2fa0c1df9342ccd90a26f33f73c24069d5cd749257e3fc6309b15761",
+      "S52texture_2D_fragment_shader_source": "8b6ed406621c6b793a1bc62fc75d93f6d7065c2b4461357cd3a45912f7462e34",
+      "S52color_tri_vertex_shader_source": "f7e65b602e87a5522494d7c157644d4247c2f91073e14abf88e75edd2808f228",
+      "S52color_tri_fragment_shader_source": "448da3b0712c18b86fc99476ee72699ceef36773d003528a90b4621b0927fc15"
+    },
+    "command": [
+      "c++",
+      "-std=c++17",
+      "-O3",
+      "-Wall",
+      "-Wextra",
+      "-Wno-unused-parameter",
+      "-Wno-deprecated-copy",
+      "-DSKAGER_OCHARTS_ADAPTER",
+      "-DocpnUSE_GL",
+      "-I/home/standard/Projects/X-nav/.local/sysroot/usr/lib/wx/include/gtk3-unicode-3.2",
+      "-I/home/standard/Projects/X-nav/.local/sysroot/usr/include/wx-3.2",
+      "-DWXUSINGDLL",
+      "-D__WXGTK3__",
+      "-D__WXGTK__",
+      "-D_FILE_OFFSET_BITS=64",
+      "-I/home/standard/Projects/X-nav/.local/sysroot/usr/include",
+      "-I/home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/src",
+      "-I/home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/.local/painter-qualified-2/private",
+      "-I/home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/.local/private/libs/s52plib/src",
+      "-I/home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/.local/private/libs/geoprim/src",
+      "-I/home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/.local/private/libs/pugixml",
+      "-I/home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/.local/private/libs/glu",
+      "/home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/tests/chart_cable_wave_test.cpp",
+      "/home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/build/integration-source/libs/geoprim/src/line_clip.cpp",
+      "-L/home/standard/Projects/X-nav/.local/sysroot/usr/lib",
+      "-lwx_gtk3u_core-3.2",
+      "-lwx_baseu-3.2",
+      "-lwx_gtk3u_gl-3.2",
+      "-lGL",
+      "-lGLEW",
+      "-o",
+      "/home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/.local/painter-qualified-2/private/cable-test"
+    ],
+    "exit": 0,
+    "stdout": "scale=1 angleRange=0..pi maxPixels=650 averageBuildUs=43.4325 slowestBuildUs=111.26 averageMesaUploadFinishUs=38.8835\nscale=8 angleRange=0..pi maxPixels=28598 averageBuildUs=603.023 slowestBuildUs=1528.71 averageMesaUploadFinishUs=448.036\noriginal shortSWMeanUs=3.50991\ndisabledHook shortSWMeanUs=3.32998\n554 actual traversal/helper/Mesa checks passed; fallback HPGL is call-observed, not raster-qualified\n",
+    "executableSha256": "d565fd5b404d6bc9aac4d585d2069392ab94c8c6c7dd2e30fa3f019746cb8722"
+  }
+]

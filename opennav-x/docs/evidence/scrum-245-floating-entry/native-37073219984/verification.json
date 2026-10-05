@@ -1,0 +1,214 @@
+{
+  "verified": true,
+  "scope": "Downloaded evidence verification only; no fresh CI, build or test execution",
+  "runId": 37073219984,
+  "jobId": 111057239525,
+  "jobConclusion": "success",
+  "jobCompletedAt": "2026-10-02T22:35:30Z",
+  "jobMetadataSource": "Root coordinator supplied run/job receipt; candidate and proof independently checked from downloaded artifact",
+  "remoteCommit": "e67f70e7dafc31b6da9d34d5eab8690a9eab09c8",
+  "localQualificationCommit": "8ef2baca8de5820ae91968b9ce67065c0ce43baa",
+  "artifact": {
+    "id": 11256121540,
+    "bytes": 4357411,
+    "sha256": "17191734b5bdb4438a84c344b175186d4914e26809f0332ddfd6fc3cb4d9e030",
+    "zipCrcPassed": true,
+    "allExtractedFilesMatchArchive": true,
+    "fileCount": 150
+  },
+  "sourceInputs": {
+    "count": 130,
+    "expectedSourceSetExact": true,
+    "byteIdentical": 1,
+    "gitLfToCrlfOnly": 129,
+    "lfPinnedSkagerBrandAssetUnchanged": true,
+    "workflowMapping": "../.github/workflows/skager-windows-changed-units.yml -> .github/workflows/skager-windows-changed-units.yml",
+    "otherNormalizationAllowed": false
+  },
+  "nativeLifecycle": {
+    "checks": 12,
+    "exitCode": 0,
+    "exactOneSuccessLine": true,
+    "msvc": "19.44.35229.0",
+    "consoleExecutable": {
+      "bytes": 69120,
+      "sha256": "8bfca5c6b4f7063a22dad39d5dd60918b7f0b4dbc1d0fce807a67b09754b50a1"
+    },
+    "runtimeDllCount": 11,
+    "allExecutableAndRuntimeBytesMatched": true,
+    "peHeaders": {
+      "floating_surface_test.exe": {
+        "machine": "IMAGE_FILE_MACHINE_I386",
+        "pe": "PE32",
+        "subsystem": 3
+      },
+      "wxbase32u_vc14x.dll": {
+        "machine": "IMAGE_FILE_MACHINE_I386",
+        "pe": "PE32",
+        "subsystem": 2
+      },
+      "wxmsw32u_core_vc14x.dll": {
+        "machine": "IMAGE_FILE_MACHINE_I386",
+        "pe": "PE32",
+        "subsystem": 2
+      },
+      "concrt140.dll": {
+        "machine": "IMAGE_FILE_MACHINE_I386",
+        "pe": "PE32",
+        "subsystem": 3
+      },
+      "msvcp140.dll": {
+        "machine": "IMAGE_FILE_MACHINE_I386",
+        "pe": "PE32",
+        "subsystem": 3
+      },
+      "msvcp140_1.dll": {
+        "machine": "IMAGE_FILE_MACHINE_I386",
+        "pe": "PE32",
+        "subsystem": 3
+      },
+      "msvcp140_2.dll": {
+        "machine": "IMAGE_FILE_MACHINE_I386",
+        "pe": "PE32",
+        "subsystem": 3
+      },
+      "msvcp140_atomic_wait.dll": {
+        "machine": "IMAGE_FILE_MACHINE_I386",
+        "pe": "PE32",
+        "subsystem": 3
+      },
+      "msvcp140_codecvt_ids.dll": {
+        "machine": "IMAGE_FILE_MACHINE_I386",
+        "pe": "PE32",
+        "subsystem": 3
+      },
+      "vccorlib140.dll": {
+        "machine": "IMAGE_FILE_MACHINE_I386",
+        "pe": "PE32",
+        "subsystem": 3
+      },
+      "vcruntime140.dll": {
+        "machine": "IMAGE_FILE_MACHINE_I386",
+        "pe": "PE32",
+        "subsystem": 3
+      },
+      "vcruntime140_threads.dll": {
+        "machine": "IMAGE_FILE_MACHINE_I386",
+        "pe": "PE32",
+        "subsystem": 3
+      }
+    }
+  },
+  "negativeControl": {
+    "onlyOriginalEntryPointRestored": true,
+    "actualErrors": [
+      "LNK2019",
+      "LNK1120"
+    ],
+    "missingSymbol": "_main",
+    "noExecutableProduced": true,
+    "source": {
+      "bytes": 5093,
+      "sha256": "650569435b2938bcba80eea9e2feddc4cd33f0e885199e45dcabc78a7ecf2848"
+    }
+  },
+  "retainedFiles": {
+    "summary.json": {
+      "artifactBytes": {
+        "bytes": 24345,
+        "sha256": "04e4e4e3922bd4b826e1f9d621242985989c05992a9c6058535e66bb0bb588cf"
+      },
+      "retainedLfText": {
+        "bytes": 23729,
+        "sha256": "8a42600e1a44bff3fb951bddc24334912a5fcc1919be13ba0cd8c8d2242c5fa3"
+      }
+    },
+    "floating-build-configure.log": {
+      "artifactBytes": {
+        "bytes": 1472,
+        "sha256": "4315fc5adc2978135ac7e27e995c7d5488addb8f591de49a86902db9dbdcf218"
+      },
+      "retainedLfText": {
+        "bytes": 1472,
+        "sha256": "4315fc5adc2978135ac7e27e995c7d5488addb8f591de49a86902db9dbdcf218"
+      }
+    },
+    "floating-build-configure.command.json": {
+      "artifactBytes": {
+        "bytes": 585,
+        "sha256": "d9c80057e1e6653badd82cf2e34f5db4f3a039d26f4caed1ca17546d2ebac2a4"
+      },
+      "retainedLfText": {
+        "bytes": 571,
+        "sha256": "25944d4ad776cd969f0b0da67a6ba54fce0b7baf53490dacb797341d28d5185b"
+      }
+    },
+    "floating-link.log": {
+      "artifactBytes": {
+        "bytes": 400,
+        "sha256": "151ab04f6f744da22e7a6eb4695be29ce0cf749e08733cdbc4f92237bbdfce41"
+      },
+      "retainedLfText": {
+        "bytes": 392,
+        "sha256": "da528b0c7b5536561f8ab384cc98e22f78c1afc8ea7c23a629cdc9f6fe7f105e"
+      }
+    },
+    "floating-link.command.json": {
+      "artifactBytes": {
+        "bytes": 217,
+        "sha256": "8af1bf1f329ed6907c84c55655520c255eb1e7286f59b45689a2919ea82fd506"
+      },
+      "retainedLfText": {
+        "bytes": 207,
+        "sha256": "b73983ff119d4ed4432da84180faf1ada7839ad174b9db3dda09602d3c9da182"
+      }
+    },
+    "floating-surface.log": {
+      "artifactBytes": {
+        "bytes": 45,
+        "sha256": "f7804f75ca3bc61c5f48739b05f912e020cc12162d037a445341993cfa0c4c58"
+      },
+      "retainedLfText": {
+        "bytes": 44,
+        "sha256": "8c8f108ee61361994082494888f0418dff2e645c9aa9d1f5b2e2af0c9b879c75"
+      }
+    },
+    "floating-surface.command.json": {
+      "artifactBytes": {
+        "bytes": 130,
+        "sha256": "f8640ca2e76fb4184a53a828d4052b2805efff603f2e87d656843802cbdb7062"
+      },
+      "retainedLfText": {
+        "bytes": 128,
+        "sha256": "24ba8d44575739afbdda04a08910986b523a9f86ca617b7d2bb3796c83cd093c"
+      }
+    },
+    "legacy-link.log": {
+      "artifactBytes": {
+        "bytes": 800,
+        "sha256": "5610dfe00b370a2ccebb5921ae32a993ffd39ffb80072bd5df9f5b5bceef4b82"
+      },
+      "retainedLfText": {
+        "bytes": 791,
+        "sha256": "f0a1b184a934e7090ece5fa6b43579ea8fafc77b20c0cb517ad720f45a69cf63"
+      }
+    },
+    "legacy-link.command.json": {
+      "artifactBytes": {
+        "bytes": 215,
+        "sha256": "45edd5ebeae763bc6ae620c8159838be6da590572e78285c0540a26398cf00dd"
+      },
+      "retainedLfText": {
+        "bytes": 205,
+        "sha256": "6acaab682cecac8cdf384667abc09fa93931f7de61810ddb9859295b95abecaf"
+      }
+    }
+  },
+  "nativeProductAcceptance": false,
+  "remainingGates": [
+    "Full corrected product candidate (SCRUM-224 remains open)",
+    "Installer/update/repair/rollback/uninstall",
+    "DPI and product visuals",
+    "Boat acceptance"
+  ]
+}

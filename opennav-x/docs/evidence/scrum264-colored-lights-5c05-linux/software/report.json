@@ -1,0 +1,2504 @@
+{
+  "schema": 1,
+  "commit": "5c05eb55c15b67d4014df55896d95452e9cc9d64",
+  "binary_sha256": "0e7f0500f79f8ca917b3ba0853ce3c205d68e6e1beaffd06377283950e32fd73",
+  "build_flags": {
+    "OCPN_BUILD_TEST": "ON",
+    "OPENNAV_ENABLE_ROUTE_SCENARIO": "ON",
+    "XNAV_ENABLE_PILOT_LOOPBACK_TESTS": "ON",
+    "XNAV_ENABLE_TEST_FIXTURES": "ON"
+  },
+  "manifest_sha256": "beff73cae53211c4ef0b0c3fa2ed83e5290680f19f48781646e1f1d0d4f88e53",
+  "resource_files": {
+    "chartsymbols.xml": {
+      "sha256": "beca42d4f1e1cbe5dd761d3e2182d5ebe935556a94674df5da47aaafe7fb0119",
+      "bytes": 2242082
+    },
+    "S52RAZDS.RLE": {
+      "sha256": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26",
+      "bytes": 1305627
+    },
+    "rastersymbols-day.png": {
+      "sha256": "e71bb49aa0c4d18990ed3fef9362989df25a2efc49bc41ff5439bea993d6df06",
+      "bytes": 199796
+    },
+    "rastersymbols-dusk.png": {
+      "sha256": "8a1c1f1db4f2e9d10b1d67687ca96b7f5cbda9ed3e0acdb77162c5a231bb1308",
+      "bytes": 174185
+    },
+    "rastersymbols-dark.png": {
+      "sha256": "8606b8f2f7727c2b4f906d55bad92ee0a7331c3fdfce3276dc01eba4e5a0b5c7",
+      "bytes": 169565
+    }
+  },
+  "source_evidence": {
+    "src/integration/ChartNameTypography.h": "23688fca7f9ed456e7458fe1228e0bf9908660a953732cb6e6749c5838e1f4d9",
+    "src/integration/ChartCogPredictor.h": "3e7841bb311bb9d4951be082a669f4737ee978dd426df4899a22bc9971033c90",
+    "src/integration/ChartPresentation.cpp": "c8ebccb932abb3bbd6c95a5da4b6b9e81475710a98a132bdb717c742eac73fd8",
+    "patches/opencpn-5.12.4-xnav.patch": "dfbacadf42502d1d0366745b3a187d256e620b0d2ea7dba9e8912c46e999e0b3",
+    "patches/opencpn-5.12.4-chart-presentation.patch": "c7b7c6cdb9089bd37e7659c743d104a8cf64cb947117dabdc8fe60bf5e3546aa",
+    "resources/chart-style/v1/definition.json": "bd15a26d1767b91cbfaac6fc93c364246fe95e3441149fb9fed6d2675b64d4e4",
+    "docs/design/prototype-tokens.json": "111ee35527a974b2df6c2c4af0afd04e5aebdf14bad3004a98be9064aef790c6",
+    "src/application/SkagerBrandAsset.h": "cc9f469181717b4fb80986b9406d2d6d078bfdb5971d2e68f6b4072b8dcd2019",
+    "resources/branding/provenance.json": "f639aa4ffa1194fb527388b15b2f9880746829d4120e30b4ddca32b0326557a6",
+    "tools/chart_cable_paint.py": "462e92d27cfbf553454c286bc074e166699922fcab0b6874f40c9d7984186822",
+    "tools/chart_day_neutral_ink.py": "0f136c0e9764c7750ab581ef3c9b0c35c976563ceb88d8598eeee5a0e7761840",
+    "src/ui/SkagerWordmark.h": "c2fc3d1afdf88bfd2e884d541e7b3ad4463702cece09057e38f4d496deda9928",
+    "src/integration/OpenCPNIntegration.cpp": "6a678db6af47c8697955977b3984beda0a58f04002fe0e178b45e77ae2d511a2",
+    "tools/chart_anchor_art.py": "af9d7ad15bb78a7eaa8f8ff39256c74e56724b95d782cc2638d0a16ebbbc1904",
+    "tools/chart_cardinal_art.py": "e8b4f52df0d558ec715613c9f737776db0f10f844c3f2769a3f35fd8f670158e",
+    "tools/chart_construction_hatch.py": "a1dc22dd3a1d08ed195bcceb55f10ff29578a58f16ef1f5f517192830be459b4",
+    "tools/chart_raster_ink.py": "ffffd4365cdf534b77110cd26ca068fc86a55286e66b8baa5c18811389bfb294",
+    "tools/chart_seamark_art.py": "fcafdb7de6926378ff74ec1ebee2656c84f2f91f1d93d4856e3ede0832341f91",
+    "tools/chart_service_art.py": "86002da05b15a6f59098d424e794adb383b1c9ba270a90834056d7f8b86a8cc8",
+    "tools/chart_structure_paint.py": "aebe01e1ed890e425a5f1b18e4fc876b00ebb11d78da6382c7c3540128f03ec0"
+  },
+  "authority": "Linux Xvfb software development visuals only; not native Windows, production or boat acceptance",
+  "runtime_identity": "Still required from loader self-test and actual capture diagnostics",
+  "renderer_requested": "software",
+  "scope": "Official IHO S-64 presentation-test geometry, not operational nautical ENC; three actual-object scenes; controlled simulated loopback RMC; no Demo or injected chart objects",
+  "scene_source": {
+    "fixtureSha256": "c70d9e0f53e149270f85900f8576082db86781d64fbb71aa7d5ceb4af4aa22e3",
+    "featureAuditSha256": "567c4dea09a1d05a11919174e10268b7e75ea9e5ac85c281a10097bd0360e15b",
+    "preferredChannelGap": "No CATLAM3/4 or banded preferred-channel BOYLAT in GB4X0000; GB4X0001 also has only two ordinary single-color BOYLAT.",
+    "scenes": [
+      {
+        "id": "s64-lateral",
+        "cell": "GB4X0000",
+        "kind": "official IHO S-64 test geography, not real-world",
+        "center": [
+          -32.5186315,
+          61.0216421
+        ],
+        "scalePpm": 0.3,
+        "features": [
+          {
+            "class": "BOYLAT",
+            "attributes": {
+              "RCID": 219,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 17,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29141115,
+              "FIDS": 1,
+              "LNAM": "021C01BCA87B0001",
+              "BOYSHP": 1,
+              "CATLAM": 2,
+              "COLOUR": [
+                "4"
+              ],
+              "OBJNAM": "S7",
+              "ogrFid": 218,
+              "longitude": 61.0192483,
+              "latitude": -32.5237974
+            },
+            "expectedPinnedLookup": {
+              "id": "1038",
+              "RCID": "31090",
+              "class": "BOYLAT",
+              "type": "Point",
+              "table": "Simplified",
+              "attributes": [
+                "BOYSHP1",
+                "COLOUR4"
+              ],
+              "instruction": "SY(BOYLAT13);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)",
+              "displayPriority": "Hazards",
+              "radarPriority": "On Top",
+              "displayCategory": "Standard"
+            },
+            "expectedSymbols": {
+              "Standard": "BOYLAT13",
+              "XNav": "XNLAT013"
+            },
+            "related": []
+          },
+          {
+            "class": "BOYLAT",
+            "attributes": {
+              "RCID": 224,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 17,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29140975,
+              "FIDS": 1,
+              "LNAM": "021C01BCA7EF0001",
+              "LNAM_REFS": [
+                "021C01BCA7F00001"
+              ],
+              "FFPT_RIND": [
+                2
+              ],
+              "BOYSHP": 2,
+              "CATLAM": 1,
+              "COLOUR": [
+                "3"
+              ],
+              "OBJNAM": "S6",
+              "ogrFid": 223,
+              "longitude": 61.0240359,
+              "latitude": -32.5134656
+            },
+            "expectedPinnedLookup": {
+              "id": "1039",
+              "RCID": "31091",
+              "class": "BOYLAT",
+              "type": "Point",
+              "table": "Simplified",
+              "attributes": [
+                "BOYSHP2",
+                "COLOUR3"
+              ],
+              "instruction": "SY(BOYLAT24);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)",
+              "displayPriority": "Hazards",
+              "radarPriority": "On Top",
+              "displayCategory": "Standard"
+            },
+            "expectedSymbols": {
+              "Standard": "BOYLAT24",
+              "XNav": "XNLAT024"
+            },
+            "related": [
+              {
+                "class": "LIGHTS",
+                "attributes": {
+                  "RCID": 223,
+                  "PRIM": 1,
+                  "GRUP": 2,
+                  "OBJL": 75,
+                  "RVER": 1,
+                  "AGEN": 540,
+                  "FIDN": 29140976,
+                  "FIDS": 1,
+                  "LNAM": "021C01BCA7F00001",
+                  "COLOUR": [
+                    "3"
+                  ],
+                  "LITCHR": 2,
+                  "SIGGRP": "(1)",
+                  "SIGPER": 5.0,
+                  "ogrFid": 222,
+                  "longitude": 61.0240359,
+                  "latitude": -32.5134656
+                }
+              }
+            ]
+          },
+          {
+            "class": "BOYLAT",
+            "attributes": {
+              "RCID": 228,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 17,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29140968,
+              "FIDS": 1,
+              "LNAM": "021C01BCA7E80001",
+              "LNAM_REFS": [
+                "021C01BCA7E90001"
+              ],
+              "FFPT_RIND": [
+                2
+              ],
+              "BOYSHP": 1,
+              "CATLAM": 2,
+              "COLOUR": [
+                "4"
+              ],
+              "OBJNAM": "S5",
+              "ogrFid": 227,
+              "longitude": 61.017694,
+              "latitude": -32.5146737
+            },
+            "expectedPinnedLookup": {
+              "id": "1038",
+              "RCID": "31090",
+              "class": "BOYLAT",
+              "type": "Point",
+              "table": "Simplified",
+              "attributes": [
+                "BOYSHP1",
+                "COLOUR4"
+              ],
+              "instruction": "SY(BOYLAT13);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)",
+              "displayPriority": "Hazards",
+              "radarPriority": "On Top",
+              "displayCategory": "Standard"
+            },
+            "expectedSymbols": {
+              "Standard": "BOYLAT13",
+              "XNav": "XNLAT013"
+            },
+            "related": [
+              {
+                "class": "LIGHTS",
+                "attributes": {
+                  "RCID": 227,
+                  "PRIM": 1,
+                  "GRUP": 2,
+                  "OBJL": 75,
+                  "RVER": 1,
+                  "AGEN": 540,
+                  "FIDN": 29140969,
+                  "FIDS": 1,
+                  "LNAM": "021C01BCA7E90001",
+                  "COLOUR": [
+                    "4"
+                  ],
+                  "LITCHR": 2,
+                  "SIGGRP": "(1)",
+                  "SIGPER": 5.0,
+                  "ogrFid": 226,
+                  "longitude": 61.017694,
+                  "latitude": -32.5146737
+                }
+              }
+            ]
+          }
+        ],
+        "exactSelectedFeatureBoundsWSEN": [
+          61.0192483,
+          -32.5237974,
+          61.0240359,
+          -32.5134656
+        ],
+        "symbolTable": "Simplified (nSymbolStyle=76)",
+        "classification": "Expected pinned lookup from supplied attributes; actual emitted paint not yet observed",
+        "sourceFiles": {
+          "GB4X0000.000": {
+            "bytes": 945697,
+            "sha256": "c70d9e0f53e149270f85900f8576082db86781d64fbb71aa7d5ceb4af4aa22e3"
+          }
+        },
+        "scope": "Official IHO S-64 presentation-test geometry, not operational nautical coverage. No object insertion.",
+        "themes": [
+          "Day",
+          "Night",
+          "Day"
+        ]
+      }
+    ]
+  },
+  "chart_source_files": {
+    "GB4X0000.000": "c70d9e0f53e149270f85900f8576082db86781d64fbb71aa7d5ceb4af4aa22e3"
+  },
+  "captures": [
+    {
+      "name": "s64-lateral-SKAGER-Day",
+      "image_sha256": "fc671c5ecc1f5bdfe06764489f0817c345a10e3ccb8b8b7860e60f78c96a97ff",
+      "scene": "s64-lateral",
+      "chart": {
+        "canvas_pixels": {
+          "height": 566,
+          "width": 1014
+        },
+        "latitude": -32.5186315,
+        "database_entries": 1,
+        "follow": false,
+        "quilt_members": [
+          {
+            "type": 5,
+            "native_scale": 52000,
+            "file": "GB4X0000.000",
+            "index": 0
+          }
+        ],
+        "opengl_enabled": false,
+        "quilt_reference": 0,
+        "scale_bar": {
+          "height": 29,
+          "y": 505,
+          "width": 26,
+          "x": 191
+        },
+        "depth_unit_type": 1,
+        "quilt": true,
+        "scale_ppm": 0.3000000119,
+        "longitude": 61.0216421,
+        "depth_units_visible": true
+      },
+      "presentation": {
+        "status": "SKAGER presentation v1 / pinned symbols; o-charts: no SKAGER adapter loaded",
+        "saved_point_style": 76,
+        "requested": "XNav",
+        "effective_point_style": 76
+      },
+      "source_feature_crops": [
+        {
+          "class": "BOYLAT",
+          "source_rcid": 219,
+          "bounds": [
+            471,
+            520,
+            543,
+            592
+          ],
+          "draw": {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYLAT",
+            "object_index": 218,
+            "latitude": -32.5237974,
+            "longitude": 61.0192483,
+            "symbol": "XNLAT013",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 427,
+            "pixel_y": 488,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "sha256": "982481f9bc631e32e0a4dc169c11dcf4d7c062911f64ed5adaf93ecabce417d7"
+        },
+        {
+          "class": "BOYLAT",
+          "source_rcid": 224,
+          "bounds": [
+            631,
+            110,
+            703,
+            182
+          ],
+          "draw": {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYLAT",
+            "object_index": 223,
+            "latitude": -32.5134656,
+            "longitude": 61.0240359,
+            "symbol": "XNLAT024",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 587,
+            "pixel_y": 78,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "sha256": "6dec34171fd5ea748aed43a8c6692b2d3e21db41e6f3da04625681cffb59744f"
+        },
+        {
+          "class": "BOYLAT",
+          "source_rcid": 228,
+          "bounds": [
+            419,
+            158,
+            491,
+            230
+          ],
+          "draw": {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYLAT",
+            "object_index": 227,
+            "latitude": -32.5146737,
+            "longitude": 61.017694,
+            "symbol": "XNLAT013",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 375,
+            "pixel_y": 126,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "sha256": "07fe05502ab0bdf71036e1e907b428bebf2d082d9f678bc7402a9659fb5cc566"
+        }
+      ],
+      "trace": {
+        "read_only_trace_complete": true,
+        "debugger_timing_note": "Entry breakpoints can delay initial drawing. Both probes disabled before settled snapshots; no inferior calls or model writes.",
+        "draws": [
+          {
+            "kind": "RenderSY",
+            "class": "BOYLAT",
+            "object_index": 218,
+            "latitude": -32.5237974,
+            "longitude": 61.0192483,
+            "symbol": "XNLAT013",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "LIGHTS",
+            "object_index": 222,
+            "latitude": -32.5134656,
+            "longitude": 61.0240359,
+            "symbol": "LIGHTS11",
+            "definition": 86,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "attribute_names": [
+              "catgeo",
+              "COLOUR",
+              "LITCHR",
+              "SIGGRP",
+              "SIGPER"
+            ],
+            "has_ORIENT": false
+          },
+          {
+            "kind": "RenderSY",
+            "class": "BOYLAT",
+            "object_index": 223,
+            "latitude": -32.5134656,
+            "longitude": 61.0240359,
+            "symbol": "XNLAT024",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "LIGHTS",
+            "object_index": 224,
+            "latitude": -32.4990566,
+            "longitude": 61.0175545,
+            "symbol": "LIGHTS11",
+            "definition": 86,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "attribute_names": [
+              "catgeo",
+              "COLOUR",
+              "LITCHR",
+              "SIGGRP"
+            ],
+            "has_ORIENT": false
+          },
+          {
+            "kind": "RenderSY",
+            "class": "BOYLAT",
+            "object_index": 225,
+            "latitude": -32.4990566,
+            "longitude": 61.0175545,
+            "symbol": "XNLAT024",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "LIGHTS",
+            "object_index": 226,
+            "latitude": -32.5146737,
+            "longitude": 61.017694,
+            "symbol": "LIGHTS12",
+            "definition": 86,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "attribute_names": [
+              "catgeo",
+              "COLOUR",
+              "LITCHR",
+              "SIGGRP",
+              "SIGPER"
+            ],
+            "has_ORIENT": false
+          },
+          {
+            "kind": "RenderSY",
+            "class": "BOYLAT",
+            "object_index": 227,
+            "latitude": -32.5146737,
+            "longitude": 61.017694,
+            "symbol": "XNLAT013",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          }
+        ],
+        "raster_draws": [
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYLAT",
+            "object_index": 218,
+            "latitude": -32.5237974,
+            "longitude": 61.0192483,
+            "symbol": "XNLAT013",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 427,
+            "pixel_y": 488,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "LIGHTS",
+            "object_index": 222,
+            "latitude": -32.5134656,
+            "longitude": 61.0240359,
+            "symbol": "XNLIT011",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "attribute_names": [
+              "catgeo",
+              "COLOUR",
+              "LITCHR",
+              "SIGGRP",
+              "SIGPER"
+            ],
+            "has_ORIENT": false,
+            "pixel_x": 587,
+            "pixel_y": 78,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYLAT",
+            "object_index": 223,
+            "latitude": -32.5134656,
+            "longitude": 61.0240359,
+            "symbol": "XNLAT024",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 587,
+            "pixel_y": 78,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "LIGHTS",
+            "object_index": 226,
+            "latitude": -32.5146737,
+            "longitude": 61.017694,
+            "symbol": "XNLIT012",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "attribute_names": [
+              "catgeo",
+              "COLOUR",
+              "LITCHR",
+              "SIGGRP",
+              "SIGPER"
+            ],
+            "has_ORIENT": false,
+            "pixel_x": 375,
+            "pixel_y": 126,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYLAT",
+            "object_index": 227,
+            "latitude": -32.5146737,
+            "longitude": 61.017694,
+            "symbol": "XNLAT013",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 375,
+            "pixel_y": 126,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          }
+        ]
+      },
+      "water_pixels": 520065,
+      "owned_values": {
+        "Latitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Latitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "69585823",
+          "validity": "Measured",
+          "value": 47.6,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 166,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Longitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Longitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "69585823",
+          "validity": "Measured",
+          "value": -122.36,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 166,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Speed over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Speed over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "69585823",
+          "validity": "Measured",
+          "value": 3,
+          "aging_after_ms": 2000,
+          "unit": "kn",
+          "age_ms": 166,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Course over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Course over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "69585823",
+          "validity": "Measured",
+          "value": 90,
+          "aging_after_ms": 2000,
+          "unit": "deg true",
+          "age_ms": 166,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        }
+      }
+    },
+    {
+      "name": "s64-lateral-SKAGER-Night",
+      "image_sha256": "92c57ce0d86e16b114f7af03c25631724424e4221e99e850242af632509ac1ef",
+      "scene": "s64-lateral",
+      "chart": {
+        "canvas_pixels": {
+          "height": 566,
+          "width": 1014
+        },
+        "latitude": -32.5186315,
+        "database_entries": 1,
+        "follow": false,
+        "quilt_members": [
+          {
+            "type": 5,
+            "native_scale": 52000,
+            "file": "GB4X0000.000",
+            "index": 0
+          }
+        ],
+        "opengl_enabled": false,
+        "quilt_reference": 0,
+        "scale_bar": {
+          "height": 29,
+          "y": 505,
+          "width": 26,
+          "x": 191
+        },
+        "depth_unit_type": 1,
+        "quilt": true,
+        "scale_ppm": 0.3000000119,
+        "longitude": 61.0216421,
+        "depth_units_visible": true
+      },
+      "presentation": {
+        "status": "SKAGER presentation v1 / pinned symbols; o-charts: no SKAGER adapter loaded",
+        "saved_point_style": 76,
+        "requested": "XNav",
+        "effective_point_style": 76
+      },
+      "source_feature_crops": [
+        {
+          "class": "BOYLAT",
+          "source_rcid": 219,
+          "bounds": [
+            471,
+            520,
+            543,
+            592
+          ],
+          "draw": {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYLAT",
+            "object_index": 218,
+            "latitude": -32.5237974,
+            "longitude": 61.0192483,
+            "symbol": "XNLAT013",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 427,
+            "pixel_y": 488,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "sha256": "38777d88970c4275fd0ebb349eb28043fa4be8cf88efae9ee61e224e9c27cbc6"
+        },
+        {
+          "class": "BOYLAT",
+          "source_rcid": 224,
+          "bounds": [
+            631,
+            110,
+            703,
+            182
+          ],
+          "draw": {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYLAT",
+            "object_index": 223,
+            "latitude": -32.5134656,
+            "longitude": 61.0240359,
+            "symbol": "XNLAT024",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 587,
+            "pixel_y": 78,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "sha256": "1aa05d4afcda7f28cc37939a07c45d9b658c779b24c8e6775f6b91d84b4e0302"
+        },
+        {
+          "class": "BOYLAT",
+          "source_rcid": 228,
+          "bounds": [
+            419,
+            158,
+            491,
+            230
+          ],
+          "draw": {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYLAT",
+            "object_index": 227,
+            "latitude": -32.5146737,
+            "longitude": 61.017694,
+            "symbol": "XNLAT013",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 375,
+            "pixel_y": 126,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "sha256": "344d9467a5466d2534df44f6393229c3e7a2555a71bfe241b16ad5a3f6ba2b48"
+        }
+      ],
+      "trace": {
+        "read_only_trace_complete": true,
+        "debugger_timing_note": "Entry breakpoints can delay initial drawing. Both probes disabled before settled snapshots; no inferior calls or model writes.",
+        "draws": [
+          {
+            "kind": "RenderSY",
+            "class": "BOYLAT",
+            "object_index": 218,
+            "latitude": -32.5237974,
+            "longitude": 61.0192483,
+            "symbol": "XNLAT013",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "LIGHTS",
+            "object_index": 222,
+            "latitude": -32.5134656,
+            "longitude": 61.0240359,
+            "symbol": "LIGHTS11",
+            "definition": 86,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "attribute_names": [
+              "catgeo",
+              "COLOUR",
+              "LITCHR",
+              "SIGGRP",
+              "SIGPER"
+            ],
+            "has_ORIENT": false
+          },
+          {
+            "kind": "RenderSY",
+            "class": "BOYLAT",
+            "object_index": 223,
+            "latitude": -32.5134656,
+            "longitude": 61.0240359,
+            "symbol": "XNLAT024",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "LIGHTS",
+            "object_index": 224,
+            "latitude": -32.4990566,
+            "longitude": 61.0175545,
+            "symbol": "LIGHTS11",
+            "definition": 86,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "attribute_names": [
+              "catgeo",
+              "COLOUR",
+              "LITCHR",
+              "SIGGRP"
+            ],
+            "has_ORIENT": false
+          },
+          {
+            "kind": "RenderSY",
+            "class": "BOYLAT",
+            "object_index": 225,
+            "latitude": -32.4990566,
+            "longitude": 61.0175545,
+            "symbol": "XNLAT024",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "LIGHTS",
+            "object_index": 226,
+            "latitude": -32.5146737,
+            "longitude": 61.017694,
+            "symbol": "LIGHTS12",
+            "definition": 86,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "attribute_names": [
+              "catgeo",
+              "COLOUR",
+              "LITCHR",
+              "SIGGRP",
+              "SIGPER"
+            ],
+            "has_ORIENT": false
+          },
+          {
+            "kind": "RenderSY",
+            "class": "BOYLAT",
+            "object_index": 227,
+            "latitude": -32.5146737,
+            "longitude": 61.017694,
+            "symbol": "XNLAT013",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          }
+        ],
+        "raster_draws": [
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYLAT",
+            "object_index": 218,
+            "latitude": -32.5237974,
+            "longitude": 61.0192483,
+            "symbol": "XNLAT013",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 427,
+            "pixel_y": 488,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "LIGHTS",
+            "object_index": 222,
+            "latitude": -32.5134656,
+            "longitude": 61.0240359,
+            "symbol": "XNLIT011",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "attribute_names": [
+              "catgeo",
+              "COLOUR",
+              "LITCHR",
+              "SIGGRP",
+              "SIGPER"
+            ],
+            "has_ORIENT": false,
+            "pixel_x": 587,
+            "pixel_y": 78,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYLAT",
+            "object_index": 223,
+            "latitude": -32.5134656,
+            "longitude": 61.0240359,
+            "symbol": "XNLAT024",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 587,
+            "pixel_y": 78,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "LIGHTS",
+            "object_index": 226,
+            "latitude": -32.5146737,
+            "longitude": 61.017694,
+            "symbol": "XNLIT012",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "attribute_names": [
+              "catgeo",
+              "COLOUR",
+              "LITCHR",
+              "SIGGRP",
+              "SIGPER"
+            ],
+            "has_ORIENT": false,
+            "pixel_x": 375,
+            "pixel_y": 126,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYLAT",
+            "object_index": 227,
+            "latitude": -32.5146737,
+            "longitude": 61.017694,
+            "symbol": "XNLAT013",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 375,
+            "pixel_y": 126,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          }
+        ]
+      },
+      "water_pixels": 520253,
+      "owned_values": {
+        "Latitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Latitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "69589481",
+          "validity": "Measured",
+          "value": 47.6,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 288,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Longitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Longitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "69589481",
+          "validity": "Measured",
+          "value": -122.36,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 288,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Speed over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Speed over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "69589481",
+          "validity": "Measured",
+          "value": 3,
+          "aging_after_ms": 2000,
+          "unit": "kn",
+          "age_ms": 288,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Course over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Course over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "69589481",
+          "validity": "Measured",
+          "value": 90,
+          "aging_after_ms": 2000,
+          "unit": "deg true",
+          "age_ms": 288,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        }
+      }
+    },
+    {
+      "name": "s64-lateral-SKAGER-Day-return",
+      "image_sha256": "f5cd57481111ab2c6672e2039cde8c7f053d9f66fc0bc310bbcaf3dd898e460b",
+      "scene": "s64-lateral",
+      "chart": {
+        "canvas_pixels": {
+          "height": 566,
+          "width": 1014
+        },
+        "latitude": -32.5186315,
+        "database_entries": 1,
+        "follow": false,
+        "quilt_members": [
+          {
+            "type": 5,
+            "native_scale": 52000,
+            "file": "GB4X0000.000",
+            "index": 0
+          }
+        ],
+        "opengl_enabled": false,
+        "quilt_reference": 0,
+        "scale_bar": {
+          "height": 29,
+          "y": 505,
+          "width": 26,
+          "x": 191
+        },
+        "depth_unit_type": 1,
+        "quilt": true,
+        "scale_ppm": 0.3000000119,
+        "longitude": 61.0216421,
+        "depth_units_visible": true
+      },
+      "presentation": {
+        "status": "SKAGER presentation v1 / pinned symbols; o-charts: no SKAGER adapter loaded",
+        "saved_point_style": 76,
+        "requested": "XNav",
+        "effective_point_style": 76
+      },
+      "source_feature_crops": [
+        {
+          "class": "BOYLAT",
+          "source_rcid": 219,
+          "bounds": [
+            471,
+            520,
+            543,
+            592
+          ],
+          "draw": {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYLAT",
+            "object_index": 218,
+            "latitude": -32.5237974,
+            "longitude": 61.0192483,
+            "symbol": "XNLAT013",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 427,
+            "pixel_y": 488,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "sha256": "982481f9bc631e32e0a4dc169c11dcf4d7c062911f64ed5adaf93ecabce417d7"
+        },
+        {
+          "class": "BOYLAT",
+          "source_rcid": 224,
+          "bounds": [
+            631,
+            110,
+            703,
+            182
+          ],
+          "draw": {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYLAT",
+            "object_index": 223,
+            "latitude": -32.5134656,
+            "longitude": 61.0240359,
+            "symbol": "XNLAT024",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 587,
+            "pixel_y": 78,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "sha256": "6dec34171fd5ea748aed43a8c6692b2d3e21db41e6f3da04625681cffb59744f"
+        },
+        {
+          "class": "BOYLAT",
+          "source_rcid": 228,
+          "bounds": [
+            419,
+            158,
+            491,
+            230
+          ],
+          "draw": {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYLAT",
+            "object_index": 227,
+            "latitude": -32.5146737,
+            "longitude": 61.017694,
+            "symbol": "XNLAT013",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 375,
+            "pixel_y": 126,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "sha256": "07fe05502ab0bdf71036e1e907b428bebf2d082d9f678bc7402a9659fb5cc566"
+        }
+      ],
+      "trace": {
+        "read_only_trace_complete": true,
+        "debugger_timing_note": "Entry breakpoints can delay initial drawing. Both probes disabled before settled snapshots; no inferior calls or model writes.",
+        "draws": [
+          {
+            "kind": "RenderSY",
+            "class": "BOYLAT",
+            "object_index": 218,
+            "latitude": -32.5237974,
+            "longitude": 61.0192483,
+            "symbol": "XNLAT013",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "LIGHTS",
+            "object_index": 222,
+            "latitude": -32.5134656,
+            "longitude": 61.0240359,
+            "symbol": "LIGHTS11",
+            "definition": 86,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "attribute_names": [
+              "catgeo",
+              "COLOUR",
+              "LITCHR",
+              "SIGGRP",
+              "SIGPER"
+            ],
+            "has_ORIENT": false
+          },
+          {
+            "kind": "RenderSY",
+            "class": "BOYLAT",
+            "object_index": 223,
+            "latitude": -32.5134656,
+            "longitude": 61.0240359,
+            "symbol": "XNLAT024",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "LIGHTS",
+            "object_index": 224,
+            "latitude": -32.4990566,
+            "longitude": 61.0175545,
+            "symbol": "LIGHTS11",
+            "definition": 86,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "attribute_names": [
+              "catgeo",
+              "COLOUR",
+              "LITCHR",
+              "SIGGRP"
+            ],
+            "has_ORIENT": false
+          },
+          {
+            "kind": "RenderSY",
+            "class": "BOYLAT",
+            "object_index": 225,
+            "latitude": -32.4990566,
+            "longitude": 61.0175545,
+            "symbol": "XNLAT024",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "LIGHTS",
+            "object_index": 226,
+            "latitude": -32.5146737,
+            "longitude": 61.017694,
+            "symbol": "LIGHTS12",
+            "definition": 86,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "attribute_names": [
+              "catgeo",
+              "COLOUR",
+              "LITCHR",
+              "SIGGRP",
+              "SIGPER"
+            ],
+            "has_ORIENT": false
+          },
+          {
+            "kind": "RenderSY",
+            "class": "BOYLAT",
+            "object_index": 227,
+            "latitude": -32.5146737,
+            "longitude": 61.017694,
+            "symbol": "XNLAT013",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          }
+        ],
+        "raster_draws": [
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYLAT",
+            "object_index": 218,
+            "latitude": -32.5237974,
+            "longitude": 61.0192483,
+            "symbol": "XNLAT013",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 427,
+            "pixel_y": 488,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "LIGHTS",
+            "object_index": 222,
+            "latitude": -32.5134656,
+            "longitude": 61.0240359,
+            "symbol": "XNLIT011",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "attribute_names": [
+              "catgeo",
+              "COLOUR",
+              "LITCHR",
+              "SIGGRP",
+              "SIGPER"
+            ],
+            "has_ORIENT": false,
+            "pixel_x": 587,
+            "pixel_y": 78,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYLAT",
+            "object_index": 223,
+            "latitude": -32.5134656,
+            "longitude": 61.0240359,
+            "symbol": "XNLAT024",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 587,
+            "pixel_y": 78,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "LIGHTS",
+            "object_index": 226,
+            "latitude": -32.5146737,
+            "longitude": 61.017694,
+            "symbol": "XNLIT012",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "attribute_names": [
+              "catgeo",
+              "COLOUR",
+              "LITCHR",
+              "SIGGRP",
+              "SIGPER"
+            ],
+            "has_ORIENT": false,
+            "pixel_x": 375,
+            "pixel_y": 126,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYLAT",
+            "object_index": 227,
+            "latitude": -32.5146737,
+            "longitude": 61.017694,
+            "symbol": "XNLAT013",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 375,
+            "pixel_y": 126,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          }
+        ]
+      },
+      "water_pixels": 520065,
+      "owned_values": {
+        "Latitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Latitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "69591884",
+          "validity": "Measured",
+          "value": 47.6,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 163,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Longitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Longitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "69591884",
+          "validity": "Measured",
+          "value": -122.36,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 163,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Speed over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Speed over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "69591884",
+          "validity": "Measured",
+          "value": 3,
+          "aging_after_ms": 2000,
+          "unit": "kn",
+          "age_ms": 163,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Course over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Course over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "69591884",
+          "validity": "Measured",
+          "value": 90,
+          "aging_after_ms": 2000,
+          "unit": "deg true",
+          "age_ms": 163,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        }
+      }
+    },
+    {
+      "name": "s64-lateral-Standard-Day",
+      "image_sha256": "79624bcd8e6b0b46226cd3b9721c65c1b1abee04c2ed05425345877b5cd0bfe0",
+      "scene": "s64-lateral",
+      "chart": {
+        "canvas_pixels": {
+          "height": 566,
+          "width": 1014
+        },
+        "latitude": -32.5186315,
+        "database_entries": 1,
+        "follow": false,
+        "quilt_members": [
+          {
+            "type": 5,
+            "native_scale": 52000,
+            "file": "GB4X0000.000",
+            "index": 0
+          }
+        ],
+        "opengl_enabled": false,
+        "quilt_reference": 0,
+        "scale_bar": {
+          "height": 12,
+          "y": 527,
+          "width": 66,
+          "x": 18
+        },
+        "depth_unit_type": 1,
+        "quilt": true,
+        "scale_ppm": 0.3000000119,
+        "longitude": 61.0216421,
+        "depth_units_visible": true
+      },
+      "presentation": {
+        "status": "Standard OpenCPN presentation; o-charts: no SKAGER adapter loaded",
+        "saved_point_style": 76,
+        "requested": "Standard",
+        "effective_point_style": 76
+      },
+      "source_feature_crops": [
+        {
+          "class": "BOYLAT",
+          "source_rcid": 219,
+          "bounds": [
+            471,
+            520,
+            543,
+            592
+          ],
+          "draw": {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYLAT",
+            "object_index": 218,
+            "latitude": -32.5237974,
+            "longitude": 61.0192483,
+            "symbol": "BOYLAT13",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 427,
+            "pixel_y": 488,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "sha256": "edfa8b24ca9396d425cae69698798fbcd2867af457b50aea7b9a5c6c22b96299"
+        },
+        {
+          "class": "BOYLAT",
+          "source_rcid": 224,
+          "bounds": [
+            631,
+            110,
+            703,
+            182
+          ],
+          "draw": {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYLAT",
+            "object_index": 223,
+            "latitude": -32.5134656,
+            "longitude": 61.0240359,
+            "symbol": "BOYLAT24",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 587,
+            "pixel_y": 78,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "sha256": "022a945cbf6bef1d23a272a6e66c3b00bf1edea93904c3ff178ecd908e63a22b"
+        },
+        {
+          "class": "BOYLAT",
+          "source_rcid": 228,
+          "bounds": [
+            419,
+            158,
+            491,
+            230
+          ],
+          "draw": {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYLAT",
+            "object_index": 227,
+            "latitude": -32.5146737,
+            "longitude": 61.017694,
+            "symbol": "BOYLAT13",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 375,
+            "pixel_y": 126,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "sha256": "dd980c32307d7e180e22356d3803b124f8d0565e682582b6d02f9254d60f2d7a"
+        }
+      ],
+      "trace": {
+        "read_only_trace_complete": true,
+        "debugger_timing_note": "Entry breakpoints can delay initial drawing. Both probes disabled before settled snapshots; no inferior calls or model writes.",
+        "draws": [
+          {
+            "kind": "RenderSY",
+            "class": "BOYLAT",
+            "object_index": 218,
+            "latitude": -32.5237974,
+            "longitude": 61.0192483,
+            "symbol": "BOYLAT13",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "LIGHTS",
+            "object_index": 222,
+            "latitude": -32.5134656,
+            "longitude": 61.0240359,
+            "symbol": "LIGHTS11",
+            "definition": 86,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "attribute_names": [
+              "catgeo",
+              "COLOUR",
+              "LITCHR",
+              "SIGGRP",
+              "SIGPER"
+            ],
+            "has_ORIENT": false
+          },
+          {
+            "kind": "RenderSY",
+            "class": "BOYLAT",
+            "object_index": 223,
+            "latitude": -32.5134656,
+            "longitude": 61.0240359,
+            "symbol": "BOYLAT24",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "LIGHTS",
+            "object_index": 224,
+            "latitude": -32.4990566,
+            "longitude": 61.0175545,
+            "symbol": "LIGHTS11",
+            "definition": 86,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "attribute_names": [
+              "catgeo",
+              "COLOUR",
+              "LITCHR",
+              "SIGGRP"
+            ],
+            "has_ORIENT": false
+          },
+          {
+            "kind": "RenderSY",
+            "class": "BOYLAT",
+            "object_index": 225,
+            "latitude": -32.4990566,
+            "longitude": 61.0175545,
+            "symbol": "BOYLAT24",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "LIGHTS",
+            "object_index": 226,
+            "latitude": -32.5146737,
+            "longitude": 61.017694,
+            "symbol": "LIGHTS12",
+            "definition": 86,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "attribute_names": [
+              "catgeo",
+              "COLOUR",
+              "LITCHR",
+              "SIGGRP",
+              "SIGPER"
+            ],
+            "has_ORIENT": false
+          },
+          {
+            "kind": "RenderSY",
+            "class": "BOYLAT",
+            "object_index": 227,
+            "latitude": -32.5146737,
+            "longitude": 61.017694,
+            "symbol": "BOYLAT13",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          }
+        ],
+        "raster_draws": [
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYLAT",
+            "object_index": 218,
+            "latitude": -32.5237974,
+            "longitude": 61.0192483,
+            "symbol": "BOYLAT13",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 427,
+            "pixel_y": 488,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYLAT",
+            "object_index": 223,
+            "latitude": -32.5134656,
+            "longitude": 61.0240359,
+            "symbol": "BOYLAT24",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 587,
+            "pixel_y": 78,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYLAT",
+            "object_index": 227,
+            "latitude": -32.5146737,
+            "longitude": 61.017694,
+            "symbol": "BOYLAT13",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 375,
+            "pixel_y": 126,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          }
+        ]
+      },
+      "water_pixels": 517274,
+      "owned_values": {
+        "Latitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Latitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "69599283",
+          "validity": "Measured",
+          "value": 47.6,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 186,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Longitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Longitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "69599283",
+          "validity": "Measured",
+          "value": -122.36,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 186,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Speed over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Speed over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "69599283",
+          "validity": "Measured",
+          "value": 3,
+          "aging_after_ms": 2000,
+          "unit": "kn",
+          "age_ms": 186,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Course over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Course over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "69599283",
+          "validity": "Measured",
+          "value": 90,
+          "aging_after_ms": 2000,
+          "unit": "deg true",
+          "age_ms": 186,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        }
+      }
+    },
+    {
+      "name": "s64-lateral-Standard-Night",
+      "image_sha256": "1caff712f617ca968c8aa9f3a46eb9e3bc7d2667f57082975d327650874bb1f0",
+      "scene": "s64-lateral",
+      "chart": {
+        "canvas_pixels": {
+          "height": 566,
+          "width": 1014
+        },
+        "latitude": -32.5186315,
+        "database_entries": 1,
+        "follow": false,
+        "quilt_members": [
+          {
+            "type": 5,
+            "native_scale": 52000,
+            "file": "GB4X0000.000",
+            "index": 0
+          }
+        ],
+        "opengl_enabled": false,
+        "quilt_reference": 0,
+        "scale_bar": {
+          "height": 12,
+          "y": 527,
+          "width": 66,
+          "x": 18
+        },
+        "depth_unit_type": 1,
+        "quilt": true,
+        "scale_ppm": 0.3000000119,
+        "longitude": 61.0216421,
+        "depth_units_visible": true
+      },
+      "presentation": {
+        "status": "Standard OpenCPN presentation; o-charts: no SKAGER adapter loaded",
+        "saved_point_style": 76,
+        "requested": "Standard",
+        "effective_point_style": 76
+      },
+      "source_feature_crops": [
+        {
+          "class": "BOYLAT",
+          "source_rcid": 219,
+          "bounds": [
+            471,
+            520,
+            543,
+            592
+          ],
+          "draw": {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYLAT",
+            "object_index": 218,
+            "latitude": -32.5237974,
+            "longitude": 61.0192483,
+            "symbol": "BOYLAT13",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 427,
+            "pixel_y": 488,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "sha256": "d79307efe50b6f84ce79f893824409e86f5f694f58fc02d34fe48d2a486b78ee"
+        },
+        {
+          "class": "BOYLAT",
+          "source_rcid": 224,
+          "bounds": [
+            631,
+            110,
+            703,
+            182
+          ],
+          "draw": {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYLAT",
+            "object_index": 223,
+            "latitude": -32.5134656,
+            "longitude": 61.0240359,
+            "symbol": "BOYLAT24",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 587,
+            "pixel_y": 78,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "sha256": "0d99fa18471785f6d244349dfc577fe95a28c8e8f5bed7eb003e41aace32334a"
+        },
+        {
+          "class": "BOYLAT",
+          "source_rcid": 228,
+          "bounds": [
+            419,
+            158,
+            491,
+            230
+          ],
+          "draw": {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYLAT",
+            "object_index": 227,
+            "latitude": -32.5146737,
+            "longitude": 61.017694,
+            "symbol": "BOYLAT13",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 375,
+            "pixel_y": 126,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "sha256": "8f25e12e0fe57fe840ceb70b070770e6b6048e58fc7535f3bf280c984eb5804e"
+        }
+      ],
+      "trace": {
+        "read_only_trace_complete": true,
+        "debugger_timing_note": "Entry breakpoints can delay initial drawing. Both probes disabled before settled snapshots; no inferior calls or model writes.",
+        "draws": [
+          {
+            "kind": "RenderSY",
+            "class": "BOYLAT",
+            "object_index": 218,
+            "latitude": -32.5237974,
+            "longitude": 61.0192483,
+            "symbol": "BOYLAT13",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "LIGHTS",
+            "object_index": 222,
+            "latitude": -32.5134656,
+            "longitude": 61.0240359,
+            "symbol": "LIGHTS11",
+            "definition": 86,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "attribute_names": [
+              "catgeo",
+              "COLOUR",
+              "LITCHR",
+              "SIGGRP",
+              "SIGPER"
+            ],
+            "has_ORIENT": false
+          },
+          {
+            "kind": "RenderSY",
+            "class": "BOYLAT",
+            "object_index": 223,
+            "latitude": -32.5134656,
+            "longitude": 61.0240359,
+            "symbol": "BOYLAT24",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "LIGHTS",
+            "object_index": 224,
+            "latitude": -32.4990566,
+            "longitude": 61.0175545,
+            "symbol": "LIGHTS11",
+            "definition": 86,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "attribute_names": [
+              "catgeo",
+              "COLOUR",
+              "LITCHR",
+              "SIGGRP"
+            ],
+            "has_ORIENT": false
+          },
+          {
+            "kind": "RenderSY",
+            "class": "BOYLAT",
+            "object_index": 225,
+            "latitude": -32.4990566,
+            "longitude": 61.0175545,
+            "symbol": "BOYLAT24",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "LIGHTS",
+            "object_index": 226,
+            "latitude": -32.5146737,
+            "longitude": 61.017694,
+            "symbol": "LIGHTS12",
+            "definition": 86,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "attribute_names": [
+              "catgeo",
+              "COLOUR",
+              "LITCHR",
+              "SIGGRP",
+              "SIGPER"
+            ],
+            "has_ORIENT": false
+          },
+          {
+            "kind": "RenderSY",
+            "class": "BOYLAT",
+            "object_index": 227,
+            "latitude": -32.5146737,
+            "longitude": 61.017694,
+            "symbol": "BOYLAT13",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          }
+        ],
+        "raster_draws": [
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYLAT",
+            "object_index": 218,
+            "latitude": -32.5237974,
+            "longitude": 61.0192483,
+            "symbol": "BOYLAT13",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 427,
+            "pixel_y": 488,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYLAT",
+            "object_index": 223,
+            "latitude": -32.5134656,
+            "longitude": 61.0240359,
+            "symbol": "BOYLAT24",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 587,
+            "pixel_y": 78,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYLAT",
+            "object_index": 227,
+            "latitude": -32.5146737,
+            "longitude": 61.017694,
+            "symbol": "BOYLAT13",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 375,
+            "pixel_y": 126,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          }
+        ]
+      },
+      "water_pixels": 517898,
+      "owned_values": {
+        "Latitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Latitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "69602651",
+          "validity": "Measured",
+          "value": 47.6,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 136,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Longitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Longitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "69602651",
+          "validity": "Measured",
+          "value": -122.36,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 136,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Speed over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Speed over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "69602651",
+          "validity": "Measured",
+          "value": 3,
+          "aging_after_ms": 2000,
+          "unit": "kn",
+          "age_ms": 136,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Course over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Course over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "69602651",
+          "validity": "Measured",
+          "value": 90,
+          "aging_after_ms": 2000,
+          "unit": "deg true",
+          "age_ms": 136,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        }
+      }
+    },
+    {
+      "name": "s64-lateral-Standard-Day-return",
+      "image_sha256": "003ab2879583063b9856613d02770330bbd0ed38c41b088399f9b8a6f4632b6c",
+      "scene": "s64-lateral",
+      "chart": {
+        "canvas_pixels": {
+          "height": 566,
+          "width": 1014
+        },
+        "latitude": -32.5186315,
+        "database_entries": 1,
+        "follow": false,
+        "quilt_members": [
+          {
+            "type": 5,
+            "native_scale": 52000,
+            "file": "GB4X0000.000",
+            "index": 0
+          }
+        ],
+        "opengl_enabled": false,
+        "quilt_reference": 0,
+        "scale_bar": {
+          "height": 12,
+          "y": 527,
+          "width": 66,
+          "x": 18
+        },
+        "depth_unit_type": 1,
+        "quilt": true,
+        "scale_ppm": 0.3000000119,
+        "longitude": 61.0216421,
+        "depth_units_visible": true
+      },
+      "presentation": {
+        "status": "Standard OpenCPN presentation; o-charts: no SKAGER adapter loaded",
+        "saved_point_style": 76,
+        "requested": "Standard",
+        "effective_point_style": 76
+      },
+      "source_feature_crops": [
+        {
+          "class": "BOYLAT",
+          "source_rcid": 219,
+          "bounds": [
+            471,
+            520,
+            543,
+            592
+          ],
+          "draw": {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYLAT",
+            "object_index": 218,
+            "latitude": -32.5237974,
+            "longitude": 61.0192483,
+            "symbol": "BOYLAT13",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 427,
+            "pixel_y": 488,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "sha256": "edfa8b24ca9396d425cae69698798fbcd2867af457b50aea7b9a5c6c22b96299"
+        },
+        {
+          "class": "BOYLAT",
+          "source_rcid": 224,
+          "bounds": [
+            631,
+            110,
+            703,
+            182
+          ],
+          "draw": {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYLAT",
+            "object_index": 223,
+            "latitude": -32.5134656,
+            "longitude": 61.0240359,
+            "symbol": "BOYLAT24",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 587,
+            "pixel_y": 78,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "sha256": "022a945cbf6bef1d23a272a6e66c3b00bf1edea93904c3ff178ecd908e63a22b"
+        },
+        {
+          "class": "BOYLAT",
+          "source_rcid": 228,
+          "bounds": [
+            419,
+            158,
+            491,
+            230
+          ],
+          "draw": {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYLAT",
+            "object_index": 227,
+            "latitude": -32.5146737,
+            "longitude": 61.017694,
+            "symbol": "BOYLAT13",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 375,
+            "pixel_y": 126,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "sha256": "dd980c32307d7e180e22356d3803b124f8d0565e682582b6d02f9254d60f2d7a"
+        }
+      ],
+      "trace": {
+        "read_only_trace_complete": true,
+        "debugger_timing_note": "Entry breakpoints can delay initial drawing. Both probes disabled before settled snapshots; no inferior calls or model writes.",
+        "draws": [
+          {
+            "kind": "RenderSY",
+            "class": "BOYLAT",
+            "object_index": 218,
+            "latitude": -32.5237974,
+            "longitude": 61.0192483,
+            "symbol": "BOYLAT13",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "LIGHTS",
+            "object_index": 222,
+            "latitude": -32.5134656,
+            "longitude": 61.0240359,
+            "symbol": "LIGHTS11",
+            "definition": 86,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "attribute_names": [
+              "catgeo",
+              "COLOUR",
+              "LITCHR",
+              "SIGGRP",
+              "SIGPER"
+            ],
+            "has_ORIENT": false
+          },
+          {
+            "kind": "RenderSY",
+            "class": "BOYLAT",
+            "object_index": 223,
+            "latitude": -32.5134656,
+            "longitude": 61.0240359,
+            "symbol": "BOYLAT24",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "LIGHTS",
+            "object_index": 224,
+            "latitude": -32.4990566,
+            "longitude": 61.0175545,
+            "symbol": "LIGHTS11",
+            "definition": 86,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "attribute_names": [
+              "catgeo",
+              "COLOUR",
+              "LITCHR",
+              "SIGGRP"
+            ],
+            "has_ORIENT": false
+          },
+          {
+            "kind": "RenderSY",
+            "class": "BOYLAT",
+            "object_index": 225,
+            "latitude": -32.4990566,
+            "longitude": 61.0175545,
+            "symbol": "BOYLAT24",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "LIGHTS",
+            "object_index": 226,
+            "latitude": -32.5146737,
+            "longitude": 61.017694,
+            "symbol": "LIGHTS12",
+            "definition": 86,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "attribute_names": [
+              "catgeo",
+              "COLOUR",
+              "LITCHR",
+              "SIGGRP",
+              "SIGPER"
+            ],
+            "has_ORIENT": false
+          },
+          {
+            "kind": "RenderSY",
+            "class": "BOYLAT",
+            "object_index": 227,
+            "latitude": -32.5146737,
+            "longitude": 61.017694,
+            "symbol": "BOYLAT13",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          }
+        ],
+        "raster_draws": [
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYLAT",
+            "object_index": 218,
+            "latitude": -32.5237974,
+            "longitude": 61.0192483,
+            "symbol": "BOYLAT13",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 427,
+            "pixel_y": 488,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYLAT",
+            "object_index": 223,
+            "latitude": -32.5134656,
+            "longitude": 61.0240359,
+            "symbol": "BOYLAT24",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 587,
+            "pixel_y": 78,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYLAT",
+            "object_index": 227,
+            "latitude": -32.5146737,
+            "longitude": 61.017694,
+            "symbol": "BOYLAT13",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 375,
+            "pixel_y": 126,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          }
+        ]
+      },
+      "water_pixels": 517274,
+      "owned_values": {
+        "Latitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Latitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "69605065",
+          "validity": "Measured",
+          "value": 47.6,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 50,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Longitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Longitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "69605065",
+          "validity": "Measured",
+          "value": -122.36,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 50,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Speed over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Speed over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "69605065",
+          "validity": "Measured",
+          "value": 3,
+          "aging_after_ms": 2000,
+          "unit": "kn",
+          "age_ms": 50,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Course over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Course over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "69605065",
+          "validity": "Measured",
+          "value": 90,
+          "aging_after_ms": 2000,
+          "unit": "deg true",
+          "age_ms": 50,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        }
+      }
+    }
+  ],
+  "status": "passed",
+  "clean_exit": true,
+  "font_evidence": {
+    "policy_source_sha256": "c8ebccb932abb3bbd6c95a5da4b6b9e81475710a98a132bdb717c742eac73fd8",
+    "note": "Source policy and Linux fontconfig inventory recorded; this does not establish native Windows glyph metrics",
+    "Segoe UI Variable Display": {
+      "exit_code": 0,
+      "linux_fontconfig_match": "Liberation Sans\n/usr/share/fonts/liberation/LiberationSans-Regular.ttf"
+    },
+    "Segoe UI": {
+      "exit_code": 0,
+      "linux_fontconfig_match": "Liberation Sans\n/usr/share/fonts/liberation/LiberationSans-Regular.ttf"
+    },
+    "Arial": {
+      "exit_code": 0,
+      "linux_fontconfig_match": "Liberation Sans\n/usr/share/fonts/liberation/LiberationSans-Regular.ttf"
+    }
+  },
+  "additional_source_evidence": {
+    "src/ui/SkagerWordmark.h": "c2fc3d1afdf88bfd2e884d541e7b3ad4463702cece09057e38f4d496deda9928",
+    "src/ui/Theme.h": "b28adb1f519ec5a1f9b7e2bfab6ec2ab1c7f06656bd129316e9e453ef1ec0776",
+    "src/ui/Shell.cpp": "ed022b04450b0a24fec10cb3303551f35ab7e8dd01161918d18daa3ce322ad02",
+    "src/integration/ChartCanvasInk.h": "cc1a4d94131f932f2bbd40d330d9003d0086dfc1237449b4215b509377c39f66",
+    "src/integration/ChartRouteLabel.cpp": "c4f6b225ed4e6985370da71559237b5ee6bbc3d2ac62fa4cf530d02b781f017f",
+    "src/integration/ChartRouteLabelRaster.h": "c2ca0bd64ec1203addbd518b2424af91c3ca25f72b250d1f6c80b6e467722f3b",
+    "tools/chart_cardinal_art.py": "e8b4f52df0d558ec715613c9f737776db0f10f844c3f2769a3f35fd8f670158e",
+    "resources/chart-style/v1/cardinals/provenance.json": "a0017453b3ea5a814a613bb50d0f5a676fdf0095e0b5e7a6249ec49fe38c8010"
+  },
+  "loader_selftest": {
+    "upstream": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+    "commissioning_restart_protocol": 0,
+    "version": "0.4.0-beta2",
+    "commit": "5c05eb55c15b67d4014df55896d95452e9cc9d64",
+    "compiler": "GNU 16.2.1 / 8 byte pointers",
+    "plugins_loaded": false,
+    "test_fixtures": true,
+    "resources": {
+      "gshhs/poly-c-1.dat": true,
+      "s57data/s57objectclasses.csv": true,
+      "uidata/styles.xml": true,
+      "s57data/chartsymbols.xml": true
+    },
+    "normal_config_directory": "/etc",
+    "passed": true,
+    "xnav_hardware_output_policy": "test-loopback-only",
+    "build_purpose": "DEVELOPER TEST BUILD",
+    "profile_initialized": false,
+    "contract": "OpenNavX.LoaderSelfTest.1"
+  },
+  "day_return_checks": [
+    {
+      "image": "s64-lateral-SKAGER-Day-return",
+      "bounds": [
+        80,
+        68,
+        1094,
+        634
+      ],
+      "equal": true,
+      "mask": null
+    },
+    {
+      "image": "s64-lateral-Standard-Day-return",
+      "bounds": [
+        80,
+        68,
+        1094,
+        634
+      ],
+      "equal": true,
+      "mask": null
+    }
+  ],
+  "symbol_table_receipts": [
+    {
+      "style": "XNav",
+      "persisted_nSymbolStyle": 76,
+      "scope": "Pinned config read/write boundary; direct in-process enum and object lookup not exposed by current diagnostics"
+    },
+    {
+      "style": "Standard",
+      "persisted_nSymbolStyle": 76,
+      "scope": "Pinned config read/write boundary; direct in-process enum and object lookup not exposed by current diagnostics"
+    }
+  ],
+  "historical_checks": [
+    {
+      "image": "s64-lateral-Standard-Day",
+      "historical_sha256": "208579f372c3d016e80f75949691cf2637d30495be45084be3d4bc877d7ccb94",
+      "bounds": [
+        80,
+        68,
+        1094,
+        634
+      ],
+      "equal": true,
+      "mask": null
+    }
+  ]
+}

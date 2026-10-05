@@ -9,6 +9,7 @@ target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/OpenCPNI
 target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/AnchorGeometry.cpp")
 target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/OnlineAis.cpp")
 target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/OnlineAisOverlay.cpp")
+target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/OnboardAisPresentation.cpp")
 target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/DashboardPresentation.cpp")
 # Only the bundled, source-pinned Dashboard opts into transient XNav
 # presentation. No third-party plugin ABI or normal upstream build is changed.
@@ -20,6 +21,7 @@ target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/Navigati
 target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/OpenCPNRouteReader.cpp")
 target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/PreviewDiagnostics.cpp"
   "${OPENNAV_ROOT}/src/integration/RuntimeDiagnostics.cpp"
+  "${OPENNAV_ROOT}/src/integration/ChartModuleCheck.cpp"
   "${OPENNAV_ROOT}/src/integration/InstallerSelfTest.cpp")
 add_library(opennav_marine
   "${OPENNAV_ROOT}/src/integration/N2kInstruments.cpp"
@@ -48,10 +50,24 @@ string(TIMESTAMP OPENNAV_BUILD_DATE "%Y-%m-%dT%H:%M:%SZ" UTC)
 configure_file("${OPENNAV_ROOT}/src/integration/OpenNavBuild.h.in" "${CMAKE_BINARY_DIR}/include/OpenNavBuild.h" @ONLY)
 target_include_directories(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src")
 target_compile_definitions(${PACKAGE_NAME} PRIVATE OPENNAV_X=1)
+# The optional S-52 geographic-label painter is a bounded integration helper;
+# the standalone upstream library and all default presentation paths stay stock.
+target_compile_definitions(S52PLIB PRIVATE OPENNAV_X=1)
+target_include_directories(S52PLIB PRIVATE "${OPENNAV_ROOT}/src")
+if(WIN32)
+  target_link_libraries(S52PLIB PRIVATE opennav_chart_name_alpha)
+endif()
 # Preserve normal plugin preferences while upstream Safe Mode blocks loading.
 # Limit this additional definition to the one affected model translation unit.
 set_property(SOURCE "${CMAKE_SOURCE_DIR}/model/src/plugin_loader.cpp"
   DIRECTORY "${CMAKE_SOURCE_DIR}/model" APPEND PROPERTY COMPILE_DEFINITIONS OPENNAV_X=1)
+set_property(SOURCE "${CMAKE_SOURCE_DIR}/model/src/plugin_loader.cpp"
+  DIRECTORY "${CMAKE_SOURCE_DIR}/model" APPEND PROPERTY INCLUDE_DIRECTORIES "${OPENNAV_ROOT}/src")
+# The shared model object now calls the optional presentation callback. Every
+# consumer (including upstream headless fixtures) needs its real implementation.
+# LINK_ONLY keeps integration compile flags/includes out of the model and its
+# consumers; the unregistered callback retains ordinary upstream loading.
+target_link_libraries(_model_src INTERFACE "$<LINK_ONLY:opennav_integration>")
 # Bound untrusted Signal K before the upstream recursive parser, not only after
 # the driver has already decoded it. The pristine build has no OpenNav include.
 set_property(SOURCE "${CMAKE_SOURCE_DIR}/model/src/comm_drv_signalk_net.cpp"
@@ -92,6 +108,12 @@ endif()
 # Defer attaching model-bound tests; test sources stay outside upstream.
 function(opennav_attach_route_tests)
   if(TARGET tests)
+    target_sources(tests PRIVATE
+      "${OPENNAV_ROOT}/tests/preview_diagnostics_tests.cpp"
+      "${OPENNAV_ROOT}/src/integration/PreviewDiagnostics.cpp")
+    target_compile_definitions(tests PRIVATE OPENNAV_DIAGNOSTICS_GTEST=1)
+    target_include_directories(tests PRIVATE "${CMAKE_BINARY_DIR}/include")
+    target_link_libraries(tests PRIVATE ocpn::wxjson)
     target_sources(tests PRIVATE "${OPENNAV_ROOT}/tests/peer_unavailable_tests.cpp")
     target_sources(tests PRIVATE "${OPENNAV_ROOT}/tests/pilot_presentation_tests.cpp")
     target_sources(tests PRIVATE "${OPENNAV_ROOT}/tests/anchor_view_tests.cpp"
@@ -142,6 +164,8 @@ function(opennav_attach_route_tests)
     add_executable(ais_drawer_test "${OPENNAV_ROOT}/tests/ais_drawer_test.cpp")
     target_link_libraries(ais_drawer_test PRIVATE opennav_ui)
     target_compile_features(ais_drawer_test PRIVATE cxx_std_17)
+    include("${OPENNAV_ROOT}/cmake/BoatFeedbackTests.cmake")
+    opennav_attach_boat_feedback_tests()
     if(LINUX)
       find_package(PkgConfig REQUIRED)
       pkg_check_modules(OPENNAV_UI_TEST_GTK REQUIRED IMPORTED_TARGET gtk+-3.0)
@@ -213,6 +237,25 @@ endif()
 # Separately owned, deterministically derived presentation resources. Verify
 # source bytes before generation; never overwrite the stock s57data directory.
 find_package(Python3 REQUIRED COMPONENTS Interpreter)
+# Verify approved, committed artwork without adding Pillow to product builds.
+execute_process(COMMAND "${Python3_EXECUTABLE}" "${OPENNAV_ROOT}/tools/verify-skager-brand.py"
+  RESULT_VARIABLE skager_brand_result)
+if(NOT skager_brand_result EQUAL 0)
+  message(FATAL_ERROR "SKAGER approved artwork verification failed")
+endif()
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
+  "${OPENNAV_ROOT}/resources/branding/provenance.json"
+  "${OPENNAV_ROOT}/resources/branding/skager-wordmark-approved.png"
+  "${OPENNAV_ROOT}/resources/branding/skager-wordmark.png"
+  "${OPENNAV_ROOT}/resources/branding/skager.ico"
+  "${OPENNAV_ROOT}/src/application/SkagerBrandAsset.h")
+if(MSVC)
+  # The explicit integration hook runs after upstream's resource configuration.
+  # Replace only the disposable build output, keeping resource ID 0 (frame icon),
+  # executable filename, version and upstream source/stock install unchanged.
+  configure_file("${OPENNAV_ROOT}/src/integration/Skager.rc.in"
+    "${CMAKE_BINARY_DIR}/opencpn.rc" @ONLY)
+endif()
 set(xnav_chart_style "${CMAKE_BINARY_DIR}/opennav-chart-style/v1")
 execute_process(COMMAND "${Python3_EXECUTABLE}" "${OPENNAV_ROOT}/tools/generate-xnav-chart-style.py"
   --source "${CMAKE_SOURCE_DIR}/data/s57data" --output "${xnav_chart_style}"
@@ -226,9 +269,230 @@ set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
   "${OPENNAV_ROOT}/docs/design/prototype-tokens.json"
   "${OPENNAV_ROOT}/tools/generate-xnav-chart-style.py")
 set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
-  "${OPENNAV_ROOT}/tools/chart_raster_ink.py")
-target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/ChartPresentation.cpp")
+  "${OPENNAV_ROOT}/tools/chart_raster_ink.py"
+  "${OPENNAV_ROOT}/tools/chart_day_neutral_ink.py"
+  "${OPENNAV_ROOT}/tools/chart_anchor_art.py"
+  "${OPENNAV_ROOT}/tools/chart_cable_paint.py"
+  "${OPENNAV_ROOT}/tools/chart_structure_paint.py"
+  "${OPENNAV_ROOT}/tools/chart_building_point.py"
+  "${OPENNAV_ROOT}/tools/chart_light_tower.py"
+  "${OPENNAV_ROOT}/tools/derive-light-tower.py"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/light-tower/recipe.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/building-point/recipe.json"
+  "${OPENNAV_ROOT}/tools/chart_construction_hatch.py"
+  "${OPENNAV_ROOT}/tools/chart_service_art.py"
+  "${OPENNAV_ROOT}/tools/chart_hazard_art.py"
+  "${OPENNAV_ROOT}/tools/derive-hazard-art.py"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/hazards/provenance.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/hazards/UWTROC03.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/hazards/UWTROC03-alpha.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/hazards/UWTROC04.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/hazards/UWTROC04-alpha.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/hazards/WRECKS05.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/hazards/WRECKS05-alpha.json"
+  "${OPENNAV_ROOT}/tools/chart_fishing_pattern.py"
+  "${OPENNAV_ROOT}/tools/chart_cardinal_art.py"
+  "${OPENNAV_ROOT}/tools/chart_seamark_art.py"
+  "${OPENNAV_ROOT}/tools/chart_special_buoy_art.py"
+  "${OPENNAV_ROOT}/tools/chart_generic_beacon_art.py"
+  "${OPENNAV_ROOT}/tools/derive-generic-beacon-art.py"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/generic-beacon/XNBCNG01-DAY_BRIGHT-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/generic-beacon/XNBCNG01-DAY_BRIGHT.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/generic-beacon/XNBCNG01-DUSK-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/generic-beacon/XNBCNG01-DUSK.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/generic-beacon/XNBCNG01-NIGHT-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/generic-beacon/XNBCNG01-NIGHT.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/generic-beacon/provenance.json"
+  "${OPENNAV_ROOT}/tools/derive-special-buoy-art.py"
+  "${OPENNAV_ROOT}/tools/chart_yellow_buoy_art.py"
+  "${OPENNAV_ROOT}/tools/derive-yellow-buoy-art.py"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/yellow-buoy/XNSPPT01-DAY_BRIGHT-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/yellow-buoy/XNSPPT01-DAY_BRIGHT.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/yellow-buoy/XNSPPT01-DUSK-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/yellow-buoy/XNSPPT01-DUSK.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/yellow-buoy/XNSPPT01-NIGHT-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/yellow-buoy/XNSPPT01-NIGHT.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/yellow-buoy/XNSPPY01-DAY_BRIGHT-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/yellow-buoy/XNSPPY01-DAY_BRIGHT.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/yellow-buoy/XNSPPY01-DUSK-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/yellow-buoy/XNSPPY01-DUSK.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/yellow-buoy/XNSPPY01-NIGHT-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/yellow-buoy/XNSPPY01-NIGHT.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/yellow-buoy/provenance.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/special-buoy/XNSPPW01-DAY_BRIGHT-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/special-buoy/XNSPPW01-DAY_BRIGHT.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/special-buoy/XNSPPW01-DUSK-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/special-buoy/XNSPPW01-DUSK.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/special-buoy/XNSPPW01-NIGHT-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/special-buoy/XNSPPW01-NIGHT.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/special-buoy/provenance.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/BOYISD12-DAY_BRIGHT-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/BOYISD12-DAY_BRIGHT.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/BOYISD12-DUSK-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/BOYISD12-DUSK.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/BOYISD12-NIGHT-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/BOYISD12-NIGHT.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/BOYSAW12-DAY_BRIGHT-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/BOYSAW12-DAY_BRIGHT.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/BOYSAW12-DUSK-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/BOYSAW12-DUSK.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/BOYSAW12-NIGHT-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/BOYSAW12-NIGHT.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/LIGHTS13-DAY_BRIGHT-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/LIGHTS13-DAY_BRIGHT.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/LIGHTS13-DUSK-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/LIGHTS13-DUSK.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/LIGHTS13-NIGHT-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/LIGHTS13-NIGHT.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/XNCAN072-DAY_BRIGHT-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/XNCAN072-DAY_BRIGHT.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/XNCAN072-DUSK-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/XNCAN072-DUSK.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/XNCAN072-NIGHT-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/XNCAN072-NIGHT.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/XNCAN073-DAY_BRIGHT-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/XNCAN073-DAY_BRIGHT.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/XNCAN073-DUSK-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/XNCAN073-DUSK.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/XNCAN073-NIGHT-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/XNCAN073-NIGHT.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/XNCON066-DAY_BRIGHT-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/XNCON066-DAY_BRIGHT.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/XNCON066-DUSK-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/XNCON066-DUSK.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/XNCON066-NIGHT-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/XNCON066-NIGHT.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/XNCON067-DAY_BRIGHT-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/XNCON067-DAY_BRIGHT.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/XNCON067-DUSK-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/XNCON067-DUSK.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/XNCON067-NIGHT-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/XNCON067-NIGHT.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/XNLAT013-DAY_BRIGHT-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/XNLAT013-DAY_BRIGHT.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/XNLAT013-DUSK-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/XNLAT013-DUSK.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/XNLAT013-NIGHT-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/XNLAT013-NIGHT.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/XNLAT014-DAY_BRIGHT-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/XNLAT014-DAY_BRIGHT.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/XNLAT014-DUSK-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/XNLAT014-DUSK.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/XNLAT014-NIGHT-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/XNLAT014-NIGHT.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/XNLAT023-DAY_BRIGHT-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/XNLAT023-DAY_BRIGHT.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/XNLAT023-DUSK-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/XNLAT023-DUSK.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/XNLAT023-NIGHT-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/XNLAT023-NIGHT.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/XNLAT024-DAY_BRIGHT-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/XNLAT024-DAY_BRIGHT.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/XNLAT024-DUSK-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/XNLAT024-DUSK.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/XNLAT024-NIGHT-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/XNLAT024-NIGHT.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/mapping.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/seamarks/provenance.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/cardinals/BOYCAR01-DAY_BRIGHT-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/cardinals/BOYCAR01-DAY_BRIGHT.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/cardinals/BOYCAR01-DUSK-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/cardinals/BOYCAR01-DUSK.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/cardinals/BOYCAR01-NIGHT-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/cardinals/BOYCAR01-NIGHT.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/cardinals/BOYCAR02-DAY_BRIGHT-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/cardinals/BOYCAR02-DAY_BRIGHT.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/cardinals/BOYCAR02-DUSK-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/cardinals/BOYCAR02-DUSK.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/cardinals/BOYCAR02-NIGHT-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/cardinals/BOYCAR02-NIGHT.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/cardinals/BOYCAR03-DAY_BRIGHT-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/cardinals/BOYCAR03-DAY_BRIGHT.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/cardinals/BOYCAR03-DUSK-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/cardinals/BOYCAR03-DUSK.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/cardinals/BOYCAR03-NIGHT-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/cardinals/BOYCAR03-NIGHT.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/cardinals/BOYCAR04-DAY_BRIGHT-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/cardinals/BOYCAR04-DAY_BRIGHT.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/cardinals/BOYCAR04-DUSK-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/cardinals/BOYCAR04-DUSK.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/cardinals/BOYCAR04-NIGHT-rgba.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/cardinals/BOYCAR04-NIGHT.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/cardinals/provenance.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/services/PILBOP02.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/services/PILBOP02-alpha.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/services/RTPBCN02.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/services/RTPBCN02-alpha.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/services/SMCFAC02.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/services/SMCFAC02-alpha.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/services/provenance.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/fishing-pattern/XNFISH03.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/fishing-pattern/XNFISH03-alpha.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/fishing-pattern/provenance.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/anchorage/ACHARE51.svg"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/anchorage/ACHARE51-alpha.json"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/anchorage/provenance.json"
+  "${OPENNAV_ROOT}/docs/design/prototype/src/seamarks.json"
+  "${OPENNAV_ROOT}/docs/design/prototype/src/chart-marker-art.js"
+  "${OPENNAV_ROOT}/docs/design/prototype/src/chart-symbols.js"
+  "${OPENNAV_ROOT}/docs/design/prototype/src/chart-symbols.css"
+  "${OPENNAV_ROOT}/docs/design/prototype/src/style.css")
+target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/ChartPresentation.cpp"
+  "${OPENNAV_ROOT}/src/integration/OChartsPresentation.cpp"
+  "${OPENNAV_ROOT}/src/integration/OChartsModuleLoader.cpp"
+  "${OPENNAV_ROOT}/src/integration/ChartRouteWaypoint.cpp"
+  "${OPENNAV_ROOT}/src/integration/ChartAnchorWatch.cpp"
+  "${OPENNAV_ROOT}/src/integration/ChartRouteLabel.cpp"
+  "${OPENNAV_ROOT}/src/integration/ChartRouteUnderlay.cpp"
+  "${OPENNAV_ROOT}/src/integration/ChartRouteUnderlayGeometry.cpp")
 target_include_directories(${PACKAGE_NAME} PRIVATE "${xnav_chart_style}")
+# The private o-charts adapter is optional until its exact source, native ABI
+# and chart lifecycle have qualified. A missing package preserves stock plugin
+# loading and is reported separately from core ENC presentation.
+set(SKAGER_OCHARTS_PACKAGE "" CACHE PATH "Qualified private chart adapter package")
+set(skager_ocharts_available false)
+set(skager_ocharts_sha256 "")
+set(skager_ocharts_bytes 0)
+if(SKAGER_OCHARTS_PACKAGE)
+  if(NOT WIN32 OR NOT MSVC OR NOT CMAKE_SIZEOF_VOID_P EQUAL 4)
+    message(FATAL_ERROR "Private chart adapter requires native MSVC Win32")
+  endif()
+  get_filename_component(SKAGER_OCHARTS_PACKAGE "${SKAGER_OCHARTS_PACKAGE}" ABSOLUTE)
+  set(skager_ocharts_validator "${OPENNAV_ROOT}/tools/verify-ocharts-adapter-package.py")
+  execute_process(COMMAND "${Python3_EXECUTABLE}" "${skager_ocharts_validator}"
+    --package "${SKAGER_OCHARTS_PACKAGE}" --resources "${xnav_chart_style}"
+    --header "${CMAKE_BINARY_DIR}/include/SkagerOChartsPackage.h"
+    RESULT_VARIABLE skager_ocharts_result)
+  if(NOT skager_ocharts_result EQUAL 0)
+    message(FATAL_ERROR "Private chart adapter source/package verification failed")
+  endif()
+  set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
+    "${SKAGER_OCHARTS_PACKAGE}/skager-ocharts-adapter.dll"
+    "${SKAGER_OCHARTS_PACKAGE}/manifest.json"
+    "${SKAGER_OCHARTS_PACKAGE}/corresponding-source.zip"
+    "${skager_ocharts_validator}" "${OPENNAV_ROOT}/tools/prepare-ocharts-adapter.py")
+  # Recheck source/resources at build and install, including changes after
+  # configure. The compiled header is emitted only by successful configuration.
+  add_custom_target(skager_verify_ocharts_package
+    COMMAND "${Python3_EXECUTABLE}" "${skager_ocharts_validator}"
+      --package "${SKAGER_OCHARTS_PACKAGE}" --resources "${xnav_chart_style}"
+    VERBATIM)
+  add_dependencies(${PACKAGE_NAME} skager_verify_ocharts_package)
+  install(CODE "
+    execute_process(COMMAND \"${Python3_EXECUTABLE}\" \"${skager_ocharts_validator}\"
+      --package \"${SKAGER_OCHARTS_PACKAGE}\" --resources \"${xnav_chart_style}\"
+      RESULT_VARIABLE skager_ocharts_install_result)
+    if(NOT skager_ocharts_install_result EQUAL 0)
+      message(FATAL_ERROR \"Private chart adapter changed before install\")
+    endif()")
+  install(FILES "${SKAGER_OCHARTS_PACKAGE}/skager-ocharts-adapter.dll" DESTINATION .)
+  install(FILES "${SKAGER_OCHARTS_PACKAGE}/manifest.json"
+    "${SKAGER_OCHARTS_PACKAGE}/corresponding-source.zip"
+    DESTINATION "${PREFIX_PKGDATA}/opennav/third-party/ocharts")
+else()
+  configure_file("${OPENNAV_ROOT}/src/integration/SkagerOChartsPackage.h.in"
+    "${CMAKE_BINARY_DIR}/include/SkagerOChartsPackage.h" @ONLY)
+endif()
 install(FILES "${xnav_chart_style}/chartsymbols.xml" "${xnav_chart_style}/S52RAZDS.RLE"
   "${xnav_chart_style}/rastersymbols-day.png" "${xnav_chart_style}/rastersymbols-dusk.png"
   "${xnav_chart_style}/rastersymbols-dark.png" "${xnav_chart_style}/manifest.json"

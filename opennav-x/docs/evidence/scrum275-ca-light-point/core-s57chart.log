@@ -1,0 +1,8 @@
+/home/standard/Projects/X-nav-worktrees/scrum275-ca-light-point/.local/core/gui/src/s57chart.cpp: In member function ‘wxString s57chart::CreateObjDescriptions(ListOfObjRazRules*)’:
+/home/standard/Projects/X-nav-worktrees/scrum275-ca-light-point/.local/core/gui/src/s57chart.cpp:5776:27: warning: ‘bool wxFileName::Normalize()’ is deprecated: specify the wanted flags explicitly to avoid surprises [-Wdeprecated-declarations]
+ 5776 |             file.Normalize();
+      |             ~~~~~~~~~~~~~~^~
+In file included from /home/standard/Projects/X-nav-worktrees/scrum275-ca-light-point/.local/core/gui/src/s57chart.cpp:36:
+/home/standard/Projects/X-nav/.local/sysroot/usr/include/wx-3.2/wx/filename.h:366:10: note: declared here
+  366 |     bool Normalize()
+      |          ^~~~~~~~~

@@ -1,0 +1,99 @@
+{
+  "schema": 1,
+  "source_commit": "afa010fb50e80a7a9012195632791f97308872d1",
+  "source_dirty": true,
+  "platform": "linux",
+  "manifest_sha256": "b9f881e62b3cb956fcf526c50d0a3685d1fbede1f3254cd6dc16e59a7d3f514e",
+  "scope": "Offline production component libraries with owned fixtures; no product/profile/chart/network/hardware acceptance",
+  "passed": true,
+  "tests": [
+    {
+      "name": "chart_info_tests",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 3.214,
+      "binary_sha256": "3bff334fbc77e9eb6c3195692daa82fb42dd30502f1d585ff2847249c0c250a2"
+    },
+    {
+      "name": "pilot_status_tests",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 3.038,
+      "binary_sha256": "b66fed3b121f8f905e3d316c654f7d3c8ddbbddf71810b513093fb21b9765c1d"
+    },
+    {
+      "name": "anchor_route_transition_tests",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 3.036,
+      "binary_sha256": "602cc4bca3dfaeeb1719b5a90122cee4fc4fa321a0b68f1d3fb04159671daf27"
+    },
+    {
+      "name": "navigation_naming_tests",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 3.028,
+      "binary_sha256": "e94aa798f579727df0b7659055fdbc417adb5f5ff26f7bb50ac330a53fbfe681"
+    },
+    {
+      "name": "route_context_tests",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 3.026,
+      "binary_sha256": "b1477e4baec9e7ec344930003f460801d56e2f1e417dc20e62dc95cff563c28a"
+    },
+    {
+      "name": "chart_info_drawer_test",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 3.313,
+      "binary_sha256": "2afed267e450c42d657f256c6bd5a0f5fd13a63863c2b932c308cdd06af282f7"
+    },
+    {
+      "name": "navigation_name_editor_test",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 3.206,
+      "binary_sha256": "3af9c30f5b286d3d9c3a933c9f6d1673cf89aa5e0e17d651a8f4fde3fce5c567"
+    },
+    {
+      "name": "route_context_card_test",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 3.209,
+      "binary_sha256": "88199c460283781fb625443a11c3a0415a942f95f20991b5bdcd3a1855a53c56"
+    },
+    {
+      "name": "chart_light_hover_tests",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 3.054,
+      "binary_sha256": "c6fb5d61a9cd685eed0f99dc0b78047edda7646da5d322db8f47a9fd4b4988b9"
+    },
+    {
+      "name": "ais_drawer_scroll_test",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 10.264,
+      "binary_sha256": "c868a0d1d0d994fed6a50a9b671f3d237ac37f55fae827df77e78a8a640d1288"
+    },
+    {
+      "name": "online_ais_radius_test",
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 3.054,
+      "binary_sha256": "85847658f85ba63bf49902bf7eded7fe012781898a1ebb36d4e17e045ee8fb3b"
+    }
+  ]
+}

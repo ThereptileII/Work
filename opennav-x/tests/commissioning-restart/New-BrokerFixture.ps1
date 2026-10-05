@@ -1,7 +1,8 @@
 # Keep the inert root the same byte length as the fixed recovered-root contract.
 # No production baseline/lineage validation is substituted or relaxed.
-function New-BrokerFixtureProfileBytes {
+function New-BrokerFixtureProfileBytes([string]$ChartPalette='') {
  $text="[Settings]`r`nPersistActiveRoute=0`r`n[Settings/NMEADataSource]`r`nDataConnections=0;0;;0;1;COM8;115200;0;1;0;;0;;0;0;1;0;1;Gateway;0;;0`r`n[Directories]`r`nChartDir=original`r`n[OpenNav]`r`nInterfaceMode=xnav`r`n"
+ if($ChartPalette){if($ChartPalette -cnotin @('XNav','Standard')){throw 'Fixed synthetic palette required.'};$text+='ChartPresentationV1='+$ChartPalette+"`r`n"}
  $encoding=New-Object Text.UTF8Encoding($false,$true)
  while($encoding.GetByteCount($text)+80 -le 21380){$text+='# '+('-'*76)+"`r`n"}
  $remaining=21380-$encoding.GetByteCount($text)
@@ -53,7 +54,7 @@ function New-BrokerFixture([string]$Directory,[string]$Binaries,[string]$SourceT
  $environment=Get-CommissioningLaunchEnvironment $exe ([Environment]::GetFolderPath('Windows'))
  $context=[pscustomobject]@{workspace=$workspace;profile=$profile;managed=$managed;application=$stockApp;pluginRoots=$roots;installation=@{executable=$exe;commit=$commit};launchEnvironment=$environment;sid=$sid;session=$windowsSession}
  $baseline=Join-Path $preparedDir 'baseline.ini';$input=Join-Path $preparedDir 'input-only.ini';$ini=Join-Path $profile 'opencpn.ini'
- $bytes=New-BrokerFixtureProfileBytes
+ $bytes=New-BrokerFixtureProfileBytes $(if($Case -clike 'palette-*'){'XNav'}else{''})
  [IO.File]::WriteAllBytes($baseline,$bytes);$baselineHash=Get-Digest $baseline
  [IO.File]::WriteAllBytes($input,(Get-CommissioningInputBytes $bytes));[IO.File]::Copy($input,$ini)
  $safe=Join-Path $managed 'dashboard_pi.dll';$unsafe=Join-Path $managed 'control_pi.dll';$library=Join-Path $managed 'inert-helper.dll'

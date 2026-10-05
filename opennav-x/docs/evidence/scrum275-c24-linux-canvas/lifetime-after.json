@@ -1,0 +1,14 @@
+{
+  "source": "c24c15482293ad2e2f3ce4e1c8af2ca5669381de",
+  "mappedCorrection": "eaff7473a019d3cb4736b6d11b397abafec2c3dd",
+  "sourceClean": true,
+  "donorFingerprintCount": 4610,
+  "donorChanged": [],
+  "executableSha256": "13d6dcdf1c52f55237afd166f022d09252a7e362e66d962187fde08286fdb76d",
+  "buildElfSha256": "c977d9ea3cdd1e0cee90140edd2691493a95786ff6b4b7bf2f2929bb8c9fec51",
+  "manifestSha256": "ffa75c9d097a143e58aa13f9300b04bebac0836ab849bd4284401df1866f4b2a",
+  "objectExit": 0,
+  "buildExit": 0,
+  "softwareExit": 0,
+  "openglExit": 1
+}

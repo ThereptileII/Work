@@ -1,0 +1,28 @@
+{
+  "sourceCommit": "1356fd1603aacbea04d7081d16331e9a181180bb",
+  "publishedCommit": "9fcd3db54ee6913cc144ecfc09ec2152078a6eff",
+  "ciRun": 37080314681,
+  "failedJob": 111079164722,
+  "artifact": 11259141261,
+  "artifactBytes": 105416,
+  "artifactSha256": "627310aea57c60bed249825ede9ce5026569a59fb0b47858f28bd825697e3fb6",
+  "allZipCrcsPassed": true,
+  "failure": "Historical OpenNav log prefix expected after SKAGER rename; actual log verifies new prefix",
+  "ciIntegratedCtestPassed": 147,
+  "focusedCorrection": "Same frozen executable, corrected exact log prefix; three modes and existing resource/profile assertions pass with clean exits",
+  "binarySha256": "0aaaf2238828fcf4b42d02c8b7dad7191781ead1bf2ece0c2a9384c1fdc726bf",
+  "productCodeChanged": false,
+  "files": {
+    "ci-failure/floating-surface-linux.log": "2c13d0725928169b72e308efd87c873210eb2da294369880aeaae3175468f3a2",
+    "ci-failure/installed-resource-runtime/application.log": "830589d9decf06e24b3d896d7e5ed6c8f0834ead3f898a9c2e3e579f7d34284a",
+    "ci-failure/installed-resource-runtime/result.json": "4578ab7563f04db8a20944408b76cbdd008e26012e5e2ae77f73fd78a5b7fa2b",
+    "ci-failure/installer-loader-selftest.json": "eff3b0f33b4faa18330568ab73397ed7ef48acca090ad7d27f406c1c65e9479a",
+    "ci-failure/xnav-linux-tests.log": "65f11b51d2c34014e85b95c43cc9c2fec5d374de50149e666e56a24a6efc96a2",
+    "corrected-smoke-installed-resources-linux.py": "a102026329c9e96303cd44c856b952ee1f98e3ea24fdfd74de5eb1dca7ae864f",
+    "focused-correction/application.log": "f1ba86b48083ded53108f1c1d3ea3095b73a7765e49b84fb90c59aa6c562c44b",
+    "focused-correction/launch-0.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "focused-correction/launch-1.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "focused-correction/launch-2.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "focused-correction/result.json": "35baa7cd789e0da42e1f6b41dcbc00727ea3288d888d7bcc4a445edff488c3a9"
+  }
+}

@@ -1,0 +1,286 @@
+{
+  "schema": 1,
+  "commit": "d5d71356d806ea8c3518644d10728a24f1334d1d",
+  "binary_sha256": "99dcf961483882f7053186a6b4d2fb904308f38ef7e9874547bca070d07a8559",
+  "build_flags": {
+    "OCPN_BUILD_TEST": "ON",
+    "OPENNAV_ENABLE_ROUTE_SCENARIO": "ON",
+    "XNAV_ENABLE_PILOT_LOOPBACK_TESTS": "ON",
+    "XNAV_ENABLE_TEST_FIXTURES": "ON"
+  },
+  "manifest_sha256": "12cfbce4686fce9a89e15f45105195c9f09a51ae4e3e9932aa7ba803ae205a52",
+  "resource_files": {
+    "chartsymbols.xml": {
+      "sha256": "5aca020aae65f3bcb38ff548ee183868dca72811cdd33dd26cc89d2c726738e3",
+      "bytes": 2242894
+    },
+    "S52RAZDS.RLE": {
+      "sha256": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26",
+      "bytes": 1305627
+    },
+    "rastersymbols-day.png": {
+      "sha256": "865c7238985b2ea7e2d2c46d2612f70b0d2e3b4992a33f6bf3cd2fb5fee59de9",
+      "bytes": 199897
+    },
+    "rastersymbols-dusk.png": {
+      "sha256": "33fa1b8f539a5f90b2d220599ee9fe926cf11f86b60ce643b720037ba4e26446",
+      "bytes": 174289
+    },
+    "rastersymbols-dark.png": {
+      "sha256": "55aa9eb7bb9624ca6d730c47e481c2eea2c9dbdefef2f5ccebf54e67bc9eb116",
+      "bytes": 169663
+    }
+  },
+  "source_evidence": {
+    "src/integration/ChartNameTypography.h": "23688fca7f9ed456e7458fe1228e0bf9908660a953732cb6e6749c5838e1f4d9",
+    "src/integration/ChartTextFace.h": "4c1b0c41e29ecdac9af7a6fd7446863714539777c1904fa598679ba3ec49b3ab",
+    "src/integration/ChartCogPredictor.h": "3e7841bb311bb9d4951be082a669f4737ee978dd426df4899a22bc9971033c90",
+    "src/integration/ChartPresentation.cpp": "32339b83be2c3b9ff81fb31bfbf8313628a7f1596092921a98693ae0a140a358",
+    "patches/opencpn-5.12.4-xnav.patch": "dfbacadf42502d1d0366745b3a187d256e620b0d2ea7dba9e8912c46e999e0b3",
+    "patches/opencpn-5.12.4-chart-presentation.patch": "9ecf04798b61c84a4f298ae04acd9201768026c3095531c5e2767682408b147d",
+    "resources/chart-style/v1/definition.json": "bd15a26d1767b91cbfaac6fc93c364246fe95e3441149fb9fed6d2675b64d4e4",
+    "docs/design/prototype-tokens.json": "111ee35527a974b2df6c2c4af0afd04e5aebdf14bad3004a98be9064aef790c6",
+    "src/application/SkagerBrandAsset.h": "cc9f469181717b4fb80986b9406d2d6d078bfdb5971d2e68f6b4072b8dcd2019",
+    "resources/branding/provenance.json": "f639aa4ffa1194fb527388b15b2f9880746829d4120e30b4ddca32b0326557a6",
+    "tools/chart_cable_paint.py": "462e92d27cfbf553454c286bc074e166699922fcab0b6874f40c9d7984186822",
+    "tools/chart_day_neutral_ink.py": "0f136c0e9764c7750ab581ef3c9b0c35c976563ceb88d8598eeee5a0e7761840",
+    "src/ui/SkagerWordmark.h": "c2fc3d1afdf88bfd2e884d541e7b3ad4463702cece09057e38f4d496deda9928",
+    "src/integration/OpenCPNIntegration.cpp": "6a678db6af47c8697955977b3984beda0a58f04002fe0e178b45e77ae2d511a2",
+    "tools/chart_anchor_art.py": "af9d7ad15bb78a7eaa8f8ff39256c74e56724b95d782cc2638d0a16ebbbc1904",
+    "tools/chart_cardinal_art.py": "e8b4f52df0d558ec715613c9f737776db0f10f844c3f2769a3f35fd8f670158e",
+    "tools/chart_construction_hatch.py": "a1dc22dd3a1d08ed195bcceb55f10ff29578a58f16ef1f5f517192830be459b4",
+    "tools/chart_raster_ink.py": "ffffd4365cdf534b77110cd26ca068fc86a55286e66b8baa5c18811389bfb294",
+    "tools/chart_seamark_art.py": "fcafdb7de6926378ff74ec1ebee2656c84f2f91f1d93d4856e3ede0832341f91",
+    "tools/chart_service_art.py": "86002da05b15a6f59098d424e794adb383b1c9ba270a90834056d7f8b86a8cc8",
+    "tools/chart_special_buoy_art.py": "488a76b80b55f3a443fe2c965e5c7725e7cf39fba1158cd156eef358ca8fbc19",
+    "tools/chart_structure_paint.py": "aebe01e1ed890e425a5f1b18e4fc876b00ebb11d78da6382c7c3540128f03ec0"
+  },
+  "authority": "Linux Xvfb opengl development visuals only; not native Windows, production or boat acceptance",
+  "runtime_identity": "Still required from loader self-test and actual capture diagnostics",
+  "renderer_requested": "opengl",
+  "scope": "Final land-label face correction, SKAGER Day-only exact historical chart comparison; Pier57 public real ENC, Simplified disposable profile; classified white/orange BOYSPP RCID 23/24, Day/Night XNSPPW01 candidate and Dusk stock fallback; unchanged LIGHTS39/43; emitted rules remain source-derived, not all buoy families; controlled simulated loopback RMC; no private boat profile, hardware, Demo or scenario activation",
+  "baseline_report_sha256": "37f583bca57ffca1d8e497c20813abb068e61e676f1d6e9f1616764f923ef778",
+  "baseline_commit": "9dee9b148f4d6ebdd20bb4c49229fe19340df209",
+  "chart_source_files": {
+    "CATALOG.031": "6f127353e5e20788574b6183962b023e4191cc52f431f3a33ba3bb4ff9ce7d76",
+    "README.TXT": "c202a13afaebd80a89433fda9466cb09d60e2f8345202ecb302b855daa50b573",
+    "US5SEAFL/US419FLA.TXT": "71837814a9b696ef71d84638bcf44dd87eef438a9852f1f03e17aa54198f1927",
+    "US5SEAFL/US419FLB.TXT": "2f670f03807112f993c8372e9d276b5cc06e27c15eb69349d78a13475b65bba6",
+    "US5SEAFL/US5SEAFL.000": "7e474bea96e7a84c6f3ee6b44ff7db4288029fa47ac2a285594e18469dbf518c",
+    "US5SEAFL/US5SEAFL.001": "504440d201453548aae160c4c5340d55d480bd39cd57061b7fc03262968e062d",
+    "USERAGREEMENT.TXT": "27b503af0727216809c8cc9cd73a8895073f43535f4e1bdba8b0b14c599f848f"
+  },
+  "captures": [
+    {
+      "name": "SKAGER-Day",
+      "image_sha256": "f78f338983f00f2cf5d1877d2de8272bdd4c6ecdab4465e10aaf329eba14ff96",
+      "surface_roles": {
+        "scope": "Pier57 real ENC scene only; no full-coast surface-count or edge-wrap qualification"
+      },
+      "wordmark": {
+        "exact_native_component_match": true,
+        "panel": [
+          0,
+          0,
+          179,
+          68
+        ],
+        "asset_bounds": [
+          30,
+          15,
+          150,
+          51
+        ],
+        "ink_pixels": 1273,
+        "separate_letter_columns": [
+          6,
+          3
+        ],
+        "background_rgb": [
+          21,
+          35,
+          38
+        ],
+        "reference_sha256": "24ab654bebf47824fe198fb17c7b0e535d21402376b5cd1bb50b86533851b4ed",
+        "pointer_parked_at": [
+          5,
+          5
+        ]
+      },
+      "build_commit": "d5d71356d806ea8c3518644d10728a24f1334d1d",
+      "chart": {
+        "canvas_pixels": {
+          "height": 566,
+          "width": 1014
+        },
+        "latitude": 47.60605,
+        "database_entries": 1,
+        "follow": false,
+        "quilt_members": [
+          {
+            "type": 5,
+            "native_scale": 12000,
+            "file": "US5SEAFL.000",
+            "index": 0
+          }
+        ],
+        "opengl_enabled": true,
+        "quilt_reference": 0,
+        "scale_bar": {
+          "height": 29,
+          "y": 505,
+          "width": 25,
+          "x": 191
+        },
+        "depth_unit_type": 1,
+        "quilt": true,
+        "scale_ppm": 0.6000000238,
+        "longitude": -122.34281,
+        "depth_units_visible": true
+      },
+      "presentation": {
+        "status": "SKAGER presentation v1 / pinned symbols; o-charts: no SKAGER adapter loaded",
+        "saved_point_style": 76,
+        "requested": "XNav",
+        "effective_point_style": 76
+      },
+      "water_pixels": 279275,
+      "water_color_counts": {
+        "(212, 228, 228)": 279275
+      },
+      "land_or_built_area_pixels": 220046,
+      "built_area_color_shared_with_land": true,
+      "owned_values": {
+        "Latitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Latitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "75330426",
+          "validity": "Measured",
+          "value": 47.6,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 150,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Longitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Longitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "75330426",
+          "validity": "Measured",
+          "value": -122.36,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 150,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Speed over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Speed over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "75330426",
+          "validity": "Measured",
+          "value": 3,
+          "aging_after_ms": 2000,
+          "unit": "kn",
+          "age_ms": 150,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Course over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Course over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "75330426",
+          "validity": "Measured",
+          "value": 90,
+          "aging_after_ms": 2000,
+          "unit": "deg true",
+          "age_ms": 150,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        }
+      },
+      "latest_owned_input_monotonic": 75331.026825172
+    }
+  ],
+  "status": "passed",
+  "clean_exit": true,
+  "font_evidence": {
+    "policy_source_sha256": "32339b83be2c3b9ff81fb31bfbf8313628a7f1596092921a98693ae0a140a358",
+    "note": "Source policy and Linux fontconfig inventory recorded; this does not establish native Windows glyph metrics",
+    "Segoe UI Variable Display": {
+      "exit_code": 0,
+      "linux_fontconfig_match": "Liberation Sans\n/usr/share/fonts/liberation/LiberationSans-Regular.ttf"
+    },
+    "Segoe UI": {
+      "exit_code": 0,
+      "linux_fontconfig_match": "Liberation Sans\n/usr/share/fonts/liberation/LiberationSans-Regular.ttf"
+    },
+    "Arial": {
+      "exit_code": 0,
+      "linux_fontconfig_match": "Liberation Sans\n/usr/share/fonts/liberation/LiberationSans-Regular.ttf"
+    }
+  },
+  "additional_source_evidence": {
+    "src/ui/SkagerWordmark.h": "c2fc3d1afdf88bfd2e884d541e7b3ad4463702cece09057e38f4d496deda9928",
+    "src/ui/Theme.h": "b28adb1f519ec5a1f9b7e2bfab6ec2ab1c7f06656bd129316e9e453ef1ec0776",
+    "src/ui/Shell.cpp": "ed022b04450b0a24fec10cb3303551f35ab7e8dd01161918d18daa3ce322ad02",
+    "src/integration/ChartCanvasInk.h": "cc1a4d94131f932f2bbd40d330d9003d0086dfc1237449b4215b509377c39f66",
+    "src/integration/ChartRouteLabel.cpp": "c4f6b225ed4e6985370da71559237b5ee6bbc3d2ac62fa4cf530d02b781f017f",
+    "src/integration/ChartRouteLabelRaster.h": "c2ca0bd64ec1203addbd518b2424af91c3ca25f72b250d1f6c80b6e467722f3b",
+    "tools/chart_cardinal_art.py": "e8b4f52df0d558ec715613c9f737776db0f10f844c3f2769a3f35fd8f670158e",
+    "resources/chart-style/v1/cardinals/provenance.json": "a0017453b3ea5a814a613bb50d0f5a676fdf0095e0b5e7a6249ec49fe38c8010"
+  },
+  "loader_selftest": {
+    "upstream": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+    "commissioning_restart_protocol": 0,
+    "version": "0.4.0-beta2",
+    "commit": "d5d71356d806ea8c3518644d10728a24f1334d1d",
+    "compiler": "GNU 16.2.1 / 8 byte pointers",
+    "plugins_loaded": false,
+    "test_fixtures": true,
+    "resources": {
+      "gshhs/poly-c-1.dat": true,
+      "s57data/s57objectclasses.csv": true,
+      "uidata/styles.xml": true,
+      "s57data/chartsymbols.xml": true
+    },
+    "normal_config_directory": "/etc",
+    "passed": true,
+    "xnav_hardware_output_policy": "test-loopback-only",
+    "build_purpose": "DEVELOPER TEST BUILD",
+    "profile_initialized": false,
+    "contract": "OpenNavX.LoaderSelfTest.1"
+  },
+  "toolbar_windows": [
+    {
+      "name": "SKAGER-Day",
+      "bounds": [
+        883,
+        545,
+        1072,
+        597
+      ],
+      "diagnostic_bounds": [
+        883,
+        545,
+        1072,
+        597
+      ],
+      "window_id": "2097475"
+    }
+  ],
+  "symbol_table_receipts": [
+    {
+      "style": "XNav",
+      "persisted_nSymbolStyle": 76,
+      "saved_point_style": 76,
+      "effective_point_style": 76,
+      "scope": "Actual runtime enum plus unchanged persisted preference; emitted per-object instruction is still source-derived"
+    }
+  ]
+}

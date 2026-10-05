@@ -1,0 +1,105 @@
+{
+  "commit": "45d73e831409d602e8205f32fcba08947ea370bc",
+  "orderedCorePatchTree": "9f027c926ec61da84fa118af7b53a61d24dede4c",
+  "manifestSha256": "cecfd92eff1b2c9a9c2aa2e64e9a16968a84bdcdee14b77eba337a9277c07185",
+  "buildElfSha256": "f9ee4b07905f923724b1b02b7d54d0ea769ba3eba90e176cd0771276268e0ade",
+  "installedElfSha256": "a691df000a77435dba3163350d560eef0b3a1a7b0e876ef41cc49eef83deb862",
+  "reports": [
+    {
+      "path": "output/capture-45d73e8-s64-light-fog-software/report.json",
+      "status": "failed",
+      "clean_exit": false,
+      "captures": 0,
+      "failure": "('app exited', 1)",
+      "sha256": "507833876ea6ecc4fb3283b76598c3f6064088b63a127d17d7e196d28bf189cb"
+    },
+    {
+      "path": "output/capture-45d73e8-s64-light-fog-software-r1/report.json",
+      "status": "failed",
+      "clean_exit": false,
+      "captures": 0,
+      "failure": "Original fog lookup missing",
+      "sha256": "fdce065e398ed5be4b30860076ea4d85e21b8e9861405a1bf90846416940af20"
+    },
+    {
+      "path": "output/capture-45d73e8-s64-light-fog-software-r2/report.json",
+      "status": "passed",
+      "clean_exit": true,
+      "captures": 4,
+      "failure": null,
+      "sha256": "40bc4bc46f60a55e7e47b3c9cd052961afc41a8f7d31ff55aab28e5b3c0e72aa"
+    },
+    {
+      "path": "output/capture-45d73e8-s64-light-fog-opengl-r2/report.json",
+      "status": "passed",
+      "clean_exit": true,
+      "captures": 4,
+      "failure": null,
+      "sha256": "5593b25a4dd6fb022355df06d96c1610eefb4cbcc3897de8c2ffbe149d098823"
+    },
+    {
+      "path": "output/capture-45d73e8-s64-rocks-software-r2/report.json",
+      "status": "passed",
+      "clean_exit": true,
+      "captures": 4,
+      "failure": null,
+      "sha256": "41c00706c6f871dcc436af316e56d422d5b47ce2878753036052fbe21346c348"
+    },
+    {
+      "path": "output/capture-45d73e8-s64-rocks-opengl-r2/report.json",
+      "status": "passed",
+      "clean_exit": true,
+      "captures": 4,
+      "failure": null,
+      "sha256": "fdd94c8e790ad9962f5252298a236649053e230ab0f3ebec888d0a6680c5f7d9"
+    },
+    {
+      "path": "output/capture-45d73e8-s64-wreck-software-r2/report.json",
+      "status": "passed",
+      "clean_exit": true,
+      "captures": 4,
+      "failure": null,
+      "sha256": "237786b797c022ef1b8244b4306a15143436fa36fba0ec5c629d51775fa40478"
+    },
+    {
+      "path": "output/capture-45d73e8-s64-wreck-opengl-r2/report.json",
+      "status": "passed",
+      "clean_exit": true,
+      "captures": 4,
+      "failure": null,
+      "sha256": "1ad320dfef1e61a24eff7fa3f031a16a027b6116371a8be64defc9bc2be77f7a"
+    },
+    {
+      "path": "output/capture-45d73e8-seattle-software-r2/report.json",
+      "status": "passed",
+      "clean_exit": true,
+      "captures": 4,
+      "failure": null,
+      "sha256": "1c18d5dcef41eb0be59d3b1e84b506776d93e8151cc9e723cbc51d4d2c228f06"
+    },
+    {
+      "path": "output/capture-45d73e8-seattle-opengl-r2/report.json",
+      "status": "passed",
+      "clean_exit": true,
+      "captures": 4,
+      "failure": null,
+      "sha256": "034ba14ae4d0b8758f96a83c75929f23069b1446f57842b90e4980cd4e065898"
+    },
+    {
+      "path": "output/capture-45d73e8-s64-light-fog-software-standard-control/report.json",
+      "status": "passed",
+      "clean_exit": true,
+      "captures": 4,
+      "failure": null,
+      "sha256": "5759f893a5a7db81a04afb2e4530d6c61b0f643036367327c4922795aa58dc7e"
+    },
+    {
+      "path": "output/capture-45d73e8-s64-light-fog-opengl-standard-control/report.json",
+      "status": "passed",
+      "clean_exit": true,
+      "captures": 4,
+      "failure": null,
+      "sha256": "1a8e4beed45c7a5d9d22d218ed2b37f37a9796c53436b019bbaf6a478ad20af9"
+    }
+  ]
+}

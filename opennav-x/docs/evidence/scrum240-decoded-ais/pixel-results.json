@@ -1,0 +1,118 @@
+{
+  "status": "passed",
+  "scope": "8 actual target/style/renderer regions; notch and straight-stern interior probes",
+  "regions": [
+    {
+      "renderer": "software",
+      "style": "SKAGER",
+      "target": "class_a",
+      "screen_roi": [
+        470,
+        180,
+        505,
+        224
+      ],
+      "exact_plum_pixels": 26,
+      "exact_floating_fill_pixels": 64,
+      "image_sha256": "76bdd7064729409ecf4c552ab3a0b129448733da1376f942b9ba6c66c1da175d"
+    },
+    {
+      "renderer": "software",
+      "style": "SKAGER",
+      "target": "class_b",
+      "screen_roi": [
+        470,
+        480,
+        505,
+        526
+      ],
+      "exact_plum_pixels": 33,
+      "exact_floating_fill_pixels": 38,
+      "image_sha256": "76bdd7064729409ecf4c552ab3a0b129448733da1376f942b9ba6c66c1da175d"
+    },
+    {
+      "renderer": "software",
+      "style": "Standard",
+      "target": "class_a",
+      "screen_roi": [
+        470,
+        180,
+        505,
+        224
+      ],
+      "exact_plum_pixels": 0,
+      "exact_floating_fill_pixels": 0,
+      "image_sha256": "c75e178036c0e18f015247f12415c9fb6b52565097c93d25868ab91957f66f76"
+    },
+    {
+      "renderer": "software",
+      "style": "Standard",
+      "target": "class_b",
+      "screen_roi": [
+        470,
+        480,
+        505,
+        526
+      ],
+      "exact_plum_pixels": 0,
+      "exact_floating_fill_pixels": 0,
+      "image_sha256": "c75e178036c0e18f015247f12415c9fb6b52565097c93d25868ab91957f66f76"
+    },
+    {
+      "renderer": "opengl",
+      "style": "SKAGER",
+      "target": "class_a",
+      "screen_roi": [
+        470,
+        180,
+        505,
+        224
+      ],
+      "exact_plum_pixels": 96,
+      "exact_floating_fill_pixels": 82,
+      "image_sha256": "ba754f0fabd6c72e1cf10daa80531b2424dd8e9653e60ec9945fc9e2a792ec99"
+    },
+    {
+      "renderer": "opengl",
+      "style": "SKAGER",
+      "target": "class_b",
+      "screen_roi": [
+        470,
+        480,
+        505,
+        526
+      ],
+      "exact_plum_pixels": 96,
+      "exact_floating_fill_pixels": 58,
+      "image_sha256": "ba754f0fabd6c72e1cf10daa80531b2424dd8e9653e60ec9945fc9e2a792ec99"
+    },
+    {
+      "renderer": "opengl",
+      "style": "Standard",
+      "target": "class_a",
+      "screen_roi": [
+        470,
+        180,
+        505,
+        224
+      ],
+      "exact_plum_pixels": 0,
+      "exact_floating_fill_pixels": 0,
+      "image_sha256": "1f18b517730d998e2c49a7a73e878be63d34a0bcd3aaec1e8fec3916adcaa9f4"
+    },
+    {
+      "renderer": "opengl",
+      "style": "Standard",
+      "target": "class_b",
+      "screen_roi": [
+        470,
+        480,
+        505,
+        526
+      ],
+      "exact_plum_pixels": 0,
+      "exact_floating_fill_pixels": 0,
+      "image_sha256": "1f18b517730d998e2c49a7a73e878be63d34a0bcd3aaec1e8fec3916adcaa9f4"
+    }
+  ]
+}

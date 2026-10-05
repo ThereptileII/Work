@@ -208,7 +208,7 @@ try {
   $checks.Add('Portable extraction refuses traversal, ADS, drive paths, duplicate separators and Windows reserved names')
   Add-Type -AssemblyName System.IO.Compression
   Add-Type -AssemblyName System.IO.Compression.FileSystem
-  foreach ($archiveNames in @(@('OpenNavX-Beta2-Portable-Recovery/../outside'),@('wrong-root/file'),@('OpenNavX-Beta2-Portable-Recovery\app\file'),@('OpenNavX-Beta2-Portable-Recovery/app/A','OpenNavX-Beta2-Portable-Recovery/app/a'))) {
+  foreach ($archiveNames in @(@('OpenNavX-Beta2-Portable-Recovery/../outside'),@('wrong-root/file'),@('SKAGER-Beta2-Portable-Recovery/app/a','OpenNavX-Beta2-Portable-Recovery/app/b'),@('skager-Beta2-Portable-Recovery/app/file'),@('OpenNavX-Beta2-Portable-Recovery\app\file'),@('OpenNavX-Beta2-Portable-Recovery/app/A','OpenNavX-Beta2-Portable-Recovery/app/a'))) {
     $zipPath=Join-Path $root ([guid]::NewGuid().ToString('N')+'.zip')
     $zip=[IO.Compression.ZipFile]::Open($zipPath,[IO.Compression.ZipArchiveMode]::Create)
     try {foreach ($name in $archiveNames) {$null=$zip.CreateEntry($name)}} finally {$zip.Dispose()}
@@ -216,6 +216,15 @@ try {
     if (-not $rejected) {throw 'Unsafe recovery ZIP extracted.'}
   }
   $checks.Add('Portable ZIP rejects traversal, wrong product root and case-colliding entries before extracting files')
+  foreach ($approvedRoot in @('SKAGER-Beta2-Portable-Recovery','OpenNavX-Beta2-Portable-Recovery')) {
+    $zipPath=Join-Path $root ([guid]::NewGuid().ToString('N')+'.zip')
+    $zip=[IO.Compression.ZipFile]::Open($zipPath,[IO.Compression.ZipArchiveMode]::Create)
+    try {$null=$zip.CreateEntry($approvedRoot+'/docs/inert.txt')} finally {$zip.Dispose()}
+    $destination=Join-Path $root ([guid]::NewGuid().ToString('N'))
+    $actual=Expand-ReviewArchive $zipPath $destination
+    if ($actual -cne (Join-Path $destination $approvedRoot) -or -not (Test-Path -LiteralPath (Join-Path $actual 'docs/inert.txt'))) {throw 'Versioned recovery root was not preserved.'}
+  }
+  $checks.Add('Current SKAGER and historical OpenNav recovery roots extract unchanged; mixed roots refuse')
   $package=Join-Path $root 'OpenNavX-Beta2-Portable-Recovery'
   foreach ($directory in @('app/plugins','profile/plugins','logs','docs')) {$null=New-Item -ItemType Directory -Path (Join-Path $package $directory) -Force}
   foreach ($directory in @('app/plugins','profile/plugins')) {

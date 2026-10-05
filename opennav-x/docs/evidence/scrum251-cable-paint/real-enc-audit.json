@@ -1,0 +1,1241 @@
+{
+  "reader": "Pinned OpenCPN S57Reader via OGRS57DataSource, default S57M_UPDATES; read only",
+  "selectionBBox": [
+    -122.39,
+    47.58,
+    -122.33,
+    47.62
+  ],
+  "chartFiles": {
+    "/home/standard/Projects/X-nav/build/chart-fixtures/ENC_ROOT/US5SEAFL/US5SEAFL.000": "7e474bea96e7a84c6f3ee6b44ff7db4288029fa47ac2a285594e18469dbf518c",
+    "/home/standard/Projects/X-nav/build/chart-fixtures/ENC_ROOT/US5SEAFL/US5SEAFL.001": "504440d201453548aae160c4c5340d55d480bd39cd57061b7fc03262968e062d"
+  },
+  "snapshotCommit": "e14de49f444c56de28465416a83337838ad84413",
+  "snapshot": "capture-e14de49-sw-short/SKAGER-Day.png",
+  "camera": {
+    "latitude": 47.6,
+    "longitude": -122.36,
+    "VPScale": 0.15,
+    "rotation": 0
+  },
+  "features": [
+    {
+      "class": "CBLARE",
+      "readerFID": 1563,
+      "bbox": [
+        -122.3460248,
+        47.5839349,
+        -122.3425424,
+        47.5876206
+      ],
+      "coordinateCount": 43,
+      "attributes": "RCID=1564 PRIM=3 GRUP=2 OBJL=20 RVER=1 AGEN=550 FIDN=-554368949 FIDS=6435 LNAM=0226DEF5004B1923 RESTRN=2,6,24 SCAMIN=29999 SORDAT=200212 SORIND=US,US,graph,Chart 18450 ",
+      "wkt": null
+    },
+    {
+      "class": "CBLARE",
+      "readerFID": 1565,
+      "bbox": [
+        -122.4,
+        47.603422,
+        -122.3389897,
+        47.6156811
+      ],
+      "coordinateCount": 282,
+      "attributes": "RCID=1566 PRIM=3 GRUP=2 OBJL=20 RVER=1 AGEN=550 FIDN=-1545907960 FIDS=6435 LNAM=0226A3DB51081923 RESTRN=2,6,24 SCAMIN=29999 SORDAT=200212 SORIND=US,US,graph,Chart 18450 ",
+      "wkt": null
+    },
+    {
+      "class": "PIPARE",
+      "readerFID": 1567,
+      "bbox": [
+        -122.3955849,
+        47.5919896,
+        -122.389522,
+        47.5963124
+      ],
+      "coordinateCount": 83,
+      "attributes": "RCID=1568 PRIM=3 GRUP=2 OBJL=92 RVER=1 AGEN=550 FIDN=-1236969592 FIDS=6435 LNAM=0226B64557881923 RESTRN=2,6,24 SCAMIN=29999 SORDAT=20141121 SORIND=US,US,reprt,L-2355/14 ",
+      "wkt": null
+    },
+    {
+      "class": "PIPARE",
+      "readerFID": 1568,
+      "bbox": [
+        -122.3460257,
+        47.5760129,
+        -122.3423481,
+        47.5812155
+      ],
+      "coordinateCount": 54,
+      "attributes": "RCID=1569 PRIM=3 GRUP=2 OBJL=92 RVER=1 AGEN=550 FIDN=1207873677 FIDS=6435 LNAM=022647FEB08D1923 RESTRN=2,6,24 SCAMIN=29999 SORDAT=200212 SORIND=US,US,graph,Chart 18450 ",
+      "wkt": null
+    },
+    {
+      "class": "CBLSUB",
+      "readerFID": 1570,
+      "bbox": [
+        -122.349421,
+        47.5985222,
+        -122.3402692,
+        47.6092584
+      ],
+      "coordinateCount": 129,
+      "attributes": "RCID=1571 PRIM=2 GRUP=2 OBJL=22 RVER=1 AGEN=550 FIDN=-1564374074 FIDS=6435 LNAM=0226A2C18BC61923 CATCBL=1 SCAMIN=29999 SORDAT=20240611 SORIND=US,US,report,L-242-2024 ",
+      "wkt": "LINESTRING (-122.34696840 47.60925840,-122.34701630 47.60917360,-122.34708620 47.60900980,-122.34715820 47.60886380,-122.34724730 47.60869350,-122.34730890 47.60856900,-122.34736140 47.60846460,-122.34742530 47.60836070,-122.34750080 47.60822450,-122.34757570 47.60808170,-122.34765400 47.60793020,-122.34774280 47.60777540,-122.34782270 47.60765040,-122.34789680 47.60753450,-122.34796720 47.60741820,-122.34802350 47.60732120,-122.34810000 47.60720280,-122.34817610 47.60708830,-122.34828650 47.60695350,-122.34836910 47.60685180,-122.34845750 47.60675350,-122.34848860 47.60672270,-122.34860150 47.60657390,-122.34871310 47.60639640,-122.34885900 47.60618770,-122.34891970 47.60612820,-122.34899200 47.60601900,-122.34906900 47.60589350,-122.34914570 47.60573040,-122.34923340 47.60557900,-122.34928330 47.60548290,-122.34932910 47.60539940,-122.34935630 47.60531930,-122.34936990 47.60524290,-122.34937470 47.60517040,-122.34939740 47.60507220,-122.34942100 47.60492220,-122.34940370 47.60477270,-122.34939550 47.60467160,-122.34938280 47.60453060,-122.34935790 47.60438530,-122.34934280 47.60425470,-122.34932550 47.60412230,-122.34930490 47.60399780,-122.34928190 47.60387580,-122.34926900 47.60378080,-122.34927010 47.60369500,-122.34925010 47.60355050,-122.34907450 47.60313240,-122.34902880 47.60298250,-122.34897820 47.60283210,-122.34892570 47.60270120,-122.34886810 47.60257200,-122.34881320 47.60245750,-122.34875160 47.60234540,-122.34872350 47.60224350,-122.34867470 47.60209960,-122.34862970 47.60201550,-122.34857560 47.60189910,-122.34851600 47.60178860,-122.34846720 47.60169930,-122.34841480 47.60159830,-122.34835500 47.60149240,-122.34831590 47.60141840,-122.34828300 47.60134590,-122.34824570 47.60127420,-122.34821280 47.60119050,-122.34816870 47.60109480,-122.34813060 47.60099830,-122.34809920 47.60087920,-122.34804580 47.60074580,-122.34797660 47.60060880,-122.34792540 47.60052310,-122.34786370 47.60043510,-122.34776000 47.60034210,-122.34767160 47.60025860,-122.34758080 47.60018790,-122.34748550 47.60013190,-122.34737680 47.60007300,-122.34726230 47.60001120,-122.34714610 47.59996280,-122.34702440 47.59991840,-122.34686230 47.59986270,-122.34670770 47.59981540,-122.34654720 47.59976240,-122.34637360 47.59971890,-122.34619700 47.59968120,-122.34600390 47.59963390,-122.34586690 47.59960750,-122.34539140 47.59947070,-122.34529660 47.59944260,-122.34502390 47.59935190,-122.34482840 47.59931860,-122.34462200 47.59927610,-122.34441610 47.59923490,-122.34423190 47.59918750,-122.34403240 47.59914410,-122.34383870 47.59910660,-122.34362800 47.59906690,-122.34345970 47.59903680,-122.34332970 47.59901330,-122.34310510 47.59900030,-122.34287490 47.59897300,-122.34264640 47.59893730,-122.34242500 47.59890760,-122.34219900 47.59887280,-122.34198680 47.59883780,-122.34177430 47.59879260,-122.34159760 47.59876560,-122.34144050 47.59873290,-122.34133520 47.59870680,-122.34125530 47.59869090,-122.34113880 47.59867350,-122.34109560 47.59866420,-122.34106370 47.59865560,-122.34103150 47.59864780,-122.34089090 47.59862360,-122.34077000 47.59860450,-122.34071950 47.59859930,-122.34070050 47.59859700,-122.34067880 47.59859330,-122.34066210 47.59859020,-122.34063890 47.59858720,-122.34060430 47.59858350,-122.34056290 47.59857940,-122.34051490 47.59857400,-122.34041160 47.59854990,-122.34039690 47.59854490,-122.34026920 47.59852220)"
+    },
+    {
+      "class": "PIPSOL",
+      "readerFID": 1573,
+      "bbox": [
+        -122.340831,
+        47.6036666,
+        -122.3395758,
+        47.6036824
+      ],
+      "coordinateCount": 7,
+      "attributes": "RCID=1574 PRIM=2 GRUP=2 OBJL=94 RVER=1 AGEN=550 FIDN=1855143052 FIDS=6435 LNAM=02266E933C8C1923 CATPIP=4 SCAMIN=29999 SORDAT=200212 SORIND=US,US,graph,Chart 18450 ",
+      "wkt": null
+    },
+    {
+      "class": "PIPSOL",
+      "readerFID": 1574,
+      "bbox": [
+        -122.3397107,
+        47.6029518,
+        -122.3394039,
+        47.6029723
+      ],
+      "coordinateCount": 4,
+      "attributes": "RCID=1575 PRIM=2 GRUP=2 OBJL=94 RVER=1 AGEN=550 FIDN=-2039470759 FIDS=6435 LNAM=0226867025591923 SCAMIN=29999 SORDAT=201211 SORIND=US,US,graph,Chart 18450 ",
+      "wkt": null
+    },
+    {
+      "class": "PIPSOL",
+      "readerFID": 1575,
+      "bbox": [
+        -122.3620294,
+        47.582736,
+        -122.36166,
+        47.5827625
+      ],
+      "coordinateCount": 4,
+      "attributes": "RCID=1576 PRIM=2 GRUP=2 OBJL=94 RVER=1 AGEN=550 FIDN=-1269414242 FIDS=6435 LNAM=0226B456469E1923 CATPIP=4 SCAMIN=29999 SORDAT=200212 SORIND=US,US,graph,Chart 18450 ",
+      "wkt": null
+    },
+    {
+      "class": "PIPSOL",
+      "readerFID": 1578,
+      "bbox": [
+        -122.4,
+        47.595698,
+        -122.3883345,
+        47.5967243
+      ],
+      "coordinateCount": 13,
+      "attributes": "RCID=1579 PRIM=2 GRUP=2 OBJL=94 RVER=1 AGEN=550 FIDN=-631685045 FIDS=6435 LNAM=0226DA59404B1923 CATPIP=4 SCAMIN=29999 SORDAT=200212 SORIND=US,US,graph,Chart 18450 ",
+      "wkt": null
+    },
+    {
+      "class": "PIPSOL",
+      "readerFID": 1579,
+      "bbox": [
+        -122.3847918,
+        47.5951471,
+        -122.384462,
+        47.595465
+      ],
+      "coordinateCount": 2,
+      "attributes": "RCID=1580 PRIM=2 GRUP=2 OBJL=94 RVER=1 AGEN=550 FIDN=-1615145273 FIDS=6435 LNAM=02269FBAD6C71923 CATPIP=4 SCAMIN=29999 SORDAT=200212 SORIND=US,US,graph,Chart 18450 ",
+      "wkt": null
+    },
+    {
+      "class": "PIPSOL",
+      "readerFID": 1580,
+      "bbox": [
+        -122.4,
+        47.5950377,
+        -122.3878316,
+        47.598067
+      ],
+      "coordinateCount": 15,
+      "attributes": "RCID=1581 PRIM=2 GRUP=2 OBJL=94 RVER=1 AGEN=550 FIDN=448122112 FIDS=6435 LNAM=02261AB5CD001923 CATPIP=4 SCAMIN=29999 SORDAT=200212 SORIND=US,US,graph,Chart 18450 ",
+      "wkt": null
+    },
+    {
+      "class": "PIPSOL",
+      "readerFID": 1581,
+      "bbox": [
+        -122.3607917,
+        47.6181528,
+        -122.3604905,
+        47.6183321
+      ],
+      "coordinateCount": 5,
+      "attributes": "RCID=1582 PRIM=2 GRUP=2 OBJL=94 RVER=1 AGEN=550 FIDN=-2042253891 FIDS=6435 LNAM=02268645ADBD1923 CATPIP=4 SCAMIN=29999 SORDAT=20030301 SORIND=US,US,graph,BP-185142 ",
+      "wkt": null
+    },
+    {
+      "class": "PIPSOL",
+      "readerFID": 1584,
+      "bbox": [
+        -122.3619972,
+        47.6174611,
+        -122.3605424,
+        47.618367
+      ],
+      "coordinateCount": 11,
+      "attributes": "RCID=1585 PRIM=2 GRUP=2 OBJL=94 RVER=1 AGEN=550 FIDN=-536373836 FIDS=6435 LNAM=0226E00795B41923 CATPIP=4 SCAMIN=29999 SORDAT=20030301 SORIND=US,US,graph,BP-185142 ",
+      "wkt": null
+    },
+    {
+      "class": "PIPSOL",
+      "readerFID": 1585,
+      "bbox": [
+        -122.3778986,
+        47.5872636,
+        -122.37732,
+        47.587609
+      ],
+      "coordinateCount": 6,
+      "attributes": "RCID=1586 PRIM=2 GRUP=2 OBJL=94 RVER=1 AGEN=550 FIDN=819726920 FIDS=6435 LNAM=022630DC0A481923 CATPIP=4 SCAMIN=29999 SORDAT=200212 SORIND=US,US,graph,Chart 18450 ",
+      "wkt": null
+    },
+    {
+      "class": "PIPSOL",
+      "readerFID": 1586,
+      "bbox": [
+        -122.363088,
+        47.618672,
+        -122.3606234,
+        47.6186818
+      ],
+      "coordinateCount": 7,
+      "attributes": "RCID=1587 PRIM=2 GRUP=2 OBJL=94 RVER=1 AGEN=550 FIDN=760194085 FIDS=6435 LNAM=02262D4FA4251923 CATPIP=4 SCAMIN=29999 SORDAT=200212 SORIND=US,US,graph,Chart 18450 ",
+      "wkt": null
+    },
+    {
+      "class": "PIPSOL",
+      "readerFID": 1587,
+      "bbox": [
+        -122.3838138,
+        47.5945263,
+        -122.3835614,
+        47.5945576
+      ],
+      "coordinateCount": 3,
+      "attributes": "RCID=1588 PRIM=2 GRUP=2 OBJL=94 RVER=1 AGEN=550 FIDN=980604080 FIDS=6435 LNAM=02263A72D4B01923 CATPIP=4 SCAMIN=29999 SORDAT=200212 SORIND=US,US,graph,Chart 18450 ",
+      "wkt": null
+    },
+    {
+      "class": "PIPSOL",
+      "readerFID": 1588,
+      "bbox": [
+        -122.3835618,
+        47.5945584,
+        -122.383184,
+        47.594606
+      ],
+      "coordinateCount": 5,
+      "attributes": "RCID=1589 PRIM=2 GRUP=2 OBJL=94 RVER=1 AGEN=550 FIDN=980604080 FIDS=65533 LNAM=02263A72D4B0FFFD CATPIP=4 SCAMIN=29999 SORDAT=200212 SORIND=US,US,graph,Chart 18450 ",
+      "wkt": null
+    },
+    {
+      "class": "HRBFAC",
+      "readerFID": 1676,
+      "bbox": [
+        -122.347445,
+        47.587909,
+        -122.347445,
+        47.587909
+      ],
+      "coordinateCount": 1,
+      "attributes": "RCID=2780 PRIM=1 GRUP=2 OBJL=64 RVER=1 AGEN=550 FIDN=2035313050 FIDS=6435 LNAM=02267950699A1923 CATHAF=10 OBJNAM=Terminal 18 SCAMIN=17999 SORDAT=200212 SORIND=US,US,graph,Chart 18450 ",
+      "wkt": "POINT (-122.34744500 47.58790900)"
+    },
+    {
+      "class": "HRBFAC",
+      "readerFID": 1677,
+      "bbox": [
+        -122.338923,
+        47.596993,
+        -122.338923,
+        47.596993
+      ],
+      "coordinateCount": 1,
+      "attributes": "RCID=2781 PRIM=1 GRUP=2 OBJL=64 RVER=1 AGEN=550 FIDN=-1722032119 FIDS=6435 LNAM=0226995BE0091923 CATHAF=10 OBJNAM=Terminal No 46 SCAMIN=17999 SORDAT=200212 SORIND=US,US,graph,Chart 18450 ",
+      "wkt": "POINT (-122.33892300 47.59699300)"
+    },
+    {
+      "class": "HRBFAC",
+      "readerFID": 1680,
+      "bbox": [
+        -122.340149,
+        47.592888,
+        -122.340149,
+        47.592888
+      ],
+      "coordinateCount": 1,
+      "attributes": "RCID=2784 PRIM=1 GRUP=2 OBJL=64 RVER=1 AGEN=550 FIDN=-282310062 FIDS=6435 LNAM=0226EF2C4A521923 CATHAF=10 OBJNAM=Terminal No 37 SCAMIN=17999 SORDAT=200212 SORIND=US,US,graph,Chart 18450 ",
+      "wkt": "POINT (-122.34014900 47.59288800)"
+    },
+    {
+      "class": "HRBFAC",
+      "readerFID": 1682,
+      "bbox": [
+        -122.3388836,
+        47.602974,
+        -122.3388836,
+        47.602974
+      ],
+      "coordinateCount": 1,
+      "attributes": "RCID=2786 PRIM=1 GRUP=2 OBJL=64 RVER=1 AGEN=550 FIDN=257203832 FIDS=6435 LNAM=02260F549E781923 CATHAF=3 SCAMIN=17999 SORDAT=200212 SORIND=US,US,graph,Chart 18450 ",
+      "wkt": "POINT (-122.33888360 47.60297400)"
+    },
+    {
+      "class": "ACHARE",
+      "readerFID": 1860,
+      "bbox": [
+        -122.3879055,
+        47.5916667,
+        -122.3613889,
+        47.5988472
+      ],
+      "coordinateCount": 198,
+      "attributes": "RCID=2964 PRIM=3 GRUP=2 OBJL=4 RVER=1 AGEN=550 FIDN=-449857230 FIDS=6435 LNAM=0226E52FB9321923 CATACH=1 OBJNAM=Elliott Bay West General Anchorage INFORM=33 CFR 110.230 SCAMIN=21999 SORDAT=20130212 SORIND=US,US,reprt,L-345/13 ",
+      "wkt": null
+    },
+    {
+      "class": "ACHARE",
+      "readerFID": 1861,
+      "bbox": [
+        -122.4,
+        47.6156111,
+        -122.3852778,
+        47.625
+      ],
+      "coordinateCount": 19,
+      "attributes": "RCID=2965 PRIM=3 GRUP=2 OBJL=4 RVER=1 AGEN=550 FIDN=657615127 FIDS=6435 LNAM=0226273269171923 CATACH=1 OBJNAM=Smith Cove West General Anchorage INFORM=33 CFR 110.230 SCAMIN=21999 SORDAT=20130212 SORIND=US,US,reprt,L-345/13 ",
+      "wkt": null
+    },
+    {
+      "class": "ACHARE",
+      "readerFID": 1862,
+      "bbox": [
+        -122.3786111,
+        47.6156111,
+        -122.3562891,
+        47.625
+      ],
+      "coordinateCount": 360,
+      "attributes": "RCID=2966 PRIM=3 GRUP=2 OBJL=4 RVER=1 AGEN=550 FIDN=-477792702 FIDS=6435 LNAM=0226E38576421923 CATACH=1 OBJNAM=Smith Cove East General Anchorage INFORM=33 CFR 110.230 SCAMIN=21999 SORDAT=20130212 SORIND=US,US,reprt,L-345/13 ",
+      "wkt": null
+    },
+    {
+      "class": "ACHARE",
+      "readerFID": 1863,
+      "bbox": [
+        -122.3583333,
+        47.5867136,
+        -122.3459722,
+        47.5988472
+      ],
+      "coordinateCount": 370,
+      "attributes": "RCID=2967 PRIM=3 GRUP=2 OBJL=4 RVER=1 AGEN=550 FIDN=868392577 FIDS=6435 LNAM=022633C29E811923 CATACH=1 OBJNAM=Elliott Bay East General Anchorage INFORM=33 CFR 110.230 SCAMIN=21999 SORDAT=20130212 SORIND=US,US,reprt,L-345/13 ",
+      "wkt": null
+    },
+    {
+      "class": "DMPGRD",
+      "readerFID": 1864,
+      "bbox": [
+        -122.361162,
+        47.596868,
+        -122.353847,
+        47.601816
+      ],
+      "coordinateCount": 1365,
+      "attributes": "RCID=2968 PRIM=3 GRUP=2 OBJL=48 RVER=1 AGEN=550 FIDN=-1327846109 FIDS=6435 LNAM=0226B0DAAD231923 CATDPG=5 INFORM=Depths from survey of 2020 SCAMIN=21999 SORDAT=20201207 SORIND=US,US,graph,H13413 ",
+      "wkt": null
+    },
+    {
+      "class": "RESARE",
+      "readerFID": 1866,
+      "bbox": [
+        -122.3852778,
+        47.6183333,
+        -122.3786111,
+        47.625
+      ],
+      "coordinateCount": 13,
+      "attributes": "RCID=2970 PRIM=3 GRUP=2 OBJL=112 RVER=1 AGEN=550 FIDN=-984691223 FIDS=6435 LNAM=0226C54ECDE91923 CATREA=1 RESTRN=8 INFORM=Safety and Security Zone, 33 CFR 165.1324 SCAMIN=29999 SORDAT=20091209 SORIND=US,US,reprt,L-1902/09 ",
+      "wkt": null
+    },
+    {
+      "class": "RESARE",
+      "readerFID": 1867,
+      "bbox": [
+        -122.358475,
+        47.5769192,
+        -122.3573789,
+        47.581517
+      ],
+      "coordinateCount": 73,
+      "attributes": "RCID=2971 PRIM=3 GRUP=2 OBJL=112 RVER=1 AGEN=550 FIDN=465699120 FIDS=6435 LNAM=02261BC201301923 RESTRN=1,5,24 INFORM=Regulated navigation area, 33 CFR 165.1336 SCAMIN=29999 SORDAT=20120410 SORIND=US,US,reprt,L-719/12 ",
+      "wkt": null
+    },
+    {
+      "class": "RESARE",
+      "readerFID": 1868,
+      "bbox": [
+        -122.3638887,
+        47.5844409,
+        -122.3583223,
+        47.5886097
+      ],
+      "coordinateCount": 56,
+      "attributes": "RCID=2972 PRIM=3 GRUP=2 OBJL=112 RVER=1 AGEN=550 FIDN=-1274439827 FIDS=6435 LNAM=0226B409976D1923 CATREA=1 RESTRN=8 INFORM=33 CFR 165.1340: Navigation regulations are published in Chapter 2 of the U.S. Coast Pilot for this geographic area. Refer to regulation section numbers. SCAMIN=29999 SORDAT=20180405 SORIND=US,US,reprt,L-326-2018 ",
+      "wkt": null
+    },
+    {
+      "class": "RESARE",
+      "readerFID": 1869,
+      "bbox": [
+        -122.373056,
+        47.5830636,
+        -122.364583,
+        47.590556
+      ],
+      "coordinateCount": 148,
+      "attributes": "RCID=2973 PRIM=3 GRUP=2 OBJL=112 RVER=1 AGEN=550 FIDN=1102999002 FIDS=6435 LNAM=022641BE6DDA1923 RESTRN=1,5,9,20,24 INFORM=Regulated Navigation Area - 33 CFR 165.1336: Navigation regulations are published in Chapter 2 of the U.S. Coast Pilot for this geographic area. Refer to regulation section numbers. SCAMIN=29999 SORDAT=20220603 SORIND=US,US,reprt,L-137-2022 ",
+      "wkt": null
+    },
+    {
+      "class": "RESARE",
+      "readerFID": 1870,
+      "bbox": [
+        -122.3429977,
+        47.589908,
+        -122.3385646,
+        47.5907518
+      ],
+      "coordinateCount": 84,
+      "attributes": "RCID=2974 PRIM=3 GRUP=2 OBJL=112 RVER=1 AGEN=550 FIDN=556307983 FIDS=6435 LNAM=02262128960F1923 CATREA=1 RESTRN=8,2 INFORM=Security zone, 33 CFR 165.1334 SCAMIN=29999 SORDAT=20101101 SORIND=US,US,reprt,L-1127/10 ",
+      "wkt": null
+    },
+    {
+      "class": "FERYRT",
+      "readerFID": 1928,
+      "bbox": [
+        -122.4,
+        47.602626,
+        -122.340922,
+        47.6081053
+      ],
+      "coordinateCount": 11,
+      "attributes": "RCID=3032 PRIM=2 GRUP=2 OBJL=53 RVER=1 AGEN=550 FIDN=2084298418 FIDS=39953 LNAM=02267C3BDEB29C11 CATFRY=1 INFORM=Mariners are cautioned that the Washington State Ferries may deviate from the published standard routes due to inclement weather, traffic conditions, navigational hazards or other emergency conditions. SCAMIN=29999 SORDAT=200512 SORIND=US,US,graph,Chart 18440 ",
+      "wkt": "LINESTRING (-122.40000000 47.60369370,-122.39579660 47.60361510,-122.38793300 47.60346800,-122.38297640 47.60337620,-122.35749800 47.60290400,-122.34274500 47.60266100,-122.34117440 47.60263090,-122.34092200 47.60262600,-122.34211500 47.60273700,-122.36155500 47.60453990,-122.40000000 47.60810530)"
+    }
+  ],
+  "pinnedLookups": [
+    {
+      "identity": {
+        "id": "1",
+        "RCID": "32037",
+        "name": "ACHARE"
+      },
+      "table": "Plain",
+      "type": "Area",
+      "attributes": [
+        "CATACH8"
+      ],
+      "instruction": "SY(ACHARE02);LS(DASH,2,CHMGF);CS(RESTRN01)"
+    },
+    {
+      "identity": {
+        "id": "2",
+        "RCID": "32038",
+        "name": "ACHARE"
+      },
+      "table": "Plain",
+      "type": "Area",
+      "attributes": [],
+      "instruction": "SY(ACHARE51);CS(RESARE02)"
+    },
+    {
+      "identity": {
+        "id": "25",
+        "RCID": "32061",
+        "name": "CBLARE"
+      },
+      "table": "Plain",
+      "type": "Area",
+      "attributes": [],
+      "instruction": "SY(CBLARE51);LS(DASH,2,CHMGD);CS(RESTRN01)"
+    },
+    {
+      "identity": {
+        "id": "41",
+        "RCID": "32077",
+        "name": "DMPGRD"
+      },
+      "table": "Plain",
+      "type": "Area",
+      "attributes": [
+        "CATDPG5"
+      ],
+      "instruction": "LS(DASH,1,CHMGD);CS(RESTRN01)"
+    },
+    {
+      "identity": {
+        "id": "42",
+        "RCID": "32078",
+        "name": "DMPGRD"
+      },
+      "table": "Plain",
+      "type": "Area",
+      "attributes": [],
+      "instruction": "SY(INFARE51);LS(DASH,1,CHMGD);CS(RESTRN01)"
+    },
+    {
+      "identity": {
+        "id": "59",
+        "RCID": "32095",
+        "name": "FERYRT"
+      },
+      "table": "Plain",
+      "type": "Area",
+      "attributes": [
+        "CATFRY2"
+      ],
+      "instruction": "SY(FRYARE52);LS(DASH,2,CHBLK)"
+    },
+    {
+      "identity": {
+        "id": "60",
+        "RCID": "32096",
+        "name": "FERYRT"
+      },
+      "table": "Plain",
+      "type": "Area",
+      "attributes": [],
+      "instruction": "SY(FRYARE51);LS(DASH,2,CHMGD)"
+    },
+    {
+      "identity": {
+        "id": "75",
+        "RCID": "32111",
+        "name": "HRBFAC"
+      },
+      "table": "Plain",
+      "type": "Area",
+      "attributes": [
+        "CATHAF1"
+      ],
+      "instruction": "SY(ROLROL01)"
+    },
+    {
+      "identity": {
+        "id": "76",
+        "RCID": "32112",
+        "name": "HRBFAC"
+      },
+      "table": "Plain",
+      "type": "Area",
+      "attributes": [
+        "CATHAF4"
+      ],
+      "instruction": "SY(HRBFAC09)"
+    },
+    {
+      "identity": {
+        "id": "77",
+        "RCID": "32113",
+        "name": "HRBFAC"
+      },
+      "table": "Plain",
+      "type": "Area",
+      "attributes": [
+        "CATHAF5"
+      ],
+      "instruction": "SY(SMCFAC02)"
+    },
+    {
+      "identity": {
+        "id": "78",
+        "RCID": "32114",
+        "name": "HRBFAC"
+      },
+      "table": "Plain",
+      "type": "Area",
+      "attributes": [],
+      "instruction": "SY(CHINFO07)"
+    },
+    {
+      "identity": {
+        "id": "131",
+        "RCID": "32167",
+        "name": "PIPARE"
+      },
+      "table": "Plain",
+      "type": "Area",
+      "attributes": [
+        "CATPIP2"
+      ],
+      "instruction": "SY(INFARE51);LS(DASH,2,CHGRD);CS(RESTRN01)"
+    },
+    {
+      "identity": {
+        "id": "132",
+        "RCID": "32168",
+        "name": "PIPARE"
+      },
+      "table": "Plain",
+      "type": "Area",
+      "attributes": [
+        "CATPIP3"
+      ],
+      "instruction": "SY(INFARE51);LS(DASH,2,CHGRD);CS(RESTRN01)"
+    },
+    {
+      "identity": {
+        "id": "133",
+        "RCID": "32169",
+        "name": "PIPARE"
+      },
+      "table": "Plain",
+      "type": "Area",
+      "attributes": [
+        "PRODCT3"
+      ],
+      "instruction": "SY(INFARE51);LS(DASH,2,CHGRD);CS(RESTRN01)"
+    },
+    {
+      "identity": {
+        "id": "134",
+        "RCID": "32170",
+        "name": "PIPARE"
+      },
+      "table": "Plain",
+      "type": "Area",
+      "attributes": [],
+      "instruction": "SY(INFARE51);LS(DASH,2,CHMGD);CS(RESTRN01)"
+    },
+    {
+      "identity": {
+        "id": "164",
+        "RCID": "32200",
+        "name": "RESARE"
+      },
+      "table": "Plain",
+      "type": "Area",
+      "attributes": [
+        "CATREA27"
+      ],
+      "instruction": "SY(ESSARE01);LC(ESSARE01)"
+    },
+    {
+      "identity": {
+        "id": "165",
+        "RCID": "32201",
+        "name": "RESARE"
+      },
+      "table": "Plain",
+      "type": "Area",
+      "attributes": [
+        "CATREA28"
+      ],
+      "instruction": "SY(PSSARE01);LC(ESSARE01)"
+    },
+    {
+      "identity": {
+        "id": "166",
+        "RCID": "93668",
+        "name": "RESARE"
+      },
+      "table": "Plain",
+      "type": "Area",
+      "attributes": [
+        "CATREA4"
+      ],
+      "instruction": "TX(OBJNAM,3,1,2,'15110',1,0,CHMGD,29);CS(RESARE02)"
+    },
+    {
+      "identity": {
+        "id": "167",
+        "RCID": "32202",
+        "name": "RESARE"
+      },
+      "table": "Plain",
+      "type": "Area",
+      "attributes": [],
+      "instruction": "CS(RESARE02)"
+    },
+    {
+      "identity": {
+        "id": "341",
+        "RCID": "32376",
+        "name": "ACHARE"
+      },
+      "table": "Symbolized",
+      "type": "Area",
+      "attributes": [
+        "CATACH8"
+      ],
+      "instruction": "SY(ACHARE02);LS(DASH,2,CHMGF);CS(RESTRN01)"
+    },
+    {
+      "identity": {
+        "id": "342",
+        "RCID": "32377",
+        "name": "ACHARE"
+      },
+      "table": "Symbolized",
+      "type": "Area",
+      "attributes": [],
+      "instruction": "SY(ACHARE51);CS(RESARE02)"
+    },
+    {
+      "identity": {
+        "id": "365",
+        "RCID": "32400",
+        "name": "CBLARE"
+      },
+      "table": "Symbolized",
+      "type": "Area",
+      "attributes": [],
+      "instruction": "SY(CBLARE51);LC(CBLARE51);CS(RESTRN01)"
+    },
+    {
+      "identity": {
+        "id": "381",
+        "RCID": "32416",
+        "name": "DMPGRD"
+      },
+      "table": "Symbolized",
+      "type": "Area",
+      "attributes": [
+        "CATDPG5"
+      ],
+      "instruction": "LC(NAVARE51);CS(RESTRN01)"
+    },
+    {
+      "identity": {
+        "id": "382",
+        "RCID": "32417",
+        "name": "DMPGRD"
+      },
+      "table": "Symbolized",
+      "type": "Area",
+      "attributes": [],
+      "instruction": "SY(INFARE51);LC(CTYARE51);CS(RESTRN01)"
+    },
+    {
+      "identity": {
+        "id": "399",
+        "RCID": "32434",
+        "name": "FERYRT"
+      },
+      "table": "Symbolized",
+      "type": "Area",
+      "attributes": [
+        "CATFRY2"
+      ],
+      "instruction": "SY(FRYARE52);LC(NAVARE51)"
+    },
+    {
+      "identity": {
+        "id": "400",
+        "RCID": "32435",
+        "name": "FERYRT"
+      },
+      "table": "Symbolized",
+      "type": "Area",
+      "attributes": [],
+      "instruction": "SY(FRYARE51);LC(NAVARE51)"
+    },
+    {
+      "identity": {
+        "id": "415",
+        "RCID": "32450",
+        "name": "HRBFAC"
+      },
+      "table": "Symbolized",
+      "type": "Area",
+      "attributes": [
+        "CATHAF1"
+      ],
+      "instruction": "SY(ROLROL01)"
+    },
+    {
+      "identity": {
+        "id": "416",
+        "RCID": "32451",
+        "name": "HRBFAC"
+      },
+      "table": "Symbolized",
+      "type": "Area",
+      "attributes": [
+        "CATHAF4"
+      ],
+      "instruction": "SY(HRBFAC09)"
+    },
+    {
+      "identity": {
+        "id": "417",
+        "RCID": "32452",
+        "name": "HRBFAC"
+      },
+      "table": "Symbolized",
+      "type": "Area",
+      "attributes": [
+        "CATHAF5"
+      ],
+      "instruction": "SY(SMCFAC02)"
+    },
+    {
+      "identity": {
+        "id": "418",
+        "RCID": "32453",
+        "name": "HRBFAC"
+      },
+      "table": "Symbolized",
+      "type": "Area",
+      "attributes": [],
+      "instruction": "SY(CHINFO07)"
+    },
+    {
+      "identity": {
+        "id": "473",
+        "RCID": "32508",
+        "name": "PIPARE"
+      },
+      "table": "Symbolized",
+      "type": "Area",
+      "attributes": [
+        "CATPIP2"
+      ],
+      "instruction": "SY(INFARE51);LC(PIPARE61);CS(RESTRN01)"
+    },
+    {
+      "identity": {
+        "id": "474",
+        "RCID": "32509",
+        "name": "PIPARE"
+      },
+      "table": "Symbolized",
+      "type": "Area",
+      "attributes": [
+        "CATPIP3"
+      ],
+      "instruction": "SY(INFARE51);LC(PIPARE61);CS(RESTRN01)"
+    },
+    {
+      "identity": {
+        "id": "475",
+        "RCID": "32510",
+        "name": "PIPARE"
+      },
+      "table": "Symbolized",
+      "type": "Area",
+      "attributes": [
+        "PRODCT3"
+      ],
+      "instruction": "SY(INFARE51);LC(PIPARE61);CS(RESTRN01)"
+    },
+    {
+      "identity": {
+        "id": "476",
+        "RCID": "32511",
+        "name": "PIPARE"
+      },
+      "table": "Symbolized",
+      "type": "Area",
+      "attributes": [],
+      "instruction": "SY(INFARE51);LC(PIPARE51);CS(RESTRN01)"
+    },
+    {
+      "identity": {
+        "id": "506",
+        "RCID": "32541",
+        "name": "RESARE"
+      },
+      "table": "Symbolized",
+      "type": "Area",
+      "attributes": [
+        "CATREA27"
+      ],
+      "instruction": "SY(ESSARE01);LC(ESSARE01)"
+    },
+    {
+      "identity": {
+        "id": "507",
+        "RCID": "32542",
+        "name": "RESARE"
+      },
+      "table": "Symbolized",
+      "type": "Area",
+      "attributes": [
+        "CATREA28"
+      ],
+      "instruction": "SY(PSSARE01);LC(ESSARE01)"
+    },
+    {
+      "identity": {
+        "id": "508",
+        "RCID": "32543",
+        "name": "RESARE"
+      },
+      "table": "Symbolized",
+      "type": "Area",
+      "attributes": [],
+      "instruction": "CS(RESARE02)"
+    },
+    {
+      "identity": {
+        "id": "709",
+        "RCID": "31785",
+        "name": "CBLSUB"
+      },
+      "table": "Lines",
+      "type": "Line",
+      "attributes": [
+        "CATCBL6"
+      ],
+      "instruction": "LS(DASH,1,CHMGD)"
+    },
+    {
+      "identity": {
+        "id": "710",
+        "RCID": "31786",
+        "name": "CBLSUB"
+      },
+      "table": "Lines",
+      "type": "Line",
+      "attributes": [],
+      "instruction": "LC(CBLSUB06)"
+    },
+    {
+      "identity": {
+        "id": "745",
+        "RCID": "31821",
+        "name": "FERYRT"
+      },
+      "table": "Lines",
+      "type": "Line",
+      "attributes": [
+        "CATFRY1"
+      ],
+      "instruction": "LC(FERYRT01)"
+    },
+    {
+      "identity": {
+        "id": "746",
+        "RCID": "31822",
+        "name": "FERYRT"
+      },
+      "table": "Lines",
+      "type": "Line",
+      "attributes": [
+        "CATFRY2"
+      ],
+      "instruction": "LC(FERYRT02)"
+    },
+    {
+      "identity": {
+        "id": "747",
+        "RCID": "31823",
+        "name": "FERYRT"
+      },
+      "table": "Lines",
+      "type": "Line",
+      "attributes": [],
+      "instruction": "LC(FERYRT02)"
+    },
+    {
+      "identity": {
+        "id": "785",
+        "RCID": "31861",
+        "name": "PIPSOL"
+      },
+      "table": "Lines",
+      "type": "Line",
+      "attributes": [
+        "CATPIP2"
+      ],
+      "instruction": "LC(PIPSOL06)"
+    },
+    {
+      "identity": {
+        "id": "786",
+        "RCID": "31862",
+        "name": "PIPSOL"
+      },
+      "table": "Lines",
+      "type": "Line",
+      "attributes": [
+        "CATPIP3"
+      ],
+      "instruction": "LC(PIPSOL06)"
+    },
+    {
+      "identity": {
+        "id": "787",
+        "RCID": "31863",
+        "name": "PIPSOL"
+      },
+      "table": "Lines",
+      "type": "Line",
+      "attributes": [
+        "CATPIP4"
+      ],
+      "instruction": "LC(PIPSOL06)"
+    },
+    {
+      "identity": {
+        "id": "788",
+        "RCID": "31864",
+        "name": "PIPSOL"
+      },
+      "table": "Lines",
+      "type": "Line",
+      "attributes": [
+        "CATPIP5"
+      ],
+      "instruction": "LC(PIPSOL06)"
+    },
+    {
+      "identity": {
+        "id": "789",
+        "RCID": "31865",
+        "name": "PIPSOL"
+      },
+      "table": "Lines",
+      "type": "Line",
+      "attributes": [
+        "PRODCT3"
+      ],
+      "instruction": "LC(PIPSOL06)"
+    },
+    {
+      "identity": {
+        "id": "790",
+        "RCID": "31866",
+        "name": "PIPSOL"
+      },
+      "table": "Lines",
+      "type": "Line",
+      "attributes": [],
+      "instruction": "LC(PIPSOL05)"
+    },
+    {
+      "identity": {
+        "id": "961",
+        "RCID": "31013",
+        "name": "ACHARE"
+      },
+      "table": "Simplified",
+      "type": "Point",
+      "attributes": [],
+      "instruction": "SY(ACHARE02)"
+    },
+    {
+      "identity": {
+        "id": "1111",
+        "RCID": "31163",
+        "name": "DMPGRD"
+      },
+      "table": "Simplified",
+      "type": "Point",
+      "attributes": [],
+      "instruction": "SY(CHINFO07)"
+    },
+    {
+      "identity": {
+        "id": "1125",
+        "RCID": "31177",
+        "name": "HRBFAC"
+      },
+      "table": "Simplified",
+      "type": "Point",
+      "attributes": [
+        "CATHAF1"
+      ],
+      "instruction": "SY(ROLROL01)"
+    },
+    {
+      "identity": {
+        "id": "1126",
+        "RCID": "31178",
+        "name": "HRBFAC"
+      },
+      "table": "Simplified",
+      "type": "Point",
+      "attributes": [
+        "CATHAF4"
+      ],
+      "instruction": "SY(HRBFAC09)"
+    },
+    {
+      "identity": {
+        "id": "1127",
+        "RCID": "31179",
+        "name": "HRBFAC"
+      },
+      "table": "Simplified",
+      "type": "Point",
+      "attributes": [
+        "CATHAF5"
+      ],
+      "instruction": "SY(SMCFAC02)"
+    },
+    {
+      "identity": {
+        "id": "1128",
+        "RCID": "31180",
+        "name": "HRBFAC"
+      },
+      "table": "Simplified",
+      "type": "Point",
+      "attributes": [],
+      "instruction": "SY(CHINFO07)"
+    },
+    {
+      "identity": {
+        "id": "1203",
+        "RCID": "31255",
+        "name": "PIPARE"
+      },
+      "table": "Simplified",
+      "type": "Point",
+      "attributes": [],
+      "instruction": "SY(CHINFO07)"
+    },
+    {
+      "identity": {
+        "id": "1204",
+        "RCID": "31256",
+        "name": "PIPSOL"
+      },
+      "table": "Simplified",
+      "type": "Point",
+      "attributes": [],
+      "instruction": ""
+    },
+    {
+      "identity": {
+        "id": "1712",
+        "RCID": "30001",
+        "name": "ACHARE"
+      },
+      "table": "Paper",
+      "type": "Point",
+      "attributes": [],
+      "instruction": "SY(ACHARE02)"
+    },
+    {
+      "identity": {
+        "id": "2178",
+        "RCID": "30358",
+        "name": "DMPGRD"
+      },
+      "table": "Paper",
+      "type": "Point",
+      "attributes": [],
+      "instruction": "SY(CHINFO07)"
+    },
+    {
+      "identity": {
+        "id": "2192",
+        "RCID": "30372",
+        "name": "HRBFAC"
+      },
+      "table": "Paper",
+      "type": "Point",
+      "attributes": [
+        "CATHAF1"
+      ],
+      "instruction": "SY(ROLROL01)"
+    },
+    {
+      "identity": {
+        "id": "2193",
+        "RCID": "30373",
+        "name": "HRBFAC"
+      },
+      "table": "Paper",
+      "type": "Point",
+      "attributes": [
+        "CATHAF4"
+      ],
+      "instruction": "SY(HRBFAC09)"
+    },
+    {
+      "identity": {
+        "id": "2194",
+        "RCID": "30374",
+        "name": "HRBFAC"
+      },
+      "table": "Paper",
+      "type": "Point",
+      "attributes": [
+        "CATHAF5"
+      ],
+      "instruction": "SY(SMCFAC02)"
+    },
+    {
+      "identity": {
+        "id": "2195",
+        "RCID": "30375",
+        "name": "HRBFAC"
+      },
+      "table": "Paper",
+      "type": "Point",
+      "attributes": [],
+      "instruction": "SY(CHINFO07)"
+    },
+    {
+      "identity": {
+        "id": "2321",
+        "RCID": "30478",
+        "name": "PIPARE"
+      },
+      "table": "Paper",
+      "type": "Point",
+      "attributes": [],
+      "instruction": "SY(CHINFO07)"
+    },
+    {
+      "identity": {
+        "id": "2322",
+        "RCID": "30479",
+        "name": "PIPSOL"
+      },
+      "table": "Paper",
+      "type": "Point",
+      "attributes": [],
+      "instruction": ""
+    },
+    {
+      "identity": {
+        "id": "2",
+        "RCID": "32038",
+        "name": "ACHARE"
+      },
+      "table": "Plain",
+      "type": "Area",
+      "attributes": [],
+      "instruction": "SY(ACHARE51);LS(DASH,2,CHMGF);CS(RESTRN01)"
+    },
+    {
+      "identity": {
+        "id": "342",
+        "RCID": "32377",
+        "name": "ACHARE"
+      },
+      "table": "Symbolized",
+      "type": "Area",
+      "attributes": [],
+      "instruction": "SY(ACHARE51);LC(ACHARE51);CS(RESARE01)"
+    }
+  ]
+}

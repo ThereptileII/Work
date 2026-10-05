@@ -168,3 +168,24 @@ TEST(OpenNavPilotPresentation, ProductStatusOnlyOverridesOldPermission) {
   EXPECT_EQ(v.mode, adapters::PilotMode::Auto);
   EXPECT_NE(v.note.find("Status only"), std::string::npos);
 }
+TEST(OpenNavPilotPresentation, StatusOnlyShowsFeedbackLossAndDoesNotPromiseSetup) {
+  auto p = Live();
+  p.output_unavailable = true;
+  auto v = View(p, stamp + 3s);
+  EXPECT_FALSE(v.available);
+  EXPECT_TRUE(v.degraded);
+  EXPECT_EQ(v.state, "FEEDBACK LOST");
+  EXPECT_EQ(v.connection, "Feedback lost");
+  EXPECT_NE(v.note.find("stale or lost"), std::string::npos);
+  EXPECT_FALSE(v.heading_magnetic_deg);
+  p.feedback = {};
+  p.fresh = false;
+  v = View(p);
+  EXPECT_FALSE(v.available);
+  EXPECT_FALSE(v.degraded);
+  EXPECT_EQ(v.connection, "Waiting for feedback");
+  EXPECT_EQ(v.note.find("configuring"), std::string::npos);
+  v = View(Live(), stamp, false, true);
+  EXPECT_FALSE(v.available);
+  EXPECT_FALSE(v.degraded);
+}

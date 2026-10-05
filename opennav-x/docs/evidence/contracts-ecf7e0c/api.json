@@ -1,0 +1,440 @@
+{
+  "retrievedUtc": "2026-10-04T09:19:24.853Z",
+  "run": {
+    "id": 37191400051,
+    "head_sha": "ecf7e0c46609cf4cb29141964d7c4bde98b002b7",
+    "path": ".github/workflows/opennav-baseline.yml",
+    "event": "push",
+    "status": "in_progress",
+    "conclusion": null,
+    "run_attempt": 1,
+    "html_url": "https://github.com/ThereptileII/Work/actions/runs/37191400051"
+  },
+  "attemptJobsTotal": 16,
+  "jobs": [
+    {
+      "id": 111404167322,
+      "run_id": 37191400051,
+      "workflow_name": "SKAGER Beta 2",
+      "head_branch": "opennav-x-beta2-ui",
+      "run_url": "https://api.github.com/repos/ThereptileII/Work/actions/runs/37191400051",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOM4BDHM8AAAAZ8DSwmg",
+      "head_sha": "ecf7e0c46609cf4cb29141964d7c4bde98b002b7",
+      "url": "https://api.github.com/repos/ThereptileII/Work/actions/jobs/111404167322",
+      "html_url": "https://github.com/ThereptileII/Work/actions/runs/37191400051/job/111404167322",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-04T09:12:23Z",
+      "started_at": "2026-10-04T09:12:25Z",
+      "completed_at": "2026-10-04T09:15:06Z",
+      "name": "contracts (ubuntu-24.04)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-04T09:12:25Z",
+          "completed_at": "2026-10-04T09:12:26Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-04T09:12:26Z",
+          "completed_at": "2026-10-04T09:12:31Z"
+        },
+        {
+          "name": "Verify published distribution inputs before compilation",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-04T09:12:31Z",
+          "completed_at": "2026-10-04T09:12:32Z"
+        },
+        {
+          "name": "Verify corresponding-source archive structure and integrity",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-04T09:12:32Z",
+          "completed_at": "2026-10-04T09:12:33Z"
+        },
+        {
+          "name": "Same-job dependency evidence, tamper refusal and cache staging contracts",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-04T09:12:33Z",
+          "completed_at": "2026-10-04T09:12:39Z"
+        },
+        {
+          "name": "Native version probe stream identity and bounded failure contracts",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-04T09:12:39Z",
+          "completed_at": "2026-10-04T09:13:11Z"
+        },
+        {
+          "name": "Native version probe contracts in Windows PowerShell 5.1",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 7,
+          "started_at": "2026-10-04T09:13:11Z",
+          "completed_at": "2026-10-04T09:13:11Z"
+        },
+        {
+          "name": "Peer boundary monitor rejects tampering and filters listeners by process",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-04T09:13:11Z",
+          "completed_at": "2026-10-04T09:13:12Z"
+        },
+        {
+          "name": "Preserve reviewed notice bytes through Windows Git checkout",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-04T09:13:12Z",
+          "completed_at": "2026-10-04T09:13:12Z"
+        },
+        {
+          "name": "Verify relocated installer completion and failed fixture retention",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-10-04T09:13:12Z",
+          "completed_at": "2026-10-04T09:13:12Z"
+        },
+        {
+          "name": "Installer rejects unqualified XNav output policies",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-10-04T09:13:12Z",
+          "completed_at": "2026-10-04T09:13:13Z"
+        },
+        {
+          "name": "Staged installer normal and delay import closure fixtures",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-10-04T09:13:13Z",
+          "completed_at": "2026-10-04T09:13:14Z"
+        },
+        {
+          "name": "Verify the exact boat translator parser for host interoperability tests",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-10-04T09:13:14Z",
+          "completed_at": "2026-10-04T09:13:14Z"
+        },
+        {
+          "name": "Prepare reviewed boat producer expiry and actual codec oracle",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14,
+          "started_at": "2026-10-04T09:13:14Z",
+          "completed_at": "2026-10-04T09:13:15Z"
+        },
+        {
+          "name": "Installer filesystem contracts in native Windows PowerShell 5.1",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 15,
+          "started_at": "2026-10-04T09:13:15Z",
+          "completed_at": "2026-10-04T09:13:15Z"
+        },
+        {
+          "name": "Portable maintenance refusal and recovery identity contracts",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-10-04T09:13:15Z",
+          "completed_at": "2026-10-04T09:13:20Z"
+        },
+        {
+          "name": "Configure Linux contracts",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-10-04T09:13:20Z",
+          "completed_at": "2026-10-04T09:13:24Z"
+        },
+        {
+          "name": "Configure contracts for the supported Windows application ABI",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 18,
+          "started_at": "2026-10-04T09:13:24Z",
+          "completed_at": "2026-10-04T09:13:24Z"
+        },
+        {
+          "name": "Run cmake --build opennav-x/build/contracts --config Release",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-10-04T09:13:24Z",
+          "completed_at": "2026-10-04T09:14:38Z"
+        },
+        {
+          "name": "Run ctest --test-dir opennav-x/build/contracts -C Release --output-on-failure",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 20,
+          "started_at": "2026-10-04T09:14:38Z",
+          "completed_at": "2026-10-04T09:14:45Z"
+        },
+        {
+          "name": "Repeat the restart handoff with deliberately delayed result publication",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21,
+          "started_at": "2026-10-04T09:14:45Z",
+          "completed_at": "2026-10-04T09:15:04Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 42,
+          "started_at": "2026-10-04T09:15:04Z",
+          "completed_at": "2026-10-04T09:15:04Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 43,
+          "started_at": "2026-10-04T09:15:04Z",
+          "completed_at": "2026-10-04T09:15:04Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/ThereptileII/Work/check-runs/111404167322",
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "runner_id": 1000003456,
+      "runner_name": "GitHub Actions 1000003456",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 111404167372,
+      "run_id": 37191400051,
+      "workflow_name": "SKAGER Beta 2",
+      "head_branch": "opennav-x-beta2-ui",
+      "run_url": "https://api.github.com/repos/ThereptileII/Work/actions/runs/37191400051",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOM4BDHM8AAAAZ8DSwzA",
+      "head_sha": "ecf7e0c46609cf4cb29141964d7c4bde98b002b7",
+      "url": "https://api.github.com/repos/ThereptileII/Work/actions/jobs/111404167372",
+      "html_url": "https://github.com/ThereptileII/Work/actions/runs/37191400051/job/111404167372",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-04T09:12:23Z",
+      "started_at": "2026-10-04T09:12:25Z",
+      "completed_at": "2026-10-04T09:18:04Z",
+      "name": "contracts (windows-2022)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-04T09:12:25Z",
+          "completed_at": "2026-10-04T09:12:26Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-04T09:12:26Z",
+          "completed_at": "2026-10-04T09:12:36Z"
+        },
+        {
+          "name": "Verify published distribution inputs before compilation",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-04T09:12:36Z",
+          "completed_at": "2026-10-04T09:12:37Z"
+        },
+        {
+          "name": "Verify corresponding-source archive structure and integrity",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-04T09:12:37Z",
+          "completed_at": "2026-10-04T09:12:46Z"
+        },
+        {
+          "name": "Same-job dependency evidence, tamper refusal and cache staging contracts",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-04T09:12:46Z",
+          "completed_at": "2026-10-04T09:13:22Z"
+        },
+        {
+          "name": "Native version probe stream identity and bounded failure contracts",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-04T09:13:22Z",
+          "completed_at": "2026-10-04T09:13:54Z"
+        },
+        {
+          "name": "Native version probe contracts in Windows PowerShell 5.1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-04T09:13:54Z",
+          "completed_at": "2026-10-04T09:14:28Z"
+        },
+        {
+          "name": "Peer boundary monitor rejects tampering and filters listeners by process",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-04T09:14:28Z",
+          "completed_at": "2026-10-04T09:14:29Z"
+        },
+        {
+          "name": "Preserve reviewed notice bytes through Windows Git checkout",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-04T09:14:29Z",
+          "completed_at": "2026-10-04T09:14:32Z"
+        },
+        {
+          "name": "Verify relocated installer completion and failed fixture retention",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-10-04T09:14:32Z",
+          "completed_at": "2026-10-04T09:14:32Z"
+        },
+        {
+          "name": "Installer rejects unqualified XNav output policies",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-10-04T09:14:32Z",
+          "completed_at": "2026-10-04T09:14:33Z"
+        },
+        {
+          "name": "Staged installer normal and delay import closure fixtures",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-10-04T09:14:33Z",
+          "completed_at": "2026-10-04T09:14:34Z"
+        },
+        {
+          "name": "Verify the exact boat translator parser for host interoperability tests",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-10-04T09:14:34Z",
+          "completed_at": "2026-10-04T09:14:35Z"
+        },
+        {
+          "name": "Prepare reviewed boat producer expiry and actual codec oracle",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14,
+          "started_at": "2026-10-04T09:14:35Z",
+          "completed_at": "2026-10-04T09:14:36Z"
+        },
+        {
+          "name": "Installer filesystem contracts in native Windows PowerShell 5.1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-10-04T09:14:36Z",
+          "completed_at": "2026-10-04T09:15:41Z"
+        },
+        {
+          "name": "Portable maintenance refusal and recovery identity contracts",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 16,
+          "started_at": "2026-10-04T09:15:41Z",
+          "completed_at": "2026-10-04T09:15:41Z"
+        },
+        {
+          "name": "Configure Linux contracts",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 17,
+          "started_at": "2026-10-04T09:15:41Z",
+          "completed_at": "2026-10-04T09:15:41Z"
+        },
+        {
+          "name": "Configure contracts for the supported Windows application ABI",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-10-04T09:15:41Z",
+          "completed_at": "2026-10-04T09:16:00Z"
+        },
+        {
+          "name": "Run cmake --build opennav-x/build/contracts --config Release",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-10-04T09:16:00Z",
+          "completed_at": "2026-10-04T09:17:34Z"
+        },
+        {
+          "name": "Run ctest --test-dir opennav-x/build/contracts -C Release --output-on-failure",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 20,
+          "started_at": "2026-10-04T09:17:34Z",
+          "completed_at": "2026-10-04T09:17:41Z"
+        },
+        {
+          "name": "Repeat the restart handoff with deliberately delayed result publication",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21,
+          "started_at": "2026-10-04T09:17:41Z",
+          "completed_at": "2026-10-04T09:18:01Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 42,
+          "started_at": "2026-10-04T09:18:01Z",
+          "completed_at": "2026-10-04T09:18:03Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 43,
+          "started_at": "2026-10-04T09:18:03Z",
+          "completed_at": "2026-10-04T09:18:03Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/ThereptileII/Work/check-runs/111404167372",
+      "labels": [
+        "windows-2022"
+      ],
+      "runner_id": 1000003459,
+      "runner_name": "GitHub Actions 1000003459",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    }
+  ]
+}

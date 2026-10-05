@@ -1,0 +1,81 @@
+{
+  "issue": "SCRUM-280",
+  "prototypeScale": 0.84375,
+  "nightBrightness": 0.78,
+  "rasterizer": "rsvg-convert version 2.62.3\n\nlibraries used:\n  cairo 1.18.4\n  pango 1.58.2\n  harfbuzz 14.4.0\n  fontconfig 2.18.3",
+  "symbols": {
+    "UWTROC03": {
+      "tile": [
+        852,
+        1160,
+        24,
+        24
+      ],
+      "pivot": [
+        12,
+        12
+      ],
+      "effectiveRcid": 2249,
+      "alphaSha256": "eed289d33362016f13383ed1c9bdb484b7c4fe4b1643badbf923f078df50dc0a",
+      "changedPixels": 56
+    },
+    "UWTROC04": {
+      "tile": [
+        884,
+        1160,
+        24,
+        24
+      ],
+      "pivot": [
+        12,
+        12
+      ],
+      "effectiveRcid": 3164,
+      "alphaSha256": "d2c1ad63c199582835453e4ddce89be2d1b400cb99b4760432a11901a171bf0b",
+      "changedPixels": 88
+    },
+    "WRECKS05": {
+      "tile": [
+        916,
+        1160,
+        24,
+        24
+      ],
+      "pivot": [
+        12,
+        12
+      ],
+      "effectiveRcid": 2038,
+      "alphaSha256": "207b813777a9f78693fe1da56a51df8053c5e7289d2438949d25fef4a2b6842c",
+      "changedPixels": 161
+    }
+  },
+  "sources": {
+    "docs/design/prototype/index.html": "8fdc4800e3e575c6e2c2248d2a18a9de199b5176eca4bb3d2b75d53d620a2f42",
+    "docs/design/prototype-tokens.json": "111ee35527a974b2df6c2c4af0afd04e5aebdf14bad3004a98be9064aef790c6",
+    "tools/derive-hazard-art.py": "c5d4c43fa49445a67683355ef57ba2e26a454a7d00a1e172cbcc83533dbdd434",
+    "resources/chart-style/v1/hazards/UWTROC03-alpha.json": "0f91dbf5d56e3a25f89551812a568b5e4d6b829d9d24e16f62ddeeeeb171bef7",
+    "resources/chart-style/v1/hazards/UWTROC03.svg": "53c72c42abce6f67c7bc25254c9911ae3c011ece22cf1df0fe4222e316a8ee54",
+    "resources/chart-style/v1/hazards/UWTROC04-alpha.json": "0db48d0a527ce21a729c1114b3e6f861add6c367e67a115e95a6fa74b41a3e04",
+    "resources/chart-style/v1/hazards/UWTROC04.svg": "890242f9793681a906f900ac77c9f2f1f79d0a6a1dbdda312bad76b60418e79e",
+    "resources/chart-style/v1/hazards/WRECKS05-alpha.json": "ca24b8fdb39c3afaf650834715cbbd35cb4cb2d363dbc0cd85c4003977a3644a",
+    "resources/chart-style/v1/hazards/WRECKS05.svg": "d7756ca2ed5fcc8917068699c675ff3881610e862df52f04bd79fa19f7932e6e"
+  },
+  "hazardRgb": {
+    "DAY_BRIGHT": [
+      104,
+      123,
+      122
+    ],
+    "DUSK": [
+      173,
+      187,
+      177
+    ],
+    "NIGHT": [
+      91,
+      104,
+      94
+    ]
+  }
+}

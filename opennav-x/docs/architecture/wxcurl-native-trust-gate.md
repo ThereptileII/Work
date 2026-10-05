@@ -8,7 +8,7 @@ does not define `OPENNAV_WXCURL_TLS_TEST`, so it exercises the production
 Windows native-CA path.
 
 The wxCurl cases reuse the downloader gate's disposable GitHub Windows runner,
-owned loopback TLS servers, exact CurrentUser Root CA lifecycle, manifest-bound
+owned loopback TLS servers, exact disposable LocalMachine Root CA lifecycle, manifest-bound
 installed runtime DLLs, and verified cleanup. GET and HEAD must accept the
 36-byte payload and HTTPS redirect, while wrong-host, expired, untrusted,
 downgrade, file redirect, and removed-trust cases must reject. Every case also

@@ -1,0 +1,189 @@
+# SKAGER Beta 2 — desktop and boat-PC checks
+
+Use the installer for the real OpenCPN environment. Use the portable recovery ZIP
+for isolated troubleshooting. This checklist records observations; it does not
+certify the product for navigation.
+
+Before starting, record the build/commit from **System → Diagnostics**, the
+installer or ZIP SHA-256, Windows scaling, screen resolution and whether this is
+the installed profile or an isolated recovery profile. Mark each check **Pass**,
+**Fail**, **Unavailable** or **Not tested**. A disabled action or missing sensor
+is not proof that its underlying hardware works.
+
+## Installation and recovery
+
+1. Back up the real OpenCPN profile and close all modes.
+2. Install/update with the supplied Setup. Check the detected OpenCPN and recovery
+   location; stop if compatibility fails.
+3. Read any expected version-change navigation caution before continuing. Open
+   SKAGER, Legacy and Safe Mode in turn. Confirm the same charts, routes,
+   waypoints and settings remain available in installed mode.
+4. Test **System → Open Legacy OpenCPN**, then the Legacy menu's
+   **Switch to SKAGER** entry. Also test **System → Safe Mode** and return to SKAGER.
+   Close/restart normally and wait for each startup to finish. Coastlines/chart content must remain
+   visible. A blank or all-water image is a failure when land should be in view.
+5. Close normally and verify Windows, SSH and RustDesk remain accessible.
+
+During remotely managed boat testing, use the separately prepared guarded
+restart procedure. Do not bypass a refused transition with an unreviewed direct
+launch. An ordinary close followed by another shortcut is recorded separately
+from a successful in-application mode switch.
+
+## Navigation and functional usability checks
+
+Start with the boat PC's existing resolution and Windows scaling; record both.
+Exercise the relevant controls and data at the configuration needed to verify
+functional behavior. A concrete clipping or inaccessible-control defect may need
+a targeted resolution/DPI check. The primary design target is **1280×800**, with
+**1920×1080** also in the design scope, but broad design comparisons and
+100%/125%/150% design-only sweeps require an explicit user request under the later
+[delivery policy](https://github.com/ThereptileII/Work/blob/opennav-x-beta2-ui/opennav-x/docs/delivery-workflow.md). Record unrequested design review as
+**Not requested**. Do not change the boat's display configuration remotely just
+to match a screenshot.
+
+Record the actual application window size and DPI from Diagnostics where
+available. Screen resolution alone does not establish the application's usable
+space or text size. Try the controls with physical touch when aboard; a remote
+mouse pass does not count as a physical touchscreen test.
+
+- Check chart pan, zoom, chart switching and ownship following when GPS is valid.
+- Check the four primary data-rail values stay visible when an alert appears.
+- Check that data, alerts and controls remain readable in the theme relevant to
+  the functional change or reported defect. A full theme/appearance review needs
+  an explicit design-review request.
+- Open/close contextual sheets with their Back/Cancel actions and Escape.
+- Review route/waypoint browsing and selection, AIS selection/details, settings
+  categories, and source-health details. Note any clipped or unreachable control.
+- Check Diagnostics shows Beta 2 and the expected commit from BUILD_INFO.md.
+- No normal product launcher, menu or screen should offer synthetic trip scenarios.
+
+Useful paths are **Menu → Vessel instruments**, **Energy**,
+**Menu → Settings → SENSORS**, and **Menu → Settings → DISPLAY**.
+Display provides **Configure data rail**, **Configure instruments** and
+**Fullscreen / window**. Check that the rail contains at most four chosen values,
+their order survives a normal restart, and expanded instruments remain reachable
+by scrolling. The chart's **North/Course** control changes orientation;
+**Center** requires a usable ownship position.
+
+With actual received AIS, select a chart target, review the compact card and open
+**Details**. Without received AIS, record **Unavailable** and check the no-data
+message. Observe existing SmartNav/anchor alerts only during the read-only boat
+pass; do not create alarms, change the anchor watch or acknowledge a real alarm
+merely to obtain screenshots.
+
+## Optional Online AIS key (prototype-stage builds)
+
+Use **Traffic → Online AIS settings**. Each tester uses their own AISStream key.
+Do not send the key with feedback, and do not show unmasked text in screenshots.
+
+1. Open **Set AISStream key**. Confirm a blank masked field; Cancel should leave
+   the previous stored key unchanged. Reopen it and verify it is still blank.
+2. Enter your key and **Save key**. Confirm **Stored securely**. If Online AIS
+   was Off, it should remain Off until you explicitly choose **Enabled**.
+3. Enable it with an internet connection and an appropriate chart area. Check
+   connection status and received traffic. Details must identify online targets;
+   onboard AIS health remains separate.
+4. Reopen the key field. It must not reveal or prefill your stored key. Escape
+   should return to Online AIS settings without replacing it.
+5. Check that an application restart and a normal update/repair retain the saved
+   key and enabled preference. No key should appear in exported diagnostics.
+6. If you want to delete the key, choose **Remove key**. Cancel first and verify
+   it is preserved. Confirm removal only when intended; Online AIS must stop and
+   the key status become **Not configured**. You can enter it again afterwards.
+
+Do not disconnect the boat PC's remote-access network to test an AIS outage.
+Use provider disable/re-enable or a disposable desktop network test instead.
+No online targets in a quiet area is not proof that the key or connection failed.
+
+## Navigation edits
+
+On an isolated desktop recovery profile, right-click/long-press the chart and
+choose **Waypoint**, enter a name and **Save**. Use **Menu → Routes → Create route
+on chart**, tap three positions, then **Undo** once. **Done** opens naming;
+**Cancel** there retains the draft, while the chart's **Cancel** action discards
+it after confirmation. Save, rename, reverse and remove only explicit test
+objects. Test Go To or route activation/stop only in a disconnected desktop
+profile with all output connections and command-capable plugins disabled and a
+valid, deliberately supplied read-only position source. If that source is absent,
+verify the action is unavailable instead of inventing a successful test.
+
+**On the actual boat PC, do not activate routes or change output settings during
+remote read-only testing.** OpenCPN/plugins may emit navigation messages even
+while SKAGER autopilot control is disabled. Preserve real user objects.
+
+## Real data, instruments and energy
+
+Observe only sources which are actually connected. Record GPS, heading, wind,
+depth, STW, rudder, propulsion, battery and tank availability separately. Compare
+values against existing instruments and inspect age/source in Diagnostics.
+
+Missing values must remain unavailable. Stale values must be marked, and
+calculations depending on stale SOC/GPS/route inputs must disappear. If no route
+is active, arrival SOC should be unavailable. Energy predictions are advisory;
+review capacity/reserve/calibration assumptions before assessing accuracy.
+
+Sensor disconnection tests and any physical configuration changes require a safe,
+deliberate local test plan. Do not unplug shared vessel equipment remotely merely
+to produce an error state.
+
+## Autopilot and other equipment
+
+Keep **Autopilot Control OFF**. Status-only observation is permitted after source
+and connection review. Do not press AUTO, STANDBY, ±1, ±10, TRACK or WIND during
+remote Beta 2 validation. No propulsion, switching or radar-transmit command is
+part of this checklist. Physical command tests require separate explicit approval.
+SmartNav advice must never execute a steering command.
+
+## October boat-feedback checks
+
+Use existing chart information and read-only data first. For saving/editing
+objects or trying navigation/anchor transitions, use deliberately created test
+objects in an appropriate supervised session. Do not issue equipment commands.
+
+1. Open AIS. Scroll the list with a wheel and, when physically aboard, touch.
+   Select a target without accidentally selecting one after a drag.
+2. Set Online AIS radius and Apply. It is measured around the **chart center**,
+   so panning changes the search area. Allow the subscription update to finish.
+   Check the selected radius survives a normal restart. For a missing-traffic
+   report, include the diagnostic counts and whether targets were expected in
+   that same area; do not send the API key or private coordinates.
+3. Select an existing route on the chart. Check its summary opens and closes
+   predictably. Inspect chart objects and expand their details; missing source
+   information must remain explicitly unavailable.
+4. In a supervised object-editing session, create a test waypoint or route,
+   enter a name, save it and reopen it. Try Cancel/Escape while editing a second
+   draft and confirm the saved name is unchanged.
+5. With valid navigation input and an active test route, check remaining
+   distance and cross-track error. With input unavailable, confirm they do not
+   appear fresh or become an invented zero.
+6. For an existing anchor watch, check its distance and ring. In a supervised
+   transition test, starting a route must ask before stopping anchor watch;
+   cancelling must preserve the watch and saved anchor marks must remain.
+7. With a supported pilot status source, check mode/heading become available
+   through the existing connection and visibly age on source loss. Leave
+   physical command output disabled.
+8. Check the reported chart details at the boat's current display settings:
+   ownship, route colors, scale legend, light sectors/towers and anchor mark.
+   Custom icons and Standard presentation should retain their normal behavior.
+   Record only relevant mismatches; a broad design review is not required.
+
+## Maintenance checks
+
+In a disposable Windows environment, exercise update, repair, rollback,
+uninstall and reinstall. Verify original OpenCPN remains launchable and user data
+is unchanged. On the real boat, retain the verified recovery set and do not leave
+an unvalidated installation active. Return to known-good Legacy/Safe if needed.
+
+## Reporting
+
+Use **System → Export diagnostic bundle → Export Diagnostic Bundle** for the
+product's sanitized operational report. Nothing is uploaded automatically.
+Include the exact version/commit, action sequence, expected/actual behavior,
+screen resolution/scaling and relevant screenshots. The separate
+**Export with selected recording...** action includes only the recording you
+choose and confirm; review it before sharing. Never send the complete profile, chart
+files, passwords or unrelated Desktop files.
+
+Screenshots can contain vessel position and licensed chart content; review or
+redact them before uploading. A missing physical sensor should be reported as
+unavailable, not as a successful hardware test.

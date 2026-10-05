@@ -1,0 +1,25 @@
+/tmp/skager-capture-4wx2rul8/s64-yellow-SKAGER
+/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/combined-e1d0136/iho/capture-s64.py:173: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/combined-e1d0136/iho/capture-s64.py:173: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/combined-e1d0136/iho/capture-s64.py:173: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/combined-e1d0136/iho/capture-s64.py:173: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+/tmp/skager-capture-4wx2rul8/s64-yellow-Standard
+/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/combined-e1d0136/iho/capture-s64.py:173: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/combined-e1d0136/iho/capture-s64.py:173: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/combined-e1d0136/iho/capture-s64.py:173: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/combined-e1d0136/iho/capture-s64.py:173: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+Verified private clean application e1d01367692f7b8c866be369417e68c836c5d563 and exact upstream result of nine patches
+Traceback (most recent call last):
+  File "/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/combined-e1d0136/iho/capture-s64.py", line 183, in <module>
+    i.require(ImageChops.difference(day_chart,image.crop(chart_bounds)).getbbox() is None,'Whole chart Day-return differs')
+  File "/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/combined-e1d0136/iho/cache-inputs-readonly.py", line 21, in require
+    raise RuntimeError(message)
+RuntimeError: Whole chart Day-return differs

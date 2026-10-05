@@ -1,0 +1,57 @@
+{
+  "schema": 1,
+  "originalRunId": 37155858878,
+  "originalRunAttempt": 1,
+  "originalCommit": "4ddf1f383e495150551946dd36103cd77cea85eb",
+  "artifactId": 11287093978,
+  "artifactName": "windows-integration-4ddf1f383e495150551946dd36103cd77cea85eb",
+  "artifactBytes": 58474264,
+  "artifactSha256": "a23b33366a3c119f724e47b77360082068791bd3f8204f8b8104b60db64fd8fd",
+  "fixtureZipSha256": "b4ef8b4e2109d6f19c58677eb4f86ca25358620694f9fc7d474c4695a437da01",
+  "expectedClosure": [
+    "ais_provider_test_client",
+    "ais_session_native",
+    "ais_transport_test_client",
+    "ixwebsocket",
+    "opennav_ais",
+    "opennav_ais_codec",
+    "opennav_ais_credentials",
+    "opennav_vessel"
+  ],
+  "members": {
+    "evidence/local/ais-native-runtime/build/fixtures/ais_provider_test_client.vcxproj": {
+      "bytes": 30006,
+      "sha256": "b68fa8de7bb3d79f7bfe876905cc9e2cceb6d41d6c2cfbf8df6c2ca2f885be25"
+    },
+    "evidence/local/ais-native-runtime/build/ais_session_native.vcxproj": {
+      "bytes": 63017,
+      "sha256": "7f9eae02e9f83a151e576c9c5c9220abb3a643bcd98491607bba061464f4a36e"
+    },
+    "evidence/local/ais-native-runtime/build/fixtures/ais_transport_test_client.vcxproj": {
+      "bytes": 27092,
+      "sha256": "417dc3425fbd5f75f4a0ac0b06f8a131e61b5f7af562e1e723a13f55cb3f02bc"
+    },
+    "evidence/local/ais-native-runtime/build/fixtures/ixwebsocket/ixwebsocket.vcxproj": {
+      "bytes": 35580,
+      "sha256": "d86b397efb6f0b1b10f2f87847550b71da187f6eaf532e3c01e74f6e9f997ff0"
+    },
+    "evidence/local/ais-native-runtime/build/fixtures/opennav/opennav_ais.vcxproj": {
+      "bytes": 24334,
+      "sha256": "47fd1ce7918146cbabe096dc9ec1dcba104db05867813b0c22f3d8d3e083ebcd"
+    },
+    "evidence/local/ais-native-runtime/build/fixtures/opennav/opennav_ais_codec.vcxproj": {
+      "bytes": 26051,
+      "sha256": "fd7ba35565eef66dafc6dc41c74b3db8027900514c6e8b551bb90ab040c55b0f"
+    },
+    "evidence/local/ais-native-runtime/build/fixtures/opennav/opennav_ais_credentials.vcxproj": {
+      "bytes": 23535,
+      "sha256": "37d8096e147e217097ba9aecdf2b3526c16fc43f550903f968b4be7c8cc1b4de"
+    },
+    "evidence/local/ais-native-runtime/build/fixtures/opennav/opennav_vessel.vcxproj": {
+      "bytes": 24280,
+      "sha256": "f1163f344bef6e404d32bbbcfe58a465f4c0dda2bd39ae1af18aed3914ceb9f9"
+    }
+  },
+  "unchangedDownstreamSourceGuardSha256": "3f7701b70648ddf1ae3de01fa0e27f6117a5a57e6c54ca159152093ce3ff0def",
+  "originalNativeJobId": 111300070821
+}

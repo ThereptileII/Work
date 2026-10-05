@@ -1,10 +1,10 @@
 # Portable recovery — start here
 
-This ZIP is an isolated recovery/development copy of **OpenNav X Beta 2**.
-Use `OpenNavX-Beta2-Setup.exe` for integration with your normal OpenCPN profile.
+This ZIP is an isolated recovery/development copy of **SKAGER Beta 2**.
+Use `SKAGER-Beta2-Setup.exe` for integration with your normal OpenCPN profile.
 
 1. Extract the entire recovery ZIP into a **new folder**.
-2. Run **Run-XNav.cmd**. The real OpenCPN chart canvas should appear.
+2. Run **Run-SKAGER.cmd**. The real OpenCPN chart canvas should appear.
 3. Check the version under System → Diagnostics.
 4. Use **Run-Legacy.cmd** or **Run-Safe.cmd** for recovery; close the current
    application before starting another mode.

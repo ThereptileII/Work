@@ -1,0 +1,26 @@
+{
+  "status": "passed",
+  "checks": 5,
+  "loader": {
+    "upstream": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+    "commissioning_restart_protocol": 0,
+    "version": "0.4.0-beta2",
+    "commit": "9fcd3db54ee6913cc144ecfc09ec2152078a6eff",
+    "compiler": "GNU 13.3.0 / 8 byte pointers",
+    "plugins_loaded": false,
+    "test_fixtures": true,
+    "resources": {
+      "gshhs/poly-c-1.dat": true,
+      "s57data/s57objectclasses.csv": true,
+      "uidata/styles.xml": true,
+      "s57data/chartsymbols.xml": true
+    },
+    "normal_config_directory": "/etc",
+    "passed": true,
+    "xnav_hardware_output_policy": "test-loopback-only",
+    "build_purpose": "DEVELOPER TEST BUILD",
+    "profile_initialized": false,
+    "contract": "OpenNavX.LoaderSelfTest.1"
+  },
+  "app_sha256": "2e62706185f96d44544a21f995bfb631ca63cb26465bd85e6b6a58a88922369f"
+}

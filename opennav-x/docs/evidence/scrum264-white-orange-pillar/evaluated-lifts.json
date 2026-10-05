@@ -1,0 +1,93 @@
+{
+  "DAY_BRIGHT": {
+    "alphaBounds": [
+      9,
+      7,
+      15,
+      24
+    ],
+    "orange": [
+      235,
+      125,
+      54
+    ],
+    "sourceOrange": [
+      235,
+      125,
+      54
+    ],
+    "contrast": {
+      "DEPDW": 2.150294110256388,
+      "DEPMD": 1.9563112685599173,
+      "DEPMS": 1.6239164025866728,
+      "DEPVS": 1.142437372260887,
+      "DEPIT": 1.5836187498532037
+    }
+  },
+  "DUSK": {
+    "alphaBounds": [
+      9,
+      7,
+      15,
+      24
+    ],
+    "orange": [
+      247,
+      233,
+      225
+    ],
+    "sourceOrange": [
+      75,
+      38,
+      19
+    ],
+    "contrast": {
+      "DEPDW": 7.3475081359842465,
+      "DEPMD": 5.759981158471318,
+      "DEPMS": 4.027704943950767,
+      "DEPVS": 3.012522929183081,
+      "DEPIT": 4.093820213875962
+    },
+    "hlsLightnessStep": 60682,
+    "hlsDenominator": 65535,
+    "precedingRgb": [
+      247,
+      232,
+      225
+    ],
+    "precedingWorstContrast": 2.993301450128543
+  },
+  "NIGHT": {
+    "alphaBounds": [
+      9,
+      7,
+      15,
+      24
+    ],
+    "orange": [
+      208,
+      113,
+      49
+    ],
+    "sourceOrange": [
+      52,
+      28,
+      12
+    ],
+    "contrast": {
+      "DEPDW": 5.257673507672438,
+      "DEPMD": 4.6599037162229875,
+      "DEPMS": 3.811720745596331,
+      "DEPVS": 3.0342356458426587,
+      "DEPIT": 3.714882996641177
+    },
+    "hlsLightnessStep": 32982,
+    "hlsDenominator": 65535,
+    "precedingRgb": [
+      207,
+      112,
+      49
+    ],
+    "precedingWorstContrast": 2.9977142240488193
+  }
+}

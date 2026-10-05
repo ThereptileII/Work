@@ -1,0 +1,43 @@
+{
+  "scope": "Focused native AIS scroll fixture; no installed product or boat acceptance",
+  "run_failure": "https://github.com/ThereptileII/Work/actions/runs/37273267768",
+  "run_pass": "https://github.com/ThereptileII/Work/actions/runs/37273670351",
+  "results": [
+    {
+      "name": "ais-scroll-native-failed",
+      "artifact_id": 11328947930,
+      "artifact_sha256": "91800dc7c9f22b879baa94e01d4f4e65fef0c18a3ca80bd237fbecfa9e6403f2",
+      "commit": "a0f672cd2fce532b8207841046f8f507dcd2613f",
+      "status": "failed",
+      "executable": {
+        "bytes": 306176,
+        "sha256": "a6748af549647dd6ab9572cfd1091758a0f6df67fcfad4258c17b5bb8fdd5139"
+      },
+      "lines": [
+        "OWNER INPUT before explicit outside input wheel=0 pan=0 motion=1",
+        "OWNER INPUT after outside wheel wheel=1 pan=0 motion=1",
+        "OWNER INPUT after outside pan wheel=1 pan=1 motion=1",
+        "OWNER INPUT after outside motion wheel=1 pan=1 motion=2",
+        "FAIL outside chart-owner input is unaffected"
+      ]
+    },
+    {
+      "name": "ais-scroll-native-passed",
+      "artifact_id": 11329326986,
+      "artifact_sha256": "b7411cc11a7fd4b568f1fb8fea8549f08276376880afda13efcac6a5ee3a4be3",
+      "commit": "3ed539137168a21c6b1fa95f958a2eb5d66cc273",
+      "status": "passed",
+      "executable": {
+        "bytes": 304640,
+        "sha256": "6085437b7e1a89e245307053de2da4cf217d4324af0af079c8de820fe0783e8e"
+      },
+      "lines": [
+        "OWNER INPUT before explicit outside input wheel=0 pan=0 motion=0 incidental-motion=1",
+        "OWNER INPUT after outside wheel wheel=1 pan=0 motion=0 incidental-motion=1",
+        "OWNER INPUT after outside pan wheel=1 pan=1 motion=0 incidental-motion=1",
+        "OWNER INPUT after outside motion wheel=1 pan=1 motion=1 incidental-motion=1",
+        "PASS 47 AIS scroll interaction checks"
+      ]
+    }
+  ]
+}

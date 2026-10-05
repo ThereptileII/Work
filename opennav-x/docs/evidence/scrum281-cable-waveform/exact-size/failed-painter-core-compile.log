@@ -1,0 +1,60 @@
+In file included from /home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/tests/chart_cable_wave_test.cpp:8:
+/home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/src/integration/ChartCableWave.h: In member function ‘bool opennav::integration::CableWaveTile::Prepare(double, double, const wxColour&, wxPoint)’:
+/home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/src/integration/ChartCableWave.h:53:34: error: ‘class wxGraphicsPath’ has no member named ‘AddQuadCurveTo’; did you mean ‘AddQuadCurveToPoint’?
+   53 |         for(int i=0;i<4;++i)path.AddQuadCurveTo(6*i+3,i%2?5:-5,6*i+6,0);
+      |                                  ^~~~~~~~~~~~~~
+      |                                  AddQuadCurveToPoint
+In file included from /home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/tests/chart_cable_wave_test.cpp:37:
+/home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/.local/painter/core/cable-methods.inc: At global scope:
+/home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/.local/painter/core/cable-methods.inc:1:6: error: no declaration matches ‘void s52plib::draw_lc_poly(wxDC*, wxColour&, int, wxPoint*, int*, int, float, float, Rule*)’
+    1 | void s52plib::draw_lc_poly(wxDC *pdc, wxColor &color, int width, wxPoint *ptp,
+      |      ^~~~~~~
+  • there is 1 candidate
+    • candidate is: ‘void s52plib::draw_lc_poly(wxDC*, wxColour, int, wxPoint*, int*, int, float, float, Rule*)’
+      /home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/tests/chart_cable_wave_test.cpp:34:7:
+         34 |  void draw_lc_poly(wxDC*,wxColor,int,wxPoint*,int*,int,float,float,Rule*);
+            |       ^~~~~~~~~~~~
+In file included from /home/standard/Projects/X-nav/.local/sysroot/usr/include/wx-3.2/wx/window.h:24,
+                 from /home/standard/Projects/X-nav/.local/sysroot/usr/include/wx-3.2/wx/wx.h:38,
+                 from /home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/tests/chart_cable_wave_test.cpp:2:
+      • parameter 2 of candidate has type ‘wxColour’...
+        /home/standard/Projects/X-nav/.local/sysroot/usr/include/wx-3.2/wx/colour.h:247:17:
+          247 | #define wxColor wxColour
+              |                 ^~~~~~~~
+      • in expansion of macro ‘wxColor’
+           34 |  void draw_lc_poly(wxDC*,wxColor,int,wxPoint*,int*,int,float,float,Rule*);
+              |                          ^~~~~~~
+      • ...which does not match type ‘wxColour&’
+        /home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/.local/painter/core/cable-methods.inc:1:48:
+            1 | void s52plib::draw_lc_poly(wxDC *pdc, wxColor &color, int width, wxPoint *ptp,
+/home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/tests/chart_cable_wave_test.cpp:28:7: note: ‘class s52plib’ defined here
+   28 | class s52plib {
+      |       ^~~~~~~
+/home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/.local/painter/core/cable-methods.inc:322:6: error: no declaration matches ‘void s52plib::stock_lc_poly(wxDC*, wxColour&, int, wxPoint*, int*, int, float, float, Rule*)’
+  322 | void s52plib::stock_lc_poly(wxDC *pdc, wxColor &color, int width, wxPoint *ptp,
+      |      ^~~~~~~
+  • there is 1 candidate
+    • candidate is: ‘void s52plib::stock_lc_poly(wxDC*, wxColour, int, wxPoint*, int*, int, float, float, Rule*)’
+      /home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/tests/chart_cable_wave_test.cpp:35:7:
+         35 |  void stock_lc_poly(wxDC*,wxColor,int,wxPoint*,int*,int,float,float,Rule*);
+            |       ^~~~~~~~~~~~~
+      • parameter 2 of candidate has type ‘wxColour’...
+        /home/standard/Projects/X-nav/.local/sysroot/usr/include/wx-3.2/wx/colour.h:247:17:
+          247 | #define wxColor wxColour
+              |                 ^~~~~~~~
+      • in expansion of macro ‘wxColor’
+           35 |  void stock_lc_poly(wxDC*,wxColor,int,wxPoint*,int*,int,float,float,Rule*);
+              |                           ^~~~~~~
+      • ...which does not match type ‘wxColour&’
+        /home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/.local/painter/core/cable-methods.inc:322:49:
+          322 | void s52plib::stock_lc_poly(wxDC *pdc, wxColor &color, int width, wxPoint *ptp,
+/home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/tests/chart_cable_wave_test.cpp:28:7: note: ‘class s52plib’ defined here
+   28 | class s52plib {
+      |       ^~~~~~~
+/home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/tests/chart_cable_wave_test.cpp: In function ‘int main(int, char**)’:
+/home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/tests/chart_cable_wave_test.cpp:65:3: warning: this ‘if’ clause does not guard... [-Wmisleading-indentation]
+   65 |   if(shape==1)std::reverse(points,points+3);if(shape==2)mask[0]=0;if(shape==3){points[0]={-500,-500};points[1]={-400,-500};count=2;}if(shape==4){points[1]={45,100};count=2;}if(shape==5){points[1]={80,100};count=2;}
+      |   ^~
+/home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/tests/chart_cable_wave_test.cpp:65:45: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘if’
+   65 |   if(shape==1)std::reverse(points,points+3);if(shape==2)mask[0]=0;if(shape==3){points[0]={-500,-500};points[1]={-400,-500};count=2;}if(shape==4){points[1]={45,100};count=2;}if(shape==5){points[1]={80,100};count=2;}
+      |                                             ^~

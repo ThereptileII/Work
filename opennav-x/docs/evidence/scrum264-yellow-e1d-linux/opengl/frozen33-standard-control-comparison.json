@@ -1,0 +1,47 @@
+{
+  "scope": "Single frozen33 Standard-only GL control; no product mutation or rebuild",
+  "frozen33BinarySha256": "f8b97d34fe0e470fcb609b51fc6557063e7129acbccf497de3f14fa735af38eb",
+  "e1BinarySha256": "8f5d3b898636c6f4461c0b1898569462ead32ff0403d7c9ab11f462947d24c08",
+  "chartBounds": [
+    80,
+    68,
+    1094,
+    634
+  ],
+  "perTheme": {
+    "Day": {
+      "frozen33VsE1ChartEqual": true,
+      "changedPixels": 0,
+      "e1Sha256": "010d6eeaf563f184ac526b6e98f6e33690df779d9062e2e50579b6a7302a5f74",
+      "frozen33Sha256": "6545fd5d8cbf19da486849d1a178a8c1d63f11b7907810144d325f269a9ebe07"
+    },
+    "Dusk": {
+      "frozen33VsE1ChartEqual": true,
+      "changedPixels": 0,
+      "e1Sha256": "c81d3f1dbb647bf294378fcabedcc9ea4381645ee1f0e9c4a10d55a374fd5788",
+      "frozen33Sha256": "5b771207aae566883a8a90a83c04bf2d3e66389ecf2b349a93eb986a48ab5fef"
+    },
+    "Night": {
+      "frozen33VsE1ChartEqual": true,
+      "changedPixels": 0,
+      "e1Sha256": "caa420a362b20c7fc2a591a33e01104348835b18122d2adb6797bd2e813550c3",
+      "frozen33Sha256": "79a9d8e30c7d9fe14d16c73799176cecca513e77684bc06821a086bf432ca338"
+    },
+    "Day-return": {
+      "frozen33VsE1ChartEqual": true,
+      "changedPixels": 0,
+      "e1Sha256": "66496a571aa420210b1f0daa9c4e3b41f9bd3bab158d5fa8c202064cb58e0a35",
+      "frozen33Sha256": "bada86883274aeefc2bf64dc5734a8bb31b078f968f5b9846ee2d2f525d2c359"
+    }
+  },
+  "frozen33DayReturn": {
+    "equal": false,
+    "bbox": [
+      526,
+      280,
+      595,
+      299
+    ],
+    "changedPixels": 503
+  }
+}

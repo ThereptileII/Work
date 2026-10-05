@@ -1,0 +1,373 @@
+{
+  "renderer": "opengl",
+  "source": "27e93e40709e2d9d2044cb9f6d58979042ff6234",
+  "priorSource": "5bb7e0584029c72ce21f9230e246dad5771dc321",
+  "records": [
+    {
+      "name": "s64-light-fog-SKAGER-Day",
+      "prior": "/home/standard/Projects/X-nav-worktrees/scrum275-linux-e6ef384/docs/evidence/scrum268-5bb-linux-canvas/iho/output/capture-5bb7e05-s64-light-fog-opengl/s64-light-fog-SKAGER-Day.png",
+      "priorSha256": "12d8edd9c2e5805e879c3d515724663b83bed7ea6eb2788a4b850368625f2e0c",
+      "currentSha256": "dc7661324c4a23a89cd6f4e2ec1740295e55627adfc87d9ae66b52f3fd642d64",
+      "chartBounds": [
+        80,
+        68,
+        1094,
+        634
+      ],
+      "outsideChartChangedPixels": 206,
+      "outsideChartDifferenceBounds": [
+        1067,
+        25,
+        1095,
+        36
+      ],
+      "changedChartPixels": 112,
+      "outsideBuildingTileChangedPixels": 0,
+      "points": [
+        {
+          "sourceRcid": 35,
+          "actualRasterDraw": {
+            "kind": "RenderRasterSymbol",
+            "class": "BUISGL",
+            "object_index": 34,
+            "latitude": -32.3768207,
+            "longitude": 61.0311125,
+            "lookup_table": 76,
+            "lookup_rcid": 31143,
+            "priority": 52,
+            "effective_symbol_table": 76,
+            "symbol": "XNBLDG01",
+            "definition": 82,
+            "pixel_x": 534,
+            "pixel_y": 343,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "exactTileBounds": [
+            610,
+            407,
+            619,
+            416
+          ],
+          "changedPixels": 31,
+          "contextCropBounds": [
+            590,
+            387,
+            638,
+            435
+          ],
+          "comparisonImage": "s64-light-fog-SKAGER-Day-BUISGL35-before-after.png"
+        },
+        {
+          "sourceRcid": 36,
+          "actualRasterDraw": {
+            "kind": "RenderRasterSymbol",
+            "class": "BUISGL",
+            "object_index": 35,
+            "latitude": -32.3772903,
+            "longitude": 61.0310718,
+            "lookup_table": 76,
+            "lookup_rcid": 31143,
+            "priority": 52,
+            "effective_symbol_table": 76,
+            "symbol": "XNBLDG01",
+            "definition": 82,
+            "pixel_x": 531,
+            "pixel_y": 379,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "exactTileBounds": [
+            607,
+            443,
+            616,
+            452
+          ],
+          "changedPixels": 81,
+          "contextCropBounds": [
+            587,
+            423,
+            635,
+            471
+          ],
+          "comparisonImage": "s64-light-fog-SKAGER-Day-BUISGL36-before-after.png"
+        }
+      ]
+    },
+    {
+      "name": "s64-light-fog-SKAGER-Dusk",
+      "prior": "/home/standard/Projects/X-nav-worktrees/scrum275-linux-e6ef384/docs/evidence/scrum268-5bb-linux-canvas/iho/output/capture-5bb7e05-s64-light-fog-opengl/s64-light-fog-SKAGER-Dusk.png",
+      "priorSha256": "a2c1d855960f8355ff8827c90b3cf2f992411c9b8e1686e1f04df70a6fdf7325",
+      "currentSha256": "b732a93bc8c18083ded1509c5b75e62365edf1d29ceabd5cb22f305298ee5b29",
+      "chartBounds": [
+        80,
+        68,
+        1094,
+        634
+      ],
+      "outsideChartChangedPixels": 229,
+      "outsideChartDifferenceBounds": [
+        1067,
+        25,
+        1257,
+        236
+      ],
+      "changedChartPixels": 112,
+      "outsideBuildingTileChangedPixels": 0,
+      "points": [
+        {
+          "sourceRcid": 35,
+          "actualRasterDraw": {
+            "kind": "RenderRasterSymbol",
+            "class": "BUISGL",
+            "object_index": 34,
+            "latitude": -32.3768207,
+            "longitude": 61.0311125,
+            "lookup_table": 76,
+            "lookup_rcid": 31143,
+            "priority": 52,
+            "effective_symbol_table": 76,
+            "symbol": "XNBLDG01",
+            "definition": 82,
+            "pixel_x": 534,
+            "pixel_y": 343,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "exactTileBounds": [
+            610,
+            407,
+            619,
+            416
+          ],
+          "changedPixels": 31,
+          "contextCropBounds": [
+            590,
+            387,
+            638,
+            435
+          ],
+          "comparisonImage": "s64-light-fog-SKAGER-Dusk-BUISGL35-before-after.png"
+        },
+        {
+          "sourceRcid": 36,
+          "actualRasterDraw": {
+            "kind": "RenderRasterSymbol",
+            "class": "BUISGL",
+            "object_index": 35,
+            "latitude": -32.3772903,
+            "longitude": 61.0310718,
+            "lookup_table": 76,
+            "lookup_rcid": 31143,
+            "priority": 52,
+            "effective_symbol_table": 76,
+            "symbol": "XNBLDG01",
+            "definition": 82,
+            "pixel_x": 531,
+            "pixel_y": 379,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "exactTileBounds": [
+            607,
+            443,
+            616,
+            452
+          ],
+          "changedPixels": 81,
+          "contextCropBounds": [
+            587,
+            423,
+            635,
+            471
+          ],
+          "comparisonImage": "s64-light-fog-SKAGER-Dusk-BUISGL36-before-after.png"
+        }
+      ]
+    },
+    {
+      "name": "s64-light-fog-SKAGER-Night",
+      "prior": "/home/standard/Projects/X-nav-worktrees/scrum275-linux-e6ef384/docs/evidence/scrum268-5bb-linux-canvas/iho/output/capture-5bb7e05-s64-light-fog-opengl/s64-light-fog-SKAGER-Night.png",
+      "priorSha256": "a10351b2782f2f2e4ac412b4b3cf479a7f34632d34589c9132ed822ef5a6d34c",
+      "currentSha256": "673e51ed3ec67a5ab436b3086a56f23006c44297222454db4a11da4c5db698d2",
+      "chartBounds": [
+        80,
+        68,
+        1094,
+        634
+      ],
+      "outsideChartChangedPixels": 232,
+      "outsideChartDifferenceBounds": [
+        1067,
+        25,
+        1257,
+        236
+      ],
+      "changedChartPixels": 112,
+      "outsideBuildingTileChangedPixels": 0,
+      "points": [
+        {
+          "sourceRcid": 35,
+          "actualRasterDraw": {
+            "kind": "RenderRasterSymbol",
+            "class": "BUISGL",
+            "object_index": 34,
+            "latitude": -32.3768207,
+            "longitude": 61.0311125,
+            "lookup_table": 76,
+            "lookup_rcid": 31143,
+            "priority": 52,
+            "effective_symbol_table": 76,
+            "symbol": "XNBLDG01",
+            "definition": 82,
+            "pixel_x": 534,
+            "pixel_y": 343,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "exactTileBounds": [
+            610,
+            407,
+            619,
+            416
+          ],
+          "changedPixels": 31,
+          "contextCropBounds": [
+            590,
+            387,
+            638,
+            435
+          ],
+          "comparisonImage": "s64-light-fog-SKAGER-Night-BUISGL35-before-after.png"
+        },
+        {
+          "sourceRcid": 36,
+          "actualRasterDraw": {
+            "kind": "RenderRasterSymbol",
+            "class": "BUISGL",
+            "object_index": 35,
+            "latitude": -32.3772903,
+            "longitude": 61.0310718,
+            "lookup_table": 76,
+            "lookup_rcid": 31143,
+            "priority": 52,
+            "effective_symbol_table": 76,
+            "symbol": "XNBLDG01",
+            "definition": 82,
+            "pixel_x": 531,
+            "pixel_y": 379,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "exactTileBounds": [
+            607,
+            443,
+            616,
+            452
+          ],
+          "changedPixels": 81,
+          "contextCropBounds": [
+            587,
+            423,
+            635,
+            471
+          ],
+          "comparisonImage": "s64-light-fog-SKAGER-Night-BUISGL36-before-after.png"
+        }
+      ]
+    },
+    {
+      "name": "s64-light-fog-SKAGER-Day-return",
+      "prior": "/home/standard/Projects/X-nav-worktrees/scrum275-linux-e6ef384/docs/evidence/scrum268-5bb-linux-canvas/iho/output/capture-5bb7e05-s64-light-fog-opengl/s64-light-fog-SKAGER-Day-return.png",
+      "priorSha256": "fe816942c6e8c6032fe27bc2ea334ec3169e3d30e51db468ccceb1f078489466",
+      "currentSha256": "b4b42c272d888766a3dfed4dc00ed54a4b93bd6866168b04054ed06e2c9cca09",
+      "chartBounds": [
+        80,
+        68,
+        1094,
+        634
+      ],
+      "outsideChartChangedPixels": 231,
+      "outsideChartDifferenceBounds": [
+        1067,
+        25,
+        1257,
+        236
+      ],
+      "changedChartPixels": 112,
+      "outsideBuildingTileChangedPixels": 0,
+      "points": [
+        {
+          "sourceRcid": 35,
+          "actualRasterDraw": {
+            "kind": "RenderRasterSymbol",
+            "class": "BUISGL",
+            "object_index": 34,
+            "latitude": -32.3768207,
+            "longitude": 61.0311125,
+            "lookup_table": 76,
+            "lookup_rcid": 31143,
+            "priority": 52,
+            "effective_symbol_table": 76,
+            "symbol": "XNBLDG01",
+            "definition": 82,
+            "pixel_x": 534,
+            "pixel_y": 343,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "exactTileBounds": [
+            610,
+            407,
+            619,
+            416
+          ],
+          "changedPixels": 31,
+          "contextCropBounds": [
+            590,
+            387,
+            638,
+            435
+          ],
+          "comparisonImage": "s64-light-fog-SKAGER-Day-return-BUISGL35-before-after.png"
+        },
+        {
+          "sourceRcid": 36,
+          "actualRasterDraw": {
+            "kind": "RenderRasterSymbol",
+            "class": "BUISGL",
+            "object_index": 35,
+            "latitude": -32.3772903,
+            "longitude": 61.0310718,
+            "lookup_table": 76,
+            "lookup_rcid": 31143,
+            "priority": 52,
+            "effective_symbol_table": 76,
+            "symbol": "XNBLDG01",
+            "definition": 82,
+            "pixel_x": 531,
+            "pixel_y": 379,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "exactTileBounds": [
+            607,
+            443,
+            616,
+            452
+          ],
+          "changedPixels": 81,
+          "contextCropBounds": [
+            587,
+            423,
+            635,
+            471
+          ],
+          "comparisonImage": "s64-light-fog-SKAGER-Day-return-BUISGL36-before-after.png"
+        }
+      ]
+    }
+  ],
+  "passed": true,
+  "limits": "Before/after change confinement only. Original whole-chart Day-return gate remains unmasked. No CONVIS1 point in source viewport; not private/native/boat acceptance."
+}

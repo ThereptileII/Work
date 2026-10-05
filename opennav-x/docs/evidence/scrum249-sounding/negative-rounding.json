@@ -1,0 +1,55 @@
+{
+  "actualSourceSha256": "2002588edf758ff6876944a21183fd76c0150031becd8c0a2da70ff06d86d90a",
+  "negativeLegacyRounding": true,
+  "actualMethods": [
+    "bool s52plib::RenderSoundingSymbol("
+  ],
+  "atlasSourceSha256": "4a2924e983af608e82f05ec61242db795b14d98fb69489138855ad716b963332",
+  "atlasMethods": [
+    "DepthFont::DepthFont()",
+    "DepthFont::~DepthFont()",
+    "void DepthFont::Build(",
+    "void DepthFont::Delete()",
+    "bool DepthFont::GetGLTextureRect("
+  ],
+  "prototype": {
+    "sizePx": 10,
+    "stack": "\"Segoe UI Variable Display\",\"Segoe UI\",Arial,sans-serif"
+  },
+  "pinnedPainterTailAndStockFontBranchUnchanged": true,
+  "pinnedRenderMPSUnchanged": true,
+  "verifiedLibraryInstallationOnly": true,
+  "extractedSha256": "ce78997c63343ce2d9b6a4be8b40139bfe692d418f93ae4d1d19656c84bea313",
+  "compileCommand": [
+    "g++",
+    "-std=c++17",
+    "-Wall",
+    "-Werror",
+    "-Wno-unused-variable",
+    "-DOPENNAV_X",
+    "-I/home/standard/Projects/X-nav/.local/sysroot/usr/lib/wx/include/gtk3-unicode-3.2",
+    "-I/home/standard/Projects/X-nav/.local/sysroot/usr/include/wx-3.2",
+    "-DWXUSINGDLL",
+    "-D__WXGTK3__",
+    "-D__WXGTK__",
+    "-D_FILE_OFFSET_BITS=64",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum15-sounding-typography/src",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum15-sounding-typography/.local/sounding-negative",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum15-sounding-typography/build/integration-source/libs/s52plib/src",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum15-sounding-typography/build/integration-source/libs/geoprim/src",
+    "/home/standard/Projects/X-nav-worktrees/scrum15-sounding-typography/tests/chart_sounding_render_test.cpp",
+    "/home/standard/Projects/X-nav-worktrees/scrum15-sounding-typography/build/integration-source/libs/geoprim/src/bbox.cpp",
+    "-L/home/standard/Projects/X-nav/.local/sysroot/usr/lib",
+    "-lwx_gtk3u_core-3.2",
+    "-lwx_baseu-3.2",
+    "-o",
+    "/home/standard/Projects/X-nav-worktrees/scrum15-sounding-typography/.local/sounding-negative/chart-sounding-test"
+  ],
+  "exitCode": 1,
+  "output": "Styled raster keeps fractional font, no legacy size conversion\n",
+  "limitations": [
+    "Actual DepthFont raster/upload, GL calls record textures; no driver draw",
+    "Viewport and text-owner containers are fixtures",
+    "Linux font raster; native Windows and boat acceptance remain open"
+  ]
+}

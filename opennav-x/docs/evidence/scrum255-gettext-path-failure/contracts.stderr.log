@@ -1,0 +1,134 @@
+EE....F..EE.FFE.E
+======================================================================
+ERROR: test_drift_after_selection_refused (__main__.GettextPrerequisiteTests.test_drift_after_selection_refused)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\a\Work\Work\opennav-x\tests\windows_gettext_tests.py", line 87, in test_drift_after_selection_refused
+    self.ensure();(self.bin/'msgfmt.exe').write_bytes(b'changed')
+    ^^^^^^^^^^^^^
+  File "D:\a\Work\Work\opennav-x\tests\windows_gettext_tests.py", line 29, in ensure
+    def ensure(self,install=False):return g.ensure(self.receipt,install)
+                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\a\Work\Work\opennav-x\tools\windows_gettext.py", line 152, in ensure
+    raise RuntimeError('Usable Poedit msgfmt and msgmerge absent; installation was not authorized')
+RuntimeError: Usable Poedit msgfmt and msgmerge absent; installation was not authorized
+
+======================================================================
+ERROR: test_known_pair_requires_no_acquisition (__main__.GettextPrerequisiteTests.test_known_pair_requires_no_acquisition)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\a\Work\Work\opennav-x\tests\windows_gettext_tests.py", line 33, in test_known_pair_requires_no_acquisition
+    r=self.ensure();self.assertEqual(r['attempts'],[]);self.assertEqual(run.call_count,2)
+      ^^^^^^^^^^^^^
+  File "D:\a\Work\Work\opennav-x\tests\windows_gettext_tests.py", line 29, in ensure
+    def ensure(self,install=False):return g.ensure(self.receipt,install)
+                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\a\Work\Work\opennav-x\tools\windows_gettext.py", line 152, in ensure
+    raise RuntimeError('Usable Poedit msgfmt and msgmerge absent; installation was not authorized')
+RuntimeError: Usable Poedit msgfmt and msgmerge absent; installation was not authorized
+
+======================================================================
+ERROR: test_receipt_cannot_retarget_to_path_tool (__main__.GettextPrerequisiteTests.test_receipt_cannot_retarget_to_path_tool)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\a\Work\Work\opennav-x\tests\windows_gettext_tests.py", line 91, in test_receipt_cannot_retarget_to_path_tool
+    with patch.object(g,'native',side_effect=self.native):self.ensure()
+                                                          ^^^^^^^^^^^^^
+  File "D:\a\Work\Work\opennav-x\tests\windows_gettext_tests.py", line 29, in ensure
+    def ensure(self,install=False):return g.ensure(self.receipt,install)
+                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\a\Work\Work\opennav-x\tools\windows_gettext.py", line 152, in ensure
+    raise RuntimeError('Usable Poedit msgfmt and msgmerge absent; installation was not authorized')
+RuntimeError: Usable Poedit msgfmt and msgmerge absent; installation was not authorized
+
+======================================================================
+ERROR: test_retry_recovers_only_after_successful_package_exit (__main__.GettextPrerequisiteTests.test_retry_recovers_only_after_successful_package_exit)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\a\Work\Work\opennav-x\tests\windows_gettext_tests.py", line 63, in test_retry_recovers_only_after_successful_package_exit
+    with patch.object(g,'native',side_effect=run):r=self.ensure(True)
+                                                    ^^^^^^^^^^^^^^^^^
+  File "D:\a\Work\Work\opennav-x\tests\windows_gettext_tests.py", line 29, in ensure
+    def ensure(self,install=False):return g.ensure(self.receipt,install)
+                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\a\Work\Work\opennav-x\tools\windows_gettext.py", line 153, in ensure
+    choco = chocolatey();state['packageManager']={'path':str(choco),**identity(choco)}
+            ^^^^^^^^^^^^
+  File "D:\a\Work\Work\opennav-x\tools\windows_gettext.py", line 133, in chocolatey
+    raise RuntimeError('Known Chocolatey executable is unavailable or redirected')
+RuntimeError: Known Chocolatey executable is unavailable or redirected
+
+======================================================================
+ERROR: test_version_timeout_cannot_trigger_install (__main__.GettextPrerequisiteTests.test_version_timeout_cannot_trigger_install)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\a\Work\Work\opennav-x\tests\windows_gettext_tests.py", line 78, in test_version_timeout_cannot_trigger_install
+    with self.assertRaisesRegex(g.PrerequisiteDeadline,'timed out'):self.ensure(True)
+                                                                    ^^^^^^^^^^^^^^^^^
+  File "D:\a\Work\Work\opennav-x\tests\windows_gettext_tests.py", line 29, in ensure
+    def ensure(self,install=False):return g.ensure(self.receipt,install)
+                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\a\Work\Work\opennav-x\tools\windows_gettext.py", line 153, in ensure
+    choco = chocolatey();state['packageManager']={'path':str(choco),**identity(choco)}
+            ^^^^^^^^^^^^
+  File "D:\a\Work\Work\opennav-x\tools\windows_gettext.py", line 133, in chocolatey
+    raise RuntimeError('Known Chocolatey executable is unavailable or redirected')
+RuntimeError: Known Chocolatey executable is unavailable or redirected
+
+======================================================================
+ERROR: test_x86_known_pair_is_supported (__main__.GettextPrerequisiteTests.test_x86_known_pair_is_supported)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\a\Work\Work\opennav-x\tests\windows_gettext_tests.py", line 38, in test_x86_known_pair_is_supported
+    with patch.object(g,'native',side_effect=self.native):self.assertEqual(self.ensure()['directory'],str(folder))
+                                                                           ^^^^^^^^^^^^^
+  File "D:\a\Work\Work\opennav-x\tests\windows_gettext_tests.py", line 29, in ensure
+    def ensure(self,install=False):return g.ensure(self.receipt,install)
+                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\a\Work\Work\opennav-x\tools\windows_gettext.py", line 152, in ensure
+    raise RuntimeError('Usable Poedit msgfmt and msgmerge absent; installation was not authorized')
+RuntimeError: Usable Poedit msgfmt and msgmerge absent; installation was not authorized
+
+======================================================================
+FAIL: test_package_timeout_stops_without_retry (__main__.GettextPrerequisiteTests.test_package_timeout_stops_without_retry)
+----------------------------------------------------------------------
+RuntimeError: Known Chocolatey executable is unavailable or redirected
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\a\Work\Work\opennav-x\tests\windows_gettext_tests.py", line 82, in test_package_timeout_stops_without_retry
+    with self.assertRaisesRegex(RuntimeError,'timed out'):self.ensure(True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: "timed out" does not match "Known Chocolatey executable is unavailable or redirected"
+
+======================================================================
+FAIL: test_success_without_usable_files_is_refused (__main__.GettextPrerequisiteTests.test_success_without_usable_files_is_refused)
+----------------------------------------------------------------------
+RuntimeError: Known Chocolatey executable is unavailable or redirected
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\a\Work\Work\opennav-x\tests\windows_gettext_tests.py", line 73, in test_success_without_usable_files_is_refused
+    with self.assertRaisesRegex(RuntimeError,'three bounded attempts'):self.ensure(True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: "three bounded attempts" does not match "Known Chocolatey executable is unavailable or redirected"
+
+======================================================================
+FAIL: test_three_failed_attempts_never_accepted (__main__.GettextPrerequisiteTests.test_three_failed_attempts_never_accepted)
+----------------------------------------------------------------------
+RuntimeError: Known Chocolatey executable is unavailable or redirected
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\a\Work\Work\opennav-x\tests\windows_gettext_tests.py", line 68, in test_three_failed_attempts_never_accepted
+    with self.assertRaisesRegex(RuntimeError,'three bounded attempts'):self.ensure(True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: "three bounded attempts" does not match "Known Chocolatey executable is unavailable or redirected"
+
+----------------------------------------------------------------------
+Ran 17 tests in 0.286s
+
+FAILED (failures=3, errors=6)

@@ -1,0 +1,154 @@
+{
+  "artifact": {
+    "id": 11264111012,
+    "name": "native-ocharts-loader-guards-4609f31dba3e970802e6ba3fbe3438e129ab9aad",
+    "size_in_bytes": 14674,
+    "url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/11264111012",
+    "archive_download_url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/11264111012/zip",
+    "expired": false,
+    "created_at": "2026-10-03T04:03:13Z",
+    "expires_at": "2027-01-01T04:02:26Z",
+    "updated_at": "2026-10-03T04:03:13Z",
+    "digest": "sha256:8913c4a532fa2c815e95be39b240ef2a59d1f5f9949ebd0e7d988c68b35f7329",
+    "workflow_run": {
+      "id": 37095201787,
+      "repository_id": 864043804,
+      "head_repository_id": 864043804,
+      "head_branch": "skager-ocharts-loader",
+      "head_sha": "4609f31dba3e970802e6ba3fbe3438e129ab9aad"
+    }
+  },
+  "jobs": {
+    "total_count": 1,
+    "jobs": [
+      {
+        "id": 111123599456,
+        "run_id": 37095201787,
+        "workflow_name": "SKAGER native o-charts loader guards",
+        "head_branch": "skager-ocharts-loader",
+        "run_url": "https://api.github.com/repos/ThereptileII/Work/actions/runs/37095201787",
+        "run_attempt": 1,
+        "node_id": "CR_kwDOM4BDHM8AAAAZ33uQYA",
+        "head_sha": "4609f31dba3e970802e6ba3fbe3438e129ab9aad",
+        "url": "https://api.github.com/repos/ThereptileII/Work/actions/jobs/111123599456",
+        "html_url": "https://github.com/ThereptileII/Work/actions/runs/37095201787/job/111123599456",
+        "status": "completed",
+        "conclusion": "success",
+        "created_at": "2026-10-03T04:02:26Z",
+        "started_at": "2026-10-03T04:02:28Z",
+        "completed_at": "2026-10-03T04:03:16Z",
+        "name": "Native Win32 private chart loader boundaries",
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1,
+            "started_at": "2026-10-03T04:02:29Z",
+            "completed_at": "2026-10-03T04:02:29Z"
+          },
+          {
+            "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2,
+            "started_at": "2026-10-03T04:02:29Z",
+            "completed_at": "2026-10-03T04:02:41Z"
+          },
+          {
+            "name": "Exercise unchanged production loader with harmless native DLLs",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3,
+            "started_at": "2026-10-03T04:02:41Z",
+            "completed_at": "2026-10-03T04:03:13Z"
+          },
+          {
+            "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4,
+            "started_at": "2026-10-03T04:03:13Z",
+            "completed_at": "2026-10-03T04:03:13Z"
+          },
+          {
+            "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8,
+            "started_at": "2026-10-03T04:03:13Z",
+            "completed_at": "2026-10-03T04:03:15Z"
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 9,
+            "started_at": "2026-10-03T04:03:15Z",
+            "completed_at": "2026-10-03T04:03:15Z"
+          }
+        ],
+        "check_run_url": "https://api.github.com/repos/ThereptileII/Work/check-runs/111123599456",
+        "labels": [
+          "windows-2022"
+        ],
+        "runner_id": 1000003218,
+        "runner_name": "GitHub Actions 1000003218",
+        "runner_group_id": 0,
+        "runner_group_name": "GitHub Actions"
+      }
+    ]
+  },
+  "publication": {
+    "localSource": "6dafd29db791c773793c2b1155c358cc81452fc2",
+    "baseLocal": "34c8d3aada3851be06e3468bc1036200af158f99",
+    "baseRemote": "d7cc9b438aa62070e54cc961241e5515761c9cfe",
+    "baseTree": "8b0cd6e20328c135b016c836d89e31816fdb94e3",
+    "finalTree": "8cefcfc4f755c932d51f9df5ee4545a43c006fb8",
+    "mappedBlobs": 2786,
+    "changedBlobs": 172,
+    "preservedExtras": [
+      {
+        "path": ".gitignore",
+        "mode": "100644",
+        "sha": "836dcb198dc3a11606e65359e1f7f266aa47fffc"
+      },
+      {
+        "path": "Motor_read_old.ino",
+        "mode": "100644",
+        "sha": "1329cf966f841c2346b965a0b8f89b95b562e874"
+      },
+      {
+        "path": "Nissan_ev_to_NMEA_and_wifi.ino",
+        "mode": "100644",
+        "sha": "28befb15813a1cd4c14b07aa551a98f158b23f5f"
+      },
+      {
+        "path": "README.md",
+        "mode": "100644",
+        "sha": "598c21a9af4a311aadcc27ebe12804aa9f355b59"
+      },
+      {
+        "path": "Switchbank_relay.ino",
+        "mode": "100644",
+        "sha": "6972976ff70c8e99b3e5dac5a459360d5a37d1ed"
+      },
+      {
+        "path": "autopilotcontroller.ino",
+        "mode": "100644",
+        "sha": "4cd19a744e43afad013fe1952c38efc9dd0409ab"
+      },
+      {
+        "path": "throttlecontroller.ino",
+        "mode": "100644",
+        "sha": "4ff5fb25e64266b690c720e3d2773192071fafc8"
+      },
+      {
+        "path": "xboxcontroller.ino",
+        "mode": "100644",
+        "sha": "4a40a332ca23a302eac6b2f7f87b41d67c1a6c64"
+      }
+    ],
+    "mismatches": []
+  }
+}

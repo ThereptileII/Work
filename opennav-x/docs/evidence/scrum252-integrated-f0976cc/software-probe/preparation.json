@@ -1,0 +1,11 @@
+{
+  "source": "tools/smoke-navigation.py",
+  "sourceSha256": "25638f0c58b7fff39b18cbcdfe829d1262878fcb6ff11c903695e826d3bde59e",
+  "collectorSha256": "b738ef93226e98cfebdf289af75c8ee7ae80ea869624fbe14ea30997b65af0f1",
+  "preservedOriginalAssertions": 111,
+  "collectorAssertions": 112,
+  "routeScenarioSha256": "a43b36b4ea05da81491c2d0c7489e2c00c7ac7006422e94b9a02798f3ba0f7da",
+  "preparedOnly": true,
+  "launchRequires": "Explicit parent final source commit and installed executable SHA256; no launch performed",
+  "diagnosticOnly": "One read-only ABI breakpoint probe; timing and scenario outcome are not validation"
+}

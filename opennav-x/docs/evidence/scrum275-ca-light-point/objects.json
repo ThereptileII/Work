@@ -1,0 +1,22 @@
+{
+  "core-s52plib.o": {
+    "sha256": "f0559cb3686876233875c4c60debeaeea83e5a3c753319f688bd4d414cd18377",
+    "bytes": 543080
+  },
+  "core-s57chart.o": {
+    "sha256": "3cc13c260486813eb81e2798ecb8e991d9e90b18f7436121dc7078747c4ce2a9",
+    "bytes": 605960
+  },
+  "private-s52plib.o": {
+    "sha256": "010e81808ed1e8617aa2347c4a7bf0ecec8f3a27d143fbd8c658218a6278a6be",
+    "bytes": 538888
+  },
+  "private-eSENCChart.o": {
+    "sha256": "fd2eb746e99a2e0f4f7508908f89e5864d6fdae7c14088baa6fbb0579c8c91c2",
+    "bytes": 598728
+  },
+  "private-disabled.o": {
+    "sha256": "54d60a82edf546c02870717af7d526b4815d2ec40530cce930cfeb4805cddd1c",
+    "bytes": 493040
+  }
+}

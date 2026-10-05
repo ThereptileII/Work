@@ -1,0 +1,54 @@
+{
+  "schema": 1,
+  "status": "independently-verified-staged-only",
+  "toolCommit": "70537545011ef3fd2ecb288a404ae3dc94d5d019",
+  "nativeRun": 37124439890,
+  "nativeRunAttempt": 1,
+  "operatorFiles": 117,
+  "archiveSha256": "096a6743074e19bf185fcbf33cfbd26bda95d278c5f4f8a5ea806f0acc85a42d",
+  "manifestSha256": "a24b13ef4c912b6e82e6e392d8b3ac8d6bfb1f515a61604c3ab9d3b1785f877d",
+  "completionSha256": "c62cca2afbe73a08bd9ac975afe093385f404b771a06dce0fc8bd431c2377152",
+  "usedExistingQualifiedStager": {
+    "commit": "ffa2de31ae02ca826ec5d3604f57a8c619035bb1",
+    "stageReviewToolsSha256": "b0eebe2fb8539e2ffa599cc0b10e0503b4f5d679bf7b8388b7594d3559e24b29",
+    "commonSha256": "5b62c3bc3ed1324c947355c31279fcbfdb964f5c7339b9fc8a75044d7e92ebb0"
+  },
+  "beforeUtc": "2026-10-03T13:09:30.2646946Z",
+  "afterUtc": "2026-10-03T13:12:35.5279022Z",
+  "verification": {
+    "new117ExactTestedByteMatches": true,
+    "only117ToolsAndCompletionInNewDirectory": true,
+    "old117AndCompletionPreserved": true,
+    "stockExactAndUnchanged": true,
+    "installedProductAndOwnershipUnchanged": true,
+    "profileAndStateUnchanged": true,
+    "coldAndRecoveryRecordHashesUnchanged": true,
+    "remoteAccessHealthyAndUnchanged": true,
+    "noNavigationHelperOrCommissioningProcesses": true,
+    "noRunningProductTasks": true,
+    "noActiveCommissioningMarker": true
+  },
+  "retainedInvocationFailures": [
+    {
+      "boundary": "read-only stdin EOF wrapper",
+      "outcome": "90-second timeout; identical audited query succeeded through compressed in-memory argument; no remote file"
+    },
+    {
+      "boundary": "old helper import before transport creation",
+      "outcome": "missing per-process execution-policy argument refused before writes; corrected invocation used existing Bypass convention; no persistent policy change"
+    }
+  ],
+  "privateEvidenceSha256": {
+    "before-stdout.json": "50726125f86f51030b4352a2aecbaf97f9bd9199831063e54dadf0c0766b373b",
+    "after-stdout.json": "947fee599d38dd3bea7493b0c872fa02a1165b291fbfe9adc73593003b358451",
+    "stage-stdout.json": "7c977437e5f9c00438d291dfed3f6237bb1575fbb3db720a164e9725ae1a5c30",
+    "verify-stdout.json": "cd90a1a06d9fb0b2f4e118a915d5f59f01dfa4db250af59c4030375a43519fea"
+  },
+  "newOperatorsExecuted": false,
+  "applicationLaunched": false,
+  "applicationInstalled": false,
+  "profileMutated": false,
+  "remoteAccessChanged": false,
+  "physicalOutputCommands": false,
+  "applicationAcceptance": false
+}

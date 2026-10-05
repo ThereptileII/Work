@@ -1,0 +1,98 @@
+static wxString *_UDWHAZ03(S57Obj *obj, double depth_value,
+                           ObjRazRules *rzRules, bool *promote_return)
+// Remarks: Obstructions or isolated underwater dangers of depths less than the
+// safety contour which lie within the safe waters defined by the safety contour
+// are to be presented by a specific isolated danger symbol as hazardous objects
+// and put in IMO category DISPLAYBASE (see (3), App.2, 1.3). This task
+// is performed by this conditional symbology procedure.
+{
+  wxString udwhaz03str;
+  int danger = FALSE;
+  int expsou = 0;
+  double safety_contour = S52_getMarinerParam(S52_MAR_SAFETY_CONTOUR);
+  bool b_promote = false;
+
+  if (depth_value == UNKNOWN) {
+    GetIntAttr(obj, "EXPSOU", expsou);
+    if (expsou != 1) danger = TRUE;
+  }
+  if (danger == FALSE && (expsou == 1 || depth_value <= safety_contour)) {
+    // that intersect this point/line/area for OBSTRN04
+    // that intersect this point/area      for WRECKS02
+
+    // get area DEPARE & DRGARE that intersect this point/line/area
+
+    std::list<S57Obj*> *pobj_list = NULL;
+//FIXME plib
+//     if (obj->m_chart_context->chart)
+//       pobj_list = obj->m_chart_context->chart->GetAssociatedObjects(obj);
+//     else
+    {
+      danger = false;
+      //            wxString *ret_str = new wxString(udwhaz03str);
+      //            return ret_str;
+    }
+
+    if (pobj_list) {
+      for (S57Obj* ptest_obj: *pobj_list) {
+        if (GEO_LINE == ptest_obj->Primitive_type) {
+          double drval2 = 0.0;
+          GetDoubleAttr(ptest_obj, "DRVAL2", drval2);
+
+          if (drval2 < safety_contour) {
+            danger = TRUE;
+            break;
+          }
+        } else {
+          double drval1 = 0.0;
+          GetDoubleAttr(ptest_obj, "DRVAL1", drval1);
+
+#if 0
+                    double drval2 = 0.0;
+                    GetDoubleAttr(ptest_obj, "DRVAL2", drval2);
+
+                    if(expsou == 1 || depth_value < drval2 )
+                        b_promote = true;
+#endif
+
+          if (drval1 >= safety_contour && expsou != 1) {
+            danger = TRUE;
+            break;
+          }
+        }
+      }
+
+      delete pobj_list;
+    }
+  }
+
+  if (TRUE == danger) {
+    int watlev = 0;  // Enum 0 invalid
+    GetIntAttr(obj, "WATLEV", watlev);
+
+    if ((1 == watlev) || (2 == watlev)) {
+      // dry
+      //                  udwhaz03str = _T(";OP(--D14050)");
+    } else {
+      udwhaz03str = _T(";SY(ISODGR51)");  //_T(";OP(8OD14010);SY(ISODGR51)");
+      //                  S57_setAtt(geo, "SCAMIN", "INFINITE");
+    }
+
+    //  Move this object to DisplayBase category
+    rzRules->obj->m_DisplayCat = DISPLAYBASE;
+
+    /*
+                GString *watlevstr = S57_getAttVal(geo, "WATLEV");
+                if (NULL != watlevstr && ('1' == *watlevstr->str || '2' ==
+       *watlevstr->str)) udwhaz03str = g_string_new(";OP(--D14050"); else {
+                    udwhaz03str = g_string_new(";OP(8OD14010);SY(ISODGR01)");
+                    S57_setAtt(geo, "SCAMIN", "INFINITE");
+                }
+    */
+  }
+
+  if (promote_return) *promote_return = b_promote;
+
+  wxString *ret_str = new wxString(udwhaz03str);
+  return ret_str;
+}

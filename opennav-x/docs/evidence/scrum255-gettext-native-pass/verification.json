@@ -1,0 +1,298 @@
+{
+  "localSource": "36ab8e7b2e59e94dd35fc0486c5bc400315779e9",
+  "remoteSource": "4330cae78c53707310e94ded4d1b933d0fb519a8",
+  "github": {
+    "jobs": {
+      "jobs": [
+        {
+          "id": 111100530739,
+          "name": "Native Poedit prerequisite and translation proof",
+          "status": "completed",
+          "conclusion": "success",
+          "run_id": 37087435049,
+          "logs_url": null,
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 1
+            },
+            {
+              "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 2
+            },
+            {
+              "name": "Verify bounded acquisition and actual gettext tools",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 3
+            },
+            {
+              "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 4
+            },
+            {
+              "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 8
+            },
+            {
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 9
+            }
+          ]
+        }
+      ]
+    },
+    "artifacts": {
+      "artifacts": [
+        {
+          "id": 11261311795,
+          "name": "native-gettext-4330cae78c53707310e94ded4d1b933d0fb519a8",
+          "size_in_bytes": 10885,
+          "url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/11261311795",
+          "archive_download_url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/11261311795/zip",
+          "expired": false,
+          "created_at": "2026-10-03T01:48:22Z",
+          "expires_at": "2027-01-01T01:47:30Z",
+          "updated_at": "2026-10-03T01:48:22Z",
+          "digest": "sha256:850564d42deeeab8861f933be77444d234328e6585cc40c7ff12909f8cdec131",
+          "workflow_run": {
+            "id": 37087435049,
+            "repository_id": 864043804,
+            "head_repository_id": 864043804,
+            "head_branch": "skager-gettext-prerequisite",
+            "head_sha": "4330cae78c53707310e94ded4d1b933d0fb519a8"
+          }
+        }
+      ]
+    }
+  },
+  "archive": {
+    "bytes": 10885,
+    "sha256": "850564d42deeeab8861f933be77444d234328e6585cc40c7ff12909f8cdec131",
+    "zipEntries": 30,
+    "allCrcPassed": true
+  },
+  "sourceInputs": {
+    "tools/windows_gettext.py": {
+      "identity": {
+        "bytes": 9960,
+        "sha256": "1f86e71f42766f3c0b730ec07dd32abdfd8cdee218aa1c1d8f8b2c786754ef36"
+      },
+      "match": "GitCRLFOnly"
+    },
+    "tools/test-windows-gettext-native.py": {
+      "identity": {
+        "bytes": 3565,
+        "sha256": "46837d2e65ce3fad64169e8841d857a7fa9b28d1f54dea975ab7f2d0aa29da8e"
+      },
+      "match": "GitCRLFOnly"
+    },
+    "tests/windows_gettext_tests.py": {
+      "identity": {
+        "bytes": 12998,
+        "sha256": "b9edabf7ef3d1f6b618f5f69a142861b6136b5436544f9ea34b4aae77d2593b1"
+      },
+      "match": "GitCRLFOnly"
+    },
+    "tools/build-pristine-windows.ps1": {
+      "identity": {
+        "bytes": 19510,
+        "sha256": "97eef260edf96d32a73d3c5e55e58b81001bc2c97d122044d75a92708d1c60f8"
+      },
+      "match": "GitCRLFOnly"
+    }
+  },
+  "nativeContracts": {
+    "passed": 25,
+    "skipped": 0,
+    "shortAliasDiagnostics": [
+      {
+        "nativeTemp": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\tmpsnupgjou",
+        "resolvedTemp": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\tmpsnupgjou",
+        "tempSpellingChanged": true,
+        "tempReparseAttributes": 16
+      },
+      {
+        "shortAlias": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\TMPGCU~1\\PROGRA~1\\Poedit\\GETTEX~1\\bin\\msgfmt.exe",
+        "resolvedAlias": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\tmpgcu97z8d\\Program Files\\Poedit\\Gettexttools\\bin\\msgfmt.exe",
+        "sameFile": true,
+        "aliasReparseAttributes": 32
+      }
+    ],
+    "actualJunctionRefusal": "passed via named test in exact source and all25 result"
+  },
+  "independentlyRehashedNativeStreamPairs": [
+    "contracts.json",
+    "msgfmt.json",
+    "msgmerge.json",
+    "gettext-logs/install-1.json",
+    "gettext-logs/verify/msgfmt.json",
+    "gettext-logs/verify/msgmerge.json",
+    "gettext-logs/after-install-1/0/msgfmt.json",
+    "gettext-logs/after-install-1/0/msgmerge.json"
+  ],
+  "packageAttempts": {
+    "total": 1,
+    "exitCodes": [
+      0
+    ],
+    "firstInstallSuccessful": true
+  },
+  "recordedNativeTools": {
+    "msgfmt.exe": {
+      "path": "C:\\Program Files\\Poedit\\GettextTools\\bin\\msgfmt.exe",
+      "bytes": 102136,
+      "sha256": "b0f3872d0daddf5f30d19bbbb3ee7031758967188206f4a9fde1b839c0823645",
+      "versionLine": "msgfmt.exe (GNU gettext-tools) 0.26"
+    },
+    "msgmerge.exe": {
+      "path": "C:\\Program Files\\Poedit\\GettextTools\\bin\\msgmerge.exe",
+      "bytes": 76528,
+      "sha256": "6cfbccef4068a4eaed76360fc9f9a9d06bdb16f8cc05157941df28327ecd7f65",
+      "versionLine": "msgmerge.exe (GNU gettext-tools) 0.26"
+    }
+  },
+  "functionalCatalogProof": "Independently parsed native-produced sample.mo; exact UTF-8 translation SKAGER \u00f6vers\u00e4ttning",
+  "catalogIdentity": {
+    "bytes": 150,
+    "sha256": "d7b9a541b36eb7939cecebf61ad6e5417ef6ed4f269cd9bd63b53a19104bec51"
+  },
+  "nativeProductAcceptance": false,
+  "limits": [
+    "Prerequisite-only proof, no app or maintained dependency build",
+    "Tool binaries not uploaded; their observed hashes and live native probes are retained, not independently rehashed tool binaries",
+    "No GUI, runtime, installer, native chart, full candidate or boat acceptance"
+  ],
+  "rawFiles": {
+    "contracts.json": {
+      "bytes": 508,
+      "sha256": "d1fc35915a70ffc6056f8792f4967717ed0a8a171cf458e04af4f9344c84ba4a"
+    },
+    "contracts.stderr.log": {
+      "bytes": 129,
+      "sha256": "35f24f28d7d93331b02827d2d07a15e55132c05b3d87d1c33bc2eb502f26f4d1"
+    },
+    "contracts.stdout.log": {
+      "bytes": 505,
+      "sha256": "41d3dae3b658c543608c1c1940a1cf2afa127b84b244ca7ea1891db4ddb584ce"
+    },
+    "gettext.json": {
+      "bytes": 2167,
+      "sha256": "96fa7bc77a7e2afb86db1143c2016807ff558ce6f30ab100b2ef624bf4b45106"
+    },
+    "merged.po": {
+      "bytes": 114,
+      "sha256": "ad23c11f41fd044cbe6c3de51ec92a582ba4e5b666cfc27bebe9ba09847772df"
+    },
+    "msgfmt.json": {
+      "bytes": 638,
+      "sha256": "98ed17b2bbae90c47de8a8d0397b5648bea79b812f98180791ec292a96670af1"
+    },
+    "msgfmt.stderr.log": {
+      "bytes": 947,
+      "sha256": "58fcd31b00f1b6d935028ee4b9b27a5dbd26e2c8f1133e7f86ed4e3af7d5930f"
+    },
+    "msgfmt.stdout.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "msgmerge.json": {
+      "bytes": 728,
+      "sha256": "9b32c5b84cb506961b1482d676ddc5fa78fc23fcd1a9436ab26b95741d4a55e1"
+    },
+    "msgmerge.stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "msgmerge.stdout.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "sample.mo": {
+      "bytes": 150,
+      "sha256": "d7b9a541b36eb7939cecebf61ad6e5417ef6ed4f269cd9bd63b53a19104bec51"
+    },
+    "sample.po": {
+      "bytes": 123,
+      "sha256": "f7828e166eea6566fc6e3f048c9a0608d76ba94b5b5bdea439fd9f257e275daf"
+    },
+    "sample.pot": {
+      "bytes": 102,
+      "sha256": "ed63d172501ceb77d1f3864ce4c64f83986a0a44d7637aa49a2ca607453c3cf2"
+    },
+    "summary.json": {
+      "bytes": 1302,
+      "sha256": "77b52e9d0849557264055eae3a0d47e3d46e1866ee7489f74ca42a89d11179b1"
+    },
+    "gettext-logs/install-1.json": {
+      "bytes": 623,
+      "sha256": "c683369e3855e7a3d64a4d79166cf514cc1e3426fb20f3d988365d5ce741eec0"
+    },
+    "gettext-logs/install-1.stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "gettext-logs/install-1.stdout.log": {
+      "bytes": 1257,
+      "sha256": "28aa9d747a4591a65a66c42c4b9d41601643918595e7f7f978b0587a131fc001"
+    },
+    "gettext-logs/verify/msgfmt.json": {
+      "bytes": 448,
+      "sha256": "ac42f1b6b252e7fc7956b345e78cd748c235ea41601eb6e2a6fd79dd3749dd32"
+    },
+    "gettext-logs/verify/msgfmt.stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "gettext-logs/verify/msgfmt.stdout.log": {
+      "bytes": 324,
+      "sha256": "1ff07d323b071b52af7511b8e9fade3e1552dd1510974d77eacf12af45cbc63b"
+    },
+    "gettext-logs/verify/msgmerge.json": {
+      "bytes": 450,
+      "sha256": "0a55a2b91743d37df3f063947f3944fa10551abd08e06a0bba56e3740875a5d0"
+    },
+    "gettext-logs/verify/msgmerge.stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "gettext-logs/verify/msgmerge.stdout.log": {
+      "bytes": 324,
+      "sha256": "c92f18c21ba59ffa2f05a485c35f51e29337c651215f02b3cfa07441eb9f1746"
+    },
+    "gettext-logs/after-install-1/0/msgfmt.json": {
+      "bytes": 448,
+      "sha256": "047ae85ff3b3a5ff492336868c0b5a20ef3b189b54a342ebbc4a86acf9719628"
+    },
+    "gettext-logs/after-install-1/0/msgfmt.stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "gettext-logs/after-install-1/0/msgfmt.stdout.log": {
+      "bytes": 324,
+      "sha256": "1ff07d323b071b52af7511b8e9fade3e1552dd1510974d77eacf12af45cbc63b"
+    },
+    "gettext-logs/after-install-1/0/msgmerge.json": {
+      "bytes": 450,
+      "sha256": "386b2f0cb43d423558db114eee3c4b43af6e377226e68ff1dd532facd68188ab"
+    },
+    "gettext-logs/after-install-1/0/msgmerge.stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "gettext-logs/after-install-1/0/msgmerge.stdout.log": {
+      "bytes": 324,
+      "sha256": "c92f18c21ba59ffa2f05a485c35f51e29337c651215f02b3cfa07441eb9f1746"
+    }
+  }
+}

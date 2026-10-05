@@ -1,0 +1,358 @@
+{
+  "decoder": {
+    "pyogrio": "0.13.0",
+    "gdal": [
+      3,
+      12,
+      4
+    ]
+  },
+  "limit": 32768,
+  "scope": "Source point/multipoint feature counts, an upper bound before lookup selection, not runtime razRules instrumentation. Official S64 is test geography.",
+  "cells": [
+    {
+      "cell": "US5SEAFL",
+      "files": {
+        "US5SEAFL.000": {
+          "bytes": 841005,
+          "sha256": "7e474bea96e7a84c6f3ee6b44ff7db4288029fa47ac2a285594e18469dbf518c"
+        },
+        "US5SEAFL.001": {
+          "bytes": 8709,
+          "sha256": "504440d201453548aae160c4c5340d55d480bd39cd57061b7fc03262968e062d"
+        }
+      },
+      "pointFeatureCount": 506,
+      "layers": {
+        "BCNLAT": {
+          "geometry": "Point",
+          "features": 3
+        },
+        "BCNSPP": {
+          "geometry": "Point",
+          "features": 15
+        },
+        "BERTHS": {
+          "geometry": "Unknown",
+          "features": 15
+        },
+        "BOYSPP": {
+          "geometry": "Point",
+          "features": 6
+        },
+        "CRANES": {
+          "geometry": "Unknown",
+          "features": 2
+        },
+        "DAYMAR": {
+          "geometry": "Point",
+          "features": 5
+        },
+        "FOGSIG": {
+          "geometry": "Point",
+          "features": 1
+        },
+        "HRBFAC": {
+          "geometry": "Unknown",
+          "features": 10
+        },
+        "LNDARE": {
+          "geometry": "Unknown",
+          "features": 1
+        },
+        "LNDMRK": {
+          "geometry": "Unknown",
+          "features": 15
+        },
+        "LIGHTS": {
+          "geometry": "Point",
+          "features": 19
+        },
+        "MAGVAR": {
+          "geometry": "Unknown",
+          "features": 1
+        },
+        "MORFAC": {
+          "geometry": "Unknown",
+          "features": 93
+        },
+        "OBSTRN": {
+          "geometry": "Unknown",
+          "features": 166
+        },
+        "PILPNT": {
+          "geometry": "Point",
+          "features": 82
+        },
+        "PRDARE": {
+          "geometry": "Unknown",
+          "features": 9
+        },
+        "PYLONS": {
+          "geometry": "Unknown",
+          "features": 4
+        },
+        "RDOSTA": {
+          "geometry": "Point",
+          "features": 1
+        },
+        "SBDARE": {
+          "geometry": "Unknown",
+          "features": 41
+        },
+        "SILTNK": {
+          "geometry": "Unknown",
+          "features": 2
+        },
+        "SOUNDG": {
+          "geometry": "MultiPoint Z",
+          "features": 11
+        },
+        "UWTROC": {
+          "geometry": "Point",
+          "features": 1
+        },
+        "WEDKLP": {
+          "geometry": "Unknown",
+          "features": 1
+        },
+        "WRECKS": {
+          "geometry": "Unknown",
+          "features": 2
+        }
+      }
+    },
+    {
+      "cell": "GB4X0000",
+      "files": {
+        "GB4X0000.000": {
+          "bytes": 945697,
+          "sha256": "c70d9e0f53e149270f85900f8576082db86781d64fbb71aa7d5ceb4af4aa22e3"
+        }
+      },
+      "pointFeatureCount": 757,
+      "layers": {
+        "AIRARE": {
+          "geometry": "Unknown",
+          "features": 1
+        },
+        "ACHARE": {
+          "geometry": "Unknown",
+          "features": 2
+        },
+        "BCNCAR": {
+          "geometry": "Point",
+          "features": 6
+        },
+        "BCNLAT": {
+          "geometry": "Point",
+          "features": 2
+        },
+        "BCNSPP": {
+          "geometry": "Point",
+          "features": 14
+        },
+        "BUISGL": {
+          "geometry": "Unknown",
+          "features": 29
+        },
+        "BOYCAR": {
+          "geometry": "Point",
+          "features": 11
+        },
+        "BOYINB": {
+          "geometry": "Point",
+          "features": 1
+        },
+        "BOYISD": {
+          "geometry": "Point",
+          "features": 1
+        },
+        "BOYLAT": {
+          "geometry": "Point",
+          "features": 22
+        },
+        "BOYSAW": {
+          "geometry": "Point",
+          "features": 8
+        },
+        "BOYSPP": {
+          "geometry": "Point",
+          "features": 23
+        },
+        "CTNARE": {
+          "geometry": "Unknown",
+          "features": 1
+        },
+        "CGUSTA": {
+          "geometry": "Point",
+          "features": 2
+        },
+        "CTRPNT": {
+          "geometry": "Point",
+          "features": 1
+        },
+        "CURENT": {
+          "geometry": "Point",
+          "features": 5
+        },
+        "FOGSIG": {
+          "geometry": "Point",
+          "features": 23
+        },
+        "FORSTC": {
+          "geometry": "Unknown",
+          "features": 2
+        },
+        "GATCON": {
+          "geometry": "Unknown",
+          "features": 1
+        },
+        "HRBFAC": {
+          "geometry": "Unknown",
+          "features": 1
+        },
+        "LNDARE": {
+          "geometry": "Unknown",
+          "features": 10
+        },
+        "LNDELV": {
+          "geometry": "Unknown",
+          "features": 17
+        },
+        "LNDRGN": {
+          "geometry": "Unknown",
+          "features": 3
+        },
+        "LNDMRK": {
+          "geometry": "Unknown",
+          "features": 34
+        },
+        "LIGHTS": {
+          "geometry": "Point",
+          "features": 151
+        },
+        "LITFLT": {
+          "geometry": "Point",
+          "features": 3
+        },
+        "MARCUL": {
+          "geometry": "Unknown",
+          "features": 1
+        },
+        "MORFAC": {
+          "geometry": "Unknown",
+          "features": 3
+        },
+        "OBSTRN": {
+          "geometry": "Unknown",
+          "features": 38
+        },
+        "OFSPLF": {
+          "geometry": "Unknown",
+          "features": 15
+        },
+        "PILPNT": {
+          "geometry": "Point",
+          "features": 9
+        },
+        "PILBOP": {
+          "geometry": "Unknown",
+          "features": 4
+        },
+        "PIPSOL": {
+          "geometry": "Unknown",
+          "features": 1
+        },
+        "PRDARE": {
+          "geometry": "Unknown",
+          "features": 1
+        },
+        "PYLONS": {
+          "geometry": "Unknown",
+          "features": 4
+        },
+        "RADSTA": {
+          "geometry": "Point",
+          "features": 2
+        },
+        "RTPBCN": {
+          "geometry": "Point",
+          "features": 6
+        },
+        "RDOCAL": {
+          "geometry": "Unknown",
+          "features": 6
+        },
+        "RDOSTA": {
+          "geometry": "Point",
+          "features": 9
+        },
+        "RSCSTA": {
+          "geometry": "Point",
+          "features": 1
+        },
+        "SNDWAV": {
+          "geometry": "Unknown",
+          "features": 3
+        },
+        "SBDARE": {
+          "geometry": "Unknown",
+          "features": 113
+        },
+        "SISTAT": {
+          "geometry": "Point",
+          "features": 1
+        },
+        "SISTAW": {
+          "geometry": "Point",
+          "features": 1
+        },
+        "SILTNK": {
+          "geometry": "Unknown",
+          "features": 7
+        },
+        "SOUNDG": {
+          "geometry": "MultiPoint Z",
+          "features": 11
+        },
+        "SPRING": {
+          "geometry": "Point",
+          "features": 1
+        },
+        "TS_PAD": {
+          "geometry": "Unknown",
+          "features": 6
+        },
+        "TOPMAR": {
+          "geometry": "Point",
+          "features": 50
+        },
+        "UWTROC": {
+          "geometry": "Point",
+          "features": 50
+        },
+        "VEGATN": {
+          "geometry": "Unknown",
+          "features": 10
+        },
+        "WATTUR": {
+          "geometry": "Unknown",
+          "features": 6
+        },
+        "WEDKLP": {
+          "geometry": "Unknown",
+          "features": 2
+        },
+        "WRECKS": {
+          "geometry": "Unknown",
+          "features": 20
+        },
+        "TS_FEB": {
+          "geometry": "Unknown",
+          "features": 2
+        }
+      }
+    }
+  ]
+}

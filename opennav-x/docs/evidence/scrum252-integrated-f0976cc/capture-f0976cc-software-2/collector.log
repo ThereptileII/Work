@@ -1,0 +1,12 @@
+/tmp/sr252-eddxh2rq/profile
+WARNING: The convert command is deprecated in IMv7, use "magick" instead of "convert" or "magick convert"
+
+WARNING: The convert command is deprecated in IMv7, use "magick" instead of "convert" or "magick convert"
+
+Traceback (most recent call last):
+  File "/home/standard/Projects/X-nav-worktrees/scrum252-route-labels/.local/route252-capture/smoke-navigation-route252.py", line 1036, in <module>
+    capture_cycle(profile,evidence,prefix,env,args,report,capture,result,app,phase)
+  File "/home/standard/Projects/X-nav-worktrees/scrum252-route-labels/.local/route252-capture/route252_capture.py", line 63, in capture_cycle
+    assert hits>=180,('Eligible actual route label background missing',light,names[i],hits,fill)
+           ^^^^^^^^^
+AssertionError: ('Eligible actual route label background missing', 'Day', 'SIM 3', 0, (247, 248, 240))

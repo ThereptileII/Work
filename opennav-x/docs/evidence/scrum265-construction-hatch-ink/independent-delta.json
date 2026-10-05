@@ -1,0 +1,124 @@
+{
+  "baselineSource": "9632421f701c5ec74d7a1360bc713c0034faf9af",
+  "paletteRole": "XNHAT",
+  "delta": {
+    "rastersymbols-day.png": {
+      "changedPixels": 192,
+      "alphaIdentical": true,
+      "pngBytesIdentical": false,
+      "sha256": "7bac171250d185a3b55addf5e47e9632c4ab6b390333ce484d8c235e10571b15"
+    },
+    "rastersymbols-dusk.png": {
+      "changedPixels": 0,
+      "alphaIdentical": true,
+      "pngBytesIdentical": true,
+      "sha256": "bf7f4f75287cfb3488b5deb625009f4365f8ef347cd33d820d65c3786a46e161"
+    },
+    "rastersymbols-dark.png": {
+      "changedPixels": 0,
+      "alphaIdentical": true,
+      "pngBytesIdentical": true,
+      "sha256": "ac8a61fbe1577de2f717ebbe14e3f5e2f6daa67dfe511813b57fb9f1e2029291"
+    }
+  },
+  "entireXmlInverseMatches963": true,
+  "rleBytesIdentical": true,
+  "allConditionalLookups": [
+    {
+      "id": "181",
+      "RCID": "32216",
+      "name": "SLCONS",
+      "type": "Area",
+      "table": "Plain",
+      "instruction": "CS(SLCONS03)"
+    },
+    {
+      "id": "280",
+      "RCID": "32315",
+      "name": "slcons",
+      "type": "Area",
+      "table": "Plain",
+      "instruction": "CS(SLCONS03)"
+    },
+    {
+      "id": "522",
+      "RCID": "32557",
+      "name": "SLCONS",
+      "type": "Area",
+      "table": "Symbolized",
+      "instruction": "CS(SLCONS03)"
+    },
+    {
+      "id": "627",
+      "RCID": "32662",
+      "name": "slcons",
+      "type": "Area",
+      "table": "Symbolized",
+      "instruction": "CS(SLCONS03)"
+    },
+    {
+      "id": "830",
+      "RCID": "31906",
+      "name": "SLCONS",
+      "type": "Line",
+      "table": "Lines",
+      "instruction": "CS(SLCONS03)"
+    },
+    {
+      "id": "906",
+      "RCID": "31982",
+      "name": "slcons",
+      "type": "Line",
+      "table": "Lines",
+      "instruction": "CS(SLCONS03)"
+    },
+    {
+      "id": "1253",
+      "RCID": "31305",
+      "name": "SLCONS",
+      "type": "Point",
+      "table": "Simplified",
+      "instruction": "SY(MORFAC03);CS(SLCONS03)"
+    },
+    {
+      "id": "1564",
+      "RCID": "31616",
+      "name": "slcons",
+      "type": "Point",
+      "table": "Simplified",
+      "instruction": "SY(PIER0001);CS(SLCONS03)"
+    },
+    {
+      "id": "1565",
+      "RCID": "31617",
+      "name": "slcons",
+      "type": "Point",
+      "table": "Simplified",
+      "instruction": "SY(MORFAC03);CS(SLCONS03)"
+    },
+    {
+      "id": "2371",
+      "RCID": "30528",
+      "name": "SLCONS",
+      "type": "Point",
+      "table": "Paper",
+      "instruction": "SY(MORFAC03);CS(SLCONS03)"
+    },
+    {
+      "id": "2797",
+      "RCID": "30865",
+      "name": "slcons",
+      "type": "Point",
+      "table": "Paper",
+      "instruction": "SY(PIER0001);CS(SLCONS03)"
+    },
+    {
+      "id": "2798",
+      "RCID": "30866",
+      "name": "slcons",
+      "type": "Point",
+      "table": "Paper",
+      "instruction": "SY(MORFAC03);CS(SLCONS03)"
+    }
+  ]
+}

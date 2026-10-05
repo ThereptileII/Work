@@ -1,0 +1,36 @@
+{
+  "source": "33d90c38cd1a628c21d0ca159647012d98649d2e",
+  "origin": "/home/standard/Projects/X-nav-worktrees/skager-product-fidelity/.local/symbol-followup-33d/resources",
+  "privateCopy": "/home/standard/Projects/X-nav-worktrees/audit-combined-symbol-loader/.local/combined-loader/resources",
+  "allManifestFilesVerified": true,
+  "files": {
+    "chartsymbols.xml": {
+      "sha256": "f4a20a46b0e5dbc9216f67386a1b0e6dd7c73e982b7b334b0ae795cd2c5f5334",
+      "bytes": 2245002
+    },
+    "S52RAZDS.RLE": {
+      "sha256": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26",
+      "bytes": 1305627
+    },
+    "rastersymbols-day.png": {
+      "sha256": "852753fa6b8d32b23cfec81d060496c2602e8f1b590c73c7921e2041b4de745f",
+      "bytes": 200449
+    },
+    "rastersymbols-dusk.png": {
+      "sha256": "882b3486bcabd3a075ae567f42e284ff065e83ebfe5033bb6eb68f655d18202e",
+      "bytes": 174807
+    },
+    "rastersymbols-dark.png": {
+      "sha256": "ab539905f9059ec8398b5e466a71bf7268368d66776cd41ea13706b79047a4f5",
+      "bytes": 170162
+    },
+    "manifest.json": {
+      "sha256": "ffa75c9d097a143e58aa13f9300b04bebac0836ab849bd4284401df1866f4b2a",
+      "bytes": 107463
+    },
+    "XNavChartResources.h": {
+      "sha256": "292c10d111d815d7876bca72b60cbbd564d0c4fee7dc99c21986c1572dc46b4d",
+      "bytes": 934
+    }
+  }
+}

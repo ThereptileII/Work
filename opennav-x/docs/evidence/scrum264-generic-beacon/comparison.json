@@ -1,0 +1,89 @@
+{
+  "description": "Resource evidence at shared 48px anchor; contact sheet 2x nearest. Not application or Windows captures.",
+  "themes": [
+    {
+      "table": "DAY_BRIGHT",
+      "referenceAndAtlasCompositeEqual": true,
+      "anchor": [
+        24,
+        24
+      ],
+      "viewSize": [
+        48,
+        48
+      ],
+      "atlasTile": [
+        724,
+        1160,
+        24,
+        28
+      ],
+      "priorTile": [
+        147,
+        415,
+        10,
+        18
+      ]
+    },
+    {
+      "table": "DUSK",
+      "referenceAndAtlasCompositeEqual": true,
+      "anchor": [
+        24,
+        24
+      ],
+      "viewSize": [
+        48,
+        48
+      ],
+      "atlasTile": [
+        724,
+        1160,
+        24,
+        28
+      ],
+      "priorTile": [
+        147,
+        415,
+        10,
+        18
+      ]
+    },
+    {
+      "table": "NIGHT",
+      "referenceAndAtlasCompositeEqual": true,
+      "anchor": [
+        24,
+        24
+      ],
+      "viewSize": [
+        48,
+        48
+      ],
+      "atlasTile": [
+        724,
+        1160,
+        24,
+        28
+      ],
+      "priorTile": [
+        147,
+        415,
+        10,
+        18
+      ]
+    }
+  ],
+  "files": {
+    "DAY_BRIGHT-current.png": "18804f2f643a9825c299c2a178cda7ea0cbec10646fef16e9e74f343ea4db9f0",
+    "DAY_BRIGHT-prior.png": "2b7a633b6f136588d6a2e80a7cee1f7e2d61ec45fba2ca6804764c50df2fe426",
+    "DAY_BRIGHT-reference.png": "18804f2f643a9825c299c2a178cda7ea0cbec10646fef16e9e74f343ea4db9f0",
+    "DUSK-current.png": "5e0b116b47bbf9a6a011a097cf62ec7df982fc684390dd5cdecad56e35557eda",
+    "DUSK-prior.png": "e384b93e7c3c5259b300e0d825b21f7352726d1a7cfa0a4a289b4f73a4f92f2e",
+    "DUSK-reference.png": "5e0b116b47bbf9a6a011a097cf62ec7df982fc684390dd5cdecad56e35557eda",
+    "NIGHT-current.png": "9b7c5af45aed936d8b8133a945a7e861c37b86d6360b9d404ce5c6f53d9da5cc",
+    "NIGHT-prior.png": "5021f53452d05032b558b44d308af4fdd5a47d5adf03150e100555646c16aef4",
+    "NIGHT-reference.png": "9b7c5af45aed936d8b8133a945a7e861c37b86d6360b9d404ce5c6f53d9da5cc",
+    "comparison.png": "d262d7cfe01925a38f63394a99a1b400d44d610b10330516b7f8fb71ea2ac158"
+  }
+}

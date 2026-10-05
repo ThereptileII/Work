@@ -1,0 +1,18 @@
+{
+  "commit": "60929a55663616f84b94c1928d2c6e9234b198be",
+  "run": 37031067799,
+  "artifact": 11238170367,
+  "bytes": 14047240,
+  "sha256": "69625643992f95eb4fd9fa6ca923c96b0bde2b27946f5e8ab58d097a7f4d7f6c",
+  "entries": 774,
+  "result": "expected regression reproduced before pointer input",
+  "settings_checks": 218,
+  "unchanged_product_source_inputs": 235,
+  "settings_executable_sha256": "106e80d0785154a71dc79e868d469d01c9e345178c0edc47c642f4eb883de702",
+  "files": {
+    "before-activation.png": "f54c0f14b35a6d1c932a6d18025d7da7f3b6edc95368f550bd15be8e3a99ec6c",
+    "after-activation.png": "a15818825877872e78129d9702740ab7ee399b82353c2a9f17719651109c6006",
+    "evidence.jsonl": "002090476c45e884f1ec6c4440d13b9396db0bb80f1bbd9b491841d7ceb2fbfd"
+  },
+  "scope": "Offline native component only; no product or boat acceptance"
+}

@@ -21,6 +21,9 @@ import zipfile
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "tools"))
 from diagnostic_snapshot import read_json_snapshot
+from recovery_capture_inputs import (verify_package, stage_disposable_package, verify_disposable_package,
+                                     stage_iho, runtime_identity,
+                                     presentation, iho_pixels, day_return, IHO_SCENES, IHO_SHA256, sha)
 
 
 def public_enc():
@@ -63,6 +66,15 @@ def main():
         spec.loader.exec_module(ui)
     parser.add_argument("--build", type=Path, default=ROOT / ("build/production-windows" if windows else "build/production-linux"))
     parser.add_argument("--app", type=Path, default=ROOT / ("build/production-install/opencpn.exe" if windows else "build/production-install/bin/opencpn"))
+    parser.add_argument("--recovery-package", type=Path, help="Audited extracted portable recovery root; no build metadata needed")
+    parser.add_argument("--recovery-archive", type=Path, help="Original independently audited portable recovery ZIP")
+    parser.add_argument("--expected-recovery-archive-sha256")
+    parser.add_argument("--expected-file-manifest-sha256")
+    parser.add_argument("--expected-application-commit", help="Application SHA, distinct from this collector's source SHA")
+    parser.add_argument("--expected-executable-sha256")
+    parser.add_argument("--iho-s64", type=Path, help="Exact retained GB4X0000.000; official test geography")
+    parser.add_argument("--iho-scene", choices=IHO_SCENES, default="yellow",
+                        help="Named official test view; optional lateral/cardinals/light-fog/sector-rwg/unknown-rock require image review, yellow retains exact pixels")
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--chart-style", choices=["XNav", "Standard"], default="XNav")
     parser.add_argument("--renderer", choices=["software", "opengl"], default="software")
@@ -78,10 +90,43 @@ def main():
     parser.add_argument("--review-window-guard", action="store_true",
                         help="Windows CI: qualify guarded boat capture against actual native owned windows")
     args = parser.parse_args()
+    if args.iho_s64 and (args.public_enc or not args.navigation_only):
+        parser.error("IHO mode requires --navigation-only and cannot combine with --public-enc")
+    if not args.iho_s64 and any(a.split("=", 1)[0] == "--iho-scene" for a in sys.argv[1:]):
+        parser.error("--iho-scene requires --iho-s64")
+    recovery = None
+    if args.recovery_package:
+        if not windows or not args.navigation_only:
+            parser.error("Recovery package review requires disposable Windows and --navigation-only")
+        if any(arg.split("=", 1)[0] in ("--app", "--build") for arg in sys.argv[1:]):
+            parser.error("Recovery mode selects its verified app/profile version; --app/--build are incompatible")
+        if not args.recovery_archive:
+            parser.error("Recovery mode requires its independently audited ZIP")
+        recovery = verify_package(args.recovery_package, args.expected_application_commit,
+                                  args.expected_executable_sha256, args.expected_file_manifest_sha256,
+                                  args.recovery_archive, args.expected_recovery_archive_sha256)
+    elif any((args.recovery_archive, args.expected_file_manifest_sha256, args.expected_recovery_archive_sha256)):
+        parser.error("Package audit inputs require --recovery-package")
+    if args.expected_executable_sha256 and not recovery:
+        assert sha(args.app) == args.expected_executable_sha256, "Expected application executable differs"
     args.output.mkdir(parents=True, exist_ok=False)
     profile = args.output.resolve() / "profile"
-    subprocess.run([sys.executable, str(ROOT / "tools/prepare-test-profile.py"),
-                    "--build", str(args.build), "--profile", str(profile)], check=True)
+    disposable = None
+    if recovery:
+        # The production portable guard requires the executable's OWN sibling
+        # profile/logs. Keep the audited original untouched and run byte-identical
+        # app/resources in a new disposable package with a disconnected profile.
+        disposable = stage_disposable_package(args.recovery_package, args.output.resolve(), recovery)
+        args.app = Path(disposable["executable"])
+        profile = Path(disposable["profile"])
+        diagnostics_path = Path(disposable["logs"]) / "opennav-diagnostics.json"
+    else:
+        subprocess.run([sys.executable, str(ROOT / "tools/prepare-test-profile.py"),
+                        "--build", str(args.build), "--profile", str(profile)], check=True)
+        diagnostics_path = profile / "opennav-diagnostics.json"
+    if args.iho_s64:
+        charts = args.output.resolve() / "iho-fixture"
+        chart_provenance = stage_iho(args.iho_s64, charts, args.iho_scene)
     with (profile / "opencpn.conf").open("a") as stream:
         stream.write(f"\n[Settings]\nOpenGL={int(args.renderer == 'opengl')}\n"
                      f"[OpenNav]\nChartPresentationV1={args.chart_style}\n")
@@ -89,6 +134,10 @@ def main():
             charts, chart_provenance = public_enc()
             stream.write(f"\n[ChartDirectories]\nChartDir1={charts.as_posix()}\n"
                          "[Settings/GlobalState]\nVPLatLon=47.6000,-122.3600\nVPScale=0.15\n")
+        elif args.iho_s64:
+            stream.write("\n[Settings]\nChartQuilting=1\n[ChartDirectories]\nChartDir1=" + charts.as_posix() +
+                         "\n[Settings/GlobalState]\nVPLatLon=" + ','.join(map(str, chart_provenance['center'])) +
+                         "\nVPScale=" + str(chart_provenance['requested_scale_ppm']) + "\nnSymbolStyle=76\n")
         else:
             stream.write("[Settings/GlobalState]\nVPLatLon=59.0800,18.5000\nVPScale=0.001\n")
         if args.depth_unit:
@@ -106,10 +155,15 @@ def main():
     record = {"authority": "Native Windows development" if windows else "Linux development only", "size": [1280, 800],
               "selected_view": args.view,
               "renderer": args.renderer, "chart_style": args.chart_style,
-              "chart": chart_provenance if args.public_enc else "OpenCPN coastline reference",
+              "chart": chart_provenance if (args.public_enc or args.iho_s64) else "OpenCPN coastline reference",
               "input": "none; isolated disposable profile",
               "source_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
               "executable_sha256": hashlib.sha256(args.app.read_bytes()).hexdigest(), "captures": []}
+    record["expected_application_commit"] = args.expected_application_commit
+    record["recovery_package_audit"] = recovery
+    record["disposable_package"] = disposable
+    record["diagnostics_path"] = str(diagnostics_path)
+    record["isolation_scope"] = "Fresh disconnected profile; no copied connections/plugins or device commands. Disposable CI desktop required; not an OS network/device sandbox."
     xserver = None if windows else subprocess.Popen(["Xvfb", env["DISPLAY"], "-screen", "0", "1280x800x24", "-nolisten", "tcp"],
                                env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     if windows:
@@ -122,7 +176,7 @@ def main():
         return subprocess.check_output(["xdotool", *map(str, command)], env=env, text=True).strip()
 
     def data():
-        return read_json_snapshot(profile / "opennav-diagnostics.json")
+        return read_json_snapshot(diagnostics_path)
 
     def click(label, expected_light=None, in_drawer=False):
         before = data()
@@ -242,6 +296,8 @@ def main():
         else:
             subprocess.run(["import", "-window", "root", str(path)], env=env, check=True)
         snapshot = data()
+        if args.expected_application_commit:
+            runtime_identity(snapshot, args.expected_application_commit, recovery is not None)
         # Actual native controls, compared with independently rendered HTML.
         reference = json.loads((ROOT / "docs/design/prototype/reference" /
                                 ("windows" if windows else "linux") / "capture.json").read_text())
@@ -408,11 +464,9 @@ def main():
                         return projection >= .5 and all(min(a,b)-3 <= c <= max(a,b)+3 for a,b,c in zip(surface,ink,color))
                     assert sum(ink_coverage(c) for c in sample) >= 5, f"Floating {label} glyph/text absent (visible flag alone is insufficient)"
             record.setdefault("painted_controls", []).append(name)
-        style = snapshot["runtime"]["chart_presentation"]
-        assert style["requested"] == args.chart_style, "Requested chart style was not retained"
-        assert style["status"].startswith(args.chart_style + " "), "Requested chart style was not active"
+        presentation(snapshot, args.chart_style, bool(args.iho_s64), args.iho_scene)
         assert snapshot["runtime"]["chart"]["opengl_enabled"] == (args.renderer == "opengl"), "Requested renderer was not active"
-        if args.navigation_only and not args.public_enc and args.chart_style == "XNav":
+        if args.navigation_only and not (args.public_enc or args.iho_s64) and args.chart_style == "XNav":
             from collections import Counter
             from PIL import Image
             theme = snapshot["runtime"]["display"]["light"].lower()
@@ -438,6 +492,12 @@ def main():
             detail = sum(v for _, v in colors.most_common()[3:]) / sum(colors.values())
             assert len(colors) > 20 and detail > .005, "ENC details are absent"
             record.setdefault("chart_checks", []).append({"file": path.name, "colors": len(colors), "detail_fraction": detail})
+        if args.iho_s64 and args.iho_scene == "yellow":
+            record.setdefault("iho_pair_checks", {})[name] = iho_pixels(
+                path, snapshot, client_origin, args.chart_style, args.renderer, ROOT)
+        if args.navigation_only and name == "navigation-return-day":
+            record["whole_chart_day_return"] = day_return(
+                path, args.output / "navigation-day.png", snapshot, client_origin)
         record["executable_build_commit"] = snapshot["build_commit"]
         (args.output / f"{name}.json").write_text(json.dumps(snapshot, indent=2) + "\n")
         # Settings are a required new service flow, not a fabricated HTML state.
@@ -447,7 +507,7 @@ def main():
     try:
         time.sleep(.6)
         app = subprocess.Popen([str(args.app), "--configdir", str(profile), "--xnav"] +
-                               (["--rebuild_chart_db"] if args.public_enc else []) +
+                               (["--rebuild_chart_db"] if (args.public_enc or args.iho_s64) else []) +
                                (["--no_opengl"] if args.renderer == "software" else []),
                                env=env, stdout=log, stderr=log)
         deadline = time.monotonic() + 75
@@ -460,10 +520,12 @@ def main():
             time.sleep(.2)
         else:
             raise RuntimeError("Application did not finish initialization")
+        if args.expected_application_commit:
+            runtime_identity(data(), args.expected_application_commit, recovery is not None)
         resize_ticks = int(data()["runtime"]["ui_update"]["ticks"])
         resize_started = time.time_ns()
         if windows:
-            window, pid = ui.wait_window("OpenNav X / OpenCPN", app.pid)
+            window, pid = ui.wait_window("SKAGER / OpenCPN", app.pid)
             assert ui.GetDpiForWindow(window) == 96, "Primary reference requires 96 DPI"
             rect, client = ui.W.RECT(), ui.W.RECT()
             assert ui.GetWindowRect(window, ui.C.byref(rect))
@@ -476,7 +538,7 @@ def main():
             assert (client.right, client.bottom) == (1280, 800)
             record["captureScope"] = "1280x800 native client crop; full outer capture retained; boat fullscreen pending"
         else:
-            matches = xdo("search", "--all", "--onlyvisible", "--pid", app.pid, "--name", "^OpenNav X / OpenCPN$").splitlines()
+            matches = xdo("search", "--all", "--onlyvisible", "--pid", app.pid, "--name", "^SKAGER / OpenCPN$").splitlines()
             record["matched_windows"] = [{"id": item, "name": xdo("getwindowname", item), "geometry": xdo("getwindowgeometry", item)} for item in matches]
             assert len(matches) == 1, "The capture must resize the main frame, not an owned floating surface"
             window = matches[0]
@@ -488,7 +550,7 @@ def main():
         settle = time.monotonic()
         while time.monotonic() - settle < 10:
             observed = data()
-            if ((profile / "opennav-diagnostics.json").stat().st_mtime_ns > resize_started
+            if (diagnostics_path.stat().st_mtime_ns > resize_started
                     and int(observed["runtime"]["ui_update"]["ticks"]) >= resize_ticks + 3
                     and observed["runtime"]["chart"]["canvas_pixels"] == {"width":1014,"height":566}):
                 break
@@ -726,7 +788,7 @@ def main():
             try:
                 if windows:
                     if not window:
-                        window, _ = ui.wait_window("OpenNav X / OpenCPN", app.pid, timeout=5)
+                        window, _ = ui.wait_window("SKAGER / OpenCPN", app.pid, timeout=5)
                     ui.close(window)  # normal WM_CLOSE; same path as the window close button
                 else:
                     subprocess.run([str(args.app), "--configdir", str(profile), "--remote", "--quit"],
@@ -739,6 +801,36 @@ def main():
                 shutdown_error = type(error).__name__
         if app:
             record["exit_code"] = app.returncode
+        if disposable:
+            try:
+                record["disposable_immutable_payload_unchanged"] = verify_disposable_package(disposable) == disposable
+                # Retain these two bounded disconnected-session diagnostics,
+                # never the copied package/profile/chart database as evidence.
+                for source, name in ((profile / "opencpn.log", "native-opencpn.log"),
+                                     (diagnostics_path, "last-diagnostics.json")):
+                    if source.is_file():
+                        if source.stat().st_size > 16 * 1024 * 1024:
+                            raise ValueError("Disposable diagnostic exceeds evidence limit")
+                        (args.output / name).write_bytes(source.read_bytes())
+            except (OSError, ValueError) as error:
+                record["disposable_immutable_payload_unchanged"] = False
+                record["disposable_payload_change"] = str(error)
+                shutdown_error = "Disposable immutable payload changed during capture"
+        if recovery:
+            try:
+                record["recovery_package_unchanged"] = verify_package(
+                    args.recovery_package, args.expected_application_commit, args.expected_executable_sha256,
+                    args.expected_file_manifest_sha256, args.recovery_archive,
+                    args.expected_recovery_archive_sha256) == recovery
+            except (OSError, ValueError, zipfile.BadZipFile) as error:
+                record["recovery_package_unchanged"] = False
+                record["recovery_package_change"] = str(error)
+                shutdown_error = "Audited package changed during capture"
+        if args.iho_s64:
+            record["iho_source_unchanged"] = sha(args.iho_s64) == IHO_SHA256
+            record["iho_staged_unchanged"] = sha(charts / "GB4X0000.000") == IHO_SHA256
+            if not record["iho_source_unchanged"] or not record["iho_staged_unchanged"]:
+                shutdown_error = "Official test cell changed during capture"
         log.close()
         if xserver:
             xserver.terminate()

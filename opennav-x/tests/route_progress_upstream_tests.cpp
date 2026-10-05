@@ -5,6 +5,7 @@
 #include "model/route_point.h"
 #include "model/routeman.h"
 #include "model/own_ship.h"
+#include "model/navutil_base.h"
 #include <gtest/gtest.h>
 #include <wx/app.h>
 #include <wx/init.h>
@@ -20,6 +21,19 @@ class WayPointmanGui {
   static void InitializeModelFixture(WayPointman& model) {
     model.m_pLegacyIconArray = new SortedArrayOfMarkIcon([](MarkIcon*, MarkIcon*){return 0;});
     model.m_pExtendedIconArray = new SortedArrayOfMarkIcon([](MarkIcon*, MarkIcon*){return 0;});
+  }
+};
+// This model-only executable does not link RoutemanGui. Use its existing
+// friend boundary to seed getter values, not to recreate native XTE geometry.
+// The native RouteProgressScenario checks real completed progress separately.
+class RoutemanGui {
+ public:
+  static void CompletedProgress(Routeman &model, double xte, int direction) {
+    model.CurrentRngToActivePoint = 2.;
+    model.CurrentBrgToActivePoint = 45.;
+    model.CurrentXTEToActivePoint = xte;
+    model.XTEDir = direction;
+    model.m_bDataValid = true;
   }
 };
 
@@ -160,5 +174,32 @@ TEST_F(OpenNavRouteGeometry, CopyRefusesWorkerThread) {
   bool rejected=false;
   std::thread worker([&]{try {CopyActiveRoute(manager.get());}catch(const std::logic_error&){rejected=true;}});
   worker.join();EXPECT_TRUE(rejected);
+}
+TEST_F(OpenNavRouteGeometry, CrossTrackReaderCopiesNativeGettersOnlyWhenProgressValid) {
+  const auto fixture = Read(1);
+  for (int direction : {-1, 1}) {
+    RoutemanGui::CompletedProgress(*manager, .037, direction);
+    auto copied = ReadRouteProgress(fixture.position);
+    EXPECT_EQ(copied.cross_track_error_nm, manager->GetCurrentXTEToActivePoint());
+    EXPECT_EQ(copied.cross_track_direction, manager->GetXTEDir());
+    EXPECT_EQ(copied.distance_units_per_nm, toUsrDistance(1.));
+    EXPECT_EQ(copied.distance_unit, getUsrDistanceUnit().ToStdString(wxConvUTF8));
+    // Keep this model-only check focused on copying. Its selected position
+    // needs the explicitly synthetic accepted fix from the existing fixture.
+    copied.upstream_position_valid = fixture.upstream_position_valid;
+    copied.upstream_latitude_deg = fixture.upstream_latitude_deg;
+    copied.upstream_longitude_deg = fixture.upstream_longitude_deg;
+    RouteProgressInput input("xte getters");
+    input.Complete(copied, copied, Time{100s});
+    EXPECT_EQ(input.Current()->cross_track_error_nm, .037);
+    EXPECT_EQ(input.Current()->cross_track_direction, direction < 0
+                  ? CrossTrackDirection::Left : CrossTrackDirection::Right);
+  }
+  manager->m_bDataValid = false;
+  auto unavailable = ReadRouteProgress(fixture.position);
+  EXPECT_FALSE(unavailable.cross_track_error_nm);
+  EXPECT_FALSE(unavailable.cross_track_direction);
+  manager->DeactivateRoute();
+  EXPECT_FALSE(ReadRouteProgress(fixture.position).cross_track_error_nm);
 }
 }  // namespace

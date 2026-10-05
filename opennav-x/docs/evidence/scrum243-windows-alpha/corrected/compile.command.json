@@ -1,0 +1,13 @@
+[
+  "cmake",
+  "--build",
+  "D:\\a\\Work\\Work\\opennav-x\\evidence\\local\\chart-name-painter\\build",
+  "--config",
+  "Release",
+  "--target",
+  "chart_name_text_test",
+  "--parallel",
+  "1",
+  "--",
+  "/verbosity:normal"
+]

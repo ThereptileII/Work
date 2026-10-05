@@ -1,0 +1,69 @@
+{
+  "productionSource": "/home/standard/Projects/X-nav-worktrees/skager-product-fidelity/build/integration-source/libs/s52plib/src/chartsymbols.cpp",
+  "productionSourceSha256": "81249b229533e602e7d9a6bb04982c3b160be7e5d3e200444970bf4f2e481752",
+  "unchangedMethods": [
+    "ChartSymbols",
+    "~ChartSymbols",
+    "InitializeTables",
+    "DeleteGlobals",
+    "ProcessColorTables",
+    "ProcessSymbols",
+    "BuildSymbol",
+    "LoadRasterFileForColorTable",
+    "FindColorTable",
+    "HashKey",
+    "GetImage",
+    "GetGLTextureRect"
+  ],
+  "excerptsSha256": "5953e35bb13b98e030bc9479358affa256a4cb8466204d8738f2744f500f34cc",
+  "fixtureContainers": "Only S52 owner containers are substituted; real pinned ProcessSymbols, BuildSymbol, PNG loader, GetImage, GetGLTextureRect execute.",
+  "privateLoaderSourceProof": {
+    "source": "/home/standard/Projects/X-nav-worktrees/scrum259-adapter-preparation/.local/pinned-source/libs/s52plib/src/chartsymbols.cpp",
+    "gitBlob": "30ae2477b4b8ba748a8cd6f046079e8607b8151f",
+    "sha256": "a88dd1739236032b23548a70e45bf9b8c649118678b36743ee5e754b47e6c208",
+    "byteIdenticalExecutedMethods": {
+      "ProcessSymbols": "afab3a5b9ff1435e42fddc2cf3f35aab76aa7b288ede6023a8f2a2db0e1d5cf4",
+      "BuildSymbol": "81ca854f5c3775390ad0297fa87ea29973141dde92c569f53bed1bc10b48fc29",
+      "GetImage": "c1356cfc1caf5641e5b4e5782b0bea362f4a877ee3ac7290072eab0a1f4f4a48",
+      "GetGLTextureRect": "638c5bf010c8e4a6ce39f84e80e2b2b36b7e3746464a331a4df027eb78ed0927"
+    },
+    "scope": "Actual owned-resource validation executes; shared method bodies match. Private DLL renderer and GL atlas upload remain unexecuted."
+  },
+  "compileCommand": [
+    "g++",
+    "-std=c++17",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-Wno-unused-parameter",
+    "-Wno-deprecated-copy",
+    "-DocpnUSE_GL",
+    "-I/home/standard/Projects/X-nav/.local/sysroot/usr/lib/wx/include/gtk3-unicode-3.2",
+    "-I/home/standard/Projects/X-nav/.local/sysroot/usr/include/wx-3.2",
+    "-DWXUSINGDLL",
+    "-D__WXGTK3__",
+    "-D__WXGTK__",
+    "-D_FILE_OFFSET_BITS=64",
+    "-I/home/standard/Projects/X-nav-worktrees/skager-product-fidelity/build/integration-source/libs/s52plib/src",
+    "-I/home/standard/Projects/X-nav-worktrees/skager-product-fidelity/build/integration-source/libs/geoprim/src",
+    "-I/home/standard/Projects/X-nav-worktrees/skager-product-fidelity/build/integration-source/libs/pugixml",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum280-hazard-glyphs/src",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum280-hazard-glyphs/.local/loader",
+    "/home/standard/Projects/X-nav-worktrees/scrum280-hazard-glyphs/tests/chart_hazard_loader_test.cpp",
+    "/home/standard/Projects/X-nav-worktrees/skager-product-fidelity/build/integration-source/libs/pugixml/pugixml.cpp",
+    "-L/home/standard/Projects/X-nav/.local/sysroot/usr/lib",
+    "-lwx_gtk3u_core-3.2",
+    "-lwx_baseu-3.2",
+    "-lGL",
+    "-lGLEW",
+    "-o",
+    "/home/standard/Projects/X-nav-worktrees/scrum280-hazard-glyphs/.local/loader/anchor-loader-test"
+  ],
+  "exitCode": 0,
+  "output": "case 1 UWTROC: ;SY(UWTROC04)<US><US>\ncase 2 UWTROC: ;SY(UWTROC04)<US><US>\ncase 3 UWTROC: ;SY(LNDARE01)<US><US>\ncase 4 UWTROC: ;SY(UWTROC03)<US><US>\ncase 5 UWTROC: ;SY(UWTROC04)<US><US>\ncase 6 UWTROC: ;SY(UWTROC04)<US><US>\ncase 7 UWTROC: ;SY(UWTROC04)<US><US>\ncase 8 UWTROC: ;SY(DANGER51);SY(SOUNDS13);SY(SOUNDS52)<US><US><US>\ncase 9 UWTROC: ;SY(UWTROC04)<US><US>\ncase 10 UWTROC: ;SY(UWTROC04)<US><US>\ncase 11 UWTROC: ;SY(DANGER52);SY(SOUNDG22);SY(SOUNDG11)<US><US><US>\ncase 12 WRECKS: ;SY(WRECKS04)<US><US>\ncase 13 WRECKS: ;SY(WRECKS05)<US><US>\ncase 14 WRECKS: ;SY(WRECKS01)<US><US>\ncase 15 WRECKS: ;SY(WRECKS01)<US><US>\ncase 16 WRECKS: <US><US>\ncase 17 WRECKS: <US><US>\ncase 18 UWTROC: ;SY(ISODGR51)<US><US>\ncase 19 WRECKS: ;SY(ISODGR51)<US><US>\ncase 20 UWTROC: ;SY(UWTROC03);SY(QUAPOS01)<US><US>\ncase 21 UWTROC: ;SY(UWTROC03);SY(QUAPOS02)<US><US>\ncase 22 UWTROC: ;SY(UWTROC03);SY(QUAPOS03)<US><US>\ncase 23 UWTROC: ;SY(UWTROC03);SY(QUAPOS03)<US><US>\ncase 24 UWTROC: ;SY(UWTROC03);SY(LOWACC03)<US><US>\ncase 25 WRECKS: ;SY(DANGER51);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(WRECKS07);SY(SOUNDS13);SY(SOUNDS52)<US><US><US>\ncase 26 OBSTRN: ;SY(OBSTRN01)<US><US>\n26 actual conditional cases retained this source's missing/depth/quality and isolated-danger behavior\ncase 1 UWTROC: ;SY(UWTROC04)<US><US>\ncase 2 UWTROC: ;SY(UWTROC04)<US><US>\ncase 3 UWTROC: ;SY(LNDARE01)<US><US>\ncase 4 UWTROC: ;SY(UWTROC03)<US><US>\ncase 5 UWTROC: ;SY(UWTROC04)<US><US>\ncase 6 UWTROC: ;SY(UWTROC04)<US><US>\ncase 7 UWTROC: ;SY(UWTROC04)<US><US>\ncase 8 UWTROC: ;SY(DANGER51);SY(SOUNDS13);SY(SOUNDS52)<US><US><US>\ncase 9 UWTROC: ;SY(UWTROC04)<US><US>\ncase 10 UWTROC: ;SY(UWTROC04)<US><US>\ncase 11 UWTROC: ;SY(DANGER52);SY(SOUNDG22);SY(SOUNDG11)<US><US><US>\ncase 12 WRECKS: ;SY(WRECKS04)<US><US>\ncase 13 WRECKS: ;SY(WRECKS05)<US><US>\ncase 14 WRECKS: ;SY(WRECKS01)<US><US>\ncase 15 WRECKS: ;SY(WRECKS01)<US><US>\ncase 16 WRECKS: <US><US>\ncase 17 WRECKS: <US><US>\ncase 18 UWTROC: ;SY(ISODGR51)<US><US>\ncase 19 WRECKS: ;SY(ISODGR51)<US><US>\ncase 20 UWTROC: ;SY(UWTROC03);SY(QUAPOS01)<US><US>\ncase 21 UWTROC: ;SY(UWTROC03);SY(QUAPOS02)<US><US>\ncase 22 UWTROC: ;SY(UWTROC03);SY(QUAPOS03)<US><US>\ncase 23 UWTROC: ;SY(UWTROC03);SY(QUAPOS03)<US><US>\ncase 24 UWTROC: ;SY(UWTROC03);SY(LOWACC03)<US><US>\ncase 25 WRECKS: ;SY(DANGER51);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(WRECKS07);SY(SOUNDS13);SY(SOUNDS52)<US><US><US>\ncase 26 OBSTRN: ;SY(OBSTRN01)<US><US>\n26 actual conditional cases retained this source's missing/depth/quality and isolated-danger behavior\n26 old/new resource-context conditional outputs and display categories identical for this source\n200 actual pinned loader checks passed; GL context and native Windows acceptance remain open\n",
+  "limitations": [
+    "No GL context or texture draw",
+    "No full chart canvas",
+    "Native Windows and boat display acceptance remain open"
+  ]
+}

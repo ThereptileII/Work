@@ -1,0 +1,1534 @@
+{
+  "schema": 1,
+  "commit": "e1d01367692f7b8c866be369417e68c836c5d563",
+  "binary_sha256": "8f5d3b898636c6f4461c0b1898569462ead32ff0403d7c9ab11f462947d24c08",
+  "build_flags": {
+    "OCPN_BUILD_TEST": "ON",
+    "OPENNAV_ENABLE_ROUTE_SCENARIO": "ON",
+    "XNAV_ENABLE_PILOT_LOOPBACK_TESTS": "ON",
+    "XNAV_ENABLE_TEST_FIXTURES": "ON"
+  },
+  "manifest_sha256": "ffa75c9d097a143e58aa13f9300b04bebac0836ab849bd4284401df1866f4b2a",
+  "resource_files": {
+    "chartsymbols.xml": {
+      "sha256": "f4a20a46b0e5dbc9216f67386a1b0e6dd7c73e982b7b334b0ae795cd2c5f5334",
+      "bytes": 2245002
+    },
+    "S52RAZDS.RLE": {
+      "sha256": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26",
+      "bytes": 1305627
+    },
+    "rastersymbols-day.png": {
+      "sha256": "852753fa6b8d32b23cfec81d060496c2602e8f1b590c73c7921e2041b4de745f",
+      "bytes": 200449
+    },
+    "rastersymbols-dusk.png": {
+      "sha256": "882b3486bcabd3a075ae567f42e284ff065e83ebfe5033bb6eb68f655d18202e",
+      "bytes": 174807
+    },
+    "rastersymbols-dark.png": {
+      "sha256": "ab539905f9059ec8398b5e466a71bf7268368d66776cd41ea13706b79047a4f5",
+      "bytes": 170162
+    }
+  },
+  "source_evidence": {
+    "src/integration/ChartNameTypography.h": "23688fca7f9ed456e7458fe1228e0bf9908660a953732cb6e6749c5838e1f4d9",
+    "src/integration/ChartTextFace.h": "4c1b0c41e29ecdac9af7a6fd7446863714539777c1904fa598679ba3ec49b3ab",
+    "src/integration/ChartCogPredictor.h": "3e7841bb311bb9d4951be082a669f4737ee978dd426df4899a22bc9971033c90",
+    "src/integration/ChartPresentation.cpp": "32339b83be2c3b9ff81fb31bfbf8313628a7f1596092921a98693ae0a140a358",
+    "patches/opencpn-5.12.4-xnav.patch": "dfbacadf42502d1d0366745b3a187d256e620b0d2ea7dba9e8912c46e999e0b3",
+    "patches/opencpn-5.12.4-chart-presentation.patch": "ea148ab5d432ac57771e623ca6f2523fb0392f803466ee08a86261d17c80ee1a",
+    "resources/chart-style/v1/definition.json": "bd15a26d1767b91cbfaac6fc93c364246fe95e3441149fb9fed6d2675b64d4e4",
+    "docs/design/prototype-tokens.json": "111ee35527a974b2df6c2c4af0afd04e5aebdf14bad3004a98be9064aef790c6",
+    "src/application/SkagerBrandAsset.h": "cc9f469181717b4fb80986b9406d2d6d078bfdb5971d2e68f6b4072b8dcd2019",
+    "resources/branding/provenance.json": "f639aa4ffa1194fb527388b15b2f9880746829d4120e30b4ddca32b0326557a6",
+    "tools/chart_cable_paint.py": "462e92d27cfbf553454c286bc074e166699922fcab0b6874f40c9d7984186822",
+    "tools/chart_day_neutral_ink.py": "0f136c0e9764c7750ab581ef3c9b0c35c976563ceb88d8598eeee5a0e7761840",
+    "src/ui/SkagerWordmark.h": "c2fc3d1afdf88bfd2e884d541e7b3ad4463702cece09057e38f4d496deda9928",
+    "src/integration/OpenCPNIntegration.cpp": "aac47c98d529eff76f24058ee1c5a02b90bacee9dc63e05d4800ed6c63ec349b",
+    "tools/chart_anchor_art.py": "af9d7ad15bb78a7eaa8f8ff39256c74e56724b95d782cc2638d0a16ebbbc1904",
+    "tools/chart_cardinal_art.py": "e8b4f52df0d558ec715613c9f737776db0f10f844c3f2769a3f35fd8f670158e",
+    "tools/chart_construction_hatch.py": "a1dc22dd3a1d08ed195bcceb55f10ff29578a58f16ef1f5f517192830be459b4",
+    "tools/chart_generic_beacon_art.py": "bfdb78bb9ff10c7bb05f2ea086d5f4280028c9c4875f5a93108b4189cae48415",
+    "tools/chart_raster_ink.py": "ffffd4365cdf534b77110cd26ca068fc86a55286e66b8baa5c18811389bfb294",
+    "tools/chart_seamark_art.py": "fcafdb7de6926378ff74ec1ebee2656c84f2f91f1d93d4856e3ede0832341f91",
+    "tools/chart_service_art.py": "86002da05b15a6f59098d424e794adb383b1c9ba270a90834056d7f8b86a8cc8",
+    "tools/chart_special_buoy_art.py": "488a76b80b55f3a443fe2c965e5c7725e7cf39fba1158cd156eef358ca8fbc19",
+    "tools/chart_structure_paint.py": "aebe01e1ed890e425a5f1b18e4fc876b00ebb11d78da6382c7c3540128f03ec0",
+    "tools/chart_yellow_buoy_art.py": "a3d5adab538c74c4ba1ef82bfc62fc82f9e973ae13286bb1dab0db89ea8d91d3"
+  },
+  "authority": "Linux Xvfb opengl development visuals only; not native Windows, production or boat acceptance",
+  "runtime_identity": "Still required from loader self-test and actual capture diagnostics",
+  "renderer_requested": "opengl",
+  "scope": "Official IHO S-64 presentation-test geometry, not operational nautical ENC; one actual yellow buoy and fitted-X TOPMAR source pair; controlled simulated loopback RMC; no Demo or injected chart objects",
+  "scene_source": {
+    "fixtureSha256": "c70d9e0f53e149270f85900f8576082db86781d64fbb71aa7d5ceb4af4aa22e3",
+    "featureAuditSha256": "567c4dea09a1d05a11919174e10268b7e75ea9e5ac85c281a10097bd0360e15b",
+    "scenes": [
+      {
+        "id": "s64-yellow",
+        "cell": "GB4X0000",
+        "kind": "IHO-S64-official-test-data-not-real-world",
+        "center": [
+          -32.3471615,
+          61.169588
+        ],
+        "scalePpm": 0.6,
+        "themes": [
+          "Day",
+          "Dusk",
+          "Night",
+          "Day"
+        ],
+        "features": [
+          {
+            "class": "BOYSPP",
+            "attributes": {
+              "RCID": 254,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 19,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29141051,
+              "FIDS": 1,
+              "LNAM": "021C01BCA83B0001",
+              "LNAM_REFS": [
+                "021C01BCA83C0001",
+                "021C01BCA83D0001",
+                "021C01BCA83E0001"
+              ],
+              "FFPT_RIND": [
+                2,
+                2,
+                2
+              ],
+              "BOYSHP": 3,
+              "CATSPM": [
+                "27"
+              ],
+              "COLOUR": [
+                "6"
+              ],
+              "ogrFid": 253,
+              "longitude": 61.169588,
+              "latitude": -32.3471615
+            },
+            "related": [],
+            "expectedRaster": "XNSPPY01"
+          },
+          {
+            "class": "TOPMAR",
+            "attributes": {
+              "RCID": 257,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 144,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29141054,
+              "FIDS": 1,
+              "LNAM": "021C01BCA83E0001",
+              "COLOUR": [
+                "6"
+              ],
+              "TOPSHP": 7,
+              "ogrFid": 256,
+              "longitude": 61.169588,
+              "latitude": -32.3471615
+            },
+            "related": [],
+            "expectedRaster": "XNSPPT01"
+          }
+        ]
+      }
+    ]
+  },
+  "chart_source_files": {
+    "GB4X0000.000": "c70d9e0f53e149270f85900f8576082db86781d64fbb71aa7d5ceb4af4aa22e3"
+  },
+  "captures": [
+    {
+      "name": "s64-yellow-SKAGER-Day",
+      "image_sha256": "5049ee0b9e7d45a777af7b3277e4fe4178475742dc63cc5e60f6798f61d1c5cd",
+      "scene": "s64-yellow",
+      "chart": {
+        "canvas_pixels": {
+          "height": 566,
+          "width": 1014
+        },
+        "latitude": -32.3471615,
+        "database_entries": 1,
+        "follow": false,
+        "quilt_members": [
+          {
+            "type": 5,
+            "native_scale": 52000,
+            "file": "GB4X0000.000",
+            "index": 0
+          }
+        ],
+        "opengl_enabled": true,
+        "quilt_reference": 0,
+        "scale_bar": {
+          "height": 29,
+          "y": 505,
+          "width": 25,
+          "x": 191
+        },
+        "depth_unit_type": 1,
+        "quilt": true,
+        "scale_ppm": 0.5826126536,
+        "longitude": 61.169588,
+        "depth_units_visible": true
+      },
+      "presentation": {
+        "status": "SKAGER presentation v1 / pinned symbols; o-charts: no SKAGER adapter loaded",
+        "private_ocharts": {
+          "available": false
+        },
+        "requested": "XNav",
+        "core": {
+          "available": true,
+          "saved_point_style": 76,
+          "effective_point_style": 76
+        }
+      },
+      "source_feature_crops": [
+        {
+          "class": "BOYSPP",
+          "source_rcid": 254,
+          "bounds": [
+            551,
+            315,
+            623,
+            387
+          ],
+          "draw": {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYSPP",
+            "object_index": 253,
+            "latitude": -32.3471615,
+            "longitude": 61.169588,
+            "symbol": "XNSPPY01",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 507,
+            "pixel_y": 283,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "sha256": "abb4cd86a691b139741131c66d56d42850eea1d217dfccbc921d484dffcc091f"
+        },
+        {
+          "class": "TOPMAR",
+          "source_rcid": 257,
+          "bounds": [
+            551,
+            315,
+            623,
+            387
+          ],
+          "draw": {
+            "kind": "RenderRasterSymbol",
+            "class": "TOPMAR",
+            "object_index": 256,
+            "latitude": -32.3471615,
+            "longitude": 61.169588,
+            "symbol": "XNSPPT01",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 507,
+            "pixel_y": 283,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "sha256": "abb4cd86a691b139741131c66d56d42850eea1d217dfccbc921d484dffcc091f"
+        }
+      ],
+      "trace": {
+        "read_only_trace_complete": true,
+        "debugger_timing_note": "Entry probes disabled before settled snapshots; no inferior calls or model writes. TOPMAR raster call occurs only after current exact platform-uniqueness guard succeeds.",
+        "draws": [
+          {
+            "kind": "RenderSY",
+            "class": "BOYSPP",
+            "object_index": 253,
+            "latitude": -32.3471615,
+            "longitude": 61.169588,
+            "symbol": "BOYSPP11",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          }
+        ],
+        "raster_draws": [
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "TOPMAR",
+            "object_index": 256,
+            "latitude": -32.3471615,
+            "longitude": 61.169588,
+            "symbol": "XNSPPT01",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 507,
+            "pixel_y": 283,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYSPP",
+            "object_index": 253,
+            "latitude": -32.3471615,
+            "longitude": 61.169588,
+            "symbol": "XNSPPY01",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 507,
+            "pixel_y": 283,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          }
+        ]
+      },
+      "water_pixels": 530778,
+      "owned_values": {
+        "Latitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Latitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "81306968",
+          "validity": "Measured",
+          "value": 47.6,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 121,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Longitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Longitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "81306968",
+          "validity": "Measured",
+          "value": -122.36,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 121,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Speed over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Speed over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "81306968",
+          "validity": "Measured",
+          "value": 3,
+          "aging_after_ms": 2000,
+          "unit": "kn",
+          "age_ms": 121,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Course over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Course over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "81306968",
+          "validity": "Measured",
+          "value": 90,
+          "aging_after_ms": 2000,
+          "unit": "deg true",
+          "age_ms": 121,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        }
+      }
+    },
+    {
+      "name": "s64-yellow-SKAGER-Dusk",
+      "image_sha256": "8c77830a8a81297b029bf94054f8c90f7275e6197c8b2f32656df781dab36404",
+      "scene": "s64-yellow",
+      "chart": {
+        "canvas_pixels": {
+          "height": 566,
+          "width": 1014
+        },
+        "latitude": -32.3471615,
+        "database_entries": 1,
+        "follow": false,
+        "quilt_members": [
+          {
+            "type": 5,
+            "native_scale": 52000,
+            "file": "GB4X0000.000",
+            "index": 0
+          }
+        ],
+        "opengl_enabled": true,
+        "quilt_reference": 0,
+        "scale_bar": {
+          "height": 29,
+          "y": 505,
+          "width": 25,
+          "x": 191
+        },
+        "depth_unit_type": 1,
+        "quilt": true,
+        "scale_ppm": 0.5826126536,
+        "longitude": 61.169588,
+        "depth_units_visible": true
+      },
+      "presentation": {
+        "status": "SKAGER presentation v1 / pinned symbols; o-charts: no SKAGER adapter loaded",
+        "private_ocharts": {
+          "available": false
+        },
+        "requested": "XNav",
+        "core": {
+          "available": true,
+          "saved_point_style": 76,
+          "effective_point_style": 76
+        }
+      },
+      "source_feature_crops": [
+        {
+          "class": "BOYSPP",
+          "source_rcid": 254,
+          "bounds": [
+            551,
+            315,
+            623,
+            387
+          ],
+          "draw": {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYSPP",
+            "object_index": 253,
+            "latitude": -32.3471615,
+            "longitude": 61.169588,
+            "symbol": "XNSPPY01",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 507,
+            "pixel_y": 283,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "sha256": "feb70d429d9426e1ef049d0c891d3cd9182c6e15c29906650d756115a590bd3c"
+        },
+        {
+          "class": "TOPMAR",
+          "source_rcid": 257,
+          "bounds": [
+            551,
+            315,
+            623,
+            387
+          ],
+          "draw": {
+            "kind": "RenderRasterSymbol",
+            "class": "TOPMAR",
+            "object_index": 256,
+            "latitude": -32.3471615,
+            "longitude": 61.169588,
+            "symbol": "XNSPPT01",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 507,
+            "pixel_y": 283,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "sha256": "feb70d429d9426e1ef049d0c891d3cd9182c6e15c29906650d756115a590bd3c"
+        }
+      ],
+      "trace": {
+        "read_only_trace_complete": true,
+        "debugger_timing_note": "Entry probes disabled before settled snapshots; no inferior calls or model writes. TOPMAR raster call occurs only after current exact platform-uniqueness guard succeeds.",
+        "draws": [
+          {
+            "kind": "RenderSY",
+            "class": "BOYSPP",
+            "object_index": 253,
+            "latitude": -32.3471615,
+            "longitude": 61.169588,
+            "symbol": "BOYSPP11",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          }
+        ],
+        "raster_draws": [
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "TOPMAR",
+            "object_index": 256,
+            "latitude": -32.3471615,
+            "longitude": 61.169588,
+            "symbol": "XNSPPT01",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 507,
+            "pixel_y": 283,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYSPP",
+            "object_index": 253,
+            "latitude": -32.3471615,
+            "longitude": 61.169588,
+            "symbol": "XNSPPY01",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 507,
+            "pixel_y": 283,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          }
+        ]
+      },
+      "water_pixels": 531001,
+      "owned_values": {
+        "Latitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Latitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "81309370",
+          "validity": "Measured",
+          "value": 47.6,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 237,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Longitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Longitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "81309370",
+          "validity": "Measured",
+          "value": -122.36,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 237,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Speed over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Speed over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "81309370",
+          "validity": "Measured",
+          "value": 3,
+          "aging_after_ms": 2000,
+          "unit": "kn",
+          "age_ms": 237,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Course over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Course over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "81309370",
+          "validity": "Measured",
+          "value": 90,
+          "aging_after_ms": 2000,
+          "unit": "deg true",
+          "age_ms": 237,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        }
+      }
+    },
+    {
+      "name": "s64-yellow-SKAGER-Night",
+      "image_sha256": "9bae3538e055367bfb52532c0c4ddab15cd5977e425b0baddf18633cc4cb134e",
+      "scene": "s64-yellow",
+      "chart": {
+        "canvas_pixels": {
+          "height": 566,
+          "width": 1014
+        },
+        "latitude": -32.3471615,
+        "database_entries": 1,
+        "follow": false,
+        "quilt_members": [
+          {
+            "type": 5,
+            "native_scale": 52000,
+            "file": "GB4X0000.000",
+            "index": 0
+          }
+        ],
+        "opengl_enabled": true,
+        "quilt_reference": 0,
+        "scale_bar": {
+          "height": 29,
+          "y": 505,
+          "width": 25,
+          "x": 191
+        },
+        "depth_unit_type": 1,
+        "quilt": true,
+        "scale_ppm": 0.5826126536,
+        "longitude": 61.169588,
+        "depth_units_visible": true
+      },
+      "presentation": {
+        "status": "SKAGER presentation v1 / pinned symbols; o-charts: no SKAGER adapter loaded",
+        "private_ocharts": {
+          "available": false
+        },
+        "requested": "XNav",
+        "core": {
+          "available": true,
+          "saved_point_style": 76,
+          "effective_point_style": 76
+        }
+      },
+      "source_feature_crops": [
+        {
+          "class": "BOYSPP",
+          "source_rcid": 254,
+          "bounds": [
+            551,
+            315,
+            623,
+            387
+          ],
+          "draw": {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYSPP",
+            "object_index": 253,
+            "latitude": -32.3471615,
+            "longitude": 61.169588,
+            "symbol": "XNSPPY01",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 507,
+            "pixel_y": 283,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "sha256": "4cde4e40cc0b4ed411bdcba7a10610c01080bc9bce3ebdff69e464e5cf2fc66e"
+        },
+        {
+          "class": "TOPMAR",
+          "source_rcid": 257,
+          "bounds": [
+            551,
+            315,
+            623,
+            387
+          ],
+          "draw": {
+            "kind": "RenderRasterSymbol",
+            "class": "TOPMAR",
+            "object_index": 256,
+            "latitude": -32.3471615,
+            "longitude": 61.169588,
+            "symbol": "XNSPPT01",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 507,
+            "pixel_y": 283,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "sha256": "4cde4e40cc0b4ed411bdcba7a10610c01080bc9bce3ebdff69e464e5cf2fc66e"
+        }
+      ],
+      "trace": {
+        "read_only_trace_complete": true,
+        "debugger_timing_note": "Entry probes disabled before settled snapshots; no inferior calls or model writes. TOPMAR raster call occurs only after current exact platform-uniqueness guard succeeds.",
+        "draws": [
+          {
+            "kind": "RenderSY",
+            "class": "BOYSPP",
+            "object_index": 253,
+            "latitude": -32.3471615,
+            "longitude": 61.169588,
+            "symbol": "BOYSPP11",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          }
+        ],
+        "raster_draws": [
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "TOPMAR",
+            "object_index": 256,
+            "latitude": -32.3471615,
+            "longitude": 61.169588,
+            "symbol": "XNSPPT01",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 507,
+            "pixel_y": 283,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYSPP",
+            "object_index": 253,
+            "latitude": -32.3471615,
+            "longitude": 61.169588,
+            "symbol": "XNSPPY01",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 507,
+            "pixel_y": 283,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          }
+        ]
+      },
+      "water_pixels": 531159,
+      "owned_values": {
+        "Latitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Latitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "81311524",
+          "validity": "Measured",
+          "value": 47.6,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 240,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Longitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Longitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "81311524",
+          "validity": "Measured",
+          "value": -122.36,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 240,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Speed over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Speed over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "81311524",
+          "validity": "Measured",
+          "value": 3,
+          "aging_after_ms": 2000,
+          "unit": "kn",
+          "age_ms": 240,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Course over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Course over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "81311524",
+          "validity": "Measured",
+          "value": 90,
+          "aging_after_ms": 2000,
+          "unit": "deg true",
+          "age_ms": 240,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        }
+      }
+    },
+    {
+      "name": "s64-yellow-SKAGER-Day-return",
+      "image_sha256": "9212d0690814435a49a5021bed9577f617232b431df5eb48bb69b0536877fc2e",
+      "scene": "s64-yellow",
+      "chart": {
+        "canvas_pixels": {
+          "height": 566,
+          "width": 1014
+        },
+        "latitude": -32.3471615,
+        "database_entries": 1,
+        "follow": false,
+        "quilt_members": [
+          {
+            "type": 5,
+            "native_scale": 52000,
+            "file": "GB4X0000.000",
+            "index": 0
+          }
+        ],
+        "opengl_enabled": true,
+        "quilt_reference": 0,
+        "scale_bar": {
+          "height": 29,
+          "y": 505,
+          "width": 25,
+          "x": 191
+        },
+        "depth_unit_type": 1,
+        "quilt": true,
+        "scale_ppm": 0.5826126536,
+        "longitude": 61.169588,
+        "depth_units_visible": true
+      },
+      "presentation": {
+        "status": "SKAGER presentation v1 / pinned symbols; o-charts: no SKAGER adapter loaded",
+        "private_ocharts": {
+          "available": false
+        },
+        "requested": "XNav",
+        "core": {
+          "available": true,
+          "saved_point_style": 76,
+          "effective_point_style": 76
+        }
+      },
+      "source_feature_crops": [
+        {
+          "class": "BOYSPP",
+          "source_rcid": 254,
+          "bounds": [
+            551,
+            315,
+            623,
+            387
+          ],
+          "draw": {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYSPP",
+            "object_index": 253,
+            "latitude": -32.3471615,
+            "longitude": 61.169588,
+            "symbol": "XNSPPY01",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 507,
+            "pixel_y": 283,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "sha256": "abb4cd86a691b139741131c66d56d42850eea1d217dfccbc921d484dffcc091f"
+        },
+        {
+          "class": "TOPMAR",
+          "source_rcid": 257,
+          "bounds": [
+            551,
+            315,
+            623,
+            387
+          ],
+          "draw": {
+            "kind": "RenderRasterSymbol",
+            "class": "TOPMAR",
+            "object_index": 256,
+            "latitude": -32.3471615,
+            "longitude": 61.169588,
+            "symbol": "XNSPPT01",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 507,
+            "pixel_y": 283,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "sha256": "abb4cd86a691b139741131c66d56d42850eea1d217dfccbc921d484dffcc091f"
+        }
+      ],
+      "trace": {
+        "read_only_trace_complete": true,
+        "debugger_timing_note": "Entry probes disabled before settled snapshots; no inferior calls or model writes. TOPMAR raster call occurs only after current exact platform-uniqueness guard succeeds.",
+        "draws": [
+          {
+            "kind": "RenderSY",
+            "class": "BOYSPP",
+            "object_index": 253,
+            "latitude": -32.3471615,
+            "longitude": 61.169588,
+            "symbol": "BOYSPP11",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          }
+        ],
+        "raster_draws": [
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "TOPMAR",
+            "object_index": 256,
+            "latitude": -32.3471615,
+            "longitude": 61.169588,
+            "symbol": "XNSPPT01",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 507,
+            "pixel_y": 283,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYSPP",
+            "object_index": 253,
+            "latitude": -32.3471615,
+            "longitude": 61.169588,
+            "symbol": "XNSPPY01",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 507,
+            "pixel_y": 283,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          }
+        ]
+      },
+      "water_pixels": 530778,
+      "owned_values": {
+        "Latitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Latitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "81313926",
+          "validity": "Measured",
+          "value": 47.6,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 195,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Longitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Longitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "81313926",
+          "validity": "Measured",
+          "value": -122.36,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 195,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Speed over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Speed over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "81313926",
+          "validity": "Measured",
+          "value": 3,
+          "aging_after_ms": 2000,
+          "unit": "kn",
+          "age_ms": 195,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Course over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Course over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "81313926",
+          "validity": "Measured",
+          "value": 90,
+          "aging_after_ms": 2000,
+          "unit": "deg true",
+          "age_ms": 195,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        }
+      }
+    },
+    {
+      "name": "s64-yellow-Standard-Day",
+      "image_sha256": "010d6eeaf563f184ac526b6e98f6e33690df779d9062e2e50579b6a7302a5f74",
+      "scene": "s64-yellow",
+      "chart": {
+        "canvas_pixels": {
+          "height": 566,
+          "width": 1014
+        },
+        "latitude": -32.3471615,
+        "database_entries": 1,
+        "follow": false,
+        "quilt_members": [
+          {
+            "type": 5,
+            "native_scale": 52000,
+            "file": "GB4X0000.000",
+            "index": 0
+          }
+        ],
+        "opengl_enabled": true,
+        "quilt_reference": 0,
+        "scale_bar": {
+          "height": 12,
+          "y": 527,
+          "width": 69,
+          "x": 18
+        },
+        "depth_unit_type": 1,
+        "quilt": true,
+        "scale_ppm": 0.5826126536,
+        "longitude": 61.169588,
+        "depth_units_visible": true
+      },
+      "presentation": {
+        "status": "Standard OpenCPN presentation; o-charts: no SKAGER adapter loaded",
+        "private_ocharts": {
+          "available": false
+        },
+        "requested": "Standard",
+        "core": {
+          "available": true,
+          "saved_point_style": 76,
+          "effective_point_style": 76
+        }
+      },
+      "source_feature_crops": [
+        {
+          "class": "BOYSPP",
+          "source_rcid": 254,
+          "bounds": [
+            551,
+            315,
+            623,
+            387
+          ],
+          "draw": {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYSPP",
+            "object_index": 253,
+            "latitude": -32.3471615,
+            "longitude": 61.169588,
+            "symbol": "BOYSPP11",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 507,
+            "pixel_y": 283,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "sha256": "9e554834ea3907d707e0024850d3b31dcbc541dd35e5bef15a0045c9ab409906"
+        }
+      ],
+      "trace": {
+        "read_only_trace_complete": true,
+        "debugger_timing_note": "Entry probes disabled before settled snapshots; no inferior calls or model writes. TOPMAR raster call occurs only after current exact platform-uniqueness guard succeeds.",
+        "draws": [
+          {
+            "kind": "RenderSY",
+            "class": "BOYSPP",
+            "object_index": 253,
+            "latitude": -32.3471615,
+            "longitude": 61.169588,
+            "symbol": "BOYSPP11",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          }
+        ],
+        "raster_draws": [
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYSPP",
+            "object_index": 253,
+            "latitude": -32.3471615,
+            "longitude": 61.169588,
+            "symbol": "BOYSPP11",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 507,
+            "pixel_y": 283,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          }
+        ]
+      },
+      "water_pixels": 529510,
+      "owned_values": {
+        "Latitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Latitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "81321306",
+          "validity": "Measured",
+          "value": 47.6,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 51,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Longitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Longitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "81321306",
+          "validity": "Measured",
+          "value": -122.36,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 51,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Speed over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Speed over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "81321306",
+          "validity": "Measured",
+          "value": 3,
+          "aging_after_ms": 2000,
+          "unit": "kn",
+          "age_ms": 51,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Course over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Course over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "81321306",
+          "validity": "Measured",
+          "value": 90,
+          "aging_after_ms": 2000,
+          "unit": "deg true",
+          "age_ms": 51,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        }
+      }
+    },
+    {
+      "name": "s64-yellow-Standard-Dusk",
+      "image_sha256": "c81d3f1dbb647bf294378fcabedcc9ea4381645ee1f0e9c4a10d55a374fd5788",
+      "scene": "s64-yellow",
+      "chart": {
+        "canvas_pixels": {
+          "height": 566,
+          "width": 1014
+        },
+        "latitude": -32.3471615,
+        "database_entries": 1,
+        "follow": false,
+        "quilt_members": [
+          {
+            "type": 5,
+            "native_scale": 52000,
+            "file": "GB4X0000.000",
+            "index": 0
+          }
+        ],
+        "opengl_enabled": true,
+        "quilt_reference": 0,
+        "scale_bar": {
+          "height": 12,
+          "y": 527,
+          "width": 69,
+          "x": 18
+        },
+        "depth_unit_type": 1,
+        "quilt": true,
+        "scale_ppm": 0.5826126536,
+        "longitude": 61.169588,
+        "depth_units_visible": true
+      },
+      "presentation": {
+        "status": "Standard OpenCPN presentation; o-charts: no SKAGER adapter loaded",
+        "private_ocharts": {
+          "available": false
+        },
+        "requested": "Standard",
+        "core": {
+          "available": true,
+          "saved_point_style": 76,
+          "effective_point_style": 76
+        }
+      },
+      "source_feature_crops": [
+        {
+          "class": "BOYSPP",
+          "source_rcid": 254,
+          "bounds": [
+            551,
+            315,
+            623,
+            387
+          ],
+          "draw": {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYSPP",
+            "object_index": 253,
+            "latitude": -32.3471615,
+            "longitude": 61.169588,
+            "symbol": "BOYSPP11",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 507,
+            "pixel_y": 283,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "sha256": "e2f58988c30040c200ca492958fc9d65bddbff83797ddce09afc7ef31f90cf15"
+        }
+      ],
+      "trace": {
+        "read_only_trace_complete": true,
+        "debugger_timing_note": "Entry probes disabled before settled snapshots; no inferior calls or model writes. TOPMAR raster call occurs only after current exact platform-uniqueness guard succeeds.",
+        "draws": [
+          {
+            "kind": "RenderSY",
+            "class": "BOYSPP",
+            "object_index": 253,
+            "latitude": -32.3471615,
+            "longitude": 61.169588,
+            "symbol": "BOYSPP11",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          }
+        ],
+        "raster_draws": [
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYSPP",
+            "object_index": 253,
+            "latitude": -32.3471615,
+            "longitude": 61.169588,
+            "symbol": "BOYSPP11",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 507,
+            "pixel_y": 283,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          }
+        ]
+      },
+      "water_pixels": 529918,
+      "owned_values": {
+        "Latitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Latitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "81323410",
+          "validity": "Measured",
+          "value": 47.6,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 286,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Longitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Longitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "81323410",
+          "validity": "Measured",
+          "value": -122.36,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 286,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Speed over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Speed over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "81323410",
+          "validity": "Measured",
+          "value": 3,
+          "aging_after_ms": 2000,
+          "unit": "kn",
+          "age_ms": 286,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Course over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Course over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "81323410",
+          "validity": "Measured",
+          "value": 90,
+          "aging_after_ms": 2000,
+          "unit": "deg true",
+          "age_ms": 286,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        }
+      }
+    },
+    {
+      "name": "s64-yellow-Standard-Night",
+      "image_sha256": "caa420a362b20c7fc2a591a33e01104348835b18122d2adb6797bd2e813550c3",
+      "scene": "s64-yellow",
+      "chart": {
+        "canvas_pixels": {
+          "height": 566,
+          "width": 1014
+        },
+        "latitude": -32.3471615,
+        "database_entries": 1,
+        "follow": false,
+        "quilt_members": [
+          {
+            "type": 5,
+            "native_scale": 52000,
+            "file": "GB4X0000.000",
+            "index": 0
+          }
+        ],
+        "opengl_enabled": true,
+        "quilt_reference": 0,
+        "scale_bar": {
+          "height": 12,
+          "y": 527,
+          "width": 69,
+          "x": 18
+        },
+        "depth_unit_type": 1,
+        "quilt": true,
+        "scale_ppm": 0.5826126536,
+        "longitude": 61.169588,
+        "depth_units_visible": true
+      },
+      "presentation": {
+        "status": "Standard OpenCPN presentation; o-charts: no SKAGER adapter loaded",
+        "private_ocharts": {
+          "available": false
+        },
+        "requested": "Standard",
+        "core": {
+          "available": true,
+          "saved_point_style": 76,
+          "effective_point_style": 76
+        }
+      },
+      "source_feature_crops": [
+        {
+          "class": "BOYSPP",
+          "source_rcid": 254,
+          "bounds": [
+            551,
+            315,
+            623,
+            387
+          ],
+          "draw": {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYSPP",
+            "object_index": 253,
+            "latitude": -32.3471615,
+            "longitude": 61.169588,
+            "symbol": "BOYSPP11",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 507,
+            "pixel_y": 283,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "sha256": "2f82a90ac1f5c2239c16ad573e05dee383519552cedf12f70c74bc0324e89869"
+        }
+      ],
+      "trace": {
+        "read_only_trace_complete": true,
+        "debugger_timing_note": "Entry probes disabled before settled snapshots; no inferior calls or model writes. TOPMAR raster call occurs only after current exact platform-uniqueness guard succeeds.",
+        "draws": [
+          {
+            "kind": "RenderSY",
+            "class": "BOYSPP",
+            "object_index": 253,
+            "latitude": -32.3471615,
+            "longitude": 61.169588,
+            "symbol": "BOYSPP11",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          }
+        ],
+        "raster_draws": [
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYSPP",
+            "object_index": 253,
+            "latitude": -32.3471615,
+            "longitude": 61.169588,
+            "symbol": "BOYSPP11",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 507,
+            "pixel_y": 283,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          }
+        ]
+      },
+      "water_pixels": 530210,
+      "owned_values": {
+        "Latitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Latitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "81324499",
+          "validity": "Measured",
+          "value": 47.6,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 215,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Longitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Longitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "81324499",
+          "validity": "Measured",
+          "value": -122.36,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 215,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Speed over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Speed over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "81324499",
+          "validity": "Measured",
+          "value": 3,
+          "aging_after_ms": 2000,
+          "unit": "kn",
+          "age_ms": 215,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Course over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Course over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "81324499",
+          "validity": "Measured",
+          "value": 90,
+          "aging_after_ms": 2000,
+          "unit": "deg true",
+          "age_ms": 215,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        }
+      }
+    }
+  ],
+  "status": "failed",
+  "clean_exit": false,
+  "font_evidence": {
+    "policy_source_sha256": "32339b83be2c3b9ff81fb31bfbf8313628a7f1596092921a98693ae0a140a358",
+    "note": "Source policy and Linux fontconfig inventory recorded; this does not establish native Windows glyph metrics",
+    "Segoe UI Variable Display": {
+      "exit_code": 0,
+      "linux_fontconfig_match": "Liberation Sans\n/usr/share/fonts/liberation/LiberationSans-Regular.ttf"
+    },
+    "Segoe UI": {
+      "exit_code": 0,
+      "linux_fontconfig_match": "Liberation Sans\n/usr/share/fonts/liberation/LiberationSans-Regular.ttf"
+    },
+    "Arial": {
+      "exit_code": 0,
+      "linux_fontconfig_match": "Liberation Sans\n/usr/share/fonts/liberation/LiberationSans-Regular.ttf"
+    }
+  },
+  "additional_source_evidence": {
+    "src/ui/SkagerWordmark.h": "c2fc3d1afdf88bfd2e884d541e7b3ad4463702cece09057e38f4d496deda9928",
+    "src/ui/Theme.h": "b28adb1f519ec5a1f9b7e2bfab6ec2ab1c7f06656bd129316e9e453ef1ec0776",
+    "src/ui/Shell.cpp": "ed022b04450b0a24fec10cb3303551f35ab7e8dd01161918d18daa3ce322ad02",
+    "src/integration/ChartCanvasInk.h": "cc1a4d94131f932f2bbd40d330d9003d0086dfc1237449b4215b509377c39f66",
+    "src/integration/ChartRouteLabel.cpp": "c4f6b225ed4e6985370da71559237b5ee6bbc3d2ac62fa4cf530d02b781f017f",
+    "src/integration/ChartRouteLabelRaster.h": "c2ca0bd64ec1203addbd518b2424af91c3ca25f72b250d1f6c80b6e467722f3b",
+    "tools/chart_cardinal_art.py": "e8b4f52df0d558ec715613c9f737776db0f10f844c3f2769a3f35fd8f670158e",
+    "resources/chart-style/v1/cardinals/provenance.json": "a0017453b3ea5a814a613bb50d0f5a676fdf0095e0b5e7a6249ec49fe38c8010"
+  },
+  "loader_selftest": {
+    "upstream": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+    "commissioning_restart_protocol": 0,
+    "version": "0.4.0-beta2",
+    "commit": "e1d01367692f7b8c866be369417e68c836c5d563",
+    "compiler": "GNU 16.2.1 / 8 byte pointers",
+    "plugins_loaded": false,
+    "test_fixtures": true,
+    "resources": {
+      "gshhs/poly-c-1.dat": true,
+      "s57data/s57objectclasses.csv": true,
+      "uidata/styles.xml": true,
+      "s57data/chartsymbols.xml": true
+    },
+    "normal_config_directory": "/etc",
+    "passed": true,
+    "xnav_hardware_output_policy": "test-loopback-only",
+    "build_purpose": "DEVELOPER TEST BUILD",
+    "profile_initialized": false,
+    "contract": "OpenNavX.LoaderSelfTest.1"
+  },
+  "day_return_checks": [
+    {
+      "image": "s64-yellow-SKAGER-Day-return",
+      "bounds": [
+        80,
+        68,
+        1094,
+        634
+      ],
+      "equal": true,
+      "mask": null
+    }
+  ],
+  "symbol_table_receipts": [
+    {
+      "style": "XNav",
+      "persisted_nSymbolStyle": 76,
+      "scope": "Persisted preference plus explicitly scoped core diagnostics; private adapter unavailable; actual object table independently traced"
+    }
+  ],
+  "failure": "Whole chart Day-return differs"
+}

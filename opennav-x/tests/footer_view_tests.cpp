@@ -22,7 +22,7 @@ int RunFooterChecks() {
     const auto view=[&](vessel::Time now=stamp) {return application::PresentFooter(state,anchor,
       application::PresentSourceHealth(state,{},onboard,online,{},now),now);};
     Check(view().navigation_state=="NO POSITION"&&view().position=="GPS POSITION UNAVAILABLE","empty product has no invented underway/position");
-    Check(view().cog=="—"&&view().xte=="—","missing COG and unimplemented XTE not zero");
+    Check(view().cog=="—"&&view().xte=="—","missing COG and XTE not zero");
     Check(view().health_summary=="0 live signals"&&view().health_state==S::Unavailable,"no fabricated nine-of-ten source health");
     state.navigation.latitude_deg=Reading(58.341033333333);
     Check(view().position_state==S::Unavailable,"one coordinate cannot establish position");
@@ -67,8 +67,44 @@ int RunFooterChecks() {
     route->remaining_distance_nm=2;route->observed_at=stamp;route->position_observed_at=stamp;route->state=vessel::RouteState::Valid;
     route->source="OpenCPN route progress";route->position_source=state.navigation.latitude_deg.source;state.navigation.route=route;
     Check(view().navigation_state=="ROUTE ACTIVE","valid owned route activates footer route state");
+    Check(view().xte == "—", "valid route with no recorded XTE cannot invent it");
+    route->cross_track_error_nm = .03;
+    route->cross_track_direction = vessel::CrossTrackDirection::Left;
+    Check(view().xte == "← 0.030 NM" && view().xte_state == S::Current &&
+              view().xte_hint == "Steer left toward route (OpenCPN)",
+          "left arrow explicitly means native direction to steer toward route");
+    route->cross_track_direction = vessel::CrossTrackDirection::Right;
+    Check(view().xte == "0.030 NM →" && view().xte_hint == "Steer right toward route (OpenCPN)",
+          "right arrow preserves native steering direction");
+    route->distance_units_per_nm = 1852.; route->distance_unit = "m";
+    Check(view().xte == "56 m →", "owned OpenCPN preference controls XTE units");
+    route->cross_track_error_nm = 0.;
+    Check(view().xte == "0 m" && view().xte_hint == "On route; no cross-track correction",
+          "observed zero has no arbitrary corrective arrow");
+    route->cross_track_error_nm = .03;
+    route->distance_units_per_nm = 1.; route->distance_unit = "NM";
+    Check(view(stamp + 2s).xte == "0.030 NM → AGING" && view(stamp + 2s).xte_state == S::Aging,
+          "aging route XTE never claims current quality");
+    for (int bad = 0; bad < 4; ++bad) {
+      const auto saved = state.navigation;
+      if (bad == 0) state.navigation.latitude_deg.source = state.navigation.longitude_deg.source = "other GPS";
+      if (bad == 1) state.navigation.latitude_deg.observed_at = state.navigation.longitude_deg.observed_at = stamp - 1ms;
+      if (bad == 2) state.navigation.latitude_deg.value.reset();
+      if (bad == 3) state.navigation.longitude_deg.validity = vessel::Validity::Uncertain;
+      Check(view().xte == "—", "current GPS loss, source change, older fix and uncertainty withhold XTE");
+      state.navigation = saved;
+    }
+    state.navigation.latitude_deg.observed_at = state.navigation.longitude_deg.observed_at = stamp + 1s;
+    Check(view(stamp + 1s).xte == "0.030 NM →", "newer same-source GPS may follow coherent route pass");
+    Check(view(stamp + 5s).xte == "STALE" && view(stamp + 5s).xte_state == S::Stale,
+          "newer GPS cannot refresh an expired route XTE publication");
+    state.navigation.latitude_deg.observed_at = state.navigation.longitude_deg.observed_at = stamp;
+    anchor.waypoint_id = "watch";
+    Check(view().xte == "—", "anchor mode cannot expose conflicting route guidance");
+    anchor = {};
     route->state=vessel::RouteState::RouteChanged;
     Check(view().navigation_state=="ROUTE WAITING","editing/reversal/transition cannot look coherent");
+    Check(view().xte == "—", "route transition clears cross-track presentation");
     route->state=vessel::RouteState::NoActiveRoute;
     Check(view().navigation_state=="EXPLORING","deactivation removes route-active state");
     route->state=vessel::RouteState::Valid;route->observed_at-=10s;route->position_observed_at=route->observed_at;
@@ -89,7 +125,7 @@ int RunFooterChecks() {
       Check(v.historical&&v.live_signals==0&&v.health_summary=="Inspect quality","historical data never claims live signals");
       Check(v.navigation_state==(replay?"REPLAY":"TEST DATA"),"test/replay state unmistakable");
     }
-    Check(view().xte=="—","XTE remains unavailable in all source modes");
+    Check(view().xte=="—","absent XTE remains unavailable in historical source modes");
     std::cout<<"PASS "<<checks<<" footer provenance checks\n";return 0;
   }catch(const std::exception &e){std::cerr<<e.what()<<'\n';return 1;}
 }

@@ -1,0 +1,34 @@
+[1/29] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/ShapefileReader.cpp.o
+[2/29] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/Schema.cpp.o
+[3/29] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/FeatureIterator.cpp.o
+[4/29] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/GeometryType.cpp.o
+[5/29] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/Bounds.cpp.o
+[6/29] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/Geometry.cpp.o
+[7/29] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/Point.cpp.o
+[8/29] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/Line.cpp.o
+[9/29] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/Ring.cpp.o
+[10/29] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/Polygon.cpp.o
+[11/29] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/MultiPoint.cpp.o
+[12/29] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/MultiLine.cpp.o
+[13/29] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/MultiPolygon.cpp.o
+[14/29] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/Feature.cpp.o
+[15/29] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/FieldType.cpp.o
+[16/29] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/Field.cpp.o
+[17/29] cd /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-linux/libs/libdnet && /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/.local/sysroot/usr/bin/cmake -E echo Built\ the\ libdnet\ library
+Built the libdnet library
+[18/29] Building CXX object libs/s52plib/CMakeFiles/S52PLIB.dir/src/s52plib.cpp.o
+/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/s52plib/src/s52plib.cpp: In member function ‘void s52plib::PLIB_LoadS57ObjectConfig(wxFileConfig*)’:
+/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/s52plib/src/s52plib.cpp:10374:28: warning: ‘char* strncpy(char*, const char*, size_t)’ specified bound 6 equals destination size [-Wstringop-truncation]
+10374 |                     strncpy( pOLE->OBJLName, sObj.mb_str(), 6 );
+      |                     ~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[19/29] Linking CXX static library libs/s52plib/libS52PLIB.a
+[20/29] Building CXX object CMakeFiles/opencpn.dir/gui/src/chartdbs.cpp.o
+[21/29] Building CXX object CMakeFiles/opencpn.dir/gui/src/ocpn_plugin_gui.cpp.o
+[22/29] Building CXX object CMakeFiles/opencpn.dir/gui/src/chcanv.cpp.o
+[23/29] Building CXX object CMakeFiles/opencpn.dir/gui/src/shapefile_basemap.cpp.o
+[24/29] Building CXX object CMakeFiles/opencpn.dir/gui/src/glChartCanvas.cpp.o
+[25/29] Building CXX object CMakeFiles/opencpn.dir/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/src/integration/PreviewDiagnostics.cpp.o
+[26/29] Building CXX object CMakeFiles/opencpn.dir/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/src/integration/InstallerSelfTest.cpp.o
+[27/29] Linking CXX static library libs/ShapefileCpp/libShapefileCppLib.a
+[28/29] Building CXX object CMakeFiles/opencpn.dir/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/src/integration/OpenCPNIntegration.cpp.o
+[29/29] Linking CXX executable opencpn

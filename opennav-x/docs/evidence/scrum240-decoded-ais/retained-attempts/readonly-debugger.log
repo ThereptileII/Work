@@ -1,0 +1,33 @@
+[New LWP 161]
+[New LWP 139]
+[New LWP 134]
+[New LWP 133]
+[New LWP 124]
+[New LWP 123]
+[New LWP 118]
+[New LWP 111]
+[New LWP 107]
+[New LWP 106]
+[New LWP 104]
+[New LWP 88]
+[New LWP 87]
+[New LWP 86]
+[New LWP 84]
+[New LWP 83]
+[New LWP 82]
+[New LWP 81]
+[New LWP 79]
+
+This GDB supports auto-downloading debuginfo from the following URLs:
+  <https://debuginfod.archlinux.org>
+Enable debuginfod for this session? (y or [n]) [answered N; input not from terminal]
+Debuginfod has been disabled.
+To make this setting permanent, add 'set debuginfod enabled off' to .gdbinit.
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/usr/lib/libthread_db.so.1".
+0x00007f8fa70a0952 in ?? () from /usr/lib/libc.so.6
+[Inferior 1 (process 68) detached]
+Cannot change this setting while the inferior is running.
+Cannot change this setting while the inferior is running.
+Python Exception <class 'gdb.error'>: 'g_bInlandEcdis' has unknown type; cast it to its declared type
+Error occurred in Python: 'g_bInlandEcdis' has unknown type; cast it to its declared type

@@ -1,0 +1,6 @@
+renderer=llvmpipe (LLVM 22.1.8, 256 bits) version=4.6 (Compatibility Profile) Mesa 26.2.2-arch1.1
+DAY_BRIGHT 1 sample=83,104,121 expectedInk=247,244,216
+tileStraight=243,243,213 alpha=43
+DAY_BRIGHT 3 sample=72,81,103 expectedInk=182,110,108
+tileStraight=177,106,106 alpha=43
+actual .17 wash blend

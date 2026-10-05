@@ -1,0 +1,9 @@
+{
+  "sourceCommit": "fe44d02",
+  "fanCommit": "95276c3",
+  "lifetimeOriginalCommit": "eaff747",
+  "headers": {
+    "src/integration/ChartCaFan.h": "18f57fd41fa2503412ac96f0571793e8de38d6b7f7a7b5547d219fe7113b7dc8",
+    "src/integration/ChartCaLightPoint.h": "47928a42302f73f70b13a8a78ecaf861a7338e6d792b16b2c508ed22b816e876"
+  }
+}

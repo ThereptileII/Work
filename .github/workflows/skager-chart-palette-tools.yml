@@ -1,0 +1,106 @@
+name: SKAGER guarded chart palette tooling
+on:
+  push:
+    branches: [skager-chart-palette-tools]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: skager-chart-palette-tools-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  policy:
+    name: Exact palette, journal and staging policies
+    runs-on: windows-2022
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Exercise only affected policies in native Windows PowerShell 5.1
+        run: |
+          $Out = 'opennav-x/evidence/local/palette269-policy'
+          New-Item -ItemType Directory -Path $Out -Force | Out-Null
+          foreach ($Suite in @('restart-commissioning','restart-window-review','review-window','broker-fixture-contracts','review-staging')) {
+            & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -File "opennav-x/tools/boat/test-$Suite.ps1" 2>&1 | Tee-Object -FilePath "$Out/$Suite.json"
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
+          python opennav-x/tools/test-boat-palette-qualification.py -v
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python opennav-x/tools/qualify-boat-palette-tools.py --gate policy --evidence $Out
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: palette269-policy-${{ github.sha }}
+          path: opennav-x/evidence/local/palette269-policy
+          if-no-files-found: error
+  window:
+    name: Fixed mode and sixteen palette HWND cases
+    runs-on: windows-2022
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Prepare disposable CI desktop only
+        run: python opennav-x/tools/prepare-stock-review-desktop.py
+      - name: Exercise exact mode, palette, modal and bounded reveal controls
+        run: |
+          $Out = 'opennav-x/evidence/local/palette269-window'
+          New-Item -ItemType Directory -Path $Out -Force | Out-Null
+          & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -ExecutionPolicy Bypass -File opennav-x/tools/test-restart-window-native.ps1 -Evidence $Out 2>&1 | Tee-Object -FilePath "$Out/native-window-tests.log"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python opennav-x/tools/qualify-boat-palette-tools.py --gate window --evidence $Out
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: palette269-window-${{ github.sha }}
+          path: opennav-x/evidence/local/palette269-window
+          if-no-files-found: error
+  broker:
+    name: Actual broker and scheduled palette Arm Collect
+    runs-on: windows-2022
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Build only unchanged Win32 restart helper and inert marker fixtures
+        run: |
+          cmake -S opennav-x/tests/commissioning-restart -B opennav-x/build/commissioning-restart -G "Visual Studio 17 2022" -A Win32
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cmake --build opennav-x/build/commissioning-restart --config Release --parallel 2
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Exercise exact broker palette authorization, replay and refusal boundary
+        run: |
+          $Out = 'opennav-x/evidence/local/palette269-broker'
+          New-Item -ItemType Directory -Path "$Out/broker" -Force | Out-Null
+          & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -ExecutionPolicy Bypass -File opennav-x/tools/test-commissioning-broker-windows.ps1 -Binaries opennav-x/build/commissioning-restart/Release -Evidence "$Out/broker" 2>&1 | Tee-Object -FilePath "$Out/broker/native-broker-tests.log"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          New-Item -ItemType Directory -Path "$Out/prepare-arm" -Force | Out-Null
+          & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -ExecutionPolicy Bypass -File opennav-x/tools/test-commissioning-prepare-arm-windows.ps1 -Binaries opennav-x/build/commissioning-restart/Release -Evidence "$Out/prepare-arm" 2>&1 | Tee-Object -FilePath "$Out/prepare-arm/native-prepare-arm-tests.log"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python opennav-x/tools/qualify-boat-palette-tools.py --gate broker --evidence $Out
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: palette269-broker-${{ github.sha }}
+          path: opennav-x/evidence/local/palette269-broker
+          if-no-files-found: error
+  bundle:
+    name: Exact tested 117-file tool archive and receipt
+    needs: [policy, window, broker]
+    runs-on: windows-2022
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: palette269-*-${{ github.sha }}
+          path: opennav-x/evidence/local/palette269-gates
+      - name: Recheck same-run native evidence and seal exact tested checkout bytes
+        run: |
+          python opennav-x/tools/qualify-boat-palette-tools.py --package --evidence opennav-x/evidence/local/palette269-gates --output opennav-x/evidence/local/palette269-bundle
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: palette269-qualified-tools-${{ github.sha }}
+          path: opennav-x/evidence/local/palette269-bundle
+          if-no-files-found: error

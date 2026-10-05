@@ -1,0 +1,2937 @@
+{
+  "purpose": "Source geometry/attributes only; no application or chart-render proof",
+  "decoder": {
+    "pyogrio": "0.13.0",
+    "gdal": [
+      3,
+      12,
+      4
+    ]
+  },
+  "updates": "APPLY",
+  "coordinateOrder": "longitude,latitude",
+  "cells": [
+    {
+      "name": "US5SEAFL",
+      "kind": "NOAA real-world ENC",
+      "files": {
+        "US5SEAFL.000": {
+          "bytes": 841005,
+          "sha256": "7e474bea96e7a84c6f3ee6b44ff7db4288029fa47ac2a285594e18469dbf518c"
+        },
+        "US5SEAFL.001": {
+          "bytes": 8709,
+          "sha256": "504440d201453548aae160c4c5340d55d480bd39cd57061b7fc03262968e062d"
+        }
+      },
+      "features": {
+        "SMCFAC": [],
+        "HRBFAC": [
+          {
+            "ogrFid": 1673,
+            "attributes": {
+              "RCID": 2778,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 64,
+              "RVER": 1,
+              "AGEN": 550,
+              "FIDN": -1595103138,
+              "FIDS": 6435,
+              "LNAM": "0226A0ECA85E1923",
+              "CATHAF": [
+                "10"
+              ],
+              "OBJNAM": "Terminal No 20",
+              "SCAMIN": 17999,
+              "SORDAT": "200212",
+              "SORIND": "US,US,graph,Chart 18450"
+            },
+            "geometryType": "Point",
+            "bounds": [
+              -122.346878,
+              47.576454,
+              -122.346878,
+              47.576454
+            ]
+          },
+          {
+            "ogrFid": 1674,
+            "attributes": {
+              "RCID": 2779,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 64,
+              "RVER": 1,
+              "AGEN": 550,
+              "FIDN": -1918741634,
+              "FIDS": 6435,
+              "LNAM": "02268DA2537E1923",
+              "CATHAF": [
+                "10"
+              ],
+              "OBJNAM": "Terminal 25",
+              "SCAMIN": 17999,
+              "SORDAT": "200212",
+              "SORIND": "US,US,graph,Chart 18450"
+            },
+            "geometryType": "Point",
+            "bounds": [
+              -122.3412417,
+              47.5758896,
+              -122.3412417,
+              47.5758896
+            ]
+          },
+          {
+            "ogrFid": 1675,
+            "attributes": {
+              "RCID": 2780,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 64,
+              "RVER": 1,
+              "AGEN": 550,
+              "FIDN": 2035313050,
+              "FIDS": 6435,
+              "LNAM": "02267950699A1923",
+              "CATHAF": [
+                "10"
+              ],
+              "OBJNAM": "Terminal 18",
+              "SCAMIN": 17999,
+              "SORDAT": "200212",
+              "SORIND": "US,US,graph,Chart 18450"
+            },
+            "geometryType": "Point",
+            "bounds": [
+              -122.347445,
+              47.587909,
+              -122.347445,
+              47.587909
+            ]
+          },
+          {
+            "ogrFid": 1676,
+            "attributes": {
+              "RCID": 2781,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 64,
+              "RVER": 1,
+              "AGEN": 550,
+              "FIDN": -1722032119,
+              "FIDS": 6435,
+              "LNAM": "0226995BE0091923",
+              "CATHAF": [
+                "10"
+              ],
+              "OBJNAM": "Terminal No 46",
+              "SCAMIN": 17999,
+              "SORDAT": "200212",
+              "SORIND": "US,US,graph,Chart 18450"
+            },
+            "geometryType": "Point",
+            "bounds": [
+              -122.338923,
+              47.596993,
+              -122.338923,
+              47.596993
+            ]
+          },
+          {
+            "ogrFid": 1677,
+            "attributes": {
+              "RCID": 2782,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 64,
+              "RVER": 1,
+              "AGEN": 550,
+              "FIDN": -1211645137,
+              "FIDS": 6435,
+              "LNAM": "0226B7C7C32F1923",
+              "CATHAF": [
+                "10"
+              ],
+              "OBJNAM": "Terminal No 5",
+              "SCAMIN": 17999,
+              "SORDAT": "200212",
+              "SORIND": "US,US,graph,Chart 18450"
+            },
+            "geometryType": "Point",
+            "bounds": [
+              -122.362255,
+              47.578361,
+              -122.362255,
+              47.578361
+            ]
+          },
+          {
+            "ogrFid": 1678,
+            "attributes": {
+              "RCID": 2783,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 64,
+              "RVER": 1,
+              "AGEN": 550,
+              "FIDN": 848086931,
+              "FIDS": 6435,
+              "LNAM": "0226328CC7931923",
+              "CATHAF": [
+                "10"
+              ],
+              "OBJNAM": "Terminal 102 West",
+              "SCAMIN": 17999,
+              "SORDAT": "200212",
+              "SORIND": "US,US,graph,Chart 18450"
+            },
+            "geometryType": "Point",
+            "bounds": [
+              -122.347871,
+              47.569472,
+              -122.347871,
+              47.569472
+            ]
+          },
+          {
+            "ogrFid": 1679,
+            "attributes": {
+              "RCID": 2784,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 64,
+              "RVER": 1,
+              "AGEN": 550,
+              "FIDN": -282310062,
+              "FIDS": 6435,
+              "LNAM": "0226EF2C4A521923",
+              "CATHAF": [
+                "10"
+              ],
+              "OBJNAM": "Terminal No 37",
+              "SCAMIN": 17999,
+              "SORDAT": "200212",
+              "SORIND": "US,US,graph,Chart 18450"
+            },
+            "geometryType": "Point",
+            "bounds": [
+              -122.340149,
+              47.592888,
+              -122.340149,
+              47.592888
+            ]
+          },
+          {
+            "ogrFid": 1680,
+            "attributes": {
+              "RCID": 2785,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 64,
+              "RVER": 1,
+              "AGEN": 550,
+              "FIDN": -374784754,
+              "FIDS": 6435,
+              "LNAM": "0226E9A93D0E1923",
+              "CATHAF": [
+                "10"
+              ],
+              "OBJNAM": "Terminal 105",
+              "SCAMIN": 17999,
+              "SORDAT": "200212",
+              "SORIND": "US,US,graph,Chart 18450"
+            },
+            "geometryType": "Point",
+            "bounds": [
+              -122.3495489,
+              47.5636562,
+              -122.3495489,
+              47.5636562
+            ]
+          },
+          {
+            "ogrFid": 1681,
+            "attributes": {
+              "RCID": 2786,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 64,
+              "RVER": 1,
+              "AGEN": 550,
+              "FIDN": 257203832,
+              "FIDS": 6435,
+              "LNAM": "02260F549E781923",
+              "CATHAF": [
+                "3"
+              ],
+              "SCAMIN": 17999,
+              "SORDAT": "200212",
+              "SORIND": "US,US,graph,Chart 18450"
+            },
+            "geometryType": "Point",
+            "bounds": [
+              -122.3388836,
+              47.602974,
+              -122.3388836,
+              47.602974
+            ]
+          },
+          {
+            "ogrFid": 1682,
+            "attributes": {
+              "RCID": 2787,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 64,
+              "RVER": 1,
+              "AGEN": 550,
+              "FIDN": 782972902,
+              "FIDS": 6435,
+              "LNAM": "02262EAB37E61923",
+              "CATHAF": [
+                "10"
+              ],
+              "OBJNAM": "Terminal 106",
+              "SCAMIN": 17999,
+              "SORDAT": "200212",
+              "SORIND": "US,US,graph,Chart 18450"
+            },
+            "geometryType": "Point",
+            "bounds": [
+              -122.345501,
+              47.564574,
+              -122.345501,
+              47.564574
+            ]
+          }
+        ],
+        "UWTROC": [
+          {
+            "ogrFid": 904,
+            "attributes": {
+              "RCID": 905,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 153,
+              "RVER": 1,
+              "AGEN": 550,
+              "FIDN": 1330120044,
+              "FIDS": 6435,
+              "LNAM": "02264F48056C1923",
+              "EXPSOU": 1,
+              "VALSOU": -1.2,
+              "WATLEV": 4,
+              "SORDAT": "20221005",
+              "SORIND": "US,US,reprt,L-249-2022"
+            },
+            "geometryType": "Point",
+            "bounds": [
+              -122.3620377,
+              47.5843537,
+              -122.3620377,
+              47.5843537
+            ]
+          }
+        ],
+        "WRECKS": [
+          {
+            "ogrFid": 736,
+            "attributes": {
+              "RCID": 737,
+              "PRIM": 3,
+              "GRUP": 2,
+              "OBJL": 159,
+              "RVER": 1,
+              "AGEN": 550,
+              "FIDN": 1973092595,
+              "FIDS": 6435,
+              "LNAM": "0226759B00F31923",
+              "CATWRK": 1,
+              "QUASOU": [
+                "6"
+              ],
+              "VALSOU": 53.1,
+              "WATLEV": 3,
+              "SCAMIN": 29999,
+              "SORDAT": "20201207",
+              "SORIND": "US,US,graph,H13413"
+            },
+            "geometryType": "Polygon",
+            "bounds": [
+              -122.371994,
+              47.587707,
+              -122.3712347,
+              47.5881598
+            ]
+          },
+          {
+            "ogrFid": 905,
+            "attributes": {
+              "RCID": 906,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 159,
+              "RVER": 1,
+              "AGEN": 550,
+              "FIDN": -1698940905,
+              "FIDS": 6435,
+              "LNAM": "02269ABC38171923",
+              "CATWRK": 1,
+              "EXPSOU": 1.0,
+              "QUASOU": [
+                "6"
+              ],
+              "VALSOU": 125.3,
+              "WATLEV": 3,
+              "SCAMIN": 29999,
+              "SORDAT": "20201207",
+              "SORIND": "US,US,graph,H13413"
+            },
+            "geometryType": "Point",
+            "bounds": [
+              -122.3709709,
+              47.6101456,
+              -122.3709709,
+              47.6101456
+            ]
+          },
+          {
+            "ogrFid": 906,
+            "attributes": {
+              "RCID": 907,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 159,
+              "RVER": 1,
+              "AGEN": 550,
+              "FIDN": 1342503282,
+              "FIDS": 6435,
+              "LNAM": "02265004F9721923",
+              "CATWRK": 1,
+              "EXPSOU": 1.0,
+              "QUASOU": [
+                "6"
+              ],
+              "VALSOU": 62.6,
+              "WATLEV": 3,
+              "SCAMIN": 29999,
+              "SORDAT": "20201207",
+              "SORIND": "US,US,graph,H13413"
+            },
+            "geometryType": "Point",
+            "bounds": [
+              -122.351594,
+              47.5967924,
+              -122.351594,
+              47.5967924
+            ]
+          }
+        ],
+        "FSHFAC": [],
+        "CBLSUB": [
+          {
+            "ogrFid": 1569,
+            "attributes": {
+              "RCID": 1571,
+              "PRIM": 2,
+              "GRUP": 2,
+              "OBJL": 22,
+              "RVER": 2,
+              "AGEN": 550,
+              "FIDN": -1564374074,
+              "FIDS": 6435,
+              "LNAM": "0226A2C18BC61923",
+              "CATCBL": 1,
+              "SCAMIN": 29999,
+              "SORDAT": "20240611",
+              "SORIND": "US,US,reprt,L-242-2024"
+            },
+            "geometryType": "LineString",
+            "bounds": [
+              -122.349421,
+              47.5985222,
+              -122.3402692,
+              47.6092584
+            ]
+          }
+        ]
+      },
+      "counts": {
+        "SMCFAC": 0,
+        "HRBFAC": 10,
+        "UWTROC": 1,
+        "WRECKS": 3,
+        "FSHFAC": 0,
+        "CBLSUB": 1
+      }
+    },
+    {
+      "name": "GB4X0000",
+      "kind": "Official IHO S-64 presentation-test geography, not operational ENC",
+      "files": {
+        "GB4X0000.000": {
+          "bytes": 945697,
+          "sha256": "c70d9e0f53e149270f85900f8576082db86781d64fbb71aa7d5ceb4af4aa22e3"
+        }
+      },
+      "features": {
+        "SMCFAC": [],
+        "HRBFAC": [
+          {
+            "ogrFid": 475,
+            "attributes": {
+              "RCID": 476,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 64,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29141660,
+              "FIDS": 1,
+              "LNAM": "021C01BCAA9C0001",
+              "CATHAF": [
+                "4"
+              ]
+            },
+            "geometryType": "Point",
+            "bounds": [
+              60.974097,
+              -32.4021822,
+              60.974097,
+              -32.4021822
+            ]
+          }
+        ],
+        "UWTROC": [
+          {
+            "ogrFid": 0,
+            "attributes": {
+              "RCID": 1,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 153,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29142467,
+              "FIDS": 1,
+              "LNAM": "021C01BCADC30001",
+              "NATSUR": [
+                "9"
+              ],
+              "QUASOU": [
+                "2"
+              ],
+              "WATLEV": 3
+            },
+            "geometryType": "Point",
+            "bounds": [
+              61.033202,
+              -32.3734615,
+              61.033202,
+              -32.3734615
+            ]
+          },
+          {
+            "ogrFid": 1,
+            "attributes": {
+              "RCID": 2,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 153,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29142469,
+              "FIDS": 1,
+              "LNAM": "021C01BCADC50001",
+              "NATSUR": [
+                "9"
+              ],
+              "QUASOU": [
+                "2"
+              ],
+              "WATLEV": 3
+            },
+            "geometryType": "Point",
+            "bounds": [
+              61.028529,
+              -32.3787712,
+              61.028529,
+              -32.3787712
+            ]
+          },
+          {
+            "ogrFid": 2,
+            "attributes": {
+              "RCID": 3,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 153,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29142468,
+              "FIDS": 1,
+              "LNAM": "021C01BCADC40001",
+              "NATSUR": [
+                "9"
+              ],
+              "QUASOU": [
+                "2"
+              ],
+              "WATLEV": 3
+            },
+            "geometryType": "Point",
+            "bounds": [
+              61.0350686,
+              -32.3790962,
+              61.0350686,
+              -32.3790962
+            ]
+          },
+          {
+            "ogrFid": 37,
+            "attributes": {
+              "RCID": 38,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 153,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29143535,
+              "FIDS": 1,
+              "LNAM": "021C01BCB1EF0001",
+              "EXPSOU": 2.0,
+              "QUASOU": [
+                "2"
+              ],
+              "WATLEV": 5
+            },
+            "geometryType": "Point",
+            "bounds": [
+              61.0417285,
+              -32.3798547,
+              61.0417285,
+              -32.3798547
+            ]
+          },
+          {
+            "ogrFid": 112,
+            "attributes": {
+              "RCID": 113,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 153,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29142531,
+              "FIDS": 1,
+              "LNAM": "021C01BCAE030001",
+              "EXPSOU": 2.0,
+              "VALSOU": -0.8,
+              "WATLEV": 4
+            },
+            "geometryType": "Point",
+            "bounds": [
+              61.0108095,
+              -32.6164422,
+              61.0108095,
+              -32.6164422
+            ]
+          },
+          {
+            "ogrFid": 117,
+            "attributes": {
+              "RCID": 118,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 153,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29142393,
+              "FIDS": 1,
+              "LNAM": "021C01BCAD790001",
+              "NATSUR": [
+                "9"
+              ],
+              "QUASOU": [
+                "2"
+              ],
+              "WATLEV": 4
+            },
+            "geometryType": "Point",
+            "bounds": [
+              60.9469005,
+              -32.5151245,
+              60.9469005,
+              -32.5151245
+            ]
+          },
+          {
+            "ogrFid": 118,
+            "attributes": {
+              "RCID": 119,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 153,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29142392,
+              "FIDS": 1,
+              "LNAM": "021C01BCAD780001",
+              "NATSUR": [
+                "9"
+              ],
+              "QUASOU": [
+                "2"
+              ],
+              "WATLEV": 4
+            },
+            "geometryType": "Point",
+            "bounds": [
+              60.9459606,
+              -32.5162966,
+              60.9459606,
+              -32.5162966
+            ]
+          },
+          {
+            "ogrFid": 119,
+            "attributes": {
+              "RCID": 120,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 153,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29142391,
+              "FIDS": 1,
+              "LNAM": "021C01BCAD770001",
+              "NATSUR": [
+                "9"
+              ],
+              "QUASOU": [
+                "2"
+              ],
+              "WATLEV": 4
+            },
+            "geometryType": "Point",
+            "bounds": [
+              60.9423177,
+              -32.5090115,
+              60.9423177,
+              -32.5090115
+            ]
+          },
+          {
+            "ogrFid": 144,
+            "attributes": {
+              "RCID": 145,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 153,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29142396,
+              "FIDS": 1,
+              "LNAM": "021C01BCAD7C0001",
+              "NATSUR": [
+                "9"
+              ],
+              "QUASOU": [
+                "2"
+              ],
+              "WATLEV": 4
+            },
+            "geometryType": "Point",
+            "bounds": [
+              60.9459467,
+              -32.5087049,
+              60.9459467,
+              -32.5087049
+            ]
+          },
+          {
+            "ogrFid": 145,
+            "attributes": {
+              "RCID": 146,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 153,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29142397,
+              "FIDS": 1,
+              "LNAM": "021C01BCAD7D0001",
+              "NATSUR": [
+                "9"
+              ],
+              "QUASOU": [
+                "2"
+              ],
+              "WATLEV": 4
+            },
+            "geometryType": "Point",
+            "bounds": [
+              60.9537135,
+              -32.5135647,
+              60.9537135,
+              -32.5135647
+            ]
+          },
+          {
+            "ogrFid": 146,
+            "attributes": {
+              "RCID": 147,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 153,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29142398,
+              "FIDS": 1,
+              "LNAM": "021C01BCAD7E0001",
+              "NATSUR": [
+                "9"
+              ],
+              "QUASOU": [
+                "2"
+              ],
+              "WATLEV": 4
+            },
+            "geometryType": "Point",
+            "bounds": [
+              60.9454395,
+              -32.5040793,
+              60.9454395,
+              -32.5040793
+            ]
+          },
+          {
+            "ogrFid": 147,
+            "attributes": {
+              "RCID": 148,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 153,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29142399,
+              "FIDS": 1,
+              "LNAM": "021C01BCAD7F0001",
+              "NATSUR": [
+                "9"
+              ],
+              "QUASOU": [
+                "2"
+              ],
+              "WATLEV": 4
+            },
+            "geometryType": "Point",
+            "bounds": [
+              60.9471254,
+              -32.5017348,
+              60.9471254,
+              -32.5017348
+            ]
+          },
+          {
+            "ogrFid": 216,
+            "attributes": {
+              "RCID": 217,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 153,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29141900,
+              "FIDS": 1,
+              "LNAM": "021C01BCAB8C0001",
+              "NATSUR": [
+                "9"
+              ],
+              "VALSOU": 4.2,
+              "WATLEV": 3
+            },
+            "geometryType": "Point",
+            "bounds": [
+              61.0130518,
+              -32.5156745,
+              61.0130518,
+              -32.5156745
+            ]
+          },
+          {
+            "ogrFid": 217,
+            "attributes": {
+              "RCID": 218,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 153,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29141899,
+              "FIDS": 1,
+              "LNAM": "021C01BCAB8B0001",
+              "NATSUR": [
+                "9"
+              ],
+              "VALSOU": 14.9,
+              "WATLEV": 3
+            },
+            "geometryType": "Point",
+            "bounds": [
+              61.0176998,
+              -32.5094533,
+              61.0176998,
+              -32.5094533
+            ]
+          },
+          {
+            "ogrFid": 252,
+            "attributes": {
+              "RCID": 253,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 153,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29141897,
+              "FIDS": 1,
+              "LNAM": "021C01BCAB890001",
+              "EXPSOU": 2.0,
+              "NATSUR": [
+                "9"
+              ],
+              "VALSOU": -0.6,
+              "WATLEV": 4
+            },
+            "geometryType": "Point",
+            "bounds": [
+              61.0450819,
+              -32.5088492,
+              61.0450819,
+              -32.5088492
+            ]
+          },
+          {
+            "ogrFid": 395,
+            "attributes": {
+              "RCID": 396,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 153,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29143946,
+              "FIDS": 1,
+              "LNAM": "021C01BCB38A0001",
+              "NATSUR": [
+                "9"
+              ],
+              "QUASOU": [
+                "2"
+              ],
+              "WATLEV": 5
+            },
+            "geometryType": "Point",
+            "bounds": [
+              60.9747844,
+              -32.5211199,
+              60.9747844,
+              -32.5211199
+            ]
+          },
+          {
+            "ogrFid": 468,
+            "attributes": {
+              "RCID": 469,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 153,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29141674,
+              "FIDS": 1,
+              "LNAM": "021C01BCAAAA0001",
+              "NATSUR": [
+                "9"
+              ],
+              "VALSOU": 13.7,
+              "WATLEV": 3
+            },
+            "geometryType": "Point",
+            "bounds": [
+              60.9887772,
+              -32.3950593,
+              60.9887772,
+              -32.3950593
+            ]
+          },
+          {
+            "ogrFid": 469,
+            "attributes": {
+              "RCID": 470,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 153,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29141673,
+              "FIDS": 1,
+              "LNAM": "021C01BCAAA90001",
+              "NATSUR": [
+                "9"
+              ],
+              "QUASOU": [
+                "2"
+              ],
+              "WATLEV": 3
+            },
+            "geometryType": "Point",
+            "bounds": [
+              60.980539,
+              -32.4072193,
+              60.980539,
+              -32.4072193
+            ]
+          },
+          {
+            "ogrFid": 501,
+            "attributes": {
+              "RCID": 502,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 153,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29141672,
+              "FIDS": 1,
+              "LNAM": "021C01BCAAA80001",
+              "EXPSOU": 2.0,
+              "NATSUR": [
+                "9"
+              ],
+              "VALSOU": 1.3,
+              "WATLEV": 3
+            },
+            "geometryType": "Point",
+            "bounds": [
+              60.9810265,
+              -32.4155688,
+              60.9810265,
+              -32.4155688
+            ]
+          },
+          {
+            "ogrFid": 531,
+            "attributes": {
+              "RCID": 532,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 153,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29142465,
+              "FIDS": 1,
+              "LNAM": "021C01BCADC10001",
+              "EXPSOU": 2.0,
+              "QUASOU": [
+                "2"
+              ],
+              "WATLEV": 3
+            },
+            "geometryType": "Point",
+            "bounds": [
+              61.0330447,
+              -32.3654152,
+              61.0330447,
+              -32.3654152
+            ]
+          },
+          {
+            "ogrFid": 785,
+            "attributes": {
+              "RCID": 786,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 153,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29143973,
+              "FIDS": 1,
+              "LNAM": "021C01BCB3A50001",
+              "NATSUR": [
+                "9"
+              ],
+              "QUASOU": [
+                "2"
+              ],
+              "WATLEV": 4
+            },
+            "geometryType": "Point",
+            "bounds": [
+              60.9585034,
+              -32.4656312,
+              60.9585034,
+              -32.4656312
+            ]
+          },
+          {
+            "ogrFid": 786,
+            "attributes": {
+              "RCID": 787,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 153,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29143997,
+              "FIDS": 1,
+              "LNAM": "021C01BCB3BD0001",
+              "NATSUR": [
+                "9"
+              ],
+              "VALSOU": 20.0,
+              "WATLEV": 3
+            },
+            "geometryType": "Point",
+            "bounds": [
+              60.9718026,
+              -32.4735422,
+              60.9718026,
+              -32.4735422
+            ]
+          },
+          {
+            "ogrFid": 1319,
+            "attributes": {
+              "RCID": 1320,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 153,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29142331,
+              "FIDS": 1,
+              "LNAM": "021C01BCAD3B0001",
+              "NATSUR": [
+                "9"
+              ],
+              "QUASOU": [
+                "2"
+              ],
+              "WATLEV": 4
+            },
+            "geometryType": "Point",
+            "bounds": [
+              60.9775015,
+              -32.4759325,
+              60.9775015,
+              -32.4759325
+            ]
+          },
+          {
+            "ogrFid": 1518,
+            "attributes": {
+              "RCID": 1519,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 153,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29141898,
+              "FIDS": 1,
+              "LNAM": "021C01BCAB8A0001",
+              "QUASOU": [
+                "2"
+              ],
+              "WATLEV": 5
+            },
+            "geometryType": "Point",
+            "bounds": [
+              61.0405949,
+              -32.5242302,
+              61.0405949,
+              -32.5242302
+            ]
+          },
+          {
+            "ogrFid": 1519,
+            "attributes": {
+              "RCID": 1520,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 153,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29141896,
+              "FIDS": 1,
+              "LNAM": "021C01BCAB880001",
+              "NATSUR": [
+                "9"
+              ],
+              "QUASOU": [
+                "2"
+              ],
+              "WATLEV": 3
+            },
+            "geometryType": "Point",
+            "bounds": [
+              61.0420596,
+              -32.5075598,
+              61.0420596,
+              -32.5075598
+            ]
+          },
+          {
+            "ogrFid": 1520,
+            "attributes": {
+              "RCID": 1521,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 153,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29141895,
+              "FIDS": 1,
+              "LNAM": "021C01BCAB870001",
+              "NATSUR": [
+                "9"
+              ],
+              "VALSOU": 3.3,
+              "WATLEV": 3
+            },
+            "geometryType": "Point",
+            "bounds": [
+              61.0340921,
+              -32.5024923,
+              61.0340921,
+              -32.5024923
+            ]
+          },
+          {
+            "ogrFid": 1521,
+            "attributes": {
+              "RCID": 1522,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 153,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29141894,
+              "FIDS": 1,
+              "LNAM": "021C01BCAB860001",
+              "NATSUR": [
+                "9"
+              ],
+              "QUASOU": [
+                "2"
+              ],
+              "WATLEV": 3
+            },
+            "geometryType": "Point",
+            "bounds": [
+              61.0441604,
+              -32.5048638,
+              61.0441604,
+              -32.5048638
+            ]
+          },
+          {
+            "ogrFid": 1522,
+            "attributes": {
+              "RCID": 1523,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 153,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29141893,
+              "FIDS": 1,
+              "LNAM": "021C01BCAB850001",
+              "NATSUR": [
+                "9"
+              ],
+              "QUASOU": [
+                "2"
+              ],
+              "WATLEV": 3
+            },
+            "geometryType": "Point",
+            "bounds": [
+              61.0619001,
+              -32.5243203,
+              61.0619001,
+              -32.5243203
+            ]
+          },
+          {
+            "ogrFid": 1523,
+            "attributes": {
+              "RCID": 1524,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 153,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29141892,
+              "FIDS": 1,
+              "LNAM": "021C01BCAB840001",
+              "NATSUR": [
+                "9"
+              ],
+              "QUASOU": [
+                "2"
+              ],
+              "WATLEV": 3
+            },
+            "geometryType": "Point",
+            "bounds": [
+              61.0641146,
+              -32.5231484,
+              61.0641146,
+              -32.5231484
+            ]
+          },
+          {
+            "ogrFid": 1524,
+            "attributes": {
+              "RCID": 1525,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 153,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29141891,
+              "FIDS": 1,
+              "LNAM": "021C01BCAB830001",
+              "QUASOU": [
+                "2"
+              ],
+              "WATLEV": 3
+            },
+            "geometryType": "Point",
+            "bounds": [
+              61.0527609,
+              -32.5150975,
+              61.0527609,
+              -32.5150975
+            ]
+          },
+          {
+            "ogrFid": 1525,
+            "attributes": {
+              "RCID": 1526,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 153,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29141890,
+              "FIDS": 1,
+              "LNAM": "021C01BCAB820001",
+              "NATSUR": [
+                "9"
+              ],
+              "VALSOU": 3.9,
+              "WATLEV": 3
+            },
+            "geometryType": "Point",
+            "bounds": [
+              61.0558373,
+              -32.5132852,
+              61.0558373,
+              -32.5132852
+            ]
+          },
+          {
+            "ogrFid": 1526,
+            "attributes": {
+              "RCID": 1527,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 153,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29141889,
+              "FIDS": 1,
+              "LNAM": "021C01BCAB810001",
+              "NATSUR": [
+                "9"
+              ],
+              "QUASOU": [
+                "2"
+              ],
+              "WATLEV": 3
+            },
+            "geometryType": "Point",
+            "bounds": [
+              61.0638611,
+              -32.5208765,
+              61.0638611,
+              -32.5208765
+            ]
+          },
+          {
+            "ogrFid": 1527,
+            "attributes": {
+              "RCID": 1528,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 153,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29141888,
+              "FIDS": 1,
+              "LNAM": "021C01BCAB800001",
+              "NATSUR": [
+                "9"
+              ],
+              "QUASOU": [
+                "2"
+              ],
+              "WATLEV": 3
+            },
+            "geometryType": "Point",
+            "bounds": [
+              61.0651611,
+              -32.5196324,
+              61.0651611,
+              -32.5196324
+            ]
+          },
+          {
+            "ogrFid": 1528,
+            "attributes": {
+              "RCID": 1529,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 153,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29141887,
+              "FIDS": 1,
+              "LNAM": "021C01BCAB7F0001",
+              "NATSUR": [
+                "9"
+              ],
+              "QUASOU": [
+                "2"
+              ],
+              "WATLEV": 3
+            },
+            "geometryType": "Point",
+            "bounds": [
+              61.0484853,
+              -32.5063335,
+              61.0484853,
+              -32.5063335
+            ]
+          },
+          {
+            "ogrFid": 1544,
+            "attributes": {
+              "RCID": 1545,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 153,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29141912,
+              "FIDS": 1,
+              "LNAM": "021C01BCAB980001",
+              "NATSUR": [
+                "9"
+              ],
+              "QUASOU": [
+                "2"
+              ],
+              "WATLEV": 3
+            },
+            "geometryType": "Point",
+            "bounds": [
+              61.0496162,
+              -32.5034932,
+              61.0496162,
+              -32.5034932
+            ]
+          },
+          {
+            "ogrFid": 1545,
+            "attributes": {
+              "RCID": 1546,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 153,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29141913,
+              "FIDS": 1,
+              "LNAM": "021C01BCAB990001",
+              "NATSUR": [
+                "9"
+              ],
+              "QUASOU": [
+                "2"
+              ],
+              "WATLEV": 3
+            },
+            "geometryType": "Point",
+            "bounds": [
+              61.0485604,
+              -32.501834,
+              61.0485604,
+              -32.501834
+            ]
+          },
+          {
+            "ogrFid": 1546,
+            "attributes": {
+              "RCID": 1547,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 153,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29141914,
+              "FIDS": 1,
+              "LNAM": "021C01BCAB9A0001",
+              "NATSUR": [
+                "9"
+              ],
+              "QUASOU": [
+                "2"
+              ],
+              "WATLEV": 3
+            },
+            "geometryType": "Point",
+            "bounds": [
+              61.0499722,
+              -32.5011487,
+              61.0499722,
+              -32.5011487
+            ]
+          },
+          {
+            "ogrFid": 1578,
+            "attributes": {
+              "RCID": 1579,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 153,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29142394,
+              "FIDS": 1,
+              "LNAM": "021C01BCAD7A0001",
+              "NATSUR": [
+                "9"
+              ],
+              "QUASOU": [
+                "2"
+              ],
+              "WATLEV": 4
+            },
+            "geometryType": "Point",
+            "bounds": [
+              60.9592069,
+              -32.5176219,
+              60.9592069,
+              -32.5176219
+            ]
+          },
+          {
+            "ogrFid": 1579,
+            "attributes": {
+              "RCID": 1580,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 153,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29142395,
+              "FIDS": 1,
+              "LNAM": "021C01BCAD7B0001",
+              "NATSUR": [
+                "9"
+              ],
+              "QUASOU": [
+                "2"
+              ],
+              "WATLEV": 4
+            },
+            "geometryType": "Point",
+            "bounds": [
+              60.9597351,
+              -32.5186046,
+              60.9597351,
+              -32.5186046
+            ]
+          },
+          {
+            "ogrFid": 1868,
+            "attributes": {
+              "RCID": 1869,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 153,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29142229,
+              "FIDS": 1,
+              "LNAM": "021C01BCACD50001",
+              "NATSUR": [
+                "9"
+              ],
+              "QUASOU": [
+                "2"
+              ],
+              "WATLEV": 4
+            },
+            "geometryType": "Point",
+            "bounds": [
+              60.9875197,
+              -32.4846634,
+              60.9875197,
+              -32.4846634
+            ]
+          },
+          {
+            "ogrFid": 1869,
+            "attributes": {
+              "RCID": 1870,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 153,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29142230,
+              "FIDS": 1,
+              "LNAM": "021C01BCACD60001",
+              "NATSUR": [
+                "9"
+              ],
+              "VALSOU": 7.5,
+              "WATLEV": 3
+            },
+            "geometryType": "Point",
+            "bounds": [
+              60.9879042,
+              -32.4797298,
+              60.9879042,
+              -32.4797298
+            ]
+          },
+          {
+            "ogrFid": 1870,
+            "attributes": {
+              "RCID": 1871,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 153,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29142305,
+              "FIDS": 1,
+              "LNAM": "021C01BCAD210001",
+              "NATSUR": [
+                "9"
+              ],
+              "QUASOU": [
+                "2"
+              ],
+              "WATLEV": 4
+            },
+            "geometryType": "Point",
+            "bounds": [
+              60.987322,
+              -32.482607,
+              60.987322,
+              -32.482607
+            ]
+          },
+          {
+            "ogrFid": 1871,
+            "attributes": {
+              "RCID": 1872,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 153,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29142306,
+              "FIDS": 1,
+              "LNAM": "021C01BCAD220001",
+              "NATSUR": [
+                "9"
+              ],
+              "QUASOU": [
+                "2"
+              ],
+              "WATLEV": 4
+            },
+            "geometryType": "Point",
+            "bounds": [
+              60.9854381,
+              -32.4826972,
+              60.9854381,
+              -32.4826972
+            ]
+          },
+          {
+            "ogrFid": 1872,
+            "attributes": {
+              "RCID": 1873,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 153,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29142307,
+              "FIDS": 1,
+              "LNAM": "021C01BCAD230001",
+              "NATSUR": [
+                "9"
+              ],
+              "QUASOU": [
+                "2"
+              ],
+              "WATLEV": 4
+            },
+            "geometryType": "Point",
+            "bounds": [
+              60.9862156,
+              -32.4836352,
+              60.9862156,
+              -32.4836352
+            ]
+          },
+          {
+            "ogrFid": 1873,
+            "attributes": {
+              "RCID": 1874,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 153,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29142308,
+              "FIDS": 1,
+              "LNAM": "021C01BCAD240001",
+              "NATSUR": [
+                "9"
+              ],
+              "QUASOU": [
+                "2"
+              ],
+              "WATLEV": 4
+            },
+            "geometryType": "Point",
+            "bounds": [
+              60.9821968,
+              -32.4829588,
+              60.9821968,
+              -32.4829588
+            ]
+          },
+          {
+            "ogrFid": 1874,
+            "attributes": {
+              "RCID": 1875,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 153,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29142309,
+              "FIDS": 1,
+              "LNAM": "021C01BCAD250001",
+              "NATSUR": [
+                "9"
+              ],
+              "QUASOU": [
+                "2"
+              ],
+              "WATLEV": 4
+            },
+            "geometryType": "Point",
+            "bounds": [
+              60.9797588,
+              -32.4830309,
+              60.9797588,
+              -32.4830309
+            ]
+          },
+          {
+            "ogrFid": 1875,
+            "attributes": {
+              "RCID": 1876,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 153,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29142310,
+              "FIDS": 1,
+              "LNAM": "021C01BCAD260001",
+              "NATSUR": [
+                "9"
+              ],
+              "QUASOU": [
+                "2"
+              ],
+              "WATLEV": 3
+            },
+            "geometryType": "Point",
+            "bounds": [
+              60.970729,
+              -32.4806047,
+              60.970729,
+              -32.4806047
+            ]
+          },
+          {
+            "ogrFid": 1876,
+            "attributes": {
+              "RCID": 1877,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 153,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29142311,
+              "FIDS": 1,
+              "LNAM": "021C01BCAD270001",
+              "NATSUR": [
+                "9"
+              ],
+              "QUASOU": [
+                "2"
+              ],
+              "WATLEV": 4
+            },
+            "geometryType": "Point",
+            "bounds": [
+              60.9770162,
+              -32.4832925,
+              60.9770162,
+              -32.4832925
+            ]
+          },
+          {
+            "ogrFid": 1877,
+            "attributes": {
+              "RCID": 1878,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 153,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29142312,
+              "FIDS": 1,
+              "LNAM": "021C01BCAD280001",
+              "NATSUR": [
+                "9"
+              ],
+              "VALSOU": 20.5,
+              "WATLEV": 3
+            },
+            "geometryType": "Point",
+            "bounds": [
+              60.9788157,
+              -32.4869452,
+              60.9788157,
+              -32.4869452
+            ]
+          },
+          {
+            "ogrFid": 1883,
+            "attributes": {
+              "RCID": 1884,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 153,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29142332,
+              "FIDS": 1,
+              "LNAM": "021C01BCAD3C0001",
+              "NATSUR": [
+                "9"
+              ],
+              "QUASOU": [
+                "2"
+              ],
+              "WATLEV": 4
+            },
+            "geometryType": "Point",
+            "bounds": [
+              60.9802451,
+              -32.4762121,
+              60.9802451,
+              -32.4762121
+            ]
+          }
+        ],
+        "WRECKS": [
+          {
+            "ogrFid": 113,
+            "attributes": {
+              "RCID": 114,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 159,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29142231,
+              "FIDS": 1,
+              "LNAM": "021C01BCACD70001",
+              "CATWRK": 2,
+              "EXPSOU": 2.0,
+              "QUASOU": [
+                "7"
+              ],
+              "VALSOU": 15.0,
+              "WATLEV": 3
+            },
+            "geometryType": "Point",
+            "bounds": [
+              60.9922144,
+              -32.4603718,
+              60.9922144,
+              -32.4603718
+            ]
+          },
+          {
+            "ogrFid": 247,
+            "attributes": {
+              "RCID": 248,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 159,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29143971,
+              "FIDS": 1,
+              "LNAM": "021C01BCB3A30001",
+              "CATWRK": 5,
+              "CONRAD": 1.0,
+              "WATLEV": 1
+            },
+            "geometryType": "Point",
+            "bounds": [
+              61.0393137,
+              -32.5280344,
+              61.0393137,
+              -32.5280344
+            ]
+          },
+          {
+            "ogrFid": 401,
+            "attributes": {
+              "RCID": 402,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 159,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29143970,
+              "FIDS": 1,
+              "LNAM": "021C01BCB3A20001",
+              "CATWRK": 5,
+              "WATLEV": 1,
+              "INFORM": "Target mark"
+            },
+            "geometryType": "Point",
+            "bounds": [
+              60.9877222,
+              -32.5242752,
+              60.9877222,
+              -32.5242752
+            ]
+          },
+          {
+            "ogrFid": 502,
+            "attributes": {
+              "RCID": 503,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 159,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29141676,
+              "FIDS": 1,
+              "LNAM": "021C01BCAAAC0001",
+              "CATWRK": 2,
+              "EXPSOU": 2.0,
+              "QUASOU": [
+                "6"
+              ],
+              "VALSOU": 9.1,
+              "WATLEV": 3
+            },
+            "geometryType": "Point",
+            "bounds": [
+              60.9860952,
+              -32.399826,
+              60.9860952,
+              -32.399826
+            ]
+          },
+          {
+            "ogrFid": 663,
+            "attributes": {
+              "RCID": 664,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 159,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29144101,
+              "FIDS": 1,
+              "LNAM": "021C01BCB4250001",
+              "CATWRK": 2,
+              "QUASOU": [
+                "6"
+              ],
+              "VALSOU": 28.0,
+              "WATLEV": 3
+            },
+            "geometryType": "Point",
+            "bounds": [
+              61.2899463,
+              -32.5331276,
+              61.2899463,
+              -32.5331276
+            ]
+          },
+          {
+            "ogrFid": 664,
+            "attributes": {
+              "RCID": 665,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 159,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29144100,
+              "FIDS": 1,
+              "LNAM": "021C01BCB4240001",
+              "CATWRK": 2,
+              "EXPSOU": 2.0,
+              "QUASOU": [
+                "6"
+              ],
+              "TECSOU": [
+                "6"
+              ],
+              "VALSOU": 19.5,
+              "WATLEV": 3
+            },
+            "geometryType": "Point",
+            "bounds": [
+              61.2799252,
+              -32.5372289,
+              61.2799252,
+              -32.5372289
+            ]
+          },
+          {
+            "ogrFid": 708,
+            "attributes": {
+              "RCID": 709,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 159,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29141776,
+              "FIDS": 1,
+              "LNAM": "021C01BCAB100001",
+              "CATWRK": 2,
+              "EXPSOU": 2.0,
+              "QUASOU": [
+                "6"
+              ],
+              "VALSOU": 1.8,
+              "WATLEV": 3
+            },
+            "geometryType": "Point",
+            "bounds": [
+              60.880656,
+              -32.6206388,
+              60.880656,
+              -32.6206388
+            ]
+          },
+          {
+            "ogrFid": 742,
+            "attributes": {
+              "RCID": 743,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 159,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29142360,
+              "FIDS": 1,
+              "LNAM": "021C01BCAD580001",
+              "CATWRK": 2,
+              "EXPSOU": 2.0,
+              "QUASOU": [
+                "6"
+              ],
+              "VALSOU": 1.3,
+              "WATLEV": 3
+            },
+            "geometryType": "Point",
+            "bounds": [
+              61.2043575,
+              -32.608769,
+              61.2043575,
+              -32.608769
+            ]
+          },
+          {
+            "ogrFid": 743,
+            "attributes": {
+              "RCID": 744,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 159,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29142361,
+              "FIDS": 1,
+              "LNAM": "021C01BCAD590001",
+              "CATWRK": 2,
+              "EXPSOU": 2.0,
+              "QUASOU": [
+                "6"
+              ],
+              "VALSOU": 16.8,
+              "WATLEV": 3
+            },
+            "geometryType": "Point",
+            "bounds": [
+              61.2110278,
+              -32.5867635,
+              61.2110278,
+              -32.5867635
+            ]
+          },
+          {
+            "ogrFid": 744,
+            "attributes": {
+              "RCID": 745,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 159,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29142362,
+              "FIDS": 1,
+              "LNAM": "021C01BCAD5A0001",
+              "CATWRK": 2,
+              "EXPSOU": 2.0,
+              "QUASOU": [
+                "6"
+              ],
+              "VALSOU": 29.0,
+              "WATLEV": 3
+            },
+            "geometryType": "Point",
+            "bounds": [
+              61.2224561,
+              -32.5646895,
+              61.2224561,
+              -32.5646895
+            ]
+          },
+          {
+            "ogrFid": 854,
+            "attributes": {
+              "RCID": 855,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 159,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29143642,
+              "FIDS": 1,
+              "LNAM": "021C01BCB25A0001",
+              "CATWRK": 1,
+              "QUASOU": [
+                "2"
+              ],
+              "WATLEV": 3
+            },
+            "geometryType": "Point",
+            "bounds": [
+              61.1031909,
+              -32.4450159,
+              61.1031909,
+              -32.4450159
+            ]
+          },
+          {
+            "ogrFid": 928,
+            "attributes": {
+              "RCID": 929,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 159,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29144076,
+              "FIDS": 1,
+              "LNAM": "021C01BCB40C0001",
+              "CATWRK": 2,
+              "QUASOU": [
+                "6"
+              ],
+              "VALSOU": 35.0,
+              "WATLEV": 3
+            },
+            "geometryType": "Point",
+            "bounds": [
+              61.2730285,
+              -32.6009781,
+              61.2730285,
+              -32.6009781
+            ]
+          },
+          {
+            "ogrFid": 977,
+            "attributes": {
+              "RCID": 978,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 159,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29144074,
+              "FIDS": 1,
+              "LNAM": "021C01BCB40A0001",
+              "CATWRK": 2,
+              "QUASOU": [
+                "2"
+              ],
+              "WATLEV": 4,
+              "INFORM": "Masts only are visible at Chart Datum"
+            },
+            "geometryType": "Point",
+            "bounds": [
+              60.9518898,
+              -32.5408523,
+              60.9518898,
+              -32.5408523
+            ]
+          },
+          {
+            "ogrFid": 997,
+            "attributes": {
+              "RCID": 998,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 159,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29142559,
+              "FIDS": 1,
+              "LNAM": "021C01BCAE1F0001",
+              "CATWRK": 2,
+              "QUASOU": [
+                "2"
+              ],
+              "WATLEV": 3
+            },
+            "geometryType": "Point",
+            "bounds": [
+              61.0135909,
+              -32.5319467,
+              61.0135909,
+              -32.5319467
+            ]
+          },
+          {
+            "ogrFid": 1083,
+            "attributes": {
+              "RCID": 1084,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 159,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29142439,
+              "FIDS": 1,
+              "LNAM": "021C01BCADA70001",
+              "CATWRK": 2,
+              "EXPSOU": 2.0,
+              "QUASOU": [
+                "6"
+              ],
+              "VALSOU": 4.2,
+              "WATLEV": 3
+            },
+            "geometryType": "Point",
+            "bounds": [
+              61.0432813,
+              -32.5388333,
+              61.0432813,
+              -32.5388333
+            ]
+          },
+          {
+            "ogrFid": 1214,
+            "attributes": {
+              "RCID": 1215,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 159,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29141777,
+              "FIDS": 1,
+              "LNAM": "021C01BCAB110001",
+              "CATWRK": 2,
+              "QUASOU": [
+                "6"
+              ],
+              "VALSOU": 8.9,
+              "WATLEV": 3
+            },
+            "geometryType": "Point",
+            "bounds": [
+              60.8931155,
+              -32.6102281,
+              60.8931155,
+              -32.6102281
+            ]
+          },
+          {
+            "ogrFid": 1215,
+            "attributes": {
+              "RCID": 1216,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 159,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29141778,
+              "FIDS": 1,
+              "LNAM": "021C01BCAB120001",
+              "CATWRK": 2,
+              "QUASOU": [
+                "6"
+              ],
+              "VALSOU": 6.4,
+              "WATLEV": 3
+            },
+            "geometryType": "Point",
+            "bounds": [
+              60.8920061,
+              -32.6092013,
+              60.8920061,
+              -32.6092013
+            ]
+          },
+          {
+            "ogrFid": 1350,
+            "attributes": {
+              "RCID": 1351,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 159,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29141735,
+              "FIDS": 1,
+              "LNAM": "021C01BCAAE70001",
+              "CATWRK": 2,
+              "QUASOU": [
+                "6"
+              ],
+              "TECSOU": [
+                "6"
+              ],
+              "VALSOU": 30.5,
+              "WATLEV": 3
+            },
+            "geometryType": "Point",
+            "bounds": [
+              61.3148484,
+              -32.6049772,
+              61.3148484,
+              -32.6049772
+            ]
+          },
+          {
+            "ogrFid": 1387,
+            "attributes": {
+              "RCID": 1388,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 159,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29142142,
+              "FIDS": 1,
+              "LNAM": "021C01BCAC7E0001",
+              "CATWRK": 1,
+              "WATLEV": 3
+            },
+            "geometryType": "Point",
+            "bounds": [
+              61.0211394,
+              -32.471726,
+              61.0211394,
+              -32.471726
+            ]
+          },
+          {
+            "ogrFid": 1884,
+            "attributes": {
+              "RCID": 1885,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 159,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29142333,
+              "FIDS": 1,
+              "LNAM": "021C01BCAD3D0001",
+              "CATWRK": 5,
+              "WATLEV": 1
+            },
+            "geometryType": "Point",
+            "bounds": [
+              60.9821032,
+              -32.4816239,
+              60.9821032,
+              -32.4816239
+            ]
+          }
+        ],
+        "FSHFAC": [
+          {
+            "ogrFid": 238,
+            "attributes": {
+              "RCID": 239,
+              "PRIM": 2,
+              "GRUP": 2,
+              "OBJL": 55,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29140946,
+              "FIDS": 1,
+              "LNAM": "021C01BCA7D20001",
+              "CATFIF": 1.0
+            },
+            "geometryType": "LineString",
+            "bounds": [
+              61.0382487,
+              -32.5145295,
+              61.0387969,
+              -32.5112656
+            ]
+          },
+          {
+            "ogrFid": 1182,
+            "attributes": {
+              "RCID": 1183,
+              "PRIM": 3,
+              "GRUP": 2,
+              "OBJL": 55,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29143466,
+              "FIDS": 1,
+              "LNAM": "021C01BCB1AA0001"
+            },
+            "geometryType": "Polygon",
+            "bounds": [
+              60.9613904,
+              -32.5764819,
+              60.966539,
+              -32.5716997
+            ]
+          },
+          {
+            "ogrFid": 1538,
+            "attributes": {
+              "RCID": 1539,
+              "PRIM": 2,
+              "GRUP": 2,
+              "OBJL": 55,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29141083,
+              "FIDS": 1,
+              "LNAM": "021C01BCA85B0001",
+              "CATFIF": 1.0
+            },
+            "geometryType": "LineString",
+            "bounds": [
+              61.0391084,
+              -32.5149712,
+              61.0433178,
+              -32.5138442
+            ]
+          }
+        ],
+        "CBLSUB": [
+          {
+            "ogrFid": 264,
+            "attributes": {
+              "RCID": 265,
+              "PRIM": 2,
+              "GRUP": 2,
+              "OBJL": 22,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29143637,
+              "FIDS": 1,
+              "LNAM": "021C01BCB2550001",
+              "CATCBL": 1
+            },
+            "geometryType": "LineString",
+            "bounds": [
+              61.1665751,
+              -32.3788434,
+              61.194676,
+              -32.3460956
+            ]
+          },
+          {
+            "ogrFid": 273,
+            "attributes": {
+              "RCID": 274,
+              "PRIM": 2,
+              "GRUP": 2,
+              "OBJL": 22,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29141700,
+              "FIDS": 1,
+              "LNAM": "021C01BCAAC40001",
+              "CATCBL": 6
+            },
+            "geometryType": "LineString",
+            "bounds": [
+              61.1921367,
+              -32.379033,
+              61.2004002,
+              -32.3699938
+            ]
+          },
+          {
+            "ogrFid": 274,
+            "attributes": {
+              "RCID": 275,
+              "PRIM": 2,
+              "GRUP": 2,
+              "OBJL": 22,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29141701,
+              "FIDS": 1,
+              "LNAM": "021C01BCAAC50001",
+              "CATCBL": 6
+            },
+            "geometryType": "LineString",
+            "bounds": [
+              61.1921433,
+              -32.3792136,
+              61.2056208,
+              -32.376604
+            ]
+          },
+          {
+            "ogrFid": 275,
+            "attributes": {
+              "RCID": 276,
+              "PRIM": 2,
+              "GRUP": 2,
+              "OBJL": 22,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29141702,
+              "FIDS": 1,
+              "LNAM": "021C01BCAAC60001",
+              "CATCBL": 6
+            },
+            "geometryType": "LineString",
+            "bounds": [
+              61.1921877,
+              -32.3865364,
+              61.2029793,
+              -32.3795567
+            ]
+          },
+          {
+            "ogrFid": 276,
+            "attributes": {
+              "RCID": 277,
+              "PRIM": 2,
+              "GRUP": 2,
+              "OBJL": 22,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29141703,
+              "FIDS": 1,
+              "LNAM": "021C01BCAAC70001",
+              "CATCBL": 6
+            },
+            "geometryType": "LineString",
+            "bounds": [
+              61.1913523,
+              -32.3914841,
+              61.1916455,
+              -32.3797554
+            ]
+          },
+          {
+            "ogrFid": 721,
+            "attributes": {
+              "RCID": 722,
+              "PRIM": 2,
+              "GRUP": 2,
+              "OBJL": 22,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29142347,
+              "FIDS": 1,
+              "LNAM": "021C01BCAD4B0001",
+              "CATCBL": 1
+            },
+            "geometryType": "LineString",
+            "bounds": [
+              61.2376274,
+              -32.5513342,
+              61.2472319,
+              -32.5409154
+            ]
+          },
+          {
+            "ogrFid": 723,
+            "attributes": {
+              "RCID": 724,
+              "PRIM": 2,
+              "GRUP": 2,
+              "OBJL": 22,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29140861,
+              "FIDS": 1,
+              "LNAM": "021C01BCA77D0001",
+              "CATCBL": 1
+            },
+            "geometryType": "LineString",
+            "bounds": [
+              61.1480196,
+              -32.6120113,
+              61.1521163,
+              -32.6100119
+            ]
+          },
+          {
+            "ogrFid": 724,
+            "attributes": {
+              "RCID": 725,
+              "PRIM": 2,
+              "GRUP": 2,
+              "OBJL": 22,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29142170,
+              "FIDS": 1,
+              "LNAM": "021C01BCAC9A0001",
+              "CATCBL": 1
+            },
+            "geometryType": "LineString",
+            "bounds": [
+              61.1544859,
+              -32.6104893,
+              61.2366035,
+              -32.5416004
+            ]
+          },
+          {
+            "ogrFid": 725,
+            "attributes": {
+              "RCID": 726,
+              "PRIM": 2,
+              "GRUP": 2,
+              "OBJL": 22,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29142169,
+              "FIDS": 1,
+              "LNAM": "021C01BCAC990001",
+              "CATCBL": 1
+            },
+            "geometryType": "LineString",
+            "bounds": [
+              61.15436,
+              -32.6098498,
+              61.2356885,
+              -32.5411768
+            ]
+          },
+          {
+            "ogrFid": 890,
+            "attributes": {
+              "RCID": 891,
+              "PRIM": 2,
+              "GRUP": 2,
+              "OBJL": 22,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29142346,
+              "FIDS": 1,
+              "LNAM": "021C01BCAD4A0001",
+              "CATCBL": 1
+            },
+            "geometryType": "LineString",
+            "bounds": [
+              61.2371297,
+              -32.5520192,
+              61.2464297,
+              -32.5415103
+            ]
+          },
+          {
+            "ogrFid": 902,
+            "attributes": {
+              "RCID": 903,
+              "PRIM": 2,
+              "GRUP": 2,
+              "OBJL": 22,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29141444,
+              "FIDS": 1,
+              "LNAM": "021C01BCA9C40001",
+              "CATCBL": 1
+            },
+            "geometryType": "LineString",
+            "bounds": [
+              61.2269121,
+              -32.5398699,
+              61.2362125,
+              -32.5290441
+            ]
+          },
+          {
+            "ogrFid": 903,
+            "attributes": {
+              "RCID": 904,
+              "PRIM": 2,
+              "GRUP": 2,
+              "OBJL": 22,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29140882,
+              "FIDS": 1,
+              "LNAM": "021C01BCA7920001",
+              "CATCBL": 1
+            },
+            "geometryType": "LineString",
+            "bounds": [
+              61.1536412,
+              -32.6138305,
+              61.1551429,
+              -32.6106424
+            ]
+          },
+          {
+            "ogrFid": 904,
+            "attributes": {
+              "RCID": 905,
+              "PRIM": 2,
+              "GRUP": 2,
+              "OBJL": 22,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29140860,
+              "FIDS": 1,
+              "LNAM": "021C01BCA77C0001",
+              "CATCBL": 1
+            },
+            "geometryType": "LineString",
+            "bounds": [
+              61.1499967,
+              -32.6080485,
+              61.1534149,
+              -32.6021941
+            ]
+          },
+          {
+            "ogrFid": 914,
+            "attributes": {
+              "RCID": 915,
+              "PRIM": 2,
+              "GRUP": 2,
+              "OBJL": 22,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29142348,
+              "FIDS": 1,
+              "LNAM": "021C01BCAD4C0001",
+              "CATCBL": 1
+            },
+            "geometryType": "LineString",
+            "bounds": [
+              61.2260542,
+              -32.5405008,
+              61.2355488,
+              -32.529612
+            ]
+          },
+          {
+            "ogrFid": 1678,
+            "attributes": {
+              "RCID": 1679,
+              "PRIM": 2,
+              "GRUP": 2,
+              "OBJL": 22,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29143632,
+              "FIDS": 1,
+              "LNAM": "021C01BCB2500001",
+              "CATCBL": 1
+            },
+            "geometryType": "LineString",
+            "bounds": [
+              61.0327165,
+              -32.3843604,
+              61.191154,
+              -32.3769471
+            ]
+          },
+          {
+            "ogrFid": 1778,
+            "attributes": {
+              "RCID": 1779,
+              "PRIM": 2,
+              "GRUP": 2,
+              "OBJL": 22,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29143636,
+              "FIDS": 1,
+              "LNAM": "021C01BCB2540001",
+              "CATCBL": 6
+            },
+            "geometryType": "LineString",
+            "bounds": [
+              61.1806508,
+              -32.3783648,
+              61.1898681,
+              -32.3722966
+            ]
+          },
+          {
+            "ogrFid": 1779,
+            "attributes": {
+              "RCID": 1780,
+              "PRIM": 2,
+              "GRUP": 2,
+              "OBJL": 22,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29143635,
+              "FIDS": 1,
+              "LNAM": "021C01BCB2530001",
+              "CATCBL": 6
+            },
+            "geometryType": "LineString",
+            "bounds": [
+              61.1778957,
+              -32.3806764,
+              61.1912569,
+              -32.379331
+            ]
+          },
+          {
+            "ogrFid": 1780,
+            "attributes": {
+              "RCID": 1781,
+              "PRIM": 2,
+              "GRUP": 2,
+              "OBJL": 22,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29143634,
+              "FIDS": 1,
+              "LNAM": "021C01BCB2520001",
+              "CATCBL": 6
+            },
+            "geometryType": "LineString",
+            "bounds": [
+              61.1832578,
+              -32.3888658,
+              61.191507,
+              -32.3797825
+            ]
+          },
+          {
+            "ogrFid": 1781,
+            "attributes": {
+              "RCID": 1782,
+              "PRIM": 2,
+              "GRUP": 2,
+              "OBJL": 22,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29143633,
+              "FIDS": 1,
+              "LNAM": "021C01BCB2510001",
+              "CATCBL": 1
+            },
+            "geometryType": "LineString",
+            "bounds": [
+              61.1630195,
+              -32.3790511,
+              61.1912917,
+              -32.371809
+            ]
+          },
+          {
+            "ogrFid": 1782,
+            "attributes": {
+              "RCID": 1783,
+              "PRIM": 2,
+              "GRUP": 2,
+              "OBJL": 22,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29142584,
+              "FIDS": 1,
+              "LNAM": "021C01BCAE380001",
+              "CATCBL": 6
+            },
+            "geometryType": "LineString",
+            "bounds": [
+              61.1903961,
+              -32.3789247,
+              61.1915788,
+              -32.3674562
+            ]
+          }
+        ]
+      },
+      "counts": {
+        "SMCFAC": 0,
+        "HRBFAC": 1,
+        "UWTROC": 50,
+        "WRECKS": 20,
+        "FSHFAC": 3,
+        "CBLSUB": 20
+      }
+    }
+  ]
+}

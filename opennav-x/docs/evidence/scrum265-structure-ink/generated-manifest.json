@@ -1,0 +1,1351 @@
+{
+  "version": 1,
+  "upstreamCommit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "prototypeSha256": "b04573b920b6bccd16afd22f54a909e48afcfd502ce9cd7c69fdf5b6dd895447",
+  "palette": {
+    "DAY_BRIGHT": {
+      "LANDA": [
+        238,
+        238,
+        226
+      ],
+      "XNBUA": [
+        238,
+        238,
+        226
+      ],
+      "XNSTR": [
+        238,
+        238,
+        226
+      ],
+      "XNGEO": [
+        104,
+        123,
+        122
+      ],
+      "XNCBL": [
+        156,
+        134,
+        150
+      ],
+      "XNARE": [
+        156,
+        134,
+        150
+      ],
+      "CSTLN": [
+        175,
+        191,
+        174
+      ],
+      "DEPDW": [
+        213,
+        229,
+        229
+      ],
+      "CHBLK": [
+        83,
+        100,
+        95
+      ],
+      "CHGRD": [
+        83,
+        100,
+        95
+      ],
+      "DEPMD": [
+        199,
+        220,
+        221
+      ],
+      "DEPMS": [
+        173,
+        203,
+        206
+      ],
+      "DEPVS": [
+        134,
+        172,
+        182
+      ],
+      "DEPIT": [
+        181,
+        201,
+        171
+      ],
+      "DEPCN": [
+        173,
+        203,
+        206
+      ],
+      "DEPSC": [
+        104,
+        123,
+        122
+      ],
+      "SNDG1": [
+        104,
+        123,
+        122
+      ],
+      "SNDG2": [
+        35,
+        62,
+        62
+      ]
+    },
+    "DUSK": {
+      "LANDA": [
+        78,
+        97,
+        93
+      ],
+      "XNBUA": [
+        78,
+        97,
+        93
+      ],
+      "XNSTR": [
+        78,
+        97,
+        93
+      ],
+      "XNGEO": [
+        173,
+        187,
+        177
+      ],
+      "XNCBL": [
+        184,
+        160,
+        177
+      ],
+      "XNARE": [
+        184,
+        160,
+        177
+      ],
+      "CSTLN": [
+        116,
+        135,
+        121
+      ],
+      "DEPDW": [
+        52,
+        79,
+        89
+      ],
+      "CHBLK": [
+        225,
+        229,
+        216
+      ],
+      "CHGRD": [
+        225,
+        229,
+        216
+      ],
+      "DEPMD": [
+        66,
+        95,
+        105
+      ],
+      "DEPMS": [
+        86,
+        120,
+        128
+      ],
+      "DEPVS": [
+        113,
+        140,
+        147
+      ],
+      "DEPIT": [
+        98,
+        118,
+        107
+      ],
+      "DEPCN": [
+        86,
+        120,
+        128
+      ],
+      "DEPSC": [
+        173,
+        187,
+        177
+      ],
+      "SNDG1": [
+        173,
+        187,
+        177
+      ],
+      "SNDG2": [
+        225,
+        229,
+        216
+      ]
+    },
+    "NIGHT": {
+      "LANDA": [
+        29,
+        41,
+        37
+      ],
+      "XNBUA": [
+        29,
+        41,
+        37
+      ],
+      "XNSTR": [
+        29,
+        41,
+        37
+      ],
+      "XNGEO": [
+        91,
+        104,
+        94
+      ],
+      "XNCBL": [
+        113,
+        99,
+        110
+      ],
+      "XNARE": [
+        113,
+        99,
+        110
+      ],
+      "CSTLN": [
+        55,
+        68,
+        58
+      ],
+      "DEPDW": [
+        14,
+        23,
+        28
+      ],
+      "CHBLK": [
+        117,
+        133,
+        121
+      ],
+      "CHGRD": [
+        117,
+        133,
+        121
+      ],
+      "DEPMD": [
+        22,
+        35,
+        41
+      ],
+      "DEPMS": [
+        33,
+        51,
+        57
+      ],
+      "DEPVS": [
+        48,
+        66,
+        75
+      ],
+      "DEPIT": [
+        40,
+        53,
+        46
+      ],
+      "DEPCN": [
+        33,
+        51,
+        57
+      ],
+      "DEPSC": [
+        117,
+        133,
+        121
+      ],
+      "SNDG1": [
+        117,
+        133,
+        121
+      ],
+      "SNDG2": [
+        182,
+        195,
+        175
+      ]
+    }
+  },
+  "neutralRasterInk": {
+    "rastersymbols-dusk.png": {
+      "sourceRgb": [
+        54,
+        54,
+        54
+      ],
+      "targetRgb": [
+        225,
+        229,
+        216
+      ],
+      "changedPixels": 42100,
+      "alphaAndGeometryPreserved": true
+    },
+    "rastersymbols-dark.png": {
+      "sourceRgb": [
+        27,
+        27,
+        27
+      ],
+      "targetRgb": [
+        117,
+        133,
+        121
+      ],
+      "changedPixels": 42100,
+      "alphaAndGeometryPreserved": true
+    }
+  },
+  "dayNeutralRasterInk": {
+    "sourcePaletteRoles": [
+      "CHBLK",
+      "CHGRD"
+    ],
+    "targetRgb": [
+      83,
+      100,
+      95
+    ],
+    "changedPixels": 40482,
+    "blackPixels": 39511,
+    "grayPixels": 971,
+    "maskIndexSha256": "5e4ecc6dbc228ed8b5874ba4094922c03b4a12b68220fc4553266460b228ce73",
+    "sourcePngSha256": "ee1020a8b94b312faba8c146974e49147d280e5ef3cc13f3cd688bbfd54dde0c",
+    "sourceXmlSha256": "84f93522576ed5872b24865cf6161872ed0b4b634f77c64ca697a04d3568e886",
+    "excludedNeutralPixels": 4215,
+    "soundingsAndOtherRolesPreserved": true,
+    "alphaAndGeometryPreserved": true
+  },
+  "nightCanvas": {
+    "brightness": 0.78,
+    "roles": {
+      "LANDA": {
+        "raw": [
+          37,
+          52,
+          47
+        ],
+        "effective": [
+          29,
+          41,
+          37
+        ]
+      },
+      "XNBUA": {
+        "raw": [
+          37,
+          52,
+          47
+        ],
+        "effective": [
+          29,
+          41,
+          37
+        ]
+      },
+      "XNSTR": {
+        "raw": [
+          37,
+          52,
+          47
+        ],
+        "effective": [
+          29,
+          41,
+          37
+        ]
+      },
+      "XNGEO": {
+        "raw": [
+          117,
+          133,
+          121
+        ],
+        "effective": [
+          91,
+          104,
+          94
+        ]
+      },
+      "CSTLN": {
+        "raw": [
+          70,
+          87,
+          74
+        ],
+        "effective": [
+          55,
+          68,
+          58
+        ]
+      },
+      "DEPDW": {
+        "raw": [
+          18,
+          30,
+          36
+        ],
+        "effective": [
+          14,
+          23,
+          28
+        ]
+      },
+      "DEPMD": {
+        "raw": [
+          28,
+          45,
+          53
+        ],
+        "effective": [
+          22,
+          35,
+          41
+        ]
+      },
+      "DEPMS": {
+        "raw": [
+          42,
+          65,
+          73
+        ],
+        "effective": [
+          33,
+          51,
+          57
+        ]
+      },
+      "DEPVS": {
+        "raw": [
+          61,
+          85,
+          96
+        ],
+        "effective": [
+          48,
+          66,
+          75
+        ]
+      },
+      "DEPIT": {
+        "raw": [
+          51,
+          68,
+          59
+        ],
+        "effective": [
+          40,
+          53,
+          46
+        ]
+      },
+      "DEPCN": {
+        "raw": [
+          42,
+          65,
+          73
+        ],
+        "effective": [
+          33,
+          51,
+          57
+        ]
+      }
+    },
+    "retainedSafetyInk": [
+      "CHBLK",
+      "CHGRD",
+      "DEPSC",
+      "SNDG1",
+      "SNDG2"
+    ]
+  },
+  "anchorageArtwork": {
+    "rastersymbols-day.png": {
+      "tile": [
+        20,
+        1160,
+        20,
+        20
+      ],
+      "pivot": [
+        10,
+        10
+      ],
+      "serviceRgb": [
+        124,
+        133,
+        138
+      ],
+      "changedPixels": 126,
+      "alphaSha256": "a814de453f8c9158f6767a1ba25a496fae762535f1a79f2edbd116dc4a2a3c83",
+      "atlasDimensionsUnchanged": [
+        1500,
+        1200
+      ]
+    },
+    "rastersymbols-dusk.png": {
+      "tile": [
+        20,
+        1160,
+        20,
+        20
+      ],
+      "pivot": [
+        10,
+        10
+      ],
+      "serviceRgb": [
+        168,
+        187,
+        183
+      ],
+      "changedPixels": 126,
+      "alphaSha256": "a814de453f8c9158f6767a1ba25a496fae762535f1a79f2edbd116dc4a2a3c83",
+      "atlasDimensionsUnchanged": [
+        1500,
+        1200
+      ]
+    },
+    "rastersymbols-dark.png": {
+      "tile": [
+        20,
+        1160,
+        20,
+        20
+      ],
+      "pivot": [
+        10,
+        10
+      ],
+      "serviceRgb": [
+        98,
+        115,
+        108
+      ],
+      "changedPixels": 126,
+      "alphaSha256": "a814de453f8c9158f6767a1ba25a496fae762535f1a79f2edbd116dc4a2a3c83",
+      "atlasDimensionsUnchanged": [
+        1500,
+        1200
+      ]
+    }
+  },
+  "serviceArtwork": {
+    "rastersymbols-day.png": {
+      "PILBOP02": {
+        "effectiveRcid": 1,
+        "tile": [
+          52,
+          1160,
+          24,
+          24
+        ],
+        "pivot": [
+          12,
+          12
+        ],
+        "alphaSha256": "a5939fe16a9ceab9bdd44e5b0182c76407b6c3b0800d5429ce39f510e7f9bc86",
+        "changedPixels": 148,
+        "serviceRgb": [
+          124,
+          133,
+          138
+        ],
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      },
+      "RTPBCN02": {
+        "effectiveRcid": 2259,
+        "tile": [
+          84,
+          1160,
+          24,
+          24
+        ],
+        "pivot": [
+          12,
+          12
+        ],
+        "alphaSha256": "4e8e9899f67b94972331aac087f52726aaf53ca4644e6da4d316104e91472ba6",
+        "changedPixels": 156,
+        "serviceRgb": [
+          124,
+          133,
+          138
+        ],
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      }
+    },
+    "rastersymbols-dusk.png": {
+      "PILBOP02": {
+        "effectiveRcid": 1,
+        "tile": [
+          52,
+          1160,
+          24,
+          24
+        ],
+        "pivot": [
+          12,
+          12
+        ],
+        "alphaSha256": "a5939fe16a9ceab9bdd44e5b0182c76407b6c3b0800d5429ce39f510e7f9bc86",
+        "changedPixels": 148,
+        "serviceRgb": [
+          168,
+          187,
+          183
+        ],
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      },
+      "RTPBCN02": {
+        "effectiveRcid": 2259,
+        "tile": [
+          84,
+          1160,
+          24,
+          24
+        ],
+        "pivot": [
+          12,
+          12
+        ],
+        "alphaSha256": "4e8e9899f67b94972331aac087f52726aaf53ca4644e6da4d316104e91472ba6",
+        "changedPixels": 156,
+        "serviceRgb": [
+          168,
+          187,
+          183
+        ],
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      }
+    },
+    "rastersymbols-dark.png": {
+      "PILBOP02": {
+        "effectiveRcid": 1,
+        "tile": [
+          52,
+          1160,
+          24,
+          24
+        ],
+        "pivot": [
+          12,
+          12
+        ],
+        "alphaSha256": "a5939fe16a9ceab9bdd44e5b0182c76407b6c3b0800d5429ce39f510e7f9bc86",
+        "changedPixels": 148,
+        "serviceRgb": [
+          98,
+          115,
+          108
+        ],
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      },
+      "RTPBCN02": {
+        "effectiveRcid": 2259,
+        "tile": [
+          84,
+          1160,
+          24,
+          24
+        ],
+        "pivot": [
+          12,
+          12
+        ],
+        "alphaSha256": "4e8e9899f67b94972331aac087f52726aaf53ca4644e6da4d316104e91472ba6",
+        "changedPixels": 156,
+        "serviceRgb": [
+          98,
+          115,
+          108
+        ],
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      }
+    }
+  },
+  "cardinalArtwork": {
+    "rastersymbols-day.png": {
+      "BOYCAR01": {
+        "effectiveRcid": 1270,
+        "category": 1,
+        "tile": [
+          116,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "e80ffde30034bd9d28c79af8827682f02b9653f10fda81a2b345323cf6177f66",
+            "changedPixels": 102
+          },
+          "DUSK": {
+            "rgbaSha256": "1e1720055b2e3c1c5e9d8b95ea8e2517063cc0d9876e70b2d6f7fe69db8da522",
+            "changedPixels": 102
+          },
+          "NIGHT": {
+            "rgbaSha256": "711442707cd88f18e7c684240bc6ceec3426c9243e7b3e801a0a9b514fa446e3",
+            "changedPixels": 102
+          }
+        },
+        "colors": {
+          "black": [
+            83,
+            100,
+            95
+          ],
+          "yellow": [
+            172,
+            141,
+            76
+          ],
+          "water": [
+            213,
+            229,
+            229
+          ]
+        },
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      },
+      "BOYCAR02": {
+        "effectiveRcid": 1271,
+        "category": 2,
+        "tile": [
+          148,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "69fd8ae751627da58960cd97872ec2b2acea5328f0b9538720b0cccd214629bb",
+            "changedPixels": 102
+          },
+          "DUSK": {
+            "rgbaSha256": "de31e530b46c7b043e9a92fa9e951860a7590d40db04bf9d18eecd43f0623229",
+            "changedPixels": 102
+          },
+          "NIGHT": {
+            "rgbaSha256": "c3b6bd3d6a06aeb1d894e510ab798b7d109e9ce39822e71205b08f627f82e177",
+            "changedPixels": 102
+          }
+        },
+        "colors": {
+          "black": [
+            83,
+            100,
+            95
+          ],
+          "yellow": [
+            172,
+            141,
+            76
+          ],
+          "water": [
+            213,
+            229,
+            229
+          ]
+        },
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      },
+      "BOYCAR03": {
+        "effectiveRcid": 1272,
+        "category": 3,
+        "tile": [
+          180,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "52935ed49d25dd1f9675363debc9936804d9fa0bf86b19f43d07579c3343889c",
+            "changedPixels": 100
+          },
+          "DUSK": {
+            "rgbaSha256": "5e2d0124ae842e7f19490fc3a450226166519b0284c98911d28c4061cbfb6740",
+            "changedPixels": 100
+          },
+          "NIGHT": {
+            "rgbaSha256": "af059cb8e711c835fdf48348f9a770820c89d59a2f47a2656b10c909af9de12f",
+            "changedPixels": 100
+          }
+        },
+        "colors": {
+          "black": [
+            83,
+            100,
+            95
+          ],
+          "yellow": [
+            172,
+            141,
+            76
+          ],
+          "water": [
+            213,
+            229,
+            229
+          ]
+        },
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      },
+      "BOYCAR04": {
+        "effectiveRcid": 1273,
+        "category": 4,
+        "tile": [
+          212,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "c0c46d8a5afc8fd31448740d1356ea1af4a457032322c0a83426af2d8b242b94",
+            "changedPixels": 100
+          },
+          "DUSK": {
+            "rgbaSha256": "71dd26ff8408876091d1f9e4688113ed65b06056f38fcefb838aa3dc6e9ab641",
+            "changedPixels": 100
+          },
+          "NIGHT": {
+            "rgbaSha256": "b2ad1c67dd10e87432a81ec6a6d176805897674662a43af4f08e5d7b17e4feb9",
+            "changedPixels": 100
+          }
+        },
+        "colors": {
+          "black": [
+            83,
+            100,
+            95
+          ],
+          "yellow": [
+            172,
+            141,
+            76
+          ],
+          "water": [
+            213,
+            229,
+            229
+          ]
+        },
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      }
+    },
+    "rastersymbols-dusk.png": {
+      "BOYCAR01": {
+        "effectiveRcid": 1270,
+        "category": 1,
+        "tile": [
+          116,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "e80ffde30034bd9d28c79af8827682f02b9653f10fda81a2b345323cf6177f66",
+            "changedPixels": 102
+          },
+          "DUSK": {
+            "rgbaSha256": "1e1720055b2e3c1c5e9d8b95ea8e2517063cc0d9876e70b2d6f7fe69db8da522",
+            "changedPixels": 102
+          },
+          "NIGHT": {
+            "rgbaSha256": "711442707cd88f18e7c684240bc6ceec3426c9243e7b3e801a0a9b514fa446e3",
+            "changedPixels": 102
+          }
+        },
+        "colors": {
+          "black": [
+            195,
+            206,
+            194
+          ],
+          "yellow": [
+            203,
+            177,
+            122
+          ],
+          "water": [
+            52,
+            79,
+            89
+          ]
+        },
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      },
+      "BOYCAR02": {
+        "effectiveRcid": 1271,
+        "category": 2,
+        "tile": [
+          148,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "69fd8ae751627da58960cd97872ec2b2acea5328f0b9538720b0cccd214629bb",
+            "changedPixels": 102
+          },
+          "DUSK": {
+            "rgbaSha256": "de31e530b46c7b043e9a92fa9e951860a7590d40db04bf9d18eecd43f0623229",
+            "changedPixels": 102
+          },
+          "NIGHT": {
+            "rgbaSha256": "c3b6bd3d6a06aeb1d894e510ab798b7d109e9ce39822e71205b08f627f82e177",
+            "changedPixels": 102
+          }
+        },
+        "colors": {
+          "black": [
+            195,
+            206,
+            194
+          ],
+          "yellow": [
+            203,
+            177,
+            122
+          ],
+          "water": [
+            52,
+            79,
+            89
+          ]
+        },
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      },
+      "BOYCAR03": {
+        "effectiveRcid": 1272,
+        "category": 3,
+        "tile": [
+          180,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "52935ed49d25dd1f9675363debc9936804d9fa0bf86b19f43d07579c3343889c",
+            "changedPixels": 100
+          },
+          "DUSK": {
+            "rgbaSha256": "5e2d0124ae842e7f19490fc3a450226166519b0284c98911d28c4061cbfb6740",
+            "changedPixels": 100
+          },
+          "NIGHT": {
+            "rgbaSha256": "af059cb8e711c835fdf48348f9a770820c89d59a2f47a2656b10c909af9de12f",
+            "changedPixels": 100
+          }
+        },
+        "colors": {
+          "black": [
+            195,
+            206,
+            194
+          ],
+          "yellow": [
+            203,
+            177,
+            122
+          ],
+          "water": [
+            52,
+            79,
+            89
+          ]
+        },
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      },
+      "BOYCAR04": {
+        "effectiveRcid": 1273,
+        "category": 4,
+        "tile": [
+          212,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "c0c46d8a5afc8fd31448740d1356ea1af4a457032322c0a83426af2d8b242b94",
+            "changedPixels": 100
+          },
+          "DUSK": {
+            "rgbaSha256": "71dd26ff8408876091d1f9e4688113ed65b06056f38fcefb838aa3dc6e9ab641",
+            "changedPixels": 100
+          },
+          "NIGHT": {
+            "rgbaSha256": "b2ad1c67dd10e87432a81ec6a6d176805897674662a43af4f08e5d7b17e4feb9",
+            "changedPixels": 100
+          }
+        },
+        "colors": {
+          "black": [
+            195,
+            206,
+            194
+          ],
+          "yellow": [
+            203,
+            177,
+            122
+          ],
+          "water": [
+            52,
+            79,
+            89
+          ]
+        },
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      }
+    },
+    "rastersymbols-dark.png": {
+      "BOYCAR01": {
+        "effectiveRcid": 1270,
+        "category": 1,
+        "tile": [
+          116,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "e80ffde30034bd9d28c79af8827682f02b9653f10fda81a2b345323cf6177f66",
+            "changedPixels": 102
+          },
+          "DUSK": {
+            "rgbaSha256": "1e1720055b2e3c1c5e9d8b95ea8e2517063cc0d9876e70b2d6f7fe69db8da522",
+            "changedPixels": 102
+          },
+          "NIGHT": {
+            "rgbaSha256": "711442707cd88f18e7c684240bc6ceec3426c9243e7b3e801a0a9b514fa446e3",
+            "changedPixels": 102
+          }
+        },
+        "colors": {
+          "black": [
+            107,
+            119,
+            109
+          ],
+          "yellow": [
+            131,
+            112,
+            76
+          ],
+          "water": [
+            14,
+            23,
+            28
+          ]
+        },
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      },
+      "BOYCAR02": {
+        "effectiveRcid": 1271,
+        "category": 2,
+        "tile": [
+          148,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "69fd8ae751627da58960cd97872ec2b2acea5328f0b9538720b0cccd214629bb",
+            "changedPixels": 102
+          },
+          "DUSK": {
+            "rgbaSha256": "de31e530b46c7b043e9a92fa9e951860a7590d40db04bf9d18eecd43f0623229",
+            "changedPixels": 102
+          },
+          "NIGHT": {
+            "rgbaSha256": "c3b6bd3d6a06aeb1d894e510ab798b7d109e9ce39822e71205b08f627f82e177",
+            "changedPixels": 102
+          }
+        },
+        "colors": {
+          "black": [
+            107,
+            119,
+            109
+          ],
+          "yellow": [
+            131,
+            112,
+            76
+          ],
+          "water": [
+            14,
+            23,
+            28
+          ]
+        },
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      },
+      "BOYCAR03": {
+        "effectiveRcid": 1272,
+        "category": 3,
+        "tile": [
+          180,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "52935ed49d25dd1f9675363debc9936804d9fa0bf86b19f43d07579c3343889c",
+            "changedPixels": 100
+          },
+          "DUSK": {
+            "rgbaSha256": "5e2d0124ae842e7f19490fc3a450226166519b0284c98911d28c4061cbfb6740",
+            "changedPixels": 100
+          },
+          "NIGHT": {
+            "rgbaSha256": "af059cb8e711c835fdf48348f9a770820c89d59a2f47a2656b10c909af9de12f",
+            "changedPixels": 100
+          }
+        },
+        "colors": {
+          "black": [
+            107,
+            119,
+            109
+          ],
+          "yellow": [
+            131,
+            112,
+            76
+          ],
+          "water": [
+            14,
+            23,
+            28
+          ]
+        },
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      },
+      "BOYCAR04": {
+        "effectiveRcid": 1273,
+        "category": 4,
+        "tile": [
+          212,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "c0c46d8a5afc8fd31448740d1356ea1af4a457032322c0a83426af2d8b242b94",
+            "changedPixels": 100
+          },
+          "DUSK": {
+            "rgbaSha256": "71dd26ff8408876091d1f9e4688113ed65b06056f38fcefb838aa3dc6e9ab641",
+            "changedPixels": 100
+          },
+          "NIGHT": {
+            "rgbaSha256": "b2ad1c67dd10e87432a81ec6a6d176805897674662a43af4f08e5d7b17e4feb9",
+            "changedPixels": 100
+          }
+        },
+        "colors": {
+          "black": [
+            107,
+            119,
+            109
+          ],
+          "yellow": [
+            131,
+            112,
+            76
+          ],
+          "water": [
+            14,
+            23,
+            28
+          ]
+        },
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      }
+    }
+  },
+  "geographicNameLookups": 18,
+  "structuralAreaPaint": {
+    "color": "XNSTR",
+    "lookupIds": [
+      "135",
+      "17",
+      "18",
+      "19",
+      "20",
+      "357",
+      "358",
+      "359",
+      "360",
+      "401",
+      "438",
+      "477",
+      "61",
+      "98"
+    ],
+    "unchangedBordersSelectorsAndLabels": true
+  },
+  "submarineCablePaint": {
+    "name": "CBLSUB06",
+    "RCID": "2012",
+    "color": "XNCBL",
+    "unchangedHPGL": true
+  },
+  "areaLinePaint": {
+    "color": "XNARE",
+    "ferryLineRCID": "2019",
+    "plainCableLookupRCID": "32061",
+    "unchangedGeometryAndRestrictions": true
+  },
+  "files": {
+    "chartsymbols.xml": {
+      "sha256": "f1cb1507cc09b4aa0156c43f5ef994fdfbf6d43904a9a4e8861ee7ff5b6a71ee",
+      "bytes": 2232375
+    },
+    "S52RAZDS.RLE": {
+      "sha256": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26",
+      "bytes": 1305627
+    },
+    "rastersymbols-day.png": {
+      "sha256": "afaa3654e49be7a6095a5130cafe735782d9b8e972bac5d496535e18959a3c88",
+      "bytes": 197895
+    },
+    "rastersymbols-dusk.png": {
+      "sha256": "201f0663bd786d5e1d8ba09d8d43b106df164d5a282f60860258d226adadb6c9",
+      "bytes": 172357
+    },
+    "rastersymbols-dark.png": {
+      "sha256": "9c91273e3dbe9563d79b2d2b0a757bb83207aa0db9183e8aecc1112070ead724",
+      "bytes": 167654
+    }
+  }
+}

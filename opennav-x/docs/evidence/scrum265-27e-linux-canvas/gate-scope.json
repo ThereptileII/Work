@@ -1,0 +1,26 @@
+{
+  "baseSource": "5bb7e0584029c72ce21f9230e246dad5771dc321",
+  "targetSource": "27e93e40709e2d9d2044cb9f6d58979042ff6234",
+  "collectorBase": "docs/evidence/scrum268-5bb-linux-canvas/iho/capture-s64.py",
+  "collectorChanges": [
+    "SKAGER-only selection; four captures per renderer instead of eight across two presentations",
+    "Additional exact source BUISGL35/36 features for existing read-only raster-entry observer",
+    "Require actual building lookup31143"
+  ],
+  "unchangedGuards": [
+    "Whole-chart Day return equality, no mask",
+    "Actual inferior exit0",
+    "Exact source/ELF/resource identities",
+    "Actual renderer and fixed viewport/chart identity",
+    "Measured input freshness from explicitly simulated input-only loopback",
+    "Pilot/control unavailable"
+  ],
+  "rendererProbeUnchanged": true,
+  "layoutSourceUnchanged": true,
+  "loaderRunnerBoundary": "Existing verify-anchor-loader.py through single successful fixture run; unrelated prior light/buoy mutation-recompile block excluded. Tests/chart_seamark_loader_test.cpp unmodified from exact27 checkout. No production source substitutes added.",
+  "combinedResourceCommand": "python3 tests/chart_presentation_resources_tests.py",
+  "combinedResourceIsolation": "Read-only filesystem except fresh output directory and private /tmp; no individual subtests rerun separately",
+  "softwareBefore": "Retained326 software light/fog receipt: later5bb fixes only ordinary GL atlas metrics; no new software baseline launch",
+  "openglBefore": "Retained5bb OpenGL light/fog receipt",
+  "standard": "All9 installed Standard files exactly match sealed5bb; prior5bb Standard full theme-cycle receipt retained; no new Standard launch"
+}

@@ -1,0 +1,34 @@
+{
+  "localFrozenCommit": "e768b06bf5c130038abfd6e1166da0078037cb5b",
+  "publishedCommit": "55ef51e4944e8570f6a391dad20b0db8447a7443",
+  "remoteTree": "626cd31db4349b46ec98d7ad7534b789833ec15b",
+  "mappedEntries": 6862,
+  "fullTreeIndependentlyReconstructed": true,
+  "branch": "opennav-x-beta2-ui",
+  "runId": 37199379614,
+  "runAttempt": 1,
+  "runUrl": "https://github.com/ThereptileII/Work/actions/runs/37199379614",
+  "publishedAt": "2026-10-04T11:37:38Z",
+  "predecessor": "ecf7e0c46609cf4cb29141964d7c4bde98b002b7",
+  "predecessorQualification": "failed real-host private chart-module binding; no eligible package",
+  "changedExecutionInputs": [
+    "cmake/ocharts-adapter/Targets.cmake",
+    "src/integration/ChartModuleCheck.cpp",
+    ".github/workflows/opennav-baseline.yml"
+  ],
+  "change": "Match pinned OpenCPN's MSVC mutex construction compatibility definition; retain early diagnostic stages and immediate failure artifact; independent trust and peer checks may run after a successful production build while packaging still requires all original gates.",
+  "chartUiOrTlsPolicyChanged": false,
+  "nativeBindingProof": {
+    "commit": "a167e3049c68bc9443fcbd1b3f46efc2475988c0",
+    "runId": 37198821735,
+    "artifactId": 11302176888,
+    "artifactSha256": "32bb19524247e0819e30e3a27c646443e58abc34d243f06622ab6b755322bd2f",
+    "status": "passed",
+    "actualFullHostAcceptance": false
+  },
+  "endurance": "explicitly skipped by user direction",
+  "packageAcceptance": "pending",
+  "boatAcceptance": "pending",
+  "boatMutation": false,
+  "publicRelease": false
+}

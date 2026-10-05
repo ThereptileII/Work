@@ -1,0 +1,73 @@
+{
+  "schema": 1,
+  "localSourceCommit": "1a02ae083501eb05feeef7879e6ee450c076be69",
+  "publishedSourceCommit": "280d5e2e28570fed4f2b84eaafc104bad9ee7c1f",
+  "publishedSourceTree": "eb853da00bfc736610bb1a2afd7676b597db60cb",
+  "scope": "Linux development visual evidence; not Windows, OpenGL, active-route or boat acceptance",
+  "files": {
+    "report.json": {
+      "sha256": "c8f9c4292604b8d71a1c6ee3e861479d917fdda86460bf3d0d1daa2ccaf70e9a",
+      "bytes": 22948
+    },
+    "visual-review.json": {
+      "sha256": "dc447df287d05263f8aca49c2e03a616a950fd4f4924445797812722dc570ab0",
+      "bytes": 7605
+    },
+    "controlled-input.json": {
+      "sha256": "7cf8354439179dd2dd5d3a02a069235662ab8902bf9212111dbc82b1f24cdb71",
+      "bytes": 7662
+    },
+    "loader-selftest.json": {
+      "sha256": "43ded854ca437f91066cb2c5e146cfab54be4ce960367b586aaec228e682a2e8",
+      "bytes": 715
+    },
+    "SKAGER-Day.png": {
+      "sha256": "35f03c3fed1230619fec8d07664d88dc413c323a233386f54aaa79e80665fe46",
+      "bytes": 263255
+    },
+    "SKAGER-Day.json": {
+      "sha256": "61896cec1cc541277e45c797669d221e290fb063fc31eb78162c300ac7189d25",
+      "bytes": 27777
+    },
+    "SKAGER-Dusk.png": {
+      "sha256": "dbd64b77aa39450b8975ffd4d62ff6d3ce8a8e7eb9bfa027a77b9254ffe3984a",
+      "bytes": 256030
+    },
+    "SKAGER-Dusk.json": {
+      "sha256": "c1e853d2ff8cb91587300fc634e0b0d366c04774b0605886eafaffcccfd54f31",
+      "bytes": 30669
+    },
+    "SKAGER-Night.png": {
+      "sha256": "fec4eea267d7627a430e19284ef1868367f22445358e6850ed5e2ebb8268641f",
+      "bytes": 251181
+    },
+    "SKAGER-Night.json": {
+      "sha256": "fb8de3ab8d8bca3952fca6400bd4333530398b437897aad86524f00f6d16864d",
+      "bytes": 30670
+    },
+    "Standard-Day.png": {
+      "sha256": "91b2cb6249b2f6000138933bc88a1c2341985bfe3b49599a053768693e8c7e0e",
+      "bytes": 272317
+    },
+    "Standard-Day.json": {
+      "sha256": "8d111ecb0294475063cdf457ed7eccdea7f74a9ac78af26f68aea22f86bde279",
+      "bytes": 27772
+    },
+    "Standard-Dusk.png": {
+      "sha256": "20b7ff7774a5e73e1720d3d4392c6c2de469ff695fd7aa96c6af6996ce464f8a",
+      "bytes": 240317
+    },
+    "Standard-Dusk.json": {
+      "sha256": "9aaf564c2f016e5018f5effef1df8e3fe6d7c533af02a8cb6116b8d120c567a8",
+      "bytes": 30657
+    },
+    "Standard-Night.png": {
+      "sha256": "508692ad4607a4afe8a775a1305d8699de8d90023bdd6bc9d2c14c0624b36015",
+      "bytes": 229426
+    },
+    "Standard-Night.json": {
+      "sha256": "c5874b346404e51ef3f49fadd1f779f1656df188d5e412a9a2c6e0da55d13ced",
+      "bytes": 30665
+    }
+  }
+}

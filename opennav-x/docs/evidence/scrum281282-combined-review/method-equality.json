@@ -1,0 +1,31 @@
+{
+  "core": {
+    "void s52plib::draw_lc_poly(": {
+      "sha256": "9243094fb36bc5864fff6decf948e849ce4c377e3e12d75155e92e59d10a4fad",
+      "bytes": 9541,
+      "identicalReviewedReference": "/home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/build/integration-source/libs/s52plib/src/s52plib.cpp"
+    },
+    "render_canvas_parms *s52plib::CreatePatternBufferSpec(": {
+      "sha256": "d49d056785ffb8c68d6270c75615cde44703297ec0d9e3f0fadb2e38eae479f3",
+      "bytes": 8957,
+      "identicalReviewedReference": "/home/standard/Projects/X-nav-worktrees/scrum282-fishing-pattern/.local/fishing/core/libs/s52plib/src/s52plib.cpp"
+    }
+  },
+  "private": {
+    "void s52plib::draw_lc_poly(": {
+      "sha256": "489bcf69adef1117615594d10781604b9f651490186ec158a08422920f463c5a",
+      "bytes": 9505,
+      "identicalReviewedReference": "/home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/.local/private/libs/s52plib/src/s52plib.cpp"
+    },
+    "render_canvas_parms *s52plib::CreatePatternBufferSpec(": {
+      "sha256": "cf0739d66d803cb99a97fdd30c6a847fdfdfe01955741581609b5c868cadc392",
+      "bytes": 8970,
+      "identicalReviewedReference": "/home/standard/Projects/X-nav-worktrees/scrum282-fishing-pattern/.local/fishing/followup/source/libs/s52plib/src/s52plib.cpp"
+    }
+  },
+  "headers": {
+    "ChartFishingPattern.h": "ea50046c24edd0c5ee4723c6a40af4802155fc14f0e493b1fd4b11ec29848630",
+    "ChartCableWave.h": "6f61208b428e9bd99a04157af887f3735d055df89116885de79a4dac2d0539bf",
+    "ChartCaFan.h": "2f31ef44ec71c8be79dc2f544f59504cc2fb46ccf99246fff822d0c77293aed1"
+  }
+}

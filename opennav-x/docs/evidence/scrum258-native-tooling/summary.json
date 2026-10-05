@@ -1,0 +1,489 @@
+{
+  "issue": "SCRUM-258",
+  "status": "native-tool-composition-qualified-staging-pending",
+  "localSource": "3da0e563de40f71fdb5c31df89c9ec65a04826b5",
+  "remoteSource": "ffa2de31ae02ca826ec5d3604f57a8c619035bb1",
+  "remoteTree": "9cfb50abd7078b794f48bd2b6e2850a4c6d6bc06",
+  "branch": "skager-boat-review-composition",
+  "workflow": {
+    "id": 37090716935,
+    "url": "https://github.com/ThereptileII/Work/actions/runs/37090716935",
+    "attempt": 1,
+    "status": "completed",
+    "conclusion": "success",
+    "completedByUtc": "2026-10-03T02:47:47Z",
+    "jobs": [
+      {
+        "id": 111110278896,
+        "name": "Read-only native warning desktop diagnostics",
+        "conclusion": "success"
+      },
+      {
+        "id": 111110279056,
+        "name": "Actual official OpenCPN portable upgrade caution (en_US)",
+        "conclusion": "success"
+      },
+      {
+        "id": 111110279061,
+        "name": "Actual COM shortcut migration (x86)",
+        "conclusion": "success"
+      },
+      {
+        "id": 111110279063,
+        "name": "Pinned zlib source only (no native build)",
+        "conclusion": "success"
+      },
+      {
+        "id": 111110279085,
+        "name": "Disposable native Windows tooling checks",
+        "conclusion": "success"
+      },
+      {
+        "id": 111110279086,
+        "name": "Actual official OpenCPN portable upgrade caution (sv)",
+        "conclusion": "success"
+      },
+      {
+        "id": 111110279095,
+        "name": "Actual COM shortcut migration (x64)",
+        "conclusion": "success"
+      },
+      {
+        "id": 111110279099,
+        "name": "Native Win32 commissioning restart process boundary",
+        "conclusion": "success"
+      },
+      {
+        "id": 111110901109,
+        "name": "Fixed guarded mode UI actions on disposable native windows",
+        "conclusion": "success"
+      },
+      {
+        "id": 111110901164,
+        "name": "Actual restart broker with disposable marker-only installation",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "downloadedArtifacts": [
+    {
+      "id": 11262457952,
+      "name": "development-commissioning-restart-ffa2de31ae02ca826ec5d3604f57a8c619035bb1",
+      "size": 6648,
+      "sha256": "5d8bf3373f0787bb9561d66b871ed79f3f71996736ddc254892b731a359b2d36",
+      "crc": "passed",
+      "members": [
+        "commissioning-restart-native.json",
+        "native-process-tests.log"
+      ],
+      "file": "11262457952.zip"
+    },
+    {
+      "id": 11262452960,
+      "name": "development-boat-tooling-ffa2de31ae02ca826ec5d3604f57a8c619035bb1",
+      "size": 30827,
+      "sha256": "f0af9db047829d7af99ac7e60126abb4e98f683832e8e572656f7ca20f7cafbd",
+      "crc": "passed",
+      "members": [
+        "maintenance-baseline-adoption.log",
+        "maintenance-broker-fixture-contracts.log",
+        "maintenance-boat-tools.log",
+        "maintenance-chart-helper-attempts.log",
+        "maintenance-chart-helper-shutdown.log",
+        "maintenance-cold-baseline.log",
+        "maintenance-cold-helper-policy.log",
+        "maintenance-cold-helper-workflow.log",
+        "maintenance-commissioning-launch.log",
+        "maintenance-commissioning.log",
+        "maintenance-installed-welcome.log",
+        "maintenance-navigation-copy.log",
+        "maintenance-official-upgrade-policy.log",
+        "maintenance-orphan-chart-helper.log",
+        "maintenance-preparation.log",
+        "maintenance-renderer-log.log",
+        "maintenance-restart-aui-persistence.log",
+        "maintenance-restart-commissioning.log",
+        "maintenance-restart-window-review.log",
+        "maintenance-review-staging.log",
+        "maintenance-review-window.log",
+        "maintenance-source-checkout.log",
+        "maintenance-startup-log.log",
+        "maintenance-stock-chart.log",
+        "maintenance-stock-review.log",
+        "maintenance-stock-welcome.log"
+      ],
+      "file": "11262452960.zip"
+    },
+    {
+      "id": 11262397974,
+      "name": "development-installer-shortcuts-x64-ffa2de31ae02ca826ec5d3604f57a8c619035bb1",
+      "size": 1943,
+      "sha256": "b53c324ef0d6737a2ee9b26e6cb1d621ac6ea02244cf36a1884d8ec5673c5bd8",
+      "crc": "passed",
+      "members": [
+        "native-shortcuts.log"
+      ],
+      "file": "11262397974.zip"
+    },
+    {
+      "id": 11262353425,
+      "name": "development-commissioning-broker-ffa2de31ae02ca826ec5d3604f57a8c619035bb1",
+      "size": 18931,
+      "sha256": "0ccc50daf13b5c1eef9d7a9b49a62c14fb00cbd8b38ec0545c26e2d6fcbcd3dc",
+      "crc": "passed",
+      "members": [
+        "restart-broker/broker-result.json",
+        "restart-broker/consumed-stdout.txt",
+        "restart-broker/consumed-stderr.txt",
+        "restart-broker/expired-stderr.txt",
+        "restart-broker/expired-stdout.txt",
+        "restart-broker/native-task-identity.json",
+        "restart-broker/output-connection-stderr.txt",
+        "restart-broker/output-connection-stdout.txt",
+        "restart-broker/plugin-bytes-stderr.txt",
+        "restart-broker/plugin-bytes-stdout.txt",
+        "restart-broker/receipt-recording-failure-stderr.txt",
+        "restart-broker/receipt-recording-failure-stdout.txt",
+        "restart-broker/success-stderr.txt",
+        "restart-broker/success-stdout.txt",
+        "restart-prepare-arm/composed-cold-byte-stderr.txt",
+        "restart-prepare-arm/composed-cold-byte-stdout.txt",
+        "restart-prepare-arm/composed-old-closure-stderr.txt",
+        "restart-prepare-arm/composed-old-closure-stdout.txt",
+        "restart-prepare-arm/composed-other-directory-stderr.txt",
+        "restart-prepare-arm/composed-other-directory-stdout.txt",
+        "restart-prepare-arm/corrupt-capability-prepare-stderr.txt",
+        "restart-prepare-arm/corrupt-capability-prepare-stdout.txt",
+        "restart-prepare-arm/duplicate-arm-stderr.txt",
+        "restart-prepare-arm/duplicate-arm-stdout.txt",
+        "restart-prepare-arm/early-collect-stderr.txt",
+        "restart-prepare-arm/early-collect-stdout.txt",
+        "restart-prepare-arm/output-connection-arm-stderr.txt",
+        "restart-prepare-arm/output-connection-arm-stdout.txt",
+        "restart-prepare-arm/output-connection-collect-stderr.txt",
+        "restart-prepare-arm/output-connection-collect-stdout.txt",
+        "restart-prepare-arm/output-connection-prepare-stderr.txt",
+        "restart-prepare-arm/output-connection-prepare-stdout.txt",
+        "restart-prepare-arm/prepare-arm-result.json",
+        "restart-prepare-arm/shutdown-copy-hash-prepare-stderr.txt",
+        "restart-prepare-arm/shutdown-copy-hash-prepare-stdout.txt",
+        "restart-prepare-arm/success-arm-stderr.txt",
+        "restart-prepare-arm/success-arm-stdout.txt",
+        "restart-prepare-arm/success-collect-stderr.txt",
+        "restart-prepare-arm/success-collect-stdout.txt",
+        "restart-prepare-arm/success-prepare-stderr.txt",
+        "restart-prepare-arm/success-prepare-stdout.txt",
+        "restart-prepare-arm/wrong-parent-stderr.txt",
+        "restart-prepare-arm/wrong-parent-stdout.txt"
+      ],
+      "file": "11262353425.zip"
+    },
+    {
+      "id": 11261853697,
+      "name": "development-restart-window-ffa2de31ae02ca826ec5d3604f57a8c619035bb1",
+      "size": 23481,
+      "sha256": "083bbf3537b5a85b52e5ab02e659cd7e608c95602f0552b4d5d3c112c0733f6e",
+      "crc": "passed",
+      "members": [
+        "restart-window/native-window-results.json",
+        "display-window/native-display-results.json",
+        "stock-resize/maximized.png",
+        "stock-resize/native-stock-resize.json",
+        "stock-resize/offscreen.png",
+        "stock-close/stock-close-result.json"
+      ],
+      "file": "11261853697.zip"
+    },
+    {
+      "id": 11261823560,
+      "name": "development-installer-shortcuts-x86-ffa2de31ae02ca826ec5d3604f57a8c619035bb1",
+      "size": 1940,
+      "sha256": "63870d8ae2f7ad57641d9aae849d5aaf8cc5bebc5055d72cc51d27d8dfc6f2a5",
+      "crc": "passed",
+      "members": [
+        "native-shortcuts.log"
+      ],
+      "file": "11261823560.zip"
+    }
+  ],
+  "artifactChecks": [
+    "exact head/run metadata",
+    "API size and SHA256",
+    "ZIP CRC",
+    "member paths, duplicate names, symlinks, entry and expansion bounds"
+  ],
+  "maintenance": [
+    {
+      "suite": "baseline-adoption",
+      "status": "passed",
+      "checks": 178,
+      "reportSha256": "aee03f83be5a611536a7d11ef401334847e2d30f982ff6c62040e43a4b2e8df3"
+    },
+    {
+      "suite": "boat-tools",
+      "status": "passed",
+      "checks": 31,
+      "reportSha256": "8caa54e89d8a7ef674d2fd27c437c52a38ad461f7b63b8c181e94b4197c4dcca"
+    },
+    {
+      "suite": "broker-fixture-contracts",
+      "status": "passed",
+      "checks": 27,
+      "reportSha256": "12d112884e50b72aca6b112762b8c6f7726d24c50fa12496c91405f103bc3db5"
+    },
+    {
+      "suite": "chart-helper-attempts",
+      "status": "passed",
+      "checks": 23,
+      "reportSha256": "44a90a18f11f3517d06ccfba38fcb40651cb009c5672308de6a1c4d4c378187b"
+    },
+    {
+      "suite": "chart-helper-shutdown",
+      "status": "passed",
+      "checks": 45,
+      "reportSha256": "37614cca0ebe3f3f3336a143897a507fbafd2af06dc0f1572ed0919622550f0a"
+    },
+    {
+      "suite": "cold-baseline",
+      "status": "passed",
+      "checks": 40,
+      "reportSha256": "563d8d3c725ec57f19ca184a8249d44740fd11b4249c5bab8f25f5aa5c034b45"
+    },
+    {
+      "suite": "cold-helper-policy",
+      "status": "passed",
+      "checks": 21,
+      "reportSha256": "9d19adb471f53988a8a7bfb599e7e5f194c5faf16e4fe3080d9b9fff794a0f8d"
+    },
+    {
+      "suite": "cold-helper-workflow",
+      "status": "passed",
+      "checks": 33,
+      "reportSha256": "0f9720ce9ed722d31d81816e3eafd49a6cc2e750ec3bfc84c7ff024a54abc05b"
+    },
+    {
+      "suite": "commissioning-launch",
+      "status": "passed",
+      "checks": 11,
+      "reportSha256": "47e2690ed75119964e24eb835d430001703147fd24c202013cd50ceecf260819"
+    },
+    {
+      "suite": "commissioning",
+      "status": "passed",
+      "checks": 21,
+      "reportSha256": "6ec421f2fe9a57c2d61d7b982a1776a2e5e1bec62b4550850f53e0567f974b74"
+    },
+    {
+      "suite": "installed-welcome",
+      "status": "passed",
+      "checks": 114,
+      "reportSha256": "0de2c9f4b9bc6c3c2b0d309a97e40cabd54aee1e22fe6b19643ba3b4288cd23b"
+    },
+    {
+      "suite": "navigation-copy",
+      "status": "passed",
+      "checks": 11,
+      "reportSha256": "0e621633986bf20ec1ae87370422880751291e36031e894d3f3771a3b3838303"
+    },
+    {
+      "suite": "official-upgrade-policy",
+      "status": "passed",
+      "checks": 86,
+      "reportSha256": "8243df3ce4b5b38eb79319c9c27908e7a17e32f62c2ca1655ce0eefa9de3225b"
+    },
+    {
+      "suite": "orphan-chart-helper",
+      "status": "passed",
+      "checks": 21,
+      "reportSha256": "67c2aa8a57c005e33c176bbc411a81e43e6189e419a43454a4e61a694c62f1b2"
+    },
+    {
+      "suite": "preparation",
+      "status": "passed",
+      "checks": 34,
+      "reportSha256": "372f86f3ce96e7b2daf56b416ca7c9e8d6dc10ab5e2f40df64e353f85ee63dda"
+    },
+    {
+      "suite": "renderer-log",
+      "status": "passed",
+      "checks": 66,
+      "reportSha256": "b8f6699545a7163269134b50b2236466888814bed3a3fbeb320e4c5935c2a378"
+    },
+    {
+      "suite": "restart-aui-persistence",
+      "status": "passed",
+      "checks": 77,
+      "reportSha256": "4f7540a25975f42e930bf7471dc86d2cd1bc3b1cbc378bd9ba23717089024abf"
+    },
+    {
+      "suite": "restart-commissioning",
+      "status": "passed",
+      "checks": 313,
+      "reportSha256": "d0d0d9826694178af235cd0bb92994cf60515def309eb025538f6dccb663bbb9"
+    },
+    {
+      "suite": "restart-window-review",
+      "status": "passed",
+      "checks": 133,
+      "reportSha256": "f7a0dac16aee6160c6d2dcfd83063df9ce231d2145975190e01c4f9d280126c7"
+    },
+    {
+      "suite": "review-staging",
+      "status": "passed",
+      "checks": 12,
+      "reportSha256": "a7aa78fffecb98147cd3913c7d476f7b84a0b1a2ee0d71720aea89345046fc02"
+    },
+    {
+      "suite": "review-window",
+      "status": "passed",
+      "checks": 230,
+      "reportSha256": "c725c2482cbb4390c97191972c068c6a80644b7236e5f0253a8324990608b606"
+    },
+    {
+      "suite": "source-checkout",
+      "status": "passed",
+      "checks": 16,
+      "reportSha256": "0c76928637abbdaa11bf303efccd44d533dd502bd8648c0456723f86df599fe5"
+    },
+    {
+      "suite": "startup-log",
+      "status": "passed",
+      "checks": 16,
+      "reportSha256": "b25d79bef7fcd830fcfb809b7f86747f8d56d5bb997dcfca7cc72a033b91a923"
+    },
+    {
+      "suite": "stock-chart",
+      "status": "passed",
+      "checks": 61,
+      "reportSha256": "7d4ad3aacddcd5ab6af82671599c43dcb26df99a0f53761e1bc33605e5739fb2"
+    },
+    {
+      "suite": "stock-review",
+      "status": "passed",
+      "checks": 90,
+      "reportSha256": "72b55d8bb1e97260d1572e01b560ea84d1a4104c7907359bb5d49848cc578809"
+    },
+    {
+      "suite": "stock-welcome",
+      "status": "passed",
+      "checks": 149,
+      "reportSha256": "aa95b99e7b0b074a906849da58500c876c2a9e7935101b169cc702a1b5b9f5e3"
+    }
+  ],
+  "maintenanceChecks": 1859,
+  "nativeTransport": {
+    "checks": 384,
+    "cases": 24,
+    "status": "passed",
+    "noMarineCode": true
+  },
+  "nativeBroker": {
+    "checks": 51,
+    "status": "passed",
+    "cases": 6,
+    "actualBroker": true,
+    "cleanupErrors": []
+  },
+  "nativePrepareArm": {
+    "checks": 65,
+    "status": "passed",
+    "actualPrepare": true,
+    "actualArmCollect": true,
+    "compositionChecks": [
+      "success: actual fresh Prepare pins the exact composed cold-baseline reader",
+      "Composed session refuses cold-byte through actual Arm identity guard",
+      "Composed cold-byte refusal creates no Arm intent",
+      "Composed session refuses old-closure through actual Arm identity guard",
+      "Composed old-closure refusal creates no Arm intent",
+      "Composed session refuses other-directory through actual Arm identity guard",
+      "Composed other-directory refusal creates no Arm intent",
+      "Composed negative fixtures restore exact bytes before actual successful Arm/Collect",
+      "output-connection: actual fresh Prepare pins the exact composed cold-baseline reader"
+    ],
+    "cleanupErrors": []
+  },
+  "nativeWindows": [
+    {
+      "report": "restart-window/native-window-results.json",
+      "status": "passed",
+      "cases": 14,
+      "refused": 8,
+      "nativeHelperSha256": "42eaaa1b1e56b97b648a87a588b68479d668e76c83872be58ba88fbf161d8d6f",
+      "fixtureSha256": "2ccdb286179ff1583894b2903f967f57dd849615810135e40980874719112786"
+    },
+    {
+      "report": "display-window/native-display-results.json",
+      "status": "passed",
+      "cases": 53,
+      "refused": 29,
+      "nativeHelperSha256": "b48928bdb2e5dc410839c9496777914a22668ba7a6fd7fa543ac633b26d02102",
+      "fixtureSha256": "704c875e4dc2c57f9ba4dea4b5da1b738dcad15e4f9c7c6a497ce062c0d373a8"
+    }
+  ],
+  "actualSuccessfulModeCaptions": [
+    "Open Legacy OpenCPN",
+    "Restart SKAGER",
+    "Safe Mode",
+    "Switch to SKAGER"
+  ],
+  "nativeShortcuts": {
+    "x86": 238,
+    "x64": 238
+  },
+  "sourceIdentity": {
+    "remoteLocalToolWorkflowBlobModeMatches": 119,
+    "nativeCheckoutNormalization": "Only Git LF to CRLF conversion for the following native script hashes; no other source substitution accepted.",
+    "nativeScriptHashes": [
+      {
+        "path": "tools/boat/RestartCommissioningPrepare.ps1",
+        "gitLfSha256": "078657992c0075a17c9fb25079383f6a9d4046b5808d4a53d04b5da387c43d46",
+        "nativeCrLfSha256": "bbc25e3933ef8e085484c7ff3203d452258ab6609504ae285eaa0875af8f31f9",
+        "sourceAndExecutedCopyMatch": true
+      },
+      {
+        "path": "tools/boat/RestartCommissioningArm.ps1",
+        "gitLfSha256": "0b1eab3d100279aac2e992640e0fd64a027ed0f03bc675d3461eda7a7c8b459c",
+        "nativeCrLfSha256": "7bf28fac37ed2eb18a78c9d26a4cdcdaf721f1de54fe88a944fd8a18693bf795",
+        "sourceAndExecutedCopyMatch": true
+      },
+      {
+        "path": "tools/boat/RestartCommissioningBroker.ps1",
+        "gitLfSha256": "7c131395714179c49f48158ee2ccd34bf3ef1e382e98fecabb2aeebc60c7f190",
+        "nativeCrLfSha256": "fa765c32ff48af981d3ab0f0fb0a259c52bdcf4dc34a0e49ed10d03156c07664",
+        "sourceAndExecutedCopyMatch": true
+      },
+      {
+        "path": "tools/boat/RestartWindowNative.cs",
+        "gitLfSha256": "941c7d34f17b4777cf9fedb37c0a69714c3a8bef65613e88e0b88eded08d7394",
+        "nativeCrLfSha256": "42eaaa1b1e56b97b648a87a588b68479d668e76c83872be58ba88fbf161d8d6f",
+        "nativeReportMatches": true
+      },
+      {
+        "path": "tests/commissioning-restart/window-review-fixture.ps1",
+        "gitLfSha256": "1502571f8fe6d44cb131488b39715354137d054a650d3f2d02931d74c74c9781",
+        "nativeCrLfSha256": "2ccdb286179ff1583894b2903f967f57dd849615810135e40980874719112786",
+        "nativeReportMatches": true
+      },
+      {
+        "path": "tools/boat/ReviewWindowNative.cs",
+        "gitLfSha256": "aeab79f285651ba73838da4959e7a3a55fee911bf2555725936a733a8d2d6f89",
+        "nativeCrLfSha256": "b48928bdb2e5dc410839c9496777914a22668ba7a6fd7fa543ac633b26d02102",
+        "nativeReportMatches": true
+      },
+      {
+        "path": "tests/display-review/window-fixture.ps1",
+        "gitLfSha256": "416504213530f173536b21168b0c5bb0965fe6dcf7f97d0be0f2220581334873",
+        "nativeCrLfSha256": "704c875e4dc2c57f9ba4dea4b5da1b738dcad15e4f9c7c6a497ce062c0d373a8",
+        "nativeReportMatches": true
+      }
+    ]
+  },
+  "unchangedApplicationCandidate": "61a0a7838b56ad841bb458af6fc62651464bdafe",
+  "limits": [
+    "Six directly relevant artifacts independently downloaded; other four jobs are API-success observations only.",
+    "Native tests use disposable files, synthetic machine/profile identities and marker processes; no real OpenCPN application or boat acceptance.",
+    "Actual native window fixtures prove fixed selectors and refusal behavior, not product rendering or physical touch.",
+    "Hash-verified remote staging and a new independent actual-profile commissioning session remain pending.",
+    "No boat access, staging, deployment, profile mutation, launch, physical output or retirement performed."
+  ]
+}

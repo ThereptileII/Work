@@ -1,0 +1,6 @@
+
+(floating_surface_test:15129): dbind-WARNING **: 00:14:49.219: AT-SPI: Error retrieving accessibility bus address: org.freedesktop.DBus.Error.ServiceUnknown: The name org.a11y.Bus was not provided by any .service files
+after queued map: requested hidden, wx shown=1, GTK visible=0
+native origin=980,549; desired=980,549
+native origin=980,549; desired=980,549
+17 floating-surface lifecycle checks passed

@@ -1,0 +1,5 @@
+308118 checks passed; 1000 four-leg wrapped unions 14.8488 ms
+128-leg union mean 0.324591 ms
+1024-leg union mean 4.75203 ms
+308138 total geometry/painter/workload checks passed
+1426 production collection checks passed

@@ -1,0 +1,23 @@
+{
+  "checked_local_commit": "5655c7c",
+  "original_files": 178,
+  "all_sha256_and_sizes_match": true,
+  "application_commit": "326daf73cdbeb0e7219ccb47b88967bc6a67ceaf",
+  "reviewed_images": [
+    "output/capture-326daf7-s64-sector-rwg-software/s64-sector-rwg-SKAGER-Day.png",
+    "output/capture-326daf7-s64-sector-rwg-software/s64-sector-rwg-Standard-Day.png",
+    "output/capture-326daf7-s64-sector-rwg-opengl/s64-sector-rwg-SKAGER-Day.png",
+    "output/capture-326daf7-s64-sector-rwg-opengl/s64-sector-rwg-SKAGER-Night.png",
+    "output/capture-326daf7-s64-light-fog-opengl/s64-light-fog-SKAGER-Day-LIGHTS-32.png",
+    "output/capture-326daf7-s64-light-fog-opengl/changed-before.png",
+    "output/capture-326daf7-s64-light-fog-opengl/changed-after.png"
+  ],
+  "observations": [
+    "Supplied central light point visible in actual GL.",
+    "Ordinary R/W/G fan is visually distinct from original Standard; source bearing/range semantics retained.",
+    "Night dims surfaces, light fan and data without invented live inputs.",
+    "Persistent chart selector and upstream OverZoom warning remain visible; no global prototype-conformance claim.",
+    "Numeric26.2 Day-return change remains failed, separate from light/fog glyphs."
+  ],
+  "limits": "Linux Mesa development visuals; not Windows/private/boat acceptance. No new application execution."
+}

@@ -1,0 +1,25 @@
+{
+  "source": "/home/standard/Projects/X-nav-worktrees/scrum259-adapter-preparation/.local/pinned-source/libs/s52plib/src/s52cnsy.cpp",
+  "bytes": 202484,
+  "sha256": "9a6194f9eb488ac5f25b67ef8e96b97d27acfc5b5748bb0e18e60adb998c9e50",
+  "sourceLines": "554 onward; commented association query around578",
+  "fixtureInputs": {
+    "feature": "UWTROC",
+    "primitive": "Point",
+    "VALSOU": "absent",
+    "WATLEV": 3,
+    "CATWRK": 2,
+    "EXPSOU": "absent",
+    "QUAPOS": "absent",
+    "safetyContourMetres": 5,
+    "associatedObject": {
+      "feature": "DEPARE",
+      "primitive": "Area",
+      "DRVAL1": 10
+    }
+  },
+  "coreResult": "SY(ISODGR51); DisplayBase",
+  "privateResult": "Fixture refused expected ISODGR51 at check92; original private function does not query associated area",
+  "privateWkOffsets": "TX('Wk',2,1,2,'15110',1,0,CHBLK,21)",
+  "scope": "Inherited source difference; retained failed parity expectation, no private source edits"
+}

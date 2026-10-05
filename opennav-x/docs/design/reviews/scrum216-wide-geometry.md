@@ -44,3 +44,27 @@ remain reference values: the product retains the real upstream OpenCPN chart
 and does not render those synthetic HTML overlays. The native <=760px compact
 pane still differs from the HTML rail/timeline layout. Native Windows
 rendering and boat display acceptance remain open.
+
+## Capture-wrapper follow-up (SCRUM-216 comment 10424)
+
+Read-only inspection of frozen local `76bad1a` found that the component clients
+had advanced beyond their native capture wrappers. Settings emits 14 states,
+but its wrapper still expected 12 and inferred a theme from the final filename
+word; `display-applied-125-chart` is actually the retained Night state. Horizon
+emits a fifteenth `prototype-large-desktop-1920` state, absent from the wrapper's
+exact allowlist, and its prepared desktop was smaller than that screen capture.
+
+The isolated test-only correction checks the exact 14 Settings identities and
+explicit per-state themes, includes the exact large Horizon identity, prepares
+at least a 1920×1080 native desktop (and a matching private Xvfb screen), and
+requires the large image to remain exactly 1920×1080. Existing component pass
+requirements, canonical Day/Dusk/Night comparisons, one-pixel geometry bounds,
+content/palette checks and control-containment assertions remain unchanged.
+No reference image, product source or frozen candidate was changed.
+
+Four inert wrapper tests pass against the current C++ capture declarations.
+They reject omitted, duplicate and unknown states, cropped/resized large images,
+and excessive geometry differences. Python syntax and diff checks pass. These
+checks launch no application or desktop and render no image. Fresh native
+component execution, screenshot inspection, OS DPI and boat acceptance remain
+required; this correction is not a new native result.

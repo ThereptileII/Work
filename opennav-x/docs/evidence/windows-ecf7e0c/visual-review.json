@@ -1,0 +1,36 @@
+{
+  "schema": 1,
+  "applicationCommit": "ecf7e0c46609cf4cb29141964d7c4bde98b002b7",
+  "run": 37191400051,
+  "originalArtifact": 11301641242,
+  "originalArtifactSha256": "ce868e58356da4e74ba469f7f918bf2500d45e3f44cc2e3e9936c4aa5645fe17",
+  "reviewedImages": [
+    {
+      "path": "evidence/local/chart-software-01-loaded.png",
+      "sha256": "54c4aa95e15721ec1411a55f96d1b7e51bdc408baabce84f92d5e7e6ea19514f"
+    },
+    {
+      "path": "evidence/local/chart-software-06-returned.png",
+      "sha256": "20db630a49f65e3089d2c5ea8d7c1b3e8844fa7defea97d716e3d943891d97e4"
+    },
+    {
+      "path": "evidence/local/dpi-100-02-navigation-night.png",
+      "sha256": "f42345173bc4958bcac3c818e131bd5a04b6655ddb2f367fe477652f7e6eee35"
+    }
+  ],
+  "observed": [
+    "Public ENC/coastline remains visible on initial software rendering and after Legacy return.",
+    "The reduced SKAGER wordmark and neutral land/structural palette are visible.",
+    "Native chart numbers and labels are readable at the retained overview, with geographic names in the intentional italic role. Actual resolved family is not inferred from pixels.",
+    "Night UI and basemap use subdued surfaces; this selected image contains explicit CI test-data indicators.",
+    "The native title bar changes brightness/focus appearance after restart."
+  ],
+  "limitations": [
+    "These images use the fixture-enabled application and do not prove final fixture-free packaging.",
+    "The native private-module check failed; no private licensed chart or boat review is accepted.",
+    "No individual buoy/light family or full prototype equivalence is established by these wide views.",
+    "The requested OpenGL CI path actually fell back to software. Physical GPU and prototype preferred-font qualification remain open."
+  ],
+  "prototypeConformanceAccepted": false,
+  "boatAcceptance": false
+}

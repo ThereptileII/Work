@@ -1,0 +1,299 @@
+Test project /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-linux/test
+        Start   1: DateTimeFormatTest.LMTTimeZoneOneHourEast
+  1/147 Test   #1: DateTimeFormatTest.LMTTimeZoneOneHourEast ........................................   Passed    0.08 sec
+        Start   2: DateTimeFormatTest.LMTTimeZone30MinEast
+  2/147 Test   #2: DateTimeFormatTest.LMTTimeZone30MinEast ..........................................   Passed    0.08 sec
+        Start   3: DateTimeFormatTest.LMTTimeZoneWest
+  3/147 Test   #3: DateTimeFormatTest.LMTTimeZoneWest ...............................................   Passed    0.08 sec
+        Start   4: DateTimeFormatTest.CustomFormatStringEnUS
+  4/147 Test   #4: DateTimeFormatTest.CustomFormatStringEnUS ........................................   Passed    0.08 sec
+        Start   5: DateTimeFormatTest.CustomFormatStringUTC
+  5/147 Test   #5: DateTimeFormatTest.CustomFormatStringUTC .........................................   Passed    0.08 sec
+        Start   6: DateTimeFormatTest.CustomFormatStringEST
+  6/147 Test   #6: DateTimeFormatTest.CustomFormatStringEST .........................................   Passed    0.08 sec
+        Start   7: DateTimeFormatTest.CustomTimeZone
+  7/147 Test   #7: DateTimeFormatTest.CustomTimeZone ................................................   Passed    0.10 sec
+        Start   8: DateTimeFormatTest.ShowTimezoneTrue
+  8/147 Test   #8: DateTimeFormatTest.ShowTimezoneTrue ..............................................   Passed    0.09 sec
+        Start   9: DateTimeFormatTest.ShowTimezoneFalse
+  9/147 Test   #9: DateTimeFormatTest.ShowTimezoneFalse .............................................   Passed    0.09 sec
+        Start  10: DateTimeFormatTest.ShowTimezoneDefault
+ 10/147 Test  #10: DateTimeFormatTest.ShowTimezoneDefault ...........................................   Passed    0.08 sec
+        Start  11: DateTimeFormatTest.LocalTimezoneEST
+ 11/147 Test  #11: DateTimeFormatTest.LocalTimezoneEST ..............................................   Passed    0.35 sec
+        Start  12: DateTimeFormatTest.LocalTimezoneCETSwedish
+ 12/147 Test  #12: DateTimeFormatTest.LocalTimezoneCETSwedish .......................................   Passed    0.17 sec
+        Start  13: MsgFixture.ObservableMsg
+ 13/147 Test  #13: MsgFixture.ObservableMsg .........................................................   Passed    0.30 sec
+        Start  14: Messaging.NavMsg
+ 14/147 Test  #14: Messaging.NavMsg .................................................................   Passed    0.14 sec
+        Start  15: Messaging.All0183
+ 15/147 Test  #15: Messaging.All0183 ................................................................   Passed    0.12 sec
+        Start  16: Messaging.AppMsg
+ 16/147 Test  #16: Messaging.AppMsg .................................................................   Passed    0.12 sec
+        Start  17: Observable.torture
+ 17/147 Test  #17: Observable.torture ...............................................................   Passed    0.08 sec
+        Start  18: Drivers.Registry
+ 18/147 Test  #18: Drivers.Registry .................................................................   Passed    0.08 sec
+        Start  19: Navmsg2000.to_string
+ 19/147 Test  #19: Navmsg2000.to_string .............................................................   Passed    0.08 sec
+        Start  20: FileDriver.Registration
+ 20/147 Test  #20: FileDriver.Registration ..........................................................   Passed    0.08 sec
+        Start  21: FileDriver.output
+ 21/147 Test  #21: FileDriver.output ................................................................   Passed    0.08 sec
+        Start  22: Listeners.vector
+ 22/147 Test  #22: Listeners.vector .................................................................   Passed    0.12 sec
+        Start  23: Guernsey.play_log
+ 23/147 Test  #23: Guernsey.play_log ................................................................   Passed    0.12 sec
+        Start  24: FindDriver.lookup
+ 24/147 Test  #24: FindDriver.lookup ................................................................   Passed    0.12 sec
+        Start  25: Registry.persistence
+ 25/147 Test  #25: Registry.persistence .............................................................   Passed    0.13 sec
+        Start  26: Position.ParseGGA
+ 26/147 Test  #26: Position.ParseGGA ................................................................   Passed    0.12 sec
+        Start  27: Priority.Framework
+ 27/147 Test  #27: Priority.Framework ...............................................................   Passed    0.15 sec
+        Start  28: Priority.DifferentSource
+ 28/147 Test  #28: Priority.DifferentSource .........................................................   Passed    0.13 sec
+        Start  29: AIS.Decoding
+ 29/147 Test  #29: AIS.Decoding .....................................................................   Passed    0.13 sec
+        Start  30: AIS.AISVDO
+ 30/147 Test  #30: AIS.AISVDO .......................................................................   Passed    0.13 sec
+        Start  31: AIS.AISVDM
+ 31/147 Test  #31: AIS.AISVDM .......................................................................   Passed    0.13 sec
+        Start  32: Navmsg.ActiveMessages
+ 32/147 Test  #32: Navmsg.ActiveMessages ............................................................   Passed    0.13 sec
+        Start  33: Instance.StdInstanceChk
+ 33/147 Test  #33: Instance.StdInstanceChk ..........................................................   Passed    0.15 sec
+        Start  34: Instance.WxInstanceChk
+ 34/147 Test  #34: Instance.WxInstanceChk ...........................................................   Passed    0.09 sec
+        Start  35: IpcClient.IpcGetEndpoint
+ 35/147 Test  #35: IpcClient.IpcGetEndpoint .........................................................   Passed    0.43 sec
+        Start  36: IpcClient.Raise
+ 36/147 Test  #36: IpcClient.Raise ..................................................................   Passed    0.40 sec
+        Start  37: IpcClient.Open
+ 37/147 Test  #37: IpcClient.Open ...................................................................   Passed    0.40 sec
+        Start  38: Plugin.Basic
+ 38/147 Test  #38: Plugin.Basic .....................................................................   Passed    0.12 sec
+        Start  39: WaitContinue.Basic
+ 39/147 Test  #39: WaitContinue.Basic ...............................................................   Passed    0.16 sec
+        Start  40: FormatTime.Basic
+ 40/147 Test  #40: FormatTime.Basic .................................................................   Passed    0.08 sec
+        Start  41: SemanticVersion.Basic
+ 41/147 Test  #41: SemanticVersion.Basic ............................................................   Passed    0.08 sec
+        Start  42: Filter.Create
+ 42/147 Test  #42: Filter.Create ....................................................................   Passed    0.09 sec
+        Start  43: Filter.ListSystemFilters
+ 43/147 Test  #43: Filter.ListSystemFilters .........................................................   Passed    0.09 sec
+        Start  44: DriverRegistry.RegisterDriver
+ 44/147 Test  #44: DriverRegistry.RegisterDriver ....................................................   Passed    1.11 sec
+        Start  45: RestServer.start_stop
+ 45/147 Test  #45: RestServer.start_stop ............................................................   Passed    0.94 sec
+        Start  46: RestServer.Ping
+ 46/147 Test  #46: RestServer.Ping ..................................................................   Passed    0.99 sec
+        Start  47: RestServer.Pong
+ 47/147 Test  #47: RestServer.Pong ..................................................................   Passed    0.89 sec
+        Start  48: RestServer.Version
+ 48/147 Test  #48: RestServer.Version ...............................................................   Passed    0.87 sec
+        Start  49: RestServer.Object
+ 49/147 Test  #49: RestServer.Object ................................................................   Passed    1.48 sec
+        Start  50: RestServer.CheckWrite
+ 50/147 Test  #50: RestServer.CheckWrite ............................................................   Passed    1.03 sec
+        Start  51: RestServer.PluginMessage
+ 51/147 Test  #51: RestServer.PluginMessage .........................................................   Passed    1.07 sec
+        Start  52: OpenNavDiagnostics.FreshnessFrameCoherence
+ 52/147 Test  #52: OpenNavDiagnostics.FreshnessFrameCoherence .......................................   Passed    0.12 sec
+        Start  53: OpenNavPeerUnavailable.RejectsEmptyTransfersInsteadOfClaimingSuccess
+ 53/147 Test  #53: OpenNavPeerUnavailable.RejectsEmptyTransfersInsteadOfClaimingSuccess .............   Passed    0.08 sec
+        Start  54: OpenNavPeerUnavailable.ForcedSendDoesNotInspectOrSerializeObjects
+ 54/147 Test  #54: OpenNavPeerUnavailable.ForcedSendDoesNotInspectOrSerializeObjects ................   Passed    0.08 sec
+        Start  55: OpenNavPeerUnavailable.ClearsRetainedVersionWithoutPairingOrFallback
+ 55/147 Test  #55: OpenNavPeerUnavailable.ClearsRetainedVersionWithoutPairingOrFallback .............   Passed    0.08 sec
+        Start  56: OpenNavPeerUnavailable.DirectKeyCheckRejectsWithoutSendingCredential
+ 56/147 Test  #56: OpenNavPeerUnavailable.DirectKeyCheckRejectsWithoutSendingCredential .............   Passed    0.08 sec
+        Start  57: OpenNavPilotPresentation.MeasuredMagneticHeadingAndCommands
+ 57/147 Test  #57: OpenNavPilotPresentation.MeasuredMagneticHeadingAndCommands ......................   Passed    0.08 sec
+        Start  58: OpenNavPilotPresentation.PendingAndTimeoutNeverInventConfirmation
+ 58/147 Test  #58: OpenNavPilotPresentation.PendingAndTimeoutNeverInventConfirmation ................   Passed    0.08 sec
+        Start  59: OpenNavPilotPresentation.InvalidFreshnessAndHeading
+ 59/147 Test  #59: OpenNavPilotPresentation.InvalidFreshnessAndHeading ..............................   Passed    0.08 sec
+        Start  60: OpenNavPilotPresentation.PermissionAndReplay
+ 60/147 Test  #60: OpenNavPilotPresentation.PermissionAndReplay .....................................   Passed    0.08 sec
+        Start  61: OpenNavPilotPresentation.ProductStatusOnlyOverridesOldPermission
+ 61/147 Test  #61: OpenNavPilotPresentation.ProductStatusOnlyOverridesOldPermission .................   Passed    0.08 sec
+        Start  62: OpenNavAnchorView.CurrentPositionAndUnavailableStates
+ 62/147 Test  #62: OpenNavAnchorView.CurrentPositionAndUnavailableStates ............................   Passed    0.08 sec
+        Start  63: OpenNavAnchorView.ChangedPositionAndInvalidObservationsSuppressed
+ 63/147 Test  #63: OpenNavAnchorView.ChangedPositionAndInvalidObservationsSuppressed ................   Passed    0.08 sec
+        Start  64: OpenNavAnchorView.HistoryOwnedBoundedAndNeverRefreshedByReading
+ 64/147 Test  #64: OpenNavAnchorView.HistoryOwnedBoundedAndNeverRefreshedByReading ..................   Passed    0.08 sec
+        Start  65: OpenNavAnchorGeometry.PinnedMercatorProjectionIncludingAntimeridian
+ 65/147 Test  #65: OpenNavAnchorGeometry.PinnedMercatorProjectionIncludingAntimeridian ..............   Passed    0.08 sec
+        Start  66: OpenNavAnchorGeometry.InvalidCoordinatesUnavailable
+ 66/147 Test  #66: OpenNavAnchorGeometry.InvalidCoordinatesUnavailable ..............................   Passed    0.08 sec
+        Start  67: OpenNavPassage.CurrentObservationProvenance
+ 67/147 Test  #67: OpenNavPassage.CurrentObservationProvenance ......................................   Passed    0.08 sec
+        Start  68: OpenNavEnergyView.CurrentObservationProvenance
+ 68/147 Test  #68: OpenNavEnergyView.CurrentObservationProvenance ...................................   Passed    0.08 sec
+        Start  69: OpenNavInstruments.CurrentDirectionalProvenance
+ 69/147 Test  #69: OpenNavInstruments.CurrentDirectionalProvenance ..................................   Passed    0.08 sec
+        Start  70: OpenNavSourceHealth.PerMeasurementAndIndependentAis
+ 70/147 Test  #70: OpenNavSourceHealth.PerMeasurementAndIndependentAis ..............................   Passed    0.08 sec
+        Start  71: OpenNavFooter.OwnedNavigationAndHealth
+ 71/147 Test  #71: OpenNavFooter.OwnedNavigationAndHealth ...........................................   Passed    0.08 sec
+        Start  72: OpenNavHorizon.OwnedAdviceAndActions
+ 72/147 Test  #72: OpenNavHorizon.OwnedAdviceAndActions .............................................   Passed    0.08 sec
+        Start  73: OpenNavRouteGeometry.AntimeridianFirstMiddleFinalMatchUpstream
+ 73/147 Test  #73: OpenNavRouteGeometry.AntimeridianFirstMiddleFinalMatchUpstream ...................   Passed    0.08 sec
+        Start  74: OpenNavRouteGeometry.ActualReverseAndEditChangeRevision
+ 74/147 Test  #74: OpenNavRouteGeometry.ActualReverseAndEditChangeRevision ..........................   Passed    0.08 sec
+        Start  75: OpenNavRouteGeometry.RemovedRouteIsNotDereferencedAndSnapshotSurvivesDeletion
+ 75/147 Test  #75: OpenNavRouteGeometry.RemovedRouteIsNotDereferencedAndSnapshotSurvivesDeletion ....   Passed    0.08 sec
+        Start  76: OpenNavRouteGeometry.RepeatedObjectAndGuidAreRejected
+ 76/147 Test  #76: OpenNavRouteGeometry.RepeatedObjectAndGuidAreRejected ............................   Passed    0.08 sec
+        Start  77: OpenNavRouteGeometry.NestedEventGuardRejectsEditThenRestore
+ 77/147 Test  #77: OpenNavRouteGeometry.NestedEventGuardRejectsEditThenRestore ......................   Passed    0.08 sec
+        Start  78: OpenNavRouteGeometry.OpenRouteOrPointEditRemainsUnavailable
+ 78/147 Test  #78: OpenNavRouteGeometry.OpenRouteOrPointEditRemainsUnavailable ......................   Passed    0.08 sec
+        Start  79: OpenNavRouteGeometry.CopyRefusesWorkerThread
+ 79/147 Test  #79: OpenNavRouteGeometry.CopyRefusesWorkerThread .....................................   Passed    0.08 sec
+        Start  80: OpenNavMarine.N2kBatteryPreservesInstanceAndSign
+ 80/147 Test  #80: OpenNavMarine.N2kBatteryPreservesInstanceAndSign .................................   Passed    0.08 sec
+        Start  81: OpenNavMarine.RealAddressClaimUnifiesPackAcrossDifferentPgns
+ 81/147 Test  #81: OpenNavMarine.RealAddressClaimUnifiesPackAcrossDifferentPgns .....................   Passed    0.08 sec
+        Start  82: OpenNavMarine.N2kHighVoltageSaturationIsUnavailable
+ 82/147 Test  #82: OpenNavMarine.N2kHighVoltageSaturationIsUnavailable ..............................   Passed    0.08 sec
+        Start  83: OpenNavMarine.N2kSocAndSohDoNotInventCapacity
+ 83/147 Test  #83: OpenNavMarine.N2kSocAndSohDoNotInventCapacity ....................................   Passed    0.09 sec
+        Start  84: OpenNavMarine.N2kRejectsEveryTruncatedEnvelope
+ 84/147 Test  #84: OpenNavMarine.N2kRejectsEveryTruncatedEnvelope ...................................   Passed    0.08 sec
+        Start  85: OpenNavMarine.N2kHeadingRequiresReferenceProvenance
+ 85/147 Test  #85: OpenNavMarine.N2kHeadingRequiresReferenceProvenance ..............................   Passed    0.08 sec
+        Start  86: OpenNavMarine.N2kWindDoesNotConfuseNorthAndRelativeAngles
+ 86/147 Test  #86: OpenNavMarine.N2kWindDoesNotConfuseNorthAndRelativeAngles ........................   Passed    0.08 sec
+        Start  87: OpenNavMarine.N2kDepthRudderRpmAndTankUnits
+ 87/147 Test  #87: OpenNavMarine.N2kDepthRudderRpmAndTankUnits ......................................   Passed    0.08 sec
+        Start  88: OpenNavMarine.NmeaMissingValuesNeverBecomeZero
+ 88/147 Test  #88: OpenNavMarine.NmeaMissingValuesNeverBecomeZero ...................................   Passed    0.08 sec
+        Start  89: OpenNavMarine.NmeaChecksumsStatusAndWindUnits
+ 89/147 Test  #89: OpenNavMarine.NmeaChecksumsStatusAndWindUnits ....................................   Passed    0.08 sec
+        Start  90: OpenNavMarine.SignalKIntegerRatioAndPackIdentity
+ 90/147 Test  #90: OpenNavMarine.SignalKIntegerRatioAndPackIdentity .................................   Passed    0.08 sec
+        Start  91: OpenNavMarine.SignalKContextTimestampAndNulls
+ 91/147 Test  #91: OpenNavMarine.SignalKContextTimestampAndNulls ....................................   Passed    0.08 sec
+        Start  92: OpenNavMarine.SignalKFractionalTimestampNativeClockResolution
+ 92/147 Test  #92: OpenNavMarine.SignalKFractionalTimestampNativeClockResolution ....................   Passed    0.08 sec
+        Start  93: OpenNavMarine.SignalKSourceMissingAndUnknownPaths
+ 93/147 Test  #93: OpenNavMarine.SignalKSourceMissingAndUnknownPaths ................................   Passed    0.08 sec
+        Start  94: OpenNavMarine.SignalKPropulsionAndExplicitExtensionMapping
+ 94/147 Test  #94: OpenNavMarine.SignalKPropulsionAndExplicitExtensionMapping .......................   Passed    0.08 sec
+        Start  95: OpenNavMarine.ConfiguredLiveBatteryFeedsEnergyWithoutDemoDefaults
+ 95/147 Test  #95: OpenNavMarine.ConfiguredLiveBatteryFeedsEnergyWithoutDemoDefaults ................   Passed    0.08 sec
+        Start  96: OpenNavMarine.PersistedPropulsionMappingsPreserveAgeAndDomain
+ 96/147 Test  #96: OpenNavMarine.PersistedPropulsionMappingsPreserveAgeAndDomain ....................   Passed    0.08 sec
+        Start  97: OpenNavMarine.DcWideRangeVoltageCurrentFromBoatWire
+ 97/147 Test  #97: OpenNavMarine.DcWideRangeVoltageCurrentFromBoatWire ..............................   Passed    0.08 sec
+        Start  98: OpenNavMarine.DcWideRangeSentinelsAndUnsignedVoltage
+ 98/147 Test  #98: OpenNavMarine.DcWideRangeSentinelsAndUnsignedVoltage .............................   Passed    0.08 sec
+        Start  99: OpenNavMarine.DcWideRangePrecedenceKeepsEpochCoherent
+ 99/147 Test  #99: OpenNavMarine.DcWideRangePrecedenceKeepsEpochCoherent ............................   Passed    0.09 sec
+        Start 100: OpenNavMarine.EngineTemperaturePreservesFieldMeaningAndLength
+100/147 Test #100: OpenNavMarine.EngineTemperaturePreservesFieldMeaningAndLength ....................   Passed    0.08 sec
+        Start 101: OpenNavMarine.TransmissionGearUsesPinnedDecoder
+101/147 Test #101: OpenNavMarine.TransmissionGearUsesPinnedDecoder ..................................   Passed    0.08 sec
+        Start 102: OpenNavMarine.BetaPgnTruncationAndReservedIdentity
+102/147 Test #102: OpenNavMarine.BetaPgnTruncationAndReservedIdentity ...............................   Passed    0.08 sec
+        Start 103: OpenNavMarine.ErrorCodesCannotBecomePlausibleMeasurements
+103/147 Test #103: OpenNavMarine.ErrorCodesCannotBecomePlausibleMeasurements ........................   Passed    0.08 sec
+        Start 104: OpenNavMarine.BoundBoatFieldsUseActualPinnedMarineDecoder
+104/147 Test #104: OpenNavMarine.BoundBoatFieldsUseActualPinnedMarineDecoder ........................   Passed    0.08 sec
+        Start 105: OpenNavMarine.NmeaRejectsUntrustedBytesBeforeWxParsing
+105/147 Test #105: OpenNavMarine.NmeaRejectsUntrustedBytesBeforeWxParsing ...........................   Passed    0.08 sec
+        Start 106: OpenNavMarine.N2kRejectsInvalidPriorityAndBoundedRandomEnvelopes
+106/147 Test #106: OpenNavMarine.N2kRejectsInvalidPriorityAndBoundedRandomEnvelopes .................   Passed    0.08 sec
+        Start 107: OpenNavMarine.SignalKRejectsDeepOrMalformedExternalText
+107/147 Test #107: OpenNavMarine.SignalKRejectsDeepOrMalformedExternalText ..........................   Passed    0.08 sec
+        Start 108: OpenNavMarine.SignalKUnicodeSourceAndDriverFraming
+108/147 Test #108: OpenNavMarine.SignalKUnicodeSourceAndDriverFraming ...............................   Passed    0.08 sec
+        Start 109: OpenNavAisClock.UsesPinnedWxUtcTickConvention
+109/147 Test #109: OpenNavAisClock.UsesPinnedWxUtcTickConvention ....................................   Passed    0.08 sec
+        Start 110: OpenNavAisClock.SameElapsedTimeInUtcAndEastAndWestTimezones
+110/147 Test #110: OpenNavAisClock.SameElapsedTimeInUtcAndEastAndWestTimezones ......................   Passed    0.08 sec
+        Start 111: OpenNavAisClock.RetainsStaleObservationAge
+111/147 Test #111: OpenNavAisClock.RetainsStaleObservationAge .......................................   Passed    0.08 sec
+        Start 112: OpenNavAisClock.RejectsFutureMissingImplausibleAndOverflowReports
+112/147 Test #112: OpenNavAisClock.RejectsFutureMissingImplausibleAndOverflowReports ................   Passed    0.08 sec
+        Start 113: OpenNavSettings.PersistsInSharedProfileWithoutChangingOtherEntries
+113/147 Test #113: OpenNavSettings.PersistsInSharedProfileWithoutChangingOtherEntries ...............   Passed    0.08 sec
+        Start 114: OpenNavSettings.CorruptRecordPreservedAndFailsClosed
+114/147 Test #114: OpenNavSettings.CorruptRecordPreservedAndFailsClosed .............................   Passed    0.08 sec
+        Start 115: OpenNavSettings.DisplayPreferencesRoundTripWithoutChangingOlderSettings
+115/147 Test #115: OpenNavSettings.DisplayPreferencesRoundTripWithoutChangingOlderSettings ..........   Passed    0.08 sec
+        Start 116: OpenNavSettings.InvalidDisplayRecordPreservedAndInvalidSaveRejected
+116/147 Test #116: OpenNavSettings.InvalidDisplayRecordPreservedAndInvalidSaveRejected ..............   Passed    0.08 sec
+        Start 117: OpenNavSettings.DisplayFailedFlushRestoresAppliedValue
+117/147 Test #117: OpenNavSettings.DisplayFailedFlushRestoresAppliedValue ...........................   Passed    0.08 sec
+        Start 118: OpenNavSettings.FailedFlushRestoresPreviousValue
+118/147 Test #118: OpenNavSettings.FailedFlushRestoresPreviousValue .................................   Passed    0.08 sec
+        Start 119: OpenNavSettings.VesselProfileKeepsLegacyRecordAndUnconfiguredEnergy
+119/147 Test #119: OpenNavSettings.VesselProfileKeepsLegacyRecordAndUnconfiguredEnergy ..............   Passed    0.08 sec
+        Start 120: OpenNavSettings.VesselSaveFailedFlushRestoresAllThreeEntries
+120/147 Test #120: OpenNavSettings.VesselSaveFailedFlushRestoresAllThreeEntries .....................   Passed    0.08 sec
+        Start 121: OpenNavSettings.VesselSavePersistsEditedChartNameAndBattery
+121/147 Test #121: OpenNavSettings.VesselSavePersistsEditedChartNameAndBattery ......................   Passed    0.08 sec
+        Start 122: OpenNavSettings.WorkerCannotWriteConfiguration
+122/147 Test #122: OpenNavSettings.WorkerCannotWriteConfiguration ...................................   Passed    0.08 sec
+        Start 123: OpenNavOnlineAIS.DefaultOffAndPersistentOptInNeedsValidLiveViewport
+123/147 Test #123: OpenNavOnlineAIS.DefaultOffAndPersistentOptInNeedsValidLiveViewport ..............   Passed    0.08 sec
+        Start 124: OpenNavOnlineAIS.UnknownConfigurationIsPreservedAndDisabled
+124/147 Test #124: OpenNavOnlineAIS.UnknownConfigurationIsPreservedAndDisabled ......................   Passed    0.09 sec
+        Start 125: OpenNavOnlineAIS.InvalidViewportAndReplayStopNetworking
+125/147 Test #125: OpenNavOnlineAIS.InvalidViewportAndReplayStopNetworking ..........................   Passed    0.09 sec
+        Start 126: OpenNavOnlineAIS.FailedEnableRestoresTheExactPreviousPreference
+126/147 Test #126: OpenNavOnlineAIS.FailedEnableRestoresTheExactPreviousPreference ..................   Passed    0.08 sec
+        Start 127: OpenNavOnlineAIS.DisableStopsImmediatelyEvenWhenPersistenceFails
+127/147 Test #127: OpenNavOnlineAIS.DisableStopsImmediatelyEvenWhenPersistenceFails .................   Passed    0.08 sec
+        Start 128: OpenNavOnlineAIS.CredentialIsSeparateAndDoesNotImplicitlyEnable
+128/147 Test #128: OpenNavOnlineAIS.CredentialIsSeparateAndDoesNotImplicitlyEnable ..................   Passed    0.08 sec
+        Start 129: OpenNavOnlineAIS.FailedRemovalStillDisablesAndSuccessfulRemovalVerifiesAbsence
+129/147 Test #129: OpenNavOnlineAIS.FailedRemovalStillDisablesAndSuccessfulRemovalVerifiesAbsence ...   Passed    0.08 sec
+        Start 130: OpenNavOnlineAIS.WorkerCannotWriteSettingsOrCredentials
+130/147 Test #130: OpenNavOnlineAIS.WorkerCannotWriteSettingsOrCredentials ..........................   Passed    0.08 sec
+        Start 131: OpenNavOnlineAIS.PinnedOrderedBoundingBoxPreservesDatelineAndWorldExtent
+131/147 Test #131: OpenNavOnlineAIS.PinnedOrderedBoundingBoxPreservesDatelineAndWorldExtent .........   Passed    0.08 sec
+        Start 132: OpenNavOnlineAIS.InvalidAndOverflowViewportCannotCreateSubscription
+132/147 Test #132: OpenNavOnlineAIS.InvalidAndOverflowViewportCannotCreateSubscription ..............   Passed    0.08 sec
+        Start 133: OpenNavRecovery.ActualJournalCountsCrashesAndPreservesRetryEvidence
+133/147 Test #133: OpenNavRecovery.ActualJournalCountsCrashesAndPreservesRetryEvidence ..............   Passed    0.08 sec
+        Start 134: OpenNavRecovery.HealthyRequiresDeferredInitializationAndThirtySeconds
+134/147 Test #134: OpenNavRecovery.HealthyRequiresDeferredInitializationAndThirtySeconds ............   Passed    0.08 sec
+        Start 135: OpenNavRecovery.CorruptJournalFailsClosedWithoutTouchingNavigationData
+135/147 Test #135: OpenNavRecovery.CorruptJournalFailsClosedWithoutTouchingNavigationData ...........   Passed    0.08 sec
+        Start 136: OpenNavDiscovery.RepeatedScansReleaseAllOwnedReferences
+136/147 Test #136: OpenNavDiscovery.RepeatedScansReleaseAllOwnedReferences ..........................   Passed    0.30 sec
+        Start 137: OpenNavDiscovery.ContextFailureReturnsUnavailableCatalog
+137/147 Test #137: OpenNavDiscovery.ContextFailureReturnsUnavailableCatalog .........................   Passed    0.08 sec
+        Start 138: OpenNavDiscovery.ScanFailureReleasesContext
+138/147 Test #138: OpenNavDiscovery.ScanFailureReleasesContext ......................................   Passed    0.08 sec
+        Start 139: Buffer.Single
+139/147 Test #139: Buffer.Single ....................................................................   Passed    0.08 sec
+        Start 140: Buffer.Size_3
+140/147 Test #140: Buffer.Size_3 ....................................................................   Passed    0.08 sec
+        Start 141: Buffer.Hakefjord
+141/147 Test #141: Buffer.Hakefjord .................................................................   Passed    0.24 sec
+        Start 142: Buffer.RateLimit1
+142/147 Test #142: Buffer.RateLimit1 ................................................................   Passed    0.13 sec
+        Start 143: Buffer.RateLimit2
+143/147 Test #143: Buffer.RateLimit2 ................................................................   Passed    0.28 sec
+        Start 144: Buffer.RateAndSizeLimit
+144/147 Test #144: Buffer.RateAndSizeLimit ..........................................................   Passed    0.12 sec
+        Start 145: Buffer.OverrunEvent
+145/147 Test #145: Buffer.OverrunEvent ..............................................................   Passed    0.08 sec
+        Start 146: N0183Nuffer.Basic
+146/147 Test #146: N0183Nuffer.Basic ................................................................   Passed    0.08 sec
+        Start 147: IpcServer.Commands
+147/147 Test #147: IpcServer.Commands ...............................................................   Passed    0.36 sec
+
+100% tests passed out of 147
+
+Total Test time (real) =  23.77 sec

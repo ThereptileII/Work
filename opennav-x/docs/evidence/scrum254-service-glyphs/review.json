@@ -1,0 +1,78 @@
+{
+  "issue": "SCRUM-254",
+  "base": "797afebbb21c49e37b2f3ff613c887cb8916168f",
+  "upstream": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "checks": {
+    "resources": 10709,
+    "nativeLoader": 6234,
+    "dedicatedRejections": 9,
+    "negativeNativeLoaderPivots": 2,
+    "windowsPreflightOffline": 7,
+    "unchangedEffectiveLookups": 6
+  },
+  "commands": [
+    "python3 tests/chart_presentation_resources_tests.py",
+    "python3 tests/chart_service_negative_tests.py --source upstream/OpenCPN/data/s57data",
+    "python3 tools/verify-anchor-loader.py --services --source upstream/OpenCPN --generated .local/service-glyphs/generated --output .local/service-glyphs/loader --wx-config /home/standard/Projects/X-nav/.local/sysroot/usr/bin/wx-config --wx-prefix /home/standard/Projects/X-nav/.local/sysroot/usr",
+    "python3 tests/windows_chart_units_tests.py"
+  ],
+  "inputSha256": {
+    "resources/chart-style/v1/services/PILBOP02-alpha.json": "39356bc37b8a8dfd426ad8916e05b465cccf0063755a21b376b425862e622b27",
+    "resources/chart-style/v1/services/PILBOP02.svg": "02244cba37816514c8eb2e6358652729e81a42aff04e903a443f5d9ff5f83b3a",
+    "resources/chart-style/v1/services/RTPBCN02-alpha.json": "4ab2a4d432bc7cc81f821e43a0f401517697521565d55db6181f5a7c5fcc57e8",
+    "resources/chart-style/v1/services/RTPBCN02.svg": "3b15bf46875074fde21e2ce3c4d0760d2213902666b5c774b0080532c6196cf1",
+    "resources/chart-style/v1/services/provenance.json": "75117b17f5b4dfa30e079a11c3429180ec156918b2bd8d3c58b88bf9553f2d8e",
+    "src/integration/OpenCPN.cmake": "cc39733ac7c63d88402f7a591987553e2b941236ee0819cec6be1587f8facaf1",
+    "tests/chart_anchor_resources_tests.py": "1815584e02bb745de6243001aa586c04cecb8d81bf8508878ad2ed4dca318bd2",
+    "tests/chart_presentation_resources_tests.py": "b3b9cdeed8d5c361a340c94b40da2f2e48e8de07015b456b29f4308168a28be1",
+    "tests/chart_service_loader_test.cpp": "77e162028a0f0a36dd8b843f24a85a45a3eed05149f6b7c74533b2d71a62c869",
+    "tests/chart_service_negative_tests.py": "41a9c7f321ce787f9824a9956994ac5c459c421db1ac295139c2d2ccdf05c45a",
+    "tests/chart_service_resources_tests.py": "ed05bb4cf39b2250a52c3ad55203d8224d7a6334f3b0581c3dfa4c64bb9b7002",
+    "tools/chart_service_art.py": "86002da05b15a6f59098d424e794adb383b1c9ba270a90834056d7f8b86a8cc8",
+    "tools/generate-xnav-chart-style.py": "f7bf65e3bb5eb8db735d54c32e2c46fbc340e913e9c09e7ed8b9be7d8a81cef7",
+    "tools/verify-anchor-loader.py": "ae8ffab73a46b5d1593d17b9e1be784056b8ba11b87040cc9fb085a4693e1278",
+    "tools/windows_chart_units.py": "7db667d23e94d48abfc9af2389ab5aa0b3946b710f6ece91b0932b83eb679fec"
+  },
+  "evidenceSha256": {
+    "PILBOP02-DAY_BRIGHT-current.png": "aa0c4c140cd250ef7d28c5cf7115d14e1e2a2da5a89e01b9fed4239344283aad",
+    "PILBOP02-DAY_BRIGHT-reference.png": "2d3f19c6776f38cb37c9a50fb1711f4d19bd245f7a94d8c196c28e026d162ae2",
+    "PILBOP02-DAY_BRIGHT-stock.png": "79d05964f7360de8bb4fef6f29d647c4fc2d968d701b2828bbfbfe0ca126048d",
+    "PILBOP02-DUSK-current.png": "854252270de25043690648505530fafbcff9b4dfdaa68a648743b2abe21f3cff",
+    "PILBOP02-DUSK-reference.png": "a7aea0d5cdffb6960227a6ea26dfb27c70d5cac3360609b0fa188e43decbc9b2",
+    "PILBOP02-DUSK-stock.png": "445ed137afeeef2c8ea59656ba3939496b19a67ff9b62d7e2d934ee46ca51a52",
+    "PILBOP02-NIGHT-current.png": "d2ae8d426d76bf122f8367c0eba528b2a0437b89cccf6739b8bdbbd8ac85565e",
+    "PILBOP02-NIGHT-reference.png": "fa79a95038c850c139db7d3cabea6600468ea1a7a357baf85c4337fa8fe2034a",
+    "PILBOP02-NIGHT-stock.png": "677c942242a9394bdc1de85babd35b4adbbd10708f4752fae304cb45634cf5fa",
+    "RTPBCN02-DAY_BRIGHT-current.png": "f4880bab00510d9062836ed18c1faf2465654286b1a7c546fa5b9d655cb7d14c",
+    "RTPBCN02-DAY_BRIGHT-reference.png": "80bda9578263fe384afff2688c9dcbd859a70218f261171091644c90d575dfe4",
+    "RTPBCN02-DAY_BRIGHT-stock.png": "0c84624aa1835f55486241627919a1aaeb6ac85afc22423f197d6a7318f2f3ef",
+    "RTPBCN02-DUSK-current.png": "f1f0e13fd3a3a0a4ff7bcdc3bf18b2e06be28fd03cae841c64cf22052bcae4f9",
+    "RTPBCN02-DUSK-reference.png": "60c182a65e1a7fa93e1e57d44301c6c1be05d6af5c756899e43386d7f423e311",
+    "RTPBCN02-DUSK-stock.png": "97bcc6fe090499cd6a9351839b10e261d16e272b4fd74c76f5df375fcc6ca926",
+    "RTPBCN02-NIGHT-current.png": "965ad45f0ffd3c6fa1983963aedcf7784a775e24c62f013db9defeb58d1ee78c",
+    "RTPBCN02-NIGHT-reference.png": "7f711c1363bab69e56a5024e454670d467819a0cd3f885cb59e0a88e2c21b29b",
+    "RTPBCN02-NIGHT-stock.png": "c0a3578130a5975a41a0999a6c6fd52f9026b8792be6dab9ac2f657c3e0f0319",
+    "generated-manifest.json": "066091b589f4e93e028971252c93e4fcd745c9d28ab610da257e9c1980af96b6",
+    "loader-negative.json": "db83b035b4557ce531d28334e615cc1763d0107587a41f1b4f5b43615d4340cb",
+    "loader.json": "8135cfa0edd1d2f3fb89e331006ce2c7b0cddadcfe5cdd57acea07151ac084f2",
+    "loader.log": "cdc916a2b7b66a683ebe8233bc9b4f37bf303c3a05c989b5113cdeec9ab37c50",
+    "negative.log": "45b90474e2238780028bc16f9536ce4196f93f74e618dd27270eb9a027fdc8d1",
+    "preflight.log": "dce0ab930c0a2a59f30a63681b5350160c5d5fcc3f96d9e0c225e7c1646cfd0b",
+    "reference-comparison.json": "71fc6af3fed19d4340b9861f0675c050997192bcedd03b60c737781c51364988",
+    "resources.log": "4f01e131041d7131c57ecc37b10e605f3392c1e0a9cc9584d8463d52f2cf053d",
+    "selected-rules.json": "b71742fe5729962d95b1e049dd4920636a3055f7a7a3759e9b6896eec4246643",
+    "stock-prototype-loaded.png": "6f82afdbd9503dad6ccc1073e22209d7e05ae5734e4205fa839b2399ddf1794a"
+  },
+  "loaderBinarySha256": "6bb2b61a8202339d52bcf57ce4e449230a4966a73ec9110f06d07da8372a364b",
+  "limits": [
+    "No application or ENC scenario run",
+    "No GL context or texture drawing",
+    "No native Windows/DPI proof",
+    "No boat acceptance",
+    "No full CI dispatch"
+  ],
+  "failedInstrumentation": [
+    "Initial generation command used a symlink nested inside the empty submodule directory and failed FileNotFound before generation; fixed local pointer only.",
+    "Initial crop comparator demanded identical straight RGB, exposing Cairo low-alpha unpremultiplication rounding. Exact alpha and <1 visible-channel error confirmed; no product asset change."
+  ]
+}

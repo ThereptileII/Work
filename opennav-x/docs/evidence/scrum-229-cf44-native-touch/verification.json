@@ -1,0 +1,28 @@
+{
+  "artifact": 11248744075,
+  "commit": "cf44e938a3539af6e97a03346542f04f3e7895a4",
+  "bytes": 12079502,
+  "sha256": "0cc54aa3056ae46601b523ec780ae463d5851b7a258db675fd5259f767eed847",
+  "entries": 692,
+  "crc": "pass",
+  "paths": "pass",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/37056805105",
+  "local_source": "dbd8a0a88091839d7d27d15042315758fc866300",
+  "binary_sha256": "a237796849a4cfe99a0e4a5b5a617758e0622f3b5c7d6a129dbcd20354ab1e5b",
+  "verified_sources": {
+    "raw": 16,
+    "windows_crlf": 257
+  },
+  "verified_artifact_groups": {
+    "objects": 1,
+    "uiObjects": 28,
+    "touchRuntime": 12
+  },
+  "independent_review": "Original Edit hit zero scroll; three actual body-hit pans scroll480px; lower action and Save settle visible; native tap activates once with zero saves and unchanged fields; host exits and DPI restored100",
+  "not_acceptance": [
+    "full integrated DPI",
+    "all prototype views",
+    "boat touchscreen",
+    "public release"
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "actualSourceSha256": "b6810e842c1a109b3ce26078d213d0b6eda23f0c2ca3795bb9e28a328185af53",
+  "actualMethods": [
+    "S52_TextC::S52_TextC()",
+    "S52_TextC::~S52_TextC()",
+    "static void rotate(wxRect *r,",
+    "bool s52plib::RenderText(",
+    "bool s52plib::CheckTextRectList("
+  ],
+  "callerRegistrationVerbatim": true,
+  "extractedSha256": "9256553e297caf5caee882e8bbbe472565481ff780334a8f13c3b688c5e94d8e",
+  "compileCommand": [
+    "g++",
+    "-std=c++17",
+    "-O3",
+    "-Wall",
+    "-Werror",
+    "-Wno-unused-variable",
+    "-DSKAGER_OCHARTS_ADAPTER",
+    "-DocpnUSE_GL",
+    "-I/home/standard/Projects/X-nav/.local/sysroot/usr/lib/wx/include/gtk3-unicode-3.2",
+    "-I/home/standard/Projects/X-nav/.local/sysroot/usr/include/wx-3.2",
+    "-DWXUSINGDLL",
+    "-D__WXGTK3__",
+    "-D__WXGTK__",
+    "-D_FILE_OFFSET_BITS=64",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum268-text-cache-metric/src",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum268-text-cache-metric/.local/check-private-original",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum268-text-cache-metric/.local/sources/private/libs/s52plib/src",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum268-text-cache-metric/.local/sources/private/libs/geoprim/src",
+    "/home/standard/Projects/X-nav-worktrees/scrum268-text-cache-metric/tests/chart_name_render_boundary_test.cpp",
+    "-L/home/standard/Projects/X-nav/.local/sysroot/usr/lib",
+    "-lwx_gtk3u_core-3.2",
+    "-lwx_baseu-3.2",
+    "-o",
+    "/home/standard/Projects/X-nav-worktrees/scrum268-text-cache-metric/.local/check-private-original/chart-name-boundary-test"
+  ],
+  "exitCode": 1,
+  "output": "Day/Dusk/Night/Day text phases keep identical placement\n",
+  "privateRenderer": true,
+  "glyphCacheOnly": true,
+  "originalRenderTextSha256": "cdfb230b3dea6e933d3296674d87e7b919ef29fed8191763151effd1c77eeee8",
+  "limitations": [
+    "GL calls record uploads; no actual GL context or driver draw",
+    "Ordinary glyph extents are fixed dependency inputs from the retained LNDELV trace; actual RenderText owns cache selection and positioning",
+    "Viewport and text-owner containers are fixtures",
+    "Linux font raster; native Windows and boat acceptance remain open"
+  ]
+}

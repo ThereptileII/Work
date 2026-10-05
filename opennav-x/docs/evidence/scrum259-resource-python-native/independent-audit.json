@@ -1,0 +1,68 @@
+{
+  "passed": true,
+  "localSource": "eced8dae855d477a9ea356ef600a958322bbc1d2",
+  "remoteSource": "c7f3616c5b9d385d39edf25b51f89a3508906071",
+  "sourceCheckoutProof": {
+    "tools/test-chart-resource-python.py": {
+      "matchesCheckoutForm": [
+        "CRLF"
+      ],
+      "record": {
+        "sha256": "2fc87959b2bc4bc22d519905f86205602e9d720e3b3739f7d8a9507e5009067f",
+        "bytes": 8654
+      }
+    },
+    "tools/generate-xnav-chart-style.py": {
+      "matchesCheckoutForm": [
+        "CRLF"
+      ],
+      "record": {
+        "sha256": "442438cf89acd2818c6664452aaf2db5fee28ed5bd67249d194753d539f5eb8a",
+        "bytes": 15569
+      }
+    },
+    "resources/chart-style/v1/source-lock.json": {
+      "matchesCheckoutForm": [
+        "CRLF"
+      ],
+      "record": {
+        "sha256": "2b00d604a0ab9a0dc3a7b50885a3d712475bd26159cd0f5c29c52654e5952f23",
+        "bytes": 819
+      }
+    }
+  },
+  "allFivePinnedInputsRehashed": true,
+  "all28GeneratedFilesRehashed": true,
+  "allPinnedSevenFilesExactlyEqual": true,
+  "unpinnedDifferentFiles": [
+    "XNavChartResources.h",
+    "manifest.json",
+    "rastersymbols-dark.png",
+    "rastersymbols-day.png",
+    "rastersymbols-dusk.png"
+  ],
+  "independentPillowDecodedPixelProof": {
+    "rastersymbols-dark.png": {
+      "rgbaBytes": 7200000,
+      "rgbaSha256": "692b5a117ed3cc2096f1aa3dfbc4ed6d403951df85f66d7a631d9ff82efc4142",
+      "allPixelsEqual": true,
+      "allNonIdatChunksIdentical": true
+    },
+    "rastersymbols-day.png": {
+      "rgbaBytes": 7200000,
+      "rgbaSha256": "226800729867ae89afba12d59d9146e30dfee9437db335071a41f47783837041",
+      "allPixelsEqual": true,
+      "allNonIdatChunksIdentical": true
+    },
+    "rastersymbols-dusk.png": {
+      "rgbaBytes": 7200000,
+      "rgbaSha256": "27b59b3dd7ef1ce6d7ac64376cd484c58ac8b83263503bbe3392cbb87a761b9f",
+      "allPixelsEqual": true,
+      "allNonIdatChunksIdentical": true
+    }
+  },
+  "manifestMetadataOtherwiseExactlyEqual": true,
+  "wiring17Confirmed": true,
+  "pythonExecutableHashes": "CI-reported only; executable bytes are not in artifact",
+  "runtimeAcceptance": "Resource-only reproduction and pin repair, no full app/native module/boat qualification"
+}

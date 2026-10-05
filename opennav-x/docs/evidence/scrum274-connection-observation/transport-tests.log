@@ -1,0 +1,19 @@
+PASS binary: messages=1 maximum=42 opened=1 errors=0 close=1000
+PASS compressed: messages=1 maximum=4096 opened=1 errors=0 close=1000
+PASS exact-limit: messages=1 maximum=65536 opened=1 errors=0 close=1000
+PASS message-too-large: messages=0 maximum=0 opened=1 errors=0 close=1009
+PASS compressed-exact-limit: messages=1 maximum=65536 opened=1 errors=0 close=1000
+PASS inflate-bomb: messages=0 maximum=0 opened=1 errors=0 close=1009
+PASS fragmented: messages=1 maximum=64000 opened=1 errors=0 close=1000
+PASS fragment-overflow: messages=0 maximum=0 opened=1 errors=0 close=1009
+PASS two-reports-across-receive-cap: messages=2 maximum=40000 opened=1 errors=0 close=1000
+PASS empty-fragment-flood: messages=0 maximum=0 opened=1 errors=0 close=1009
+PASS advertised-32bit-overflow: messages=0 maximum=0 opened=1 errors=0 close=1009
+PASS advertised-64bit-overflow: messages=0 maximum=0 opened=1 errors=0 close=1009
+PASS continuous-small-reports: messages=500 maximum=1000 opened=1 errors=0 close=1000
+PASS http-status-overflow: messages=0 maximum=0 opened=0 errors=1 close=0
+PASS http-header-overflow: messages=0 maximum=0 opened=0 errors=1 close=0
+PASS redirect-refused: messages=0 maximum=0 opened=0 errors=1 close=0
+PASS untrusted-certificate: messages=0 maximum=0 opened=0 errors=1 close=0
+PASS hostname-mismatch: messages=0 maximum=0 opened=0 errors=1 close=0
+18 TLS/transport scenarios passed

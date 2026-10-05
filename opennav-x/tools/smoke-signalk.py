@@ -124,7 +124,7 @@ try:
     report['checks'].append('Whole marine input loss expires battery and suppresses predictions')
     assert not errors,errors
     if windows:
-        handle,_=ui.wait_window('OpenNav X / OpenCPN',app.pid)
+        handle,_=ui.wait_window('SKAGER / OpenCPN',app.pid)
         monitor=ui.monitor_process(app.pid);ui.close(handle);ui.wait_clean_exit(monitor)
     else:subprocess.run([str(exe),'--configdir',str(profile),'--remote','--quit'],env=env,capture_output=True,check=True,timeout=15)
     assert app.wait(timeout=30)==0

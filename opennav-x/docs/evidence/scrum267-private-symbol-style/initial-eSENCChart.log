@@ -1,0 +1,4 @@
+/home/standard/Projects/X-nav-worktrees/scrum267-private-symbol-style/.local/symbol-style/source/src/eSENCChart.cpp:54:10: fatal error: tinyxml.h: No such file or directory
+   54 | #include "tinyxml.h"
+      |          ^~~~~~~~~~~
+compilation terminated.

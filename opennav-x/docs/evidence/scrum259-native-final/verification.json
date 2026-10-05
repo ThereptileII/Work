@@ -1,0 +1,211 @@
+{
+  "status": "passed",
+  "localSource": "de26174c6cd801da1411283728aa7c8d19517083",
+  "remoteCommit": "5d6c5cf44cb72f8166b2ab67115bccd568336e35",
+  "run": 37098440931,
+  "job": 111133035756,
+  "artifact": 11265451293,
+  "zipBytes": 16574,
+  "zipSha256": "0789dc1b6afef740703e59b1e4a55c66b20b3be666dcab24b9abb5137f16e908",
+  "crc": "passed",
+  "sourceReceipts": [
+    {
+      "recordedPath": "src/integration/OChartsModuleLoader.cpp",
+      "localPath": "src/integration/OChartsModuleLoader.cpp",
+      "matches": "checkoutCRLF",
+      "bytes": 7868,
+      "sha256": "3d0afe5241f42b7acb0e6f702c1258b9afaa02bb81be0102d2584d3cca24ed47"
+    },
+    {
+      "recordedPath": "src/integration/OChartsModuleLoader.h",
+      "localPath": "src/integration/OChartsModuleLoader.h",
+      "matches": "checkoutCRLF",
+      "bytes": 1296,
+      "sha256": "38cdda23e1a8c9c516b5b53b9a5ee8d76285adf520395418332bf51327690896"
+    },
+    {
+      "recordedPath": "src/integration/PluginPresentationLoader.cpp",
+      "localPath": "src/integration/PluginPresentationLoader.cpp",
+      "matches": "checkoutCRLF",
+      "bytes": 427,
+      "sha256": "a06d7e0d430172ab4e829416bcb882a27300a6d857dd2858c859280832cd1df4"
+    },
+    {
+      "recordedPath": "src/integration/PluginPresentationLoader.h",
+      "localPath": "src/integration/PluginPresentationLoader.h",
+      "matches": "checkoutCRLF",
+      "bytes": 709,
+      "sha256": "e25cc7ea7856768c41951a16edaf4ea9386213be4a0fdfafa4907764b0764213"
+    },
+    {
+      "recordedPath": "src/integration/PluginPresentationFallback.h",
+      "localPath": "src/integration/PluginPresentationFallback.h",
+      "matches": "checkoutCRLF",
+      "bytes": 1721,
+      "sha256": "a4ba741c17df9a73f70dae515c3bc363088d397b34cc429a9fc4eb68b72fd525"
+    },
+    {
+      "recordedPath": "src/plugin-adapters/ChartPresentationBindingV1.h",
+      "localPath": "src/plugin-adapters/ChartPresentationBindingV1.h",
+      "matches": "checkoutCRLF",
+      "bytes": 2315,
+      "sha256": "4f8b4e10d8e302c868e20b9b72241a8215cceac3d8fad9ad9e8c62634492ef7e"
+    },
+    {
+      "recordedPath": "src/plugin-adapters/ocharts/BindingState.h",
+      "localPath": "src/plugin-adapters/ocharts/BindingState.h",
+      "matches": "checkoutCRLF",
+      "bytes": 4088,
+      "sha256": "c10e46310dc72621d3fac2ac272ed282aab1feb5c565db412ebb2c23062fc870"
+    },
+    {
+      "recordedPath": "tests/windows_ocharts_loader/CMakeLists.txt",
+      "localPath": "tests/windows_ocharts_loader/CMakeLists.txt",
+      "matches": "checkoutCRLF",
+      "bytes": 2177,
+      "sha256": "08b985909e533fdf10d25d0f16ddddef3d4bbea2c6a2fdde732148fdb485d114"
+    },
+    {
+      "recordedPath": "tests/windows_ocharts_loader/fixture.cpp",
+      "localPath": "tests/windows_ocharts_loader/fixture.cpp",
+      "matches": "checkoutCRLF",
+      "bytes": 3507,
+      "sha256": "618751e07b73799478ee3b90d2e5edff3d1f7bf34f2142522f0104d8ccc93f35"
+    },
+    {
+      "recordedPath": "tests/windows_ocharts_loader/loader_test.cpp",
+      "localPath": "tests/windows_ocharts_loader/loader_test.cpp",
+      "matches": "checkoutCRLF",
+      "bytes": 18523,
+      "sha256": "5238ae39e8f4cba7095908fc3773687e1d18904693c884b45208737a3ba1aa00"
+    },
+    {
+      "recordedPath": "tests/windows_ocharts_loader/inputs.lock.json",
+      "localPath": "tests/windows_ocharts_loader/inputs.lock.json",
+      "matches": "checkoutCRLF",
+      "bytes": 1183,
+      "sha256": "7520333aba2a38f2bca5f4316a5faa8b229dbbb057e84dc1a57e8882bc53feae"
+    },
+    {
+      "recordedPath": "tools/test-ocharts-loader-windows.py",
+      "localPath": "tools/test-ocharts-loader-windows.py",
+      "matches": "checkoutCRLF",
+      "bytes": 9980,
+      "sha256": "d4b9f25705ca2d440c171adaeacc91b351c462fe1d149294c700527f938a6100"
+    },
+    {
+      "recordedPath": "tools/test-windows-changed-units.py",
+      "localPath": "tools/test-windows-changed-units.py",
+      "matches": "checkoutCRLF",
+      "bytes": 37232,
+      "sha256": "f7a3084410a11700bb06670222b71d78c9bcc1f417599dcb030c71a56714b180"
+    },
+    {
+      "recordedPath": "tools/windows-wx.lock.json",
+      "localPath": "tools/windows-wx.lock.json",
+      "matches": "checkoutCRLF",
+      "bytes": 1017,
+      "sha256": "2fb563c4de7819d4b10d7a567e59510cd033c3b9cb55ce4ebb654964da60267f"
+    },
+    {
+      "recordedPath": "../.github/workflows/skager-ocharts-loader.yml",
+      "localPath": ".github/workflows/skager-ocharts-loader.yml",
+      "matches": "checkoutCRLF",
+      "bytes": 1626,
+      "sha256": "8fcf8c604264c76ffc10fc55d6a6d0d90ef062fbce859360bb77b19aaba7694b"
+    }
+  ],
+  "preparationTests": 14,
+  "wiringRejectionCases": 16,
+  "nativeLoaderGroups": [
+    "copied status matrix",
+    "unavailable",
+    "safe",
+    "not-main",
+    "standard-empty-resources",
+    "wrong-original-name",
+    "actual worker thread",
+    "wrong-original-hash",
+    "wrong-adapter-hash",
+    "wrong-adapter-size",
+    "missing-adapter",
+    "relative-original",
+    "unc-original",
+    "original-reparse-parent",
+    "adapter-reparse-parent",
+    "exclusive-original-lock",
+    "exclusive-adapter-lock",
+    "changed-adapter-after-compatibility",
+    "changed-original-after-compatibility",
+    "compatibility refused",
+    "compatibility missing",
+    "invalid PE load refused",
+    "over-capacity-utf8-resource",
+    "no_bind",
+    "no_status",
+    "no_create",
+    "no_destroy",
+    "binding-rejected",
+    "status-return",
+    "status-size",
+    "status-version",
+    "status-reserved",
+    "status-reason",
+    "status-selected",
+    "status-unknown",
+    "single bound module and lock lifetime",
+    "actual null/forwarded callback and residue-safe fallback",
+    "injected invalid-handle refusal retains ownership"
+  ],
+  "limits": [
+    "real adapter OpenCPN import ABI and renderer integration",
+    "full app Standard/Safe selection and plugin lifecycle",
+    "genuine loaded-module unload refusal; fault test uses a reserved non-module address",
+    "encrypted-chart rendering, licensing and physical hardware"
+  ],
+  "binaryEvidence": "Runner-recorded hashes and compile/execution logs only; artifact intentionally excludes executable, runtime and fixture DLL bytes.",
+  "independentlyFetchedContractInputs": [
+    {
+      "path": "tools/test-ocharts-adapter-preparation.py",
+      "bytes": 13793,
+      "sha256": "e7f8a508e8d0e40eeb48160429c904c276619948f6d8a86433bcd5b2fc4d0888",
+      "gitBlobSha1": "460c864f553ebf36d62bf5e1181de6fb053a4c64",
+      "remoteRef": "5d6c5cf44cb72f8166b2ab67115bccd568336e35"
+    },
+    {
+      "path": "tools/prepare-ocharts-adapter.py",
+      "bytes": 15128,
+      "sha256": "247431511e77104ca11d0f1323dbf0c177226f3d3ef8676d1594b2062ae9c199",
+      "gitBlobSha1": "e12b76137a2ca8a2b664425f84c2124895692a39",
+      "remoteRef": "5d6c5cf44cb72f8166b2ab67115bccd568336e35"
+    },
+    {
+      "path": "tools/verify-ocharts-adapter-package.py",
+      "bytes": 12923,
+      "sha256": "13c07a40b37a8934590677a421b01d852c0b3c8e5403d743fad996f132c58a21",
+      "gitBlobSha1": "658ce6cfde5fa04a67b7d14d33f862a6ebcc1cff",
+      "remoteRef": "5d6c5cf44cb72f8166b2ab67115bccd568336e35"
+    },
+    {
+      "path": "tools/test-ocharts-build-wiring.ps1",
+      "bytes": 7704,
+      "sha256": "c9a5e909484032dfe90e0694e9159c319f41fc487a9c6f310c199060a68c07e3",
+      "gitBlobSha1": "eac80224b2fdde5128b70c94ff0e2e0eb73e0f9b",
+      "remoteRef": "5d6c5cf44cb72f8166b2ab67115bccd568336e35"
+    },
+    {
+      "path": "tools/build-pristine-windows.ps1",
+      "bytes": 25189,
+      "sha256": "6436294546fd1bf971862f937abf543cb42c5e5e7e541c121456e1686d278f54",
+      "gitBlobSha1": "9829088a6bacd9cd00c2e63c6d475a5545a9c250",
+      "remoteRef": "5d6c5cf44cb72f8166b2ab67115bccd568336e35"
+    },
+    {
+      "path": "cmake/ocharts-adapter/CMakeLists.txt",
+      "bytes": 3621,
+      "sha256": "98d547c1842b353cb178ef3b1520022a99d984d085d1c7ccde3a7f0690753862",
+      "gitBlobSha1": "b1747fd8f3c69db9d4a0984768b80f140b54f925",
+      "remoteRef": "5d6c5cf44cb72f8166b2ab67115bccd568336e35"
+    }
+  ]
+}

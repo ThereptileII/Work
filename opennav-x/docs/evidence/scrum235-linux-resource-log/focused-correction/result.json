@@ -1,0 +1,24 @@
+{
+  "authority": "Linux development; actual application/harmonic loader, synthetic stock-locator identity",
+  "phases": [
+    {
+      "mode": "--xnav",
+      "tides": 2,
+      "removedPriorGeneration": false,
+      "result": "passed"
+    },
+    {
+      "mode": "--legacy",
+      "tides": 2,
+      "removedPriorGeneration": true,
+      "result": "passed"
+    },
+    {
+      "mode": "--safe-mode",
+      "tides": 1,
+      "removedPriorGeneration": true,
+      "result": "passed"
+    }
+  ],
+  "result": "passed"
+}

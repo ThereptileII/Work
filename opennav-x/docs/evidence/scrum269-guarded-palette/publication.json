@@ -1,0 +1,15 @@
+{
+  "local": "5766421b069b678bc3cc9baae0bf3436e4116efb",
+  "remoteTree": "880e3dc5b943ce32717b3589e0280d8986f9455a",
+  "entries": 4666,
+  "verified": true,
+  "applicationBase": "1835d1b84df89aff42220ac8bb535e4262034a54",
+  "pinnedUpstream": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "upstreamMode": "Existing remote publication omits local gitlink; workflow fetches exact pinned source separately",
+  "remoteCommit": "7eb5ab21eadecf2d63525d9722e9f883f9abb5eb",
+  "branch": "skager-chart-palette-tools",
+  "run": 37124017315,
+  "runUrl": "https://github.com/ThereptileII/Work/actions/runs/37124017315",
+  "qualification": "Native tools-only gate running; no application or boat acceptance",
+  "independentSourceReview": "72799fc: no remaining actionable source blocker"
+}

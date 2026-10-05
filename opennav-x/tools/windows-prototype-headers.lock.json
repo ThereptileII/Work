@@ -1,0 +1,12 @@
+{
+  "source": "OpenCPN buildwin/win_deps.bat selects OCPNWindowsCoreBuildSupport v0.5",
+  "commit": "e90cc5842b02d5502a549f0f90424e3e1614bf67",
+  "files": [
+    {
+      "file": "glew.h",
+      "url": "https://raw.githubusercontent.com/OpenCPN/OCPNWindowsCoreBuildSupport/e90cc5842b02d5502a549f0f90424e3e1614bf67/buildwin/include/glew/glew.h",
+      "sha256": "1a2d50dc00a69940838cb3b5413cf7a7ac3cee8078672f27ffbfa2d3b88ad344",
+      "bytes": 1210287
+    }
+  ]
+}

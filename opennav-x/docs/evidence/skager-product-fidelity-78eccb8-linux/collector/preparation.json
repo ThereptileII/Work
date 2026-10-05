@@ -1,0 +1,18 @@
+{
+  "launch_authorized": false,
+  "required": [
+    "root final source SHA",
+    "root staged executable SHA256",
+    "root generated manifest SHA256",
+    "explicit launch instruction"
+  ],
+  "source_collector_sha256": "fb4aead13a6faf36ae7a92871bb3ca75623eeeea3071ff66b14a2bdacb2e0e64",
+  "prepared_collector_sha256": "4bee3fe0785351e358c95b272a491c76052b96055d15f8af8b31663fc6329d75",
+  "only_behavior_change": "Additional frozen source hashes for cardinal artwork and route-label implementation; capture/probe behavior unchanged.",
+  "captures": 16,
+  "comparison_source": "f0976cc65ea63d3ed6f60ac53ec38a856d11b66b",
+  "historical_guard_source": "1356fd1603aacbea04d7081d16331e9a181180bb",
+  "read_only_cache": "/home/standard/Projects/X-nav-worktrees/skager-product-fidelity/.local/integrated-fidelity",
+  "pillow_python": "/home/standard/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+  "comparison_capture_root": "/home/standard/Projects/X-nav-worktrees/scrum253-night-canvas/.local/final-capture-prep/output"
+}

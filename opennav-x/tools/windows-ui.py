@@ -159,7 +159,7 @@ def click_text(pid, label):
                     # offscreen children and would hide higher-DPI regressions.
                     ancestor=GetParent(handle);viewport=None
                     while ancestor:
-                        if text(ancestor).startswith(('OpenNav Alpha page:', 'OpenNav product page:', 'OpenNav page:')):
+                        if text(ancestor).startswith(('OpenNav Alpha page:', 'SKAGER product page:', 'SKAGER page:')):
                             viewport=ancestor;break
                         ancestor=GetParent(ancestor)
                     if viewport:
@@ -185,11 +185,12 @@ def click_text(pid, label):
     visible = [(title, children(h)) for h, _, title in windows(pid)]
     raise RuntimeError(f'Control not found: {label}: {visible}')
 
-def pointer_text(pid, label):
+def pointer_text(pid, label, *, scroll_surface='SKAGER preferences'):
     """Click a fully visible native control through the actual Windows pointer.
 
     Unlike a direct HWND message, this cannot activate a covered or clipped
-    action. Used by the visible Preferences recovery path after footer removal.
+    action. Scrolling is restricted to the explicitly named owned drawer.
+    The default remains the Preferences recovery path.
     """
     deadline = time.monotonic() + 8
     last_scroll = None
@@ -240,7 +241,7 @@ def pointer_text(pid, label):
                             area.top <= rect.top < rect.bottom <= area.bottom):
                         contained = False
                         containment_rejection = int(parent)
-                        if (text(surface) == 'OpenNav preferences' and
+                        if (text(surface) == scroll_surface and
                                 area.left <= rect.left < rect.right <= area.right):
                             scroll_candidates[handle] = (surface, parent, area, rect)
                         break
@@ -348,7 +349,7 @@ def open_system(pid):
     deadline = time.monotonic() + 8
     while time.monotonic() < deadline:
         pages = [h for root, _, _ in windows(pid) for h, caption in children(root)
-                 if caption == 'OpenNav product page: System']
+                 if caption == 'SKAGER product page: System']
         if len(pages) == 1:
             return
         time.sleep(.1)
@@ -461,7 +462,7 @@ def assert_page_geometry(handle, child, horizon=False):
     labels = [(h,caption) for h,caption in children(handle) if not IsChild(child,h)]
     navigation = [h for h, caption in labels if caption == 'Chart']
     alerts = [h for h, caption in labels if re.fullmatch(r'Alerts(?: \d+)?',caption)]
-    footer = [h for h, caption in labels if caption == 'OpenNav status footer']
+    footer = [h for h, caption in labels if caption == 'SKAGER status footer']
     rail = [h for h, caption in labels if caption == 'Configure instruments']
     assert len(navigation) == len(alerts) == len(footer) == len(rail) == 1
     def bounds(window):
@@ -496,8 +497,8 @@ def assert_preview_page(handle, page):
     This check is in addition to, not a substitute for, screenshot review.
     """
     if page == 'Route':
-        return assert_prototype_drawer(handle, 'OpenNav passage')
-    label = 'OpenNav page: ' + page
+        return assert_prototype_drawer(handle, 'SKAGER passage')
+    label = 'SKAGER page: ' + page
     matches = [child for child, caption in children(handle) if caption == label]
     assert len(matches) == 1, f'Visible page not found: {label}'
     child = matches[0]
@@ -508,10 +509,10 @@ def assert_preview_page(handle, page):
     return {'page': page, 'native_pixels': dimensions, 'visible_and_uncovered': True}
 
 def assert_product_page(handle, page):
-    drawers={'Settings':'OpenNav preferences','AIS targets':'OpenNav vessel traffic','Anchor watch':'OpenNav anchor watch','Manual autopilot':'OpenNav autopilot','Alerts':'OpenNav alerts'}
+    drawers={'Settings':'SKAGER preferences','AIS targets':'SKAGER vessel traffic','Anchor watch':'SKAGER anchor watch','Manual autopilot':'SKAGER autopilot','Alerts':'SKAGER alerts'}
     if page in drawers:
         return assert_prototype_drawer(handle,drawers[page])
-    label='OpenNav product page: '+page
+    label='SKAGER product page: '+page
     matches=[child for child,caption in children(handle) if caption==label]
     assert len(matches)==1,f'Visible XNav page not found: {label}'
     child=matches[0];rect,_=assert_page_geometry(handle,child,horizon=page=='Vessel instruments')
@@ -524,9 +525,10 @@ def prototype_drawer_bounds(width, height, scale=1, origin=(0,0), wide=False):
     assert scale>0 and width/scale>760 and height>0
     dip=lambda value:int(value*scale+.5)
     logical_width,logical_height=width/scale,height/scale
-    top=56 if logical_height<=600 else 60 if logical_height<=740 else 68
-    rail=156 if logical_width<=1100 else 186
-    drawer=(410 if logical_width<=1100 else 432) if wide else 398
+    large=logical_width>=1500
+    top=(60 if logical_height<=740 else 76) if large else (56 if logical_height<=600 else 60 if logical_height<=740 else 68)
+    rail=220 if large else 156 if logical_width<=1100 else 186
+    drawer=(460 if large else 410 if logical_width<=1100 else 432) if wide else 398
     w=dip(drawer)
     return dict(x=origin[0]+width-dip(rail)-dip(14)-w,
                 y=origin[1]+dip(top)+dip(12),width=w,
@@ -542,8 +544,11 @@ def assert_prototype_drawer(handle, name):
     assert GetParent(matches[0])==handle, 'Drawer belongs to the tested frame'
     scale=GetDpiForWindow(handle)/96
     client=W.RECT();assert GetClientRect(handle,C.byref(client))
-    expected=(410 if client.right/scale<=1100 else 432) if name=='OpenNav preferences' else 398
-    assert abs(rect.right-rect.left-expected*scale)<=1, ('Prototype drawer width',name)
+    logical_width=client.right/scale
+    expected=(460 if logical_width>=1500 else 410 if logical_width<=1100 else 432) if name=='SKAGER preferences' else 398
+    assert abs(rect.right-rect.left-expected*scale)<=1, ('Prototype drawer width',name,
+        {'actual_pixels':rect.right-rect.left,'expected_pixels':expected*scale,
+         'client_pixels':[client.right,client.bottom],'dpi':96*scale})
     assert frame.left<rect.left<rect.right<frame.right and frame.top<rect.top<rect.bottom<frame.bottom
     point=W.POINT((rect.left+rect.right)//2,rect.top+int(45*scale))
     hit=WindowFromPoint(point)

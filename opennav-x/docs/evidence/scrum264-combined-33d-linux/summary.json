@@ -1,0 +1,81 @@
+{
+  "schema": 1,
+  "commit": "33d90c38cd1a628c21d0ca159647012d98649d2e",
+  "status": "build-regression-passed-actual-topmark-failed",
+  "authority": "Linux developer build only; no Windows, packaged private DLL, native host or boat acceptance",
+  "namespace": {
+    "physicalIsolatedRoot": "/home/standard/Projects/X-nav-worktrees/scrum264-combined-linux-33d90c3",
+    "virtualCacheRoot": "/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29",
+    "policy": "Read-only outer root; only isolated reflink copy mapped writable for build; application Git metadata replaced with independent metadata. Capture mounts combined source/build/install read-only and only collector/output writable."
+  },
+  "frozenD5Preserved": true,
+  "frozenVerifiedFiles": {
+    ".git": {
+      "sha256": "14047a439287ad33f5ff1e2577bffa0b43974993af007dfdf77eed41242db78b",
+      "mtime_ns": 1791000060948031511
+    },
+    "build/integration-source/.git": {
+      "sha256": "3b73496a1f74ecdc508881974792d0eb5bf0fd63475e8d14fdf60b6defe12ef6",
+      "mtime_ns": 1791000353288421663
+    },
+    "build/xnav-linux/CMakeCache.txt": {
+      "sha256": "f8d4538b4616449a3ee3680f0f50c44a994f2ac93ddf757c8d35acd412450185",
+      "mtime_ns": 1791006163472377665
+    },
+    "build/xnav-linux/opencpn": {
+      "sha256": "3e723b11a3af9e6ba25d7991fb5bb969a5bd3dfb927dd1ee8908b4f996cc37c0",
+      "mtime_ns": 1791020945597123053
+    },
+    "build/xnav-install/bin/opencpn": {
+      "sha256": "99dcf961483882f7053186a6b4d2fb904308f38ef7e9874547bca070d07a8559",
+      "mtime_ns": 1791020945000000000
+    }
+  },
+  "build": {
+    "exit": 0,
+    "incrementalSteps": 66,
+    "binarySha256": "f8b97d34fe0e470fcb609b51fc6557063e7129acbccf497de3f14fa735af38eb",
+    "manifestSha256": "ffa75c9d097a143e58aa13f9300b04bebac0836ab849bd4284401df1866f4b2a",
+    "independentCombinedManifestMatched": true
+  },
+  "regressions": {
+    "cases": 147,
+    "failures": 0,
+    "seconds": "22",
+    "scope": "Integrated upstream CTest batch; not separate chart-resource Python or private-preparation suites"
+  },
+  "render": {
+    "software": "failed",
+    "opengl": "not run after causal software failure",
+    "sourceKind": "Official IHO S64 test geography, not an operational nautical chart",
+    "body": "Actual BOYSPP254/Index253 BOYSPP11 -> XNSPPY01 raster at canvas507,283; lookup/effective table76",
+    "topmark": "Actual TOPMAR257/Index256 enters normal object rendering and new guard; no XNSPPT01 painter call",
+    "causalObservation": {
+      "lookupRcid": 31314,
+      "lookupTable": 76,
+      "instructionLength": 1,
+      "instructionCodepoints": [
+        31
+      ],
+      "ruleListPresent": false,
+      "lookupAttributesEmpty": true,
+      "presentationEnabled": true
+    },
+    "sourceCorroboration": "Pinned chartsymbols.cpp:235-236 appends octal037 to every parsed instruction; :491 copies it to LUP. ChartYellowBuoySymbol.h:68-69 accepts only zero-length instructions. Guard rejects legitimate terminator-only empty slot before uniqueness check.",
+    "coreDiagnostics": {
+      "available": true,
+      "saved_point_style": 76,
+      "effective_point_style": 76
+    },
+    "privateDiagnostics": {
+      "available": false
+    },
+    "collectorLimitation": "Requested0.6 viewport was natively constrained to0.5826126536; later success collector must explicitly account for this observed scale without weakening symbol or visibility checks. No theme or Day-return acceptance claimed."
+  },
+  "pending": [
+    "Minimal terminator-only empty-slot fix with realistic loaded-LUP contract coverage",
+    "Same-source actual yellow body/topmark canvas proof including independent topmark visibility and uniqueness guard",
+    "Exact native Windows private DLL and host proof",
+    "Boat display/runtime acceptance"
+  ]
+}

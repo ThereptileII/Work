@@ -1,0 +1,19 @@
+{
+  "commit": "8d471561af7a4a180587bc0ed277a96e4e69865d",
+  "runId": 37267103145,
+  "jobId": 111626121733,
+  "artifactId": 11326573035,
+  "artifactSha256": "4b93005af7007c993a9387d6290d1b8f0ffbcc73331167d4f7752575f8398a39",
+  "downloadedDigestVerified": true,
+  "status": "passed",
+  "scope": "Native Win32 private chart loader boundary and corrected orchestration helper only; no full application qualification",
+  "originalFailureRun": 37266663445,
+  "reason": "Stale test assumed PrivateOCharts was the last script parameter; production security checks remained present",
+  "producerRecipeChanged": false,
+  "checks": [
+    "Default-off switch AST",
+    "17 original rejection cases",
+    "8 installed TLS/defer combinations",
+    "Native harmless-DLL loader refusal/fallback"
+  ]
+}

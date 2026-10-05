@@ -9,7 +9,7 @@ if (@(Get-Process -Name opencpn -ErrorAction SilentlyContinue).Count) {throw 'Cl
 if ($source -ieq $root -or $source.StartsWith($root+'\',[StringComparison]::OrdinalIgnoreCase) -or $root.StartsWith($source+'\',[StringComparison]::OrdinalIgnoreCase)) {throw 'Source must be a separate old portable directory outside the recovery workspace.'}
 $manifest=Join-Path $source 'FILE_SHA256.json'
 if ((Get-Digest $manifest) -cne $ExpectedManifestSha256) {throw 'Portable inventory does not match the accepted old release supplied for this operation.'}
-if (-not [IO.File]::Exists((Join-Path $source 'app\OPENNAV_PORTABLE_PREVIEW'))) {throw 'Not a recognized isolated portable OpenNav release.'}
+if (-not [IO.File]::Exists((Join-Path $source 'app\OPENNAV_PORTABLE_PREVIEW'))) {throw 'Not a recognized isolated portable release.'}
 foreach ($item in Get-ChildItem -LiteralPath $source -Force -Recurse) {
   if ($item.Attributes -band [IO.FileAttributes]::ReparsePoint) {throw 'Portable directory contains redirected paths; inspect manually and preserve it.'}
 }

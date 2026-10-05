@@ -1,0 +1,266 @@
+{
+  "scope": "Native wx console logger ownership regression only",
+  "frozenLocal": "b00cf0b5b03ba79bbb0bb4b93d7fbd136ff3e12a",
+  "remote": "13c51725e78193eee8def2073d2131467a2b22aa",
+  "runId": 37191145516,
+  "jobId": 111403399523,
+  "attempt": 1,
+  "artifactId": 11298917603,
+  "original": {
+    "bytes": 11214,
+    "sha256": "37cdddd754e40cc652948fba4e27dce9b52999ceef747e93aa6be95c36f649a0"
+  },
+  "archive": {
+    "entries": 26,
+    "crcValid": true,
+    "safeUniqueRegularPaths": true,
+    "files": [
+      {
+        "name": "compile.command.json",
+        "bytes": 202,
+        "sha256": "2af01179b0fc97e661a1078a3c11a5bfdcf70688224b0a2a8295b0bb67e12f68"
+      },
+      {
+        "name": "compile.log",
+        "bytes": 6964,
+        "sha256": "b7d953d30314782169b675a8979b893771db937990a61cf8ba21a71adc0d4d2b"
+      },
+      {
+        "name": "configure.command.json",
+        "bytes": 506,
+        "sha256": "632e4b0ad07ff2242917f47cc4a046763502391a2040bd471dc7af5b23e22824"
+      },
+      {
+        "name": "configure.log",
+        "bytes": 1580,
+        "sha256": "50bbe986e0d323b29d6c3c8e3d9023e4b7d6a09f7a0c5b512a6fc0f2c8e1aed4"
+      },
+      {
+        "name": "fixed-assert.process.json",
+        "bytes": 145,
+        "sha256": "d066b024b3bfc2ae474a9b472779865bcbf1e8b0a27925d203edd4890aa8e9b5"
+      },
+      {
+        "name": "fixed-assert.stderr.txt",
+        "bytes": 191,
+        "sha256": "cd0da66429713b065026b62a2ec7d55bf80696b914b6fd02df310e0a64c929f0"
+      },
+      {
+        "name": "fixed-assert.stdout.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "fixed-lifecycle.process.json",
+        "bytes": 147,
+        "sha256": "1719c13aebf0c764b9a9243b4599a4cf85a7489c31091f6363a18eeabe23c501"
+      },
+      {
+        "name": "fixed-lifecycle.stderr.txt",
+        "bytes": 3158,
+        "sha256": "f57bc19e423c44d392cfcbacd79bc8507a172e9ee415b202fe70094fa6c97b09"
+      },
+      {
+        "name": "fixed-lifecycle.stdout.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "fixed.process.json",
+        "bytes": 137,
+        "sha256": "7c62e5bc3eb5fae69592416f9d4b7019813770f4efb886388b807ddff7636f9c"
+      },
+      {
+        "name": "fixed.stderr.txt",
+        "bytes": 311,
+        "sha256": "1d80efb3056d5b532f9f56e15a2de7746102b3bd0ad8d482112a0b2360f51359"
+      },
+      {
+        "name": "fixed.stdout.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "original-log.process.json",
+        "bytes": 1006,
+        "sha256": "41b74e59ed8d5262e76c65ebbd710f718657dc4fc122a9ae55b9b71caa791be5"
+      },
+      {
+        "name": "original-log.stderr.txt",
+        "bytes": 33,
+        "sha256": "93306d8649a414a5c0608eac57392cbfa1515ed3016e3e15d6d7c123b29f8b5f"
+      },
+      {
+        "name": "original-log.stdout.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "startup-log-ownership.process.json",
+        "bytes": 154,
+        "sha256": "264ebef9b5359def1c580c2c8df39693f7921e6aa5e4f05dfd2efcf092d78808"
+      },
+      {
+        "name": "startup-log-ownership.stderr.txt",
+        "bytes": 161,
+        "sha256": "cff2c68e21458d13b84e7eee31862fdedf93be78e37ff17ed9c9ce87f6d51869"
+      },
+      {
+        "name": "startup-log-ownership.stdout.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "summary.json",
+        "bytes": 7747,
+        "sha256": "6f4762ccf72b74387d06397b5afefc79d0762b0d4981c12e813844861d1d330c"
+      },
+      {
+        "name": "wxMSW-3.2.8_vc14x_Dev.7z.command.json",
+        "bytes": 229,
+        "sha256": "8ba7e25ddb5e949a8bccb32ecd494d5d04ec5c8c16d23616206662db4ec482a2"
+      },
+      {
+        "name": "wxMSW-3.2.8_vc14x_Dev.7z.log",
+        "bytes": 560,
+        "sha256": "560b2e6f21cc3dea6cc3ce2939fb8c30d669034ed5a65a250d74912672a48e3a"
+      },
+      {
+        "name": "wxMSW-3.2.8_vc14x_ReleaseDLL.7z.command.json",
+        "bytes": 236,
+        "sha256": "92bb9ac0ea707b75075055088779ea9194d609f89d6181bd573ed7bb7822ed79"
+      },
+      {
+        "name": "wxMSW-3.2.8_vc14x_ReleaseDLL.7z.log",
+        "bytes": 559,
+        "sha256": "407242b5a7f57c08ad5a3b911e7584c4a6b1685dbfa1e916bae0ade655eaee32"
+      },
+      {
+        "name": "wxWidgets-3.2.8-headers.7z.command.json",
+        "bytes": 231,
+        "sha256": "873f4ac8f88a0e79201a177df728cd7d5a211732e994f2fedfb80e2391ce34c7"
+      },
+      {
+        "name": "wxWidgets-3.2.8-headers.7z.log",
+        "bytes": 563,
+        "sha256": "cda83edf692588339537695144b7b32164846abfa51dd83bc98fbaef29756ff5"
+      }
+    ]
+  },
+  "sourceComparison": {
+    "method": "git show frozen:path, normalize CRLF to LF then LF to CRLF for Windows checkout bytes",
+    "allSixMatch": true,
+    "files": [
+      {
+        "path": "tools/test-native-downloader-console.py",
+        "gitBlobSha256": "b0f13d3261a39f5dcf86b4fabc5b261ad5bb4aab83b962fbf8b53c300c1c3df3",
+        "gitBlobBytes": 10704,
+        "windowsCheckout": {
+          "bytes": 10908,
+          "sha256": "b89470c53919cac3fa6bedcce32da78f6ddb61a86803b80ec56a37ce1d99267b"
+        },
+        "matches": true
+      },
+      {
+        "path": "tools/TrustProbeConsole.h",
+        "gitBlobSha256": "9f78cfb60b40454fdbeaf4fc4a868b3f82e55f8aa94f565665f50fda42764edc",
+        "gitBlobBytes": 2113,
+        "windowsCheckout": {
+          "bytes": 2170,
+          "sha256": "ef44869941f4550341e502533c2c78aec0265cd04016ab08cd20918761639a36"
+        },
+        "matches": true
+      },
+      {
+        "path": "tests/native_downloader_console/CMakeLists.txt",
+        "gitBlobSha256": "ed28e545a7f30ce326706b7bb4ec436b6e7d84cb63fd2eb756a2bbf5dc29fec7",
+        "gitBlobBytes": 862,
+        "windowsCheckout": {
+          "bytes": 877,
+          "sha256": "749a957b13cdf2d5f3ae108331d892dc4b8fbcbc4e039d84cec73a7d7e12bae4"
+        },
+        "matches": true
+      },
+      {
+        "path": "tests/native_downloader_console/probe.cpp",
+        "gitBlobSha256": "ada47ce4d2661e4d2096f3499cd55bb284bf1c2c6addc5a98f4f2a030054106a",
+        "gitBlobBytes": 3460,
+        "windowsCheckout": {
+          "bytes": 3556,
+          "sha256": "8c4dffa6124f1f86a711b02fc5ab676741aa6aa050d194ad672b25383c804dbe"
+        },
+        "matches": true
+      },
+      {
+        "path": "tools/test-windows-changed-units.py",
+        "gitBlobSha256": "6d16a466787ae4e30367e619e19be9a134ca631c2213743fa0756d0c68432d3e",
+        "gitBlobBytes": 36635,
+        "windowsCheckout": {
+          "bytes": 37232,
+          "sha256": "f7a3084410a11700bb06670222b71d78c9bcc1f417599dcb030c71a56714b180"
+        },
+        "matches": true
+      },
+      {
+        "path": "tools/windows-wx.lock.json",
+        "gitBlobSha256": "d8ceb7b75af2803eae6aca8adb2ea404b695dc573416d3f7899b80ecaf089d28",
+        "gitBlobBytes": 992,
+        "windowsCheckout": {
+          "bytes": 1017,
+          "sha256": "2fb563c4de7819d4b10d7a567e59510cd033c3b9cb55ce4ebb654964da60267f"
+        },
+        "matches": true
+      }
+    ]
+  },
+  "wxSource": {
+    "url": "https://raw.githubusercontent.com/wxWidgets/wxWidgets/v3.2.8/src/common/init.cpp",
+    "sha256": "f9fd740f3495d9fce34f80d58d3f6a05dae1dc72cac97061ff901874bc991ff8",
+    "startupCustomLogPreservedLines": [
+      244,
+      249
+    ],
+    "startupLogDeletedLines": [
+      346,
+      351
+    ],
+    "cleanupLogDeletedLines": [
+      380,
+      392
+    ]
+  },
+  "validation": {
+    "nativeMSVCWin32": true,
+    "dynamicRuntimeMD": true,
+    "threeArchiveLockExact": true,
+    "allFiveCaseReceiptsMatch": true,
+    "oldOwnershipRejectedExitCode": 87,
+    "fixedCycles": 16,
+    "fixedTeardownOrderExact": true,
+    "originalOwnedMessageDialog": true,
+    "actualAssertionRejectedExitCode": 86
+  },
+  "executableReported": {
+    "bytes": 37888,
+    "sha256": "7b1f4b2a96e4fd00968d1609b0228e2a07a7c582d93e05184466c98afdf5ed2d"
+  },
+  "wxRuntimeReported": {
+    "wxbase32u_vc14x.dll": {
+      "source": "D:\\a\\Work\\Work\\opennav-x\\evidence\\local\\native-downloader-console\\sdk\\wx\\lib\\vc14x_dll\\wxbase32u_vc14x.dll",
+      "bytes": 2523136,
+      "sha256": "0aa3800ac7981091f46a45342620e169d158790a6f55e96ca86e772ef567f338"
+    },
+    "wxmsw32u_core_vc14x.dll": {
+      "source": "D:\\a\\Work\\Work\\opennav-x\\evidence\\local\\native-downloader-console\\sdk\\wx\\lib\\vc14x_dll\\wxmsw32u_core_vc14x.dll",
+      "bytes": 7467008,
+      "sha256": "beadbd9824a90d54e25f899afb9cf45611e7f74c9e0a0ceb6531e0bf6d21bdc3"
+    }
+  },
+  "limits": [
+    "No actual Downloader or wxCurl TLS execution in this diagnostic.",
+    "No access-violation stack or exact crash-site attribution.",
+    "No application, package or boat acceptance.",
+    "Executable/runtime hashes are runner-reported; binary bytes are not included in this artifact.",
+    "File staging/rename result is backed by the hash-bound runner assertions and retained stage receipts; payload file itself is not in artifact."
+  ]
+}

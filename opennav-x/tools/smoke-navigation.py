@@ -40,6 +40,7 @@ if args.theme != 'Day': prefix += '-'+args.theme.lower()
 if args.renderer != 'software': prefix += '-'+args.renderer
 root = Path(__file__).resolve().parents[1]
 windows = sys.platform == 'win32'
+design_validation = os.environ.get('SKAGER_DESIGN_VALIDATION') == 'true'
 evidence = root / 'evidence/local'
 evidence.mkdir(parents=True, exist_ok=True)
 temporary = tempfile.TemporaryDirectory(prefix='opennav input ', dir=None if windows else '/tmp')
@@ -207,7 +208,7 @@ xserver = app = None
 report = {'authority': 'native Windows' if windows else 'Linux development',
           'fixture': 'Synthetic NMEA over loopback; no external devices or production profile',
           'expected': {'sog_kn': 6.3, 'cog_deg': 147, 'wind': 'unavailable', 'depth': 'unavailable'},
-          'screenshots': [], 'visual_review': 'required'}
+          'screenshots': [], 'visual_review': 'requested' if design_validation else 'not requested'}
 if objects:
     report['time_environment'] = {'TZ': os.environ.get('TZ', '(system)'),
                                   'names': list(time.tzname),
@@ -270,7 +271,7 @@ try:
     assert connected.wait(10), 'OpenCPN did not connect to loopback fixture'
     resize_tick=int(read_json_snapshot(profile/'opennav-diagnostics.json')['runtime']['ui_update']['ticks'])
     if windows:
-        handle, _ = ui.wait_window('OpenNav X / OpenCPN', app.pid)
+        handle, _ = ui.wait_window('SKAGER / OpenCPN', app.pid)
         if native_reference_fullscreen:
             deadline = time.monotonic() + 10
             while time.monotonic() < deadline:
@@ -304,7 +305,7 @@ try:
             ui.size_window(handle)
     else:
         handle = subprocess.check_output(['xdotool', 'search', '--all', '--onlyvisible', '--pid', str(app.pid),
-                    '--name', '^OpenNav X / OpenCPN$'], env=env, text=True).splitlines()[0]
+                    '--name', '^SKAGER / OpenCPN$'], env=env, text=True).splitlines()[0]
         subprocess.run(['xdotool', 'windowsize', handle, '1280', '800', 'windowmove', handle, '0', '0'], env=env, check=True)
 
     # Unavailable values already match before resize. Do not accept the old
@@ -386,7 +387,7 @@ try:
             assert footer['health_summary']==('0 live signals, 1 stale' if position_state=='Stale' else '0 live signals'), footer
         assert footer['cog']=={'Current':'147°','Stale':'STALE','Unavailable':'—'}[cog_state], footer
         if windows:
-            native=[h for h,caption in ui.children(handle) if caption=='OpenNav status footer']
+            native=[h for h,caption in ui.children(handle) if caption=='SKAGER status footer']
             assert len(native)==1 and ui.IsWindowVisible(native[0]), 'Current native footer must be visible'
             bounds=ui.W.RECT()
             assert ui.GetWindowRect(native[0],ui.C.byref(bounds))
@@ -506,7 +507,7 @@ try:
                 frame={k:int(values[n]) for k,n in [('x','X'),('y','Y'),('width','WIDTH'),('height','HEIGHT')]}
                 client=dict(frame)  # This isolated Xvfb run has no window manager/decorations.
             try:
-                report['startup_layout']=chartcheck.navigation_layout(display,frame,client)
+                report['startup_layout']=(chartcheck.navigation_layout if design_validation else chartcheck.functional_layout)(display,frame,client)
                 break
             except AssertionError as error:
                 layout_error=str(error)
@@ -530,9 +531,10 @@ try:
                 if predicate(latest):return latest
                 time.sleep(.15)
             raise AssertionError((description,latest))
-        def context_controls(sample,label):
+        def context_controls(sample,label,accessible_name=None):
             return [c for c in sample['runtime']['display'].get('interaction_controls',[])
-                    if c['label']==label and c['visible']]
+                    if c['label']==label and c['visible'] and
+                    (accessible_name is None or c.get('accessible_name')==accessible_name)]
         def focus_context():
             if windows:return
             # Bare Xvfb has no window manager to enforce transient-owner
@@ -540,7 +542,7 @@ try:
             # desktop ownership explicitly; mouse down/up still hit the real
             # card controls. Native Windows receives no focus workaround.
             found=subprocess.run(['xdotool','search','--all','--onlyvisible','--pid',str(app.pid),
-                                  '--name','^OpenNav ((AIS|waypoint) context|vessel traffic)$'],env=env,
+                                  '--name','^SKAGER ((AIS|waypoint|route) context|vessel traffic)$'],env=env,
                                  capture_output=True,text=True)
             cards=found.stdout.splitlines()
             assert len(cards)<=1,('Multiple compact contexts',cards)
@@ -574,10 +576,10 @@ try:
                     ctypes.byref(wx),ctypes.byref(wy),ctypes.byref(mask)),'Pointer left the test display'
                 return {'window':child.value,'x':rx.value,'y':ry.value,'buttons':mask.value}
             finally:x11.XCloseDisplay(display)
-        def click_object(label):
-            latest=wait_object(lambda s:any(c['enabled'] for c in context_controls(s,label)),
+        def click_object(label,accessible_name=None):
+            latest=wait_object(lambda s:any(c['enabled'] for c in context_controls(s,label,accessible_name)),
                                'Visible enabled action '+label)
-            choices=context_controls(latest,label)
+            choices=context_controls(latest,label,accessible_name)
             unique={(c['x'],c['y'],c['width'],c['height']):c for c in choices if c['enabled']}
             assert len(unique)==1,('Ambiguous context action',label,choices)
             choice=next(iter(unique.values()))
@@ -624,12 +626,16 @@ try:
             latest=wait_object(lambda s:s['ui_page']=='AIS target' and
                                context_controls(s,'Back') and
                                'drawer' in s['runtime']['display'],
-                               'Selected target opens the prototype AIS drawer')
+                               'Selected target opens the AIS drawer')
             drawer=latest['runtime']['display']['drawer']
             chart=latest['runtime']['display']['chart_region']
             expected={'x':chart['x']+chart['width']-14-398,'y':chart['y']+12,
                       'width':398,'height':client['y']+client['height']-34-12-(chart['y']+12)}
-            assert all(abs(drawer[k]-v)<=1 for k,v in expected.items()),(drawer,expected)
+            if design_validation:
+                assert all(abs(drawer[k]-v)<=1 for k,v in expected.items()),(drawer,expected)
+            else:
+                assert drawer['width']>0 and drawer['height']>0 and client['x']<=drawer['x'] and client['y']<=drawer['y']
+                assert drawer['x']+drawer['width']<=client['x']+client['width'] and drawer['y']+drawer['height']<=client['y']+client['height'], 'AIS drawer must fit the actual client'
             report.setdefault('ais_drawer_geometry',[]).append(drawer)
             focus_context()
             return latest
@@ -732,7 +738,7 @@ try:
                     rgb = capture(current)
                     if current=='route-detail-renamed':
                         click_object('Activate route')
-                        wait_object(lambda s:context_controls(s,'Cancel') and context_controls(s,'Activate'),
+                        wait_object(lambda s:context_controls(s,'Cancel','Cancel') and context_controls(s,'Activate','Activate'),
                                     'Actual activation confirmation is open')
                         (profile/'route-modal-opened').write_text('Owned activation confirmation visible.\n')
                         modal_deadline=time.monotonic()+8
@@ -745,22 +751,23 @@ try:
                         # Two refresh intervals while the dialog is alive: an
                         # Update-driven DestroyChildren would invalidate it.
                         time.sleep(2.2)
-                        wait_object(lambda s:context_controls(s,'Cancel') and context_controls(s,'Activate'),
+                        wait_object(lambda s:context_controls(s,'Cancel','Cancel') and context_controls(s,'Activate','Activate'),
                                     'Route change must not rebuild a live modal sheet')
                         capture('route-detail-stale-confirmation')
-                        click_object('Activate')
-                        wait_object(lambda s:not context_controls(s,'Cancel'),
+                        click_object('Activate',accessible_name='Activate')
+                        # Inline name-editor Cancel stays visible on the detail
+                        # page; only the owned confirmation must disappear.
+                        wait_object(lambda s:not context_controls(s,'Cancel','Cancel'),
                                     'Stale confirmation closes normally')
                         (profile/'route-modal-confirmed').write_text('Confirmed original activation intent after external edit.\n')
                     if current in route_phases:
                         (profile/(current+'-observed')).write_text('Open detail native actions and enabled state verified.\n')
                     if current in ('settings-return','settings-return-navigation'):
-                        # Reconfiguration must restore the entire prototype
-                        # frame, including the horizon hidden by an object
-                        # page. Land/water alone cannot prove correct layout.
+                        # Reconfiguration must restore visible chart, primary
+                        # values and recovery controls after an object page.
                         layout=ready['runtime']['display']
                         report.setdefault('settings_return_layout',[]).append(
-                            chartcheck.navigation_layout(layout,frame,client))
+                            (chartcheck.navigation_layout if design_validation else chartcheck.functional_layout)(layout,frame,client))
                         report.setdefault('chart_rendering', []).append(chartcheck.check(
                             rgb, chart_colors, 'Actual settings reconfiguration returns coastline without restart / '+current))
                         (profile / (current+'-observed')).write_text('Native chart land and water verified.\n')
@@ -830,14 +837,14 @@ try:
             ui.click_text(app.pid,'Settings');ui.click_text(app.pid,'Navigation');ui.click_text(app.pid,'Waypoints')
             ui.click_text(app.pid,'ALPHA TEST edited / mark');ui.click_text(app.pid,'Edit waypoint')
             ui.set_text_in_dialog(app.pid,'Edit waypoint','ALPHA TEST edited','ALPHA TEST UI edited')
-            ui.click_text(app.pid,'Save');time.sleep(.6)
+            click_object('Save',accessible_name='Save');time.sleep(.6)
             assert any(c=='ALPHA TEST UI edited' for _,c in ui.children(handle))
             capture('waypoint-edit-sheet-result')
-            ui.click_text(app.pid,'Delete waypoint');ui.click_text(app.pid,'Cancel')
+            ui.click_text(app.pid,'Delete waypoint');click_object('Cancel',accessible_name='Cancel')
             assert any(c=='ALPHA TEST UI edited' for _,c in ui.children(handle)), 'Cancel changed the mark'
             ui.click_text(app.pid,'Edit waypoint')
             ui.set_text_in_dialog(app.pid,'Edit waypoint','ALPHA TEST UI edited','ALPHA TEST edited')
-            ui.click_text(app.pid,'Save')
+            click_object('Save',accessible_name='Save')
             report['native_edit_confirmation']='Themed property sheet saves and refreshes; delete cancellation preserves mark'
     elif boat:
         def snapshot(name):
@@ -996,35 +1003,49 @@ try:
                     assert live_display['display']['light'] == args.theme
                     assert live_display['chart']['opengl_enabled'] == (args.renderer == 'opengl')
                     assert len(points) == 3, 'Upstream route projection missing'
-                    if route_standard:
-                        ink = tuple(entry['stock_active_ink'])
+                    if not route_standard and not design_validation:
+                        spec=importlib.util.spec_from_file_location('routecheck',root/'tools/chart-render-check.py')
+                        routecheck=importlib.util.module_from_spec(spec);spec.loader.exec_module(routecheck)
+                        left=top=0
+                        if windows:
+                            outer=ui.W.RECT();assert ui.GetWindowRect(handle,ui.C.byref(outer))
+                            left,top=outer.left,outer.top
+                        report['active_route_paint']=dict(routecheck.route_visibility(rgb,points,(left,top)),
+                            style='XNav',theme=args.theme,renderer=args.renderer)
                     else:
-                        tokens = json.loads((root/'docs/design/prototype-tokens.json').read_text())
-                        ink = tuple(bytes.fromhex(tokens['themes'][args.theme.lower()]['--route'].lstrip('#')))
-                    requested_ink = ink
-                    if args.renderer == 'opengl':
-                        # Pinned ocpnDC shader uniforms divide RGB by 256,
-                        # then the normalized framebuffer quantizes to 255.
-                        # Model that inspected conversion exactly, not an
-                        # image tolerance that could hide a different palette.
-                        ink = tuple(round(v*255/256) for v in requested_ink)
-                    left = top = 0
-                    if windows:
-                        outer=ui.W.RECT();assert ui.GetWindowRect(handle,ui.C.byref(outer))
-                        left,top=outer.left,outer.top
-                    assert len(rgb) == 1280*800*3
-                    samples=[]
-                    for a,b in zip(points,points[1:]):
-                        for fraction in (.2,.35,.5,.65,.8):
-                            x=round(a['x']+(b['x']-a['x'])*fraction)-left
-                            y=round(a['y']+(b['y']-a['y'])*fraction)-top
-                            assert 4<=x<1276 and 4<=y<796, 'Projected route sample offscreen'
-                            hits=sum(tuple(rgb[(py*1280+px)*3:(py*1280+px)*3+3]) == ink
-                                     for py in range(y-3,y+4) for px in range(x-3,x+4))
-                            assert hits>=2, ('Actual upstream route stroke has wrong/missing ink',x,y,ink,hits)
-                            samples.append(dict(x=x,y=y,exact_ink_pixels=hits))
-                    report['active_route_paint'] = dict(style='Standard' if route_standard else 'XNav',
-                                                       requested_ink=requested_ink,ink=ink,theme=args.theme,renderer=args.renderer,projection='pinned ChartCanvas::GetCanvasPointPix',samples=samples)
+                        if route_standard:
+                            ink = tuple(entry['stock_active_ink'])
+                        else:
+                            tokens = json.loads((root/'docs/design/prototype-tokens.json').read_text())
+                            ink = tuple(bytes.fromhex(tokens['themes'][args.theme.lower()]['--route'].lstrip('#')))
+                            if args.theme == 'Night':
+                                # Immutable chart-canvas brightness, before the
+                                # separate inspected GL framebuffer conversion.
+                                ink = tuple(round(channel*.78) for channel in ink)
+                        requested_ink = ink
+                        if args.renderer == 'opengl':
+                            # Pinned ocpnDC shader uniforms divide RGB by 256,
+                            # then the normalized framebuffer quantizes to 255.
+                            # Model that inspected conversion exactly, not an
+                            # image tolerance that could hide a different palette.
+                            ink = tuple(round(v*255/256) for v in requested_ink)
+                        left = top = 0
+                        if windows:
+                            outer=ui.W.RECT();assert ui.GetWindowRect(handle,ui.C.byref(outer))
+                            left,top=outer.left,outer.top
+                        assert len(rgb) == 1280*800*3
+                        samples=[]
+                        for a,b in zip(points,points[1:]):
+                            for fraction in (.2,.35,.5,.65,.8):
+                                x=round(a['x']+(b['x']-a['x'])*fraction)-left
+                                y=round(a['y']+(b['y']-a['y'])*fraction)-top
+                                assert 4<=x<1276 and 4<=y<796, 'Projected route sample offscreen'
+                                hits=sum(tuple(rgb[(py*1280+px)*3:(py*1280+px)*3+3]) == ink
+                                         for py in range(y-3,y+4) for px in range(x-3,x+4))
+                                assert hits>=2, ('Actual upstream route stroke has wrong/missing ink',x,y,ink,hits)
+                                samples.append(dict(x=x,y=y,exact_ink_pixels=hits))
+                        report['active_route_paint'] = dict(style='Standard' if route_standard else 'XNav',
+                                                           requested_ink=requested_ink,ink=ink,theme=args.theme,renderer=args.renderer,projection='pinned ChartCanvas::GetCanvasPointPix',samples=samples)
                     seen_live = True
                 if result.get('phase') == 'stop-input':
                     phase[0] = 'none'

@@ -1,0 +1,180 @@
+{
+  "source": {
+    "local": "1835d1b84df89aff42220ac8bb535e4262034a54",
+    "remote": "9d98a500916e8a7f59dac9735427dde6d3c7d2e5",
+    "remote_tree": "bc9e631e57c71992c573f5b5110b497096b23867"
+  },
+  "run": 37120549213,
+  "job": 111196628593,
+  "attempt": 1,
+  "artifact": {
+    "id": 11275626437,
+    "bytes": 53118284,
+    "sha256": "eb11a4ab014832e3304a387ada3b3f8afe8195f2d3850ee24c1ccaed1f064adc",
+    "crc_entries_passed": 13361
+  },
+  "native_ctest": {
+    "name": "(empty)",
+    "tests": "139",
+    "failures": "0",
+    "disabled": "0",
+    "skipped": "0",
+    "hostname": "",
+    "time": "20",
+    "timestamp": "2026-10-03T13:07:16"
+  },
+  "private_package": {
+    "frozen_verifier_exit": 0,
+    "exports": [
+      "create_pi",
+      "destroy_pi",
+      "skager_bind_chart_presentation_v1",
+      "skager_chart_point_style_v1",
+      "skager_chart_presentation_status_v1"
+    ],
+    "dll": {
+      "sha256": "38648f789f1eced809e9371865b5ae273881faa9b3ff9502ea56bf919f6a816b",
+      "bytes": 1328640,
+      "name": "skager-ocharts-adapter.dll",
+      "machine": "I386"
+    },
+    "correspondingSource": {
+      "sha256": "50aadaa84417fa7e7809cf055389d50027dd800cbde41fc1ea8cff69d59ad214",
+      "bytes": 5631072,
+      "path": "corresponding-source.zip"
+    },
+    "inputs_match_frozen_source": true,
+    "chart_resource_sets": {
+      "ocharts-chart-style/v1": {
+        "chartsymbols.xml": "f4a20a46b0e5dbc9216f67386a1b0e6dd7c73e982b7b334b0ae795cd2c5f5334",
+        "manifest.json": "ffa75c9d097a143e58aa13f9300b04bebac0836ab849bd4284401df1866f4b2a",
+        "rastersymbols-day.png": "852753fa6b8d32b23cfec81d060496c2602e8f1b590c73c7921e2041b4de745f",
+        "rastersymbols-dark.png": "ab539905f9059ec8398b5e466a71bf7268368d66776cd41ea13706b79047a4f5",
+        "rastersymbols-dusk.png": "882b3486bcabd3a075ae567f42e284ff065e83ebfe5033bb6eb68f655d18202e",
+        "S52RAZDS.RLE": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26",
+        "XNavChartResources.h": "292c10d111d815d7876bca72b60cbbd564d0c4fee7dc99c21986c1572dc46b4d"
+      },
+      "ocharts-prepared/resources": {
+        "chartsymbols.xml": "f4a20a46b0e5dbc9216f67386a1b0e6dd7c73e982b7b334b0ae795cd2c5f5334",
+        "manifest.json": "ffa75c9d097a143e58aa13f9300b04bebac0836ab849bd4284401df1866f4b2a",
+        "rastersymbols-day.png": "852753fa6b8d32b23cfec81d060496c2602e8f1b590c73c7921e2041b4de745f",
+        "rastersymbols-dark.png": "ab539905f9059ec8398b5e466a71bf7268368d66776cd41ea13706b79047a4f5",
+        "rastersymbols-dusk.png": "882b3486bcabd3a075ae567f42e284ff065e83ebfe5033bb6eb68f655d18202e",
+        "S52RAZDS.RLE": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26",
+        "XNavChartResources.h": "292c10d111d815d7876bca72b60cbbd564d0c4fee7dc99c21986c1572dc46b4d"
+      },
+      "xnav-windows/opennav-chart-style/v1": {
+        "chartsymbols.xml": "f4a20a46b0e5dbc9216f67386a1b0e6dd7c73e982b7b334b0ae795cd2c5f5334",
+        "manifest.json": "ffa75c9d097a143e58aa13f9300b04bebac0836ab849bd4284401df1866f4b2a",
+        "rastersymbols-dark.png": "ab539905f9059ec8398b5e466a71bf7268368d66776cd41ea13706b79047a4f5",
+        "rastersymbols-day.png": "852753fa6b8d32b23cfec81d060496c2602e8f1b590c73c7921e2041b4de745f",
+        "rastersymbols-dusk.png": "882b3486bcabd3a075ae567f42e284ff065e83ebfe5033bb6eb68f655d18202e",
+        "S52RAZDS.RLE": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26",
+        "XNavChartResources.h": "292c10d111d815d7876bca72b60cbbd564d0c4fee7dc99c21986c1572dc46b4d"
+      }
+    }
+  },
+  "failure": {
+    "file": "tools/smoke-preview.py",
+    "line": 683,
+    "error": "KeyError: remaining_nm",
+    "route": {
+      "position_source": "DEMO deterministic trip v0.1",
+      "position_monotonic_ms": "6138453",
+      "quality": "UNAVAILABLE",
+      "id": "DEMO-coastal-passage",
+      "waypoint": "DEMO-Sheltered-bay",
+      "observed_monotonic_ms": "6138453",
+      "waypoint_count": 3,
+      "revision": "1",
+      "state": "ActivePointChanged",
+      "active_waypoint_index": 2,
+      "revision_scope": "DEMO-v0.1",
+      "unit": "nautical miles",
+      "source": "DEMO synthetic remaining-distance timeline v0.1 (NM), not OpenCPN live progress"
+    },
+    "energy": {
+      "range_input": "",
+      "arrival_input": "Active route distance",
+      "range_quality": "CURRENT INPUTS",
+      "arrival_validity": "Active route distance invalid / outside model domain",
+      "model": "DEMO: 48 kWh usable, 15% reserve; constant speed and whole-pack discharge",
+      "arrival_quality": "UNAVAILABLE",
+      "range_nm": 12.90211772
+    },
+    "window_found_monotonic_ms": 6023359,
+    "observed_monotonic_ms": 6138453,
+    "elapsed_since_window_ms": 115094
+  },
+  "executable_availability": {
+    "opencpn_exe_present": false,
+    "installer_present": false,
+    "only_exes": "Four CMake CompilerId probes; no reusable application payload",
+    "fixture_executable_reported_sha256": "38cbeb89e8dac9e900e905fbe134b72afdf09dfe02749cb7c1576f4216e39150"
+  },
+  "scope": "Failed native fixture suite. No fixture-free product, actual-host module check, setup/icon inspection, portable package, Windows endurance, boat or release acceptance.",
+  "retained_files": {
+    "preview-results.json": {
+      "sha256": "481cd684958c473e37b0f2f5985f2330c7f29505445fcdc4ab1273cc118d352d",
+      "bytes": 32996
+    },
+    "preview-failure-inventory.json": {
+      "sha256": "b29b67827227512bff2d7ef3f07147003e027b79e6338e014cff5cf643784509",
+      "bytes": 2450
+    },
+    "preview-failure.png": {
+      "sha256": "586e44ab42a466cf03cbfbd0aac912b483084d955d25edf8acf162e4384a6434",
+      "bytes": 880171
+    },
+    "opennav-diagnostics.json": {
+      "sha256": "d2d2a125309198258edb53c19b2099a38169bffd796e1ccb75d94578df4eb48c",
+      "bytes": 65677
+    },
+    "windows-ocharts-first-build.json": {
+      "sha256": "0647f4139cb0cb5876e55c0ccd9cb93d16adaf65c680115a4341e730e910c490",
+      "bytes": 1018
+    },
+    "windows-xnav-python.json": {
+      "sha256": "d51643d33b207a36f444119dffcbefc6ab14124e2c8b5368a3abc38c81ca4bb1",
+      "bytes": 321
+    },
+    "preview-failed-step.log": {
+      "sha256": "b630bf6952058471cad40f4d86f43d9d898ff1a69634c76df6999e942a5f0f04",
+      "bytes": 1772
+    },
+    "obsolete-b8-linux-terminal.json": {
+      "sha256": "ed8e60c0df8a6b7983452747b6fc87bb266e2fe87aabfa83e9fe3f22301240fb",
+      "bytes": 5659
+    },
+    "private-package-manifest.json": {
+      "sha256": "a80a706603c41c07fbb72ae921788bbd370bb112a9bd47fe43d1351524673016",
+      "bytes": 11912
+    },
+    "font-proof.txt": {
+      "sha256": "bbef0592d109b74e59e5616331305be9792a9058d4f6185f9720c497a685d741",
+      "bytes": 535
+    }
+  },
+  "archive_input_hashes": {
+    "evidence/local/windows-xnav-Win32.log": {
+      "sha256": "a084eb131df95342d1b954c47012b7fcd913fa914470361734ee5c7733a79e5b",
+      "bytes": 6475155
+    },
+    "evidence/local/windows-xnav-tests.xml": {
+      "sha256": "0c49a7d1be1583c6f4ada8a711e1d21fbb3b9c090195deb53f600c3f3de13c1f",
+      "bytes": 122142
+    },
+    "build/ocharts-package/manifest.json": {
+      "sha256": "a80a706603c41c07fbb72ae921788bbd370bb112a9bd47fe43d1351524673016",
+      "bytes": 11912
+    },
+    "build/ocharts-package/corresponding-source.zip": {
+      "sha256": "50aadaa84417fa7e7809cf055389d50027dd800cbde41fc1ea8cff69d59ad214",
+      "bytes": 5631072
+    },
+    "build/ocharts-package/skager-ocharts-adapter.dll": {
+      "sha256": "38648f789f1eced809e9371865b5ae273881faa9b3ff9502ea56bf919f6a816b",
+      "bytes": 1328640
+    }
+  }
+}

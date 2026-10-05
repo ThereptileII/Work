@@ -48,14 +48,44 @@ foreach($from in @('--xnav','--legacy','--safe-mode')) {
   else {Refuse {[OpenNavX.RestartWindowNative]::Caption($from,$to)} 'no invented Legacy/Safe-to-Legacy/Safe path'}
  }
 }
+# Palette choice is explicit, case-sensitive, XNav-only, and never an ordinary
+# display action. Check actual policy methods, not only source spelling.
+foreach($palette in @('XNav','Standard')) {
+ Assert-RestartWindowAction 'RequestGuardedMode' '--xnav' 'RequestChartPalette';Check $true 'guarded palette request'
+ Check ([OpenNavX.RestartWindowNative]::PaletteCaption($palette) -ceq $(if($palette -ceq 'XNav'){'SKAGER'}else{'Standard'})) 'actual fixed source palette caption'
+ $a=CopyValue $arm;$r=CopyValue $ready;$a.mode='--xnav';$r.mode='--xnav';$a.createdUtc=$now.AddSeconds(-10).ToString('o');$r.createdUtc=$now.AddSeconds(-5).ToString('o')
+ $a|Add-Member chartPalette $palette;$r|Add-Member chartPalette $palette
+ Assert-RestartReady $r $a $session $now;Check $true 'same immutable palette arm/readiness'
+ $r.chartPalette=$(if($palette -ceq 'XNav'){'Standard'}else{'XNav'})
+ Refuse {Assert-RestartReady $r $a $session $now} 'opposite readiness choice refused'
+ $before=@{'Settings/Foo'='1';'OpenNav/InterfaceMode'='xnav';'OpenNav/ChartPresentationV1'='XNav'}
+ $after=$before.Clone();$after['OpenNav/ChartPresentationV1']=$palette
+ $null=Assert-RestartIniDelta $before $after '--xnav' $palette;Check $true 'exact chosen palette delta/no-delta accepted'
+ $after['OpenNav/ChartPresentationV1']=$(if($palette -ceq 'XNav'){'Standard'}else{'XNav'})
+ Refuse {Assert-RestartIniDelta $before $after '--xnav' $palette} 'opposite resulting palette refused including unchanged result'
+ $after['OpenNav/ChartPresentationV1']='Standard';Refuse {Assert-RestartIniDelta $before $after '--xnav'} 'old unarmed calls still refuse palette delta'
+ $after.Remove('OpenNav/ChartPresentationV1');Refuse {Assert-RestartIniDelta $before $after '--xnav' $palette} 'missing resulting palette refused'
+ $after=$before.Clone();$after['OpenNav/ChartPresentationV1']=$palette;$after['Settings/UploadConnection']='enabled'
+ Refuse {Assert-RestartIniDelta $before $after '--xnav' $palette} 'palette does not authorize connection delta'
+ foreach($mode in @('--legacy','--safe-mode')) {Refuse {Assert-RestartChartPalette $mode $palette} 'palette cannot arm Legacy/Safe';Refuse {Assert-RestartWindowAction 'RequestGuardedMode' $mode 'RequestChartPalette'} 'palette needs actual SKAGER parent'}
+}
+foreach($bad in @('xnav','standard','XNav Standard','XNav;Start-Process','Paper','76','XNav ')) {
+ Refuse {Assert-RestartChartPalette '--xnav' $bad} 'only exact fixed palette intent'
+ Refuse {[OpenNavX.RestartWindowNative]::PaletteCaption($bad)} 'no arbitrary palette caption'
+}
+foreach($action in @('RequestChartPalette','ConfirmPalette','Save and restart','XNav','Standard')) {
+ Refuse {Assert-RestartWindowAction 'ReviewRestartChild' '--xnav' $action} 'ordinary child review cannot select or confirm palette'
+}
 $root=[IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../..'))
 $ui=[IO.File]::ReadAllText((Join-Path $root 'src/ui/ProductPanel.cpp'))
 $bridge=[IO.File]::ReadAllText((Join-Path $root 'src/integration/OpenCPNIntegration.cpp'))
+$brand=[IO.File]::ReadAllText((Join-Path $root 'src/application/Brand.h'))
+$titleConstants=@{'--xnav'='WindowTitle';'--legacy'='LegacyTitle';'--safe-mode'='SafeModeTitle'}
 foreach($mode in @('--xnav','--legacy','--safe-mode')) {
- Check ($bridge.Contains('"'+[OpenNavX.RestartWindowNative]::Title($mode)+'"')) 'exact mode title derives from actual installed source'
+ Check ($brand.Contains('"'+[OpenNavX.RestartWindowNative]::Title($mode)+'"') -and $bridge.Contains('application::brand::'+$titleConstants[$mode])) 'exact mode title derives from actual installed source'
  Check ($ui.Contains('"'+[OpenNavX.RestartWindowNative]::Caption('--xnav',$mode)+'"')) 'exact System button derives from actual source'
 }
-Check ($bridge.Contains('"Switch to XNav"')) 'actual Legacy return menu exists'
+Check ($brand.Contains('"Switch to SKAGER"') -and $bridge.Contains('application::brand::SwitchToModern')) 'actual Legacy return menu exists'
 foreach($name in @('RestartWindowReview.ps1','review-restart-window.ps1')) {
  $errors=$null;$tokens=$null;$null=[Management.Automation.Language.Parser]::ParseFile((Join-Path $PSScriptRoot $name),[ref]$tokens,[ref]$errors)
  Check ($errors.Count -eq 0) ('script parse '+$name)
@@ -136,5 +166,24 @@ try {
  Refuse {Get-RestartBaseline $session $record $child} 'normal Arm still refuses a seventeenth transition'
  $chain=Get-RestartBaseline $session $record $child -ReviewOnly
  Check ($chain.completedTransitions -eq 16 -and $chain.child.pid -ceq $child.pid) 'the final sixteenth child can be reviewed without authorizing another restart'
+ # A separate disposable palette intent tests real file hashes and replay.
+ $paletteDir=Join-Path $temporary 'palette-proof';$null=New-Item -ItemType Directory -Path $paletteDir
+ $pa=[pscustomobject]@{owner=$script:RestartOwner;session=$session.session;recordSha256=$session.recordSha256;mode='--xnav';chartPalette='Standard';parentPid=$parent.pid;parentCreatedFiletime=$parent.createdFiletime;transition=$paletteDir}
+ $paPath=Join-Path $temporary ('arm-'+$parent.pid+'-'+$parent.createdFiletime+'.json');Write-Record $paPath $pa
+ $pr=[pscustomobject]@{owner=$script:RestartOwner;session=$session.session;recordSha256=$session.recordSha256;mode='--xnav';chartPalette='Standard';parent=$parent;beforeSha256=$session.beforeIniSha256}
+ Write-Record (Join-Path $paletteDir 'ready.json') $pr
+ $pi=[pscustomobject]@{owner='OpenNavX.GuardedModeIntent.1';session=$session.session;recordSha256=$session.recordSha256;mode='--xnav';fromMode='--xnav';chartPalette='Standard';parent=$parent;command=@{Palette='Standard'};status='consumed-before-ui-action';armSha256=(Get-Digest $paPath);readySha256=(Get-Digest (Join-Path $paletteDir 'ready.json'))}
+ Write-Record (Join-Path $paletteDir 'ui-intent-consumed.json') $pi
+ $pp=Read-RestartPaletteProof $paletteDir $session $parent '--xnav' 'Standard' $session.beforeIniSha256
+ $null=Read-RestartPaletteProof $paletteDir $session $parent '--xnav' 'Standard' $session.beforeIniSha256 $pp;Check $true 'actual immutable palette proof rereads exact arm/ready/intent'
+ Refuse {Read-RestartPaletteProof $paletteDir $session $parent '--xnav' 'XNav' $session.beforeIniSha256 $pp} 'opposite palette replay refused'
+ Refuse {Read-RestartPaletteProof $paletteDir $session $parent '--xnav' 'Standard' ('f'*64) $pp} 'different baseline replay refused'
+ $changed=CopyValue $pp;$changed.intentSha256='e'*64
+ Refuse {Read-RestartPaletteProof $paletteDir $session $parent '--xnav' 'Standard' $session.beforeIniSha256 $changed} 'changed consumed intent hash refused'
+ foreach($name in @('ready.json','ui-intent-consumed.json')) {
+  $path=Join-Path $paletteDir $name;$bytes=[IO.File]::ReadAllBytes($path);[IO.File]::AppendAllText($path,' ')
+  Refuse {Read-RestartPaletteProof $paletteDir $session $parent '--xnav' 'Standard' $session.beforeIniSha256 $pp} ('mutated immutable '+$name)
+  [IO.File]::WriteAllBytes($path,$bytes)
+ }
 } finally {Remove-Item -LiteralPath $temporary -Recurse -Force}
 [pscustomobject]@{status='passed';checks=$script:checks;nativeWindowExecuted=$false;applicationLaunched=$false;boatTouched=$false;physicalOutput=$false}|ConvertTo-Json

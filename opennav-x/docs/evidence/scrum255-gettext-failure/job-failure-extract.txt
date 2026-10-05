@@ -1,0 +1,10 @@
+2026-10-03T01:09:09.0423231Z Transcript stopped, output file is D:\a\Work\Work\opennav-x\evidence\local\windows-xnav-Win32.log
+2026-10-03T01:09:09.0877684Z [31;1mException: [0mD:\a\Work\Work\opennav-x\tools\build-pristine-windows.ps1:189[0m
+2026-10-03T01:09:09.0878306Z [31;1m[0m[36;1mLine |[0m
+2026-10-03T01:09:09.0879379Z [31;1m[0m[36;1m[36;1m 189 | [0m … $Gettext) { [36;1mthrow 'Poedit gettext tools not found after dependency in[0m …[0m
+2026-10-03T01:09:09.0880569Z [31;1m[0m[36;1m[36;1m[0m[36;1m[0m[36;1m     | [31;1m               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+2026-10-03T01:09:09.0881426Z [31;1m[0m[36;1m[36;1m[0m[36;1m[0m[36;1m[31;1m[31;1m[36;1m     | [31;1mPoedit gettext tools not found after dependency installation[0m
+2026-10-03T01:09:09.1171004Z ##[error]Process completed with exit code 1.
+2026-10-03T01:09:09.1540813Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+2026-10-03T01:09:09.1541285Z with:
+2026-10-03T01:09:09.1541599Z   name: windows-integration-9fcd3db54ee6913cc144ecfc09ec2152078a6eff

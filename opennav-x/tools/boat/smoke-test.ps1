@@ -16,7 +16,7 @@ try {
   Start-Sleep -Seconds $ObserveSeconds
   $process=Get-Process -Id $running.pid -ErrorAction Stop
   try {
-    if (-not $process.Responding) {throw 'XNav window is not responding.'}
+    if (-not $process.Responding) {throw 'SKAGER window is not responding.'}
     $record.resources=@{workingSetBytes=$process.WorkingSet64;privateBytes=$process.PrivateMemorySize64;handles=$process.HandleCount;cpuSeconds=$process.TotalProcessorTime.TotalSeconds}
   } finally {$process.Dispose()}
   $record.capture=Invoke-InteractiveJob $Workspace ([pscustomobject]@{action='Capture';executable=$installed.executable;executableSha256=(Get-Digest $installed.executable);processId=$running.pid;imagePath=(Join-Path $directory 'navigation.png')})

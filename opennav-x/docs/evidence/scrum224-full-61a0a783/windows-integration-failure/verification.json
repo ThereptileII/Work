@@ -1,0 +1,38 @@
+{
+  "sourceRemote": "61a0a7838b56ad841bb458af6fc62651464bdafe",
+  "sourceLocal": "78eccb8b7f21b260ded57d3ba763f884d60c8180",
+  "status": "failed",
+  "failureUtc": "2026-10-03T03:16:18Z",
+  "failedStep": "Build and exercise integrated modes",
+  "failedExecutable": "chart_name_text_test.exe",
+  "exitCode": 1,
+  "diagnostic": "Water label must not become opaque or ignore alpha",
+  "sourceAssertion": "tests/chart_name_text_test.cpp:69",
+  "runnerWrapper": "tools/build-pristine-windows.ps1:24",
+  "invocation": "tools/build-pristine-windows.ps1:245",
+  "artifact": {
+    "id": 11262911171,
+    "bytes": 20100275,
+    "sha256": "ddc7e8627e2a6f821053db5a6b808905cad9bfdb578a8788755d36fbd671676d",
+    "crcEntriesPassed": 5804
+  },
+  "completedJobLog": {
+    "bytes": 7023535,
+    "sha256": "3d119809bb8cd3f8194ccfee526fa8b783fe036f3ab30741e2c5d489e9f9812c"
+  },
+  "nativeBuildTranscript": {
+    "bytes": 6406279,
+    "sha256": "cd2d3101b70c631eed801e937d2802e26e8e9ac32c5cec50d09e56280b25ae19"
+  },
+  "gettext": {
+    "status": "passed",
+    "nativeStreamPairsRehashed": 5,
+    "binaryHashes": "runner observations only; tool executables not uploaded"
+  },
+  "nativeApplication": "compiled and installed; subsequent first offline painter failed",
+  "painterImage": "absent: saved only after assertion",
+  "appAndSetupPE": "not present in uploaded artifact; only compiler-identification executables",
+  "runtimePackageDpiAndEndurance": "Windows steps not reached",
+  "cause": "not established: exact failing pixels/backend/DPI not emitted",
+  "nativeProductAcceptance": false
+}

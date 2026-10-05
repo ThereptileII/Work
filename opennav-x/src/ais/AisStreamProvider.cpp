@@ -18,6 +18,21 @@ void Erase(std::string &value) {
 unsigned Entropy() {
   return static_cast<unsigned>(vessel::Clock::now().time_since_epoch().count());
 }
+ConnectionObservation Observe(const ix::SocketConnectionInfo &input,
+                              std::uint64_t generation) {
+  ConnectionObservation result;
+  if (input.family == ix::SocketConnectionInfo::Family::IPv4)
+    result.family = AddressFamily::IPv4;
+  else if (input.family == ix::SocketConnectionInfo::Family::IPv6)
+    result.family = AddressFamily::IPv6;
+  else
+    return result;
+  result.local = {input.local.address, input.local.port, input.local.scope};
+  result.remote = {input.remote.address, input.remote.port, input.remote.scope};
+  result.captured_at = input.capturedAt;
+  result.generation = generation;
+  return result;
+}
 } // namespace
 class AisStreamProvider::Impl {
 public:
@@ -29,6 +44,7 @@ public:
     {
       std::lock_guard<std::mutex> lock(mutex_);
       stop_ = true;
+      session_.Enable(false, vessel::Clock::now());
       ++generation_;
     }
     changed_.notify_all();
@@ -36,7 +52,8 @@ public:
   }
   void Enable(bool value) {
     std::lock_guard<std::mutex> lock(mutex_);
-    session_.Enable(value, vessel::Clock::now());
+    if (session_.Enable(value, vessel::Clock::now()))
+      ++generation_; // actual intent transition invalidates callbacks/credential reads
     Wake();
   }
   bool ViewportChanged(Viewport viewport) {
@@ -48,9 +65,14 @@ public:
   }
   void CredentialsChanged() {
     std::lock_guard<std::mutex> lock(mutex_);
+    ++generation_; // also invalidate a credential read while disabled/offline
     session_.RetryCredentials(vessel::Clock::now());
     Wake();
   }
+#ifdef OPENNAV_AIS_TEST_TRANSPORT
+  // Set once before ForTest hands the disabled provider to its caller.
+  void SetOpenGateForTest(std::function<void()> gate) { open_gate_ = std::move(gate); }
+#endif
   ProviderSnapshot Read(vessel::Time now) const {
     std::lock_guard<std::mutex> lock(mutex_);
     return session_.Read(now);
@@ -63,6 +85,12 @@ private:
   }
   void Message(std::uint64_t generation,
                const ix::WebSocketMessagePtr &message) {
+#ifdef OPENNAV_AIS_TEST_TRANSPORT
+    // Real IX has completed TLS/HTTP and released its transport lock here.
+    // Dedicated tests can delay delivery without holding the provider mutex.
+    if (message->type == ix::WebSocketMessageType::Open && open_gate_)
+      open_gate_();
+#endif
     std::lock_guard<std::mutex> lock(mutex_);
     if (stop_ || generation != generation_)
       return;
@@ -70,7 +98,7 @@ private:
     try {
       switch (message->type) {
       case ix::WebSocketMessageType::Open:
-        session_.Opened(now);
+        session_.Opened(now, Observe(message->openInfo.connectionInfo, generation));
         break;
       case ix::WebSocketMessageType::Message:
         // AISStream's UTF-8 JSON is carried in binary frames. The codec
@@ -112,12 +140,14 @@ private:
         continue;
       }
       if (!socket && session_.NeedsConnection(now)) {
+        const auto credential_generation = generation_;
         lock.unlock();
         auto credential = credentials_->Read();
         lock.lock();
         if (stop_)
           break;
-        if (!session_.NeedsConnection(vessel::Clock::now()))
+        if (credential_generation != generation_ ||
+            !session_.NeedsConnection(vessel::Clock::now()))
           continue;
         if (credential.status != CredentialStatus::Ready) {
           session_.CredentialMissing(vessel::Clock::now());
@@ -157,16 +187,24 @@ private:
           auto wire = AisStreamSubscription(key.View(), area);
           if (!wire)
             session_.CredentialMissing(now);
-          else {
-            // The small complete subscription is sent as one message. Keeping
-            // the state lock here makes viewport selection and Sent coherent.
+          else if (session_.SubscriptionSent(now)) {
+            // Reserve this exact area before releasing the state lock: a pan
+            // during send must remain pending, and an immediate confirmation
+            // must see the subscription already in flight. This is not a
+            // connection confirmation; only the service's reply can provide it.
+            const auto sent_generation = generation_;
+            lock.unlock();
+            // IX can synchronously deliver Close from a failed send. It also
+            // takes transport locks shared with its callbacks, so never hold
+            // the provider/UI state lock across this call.
             const auto sent = socket->sendText(*wire);
             Erase(*wire);
-            if (sent.success && !sent.compressionError)
-              session_.SubscriptionSent(vessel::Clock::now());
-            else
+            lock.lock();
+            if (!stop_ && sent_generation == generation_ &&
+                (!sent.success || sent.compressionError))
               session_.Disconnected(vessel::Clock::now(), Entropy());
-          }
+          } else
+            Erase(*wire);
         }
       }
       changed_.wait_for(lock, std::chrono::milliseconds(100),
@@ -187,6 +225,9 @@ private:
   bool stop_ = false, wake_ = false;
   std::uint64_t generation_ = 0;
   std::thread worker_;
+#ifdef OPENNAV_AIS_TEST_TRANSPORT
+  std::function<void()> open_gate_;
+#endif
 };
 AisStreamProvider::AisStreamProvider()
     : AisStreamProvider(CreateAisCredentials(),
@@ -208,12 +249,15 @@ ProviderSnapshot AisStreamProvider::Read(vessel::Time now) const {
 #ifdef OPENNAV_AIS_TEST_TRANSPORT
 std::unique_ptr<AisStreamProvider>
 AisStreamProvider::ForTest(std::unique_ptr<IAisCredentials> credentials,
-                           const std::string &url, const std::string &ca) {
+                           const std::string &url, const std::string &ca,
+                           std::function<void()> before_open) {
   if (!credentials ||
       (url.find("wss://127.0.0.1:") != 0 && url.find("wss://localhost:") != 0))
     return {};
-  return std::unique_ptr<AisStreamProvider>(
+  auto provider = std::unique_ptr<AisStreamProvider>(
       new AisStreamProvider(std::move(credentials), url, ca));
+  provider->impl_->SetOpenGateForTest(std::move(before_open));
+  return provider;
 }
 #endif
 } // namespace opennav::ais

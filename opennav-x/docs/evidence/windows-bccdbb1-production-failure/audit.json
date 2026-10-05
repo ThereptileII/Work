@@ -1,0 +1,134 @@
+{
+  "candidate": "bccdbb11cef827d3b63731fe1e874bc72bf47d2d",
+  "run": 37177738716,
+  "attempt": 1,
+  "artifact": {
+    "id": 11295952643,
+    "bytes": 177280,
+    "sha256": "7ea2d15d0f033596bcb21824650437754c02f2bb0fb6baecfb90abbb9d2dbdb5",
+    "members": 13,
+    "allCrcs": "passed",
+    "safeUniqueRelativePaths": "passed"
+  },
+  "productionTests": {
+    "uniqueCases": 139,
+    "executions": 139,
+    "status": "run",
+    "passed": 139,
+    "failures": 0,
+    "errors": 0,
+    "disabled": 0,
+    "skipped": 0,
+    "originalCtestPassedRows": 139,
+    "reportedLogSeconds": 19.31,
+    "xmlTimestamp": "2026-10-04T06:36:09",
+    "scope": "Native Windows production suite only; do not substitute Linux147 count"
+  },
+  "trustImportProcess": {
+    "processId": 6632,
+    "exitCode": 0,
+    "timedOut": false,
+    "timeoutSeconds": 30,
+    "elapsedSeconds": 0.3414442
+  },
+  "trustImportProgressBracketSeconds": 0.344875,
+  "downloaderValidProcess": {
+    "processId": 4504,
+    "exitCode": -1,
+    "timedOut": true,
+    "timeoutSeconds": 30,
+    "elapsedSeconds": 30.0144378
+  },
+  "downloaderStreams": {
+    "downloader-valid.stdout.txt": {
+      "bytes": 2,
+      "content": "CRLF only; no diagnostic text"
+    },
+    "downloader-valid.stderr.txt": {
+      "bytes": 2,
+      "content": "CRLF only; no diagnostic text"
+    }
+  },
+  "lastProgress": {
+    "utc": "2026-10-04T06:37:15.2172069Z",
+    "stage": "downloader-case",
+    "name": "valid",
+    "state": "failure",
+    "detail": "downloader-valid exceeded the 30-second native probe limit"
+  },
+  "wxCurlSourceKind": "verified-private-ocharts",
+  "runtimeDllIdentityCount": 72,
+  "probeBinarySha256": "e98f066a6061e4efb28ff17e4d7b0edd8cdb6f4b6f9945b47d179f8be09767c1",
+  "wxCurlProbeBinarySha256": "c4ed999abae751fbb7b97b48cdde0a9eb2508019d04972e4fe79361b4dea60af",
+  "binaryHashesIndependentRehash": false,
+  "failureInterpretation": "First downloader-valid process timed out and was terminated by bounded harness. No downloader result text; later private WXCURL matrix did not run. No application crash or package eligibility inferred.",
+  "hypothesis": "Frozen probe has no explicit wx application/log-target initialization. wx3.2.8 null-app default logger can route warnings through wxMessageOutputBest to blocking MessageBox on Windows; this archive has no native UI/stack proof that this caused the timeout.",
+  "sourceFiles": {
+    "tools/downloader-trust-probe.cpp": {
+      "frozenLocal": "1a6733a1cbcc817aa0f13fa5acc41aac62a54146",
+      "sha256": "9b72de42e87940e7a57eefce4a82de1ce7b15b64f22e1605ba6db5e73c42ff3d"
+    },
+    "tools/test-downloader-trust-windows.ps1": {
+      "frozenLocal": "1a6733a1cbcc817aa0f13fa5acc41aac62a54146",
+      "sha256": "05141bd0d1c02f5485754e304396de5703c89d044470b50353427b59ba380720"
+    },
+    "patches/opencpn-5.12.4-download-trust.patch": {
+      "frozenLocal": "1a6733a1cbcc817aa0f13fa5acc41aac62a54146",
+      "sha256": "04763cb038ad088a722e76d4f85bde7e356489b697a373458195336d4278412b"
+    }
+  },
+  "members": {
+    "ocharts-private-wxcurl-trust-windows/downloader-valid.process.json": {
+      "bytes": 125,
+      "sha256": "66f6951f37494e5887bfe68c91996bb0bf12f0e5f1f8bb6f80cc20ee46a5b362"
+    },
+    "ocharts-private-wxcurl-trust-windows/downloader-valid.stderr.txt": {
+      "bytes": 2,
+      "sha256": "7eb70257593da06f682a3ddda54a9d260d4fc514f645237f5ca74b08f8da61a6"
+    },
+    "ocharts-private-wxcurl-trust-windows/downloader-valid.stdout.txt": {
+      "bytes": 2,
+      "sha256": "7eb70257593da06f682a3ddda54a9d260d4fc514f645237f5ca74b08f8da61a6"
+    },
+    "ocharts-private-wxcurl-trust-windows/owned-ca-import.process.json": {
+      "bytes": 124,
+      "sha256": "e857753b2919fb110190804c996511ce45b83a1a5b7c28bed749f8f4f0a76ce7"
+    },
+    "ocharts-private-wxcurl-trust-windows/owned-ca-import.stderr.txt": {
+      "bytes": 2,
+      "sha256": "7eb70257593da06f682a3ddda54a9d260d4fc514f645237f5ca74b08f8da61a6"
+    },
+    "ocharts-private-wxcurl-trust-windows/owned-ca-import.stdout.txt": {
+      "bytes": 189,
+      "sha256": "84ad8432796a685c8981d5d401e9663bc2e738e9f3d33a6042702c88dcb3c9be"
+    },
+    "ocharts-private-wxcurl-trust-windows/prerequisites.json": {
+      "bytes": 8518,
+      "sha256": "c9ceac162ec753c7911f8c150b19c8851c75992c866eeff74c4a27062cacc3d7"
+    },
+    "ocharts-private-wxcurl-trust-windows/progress.jsonl": {
+      "bytes": 1406,
+      "sha256": "6aee7defad1ad1bd9fab82ab0c2b1d98931b2a535adef9441b280ed13a2b554d"
+    },
+    "windows-native-output.log": {
+      "bytes": 2311761,
+      "sha256": "4f83b6c5e625c4fc9099ee32d59a4c1cd2d88bafaf7731ee4b1e26f5a3bb8062"
+    },
+    "windows-production-executable-sha256.txt": {
+      "bytes": 185,
+      "sha256": "e7f58d092ef28ed23565022006628b552cf007b01e9454e5e267e426552190c5"
+    },
+    "windows-production-python.json": {
+      "bytes": 321,
+      "sha256": "d51643d33b207a36f444119dffcbefc6ab14124e2c8b5368a3abc38c81ca4bb1"
+    },
+    "windows-production-tests.xml": {
+      "bytes": 122962,
+      "sha256": "ea0fe48e784663b033f79f43059ce3a5a61bc623b6b9af916be169591acfd6f2"
+    },
+    "windows-production-Win32.log": {
+      "bytes": 1122928,
+      "sha256": "9a25cf37f54e0440c85d8be7a568e2d4d3de777ff7e705e918b2fc5a823046c0"
+    }
+  }
+}

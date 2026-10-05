@@ -52,37 +52,37 @@ foreach($labels in @(@('Chart','Passage'),($rail+@('AUTO')),(@('Chart')+$rail[0.
  }
 }
 foreach($spec in @(
- @('OpenNav chart tools',@('Measure','Waypoint','+',[string][char]0x2212),@(),$true),
- @('OpenNav chart orientation',@('North'),@(),$true),
- @('OpenNav chart orientation',@('Course'),@(),$true),
- @('OpenNav follow boat',@('Follow boat'),@(),$true),
- @('OpenNav passage',@(),@('Close'),$true),
- @('OpenNav preferences',@(),@('Close'),$true),
- @('OpenNav anchor watch',@(),@('Close'),$true),
- @('OpenNav autopilot',@(),@('Close'),$true),
- @('OpenNav alerts',@(),@('Close'),$true),
- @('OpenNav source health',@(),@('Close'),$true),
- @('OpenNav source health',@('AUTO'),@('Close'),$false),
- @('OpenNav source health',@(),@('Back'),$false),
- @('OpenNav alerts',@('Acknowledge'),@('Close'),$false),
- @('OpenNav alerts',@(),@('Close','Back'),$false),
- @('OpenNav anchor watch',@('Set anchor'),@('Close'),$false),
- @('OpenNav autopilot',@('Auto'),@('Close'),$false),
- @('OpenNav anchor watch',@(),@('Back'),$false),
- @('OpenNav autopilot',@(),@('Close','Back'),$false),
- @('OpenNav preferences',@('AUTO'),@('Close'),$false),
- @('OpenNav preferences',@(),@('Back'),$false),
- @('OpenNav preferences',@(),@('Close','Back'),$false),
- @('OpenNav vessel traffic',@(),@('Back'),$true),
- @('OpenNav vessel traffic',@(),@('Close'),$true),
+ @('SKAGER chart tools',@('Measure','Waypoint','+',[string][char]0x2212),@(),$true),
+ @('SKAGER chart orientation',@('North'),@(),$true),
+ @('SKAGER chart orientation',@('Course'),@(),$true),
+ @('SKAGER follow boat',@('Follow boat'),@(),$true),
+ @('SKAGER passage',@(),@('Close'),$true),
+ @('SKAGER preferences',@(),@('Close'),$true),
+ @('SKAGER anchor watch',@(),@('Close'),$true),
+ @('SKAGER autopilot',@(),@('Close'),$true),
+ @('SKAGER alerts',@(),@('Close'),$true),
+ @('SKAGER source health',@(),@('Close'),$true),
+ @('SKAGER source health',@('AUTO'),@('Close'),$false),
+ @('SKAGER source health',@(),@('Back'),$false),
+ @('SKAGER alerts',@('Acknowledge'),@('Close'),$false),
+ @('SKAGER alerts',@(),@('Close','Back'),$false),
+ @('SKAGER anchor watch',@('Set anchor'),@('Close'),$false),
+ @('SKAGER autopilot',@('Auto'),@('Close'),$false),
+ @('SKAGER anchor watch',@(),@('Back'),$false),
+ @('SKAGER autopilot',@(),@('Close','Back'),$false),
+ @('SKAGER preferences',@('AUTO'),@('Close'),$false),
+ @('SKAGER preferences',@(),@('Back'),$false),
+ @('SKAGER preferences',@(),@('Close','Back'),$false),
+ @('SKAGER vessel traffic',@(),@('Back'),$true),
+ @('SKAGER vessel traffic',@(),@('Close'),$true),
  @('Unexpected modal',@(),@('Close'),$false),
- @('OpenNav passage',@('AUTO'),@('Close'),$false),
- @('OpenNav passage',@(),@('Close','Close'),$false),
- @('OpenNav passage',@(),@('Back'),$false),
- @('OpenNav vessel traffic',@(),@('Close','Back'),$false),
- @('OpenNav chart tools',@('Measure','Waypoint','+','+'),@(),$false),
- @('OpenNav chart orientation',@('North','Course'),@(),$false),
- @('OpenNav follow boat',@('Follow boat','STBY'),@(),$false))) {
+ @('SKAGER passage',@('AUTO'),@('Close'),$false),
+ @('SKAGER passage',@(),@('Close','Close'),$false),
+ @('SKAGER passage',@(),@('Back'),$false),
+ @('SKAGER vessel traffic',@(),@('Close','Back'),$false),
+ @('SKAGER chart tools',@('Measure','Waypoint','+','+'),@(),$false),
+ @('SKAGER chart orientation',@('North','Course'),@(),$false),
+ @('SKAGER follow boat',@('Follow boat','STBY'),@(),$false))) {
  Pass ('Fixed owned capture signature '+$spec[0]+' / '+$spec[3]) {
   if([OpenNavX.ReviewWindowNative]::IsPrototypeSurface($spec[0],$spec[1],$spec[2]) -ne $spec[3]){throw 'Capture signature mismatch.'}
  }
@@ -130,7 +130,7 @@ foreach($field in @('Id','Path','SessionId','MainWindowHandle','HasExited','Star
 }
 Pass 'All pointer labels resolve to actual current source controls' {
   $root=[IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..').Replace('\',[IO.Path]::DirectorySeparatorChar))
-  $source='';foreach($name in @('Shell.cpp','ProductPanel.cpp','ProductSettings.cpp','Theme.h')){$source+=[IO.File]::ReadAllText((Join-Path $root ('src/ui/'+$name)))}
+  $source='';foreach($name in @('Shell.cpp','ProductPanel.cpp','ProductSettings.cpp','ChartPresentationDrawer.cpp','Theme.h')){$source+=[IO.File]::ReadAllText((Join-Path $root ('src/ui/'+$name)))}
   $source+=[IO.File]::ReadAllText((Join-Path $root 'src/integration/OpenCPNIntegration.cpp'))
   foreach($action in Get-WindowReviewActions | Where-Object {$_ -cnotin @('Capture','Resize1280x800','Escape','PanRight','SelectFirstVisibleWaypoint','SelectFirstVisibleAis')}) {
     foreach($label in [OpenNavX.ReviewWindowNative]::ActionLabels($action)) {
@@ -156,8 +156,8 @@ foreach($value in @(-1,0,99,32769,'900',900.5,$null)) {
   Refuse 'Pan refuses malformed/hidden chart geometry' {$v=CopyValue $chartData;$v.runtime.display.chart_region.width=$value;Convert-WindowReviewChart $v ('a'*40) $now $now}
 }
 Pass 'Display controls retain exact source page scopes; orientation requires navigation chart tools' {
-  if([OpenNavX.ReviewWindowNative]::ActionContext('Display') -cne 'OpenNav product page: Settings' -or
-     [OpenNavX.ReviewWindowNative]::ActionContext('ToggleFullscreen') -cne 'OpenNav product page: Display' -or
+  if([OpenNavX.ReviewWindowNative]::ActionContext('Display') -cne 'SKAGER product page: Settings' -or
+     [OpenNavX.ReviewWindowNative]::ActionContext('ToggleFullscreen') -cne 'SKAGER product page: Display' -or
      [OpenNavX.ReviewWindowNative]::ActionContext('ToggleOrientation') -cne 'Navigation chart tools'){throw 'Display action scope changed.'}
 }
 foreach($action in @('Fullscreen','North','Course','SetOrientation','SetResolution','SetDpi','Brightness','EnableControl')) {
@@ -202,7 +202,7 @@ foreach($label in @('Refresh target list','Show / hide AIS on chart','AUTO','TRA
     if([OpenNavX.ReviewWindowNative]::IsSelectionLabel($waypoint,$label) -or [OpenNavX.ReviewWindowNative]::IsSelectionLabel($ais,$label)){throw 'Command/malformed caption accepted'}
   }
 }
-foreach($page in @('OpenNav product page: Autopilot','OpenNav product page: Routes','OpenNav product page: Waypoint detail',$aisPage,'')) {
+foreach($page in @('SKAGER product page: Autopilot','SKAGER product page: Routes','SKAGER product page: Waypoint detail',$aisPage,'')) {
   Refuse 'Waypoint selection requires the exact list page even if another page has a matching caption' {
     [OpenNavX.ReviewWindowNative]::ChooseSelectionRow($waypoint,$page,@((Row 1 'Example / mark')))
   }
@@ -214,6 +214,46 @@ Refuse 'Overlapping first native rows are ambiguous' {[OpenNavX.ReviewWindowNati
 Refuse 'A null row is invalid' {[OpenNavX.ReviewWindowNative]::ChooseSelectionRow($waypoint,$wpPage,@($null))}
 Refuse 'An invalid native HWND is refused' {[OpenNavX.ReviewWindowNative]::ChooseSelectionRow($waypoint,$wpPage,@((Row 0 'A / mark')))}
 Refuse 'Bounded row inventory refuses unbounded input' {[OpenNavX.ReviewWindowNative]::ChooseSelectionRow($waypoint,$wpPage,(New-Object 'OpenNavX.ReviewWindowNative+SelectionRow[]' 4097))}
+$aisData=[pscustomobject]@{build_commit=('a'*40);build_purpose='INSTALLED PRODUCT';data_mode='OPENCPN selected navigation';ui_page='AIS targets';
+ runtime=[pscustomobject]@{ais_selected_mmsi=0;ui_update=[pscustomobject]@{ticks='10'};display=[pscustomobject]@{route_creation_active=$false}}}
+Pass 'Modern traffic list observation has no preselected identity' {
+ $value=Convert-WindowReviewAis $aisData ('a'*40) $now $now 'AIS targets'
+ if($value.tick -ne 10 -or $value.selectedMmsi -ne 0){throw 'Unexpected list identity.'}
+}
+Pass 'Modern detail requires an actual positive current MMSI' {
+ $value=CopyValue $aisData;$value.ui_page='AIS target';$value.runtime.ais_selected_mmsi=265000001;$value.runtime.ui_update.ticks='11'
+ $observed=Convert-WindowReviewAis $value ('a'*40) $now $now 'AIS target'
+ if($observed.tick -ne 11 -or $observed.selectedMmsi -ne 265000001){throw 'Selected identity changed.'}
+}
+foreach($field in @('build_commit','build_purpose','data_mode','ui_page')) {
+ Refuse ('AIS observation refuses mismatched '+$field) {$value=CopyValue $aisData;$value.$field='wrong';Convert-WindowReviewAis $value ('a'*40) $now $now 'AIS targets'}
+}
+foreach($written in @($now.AddSeconds(-6),$now.AddSeconds(1))) {
+ Refuse 'AIS observations refuse stale/future files' {Convert-WindowReviewAis $aisData ('a'*40) $written $now 'AIS targets'}
+}
+foreach($mmsi in @(0,-1,1000000000,'265000001',$null)) {
+ Refuse 'Target detail refuses missing malformed or out-of-range identity' {
+  $value=CopyValue $aisData;$value.ui_page='AIS target';$value.runtime.ais_selected_mmsi=$mmsi
+  Convert-WindowReviewAis $value ('a'*40) $now $now 'AIS target'
+ }
+}
+foreach($tick in @('-1','not-a-tick','18446744073709551616','',$null)) {
+ Refuse 'AIS observations require bounded numeric publication ticks' {$value=CopyValue $aisData;$value.runtime.ui_update.ticks=$tick;Convert-WindowReviewAis $value ('a'*40) $now $now 'AIS targets'}
+}
+foreach($active in @($true,'false',$null)) {
+ Refuse 'AIS review refuses active or ambiguous route creation' {$value=CopyValue $aisData;$value.runtime.display.route_creation_active=$active;Convert-WindowReviewAis $value ('a'*40) $now $now 'AIS targets'}
+}
+Pass 'Modern AIS selection remains bound to actual accessible list and page titles' {
+ $root=[IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..').Replace('\',[IO.Path]::DirectorySeparatorChar))
+ $list=[IO.File]::ReadAllText((Join-Path $root 'src/ui/ListView.cpp'))
+ $drawer=[IO.File]::ReadAllText((Join-Path $root 'src/ui/AisDrawer.cpp'))
+ foreach($literal in @('SetName("Vessel traffic list")','(position.y + offset_) / FromDIP(71)','rows_[row].identity == pressed')) {
+  if(-not $list.Contains($literal)){throw 'Reviewed virtual list identity/hit/press contract changed.'}
+ }
+ foreach($literal in @('SetName("AIS scroll body")','return view_ == View::Target ? "AIS target"',': "AIS targets"','"Show on chart"')) {
+  if(-not $drawer.Contains($literal)){throw 'Reviewed AIS drawer names changed.'}
+ }
+}
 foreach($action in @('Select','SelectAisByName','SelectWaypointById','RestartLegacy','RestartSafe','RestartXNav','GO TO','SelectFirstVisibleAIS')) {
   Refuse "No arbitrary row or mode-restart native action: $action" {[OpenNavX.ReviewWindowNative]::SelectionPage($action)}
 }

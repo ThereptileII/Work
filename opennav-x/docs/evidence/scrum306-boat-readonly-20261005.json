@@ -1,0 +1,79 @@
+{
+  "issue": "SCRUM-306",
+  "scope": "Authorized read-only boat diagnostic plus existing isolated internet AIS probe; no product restart, chart/UI interaction, configuration mutation, network disruption or marine equipment command",
+  "dateUtc": "2026-10-05",
+  "probe": {
+    "commit": "c86c6a7558bfa028fcb6de36b11f6a2a875a22b7",
+    "upstreamCommit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+    "trustedPriorArtifactEvidence": "docs/evidence/boat-ais-probe-c86c6a7.json",
+    "buildInfoSha256": "8a90d32b496972d9c43d061bbead18a51f89688d7de9a7af0e4a43eb1a6e273f",
+    "deployedBaseScriptSha256": "b1e7704c2ce8ed5788434817971096276e149071a9e8721e526d2bde38025937",
+    "deployedDesktopScriptSha256": "b6553c85ef0f68a2f4c2d9d58cb5dc0c70a3aea9cf1624a730d80949ba662a89",
+    "scriptVerification": "Deployed scripts exactly match current reviewed source with Windows CRLF; wrapper validates BUILD_INFO, all executable/DLL hashes, directory inventory and offline capability declaration before execution",
+    "durationSeconds": 45,
+    "publicTestRegion": "oresund",
+    "exitCode": 0,
+    "subscriptionConfirmed": true,
+    "peakTargetCount": 31,
+    "acceptedReports": 45,
+    "rejectedReports": 0,
+    "reconnects": 0,
+    "disabledAndCleared": true,
+    "chartOrUiAccepted": false,
+    "credential": "Existing interactive user's protected credential; never read by orchestration or emitted in output",
+    "cleanup": {
+      "probeProcesses": 0,
+      "temporaryProbeTasks": 0
+    },
+    "negativePreparation": "First invocation exited 1 without an aggregate result. Retried with the reviewed process-local ExecutionPolicy Bypass invocation; no system policy changed. No success was inferred from the first attempt."
+  },
+  "runningProduct": {
+    "commit": "0da2c64379d5a9cc4b9b2bd068de6e0b69816577",
+    "diagnosticWrittenUtc": "2026-10-05T04:49:07.5570676Z",
+    "diagnosticObservedUtc": "2026-10-05T04:49:08.3384464Z",
+    "enabled": true,
+    "credentialPresent": true,
+    "connectionState": 4,
+    "subscriptionConfirmed": true,
+    "targets": 0,
+    "accepted": 0,
+    "rejected": 0,
+    "reconnects": 0,
+    "laterDiagnosticWrittenUtc": "2026-10-05T04:50:09.1925900Z",
+    "laterCountersUnchanged": true,
+    "chartCenterInsidePublicProbeRegion": false,
+    "subscriptionBoundingBoxAvailable": false,
+    "subscriptionIntersectionWithProbeRegion": null
+  },
+  "conclusion": "The boat desktop credential, network and service can receive supported AIS traffic through the verified older isolated probe. The concurrently running product remains connected with no counted reports or targets. Different subscribed geography/coverage remains plausible, but the actual sent bounding box is absent from diagnostics, so it is not a proven cause. A current product integration or transport difference is not ruled out.",
+  "sourceInspection": {
+    "currentCheckout": "AisStreamSession accepts a server SubscriptionConfirmation before Connected; supported malformed/rejected reports increment rejected, but unknown message kinds are ignored and uncounted. Therefore accepted=0/rejected=0 does not prove zero incoming frames. SubscriptionPolicy retains an existing subscription while a new viewport lies inside its margin; otherwise it queues a replacement. It does not automatically recenter on a busy public region.",
+    "limitation": "The exact installed and old probe git objects are not present in this shallow local checkout. Current source inspection is not asserted to be an exact installed-binary source audit."
+  },
+  "remaining": [
+    "Identify the actual requested/sent product subscription area without publishing vessel coordinates, then compare traffic in the same area or perform an explicitly authorized product public-region test.",
+    "Qualify the current product's provider-to-list/chart path separately; this old isolated probe is not evidence that SCRUM-306 is fixed.",
+    "No product restart, UI/geography change, raw server frame capture, credential export or physical equipment operation was performed."
+  ],
+  "privateDataIncluded": false,
+  "stockholmFollowup": {
+    "observedUtc": "2026-10-05T05:30:49.4685031Z",
+    "commit": "c86c6a7558bfa028fcb6de36b11f6a2a875a22b7",
+    "durationSeconds": 45,
+    "publicTestRegion": "stockholm",
+    "exitCode": 0,
+    "subscriptionConfirmed": true,
+    "peakTargetCount": 74,
+    "acceptedReports": 96,
+    "rejectedReports": 0,
+    "reconnects": 0,
+    "disabledAndCleared": true,
+    "cleanup": {
+      "probeProcesses": 0,
+      "temporaryProbeTasks": 0
+    },
+    "buildInfoAndScriptHashesReverified": true,
+    "productOrProfileChanged": false,
+    "scope": "Same verified older isolated internet-only probe; not current product acceptance or same-area diagnosis"
+  }
+}

@@ -1,0 +1,4544 @@
+{
+  "version": 1,
+  "upstreamCommit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "prototypeSha256": "b04573b920b6bccd16afd22f54a909e48afcfd502ce9cd7c69fdf5b6dd895447",
+  "palette": {
+    "DAY_BRIGHT": {
+      "LANDA": [
+        238,
+        238,
+        226
+      ],
+      "XNBUA": [
+        238,
+        238,
+        226
+      ],
+      "XNSTR": [
+        238,
+        238,
+        226
+      ],
+      "XNSHR": [
+        175,
+        191,
+        174
+      ],
+      "XNGEO": [
+        104,
+        123,
+        122
+      ],
+      "XNCBL": [
+        156,
+        134,
+        150
+      ],
+      "XNARE": [
+        156,
+        134,
+        150
+      ],
+      "CSTLN": [
+        175,
+        191,
+        174
+      ],
+      "DEPDW": [
+        213,
+        229,
+        229
+      ],
+      "CHBLK": [
+        83,
+        100,
+        95
+      ],
+      "CHGRD": [
+        83,
+        100,
+        95
+      ],
+      "XNHAT": [
+        83,
+        100,
+        95
+      ],
+      "XNBLF": [
+        124,
+        133,
+        138
+      ],
+      "XNBLO": [
+        83,
+        100,
+        95
+      ],
+      "DEPMD": [
+        199,
+        220,
+        221
+      ],
+      "DEPMS": [
+        173,
+        203,
+        206
+      ],
+      "DEPVS": [
+        134,
+        172,
+        182
+      ],
+      "DEPIT": [
+        181,
+        201,
+        171
+      ],
+      "DEPCN": [
+        173,
+        203,
+        206
+      ],
+      "DEPSC": [
+        104,
+        123,
+        122
+      ],
+      "SNDG1": [
+        104,
+        123,
+        122
+      ],
+      "SNDG2": [
+        35,
+        62,
+        62
+      ]
+    },
+    "DUSK": {
+      "LANDA": [
+        78,
+        97,
+        93
+      ],
+      "XNBUA": [
+        78,
+        97,
+        93
+      ],
+      "XNSTR": [
+        78,
+        97,
+        93
+      ],
+      "XNSHR": [
+        116,
+        135,
+        121
+      ],
+      "XNGEO": [
+        173,
+        187,
+        177
+      ],
+      "XNCBL": [
+        184,
+        160,
+        177
+      ],
+      "XNARE": [
+        184,
+        160,
+        177
+      ],
+      "CSTLN": [
+        116,
+        135,
+        121
+      ],
+      "DEPDW": [
+        52,
+        79,
+        89
+      ],
+      "CHBLK": [
+        225,
+        229,
+        216
+      ],
+      "CHGRD": [
+        225,
+        229,
+        216
+      ],
+      "XNHAT": [
+        225,
+        229,
+        216
+      ],
+      "XNBLF": [
+        168,
+        187,
+        183
+      ],
+      "XNBLO": [
+        195,
+        206,
+        194
+      ],
+      "DEPMD": [
+        66,
+        95,
+        105
+      ],
+      "DEPMS": [
+        86,
+        120,
+        128
+      ],
+      "DEPVS": [
+        113,
+        140,
+        147
+      ],
+      "DEPIT": [
+        98,
+        118,
+        107
+      ],
+      "DEPCN": [
+        86,
+        120,
+        128
+      ],
+      "DEPSC": [
+        173,
+        187,
+        177
+      ],
+      "SNDG1": [
+        173,
+        187,
+        177
+      ],
+      "SNDG2": [
+        225,
+        229,
+        216
+      ]
+    },
+    "NIGHT": {
+      "LANDA": [
+        29,
+        41,
+        37
+      ],
+      "XNBUA": [
+        29,
+        41,
+        37
+      ],
+      "XNSTR": [
+        29,
+        41,
+        37
+      ],
+      "XNSHR": [
+        55,
+        68,
+        58
+      ],
+      "XNGEO": [
+        91,
+        104,
+        94
+      ],
+      "XNCBL": [
+        113,
+        99,
+        110
+      ],
+      "XNARE": [
+        113,
+        99,
+        110
+      ],
+      "CSTLN": [
+        55,
+        68,
+        58
+      ],
+      "DEPDW": [
+        14,
+        23,
+        28
+      ],
+      "CHBLK": [
+        117,
+        133,
+        121
+      ],
+      "CHGRD": [
+        117,
+        133,
+        121
+      ],
+      "XNHAT": [
+        117,
+        133,
+        121
+      ],
+      "XNBLF": [
+        98,
+        115,
+        108
+      ],
+      "XNBLO": [
+        107,
+        119,
+        109
+      ],
+      "DEPMD": [
+        22,
+        35,
+        41
+      ],
+      "DEPMS": [
+        33,
+        51,
+        57
+      ],
+      "DEPVS": [
+        48,
+        66,
+        75
+      ],
+      "DEPIT": [
+        40,
+        53,
+        46
+      ],
+      "DEPCN": [
+        33,
+        51,
+        57
+      ],
+      "DEPSC": [
+        117,
+        133,
+        121
+      ],
+      "SNDG1": [
+        117,
+        133,
+        121
+      ],
+      "SNDG2": [
+        182,
+        195,
+        175
+      ]
+    }
+  },
+  "neutralRasterInk": {
+    "rastersymbols-dusk.png": {
+      "sourceRgb": [
+        54,
+        54,
+        54
+      ],
+      "targetRgb": [
+        225,
+        229,
+        216
+      ],
+      "changedPixels": 42100,
+      "alphaAndGeometryPreserved": true
+    },
+    "rastersymbols-dark.png": {
+      "sourceRgb": [
+        27,
+        27,
+        27
+      ],
+      "targetRgb": [
+        117,
+        133,
+        121
+      ],
+      "changedPixels": 42100,
+      "alphaAndGeometryPreserved": true
+    }
+  },
+  "dayNeutralRasterInk": {
+    "sourcePaletteRoles": [
+      "CHBLK",
+      "CHGRD"
+    ],
+    "targetRgb": [
+      83,
+      100,
+      95
+    ],
+    "changedPixels": 40482,
+    "blackPixels": 39511,
+    "grayPixels": 971,
+    "maskIndexSha256": "5e4ecc6dbc228ed8b5874ba4094922c03b4a12b68220fc4553266460b228ce73",
+    "sourcePngSha256": "ee1020a8b94b312faba8c146974e49147d280e5ef3cc13f3cd688bbfd54dde0c",
+    "sourceXmlSha256": "84f93522576ed5872b24865cf6161872ed0b4b634f77c64ca697a04d3568e886",
+    "excludedNeutralPixels": 4215,
+    "soundingsAndOtherRolesPreserved": true,
+    "alphaAndGeometryPreserved": true
+  },
+  "nightCanvas": {
+    "brightness": 0.78,
+    "roles": {
+      "LANDA": {
+        "raw": [
+          37,
+          52,
+          47
+        ],
+        "effective": [
+          29,
+          41,
+          37
+        ]
+      },
+      "XNBUA": {
+        "raw": [
+          37,
+          52,
+          47
+        ],
+        "effective": [
+          29,
+          41,
+          37
+        ]
+      },
+      "XNSTR": {
+        "raw": [
+          37,
+          52,
+          47
+        ],
+        "effective": [
+          29,
+          41,
+          37
+        ]
+      },
+      "XNSHR": {
+        "raw": [
+          70,
+          87,
+          74
+        ],
+        "effective": [
+          55,
+          68,
+          58
+        ]
+      },
+      "XNGEO": {
+        "raw": [
+          117,
+          133,
+          121
+        ],
+        "effective": [
+          91,
+          104,
+          94
+        ]
+      },
+      "CSTLN": {
+        "raw": [
+          70,
+          87,
+          74
+        ],
+        "effective": [
+          55,
+          68,
+          58
+        ]
+      },
+      "DEPDW": {
+        "raw": [
+          18,
+          30,
+          36
+        ],
+        "effective": [
+          14,
+          23,
+          28
+        ]
+      },
+      "XNBLF": {
+        "raw": [
+          126,
+          148,
+          138
+        ],
+        "effective": [
+          98,
+          115,
+          108
+        ]
+      },
+      "XNBLO": {
+        "raw": [
+          137,
+          152,
+          140
+        ],
+        "effective": [
+          107,
+          119,
+          109
+        ]
+      },
+      "DEPMD": {
+        "raw": [
+          28,
+          45,
+          53
+        ],
+        "effective": [
+          22,
+          35,
+          41
+        ]
+      },
+      "DEPMS": {
+        "raw": [
+          42,
+          65,
+          73
+        ],
+        "effective": [
+          33,
+          51,
+          57
+        ]
+      },
+      "DEPVS": {
+        "raw": [
+          61,
+          85,
+          96
+        ],
+        "effective": [
+          48,
+          66,
+          75
+        ]
+      },
+      "DEPIT": {
+        "raw": [
+          51,
+          68,
+          59
+        ],
+        "effective": [
+          40,
+          53,
+          46
+        ]
+      },
+      "DEPCN": {
+        "raw": [
+          42,
+          65,
+          73
+        ],
+        "effective": [
+          33,
+          51,
+          57
+        ]
+      }
+    },
+    "retainedSafetyInk": [
+      "CHBLK",
+      "CHGRD",
+      "DEPSC",
+      "SNDG1",
+      "SNDG2"
+    ]
+  },
+  "anchorageArtwork": {
+    "rastersymbols-day.png": {
+      "tile": [
+        20,
+        1160,
+        20,
+        20
+      ],
+      "pivot": [
+        10,
+        10
+      ],
+      "serviceRgb": [
+        124,
+        133,
+        138
+      ],
+      "changedPixels": 126,
+      "alphaSha256": "a814de453f8c9158f6767a1ba25a496fae762535f1a79f2edbd116dc4a2a3c83",
+      "atlasDimensionsUnchanged": [
+        1500,
+        1200
+      ]
+    },
+    "rastersymbols-dusk.png": {
+      "tile": [
+        20,
+        1160,
+        20,
+        20
+      ],
+      "pivot": [
+        10,
+        10
+      ],
+      "serviceRgb": [
+        168,
+        187,
+        183
+      ],
+      "changedPixels": 126,
+      "alphaSha256": "a814de453f8c9158f6767a1ba25a496fae762535f1a79f2edbd116dc4a2a3c83",
+      "atlasDimensionsUnchanged": [
+        1500,
+        1200
+      ]
+    },
+    "rastersymbols-dark.png": {
+      "tile": [
+        20,
+        1160,
+        20,
+        20
+      ],
+      "pivot": [
+        10,
+        10
+      ],
+      "serviceRgb": [
+        98,
+        115,
+        108
+      ],
+      "changedPixels": 126,
+      "alphaSha256": "a814de453f8c9158f6767a1ba25a496fae762535f1a79f2edbd116dc4a2a3c83",
+      "atlasDimensionsUnchanged": [
+        1500,
+        1200
+      ]
+    }
+  },
+  "serviceArtwork": {
+    "rastersymbols-day.png": {
+      "PILBOP02": {
+        "effectiveRcid": 1,
+        "tile": [
+          52,
+          1160,
+          24,
+          24
+        ],
+        "pivot": [
+          12,
+          12
+        ],
+        "alphaSha256": "a5939fe16a9ceab9bdd44e5b0182c76407b6c3b0800d5429ce39f510e7f9bc86",
+        "changedPixels": 148,
+        "serviceRgb": [
+          124,
+          133,
+          138
+        ],
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      },
+      "RTPBCN02": {
+        "effectiveRcid": 2259,
+        "tile": [
+          84,
+          1160,
+          24,
+          24
+        ],
+        "pivot": [
+          12,
+          12
+        ],
+        "alphaSha256": "4e8e9899f67b94972331aac087f52726aaf53ca4644e6da4d316104e91472ba6",
+        "changedPixels": 156,
+        "serviceRgb": [
+          124,
+          133,
+          138
+        ],
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      },
+      "SMCFAC02": {
+        "effectiveRcid": 2108,
+        "tile": [
+          820,
+          1160,
+          24,
+          24
+        ],
+        "pivot": [
+          12,
+          12
+        ],
+        "alphaSha256": "b26100fff9af4b66ba98b6dcd6cbd2fa453c921f46ca05480ba84e8a9b6b0bf6",
+        "changedPixels": 152,
+        "serviceRgb": [
+          124,
+          133,
+          138
+        ],
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      }
+    },
+    "rastersymbols-dusk.png": {
+      "PILBOP02": {
+        "effectiveRcid": 1,
+        "tile": [
+          52,
+          1160,
+          24,
+          24
+        ],
+        "pivot": [
+          12,
+          12
+        ],
+        "alphaSha256": "a5939fe16a9ceab9bdd44e5b0182c76407b6c3b0800d5429ce39f510e7f9bc86",
+        "changedPixels": 148,
+        "serviceRgb": [
+          168,
+          187,
+          183
+        ],
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      },
+      "RTPBCN02": {
+        "effectiveRcid": 2259,
+        "tile": [
+          84,
+          1160,
+          24,
+          24
+        ],
+        "pivot": [
+          12,
+          12
+        ],
+        "alphaSha256": "4e8e9899f67b94972331aac087f52726aaf53ca4644e6da4d316104e91472ba6",
+        "changedPixels": 156,
+        "serviceRgb": [
+          168,
+          187,
+          183
+        ],
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      },
+      "SMCFAC02": {
+        "effectiveRcid": 2108,
+        "tile": [
+          820,
+          1160,
+          24,
+          24
+        ],
+        "pivot": [
+          12,
+          12
+        ],
+        "alphaSha256": "b26100fff9af4b66ba98b6dcd6cbd2fa453c921f46ca05480ba84e8a9b6b0bf6",
+        "changedPixels": 152,
+        "serviceRgb": [
+          168,
+          187,
+          183
+        ],
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      }
+    },
+    "rastersymbols-dark.png": {
+      "PILBOP02": {
+        "effectiveRcid": 1,
+        "tile": [
+          52,
+          1160,
+          24,
+          24
+        ],
+        "pivot": [
+          12,
+          12
+        ],
+        "alphaSha256": "a5939fe16a9ceab9bdd44e5b0182c76407b6c3b0800d5429ce39f510e7f9bc86",
+        "changedPixels": 148,
+        "serviceRgb": [
+          98,
+          115,
+          108
+        ],
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      },
+      "RTPBCN02": {
+        "effectiveRcid": 2259,
+        "tile": [
+          84,
+          1160,
+          24,
+          24
+        ],
+        "pivot": [
+          12,
+          12
+        ],
+        "alphaSha256": "4e8e9899f67b94972331aac087f52726aaf53ca4644e6da4d316104e91472ba6",
+        "changedPixels": 156,
+        "serviceRgb": [
+          98,
+          115,
+          108
+        ],
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      },
+      "SMCFAC02": {
+        "effectiveRcid": 2108,
+        "tile": [
+          820,
+          1160,
+          24,
+          24
+        ],
+        "pivot": [
+          12,
+          12
+        ],
+        "alphaSha256": "b26100fff9af4b66ba98b6dcd6cbd2fa453c921f46ca05480ba84e8a9b6b0bf6",
+        "changedPixels": 152,
+        "serviceRgb": [
+          98,
+          115,
+          108
+        ],
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      }
+    }
+  },
+  "hazardArtwork": {
+    "rastersymbols-day.png": {
+      "UWTROC03": {
+        "tile": [
+          852,
+          1160,
+          24,
+          24
+        ],
+        "pivot": [
+          12,
+          12
+        ],
+        "effectiveRcid": 2249,
+        "alphaSha256": "eed289d33362016f13383ed1c9bdb484b7c4fe4b1643badbf923f078df50dc0a",
+        "changedPixels": 56,
+        "hazardRgb": [
+          104,
+          123,
+          122
+        ],
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      },
+      "UWTROC04": {
+        "tile": [
+          884,
+          1160,
+          24,
+          24
+        ],
+        "pivot": [
+          12,
+          12
+        ],
+        "effectiveRcid": 3164,
+        "alphaSha256": "d2c1ad63c199582835453e4ddce89be2d1b400cb99b4760432a11901a171bf0b",
+        "changedPixels": 88,
+        "hazardRgb": [
+          104,
+          123,
+          122
+        ],
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      },
+      "WRECKS05": {
+        "tile": [
+          916,
+          1160,
+          24,
+          24
+        ],
+        "pivot": [
+          12,
+          12
+        ],
+        "effectiveRcid": 2038,
+        "alphaSha256": "207b813777a9f78693fe1da56a51df8053c5e7289d2438949d25fef4a2b6842c",
+        "changedPixels": 161,
+        "hazardRgb": [
+          104,
+          123,
+          122
+        ],
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      }
+    },
+    "rastersymbols-dusk.png": {
+      "UWTROC03": {
+        "tile": [
+          852,
+          1160,
+          24,
+          24
+        ],
+        "pivot": [
+          12,
+          12
+        ],
+        "effectiveRcid": 2249,
+        "alphaSha256": "eed289d33362016f13383ed1c9bdb484b7c4fe4b1643badbf923f078df50dc0a",
+        "changedPixels": 56,
+        "hazardRgb": [
+          173,
+          187,
+          177
+        ],
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      },
+      "UWTROC04": {
+        "tile": [
+          884,
+          1160,
+          24,
+          24
+        ],
+        "pivot": [
+          12,
+          12
+        ],
+        "effectiveRcid": 3164,
+        "alphaSha256": "d2c1ad63c199582835453e4ddce89be2d1b400cb99b4760432a11901a171bf0b",
+        "changedPixels": 88,
+        "hazardRgb": [
+          173,
+          187,
+          177
+        ],
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      },
+      "WRECKS05": {
+        "tile": [
+          916,
+          1160,
+          24,
+          24
+        ],
+        "pivot": [
+          12,
+          12
+        ],
+        "effectiveRcid": 2038,
+        "alphaSha256": "207b813777a9f78693fe1da56a51df8053c5e7289d2438949d25fef4a2b6842c",
+        "changedPixels": 161,
+        "hazardRgb": [
+          173,
+          187,
+          177
+        ],
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      }
+    },
+    "rastersymbols-dark.png": {
+      "UWTROC03": {
+        "tile": [
+          852,
+          1160,
+          24,
+          24
+        ],
+        "pivot": [
+          12,
+          12
+        ],
+        "effectiveRcid": 2249,
+        "alphaSha256": "eed289d33362016f13383ed1c9bdb484b7c4fe4b1643badbf923f078df50dc0a",
+        "changedPixels": 56,
+        "hazardRgb": [
+          91,
+          104,
+          94
+        ],
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      },
+      "UWTROC04": {
+        "tile": [
+          884,
+          1160,
+          24,
+          24
+        ],
+        "pivot": [
+          12,
+          12
+        ],
+        "effectiveRcid": 3164,
+        "alphaSha256": "d2c1ad63c199582835453e4ddce89be2d1b400cb99b4760432a11901a171bf0b",
+        "changedPixels": 88,
+        "hazardRgb": [
+          91,
+          104,
+          94
+        ],
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      },
+      "WRECKS05": {
+        "tile": [
+          916,
+          1160,
+          24,
+          24
+        ],
+        "pivot": [
+          12,
+          12
+        ],
+        "effectiveRcid": 2038,
+        "alphaSha256": "207b813777a9f78693fe1da56a51df8053c5e7289d2438949d25fef4a2b6842c",
+        "changedPixels": 161,
+        "hazardRgb": [
+          91,
+          104,
+          94
+        ],
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      }
+    }
+  },
+  "cardinalArtwork": {
+    "rastersymbols-day.png": {
+      "BOYCAR01": {
+        "effectiveRcid": 1270,
+        "category": 1,
+        "tile": [
+          116,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "e80ffde30034bd9d28c79af8827682f02b9653f10fda81a2b345323cf6177f66",
+            "changedPixels": 102
+          },
+          "DUSK": {
+            "rgbaSha256": "1e1720055b2e3c1c5e9d8b95ea8e2517063cc0d9876e70b2d6f7fe69db8da522",
+            "changedPixels": 102
+          },
+          "NIGHT": {
+            "rgbaSha256": "711442707cd88f18e7c684240bc6ceec3426c9243e7b3e801a0a9b514fa446e3",
+            "changedPixels": 102
+          }
+        },
+        "colors": {
+          "black": [
+            83,
+            100,
+            95
+          ],
+          "yellow": [
+            172,
+            141,
+            76
+          ],
+          "water": [
+            213,
+            229,
+            229
+          ]
+        },
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      },
+      "BOYCAR02": {
+        "effectiveRcid": 1271,
+        "category": 2,
+        "tile": [
+          148,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "69fd8ae751627da58960cd97872ec2b2acea5328f0b9538720b0cccd214629bb",
+            "changedPixels": 102
+          },
+          "DUSK": {
+            "rgbaSha256": "de31e530b46c7b043e9a92fa9e951860a7590d40db04bf9d18eecd43f0623229",
+            "changedPixels": 102
+          },
+          "NIGHT": {
+            "rgbaSha256": "c3b6bd3d6a06aeb1d894e510ab798b7d109e9ce39822e71205b08f627f82e177",
+            "changedPixels": 102
+          }
+        },
+        "colors": {
+          "black": [
+            83,
+            100,
+            95
+          ],
+          "yellow": [
+            172,
+            141,
+            76
+          ],
+          "water": [
+            213,
+            229,
+            229
+          ]
+        },
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      },
+      "BOYCAR03": {
+        "effectiveRcid": 1272,
+        "category": 3,
+        "tile": [
+          180,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "52935ed49d25dd1f9675363debc9936804d9fa0bf86b19f43d07579c3343889c",
+            "changedPixels": 100
+          },
+          "DUSK": {
+            "rgbaSha256": "5e2d0124ae842e7f19490fc3a450226166519b0284c98911d28c4061cbfb6740",
+            "changedPixels": 100
+          },
+          "NIGHT": {
+            "rgbaSha256": "af059cb8e711c835fdf48348f9a770820c89d59a2f47a2656b10c909af9de12f",
+            "changedPixels": 100
+          }
+        },
+        "colors": {
+          "black": [
+            83,
+            100,
+            95
+          ],
+          "yellow": [
+            172,
+            141,
+            76
+          ],
+          "water": [
+            213,
+            229,
+            229
+          ]
+        },
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      },
+      "BOYCAR04": {
+        "effectiveRcid": 1273,
+        "category": 4,
+        "tile": [
+          212,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "c0c46d8a5afc8fd31448740d1356ea1af4a457032322c0a83426af2d8b242b94",
+            "changedPixels": 100
+          },
+          "DUSK": {
+            "rgbaSha256": "71dd26ff8408876091d1f9e4688113ed65b06056f38fcefb838aa3dc6e9ab641",
+            "changedPixels": 100
+          },
+          "NIGHT": {
+            "rgbaSha256": "b2ad1c67dd10e87432a81ec6a6d176805897674662a43af4f08e5d7b17e4feb9",
+            "changedPixels": 100
+          }
+        },
+        "colors": {
+          "black": [
+            83,
+            100,
+            95
+          ],
+          "yellow": [
+            172,
+            141,
+            76
+          ],
+          "water": [
+            213,
+            229,
+            229
+          ]
+        },
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      }
+    },
+    "rastersymbols-dusk.png": {
+      "BOYCAR01": {
+        "effectiveRcid": 1270,
+        "category": 1,
+        "tile": [
+          116,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "e80ffde30034bd9d28c79af8827682f02b9653f10fda81a2b345323cf6177f66",
+            "changedPixels": 102
+          },
+          "DUSK": {
+            "rgbaSha256": "1e1720055b2e3c1c5e9d8b95ea8e2517063cc0d9876e70b2d6f7fe69db8da522",
+            "changedPixels": 102
+          },
+          "NIGHT": {
+            "rgbaSha256": "711442707cd88f18e7c684240bc6ceec3426c9243e7b3e801a0a9b514fa446e3",
+            "changedPixels": 102
+          }
+        },
+        "colors": {
+          "black": [
+            195,
+            206,
+            194
+          ],
+          "yellow": [
+            203,
+            177,
+            122
+          ],
+          "water": [
+            52,
+            79,
+            89
+          ]
+        },
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      },
+      "BOYCAR02": {
+        "effectiveRcid": 1271,
+        "category": 2,
+        "tile": [
+          148,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "69fd8ae751627da58960cd97872ec2b2acea5328f0b9538720b0cccd214629bb",
+            "changedPixels": 102
+          },
+          "DUSK": {
+            "rgbaSha256": "de31e530b46c7b043e9a92fa9e951860a7590d40db04bf9d18eecd43f0623229",
+            "changedPixels": 102
+          },
+          "NIGHT": {
+            "rgbaSha256": "c3b6bd3d6a06aeb1d894e510ab798b7d109e9ce39822e71205b08f627f82e177",
+            "changedPixels": 102
+          }
+        },
+        "colors": {
+          "black": [
+            195,
+            206,
+            194
+          ],
+          "yellow": [
+            203,
+            177,
+            122
+          ],
+          "water": [
+            52,
+            79,
+            89
+          ]
+        },
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      },
+      "BOYCAR03": {
+        "effectiveRcid": 1272,
+        "category": 3,
+        "tile": [
+          180,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "52935ed49d25dd1f9675363debc9936804d9fa0bf86b19f43d07579c3343889c",
+            "changedPixels": 100
+          },
+          "DUSK": {
+            "rgbaSha256": "5e2d0124ae842e7f19490fc3a450226166519b0284c98911d28c4061cbfb6740",
+            "changedPixels": 100
+          },
+          "NIGHT": {
+            "rgbaSha256": "af059cb8e711c835fdf48348f9a770820c89d59a2f47a2656b10c909af9de12f",
+            "changedPixels": 100
+          }
+        },
+        "colors": {
+          "black": [
+            195,
+            206,
+            194
+          ],
+          "yellow": [
+            203,
+            177,
+            122
+          ],
+          "water": [
+            52,
+            79,
+            89
+          ]
+        },
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      },
+      "BOYCAR04": {
+        "effectiveRcid": 1273,
+        "category": 4,
+        "tile": [
+          212,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "c0c46d8a5afc8fd31448740d1356ea1af4a457032322c0a83426af2d8b242b94",
+            "changedPixels": 100
+          },
+          "DUSK": {
+            "rgbaSha256": "71dd26ff8408876091d1f9e4688113ed65b06056f38fcefb838aa3dc6e9ab641",
+            "changedPixels": 100
+          },
+          "NIGHT": {
+            "rgbaSha256": "b2ad1c67dd10e87432a81ec6a6d176805897674662a43af4f08e5d7b17e4feb9",
+            "changedPixels": 100
+          }
+        },
+        "colors": {
+          "black": [
+            195,
+            206,
+            194
+          ],
+          "yellow": [
+            203,
+            177,
+            122
+          ],
+          "water": [
+            52,
+            79,
+            89
+          ]
+        },
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      }
+    },
+    "rastersymbols-dark.png": {
+      "BOYCAR01": {
+        "effectiveRcid": 1270,
+        "category": 1,
+        "tile": [
+          116,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "e80ffde30034bd9d28c79af8827682f02b9653f10fda81a2b345323cf6177f66",
+            "changedPixels": 102
+          },
+          "DUSK": {
+            "rgbaSha256": "1e1720055b2e3c1c5e9d8b95ea8e2517063cc0d9876e70b2d6f7fe69db8da522",
+            "changedPixels": 102
+          },
+          "NIGHT": {
+            "rgbaSha256": "711442707cd88f18e7c684240bc6ceec3426c9243e7b3e801a0a9b514fa446e3",
+            "changedPixels": 102
+          }
+        },
+        "colors": {
+          "black": [
+            107,
+            119,
+            109
+          ],
+          "yellow": [
+            131,
+            112,
+            76
+          ],
+          "water": [
+            14,
+            23,
+            28
+          ]
+        },
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      },
+      "BOYCAR02": {
+        "effectiveRcid": 1271,
+        "category": 2,
+        "tile": [
+          148,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "69fd8ae751627da58960cd97872ec2b2acea5328f0b9538720b0cccd214629bb",
+            "changedPixels": 102
+          },
+          "DUSK": {
+            "rgbaSha256": "de31e530b46c7b043e9a92fa9e951860a7590d40db04bf9d18eecd43f0623229",
+            "changedPixels": 102
+          },
+          "NIGHT": {
+            "rgbaSha256": "c3b6bd3d6a06aeb1d894e510ab798b7d109e9ce39822e71205b08f627f82e177",
+            "changedPixels": 102
+          }
+        },
+        "colors": {
+          "black": [
+            107,
+            119,
+            109
+          ],
+          "yellow": [
+            131,
+            112,
+            76
+          ],
+          "water": [
+            14,
+            23,
+            28
+          ]
+        },
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      },
+      "BOYCAR03": {
+        "effectiveRcid": 1272,
+        "category": 3,
+        "tile": [
+          180,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "52935ed49d25dd1f9675363debc9936804d9fa0bf86b19f43d07579c3343889c",
+            "changedPixels": 100
+          },
+          "DUSK": {
+            "rgbaSha256": "5e2d0124ae842e7f19490fc3a450226166519b0284c98911d28c4061cbfb6740",
+            "changedPixels": 100
+          },
+          "NIGHT": {
+            "rgbaSha256": "af059cb8e711c835fdf48348f9a770820c89d59a2f47a2656b10c909af9de12f",
+            "changedPixels": 100
+          }
+        },
+        "colors": {
+          "black": [
+            107,
+            119,
+            109
+          ],
+          "yellow": [
+            131,
+            112,
+            76
+          ],
+          "water": [
+            14,
+            23,
+            28
+          ]
+        },
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      },
+      "BOYCAR04": {
+        "effectiveRcid": 1273,
+        "category": 4,
+        "tile": [
+          212,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "c0c46d8a5afc8fd31448740d1356ea1af4a457032322c0a83426af2d8b242b94",
+            "changedPixels": 100
+          },
+          "DUSK": {
+            "rgbaSha256": "71dd26ff8408876091d1f9e4688113ed65b06056f38fcefb838aa3dc6e9ab641",
+            "changedPixels": 100
+          },
+          "NIGHT": {
+            "rgbaSha256": "b2ad1c67dd10e87432a81ec6a6d176805897674662a43af4f08e5d7b17e4feb9",
+            "changedPixels": 100
+          }
+        },
+        "colors": {
+          "black": [
+            107,
+            119,
+            109
+          ],
+          "yellow": [
+            131,
+            112,
+            76
+          ],
+          "water": [
+            14,
+            23,
+            28
+          ]
+        },
+        "atlasDimensionsUnchanged": [
+          1500,
+          1200
+        ]
+      }
+    }
+  },
+  "seamarkArtwork": {
+    "rastersymbols-day.png": {
+      "XNLAT013": {
+        "source": "BOYLAT13",
+        "sourceRcid": 2050,
+        "rcid": 60001,
+        "original": [
+          1232,
+          10,
+          14,
+          14
+        ],
+        "originalPivot": [
+          9,
+          9
+        ],
+        "tile": [
+          244,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "sourceNodeSha256": "42b64f6bc0c3f85806d2e3a87ee9747a19fb5d37808e5218ef1bf1ada80b7e04",
+        "prototypeScale": 0.84375,
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "1cd188b28f5f44be2d4f14a4793c7f6b2152c04d8375b130e234ba03769999c1",
+            "changedPixels": 78
+          },
+          "DUSK": {
+            "rgbaSha256": "a0d39f1b90010c88a1446fdf4cefa5cb139f121873284c423168ff17f21ff048",
+            "changedPixels": 78
+          },
+          "NIGHT": {
+            "rgbaSha256": "b6c5bef27884eed1972959a891dad6afb14c60f792bd0fc8bfa01ef53b8f3c32",
+            "changedPixels": 78
+          }
+        }
+      },
+      "XNLAT014": {
+        "source": "BOYLAT14",
+        "sourceRcid": 2051,
+        "rcid": 60002,
+        "original": [
+          1256,
+          10,
+          14,
+          14
+        ],
+        "originalPivot": [
+          9,
+          9
+        ],
+        "tile": [
+          276,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "sourceNodeSha256": "13e4b5ba15e10011d8e1718d195f6126bb4d494fac5e926d90adad990802ce79",
+        "prototypeScale": 0.84375,
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "3c5a234947f59c11b8dd534d1eda0f072566027895b6359e252d03622a52169c",
+            "changedPixels": 78
+          },
+          "DUSK": {
+            "rgbaSha256": "70847a3375e5b41ff85a6a5aad2c5311d683374bd38dc57aedcf7b2dd26893cd",
+            "changedPixels": 78
+          },
+          "NIGHT": {
+            "rgbaSha256": "85ab4bc596827dad951fa5b2c9b7c65193973950286c2045e86842e6aebf0d5f",
+            "changedPixels": 78
+          }
+        }
+      },
+      "XNLAT023": {
+        "source": "BOYLAT23",
+        "sourceRcid": 2052,
+        "rcid": 60003,
+        "original": [
+          1280,
+          10,
+          16,
+          13
+        ],
+        "originalPivot": [
+          8,
+          6
+        ],
+        "tile": [
+          308,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "sourceNodeSha256": "ee02678e0188bd20d65ef961fa119325f8a35d0996cadcac1d43dfb6b9a19483",
+        "prototypeScale": 0.84375,
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "625d1a562f9907e4c852ded1af4e040b645dc7dbc41883bb0c352ce4805dd046",
+            "changedPixels": 78
+          },
+          "DUSK": {
+            "rgbaSha256": "be1715d098711fcb56c41f68e33ede6021987486a6209a231dbaaf6e3e762463",
+            "changedPixels": 78
+          },
+          "NIGHT": {
+            "rgbaSha256": "52243af3135d38f76eb15286f8b02b6c1d07789c92ed61668904e201078be1c3",
+            "changedPixels": 78
+          }
+        }
+      },
+      "XNLAT024": {
+        "source": "BOYLAT24",
+        "sourceRcid": 2053,
+        "rcid": 60004,
+        "original": [
+          1306,
+          10,
+          16,
+          13
+        ],
+        "originalPivot": [
+          8,
+          6
+        ],
+        "tile": [
+          340,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "sourceNodeSha256": "9edccd70199d35f2449f9bf3d3fd02dbefc7889a4032685e5afdb17dba18e71f",
+        "prototypeScale": 0.84375,
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "13eb1247514a58eb8412f1f12a5081356ad7fefb26619dcded8c8620b05b5e38",
+            "changedPixels": 78
+          },
+          "DUSK": {
+            "rgbaSha256": "58673961416916c25d03877fb407d0a4828a3ee63054f0daa322dd1be626f2d1",
+            "changedPixels": 78
+          },
+          "NIGHT": {
+            "rgbaSha256": "4eed436afe9d5c305cd2a1ef32ac076a35c2ba77de2747bb4adbafcc88d414c4",
+            "changedPixels": 78
+          }
+        }
+      },
+      "XNCAN072": {
+        "source": "BOYCAN72",
+        "sourceRcid": 26,
+        "rcid": 60005,
+        "original": [
+          805,
+          701,
+          19,
+          15
+        ],
+        "originalPivot": [
+          9,
+          11
+        ],
+        "tile": [
+          372,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "sourceNodeSha256": "3941c8f96968dd963a4b2e6e8b7195af21af91a81ba77bb56efba1e6feed6480",
+        "prototypeScale": 0.84375,
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "89ce8a19d24636640c0c8a2a38fd1302c79198f665f613d0f4f5b71e64a9b91b",
+            "changedPixels": 78
+          },
+          "DUSK": {
+            "rgbaSha256": "57281d4eda58ffa5005b734ffbc5730fda018c0ba9771bfe434f0230f0729de3",
+            "changedPixels": 78
+          },
+          "NIGHT": {
+            "rgbaSha256": "5e91414fe55363fdc7585928db05979194102cda2af06afa851841a5daa43df9",
+            "changedPixels": 78
+          }
+        }
+      },
+      "XNCAN073": {
+        "source": "BOYCAN73",
+        "sourceRcid": 26,
+        "rcid": 60006,
+        "original": [
+          834,
+          701,
+          19,
+          15
+        ],
+        "originalPivot": [
+          9,
+          11
+        ],
+        "tile": [
+          404,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "sourceNodeSha256": "6e00067c81369b536de1086736035373aa149e175987f5f3ff1d6e2e2606c4ed",
+        "prototypeScale": 0.84375,
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "afab1983894c2eb6064c72f3513cb49407a9784ff63532f2117f2f643b77fc68",
+            "changedPixels": 78
+          },
+          "DUSK": {
+            "rgbaSha256": "3e03bf471a3462c3c7accf85095d045712ff1f5ca2aeb125d601610c595a2a89",
+            "changedPixels": 78
+          },
+          "NIGHT": {
+            "rgbaSha256": "d960fca4f0a02481cd3f500ab7c9551e4900c0f0bfd710cae49129f2b8460f1f",
+            "changedPixels": 78
+          }
+        }
+      },
+      "XNCON066": {
+        "source": "BOYCON66",
+        "sourceRcid": 31,
+        "rcid": 60007,
+        "original": [
+          891,
+          701,
+          19,
+          16
+        ],
+        "originalPivot": [
+          9,
+          12
+        ],
+        "tile": [
+          436,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "sourceNodeSha256": "f9501c1c3f3d0450582e5286cbd4b5f226f2ad3496f6a6493cfebd77bac2d081",
+        "prototypeScale": 0.84375,
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "1d6ead71a866f4899958742622ccb5007c3525fe3992ca5f51d7a8e4f049d178",
+            "changedPixels": 78
+          },
+          "DUSK": {
+            "rgbaSha256": "830812c4c3d98dbca47ce17d1c2bc7c9c0c2b5f61a4e778f5457d7eb433e231d",
+            "changedPixels": 78
+          },
+          "NIGHT": {
+            "rgbaSha256": "e24dd71cfc03fabc3ef7bcf5d724139c67cb2609504d2b3a4bbc16053624a9cc",
+            "changedPixels": 78
+          }
+        }
+      },
+      "XNCON067": {
+        "source": "BOYCON67",
+        "sourceRcid": 31,
+        "rcid": 60008,
+        "original": [
+          920,
+          701,
+          19,
+          16
+        ],
+        "originalPivot": [
+          9,
+          12
+        ],
+        "tile": [
+          468,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "sourceNodeSha256": "285062b0f4e9bd012b94f9f228149aef52335bd1bf986447f0311136f4637a74",
+        "prototypeScale": 0.84375,
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "59e9ac56ac8d033e3d6b030f21e56c625a3126c2d2df9058c6d00faa5bd02aba",
+            "changedPixels": 78
+          },
+          "DUSK": {
+            "rgbaSha256": "df28cd00b63093a162e837c1ce6b504968a8517bd4f522986a98a0b8f3a05217",
+            "changedPixels": 78
+          },
+          "NIGHT": {
+            "rgbaSha256": "6e6d0a8b7a550492827412adc4145963b955cdbe53b57f401bffbf538816929a",
+            "changedPixels": 78
+          }
+        }
+      },
+      "BOYISD12": {
+        "source": "BOYISD12",
+        "sourceRcid": 2049,
+        "rcid": 2049,
+        "original": [
+          1210,
+          10,
+          12,
+          17
+        ],
+        "originalPivot": [
+          5,
+          8
+        ],
+        "tile": [
+          500,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "sourceNodeSha256": "0a4d6ed41ee7ff5dea5a95e4b15950b4550654b6c396a8d4cbe82eb876bfb855",
+        "prototypeScale": 0.84375,
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "96d1eced6b085f485b49783a821adcd44d8e745daddaeb5653bcb07d7890872c",
+            "changedPixels": 100
+          },
+          "DUSK": {
+            "rgbaSha256": "917681c9aa7483bf3cfa1788e5f1c4d6870ee6f0e4ac2014b7d7f5042ea03e61",
+            "changedPixels": 100
+          },
+          "NIGHT": {
+            "rgbaSha256": "399159d1ad8092a7c4527ce53b0949ca391fe75b51d359f20b12117f90fdcf1c",
+            "changedPixels": 100
+          }
+        }
+      },
+      "BOYSAW12": {
+        "source": "BOYSAW12",
+        "sourceRcid": 1294,
+        "rcid": 1294,
+        "original": [
+          1451,
+          10,
+          13,
+          13
+        ],
+        "originalPivot": [
+          6,
+          6
+        ],
+        "tile": [
+          532,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "sourceNodeSha256": "64678f1bc372712a728b361a1ecfe4e09f4a435b532d385f580c78a5df28b7b0",
+        "prototypeScale": 0.84375,
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "a1d7206961ba7713134f8e5d95a914e7d2c42393eb0ab5a6604f5cb4e14a690b",
+            "changedPixels": 84
+          },
+          "DUSK": {
+            "rgbaSha256": "619d49f36ab621aca4931351375e8b51061689a55fdd6ff37087857da7a3410e",
+            "changedPixels": 84
+          },
+          "NIGHT": {
+            "rgbaSha256": "6645e1d08cd5960d11a3848e693f1ef7c987751b86246ee971499f0e0a7a7ba6",
+            "changedPixels": 84
+          }
+        }
+      },
+      "XNLIT011": {
+        "source": "LIGHTS11",
+        "sourceRcid": 1396,
+        "rcid": 60009,
+        "original": [
+          247,
+          175,
+          22,
+          22
+        ],
+        "originalPivot": [
+          0,
+          0
+        ],
+        "tile": [
+          564,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "sourceNodeSha256": "977f81d6fa908c5692cf40920fa558fe054d4200590ae11983f7aef0e5e6fc37",
+        "prototypeSource": "LIGHTS13",
+        "rayRole": "--mark-red",
+        "prototypeScale": 0.78125,
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "a9c6ad01a31120a1b06d6c582ae86bf3bd6ebfd50583dc83bd023b2a07894024",
+            "changedPixels": 88
+          },
+          "DUSK": {
+            "rgbaSha256": "8ad5cb67fd018bf55872e310c0ad1ae213feadfc49156acdd81d78a99dc74815",
+            "changedPixels": 88
+          },
+          "NIGHT": {
+            "rgbaSha256": "54df4dcc395f5510637f01c080cd0f6cc311c08376bfb3e73e589b8c37e1e44d",
+            "changedPixels": 88
+          }
+        }
+      },
+      "XNLIT012": {
+        "source": "LIGHTS12",
+        "sourceRcid": 1397,
+        "rcid": 60010,
+        "original": [
+          278,
+          205,
+          22,
+          22
+        ],
+        "originalPivot": [
+          0,
+          0
+        ],
+        "tile": [
+          596,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "sourceNodeSha256": "ca9e88ac3770cb41593cfa3b8e98ef476e44eeefff59811824c517e4bf3ebfd9",
+        "prototypeSource": "LIGHTS13",
+        "rayRole": "--mark-green",
+        "prototypeScale": 0.78125,
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "f7091e98a28c89a9e350e4be3fef7b8dd076184f475f80ee3f8cff10d96469e3",
+            "changedPixels": 88
+          },
+          "DUSK": {
+            "rgbaSha256": "eeecbc6a5415a4faaa360e214ae63bf5bb0a6d63ccd7801fb5b30441dcd4e6a5",
+            "changedPixels": 88
+          },
+          "NIGHT": {
+            "rgbaSha256": "b4db85b6f83e054d899d87b6d6b507a5898f7fa0deb6e0ae483a718e625ee7b0",
+            "changedPixels": 88
+          }
+        }
+      },
+      "XNLIT013": {
+        "source": "LIGHTS13",
+        "sourceRcid": 1398,
+        "rcid": 60011,
+        "original": [
+          278,
+          175,
+          22,
+          22
+        ],
+        "originalPivot": [
+          0,
+          0
+        ],
+        "tile": [
+          628,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "sourceNodeSha256": "d61559cd61187c3f7ad6239313d6447223ddf6759ac90d4d842a3893e4fada2b",
+        "prototypeSource": "LIGHTS13",
+        "rayRole": "--mark-yellow",
+        "prototypeScale": 0.78125,
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "409b10976ec0856f30c32a9a3c2578bee85b2d142211cfc830bb5a9fae961198",
+            "changedPixels": 88
+          },
+          "DUSK": {
+            "rgbaSha256": "89b150f25640cc4196eabf5df4f41c87fbb5fc14501364751ee2faf7c954dc30",
+            "changedPixels": 88
+          },
+          "NIGHT": {
+            "rgbaSha256": "d5c8f0b72d994526ed5e7d7cdd718ed7082a2c974b7a711460c9ba8c37bb32a4",
+            "changedPixels": 88
+          }
+        }
+      }
+    },
+    "rastersymbols-dusk.png": {
+      "XNLAT013": {
+        "source": "BOYLAT13",
+        "sourceRcid": 2050,
+        "rcid": 60001,
+        "original": [
+          1232,
+          10,
+          14,
+          14
+        ],
+        "originalPivot": [
+          9,
+          9
+        ],
+        "tile": [
+          244,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "sourceNodeSha256": "42b64f6bc0c3f85806d2e3a87ee9747a19fb5d37808e5218ef1bf1ada80b7e04",
+        "prototypeScale": 0.84375,
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "1cd188b28f5f44be2d4f14a4793c7f6b2152c04d8375b130e234ba03769999c1",
+            "changedPixels": 78
+          },
+          "DUSK": {
+            "rgbaSha256": "a0d39f1b90010c88a1446fdf4cefa5cb139f121873284c423168ff17f21ff048",
+            "changedPixels": 78
+          },
+          "NIGHT": {
+            "rgbaSha256": "b6c5bef27884eed1972959a891dad6afb14c60f792bd0fc8bfa01ef53b8f3c32",
+            "changedPixels": 78
+          }
+        }
+      },
+      "XNLAT014": {
+        "source": "BOYLAT14",
+        "sourceRcid": 2051,
+        "rcid": 60002,
+        "original": [
+          1256,
+          10,
+          14,
+          14
+        ],
+        "originalPivot": [
+          9,
+          9
+        ],
+        "tile": [
+          276,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "sourceNodeSha256": "13e4b5ba15e10011d8e1718d195f6126bb4d494fac5e926d90adad990802ce79",
+        "prototypeScale": 0.84375,
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "3c5a234947f59c11b8dd534d1eda0f072566027895b6359e252d03622a52169c",
+            "changedPixels": 78
+          },
+          "DUSK": {
+            "rgbaSha256": "70847a3375e5b41ff85a6a5aad2c5311d683374bd38dc57aedcf7b2dd26893cd",
+            "changedPixels": 78
+          },
+          "NIGHT": {
+            "rgbaSha256": "85ab4bc596827dad951fa5b2c9b7c65193973950286c2045e86842e6aebf0d5f",
+            "changedPixels": 78
+          }
+        }
+      },
+      "XNLAT023": {
+        "source": "BOYLAT23",
+        "sourceRcid": 2052,
+        "rcid": 60003,
+        "original": [
+          1280,
+          10,
+          16,
+          13
+        ],
+        "originalPivot": [
+          8,
+          6
+        ],
+        "tile": [
+          308,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "sourceNodeSha256": "ee02678e0188bd20d65ef961fa119325f8a35d0996cadcac1d43dfb6b9a19483",
+        "prototypeScale": 0.84375,
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "625d1a562f9907e4c852ded1af4e040b645dc7dbc41883bb0c352ce4805dd046",
+            "changedPixels": 78
+          },
+          "DUSK": {
+            "rgbaSha256": "be1715d098711fcb56c41f68e33ede6021987486a6209a231dbaaf6e3e762463",
+            "changedPixels": 78
+          },
+          "NIGHT": {
+            "rgbaSha256": "52243af3135d38f76eb15286f8b02b6c1d07789c92ed61668904e201078be1c3",
+            "changedPixels": 78
+          }
+        }
+      },
+      "XNLAT024": {
+        "source": "BOYLAT24",
+        "sourceRcid": 2053,
+        "rcid": 60004,
+        "original": [
+          1306,
+          10,
+          16,
+          13
+        ],
+        "originalPivot": [
+          8,
+          6
+        ],
+        "tile": [
+          340,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "sourceNodeSha256": "9edccd70199d35f2449f9bf3d3fd02dbefc7889a4032685e5afdb17dba18e71f",
+        "prototypeScale": 0.84375,
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "13eb1247514a58eb8412f1f12a5081356ad7fefb26619dcded8c8620b05b5e38",
+            "changedPixels": 78
+          },
+          "DUSK": {
+            "rgbaSha256": "58673961416916c25d03877fb407d0a4828a3ee63054f0daa322dd1be626f2d1",
+            "changedPixels": 78
+          },
+          "NIGHT": {
+            "rgbaSha256": "4eed436afe9d5c305cd2a1ef32ac076a35c2ba77de2747bb4adbafcc88d414c4",
+            "changedPixels": 78
+          }
+        }
+      },
+      "XNCAN072": {
+        "source": "BOYCAN72",
+        "sourceRcid": 26,
+        "rcid": 60005,
+        "original": [
+          805,
+          701,
+          19,
+          15
+        ],
+        "originalPivot": [
+          9,
+          11
+        ],
+        "tile": [
+          372,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "sourceNodeSha256": "3941c8f96968dd963a4b2e6e8b7195af21af91a81ba77bb56efba1e6feed6480",
+        "prototypeScale": 0.84375,
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "89ce8a19d24636640c0c8a2a38fd1302c79198f665f613d0f4f5b71e64a9b91b",
+            "changedPixels": 78
+          },
+          "DUSK": {
+            "rgbaSha256": "57281d4eda58ffa5005b734ffbc5730fda018c0ba9771bfe434f0230f0729de3",
+            "changedPixels": 78
+          },
+          "NIGHT": {
+            "rgbaSha256": "5e91414fe55363fdc7585928db05979194102cda2af06afa851841a5daa43df9",
+            "changedPixels": 78
+          }
+        }
+      },
+      "XNCAN073": {
+        "source": "BOYCAN73",
+        "sourceRcid": 26,
+        "rcid": 60006,
+        "original": [
+          834,
+          701,
+          19,
+          15
+        ],
+        "originalPivot": [
+          9,
+          11
+        ],
+        "tile": [
+          404,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "sourceNodeSha256": "6e00067c81369b536de1086736035373aa149e175987f5f3ff1d6e2e2606c4ed",
+        "prototypeScale": 0.84375,
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "afab1983894c2eb6064c72f3513cb49407a9784ff63532f2117f2f643b77fc68",
+            "changedPixels": 78
+          },
+          "DUSK": {
+            "rgbaSha256": "3e03bf471a3462c3c7accf85095d045712ff1f5ca2aeb125d601610c595a2a89",
+            "changedPixels": 78
+          },
+          "NIGHT": {
+            "rgbaSha256": "d960fca4f0a02481cd3f500ab7c9551e4900c0f0bfd710cae49129f2b8460f1f",
+            "changedPixels": 78
+          }
+        }
+      },
+      "XNCON066": {
+        "source": "BOYCON66",
+        "sourceRcid": 31,
+        "rcid": 60007,
+        "original": [
+          891,
+          701,
+          19,
+          16
+        ],
+        "originalPivot": [
+          9,
+          12
+        ],
+        "tile": [
+          436,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "sourceNodeSha256": "f9501c1c3f3d0450582e5286cbd4b5f226f2ad3496f6a6493cfebd77bac2d081",
+        "prototypeScale": 0.84375,
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "1d6ead71a866f4899958742622ccb5007c3525fe3992ca5f51d7a8e4f049d178",
+            "changedPixels": 78
+          },
+          "DUSK": {
+            "rgbaSha256": "830812c4c3d98dbca47ce17d1c2bc7c9c0c2b5f61a4e778f5457d7eb433e231d",
+            "changedPixels": 78
+          },
+          "NIGHT": {
+            "rgbaSha256": "e24dd71cfc03fabc3ef7bcf5d724139c67cb2609504d2b3a4bbc16053624a9cc",
+            "changedPixels": 78
+          }
+        }
+      },
+      "XNCON067": {
+        "source": "BOYCON67",
+        "sourceRcid": 31,
+        "rcid": 60008,
+        "original": [
+          920,
+          701,
+          19,
+          16
+        ],
+        "originalPivot": [
+          9,
+          12
+        ],
+        "tile": [
+          468,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "sourceNodeSha256": "285062b0f4e9bd012b94f9f228149aef52335bd1bf986447f0311136f4637a74",
+        "prototypeScale": 0.84375,
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "59e9ac56ac8d033e3d6b030f21e56c625a3126c2d2df9058c6d00faa5bd02aba",
+            "changedPixels": 78
+          },
+          "DUSK": {
+            "rgbaSha256": "df28cd00b63093a162e837c1ce6b504968a8517bd4f522986a98a0b8f3a05217",
+            "changedPixels": 78
+          },
+          "NIGHT": {
+            "rgbaSha256": "6e6d0a8b7a550492827412adc4145963b955cdbe53b57f401bffbf538816929a",
+            "changedPixels": 78
+          }
+        }
+      },
+      "BOYISD12": {
+        "source": "BOYISD12",
+        "sourceRcid": 2049,
+        "rcid": 2049,
+        "original": [
+          1210,
+          10,
+          12,
+          17
+        ],
+        "originalPivot": [
+          5,
+          8
+        ],
+        "tile": [
+          500,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "sourceNodeSha256": "0a4d6ed41ee7ff5dea5a95e4b15950b4550654b6c396a8d4cbe82eb876bfb855",
+        "prototypeScale": 0.84375,
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "96d1eced6b085f485b49783a821adcd44d8e745daddaeb5653bcb07d7890872c",
+            "changedPixels": 100
+          },
+          "DUSK": {
+            "rgbaSha256": "917681c9aa7483bf3cfa1788e5f1c4d6870ee6f0e4ac2014b7d7f5042ea03e61",
+            "changedPixels": 100
+          },
+          "NIGHT": {
+            "rgbaSha256": "399159d1ad8092a7c4527ce53b0949ca391fe75b51d359f20b12117f90fdcf1c",
+            "changedPixels": 100
+          }
+        }
+      },
+      "BOYSAW12": {
+        "source": "BOYSAW12",
+        "sourceRcid": 1294,
+        "rcid": 1294,
+        "original": [
+          1451,
+          10,
+          13,
+          13
+        ],
+        "originalPivot": [
+          6,
+          6
+        ],
+        "tile": [
+          532,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "sourceNodeSha256": "64678f1bc372712a728b361a1ecfe4e09f4a435b532d385f580c78a5df28b7b0",
+        "prototypeScale": 0.84375,
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "a1d7206961ba7713134f8e5d95a914e7d2c42393eb0ab5a6604f5cb4e14a690b",
+            "changedPixels": 84
+          },
+          "DUSK": {
+            "rgbaSha256": "619d49f36ab621aca4931351375e8b51061689a55fdd6ff37087857da7a3410e",
+            "changedPixels": 84
+          },
+          "NIGHT": {
+            "rgbaSha256": "6645e1d08cd5960d11a3848e693f1ef7c987751b86246ee971499f0e0a7a7ba6",
+            "changedPixels": 84
+          }
+        }
+      },
+      "XNLIT011": {
+        "source": "LIGHTS11",
+        "sourceRcid": 1396,
+        "rcid": 60009,
+        "original": [
+          247,
+          175,
+          22,
+          22
+        ],
+        "originalPivot": [
+          0,
+          0
+        ],
+        "tile": [
+          564,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "sourceNodeSha256": "977f81d6fa908c5692cf40920fa558fe054d4200590ae11983f7aef0e5e6fc37",
+        "prototypeSource": "LIGHTS13",
+        "rayRole": "--mark-red",
+        "prototypeScale": 0.78125,
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "a9c6ad01a31120a1b06d6c582ae86bf3bd6ebfd50583dc83bd023b2a07894024",
+            "changedPixels": 88
+          },
+          "DUSK": {
+            "rgbaSha256": "8ad5cb67fd018bf55872e310c0ad1ae213feadfc49156acdd81d78a99dc74815",
+            "changedPixels": 88
+          },
+          "NIGHT": {
+            "rgbaSha256": "54df4dcc395f5510637f01c080cd0f6cc311c08376bfb3e73e589b8c37e1e44d",
+            "changedPixels": 88
+          }
+        }
+      },
+      "XNLIT012": {
+        "source": "LIGHTS12",
+        "sourceRcid": 1397,
+        "rcid": 60010,
+        "original": [
+          278,
+          205,
+          22,
+          22
+        ],
+        "originalPivot": [
+          0,
+          0
+        ],
+        "tile": [
+          596,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "sourceNodeSha256": "ca9e88ac3770cb41593cfa3b8e98ef476e44eeefff59811824c517e4bf3ebfd9",
+        "prototypeSource": "LIGHTS13",
+        "rayRole": "--mark-green",
+        "prototypeScale": 0.78125,
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "f7091e98a28c89a9e350e4be3fef7b8dd076184f475f80ee3f8cff10d96469e3",
+            "changedPixels": 88
+          },
+          "DUSK": {
+            "rgbaSha256": "eeecbc6a5415a4faaa360e214ae63bf5bb0a6d63ccd7801fb5b30441dcd4e6a5",
+            "changedPixels": 88
+          },
+          "NIGHT": {
+            "rgbaSha256": "b4db85b6f83e054d899d87b6d6b507a5898f7fa0deb6e0ae483a718e625ee7b0",
+            "changedPixels": 88
+          }
+        }
+      },
+      "XNLIT013": {
+        "source": "LIGHTS13",
+        "sourceRcid": 1398,
+        "rcid": 60011,
+        "original": [
+          278,
+          175,
+          22,
+          22
+        ],
+        "originalPivot": [
+          0,
+          0
+        ],
+        "tile": [
+          628,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "sourceNodeSha256": "d61559cd61187c3f7ad6239313d6447223ddf6759ac90d4d842a3893e4fada2b",
+        "prototypeSource": "LIGHTS13",
+        "rayRole": "--mark-yellow",
+        "prototypeScale": 0.78125,
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "409b10976ec0856f30c32a9a3c2578bee85b2d142211cfc830bb5a9fae961198",
+            "changedPixels": 88
+          },
+          "DUSK": {
+            "rgbaSha256": "89b150f25640cc4196eabf5df4f41c87fbb5fc14501364751ee2faf7c954dc30",
+            "changedPixels": 88
+          },
+          "NIGHT": {
+            "rgbaSha256": "d5c8f0b72d994526ed5e7d7cdd718ed7082a2c974b7a711460c9ba8c37bb32a4",
+            "changedPixels": 88
+          }
+        }
+      }
+    },
+    "rastersymbols-dark.png": {
+      "XNLAT013": {
+        "source": "BOYLAT13",
+        "sourceRcid": 2050,
+        "rcid": 60001,
+        "original": [
+          1232,
+          10,
+          14,
+          14
+        ],
+        "originalPivot": [
+          9,
+          9
+        ],
+        "tile": [
+          244,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "sourceNodeSha256": "42b64f6bc0c3f85806d2e3a87ee9747a19fb5d37808e5218ef1bf1ada80b7e04",
+        "prototypeScale": 0.84375,
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "1cd188b28f5f44be2d4f14a4793c7f6b2152c04d8375b130e234ba03769999c1",
+            "changedPixels": 78
+          },
+          "DUSK": {
+            "rgbaSha256": "a0d39f1b90010c88a1446fdf4cefa5cb139f121873284c423168ff17f21ff048",
+            "changedPixels": 78
+          },
+          "NIGHT": {
+            "rgbaSha256": "b6c5bef27884eed1972959a891dad6afb14c60f792bd0fc8bfa01ef53b8f3c32",
+            "changedPixels": 78
+          }
+        }
+      },
+      "XNLAT014": {
+        "source": "BOYLAT14",
+        "sourceRcid": 2051,
+        "rcid": 60002,
+        "original": [
+          1256,
+          10,
+          14,
+          14
+        ],
+        "originalPivot": [
+          9,
+          9
+        ],
+        "tile": [
+          276,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "sourceNodeSha256": "13e4b5ba15e10011d8e1718d195f6126bb4d494fac5e926d90adad990802ce79",
+        "prototypeScale": 0.84375,
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "3c5a234947f59c11b8dd534d1eda0f072566027895b6359e252d03622a52169c",
+            "changedPixels": 78
+          },
+          "DUSK": {
+            "rgbaSha256": "70847a3375e5b41ff85a6a5aad2c5311d683374bd38dc57aedcf7b2dd26893cd",
+            "changedPixels": 78
+          },
+          "NIGHT": {
+            "rgbaSha256": "85ab4bc596827dad951fa5b2c9b7c65193973950286c2045e86842e6aebf0d5f",
+            "changedPixels": 78
+          }
+        }
+      },
+      "XNLAT023": {
+        "source": "BOYLAT23",
+        "sourceRcid": 2052,
+        "rcid": 60003,
+        "original": [
+          1280,
+          10,
+          16,
+          13
+        ],
+        "originalPivot": [
+          8,
+          6
+        ],
+        "tile": [
+          308,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "sourceNodeSha256": "ee02678e0188bd20d65ef961fa119325f8a35d0996cadcac1d43dfb6b9a19483",
+        "prototypeScale": 0.84375,
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "625d1a562f9907e4c852ded1af4e040b645dc7dbc41883bb0c352ce4805dd046",
+            "changedPixels": 78
+          },
+          "DUSK": {
+            "rgbaSha256": "be1715d098711fcb56c41f68e33ede6021987486a6209a231dbaaf6e3e762463",
+            "changedPixels": 78
+          },
+          "NIGHT": {
+            "rgbaSha256": "52243af3135d38f76eb15286f8b02b6c1d07789c92ed61668904e201078be1c3",
+            "changedPixels": 78
+          }
+        }
+      },
+      "XNLAT024": {
+        "source": "BOYLAT24",
+        "sourceRcid": 2053,
+        "rcid": 60004,
+        "original": [
+          1306,
+          10,
+          16,
+          13
+        ],
+        "originalPivot": [
+          8,
+          6
+        ],
+        "tile": [
+          340,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "sourceNodeSha256": "9edccd70199d35f2449f9bf3d3fd02dbefc7889a4032685e5afdb17dba18e71f",
+        "prototypeScale": 0.84375,
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "13eb1247514a58eb8412f1f12a5081356ad7fefb26619dcded8c8620b05b5e38",
+            "changedPixels": 78
+          },
+          "DUSK": {
+            "rgbaSha256": "58673961416916c25d03877fb407d0a4828a3ee63054f0daa322dd1be626f2d1",
+            "changedPixels": 78
+          },
+          "NIGHT": {
+            "rgbaSha256": "4eed436afe9d5c305cd2a1ef32ac076a35c2ba77de2747bb4adbafcc88d414c4",
+            "changedPixels": 78
+          }
+        }
+      },
+      "XNCAN072": {
+        "source": "BOYCAN72",
+        "sourceRcid": 26,
+        "rcid": 60005,
+        "original": [
+          805,
+          701,
+          19,
+          15
+        ],
+        "originalPivot": [
+          9,
+          11
+        ],
+        "tile": [
+          372,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "sourceNodeSha256": "3941c8f96968dd963a4b2e6e8b7195af21af91a81ba77bb56efba1e6feed6480",
+        "prototypeScale": 0.84375,
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "89ce8a19d24636640c0c8a2a38fd1302c79198f665f613d0f4f5b71e64a9b91b",
+            "changedPixels": 78
+          },
+          "DUSK": {
+            "rgbaSha256": "57281d4eda58ffa5005b734ffbc5730fda018c0ba9771bfe434f0230f0729de3",
+            "changedPixels": 78
+          },
+          "NIGHT": {
+            "rgbaSha256": "5e91414fe55363fdc7585928db05979194102cda2af06afa851841a5daa43df9",
+            "changedPixels": 78
+          }
+        }
+      },
+      "XNCAN073": {
+        "source": "BOYCAN73",
+        "sourceRcid": 26,
+        "rcid": 60006,
+        "original": [
+          834,
+          701,
+          19,
+          15
+        ],
+        "originalPivot": [
+          9,
+          11
+        ],
+        "tile": [
+          404,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "sourceNodeSha256": "6e00067c81369b536de1086736035373aa149e175987f5f3ff1d6e2e2606c4ed",
+        "prototypeScale": 0.84375,
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "afab1983894c2eb6064c72f3513cb49407a9784ff63532f2117f2f643b77fc68",
+            "changedPixels": 78
+          },
+          "DUSK": {
+            "rgbaSha256": "3e03bf471a3462c3c7accf85095d045712ff1f5ca2aeb125d601610c595a2a89",
+            "changedPixels": 78
+          },
+          "NIGHT": {
+            "rgbaSha256": "d960fca4f0a02481cd3f500ab7c9551e4900c0f0bfd710cae49129f2b8460f1f",
+            "changedPixels": 78
+          }
+        }
+      },
+      "XNCON066": {
+        "source": "BOYCON66",
+        "sourceRcid": 31,
+        "rcid": 60007,
+        "original": [
+          891,
+          701,
+          19,
+          16
+        ],
+        "originalPivot": [
+          9,
+          12
+        ],
+        "tile": [
+          436,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "sourceNodeSha256": "f9501c1c3f3d0450582e5286cbd4b5f226f2ad3496f6a6493cfebd77bac2d081",
+        "prototypeScale": 0.84375,
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "1d6ead71a866f4899958742622ccb5007c3525fe3992ca5f51d7a8e4f049d178",
+            "changedPixels": 78
+          },
+          "DUSK": {
+            "rgbaSha256": "830812c4c3d98dbca47ce17d1c2bc7c9c0c2b5f61a4e778f5457d7eb433e231d",
+            "changedPixels": 78
+          },
+          "NIGHT": {
+            "rgbaSha256": "e24dd71cfc03fabc3ef7bcf5d724139c67cb2609504d2b3a4bbc16053624a9cc",
+            "changedPixels": 78
+          }
+        }
+      },
+      "XNCON067": {
+        "source": "BOYCON67",
+        "sourceRcid": 31,
+        "rcid": 60008,
+        "original": [
+          920,
+          701,
+          19,
+          16
+        ],
+        "originalPivot": [
+          9,
+          12
+        ],
+        "tile": [
+          468,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "sourceNodeSha256": "285062b0f4e9bd012b94f9f228149aef52335bd1bf986447f0311136f4637a74",
+        "prototypeScale": 0.84375,
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "59e9ac56ac8d033e3d6b030f21e56c625a3126c2d2df9058c6d00faa5bd02aba",
+            "changedPixels": 78
+          },
+          "DUSK": {
+            "rgbaSha256": "df28cd00b63093a162e837c1ce6b504968a8517bd4f522986a98a0b8f3a05217",
+            "changedPixels": 78
+          },
+          "NIGHT": {
+            "rgbaSha256": "6e6d0a8b7a550492827412adc4145963b955cdbe53b57f401bffbf538816929a",
+            "changedPixels": 78
+          }
+        }
+      },
+      "BOYISD12": {
+        "source": "BOYISD12",
+        "sourceRcid": 2049,
+        "rcid": 2049,
+        "original": [
+          1210,
+          10,
+          12,
+          17
+        ],
+        "originalPivot": [
+          5,
+          8
+        ],
+        "tile": [
+          500,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "sourceNodeSha256": "0a4d6ed41ee7ff5dea5a95e4b15950b4550654b6c396a8d4cbe82eb876bfb855",
+        "prototypeScale": 0.84375,
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "96d1eced6b085f485b49783a821adcd44d8e745daddaeb5653bcb07d7890872c",
+            "changedPixels": 100
+          },
+          "DUSK": {
+            "rgbaSha256": "917681c9aa7483bf3cfa1788e5f1c4d6870ee6f0e4ac2014b7d7f5042ea03e61",
+            "changedPixels": 100
+          },
+          "NIGHT": {
+            "rgbaSha256": "399159d1ad8092a7c4527ce53b0949ca391fe75b51d359f20b12117f90fdcf1c",
+            "changedPixels": 100
+          }
+        }
+      },
+      "BOYSAW12": {
+        "source": "BOYSAW12",
+        "sourceRcid": 1294,
+        "rcid": 1294,
+        "original": [
+          1451,
+          10,
+          13,
+          13
+        ],
+        "originalPivot": [
+          6,
+          6
+        ],
+        "tile": [
+          532,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "sourceNodeSha256": "64678f1bc372712a728b361a1ecfe4e09f4a435b532d385f580c78a5df28b7b0",
+        "prototypeScale": 0.84375,
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "a1d7206961ba7713134f8e5d95a914e7d2c42393eb0ab5a6604f5cb4e14a690b",
+            "changedPixels": 84
+          },
+          "DUSK": {
+            "rgbaSha256": "619d49f36ab621aca4931351375e8b51061689a55fdd6ff37087857da7a3410e",
+            "changedPixels": 84
+          },
+          "NIGHT": {
+            "rgbaSha256": "6645e1d08cd5960d11a3848e693f1ef7c987751b86246ee971499f0e0a7a7ba6",
+            "changedPixels": 84
+          }
+        }
+      },
+      "XNLIT011": {
+        "source": "LIGHTS11",
+        "sourceRcid": 1396,
+        "rcid": 60009,
+        "original": [
+          247,
+          175,
+          22,
+          22
+        ],
+        "originalPivot": [
+          0,
+          0
+        ],
+        "tile": [
+          564,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "sourceNodeSha256": "977f81d6fa908c5692cf40920fa558fe054d4200590ae11983f7aef0e5e6fc37",
+        "prototypeSource": "LIGHTS13",
+        "rayRole": "--mark-red",
+        "prototypeScale": 0.78125,
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "a9c6ad01a31120a1b06d6c582ae86bf3bd6ebfd50583dc83bd023b2a07894024",
+            "changedPixels": 88
+          },
+          "DUSK": {
+            "rgbaSha256": "8ad5cb67fd018bf55872e310c0ad1ae213feadfc49156acdd81d78a99dc74815",
+            "changedPixels": 88
+          },
+          "NIGHT": {
+            "rgbaSha256": "54df4dcc395f5510637f01c080cd0f6cc311c08376bfb3e73e589b8c37e1e44d",
+            "changedPixels": 88
+          }
+        }
+      },
+      "XNLIT012": {
+        "source": "LIGHTS12",
+        "sourceRcid": 1397,
+        "rcid": 60010,
+        "original": [
+          278,
+          205,
+          22,
+          22
+        ],
+        "originalPivot": [
+          0,
+          0
+        ],
+        "tile": [
+          596,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "sourceNodeSha256": "ca9e88ac3770cb41593cfa3b8e98ef476e44eeefff59811824c517e4bf3ebfd9",
+        "prototypeSource": "LIGHTS13",
+        "rayRole": "--mark-green",
+        "prototypeScale": 0.78125,
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "f7091e98a28c89a9e350e4be3fef7b8dd076184f475f80ee3f8cff10d96469e3",
+            "changedPixels": 88
+          },
+          "DUSK": {
+            "rgbaSha256": "eeecbc6a5415a4faaa360e214ae63bf5bb0a6d63ccd7801fb5b30441dcd4e6a5",
+            "changedPixels": 88
+          },
+          "NIGHT": {
+            "rgbaSha256": "b4db85b6f83e054d899d87b6d6b507a5898f7fa0deb6e0ae483a718e625ee7b0",
+            "changedPixels": 88
+          }
+        }
+      },
+      "XNLIT013": {
+        "source": "LIGHTS13",
+        "sourceRcid": 1398,
+        "rcid": 60011,
+        "original": [
+          278,
+          175,
+          22,
+          22
+        ],
+        "originalPivot": [
+          0,
+          0
+        ],
+        "tile": [
+          628,
+          1160,
+          24,
+          28
+        ],
+        "pivot": [
+          12,
+          14
+        ],
+        "sourceNodeSha256": "d61559cd61187c3f7ad6239313d6447223ddf6759ac90d4d842a3893e4fada2b",
+        "prototypeSource": "LIGHTS13",
+        "rayRole": "--mark-yellow",
+        "prototypeScale": 0.78125,
+        "themes": {
+          "DAY_BRIGHT": {
+            "rgbaSha256": "409b10976ec0856f30c32a9a3c2578bee85b2d142211cfc830bb5a9fae961198",
+            "changedPixels": 88
+          },
+          "DUSK": {
+            "rgbaSha256": "89b150f25640cc4196eabf5df4f41c87fbb5fc14501364751ee2faf7c954dc30",
+            "changedPixels": 88
+          },
+          "NIGHT": {
+            "rgbaSha256": "d5c8f0b72d994526ed5e7d7cdd718ed7082a2c974b7a711460c9ba8c37bb32a4",
+            "changedPixels": 88
+          }
+        }
+      }
+    }
+  },
+  "constructionHatch": {
+    "rastersymbols-day.png": {
+      "pattern": "CROSSX01",
+      "RCID": "3",
+      "color": "XNHAT",
+      "targetRgb": [
+        83,
+        100,
+        95
+      ],
+      "bounds": [
+        400,
+        1040,
+        416,
+        1056
+      ],
+      "changedPixels": 192,
+      "sourceTileSha256": "d160f03e2a7bfb503d8102c94765e7780043f774f17f71c6762e0324f21055c7",
+      "alphaSha256": "3f56c716a5f81200c36934ed8672f0acc9431447b08adf72d816c0dbf662204f",
+      "preexistingTransparentTheme": false,
+      "geometrySpacingAlphaAndConditionsPreserved": true
+    },
+    "rastersymbols-dusk.png": {
+      "pattern": "CROSSX01",
+      "RCID": "3",
+      "color": "XNHAT",
+      "targetRgb": [
+        225,
+        229,
+        216
+      ],
+      "bounds": [
+        400,
+        1040,
+        416,
+        1056
+      ],
+      "changedPixels": 0,
+      "sourceTileSha256": "4ab894760b4d2518a56d7f03e98f1c91ddb01b915a22ef9e09ab3071e1d5cb79",
+      "alphaSha256": "5341e6b2646979a70e57653007a1f310169421ec9bdd9f1a5648f75ade005af1",
+      "preexistingTransparentTheme": true,
+      "geometrySpacingAlphaAndConditionsPreserved": true
+    },
+    "rastersymbols-dark.png": {
+      "pattern": "CROSSX01",
+      "RCID": "3",
+      "color": "XNHAT",
+      "targetRgb": [
+        117,
+        133,
+        121
+      ],
+      "bounds": [
+        400,
+        1040,
+        416,
+        1056
+      ],
+      "changedPixels": 0,
+      "sourceTileSha256": "4ab894760b4d2518a56d7f03e98f1c91ddb01b915a22ef9e09ab3071e1d5cb79",
+      "alphaSha256": "5341e6b2646979a70e57653007a1f310169421ec9bdd9f1a5648f75ade005af1",
+      "preexistingTransparentTheme": true,
+      "geometrySpacingAlphaAndConditionsPreserved": true
+    }
+  },
+  "specialBuoyArtwork": {
+    "rastersymbols-day.png": {
+      "issue": "SCRUM-264",
+      "sourceXmlSha256": "84f93522576ed5872b24865cf6161872ed0b4b634f77c64ca697a04d3568e886",
+      "orangeSource": "BOYPIL81/43 CHCOR, exact Paper1947 attributes. Day unchanged; fixed Night HLS-lightness lift meets >=3:1 against styled depth fills without a global palette edit. Dusk retains source ink in the unused alias tile and is ineligible at RenderSY; its tested lift lost orange recognition.",
+      "sourceNodeSha256": "1b0eb8455a8eb0e26eabe725252de415fc074f3a1985736d67b6f83ef45cd2a3",
+      "tile": [
+        660,
+        1160,
+        24,
+        28
+      ],
+      "pivot": [
+        12,
+        14
+      ],
+      "prototypeScale": 0.84375,
+      "derivation": "Prototype stem/base circle only; no head/topmark. Neutral silhouette, white/orange horizontal bands. No physical stripe measurements asserted.",
+      "nightLegibilityException": {
+        "reason": "Prototype has no orange role; stock Night CHCOR fails visible band recognition. Dusk lift is rejected as cream; stock Rule remains active there.",
+        "hlsLightnessStep": 32982,
+        "hlsDenominator": 65535,
+        "preserveSourceHueAndSaturation": true,
+        "precedingRgb": [
+          207,
+          112,
+          49
+        ],
+        "requiredSolidContrast": 3,
+        "waterRoles": [
+          "DEPDW",
+          "DEPMD",
+          "DEPMS",
+          "DEPVS",
+          "DEPIT"
+        ]
+      },
+      "themes": {
+        "DAY_BRIGHT": {
+          "rgbaSha256": "f8140ad81822563d785da392785c66bd3d5dab59ebe1f9239c2945e3789890e9",
+          "changedPixels": 50,
+          "colors": {
+            "neutral": [
+              83,
+              100,
+              95
+            ],
+            "white": [
+              246,
+              247,
+              239
+            ],
+            "water": [
+              213,
+              229,
+              229
+            ],
+            "orange": [
+              235,
+              125,
+              54
+            ]
+          },
+          "sourceOrange": [
+            235,
+            125,
+            54
+          ],
+          "orangeLiftException": false,
+          "eligibleForAlias": true
+        },
+        "DUSK": {
+          "rgbaSha256": "6e5da16bc913c745e1871f8867236c26338d13a13a44b80966de53d59f9f15f4",
+          "changedPixels": 50,
+          "colors": {
+            "neutral": [
+              195,
+              206,
+              194
+            ],
+            "white": [
+              215,
+              222,
+              207
+            ],
+            "water": [
+              52,
+              79,
+              89
+            ],
+            "orange": [
+              75,
+              38,
+              19
+            ]
+          },
+          "sourceOrange": [
+            75,
+            38,
+            19
+          ],
+          "orangeLiftException": false,
+          "eligibleForAlias": false
+        },
+        "NIGHT": {
+          "rgbaSha256": "de6b0f993481a24f44c34af0b8bb126ae7d5b7cfcf903a2d1531fa9a234f180a",
+          "changedPixels": 50,
+          "colors": {
+            "neutral": [
+              107,
+              119,
+              109
+            ],
+            "white": [
+              128,
+              136,
+              125
+            ],
+            "water": [
+              14,
+              23,
+              28
+            ],
+            "orange": [
+              208,
+              113,
+              49
+            ]
+          },
+          "sourceOrange": [
+            52,
+            28,
+            12
+          ],
+          "orangeLiftException": true,
+          "eligibleForAlias": true
+        }
+      },
+      "sources": {
+        "docs/design/prototype/src/chart-marker-art.js": "be2c7f44817c29d3714412c7974d3cf07e238f65c7131958b0cb8ff6fbd7816d",
+        "docs/design/prototype/src/chart-symbols.css": "ca7ec18b38bf682600b6c3c39c5798c94b00bbaddd5589119d5fcb77ad599cb3",
+        "docs/design/prototype-tokens.json": "111ee35527a974b2df6c2c4af0afd04e5aebdf14bad3004a98be9064aef790c6",
+        "tools/derive-special-buoy-art.py": "73e87304a10ff7cdd73fe056839a737269e8e3637c7178b3d3b5ce3cde5f6d6c",
+        "resources/chart-style/v1/special-buoy/XNSPPW01-DAY_BRIGHT-rgba.json": "fe8dbdb7e727156c7f4461b87997a1b77acf4552b95e93bb1a0f44b0642f31d6",
+        "resources/chart-style/v1/special-buoy/XNSPPW01-DAY_BRIGHT.svg": "3de66adff6f0502c8ca48cc053424c1d41e2f2546637df86086bb5fa09631fa7",
+        "resources/chart-style/v1/special-buoy/XNSPPW01-DUSK-rgba.json": "e58e60de2a66b45924e949b1b8757a184e0dae363d080448f6a9237dbc17eb48",
+        "resources/chart-style/v1/special-buoy/XNSPPW01-DUSK.svg": "431b0d10e408608b9c5aec9c047f749526fd899bc8d929b0af78bfb39ae7f106",
+        "resources/chart-style/v1/special-buoy/XNSPPW01-NIGHT-rgba.json": "a55a844690ba9a53ab860d3f1cfedf63b7afec78555fea5cc65a4847757cd8b8",
+        "resources/chart-style/v1/special-buoy/XNSPPW01-NIGHT.svg": "dcb65117cf5346059413c3f053fa81815942aea1269a31ae9d76222aeb83bd3f"
+      }
+    },
+    "rastersymbols-dusk.png": {
+      "issue": "SCRUM-264",
+      "sourceXmlSha256": "84f93522576ed5872b24865cf6161872ed0b4b634f77c64ca697a04d3568e886",
+      "orangeSource": "BOYPIL81/43 CHCOR, exact Paper1947 attributes. Day unchanged; fixed Night HLS-lightness lift meets >=3:1 against styled depth fills without a global palette edit. Dusk retains source ink in the unused alias tile and is ineligible at RenderSY; its tested lift lost orange recognition.",
+      "sourceNodeSha256": "1b0eb8455a8eb0e26eabe725252de415fc074f3a1985736d67b6f83ef45cd2a3",
+      "tile": [
+        660,
+        1160,
+        24,
+        28
+      ],
+      "pivot": [
+        12,
+        14
+      ],
+      "prototypeScale": 0.84375,
+      "derivation": "Prototype stem/base circle only; no head/topmark. Neutral silhouette, white/orange horizontal bands. No physical stripe measurements asserted.",
+      "nightLegibilityException": {
+        "reason": "Prototype has no orange role; stock Night CHCOR fails visible band recognition. Dusk lift is rejected as cream; stock Rule remains active there.",
+        "hlsLightnessStep": 32982,
+        "hlsDenominator": 65535,
+        "preserveSourceHueAndSaturation": true,
+        "precedingRgb": [
+          207,
+          112,
+          49
+        ],
+        "requiredSolidContrast": 3,
+        "waterRoles": [
+          "DEPDW",
+          "DEPMD",
+          "DEPMS",
+          "DEPVS",
+          "DEPIT"
+        ]
+      },
+      "themes": {
+        "DAY_BRIGHT": {
+          "rgbaSha256": "f8140ad81822563d785da392785c66bd3d5dab59ebe1f9239c2945e3789890e9",
+          "changedPixels": 50,
+          "colors": {
+            "neutral": [
+              83,
+              100,
+              95
+            ],
+            "white": [
+              246,
+              247,
+              239
+            ],
+            "water": [
+              213,
+              229,
+              229
+            ],
+            "orange": [
+              235,
+              125,
+              54
+            ]
+          },
+          "sourceOrange": [
+            235,
+            125,
+            54
+          ],
+          "orangeLiftException": false,
+          "eligibleForAlias": true
+        },
+        "DUSK": {
+          "rgbaSha256": "6e5da16bc913c745e1871f8867236c26338d13a13a44b80966de53d59f9f15f4",
+          "changedPixels": 50,
+          "colors": {
+            "neutral": [
+              195,
+              206,
+              194
+            ],
+            "white": [
+              215,
+              222,
+              207
+            ],
+            "water": [
+              52,
+              79,
+              89
+            ],
+            "orange": [
+              75,
+              38,
+              19
+            ]
+          },
+          "sourceOrange": [
+            75,
+            38,
+            19
+          ],
+          "orangeLiftException": false,
+          "eligibleForAlias": false
+        },
+        "NIGHT": {
+          "rgbaSha256": "de6b0f993481a24f44c34af0b8bb126ae7d5b7cfcf903a2d1531fa9a234f180a",
+          "changedPixels": 50,
+          "colors": {
+            "neutral": [
+              107,
+              119,
+              109
+            ],
+            "white": [
+              128,
+              136,
+              125
+            ],
+            "water": [
+              14,
+              23,
+              28
+            ],
+            "orange": [
+              208,
+              113,
+              49
+            ]
+          },
+          "sourceOrange": [
+            52,
+            28,
+            12
+          ],
+          "orangeLiftException": true,
+          "eligibleForAlias": true
+        }
+      },
+      "sources": {
+        "docs/design/prototype/src/chart-marker-art.js": "be2c7f44817c29d3714412c7974d3cf07e238f65c7131958b0cb8ff6fbd7816d",
+        "docs/design/prototype/src/chart-symbols.css": "ca7ec18b38bf682600b6c3c39c5798c94b00bbaddd5589119d5fcb77ad599cb3",
+        "docs/design/prototype-tokens.json": "111ee35527a974b2df6c2c4af0afd04e5aebdf14bad3004a98be9064aef790c6",
+        "tools/derive-special-buoy-art.py": "73e87304a10ff7cdd73fe056839a737269e8e3637c7178b3d3b5ce3cde5f6d6c",
+        "resources/chart-style/v1/special-buoy/XNSPPW01-DAY_BRIGHT-rgba.json": "fe8dbdb7e727156c7f4461b87997a1b77acf4552b95e93bb1a0f44b0642f31d6",
+        "resources/chart-style/v1/special-buoy/XNSPPW01-DAY_BRIGHT.svg": "3de66adff6f0502c8ca48cc053424c1d41e2f2546637df86086bb5fa09631fa7",
+        "resources/chart-style/v1/special-buoy/XNSPPW01-DUSK-rgba.json": "e58e60de2a66b45924e949b1b8757a184e0dae363d080448f6a9237dbc17eb48",
+        "resources/chart-style/v1/special-buoy/XNSPPW01-DUSK.svg": "431b0d10e408608b9c5aec9c047f749526fd899bc8d929b0af78bfb39ae7f106",
+        "resources/chart-style/v1/special-buoy/XNSPPW01-NIGHT-rgba.json": "a55a844690ba9a53ab860d3f1cfedf63b7afec78555fea5cc65a4847757cd8b8",
+        "resources/chart-style/v1/special-buoy/XNSPPW01-NIGHT.svg": "dcb65117cf5346059413c3f053fa81815942aea1269a31ae9d76222aeb83bd3f"
+      }
+    },
+    "rastersymbols-dark.png": {
+      "issue": "SCRUM-264",
+      "sourceXmlSha256": "84f93522576ed5872b24865cf6161872ed0b4b634f77c64ca697a04d3568e886",
+      "orangeSource": "BOYPIL81/43 CHCOR, exact Paper1947 attributes. Day unchanged; fixed Night HLS-lightness lift meets >=3:1 against styled depth fills without a global palette edit. Dusk retains source ink in the unused alias tile and is ineligible at RenderSY; its tested lift lost orange recognition.",
+      "sourceNodeSha256": "1b0eb8455a8eb0e26eabe725252de415fc074f3a1985736d67b6f83ef45cd2a3",
+      "tile": [
+        660,
+        1160,
+        24,
+        28
+      ],
+      "pivot": [
+        12,
+        14
+      ],
+      "prototypeScale": 0.84375,
+      "derivation": "Prototype stem/base circle only; no head/topmark. Neutral silhouette, white/orange horizontal bands. No physical stripe measurements asserted.",
+      "nightLegibilityException": {
+        "reason": "Prototype has no orange role; stock Night CHCOR fails visible band recognition. Dusk lift is rejected as cream; stock Rule remains active there.",
+        "hlsLightnessStep": 32982,
+        "hlsDenominator": 65535,
+        "preserveSourceHueAndSaturation": true,
+        "precedingRgb": [
+          207,
+          112,
+          49
+        ],
+        "requiredSolidContrast": 3,
+        "waterRoles": [
+          "DEPDW",
+          "DEPMD",
+          "DEPMS",
+          "DEPVS",
+          "DEPIT"
+        ]
+      },
+      "themes": {
+        "DAY_BRIGHT": {
+          "rgbaSha256": "f8140ad81822563d785da392785c66bd3d5dab59ebe1f9239c2945e3789890e9",
+          "changedPixels": 50,
+          "colors": {
+            "neutral": [
+              83,
+              100,
+              95
+            ],
+            "white": [
+              246,
+              247,
+              239
+            ],
+            "water": [
+              213,
+              229,
+              229
+            ],
+            "orange": [
+              235,
+              125,
+              54
+            ]
+          },
+          "sourceOrange": [
+            235,
+            125,
+            54
+          ],
+          "orangeLiftException": false,
+          "eligibleForAlias": true
+        },
+        "DUSK": {
+          "rgbaSha256": "6e5da16bc913c745e1871f8867236c26338d13a13a44b80966de53d59f9f15f4",
+          "changedPixels": 50,
+          "colors": {
+            "neutral": [
+              195,
+              206,
+              194
+            ],
+            "white": [
+              215,
+              222,
+              207
+            ],
+            "water": [
+              52,
+              79,
+              89
+            ],
+            "orange": [
+              75,
+              38,
+              19
+            ]
+          },
+          "sourceOrange": [
+            75,
+            38,
+            19
+          ],
+          "orangeLiftException": false,
+          "eligibleForAlias": false
+        },
+        "NIGHT": {
+          "rgbaSha256": "de6b0f993481a24f44c34af0b8bb126ae7d5b7cfcf903a2d1531fa9a234f180a",
+          "changedPixels": 50,
+          "colors": {
+            "neutral": [
+              107,
+              119,
+              109
+            ],
+            "white": [
+              128,
+              136,
+              125
+            ],
+            "water": [
+              14,
+              23,
+              28
+            ],
+            "orange": [
+              208,
+              113,
+              49
+            ]
+          },
+          "sourceOrange": [
+            52,
+            28,
+            12
+          ],
+          "orangeLiftException": true,
+          "eligibleForAlias": true
+        }
+      },
+      "sources": {
+        "docs/design/prototype/src/chart-marker-art.js": "be2c7f44817c29d3714412c7974d3cf07e238f65c7131958b0cb8ff6fbd7816d",
+        "docs/design/prototype/src/chart-symbols.css": "ca7ec18b38bf682600b6c3c39c5798c94b00bbaddd5589119d5fcb77ad599cb3",
+        "docs/design/prototype-tokens.json": "111ee35527a974b2df6c2c4af0afd04e5aebdf14bad3004a98be9064aef790c6",
+        "tools/derive-special-buoy-art.py": "73e87304a10ff7cdd73fe056839a737269e8e3637c7178b3d3b5ce3cde5f6d6c",
+        "resources/chart-style/v1/special-buoy/XNSPPW01-DAY_BRIGHT-rgba.json": "fe8dbdb7e727156c7f4461b87997a1b77acf4552b95e93bb1a0f44b0642f31d6",
+        "resources/chart-style/v1/special-buoy/XNSPPW01-DAY_BRIGHT.svg": "3de66adff6f0502c8ca48cc053424c1d41e2f2546637df86086bb5fa09631fa7",
+        "resources/chart-style/v1/special-buoy/XNSPPW01-DUSK-rgba.json": "e58e60de2a66b45924e949b1b8757a184e0dae363d080448f6a9237dbc17eb48",
+        "resources/chart-style/v1/special-buoy/XNSPPW01-DUSK.svg": "431b0d10e408608b9c5aec9c047f749526fd899bc8d929b0af78bfb39ae7f106",
+        "resources/chart-style/v1/special-buoy/XNSPPW01-NIGHT-rgba.json": "a55a844690ba9a53ab860d3f1cfedf63b7afec78555fea5cc65a4847757cd8b8",
+        "resources/chart-style/v1/special-buoy/XNSPPW01-NIGHT.svg": "dcb65117cf5346059413c3f053fa81815942aea1269a31ae9d76222aeb83bd3f"
+      }
+    }
+  },
+  "genericBeaconArtwork": {
+    "rastersymbols-day.png": {
+      "issue": "SCRUM-264",
+      "sourceSymbol": "point:BCNGEN01",
+      "tile": [
+        724,
+        1160,
+        24,
+        28
+      ],
+      "pivot": [
+        12,
+        14
+      ],
+      "prototypeScale": 0.84375,
+      "nightBrightness": 0.78,
+      "rasterizer": "rsvg-convert version 2.62.3\n\nlibraries used:\n  cairo 1.18.4\n  pango 1.58.2\n  harfbuzz 14.4.0\n  fontconfig 2.18.3",
+      "selection": "Only original Simplified generic selections1696/31748 and1708/31760; no classified/Paper replacement.",
+      "themes": {
+        "DAY_BRIGHT": {
+          "rgbaSha256": "bf6b4c347463f7fcf478c76ae0c5782f6573ddd8e40c1e57847b7637f95d9c9f",
+          "changedPixels": 102,
+          "colors": {
+            "--chart-text": [
+              104,
+              123,
+              122
+            ],
+            "--mark-service": [
+              124,
+              133,
+              138
+            ]
+          }
+        },
+        "DUSK": {
+          "rgbaSha256": "913ef3d496a5d537ff10df890664f6773e4ed2b31a559b6a257c952639824b49",
+          "changedPixels": 102,
+          "colors": {
+            "--chart-text": [
+              173,
+              187,
+              177
+            ],
+            "--mark-service": [
+              168,
+              187,
+              183
+            ]
+          }
+        },
+        "NIGHT": {
+          "rgbaSha256": "7c2a83aab224b0b07523294f4368de9279c82b5dc98273b11ccad42b9e033982",
+          "changedPixels": 102,
+          "colors": {
+            "--chart-text": [
+              91,
+              104,
+              94
+            ],
+            "--mark-service": [
+              98,
+              115,
+              108
+            ]
+          }
+        }
+      },
+      "sources": {
+        "docs/design/prototype/src/chart-marker-art.js": "be2c7f44817c29d3714412c7974d3cf07e238f65c7131958b0cb8ff6fbd7816d",
+        "docs/design/prototype/src/chart-symbols.css": "ca7ec18b38bf682600b6c3c39c5798c94b00bbaddd5589119d5fcb77ad599cb3",
+        "docs/design/prototype/src/seamarks.json": "78377f9622f82b6e2e16b6709fe62056863389ae5f6cc21bc6da9de3ed9cdfd9",
+        "docs/design/prototype/src/style.css": "f943f5c91e2b260067e97a80d47fc923b64c3bb715c73a58ce1d4a6bf7a1bb46",
+        "docs/design/prototype-tokens.json": "111ee35527a974b2df6c2c4af0afd04e5aebdf14bad3004a98be9064aef790c6",
+        "tools/derive-generic-beacon-art.py": "ea26e721223398c908d410caf0a0b8e55c3899bae695dd3402a259ecf98a7587",
+        "resources/chart-style/v1/generic-beacon/XNBCNG01-DAY_BRIGHT-rgba.json": "8555e62126ab47c187a1f38626a181511ca982d79def65ee96f9376e826161ea",
+        "resources/chart-style/v1/generic-beacon/XNBCNG01-DAY_BRIGHT.svg": "57cf2b3fa24ba1ed50cb94fa57fcd3599fcf7bce49614ece99faea86157a8e17",
+        "resources/chart-style/v1/generic-beacon/XNBCNG01-DUSK-rgba.json": "98846a5e074fcb2f5f227634bbe798da5ac4310b80fa86205fed42a30cb2cc81",
+        "resources/chart-style/v1/generic-beacon/XNBCNG01-DUSK.svg": "d510e96e7df0898f383a76c6a034b253746c68dd103e2d10387e81d979de8bbc",
+        "resources/chart-style/v1/generic-beacon/XNBCNG01-NIGHT-rgba.json": "ee8323c16811c5199646467f463f421d5fbcd36508ac222a653500a849d244f2",
+        "resources/chart-style/v1/generic-beacon/XNBCNG01-NIGHT.svg": "5826afe80d83b3870c3ac3fd75d10c327c9f3728bf5cab785ffcfe17d68fc5fc"
+      }
+    },
+    "rastersymbols-dusk.png": {
+      "issue": "SCRUM-264",
+      "sourceSymbol": "point:BCNGEN01",
+      "tile": [
+        724,
+        1160,
+        24,
+        28
+      ],
+      "pivot": [
+        12,
+        14
+      ],
+      "prototypeScale": 0.84375,
+      "nightBrightness": 0.78,
+      "rasterizer": "rsvg-convert version 2.62.3\n\nlibraries used:\n  cairo 1.18.4\n  pango 1.58.2\n  harfbuzz 14.4.0\n  fontconfig 2.18.3",
+      "selection": "Only original Simplified generic selections1696/31748 and1708/31760; no classified/Paper replacement.",
+      "themes": {
+        "DAY_BRIGHT": {
+          "rgbaSha256": "bf6b4c347463f7fcf478c76ae0c5782f6573ddd8e40c1e57847b7637f95d9c9f",
+          "changedPixels": 102,
+          "colors": {
+            "--chart-text": [
+              104,
+              123,
+              122
+            ],
+            "--mark-service": [
+              124,
+              133,
+              138
+            ]
+          }
+        },
+        "DUSK": {
+          "rgbaSha256": "913ef3d496a5d537ff10df890664f6773e4ed2b31a559b6a257c952639824b49",
+          "changedPixels": 102,
+          "colors": {
+            "--chart-text": [
+              173,
+              187,
+              177
+            ],
+            "--mark-service": [
+              168,
+              187,
+              183
+            ]
+          }
+        },
+        "NIGHT": {
+          "rgbaSha256": "7c2a83aab224b0b07523294f4368de9279c82b5dc98273b11ccad42b9e033982",
+          "changedPixels": 102,
+          "colors": {
+            "--chart-text": [
+              91,
+              104,
+              94
+            ],
+            "--mark-service": [
+              98,
+              115,
+              108
+            ]
+          }
+        }
+      },
+      "sources": {
+        "docs/design/prototype/src/chart-marker-art.js": "be2c7f44817c29d3714412c7974d3cf07e238f65c7131958b0cb8ff6fbd7816d",
+        "docs/design/prototype/src/chart-symbols.css": "ca7ec18b38bf682600b6c3c39c5798c94b00bbaddd5589119d5fcb77ad599cb3",
+        "docs/design/prototype/src/seamarks.json": "78377f9622f82b6e2e16b6709fe62056863389ae5f6cc21bc6da9de3ed9cdfd9",
+        "docs/design/prototype/src/style.css": "f943f5c91e2b260067e97a80d47fc923b64c3bb715c73a58ce1d4a6bf7a1bb46",
+        "docs/design/prototype-tokens.json": "111ee35527a974b2df6c2c4af0afd04e5aebdf14bad3004a98be9064aef790c6",
+        "tools/derive-generic-beacon-art.py": "ea26e721223398c908d410caf0a0b8e55c3899bae695dd3402a259ecf98a7587",
+        "resources/chart-style/v1/generic-beacon/XNBCNG01-DAY_BRIGHT-rgba.json": "8555e62126ab47c187a1f38626a181511ca982d79def65ee96f9376e826161ea",
+        "resources/chart-style/v1/generic-beacon/XNBCNG01-DAY_BRIGHT.svg": "57cf2b3fa24ba1ed50cb94fa57fcd3599fcf7bce49614ece99faea86157a8e17",
+        "resources/chart-style/v1/generic-beacon/XNBCNG01-DUSK-rgba.json": "98846a5e074fcb2f5f227634bbe798da5ac4310b80fa86205fed42a30cb2cc81",
+        "resources/chart-style/v1/generic-beacon/XNBCNG01-DUSK.svg": "d510e96e7df0898f383a76c6a034b253746c68dd103e2d10387e81d979de8bbc",
+        "resources/chart-style/v1/generic-beacon/XNBCNG01-NIGHT-rgba.json": "ee8323c16811c5199646467f463f421d5fbcd36508ac222a653500a849d244f2",
+        "resources/chart-style/v1/generic-beacon/XNBCNG01-NIGHT.svg": "5826afe80d83b3870c3ac3fd75d10c327c9f3728bf5cab785ffcfe17d68fc5fc"
+      }
+    },
+    "rastersymbols-dark.png": {
+      "issue": "SCRUM-264",
+      "sourceSymbol": "point:BCNGEN01",
+      "tile": [
+        724,
+        1160,
+        24,
+        28
+      ],
+      "pivot": [
+        12,
+        14
+      ],
+      "prototypeScale": 0.84375,
+      "nightBrightness": 0.78,
+      "rasterizer": "rsvg-convert version 2.62.3\n\nlibraries used:\n  cairo 1.18.4\n  pango 1.58.2\n  harfbuzz 14.4.0\n  fontconfig 2.18.3",
+      "selection": "Only original Simplified generic selections1696/31748 and1708/31760; no classified/Paper replacement.",
+      "themes": {
+        "DAY_BRIGHT": {
+          "rgbaSha256": "bf6b4c347463f7fcf478c76ae0c5782f6573ddd8e40c1e57847b7637f95d9c9f",
+          "changedPixels": 102,
+          "colors": {
+            "--chart-text": [
+              104,
+              123,
+              122
+            ],
+            "--mark-service": [
+              124,
+              133,
+              138
+            ]
+          }
+        },
+        "DUSK": {
+          "rgbaSha256": "913ef3d496a5d537ff10df890664f6773e4ed2b31a559b6a257c952639824b49",
+          "changedPixels": 102,
+          "colors": {
+            "--chart-text": [
+              173,
+              187,
+              177
+            ],
+            "--mark-service": [
+              168,
+              187,
+              183
+            ]
+          }
+        },
+        "NIGHT": {
+          "rgbaSha256": "7c2a83aab224b0b07523294f4368de9279c82b5dc98273b11ccad42b9e033982",
+          "changedPixels": 102,
+          "colors": {
+            "--chart-text": [
+              91,
+              104,
+              94
+            ],
+            "--mark-service": [
+              98,
+              115,
+              108
+            ]
+          }
+        }
+      },
+      "sources": {
+        "docs/design/prototype/src/chart-marker-art.js": "be2c7f44817c29d3714412c7974d3cf07e238f65c7131958b0cb8ff6fbd7816d",
+        "docs/design/prototype/src/chart-symbols.css": "ca7ec18b38bf682600b6c3c39c5798c94b00bbaddd5589119d5fcb77ad599cb3",
+        "docs/design/prototype/src/seamarks.json": "78377f9622f82b6e2e16b6709fe62056863389ae5f6cc21bc6da9de3ed9cdfd9",
+        "docs/design/prototype/src/style.css": "f943f5c91e2b260067e97a80d47fc923b64c3bb715c73a58ce1d4a6bf7a1bb46",
+        "docs/design/prototype-tokens.json": "111ee35527a974b2df6c2c4af0afd04e5aebdf14bad3004a98be9064aef790c6",
+        "tools/derive-generic-beacon-art.py": "ea26e721223398c908d410caf0a0b8e55c3899bae695dd3402a259ecf98a7587",
+        "resources/chart-style/v1/generic-beacon/XNBCNG01-DAY_BRIGHT-rgba.json": "8555e62126ab47c187a1f38626a181511ca982d79def65ee96f9376e826161ea",
+        "resources/chart-style/v1/generic-beacon/XNBCNG01-DAY_BRIGHT.svg": "57cf2b3fa24ba1ed50cb94fa57fcd3599fcf7bce49614ece99faea86157a8e17",
+        "resources/chart-style/v1/generic-beacon/XNBCNG01-DUSK-rgba.json": "98846a5e074fcb2f5f227634bbe798da5ac4310b80fa86205fed42a30cb2cc81",
+        "resources/chart-style/v1/generic-beacon/XNBCNG01-DUSK.svg": "d510e96e7df0898f383a76c6a034b253746c68dd103e2d10387e81d979de8bbc",
+        "resources/chart-style/v1/generic-beacon/XNBCNG01-NIGHT-rgba.json": "ee8323c16811c5199646467f463f421d5fbcd36508ac222a653500a849d244f2",
+        "resources/chart-style/v1/generic-beacon/XNBCNG01-NIGHT.svg": "5826afe80d83b3870c3ac3fd75d10c327c9f3728bf5cab785ffcfe17d68fc5fc"
+      }
+    }
+  },
+  "yellowBuoyArtwork": {
+    "rastersymbols-day.png": {
+      "issue": "SCRUM-264",
+      "nightBrightness": 0.78,
+      "prototypeScale": 0.84375,
+      "pivot": [
+        12,
+        14
+      ],
+      "derivation": "Exact BOYSPP11 chartSymbolGraphic split: supplied X head removed from body and painted only from explicit yellow TOPMAR TOPSHP7. Geometry is not inferred physical dimensions.",
+      "sources": {
+        "docs/design/prototype/src/chart-marker-art.js": "be2c7f44817c29d3714412c7974d3cf07e238f65c7131958b0cb8ff6fbd7816d",
+        "docs/design/prototype/src/seamarks.json": "78377f9622f82b6e2e16b6709fe62056863389ae5f6cc21bc6da9de3ed9cdfd9",
+        "docs/design/prototype/src/chart-symbols.css": "ca7ec18b38bf682600b6c3c39c5798c94b00bbaddd5589119d5fcb77ad599cb3",
+        "docs/design/prototype-tokens.json": "111ee35527a974b2df6c2c4af0afd04e5aebdf14bad3004a98be9064aef790c6",
+        "tools/derive-yellow-buoy-art.py": "f6c65d74c40e3f359a24272302749160affe1e2944dcfd7fc22fd082a4a36edf",
+        "resources/chart-style/v1/yellow-buoy/XNSPPT01-DAY_BRIGHT-rgba.json": "0e694282001ce3d53da674e4dbe859dded52dccc9c032c3d8e34a23a067a4380",
+        "resources/chart-style/v1/yellow-buoy/XNSPPT01-DAY_BRIGHT.svg": "8b9ab8f9600ef0683f7da50d7da5f95479fe23a06cdda84a3188a61ea8c1d3b1",
+        "resources/chart-style/v1/yellow-buoy/XNSPPT01-DUSK-rgba.json": "621f2949bd64d236556732cc4c4d860685aff4ff1e8f140910ec12dcbf8f59db",
+        "resources/chart-style/v1/yellow-buoy/XNSPPT01-DUSK.svg": "158c6fc04ec9a4d1f1c5c70a97fdd5211db120f294425ddb7c27d21753d19315",
+        "resources/chart-style/v1/yellow-buoy/XNSPPT01-NIGHT-rgba.json": "2b9122f3b0ca7898f7ffc810c280ad12f69b438b333a132917919ca6db8ef6e8",
+        "resources/chart-style/v1/yellow-buoy/XNSPPT01-NIGHT.svg": "fd3daee1a7401f70b9b731318501a0cef746987f318904e6e2c8069d21e90f2f",
+        "resources/chart-style/v1/yellow-buoy/XNSPPY01-DAY_BRIGHT-rgba.json": "52024589df37e4fc3f345c39b94909dd3d18aedcea61476e8816353f3f8dd0a2",
+        "resources/chart-style/v1/yellow-buoy/XNSPPY01-DAY_BRIGHT.svg": "db03ce3eb043003f1635e29a3a793d5376b36678b3094f42a58a703f3b011d2d",
+        "resources/chart-style/v1/yellow-buoy/XNSPPY01-DUSK-rgba.json": "d479b574efb12c19f55a7e18c63435c937df8d7c99a3a8fb6cb9fc26e2e90a7d",
+        "resources/chart-style/v1/yellow-buoy/XNSPPY01-DUSK.svg": "a8b0b755cebda1496d598c20ab194d6b6196e8eb542492546e92d5990df98058",
+        "resources/chart-style/v1/yellow-buoy/XNSPPY01-NIGHT-rgba.json": "cb4bcad458feb44bff97238816ef1768ef426696d2d84ab3620960b598aff841",
+        "resources/chart-style/v1/yellow-buoy/XNSPPY01-NIGHT.svg": "7532cd1f45c57cd19c1e07827116fbbdb2254127a19ef2dc0ddfc9b8cbc76132"
+      },
+      "symbols": {
+        "XNSPPY01": {
+          "tile": [
+            692,
+            1160,
+            24,
+            28
+          ],
+          "rcid": 60013,
+          "themes": {
+            "DAY_BRIGHT": {
+              "rgbaSha256": "d95e4382230575278b1652fa799e1d71ee4cc787ace91e22cd93e9d7f521bc55",
+              "changedPixels": 50
+            },
+            "DUSK": {
+              "rgbaSha256": "f9b0e093e40c664caa3a697ae502f63c4645314f0c4093ccf2e3edcc7faaf9bf",
+              "changedPixels": 50
+            },
+            "NIGHT": {
+              "rgbaSha256": "4625af2bebff35d751f1a35b72e85e23a100fbf5be67c5159bf577eb1269aea4",
+              "changedPixels": 50
+            }
+          }
+        },
+        "XNSPPT01": {
+          "tile": [
+            756,
+            1160,
+            24,
+            28
+          ],
+          "rcid": 60015,
+          "themes": {
+            "DAY_BRIGHT": {
+              "rgbaSha256": "f5f33e3737164cd9fb2ac8fca21266ac02c2d68ca0b6150716e2bf23b3aed32c",
+              "changedPixels": 44
+            },
+            "DUSK": {
+              "rgbaSha256": "293dac5cbfa9f4013c2c3977752e233dcc850aacdb3e61276d9db356ad37e400",
+              "changedPixels": 44
+            },
+            "NIGHT": {
+              "rgbaSha256": "7b59e42da719be6611216b6d3890915871d0fe6bdb45035d366263a358ab502f",
+              "changedPixels": 44
+            }
+          }
+        }
+      }
+    },
+    "rastersymbols-dusk.png": {
+      "issue": "SCRUM-264",
+      "nightBrightness": 0.78,
+      "prototypeScale": 0.84375,
+      "pivot": [
+        12,
+        14
+      ],
+      "derivation": "Exact BOYSPP11 chartSymbolGraphic split: supplied X head removed from body and painted only from explicit yellow TOPMAR TOPSHP7. Geometry is not inferred physical dimensions.",
+      "sources": {
+        "docs/design/prototype/src/chart-marker-art.js": "be2c7f44817c29d3714412c7974d3cf07e238f65c7131958b0cb8ff6fbd7816d",
+        "docs/design/prototype/src/seamarks.json": "78377f9622f82b6e2e16b6709fe62056863389ae5f6cc21bc6da9de3ed9cdfd9",
+        "docs/design/prototype/src/chart-symbols.css": "ca7ec18b38bf682600b6c3c39c5798c94b00bbaddd5589119d5fcb77ad599cb3",
+        "docs/design/prototype-tokens.json": "111ee35527a974b2df6c2c4af0afd04e5aebdf14bad3004a98be9064aef790c6",
+        "tools/derive-yellow-buoy-art.py": "f6c65d74c40e3f359a24272302749160affe1e2944dcfd7fc22fd082a4a36edf",
+        "resources/chart-style/v1/yellow-buoy/XNSPPT01-DAY_BRIGHT-rgba.json": "0e694282001ce3d53da674e4dbe859dded52dccc9c032c3d8e34a23a067a4380",
+        "resources/chart-style/v1/yellow-buoy/XNSPPT01-DAY_BRIGHT.svg": "8b9ab8f9600ef0683f7da50d7da5f95479fe23a06cdda84a3188a61ea8c1d3b1",
+        "resources/chart-style/v1/yellow-buoy/XNSPPT01-DUSK-rgba.json": "621f2949bd64d236556732cc4c4d860685aff4ff1e8f140910ec12dcbf8f59db",
+        "resources/chart-style/v1/yellow-buoy/XNSPPT01-DUSK.svg": "158c6fc04ec9a4d1f1c5c70a97fdd5211db120f294425ddb7c27d21753d19315",
+        "resources/chart-style/v1/yellow-buoy/XNSPPT01-NIGHT-rgba.json": "2b9122f3b0ca7898f7ffc810c280ad12f69b438b333a132917919ca6db8ef6e8",
+        "resources/chart-style/v1/yellow-buoy/XNSPPT01-NIGHT.svg": "fd3daee1a7401f70b9b731318501a0cef746987f318904e6e2c8069d21e90f2f",
+        "resources/chart-style/v1/yellow-buoy/XNSPPY01-DAY_BRIGHT-rgba.json": "52024589df37e4fc3f345c39b94909dd3d18aedcea61476e8816353f3f8dd0a2",
+        "resources/chart-style/v1/yellow-buoy/XNSPPY01-DAY_BRIGHT.svg": "db03ce3eb043003f1635e29a3a793d5376b36678b3094f42a58a703f3b011d2d",
+        "resources/chart-style/v1/yellow-buoy/XNSPPY01-DUSK-rgba.json": "d479b574efb12c19f55a7e18c63435c937df8d7c99a3a8fb6cb9fc26e2e90a7d",
+        "resources/chart-style/v1/yellow-buoy/XNSPPY01-DUSK.svg": "a8b0b755cebda1496d598c20ab194d6b6196e8eb542492546e92d5990df98058",
+        "resources/chart-style/v1/yellow-buoy/XNSPPY01-NIGHT-rgba.json": "cb4bcad458feb44bff97238816ef1768ef426696d2d84ab3620960b598aff841",
+        "resources/chart-style/v1/yellow-buoy/XNSPPY01-NIGHT.svg": "7532cd1f45c57cd19c1e07827116fbbdb2254127a19ef2dc0ddfc9b8cbc76132"
+      },
+      "symbols": {
+        "XNSPPY01": {
+          "tile": [
+            692,
+            1160,
+            24,
+            28
+          ],
+          "rcid": 60013,
+          "themes": {
+            "DAY_BRIGHT": {
+              "rgbaSha256": "d95e4382230575278b1652fa799e1d71ee4cc787ace91e22cd93e9d7f521bc55",
+              "changedPixels": 50
+            },
+            "DUSK": {
+              "rgbaSha256": "f9b0e093e40c664caa3a697ae502f63c4645314f0c4093ccf2e3edcc7faaf9bf",
+              "changedPixels": 50
+            },
+            "NIGHT": {
+              "rgbaSha256": "4625af2bebff35d751f1a35b72e85e23a100fbf5be67c5159bf577eb1269aea4",
+              "changedPixels": 50
+            }
+          }
+        },
+        "XNSPPT01": {
+          "tile": [
+            756,
+            1160,
+            24,
+            28
+          ],
+          "rcid": 60015,
+          "themes": {
+            "DAY_BRIGHT": {
+              "rgbaSha256": "f5f33e3737164cd9fb2ac8fca21266ac02c2d68ca0b6150716e2bf23b3aed32c",
+              "changedPixels": 44
+            },
+            "DUSK": {
+              "rgbaSha256": "293dac5cbfa9f4013c2c3977752e233dcc850aacdb3e61276d9db356ad37e400",
+              "changedPixels": 44
+            },
+            "NIGHT": {
+              "rgbaSha256": "7b59e42da719be6611216b6d3890915871d0fe6bdb45035d366263a358ab502f",
+              "changedPixels": 44
+            }
+          }
+        }
+      }
+    },
+    "rastersymbols-dark.png": {
+      "issue": "SCRUM-264",
+      "nightBrightness": 0.78,
+      "prototypeScale": 0.84375,
+      "pivot": [
+        12,
+        14
+      ],
+      "derivation": "Exact BOYSPP11 chartSymbolGraphic split: supplied X head removed from body and painted only from explicit yellow TOPMAR TOPSHP7. Geometry is not inferred physical dimensions.",
+      "sources": {
+        "docs/design/prototype/src/chart-marker-art.js": "be2c7f44817c29d3714412c7974d3cf07e238f65c7131958b0cb8ff6fbd7816d",
+        "docs/design/prototype/src/seamarks.json": "78377f9622f82b6e2e16b6709fe62056863389ae5f6cc21bc6da9de3ed9cdfd9",
+        "docs/design/prototype/src/chart-symbols.css": "ca7ec18b38bf682600b6c3c39c5798c94b00bbaddd5589119d5fcb77ad599cb3",
+        "docs/design/prototype-tokens.json": "111ee35527a974b2df6c2c4af0afd04e5aebdf14bad3004a98be9064aef790c6",
+        "tools/derive-yellow-buoy-art.py": "f6c65d74c40e3f359a24272302749160affe1e2944dcfd7fc22fd082a4a36edf",
+        "resources/chart-style/v1/yellow-buoy/XNSPPT01-DAY_BRIGHT-rgba.json": "0e694282001ce3d53da674e4dbe859dded52dccc9c032c3d8e34a23a067a4380",
+        "resources/chart-style/v1/yellow-buoy/XNSPPT01-DAY_BRIGHT.svg": "8b9ab8f9600ef0683f7da50d7da5f95479fe23a06cdda84a3188a61ea8c1d3b1",
+        "resources/chart-style/v1/yellow-buoy/XNSPPT01-DUSK-rgba.json": "621f2949bd64d236556732cc4c4d860685aff4ff1e8f140910ec12dcbf8f59db",
+        "resources/chart-style/v1/yellow-buoy/XNSPPT01-DUSK.svg": "158c6fc04ec9a4d1f1c5c70a97fdd5211db120f294425ddb7c27d21753d19315",
+        "resources/chart-style/v1/yellow-buoy/XNSPPT01-NIGHT-rgba.json": "2b9122f3b0ca7898f7ffc810c280ad12f69b438b333a132917919ca6db8ef6e8",
+        "resources/chart-style/v1/yellow-buoy/XNSPPT01-NIGHT.svg": "fd3daee1a7401f70b9b731318501a0cef746987f318904e6e2c8069d21e90f2f",
+        "resources/chart-style/v1/yellow-buoy/XNSPPY01-DAY_BRIGHT-rgba.json": "52024589df37e4fc3f345c39b94909dd3d18aedcea61476e8816353f3f8dd0a2",
+        "resources/chart-style/v1/yellow-buoy/XNSPPY01-DAY_BRIGHT.svg": "db03ce3eb043003f1635e29a3a793d5376b36678b3094f42a58a703f3b011d2d",
+        "resources/chart-style/v1/yellow-buoy/XNSPPY01-DUSK-rgba.json": "d479b574efb12c19f55a7e18c63435c937df8d7c99a3a8fb6cb9fc26e2e90a7d",
+        "resources/chart-style/v1/yellow-buoy/XNSPPY01-DUSK.svg": "a8b0b755cebda1496d598c20ab194d6b6196e8eb542492546e92d5990df98058",
+        "resources/chart-style/v1/yellow-buoy/XNSPPY01-NIGHT-rgba.json": "cb4bcad458feb44bff97238816ef1768ef426696d2d84ab3620960b598aff841",
+        "resources/chart-style/v1/yellow-buoy/XNSPPY01-NIGHT.svg": "7532cd1f45c57cd19c1e07827116fbbdb2254127a19ef2dc0ddfc9b8cbc76132"
+      },
+      "symbols": {
+        "XNSPPY01": {
+          "tile": [
+            692,
+            1160,
+            24,
+            28
+          ],
+          "rcid": 60013,
+          "themes": {
+            "DAY_BRIGHT": {
+              "rgbaSha256": "d95e4382230575278b1652fa799e1d71ee4cc787ace91e22cd93e9d7f521bc55",
+              "changedPixels": 50
+            },
+            "DUSK": {
+              "rgbaSha256": "f9b0e093e40c664caa3a697ae502f63c4645314f0c4093ccf2e3edcc7faaf9bf",
+              "changedPixels": 50
+            },
+            "NIGHT": {
+              "rgbaSha256": "4625af2bebff35d751f1a35b72e85e23a100fbf5be67c5159bf577eb1269aea4",
+              "changedPixels": 50
+            }
+          }
+        },
+        "XNSPPT01": {
+          "tile": [
+            756,
+            1160,
+            24,
+            28
+          ],
+          "rcid": 60015,
+          "themes": {
+            "DAY_BRIGHT": {
+              "rgbaSha256": "f5f33e3737164cd9fb2ac8fca21266ac02c2d68ca0b6150716e2bf23b3aed32c",
+              "changedPixels": 44
+            },
+            "DUSK": {
+              "rgbaSha256": "293dac5cbfa9f4013c2c3977752e233dcc850aacdb3e61276d9db356ad37e400",
+              "changedPixels": 44
+            },
+            "NIGHT": {
+              "rgbaSha256": "7b59e42da719be6611216b6d3890915871d0fe6bdb45035d366263a358ab502f",
+              "changedPixels": 44
+            }
+          }
+        }
+      }
+    }
+  },
+  "buildingPointArtwork": {
+    "rastersymbols-day.png": {
+      "symbol": "XNBLDG01",
+      "RCID": "60016",
+      "lookupId": "1091",
+      "tile": [
+        788,
+        1160,
+        9,
+        9
+      ],
+      "pivot": [
+        4,
+        4
+      ],
+      "fillRgb": [
+        124,
+        133,
+        138
+      ],
+      "outlineRgb": [
+        83,
+        100,
+        95
+      ],
+      "changedPixels": 81,
+      "alphaSha256": "f6df59347e751cf20ea03b235a86d898340c0593ae25460600332d6546047194",
+      "recipeSha256": "0d5dfa911e9aec2c244249e6d38934852aa293302b9ac8ff6841cce9fa071145",
+      "sourceSymbolAndPaperUnchanged": true
+    },
+    "rastersymbols-dusk.png": {
+      "symbol": "XNBLDG01",
+      "RCID": "60016",
+      "lookupId": "1091",
+      "tile": [
+        788,
+        1160,
+        9,
+        9
+      ],
+      "pivot": [
+        4,
+        4
+      ],
+      "fillRgb": [
+        168,
+        187,
+        183
+      ],
+      "outlineRgb": [
+        195,
+        206,
+        194
+      ],
+      "changedPixels": 81,
+      "alphaSha256": "f6df59347e751cf20ea03b235a86d898340c0593ae25460600332d6546047194",
+      "recipeSha256": "0d5dfa911e9aec2c244249e6d38934852aa293302b9ac8ff6841cce9fa071145",
+      "sourceSymbolAndPaperUnchanged": true
+    },
+    "rastersymbols-dark.png": {
+      "symbol": "XNBLDG01",
+      "RCID": "60016",
+      "lookupId": "1091",
+      "tile": [
+        788,
+        1160,
+        9,
+        9
+      ],
+      "pivot": [
+        4,
+        4
+      ],
+      "fillRgb": [
+        98,
+        115,
+        108
+      ],
+      "outlineRgb": [
+        107,
+        119,
+        109
+      ],
+      "changedPixels": 81,
+      "alphaSha256": "f6df59347e751cf20ea03b235a86d898340c0593ae25460600332d6546047194",
+      "recipeSha256": "0d5dfa911e9aec2c244249e6d38934852aa293302b9ac8ff6841cce9fa071145",
+      "sourceSymbolAndPaperUnchanged": true
+    }
+  },
+  "fishingPatternArtwork": {
+    "rastersymbols-day.png": {
+      "name": "XNFISH03",
+      "RCID": "60017",
+      "tile": [
+        948,
+        1160,
+        24,
+        24
+      ],
+      "pixels": 48,
+      "rgb": [
+        156,
+        134,
+        150
+      ],
+      "alphaSha256": "6fd32cd07301655501afc6e16ebb9e40f072a771bb5c604f4959425e1cc5c6fb",
+      "stockVectorCellPreserved": true
+    },
+    "rastersymbols-dusk.png": {
+      "name": "XNFISH03",
+      "RCID": "60017",
+      "tile": [
+        948,
+        1160,
+        24,
+        24
+      ],
+      "pixels": 48,
+      "rgb": [
+        184,
+        160,
+        177
+      ],
+      "alphaSha256": "6fd32cd07301655501afc6e16ebb9e40f072a771bb5c604f4959425e1cc5c6fb",
+      "stockVectorCellPreserved": true
+    },
+    "rastersymbols-dark.png": {
+      "name": "XNFISH03",
+      "RCID": "60017",
+      "tile": [
+        948,
+        1160,
+        24,
+        24
+      ],
+      "pixels": 48,
+      "rgb": [
+        113,
+        99,
+        110
+      ],
+      "alphaSha256": "6fd32cd07301655501afc6e16ebb9e40f072a771bb5c604f4959425e1cc5c6fb",
+      "stockVectorCellPreserved": true
+    }
+  },
+  "geographicNameLookups": 18,
+  "structuralAreaPaint": {
+    "color": "XNSTR",
+    "lookupIds": [
+      "135",
+      "17",
+      "18",
+      "19",
+      "20",
+      "357",
+      "358",
+      "359",
+      "360",
+      "401",
+      "438",
+      "477",
+      "61",
+      "98"
+    ],
+    "outlineColor": "XNSHR",
+    "outlineLookupIds": [
+      "16",
+      "18",
+      "20",
+      "356",
+      "358",
+      "360"
+    ],
+    "unchangedWidthsSelectorsAndLabels": true
+  },
+  "submarineCablePaint": {
+    "name": "CBLSUB06",
+    "RCID": "2012",
+    "color": "XNCBL",
+    "unchangedHPGL": false,
+    "waveform": {
+      "sourcePath": "M-12 0q3-5 6 0t6 0t6 0t6 0",
+      "sourceSha256": "be2c7f44817c29d3714412c7974d3cf07e238f65c7131958b0cb8ff6fbd7816d",
+      "segments": 64,
+      "scaleNumerator": 635,
+      "scaleDenominator": 24,
+      "origin": [
+        0,
+        0
+      ],
+      "vectorBox": [
+        0,
+        -84,
+        635,
+        168
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "repeatHpgl": 635,
+      "nominalDpi": 96,
+      "stroke": "Verified exact quadratic RGBA hook:1.3CSS/round; integer SW1 resource fallback"
+    }
+  },
+  "areaLinePaint": {
+    "color": "XNARE",
+    "ferryLineRCID": "2019",
+    "plainCableLookupRCID": "32061",
+    "unchangedGeometryAndRestrictions": true
+  },
+  "files": {
+    "chartsymbols.xml": {
+      "sha256": "4526efc49f463d70e7698e083c7f4557d1b442eb5491ff2a4fd65c197ac2068f",
+      "bytes": 2247431
+    },
+    "S52RAZDS.RLE": {
+      "sha256": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26",
+      "bytes": 1305627
+    },
+    "rastersymbols-day.png": {
+      "sha256": "74e332990cd723e562e1d499b230ec7240be995f395405a468a5f7674beb1377",
+      "bytes": 201601
+    },
+    "rastersymbols-dusk.png": {
+      "sha256": "04f525eff51b9ac2677a7d632196f2c40f801cde476825a8887551fd01f551ff",
+      "bytes": 175933
+    },
+    "rastersymbols-dark.png": {
+      "sha256": "687f9774edb190b2cc9d75a8dd4088e545eec0987f5c4d54fbc84a0783e158d1",
+      "bytes": 171187
+    }
+  }
+}

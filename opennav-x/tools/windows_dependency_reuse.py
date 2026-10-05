@@ -23,8 +23,8 @@ RECEIPT = "evidence/local/windows-dependency-first-success-receipt.json"
 PRODUCER_FACTS = {
     "openssl-parent": "evidence/local/windows-openssl-parent-tool-facts.json",
     "openssl-child": "evidence/local/windows-openssl-child-tool-facts.json",
-    "zlib-parent": "evidence/local/windows-zlib-parent-tool-facts.json",
-    "zlib-child": "evidence/local/windows-zlib-child-tool-facts.json",
+    "zlib-parent": "evidence/local/windows-zlib-1.3.2/windows-zlib-parent-tool-facts.json",
+    "zlib-child": "evidence/local/windows-zlib-1.3.2/windows-zlib-child-tool-facts.json",
     "curl-parent": "evidence/local/windows-curl-parent-tool-facts.json",
 }
 PATCHES = (
@@ -45,9 +45,15 @@ PATCHES = (
 # receipt's workspace path boundary.
 INPUTS = tuple(sorted((
     "tools/build-pristine-windows.ps1",
+    "tools/windows-parent-environment.ps1",
+    "evidence/local/windows-gettext-xnav.json",
+    "tools/windows_gettext.py",
     "tools/build-openssl-windows.ps1",
     "tools/build-zlib-windows.ps1",
     "tools/build-curl-windows.ps1",
+    "tools/windows-curl-environment.ps1",
+    "tools/windows-curl-import-layout.cmake",
+    "tools/test-curl-source-preflight.ps1",
     "tools/patch-curl-test-openssl.py",
     "tools/windows-native-tool-facts.ps1",
     "tools/windows-native-tool-facts.cmake",
@@ -75,6 +81,11 @@ INPUTS = tuple(sorted((
     "evidence/local/windows-openssl-native-output.log",
     "evidence/local/windows-zlib-1.3.2/windows-zlib-native-output.log",
     "evidence/local/windows-curl-native-output.log",
+    "evidence/local/windows-curl-source-preflight/source-analysis.json",
+    "evidence/local/windows-curl-source-preflight/test1119.stdout.txt",
+    "evidence/local/windows-curl-source-preflight/test1119.stderr.txt",
+    "evidence/local/windows-curl-source-preflight/test1167.stdout.txt",
+    "evidence/local/windows-curl-source-preflight/test1167.stderr.txt",
     evidence.FIRST_SUCCESS_ZLIB_SOURCE_VERIFICATION,
     *(f"patches/{name}" for name in PATCHES),
     *(f"docs/third-party/{name}/{file}" for name in (

@@ -1,0 +1,8 @@
+{
+  "identicalExistingWorkflowSteps": true,
+  "actualLocalPowerShellStepExit": 0,
+  "injectedPreparationExit": 7,
+  "failureLogRetained": true,
+  "laterBuildWiringNotRun": true,
+  "nativeWindowsAcceptance": false
+}

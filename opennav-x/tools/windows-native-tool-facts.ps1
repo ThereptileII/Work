@@ -253,9 +253,9 @@ if($LASTEXITCODE -ne 0 -or @($ExpectedVs).Count -ne 1 -or
     throw 'Visual Studio selection differs from the producer'
 }
 $VcVarsFact=$null
-if($Kind -like '*-child') {
+if($Kind -like '*-child' -or ($Kind -eq 'curl-parent' -and $VcVars)) {
     $VcVarsFact=FileFact $VcVars 'vcvarsall x86 initializer'
-    if($env:VSCMD_ARG_TGT_ARCH -cne 'x86'){throw 'Child process is not initialized for x86 MSVC'}
+    if($env:VSCMD_ARG_TGT_ARCH -cne 'x86'){throw 'Tool-facts process is not initialized for x86 MSVC'}
 }
 $ToolSpecs=switch($Kind) {
     'openssl-parent' { [ordered]@{'tar.exe'=@('--version');'perl.exe'=@('-v');'nasm.exe'=@('-v');'cmd.exe'=@('/c','ver')} }
@@ -275,7 +275,7 @@ $Environment=[ordered]@{}
 foreach($Name in @('PROCESSOR_ARCHITECTURE','VSCMD_ARG_TGT_ARCH','VSCMD_ARG_HOST_ARCH',
     'VCToolsVersion','WindowsSDKVersion','UCRTVersion','VSINSTALLDIR','VCINSTALLDIR',
     'VCToolsInstallDir','WindowsSdkDir','UniversalCRTSdkDir','VisualStudioVersion',
-    'CMAKE_WINDOWS_KITS_10_DIR')) {
+    'CMAKE_WINDOWS_KITS_10_DIR','MSYS2_ARG_CONV_EXCL')) {
     $Environment[$Name]=[Environment]::GetEnvironmentVariable($Name)
 }
 foreach($Name in @('PATH','INCLUDE','LIB','LIBPATH')) {

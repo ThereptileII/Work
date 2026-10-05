@@ -1,4 +1,2192 @@
-# OpenNav X status — 2026-10-01
+# SKAGER status — 2026-10-05
+
+## Remaining boat feedback — coordinated Staging batch
+
+All 16 reported items have been investigated; **15 code fixes are implemented**
+and await native/boat confirmation. SCRUM-300's callback-lifetime correction is
+included in the replacement; SCRUM-306 still needs installed target reception
+confirmed. The changes include
+passive pilot discovery, coherent anchor distance, anchor/route transitions,
+route/waypoint naming and contextual cards, actual XTE, chart-object information,
+AIS list scrolling and the reported chart/anchor/ownship presentation defects.
+
+SCRUM-306 remains In Progress: its radius-control upgrade is implemented, but
+the installed missing-target symptom is not yet proven fixed. An isolated live
+probe received real traffic; that does not qualify the current application's
+chart/list path. Coordinate-free commissioning diagnostics are implemented to
+separate incoming reports, subscription state, cached positions and radius
+filtering without exposing the credential or vessel position.
+
+The focused shared suite passes 11/11 components plus the added actual-source
+anchor-renderer test. These receipts identify a dirty development worktree, not
+a release. The initial native preflight found and corrected an obsolete build-test
+parameter-order assertion before full Windows compilation. The corrected
+helper passes native run 37267103145. Integrated Linux/native Windows Staging
+qualification with authenticated SDK reuse remains pending. The boat remains on the previously
+installed candidate until a qualified replacement is available. No Production
+promotion or broad design/endurance campaign is requested. See the
+[batch evidence](evidence/2026-10-05-boat-feedback/README.md).
+
+Pre-deployment review found that synchronous OpenCPN plugin callbacks can change
+the selected route during the new anchor-to-route transition. Candidate
+`ff7ae5d84884b8369acdd5eba9666152869ad497` is held from boat installation. The
+replacement re-resolves and validates state after those callbacks. Its focused
+actual-function fixture passes 33 mutation cases plus normal/failure paths;
+the previous source fails with the expected stale-pointer error. The held candidate's contract
+gates passed 97 Linux and 94 Windows tests; integrated runs were superseded.
+Those results do not qualify the corrected replacement.
+The equivalent inherited watch-set callback is also corrected and covered by
+seven additional cases in the same fixture. Four native fixture entry-point
+settings found in the superseded logs are corrected; application code is
+unchanged by that build-setting repair. The next candidate includes all three
+corrections, without another design or endurance campaign.
+
+Candidate `30a0bb7853c1fa879d682cdc70b2d72204eb5977` compiles on native
+Windows and passes 144/144 integrated CTests. Twelve of thirteen new shared
+components pass; the AIS scroll fixture failed because an ordinary native owner
+mouse-motion event contaminated its lifetime counter. The isolated native
+diagnostic reproduced the extra event, then the corrected fixture passed all
+47 checks in run 37273670351, preserving the original assertions and adding
+three exact-dispatch checks. Application code is unchanged by this correction.
+See [downloaded native evidence](evidence/2026-10-05-boat-feedback/ais-scroll-native.json).
+The new component step is moved after immutable build retention, so future
+runtime-helper failures retain the compiled inputs. Replacement integrated
+packaging and boat acceptance remain pending; the failed run did not produce
+a qualified installer.
+
+Replacement `982a2b54d06bea4de9507b11e445dae00651d06f` also compiles
+on Windows and passes 144/144 CTests. Its following AIS dependency reprobe
+stops because it tries to reuse the initial build's curl diagnostic directory;
+the diagnostic correctly refuses overwriting earlier evidence. This is a build
+orchestration failure, not evidence of an application crash or TLS failure.
+The producer SDK remains unchanged. A focused repeated-reprobe correction must
+pass native Windows before the next application build. The AIS security gate
+is moved before expensive application compilation so it fails early.
+
+Separate helper corrections pass 199 delivery-policy checks on each platform
+and 64 inert native window cases, including modern AIS row selection. Their
+receipts identify helper revisions separately from the application. The boat
+source checkout is `d8ab001`; all 118 helper files match reviewed bytes. The
+installed application remains `0da2c64`; no live AIS acceptance is inferred.
+
+## Online AIS freeze: first narrow repair — SCRUM-301
+
+The provider no longer holds its UI/state lock while sending a subscription.
+Pinned IX can synchronously call back after a write failure; the old lock scope
+could deadlock both the worker and the next UI read. Subscription reservation
+now precedes the unlocked send, preserving immediate confirmation, viewport
+changes and newer enable/disable intent.
+
+All **8 Linux provider TLS lifecycle scenarios pass**, including two new
+send-concurrency cases. The old provider fails the same reentrant-read test by
+the expected bounded timeout. The corrected launcher/runtime helper suite
+passes 11 tests on both platforms. The focused native Windows
+[run 37237278099](https://github.com/ThereptileII/Work/actions/runs/37237278099)
+passes at `e4273b68d4024ed1d38a3fcc3f5550221135a11a`: MSVC Win32 build,
+8 provider TLS lifecycles, 18 adversarial transport scenarios and 178 session
+checks. Downloaded evidence and compiled-source identities were verified.
+It reuses the authenticated SDK and builds only AIS test clients.
+Integrated application/boat reproduction remains pending; this is not yet a
+confirmed resolution of the user's boat symptom. SCRUM-301 remains Testing.
+See [focused evidence](evidence/2026-10-04-ais-freeze.md).
+
+This increment does not request a full application build, deployment, design
+review or Production promotion. The installed boat candidate is unchanged.
+Missing AIS targets/radius and list scrolling remain separate Jira work.
+
+## Further delivery streamlining — SCRUM-225 / 292 / 293
+
+Implementation now selects CI from actual changed inputs, retains compiled
+Windows packages before desktop qualification, and supports targeted retesting
+against the original bytes with a separately identified test-helper revision.
+Library reuse is an immutable authenticated producer bundle, with fresh native
+toolchain/source checks; failed or mismatched inputs never fall back silently.
+New packages remain Staging by default. Production and design review still need
+explicit instructions. See [build efficiency](build-efficiency.md).
+
+Focused delivery checks pass **190 tests on Linux and 190 on native Windows**
+at `0e6ee68aa70f82a5d29561cf8de346e0b28d7422`
+([run 37235438463](https://github.com/ThereptileII/Work/actions/runs/37235438463)).
+Native dependency-only production and cross-run reuse both pass. The measured
+SDK stage drops from **50m30s** cold to **1m14s** authenticated reuse, with fresh
+native tool/source checks. This is a dependency-stage measurement, not a full
+application-build timing. The retained archive's timestamp defect is corrected
+and tested across forced clock changes.
+
+SCRUM-292/293 helper gates pass; SCRUM-225 and the complete Staging delivery gate
+remain Testing pending the next real consuming application candidate. No extra
+application build is requested merely to close those gates. No boat, design or
+Production qualification is claimed. The installed boat candidate is unchanged.
+See the [delivery-efficiency evidence](evidence/2026-10-04-delivery-efficiency.md).
+
+## Staging delivery and explicit Production promotion
+
+The user has adopted versioned Staging delivery followed by a separate
+Production-readiness flow. Promotion must perform only release-readiness work;
+design validation, prototype comparisons, aesthetic refinement and design
+screenshot/DPI review sets require explicit user instruction. Older blanket
+visual-promotion requirements do not override this decision. Functional,
+navigation/data-validity, security, installer/profile-preservation, recovery and
+package/source checks remain. Unrequested design review is not recorded as a
+pass. See [the delivery policy](delivery-workflow.md) and
+[SCRUM-290](https://swedishcountrysideliving.atlassian.net/browse/SCRUM-290).
+The workflow split and release tooling are implemented under SCRUM-290:
+ordinary delivery defaults to Staging; both channels create versioned draft
+GitHub Releases while public access is closed. Production is manual-only,
+requires a named Staging release and the user's instruction, and qualifies the
+retained application/package without recompilation. Installer readiness,
+profile preservation, recovery, navigation and security remain functional gates.
+Prototype comparisons and design-only DPI/painter runs are opt-in. The complete
+installer matrix runs in Production; Staging checks installation/startup,
+profile preservation and rollback. Evidence is bound to both product and test
+helper revisions, package hashes and the original producing run attempt.
+
+Focused local verification passes **75 tests** across release inventory,
+transport, qualification/workflow policy and installer helper suites. Edited
+workflows pass actionlint and duplicate-key checks; Linux build scripts parse.
+These are delivery-tool results, not application or installer acceptance.
+Native delivery-tool [run 37221989304](https://github.com/ThereptileII/Work/actions/runs/37221989304)
+passes **75 Linux and 75 Windows checks**, including Windows script parsing,
+at `311ddabafde937ab7764ba1c396730ac2d3e4648`. The default-branch workflow
+registration preserves the existing firmware files; `staging` is the software
+starting point. The first real Staging release/promotion execution remains
+separate verification; no application release is claimed from helper CI.
+See [delivery implementation evidence](evidence/staging-delivery-workflow/README.md).
+No application build, design review, Production promotion, boat change or public
+opening was performed for this process update. Historical evidence below retains
+its original outcomes and the installed candidate is unchanged.
+
+## Boat candidate installed and left open
+
+The exact **0.4.0-beta2 / 0da2c64379d5a9cc4b9b2bd068de6e0b69816577**
+candidate is now installed on the boat PC and launched through the audited
+read-only path. The process is responsive and left open for the user.
+**Startup still awaits the OpenCPN welcome acknowledgement**, obscured by a
+Windows feature-update reminder: select **Remind me later**, then **Acceptera**.
+No normal navigation frame/fresh canvas-completion marker is claimed yet.
+The incompatible inherited RTL-SDR plugin was safely excluded from the new
+candidate; original files and the previous installation remain recoverable.
+Read-only commissioning remains applied and physical output remains disabled.
+No additional visual/endurance tests, Windows update or reboot were performed.
+See [the precise handoff record](evidence/boat-handoff-0da2c64/README.md).
+The full CI/installer and release gates remain open.
+
+## Current user handoff instruction
+
+The user now requests: finish the current Windows build, install the candidate
+on the boat, verify that SKAGER starts and responds, and leave it running for
+manual testing. Do not start additional visual, chart-comparison or endurance
+runs. Do not dispatch the prepared supplementary package-review workflows for
+this handoff. Existing in-flight CI remains the package producer; this direction
+does not qualify unperformed visual, security, hardware or public-release gates.
+Verify the downloaded package identity, compatibility, recovery backup and
+read-only launch boundary before installation/startup. Keep the safe read-only
+configuration while leaving the application open; do not restore output-capable
+configuration behind a running application. Record the exact installed build and
+handoff state. Broader acceptance issues remain open, rather than being marked
+Done from successful startup alone.
+
+## Current replacement — installer test boundary correction
+
+The active frozen replacement is `0da2c64379d5a9cc4b9b2bd068de6e0b69816577`
+(local `f1ea102cb362ed719cef50bb2c2506f1c470dd12`),
+[run 37207119257](https://github.com/ThereptileII/Work/actions/runs/37207119257).
+Its [6,881-entry mapped tree](evidence/skager-installer-test-f1ea-publication.json)
+is independently reconstructed. Only the installer harness and failure-only
+binary retention change execution behavior. Application, production installer,
+chart resources, typography, logo and TLS policy are unchanged. Twelve existing
+completion tests pass; the actual Windows helper parses without execution.
+The [replacement contracts](evidence/contracts-0da2c64/README.md) now pass
+94 Linux and 91 Windows cases (94 unique), plus 20 existing lifecycle repeat
+executions. The [original same-run restart receipt](evidence/restart-0da2c64/README.md)
+passes independent hash/CRC and exact commit/run/attempt checks, with actual boat
+acceptance false. The [exact Linux integrated artifact](evidence/linux-0da2c64/README.md)
+now passes independent original digest/CRC verification and byte comparison of
+all 27 retained reports. Both fixture and fixture-free builds pass the same 147
+cases (294 executions); actual core Downloader/wxCurl pass 12/13 cases. Four
+unchanged chart captures show coastline/ENC content after mode return in software
+and llvmpipe OpenGL. Their glyph rasterization differs; neither individual symbol
+families nor Windows/boat font conformance is accepted by this wide-view check.
+The exact native fixture-free application build passed at 15:30:24 UTC, followed
+by successful real-host private-module loading, Windows Downloader trust and
+peer-buffer checks. The fixture navigation/restart/scenario and AIS transport
+steps and recovery packaging also pass. The installer suite stopped at 15:52:38
+UTC after 35 completed checks because the new standalone test helper uses
+`Get-FileHash`, unavailable in its inherited PowerShell environment. Its error
+occurs before the separate `SelfTest` call. The exact candidate's clean install,
+Beta 1 upgrade/startup, profile preservation, modes, rollback/repair and missing
+import guard had passed. The [helper-only correction](evidence/installer-selftest-hash-0da2c64/README.md)
+reuses the unchanged production `Hash` function; native execution of that repair
+and the rest of the suite remain unverified. The CI run is not qualified.
+
+Under the user's startup-only handoff instruction above, recover the unchanged
+original Setup/recovery/source from the failure-retention artifact for the
+limited boat test, after exact byte/source verification and read-only preparation.
+The 700,027,780-byte original exceeds the connector's 512 MiB limit, so a
+transfer-only workflow will retain a smaller selection of unchanged payloads.
+It does not rebuild, retest or turn the failed qualification into a pass. Broader
+installer/security/visual/public-release gates remain open. Endurance stays
+skipped. The later installation/handoff above supersedes this earlier pending state.
+
+## Preceding 55ef51e — chart binding passes, installer test correction
+
+The preceding replacement is `55ef51e4944e8570f6a391dad20b0db8447a7443`
+(frozen local `e768b06bf5c130038abfd6e1166da0078037cb5b`),
+[run 37199379614](https://github.com/ThereptileII/Work/actions/runs/37199379614).
+Its [complete 6,862-entry mapped tree](evidence/skager-chart-mutex-e768-publication.json)
+is independently reconstructed. Publication followed the bounded native
+before/after mutex proof and independent review. The private adapter now uses
+the pinned host's existing MSVC compatibility definition; explicit early-check
+stages retain diagnostics if loading fails. Chart artwork, UI, typography and
+TLS policy are unchanged. Independent trust/peer checks can finish after a
+successful production build even if the module check fails, but packaging still
+requires every original gate. Exact-commit Linux qualification has passed as
+recorded below. The actual native product/module, trust, peer, recovery-package,
+DPI and chart gates now pass. The installer test stopped after 34 checks when
+its intentionally missing DLL was correctly refused by the earlier PE-import
+guard: the test still expected a later loader error. No eligible delivery was
+produced and no boat installation has changed. The [test correction](evidence/scrum217-installer-dependency-gate.md)
+requires the exact missing import and retains a separate actual missing-DLL
+loader check. Application and installer implementation remain unchanged.
+Endurance is explicitly skipped.
+
+The replacement's [completed contracts](evidence/contracts-55ef51e/README.md)
+pass 94 Linux and 91 Windows cases, with no failures or skips, plus ten additional
+executions of the existing restart test on each platform. Its independently
+verified [same-run restart receipt](evidence/restart-55ef51e/README.md) retains
+the exact source/run/attempt and all four prerequisite successes. These do not
+replace the native application or the required package/boat gates.
+
+The [exact replacement Linux artifact](evidence/linux-55ef51e/README.md) now
+passes independent original size/digest and 4,251-entry CRC verification. Both
+fixture and fixture-free applications pass 147 cases; actual core Downloader
+and wxCurl pass 12 and 13 cases respectively. Product reports fixtures disabled,
+status-only and zero loopback output. Endurance is explicitly skipped. Four
+original chart captures retain ENC/coastline after Legacy return in software
+and llvmpipe OpenGL. Their glyph forms differ; no actual preferred font face,
+individual symbol family, physical GPU or private-chart acceptance is inferred.
+The original native Windows artifact is retained as `11305580491`, SHA-256
+`747e38e8d88c4e49fca6b6efb181101db10824ac87cf55f6e0be80011e8bec7a`.
+Installer completion, eligible delivery and boat review remain open.
+
+### Preceding ecf7e0c candidate and verified chart binding correction
+
+The preceding replacement is `ecf7e0c46609cf4cb29141964d7c4bde98b002b7`
+(frozen local `1988df7a8a0ae8ddc6365ca46026d32fccfa0bdc`),
+[run 37191400051](https://github.com/ThereptileII/Work/actions/runs/37191400051).
+Its [complete 6,833-entry mapped tree](evidence/skager-console-ownership-1988-publication.json)
+is independently reconstructed. The narrow logger ownership repair has passed
+its native before/after proof and independent source review. Only the console
+helper, probe-result flushing and focused proof changed; application, chart and
+TLS policy inputs remain unchanged. The existing functional, security, package,
+installer and boat gates remain required. Endurance is explicitly skipped.
+The native fixture-free product build passed at 11:07:29 UTC. The following
+real-host private chart-module check failed at 11:07:33 UTC. The run has now
+completed with failure. Its [original Windows artifact](evidence/windows-ecf7e0c/README.md)
+is independently digest/CRC verified: 139 fixture and 139 production cases,
+12 actual Downloader and nine private wxCurl cases pass. The repaired console
+helper completes teardown. The positive private-module child exits
+`0xC0000005`, before its JSON report; there is no retained faulting instruction.
+Default/invalid-option early checks pass, and profiles are unchanged. Public
+Downloader, recovery-package and installer gates were skipped, so this run
+cannot produce an eligible candidate. Independent DPI/chart checks pass with
+software fallback, not an actual OpenGL result. No package or boat acceptance
+is claimed.
+
+The private adapter omits the mutex compatibility definition used by pinned
+OpenCPN while its first binding call locks a global mutex against the older
+staged MSVC runtime. SCRUM-259's [small native before/after proof](evidence/scrum259-native-binding-runtime/README.md)
+now reproduces the first binding lock's access violation against the exact
+14.12.25810.0 CRT and passes the full guarded binding lifecycle. The original
+13-member artifact and all seven source identities are independently verified.
+The guard matches upstream; explicit early-check stderr stages preserve
+diagnostics if module loading still fails. Neither change replaces stock or
+boat runtime files. SCRUM-217's next workflow also retains module failures
+immediately and permits independent trust/peer checks to finish; packaging
+still requires every original gate. One combined replacement follows this
+bounded native proof and independent review; full-host acceptance remains open.
+Endurance remains skipped.
+
+The exact replacement's [contract audit](evidence/contracts-ecf7e0c/README.md)
+passes 94 Linux and 91 Windows cases with no failures or skips, plus ten
+additional executions of the existing restart test on each platform. Its
+[same-run restart prerequisite](evidence/restart-ecf7e0c/README.md) is verified
+against the original artifact and all four required success values. These
+results qualify prerequisites only; the integrated application, actual TLS,
+package and boat gates remain separate.
+
+The [current Linux integrated artifact](evidence/linux-ecf7e0c/README.md) is now
+independently digest/CRC verified: both builds pass the same 147 cases, and the
+actual core Downloader/wxCurl suites pass 12/13 cases respectively. The product
+loader identifies this exact commit, fixtures disabled and status-only output;
+its loopback pilot record contains zero output. Endurance is explicitly skipped.
+Four retained Day/Legacy-return captures show ENC/coastline content, neutral
+structural colours and the smaller logo. Linux software/OpenGL chart glyphs
+differ; native Windows/boat typography remains unaccepted. Linux OpenGL uses
+llvmpipe, so this is not physical-GPU evidence. Windows and boat gates remain open.
+
+### Preceding d29da37 candidate and verified ownership correction
+
+The preceding candidate is `d29da372af86c01cb2817f932891fd9408d882fe`
+(frozen local `615118f351abdea7b79a042db63e58fe0a635e0a`),
+[run 37184477492](https://github.com/ThereptileII/Work/actions/runs/37184477492).
+Its complete 6,781-entry mapped tree
+`06beb1e9a06af7d7ee30abf32556a08602a165b6` is independently reconstructed.
+The native production step failed; the independent DPI and ENC steps subsequently
+passed, and the final evidence upload completed. This candidate is ineligible for installation. The
+[original failure audit](evidence/windows-d29da37-production-failure/README.md)
+confirms 139 passing production cases and a successful owned-CA import, followed
+by Downloader probe exit `0xC0000005` after GET/HEAD return. The former timeout is
+gone, but no structured result or completed TLS case is produced. There is no
+eligible installer. The [bounded native ownership proof](evidence/scrum211-native-console-ownership/README.md)
+now directly observes wxWidgets deleting the previous helper's owned startup log
+during initialization. The corrected helper establishes wx first, then owns its
+persistent logger. All five proof cases pass, including 16 complete teardown
+cycles and retained fatal assertions. The original artifact and all six frozen
+source identities are independently verified. Actual Downloader/wxCurl results
+now flush before teardown. No production TLS, application or chart behavior
+changed. One combined replacement will retain the existing gates; this narrow
+proof does not establish actual TLS acceptance or the original AV instruction.
+Its [completed contracts](evidence/contracts-d29da37/README.md) pass 94 Linux
+and 91 Windows cases, with zero failures/skips, plus ten additional executions
+of the existing restart test per platform. The independently verified
+[same-run restart receipt](evidence/restart-d29da37/README.md) binds the exact
+commit/run/attempt and all four required success values. These close package
+prerequisites, not integrated application, TLS, installer or boat acceptance.
+
+The [exact replacement Linux integration audit](evidence/linux-d29da37/README.md)
+now verifies the original 19,751,200-byte artifact and all 4,251 ZIP entries.
+Fixture and fixture-free builds each pass the same 147-case suite with zero
+failures/skips; the actual Downloader's 12 and core wxCurl's 13 cases also pass.
+Production is status-only with zero pilot output, and endurance is explicitly
+skipped. Native Windows production qualification failed as described above. Linux does not exercise the
+Windows console helper, native trust store or private wxCurl integration.
+
+The preceding `bccdbb1` run completed with a native production-gate failure;
+it produced no eligible installer. Its [original failure evidence](evidence/windows-bccdbb1-production-failure/README.md)
+contains 139 passing production cases followed by the bounded 30-second
+`downloader-valid` timeout. The earlier owned-certificate import passed in
+0.34 seconds. No navigation-application crash is established by this timeout.
+
+The [small native console proof](evidence/scrum211-native-console/README.md)
+then reproduced a visible wx logging message box in a standalone process.
+The shared explicit stderr logger/initialization passes file staging/rename;
+an actual assertion exits 86 with its diagnostic, rather than blocking for UI.
+Both Windows TLS probes now use that helper and flushed stage messages.
+Production Downloader, wxCurl and certificate-verification behavior are
+unchanged. The helper is included in the private adapter's source-input manifest.
+Focused local checks pass: 17 preparation cases and 12 actual Downloader cases.
+One combined replacement will run the existing functional/security/package
+gates. Endurance remains explicitly skipped. The native proof is not TLS or
+boat acceptance, and the previous full run will not be retried unchanged.
+
+The [retained native visual review](evidence/native-visual-bccdbb1/README.md)
+shows neutral structural paint, prototype font fallback and the smaller logo.
+Both chart phases actually used software rendering, and the private adapter
+was unavailable. Individual symbol recognition, actual private ENC, boat GPU,
+fonts and physical display remain required checks; complete fidelity is not
+claimed from these screenshots.
+
+The [fresh boat font inventory](evidence/scrum263-boat-fonts-20261004/README.md)
+confirms the prototype's preferred families are installed; actual native glyphs
+remain a visual gate. The [separately qualified review tools](evidence/scrum289-native-review-tools/README.md)
+pass 75 native fixed-action cases and are now staged as one verified 117-file
+bundle at `C:\XNav\scripts\review-47c0a789967c29a618db1f0249a42ade756bf460`.
+This adds the real prototype zoom and System/recovery paths without widening
+the action boundary. No application was installed or launched by that staging.
+The saved older launch attestations remain expired; fresh post-install
+commissioning is required for the replacement generation.
+
+### Preceding bccdbb1 candidate
+
+The preceding candidate is
+`bccdbb11cef827d3b63731fe1e874bc72bf47d2d` (local frozen
+`1a6733a1cbcc817aa0f13fa5acc41aac62a54146`),
+[run 37177738716](https://github.com/ThereptileII/Work/actions/runs/37177738716).
+The complete 6,709-entry mapped tree
+`ffd4c39e28dfaa29caaaa16619da32a2752e9158` is independently verified.
+Application and chart inputs remain the reviewed 17ab044 source. Execution
+changes repair the proven unattended certificate prompt, bound probe subprocesses,
+and skip endurance by explicit user direction. Native functional, actual TLS,
+package and boat acceptance remain pending. No duplicate full run was started.
+The [same-commit contract audit](evidence/contracts-bccdbb1/README.md) now
+confirms 94 Linux and 91 Windows cases, with no failures/skips, and ten additional
+executions of one existing restart test per platform. The
+[same-run restart receipt](evidence/restart-bccdbb1/README.md) is independently
+verified against its original artifact. Integrated application/package and boat
+acceptance remain separate; these counts do not qualify the whole candidate.
+
+## Preceding 17ab044 evidence and proven blocker repair
+
+Frozen local `0a52a6cfe3bd3b4a1e6253d609bd9dc046016bd4` is published as
+`17ab044a1e5222dc71791ac8118454219efe8734` in
+[run 37164360050](https://github.com/ThereptileII/Work/actions/runs/37164360050).
+The [6,658-entry mapped tree](evidence/skager-symbols-0a52-publication.json)
+is independently reconstructed and preserves all eight unrelated root files.
+The reviewed application source is identical to the successful `98d2c45`
+preflight below; only documentation follows it. This one combined candidate
+includes supplied symbol artwork, neutral structural colours, prototype font
+selection, the smaller approved logo, classified light outlines and the compact
+unchanged-trigger warning. It also includes the AIS traversal correction that
+passed its short original-file native proof before this run began.
+
+The [completed contract jobs](evidence/contracts-17ab044/README.md) pass at this
+exact commit: 94 Linux and 91 Windows CTest cases, with no failures or skips.
+Both also pass ten additional executions of the same restart test. Root verified
+the original decoded log identities, result rows and frozen source hashes;
+these counts do not include the ongoing integrated or package gates.
+The [same-run restart prerequisite](evidence/restart-17ab044/README.md) is also
+independently acquired and verified: exact commit/run/attempt, original artifact
+digest/CRC and all four native success values. It explicitly records no boat
+acceptance and does not qualify the eventual application package.
+The original native artifact is now retained and digest/CRC verified. The
+application builds, 139 fixture-enabled tests and 139 production tests pass;
+the maintained-TLS AIS runtime passes. After the actual Downloader/wxCurl probes
+link, the trust harness produces no first-case receipt. Its last certificate
+output is at 02:11:25 UTC; the user-directed cancellation is at 04:16:57 UTC.
+The [bounded native diagnostic](evidence/scrum288-native-trust-import/README.md)
+reproduced a visible unattended Windows Security Warning in CurrentUser root
+import. The corrected disposable-machine import and bounded helpers now pass
+four native cases in run 37177584391; import takes 0.344 seconds and exact cleanup
+restores the trust inventory. No application/TLS validation policy changed.
+The single replacement candidate combines this proven harness repair with the
+explicit endurance skip; actual TLS and package gates remain required.
+No eligible installer or Windows overall acceptance is claimed.
+
+The user explicitly changed the active objective on October 4 to deliver a
+stable SKAGER boat-test candidate quickly and **skip endurance testing**.
+[The narrow policy change](evidence/scrum217-user-directed-endurance-skip.md)
+records endurance as skipped, never passed or shortened. Functional, security,
+installer, chart and recovery gates remain. Named/public release stays withheld.
+SCRUM-287's parallel-endurance preparation is deferred in Idea. The obsolete
+run was cancelled normally; its complete native evidence was preserved.
+
+The [read-only boat connection check](evidence/boat-connection-20261004.json)
+confirms all three remote-access services were running with no navigation
+application running. No installation, launch or retirement occurred in this cycle.
+The [read-only source-review preparation](evidence/boat-source-review-preparation-bccdbb1.json)
+now verifies the 14 retained review-note copies and the unchanged current stock
+and managed DLL identities. Four built-in plugin sources and all three Dashboard
+bridge files match their prior review. The private adapter adds presentation and
+owned observation behavior, with its existing closed vendor-helper boundary
+explicitly retained. This reuses equal source evidence; it is not a fresh launch
+attestation or candidate binary acceptance. Post-install inventory and boat
+rendering still require the new package.
+
+The separate package-security tooling is now ready at
+[`f288b03`](https://github.com/ThereptileII/Work/commit/f288b031fa83990cc1ad3986e545581651ac9908)
+(local `f6b7dff`), with its complete 1,457-entry mapping independently verified.
+It preserves the SKAGER naming/native-path fixes and later unsupported-Setup/
+profile-restoration checks. Its exact owned-certificate helper also passes the
+[separate native proof](evidence/scrum288-native-trust-import/README.md#separate-candidate-package-helper),
+including refusal and exact trust cleanup. No candidate request exists yet:
+actual packaged PluginHandler TLS/peer and profile-preservation acceptance still
+requires an original eligible replacement artifact. The failed bccdbb1 run is
+ineligible. This test-tool update changes no
+application input and caused no replacement application build.
+The [exact producer-label comparison](evidence/scrum211-candidate-prerequisite-label.json)
+also corrects one stale upload-step name after the endurance policy change;
+all 19 required names match the frozen producer and actual native job. Nine
+adapter cases and two request cases pass, including rejection of the old label.
+Strict success, commit/run/attempt, digest and restart requirements are unchanged.
+
+### Current native prerequisites verified
+
+The [original native maintenance artifact](evidence/boat-maintenance-bccdbb1/README.md)
+contains 20 passing PowerShell suite receipts and 11 unique Python navigation-copy
+tests. Nested assertion totals are retained separately. The
+[original private-loader artifact](evidence/native-ocharts-loader-bccdbb1/README.md)
+contains 38 passing native groups using inert DLLs. Root verified both original
+archives and their frozen-source identities. These are completed same-candidate
+prerequisites, not actual product/boat runtime or visual acceptance. No test was
+rerun to produce these documentary audits.
+
+### Current Linux gate passed
+
+The [original bccdbb1 Linux audit](evidence/linux-bccdbb1/README.md) verifies
+artifact `11295011188` against its API/upload digest and all 4,251 ZIP CRCs.
+Both fixture-enabled and fixture-free production builds pass the same 147-case
+suite, with zero failures/skips: 294 executions, not 294 unique cases.
+Functional inputs, modes/persistence, charts, recovery and production status-only
+output checks pass. Root verified the original bytes, unchanged report subset,
+production identity and explicit endurance-skipped receipt; returned software
+and llvmpipe chart captures retain coastlines. This closes the Linux gate for
+this candidate. Native Windows, package/security and boat acceptance remain open.
+
+### Completed prior Linux gate
+
+The [original Linux artifact audit](evidence/linux-17ab044/README.md) confirms
+147 fixture-enabled and 147 fixture-free production CTest cases, all passing
+without skips, plus 10800.118 seconds of actual endurance. Both groups are test
+executions of the 147-case integrated suite, not 294 unique tests. Recomputed
+resource deltas are resident memory −223232 bytes, handles 0 and threads 0; average
+CPU is 3.353% of one core. The audit retains 90 dropout recoveries and 765 route
+progress changes. Root reviewed coastlines in start/end and returned software/GL
+images. The GL renderer is llvmpipe; this does not qualify the boat GPU or native
+Windows appearance. One zoom-in observation leaves the scale unchanged with a
+changed centre, so every opposite zoom pair is not claimed to restore its viewport.
+
+The completed Linux endurance above is retained historical evidence. No further
+endurance runs or parallel-endurance infrastructure are required for the current
+user-directed boat-test objective. The earlier
+[read-only collector](evidence/native-log-diagnostic-12d7058/README.md) could not
+retrieve a live log; the terminal original native log is now available and
+bounds the harness delay as described above.
+
+### Bounded build-tool closeouts during this run
+
+SCRUM-255, SCRUM-272 and SCRUM-273 are now Done against their own acceptance
+criteria: [early gettext prerequisite](evidence/scrum255-closeout/README.md),
+[native trust-probe path normalization](evidence/scrum272-closeout/README.md),
+and [duplicate source-cache publication](evidence/scrum273-closeout/README.md).
+Original failures, native proofs and stronger later private-package evidence
+remain linked. The gettext audit also corrected one stale source-order test
+after the shared-helper refactor; its single focused case passes and both
+deliberately wrong orderings are rejected. This later test-only maintenance is
+not in frozen `17ab044`, does not change application inputs, and did not trigger
+another full build. Full maintained-TLS, product/package, chart and boat gates
+remain open; these issue transitions do not qualify the current candidate.
+
+SCRUM-285's [generated-project traversal closeout](evidence/scrum285-closeout/README.md)
+is also Done after root reviewed the original eight-case native proof, unchanged
+frozen execution inputs and the subsequent actual AIS-stage success. Detailed
+runtime artifact audit and the remaining candidate/package/boat gates stay open.
+
+## Prior full candidate — 4ddf1f3 native AIS gate failed
+
+Frozen local `48c2f8b8d5d4103bcbaacc45a18c4e6a238d4c52` maps to remote
+`4ddf1f383e495150551946dd36103cd77cea85eb`, with the
+[5,662-entry tree independently reconstructed](evidence/skager-parent-context-publication.json).
+The [short native proof](https://github.com/ThereptileII/Work/actions/runs/37155593528)
+passed; its [original artifact and audit](evidence/scrum278-native-parent-context/README.md)
+retain the negative rejection and successful exact restoration. Root independently
+verified the archive, all 25 CRCs and unchanged receipts. Both negative/positive
+PATH hashes exactly reproduce the original 63c1029 failure pair; only that field
+differs. This proves the parent-context correction, not AIS or TLS acceptance.
+
+The full branch now uses that **same source SHA**, with no intervening changes,
+in [run 37155858878](https://github.com/ThereptileII/Work/actions/runs/37155858878).
+It includes the previously checked chart metric consistency and neutral building
+alias corrections below. Actual AIS runtime, remaining product/package gates and
+boat qualification are pending. No eligible package or boat modification is claimed.
+
+At 23:21 UTC on October 3, the same run's Linux integrated functional stages
+have passed through the public ENC/plugin rendering gate; its actual elapsed-time
+endurance stage is running. The native Windows application build and integrated
+mode checks passed, followed by source reproduction, installed peer-key refusal
+and staged-loader checks. Actual chart gestures, repeated crash recovery, fixture
+UI and same-job dependency capture passed. Native AIS step18 then failed;
+fixture-free production, TLS and package stages19–27 were skipped. Independent
+DPI and public ENC checks subsequently passed. The original artifact now proves
+OpenSSL/zlib parent and child checks and AIS configuration passed, then the AIS
+wrapper raised `KeyError: 'Include'` while treating MSBuild configuration metadata
+as a project dependency. AIS compilation/runtime never began. SCRUM-285's narrow
+ItemGroup traversal repair and [retained-project checks](evidence/scrum285-native-ais-project-closure/README.md)
+are integrated. Its [short native proof](evidence/scrum285-native-ais-project-closure/native-ab92dc7/README.md)
+passed all eight cases in run 37162505696 at exact `ab92dc7`; root verified the
+original artifact, all CRCs and execution-input identities. This qualifies the
+parser correction before a replacement build, not actual AIS compilation or TLS
+runtime. A bounded downstream review of the original eight projects, 55 source
+paths, expected JSON headers and 155 retained dependency files found no further
+concrete setup defect. It did not execute native binaries or reuse producer
+receipts across jobs.
+This is a separate wrapper defect, not the earlier PATH mismatch or an observed
+application crash. The separate pristine
+Linux/native Windows baselines, recovery/restart/guarded-mode prerequisites and
+both contract jobs passed. The [terminal contract evidence](evidence/contracts-4ddf1f3/README.md)
+records 94 Linux and 91 Windows CTest cases; these are not the still-pending
+integrated application or package totals. No duplicate full build was dispatched.
+
+Supplied artwork is integrated on the separate symbol-completion branch, without
+changing this candidate: SCRUM-279 marina, SCRUM-280 rock/wreck, SCRUM-281 cable
+waveform and SCRUM-282 fishing-stake area. The [combined resource proof](evidence/scrum279-283-combined/README.md)
+passes: exactly 505 new pixels per theme, all other RGBA/PNG metadata unchanged,
+and complete prior XML recovered after only the reviewed transformations.
+The [combined source/object review](evidence/scrum281282-combined-review/README.md)
+proves ordered patch composition and normal optimized core/private compilation.
+Root reviewed the three-theme glyph/painter comparisons. The [combined actual
+Linux canvas evidence](evidence/scrum279282-45d-linux-canvas/README.md) now passes
+40 captures, ten clean sessions and ten exact unmasked whole-chart Day returns;
+root verified all 292 retained file identities and independently recomputed those
+returns. Actual unknown-depth rock selection is proven. The sampled awash rock
+and wreck correctly retain OpenCPN's isolated-danger symbol; they do not qualify
+the alternative supplied glyphs. The retained charts contain no matching marina
+or fishing-stake polygon. Native Windows, private DLL and boat acceptance remain
+open. The oversized cable
+experiment was rejected; the final 24-pixel-equivalent waveform is implemented.
+The fishing motif retains native repeat spacing and now uses the actual private
+adapter compile guard. These changes are not present in `4ddf1f3`.
+
+SCRUM-283 is a newly observed private-chart safety qualification blocker. Focused
+execution of original pinned conditional procedures shows that private
+`_UDWHAZ03` does not call the chart's associated-depth-area query, while core
+OpenCPN does. The retained negative case has UWTROC/WATLEV3 with missing VALSOU,
+a 5 m safety contour and an associated 10 m DEPARE: core selects ISODGR51 and
+DisplayBase; the original private branch differs. This source-level result is
+inherited, not caused by the new artwork and not yet an observed boat-chart
+failure. The original failure remains evidence; per-source resource preservation
+must not be reported as core/private safety parity. The narrow adapter-only
+callback correction is now integrated, with [actual-source safety and lifetime checks](evidence/scrum283-private-hazard-association/README.md)
+passing. Both original failed point cases now select ISODGR51/DisplayBase. The
+original private reference-point/first-area limitation remains explicit; native
+private-DLL and boat qualification are still required before closing SCRUM-283.
+The running `4ddf1f3` build remains development evidence, not final private-chart
+navigation qualification.
+
+SCRUM-284 separately addresses the remaining heavy ordinary all-round light arc.
+The prototype has no custom all-round/tower glyph; any treatment must preserve
+the upstream full-circle/range-band meaning while applying its paint hierarchy.
+The [outline-only refinement](evidence/scrum284-all-round-light/README.md) is now
+integrated as `fc6348a`: 339 actual-method assertions per core/private renderer
+and both complete optimized renderer objects pass. Root reviewed its 36 controlled
+images and verified 75 evidence identities. The [actual `fc6348a` chart comparison](evidence/scrum284-fc6348a-linux-canvas/README.md)
+now passes: normal 29-step incremental build/link/install, 16 captures, four
+clean sessions and four exact Day returns. All eight Standard chart images are
+unchanged; SKAGER differences occur only around the old light ring. Root inspected
+Day/Night comparisons and verified all 142 retained file identities. Native/boat
+conformance is not claimed.
+
+SCRUM-286's [compact OverZoom warning](evidence/scrum286-overzoom-warning/README.md)
+is integrated as `98d2c45`. The original warning trigger and stock fallback remain
+unchanged; the new presentation uses existing prototype warning-callout roles.
+Its 260 focused assertions, eight controlled images and three optimized actual
+production units pass. Root reviewed the source and verified 45 evidence files.
+The [actual `98d2c45` application comparison](evidence/scrum286-98d2c45-linux-canvas/README.md)
+now passes: normal 38-step single-job incremental build/link/install, 16 captures,
+four exact whole-chart Day returns and four clean exits. All eight Standard chart
+controls remain identical to `fc6348a`; SKAGER changes are confined to the old
+top-left warning region. Root inspected Day/Night comparisons and the complete
+Day chart, and verified all 143 evidence file identities. The combined source is
+ready for one full native replacement; no eligible Windows package is claimed yet.
+
+The [current identity audit](evidence/scrum246-15-identity-33f9fd1/README.md)
+confirms the 124-DIP approved logo, nine-size Windows icon and customer SKAGER
+captions. The original native `4dd` font probe resolves Segoe UI because that
+host lacks Variable Display, as permitted by the prototype's stack. The boat's
+HTML reference resolves Variable Display; actual native boat typography still
+needs review. Internal compatibility identifiers and immutable design evidence
+retain their original names.
+
+## SCRUM-278 — focused Windows environment correction
+
+The shared parent setup is integrated as `970671d`, with the existing Gettext
+receipt bound to dependency reuse in `7568bf7`. Build and AIS callers preserve
+the same native-Perl/Gettext prefix order; AIS verifies existing tools without
+installing them or rewriting captured identities. The 13 helper checks, 12
+initial receipt/order cases and one additional receipt-tamper case pass locally.
+
+`eab2e95` adds the short native proof on its own CI branch, using the actual
+unchanged tool-facts helper and exact producer setup span. Thirteen preparation
+checks passed before the successful native run. The full candidate was held at
+failed `63c1029` until that focused native evidence was verified.
+
+## Prior full qualification — 63c1029 native AIS gate failed
+
+Frozen local **`d18da7ccc94b175d1f4a09a0019ab7e4b4f55d31`** is published as
+**`63c1029584a325a961fa89794071cbf053c2e966`** in
+[run 37147671879](https://github.com/ThereptileII/Work/actions/runs/37147671879).
+The [independently reconstructed5113-entry tree](evidence/skager-combined-d18-publication.json)
+preserves all eight unrelated root files. This single full replacement starts
+after the focused certificate/native-source checks and the combined normal
+49-step Linux Release build/link/install pass. Application/resources/patches
+match exact preflight326daf7; later changes are documentation and optional
+native capture tooling. The native integrated build/mode checks, fixture UI and
+dependency receipt capture passed, but step 18 (same-job AIS runtime gate) failed.
+The [original native artifact](evidence/scrum274-native-63-path/README.md) proves
+that OpenSSL parent verification rejected only `environment.PATHSha256`; all
+other tool and source facts match. AIS configure/build/runtime had not started.
+Root independently verified the original archive hash, all 13,395 CRCs and the
+sole-field difference. SCRUM-278 owns restoring the same parent initialization
+used by the successful dependency build, with a short native proof before a
+full replacement. Exact environment verification will not be relaxed.
+Production, subsequent TLS and product packaging were skipped.
+No eligible boat package or replacement full run is claimed.
+
+Both actual software light/fog and R/W/Gsector theme sets pass16captures with
+clean exits. Actual MesaGL now dispatches the previously missing XNLIT013 light
+point and preserves FOGSIG01. The mixed-sector GL set passes8 SKAGER/Standard
+captures, including exact whole-chart Day returns and three successful fan
+builds/draws. Full light/fog GL theme comparison remains **failed**:355 changed
+pixels in numeric26.2 near the chart edge, separate from the light/fog glyphs.
+Original images/assertions are retained; it is not accepted as mere antialiasing.
+A [single read-only actual metric trace](evidence/scrum268-326-elevation-metrics/README.md)
+confirms LNDELV28 elevation8m→26.2ft: the first atlas miss changes average width9
+to16, while subsequent hits keep9, shifting otherwise unchanged text7px left.
+All four traced images exactly match the original failed captures. SCRUM-268 now
+owns the minimal core/private consistency correction, integrated locally as
+`a8481a8`. Its [actual corrected Linux chart gate](evidence/scrum268-5bb-linux-canvas/README.md)
+passes at exact `5bb7e05`: normal29-step incremental build/link/install,12
+OpenGL captures, three exact unmasked Day returns and three clean exits. Root
+verified all116 retained evidence files and inspected Day/Night/Standard images.
+The initial Day chart is unchanged; subsequent differences are confined to the
+diagnosed elevation label. Native/private-DLL/boat acceptance remains open;
+this correction is **not** in the frozen63c1029 Windows candidate.
+
+That visual investigation continues independently of Windows qualification.
+The observed brown point below the light is now identified as generic BUISGL36.
+The [isolated default-building alias](evidence/scrum265-building-point-alias/README.md)
+is integrated locally as `78ef9ff`, after 128 focused checks, independent
+source review and verification of 26 input/output identities. Only Simplified lookup 1091 uses prototype neutral
+inks; all 81 alpha values, geometry, original/Paper/conspicuous symbols and
+classification remain intact. The [actual 27e93e4 Linux canvas gate](evidence/scrum265-27e-linux-canvas/README.md)
+now passes: eight software/Mesa captures, two exact unmasked Day returns and
+two clean exits after the normal 28-step incremental build. Root independently
+verified all 146 evidence identities and recomputed the eight before/after image
+comparisons: zero changed chart pixels outside the two actual building tiles.
+The single loader and combined-resource checks also pass; their assertion
+totals are not separate test-case counts. Brighter
+Dusk/Night generic ink relative to the preserved conspicuous tile is an explicit
+unaccepted readability boundary. This addition also remains outside frozen candidate 63c1029.
+The [all-round light review](design/reviews/scrum264-all-round-light-boundary.md)
+confirms that the prototype supplies no full-circle range-ring replacement;
+its retained upstream outline and Night paint remain visible differences.
+No package, full visual conformance, private renderer or boat acceptance is
+claimed. The boat installation and frozen candidate application stay unchanged.
+
+## Pre-publication correction record — original GL light point failure
+
+The native certificate-fixture repair passes its [short Windows gate](https://github.com/ThereptileII/Work/actions/runs/37145287262)
+at exact `a191102c6f150f47980bdb1c774878483c203b99` / local `827cf9b`.
+[Seven helper checks and the independently audited original artifact](evidence/scrum277-native-fixtures-a191/README.md)
+prove original CRLF rejection, corrected issuance and specific expiry rejection.
+The runner tool is OpenSSL 3.6.4; maintained 3.5.9 full Downloader/wxCurl TLS
+acceptance is still mandatory. No new full candidate has been dispatched.
+
+The corrected `c24c154` Linux Release application builds and links with
+unchanged warning policy. Eight real-chart software SKAGER/Standard theme
+captures pass. [Actual Mesa GL failure and original diagnostics](evidence/scrum275-c24-linux-canvas/README.md)
+showed the added central light missing because an unrelated SOUNDG multipoint
+container has no scalar coordinate. OpenCPN deliberately stores its geometry in
+arrays; the presentation inventory incorrectly read the unused scalar instead.
+
+Local `326daf7` corrects both inventory passes without changing soundings or
+independent-point refusal. The regression failed against the original helper;
+[147 core / 147 private / 145 no-GL focused checks](evidence/scrum275-multipoint-sounding/README.md)
+now pass at normal O3/Werror. Independent source review checked parent/clone
+initialization. The warm application is advancing to this exact combined source
+for actual software/Mesa light and sector captures. This is not yet a GL pass.
+
+Root now composes reviewed SCRUM-274/275 plus scoped-lifetime repair and the
+[SCRUM-276 compact sector fan](evidence/scrum276-compact-ca-fan/README.md).
+576 focused software/Mesa checks pass for each actual core/private method
+variant, with exact Standard/oriented/uncertain image fallback. Original sector
+geometry remains authoritative. Full-canvas clipping and near-cap tile cost
+still require actual candidate review. No all-round/expanded-light or complete
+lighthouse-family conformance is claimed. Fonts, smaller logo and neutral
+structural palette remain in the batch. The boat installation is unchanged.
+
+## Combined replacement: certificate-fixture setup failure isolated
+
+Native job `111243795980` failed after the application built and all **139/139
+production tests passed**. Actual Downloader and private wxCurl trust probes
+configured and linked, closing the prior CMake path failure at that boundary.
+Before TLS assertions started, OpenSSL rejected the expired-certificate fixture's
+CA index (`could not load/parse file`). `Set-Content -Value ''` writes a newline;
+the CA database requires an initially zero-byte file. **SCRUM-277** owns the
+small correction and native fixture-only proof before another full candidate.
+The [original failure artifact](evidence/scrum272-native-154-expired-fixture/README.md)
+is retained, independently hashed and inspected. No TLS acceptance is claimed.
+
+Integrated modes, chart gestures, repeated recovery, fixture UI and dependency
+capture passed. Independent DPI/ENC checks passed with software fallback; actual
+native OpenGL remains open. Module/package/installer gates were skipped, so no
+eligible boat package exists. A next-run workflow-only correction immediately
+uploads existing production failure records; every original step, failure status
+and package eligibility guard is preserved. Its ordered YAML comparison passes.
+
+Local **`96c0c2705aacae511b6f8c22afaa6618dbabceff`** is published as
+**`15452e512fd073090b1a4cea7c9010eac0874118`**. The complete 4,782-entry mapped
+tree `3c53cff0332dfc09babb8e5b8daa7986f77a9c84` was independently reconstructed
+with eight unrelated root files preserved. One
+[combined full run](https://github.com/ThereptileII/Work/actions/runs/37136712793)
+started at 16:24 UTC after the focused proof below. The
+[publication receipt](evidence/skager-combined-96c0-publication.json) keeps exact
+identities. Application source is frozen during qualification; no replacement
+application has been installed, launched or retired on the boat in this cycle.
+
+The [focused native run 37135967220](https://github.com/ThereptileII/Work/actions/runs/37135967220)
+passed at exact source `71470d07d8dd9ac6a3050e2b64093e0892473c97` / local
+`1c4d817c373b85838bc7c1b5d97d11bd026b3454`. SCRUM-272 normalizes native
+CMake paths while retaining the original production targets and TLS assertions.
+The first short run exposed a source-cache publication failure;
+SCRUM-273 prevents competing duplicate writes by giving each locked blob one publisher, preserving parallelism and
+each source path's hash/size verification. The original failure is retained.
+
+Six cache regressions, 24 path checks, the original native configuration failure
+control and ten actual core/private x86 objects passed. The
+[independent original-artifact audit](evidence/scrum272-native-714-compile/README.md)
+binds the source/header closure and four generated projects. Root separately
+verified the archive hash, all 171 CRCs and all ten object bytes. This is compile
+proof, not link/TLS or application acceptance. The next full candidate retains
+those mandatory gates and batches the already native-compiled SCRUM-271
+notification styling; no repeated standalone dependency build was needed.
+
+Supplementary package review now supports
+[named lateral/cardinal IHO scenes](evidence/scrum264-named-iho-review-scenes/README.md)
+with locked provenance and unchanged yellow-pair checks. These require actual
+image review and do not claim complete symbol-family conformance. Boat native
+chart/font/logo acceptance and replacement installation remain pending.
+
+A subsequent read-only lighthouse review identified a remaining presentation
+gap: ordinary sector and long-range lights often emit upstream `CA` arcs rather
+than the `SY(LIGHTS11–13)` commands covered by the new compact aliases. They
+therefore still lack the prototype's independent central point. **SCRUM-275**
+tracks a bounded follow-on in an isolated worktree, retaining actual sector
+bearings, colors, ranges and visibility. The frozen candidate is unchanged and
+must not be described as complete lighthouse conformance. Prototype fan styling
+and pin/focus/readout interaction are separate open SCRUM-14/15 concerns.
+**SCRUM-276** now owns a separate ordinary R/W/G compact-fan paint increment:
+the prototype wash and fine translucent lines, retaining upstream geometry and
+navigation distinctions. Software and GLSL need bounded alpha-capable paint;
+changing shared symbol colors alone cannot reproduce the reference. This work
+is isolated from 15452e5 and does not include expanded/pinned interaction.
+
+The isolated CA-point implementation `ef266211e214c9ad57b14c7283b3ecd2fe71c67a`
+is followed by `5085641e1c7af3f6294ce99bd42820622d48f3d8`: ordinary mixed-color
+groups now use a generic prototype location point while each original sector
+remains independent. An exact offset FOGSIG lookup is allowed; tower/pile
+groups still retain stock presentation because the added point would obscure
+their structural symbols. The follow-on passes 121 core, 121 private and 119
+no-GL focused checks, and four affected production compilations. Root reviewed
+the delta and independently verified source/output identities and unchanged
+painters. These are not actual canvas results. The 32,768-object bound remains;
+the roughly 55 ms maximum all-light desktop case needs boat responsiveness
+review. SCRUM-275 is in Testing, with native/private-DLL/boat visuals and
+scaling/rotation still open. No change entered the failed 15452e5 candidate.
+
+In parallel, **SCRUM-274** implements an isolated read-only
+AIS transport-observation dependency for SCRUM-227. The pinned transport has no
+public positively attributed endpoint copy. A value captured inside its accepted
+connection path, with immutable time and generation, avoids UI/socket lifetime
+leaks. Independent review also found rejected-Open and unlocked credential-read
+races that the new observation must guard. This work is not part of 15452e5;
+no firewall, real outage, hardware command or boat action has been performed.
+The separately reviewed implementation `20ee0b566527ceab5d46663df348d3f96fd905e8` is now
+in Testing: 178 session checks, six actual TLS/provider lifecycle cases and 18
+existing transport scenarios passed on Linux. Root reviewed the boundary and
+independently verified 12 source inputs, 129 compiled IX records and four
+retained outputs. Native Win32 runtime and actual outage/boat gates remain open;
+the frozen build excludes it. It is now composed locally for the next candidate.
+Its isolated continuation `e4400d8acabf10e012398caf164d0e9973567b46` prepares a
+small native runtime gate for the next required candidate, reusing verified
+same-job TLS dependencies. Three offline guard checks pass; actual native
+configure/link/runtime execution is still pending. No separate dependency or
+application rebuild was launched for this preparation.
+
+The separate source-composition rehearsal `e6ef3843dc604368d32bc823c770bec76d890b69`
+combined these two reviewed workstreams without modifying 15452e5. Root now
+incorporates that reviewed composition and the lifetime correction below.
+Ordered core/private patches, committed-byte preservation and owned-header
+closure pass; the only original conflict was two appended documentation sections,
+both retained. Isolated input results are not reclassified as combined runtime
+proof. This is preparation for the next required candidate, not a published or
+accepted replacement, and it does not close remaining lighthouse-family styling.
+
+The exact e6 Linux Release attempt failed `-Werror=dangling-pointer` in the
+scoped light inventory before link. [Original failure evidence](evidence/scrum275-e6-linux-build-failure/README.md)
+retains full compiler output and verifies all 4,610 donor fingerprints unchanged.
+Isolated repair `eaff747` uses scoped stable ownership, restores the previous
+borrow before destruction, and preserves stock paint on allocation failure.
+Focused actual-source checks at `-O3 -Werror` pass 133 core, 133 private and
+131 no-GL cases. The previously failing actual Release object now passes unchanged flags; the
+same warm application build/link and canvas proof continue separately. No warning
+is suppressed and no e6 application/canvas pass is claimed.
+
+## Production application builds; trust-probe configuration blocks candidate
+
+Local **`8a0ed1f646e2551a55639c1cc3fb609cc2652464`** is published as
+**`442960ba55277845e171f9b95a38838f66c23981`**, independently reconstructed
+tree `3b74065f9f9886ebe73f33f85b71ca8bb469865e` (4,689 mapped entries; eight
+unrelated root files preserved). The [corrected full run](https://github.com/ThereptileII/Work/actions/runs/37126951293)
+started after the focused SCRUM-270 proof below passed. The
+[publication receipt](evidence/scrum270-preview-validity/publication.json)
+keeps the exact identities. Application source, patches, chart assets and CMake
+are unchanged from 1835/9d98. The difference includes the coherent preview
+predicate, immediate failed-fixture upload and separately qualified review tools.
+Native/full/boat acceptance is pending; the current source is frozen and no
+new application has been installed or launched on the boat.
+
+The exact native job `111215213199` passed integrated build/exercise at
+15:10:14 UTC and the formerly failing full preview scenario suite at
+15:15:05 UTC. Startup/loader, pointer chart interaction and repeated crash recovery
+also passed. Its same-job dependency closure and fixture-free product build then
+passed, including **139/139 production CTests**. At 15:30:28 UTC the private
+downloader-trust probe failed CMake configuration on Windows backslash paths
+(`Invalid character escape '\a'`). No TLS assertion ran. **SCRUM-272** tracks
+the narrow path-boundary correction and native proof before another full run.
+The [original failure evidence](evidence/scrum259-native-442-trust-configure/README.md)
+retains the complete production transcript and independent artifact audit.
+No application/setup/probe executable was retained; the private DLL alone does
+not make a review package. Packaging, installer and boat gates remain open.
+Independent DPI/public ENC checks passed with software fallback only, not native
+OpenGL acceptance. The Linux elapsed-time gate continues in the background.
+
+The boat machine produced one isolated **HTML reference** capture in Day, Dusk
+and Night. [Original captures and actual font observations](evidence/scrum263-boat-html-reference-5884701/README.md)
+confirm Segoe UI Variable Display for the visible root typography and Segoe UI
+for geographic land labels. A dual-class landmark resolves to Segoe UI Semibold;
+this does not establish normal-only LIGHTS-description weight. The original HTML
+and its old illustrative logo are unchanged. Existing browser processes and the
+normal navigation profile were preserved; no navigation application was launched.
+This establishes same-machine reference fonts, not physical native UI acceptance.
+
+The supplementary actual-package chart collector now preserves the application's
+portable-profile guard: it runs a verified disposable copy with its own clean
+profile/logs and leaves the audited original package untouched. Pre-dispatch
+inspection caught the former external-profile request and wrong diagnostics
+path. Twenty focused offline cases and four checks linked to the unchanged
+production path guard pass; native launch remains pending. See the
+[bounded collector correction](evidence/scrum264-native-recovery-collector/README.md).
+Its separate native preflight caught asymmetric canonical path comparison before
+CMake or any application launch. The original artifact is retained; the narrow
+plain-path-then-canonical correction and real equivalent-path regression now pass
+[native run 37130959195](https://github.com/ThereptileII/Work/actions/runs/37130959195):
+21 Python cases without skips and four actual MSVC Win32 portable-path checks.
+The downloaded original evidence and exact source hashes are retained. This
+closes the collector path defect, not application/visual acceptance. No additional
+full application build was started.
+
+## Native application passes build; preview sample timing blocks packaging
+
+The exact `1835d1b` / `9d98a500` native job has now completed with a retained
+[fixture-suite failure](evidence/scrum270-native-9d98-preview-failure/README.md).
+The application build, all 139 native CTests, pointer route gestures, repeated
+crash recovery, 100/125/150% DPI/touch and public ENC checks passed. Independent
+renderer inspection confirms software and permitted fallback only: the hosted
+machine rejected OpenGL, so this result does not qualify native hardware GL.
+The [renderer receipt](evidence/scrum270-native-9d98-preview-failure/renderer-proof.json)
+retains the exact report identity and observations. Independent
+artifact inspection confirms the fresh five-export private DLL, its complete
+source/resource identity and identical private/host presentation resources.
+The actual GDI probe selected Segoe UI for both the UI and ordinary chart text;
+the hosted machine lacks Segoe UI Variable Display and uses the prototype's
+declared fallback. These are native checks, not boat visual acceptance.
+
+At simulated second 115, the preview test accepted a decreased-SOC snapshot
+without checking route validity. The product correctly reported
+`ActivePointChanged` / unavailable and withheld both remaining distance and
+arrival SOC; the test then indexed the absent distance. **SCRUM-270** now has a
+[narrow coherent-sample predicate repair](evidence/scrum270-preview-validity/README.md):
+the actual failed diagnostic and genuine fixture outputs at seconds 114/115/116
+prove the old exception and new valid-sample selection. The twelve-second timeout
+and every original comparison remain unchanged. No production navigation behavior
+changes. The original failure, screenshot and diagnostic
+remain immutable. The fixture-free build, real-host module check and packages
+were skipped; this run supplies no installable candidate. Immediate fixture
+failure upload is added so a future failure can be inspected while
+independent display checks continue. No blind full rerun or boat installation
+has occurred. The current Linux elapsed-time gate continues separately.
+
+## Preceding combined candidate (native fixture failure retained above)
+
+Local source/evidence **`1835d1b84df89aff42220ac8bb535e4262034a54`** is published
+as **`9d98a500916e8a7f59dac9735427dde6d3c7d2e5`**. All 4,649 mapped blob/mode
+entries independently reconstruct `bc9e631e57c71992c573f5b5110b497096b23867`;
+the eight unrelated root files are preserved. The
+[full Windows/Linux run](https://github.com/ThereptileII/Work/actions/runs/37120549213)
+started only after the native resource repair and the actual SKAGER software/GL
+yellow-symbol checks below passed. The [publication receipt](evidence/skager-symbols-1835-publication.json)
+keeps exact identities. Native runtime, fresh five-export private package and
+boat acceptance remain pending. No product change will be mixed into this run.
+
+One read-only boat refresh at 11:44 UTC found no meaningful change: no navigation,
+helper or active commissioning process; stock/installed/profile/recovery identities
+and all 117 qualified tools match. Remote access remains healthy. No application
+has been installed, launched or retired on the boat in this cycle.
+
+Separate review tooling is being prepared against that unchanged application:
+the [audited-package collector](evidence/scrum264-native-recovery-collector/README.md)
+can capture the existing Windows payload with public ENC and the exact official
+IHO test cell, without another application build. Its dedicated workflow refuses
+to run until a produced artifact has been independently audited and its exact
+identities recorded. Original licensed test data is excluded from uploads.
+The [guarded palette review](evidence/scrum269-guarded-palette/README.md)
+(SCRUM-269) now follows the actual Layers interface and binds one XNav/Standard
+choice to the normal restart broker. The separate [native tooling run](https://github.com/ThereptileII/Work/actions/runs/37124439890)
+**passed** on exact `70537545011ef3fd2ecb288a404ae3dc94d5d019`, attempt 1:
+14 existing mode HWND cases, 16 palette/reveal HWND cases with normal fixture
+exits, 13 actual broker cases and five Prepare/Arm cases. The downloaded
+[three-gate/bundle receipt](evidence/scrum269-guarded-palette/native-corrected-run.json)
+independently binds all 117 tested Windows operator bytes. This is tooling-only
+proof, with harmless windows and marker/helper fixtures; actual application
+palette selection, native visuals and boat recovery remain pending.
+
+After separate authorization, the existing qualified `ffa2de31` staging operator
+placed those exact 117 files in a new owned versioned directory. Independent
+[staging and preservation checks](evidence/scrum269-guarded-palette/boat-staged-only.json)
+matched every file and completion record; stock, installed ownership/executable,
+profile/state, cold/recovery records, old tools and remote-access health were
+unchanged between 13:09 and 13:12 UTC. No navigation/helper/commissioning process,
+running product task or active commissioning marker was observed. An initial
+read-only stdin wrapper timed out; a subsequent invocation omitted the existing
+per-process execution-policy flag and refused the old helper import before any
+write. Both are retained; corrected transport/staging followed. No new operator,
+application or installer ran, no persistent policy changed, and no physical
+output was issued. The frozen application and all launch/recovery guards remain
+separate from this tooling PASS and staged-only result.
+
+## Windows resource repair verified; combined candidate awaiting full gates
+
+The exact d5/b8 [full candidate](https://github.com/ThereptileII/Work/actions/runs/37114216075)
+failed native host configuration at 10:58 UTC. OpenSSL passed, zlib passed 13/13,
+curl passed 1,569/1,569 and the private chart DLL linked successfully. The next
+host configure rejected **“Adapter chart resource manifest differs”**. The
+failure is tracked in SCRUM-259; no application crash or linker failure is
+inferred. The [downloaded failure audit](evidence/scrum259-full-b8cf-failure/README.md)
+verifies the linked four-export private package and all 5,812 artifact CRCs.
+Its host generated resources were not retained. The build used Python 3.12.10
+for initial generation but CMake selected 3.14.7 for the host; those Windows
+versions use different PNG compression implementations. The
+[entry-interpreter repair](evidence/scrum259-resource-python-repair/README.md)
+pins both paths and preserves strict byte checks. Its
+[focused native proof](evidence/scrum259-resource-python-native/README.md)
+passed on remote `c7f3616c5b9d385d39edf25b51f89a3508906071`, mapped exactly
+from isolated `eced8da`: the original interpreter difference is reproduced,
+decoded pixels remain identical, and both explicitly pinned configurations
+produce all seven files byte-for-byte identically. The combined replacement
+run above began after that focused proof. No candidate from this
+cycle has been installed or launched on the boat; the existing Linux elapsed-time
+gate continues independently.
+
+## Isolated symbol and private-observation follow-ups
+
+The supplied generic beacon is implemented in `85ea050` (isolated source
+`2b90485`), with [exact prototype/resource evidence](evidence/scrum264-generic-beacon/README.md):
+2,118 focused checks, two original Simplified generic selections, preserved
+classified/Paper consumers and exact Day/Dusk/Night comparisons. The yellow
+body and explicitly fitted X from `5ad1c94` are integrated as `559d161`, with
+[classification and source proof](evidence/scrum264-yellow-special/README.md).
+Combined application source **`33d90c3`** passes the
+[integrated Linux build and 147 regressions](evidence/scrum264-combined-33d-linux/README.md).
+The separate [combined resource batch](evidence/scrum264-combined-resource-33d/README.md)
+passes 79,177 resource checks and 17 private preparation tests. These suites are
+distinct from the 147 integrated cases. The
+[17-tile actual-loader check](evidence/scrum264-combined-loader-33d90c3/README.md)
+passes 46,918 checks across all three themes. Its methods match the separately
+tested seven negative controls, which were not redundantly repeated. These are not Windows or boat visual
+acceptance; the documented positive IHO objects are official test geography.
+Actual software canvas validation then caught a missing yellow X: the real
+loader represents an empty instruction as U+001F, whereas the new topmark guard
+expected a zero-length string. The failed capture and runtime values are
+retained in the integrated evidence. The narrow canonical no-op repair in
+**`e1d0136`** passes [both actual pinned parsers](evidence/scrum264-yellow-empty-instruction/README.md)
+(150 checks and six mutation refusals). Its affected-target build/install and
+[actual yellow body/fitted-head software and OpenGL captures](evidence/scrum264-yellow-e1d-linux/README.md)
+pass all SKAGER themes and exact whole-chart Day return. Standard software also
+passes. The 147-case batch and complete resource suite were not repeated.
+
+The same review found an inherited Standard OpenGL light-label shift. One
+frozen-33 control reproduces all 503 changed pixels; corresponding entire chart
+regions match e1 exactly in every theme, without masking. Its failed assertion
+is retained, not reported as a pass. **SCRUM-268** tracks the original text-cache
+behavior and pending native applicability. No Standard renderer correction was
+introduced in this candidate. SCRUM-264 enters Testing; native private-renderer
+and boat recognition/readability remain required.
+
+`a6b2d01` (isolated source `f5fbd3a`) closes the private diagnostic-observation gap:
+[copied actual private table state](evidence/scrum267-private-diagnostics/README.md)
+is lifetime/thread gated and separate from core state. Focused contract, package,
+PE refusal and affected Linux-object checks pass; SCRUM-267 is Testing pending
+native/boat acceptance. The [incremental lifecycle source review](design/reviews/scrum259-ocharts-e1-lifecycle-source-review.md)
+verifies all 219 locked inputs and the four new observation-only activity calls;
+a fresh five-export package/runtime receipt is required. These follow-ups are
+**not** in the frozen d5/b8 candidate
+below. Its running results must not be attributed to the newer source.
+
+## Full candidate after focused Windows repair
+
+Frozen application **`d5d71356d806ea8c3518644d10728a24f1334d1d`** is published
+exactly as **`b8cfbf809450208f723095ffb4e00d7800b619a5`**, mapped tree
+`111fac745157fd70cc83be81d09b0f3a6da7ecd5` (4,249 verified blob/mode entries).
+The [full native/Linux candidate](https://github.com/ThereptileII/Work/actions/runs/37114216075)
+started only after both [audited native compilation checks](evidence/skager-final-font-native-9dee9b1/README.md)
+passed: 70 private-renderer and 23 core chart objects. Those checks apply to
+the preceding 9dee source; the final two-line [Land label face correction](evidence/scrum263-geographic-face/README.md)
+has separate actual-resolver/object proof and will be qualified by the full run.
+The noncritical face-choice adjustment did not cause another 93-object preflight.
+
+The prototype explicitly uses Segoe UI for Land annotations while Water names
+inherit the main stack. Both core and private renderers now preserve that
+distinction, with no size, tracking, opacity or resource changes. The preceding
+[9dee integrated Linux evidence](evidence/scrum263-chart-face-9dee-linux/README.md)
+passes 147/147 tests and four exact chart comparisons; the initial isolated
+Wayland/Xvfb launcher failure and corrected font-probe retry remain recorded.
+The [final d5 integrated Linux build, font probe and two original Day captures](evidence/scrum263-land-face-d5d-linux/README.md)
+pass. Both full chart and identity-panel comparisons are exactly equal to 9dee;
+the 147-test suite was deliberately not repeated for the two-line face choice.
+The native run then reached private DLL linking but failed the host resource
+identity check described above. Host runtime, packaging, actual font resolution
+and boat rendering remain pending. No candidate has
+been installed or launched on the boat in this cycle.
+
+The [same-run native restart receipt](evidence/final-d5-restart-qualified/README.md)
+has been downloaded and independently verified: all four gates passed, exact
+candidate/run/attempt identities match, and `actualBoat:false` is preserved.
+The [read-only boat refresh](evidence/boat-readiness-final-d5-20261003.md)
+verifies the unchanged real installation/profile, complete recovery hashes and
+117 qualified staged tools. Retain that exact tool bundle for the later review;
+neither receipt is an application-package or boat-rendering acceptance.
+
+## Final chart typeface correction under qualification
+
+Application source **`9dee9b148f4d6ebdd20bb4c49229fe19340df209`** is published
+as **`aa95750b0abbd9ffa646407019b3393f2e7b5bce`** with all 4,174 mapped
+blob/mode entries independently verified. The [ordinary chart-font correction](evidence/scrum263-ordinary-chart-face/README.md)
+selects installed Segoe UI, then Arial, only for a newly verified SKAGER
+presentation library. Ordinary text retains its existing size, weight, style,
+content and positioning. Geographic and generated-LIGHTS roles retain their
+own handlers and deliberate fallbacks. Font creation failure retains stock;
+Standard/Legacy and stored user preferences remain unchanged.
+
+Focused actual-method, production-object and fallback checks pass. The exact
+9dee Linux integration and audited native core/private compilation pass. The
+existing Windows font component now checks the selected HDC face for ordinary
+chart text as well as the UI stack; that result and physical boat review remain
+pending. No all-symbol or screen-level visual acceptance is implied.
+
+## Current focused Windows repair and classified buoy candidate
+
+Frozen source **`ccc0faad089e89a5b3a0b1f2994f4fa4ee18053d`**, published as
+**`1c3e32d68b2e12892a62e6fe28d61cfaa2377a45`**, adds the reviewed private
+CMake path repair and the [classified white/orange pillar derivative](evidence/scrum264-white-orange-pillar/README.md).
+All 4,074 mapped blob/mode entries independently reconstruct the remote tree.
+The [short native gate](https://github.com/ThereptileII/Work/actions/runs/37112484119)
+passes the original Windows escape reproduction, normalized paths and all 70
+actual private production translation units. The [independent artifact audit](evidence/scrum259-native70-ccc0/README.md)
+verifies all actual I386 objects and source/resource identities. It does not
+qualify dependency producers, DLL linking, runtime or packaging.
+The [integrated Linux build and real-chart review](evidence/skager-chart-ccc0faa-linux/README.md)
+pass 147/147 regressions, 16 captures and four clean exits. All Standard and
+Day-return chart comparisons are exact; changes remain inside the two buoy bodies.
+
+The buoy alias is restricted to the inspected white/orange horizontal-band
+pillar classification, verified SKAGER presentation and Simplified lookup.
+Day and Night use the supplied prototype's stem/base geometry with preserved
+classification. Dusk retains the original symbol: a tested brighter orange
+lost its recognizable hue and was rejected. Unmapped fixed beacons, physical
+lighthouse towers and directional/sector lights are not claimed to match.
+No candidate from this cycle has been installed or launched on the boat.
+
+## Latest bounded light and hatch correction
+
+Application source **`5c05eb55c15b67d4014df55896d95452e9cc9d64`** combines
+[orientation-preserving compact light aliases](evidence/scrum264-oriented-light-aliases/README.md)
+and [neutral construction-hatch ink](evidence/scrum265-construction-hatch-ink/README.md).
+Original LIGHTS11/12/13 vectors remain entirely stock. Only verified SKAGER
+instances and lights without any ORIENT attribute may select the separate compact
+red/green/white aliases. Directional data, conditional decisions, original Rule
+metadata/lifetime and missing-alias fallback are preserved. The earlier white
+bitmap substitution below is superseded; it is not approved for boat deployment.
+
+Only 192 Day construction-pattern pixels change to prototype neutral ink. The
+pattern geometry, alpha, dashed shoreline and all twelve original conditional
+consumers remain unchanged. Dusk/Night retain their existing transparent tile.
+Global CHBRN and other hazard usage are untouched. This corrects the identified
+brown Pier57 hatch without painting a submerged ruined pier as ordinary land.
+
+The [combined resource proof](evidence/scrum264265-combined-resource-proof/README.md)
+passes 53,377 focused checks and the unchanged whole-resource inverse/negative
+oracles. Exact integrated Linux build/install and 147/147 regressions pass.
+The [Pier57 hatch review](evidence/skager-chart-5c05eb5-linux/README.md) and
+[actual red/green lights](evidence/scrum264-colored-lights-5c05-linux/README.md)
+retain 24 original software/OpenGL captures. Standard historical comparisons and
+complete Day-return checks pass; light changes stay within the real light
+neighborhoods and the hatch change stays within the construction feature.
+
+Exact mapped publication **`159cbeff00d67fbd0b77442b7288407f5d93db2b`** has
+3,805 independently verified blob/mode entries, including eight preserved
+unrelated root files. The [focused Windows changed-unit preflight](https://github.com/ThereptileII/Work/actions/runs/37109776549)
+passes. Its [downloaded artifact audit](evidence/scrum247-native23-159c/README.md)
+verifies all 23 actual I386 objects, 447 product inputs, 1,439 patched upstream
+inputs and seven generated resources against the frozen source/build. It is
+compile qualification, not an application/runtime release gate.
+Physical boat fonts/GPU/display and private-renderer acceptance remain pending.
+No candidate from this correction has been installed on the boat.
+
+## Preceding combined candidate: SKAGER chart fidelity and branding
+
+The next correction batch includes the exact prototype
+[ferry/cable-area ink](evidence/scrum260-area-ink/README.md),
+[Day neutral marker ink](design/reviews/scrum261-day-neutral-ink.md), and
+[floating chart-control border and complete navigation captions](evidence/scrum14-floating-caption/README.md).
+These preserve navigational classifications, symbol geometry, soundings,
+Standard resources and control hit areas. The Day mask changes only 40,482
+unambiguously owned neutral pixels; off-palette wreck bitmaps remain unchanged.
+The [final copy audit](design/reviews/scrum236-final-copy-audit.md) also closes
+remaining operator/diagnostic product labels. Customer-facing identity is
+SKAGER with the approved Jira artwork; immutable evidence, compatibility IDs
+and required OpenCPN attribution remain.
+
+The preceding frozen application source **`9632421f701c5ec74d7a1360bc713c0034faf9af`**
+is published exactly as **`d2787c649268809a2d99a72c6ad3e104d504f461`**:
+3,306 mapped blobs/modes match and eight unrelated repository files are preserved.
+The [integrated Linux build/install](evidence/skager-chart-9632421-linux/README.md)
+and **147/147** regressions pass. All **32** real NOAA ENC captures pass across
+two scenes, software/Mesa OpenGL, SKAGER/Standard and Day/Dusk/Night/Day-return.
+The entire chart returns to identical Day pixels in all eight cycles, including
+the GL selector. All sixteen Standard historical chart comparisons remain exact
+within their documented toolbar exception. The saved Paper preference stays
+unchanged while SKAGER uses the effective Simplified table. The smaller approved
+header matches its reviewed component at actual size.
+
+The preceding `a3e8477` / `7a9e549` GL selector failure remains in
+[its original evidence](evidence/skager-chart-a3e8477-linux/README.md). The
+[cache correction](evidence/scrum266-selector-cache/README.md) now closes that
+observed **Linux** reproduction without an added mask or tolerance; physical
+GPU and Windows acceptance remain separate.
+
+The preceding [native run 37100591834](https://github.com/ThereptileII/Work/actions/runs/37100591834)
+passed all 1,569 executed maintained-curl upstream tests, then stopped at
+private-adapter dependency-manifest resolution before application compilation.
+It was not an application crash. Explicit producer roots and the complete copied
+header closure now pass [fresh native proof](evidence/scrum259-native-prefix-proof/README.md):
+17 producer/package cases, 15 preparation cases, 16 wiring refusals and 38 actual
+harmless-DLL loader groups. The independently verified artifact belongs to the
+same `d2787c6` source. The [full replacement qualification](https://github.com/ThereptileII/Work/actions/runs/37106815245)
+passes the maintained dependency producers, then stops at private-renderer CMake
+configuration: Windows backslashes in the wxCurl source paths are interpreted
+as escapes. The [retained exact failure](evidence/scrum259-private-configure-d2787/README.md)
+is before private DLL or host application compilation, not an application crash.
+The bounded path repair and direct native configure/object preflight are in
+progress before another full candidate. No tested dependency output binaries
+were retained in this failure artifact, so they cannot be treated as reusable
+verified producer output merely because their logs passed.
+
+Actual private DLL linking/loading, Windows font selection, final
+package/installer and boat rendering remain pending. No candidate has been
+installed on the boat in this cycle. The later source5c05 above also corrects
+the ORIENT boundary identified in this historical candidate. `d2787c6` remains
+prerequisite/diagnostic evidence and is not approved for boat deployment.
+
+The user's additional October 3 feedback is represented by SCRUM-263–267.
+The [approved header wordmark is now 124 DIP](design/reviews/scrum263-header-typeface.md),
+down from 148, with source artwork and Windows icon unchanged. The prototype's
+Segoe UI Variable Display / Segoe UI / Arial font stack is already selected by
+native UI policy. Canonical Windows browser evidence resolves Segoe UI; an
+actual native HDC face probe is now in the Windows drawing gate. Its fresh
+Windows result and generic ENC/user-font review remain open. Eleven supplied
+[modern marine/light glyphs](evidence/scrum264-seamark-art/README.md) now have
+bounded resource/loader proof: eight classified lateral aliases, isolated danger,
+safe water and the prototype light circle/rays. An additional
+[16 official IHO S-64 chart captures](evidence/scrum264-s64-9632421-linux/README.md)
+now verify actual ordinary lateral, isolated-danger, safe-water, four cardinal
+and white-light raster selection in software/Mesa OpenGL, with twelve normal
+application exits. The ordinary red/green short flares and classified long-range
+light treatment remain visibly stock. Preferred-channel actual-chart coverage
+and full native/boat recognition remain open. The special-purpose buoy remains
+stock because its actual white/orange classification cannot safely be painted
+as the prototype's yellow mark. Generic beacons and unproved physical topmark
+composition also remain open.
+
+[Structural fill and outline changes](evidence/scrum265-structure-ink/README.md)
+replace fourteen specific brown fills and six outlines with prototype land/shore
+roles. Shared hazard brown is preserved. This is not a claim that every remaining
+brown chart object can safely be recolored. The actual public ENC before-captures
+are retained in [the Pier 57 scene record](evidence/scrum264-public-enc-scenes/README.md).
+
+The stock default Paper Chart table would hide the new Simplified artwork.
+Both the [core](evidence/scrum267-effective-symbol-style/README.md) and
+[private renderer](evidence/scrum267-private-symbol-style/README.md) now use an
+effective Simplified table only inside a verified SKAGER presentation instance.
+The saved OpenCPN preference remains unchanged for Standard and Legacy. Actual
+render/query/cache consumers share the same effective selection; diagnostics
+expose saved and effective values. Focused compiled-method/object checks pass.
+The combined Linux application now proves the retained-preference round trip and
+whole GL theme return. Actual private-renderer execution, Windows fonts and boat
+rendering still require fresh qualification.
+
+### Preceding integrated candidate and corrected Windows prerequisite
+
+The replacement source is `dfa7b721ef6eca3f084f77e95dd8e2adc20bde4b`,
+published exactly as `c9ff4ae2c110d234807a326bc30c25084eb42a5d` (2,849 mapped
+blobs/modes verified). Its [integrated Linux build/install](evidence/scrum259-linux-dfa7b72/README.md)
+passes all five original drawing fixtures and **147/147** regressions. The
+shared-model callback link correction and the initial isolated test-environment
+failure are retained with their passing evidence. The
+[corrected native preflight](evidence/scrum259-native23-corrected/README.md)
+passes all **23 actual Win32 compilation units** with independently verified
+downloaded objects. Its earlier missing-header failure is retained separately.
+
+The [full replacement run 37097634494](https://github.com/ThereptileII/Work/actions/runs/37097634494)
+stopped at its Windows private-loader prerequisite, before application
+compilation: the preparation test expected deterministic LF output, but inherited
+Windows Git settings produced CRLF. Thirteen of fourteen preparation cases
+passed; the native loader did not execute, so its expected artifact was absent.
+A bounded production preparation correction now passes its
+[separate native gate](evidence/scrum259-native-final/README.md), run
+37098440931 at exact published `5d6c5cf44cb72f8166b2ab67115bccd568336e35`:
+14 preparation cases, 16 build-wiring refusals and 38 actual harmless-DLL
+loader groups. The downloaded artifact and source identities were independently
+verified. Git patch output now explicitly stays LF regardless of inherited
+Windows settings. This does not qualify the private renderer DLL, application,
+charts or final package; no application crash is inferred from the original run.
+Other Linux/native jobs continue independently. The Windows real-module,
+final-icon, installer, chart and boat gates remain open.
+
+The [fresh read-only boat check](evidence/scrum17-readonly-20261003/README.md)
+confirms unchanged validated stock OpenCPN, installed Beta 1, profile and recovery
+state, with no navigation/helper processes. SSH and Tailscale remain healthy;
+RustDesk's service is running, but interactive connectivity was not exercised.
+No candidate was installed and no older generation was removed.
+
+**Boat chart presentation gap (SCRUM-259):** the fresh read-only inventory found
+581 `.oesu` files in the first configured chart root and two MBTiles files in the
+second. Both roots are available; no chart contents, private paths or licence
+material were exported, and the profile remained unchanged. The accepted
+o-charts source constructs and renders with its own S-52 library from the stock
+shared resource directory. Current core `CreateChartPresentation` does not
+intercept that construction. Consequently the core NOAA captures below cannot
+qualify SKAGER presentation on the boat's o-charts collection. The exact plugin
+resource/API boundary has now been inspected under SCRUM-259. A separately named,
+exact-source private renderer adapter and fail-closed host boundary are implemented;
+the source/package recipe has passed focused preparation checks. Native ABI,
+private downloader trust, complete application and boat rendering gates remain
+open. The [actual Win32 loader boundary](evidence/scrum259-native-loader/README.md)
+passes all 38 native groups at published `4609f31dba3e970802e6ba3fbe3438e129ab9aad`.
+The next candidate also includes an explicit early real-host module check,
+which blocks child-process creation and never invokes the plugin factory or
+initialization. It has not yet passed natively. The installer gate now checks
+the actual application's and Setup's PE icon frames and product metadata
+against the approved Jira artwork; native final-binary results remain open.
+No boat plugin or stock resources have been changed. Raster MBTiles
+cannot receive object-level vector styling. [Availability evidence](evidence/boat-chart-types-20261003/summary.json).
+
+The preceding chart-capture application source is `78eccb8b7f21b260ded57d3ba763f884d60c8180`,
+published exactly as `61a0a7838b56ad841bb458af6fc62651464bdafe` (2,472 mapped
+blobs/modes verified). Its [integrated Linux build and staging pass](evidence/skager-chart-78eccb8-linux-build/README.md).
+This combines the prior palette/service artwork, the [four classified cardinal
+glyphs](design/reviews/scrum256-cardinal-glyphs.md), and the [actual active-waypoint
+name card](design/reviews/scrum257-active-name.md). Active-point symbol/blinking
+and navigation semantics remain upstream-owned. SKAGER naming and the approved
+Jira logo are wired into the product and Windows resources; compatibility IDs,
+original source evidence and required OpenCPN credit are retained.
+
+The [actual native Gettext prerequisite proof now passes](evidence/scrum255-gettext-native-pass/README.md):
+25 contracts, successful bounded acquisition, exact-path tool identities and a
+real UTF-8 catalog operation. Both earlier focused failures are retained.
+The [final seventeen-unit native preflight](evidence/scrum-247-native-chart17-final/README.md)
+passes with independently verified downloaded objects and resources. All
+[sixteen final ENC comparisons](evidence/skager-product-fidelity-78eccb8-linux/README.md)
+pass, and Standard pixels remain identical. The [software and actual-GL route
+runs](design/reviews/scrum252-257-final-78eccb8.md) pass all 26 original assertions,
+hot themes, active-name cards with preserved icon blinking, stale controls and
+clean shutdown. A card-covered GL pixel sample required a documented collector
+correction; its original failure and missing-stroke negative controls remain.
+No application correction or weakened navigation assertion was involved.
+
+The exact published candidate entered the [full Linux/Windows qualification
+run 37088759582](https://github.com/ThereptileII/Work/actions/runs/37088759582).
+Windows job 111105527254 built and installed the application, but failed the
+offline geographic-name painter at 03:16:18 UTC: water-label pixels exceeded
+the required alpha bound. That candidate remains unqualified. The isolated
+[native diagnosis and correction](evidence/scrum243-windows-alpha/README.md)
+now pass all 2,452 original Windows assertions in run 37094223771 at exact
+`7687ce53c780bdfd53db30bb063f9bcc8f6404b7`. GDI+ grayscale coverage restores
+translucent text without changing bounds, colors, opacity or any opaque pixels.
+The original failed artifact and paired images remain retained. A complete
+replacement application/package has not yet been qualified. Linux qualification
+continues in the background. No
+full release, physical GPU, boat visual pass or obsolete-version retirement is
+implied. Whole-chart prototype conformance remains open.
+
+Boat review preparation found a tooling integration gap: the already qualified
+cold-baseline recovery checkout predates SKAGER window selectors, while the
+application candidate's tools lack that completed-baseline reader. SCRUM-258
+[combines those previously reviewed boundaries](installer/skager-boat-tool-composition.md)
+without changing the frozen application. Its exact local `3da0e563de40f71fdb5c31df89c9ec65a04826b5`
+is published as `ffa2de31ae02ca826ec5d3604f57a8c619035bb1` on the separate
+`skager-boat-review-composition` branch: all 2,484 local blobs/modes match and
+eight unrelated repository files remain unchanged. Independent source review and
+945 focused portable checks pass. All ten jobs in [native tooling run 37090716935](https://github.com/ThereptileII/Work/actions/runs/37090716935)
+now pass, with [six original artifacts independently verified](evidence/scrum258-native-tooling/README.md),
+including actual dependency refusals and successful Prepare/Arm/Collect. It
+built only small test helpers, not another OpenCPN application. At 03:13:19 UTC,
+all 117 tools were staged separately and independently rehashed on the boat;
+[the staging receipt](evidence/scrum258-native-tooling/boat-staging.json) confirms
+unchanged stock executable, profile, installed state and qualified source checkout.
+SSH, Tailscale and RustDesk remain running. No new tools were executed and no
+application was launched or installed.
+
+## Previous correction batch: chart labels, Night, land and service symbols
+
+Local `f0976cc65ea63d3ed6f60ac53ec38a856d11b66b` is frozen and published as
+`9a4231f45d978321c612a6a1de66d735d531bbaa`. Its combined Linux application
+[built and staged successfully](evidence/skager-chart-f0976cc-linux-build/README.md).
+The [seventeen-unit native preflight](https://github.com/ThereptileII/Work/actions/runs/37085103227)
+passed, with downloaded object/source/resource identities independently verified.
+It is compilation evidence only, separate from the preceding full candidate.
+[Sixteen real-ENC captures](evidence/skager-product-fidelity-f0976cc-linux/README.md)
+pass software/OpenGL Day → Dusk → Night → Day, with four clean exits. Exact
+Night/land colors, matte-free logo and unchanged Standard chart pixels were
+checked. The [active-route comparison](design/reviews/scrum252-integrated-f0976cc.md)
+passes all 26 original assertions and hot-theme label checks in OpenGL, but
+the first software capture lacks the expected name card, numbered circle and
+route understroke. The [diagnosis and repair](design/reviews/scrum252-fixture-repaint.md)
+trace this to direct test-scenario mutations missing the redraw notification
+used by normal route commands. An ordinary theme repaint on the same executable
+shows the correct cards, markers and current geometry. Only the test scenario
+was corrected; all 26 navigation assertions remain intact. A fresh capture of
+the corrected scenario remains required. No release or whole-chart conformance
+is inferred from these captures.
+
+This batch includes theme-aware approved SKAGER artwork, guarded route-point
+name cards, effective prototype Night chart colors, the GTK chart-control
+recapture fix, exact pilot-boarding/radar-beacon artwork, and the correction of
+built-up-area fill to prototype land. It retains navigation classifications,
+hazard contrast, Standard resources and Legacy/Safe boundaries. No new boat
+installation or old-generation retirement has occurred.
+
+## Previous full candidate: integrated failures retained
+
+The frozen implementation is local
+`1356fd1603aacbea04d7081d16331e9a181180bb`, published as
+`9fcd3db54ee6913cc144ecfc09ec2152078a6eff`. On October 3 at 00:02 UTC it was
+promoted once to the existing `opennav-x-beta2-ui` qualification branch, after
+the targeted Windows failures were fixed and verified. Later local evidence and
+corrections are separate from this frozen executable.
+The exact-source [full run is 37080314681](https://github.com/ThereptileII/Work/actions/runs/37080314681).
+Its Linux and native Windows contract jobs pass. The integrated Linux job built
+the application and passed all 147 CTest cases, then stopped on the resource
+scenario's obsolete `OpenNav` log-prefix expectation. The
+[one-line correction and downloaded failure](evidence/scrum235-linux-resource-log/README.md)
+retain all resource/profile assertions; a focused same-executable rerun passes
+SKAGER, Legacy and Safe with three clean exits. The full job remains failed.
+The native job also stopped before application compilation: Chocolatey's Poedit
+download returned HTTP 504, which the upstream batch masked until the later
+gettext check. [Downloaded failure evidence](evidence/scrum255-gettext-failure/README.md)
+is retained. SCRUM-255 now owns early prerequisite verification and bounded
+recovery; no blind full-job rerun is started. This is not an observed application
+crash. Application/package/installer/rendering/endurance acceptance remains open.
+
+The narrow SCRUM-255 repair checks both Poedit tools before expensive builds,
+retries only bounded package-manager failures, and verifies their identities
+again before configuration. Its [separate native prerequisite run](https://github.com/ThereptileII/Work/actions/runs/37086572916)
+stopped in the offline contracts, before acquisition: the lexical-path guard
+mistook canonical Windows path spelling for redirection. That guard is being
+corrected to detect actual reparse components; the failed run is retained.
+No full application build was started for this failed short proof.
+
+The next local increment includes theme-aware compositing of the approved logo
+(`8accdd9`): original asset bytes and letter geometry remain unchanged, the
+baked-in rectangular matte is removed, and Night uses the prototype's reduced
+brand ink. [Nine focused component drawings](evidence/scrum-236-theme-wordmark/README.md)
+cover three themes and 100/125/150% device sizes. They do not qualify native DPI.
+SCRUM-252 covers the remaining waypoint-name labels; SCRUM-253 covers the
+confirmed difference between raw Night chart tokens and the prototype's
+chart-only brightness rule. These changes are not included in run 37080314681.
+
+The combined next increment now includes waypoint name cards (`559a070`),
+effective Night surfaces and owned overlay ink (`fcc79aa`), and the confirmed
+GTK owner-recapture repair (`1e0a7f1`). Focused source/raster checks pass; the
+waypoint cache includes the two review corrections: failed GL replacement
+keeps stock ownership intact, and transparent texture padding does not enlarge
+the label's hit/cull bounds. The combined `6dd6665` Linux application linked
+successfully in 98 incremental steps. This is build evidence, not visual or
+Windows acceptance. Night hazard ink, safety contours and soundings deliberately remain
+brighter to preserve the measured contrast gates. The [symbol source audit](design/reviews/scrum15-symbol-source-audit.md)
+separates exact artwork candidates from decorative examples that would change
+charted meaning. SCRUM-254 owns the narrow pilot-boarding/radar-beacon artwork
+increment, now integrated as `585fd0f`: both exact prototype assets pass the
+pinned native loader and resource-isolation checks. The built-up-area fill is
+also being corrected from the earlier shore-color policy to the prototype's
+land role. A final combined capture build and native preflight follow these
+bounded changes. No newer combined executable is qualified yet.
+
+- [Native sixteen-unit preflight](evidence/scrum-247-native-chart16/README.md)
+  passed MSVC Win32, including the actual GL canvas and sounding renderer.
+  Downloaded objects, source identity and archive integrity were independently
+  verified. This is compilation evidence, not Windows product acceptance.
+- The frozen Linux integrated build linked successfully after 104 build steps.
+  Sixteen real public ENC captures cover SKAGER and Standard in software and
+  Mesa OpenGL, each through Day → Dusk → Night → Day, with four clean exits.
+  The strict repeated-edge check now passes; the older failing pictures remain.
+  [Captures and independent review](design/reviews/skager-chart-1356fd1-linux.md)
+  retain their precise identities and limitations. Two actual upstream route
+  scenarios also pass 26 checks each, exact projected
+  route-paint samples, stale handling and clean exit. These do not qualify boat
+  GPU, Windows fonts or every route/AIS visual state.
+  The stale-position GL route image omits floating chart controls visible in
+  its software counterpart. SCRUM-228 traced this to the delayed owner recapture
+  and now has a [focused repair](design/reviews/scrum228-recapture-repair.md),
+  including an actual native stacking negative control. The newer integrated
+  application still needs to demonstrate the correction.
+- The [fresh read-only boat audit](evidence/boat-readiness-20261003.md) found
+  remote access running, no application processes and matching stock/profile/
+  recovery hashes. The connected display reports 1920×1080 with configured
+  150% scaling; actual application DPI and the requested 1280×800 comparison
+  remain unmeasured. The accepted Beta1 installation remains unchanged.
+
+The candidate includes customer-facing SKAGER naming, the approved Jira logo
+and Windows icon derivatives, chart/name/light/sounding typography, bounded
+route/waypoint/healthy-AIS presentation, the chart framebuffer repair and the
+scoped submarine-cable color. **Visual conformance is not accepted:** harbor
+label density, small light-description readability, several special-state
+symbols and the newer wordmark's integrated rendering still require review or
+correction. Standard fallback and navigation meaning remain mandatory.
+
+Full native application, fixture-free packaging, installer/recovery, DPI,
+physical display and boat acceptance remain open. No replacement is installed,
+no older generation is removed and no physical command is sent by this batch.
+The previous candidate's [Linux job and three-hour endurance passed](evidence/scrum-224-linux-baseline-4c597955/README.md)
+with both 147-case suites, 1,080 samples and 90 dropout recoveries. This older
+source's pass cannot qualify the frozen candidate or these newer changes.
+
+## Previous: SKAGER identity and prototype chart refinements
+
+The latest user instruction requires the approved SCRUM-89 SKAGER artwork and
+customer-facing name throughout the product. The combined development branch
+now includes native captions/logo (SCRUM-235), Windows application/setup/maintenance
+icons and SKAGER distribution/guide names (SCRUM-236), fractional default-route
+foreground (SCRUM-237), and geographic chart-name typography/ink (SCRUM-238).
+The integrated source is local `1a02ae083501eb05feeef7879e6ee450c076be69`,
+published equivalent `280d5e2e28570fed4f2b84eaafc104bad9ee7c1f`. It also includes
+the bounded healthy COG predictor (SCRUM-239). Its integrated Linux build and
+six real-ENC software captures passed with two clean exits; see the
+[visual review and exact evidence](design/reviews/skager-chart-integrated-1a02ae0.md).
+Further focused integration now includes onboard AIS bodies (SCRUM-240), the
+bounded route understroke (SCRUM-241), verified default waypoint markers
+(SCRUM-242), geographic tracking/opacity (SCRUM-243), and the effective
+prototype anchorage glyph (SCRUM-244). All nine combined upstream patches apply
+to the pinned source. The first combined source `e14de49f444c56de28465416a83337838ad84413`
+passed its Linux integrated link and twelve real-ENC software/Mesa-GL captures,
+with four clean exits. The [comparison record](design/reviews/skager-chart-e14de49-linux.md)
+retains exact identities and two initial collector failures. SCRUM-243's
+text-overlap/DPI-bound correction is included. Visual inspection nevertheless
+found a theme-transition OpenGL edge-wrap defect in both SKAGER and Standard;
+SCRUM-250 is repairing the confirmed framebuffer/viewport mismatch. These
+images therefore do not pass the OpenGL visual gate. They contain no active
+route or AIS targets and do not qualify those painters. Later integrated
+source includes light descriptions (248), sounding typography (249), and the
+selector's deferred-fallback correction (246). Native and boat qualification
+remain open; older Windows evidence does not qualify these newer changes.
+Internal configuration/protocol identities,
+existing user data, immutable prototype and required OpenCPN attribution remain
+intact. See [native identity](architecture/skager-native-branding.md),
+[packaging identity](installer/skager-branding.md),
+[route foreground](design/reviews/scrum237-route-foreground.md) and
+[geographic names](design/reviews/scrum238-geographic-names.md).
+
+The preceding candidate `4c597955f96647a9c7b837139aa2732f2c3a3fa5` is in
+[run 37063131823](https://github.com/ThereptileII/Work/actions/runs/37063131823).
+At 22:12 UTC on October 2, integrated Windows job 111026476044 failed to link
+`floating_surface_test.exe`: its console target expected `_main`, whereas
+`wxIMPLEMENT_APP` supplied the Windows GUI entry point. This is an automated
+fixture link failure, not an observed SKAGER crash. SCRUM-245 isolates the
+entry-point repair and native lifecycle proof, including a required reproduction
+of the original linker error, before another full candidate. No behavioral
+assertion is removed. Failure artifact 11254867923 has SHA-256
+`82e07a88d0e822a0556fcaa4eebc39ad7a33ca8e4d2a7491a9531097b077861b`.
+Linux contracts passed 92/92 and Windows 89/89; 13 other jobs passed. The latest
+22:25 UTC observation still has Linux endurance running, not accepted as a
+three-hour pass. Windows UI, fixture-free packaging and installer steps after
+the failed link were skipped and cannot be claimed passed.
+The isolated SCRUM-245 correction then passed native MSVC Win32 in
+[run 37073219984](https://github.com/ThereptileII/Work/actions/runs/37073219984),
+commit `e67f70e7dafc31b6da9d34d5eab8690a9eab09c8`: the old entry point reproduced
+the exact linker errors, and the fixed executable passed all 12 unchanged
+Windows lifecycle checks. The downloaded artifact's size/hash/CRC, 130 source
+inputs, executable and 11 runtime DLLs were independently verified; see
+[the retained receipt](evidence/scrum-245-floating-entry/native-37073219984/verification.json).
+This closes that fixture defect, not SCRUM-224 or full product qualification.
+Long-running qualification continues in the background while these isolated
+visual changes receive focused checks. No redundant full candidate was started
+for the individual branding or paint changes.
+
+Prototype conformance remains open. The e14de49 captures show the corrected
+COG endpoint, geographic tracking and two vector-selector colors; labels and
+several chart-object states still differ. Route/waypoint/onboard-AIS appearance,
+native Windows DPI, actual boat GPU and boat-display comparisons remain gates.
+The bounded implementations retain explicit special-state and geometry fallbacks.
+
+The first focused native chart preflight [37076177181](https://github.com/ThereptileII/Work/actions/runs/37076177181)
+stopped before compilation: Git's repeated-section mode handling rejected
+`chcanv.cpp` under Windows file-mode configuration. The exact nine-patch failure
+was reproduced; private pinned-index application and independent final-tree
+verification fix it without changing the patch contents or tamper guards.
+Combined local `19c900afdfca4c3272715c0f998b8941ec45c8df`, published equivalent
+`6f22f688cc1156c8c1e2395c854fff1a38398338`, includes all nine verified patches and
+15 actual chart production units. The corrected [native preflight37077779848](https://github.com/ThereptileII/Work/actions/runs/37077779848)
+failed on the preflight helper's missing `OCPN_Sound.h` include path. The complete
+production include set and actual generated sound configuration corrected that
+helper; [failure evidence](evidence/scrum-247-chart-preflight/native-37077779848/receipt.json)
+is retained. The subsequent sixteen-unit preflight above passes. This short
+compile gate cannot substitute for a full application,
+fixture-free package, installer, Windows UI or boat acceptance.
+No physical
+actuator commands or boat-install retirement have been performed by this batch.
+
+## Previous: chart refinements and corrected candidate preparation
+
+The previous stale-snapshot and touch failures below are retained historical
+evidence. The corrected source now has two verified development gates:
+
+- [Exact Linux preview](evidence/scrum-224-cf07197-linux-preview/coherence-identity.json)
+  at local `cf0719749482e62d48daed02515f2b6c6d242b67`, published equivalent
+  `e0e0e9ef71714932ab69d533d1f86cbcd48e33b3`: the 129-check freshness regression
+  and one full preview pass. The preview took 213 seconds, retained 44 captures,
+  exercised 60 pointer actions and all eight scenarios, and observed seven
+  clean application exits through XNav, Legacy, Safe and direct Legacy return.
+  Real coastline remains visible in the reviewed final return. This run used
+  process/signal tracing; it does not retrospectively identify the older747
+  SIGKILL cause. The interrupted build wrapper, brief overlapping Ninja and
+  explicit object/cache recovery are recorded, not hidden.
+- [Downloaded native touch proof](evidence/scrum-229-cf44-native-touch/verification.json)
+  for `cf44e938a3539af6e97a03346542f04f3e7895a4` passes actual 125% Windows
+  input. The original Edit target gives zero scroll. Three native body-hit pans
+  move 480 px, leave Save and the lower action fully visible, and an exact tap
+  activates the action once without saving or changing fields. The initial
+  test's unsupported forwarded-message-count assumption was removed; native
+  hit, movement, settled geometry and state assertions remain strict. Artifact
+  hashes, 273 recorded input entries, 29 objects, 12 runtime DLLs and both test
+  executables were verified. This is a component proof, not full-app DPI or
+  physical touchscreen acceptance.
+
+After those checks, the exact `cf44e938` source was promoted once to
+[full run37057756273](https://github.com/ThereptileII/Work/actions/runs/37057756273).
+Its Linux and Windows portable contract jobs found a missing shared-helper
+binding in the older geometry test (91/92 and 88/89 CTest entries passed).
+This is a test-harness `NameError`, not an application crash. The downstream
+Windows integrated job was skipped; running upstream/Linux jobs remain intact.
+The two-file repair at local `3b944213` / published `16187f407754a3dbe137d03311518e27445b03d7`
+passes all 24 retained cases locally and in [native short run37058880373](https://github.com/ThereptileII/Work/actions/runs/37058880373)
+under Windows cp1252. No product or behavioral assertion was removed.
+Chart refinements are being batched separately before another full candidate.
+No replacement package or boat deployment is yet qualified.
+
+## SCRUM-15 / SCRUM-231 / SCRUM-232 — user chart feedback confirmed
+
+The user's screenshot concern is valid: the active XNav chart presentation
+still differs visibly from the immutable prototype. Functional chart tests do
+not qualify chart appearance. The retained FFE ENC view uses XNav resources,
+but its large mustard built-up areas retain stock CHBRN. Inspection of the
+hash-pinned public US5SEAFL cell identifies the Seattle and West Seattle
+BUAARE polygons. SCRUM-231 changes only their fill through a dedicated XNav
+paint role using the prototype shore neutral. CHBRN also colours hazards and
+light sectors and remains intact for those uses. [Matched local ENC evidence](evidence/scrum-231-built-area-local.json)
+now confirms the correction in all three themes and pixel-identical Standard
+chart regions. The strengthened resource guard passes 3,484 checks and leaves
+the captured generated resources byte-identical. Native Windows, OpenGL and
+boat acceptance remain open.
+
+SCRUM-232 separately tracks the stock red default ownship versus the prototype
+chevron, preserving OpenCPN position, heading, accuracy, user-icon and scaled
+ship semantics. Heavy labels and chart-symbol/route/waypoint/AIS styling remain
+open. Some illustrative prototype danger symbols omit required chart meaning;
+they cannot be copied indiscriminately. No primary chart view is visually
+accepted. The chart corrections are isolated from the frozen stability
+candidate. The combined refinement source now includes:
+
+- Dedicated built-area fill, with matched Day/Dusk/Night real-ENC captures
+  and byte-identical Standard chart regions (SCRUM-231).
+- Shared prototype ownship chevron at the existing OpenCPN position/rotation,
+  retaining stock custom, scaled and low-accuracy paths. The three changed
+  production units compile; 488 focused painter checks pass, including the
+  Windows max-macro hazard and shared software/GL DPI factor (SCRUM-232).
+- Available owned online AIS names, exact prototype baseline and theme ink,
+  bounded placement and stale/lost label removal. 58 core checks and the updated
+  26-check painter pass; the production overlay compiles (SCRUM-233). Independent
+  review found OpenCPN's 500-pixel text-measurement clamp. The correction omits
+  saturated metrics; its regression exercises a real 1,024-pixel name reported
+  as 500 pixels. Exactly-500-pixel labels are conservatively omitted too.
+
+The combined local `25297e3` / published `6e0117de` source completed one
+136-step integrated Linux link and a short real-ENC Day/Dusk/Night run with a
+clean exit. [Retained identity and captures](evidence/scrum-15-25297-integrated-chart/identity.json)
+bind the exact executable and public chart. Root review confirms the neutral
+built areas and east-facing prototype chevron. Controlled loopback input was
+fresh; it is not real boat-data evidence. These captures precede the label
+saturation repair and contain no online targets, so cannot qualify that repair.
+
+The same comparison still shows prominent text, dense soundings, stock hazard
+symbols and a red upstream course predictor. This is not prototype conformance.
+The [remaining presentation review](design/reviews/scrum15-chart-comparison-20261002.md)
+records the differences and source boundaries. SCRUM-234 now corrects a
+separately confirmed GL-only online AIS stern-notch defect by changing only
+the polygon's cyclic starting vertex. The original fails two topology checks;
+the correction passes all three, including 1,326 interior comparisons and
+unchanged software path geometry. Its production object compiles. This is
+source/topology proof, not an actual OpenGL capture.
+Windows, actual GL, physical boat review and remaining chart-symbol/label/route
+refinements are still open. No replacement package is qualified yet.
+
+## SCRUM-224 / SCRUM-228 / SCRUM-230 — clean GTK fix verified locally; stale snapshot blocks preview
+
+The coherent Linux build at `a3edcaef2904bf1450e306f3e086164479ec7f6f`
+contains the approved GTK floating-surface fix without temporary diagnostics.
+Its short viewport check passed actual zoom/palette button activation, stable
+chart center, correct painted positions and coastline/layout checks.
+[Exact build and failure evidence](evidence/scrum-224-a3edcae-local-preview.json)
+binds executable SHA-256
+`cb195d7356f5891aa2c4831b64f3bc8f33f0fe9e4fc4670c696200858b404985`.
+The prior747 and671 binaries and evidence remain preserved.
+
+The one traced full preview then failed the existing stale-data assertion.
+At5038ms, the exported snapshot marks samples stale and omits route distance,
+but still includes an aging arrival-SOC estimate. The retained
+[UI screenshot](evidence/scrum-230-a3edcae-stale-ui.png) already shows unavailable
+values and “Battery SOC stale”; this is an inconsistent snapshot observation,
+not proof that stale advice remains visible. SCRUM-230 is In Progress. No
+assertion was relaxed and no rerun was performed.
+
+Lifecycle checks were not reached. The original747 missing-window/SIGKILL
+uncertainty remains open; its observed descendant was not proven to be the
+restart child. Process tracing can alter timing and grants no waiver. This is
+not a full preview, native Windows or boat pass, and no new full candidate was
+dispatched by this local verification.
+
+## SCRUM-224 / SCRUM-229 — ffe native build passes; preview and 125% touch gates fail
+
+The frozen [ffe run](https://github.com/ThereptileII/Work/actions/runs/37041103887)
+has completed its native job. [Downloaded terminal evidence](evidence/scrum-224-ffe-native-final.json)
+verifies artifact11246267901 (43,226,505 bytes, SHA-256
+`50ab9ff8307f85b792c9f1ee8ddb5fe771cb96c23527b1402af5c1e1459d853e`).
+Native compilation and138/138 integrated tests passed, as did installed peer
+and loader checks, pointer navigation/route gestures, three recovery sequences
+and the public ENC/plugin gate. The requested OpenGL phase actually used
+software fallback; this is not actual GPU/OpenGL acceptance.
+
+The preview stops at the obsolete Settings → Display → Chart presentation
+path already corrected in the prepared747 helper. The native125% DPI run
+separately fails to reach the lower Vessel Preferences action by touch. Its
+unverified pan start falls on the editable battery-capacity field; SCRUM-229
+tracks a strictly checked scroll-body gesture and native replay. The100%
+sequence completed,125% remains failed,150% was not reached. Fixture-free
+product, installer, package-security, native endurance and boat gates were not
+qualified; no replacement full candidate or boat deployment has started.
+
+## SCRUM-224 / SCRUM-228 — local preview repair verified; two bounded failures retained
+
+The coherent Linux build at `74761400862bc1d25102b2b741d14247dd343cdc`
+verifies the corrected visible Diagnostics selection, all eight data scenarios,
+60 pointer actions and XNav → Legacy with coastline content.
+[Retained preview evidence](evidence/scrum-224-747-local-preview.json) records
+the subsequent Legacy → XNav failure: an OpenCPN-named descendant received
+SIGKILL before the expected replacement window/startup log appeared. Its empty
+observed argv does not establish which forked child it was. The sender/cause is under
+investigation; this is not a full preview or lifecycle pass. An earlier
+interrupted run remains separate. No new full candidate was dispatched.
+
+A separate three-input check of that same executable confirms an initial
+Linux floating-chart-control visibility/geometry inconsistency after startup
+resize. The chart receives the zoom-labelled inputs while controls are not
+painted; palette input still works. [Evidence and images](evidence/scrum-228-747-local-viewport.json)
+retain the actual input trace and unchanged scale. SCRUM-228 tracks the fix.
+This does not explain the older c95 scale drift or establish a Windows failure.
+The frozen ffe native build continues; package/boat promotion remains blocked
+by its Linux preview failure. Boat files, profiles and remote access are unchanged.
+
+## SCRUM-224 / SCRUM-14 / SCRUM-226 — combined focused Windows proof passes
+
+Published `ffe4ecf11f43a916098fefe8f17071c63867a838`
+(local `f220b31391815663c442d1f8dcbe98a54c03333c`) passed
+[native run37039246758](https://github.com/ThereptileII/Work/actions/runs/37039246758):
+**469 component checks** (Settings250, Search85, Chart46, Energy88). The strict
+Layers and drawer geometry checks and runtime staging guards also passed.
+[Downloaded proof](evidence/scrum-224-ffe-focused-native/verification.json)
+verifies exact artifact11241214936,259 unique source/patch/lock inputs,
+31 compiled objects,12 runtime files,four executables and30 canonical captures.
+The immutable Search reference job was intentionally skipped.
+
+Native review confirms the System intro/row order, truthful disabled states and
+visible recovery/Advanced links. Title/subtitle ink remains2px/4px above the
+canonical reference, and row font metrics remain unmatched; this is partial
+System refinement, not whole-view visual acceptance. Search/Chart retain their
+previous appearance (only Shell clock pixels differ). The Energy header repair
+passes actual pointer-close/reentry after scrolling and resizing; both retained
+header screenshots show the action in its correct upper-right position.
+
+After the downloaded focused evidence passed, the exact same `ffe4ecf` commit
+was promoted once to [full qualification run37041103887](https://github.com/ThereptileII/Work/actions/runs/37041103887).
+It is frozen. The prior88 Linux layout-oracle failure remains retained below;
+its native job subsequently failed the same obsolete Layers oracle after successful compilation and138 tests. Waiting for that already-disqualified
+candidate's terminal native result is no longer a prerequisite to starting the
+corrected candidate; no run was cancelled or restarted. No package or boat
+promotion follows from the component-only pass. Exact full-shell DPI,
+dependency/security, installer, recovery and physical-display gates remain open.
+
+The exact ffe Linux job then failed in the preview interaction check after the
+repaired Layers check, navigation/input, recording, recovery and user-flow
+checks passed. [Downloaded failure evidence](evidence/scrum-224-ffe-preview-selector-failure.json)
+shows a hidden previous Diagnostics control counted alongside the visible
+Preferences action. No crash was reported. A focused selector repair is being
+verified before any new candidate; the native job continues unchanged. This
+candidate is not eligible for boat deployment or package-security probing.
+
+The older c95 Linux job completed:146/146 fixture-integrated tests and the same
+146/146 fixture-free product tests passed. Its downloaded
+[three-hour evidence](evidence/scrum-224-c95-linux-final.json) contains1080 samples,
+zero sustained handle/thread growth, resident-memory median change−106496 bytes,
+and2.58% of one CPU core. The final soak image is all water after substantial
+viewport scale/longitude drift; it is explicitly **not chart-content acceptance**.
+Numeric endurance does not qualify ffe, native Windows, or the boat display.
+Boat/profile/remote access and public payment/download access were unchanged.
+
+## SCRUM-227 — disposable AIS outage boundary verified
+
+The separate [native run37047212685](https://github.com/ThereptileII/Work/actions/runs/37047212685)
+passes on exact source `97142aa1a99ed789380274f20ae7a5c5349d18aa`.
+[Downloaded evidence](evidence/scrum-227-disposable-native-proof.json) verifies
+all four source inputs,three Win32 executables and both IPv4/IPv6 phases.
+Existing marker connections were interrupted, retries were blocked and traffic
+recovered after both normal helper exit and forced termination. Independent
+control traffic stayed connected without errors. Fresh independent queries
+confirmed the uniquely owned filters and sublayer were removed in both phases.
+
+This helper can target only inert loopback marker executables in a disposable
+hosted runner. It does not target OpenCPN,AISStream or boat traffic. The initial
+RPC type compile failure and strict readback refusal were retained; the latter
+was documented Windows INDEXED metadata, now explicitly requested and compared
+exactly without masking unknown flags. Actual-product binding and live
+AIS loss/aging/reconnect remain open;SCRUM-227 is not Done. Product candidate,
+boat installation, remote access and hardware-control policy are unchanged.
+
+## SCRUM-224 / SCRUM-213 — native focus repair proven; integrated layout oracle correction required
+
+Published source `88c141ba9fee5c28e12b5f4ac0f7e7550d1a8ca6`
+(local equivalent `688bb713db885dbe78ca6db861382ce248c231f7`) passed the
+[focused native run](https://github.com/ThereptileII/Work/actions/runs/37032588707):
+230 Settings + 85 Search/Shell + 46 Chart checks, plus the corrected strict
+large-desktop geometry oracle. Downloaded artifact `11238311244` was verified
+against its SHA-256, 247 source inputs, 31 objects, 12 runtime files, three
+executables and 23 canonical captures. Combined Linux Settings passed 181
+checks with 14 captures; this does not replace integrated Linux qualification.
+
+The retained `60929a5` negative control reproduces the actual failure:
+restoring focus to Advanced battery model scrolls Sensors out of its pointer
+target. Explicit Preferences reopening now focuses its current visible tab
+before resetting scroll. The unchanged native pointer checks and before/after
+trace prove stable geometry and real Sensors selection. The independent
+1920-width failure was an obsolete test expectation: the immutable prototype
+and native product require 460 DIP at the large-desktop breakpoint. No tolerance
+was widened and no release gate was removed.
+
+[Verified native evidence](evidence/scrum-224-88c-focused-native-proof.json) and
+[scoped visual review](design/reviews/native88-focused-review.md) cover the
+Search row/focus outline, shared Windows title/border, Chart supporting text
+and System flow corrections. Original HTML is unchanged. Whole-view conformance,
+other DPI/Back-header states and boat acceptance remain open.
+
+After this evidence passed, the **same commit** was promoted to
+[full Linux/Windows qualification run 37033702537](https://github.com/ThereptileII/Work/actions/runs/37033702537).
+The candidate remains frozen. Its integrated Linux job failed before navigation-object interactions because the strict chart-layout oracle still listed the six pre-Layers floating controls. The actual new44×44 Layers button matches the immutable prototype. [Verified failure evidence](evidence/scrum-224-88c-linux-layout-failure.json) retains the real screenshot and layout. The isolated correction requires the exact seventh control and preserves one-pixel geometry bounds and arbitrary-overlay rejection; captured negative/positive replay plus nine targeted rejections pass. No application geometry changed. Native Windows continues independently; **this run is not eligible for boat deployment or security-package probing**. Full product/dependency, installer/recovery, native DPI and boat gates remain unaccepted.
+
+The same commit's [native recovery subset](evidence/scrum-17-88c-recovery-tooling.json) has21 passing maintenance reports,384 marker-process checks,51 actual broker checks and56 Prepare/Arm/Collect checks, with downloaded bytes/source identities verified. These disposable tests do not imply real-profile or application acceptance.
+The older c95d failed native evidence remains preserved; its already-running
+Linux endurance continues independently. The boat installation and remote
+access were not modified; older-install retirement remains gated by a known-good
+replacement. No public payment/download access was opened.
+
+## SCRUM-224 — c95d native UI gates fail; short prototype proof passes
+
+The frozen `c95d3a0` [full run](https://github.com/ThereptileII/Work/actions/runs/37017351644)
+passed native compilation and all 138 integrated tests, installed peer CLI,
+staged loader, pointer route gestures and repeated crash recovery. It then
+failed the Sensors Preferences pointer check and the 1920-wide Preferences
+width assertion. [Verified failure evidence](evidence/scrum-224-c95-native-ui-failure.json)
+records both artifacts and exact scope. The latter oracle expects 432px where
+the immutable prototype and actual native drawer require 460px. The former
+shows body scrolling after foreground activation and remains under investigation.
+No product package, installer, installed security probe or boat promotion is
+accepted. Linux endurance continues independently. Narrow reproductions and
+corrections precede any further full candidate build.
+
+Separately, `29ea06a358ed24cc29eb2be74b67b234a3ecaa6e` passes
+[focused native run 37026807977](https://github.com/ThereptileII/Work/actions/runs/37026807977):
+190 Settings, 82 Search/Shell and 46 Chart drawer checks (**318 total**), plus
+compilation of all 28 production UI objects and the complete NavigationActions,
+NavigationObjects and SettingsStore units. The downloaded artifact, 247 source
+inputs, 31 objects, three executables/runtimes and 23 captures were verified.
+[Exact proof and limitations](evidence/scrum-224-29ea-focused-native-proof.json)
+remain component-scoped. Display track colors/geometry are supported; known
+other Settings differences and physical boat acceptance remain open. This pass
+does not qualify the full candidate or the later local System-flow correction.
+
+## SCRUM-14/15/216 — bounded prototype follow-up; native proof pending
+
+Published follow-up `34b8509` reached native CMake setup in
+[short run 37025085247](https://github.com/ThereptileII/Work/actions/runs/37025085247),
+which rejected an obsolete include directory before compilation or execution.
+The [retained artifact and all-path audit](evidence/scrum-224-prototype-native-setup.json)
+identify the narrow correction: remove `gui/src/s57/include`, absent from the
+pinned source tree; retain strict checks for all 27 actual directories and all
+production headers/macros. Only this short proof is retried. No application
+crash, dependency qualification, Windows UI pass or boat acceptance is inferred.
+
+Retry `9b0766b` / [37025995465](https://github.com/ThereptileII/Work/actions/runs/37025995465)
+compiled both complete navigation-bridge units and the production UI library.
+It stopped linking the standalone Search test because its Windows console
+entrypoint was missing. Both new fixtures now use the established explicit
+`main` → `wxEntry` pattern. Their local checks still pass (82 + 46); only the
+short native proof is retried. Product sources and `c95d` remain unchanged.
+
+Separate from frozen candidate `c95d3a0`, the October 2 follow-up restores rail
+metric icons and the Display selector track, adds saved-route/waypoint Search,
+and connects the native Chart presentation drawer to floating Layers and
+Settings → Navigation. OpenCPN owns the chart preferences; commands display
+observed readback, and unsupported/managed layers have no invented switch.
+
+The combined Linux component build passed. Search and Shell entrypoints passed
+82 checks, including rejected-action readback, Escape/Close and a short-chart
+overlap boundary; the chart drawer passed 46 checks. Two synthetic Shell captures
+and exact local source/executable identities are recorded in
+[scoped evidence](evidence/scrum14-prototype-combined-linux/verification.json).
+Earlier component-only Display and rail reviews retain their original scope.
+
+A separate short native proof compiles the complete changed navigation bridge
+and production UI, then runs the Settings, Search and Chart components. It does
+not rebuild dependency producers, qualify an installer, or launch on the boat.
+Windows and boat conformance remain pending. The full `c95d3a0` candidate remains
+unchanged: at 15:04 UTC its Linux endurance step and native integrated build were
+still running; no product artifact or boat replacement is accepted here.
+
+## SCRUM-224/214 — native encoding proof passed; c95d replacement qualifying
+
+Published replacement `c95d3a091bb2a0ce0e19d0146ab28dc848ef5290`
+(local `24d0a5a`) passes [native Python-only run 37017228040](https://github.com/ThereptileII/Work/actions/runs/37017228040):
+Windows Python 3.12.10 with default cp1252 completes all 24 tests in 0.303 seconds.
+The GitHub comparison against `2060` confirms only the geometry test file and
+its small Python-only workflow changed; product code is unchanged. Both AST
+source reads now explicitly use UTF-8, with a regression for legacy Windows
+decoding. Geometry, clipping and touch assertions remain intact.
+
+The preceding `2060` full run failed Windows contracts at 86/87 tests: implicit
+cp1252 decoding corrupted the Unicode minus label in the geometry harness,
+failing thirteen subcases. Native integration was skipped. This is a test-source
+encoding defect, not a product crash. Other Linux jobs from that revision remain
+running; no endurance result is inferred. The earlier 190-check Settings
+component proof remains valid within its recorded scope.
+
+After the native Python proof passed, the integrated branch advanced to exact
+`c95d`. [Replacement run 37017351644](https://github.com/ThereptileII/Work/actions/runs/37017351644)
+is in progress. Full native application, CLI, DPI/visual, installer/recovery and
+endurance acceptance remain open. See the [failure and replacement proof record](evidence/scrum-224-c95d-native-python-proof.json).
+No product, boat or release acceptance is claimed.
+
+## SCRUM-224/98 — retained 2060 focused native proof
+
+Published source `2060f8f6b078db6e74e6f8b111e7439073ca1bce` (local `af33a05`)
+passes [focused native run 37014950505](https://github.com/ThereptileII/Work/actions/runs/37014950505).
+The downloaded artifact matches its API length and SHA-256; all 867 ZIP entries
+pass CRC/path checks. Native Settings completes 190 checks, fourteen captures
+and ordered interaction steps 0–23, including root reopening. The executable,
+twelve runtime DLLs and fourteen captures match their retained hashes. All five
+changed objects and 26 UI objects compile; both legacy macro negative controls
+fail as intended. The native home-directory excerpt proof passes, but does not
+execute the actual installed CLI. See the [scoped proof](evidence/scrum-224-2060-focused-native-proof.json).
+All 256 retained source/input records correspond to exact local `af33a05`:
+seven are byte-identical and 249 match the expected Windows CRLF checkout.
+
+The preceding `f2704c3` probe failed because the Settings test's recurring timer
+re-entered its interaction sequence. That failure remains retained. The `2060`
+correction changes only `tests/settings_drawer_test.cpp`; production Settings
+code remains unchanged.
+
+After this proof, the integrated branch advanced once from `488f` to exact
+`2060`. [Full candidate run 37015958242](https://github.com/ThereptileII/Work/actions/runs/37015958242),
+created at 13:52:44 UTC, later failed Windows contracts and skipped native
+integration as described above; separate Linux jobs remain running. Actual CLI, complete DPI/fullscreen,
+chart/plugin, installer/recovery, runtime closure and native endurance gates
+remain open. Captures still require visual review; this is neither product nor
+boat acceptance. Publication to `ThereptileII/Work` was explicitly authorized
+on 2026-10-02; the repaired source and earlier qualification evidence are
+published. No boat deployment or retirement has occurred.
+
+## SCRUM-224 — compile repaired; three native qualification failures isolated
+
+Frozen `488fbbdf5161e986c986773187b1008a7f8684f5` has completed
+[run 36984898997](https://github.com/ThereptileII/Work/actions/runs/36984898997):
+14 jobs passed, native integration failed, publication was skipped. Application
+compilation/linking now pass. Windows passes 138/138 application tests, native
+chart/route pointer flows, repeated crash recovery and the public ENC/software
+and OpenGL chart gate. These are not complete Windows product acceptance.
+
+The native failures are now source-grounded: the peer CLI refusal test runs
+after GUI processing has created the normal profile directory; root Preferences
+reopening retains a scroll offset that hides its section tabs; and the 1920px
+DPI oracle expects 61px navigation although the immutable HTML and actual
+native rendering require 69px. Local repairs preserve the unknown-profile
+refusal and strict UI assertions. The Preferences component passes 179 checks
+and its no-reset negative control fails; 23 geometry tests distinguish the
+prototype width breakpoint and reject deliberately incorrect sizes. The first
+[focused run 37013831216](https://github.com/ThereptileII/Work/actions/runs/37013831216)
+subsequently failed on test-timer reentrancy. Its retained failure and the passing
+replacement proof are distinguished above; full candidate qualification remains
+pending.
+
+Linux integrated qualification passed: 146/146 tests in each fixture and
+fixture-free configuration, plus the actual three-hour trip. The latter records
+1,080 samples, 540 UI actions, about 1.1 MB resident growth, no measured
+handle/thread growth and 3.21% of one CPU core. This is Linux evidence, not a
+substitute for native endurance or boat acceptance. Both artifacts have verified
+size, SHA-256 and ZIP CRC. See the
+[terminal qualification record](evidence/scrum-224-488f-terminal-qualification.json).
+
+No fixture-free Windows package or installer was produced; those dependent
+stages were skipped. The boat is unchanged, old installations are retained,
+and prototype fanout remains held. On 2026-10-02 the user explicitly authorized
+publication of the reviewed source repairs and non-sensitive qualification
+evidence to `ThereptileII/Work`. Fresh native acceptance remains required.
+
+## SCRUM-224 — earlier focused compile proof and prerequisite results
+
+Frozen candidate `488fbbdf5161e986c986773187b1008a7f8684f5` (local `548a376`)
+passes [the focused native compile](https://github.com/ThereptileII/Work/actions/runs/36984238840).
+The verified artifact reproduces both original Windows macro failures, then
+compiles the four corrected networking units, production UI target and full
+SettingsStore. All 31 retained I386 objects match their recorded hashes; this
+covers 14 of the 15 changed XNav UI/integration source files. See
+[exact-source proof](evidence/scrum-224-native-changed-units-488fbbd.json).
+The first short probe stopped at a CMake path-escaping error before compilation;
+the corrected probe passed without rebuilding the maintained dependencies.
+
+The [integrated run](https://github.com/ThereptileII/Work/actions/runs/36984898997)
+subsequently verified full application compilation/linking, then failed the
+three later checks described above. The new early compile gate detects the
+original macro failure before expensive producer suites. No boat installation
+or retirement occurred.
+
+Eleven early artifacts from this run have verified API sizes, SHA-256 and ZIP
+CRC, including the same-run restart prerequisite receipt. Windows pristine
+passes 60/60; Linux pristine retains its two named upstream failures (64/66).
+These are prerequisites, not integrated product acceptance; see
+[early evidence](evidence/scrum-224-488f-early-gates.json). The earlier 09:02 UTC
+running observation is superseded by the terminal record above. Neither job
+was restarted or cancelled to collect it.
+
+The same candidate's completed contract logs confirm 90 Linux / 87 Windows
+CTest passes, 43 dependency contracts per platform and ten additional restart
+executions per platform, with no failures in those suites. See
+[contract evidence](evidence/scrum-224-488f-contracts.json). These results do not
+replace integrated application, installer, UI or boat qualification.
+
+## SCRUM-22/27 — installer preservation checks prepared in parallel
+
+The unsupported-build smoke assertion previously checked the supported sibling
+directory rather than the rejected installation. Test-only revision `0fc08f9`
+now snapshots the actual rejected tree and pre-existing seeded profile, verifies
+the exact rejection reason and checks that installation/shortcut folders remain
+absent. It records Setup, package-manifest and test-source hashes. Installer
+product code is unchanged. This correction is separate from frozen `488f`;
+native proof against its eventual verified package remains pending.
+
+[The recovery coverage audit](evidence/scrum-27-real-release-coverage-audit.json)
+confirms genuine accepted Beta 1 and genuine early Beta 2 installers are used
+by the existing update/rollback harness. Historical 45-check recovery evidence
+is retained separately from pending candidate acceptance. There is no need to
+rerun another complete application build for this audit or the test correction.
+Neither issue is Done and no boat retirement has occurred.
+
+## SCRUM-24/25 — signed release policy passes native tests
+
+The isolated update branch at `a3a7bac04a3bdda8ddd485450a7dab8aedbd2c4d`
+passes [Linux and native Windows/386](https://github.com/ThereptileII/Work/actions/runs/36939227135).
+Each platform passes 19 top-level tests and 30 subtests, without failures/skips,
+plus `go vet`; both downloaded artifacts have verified length, SHA-256 and CRC.
+The policy distinguishes upgrades, same release, downgrades, conflicting source
+identities and unsupported OpenCPN installations. Strict JSON and Windows path
+checks reject the case-alias and reserved-name defects found during review.
+The read-only composition binds policy identity to actual signed TUF metadata;
+no installer executes and no startup updater is enabled. See
+[exact native evidence](evidence/scrum-24-release-policy-native.json).
+Root/key/cache custody and transactional recovery remain open. The boat candidate
+is still separately frozen at `45b8a9d`.
+
+
+## SCRUM-25 — isolated signed-update verifier passes native feasibility
+
+The separate verifier branch at `24bd013f4891638f0e59411836c67f271a66a645`
+passes [Linux and native Windows 386](https://github.com/ThereptileII/Work/actions/runs/36936782032).
+Both downloaded result artifacts have verified size, SHA-256 and ZIP CRC.
+Each platform passes six top-level tests and nine subtests without skips, plus
+`go vet`. The tests use real Ed25519-signed metadata generated only in temporary
+fixtures and reject altered signatures/content, expired or older metadata,
+wrong channels/identity, oversized data and cross-origin redirects.
+
+This is a feasibility result, not a shipping updater. It neither executes a
+package nor modifies the application or installer. Trusted-root deployment,
+cache protection, application release/downgrade policy, dependency licensing and
+transactional installer handoff remain open; see
+[the scoped evidence](evidence/scrum-25-verifier-feasibility.json).
+SCRUM-24 now owns the deterministic release-policy prerequisite. Product
+qualification continues independently on frozen `45b8a9d`.
+
+
+## Current replacement — verified early gates
+
+All ten native boat-tooling jobs at exact `45b8a9d` pass. Twenty-seven
+available early artifacts have independently verified lengths, SHA-256 and
+all 1,237 ZIP entry CRCs. Supplemental AIS passes seven tests per platform;
+the Linux network fixture passes 18 TLS/transport scenarios and 30 offline
+checks. Prototype references capture 63 states per platform, without implying
+native application visual acceptance. Pristine Windows passes 60 tests;
+pristine Linux retains its two classified upstream failures out of 66 and is
+not release acceptance. Integrated Linux endurance and the three native product
+build jobs remain in progress at this observation; installation remains withheld.
+See [the exact early evidence](evidence/scrum-224-45b8-early-gates.json).
+
+## Current replacement — native certificate path repair
+
+The application candidate is now frozen at
+`45b8a9d2809d0d34171010ad1c00f4a3cd056a09` (local `9c4740f`).
+The previous `37978e` composition and object-workflow builds failed before curl
+configure because a Windows-backslash script path made MSYS Perl look for
+certificate inputs in the output directory. The narrow caller repair uses the
+verified MSYS Perl explicitly and passes the same slash form as upstream CMake.
+
+[Focused native run 36935540968](https://github.com/ThereptileII/Work/actions/runs/36935540968)
+passes the new actual-script path regression and retained host/certificate/tool
+checks. Its downloaded artifact has verified length, SHA-256 and all 20 ZIP CRCs.
+See [the scoped proof](evidence/scrum-224-45b8-native-path-pass.json).
+Fresh [integrated](https://github.com/ThereptileII/Work/actions/runs/36935775514),
+[prototype](https://github.com/ThereptileII/Work/actions/runs/36935778459) and
+[native tooling](https://github.com/ThereptileII/Work/actions/runs/36935773834)
+runs target that exact commit; they are not yet accepted. No deployment or old
+installation cleanup has occurred. A read-only boat heartbeat at 22:24 UTC
+confirmed zero OpenCPN processes and all three remote-access services running.
+
+
+## SCRUM-218 — complete native diagnostic log retained
+
+The separate read-only collector at `c42ff4c97ee71cfe84bab54873ee5dac18f15510`
+passes [run 36932209206](https://github.com/ThereptileII/Work/actions/runs/36932209206)
+and ten focused refusal/security tests. It retained all 1,738,273,051 bytes of
+the cancelled b48 prototype job's log within the explicit 2 GiB / eight-minute
+limits. The downloaded archive and uncompressed log have independently verified
+hashes and lengths. No running product job was modified or restarted. This is
+diagnostic evidence, not application acceptance; see
+[the collection record](evidence/scrum-218-complete-native-log.json).
+
+## Previous candidate qualification — 37978e
+
+The previous frozen candidate is `37978e26517af810092ec2bc554b199d36a705d2`
+(local `2a3c2c6b88945a50a7b552fd41c37658747ac5a4`). Its
+[integrated run](https://github.com/ThereptileII/Work/actions/runs/36929977632)
+passes 90 Linux and 87 native Windows portable CTest contracts, plus ten
+repeated restart handoffs on each platform and the supporting policy suites.
+All ten [native tooling jobs](https://github.com/ThereptileII/Work/actions/runs/36929976171)
+pass. Fourteen downloaded early artifacts have verified size, SHA-256 and ZIP
+CRC records, including 238 actual COM shortcut migration checks on each host
+architecture, 22 maintenance reports, native broker/Prepare/Arm checks, and
+supplemental AIS tests. See [the exact-candidate early evidence](evidence/scrum-224-37978e-early-gates.json).
+
+The [prototype run](https://github.com/ThereptileII/Work/actions/runs/36929980191)
+has passed its supporting checks, but native composition job `110596574723`
+failed before curl configure: MSYS Perl received a backslash script path,
+and the certificate generator searched the output directory for source inputs.
+The producer correctly rejected the empty certificate. The separate object-flow
+job failed at the same preflight; its independently verified artifact confirms
+the same error. The integrated Windows job also failed at the same preflight; all three
+native failure artifacts have verified hashes and ZIP integrity.
+See [the verified failure record](evidence/scrum-224-37978-certificate-path-failure.json).
+The replacement caller-path repair has passed its focused native gate; its
+full qualification remains open as recorded above. No existing generator or
+TLS assertions were weakened.
+No artifact is approved for boat deployment. The previous b48 Linux job has
+completed successfully, including 146 fixture and 146 fixture-free test cases,
+the 10,800-second soak, loader checks and mode/navigation/chart fixtures. See
+[its bounded evidence review](evidence/scrum-224-b48-linux-complete.json).
+This older Linux result is not acceptance of this replacement revision. The boat remains
+unchanged and old installations are retained until a replacement is known-good.
 
 ## SCRUM-224 — native test-host producer binding verified; product gates remain open
 

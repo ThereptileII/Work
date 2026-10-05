@@ -1,0 +1,52 @@
+/tmp/skager-capture-opx5qtx2/SKAGER
+/home/standard/Projects/X-nav-worktrees/scrum256-cardinal-glyphs/.local/final-batch-capture-prep/capture-final.py:178: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  edge_top = list(image.crop((690,68,1094,76)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum256-cardinal-glyphs/.local/final-batch-capture-prep/capture-final.py:179: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  edge_bottom = list(image.crop((690,626,1094,634)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum256-cardinal-glyphs/.local/final-batch-capture-prep/capture-final.py:189: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum256-cardinal-glyphs/.local/final-batch-capture-prep/capture-final.py:178: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  edge_top = list(image.crop((690,68,1094,76)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum256-cardinal-glyphs/.local/final-batch-capture-prep/capture-final.py:179: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  edge_bottom = list(image.crop((690,626,1094,634)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum256-cardinal-glyphs/.local/final-batch-capture-prep/capture-final.py:189: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum256-cardinal-glyphs/.local/final-batch-capture-prep/capture-final.py:178: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  edge_top = list(image.crop((690,68,1094,76)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum256-cardinal-glyphs/.local/final-batch-capture-prep/capture-final.py:179: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  edge_bottom = list(image.crop((690,626,1094,634)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum256-cardinal-glyphs/.local/final-batch-capture-prep/capture-final.py:189: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum256-cardinal-glyphs/.local/final-batch-capture-prep/capture-final.py:178: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  edge_top = list(image.crop((690,68,1094,76)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum256-cardinal-glyphs/.local/final-batch-capture-prep/capture-final.py:179: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  edge_bottom = list(image.crop((690,626,1094,634)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum256-cardinal-glyphs/.local/final-batch-capture-prep/capture-final.py:189: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+/tmp/skager-capture-opx5qtx2/Standard
+/home/standard/Projects/X-nav-worktrees/scrum256-cardinal-glyphs/.local/final-batch-capture-prep/capture-final.py:178: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  edge_top = list(image.crop((690,68,1094,76)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum256-cardinal-glyphs/.local/final-batch-capture-prep/capture-final.py:179: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  edge_bottom = list(image.crop((690,626,1094,634)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum256-cardinal-glyphs/.local/final-batch-capture-prep/capture-final.py:189: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum256-cardinal-glyphs/.local/final-batch-capture-prep/capture-final.py:178: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  edge_top = list(image.crop((690,68,1094,76)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum256-cardinal-glyphs/.local/final-batch-capture-prep/capture-final.py:179: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  edge_bottom = list(image.crop((690,626,1094,634)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum256-cardinal-glyphs/.local/final-batch-capture-prep/capture-final.py:189: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum256-cardinal-glyphs/.local/final-batch-capture-prep/capture-final.py:178: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  edge_top = list(image.crop((690,68,1094,76)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum256-cardinal-glyphs/.local/final-batch-capture-prep/capture-final.py:179: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  edge_bottom = list(image.crop((690,626,1094,634)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum256-cardinal-glyphs/.local/final-batch-capture-prep/capture-final.py:189: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum256-cardinal-glyphs/.local/final-batch-capture-prep/capture-final.py:178: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  edge_top = list(image.crop((690,68,1094,76)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum256-cardinal-glyphs/.local/final-batch-capture-prep/capture-final.py:179: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  edge_bottom = list(image.crop((690,626,1094,634)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum256-cardinal-glyphs/.local/final-batch-capture-prep/capture-final.py:189: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+Verified private clean application 78eccb8b7f21b260ded57d3ba763f884d60c8180 and exact upstream result of nine patches
+Eight exact-build real-ENC theme-cycle captures passed: /home/standard/Projects/X-nav-worktrees/scrum256-cardinal-glyphs/.local/final-batch-capture-prep/output/capture-78eccb8-opengl

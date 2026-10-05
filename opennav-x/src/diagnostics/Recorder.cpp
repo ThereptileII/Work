@@ -174,7 +174,7 @@ void Recorder::Work() {
 }
 Recording LoadRecording(const fs::path &file) {
   if (!fs::is_regular_file(file) || fs::file_size(file) > RecordingByteLimit)
-    throw std::invalid_argument("Not a bounded OpenNav recording file");
+    throw std::invalid_argument("Not a bounded SKAGER recording file");
   std::ifstream in(file, std::ios::binary);
   if (!in)
     throw std::runtime_error("Cannot open recording");

@@ -1,0 +1,77 @@
+{
+  "issue": "SCRUM-264",
+  "nightBrightness": 0.78,
+  "prototypeScale": 0.84375,
+  "pivot": [
+    12,
+    14
+  ],
+  "derivation": "Exact BOYSPP11 chartSymbolGraphic split: supplied X head removed from body and painted only from explicit yellow TOPMAR TOPSHP7. Geometry is not inferred physical dimensions.",
+  "sources": {
+    "docs/design/prototype/src/chart-marker-art.js": "be2c7f44817c29d3714412c7974d3cf07e238f65c7131958b0cb8ff6fbd7816d",
+    "docs/design/prototype/src/seamarks.json": "78377f9622f82b6e2e16b6709fe62056863389ae5f6cc21bc6da9de3ed9cdfd9",
+    "docs/design/prototype/src/chart-symbols.css": "ca7ec18b38bf682600b6c3c39c5798c94b00bbaddd5589119d5fcb77ad599cb3",
+    "docs/design/prototype-tokens.json": "111ee35527a974b2df6c2c4af0afd04e5aebdf14bad3004a98be9064aef790c6",
+    "tools/derive-yellow-buoy-art.py": "f6c65d74c40e3f359a24272302749160affe1e2944dcfd7fc22fd082a4a36edf",
+    "resources/chart-style/v1/yellow-buoy/XNSPPT01-DAY_BRIGHT-rgba.json": "0e694282001ce3d53da674e4dbe859dded52dccc9c032c3d8e34a23a067a4380",
+    "resources/chart-style/v1/yellow-buoy/XNSPPT01-DAY_BRIGHT.svg": "8b9ab8f9600ef0683f7da50d7da5f95479fe23a06cdda84a3188a61ea8c1d3b1",
+    "resources/chart-style/v1/yellow-buoy/XNSPPT01-DUSK-rgba.json": "621f2949bd64d236556732cc4c4d860685aff4ff1e8f140910ec12dcbf8f59db",
+    "resources/chart-style/v1/yellow-buoy/XNSPPT01-DUSK.svg": "158c6fc04ec9a4d1f1c5c70a97fdd5211db120f294425ddb7c27d21753d19315",
+    "resources/chart-style/v1/yellow-buoy/XNSPPT01-NIGHT-rgba.json": "2b9122f3b0ca7898f7ffc810c280ad12f69b438b333a132917919ca6db8ef6e8",
+    "resources/chart-style/v1/yellow-buoy/XNSPPT01-NIGHT.svg": "fd3daee1a7401f70b9b731318501a0cef746987f318904e6e2c8069d21e90f2f",
+    "resources/chart-style/v1/yellow-buoy/XNSPPY01-DAY_BRIGHT-rgba.json": "52024589df37e4fc3f345c39b94909dd3d18aedcea61476e8816353f3f8dd0a2",
+    "resources/chart-style/v1/yellow-buoy/XNSPPY01-DAY_BRIGHT.svg": "db03ce3eb043003f1635e29a3a793d5376b36678b3094f42a58a703f3b011d2d",
+    "resources/chart-style/v1/yellow-buoy/XNSPPY01-DUSK-rgba.json": "d479b574efb12c19f55a7e18c63435c937df8d7c99a3a8fb6cb9fc26e2e90a7d",
+    "resources/chart-style/v1/yellow-buoy/XNSPPY01-DUSK.svg": "a8b0b755cebda1496d598c20ab194d6b6196e8eb542492546e92d5990df98058",
+    "resources/chart-style/v1/yellow-buoy/XNSPPY01-NIGHT-rgba.json": "cb4bcad458feb44bff97238816ef1768ef426696d2d84ab3620960b598aff841",
+    "resources/chart-style/v1/yellow-buoy/XNSPPY01-NIGHT.svg": "7532cd1f45c57cd19c1e07827116fbbdb2254127a19ef2dc0ddfc9b8cbc76132"
+  },
+  "symbols": {
+    "XNSPPY01": {
+      "tile": [
+        692,
+        1160,
+        24,
+        28
+      ],
+      "rcid": 60013,
+      "themes": {
+        "DAY_BRIGHT": {
+          "rgbaSha256": "d95e4382230575278b1652fa799e1d71ee4cc787ace91e22cd93e9d7f521bc55",
+          "changedPixels": 50
+        },
+        "DUSK": {
+          "rgbaSha256": "f9b0e093e40c664caa3a697ae502f63c4645314f0c4093ccf2e3edcc7faaf9bf",
+          "changedPixels": 50
+        },
+        "NIGHT": {
+          "rgbaSha256": "4625af2bebff35d751f1a35b72e85e23a100fbf5be67c5159bf577eb1269aea4",
+          "changedPixels": 50
+        }
+      }
+    },
+    "XNSPPT01": {
+      "tile": [
+        756,
+        1160,
+        24,
+        28
+      ],
+      "rcid": 60015,
+      "themes": {
+        "DAY_BRIGHT": {
+          "rgbaSha256": "f5f33e3737164cd9fb2ac8fca21266ac02c2d68ca0b6150716e2bf23b3aed32c",
+          "changedPixels": 44
+        },
+        "DUSK": {
+          "rgbaSha256": "293dac5cbfa9f4013c2c3977752e233dcc850aacdb3e61276d9db356ad37e400",
+          "changedPixels": 44
+        },
+        "NIGHT": {
+          "rgbaSha256": "7b59e42da719be6611216b6d3890915871d0fe6bdb45035d366263a358ab502f",
+          "changedPixels": 44
+        }
+      }
+    }
+  }
+}

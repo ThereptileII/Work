@@ -8,16 +8,23 @@ remote boat smoke tests.
 | Flow | Starting state and actions | Interactions | Back/cancellation | Error behavior |
 | --- | --- | --- | --- | --- |
 | Go To | Chart position long press/right click → Go To → Start | 3 | Outside/Escape closes position card; Cancel closes confirmation | Missing position, protected/shared changes or invalid destination are rejected by the integration; no partial independent route |
-| Create waypoint | Chart position long press/right click → Waypoint → name → Save | 3 + text | Cancel writes nothing | Storage/position errors remain visible; no invented coordinates |
-| Edit waypoint | Select saved mark → Edit waypoint → Save | 3 + text | Cancel retains original | Active/protected/shared cases are read-only where the integration cannot safely edit |
+| Create waypoint | Chart position long press/right click → Waypoint → review Name and optional Description → Save | 3 + text | Cancel writes nothing | Nearby chart names are suggestions only; ambiguous/missing names fall back to a coordinate-based name. Storage/position errors remain visible |
+| Rename a saved object | Route or Waypoint detail → edit Route name or Waypoint name → Save or Enter | 1 + text after detail opens | Inline Cancel or Escape in the field restores the saved name and keeps the detail page open | Empty/invalid names cannot save; failed revision/protection checks retain the draft and show the error. Description is unchanged |
+| Edit waypoint | Select saved mark → Edit waypoint → edit Name/Description → Save | 3 + text | Sheet Cancel retains original | Active/protected/shared cases are read-only where the integration cannot safely edit |
 | Waypoint Go To | Selected waypoint → GO TO → START | 2 after selection | Cancel retains navigation | Missing/stale position disables GO TO; the visible selection refreshes and integration revalidates its revision after confirmation |
 | Remove waypoint | Selected mark → Delete waypoint → confirm | 2 after selection | Cancel preserves mark | Shared/protected marks remain disabled; no cascade deletion |
 | Create route | Menu → Routes → Create route on chart → tap points → Done → name/save | 5 + points/name | Undo removes the last draft point when at least two points and the native undo action are available; otherwise it is disabled. Cancel in naming retains the draft; chart Cancel discards the draft after confirmation | OpenCPN owns the draft and validation; unexpected Undo failure stays visible; details remain reviewable before activation |
+| Inspect a chart route | Select a route segment, or hover when no other task is open → route card → Details or View on chart | 1 selection + 1 action; hover needs no tap | Close, outside press or Escape dismisses the card | Card shows copied name, state, departure, destination and point count; removed routes lose their actions. Neither action activates the route |
+| Edit route description | Route detail → Edit route name / description → Save | 2 + text after detail opens | Sheet Cancel retains saved values | Existing revision and read-only checks still apply |
 | Activate route | Routes → select route → Activate route → confirm | 3 after list | Back returns to Routes | Revision/state revalidated; activation is not an autopilot mode request |
 | Stop route | Active route detail → Stop navigation → confirm | 2 | Cancel leaves passage active | No steering command; normal OpenCPN route output semantics remain unchanged |
 | Select AIS | Tap received target → compact card | 1 | Close/outside returns to chart | Expired/lost selection is cleared; no synthetic target substitution |
 | Inspect AIS | Selected card → Details; or Menu → AIS targets → vessel | 1 or 3 | Back returns to targets | Lost target shows unavailable; CPA/TCPA remain upstream results |
+| Chart object information | Chart position long press/right click → Info → optionally Show all chart details for a section | 2, plus 1 per expanded section | Hide chart details collapses that section; Close or Escape returns to the chart | Upstream objects/values remain authoritative; unknown fields and attachment references remain in inert full-detail text. Empty or truncated results are explicit; truncation directs to Legacy Object Query |
 | Chart orientation | Tap North/Course control beside Center | 1 | Chart remains visible | Label reads the actual OpenCPN selection; uses the existing North/Course action |
+| Explicit chart orientation | Chart → Layers → North up, Course up or Head up | 2 | Close or Escape returns to the chart | Selected mode is upstream state; current course/heading is still required for suitable rotation |
+| Find a saved object | Search → optionally type a name → select route or waypoint | 2, plus typing | Close/Escape cancels; reopening starts a fresh search | Deleted/ambiguous objects cannot select; no result stays explicit; a route opens details without activation |
+| Chart layers | Chart → Layers → AIS, ENC text or soundings switch | 2 | Close/Escape returns to the chart | Read back actual state; unsupported controls stay unavailable; symbols/contours remain under OpenCPN safety presentation |
 | Display mode | Tap current Day/Dusk/Night label | 1 per step | No modal | Label and chart/XNav palette change together |
 | Instruments | Menu → Vessel instruments | 2 | Back → Menu; Navigation → chart | Stale/missing readings show their state; groups retain configured selections |
 | Propulsion/energy | Energy action, or Menu → Propulsion & energy | 1 or 2 | Navigation returns to chart | Dependent predictions are withheld and their blocking reason shown |
@@ -35,9 +42,15 @@ remote boat smoke tests.
 
 - Back follows the logical parent. Home Back returns to navigation.
 - Escape performs Back on a product page when focus is not editing text. A
-  modal edit/confirmation sheet owns its own Escape/Cancel behavior.
+  modal edit/confirmation sheet owns its own Escape/Cancel behavior. In an
+  inline name field, Escape cancels that name draft instead of leaving the page.
 - Outside/Escape dismisses a transient chart card. An edit sheet does not
   silently save or discard a route; use its explicit Save/Cancel controls.
+- Inline names are saved explicitly; timer/theme refreshes preserve an edited
+  draft. The route/waypoint name and description sheets remain available for
+  fuller edits. Creation suggestions never rename an existing saved object.
+- Route hover cards do not take keyboard focus or replace an open drawer,
+  modal or detail task. View on chart and Details remain separate from activation.
 - While creating a route, full-width Cancel/Undo/Done actions replace the three
   page-navigation buttons in the bottom row. The chart and rail retain their
   normal size, and Pilot/STBY/System remain accessible.

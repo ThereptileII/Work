@@ -1,0 +1,65 @@
+[
+  {
+    "theme": 0,
+    "bounds": [
+      41,
+      40,
+      40
+    ],
+    "maximumDelta": [
+      39,
+      39,
+      39
+    ],
+    "violatingChannels": 0,
+    "first": [],
+    "drawnBounds": [
+      17,
+      87,
+      153,
+      100
+    ]
+  },
+  {
+    "theme": 1,
+    "bounds": [
+      45,
+      40,
+      33
+    ],
+    "maximumDelta": [
+      43,
+      38,
+      32
+    ],
+    "violatingChannels": 0,
+    "first": [],
+    "drawnBounds": [
+      377,
+      87,
+      513,
+      100
+    ]
+  },
+  {
+    "theme": 2,
+    "bounds": [
+      37,
+      39,
+      32
+    ],
+    "maximumDelta": [
+      36,
+      37,
+      31
+    ],
+    "violatingChannels": 0,
+    "first": [],
+    "drawnBounds": [
+      737,
+      87,
+      873,
+      100
+    ]
+  }
+]

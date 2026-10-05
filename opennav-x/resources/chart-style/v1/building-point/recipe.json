@@ -1,0 +1,171 @@
+{
+  "schema": 1,
+  "sourceSymbol": "BUISGL01",
+  "sourceRcid": 1307,
+  "sourceNodeCanonicalSha256": "92d8e32eaa57e5b57ef0461e9eace16eac2b0a68e1c54ed7d0c99b401171de57",
+  "lookupCanonicalSha256": "66f45ca6018e674633dabb8dbb1c22eae735626a594334a24d70df282bf55c5c",
+  "sourceTile": [
+    459,
+    78,
+    9,
+    9
+  ],
+  "pivot": [
+    4,
+    4
+  ],
+  "sourceTileRgbaSha256": {
+    "DAY_BRIGHT": "62c9997331cefd8f9e7112e1a237c8eac0c88f45e8283eb77a4066ac9d1b549c",
+    "DUSK": "16e06b805e306dd128b151679c2c6f518865f398040d965c139434a8626b509c",
+    "NIGHT": "fb223f66eb1a1666379b266a9103e0ab3c5564631f8dd41e06abc5e3b42d9c5c"
+  },
+  "sourceXmlSha256": "84f93522576ed5872b24865cf6161872ed0b4b634f77c64ca697a04d3568e886",
+  "prototypeSha256": "b04573b920b6bccd16afd22f54a909e48afcfd502ce9cd7c69fdf5b6dd895447",
+  "model": "Per-coordinate signed rational transfer on the exact known Day LANDF-to-CHBRN two-ink line; no hue selection or threshold. Retains pinned filtered overshoot and alpha. Other palettes reuse the same shape weights, not their differently baked RGB.",
+  "sourceOutlineRgb": [
+    139,
+    102,
+    31
+  ],
+  "sourceFillRgb": [
+    177,
+    145,
+    57
+  ],
+  "denominator": 3969,
+  "fillNumerators": [
+    [
+      -38,
+      -81,
+      -226,
+      -226,
+      -226,
+      -226,
+      -226,
+      -145,
+      -107
+    ],
+    [
+      -162,
+      295,
+      1078,
+      1035,
+      1035,
+      1035,
+      1078,
+      526,
+      -150
+    ],
+    [
+      -226,
+      1035,
+      4269,
+      4119,
+      4119,
+      4119,
+      4376,
+      2087,
+      -338
+    ],
+    [
+      -226,
+      1035,
+      4119,
+      3969,
+      3969,
+      3969,
+      4226,
+      2006,
+      -338
+    ],
+    [
+      -226,
+      1035,
+      4119,
+      3969,
+      3969,
+      3969,
+      4226,
+      2006,
+      -338
+    ],
+    [
+      -226,
+      1035,
+      4119,
+      3969,
+      3969,
+      3969,
+      4226,
+      2006,
+      -338
+    ],
+    [
+      -226,
+      1116,
+      4414,
+      4226,
+      4226,
+      4226,
+      4521,
+      2113,
+      -338
+    ],
+    [
+      -124,
+      552,
+      2113,
+      2006,
+      2006,
+      2006,
+      2113,
+      1035,
+      -145
+    ],
+    [
+      -107,
+      -119,
+      -376,
+      -338,
+      -338,
+      -338,
+      -376,
+      -145,
+      -38
+    ]
+  ],
+  "alphaRows": [
+    "b1edededededededbf",
+    "f6fffffffffffffff5",
+    "edffffffffffffffed",
+    "edffffffffffffffed",
+    "edffffffffffffffed",
+    "edffffffffffffffed",
+    "edffffffffffffffed",
+    "f5fffffffffffffff4",
+    "bfedededededededca"
+  ],
+  "sourceDayReconstruction": {
+    "maximumRoundedChannelError": 1,
+    "channelsDifferentByOne": 29,
+    "minimumNumerator": -376,
+    "maximumNumerator": 4521
+  },
+  "alias": "XNBLDG01",
+  "aliasRcid": 60016,
+  "tile": [
+    788,
+    1160,
+    9,
+    9
+  ],
+  "roles": {
+    "fill": "XNBLF",
+    "outline": "XNBLO"
+  },
+  "tokens": {
+    "fill": "--mark-service",
+    "outline": "--mark-black"
+  },
+  "nightBrightness": 0.78
+}

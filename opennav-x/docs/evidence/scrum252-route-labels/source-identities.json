@@ -1,0 +1,8 @@
+{
+  "src/integration/ChartRouteLabel.cpp": "a47860430994fdd5480627fae42871dc391f2b64c601275fda332f0dd896ca62",
+  "src/integration/ChartRouteLabel.h": "0df631632f74f8df1df46de76e54063185c4a09bf6a4f6a86c817825c7cb3c53",
+  "src/integration/ChartRouteLabelRaster.h": "c2ca0bd64ec1203addbd518b2424af91c3ca25f72b250d1f6c80b6e467722f3b",
+  "tests/chart_route_label_test.cpp": "858868dd5ecf78133805eccae13feef5c09246bd8216dafe0245cf17b9a34a04",
+  "patches/opencpn-5.12.4-chart-presentation.patch": "4663d1cb9f443cb042223b1fc10f4f1cec87a903f3ea8d2f32e7e5d4da4aaf41",
+  "docs/design/prototype/index.html": "b04573b920b6bccd16afd22f54a909e48afcfd502ce9cd7c69fdf5b6dd895447"
+}

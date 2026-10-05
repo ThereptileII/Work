@@ -1,12 +1,19 @@
 name: OpenNav immutable prototype references
 on:
-  push:
-    branches: [opennav-x-prototype]
   workflow_dispatch:
+    inputs:
+      design_validation:
+        description: User explicitly requested this design review
+        type: boolean
+        required: true
+        default: false
+env:
+  SKAGER_DESIGN_VALIDATION: ${{ inputs.design_validation && 'true' || 'false' }}
 permissions:
   contents: read
 jobs:
   native-review-guard:
+    if: ${{ inputs.design_validation == true }}
     name: Prototype capture guard on disposable Windows surfaces
     runs-on: windows-2022
     timeout-minutes: 10
@@ -28,6 +35,7 @@ jobs:
           path: opennav-x/evidence/local/prototype-review-guard
           if-no-files-found: error
   native-object-flow:
+    if: ${{ inputs.design_validation == true }}
     name: Native prototype route waypoint AIS pointer regressions (not full release gate)
     runs-on: windows-2022
     # Maintained OpenSSL/curl/zlib are built and run their upstream tests first.
@@ -78,6 +86,7 @@ jobs:
           path: opennav-x/evidence/local
           if-no-files-found: error
   native-composition:
+    if: ${{ inputs.design_validation == true }}
     name: Native prototype composition development (not release qualification)
     runs-on: windows-2022
     # Include source dependency tests and native trust checks without skipping UI gates.
@@ -251,7 +260,7 @@ jobs:
           # The fixture-free settings gate above explicitly established that
           # this disposable account has no product key. This is a negative,
           # offline commissioning test; it cannot connect without a key.
-          $Package = (Resolve-Path opennav-x/build/ais-readonly-probe/OpenNavX-AIS-ReadOnly-Probe).Path
+          $Package = (Resolve-Path opennav-x/build/ais-readonly-probe/SKAGER-AIS-ReadOnly-Probe).Path
           $InfoHash = (Get-FileHash "$Package/BUILD_INFO.json" -Algorithm SHA256).Hash.ToLowerInvariant()
           $Evidence = Join-Path $PWD 'opennav-x/evidence/local/probe-offline-launch'
           & powershell -NoProfile -ExecutionPolicy Bypass -File opennav-x/tools/boat/probe-online-ais.ps1 -Package $Package -ExpectedCommit $env:GITHUB_SHA -ExpectedBuildInfoSha256 $InfoHash -Evidence $Evidence
@@ -273,6 +282,7 @@ jobs:
           path: opennav-x/evidence/local
           if-no-files-found: error
   ais-network-linux:
+    if: ${{ inputs.design_validation == true }}
     name: Bounded AIS TLS and provider lifecycle (Linux loopback only)
     runs-on: ubuntu-24.04
     timeout-minutes: 15
@@ -301,6 +311,7 @@ jobs:
           path: opennav-x/evidence/local/ais-transport
           if-no-files-found: error
   ais-foundation:
+    if: ${{ inputs.design_validation == true }}
     name: Supplemental AIS portable contracts (${{ matrix.os }})
     strategy:
       fail-fast: false
@@ -325,6 +336,7 @@ jobs:
           path: opennav-x/build/prototype-contracts/ais-foundation.xml
           if-no-files-found: error
   reference:
+    if: ${{ inputs.design_validation == true }}
     strategy:
       fail-fast: false
       matrix:

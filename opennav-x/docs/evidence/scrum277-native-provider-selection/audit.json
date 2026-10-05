@@ -1,0 +1,18 @@
+{
+  "runId": 37144998291,
+  "jobId": 111266997912,
+  "remoteCommit": "1d9a6f68f5ab689f1906a94033f3a4ee164ab3bf",
+  "localCommit": "225e08baf1464b2115113b4a741168e997afe1d5",
+  "artifactId": 11281613394,
+  "artifactBytes": 1353,
+  "artifactSha256": "8b6d2cf00b6224c0edcbdcd649b43aae57c6f620031874e84be42ff834a61d46",
+  "crcEntriesPassed": 2,
+  "matchedInputs": {
+    "tools/test-downloader-trust-windows.ps1": "exact Windows CRLF checkout",
+    "tools/test-downloader-certificate-fixtures.ps1": "exact Windows CRLF checkout",
+    ".github/workflows/skager-certificate-fixtures.yml": "exact Windows CRLF checkout"
+  },
+  "checksReached": 0,
+  "localCorrectionCheck": "Actual three AST provider assignments tested against two PATH entries in both orders; selected scalar matches direct openssl.exe invocation",
+  "nativeCorrectionPending": true
+}

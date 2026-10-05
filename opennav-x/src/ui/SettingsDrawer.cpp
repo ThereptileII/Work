@@ -1,8 +1,11 @@
+#include "application/Brand.h"
 #include "ui/SettingsDrawer.h"
 #include "ui/DisplaySizing.h"
+#include "application/Version.h"
 #include <wx/dcbuffer.h>
 #include <wx/graphics.h>
 #include <wx/sizer.h>
+#include <wx/tokenzr.h>
 #include <array>
 #include <cmath>
 #include <limits>
@@ -22,6 +25,20 @@ XNavSettingsDrawer::XNavSettingsDrawer(wxWindow &owner, SettingsDrawerActions ac
   SetWide(true);
   SetHeading("PREFERENCES","A helm of your own",false);
   Build();
+}
+void XNavSettingsDrawer::Open(const wxRect &workspace) {
+  Present(workspace);
+  if (!IsShown()) return;
+  // Root reopening must replace a remembered offscreen child before resetting
+  // scroll, or native activation restores that child and scrolls back to it.
+  const auto index = static_cast<std::size_t>(section_);
+  if (index < tabs_buttons_.size()) {
+    auto *tab = tabs_buttons_[index];
+    if (tab && tab->IsShown() && tab->IsEnabled()) tab->SetFocus();
+  }
+  // Prototype openPanel('settings') starts the drawer body at the top.
+  // Keep this separate from Present(), which also runs during live refresh.
+  body_->Scroll(0, 0);
 }
 void XNavSettingsDrawer::Select(SettingsSection section) {
   if (static_cast<unsigned>(section)>=titles.size()) return;
@@ -45,6 +62,10 @@ void XNavSettingsDrawer::Update(const ProductState &state,LightMode mode) {
     for(auto *b:tabs_buttons_)b->SetLightMode(mode);
     for(const auto &choice:light_buttons_)choice.first->SetSelected(choice.second==mode);
     tabs_->SetBackgroundColour(Colour(Theme(mode).background));
+    if(light_track_) {
+      light_track_->SetBackgroundColour(Colour(Theme(mode).surface));
+      light_track_->Refresh(false);
+    }
     for(auto *frame:input_frames_)frame->Refresh(false);
     for(auto *panel:field_containers_)panel->SetBackgroundColour(Colour(Theme(mode).background));
     for(std::size_t i=0;i<field_captions_.size();++i)
@@ -119,19 +140,33 @@ void XNavSettingsDrawer::DisplayForm() {
   layout_field_->Bind(wxEVT_CHOICE,[this](wxCommandEvent &event){
     display_draft_.layout=static_cast<application::ChartLayout>(event.GetInt());display_dirty_=true;
   });
-  CopyBlock(34,[](XNavPainter &p,int width){p.TextTracked("LIGHT FOR THE MOMENT",0,4,10,p.c.secondary,400,1.5,width);});
+  CopyBlock(33,[](XNavPainter &p,int width){p.TextTracked("LIGHT FOR THE MOMENT",0,4,10,p.c.secondary,400,1.5,width);});
+  light_track_=new wxPanel(body_,wxID_ANY);
+  light_track_->SetName("Display light track");
+  light_track_->SetBackgroundStyle(wxBG_STYLE_PAINT);
+  light_track_->SetBackgroundColour(Colour(Theme(light_).surface));
+  light_track_->Bind(wxEVT_PAINT,[this](wxPaintEvent &){
+    wxAutoBufferedPaintDC dc(light_track_);
+    dc.SetBackground(wxBrush(Colour(Theme(light_).background)));dc.Clear();
+    dc.SetPen(*wxTRANSPARENT_PEN);dc.SetBrush(wxBrush(Colour(Theme(light_).surface)));
+    dc.DrawRoundedRectangle(wxPoint(0,0),light_track_->GetClientSize(),FromDIP(9));
+  });
   auto *row=new wxBoxSizer(wxHORIZONTAL);
   for(const auto mode:{LightMode::Day,LightMode::Dusk,LightMode::Night}) {
     const wxString name=mode==LightMode::Day?"Day":mode==LightMode::Dusk?"Dusk":"Night";
-    auto *b=new XNavButton(body_,wxID_ANY,name,"Display "+name);b->SetRole(ButtonRole::Segment);
+    auto *b=new XNavButton(light_track_,wxID_ANY,name,"Display "+name);b->SetSegmentInTrack();
     b->SetSelected(mode==light_);b->SetLightMode(light_);b->SetMinSize(FromDIP(wxSize(48,40)));b->Enable(bool(actions_.theme));
     b->Bind(wxEVT_BUTTON,[this,mode](wxCommandEvent &){CallAfter([this,mode]{
       if(actions_.theme) actions_.theme(mode);
       Select(SettingsSection::Display);
     });});
+    if(mode!=LightMode::Day)row->AddSpacer(FromDIP(4));
     row->Add(b,1);buttons_.push_back(b);light_buttons_.push_back({b,mode});
   }
-  content_->Add(row,0,wxEXPAND|wxBOTTOM,FromDIP(30));
+  auto *track_layout=new wxBoxSizer(wxVERTICAL);
+  track_layout->Add(row,1,wxEXPAND|wxALL,FromDIP(4));
+  light_track_->SetSizer(track_layout);
+  content_->Add(light_track_,0,wxEXPAND|wxBOTTOM,FromDIP(30));
   Button("Apply display preferences",[this]{SaveDisplay();},ButtonRole::Primary);
   display_message_=new wxStaticText(body_,wxID_ANY,wxEmptyString);
   display_message_->SetFont(UiFont(*this,11));
@@ -279,7 +314,7 @@ void XNavSettingsDrawer::Button(const wxString &label,std::function<void()> acti
 }
 void XNavSettingsDrawer::Build() {
   ClearBody();tabs_buttons_.clear();buttons_.clear();light_buttons_.clear();copies_.clear();
-  scale_field_=nullptr;layout_field_=nullptr;display_message_=nullptr;
+  scale_field_=nullptr;layout_field_=nullptr;display_message_=nullptr;light_track_=nullptr;
   fields_.fill(nullptr);input_frames_.clear();field_containers_.clear();field_captions_.clear();message_=nullptr;
   tabs_=new wxPanel(body_,wxID_ANY);tabs_->SetLabel(wxEmptyString);
   tabs_->SetBackgroundColour(Colour(Theme(light_).background));
@@ -310,7 +345,7 @@ void XNavSettingsDrawer::Build() {
       break;
     case SettingsSection::Navigation:
       Page("Navigation preferences","Units, chart orientation and navigation alarms",XNavIcon::Compass,ProductPage::NavigationSettings);
-      Page("Chart presentation","XNav or Standard, light and display",XNavIcon::Layers,ProductPage::Display);
+      Link("Chart presentation","Layers, orientation and chart palette",XNavIcon::Layers,actions_.chart_presentation);
       Link("Charts & coverage","Configured OpenCPN charts and connections",XNavIcon::Chart,actions_.advanced);
       Page("Alarms & thresholds","Inspect current navigation conditions",XNavIcon::Bell,ProductPage::Alerts);
       Page("Passage library","Saved OpenCPN routes",XNavIcon::Route,ProductPage::Routes);
@@ -332,10 +367,10 @@ void XNavSettingsDrawer::Build() {
         p.Text("Control",0,12,12,p.c.secondary);p.TextWeight(state_.pilot.enabled?"Enabled":"Off",width/2,12,12,p.c.primary,500,width/2,true);
         p.Rule(0,40,width);p.Text(state_.pilot.fresh?"Current pilot feedback":"Pilot feedback unavailable",0,58,12,p.c.secondary,false,width);
       });
-      Page("Adapter & capabilities","Connection, acknowledgement and modes",XNavIcon::Settings,ProductPage::PilotSettings);
+      Page("Pilot connection","Status from your OpenCPN connection",XNavIcon::Settings,ProductPage::PilotSettings);
       Page("Helm controls","Standby, Auto and heading adjustments",XNavIcon::Instruments,ProductPage::Pilot);
-      CopyBlock(90,[](XNavPainter &p,int width){p.Text("Steering requires explicit control enablement",0,18,11,p.c.secondary,false,width);
-        p.Text("and confirmation from the adapter.",0,39,11,p.c.secondary,false,width);});
+      CopyBlock(90,[](XNavPainter &p,int width){p.Text("This installation observes pilot status only.",0,18,11,p.c.secondary,false,width);
+        p.Text("Use the pilot's own controls to steer.",0,39,11,p.c.secondary,false,width);});
       break;
     case SettingsSection::Radar:
       CopyBlock(104,[this](XNavPainter &p,int width){p.TextTracked("RADAR",0,4,9,p.c.accent,650,1.17);
@@ -348,18 +383,55 @@ void XNavSettingsDrawer::Build() {
       DisplayForm();
       break;
     }
-    case SettingsSection::System:
+    case SettingsSection::System: {
+      auto title_lines=std::make_shared<std::vector<wxString>>(
+          1,"A complete helm. A cared-for system.");
+      CopyBlock(126,[title_lines](XNavPainter &p,int width){
+        p.TextTracked(wxString(application::brand::Name) + wxString::FromUTF8(" · ")+wxString::FromUTF8(application::Version),
+                      0,9,10,p.c.secondary,650,1.3,width);
+        for(std::size_t i=0;i<title_lines->size();++i)
+          p.TextTracked((*title_lines)[i],0,33+30*i,23,p.c.primary,700,-.6,width);
+        p.Wrapped("Set up, maintain and recover your navigation workspace.",
+                  0,73+30*(title_lines->size()-1),13,21,width,p.c.secondary,2);
+      });
+      auto *intro=copies_.back();
+      intro->Bind(wxEVT_SIZE,[this,intro,title_lines](wxSizeEvent &event){
+        wxClientDC dc(intro);dc.SetFont(UiFontWeight(*intro,23,700));
+        const int width=intro->GetClientSize().x;
+        const double tracking=-.6*intro->FromDIP(100)/100.;
+        wxStringTokenizer words("A complete helm. A cared-for system."," ");
+        title_lines->clear();wxString line;
+        while(words.HasMoreTokens()) {
+          const auto word=words.GetNextToken();
+          const auto candidate=line.empty()?word:line+" "+word;
+          if(!line.empty() && dc.GetTextExtent(candidate).x+tracking*(candidate.length()-1)>width) {
+            title_lines->push_back(line);line=word;
+          } else line=candidate;
+        }
+        title_lines->push_back(line);
+        const int height=FromDIP(126+30*(title_lines->size()-1));
+        if(intro->GetMinSize().y!=height) {
+          intro->SetMinSize(wxSize(FromDIP(300),height));body_->Layout();body_->FitInside();
+        }
+        intro->Refresh(false);event.Skip();
+      });
+      Link("Installation & recovery","Installer unavailable; recovery controls below",XNavIcon::Download,{});
+      Link("Updates","Update controls unavailable",XNavIcon::Refresh,{});
+      Link("Backups","Backup and restore controls unavailable",XNavIcon::Shield,{});
+      Link("Diagnostics","Versions, data quality and source health",XNavIcon::Instruments,actions_.diagnostics);
+      Link("Plugins","OpenCPN adapters and plugin settings",XNavIcon::Layers,actions_.plugins);
+      Link("Help & guides","Basic help; guides unavailable",XNavIcon::Info,
+           [this]{Select(SettingsSection::Help);});
+      Link("About & licenses","Version above; license viewer unavailable",XNavIcon::Info,{});
+      Link("Run vessel setup","Setup wizard unavailable; use Vessel tab",XNavIcon::Boat,{});
       Page("Interface & recovery","Legacy, Safe Mode, restart and diagnostics",XNavIcon::Shield,ProductPage::System);
-      Link("Diagnostics","Versions, data quality and current source state",XNavIcon::Settings,actions_.diagnostics);
-      Page("Recordings & commissioning","Read-only observation and field capture",XNavIcon::Instruments,ProductPage::Commissioning);
-      Page("Export diagnostics","Choose the information to include",XNavIcon::Settings,ProductPage::FieldReport);
-      Link("Plugins & adapters","Advanced OpenCPN plugin settings",XNavIcon::Layers,actions_.plugins);
-      Button("Legacy mode",actions_.legacy);
-      Button("Safe mode",actions_.safe);
-      Page("Advanced / Legacy Settings","Connections, charts and additional preferences",XNavIcon::Settings,ProductPage::NavigationSettings);
+      Link("Advanced / Legacy Settings",actions_.advanced
+          ? "Connections, charts and additional preferences" : "OpenCPN settings unavailable",
+          XNavIcon::Settings,actions_.advanced);
       break;
+    }
     case SettingsSection::Help:
-      CopyBlock(145,[](XNavPainter &p,int width){p.TextTracked("OPENNAV X",0,4,9,p.c.accent,650,1.17);
+      CopyBlock(145,[](XNavPainter &p,int width){p.TextTracked(application::brand::Name,0,4,9,p.c.accent,650,1.17);
         p.Text("Charts and navigation are owned by OpenCPN.",0,36,12,p.c.secondary,false,width);
         p.Text("Predictions are advisory. Missing data stays unavailable.",0,62,12,p.c.secondary,false,width);
         p.Text("Legacy and Safe keep the same navigation profile.",0,88,12,p.c.secondary,false,width);});

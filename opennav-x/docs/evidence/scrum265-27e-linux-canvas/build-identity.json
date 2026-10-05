@@ -1,0 +1,47 @@
+{
+  "source": "27e93e40709e2d9d2044cb9f6d58979042ff6234",
+  "priorSealedFilesVerified": 18,
+  "standardFilesUnchanged": {
+    "build/xnav-install/share/opencpn/s57data/S52RAZDS.RLE": {
+      "sha256": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26",
+      "bytes": 1305627
+    },
+    "build/xnav-install/share/opencpn/s57data/attdecode.csv": {
+      "sha256": "49bd4c9a91947613a4b6f8b3ac435cf42a30a751bce9a7123d79591786eef03e",
+      "bytes": 29983
+    },
+    "build/xnav-install/share/opencpn/s57data/chartsymbols.xml": {
+      "sha256": "84f93522576ed5872b24865cf6161872ed0b4b634f77c64ca697a04d3568e886",
+      "bytes": 2231495
+    },
+    "build/xnav-install/share/opencpn/s57data/rastersymbols-dark.png": {
+      "sha256": "179cb516fd1a7795e8ab9ecbb8d4d5d88bf15cf42e5528c2f4e3ea2340320c33",
+      "bytes": 163832
+    },
+    "build/xnav-install/share/opencpn/s57data/rastersymbols-day.png": {
+      "sha256": "ee1020a8b94b312faba8c146974e49147d280e5ef3cc13f3cd688bbfd54dde0c",
+      "bytes": 250509
+    },
+    "build/xnav-install/share/opencpn/s57data/rastersymbols-dusk.png": {
+      "sha256": "56d6191b954978d0a85484b490228aab467610bfbf646c814af003428a766c2d",
+      "bytes": 169019
+    },
+    "build/xnav-install/share/opencpn/s57data/s57attributes.csv": {
+      "sha256": "61c3fc9db5cfbc0aaefdcfb17474d64b56db7e7be6238974f6f1a11680a6b2c7",
+      "bytes": 11996
+    },
+    "build/xnav-install/share/opencpn/s57data/s57expectedinput.csv": {
+      "sha256": "deebeea969817da8aa9b3d57801ac530e28e3ed10692f407b8ed80f680fee409",
+      "bytes": 40407
+    },
+    "build/xnav-install/share/opencpn/s57data/s57objectclasses.csv": {
+      "sha256": "5e823ae9b78fa8f976b16231b96548215fb020fb3f83751748c7e767b9ea232a",
+      "bytes": 41998
+    }
+  },
+  "installedResourceMatchesReviewedGenerated": true,
+  "manifestSha256": "15a6bb831392088990737d688bc7716efa42f1d950f051c7a0dd909ee3065e2d",
+  "installedElfSha256": "6a9309c5c5d2b421e4a093d5ebfc0c29636d77b75c622d2e437aeabaf0753f71",
+  "buildElfSha256": "75776edd30e8df0322b41775f9e1380ffd935633ef6fef8f85a24e143f45865f",
+  "buildHeaderSha256": "66d90aca9fb5fea1366d7704cc00dbf5b90cc60c6eca53959932e9ffa0c1ee06"
+}

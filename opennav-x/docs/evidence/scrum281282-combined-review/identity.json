@@ -1,0 +1,29 @@
+{
+  "base": "00ffa88eccb321d5230002f1a1621045abed85b1",
+  "privateFollowup": "af69c5e7b3c61012c18dc34d9630c4c4df874ec3",
+  "reviewCheckout": "443f1fb39409db9f030b4d0bb7ab1b2a4910c8af",
+  "compiler": "c++ (GCC) 16.2.1 20260810",
+  "files": {
+    "src/integration/ChartFishingPattern.h": "ea50046c24edd0c5ee4723c6a40af4802155fc14f0e493b1fd4b11ec29848630",
+    "src/integration/ChartCableWave.h": "6f61208b428e9bd99a04157af887f3735d055df89116885de79a4dac2d0539bf",
+    "src/integration/ChartCaFan.h": "2f31ef44ec71c8be79dc2f544f59504cc2fb46ccf99246fff822d0c77293aed1",
+    "cmake/ocharts-adapter/Targets.cmake": "de944c6c0b99cbf94da8282264274b57ca69dd11202be166a030579cc35b3325",
+    "tools/prepare-ocharts-adapter.py": "6354b0296f33259655fad17b0352c190efdac3184d76010fd65e20de179499cd",
+    "patches/ocharts-skager-presentation.patch": "fa81232e7c717978f8706015bf2c3c72aa9ea028fbdf84e6c51a0dea95a93caa",
+    "patches/ocharts-wxcurl-trust.patch": "e68b0a767f6a27d0136fa7e6b82ca96eac69f934f5fe54a13b314750bbb3d567",
+    "patches/opencpn-5.12.4-ais-transport.patch": "ee6689b8943284347fadca9564892b31db4c43db2a007412ac3fdc2072d07fd7",
+    "patches/opencpn-5.12.4-chart-presentation.patch": "a4d63df39d24ac6866a85b205d1206b469d1cba621595a20950471c4e638f250",
+    "patches/opencpn-5.12.4-download-trust.patch": "04763cb038ad088a722e76d4f85bde7e356489b697a373458195336d4278412b",
+    "patches/opencpn-5.12.4-maintained-curl.patch": "dafa1fec0a69e3a1195db726c2cb26ceeb7535b5e25476ac2e4658d910f44e48",
+    "patches/opencpn-5.12.4-peer-response-buffer.patch": "c335f361766a6982c3d096e93f7c149179deb33134668e110111ac4980064e15",
+    "patches/opencpn-5.12.4-peer-unavailable.patch": "5bf1c2ae4b09043ce18151f766aebd2b881b993f352000e34399de7e8b36b6d3",
+    "patches/opencpn-5.12.4-regression-tests.patch": "3ef13652b8f3717d836883d2fbb7a18f35dbd2ca1162ac991fe339e61392dff1",
+    "patches/opencpn-5.12.4-wxcurl-trust.patch": "f3ad76fc07b80e6f2c01331894ce5e685f6aa4456a2a3c761e3115c8c21f3d6b",
+    "patches/opencpn-5.12.4-xnav.patch": "dfbacadf42502d1d0366745b3a187d256e620b0d2ea7dba9e8912c46e999e0b3",
+    "patches/ocharts-private-hazard-association.patch": "c7d007de282e4f0c955b41c520ad31ed597ffafd03ef08d57472d13fd8f4d4ff"
+  },
+  "sourceUnits": {
+    "build/integration-source/libs/s52plib/src/s52plib.cpp": "1b8f77fccb4f139d461b5dffc797f5157d139bfc7e1c6035fc3b4590f8bc489a",
+    ".local/private/libs/s52plib/src/s52plib.cpp": "0293e5e6f202bd49e38eab8174db5a522a8c2444bb3d5f89c157244c33c43b69"
+  }
+}

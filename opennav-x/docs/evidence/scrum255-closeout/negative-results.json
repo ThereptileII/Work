@@ -1,0 +1,18 @@
+[
+  {
+    "mutation": "ensure-after-curl-preflight",
+    "rejectedByAssertion": true,
+    "testsRun": 1,
+    "failures": 1,
+    "errors": 0,
+    "mutatedSourceSha256": "845766fa02139e3026b8c565eeff4a4c52765df5762d247e050109c7732425b5"
+  },
+  {
+    "mutation": "verify-after-application-cmake",
+    "rejectedByAssertion": true,
+    "testsRun": 1,
+    "failures": 1,
+    "errors": 0,
+    "mutatedSourceSha256": "75542ac82902614f7b2cf258393147bc87f125d2e8d61ab60af5d0ff17ea3ac3"
+  }
+]

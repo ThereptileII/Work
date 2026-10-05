@@ -6,6 +6,7 @@ Windows runtime preparation and native gates are performed by the caller.
 """
 import argparse
 import hashlib
+import importlib.util
 import json
 import os
 from pathlib import Path
@@ -36,7 +37,7 @@ openssl_source = verify_openssl_package_inputs(
     ROOT / 'docs/third-party/OpenSSL-3.5.9')
 curl_sources = verify_curl_package_inputs(
     args.install, args.dependency_source_cache, ROOT / 'docs/third-party')
-destination = args.output / 'OpenNavX-Beta2-Portable-Recovery'
+destination = args.output / 'SKAGER-Beta2-Portable-Recovery'
 if destination.exists():
     raise SystemExit('Refusing to overwrite an existing recovery directory')
 destination.mkdir(parents=True)
@@ -51,7 +52,11 @@ for required in ['msvcp140.dll', 'vcruntime140.dll']:
         raise SystemExit('App-local MSVC runtime missing: ' + required)
 verify_packaged_openssl(app, openssl_source['manifest'])
 verify_packaged_curl(app, curl_sources['manifests'])
-(app / 'OPENNAV_PORTABLE_PREVIEW').write_text('OpenNav X portable Beta 2 recovery\n')
+adapter_spec = importlib.util.spec_from_file_location('ocharts_package', ROOT / 'tools/verify-ocharts-adapter-package.py')
+adapter_package = importlib.util.module_from_spec(adapter_spec)
+adapter_spec.loader.exec_module(adapter_package)
+adapter_sources = adapter_package.installed_source_bundle(app, args.build)
+(app / 'OPENNAV_PORTABLE_PREVIEW').write_text('SKAGER portable Beta 2 recovery\n')
 for directory in ['profile', 'logs', 'docs/licenses']:
     (destination / directory).mkdir(parents=True)
 # PluginPaths::InitWindowsPaths and GetPluginDataPath use PrivateDataDir/plugins
@@ -72,15 +77,15 @@ date = re.search(r'#define VERSION_DATE "([^"]+)"', config).group(1)
     'VPLatLon=59.0800,18.5000\nVPScale=0.003\n'
     '[OpenNav]\nInterfaceMode=xnav\n', encoding='utf-8')
 (destination / 'profile/README.txt').write_text('Isolated recovery profile. Configure charts locally if needed; installation uses your real OpenCPN profile.\n')
-(destination / 'logs/README.txt').write_text('OpenNav diagnostics and launcher output live here. Current OpenCPN log: ../profile/opencpn.log\n')
-launchers = {'Run-XNav': '--xnav',
+(destination / 'logs/README.txt').write_text('SKAGER diagnostics and launcher output live here. Current OpenCPN log: ../profile/opencpn.log\n')
+launchers = {'Run-SKAGER': '--xnav',
              'Run-Legacy': '--legacy', 'Run-Safe': '--safe-mode'}
 for name, mode in launchers.items():
     text = f'''@echo off
 setlocal
 cd /d "%~dp0"
 if not exist "%~dp0app\\opencpn.exe" (
-  echo Extract the entire OpenNav recovery ZIP before running this launcher.
+  echo Extract the entire SKAGER recovery ZIP before running this launcher.
   pause
   exit /b 1
 )
@@ -90,12 +95,14 @@ if not exist "%~dp0logs" mkdir "%~dp0logs"
 set "preview_exit=%errorlevel%"
 if exist "%~dp0profile\\opencpn.log" copy /y "%~dp0profile\\opencpn.log" "%~dp0logs\\opencpn.log" >nul
 if not "%preview_exit%"=="0" (
-  echo OpenNav exited with code %preview_exit%. See logs\\{name}.log and profile\\opencpn.log.
+  echo SKAGER exited with code %preview_exit%. See logs\\{name}.log and profile\\opencpn.log.
   pause
 )
 exit /b %preview_exit%
 '''
     (destination / (name + '.cmd')).write_bytes(text.replace('\n', '\r\n').encode('utf-8'))
+if not (ROOT / 'docs/beta2/SKAGER-Beta2-Release-Notes.md').is_file():
+    raise SystemExit('Beta 2 release notes are required in every recovery/installer package')
 for file in (ROOT / 'docs/beta2').glob('*.md'):
     shutil.copy2(file, destination / 'docs' / file.name)
 version_header = (ROOT / 'src/application/Version.h').read_text()
@@ -162,7 +169,7 @@ for file in destination.rglob('*'):
 
 info = f'''# Build information
 
-- OpenNav X: Beta 2 / {product_version}
+- SKAGER: Beta 2 / {product_version}
 - Git commit: `{commit}`
 - OpenCPN: 5.12.4
 - Pinned upstream: `37fd0cddb7334fe489e9f18aa163977a9c5c84f7`
@@ -170,7 +177,7 @@ info = f'''# Build information
 - Architecture: Win32/x86 application and plugin ABI; Windows 10/11 x64 host
 - Build date (UTC): {build_value('OPENNAV_BUILD_DATE')}
 - CI run: {run}
-- Modes: XNav, Legacy, Safe; package-local recovery profile only
+- Modes: SKAGER, Legacy, Safe; package-local recovery profile only
 - Build purpose: INSTALLED PRODUCT; test fixtures compiled OFF
 - No synthetic vessel-data source or scenario launcher is included
 - Required UI gates: native 1280×800 / 96, 120, 144 DPI and actual boat display
@@ -195,7 +202,7 @@ shutil.copytree(ROOT / 'docs/third-party/wxWidgets-3.2.8', destination / 'docs/l
 shutil.copytree(ROOT / 'docs/third-party/OpenSSL-3.5.9', destination / 'docs/licenses/OpenSSL-3.5.9')
 for library in ('curl-8.22.0', 'zlib-1.3.2'):
     shutil.copytree(ROOT / 'docs/third-party' / library, destination / 'docs/licenses' / library)
-shutil.copy2(ROOT / 'LICENSE', destination / 'docs/licenses/OpenNavX-COPYING.txt')
+shutil.copy2(ROOT / 'LICENSE', destination / 'docs/licenses/SKAGER-COPYING.txt')
 (destination / 'docs/SOURCE_AND_LICENSES.md').write_text(f'''# Source and third-party notices
 
 OpenCPN and this integration are distributed under their applicable GPL terms.
@@ -205,6 +212,10 @@ Build scripts, dependency locks and exact integration patches are in the project
 The CI artifact also supplies a corresponding-source archive with the exact root
 CI workflow, reviewed integrated OpenCPN files, the verified inert OpenSSL, curl and zlib source
 archives used by this build, and a per-file SOURCE_REFERENCE.json with its exact hash.
+If the private o-charts presentation adapter is included, its exact original
+sources, reviewed patches, build recipe and notices are supplied in
+`app/opennav/third-party/ocharts/corresponding-source.zip` and in the standalone
+source artifact. Licensed charts and closed helpers are not distributed.
 See `licenses/`
 for bundled OpenCPN/library notices and the installed application's license files.
 
@@ -219,13 +230,13 @@ set remain explicit release-review gates; package assembly does not approve them
 manifest = {str(f.relative_to(destination)).replace('\\', '/'): hashlib.sha256(f.read_bytes()).hexdigest()
             for f in sorted(destination.rglob('*')) if f.is_file()}
 (destination / 'FILE_SHA256.json').write_text(json.dumps(manifest, indent=2) + '\n')
-archive = args.output / 'OpenNavX-Beta2-Portable-Recovery.zip'
+archive = args.output / 'SKAGER-Beta2-Portable-Recovery.zip'
 with zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED, compresslevel=6) as z:
     for file in sorted(destination.rglob('*')):
         if file.is_file(): z.write(file, file.relative_to(args.output))
 (archive.with_suffix('.zip.sha256')).write_text(hashlib.sha256(archive.read_bytes()).hexdigest() + '  ' + archive.name + '\n')
 # Complete exact source plus root CI recipe, not an expiring download offer.
 from source_package import create_source_archive
-create_source_archive(ROOT, commit, args.output / 'OpenNavX-Beta2-source.zip',
-                      [openssl_source['sourceBundle']] + curl_sources['sourceBundles'])
+create_source_archive(ROOT, commit, args.output / 'SKAGER-Beta2-source.zip',
+                      [openssl_source['sourceBundle']] + curl_sources['sourceBundles'] + adapter_sources)
 print(archive)

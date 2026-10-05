@@ -1,0 +1,681 @@
+{
+  "schema": 1,
+  "commit": "45d73e831409d602e8205f32fcba08947ea370bc",
+  "binary_sha256": "a691df000a77435dba3163350d560eef0b3a1a7b0e876ef41cc49eef83deb862",
+  "build_flags": {
+    "OCPN_BUILD_TEST": "ON",
+    "OPENNAV_ENABLE_ROUTE_SCENARIO": "ON",
+    "XNAV_ENABLE_PILOT_LOOPBACK_TESTS": "ON",
+    "XNAV_ENABLE_TEST_FIXTURES": "ON"
+  },
+  "manifest_sha256": "cecfd92eff1b2c9a9c2aa2e64e9a16968a84bdcdee14b77eba337a9277c07185",
+  "resource_files": {
+    "chartsymbols.xml": {
+      "sha256": "4526efc49f463d70e7698e083c7f4557d1b442eb5491ff2a4fd65c197ac2068f",
+      "bytes": 2247431
+    },
+    "S52RAZDS.RLE": {
+      "sha256": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26",
+      "bytes": 1305627
+    },
+    "rastersymbols-day.png": {
+      "sha256": "74e332990cd723e562e1d499b230ec7240be995f395405a468a5f7674beb1377",
+      "bytes": 201601
+    },
+    "rastersymbols-dusk.png": {
+      "sha256": "04f525eff51b9ac2677a7d632196f2c40f801cde476825a8887551fd01f551ff",
+      "bytes": 175933
+    },
+    "rastersymbols-dark.png": {
+      "sha256": "687f9774edb190b2cc9d75a8dd4088e545eec0987f5c4d54fbc84a0783e158d1",
+      "bytes": 171187
+    }
+  },
+  "source_evidence": {
+    "src/integration/ChartNameTypography.h": "23688fca7f9ed456e7458fe1228e0bf9908660a953732cb6e6749c5838e1f4d9",
+    "src/integration/ChartTextFace.h": "4c1b0c41e29ecdac9af7a6fd7446863714539777c1904fa598679ba3ec49b3ab",
+    "src/integration/ChartCogPredictor.h": "3e7841bb311bb9d4951be082a669f4737ee978dd426df4899a22bc9971033c90",
+    "src/integration/ChartPresentation.cpp": "32339b83be2c3b9ff81fb31bfbf8313628a7f1596092921a98693ae0a140a358",
+    "patches/opencpn-5.12.4-xnav.patch": "dfbacadf42502d1d0366745b3a187d256e620b0d2ea7dba9e8912c46e999e0b3",
+    "patches/opencpn-5.12.4-chart-presentation.patch": "a4d63df39d24ac6866a85b205d1206b469d1cba621595a20950471c4e638f250",
+    "resources/chart-style/v1/definition.json": "72395a6b199e15c81780002de684f36ff8b17838639c44c401a842abfd89b0cd",
+    "docs/design/prototype-tokens.json": "111ee35527a974b2df6c2c4af0afd04e5aebdf14bad3004a98be9064aef790c6",
+    "src/application/SkagerBrandAsset.h": "cc9f469181717b4fb80986b9406d2d6d078bfdb5971d2e68f6b4072b8dcd2019",
+    "resources/branding/provenance.json": "f639aa4ffa1194fb527388b15b2f9880746829d4120e30b4ddca32b0326557a6",
+    "tools/chart_cable_paint.py": "97c1037622853e64b5b7897692003dec9f76175213a863418b60d657cfd407c9",
+    "tools/chart_day_neutral_ink.py": "0f136c0e9764c7750ab581ef3c9b0c35c976563ceb88d8598eeee5a0e7761840",
+    "src/ui/SkagerWordmark.h": "c2fc3d1afdf88bfd2e884d541e7b3ad4463702cece09057e38f4d496deda9928",
+    "src/integration/OpenCPNIntegration.cpp": "aac47c98d529eff76f24058ee1c5a02b90bacee9dc63e05d4800ed6c63ec349b",
+    "src/integration/ChartCaFan.h": "2f31ef44ec71c8be79dc2f544f59504cc2fb46ccf99246fff822d0c77293aed1",
+    "src/integration/ChartCaLightPoint.h": "9bd5b3a03422d5b920a9a978e6ee49f4bc6db94fbd5f3b59621f7841d9a05e0d",
+    "src/ais/Provider.h": "cbbf30f2d55bec7b1be3a6b8acf73c17976986e08c4aa33d088f4dc34d75c210",
+    "src/ais/AisStreamProvider.cpp": "1b7d713f3e832119c02150f8aa283a1aae482daf2f1408b5cbcf21449963768b",
+    "src/ais/AisStreamSession.cpp": "5f715a56a9aefdecbadf9faf297b833d9f76d322bb76443fdcdc4a907af883dc",
+    "tools/chart_anchor_art.py": "af9d7ad15bb78a7eaa8f8ff39256c74e56724b95d782cc2638d0a16ebbbc1904",
+    "tools/chart_building_point.py": "fa01153dc2e022c03384f8a379aacb68d025d74e341735b5fc702580f8216ed8",
+    "tools/chart_cardinal_art.py": "e8b4f52df0d558ec715613c9f737776db0f10f844c3f2769a3f35fd8f670158e",
+    "tools/chart_construction_hatch.py": "a1dc22dd3a1d08ed195bcceb55f10ff29578a58f16ef1f5f517192830be459b4",
+    "tools/chart_fishing_pattern.py": "e1974aeab8ba857f0b58db5d5240ef807cf32a7c3ee7f11b4b62699b872e8e3b",
+    "tools/chart_generic_beacon_art.py": "bfdb78bb9ff10c7bb05f2ea086d5f4280028c9c4875f5a93108b4189cae48415",
+    "tools/chart_hazard_art.py": "7cfa2cccba6c50eb3d1b6dd040c8cb5690ec38b41fcbcc6ef5b7483c2a26b777",
+    "tools/chart_raster_ink.py": "ffffd4365cdf534b77110cd26ca068fc86a55286e66b8baa5c18811389bfb294",
+    "tools/chart_seamark_art.py": "fcafdb7de6926378ff74ec1ebee2656c84f2f91f1d93d4856e3ede0832341f91",
+    "tools/chart_service_art.py": "61065ca1eecb2f1db842b0eb8dbe10925cd55551abf56965df1779d65d4a58a8",
+    "tools/chart_special_buoy_art.py": "488a76b80b55f3a443fe2c965e5c7725e7cf39fba1158cd156eef358ca8fbc19",
+    "tools/chart_structure_paint.py": "aebe01e1ed890e425a5f1b18e4fc876b00ebb11d78da6382c7c3540128f03ec0",
+    "tools/chart_yellow_buoy_art.py": "a3d5adab538c74c4ba1ef82bfc62fc82f9e973ae13286bb1dab0db89ea8d91d3",
+    "src/integration/ChartCableWave.h": "6f61208b428e9bd99a04157af887f3735d055df89116885de79a4dac2d0539bf",
+    "src/integration/ChartCanvasInk.h": "cc1a4d94131f932f2bbd40d330d9003d0086dfc1237449b4215b509377c39f66",
+    "src/integration/ChartFishingPattern.h": "ea50046c24edd0c5ee4723c6a40af4802155fc14f0e493b1fd4b11ec29848630",
+    "src/integration/ChartLightLabel.h": "64d1fa48773369339402acd12d0be91847a5c69e145b8a072268c752a579e9ee",
+    "src/integration/ChartLightSymbol.h": "c3d52a12d12562f601eae930f59ea4ebefa62925975f51ec05c875f0687a5b04",
+    "src/integration/ChartModuleCheck.h": "6d413e9d5895115d0f2bf8025d980c4ec69bc37d5cb027d565129fe8d26362ca",
+    "src/integration/ChartModulePe.h": "3f84df7d0be6f4ec190c5710d55b381cb1aa465022c68c90aff8fc8de3847d0b",
+    "src/integration/ChartNameSpacing.h": "2f37a592dd4c311a371441cc42560a68286d65cb442a061a739dbcce9e5cd6f6",
+    "src/integration/ChartNameText.h": "da096196bd661f5e5bb47fdab0946a8987f707cf961f5eb9197090355a140635",
+    "src/integration/ChartPresentation.h": "9bca31e12f6bb3603d5a932ccdd9da735f64efcba548bf58ded1e47fe45e5e02",
+    "src/integration/ChartRouteGeometry.h": "89e95a7688b02f0a206b97de2971ee6f9abda2f7f291112e40a454fbb4db6550",
+    "src/integration/ChartRouteLabel.h": "0df631632f74f8df1df46de76e54063185c4a09bf6a4f6a86c817825c7cb3c53",
+    "src/integration/ChartRouteLabelRaster.h": "c2ca0bd64ec1203addbd518b2424af91c3ca25f72b250d1f6c80b6e467722f3b",
+    "src/integration/ChartRouteUnderlay.h": "c6785bdd38bd44be4b1fdb1321ea7dc4130d8f1aa91647d6a4d6822e6744f83c",
+    "src/integration/ChartRouteWaypoint.h": "83f6fee518d2c2e7ad157938977ce50ecae7220d5c4a145d69a65bbefb01821c",
+    "src/integration/ChartSoundingFont.h": "02d27cb56d7af4f292640e59ec0326ba7b6555406956e6419a367b5bab124021",
+    "src/integration/ChartSpecialBuoySymbol.h": "24e1af5d565b522d00f5d8103c14b5bcadfb0075a3c4fcebcf2e832e22e8c8c4",
+    "src/integration/ChartWaypointIcon.h": "c9960ef0eb5dbb45ea7d866f6d406ef6e35822a60a95db251b2f063d4b703616",
+    "src/integration/ChartYellowBuoySymbol.h": "feb82319b1b2d372d2b512ff9a7775bca7b752bcf09e64919482152a6405549d"
+  },
+  "authority": "Linux Xvfb opengl development visuals only; not native Windows, production or boat acceptance",
+  "runtime_identity": "Still required from loader self-test and actual capture diagnostics",
+  "renderer_requested": "opengl",
+  "scope": "NOAA real-world ENC; explicit source scene; controlled simulated loopback RMC; no Demo or injected chart objects",
+  "scene_source": {
+    "cell": "GB4X0000.000",
+    "source_sha256": "c70d9e0f53e149270f85900f8576082db86781d64fbb71aa7d5ceb4af4aa22e3",
+    "coordinate_order": "latitude,longitude",
+    "scope": "Official IHO S-64 presentation-test geography, not operational ENC",
+    "decoder": "pyogrio/GDAL, UPDATES=APPLY, point WKB decoded with Shapely; all non-null attributes retained; absent/null fields omitted",
+    "scale_basis": "Requested .6 -> expected .5826126536 reuses retained canonical 1014x566 IHO viewport calibration; this is not a newly observed sector-rwg capture",
+    "scenes": [
+      {
+        "id": "seattle",
+        "center": [
+          47.6,
+          -122.36
+        ],
+        "scalePpm": 0.15,
+        "actualScale": 0.150000006,
+        "cell": "US5SEAFL.000",
+        "nativeScale": 12000,
+        "themes": [
+          "Day",
+          "Dusk",
+          "Night",
+          "Day"
+        ],
+        "expectedCA": [],
+        "features": [],
+        "sourceCable": [
+          {
+            "ogrFid": 1569,
+            "attributes": {
+              "RCID": 1571,
+              "PRIM": 2,
+              "GRUP": 2,
+              "OBJL": 22,
+              "RVER": 2,
+              "AGEN": 550,
+              "FIDN": -1564374074,
+              "FIDS": 6435,
+              "LNAM": "0226A2C18BC61923",
+              "CATCBL": 1,
+              "SCAMIN": 29999,
+              "SORDAT": "20240611",
+              "SORIND": "US,US,reprt,L-242-2024"
+            },
+            "geometryType": "LineString",
+            "bounds": [
+              -122.349421,
+              47.5985222,
+              -122.3402692,
+              47.6092584
+            ]
+          }
+        ]
+      }
+    ],
+    "source_files": {
+      "US5SEAFL": {
+        "US5SEAFL.000": {
+          "bytes": 841005,
+          "sha256": "7e474bea96e7a84c6f3ee6b44ff7db4288029fa47ac2a285594e18469dbf518c"
+        },
+        "US5SEAFL.001": {
+          "bytes": 8709,
+          "sha256": "504440d201453548aae160c4c5340d55d480bd39cd57061b7fc03262968e062d"
+        }
+      },
+      "GB4X0000": {
+        "GB4X0000.000": {
+          "bytes": 945697,
+          "sha256": "c70d9e0f53e149270f85900f8576082db86781d64fbb71aa7d5ceb4af4aa22e3"
+        }
+      }
+    }
+  },
+  "chart_source_files": {
+    "US5SEAFL.000": "7e474bea96e7a84c6f3ee6b44ff7db4288029fa47ac2a285594e18469dbf518c",
+    "US5SEAFL.001": "504440d201453548aae160c4c5340d55d480bd39cd57061b7fc03262968e062d"
+  },
+  "captures": [
+    {
+      "name": "seattle-SKAGER-Day",
+      "image_sha256": "bb1b2a7d3b5e7217809ad0ac7fee8868e1d5e8d398f4cea0024d125564c6c82d",
+      "scene": "seattle",
+      "chart": {
+        "canvas_pixels": {
+          "height": 566,
+          "width": 1014
+        },
+        "latitude": 47.6,
+        "database_entries": 1,
+        "follow": false,
+        "quilt_members": [
+          {
+            "type": 5,
+            "native_scale": 12000,
+            "file": "US5SEAFL.000",
+            "index": 0
+          }
+        ],
+        "opengl_enabled": true,
+        "quilt_reference": 0,
+        "scale_bar": {
+          "height": 29,
+          "y": 505,
+          "width": 25,
+          "x": 191
+        },
+        "depth_unit_type": 1,
+        "quilt": true,
+        "scale_ppm": 0.150000006,
+        "longitude": -122.36,
+        "depth_units_visible": true
+      },
+      "presentation": {
+        "status": "SKAGER presentation v1 / pinned symbols; o-charts: no SKAGER adapter loaded",
+        "private_ocharts": {
+          "available": false
+        },
+        "requested": "XNav",
+        "core": {
+          "available": true,
+          "saved_point_style": 76,
+          "effective_point_style": 76
+        }
+      },
+      "source_feature_crops": [],
+      "trace": {
+        "conditional_selection": [],
+        "read_only_trace_complete": true,
+        "draws": [],
+        "arc_draws": [],
+        "raster_draws": []
+      },
+      "water_pixels": 365708,
+      "owned_values": {
+        "Latitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Latitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "124675879",
+          "validity": "Measured",
+          "value": 47.6,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 233,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Longitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Longitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "124675879",
+          "validity": "Measured",
+          "value": -122.36,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 233,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Speed over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Speed over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "124675879",
+          "validity": "Measured",
+          "value": 3,
+          "aging_after_ms": 2000,
+          "unit": "kn",
+          "age_ms": 233,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Course over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Course over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "124675879",
+          "validity": "Measured",
+          "value": 90,
+          "aging_after_ms": 2000,
+          "unit": "deg true",
+          "age_ms": 233,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        }
+      }
+    },
+    {
+      "name": "seattle-SKAGER-Dusk",
+      "image_sha256": "78c1871412b6a0ede059e6a42665403d4311eb7450cde18e6d282479f3cef170",
+      "scene": "seattle",
+      "chart": {
+        "canvas_pixels": {
+          "height": 566,
+          "width": 1014
+        },
+        "latitude": 47.6,
+        "database_entries": 1,
+        "follow": false,
+        "quilt_members": [
+          {
+            "type": 5,
+            "native_scale": 12000,
+            "file": "US5SEAFL.000",
+            "index": 0
+          }
+        ],
+        "opengl_enabled": true,
+        "quilt_reference": 0,
+        "scale_bar": {
+          "height": 29,
+          "y": 505,
+          "width": 25,
+          "x": 191
+        },
+        "depth_unit_type": 1,
+        "quilt": true,
+        "scale_ppm": 0.150000006,
+        "longitude": -122.36,
+        "depth_units_visible": true
+      },
+      "presentation": {
+        "status": "SKAGER presentation v1 / pinned symbols; o-charts: no SKAGER adapter loaded",
+        "private_ocharts": {
+          "available": false
+        },
+        "requested": "XNav",
+        "core": {
+          "available": true,
+          "saved_point_style": 76,
+          "effective_point_style": 76
+        }
+      },
+      "source_feature_crops": [],
+      "trace": {
+        "conditional_selection": [],
+        "read_only_trace_complete": true,
+        "draws": [],
+        "arc_draws": [],
+        "raster_draws": []
+      },
+      "water_pixels": 366748,
+      "owned_values": {
+        "Latitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Latitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "124678882",
+          "validity": "Measured",
+          "value": 47.6,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 18,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Longitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Longitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "124678882",
+          "validity": "Measured",
+          "value": -122.36,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 18,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Speed over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Speed over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "124678882",
+          "validity": "Measured",
+          "value": 3,
+          "aging_after_ms": 2000,
+          "unit": "kn",
+          "age_ms": 18,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Course over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Course over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "124678882",
+          "validity": "Measured",
+          "value": 90,
+          "aging_after_ms": 2000,
+          "unit": "deg true",
+          "age_ms": 18,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        }
+      }
+    },
+    {
+      "name": "seattle-SKAGER-Night",
+      "image_sha256": "dfd55cf5d52a169d5d0a54d07a26f4d2b76a9b321e3358254c8f0b993bc24157",
+      "scene": "seattle",
+      "chart": {
+        "canvas_pixels": {
+          "height": 566,
+          "width": 1014
+        },
+        "latitude": 47.6,
+        "database_entries": 1,
+        "follow": false,
+        "quilt_members": [
+          {
+            "type": 5,
+            "native_scale": 12000,
+            "file": "US5SEAFL.000",
+            "index": 0
+          }
+        ],
+        "opengl_enabled": true,
+        "quilt_reference": 0,
+        "scale_bar": {
+          "height": 29,
+          "y": 505,
+          "width": 25,
+          "x": 191
+        },
+        "depth_unit_type": 1,
+        "quilt": true,
+        "scale_ppm": 0.150000006,
+        "longitude": -122.36,
+        "depth_units_visible": true
+      },
+      "presentation": {
+        "status": "SKAGER presentation v1 / pinned symbols; o-charts: no SKAGER adapter loaded",
+        "private_ocharts": {
+          "available": false
+        },
+        "requested": "XNav",
+        "core": {
+          "available": true,
+          "saved_point_style": 76,
+          "effective_point_style": 76
+        }
+      },
+      "source_feature_crops": [],
+      "trace": {
+        "conditional_selection": [],
+        "read_only_trace_complete": true,
+        "draws": [],
+        "arc_draws": [],
+        "raster_draws": []
+      },
+      "water_pixels": 366904,
+      "owned_values": {
+        "Latitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Latitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "124680986",
+          "validity": "Measured",
+          "value": 47.6,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 5,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Longitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Longitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "124680986",
+          "validity": "Measured",
+          "value": -122.36,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 5,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Speed over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Speed over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "124680986",
+          "validity": "Measured",
+          "value": 3,
+          "aging_after_ms": 2000,
+          "unit": "kn",
+          "age_ms": 5,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Course over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Course over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "124680986",
+          "validity": "Measured",
+          "value": 90,
+          "aging_after_ms": 2000,
+          "unit": "deg true",
+          "age_ms": 5,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        }
+      }
+    },
+    {
+      "name": "seattle-SKAGER-Day-return",
+      "image_sha256": "8c1bded6a2f6de409a8b60f1ef242b7ead4689df23c2fa81ef71cf7136b3d1bc",
+      "scene": "seattle",
+      "chart": {
+        "canvas_pixels": {
+          "height": 566,
+          "width": 1014
+        },
+        "latitude": 47.6,
+        "database_entries": 1,
+        "follow": false,
+        "quilt_members": [
+          {
+            "type": 5,
+            "native_scale": 12000,
+            "file": "US5SEAFL.000",
+            "index": 0
+          }
+        ],
+        "opengl_enabled": true,
+        "quilt_reference": 0,
+        "scale_bar": {
+          "height": 29,
+          "y": 505,
+          "width": 25,
+          "x": 191
+        },
+        "depth_unit_type": 1,
+        "quilt": true,
+        "scale_ppm": 0.150000006,
+        "longitude": -122.36,
+        "depth_units_visible": true
+      },
+      "presentation": {
+        "status": "SKAGER presentation v1 / pinned symbols; o-charts: no SKAGER adapter loaded",
+        "private_ocharts": {
+          "available": false
+        },
+        "requested": "XNav",
+        "core": {
+          "available": true,
+          "saved_point_style": 76,
+          "effective_point_style": 76
+        }
+      },
+      "source_feature_crops": [],
+      "trace": {
+        "conditional_selection": [],
+        "read_only_trace_complete": true,
+        "draws": [],
+        "arc_draws": [],
+        "raster_draws": []
+      },
+      "water_pixels": 365708,
+      "owned_values": {
+        "Latitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Latitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "124683100",
+          "validity": "Measured",
+          "value": 47.6,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 143,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Longitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Longitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "124683100",
+          "validity": "Measured",
+          "value": -122.36,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 143,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Speed over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Speed over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "124683100",
+          "validity": "Measured",
+          "value": 3,
+          "aging_after_ms": 2000,
+          "unit": "kn",
+          "age_ms": 143,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Course over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Course over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "124683100",
+          "validity": "Measured",
+          "value": 90,
+          "aging_after_ms": 2000,
+          "unit": "deg true",
+          "age_ms": 143,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        }
+      }
+    }
+  ],
+  "status": "passed",
+  "clean_exit": true,
+  "font_evidence": {
+    "policy_source_sha256": "32339b83be2c3b9ff81fb31bfbf8313628a7f1596092921a98693ae0a140a358",
+    "note": "Source policy and Linux fontconfig inventory recorded; this does not establish native Windows glyph metrics",
+    "Segoe UI Variable Display": {
+      "exit_code": 0,
+      "linux_fontconfig_match": "Liberation Sans\n/usr/share/fonts/liberation/LiberationSans-Regular.ttf"
+    },
+    "Segoe UI": {
+      "exit_code": 0,
+      "linux_fontconfig_match": "Liberation Sans\n/usr/share/fonts/liberation/LiberationSans-Regular.ttf"
+    },
+    "Arial": {
+      "exit_code": 0,
+      "linux_fontconfig_match": "Liberation Sans\n/usr/share/fonts/liberation/LiberationSans-Regular.ttf"
+    }
+  },
+  "additional_source_evidence": {
+    "src/ui/SkagerWordmark.h": "c2fc3d1afdf88bfd2e884d541e7b3ad4463702cece09057e38f4d496deda9928",
+    "src/ui/Theme.h": "b28adb1f519ec5a1f9b7e2bfab6ec2ab1c7f06656bd129316e9e453ef1ec0776",
+    "src/ui/Shell.cpp": "ed022b04450b0a24fec10cb3303551f35ab7e8dd01161918d18daa3ce322ad02",
+    "src/integration/ChartCanvasInk.h": "cc1a4d94131f932f2bbd40d330d9003d0086dfc1237449b4215b509377c39f66",
+    "src/integration/ChartRouteLabel.cpp": "c4f6b225ed4e6985370da71559237b5ee6bbc3d2ac62fa4cf530d02b781f017f",
+    "src/integration/ChartRouteLabelRaster.h": "c2ca0bd64ec1203addbd518b2424af91c3ca25f72b250d1f6c80b6e467722f3b",
+    "tools/chart_cardinal_art.py": "e8b4f52df0d558ec715613c9f737776db0f10f844c3f2769a3f35fd8f670158e",
+    "resources/chart-style/v1/cardinals/provenance.json": "a0017453b3ea5a814a613bb50d0f5a676fdf0095e0b5e7a6249ec49fe38c8010"
+  },
+  "mesa_renderer": "name of display: :276\ndisplay: :276  screen: 0\ndirect rendering: Yes\nExtended renderer info (GLX_MESA_query_renderer):\n    Vendor: Mesa (0xffffffff)\n    Device: llvmpipe (LLVM 22.1.8, 256 bits) (0xffffffff)\n    Version: 26.2.2\n    Accelerated: no\n    Video memory: 7807MB\n    Unified memory: yes\n    Preferred profile: core (0x1)\n    Max core profile version: 4.6\n    Max compat profile version: 4.6\n    Max GLES1 profile version: 1.1\n    Max GLES[23] profile version: 3.2\nMemory info (GL_ATI_meminfo):\n    VBO free memory - total: 0 MB, largest block: 0 MB\n    VBO free aux. memory - total: 3836 MB, largest block: 3836 MB\n    Texture free memory - total: 0 MB, largest block: 0 MB\n    Texture free aux. memory - total: 3836 MB, largest block: 3836 MB\n    Renderbuffer free memory - total: 0 MB, largest block: 0 MB\n    Renderbuffer free aux. memory - total: 3836 MB, largest block: 3836 MB\nMemory info (GL_NVX_gpu_memory_info):\n    Dedicated video memory: 0 MB\n    Total available memory: 7807 MB\n    Currently available dedicated video memory: 0 MB\nOpenGL vendor string: Mesa\nOpenGL renderer string: llvmpipe (LLVM 22.1.8, 256 bits)\nOpenGL core profile version string: 4.6 (Core Profile) Mesa 26.2.2-arch1.1\nOpenGL core profile shading language version string: 4.60\nOpenGL core profile context flags: (none)\nOpenGL core profile profile mask: core profile\n\nOpenGL version string: 4.6 (Compatibility Profile) Mesa 26.2.2-arch1.1\nOpenGL shading language version string: 4.60\nOpenGL context flags: (none)\nOpenGL profile mask: compatibility profile\n\nOpenGL ES profile version string: OpenGL ES 3.2 Mesa 26.2.2-arch1.1\nOpenGL ES profile shading language version string: OpenGL ES GLSL ES 3.20\n\n",
+  "loader_selftest": {
+    "upstream": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+    "commissioning_restart_protocol": 0,
+    "version": "0.4.0-beta2",
+    "commit": "45d73e831409d602e8205f32fcba08947ea370bc",
+    "compiler": "GNU 16.2.1 / 8 byte pointers",
+    "plugins_loaded": false,
+    "test_fixtures": true,
+    "resources": {
+      "gshhs/poly-c-1.dat": true,
+      "s57data/s57objectclasses.csv": true,
+      "uidata/styles.xml": true,
+      "s57data/chartsymbols.xml": true
+    },
+    "normal_config_directory": "/etc",
+    "passed": true,
+    "xnav_hardware_output_policy": "test-loopback-only",
+    "build_purpose": "DEVELOPER TEST BUILD",
+    "profile_initialized": false,
+    "contract": "OpenNavX.LoaderSelfTest.1"
+  },
+  "day_return_checks": [
+    {
+      "image": "seattle-SKAGER-Day-return",
+      "bounds": [
+        80,
+        68,
+        1094,
+        634
+      ],
+      "equal": true,
+      "mask": null
+    }
+  ],
+  "symbol_table_receipts": [
+    {
+      "style": "XNav",
+      "persisted_nSymbolStyle": 76,
+      "scope": "Persisted preference plus explicitly scoped core diagnostics; private adapter unavailable; actual object table independently traced"
+    }
+  ]
+}

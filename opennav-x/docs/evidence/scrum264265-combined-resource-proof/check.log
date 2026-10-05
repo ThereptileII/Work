@@ -1,0 +1,9 @@
+{
+  "status": "passed",
+  "source": "5c05eb55c15b67d4014df55896d95452e9cc9d64",
+  "checks": 53377,
+  "seamark_checks": 53258,
+  "hatch_checks": 119,
+  "manifest_sha256": "beff73cae53211c4ef0b0c3fa2ed83e5290680f19f48781646e1f1d0d4f88e53",
+  "scope": "One combined generation, unchanged seamark and hatch oracles including whole XML/atlas inverse and retained negative controls; no app or native acceptance."
+}

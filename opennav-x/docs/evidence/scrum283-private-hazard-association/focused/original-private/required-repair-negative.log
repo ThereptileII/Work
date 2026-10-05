@@ -1,0 +1,19 @@
+context layout 80 76
+case 1 UWTROC: ;SY(UWTROC04)<US><US> /category=79
+case 2 UWTROC: ;SY(UWTROC04)<US><US> /category=79
+case 3 UWTROC: ;SY(LNDARE01)<US><US> /category=79
+case 4 UWTROC: ;SY(UWTROC03)<US><US> /category=79
+case 5 UWTROC: ;SY(UWTROC04)<US><US> /category=79
+case 6 UWTROC: ;SY(UWTROC04)<US><US> /category=79
+case 7 UWTROC: ;SY(UWTROC04)<US><US> /category=79
+case 8 UWTROC: ;SY(DANGER51);SY(SOUNDS13);SY(SOUNDS52)<US><US><US> /category=79
+case 9 UWTROC: ;SY(UWTROC04)<US><US> /category=79
+case 10 UWTROC: ;SY(UWTROC04)<US><US> /category=79
+case 11 UWTROC: ;SY(DANGER52);SY(SOUNDG22);SY(SOUNDG11)<US><US><US> /category=79
+case 12 WRECKS: ;SY(WRECKS04)<US><US> /category=79
+case 13 WRECKS: ;SY(WRECKS05)<US><US> /category=79
+case 14 WRECKS: ;SY(WRECKS01)<US><US> /category=79
+case 15 WRECKS: ;SY(WRECKS01)<US><US> /category=79
+case 16 WRECKS: <US><US> /category=79
+case 17 WRECKS: <US><US> /category=79
+association check 18

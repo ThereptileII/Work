@@ -1,4 +1,5 @@
 #include "NavigationObjectScenario.h"
+#include "application/AnchorRouteTransition.h"
 #include "chcanv.h"
 #include "integration/NavigationObjects.h"
 #include "integration/NavigationActions.h"
@@ -36,6 +37,8 @@
 #include <wx/timer.h>
 extern bool g_bDeferredInitDone;
 extern MyFrame *gFrame;
+extern RoutePoint *pAnchorWatchPoint1, *pAnchorWatchPoint2;
+extern wxString g_AW1GUID, g_AW2GUID;
 namespace opennav::test {
 namespace {
 using namespace integration;
@@ -727,6 +730,14 @@ void ObjectScenarioStep(const vessel::Navigation &selected) {
       Check(!EditWaypoint(old, "STALE EDIT", "Must fail").ok,
             "Reject old waypoint revision");
       retained_mark = Mark(mark_id);
+      (void)CopyNavigationNameSuggestion(*gFrame,
+          {retained_mark.latitude_deg, retained_mark.longitude_deg}, false);
+      Check(Mark(mark_id).name == "ALPHA TEST edited" &&
+                Mark(mark_id).revision == retained_mark.revision,
+            "Chart name suggestion never renames a stored waypoint");
+      Check(!EditWaypoint(retained_mark, "   ", "Must not save").ok &&
+                Mark(mark_id).revision == retained_mark.revision,
+            "Invalid name preserves native waypoint and revision");
       Check(!DeleteWaypoint(old).ok, "Reject deletion using old revision");
       CheckWaypointContext(selected, mark_id);
       const auto retained_context = CopyWaypointContext(mark_id, selected, Clock::now());
@@ -775,6 +786,14 @@ void ObjectScenarioStep(const vessel::Navigation &selected) {
             "Edit route");
       Check(!ReverseRoute(before).ok, "Reject old route revision");
       before = RouteCopy();
+      (void)CopyNavigationNameSuggestion(*gFrame,
+          {before.points.back().latitude_deg, before.points.back().longitude_deg}, true);
+      Check(RouteCopy().name == "ALPHA TEST renamed route" &&
+                RouteCopy().revision == before.revision,
+            "Chart name suggestion never renames a saved route");
+      Check(!EditRoute(before, "   ", "Must not save").ok &&
+                RouteCopy().revision == before.revision,
+            "Invalid name preserves native route and revision");
       Check(ReverseRoute(before).ok, "Reverse route through core");
       auto reversed = RouteCopy();
       Check(reversed.points.front().id == before.points.back().id,
@@ -811,12 +830,21 @@ void ObjectScenarioStep(const vessel::Navigation &selected) {
       Check(g_pRouteMan->GetpActiveRoute() == test_route,
             "Normal progress preserves active route");
       CheckSelectedRouteStop(selected);
+      const auto route_before_anchor = RouteCopy();
+      Check(ActivateRoute(route_before_anchor, selected).ok,
+            "Activate navigation before setting anchor");
       auto started = StartAnchor(selected, 50);
       Check(started.ok, "Start upstream anchor watch");
+      Check(!g_pRouteMan->GetpActiveRoute() && !test_route->IsActive() &&
+                RouteCopy().points.size() == route_before_anchor.points.size() &&
+                RouteCopy().points.front().id == route_before_anchor.points.front().id &&
+                NavObj_dB::GetInstance().UpdateRoute(test_route),
+            "Setting anchor deactivates navigation and preserves persisted route and marks");
       anchor_id = started.identity;
       auto *created_anchor = pWayPointMan->FindWaypointByGuid(anchor_id);
       Check(created_anchor && created_anchor->GetName() == "50" &&
-                created_anchor->GetIconName() == "anchor",
+                created_anchor->GetIconName() == "anchor" &&
+                created_anchor->GetDescription() == "SKAGER temporary anchor watch",
             "Anchor chart label uses whole metres and anchor icon");
       Check(!StartAnchor(selected, 50).ok, "No implicit anchor replacement");
       Check(!DeleteWaypoint(Mark(anchor_id)).ok, "Anchor mark protected");
@@ -832,6 +860,62 @@ void ObjectScenarioStep(const vessel::Navigation &selected) {
                 watch.vessel_position->observed_at == selected.latitude_deg.observed_at &&
                 watch.vessel_position->position_source == selected.latitude_deg.source,
             "Anchor plot copies the selected GPS source/time through integration");
+      {
+        const auto actions = MakeNavigationActions(*gFrame, [selected] { return selected; }, {});
+        const auto before = CopyAnchorWatchSelection();
+        const auto route = RouteCopy();
+        Check(before.available && before.watches.size() == 1,
+              "Owned confirmation selection includes current anchor watch");
+        Check(!application::ConfirmRouteActivation(route, actions, [](bool stopping) {
+                Check(stopping, "Anchor-active route confirmation describes stop-watch transition");
+                return false;
+              }) && application::SameAnchorWatchSelection(before, CopyAnchorWatchSelection()) &&
+                  !g_pRouteMan->GetpActiveRoute(),
+              "Cancel leaves real anchor watch, route and mark unchanged");
+        Check(!ActivateRoute(route, selected).ok &&
+                  !GoTo({gLat + .1, gLon + .1}, "BLOCKED", selected).ok &&
+                  !GoToWaypoint(Mark(mark_id), selected).ok,
+              "Unconfirmed activation and Go To cannot bypass anchor exclusion");
+        auto changed_route = route;
+        changed_route.revision += " stale";
+        Check(!ActivateRouteAfterAnchor(changed_route, selected, before).ok &&
+                  application::SameAnchorWatchSelection(before, CopyAnchorWatchSelection()),
+              "Changed route revision cannot stop a watch");
+        auto *original_mark = pWayPointMan->FindWaypointByGuid(anchor_id);
+        original_mark->SetName("55");
+        Check(!ActivateRouteAfterAnchor(route, selected, before).ok &&
+                  pAnchorWatchPoint1 == original_mark && !g_pRouteMan->GetpActiveRoute(),
+              "Changed anchor radius requires fresh confirmation");
+        original_mark->SetName("50");
+        const auto second = CreateWaypoint({gLat + .01, gLon}, "60", "Preserved user anchor");
+        Check(second.ok, "Create second watched user mark");
+        auto *second_mark = pWayPointMan->FindWaypointByGuid(second.identity);
+        pAnchorWatchPoint2 = second_mark;
+        g_AW2GUID = second_mark->m_GUID;
+        Check(!ActivateRouteAfterAnchor(route, selected, before).ok && pAnchorWatchPoint1 &&
+                  pAnchorWatchPoint2,
+              "A second watch added during confirmation cannot be silently cleared");
+        const auto accepted = application::ConfirmRouteActivation(
+            RouteCopy(), actions, [](bool stopping) { return stopping; });
+        Check(accepted && accepted->ok && g_pRouteMan->GetpActiveRoute() == test_route &&
+                  !pAnchorWatchPoint1 && !pAnchorWatchPoint2 &&
+                  g_AW1GUID.empty() && g_AW2GUID.empty(),
+              "Accepted transition stops both watches and activates selected native route");
+        Check(pWayPointMan->FindWaypointByGuid(anchor_id) == original_mark &&
+                  pWayPointMan->FindWaypointByGuid(second.identity) == second_mark &&
+                  NavObj_dB::GetInstance().UpdateRoutePoint(original_mark) &&
+                  NavObj_dB::GetInstance().UpdateRoutePoint(second_mark) &&
+                  NavObj_dB::GetInstance().UpdateRoute(test_route),
+              "Both temporary and user anchor marks remain registered and persisted");
+        // Explicit test cleanup, separate from the non-destructive transition.
+        Check(DeleteWaypoint(Mark(anchor_id)).ok && DeleteWaypoint(Mark(second.identity)).ok,
+              "Remove preserved disposable fixture marks explicitly");
+        const auto restarted = StartAnchor(selected, 50);
+        Check(restarted.ok && !g_pRouteMan->GetpActiveRoute(),
+              "Returning to anchor stops the route without deleting it");
+        anchor_id = restarted.identity;
+        Record("Confirmed route/anchor exclusion, cancel, stale selections, both watches and native mark persistence");
+      }
       Check(ClearAnchor(anchor_id).ok, "Clear upstream watch");
       Check(!ClearAnchor(anchor_id).ok, "Cleared watch cannot be reused");
       Check(!pWayPointMan->FindWaypointByGuid(anchor_id),
@@ -849,19 +933,22 @@ void ObjectScenarioStep(const vessel::Navigation &selected) {
       Check(ClearAnchor(user_watch.identity).ok &&
                 pWayPointMan->FindWaypointByGuid(user_watch.identity) == user_mark,
             "Clearing user-repurposed watch preserves its waypoint");
-      auto old_watch = StartAnchor(selected, 70);
-      Check(old_watch.ok, "Create old-release ownership fixture");
-      auto *old_mark = pWayPointMan->FindWaypointByGuid(old_watch.identity);
-      old_mark->SetName("70.000000");
-      old_mark->SetIconName("diamond");
-      old_mark->m_MarkDescription =
-          "OpenNav anchor watch; radius stored using OpenCPN semantics";
-      Check(NavObj_dB::GetInstance().UpdateRoutePoint(old_mark),
-            "Persist exact Beta 1 watch shape");
-      Check(ClearAnchor(old_watch.identity).ok &&
-                !pWayPointMan->FindWaypointByGuid(old_watch.identity),
-            "Clearing an upgraded Beta 1 watch removes its owned mark");
-      Record("Anchor ownership preserves repurposed user marks and recognizes Beta 1 watches");
+      for (const auto *description : {
+               "OpenNav anchor watch; radius stored using OpenCPN semantics",
+               "OpenNav temporary anchor watch"}) {
+        auto old_watch = StartAnchor(selected, 70);
+        Check(old_watch.ok, "Create old-release ownership fixture");
+        auto *old_mark = pWayPointMan->FindWaypointByGuid(old_watch.identity);
+        old_mark->SetName("70.000000");
+        old_mark->SetIconName("diamond");
+        old_mark->m_MarkDescription = description;
+        Check(NavObj_dB::GetInstance().UpdateRoutePoint(old_mark),
+              "Persist exact historical watch description");
+        Check(ClearAnchor(old_watch.identity).ok &&
+                  !pWayPointMan->FindWaypointByGuid(old_watch.identity),
+              "Clearing an upgraded watch removes its owned mark");
+      }
+      Record("Anchor ownership preserves repurposed user marks and recognizes both historical watch descriptions");
       Check(g_pAIS != nullptr, "AIS service exists");
       target = std::make_shared<AisTargetData>(AisTargetCallbacks{});
       target->MMSI = 990000001;

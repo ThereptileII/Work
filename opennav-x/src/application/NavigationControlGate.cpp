@@ -31,6 +31,7 @@ std::function<void(Args...)> Guard(std::function<void(Args...)> action,
 NavigationActions GuardNavigationChanges(NavigationActions a,
                                          std::function<bool()> allowed) {
   a.activate = Guard(a.activate, allowed);
+  a.activate_after_anchor = Guard(a.activate_after_anchor, allowed);
   a.deactivate = Guard(a.deactivate, allowed);
   a.reverse = Guard(a.reverse, allowed);
   a.edit_route = Guard(a.edit_route, allowed);

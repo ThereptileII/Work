@@ -1,0 +1,7 @@
+choco install -y poedit
+Failed to fetch results from V2 feed at 'https://community.chocolatey.org/api/v2/Packages(Id='poedit',Version='3.9.1')' with following message : Response status code does not indicate success: 504 (Gateway Timeout).
+Unable to find package 'poedit'. Existing packages must be restored before performing an install or update.
+  TESTDONE: 2072 tests were considered during 766 seconds.
+  TESTINFO: 503 tests were skipped due to these restraints:
+  TESTDONE: 1569 tests out of 1569 reported OK: 100%
+Built and verified curl 8.22.0 with OpenSSL 3.5.9 for Win32/x86

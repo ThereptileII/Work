@@ -1,0 +1,22 @@
+name: SKAGER focused native Python geometry proof
+on:
+  push:
+    branches: [skager-native-python-contracts]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  geometry:
+    runs-on: windows-2022
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Verify native locale and unchanged diagnostic geometry assertions
+        shell: pwsh
+        env:
+          PYTHONUTF8: '0'
+        run: |
+          python -c "import locale, sys; print(sys.version); print('Locale:', locale.getencoding()); assert sys.platform == 'win32'"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python opennav-x/tools/test-diagnostic-geometry.py -v
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

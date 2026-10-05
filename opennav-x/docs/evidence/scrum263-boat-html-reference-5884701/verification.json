@@ -1,0 +1,95 @@
+{
+  "schema": 1,
+  "scope": "Same-machine immutable HTML reference only; no native application acceptance",
+  "tooling_commit": "5884701a7abd58a70c6dc0ffa494bdc262c30ad3",
+  "root_integration_commit": "3ffcc22",
+  "bundle_sha256": "2cd479bd71c2e541a487edab63797b7bac872408c94bebbd55f799e7ed1890e5",
+  "bundle_bytes": 61590914,
+  "bundle_entries": 124,
+  "staging_script_sha256": "332c3e0eebf57d4922240e702be3e3eb442ad0d99785440d2c1e2dc15cc090d8",
+  "before_utc": "2026-10-03T15:24:19.2102826Z",
+  "after_utc": "2026-10-03T15:32:55.1594372Z",
+  "native_exit_code": 0,
+  "actual_capture_attempts": 1,
+  "normal_profile_sha256_before_and_after": "d891d88c62657139e1b1c6ff7d9e8acdae726a4e116dbc844126992a39adbdb6",
+  "existing_edge_process_count": 7,
+  "existing_edge_process_ids_preserved": true,
+  "owned_process_count_after": 0,
+  "owned_temporary_directory_count_after": 0,
+  "opencpn_process_count_before_and_after": 0,
+  "edge_version": "154.0.4258.48",
+  "edge_launcher_sha256_before_and_after": "64670d599edc778d7a2a7db70a98791799fe027a9858eff7eeb28d31975dba3c",
+  "python_sha256": "5341746f92483a93e44c313de830f2fba2956f0759094404a16b2fed06c9a2ed",
+  "display_reported_pixels": [
+    1920,
+    1080
+  ],
+  "window_dpi_measured": false,
+  "fetched_files": [
+    {
+      "relative": "capture/navigation-day.png",
+      "bytes": 385843,
+      "sha256": "edc5bd947e42a106f936ffc37498f6cb761737f19d11aafdaeb2dd2f42afc114"
+    },
+    {
+      "relative": "capture/navigation-dusk.png",
+      "bytes": 388401,
+      "sha256": "58feb06b0b0adb5f0254cb04363834613aede46a4d228a235b3e49b906ba2878"
+    },
+    {
+      "relative": "capture/navigation-night.png",
+      "bytes": 365877,
+      "sha256": "19a5bc5e2a2281a49f481b78026811d410af4379d509514bab82d653b887ffc7"
+    },
+    {
+      "relative": "capture/capture.json",
+      "bytes": 1189665,
+      "sha256": "99bdb0025325c4b34d2266a97a3578158ce294ccfcc9f65a9d6924085fb28853"
+    },
+    {
+      "relative": "completion.json",
+      "bytes": 99949,
+      "sha256": "ce2653e9ea1b3f83deaadb56d70690595aa2a0ad4525ac8fa9833c521ec37e9c"
+    },
+    {
+      "relative": "runtime-install.log",
+      "bytes": 1311,
+      "sha256": "8aae5415a0f61f63f037bee6c39c0591946ccf31e751d64452ba369eb795da14"
+    },
+    {
+      "relative": "render.log",
+      "bytes": 51,
+      "sha256": "438285f201600e78ba272fb7b3d5b5645a680e724b3a54ac35248582f7e73b2e"
+    }
+  ],
+  "request_and_overlap_facts": {
+    "navigation-day": {
+      "events": 2,
+      "unique_original_html_urls": 1,
+      "symbol_landmark_samples_identical": true
+    },
+    "navigation-dusk": {
+      "events": 2,
+      "unique_original_html_urls": 1,
+      "symbol_landmark_samples_identical": true
+    },
+    "navigation-night": {
+      "events": 2,
+      "unique_original_html_urls": 1,
+      "symbol_landmark_samples_identical": true
+    }
+  },
+  "runtime_verification": "Source-locked remote pre/post runtime hashes; downloaded receipts and all seven fetched evidence files independently hashed locally. Runtime binary files were not downloaded for independent byte rehash.",
+  "transport": {
+    "initial_scp_timeout_seconds": 180,
+    "before_runtime_or_browser_execution": true,
+    "verified_partial_bytes": 61363200,
+    "verified_partial_sha256": "64902347674d5ce422d8574936343128e2b36287f058cd2388d984574163b28c",
+    "matched_exact_local_zip_prefix": true,
+    "sftp_resumed_bytes": 227714,
+    "complete_remote_zip_hash_verified_before_execution": true,
+    "unused_retransmit_partial_never_executed": true,
+    "sftp_initial_path_stat_refusal": "C:/ spelling rejected; /C:/ path resumed verified owned partial"
+  },
+  "font_sampling_limit": "First matching DOM node only. Symbol-label sample is the same dual-class landmark as landmark-label, not normal-only light characteristics."
+}

@@ -1,0 +1,31 @@
+--- d5/src/o-charts_pi.cpp
++++ e1/src/o-charts_pi.cpp
+@@ -554,10 +554,12 @@
+ 
+ o_charts_pi::~o_charts_pi()
+ {
++    skager::ocharts::SetChartPresentationActive(false);
+ }
+ 
+ int o_charts_pi::Init(void)
+ {
++    skager::ocharts::SetChartPresentationActive(false);
+ 
+     //  Get the path of the PlugIn itself
+     g_pi_filename = GetPlugInPath(this);
+@@ -747,6 +749,7 @@
+     pAlternateKey = &keyMapSystem;
+ 
+     init_S52Library();
++    skager::ocharts::SetChartPresentationActive(true);
+ 
+     // Establish the system build type for server identification
+     /*
+@@ -771,6 +774,7 @@
+ 
+ bool o_charts_pi::DeInit(void)
+ {
++    skager::ocharts::SetChartPresentationActive(false);
+     SaveConfig();
+ 
+ //    delete pinfoDlg;

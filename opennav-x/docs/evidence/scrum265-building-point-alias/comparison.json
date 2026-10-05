@@ -1,0 +1,98 @@
+[
+  {
+    "table": "DAY_BRIGHT",
+    "landRgb": [
+      238,
+      238,
+      226
+    ],
+    "fillRgb": [
+      124,
+      133,
+      138
+    ],
+    "outlineRgb": [
+      83,
+      100,
+      95
+    ],
+    "tiles": {
+      "BUISGL01": {
+        "rgbaSha256": "62c9997331cefd8f9e7112e1a237c8eac0c88f45e8283eb77a4066ac9d1b549c",
+        "alphaSha256": "f6df59347e751cf20ea03b235a86d898340c0593ae25460600332d6546047194"
+      },
+      "XNBLDG01": {
+        "rgbaSha256": "ad740e6b54cc73fb01b714d1958e8adb80b84cba83158dfc0f1e4af27813c843",
+        "alphaSha256": "f6df59347e751cf20ea03b235a86d898340c0593ae25460600332d6546047194"
+      },
+      "BUISGL11": {
+        "rgbaSha256": "d86f1168172da3c7ca8db0da98c9f9e508b763beeb5cc8f772fa83d25a25171c",
+        "alphaSha256": "f6df59347e751cf20ea03b235a86d898340c0593ae25460600332d6546047194"
+      }
+    }
+  },
+  {
+    "table": "DUSK",
+    "landRgb": [
+      78,
+      97,
+      93
+    ],
+    "fillRgb": [
+      168,
+      187,
+      183
+    ],
+    "outlineRgb": [
+      195,
+      206,
+      194
+    ],
+    "tiles": {
+      "BUISGL01": {
+        "rgbaSha256": "16e06b805e306dd128b151679c2c6f518865f398040d965c139434a8626b509c",
+        "alphaSha256": "f6df59347e751cf20ea03b235a86d898340c0593ae25460600332d6546047194"
+      },
+      "XNBLDG01": {
+        "rgbaSha256": "30d3e75426bbc0f79d41f3dd000e72c28948c0deaf347da9a13b91c72aa8517f",
+        "alphaSha256": "f6df59347e751cf20ea03b235a86d898340c0593ae25460600332d6546047194"
+      },
+      "BUISGL11": {
+        "rgbaSha256": "a1ec8a2f8844cfd71430be42100deddad3b93980c9dcff2797c077e766f176f7",
+        "alphaSha256": "f6df59347e751cf20ea03b235a86d898340c0593ae25460600332d6546047194"
+      }
+    }
+  },
+  {
+    "table": "NIGHT",
+    "landRgb": [
+      29,
+      41,
+      37
+    ],
+    "fillRgb": [
+      98,
+      115,
+      108
+    ],
+    "outlineRgb": [
+      107,
+      119,
+      109
+    ],
+    "tiles": {
+      "BUISGL01": {
+        "rgbaSha256": "fb223f66eb1a1666379b266a9103e0ab3c5564631f8dd41e06abc5e3b42d9c5c",
+        "alphaSha256": "f6df59347e751cf20ea03b235a86d898340c0593ae25460600332d6546047194"
+      },
+      "XNBLDG01": {
+        "rgbaSha256": "9efc794ca18b58a05286fd5a6777315f7335ba94d386b0fa018c32df07ca7130",
+        "alphaSha256": "f6df59347e751cf20ea03b235a86d898340c0593ae25460600332d6546047194"
+      },
+      "BUISGL11": {
+        "rgbaSha256": "d1500630ea19cfa717ba134e3c0a152591745ba48f0eee003a8d8e15bee08bc2",
+        "alphaSha256": "f6df59347e751cf20ea03b235a86d898340c0593ae25460600332d6546047194"
+      }
+    }
+  }
+]

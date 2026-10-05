@@ -1,0 +1,34 @@
+{
+  "commit": "5c05eb55c15b67d4014df55896d95452e9cc9d64",
+  "trackedStatus": "",
+  "binarySha256": "0e7f0500f79f8ca917b3ba0853ce3c205d68e6e1beaffd06377283950e32fd73",
+  "manifestSha256": "beff73cae53211c4ef0b0c3fa2ed83e5290680f19f48781646e1f1d0d4f88e53",
+  "resourceFiles": {
+    "chartsymbols.xml": {
+      "sha256": "beca42d4f1e1cbe5dd761d3e2182d5ebe935556a94674df5da47aaafe7fb0119",
+      "bytes": 2242082
+    },
+    "S52RAZDS.RLE": {
+      "sha256": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26",
+      "bytes": 1305627
+    },
+    "rastersymbols-day.png": {
+      "sha256": "e71bb49aa0c4d18990ed3fef9362989df25a2efc49bc41ff5439bea993d6df06",
+      "bytes": 199796
+    },
+    "rastersymbols-dusk.png": {
+      "sha256": "8a1c1f1db4f2e9d10b1d67687ca96b7f5cbda9ed3e0acdb77162c5a231bb1308",
+      "bytes": 174185
+    },
+    "rastersymbols-dark.png": {
+      "sha256": "8606b8f2f7727c2b4f906d55bad92ee0a7331c3fdfce3276dc01eba4e5a0b5c7",
+      "bytes": 169565
+    }
+  },
+  "fixtureSha256": "c70d9e0f53e149270f85900f8576082db86781d64fbb71aa7d5ceb4af4aa22e3",
+  "layoutHeaders": {
+    "s52plib.h": "16b75f1928e302bb5d7d49787335db29912008f648f315d20e4461917bd6edc7",
+    "s52s57.h": "05ff57005854196159bf65cb5386305d7fdb89a8bd3efa3d0184070c7c46ceeb"
+  },
+  "layoutHelperSha256": "7364807d46e48bc13e0590e0689f361fedd697be6c83ed71028f707991f87483"
+}

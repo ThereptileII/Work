@@ -1,0 +1,7 @@
+[
+  "7z",
+  "x",
+  "-y",
+  "-oD:\\a\\Work\\Work\\opennav-x\\build\\windows-chart-name-sdk\\wx",
+  "D:\\a\\Work\\Work\\opennav-x\\build\\windows-chart-name-sdk\\wxMSW-3.2.8_vc14x_ReleaseDLL.7z"
+]

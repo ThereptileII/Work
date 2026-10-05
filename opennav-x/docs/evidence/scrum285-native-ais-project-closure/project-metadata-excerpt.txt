@@ -1,0 +1,11 @@
+122:       <GenerateDebugInformation>true</GenerateDebugInformation>
+123:       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+124:       <ImportLibrary>D:/a/Work/Work/opennav-x/evidence/local/ais-native-runtime/build/Debug/ais_session_native.lib</ImportLibrary>
+125:       <ProgramDataBaseFile>D:/a/Work/Work/opennav-x/evidence/local/ais-native-runtime/build/bin/Debug/ais_session_native.pdb</ProgramDataBaseFile>
+126:       <SubSystem>Console</SubSystem>
+127:     </Link>
+128:     <ProjectReference>
+129:       <LinkLibraryDependencies>false</LinkLibraryDependencies>
+130:     </ProjectReference>
+131:   </ItemDefinitionGroup>
+132:   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

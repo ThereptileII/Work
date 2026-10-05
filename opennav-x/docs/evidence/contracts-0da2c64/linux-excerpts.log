@@ -1,0 +1,133 @@
+90: 2026-10-04T13:51:36.3455119Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +0da2c64379d5a9cc4b9b2bd068de6e0b69816577:refs/remotes/origin/opennav-x-beta2-ui
+92: 2026-10-04T13:51:42.3401652Z  * [new ref]         0da2c64379d5a9cc4b9b2bd068de6e0b69816577 -> origin/opennav-x-beta2-ui
+114: 2026-10-04T13:51:43.4219579Z 0da2c64379d5a9cc4b9b2bd068de6e0b69816577
+128: 2026-10-04T13:51:44.3701936Z Ran 11 tests in 0.641s
+130: 2026-10-04T13:51:44.3702194Z OK
+133: 2026-10-04T13:51:44.4732999Z Ran 9 tests in 0.015s
+135: 2026-10-04T13:51:44.4733363Z OK
+138: 2026-10-04T13:51:44.6696420Z Ran 17 tests in 0.106s
+140: 2026-10-04T13:51:44.6696766Z OK
+168: 2026-10-04T13:51:49.5451733Z Ran 15 tests in 4.712s
+170: 2026-10-04T13:51:49.5452075Z OK
+187: 2026-10-04T13:51:50.1021166Z Ran 14 tests in 0.442s
+189: 2026-10-04T13:51:50.1021473Z OK
+205: 2026-10-04T13:51:50.5026766Z Ran 13 tests in 0.280s
+207: 2026-10-04T13:51:50.5027072Z OK
+210: 2026-10-04T13:51:50.6778787Z Ran 4 tests in 0.042s
+212: 2026-10-04T13:51:50.6779030Z OK
+232: 2026-10-04T13:52:28.5403478Z Ran 7 tests in 0.463s
+234: 2026-10-04T13:52:28.5403970Z OK
+246: 2026-10-04T13:52:28.8178252Z Ran 12 tests in 0.027s
+248: 2026-10-04T13:52:28.8178899Z OK
+253: 2026-10-04T13:52:29.4792128Z 48 actual installer output-policy checks passed; no installer operation invoked
+494: 2026-10-04T13:52:37.3651292Z Ran 11 tests in 0.098s
+496: 2026-10-04T13:52:37.3651735Z OK
+763: 2026-10-04T13:53:40.1368717Z  1/94 Test  #1: geographic_chart_name_boundary .................   Passed    0.00 sec
+765: 2026-10-04T13:53:40.1445037Z  2/94 Test  #2: display_prototype_geometry .....................   Passed    0.00 sec
+767: 2026-10-04T13:53:40.1554866Z  3/94 Test  #3: early_startup_fixtures_isolation ...............   Passed    0.01 sec
+769: 2026-10-04T13:53:40.1621626Z  4/94 Test  #4: early_startup_product_isolation ................   Passed    0.01 sec
+771: 2026-10-04T13:53:40.1688479Z  5/94 Test  #5: early_startup_msw_excluded_isolation ...........   Passed    0.01 sec
+773: 2026-10-04T13:53:40.1768143Z  6/94 Test  #6: fixture_marker_publication .....................   Passed    0.01 sec
+775: 2026-10-04T13:53:40.1790818Z  7/94 Test  #7: passage_view_provenance ........................   Passed    0.00 sec
+777: 2026-10-04T13:53:40.1814531Z  8/94 Test  #8: instrument_view_provenance .....................   Passed    0.00 sec
+779: 2026-10-04T13:53:40.1846816Z  9/94 Test  #9: footer_view_provenance .........................   Passed    0.00 sec
+781: 2026-10-04T13:53:40.1882345Z 10/94 Test #10: horizon_view_provenance ........................   Passed    0.00 sec
+783: 2026-10-04T13:53:40.1903531Z 11/94 Test #11: source_health_view_provenance ..................   Passed    0.00 sec
+785: 2026-10-04T13:53:40.1921091Z 12/94 Test #12: build_policy_product ...........................   Passed    0.00 sec
+787: 2026-10-04T13:53:40.1938401Z 13/94 Test #13: build_policy_fixtures ..........................   Passed    0.00 sec
+789: 2026-10-04T13:53:40.1955101Z 14/94 Test #14: pilot_output_product_policy ....................   Passed    0.00 sec
+791: 2026-10-04T13:53:40.1971807Z 15/94 Test #15: pilot_output_loopback_policy ...................   Passed    0.00 sec
+793: 2026-10-04T13:53:40.1988774Z 16/94 Test #16: ais_selection_lifetime .........................   Passed    0.00 sec
+795: 2026-10-04T13:53:40.2025657Z 17/94 Test #17: ais_report_health ..............................   Passed    0.00 sec
+797: 2026-10-04T13:53:41.6595216Z 18/94 Test #18: online_ais_cache_and_precedence ................   Passed    1.46 sec
+799: 2026-10-04T13:53:41.6617014Z 19/94 Test #19: chart_canvas_night_ink .........................   Passed    0.00 sec
+801: 2026-10-04T13:53:41.6660074Z 20/94 Test #20: online_ais_chart_presentation ..................   Passed    0.00 sec
+803: 2026-10-04T13:53:41.6689734Z 21/94 Test #21: aisstream_untrusted_json_and_subscription ......   Passed    0.00 sec
+805: 2026-10-04T13:53:41.6709624Z 22/94 Test #22: aisstream_session_lifecycle ....................   Passed    0.00 sec
+807: 2026-10-04T13:53:41.6726894Z 23/94 Test #23: ais_credentials_protected_storage ..............   Passed    0.00 sec
+809: 2026-10-04T13:53:41.6745108Z 24/94 Test #24: operational_alert_sensors ......................   Passed    0.00 sec
+811: 2026-10-04T13:53:41.6763459Z 25/94 Test #25: operational_alert_alarms .......................   Passed    0.00 sec
+813: 2026-10-04T13:53:41.8414719Z 26/94 Test #26: operational_alert_lifecycle ....................   Passed    0.16 sec
+815: 2026-10-04T13:53:41.8441849Z 27/94 Test #27: field_report_privacy ...........................   Passed    0.00 sec
+817: 2026-10-04T13:53:41.8684777Z 28/94 Test #28: field_report_limits ............................   Passed    0.02 sec
+819: 2026-10-04T13:53:41.8715856Z 29/94 Test #29: field_report_recording .........................   Passed    0.00 sec
+821: 2026-10-04T13:53:41.8732429Z 30/94 Test #30: windows_sdk_macro_contract .....................   Passed    0.00 sec
+823: 2026-10-04T13:53:41.8752677Z 31/94 Test #31: boat_n2k_binding ...............................   Passed    0.00 sec
+825: 2026-10-04T13:53:41.8770341Z 32/94 Test #32: boat_n2k_mapping ...............................   Passed    0.00 sec
+827: 2026-10-04T13:53:41.8787952Z 33/94 Test #33: boat_n2k_expiry ................................   Passed    0.00 sec
+829: 2026-10-04T13:53:41.8805301Z 34/94 Test #34: boat_actual_producer_expiry ....................   Passed    0.00 sec
+831: 2026-10-04T13:53:41.8838518Z 35/94 Test #35: n2k_source_identity ............................   Passed    0.00 sec
+833: 2026-10-04T13:53:41.8856455Z 36/94 Test #36: st4000_identity ................................   Passed    0.00 sec
+835: 2026-10-04T13:53:41.8873639Z 37/94 Test #37: st4000_feedback ................................   Passed    0.00 sec
+837: 2026-10-04T13:53:41.8891098Z 38/94 Test #38: st4000_encoding ................................   Passed    0.00 sec
+839: 2026-10-04T13:53:41.8908222Z 39/94 Test #39: st4000_commands ................................   Passed    0.00 sec
+841: 2026-10-04T13:53:41.8925275Z 40/94 Test #40: st4000_discovery ...............................   Passed    0.00 sec
+843: 2026-10-04T13:53:41.8942066Z 41/94 Test #41: st4000_actual_firmware_parser ..................   Passed    0.00 sec
+845: 2026-10-04T13:53:41.9008546Z 42/94 Test #42: recording_roundtrip_age ........................   Passed    0.01 sec
+847: 2026-10-04T13:53:41.9071457Z 43/94 Test #43: recording_privacy ..............................   Passed    0.01 sec
+849: 2026-10-04T13:53:41.9206012Z 44/94 Test #44: recording_malformed_input ......................   Passed    0.01 sec
+851: 2026-10-04T13:53:41.9242948Z 45/94 Test #45: recording_replay_clock .........................   Passed    0.00 sec
+853: 2026-10-04T13:53:41.9294250Z 46/94 Test #46: recording_calibration_pairs ....................   Passed    0.00 sec
+855: 2026-10-04T13:53:41.9454945Z 47/94 Test #47: recording_storage_rotation .....................   Passed    0.02 sec
+857: 2026-10-04T13:53:41.9525937Z 48/94 Test #48: recording_control_isolation ....................   Passed    0.01 sec
+859: 2026-10-04T13:53:41.9565220Z 49/94 Test #49: installed_resource_defaults ....................   Passed    0.00 sec
+861: 2026-10-04T13:53:42.0072985Z 50/94 Test #50: hardware_output_package_policy .................   Passed    0.05 sec
+863: 2026-10-04T13:53:42.2333071Z 51/94 Test #51: production_runtime_generator_absence ...........   Passed    0.23 sec
+865: 2026-10-04T13:53:42.3233882Z 52/94 Test #52: diagnostic_snapshot_publication ................   Passed    0.09 sec
+867: 2026-10-04T13:53:42.9420325Z 53/94 Test #53: navigation_chart_layout_geometry ...............   Passed    0.62 sec
+869: 2026-10-04T13:53:42.9999591Z 54/94 Test #54: windows_route_summary_layout_contract ..........   Passed    0.06 sec
+871: 2026-10-04T13:53:43.0749130Z 55/94 Test #55: preview_preferences_action_selection ...........   Passed    0.07 sec
+873: 2026-10-04T13:53:43.1285705Z 56/94 Test #56: native_dpi_preferences_pan_target ..............   Passed    0.05 sec
+875: 2026-10-04T13:53:43.1772383Z 57/94 Test #57: native_reference_fullscreen_surface_contract ...   Passed    0.05 sec
+877: 2026-10-04T13:53:43.5510826Z 58/94 Test #58: native_diagnostic_geometry_observation .........   Passed    0.37 sec
+879: 2026-10-04T13:53:43.5605278Z 59/94 Test #59: commissioning_restart_wire_contract ............   Passed    0.01 sec
+881: 2026-10-04T13:53:43.6113745Z 60/94 Test #60: commissioning_restart_package_capability .......   Passed    0.05 sec
+883: 2026-10-04T13:53:43.6634993Z 61/94 Test #61: startup_log_rotation_contract ..................   Passed    0.05 sec
+885: 2026-10-04T13:53:43.7152956Z 62/94 Test #62: installer_expected_version_notice ..............   Passed    0.05 sec
+887: 2026-10-04T13:53:45.6622282Z 63/94 Test #63: restart_lifecycle_contract .....................   Passed    1.95 sec
+889: 2026-10-04T13:53:45.6643618Z 64/94 Test #64: startup_recovery_contract ......................   Passed    0.00 sec
+891: 2026-10-04T13:53:45.6660975Z 65/94 Test #65: startup_mode_contract ..........................   Passed    0.00 sec
+893: 2026-10-04T13:53:45.6678402Z 66/94 Test #66: vessel_quality_contract ........................   Passed    0.00 sec
+895: 2026-10-04T13:53:45.6695523Z 67/94 Test #67: navigation_input_contract ......................   Passed    0.00 sec
+897: 2026-10-04T13:53:45.6713482Z 68/94 Test #68: sensor_source_selection ........................   Passed    0.00 sec
+899: 2026-10-04T13:53:45.6733647Z 69/94 Test #69: sensor_source_validity .........................   Passed    0.00 sec
+901: 2026-10-04T13:53:45.6751869Z 70/94 Test #70: sensor_source_health ...........................   Passed    0.00 sec
+903: 2026-10-04T13:53:45.6769228Z 71/94 Test #71: sensor_battery_coherence .......................   Passed    0.00 sec
+905: 2026-10-04T13:53:45.6789010Z 72/94 Test #72: route_progress_contract ........................   Passed    0.00 sec
+907: 2026-10-04T13:53:45.6847942Z 73/94 Test #73: energy_input_quality ...........................   Passed    0.00 sec
+909: 2026-10-04T13:53:45.6879225Z 74/94 Test #74: energy_prediction_contract .....................   Passed    0.00 sec
+911: 2026-10-04T13:53:45.6897907Z 75/94 Test #75: energy_curve_import ............................   Passed    0.00 sec
+913: 2026-10-04T13:53:45.6915496Z 76/94 Test #76: energy_live_configuration ......................   Passed    0.00 sec
+915: 2026-10-04T13:53:45.6934192Z 77/94 Test #77: smartnav_operational_failures ..................   Passed    0.00 sec
+917: 2026-10-04T13:53:45.6953211Z 78/94 Test #78: smartnav_route_timeline ........................   Passed    0.00 sec
+919: 2026-10-04T13:53:45.6972687Z 79/94 Test #79: smartnav_energy_ais_events .....................   Passed    0.00 sec
+921: 2026-10-04T13:53:45.7012533Z 80/94 Test #80: smartnav_chart_corridor ........................   Passed    0.00 sec
+923: 2026-10-04T13:53:45.7030355Z 81/94 Test #81: autopilot_manual_feedback ......................   Passed    0.00 sec
+925: 2026-10-04T13:53:45.7048451Z 82/94 Test #82: autopilot_failures .............................   Passed    0.00 sec
+927: 2026-10-04T13:53:45.7065430Z 83/94 Test #83: autopilot_ack_evidence .........................   Passed    0.00 sec
+929: 2026-10-04T13:53:45.7082442Z 84/94 Test #84: radar_capability_contract ......................   Passed    0.00 sec
+931: 2026-10-04T13:53:45.7105388Z 85/94 Test #85: settings_record_roundtrip ......................   Passed    0.00 sec
+933: 2026-10-04T13:53:45.7130790Z 86/94 Test #86: settings_invalid_configuration .................   Passed    0.00 sec
+935: 2026-10-04T13:53:45.7150965Z 87/94 Test #87: settings_live_energy_freshness .................   Passed    0.00 sec
+937: 2026-10-04T13:53:45.7174454Z 88/94 Test #88: settings_display_selection .....................   Passed    0.00 sec
+939: 2026-10-04T13:53:45.7198434Z 89/94 Test #89: settings_explicit_propulsion_mappings ..........   Passed    0.00 sec
+941: 2026-10-04T13:53:45.7223405Z 90/94 Test #90: settings_pilot_permission ......................   Passed    0.00 sec
+943: 2026-10-04T13:53:45.7254758Z 91/94 Test #91: preview_demo_contract ..........................   Passed    0.00 sec
+945: 2026-10-04T13:53:45.7279904Z 92/94 Test #92: portable_profile_contract ......................   Passed    0.00 sec
+947: 2026-10-04T13:53:45.7304530Z 93/94 Test #93: preview_resources_contract .....................   Passed    0.00 sec
+949: 2026-10-04T13:53:45.7321524Z 94/94 Test #94: restart_arguments_contract .....................   Passed    0.00 sec
+951: 2026-10-04T13:53:45.7325743Z 100% tests passed, 0 tests failed out of 94
+953: 2026-10-04T13:53:45.7326213Z Total Test time (real) =   5.65 sec
+961: 2026-10-04T13:53:47.7394814Z     Test #63: restart_lifecycle_contract .......   Passed    1.95 sec
+963: 2026-10-04T13:53:49.6863323Z     Test #63: restart_lifecycle_contract .......   Passed    1.95 sec
+965: 2026-10-04T13:53:51.6335096Z     Test #63: restart_lifecycle_contract .......   Passed    1.95 sec
+967: 2026-10-04T13:53:53.5807540Z     Test #63: restart_lifecycle_contract .......   Passed    1.95 sec
+969: 2026-10-04T13:53:55.5283695Z     Test #63: restart_lifecycle_contract .......   Passed    1.95 sec
+971: 2026-10-04T13:53:57.4756675Z     Test #63: restart_lifecycle_contract .......   Passed    1.95 sec
+973: 2026-10-04T13:53:59.4228399Z     Test #63: restart_lifecycle_contract .......   Passed    1.95 sec
+975: 2026-10-04T13:54:01.3704542Z     Test #63: restart_lifecycle_contract .......   Passed    1.95 sec
+977: 2026-10-04T13:54:03.3177603Z     Test #63: restart_lifecycle_contract .......   Passed    1.95 sec
+979: 2026-10-04T13:54:05.2650417Z 1/1 Test #63: restart_lifecycle_contract .......   Passed    1.95 sec
+981: 2026-10-04T13:54:05.2654356Z 100% tests passed, 0 tests failed out of 1
+983: 2026-10-04T13:54:05.2654815Z Total Test time (real) =  19.47 sec
+984: 2026-10-04T13:54:05.3092877Z Post job cleanup.

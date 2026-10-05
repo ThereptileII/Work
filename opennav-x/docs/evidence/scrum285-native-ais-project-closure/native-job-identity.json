@@ -1,0 +1,14 @@
+{
+  "originalNativeJobId": 111300070821,
+  "originalRunId": 37155858878,
+  "originalRunAttempt": 1,
+  "wholeRunTerminalRequired": false,
+  "nativeJobTerminalFailureRequired": true,
+  "nativeStep17": "completed/success",
+  "nativeStep18": "completed/failure",
+  "focusedIdentityTestsPassed": 1,
+  "previousSevenProjectCasesNotRerun": true,
+  "nativeExpectedTests": 8,
+  "artifactGuardByteIdentical": true,
+  "nativeExecution": false
+}

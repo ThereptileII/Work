@@ -1,0 +1,294 @@
+{
+  "archive": {
+    "artifactId": 11292744507,
+    "runId": 37164360050,
+    "remoteCommit": "17ab044a1e5222dc71791ac8118454219efe8734",
+    "bytes": 20065317,
+    "sha256": "1532200addc68a47b618aeae777e09ad5ad8743c6da09487026f2a55feeae351",
+    "rootPreviouslyVerifiedCRCs": 4259
+  },
+  "soak": {
+    "status": "passed",
+    "authority": "Linux development",
+    "requestedSeconds": 10800,
+    "elapsedSeconds": 10800.118381349,
+    "releaseDuration": true,
+    "samples": 1080,
+    "actions": 540,
+    "slots": {
+      "0": 90,
+      "1": 90,
+      "2": 90,
+      "3": 90,
+      "4": 90,
+      "5": 90
+    },
+    "dropoutCounts": {
+      "stale": 45,
+      "unavailable": 45
+    },
+    "recoveryCount": 90,
+    "energyUnavailableSamples": 180,
+    "aisPositiveSamples": 990,
+    "lightSamples": {
+      "Dusk": 360,
+      "Night": 360,
+      "Day": 360
+    },
+    "sampleElapsedRange": [
+      2.91,
+      10790.084
+    ],
+    "sampleElapsedStrictlyIncreasing": true,
+    "uiTicksStrictlyIncreasing": true,
+    "uiTickRange": [
+      "25",
+      "43958"
+    ],
+    "resourceWarmupSeconds": 300,
+    "resourceStableSamples": 1050,
+    "medianWindowSamples": 210,
+    "recomputedResourceGrowth": {
+      "resident_bytes": -223232.0,
+      "handles": 0.0,
+      "threads": 0.0
+    },
+    "matchesReportedGrowth": true,
+    "growthLimits": {
+      "resident_bytes": 134217728,
+      "private_bytes": 134217728,
+      "handles": 32,
+      "gdi_objects": 64,
+      "user_objects": 64,
+      "threads": 8
+    },
+    "recomputedCpuPercentOneCore": 3.353056138706949,
+    "reportedCpuPercentOneCore": 3.353056138706949,
+    "maxPageObservationSeconds": 1.2533901090000654,
+    "pageObservationLimitSeconds": 8,
+    "recomputedRouteProgressSamples": 765,
+    "reportedRouteProgressSamples": 765,
+    "harnessCommit": "17ab044a1e5222dc71791ac8118454219efe8734",
+    "buildCommit": "17ab044a1e5222dc71791ac8118454219efe8734",
+    "binaryMatchesHarnessCommit": true,
+    "frozenHarnessSha256": "15a9495f0df8dacd00a9f558b06c8f9c67167aa8aa8e3f16bb0ac9a04ba45231",
+    "reportedHarnessSha256": "15a9495f0df8dacd00a9f558b06c8f9c67167aa8aa8e3f16bb0ac9a04ba45231",
+    "currentHarnessEqualsFrozen": true,
+    "reportedExecutable": {
+      "path": "/home/runner/work/Work/Work/opennav-x/build/xnav-install/bin/opencpn",
+      "bytes": 24539040,
+      "mtime_ns": 1791073688000000000,
+      "sha256": "6ef752f8ed91423ae7094bb03d65ddb9f36cedd8b6bc68743c6566909413ed5f"
+    }
+  },
+  "xml": {
+    "xnav-linux-tests.xml": {
+      "attributes": {
+        "name": "(empty)",
+        "tests": "147",
+        "failures": "0",
+        "disabled": "0",
+        "skipped": "0",
+        "hostname": "",
+        "time": "14",
+        "timestamp": "2026-10-04T00:30:54"
+      },
+      "caseCount": 147,
+      "uniqueNames": 147,
+      "caseStatusCounts": {
+        "run": 147
+      },
+      "failureNodes": 0,
+      "errorNodes": 0,
+      "skippedNodes": 0
+    },
+    "production-linux-tests.xml": {
+      "attributes": {
+        "name": "(empty)",
+        "tests": "147",
+        "failures": "0",
+        "disabled": "0",
+        "skipped": "0",
+        "hostname": "",
+        "time": "14",
+        "timestamp": "2026-10-04T03:56:33"
+      },
+      "caseCount": 147,
+      "uniqueNames": 147,
+      "caseStatusCounts": {
+        "run": 147
+      },
+      "failureNodes": 0,
+      "errorNodes": 0,
+      "skippedNodes": 0
+    }
+  },
+  "selectedOriginalFiles": {
+    "soak/results.json": {
+      "bytes": 1070398,
+      "sha256": "ebe5ff292621461aaf1ec59e66f2d7279dd4a0fb3d1f47aed6da33b91c3e68e5",
+      "extractedMatchesOriginal": true
+    },
+    "soak/metrics.jsonl": {
+      "bytes": 784199,
+      "sha256": "2c20431c9e254b2c913457ea0380ce070e804813028ad095fc0423d619eb3a05",
+      "extractedMatchesOriginal": true
+    },
+    "soak/launch.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "extractedMatchesOriginal": true
+    },
+    "soak/opencpn.log": {
+      "bytes": 28933,
+      "sha256": "d79c7e4e22aef5ebb1ceaa6b754588dd165e7d71c6fd57c48a1525157d8f0a6b",
+      "extractedMatchesOriginal": true
+    },
+    "xnav-linux-tests.xml": {
+      "bytes": 126673,
+      "sha256": "16943f699abe7e2740bcff8f1651406ae566a832c3cb59fef9278b54811e93cb",
+      "extractedMatchesOriginal": true
+    },
+    "production-linux-tests.xml": {
+      "bytes": 127529,
+      "sha256": "c9651a4071930a2245a42b7758a5df0dfe60db6075c29bb7c72c8563ee91715c",
+      "extractedMatchesOriginal": true
+    }
+  },
+  "limits": [
+    "Linux development evidence only; native Windows and boat acceptance remain separate",
+    "Profile equality and zero exit follow passed status through hash-matched harness assertions; no independent before/after profile receipt is present",
+    "Reported binary hash is a runner observation; executable is not among selected reports",
+    "No tests/builds/downloads executed for this audit; selected original bytes rehashed"
+  ],
+  "viewport": {
+    "observations": 270,
+    "inputReturned": 270,
+    "recordedActivations": 150,
+    "traceLimit": 2048,
+    "labelCounts": {
+      "+": 90,
+      "\u2212": 90,
+      "Day": 30,
+      "Dusk": 30,
+      "Night": 30
+    },
+    "zoomInScaleRatios": {
+      "2.0": 89,
+      "1.0": 1
+    },
+    "zoomOutScaleRatios": {
+      "0.5": 90
+    },
+    "paletteTransitions": {
+      "Day -> Dusk": 30,
+      "Dusk -> Night": 30,
+      "Night -> Day": 30
+    },
+    "unchangedZoomIn": [
+      {
+        "observationIndex": 204,
+        "before": {
+          "observed_monotonic": 10162.702331473,
+          "observed_unix_ns": 1791082736769481676,
+          "diagnostic_mtime_ns": 1791082736690810685,
+          "diagnostic_clock": "live monotonic clock",
+          "ui_update": {
+            "timer_period_ms": 250,
+            "mean_ms": 3.813261062,
+            "scope": "Shell update callback including diagnostics; excludes asynchronous chart painting",
+            "maximum_ms": 38.545218,
+            "ticks": "33252",
+            "last_ms": 1.192063
+          },
+          "page": "Navigation",
+          "light": "Night",
+          "chart": {
+            "canvas_pixels": {
+              "height": 566,
+              "width": 1014
+            },
+            "latitude": 59.08,
+            "follow": false,
+            "opengl_enabled": false,
+            "scale_bar": {
+              "height": 29,
+              "y": 505,
+              "width": 29,
+              "x": 191
+            },
+            "depth_unit_type": 0,
+            "quilt": true,
+            "scale_ppm": 0.003000000026,
+            "longitude": 18.5,
+            "depth_units_visible": true
+          }
+        },
+        "after": {
+          "observed_monotonic": 10163.630474932,
+          "observed_unix_ns": 1791082737697625305,
+          "diagnostic_mtime_ns": 1791082737694831449,
+          "diagnostic_clock": "live monotonic clock",
+          "ui_update": {
+            "timer_period_ms": 250,
+            "mean_ms": 3.813147359,
+            "scope": "Shell update callback including diagnostics; excludes asynchronous chart painting",
+            "maximum_ms": 38.545218,
+            "ticks": "33257",
+            "last_ms": 1.067685
+          },
+          "page": "Navigation",
+          "light": "Night",
+          "chart": {
+            "canvas_pixels": {
+              "height": 566,
+              "width": 1014
+            },
+            "latitude": 58.73969022,
+            "follow": false,
+            "opengl_enabled": false,
+            "scale_bar": {
+              "height": 29,
+              "y": 505,
+              "width": 29,
+              "x": 191
+            },
+            "depth_unit_type": 0,
+            "quilt": true,
+            "scale_ppm": 0.003000000026,
+            "longitude": 19.74316673,
+            "depth_units_visible": true
+          }
+        },
+        "selectedControl": {
+          "height": 44,
+          "y": 549,
+          "visible": true,
+          "width": 44,
+          "accessible_name": "Zoom chart in",
+          "x": 980,
+          "label": "+",
+          "enabled": true
+        },
+        "freshControls": [
+          {
+            "height": 44,
+            "y": 549,
+            "visible": true,
+            "width": 44,
+            "accessible_name": "Zoom chart in",
+            "x": 980,
+            "label": "+",
+            "enabled": true
+          }
+        ],
+        "activationObserved": false
+      }
+    ]
+  },
+  "selectedReportsArchive": {
+    "bytes": 103248,
+    "sha256": "1818cfb8904d8c660be21dc1f3c7a68ea065fe51237ecf990702bf592db272f2",
+    "scope": "New documentary subset of six unchanged original files, not GitHub artifact ZIP"
+  }
+}

@@ -1,0 +1,14 @@
+--- original-render-probe.gdb
++++ guarded-render-probe.gdb
+@@ -115,8 +115,9 @@
+    emit({'kind':'trace_error','probe':self.kind,'error':str(error)});self.enabled=False
+   return False
+ Start('main',temporary=True,internal=True)
+-Fan('_ZN7opennav11integration9CaFanTile5BuildERKNS0_13CaFanGeometryERKNS0_10CaFanPaintE','fan_build')
+-Fan('_ZN7opennav11integration11DrawCaFanGLERKNS0_9CaFanTileEjii','fan_gl_draw')
++if os.environ['SKAGER_SEAMARK_STYLE']=='XNav' and len(scene['expectedCA'])==3:
++ Fan('_ZN7opennav11integration9CaFanTile5BuildERKNS0_13CaFanGeometryERKNS0_10CaFanPaintE','fan_build')
++ Fan('_ZN7opennav11integration11DrawCaFanGLERKNS0_9CaFanTileEjii','fan_gl_draw')
+ Probe('_ZN7s52plib8RenderSYEP12_ObjRazRulesP6_Rules','RenderSY')
+ Probe('_ZN7s52plib10RenderCARCEP12_ObjRazRulesP6_Rules','RenderCARC')
+ Probe('_ZN7s52plib18RenderRasterSymbolEP12_ObjRazRulesP5_RuleR7wxPointf','RenderRasterSymbol')

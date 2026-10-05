@@ -1,0 +1,11 @@
+{
+  "baseCommit": "92b4f556aee599dc307a142b5d4617b8e78aab7c",
+  "inputs": {
+    "patches/ocharts-skager-presentation.patch": "95984fe7d6cde9db46587089f79c9765616324897fc92b159278fbca41bea4fb",
+    "src/integration/ChartFishingPattern.h": "ea50046c24edd0c5ee4723c6a40af4802155fc14f0e493b1fd4b11ec29848630",
+    "cmake/ocharts-adapter/Targets.cmake": "de944c6c0b99cbf94da8282264274b57ca69dd11202be166a030579cc35b3325",
+    "tools/ocharts-adapter-source.lock.json": "0aaab29b5ad626f2215e5787b64ec7e3153f6a75223976370dbebb3967557353"
+  },
+  "objectSha256": "e55f42e03dc7292582904495ee76ea17f3065fda0e5aa9525c5ea2bb31082b3b",
+  "objectBytes": 1523288
+}

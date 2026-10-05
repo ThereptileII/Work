@@ -162,7 +162,7 @@ def main():
             with (output / f"launch-{scale}.log").open("w") as log:
                 app = subprocess.Popen([str(app_path), "--configdir", str(profile), "--xnav", "--no_opengl"],
                                        env=env, stdout=log, stderr=log)
-            handle, _ = ui.wait_window("OpenNav X / OpenCPN", app.pid)
+            handle, _ = ui.wait_window("SKAGER / OpenCPN", app.pid)
             deadline = time.monotonic()+60
             while time.monotonic() < deadline:
                 log = profile / "opencpn.log"

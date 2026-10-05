@@ -1,0 +1,59 @@
+{
+  "actualSourceSha256": "2d714c9aa0a7f3d98b50f3395d90c0791fe837866cf0db6616622725fb235bd9",
+  "negativeLegacyRounding": false,
+  "negativeInvalidFont": true,
+  "actualSetter": "s52plib::SetSoundingFontResolver",
+  "actualMethods": [
+    "bool s52plib::RenderSoundingSymbol("
+  ],
+  "atlasSourceSha256": "4a2924e983af608e82f05ec61242db795b14d98fb69489138855ad716b963332",
+  "atlasMethods": [
+    "DepthFont::DepthFont()",
+    "DepthFont::~DepthFont()",
+    "void DepthFont::Build(",
+    "void DepthFont::Delete()",
+    "bool DepthFont::GetGLTextureRect("
+  ],
+  "prototype": {
+    "sizePx": 10,
+    "stack": "\"Segoe UI Variable Display\",\"Segoe UI\",Arial,sans-serif"
+  },
+  "pinnedPainterTailAndStockFontBranchUnchanged": true,
+  "pinnedRenderMPSUnchanged": true,
+  "verifiedLibraryInstallationOnly": true,
+  "extractedSha256": "4b0460d5a3800af77325d10a69904f1a5fd14d1d3f08625c683350128b01266d",
+  "compileCommand": [
+    "g++",
+    "-std=c++17",
+    "-Wall",
+    "-Werror",
+    "-Wno-unused-variable",
+    "-DOPENNAV_X",
+    "-I/home/standard/Projects/X-nav/.local/sysroot/usr/lib/wx/include/gtk3-unicode-3.2",
+    "-I/home/standard/Projects/X-nav/.local/sysroot/usr/include/wx-3.2",
+    "-DWXUSINGDLL",
+    "-D__WXGTK3__",
+    "-D__WXGTK__",
+    "-D_FILE_OFFSET_BITS=64",
+    "-I/home/standard/Projects/X-nav-worktrees/skager-peripheral-copy/src",
+    "-I/home/standard/Projects/X-nav-worktrees/skager-peripheral-copy/.local/sounding-invalid-control",
+    "-I/home/standard/Projects/X-nav-worktrees/skager-peripheral-copy/build/integration-source/libs/s52plib/src",
+    "-I/home/standard/Projects/X-nav-worktrees/skager-peripheral-copy/build/integration-source/libs/geoprim/src",
+    "/home/standard/Projects/X-nav-worktrees/skager-peripheral-copy/tests/chart_sounding_render_test.cpp",
+    "/home/standard/Projects/X-nav-worktrees/skager-peripheral-copy/build/integration-source/libs/geoprim/src/bbox.cpp",
+    "-L/home/standard/Projects/X-nav/.local/sysroot/usr/lib",
+    "-lwx_gtk3u_core-3.2",
+    "-lwx_baseu-3.2",
+    "-o",
+    "/home/standard/Projects/X-nav-worktrees/skager-peripheral-copy/.local/sounding-invalid-control/chart-sounding-test"
+  ],
+  "exitCode": 1,
+  "output": "Native wx assertion: invalid font must never reach a drawing API\n",
+  "limitations": [
+    "Actual DepthFont raster/upload, GL calls record textures; no driver draw",
+    "Viewport and text-owner containers are fixtures",
+    "Linux font raster; native Windows and boat acceptance remain open"
+  ],
+  "fixtureSourceSha256": "edb89c07e6d2a36be5dadcb41f46c61264203b417b1fbac0b09f83e0a6d22671",
+  "patchSha256": "5660b6fd0371b1f1da225d5fb25f0aabd21e58e8ebc71d6bbdc498a8da00292a"
+}

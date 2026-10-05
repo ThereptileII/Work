@@ -1,0 +1,343 @@
+{
+  "baseCommit": "91a53301f03f99fc543de7b21c48f8c9d7931fb2",
+  "trace": {
+    "relativeEvidence": "docs/evidence/scrum268-326-elevation-metrics",
+    "localOriginalPath": "/home/standard/Projects/X-nav-worktrees/scrum275-linux-e6ef384/evidence/local/scrum268-metric-326/output/capture-268-metric-326daf7-s64-light-fog-opengl/s64-light-fog-SKAGER-trace.jsonl",
+    "sha256": "2b12251f1221c3ecd8fbb88748abfcc814d4df18793e29f89ab4ca55aad7509a",
+    "eventCount": 552,
+    "traceErrors": 0,
+    "firstReturnByPhase": {
+      "0": {
+        "sequence": 2,
+        "phase": {
+          "index": 0,
+          "theme": "Day",
+          "startup": true
+        },
+        "anchor_x": 957,
+        "anchor_y": 129,
+        "avgCharWidth": 16,
+        "rectangle": [
+          973,
+          108,
+          38,
+          22
+        ],
+        "drawn": true,
+        "pFont": 93825127070912,
+        "matching_cache": [
+          {
+            "slot": 0,
+            "key": 93825127070912,
+            "cache": 93825154764528
+          }
+        ]
+      },
+      "1": {
+        "sequence": 31,
+        "phase": {
+          "index": 1,
+          "theme": "Dusk",
+          "transition": true
+        },
+        "anchor_x": 956,
+        "anchor_y": 125,
+        "avgCharWidth": 16,
+        "rectangle": [
+          972,
+          104,
+          38,
+          22
+        ],
+        "drawn": true,
+        "pFont": 93825127070912,
+        "matching_cache": [
+          {
+            "slot": 0,
+            "key": 93825127070912,
+            "cache": 93825154764528
+          }
+        ]
+      },
+      "2": {
+        "sequence": 44,
+        "phase": {
+          "index": 2,
+          "theme": "Night",
+          "transition": true
+        },
+        "anchor_x": 956,
+        "anchor_y": 125,
+        "avgCharWidth": 9,
+        "rectangle": [
+          965,
+          104,
+          38,
+          22
+        ],
+        "drawn": true,
+        "pFont": 93825127070912,
+        "matching_cache": [
+          {
+            "slot": 0,
+            "key": 93825127070912,
+            "cache": 93825154764528
+          }
+        ]
+      },
+      "3": {
+        "sequence": 57,
+        "phase": {
+          "index": 3,
+          "theme": "Day",
+          "transition": true
+        },
+        "anchor_x": 956,
+        "anchor_y": 125,
+        "avgCharWidth": 9,
+        "rectangle": [
+          965,
+          104,
+          38,
+          22
+        ],
+        "drawn": true,
+        "pFont": 93825127070912,
+        "matching_cache": [
+          {
+            "slot": 0,
+            "key": 93825127070912,
+            "cache": 93825154764528
+          }
+        ]
+      }
+    }
+  },
+  "checks": {
+    "core": {
+      "exitCode": 0,
+      "receiptSha256": "a547ddf34bf439dea62f7cfe38e6a1d82aa888ff7051930afcf5c4b95196299c",
+      "executableSha256": "3e7c535be2c8cfcc86c7fab305addec4a53960e749f7eaed2f6783d555872026",
+      "compileLogSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "core-original": {
+      "exitCode": 1,
+      "receiptSha256": "351cdd39d9136ae998523fc84506a93645bc460cd76f17c7a825867a1e408ddc",
+      "executableSha256": "b99597babb971d02d78db972a367e0bcc0fe74b12febc28df090b54978b7dfcf",
+      "compileLogSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "private": {
+      "exitCode": 0,
+      "receiptSha256": "dcf0fcd438615618f3e6c4717166926cff129c9e635c7016a2cce83ffe7da193",
+      "executableSha256": "3e7c535be2c8cfcc86c7fab305addec4a53960e749f7eaed2f6783d555872026",
+      "compileLogSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "private-original": {
+      "exitCode": 1,
+      "receiptSha256": "417ce16cf171d03f22fe00a5ece4270459f5acce58a7b05e4bcaa5cb6be6d132",
+      "executableSha256": "b99597babb971d02d78db972a367e0bcc0fe74b12febc28df090b54978b7dfcf",
+      "compileLogSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "methodDelta": {
+    "core": {
+      "beforeSourceSha256": "d88734b2291ed2ea9f832d2b934b00c9178e5eae8a991d552e98752cc2f4cb9d",
+      "afterSourceSha256": "127af268948a5cd9144241aa573d82b11019c9df8db18402ef5469cb86a3e0b0",
+      "onlyChange": "Existing atlas M metric moved outside cache-miss branch",
+      "beforeMethodSha256": "16d3e9b9855c040f616ba1dc4272c13fe31f4354e81b38df1001cf3b5aaf4c1c",
+      "afterMethodSha256": "0800ed72a41a667aded0fb524106fcf0e53860acb02efa641c5543c89365a196"
+    },
+    "private": {
+      "beforeSourceSha256": "4cf8ce47816bfb021b832879f9ea9463d0b1450764b49b24649abee66de9d499",
+      "afterSourceSha256": "b6810e842c1a109b3ce26078d213d0b6eda23f0c2ca3795bb9e28a328185af53",
+      "onlyChange": "Existing atlas M metric moved outside cache-miss branch",
+      "beforeMethodSha256": "cdfb230b3dea6e933d3296674d87e7b919ef29fed8191763151effd1c77eeee8",
+      "afterMethodSha256": "5a9af7723a2a0832af34bb327dd94f6e05040b2de74063e3c50a8b98038bab76"
+    }
+  },
+  "changedUnitCommands": [
+    {
+      "name": "core-s52plib",
+      "command": [
+        "c++",
+        "-std=gnu++17",
+        "-O3",
+        "-Werror=dangling-pointer",
+        "-fPIC",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum268-text-cache-metric/src",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-linux/opennav-chart-style/v1",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum268-text-cache-metric/.local/sources/core/libs/s52plib/src",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum268-text-cache-metric/.local/sources/core/gui/include",
+        "-DHAVE_WX_GESTURE_EVENTS",
+        "-DIXWEBSOCKET_USE_OPEN_SSL",
+        "-DIXWEBSOCKET_USE_TLS",
+        "-DIXWEBSOCKET_USE_ZLIB",
+        "-DOPENNAV_ROUTE_TESTS=1",
+        "-DOPENNAV_X=1",
+        "-DRAPIDJSON_HAS_STDSTRING=1",
+        "-DTIXML_USE_STL",
+        "-DWXUSINGDLL",
+        "-DXNAV_ENABLE_PILOT_LOOPBACK_TESTS=1",
+        "-DXNAV_ENABLE_TEST_FIXTURES=1",
+        "-D_FILE_OFFSET_BITS=64",
+        "-D__OCPN_USE_GLEW__",
+        "-D__WXGTK3__",
+        "-D__WXGTK__",
+        "-DocpnUSE_GL",
+        "-DocpnUSE_GLSL",
+        "-DocpnUSE_SVG",
+        "-DocpnUSE_wxBitmapBundle",
+        "-Dopencpn_EXPORTS",
+        "-DwxUSE_WEBVIEW=0",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-linux/include",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/gui/include/gui",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/include",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/resources",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/gui/src/mbtiles",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/gui/src/s57/include",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/.local/sysroot/usr/include",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/src",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/tests",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-linux/opennav-chart-style/v1",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/ssl_sha1/include",
+        "-I/usr/include/gtk-3.0",
+        "-I/usr/include/pango-1.0",
+        "-I/usr/include/cloudproviders",
+        "-I/usr/include/cairo",
+        "-I/usr/include/gdk-pixbuf-2.0",
+        "-I/usr/include/glycin-2",
+        "-I/usr/include/at-spi2-atk/2.0",
+        "-I/usr/include/at-spi-2.0",
+        "-I/usr/include/atk-1.0",
+        "-I/usr/include/dbus-1.0",
+        "-I/usr/lib/dbus-1.0/include",
+        "-I/usr/include/fribidi",
+        "-I/usr/include/pixman-1",
+        "-I/usr/include/harfbuzz",
+        "-I/usr/include/freetype2",
+        "-I/usr/include/libpng16",
+        "-I/usr/include/gio-unix-2.0",
+        "-I/usr/include/glib-2.0",
+        "-I/usr/lib/glib-2.0/include",
+        "-I/usr/include/libmount",
+        "-I/usr/include/blkid",
+        "-I/usr/include/sysprof-6",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/SQLiteCpp/include",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/include",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-linux/b2681f8/lib/include",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/gdal/include",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/gdal/include/gdal",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-linux/libdnet-src/installed/include",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/libdnet/_DNET_IF",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-linux/libdnet-src/installed/include/dnet",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/serial/include",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/std_filesystem/include",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/libtess2/Include",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/tinyxml/include",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/manual/include",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/s57-charts/include",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/iso8211/include",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/gui/include",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/garmin/jeeps",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/texcmp/squish",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/mipmap/include",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/model/include",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/sqlite/include",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/wxcurl/include",
+        "-I/usr/include/libusb-1.0",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/observable/include",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/IXWebSocket",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/geoprim/src",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/mdns/include",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/mdns/mdns-1.4.3",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/mongoose/include",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/N2KParser/include",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/nmea0183/src",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/pugixml",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-linux/_deps/rapidjson_src-src/include",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/s52plib/src",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/sound/include",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/wxJSON/include",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/wxservdisc",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/picosha2",
+        "-isystem",
+        "/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/.local/sysroot/usr/lib/wx/include/gtk3-unicode-3.2",
+        "-isystem",
+        "/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/.local/sysroot/usr/include/wx-3.2",
+        "-c",
+        "/home/standard/Projects/X-nav-worktrees/scrum268-text-cache-metric/.local/sources/core/libs/s52plib/src/s52plib.cpp",
+        "-o",
+        "/home/standard/Projects/X-nav-worktrees/scrum268-text-cache-metric/.local/final-objects/core-s52plib.o"
+      ],
+      "exit": 0
+    },
+    {
+      "name": "private-s52plib",
+      "command": [
+        "c++",
+        "-std=c++17",
+        "-O3",
+        "-Werror=dangling-pointer",
+        "-fPIC",
+        "-DSKAGER_OCHARTS_ADAPTER",
+        "-DTIXML_USE_STL",
+        "-D__OCPN_USE_GLEW__",
+        "-DocpnUSE_GL=1",
+        "-DocpnUSE_GLSL=1",
+        "-I/home/standard/Projects/X-nav/.local/sysroot/usr/lib/wx/include/gtk3-unicode-3.2",
+        "-I/home/standard/Projects/X-nav/.local/sysroot/usr/include/wx-3.2",
+        "-DWXUSINGDLL",
+        "-D__WXGTK3__",
+        "-D__WXGTK__",
+        "-D_FILE_OFFSET_BITS=64",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum268-text-cache-metric/src",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-linux/opennav-chart-style/v1",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum268-text-cache-metric/.local/sources/private/src",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum259-ocharts-port/.local/plugin-source/opencpn-libs/api-17",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum268-text-cache-metric/.local/final-objects",
+        "-I/home/standard/Projects/X-nav/.local/sysroot/usr/include",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum268-text-cache-metric/.local/sources/private/libs/cpl",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum268-text-cache-metric/.local/sources/private/libs/dsa",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum268-text-cache-metric/.local/sources/private/libs/gdal",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum268-text-cache-metric/.local/sources/private/libs/geoprim",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum268-text-cache-metric/.local/sources/private/libs/iso8211",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum268-text-cache-metric/.local/sources/private/libs/s52plib",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum268-text-cache-metric/.local/sources/private/libs/pugixml",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum268-text-cache-metric/.local/sources/private/libs/tinyxml",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum268-text-cache-metric/.local/sources/private/libs/wxJSON",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum268-text-cache-metric/.local/sources/private/libs/wxcurl",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum268-text-cache-metric/.local/sources/private/libs/cpl/src",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum268-text-cache-metric/.local/sources/private/libs/dsa/src",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum268-text-cache-metric/.local/sources/private/libs/gdal/src",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum268-text-cache-metric/.local/sources/private/libs/geoprim/src",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum268-text-cache-metric/.local/sources/private/libs/iso8211/src",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum268-text-cache-metric/.local/sources/private/libs/s52plib/src",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum268-text-cache-metric/.local/sources/private/libs/tinyxml/src",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum268-text-cache-metric/.local/sources/private/libs/wxJSON/src",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum268-text-cache-metric/.local/sources/private/libs/wxcurl/src",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum268-text-cache-metric/.local/sources/private/libs/tinyxml/include",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum268-text-cache-metric/.local/sources/private/libs/wxJSON/include",
+        "-c",
+        "/home/standard/Projects/X-nav-worktrees/scrum268-text-cache-metric/.local/sources/private/libs/s52plib/src/s52plib.cpp",
+        "-o",
+        "/home/standard/Projects/X-nav-worktrees/scrum268-text-cache-metric/.local/final-objects/private-s52plib.o"
+      ],
+      "exit": 0
+    }
+  ],
+  "objects": {
+    "core-s52plib.o": {
+      "sha256": "cb8063ba835071ebe073ad9745878958daaecf2220e57fc4513fc46f7efc4df9",
+      "bytes": 642792
+    },
+    "private-s52plib.o": {
+      "sha256": "f5b1aa091f76bcd069c82dc80fc7d6b161d6681b78c0bed39a36ddd9afd57244",
+      "bytes": 640128
+    }
+  },
+  "existingBoundaryOutput": "6122231 actual RenderText DPI, overlap, registration, cache and color checks passed\n6122231 actual RenderText DPI, overlap, registration, cache and color checks passed\n",
+  "testedSourceFiles": {
+    "tests/chart_name_render_boundary_test.cpp": "b3831ceeb906d23ffabb0a35270c5c993d207917309bb8311efbe294ed15d0d6",
+    "tools/verify-chart-name-boundary.py": "f0c2a400273f21ba88a363bd6b7aed1f194c5ed82c6f65c20f4fc427baa71088"
+  }
+}

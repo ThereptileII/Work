@@ -1,0 +1,186 @@
+Verified old and new nine-patch trees; 1 changed source paths; unchanged source mtimes preserved
+{
+  "repository": "https://github.com/OpenCPN/OpenCPN.git",
+  "tag": "Release_5.12.4",
+  "commit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "pluginApi": "1.20",
+  "upstreamWindowsApplicationArchitecture": "x86",
+  "requiredWindowsHostArchitecture": "x64",
+  "specificationApplicationArchitecture": "x64",
+  "approvedApplicationArchitecture": "x86",
+  "architectureDecision": "Preserve supported OpenCPN ABI on 64-bit Windows; user approved 2026-09-21"
+}
+/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source
+-- cmake version: 4.4.3
+Device "vcan0" does not exist.
+-- tests using vcan0 are NOT available: ""
+-- *** Host Build Architecture is x86_64
+-- Setting C++17 standard via cmake standard mechanism
+-- Final compiler options:
+-- CMAKE_CXX_FLAGS: 
+-- CMAKE_CXX_FLAGS_DEBUG: -g
+-- CMAKE_CXX_FLAGS_MINSIZEREL: -Os -DNDEBUG
+-- CMAKE_CXX_FLAGS_RELEASE: -O3 -DNDEBUG
+-- CMAKE_CXX_FLAGS_RELWITHDEBINFO: -O2 -g -DNDEBUG
+-- Building version 5.12.4
+-- *** Staging to build opencpn 5.12.4 ***
+-- *** Package will NOT include documentation ***
+-- Building against GTK3...
+-- Found OpenGL....
+--     GL Lib: /usr/lib/libGL.so/usr/lib/libGLU.so
+--     GL Include: /usr/include
+--     Revised GL Lib: /usr/lib/libGL.so
+-- Found wxWidgets: -L/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/.local/sysroot/usr/lib;;-lwx_gtk3u_gl-3.2;-lwx_baseu_net-3.2;-lwx_baseu_xml-3.2;-lwx_gtk3u_html-3.2;-lwx_gtk3u_aui-3.2;-lwx_gtk3u_core-3.2;-lwx_baseu-3.2;-lwx_gtk3u_richtext-3.2 (found version "3.2.11")
+-- Could not find wxWidgets webview add-on
+-- Found wxWidgets...
+--  wxWidgets Include: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/.local/sysroot/usr/lib/wx/include/gtk3-unicode-3.2;/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/.local/sysroot/usr/include/wx-3.2
+--  wxWidgets Libraries: -L/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/.local/sysroot/usr/lib;;-lwx_gtk3u_gl-3.2;-lwx_baseu_net-3.2;-lwx_baseu_xml-3.2;-lwx_gtk3u_html-3.2;-lwx_gtk3u_aui-3.2;-lwx_gtk3u_core-3.2;-lwx_baseu-3.2;-lwx_gtk3u_richtext-3.2
+--  Revised wxWidgets Libraries: -L/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/.local/sysroot/usr/lib;-lwx_gtk3u_gl-3.2;-lwx_baseu_net-3.2;-lwx_baseu_xml-3.2;-lwx_gtk3u_html-3.2;-lwx_gtk3u_aui-3.2;-lwx_gtk3u_core-3.2;-lwx_baseu-3.2;-lwx_gtk3u_richtext-3.2
+-- Found wxWidgets_VERSION_STRING: 3.2.11
+-- 
+-- *** Staging to build opencpn  ***
+-- *** Build type: Release
+-- *** Will install to /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install  ***
+-- GarminHost is enabled.
+-- selected config gtk3-unicode-3.2
+
+-- Found OpenGL....
+--     GL Lib: 
+--     GL Include: /usr/include
+-- Using system shapelib 
+PatchFileCpp: using patched sources at /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-linux/b2681f8
+-- Applying patch 0001-ShapeFileReader-Fix-annoying-name-clash-add-accessor.patch
+-- Applying patch 0002-Point-Fix-gcc-initializer-ordering-warning.patch
+-- Applying patch 0003-ShapeFileReader-Fix-signedness-gcc-warning.patch
+-- Applying patch 0004-cmake-Only-build-the-lib-directory.patch
+-- Using patched libdnet at /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-linux/libdnet
+-- Could NOT find TinyXML (missing: TINYXML_INCLUDE_DIR TINYXML_LIBRARIES) 
+-- SVG support enabled...
+-- wxWidgets 3.1.6+ detected, using wxBitmapBundle for SVG
+-- Using new serial library...
+--     Adding local GLU
+--     Revised GL Lib (with local): GLU_static/usr/lib/libGL.so/usr/lib/libGLU.so
+--     Adding local LIBTESS2
+-- Could NOT find TinyXML (missing: TINYXML_INCLUDE_DIR TINYXML_LIBRARIES) 
+-- Building with bundled tinyxml
+--     Adding local wxserverdisc
+-- S57 ENC support: enabled
+-- Garmin Host Mode support: enabled
+-- Building with system lz4
+-- mipmap SSE support enabled
+-- Building with system lz4
+-- Building for target (Platform; version; arch): n/a-x86_64; n/a; x86_64
+-- asciidoc not found, cannot rebuild authors.html
+-- TLS configured to use openssl
+-- OpenSSL found   /usr/include /usr/lib/libssl.so;/usr/lib/libcrypto.so
+-- Found OpenGL....
+--     GL Lib: /usr/lib/libGL.so/usr/lib/libGLU.so
+--     GL Include: /usr/include
+-- OpenSSL found   /usr/include /usr/lib/libssl.so;/usr/lib/libcrypto.so
+-- Using downloaded rapidjson at /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-linux/_deps/rapidjson_src-src/include
+-- Applying patch 0010-rapidjson-1.1.0-c++20.patch
+-- Applying patch 0011-do_not_include_gtest_src_dir.patch
+-- Applying patch 0012-Fix-Wclass-memaccess-warnings-errors.patch
+-- Applying patch 0013-gcc7.patch
+CMake Error at build/integration-source/libs/rapidjson/cmake/PatchFile.cmake:29 (message):
+  Failed to apply
+  /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/rapidjson/patches/0013-gcc7.patch
+  in
+  /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-linux/_deps/rapidjson_src-src
+  using /usr/bin/patch
+
+
+-- Using systrem SQLite library version 3053004.
+-- CMAKE_SYSTEM_NAME: Linux
+-- Found Portaudio: /usr/lib/libportaudio.so
+-- CLI sound command: "/usr/bin/aplay \"%s\""
+-- Portaudio Found
+-- libsndfile Found
+-- CMAKE_BINARY_DIR: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-linux
+-- *** Staging to build PlugIns ***
+-- Libarchive version: 3.8.9
+-- *** Staging to build chartdldr_pi ***
+-- Found OpenGL...
+--     Lib: /usr/lib/libGL.so/usr/lib/libGLU.so
+--     Include: /usr/include
+-- chartdldr_pi: Building without wxDATAVIEWLISTCTRL chart listing
+-- Checking for one of the modules 'libunarr;unarr'
+-- chartdldr_pi: using libarchive for rar files
+-- *** Added plugin: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/plugins/chartdldr_pi
+-- 
+-- *** Staging to build dashboard_pi ***
+-- *** Added plugin: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/plugins/dashboard_pi
+-- *** Staging to build grib_pi ***
+-- Using system jasper library...
+-- *** Added plugin: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/plugins/grib_pi
+-- Build type: Release
+-- *** Staging to build wmm_pi ***
+-- Found OpenGL...
+--     Lib: /usr/lib/libGL.so/usr/lib/libGLU.so
+--     Include: /usr/include
+-- Found OpenGL...
+--     Lib: /usr/lib/libGL.so/usr/lib/libGLU.so
+--     Include: /usr/include
+-- *** Added plugin: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/plugins/wmm_pi
+-- *** Package will include tide and current data ***
+-- ocpn: using external curl libraries...
+--   curl includes: /usr/include
+--   curl libraries: /usr/lib/libcurl.so
+-- Checking for one of the modules 'libwxcurl;wxcurl'
+-- Building with bundled wxcurl
+-- OpenSSL found /usr/include /usr/lib/libssl.so;/usr/lib/libcrypto.so
+-- Building with lzma support: /usr/lib/liblzma.so
+-- Found LibELF...
+--     ELF Lib: /usr/include
+--     ELF Include: /usr/lib/libelf.so
+-- OpenNav build purpose: DEVELOPER TEST BUILD (not an installable product)
+-- Found wxWidgets: -L/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/.local/sysroot/usr/lib;;-lwx_gtk3u_core-3.2;-lwx_baseu-3.2;-lwx_gtk3u_aui-3.2 (found suitable version "3.2.11", minimum required is "3.2")
+Approved source, wordmark, embedded bytes and nine Windows icon sizes verified
+Verified pinned resources; generated three chart palettes, bounded structural fill/outline and geographic-name ink, isolated anchor/service/cardinal and classified seamark artwork, cable/ferry paint and resource hashes; other navigation rules unchanged
+-- Using system gtest libraries
+-- Building tests
+-- Configuring done (137.2s)
+-- Generating done (0.7s)
+-- Build files have been written to: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-linux
+[1/149] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/ShapefileReader.cpp.o
+[2/149] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/Schema.cpp.o
+[3/149] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/FeatureIterator.cpp.o
+[4/149] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/GeometryType.cpp.o
+[5/149] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/Bounds.cpp.o
+[6/149] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/Geometry.cpp.o
+[7/149] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/Point.cpp.o
+[8/149] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/Line.cpp.o
+[9/149] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/Ring.cpp.o
+[10/149] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/Polygon.cpp.o
+[11/149] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/MultiPoint.cpp.o
+[12/149] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/MultiLine.cpp.o
+[13/149] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/MultiPolygon.cpp.o
+[14/149] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/Feature.cpp.o
+[15/149] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/FieldType.cpp.o
+[16/149] Building CXX object libs/ShapefileCpp/CMakeFiles/ShapefileCppLib.dir/__/__/b2681f8/lib/src/Field.cpp.o
+[17/149] cd /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-linux/libs/libdnet && /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/.local/sysroot/usr/bin/cmake -E echo Built\ the\ libdnet\ library
+Built the libdnet library
+[18/149] Building CXX object libs/s52plib/CMakeFiles/S52PLIB.dir/src/s52plib.cpp.o
+/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/s52plib/src/s52plib.cpp: In member function ‘void s52plib::PLIB_LoadS57ObjectConfig(wxFileConfig*)’:
+/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/s52plib/src/s52plib.cpp:10411:28: warning: ‘char* strncpy(char*, const char*, size_t)’ specified bound 6 equals destination size [-Wstringop-truncation]
+10411 |                     strncpy( pOLE->OBJLName, sObj.mb_str(), 6 );
+      |                     ~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[19/149] Linking CXX static library libs/s52plib/libS52PLIB.a
+[20/149] Building CXX object CMakeFiles/opencpn.dir/gui/src/about_frame_impl.cpp.o
+[21/149] Building CXX object CMakeFiles/opencpn.dir/gui/src/about.cpp.o
+[22/149] Building CXX object CMakeFiles/opencpn.dir/gui/src/ais_info_gui.cpp.o
+[23/149] Building CXX object CMakeFiles/opencpn.dir/gui/src/ais.cpp.o
+[24/149] Building CXX object CMakeFiles/opencpn.dir/gui/src/AISTargetAlertDialog.cpp.o
+[25/149] Building CXX object CMakeFiles/opencpn.dir/gui/src/AISTargetListDialog.cpp.o
+[26/149] Building CXX object CMakeFiles/opencpn.dir/gui/src/AISTargetQueryDialog.cpp.o
+[27/149] Building CXX object CMakeFiles/opencpn.dir/gui/src/CanvasOptions.cpp.o
+[28/149] Building CXX object CMakeFiles/opencpn.dir/gui/src/canvasMenu.cpp.o
+[29/149] Building CXX object CMakeFiles/opencpn.dir/gui/src/catalog_mgr.cpp.o
+[30/149] Building CXX object CMakeFiles/opencpn.dir/gui/src/cat_settings.cpp.o
+[31/149] Building CXX object CMakeFiles/opencpn.dir/gui/src/chartdb.cpp.o
+FAILED: [code=1] CMakeFiles/opencpn.dir/gui/src/chartdb.cpp.o 
+/usr/bin/c++ -DHAVE_WX_GESTURE_EVENTS -DIXWEBSOCKET_USE_OPEN_SSL -DIXWEBSOCKET_USE_TLS -DIXWEBSOCKET_USE_ZLIB -DOPENNAV_ROUTE_TESTS=1 -DOPENNAV_X=1 -DRAPIDJSON_HAS_STDSTRING=1 -DTIXML_USE_STL -DWXUSINGDLL -DXNAV_ENABLE_PILOT_LOOPBACK_TESTS=1 -DXNAV_ENABLE_TEST_FIXTURES=1 -D_FILE_OFFSET_BITS=64 -D__OCPN_USE_GLEW__ -D__WXGTK3__ -D__WXGTK__ -DocpnUSE_GL -DocpnUSE_GLSL -DocpnUSE_SVG -DocpnUSE_wxBitmapBundle -Dopencpn_EXPORTS -DwxUSE_WEBVIEW=0 -I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-linux/include -I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/gui/include/gui -I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/include -I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/resources -I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/gui/src/mbtiles -I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/gui/src/s57/include -I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/.local/sysroot/usr/include -I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/src -I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/tests -I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-linux/opennav-chart-style/v1 -I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/ssl_sha1/include -I/usr/include/gtk-3.0 -I/usr/include/pango-1.0 -I/usr/include/cloudproviders -I/usr/include/cairo -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/glycin-2 -I/usr/include/at-spi2-atk/2.0 -I/usr/include/at-spi-2.0 -I/usr/include/atk-1.0 -I/usr/include/dbus-1.0 -I/usr/lib/dbus-1.0/include -I/usr/include/fribidi -I/usr/include/pixman-1 -I/usr/include/harfbuzz -I/usr/include/freetype2 -I/usr/include/libpng16 -I/usr/include/gio-unix-2.0 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I/usr/include/libmount -I/usr/include/blkid -I/usr/include/sysprof-6 -I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/SQLiteCpp/include -I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/include -I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-linux/b2681f8/lib/include -I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/gdal/include -I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/gdal/include/gdal -I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-linux/libdnet-src/installed/include -I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/libdnet/_DNET_IF -I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-linux/libdnet-src/installed/include/dnet -I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/serial/include -I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/std_filesystem/include -I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/libtess2/Include -I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/tinyxml/include -I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/manual/include -I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/s57-charts/include -I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/iso8211/include -I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/gui/include -I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/garmin/jeeps -I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/texcmp/squish -I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/mipmap/include -I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/model/include -I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/sqlite/include -I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/wxcurl/include -I/usr/include/libusb-1.0 -I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/observable/include -I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/IXWebSocket -I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/geoprim/src -I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/mdns/include -I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/mdns/mdns-1.4.3 -I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/mongoose/include -I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/N2KParser/include -I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/nmea0183/src -I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/pugixml -I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-linux/_deps/rapidjson_src-src/include -I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/s52plib/src -I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/sound/include -I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/wxJSON/include -I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/wxservdisc -I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/libs/picosha2 -isystem /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/.local/sysroot/usr/lib/wx/include/gtk3-unicode-3.2 -isystem /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/.local/sysroot/usr/include/wx-3.2 -D__WXGTK3__ -O3 -DNDEBUG -std=gnu++17    -DPREFIX=\"/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install\" -Wall -Wno-unused -fexceptions -rdynamic -fno-strict-aliasing -Wno-deprecated-declarations -Wno-unknown-pragmas -Werror -Wno-unknown-warning-option -MD -MT CMakeFiles/opencpn.dir/gui/src/chartdb.cpp.o -MF CMakeFiles/opencpn.dir/gui/src/chartdb.cpp.o.d -o CMakeFiles/opencpn.dir/gui/src/chartdb.cpp.o -c /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/integration-source/gui/src/chartdb.cpp
+c++: fatal error: Killed signal terminated program cc1plus
+compilation terminated.
+[32/149] Building CXX object CMakeFiles/opencpn.dir/gui/src/chartdbs.cpp.o
+ninja: build stopped: subcommand failed.

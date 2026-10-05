@@ -1,0 +1,9 @@
+{
+  "src/integration/ChartCaFan.h": "8b556366c360e6ebe60fb17d8e27f8898cb1e00bb8d18f11f730086343728193",
+  "src/integration/ChartCaAllRound.h": "51c45116e0de22d6f824b1458e3fb8c1f8b70445d9f70c800df9a6eec40480e8",
+  "tests/chart_ca_all_round_test.cpp": "847962d6ddae18d1720876ba84ad0f1bb7e529a0d8a71c171a4884716bdc0437",
+  "tools/test-ca-fan.py": "7a239f2e45652484fc5bfcbf679a6df1f730048998073766ec709fe28bd30fa8",
+  "tools/prepare-ocharts-adapter.py": "0153c953a39f5f6927dd42ea78d6532d9d44bae0f68d30b10e4c468232fdfe39",
+  "patches/opencpn-5.12.4-chart-presentation.patch": "3ea147494b199d26adff83a4e0aae9be23c72caa3f523f202aa301376e1e08db",
+  "patches/ocharts-skager-presentation.patch": "82222245b55526b00db330a84ff678a4cc1320e18093c466779db431c8fd9bf6"
+}

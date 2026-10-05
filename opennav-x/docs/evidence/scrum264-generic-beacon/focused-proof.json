@@ -1,0 +1,12 @@
+{
+  "checks": 2118,
+  "wholeXmlInverse": true,
+  "wholeRgbaInverse": true,
+  "negativeXmlCases": 7,
+  "negativePixelCases": 6,
+  "changedPixelsPerTheme": 102,
+  "baselineManifestSha256": "12cfbce4686fce9a89e15f45105195c9f09a51ae4e3e9932aa7ba803ae205a52",
+  "manifestSha256": "a4f7a75f2eaad643954fe11218ef5adb343be15fa5e8bf0a8fb3d22bf7ae43e3",
+  "nativeWindowsAcceptance": false,
+  "boatAcceptance": false
+}

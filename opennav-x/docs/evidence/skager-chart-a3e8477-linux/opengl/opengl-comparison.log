@@ -1,0 +1,9 @@
+/home/standard/Projects/X-nav-worktrees/scrum260-area-ink/.local/combined-linux-capture/compare-captures.py:20: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  changed=sum(pixel!=(0,0,0) for pixel in exposed.crop(chart).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum260-area-ink/.local/combined-linux-capture/compare-captures.py:36: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pairs=collections.Counter(zip(left.getdata(),right.getdata()))
+Traceback (most recent call last):
+  File "/home/standard/Projects/X-nav-worktrees/scrum260-area-ink/.local/combined-linux-capture/compare-captures.py", line 27, in <module>
+    assert not ImageChops.difference(first,new).crop(chart).getbbox(),'Hot Day return differs: '+name
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Hot Day return differs: SKAGER-Day-return

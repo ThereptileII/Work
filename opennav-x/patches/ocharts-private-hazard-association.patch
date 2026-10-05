@@ -1,0 +1,105 @@
+--- a/libs/s52plib/src/s52s57.h
++++ b/libs/s52plib/src/s52s57.h
+@@ -36,6 +36,9 @@
+ 
+ #include <unordered_map>
+ #include <vector>
++#ifdef SKAGER_OCHARTS_ADAPTER
++#include <list>
++#endif
+ 
+ #define CURRENT_SENC_FORMAT_VERSION 201
+ 
+@@ -341,6 +344,10 @@
+   float *vertex_buffer;
+   int chart_type;
+   int chart_scale;
++#ifdef SKAGER_OCHARTS_ADAPTER
++  // Private synchronous query: caller owns the list, chart owns its objects.
++  std::list<S57Obj *> *(*get_associated_objects)(void *, S57Obj *);
++#endif
+ };
+ 
+ class LineGeometryDescriptor {
+--- a/libs/s52plib/src/s52cnsy.cpp
++++ b/libs/s52plib/src/s52cnsy.cpp
+@@ -543,6 +543,12 @@
+     // get area DEPARE & DRGARE that intersect this point/line/area
+ 
+     std::list<S57Obj*> *pobj_list = NULL;
++#ifdef SKAGER_OCHARTS_ADAPTER
++    if (obj->m_chart_context && obj->m_chart_context->chart &&
++        obj->m_chart_context->get_associated_objects)
++      pobj_list = obj->m_chart_context->get_associated_objects(
++          obj->m_chart_context->chart, obj);
++#else
+ //FIXME plib
+ //     if (obj->m_chart_context->chart)
+ //       pobj_list = obj->m_chart_context->chart->GetAssociatedObjects(obj);
+@@ -552,6 +558,7 @@
+       //            wxString *ret_str = new wxString(udwhaz03str);
+       //            return ret_str;
+     }
++#endif
+ 
+     if (pobj_list) {
+       for (S57Obj* ptest_obj: *pobj_list) {
+--- a/src/eSENCChart.cpp
++++ b/src/eSENCChart.cpp
+@@ -39,6 +39,9 @@
+ #include <string>
+ #include <map>
+ #include <unordered_map>
++#ifdef SKAGER_OCHARTS_ADAPTER
++#include <memory>
++#endif
+ 
+ #include "o-charts_pi.h"
+ #include "eSENCChart.h"
+@@ -4376,6 +4379,26 @@
+ }
+ 
+ 
++#ifdef SKAGER_OCHARTS_ADAPTER
++// Bridge the original private chart query without exporting chart pointers or
++// extending PI/API17. Both containers are owned locally; objects remain borrowed.
++static std::list<S57Obj *> *SkagerAssociatedObjects(void *chart, S57Obj *obj)
++{
++    if (!chart || !obj || !obj->m_chart_context ||
++        obj->m_chart_context->chart != chart ||
++        obj->m_chart_context->get_associated_objects != &SkagerAssociatedObjects)
++        return nullptr;
++
++    std::unique_ptr<ListOfS57Obj> matches(
++        static_cast<eSENCChart *>(chart)->GetAssociatedObjects(obj));
++    if (!matches) return nullptr;
++    std::unique_ptr<std::list<S57Obj *>> result(new std::list<S57Obj *>);
++    for (ListOfS57Obj::Node *node = matches->GetFirst(); node; node = node->GetNext())
++        result->push_back(node->GetData());
++    return result.release();
++}
++#endif
++
+ int eSENCChart::BuildRAZFromSENCFile( const wxString& FullPath, wxString& Key, int ctype )
+ {
+ 
+@@ -4807,6 +4830,9 @@
+             //  Set up the chart context
+         m_this_chart_context = (chart_context *)calloc( sizeof(chart_context), 1);
+         m_this_chart_context->chart = this;
++#ifdef SKAGER_OCHARTS_ADAPTER
++        m_this_chart_context->get_associated_objects = &SkagerAssociatedObjects;
++#endif
+         m_this_chart_context->chart_type = GetChartType();
+         m_this_chart_context->vertex_buffer = GetLineVertexBuffer();
+         m_this_chart_context->chart_scale = GetNativeScale();
+@@ -10218,6 +10244,9 @@
+ 
+ void S57Obj::Init()
+ {
++#ifdef SKAGER_OCHARTS_ADAPTER
++    m_chart_context = nullptr;
++#endif
+     att_array = NULL;
+     attVal = NULL;
+     n_attr = 0;

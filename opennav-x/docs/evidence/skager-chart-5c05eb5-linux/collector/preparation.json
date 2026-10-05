@@ -1,0 +1,56 @@
+{
+  "schema": 1,
+  "authorizedCommit": "5c05eb55c15b67d4014df55896d95452e9cc9d64",
+  "previousCommit": "9632421f701c5ec74d7a1360bc713c0034faf9af",
+  "snapshotInventorySha256": "e9164a3907372524f5f4dec6c6fdb83a7fbd64f41dc1b662d82f2f3128d308e3",
+  "buildScope": "Single incremental app build/install and existing147 ctest; unchanged standalone font/wordmark and full resource suite omitted",
+  "captures": {
+    "pier57": {
+      "owner": "skager_brand_assets",
+      "renderers": [
+        "software",
+        "opengl"
+      ],
+      "themes": [
+        "Day",
+        "Night",
+        "Day-return"
+      ],
+      "styles": [
+        "SKAGER",
+        "Standard"
+      ],
+      "baseline": "Exact963 Pier57 originals",
+      "savedPointStyle": 76,
+      "effectivePointStyle": 76,
+      "wholeDayReturn": "Exact entire1014x566 chart, including toolbar/piano; exact179x68 header",
+      "historicalStandard": "Exact chart except declared owned toolbar bounds883,545,1072,597"
+    },
+    "s64-lateral": {
+      "owner": "prototype_route_style",
+      "renderers": [
+        "software",
+        "opengl"
+      ],
+      "themes": [
+        "Day",
+        "Night",
+        "Day-return"
+      ],
+      "styles": [
+        "SKAGER",
+        "Standard"
+      ],
+      "baseline": "Exact963 Day only; no historical Night capture",
+      "actualGreenLight": 227,
+      "actualRedLight": 223
+    }
+  },
+  "limits": [
+    "Linux software/Mesa llvmpipe only",
+    "No private o-charts adapter loaded",
+    "No Windows/boat acceptance",
+    "No synthetic chart geometry"
+  ],
+  "oldCollectorsAndEvidenceUntouched": true
+}

@@ -1,0 +1,180 @@
+{
+  "issue": "SCRUM-98",
+  "jira_selection": "10457",
+  "base_commit": "548a37653d967d552ef68216184d0d6f3734664a",
+  "failed_native_commit": "488fbbdf5161e986c986773187b1008a7f8684f5",
+  "failed_native_run": "36984898997",
+  "failed_native_job": "110769523919",
+  "failure": {
+    "flow": "Advanced battery model -> Energy configuration -> root Settings -> Sensors",
+    "location": "tools/smoke-preview.py:597 -> preferences_entry:307 -> shell_click:254",
+    "drawer": {
+      "x": 640,
+      "height": 635,
+      "width": 432,
+      "y": 111
+    },
+    "tabs": [
+      {
+        "x": 663,
+        "height": 37,
+        "accessible_name": "Settings section: Vessel",
+        "width": 52,
+        "label": "Vessel",
+        "y": -19,
+        "visible": false,
+        "enabled": true
+      },
+      {
+        "x": 720,
+        "height": 37,
+        "accessible_name": "Settings section: Navigation",
+        "width": 75,
+        "label": "Navigation",
+        "y": -19,
+        "visible": false,
+        "enabled": true
+      },
+      {
+        "x": 800,
+        "height": 37,
+        "accessible_name": "Settings section: Sensors",
+        "width": 59,
+        "label": "Sensors",
+        "y": -19,
+        "visible": false,
+        "enabled": true
+      },
+      {
+        "x": 864,
+        "height": 37,
+        "accessible_name": "Settings section: Autopilot",
+        "width": 67,
+        "label": "Autopilot",
+        "y": -19,
+        "visible": false,
+        "enabled": true
+      },
+      {
+        "x": 936,
+        "height": 37,
+        "accessible_name": "Settings section: Radar",
+        "width": 50,
+        "label": "Radar",
+        "y": -19,
+        "visible": false,
+        "enabled": true
+      },
+      {
+        "x": 991,
+        "height": 37,
+        "accessible_name": "Settings section: Display",
+        "width": 58,
+        "label": "Display",
+        "y": -19,
+        "visible": false,
+        "enabled": true
+      },
+      {
+        "x": 663,
+        "height": 37,
+        "accessible_name": "Settings section: System",
+        "width": 56,
+        "label": "System",
+        "y": 23,
+        "visible": false,
+        "enabled": true
+      },
+      {
+        "x": 724,
+        "height": 37,
+        "accessible_name": "Settings section: Help",
+        "width": 45,
+        "label": "Help",
+        "y": 23,
+        "visible": false,
+        "enabled": true
+      }
+    ],
+    "cause": "Reopening the cached native Preferences drawer retained its scroll offset, leaving every Settings section clipped."
+  },
+  "prototype_contract": {
+    "file": "docs/design/prototype/index.html",
+    "line": 296,
+    "behavior": "openPanel sets drawerBody.scrollTop=0 after rendering, including root Settings opens; settingsPanel places tabs inside the scrolling body."
+  },
+  "repair": "Root Shell::ShowSettings calls XNavSettingsDrawer::Open, which presents the drawer and resets body scroll. Ordinary Tick/refresh keeps using Present and preserves scroll. Selection and settings persistence behavior are unchanged.",
+  "preview_harness": "Unchanged: exact visible/enabled/contained section predicates and real native pointer input retained.",
+  "local_authority": "Linux offline component behavior only; not native Windows or boat acceptance",
+  "component_build": "Fresh standalone opennav_ui target only, wxGTK 3.2.11, Debug; Settings component linked separately. No OpenCPN/full product build.",
+  "positive": {
+    "passed": true,
+    "checks": 179,
+    "captures": [
+      "settings-day",
+      "settings-dusk",
+      "settings-night",
+      "sensors-day",
+      "sensors-dusk",
+      "sensors-night",
+      "display-day",
+      "display-150-chart-night",
+      "display-applied-125-chart",
+      "display-dusk",
+      "display-night",
+      "system-night",
+      "settings-radar-night",
+      "settings-autopilot-night"
+    ]
+  },
+  "negative": {
+    "result": {
+      "passed": false,
+      "checks": 167,
+      "captures": [
+        "settings-day",
+        "settings-dusk",
+        "settings-night",
+        "sensors-day",
+        "sensors-dusk",
+        "sensors-night",
+        "display-day",
+        "display-150-chart-night",
+        "display-applied-125-chart",
+        "display-dusk",
+        "display-night",
+        "system-night",
+        "settings-radar-night",
+        "settings-autopilot-night"
+      ]
+    },
+    "mutation": "Build-local SettingsDrawer.cpp copy omits only new body_->Scroll(0, 0) from Open; Present still executes.",
+    "expected_failure": "root Preferences reopening resets body scroll"
+  },
+  "focused_checks": [
+    "tests/windows_ui_layout_tests.py: existing exact geometry and pointer visibility/occlusion/identity/scroll guards pass",
+    "tests/prototype_capture_wrappers_tests.py: 4 pass",
+    "git diff --check passes"
+  ],
+  "component_regression": [
+    "At canonical 1280x800, scroll real Vessel body to the advanced action area and confirm Sensors is outside the body viewport.",
+    "Ordinary state/theme refresh preserves that exact offset.",
+    "Dismiss and root Open reset body to (0,0), preserve Vessel selection, and expose all eight enabled tabs fully within body viewport.",
+    "Real wxUIActionSimulator pointer selects Sensors after reopening; no extra settings saves occur."
+  ],
+  "remaining_native_proof": [
+    "Build changed native SettingsDrawer/Shell units and Settings component on exact integrated revision.",
+    "Run native Settings component regression, then unchanged smoke-preview.py against disposable native fixture install.",
+    "Require complete preview flow past Sensors, Advanced vessel model, Radar, Display and subsequent gates; retain diagnostic/screenshot artifacts and exact commit identities.",
+    "Do not claim full native/1920/DPI/boat/release acceptance from these Linux component results."
+  ],
+  "sha256": {
+    "src/ui/SettingsDrawer.cpp": "be22ac6ffdfe187e90408a8ad452efd18364fde74384d268119102e7a84085fa",
+    "src/ui/SettingsDrawer.h": "c5a62316a9307f24348911931731a8fbd0dbbf38572da9ee01a3700728a0ecfe",
+    "src/ui/Shell.cpp": "eb13b87158a56024c17838a9cf791839c4946e35aca758fb496eb2be8c37713f",
+    "tests/settings_drawer_test.cpp": "ac059695bed3435054855a29391a73e38af76c2d40e6122e90cd70605b5dc934",
+    "tools/smoke-preview.py": "97d20e38c4f306ab3233f96997a207d5b008e167e1b0fe895314dfb2de5c6231",
+    "tools/windows-ui.py": "17266a816c8b08b9d7e5ae21133424050f8dc6844019877b5ea35f5091e73b65",
+    "docs/design/prototype/index.html": "b04573b920b6bccd16afd22f54a909e48afcfd502ce9cd7c69fdf5b6dd895447"
+  }
+}

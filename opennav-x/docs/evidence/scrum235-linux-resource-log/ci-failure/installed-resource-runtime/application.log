@@ -1,0 +1,68 @@
+00:14:51.204 MESSAGE ocpn_app.cpp:1273 
+
+________
+
+00:14:51.204    INFO logger.cpp:131 ------- OpenCPN version 5.12.4 restarted at 2026-10-03 -------
+
+00:14:51.204    INFO logger.cpp:131 Using loglevel INFO
+00:14:51.204 MESSAGE ocpn_app.cpp:1296 wxWidgets version: wxWidgets 3.2.4 Linux 64 bit wxGTK
+00:14:51.206 MESSAGE ocpn_app.cpp:1301 OS Version reports as:  6.17
+00:14:51.206 MESSAGE ocpn_app.cpp:1303 MemoryStatus:  mem_total: 15989 mb,  mem_initial: 693 mb
+00:14:51.206 MESSAGE ocpn_app.cpp:1315 OCPN_OSDetail:  x86_64 ; Ubuntu ; 24.04 ; ubuntu ; debian
+00:14:51.206 MESSAGE ocpn_app.cpp:1319 SData_Locn is /home/runner/work/Work/Work/opennav-x/build/xnav-install/share/opencpn/
+00:14:51.206 MESSAGE ocpn_app.cpp:1337 PrivateDataDir is /tmp/onx-res-9r6mw3qw/profile
+00:14:51.213 MESSAGE ocpn_app.cpp:1403 Using existing Config_File: /tmp/onx-res-9r6mw3qw/profile/opencpn.conf
+00:14:51.214 MESSAGE navutil.cpp:1130 winPluginDir, read from ini file: 
+00:14:51.214 MESSAGE navutil.cpp:3051 Switch InlandEcdis mode Off
+00:14:51.214 MESSAGE ConfigMgr.cpp:526 Creating new Configs catalog: /tmp/onx-res-9r6mw3qw/profile/Configs/configs.xml
+00:14:51.214 MESSAGE ConfigMgr.cpp:547 Loading Configs catalog: /tmp/onx-res-9r6mw3qw/profile/Configs/configs.xml
+00:14:51.231 MESSAGE OpenCPNIntegration.cpp:374 SKAGER startup: xnav
+00:14:51.232 MESSAGE styles.cpp:841 Styles loading from /home/runner/work/Work/Work/opennav-x/build/xnav-install/share/opencpn/uidata/styles.xml
+00:14:51.232 MESSAGE styles.cpp:818 No styles found at: /home/runner/
+00:14:51.232 MESSAGE styles.cpp:818 No styles found at: /home/runner/.opencpn/
+00:14:51.239 MESSAGE styles.cpp:775 Using SVG Icons
+00:14:51.239 MESSAGE ocpn_app.cpp:1467 Detected display size (horizontal): 338 mm
+00:14:51.239 MESSAGE OCPNPlatform.cpp:1034 Getting DefaultSystemLocale...
+00:14:51.239 MESSAGE ocpn_app.cpp:1507 System default Language:  en_US
+00:14:51.239 MESSAGE ocpn_app.cpp:1510 Config file language:  
+00:14:51.240 MESSAGE ocpn_app.cpp:1516 Config file language empty, using system default:  en_US
+00:14:51.240 MESSAGE ocpn_app.cpp:1522 Adjusted App language:  en_US
+00:14:51.240 MESSAGE OCPNPlatform.cpp:1115 ChangeLocale: Language load for:  en_US
+00:14:52.092 MESSAGE OCPNPlatform.cpp:1168 ChangeLocale: Locale Init OK for:  en_US
+00:14:52.092 MESSAGE OCPNPlatform.cpp:1192 Loading catalog for opencpn core.
+00:14:52.095 MESSAGE OCPNPlatform.cpp:1034 Getting DefaultSystemLocale...
+00:14:52.096 MESSAGE ocpn_app.cpp:1529 Opencpn language set to:  en_US
+00:14:52.096 MESSAGE OpenCPNIntegration.cpp:329 SKAGER installed resource defaults: original supported OpenCPN; configured selections preserved
+00:14:52.096 MESSAGE ocpn_app.cpp:1767 Creating MyFrame...size(896, 560)  position(0, 0)
+00:14:52.135 WARNING navmsg_filter.cpp:202 Bad system filter path: /tmp/onx-res-9r6mw3qw/profile/filters
+00:14:52.137 MESSAGE ocpn_frame.cpp:832  **** Connect stuff
+00:14:52.231 MESSAGE chcanv.cpp:2444 Metrics:  m_display_size_mm: 338     g_Platform->getDisplaySize():  1280:800   
+00:14:52.231 MESSAGE chcanv.cpp:2450 monitor size: 1280 800
+00:14:52.231 MESSAGE TCDataSource.cpp:50 Loading Tide/Current data source: /tmp/onx-res-9r6mw3qw/Stock Åland/tcdata/harmonics-dwf-20210110-free.tcd
+00:14:52.264 MESSAGE TCDataSource.cpp:50 Loading Tide/Current data source: /tmp/onx-res-9r6mw3qw/Stock Åland/tcdata/HARMONICS_NO_US.IDX
+00:14:52.283 MESSAGE chartdb.cpp:219 ChartDB Cache policy:  Max open chart limit is 20.
+00:14:52.283 MESSAGE ocpn_app.cpp:1926 GPS Watchdog Timeout is: 10 sec.
+00:14:52.283 MESSAGE ocpn_app.cpp:2020 OpenCPN Initialized in 1117 ms.
+00:14:52.815 MESSAGE ocpn_frame.cpp:4750 OnInitTimer...0
+00:14:52.984 MESSAGE waypointman_gui.cpp:83 DPMM: 3.78698   ScaleFactorExp: 1
+00:14:52.984 MESSAGE waypointman_gui.cpp:90 Looking for UserIcons at /tmp/onx-res-9r6mw3qw/profile/UserIcons/
+00:14:53.085 MESSAGE ocpn_frame.cpp:4750 OnInitTimer...1
+00:14:53.186 MESSAGE ocpn_frame.cpp:4750 OnInitTimer...2
+00:14:53.186 MESSAGE plugin_loader.cpp:471 PluginLoader: loading plugins from /home/runner/.local/lib/opencpn
+00:14:53.186 MESSAGE plugin_loader.cpp:292 Using LD_LIBRARY_PATH: /home/runner/.local/lib/opencpn
+00:14:53.186 MESSAGE plugin_loader.cpp:324 Using PATH: /home/runner/.local/bin:/snap/bin:/home/runner/.local/bin:/opt/pipx_bin:/home/runner/.cargo/bin:/home/runner/.config/composer/vendor/bin:/usr/local/.ghcup/bin:/home/runner/.dotnet/tools:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+00:14:53.186 MESSAGE plugin_loader.cpp:476 Loading plugins from dir: /home/runner/.local/lib/opencpn
+00:14:53.186 MESSAGE plugin_loader.cpp:721 PluginLoader searching for PlugIns in location /home/runner/.local/lib/opencpn
+00:14:53.186 MESSAGE plugin_loader.cpp:735    Directory /home/runner/.local/lib/opencpn does not exist.
+00:14:53.198 MESSAGE OCPNPlatform.cpp:1115 ChangeLocale: Language load for:  en_US
+00:14:53.203 MESSAGE OCPNPlatform.cpp:1168 ChangeLocale: Locale Init OK for:  en_US
+00:14:53.203 MESSAGE OCPNPlatform.cpp:1192 Loading catalog for opencpn core.
+00:14:53.206 MESSAGE OCPNPlatform.cpp:1034 Getting DefaultSystemLocale...
+00:14:53.297 MESSAGE ocpn_frame.cpp:4750 OnInitTimer...3
+00:14:53.398 MESSAGE ocpn_frame.cpp:4750 OnInitTimer...4
+00:14:54.030 MESSAGE options.cpp:5299 options: got device count: 0
+00:14:54.141 MESSAGE ocpn_frame.cpp:4750 OnInitTimer...5
+00:14:54.242 MESSAGE ocpn_frame.cpp:4750 OnInitTimer...6
+00:14:54.342 MESSAGE ocpn_frame.cpp:4750 OnInitTimer...7
+00:14:54.342 MESSAGE ocpn_frame.cpp:5034 OnInitTimer...Last Call
+00:14:54.342 MESSAGE ocpn_frame.cpp:5063 OnInitTimer...Finalize Canvases

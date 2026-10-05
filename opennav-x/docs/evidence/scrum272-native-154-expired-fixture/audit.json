@@ -1,0 +1,54 @@
+{
+  "runId": 37136712793,
+  "jobId": 111243795980,
+  "remoteCommit": "15452e512fd073090b1a4cea7c9010eac0874118",
+  "localCommit": "96c0c2705aacae511b6f8c22afaa6618dbabceff",
+  "tree": "3c53cff0332dfc09babb8e5b8daa7986f77a9c84",
+  "nativeConclusion": "failure",
+  "artifact": {
+    "id": 11281990645,
+    "bytes": 65648702,
+    "sha256": "1fa9660cbf99b68893cd96b49c6fee22d92dd9f4a4d0d39f3660f970cba43f3b",
+    "crcEntriesPassed": 18441
+  },
+  "fixtureTests": 139,
+  "productionTests": 139,
+  "failure": {
+    "time": "2026-10-03T18:13:49Z",
+    "step": 18,
+    "tool": "openssl.exe ca",
+    "error": "Problem with index file: expired-index.txt (could not load/parse file)",
+    "source": "tools/test-downloader-trust-windows.ps1:95-98",
+    "productionTranscriptLine": 4137,
+    "phase": "expired certificate fixture generation before trust import/server/cases",
+    "originalIndexBytesRetained": false
+  },
+  "actualPrivateProbeConfigureAndLink": "passed; both executable paths and hashes recorded, executables deleted by cleanup",
+  "privatePackageStaticVerifier": "passed with frozen tools and actual production resource set",
+  "privatePackageDll": {
+    "sha256": "9af282c0e24ccc6ce91e314eb710d915331e932e9a597cb91957089023eb8e41",
+    "bytes": 1328640,
+    "name": "skager-ocharts-adapter.dll",
+    "machine": "I386"
+  },
+  "privateExports": [
+    "create_pi",
+    "destroy_pi",
+    "skager_bind_chart_presentation_v1",
+    "skager_chart_point_style_v1",
+    "skager_chart_presentation_status_v1"
+  ],
+  "sourceScriptMatchesCorrespondingArchive": true,
+  "retainedExecutables": [
+    "evidence/local/curl-test-host-binding/cmake-build/CMakeFiles/3.31.6/CompilerIdC/CompilerIdC.exe",
+    "evidence/local/windows-changed-units-xnav/build/CMakeFiles/3.31.6/CompilerIdCXX/CompilerIdCXX.exe",
+    "evidence/local/windows-curl-source-early-production/build/CMakeFiles/3.31.6/CompilerIdC/CompilerIdC.exe",
+    "evidence/local/windows-curl-source-early-production/build-import-name/CMakeFiles/3.31.6/CompilerIdC/CompilerIdC.exe",
+    "evidence/local/windows-curl-source-early-xnav/build/CMakeFiles/3.31.6/CompilerIdC/CompilerIdC.exe",
+    "evidence/local/windows-curl-source-early-xnav/build-import-name/CMakeFiles/3.31.6/CompilerIdC/CompilerIdC.exe"
+  ],
+  "tlsAcceptance": false,
+  "applicationPackageEligible": false,
+  "boatAcceptance": false,
+  "requestedOpenGLActuallyEnabled": false
+}

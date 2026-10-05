@@ -1,0 +1,310 @@
+﻿2026-10-03T14:43:35.3458826Z Current runner version: '2.337.0'
+2026-10-03T14:43:35.3485528Z ##[group]Runner Image Provisioner
+2026-10-03T14:43:35.3486478Z Hosted Compute Agent
+2026-10-03T14:43:35.3487089Z Version: 20260901.588
+2026-10-03T14:43:35.3487697Z Commit: f88ec8081b781fac6c440065ac7ff9e710ce3d0b
+2026-10-03T14:43:35.3488382Z Build Date: 2026-09-01T19:56:44Z
+2026-10-03T14:43:35.3489027Z Worker ID: {43efa5d6-17bb-42de-87cf-f10bfba6100a}
+2026-10-03T14:43:35.3489679Z Azure Region: eastus
+2026-10-03T14:43:35.3490173Z ##[endgroup]
+2026-10-03T14:43:35.3491589Z ##[group]Operating System
+2026-10-03T14:43:35.3492232Z Microsoft Windows Server 2022
+2026-10-03T14:43:35.3492801Z 10.0.20348
+2026-10-03T14:43:35.3493303Z Datacenter
+2026-10-03T14:43:35.3493807Z ##[endgroup]
+2026-10-03T14:43:35.3494357Z ##[group]Runner Image
+2026-10-03T14:43:35.3494900Z Image: windows-2022
+2026-10-03T14:43:35.3495409Z Version: 20260927.320.1
+2026-10-03T14:43:35.3496748Z Included Software: https://github.com/actions/runner-images/blob/win22/20260927.320/images/windows/Windows2022-Readme.md
+2026-10-03T14:43:35.3498220Z Image Release: https://github.com/actions/runner-images/releases/tag/win22%2F20260927.320
+2026-10-03T14:43:35.3499111Z ##[endgroup]
+2026-10-03T14:43:35.3500123Z ##[group]GITHUB_TOKEN Permissions
+2026-10-03T14:43:35.3502048Z Contents: read
+2026-10-03T14:43:35.3502670Z Metadata: read
+2026-10-03T14:43:35.3503278Z ##[endgroup]
+2026-10-03T14:43:35.3505393Z Secret source: Actions
+2026-10-03T14:43:35.3506342Z Cache mode: write
+2026-10-03T14:43:35.3507155Z Prepare workflow directory
+2026-10-03T14:43:35.3830391Z Prepare all required actions
+2026-10-03T14:43:35.3877820Z Getting action download info
+2026-10-03T14:43:35.5661100Z Download action repository 'actions/checkout@11d5960a326750d5838078e36cf38b85af677262' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-10-03T14:43:35.6898112Z Download action repository 'actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-10-03T14:43:36.0222413Z Complete job name: Native portable collector paths, no application build
+2026-10-03T14:43:36.2718013Z ##[group]Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+2026-10-03T14:43:36.2719291Z with:
+2026-10-03T14:43:36.2719759Z   repository: ThereptileII/Work
+2026-10-03T14:43:36.2723723Z   token: ***
+2026-10-03T14:43:36.2724166Z   ssh-strict: true
+2026-10-03T14:43:36.2724625Z   ssh-user: git
+2026-10-03T14:43:36.2725072Z   persist-credentials: true
+2026-10-03T14:43:36.2725579Z   clean: true
+2026-10-03T14:43:36.2726032Z   sparse-checkout-cone-mode: true
+2026-10-03T14:43:36.2726570Z   fetch-depth: 1
+2026-10-03T14:43:36.2727006Z   fetch-tags: false
+2026-10-03T14:43:36.2727470Z   show-progress: true
+2026-10-03T14:43:36.2727924Z   lfs: false
+2026-10-03T14:43:36.2728356Z   submodules: false
+2026-10-03T14:43:36.2728829Z   set-safe-directory: true
+2026-10-03T14:43:36.2729360Z   allow-unsafe-pr-checkout: false
+2026-10-03T14:43:36.2730105Z ##[endgroup]
+2026-10-03T14:43:36.5191352Z Syncing repository: ThereptileII/Work
+2026-10-03T14:43:36.5193280Z ##[group]Getting Git version info
+2026-10-03T14:43:36.5193939Z Working directory is 'D:\a\Work\Work'
+2026-10-03T14:43:36.6335325Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-10-03T14:43:37.0477192Z git version 2.55.0.windows.5
+2026-10-03T14:43:37.0518715Z ##[endgroup]
+2026-10-03T14:43:37.0536361Z Temporarily overriding HOME='D:\a\_temp\7e3dc019-a780-467d-9602-04493d5f90b6' before making global git config changes
+2026-10-03T14:43:37.0538451Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-03T14:43:37.0547048Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\Work\Work
+2026-10-03T14:43:37.1159233Z Deleting the contents of 'D:\a\Work\Work'
+2026-10-03T14:43:37.1164500Z ##[group]Initializing the repository
+2026-10-03T14:43:37.1173215Z [command]"C:\Program Files\Git\bin\git.exe" init D:\a\Work\Work
+2026-10-03T14:43:37.2027717Z Initialized empty Git repository in D:/a/Work/Work/.git/
+2026-10-03T14:43:37.2067211Z [command]"C:\Program Files\Git\bin\git.exe" remote add origin https://github.com/ThereptileII/Work
+2026-10-03T14:43:37.2655063Z ##[endgroup]
+2026-10-03T14:43:37.2656463Z ##[group]Disabling automatic garbage collection
+2026-10-03T14:43:37.2663517Z [command]"C:\Program Files\Git\bin\git.exe" config --local gc.auto 0
+2026-10-03T14:43:37.2885089Z ##[endgroup]
+2026-10-03T14:43:37.2886851Z ##[group]Setting up auth
+2026-10-03T14:43:37.2896104Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-10-03T14:43:37.3125621Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-10-03T14:43:38.8255432Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-03T14:43:38.8476389Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-10-03T14:43:39.2907006Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-03T14:43:39.3151816Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-10-03T14:43:39.7618411Z [command]"C:\Program Files\Git\bin\git.exe" config --local http.https://github.com/.extraheader "AUTHORIZATION: basic ***"
+2026-10-03T14:43:39.7854718Z ##[endgroup]
+2026-10-03T14:43:39.7855167Z ##[group]Fetching the repository
+2026-10-03T14:43:39.7867908Z [command]"C:\Program Files\Git\bin\git.exe" -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +27828302a1c83ecc1f187ae1d79ab9ab5ac0fdfd:refs/remotes/origin/skager-portable-capture
+2026-10-03T14:43:50.5089378Z From https://github.com/ThereptileII/Work
+2026-10-03T14:43:50.5090153Z  * [new ref]         27828302a1c83ecc1f187ae1d79ab9ab5ac0fdfd -> origin/skager-portable-capture
+2026-10-03T14:43:50.5120771Z ##[endgroup]
+2026-10-03T14:43:50.5121509Z ##[group]Determining the checkout info
+2026-10-03T14:43:50.5124541Z ##[endgroup]
+2026-10-03T14:43:50.5133941Z [command]"C:\Program Files\Git\bin\git.exe" sparse-checkout disable
+2026-10-03T14:43:50.5558039Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all extensions.worktreeConfig
+2026-10-03T14:43:50.5776874Z ##[group]Checking out the ref
+2026-10-03T14:43:50.5785650Z [command]"C:\Program Files\Git\bin\git.exe" checkout --progress --force -B skager-portable-capture refs/remotes/origin/skager-portable-capture
+2026-10-03T14:43:51.6127197Z Updating files:  51% (2440/4698)
+2026-10-03T14:43:51.6249693Z Updating files:  52% (2443/4698)
+2026-10-03T14:43:51.6349222Z Updating files:  53% (2490/4698)
+2026-10-03T14:43:51.6506231Z Updating files:  54% (2537/4698)
+2026-10-03T14:43:51.6648692Z Updating files:  55% (2584/4698)
+2026-10-03T14:43:51.6732215Z Updating files:  56% (2631/4698)
+2026-10-03T14:43:51.6862395Z Updating files:  57% (2678/4698)
+2026-10-03T14:43:51.6946373Z Updating files:  58% (2725/4698)
+2026-10-03T14:43:51.7221714Z Updating files:  59% (2772/4698)
+2026-10-03T14:43:51.7564675Z Updating files:  60% (2819/4698)
+2026-10-03T14:43:51.7737218Z Updating files:  61% (2866/4698)
+2026-10-03T14:43:51.7881691Z Updating files:  62% (2913/4698)
+2026-10-03T14:43:51.8164135Z Updating files:  63% (2960/4698)
+2026-10-03T14:43:51.8383772Z Updating files:  64% (3007/4698)
+2026-10-03T14:43:51.8572286Z Updating files:  65% (3054/4698)
+2026-10-03T14:43:51.8750600Z Updating files:  66% (3101/4698)
+2026-10-03T14:43:51.8954949Z Updating files:  67% (3148/4698)
+2026-10-03T14:43:51.9172184Z Updating files:  68% (3195/4698)
+2026-10-03T14:43:51.9355839Z Updating files:  69% (3242/4698)
+2026-10-03T14:43:51.9524441Z Updating files:  70% (3289/4698)
+2026-10-03T14:43:51.9875898Z Updating files:  71% (3336/4698)
+2026-10-03T14:43:52.0085678Z Updating files:  72% (3383/4698)
+2026-10-03T14:43:52.0411820Z Updating files:  73% (3430/4698)
+2026-10-03T14:43:52.0682840Z Updating files:  74% (3477/4698)
+2026-10-03T14:43:52.0824378Z Updating files:  75% (3524/4698)
+2026-10-03T14:43:52.0919517Z Updating files:  76% (3571/4698)
+2026-10-03T14:43:52.1105642Z Updating files:  77% (3618/4698)
+2026-10-03T14:43:52.1252910Z Updating files:  78% (3665/4698)
+2026-10-03T14:43:52.1336091Z Updating files:  79% (3712/4698)
+2026-10-03T14:43:52.1409501Z Updating files:  80% (3759/4698)
+2026-10-03T14:43:52.1494411Z Updating files:  81% (3806/4698)
+2026-10-03T14:43:52.1601058Z Updating files:  82% (3853/4698)
+2026-10-03T14:43:52.1677385Z Updating files:  83% (3900/4698)
+2026-10-03T14:43:52.1769112Z Updating files:  84% (3947/4698)
+2026-10-03T14:43:52.1855124Z Updating files:  85% (3994/4698)
+2026-10-03T14:43:52.1947355Z Updating files:  86% (4041/4698)
+2026-10-03T14:43:52.2037742Z Updating files:  87% (4088/4698)
+2026-10-03T14:43:52.2125494Z Updating files:  88% (4135/4698)
+2026-10-03T14:43:52.2229022Z Updating files:  89% (4182/4698)
+2026-10-03T14:43:52.2320866Z Updating files:  90% (4229/4698)
+2026-10-03T14:43:52.2411255Z Updating files:  91% (4276/4698)
+2026-10-03T14:43:52.2509205Z Updating files:  92% (4323/4698)
+2026-10-03T14:43:52.2600800Z Updating files:  93% (4370/4698)
+2026-10-03T14:43:52.2702201Z Updating files:  94% (4417/4698)
+2026-10-03T14:43:52.2794311Z Updating files:  95% (4464/4698)
+2026-10-03T14:43:52.2897044Z Updating files:  96% (4511/4698)
+2026-10-03T14:43:52.2995254Z Updating files:  97% (4558/4698)
+2026-10-03T14:43:52.3085819Z Updating files:  98% (4605/4698)
+2026-10-03T14:43:52.3162855Z Updating files:  99% (4652/4698)
+2026-10-03T14:43:52.3163325Z Updating files: 100% (4698/4698)
+2026-10-03T14:43:52.3163797Z Updating files: 100% (4698/4698), done.
+2026-10-03T14:43:52.3333265Z Switched to a new branch 'skager-portable-capture'
+2026-10-03T14:43:52.3423383Z branch 'skager-portable-capture' set up to track 'origin/skager-portable-capture'.
+2026-10-03T14:43:52.3575764Z ##[endgroup]
+2026-10-03T14:43:52.3907272Z [command]"C:\Program Files\Git\bin\git.exe" log -1 --format=%H
+2026-10-03T14:43:52.4130118Z 27828302a1c83ecc1f187ae1d79ab9ab5ac0fdfd
+2026-10-03T14:43:52.4550304Z ##[group]Run $ErrorActionPreference = 'Stop'
+2026-10-03T14:43:52.4550881Z [36;1m$ErrorActionPreference = 'Stop'[0m
+2026-10-03T14:43:52.4551404Z [36;1m$Out = 'opennav-x/evidence/local/portable-capture-boundary'[0m
+2026-10-03T14:43:52.4552017Z [36;1mNew-Item -ItemType Directory $Out -ErrorAction Stop | Out-Null[0m
+2026-10-03T14:43:52.4553052Z [36;1m$Sources = @{}[0m
+2026-10-03T14:43:52.4553610Z [36;1mforeach ($Path in @('src/platform/PortableProfile.cpp','src/platform/PortableProfile.h',[0m
+2026-10-03T14:43:52.4554400Z [36;1m    'tools/prototype/recovery_capture_inputs.py','tests/recovery_capture_inputs_tests.py',[0m
+2026-10-03T14:43:52.4555166Z [36;1m    'tests/portable_capture_boundary_tests.py','tests/portable_capture_boundary/probe.cpp',[0m
+2026-10-03T14:43:52.4555761Z [36;1m    'tests/portable_capture_boundary/CMakeLists.txt')) {[0m
+2026-10-03T14:43:52.4556411Z [36;1m  $Sources[$Path] = (Get-FileHash "opennav-x/$Path" -Algorithm SHA256).Hash.ToLowerInvariant()[0m
+2026-10-03T14:43:52.4556916Z [36;1m}[0m
+2026-10-03T14:43:52.4557276Z [36;1m@{commit=$env:GITHUB_SHA;run=$env:GITHUB_RUN_ID;attempt=$env:GITHUB_RUN_ATTEMPT;[0m
+2026-10-03T14:43:52.4558009Z [36;1m  scope='Collector path isolation; unchanged production guard; no OpenCPN launch';sources=$Sources} |[0m
+2026-10-03T14:43:52.4558723Z [36;1m  ConvertTo-Json -Depth 4 | Set-Content -Encoding utf8 "$Out/source.json"[0m
+2026-10-03T14:43:52.4559336Z [36;1mpython -m pip install Pillow==11.3.0 2>&1 | Tee-Object "$Out/dependencies.log"[0m
+2026-10-03T14:43:52.4559923Z [36;1mif ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }[0m
+2026-10-03T14:43:52.4560727Z [36;1mpython opennav-x/tests/recovery_capture_inputs_tests.py 2>&1 | Tee-Object "$Out/offline.log"[0m
+2026-10-03T14:43:52.4561318Z [36;1mif ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }[0m
+2026-10-03T14:43:52.4562213Z [36;1mcmake -S opennav-x/tests/portable_capture_boundary -B opennav-x/build/portable-capture-boundary -G "Visual Studio 17 2022" -A Win32 2>&1 | Tee-Object "$Out/configure.log"[0m
+2026-10-03T14:43:52.4563110Z [36;1mif ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }[0m
+2026-10-03T14:43:52.4563775Z [36;1mcmake --build opennav-x/build/portable-capture-boundary --config Release 2>&1 | Tee-Object "$Out/compile.log"[0m
+2026-10-03T14:43:52.4564434Z [36;1mif ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }[0m
+2026-10-03T14:43:52.4565411Z [36;1mpython opennav-x/tests/portable_capture_boundary_tests.py --probe opennav-x/build/portable-capture-boundary/Release/portable-capture-probe.exe --output "$Out/portable-boundary.json" 2>&1 | Tee-Object "$Out/boundary.log"[0m
+2026-10-03T14:43:52.4566405Z [36;1mif ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }[0m
+2026-10-03T14:43:52.4697706Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-10-03T14:43:52.4698157Z ##[endgroup]
+2026-10-03T14:43:58.3820096Z Collecting Pillow==11.3.0
+2026-10-03T14:43:58.5349650Z   Downloading pillow-11.3.0-cp312-cp312-win_amd64.whl.metadata (9.2 kB)
+2026-10-03T14:43:58.5840589Z Downloading pillow-11.3.0-cp312-cp312-win_amd64.whl (7.0 MB)
+2026-10-03T14:43:58.7663516Z    ---------------------------------------- 7.0/7.0 MB 61.7 MB/s  0:00:00
+2026-10-03T14:43:59.0637492Z Installing collected packages: Pillow
+2026-10-03T14:43:59.7195484Z Successfully installed Pillow-11.3.0
+2026-10-03T14:44:01.3533900Z [31;1m....FEEEFE..........[0m
+2026-10-03T14:44:01.3552447Z [31;1m======================================================================[0m
+2026-10-03T14:44:01.3560212Z [31;1mERROR: test_existing_overlap_and_output_alias_refused_without_original_mutation (__main__.DisposablePackage.test_existing_overlap_and_output_alias_refused_without_original_mutation)[0m
+2026-10-03T14:44:01.3565973Z [31;1m----------------------------------------------------------------------[0m
+2026-10-03T14:44:01.3572466Z [31;1mTraceback (most recent call last):[0m
+2026-10-03T14:44:01.3581997Z [31;1m  File "D:\a\Work\Work\opennav-x\tests\recovery_capture_inputs_tests.py", line 262, in test_existing_overlap_and_output_alias_refused_without_original_mutation[0m
+2026-10-03T14:44:01.3585221Z [31;1m    self.stage()[0m
+2026-10-03T14:44:01.3592005Z [31;1m  File "D:\a\Work\Work\opennav-x\tests\recovery_capture_inputs_tests.py", line 194, in stage[0m
+2026-10-03T14:44:01.3600686Z [31;1m    return inputs.stage_disposable_package(self.package, self.output, self.identity)[0m
+2026-10-03T14:44:01.3606654Z [31;1m           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+2026-10-03T14:44:01.3613305Z [31;1m  File "D:\a\Work\Work\opennav-x\tools\prototype\recovery_capture_inputs.py", line 187, in stage_disposable_package[0m
+2026-10-03T14:44:01.3619431Z [31;1m    require(package_root == Path(verified_identity['root']).absolute(), 'Verified original package path differs')[0m
+2026-10-03T14:44:01.3626639Z [31;1m  File "D:\a\Work\Work\opennav-x\tools\prototype\recovery_capture_inputs.py", line 28, in require[0m
+2026-10-03T14:44:01.3634698Z [31;1m    raise ValueError(message)[0m
+2026-10-03T14:44:01.3641907Z [31;1mValueError: Verified original package path differs[0m
+2026-10-03T14:44:01.3655063Z [31;1m[0m
+2026-10-03T14:44:01.3661369Z [31;1m======================================================================[0m
+2026-10-03T14:44:01.3668037Z [31;1mERROR: test_hardlink_special_file_and_missing_mutable_root_refused (__main__.DisposablePackage.test_hardlink_special_file_and_missing_mutable_root_refused)[0m
+2026-10-03T14:44:01.3673770Z [31;1m----------------------------------------------------------------------[0m
+2026-10-03T14:44:01.3679817Z [31;1mTraceback (most recent call last):[0m
+2026-10-03T14:44:01.3686306Z [31;1m  File "D:\a\Work\Work\opennav-x\tests\recovery_capture_inputs_tests.py", line 305, in test_hardlink_special_file_and_missing_mutable_root_refused[0m
+2026-10-03T14:44:01.3691990Z [31;1m    record = self.stage(); copied = Path(record['root'])[0m
+2026-10-03T14:44:01.3812042Z [31;1m             ^^^^^^^^^^^^[0m
+2026-10-03T14:44:01.4080129Z [31;1m  File "D:\a\Work\Work\opennav-x\tests\recovery_capture_inputs_tests.py", line 194, in stage[0m
+2026-10-03T14:44:01.4082105Z [31;1m    return inputs.stage_disposable_package(self.package, self.output, self.identity)[0m
+2026-10-03T14:44:01.4083531Z [31;1m           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+2026-10-03T14:44:01.4085007Z [31;1m  File "D:\a\Work\Work\opennav-x\tools\prototype\recovery_capture_inputs.py", line 187, in stage_disposable_package[0m
+2026-10-03T14:44:01.4086811Z [31;1m    require(package_root == Path(verified_identity['root']).absolute(), 'Verified original package path differs')[0m
+2026-10-03T14:44:01.4088550Z [31;1m  File "D:\a\Work\Work\opennav-x\tools\prototype\recovery_capture_inputs.py", line 28, in require[0m
+2026-10-03T14:44:01.4089732Z [31;1m    raise ValueError(message)[0m
+2026-10-03T14:44:01.4090405Z [31;1mValueError: Verified original package path differs[0m
+2026-10-03T14:44:01.4091051Z [31;1m[0m
+2026-10-03T14:44:01.4091546Z [31;1m======================================================================[0m
+2026-10-03T14:44:01.4093183Z [31;1mERROR: test_immutable_file_directory_marker_and_plugin_mutations_refused (__main__.DisposablePackage.test_immutable_file_directory_marker_and_plugin_mutations_refused)[0m
+2026-10-03T14:44:01.4095539Z [31;1m----------------------------------------------------------------------[0m
+2026-10-03T14:44:01.4096393Z [31;1mTraceback (most recent call last):[0m
+2026-10-03T14:44:01.4098409Z [31;1m  File "D:\a\Work\Work\opennav-x\tests\recovery_capture_inputs_tests.py", line 229, in test_immutable_file_directory_marker_and_plugin_mutations_refused[0m
+2026-10-03T14:44:01.4100150Z [31;1m    record = self.stage(); copied = Path(record['root'])[0m
+2026-10-03T14:44:01.4101105Z [31;1m             ^^^^^^^^^^^^[0m
+2026-10-03T14:44:01.4102256Z [31;1m  File "D:\a\Work\Work\opennav-x\tests\recovery_capture_inputs_tests.py", line 194, in stage[0m
+2026-10-03T14:44:01.4105487Z [31;1m    return inputs.stage_disposable_package(self.package, self.output, self.identity)[0m
+2026-10-03T14:44:01.4106661Z [31;1m           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+2026-10-03T14:44:01.4108242Z [31;1m  File "D:\a\Work\Work\opennav-x\tools\prototype\recovery_capture_inputs.py", line 187, in stage_disposable_package[0m
+2026-10-03T14:44:01.4114720Z [31;1m    require(package_root == Path(verified_identity['root']).absolute(), 'Verified original package path differs')[0m
+2026-10-03T14:44:01.4121444Z [31;1m  File "D:\a\Work\Work\opennav-x\tools\prototype\recovery_capture_inputs.py", line 28, in require[0m
+2026-10-03T14:44:01.4127796Z [31;1m    raise ValueError(message)[0m
+2026-10-03T14:44:01.4134555Z [31;1mValueError: Verified original package path differs[0m
+2026-10-03T14:44:01.4140933Z [31;1m[0m
+2026-10-03T14:44:01.4147566Z [31;1m======================================================================[0m
+2026-10-03T14:44:01.4155041Z [31;1mERROR: test_portable_paths_exact_payload_fresh_profile_and_mutable_logs (__main__.DisposablePackage.test_portable_paths_exact_payload_fresh_profile_and_mutable_logs)[0m
+2026-10-03T14:44:01.4161277Z [31;1m----------------------------------------------------------------------[0m
+2026-10-03T14:44:01.4168339Z [31;1mTraceback (most recent call last):[0m
+2026-10-03T14:44:01.4175711Z [31;1m  File "D:\a\Work\Work\opennav-x\tests\recovery_capture_inputs_tests.py", line 198, in test_portable_paths_exact_payload_fresh_profile_and_mutable_logs[0m
+2026-10-03T14:44:01.4181723Z [31;1m    record = self.stage()[0m
+2026-10-03T14:44:01.4188673Z [31;1m             ^^^^^^^^^^^^[0m
+2026-10-03T14:44:01.4195563Z [31;1m  File "D:\a\Work\Work\opennav-x\tests\recovery_capture_inputs_tests.py", line 194, in stage[0m
+2026-10-03T14:44:01.4202233Z [31;1m    return inputs.stage_disposable_package(self.package, self.output, self.identity)[0m
+2026-10-03T14:44:01.4208622Z [31;1m           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+2026-10-03T14:44:01.4215583Z [31;1m  File "D:\a\Work\Work\opennav-x\tools\prototype\recovery_capture_inputs.py", line 187, in stage_disposable_package[0m
+2026-10-03T14:44:01.4222440Z [31;1m    require(package_root == Path(verified_identity['root']).absolute(), 'Verified original package path differs')[0m
+2026-10-03T14:44:01.4228960Z [31;1m  File "D:\a\Work\Work\opennav-x\tools\prototype\recovery_capture_inputs.py", line 28, in require[0m
+2026-10-03T14:44:01.4235218Z [31;1m    raise ValueError(message)[0m
+2026-10-03T14:44:01.4241822Z [31;1mValueError: Verified original package path differs[0m
+2026-10-03T14:44:01.4248158Z [31;1m[0m
+2026-10-03T14:44:01.4255756Z [31;1m======================================================================[0m
+2026-10-03T14:44:01.4263641Z [31;1mFAIL: test_changed_original_and_mutable_case_alias_refused_before_copy (__main__.DisposablePackage.test_changed_original_and_mutable_case_alias_refused_before_copy)[0m
+2026-10-03T14:44:01.4270227Z [31;1m----------------------------------------------------------------------[0m
+2026-10-03T14:44:01.4277161Z [31;1mValueError: Verified original package path differs[0m
+2026-10-03T14:44:01.4283740Z [31;1m[0m
+2026-10-03T14:44:01.4290856Z [31;1mDuring handling of the above exception, another exception occurred:[0m
+2026-10-03T14:44:01.4297197Z [31;1m[0m
+2026-10-03T14:44:01.4303733Z [31;1mTraceback (most recent call last):[0m
+2026-10-03T14:44:01.4311020Z [31;1m  File "D:\a\Work\Work\opennav-x\tests\recovery_capture_inputs_tests.py", line 269, in test_changed_original_and_mutable_case_alias_refused_before_copy[0m
+2026-10-03T14:44:01.4317474Z [31;1m    with self.assertRaisesRegex(ValueError,'Original payload changed'): self.stage()[0m
+2026-10-03T14:44:01.4324126Z [31;1m         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+2026-10-03T14:44:01.4331443Z [31;1mAssertionError: "Original payload changed" does not match "Verified original package path differs"[0m
+2026-10-03T14:44:01.4337268Z [31;1m[0m
+2026-10-03T14:44:01.4344085Z [31;1m======================================================================[0m
+2026-10-03T14:44:01.4351631Z [31;1mFAIL: test_links_in_original_output_and_mutable_copy_refused (__main__.DisposablePackage.test_links_in_original_output_and_mutable_copy_refused)[0m
+2026-10-03T14:44:01.4357928Z [31;1m----------------------------------------------------------------------[0m
+2026-10-03T14:44:01.4364521Z [31;1mValueError: Verified original package path differs[0m
+2026-10-03T14:44:01.4370781Z [31;1m[0m
+2026-10-03T14:44:01.4377635Z [31;1mDuring handling of the above exception, another exception occurred:[0m
+2026-10-03T14:44:01.4384027Z [31;1m[0m
+2026-10-03T14:44:01.4390967Z [31;1mTraceback (most recent call last):[0m
+2026-10-03T14:44:01.4399002Z [31;1m  File "D:\a\Work\Work\opennav-x\tests\recovery_capture_inputs_tests.py", line 291, in test_links_in_original_output_and_mutable_copy_refused[0m
+2026-10-03T14:44:01.4405875Z [31;1m    with self.assertRaisesRegex(ValueError,'Linked/reparse'): self.stage()[0m
+2026-10-03T14:44:01.4413832Z [31;1m         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+2026-10-03T14:44:01.4421385Z [31;1mAssertionError: "Linked/reparse" does not match "Verified original package path differs"[0m
+2026-10-03T14:44:01.4428052Z [31;1m[0m
+2026-10-03T14:44:01.4435255Z [31;1m----------------------------------------------------------------------[0m
+2026-10-03T14:44:01.4443093Z [31;1mRan 20 tests in 1.247s[0m
+2026-10-03T14:44:01.4449741Z [31;1m[0m
+2026-10-03T14:44:01.4456739Z [31;1mFAILED (failures=2, errors=4)[0m
+2026-10-03T14:44:01.5005717Z ##[error]Process completed with exit code 1.
+2026-10-03T14:44:01.5208480Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+2026-10-03T14:44:01.5208962Z with:
+2026-10-03T14:44:01.5209300Z   name: portable-capture-boundary-27828302a1c83ecc1f187ae1d79ab9ab5ac0fdfd
+2026-10-03T14:44:01.5209787Z   path: opennav-x/evidence/local/portable-capture-boundary
+2026-10-03T14:44:01.5210121Z   if-no-files-found: error
+2026-10-03T14:44:01.5210346Z   compression-level: 6
+2026-10-03T14:44:01.5210547Z   overwrite: false
+2026-10-03T14:44:01.5210744Z   include-hidden-files: false
+2026-10-03T14:44:01.5210971Z ##[endgroup]
+2026-10-03T14:44:01.7102724Z (node:4896) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-03T14:44:01.7103973Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-03T14:44:01.7173547Z With the provided path, there will be 3 files uploaded
+2026-10-03T14:44:01.7179226Z Artifact name is valid!
+2026-10-03T14:44:01.7181332Z Root directory input is valid!
+2026-10-03T14:44:01.9177847Z Beginning upload of artifact content to blob storage
+2026-10-03T14:44:01.9425628Z (node:4896) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-10-03T14:44:01.9803680Z Uploaded bytes 1977
+2026-10-03T14:44:01.9981091Z Finished uploading artifact content to blob storage!
+2026-10-03T14:44:01.9982512Z SHA256 digest of uploaded artifact zip is 77a8d8c769c95ba9b86aacb95ab38c7fd17653eb0e230ebe6560dbc917f0509a
+2026-10-03T14:44:01.9984529Z Finalizing artifact upload
+2026-10-03T14:44:02.1891756Z Artifact portable-capture-boundary-27828302a1c83ecc1f187ae1d79ab9ab5ac0fdfd.zip successfully finalized. Artifact ID 11276721827
+2026-10-03T14:44:02.1894535Z Artifact portable-capture-boundary-27828302a1c83ecc1f187ae1d79ab9ab5ac0fdfd has been successfully uploaded! Final size is 1977 bytes. Artifact ID is 11276721827
+2026-10-03T14:44:02.1906389Z Artifact download URL: https://github.com/ThereptileII/Work/actions/runs/37130634759/artifacts/11276721827
+2026-10-03T14:44:02.2239944Z Post job cleanup.
+2026-10-03T14:44:02.4137039Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-10-03T14:44:02.4346809Z git version 2.55.0.windows.5
+2026-10-03T14:44:02.4410228Z Temporarily overriding HOME='D:\a\_temp\2b639bd3-ccc2-4488-97e0-477a30fab5a2' before making global git config changes
+2026-10-03T14:44:02.4411523Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-03T14:44:02.4426491Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\Work\Work
+2026-10-03T14:44:02.4709186Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-10-03T14:44:02.5007219Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-10-03T14:44:02.9643053Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-03T14:44:02.9903643Z http.https://github.com/.extraheader
+2026-10-03T14:44:02.9941143Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all http.https://github.com/.extraheader
+2026-10-03T14:44:03.0183353Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-10-03T14:44:03.4597091Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-03T14:44:03.4824148Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-10-03T14:44:03.9608108Z Cleaning up orphan processes
+2026-10-03T14:44:03.9641397Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@11d5960a326750d5838078e36cf38b85af677262, actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+

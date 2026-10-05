@@ -1,0 +1,86 @@
+{
+  ".local/before/chartsymbols.xml": {
+    "bytes": 2246138,
+    "sha256": "a4f7d248d2b64c245b56e3dca7114ead7fcf3644df91ea06d0924ac907cdfd62"
+  },
+  ".local/before/S52RAZDS.RLE": {
+    "bytes": 1305627,
+    "sha256": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26"
+  },
+  ".local/before/rastersymbols-day.png": {
+    "bytes": 200625,
+    "sha256": "106696b1169b0bf00990b9d2a2bb133269b1a835e02f1346340f278d252e76dd"
+  },
+  ".local/before/rastersymbols-dusk.png": {
+    "bytes": 174947,
+    "sha256": "ff9be20135a9aa2a0e1d37e11209d4e43777de6931854de6456b8f3d5277990e"
+  },
+  ".local/before/rastersymbols-dark.png": {
+    "bytes": 170254,
+    "sha256": "5af009cc4cab653df44e26dc6661fc773502dbabe3f857d28bd9a246373ac6d6"
+  },
+  ".local/before/manifest.json": {
+    "bytes": 110084,
+    "sha256": "15a6bb831392088990737d688bc7716efa42f1d950f051c7a0dd909ee3065e2d"
+  },
+  ".local/before/XNavChartResources.h": {
+    "bytes": 934,
+    "sha256": "ff5ab6015b877f4ec00d0617d94a1bae01ff9f7eae47ce66fa7b363ce21a852e"
+  },
+  ".local/generated/chartsymbols.xml": {
+    "bytes": 2246148,
+    "sha256": "6a80848b79579c5d256f1d56a9a456ff74cfd837bf24f10318422786cabd3b97"
+  },
+  ".local/generated/S52RAZDS.RLE": {
+    "bytes": 1305627,
+    "sha256": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26"
+  },
+  ".local/generated/rastersymbols-day.png": {
+    "bytes": 201230,
+    "sha256": "741b7e5ac3a635916cf07d5f80873301d42dac6bba03958002f41e2ec67ef4ca"
+  },
+  ".local/generated/rastersymbols-dusk.png": {
+    "bytes": 175566,
+    "sha256": "06899cfe47227df479cfce5abdcb8181d1afce8bb8cafcd5e88716f720b22fa1"
+  },
+  ".local/generated/rastersymbols-dark.png": {
+    "bytes": 170828,
+    "sha256": "5e54902040dcaa4cff69e4ee43763e22d3e9d96140ac300dcd9a860b2f587486"
+  },
+  ".local/generated/manifest.json": {
+    "bytes": 114548,
+    "sha256": "2320379102d09c7f29015ce0cd2cc360444d1d77344492926f5797c3992fa598"
+  },
+  ".local/generated/XNavChartResources.h": {
+    "bytes": 934,
+    "sha256": "c897b8060a46b47c8e0868f2a4ac7ad1ef0934f0f78760325a266b98679821bd"
+  },
+  "/home/standard/Projects/X-nav-worktrees/skager-product-fidelity/build/integration-source/libs/s52plib/src/s52cnsy.cpp": {
+    "bytes": 201105,
+    "sha256": "b27ece30ace23032d0b916c392230d1523e734cbf51a47338085a04a80fc2a7e"
+  },
+  "/home/standard/Projects/X-nav-worktrees/scrum259-adapter-preparation/.local/pinned-source/libs/s52plib/src/s52cnsy.cpp": {
+    "bytes": 202484,
+    "sha256": "9a6194f9eb488ac5f25b67ef8e96b97d27acfc5b5748bb0e18e60adb998c9e50"
+  },
+  ".local/loader/anchor-loader-test": {
+    "bytes": 736424,
+    "sha256": "fd5ddd9711ad52a779f59aecfaa8a656aa3792240f35aef601fbe23adab86be8"
+  },
+  ".local/loader/private-hazard-loader-test": {
+    "bytes": 736424,
+    "sha256": "5b8e1a7624bd8ae7eb368eeded4ab1a689d724a53ccc0fcbee1d0a37458c0a99"
+  },
+  ".local/loader/anchor-loader-methods.inc": {
+    "bytes": 11328,
+    "sha256": "5953e35bb13b98e030bc9479358affa256a4cb8466204d8738f2744f500f34cc"
+  },
+  ".local/loader/hazard-conditional-methods.inc": {
+    "bytes": 38332,
+    "sha256": "df43cfc6d1e9de0b52569cf4a1f8431a3567aa3a32de62537d050d550eadd2b9"
+  },
+  ".local/loader/private-hazard-conditional-methods.inc": {
+    "bytes": 38772,
+    "sha256": "19c76aa11a8f7d162f062a833b918dad9879a8fb3f44fdc0b30589298b21e4e7"
+  }
+}

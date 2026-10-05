@@ -1,0 +1,110 @@
+{
+  "applicationSource": "27e93e40709e2d9d2044cb9f6d58979042ff6234",
+  "sourceCleanDuringCaptures": true,
+  "captureCount": 8,
+  "wholeChartDayReturnCount": 2,
+  "cleanInferiorExitCount": 2,
+  "build": {
+    "normalIncrementalNinjaSteps": 28,
+    "exitCode": 0
+  },
+  "checkEntryPoints": [
+    {
+      "name": "actual pinned symbol-loader fixture",
+      "runs": 1,
+      "assertionsOrChecks": 47186,
+      "exitCode": 0
+    },
+    {
+      "name": "chart_presentation_resources_tests.py",
+      "runs": 1,
+      "assertionsOrChecks": 79318,
+      "exitCode": 0
+    }
+  ],
+  "assertionCountsAreNotTestCaseCounts": true,
+  "reports": {
+    "software": {
+      "captureCount": 4,
+      "wholeChartDayReturns": [
+        {
+          "image": "s64-light-fog-SKAGER-Day-return",
+          "bounds": [
+            80,
+            68,
+            1094,
+            634
+          ],
+          "equal": true,
+          "mask": null
+        }
+      ],
+      "actualInferiorExits": [
+        {
+          "kind": "inferior_exit",
+          "exit_code": 0
+        }
+      ],
+      "traceErrors": 0,
+      "changedPixelsPerTheme": [
+        124,
+        124,
+        124,
+        124
+      ],
+      "changedChartPixelsOutsideTwoTiles": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "opengl": {
+      "captureCount": 4,
+      "wholeChartDayReturns": [
+        {
+          "image": "s64-light-fog-SKAGER-Day-return",
+          "bounds": [
+            80,
+            68,
+            1094,
+            634
+          ],
+          "equal": true,
+          "mask": null
+        }
+      ],
+      "actualInferiorExits": [
+        {
+          "kind": "inferior_exit",
+          "exit_code": 0
+        }
+      ],
+      "traceErrors": 0,
+      "changedPixelsPerTheme": [
+        112,
+        112,
+        112,
+        112
+      ],
+      "changedChartPixelsOutsideTwoTiles": [
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  "localOnlySealedPrior": "evidence/local/scrum265-27e93e4/prior5bb",
+  "localOnlyBinaries": {
+    "evidence/local/scrum265-27e93e4/loader/anchor-loader-test": "4bdcfd2cb99589dee141f49c4fd56a2ed5db22818cbbe5a7463aa3971192d85f",
+    "evidence/local/scrum265-27e93e4/iho/layout": "0ba482d2bd974fcd7bca63bb992a0ee26d5b9da0a8d2c5937aa9278200d315e1"
+  },
+  "limits": [
+    "No conspicuous or function-specific BUISGL point in source viewport",
+    "BUISGL35 partly overpainted by retained original arc",
+    "Night generic brightness does not establish conspicuity hierarchy",
+    "Existing software/OpenGL all-round circle difference remains separate",
+    "No native Windows, private renderer or boat acceptance"
+  ]
+}

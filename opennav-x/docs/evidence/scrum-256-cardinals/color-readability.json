@@ -1,0 +1,536 @@
+{
+  "DAY_BRIGHT": {
+    "BOYCAR01": {
+      "black": {
+        "nominal_rgb": [
+          83,
+          100,
+          95
+        ],
+        "native_rgba": [
+          83,
+          100,
+          95,
+          227
+        ],
+        "over_water_rgb": [
+          97,
+          114,
+          110
+        ],
+        "contrast": 3.905065540622429,
+        "role_distance": 0.0,
+        "coverage_pixels": 41
+      },
+      "yellow": {
+        "nominal_rgb": [
+          172,
+          141,
+          76
+        ],
+        "native_rgba": [
+          154,
+          133,
+          80,
+          217
+        ],
+        "over_water_rgb": [
+          163,
+          147,
+          102
+        ],
+        "contrast": 2.3355749069950376,
+        "role_distance": 20.09975124224178,
+        "coverage_pixels": 6
+      }
+    },
+    "BOYCAR02": {
+      "black": {
+        "nominal_rgb": [
+          83,
+          100,
+          95
+        ],
+        "native_rgba": [
+          83,
+          100,
+          95,
+          250
+        ],
+        "over_water_rgb": [
+          86,
+          103,
+          98
+        ],
+        "contrast": 4.603550643744159,
+        "role_distance": 0.0,
+        "coverage_pixels": 39
+      },
+      "yellow": {
+        "nominal_rgb": [
+          172,
+          141,
+          76
+        ],
+        "native_rgba": [
+          154,
+          133,
+          80,
+          217
+        ],
+        "over_water_rgb": [
+          163,
+          147,
+          102
+        ],
+        "contrast": 2.3355749069950376,
+        "role_distance": 20.09975124224178,
+        "coverage_pixels": 8
+      }
+    },
+    "BOYCAR03": {
+      "black": {
+        "nominal_rgb": [
+          83,
+          100,
+          95
+        ],
+        "native_rgba": [
+          83,
+          100,
+          95,
+          230
+        ],
+        "over_water_rgb": [
+          96,
+          113,
+          108
+        ],
+        "contrast": 3.9667737582889195,
+        "role_distance": 0.0,
+        "coverage_pixels": 26
+      },
+      "yellow": {
+        "nominal_rgb": [
+          172,
+          141,
+          76
+        ],
+        "native_rgba": [
+          173,
+          141,
+          75,
+          217
+        ],
+        "over_water_rgb": [
+          179,
+          154,
+          98
+        ],
+        "contrast": 2.0956119859240645,
+        "role_distance": 1.4142135623730951,
+        "coverage_pixels": 21
+      }
+    },
+    "BOYCAR04": {
+      "black": {
+        "nominal_rgb": [
+          83,
+          100,
+          95
+        ],
+        "native_rgba": [
+          83,
+          100,
+          95,
+          230
+        ],
+        "over_water_rgb": [
+          96,
+          113,
+          108
+        ],
+        "contrast": 3.9667737582889195,
+        "role_distance": 0.0,
+        "coverage_pixels": 30
+      },
+      "yellow": {
+        "nominal_rgb": [
+          172,
+          141,
+          76
+        ],
+        "native_rgba": [
+          172,
+          141,
+          76,
+          244
+        ],
+        "over_water_rgb": [
+          174,
+          145,
+          83
+        ],
+        "contrast": 2.318113644154085,
+        "role_distance": 0.0,
+        "coverage_pixels": 17
+      }
+    }
+  },
+  "DUSK": {
+    "BOYCAR01": {
+      "black": {
+        "nominal_rgb": [
+          195,
+          206,
+          194
+        ],
+        "native_rgba": [
+          195,
+          206,
+          194,
+          241
+        ],
+        "over_water_rgb": [
+          187,
+          199,
+          188
+        ],
+        "contrast": 4.985551790492732,
+        "role_distance": 0.0,
+        "coverage_pixels": 41
+      },
+      "yellow": {
+        "nominal_rgb": [
+          203,
+          177,
+          122
+        ],
+        "native_rgba": [
+          201,
+          182,
+          136,
+          217
+        ],
+        "over_water_rgb": [
+          179,
+          167,
+          129
+        ],
+        "contrast": 3.6373856863887926,
+        "role_distance": 15.0,
+        "coverage_pixels": 6
+      }
+    },
+    "BOYCAR02": {
+      "black": {
+        "nominal_rgb": [
+          195,
+          206,
+          194
+        ],
+        "native_rgba": [
+          195,
+          206,
+          194,
+          243
+        ],
+        "over_water_rgb": [
+          188,
+          200,
+          189
+        ],
+        "contrast": 5.0379924802292475,
+        "role_distance": 0.0,
+        "coverage_pixels": 39
+      },
+      "yellow": {
+        "nominal_rgb": [
+          203,
+          177,
+          122
+        ],
+        "native_rgba": [
+          201,
+          182,
+          136,
+          217
+        ],
+        "over_water_rgb": [
+          179,
+          167,
+          129
+        ],
+        "contrast": 3.6373856863887926,
+        "role_distance": 15.0,
+        "coverage_pixels": 8
+      }
+    },
+    "BOYCAR03": {
+      "black": {
+        "nominal_rgb": [
+          195,
+          206,
+          194
+        ],
+        "native_rgba": [
+          195,
+          206,
+          194,
+          243
+        ],
+        "over_water_rgb": [
+          188,
+          200,
+          189
+        ],
+        "contrast": 5.0379924802292475,
+        "role_distance": 0.0,
+        "coverage_pixels": 26
+      },
+      "yellow": {
+        "nominal_rgb": [
+          203,
+          177,
+          122
+        ],
+        "native_rgba": [
+          203,
+          176,
+          121,
+          217
+        ],
+        "over_water_rgb": [
+          180,
+          162,
+          116
+        ],
+        "contrast": 3.4712181970209084,
+        "role_distance": 1.4142135623730951,
+        "coverage_pixels": 21
+      }
+    },
+    "BOYCAR04": {
+      "black": {
+        "nominal_rgb": [
+          195,
+          206,
+          194
+        ],
+        "native_rgba": [
+          195,
+          206,
+          194,
+          239
+        ],
+        "over_water_rgb": [
+          186,
+          198,
+          187
+        ],
+        "contrast": 4.93345998388846,
+        "role_distance": 0.0,
+        "coverage_pixels": 28
+      },
+      "yellow": {
+        "nominal_rgb": [
+          203,
+          177,
+          122
+        ],
+        "native_rgba": [
+          204,
+          177,
+          121,
+          244
+        ],
+        "over_water_rgb": [
+          197,
+          173,
+          120
+        ],
+        "contrast": 3.9950456138752473,
+        "role_distance": 1.4142135623730951,
+        "coverage_pixels": 19
+      }
+    }
+  },
+  "NIGHT": {
+    "BOYCAR01": {
+      "black": {
+        "nominal_rgb": [
+          107,
+          119,
+          109
+        ],
+        "native_rgba": [
+          107,
+          119,
+          109,
+          225
+        ],
+        "over_water_rgb": [
+          96,
+          108,
+          99
+        ],
+        "contrast": 3.301000036578816,
+        "role_distance": 0.0,
+        "coverage_pixels": 41
+      },
+      "yellow": {
+        "nominal_rgb": [
+          131,
+          112,
+          76
+        ],
+        "native_rgba": [
+          126,
+          114,
+          82,
+          217
+        ],
+        "over_water_rgb": [
+          109,
+          100,
+          74
+        ],
+        "contrast": 3.0846254378491937,
+        "role_distance": 8.06225774829855,
+        "coverage_pixels": 6
+      }
+    },
+    "BOYCAR02": {
+      "black": {
+        "nominal_rgb": [
+          107,
+          119,
+          109
+        ],
+        "native_rgba": [
+          107,
+          119,
+          109,
+          250
+        ],
+        "over_water_rgb": [
+          105,
+          117,
+          107
+        ],
+        "contrast": 3.7629349683193043,
+        "role_distance": 0.0,
+        "coverage_pixels": 39
+      },
+      "yellow": {
+        "nominal_rgb": [
+          131,
+          112,
+          76
+        ],
+        "native_rgba": [
+          126,
+          114,
+          82,
+          217
+        ],
+        "over_water_rgb": [
+          109,
+          100,
+          74
+        ],
+        "contrast": 3.0846254378491937,
+        "role_distance": 8.06225774829855,
+        "coverage_pixels": 8
+      }
+    },
+    "BOYCAR03": {
+      "black": {
+        "nominal_rgb": [
+          107,
+          119,
+          109
+        ],
+        "native_rgba": [
+          107,
+          119,
+          108,
+          243
+        ],
+        "over_water_rgb": [
+          103,
+          114,
+          104
+        ],
+        "contrast": 3.612726613639405,
+        "role_distance": 1.0,
+        "coverage_pixels": 26
+      },
+      "yellow": {
+        "nominal_rgb": [
+          131,
+          112,
+          76
+        ],
+        "native_rgba": [
+          130,
+          113,
+          75,
+          217
+        ],
+        "over_water_rgb": [
+          113,
+          100,
+          68
+        ],
+        "contrast": 3.1161355322949458,
+        "role_distance": 1.7320508075688772,
+        "coverage_pixels": 21
+      }
+    },
+    "BOYCAR04": {
+      "black": {
+        "nominal_rgb": [
+          107,
+          119,
+          109
+        ],
+        "native_rgba": [
+          107,
+          119,
+          109,
+          225
+        ],
+        "over_water_rgb": [
+          96,
+          108,
+          99
+        ],
+        "contrast": 3.301000036578816,
+        "role_distance": 0.0,
+        "coverage_pixels": 30
+      },
+      "yellow": {
+        "nominal_rgb": [
+          131,
+          112,
+          76
+        ],
+        "native_rgba": [
+          131,
+          112,
+          76,
+          244
+        ],
+        "over_water_rgb": [
+          126,
+          108,
+          74
+        ],
+        "contrast": 3.567387723662883,
+        "role_distance": 0.0,
+        "coverage_pixels": 17
+      }
+    }
+  }
+}

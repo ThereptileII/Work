@@ -1,0 +1,189 @@
+{
+  "schema": 1,
+  "sourceCommit": "1a02ae083501eb05feeef7879e6ee450c076be69",
+  "upstreamCommit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "sourceVerification": "Private app tracked source clean and exact all-nine-patch upstream result verified before staging and after capture",
+  "binarySha256": "04ac30000e6b3c1a706ad43d869d0d29df04891db7214f2453e424a730e12292",
+  "resourceManifestSha256": "d7743029bd25c16b5f4f2e8a517a521de4ac0f2276d89ad58fe51aa97ebe4a76",
+  "resourceFiles": {
+    "chartsymbols.xml": {
+      "sha256": "33333f0c50fc47c4c7c89b32265c9fb1a9ef2cf61d9349aa7a1def74f5935d6b",
+      "bytes": 2231878
+    },
+    "S52RAZDS.RLE": {
+      "sha256": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26",
+      "bytes": 1305627
+    },
+    "rastersymbols-day.png": {
+      "sha256": "ee1020a8b94b312faba8c146974e49147d280e5ef3cc13f3cd688bbfd54dde0c",
+      "bytes": 250509
+    },
+    "rastersymbols-dusk.png": {
+      "sha256": "d50328283acc58c22185af0d792c5ff92fdee06eacedaeb032ee499f54329b9f",
+      "bytes": 170361
+    },
+    "rastersymbols-dark.png": {
+      "sha256": "6efb683e1df26462e5227b4c478fd78bf2cfbed64802e2de769cf2f9563268d5",
+      "bytes": 165431
+    }
+  },
+  "patches": {
+    "opencpn-5.12.4-xnav.patch": "0cfbde6fdaaa8dfbb0563aa10e9ffc5e4e03e5ee0e2a72c92492879c7967a2c3",
+    "opencpn-5.12.4-regression-tests.patch": "3ef13652b8f3717d836883d2fbb7a18f35dbd2ca1162ac991fe339e61392dff1",
+    "opencpn-5.12.4-ais-transport.patch": "d343a0a7a77817c55b16734516b7d686dbfc2eb3f4207b43b6099d7d98c9b2f6",
+    "opencpn-5.12.4-chart-presentation.patch": "2eb80969ffab557487411ddf39aa6a9732eb5f4b84575af96e75c321e1cd9430",
+    "opencpn-5.12.4-maintained-curl.patch": "dafa1fec0a69e3a1195db726c2cb26ceeb7535b5e25476ac2e4658d910f44e48",
+    "opencpn-5.12.4-download-trust.patch": "04763cb038ad088a722e76d4f85bde7e356489b697a373458195336d4278412b",
+    "opencpn-5.12.4-wxcurl-trust.patch": "f3ad76fc07b80e6f2c01331894ce5e685f6aa4456a2a3c761e3115c8c21f3d6b",
+    "opencpn-5.12.4-peer-response-buffer.patch": "c335f361766a6982c3d096e93f7c149179deb33134668e110111ac4980064e15",
+    "opencpn-5.12.4-peer-unavailable.patch": "5bf1c2ae4b09043ce18151f766aebd2b881b993f352000e34399de7e8b36b6d3"
+  },
+  "sourceEvidence": {
+    "src/integration/ChartNameTypography.h": "23688fca7f9ed456e7458fe1228e0bf9908660a953732cb6e6749c5838e1f4d9",
+    "src/integration/ChartCogPredictor.h": "3e7841bb311bb9d4951be082a669f4737ee978dd426df4899a22bc9971033c90",
+    "src/integration/ChartPresentation.cpp": "3515d221bc83e6fda4fcb4698588216a9dbc89fa18a4df07a993bda54adbcb3f",
+    "patches/opencpn-5.12.4-xnav.patch": "0cfbde6fdaaa8dfbb0563aa10e9ffc5e4e03e5ee0e2a72c92492879c7967a2c3",
+    "patches/opencpn-5.12.4-chart-presentation.patch": "2eb80969ffab557487411ddf39aa6a9732eb5f4b84575af96e75c321e1cd9430",
+    "resources/chart-style/v1/definition.json": "0de64acce06600076b743c0557a79a4ab8781469f27d807ea92e2bd0a2ce94b3",
+    "docs/design/prototype-tokens.json": "111ee35527a974b2df6c2c4af0afd04e5aebdf14bad3004a98be9064aef790c6",
+    "src/application/SkagerBrandAsset.h": "cc9f469181717b4fb80986b9406d2d6d078bfdb5971d2e68f6b4072b8dcd2019",
+    "resources/branding/provenance.json": "f639aa4ffa1194fb527388b15b2f9880746829d4120e30b4ddca32b0326557a6"
+  },
+  "buildFlags": {
+    "OCPN_BUILD_TEST": "ON",
+    "OPENNAV_ENABLE_ROUTE_SCENARIO": "ON",
+    "XNAV_ENABLE_PILOT_LOOPBACK_TESTS": "ON",
+    "XNAV_ENABLE_TEST_FIXTURES": "ON"
+  },
+  "buildUnitReceipt": "ActiveState=inactive\nSubState=dead\nResult=success\nExecMainCode=0\nExecMainStatus=0\n",
+  "captureStatus": "passed",
+  "normalCleanExits": 2,
+  "imagesInspected": [
+    "SKAGER-Day",
+    "SKAGER-Dusk",
+    "SKAGER-Night",
+    "Standard-Day",
+    "Standard-Dusk",
+    "Standard-Night"
+  ],
+  "observations": [
+    "All six 1280x800 frames show the same public NOAA US5SEAFL real ENC viewport and controlled 3 kn / 090 deg input; chart styles and software renderer confirmed in actual diagnostics.",
+    "SKAGER displays the approved SKAGER/APP wordmark with crossbar-free A. The original dark-teal source background remains visible as a rectangular tile on the Night header; artwork has not been recolored or redrawn.",
+    "SKAGER built-up-area fills are neutral green/grey in Day, Dusk and Night; Standard retains ochre/brown fills. Geographic place labels are smaller, with water names italic, while navigation labels/soundings remain present.",
+    "SKAGER COG predictor is a thin theme-colored short-dash line; Standard retains its thick red long-dash predictor. The upstream endpoint marker remains red in both. Pixel samples demonstrate the new 5-pixel painted / 5-pixel background cadence.",
+    "Ownship triangle renders in SKAGER; Standard retains its stock red vessel symbol. No active route was created, so this capture does not validate active-route paint.",
+    "Linux fontconfig resolves all three requested face candidates to Liberation Sans; this is fallback evidence, not actual Windows Segoe metrics or native font acceptance.",
+    "Input is explicitly controlled simulated loopback RMC through the real OpenCPN navigation input path; Demo/replay were inactive and pilot enabled/simulated/control_capability remained false with command_state None."
+  ],
+  "limitations": [
+    "Linux development build only; fixtures and pilot test-loopback capability remain compiled ON but were not activated.",
+    "No Windows/MSVC installer/icon/DPI acceptance, OpenGL, endurance, physical boat or route/custom-style qualification."
+  ],
+  "controlledInput": {
+    "connections": 2,
+    "sentSentences": 54,
+    "errors": []
+  },
+  "predictorPixelSamples": {
+    "Day": {
+      "row": 350,
+      "painted_x": [
+        620,
+        630,
+        640,
+        650,
+        660,
+        670,
+        680
+      ],
+      "painted_rgb": [
+        143,
+        188,
+        185
+      ],
+      "gap_x": [
+        625,
+        635,
+        645,
+        655,
+        665,
+        675
+      ],
+      "gap_rgb": [
+        213,
+        229,
+        229
+      ]
+    },
+    "Dusk": {
+      "row": 350,
+      "painted_x": [
+        620,
+        630,
+        640,
+        650,
+        660,
+        670,
+        680
+      ],
+      "painted_rgb": [
+        101,
+        135,
+        132
+      ],
+      "gap_x": [
+        625,
+        635,
+        645,
+        655,
+        665,
+        675
+      ],
+      "gap_rgb": [
+        52,
+        79,
+        89
+      ]
+    },
+    "Night": {
+      "row": 350,
+      "painted_x": [
+        620,
+        630,
+        640,
+        650,
+        660,
+        670,
+        680
+      ],
+      "painted_rgb": [
+        67,
+        91,
+        85
+      ],
+      "gap_x": [
+        625,
+        635,
+        645,
+        655,
+        665,
+        675
+      ],
+      "gap_rgb": [
+        18,
+        30,
+        36
+      ]
+    }
+  },
+  "fontFileHashes": {
+    "/usr/share/fonts/liberation/LiberationSans-Regular.ttf": "baccc64becc3eb7d104b7c84d99f5314a0a1f896e2b3ea6c2f22fc08d2003bee"
+  },
+  "isolationDeviation": {
+    "phase": "initial cache preparation before metadata detach",
+    "operation": "git status on copied upstream .git pointer without optional-lock suppression",
+    "effect": "Shared index stat-cache timestamp refreshed at 2026-10-02 23:23:18 +0200; no reset/checkout or source/artifact writes",
+    "verification": "All 4395 shared index path/mode/blob entries still match pinned upstream37fd0cddb7334fe489e9f18aa163977a9c5c84f7, verified under read-only bwrap after capture",
+    "subsequentIsolation": "Private upstream metadata/index and read-only host throughout freeze/build/staging/capture"
+  }
+}

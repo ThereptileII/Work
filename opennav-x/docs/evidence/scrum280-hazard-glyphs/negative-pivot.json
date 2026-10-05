@@ -1,0 +1,6 @@
+{
+  "mutation": "UWTROC03 bitmap pivot x 12 -> 13 only",
+  "exitCode": 1,
+  "output": "Hazard loader check 4\n",
+  "result": "Actual loader fixture rejects displaced geographic anchor"
+}

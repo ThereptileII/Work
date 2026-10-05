@@ -1,0 +1,68 @@
+name: SKAGER native o-charts loader guards
+on:
+  push:
+    branches: [skager-ocharts-loader]
+  workflow_dispatch:
+    inputs:
+      resource_only:
+        description: Verify resource Python identity only
+        type: boolean
+        default: false
+permissions:
+  contents: read
+jobs:
+  loader-guards:
+    if: ${{ !inputs.resource_only && !contains(github.event.head_commit.message, '[resource-python]') }}
+    name: Native Win32 private chart loader boundaries
+    runs-on: windows-2022
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Verify adapter preparation and build wiring
+        shell: pwsh
+        run: |
+          $evidence = 'opennav-x/evidence/local/ocharts-loader-contracts'
+          New-Item -ItemType Directory -Force $evidence | Out-Null
+          python opennav-x/tools/test-curl-package.py -v 2>&1 | Tee-Object "$evidence/producer-prefix.log"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python opennav-x/tools/test-ocharts-adapter-preparation.py 2>&1 | Tee-Object "$evidence/preparation.log"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          & pwsh -NoProfile -File opennav-x/tools/test-ocharts-build-wiring.ps1 2>&1 | Tee-Object "$evidence/build-wiring.log"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Exercise unchanged production loader with harmless native DLLs
+        shell: pwsh
+        run: |
+          python opennav-x/tools/test-ocharts-loader-windows.py --evidence opennav-x/evidence/local/ocharts-loader-guards
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: native-ocharts-loader-guards-${{ github.sha }}
+          path: |
+            opennav-x/evidence/local/ocharts-loader-guards
+            opennav-x/evidence/local/ocharts-loader-contracts
+          if-no-files-found: error
+  resource-python:
+    name: Native resource Python identity only
+    if: ${{ inputs.resource_only || contains(github.event.head_commit.message, '[resource-python]') }}
+    runs-on: windows-2022
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Reproduce discovery drift and verify explicit interpreter
+        shell: pwsh
+        run: |
+          $evidence = 'opennav-x/evidence/local/chart-resource-python'
+          New-Item -ItemType Directory -Force $evidence | Out-Null
+          $entry = 'C:\hostedtoolcache\windows\Python\3.12.10\x64\python.exe'
+          if (-not (Test-Path -LiteralPath $entry -PathType Leaf)) { throw 'Failed production entry Python 3.12.10 is unavailable' }
+          & pwsh -NoProfile -File opennav-x/tools/test-ocharts-build-wiring.ps1 2>&1 | Tee-Object "$evidence/build-wiring.log"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          & $entry opennav-x/tools/test-chart-resource-python.py --entry-version 3.12.10 --evidence $evidence 2>&1 | Tee-Object "$evidence/probe.log"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: native-chart-resource-python-${{ github.sha }}
+          path: opennav-x/evidence/local/chart-resource-python
+          if-no-files-found: error

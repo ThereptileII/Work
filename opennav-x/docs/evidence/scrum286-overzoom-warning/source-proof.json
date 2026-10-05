@@ -1,0 +1,12 @@
+{
+  "gui/src/chcanv.cpp": {
+    "sha256": "91468c1a356975cd7221e2d3c8525ae689ec939616ff7ea9691b81a794cd381a",
+    "onlyDelta": "one indicator call, guarded custom paint, same stock pointer fallback; macro-off original"
+  },
+  "gui/src/glChartCanvas.cpp": {
+    "sha256": "cce83f5722b7494e3a2199917d9d7769401381ef6e47d3e33e58460df79e65b7",
+    "onlyDelta": "one indicator call, guarded custom paint, same stock pointer fallback; macro-off original"
+  },
+  "pin": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "orderedPatchCount": 9
+}

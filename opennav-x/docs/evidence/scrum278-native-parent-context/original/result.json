@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "status": "passed",
+  "stages": [
+    "Original initialized context captured once and verified with actual tools",
+    "Omitted-prefix control rejected; only PATHSha256 differs, including identical selected tool paths and hashes",
+    "Shared Verify initialization restored exact original facts without replacing either retained JSON"
+  ],
+  "inputs": [
+    {
+      "path": "D:\\a\\Work\\Work\\opennav-x\\tools\\test-windows-parent-context.ps1",
+      "bytes": 9137,
+      "sha256": "c0d4acf71db20b9917dba4ca26f33ea6f4dafaba1cca6ebeaa48733510f41ea2"
+    },
+    {
+      "path": "D:\\a\\Work\\Work\\opennav-x\\tools\\build-openssl-windows.ps1",
+      "bytes": 14618,
+      "sha256": "a57a2a468999daf8ba655c2328fd645d002c184ce370ca916d99cf5cc43dabc7"
+    },
+    {
+      "path": "D:\\a\\Work\\Work\\opennav-x\\tools\\windows-native-tool-facts.ps1",
+      "bytes": 17733,
+      "sha256": "909d5aca764ae461618d02a58592bf0d6f3d7a6846e4b5483aad818aa04e6cd0"
+    },
+    {
+      "path": "D:\\a\\Work\\Work\\opennav-x\\tools\\windows-parent-environment.ps1",
+      "bytes": 1903,
+      "sha256": "b84f945ddde6d343529446193360dd228b4c6b6ca8390fd0d35fb12a92e5f6b1"
+    },
+    {
+      "path": "D:\\a\\Work\\Work\\opennav-x\\tools\\windows-openssl.lock.json",
+      "bytes": 805,
+      "sha256": "dd26041ec5b5f85a76010b4e45716d8dc46c85ccb032815aab8059c49e6bc99d"
+    },
+    {
+      "path": "D:\\a\\Work\\Work\\opennav-x\\tools\\windows_gettext.py",
+      "bytes": 9960,
+      "sha256": "1f86e71f42766f3c0b730ec07dd32abdfd8cdee218aa1c1d8f8b2c786754ef36"
+    },
+    {
+      "path": "D:\\a\\Work\\Work\\.github\\workflows\\skager-parent-context.yml",
+      "bytes": 4720,
+      "sha256": "f4613a00a3077e7e28d14f4fa88ce5e5ad624804ea58e06be3bc5cde6e75c1bb"
+    },
+    {
+      "path": "D:\\a\\Work\\Work\\opennav-x\\evidence\\local\\windows-parent-context\\nasm-source.json",
+      "bytes": 267,
+      "sha256": "7889522138a7a49ff08e67625cc538fc611dba4b57c90cefd5c6abccc089cc50"
+    }
+  ],
+  "scope": "Native OpenSSL parent context only; no producer build, AIS configure/link/TLS, or x86 child acceptance",
+  "producerSetupSha256": "dc6b184a18f728b98db4cf0ac522b4edb5495cffc8a037eacc3194483fd59749",
+  "commit": "4ddf1f383e495150551946dd36103cd77cea85eb",
+  "captured": {
+    "path": "D:\\a\\Work\\Work\\opennav-x\\evidence\\local\\windows-parent-context\\captured-parent.json",
+    "bytes": 3885,
+    "sha256": "fa1b46748f7c50ae4d7c637e61f50a8cb3cc6d2cba8467b9c04175cecb1f2773"
+  },
+  "gettext": {
+    "path": "D:\\a\\Work\\Work\\opennav-x\\evidence\\local\\windows-parent-context\\windows-gettext-xnav.json",
+    "bytes": 2167,
+    "sha256": "96fa7bc77a7e2afb86db1143c2016807ff558ce6f30ab100b2ef624bf4b45106"
+  },
+  "selectedPython": {
+    "path": "C:\\hostedtoolcache\\windows\\Python\\3.12.10\\x64\\python.exe",
+    "bytes": 104952,
+    "sha256": "4d6f5f81a4bca11191c4c7c6b43632694d0a4ce74e068619d8fdc161d469859a"
+  },
+  "selectedNativePerl": {
+    "path": "C:\\Strawberry\\perl\\bin\\perl.exe",
+    "bytes": 39936,
+    "sha256": "4d61ebe19311dbf7b9710ac2c6c402e3cba3e23b63e8b82be88e471343bed52d"
+  },
+  "selectedCurlTestPerl": {
+    "path": "D:\\a\\_temp\\msys64\\usr\\bin\\perl.exe",
+    "bytes": 14278,
+    "sha256": "8679db320f05c37d004c70ee5196d0bf8e9029aea49b9abc2f5cab8e9da810c5"
+  },
+  "sharedPrefixes": [
+    "C:\\Program Files\\Poedit\\GettextTools\\bin",
+    "C:\\Strawberry\\perl\\bin"
+  ],
+  "inheritedPathSha256": "a3d6b9c5e3cbadcd6efb0a65c351d4a592c209f6da456af1f457678f6fd11fe5",
+  "negative": {
+    "path": "D:\\a\\Work\\Work\\opennav-x\\evidence\\local\\windows-parent-context\\captured-parent.json.observed.json",
+    "bytes": 3885,
+    "sha256": "01a96584a51ba3b0bcd7291e02607bc3ff9b698672a09510c432bf13f3d43c2f"
+  },
+  "changedFields": [
+    "environment.PATHSha256"
+  ],
+  "pathRestoredOnExit": true
+}

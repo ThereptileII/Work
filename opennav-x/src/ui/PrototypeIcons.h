@@ -6,6 +6,10 @@
 namespace opennav::ui {
 inline const char *PrototypeIconPath(XNavIcon icon) {
   switch (icon) {
+    case XNavIcon::Speed: return "M4 17a9 9 0 1 1 16 0m-8-4 5-6M8 20h8";
+    case XNavIcon::Depth: return "M12 3v13m-4-4 4 4 4-4M3 21l3-2 3 2 3-2 3 2 3-2 3 2";
+    case XNavIcon::Wind: return "M3 7h12a3 3 0 1 0-3-3M3 12h16a3 3 0 1 1-3 3M3 17h6a3 3 0 1 1-3 3";
+    case XNavIcon::Battery: return "M3 6h16v12H3Zm18 4v4M6 9v6m4-6v6m4-6v6";
     case XNavIcon::Spark: return "m12 2 2.5 7.5L22 12l-7.5 2.5L12 22l-2.5-7.5L2 12l7.5-2.5Z";
     case XNavIcon::Plus: return "M12 5v14M5 12h14";
     case XNavIcon::Minus: return "M5 12h14";
@@ -34,6 +38,10 @@ inline const char *PrototypeIconPath(XNavIcon icon) {
     case XNavIcon::Chevron: return "m9 5 7 7-7 7";
     case XNavIcon::Menu: return "M3 6h18M3 12h18M3 18h18";
     case XNavIcon::Shield: return "M12 2 3 6v6c0 5 9 10 9 10s9-5 9-10V6Zm-5 9 3 3 7-7";
+    case XNavIcon::Download: return "M12 3v12m-5-5 5 5 5-5M4 17v4h16v-4";
+    case XNavIcon::Refresh: return "M20 8a9 9 0 1 0 1 8M20 3v5h-5";
+    case XNavIcon::Info: return "M12 11v6m0-10h.01M21 12a9 9 0 1 0-18 0 9 9 0 0 0 18 0Z";
+    case XNavIcon::Boat: return "M8 3h8v7l5 3-3 7H6l-3-7 5-3Zm0 7 4-2 4 2M12 8v12";
     default: return "";
   }
 }

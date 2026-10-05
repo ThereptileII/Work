@@ -1,0 +1,129 @@
+{
+  "source": "78eccb8b7f21b260ded57d3ba763f884d60c8180",
+  "ELF": "a58256d8c824a43d7d74b90deb6ad6697a2ba1dabbf47b13c4e8057dd4738ffb",
+  "chartManifest": "03533971dfba1bb3cb2cba6ab52b1528a56b4f27c8b4fc118b4b503c25b4bdde",
+  "runs": {
+    "capture-78eccb8-software-1": {
+      "exit": 0,
+      "identitiesUnchangedAfter": true,
+      "contract": "passed",
+      "contractCheckCount": 26,
+      "themes": [
+        "Day",
+        "Dusk",
+        "Night",
+        "Day"
+      ],
+      "activeIconBlink": {
+        "on": {
+          "image": "active-icon-phase-1",
+          "icon": {
+            "red_pixels": 245,
+            "numbered_ring_ink_pixels": 15,
+            "ring_sectors": [
+              0,
+              0,
+              12,
+              0,
+              0,
+              0,
+              3,
+              0
+            ]
+          },
+          "card_fill_pixels": 431
+        },
+        "off": {
+          "image": "active-icon-phase-2",
+          "icon": {
+            "red_pixels": 0,
+            "numbered_ring_ink_pixels": 15,
+            "ring_sectors": [
+              0,
+              0,
+              12,
+              0,
+              0,
+              0,
+              3,
+              0
+            ]
+          },
+          "card_fill_pixels": 431
+        }
+      },
+      "GL": []
+    },
+    "capture-78eccb8-opengl-1": {
+      "exit": 1,
+      "identitiesUnchangedAfter": true,
+      "contract": null,
+      "contractCheckCount": 0,
+      "themes": [],
+      "activeIconBlink": null,
+      "GL": [
+        "04:05:26.284 MESSAGE glChartCanvas.cpp:1089 OpenGL-> Renderer String: llvmpipe (LLVM 22.1.8, 256 bits)",
+        "04:05:26.284 MESSAGE glChartCanvas.cpp:1098 OpenGL-> Version reported:  4.6 (Compatibility Profile) Mesa 26.2.2-arch1.1",
+        "04:05:26.284 MESSAGE glChartCanvas.cpp:1106 OpenGL-> GLSL Version reported:  4.60"
+      ]
+    },
+    "capture-78eccb8-opengl-2": {
+      "exit": 0,
+      "identitiesUnchangedAfter": true,
+      "contract": "passed",
+      "contractCheckCount": 26,
+      "themes": [
+        "Day",
+        "Dusk",
+        "Night",
+        "Day"
+      ],
+      "activeIconBlink": {
+        "on": {
+          "image": "active-icon-phase-1",
+          "icon": {
+            "red_pixels": 292,
+            "numbered_ring_ink_pixels": 0,
+            "ring_sectors": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "card_fill_pixels": 431
+        },
+        "off": {
+          "image": "active-icon-phase-0",
+          "icon": {
+            "red_pixels": 0,
+            "numbered_ring_ink_pixels": 19,
+            "ring_sectors": [
+              0,
+              0,
+              13,
+              0,
+              0,
+              0,
+              6,
+              0
+            ]
+          },
+          "card_fill_pixels": 431
+        }
+      },
+      "GL": [
+        "04:10:01.225 MESSAGE glChartCanvas.cpp:1089 OpenGL-> Renderer String: llvmpipe (LLVM 22.1.8, 256 bits)",
+        "04:10:01.225 MESSAGE glChartCanvas.cpp:1098 OpenGL-> Version reported:  4.6 (Compatibility Profile) Mesa 26.2.2-arch1.1",
+        "04:10:01.225 MESSAGE glChartCanvas.cpp:1106 OpenGL-> GLSL Version reported:  4.60"
+      ]
+    }
+  },
+  "actualDefectEstablished": false,
+  "retainedFailure": "Original GL stroke sample covered by legitimate endpoint card; deterministic collector-only geometry exclusion fixes measurement, not app",
+  "authority": "Linux development; Windows/boat/release gates remain separate"
+}

@@ -73,7 +73,7 @@ function ReadJson([string]$Path, [long]$Limit = 4194304) {
 function Assert-StatusOnlyOutput($Result) {
   if (-not $Result -or -not $Result.PSObject.Properties['xnav_hardware_output_policy'] -or
       $Result.xnav_hardware_output_policy -isnot [string] -or $Result.xnav_hardware_output_policy -cne 'status-only') {
-    throw 'Unqualified XNav equipment-output build refused. A status-only product is required.'
+    throw 'Unqualified SKAGER equipment-output build refused. A status-only product is required.'
   }
 }
 function Assert-InstalledProduct($Result) {
@@ -180,7 +180,7 @@ function DiscoverStock {
   return @($paths | Select-Object -Unique | Where-Object { Test-Path -LiteralPath $_ })
 }
 function AssertClosed {
-  if (@(Get-Process -Name opencpn -ErrorAction SilentlyContinue).Count) { throw 'Close OpenCPN, XNav, Legacy and Safe Mode before changing the installation.' }
+  if (@(Get-Process -Name opencpn -ErrorAction SilentlyContinue).Count) { throw 'Close OpenCPN, SKAGER, Legacy and Safe Mode before changing the installation.' }
 }
 function FileRecords([string]$Directory) {
   $items = @(Get-ChildItem -LiteralPath $Directory -Recurse -Force)
@@ -271,7 +271,7 @@ namespace OpenNav {
   # generation/package. No version string qualifies a new install/update.
   $outputPolicy = Resolve-OutputPolicy $result $RecordedRecovery
   if ($outputPolicy -eq 'historical-unqualified') {
-    Log 'Historical recovery only: this generation has no qualified XNav equipment-output policy. It is not a public-beta candidate.'
+    Log 'Historical recovery only: this generation has no qualified SKAGER equipment-output policy. It is not a public-beta candidate.'
   }
   if ($result.PSObject.Properties['normal_config_directory']) {
     $profile = PlainPath $result.normal_config_directory
@@ -321,13 +321,13 @@ function ShortcutSpec([string]$Name) {
     'Skager Safe Mode.lnk' { return @{target='app/opencpn.exe'; arguments='--safe-mode'; work='app'; mode='safe'} }
     'Maintain OpenNav.lnk' { return @{target='Maintain.exe'; arguments=''; work=''; mode='maintenance'} }
     'Maintain Skager.lnk'  { return @{target='Maintain.exe'; arguments=''; work=''; mode='maintenance'} }
-    default { throw 'Unknown item in OpenNav shortcut folder; preserve and inspect it.' }
+    default { throw 'Unknown item in SKAGER/retained shortcut folder; preserve and inspect it.' }
   }
 }
 function AssertShortcut([string]$Path, $Shell) {
   $null = PlainPath $Path
   $item = Get-Item -LiteralPath $Path -Force
-  if ($item.PSIsContainer) { throw 'Directory in OpenNav shortcut folder; preserve and inspect it.' }
+  if ($item.PSIsContainer) { throw 'Directory in SKAGER/retained shortcut folder; preserve and inspect it.' }
   if ($item.Name -cnotin @(ShortcutNames $item.DirectoryName)) {
     throw 'Shortcut name does not match its generation layout; preserve and inspect it.'
   }
@@ -335,9 +335,9 @@ function AssertShortcut([string]$Path, $Shell) {
   $link = $Shell.CreateShortcut($Path)
   $target = PlainPath ([string]$link.TargetPath)
   $base = (PlainPath (Join-Path $Root 'generations')) + '\'
-  if (-not $target.StartsWith($base, [StringComparison]::OrdinalIgnoreCase)) { throw 'Shortcut does not target an OpenNav-owned generation.' }
+  if (-not $target.StartsWith($base, [StringComparison]::OrdinalIgnoreCase)) { throw 'Shortcut does not target a SKAGER-owned generation.' }
   $relative = $target.Substring($base.Length).Replace('\','/')
-  if ($relative -cnotmatch '^([a-f0-9]{32})/(.+)$' -or $Matches[2] -cne $spec.target) { throw 'Unexpected OpenNav shortcut target.' }
+  if ($relative -cnotmatch '^([a-f0-9]{32})/(.+)$' -or $Matches[2] -cne $spec.target) { throw 'Unexpected SKAGER shortcut target.' }
   $id = $Matches[1]
   $record = ReadGeneration $id
   $owned = @($record.managedFiles | Where-Object { $_.path -ceq $spec.target -and $_.sha256 -cmatch '^[a-f0-9]{64}$' })
@@ -346,7 +346,7 @@ function AssertShortcut([string]$Path, $Shell) {
   $work = $directory; if ($spec.work) { $work = Join-Path $directory $spec.work }
   if ([string]$link.Arguments -cne $spec.arguments -or
       -not [string]::Equals((PlainPath ([string]$link.WorkingDirectory)), $work, [StringComparison]::OrdinalIgnoreCase)) {
-    throw 'Modified OpenNav shortcut arguments or working directory; preserve and inspect it.'
+    throw 'Modified SKAGER shortcut arguments or working directory; preserve and inspect it.'
   }
   # Missing/corrupt owned binaries remain repairable. The immutable ownership
   # record, exact link target and invocation identify this shortcut, not the
@@ -357,10 +357,10 @@ function AssertShellOwnership {
   foreach ($group in @(ShellGroups)) {
     $null = PlainPath $group
     if (-not (Test-Path -LiteralPath $group)) { continue }
-    if (-not [IO.Directory]::Exists($group)) { throw 'OpenNav shortcut group is not a directory.' }
+    if (-not [IO.Directory]::Exists($group)) { throw 'SKAGER/retained shortcut group is not a directory.' }
     $ownerPath = Join-Path $Root 'owner.json'
     if (-not [IO.File]::Exists($ownerPath) -or (ReadJson $ownerPath).owner -cne $Owner) {
-      throw 'Existing shortcut directory has no verified OpenNav owner; preserve and inspect it.'
+      throw 'Existing shortcut directory has no verified SKAGER owner; preserve and inspect it.'
     }
     foreach ($file in Get-ChildItem -LiteralPath $group -Force) { AssertShortcut $file.FullName $shell }
   }
@@ -688,7 +688,7 @@ try {
   $Root = PlainPath $Root
   foreach ($group in @(ShellGroups)) { $null = PlainPath $group }
   $state = ReadState
-  if ((Test-Path -LiteralPath $Root) -and -not $state -and -not (Test-Path -LiteralPath (Join-Path $Root 'owner.json'))) { throw 'Existing directory is not an OpenNav-owned installation.' }
+  if ((Test-Path -LiteralPath $Root) -and -not $state -and -not (Test-Path -LiteralPath (Join-Path $Root 'owner.json'))) { throw 'Existing directory is not a SKAGER-owned installation.' }
   if (Test-Path -LiteralPath (Join-Path $Root 'owner.json')) {
     if ((ReadJson (Join-Path $Root 'owner.json')).owner -ne $Owner) { throw 'Unknown root ownership.' }
     $OwnsRoot = $true
@@ -757,7 +757,7 @@ try {
     Log 'Installation diagnostics written; no navigation coordinates or raw data collected.'
   } else {
     AssertClosed
-    if (-not $state -and $Action -notin @('Install','Update')) { throw 'No installed OpenNav generation for this action.' }
+    if (-not $state -and $Action -notin @('Install','Update')) { throw 'No installed SKAGER generation for this action.' }
     if (Test-Path -LiteralPath $Registry) {
       if ((Get-ItemProperty -LiteralPath $Registry).OpenNavOwner -ne $Owner) { throw 'Unknown registry ownership.' }
     }

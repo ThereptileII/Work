@@ -14,7 +14,7 @@ VIProductVersion "0.4.0.0"
 VIAddVersionKey "ProductName" "SKAGER Beta 2"
 VIAddVersionKey "FileDescription" "Version-gated SKAGER Beta setup"
 VIAddVersionKey "FileVersion" "0.4.0-beta2"
-VIAddVersionKey "LegalCopyright" "OpenNav X contributors; GPL"
+VIAddVersionKey "LegalCopyright" "OpenCPN and SKAGER contributors; GPL"
 Var StockPath
 Var Action
 Var ReportPath
@@ -32,6 +32,8 @@ Var SafeShortcut
 Var LegacyControl
 Var SafeControl
 Var ShortcutModes
+!define MUI_ICON "${BRAND_ICON}"
+!define MUI_UNICON "${BRAND_ICON}"
 !define MUI_WELCOMEPAGE_TITLE "Install SKAGER"
 !define MUI_WELCOMEPAGE_TEXT "Modern navigation interface for OpenCPN.$\r$\n$\r$\nSetup checks your existing OpenCPN, creates a recovery record and installs SKAGER beside it. SKAGER, Legacy and Safe Mode use your real charts and OpenCPN profile.$\r$\n$\r$\nClose OpenCPN before continuing. Beta 2 is for evaluation and is not approved for navigation."
 !insertmacro MUI_PAGE_WELCOME
@@ -207,7 +209,7 @@ Section "SKAGER Beta integration"
   Pop $Result
   ${If} $Result != 0
     SetErrorLevel 1
-    MessageBox MB_ICONSTOP "SKAGER setup did not complete. Existing application generations and navigation data are preserved. Inspect setup details and %LOCALAPPDATA%\OpenNavXAlpha1\logs, then rerun Setup." /SD IDOK
+    MessageBox MB_ICONSTOP "SKAGER setup did not complete. Existing application generations and navigation data are preserved. Inspect the setup details, then run Setup again. If SKAGER is already installed, choose Diagnostics in SKAGER Maintenance to collect a report." /SD IDOK
     Abort
   ${EndIf}
   SetErrorLevel 0
@@ -246,7 +248,7 @@ Function un.MaintenancePage
   ${NSD_CB_AddString} $ActionControl "Uninstall"
   ${NSD_CB_AddString} $ActionControl "Diagnostics"
   ${NSD_CB_SelectString} $ActionControl "$Action"
-  ${NSD_CreateLabel} 0 100u 100% 40u "Close all OpenCPN modes before repair, rollback or uninstall. Diagnostics writes a report in %LOCALAPPDATA%\OpenNavXAlpha1\logs. To update, download and run the newer Beta Setup."
+  ${NSD_CreateLabel} 0 100u 100% 40u "Close all OpenCPN modes before repair, rollback or uninstall. Choose Diagnostics to save a SKAGER installation report. To update, download and run the newer SKAGER Setup."
   Pop $0
   GetDlgItem $0 $HWNDPARENT 1
   SendMessage $0 ${WM_SETTEXT} 0 "STR:Continue"
@@ -260,7 +262,7 @@ Section "Uninstall"
   Pop $Result
   ${If} $Result != 0
     SetErrorLevel 1
-    MessageBox MB_ICONSTOP "Maintenance failed. OpenCPN and retained recovery generations are preserved. Inspect the OpenNav installation logs." /SD IDOK
+    MessageBox MB_ICONSTOP "Maintenance failed. OpenCPN and retained recovery generations are preserved. Inspect the SKAGER installation logs." /SD IDOK
     Abort
   ${EndIf}
   SetErrorLevel 0

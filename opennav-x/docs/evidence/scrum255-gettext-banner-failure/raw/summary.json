@@ -1,0 +1,24 @@
+{
+  "passed": false,
+  "nativeProductAcceptance": false,
+  "candidate": "5fec1915c1245f18e47dc65e088aaf9cf1fc842e",
+  "inputs": {
+    "tools/windows_gettext.py": {
+      "bytes": 9950,
+      "sha256": "a64c934c81dc21132d9cafddd125d7a675e21f81ece8723075b1199ba1bb4a57"
+    },
+    "tools/test-windows-gettext-native.py": {
+      "bytes": 3565,
+      "sha256": "46837d2e65ce3fad64169e8841d857a7fa9b28d1f54dea975ab7f2d0aa29da8e"
+    },
+    "tests/windows_gettext_tests.py": {
+      "bytes": 11998,
+      "sha256": "12f60bb28caa4d4518cfecc1fa08a0c77f673720cde2c1a255bb6215b28e3f6c"
+    },
+    "tools/build-pristine-windows.ps1": {
+      "bytes": 19510,
+      "sha256": "97eef260edf96d32a73d3c5e55e58b81001bc2c97d122044d75a92708d1c60f8"
+    }
+  },
+  "error": "Poedit acquisition failed after three bounded attempts; stopping before dependency builds"
+}

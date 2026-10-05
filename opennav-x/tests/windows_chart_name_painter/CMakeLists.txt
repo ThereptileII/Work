@@ -1,0 +1,18 @@
+cmake_minimum_required(VERSION 3.24)
+project(skager_windows_chart_name_painter LANGUAGES CXX)
+if(NOT MSVC OR NOT CMAKE_SIZEOF_VOID_P EQUAL 4)
+  message(FATAL_ERROR "Native MSVC Win32 required")
+endif()
+get_filename_component(OPENNAV_ROOT "${CMAKE_CURRENT_LIST_DIR}/../.." ABSOLUTE)
+set(wxWidgets_USE_REL_AND_DBG OFF)
+find_package(wxWidgets REQUIRED COMPONENTS base core)
+include(${wxWidgets_USE_FILE})
+# The existing real header painter and its existing offline pixel assertions.
+# No application, chart/profile, unrelated UI or dependency producer build.
+add_executable(chart_name_text_test "${OPENNAV_ROOT}/tests/chart_name_text_test.cpp"
+  "${OPENNAV_ROOT}/src/integration/ChartNameAlphaWindows.cpp")
+target_include_directories(chart_name_text_test PRIVATE "${OPENNAV_ROOT}/src")
+target_compile_features(chart_name_text_test PRIVATE cxx_std_17)
+target_compile_options(chart_name_text_test PRIVATE /utf-8)
+set_property(TARGET chart_name_text_test PROPERTY MSVC_RUNTIME_LIBRARY MultiThreadedDLL)
+target_link_libraries(chart_name_text_test PRIVATE ${wxWidgets_LIBRARIES} gdiplus)

@@ -1,0 +1,29 @@
+name: SKAGER native trust probe path and compile preflight
+on:
+  push:
+    branches: [skager-trust-compile]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  trust-native-preflight:
+    runs-on: windows-2022
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Fetch supported OpenCPN source
+        shell: pwsh
+        run: |
+          git clone --depth 1 --branch Release_5.12.4 https://github.com/OpenCPN/OpenCPN.git opennav-x/upstream/OpenCPN
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Reproduce native path failure and compile actual core and private probes
+        shell: pwsh
+        run: |
+          python opennav-x/tools/test-trust-compile-windows.py --evidence opennav-x/evidence/local/trust-native-compile
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: native-trust-compile-${{ github.sha }}
+          path: opennav-x/evidence/local/trust-native-compile
+          if-no-files-found: error

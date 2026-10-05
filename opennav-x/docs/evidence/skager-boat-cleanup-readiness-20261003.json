@@ -1,0 +1,227 @@
+{
+  "observedUtc": "2026-10-03T21:56:30.3848104Z",
+  "scope": "Read-only cleanup readiness, not retirement authorization",
+  "roots": [
+    {
+      "name": "XNav",
+      "plain": true,
+      "present": true
+    },
+    {
+      "name": "OpenNavXAlpha1",
+      "plain": true,
+      "present": true
+    },
+    {
+      "name": "OpenCPN",
+      "plain": true,
+      "present": false
+    },
+    {
+      "name": "OpenCPN",
+      "plain": true,
+      "present": true
+    }
+  ],
+  "groups": [
+    {
+      "links": [],
+      "name": "SKAGER",
+      "plain": true,
+      "present": false
+    },
+    {
+      "links": [
+        {
+          "name": "Maintain OpenNav.lnk",
+          "workMatchesTargetParent": true,
+          "ownedGenerationPath": true,
+          "directory": false,
+          "plain": true,
+          "relativeTarget": "4881df508ac0468e8c66db0a76176368/Maintain.exe",
+          "sha256": "69c5780746da2937f5ef7a094412cbe5a59e061d8cb75469e6f3c0538671b911",
+          "targetExists": true,
+          "arguments": ""
+        },
+        {
+          "name": "OpenCPN Legacy.lnk",
+          "workMatchesTargetParent": true,
+          "ownedGenerationPath": true,
+          "directory": false,
+          "plain": true,
+          "relativeTarget": "4881df508ac0468e8c66db0a76176368/app/opencpn.exe",
+          "sha256": "49f0965c1759a96fec1e31487276da13c6289b1cf73ca7b05d729381b74ee107",
+          "targetExists": true,
+          "arguments": "--legacy"
+        },
+        {
+          "name": "OpenNav Safe Mode.lnk",
+          "workMatchesTargetParent": true,
+          "ownedGenerationPath": true,
+          "directory": false,
+          "plain": true,
+          "relativeTarget": "4881df508ac0468e8c66db0a76176368/app/opencpn.exe",
+          "sha256": "91d7c2963de5a97f25de4a3c982a92c68382bc3b669fc39d40899fa12167d83b",
+          "targetExists": true,
+          "arguments": "--safe-mode"
+        },
+        {
+          "name": "OpenNav X.lnk",
+          "workMatchesTargetParent": true,
+          "ownedGenerationPath": true,
+          "directory": false,
+          "plain": true,
+          "relativeTarget": "4881df508ac0468e8c66db0a76176368/app/opencpn.exe",
+          "sha256": "ba0db91fcdb340ca6a8c97c4f7b94ad66340ef3469794c80e538c8810cdae713",
+          "targetExists": true,
+          "arguments": "--xnav"
+        }
+      ],
+      "name": "OpenNav X",
+      "plain": true,
+      "present": true
+    },
+    {
+      "links": [
+        {
+          "name": "Maintain OpenNav.lnk",
+          "workMatchesTargetParent": true,
+          "ownedGenerationPath": true,
+          "directory": false,
+          "plain": true,
+          "relativeTarget": "e54582e3425a4ab9a426759144b31478/Maintain.exe",
+          "sha256": "ba69343116d3fd5496d27222f9690e4b83b56941703eda78fe082f7514284e7b",
+          "targetExists": true,
+          "arguments": ""
+        },
+        {
+          "name": "OpenCPN Legacy.lnk",
+          "workMatchesTargetParent": true,
+          "ownedGenerationPath": true,
+          "directory": false,
+          "plain": true,
+          "relativeTarget": "e54582e3425a4ab9a426759144b31478/app/opencpn.exe",
+          "sha256": "81359916dde5c827a7583aa66c251dfcd65838056ee79a1063580407b9fa1db3",
+          "targetExists": true,
+          "arguments": "--legacy"
+        },
+        {
+          "name": "OpenNav Safe Mode.lnk",
+          "workMatchesTargetParent": true,
+          "ownedGenerationPath": true,
+          "directory": false,
+          "plain": true,
+          "relativeTarget": "e54582e3425a4ab9a426759144b31478/app/opencpn.exe",
+          "sha256": "7f919248388558b4f245fe97f9e0feca5b58cbb81755ff253f0f1d4c480dae06",
+          "targetExists": true,
+          "arguments": "--safe-mode"
+        },
+        {
+          "name": "OpenNav X.lnk",
+          "workMatchesTargetParent": true,
+          "ownedGenerationPath": true,
+          "directory": false,
+          "plain": true,
+          "relativeTarget": "e54582e3425a4ab9a426759144b31478/app/opencpn.exe",
+          "sha256": "44aa7e71d35b32b9f9dd6e963110726cfc171bd88a8e3bcdf1196f31f9b99e9e",
+          "targetExists": true,
+          "arguments": "--xnav"
+        }
+      ],
+      "name": "OpenNav X Alpha 1",
+      "plain": true,
+      "present": true
+    }
+  ],
+  "obsolete": [
+    {
+      "present": true,
+      "items": [
+        {
+          "directory": true,
+          "name": "OpenNavX-Beta1-Portable-win64",
+          "bytes": null
+        },
+        {
+          "directory": false,
+          "name": "OpenNavX-Beta1-Boat-Commissioning.md",
+          "bytes": 6918
+        },
+        {
+          "directory": false,
+          "name": "OpenNavX-Beta1-Portable-win64.zip",
+          "bytes": 48893110
+        },
+        {
+          "directory": false,
+          "name": "OpenNavX-Beta1-Setup.exe",
+          "bytes": 43967980
+        },
+        {
+          "directory": false,
+          "name": "OpenNavX-Beta1-source.zip",
+          "bytes": 81824233
+        },
+        {
+          "directory": false,
+          "name": "OpenNavX-Beta1-Test-Guide.md",
+          "bytes": 11656
+        },
+        {
+          "directory": false,
+          "name": "SHA256SUMS.txt",
+          "bytes": 486
+        }
+      ],
+      "portableLeaves": [],
+      "plain": true,
+      "name": "OpenNavX-Beta1-Windows"
+    },
+    {
+      "present": true,
+      "items": [
+        {
+          "directory": true,
+          "name": "OpenNavX-DeveloperPreview-win64",
+          "bytes": null
+        },
+        {
+          "directory": false,
+          "name": "OpenNavX-DeveloperPreview-win64.zip",
+          "bytes": 48386718
+        },
+        {
+          "directory": false,
+          "name": "OpenNavX-DeveloperPreview-win64.zip.sha256",
+          "bytes": 103
+        }
+      ],
+      "portableLeaves": [],
+      "plain": true,
+      "name": "OpenNavX-DeveloperPreview-win64"
+    }
+  ],
+  "treeHashesReverified": false,
+  "remoteMutation": false,
+  "ownerReceiptPresent": true,
+  "stateReceiptPresent": true,
+  "navigationProcessCount": 0,
+  "issueCommentsRead": {
+    "issue": "SCRUM-215",
+    "count": 13,
+    "last": "10883",
+    "status": "Testing"
+  },
+  "limitations": [
+    "No replacement package eligibility: 4dd candidate gates pending.",
+    "Shortcut relative targets and mode arguments observed, but generation/registry ownership and full managed-file hashes not requalified.",
+    "Known wrapper contents inspected only one level; portableLeaves empty is not evidence the previously nested portable manifest is absent.",
+    "Four release file sizes observed; content hashes must be freshly checked against accepted release identities before retirement.",
+    "No full recovery/profile/ACL/reparse tree requalification; no deletion, move, link save, launch or registry write."
+  ],
+  "transport": {
+    "initialFailure": "Windows command line too long, before inventory execution",
+    "completedMethod": "one in-memory stdin PowerShell inventory through ssh boat",
+    "sshExitCode": 0
+  }
+}

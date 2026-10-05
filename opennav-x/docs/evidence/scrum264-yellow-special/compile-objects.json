@@ -1,0 +1,14 @@
+{
+  "core-s52plib.o": {
+    "sha256": "27d4fcdebafc9c6f345c6cd885dfe8cf7567e49efe7f599bddda0b57336915b5",
+    "bytes": 539280
+  },
+  "private-s52plib.o": {
+    "sha256": "3707b7d97f449ff5700a4a1143c230b636a670be1b37f83b7eba266fcf3b6bc0",
+    "bytes": 535096
+  },
+  "private-disabled.o": {
+    "sha256": "8aeab45e857d6788b7727b165d41ff81286456a82a5f6a4f61e0290641f7f725",
+    "bytes": 493056
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "baseFillCommit": "5b7a7736aa7c8bbe79b964df0817d588bcdcdd64",
+  "priorXmlSha256": "f1cb1507cc09b4aa0156c43f5ef994fdfbf6d43904a9a4e8861ee7ff5b6a71ee",
+  "currentXmlSha256": "32cdfa6dadffca4d1f791972b6b45c6d2165baac3d59222ee36a9d899c1d9bde",
+  "reverseByteEquality": true,
+  "changedLookupIds": [
+    "16",
+    "18",
+    "20",
+    "356",
+    "358",
+    "360"
+  ],
+  "rasterAndRleUnchanged": true,
+  "contrast": {
+    "DAY_BRIGHT": {
+      "beforeLANDF": [
+        139,
+        102,
+        31
+      ],
+      "afterXNSHR": [
+        175,
+        191,
+        174
+      ],
+      "outlineToLandBefore": 4.471,
+      "outlineToLandAfter": 1.65
+    },
+    "DUSK": {
+      "beforeLANDF": [
+        76,
+        56,
+        17
+      ],
+      "afterXNSHR": [
+        116,
+        135,
+        121
+      ],
+      "outlineToLandBefore": 1.697,
+      "outlineToLandAfter": 1.718
+    },
+    "NIGHT": {
+      "beforeLANDF": [
+        23,
+        17,
+        5
+      ],
+      "afterXNSHR": [
+        55,
+        68,
+        58
+      ],
+      "outlineToLandBefore": 1.248,
+      "outlineToLandAfter": 1.469
+    }
+  },
+  "sourceHashes": {
+    "tools/chart_structure_paint.py": "aebe01e1ed890e425a5f1b18e4fc876b00ebb11d78da6382c7c3540128f03ec0",
+    "tools/generate-xnav-chart-style.py": "1123ed7e655d67f73bb2e2338a0dc02d41a57b84f2e0f158f3bb7be333eaaff6",
+    "tests/chart_structure_resources_tests.py": "0f2cf73850fd3a891a8d3ef6a7eb2e0dc1c323267793876281c832d573a9dc4e",
+    "tests/chart_presentation_resources_tests.py": "79bfcad08ee38d9bf9f8c418db10aac64505a58782f6705edfa2187477e32d6c",
+    "resources/chart-style/v1/definition.json": "cc4b372518943fdc74d29ec0eb620ee415abe3fda978ec92898eb9e29b8b876c"
+  },
+  "limits": [
+    "No actual renderer, Windows, boat or hazard-readability acceptance.",
+    "Day outline contrast decreases; exact chart visual review is required."
+  ]
+}

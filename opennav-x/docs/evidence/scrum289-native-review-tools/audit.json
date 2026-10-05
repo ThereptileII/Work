@@ -1,0 +1,60 @@
+{
+  "local_source": "35cd4c98468c57749245d5d5c348f5c7f7b1bab2",
+  "remote_source": "47c0a789967c29a618db1f0249a42ade756bf460",
+  "run": "37184066301",
+  "attempt": "1",
+  "archives": {
+    "window": {
+      "id": 11296715299,
+      "sha256": "00bad4079ee98f65304c0d967ff6cb7951ad516e82fe890332b97bcffb6b5917",
+      "bytes": 25462,
+      "entries": 4
+    },
+    "broker": {
+      "id": 11296516288,
+      "sha256": "855975eb1fe955cbf7b3c9207acdbfbbc4316a041162373a9a946017b97e6131",
+      "bytes": 38364,
+      "entries": 66
+    },
+    "bundle": {
+      "id": 11296067491,
+      "sha256": "f182084abb099347f5788dd973bef5297cda1ce5541629e98d5b849888d4e76d",
+      "bytes": 373954,
+      "entries": 3
+    },
+    "policy": {
+      "id": 11295919163,
+      "sha256": "76aa5bf21b7b3d0d86505d5f21116c7d975d3c48c46ad8081abc3c2a8a855982",
+      "bytes": 15883,
+      "entries": 6
+    }
+  },
+  "archiveChecks": "SHA256, API byte size and identity, all CRCs, safe unique nonlink paths",
+  "toolFiles": 117,
+  "sourceClosure": "Every inner file exact manifest size/hash; git blob source hash and LF/CRLF equivalence independently checked",
+  "gateReceiptHashes": {
+    "broker": "91e6579a0e75e322d9695baa59164c98a11e259cba41f39ec00290245df0274f",
+    "policy": "e778806d6d59f8305ed9764ffddfd1dc90004635d33ea0b86da5cbba9a873d3c",
+    "window": "785cd0d8257044a216876d0c922fd8ba1a7c7cf3fb0594db21068131f958a07b"
+  },
+  "displayCases": 75,
+  "newPrototypeCases": 22,
+  "paletteCases": 16,
+  "brokerCases": 13,
+  "scheduledPaletteArmCollect": "passed, exit0, actualArm/actualCollect true",
+  "applicationAcceptance": false,
+  "boatAcceptance": false,
+  "staging": {
+    "directory": "C:\\XNav\\scripts\\review-47c0a789967c29a618db1f0249a42ade756bf460",
+    "completionSha256": "f64bab5e7eba48c9ad151cc842bf0f2be52e26a4b00b38b7f80e733dce878713",
+    "verifiedFiles": 117,
+    "closedSetIncludingReceipt": 118,
+    "activeCommissioningBefore": false,
+    "activeCommissioningAfter": false,
+    "toolsExecuted": false,
+    "applicationChanged": false,
+    "profileChanged": false,
+    "sourceCheckoutChanged": false,
+    "firstAttempt": "Default PowerShell policy refused Common.ps1 before staging; exact transport retained. Successful retry used process-only ExecutionPolicy Bypass; no persistent policy change."
+  }
+}

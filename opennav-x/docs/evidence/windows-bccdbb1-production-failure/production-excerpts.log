@@ -1,0 +1,24 @@
+Selected original windows-production-Win32.log lines, prefixed with original line number. Original full logs remain only inside the preserved archive.
+280: PS>TerminatingError(): "zlib source archive differs from reviewed lock: expected bytes=6 sha256=7192385c3c0605de55bb9476ce1d90748190ecb32a8eed7f5207b30cf6a1fe89; observed bytes=3 sha256=039058c6f2c0cb492c533b0a4d14ef77cc0f78abccced5287d84a1a2011cfb81; evidence=C:\Users\runneradmin\AppData\Local\Temp\zlib-source-guard-862a24952e7b42938d65aab3336f3187\source-verification.json"
+281: PS>TerminatingError(): "zlib source archive differs from reviewed lock: expected bytes=6 sha256=7192385c3c0605de55bb9476ce1d90748190ecb32a8eed7f5207b30cf6a1fe89; observed bytes=6 sha256=875c6137c720a291a03f6710c14ca96320e64e1d90fbb2f479b74b367de302cc; evidence=C:\Users\runneradmin\AppData\Local\Temp\zlib-source-guard-862a24952e7b42938d65aab3336f3187\source-verification.json"
+282: PS>TerminatingError(): "zlib source archive differs from reviewed lock: expected bytes=6 sha256=7192385c3c0605de55bb9476ce1d90748190ecb32a8eed7f5207b30cf6a1fe89; observed bytes= sha256=; evidence=C:\Users\runneradmin\AppData\Local\Temp\zlib-source-guard-862a24952e7b42938d65aab3336f3187\source-verification.json"
+284: PS>TerminatingError(): "zlib manifest does not identify the reviewed zlib 1.3.2 source"
+285: PS>TerminatingError(): "zlib manifest does not identify the reviewed zlib 1.3.2 source"
+286: PS>TerminatingError(): "zlib manifest does not identify the reviewed zlib 1.3.2 source"
+287: PS>TerminatingError(): "zlib manifest does not identify the reviewed zlib 1.3.2 source"
+288: PS>TerminatingError(): "zlib manifest does not identify the reviewed zlib 1.3.2 source"
+4076: 100% tests passed, 0 tests failed out of 139
+4078: Total Test time (real) =  19.31 sec
+4150: 2026-10-04T06:36:44.3114827Z trust-import/LocalMachine-Root before
+4151: 2026-10-04T06:36:44.5989333Z process/owned-ca-import before
+4152: 2026-10-04T06:36:44.9438083Z process/owned-ca-import after exit=0
+4153: 2026-10-04T06:36:44.9762245Z trust-import/LocalMachine-Root after
+4154: 2026-10-04T06:36:44.9813332Z server/valid before
+4155: 2026-10-04T06:36:45.1754057Z server/valid after port=51490
+4156: 2026-10-04T06:36:45.1865606Z downloader-case/valid before
+4157: 2026-10-04T06:36:45.1922942Z process/downloader-valid before
+4158: 2026-10-04T06:37:15.1899848Z process/downloader-valid timeout Exceeded 30 seconds; terminating owned process tree
+4159: 2026-10-04T06:37:15.2150026Z process/downloader-valid failure downloader-valid exceeded the 30-second native probe limit
+4160: 2026-10-04T06:37:15.2172069Z downloader-case/valid failure downloader-valid exceeded the 30-second native probe limit
+4165:      | downloader-valid exceeded the 30-second native probe limit
+4166: PS>TerminatingError(): "pwsh failed with exit code 1"

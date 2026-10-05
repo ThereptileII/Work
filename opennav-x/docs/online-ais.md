@@ -4,6 +4,27 @@ AISStream is supplemental traffic information; OpenCPN onboard AIS remains
 the navigation authority. Provider snapshots own their values and retain
 provenance. No socket, decoder or credential object crosses into Vessel Data.
 
+## Subscription-send concurrency — SCRUM-301
+
+The provider must never hold its state mutex across `IXWebSocket::sendText`.
+The pinned transport can synchronously deliver a Close callback after a socket
+write failure; that callback needs the same provider mutex. Holding it across
+send can deadlock the worker and the next UI read.
+
+Reserve the exact pending subscription under the state lock, then release it
+before sending. Reservation means unconfirmed/Subscribing, not Connected.
+Only the service confirmation establishes Connected. This ordering also allows
+an immediate reply and preserves a chart pan that arrives while the earlier
+subscription is being sent. After sending, apply failure only if the original
+connection generation is still current and shutdown has not begun. A later
+disable, re-enable or credential change takes precedence.
+
+Offline provider tests exercise reentrant reading, confirmation/report receipt,
+viewport replacement and disable/re-enable during a held real IX send. The
+pre-fix provider must fail the bounded reentrant-read test. This establishes a
+reachable deadlock and its repair; it does not establish the exact trigger of
+the user's boat freeze. Native product and boat acceptance remain separate.
+
 The onboard target summary uses the retained upstream report observation epoch,
 matching the copied position fields. The enclosing container's copy timestamp
 is not report freshness. The integrated actual-model scenario verifies 64
@@ -11,6 +32,42 @@ repeated reads and a 70-second-old report without refreshing either timestamp.
 The prototype target drawer opens directly, scrolls to Show on chart, and closes
 only after a successful current-position action. Separate local and supplemental
 chart actions retain their existing ownership boundaries.
+
+## Requested reception radius — SCRUM-306
+
+Traffic → Online AIS settings offers a 1–200 nm slider, initially 25 nm, with
+an explicit **Apply radius** action. These are SKAGER-supported limits, not a
+claimed AISStream service limit. Adjusting the draft does not write settings or
+change a subscription. Apply persists `/OpenNav/OnlineAIS/v1/RadiusNm` separately
+from the credential; a failed write restores the previous setting and leaves the
+effective radius unchanged. Changing radius never enables an OFF/replay feed.
+
+The center is the actual primary chart projection center, not own-vessel GPS
+and not the latitude midpoint of a Mercator bounding box. A geographic circle
+is enclosed by one or two service bounding boxes; antimeridian and polar cases
+are explicit. The copied online list/chart feed is filtered to the same circle,
+so retained reports outside a reduced radius disappear without waiting for
+cache expiry. The onboard model and its whole-target precedence are unchanged.
+This geometry is only a reception/display filter, never a navigation distance,
+CPA/TCPA calculation or safety alarm input.
+
+Explicit radius areas bypass the viewport-margin containment optimization;
+otherwise shrinking would retain the previously subscribed larger area. The
+existing five-second coalescing cadence, single confirmation in flight, latest
+area on reconnect and SCRUM-301 nonblocking provider worker remain in place.
+Confirmation alone does not establish receipt of a vessel position. The drawer
+explicitly reports when no online positions have been received.
+
+The focused offline `tests/online_ais_radius` harness follows valid Class A,
+standard Class B and extended Class B messages through session confirmation,
+decoder/cache, circular filtering, onboard merge and chart-mark projection.
+It covers setting bounds, reload/write failure, radius shrink, antimeridian,
+polar geometry and reconnect. `tests/ais_drawer_scroll` exercises the slider's
+draft/apply/read-back behavior with the production control. This proves the
+fixture path; it does not establish why a particular live account/area has no
+reports or claim live vessel coverage. Native product and actual live reception
+remain separate evidence.
+
 # Supplemental Online AIS — contract and implementation status
 
 Online AIS is an optional Internet input for chart/list presentation. It never
@@ -110,7 +167,7 @@ alarms and onboard receiver health continue to consume onboard-only state.
 Online target positions are not inserted into OpenCPN's decoder or CPA model.
 
 Traffic → Online AIS settings provides explicit OFF/Enabled and, on Windows,
-masked key entry/removal. Only the enabled preference enters wxFileConfig;
+masked key entry/removal. Enabled and radius preferences enter wxFileConfig;
 the key goes directly to the bounded credential adapter. Runtime diagnostics
 contain status enums, counters, confirmation and a presence flag, never secret
 text. Update/repair leave the per-user credential entry intact. Uninstall
@@ -226,6 +283,18 @@ A successful confirmation resets failure backoff. Static reports and reads never
 refresh a position. Disable removes online targets; network loss retains their
 original observations so they age out. Old callbacks cannot revive a disabled
 or superseded connection.
+
+Commissioning diagnostics distinguish received complete data messages from
+accepted/rejected reports and ignored unsupported message kinds. These counters
+are cumulative for the provider lifetime; zero accepted/rejected reports does
+not mean no messages arrived. Ping/pong frames and raw payloads are not recorded.
+Subscription pending means the latest desired area still needs a send (including
+reconnection); awaiting confirmation means a send is in flight. A previously
+confirmed area can coexist with a pending replacement during the cadence wait.
+The active radius, unexpired positioned-cache count before filtering and
+in-radius count identify display filtering without exporting subscription bounds
+or vessel coordinates. Static-only records are excluded from both position
+counts. No diagnostic read refreshes observations or changes session state.
 
 `AisStreamProvider` owns a controller thread and the bundled socket's receive
 thread. Its public methods copy values under a mutex; no window pointer or

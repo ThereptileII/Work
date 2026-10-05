@@ -7,22 +7,73 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"path"
 	"path/filepath"
 	"regexp"
 	"strings"
+	"sync/atomic"
 	"time"
 
 	"github.com/theupdateframework/go-tuf/v2/metadata/config"
 	"github.com/theupdateframework/go-tuf/v2/metadata/updater"
 )
 
-const maxTargetBytes = 64 << 20
+const maxTargetBytes = 32 << 10
 const maxOperationTime = 30 * time.Second
 
+type metadataLimitKey struct{}
+
 type deadlineTransport struct {
-	base     http.RoundTripper
-	deadline time.Time
+	base      http.RoundTripper
+	deadline  time.Time
+	remaining *atomic.Int64
 }
+
+type boundedMetadataBody struct {
+	ioReadCloser
+	left  int64
+	total *atomic.Int64
+}
+
+func (b *boundedMetadataBody) Read(p []byte) (int, error) {
+	limit := b.left
+	if b.total != nil && b.total.Load() < limit {
+		limit = b.total.Load()
+	}
+	if limit < 0 {
+		return 0, errors.New("update response length exceeds hard limit")
+	}
+	if int64(len(p)) > limit+1 {
+		p = p[:int(limit+1)]
+	}
+	n, err := b.ioReadCloser.Read(p)
+	b.left -= int64(n)
+	remaining := int64(1)
+	if b.total != nil {
+		remaining = b.total.Add(-int64(n))
+	}
+	if b.left < 0 || remaining < 0 {
+		return n, errors.New("update response length exceeds hard limit")
+	}
+	return n, err
+}
+
+func metadataResponseLimit(u *url.URL) int64 {
+	name := path.Base(u.Path)
+	switch {
+	case strings.HasSuffix(name, "root.json"):
+		return 512 << 10
+	case name == "timestamp.json":
+		return 16 << 10
+	case strings.HasSuffix(name, "snapshot.json"):
+		return 2 << 20
+	case strings.Contains(u.Path, "/targets/releases/"):
+		return maxTargetBytes
+	default:
+		return 5 << 20
+	}
+}
+
 type cancelBody struct {
 	ioReadCloser
 	cancel context.CancelFunc
@@ -40,7 +91,16 @@ func (t deadlineTransport) RoundTrip(req *http.Request) (*http.Response, error) 
 		cancel()
 		return nil, err
 	}
-	res.Body = &cancelBody{ioReadCloser: res.Body, cancel: cancel}
+	limit := metadataResponseLimit(req.URL)
+	if initial, ok := req.Context().Value(metadataLimitKey{}).(int64); ok && initial < limit {
+		limit = initial
+	}
+	if res.ContentLength > limit {
+		res.Body.Close()
+		cancel()
+		return nil, errors.New("update response length exceeds hard limit")
+	}
+	res.Body = &cancelBody{ioReadCloser: &boundedMetadataBody{ioReadCloser: res.Body, left: limit, total: t.remaining}, cancel: cancel}
 	return res, nil
 }
 
@@ -105,11 +165,15 @@ func verifyWithClient(req Request, deadline time.Time, injected *http.Client) (R
 	if base == nil {
 		base = http.DefaultTransport
 	}
-	client.Transport = deadlineTransport{base: base, deadline: deadline}
+	budget := &atomic.Int64{}
+	budget.Store(32 << 20)
+	client.Transport = deadlineTransport{base: base, deadline: deadline, remaining: budget}
 	client.CheckRedirect = func(next *http.Request, via []*http.Request) error {
 		if next.URL.Scheme != "https" || next.URL.Host != u.Host || len(via) >= 5 {
 			return errors.New("metadata redirect outside HTTPS origin")
 		}
+		initial := metadataResponseLimit(via[0].URL)
+		*next = *next.WithContext(context.WithValue(next.Context(), metadataLimitKey{}, initial))
 		return nil
 	}
 	if err := cfg.SetDefaultFetcherHTTPClient(client); err != nil {

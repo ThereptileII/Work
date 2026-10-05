@@ -1,10 +1,42 @@
 param([ValidateSet('Win32', 'x64')][string]$Architecture = 'Win32', [switch]$Integration, [switch]$Production,
-      [switch]$PrototypeObjectFlow, [switch]$ReuseVerifiedDependencies)
+      [switch]$PrototypeObjectFlow, [switch]$ReuseVerifiedDependencies, [switch]$VerifyPeerCli, [switch]$PrivateOCharts,
+      [switch]$DependenciesOnly, [string]$SealDependencyBundle = '',
+      [string]$DependencyBundle = '', [string]$DependencyBundleProvenance = '',
+      [switch]$VerifyDependencyBundleOnly, [switch]$ReusePrivateOCharts, [switch]$DeferRuntimeQualification)
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 $Root = Split-Path $PSScriptRoot -Parent
 $Source = Join-Path $Root 'upstream/OpenCPN'
 if ($Production -and -not $Integration) { throw 'Production requires Integration' }
+if ($DeferRuntimeQualification -and (-not $Integration -or $env:GITHUB_ACTIONS -cne 'true')) {
+    throw 'Deferred runtime qualification requires the explicit native CI integration build'
+}
+$BundleRequested = -not [string]::IsNullOrEmpty($DependencyBundle)
+if ($DependenciesOnly -and (-not $Integration -or $Production -or $PrivateOCharts -or
+    $ReuseVerifiedDependencies -or $BundleRequested -or -not $SealDependencyBundle -or
+    $env:GITHUB_ACTIONS -cne 'true' -or $env:GITHUB_JOB -cne 'windows-dependencies')) {
+    throw 'Dependency-only sealing requires the dedicated fresh native CI producer'
+}
+if ($SealDependencyBundle -and -not $DependenciesOnly) {
+    throw 'Bundle sealing is restricted to the dependency-only producer'
+}
+if ($BundleRequested -and (-not $Integration -or $ReuseVerifiedDependencies -or
+    -not $DependencyBundleProvenance -or $env:GITHUB_ACTIONS -cne 'true')) {
+    throw 'Cross-run reuse requires explicit authenticated native CI dependency inputs'
+}
+if (($DependencyBundleProvenance -or $VerifyDependencyBundleOnly) -and -not $BundleRequested) {
+    throw 'Bundle provenance/reprobe mode requires a dependency bundle'
+}
+if ($VerifyDependencyBundleOnly -and ($PrivateOCharts -or $Production)) {
+    throw 'Dependency-only reprobe cannot request application/private build flags'
+}
+if ($ReusePrivateOCharts -and (-not $PrivateOCharts -or -not $Production -or -not $BundleRequested)) {
+    throw 'Private adapter reuse requires the production bundle invocation and original same-job receipt'
+}
+
+if ($VerifyPeerCli -and (-not $Integration -or $Production)) {
+    throw 'Peer CLI isolation verification requires the initial integrated fixture build'
+}
 if ($ReuseVerifiedDependencies -and (-not $Production -or -not $Integration -or
     $env:GITHUB_ACTIONS -cne 'true' -or $env:GITHUB_JOB -cne 'windows-integration')) {
     throw 'Dependency reuse is only available to the explicit same-job CI production invocation'
@@ -12,11 +44,34 @@ if ($ReuseVerifiedDependencies -and (-not $Production -or -not $Integration -or
 if ($PrototypeObjectFlow -and (-not $Integration -or $Production -or $env:GITHUB_ACTIONS -ne 'true')) {
     throw 'The prototype-only object flow is a disposable CI development gate, not a production/release gate'
 }
+if ($PrivateOCharts -and (-not $Integration -or $env:GITHUB_ACTIONS -cne 'true' -or
+    $env:GITHUB_JOB -cne 'windows-integration')) {
+    throw 'Private adapter build requires the explicit disposable Windows integration job'
+}
 $Variant = if ($Production) { 'production' } elseif ($Integration) { 'xnav' } else { 'pristine' }
 $Evidence = Join-Path $Root 'evidence/local'
+if ($VerifyDependencyBundleOnly) {
+    # Reprobes must not overwrite the original transcript, interpreter/gettext
+    # receipts or curl preflight. Keep every invocation's diagnostics separate.
+    $Evidence = Join-Path $Evidence ("dependency-reprobe-" + [guid]::NewGuid().ToString('N'))
+    if (Test-Path -LiteralPath $Evidence) { throw 'Dependency reprobe evidence must be fresh' }
+}
 New-Item -ItemType Directory -Force $Evidence | Out-Null
 Start-Transcript -Path (Join-Path $Evidence "windows-$Variant-$Architecture.log")
+# Capture the entry interpreter before dependency setup changes PATH. CMake's
+# independent discovery may otherwise choose another Python/zlib encoder.
+$PythonIdentityJson = & python -c 'import hashlib,json,pathlib,sys,zlib; p=pathlib.Path(sys.executable).resolve(); print(json.dumps({"executable":str(p),"sha256":hashlib.sha256(p.read_bytes()).hexdigest(),"version":sys.version,"zlibCompile":zlib.ZLIB_VERSION,"zlibRuntime":zlib.ZLIB_RUNTIME_VERSION,"zlibNg":getattr(zlib,"ZLIBNG_VERSION",None)}))'
+if ($LASTEXITCODE -ne 0) { throw 'Cannot identify the entry Python interpreter' }
+$PythonIdentity = $PythonIdentityJson | ConvertFrom-Json
+$BuildPython = [string]$PythonIdentity.executable
+if (-not [IO.Path]::IsPathFullyQualified($BuildPython) -or
+    -not (Test-Path -LiteralPath $BuildPython -PathType Leaf)) {
+    throw 'Entry Python did not report an absolute existing executable'
+}
+$PythonCMakeArgument = "-DPython3_EXECUTABLE:FILEPATH=$BuildPython"
+$PythonIdentityJson | Set-Content -LiteralPath (Join-Path $Evidence "windows-$Variant-python.json") -Encoding utf8
 function Run([string]$Program, [string[]]$Arguments) {
+    if ($Program -ceq 'python') { $Program = $BuildPython }
     & $Program @Arguments 2>&1 | Tee-Object -FilePath (Join-Path $Evidence 'windows-native-output.log') -Append
     if ($LASTEXITCODE -ne 0) { throw "$Program failed with exit code $LASTEXITCODE" }
 }
@@ -31,36 +86,135 @@ function Assert-ManifestRecord([object]$Record, [string]$Path, [string]$Label) {
         throw "$Label differs from its producer manifest"
     }
 }
+function Build-PrivateOCharts([bool]$Reuse) {
+    $Prepared = Join-Path $Root 'build/ocharts-prepared'
+    $NativeBuild = Join-Path $Root 'build/ocharts-native'
+    $Package = Join-Path $Root 'build/ocharts-package'
+    $Resources = Join-Path $Root 'build/ocharts-chart-style/v1'
+    $ReceiptPath = Join-Path $Evidence 'windows-ocharts-first-build.json'
+    $Identity = [ordered]@{
+        run = $env:GITHUB_RUN_ID; attempt = $env:GITHUB_RUN_ATTEMPT
+        job = $env:GITHUB_JOB; commit = $env:GITHUB_SHA
+        script = Digest (Join-Path $PSScriptRoot 'build-pristine-windows.ps1')
+        python = $BuildPython; pythonSha256 = Digest $BuildPython
+    }
+    foreach ($Value in $Identity.Values) {
+        if (-not $Value) { throw 'Private adapter requires complete same-job identity' }
+    }
+    if ($Reuse) {
+        $Previous = Get-Content -LiteralPath $ReceiptPath -Raw | ConvertFrom-Json
+        foreach ($Key in $Identity.Keys) {
+            if ($Previous.identity.$Key -cne $Identity[$Key]) {
+                throw 'Private adapter build belongs to different job/source inputs'
+            }
+        }
+        Assert-ManifestRecord $Previous.preparation (Join-Path $Prepared 'preparation.json') 'private preparation receipt'
+        foreach ($Name in @('manifest.json','skager-ocharts-adapter.dll','corresponding-source.zip')) {
+            Assert-ManifestRecord $Previous.package.$Name (Join-Path $Package $Name) "private package $Name"
+        }
+    } else {
+        foreach ($Path in @($Prepared,$NativeBuild,$Package,$ReceiptPath)) {
+            if (Test-Path -LiteralPath $Path) { throw "Private adapter first build requires a fresh output: $Path" }
+        }
+    }
+    # Generate from the same pinned integration input before the host configure.
+    # The host repeats generation; its package verifier requires exact equality.
+    Run python @((Join-Path $PSScriptRoot 'generate-xnav-chart-style.py'),
+        '--source', (Join-Path $Source 'data/s57data'), '--output', $Resources)
+    if (-not $Reuse) {
+        Run python @((Join-Path $PSScriptRoot 'prepare-ocharts-adapter.py'),
+            '--output', $Prepared, '--cache', (Join-Path $Root 'build/ocharts-source-cache'),
+            '--curl-prefix', (Join-Path $Root 'build/windows-curl-8.22.0/install'),
+            '--openssl-prefix', $OpenSslPrefix, '--zlib-prefix', $ZlibPrefix, '--resources', $Resources)
+        Run cmake @('-S', (Join-Path $Root 'cmake/ocharts-adapter'), '-B', $NativeBuild,
+            '-G', 'Visual Studio 17 2022', '-A', 'Win32', '-DCMAKE_POLICY_VERSION_MINIMUM=3.5',
+            "-DSKAGER_PREPARED:PATH=$Prepared", $PythonCMakeArgument)
+        Run cmake @('--build', $NativeBuild, '--config', 'Release', '--target',
+            'skager-ocharts-adapter', '--parallel', '2')
+        Run python @((Join-Path $PSScriptRoot 'prepare-ocharts-adapter.py'),
+            '--prepared', $Prepared, '--package-dll', (Join-Path $NativeBuild 'Release/skager-ocharts-adapter.dll'),
+            '--output', $Package)
+    }
+    # Re-derive original+patch source and inspect every prepared byte on BOTH
+    # passes. A package receipt alone is never proof of available SDK/runtime.
+    Run python @((Join-Path $PSScriptRoot 'prepare-ocharts-adapter.py'), '--verify-prepared', $Prepared)
+    foreach ($Library in @('curl','zlib')) {
+        $Prefix = if ($Library -eq 'curl') { Join-Path $Root 'build/windows-curl-8.22.0/install' } else { $ZlibPrefix }
+        $Manifest = Join-Path $Prefix "$Library-build.json"
+        if ((Digest $Manifest) -cne (Digest (Join-Path $Prepared "sdk/$Library-build.json"))) {
+            throw "Private adapter $Library manifest differs from same-job producer"
+        }
+        $Facts = Get-Content -LiteralPath $Manifest -Raw | ConvertFrom-Json
+        foreach ($Item in $Facts.outputs.PSObject.Properties) {
+            Assert-ManifestRecord $Item.Value (Join-Path $Prefix $Item.Name) "$Library producer $($Item.Name)"
+            Assert-ManifestRecord $Item.Value (Join-Path $Prepared "sdk/$($Item.Name)") "private $Library SDK $($Item.Name)"
+        }
+    }
+    Run python @((Join-Path $PSScriptRoot 'verify-ocharts-adapter-package.py'),
+        '--package', $Package, '--resources', $Resources,
+        '--header', (Join-Path $Root 'build/ocharts-verification/SkagerOChartsPackage.h'))
+    if (-not $Reuse) {
+        $Files = [ordered]@{}
+        foreach ($Name in @('manifest.json','skager-ocharts-adapter.dll','corresponding-source.zip')) {
+            $Path = Join-Path $Package $Name
+            $Files[$Name] = @{sha256=(Digest $Path);bytes=(Get-Item -LiteralPath $Path).Length}
+        }
+        $PrepPath = Join-Path $Prepared 'preparation.json'
+        [ordered]@{identity=$Identity; package=$Files
+            preparation=@{sha256=(Digest $PrepPath);bytes=(Get-Item -LiteralPath $PrepPath).Length}
+        } | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $ReceiptPath -Encoding utf8
+    }
+    $script:OChartsPackage = $Package
+}
+$OChartsPackage = ''
+. (Join-Path $PSScriptRoot 'windows-parent-environment.ps1')
 try {
+    if ($ReuseVerifiedDependencies -and -not $PrivateOCharts -and
+        (Test-Path -LiteralPath (Join-Path $Evidence 'windows-ocharts-first-build.json'))) {
+        throw 'Production pass must preserve the first pass PrivateOCharts selection'
+    }
     if ($Integration) {
-        if (-not (Test-Path -LiteralPath $env:SKAGER_NATIVE_PERL -PathType Leaf)) {
-            throw 'The native OpenSSL build Perl was not selected before MSYS2 setup'
-        }
-        $NativePerl = (Resolve-Path -LiteralPath $env:SKAGER_NATIVE_PERL).Path
-        $env:PATH = "$(Split-Path $NativePerl -Parent);$env:PATH"
-        if ((Get-Command perl.exe -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source -ine $NativePerl) {
-            throw 'OpenSSL build Perl differs from the preselected native tool'
-        }
-        if (-not (Test-Path -LiteralPath $env:SKAGER_CURL_TEST_PERL -PathType Leaf)) {
-            throw 'MSYS2 curl test Perl was not selected'
-        }
+        Initialize-WindowsNativePerl
     }
     Run python @((Join-Path $PSScriptRoot 'verify-upstream.py'))
     if (-not [Environment]::Is64BitOperatingSystem) { throw 'Windows x64 host required' }
     if ($Architecture -eq 'x64') {
         throw 'OpenCPN 5.12.4 ships Win32 dependencies. An x64 dependency and plugin ABI port is not validated; refusing to mislabel Win32 as x64.'
     }
+    # Stop before curl preflight, stock win_deps or any expensive producer if
+    # the existing Poedit provider cannot supply both usable gettext tools.
+    $GettextReceipt = Join-Path $Evidence "windows-gettext-$Variant.json"
+    $Gettext = Initialize-WindowsGettext -Python $BuildPython -Receipt $GettextReceipt -Mode Ensure `
+        -Log (Join-Path $Evidence 'windows-native-output.log')
     if ($Integration) {
+        # Exercise the unchanged curl source tests with the reviewed native/MSYS
+        # environment before any maintained dependency compilation. The real curl
+        # producer repeats them against its own generated configurehelp.pm.
+        $CurlPreflight = Join-Path $Evidence ("windows-curl-source-early-$Variant")
+        Run pwsh @('-NoProfile', '-File', (Join-Path $PSScriptRoot 'test-curl-source-preflight.ps1'),
+            '-ProductionOnly', '-TestPerl', $env:SKAGER_CURL_TEST_PERL, '-Evidence', $CurlPreflight)
         # Fail on a changed zlib source before the costly OpenSSL build. The
         # normal zlib build below repeats the same guard and upstream tests.
-        & (Join-Path $PSScriptRoot 'build-zlib-windows.ps1') -VerifySourceOnly
+        if (-not $BundleRequested) {
+            & (Join-Path $PSScriptRoot 'build-zlib-windows.ps1') -VerifySourceOnly
+        }
         # Also verify the producer/consumer lock contract before building dependencies.
         & (Join-Path $PSScriptRoot 'test-zlib-source-verification.ps1')
     }
-    if ($Integration) {
+    if ($Integration -and -not $DependenciesOnly -and -not $VerifyDependencyBundleOnly) {
         Run python @((Join-Path $PSScriptRoot 'prepare-integration.py'))
         $Source = Join-Path $Root 'build/integration-source'
+        if (-not $ReuseVerifiedDependencies) {
+            # Compile complete changed units with native Windows/wx headers
+            # before spending time on maintained dependency producer suites.
+            Run python @((Join-Path $PSScriptRoot 'test-windows-changed-units.py'),
+                '--ui', '--evidence', (Join-Path $Evidence "windows-changed-units-$Variant"))
+        }
     }
+    if ($DependenciesOnly -or $VerifyDependencyBundleOnly) {
+        $Source = Join-Path $Root 'build/integration-source'
+        New-Item -ItemType Directory -Force (Join-Path $Source 'cache/buildwin') | Out-Null
+    } else {
     # Upstream's batch file can continue after a failed wget/7z operation.
     # Prepopulate the exact supported wx bundle with checked, retryable fetches.
     $Wx = Join-Path $Source 'cache/wxWidgets-3.2.8'
@@ -84,6 +238,7 @@ try {
     try {
         Run cmd @('/c', 'buildwin\win_deps.bat')
     } finally { Pop-Location }
+    }
     if ($Integration) {
         # Replace the stock dependency bundle only in the disposable integrated
         # tree. Each consumer runs only after its producer manifest and output
@@ -91,7 +246,23 @@ try {
         $ZlibPrefix = Join-Path $Root 'build/windows-zlib-1.3.2/install'
         $ZlibManifestPath = Join-Path $ZlibPrefix 'zlib-build.json'
         $OpenSslPrefix = Join-Path $Root 'build/windows-openssl-3.5.9/install'
-        if ($ReuseVerifiedDependencies) {
+        if ($BundleRequested) {
+            $BundleArguments = @('--root', $Root, '--bundle', $DependencyBundle,
+                '--provenance', $DependencyBundleProvenance)
+            Write-Output "Cross-run dependency verification begin: $([DateTime]::UtcNow.ToString('o'))"
+            Run python (@((Join-Path $PSScriptRoot 'windows_dependency_bundle.py'), 'restore') + $BundleArguments)
+            & (Join-Path $PSScriptRoot 'build-openssl-windows.ps1') -IntegrationSource $Source -VerifyToolFactsOnly
+            & (Join-Path $PSScriptRoot 'build-zlib-windows.ps1') -VerifyToolFactsOnly
+            $BeforeCurlPath = $env:PATH
+            try {
+                $env:PATH = "$(Split-Path $env:SKAGER_CURL_TEST_PERL -Parent);$env:PATH"
+                & (Join-Path $PSScriptRoot 'verify-curl-bundle.ps1') `
+                    -DependencyBundle $DependencyBundle -DependencyBundleProvenance $DependencyBundleProvenance `
+                    -Python $BuildPython -RuntimeEvidenceDirectory $Evidence
+            } finally { $env:PATH = $BeforeCurlPath }
+            Run python (@((Join-Path $PSScriptRoot 'windows_dependency_bundle.py'), 'stage') + $BundleArguments)
+            Write-Output "Cross-run dependency live reprobe and stage passed: $([DateTime]::UtcNow.ToString('o'))"
+        } elseif ($ReuseVerifiedDependencies) {
             Write-Output "Same-job dependency reuse verification begin: $([DateTime]::UtcNow.ToString('o'))"
             # The normal source/consumer and stock dependency preflights have
             # already run. Verify immutable producer evidence before reading
@@ -164,24 +335,32 @@ try {
                 (Join-Path $Source "cache/buildwin/$CacheOutput") "cached $CacheOutput"
         }
     }
+    if ($DependenciesOnly) {
+        # Seal successful upstream evidence before any application/private work.
+        Run python @((Join-Path $PSScriptRoot 'windows_dependency_bundle.py'), 'seal',
+            '--root', $Root, '--output', $SealDependencyBundle, '--producer-success')
+        return
+    }
+    if ($VerifyDependencyBundleOnly) { return }
+    if ($PrivateOCharts) { Build-PrivateOCharts ([bool]($ReuseVerifiedDependencies -or $ReusePrivateOCharts)) }
     $Wx = Join-Path $Source 'cache/wxWidgets-3.2.8'
     $Build = Join-Path $Root "build/$Variant-windows"
     $Install = Join-Path $Root "build/$Variant-install"
-    $Gettext = @(
-        "$env:ProgramFiles\Poedit\Gettexttools\bin",
-        "${env:ProgramFiles(x86)}\Poedit\Gettexttools\bin"
-    ) | Where-Object { Test-Path (Join-Path $_ 'msgfmt.exe') } | Select-Object -First 1
-    if (-not $Gettext) { throw 'Poedit gettext tools not found after dependency installation' }
-    $env:PATH += ";$Gettext;$Wx\lib\vc14x_dll;$Source\cache\buildwin"
+    # Reprobe the exact approved files after dependency setup; no late PATH
+    # substitute or installer retry is allowed here.
+    Run python @((Join-Path $PSScriptRoot 'windows_gettext.py'), 'verify', '--receipt', $GettextReceipt)
+    $env:PATH = "$Gettext;$env:PATH;$Wx\lib\vc14x_dll;$Source\cache\buildwin"
     $OpenNavArgs = @()
     if ($Integration) {
         $Fixtures = if ($Production) { 'OFF' } else { 'ON' }
-        $OpenNavArgs = @("-DOPENNAV_ROOT=$Root", "-DOPENNAV_ENABLE_ROUTE_SCENARIO=$Fixtures", "-DXNAV_ENABLE_TEST_FIXTURES=$Fixtures", "-DXNAV_ENABLE_PILOT_LOOPBACK_TESTS=$Fixtures")
+        $OpenNavArgs = @("-DOPENNAV_ROOT=$Root", "-DOPENNAV_ENABLE_ROUTE_SCENARIO=$Fixtures", "-DXNAV_ENABLE_TEST_FIXTURES=$Fixtures", "-DXNAV_ENABLE_PILOT_LOOPBACK_TESTS=$Fixtures", "-DSKAGER_OCHARTS_PACKAGE=$OChartsPackage")
     }
     Run cmake (@('-S', $Source, '-B', $Build, '-G', 'Visual Studio 17 2022',
-        '-A', $Architecture, '-DCMAKE_POLICY_VERSION_MINIMUM=3.5', '-DCMAKE_BUILD_TYPE=Release',
+        '-A', $Architecture, $PythonCMakeArgument, '-DCMAKE_POLICY_VERSION_MINIMUM=3.5', '-DCMAKE_BUILD_TYPE=Release',
         "-DwxWidgets_ROOT_DIR=$Wx", "-DwxWidgets_LIB_DIR=$Wx/lib/vc14x_dll",
         '-DwxWidgets_CONFIGURATION=mswu', '-DOCPN_CI_BUILD=ON',
+        "-DGETTEXT_MSGFMT_EXECUTABLE=$Gettext/msgfmt.exe",
+        "-DGETTEXT_MSGMERGE_EXECUTABLE=$Gettext/msgmerge.exe",
         '-DOCPN_BUILD_TEST=ON', '-DOCPN_BUNDLE_WXDLLS=ON',
         '-DOCPN_BUNDLE_DOCS=OFF', '-DOCPN_BUNDLE_GSHHS=ON',
         '-DOCPN_BUNDLE_TCDATA=ON', "-DCMAKE_INSTALL_PREFIX=$Install") + $OpenNavArgs)
@@ -209,11 +388,39 @@ try {
             }
         }
     }
+    if ($VerifyPeerCli) {
+        # Run before any installed application/model test: even GUI launches
+        # with --configdir create the normal home directory in InitializeLogFile.
+        # The CLI test must still refuse every pre-existing common-data profile.
+        Run python @((Join-Path $PSScriptRoot 'peer-cli-receipt.py'), 'capture',
+            '--cli', (Join-Path $Install 'opencpn-cmd.exe'),
+            '--receipt', (Join-Path $Evidence 'windows-peer-cli-receipt.json'))
+    }
+    if ($Integration -and -not $DeferRuntimeQualification -and $env:SKAGER_DESIGN_VALIDATION -ceq 'true') {
+        # Explicitly requested offline painter processes; no chart/profile/input or hardware output.
+        Run (Join-Path $Build 'Release/chart_name_text_test.exe') @((Join-Path $Evidence "chart-names-$Variant.png"))
+        Run (Join-Path $Build 'Release/chart_light_label_test.exe') @((Join-Path $Evidence "chart-lights-$Variant.png"))
+        Run (Join-Path $Build 'Release/skager_wordmark_test.exe') @((Join-Path $Evidence "skager-wordmark-$Variant.png"))
+        Run (Join-Path $Build 'Release/ui_font_resolution_test.exe') @()
+        Run (Join-Path $Build 'Release/chart_route_label_test.exe') @((Join-Path $Evidence "chart-route-labels-$Variant.png"))
+        Run (Join-Path $Build 'Release/onboard_ais_body_test.exe') @((Join-Path $Evidence "onboard-ais-$Variant.png"))
+    }
     Run ctest @('--test-dir', (Join-Path $Build 'test'), '-C', 'Release', '--output-on-failure', '--no-tests=error',
         '--timeout', '90', '--output-junit', (Join-Path $Evidence "windows-$Variant-tests.xml"))
     Get-FileHash (Join-Path $Build 'Release/opencpn.exe') -Algorithm SHA256 |
         Format-List | Out-File (Join-Path $Evidence "windows-$Variant-executable-sha256.txt")
     Run python @((Join-Path $PSScriptRoot 'verify-upstream.py'))
+    if ($PrivateOCharts -and $Production) {
+        # Installed maintained runtime is now available. Keep the private probe
+        # separate from the unchanged core TLS gate and its evidence directory.
+        Run pwsh @('-NoLogo', '-NoProfile', '-File', (Join-Path $PSScriptRoot 'test-downloader-trust-windows.ps1'),
+            '-IntegrationSource', $Source, '-Install', 'production-install',
+            '-OChartsPrepared', (Join-Path $Root 'build/ocharts-prepared'))
+    }
+    if ($DeferRuntimeQualification) {
+        Write-Output 'Compilation, CTest and installed security checks complete; runtime qualification is pending in the separate downstream job.'
+        return
+    }
     if ($Integration -and -not $Production) {
         if ($PrototypeObjectFlow) {
             # Additional targeted development job. The default full integrated
@@ -238,12 +445,14 @@ try {
         Run python @((Join-Path $PSScriptRoot 'smoke-pilot.py'))
         Run python @((Join-Path $PSScriptRoot 'smoke-navigation.py'), '--objects')
         Run python @((Join-Path $PSScriptRoot 'smoke-recovery.py'))
-        & (Join-Path $PSScriptRoot 'capture-pristine-windows.ps1') -Variant xnav -Mode legacy -Name '11-legacy-mode'
-        & (Join-Path $PSScriptRoot 'capture-pristine-windows.ps1') -Variant xnav -Mode safe-mode -Name '12-safe-mode'
+        if ($env:SKAGER_DESIGN_VALIDATION -ceq 'true') {
+            & (Join-Path $PSScriptRoot 'capture-pristine-windows.ps1') -Variant xnav -Mode legacy -Name '11-legacy-mode'
+            & (Join-Path $PSScriptRoot 'capture-pristine-windows.ps1') -Variant xnav -Mode safe-mode -Name '12-safe-mode'
+        }
         }
     } elseif ($Production) {
         Run python @((Join-Path $PSScriptRoot 'smoke-pilot.py'), '--production')
-    } else {
+    } elseif ($env:SKAGER_DESIGN_VALIDATION -ceq 'true') {
         & (Join-Path $PSScriptRoot 'capture-pristine-windows.ps1')
     }
 } finally { Stop-Transcript }

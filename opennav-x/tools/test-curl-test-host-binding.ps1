@@ -14,6 +14,34 @@ $NativePerl = (Resolve-Path -LiteralPath $NativePerl).Path
 if ($TestPerl -ieq $NativePerl) { throw 'Native and curl test Perl must differ' }
 $Evidence = [IO.Path]::GetFullPath($Evidence)
 $null = New-Item -ItemType Directory -Force -Path $Evidence
+# Reproduce the path passed to the producer's pre-configure genserv probe.
+# MSYS File::Basename does not split a native backslash script path, so the
+# generator searches for ./test-ca.prm instead of its locked source neighbor.
+$Certs = Join-Path $Evidence 'path-fixture/certs'
+$null = New-Item -ItemType Directory -Force -Path $Certs
+$Generator = Join-Path $Certs 'genserv.pl'
+[IO.File]::WriteAllText($Generator, @'
+use strict;
+use warnings;
+use File::Basename;
+my $path = dirname(__FILE__) . "/test-ca.prm";
+print "$path\n";
+exit((-f $path) ? 0 : 1);
+'@)
+[IO.File]::WriteAllText((Join-Path $Certs 'test-ca.prm'), "disposable certificate config`n")
+$BackslashResult = & $TestPerl $Generator 2>&1
+$BackslashExit = $LASTEXITCODE
+if ($BackslashExit -ne 1 -or @($BackslashResult)[0] -cne './test-ca.prm') {
+    throw 'MSYS Perl no longer reproduces the backslash source-path failure'
+}
+$SlashGenerator = $Generator.Replace('\','/')
+$SlashResult = & $TestPerl $SlashGenerator 2>&1
+if ($LASTEXITCODE -ne 0 -or @($SlashResult)[0] -cne ($Certs.Replace('\','/') + '/test-ca.prm')) {
+    throw 'MSYS Perl did not resolve the slash-form certificate config'
+}
+@{backslashExit=$BackslashExit; backslashLookup=@($BackslashResult)[0];
+  slashExit=$LASTEXITCODE; slashLookup=@($SlashResult)[0]} |
+    ConvertTo-Json -Compress | Set-Content -LiteralPath (Join-Path $Evidence 'msys-cert-path.json')
 $Source = Join-Path $Evidence 'cmake-source'
 $Build = Join-Path $Evidence 'cmake-build'
 $null = New-Item -ItemType Directory -Force -Path $Source

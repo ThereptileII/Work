@@ -1,0 +1,235 @@
+
+build/xnav-install/bin/opencpn:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+00000000010f7d70 <_ZN7s52plib11RenderT_AllEP12_ObjRazRulesP6_Rulesb>:
+ 10f7d70:	55                   	push   %rbp
+ 10f7d71:	48 89 e5             	mov    %rsp,%rbp
+ 10f7d74:	48 81 ec d0 01 00 00 	sub    $0x1d0,%rsp
+ 10f7d7b:	48 89 5d d8          	mov    %rbx,-0x28(%rbp)
+ 10f7d7f:	48 89 f3             	mov    %rsi,%rbx
+ 10f7d82:	4c 89 65 e0          	mov    %r12,-0x20(%rbp)
+ 10f7d86:	49 89 fc             	mov    %rdi,%r12
+ 10f7d89:	4c 89 7d f8          	mov    %r15,-0x8(%rbp)
+ 10f7d8d:	49 89 d7             	mov    %rdx,%r15
+ 10f7d90:	4c 89 75 f0          	mov    %r14,-0x10(%rbp)
+ 10f7d94:	48 89 b5 78 fe ff ff 	mov    %rsi,-0x188(%rbp)
+ 10f7d9b:	88 8d 70 fe ff ff    	mov    %cl,-0x190(%rbp)
+ 10f7da1:	64 48 8b 04 25 28 00 	mov    %fs:0x28,%rax
+ 10f7da8:	00 00 
+ 10f7daa:	48 89 45 c8          	mov    %rax,-0x38(%rbp)
+ 10f7dae:	31 c0                	xor    %eax,%eax
+ 10f7db0:	e8 9b b4 fd ff       	call   10d3250 <_ZN7s52plib15TextRenderCheckEP12_ObjRazRules>
+ 10f7db5:	84 c0                	test   %al,%al
+ 10f7db7:	0f 84 3b 0b 00 00    	je     10f88f8 <_ZN7s52plib11RenderT_AllEP12_ObjRazRulesP6_Rulesb+0xb88>
+ 10f7dbd:	4c 89 6d e8          	mov    %r13,-0x18(%rbp)
+ 10f7dc1:	41 89 c5             	mov    %eax,%r13d
+ 10f7dc4:	48 8b 43 08          	mov    0x8(%rbx),%rax
+ 10f7dc8:	48 89 de             	mov    %rbx,%rsi
+ 10f7dcb:	44                   	rex.R
+ 10f7dcc:	8b                   	.byte 0x8b
+ 10f7dcd:	b0 c0                	mov    $0xc0,%al
+	...
+
+
+build/xnav-install/bin/opencpn:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+00000000010f4e60 <_ZN7s52plib10RenderTextEP4wxDCP9S52_TextCiiP6wxRectP6S57Objb>:
+ 10f4e60:	55                   	push   %rbp
+ 10f4e61:	66 0f ef c0          	pxor   %xmm0,%xmm0
+ 10f4e65:	48 89 e5             	mov    %rsp,%rbp
+ 10f4e68:	41 57                	push   %r15
+ 10f4e6a:	49 89 ff             	mov    %rdi,%r15
+ 10f4e6d:	41 56                	push   %r14
+ 10f4e6f:	49 89 d6             	mov    %rdx,%r14
+ 10f4e72:	41 55                	push   %r13
+ 10f4e74:	41 54                	push   %r12
+ 10f4e76:	53                   	push   %rbx
+ 10f4e77:	48 81 ec c8 02 00 00 	sub    $0x2c8,%rsp
+ 10f4e7e:	48 89 b5 a0 fd ff ff 	mov    %rsi,-0x260(%rbp)
+ 10f4e85:	f2 0f 10 8a 00 01 00 	movsd  0x100(%rdx),%xmm1
+ 10f4e8c:	00 
+ 10f4e8d:	89 8d 68 fd ff ff    	mov    %ecx,-0x298(%rbp)
+ 10f4e93:	44 89 85 64 fd ff ff 	mov    %r8d,-0x29c(%rbp)
+ 10f4e9a:	4c 89 8d 58 fd ff ff 	mov    %r9,-0x2a8(%rbp)
+ 10f4ea1:	64 48 8b 04 25 28 00 	mov    %fs:0x28,%rax
+ 10f4ea8:	00 00 
+ 10f4eaa:	48 89 45 c8          	mov    %rax,-0x38(%rbp)
+ 10f4eae:	31 c0                	xor    %eax,%eax
+ 10f4eb0:	66 0f 2f c8          	comisd %xmm0,%xmm1
+ 10f4eb4:	c6 85 78 fd ff ff 01 	movb   $0x1,-0x288(%rbp)
+ 10f4ebb:	77 0e                	ja     10f4ecb <_ZN7s52plib10RenderTextEP4wxDCP9S52_TextCiiP6wxRectP6S57Objb+0x6b>
+ 10f4ebd:	80                   	.byte 0x80
+ 10f4ebe:	ba                   	.byte 0xba
+ 10f4ebf:	08                   	.byte 0x8
+
+
+build/xnav-install/bin/opencpn:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+000000000111d1a0 <_ZN7TexFont5BuildER6wxFontddb>:
+ 111d1a0:	55                   	push   %rbp
+ 111d1a1:	48 89 e5             	mov    %rsp,%rbp
+ 111d1a4:	48 81 ec 60 01 00 00 	sub    $0x160,%rsp
+ 111d1ab:	48 89 5d d8          	mov    %rbx,-0x28(%rbp)
+ 111d1af:	48 89 fb             	mov    %rdi,%rbx
+ 111d1b2:	4c 89 65 e0          	mov    %r12,-0x20(%rbp)
+ 111d1b6:	41 89 d4             	mov    %edx,%r12d
+ 111d1b9:	4c 89 7d f8          	mov    %r15,-0x8(%rbp)
+ 111d1bd:	49 89 f7             	mov    %rsi,%r15
+ 111d1c0:	f2 0f 11 8d a8 fe ff 	movsd  %xmm1,-0x158(%rbp)
+ 111d1c7:	ff 
+ 111d1c8:	64 48 8b 04 25 28 00 	mov    %fs:0x28,%rax
+ 111d1cf:	00 00 
+ 111d1d1:	48 89 45 c8          	mov    %rax,-0x38(%rbp)
+ 111d1d5:	31 c0                	xor    %eax,%eax
+ 111d1d7:	80 bf 28 0a 00 00 00 	cmpb   $0x0,0xa28(%rdi)
+ 111d1de:	0f 85 f4 14 00 00    	jne    111e6d8 <_ZN7TexFont5BuildER6wxFontddb+0x1538>
+ 111d1e4:	4c 89 6d e8          	mov    %r13,-0x18(%rbp)
+ 111d1e8:	4c 89 fe             	mov    %r15,%rsi
+ 111d1eb:	4c 89 75 f0          	mov    %r14,-0x10(%rbp)
+ 111d1ef:	4c 39 fb             	cmp    %r15,%rbx
+ 111d1f2:	74 18                	je     111d20c <_ZN7TexFont5BuildER6wxFontddb+0x6c>
+ 111d1f4:	48 89 df             	mov    %rbx,%rdi
+ 111d1f7:	f2 0f 11 85 c8 fe ff 	movsd  %xmm0,-0x138(%rbp)
+ 111d1fe:	ff 
+ 111d1ff:	e8                   	.byte 0xe8
+
+
+build/xnav-install/bin/opencpn:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+000000000111adf0 <_ZN7TexFont13GetTextExtentEPKcPiS2_>:
+ 111adf0:	53                   	push   %rbx
+ 111adf1:	0f be 06             	movsbl (%rsi),%eax
+ 111adf4:	49 89 d2             	mov    %rdx,%r10
+ 111adf7:	49 89 c9             	mov    %rcx,%r9
+ 111adfa:	84 c0                	test   %al,%al
+ 111adfc:	0f 84 a6 00 00 00    	je     111aea8 <_ZN7TexFont13GetTextExtentEPKcPiS2_+0xb8>
+ 111ae02:	49 89 f8             	mov    %rdi,%r8
+ 111ae05:	31 d2                	xor    %edx,%edx
+ 111ae07:	48 89 f7             	mov    %rsi,%rdi
+ 111ae0a:	31 db                	xor    %ebx,%ebx
+ 111ae0c:	45 8b 98 34 05 00 00 	mov    0x534(%r8),%r11d
+ 111ae13:	31 f6                	xor    %esi,%esi
+ 111ae15:	31 c9                	xor    %ecx,%ecx
+ 111ae17:	eb 40                	jmp    111ae59 <_ZN7TexFont13GetTextExtentEPKcPiS2_+0x69>
+ 111ae19:	0f 1f 80 00 00 00 00 	nopl   0x0(%rax)
+ 111ae20:	8d 48 e0             	lea    -0x20(%rax),%ecx
+ 111ae23:	80 f9 5f             	cmp    $0x5f,%cl
+ 111ae26:	77 23                	ja     111ae4b <_ZN7TexFont13GetTextExtentEPKcPiS2_+0x5b>
+ 111ae28:	89 c0                	mov    %eax,%eax
+ 111ae2a:	66 0f ef c0          	pxor   %xmm0,%xmm0
+ 111ae2e:	f3 0f 2a c3          	cvtsi2ss %ebx,%xmm0
+ 111ae32:	48 8d 04 80          	lea    (%rax,%rax,4),%rax
+ 111ae36:	f3 41 0f 58 44 80 24 	addss  0x24(%r8,%rax,4),%xmm0
+ 111ae3d:	41 8b 44 80 20       	mov    0x20(%r8,%rax,4),%eax
+ 111ae42:	39 c6                	cmp    %eax,%esi
+ 111ae44:	f3 0f 2c d8          	cvttss2si %xmm0,%ebx
+ 111ae48:	0f 4c f0             	cmovl  %eax,%esi
+ 111ae4b:	83 c2 01             	add    $0x1,%edx
+ 111ae4e:	48                   	rex.W
+ 111ae4f:	63                   	.byte 0x63
+
+
+build/xnav-install/bin/opencpn:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+000000000111b490 <_ZN7TexFont13GetTextExtentERK8wxStringPiS3_>:
+ 111b490:	48 83 ec 68          	sub    $0x68,%rsp
+ 111b494:	48 8b 05 e5 80 4e 00 	mov    0x4e80e5(%rip),%rax        # 1603580 <_ZTV12wxMBConvUTF8+0x95f58>
+ 111b49b:	48 89 5c 24 38       	mov    %rbx,0x38(%rsp)
+ 111b4a0:	48 89 f3             	mov    %rsi,%rbx
+ 111b4a3:	48 8d 74 24 10       	lea    0x10(%rsp),%rsi
+ 111b4a8:	4c 89 64 24 48       	mov    %r12,0x48(%rsp)
+ 111b4ad:	48 83 c0 10          	add    $0x10,%rax
+ 111b4b1:	49 89 fc             	mov    %rdi,%r12
+ 111b4b4:	48 89 df             	mov    %rbx,%rdi
+ 111b4b7:	4c 89 6c 24 50       	mov    %r13,0x50(%rsp)
+ 111b4bc:	49 89 d5             	mov    %rdx,%r13
+ 111b4bf:	4c 89 74 24 58       	mov    %r14,0x58(%rsp)
+ 111b4c4:	64 4c 8b 34 25 28 00 	mov    %fs:0x28,%r14
+ 111b4cb:	00 00 
+ 111b4cd:	4c 89 74 24 28       	mov    %r14,0x28(%rsp)
+ 111b4d2:	49 89 ce             	mov    %rcx,%r14
+ 111b4d5:	48 89 44 24 10       	mov    %rax,0x10(%rsp)
+ 111b4da:	c7 44 24 18 00 00 00 	movl   $0x0,0x18(%rsp)
+ 111b4e1:	00 
+ 111b4e2:	e8 79 e7 24 ff       	call   369c60 <_ZNK8wxString6AsCharERK8wxMBConv@plt>
+ 111b4e7:	48 85 c0             	test   %rax,%rax
+ 111b4ea:	0f 84 f8 00 00 00    	je     111b5e8 <_ZN7TexFont13GetTextExtentERK8wxStringPiS3_+0x158>
+
+
+build/xnav-install/bin/opencpn:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+000000000111ceb0 <_ZN7TexFont12RenderStringEPKciif>:
+ 111ceb0:	0f 28 c8             	movaps %xmm0,%xmm1
+ 111ceb3:	66 0f 6e d1          	movd   %ecx,%xmm2
+ 111ceb7:	66 0f 6e c2          	movd   %edx,%xmm0
+ 111cebb:	48 83 ec 18          	sub    $0x18,%rsp
+ 111cebf:	66 0f 62 c2          	punpckldq %xmm2,%xmm0
+ 111cec3:	48 89 6c 24 08       	mov    %rbp,0x8(%rsp)
+ 111cec8:	48 89 fd             	mov    %rdi,%rbp
+ 111cecb:	4c 89 64 24 10       	mov    %r12,0x10(%rsp)
+ 111ced0:	f3 0f 7e c0          	movq   %xmm0,%xmm0
+ 111ced4:	49 89 f4             	mov    %rsi,%r12
+ 111ced7:	8b b7 14 0a 00 00    	mov    0xa14(%rdi),%esi
+ 111cedd:	f3 0f 11 8f 34 0a 00 	movss  %xmm1,0xa34(%rdi)
+ 111cee4:	00 
+ 111cee5:	0f 5b c0             	cvtdq2ps %xmm0,%xmm0
+ 111cee8:	0f 13 87 2c 0a 00 00 	movlps %xmm0,0xa2c(%rdi)
+ 111ceef:	bf e1 0d 00 00       	mov    $0xde1,%edi
+ 111cef4:	e8 c7 29 25 ff       	call   36f8c0 <glBindTexture@plt>
+ 111cef9:	41 0f be 34 24       	movsbl (%r12),%esi
+ 111cefe:	40 84 f6             	test   %sil,%sil
+ 111cf01:	74 69                	je     111cf6c <_ZN7TexFont12RenderStringEPKciif+0xbc>
+ 111cf03:	48 89 1c 24          	mov    %rbx,(%rsp)
+ 111cf07:	31 c0                	xor    %eax,%eax
+ 111cf09:	31 db                	xor    %ebx,%ebx
+ 111cf0b:	eb 29                	jmp    111cf36 <_ZN7TexFont12RenderStringEPKciif+0x86>
+ 111cf0d:	0f 1f 00             	nopl   (%rax)
+
+
+build/xnav-install/bin/opencpn:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+000000000111cfa0 <_ZN7TexFont12RenderStringERK8wxStringiif>:
+ 111cfa0:	48 83 ec 78          	sub    $0x78,%rsp
+ 111cfa4:	48 89 5c 24 48       	mov    %rbx,0x48(%rsp)
+ 111cfa9:	48 89 f3             	mov    %rsi,%rbx
+ 111cfac:	48 89 6c 24 50       	mov    %rbp,0x50(%rsp)
+ 111cfb1:	48 89 fd             	mov    %rdi,%rbp
+ 111cfb4:	4c 89 6c 24 60       	mov    %r13,0x60(%rsp)
+ 111cfb9:	41 89 d5             	mov    %edx,%r13d
+ 111cfbc:	4c 89 74 24 68       	mov    %r14,0x68(%rsp)
+ 111cfc1:	41 89 ce             	mov    %ecx,%r14d
+ 111cfc4:	f3 0f 11 44 24 0c    	movss  %xmm0,0xc(%rsp)
+ 111cfca:	64 48 8b 04 25 28 00 	mov    %fs:0x28,%rax
+ 111cfd1:	00 00 
+ 111cfd3:	48 89 44 24 38       	mov    %rax,0x38(%rsp)
+ 111cfd8:	31 c0                	xor    %eax,%eax
+ 111cfda:	e8 d1 de ff ff       	call   111aeb0 <_ZN7TexFont18LoadTexFontShadersEv>
+ 111cfdf:	48 8b 05 9a 65 4e 00 	mov    0x4e659a(%rip),%rax        # 1603580 <_ZTV12wxMBConvUTF8+0x95f58>
+ 111cfe6:	48 89 df             	mov    %rbx,%rdi
+ 111cfe9:	48 8d 74 24 20       	lea    0x20(%rsp),%rsi
+ 111cfee:	c7 44 24 28 00 00 00 	movl   $0x0,0x28(%rsp)
+ 111cff5:	00 
+ 111cff6:	48 83 c0 10          	add    $0x10,%rax
+ 111cffa:	48 89 44 24 20       	mov    %rax,0x20(%rsp)
+ 111cfff:	e8                   	.byte 0xe8

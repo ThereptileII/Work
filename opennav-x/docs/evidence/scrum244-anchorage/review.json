@@ -1,0 +1,69 @@
+{
+  "issue": "SCRUM-244",
+  "baseCommit": "2f3a33c859fcb8e8f60a265c18d0b7ff9f345603",
+  "upstreamCommit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "effectiveSymbol": {
+    "name": "ACHARE51",
+    "RCID": 1105,
+    "before": {
+      "tile": [
+        373,
+        415,
+        25,
+        29
+      ],
+      "pivot": [
+        18,
+        1
+      ]
+    },
+    "after": {
+      "tile": [
+        20,
+        1160,
+        20,
+        20
+      ],
+      "pivot": [
+        10,
+        10
+      ]
+    }
+  },
+  "pixelChangesPerTheme": 126,
+  "allOtherPixelsIncludingAlphaPreserved": true,
+  "atlasDimensions": [
+    1500,
+    1200
+  ],
+  "atlasDimensionsChanged": false,
+  "resourceChecks": 8017,
+  "actualLoaderChecks": 2356,
+  "tests": {
+    "resources": "python tests/chart_presentation_resources_tests.py",
+    "loader": "DISPLAY=:0 python tools/verify-anchor-loader.py --source upstream/OpenCPN --generated .local/anchor-fit/generated --output .local/anchor-fit/loader --wx-config /home/standard/Projects/X-nav/.local/sysroot/usr/bin/wx-config --wx-prefix /home/standard/Projects/X-nav/.local/sysroot/usr"
+  },
+  "inputSha256": {
+    "tools/chart_anchor_art.py": "af9d7ad15bb78a7eaa8f8ff39256c74e56724b95d782cc2638d0a16ebbbc1904",
+    "tools/generate-xnav-chart-style.py": "5bc99e7d08c07c2ef11f9fc449312d69dddd58acbb6fb6ad2d7ba585e6114ab1",
+    "tools/verify-anchor-loader.py": "48b081300c3c8141ed5a3c7ebcf9a65841c71934b35c7d8fab936e76e395d033",
+    "tests/chart_anchor_loader_test.cpp": "a15e14ffd35557fc65bf6f8e77399affc3bc455b941df9408a2f05f04ab8d549",
+    "tests/chart_anchor_resources_tests.py": "6c412b8d499788da32e83fb8b6617a6cbaeb659e70617bfcd29f2737cc86747e",
+    "tests/chart_presentation_resources_tests.py": "a5b40332abd134214327b4f30cd90628010409b3d52dd44d6ec768ea33742161",
+    "src/integration/OpenCPN.cmake": "ae871d36d5cdd25c5834dfd9e94a6c124fa5f3ef5cbefa4ef543b81e66bd1e8b",
+    "resources/chart-style/v1/definition.json": "57719cf7dd907d467058fdfc7d29bd12551fc25a11fb7fc22a319fbafd85d6d0",
+    "resources/chart-style/v1/anchorage/ACHARE51-alpha.json": "850dae40d31781f086f69098a7d8e1a70e26293cf0420db15e8451841f1ed3a4",
+    "resources/chart-style/v1/anchorage/ACHARE51.svg": "8c585e0fcccd62b53b39974d3a12ff3a43997f14728fbc8df6bb4fc27367a23e",
+    "resources/chart-style/v1/anchorage/provenance.json": "88132cb6e481141438af8a25ab94b872a9e2f0844a7d6b0a53a77f50ed91a1f7"
+  },
+  "remainingGates": [
+    "Full chart software/GL rendering and rotated view capture",
+    "Native Windows exact-commit rendering/DPI",
+    "Boat display comparison",
+    "Parent SCRUM-15 final visual acceptance"
+  ],
+  "notRun": [
+    "Full CI",
+    "Boat or hardware tests"
+  ]
+}

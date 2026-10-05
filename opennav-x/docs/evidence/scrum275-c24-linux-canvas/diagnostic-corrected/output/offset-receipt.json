@@ -1,0 +1,16 @@
+{
+  "binarySha256": "13d6dcdf1c52f55237afd166f022d09252a7e362e66d962187fde08286fdb76d",
+  "symbol": "_ZN7s52plib30RenderPresentationCaLightPointEP12_ObjRazRules",
+  "start": "0x10e3100",
+  "instructionOffsets": {
+    "0x150": [
+      "48 8b 05 49 93 51 00",
+      "mov"
+    ],
+    "0x28f": [
+      "4d 85 ed",
+      "test"
+    ]
+  },
+  "note": "0x150 after Take, 0x28f dictionary lookup complete before guard. Offsets validated at instruction boundaries, exact bytes."
+}

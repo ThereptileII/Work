@@ -1,0 +1,118 @@
+[
+  {
+    "name": "core",
+    "sourceSha256": "d88734b2291ed2ea9f832d2b934b00c9178e5eae8a991d552e98752cc2f4cb9d",
+    "stockSourceSha256": "76ff438a3928a81d0d0b0c9b8469c8bbee299895a50c3a7801ac532b711cdecf",
+    "stockMethods": {
+      "int s52plib::RenderCARC_GLSL(": "56be2c2dd6c982061960d3def364154c7b425610e3c37cd1216e36ce1844e884",
+      "int s52plib::RenderCARC_VBO(": "598e696d6a3bdb9b11d4bdcdb0a084133c7f11893e331fbd619b5411384871f0"
+    },
+    "matrixPrefixSha256": "5fb94466a599bfa5568728225fd03d6d532c17b3f64ee9beab0d675a5358c948",
+    "helperSha256": "18f57fd41fa2503412ac96f0571793e8de38d6b7f7a7b5547d219fe7113b7dc8",
+    "methods": {
+      "int s52plib::RenderCARC_GLSL(": "c9384dafb5238ec7f8cda55d1200573b9e7f18e454ab3b5ec902bdd84a8fefbf",
+      "int s52plib::RenderCARC_VBO(": "f452a01bf2c382248a7fbea383d3a461a26059bf3d1dea8143e6a6fb676898bb"
+    },
+    "shaderMethods": {
+      "S52texture_2D_vertex_shader_source": "c6e06a1e2fa0c1df9342ccd90a26f33f73c24069d5cd749257e3fc6309b15761",
+      "S52texture_2D_fragment_shader_source": "8b6ed406621c6b793a1bc62fc75d93f6d7065c2b4461357cd3a45912f7462e34",
+      "S52ring_vertex_shader_source": "854afeb6b9147d89cc0c4268f32af8c675905fc59bb4a1a0ed71eeb4afad6c16",
+      "S52ring_fragment_shader_source": "528a5ef4f43ca78b6581999704c0839dca43f77768ef6317cfb551309615fb52"
+    },
+    "command": [
+      "c++",
+      "-std=c++17",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-Wno-unused-parameter",
+      "-Wno-deprecated-copy",
+      "-DOPENNAV_X",
+      "-DocpnUSE_GL",
+      "-I/home/standard/Projects/X-nav/.local/sysroot/usr/lib/wx/include/gtk3-unicode-3.2",
+      "-I/home/standard/Projects/X-nav/.local/sysroot/usr/include/wx-3.2",
+      "-DWXUSINGDLL",
+      "-D__WXGTK3__",
+      "-D__WXGTK__",
+      "-D_FILE_OFFSET_BITS=64",
+      "-I/home/standard/Projects/X-nav/.local/sysroot/usr/include",
+      "-I/home/standard/Projects/X-nav-worktrees/scrum276-ca-fan/src",
+      "-I/home/standard/Projects/X-nav-worktrees/scrum276-ca-fan/.local/fan-refusal-sealed/core",
+      "-I.local/core/libs/s52plib/src",
+      "-I.local/core/libs/geoprim/src",
+      "-I.local/core/libs/pugixml",
+      "-I.local/core/libs/glu",
+      "/home/standard/Projects/X-nav-worktrees/scrum276-ca-fan/tests/chart_ca_fan_test.cpp",
+      ".local/core/libs/geoprim/src/bbox.cpp",
+      "-L/home/standard/Projects/X-nav/.local/sysroot/usr/lib",
+      "-lwx_gtk3u_core-3.2",
+      "-lwx_baseu-3.2",
+      "-lwx_gtk3u_gl-3.2",
+      "-lGL",
+      "-lGLEW",
+      "-o",
+      "/home/standard/Projects/X-nav-worktrees/scrum276-ca-fan/.local/fan-refusal-sealed/core/fan-test"
+    ],
+    "exit": 0,
+    "stdout": "renderer=llvmpipe (LLVM 22.1.8, 256 bits) version=4.6 (Compatibility Profile) Mesa 26.2.2-arch1.1\nDAY_BRIGHT 1 sample=84,105,121 expectedInk=247,244,216\ntileStraight=247,244,216 alpha=43\nDAY_BRIGHT 3 sample=73,83,103 expectedInk=182,110,108\ntileStraight=182,110,108 alpha=43\nDAY_BRIGHT 4 sample=55,88,105 expectedInk=80,141,120\ntileStraight=80,141,120 alpha=43\nDUSK 1 sample=79,100,114 expectedInk=221,214,174\ntileStraight=221,214,174 alpha=43\nDUSK 3 sample=78,89,109 expectedInk=211,148,140\ntileStraight=211,148,140 alpha=43\nDUSK 4 sample=66,95,112 expectedInk=143,186,162\ntileStraight=143,186,162 alpha=43\nNIGHT 1 sample=66,87,103 expectedInk=143,136,106\ntileStraight=143,136,106 alpha=43\nNIGHT 3 sample=65,80,100 expectedInk=136,94,87\ntileStraight=136,94,87 alpha=43\nNIGHT 4 sample=58,85,102 expectedInk=94,122,103\ntileStraight=94,122,103 alpha=43\nstandardCachedPaintMs=0.0164488 originalCachedPaintMs=0.0183371\ntypicalUploadAndFinishMs=0.502348\nmaximumTile=1023x1023 maximumBuildMs=41.2305\nmaximumUploadAndFinishMs=14.3519 rgbaBytes=4186116\nmaximumCasePeakRssIncreaseKiB=16508 (process high-water observation, not allocator upper bound)\ntypicalTileBuildMs=0.440918 checks=576\n",
+    "executableSha256": "4cf7e8ffc301368fce5e6a5a6523700987c7d7429bf09b56326cd7eada15cd06"
+  },
+  {
+    "name": "private",
+    "sourceSha256": "4cf8ce47816bfb021b832879f9ea9463d0b1450764b49b24649abee66de9d499",
+    "stockSourceSha256": "fe9be32112dfa0b8f00a83d72b3f3c67bf1134e403c357593ac9153bc3021d2f",
+    "stockMethods": {
+      "int s52plib::RenderCARC_GLSL(": "785a67aae577e12253e42133f8598facee43130638aaf4106cc596ac039686e7",
+      "int s52plib::RenderCARC_VBO(": "598e696d6a3bdb9b11d4bdcdb0a084133c7f11893e331fbd619b5411384871f0"
+    },
+    "matrixPrefixSha256": "5fb94466a599bfa5568728225fd03d6d532c17b3f64ee9beab0d675a5358c948",
+    "helperSha256": "18f57fd41fa2503412ac96f0571793e8de38d6b7f7a7b5547d219fe7113b7dc8",
+    "methods": {
+      "int s52plib::RenderCARC_GLSL(": "7ee8113d086a59a884686cebdb380d94ed6b37d0284601812327f139bcd171f2",
+      "int s52plib::RenderCARC_VBO(": "abac731bb2dceca2bde8014f8a6887dc7f589f9dd5ce0711c4df196cc0324a2b"
+    },
+    "shaderMethods": {
+      "S52texture_2D_vertex_shader_source": "c6e06a1e2fa0c1df9342ccd90a26f33f73c24069d5cd749257e3fc6309b15761",
+      "S52texture_2D_fragment_shader_source": "8b6ed406621c6b793a1bc62fc75d93f6d7065c2b4461357cd3a45912f7462e34",
+      "S52ring_vertex_shader_source": "854afeb6b9147d89cc0c4268f32af8c675905fc59bb4a1a0ed71eeb4afad6c16",
+      "S52ring_fragment_shader_source": "22c5bff01496dc9965860a9c09a5eb14040c852bf358937345e59c6d1a5ebd33"
+    },
+    "command": [
+      "c++",
+      "-std=c++17",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-Wno-unused-parameter",
+      "-Wno-deprecated-copy",
+      "-DSKAGER_OCHARTS_ADAPTER",
+      "-DocpnUSE_GL",
+      "-I/home/standard/Projects/X-nav/.local/sysroot/usr/lib/wx/include/gtk3-unicode-3.2",
+      "-I/home/standard/Projects/X-nav/.local/sysroot/usr/include/wx-3.2",
+      "-DWXUSINGDLL",
+      "-D__WXGTK3__",
+      "-D__WXGTK__",
+      "-D_FILE_OFFSET_BITS=64",
+      "-I/home/standard/Projects/X-nav/.local/sysroot/usr/include",
+      "-I/home/standard/Projects/X-nav-worktrees/scrum276-ca-fan/src",
+      "-I/home/standard/Projects/X-nav-worktrees/scrum276-ca-fan/.local/fan-refusal-sealed/private",
+      "-I.local/private/libs/s52plib/src",
+      "-I.local/private/libs/geoprim/src",
+      "-I.local/private/libs/pugixml",
+      "-I.local/private/libs/glu",
+      "/home/standard/Projects/X-nav-worktrees/scrum276-ca-fan/tests/chart_ca_fan_test.cpp",
+      ".local/core/libs/geoprim/src/bbox.cpp",
+      "-L/home/standard/Projects/X-nav/.local/sysroot/usr/lib",
+      "-lwx_gtk3u_core-3.2",
+      "-lwx_baseu-3.2",
+      "-lwx_gtk3u_gl-3.2",
+      "-lGL",
+      "-lGLEW",
+      "-o",
+      "/home/standard/Projects/X-nav-worktrees/scrum276-ca-fan/.local/fan-refusal-sealed/private/fan-test"
+    ],
+    "exit": 0,
+    "stdout": "renderer=llvmpipe (LLVM 22.1.8, 256 bits) version=4.6 (Compatibility Profile) Mesa 26.2.2-arch1.1\nDAY_BRIGHT 1 sample=84,105,121 expectedInk=247,244,216\ntileStraight=247,244,216 alpha=43\nDAY_BRIGHT 3 sample=73,83,103 expectedInk=182,110,108\ntileStraight=182,110,108 alpha=43\nDAY_BRIGHT 4 sample=55,88,105 expectedInk=80,141,120\ntileStraight=80,141,120 alpha=43\nDUSK 1 sample=79,100,114 expectedInk=221,214,174\ntileStraight=221,214,174 alpha=43\nDUSK 3 sample=78,89,109 expectedInk=211,148,140\ntileStraight=211,148,140 alpha=43\nDUSK 4 sample=66,95,112 expectedInk=143,186,162\ntileStraight=143,186,162 alpha=43\nNIGHT 1 sample=66,87,103 expectedInk=143,136,106\ntileStraight=143,136,106 alpha=43\nNIGHT 3 sample=65,80,100 expectedInk=136,94,87\ntileStraight=136,94,87 alpha=43\nNIGHT 4 sample=58,85,102 expectedInk=94,122,103\ntileStraight=94,122,103 alpha=43\nstandardCachedPaintMs=0.0214574 originalCachedPaintMs=0.0215985\ntypicalUploadAndFinishMs=0.70767\nmaximumTile=1023x1023 maximumBuildMs=76.6778\nmaximumUploadAndFinishMs=24.1567 rgbaBytes=4186116\nmaximumCasePeakRssIncreaseKiB=16384 (process high-water observation, not allocator upper bound)\ntypicalTileBuildMs=0.603749 checks=576\n",
+    "executableSha256": "4e1a241a3df63673c254ae8d61341a90bce3d19be9671d70b0eaa2c81ebfb4a2"
+  }
+]

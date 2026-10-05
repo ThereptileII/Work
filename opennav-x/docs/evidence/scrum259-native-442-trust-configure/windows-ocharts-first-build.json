@@ -1,0 +1,29 @@
+{
+  "identity": {
+    "run": "37126951293",
+    "attempt": "1",
+    "job": "windows-integration",
+    "commit": "442960ba55277845e171f9b95a38838f66c23981",
+    "script": "6cb148d2f0d18babf96877239c403b4a8b8d2b4dfb4eccfe2cf98cda6c56d09c",
+    "python": "C:\\hostedtoolcache\\windows\\Python\\3.12.10\\x64\\python.exe",
+    "pythonSha256": "4d6f5f81a4bca11191c4c7c6b43632694d0a4ce74e068619d8fdc161d469859a"
+  },
+  "package": {
+    "manifest.json": {
+      "bytes": 11912,
+      "sha256": "fdff288bfbff091e56b47378bbc7b1a87a13f04f16255817268e7e853f2ebecc"
+    },
+    "skager-ocharts-adapter.dll": {
+      "bytes": 1328640,
+      "sha256": "25bbb921e1db697ab79ecc365f83bdc9edd4650c340d2e3cfacea9a5a7942d8f"
+    },
+    "corresponding-source.zip": {
+      "bytes": 5631072,
+      "sha256": "50aadaa84417fa7e7809cf055389d50027dd800cbde41fc1ea8cff69d59ad214"
+    }
+  },
+  "preparation": {
+    "bytes": 337963,
+    "sha256": "e4f339fbd82e7a99ce4259ef1838536ef999817e25f52cbcaf3717b7cdf1e9d1"
+  }
+}

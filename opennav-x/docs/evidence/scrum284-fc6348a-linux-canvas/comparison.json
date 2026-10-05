@@ -1,0 +1,318 @@
+{
+  "sourceBefore": "45d73e831409d602e8205f32fcba08947ea370bc",
+  "sourceAfter": "fc6348a6df8374878802b3e051a3670d83ed9a56",
+  "comparisons": [
+    {
+      "renderer": "software",
+      "mode": "SKAGER",
+      "image": "s64-light-fog-SKAGER-Day",
+      "changedPixels": 1920,
+      "chartRelativeBbox": [
+        441,
+        217,
+        573,
+        349
+      ],
+      "beforeSha256": "e0169d797a79dee0d62a78121653027231e3dce82f56e9480726a416ec0ae57c",
+      "afterSha256": "a1abb46031dde06f52cec7d0abb4f3e8b055f6c348e198ffdca2e84886f1ba96",
+      "wholeChartComparison": true,
+      "mask": null,
+      "center": [
+        507,
+        283
+      ],
+      "minimumChangedRadius": 60.802960454241045,
+      "maximumChangedRadius": 67.11929677819934,
+      "comparisonCrop": [
+        511,
+        275,
+        664,
+        428
+      ]
+    },
+    {
+      "renderer": "software",
+      "mode": "SKAGER",
+      "image": "s64-light-fog-SKAGER-Dusk",
+      "changedPixels": 1920,
+      "chartRelativeBbox": [
+        441,
+        217,
+        573,
+        349
+      ],
+      "beforeSha256": "5be04d599c9410d832b7c0988b6699489ee080fa851bbf64972136d48f45f4e9",
+      "afterSha256": "f3539752d2f65da88ef906bfc92e23546695b1be543c85cd636fa73b83198a2e",
+      "wholeChartComparison": true,
+      "mask": null,
+      "center": [
+        507,
+        283
+      ],
+      "minimumChangedRadius": 60.802960454241045,
+      "maximumChangedRadius": 67.11929677819934,
+      "comparisonCrop": [
+        511,
+        275,
+        664,
+        428
+      ]
+    },
+    {
+      "renderer": "software",
+      "mode": "SKAGER",
+      "image": "s64-light-fog-SKAGER-Night",
+      "changedPixels": 1920,
+      "chartRelativeBbox": [
+        441,
+        217,
+        573,
+        349
+      ],
+      "beforeSha256": "e276af05641c3d08bc420f4070d684f79c6a95c6abbb8945bb05e1770de447a6",
+      "afterSha256": "b593d03b6a900672969f080762d32c773a3941807f3529ba48ed7d610621473d",
+      "wholeChartComparison": true,
+      "mask": null,
+      "center": [
+        507,
+        283
+      ],
+      "minimumChangedRadius": 60.802960454241045,
+      "maximumChangedRadius": 67.11929677819934,
+      "comparisonCrop": [
+        511,
+        275,
+        664,
+        428
+      ]
+    },
+    {
+      "renderer": "software",
+      "mode": "SKAGER",
+      "image": "s64-light-fog-SKAGER-Day-return",
+      "changedPixels": 1920,
+      "chartRelativeBbox": [
+        441,
+        217,
+        573,
+        349
+      ],
+      "beforeSha256": "5d5389547c781d56b6f9465fa4e860384a050f9d897159b08ec98590e7883616",
+      "afterSha256": "faa6e8bb650d51a1c4577dfb6470b880dabeaef9863d3e0b80b072888bd6ef50",
+      "wholeChartComparison": true,
+      "mask": null,
+      "center": [
+        507,
+        283
+      ],
+      "minimumChangedRadius": 60.802960454241045,
+      "maximumChangedRadius": 67.11929677819934,
+      "comparisonCrop": [
+        511,
+        275,
+        664,
+        428
+      ]
+    },
+    {
+      "renderer": "software",
+      "mode": "Standard",
+      "image": "s64-light-fog-Standard-Day",
+      "changedPixels": 0,
+      "chartRelativeBbox": null,
+      "beforeSha256": "7ad366be9be5d490058e53df9cba021f8a16401c5ecb4117303060aeb622e691",
+      "afterSha256": "fef65a777509724c5faa6e67a15c11dd7d5fd6b3a14cfbdc35fa89cde7269503",
+      "wholeChartComparison": true,
+      "mask": null
+    },
+    {
+      "renderer": "software",
+      "mode": "Standard",
+      "image": "s64-light-fog-Standard-Dusk",
+      "changedPixels": 0,
+      "chartRelativeBbox": null,
+      "beforeSha256": "3191bb3a83c974199ff43c1008b3fa69a7cae35812bbd1eb4ed65c67238d049a",
+      "afterSha256": "8d3fe53f081a4a82db33d919c6cb3fa50441d331714cd4192d1040c0d2aed28a",
+      "wholeChartComparison": true,
+      "mask": null
+    },
+    {
+      "renderer": "software",
+      "mode": "Standard",
+      "image": "s64-light-fog-Standard-Night",
+      "changedPixels": 0,
+      "chartRelativeBbox": null,
+      "beforeSha256": "3fe90e5a76866be5d1da0d52fc9d8b1f9caea0a36f218dd4e717929d78da2cab",
+      "afterSha256": "5df9a3fdf3a69aa53643e57a6ec5725f170da83e8361a614bf42e4ed15ca0727",
+      "wholeChartComparison": true,
+      "mask": null
+    },
+    {
+      "renderer": "software",
+      "mode": "Standard",
+      "image": "s64-light-fog-Standard-Day-return",
+      "changedPixels": 0,
+      "chartRelativeBbox": null,
+      "beforeSha256": "d090b96def121803dd53f5df4cf66e97b64cc091e6bfad3d05b626ceccbe955b",
+      "afterSha256": "a11bf926a33cc58d9c7f0a27aa825361843324c1605dd7e5c7cc0ac5a501550d",
+      "wholeChartComparison": true,
+      "mask": null
+    },
+    {
+      "renderer": "opengl",
+      "mode": "SKAGER",
+      "image": "s64-light-fog-SKAGER-Day",
+      "changedPixels": 3400,
+      "chartRelativeBbox": [
+        439,
+        215,
+        575,
+        351
+      ],
+      "beforeSha256": "3e3b6061643d9c6187ab0c9006625824bd7ec3692cd535d9e9dcd0b66158a085",
+      "afterSha256": "246333e1c30b047a173423137ce90e542591a653427057349fbb672b116c5deb",
+      "wholeChartComparison": true,
+      "mask": null,
+      "center": [
+        507,
+        283
+      ],
+      "minimumChangedRadius": 59.033888572581766,
+      "maximumChangedRadius": 68.8839603971781,
+      "comparisonCrop": [
+        511,
+        275,
+        664,
+        428
+      ]
+    },
+    {
+      "renderer": "opengl",
+      "mode": "SKAGER",
+      "image": "s64-light-fog-SKAGER-Dusk",
+      "changedPixels": 3392,
+      "chartRelativeBbox": [
+        439,
+        215,
+        575,
+        351
+      ],
+      "beforeSha256": "2dc0d5ffdd257d9a3103b70faf2c47d870d6adbf015cf6063385b4f62679cef3",
+      "afterSha256": "a6d0ff46514525a63c5c13726593f631567f609a449a0df35ba957ce57a4c3d7",
+      "wholeChartComparison": true,
+      "mask": null,
+      "center": [
+        507,
+        283
+      ],
+      "minimumChangedRadius": 59.033888572581766,
+      "maximumChangedRadius": 68.8839603971781,
+      "comparisonCrop": [
+        511,
+        275,
+        664,
+        428
+      ]
+    },
+    {
+      "renderer": "opengl",
+      "mode": "SKAGER",
+      "image": "s64-light-fog-SKAGER-Night",
+      "changedPixels": 3392,
+      "chartRelativeBbox": [
+        439,
+        215,
+        575,
+        351
+      ],
+      "beforeSha256": "186421a88ff23bc66f3f28a44c1abf9a0b241970774f7ab9ea85bc834391e9f7",
+      "afterSha256": "1a7880cd5e6b73310ffc913ef3ee61b2b35f16917fe02e5f24e8c73093615d6e",
+      "wholeChartComparison": true,
+      "mask": null,
+      "center": [
+        507,
+        283
+      ],
+      "minimumChangedRadius": 59.033888572581766,
+      "maximumChangedRadius": 68.8839603971781,
+      "comparisonCrop": [
+        511,
+        275,
+        664,
+        428
+      ]
+    },
+    {
+      "renderer": "opengl",
+      "mode": "SKAGER",
+      "image": "s64-light-fog-SKAGER-Day-return",
+      "changedPixels": 3400,
+      "chartRelativeBbox": [
+        439,
+        215,
+        575,
+        351
+      ],
+      "beforeSha256": "5a04f83f3fe9828c1b0b5aba826f4ef14af6bfb7663f3ff25dbab8c2b28cff23",
+      "afterSha256": "e2048fead19bd3dbedeff88ff0f03af9959e28017a58ebcb339861ee643f0114",
+      "wholeChartComparison": true,
+      "mask": null,
+      "center": [
+        507,
+        283
+      ],
+      "minimumChangedRadius": 59.033888572581766,
+      "maximumChangedRadius": 68.8839603971781,
+      "comparisonCrop": [
+        511,
+        275,
+        664,
+        428
+      ]
+    },
+    {
+      "renderer": "opengl",
+      "mode": "Standard",
+      "image": "s64-light-fog-Standard-Day",
+      "changedPixels": 0,
+      "chartRelativeBbox": null,
+      "beforeSha256": "a253ab3d35d8e210b8bfddc0b2c767784eb71b2980941ae023d456f60acf055b",
+      "afterSha256": "e8c58316d0344352d0857287c4cb4a740a6c9e6e639606cb3299f5f9e0480acb",
+      "wholeChartComparison": true,
+      "mask": null
+    },
+    {
+      "renderer": "opengl",
+      "mode": "Standard",
+      "image": "s64-light-fog-Standard-Dusk",
+      "changedPixels": 0,
+      "chartRelativeBbox": null,
+      "beforeSha256": "9560c39f15070014b8f898b5a88fc64972c3b1c1f28512042485042275f61887",
+      "afterSha256": "30d06876f070d27965e05199ad82bec8f27bfade044652428d1054338e28c3a8",
+      "wholeChartComparison": true,
+      "mask": null
+    },
+    {
+      "renderer": "opengl",
+      "mode": "Standard",
+      "image": "s64-light-fog-Standard-Night",
+      "changedPixels": 0,
+      "chartRelativeBbox": null,
+      "beforeSha256": "c678a30c04f44b7d209afd4c93bd72ce78bb59b6cbd7099c2d8c8baac3b575e7",
+      "afterSha256": "a7563f5c79f79e2df5b4b145926f4cd0101634931f90143dfa5df4eb1fb0c0b8",
+      "wholeChartComparison": true,
+      "mask": null
+    },
+    {
+      "renderer": "opengl",
+      "mode": "Standard",
+      "image": "s64-light-fog-Standard-Day-return",
+      "changedPixels": 0,
+      "chartRelativeBbox": null,
+      "beforeSha256": "6c7262c8ed46922a1c599601cdaf44aea9f28d655d5ddadd1b9652b868eb30e3",
+      "afterSha256": "f7da2e6014dc3421770fe45688b560e61298f90764677dc124a1f96f66a6cf3b",
+      "wholeChartComparison": true,
+      "mask": null
+    }
+  ]
+}

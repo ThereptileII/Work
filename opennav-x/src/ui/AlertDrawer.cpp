@@ -87,7 +87,7 @@ void XNavAlertDrawer::Rebuild() {
     });
   if (alerts_.empty())
     visual(86, "No current alerts", [](XNavPainter &p, wxDC &, int w) {
-      p.Wrapped("No current XNav alerts. Continue to monitor the chart, "
+      p.Wrapped("No current SKAGER alerts. Continue to monitor the chart, "
                 "instruments and surroundings.",
                 0, 20, 12, 20, w, p.c.secondary, 3);
     });

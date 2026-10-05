@@ -1,5 +1,6 @@
 #include "ui/ContextCard.h"
 #include "ui/Sheet.h"
+#include "ui/NameEditor.h"
 #include "vessel/AisSelection.h"
 #include <algorithm>
 #include <cmath>
@@ -35,9 +36,9 @@ std::optional<application::CommandResult> WaypointSheet(
         "Start a passage to this waypoint? Check the chart and passage before starting.", "START", scale_percent))
       return navigation.go_to_waypoint(point);
   } else if (action == ContextAction::Edit && navigation.edit_waypoint) {
-    auto fields = EditSheet(parent, mode, "Edit waypoint",
+    auto fields = EditNavigationNameSheet(parent, mode, "Edit waypoint",
         "Active-route, anchor-watch and protected points are read-only here.",
-        {{"Name", W(point.name), 128}, {"Description", W(point.description), 2048}}, "Save", scale_percent);
+        point.name, point.description, "Save", scale_percent);
     if (fields) return navigation.edit_waypoint(point, (*fields)[0], (*fields)[1]);
   } else if (action == ContextAction::Remove && navigation.delete_waypoint) {
     if (ConfirmSheet(parent, mode, "Delete waypoint",
@@ -48,7 +49,7 @@ std::optional<application::CommandResult> WaypointSheet(
   return {};
 }
 XNavContextCard::XNavContextCard(wxWindow &owner, ContextKind kind, Action action)
-    : wxDialog(&owner, wxID_ANY, kind == ContextKind::Ais ? "OpenNav AIS context" : kind == ContextKind::Waypoint ? "OpenNav waypoint context" : "OpenNav chart context",
+    : wxDialog(&owner, wxID_ANY, kind == ContextKind::Ais ? "SKAGER AIS context" : kind == ContextKind::Waypoint ? "SKAGER waypoint context" : "SKAGER chart context",
                wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxTAB_TRAVERSAL),
       kind_(kind), action_(std::move(action)) {
   SetName(kind == ContextKind::Ais ? "OpenNav AIS context" : kind == ContextKind::Waypoint ? "OpenNav waypoint context" : "OpenNav chart context");

@@ -1,0 +1,269 @@
+
+/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/ca-light-e6ef384/diagnostic-corrected/inputs/install/bin/opencpn:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+00000000010e3100 <_ZN7s52plib30RenderPresentationCaLightPointEP12_ObjRazRules>:
+ 10e3100:	48 81 ec 98 00 00 00 	sub    $0x98,%rsp
+ 10e3107:	64 48 8b 04 25 28 00 	mov    %fs:0x28,%rax
+ 10e310e:	00 00 
+ 10e3110:	48 89 44 24 58       	mov    %rax,0x58(%rsp)
+ 10e3115:	31 c0                	xor    %eax,%eax
+ 10e3117:	80 bf 0a 03 00 00 00 	cmpb   $0x0,0x30a(%rdi)
+ 10e311e:	0f 84 cb 02 00 00    	je     10e33ef <_ZN7s52plib30RenderPresentationCaLightPointEP12_ObjRazRules+0x2ef>
+ 10e3124:	48 89 5c 24 68       	mov    %rbx,0x68(%rsp)
+ 10e3129:	48 89 fb             	mov    %rdi,%rbx
+ 10e312c:	48 89 6c 24 70       	mov    %rbp,0x70(%rsp)
+ 10e3131:	48 89 f5             	mov    %rsi,%rbp
+ 10e3134:	4c 89 64 24 78       	mov    %r12,0x78(%rsp)
+ 10e3139:	4c 8b a7 10 03 00 00 	mov    0x310(%rdi),%r12
+ 10e3140:	48 85 f6             	test   %rsi,%rsi
+ 10e3143:	0f 84 97 02 00 00    	je     10e33e0 <_ZN7s52plib30RenderPresentationCaLightPointEP12_ObjRazRules+0x2e0>
+ 10e3149:	4d 85 e4             	test   %r12,%r12
+ 10e314c:	0f 84 8e 02 00 00    	je     10e33e0 <_ZN7s52plib30RenderPresentationCaLightPointEP12_ObjRazRules+0x2e0>
+ 10e3152:	48 8b 76 08          	mov    0x8(%rsi),%rsi
+ 10e3156:	49 83 7c 24 18 00    	cmpq   $0x0,0x18(%r12)
+ 10e315c:	0f 84 ae 02 00 00    	je     10e3410 <_ZN7s52plib30RenderPresentationCaLightPointEP12_ObjRazRules+0x310>
+ 10e3162:	4d 8b 4c 24 08       	mov    0x8(%r12),%r9
+ 10e3167:	48 89 f0             	mov    %rsi,%rax
+ 10e316a:	31 d2                	xor    %edx,%edx
+ 10e316c:	49 f7 f1             	div    %r9
+ 10e316f:	49 8b 04 24          	mov    (%r12),%rax
+ 10e3173:	48 8b 0c d0          	mov    (%rax,%rdx,8),%rcx
+ 10e3177:	49 89 d2             	mov    %rdx,%r10
+ 10e317a:	48 85 c9             	test   %rcx,%rcx
+ 10e317d:	0f 84 5d 02 00 00    	je     10e33e0 <_ZN7s52plib30RenderPresentationCaLightPointEP12_ObjRazRules+0x2e0>
+ 10e3183:	48 8b 01             	mov    (%rcx),%rax
+ 10e3186:	48 8b 78 08          	mov    0x8(%rax),%rdi
+ 10e318a:	48 39 fe             	cmp    %rdi,%rsi
+ 10e318d:	74 31                	je     10e31c0 <_ZN7s52plib30RenderPresentationCaLightPointEP12_ObjRazRules+0xc0>
+ 10e318f:	4c 8b 00             	mov    (%rax),%r8
+ 10e3192:	4d 85 c0             	test   %r8,%r8
+ 10e3195:	0f 84 45 02 00 00    	je     10e33e0 <_ZN7s52plib30RenderPresentationCaLightPointEP12_ObjRazRules+0x2e0>
+ 10e319b:	49 8b 78 08          	mov    0x8(%r8),%rdi
+ 10e319f:	48 89 c1             	mov    %rax,%rcx
+ 10e31a2:	31 d2                	xor    %edx,%edx
+ 10e31a4:	48 89 f8             	mov    %rdi,%rax
+ 10e31a7:	49 f7 f1             	div    %r9
+ 10e31aa:	4c 39 d2             	cmp    %r10,%rdx
+ 10e31ad:	0f 85 2d 02 00 00    	jne    10e33e0 <_ZN7s52plib30RenderPresentationCaLightPointEP12_ObjRazRules+0x2e0>
+ 10e31b3:	4c 89 c0             	mov    %r8,%rax
+ 10e31b6:	48 39 fe             	cmp    %rdi,%rsi
+ 10e31b9:	75 d4                	jne    10e318f <_ZN7s52plib30RenderPresentationCaLightPointEP12_ObjRazRules+0x8f>
+ 10e31bb:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
+ 10e31c0:	4c 89 b4 24 88 00 00 	mov    %r14,0x88(%rsp)
+ 10e31c7:	00 
+ 10e31c8:	48 8b 39             	mov    (%rcx),%rdi
+ 10e31cb:	48 85 ff             	test   %rdi,%rdi
+ 10e31ce:	0f 84 c4 02 00 00    	je     10e3498 <_ZN7s52plib30RenderPresentationCaLightPointEP12_ObjRazRules+0x398>
+ 10e31d4:	49 8b 74 24 08       	mov    0x8(%r12),%rsi
+ 10e31d9:	48 8b 47 08          	mov    0x8(%rdi),%rax
+ 10e31dd:	31 d2                	xor    %edx,%edx
+ 10e31df:	4d 8b 14 24          	mov    (%r12),%r10
+ 10e31e3:	4c 8b 77 10          	mov    0x10(%rdi),%r14
+ 10e31e7:	48 f7 f6             	div    %rsi
+ 10e31ea:	4d 8d 1c d2          	lea    (%r10,%rdx,8),%r11
+ 10e31ee:	49 89 d1             	mov    %rdx,%r9
+ 10e31f1:	49 8b 13             	mov    (%r11),%rdx
+ 10e31f4:	48 89 d0             	mov    %rdx,%rax
+ 10e31f7:	66 0f 1f 84 00 00 00 	nopw   0x0(%rax,%rax,1)
+ 10e31fe:	00 00 
+ 10e3200:	48 89 c1             	mov    %rax,%rcx
+ 10e3203:	48 8b 00             	mov    (%rax),%rax
+ 10e3206:	48 39 c7             	cmp    %rax,%rdi
+ 10e3209:	75 f5                	jne    10e3200 <_ZN7s52plib30RenderPresentationCaLightPointEP12_ObjRazRules+0x100>
+ 10e320b:	4c 8b 07             	mov    (%rdi),%r8
+ 10e320e:	48 39 ca             	cmp    %rcx,%rdx
+ 10e3211:	0f 84 49 02 00 00    	je     10e3460 <_ZN7s52plib30RenderPresentationCaLightPointEP12_ObjRazRules+0x360>
+ 10e3217:	4d 85 c0             	test   %r8,%r8
+ 10e321a:	74 15                	je     10e3231 <_ZN7s52plib30RenderPresentationCaLightPointEP12_ObjRazRules+0x131>
+ 10e321c:	49 8b 40 08          	mov    0x8(%r8),%rax
+ 10e3220:	31 d2                	xor    %edx,%edx
+ 10e3222:	48 f7 f6             	div    %rsi
+ 10e3225:	49 39 d1             	cmp    %rdx,%r9
+ 10e3228:	74 07                	je     10e3231 <_ZN7s52plib30RenderPresentationCaLightPointEP12_ObjRazRules+0x131>
+ 10e322a:	49 89 0c d2          	mov    %rcx,(%r10,%rdx,8)
+ 10e322e:	4c 8b 07             	mov    (%rdi),%r8
+ 10e3231:	4c 89 01             	mov    %r8,(%rcx)
+ 10e3234:	be 18 00 00 00       	mov    $0x18,%esi
+ 10e3239:	e8 d2 42 28 ff       	call   367510 <_ZdlPvm@plt>
+ 10e323e:	49 83 6c 24 18 01    	subq   $0x1,0x18(%r12)
+ 10e3244:	4c 89 f6             	mov    %r14,%rsi
+ 10e3247:	4d 85 f6             	test   %r14,%r14
+ 10e324a:	0f 84 48 02 00 00    	je     10e3498 <_ZN7s52plib30RenderPresentationCaLightPointEP12_ObjRazRules+0x398>
+ 10e3250:	48 8b 05 49 93 51 00 	mov    0x519349(%rip),%rax        # 15fc5a0 <_ZN8wxString4nposE+0x97420>
+ 10e3257:	48 89 e1             	mov    %rsp,%rcx
+ 10e325a:	48 8d 7c 24 10       	lea    0x10(%rsp),%rdi
+ 10e325f:	4c 89 ac 24 80 00 00 	mov    %r13,0x80(%rsp)
+ 10e3266:	00 
+ 10e3267:	4c 89 bc 24 90 00 00 	mov    %r15,0x90(%rsp)
+ 10e326e:	00 
+ 10e326f:	4c 8b bb f8 00 00 00 	mov    0xf8(%rbx),%r15
+ 10e3276:	48 8b 10             	mov    (%rax),%rdx
+ 10e3279:	48 8b 05 68 93 51 00 	mov    0x519368(%rip),%rax        # 15fc5e8 <_ZTV12wxMBConvUTF8+0x95f40>
+ 10e3280:	c7 44 24 08 00 00 00 	movl   $0x0,0x8(%rsp)
+ 10e3287:	00 
+ 10e3288:	c7 44 24 30 00 00 00 	movl   $0x0,0x30(%rsp)
+ 10e328f:	00 
+ 10e3290:	48 c7 44 24 28 00 00 	movq   $0x0,0x28(%rsp)
+ 10e3297:	00 00 
+ 10e3299:	48 83 c0 10          	add    $0x10,%rax
+ 10e329d:	48 89 04 24          	mov    %rax,(%rsp)
+ 10e32a1:	48 8d 44 24 30       	lea    0x30(%rsp),%rax
+ 10e32a6:	48 89 44 24 20       	mov    %rax,0x20(%rsp)
+ 10e32ab:	48 c7 44 24 40 00 00 	movq   $0x0,0x40(%rsp)
+ 10e32b2:	00 00 
+ 10e32b4:	48 c7 44 24 48 00 00 	movq   $0x0,0x48(%rsp)
+ 10e32bb:	00 00 
+ 10e32bd:	e8 ce 46 28 ff       	call   367990 <_ZN8wxString10ConvertStrEPKcmRK8wxMBConv@plt>
+ 10e32c2:	48 8b 44 24 10       	mov    0x10(%rsp),%rax
+ 10e32c7:	4c 8d 64 24 20       	lea    0x20(%rsp),%r12
+ 10e32cc:	4c 8b 44 24 18       	mov    0x18(%rsp),%r8
+ 10e32d1:	31 f6                	xor    %esi,%esi
+ 10e32d3:	48 8b 54 24 28       	mov    0x28(%rsp),%rdx
+ 10e32d8:	4c 89 e7             	mov    %r12,%rdi
+ 10e32db:	48 8b 08             	mov    (%rax),%rcx
+ 10e32de:	e8 8d 63 28 ff       	call   369670 <_ZNSt7__cxx1112basic_stringIwSt11char_traitsIwESaIwEE10_M_replaceEmmPKwm@plt>
+ 10e32e3:	4c 8b 6c 24 10       	mov    0x10(%rsp),%r13
+ 10e32e8:	e8 93 a8 28 ff       	call   36db80 <_ZN9wxPrivate18GetUntypedNullDataEv@plt>
+ 10e32ed:	49 39 c5             	cmp    %rax,%r13
+ 10e32f0:	74 2a                	je     10e331c <_ZN7s52plib30RenderPresentationCaLightPointEP12_ObjRazRules+0x21c>
+ 10e32f2:	4c 8b 6c 24 10       	mov    0x10(%rsp),%r13
+ 10e32f7:	66 41 83 6d 10 01    	subw   $0x1,0x10(%r13)
+ 10e32fd:	75 18                	jne    10e3317 <_ZN7s52plib30RenderPresentationCaLightPointEP12_ObjRazRules+0x217>
+ 10e32ff:	41 80 7d 12 00       	cmpb   $0x0,0x12(%r13)
+ 10e3304:	0f 85 aa 01 00 00    	jne    10e34b4 <_ZN7s52plib30RenderPresentationCaLightPointEP12_ObjRazRules+0x3b4>
+ 10e330a:	be 18 00 00 00       	mov    $0x18,%esi
+ 10e330f:	4c 89 ef             	mov    %r13,%rdi
+ 10e3312:	e8 f9 41 28 ff       	call   367510 <_ZdlPvm@plt>
+ 10e3317:	e8 64 a8 28 ff       	call   36db80 <_ZN9wxPrivate18GetUntypedNullDataEv@plt>
+ 10e331c:	48 8b 7c 24 20       	mov    0x20(%rsp),%rdi
+ 10e3321:	e8 6a 84 28 ff       	call   36b790 <_ZN12wxStringHash10stringHashEPKw@plt>
+ 10e3326:	31 d2                	xor    %edx,%edx
+ 10e3328:	49 f7 77 08          	divq   0x8(%r15)
+ 10e332c:	49 8b 07             	mov    (%r15),%rax
+ 10e332f:	4c 8b 2c d0          	mov    (%rax,%rdx,8),%r13
+ 10e3333:	4d 85 ed             	test   %r13,%r13
+ 10e3336:	74 2c                	je     10e3364 <_ZN7s52plib30RenderPresentationCaLightPointEP12_ObjRazRules+0x264>
+ 10e3338:	0f 1f 84 00 00 00 00 	nopl   0x0(%rax,%rax,1)
+ 10e333f:	00 
+ 10e3340:	48 8b 44 24 28       	mov    0x28(%rsp),%rax
+ 10e3345:	49 39 45 10          	cmp    %rax,0x10(%r13)
+ 10e3349:	75 10                	jne    10e335b <_ZN7s52plib30RenderPresentationCaLightPointEP12_ObjRazRules+0x25b>
+ 10e334b:	49 8d 7d 08          	lea    0x8(%r13),%rdi
+ 10e334f:	4c 89 e6             	mov    %r12,%rsi
+ 10e3352:	e8 89 5d 28 ff       	call   3690e0 <_ZNK8wxString7compareERKS_@plt>
+ 10e3357:	85 c0                	test   %eax,%eax
+ 10e3359:	74 09                	je     10e3364 <_ZN7s52plib30RenderPresentationCaLightPointEP12_ObjRazRules+0x264>
+ 10e335b:	4d 8b 6d 00          	mov    0x0(%r13),%r13
+ 10e335f:	4d 85 ed             	test   %r13,%r13
+ 10e3362:	75 dc                	jne    10e3340 <_ZN7s52plib30RenderPresentationCaLightPointEP12_ObjRazRules+0x240>
+ 10e3364:	48 8b 7c 24 40       	mov    0x40(%rsp),%rdi
+ 10e3369:	e8 62 80 28 ff       	call   36b3d0 <free@plt>
+ 10e336e:	48 8b 7c 24 20       	mov    0x20(%rsp),%rdi
+ 10e3373:	48 8d 44 24 30       	lea    0x30(%rsp),%rax
+ 10e3378:	48 39 c7             	cmp    %rax,%rdi
+ 10e337b:	74 12                	je     10e338f <_ZN7s52plib30RenderPresentationCaLightPointEP12_ObjRazRules+0x28f>
+ 10e337d:	48 8b 44 24 30       	mov    0x30(%rsp),%rax
+ 10e3382:	48 8d 34 85 04 00 00 	lea    0x4(,%rax,4),%rsi
+ 10e3389:	00 
+ 10e338a:	e8 81 41 28 ff       	call   367510 <_ZdlPvm@plt>
+ 10e338f:	4d 85 ed             	test   %r13,%r13
+ 10e3392:	74 1c                	je     10e33b0 <_ZN7s52plib30RenderPresentationCaLightPointEP12_ObjRazRules+0x2b0>
+ 10e3394:	49 8b 45 38          	mov    0x38(%r13),%rax
+ 10e3398:	48 85 c0             	test   %rax,%rax
+ 10e339b:	74 13                	je     10e33b0 <_ZN7s52plib30RenderPresentationCaLightPointEP12_ObjRazRules+0x2b0>
+ 10e339d:	80 78 0c 52          	cmpb   $0x52,0xc(%rax)
+ 10e33a1:	75 0d                	jne    10e33b0 <_ZN7s52plib30RenderPresentationCaLightPointEP12_ObjRazRules+0x2b0>
+ 10e33a3:	49 8b 36             	mov    (%r14),%rsi
+ 10e33a6:	48 39 70 04          	cmp    %rsi,0x4(%rax)
+ 10e33aa:	0f 84 12 01 00 00    	je     10e34c2 <_ZN7s52plib30RenderPresentationCaLightPointEP12_ObjRazRules+0x3c2>
+ 10e33b0:	48 8b 5c 24 68       	mov    0x68(%rsp),%rbx
+ 10e33b5:	48 8b 6c 24 70       	mov    0x70(%rsp),%rbp
+ 10e33ba:	4c 8b 64 24 78       	mov    0x78(%rsp),%r12
+ 10e33bf:	4c 8b ac 24 80 00 00 	mov    0x80(%rsp),%r13
+ 10e33c6:	00 
+ 10e33c7:	4c 8b b4 24 88 00 00 	mov    0x88(%rsp),%r14
+ 10e33ce:	00 
+ 10e33cf:	4c 8b bc 24 90 00 00 	mov    0x90(%rsp),%r15
+ 10e33d6:	00 
+ 10e33d7:	eb 16                	jmp    10e33ef <_ZN7s52plib30RenderPresentationCaLightPointEP12_ObjRazRules+0x2ef>
+ 10e33d9:	0f 1f 80 00 00 00 00 	nopl   0x0(%rax)
+ 10e33e0:	48 8b 5c 24 68       	mov    0x68(%rsp),%rbx
+ 10e33e5:	48 8b 6c 24 70       	mov    0x70(%rsp),%rbp
+ 10e33ea:	4c 8b 64 24 78       	mov    0x78(%rsp),%r12
+ 10e33ef:	48 8b 44 24 58       	mov    0x58(%rsp),%rax
+ 10e33f4:	64 48 2b 04 25 28 00 	sub    %fs:0x28,%rax
+ 10e33fb:	00 00 
+ 10e33fd:	0f 85 1a 01 00 00    	jne    10e351d <_ZN7s52plib30RenderPresentationCaLightPointEP12_ObjRazRules+0x41d>
+ 10e3403:	48 81 c4 98 00 00 00 	add    $0x98,%rsp
+ 10e340a:	c3                   	ret
+ 10e340b:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
+ 10e3410:	49 8b 44 24 10       	mov    0x10(%r12),%rax
+ 10e3415:	48 85 c0             	test   %rax,%rax
+ 10e3418:	74 c6                	je     10e33e0 <_ZN7s52plib30RenderPresentationCaLightPointEP12_ObjRazRules+0x2e0>
+ 10e341a:	49 8d 4c 24 10       	lea    0x10(%r12),%rcx
+ 10e341f:	eb 2d                	jmp    10e344e <_ZN7s52plib30RenderPresentationCaLightPointEP12_ObjRazRules+0x34e>
+ 10e3421:	66 0f 1f 84 00 00 00 	nopw   0x0(%rax,%rax,1)
+ 10e3428:	00 00 
+ 10e342a:	66 66 2e 0f 1f 84 00 	data16 cs nopw 0x0(%rax,%rax,1)
+ 10e3431:	00 00 00 00 
+ 10e3435:	66 66 2e 0f 1f 84 00 	data16 cs nopw 0x0(%rax,%rax,1)
+ 10e343c:	00 00 00 00 
+ 10e3440:	48 8b 10             	mov    (%rax),%rdx
+ 10e3443:	48 89 c1             	mov    %rax,%rcx
+ 10e3446:	48 85 d2             	test   %rdx,%rdx
+ 10e3449:	74 95                	je     10e33e0 <_ZN7s52plib30RenderPresentationCaLightPointEP12_ObjRazRules+0x2e0>
+ 10e344b:	48 89 d0             	mov    %rdx,%rax
+ 10e344e:	48 3b 70 08          	cmp    0x8(%rax),%rsi
+ 10e3452:	75 ec                	jne    10e3440 <_ZN7s52plib30RenderPresentationCaLightPointEP12_ObjRazRules+0x340>
+ 10e3454:	e9 67 fd ff ff       	jmp    10e31c0 <_ZN7s52plib30RenderPresentationCaLightPointEP12_ObjRazRules+0xc0>
+ 10e3459:	0f 1f 80 00 00 00 00 	nopl   0x0(%rax)
+ 10e3460:	4d 85 c0             	test   %r8,%r8
+ 10e3463:	0f 84 a5 00 00 00    	je     10e350e <_ZN7s52plib30RenderPresentationCaLightPointEP12_ObjRazRules+0x40e>
+ 10e3469:	49 8b 40 08          	mov    0x8(%r8),%rax
+ 10e346d:	31 d2                	xor    %edx,%edx
+ 10e346f:	48 f7 f6             	div    %rsi
+ 10e3472:	49 39 d1             	cmp    %rdx,%r9
+ 10e3475:	0f 84 b6 fd ff ff    	je     10e3231 <_ZN7s52plib30RenderPresentationCaLightPointEP12_ObjRazRules+0x131>
+ 10e347b:	49 89 0c d2          	mov    %rcx,(%r10,%rdx,8)
+ 10e347f:	49 8b 04 24          	mov    (%r12),%rax
+ 10e3483:	4a c7 04 c8 00 00 00 	movq   $0x0,(%rax,%r9,8)
+ 10e348a:	00 
+ 10e348b:	4c 8b 07             	mov    (%rdi),%r8
+ 10e348e:	e9 9e fd ff ff       	jmp    10e3231 <_ZN7s52plib30RenderPresentationCaLightPointEP12_ObjRazRules+0x131>
+ 10e3493:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
+ 10e3498:	48 8b 5c 24 68       	mov    0x68(%rsp),%rbx
+ 10e349d:	48 8b 6c 24 70       	mov    0x70(%rsp),%rbp
+ 10e34a2:	4c 8b 64 24 78       	mov    0x78(%rsp),%r12
+ 10e34a7:	4c 8b b4 24 88 00 00 	mov    0x88(%rsp),%r14
+ 10e34ae:	00 
+ 10e34af:	e9 3b ff ff ff       	jmp    10e33ef <_ZN7s52plib30RenderPresentationCaLightPointEP12_ObjRazRules+0x2ef>
+ 10e34b4:	49 8b 7d 00          	mov    0x0(%r13),%rdi
+ 10e34b8:	e8 13 7f 28 ff       	call   36b3d0 <free@plt>
+ 10e34bd:	e9 48 fe ff ff       	jmp    10e330a <_ZN7s52plib30RenderPresentationCaLightPointEP12_ObjRazRules+0x20a>
+ 10e34c2:	48 8b 45 08          	mov    0x8(%rbp),%rax
+ 10e34c6:	48 8d 54 24 10       	lea    0x10(%rsp),%rdx
+ 10e34cb:	48 89 ee             	mov    %rbp,%rsi
+ 10e34ce:	48 89 df             	mov    %rbx,%rdi
+ 10e34d1:	48 c7 44 24 10 00 00 	movq   $0x0,0x10(%rsp)
+ 10e34d8:	00 00 
+ 10e34da:	66 0f ef c0          	pxor   %xmm0,%xmm0
+ 10e34de:	66 0f ef c9          	pxor   %xmm1,%xmm1
+ 10e34e2:	f2 0f 5a 40 38       	cvtsd2ss 0x38(%rax),%xmm0
+ 10e34e7:	f2 0f 5a 48 30       	cvtsd2ss 0x30(%rax),%xmm1
+ 10e34ec:	e8 2f 05 ff ff       	call   10d3a20 <_ZN7s52plib17GetPointPixSingleEP12_ObjRazRulesffP7wxPoint>
+ 10e34f1:	49 8b 55 38          	mov    0x38(%r13),%rdx
+ 10e34f5:	66 0f ef c0          	pxor   %xmm0,%xmm0
+ 10e34f9:	48 8d 4c 24 10       	lea    0x10(%rsp),%rcx
+ 10e34fe:	48 89 ee             	mov    %rbp,%rsi
+ 10e3501:	48 89 df             	mov    %rbx,%rdi
+ 10e3504:	e8 f7 e4 ff ff       	call   10e1a00 <_ZN7s52plib18RenderRasterSymbolEP12_ObjRazRulesP5_RuleR7wxPointf>
+ 10e3509:	e9 a2 fe ff ff       	jmp    10e33b0 <_ZN7s52plib30RenderPresentationCaLightPointEP12_ObjRazRules+0x2b0>
+ 10e350e:	49 c7 03 00 00 00 00 	movq   $0x0,(%r11)
+ 10e3515:	4c 8b 07             	mov    (%rdi),%r8
+ 10e3518:	e9 14 fd ff ff       	jmp    10e3231 <_ZN7s52plib30RenderPresentationCaLightPointEP12_ObjRazRules+0x131>
+ 10e351d:	48                   	rex.W
+ 10e351e:	89                   	.byte 0x89
+ 10e351f:	5c                   	pop    %rsp

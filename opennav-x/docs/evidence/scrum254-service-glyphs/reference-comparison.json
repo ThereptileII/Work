@@ -1,0 +1,41 @@
+{
+  "comparisons": [
+    {
+      "symbol": "PILBOP02",
+      "theme": "DAY_BRIGHT",
+      "coverageExact": true,
+      "maxPremultipliedChannelDifference": 0.9529411764705882
+    },
+    {
+      "symbol": "RTPBCN02",
+      "theme": "DAY_BRIGHT",
+      "coverageExact": true,
+      "maxPremultipliedChannelDifference": 0.9529411764705882
+    },
+    {
+      "symbol": "PILBOP02",
+      "theme": "DUSK",
+      "coverageExact": true,
+      "maxPremultipliedChannelDifference": 0.9333333333333333
+    },
+    {
+      "symbol": "RTPBCN02",
+      "theme": "DUSK",
+      "coverageExact": true,
+      "maxPremultipliedChannelDifference": 0.9372549019607843
+    },
+    {
+      "symbol": "PILBOP02",
+      "theme": "NIGHT",
+      "coverageExact": true,
+      "maxPremultipliedChannelDifference": 0.9490196078431372
+    },
+    {
+      "symbol": "RTPBCN02",
+      "theme": "NIGHT",
+      "coverageExact": true,
+      "maxPremultipliedChannelDifference": 0.9490196078431372
+    }
+  ],
+  "note": "Cairo SVG RGB unpremultiplication rounds low-alpha channels; coverage is exact, composited channel difference <=1.01. Native output has exact service RGB."
+}

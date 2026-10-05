@@ -1,0 +1,51 @@
+4075: 
+4076: 100% tests passed, 0 tests failed out of 139
+4077: 
+4078: Total Test time (real) =  18.43 sec
+4079: {
+4080:   "repository": "https://github.com/OpenCPN/OpenCPN.git",
+4081:   "tag": "Release_5.12.4",
+4082:   "commit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+4083:   "pluginApi": "1.20",
+4084:   "upstreamWindowsApplicationArchitecture": "x86",
+4085:   "requiredWindowsHostArchitecture": "x64",
+4086:   "specificationApplicationArchitecture": "x64",
+4087:   "approvedApplicationArchitecture": "x86",
+4088:   "architectureDecision": "Preserve supported OpenCPN ABI on 64-bit Windows; user approved 2026-09-21"
+4089: }
+4090: -- Selecting Windows SDK version 10.0.26100.0 to target Windows 10.0.20348.
+4091: -- The CXX compiler identification is MSVC 19.44.35229.0
+4092: -- Detecting CXX compiler ABI info
+4093: -- Detecting CXX compiler ABI info - done
+4094: -- Check for working CXX compiler: C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x86/cl.exe - skipped
+4095: -- Detecting CXX compile features
+4096: -- Detecting CXX compile features - done
+4097: -- Found Python3: C:/hostedtoolcache/windows/Python/3.14.7/x64/python3.exe (found version "3.14.7") found components: Interpreter
+4098: -- Found wxWidgets: D:/a/Work/Work/opennav-x/build/ocharts-prepared/sdk/wx/lib/vc14x_dll/wxbase32u.lib;D:/a/Work/Work/opennav-x/build/ocharts-prepared/sdk/wx/lib/vc14x_dll/wxmsw32u_core.lib;D:/a/Work/Work/opennav-x/build/ocharts-prepared/sdk/wx/lib/vc14x_dll/wxpng.lib;D:/a/Work/Work/opennav-x/build/ocharts-prepared/sdk/wx/lib/vc14x_dll/wxtiff.lib;D:/a/Work/Work/opennav-x/build/ocharts-prepared/sdk/wx/lib/vc14x_dll/wxjpeg.lib;D:/a/Work/Work/opennav-x/build/ocharts-prepared/sdk/wx/lib/vc14x_dll/wxzlib.lib;D:/a/Work/Work/opennav-x/build/ocharts-prepared/sdk/wx/lib/vc14x_dll/wxregexu.lib;D:/a/Work/Work/opennav-x/build/ocharts-prepared/sdk/wx/lib/vc14x_dll/wxexpat.lib;gdiplus;msimg32;winmm;comctl32;uuid;oleacc;uxtheme;rpcrt4;shlwapi;version;wsock32 (found version "3.2.8") found components: base core png tiff jpeg zlib regex expat
+4099: CMake Error at CMakeLists.txt:46 (add_executable):
+4100: -- Configuring incomplete, errors occurred!
+4101:   Syntax error in cmake code when parsing string
+4102: 
+4103:     D:\a\Work\Work\opennav-x\build\integration-source/model/src/downloader.cpp
+4104: 
+4105:   Invalid character escape '\a'.
+4106: 
+4107: 
+4108: CMake Error at CMakeLists.txt:46 (add_executable):
+4109:   Syntax error in cmake code when parsing string
+4110: 
+4111:     D:\a\Work\Work\opennav-x\tools/downloader-trust-probe.cpp
+4112: 
+4113:   Invalid character escape '\a'.
+4114: 
+4115: 
+4116: Exception: D:\a\Work\Work\opennav-x\tools\test-downloader-trust-windows.ps1:51
+4117: Line |
+4118:   51 |  … TCODE -ne 0) { throw "$Program failed with exit code $LASTEXITCODE" }
+4119:      |                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+4120:      | cmake failed with exit code 1
+4121: PS>TerminatingError(): "pwsh failed with exit code 1"
+4122: **********************
+4123: PowerShell transcript end
+4124: End time: 20261003153029
+4125: **********************

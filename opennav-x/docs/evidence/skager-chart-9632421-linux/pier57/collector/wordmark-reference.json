@@ -1,0 +1,44 @@
+{
+  "sourceCommit": "0cb7a227823ec22651caaa7eeff8957f927348a7",
+  "sheetSha256": "24ab654bebf47824fe198fb17c7b0e535d21402376b5cd1bb50b86533851b4ed",
+  "unchangedSourceFiles": {
+    "src/ui/SkagerWordmark.h": "c2fc3d1afdf88bfd2e884d541e7b3ad4463702cece09057e38f4d496deda9928",
+    "src/application/SkagerBrandAsset.h": "cc9f469181717b4fb80986b9406d2d6d078bfdb5971d2e68f6b4072b8dcd2019",
+    "src/ui/Theme.h": "b28adb1f519ec5a1f9b7e2bfab6ec2ab1c7f06656bd129316e9e453ef1ec0776",
+    "tests/skager_wordmark_test.cpp": "eebd73b9be991dd2cf920040d1aa13a4e67391b234bb7803e497bc0e565f959b"
+  },
+  "prior148PanelMatchesActualA3eExactly": [
+    "Day",
+    "Dusk",
+    "Night"
+  ],
+  "panels": {
+    "Day": {
+      "bbox": [
+        30,
+        15,
+        150,
+        51
+      ],
+      "inkPixels": 1273
+    },
+    "Dusk": {
+      "bbox": [
+        30,
+        15,
+        150,
+        51
+      ],
+      "inkPixels": 1273
+    },
+    "Night": {
+      "bbox": [
+        30,
+        15,
+        150,
+        51
+      ],
+      "inkPixels": 1273
+    }
+  }
+}

@@ -1,0 +1,566 @@
+{
+  "README.md": {
+    "bytes": 7040,
+    "sha256": "d25fb22b9fc20f594afb8b7b8f25e1ee77f8592184ed1f9f24d0dec210c2379a"
+  },
+  "build/lifetime-build.exit": {
+    "bytes": 2,
+    "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+  },
+  "build/lifetime-build.log": {
+    "bytes": 134005,
+    "sha256": "3fb765aeb964607489838defb51c5031af9acbb512f09f5f4d632014e0e2561a"
+  },
+  "build/lifetime-object.exit": {
+    "bytes": 2,
+    "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+  },
+  "build/lifetime-object.log": {
+    "bytes": 332,
+    "sha256": "036dc26d9a68269d40163e77ef93cae34db1fd3707a773c36f1e00bc3a8cdd09"
+  },
+  "diagnostic/cache-inputs-readonly.py": {
+    "bytes": 4630,
+    "sha256": "0528801cfb7b27faa8027869ad8ee5ab07b6475e27544c6bf93f04e6e8c1750d"
+  },
+  "diagnostic/compile-layout.py": {
+    "bytes": 1576,
+    "sha256": "e258c114c1d6794aca8067fcefd9f5e9caa98b49b06b6e94dca18a7f8819168e"
+  },
+  "diagnostic/diagnostic.py": {
+    "bytes": 21996,
+    "sha256": "90b166cb30e99205e705da23a818b0ec62fdc8515e94289a004807b628944845"
+  },
+  "diagnostic/inputs/frozen-inputs.json": {
+    "bytes": 1158,
+    "sha256": "687bdc8fcd8e151efa1a92899e207be7fb88a84fc570f2c58a48285ac8a14fb4"
+  },
+  "diagnostic/inputs/staged-inputs.json": {
+    "bytes": 4377,
+    "sha256": "68d0992b2d844a453cd6ce279fb359c53e7c06134ed80c7574f602925b7186ca"
+  },
+  "diagnostic/layout.cpp": {
+    "bytes": 1871,
+    "sha256": "c6afa0b4ad4ed62e9a2a5842d814e9339aeb4873d2b92042469d99603bd915b2"
+  },
+  "diagnostic/layout.json": {
+    "bytes": 1117,
+    "sha256": "b028a9f022387e44158f5f894a2616b9c4234b5cb52d910e7a22205879c9fd29"
+  },
+  "diagnostic/output/capture-ca-light-c24c154-diagnostic/controlled-input.json": {
+    "bytes": 149,
+    "sha256": "b8a80e079d9c87a939425ee33fa21c677e3643bf3defdaddbc3cff25ebec9b7b"
+  },
+  "diagnostic/output/capture-ca-light-c24c154-diagnostic/failure-canvas.png": {
+    "bytes": 263,
+    "sha256": "f3bdcc59f1a08b8f599bc2d653ce1bdeaafc2bfdc23eaa6d15fe20b7bd6f5101"
+  },
+  "diagnostic/output/capture-ca-light-c24c154-diagnostic/loader-selftest.json": {
+    "bytes": 715,
+    "sha256": "c300999c3c84be55220e93dd53d21d8b3f9d17572ca735c6dd6f49ff3501d08d"
+  },
+  "diagnostic/output/capture-ca-light-c24c154-diagnostic/mesa-renderer.txt": {
+    "bytes": 1691,
+    "sha256": "b535ca5b034e91a55937a75bd7baed9c00eb041b70631a6730c3a097c5d60d8c"
+  },
+  "diagnostic/output/capture-ca-light-c24c154-diagnostic/report.json": {
+    "bytes": 10191,
+    "sha256": "a0d4c06c3fcd1d8288f4bb3bdb6e8af5ae07f572207ea79bc1b06cad314a20e4"
+  },
+  "diagnostic/output/capture-ca-light-c24c154-diagnostic/s64-light32-fog33-SKAGER-inferior.pid": {
+    "bytes": 3,
+    "sha256": "ec2e990b934dde55cb87300629cedfc21b15cd28bbcf77d8bbdc55359d7689da"
+  },
+  "diagnostic/output/capture-ca-light-c24c154-diagnostic/s64-light32-fog33-SKAGER-launch.log": {
+    "bytes": 2730,
+    "sha256": "a3b6f74064aeef6971255b98e1c70da537081df7cb99202ba754e180c7ff5777"
+  },
+  "diagnostic/output/capture-ca-light-c24c154-diagnostic/s64-light32-fog33-SKAGER-profile/gl_caps.json": {
+    "bytes": 11377,
+    "sha256": "ead54ccd3d4e399b3a837b3603e1de6ba3aa72c4f52a8935d847af1fda81768f"
+  },
+  "diagnostic/output/capture-ca-light-c24c154-diagnostic/s64-light32-fog33-SKAGER-profile/opencpn.conf": {
+    "bytes": 8731,
+    "sha256": "31e9425b0546cdc05e2fb2ee96bb700b79129e0c1b8079ed509b915704f03923"
+  },
+  "diagnostic/output/capture-ca-light-c24c154-diagnostic/s64-light32-fog33-SKAGER-profile/opencpn.log": {
+    "bytes": 11561,
+    "sha256": "4bbfb26f35c0a80af2a580b8af1466ddd41b180ef9195d73cde95ed4d9e160d6"
+  },
+  "diagnostic/output/capture-ca-light-c24c154-diagnostic/s64-light32-fog33-SKAGER-profile/opennav-diagnostics.json": {
+    "bytes": 32009,
+    "sha256": "9e34750a1d07c588020c0073c49e3928027ed79f8231844a61f338829a948f3a"
+  },
+  "diagnostic/output/capture-ca-light-c24c154-diagnostic/s64-light32-fog33-SKAGER-trace.jsonl": {
+    "bytes": 3522,
+    "sha256": "c74a6945e2fe3d48b5da4f3650a0b14fa303e62e7c871750975cf8e26a73d606"
+  },
+  "diagnostic/output/diagnostic.exit": {
+    "bytes": 2,
+    "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+  },
+  "diagnostic/output/diagnostic.log": {
+    "bytes": 1944,
+    "sha256": "37d378ceaf68704092ae2cd23ecc47b659ed4e1d4c61e83c4a3e85bb3848bbcb"
+  },
+  "diagnostic/output/layout-compile-final.log": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "diagnostic/output/layout-receipt.json": {
+    "bytes": 7761,
+    "sha256": "9d66d8d2a7f64462b6cbc58402bdab449e8bbd125c92f1134a149c1f951c3203"
+  },
+  "diagnostic/point-disassembly.txt": {
+    "bytes": 14352,
+    "sha256": "96e212534ae9d110307a2c03c4588d552840c243b5b75c8b17f5315e53c12015"
+  },
+  "diagnostic/render-probe.gdb": {
+    "bytes": 5638,
+    "sha256": "a417341d86c0246d400fb4e43e996a54d425457778d79e00cb2edc5657cb50cb"
+  },
+  "diagnostic/scenes.json": {
+    "bytes": 1139,
+    "sha256": "a0f8e1c3e2d2509b6ad65a4108d73586491f2d15782efe5cff1805cd8fb441da"
+  },
+  "diagnostic-corrected/cache-inputs-readonly.py": {
+    "bytes": 4630,
+    "sha256": "0528801cfb7b27faa8027869ad8ee5ab07b6475e27544c6bf93f04e6e8c1750d"
+  },
+  "diagnostic-corrected/compile-layout.py": {
+    "bytes": 1576,
+    "sha256": "e258c114c1d6794aca8067fcefd9f5e9caa98b49b06b6e94dca18a7f8819168e"
+  },
+  "diagnostic-corrected/diagnostic.py": {
+    "bytes": 21996,
+    "sha256": "90b166cb30e99205e705da23a818b0ec62fdc8515e94289a004807b628944845"
+  },
+  "diagnostic-corrected/inputs/frozen-inputs.json": {
+    "bytes": 1158,
+    "sha256": "687bdc8fcd8e151efa1a92899e207be7fb88a84fc570f2c58a48285ac8a14fb4"
+  },
+  "diagnostic-corrected/inputs/staged-inputs.json": {
+    "bytes": 4377,
+    "sha256": "68d0992b2d844a453cd6ce279fb359c53e7c06134ed80c7574f602925b7186ca"
+  },
+  "diagnostic-corrected/layout.cpp": {
+    "bytes": 2565,
+    "sha256": "5a5a8eedf40c5f41f674e3c218b425a662ad7b879cca595c2820fceaba9fbb92"
+  },
+  "diagnostic-corrected/layout.json": {
+    "bytes": 1210,
+    "sha256": "75f5e12ad77690e4310f111b955a059ba1c691592be1149bcfcd9b17c93071cc"
+  },
+  "diagnostic-corrected/output/capture-ca-light-c24c154-diagnostic-corrected/controlled-input.json": {
+    "bytes": 2567,
+    "sha256": "107e5da2d0e8eb4eb2077098d69a06776248df9da6667b9b2a4977570985e2d8"
+  },
+  "diagnostic-corrected/output/capture-ca-light-c24c154-diagnostic-corrected/failure-canvas.png": {
+    "bytes": 263,
+    "sha256": "f3bdcc59f1a08b8f599bc2d653ce1bdeaafc2bfdc23eaa6d15fe20b7bd6f5101"
+  },
+  "diagnostic-corrected/output/capture-ca-light-c24c154-diagnostic-corrected/loader-selftest.json": {
+    "bytes": 715,
+    "sha256": "c300999c3c84be55220e93dd53d21d8b3f9d17572ca735c6dd6f49ff3501d08d"
+  },
+  "diagnostic-corrected/output/capture-ca-light-c24c154-diagnostic-corrected/mesa-renderer.txt": {
+    "bytes": 1691,
+    "sha256": "b1559fc321899b52fcbd1fc3c50593ad76c7dedce3396588c51189124b98bebd"
+  },
+  "diagnostic-corrected/output/capture-ca-light-c24c154-diagnostic-corrected/report.json": {
+    "bytes": 13453,
+    "sha256": "070a5b86b6cb8a42ab7d2416a31ea2406e120da59e6ac8882a871fc250c21d65"
+  },
+  "diagnostic-corrected/output/capture-ca-light-c24c154-diagnostic-corrected/s64-light32-fog33-SKAGER-Day.json": {
+    "bytes": 28666,
+    "sha256": "3125b2e0c91e5c38e99a909ed052c3c0c21c86892c58d1ae0449664f792e5788"
+  },
+  "diagnostic-corrected/output/capture-ca-light-c24c154-diagnostic-corrected/s64-light32-fog33-SKAGER-Day.png": {
+    "bytes": 123972,
+    "sha256": "f4bc98fcdae511d0b61b158a9d89760a019144846c47e187d281e1391ebb5ab4"
+  },
+  "diagnostic-corrected/output/capture-ca-light-c24c154-diagnostic-corrected/s64-light32-fog33-SKAGER-inferior.pid": {
+    "bytes": 3,
+    "sha256": "8e612bd1f5d132a339575b8dafb7842c64614e56bcf3d5ab65a0bc4b34329407"
+  },
+  "diagnostic-corrected/output/capture-ca-light-c24c154-diagnostic-corrected/s64-light32-fog33-SKAGER-launch.log": {
+    "bytes": 8746,
+    "sha256": "84109db3195e83efb17857facc272e91cccd3c6bddd28380c56f67ab7a7ba39a"
+  },
+  "diagnostic-corrected/output/capture-ca-light-c24c154-diagnostic-corrected/s64-light32-fog33-SKAGER-profile/gl_caps.json": {
+    "bytes": 11377,
+    "sha256": "ead54ccd3d4e399b3a837b3603e1de6ba3aa72c4f52a8935d847af1fda81768f"
+  },
+  "diagnostic-corrected/output/capture-ca-light-c24c154-diagnostic-corrected/s64-light32-fog33-SKAGER-profile/opencpn.conf": {
+    "bytes": 12163,
+    "sha256": "ac9f4b2f110ac99c53b78f0d89c4b90b6ad34f2fb2faa8c072f33bb461e2320d"
+  },
+  "diagnostic-corrected/output/capture-ca-light-c24c154-diagnostic-corrected/s64-light32-fog33-SKAGER-profile/opencpn.log": {
+    "bytes": 19733,
+    "sha256": "efaba86365a1eef6c5e6d416103c78148946c5dc8b287003eb12448002061dff"
+  },
+  "diagnostic-corrected/output/capture-ca-light-c24c154-diagnostic-corrected/s64-light32-fog33-SKAGER-profile/opennav-diagnostics.json": {
+    "bytes": 33418,
+    "sha256": "b6b88942f4538efdd5f5aba3a683842622cc3e1b9b073720efedb357f783848b"
+  },
+  "diagnostic-corrected/output/capture-ca-light-c24c154-diagnostic-corrected/s64-light32-fog33-SKAGER-trace.jsonl": {
+    "bytes": 36116,
+    "sha256": "07a686fedb37604b644828103514b805f2ba71b162e4919f44b09b3058e7400c"
+  },
+  "diagnostic-corrected/output/diagnostic.exit": {
+    "bytes": 2,
+    "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+  },
+  "diagnostic-corrected/output/diagnostic.log": {
+    "bytes": 2352,
+    "sha256": "d8d82130ce5e01524516b3a762e9eff329ec80ce7056f04c09e78665622c5df5"
+  },
+  "diagnostic-corrected/output/layout-compile-final.log": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "diagnostic-corrected/output/layout-receipt.json": {
+    "bytes": 7781,
+    "sha256": "d40b686a626f4da63f0067bacbadb4ff12d88b3e5706b70a3b8e7cabde5e4fc6"
+  },
+  "diagnostic-corrected/output/offset-receipt.json": {
+    "bytes": 471,
+    "sha256": "deed2e0896e185dfb6837bf6af7670b8d05d06b19005b5b53da2c3f49e28c3b0"
+  },
+  "diagnostic-corrected/output/point-disassembly.txt": {
+    "bytes": 16195,
+    "sha256": "a59b72391e611508a51ad6bfe8ab65ac20b8e88320cf8edfffa93b159cf879c6"
+  },
+  "diagnostic-corrected/render-probe.gdb": {
+    "bytes": 6937,
+    "sha256": "f634cbe4a2bebb439e417cafe9f3ab8c01fcc0502edfd22b8baf6a95675af04a"
+  },
+  "diagnostic-corrected/scenes.json": {
+    "bytes": 1139,
+    "sha256": "a0f8e1c3e2d2509b6ad65a4108d73586491f2d15782efe5cff1805cd8fb441da"
+  },
+  "diagnostic-corrected/verify-offsets.py": {
+    "bytes": 1355,
+    "sha256": "9b17c86afb4e97701d1b4b1b350c4426805528240bf1a7e7336ad9c0d3bec1ac"
+  },
+  "iho/cache-inputs-readonly.py": {
+    "bytes": 4630,
+    "sha256": "0528801cfb7b27faa8027869ad8ee5ab07b6475e27544c6bf93f04e6e8c1750d"
+  },
+  "iho/capture-s64.py": {
+    "bytes": 21970,
+    "sha256": "58878bd453e79c5ab4b347de9525d143ae7cccb72ca6f2c00c4c0265f72f3f4c"
+  },
+  "iho/compile-layout.py": {
+    "bytes": 1576,
+    "sha256": "e258c114c1d6794aca8067fcefd9f5e9caa98b49b06b6e94dca18a7f8819168e"
+  },
+  "iho/inputs/frozen-inputs.json": {
+    "bytes": 1158,
+    "sha256": "687bdc8fcd8e151efa1a92899e207be7fb88a84fc570f2c58a48285ac8a14fb4"
+  },
+  "iho/inputs/staged-inputs.json": {
+    "bytes": 4377,
+    "sha256": "68d0992b2d844a453cd6ce279fb359c53e7c06134ed80c7574f602925b7186ca"
+  },
+  "iho/layout.cpp": {
+    "bytes": 811,
+    "sha256": "d4ad5a1ec10ad6d14530d02ea2a6c3f586c55691f2d59fe061899de33271234f"
+  },
+  "iho/layout.json": {
+    "bytes": 456,
+    "sha256": "734ce8d593e9b42ccec1bfeaf269cb3105140d12ee15dc50ab78c41cfeadc075"
+  },
+  "iho/output/capture-ca-light-c24c154-opengl/controlled-input.json": {
+    "bytes": 21455,
+    "sha256": "c7279fcb7eecdd3bd5b200aa62592395f7ccdd480611038b9c69caaf30dfbea3"
+  },
+  "iho/output/capture-ca-light-c24c154-opengl/failure-canvas.png": {
+    "bytes": 123819,
+    "sha256": "f7b1ab9f80fa424db63eccf1118d4d78d542e7749702e57647cc9dac96e30267"
+  },
+  "iho/output/capture-ca-light-c24c154-opengl/loader-selftest.json": {
+    "bytes": 715,
+    "sha256": "c300999c3c84be55220e93dd53d21d8b3f9d17572ca735c6dd6f49ff3501d08d"
+  },
+  "iho/output/capture-ca-light-c24c154-opengl/mesa-renderer.txt": {
+    "bytes": 1691,
+    "sha256": "395b9ab0533c16025f689fdf81d539ab9787972dee825c15740bdd64239f243d"
+  },
+  "iho/output/capture-ca-light-c24c154-opengl/report.json": {
+    "bytes": 10200,
+    "sha256": "d6f2b281a6ce3323b5858bcb36931de1922752135a1c71071074312966f4c54a"
+  },
+  "iho/output/capture-ca-light-c24c154-opengl/s64-light32-fog33-SKAGER-inferior.pid": {
+    "bytes": 3,
+    "sha256": "9537f32ec7599e1ae953af6c9f929fe747ff9dadf79a9beff1f304c550173011"
+  },
+  "iho/output/capture-ca-light-c24c154-opengl/s64-light32-fog33-SKAGER-launch.log": {
+    "bytes": 9534,
+    "sha256": "8c0bd1368af5f427366a8f14a872ae43bb0dde627dcd410cb8ae01ab01194d19"
+  },
+  "iho/output/capture-ca-light-c24c154-opengl/s64-light32-fog33-SKAGER-profile/gl_caps.json": {
+    "bytes": 11377,
+    "sha256": "ead54ccd3d4e399b3a837b3603e1de6ba3aa72c4f52a8935d847af1fda81768f"
+  },
+  "iho/output/capture-ca-light-c24c154-opengl/s64-light32-fog33-SKAGER-profile/opencpn.conf": {
+    "bytes": 11742,
+    "sha256": "2ebc7f76ba1412972b5e51b821c7418d9249e07e46a30109882a5f65545bfbcc"
+  },
+  "iho/output/capture-ca-light-c24c154-opengl/s64-light32-fog33-SKAGER-profile/opencpn.log": {
+    "bytes": 17843,
+    "sha256": "548547034449c2531a206d0056a6338466bb1fe85d5eb37ebd1f96a0e1ddcd2f"
+  },
+  "iho/output/capture-ca-light-c24c154-opengl/s64-light32-fog33-SKAGER-profile/opennav-diagnostics.json": {
+    "bytes": 33420,
+    "sha256": "6a671e26025df2c61dd797a6172e22d5c038d623ff3ba5e5963b38cf25489754"
+  },
+  "iho/output/capture-ca-light-c24c154-opengl/s64-light32-fog33-SKAGER-trace.jsonl": {
+    "bytes": 1833,
+    "sha256": "ff13e43804c771c48986ef482b24411358bb9cf39a58ff83fe908bd743e2090d"
+  },
+  "iho/output/capture-ca-light-c24c154-software/controlled-input.json": {
+    "bytes": 9496,
+    "sha256": "76f174909181b954dadc20cb986ec3f52c539995e9075b8d2205316dfb076b9d"
+  },
+  "iho/output/capture-ca-light-c24c154-software/loader-selftest.json": {
+    "bytes": 715,
+    "sha256": "c300999c3c84be55220e93dd53d21d8b3f9d17572ca735c6dd6f49ff3501d08d"
+  },
+  "iho/output/capture-ca-light-c24c154-software/report.json": {
+    "bytes": 63741,
+    "sha256": "779ce1853a93b3033faf7d2257b0c18a65734e6a7ac6dd500970690df8e3a74b"
+  },
+  "iho/output/capture-ca-light-c24c154-software/s64-light32-fog33-SKAGER-Day-FOGSIG-33.png": {
+    "bytes": 2115,
+    "sha256": "ec44e7e21e9a6db1c02c51a5b0c8c011349a64e0e95c676f6455fdda254c8890"
+  },
+  "iho/output/capture-ca-light-c24c154-software/s64-light32-fog33-SKAGER-Day-LIGHTS-32.png": {
+    "bytes": 2115,
+    "sha256": "ec44e7e21e9a6db1c02c51a5b0c8c011349a64e0e95c676f6455fdda254c8890"
+  },
+  "iho/output/capture-ca-light-c24c154-software/s64-light32-fog33-SKAGER-Day-return-FOGSIG-33.png": {
+    "bytes": 2115,
+    "sha256": "ec44e7e21e9a6db1c02c51a5b0c8c011349a64e0e95c676f6455fdda254c8890"
+  },
+  "iho/output/capture-ca-light-c24c154-software/s64-light32-fog33-SKAGER-Day-return-LIGHTS-32.png": {
+    "bytes": 2115,
+    "sha256": "ec44e7e21e9a6db1c02c51a5b0c8c011349a64e0e95c676f6455fdda254c8890"
+  },
+  "iho/output/capture-ca-light-c24c154-software/s64-light32-fog33-SKAGER-Day-return.json": {
+    "bytes": 31557,
+    "sha256": "30f5db5fee23dc22b037eb98918f1028b09b6d4f33ef743ed4ce52ac87db5448"
+  },
+  "iho/output/capture-ca-light-c24c154-software/s64-light32-fog33-SKAGER-Day-return.png": {
+    "bytes": 177701,
+    "sha256": "00d51aaf94c147c45b474076b08b5a20118762b4e91cf0750223f9913041bf3e"
+  },
+  "iho/output/capture-ca-light-c24c154-software/s64-light32-fog33-SKAGER-Day.json": {
+    "bytes": 28664,
+    "sha256": "9e4b05e892b0455dc934e05f68b38838ee925afe38de22d038b9510d6804358e"
+  },
+  "iho/output/capture-ca-light-c24c154-software/s64-light32-fog33-SKAGER-Day.png": {
+    "bytes": 177341,
+    "sha256": "7b133e7adc4442bebae9fb6c2f2ea77293e64e15c4f2b0dea9182be537e1daa1"
+  },
+  "iho/output/capture-ca-light-c24c154-software/s64-light32-fog33-SKAGER-Dusk-FOGSIG-33.png": {
+    "bytes": 2048,
+    "sha256": "4f784b58681d3a2de67abac13606cd15c5264738492d7b11ab77815bff594fb7"
+  },
+  "iho/output/capture-ca-light-c24c154-software/s64-light32-fog33-SKAGER-Dusk-LIGHTS-32.png": {
+    "bytes": 2048,
+    "sha256": "4f784b58681d3a2de67abac13606cd15c5264738492d7b11ab77815bff594fb7"
+  },
+  "iho/output/capture-ca-light-c24c154-software/s64-light32-fog33-SKAGER-Dusk.json": {
+    "bytes": 31556,
+    "sha256": "4d04b9efbf0c5325f1c85e3a431ba9ab1d2f7b21c6dc7b9d815cb0f8f6d4e53a"
+  },
+  "iho/output/capture-ca-light-c24c154-software/s64-light32-fog33-SKAGER-Dusk.png": {
+    "bytes": 162663,
+    "sha256": "87e1905eb7f80d382f7ee70de4e79c1eb21e104cadcd81a04e3a22d3414baa12"
+  },
+  "iho/output/capture-ca-light-c24c154-software/s64-light32-fog33-SKAGER-Night-FOGSIG-33.png": {
+    "bytes": 1948,
+    "sha256": "2c1748484003dbb63903cb896c77ce94b0636c9c964c1023472bae5abdf0853b"
+  },
+  "iho/output/capture-ca-light-c24c154-software/s64-light32-fog33-SKAGER-Night-LIGHTS-32.png": {
+    "bytes": 1948,
+    "sha256": "2c1748484003dbb63903cb896c77ce94b0636c9c964c1023472bae5abdf0853b"
+  },
+  "iho/output/capture-ca-light-c24c154-software/s64-light32-fog33-SKAGER-Night.json": {
+    "bytes": 31558,
+    "sha256": "018f018d3ed4c076806980d73a61ae68c7b8556179e49ab28c9381e11e68354a"
+  },
+  "iho/output/capture-ca-light-c24c154-software/s64-light32-fog33-SKAGER-Night.png": {
+    "bytes": 154752,
+    "sha256": "e18f73b1a2d2ed9892dd2da43d8efda8b8194ceff898aeddf893c84c4389840b"
+  },
+  "iho/output/capture-ca-light-c24c154-software/s64-light32-fog33-SKAGER-inferior.pid": {
+    "bytes": 3,
+    "sha256": "7045d16ae7f043ec25774a0a85d6f479e5bb019e9c5a1584bc76736d116b8f33"
+  },
+  "iho/output/capture-ca-light-c24c154-software/s64-light32-fog33-SKAGER-launch.log": {
+    "bytes": 8382,
+    "sha256": "32286a1b10d1421fb9ee4d5a8b9f62de031cf34f87220da941977480ea62371c"
+  },
+  "iho/output/capture-ca-light-c24c154-software/s64-light32-fog33-SKAGER-profile/opencpn.conf": {
+    "bytes": 12146,
+    "sha256": "af4a21c1be1aa3999a77085496b80c90fd87c934509b8c924ad7843fb37276c3"
+  },
+  "iho/output/capture-ca-light-c24c154-software/s64-light32-fog33-SKAGER-profile/opencpn.log": {
+    "bytes": 15627,
+    "sha256": "6a58f4a087238ef0cb70fa749f00445e2b0b5c79042848abf09ccf9521c4ed38"
+  },
+  "iho/output/capture-ca-light-c24c154-software/s64-light32-fog33-SKAGER-profile/opennav-diagnostics.json": {
+    "bytes": 36981,
+    "sha256": "48193e69ceb97b954d7ec77ee122cbce805ee816bd8de7b0212a8fb09e54c090"
+  },
+  "iho/output/capture-ca-light-c24c154-software/s64-light32-fog33-SKAGER-trace.jsonl": {
+    "bytes": 2381,
+    "sha256": "762c3483a0eef612bc402c74e40bf8b8d39c0fdc93fe2e072e154e49b1ce46fc"
+  },
+  "iho/output/capture-ca-light-c24c154-software/s64-light32-fog33-Standard-Day-FOGSIG-33.png": {
+    "bytes": 1668,
+    "sha256": "dcb68dbc918aaf0d709b904f3cf1081ebbe76dee83cfb4f96c0d9e3ff5826066"
+  },
+  "iho/output/capture-ca-light-c24c154-software/s64-light32-fog33-Standard-Day-return-FOGSIG-33.png": {
+    "bytes": 1668,
+    "sha256": "dcb68dbc918aaf0d709b904f3cf1081ebbe76dee83cfb4f96c0d9e3ff5826066"
+  },
+  "iho/output/capture-ca-light-c24c154-software/s64-light32-fog33-Standard-Day-return.json": {
+    "bytes": 31552,
+    "sha256": "a7e5d94169d88c1907ae309f34354ad9beb25abd3e05abcfc17588ba19419ab2"
+  },
+  "iho/output/capture-ca-light-c24c154-software/s64-light32-fog33-Standard-Day-return.png": {
+    "bytes": 188590,
+    "sha256": "c88811ab8983563e48b523ca9d4ecf54974c76e0bce6283bc42c188d3947d466"
+  },
+  "iho/output/capture-ca-light-c24c154-software/s64-light32-fog33-Standard-Day.json": {
+    "bytes": 28658,
+    "sha256": "367d3f44aaf27c67358f73bfd66e6f136c4d35bf1e76a4668ea714cbbedc0169"
+  },
+  "iho/output/capture-ca-light-c24c154-software/s64-light32-fog33-Standard-Day.png": {
+    "bytes": 188600,
+    "sha256": "5a3b32d189d0a03d2c3760daa99166c8f574197c395cd4e8be03c4b466298eb3"
+  },
+  "iho/output/capture-ca-light-c24c154-software/s64-light32-fog33-Standard-Dusk-FOGSIG-33.png": {
+    "bytes": 1345,
+    "sha256": "f59a8537e1acdde3c043b5679deac5629cae4a7a0e232fe7e631024d25cc185d"
+  },
+  "iho/output/capture-ca-light-c24c154-software/s64-light32-fog33-Standard-Dusk.json": {
+    "bytes": 31554,
+    "sha256": "6551f6d78160db926e8d9cbc0477134919df926401c60a5a24a056c064d6fa5e"
+  },
+  "iho/output/capture-ca-light-c24c154-software/s64-light32-fog33-Standard-Dusk.png": {
+    "bytes": 152667,
+    "sha256": "9fa4ad3bd41909d83f5846cf86cb5432095ee9b9bb8ecf315e8944ccf152e4dc"
+  },
+  "iho/output/capture-ca-light-c24c154-software/s64-light32-fog33-Standard-Night-FOGSIG-33.png": {
+    "bytes": 1312,
+    "sha256": "517ca69e636375208376d4e362dac133d05d47e37e4d82399fbaddbad0a54bb9"
+  },
+  "iho/output/capture-ca-light-c24c154-software/s64-light32-fog33-Standard-Night.json": {
+    "bytes": 31554,
+    "sha256": "82559397b0302161990eedba934a1f9d1d7358ec0e190f69e0a219cc48245bfb"
+  },
+  "iho/output/capture-ca-light-c24c154-software/s64-light32-fog33-Standard-Night.png": {
+    "bytes": 146524,
+    "sha256": "fac7b9821c52ab5c22c3968b01ef80a70a1c2437bae84804c099ef63a57f0ac8"
+  },
+  "iho/output/capture-ca-light-c24c154-software/s64-light32-fog33-Standard-inferior.pid": {
+    "bytes": 3,
+    "sha256": "2d1007980f49215311f7f1012e84f99b801eb5daeca04dedea3ada41cc45353b"
+  },
+  "iho/output/capture-ca-light-c24c154-software/s64-light32-fog33-Standard-launch.log": {
+    "bytes": 8303,
+    "sha256": "d5da224ddb82171fb168644b84e7e39730178df3ce41432cf3cc9fbf4be5cdae"
+  },
+  "iho/output/capture-ca-light-c24c154-software/s64-light32-fog33-Standard-profile/opencpn.conf": {
+    "bytes": 12150,
+    "sha256": "20ba6577151940450832e520146f99cdc2fc9c9010eb003751d223c5cb71ff3b"
+  },
+  "iho/output/capture-ca-light-c24c154-software/s64-light32-fog33-Standard-profile/opencpn.log": {
+    "bytes": 15532,
+    "sha256": "b2d5241e94e7283b748e37e922f28ee1bd2b75a894b4b1caad589ba12b3bf477"
+  },
+  "iho/output/capture-ca-light-c24c154-software/s64-light32-fog33-Standard-profile/opennav-diagnostics.json": {
+    "bytes": 36976,
+    "sha256": "a639619f1ade212f6240c7a50de5d0158e59b7b426b8ec039fe73b27c0bea1f0"
+  },
+  "iho/output/capture-ca-light-c24c154-software/s64-light32-fog33-Standard-trace.jsonl": {
+    "bytes": 1945,
+    "sha256": "7b95d511ac3a6ade9c8bcce2db8425904f4163883552d22bf1c3e30c30a74fb9"
+  },
+  "iho/output/capture-opengl.exit": {
+    "bytes": 2,
+    "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+  },
+  "iho/output/capture-opengl.log": {
+    "bytes": 627,
+    "sha256": "b2b9b4af7653e3f08f4d87f7320cd2dadafd12a04a898de2cb7408fffa3b8f40"
+  },
+  "iho/output/capture.exit": {
+    "bytes": 2,
+    "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+  },
+  "iho/output/capture.log": {
+    "bytes": 7936,
+    "sha256": "d43637442cfe777a6a54b7bfb66f52b94db13083f5b1b81dc33704ce6f3b2e70"
+  },
+  "iho/output/layout-compile-final.log": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "iho/output/layout-receipt.json": {
+    "bytes": 7747,
+    "sha256": "f62a88069e250fd59a5ceee73a6183527012899dad1b43a7e6f7fbba54d5d73b"
+  },
+  "iho/render-probe.gdb": {
+    "bytes": 4962,
+    "sha256": "6f90debaf49a353b42894381a3ddf7bdc3dd201060fba36d8f56a0da39a01e9e"
+  },
+  "iho/scenes.json": {
+    "bytes": 1139,
+    "sha256": "a0f8e1c3e2d2509b6ad65a4108d73586491f2d15782efe5cff1805cd8fb441da"
+  },
+  "iho/seal-inputs.py": {
+    "bytes": 2942,
+    "sha256": "7f219b099d0ea2aa836d2e7b19ee76537321407380cc0fcabf3259a3a0d222d4"
+  },
+  "lifetime-after.json": {
+    "bytes": 546,
+    "sha256": "2e1919af9686d9fec3ce41b37f16f192eb66b3a39377687bcabbb4b8eb235f77"
+  },
+  "lifetime-build-prefix.sh": {
+    "bytes": 1210,
+    "sha256": "faf39b4a7b88c088854640556f8c6e5b421722f5cf35ac2f2f60446d14e0224a"
+  },
+  "offline-audit.json": {
+    "bytes": 1848,
+    "sha256": "2e93b3e44a794a1c4387abece1fed9a78ac3d6630a12a652e96f7ed59e6244a9"
+  },
+  "run-diagnostic-corrected.sh": {
+    "bytes": 1793,
+    "sha256": "9affc70463a0e275816e954dd128af5f5d6e986f78a7e50109da25cdb2b231da"
+  },
+  "run-diagnostic.sh": {
+    "bytes": 1747,
+    "sha256": "e9f7ba29c0acacb252de0713edd21901f392c952d7db33f4b03dfee48ab5d57c"
+  },
+  "run-iho-opengl.sh": {
+    "bytes": 1730,
+    "sha256": "cc174bb7ff6b67ff4a0ca3b4e2fc903fb290e00356bb12bcd0d937de9dc80ee2"
+  },
+  "run-iho-software.sh": {
+    "bytes": 1812,
+    "sha256": "040d21e54a27042949ff176ddf44feb9be6079ce553f91118a704ccdfe1e0254"
+  },
+  "run-lifetime-build.sh": {
+    "bytes": 1374,
+    "sha256": "65e54a853d0b6e16318daeb7b831e03bd114989a3ef9d4a6555db2e7c1fd96dc"
+  },
+  "run-lifetime-object.sh": {
+    "bytes": 1335,
+    "sha256": "e9eaeec90ecdd9de6d571a57c82490eee36a6f227b4de59a6fa4d61ac4358524"
+  }
+}

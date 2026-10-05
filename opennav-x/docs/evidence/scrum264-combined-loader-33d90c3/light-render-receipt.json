@@ -1,0 +1,15 @@
+{
+  "renderBodySha256": "024eb1f3af8b04348227d19de99491cfbb2205c432e864c0c11cd7672f2bcf59",
+  "yellowHeadBodySha256": "70ca7443909731676251ee2e23c0679362cd39e1ed90d12f9410de47170287c5",
+  "objectRenderBodySha256": "1b7a9b780f78a5a88a8f49b6a9a17205bbdaf6bd7415ad656deca9757319e64f",
+  "lookupBodySha256": "420a51cb824ce4989c943f751d93f3a4a94ae451493020f519099838f923801f",
+  "lookupSortBodySha256": "03d9f9b2e9074c9bf33270099eb6e1e085e5a7c37eeb1bbec806e16dd8f0bc91",
+  "privateRenderBodySha256": "c54e644092b69cc0bdabae5fbb7244a176e8438725a44abf4d7c63e8705fe368",
+  "conditionalBodies": {
+    "bool GetDoubleAttr(S57Obj *obj,": "8b6265dac68354442f997323d69402c74109ad739bf1bef5ffff29e66c8f9dc6",
+    "bool GetStringAttr(S57Obj *obj,": "2db63d26fe99b691db51b93409cf56540c0ef58fcc7f8bf3c2cc2acc99deadd4",
+    "static int _parseList(": "ced9b3c05e34beefcbca7f060d1eb7f77368e6517037a5d09c766b77ad6ff077",
+    "static void *LIGHTS06(void *param)\n": "99dbc4761c76b92cb502e561b0fa7a748f58e2b3dbe267f90851cf1f569b5471"
+  },
+  "limits": "Actual loader/RenderSY/conditional bodies; fixture objects and recorded painter calls. No full canvas, GL draw, plugin or boat."
+}

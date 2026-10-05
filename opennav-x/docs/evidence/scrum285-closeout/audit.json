@@ -1,0 +1,141 @@
+{
+  "issue": "SCRUM-285",
+  "auditBase": "10b77d7c858919733519c1709e9fb964f05c5b12",
+  "frozenLocal": "0a52a6cfe3bd3b4a1e6253d609bd9dc046016bd4",
+  "nativeProofLocal": "c552f6158fda4ccdb995f05d876a6bf6107e326d",
+  "nativeProofRemote": "ab92dc78cd99e945a08b7a00d2b8166a5841f954",
+  "retainedArtifact": {
+    "id": 11288127267,
+    "bytes": 27576,
+    "sha256": "4af23ff5417a38c1a9a916af4145e68e15673f5df1b28faaeeb36cc93f5943f0",
+    "matchesPriorReceipt": true,
+    "entries": 11,
+    "crcFailure": null,
+    "memberIdentityMismatches": []
+  },
+  "sourceComparisons": {
+    "tools/test-ais-runtime-windows.py": {
+      "bytes": 16500,
+      "sha256": "8689934a1cb9abe0ef14faa8fe4ef82e5a4df7599d489a967a67c357c133837e",
+      "matchesNativeReportedIdentity": true,
+      "currentEqualsNativeProofSource": true,
+      "frozenEqualsNativeProofSource": true
+    },
+    "tools/test-ais-project-closure.py": {
+      "bytes": 8040,
+      "sha256": "1b0a29c6652d1ba0d1efd42536fb4e1c534d429009a705c8c09c81daffe7b706",
+      "matchesNativeReportedIdentity": true,
+      "currentEqualsNativeProofSource": true,
+      "frozenEqualsNativeProofSource": true
+    },
+    "tools/test-ais-projects-native.py": {
+      "bytes": 10131,
+      "sha256": "9b1166923904f64a9a746e15d4ccacbfcfc2694a0b365f3acb6d7593b09e2d19",
+      "matchesNativeReportedIdentity": true,
+      "currentEqualsNativeProofSource": true,
+      "frozenEqualsNativeProofSource": true
+    },
+    "tools/windows_dependency_receipt.py": {
+      "bytes": 11184,
+      "sha256": "74457dce87d6529773b743be4c7afa9059cd8182662dcbfebea6f8b07142d350",
+      "matchesNativeReportedIdentity": true,
+      "currentEqualsNativeProofSource": true,
+      "frozenEqualsNativeProofSource": true
+    },
+    "tools/windows_dependency_reuse.py": {
+      "bytes": 8625,
+      "sha256": "4c653c5d787345effcac91c54bd27753c58a1e9430e8a8ef0bbf137e7b162ea7",
+      "matchesNativeReportedIdentity": true,
+      "currentEqualsNativeProofSource": true,
+      "frozenEqualsNativeProofSource": true
+    },
+    "tools/windows_dependency_stage.py": {
+      "bytes": 7858,
+      "sha256": "1c009a9bd10ef56df87bcd6912c364ac024b0640a7f5087996665a8b05140bec",
+      "matchesNativeReportedIdentity": true,
+      "currentEqualsNativeProofSource": true,
+      "frozenEqualsNativeProofSource": true
+    },
+    "tools/windows_dependency_evidence.py": {
+      "bytes": 11203,
+      "sha256": "9d3c6656d85f22e5e8a29761e0bc79e8ed7b95f2fa5c5c44d8ab9acb1a9942ef",
+      "matchesNativeReportedIdentity": true,
+      "currentEqualsNativeProofSource": true,
+      "frozenEqualsNativeProofSource": true
+    },
+    "tests/fixtures/ais-projects-4dd/manifest.json": {
+      "bytes": 2471,
+      "sha256": "dcb85ac5237621586f8f54d7ef447f72c9b95b110fe2aff1a2404d77c773688a",
+      "matchesNativeReportedIdentity": true,
+      "currentEqualsNativeProofSource": true,
+      "frozenEqualsNativeProofSource": true
+    },
+    "tests/fixtures/ais-projects-4dd/projects.zip": {
+      "bytes": 25840,
+      "sha256": "b4ef8b4e2109d6f19c58677eb4f86ca25358620694f9fc7d474c4695a437da01",
+      "matchesNativeReportedIdentity": true,
+      "currentEqualsNativeProofSource": true,
+      "frozenEqualsNativeProofSource": true
+    },
+    ".github/workflows/skager-ais-project-closure.yml": {
+      "bytes": 1231,
+      "sha256": "d8fa426eba2173cd35a92c15b5c1541806af44a72232ffe4965eaa8446a8267d",
+      "matchesNativeReportedIdentity": true,
+      "currentEqualsNativeProofSource": true,
+      "frozenEqualsNativeProofSource": true
+    }
+  },
+  "nativeFocusedResult": {
+    "passed": true,
+    "tests": 8,
+    "skipped": 0,
+    "originalRun": 37155858878,
+    "originalCommit": "4ddf1f383e495150551946dd36103cd77cea85eb",
+    "expectedClosure": [
+      "ais_provider_test_client",
+      "ais_session_native",
+      "ais_transport_test_client",
+      "ixwebsocket",
+      "opennav_ais",
+      "opennav_ais_codec",
+      "opennav_ais_credentials",
+      "opennav_vessel"
+    ],
+    "scope": "Original generated project parsing only; no AIS/native binary execution"
+  },
+  "originalProjectMemberMismatches": [],
+  "downstreamSourceGuard": {
+    "sha256": "3f7701b70648ddf1ae3de01fa0e27f6117a5a57e6c54ca159152093ce3ff0def",
+    "matchesOriginalManifest": true
+  },
+  "workflow": {
+    "bytes": 47456,
+    "sha256": "e63dfed1f88054a71152331e420ca36a20b24004c2418a4d8627f5518c0a195c",
+    "equalsFrozenSource": true
+  },
+  "interimStageReceipt": {
+    "path": "docs/evidence/windows-17ab044-interim-stages.json",
+    "bytes": 10593,
+    "sha256": "f22f987ede32e0968219a7a2a64461160e5aa565429235752a470ccad0945f2d",
+    "observedUtc": "2026-10-04 01:56:39 UTC",
+    "runId": 37164360050,
+    "remoteCommit": "17ab044a1e5222dc71791ac8118454219efe8734",
+    "attempt": 1,
+    "jobId": 111325149619,
+    "jobStatusAtObservation": "in_progress",
+    "jobConclusionAtObservation": null,
+    "aisStep": {
+      "name": "Native AIS observation and transport with same-job maintained TLS",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 18,
+      "started_at": "2026-10-04T01:52:29Z",
+      "completed_at": "2026-10-04T01:55:11Z"
+    }
+  },
+  "limits": [
+    "No tests, CI polling, downloads, compilation or boat operations",
+    "Step success only; no detailed current runtime report audited",
+    "SCRUM-274, package, native visual and boat/release gates remain separate"
+  ]
+}

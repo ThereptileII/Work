@@ -1,0 +1,17 @@
+{"kind": "abi", "machine": "x86-64 SysV", "argument_boundary": "Exact mangled symbol entry before prologue", "layout": {"s52plib.vp_plib": 2352, "s52plib.m_nSymbolStyle": 0, "VPointCompat.pix_width": 0, "VPointCompat.pix_height": 4, "ObjRazRules.obj": 8, "ObjRazRules.LUP": 0, "S57Obj.FeatureName": 0, "S57Obj.Index": 40, "S57Obj.m_lat": 152, "S57Obj.m_lon": 160, "Rules.razRule": 16, "Rule.name": 4, "Rule.definition": 12, "LUPrec.TNAM": 24, "wxPoint.x": 0, "wxPoint.y": 4, "pointerBytes": 8}}
+{"kind": "RenderSY", "class": "BOYLAT", "object_index": 218, "latitude": -32.5237974, "longitude": 61.0192483, "symbol": "BOYLAT13", "definition": 82, "lookup_table": 76, "effective_symbol_table": 76}
+{"kind": "RenderSY", "class": "LIGHTS", "object_index": 397, "latitude": -32.5230041, "longitude": 61.0057736, "symbol": "LIGHTS11", "definition": 86, "lookup_table": 76, "effective_symbol_table": 76}
+{"kind": "RenderSY", "class": "BOYISD", "object_index": 453, "latitude": -32.5377607, "longitude": 61.0432378, "symbol": "BOYISD12", "definition": 82, "lookup_table": 76, "effective_symbol_table": 76}
+{"kind": "RenderRasterSymbol", "class": "BOYISD", "object_index": 453, "latitude": -32.5377607, "longitude": 61.0432378, "symbol": "BOYISD12", "definition": 82, "lookup_table": 76, "effective_symbol_table": 76, "pixel_x": 746, "pixel_y": 46, "canvas_width": 1014, "canvas_height": 566}
+{"kind": "RenderSY", "class": "LIGHTS", "object_index": 454, "latitude": -32.5377607, "longitude": 61.0432378, "symbol": "LIGHTS13", "definition": 86, "lookup_table": 76, "effective_symbol_table": 76}
+{"kind": "RenderSY", "class": "BOYLAT", "object_index": 456, "latitude": -32.53667, "longitude": 61.0194105, "symbol": "BOYLAT13", "definition": 82, "lookup_table": 76, "effective_symbol_table": 76}
+{"kind": "RenderSY", "class": "LIGHTS", "object_index": 457, "latitude": -32.53667, "longitude": 61.0194105, "symbol": "LIGHTS12", "definition": 86, "lookup_table": 76, "effective_symbol_table": 76}
+{"kind": "RenderSY", "class": "BOYLAT", "object_index": 459, "latitude": -32.5308109, "longitude": 61.0276278, "symbol": "BOYLAT24", "definition": 82, "lookup_table": 76, "effective_symbol_table": 76}
+{"kind": "RenderSY", "class": "LIGHTS", "object_index": 460, "latitude": -32.5308109, "longitude": 61.0276278, "symbol": "LIGHTS11", "definition": 86, "lookup_table": 76, "effective_symbol_table": 76}
+{"kind": "RenderSY", "class": "BOYSPP", "object_index": 1058, "latitude": -32.5471795, "longitude": 61.0544614, "symbol": "BOYSPP11", "definition": 82, "lookup_table": 76, "effective_symbol_table": 76}
+{"kind": "RenderSY", "class": "BOYSAW", "object_index": 1388, "latitude": -32.5521544, "longitude": 61.0260879, "symbol": "BOYSAW12", "definition": 82, "lookup_table": 76, "effective_symbol_table": 76}
+{"kind": "RenderRasterSymbol", "class": "BOYSAW", "object_index": 1388, "latitude": -32.5521544, "longitude": 61.0260879, "symbol": "BOYSAW12", "definition": 82, "lookup_table": 76, "effective_symbol_table": 76, "pixel_x": 268, "pixel_y": 521, "canvas_width": 1014, "canvas_height": 566}
+{"kind": "trace_disabled", "probe": "RenderRasterSymbol", "reason": "all_requested_geometry_observed", "hits": 22}
+{"kind": "RenderSY", "class": "LIGHTS", "object_index": 1389, "latitude": -32.5521544, "longitude": 61.0260879, "symbol": "LIGHTS13", "definition": 86, "lookup_table": 76, "effective_symbol_table": 76}
+{"kind": "trace_disabled", "probe": "RenderSY", "reason": "all_requested_geometry_observed", "hits": 29}
+{"kind": "inferior_exit", "exit_code": 0}

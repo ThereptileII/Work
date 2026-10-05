@@ -36,9 +36,32 @@ jobs:
           cache-dependency-path: opennav-x/tools/update-verifier/go.sum
       - run: go test -count=1 -json ./... > verifier-tests.json
       - run: go vet ./...
+      - name: Native authenticated startup and interruption records
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          & ../test-update-transaction.ps1 *>&1 | Tee-Object -FilePath transaction-tests.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
           name: update-verifier-${{ matrix.os }}-${{ matrix.arch }}-${{ github.sha }}
-          path: opennav-x/tools/update-verifier/verifier-tests.json
+          path: |
+            opennav-x/tools/update-verifier/verifier-tests.json
+            opennav-x/tools/update-verifier/transaction-tests.log
+          if-no-files-found: error
+
+  startup-popup:
+    name: Native startup update interactions
+    runs-on: windows-2022
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Build only the startup model and native popup
+        run: python opennav-x/tools/test-startup-update-windows.py --evidence opennav-x/build/startup-update-native-evidence
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: startup-update-native-${{ github.sha }}
+          path: opennav-x/build/startup-update-native-evidence
           if-no-files-found: error

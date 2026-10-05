@@ -1,0 +1,85 @@
+{
+  "staged": {
+    "schema": 1,
+    "commit": "f0976cc65ea63d3ed6f60ac53ec38a856d11b66b",
+    "binary_sha256": "97c6ee19043a3fe6bd66a099451c26c8a0f5e2f3cf77b8e2fe626f2ab3e38e3e",
+    "build_flags": {
+      "OCPN_BUILD_TEST": "ON",
+      "OPENNAV_ENABLE_ROUTE_SCENARIO": "ON",
+      "XNAV_ENABLE_PILOT_LOOPBACK_TESTS": "ON",
+      "XNAV_ENABLE_TEST_FIXTURES": "ON"
+    },
+    "manifest_sha256": "7c1f9e41f7dbd99b322a5c1cc9a4c0b73b8ad3ba3505c7da89f05ddc5e4abe39",
+    "resource_files": {
+      "chartsymbols.xml": {
+        "sha256": "980eb621e5c8cc52815bb25e3e288daf71ca9a8551b9509b65b7447e03b54d7c",
+        "bytes": 2232038
+      },
+      "S52RAZDS.RLE": {
+        "sha256": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26",
+        "bytes": 1305627
+      },
+      "rastersymbols-day.png": {
+        "sha256": "c2b8a3b646a15d1483b060a4df1a470af278221db0f219a31f18963a94c9979f",
+        "bytes": 196751
+      },
+      "rastersymbols-dusk.png": {
+        "sha256": "1beac21361321e7b71c8270c3430decd2a27954e5eddd987bba79494ad1c8b4a",
+        "bytes": 171356
+      },
+      "rastersymbols-dark.png": {
+        "sha256": "bdf132c9799214470fab355af467768b43f26b86ee6483d9b2363e91714ca434",
+        "bytes": 166498
+      }
+    },
+    "source_evidence": {
+      "src/integration/ChartNameTypography.h": "23688fca7f9ed456e7458fe1228e0bf9908660a953732cb6e6749c5838e1f4d9",
+      "src/integration/ChartCogPredictor.h": "3e7841bb311bb9d4951be082a669f4737ee978dd426df4899a22bc9971033c90",
+      "src/integration/ChartPresentation.cpp": "9e26a9b5b5dabe603d14cff54c203f39b669270af88bd7a13705b037c6c859a4",
+      "patches/opencpn-5.12.4-xnav.patch": "dfbacadf42502d1d0366745b3a187d256e620b0d2ea7dba9e8912c46e999e0b3",
+      "patches/opencpn-5.12.4-chart-presentation.patch": "6c7b0a2dbe0573de1aa141086047ae37570c731c0d0debc491c3012083c54fc1",
+      "resources/chart-style/v1/definition.json": "d3f7b80887d234802137da6580c74b3162dfe38184b416c158024cb340233702",
+      "docs/design/prototype-tokens.json": "111ee35527a974b2df6c2c4af0afd04e5aebdf14bad3004a98be9064aef790c6",
+      "src/application/SkagerBrandAsset.h": "cc9f469181717b4fb80986b9406d2d6d078bfdb5971d2e68f6b4072b8dcd2019",
+      "resources/branding/provenance.json": "f639aa4ffa1194fb527388b15b2f9880746829d4120e30b4ddca32b0326557a6"
+    },
+    "authority": "Private Linux development staging only; not a production, native Windows or boat qualification",
+    "runtime_identity": "Must be confirmed by loader self-test and capture diagnostics before accepting images"
+  },
+  "frozen": {
+    "schema": 1,
+    "commit": "f0976cc65ea63d3ed6f60ac53ec38a856d11b66b",
+    "upstreamCommit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+    "patches": {
+      "opencpn-5.12.4-xnav.patch": "dfbacadf42502d1d0366745b3a187d256e620b0d2ea7dba9e8912c46e999e0b3",
+      "opencpn-5.12.4-regression-tests.patch": "3ef13652b8f3717d836883d2fbb7a18f35dbd2ca1162ac991fe339e61392dff1",
+      "opencpn-5.12.4-ais-transport.patch": "d343a0a7a77817c55b16734516b7d686dbfc2eb3f4207b43b6099d7d98c9b2f6",
+      "opencpn-5.12.4-chart-presentation.patch": "6c7b0a2dbe0573de1aa141086047ae37570c731c0d0debc491c3012083c54fc1",
+      "opencpn-5.12.4-maintained-curl.patch": "dafa1fec0a69e3a1195db726c2cb26ceeb7535b5e25476ac2e4658d910f44e48",
+      "opencpn-5.12.4-download-trust.patch": "04763cb038ad088a722e76d4f85bde7e356489b697a373458195336d4278412b",
+      "opencpn-5.12.4-wxcurl-trust.patch": "f3ad76fc07b80e6f2c01331894ce5e685f6aa4456a2a3c761e3115c8c21f3d6b",
+      "opencpn-5.12.4-peer-response-buffer.patch": "c335f361766a6982c3d096e93f7c149179deb33134668e110111ac4980064e15",
+      "opencpn-5.12.4-peer-unavailable.patch": "5bf1c2ae4b09043ce18151f766aebd2b881b993f352000e34399de7e8b36b6d3"
+    },
+    "previousAppCommit": "6dd6665396b465100986cd418e38ba099a117612",
+    "changedUpstreamFiles": [],
+    "isolation": "Read-only root; private cache writable; original CMake paths remapped"
+  },
+  "collectorPreparation": {
+    "source": "tools/smoke-navigation.py",
+    "sourceSha256": "25638f0c58b7fff39b18cbcdfe829d1262878fcb6ff11c903695e826d3bde59e",
+    "collectorSha256": "82ab2ceb777578ca4d3260c17fd7674a3444af71e196fd7a1a63ab563db0530a",
+    "preservedOriginalAssertions": 111,
+    "collectorAssertions": 112,
+    "routeScenarioSha256": "a43b36b4ea05da81491c2d0c7489e2c00c7ac7006422e94b9a02798f3ba0f7da",
+    "preparedOnly": true,
+    "launchRequires": "Explicit parent final source commit and installed executable SHA256; no launch performed"
+  },
+  "scope": "Isolated copied actual route scenario; no external input/output, model-pointer injection, product or frozen cache edits",
+  "rendererRequested": "software",
+  "upstreamPatchValidation": "Root frozen source; patch identities independently retained here",
+  "collectorHelperSha256": "78ba468f79732981ab5422ff4b344f0d3beff9143cb4232284943332a11550ff",
+  "exitCode": 1,
+  "identitiesUnchangedAfter": true,
+  "glEvidence": []
+}

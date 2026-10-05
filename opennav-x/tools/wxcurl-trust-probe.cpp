@@ -3,6 +3,9 @@
 #include <wx/curl/http.h>
 #include <wx/init.h>
 #include <wx/mstream.h>
+#ifdef _WIN32
+#include "TrustProbeConsole.h"
+#endif
 
 struct CurlSession {
   CurlSession() { wxCurlBase::Init(); }
@@ -26,7 +29,11 @@ class ProbeHTTP : public wxCurlHTTP {
 
 int main(int argc, char** argv) {
   if (argc != 2 && argc != 3) return 2;
+#ifdef _WIN32
+  opennav::TrustProbeConsole initializer;
+#else
   wxInitializer initializer;
+#endif
   if (!initializer.IsOk()) return 3;
   CurlSession curl_session;
   const wxString url = wxString::FromUTF8(argv[argc - 1]);
@@ -34,17 +41,21 @@ int main(int argc, char** argv) {
     if (std::string(argv[1]) != "--configure") return 2;
     ProbeHTTP configured;
     const bool ok = configured.ConfigureOnly(url);
-    std::cout << "configure_ok=" << (ok ? "true" : "false") << "\n";
+    std::cout << "configure_ok=" << (ok ? "true" : "false") << "\n" << std::flush;
     return ok ? 0 : 1;
   }
   ProbeHTTP guard;
+  std::cerr << "stage: rejected-option check" << std::endl;
   const bool bad_option_blocked = guard.BadOptionBlocksPerform(url);
   wxCurlHTTP http;
   wxMemoryOutputStream output;
+  std::cerr << "stage: wxCurl GET begin" << std::endl;
   const bool get_ok = http.Get(output, url);
   const std::string get_error = http.GetErrorString();
   const std::string get_detail = http.GetDetailedErrorString();
+  std::cerr << "stage: wxCurl GET returned; HEAD begin" << std::endl;
   const bool head_ok = http.Head(url);
+  std::cerr << "stage: wxCurl HEAD returned" << std::endl;
   std::cout << "bad_option_blocked="
             << (bad_option_blocked ? "true" : "false") << "\n"
             << "get_ok=" << (get_ok ? "true" : "false") << "\n"
@@ -53,6 +64,6 @@ int main(int argc, char** argv) {
             << "get_detail=" << get_detail << "\n"
             << "head_ok=" << (head_ok ? "true" : "false") << "\n"
             << "head_error=" << http.GetErrorString() << "\n"
-            << "head_detail=" << http.GetDetailedErrorString() << "\n";
+            << "head_detail=" << http.GetDetailedErrorString() << "\n" << std::flush;
   return bad_option_blocked && get_ok && head_ok ? 0 : 1;
 }

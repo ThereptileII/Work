@@ -34,7 +34,7 @@ Parts Middle(const application::FooterView &v, LightMode mode) {
   const auto c = Theme(mode);
   return {{"COG",9,400,c.muted}, {wxString::FromUTF8(v.cog),7,500,StateInk(v.cog_state,c),.7},
           {"/",9,400,c.border,0,false,true}, {"XTE",9,400,c.muted},
-          {wxString::FromUTF8(v.xte),9,500,c.secondary,.18}};
+          {wxString::FromUTF8(v.xte),9,500,StateInk(v.xte_state,c),.18}};
 }
 Parts Health(const application::FooterView &v, LightMode mode) {
   const auto c = Theme(mode);
@@ -80,7 +80,7 @@ void Draw(wxWindow &w,wxDC &dc,const Parts &parts,double x,int height,double bri
 }
 auto Visual(const application::FooterView &v) {
   return std::make_tuple(v.navigation_state,v.position,v.cog,v.xte,v.health_source,
-                        v.health_summary,v.position_state,v.cog_state,v.health_state,v.historical);
+                        v.health_summary,v.position_state,v.cog_state,v.xte_state,v.xte_hint,v.health_state,v.historical);
 }
 }
 class FooterHealthButton final : public XNavButton {
@@ -131,7 +131,7 @@ class FooterHealthButton final : public XNavButton {
 };
 XNavStatusFooter::XNavStatusFooter(wxWindow *parent,std::function<void()> health)
     :wxPanel(parent,wxID_ANY) {
-  SetName("OpenNav status footer");SetLabel("OpenNav status footer");
+  SetName("OpenNav status footer");SetLabel("SKAGER status footer");
   SetBackgroundStyle(wxBG_STYLE_PAINT);SetMinSize(FromDIP(wxSize(0,34)));
   health_=new FooterHealthButton(this,std::move(health));
   Bind(wxEVT_PAINT,&XNavStatusFooter::Paint,this);
@@ -140,7 +140,7 @@ XNavStatusFooter::XNavStatusFooter(wxWindow *parent,std::function<void()> health
 void XNavStatusFooter::Update(application::FooterView view,LightMode mode) {
   const bool changed=Visual(view_)!=Visual(view)||mode_!=mode;
   view_=std::move(view);mode_=mode;
-  if(changed) {health_->Present(view_,mode_);Layout();Refresh(false);}
+  if(changed) {SetToolTip(wxString::FromUTF8(view_.xte_hint));SetHelpText(wxString::FromUTF8(view_.xte_hint));health_->Present(view_,mode_);Layout();Refresh(false);}
 }
 bool XNavStatusFooter::Layout() {
   const auto size=GetClientSize();const int padding=FromDIP(20);

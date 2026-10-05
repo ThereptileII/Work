@@ -449,3 +449,194 @@ index 8473c55c9..99cad7865 100644
  
          // Contains all messages that are waiting to be sent
          std::vector<uint8_t> _txbuf;
+diff --git i/libs/IXWebSocket/CMakeLists.txt w/libs/IXWebSocket/CMakeLists.txt
+index ab4e3f6..5033bd0 100644
+--- i/libs/IXWebSocket/CMakeLists.txt
++++ w/libs/IXWebSocket/CMakeLists.txt
+@@ -90,6 +90,7 @@ set( IXWEBSOCKET_HEADERS
+     ixwebsocket/IXSelectInterruptEvent.h
+     ixwebsocket/IXSetThreadName.h
+     ixwebsocket/IXSocket.h
++    ixwebsocket/IXSocketConnectionInfo.h
+     ixwebsocket/IXSocketConnect.h
+     ixwebsocket/IXSocketFactory.h
+     ixwebsocket/IXSocketServer.h
+diff --git i/libs/IXWebSocket/ixwebsocket/IXSocket.cpp w/libs/IXWebSocket/ixwebsocket/IXSocket.cpp
+index 03ab0f5..1984a38 100644
+--- i/libs/IXWebSocket/ixwebsocket/IXSocket.cpp
++++ w/libs/IXWebSocket/ixwebsocket/IXSocket.cpp
+@@ -230,6 +230,46 @@ namespace ix
+         return _sockfd != -1;
+     }
+ 
++    SocketConnectionInfo Socket::getConnectionInfo()
++    {
++        std::lock_guard<std::mutex> lock(_socketMutex);
++        const int fd = _sockfd;
++        SocketConnectionInfo result;
++        if (fd == -1) return result;
++        sockaddr_storage local{}, remote{};
++        socklen_t localSize = sizeof(local), remoteSize = sizeof(remote);
++        if (getsockname(fd, reinterpret_cast<sockaddr*>(&local), &localSize) != 0 ||
++            getpeername(fd, reinterpret_cast<sockaddr*>(&remote), &remoteSize) != 0 ||
++            local.ss_family != remote.ss_family) return result;
++        if (local.ss_family == AF_INET && localSize >= sizeof(sockaddr_in) &&
++            remoteSize >= sizeof(sockaddr_in))
++        {
++            const auto& l = reinterpret_cast<const sockaddr_in&>(local);
++            const auto& r = reinterpret_cast<const sockaddr_in&>(remote);
++            memcpy(result.local.address.data(), &l.sin_addr, 4);
++            memcpy(result.remote.address.data(), &r.sin_addr, 4);
++            result.local.port = ntohs(l.sin_port);
++            result.remote.port = ntohs(r.sin_port);
++            result.family = SocketConnectionInfo::Family::IPv4;
++        }
++        else if (local.ss_family == AF_INET6 && localSize >= sizeof(sockaddr_in6) &&
++                 remoteSize >= sizeof(sockaddr_in6))
++        {
++            const auto& l = reinterpret_cast<const sockaddr_in6&>(local);
++            const auto& r = reinterpret_cast<const sockaddr_in6&>(remote);
++            memcpy(result.local.address.data(), &l.sin6_addr, 16);
++            memcpy(result.remote.address.data(), &r.sin6_addr, 16);
++            result.local.port = ntohs(l.sin6_port);
++            result.remote.port = ntohs(r.sin6_port);
++            result.local.scope = l.sin6_scope_id;
++            result.remote.scope = r.sin6_scope_id;
++            result.family = SocketConnectionInfo::Family::IPv6;
++        }
++        if (!result.local.port || !result.remote.port) return {};
++        result.capturedAt = std::chrono::steady_clock::now();
++        return result;
++    }
++
+     void Socket::close()
+     {
+         std::lock_guard<std::mutex> lock(_socketMutex);
+diff --git i/libs/IXWebSocket/ixwebsocket/IXSocket.h w/libs/IXWebSocket/ixwebsocket/IXSocket.h
+index 1623779..9d25177 100644
+--- i/libs/IXWebSocket/ixwebsocket/IXSocket.h
++++ w/libs/IXWebSocket/ixwebsocket/IXSocket.h
+@@ -23,6 +23,7 @@ typedef int ssize_t;
+ #endif
+ 
+ #include "IXCancellationRequest.h"
++#include "IXSocketConnectionInfo.h"
+ #include "IXProgressCallback.h"
+ #include "IXSelectInterrupt.h"
+ 
+@@ -62,6 +63,10 @@ namespace ix
+                              const CancellationRequest& isCancellationRequested);
+         virtual void close();
+ 
++        // Caller holds the transport lifetime lock after a successful handshake.
++        // Failure returns unavailable and must not change connection behavior.
++        SocketConnectionInfo getConnectionInfo();
++
+         virtual ssize_t send(char* buffer, size_t length);
+         ssize_t send(const std::string& buffer);
+         virtual ssize_t recv(void* buffer, size_t length);
+diff --git i/libs/IXWebSocket/ixwebsocket/IXSocketConnectionInfo.h w/libs/IXWebSocket/ixwebsocket/IXSocketConnectionInfo.h
+new file mode 100644
+index 0000000..24ce4b3
+--- /dev/null
++++ w/libs/IXWebSocket/ixwebsocket/IXSocketConnectionInfo.h
+@@ -0,0 +1,22 @@
++#pragma once
++#include <array>
++#include <chrono>
++#include <cstdint>
++
++namespace ix
++{
++    // Owned numeric values only. A capture is historical, never a liveness claim.
++    struct SocketEndpoint
++    {
++        std::array<uint8_t, 16> address{}; // network-order bytes; IPv4 uses first four
++        uint16_t port = 0;               // host order
++        uint32_t scope = 0;              // IPv6 scope ID; zero for IPv4
++    };
++    struct SocketConnectionInfo
++    {
++        enum class Family { Unavailable, IPv4, IPv6 };
++        Family family = Family::Unavailable;
++        SocketEndpoint local, remote;
++        std::chrono::steady_clock::time_point capturedAt{};
++    };
++}
+diff --git i/libs/IXWebSocket/ixwebsocket/IXWebSocket.cpp w/libs/IXWebSocket/ixwebsocket/IXWebSocket.cpp
+index 5c1694d..55a93ca 100644
+--- i/libs/IXWebSocket/ixwebsocket/IXWebSocket.cpp
++++ w/libs/IXWebSocket/ixwebsocket/IXWebSocket.cpp
+@@ -247,7 +247,7 @@ namespace ix
+             emptyMsg,
+             0,
+             WebSocketErrorInfo(),
+-            WebSocketOpenInfo(status.uri, status.headers, status.protocol),
++            WebSocketOpenInfo(status.uri, status.headers, status.protocol, status.connectionInfo),
+             WebSocketCloseInfo()));
+ 
+         if (_pingIntervalSecs > 0)
+diff --git i/libs/IXWebSocket/ixwebsocket/IXWebSocketInitResult.h w/libs/IXWebSocket/ixwebsocket/IXWebSocketInitResult.h
+index d60e4f8..04a065f 100644
+--- i/libs/IXWebSocket/ixwebsocket/IXWebSocketInitResult.h
++++ w/libs/IXWebSocket/ixwebsocket/IXWebSocketInitResult.h
+@@ -7,11 +7,13 @@
+ #pragma once
+ 
+ #include "IXWebSocketHttpHeaders.h"
++#include "IXSocketConnectionInfo.h"
+ 
+ namespace ix
+ {
+     struct WebSocketInitResult
+     {
++        SocketConnectionInfo connectionInfo;
+         bool success;
+         int http_status;
+         std::string errorStr;
+diff --git i/libs/IXWebSocket/ixwebsocket/IXWebSocketOpenInfo.h w/libs/IXWebSocket/ixwebsocket/IXWebSocketOpenInfo.h
+index 3eb32b0..87be983 100644
+--- i/libs/IXWebSocket/ixwebsocket/IXWebSocketOpenInfo.h
++++ w/libs/IXWebSocket/ixwebsocket/IXWebSocketOpenInfo.h
+@@ -7,6 +7,7 @@
+ #pragma once
+ 
+ #include "IXWebSocketHttpHeaders.h"
++#include "IXSocketConnectionInfo.h"
+ #include <cstdint>
+ #include <string>
+ 
+@@ -14,14 +15,17 @@ namespace ix
+ {
+     struct WebSocketOpenInfo
+     {
++        SocketConnectionInfo connectionInfo;
+         std::string uri;
+         WebSocketHttpHeaders headers;
+         std::string protocol;
+ 
+         WebSocketOpenInfo(const std::string& u = std::string(),
+                           const WebSocketHttpHeaders& h = WebSocketHttpHeaders(),
+-                          const std::string& p = std::string())
+-            : uri(u)
++                          const std::string& p = std::string(),
++                          const SocketConnectionInfo& connection = SocketConnectionInfo())
++            : connectionInfo(connection)
++            , uri(u)
+             , headers(h)
+             , protocol(p)
+         {
+diff --git i/libs/IXWebSocket/ixwebsocket/IXWebSocketTransport.cpp w/libs/IXWebSocket/ixwebsocket/IXWebSocketTransport.cpp
+index ad32a3e..ba3b850 100644
+--- i/libs/IXWebSocket/ixwebsocket/IXWebSocketTransport.cpp
++++ w/libs/IXWebSocket/ixwebsocket/IXWebSocketTransport.cpp
+@@ -169,6 +169,9 @@ namespace ix
+ 
+             if (result.success)
+             {
++                // Still under _socketMutex: the authenticated, upgraded client
++                // socket cannot be replaced/closed while both ends are copied.
++                result.connectionInfo = _socket->getConnectionInfo();
+                 setReadyState(ReadyState::OPEN);
+             }
+             return result;

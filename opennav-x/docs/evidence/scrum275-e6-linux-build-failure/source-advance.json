@@ -1,0 +1,86 @@
+{
+  "from": "e1d01367692f7b8c866be369417e68c836c5d563",
+  "to": "e6ef3843dc604368d32bc823c770bec76d890b69",
+  "oldTreeMatchedAllNinePatches": true,
+  "newTreeMatchedAllNinePatches": true,
+  "changes": [
+    {
+      "path": "gui/include/gui/notification_manager_gui.h",
+      "oldSha256": "4a3734b7b16f1e178a6e081befe4def4e70d4abf7e2a2c891177c506323f1bcf",
+      "sha256": "a6f17d6b7e296621c34473d971e281fa1ec86749919f0af42ca1ad2d4c2c0c15",
+      "mode": "100644"
+    },
+    {
+      "path": "gui/src/notification_manager_gui.cpp",
+      "oldSha256": "0c7ecf3a203c560dbe44bb875a8569dee183c9bdc578e791b4236e2a81e7ac9c",
+      "sha256": "56c0843a7564f4a7cd945ecc53a0511f49c5957ab06e7564bebd08efc373b3d1",
+      "mode": "100644"
+    },
+    {
+      "path": "gui/src/s57chart.cpp",
+      "oldSha256": "312c0704c05e2bee0fe02ca5d84cfbd866e2d86324b02e088f8f9fa692fa27f3",
+      "sha256": "e00bdddf7ce1a5427eba988db9967df14ca02bbd37781ff128026a49f3b3ef48",
+      "mode": "100644"
+    },
+    {
+      "path": "libs/IXWebSocket/CMakeLists.txt",
+      "oldSha256": "11bef0f058b04027d9f8d63d2f1691956fc4639cc5f81b845d366e0cfa9d3f71",
+      "sha256": "317565cf0f380752ca439b6c5520a14d27f03ff66cd00a4af37a666193f57257",
+      "mode": "100644"
+    },
+    {
+      "path": "libs/IXWebSocket/ixwebsocket/IXSocket.cpp",
+      "oldSha256": "207e2d02528b0acfa0ac10d57a30dc06db9f4852bdf706a95d0fc6680b24d998",
+      "sha256": "007edd69bf87d5a713f46b3e8452de15827cbe3d9281e4abe7ec5f59be9a310a",
+      "mode": "100644"
+    },
+    {
+      "path": "libs/IXWebSocket/ixwebsocket/IXSocket.h",
+      "oldSha256": "a32b8e9c0876b08b0ea326eff2446b0ac3079504692857018e2afc118044ccfd",
+      "sha256": "7ad3dece271a111c2d994fd465caa8caa82db138ee0af30b457c8a0b2c06ad20",
+      "mode": "100644"
+    },
+    {
+      "path": "libs/IXWebSocket/ixwebsocket/IXSocketConnectionInfo.h",
+      "oldSha256": null,
+      "sha256": "d5a21ebb587d70057c66e0ca90055ee47cd807063e45b823409f6c510195859f",
+      "mode": "100644"
+    },
+    {
+      "path": "libs/IXWebSocket/ixwebsocket/IXWebSocket.cpp",
+      "oldSha256": "7b4257934da01e044895feef2c5e8ba12e4ca4fe095651873e25d3837ff8e1ac",
+      "sha256": "9cde47f84fef8a87269bcde1f5bfd5ab1d848fd4275c921da00c9edf099cb4bf",
+      "mode": "100644"
+    },
+    {
+      "path": "libs/IXWebSocket/ixwebsocket/IXWebSocketInitResult.h",
+      "oldSha256": "b39954e5c35119957452f05130fc5a1a269b2afba73ea4d239b3855e8ff6efdc",
+      "sha256": "b3f41a1e86ac6deba388d4842e258bc102419160cbe557d47a1c7b8a412bf168",
+      "mode": "100644"
+    },
+    {
+      "path": "libs/IXWebSocket/ixwebsocket/IXWebSocketOpenInfo.h",
+      "oldSha256": "3d827190272867b7d4b9478ed829e2257df4add9c1a19ce00633a6c14d5bf345",
+      "sha256": "8e2afd38d821dfec3411e6389b7bc793223bd3d8a7bcb80f095a29c61d5266d4",
+      "mode": "100644"
+    },
+    {
+      "path": "libs/IXWebSocket/ixwebsocket/IXWebSocketTransport.cpp",
+      "oldSha256": "9b63451b53c966378f31cc253b6d02db60a681fdf8e577b660374dfab6800fac",
+      "sha256": "f0460b8b3307daf5aaa4e1016c20bb3cd3d521870ad66878694fdb0a0552b9b5",
+      "mode": "100644"
+    },
+    {
+      "path": "libs/s52plib/src/s52plib.cpp",
+      "oldSha256": "8e4ff233ee27cfcadf3effd5ab68e9521314fe8d8c26338fac5d9bb474184a26",
+      "sha256": "9fa1ff04a0d37690d291852510845abb1734c134ac306934698ef496d78880a2",
+      "mode": "100755"
+    },
+    {
+      "path": "libs/s52plib/src/s52plib.h",
+      "oldSha256": "4501cf8efd6719152b2626dae822d856705fc325b279af4341d0f82d493f9e5c",
+      "sha256": "48c985754d7b17f451423757a5b1f26007c047bdfd6f2824d236f815c944f8a8",
+      "mode": "100755"
+    }
+  ]
+}

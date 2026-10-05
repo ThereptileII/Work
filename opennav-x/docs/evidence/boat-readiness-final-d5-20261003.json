@@ -1,0 +1,289 @@
+{
+  "scope": "Read-only readiness; no deployment, launch permission or boat acceptance",
+  "observedUtc": {
+    "readiness": "2026-10-03T09:50:27.9597344Z",
+    "fullRecovery": "2026-10-03T09:52:21.5699177Z",
+    "toolHashes": "2026-10-03T09:53:59.3892038Z",
+    "gpu": "2026-10-03T09:53:07.0744712Z"
+  },
+  "candidate": {
+    "localSource": "d5d71356d806ea8c3518644d10728a24f1334d1d",
+    "remoteSource": "b8cfbf809450208f723095ffb4e00d7800b619a5",
+    "runId": 37114216075
+  },
+  "connectivity": {
+    "sshReachable": true,
+    "services": [
+      {
+        "name": "RustDesk",
+        "status": "Running",
+        "startType": "Automatic"
+      },
+      {
+        "name": "sshd",
+        "status": "Running",
+        "startType": "Automatic"
+      },
+      {
+        "name": "Tailscale",
+        "status": "Running",
+        "startType": "Automatic"
+      }
+    ],
+    "tailscale": {
+      "backendState": "Running",
+      "selfOnline": true,
+      "healthWarningCount": 0
+    }
+  },
+  "stock": {
+    "identity": {
+      "bytes": 11624448,
+      "sha256": "7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c"
+    },
+    "version": "5,12,4",
+    "exactSupportedIdentity": true
+  },
+  "stockArchitecture": "x86",
+  "installed": {
+    "commit": "a3e6e0812e01d2aee8f0b83807527b9a0c0fc79a",
+    "version": "0.3.0-beta1",
+    "ownership": {
+      "bytes": 466817,
+      "sha256": "c18363e5a0dd2ed907a92d857660aabdf19e2acf6660481baf7cb3034a431683"
+    },
+    "executable": {
+      "bytes": 13170688,
+      "sha256": "6f20acea9f90c840e0dcfbbf70782c2f1fc2480be7439058b48947cc9f7b91b6"
+    },
+    "executableMatchesOwnership": true
+  },
+  "normalProfile": {
+    "bytes": 21492,
+    "sha256": "d891d88c62657139e1b1c6ff7d9e8acdae726a4e116dbc844126992a39adbdb6"
+  },
+  "installState": {
+    "bytes": 461,
+    "sha256": "a6ec7cda54cf855ef3ce78bbe63090bf1a799345c0713dc545c2ccc0a003952d"
+  },
+  "profileAndStateUnchanged": true,
+  "navigationHelperProcessCount": 0,
+  "commissioningActive": false,
+  "display": {
+    "gpu": "Intel(R) UHD Graphics",
+    "resolution": [
+      1920,
+      1080
+    ],
+    "driverVersion": "32.0.101.7088",
+    "storedDpi": 144,
+    "measuredApplicationDpi": false
+  },
+  "coldBaseline": {
+    "launchPermission": false,
+    "liveIniMatches": true,
+    "reviewSha256": "300332ba5fe4a2be25bc4197f86f08784cef0df1efed2234f7c9eea306331c32",
+    "predecessorMatches": true,
+    "savedIniMatches": true,
+    "liveActualEntryCount": 2031,
+    "captureMatches": true,
+    "baselineSha256": "d891d88c62657139e1b1c6ff7d9e8acdae726a4e116dbc844126992a39adbdb6",
+    "liveInventory": {
+      "redirects": 0,
+      "entries": 2031,
+      "mismatches": 0,
+      "matched": 2031
+    },
+    "baselineBytes": 21492,
+    "backupInventory": {
+      "redirects": 0,
+      "entries": 2031,
+      "mismatches": 0,
+      "matched": 2031
+    },
+    "reviewMatches": true,
+    "preservationOnly": true,
+    "captureSha256": "705b10e2984accfd6fce5c7dd9eb18c84aa182bfeff855efa60bd06e3c4d994b",
+    "recordSha256": "543f63c4583140917208a54dac2419540bc418b43143e74a939c618da29d1470"
+  },
+  "recoverySet": {
+    "profile": {
+      "redirects": 0,
+      "entries": 2008,
+      "mismatches": 0,
+      "matched": 2008
+    },
+    "recordSha256": "9f945ac465d056e22c6b410c77e125b6c6d105f05c7a1f0bd39769b54a8aae11",
+    "application": {
+      "redirects": 0,
+      "entries": 2123,
+      "mismatches": 0,
+      "matched": 2123
+    }
+  },
+  "oldPortable": [
+    {
+      "exeSha256": "6f20acea9f90c840e0dcfbbf70782c2f1fc2480be7439058b48947cc9f7b91b6",
+      "entries": 1257,
+      "manifestSha256": "cc20964137e65a45f75d908efb7e7f2cc05256a242efd92885b43d5ff2e2e619",
+      "markerExists": true
+    }
+  ],
+  "stagedTools": {
+    "commit": "ffa2de31ae02ca826ec5d3604f57a8c619035bb1",
+    "completionSha256": "f62f62745b5aeb86f03b5a72299eaf76f947b1c2190876740c8258ebadea3ac8",
+    "completionHashMatches": true,
+    "files": 117,
+    "allMatchIndependentManifest": true,
+    "qualifiedLocalSource": "3da0e563de40f71fdb5c31df89c9ec65a04826b5",
+    "previousNativeRun": 37090716935,
+    "currentAuditRepeatsNativeQualification": false
+  },
+  "toolDifferences": [
+    {
+      "path": "tools/boat/Preparation.ps1",
+      "status": "modified",
+      "previousSha256": "a0398b777b4250b0e634455e93ccebeab7c0a470a3e56446ebe7053eb40041f0",
+      "currentSha256": "62b423e73b8abb1cba4ef03839c684ae23db044586d935b567465060fc5912c1",
+      "scope": "error-message text only"
+    },
+    {
+      "path": "tools/boat/RestartWindowNative.cs",
+      "status": "modified",
+      "previousSha256": "941c7d34f17b4777cf9fedb37c0a69714c3a8bef65613e88e0b88eded08d7394",
+      "currentSha256": "9ee80382875318f12a290486b25824f23c98e208bf937a005e052e2850f25cf8",
+      "scope": "error-message text only"
+    },
+    {
+      "path": "tools/boat/ReviewWindowNative.cs",
+      "status": "modified",
+      "previousSha256": "aeab79f285651ba73838da4959e7a3a55fee911bf2555725936a733a8d2d6f89",
+      "currentSha256": "356d1df8d3a9b3100f167536e0115b6ce22f14f00c3a1f5d5151ad0bdacac6a3",
+      "scope": "error-message text only"
+    },
+    {
+      "path": "tools/boat/StockReview.ps1",
+      "status": "modified",
+      "previousSha256": "bf5c2a14f4d68b670ee733e5fd961035e0d55f01188fa90581b20fe3bc19978a",
+      "currentSha256": "5475e2982926fc3a56da987f95db31de1c7cbbc2cdb6946d38bf2ae701d45e00",
+      "scope": "error-message text only"
+    },
+    {
+      "path": "tools/boat/inspect-fonts.ps1",
+      "status": "added",
+      "previousSha256": null,
+      "currentSha256": "be938ac00a1df939a860aae7da5842c47d1d40bd40e013fa60837735d9505248",
+      "scope": "read-only installed font-family inventory"
+    },
+    {
+      "path": "tools/boat/retire-portable.ps1",
+      "status": "modified",
+      "previousSha256": "b30260cefa8944ffd9173061cff6238d0dbc48da2af6385090e33135f494c541",
+      "currentSha256": "1a46cbf1d981500f142ef8d29e37f9cbc28744965bcb5f185d041b8a762283b1",
+      "scope": "error-message text only"
+    },
+    {
+      "path": "tools/boat/smoke-test.ps1",
+      "status": "modified",
+      "previousSha256": "8a3502a2b1f8ead7d532965aaa17ec214a0d4b11df63fcfaca6f823c2eb5902d",
+      "currentSha256": "fe9c5ea91b42ddfb68c1ab013accd993f1d691dc1ba47062ff900c5a309809f4",
+      "scope": "error-message text only"
+    },
+    {
+      "path": "tools/boat/start-official-upgrade.ps1",
+      "status": "modified",
+      "previousSha256": "0d0183cc4207f221aecccb03664349dd9c1dd2443c1c2e9dcf1d93e136a43432",
+      "currentSha256": "e0cbf741b065658fc4b339cf5193bb196d0027b5b276b7fb42a6635f6f3d2597",
+      "scope": "error-message text only"
+    },
+    {
+      "path": "tools/boat/upgrade-official-opencpn.ps1",
+      "status": "modified",
+      "previousSha256": "484acabbe45b165c315c816775831a1b7c10bea60fdc5305f157df06aff66e5e",
+      "currentSha256": "5f2f96d21ba126f8fdd0bf542927a45534d1209a4735e794074662a770415c21",
+      "scope": "error-message text only"
+    },
+    {
+      "path": "tools/boat/upgrade-stock.ps1",
+      "status": "modified",
+      "previousSha256": "2f3a9d3c790cce41a2b659a2847e98339b62fb18764cead794e8e38974c502d7",
+      "currentSha256": "86f35e3f5801b082f89a9fc1302f3a5dc9c8da3c4fdd0996b6a75f1a48093e89",
+      "scope": "error-message text only"
+    }
+  ],
+  "reviewClosureUnchangedAfterQualifiedWindowsCheckoutNormalization": [
+    "Common.ps1",
+    "InteractiveJob.ps1",
+    "Commissioning.ps1",
+    "CommissioningBaseline.ps1",
+    "ColdBaseline.ps1",
+    "ColdChartHelper.ps1",
+    "RestartCommissioning.ps1",
+    "RestartCommissioningPolicy.ps1",
+    "RestartCommissioningPrepare.ps1",
+    "RestartCommissioningArm.ps1",
+    "RestartCommissioningBroker.ps1",
+    "RestartWindowReview.ps1",
+    "ReviewWindow.ps1",
+    "run-mode.ps1",
+    "commission-read-only.ps1",
+    "stop.ps1"
+  ],
+  "normalization": "Staged bundle uses separately proven Windows CRLF checkout; candidate repository source LF was converted only to CRLF for these exact comparisons.",
+  "currentNativeGates": {
+    "observedUtc": "2026-10-03T09:54:56.760Z",
+    "evidenceKind": "GitHub job status only; artifacts not downloaded by this audit",
+    "jobs": [
+      {
+        "id": 111177754640,
+        "name": "Native Win32 commissioning restart process boundary",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 111177754751,
+        "name": "Native private chart loader refusal and fallback gate",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 111177754836,
+        "name": "contracts (windows-2022)",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 111177754837,
+        "name": "Native boat recovery and commissioning contracts",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 111178161834,
+        "name": "Actual restart broker with disposable marker-only installation",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 111178161908,
+        "name": "Fixed guarded mode UI actions on disposable native windows",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 111178794028,
+        "name": "Native MSVC XNav / Legacy / Safe slice",
+        "status": "in_progress",
+        "conclusion": null
+      }
+    ]
+  },
+  "recommendation": "Retain the exact qualified staged ffa2 bundle for guarded commissioning/review/restore; no source-level API or behavior incompatibility identified. Do not stage candidate tooling only for diagnostic wording. Qualify and hash-verify the application package separately before any install or launch.",
+  "limitations": [
+    "Recovery/profile entries were rehashed but ACL acceptance and fresh installed-build/plugin/output audit were not repeated.",
+    "Current-run statuses are API observations, not independently downloaded artifact acceptance by this audit.",
+    "Native application package, installer/display/chart/loader/endurance and actual boat review remain separate gates.",
+    "Native main workflow omits standalone cold-baseline/cold-helper/attempt-ledger suites; retained ffa2 has its separate prior qualification.",
+    "New inspect-fonts.ps1 is read-only inventory and is not required for this review sequence; no dedicated current-run invocation was found."
+  ]
+}

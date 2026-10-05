@@ -1,0 +1,52 @@
+In file included from /usr/include/c++/16/memory:80,
+                 from /home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/src/integration/ChartNameText.h:5,
+                 from /home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/src/integration/ChartLightLabel.h:2,
+                 from /home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/.local/private/libs/s52plib/src/s52s57.h:34,
+                 from /home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/src/integration/ChartCaFan.h:2,
+                 from /home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/src/integration/ChartCableWave.h:2,
+                 from /home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/tests/chart_cable_wave_test.cpp:8:
+In member function ‘void std::default_delete<_Tp>::operator()(_Tp*) const [with _Tp = char]’,
+    inlined from ‘std::unique_ptr<_Tp, _Dp>::~unique_ptr() [with _Tp = char; _Dp = std::default_delete<char>]’ at /usr/include/c++/16/bits/unique_ptr.h:408:17,
+    inlined from ‘bool CGLShaderProgram::addShaderFromSource(const std::string&, GLenum)’ at /home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/.local/private/libs/s52plib/src/Cs52_shaders.h:82:9:
+/usr/include/c++/16/bits/unique_ptr.h:92:9: warning: ‘void operator delete(void*, std::size_t)’ called on pointer returned from a mismatched allocation function [-Wmismatched-new-delete]
+   92 |         delete __ptr;
+      |         ^~~~~~~~~~~~
+In file included from /home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/tests/chart_cable_wave_test.cpp:9:
+/home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/.local/private/libs/s52plib/src/Cs52_shaders.h: In function ‘bool CGLShaderProgram::addShaderFromSource(const std::string&, GLenum)’:
+/home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/.local/private/libs/s52plib/src/Cs52_shaders.h:76:62: note: returned from ‘void* operator new [](std::size_t)’
+   76 |           auto log = std::unique_ptr<char>(new char[logLength]);
+      |                                                              ^
+In member function ‘void std::default_delete<_Tp>::operator()(_Tp*) const [with _Tp = char]’,
+    inlined from ‘std::unique_ptr<_Tp, _Dp>::~unique_ptr() [with _Tp = char; _Dp = std::default_delete<char>]’ at /usr/include/c++/16/bits/unique_ptr.h:408:17,
+    inlined from ‘bool CGLShaderProgram::addShaderFromSource(const std::string&, GLenum)’ at /home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/.local/private/libs/s52plib/src/Cs52_shaders.h:82:9:
+/usr/include/c++/16/bits/unique_ptr.h:92:9: warning: ‘void operator delete(void*, std::size_t)’ called on pointer returned from a mismatched allocation function [-Wmismatched-new-delete]
+   92 |         delete __ptr;
+      |         ^~~~~~~~~~~~
+/home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/.local/private/libs/s52plib/src/Cs52_shaders.h: In function ‘bool CGLShaderProgram::addShaderFromSource(const std::string&, GLenum)’:
+/home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/.local/private/libs/s52plib/src/Cs52_shaders.h:76:62: note: returned from ‘void* operator new [](std::size_t)’
+   76 |           auto log = std::unique_ptr<char>(new char[logLength]);
+      |                                                              ^
+In member function ‘void std::default_delete<_Tp>::operator()(_Tp*) const [with _Tp = char]’,
+    inlined from ‘std::unique_ptr<_Tp, _Dp>::~unique_ptr() [with _Tp = char; _Dp = std::default_delete<char>]’ at /usr/include/c++/16/bits/unique_ptr.h:408:17,
+    inlined from ‘bool CGLShaderProgram::linkProgram()’ at /home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/.local/private/libs/s52plib/src/Cs52_shaders.h:100:9,
+    inlined from ‘int main(int, char**)’ at /home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/tests/chart_cable_wave_test.cpp:55:204:
+/usr/include/c++/16/bits/unique_ptr.h:92:9: warning: ‘void operator delete(void*, std::size_t)’ called on pointer returned from a mismatched allocation function [-Wmismatched-new-delete]
+   92 |         delete __ptr;
+      |         ^~~~~~~~~~~~
+In member function ‘bool CGLShaderProgram::linkProgram()’,
+    inlined from ‘int main(int, char**)’ at /home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/tests/chart_cable_wave_test.cpp:55:204:
+/home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/.local/private/libs/s52plib/src/Cs52_shaders.h:97:62: note: returned from ‘void* operator new [](std::size_t)’
+   97 |           auto log = std::unique_ptr<char>(new char[logLength]);
+      |                                                              ^
+In member function ‘void std::default_delete<_Tp>::operator()(_Tp*) const [with _Tp = char]’,
+    inlined from ‘std::unique_ptr<_Tp, _Dp>::~unique_ptr() [with _Tp = char; _Dp = std::default_delete<char>]’ at /usr/include/c++/16/bits/unique_ptr.h:408:17,
+    inlined from ‘bool CGLShaderProgram::linkProgram()’ at /home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/.local/private/libs/s52plib/src/Cs52_shaders.h:100:9,
+    inlined from ‘int main(int, char**)’ at /home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/tests/chart_cable_wave_test.cpp:55:204:
+/usr/include/c++/16/bits/unique_ptr.h:92:9: warning: ‘void operator delete(void*, std::size_t)’ called on pointer returned from a mismatched allocation function [-Wmismatched-new-delete]
+   92 |         delete __ptr;
+      |         ^~~~~~~~~~~~
+In member function ‘bool CGLShaderProgram::linkProgram()’,
+    inlined from ‘int main(int, char**)’ at /home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/tests/chart_cable_wave_test.cpp:55:204:
+/home/standard/Projects/X-nav-worktrees/scrum281-cable-waveform/.local/private/libs/s52plib/src/Cs52_shaders.h:97:62: note: returned from ‘void* operator new [](std::size_t)’
+   97 |           auto log = std::unique_ptr<char>(new char[logLength]);
+      |                                                              ^

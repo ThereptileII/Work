@@ -1,0 +1,153 @@
+{
+  "run": {
+    "id": 37097156866,
+    "html_url": "https://github.com/ThereptileII/Work/actions/runs/37097156866",
+    "head_sha": "c9ff4ae2c110d234807a326bc30c25084eb42a5d",
+    "head_branch": "skager-chart-module-preflight",
+    "status": "completed",
+    "conclusion": "success",
+    "run_attempt": 1,
+    "created_at": "2026-10-03T04:37:27Z",
+    "updated_at": "2026-10-03T04:40:55Z",
+    "event": "push",
+    "path": ".github/workflows/skager-windows-changed-units.yml"
+  },
+  "jobs": [
+    {
+      "id": 111129310832,
+      "name": "compile",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-03T04:37:30Z",
+      "completed_at": "2026-10-03T04:40:54Z",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-03T04:37:31Z",
+          "completed_at": "2026-10-03T04:37:32Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-03T04:37:32Z",
+          "completed_at": "2026-10-03T04:37:46Z"
+        },
+        {
+          "name": "Fetch supported OpenCPN source",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-03T04:37:46Z",
+          "completed_at": "2026-10-03T04:37:52Z"
+        },
+        {
+          "name": "Prove native peer CLI home precondition before GUI startup",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 4,
+          "started_at": "2026-10-03T04:37:52Z",
+          "completed_at": "2026-10-03T04:37:52Z"
+        },
+        {
+          "name": "Install capture dependency",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 5,
+          "started_at": "2026-10-03T04:37:52Z",
+          "completed_at": "2026-10-03T04:37:52Z"
+        },
+        {
+          "name": "Verify component runtime staging guards",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-03T04:37:52Z",
+          "completed_at": "2026-10-03T04:37:55Z"
+        },
+        {
+          "name": "Verify strict native drawer geometry oracle",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 7,
+          "started_at": "2026-10-03T04:37:55Z",
+          "completed_at": "2026-10-03T04:37:55Z"
+        },
+        {
+          "name": "Verify strict chart layout and Layers oracle",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 8,
+          "started_at": "2026-10-03T04:37:55Z",
+          "completed_at": "2026-10-03T04:37:55Z"
+        },
+        {
+          "name": "Run selected bounded native proof",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-03T04:37:55Z",
+          "completed_at": "2026-10-03T04:40:47Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-10-03T04:40:47Z",
+          "completed_at": "2026-10-03T04:40:51Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 20,
+          "started_at": "2026-10-03T04:40:51Z",
+          "completed_at": "2026-10-03T04:40:52Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21,
+          "started_at": "2026-10-03T04:40:52Z",
+          "completed_at": "2026-10-03T04:40:53Z"
+        }
+      ]
+    },
+    {
+      "id": 111129311844,
+      "name": "search-reference",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-10-03T04:37:28Z",
+      "completed_at": "2026-10-03T04:37:28Z",
+      "steps": []
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 11264084684,
+      "name": "native-changed-units-c9ff4ae2c110d234807a326bc30c25084eb42a5d",
+      "size_in_bytes": 5515294,
+      "url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/11264084684",
+      "archive_download_url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/11264084684/zip",
+      "expired": false,
+      "created_at": "2026-10-03T04:40:50Z",
+      "expires_at": "2027-01-01T04:37:27Z",
+      "updated_at": "2026-10-03T04:40:50Z",
+      "digest": "sha256:41947b9957002e994f893cf54f4ab428414438c926eb529ff7cf1de3ccc94215",
+      "workflow_run": {
+        "id": 37097156866,
+        "repository_id": 864043804,
+        "head_repository_id": 864043804,
+        "head_branch": "skager-chart-module-preflight",
+        "head_sha": "c9ff4ae2c110d234807a326bc30c25084eb42a5d"
+      }
+    }
+  ]
+}

@@ -1,0 +1,3444 @@
+{
+  "schema": 1,
+  "commit": "9632421f701c5ec74d7a1360bc713c0034faf9af",
+  "binary_sha256": "55b5f9f707be6188bf283c4ece5e992caa43352d77c4a7639a195f60d52e27a3",
+  "build_flags": {
+    "OCPN_BUILD_TEST": "ON",
+    "OPENNAV_ENABLE_ROUTE_SCENARIO": "ON",
+    "XNAV_ENABLE_PILOT_LOOPBACK_TESTS": "ON",
+    "XNAV_ENABLE_TEST_FIXTURES": "ON"
+  },
+  "manifest_sha256": "4af8f1245a59d2280fd74b563fd24f98401dfeb4ff8cdabf927352e5df856fc6",
+  "resource_files": {
+    "chartsymbols.xml": {
+      "sha256": "c483a79be2ef2e60af9f7acc1e63cc2fd390f5f66345db11670ba1a93cbd025c",
+      "bytes": 2238100
+    },
+    "S52RAZDS.RLE": {
+      "sha256": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26",
+      "bytes": 1305627
+    },
+    "rastersymbols-day.png": {
+      "sha256": "fe928da7a7afcee5907c8aa3752e426f44d6ce773f92cc81802b5b87c4e8307e",
+      "bytes": 199579
+    },
+    "rastersymbols-dusk.png": {
+      "sha256": "bf7f4f75287cfb3488b5deb625009f4365f8ef347cd33d820d65c3786a46e161",
+      "bytes": 173975
+    },
+    "rastersymbols-dark.png": {
+      "sha256": "ac8a61fbe1577de2f717ebbe14e3f5e2f6daa67dfe511813b57fb9f1e2029291",
+      "bytes": 169363
+    }
+  },
+  "source_evidence": {
+    "src/integration/ChartNameTypography.h": "23688fca7f9ed456e7458fe1228e0bf9908660a953732cb6e6749c5838e1f4d9",
+    "src/integration/ChartCogPredictor.h": "3e7841bb311bb9d4951be082a669f4737ee978dd426df4899a22bc9971033c90",
+    "src/integration/ChartPresentation.cpp": "f185dea21f4d4cdaa0ecaeb6f8d867fa35adb511d810db919316fe5d6644325a",
+    "patches/opencpn-5.12.4-xnav.patch": "dfbacadf42502d1d0366745b3a187d256e620b0d2ea7dba9e8912c46e999e0b3",
+    "patches/opencpn-5.12.4-chart-presentation.patch": "3f9e35e6b103745df7967730b05867449cd0e7d2fb1f5b90e62ce8c02798ec85",
+    "resources/chart-style/v1/definition.json": "cc4b372518943fdc74d29ec0eb620ee415abe3fda978ec92898eb9e29b8b876c",
+    "docs/design/prototype-tokens.json": "111ee35527a974b2df6c2c4af0afd04e5aebdf14bad3004a98be9064aef790c6",
+    "src/application/SkagerBrandAsset.h": "cc9f469181717b4fb80986b9406d2d6d078bfdb5971d2e68f6b4072b8dcd2019",
+    "resources/branding/provenance.json": "f639aa4ffa1194fb527388b15b2f9880746829d4120e30b4ddca32b0326557a6",
+    "tools/chart_cable_paint.py": "462e92d27cfbf553454c286bc074e166699922fcab0b6874f40c9d7984186822",
+    "tools/chart_day_neutral_ink.py": "0f136c0e9764c7750ab581ef3c9b0c35c976563ceb88d8598eeee5a0e7761840",
+    "src/ui/SkagerWordmark.h": "c2fc3d1afdf88bfd2e884d541e7b3ad4463702cece09057e38f4d496deda9928",
+    "src/integration/OpenCPNIntegration.cpp": "6a678db6af47c8697955977b3984beda0a58f04002fe0e178b45e77ae2d511a2",
+    "tools/chart_anchor_art.py": "af9d7ad15bb78a7eaa8f8ff39256c74e56724b95d782cc2638d0a16ebbbc1904",
+    "tools/chart_cardinal_art.py": "e8b4f52df0d558ec715613c9f737776db0f10f844c3f2769a3f35fd8f670158e",
+    "tools/chart_raster_ink.py": "ffffd4365cdf534b77110cd26ca068fc86a55286e66b8baa5c18811389bfb294",
+    "tools/chart_seamark_art.py": "fd05b5bd463dbed01c27b11e398c01488eec218e3b1deede0466f4125b604748",
+    "tools/chart_service_art.py": "86002da05b15a6f59098d424e794adb383b1c9ba270a90834056d7f8b86a8cc8",
+    "tools/chart_structure_paint.py": "aebe01e1ed890e425a5f1b18e4fc876b00ebb11d78da6382c7c3540128f03ec0"
+  },
+  "authority": "Linux Xvfb opengl development visuals only; not native Windows, production or boat acceptance",
+  "runtime_identity": "Still required from loader self-test and actual capture diagnostics",
+  "renderer_requested": "opengl",
+  "scope": "Official IHO S-64 presentation-test geometry, not operational nautical ENC; three actual-object scenes; controlled simulated loopback RMC; no Demo or injected chart objects",
+  "scene_source": {
+    "fixtureSha256": "c70d9e0f53e149270f85900f8576082db86781d64fbb71aa7d5ceb4af4aa22e3",
+    "featureAuditSha256": "567c4dea09a1d05a11919174e10268b7e75ea9e5ac85c281a10097bd0360e15b",
+    "preferredChannelGap": "No CATLAM3/4 or banded preferred-channel BOYLAT in GB4X0000; GB4X0001 also has only two ordinary single-color BOYLAT.",
+    "scenes": [
+      {
+        "id": "s64-lateral",
+        "cell": "GB4X0000",
+        "kind": "official IHO S-64 test geography, not real-world",
+        "center": [
+          -32.5186315,
+          61.0216421
+        ],
+        "scalePpm": 0.3,
+        "features": [
+          {
+            "class": "BOYLAT",
+            "attributes": {
+              "RCID": 219,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 17,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29141115,
+              "FIDS": 1,
+              "LNAM": "021C01BCA87B0001",
+              "BOYSHP": 1,
+              "CATLAM": 2,
+              "COLOUR": [
+                "4"
+              ],
+              "OBJNAM": "S7",
+              "ogrFid": 218,
+              "longitude": 61.0192483,
+              "latitude": -32.5237974
+            },
+            "expectedPinnedLookup": {
+              "id": "1038",
+              "RCID": "31090",
+              "class": "BOYLAT",
+              "type": "Point",
+              "table": "Simplified",
+              "attributes": [
+                "BOYSHP1",
+                "COLOUR4"
+              ],
+              "instruction": "SY(BOYLAT13);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)",
+              "displayPriority": "Hazards",
+              "radarPriority": "On Top",
+              "displayCategory": "Standard"
+            },
+            "expectedSymbols": {
+              "Standard": "BOYLAT13",
+              "XNav": "XNLAT013"
+            },
+            "related": []
+          },
+          {
+            "class": "BOYLAT",
+            "attributes": {
+              "RCID": 224,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 17,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29140975,
+              "FIDS": 1,
+              "LNAM": "021C01BCA7EF0001",
+              "LNAM_REFS": [
+                "021C01BCA7F00001"
+              ],
+              "FFPT_RIND": [
+                2
+              ],
+              "BOYSHP": 2,
+              "CATLAM": 1,
+              "COLOUR": [
+                "3"
+              ],
+              "OBJNAM": "S6",
+              "ogrFid": 223,
+              "longitude": 61.0240359,
+              "latitude": -32.5134656
+            },
+            "expectedPinnedLookup": {
+              "id": "1039",
+              "RCID": "31091",
+              "class": "BOYLAT",
+              "type": "Point",
+              "table": "Simplified",
+              "attributes": [
+                "BOYSHP2",
+                "COLOUR3"
+              ],
+              "instruction": "SY(BOYLAT24);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)",
+              "displayPriority": "Hazards",
+              "radarPriority": "On Top",
+              "displayCategory": "Standard"
+            },
+            "expectedSymbols": {
+              "Standard": "BOYLAT24",
+              "XNav": "XNLAT024"
+            },
+            "related": [
+              {
+                "class": "LIGHTS",
+                "attributes": {
+                  "RCID": 223,
+                  "PRIM": 1,
+                  "GRUP": 2,
+                  "OBJL": 75,
+                  "RVER": 1,
+                  "AGEN": 540,
+                  "FIDN": 29140976,
+                  "FIDS": 1,
+                  "LNAM": "021C01BCA7F00001",
+                  "COLOUR": [
+                    "3"
+                  ],
+                  "LITCHR": 2,
+                  "SIGGRP": "(1)",
+                  "SIGPER": 5.0,
+                  "ogrFid": 222,
+                  "longitude": 61.0240359,
+                  "latitude": -32.5134656
+                }
+              }
+            ]
+          }
+        ],
+        "exactSelectedFeatureBoundsWSEN": [
+          61.0192483,
+          -32.5237974,
+          61.0240359,
+          -32.5134656
+        ],
+        "symbolTable": "Simplified (nSymbolStyle=76)",
+        "classification": "Expected pinned lookup from supplied attributes; actual emitted paint not yet observed",
+        "sourceFiles": {
+          "GB4X0000.000": {
+            "bytes": 945697,
+            "sha256": "c70d9e0f53e149270f85900f8576082db86781d64fbb71aa7d5ceb4af4aa22e3"
+          }
+        },
+        "scope": "Official IHO S-64 presentation-test geometry, not operational nautical coverage. No object insertion.",
+        "themes": [
+          "Day"
+        ]
+      },
+      {
+        "id": "s64-safe-isolated",
+        "cell": "GB4X0000",
+        "kind": "official IHO S-64 test geography, not real-world",
+        "center": [
+          -32.54495755,
+          61.03466285
+        ],
+        "scalePpm": 0.25,
+        "features": [
+          {
+            "class": "BOYISD",
+            "attributes": {
+              "RCID": 454,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 16,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29141109,
+              "FIDS": 1,
+              "LNAM": "021C01BCA8750001",
+              "LNAM_REFS": [
+                "021C01BCA8760001",
+                "021C01BCA8770001"
+              ],
+              "FFPT_RIND": [
+                2,
+                2
+              ],
+              "BOYSHP": 4,
+              "COLOUR": [
+                "2",
+                "3",
+                "2"
+              ],
+              "COLPAT": [
+                "1"
+              ],
+              "ogrFid": 453,
+              "longitude": 61.0432378,
+              "latitude": -32.5377607
+            },
+            "expectedPinnedLookup": {
+              "id": "1028",
+              "RCID": "31080",
+              "class": "BOYISD",
+              "type": "Point",
+              "table": "Simplified",
+              "attributes": [],
+              "instruction": "SY(BOYISD12);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)",
+              "displayPriority": "Hazards",
+              "radarPriority": "On Top",
+              "displayCategory": "Standard"
+            },
+            "expectedSymbols": {
+              "Standard": "BOYISD12",
+              "XNav": "BOYISD12"
+            },
+            "related": [
+              {
+                "class": "LIGHTS",
+                "attributes": {
+                  "RCID": 455,
+                  "PRIM": 1,
+                  "GRUP": 2,
+                  "OBJL": 75,
+                  "RVER": 1,
+                  "AGEN": 540,
+                  "FIDN": 29141110,
+                  "FIDS": 1,
+                  "LNAM": "021C01BCA8760001",
+                  "COLOUR": [
+                    "1"
+                  ],
+                  "LITCHR": 2,
+                  "SIGGRP": "(2)",
+                  "SIGPER": 10.0,
+                  "ogrFid": 454,
+                  "longitude": 61.0432378,
+                  "latitude": -32.5377607
+                }
+              },
+              {
+                "class": "TOPMAR",
+                "attributes": {
+                  "RCID": 456,
+                  "PRIM": 1,
+                  "GRUP": 2,
+                  "OBJL": 144,
+                  "RVER": 1,
+                  "AGEN": 540,
+                  "FIDN": 29141111,
+                  "FIDS": 1,
+                  "LNAM": "021C01BCA8770001",
+                  "COLOUR": [
+                    "2"
+                  ],
+                  "TOPSHP": 4,
+                  "ogrFid": 455,
+                  "longitude": 61.0432378,
+                  "latitude": -32.5377607
+                }
+              }
+            ]
+          },
+          {
+            "class": "BOYSAW",
+            "attributes": {
+              "RCID": 1389,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 18,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29142425,
+              "FIDS": 1,
+              "LNAM": "021C01BCAD990001",
+              "LNAM_REFS": [
+                "021C01BCAD9A0001"
+              ],
+              "FFPT_RIND": [
+                2
+              ],
+              "BOYSHP": 3,
+              "COLOUR": [
+                "3",
+                "1"
+              ],
+              "COLPAT": [
+                "2"
+              ],
+              "OBJNAM": "Fairway",
+              "ogrFid": 1388,
+              "longitude": 61.0260879,
+              "latitude": -32.5521544
+            },
+            "expectedPinnedLookup": {
+              "id": "1046",
+              "RCID": "31098",
+              "class": "BOYSAW",
+              "type": "Point",
+              "table": "Simplified",
+              "attributes": [],
+              "instruction": "SY(BOYSAW12);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)",
+              "displayPriority": "Hazards",
+              "radarPriority": "On Top",
+              "displayCategory": "Standard"
+            },
+            "expectedSymbols": {
+              "Standard": "BOYSAW12",
+              "XNav": "BOYSAW12"
+            },
+            "related": [
+              {
+                "class": "LIGHTS",
+                "attributes": {
+                  "RCID": 1390,
+                  "PRIM": 1,
+                  "GRUP": 2,
+                  "OBJL": 75,
+                  "RVER": 1,
+                  "AGEN": 540,
+                  "FIDN": 29142426,
+                  "FIDS": 1,
+                  "LNAM": "021C01BCAD9A0001",
+                  "COLOUR": [
+                    "1"
+                  ],
+                  "LITCHR": 7,
+                  "SIGGRP": "(1)",
+                  "SIGPER": 8.0,
+                  "ogrFid": 1389,
+                  "longitude": 61.0260879,
+                  "latitude": -32.5521544
+                }
+              }
+            ]
+          }
+        ],
+        "exactSelectedFeatureBoundsWSEN": [
+          61.0260879,
+          -32.5521544,
+          61.0432378,
+          -32.5377607
+        ],
+        "symbolTable": "Simplified (nSymbolStyle=76)",
+        "classification": "Expected pinned lookup from supplied attributes; actual emitted paint not yet observed",
+        "sourceFiles": {
+          "GB4X0000.000": {
+            "bytes": 945697,
+            "sha256": "c70d9e0f53e149270f85900f8576082db86781d64fbb71aa7d5ceb4af4aa22e3"
+          }
+        },
+        "scope": "Official IHO S-64 presentation-test geometry, not operational nautical coverage. No object insertion.",
+        "themes": [
+          "Day",
+          "Night"
+        ]
+      },
+      {
+        "id": "s64-cardinals",
+        "cell": "GB4X0000",
+        "kind": "official IHO S-64 test geography, not real-world",
+        "center": [
+          -32.37658945,
+          61.0300087
+        ],
+        "scalePpm": 0.12,
+        "features": [
+          {
+            "class": "BOYCAR",
+            "attributes": {
+              "RCID": 82,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 14,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29141015,
+              "FIDS": 1,
+              "LNAM": "021C01BCA8170001",
+              "LNAM_REFS": [
+                "021C01BCA8180001",
+                "021C01BCA8190001",
+                "021C01BCA81A0001"
+              ],
+              "FFPT_RIND": [
+                2,
+                2,
+                2
+              ],
+              "BOYSHP": 4,
+              "CATCAM": 1,
+              "COLOUR": [
+                "2",
+                "6"
+              ],
+              "COLPAT": [
+                "1"
+              ],
+              "OBJNAM": "N Skerries",
+              "ogrFid": 81,
+              "longitude": 61.0334282,
+              "latitude": -32.3630942
+            },
+            "expectedPinnedLookup": {
+              "id": "1022",
+              "RCID": "31074",
+              "class": "BOYCAR",
+              "type": "Point",
+              "table": "Simplified",
+              "attributes": [
+                "CATCAM1"
+              ],
+              "instruction": "SY(BOYCAR01);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)",
+              "displayPriority": "Hazards",
+              "radarPriority": "On Top",
+              "displayCategory": "Standard"
+            },
+            "expectedSymbols": {
+              "Standard": "BOYCAR01",
+              "XNav": "BOYCAR01"
+            },
+            "related": [
+              {
+                "class": "LIGHTS",
+                "attributes": {
+                  "RCID": 80,
+                  "PRIM": 1,
+                  "GRUP": 2,
+                  "OBJL": 75,
+                  "RVER": 1,
+                  "AGEN": 540,
+                  "FIDN": 29141017,
+                  "FIDS": 1,
+                  "LNAM": "021C01BCA8190001",
+                  "COLOUR": [
+                    "1"
+                  ],
+                  "LITCHR": 5,
+                  "SIGGRP": "(1)",
+                  "ogrFid": 79,
+                  "longitude": 61.0334282,
+                  "latitude": -32.3630942
+                }
+              },
+              {
+                "class": "TOPMAR",
+                "attributes": {
+                  "RCID": 79,
+                  "PRIM": 1,
+                  "GRUP": 2,
+                  "OBJL": 144,
+                  "RVER": 1,
+                  "AGEN": 540,
+                  "FIDN": 29141018,
+                  "FIDS": 1,
+                  "LNAM": "021C01BCA81A0001",
+                  "COLOUR": [
+                    "2"
+                  ],
+                  "TOPSHP": 13,
+                  "ogrFid": 78,
+                  "longitude": 61.0334282,
+                  "latitude": -32.3630942
+                }
+              }
+            ]
+          },
+          {
+            "class": "BOYCAR",
+            "attributes": {
+              "RCID": 4,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 14,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29142248,
+              "FIDS": 1,
+              "LNAM": "021C01BCACE80001",
+              "LNAM_REFS": [
+                "021C01BCACE60001",
+                "021C01BCACE70001",
+                "021C01BCACE50001"
+              ],
+              "FFPT_RIND": [
+                2,
+                2,
+                2
+              ],
+              "BOYSHP": 4,
+              "CATCAM": 2,
+              "COLOUR": [
+                "2",
+                "6",
+                "2"
+              ],
+              "COLPAT": [
+                "1"
+              ],
+              "OBJNAM": "E Skerries",
+              "ogrFid": 3,
+              "longitude": 61.0438914,
+              "latitude": -32.3809654
+            },
+            "expectedPinnedLookup": {
+              "id": "1023",
+              "RCID": "31075",
+              "class": "BOYCAR",
+              "type": "Point",
+              "table": "Simplified",
+              "attributes": [
+                "CATCAM2"
+              ],
+              "instruction": "SY(BOYCAR02);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)",
+              "displayPriority": "Hazards",
+              "radarPriority": "On Top",
+              "displayCategory": "Standard"
+            },
+            "expectedSymbols": {
+              "Standard": "BOYCAR02",
+              "XNav": "BOYCAR02"
+            },
+            "related": [
+              {
+                "class": "LIGHTS",
+                "attributes": {
+                  "RCID": 5,
+                  "PRIM": 1,
+                  "GRUP": 2,
+                  "OBJL": 75,
+                  "RVER": 1,
+                  "AGEN": 540,
+                  "FIDN": 29142246,
+                  "FIDS": 1,
+                  "LNAM": "021C01BCACE60001",
+                  "COLOUR": [
+                    "1"
+                  ],
+                  "LITCHR": 5,
+                  "SIGGRP": "(3)",
+                  "SIGPER": 5.0,
+                  "ogrFid": 4,
+                  "longitude": 61.0438914,
+                  "latitude": -32.3809654
+                }
+              },
+              {
+                "class": "TOPMAR",
+                "attributes": {
+                  "RCID": 7,
+                  "PRIM": 1,
+                  "GRUP": 2,
+                  "OBJL": 144,
+                  "RVER": 1,
+                  "AGEN": 540,
+                  "FIDN": 29142245,
+                  "FIDS": 1,
+                  "LNAM": "021C01BCACE50001",
+                  "COLOUR": [
+                    "2"
+                  ],
+                  "TOPSHP": 11,
+                  "ogrFid": 6,
+                  "longitude": 61.0438914,
+                  "latitude": -32.3809654
+                }
+              }
+            ]
+          },
+          {
+            "class": "BOYCAR",
+            "attributes": {
+              "RCID": 72,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 14,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29144027,
+              "FIDS": 1,
+              "LNAM": "021C01BCB3DB0001",
+              "LNAM_REFS": [
+                "021C01BCB3D90001",
+                "021C01BCB3DA0001"
+              ],
+              "FFPT_RIND": [
+                2,
+                2
+              ],
+              "BOYSHP": 4,
+              "CATCAM": 3,
+              "COLOUR": [
+                "6",
+                "2"
+              ],
+              "COLPAT": [
+                "1"
+              ],
+              "OBJNAM": "S Skerries",
+              "ogrFid": 71,
+              "longitude": 61.024495,
+              "latitude": -32.3900847
+            },
+            "expectedPinnedLookup": {
+              "id": "1024",
+              "RCID": "31076",
+              "class": "BOYCAR",
+              "type": "Point",
+              "table": "Simplified",
+              "attributes": [
+                "CATCAM3"
+              ],
+              "instruction": "SY(BOYCAR03);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)",
+              "displayPriority": "Hazards",
+              "radarPriority": "On Top",
+              "displayCategory": "Standard"
+            },
+            "expectedSymbols": {
+              "Standard": "BOYCAR03",
+              "XNav": "BOYCAR03"
+            },
+            "related": [
+              {
+                "class": "LIGHTS",
+                "attributes": {
+                  "RCID": 71,
+                  "PRIM": 1,
+                  "GRUP": 2,
+                  "OBJL": 75,
+                  "RVER": 1,
+                  "AGEN": 540,
+                  "FIDN": 29144026,
+                  "FIDS": 1,
+                  "LNAM": "021C01BCB3DA0001",
+                  "COLOUR": [
+                    "1"
+                  ],
+                  "LITCHR": 26,
+                  "SIGGRP": "(6)(1)",
+                  "ogrFid": 70,
+                  "longitude": 61.024495,
+                  "latitude": -32.3900847
+                }
+              },
+              {
+                "class": "TOPMAR",
+                "attributes": {
+                  "RCID": 70,
+                  "PRIM": 1,
+                  "GRUP": 2,
+                  "OBJL": 144,
+                  "RVER": 1,
+                  "AGEN": 540,
+                  "FIDN": 29144025,
+                  "FIDS": 1,
+                  "LNAM": "021C01BCB3D90001",
+                  "COLOUR": [
+                    "2"
+                  ],
+                  "TOPSHP": 14,
+                  "ogrFid": 69,
+                  "longitude": 61.024495,
+                  "latitude": -32.3900847
+                }
+              }
+            ]
+          },
+          {
+            "class": "BOYCAR",
+            "attributes": {
+              "RCID": 10,
+              "PRIM": 1,
+              "GRUP": 2,
+              "OBJL": 14,
+              "RVER": 1,
+              "AGEN": 540,
+              "FIDN": 29142075,
+              "FIDS": 1,
+              "LNAM": "021C01BCAC3B0001",
+              "LNAM_REFS": [
+                "021C01BCAC380001",
+                "021C01BCAC390001",
+                "021C01BCAC3A0001"
+              ],
+              "FFPT_RIND": [
+                2,
+                2,
+                2
+              ],
+              "BOYSHP": 4,
+              "CATCAM": 4,
+              "COLOUR": [
+                "6",
+                "2",
+                "6"
+              ],
+              "COLPAT": [
+                "1"
+              ],
+              "OBJNAM": "W Skerries",
+              "ogrFid": 9,
+              "longitude": 61.016126,
+              "latitude": -32.3773986
+            },
+            "expectedPinnedLookup": {
+              "id": "1025",
+              "RCID": "31077",
+              "class": "BOYCAR",
+              "type": "Point",
+              "table": "Simplified",
+              "attributes": [
+                "CATCAM4"
+              ],
+              "instruction": "SY(BOYCAR04);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)",
+              "displayPriority": "Hazards",
+              "radarPriority": "On Top",
+              "displayCategory": "Standard"
+            },
+            "expectedSymbols": {
+              "Standard": "BOYCAR04",
+              "XNav": "BOYCAR04"
+            },
+            "related": [
+              {
+                "class": "LIGHTS",
+                "attributes": {
+                  "RCID": 12,
+                  "PRIM": 1,
+                  "GRUP": 2,
+                  "OBJL": 75,
+                  "RVER": 1,
+                  "AGEN": 540,
+                  "FIDN": 29142073,
+                  "FIDS": 1,
+                  "LNAM": "021C01BCAC390001",
+                  "COLOUR": [
+                    "1"
+                  ],
+                  "LITCHR": 5,
+                  "SIGGRP": "(9)",
+                  "SIGPER": 10.0,
+                  "ogrFid": 11,
+                  "longitude": 61.016126,
+                  "latitude": -32.3773986
+                }
+              },
+              {
+                "class": "TOPMAR",
+                "attributes": {
+                  "RCID": 11,
+                  "PRIM": 1,
+                  "GRUP": 2,
+                  "OBJL": 144,
+                  "RVER": 1,
+                  "AGEN": 540,
+                  "FIDN": 29142072,
+                  "FIDS": 1,
+                  "LNAM": "021C01BCAC380001",
+                  "COLOUR": [
+                    "2"
+                  ],
+                  "TOPSHP": 10,
+                  "ogrFid": 10,
+                  "longitude": 61.016126,
+                  "latitude": -32.3773986
+                }
+              }
+            ]
+          }
+        ],
+        "exactSelectedFeatureBoundsWSEN": [
+          61.016126,
+          -32.3900847,
+          61.0438914,
+          -32.3630942
+        ],
+        "symbolTable": "Simplified (nSymbolStyle=76)",
+        "classification": "Expected pinned lookup from supplied attributes; actual emitted paint not yet observed",
+        "sourceFiles": {
+          "GB4X0000.000": {
+            "bytes": 945697,
+            "sha256": "c70d9e0f53e149270f85900f8576082db86781d64fbb71aa7d5ceb4af4aa22e3"
+          }
+        },
+        "scope": "Official IHO S-64 presentation-test geometry, not operational nautical coverage. No object insertion.",
+        "themes": [
+          "Day"
+        ]
+      }
+    ]
+  },
+  "chart_source_files": {
+    "GB4X0000.000": "c70d9e0f53e149270f85900f8576082db86781d64fbb71aa7d5ceb4af4aa22e3"
+  },
+  "captures": [
+    {
+      "name": "s64-lateral-SKAGER-Day",
+      "image_sha256": "68ae4e2f416636238d8eb26e99addd43096ffc3d3e975522dc21db4e886d3e47",
+      "scene": "s64-lateral",
+      "chart": {
+        "canvas_pixels": {
+          "height": 566,
+          "width": 1014
+        },
+        "latitude": -32.5186315,
+        "database_entries": 1,
+        "follow": false,
+        "quilt_members": [
+          {
+            "type": 5,
+            "native_scale": 52000,
+            "file": "GB4X0000.000",
+            "index": 0
+          }
+        ],
+        "opengl_enabled": true,
+        "quilt_reference": 0,
+        "scale_bar": {
+          "height": 29,
+          "y": 505,
+          "width": 26,
+          "x": 191
+        },
+        "depth_unit_type": 1,
+        "quilt": true,
+        "scale_ppm": 0.3000000119,
+        "longitude": 61.0216421,
+        "depth_units_visible": true
+      },
+      "presentation": {
+        "status": "SKAGER presentation v1 / pinned symbols; o-charts: no SKAGER adapter loaded",
+        "saved_point_style": 76,
+        "requested": "XNav",
+        "effective_point_style": 76
+      },
+      "source_feature_crops": [
+        {
+          "class": "BOYLAT",
+          "source_rcid": 219,
+          "bounds": [
+            471,
+            520,
+            543,
+            592
+          ],
+          "draw": {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYLAT",
+            "object_index": 218,
+            "latitude": -32.5237974,
+            "longitude": 61.0192483,
+            "symbol": "XNLAT013",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 427,
+            "pixel_y": 488,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "sha256": "649b82a58f3aade42701b612b778556b3a65737da51e3d944a56516156643187"
+        },
+        {
+          "class": "BOYLAT",
+          "source_rcid": 224,
+          "bounds": [
+            631,
+            110,
+            703,
+            182
+          ],
+          "draw": {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYLAT",
+            "object_index": 223,
+            "latitude": -32.5134656,
+            "longitude": 61.0240359,
+            "symbol": "XNLAT024",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 587,
+            "pixel_y": 78,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "sha256": "b7055b585ebd4bdd428a457f51d0b1bb316641d1e90404f97f6bc661914a8d37"
+        }
+      ],
+      "trace": {
+        "read_only_trace_complete": true,
+        "debugger_timing_note": "Entry breakpoints can delay initial drawing. Both probes disabled before settled snapshots; no inferior calls or model writes.",
+        "draws": [
+          {
+            "kind": "RenderSY",
+            "class": "BOYLAT",
+            "object_index": 218,
+            "latitude": -32.5237974,
+            "longitude": 61.0192483,
+            "symbol": "XNLAT013",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "LIGHTS",
+            "object_index": 222,
+            "latitude": -32.5134656,
+            "longitude": 61.0240359,
+            "symbol": "LIGHTS11",
+            "definition": 86,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "BOYLAT",
+            "object_index": 223,
+            "latitude": -32.5134656,
+            "longitude": 61.0240359,
+            "symbol": "XNLAT024",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          }
+        ],
+        "raster_draws": [
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYLAT",
+            "object_index": 218,
+            "latitude": -32.5237974,
+            "longitude": 61.0192483,
+            "symbol": "XNLAT013",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 427,
+            "pixel_y": 488,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYLAT",
+            "object_index": 223,
+            "latitude": -32.5134656,
+            "longitude": 61.0240359,
+            "symbol": "XNLAT024",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 587,
+            "pixel_y": 78,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          }
+        ]
+      },
+      "water_pixels": 525984,
+      "owned_values": {
+        "Latitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Latitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "66803748",
+          "validity": "Measured",
+          "value": 47.6,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 8,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Longitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Longitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "66803748",
+          "validity": "Measured",
+          "value": -122.36,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 8,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Speed over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Speed over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "66803748",
+          "validity": "Measured",
+          "value": 3,
+          "aging_after_ms": 2000,
+          "unit": "kn",
+          "age_ms": 8,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Course over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Course over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "66803748",
+          "validity": "Measured",
+          "value": 90,
+          "aging_after_ms": 2000,
+          "unit": "deg true",
+          "age_ms": 8,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        }
+      }
+    },
+    {
+      "name": "s64-lateral-Standard-Day",
+      "image_sha256": "473135324d87d71e1facd10368c81a74433df6676414cfc3532713c22050ff26",
+      "scene": "s64-lateral",
+      "chart": {
+        "canvas_pixels": {
+          "height": 566,
+          "width": 1014
+        },
+        "latitude": -32.5186315,
+        "database_entries": 1,
+        "follow": false,
+        "quilt_members": [
+          {
+            "type": 5,
+            "native_scale": 52000,
+            "file": "GB4X0000.000",
+            "index": 0
+          }
+        ],
+        "opengl_enabled": true,
+        "quilt_reference": 0,
+        "scale_bar": {
+          "height": 12,
+          "y": 527,
+          "width": 66,
+          "x": 18
+        },
+        "depth_unit_type": 1,
+        "quilt": true,
+        "scale_ppm": 0.3000000119,
+        "longitude": 61.0216421,
+        "depth_units_visible": true
+      },
+      "presentation": {
+        "status": "Standard OpenCPN presentation; o-charts: no SKAGER adapter loaded",
+        "saved_point_style": 76,
+        "requested": "Standard",
+        "effective_point_style": 76
+      },
+      "source_feature_crops": [
+        {
+          "class": "BOYLAT",
+          "source_rcid": 219,
+          "bounds": [
+            471,
+            520,
+            543,
+            592
+          ],
+          "draw": {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYLAT",
+            "object_index": 218,
+            "latitude": -32.5237974,
+            "longitude": 61.0192483,
+            "symbol": "BOYLAT13",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 427,
+            "pixel_y": 488,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "sha256": "1761294c39478a3676f698663f0768e6a9f392405e9ec39adaa8ef5e84339939"
+        },
+        {
+          "class": "BOYLAT",
+          "source_rcid": 224,
+          "bounds": [
+            631,
+            110,
+            703,
+            182
+          ],
+          "draw": {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYLAT",
+            "object_index": 223,
+            "latitude": -32.5134656,
+            "longitude": 61.0240359,
+            "symbol": "BOYLAT24",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 587,
+            "pixel_y": 78,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "sha256": "711d5c4817c5bf48a38892767e47664394883cdb60adad19d5e21a1a99f1ea68"
+        }
+      ],
+      "trace": {
+        "read_only_trace_complete": true,
+        "debugger_timing_note": "Entry breakpoints can delay initial drawing. Both probes disabled before settled snapshots; no inferior calls or model writes.",
+        "draws": [
+          {
+            "kind": "RenderSY",
+            "class": "BOYLAT",
+            "object_index": 218,
+            "latitude": -32.5237974,
+            "longitude": 61.0192483,
+            "symbol": "BOYLAT13",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "LIGHTS",
+            "object_index": 222,
+            "latitude": -32.5134656,
+            "longitude": 61.0240359,
+            "symbol": "LIGHTS11",
+            "definition": 86,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "BOYLAT",
+            "object_index": 223,
+            "latitude": -32.5134656,
+            "longitude": 61.0240359,
+            "symbol": "BOYLAT24",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          }
+        ],
+        "raster_draws": [
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYLAT",
+            "object_index": 218,
+            "latitude": -32.5237974,
+            "longitude": 61.0192483,
+            "symbol": "BOYLAT13",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 427,
+            "pixel_y": 488,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYLAT",
+            "object_index": 223,
+            "latitude": -32.5134656,
+            "longitude": 61.0240359,
+            "symbol": "BOYLAT24",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 587,
+            "pixel_y": 78,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          }
+        ]
+      },
+      "water_pixels": 522390,
+      "owned_values": {
+        "Latitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Latitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "66811294",
+          "validity": "Measured",
+          "value": 47.6,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 71,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Longitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Longitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "66811294",
+          "validity": "Measured",
+          "value": -122.36,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 71,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Speed over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Speed over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "66811294",
+          "validity": "Measured",
+          "value": 3,
+          "aging_after_ms": 2000,
+          "unit": "kn",
+          "age_ms": 71,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Course over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Course over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "66811294",
+          "validity": "Measured",
+          "value": 90,
+          "aging_after_ms": 2000,
+          "unit": "deg true",
+          "age_ms": 71,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        }
+      }
+    },
+    {
+      "name": "s64-safe-isolated-SKAGER-Day",
+      "image_sha256": "2cf019319ac3619f921942d156767506c8cbcc6e18114004133ca4cfb51694c1",
+      "scene": "s64-safe-isolated",
+      "chart": {
+        "canvas_pixels": {
+          "height": 566,
+          "width": 1014
+        },
+        "latitude": -32.54495755,
+        "database_entries": 1,
+        "follow": false,
+        "quilt_members": [
+          {
+            "type": 5,
+            "native_scale": 52000,
+            "file": "GB4X0000.000",
+            "index": 0
+          }
+        ],
+        "opengl_enabled": true,
+        "quilt_reference": 0,
+        "scale_bar": {
+          "height": 29,
+          "y": 505,
+          "width": 25,
+          "x": 191
+        },
+        "depth_unit_type": 1,
+        "quilt": true,
+        "scale_ppm": 0.25,
+        "longitude": 61.03466285,
+        "depth_units_visible": true
+      },
+      "presentation": {
+        "status": "SKAGER presentation v1 / pinned symbols; o-charts: no SKAGER adapter loaded",
+        "saved_point_style": 76,
+        "requested": "XNav",
+        "effective_point_style": 76
+      },
+      "source_feature_crops": [
+        {
+          "class": "BOYISD",
+          "source_rcid": 454,
+          "bounds": [
+            790,
+            78,
+            862,
+            150
+          ],
+          "draw": {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYISD",
+            "object_index": 453,
+            "latitude": -32.5377607,
+            "longitude": 61.0432378,
+            "symbol": "BOYISD12",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 746,
+            "pixel_y": 46,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "sha256": "b71471b6505913d82323cebb2e0d8321ca6c0a2e963a4036f6e448b5afaa2994"
+        },
+        {
+          "class": "BOYSAW",
+          "source_rcid": 1389,
+          "bounds": [
+            312,
+            553,
+            384,
+            625
+          ],
+          "draw": {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYSAW",
+            "object_index": 1388,
+            "latitude": -32.5521544,
+            "longitude": 61.0260879,
+            "symbol": "BOYSAW12",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 268,
+            "pixel_y": 521,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "sha256": "86d7520a94c685d35e9eb011a2797890fd1bd56405820ab0042dcd49d4ef7b9a"
+        }
+      ],
+      "trace": {
+        "read_only_trace_complete": true,
+        "debugger_timing_note": "Entry breakpoints can delay initial drawing. Both probes disabled before settled snapshots; no inferior calls or model writes.",
+        "draws": [
+          {
+            "kind": "RenderSY",
+            "class": "BOYLAT",
+            "object_index": 218,
+            "latitude": -32.5237974,
+            "longitude": 61.0192483,
+            "symbol": "XNLAT013",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "LIGHTS",
+            "object_index": 397,
+            "latitude": -32.5230041,
+            "longitude": 61.0057736,
+            "symbol": "LIGHTS11",
+            "definition": 86,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "BOYISD",
+            "object_index": 453,
+            "latitude": -32.5377607,
+            "longitude": 61.0432378,
+            "symbol": "BOYISD12",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "LIGHTS",
+            "object_index": 454,
+            "latitude": -32.5377607,
+            "longitude": 61.0432378,
+            "symbol": "LIGHTS13",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "BOYLAT",
+            "object_index": 456,
+            "latitude": -32.53667,
+            "longitude": 61.0194105,
+            "symbol": "XNLAT013",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "LIGHTS",
+            "object_index": 457,
+            "latitude": -32.53667,
+            "longitude": 61.0194105,
+            "symbol": "LIGHTS12",
+            "definition": 86,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "BOYLAT",
+            "object_index": 459,
+            "latitude": -32.5308109,
+            "longitude": 61.0276278,
+            "symbol": "XNLAT024",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "LIGHTS",
+            "object_index": 460,
+            "latitude": -32.5308109,
+            "longitude": 61.0276278,
+            "symbol": "LIGHTS11",
+            "definition": 86,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "BOYSPP",
+            "object_index": 1058,
+            "latitude": -32.5471795,
+            "longitude": 61.0544614,
+            "symbol": "BOYSPP11",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "BOYSAW",
+            "object_index": 1388,
+            "latitude": -32.5521544,
+            "longitude": 61.0260879,
+            "symbol": "BOYSAW12",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "LIGHTS",
+            "object_index": 1389,
+            "latitude": -32.5521544,
+            "longitude": 61.0260879,
+            "symbol": "LIGHTS13",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          }
+        ],
+        "raster_draws": [
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYISD",
+            "object_index": 453,
+            "latitude": -32.5377607,
+            "longitude": 61.0432378,
+            "symbol": "BOYISD12",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 746,
+            "pixel_y": 46,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "LIGHTS",
+            "object_index": 454,
+            "latitude": -32.5377607,
+            "longitude": 61.0432378,
+            "symbol": "LIGHTS13",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 746,
+            "pixel_y": 46,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYSAW",
+            "object_index": 1388,
+            "latitude": -32.5521544,
+            "longitude": 61.0260879,
+            "symbol": "BOYSAW12",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 268,
+            "pixel_y": 521,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "LIGHTS",
+            "object_index": 1389,
+            "latitude": -32.5521544,
+            "longitude": 61.0260879,
+            "symbol": "LIGHTS13",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 268,
+            "pixel_y": 521,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          }
+        ]
+      },
+      "water_pixels": 529611,
+      "owned_values": {
+        "Latitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Latitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "66819164",
+          "validity": "Measured",
+          "value": 47.6,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 69,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Longitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Longitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "66819164",
+          "validity": "Measured",
+          "value": -122.36,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 69,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Speed over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Speed over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "66819164",
+          "validity": "Measured",
+          "value": 3,
+          "aging_after_ms": 2000,
+          "unit": "kn",
+          "age_ms": 69,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Course over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Course over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "66819164",
+          "validity": "Measured",
+          "value": 90,
+          "aging_after_ms": 2000,
+          "unit": "deg true",
+          "age_ms": 69,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        }
+      }
+    },
+    {
+      "name": "s64-safe-isolated-SKAGER-Night",
+      "image_sha256": "da10436e6d59c53e7e84d846fdeb42cdaf00087b4fd82b9cac019a50eead0e77",
+      "scene": "s64-safe-isolated",
+      "chart": {
+        "canvas_pixels": {
+          "height": 566,
+          "width": 1014
+        },
+        "latitude": -32.54495755,
+        "database_entries": 1,
+        "follow": false,
+        "quilt_members": [
+          {
+            "type": 5,
+            "native_scale": 52000,
+            "file": "GB4X0000.000",
+            "index": 0
+          }
+        ],
+        "opengl_enabled": true,
+        "quilt_reference": 0,
+        "scale_bar": {
+          "height": 29,
+          "y": 505,
+          "width": 25,
+          "x": 191
+        },
+        "depth_unit_type": 1,
+        "quilt": true,
+        "scale_ppm": 0.25,
+        "longitude": 61.03466285,
+        "depth_units_visible": true
+      },
+      "presentation": {
+        "status": "SKAGER presentation v1 / pinned symbols; o-charts: no SKAGER adapter loaded",
+        "saved_point_style": 76,
+        "requested": "XNav",
+        "effective_point_style": 76
+      },
+      "source_feature_crops": [
+        {
+          "class": "BOYISD",
+          "source_rcid": 454,
+          "bounds": [
+            790,
+            78,
+            862,
+            150
+          ],
+          "draw": {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYISD",
+            "object_index": 453,
+            "latitude": -32.5377607,
+            "longitude": 61.0432378,
+            "symbol": "BOYISD12",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 746,
+            "pixel_y": 46,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "sha256": "86958bad0faf5b16bfbdc319a7325522c9587eae00027aba20ff0e33e7702f5b"
+        },
+        {
+          "class": "BOYSAW",
+          "source_rcid": 1389,
+          "bounds": [
+            312,
+            553,
+            384,
+            625
+          ],
+          "draw": {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYSAW",
+            "object_index": 1388,
+            "latitude": -32.5521544,
+            "longitude": 61.0260879,
+            "symbol": "BOYSAW12",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 268,
+            "pixel_y": 521,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "sha256": "a42f8bb7ecdd347e460d4b9bae117e253bcb865894043540e72426f5ae6a51e3"
+        }
+      ],
+      "trace": {
+        "read_only_trace_complete": true,
+        "debugger_timing_note": "Entry breakpoints can delay initial drawing. Both probes disabled before settled snapshots; no inferior calls or model writes.",
+        "draws": [
+          {
+            "kind": "RenderSY",
+            "class": "BOYLAT",
+            "object_index": 218,
+            "latitude": -32.5237974,
+            "longitude": 61.0192483,
+            "symbol": "XNLAT013",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "LIGHTS",
+            "object_index": 397,
+            "latitude": -32.5230041,
+            "longitude": 61.0057736,
+            "symbol": "LIGHTS11",
+            "definition": 86,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "BOYISD",
+            "object_index": 453,
+            "latitude": -32.5377607,
+            "longitude": 61.0432378,
+            "symbol": "BOYISD12",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "LIGHTS",
+            "object_index": 454,
+            "latitude": -32.5377607,
+            "longitude": 61.0432378,
+            "symbol": "LIGHTS13",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "BOYLAT",
+            "object_index": 456,
+            "latitude": -32.53667,
+            "longitude": 61.0194105,
+            "symbol": "XNLAT013",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "LIGHTS",
+            "object_index": 457,
+            "latitude": -32.53667,
+            "longitude": 61.0194105,
+            "symbol": "LIGHTS12",
+            "definition": 86,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "BOYLAT",
+            "object_index": 459,
+            "latitude": -32.5308109,
+            "longitude": 61.0276278,
+            "symbol": "XNLAT024",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "LIGHTS",
+            "object_index": 460,
+            "latitude": -32.5308109,
+            "longitude": 61.0276278,
+            "symbol": "LIGHTS11",
+            "definition": 86,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "BOYSPP",
+            "object_index": 1058,
+            "latitude": -32.5471795,
+            "longitude": 61.0544614,
+            "symbol": "BOYSPP11",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "BOYSAW",
+            "object_index": 1388,
+            "latitude": -32.5521544,
+            "longitude": 61.0260879,
+            "symbol": "BOYSAW12",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "LIGHTS",
+            "object_index": 1389,
+            "latitude": -32.5521544,
+            "longitude": 61.0260879,
+            "symbol": "LIGHTS13",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          }
+        ],
+        "raster_draws": [
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYISD",
+            "object_index": 453,
+            "latitude": -32.5377607,
+            "longitude": 61.0432378,
+            "symbol": "BOYISD12",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 746,
+            "pixel_y": 46,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "LIGHTS",
+            "object_index": 454,
+            "latitude": -32.5377607,
+            "longitude": 61.0432378,
+            "symbol": "LIGHTS13",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 746,
+            "pixel_y": 46,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYSAW",
+            "object_index": 1388,
+            "latitude": -32.5521544,
+            "longitude": 61.0260879,
+            "symbol": "BOYSAW12",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 268,
+            "pixel_y": 521,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "LIGHTS",
+            "object_index": 1389,
+            "latitude": -32.5521544,
+            "longitude": 61.0260879,
+            "symbol": "LIGHTS13",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 268,
+            "pixel_y": 521,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          }
+        ]
+      },
+      "water_pixels": 530264,
+      "owned_values": {
+        "Latitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Latitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "66822468",
+          "validity": "Measured",
+          "value": 47.6,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 267,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Longitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Longitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "66822468",
+          "validity": "Measured",
+          "value": -122.36,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 267,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Speed over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Speed over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "66822468",
+          "validity": "Measured",
+          "value": 3,
+          "aging_after_ms": 2000,
+          "unit": "kn",
+          "age_ms": 267,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Course over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Course over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "66822468",
+          "validity": "Measured",
+          "value": 90,
+          "aging_after_ms": 2000,
+          "unit": "deg true",
+          "age_ms": 267,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        }
+      }
+    },
+    {
+      "name": "s64-safe-isolated-Standard-Day",
+      "image_sha256": "8cb0450db67f332ee3a1203c14fc9e6c144fba1733ff8965da3f3e0f0ec95205",
+      "scene": "s64-safe-isolated",
+      "chart": {
+        "canvas_pixels": {
+          "height": 566,
+          "width": 1014
+        },
+        "latitude": -32.54495755,
+        "database_entries": 1,
+        "follow": false,
+        "quilt_members": [
+          {
+            "type": 5,
+            "native_scale": 52000,
+            "file": "GB4X0000.000",
+            "index": 0
+          }
+        ],
+        "opengl_enabled": true,
+        "quilt_reference": 0,
+        "scale_bar": {
+          "height": 12,
+          "y": 527,
+          "width": 55,
+          "x": 18
+        },
+        "depth_unit_type": 1,
+        "quilt": true,
+        "scale_ppm": 0.25,
+        "longitude": 61.03466285,
+        "depth_units_visible": true
+      },
+      "presentation": {
+        "status": "Standard OpenCPN presentation; o-charts: no SKAGER adapter loaded",
+        "saved_point_style": 76,
+        "requested": "Standard",
+        "effective_point_style": 76
+      },
+      "source_feature_crops": [
+        {
+          "class": "BOYISD",
+          "source_rcid": 454,
+          "bounds": [
+            790,
+            78,
+            862,
+            150
+          ],
+          "draw": {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYISD",
+            "object_index": 453,
+            "latitude": -32.5377607,
+            "longitude": 61.0432378,
+            "symbol": "BOYISD12",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 746,
+            "pixel_y": 46,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "sha256": "8bf59b9fcae848325695cc96d44d7ed7617d12e0cbd6f2155bfc8adfca3eb42f"
+        },
+        {
+          "class": "BOYSAW",
+          "source_rcid": 1389,
+          "bounds": [
+            312,
+            553,
+            384,
+            625
+          ],
+          "draw": {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYSAW",
+            "object_index": 1388,
+            "latitude": -32.5521544,
+            "longitude": 61.0260879,
+            "symbol": "BOYSAW12",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 268,
+            "pixel_y": 521,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "sha256": "11f9aaee57b9955c1a2a34eff463422894e60797ebb20ce80b73804191caa768"
+        }
+      ],
+      "trace": {
+        "read_only_trace_complete": true,
+        "debugger_timing_note": "Entry breakpoints can delay initial drawing. Both probes disabled before settled snapshots; no inferior calls or model writes.",
+        "draws": [
+          {
+            "kind": "RenderSY",
+            "class": "BOYLAT",
+            "object_index": 218,
+            "latitude": -32.5237974,
+            "longitude": 61.0192483,
+            "symbol": "BOYLAT13",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "LIGHTS",
+            "object_index": 397,
+            "latitude": -32.5230041,
+            "longitude": 61.0057736,
+            "symbol": "LIGHTS11",
+            "definition": 86,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "BOYISD",
+            "object_index": 453,
+            "latitude": -32.5377607,
+            "longitude": 61.0432378,
+            "symbol": "BOYISD12",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "LIGHTS",
+            "object_index": 454,
+            "latitude": -32.5377607,
+            "longitude": 61.0432378,
+            "symbol": "LIGHTS13",
+            "definition": 86,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "BOYLAT",
+            "object_index": 456,
+            "latitude": -32.53667,
+            "longitude": 61.0194105,
+            "symbol": "BOYLAT13",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "LIGHTS",
+            "object_index": 457,
+            "latitude": -32.53667,
+            "longitude": 61.0194105,
+            "symbol": "LIGHTS12",
+            "definition": 86,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "BOYLAT",
+            "object_index": 459,
+            "latitude": -32.5308109,
+            "longitude": 61.0276278,
+            "symbol": "BOYLAT24",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "LIGHTS",
+            "object_index": 460,
+            "latitude": -32.5308109,
+            "longitude": 61.0276278,
+            "symbol": "LIGHTS11",
+            "definition": 86,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "BOYSPP",
+            "object_index": 1058,
+            "latitude": -32.5471795,
+            "longitude": 61.0544614,
+            "symbol": "BOYSPP11",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "BOYSAW",
+            "object_index": 1388,
+            "latitude": -32.5521544,
+            "longitude": 61.0260879,
+            "symbol": "BOYSAW12",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "LIGHTS",
+            "object_index": 1389,
+            "latitude": -32.5521544,
+            "longitude": 61.0260879,
+            "symbol": "LIGHTS13",
+            "definition": 86,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          }
+        ],
+        "raster_draws": [
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYISD",
+            "object_index": 453,
+            "latitude": -32.5377607,
+            "longitude": 61.0432378,
+            "symbol": "BOYISD12",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 746,
+            "pixel_y": 46,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYSAW",
+            "object_index": 1388,
+            "latitude": -32.5521544,
+            "longitude": 61.0260879,
+            "symbol": "BOYSAW12",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 268,
+            "pixel_y": 521,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          }
+        ]
+      },
+      "water_pixels": 525985,
+      "owned_values": {
+        "Latitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Latitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "66830029",
+          "validity": "Measured",
+          "value": 47.6,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 71,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Longitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Longitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "66830029",
+          "validity": "Measured",
+          "value": -122.36,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 71,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Speed over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Speed over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "66830029",
+          "validity": "Measured",
+          "value": 3,
+          "aging_after_ms": 2000,
+          "unit": "kn",
+          "age_ms": 71,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Course over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Course over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "66830029",
+          "validity": "Measured",
+          "value": 90,
+          "aging_after_ms": 2000,
+          "unit": "deg true",
+          "age_ms": 71,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        }
+      }
+    },
+    {
+      "name": "s64-safe-isolated-Standard-Night",
+      "image_sha256": "ef57f1b46209892c8d20848246df809c5ee13c2e991f56e2f567d782d0eaac8d",
+      "scene": "s64-safe-isolated",
+      "chart": {
+        "canvas_pixels": {
+          "height": 566,
+          "width": 1014
+        },
+        "latitude": -32.54495755,
+        "database_entries": 1,
+        "follow": false,
+        "quilt_members": [
+          {
+            "type": 5,
+            "native_scale": 52000,
+            "file": "GB4X0000.000",
+            "index": 0
+          }
+        ],
+        "opengl_enabled": true,
+        "quilt_reference": 0,
+        "scale_bar": {
+          "height": 12,
+          "y": 527,
+          "width": 55,
+          "x": 18
+        },
+        "depth_unit_type": 1,
+        "quilt": true,
+        "scale_ppm": 0.25,
+        "longitude": 61.03466285,
+        "depth_units_visible": true
+      },
+      "presentation": {
+        "status": "Standard OpenCPN presentation; o-charts: no SKAGER adapter loaded",
+        "saved_point_style": 76,
+        "requested": "Standard",
+        "effective_point_style": 76
+      },
+      "source_feature_crops": [
+        {
+          "class": "BOYISD",
+          "source_rcid": 454,
+          "bounds": [
+            790,
+            78,
+            862,
+            150
+          ],
+          "draw": {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYISD",
+            "object_index": 453,
+            "latitude": -32.5377607,
+            "longitude": 61.0432378,
+            "symbol": "BOYISD12",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 746,
+            "pixel_y": 46,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "sha256": "0c04c2dce63e6487e9d9dcd4db8fa7180aef19d8354d95ef2c6d1df1f80284cd"
+        },
+        {
+          "class": "BOYSAW",
+          "source_rcid": 1389,
+          "bounds": [
+            312,
+            553,
+            384,
+            625
+          ],
+          "draw": {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYSAW",
+            "object_index": 1388,
+            "latitude": -32.5521544,
+            "longitude": 61.0260879,
+            "symbol": "BOYSAW12",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 268,
+            "pixel_y": 521,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "sha256": "b8daf0398a59ed7f201b472cafb8651aec0d2d7c862ba326ecafc4bbcb2c639f"
+        }
+      ],
+      "trace": {
+        "read_only_trace_complete": true,
+        "debugger_timing_note": "Entry breakpoints can delay initial drawing. Both probes disabled before settled snapshots; no inferior calls or model writes.",
+        "draws": [
+          {
+            "kind": "RenderSY",
+            "class": "BOYLAT",
+            "object_index": 218,
+            "latitude": -32.5237974,
+            "longitude": 61.0192483,
+            "symbol": "BOYLAT13",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "LIGHTS",
+            "object_index": 397,
+            "latitude": -32.5230041,
+            "longitude": 61.0057736,
+            "symbol": "LIGHTS11",
+            "definition": 86,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "BOYISD",
+            "object_index": 453,
+            "latitude": -32.5377607,
+            "longitude": 61.0432378,
+            "symbol": "BOYISD12",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "LIGHTS",
+            "object_index": 454,
+            "latitude": -32.5377607,
+            "longitude": 61.0432378,
+            "symbol": "LIGHTS13",
+            "definition": 86,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "BOYLAT",
+            "object_index": 456,
+            "latitude": -32.53667,
+            "longitude": 61.0194105,
+            "symbol": "BOYLAT13",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "LIGHTS",
+            "object_index": 457,
+            "latitude": -32.53667,
+            "longitude": 61.0194105,
+            "symbol": "LIGHTS12",
+            "definition": 86,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "BOYLAT",
+            "object_index": 459,
+            "latitude": -32.5308109,
+            "longitude": 61.0276278,
+            "symbol": "BOYLAT24",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "LIGHTS",
+            "object_index": 460,
+            "latitude": -32.5308109,
+            "longitude": 61.0276278,
+            "symbol": "LIGHTS11",
+            "definition": 86,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "BOYSPP",
+            "object_index": 1058,
+            "latitude": -32.5471795,
+            "longitude": 61.0544614,
+            "symbol": "BOYSPP11",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "BOYSAW",
+            "object_index": 1388,
+            "latitude": -32.5521544,
+            "longitude": 61.0260879,
+            "symbol": "BOYSAW12",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "LIGHTS",
+            "object_index": 1389,
+            "latitude": -32.5521544,
+            "longitude": 61.0260879,
+            "symbol": "LIGHTS13",
+            "definition": 86,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          }
+        ],
+        "raster_draws": [
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYISD",
+            "object_index": 453,
+            "latitude": -32.5377607,
+            "longitude": 61.0432378,
+            "symbol": "BOYISD12",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 746,
+            "pixel_y": 46,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYSAW",
+            "object_index": 1388,
+            "latitude": -32.5521544,
+            "longitude": 61.0260879,
+            "symbol": "BOYSAW12",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 268,
+            "pixel_y": 521,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          }
+        ]
+      },
+      "water_pixels": 526832,
+      "owned_values": {
+        "Latitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Latitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "66833335",
+          "validity": "Measured",
+          "value": 47.6,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 33,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Longitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Longitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "66833335",
+          "validity": "Measured",
+          "value": -122.36,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 33,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Speed over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Speed over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "66833335",
+          "validity": "Measured",
+          "value": 3,
+          "aging_after_ms": 2000,
+          "unit": "kn",
+          "age_ms": 33,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Course over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Course over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "66833335",
+          "validity": "Measured",
+          "value": 90,
+          "aging_after_ms": 2000,
+          "unit": "deg true",
+          "age_ms": 33,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        }
+      }
+    },
+    {
+      "name": "s64-cardinals-SKAGER-Day",
+      "image_sha256": "bd2dc5814a5af53bbb3c473e55063189301aa15c32dc31342182619d600c6a3d",
+      "scene": "s64-cardinals",
+      "chart": {
+        "canvas_pixels": {
+          "height": 566,
+          "width": 1014
+        },
+        "latitude": -32.37658945,
+        "database_entries": 1,
+        "follow": false,
+        "quilt_members": [
+          {
+            "type": 5,
+            "native_scale": 52000,
+            "file": "GB4X0000.000",
+            "index": 0
+          }
+        ],
+        "opengl_enabled": true,
+        "quilt_reference": 0,
+        "scale_bar": {
+          "height": 29,
+          "y": 505,
+          "width": 29,
+          "x": 191
+        },
+        "depth_unit_type": 1,
+        "quilt": true,
+        "scale_ppm": 0.1199999973,
+        "longitude": 61.0300087,
+        "depth_units_visible": true
+      },
+      "presentation": {
+        "status": "SKAGER presentation v1 / pinned symbols; o-charts: no SKAGER adapter loaded",
+        "saved_point_style": 76,
+        "requested": "XNav",
+        "effective_point_style": 76
+      },
+      "source_feature_crops": [
+        {
+          "class": "BOYCAR",
+          "source_rcid": 82,
+          "bounds": [
+            597,
+            102,
+            669,
+            174
+          ],
+          "draw": {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYCAR",
+            "object_index": 81,
+            "latitude": -32.3630942,
+            "longitude": 61.0334282,
+            "symbol": "BOYCAR01",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 553,
+            "pixel_y": 70,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "sha256": "94f1731c7b130b624f87c26dc74959fde65cebaf825ca1dfbdacb7fc6c4acf55"
+        },
+        {
+          "class": "BOYCAR",
+          "source_rcid": 4,
+          "bounds": [
+            736,
+            384,
+            808,
+            456
+          ],
+          "draw": {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYCAR",
+            "object_index": 3,
+            "latitude": -32.3809654,
+            "longitude": 61.0438914,
+            "symbol": "BOYCAR02",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 692,
+            "pixel_y": 352,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "sha256": "f7287c1d60659c85db003a0fb896140a64c93556026ae38ffae2bdf009fa6e70"
+        },
+        {
+          "class": "BOYCAR",
+          "source_rcid": 72,
+          "bounds": [
+            477,
+            528,
+            549,
+            600
+          ],
+          "draw": {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYCAR",
+            "object_index": 71,
+            "latitude": -32.3900847,
+            "longitude": 61.024495,
+            "symbol": "BOYCAR03",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 433,
+            "pixel_y": 496,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "sha256": "126524b4129d7475d4c2f3a2a8256e23eab0feeda8ac5ab4755a2d2eee588fdb"
+        },
+        {
+          "class": "BOYCAR",
+          "source_rcid": 10,
+          "bounds": [
+            366,
+            328,
+            438,
+            400
+          ],
+          "draw": {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYCAR",
+            "object_index": 9,
+            "latitude": -32.3773986,
+            "longitude": 61.016126,
+            "symbol": "BOYCAR04",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 322,
+            "pixel_y": 296,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "sha256": "105d31c828ce122ff1bdfa9df78d052a6beb170e16e53b95c9d176b239a9dbd5"
+        }
+      ],
+      "trace": {
+        "read_only_trace_complete": true,
+        "debugger_timing_note": "Entry breakpoints can delay initial drawing. Both probes disabled before settled snapshots; no inferior calls or model writes.",
+        "draws": [
+          {
+            "kind": "RenderSY",
+            "class": "BOYCAR",
+            "object_index": 3,
+            "latitude": -32.3809654,
+            "longitude": 61.0438914,
+            "symbol": "BOYCAR02",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "LIGHTS",
+            "object_index": 4,
+            "latitude": -32.3809654,
+            "longitude": 61.0438914,
+            "symbol": "LIGHTS13",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "BOYCAR",
+            "object_index": 9,
+            "latitude": -32.3773986,
+            "longitude": 61.016126,
+            "symbol": "BOYCAR04",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "LIGHTS",
+            "object_index": 11,
+            "latitude": -32.3773986,
+            "longitude": 61.016126,
+            "symbol": "LIGHTS13",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "LIGHTS",
+            "object_index": 70,
+            "latitude": -32.3900847,
+            "longitude": 61.024495,
+            "symbol": "LIGHTS13",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "BOYCAR",
+            "object_index": 71,
+            "latitude": -32.3900847,
+            "longitude": 61.024495,
+            "symbol": "BOYCAR03",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "LIGHTS",
+            "object_index": 79,
+            "latitude": -32.3630942,
+            "longitude": 61.0334282,
+            "symbol": "LIGHTS13",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "BOYCAR",
+            "object_index": 81,
+            "latitude": -32.3630942,
+            "longitude": 61.0334282,
+            "symbol": "BOYCAR01",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          }
+        ],
+        "raster_draws": [
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYCAR",
+            "object_index": 3,
+            "latitude": -32.3809654,
+            "longitude": 61.0438914,
+            "symbol": "BOYCAR02",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 692,
+            "pixel_y": 352,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "LIGHTS",
+            "object_index": 4,
+            "latitude": -32.3809654,
+            "longitude": 61.0438914,
+            "symbol": "LIGHTS13",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 692,
+            "pixel_y": 352,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYCAR",
+            "object_index": 9,
+            "latitude": -32.3773986,
+            "longitude": 61.016126,
+            "symbol": "BOYCAR04",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 322,
+            "pixel_y": 296,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "LIGHTS",
+            "object_index": 11,
+            "latitude": -32.3773986,
+            "longitude": 61.016126,
+            "symbol": "LIGHTS13",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 322,
+            "pixel_y": 296,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "LIGHTS",
+            "object_index": 70,
+            "latitude": -32.3900847,
+            "longitude": 61.024495,
+            "symbol": "LIGHTS13",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 433,
+            "pixel_y": 496,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYCAR",
+            "object_index": 71,
+            "latitude": -32.3900847,
+            "longitude": 61.024495,
+            "symbol": "BOYCAR03",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 433,
+            "pixel_y": 496,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "LIGHTS",
+            "object_index": 79,
+            "latitude": -32.3630942,
+            "longitude": 61.0334282,
+            "symbol": "LIGHTS13",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 553,
+            "pixel_y": 70,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYCAR",
+            "object_index": 81,
+            "latitude": -32.3630942,
+            "longitude": 61.0334282,
+            "symbol": "BOYCAR01",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 553,
+            "pixel_y": 70,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          }
+        ]
+      },
+      "water_pixels": 506928,
+      "owned_values": {
+        "Latitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Latitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "66840998",
+          "validity": "Measured",
+          "value": 47.6,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 84,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Longitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Longitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "66840998",
+          "validity": "Measured",
+          "value": -122.36,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 84,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Speed over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Speed over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "66840998",
+          "validity": "Measured",
+          "value": 3,
+          "aging_after_ms": 2000,
+          "unit": "kn",
+          "age_ms": 84,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Course over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Course over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "66840998",
+          "validity": "Measured",
+          "value": 90,
+          "aging_after_ms": 2000,
+          "unit": "deg true",
+          "age_ms": 84,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        }
+      }
+    },
+    {
+      "name": "s64-cardinals-Standard-Day",
+      "image_sha256": "7b704a5474527152a17841065d729a8f8a736cf2d6e392fec80d6fb345e245a4",
+      "scene": "s64-cardinals",
+      "chart": {
+        "canvas_pixels": {
+          "height": 566,
+          "width": 1014
+        },
+        "latitude": -32.37658945,
+        "database_entries": 1,
+        "follow": false,
+        "quilt_members": [
+          {
+            "type": 5,
+            "native_scale": 52000,
+            "file": "GB4X0000.000",
+            "index": 0
+          }
+        ],
+        "opengl_enabled": true,
+        "quilt_reference": 0,
+        "scale_bar": {
+          "height": 12,
+          "y": 527,
+          "width": 131,
+          "x": 18
+        },
+        "depth_unit_type": 1,
+        "quilt": true,
+        "scale_ppm": 0.1199999973,
+        "longitude": 61.0300087,
+        "depth_units_visible": true
+      },
+      "presentation": {
+        "status": "Standard OpenCPN presentation; o-charts: no SKAGER adapter loaded",
+        "saved_point_style": 76,
+        "requested": "Standard",
+        "effective_point_style": 76
+      },
+      "source_feature_crops": [
+        {
+          "class": "BOYCAR",
+          "source_rcid": 82,
+          "bounds": [
+            597,
+            102,
+            669,
+            174
+          ],
+          "draw": {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYCAR",
+            "object_index": 81,
+            "latitude": -32.3630942,
+            "longitude": 61.0334282,
+            "symbol": "BOYCAR01",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 553,
+            "pixel_y": 70,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "sha256": "de13260b006e7e258534b7fd0e9b269e879d95e54410528b839f08b210aaa429"
+        },
+        {
+          "class": "BOYCAR",
+          "source_rcid": 4,
+          "bounds": [
+            736,
+            384,
+            808,
+            456
+          ],
+          "draw": {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYCAR",
+            "object_index": 3,
+            "latitude": -32.3809654,
+            "longitude": 61.0438914,
+            "symbol": "BOYCAR02",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 692,
+            "pixel_y": 352,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "sha256": "b6620b47e8d644c00e4c273aff34bfde0b988ae3535bd01e0d65b804d4a4e2ec"
+        },
+        {
+          "class": "BOYCAR",
+          "source_rcid": 72,
+          "bounds": [
+            477,
+            528,
+            549,
+            600
+          ],
+          "draw": {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYCAR",
+            "object_index": 71,
+            "latitude": -32.3900847,
+            "longitude": 61.024495,
+            "symbol": "BOYCAR03",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 433,
+            "pixel_y": 496,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "sha256": "434d4058507de4bae9d194526cbad3c36abbfb28898944d48c154efcf106c8bc"
+        },
+        {
+          "class": "BOYCAR",
+          "source_rcid": 10,
+          "bounds": [
+            366,
+            328,
+            438,
+            400
+          ],
+          "draw": {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYCAR",
+            "object_index": 9,
+            "latitude": -32.3773986,
+            "longitude": 61.016126,
+            "symbol": "BOYCAR04",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 322,
+            "pixel_y": 296,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          "sha256": "ce1acb123676678e90d5d2905a09067bb1f643a4ff217e1f318780c3a02bff0d"
+        }
+      ],
+      "trace": {
+        "read_only_trace_complete": true,
+        "debugger_timing_note": "Entry breakpoints can delay initial drawing. Both probes disabled before settled snapshots; no inferior calls or model writes.",
+        "draws": [
+          {
+            "kind": "RenderSY",
+            "class": "BOYCAR",
+            "object_index": 3,
+            "latitude": -32.3809654,
+            "longitude": 61.0438914,
+            "symbol": "BOYCAR02",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "LIGHTS",
+            "object_index": 4,
+            "latitude": -32.3809654,
+            "longitude": 61.0438914,
+            "symbol": "LIGHTS13",
+            "definition": 86,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "BOYCAR",
+            "object_index": 9,
+            "latitude": -32.3773986,
+            "longitude": 61.016126,
+            "symbol": "BOYCAR04",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "LIGHTS",
+            "object_index": 11,
+            "latitude": -32.3773986,
+            "longitude": 61.016126,
+            "symbol": "LIGHTS13",
+            "definition": 86,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "LIGHTS",
+            "object_index": 70,
+            "latitude": -32.3900847,
+            "longitude": 61.024495,
+            "symbol": "LIGHTS13",
+            "definition": 86,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "BOYCAR",
+            "object_index": 71,
+            "latitude": -32.3900847,
+            "longitude": 61.024495,
+            "symbol": "BOYCAR03",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "LIGHTS",
+            "object_index": 79,
+            "latitude": -32.3630942,
+            "longitude": 61.0334282,
+            "symbol": "LIGHTS13",
+            "definition": 86,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          },
+          {
+            "kind": "RenderSY",
+            "class": "BOYCAR",
+            "object_index": 81,
+            "latitude": -32.3630942,
+            "longitude": 61.0334282,
+            "symbol": "BOYCAR01",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76
+          }
+        ],
+        "raster_draws": [
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYCAR",
+            "object_index": 3,
+            "latitude": -32.3809654,
+            "longitude": 61.0438914,
+            "symbol": "BOYCAR02",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 692,
+            "pixel_y": 352,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYCAR",
+            "object_index": 9,
+            "latitude": -32.3773986,
+            "longitude": 61.016126,
+            "symbol": "BOYCAR04",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 322,
+            "pixel_y": 296,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYCAR",
+            "object_index": 71,
+            "latitude": -32.3900847,
+            "longitude": 61.024495,
+            "symbol": "BOYCAR03",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 433,
+            "pixel_y": 496,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          },
+          {
+            "kind": "RenderRasterSymbol",
+            "class": "BOYCAR",
+            "object_index": 81,
+            "latitude": -32.3630942,
+            "longitude": 61.0334282,
+            "symbol": "BOYCAR01",
+            "definition": 82,
+            "lookup_table": 76,
+            "effective_symbol_table": 76,
+            "pixel_x": 553,
+            "pixel_y": 70,
+            "canvas_width": 1014,
+            "canvas_height": 566
+          }
+        ]
+      },
+      "water_pixels": 496158,
+      "owned_values": {
+        "Latitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Latitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "66849165",
+          "validity": "Measured",
+          "value": 47.6,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 25,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Longitude": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Longitude",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "66849165",
+          "validity": "Measured",
+          "value": -122.36,
+          "aging_after_ms": 2000,
+          "unit": "deg",
+          "age_ms": 25,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Speed over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Speed over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "66849165",
+          "validity": "Measured",
+          "value": 3,
+          "aging_after_ms": 2000,
+          "unit": "kn",
+          "age_ms": 25,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        },
+        "Course over ground": {
+          "device_id": "",
+          "stale_after_ms": 5000,
+          "name": "Course over ground",
+          "quality": "LIVE",
+          "observed_monotonic_ms": "66849165",
+          "validity": "Measured",
+          "value": 90,
+          "aging_after_ms": 2000,
+          "unit": "deg true",
+          "age_ms": 25,
+          "source": "OpenCPN selected navigation (sensor identity unavailable)"
+        }
+      }
+    }
+  ],
+  "status": "passed",
+  "clean_exit": true,
+  "font_evidence": {
+    "policy_source_sha256": "f185dea21f4d4cdaa0ecaeb6f8d867fa35adb511d810db919316fe5d6644325a",
+    "note": "Source policy and Linux fontconfig inventory recorded; this does not establish native Windows glyph metrics",
+    "Segoe UI Variable Display": {
+      "exit_code": 0,
+      "linux_fontconfig_match": "Liberation Sans\n/usr/share/fonts/liberation/LiberationSans-Regular.ttf"
+    },
+    "Segoe UI": {
+      "exit_code": 0,
+      "linux_fontconfig_match": "Liberation Sans\n/usr/share/fonts/liberation/LiberationSans-Regular.ttf"
+    },
+    "Arial": {
+      "exit_code": 0,
+      "linux_fontconfig_match": "Liberation Sans\n/usr/share/fonts/liberation/LiberationSans-Regular.ttf"
+    }
+  },
+  "additional_source_evidence": {
+    "src/ui/SkagerWordmark.h": "c2fc3d1afdf88bfd2e884d541e7b3ad4463702cece09057e38f4d496deda9928",
+    "src/ui/Theme.h": "b28adb1f519ec5a1f9b7e2bfab6ec2ab1c7f06656bd129316e9e453ef1ec0776",
+    "src/ui/Shell.cpp": "ed022b04450b0a24fec10cb3303551f35ab7e8dd01161918d18daa3ce322ad02",
+    "src/integration/ChartCanvasInk.h": "cc1a4d94131f932f2bbd40d330d9003d0086dfc1237449b4215b509377c39f66",
+    "src/integration/ChartRouteLabel.cpp": "c4f6b225ed4e6985370da71559237b5ee6bbc3d2ac62fa4cf530d02b781f017f",
+    "src/integration/ChartRouteLabelRaster.h": "c2ca0bd64ec1203addbd518b2424af91c3ca25f72b250d1f6c80b6e467722f3b",
+    "tools/chart_cardinal_art.py": "e8b4f52df0d558ec715613c9f737776db0f10f844c3f2769a3f35fd8f670158e",
+    "resources/chart-style/v1/cardinals/provenance.json": "a0017453b3ea5a814a613bb50d0f5a676fdf0095e0b5e7a6249ec49fe38c8010"
+  },
+  "loader_selftest": {
+    "upstream": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+    "commissioning_restart_protocol": 0,
+    "version": "0.4.0-beta2",
+    "commit": "9632421f701c5ec74d7a1360bc713c0034faf9af",
+    "compiler": "GNU 16.2.1 / 8 byte pointers",
+    "plugins_loaded": false,
+    "test_fixtures": true,
+    "resources": {
+      "gshhs/poly-c-1.dat": true,
+      "s57data/s57objectclasses.csv": true,
+      "uidata/styles.xml": true,
+      "s57data/chartsymbols.xml": true
+    },
+    "normal_config_directory": "/etc",
+    "passed": true,
+    "xnav_hardware_output_policy": "test-loopback-only",
+    "build_purpose": "DEVELOPER TEST BUILD",
+    "profile_initialized": false,
+    "contract": "OpenNavX.LoaderSelfTest.1"
+  },
+  "symbol_table_receipts": [
+    {
+      "style": "XNav",
+      "persisted_nSymbolStyle": 76,
+      "scope": "Pinned config read/write boundary; direct in-process enum and object lookup not exposed by current diagnostics"
+    },
+    {
+      "style": "Standard",
+      "persisted_nSymbolStyle": 76,
+      "scope": "Pinned config read/write boundary; direct in-process enum and object lookup not exposed by current diagnostics"
+    },
+    {
+      "style": "XNav",
+      "persisted_nSymbolStyle": 76,
+      "scope": "Pinned config read/write boundary; direct in-process enum and object lookup not exposed by current diagnostics"
+    },
+    {
+      "style": "Standard",
+      "persisted_nSymbolStyle": 76,
+      "scope": "Pinned config read/write boundary; direct in-process enum and object lookup not exposed by current diagnostics"
+    },
+    {
+      "style": "XNav",
+      "persisted_nSymbolStyle": 76,
+      "scope": "Pinned config read/write boundary; direct in-process enum and object lookup not exposed by current diagnostics"
+    },
+    {
+      "style": "Standard",
+      "persisted_nSymbolStyle": 76,
+      "scope": "Pinned config read/write boundary; direct in-process enum and object lookup not exposed by current diagnostics"
+    }
+  ]
+}

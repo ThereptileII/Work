@@ -1,0 +1,16 @@
+{
+  "base": "fa4278e",
+  "scope": "Collector preparation only; no application execution",
+  "focused_cases": 7,
+  "result": "passed",
+  "python_syntax": "passed",
+  "yaml_parse": "passed",
+  "powershell_parse": "passed",
+  "native_capture": "not run",
+  "inputs": {
+    "tools/prototype/capture-native.py": "478a1bb8648ffb9490b04f21250606f6792b6d9db8da5e6cb00ae728ae8f02d9",
+    "tools/prototype/recovery_capture_inputs.py": "5bf4960bc3af71a0d79be097419663ef110621c93ecb35878715383881939836",
+    "tests/recovery_capture_inputs_tests.py": "5bdc76e885dd1c25ba58afef07011ee3754ba93e80ad25265eae5174564cd8e8",
+    ".github/workflows/skager-chart-package-review.yml": "b7d19f062ff75d5813f0290e028066d8bc054523c8a3e0280d543d01d643b28d"
+  }
+}

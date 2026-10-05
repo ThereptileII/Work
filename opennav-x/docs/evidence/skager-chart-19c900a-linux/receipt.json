@@ -1,0 +1,28 @@
+{
+  "localSource": "19c900afdfca4c3272715c0f998b8941ec45c8df",
+  "publishedEquivalent": "6f22f688cc1156c8c1e2395c854fff1a38398338",
+  "binarySha256": "42d4e212a3ece4d219d26d15629d1160c2c5abc15c35689b981932f9ff02ac68",
+  "captures": 6,
+  "cleanExits": 2,
+  "review": "Both root and independent reviewer inspected. Soundings/lights smaller; Standard chart region x80:1094,y68:614 pixel-identical to e14de49 in all3 themes. Harbor labels still overlap and 8px light descriptions difficult to read, especially Night; Windows/DPI/boat readability gate open.",
+  "captureSetup": "First capture correctly refused stale identity because launched before staging completed; retry with same directory refused existing output. No application launched by these two refused attempts. Final new-directory capture began after successful stage completion.",
+  "scope": "Software/Linux only. No active route/AIS. Prior GL250 defect not qualified by these captures.",
+  "files": {
+    "SKAGER-Day.json": "2bfd3b668adc828ad25fc2368ad9489e193dcddbf58943b76da84057eecf45c6",
+    "SKAGER-Day.png": "eca7287638600130887acca7b25f9cbe19559593bc498a4b222b36eae407311a",
+    "SKAGER-Dusk.json": "0fa845552bc1be92e1b9b34727712660ec77f5aadb3bd975aa89bdde98435b50",
+    "SKAGER-Dusk.png": "75cc74451aa2b6c4bb41e720c5a4bb1837e8be7dbd6d08f970d2f8b0150405aa",
+    "SKAGER-Night.json": "6c9d17bd580fa62107dfe7f9d63202b27f75f132a891a3fe49d0bb135d04614c",
+    "SKAGER-Night.png": "2aea251d7ace23c08dc2e4c28e882052e9c95c80daaf284f7f0ee1731b3a049a",
+    "Standard-Day.json": "bf3e802d6cc80227832fbb7cda3f923a6080ddd637751df06987a5577fdb2d18",
+    "Standard-Day.png": "052f45ee846e1e673b5f198988c9155a4889b3b33b0910d023225fa60efdf01f",
+    "Standard-Dusk.json": "4c3860596c15e9a03a754c679d67e35c87430bd5deb41d033c7341671bde9491",
+    "Standard-Dusk.png": "63a23d5beb43f5b7a44e807ce74907d270aea196fa0f8ff1d8a8d18f35798af1",
+    "Standard-Night.json": "eb179f78438304d15d902af3262dd91b61f715dc609d8a463b00c38e0ab6ddff",
+    "Standard-Night.png": "2a69db8320de29abe81115dd861b31f26892a1abb1e24d051eb4847a7bb48962",
+    "build.log": "ebec6ca22fa7d36eb7a90876ce8034f75497ee4154f15655f1082957f165b882",
+    "controlled-input.json": "ed17a3f60cda1c9b60a2af3d56adcb513302a2bc94fe16926a002022738f0e66",
+    "loader-selftest.json": "01dabdf03f90a12ee267e1c97dc9f62c074a4fb673ede43763f92d1db3cc1711",
+    "report.json": "6b679b41991d44d475a40285d387277eb5347cc01c2a1807646d79cdfe371129"
+  }
+}

@@ -1,0 +1,2363 @@
+{
+  "schema": 1,
+  "scope": "One unchanged-326 ELF read-only metric replay; not corrected acceptance",
+  "trace_errors": [],
+  "inferior_exit": [
+    {
+      "kind": "inferior_exit",
+      "exit_code": null,
+      "monotonic": 110417.585559922,
+      "phase": {
+        "index": 3,
+        "theme": "Day"
+      }
+    }
+  ],
+  "entry_validation_events": 1,
+  "phases": [
+    {
+      "phase": 0,
+      "owner": {
+        "object": 93825081700944,
+        "class": "LNDELV",
+        "index": 27,
+        "latitude": -32.3740304,
+        "longitude": 61.0376363,
+        "kind": "RenderT_All",
+        "owner": 93825132173136,
+        "lookup_rcid": 31187,
+        "lookup_table": 76,
+        "instruction": "ELEVAT,3,2,2,'15110',1,-1,CHBLK,31)\u001f",
+        "bTX": 1,
+        "cached_FText": 0,
+        "bFText_Added": false,
+        "sequence": 2,
+        "monotonic": 110407.368255941,
+        "phase": {
+          "index": 0,
+          "theme": "Day",
+          "startup": true
+        }
+      },
+      "entry": {
+        "kind": "RenderText",
+        "sequence": 2,
+        "owner": 93825132173136,
+        "text": 93825126771472,
+        "pdc": 0,
+        "anchor_x": 957,
+        "anchor_y": 129,
+        "rect": 140737488326240,
+        "object": 93825081700944,
+        "bsize": 10,
+        "avgCharWidth": 9,
+        "pFont": 93825127070912,
+        "xoffs": 1,
+        "yoffs": -1,
+        "hjust": 51,
+        "vjust": 50,
+        "rendered_char_height": -747355744,
+        "letter_spacing": 0.0,
+        "text_opacity": 255,
+        "light_label": false,
+        "bspecial_char": false,
+        "texobj": 0,
+        "m_colortable_index": 0,
+        "m_TextScaleFactor": 1.0,
+        "m_dipfactor": 1.0,
+        "m_ContentScaleFactor": 1.0,
+        "m_FinalTextScaleFactor": 1.0,
+        "canvas": [
+          1014,
+          566
+        ],
+        "stored_rText": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "caches": [
+          {
+            "slot": 0,
+            "key": 0,
+            "cache": 0
+          },
+          {
+            "slot": 1,
+            "key": 0,
+            "cache": 0
+          },
+          {
+            "slot": 2,
+            "key": 0,
+            "cache": 0
+          },
+          {
+            "slot": 3,
+            "key": 0,
+            "cache": 0
+          },
+          {
+            "slot": 4,
+            "key": 0,
+            "cache": 0
+          },
+          {
+            "slot": 5,
+            "key": 0,
+            "cache": 0
+          },
+          {
+            "slot": 6,
+            "key": 0,
+            "cache": 0
+          },
+          {
+            "slot": 7,
+            "key": 0,
+            "cache": 0
+          }
+        ],
+        "matching_cache": [],
+        "monotonic": 110407.371782654,
+        "phase": {
+          "index": 0,
+          "theme": "Day",
+          "startup": true
+        }
+      },
+      "events": [
+        {
+          "object": 93825081700944,
+          "class": "LNDELV",
+          "index": 27,
+          "latitude": -32.3740304,
+          "longitude": 61.0376363,
+          "kind": "RenderT_All",
+          "owner": 93825132173136,
+          "lookup_rcid": 31187,
+          "lookup_table": 76,
+          "instruction": "ELEVAT,3,2,2,'15110',1,-1,CHBLK,31)\u001f",
+          "bTX": 1,
+          "cached_FText": 0,
+          "bFText_Added": false,
+          "sequence": 2,
+          "monotonic": 110407.368255941,
+          "phase": {
+            "index": 0,
+            "theme": "Day",
+            "startup": true
+          }
+        },
+        {
+          "kind": "RenderText",
+          "sequence": 2,
+          "owner": 93825132173136,
+          "text": 93825126771472,
+          "pdc": 0,
+          "anchor_x": 957,
+          "anchor_y": 129,
+          "rect": 140737488326240,
+          "object": 93825081700944,
+          "bsize": 10,
+          "avgCharWidth": 9,
+          "pFont": 93825127070912,
+          "xoffs": 1,
+          "yoffs": -1,
+          "hjust": 51,
+          "vjust": 50,
+          "rendered_char_height": -747355744,
+          "letter_spacing": 0.0,
+          "text_opacity": 255,
+          "light_label": false,
+          "bspecial_char": false,
+          "texobj": 0,
+          "m_colortable_index": 0,
+          "m_TextScaleFactor": 1.0,
+          "m_dipfactor": 1.0,
+          "m_ContentScaleFactor": 1.0,
+          "m_FinalTextScaleFactor": 1.0,
+          "canvas": [
+            1014,
+            566
+          ],
+          "stored_rText": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "caches": [
+            {
+              "slot": 0,
+              "key": 0,
+              "cache": 0
+            },
+            {
+              "slot": 1,
+              "key": 0,
+              "cache": 0
+            },
+            {
+              "slot": 2,
+              "key": 0,
+              "cache": 0
+            },
+            {
+              "slot": 3,
+              "key": 0,
+              "cache": 0
+            },
+            {
+              "slot": 4,
+              "key": 0,
+              "cache": 0
+            },
+            {
+              "slot": 5,
+              "key": 0,
+              "cache": 0
+            },
+            {
+              "slot": 6,
+              "key": 0,
+              "cache": 0
+            },
+            {
+              "slot": 7,
+              "key": 0,
+              "cache": 0
+            }
+          ],
+          "matching_cache": [],
+          "monotonic": 110407.371782654,
+          "phase": {
+            "index": 0,
+            "theme": "Day",
+            "startup": true
+          }
+        },
+        {
+          "kind": "Build",
+          "sequence": 2,
+          "cache": 93825154764528,
+          "font": 93825127070912,
+          "monotonic": 110407.372562154,
+          "phase": {
+            "index": 0,
+            "theme": "Day",
+            "startup": true
+          }
+        },
+        {
+          "kind": "Build_return",
+          "sequence": 2,
+          "cache": 93825154764528,
+          "font": 93825127070912,
+          "monotonic": 110407.38688509,
+          "phase": {
+            "index": 0,
+            "theme": "Day",
+            "startup": true
+          }
+        },
+        {
+          "kind": "GetTextExtent_wx",
+          "sequence": 2,
+          "cache": 93825154764528,
+          "input_pointer": 140737488325888,
+          "is_label_wxstring": false,
+          "wptr": 140737488325600,
+          "hptr": 0,
+          "monotonic": 110407.387289376,
+          "phase": {
+            "index": 0,
+            "theme": "Day",
+            "startup": true
+          }
+        },
+        {
+          "kind": "GetTextExtent_char",
+          "sequence": 2,
+          "cache": 93825154764528,
+          "input_pointer": 93825154095856,
+          "is_label_wxstring": false,
+          "input": "M",
+          "wptr": 140737488325600,
+          "hptr": 0,
+          "monotonic": 110407.387967967,
+          "phase": {
+            "index": 0,
+            "theme": "Day",
+            "startup": true
+          }
+        },
+        {
+          "kind": "GetTextExtent_char_return",
+          "sequence": 2,
+          "cache": 93825154764528,
+          "input_pointer": 93825154095856,
+          "is_label_wxstring": false,
+          "input": "M",
+          "wptr": 140737488325600,
+          "hptr": 0,
+          "monotonic": 110407.388628934,
+          "phase": {
+            "index": 0,
+            "theme": "Day",
+            "startup": true
+          },
+          "width": 16,
+          "height": null
+        },
+        {
+          "kind": "GetTextExtent_wx_return",
+          "sequence": 2,
+          "cache": 93825154764528,
+          "input_pointer": 140737488325888,
+          "is_label_wxstring": false,
+          "wptr": 140737488325600,
+          "hptr": 0,
+          "monotonic": 110407.388904403,
+          "phase": {
+            "index": 0,
+            "theme": "Day",
+            "startup": true
+          },
+          "width": 16,
+          "height": null
+        },
+        {
+          "kind": "GetTextExtent_wx",
+          "sequence": 2,
+          "cache": 93825154764528,
+          "input_pointer": 93825126771472,
+          "is_label_wxstring": true,
+          "wptr": 140737488325536,
+          "hptr": 140737488325552,
+          "monotonic": 110407.389172867,
+          "phase": {
+            "index": 0,
+            "theme": "Day",
+            "startup": true
+          }
+        },
+        {
+          "kind": "GetTextExtent_char",
+          "sequence": 2,
+          "cache": 93825154764528,
+          "input_pointer": 93825154184560,
+          "is_label_wxstring": false,
+          "input": "26.2",
+          "wptr": 140737488325536,
+          "hptr": 140737488325552,
+          "monotonic": 110407.389839489,
+          "phase": {
+            "index": 0,
+            "theme": "Day",
+            "startup": true
+          }
+        },
+        {
+          "kind": "GetTextExtent_char_return",
+          "sequence": 2,
+          "cache": 93825154764528,
+          "input_pointer": 93825154184560,
+          "is_label_wxstring": false,
+          "input": "26.2",
+          "wptr": 140737488325536,
+          "hptr": 140737488325552,
+          "monotonic": 110407.390513972,
+          "phase": {
+            "index": 0,
+            "theme": "Day",
+            "startup": true
+          },
+          "width": 38,
+          "height": 22
+        },
+        {
+          "kind": "GetTextExtent_wx_return",
+          "sequence": 2,
+          "cache": 93825154764528,
+          "input_pointer": 93825126771472,
+          "is_label_wxstring": true,
+          "wptr": 140737488325536,
+          "hptr": 140737488325552,
+          "monotonic": 110407.390821681,
+          "phase": {
+            "index": 0,
+            "theme": "Day",
+            "startup": true
+          },
+          "width": 38,
+          "height": 22
+        },
+        {
+          "kind": "RenderString_wx",
+          "sequence": 2,
+          "cache": 93825154764528,
+          "input_pointer": 93825126771472,
+          "is_label_wxstring": true,
+          "x": 973,
+          "y": 108,
+          "monotonic": 110407.391138417,
+          "phase": {
+            "index": 0,
+            "theme": "Day",
+            "startup": true
+          }
+        },
+        {
+          "kind": "RenderString_char",
+          "sequence": 2,
+          "cache": 93825154764528,
+          "input_pointer": 93825154184560,
+          "is_label_wxstring": false,
+          "input": "26.2",
+          "x": 973,
+          "y": 108,
+          "monotonic": 110407.391597187,
+          "phase": {
+            "index": 0,
+            "theme": "Day",
+            "startup": true
+          }
+        },
+        {
+          "kind": "RenderText_return",
+          "sequence": 2,
+          "owner": 93825132173136,
+          "text": 93825126771472,
+          "pdc": 0,
+          "anchor_x": 957,
+          "anchor_y": 129,
+          "rect": 140737488326240,
+          "object": 93825081700944,
+          "bsize": 10,
+          "avgCharWidth": 16,
+          "pFont": 93825127070912,
+          "xoffs": 1,
+          "yoffs": -1,
+          "hjust": 51,
+          "vjust": 50,
+          "rendered_char_height": 14,
+          "letter_spacing": 0.0,
+          "text_opacity": 255,
+          "light_label": false,
+          "bspecial_char": false,
+          "texobj": 0,
+          "m_colortable_index": 0,
+          "m_TextScaleFactor": 1.0,
+          "m_dipfactor": 1.0,
+          "m_ContentScaleFactor": 1.0,
+          "m_FinalTextScaleFactor": 1.0,
+          "canvas": [
+            1014,
+            566
+          ],
+          "stored_rText": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "caches": [
+            {
+              "slot": 0,
+              "key": 93825127070912,
+              "cache": 93825154764528
+            },
+            {
+              "slot": 1,
+              "key": 0,
+              "cache": 0
+            },
+            {
+              "slot": 2,
+              "key": 0,
+              "cache": 0
+            },
+            {
+              "slot": 3,
+              "key": 0,
+              "cache": 0
+            },
+            {
+              "slot": 4,
+              "key": 0,
+              "cache": 0
+            },
+            {
+              "slot": 5,
+              "key": 0,
+              "cache": 0
+            },
+            {
+              "slot": 6,
+              "key": 0,
+              "cache": 0
+            },
+            {
+              "slot": 7,
+              "key": 0,
+              "cache": 0
+            }
+          ],
+          "matching_cache": [
+            {
+              "slot": 0,
+              "key": 93825127070912,
+              "cache": 93825154764528
+            }
+          ],
+          "monotonic": 110407.458383026,
+          "phase": {
+            "index": 0,
+            "theme": "Day",
+            "startup": true
+          },
+          "nested_events": 7,
+          "drawn": true,
+          "rectangle": [
+            973,
+            108,
+            38,
+            22
+          ]
+        },
+        {
+          "object": 93825081700944,
+          "class": "LNDELV",
+          "index": 27,
+          "latitude": -32.3740304,
+          "longitude": 61.0376363,
+          "kind": "RenderT_All_return",
+          "owner": 93825132173136,
+          "lookup_rcid": 31187,
+          "lookup_table": 76,
+          "instruction": "ELEVAT,3,2,2,'15110',1,-1,CHBLK,31)\u001f",
+          "bTX": 1,
+          "cached_FText": 0,
+          "bFText_Added": false,
+          "sequence": 2,
+          "monotonic": 110407.4587786,
+          "phase": {
+            "index": 0,
+            "theme": "Day",
+            "startup": true
+          }
+        }
+      ],
+      "return": {
+        "kind": "RenderText_return",
+        "sequence": 2,
+        "owner": 93825132173136,
+        "text": 93825126771472,
+        "pdc": 0,
+        "anchor_x": 957,
+        "anchor_y": 129,
+        "rect": 140737488326240,
+        "object": 93825081700944,
+        "bsize": 10,
+        "avgCharWidth": 16,
+        "pFont": 93825127070912,
+        "xoffs": 1,
+        "yoffs": -1,
+        "hjust": 51,
+        "vjust": 50,
+        "rendered_char_height": 14,
+        "letter_spacing": 0.0,
+        "text_opacity": 255,
+        "light_label": false,
+        "bspecial_char": false,
+        "texobj": 0,
+        "m_colortable_index": 0,
+        "m_TextScaleFactor": 1.0,
+        "m_dipfactor": 1.0,
+        "m_ContentScaleFactor": 1.0,
+        "m_FinalTextScaleFactor": 1.0,
+        "canvas": [
+          1014,
+          566
+        ],
+        "stored_rText": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "caches": [
+          {
+            "slot": 0,
+            "key": 93825127070912,
+            "cache": 93825154764528
+          },
+          {
+            "slot": 1,
+            "key": 0,
+            "cache": 0
+          },
+          {
+            "slot": 2,
+            "key": 0,
+            "cache": 0
+          },
+          {
+            "slot": 3,
+            "key": 0,
+            "cache": 0
+          },
+          {
+            "slot": 4,
+            "key": 0,
+            "cache": 0
+          },
+          {
+            "slot": 5,
+            "key": 0,
+            "cache": 0
+          },
+          {
+            "slot": 6,
+            "key": 0,
+            "cache": 0
+          },
+          {
+            "slot": 7,
+            "key": 0,
+            "cache": 0
+          }
+        ],
+        "matching_cache": [
+          {
+            "slot": 0,
+            "key": 93825127070912,
+            "cache": 93825154764528
+          }
+        ],
+        "monotonic": 110407.458383026,
+        "phase": {
+          "index": 0,
+          "theme": "Day",
+          "startup": true
+        },
+        "nested_events": 7,
+        "drawn": true,
+        "rectangle": [
+          973,
+          108,
+          38,
+          22
+        ]
+      }
+    },
+    {
+      "phase": 1,
+      "owner": {
+        "object": 93825081700944,
+        "class": "LNDELV",
+        "index": 27,
+        "latitude": -32.3740304,
+        "longitude": 61.0376363,
+        "kind": "RenderT_All",
+        "owner": 93825132173136,
+        "lookup_rcid": 31187,
+        "lookup_table": 76,
+        "instruction": "ELEVAT,3,2,2,'15110',1,-1,CHBLK,31)\u001f",
+        "bTX": 1,
+        "cached_FText": 0,
+        "bFText_Added": false,
+        "sequence": 36,
+        "monotonic": 110410.980741281,
+        "phase": {
+          "index": 1,
+          "theme": "Dusk",
+          "transition": true
+        }
+      },
+      "entry": {
+        "kind": "RenderText",
+        "sequence": 36,
+        "owner": 93825132173136,
+        "text": 93825161309088,
+        "pdc": 0,
+        "anchor_x": 957,
+        "anchor_y": 129,
+        "rect": 140737488326256,
+        "object": 93825081700944,
+        "bsize": 10,
+        "avgCharWidth": 9,
+        "pFont": 93825127070912,
+        "xoffs": 1,
+        "yoffs": -1,
+        "hjust": 51,
+        "vjust": 50,
+        "rendered_char_height": 6,
+        "letter_spacing": 0.0,
+        "text_opacity": 255,
+        "light_label": false,
+        "bspecial_char": false,
+        "texobj": 0,
+        "m_colortable_index": 3,
+        "m_TextScaleFactor": 1.0,
+        "m_dipfactor": 1.0,
+        "m_ContentScaleFactor": 1.0,
+        "m_FinalTextScaleFactor": 1.0,
+        "canvas": [
+          1014,
+          566
+        ],
+        "stored_rText": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "caches": [
+          {
+            "slot": 0,
+            "key": 93825127070912,
+            "cache": 93825154764528
+          },
+          {
+            "slot": 1,
+            "key": 0,
+            "cache": 0
+          },
+          {
+            "slot": 2,
+            "key": 0,
+            "cache": 0
+          },
+          {
+            "slot": 3,
+            "key": 0,
+            "cache": 0
+          },
+          {
+            "slot": 4,
+            "key": 0,
+            "cache": 0
+          },
+          {
+            "slot": 5,
+            "key": 0,
+            "cache": 0
+          },
+          {
+            "slot": 6,
+            "key": 0,
+            "cache": 0
+          },
+          {
+            "slot": 7,
+            "key": 0,
+            "cache": 0
+          }
+        ],
+        "matching_cache": [
+          {
+            "slot": 0,
+            "key": 93825127070912,
+            "cache": 93825154764528
+          }
+        ],
+        "monotonic": 110410.982053383,
+        "phase": {
+          "index": 1,
+          "theme": "Dusk",
+          "transition": true
+        }
+      },
+      "events": [
+        {
+          "object": 93825081700944,
+          "class": "LNDELV",
+          "index": 27,
+          "latitude": -32.3740304,
+          "longitude": 61.0376363,
+          "kind": "RenderT_All",
+          "owner": 93825132173136,
+          "lookup_rcid": 31187,
+          "lookup_table": 76,
+          "instruction": "ELEVAT,3,2,2,'15110',1,-1,CHBLK,31)\u001f",
+          "bTX": 1,
+          "cached_FText": 0,
+          "bFText_Added": false,
+          "sequence": 36,
+          "monotonic": 110410.980741281,
+          "phase": {
+            "index": 1,
+            "theme": "Dusk",
+            "transition": true
+          }
+        },
+        {
+          "kind": "RenderText",
+          "sequence": 36,
+          "owner": 93825132173136,
+          "text": 93825161309088,
+          "pdc": 0,
+          "anchor_x": 957,
+          "anchor_y": 129,
+          "rect": 140737488326256,
+          "object": 93825081700944,
+          "bsize": 10,
+          "avgCharWidth": 9,
+          "pFont": 93825127070912,
+          "xoffs": 1,
+          "yoffs": -1,
+          "hjust": 51,
+          "vjust": 50,
+          "rendered_char_height": 6,
+          "letter_spacing": 0.0,
+          "text_opacity": 255,
+          "light_label": false,
+          "bspecial_char": false,
+          "texobj": 0,
+          "m_colortable_index": 3,
+          "m_TextScaleFactor": 1.0,
+          "m_dipfactor": 1.0,
+          "m_ContentScaleFactor": 1.0,
+          "m_FinalTextScaleFactor": 1.0,
+          "canvas": [
+            1014,
+            566
+          ],
+          "stored_rText": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "caches": [
+            {
+              "slot": 0,
+              "key": 93825127070912,
+              "cache": 93825154764528
+            },
+            {
+              "slot": 1,
+              "key": 0,
+              "cache": 0
+            },
+            {
+              "slot": 2,
+              "key": 0,
+              "cache": 0
+            },
+            {
+              "slot": 3,
+              "key": 0,
+              "cache": 0
+            },
+            {
+              "slot": 4,
+              "key": 0,
+              "cache": 0
+            },
+            {
+              "slot": 5,
+              "key": 0,
+              "cache": 0
+            },
+            {
+              "slot": 6,
+              "key": 0,
+              "cache": 0
+            },
+            {
+              "slot": 7,
+              "key": 0,
+              "cache": 0
+            }
+          ],
+          "matching_cache": [
+            {
+              "slot": 0,
+              "key": 93825127070912,
+              "cache": 93825154764528
+            }
+          ],
+          "monotonic": 110410.982053383,
+          "phase": {
+            "index": 1,
+            "theme": "Dusk",
+            "transition": true
+          }
+        },
+        {
+          "kind": "GetTextExtent_wx",
+          "sequence": 36,
+          "cache": 93825154764528,
+          "input_pointer": 93825161309088,
+          "is_label_wxstring": true,
+          "wptr": 140737488325552,
+          "hptr": 140737488325568,
+          "monotonic": 110410.983096708,
+          "phase": {
+            "index": 1,
+            "theme": "Dusk",
+            "transition": true
+          }
+        },
+        {
+          "kind": "GetTextExtent_char",
+          "sequence": 36,
+          "cache": 93825154764528,
+          "input_pointer": 93825076312496,
+          "is_label_wxstring": false,
+          "input": "26.2",
+          "wptr": 140737488325552,
+          "hptr": 140737488325568,
+          "monotonic": 110410.985449588,
+          "phase": {
+            "index": 1,
+            "theme": "Dusk",
+            "transition": true
+          }
+        },
+        {
+          "kind": "GetTextExtent_char_return",
+          "sequence": 36,
+          "cache": 93825154764528,
+          "input_pointer": 93825076312496,
+          "is_label_wxstring": false,
+          "input": "26.2",
+          "wptr": 140737488325552,
+          "hptr": 140737488325568,
+          "monotonic": 110410.986649939,
+          "phase": {
+            "index": 1,
+            "theme": "Dusk",
+            "transition": true
+          },
+          "width": 38,
+          "height": 22
+        },
+        {
+          "kind": "GetTextExtent_wx_return",
+          "sequence": 36,
+          "cache": 93825154764528,
+          "input_pointer": 93825161309088,
+          "is_label_wxstring": true,
+          "wptr": 140737488325552,
+          "hptr": 140737488325568,
+          "monotonic": 110410.987165717,
+          "phase": {
+            "index": 1,
+            "theme": "Dusk",
+            "transition": true
+          },
+          "width": 38,
+          "height": 22
+        },
+        {
+          "kind": "RenderString_wx",
+          "sequence": 36,
+          "cache": 93825154764528,
+          "input_pointer": 93825161309088,
+          "is_label_wxstring": true,
+          "x": 966,
+          "y": 108,
+          "monotonic": 110410.987620982,
+          "phase": {
+            "index": 1,
+            "theme": "Dusk",
+            "transition": true
+          }
+        },
+        {
+          "kind": "RenderString_char",
+          "sequence": 36,
+          "cache": 93825154764528,
+          "input_pointer": 93825076312496,
+          "is_label_wxstring": false,
+          "input": "26.2",
+          "x": 966,
+          "y": 108,
+          "monotonic": 110410.988126931,
+          "phase": {
+            "index": 1,
+            "theme": "Dusk",
+            "transition": true
+          }
+        },
+        {
+          "kind": "RenderText_return",
+          "sequence": 36,
+          "owner": 93825132173136,
+          "text": 93825161309088,
+          "pdc": 0,
+          "anchor_x": 957,
+          "anchor_y": 129,
+          "rect": 140737488326256,
+          "object": 93825081700944,
+          "bsize": 10,
+          "avgCharWidth": 9,
+          "pFont": 93825127070912,
+          "xoffs": 1,
+          "yoffs": -1,
+          "hjust": 51,
+          "vjust": 50,
+          "rendered_char_height": 14,
+          "letter_spacing": 0.0,
+          "text_opacity": 255,
+          "light_label": false,
+          "bspecial_char": false,
+          "texobj": 0,
+          "m_colortable_index": 3,
+          "m_TextScaleFactor": 1.0,
+          "m_dipfactor": 1.0,
+          "m_ContentScaleFactor": 1.0,
+          "m_FinalTextScaleFactor": 1.0,
+          "canvas": [
+            1014,
+            566
+          ],
+          "stored_rText": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "caches": [
+            {
+              "slot": 0,
+              "key": 93825127070912,
+              "cache": 93825154764528
+            },
+            {
+              "slot": 1,
+              "key": 0,
+              "cache": 0
+            },
+            {
+              "slot": 2,
+              "key": 0,
+              "cache": 0
+            },
+            {
+              "slot": 3,
+              "key": 0,
+              "cache": 0
+            },
+            {
+              "slot": 4,
+              "key": 0,
+              "cache": 0
+            },
+            {
+              "slot": 5,
+              "key": 0,
+              "cache": 0
+            },
+            {
+              "slot": 6,
+              "key": 0,
+              "cache": 0
+            },
+            {
+              "slot": 7,
+              "key": 0,
+              "cache": 0
+            }
+          ],
+          "matching_cache": [
+            {
+              "slot": 0,
+              "key": 93825127070912,
+              "cache": 93825154764528
+            }
+          ],
+          "monotonic": 110410.989294729,
+          "phase": {
+            "index": 1,
+            "theme": "Dusk",
+            "transition": true
+          },
+          "nested_events": 4,
+          "drawn": true,
+          "rectangle": [
+            966,
+            108,
+            38,
+            22
+          ]
+        },
+        {
+          "object": 93825081700944,
+          "class": "LNDELV",
+          "index": 27,
+          "latitude": -32.3740304,
+          "longitude": 61.0376363,
+          "kind": "RenderT_All_return",
+          "owner": 93825132173136,
+          "lookup_rcid": 31187,
+          "lookup_table": 76,
+          "instruction": "ELEVAT,3,2,2,'15110',1,-1,CHBLK,31)\u001f",
+          "bTX": 1,
+          "cached_FText": 0,
+          "bFText_Added": false,
+          "sequence": 36,
+          "monotonic": 110410.989874557,
+          "phase": {
+            "index": 1,
+            "theme": "Dusk",
+            "transition": true
+          }
+        }
+      ],
+      "return": {
+        "kind": "RenderText_return",
+        "sequence": 36,
+        "owner": 93825132173136,
+        "text": 93825161309088,
+        "pdc": 0,
+        "anchor_x": 957,
+        "anchor_y": 129,
+        "rect": 140737488326256,
+        "object": 93825081700944,
+        "bsize": 10,
+        "avgCharWidth": 9,
+        "pFont": 93825127070912,
+        "xoffs": 1,
+        "yoffs": -1,
+        "hjust": 51,
+        "vjust": 50,
+        "rendered_char_height": 14,
+        "letter_spacing": 0.0,
+        "text_opacity": 255,
+        "light_label": false,
+        "bspecial_char": false,
+        "texobj": 0,
+        "m_colortable_index": 3,
+        "m_TextScaleFactor": 1.0,
+        "m_dipfactor": 1.0,
+        "m_ContentScaleFactor": 1.0,
+        "m_FinalTextScaleFactor": 1.0,
+        "canvas": [
+          1014,
+          566
+        ],
+        "stored_rText": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "caches": [
+          {
+            "slot": 0,
+            "key": 93825127070912,
+            "cache": 93825154764528
+          },
+          {
+            "slot": 1,
+            "key": 0,
+            "cache": 0
+          },
+          {
+            "slot": 2,
+            "key": 0,
+            "cache": 0
+          },
+          {
+            "slot": 3,
+            "key": 0,
+            "cache": 0
+          },
+          {
+            "slot": 4,
+            "key": 0,
+            "cache": 0
+          },
+          {
+            "slot": 5,
+            "key": 0,
+            "cache": 0
+          },
+          {
+            "slot": 6,
+            "key": 0,
+            "cache": 0
+          },
+          {
+            "slot": 7,
+            "key": 0,
+            "cache": 0
+          }
+        ],
+        "matching_cache": [
+          {
+            "slot": 0,
+            "key": 93825127070912,
+            "cache": 93825154764528
+          }
+        ],
+        "monotonic": 110410.989294729,
+        "phase": {
+          "index": 1,
+          "theme": "Dusk",
+          "transition": true
+        },
+        "nested_events": 4,
+        "drawn": true,
+        "rectangle": [
+          966,
+          108,
+          38,
+          22
+        ]
+      }
+    },
+    {
+      "phase": 2,
+      "owner": {
+        "object": 93825081700944,
+        "class": "LNDELV",
+        "index": 27,
+        "latitude": -32.3740304,
+        "longitude": 61.0376363,
+        "kind": "RenderT_All",
+        "owner": 93825132173136,
+        "lookup_rcid": 31187,
+        "lookup_table": 76,
+        "instruction": "ELEVAT,3,2,2,'15110',1,-1,CHBLK,31)\u001f",
+        "bTX": 1,
+        "cached_FText": 0,
+        "bFText_Added": false,
+        "sequence": 49,
+        "monotonic": 110413.069143817,
+        "phase": {
+          "index": 2,
+          "theme": "Night",
+          "transition": true
+        }
+      },
+      "entry": {
+        "kind": "RenderText",
+        "sequence": 49,
+        "owner": 93825132173136,
+        "text": 93825126771472,
+        "pdc": 0,
+        "anchor_x": 957,
+        "anchor_y": 129,
+        "rect": 140737488326256,
+        "object": 93825081700944,
+        "bsize": 10,
+        "avgCharWidth": 9,
+        "pFont": 93825127070912,
+        "xoffs": 1,
+        "yoffs": -1,
+        "hjust": 51,
+        "vjust": 50,
+        "rendered_char_height": 6,
+        "letter_spacing": 0.0,
+        "text_opacity": 255,
+        "light_label": false,
+        "bspecial_char": false,
+        "texobj": 0,
+        "m_colortable_index": 4,
+        "m_TextScaleFactor": 1.0,
+        "m_dipfactor": 1.0,
+        "m_ContentScaleFactor": 1.0,
+        "m_FinalTextScaleFactor": 1.0,
+        "canvas": [
+          1014,
+          566
+        ],
+        "stored_rText": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "caches": [
+          {
+            "slot": 0,
+            "key": 93825127070912,
+            "cache": 93825154764528
+          },
+          {
+            "slot": 1,
+            "key": 0,
+            "cache": 0
+          },
+          {
+            "slot": 2,
+            "key": 0,
+            "cache": 0
+          },
+          {
+            "slot": 3,
+            "key": 0,
+            "cache": 0
+          },
+          {
+            "slot": 4,
+            "key": 0,
+            "cache": 0
+          },
+          {
+            "slot": 5,
+            "key": 0,
+            "cache": 0
+          },
+          {
+            "slot": 6,
+            "key": 0,
+            "cache": 0
+          },
+          {
+            "slot": 7,
+            "key": 0,
+            "cache": 0
+          }
+        ],
+        "matching_cache": [
+          {
+            "slot": 0,
+            "key": 93825127070912,
+            "cache": 93825154764528
+          }
+        ],
+        "monotonic": 110413.070972232,
+        "phase": {
+          "index": 2,
+          "theme": "Night",
+          "transition": true
+        }
+      },
+      "events": [
+        {
+          "object": 93825081700944,
+          "class": "LNDELV",
+          "index": 27,
+          "latitude": -32.3740304,
+          "longitude": 61.0376363,
+          "kind": "RenderT_All",
+          "owner": 93825132173136,
+          "lookup_rcid": 31187,
+          "lookup_table": 76,
+          "instruction": "ELEVAT,3,2,2,'15110',1,-1,CHBLK,31)\u001f",
+          "bTX": 1,
+          "cached_FText": 0,
+          "bFText_Added": false,
+          "sequence": 49,
+          "monotonic": 110413.069143817,
+          "phase": {
+            "index": 2,
+            "theme": "Night",
+            "transition": true
+          }
+        },
+        {
+          "kind": "RenderText",
+          "sequence": 49,
+          "owner": 93825132173136,
+          "text": 93825126771472,
+          "pdc": 0,
+          "anchor_x": 957,
+          "anchor_y": 129,
+          "rect": 140737488326256,
+          "object": 93825081700944,
+          "bsize": 10,
+          "avgCharWidth": 9,
+          "pFont": 93825127070912,
+          "xoffs": 1,
+          "yoffs": -1,
+          "hjust": 51,
+          "vjust": 50,
+          "rendered_char_height": 6,
+          "letter_spacing": 0.0,
+          "text_opacity": 255,
+          "light_label": false,
+          "bspecial_char": false,
+          "texobj": 0,
+          "m_colortable_index": 4,
+          "m_TextScaleFactor": 1.0,
+          "m_dipfactor": 1.0,
+          "m_ContentScaleFactor": 1.0,
+          "m_FinalTextScaleFactor": 1.0,
+          "canvas": [
+            1014,
+            566
+          ],
+          "stored_rText": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "caches": [
+            {
+              "slot": 0,
+              "key": 93825127070912,
+              "cache": 93825154764528
+            },
+            {
+              "slot": 1,
+              "key": 0,
+              "cache": 0
+            },
+            {
+              "slot": 2,
+              "key": 0,
+              "cache": 0
+            },
+            {
+              "slot": 3,
+              "key": 0,
+              "cache": 0
+            },
+            {
+              "slot": 4,
+              "key": 0,
+              "cache": 0
+            },
+            {
+              "slot": 5,
+              "key": 0,
+              "cache": 0
+            },
+            {
+              "slot": 6,
+              "key": 0,
+              "cache": 0
+            },
+            {
+              "slot": 7,
+              "key": 0,
+              "cache": 0
+            }
+          ],
+          "matching_cache": [
+            {
+              "slot": 0,
+              "key": 93825127070912,
+              "cache": 93825154764528
+            }
+          ],
+          "monotonic": 110413.070972232,
+          "phase": {
+            "index": 2,
+            "theme": "Night",
+            "transition": true
+          }
+        },
+        {
+          "kind": "GetTextExtent_wx",
+          "sequence": 49,
+          "cache": 93825154764528,
+          "input_pointer": 93825126771472,
+          "is_label_wxstring": true,
+          "wptr": 140737488325552,
+          "hptr": 140737488325568,
+          "monotonic": 110413.073362677,
+          "phase": {
+            "index": 2,
+            "theme": "Night",
+            "transition": true
+          }
+        },
+        {
+          "kind": "GetTextExtent_char",
+          "sequence": 49,
+          "cache": 93825154764528,
+          "input_pointer": 93825152105840,
+          "is_label_wxstring": false,
+          "input": "26.2",
+          "wptr": 140737488325552,
+          "hptr": 140737488325568,
+          "monotonic": 110413.074461343,
+          "phase": {
+            "index": 2,
+            "theme": "Night",
+            "transition": true
+          }
+        },
+        {
+          "kind": "GetTextExtent_char_return",
+          "sequence": 49,
+          "cache": 93825154764528,
+          "input_pointer": 93825152105840,
+          "is_label_wxstring": false,
+          "input": "26.2",
+          "wptr": 140737488325552,
+          "hptr": 140737488325568,
+          "monotonic": 110413.075476467,
+          "phase": {
+            "index": 2,
+            "theme": "Night",
+            "transition": true
+          },
+          "width": 38,
+          "height": 22
+        },
+        {
+          "kind": "GetTextExtent_wx_return",
+          "sequence": 49,
+          "cache": 93825154764528,
+          "input_pointer": 93825126771472,
+          "is_label_wxstring": true,
+          "wptr": 140737488325552,
+          "hptr": 140737488325568,
+          "monotonic": 110413.076012836,
+          "phase": {
+            "index": 2,
+            "theme": "Night",
+            "transition": true
+          },
+          "width": 38,
+          "height": 22
+        },
+        {
+          "kind": "RenderString_wx",
+          "sequence": 49,
+          "cache": 93825154764528,
+          "input_pointer": 93825126771472,
+          "is_label_wxstring": true,
+          "x": 966,
+          "y": 108,
+          "monotonic": 110413.076491851,
+          "phase": {
+            "index": 2,
+            "theme": "Night",
+            "transition": true
+          }
+        },
+        {
+          "kind": "RenderString_char",
+          "sequence": 49,
+          "cache": 93825154764528,
+          "input_pointer": 93825152105840,
+          "is_label_wxstring": false,
+          "input": "26.2",
+          "x": 966,
+          "y": 108,
+          "monotonic": 110413.07714678,
+          "phase": {
+            "index": 2,
+            "theme": "Night",
+            "transition": true
+          }
+        },
+        {
+          "kind": "RenderText_return",
+          "sequence": 49,
+          "owner": 93825132173136,
+          "text": 93825126771472,
+          "pdc": 0,
+          "anchor_x": 957,
+          "anchor_y": 129,
+          "rect": 140737488326256,
+          "object": 93825081700944,
+          "bsize": 10,
+          "avgCharWidth": 9,
+          "pFont": 93825127070912,
+          "xoffs": 1,
+          "yoffs": -1,
+          "hjust": 51,
+          "vjust": 50,
+          "rendered_char_height": 14,
+          "letter_spacing": 0.0,
+          "text_opacity": 255,
+          "light_label": false,
+          "bspecial_char": false,
+          "texobj": 0,
+          "m_colortable_index": 4,
+          "m_TextScaleFactor": 1.0,
+          "m_dipfactor": 1.0,
+          "m_ContentScaleFactor": 1.0,
+          "m_FinalTextScaleFactor": 1.0,
+          "canvas": [
+            1014,
+            566
+          ],
+          "stored_rText": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "caches": [
+            {
+              "slot": 0,
+              "key": 93825127070912,
+              "cache": 93825154764528
+            },
+            {
+              "slot": 1,
+              "key": 0,
+              "cache": 0
+            },
+            {
+              "slot": 2,
+              "key": 0,
+              "cache": 0
+            },
+            {
+              "slot": 3,
+              "key": 0,
+              "cache": 0
+            },
+            {
+              "slot": 4,
+              "key": 0,
+              "cache": 0
+            },
+            {
+              "slot": 5,
+              "key": 0,
+              "cache": 0
+            },
+            {
+              "slot": 6,
+              "key": 0,
+              "cache": 0
+            },
+            {
+              "slot": 7,
+              "key": 0,
+              "cache": 0
+            }
+          ],
+          "matching_cache": [
+            {
+              "slot": 0,
+              "key": 93825127070912,
+              "cache": 93825154764528
+            }
+          ],
+          "monotonic": 110413.078169215,
+          "phase": {
+            "index": 2,
+            "theme": "Night",
+            "transition": true
+          },
+          "nested_events": 4,
+          "drawn": true,
+          "rectangle": [
+            966,
+            108,
+            38,
+            22
+          ]
+        },
+        {
+          "object": 93825081700944,
+          "class": "LNDELV",
+          "index": 27,
+          "latitude": -32.3740304,
+          "longitude": 61.0376363,
+          "kind": "RenderT_All_return",
+          "owner": 93825132173136,
+          "lookup_rcid": 31187,
+          "lookup_table": 76,
+          "instruction": "ELEVAT,3,2,2,'15110',1,-1,CHBLK,31)\u001f",
+          "bTX": 1,
+          "cached_FText": 0,
+          "bFText_Added": false,
+          "sequence": 49,
+          "monotonic": 110413.078689364,
+          "phase": {
+            "index": 2,
+            "theme": "Night",
+            "transition": true
+          }
+        }
+      ],
+      "return": {
+        "kind": "RenderText_return",
+        "sequence": 49,
+        "owner": 93825132173136,
+        "text": 93825126771472,
+        "pdc": 0,
+        "anchor_x": 957,
+        "anchor_y": 129,
+        "rect": 140737488326256,
+        "object": 93825081700944,
+        "bsize": 10,
+        "avgCharWidth": 9,
+        "pFont": 93825127070912,
+        "xoffs": 1,
+        "yoffs": -1,
+        "hjust": 51,
+        "vjust": 50,
+        "rendered_char_height": 14,
+        "letter_spacing": 0.0,
+        "text_opacity": 255,
+        "light_label": false,
+        "bspecial_char": false,
+        "texobj": 0,
+        "m_colortable_index": 4,
+        "m_TextScaleFactor": 1.0,
+        "m_dipfactor": 1.0,
+        "m_ContentScaleFactor": 1.0,
+        "m_FinalTextScaleFactor": 1.0,
+        "canvas": [
+          1014,
+          566
+        ],
+        "stored_rText": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "caches": [
+          {
+            "slot": 0,
+            "key": 93825127070912,
+            "cache": 93825154764528
+          },
+          {
+            "slot": 1,
+            "key": 0,
+            "cache": 0
+          },
+          {
+            "slot": 2,
+            "key": 0,
+            "cache": 0
+          },
+          {
+            "slot": 3,
+            "key": 0,
+            "cache": 0
+          },
+          {
+            "slot": 4,
+            "key": 0,
+            "cache": 0
+          },
+          {
+            "slot": 5,
+            "key": 0,
+            "cache": 0
+          },
+          {
+            "slot": 6,
+            "key": 0,
+            "cache": 0
+          },
+          {
+            "slot": 7,
+            "key": 0,
+            "cache": 0
+          }
+        ],
+        "matching_cache": [
+          {
+            "slot": 0,
+            "key": 93825127070912,
+            "cache": 93825154764528
+          }
+        ],
+        "monotonic": 110413.078169215,
+        "phase": {
+          "index": 2,
+          "theme": "Night",
+          "transition": true
+        },
+        "nested_events": 4,
+        "drawn": true,
+        "rectangle": [
+          966,
+          108,
+          38,
+          22
+        ]
+      }
+    },
+    {
+      "phase": 3,
+      "owner": {
+        "object": 93825081700944,
+        "class": "LNDELV",
+        "index": 27,
+        "latitude": -32.3740304,
+        "longitude": 61.0376363,
+        "kind": "RenderT_All",
+        "owner": 93825132173136,
+        "lookup_rcid": 31187,
+        "lookup_table": 76,
+        "instruction": "ELEVAT,3,2,2,'15110',1,-1,CHBLK,31)\u001f",
+        "bTX": 1,
+        "cached_FText": 0,
+        "bFText_Added": false,
+        "sequence": 62,
+        "monotonic": 110415.530693369,
+        "phase": {
+          "index": 3,
+          "theme": "Day",
+          "transition": true
+        }
+      },
+      "entry": {
+        "kind": "RenderText",
+        "sequence": 62,
+        "owner": 93825132173136,
+        "text": 93825161309088,
+        "pdc": 0,
+        "anchor_x": 957,
+        "anchor_y": 129,
+        "rect": 140737488326256,
+        "object": 93825081700944,
+        "bsize": 10,
+        "avgCharWidth": 9,
+        "pFont": 93825127070912,
+        "xoffs": 1,
+        "yoffs": -1,
+        "hjust": 51,
+        "vjust": 50,
+        "rendered_char_height": 6,
+        "letter_spacing": 0.0,
+        "text_opacity": 255,
+        "light_label": false,
+        "bspecial_char": false,
+        "texobj": 0,
+        "m_colortable_index": 0,
+        "m_TextScaleFactor": 1.0,
+        "m_dipfactor": 1.0,
+        "m_ContentScaleFactor": 1.0,
+        "m_FinalTextScaleFactor": 1.0,
+        "canvas": [
+          1014,
+          566
+        ],
+        "stored_rText": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "caches": [
+          {
+            "slot": 0,
+            "key": 93825127070912,
+            "cache": 93825154764528
+          },
+          {
+            "slot": 1,
+            "key": 0,
+            "cache": 0
+          },
+          {
+            "slot": 2,
+            "key": 0,
+            "cache": 0
+          },
+          {
+            "slot": 3,
+            "key": 0,
+            "cache": 0
+          },
+          {
+            "slot": 4,
+            "key": 0,
+            "cache": 0
+          },
+          {
+            "slot": 5,
+            "key": 0,
+            "cache": 0
+          },
+          {
+            "slot": 6,
+            "key": 0,
+            "cache": 0
+          },
+          {
+            "slot": 7,
+            "key": 0,
+            "cache": 0
+          }
+        ],
+        "matching_cache": [
+          {
+            "slot": 0,
+            "key": 93825127070912,
+            "cache": 93825154764528
+          }
+        ],
+        "monotonic": 110415.531985127,
+        "phase": {
+          "index": 3,
+          "theme": "Day",
+          "transition": true
+        }
+      },
+      "events": [
+        {
+          "object": 93825081700944,
+          "class": "LNDELV",
+          "index": 27,
+          "latitude": -32.3740304,
+          "longitude": 61.0376363,
+          "kind": "RenderT_All",
+          "owner": 93825132173136,
+          "lookup_rcid": 31187,
+          "lookup_table": 76,
+          "instruction": "ELEVAT,3,2,2,'15110',1,-1,CHBLK,31)\u001f",
+          "bTX": 1,
+          "cached_FText": 0,
+          "bFText_Added": false,
+          "sequence": 62,
+          "monotonic": 110415.530693369,
+          "phase": {
+            "index": 3,
+            "theme": "Day",
+            "transition": true
+          }
+        },
+        {
+          "kind": "RenderText",
+          "sequence": 62,
+          "owner": 93825132173136,
+          "text": 93825161309088,
+          "pdc": 0,
+          "anchor_x": 957,
+          "anchor_y": 129,
+          "rect": 140737488326256,
+          "object": 93825081700944,
+          "bsize": 10,
+          "avgCharWidth": 9,
+          "pFont": 93825127070912,
+          "xoffs": 1,
+          "yoffs": -1,
+          "hjust": 51,
+          "vjust": 50,
+          "rendered_char_height": 6,
+          "letter_spacing": 0.0,
+          "text_opacity": 255,
+          "light_label": false,
+          "bspecial_char": false,
+          "texobj": 0,
+          "m_colortable_index": 0,
+          "m_TextScaleFactor": 1.0,
+          "m_dipfactor": 1.0,
+          "m_ContentScaleFactor": 1.0,
+          "m_FinalTextScaleFactor": 1.0,
+          "canvas": [
+            1014,
+            566
+          ],
+          "stored_rText": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "caches": [
+            {
+              "slot": 0,
+              "key": 93825127070912,
+              "cache": 93825154764528
+            },
+            {
+              "slot": 1,
+              "key": 0,
+              "cache": 0
+            },
+            {
+              "slot": 2,
+              "key": 0,
+              "cache": 0
+            },
+            {
+              "slot": 3,
+              "key": 0,
+              "cache": 0
+            },
+            {
+              "slot": 4,
+              "key": 0,
+              "cache": 0
+            },
+            {
+              "slot": 5,
+              "key": 0,
+              "cache": 0
+            },
+            {
+              "slot": 6,
+              "key": 0,
+              "cache": 0
+            },
+            {
+              "slot": 7,
+              "key": 0,
+              "cache": 0
+            }
+          ],
+          "matching_cache": [
+            {
+              "slot": 0,
+              "key": 93825127070912,
+              "cache": 93825154764528
+            }
+          ],
+          "monotonic": 110415.531985127,
+          "phase": {
+            "index": 3,
+            "theme": "Day",
+            "transition": true
+          }
+        },
+        {
+          "kind": "GetTextExtent_wx",
+          "sequence": 62,
+          "cache": 93825154764528,
+          "input_pointer": 93825161309088,
+          "is_label_wxstring": true,
+          "wptr": 140737488325552,
+          "hptr": 140737488325568,
+          "monotonic": 110415.532856377,
+          "phase": {
+            "index": 3,
+            "theme": "Day",
+            "transition": true
+          }
+        },
+        {
+          "kind": "GetTextExtent_char",
+          "sequence": 62,
+          "cache": 93825154764528,
+          "input_pointer": 93825134625680,
+          "is_label_wxstring": false,
+          "input": "26.2",
+          "wptr": 140737488325552,
+          "hptr": 140737488325568,
+          "monotonic": 110415.53367848,
+          "phase": {
+            "index": 3,
+            "theme": "Day",
+            "transition": true
+          }
+        },
+        {
+          "kind": "GetTextExtent_char_return",
+          "sequence": 62,
+          "cache": 93825154764528,
+          "input_pointer": 93825134625680,
+          "is_label_wxstring": false,
+          "input": "26.2",
+          "wptr": 140737488325552,
+          "hptr": 140737488325568,
+          "monotonic": 110415.5344838,
+          "phase": {
+            "index": 3,
+            "theme": "Day",
+            "transition": true
+          },
+          "width": 38,
+          "height": 22
+        },
+        {
+          "kind": "GetTextExtent_wx_return",
+          "sequence": 62,
+          "cache": 93825154764528,
+          "input_pointer": 93825161309088,
+          "is_label_wxstring": true,
+          "wptr": 140737488325552,
+          "hptr": 140737488325568,
+          "monotonic": 110415.534892981,
+          "phase": {
+            "index": 3,
+            "theme": "Day",
+            "transition": true
+          },
+          "width": 38,
+          "height": 22
+        },
+        {
+          "kind": "RenderString_wx",
+          "sequence": 62,
+          "cache": 93825154764528,
+          "input_pointer": 93825161309088,
+          "is_label_wxstring": true,
+          "x": 966,
+          "y": 108,
+          "monotonic": 110415.535475956,
+          "phase": {
+            "index": 3,
+            "theme": "Day",
+            "transition": true
+          }
+        },
+        {
+          "kind": "RenderString_char",
+          "sequence": 62,
+          "cache": 93825154764528,
+          "input_pointer": 93825134625680,
+          "is_label_wxstring": false,
+          "input": "26.2",
+          "x": 966,
+          "y": 108,
+          "monotonic": 110415.536178995,
+          "phase": {
+            "index": 3,
+            "theme": "Day",
+            "transition": true
+          }
+        },
+        {
+          "kind": "RenderText_return",
+          "sequence": 62,
+          "owner": 93825132173136,
+          "text": 93825161309088,
+          "pdc": 0,
+          "anchor_x": 957,
+          "anchor_y": 129,
+          "rect": 140737488326256,
+          "object": 93825081700944,
+          "bsize": 10,
+          "avgCharWidth": 9,
+          "pFont": 93825127070912,
+          "xoffs": 1,
+          "yoffs": -1,
+          "hjust": 51,
+          "vjust": 50,
+          "rendered_char_height": 14,
+          "letter_spacing": 0.0,
+          "text_opacity": 255,
+          "light_label": false,
+          "bspecial_char": false,
+          "texobj": 0,
+          "m_colortable_index": 0,
+          "m_TextScaleFactor": 1.0,
+          "m_dipfactor": 1.0,
+          "m_ContentScaleFactor": 1.0,
+          "m_FinalTextScaleFactor": 1.0,
+          "canvas": [
+            1014,
+            566
+          ],
+          "stored_rText": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "caches": [
+            {
+              "slot": 0,
+              "key": 93825127070912,
+              "cache": 93825154764528
+            },
+            {
+              "slot": 1,
+              "key": 0,
+              "cache": 0
+            },
+            {
+              "slot": 2,
+              "key": 0,
+              "cache": 0
+            },
+            {
+              "slot": 3,
+              "key": 0,
+              "cache": 0
+            },
+            {
+              "slot": 4,
+              "key": 0,
+              "cache": 0
+            },
+            {
+              "slot": 5,
+              "key": 0,
+              "cache": 0
+            },
+            {
+              "slot": 6,
+              "key": 0,
+              "cache": 0
+            },
+            {
+              "slot": 7,
+              "key": 0,
+              "cache": 0
+            }
+          ],
+          "matching_cache": [
+            {
+              "slot": 0,
+              "key": 93825127070912,
+              "cache": 93825154764528
+            }
+          ],
+          "monotonic": 110415.537189527,
+          "phase": {
+            "index": 3,
+            "theme": "Day",
+            "transition": true
+          },
+          "nested_events": 4,
+          "drawn": true,
+          "rectangle": [
+            966,
+            108,
+            38,
+            22
+          ]
+        },
+        {
+          "object": 93825081700944,
+          "class": "LNDELV",
+          "index": 27,
+          "latitude": -32.3740304,
+          "longitude": 61.0376363,
+          "kind": "RenderT_All_return",
+          "owner": 93825132173136,
+          "lookup_rcid": 31187,
+          "lookup_table": 76,
+          "instruction": "ELEVAT,3,2,2,'15110',1,-1,CHBLK,31)\u001f",
+          "bTX": 1,
+          "cached_FText": 0,
+          "bFText_Added": false,
+          "sequence": 62,
+          "monotonic": 110415.537801373,
+          "phase": {
+            "index": 3,
+            "theme": "Day",
+            "transition": true
+          }
+        }
+      ],
+      "return": {
+        "kind": "RenderText_return",
+        "sequence": 62,
+        "owner": 93825132173136,
+        "text": 93825161309088,
+        "pdc": 0,
+        "anchor_x": 957,
+        "anchor_y": 129,
+        "rect": 140737488326256,
+        "object": 93825081700944,
+        "bsize": 10,
+        "avgCharWidth": 9,
+        "pFont": 93825127070912,
+        "xoffs": 1,
+        "yoffs": -1,
+        "hjust": 51,
+        "vjust": 50,
+        "rendered_char_height": 14,
+        "letter_spacing": 0.0,
+        "text_opacity": 255,
+        "light_label": false,
+        "bspecial_char": false,
+        "texobj": 0,
+        "m_colortable_index": 0,
+        "m_TextScaleFactor": 1.0,
+        "m_dipfactor": 1.0,
+        "m_ContentScaleFactor": 1.0,
+        "m_FinalTextScaleFactor": 1.0,
+        "canvas": [
+          1014,
+          566
+        ],
+        "stored_rText": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "caches": [
+          {
+            "slot": 0,
+            "key": 93825127070912,
+            "cache": 93825154764528
+          },
+          {
+            "slot": 1,
+            "key": 0,
+            "cache": 0
+          },
+          {
+            "slot": 2,
+            "key": 0,
+            "cache": 0
+          },
+          {
+            "slot": 3,
+            "key": 0,
+            "cache": 0
+          },
+          {
+            "slot": 4,
+            "key": 0,
+            "cache": 0
+          },
+          {
+            "slot": 5,
+            "key": 0,
+            "cache": 0
+          },
+          {
+            "slot": 6,
+            "key": 0,
+            "cache": 0
+          },
+          {
+            "slot": 7,
+            "key": 0,
+            "cache": 0
+          }
+        ],
+        "matching_cache": [
+          {
+            "slot": 0,
+            "key": 93825127070912,
+            "cache": 93825154764528
+          }
+        ],
+        "monotonic": 110415.537189527,
+        "phase": {
+          "index": 3,
+          "theme": "Day",
+          "transition": true
+        },
+        "nested_events": 4,
+        "drawn": true,
+        "rectangle": [
+          966,
+          108,
+          38,
+          22
+        ]
+      }
+    }
+  ],
+  "day_return": {
+    "changed_pixels": 355,
+    "chart_bbox": [
+      967,
+      112,
+      1010,
+      125
+    ],
+    "equal": false,
+    "mask": null
+  },
+  "original_capture_pixel_comparison": {
+    "Day": {
+      "chart_equal": true
+    },
+    "Dusk": {
+      "chart_equal": true
+    },
+    "Night": {
+      "chart_equal": true
+    },
+    "Day-return": {
+      "chart_equal": true
+    }
+  },
+  "binary_sha256": "0617b1380237489d5e9c7ab5a80ea388a5ad1540bf021c63658d494f5fddae4c"
+}

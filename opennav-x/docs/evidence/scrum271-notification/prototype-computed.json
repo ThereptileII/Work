@@ -1,0 +1,915 @@
+{
+  "identity": {
+    "schema": 1,
+    "authority": "User supplied Design suite v8, 28 September 2026. Current index.html is authoritative; archive files are historical designs.",
+    "immutable": true,
+    "sourceArchiveSha256": "bcc022275aedd94605c7e16548b44dda253e5abba0830db3030696adc39a0124",
+    "sourceArchiveBytes": 17706080,
+    "html": "index.html",
+    "htmlSha256": "b04573b920b6bccd16afd22f54a909e48afcfd502ce9cd7c69fdf5b6dd895447",
+    "files": [
+      {
+        "path": "DESIGN.md",
+        "bytes": 9499,
+        "sha256": "dae3b9adce321f1e02f3701d3f3d0e3f16754eeb2c52f2ac55b454464a2d592b"
+      },
+      {
+        "path": "NAVIGATION-AUDIT.md",
+        "bytes": 7951,
+        "sha256": "c19417a8e56187d5d34c707384a9310c98ae35fe70711099ceff21fdcd34db36"
+      },
+      {
+        "path": "QA.md",
+        "bytes": 17356,
+        "sha256": "28689fd08bcf15ea166fc3ecaae83b9ab46bd7d901a4e9edbcf29f1db8b246d0"
+      },
+      {
+        "path": "README.md",
+        "bytes": 6860,
+        "sha256": "27c9a1cab283418647de9691d5c8820143f25b20a37d68974d25e3b08b662473"
+      },
+      {
+        "path": "SYMBOLS.md",
+        "bytes": 10118,
+        "sha256": "33009173bfbf00464e95d1f2ffd7a82ed594c853dfb73b0495d456b1d986b890"
+      },
+      {
+        "path": "UI-INVENTORY.md",
+        "bytes": 6765,
+        "sha256": "d84bbd8baa99434419cdfefb2fa78d2407e68405f3f92b8b8bf7bd8d7993791f"
+      },
+      {
+        "path": "archive/README.original.md",
+        "bytes": 1994,
+        "sha256": "0d4ea3e645e34a9dc69255667591315a608d9fd2535d6d35737ddc96e49ed708"
+      },
+      {
+        "path": "archive/design-tokens.original.json",
+        "bytes": 1014,
+        "sha256": "1f7bdce13eba26d163b28f73d65bcdfaa28c0a5c365400ba805cc381286c1895"
+      },
+      {
+        "path": "archive/index.original.html",
+        "bytes": 41226,
+        "sha256": "837d2fbc00865ca2828ed50e2755866b9e1aacda3fec90159350d97f4c3fa86f"
+      },
+      {
+        "path": "build-lib.mjs",
+        "bytes": 1107,
+        "sha256": "82f6cee81ffeaea460d367997261eab5611a9c0fe0d71352c4de7df71a2a171c"
+      },
+      {
+        "path": "build.mjs",
+        "bytes": 337,
+        "sha256": "3a64cdba76e1667c323dbdbb330b0363415e43c410843e22d046ee086350c4d3"
+      },
+      {
+        "path": "design-tokens.json",
+        "bytes": 3671,
+        "sha256": "fe796c11948114c18caf79acc5cc97fc1eada43eac8aff5151ad07f69aef4b01"
+      },
+      {
+        "path": "index.html",
+        "bytes": 1382871,
+        "sha256": "b04573b920b6bccd16afd22f54a909e48afcfd502ce9cd7c69fdf5b6dd895447"
+      },
+      {
+        "path": "reference/OpenNavX_Design_Reference.png",
+        "bytes": 1962059,
+        "sha256": "0463d4990ce6679d507d195283b5d61bb081de4a6cf5cf9f35024db1c1dd71ba"
+      },
+      {
+        "path": "screenshots/01-main-navigation-day.png",
+        "bytes": 113350,
+        "sha256": "2dcfba5deadf07d7aea9b0fd09529fdab53a13f0dc750842917fa434eca274fa"
+      },
+      {
+        "path": "screenshots/02-ais-card.png",
+        "bytes": 127582,
+        "sha256": "a538a4800ad20694234b4d2d196f8bed5085006b9540c325f3a419dcfa426855"
+      },
+      {
+        "path": "screenshots/03-route.png",
+        "bytes": 71845,
+        "sha256": "32429d232a93c33dfabd2f9ceeead9dde79dd1993a24b33fd643307b452d2d9a"
+      },
+      {
+        "path": "screenshots/04-propulsion.png",
+        "bytes": 72530,
+        "sha256": "e275870d25467740ac51acde52c8fd5566fd68aff628fd783f03748d5f9334fd"
+      },
+      {
+        "path": "screenshots/05-autopilot.png",
+        "bytes": 123079,
+        "sha256": "227dea5a0f81b9f8dab34e406a2b264e5335817edda876e21baa09a9ebf99423"
+      },
+      {
+        "path": "screenshots/06-anchor.png",
+        "bytes": 307789,
+        "sha256": "cf16d026c19e912722de92e2439101f598cc8a0099d60f252b34461cf058be74"
+      },
+      {
+        "path": "screenshots/07-settings.png",
+        "bytes": 74974,
+        "sha256": "1d04932d678cee67740bf8e3f5e7a1eadd31d456b7269ebb99b1e8d9a0804ef5"
+      },
+      {
+        "path": "screenshots/08-main-navigation-night.png",
+        "bytes": 97897,
+        "sha256": "f76fc6b4e014254fb593c95b8b254cb51c1153e35bd7bb35998e5d7bfcd3d378"
+      },
+      {
+        "path": "screenshots/09-update-popup.png",
+        "bytes": 92231,
+        "sha256": "bbfbffe1601d96f5d4f9239bc5b042524de402e3bd4e941218dfbbd0b450e3ab"
+      },
+      {
+        "path": "screenshots/v2/01-chart-day.png",
+        "bytes": 115510,
+        "sha256": "fdcaab4e798d47340b1ea4ba6c4a97d0bfe0f3fc1a75d1b6a0aa03b2e7f41057"
+      },
+      {
+        "path": "screenshots/v2/02-chart-dusk.png",
+        "bytes": 112228,
+        "sha256": "1daca810f44dd13e2827f56655108ccfd637d644a51dd76f64598e5435d51eae"
+      },
+      {
+        "path": "screenshots/v2/03-chart-night.png",
+        "bytes": 98013,
+        "sha256": "d8789c2f5d7be81dcd051d07e9135d2f42d695ffc09bceecf6097995ea113b37"
+      },
+      {
+        "path": "screenshots/v2/04-energy.png",
+        "bytes": 81168,
+        "sha256": "b24a1ffca6c6e862fbfaf34b39d70eee9f8bda439df3b56e16993c705841e8cb"
+      },
+      {
+        "path": "screenshots/v2/05-instruments.png",
+        "bytes": 79683,
+        "sha256": "1ed8650884a54cc3fc98d90bb191d0569a5be6f3cb15ca9379969234aeec393e"
+      },
+      {
+        "path": "screenshots/v2/06-radar.png",
+        "bytes": 73924,
+        "sha256": "d2d417261d5517af64f3cffb8ab7c7741c4ca256cf84c7e7bdfa620ae7b48630"
+      },
+      {
+        "path": "screenshots/v2/07-anchor.png",
+        "bytes": 110169,
+        "sha256": "36b1783dcb28f792f9968267f12f47aeff1e3e199e70b7c38b06c2f585e71306"
+      },
+      {
+        "path": "screenshots/v2/08-mobile.png",
+        "bytes": 37629,
+        "sha256": "083ad3d3673a9697305cf347e2de604093c7aaf1433effdb80611a06025fd319"
+      },
+      {
+        "path": "screenshots/v2/09-passage.png",
+        "bytes": 112419,
+        "sha256": "8d0766a1f55db6547dfbc27035f05d2d094f61a4b5c0a9d342030ccac5c9a6a8"
+      },
+      {
+        "path": "screenshots/v3/01-chart-radar.png",
+        "bytes": 497265,
+        "sha256": "924d3295bb8c3789ded5781809adedcc2e4d6ef71d8bbe9266badd21cea0827c"
+      },
+      {
+        "path": "screenshots/v3/02-radar-focus.png",
+        "bytes": 263079,
+        "sha256": "765126cf5ce293fb0a77abb92b927bae36b8e1a2a0ac25ce9e240dc3ee9daabb"
+      },
+      {
+        "path": "screenshots/v3/03-add-sensor.png",
+        "bytes": 277266,
+        "sha256": "c8f03e48f79189ea84c63f19daf24c6acc38e73e016962e67a7b8197d90811aa"
+      },
+      {
+        "path": "screenshots/v3/04-software-centre.png",
+        "bytes": 391658,
+        "sha256": "cc709e1917b673332b1d6976cb8ae950c6b2baa1fab492a42f0f9f1367024a5b"
+      },
+      {
+        "path": "screenshots/v3/05-installer.png",
+        "bytes": 231925,
+        "sha256": "624b03496edc43e13687388d658cb5ca374e36c141c161d524e2681db0d0423a"
+      },
+      {
+        "path": "screenshots/v3/06-mobile-installer.png",
+        "bytes": 110749,
+        "sha256": "7c4f6e8e6a39328bcf7fe7891af3d5770a2c9896d1413b8845f98cf84dc07bcd"
+      },
+      {
+        "path": "screenshots/v3/07-mobile-sensor.png",
+        "bytes": 78407,
+        "sha256": "ecf824029dd96e56627150b6933b7fb612beb4fb308e0975bbc505068676548c"
+      },
+      {
+        "path": "screenshots/v3/08-dusk-echo.png",
+        "bytes": 470497,
+        "sha256": "c578dacffb9f03c7f57414f7ea32e843a7812eca251e4e58ddc8427f9640e312"
+      },
+      {
+        "path": "screenshots/v3/09-night-echo.png",
+        "bytes": 382362,
+        "sha256": "054e77804dbe61a93285cbfa959150ca56d5a7cc6f6f2b5afc8be04ec52e9824"
+      },
+      {
+        "path": "screenshots/v3/10-settings-return.png",
+        "bytes": 400291,
+        "sha256": "9e788f70e03c1a3ed9cec821fac63a926e66b3feab9233c1e595f921a04e1013"
+      },
+      {
+        "path": "screenshots/v3/11-guard-zone-head-up.png",
+        "bytes": 508354,
+        "sha256": "8b035e0ed719d60e7590d112f6f46c57f67b3e8e7283b33d2fbf7c90c003dadc"
+      },
+      {
+        "path": "screenshots/v3/12-energy-workspace.png",
+        "bytes": 189742,
+        "sha256": "a3c08ae903475e6a01274df62ac838aca42907c5d4a33b6677e0c33d717998e6"
+      },
+      {
+        "path": "screenshots/v3/13-energy-mobile-bottom.png",
+        "bytes": 77675,
+        "sha256": "a7643f22b034459fea94ca8b20a41f98b1e172dd12fc594fdac01c1a5e1f2b09"
+      },
+      {
+        "path": "screenshots/v4/01-settings-close.png",
+        "bytes": 355000,
+        "sha256": "f83ca8774953a606b307b61903b4bb4450ee9c2fa34e4ae13be28146bd374f61"
+      },
+      {
+        "path": "screenshots/v4/02-chart-presentation-back.png",
+        "bytes": 380604,
+        "sha256": "eee4fe21a3f100eaec12ef05d292eeae5883dca34dcf95bd783651501c8d7cff"
+      },
+      {
+        "path": "screenshots/v4/03-energy-close.png",
+        "bytes": 188342,
+        "sha256": "13bbbd2bbaf6baf9fbbcc59a2c3ccf3348abdc9573b3b77f1478ac406739a988"
+      },
+      {
+        "path": "screenshots/v4/04-mobile-energy-close.png",
+        "bytes": 75954,
+        "sha256": "7c8a191f89dbfa8369257da65acc029fbd7cc921d47c2a3cdf1bc6aafe082f56"
+      },
+      {
+        "path": "screenshots/v4/05-mobile-settings-close.png",
+        "bytes": 58643,
+        "sha256": "c7614f1e2df9f24b85345b86d6f4402b2ae7886b0e0209d7b1f375b9b006bc51"
+      },
+      {
+        "path": "screenshots/v4/06-mobile-presentation-back.png",
+        "bytes": 66499,
+        "sha256": "4a68cafd73478a39719cc7f7db4c88fe8d846991825507ec3127d209f008336e"
+      },
+      {
+        "path": "screenshots/v4/07-mobile-sensor-cancel.png",
+        "bytes": 68247,
+        "sha256": "55eaf5d27ac18c1cb2e2ba59e27dcfa5d448661de19514b99bab8918bd8eb2ba"
+      },
+      {
+        "path": "screenshots/v4/08-mobile-installer-cancel.png",
+        "bytes": 108386,
+        "sha256": "14b7b16b4be971eb04786036c1b3d351edb4f8dd78f80ffb3f4bae9a20f03e4e"
+      },
+      {
+        "path": "screenshots/v4/09-radar-context-back.png",
+        "bytes": 222994,
+        "sha256": "6eca6acd051071c0b02c59f06fbefc1d2823c9bc0b825b22048ec3512e75ed3e"
+      },
+      {
+        "path": "screenshots/v4/10-confirmation-single-return.png",
+        "bytes": 181711,
+        "sha256": "94aed0d9d35f63ae39e132d5b95abb8c422aba8fe153f209b660e877ad02b351"
+      },
+      {
+        "path": "screenshots/v4/11-compact-installer-footer.png",
+        "bytes": 118428,
+        "sha256": "09a90ae505510949f10e5a53b3a7681211d8eb98a05a9a44d1ba008d31f03ef5"
+      },
+      {
+        "path": "screenshots/v4/navigation-audit.json",
+        "bytes": 30505,
+        "sha256": "b79c1eda6eca29a217af80b91182d46b7174ba720690944d46075e6f88ff15c6"
+      },
+      {
+        "path": "screenshots/v5/atlas-checks.json",
+        "bytes": 1338,
+        "sha256": "2e42e666a4ba9ecd48fd43dd4d967538348e0ef7671d14715fa14992a2d907e9"
+      },
+      {
+        "path": "screenshots/v5/cardinal-detail-mobile.png",
+        "bytes": 91966,
+        "sha256": "d04eff1b2901440714f2f379233b7b49ce37a0efdb11124ba543ec15c6765ad6"
+      },
+      {
+        "path": "screenshots/v5/light-detail-palettes.png",
+        "bytes": 193011,
+        "sha256": "49db0e1cb5104355fa1475ef82a561a6093ee85c80317d3254d0a70457dcc895"
+      },
+      {
+        "path": "screenshots/v5/line-detail.png",
+        "bytes": 247790,
+        "sha256": "426ed6ad64deaf0cdead6aa91ee279f1ce960c9a9a887f64fecbca0814a31e7f"
+      },
+      {
+        "path": "screenshots/v5/region-b-detail.png",
+        "bytes": 291393,
+        "sha256": "709d62da1c9676d867deb88e126c83fd46f548797eeb7d2e2779ff1639655985"
+      },
+      {
+        "path": "screenshots/v5/seamark-guide-desktop.png",
+        "bytes": 301837,
+        "sha256": "4fd53cc804778ef7fe56d29dea40a67eb74dc54a331e391415c0b4ca6f626285"
+      },
+      {
+        "path": "screenshots/v5/seamark-guide-mobile.png",
+        "bytes": 146460,
+        "sha256": "22b04b28ce39318f3316e2d72d2e3b72563b19bbd962bce8666682c1a8a28a9f"
+      },
+      {
+        "path": "screenshots/v5/symbol-library-compact.png",
+        "bytes": 128370,
+        "sha256": "2d3281f4820300a441c86db5f087296e06edf68d4ec7e507e512c8bf50427e1a"
+      },
+      {
+        "path": "screenshots/v5/symbol-library-desktop.png",
+        "bytes": 233031,
+        "sha256": "99451eb92b597f9c5d2d749affdd38c1e0dc8ceeaead301765bf7088a0071182"
+      },
+      {
+        "path": "screenshots/v5/symbol-library-mobile.png",
+        "bytes": 118430,
+        "sha256": "da9da2a4a743d70fb50dbd6afa8d319af0a0fe65c81a5bf530e00fe114b990c8"
+      },
+      {
+        "path": "screenshots/v6/chart-day.png",
+        "bytes": 477805,
+        "sha256": "a24e53b55da9f590bad44239a4e166c9f6b2bb01d891bc64eb4f41a17ea4394f"
+      },
+      {
+        "path": "screenshots/v6/chart-detail.png",
+        "bytes": 374839,
+        "sha256": "edc19de21301d1eb55d88b6e85ec9d5d10f676ec0f33e889ad58fe78661e19d8"
+      },
+      {
+        "path": "screenshots/v6/chart-dusk-rotated.png",
+        "bytes": 478306,
+        "sha256": "30bc64f4df49afc81a7e250a1f08d55a6721d42b1d544a903e25795e4f981a9e"
+      },
+      {
+        "path": "screenshots/v6/chart-mobile-detail.png",
+        "bytes": 71618,
+        "sha256": "017af70574ede8b81c29aa6a13d12763d91cdccc12bcce7401cb95110ad064b4"
+      },
+      {
+        "path": "screenshots/v6/chart-mobile.png",
+        "bytes": 197813,
+        "sha256": "088415471dc26b14cb2b46b701d236bef28e3d9f0c5f7fc7ff91cb24dafc1c9c"
+      },
+      {
+        "path": "screenshots/v6/chart-night-rotated.png",
+        "bytes": 424262,
+        "sha256": "5ef3c96f522abcf6dc89ce0241fd21adb2a86f6615a6c06dc940ff6eefd8d6c2"
+      },
+      {
+        "path": "screenshots/v7/chart-dusk.png",
+        "bytes": 447096,
+        "sha256": "02e027852b72650ae46a2f9431a3e8fd122ffc13b3d7c99e2fe01fa15dd19120"
+      },
+      {
+        "path": "screenshots/v7/chart-mobile.png",
+        "bytes": 193058,
+        "sha256": "edc137da6f372ee1d712bde77854697ceb82d5eaa5de9a98b7749058aa1447b6"
+      },
+      {
+        "path": "screenshots/v7/chart-night-rotated.png",
+        "bytes": 414330,
+        "sha256": "a56c67245d3e1d85c35cf318b7f35ab64d3e401c2002ac7521ac7b11233423b8"
+      },
+      {
+        "path": "screenshots/v7/lighthouse-detail.png",
+        "bytes": 59496,
+        "sha256": "bbbd801645fcf63b3a436246da7779af97cb246e29dcccc2d6327b50dc00d0d0"
+      },
+      {
+        "path": "screenshots/v7/lighthouse-dusk.png",
+        "bytes": 195074,
+        "sha256": "91335fe6e6e98740e8eb22cbb7a222ccee73e2469647fba044d78332d86dbb21"
+      },
+      {
+        "path": "screenshots/v7/lighthouse-night.png",
+        "bytes": 180065,
+        "sha256": "79d0099076da5fc8a71cb4f3186ec21c9633c0075238fee1dbcc42406916acb9"
+      },
+      {
+        "path": "screenshots/v7/vector-marker-detail.png",
+        "bytes": 371101,
+        "sha256": "e38c8b2ef6266a91f345ee74a49f83512e0a7316eb058ef3a068171937a9bc20"
+      },
+      {
+        "path": "screenshots/v8/sectors-compact.png",
+        "bytes": 191052,
+        "sha256": "e79eb81466aff03f6a0ad298cac5ce889ead46a4aad5dd46ebe60db7c1e5ccf0"
+      },
+      {
+        "path": "screenshots/v8/sectors-course-up.png",
+        "bytes": 203620,
+        "sha256": "fdb31329b8d2f016be6c7c5509c65d1db1ff0b50897e49cad9dc0b2ee16d0d50"
+      },
+      {
+        "path": "screenshots/v8/sectors-dusk.png",
+        "bytes": 196721,
+        "sha256": "4f5a373d3b5191cee7362260fcfd6244cbcea06acabbd431141c5e8417c333f2"
+      },
+      {
+        "path": "screenshots/v8/sectors-mobile.png",
+        "bytes": 195389,
+        "sha256": "9606eed0a48c3e23487746f1de51d6e9c083157986c6521d31e6c5b5060f702a"
+      },
+      {
+        "path": "screenshots/v8/sectors-night.png",
+        "bytes": 181785,
+        "sha256": "fb06fb5fc7472f8b62d9dd08954d640390bf7b57bef8e55e57b0ef54a03a3928"
+      },
+      {
+        "path": "screenshots/v8/sectors-pinned.png",
+        "bytes": 192715,
+        "sha256": "233477fe5ce7ed20102325c5155496ed0e0f274f2af5b424937c733b4395df2f"
+      },
+      {
+        "path": "src/app.js",
+        "bytes": 69979,
+        "sha256": "5494fca7615a14e0563ddd963747ae1bf64db4bc75f569a73d30133a0552398b"
+      },
+      {
+        "path": "src/backup.js",
+        "bytes": 2784,
+        "sha256": "2f60f85974e497e3db5c7830c157080ea9e0d4e79d4da454fa086ac336d46234"
+      },
+      {
+        "path": "src/chart-marker-art.js",
+        "bytes": 3945,
+        "sha256": "be2c7f44817c29d3714412c7974d3cf07e238f65c7131958b0cb8ff6fbd7816d"
+      },
+      {
+        "path": "src/chart-symbols.css",
+        "bytes": 6099,
+        "sha256": "ca7ec18b38bf682600b6c3c39c5798c94b00bbaddd5589119d5fcb77ad599cb3"
+      },
+      {
+        "path": "src/chart-symbols.js",
+        "bytes": 6113,
+        "sha256": "d88ffe6f7566fb5fddcb49488cf28e2267e6a76a7ffabda7e53fb3751b7cc1b3"
+      },
+      {
+        "path": "src/chart-symbols.json",
+        "bytes": 5534,
+        "sha256": "499b73de179102416b1d1f8c622d0ffef78834962282ce5000d95daed32ec0ca"
+      },
+      {
+        "path": "src/chart.js",
+        "bytes": 7283,
+        "sha256": "42a046bc39b65d899508e8ff7a9c65b1d44c459398a7a20b4dcdcec9a2c59c78"
+      },
+      {
+        "path": "src/health.js",
+        "bytes": 2301,
+        "sha256": "0be6d3176f5fde6d6bef0181fc95940e6447d671a90624db6d60958f2598ed33"
+      },
+      {
+        "path": "src/light-sectors.js",
+        "bytes": 4629,
+        "sha256": "c74bd994ef4726b69cc6118c7a4058588fe273a59b5cfc87283e090d47a7ce7b"
+      },
+      {
+        "path": "src/navigation.js",
+        "bytes": 10719,
+        "sha256": "0ff145562cbeb881a2034928329fdf7dcff9b0a04f0e5301a6e711240abd901d"
+      },
+      {
+        "path": "src/radar.js",
+        "bytes": 8910,
+        "sha256": "6c310049d51af4f3c5b1f2b8f7b2a8ee701b02a3c16101011df7caee24848da4"
+      },
+      {
+        "path": "src/seamarks.json",
+        "bytes": 5898,
+        "sha256": "78377f9622f82b6e2e16b6709fe62056863389ae5f6cc21bc6da9de3ed9cdfd9"
+      },
+      {
+        "path": "src/shell.html",
+        "bytes": 10162,
+        "sha256": "9a543a4bf366e5131fe457e534120c48bdddc136b6af5538e10fb7c663707c26"
+      },
+      {
+        "path": "src/style.css",
+        "bytes": 42922,
+        "sha256": "f943f5c91e2b260067e97a80d47fc923b64c3bb715c73a58ce1d4a6bf7a1bb46"
+      },
+      {
+        "path": "src/suite.css",
+        "bytes": 31495,
+        "sha256": "6180900700c299a116a6cb7b790cf7e34f89825060a52d97d20b31bf3acd2ef3"
+      },
+      {
+        "path": "src/suite.js",
+        "bytes": 61666,
+        "sha256": "8e543c82fbe16582a0d0d302b53ad88cae787ef2a7883f78151ab3eda3f38950"
+      },
+      {
+        "path": "src/symbol-catalogue.json",
+        "bytes": 473597,
+        "sha256": "95f85499871fd3187ba6ebc5758c1f1c384e90aaa9e63f6ca4ac626e73b49993"
+      },
+      {
+        "path": "src/symbols.css",
+        "bytes": 16467,
+        "sha256": "e22c5ae5d0919810ca85cf367c0f0d85f5abba28e57758267d8817a2e4ae265b"
+      },
+      {
+        "path": "src/symbols.js",
+        "bytes": 20067,
+        "sha256": "c5c5af951ed6d98edd27a890d0afffcbc04756f75637b1c5594e835783d4f594"
+      },
+      {
+        "path": "symbol-library.mjs",
+        "bytes": 8399,
+        "sha256": "714a02b262165481f92ce466bb2855d40cde0ffe77d98904deb4f832cbd863d2"
+      },
+      {
+        "path": "vendor/opencpn/COPYING",
+        "bytes": 15170,
+        "sha256": "ead06c5e9b243275923928f60659a759507ab7ce56abebdefbcf6fcd22dba96c"
+      },
+      {
+        "path": "vendor/opencpn/SOURCE.json",
+        "bytes": 357,
+        "sha256": "83aa10692003332d4beaeac323faaa1c42b92b9216dd5fe9c4f09a045db6545b"
+      },
+      {
+        "path": "vendor/opencpn/chartsymbols.xml",
+        "bytes": 2239641,
+        "sha256": "66d2dffad07499811fdbe10ae992c01a220fed7d0163654dd02f14d3f74007b7"
+      },
+      {
+        "path": "vendor/opencpn/rastersymbols-dark.png",
+        "bytes": 163832,
+        "sha256": "179cb516fd1a7795e8ab9ecbb8d4d5d88bf15cf42e5528c2f4e3ea2340320c33"
+      },
+      {
+        "path": "vendor/opencpn/rastersymbols-day.png",
+        "bytes": 250509,
+        "sha256": "ee1020a8b94b312faba8c146974e49147d280e5ef3cc13f3cd688bbfd54dde0c"
+      },
+      {
+        "path": "vendor/opencpn/rastersymbols-dusk.png",
+        "bytes": 169019,
+        "sha256": "56d6191b954978d0a85484b490228aab467610bfbf646c814af003428a766c2d"
+      },
+      {
+        "path": "verify.mjs",
+        "bytes": 8405,
+        "sha256": "bd16fb7b03e1f50ec9946271b15e31d2c87636374c2a449b45a4dd127496e996"
+      }
+    ]
+  },
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "deviceScaleFactor": 1,
+  "themes": {
+    "day": {
+      "theme": "day",
+      "variables": {
+        "--bg": "#152326",
+        "--cyan": "#7bc8d7",
+        "--amber": "#ecc48c",
+        "--red": "#ec8f87",
+        "--floating": "#f7f8f0"
+      },
+      "components": {
+        ".alert-button": [
+          {
+            "rect": {
+              "x": 1218,
+              "y": 11.5,
+              "width": 44,
+              "height": 44
+            },
+            "style": {
+              "color": "rgb(170, 189, 189)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "9px",
+              "borderWidth": "0px",
+              "borderColor": "rgb(170, 189, 189)",
+              "stroke": "none",
+              "strokeWidth": "1px",
+              "fill": "rgb(0, 0, 0)"
+            }
+          }
+        ],
+        ".alert-button .icon": [
+          {
+            "rect": {
+              "x": 1229,
+              "y": 22.5,
+              "width": 22,
+              "height": 22
+            },
+            "style": {
+              "color": "rgb(170, 189, 189)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "borderWidth": "0px",
+              "borderColor": "rgb(170, 189, 189)",
+              "stroke": "rgb(170, 189, 189)",
+              "strokeWidth": "1.65px",
+              "fill": "none"
+            }
+          }
+        ],
+        ".alert-button b": [
+          {
+            "rect": {
+              "x": 1242,
+              "y": 14.5,
+              "width": 16,
+              "height": 16
+            },
+            "style": {
+              "color": "rgb(21, 35, 38)",
+              "backgroundColor": "rgb(236, 196, 140)",
+              "borderRadius": "50%",
+              "borderWidth": "3px",
+              "borderColor": "rgb(21, 35, 38)",
+              "stroke": "none",
+              "strokeWidth": "1px",
+              "fill": "rgb(0, 0, 0)"
+            }
+          }
+        ],
+        ".map-top-controls>.icon-btn": [
+          {
+            "rect": {
+              "x": 1016,
+              "y": 190,
+              "width": 44,
+              "height": 44
+            },
+            "style": {
+              "color": "rgb(35, 62, 62)",
+              "backgroundColor": "rgb(247, 248, 240)",
+              "borderRadius": "12px",
+              "borderWidth": "1px",
+              "borderColor": "rgba(107, 139, 128, 0.11)",
+              "stroke": "none",
+              "strokeWidth": "1px",
+              "fill": "rgb(0, 0, 0)"
+            }
+          },
+          {
+            "rect": {
+              "x": 1016,
+              "y": 244,
+              "width": 44,
+              "height": 44
+            },
+            "style": {
+              "color": "rgb(35, 62, 62)",
+              "backgroundColor": "rgb(247, 248, 240)",
+              "borderRadius": "12px",
+              "borderWidth": "1px",
+              "borderColor": "rgba(107, 139, 128, 0.11)",
+              "stroke": "none",
+              "strokeWidth": "1px",
+              "fill": "rgb(0, 0, 0)"
+            }
+          }
+        ]
+      }
+    },
+    "dusk": {
+      "theme": "dusk",
+      "variables": {
+        "--bg": "#1d282e",
+        "--cyan": "#82b0c1",
+        "--amber": "#cfac84",
+        "--red": "#ec8f87",
+        "--floating": "#243a40"
+      },
+      "components": {
+        ".alert-button": [
+          {
+            "rect": {
+              "x": 1218,
+              "y": 11.5,
+              "width": 44,
+              "height": 44
+            },
+            "style": {
+              "color": "rgb(172, 185, 183)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "9px",
+              "borderWidth": "0px",
+              "borderColor": "rgb(172, 185, 183)",
+              "stroke": "none",
+              "strokeWidth": "1px",
+              "fill": "rgb(0, 0, 0)"
+            }
+          }
+        ],
+        ".alert-button .icon": [
+          {
+            "rect": {
+              "x": 1229,
+              "y": 22.5,
+              "width": 22,
+              "height": 22
+            },
+            "style": {
+              "color": "rgb(172, 185, 183)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "borderWidth": "0px",
+              "borderColor": "rgb(172, 185, 183)",
+              "stroke": "rgb(172, 185, 183)",
+              "strokeWidth": "1.65px",
+              "fill": "none"
+            }
+          }
+        ],
+        ".alert-button b": [
+          {
+            "rect": {
+              "x": 1242,
+              "y": 14.5,
+              "width": 16,
+              "height": 16
+            },
+            "style": {
+              "color": "rgb(29, 40, 46)",
+              "backgroundColor": "rgb(207, 172, 132)",
+              "borderRadius": "50%",
+              "borderWidth": "3px",
+              "borderColor": "rgb(29, 40, 46)",
+              "stroke": "none",
+              "strokeWidth": "1px",
+              "fill": "rgb(0, 0, 0)"
+            }
+          }
+        ],
+        ".map-top-controls>.icon-btn": [
+          {
+            "rect": {
+              "x": 1016,
+              "y": 190,
+              "width": 44,
+              "height": 44
+            },
+            "style": {
+              "color": "rgb(225, 229, 216)",
+              "backgroundColor": "rgb(36, 58, 64)",
+              "borderRadius": "12px",
+              "borderWidth": "1px",
+              "borderColor": "rgba(107, 139, 128, 0.11)",
+              "stroke": "none",
+              "strokeWidth": "1px",
+              "fill": "rgb(0, 0, 0)"
+            }
+          },
+          {
+            "rect": {
+              "x": 1016,
+              "y": 244,
+              "width": 44,
+              "height": 44
+            },
+            "style": {
+              "color": "rgb(225, 229, 216)",
+              "backgroundColor": "rgb(36, 58, 64)",
+              "borderRadius": "12px",
+              "borderWidth": "1px",
+              "borderColor": "rgba(107, 139, 128, 0.11)",
+              "stroke": "none",
+              "strokeWidth": "1px",
+              "fill": "rgb(0, 0, 0)"
+            }
+          }
+        ]
+      }
+    },
+    "night": {
+      "theme": "night",
+      "variables": {
+        "--bg": "#0c1115",
+        "--cyan": "#78989c",
+        "--amber": "#aa9170",
+        "--red": "#b77569",
+        "--floating": "#152129"
+      },
+      "components": {
+        ".alert-button": [
+          {
+            "rect": {
+              "x": 1218,
+              "y": 11.5,
+              "width": 44,
+              "height": 44
+            },
+            "style": {
+              "color": "rgb(145, 152, 142)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "9px",
+              "borderWidth": "0px",
+              "borderColor": "rgb(145, 152, 142)",
+              "stroke": "none",
+              "strokeWidth": "1px",
+              "fill": "rgb(0, 0, 0)"
+            }
+          }
+        ],
+        ".alert-button .icon": [
+          {
+            "rect": {
+              "x": 1229,
+              "y": 22.5,
+              "width": 22,
+              "height": 22
+            },
+            "style": {
+              "color": "rgb(145, 152, 142)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "borderRadius": "0px",
+              "borderWidth": "0px",
+              "borderColor": "rgb(145, 152, 142)",
+              "stroke": "rgb(145, 152, 142)",
+              "strokeWidth": "1.65px",
+              "fill": "none"
+            }
+          }
+        ],
+        ".alert-button b": [
+          {
+            "rect": {
+              "x": 1242,
+              "y": 14.5,
+              "width": 16,
+              "height": 16
+            },
+            "style": {
+              "color": "rgb(12, 17, 21)",
+              "backgroundColor": "rgb(170, 145, 112)",
+              "borderRadius": "50%",
+              "borderWidth": "3px",
+              "borderColor": "rgb(12, 17, 21)",
+              "stroke": "none",
+              "strokeWidth": "1px",
+              "fill": "rgb(0, 0, 0)"
+            }
+          }
+        ],
+        ".map-top-controls>.icon-btn": [
+          {
+            "rect": {
+              "x": 1016,
+              "y": 190,
+              "width": 44,
+              "height": 44
+            },
+            "style": {
+              "color": "rgb(182, 195, 175)",
+              "backgroundColor": "rgb(21, 33, 41)",
+              "borderRadius": "12px",
+              "borderWidth": "1px",
+              "borderColor": "rgba(107, 139, 128, 0.11)",
+              "stroke": "none",
+              "strokeWidth": "1px",
+              "fill": "rgb(0, 0, 0)"
+            }
+          },
+          {
+            "rect": {
+              "x": 1016,
+              "y": 244,
+              "width": 44,
+              "height": 44
+            },
+            "style": {
+              "color": "rgb(182, 195, 175)",
+              "backgroundColor": "rgb(21, 33, 41)",
+              "borderRadius": "12px",
+              "borderWidth": "1px",
+              "borderColor": "rgba(107, 139, 128, 0.11)",
+              "stroke": "none",
+              "strokeWidth": "1px",
+              "fill": "rgb(0, 0, 0)"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

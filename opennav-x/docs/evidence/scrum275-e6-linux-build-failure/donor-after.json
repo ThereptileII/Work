@@ -1,0 +1,10 @@
+{
+  "donor": "/home/standard/Projects/X-nav-worktrees/scrum264-combined-linux-33d90c3",
+  "checked": 4610,
+  "changed": [],
+  "head": "c092a0407a9a550543bfaf89ec13407978d890d7",
+  "buildSource": "e6ef3843dc604368d32bc823c770bec76d890b69",
+  "trackedStatus": "",
+  "buildExit": 1,
+  "buildLogSha256": "2b2f28102484490f1a9b160049c68492b34d22fe1d9fd633e2086f9c2f61fd41"
+}

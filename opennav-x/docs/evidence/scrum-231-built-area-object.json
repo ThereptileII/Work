@@ -1,0 +1,81 @@
+{
+  "scope": "Read-only public ENC object inspection; no navigation computation added to product",
+  "archive_sha256": "b027e029dc7b76595381d89e3718145eb5069e5a03917e78bada4f8ebe8c84e4",
+  "cell_sha256": "7e474bea96e7a84c6f3ee6b44ff7db4288029fa47ac2a285594e18469dbf518c",
+  "cell_bytes": 841005,
+  "reader": {
+    "pyogrio": "0.13.0",
+    "gdal": [
+      3,
+      12,
+      4
+    ],
+    "shapely": "2.1.2"
+  },
+  "retained_viewport": {
+    "latitude": 47.6,
+    "longitude": -122.36,
+    "scale_ppm": 0.150000006,
+    "cell": "US5SEAFL.000"
+  },
+  "objects": [
+    {
+      "attributes": {
+        "RCID": 504,
+        "PRIM": 3,
+        "OBJL": 13,
+        "LNAM": "0226F719D9541923",
+        "OBJNAM": "Seattle"
+      },
+      "geometry_type": "Polygon",
+      "bounds_wgs84": [
+        -122.3709406,
+        47.5875098,
+        -122.325,
+        47.625
+      ],
+      "interior_wgs84": [
+        -122.335,
+        47.605
+      ],
+      "interior_contained": true
+    },
+    {
+      "attributes": {
+        "RCID": 506,
+        "PRIM": 3,
+        "OBJL": 13,
+        "LNAM": "02261954568D1923",
+        "OBJNAM": "West Seattle"
+      },
+      "geometry_type": "Polygon",
+      "bounds_wgs84": [
+        -122.4,
+        47.55,
+        -122.340976,
+        47.5954882
+      ],
+      "interior_wgs84": [
+        -122.37814903190875,
+        47.572737599999996
+      ],
+      "interior_contained": true
+    }
+  ],
+  "upstream_lookup_ids": {
+    "Plain": {
+      "id": 16,
+      "RCID": 32052
+    },
+    "Symbolized": {
+      "id": 356,
+      "RCID": 32391
+    }
+  },
+  "retained_screenshot_sha256": "f7f4249872c1f0b14aa1996ea5f47b76487217e1351baf550e0e483fd1486604",
+  "stock_CHBRN_rgb": [
+    177,
+    145,
+    57
+  ]
+}

@@ -1,0 +1,341 @@
+{
+  "run": {
+    "id": 37191400051,
+    "head_sha": "ecf7e0c46609cf4cb29141964d7c4bde98b002b7",
+    "path": ".github/workflows/opennav-baseline.yml",
+    "event": "push",
+    "status": "in_progress",
+    "conclusion": null,
+    "run_attempt": 1,
+    "html_url": "https://github.com/ThereptileII/Work/actions/runs/37191400051"
+  },
+  "retrievedUtc": "2026-10-04T09:19:24.853Z",
+  "artifact": {
+    "id": 11298888538,
+    "name": "commissioning-restart-qualified-ecf7e0c46609cf4cb29141964d7c4bde98b002b7",
+    "size_in_bytes": 333,
+    "url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/11298888538",
+    "archive_download_url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/11298888538/zip",
+    "expired": false,
+    "created_at": "2026-10-04T09:18:06Z",
+    "expires_at": "2027-01-02T09:12:22Z",
+    "updated_at": "2026-10-04T09:18:06Z",
+    "digest": "sha256:de93c30393b4516b31ca1056ba6b65c22d4eb88516704871969d5b8e55ba4c95",
+    "workflow_run": {
+      "id": 37191400051,
+      "repository_id": 864043804,
+      "head_repository_id": 864043804,
+      "head_branch": "opennav-x-beta2-ui",
+      "head_sha": "ecf7e0c46609cf4cb29141964d7c4bde98b002b7"
+    }
+  },
+  "jobs": [
+    {
+      "id": 111404167493,
+      "run_id": 37191400051,
+      "workflow_name": "SKAGER Beta 2",
+      "head_branch": "opennav-x-beta2-ui",
+      "run_url": "https://api.github.com/repos/ThereptileII/Work/actions/runs/37191400051",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOM4BDHM8AAAAZ8DSxRQ",
+      "head_sha": "ecf7e0c46609cf4cb29141964d7c4bde98b002b7",
+      "url": "https://api.github.com/repos/ThereptileII/Work/actions/jobs/111404167493",
+      "html_url": "https://github.com/ThereptileII/Work/actions/runs/37191400051/job/111404167493",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-04T09:12:23Z",
+      "started_at": "2026-10-04T09:12:26Z",
+      "completed_at": "2026-10-04T09:15:20Z",
+      "name": "Native boat recovery and commissioning contracts",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-04T09:12:27Z",
+          "completed_at": "2026-10-04T09:12:28Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-04T09:12:28Z",
+          "completed_at": "2026-10-04T09:12:41Z"
+        },
+        {
+          "name": "Exercise disposable maintenance transactions in Windows PowerShell 5.1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-04T09:12:41Z",
+          "completed_at": "2026-10-04T09:15:12Z"
+        },
+        {
+          "name": "Verify closed navigation copies without vessel data",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-04T09:15:12Z",
+          "completed_at": "2026-10-04T09:15:15Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-04T09:15:15Z",
+          "completed_at": "2026-10-04T09:15:17Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-10-04T09:15:17Z",
+          "completed_at": "2026-10-04T09:15:18Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-10-04T09:15:18Z",
+          "completed_at": "2026-10-04T09:15:18Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/ThereptileII/Work/check-runs/111404167493",
+      "labels": [
+        "windows-2022"
+      ],
+      "runner_id": 1000003461,
+      "runner_name": "GitHub Actions 1000003461",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 111404167754,
+      "run_id": 37191400051,
+      "workflow_name": "SKAGER Beta 2",
+      "head_branch": "opennav-x-beta2-ui",
+      "run_url": "https://api.github.com/repos/ThereptileII/Work/actions/runs/37191400051",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOM4BDHM8AAAAZ8DSySg",
+      "head_sha": "ecf7e0c46609cf4cb29141964d7c4bde98b002b7",
+      "url": "https://api.github.com/repos/ThereptileII/Work/actions/jobs/111404167754",
+      "html_url": "https://github.com/ThereptileII/Work/actions/runs/37191400051/job/111404167754",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-04T09:12:23Z",
+      "started_at": "2026-10-04T09:12:25Z",
+      "completed_at": "2026-10-04T09:13:45Z",
+      "name": "Native Win32 commissioning restart process boundary",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-04T09:12:26Z",
+          "completed_at": "2026-10-04T09:12:27Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-04T09:12:27Z",
+          "completed_at": "2026-10-04T09:12:40Z"
+        },
+        {
+          "name": "Compile actual restart helper with marker-only test processes",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-04T09:12:40Z",
+          "completed_at": "2026-10-04T09:13:03Z"
+        },
+        {
+          "name": "Exercise native process and pipe boundary without OpenCPN or hardware",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-04T09:13:03Z",
+          "completed_at": "2026-10-04T09:13:41Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-04T09:13:41Z",
+          "completed_at": "2026-10-04T09:13:42Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-10-04T09:13:42Z",
+          "completed_at": "2026-10-04T09:13:43Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-10-04T09:13:43Z",
+          "completed_at": "2026-10-04T09:13:44Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/ThereptileII/Work/check-runs/111404167754",
+      "labels": [
+        "windows-2022"
+      ],
+      "runner_id": 1000003462,
+      "runner_name": "GitHub Actions 1000003462",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 111404638940,
+      "run_id": 37191400051,
+      "workflow_name": "SKAGER Beta 2",
+      "head_branch": "opennav-x-beta2-ui",
+      "run_url": "https://api.github.com/repos/ThereptileII/Work/actions/runs/37191400051",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOM4BDHM8AAAAZ8Dvi3A",
+      "head_sha": "ecf7e0c46609cf4cb29141964d7c4bde98b002b7",
+      "url": "https://api.github.com/repos/ThereptileII/Work/actions/jobs/111404638940",
+      "html_url": "https://github.com/ThereptileII/Work/actions/runs/37191400051/job/111404638940",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-04T09:15:21Z",
+      "started_at": "2026-10-04T09:15:23Z",
+      "completed_at": "2026-10-04T09:18:10Z",
+      "name": "Actual restart broker with disposable marker-only installation",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-04T09:15:24Z",
+          "completed_at": "2026-10-04T09:15:25Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-04T09:15:25Z",
+          "completed_at": "2026-10-04T09:15:38Z"
+        },
+        {
+          "name": "Compile the same-commit actual helper and marker-only processes",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-04T09:15:38Z",
+          "completed_at": "2026-10-04T09:16:03Z"
+        },
+        {
+          "name": "Exercise the unchanged broker, full audit, refusals and receipt uncertainty",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-04T09:16:03Z",
+          "completed_at": "2026-10-04T09:17:06Z"
+        },
+        {
+          "name": "Exercise actual Prepare and scheduled Arm Collect against marker-only fixtures",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-04T09:17:06Z",
+          "completed_at": "2026-10-04T09:18:03Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-04T09:18:03Z",
+          "completed_at": "2026-10-04T09:18:05Z"
+        },
+        {
+          "name": "Attest same-run restart gates after native tests and evidence upload",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-04T09:18:05Z",
+          "completed_at": "2026-10-04T09:18:05Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-04T09:18:05Z",
+          "completed_at": "2026-10-04T09:18:06Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-10-04T09:18:06Z",
+          "completed_at": "2026-10-04T09:18:08Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-10-04T09:18:08Z",
+          "completed_at": "2026-10-04T09:18:08Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/ThereptileII/Work/check-runs/111404638940",
+      "labels": [
+        "windows-2022"
+      ],
+      "runner_id": 1000003466,
+      "runner_name": "GitHub Actions 1000003466",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    }
+  ],
+  "archiveVerification": {
+    "bytes": 333,
+    "sha256": "de93c30393b4516b31ca1056ba6b65c22d4eb88516704871969d5b8e55ba4c95",
+    "safePaths": true,
+    "duplicates": false,
+    "crcPassed": true,
+    "entries": [
+      {
+        "name": "qualified.json",
+        "bytes": 301,
+        "sha256": "f9409b59dae01ff4129dafafa6539d43018badcb8d2bfe88553e43131706b228",
+        "crc32": "30f636f3"
+      }
+    ]
+  },
+  "brokerLog": {
+    "jobId": 111404638940,
+    "decodedUtf8Bytes": 26530,
+    "decodedUtf8Sha256": "ac81714b0008c296eb71acc6aeaeff16842d53c7f3ac60a5fa7ce089424993ae",
+    "uploadIdDigestSizeMatch": true,
+    "completeThroughCleanup": true
+  },
+  "sourceMapping": {
+    "localCommit": "1988df7a8a0ae8ddc6365ca46026d32fccfa0bdc",
+    "workflow": {
+      "sha256": "f52c3e7a7a350cd09a1cc67b1b47ae36bbcd6b7be59c14d864b515d91d35898e",
+      "bytes": 50048,
+      "remoteBytesEqualMappedLocal": true
+    }
+  },
+  "scope": "Exact same-run prerequisite receipt and successful native job/step status; no individual broker/maintenance archive case counts claimed."
+}

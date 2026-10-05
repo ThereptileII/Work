@@ -1,0 +1,47 @@
+{
+  "application_commit": "9d98a500916e8a7f59dac9735427dde6d3c7d2e5",
+  "run": 37120549213,
+  "artifact_id": 11275626437,
+  "artifact_sha256": "eb11a4ab014832e3304a387ada3b3f8afe8195f2d3850ee24c1ccaed1f064adc",
+  "native_images": {
+    "evidence/local/chart-software-01-loaded.png": {
+      "bytes": 115972,
+      "sha256": "ce07e5145b2989df6c4969480b4a445cc958aca900d31cd47da8181978bd6d5f"
+    },
+    "evidence/local/chart-software-02-zoom.png": {
+      "bytes": 66146,
+      "sha256": "f4534b43c11505ce6eed65fbd080eff04edcf280913187f98aedcc250703149f"
+    },
+    "evidence/local/chart-software-03a-adjacent-cell.png": {
+      "bytes": 73455,
+      "sha256": "feb5ca18bce9474bc8b218afbb8197bd4fbc18f228e2923c869e11309ae262db"
+    },
+    "evidence/local/dpi-100-01-navigation-day.png": {
+      "bytes": 61192,
+      "sha256": "5680880c0603a1f5b68e0804800ffb6afaeb16460562d7d1e67ce2e6145c965c"
+    },
+    "evidence/local/dpi-100-02-navigation-night.png": {
+      "bytes": 60515,
+      "sha256": "f42345173bc4958bcac3c818e131bd5a04b6655ddb2f367fe477652f7e6eee35"
+    },
+    "evidence/local/dpi-100-1920-navigation-day.png": {
+      "bytes": 63053,
+      "sha256": "31a504a188aeefacbf1156cf6895aa9b8c7db841abc447e89b6a653b92405829"
+    },
+    "evidence/local/dpi-150-01-navigation-day.png": {
+      "bytes": 65783,
+      "sha256": "99f18cec398650613ddeff8e4b961e2f8147f8155dc57569bb81ff54a0e24361"
+    }
+  },
+  "canonical_references": {
+    "docs/design/prototype/reference/windows/navigation-day.png": {
+      "bytes": 373188,
+      "sha256": "02c4d8f6bb0536fdeeb9ff0a3c58d707660139565dcebc891bca326326897089"
+    },
+    "docs/design/prototype/reference/windows/navigation-night.png": {
+      "bytes": 353193,
+      "sha256": "2c1d95c8669be47418b587c985f9c1b2ca53c573dfa7f319d96b777abbe97117"
+    }
+  },
+  "scope": "Bounded visual review of preceding fixture build. No fixture-free package, actual private canvas, native OpenGL or boat qualification."
+}

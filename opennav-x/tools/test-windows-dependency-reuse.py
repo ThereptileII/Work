@@ -3,9 +3,11 @@
 
 from __future__ import annotations
 
+import ast
 import json
 import os
 from pathlib import Path
+import re
 import tempfile
 import unittest
 from unittest import mock
@@ -15,6 +17,71 @@ import windows_dependency_reuse as reuse
 
 
 class SameJobReuseReceiptTests(unittest.TestCase):
+    def test_existing_gettext_receipt_is_bound_without_refresh(self):
+        name = 'evidence/local/windows-gettext-xnav.json'
+        self.assertIn(name, reuse.INPUTS)
+        self.assertFalse(any('windows-gettext-xnav-logs' in item for item in reuse.INPUTS))
+        path = self.root / name
+        path.write_text(json.dumps({'status': 'passed', 'directory': 'original-gettext'}))
+        self.capture()
+        path.write_text(json.dumps({'status': 'passed', 'directory': 'different-gettext'}))
+        tampered = path.read_bytes()
+        with self.assertRaisesRegex(ValueError, 'job identity'):
+            reuse.verify_same_job(self.root)
+        self.assertEqual(path.read_bytes(), tampered)  # Verification never refreshes it.
+
+    def test_build_and_ais_share_authenticated_bundle_parent_setup(self):
+        root = Path(__file__).resolve().parents[1]
+        build = (root / 'tools/build-pristine-windows.ps1').read_text()
+        workflow = root / '.github/workflows/opennav-baseline.yml'
+        if not workflow.is_file():
+            workflow = root.parent / '.github/workflows/opennav-baseline.yml'
+        jobs = dict(re.findall(r'^  ([\w-]+):\n(.*?)(?=^  [\w-]+:|\Z)',
+                               workflow.read_text(), re.MULTILINE | re.DOTALL))
+        producer, qualification = jobs['windows-integration'], jobs['windows-qualification']
+        self.assertIn('windows-parent-environment.ps1', build)
+        self.assertLess(build.index('Initialize-WindowsNativePerl'), build.index('Initialize-WindowsGettext'))
+        self.assertLess(build.index('Initialize-WindowsGettext'), build.index('build-openssl-windows.ps1'))
+        self.assertIn('-Mode Ensure', build)
+        # AIS now delegates the exact parent setup to the build driver's
+        # verification-only mode, using authenticated cross-run inputs rather
+        # than claiming that the deferred GUI fixture gate already succeeded.
+        ais = (root / 'tools/test-ais-runtime-windows.py').read_text()
+        functions = {node.name: ast.get_source_segment(ais, node)
+                     for node in ast.parse(ais).body if isinstance(node, ast.FunctionDef)}
+        reprobe = functions['reprobe_bundle_inputs']
+        for required in ('build-pristine-windows.ps1', '-VerifyDependencyBundleOnly',
+                         '-DependencyBundle', '-DependencyBundleProvenance'):
+            self.assertIn(required, reprobe)
+        for forbidden in ('Initialize-WindowsNativePerl', 'Initialize-WindowsGettext',
+                          '--allow-install', 'fixture-success'):
+            self.assertNotIn(forbidden, reprobe)
+        self.assertIn('bundle_api.verify_restored(root, bundle, provenance)', functions['dependency_inputs'])
+        self.assertIn('reuse.verify_same_job(root)', functions['dependency_inputs'])
+        main = functions['main']
+        before, after = main.split('reprobe_bundle_inputs(', 1)
+        self.assertIn('dependency_inputs(', before)
+        self.assertIn('dependency_inputs(', after)
+        self.assertIn('observed != expected or observed_authority != authority', after)
+        command = ('test-ais-runtime-windows.py --dependency-bundle dependency-bundle '
+                   '--dependency-bundle-provenance dependency-provenance.json')
+        self.assertIn(command, producer)
+        self.assertLess(producer.index('windows_dependency_bundle.py restore'), producer.index(command))
+        self.assertLess(producer.index(command), producer.index('Compile fixture application'))
+        self.assertLess(producer.index(command), producer.index('staging_build_inputs.py seal'))
+        self.assertNotIn('--fixture-success', producer)
+        self.assertNotIn('test-ais-runtime-windows.py', qualification)
+        self.assertIn('staging_build_inputs.py restore', qualification)
+        self.assertIn('qualify-staging-windows.ps1', qualification)
+
+    def test_parent_initialization_source_is_bound(self):
+        name = 'tools/windows-parent-environment.ps1'
+        self.assertIn(name, reuse.INPUTS)
+        self.capture()
+        (self.root / name).write_bytes(b'changed parent setup')
+        with self.assertRaisesRegex(ValueError, 'job identity'):
+            reuse.verify_same_job(self.root)
+
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory(prefix="same-job-reuse-")
         self.addCleanup(self.temporary.cleanup)
@@ -70,6 +137,35 @@ class SameJobReuseReceiptTests(unittest.TestCase):
         self.original.write_text(json.dumps({"mode": "source-only", "status": "verified"}))
         reuse.verify_same_job(self.root)
 
+    def test_zlib_facts_from_actual_producer_paths_are_consumed_and_bound(self):
+        # Derive the fixture locations from the producer, independently of the
+        # consumer map used by setUp. Refuse an unfamiliar declaration shape.
+        producer = Path(__file__).with_name("build-zlib-windows.ps1").read_text()
+        directories = re.findall(r"(?m)^\$Evidence = Join-Path \$Root '([^']+)'$", producer)
+        self.assertEqual(len(directories), 1)
+        for kind, variable in (("zlib-parent", "ParentFacts"), ("zlib-child", "ChildFacts")):
+            (self.root / reuse.PRODUCER_FACTS[kind]).unlink()
+            filenames = re.findall(
+                rf"(?m)^\${variable} = Join-Path \$Evidence '([^']+)'$", producer)
+            self.assertEqual(len(filenames), 1)
+            relative = directories[0] + "/" + filenames[0]
+            self.assertEqual(reuse.PRODUCER_FACTS[kind], relative)
+            path = self.root / relative
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(json.dumps({"schemaVersion": 1, "kind": kind}), encoding="utf-8")
+        self.capture()
+        reuse.verify_same_job(self.root)
+        for kind in ("zlib-parent", "zlib-child"):
+            with self.subTest(kind=kind):
+                path = self.root / reuse.PRODUCER_FACTS[kind]
+                original = path.read_bytes()
+                try:
+                    path.write_bytes(original + b" ")
+                    with self.assertRaisesRegex(ValueError, "job identity"):
+                        reuse.verify_same_job(self.root)
+                finally:
+                    path.write_bytes(original)
+
     def test_checkout_root_workflow_is_bound_by_commit_not_nested_path(self):
         workflow = ".github/workflows/opennav-baseline.yml"
         self.assertNotIn(workflow, reuse.INPUTS)
@@ -104,6 +200,11 @@ class SameJobReuseReceiptTests(unittest.TestCase):
             next(iter(reuse.PRODUCER_FACTS.values())),
             "evidence/local/windows-curl-native-output.log",
             "tools/build-curl-windows.ps1",
+            "tools/windows-curl-environment.ps1",
+            "tools/windows-curl-import-layout.cmake",
+            "tools/test-curl-source-preflight.ps1",
+            "evidence/local/windows-curl-source-preflight/source-analysis.json",
+            "evidence/local/windows-curl-source-preflight/test1119.stderr.txt",
             "build/dependency-downloads/zlib-1.3.2.tar.gz",
         ):
             with self.subTest(relative=relative):

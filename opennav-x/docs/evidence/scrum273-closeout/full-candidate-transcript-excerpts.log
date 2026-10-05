@@ -1,0 +1,9 @@
+windows-xnav-Win32.log:17743: Prepared exact adapter sources; native build and acceptance remain pending.
+windows-xnav-Win32.log:17967:   skager-ocharts-adapter.vcxproj -> D:\a\Work\Work\opennav-x\build\ocharts-native\Release\skager-ocharts-adapter.dll
+windows-xnav-Win32.log:21200: -- Installing: D:/a/Work/Work/opennav-x/build/xnav-install/./skager-ocharts-adapter.dll
+windows-xnav-Win32.log:21202: -- Installing: D:/a/Work/Work/opennav-x/build/xnav-install/./opennav/third-party/ocharts/corresponding-source.zip
+windows-xnav-Win32.log:21596: 100% tests passed, 0 tests failed out of 139
+windows-production-Win32.log:3681: -- Installing: D:/a/Work/Work/opennav-x/build/production-install/./skager-ocharts-adapter.dll
+windows-production-Win32.log:3683: -- Installing: D:/a/Work/Work/opennav-x/build/production-install/./opennav/third-party/ocharts/corresponding-source.zip
+windows-production-Win32.log:4076: 100% tests passed, 0 tests failed out of 139
+windows-production-Win32.log:4137: Problem with index file: D:/a/_temp/opennav-downloader-trust-4ae6d9d81d8449a6b5eb5ad2cd26cd4e/fixtures/expired-index.txt (could not load/parse file)

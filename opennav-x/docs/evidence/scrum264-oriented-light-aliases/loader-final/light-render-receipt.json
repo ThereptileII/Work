@@ -1,0 +1,11 @@
+{
+  "renderBodySha256": "e939eb0ff1a0212dc21a49cf22470f4ed1b1fce9df1eb2616f5982f751bf7190",
+  "privateRenderBodySha256": "68f9c7793782eac1d4830eb42792ac85c9b12bf5cb81f0a76cc65f3112e432ca",
+  "conditionalBodies": {
+    "bool GetDoubleAttr(S57Obj *obj,": "8b6265dac68354442f997323d69402c74109ad739bf1bef5ffff29e66c8f9dc6",
+    "bool GetStringAttr(S57Obj *obj,": "2db63d26fe99b691db51b93409cf56540c0ef58fcc7f8bf3c2cc2acc99deadd4",
+    "static int _parseList(": "ced9b3c05e34beefcbca7f060d1eb7f77368e6517037a5d09c766b77ad6ff077",
+    "static void *LIGHTS06(void *param)\n": "99dbc4761c76b92cb502e561b0fa7a748f58e2b3dbe267f90851cf1f569b5471"
+  },
+  "limits": "Actual loader/RenderSY/conditional bodies; fixture objects and recorded painter calls. No full canvas, GL draw, plugin or boat."
+}

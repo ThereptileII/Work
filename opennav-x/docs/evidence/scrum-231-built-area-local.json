@@ -1,0 +1,228 @@
+{
+  "issue": "SCRUM-231",
+  "scope": "Bounded Linux Xvfb software real-ENC built-area comparison only",
+  "before_source": "cf0719749482e62d48daed02515f2b6c6d242b67",
+  "after_source": "785ffcd88e9b1ef938f534f198de4ebfd97de1b9",
+  "before_binary_sha256": "1c262147de5c7830576e354139c351b105a5ca4b982329a679bd516f18c152c8",
+  "after_binary_sha256": "11e951ac3a90942c8d536ab6a7909c68763161caa38027133e000dd5746c0261",
+  "chart_object_record": "scrum-231-built-area-object.json",
+  "actual_renderer": "software in all captures",
+  "screen_pixels": [
+    1280,
+    800
+  ],
+  "viewport_unchanged": true,
+  "strict_standard_chart_pixel_equality": true,
+  "comparison": {
+    "XNav-Day": {
+      "changed_chart_pixels": 89113,
+      "before_CHBRN_pixels": 86893,
+      "after_CHBRN_pixels": 1577,
+      "solid_CHBRN_transitions": [
+        [
+          [
+            175,
+            191,
+            174
+          ],
+          85304
+        ],
+        [
+          [
+            175,
+            190,
+            173
+          ],
+          12
+        ]
+      ],
+      "changed_non_CHBRN_pixels": 3797,
+      "sample_after": [
+        175,
+        191,
+        174
+      ]
+    },
+    "XNav-Dusk": {
+      "changed_chart_pixels": 89230,
+      "before_CHBRN_pixels": 86912,
+      "after_CHBRN_pixels": 1585,
+      "solid_CHBRN_transitions": [
+        [
+          [
+            116,
+            135,
+            121
+          ],
+          85304
+        ],
+        [
+          [
+            115,
+            133,
+            119
+          ],
+          9
+        ],
+        [
+          [
+            116,
+            134,
+            121
+          ],
+          6
+        ],
+        [
+          [
+            115,
+            134,
+            119
+          ],
+          5
+        ]
+      ],
+      "changed_non_CHBRN_pixels": 3903,
+      "sample_after": [
+        116,
+        135,
+        121
+      ]
+    },
+    "XNav-Night": {
+      "changed_chart_pixels": 89181,
+      "before_CHBRN_pixels": 86999,
+      "after_CHBRN_pixels": 1608,
+      "solid_CHBRN_transitions": [
+        [
+          [
+            70,
+            87,
+            74
+          ],
+          85333
+        ],
+        [
+          [
+            69,
+            86,
+            73
+          ],
+          25
+        ],
+        [
+          [
+            67,
+            83,
+            70
+          ],
+          10
+        ],
+        [
+          [
+            69,
+            85,
+            73
+          ],
+          9
+        ]
+      ],
+      "changed_non_CHBRN_pixels": 3790,
+      "sample_after": [
+        70,
+        87,
+        74
+      ]
+    },
+    "Standard-Day": {
+      "changed_chart_pixels": 0,
+      "before_CHBRN_pixels": 84816,
+      "after_CHBRN_pixels": 84816,
+      "solid_CHBRN_transitions": [],
+      "changed_non_CHBRN_pixels": 0,
+      "sample_after": [
+        177,
+        145,
+        57
+      ]
+    },
+    "Standard-Dusk": {
+      "changed_chart_pixels": 0,
+      "before_CHBRN_pixels": 84931,
+      "after_CHBRN_pixels": 84931,
+      "solid_CHBRN_transitions": [],
+      "changed_non_CHBRN_pixels": 0,
+      "sample_after": [
+        54,
+        44,
+        17
+      ]
+    },
+    "Standard-Night": {
+      "changed_chart_pixels": 0,
+      "before_CHBRN_pixels": 85067,
+      "after_CHBRN_pixels": 85067,
+      "solid_CHBRN_transitions": [],
+      "changed_non_CHBRN_pixels": 0,
+      "sample_after": [
+        15,
+        13,
+        5
+      ]
+    }
+  },
+  "resource_checks": 3477,
+  "native_windows_acceptance": "pending",
+  "actual_opengl_acceptance": "pending",
+  "boat_acceptance": "pending",
+  "remaining_presentation": "Ownship, marker artwork, labels and other chart presentation remain separate unfinished work",
+  "build": {
+    "base": "cf0719749482e62d48daed02515f2b6c6d242b67",
+    "target": "opencpn",
+    "steps": 28,
+    "exit_code": 0,
+    "jobs": 2,
+    "nine_upstream_patches_verified": true,
+    "isolation": "Private reflink cache/source/build/install; bwrap binds configured paths; original cache unchanged"
+  },
+  "capture_driver_sha256": "955d68352b90d92b302377b6a82d3fc9539603e5d60bb72bccd7318c391291de",
+  "raw_evidence": "/home/standard/Projects/X-nav-worktrees/scrum231-built-area-style/.local/built-area-build",
+  "images": {
+    "scrum-231-built-area-before-day.png": "63692ebbd67231e2cd797cd3cd32e10193cd06fd319ee8a795cf9828b02ef644",
+    "scrum-231-built-area-before-dusk.png": "c5f2f6ad97c9fb56a366ea182181898432e7810cd653ce1ffab21477cd2cd370",
+    "scrum-231-built-area-before-night.png": "4fb25573f36f4a491f445c8b810139a28e54f289e0774c9679815241b43c1673",
+    "scrum-231-built-area-after-day.png": "31742861559ff35cbbf69e67cba4c563b3371918e769ef3160ab19d580fb825e",
+    "scrum-231-built-area-after-dusk.png": "ebb1c8ab5b3d74ca83444e2f16690452679216c75f36035372e667cbfed80e99",
+    "scrum-231-built-area-after-night.png": "c2affb1c53149e16f8a4b7122b1562e647f73a83921a2c1c27e305ac0a65f67c"
+  },
+  "visual_review_correction": {
+    "prior_observation": "Initial review incorrectly reported blank Compass/Layers faces in the after Day image.",
+    "corrected_observation": "The retained after Day image shows Compass, N, North up and Layers artwork painted.",
+    "image_sha256": "31742861559ff35cbbf69e67cba4c563b3371918e769ef3160ab19d580fb825e",
+    "identity_check": "Committed image, current local capture and capture-time report hash are identical. No distinct blank-face image is retained, and no rewrite is established.",
+    "scope": "Evidence correction only; no application rerun or product change."
+  },
+  "resource_guard_followup": {
+    "generated_resources_byte_identical": true,
+    "files": {
+      "chartsymbols.xml": "0c05ae4fd3b1601c5f0808550740a5f98bdc1defd8dbe8242f98467cc787c756",
+      "S52RAZDS.RLE": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26",
+      "rastersymbols-day.png": "ee1020a8b94b312faba8c146974e49147d280e5ef3cc13f3cd688bbfd54dde0c",
+      "rastersymbols-dusk.png": "d50328283acc58c22185af0d792c5ff92fdee06eacedaeb032ee499f54329b9f",
+      "rastersymbols-dark.png": "6efb683e1df26462e5227b4c478fd78bf2cfbed64802e2de769cf2f9563268d5",
+      "manifest.json": "daebd9debd0bec85d0dca9eb59893c09ef9823fdd2a6ebfdba81d80651627a18",
+      "XNavChartResources.h": "4d311195a0743c20442fae0653995d715a0578047a2fa06c1233651a18f6d69a"
+    },
+    "comparison_baseline_source": "785ffcd88e9b1ef938f534f198de4ebfd97de1b9",
+    "negative_before": {
+      "LANDA/r": "accepted",
+      "LANDA/a": "accepted",
+      "LANDA/unexpected": "accepted",
+      "XNBUA/r": "rejected",
+      "XNBUA/a": "accepted",
+      "XNBUA/unexpected": "accepted"
+    },
+    "resource_checks": 3484,
+    "negative_after": "All six RGB/alpha/extra-attribute mutations rejected; nested content in XNBUA also rejected.",
+    "product_rebuild_or_recapture": false
+  }
+}

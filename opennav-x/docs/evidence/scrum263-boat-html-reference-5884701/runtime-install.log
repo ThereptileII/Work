@@ -1,0 +1,9 @@
+Looking in links: c:\XNav\tools\prototype-reference-5884701-20261003-1524\wheels
+Processing c:\xnav\tools\prototype-reference-5884701-20261003-1524\wheels\greenlet-3.5.6-cp313-cp313-win_amd64.whl (from -r C:\XNav\tools\prototype-reference-5884701-20261003-1524\requirements.lock (line 1))
+Processing c:\xnav\tools\prototype-reference-5884701-20261003-1524\wheels\pillow-11.3.0-cp313-cp313-win_amd64.whl (from -r C:\XNav\tools\prototype-reference-5884701-20261003-1524\requirements.lock (line 2))
+Processing c:\xnav\tools\prototype-reference-5884701-20261003-1524\wheels\playwright-1.58.0-py3-none-win_amd64.whl (from -r C:\XNav\tools\prototype-reference-5884701-20261003-1524\requirements.lock (line 3))
+Processing c:\xnav\tools\prototype-reference-5884701-20261003-1524\wheels\pyee-13.0.1-py3-none-any.whl (from -r C:\XNav\tools\prototype-reference-5884701-20261003-1524\requirements.lock (line 4))
+Processing c:\xnav\tools\prototype-reference-5884701-20261003-1524\wheels\typing_extensions-4.16.0-py3-none-any.whl (from -r C:\XNav\tools\prototype-reference-5884701-20261003-1524\requirements.lock (line 5))
+Installing collected packages: typing_extensions, pyee, playwright, pillow, greenlet
+
+Successfully installed greenlet-3.5.6 pillow-11.3.0 playwright-1.58.0 pyee-13.0.1 typing_extensions-4.16.0

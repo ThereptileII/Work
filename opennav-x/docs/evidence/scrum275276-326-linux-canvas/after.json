@@ -1,0 +1,109 @@
+{
+  "source": "326daf73cdbeb0e7219ccb47b88967bc6a67ceaf",
+  "sourceClean": true,
+  "buildExit": 0,
+  "binarySha256": "0617b1380237489d5e9c7ab5a80ea388a5ad1540bf021c63658d494f5fddae4c",
+  "buildElfSha256": "bf372e54c279e3bec15f5a0e47aa92c9e8334cc96406b5f42efa23bf37b4b94b",
+  "manifestSha256": "ffa75c9d097a143e58aa13f9300b04bebac0836ab849bd4284401df1866f4b2a",
+  "donorFingerprintCount": 4610,
+  "donorChanged": [],
+  "results": {
+    "capture-326daf7-s64-light-fog-opengl": {
+      "status": "failed",
+      "completedCaptureRecords": 3,
+      "failure": "Whole chart Day-return differs",
+      "cleanExit": false,
+      "dayReturnChecks": []
+    },
+    "capture-326daf7-s64-light-fog-software": {
+      "status": "passed",
+      "completedCaptureRecords": 8,
+      "failure": null,
+      "cleanExit": true,
+      "dayReturnChecks": [
+        {
+          "image": "s64-light-fog-SKAGER-Day-return",
+          "bounds": [
+            80,
+            68,
+            1094,
+            634
+          ],
+          "equal": true,
+          "mask": null
+        },
+        {
+          "image": "s64-light-fog-Standard-Day-return",
+          "bounds": [
+            80,
+            68,
+            1094,
+            634
+          ],
+          "equal": true,
+          "mask": null
+        }
+      ]
+    },
+    "capture-326daf7-s64-sector-rwg-opengl": {
+      "status": "passed",
+      "completedCaptureRecords": 8,
+      "failure": null,
+      "cleanExit": true,
+      "dayReturnChecks": [
+        {
+          "image": "s64-sector-rwg-SKAGER-Day-return",
+          "bounds": [
+            80,
+            68,
+            1094,
+            634
+          ],
+          "equal": true,
+          "mask": null
+        },
+        {
+          "image": "s64-sector-rwg-Standard-Day-return",
+          "bounds": [
+            80,
+            68,
+            1094,
+            634
+          ],
+          "equal": true,
+          "mask": null
+        }
+      ]
+    },
+    "capture-326daf7-s64-sector-rwg-software": {
+      "status": "passed",
+      "completedCaptureRecords": 8,
+      "failure": null,
+      "cleanExit": true,
+      "dayReturnChecks": [
+        {
+          "image": "s64-sector-rwg-SKAGER-Day-return",
+          "bounds": [
+            80,
+            68,
+            1094,
+            634
+          ],
+          "equal": true,
+          "mask": null
+        },
+        {
+          "image": "s64-sector-rwg-Standard-Day-return",
+          "bounds": [
+            80,
+            68,
+            1094,
+            634
+          ],
+          "equal": true,
+          "mask": null
+        }
+      ]
+    }
+  }
+}

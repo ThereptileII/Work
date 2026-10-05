@@ -64,7 +64,7 @@ def main():
     openssl_source = verify_openssl_package_inputs(
         ROOT / 'build/production-install', ROOT / 'tools/windows-openssl.lock.json',
         a.openssl_source_cache, ROOT / 'docs/third-party/OpenSSL-3.5.9')
-    package = output / 'OpenNavX-AIS-ReadOnly-Probe'
+    package = output / 'SKAGER-AIS-ReadOnly-Probe'
     app = package / 'app'
     app.mkdir(parents=True)
     exe = ROOT / 'build/production-windows/Release/aisstream_live_probe.exe'
@@ -92,11 +92,11 @@ def main():
     assert description['profile_access'] is False and description['marine_equipment'] is False
     (package / 'capabilities.json').write_text(json.dumps(description, indent=2) + '\n')
     commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
-    source = output / 'OpenNavX-AIS-ReadOnly-Probe-source.zip'
+    source = output / 'SKAGER-AIS-ReadOnly-Probe-source.zip'
     create_source_archive(ROOT, commit, source, [openssl_source['sourceBundle']])
     licenses = package / 'licenses'
     licenses.mkdir()
-    shutil.copy2(ROOT / 'LICENSE', licenses / 'OpenNavX-COPYING.txt')
+    shutil.copy2(ROOT / 'LICENSE', licenses / 'SKAGER-COPYING.txt')
     shutil.copytree(ROOT / 'docs/third-party/OpenSSL-3.5.9', licenses / 'OpenSSL-3.5.9')
     upstream = ROOT / 'build/integration-source'
     for file in upstream.rglob('*'):
@@ -106,7 +106,7 @@ def main():
             shutil.copy2(file, target)
     (package / 'READ_ME.md').write_text('''# Read-only AIS commissioning probe
 
-This is a developer diagnostic, not the XNav application or a navigation product.
+This is a developer diagnostic, not the SKAGER application or a navigation product.
 It cannot load OpenCPN profiles, charts or hardware plugins. It does not change
 network settings. No fixture data is included. Run only by deliberate choice:
 
@@ -121,7 +121,7 @@ It prints only connection states and aggregate report/target counts. A nonzero
 exit is negative commissioning evidence. This does not qualify the chart or UI.
 
 The sibling source ZIP includes exact application, integration and bundled
-dependency source and all OpenNav CI recipes. See licenses/ for notices.
+dependency source and all SKAGER CI recipes. See licenses/ for notices.
 MSVC DLLs are licensed x86 redistributables from the native CI toolchain.
 ''', encoding='utf-8')
     (package / 'BUILD_INFO.json').write_text(json.dumps({

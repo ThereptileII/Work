@@ -1,0 +1,331 @@
+{
+  "scope": "incremental static composition only; no compiled/runtime requalification",
+  "input": "5085641e1c7af3f6294ce99bd42820622d48f3d8",
+  "mapped": "90e6ba708cdd2f52d1c1e485124a33b751718237",
+  "parentReview": "b89c2fdc862e3de293c0d60cfde60d720797f664",
+  "committedInputs": {
+    "docs/evidence/scrum275-ca-light-fog-mixed/README.md": {
+      "bytes": 6901,
+      "sha256": "0b2d06086625f87ed5b905535073fbbcc5ea193b91ed19c268a938704a3b4cf4"
+    },
+    "docs/evidence/scrum275-ca-light-fog-mixed/compile-commands.json": {
+      "bytes": 23099,
+      "sha256": "533d179216632ec2a29cdcffc93c972e1c896cc697079d6e055b4d1769176955"
+    },
+    "docs/evidence/scrum275-ca-light-fog-mixed/compile-followup.py": {
+      "bytes": 2733,
+      "sha256": "93fa802ff9e5f327c86a530e57513655281f904d40a5b1a507193e5c91d79307"
+    },
+    "docs/evidence/scrum275-ca-light-fog-mixed/core-s52plib.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "docs/evidence/scrum275-ca-light-fog-mixed/core-s57chart.log": {
+      "bytes": 793,
+      "sha256": "7fd7405824a0ad118ee78e261948166f2293324a414283d9d3b9666e4c01d91c"
+    },
+    "docs/evidence/scrum275-ca-light-fog-mixed/initial-private-fixture.log": {
+      "bytes": 549,
+      "sha256": "982f676813c8b2e8c6ce43dbd7de16aff124d78b59f83667c64a543f7b99bbf7"
+    },
+    "docs/evidence/scrum275-ca-light-fog-mixed/inputs.json": {
+      "bytes": 1108,
+      "sha256": "b1473bb747e4bb179810397b2d6cf06f0f985982a33dde3bcf564b5fb1ebeefb"
+    },
+    "docs/evidence/scrum275-ca-light-fog-mixed/method-receipt.json": {
+      "bytes": 7416,
+      "sha256": "c63be509d58685f99a32e880fcc5d544b38ac0d9e6cc6819bf01cf06ac0b07b2"
+    },
+    "docs/evidence/scrum275-ca-light-fog-mixed/objects.json": {
+      "bytes": 529,
+      "sha256": "aa2ff62a34da935bd2cffb8307f665e62e370049b424d7f8fbc293e7e675a1de"
+    },
+    "docs/evidence/scrum275-ca-light-fog-mixed/private-eSENCChart.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "docs/evidence/scrum275-ca-light-fog-mixed/private-s52plib.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "docs/evidence/scrum275-ca-light-fog-mixed/source-resource-proof.json": {
+      "bytes": 5784,
+      "sha256": "22834e4fd9c575a98275867c7994a7912dc9e600bc14d4a578ee927942559cd8"
+    },
+    "docs/evidence/scrum275-ca-light-fog-mixed/verify-fog-art.py": {
+      "bytes": 7242,
+      "sha256": "6f704f49d0ecf49090b438b41df3604f04b871b2debe57230b6c062f17663362"
+    },
+    "src/integration/ChartCaLightPoint.h": {
+      "bytes": 10508,
+      "sha256": "5ea525fbe5e3cd69621bbb7d5d73f56082686646e9898a3690eddbc7d5ac140b"
+    },
+    "tests/chart_ca_light_point_test.cpp": {
+      "bytes": 14894,
+      "sha256": "a501da49d4d9fd90007819e02ad6d0beaec4021cdabd4c18073f5fc7633c07af"
+    }
+  },
+  "docsSectionSha256": "1be1badfabba09981865c15c734f60e8d4ba2f4862a815e513badef97767e104",
+  "unchangedPatchInputs": {
+    "patches/opencpn-5.12.4-xnav.patch": {
+      "bytes": 40721,
+      "sha256": "dfbacadf42502d1d0366745b3a187d256e620b0d2ea7dba9e8912c46e999e0b3"
+    },
+    "patches/opencpn-5.12.4-regression-tests.patch": {
+      "bytes": 4003,
+      "sha256": "3ef13652b8f3717d836883d2fbb7a18f35dbd2ca1162ac991fe339e61392dff1"
+    },
+    "patches/opencpn-5.12.4-ais-transport.patch": {
+      "bytes": 28491,
+      "sha256": "ee6689b8943284347fadca9564892b31db4c43db2a007412ac3fdc2072d07fd7"
+    },
+    "patches/opencpn-5.12.4-chart-presentation.patch": {
+      "bytes": 112236,
+      "sha256": "732178e171766cf19dc791b3b2c1009f0517f8a3096a2b1b13637d3713f59f59"
+    },
+    "patches/opencpn-5.12.4-maintained-curl.patch": {
+      "bytes": 551,
+      "sha256": "dafa1fec0a69e3a1195db726c2cb26ceeb7535b5e25476ac2e4658d910f44e48"
+    },
+    "patches/opencpn-5.12.4-download-trust.patch": {
+      "bytes": 12103,
+      "sha256": "04763cb038ad088a722e76d4f85bde7e356489b697a373458195336d4278412b"
+    },
+    "patches/opencpn-5.12.4-wxcurl-trust.patch": {
+      "bytes": 4944,
+      "sha256": "f3ad76fc07b80e6f2c01331894ce5e685f6aa4456a2a3c761e3115c8c21f3d6b"
+    },
+    "patches/opencpn-5.12.4-peer-response-buffer.patch": {
+      "bytes": 4915,
+      "sha256": "c335f361766a6982c3d096e93f7c149179deb33134668e110111ac4980064e15"
+    },
+    "patches/opencpn-5.12.4-peer-unavailable.patch": {
+      "bytes": 11876,
+      "sha256": "5bf1c2ae4b09043ce18151f766aebd2b881b993f352000e34399de7e8b36b6d3"
+    },
+    "patches/ocharts-skager-presentation.patch": {
+      "bytes": 43610,
+      "sha256": "37519712666151ff0f14c78128673e8c0be21cbdebf33765b6ffeda5b530c488"
+    },
+    "patches/ocharts-wxcurl-trust.patch": {
+      "bytes": 3458,
+      "sha256": "e68b0a767f6a27d0136fa7e6b82ca96eac69f934f5fe54a13b314750bbb3d567"
+    }
+  },
+  "unchangedPreparedOutputs": {
+    "core/libs/s52plib/src/s52plib.cpp": {
+      "bytes": 348100,
+      "sha256": "9fa1ff04a0d37690d291852510845abb1734c134ac306934698ef496d78880a2"
+    },
+    "core/libs/s52plib/src/s52plib.h": {
+      "bytes": 26130,
+      "sha256": "48c985754d7b17f451423757a5b1f26007c047bdfd6f2824d236f815c944f8a8"
+    },
+    "core/gui/src/s57chart.cpp": {
+      "bytes": 216096,
+      "sha256": "e00bdddf7ce1a5427eba988db9967df14ca02bbd37781ff128026a49f3b3ef48"
+    },
+    "private/libs/s52plib/src/s52plib.cpp": {
+      "bytes": 344785,
+      "sha256": "6f406e16f0ca4edcd2ce4faf6019051a98a0afc51d02d258231132a0df70f412"
+    },
+    "private/libs/s52plib/src/s52plib.h": {
+      "bytes": 25726,
+      "sha256": "ffd4ca75e1e244bae323ccc9083d5aa021e38e63fdba0cbad1f870b3f13470fa"
+    },
+    "private/src/eSENCChart.cpp": {
+      "bytes": 351401,
+      "sha256": "661960997768cfe3c485e3f82e442c965ac57b6336e525c38c61475602bf473d"
+    }
+  },
+  "unchangedPainterMethods": {
+    "core": {
+      "int s52plib::RenderCARC_GLSL(": "56be2c2dd6c982061960d3def364154c7b425610e3c37cd1216e36ce1844e884",
+      "int s52plib::RenderCARC_VBO(": "598e696d6a3bdb9b11d4bdcdb0a084133c7f11893e331fbd619b5411384871f0",
+      "bool s52plib::RenderRasterSymbol(": "825f90bfa9d31b253219693587e5f153efe214880cdcd6ecc8ac255bf4f916b8"
+    },
+    "private": {
+      "int s52plib::RenderCARC_GLSL(": "785a67aae577e12253e42133f8598facee43130638aaf4106cc596ac039686e7",
+      "int s52plib::RenderCARC_VBO(": "598e696d6a3bdb9b11d4bdcdb0a084133c7f11893e331fbd619b5411384871f0",
+      "bool s52plib::RenderRasterSymbol(": "efd3e08ddb5fba2c91fc2e2f66aeeebea5f6601c6e49da3a9396c33cd543ac78"
+    }
+  },
+  "preservedEarlierEvidence": {
+    "docs/evidence/scrum274-connection-observation/README.md": {
+      "bytes": 4461,
+      "sha256": "8e50e59fa4fe0260ebcfd199129bfb7e4163753838986d99b624e6f2e5996635"
+    },
+    "docs/evidence/scrum274-connection-observation/local-proof.json": {
+      "bytes": 25211,
+      "sha256": "05fb519484fa422e12d54fc3f1f8a3ca9f5ca950435eaa3ce99fa9aba009ef56"
+    },
+    "docs/evidence/scrum274-connection-observation/provider-production.command.json": {
+      "bytes": 633,
+      "sha256": "e9060137cc62af96af6adba208adcfc160ff3eccd195da76a9c602d2d5f0c7d8"
+    },
+    "docs/evidence/scrum274-connection-observation/provider-tests.log": {
+      "bytes": 2590,
+      "sha256": "408c9ee38b2a0c931f4940743a9476000bc459d541d8f5c4c7fa3b9a15ae5736"
+    },
+    "docs/evidence/scrum274-connection-observation/session-tests.log": {
+      "bytes": 26,
+      "sha256": "71d56d705ec361ea8a0652dd1f77e8b7285458f947063ec529d6c6635dc604c4"
+    },
+    "docs/evidence/scrum274-connection-observation/transport-tests.log": {
+      "bytes": 1393,
+      "sha256": "479c1bc7ce5bfdef4d97234b7d3499157c6851c3f5f6e2d7ea29f14971c362b2"
+    },
+    "docs/evidence/scrum274-connection-observation/native-gate.md": {
+      "bytes": 4448,
+      "sha256": "946560a6e1769382790c07d6b03af881633bf869a6790ed440dacfc24c352010"
+    },
+    "docs/evidence/scrum275-ca-light-point/README.md": {
+      "bytes": 8010,
+      "sha256": "3b259338ba3f0736f7b493b5ce55f406555fbe8f25ade743b049e7787486209b"
+    },
+    "docs/evidence/scrum275-ca-light-point/compile-changed.py": {
+      "bytes": 2881,
+      "sha256": "ccc9d170a3b81c822f31f26a1b93b7252e01677f6dc154c7b7f726e278327f34"
+    },
+    "docs/evidence/scrum275-ca-light-point/compile-commands.json": {
+      "bytes": 26529,
+      "sha256": "cb10023c56e5846e10fd8a283baf0665be4fc6eefb5a66d30d98ed8966d2088a"
+    },
+    "docs/evidence/scrum275-ca-light-point/core-s52plib.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "docs/evidence/scrum275-ca-light-point/core-s57chart.log": {
+      "bytes": 793,
+      "sha256": "7fd7405824a0ad118ee78e261948166f2293324a414283d9d3b9666e4c01d91c"
+    },
+    "docs/evidence/scrum275-ca-light-point/count-source-points.py": {
+      "bytes": 1531,
+      "sha256": "d241af412ae8ae2ad8b6f210b5f1d9d09a9417d95e5e766105140bafcebc2c70"
+    },
+    "docs/evidence/scrum275-ca-light-point/inspect-source-cases.py": {
+      "bytes": 2199,
+      "sha256": "1722cdcdae1bb50320e41f577aa69ba21b58555153ddf438d9797956bde85fb9"
+    },
+    "docs/evidence/scrum275-ca-light-point/method-receipt.json": {
+      "bytes": 7371,
+      "sha256": "6f2b0105b1a3741dcf679ac9f33e04ad3ea23bc6b0f065683f08a6e06344732c"
+    },
+    "docs/evidence/scrum275-ca-light-point/objects.json": {
+      "bytes": 662,
+      "sha256": "49b1043e83d12986659cc5dfbf67f7760d8682a4cdd1197da75c53a02945e079"
+    },
+    "docs/evidence/scrum275-ca-light-point/private-disabled.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "docs/evidence/scrum275-ca-light-point/private-eSENCChart.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "docs/evidence/scrum275-ca-light-point/private-s52plib.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "docs/evidence/scrum275-ca-light-point/source-cases.json": {
+      "bytes": 7308,
+      "sha256": "8806e98853d104e94a698e5924b6916fec15d81611a57e186c90699dbc14da19"
+    },
+    "docs/evidence/scrum275-ca-light-point/source-point-counts.json": {
+      "bytes": 7912,
+      "sha256": "6ad0edb49a5067cdef3fe90689fbaf61057b417020d5f9d2b4a8e8e75050f300"
+    },
+    "docs/evidence/scrum275-ca-light-point/source-proof.json": {
+      "bytes": 2821,
+      "sha256": "4b84190269a5348c384cca4a6db97e78402b9f13ff61b828356220b07931166c"
+    },
+    "docs/evidence/scrum275-ca-light-point/verify-source.py": {
+      "bytes": 3560,
+      "sha256": "90342e995392d7b4595ef7b47aa1437c5f6311799d3b45509a93350055968243"
+    }
+  },
+  "copiedOwnedInputs": {
+    "src/plugin-adapters/ChartPresentationBindingV1.h": {
+      "bytes": 3096,
+      "sha256": "72a9e19e8d457cdfc543cd0ec6571bf6b6eb30a4a6f4c547f0f047c631e8967f"
+    },
+    "src/plugin-adapters/ocharts/ChartPresentationAdapter.h": {
+      "bytes": 354,
+      "sha256": "7fcc05c31c82fa29818fe4ea90c352c1f96874b65b2aff7bcb41ad9f97a87ae2"
+    },
+    "src/plugin-adapters/ocharts/ChartPresentationAdapter.cpp": {
+      "bytes": 6148,
+      "sha256": "c7f8077b7b445b63dca339c749790f8c1e6ed573e632bd8ed135b882f6285831"
+    },
+    "src/plugin-adapters/ocharts/BindingState.h": {
+      "bytes": 3994,
+      "sha256": "82e4f94910c7af63772d90d23771f5328d4c0543b94390d35be8a2d04cf07e5c"
+    },
+    "src/plugin-adapters/ocharts/PointStyleObservation.h": {
+      "bytes": 1496,
+      "sha256": "9174f3077c8007263414994b7067fe1fcabacf4f9aed001d017df6de5c2b0ddf"
+    },
+    "src/plugin-adapters/ocharts/OwnedPresentationValidation.h": {
+      "bytes": 1674,
+      "sha256": "002d63e03dac37ebd4a4b4f2b4510706b3777635f04dfc9d84ad0b893021888f"
+    },
+    "src/plugin-adapters/ocharts/ResourceVerification.h": {
+      "bytes": 1363,
+      "sha256": "7b6b6e6b430cbc9e0a275653261ba056face4c04b1d9c0fd9f167fb8e5be587c"
+    },
+    "src/integration/ChartNameTypography.h": {
+      "bytes": 943,
+      "sha256": "23688fca7f9ed456e7458fe1228e0bf9908660a953732cb6e6749c5838e1f4d9"
+    },
+    "src/integration/ChartNameText.h": {
+      "bytes": 2307,
+      "sha256": "da096196bd661f5e5bb47fdab0946a8987f707cf961f5eb9197090355a140635"
+    },
+    "src/integration/ChartTextFace.h": {
+      "bytes": 802,
+      "sha256": "4c1b0c41e29ecdac9af7a6fd7446863714539777c1904fa598679ba3ec49b3ab"
+    },
+    "src/integration/ChartNameSpacing.h": {
+      "bytes": 1241,
+      "sha256": "2f37a592dd4c311a371441cc42560a68286d65cb442a061a739dbcce9e5cd6f6"
+    },
+    "src/integration/ChartNameAlphaWindows.cpp": {
+      "bytes": 925,
+      "sha256": "01d26462e5b2cd9b54cfc9f138c7b4f2f2b0842c07c535906e0f871105d826f6"
+    },
+    "src/integration/ChartLightLabel.h": {
+      "bytes": 4969,
+      "sha256": "64d1fa48773369339402acd12d0be91847a5c69e145b8a072268c752a579e9ee"
+    },
+    "src/integration/ChartLightSymbol.h": {
+      "bytes": 1011,
+      "sha256": "c3d52a12d12562f601eae930f59ea4ebefa62925975f51ec05c875f0687a5b04"
+    },
+    "src/integration/ChartCaLightPoint.h": {
+      "bytes": 10508,
+      "sha256": "5ea525fbe5e3cd69621bbb7d5d73f56082686646e9898a3690eddbc7d5ac140b"
+    },
+    "src/integration/ChartSpecialBuoySymbol.h": {
+      "bytes": 2449,
+      "sha256": "24e1af5d565b522d00f5d8103c14b5bcadfb0075a3c4fcebcf2e832e22e8c8c4"
+    },
+    "src/integration/ChartYellowBuoySymbol.h": {
+      "bytes": 4615,
+      "sha256": "feb82319b1b2d372d2b512ff9a7775bca7b752bcf09e64919482152a6405549d"
+    },
+    "src/integration/ChartSoundingFont.h": {
+      "bytes": 1134,
+      "sha256": "02d27cb56d7af4f292640e59ec0326ba7b6555406956e6419a367b5bab124021"
+    },
+    "src/integration/ChartCanvasInk.h": {
+      "bytes": 638,
+      "sha256": "cc1a4d94131f932f2bbd40d330d9003d0086dfc1237449b4215b509377c39f66"
+    },
+    "src/ui/Theme.h": {
+      "bytes": 4009,
+      "sha256": "b28adb1f519ec5a1f9b7e2bfab6ec2ab1c7f06656bd129316e9e453ef1ec0776"
+    }
+  },
+  "applicationBuilds": false,
+  "nativeRuntimeAcceptance": false
+}

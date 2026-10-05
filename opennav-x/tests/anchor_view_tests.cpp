@@ -138,3 +138,26 @@ TEST(OpenNavAnchorView, HistoryOwnedBoundedAndNeverRefreshedByReading) {
   EXPECT_TRUE(f.watch.recent_positions.empty());
   EXPECT_EQ(retained.recent_positions.size(), 300u);
 }
+TEST(OpenNavAnchorView, DistanceUnitsPreserveSmallMovementAndUnavailable) {
+  Fixture f;
+  EXPECT_EQ(f.View().display_distance, 18.);
+  EXPECT_EQ(f.View().distance_unit, "m");
+  EXPECT_EQ(f.View().distance_decimals, 0);
+  for (const auto &unit : {std::pair<double, const char *>{1. / 1852., "NMi"},
+                           {1.15078 / 1852., "mi"}, {.001, "km"},
+                           {6076.12 / 1852., "ft"}}) {
+    f.watch.distance_units_per_m = unit.first;
+    f.watch.distance_unit = unit.second;
+    EXPECT_EQ(f.View().display_distance, 18. * unit.first);
+    EXPECT_EQ(f.View().distance_unit, unit.second);
+    EXPECT_EQ(f.View().distance_decimals, unit.first < .01 ? 3 : 0);
+    EXPECT_FALSE(f.View(stamp + 6s).display_distance);
+    EXPECT_EQ(f.View().distance_m, 18.); // Canonical geometry is unchanged.
+  }
+  for (double factor : {0., -1., std::numeric_limits<double>::infinity()}) {
+    f.watch.distance_units_per_m = factor;
+    EXPECT_FALSE(f.View().display_distance);
+  }
+  f.watch = {};
+  EXPECT_FALSE(f.View().display_distance);
+}

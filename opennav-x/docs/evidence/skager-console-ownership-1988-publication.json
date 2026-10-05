@@ -1,0 +1,34 @@
+{
+  "localFrozenCommit": "1988df7a8a0ae8ddc6365ca46026d32fccfa0bdc",
+  "publishedCommit": "ecf7e0c46609cf4cb29141964d7c4bde98b002b7",
+  "remoteTree": "985d04ed946e05127002f2a68b7ad37712303a60",
+  "mappedEntries": 6833,
+  "fullTreeIndependentlyReconstructed": true,
+  "branch": "opennav-x-beta2-ui",
+  "runId": 37191400051,
+  "runAttempt": 1,
+  "runUrl": "https://github.com/ThereptileII/Work/actions/runs/37191400051",
+  "predecessor": "d29da372af86c01cb2817f932891fd9408d882fe",
+  "predecessorQualification": "failed native actual Downloader probe; no eligible package",
+  "changedExecutionInputs": [
+    "tools/TrustProbeConsole.h",
+    "tools/downloader-trust-probe.cpp",
+    "tools/wxcurl-trust-probe.cpp",
+    "tests/native_downloader_console/probe.cpp",
+    "tools/test-native-downloader-console.py"
+  ],
+  "applicationChartAndTlsPolicyChanged": false,
+  "nativeOwnershipProof": {
+    "commit": "13c51725e78193eee8def2073d2131467a2b22aa",
+    "runId": 37191145516,
+    "artifactId": 11298917603,
+    "artifactSha256": "37cdddd754e40cc652948fba4e27dce9b52999ceef747e93aa6be95c36f649a0",
+    "status": "passed",
+    "actualTlsAcceptance": false
+  },
+  "endurance": "explicitly skipped by user direction",
+  "packageAcceptance": "pending",
+  "boatAcceptance": "pending",
+  "boatMutation": false,
+  "publicRelease": false
+}

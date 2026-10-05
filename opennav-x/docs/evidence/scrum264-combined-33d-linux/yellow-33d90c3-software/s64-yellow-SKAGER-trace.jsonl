@@ -1,0 +1,5 @@
+{"kind": "abi", "machine": "x86-64 SysV", "argument_boundary": "Exact mangled symbol entry before prologue", "layout": {"s52plib.vp_plib": 2400, "s52plib.m_nSymbolStyle": 0, "VPointCompat.pix_width": 0, "VPointCompat.pix_height": 4, "ObjRazRules.obj": 8, "ObjRazRules.LUP": 0, "S57Obj.att_array": 16, "S57Obj.n_attr": 32, "S57Obj.FeatureName": 0, "S57Obj.Index": 40, "S57Obj.m_lat": 152, "S57Obj.m_lon": 160, "Rules.razRule": 16, "Rule.name": 4, "Rule.definition": 12, "LUPrec.TNAM": 24, "wxPoint.x": 0, "wxPoint.y": 4, "pointerBytes": 8}}
+{"kind": "RenderSY", "class": "BOYSPP", "object_index": 253, "latitude": -32.3471615, "longitude": 61.169588, "symbol": "BOYSPP11", "definition": 82, "lookup_table": 76, "effective_symbol_table": 76}
+{"kind": "trace_disabled", "probe": "RenderSY", "reason": "all_requested_geometry_observed", "hits": 21}
+{"kind": "RenderRasterSymbol", "class": "BOYSPP", "object_index": 253, "latitude": -32.3471615, "longitude": 61.169588, "symbol": "XNSPPY01", "definition": 82, "lookup_table": 76, "effective_symbol_table": 76, "pixel_x": 507, "pixel_y": 283, "canvas_width": 1014, "canvas_height": 566}
+{"kind": "inferior_exit", "exit_code": null}

@@ -66,7 +66,7 @@ public static class XNavAisCredentialImport {
       if(before!="missing")return before;
       bytes=Marshal.AllocHGlobal(key.Length);Marshal.Copy(key,0,bytes,key.Length);
       Credential c=new Credential();c.Type=1;c.TargetName=target;c.Persist=2;
-      c.UserName="OpenNav X AISStream";c.CredentialBlob=bytes;c.CredentialBlobSize=(uint)key.Length;
+      c.UserName="SKAGER AISStream";c.CredentialBlob=bytes;c.CredentialBlobSize=(uint)key.Length;
       if(!CredWriteW(ref c,0))return "store-failed:"+Marshal.GetLastWin32Error();
       return ReadMatch(target,key)=="same"?"stored-and-verified":"readback-failed";
     } catch {return "import-failed";}

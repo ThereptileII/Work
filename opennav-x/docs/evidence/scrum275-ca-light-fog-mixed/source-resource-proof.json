@@ -1,0 +1,187 @@
+{
+  "sourceLockSha256": "8c07d24f5cbfbdca8f7b3583d0b535b8a76e8083509425cee8bfbad5c4ee801a",
+  "generatedManifest": {
+    "sha256": "ffa75c9d097a143e58aa13f9300b04bebac0836ab849bd4284401df1866f4b2a",
+    "bytes": 107463
+  },
+  "lookup": {
+    "type": "Point",
+    "disp-prio": "Area Symbol",
+    "radar-prio": "On Top",
+    "table-name": "Simplified",
+    "instruction": "SY(FOGSIG01)",
+    "display-cat": "Standard",
+    "comment": "27080"
+  },
+  "fogGeometry": [
+    [
+      12,
+      13
+    ],
+    [
+      15,
+      -3
+    ],
+    [
+      791,
+      121
+    ]
+  ],
+  "resources": {
+    "DAY_BRIGHT": {
+      "stockAtlas": {
+        "sha256": "ee1020a8b94b312faba8c146974e49147d280e5ef3cc13f3cd688bbfd54dde0c",
+        "bytes": 250509
+      },
+      "generatedAtlas": {
+        "sha256": "852753fa6b8d32b23cfec81d060496c2602e8f1b590c73c7921e2041b4de745f",
+        "bytes": 200449
+      },
+      "fogTileSha256": "062c442b3d2d87d6a146048c24d96fc02943c9bc1ea4c6a94bd922e5108001bc",
+      "aliasCommitted": {
+        "sha256": "f10ea1f607a5b257a21a36704e18b7bb1bf501668b80b887e0993a0496bb5b45",
+        "bytes": 5650
+      },
+      "aliasCommittedRgbaSha256": "409b10976ec0856f30c32a9a3c2578bee85b2d142211cfc830bb5a9fae961198",
+      "aliasTileSha256": "a4e7bb260bfb904991c5249ac48079eada073e2259106e44ac694ad99ae19eaf",
+      "fogInkPixels": 75,
+      "pointInkPixels": 88,
+      "sourcePixelOverlap": 0
+    },
+    "DUSK": {
+      "stockAtlas": {
+        "sha256": "56d6191b954978d0a85484b490228aab467610bfbf646c814af003428a766c2d",
+        "bytes": 169019
+      },
+      "generatedAtlas": {
+        "sha256": "882b3486bcabd3a075ae567f42e284ff065e83ebfe5033bb6eb68f655d18202e",
+        "bytes": 174807
+      },
+      "fogTileSha256": "4fab0e30dcf41de93736f6439b92b0a4b7738a86fc1fb4ce794f6d16f4d1f63a",
+      "aliasCommitted": {
+        "sha256": "03aeb3957dae708c07f734ab78d19335935d47c182f0d4c362abf6c7a434a918",
+        "bytes": 5650
+      },
+      "aliasCommittedRgbaSha256": "89b150f25640cc4196eabf5df4f41c87fbb5fc14501364751ee2faf7c954dc30",
+      "aliasTileSha256": "df4d4c2bc8da66fef8c49a970dd94473b423b498a2d2f0a91f56e52d7937d18f",
+      "fogInkPixels": 75,
+      "pointInkPixels": 88,
+      "sourcePixelOverlap": 0
+    },
+    "NIGHT": {
+      "stockAtlas": {
+        "sha256": "179cb516fd1a7795e8ab9ecbb8d4d5d88bf15cf42e5528c2f4e3ea2340320c33",
+        "bytes": 163832
+      },
+      "generatedAtlas": {
+        "sha256": "ab539905f9059ec8398b5e466a71bf7268368d66776cd41ea13706b79047a4f5",
+        "bytes": 170162
+      },
+      "fogTileSha256": "d06562ff26ed08329e6944ab10404ee0af65df5787a859797af86013b53d4b54",
+      "aliasCommitted": {
+        "sha256": "8cee428afc70240890c5497bcbdd95b9bf6ce79d16e23ef5d3e992bd50c94fbc",
+        "bytes": 5650
+      },
+      "aliasCommittedRgbaSha256": "d5c8f0b72d994526ed5e7d7cdd718ed7082a2c974b7a711460c9ba8c37bb32a4",
+      "aliasTileSha256": "17c353773073e11a30ebd63bc739be4d4e67449e8b313bc2d14f44c8c38dffb6",
+      "fogInkPixels": 75,
+      "pointInkPixels": 88,
+      "sourcePixelOverlap": 0
+    }
+  },
+  "prototypeSources": {
+    "src/chart-marker-art.js": {
+      "sha256": "be2c7f44817c29d3714412c7974d3cf07e238f65c7131958b0cb8ff6fbd7816d",
+      "bytes": 3945
+    },
+    "src/chart-symbols.css": {
+      "sha256": "ca7ec18b38bf682600b6c3c39c5798c94b00bbaddd5589119d5fcb77ad599cb3",
+      "bytes": 6099
+    },
+    "src/chart-symbols.json": {
+      "sha256": "499b73de179102416b1d1f8c622d0ffef78834962282ce5000d95daed32ec0ca",
+      "bytes": 5534
+    },
+    "src/chart-symbols.js": {
+      "sha256": "d88ffe6f7566fb5fddcb49488cf28e2267e6a76a7ffabda7e53fb3751b7cc1b3",
+      "bytes": 6113
+    },
+    "src/light-sectors.js": {
+      "sha256": "c74bd994ef4726b69cc6118c7a4058588fe273a59b5cfc87283e090d47a7ce7b",
+      "bytes": 4629
+    }
+  },
+  "loaderSelection": {
+    "core": {
+      "sha256": "8eec8029788264f9e0bf6583b4bdc13947865e21c62981b77942f470e589a6ed",
+      "bytes": 30057
+    },
+    "private": {
+      "sha256": "a88dd1739236032b23548a70e45bf9b8c649118678b36743ee5e754b47e6c208",
+      "bytes": 29460
+    },
+    "privateGitBlob": "30ae2477b4b8ba748a8cd6f046079e8607b8151f",
+    "privateSourceLock": {
+      "sha256": "0aaab29b5ad626f2215e5787b64ec7e3153f6a75223976370dbebb3967557353",
+      "bytes": 30171
+    },
+    "extractor": {
+      "sha256": "5dae84980945762445cacbf38c24ab82d3d8445d2454a077c82ec1436738e2ae",
+      "bytes": 14208
+    },
+    "byteIdenticalMethods": {
+      "ProcessSymbols": {
+        "sha256": "afab3a5b9ff1435e42fddc2cf3f35aab76aa7b288ede6023a8f2a2db0e1d5cf4",
+        "bytes": 3540
+      },
+      "BuildSymbol": {
+        "sha256": "81ca854f5c3775390ad0297fa87ea29973141dde92c569f53bed1bc10b48fc29",
+        "bytes": 1708
+      }
+    },
+    "fogHasVector": true,
+    "fogHasBitmap": true,
+    "fogExplicitPreferBitmap": null,
+    "defaultPreferBitmap": true,
+    "selectedDefinition": "R",
+    "selectedGeometry": "bitmap",
+    "scope": "Source proof through actual identical core/private ProcessSymbols and BuildSymbol bodies. No native loader or canvas execution in this increment."
+  },
+  "structuralConflicts": {
+    "TOWERS01": {
+      "geometry": [
+        [
+          14,
+          26
+        ],
+        [
+          6,
+          22
+        ],
+        [
+          343,
+          742
+        ]
+      ],
+      "overlapDay1xPixels": 56
+    },
+    "PILPNT02": {
+      "geometry": [
+        [
+          7,
+          7
+        ],
+        [
+          3,
+          3
+        ],
+        [
+          1120,
+          175
+        ]
+      ],
+      "overlapDay1xPixels": 21
+    }
+  },
+  "limits": "Only native 1x source-alpha overlap, not scaled/DPI/rotated/clipped software or GL canvas proof. Current fog lookup, node and all three tiles remain byte-identical. Tower/pile conflicts remain refused."
+}

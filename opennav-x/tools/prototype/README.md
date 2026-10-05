@@ -3,9 +3,14 @@
 The broader mode/preview/recovery/DPI harnesses now target prototype controls
 and owned drawers. Their retained failure scenarios, sensor validity, alerts,
 shared navigation hashes, normal exits and plugin lifecycle checks remain
-mandatory. The extra prototype workflow runs native mode/preview/full-DPI tests
-after the existing object/route regressions; it still does not replace the
-installer/package/endurance release pipeline.
+mandatory within their relevant functional scope. Under the later
+[delivery policy](../../docs/delivery-workflow.md), `opennav-prototype.yml` is for
+explicitly requested design review only. Ordinary Staging delivery and manual
+Production promotion do not launch prototype comparisons, design screenshot
+sets or design-only DPI sweeps. These tools define how an authorized design
+review runs, not an automatic delivery prerequisite. They do not replace
+installer/package functional checks. The explicit endurance-testing skip remains
+in force until the user changes it.
 
 `extract-settings-reference.py` retains fresh Windows tab measurements as a
 sidecar to the canonical images. It verifies immutable HTML identity, all six
@@ -78,6 +83,7 @@ keeps a 1280×800 client, requires all eight navigation controls and four primar
 readings to fit, and exercises Settings/theme/Close with native injected touch.
 It captures failure evidence and restores the original disposable desktop DPI.
 It cannot run outside native GitHub CI and does not modify the boat's display.
-This adds coverage; it does not replace the existing full release DPI, alarm,
-mode lifecycle or physical touch gates. No scale is accepted just because
-Windows agreed to change its DPI setting.
+This adds coverage during an explicitly requested review; it does not replace
+relevant functional alarm, mode lifecycle, usability or physical touch gates.
+Do not start a full design-only DPI matrix as a promotion prerequisite. No scale
+is accepted just because Windows agreed to change its DPI setting.

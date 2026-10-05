@@ -2,9 +2,19 @@
 #include <cmath>
 #include <map>
 #include <tuple>
+#include <cstdint>
 
 namespace opennav::ais {
 namespace {
+std::string DisplayName(const std::string &name) {
+  if (name.size() > 128) return {};
+  bool visible = false;
+  for (unsigned char c : name) {
+    if (c < 32 || c == 127) return {};
+    visible = visible || c != ' ';
+  }
+  return visible ? name : std::string{};
+}
 bool Measured(const vessel::Sample &s, double low, double high) {
   return s.value && std::isfinite(*s.value) && *s.value >= low &&
          *s.value <= high && s.validity == vessel::Validity::Measured &&
@@ -19,9 +29,9 @@ std::optional<double> Current(const vessel::Sample &s, vessel::Time now,
 }
 } // namespace
 bool ChartTarget::operator==(const ChartTarget &o) const {
-  return std::tie(mmsi, latitude, longitude, direction_true, age, selected, observed_at) ==
+  return std::tie(mmsi, latitude, longitude, direction_true, age, selected, observed_at, name) ==
          std::tie(o.mmsi, o.latitude, o.longitude, o.direction_true, o.age,
-                  o.selected, o.observed_at);
+                  o.selected, o.observed_at, o.name);
 }
 std::vector<ChartTarget> OnlineChartTargets(const vessel::AisState &display,
                                           vessel::Time now, int selected) {
@@ -55,7 +65,8 @@ std::vector<ChartTarget> OnlineChartTargets(const vessel::AisState &display,
     // A stale/lost position has no current direction or selection highlight.
     // No direction is rendered as an unoriented mark, never a northbound ship.
     result.push_back({t.mmsi, *t.latitude_deg.value, *t.longitude_deg.value,
-                      direction, age, current && t.mmsi == selected, t.observed_at});
+                      direction, age, current && t.mmsi == selected, t.observed_at,
+                      current ? DisplayName(t.name) : std::string{}});
   }
   return result;
 }
@@ -66,9 +77,21 @@ std::optional<ChartTarget> CurrentChartMark(ChartTarget mark, vessel::Time now) 
   if (age < mark.age) return {};
   mark.age = age;
   if (age == TargetAge::Stale || age == TargetAge::Lost) {
-    mark.direction_true.reset(); mark.selected = false;
+    mark.direction_true.reset(); mark.selected = false; mark.name.clear();
   }
   return mark;
+}
+bool ChartLabelFits(const ChartLabelBounds &label, const ChartLabelBounds &viewport,
+                    const std::vector<ChartLabelBounds> &occupied) {
+  const auto right = [](const ChartLabelBounds &r) { return std::int64_t(r.x) + r.width; };
+  const auto bottom = [](const ChartLabelBounds &r) { return std::int64_t(r.y) + r.height; };
+  if (label.width <= 0 || label.height <= 0 || viewport.width <= 0 || viewport.height <= 0 ||
+      label.x < viewport.x || label.y < viewport.y || right(label) > right(viewport) ||
+      bottom(label) > bottom(viewport)) return false;
+  for (const auto &r : occupied)
+    if (r.width > 0 && r.height > 0 && label.x < right(r) && right(label) > r.x &&
+        label.y < bottom(r) && bottom(label) > r.y) return false;
+  return true;
 }
 const char *OnlineAgeLabel(TargetAge age) {
   switch (age) {

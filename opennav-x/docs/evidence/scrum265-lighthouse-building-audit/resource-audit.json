@@ -1,0 +1,451 @@
+{
+  "scope": "Read-only resource/attribute/projection/pixel evidence; actual runtime lookup not newly probed",
+  "sourceCommit": "5bb7e0584029c72ce21f9230e246dad5771dc321",
+  "sourceXmlSha256": "84f93522576ed5872b24865cf6161872ed0b4b634f77c64ca697a04d3568e886",
+  "prototypeSha256": "b04573b920b6bccd16afd22f54a909e48afcfd502ce9cd7c69fdf5b6dd895447",
+  "captureSha256": "12d8edd9c2e5805e879c3d515724663b83bed7ea6eb2788a4b850368625f2e0c",
+  "simplifiedLookups": [
+    {
+      "id": "1068",
+      "RCID": "31120",
+      "name": "BUISGL",
+      "attributes": [
+        "FUNCTN33",
+        "CONVIS1",
+        "OBJNAM"
+      ],
+      "instruction": "SY(POSGEN03);TX(OBJNAM,3,2,2,'15110',1,0,CHBLK,26)",
+      "priority": "Area Symbol",
+      "category": "Standard"
+    },
+    {
+      "id": "1069",
+      "RCID": "31121",
+      "name": "BUISGL",
+      "attributes": [
+        "FUNCTN20",
+        "CONVIS1"
+      ],
+      "instruction": "SY(BUIREL13)",
+      "priority": "Area Symbol",
+      "category": "Standard"
+    },
+    {
+      "id": "1070",
+      "RCID": "31122",
+      "name": "BUISGL",
+      "attributes": [
+        "FUNCTN21",
+        "CONVIS1"
+      ],
+      "instruction": "SY(BUIREL13)",
+      "priority": "Area Symbol",
+      "category": "Standard"
+    },
+    {
+      "id": "1071",
+      "RCID": "31123",
+      "name": "BUISGL",
+      "attributes": [
+        "FUNCTN22",
+        "CONVIS1"
+      ],
+      "instruction": "SY(BUIREL14)",
+      "priority": "Area Symbol",
+      "category": "Standard"
+    },
+    {
+      "id": "1072",
+      "RCID": "31124",
+      "name": "BUISGL",
+      "attributes": [
+        "FUNCTN23",
+        "CONVIS1"
+      ],
+      "instruction": "SY(BUIREL14)",
+      "priority": "Area Symbol",
+      "category": "Standard"
+    },
+    {
+      "id": "1073",
+      "RCID": "31125",
+      "name": "BUISGL",
+      "attributes": [
+        "FUNCTN24",
+        "CONVIS1"
+      ],
+      "instruction": "SY(BUIREL14)",
+      "priority": "Area Symbol",
+      "category": "Standard"
+    },
+    {
+      "id": "1074",
+      "RCID": "31126",
+      "name": "BUISGL",
+      "attributes": [
+        "FUNCTN25",
+        "CONVIS1"
+      ],
+      "instruction": "SY(BUIREL14)",
+      "priority": "Area Symbol",
+      "category": "Standard"
+    },
+    {
+      "id": "1075",
+      "RCID": "31127",
+      "name": "BUISGL",
+      "attributes": [
+        "FUNCTN26",
+        "CONVIS1"
+      ],
+      "instruction": "SY(BUIREL15)",
+      "priority": "Area Symbol",
+      "category": "Standard"
+    },
+    {
+      "id": "1076",
+      "RCID": "31128",
+      "name": "BUISGL",
+      "attributes": [
+        "FUNCTN27",
+        "CONVIS1"
+      ],
+      "instruction": "SY(BUIREL15)",
+      "priority": "Area Symbol",
+      "category": "Standard"
+    },
+    {
+      "id": "1077",
+      "RCID": "31129",
+      "name": "BUISGL",
+      "attributes": [
+        "FUNCTN33",
+        "CONVIS1"
+      ],
+      "instruction": "SY(POSGEN03)",
+      "priority": "Area Symbol",
+      "category": "Standard"
+    },
+    {
+      "id": "1078",
+      "RCID": "31130",
+      "name": "BUISGL",
+      "attributes": [
+        "FUNCTN35",
+        "CONVIS1"
+      ],
+      "instruction": "SY(TNKCON12)",
+      "priority": "Area Symbol",
+      "category": "Standard"
+    },
+    {
+      "id": "1079",
+      "RCID": "31131",
+      "name": "BUISGL",
+      "attributes": [
+        "FUNCTN33",
+        "OBJNAM"
+      ],
+      "instruction": "SY(POSGEN03);TX(OBJNAM,3,2,2,'15110',1,0,CHBLK,26)",
+      "priority": "Point Symbol",
+      "category": "Other"
+    },
+    {
+      "id": "1080",
+      "RCID": "31132",
+      "name": "BUISGL",
+      "attributes": [
+        "FUNCTN20"
+      ],
+      "instruction": "SY(BUIREL01)",
+      "priority": "Point Symbol",
+      "category": "Other"
+    },
+    {
+      "id": "1081",
+      "RCID": "31133",
+      "name": "BUISGL",
+      "attributes": [
+        "FUNCTN21"
+      ],
+      "instruction": "SY(BUIREL01)",
+      "priority": "Point Symbol",
+      "category": "Other"
+    },
+    {
+      "id": "1082",
+      "RCID": "31134",
+      "name": "BUISGL",
+      "attributes": [
+        "FUNCTN22"
+      ],
+      "instruction": "SY(BUIREL04)",
+      "priority": "Point Symbol",
+      "category": "Other"
+    },
+    {
+      "id": "1083",
+      "RCID": "31135",
+      "name": "BUISGL",
+      "attributes": [
+        "FUNCTN23"
+      ],
+      "instruction": "SY(BUIREL04)",
+      "priority": "Point Symbol",
+      "category": "Other"
+    },
+    {
+      "id": "1084",
+      "RCID": "31136",
+      "name": "BUISGL",
+      "attributes": [
+        "FUNCTN24"
+      ],
+      "instruction": "SY(BUIREL04)",
+      "priority": "Point Symbol",
+      "category": "Other"
+    },
+    {
+      "id": "1085",
+      "RCID": "31137",
+      "name": "BUISGL",
+      "attributes": [
+        "FUNCTN25"
+      ],
+      "instruction": "SY(BUIREL04)",
+      "priority": "Point Symbol",
+      "category": "Other"
+    },
+    {
+      "id": "1086",
+      "RCID": "31138",
+      "name": "BUISGL",
+      "attributes": [
+        "FUNCTN26"
+      ],
+      "instruction": "SY(BUIREL05)",
+      "priority": "Point Symbol",
+      "category": "Other"
+    },
+    {
+      "id": "1087",
+      "RCID": "31139",
+      "name": "BUISGL",
+      "attributes": [
+        "FUNCTN27"
+      ],
+      "instruction": "SY(BUIREL05)",
+      "priority": "Point Symbol",
+      "category": "Other"
+    },
+    {
+      "id": "1088",
+      "RCID": "31140",
+      "name": "BUISGL",
+      "attributes": [
+        "FUNCTN33"
+      ],
+      "instruction": "SY(POSGEN03)",
+      "priority": "Point Symbol",
+      "category": "Other"
+    },
+    {
+      "id": "1089",
+      "RCID": "31141",
+      "name": "BUISGL",
+      "attributes": [
+        "FUNCTN35"
+      ],
+      "instruction": "SY(TNKCON02)",
+      "priority": "Point Symbol",
+      "category": "Other"
+    },
+    {
+      "id": "1090",
+      "RCID": "31142",
+      "name": "BUISGL",
+      "attributes": [
+        "CONVIS1"
+      ],
+      "instruction": "SY(BUISGL11)",
+      "priority": "Area Symbol",
+      "category": "Standard"
+    },
+    {
+      "id": "1091",
+      "RCID": "31143",
+      "name": "BUISGL",
+      "attributes": [],
+      "instruction": "SY(BUISGL01)",
+      "priority": "Point Symbol",
+      "category": "Other"
+    }
+  ],
+  "allDirectBUISGL01Lookups": [
+    "<lookup id=\"1091\" RCID=\"31143\" name=\"BUISGL\">\n            <type>Point</type>\n            <disp-prio>Point Symbol</disp-prio>\n            <radar-prio>On Top</radar-prio>\n            <table-name>Simplified</table-name>\n            <instruction>SY(BUISGL01)</instruction>\n            <display-cat>Other</display-cat>\n            <comment>32220</comment>\n        </lookup>\n        ",
+    "<lookup id=\"2021\" RCID=\"30292\" name=\"BUISGL\">\n            <type>Point</type>\n            <disp-prio>Point Symbol</disp-prio>\n            <radar-prio>On Top</radar-prio>\n            <table-name>Paper</table-name>\n            <instruction>SY(BUISGL01)</instruction>\n            <display-cat>Other</display-cat>\n            <comment>32220</comment>\n        </lookup>\n        "
+  ],
+  "symbol": "<symbol RCID=\"1307\">\n            <name>BUISGL01</name>\n            <description>single building</description>\n            <bitmap width=\"9\" height=\"9\">\n                <distance min=\"0\" max=\"0\" />\n                <pivot x=\"4\" y=\"4\" />\n                <origin x=\"0\" y=\"0\" />\n                <graphics-location x=\"459\" y=\"78\" />\n            </bitmap>\n            <color-ref>WLANDFKCHBRN</color-ref>\n            <vector width=\"250\" height=\"250\">\n                <distance min=\"0\" max=\"0\" />\n                <pivot x=\"750\" y=\"750\" />\n                <origin x=\"618\" y=\"618\" />\n                <HPGL>SPK;ST0;PU618,618;PM0;PD868,618,868,868,618,868,618,618;PM2;FP;SPW;SW2;PU618,618;PD868,618;PD868,868;PD618,868;PD618,618;</HPGL>\n            </vector>\n            <definition>V</definition>\n        </symbol>\n\n        ",
+  "conspicuousSymbol": "<symbol RCID=\"1308\">\n            <name>BUISGL11</name>\n            <description>conspicuous single building</description>\n            <bitmap width=\"9\" height=\"9\">\n                <distance min=\"0\" max=\"0\" />\n                <pivot x=\"4\" y=\"4\" />\n                <origin x=\"0\" y=\"0\" />\n                <graphics-location x=\"478\" y=\"78\" />\n            </bitmap>\n            <color-ref>WLANDFCCHBLK</color-ref>\n            <vector width=\"250\" height=\"250\">\n                <distance min=\"0\" max=\"0\" />\n                <pivot x=\"750\" y=\"750\" />\n                <origin x=\"618\" y=\"618\" />\n                <HPGL>SPW;ST0;PU618,618;PM0;PD868,618,868,868,618,868,618,618;PM2;FP;SPC;SW2;PU618,618;PD868,618;PD868,868;PD618,868;PD618,618;</HPGL>\n            </vector>\n            <definition>V</definition>\n        </symbol>\n\n        ",
+  "bitmapOwners": [
+    {
+      "group": "symbols",
+      "name": "BUISGL01",
+      "RCID": "1307",
+      "rectangle": [
+        459,
+        78,
+        468,
+        87
+      ]
+    }
+  ],
+  "sourceColors": {
+    "DAY_BRIGHT": {
+      "CHBLK": [
+        7,
+        7,
+        7
+      ],
+      "CHBRN": [
+        177,
+        145,
+        57
+      ],
+      "LANDF": [
+        139,
+        102,
+        31
+      ]
+    },
+    "DUSK": {
+      "CHBLK": [
+        54,
+        60,
+        61
+      ],
+      "CHBRN": [
+        54,
+        44,
+        17
+      ],
+      "LANDF": [
+        76,
+        56,
+        17
+      ]
+    },
+    "NIGHT": {
+      "CHBLK": [
+        31,
+        34,
+        35
+      ],
+      "CHBRN": [
+        15,
+        13,
+        5
+      ],
+      "LANDF": [
+        23,
+        17,
+        5
+      ]
+    }
+  },
+  "tiles": {
+    "Day": {
+      "unchangedSourceTile": true,
+      "rgbaSha256": "62c9997331cefd8f9e7112e1a237c8eac0c88f45e8283eb77a4066ac9d1b549c",
+      "rgbaColors": 29,
+      "alphaValues": [
+        177,
+        191,
+        202,
+        237,
+        244,
+        245,
+        246,
+        255
+      ]
+    },
+    "Dusk": {
+      "unchangedSourceTile": true,
+      "rgbaSha256": "16e06b805e306dd128b151679c2c6f518865f398040d965c139434a8626b509c",
+      "rgbaColors": 19,
+      "alphaValues": [
+        177,
+        191,
+        202,
+        237,
+        244,
+        245,
+        246,
+        255
+      ]
+    },
+    "Night": {
+      "unchangedSourceTile": true,
+      "rgbaSha256": "fb223f66eb1a1666379b266a9103e0ab3c5564631f8dd41e06abc5e3b42d9c5c",
+      "rgbaColors": 14,
+      "alphaValues": [
+        177,
+        191,
+        202,
+        237,
+        244,
+        245,
+        246,
+        255
+      ]
+    }
+  },
+  "retainedCaptureMatch": {
+    "screenRectangle": [
+      607,
+      443,
+      616,
+      452
+    ],
+    "background": [
+      237,
+      237,
+      225
+    ],
+    "sourceTileRectangle": [
+      459,
+      78,
+      468,
+      87
+    ],
+    "pillowCompositeExact": false,
+    "maximumChannelDifference": 1,
+    "changedPixels": 6,
+    "opaqueSourcePixelsExact": true,
+    "opaqueSourcePixels": 49
+  },
+  "prototypeCatalogEntry": {
+    "id": "point:BUISGL01",
+    "code": "BUISGL01",
+    "kind": "point",
+    "description": "single building",
+    "category": "coast",
+    "bitmap": {
+      "x": 459,
+      "y": 78,
+      "width": 9,
+      "height": 9,
+      "pivot": {
+        "x": 4,
+        "y": 4
+      }
+    }
+  },
+  "prototypeExplicitBUISGLArtwork": false,
+  "prototypeFragments": {
+    "#app{--mark-red:": "#app{--mark-red:#b66e6c;--mark-green:#508d78;--mark-yellow:#ac8d4c;--mark-black:#53645f;--mark-white:#f6f7ef;--mark-blue:#648b9d;--mark-service:#7c858a;--mark-area:#9c8696}",
+    "#app[data-theme=dusk]{--mark-red:": "#app[data-theme=dusk]{--mark-red:#d3948c;--mark-green:#8fbaa2;--mark-yellow:#cbb17a;--mark-black:#c3cec2;--mark-white:#d7decf;--mark-blue:#8eaebe;--mark-service:#a8bbb7;--mark-area:#b8a0b1}",
+    "#app[data-theme=night]{--mark-red:": "#app[data-theme=night]{--mark-red:#ae7870;--mark-green:#789d84;--mark-yellow:#a89061;--mark-black:#89988c;--mark-white:#a4afa0;--mark-blue:#6d8f9e;--mark-service:#7e948a;--mark-area:#917f8d}",
+    ".chart-marker-art.marker-service{": ".chart-marker-art.marker-service{stroke:var(--mark-service)}"
+  }
+}

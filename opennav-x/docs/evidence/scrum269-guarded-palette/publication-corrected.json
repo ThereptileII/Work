@@ -1,0 +1,13 @@
+{
+  "local": "db73de2d02a1829c543101b6d60ca6c3db0509d3",
+  "remoteCommit": "70537545011ef3fd2ecb288a404ae3dc94d5d019",
+  "remoteTree": "0556b13b4f55a6bc952441462d21b7427c789241",
+  "entries": 4668,
+  "verified": true,
+  "run": 37124439890,
+  "runUrl": "https://github.com/ThereptileII/Work/actions/runs/37124439890",
+  "applicationChanged": false,
+  "production117ToolsChanged": false,
+  "correction": "Replay harness initializes its native decoder; first-run failure retained",
+  "qualification": "Corrected native tools-only run pending; no boat action"
+}

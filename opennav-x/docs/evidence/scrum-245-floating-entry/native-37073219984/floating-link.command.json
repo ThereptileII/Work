@@ -1,0 +1,11 @@
+[
+  "cmake",
+  "--build",
+  "D:\\a\\Work\\Work\\opennav-x\\evidence\\local\\windows-changed-units\\floating-build",
+  "--config",
+  "Release",
+  "--target",
+  "floating_surface_test",
+  "--parallel",
+  "2"
+]

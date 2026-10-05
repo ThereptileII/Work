@@ -1,0 +1,24 @@
+{
+  "base": "91a53301f03f99fc543de7b21c48f8c9d7931fb2",
+  "corePatches": {
+    "patches/opencpn-5.12.4-xnav.patch": "dfbacadf42502d1d0366745b3a187d256e620b0d2ea7dba9e8912c46e999e0b3",
+    "patches/opencpn-5.12.4-regression-tests.patch": "3ef13652b8f3717d836883d2fbb7a18f35dbd2ca1162ac991fe339e61392dff1",
+    "patches/opencpn-5.12.4-ais-transport.patch": "ee6689b8943284347fadca9564892b31db4c43db2a007412ac3fdc2072d07fd7",
+    "patches/opencpn-5.12.4-chart-presentation.patch": "973af69749bf40e810292d669eda901f4feedb6381a4c53ee47c34dd17842154",
+    "patches/opencpn-5.12.4-maintained-curl.patch": "dafa1fec0a69e3a1195db726c2cb26ceeb7535b5e25476ac2e4658d910f44e48",
+    "patches/opencpn-5.12.4-download-trust.patch": "04763cb038ad088a722e76d4f85bde7e356489b697a373458195336d4278412b",
+    "patches/opencpn-5.12.4-wxcurl-trust.patch": "f3ad76fc07b80e6f2c01331894ce5e685f6aa4456a2a3c761e3115c8c21f3d6b",
+    "patches/opencpn-5.12.4-peer-response-buffer.patch": "c335f361766a6982c3d096e93f7c149179deb33134668e110111ac4980064e15",
+    "patches/opencpn-5.12.4-peer-unavailable.patch": "5bf1c2ae4b09043ce18151f766aebd2b881b993f352000e34399de7e8b36b6d3"
+  },
+  "privatePatches": {
+    "patches/ocharts-skager-presentation.patch": "a279375cd4e5f2aa5bcdace4a4fd4ade846715eed77c2e9f463e3d400ef9984e",
+    "patches/ocharts-wxcurl-trust.patch": "e68b0a767f6a27d0136fa7e6b82ca96eac69f934f5fe54a13b314750bbb3d567"
+  },
+  "localHeaderCopied": true,
+  "preparedS52": {
+    "core": "127af268948a5cd9144241aa573d82b11019c9df8db18402ef5469cb86a3e0b0",
+    "private": "b6810e842c1a109b3ce26078d213d0b6eda23f0c2ca3795bb9e28a328185af53"
+  },
+  "upstreamPin": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7"
+}

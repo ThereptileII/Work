@@ -1,0 +1,1392 @@
+{
+  "passed": true,
+  "scope": "Actual SettingsDrawer component, synthetic state; no OpenCPN, profile or devices",
+  "source_commit": "cf44e938a3539af6e97a03346542f04f3e7895a4",
+  "github_sha": "cf44e938a3539af6e97a03346542f04f3e7895a4",
+  "executable_sha256": "a237796849a4cfe99a0e4a5b5a617758e0622f3b5c7d6a129dbcd20354ab1e5b",
+  "dpi_helper_sha256": "0d2e73f4e7401ea1d1a4f3eb0a54f713a16b4b066a8a4c9680bd213af2483f84",
+  "sources": {
+    "tests/settings_touch_test.cpp": "33d3d0165fbf2f3bcd09e5a65c4e014d4c0ab935ed8d1af496e6c712f0d9fcb5",
+    "tests/WindowsDpi.cpp": "3b800fc8699054f3cf21d51231fb8e93ab89c4c8fd9aa6766d9f0e8d4ac1e62c",
+    "tools/preferences-touch.py": "ad0b309c1eaeb2936e04a72e0d63bb3e8fdb0967d05b91abca572cefff89abd4",
+    "tools/test-settings-touch-windows.py": "b1bfb982af6da515bf300b8b91587b088fbc405fb2798dadf94a2fee8b7f63d1",
+    "tools/diagnostic-geometry.py": "687703c27e99e2f65fe7b4e58eb9ff20e237c6f9919d9ad3e469ffd4c0a50f9b",
+    "tools/windows-ui.py": "6cc20abecd43b7ffaff569ac1ea4476a0c28ff43793d4ca31c43ecece5212b6a"
+  },
+  "desktop": {
+    "before": [
+      1024,
+      768,
+      32
+    ],
+    "after": [
+      1440,
+      900,
+      32
+    ]
+  },
+  "original_dpi": {
+    "before_percent": 100,
+    "percent": 100,
+    "source_id": 0,
+    "minimum_relative": 0,
+    "maximum_relative": 2
+  },
+  "applied_dpi": {
+    "before_percent": 100,
+    "percent": 125,
+    "source_id": 0,
+    "minimum_relative": 0,
+    "maximum_relative": 2
+  },
+  "initial": {
+    "fixture_only": true,
+    "pid": 484,
+    "native_dpi": 120,
+    "wx_dpi": 120,
+    "saves": 0,
+    "actions": 0,
+    "battery_action": false,
+    "body_scroll_px": 0,
+    "body_pan_messages": 0,
+    "child_pan_messages": 0,
+    "child_mouse_downs": 0,
+    "focus_hwnd": 66158,
+    "runtime": {
+      "ui_update": {
+        "ticks": 2
+      },
+      "display": {
+        "drawer": {
+          "x": 545,
+          "y": 128,
+          "width": 513,
+          "height": 605
+        },
+        "interaction_controls": [
+          {
+            "x": 939,
+            "y": 152,
+            "width": 108,
+            "height": 55,
+            "label": "Close",
+            "accessible_name": "Close sheet",
+            "visible": true,
+            "enabled": true,
+            "hwnd": 131522
+          },
+          {
+            "x": 556,
+            "y": 139,
+            "width": 118,
+            "height": 55,
+            "label": "Back",
+            "accessible_name": "Back",
+            "visible": false,
+            "enabled": true,
+            "hwnd": 131508
+          },
+          {
+            "x": 574,
+            "y": 265,
+            "width": 65,
+            "height": 46,
+            "label": "Vessel",
+            "accessible_name": "Settings section: Vessel",
+            "visible": true,
+            "enabled": true,
+            "hwnd": 66158
+          },
+          {
+            "x": 645,
+            "y": 265,
+            "width": 94,
+            "height": 46,
+            "label": "Navigation",
+            "accessible_name": "Settings section: Navigation",
+            "visible": true,
+            "enabled": true,
+            "hwnd": 66160
+          },
+          {
+            "x": 745,
+            "y": 265,
+            "width": 75,
+            "height": 46,
+            "label": "Sensors",
+            "accessible_name": "Settings section: Sensors",
+            "visible": true,
+            "enabled": true,
+            "hwnd": 66162
+          },
+          {
+            "x": 826,
+            "y": 265,
+            "width": 85,
+            "height": 46,
+            "label": "Autopilot",
+            "accessible_name": "Settings section: Autopilot",
+            "visible": true,
+            "enabled": true,
+            "hwnd": 66164
+          },
+          {
+            "x": 917,
+            "y": 265,
+            "width": 63,
+            "height": 46,
+            "label": "Radar",
+            "accessible_name": "Settings section: Radar",
+            "visible": true,
+            "enabled": true,
+            "hwnd": 66166
+          },
+          {
+            "x": 574,
+            "y": 317,
+            "width": 72,
+            "height": 46,
+            "label": "Display",
+            "accessible_name": "Settings section: Display",
+            "visible": true,
+            "enabled": true,
+            "hwnd": 66168
+          },
+          {
+            "x": 652,
+            "y": 317,
+            "width": 71,
+            "height": 46,
+            "label": "System",
+            "accessible_name": "Settings section: System",
+            "visible": true,
+            "enabled": true,
+            "hwnd": 66170
+          },
+          {
+            "x": 729,
+            "y": 317,
+            "width": 56,
+            "height": 46,
+            "label": "Help",
+            "accessible_name": "Settings section: Help",
+            "visible": true,
+            "enabled": true,
+            "hwnd": 66172
+          },
+          {
+            "x": 590,
+            "y": 439,
+            "width": 422,
+            "height": 28,
+            "label": "Field: Vessel name",
+            "accessible_name": "Vessel name",
+            "visible": true,
+            "enabled": true,
+            "hwnd": 66180,
+            "value": ""
+          },
+          {
+            "x": 590,
+            "y": 559,
+            "width": 185,
+            "height": 28,
+            "label": "Field: Draft \u00b7 metres",
+            "accessible_name": "Draft \u00b7 metres",
+            "visible": true,
+            "enabled": true,
+            "hwnd": 66188,
+            "value": ""
+          },
+          {
+            "x": 827,
+            "y": 559,
+            "width": 185,
+            "height": 28,
+            "label": "Field: Safety depth \u00b7 metres",
+            "accessible_name": "Safety depth \u00b7 metres",
+            "visible": true,
+            "enabled": true,
+            "hwnd": 66196,
+            "value": "3"
+          },
+          {
+            "x": 590,
+            "y": 683,
+            "width": 422,
+            "height": 28,
+            "label": "Field: Usable battery capacity \u00b7 kWh",
+            "accessible_name": "Usable battery capacity \u00b7 kWh",
+            "visible": true,
+            "enabled": true,
+            "hwnd": 66204,
+            "value": ""
+          },
+          {
+            "x": 590,
+            "y": 793,
+            "width": 422,
+            "height": 28,
+            "label": "Field: Minimum reserve \u00b7 %",
+            "accessible_name": "Minimum reserve \u00b7 %",
+            "visible": false,
+            "enabled": true,
+            "hwnd": 66212,
+            "value": ""
+          },
+          {
+            "x": 574,
+            "y": 869,
+            "width": 454,
+            "height": 60,
+            "label": "Save vessel profile",
+            "accessible_name": "Save vessel profile",
+            "visible": false,
+            "enabled": true,
+            "hwnd": 66214
+          },
+          {
+            "x": 574,
+            "y": 977,
+            "width": 454,
+            "height": 90,
+            "label": "Advanced vessel model",
+            "accessible_name": "Advanced vessel model",
+            "visible": false,
+            "enabled": true,
+            "hwnd": 66218
+          },
+          {
+            "x": 574,
+            "y": 1067,
+            "width": 454,
+            "height": 90,
+            "label": "Advanced battery model",
+            "accessible_name": "Advanced battery model",
+            "visible": false,
+            "enabled": true,
+            "hwnd": 66220
+          }
+        ]
+      }
+    }
+  },
+  "frame_client_pixels": [
+    1262,
+    753
+  ],
+  "negative": {
+    "start": [
+      801,
+      683
+    ],
+    "end": [
+      801,
+      483
+    ],
+    "hit_hwnd": 66204,
+    "hit_class": "Edit",
+    "expected_field": {
+      "x": 590,
+      "y": 683,
+      "width": 422,
+      "height": 28,
+      "label": "Field: Usable battery capacity \u00b7 kWh",
+      "accessible_name": "Usable battery capacity \u00b7 kWh",
+      "visible": true,
+      "enabled": true,
+      "hwnd": 66204,
+      "value": ""
+    },
+    "after": {
+      "fixture_only": true,
+      "pid": 484,
+      "native_dpi": 120,
+      "wx_dpi": 120,
+      "saves": 0,
+      "actions": 0,
+      "battery_action": false,
+      "body_scroll_px": 0,
+      "body_pan_messages": 3,
+      "child_pan_messages": 9,
+      "child_mouse_downs": 0,
+      "focus_hwnd": 66158,
+      "runtime": {
+        "ui_update": {
+          "ticks": 4
+        },
+        "display": {
+          "drawer": {
+            "x": 545,
+            "y": 128,
+            "width": 513,
+            "height": 605
+          },
+          "interaction_controls": [
+            {
+              "x": 939,
+              "y": 152,
+              "width": 108,
+              "height": 55,
+              "label": "Close",
+              "accessible_name": "Close sheet",
+              "visible": true,
+              "enabled": true,
+              "hwnd": 131522
+            },
+            {
+              "x": 556,
+              "y": 139,
+              "width": 118,
+              "height": 55,
+              "label": "Back",
+              "accessible_name": "Back",
+              "visible": false,
+              "enabled": true,
+              "hwnd": 131508
+            },
+            {
+              "x": 574,
+              "y": 265,
+              "width": 65,
+              "height": 46,
+              "label": "Vessel",
+              "accessible_name": "Settings section: Vessel",
+              "visible": true,
+              "enabled": true,
+              "hwnd": 66158
+            },
+            {
+              "x": 645,
+              "y": 265,
+              "width": 94,
+              "height": 46,
+              "label": "Navigation",
+              "accessible_name": "Settings section: Navigation",
+              "visible": true,
+              "enabled": true,
+              "hwnd": 66160
+            },
+            {
+              "x": 745,
+              "y": 265,
+              "width": 75,
+              "height": 46,
+              "label": "Sensors",
+              "accessible_name": "Settings section: Sensors",
+              "visible": true,
+              "enabled": true,
+              "hwnd": 66162
+            },
+            {
+              "x": 826,
+              "y": 265,
+              "width": 85,
+              "height": 46,
+              "label": "Autopilot",
+              "accessible_name": "Settings section: Autopilot",
+              "visible": true,
+              "enabled": true,
+              "hwnd": 66164
+            },
+            {
+              "x": 917,
+              "y": 265,
+              "width": 63,
+              "height": 46,
+              "label": "Radar",
+              "accessible_name": "Settings section: Radar",
+              "visible": true,
+              "enabled": true,
+              "hwnd": 66166
+            },
+            {
+              "x": 574,
+              "y": 317,
+              "width": 72,
+              "height": 46,
+              "label": "Display",
+              "accessible_name": "Settings section: Display",
+              "visible": true,
+              "enabled": true,
+              "hwnd": 66168
+            },
+            {
+              "x": 652,
+              "y": 317,
+              "width": 71,
+              "height": 46,
+              "label": "System",
+              "accessible_name": "Settings section: System",
+              "visible": true,
+              "enabled": true,
+              "hwnd": 66170
+            },
+            {
+              "x": 729,
+              "y": 317,
+              "width": 56,
+              "height": 46,
+              "label": "Help",
+              "accessible_name": "Settings section: Help",
+              "visible": true,
+              "enabled": true,
+              "hwnd": 66172
+            },
+            {
+              "x": 590,
+              "y": 439,
+              "width": 422,
+              "height": 28,
+              "label": "Field: Vessel name",
+              "accessible_name": "Vessel name",
+              "visible": true,
+              "enabled": true,
+              "hwnd": 66180,
+              "value": ""
+            },
+            {
+              "x": 590,
+              "y": 559,
+              "width": 185,
+              "height": 28,
+              "label": "Field: Draft \u00b7 metres",
+              "accessible_name": "Draft \u00b7 metres",
+              "visible": true,
+              "enabled": true,
+              "hwnd": 66188,
+              "value": ""
+            },
+            {
+              "x": 827,
+              "y": 559,
+              "width": 185,
+              "height": 28,
+              "label": "Field: Safety depth \u00b7 metres",
+              "accessible_name": "Safety depth \u00b7 metres",
+              "visible": true,
+              "enabled": true,
+              "hwnd": 66196,
+              "value": "3"
+            },
+            {
+              "x": 590,
+              "y": 683,
+              "width": 422,
+              "height": 28,
+              "label": "Field: Usable battery capacity \u00b7 kWh",
+              "accessible_name": "Usable battery capacity \u00b7 kWh",
+              "visible": true,
+              "enabled": true,
+              "hwnd": 66204,
+              "value": ""
+            },
+            {
+              "x": 590,
+              "y": 793,
+              "width": 422,
+              "height": 28,
+              "label": "Field: Minimum reserve \u00b7 %",
+              "accessible_name": "Minimum reserve \u00b7 %",
+              "visible": false,
+              "enabled": true,
+              "hwnd": 66212,
+              "value": ""
+            },
+            {
+              "x": 574,
+              "y": 869,
+              "width": 454,
+              "height": 60,
+              "label": "Save vessel profile",
+              "accessible_name": "Save vessel profile",
+              "visible": false,
+              "enabled": true,
+              "hwnd": 66214
+            },
+            {
+              "x": 574,
+              "y": 977,
+              "width": 454,
+              "height": 90,
+              "label": "Advanced vessel model",
+              "accessible_name": "Advanced vessel model",
+              "visible": false,
+              "enabled": true,
+              "hwnd": 66218
+            },
+            {
+              "x": 574,
+              "y": 1067,
+              "width": 454,
+              "height": 90,
+              "label": "Advanced battery model",
+              "accessible_name": "Advanced battery model",
+              "visible": false,
+              "enabled": true,
+              "hwnd": 66220
+            }
+          ]
+        }
+      }
+    }
+  },
+  "preferences_scroll_attempts": [
+    {
+      "label": "Advanced battery model",
+      "scale": 125,
+      "attempts": [
+        {
+          "native_bounds": [
+            574,
+            1067,
+            1028,
+            1157
+          ],
+          "visible": false,
+          "tick": 5,
+          "pan_hit_tests": [
+            {
+              "point": [
+                556,
+                701
+              ],
+              "hwnd": 131518,
+              "class": "wxWindowNR",
+              "is_body": true
+            },
+            {
+              "point": [
+                556,
+                501
+              ],
+              "hwnd": 131518,
+              "class": "wxWindowNR",
+              "is_body": true
+            }
+          ],
+          "pan": {
+            "start": [
+              556,
+              701
+            ],
+            "end": [
+              556,
+              501
+            ],
+            "body_bounds": [
+              546,
+              240,
+              1056,
+              731
+            ],
+            "native_hit_hwnd": 131518,
+            "native_hit_class": "wxWindowNR",
+            "hit_is_body": true
+          }
+        },
+        {
+          "native_bounds": [
+            574,
+            857,
+            1028,
+            947
+          ],
+          "visible": false,
+          "tick": 10,
+          "pan_hit_tests": [
+            {
+              "point": [
+                556,
+                701
+              ],
+              "hwnd": 131518,
+              "class": "wxWindowNR",
+              "is_body": true
+            },
+            {
+              "point": [
+                556,
+                501
+              ],
+              "hwnd": 131518,
+              "class": "wxWindowNR",
+              "is_body": true
+            }
+          ],
+          "pan": {
+            "start": [
+              556,
+              701
+            ],
+            "end": [
+              556,
+              501
+            ],
+            "body_bounds": [
+              546,
+              240,
+              1056,
+              731
+            ],
+            "native_hit_hwnd": 131518,
+            "native_hit_class": "wxWindowNR",
+            "hit_is_body": true
+          }
+        },
+        {
+          "native_bounds": [
+            574,
+            647,
+            1028,
+            737
+          ],
+          "visible": false,
+          "tick": 15,
+          "pan_hit_tests": [
+            {
+              "point": [
+                556,
+                701
+              ],
+              "hwnd": 131518,
+              "class": "wxWindowNR",
+              "is_body": true
+            },
+            {
+              "point": [
+                556,
+                501
+              ],
+              "hwnd": 131518,
+              "class": "wxWindowNR",
+              "is_body": true
+            }
+          ],
+          "pan": {
+            "start": [
+              556,
+              701
+            ],
+            "end": [
+              556,
+              501
+            ],
+            "body_bounds": [
+              546,
+              240,
+              1056,
+              731
+            ],
+            "native_hit_hwnd": 131518,
+            "native_hit_class": "wxWindowNR",
+            "hit_is_body": true
+          }
+        },
+        {
+          "native_bounds": [
+            574,
+            587,
+            1028,
+            677
+          ],
+          "visible": true,
+          "tick": 20
+        }
+      ]
+    },
+    {
+      "label": "Advanced battery model",
+      "scale": 125,
+      "attempts": [
+        {
+          "native_bounds": [
+            574,
+            587,
+            1028,
+            677
+          ],
+          "visible": true,
+          "tick": 26
+        }
+      ]
+    }
+  ],
+  "vessel_form": {
+    "fields": [
+      "Field: Vessel name",
+      "Field: Draft \u00b7 metres",
+      "Field: Safety depth \u00b7 metres",
+      "Field: Usable battery capacity \u00b7 kWh",
+      "Field: Minimum reserve \u00b7 %"
+    ],
+    "save": {
+      "label": "Save vessel profile",
+      "enabled": true,
+      "visible": true
+    }
+  },
+  "positive": {
+    "reach": {
+      "label": "Advanced battery model",
+      "observations": [
+        {
+          "native_bounds": [
+            574,
+            1067,
+            1028,
+            1157
+          ],
+          "visible": false,
+          "tick": 5,
+          "pan_hit_tests": [
+            {
+              "point": [
+                556,
+                701
+              ],
+              "hwnd": 131518,
+              "class": "wxWindowNR",
+              "is_body": true
+            },
+            {
+              "point": [
+                556,
+                501
+              ],
+              "hwnd": 131518,
+              "class": "wxWindowNR",
+              "is_body": true
+            }
+          ],
+          "pan": {
+            "start": [
+              556,
+              701
+            ],
+            "end": [
+              556,
+              501
+            ],
+            "body_bounds": [
+              546,
+              240,
+              1056,
+              731
+            ],
+            "native_hit_hwnd": 131518,
+            "native_hit_class": "wxWindowNR",
+            "hit_is_body": true
+          }
+        },
+        {
+          "native_bounds": [
+            574,
+            857,
+            1028,
+            947
+          ],
+          "visible": false,
+          "tick": 10,
+          "pan_hit_tests": [
+            {
+              "point": [
+                556,
+                701
+              ],
+              "hwnd": 131518,
+              "class": "wxWindowNR",
+              "is_body": true
+            },
+            {
+              "point": [
+                556,
+                501
+              ],
+              "hwnd": 131518,
+              "class": "wxWindowNR",
+              "is_body": true
+            }
+          ],
+          "pan": {
+            "start": [
+              556,
+              701
+            ],
+            "end": [
+              556,
+              501
+            ],
+            "body_bounds": [
+              546,
+              240,
+              1056,
+              731
+            ],
+            "native_hit_hwnd": 131518,
+            "native_hit_class": "wxWindowNR",
+            "hit_is_body": true
+          }
+        },
+        {
+          "native_bounds": [
+            574,
+            647,
+            1028,
+            737
+          ],
+          "visible": false,
+          "tick": 15,
+          "pan_hit_tests": [
+            {
+              "point": [
+                556,
+                701
+              ],
+              "hwnd": 131518,
+              "class": "wxWindowNR",
+              "is_body": true
+            },
+            {
+              "point": [
+                556,
+                501
+              ],
+              "hwnd": 131518,
+              "class": "wxWindowNR",
+              "is_body": true
+            }
+          ],
+          "pan": {
+            "start": [
+              556,
+              701
+            ],
+            "end": [
+              556,
+              501
+            ],
+            "body_bounds": [
+              546,
+              240,
+              1056,
+              731
+            ],
+            "native_hit_hwnd": 131518,
+            "native_hit_class": "wxWindowNR",
+            "hit_is_body": true
+          }
+        },
+        {
+          "native_bounds": [
+            574,
+            587,
+            1028,
+            677
+          ],
+          "visible": true,
+          "tick": 20
+        }
+      ],
+      "fully_visible": true
+    },
+    "settled": {
+      "fixture_only": true,
+      "pid": 484,
+      "native_dpi": 120,
+      "wx_dpi": 120,
+      "saves": 0,
+      "actions": 0,
+      "battery_action": false,
+      "body_scroll_px": 480,
+      "body_pan_messages": 88,
+      "child_pan_messages": 30,
+      "child_mouse_downs": 0,
+      "focus_hwnd": 66158,
+      "runtime": {
+        "ui_update": {
+          "ticks": 25
+        },
+        "display": {
+          "drawer": {
+            "x": 545,
+            "y": 128,
+            "width": 513,
+            "height": 605
+          },
+          "interaction_controls": [
+            {
+              "x": 939,
+              "y": 152,
+              "width": 108,
+              "height": 55,
+              "label": "Close",
+              "accessible_name": "Close sheet",
+              "visible": true,
+              "enabled": true,
+              "hwnd": 131522
+            },
+            {
+              "x": 556,
+              "y": 139,
+              "width": 118,
+              "height": 55,
+              "label": "Back",
+              "accessible_name": "Back",
+              "visible": false,
+              "enabled": true,
+              "hwnd": 131508
+            },
+            {
+              "x": 574,
+              "y": -215,
+              "width": 65,
+              "height": 46,
+              "label": "Vessel",
+              "accessible_name": "Settings section: Vessel",
+              "visible": false,
+              "enabled": true,
+              "hwnd": 66158
+            },
+            {
+              "x": 645,
+              "y": -215,
+              "width": 94,
+              "height": 46,
+              "label": "Navigation",
+              "accessible_name": "Settings section: Navigation",
+              "visible": false,
+              "enabled": true,
+              "hwnd": 66160
+            },
+            {
+              "x": 745,
+              "y": -215,
+              "width": 75,
+              "height": 46,
+              "label": "Sensors",
+              "accessible_name": "Settings section: Sensors",
+              "visible": false,
+              "enabled": true,
+              "hwnd": 66162
+            },
+            {
+              "x": 826,
+              "y": -215,
+              "width": 85,
+              "height": 46,
+              "label": "Autopilot",
+              "accessible_name": "Settings section: Autopilot",
+              "visible": false,
+              "enabled": true,
+              "hwnd": 66164
+            },
+            {
+              "x": 917,
+              "y": -215,
+              "width": 63,
+              "height": 46,
+              "label": "Radar",
+              "accessible_name": "Settings section: Radar",
+              "visible": false,
+              "enabled": true,
+              "hwnd": 66166
+            },
+            {
+              "x": 574,
+              "y": -163,
+              "width": 72,
+              "height": 46,
+              "label": "Display",
+              "accessible_name": "Settings section: Display",
+              "visible": false,
+              "enabled": true,
+              "hwnd": 66168
+            },
+            {
+              "x": 652,
+              "y": -163,
+              "width": 71,
+              "height": 46,
+              "label": "System",
+              "accessible_name": "Settings section: System",
+              "visible": false,
+              "enabled": true,
+              "hwnd": 66170
+            },
+            {
+              "x": 729,
+              "y": -163,
+              "width": 56,
+              "height": 46,
+              "label": "Help",
+              "accessible_name": "Settings section: Help",
+              "visible": false,
+              "enabled": true,
+              "hwnd": 66172
+            },
+            {
+              "x": 590,
+              "y": -41,
+              "width": 422,
+              "height": 28,
+              "label": "Field: Vessel name",
+              "accessible_name": "Vessel name",
+              "visible": false,
+              "enabled": true,
+              "hwnd": 66180,
+              "value": ""
+            },
+            {
+              "x": 590,
+              "y": 79,
+              "width": 185,
+              "height": 28,
+              "label": "Field: Draft \u00b7 metres",
+              "accessible_name": "Draft \u00b7 metres",
+              "visible": false,
+              "enabled": true,
+              "hwnd": 66188,
+              "value": ""
+            },
+            {
+              "x": 827,
+              "y": 79,
+              "width": 185,
+              "height": 28,
+              "label": "Field: Safety depth \u00b7 metres",
+              "accessible_name": "Safety depth \u00b7 metres",
+              "visible": false,
+              "enabled": true,
+              "hwnd": 66196,
+              "value": "3"
+            },
+            {
+              "x": 590,
+              "y": 203,
+              "width": 422,
+              "height": 28,
+              "label": "Field: Usable battery capacity \u00b7 kWh",
+              "accessible_name": "Usable battery capacity \u00b7 kWh",
+              "visible": false,
+              "enabled": true,
+              "hwnd": 66204,
+              "value": ""
+            },
+            {
+              "x": 590,
+              "y": 313,
+              "width": 422,
+              "height": 28,
+              "label": "Field: Minimum reserve \u00b7 %",
+              "accessible_name": "Minimum reserve \u00b7 %",
+              "visible": true,
+              "enabled": true,
+              "hwnd": 66212,
+              "value": ""
+            },
+            {
+              "x": 574,
+              "y": 389,
+              "width": 454,
+              "height": 60,
+              "label": "Save vessel profile",
+              "accessible_name": "Save vessel profile",
+              "visible": true,
+              "enabled": true,
+              "hwnd": 66214
+            },
+            {
+              "x": 574,
+              "y": 497,
+              "width": 454,
+              "height": 90,
+              "label": "Advanced vessel model",
+              "accessible_name": "Advanced vessel model",
+              "visible": true,
+              "enabled": true,
+              "hwnd": 66218
+            },
+            {
+              "x": 574,
+              "y": 587,
+              "width": 454,
+              "height": 90,
+              "label": "Advanced battery model",
+              "accessible_name": "Advanced battery model",
+              "visible": true,
+              "enabled": true,
+              "hwnd": 66220
+            }
+          ]
+        }
+      }
+    }
+  },
+  "tap": {
+    "label": "Advanced battery model",
+    "observations": [
+      {
+        "native_bounds": [
+          574,
+          587,
+          1028,
+          677
+        ],
+        "visible": true,
+        "tick": 26
+      }
+    ],
+    "fully_visible": true,
+    "native_hit_target_verified": true,
+    "tap": [
+      801,
+      632
+    ],
+    "touch_injected": true
+  },
+  "activated": {
+    "fixture_only": true,
+    "pid": 484,
+    "native_dpi": 120,
+    "wx_dpi": 120,
+    "saves": 0,
+    "actions": 1,
+    "battery_action": true,
+    "body_scroll_px": 480,
+    "body_pan_messages": 88,
+    "child_pan_messages": 30,
+    "child_mouse_downs": 1,
+    "focus_hwnd": 66220,
+    "runtime": {
+      "ui_update": {
+        "ticks": 27
+      },
+      "display": {
+        "drawer": {
+          "x": 545,
+          "y": 128,
+          "width": 513,
+          "height": 605
+        },
+        "interaction_controls": [
+          {
+            "x": 939,
+            "y": 152,
+            "width": 108,
+            "height": 55,
+            "label": "Close",
+            "accessible_name": "Close sheet",
+            "visible": true,
+            "enabled": true,
+            "hwnd": 131522
+          },
+          {
+            "x": 556,
+            "y": 139,
+            "width": 118,
+            "height": 55,
+            "label": "Back",
+            "accessible_name": "Back",
+            "visible": false,
+            "enabled": true,
+            "hwnd": 131508
+          },
+          {
+            "x": 574,
+            "y": -215,
+            "width": 65,
+            "height": 46,
+            "label": "Vessel",
+            "accessible_name": "Settings section: Vessel",
+            "visible": false,
+            "enabled": true,
+            "hwnd": 66158
+          },
+          {
+            "x": 645,
+            "y": -215,
+            "width": 94,
+            "height": 46,
+            "label": "Navigation",
+            "accessible_name": "Settings section: Navigation",
+            "visible": false,
+            "enabled": true,
+            "hwnd": 66160
+          },
+          {
+            "x": 745,
+            "y": -215,
+            "width": 75,
+            "height": 46,
+            "label": "Sensors",
+            "accessible_name": "Settings section: Sensors",
+            "visible": false,
+            "enabled": true,
+            "hwnd": 66162
+          },
+          {
+            "x": 826,
+            "y": -215,
+            "width": 85,
+            "height": 46,
+            "label": "Autopilot",
+            "accessible_name": "Settings section: Autopilot",
+            "visible": false,
+            "enabled": true,
+            "hwnd": 66164
+          },
+          {
+            "x": 917,
+            "y": -215,
+            "width": 63,
+            "height": 46,
+            "label": "Radar",
+            "accessible_name": "Settings section: Radar",
+            "visible": false,
+            "enabled": true,
+            "hwnd": 66166
+          },
+          {
+            "x": 574,
+            "y": -163,
+            "width": 72,
+            "height": 46,
+            "label": "Display",
+            "accessible_name": "Settings section: Display",
+            "visible": false,
+            "enabled": true,
+            "hwnd": 66168
+          },
+          {
+            "x": 652,
+            "y": -163,
+            "width": 71,
+            "height": 46,
+            "label": "System",
+            "accessible_name": "Settings section: System",
+            "visible": false,
+            "enabled": true,
+            "hwnd": 66170
+          },
+          {
+            "x": 729,
+            "y": -163,
+            "width": 56,
+            "height": 46,
+            "label": "Help",
+            "accessible_name": "Settings section: Help",
+            "visible": false,
+            "enabled": true,
+            "hwnd": 66172
+          },
+          {
+            "x": 590,
+            "y": -41,
+            "width": 422,
+            "height": 28,
+            "label": "Field: Vessel name",
+            "accessible_name": "Vessel name",
+            "visible": false,
+            "enabled": true,
+            "hwnd": 66180,
+            "value": ""
+          },
+          {
+            "x": 590,
+            "y": 79,
+            "width": 185,
+            "height": 28,
+            "label": "Field: Draft \u00b7 metres",
+            "accessible_name": "Draft \u00b7 metres",
+            "visible": false,
+            "enabled": true,
+            "hwnd": 66188,
+            "value": ""
+          },
+          {
+            "x": 827,
+            "y": 79,
+            "width": 185,
+            "height": 28,
+            "label": "Field: Safety depth \u00b7 metres",
+            "accessible_name": "Safety depth \u00b7 metres",
+            "visible": false,
+            "enabled": true,
+            "hwnd": 66196,
+            "value": "3"
+          },
+          {
+            "x": 590,
+            "y": 203,
+            "width": 422,
+            "height": 28,
+            "label": "Field: Usable battery capacity \u00b7 kWh",
+            "accessible_name": "Usable battery capacity \u00b7 kWh",
+            "visible": false,
+            "enabled": true,
+            "hwnd": 66204,
+            "value": ""
+          },
+          {
+            "x": 590,
+            "y": 313,
+            "width": 422,
+            "height": 28,
+            "label": "Field: Minimum reserve \u00b7 %",
+            "accessible_name": "Minimum reserve \u00b7 %",
+            "visible": true,
+            "enabled": true,
+            "hwnd": 66212,
+            "value": ""
+          },
+          {
+            "x": 574,
+            "y": 389,
+            "width": 454,
+            "height": 60,
+            "label": "Save vessel profile",
+            "accessible_name": "Save vessel profile",
+            "visible": true,
+            "enabled": true,
+            "hwnd": 66214
+          },
+          {
+            "x": 574,
+            "y": 497,
+            "width": 454,
+            "height": 90,
+            "label": "Advanced vessel model",
+            "accessible_name": "Advanced vessel model",
+            "visible": true,
+            "enabled": true,
+            "hwnd": 66218
+          },
+          {
+            "x": 574,
+            "y": 587,
+            "width": 454,
+            "height": 90,
+            "label": "Advanced battery model",
+            "accessible_name": "Advanced battery model",
+            "visible": true,
+            "enabled": true,
+            "hwnd": 66220
+          }
+        ]
+      }
+    }
+  },
+  "host_result": {
+    "completed": true,
+    "saves": 0,
+    "actions": 1
+  },
+  "restored_dpi": {
+    "before_percent": 125,
+    "percent": 100,
+    "source_id": 0,
+    "minimum_relative": 0,
+    "maximum_relative": 2
+  }
+}

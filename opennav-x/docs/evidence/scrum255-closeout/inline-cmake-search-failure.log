@@ -1,0 +1,14 @@
+F
+======================================================================
+FAIL: test_script_orders_gate_before_every_expensive_step (__main__.GettextPrerequisiteTests.test_script_orders_gate_before_every_expensive_step)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/standard/Projects/X-nav-worktrees/scrum255-closeout/tests/windows_gettext_tests.py", line 188, in test_script_orders_gate_before_every_expensive_step
+    verify=source.index("'windows_gettext.py'), 'verify'");self.assertLess(verify,source.index('    Run cmake'))
+                                                           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 18609 not less than 5985
+
+----------------------------------------------------------------------
+Ran 1 test in 0.003s
+
+FAILED (failures=1)

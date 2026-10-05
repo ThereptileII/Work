@@ -22,13 +22,17 @@ from restart_capability import verified_restart_protocol
 ROOT = Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser()
 parser.add_argument('--package', required=True, type=Path)
+parser.add_argument('--expected-commit', default=os.environ.get('GITHUB_SHA'),
+                    help='Frozen product revision when the harness is newer than the retained package')
 args = parser.parse_args()
 if sys.platform != 'win32' or os.environ.get('GITHUB_ACTIONS') != 'true':
     raise SystemExit('Production ZIP smoke requires disposable native Windows CI')
 EVIDENCE = ROOT / 'evidence/local'
 EVIDENCE.mkdir(parents=True, exist_ok=True)
 report = {'status': 'running', 'authority': 'Native Windows; exact extracted product ZIP; fixtures OFF',
-          'checks': [], 'screenshots': [], 'chart_rendering': []}
+          'checks': [], 'screenshots': [], 'chart_rendering': [],
+          'design_validation': 'requested' if os.environ.get('SKAGER_DESIGN_VALIDATION')=='true' else 'not requested',
+          'harness_commit': subprocess.check_output(['git','-C',str(ROOT),'rev-parse','HEAD'],text=True).strip()}
 
 def module(name):
     spec = importlib.util.spec_from_file_location(name, ROOT / 'tools' / (name + '.py'))
@@ -38,6 +42,7 @@ def module(name):
 
 ui = module('windows-ui')
 charts = module('chart-render-check')
+chart_visibility = charts.presentation if os.environ.get('SKAGER_DESIGN_VALIDATION')=='true' else charts.functional
 startup_log = module('startup-log')
 report['display'] = ui.ensure_desktop(1440,900)
 normal_locations = []
@@ -59,7 +64,7 @@ def inventory():
 normal_before = inventory()
 temporary = tempfile.TemporaryDirectory(prefix='OpenNav product recovery ')
 temp = Path(temporary.name)
-package = temp / 'OpenNavX-Beta2-Portable-Recovery'
+package = temp / 'SKAGER-Beta2-Portable-Recovery'
 profile = package / 'profile'
 logs = package / 'logs'
 exe = package / 'app/opencpn.exe'
@@ -123,8 +128,8 @@ def capture(name, chart=True):
     rgb = ui.capture(handle, path, screen_pixels=True)
     report['screenshots'].append(path.name)
     if chart and 'colors' in globals():
-        style='XNav' if ui.text(handle)=='OpenNav X / OpenCPN' else 'Standard'
-        report['chart_rendering'].append(charts.presentation(rgb,style,'Day',name))
+        style='XNav' if ui.text(handle)=='SKAGER / OpenCPN' else 'Standard'
+        report['chart_rendering'].append(chart_visibility(rgb,style,'Day',name))
     return rgb
 
 def no_demo_controls():
@@ -166,10 +171,10 @@ def restart_xnav_from_legacy(name):
     previous = pid
     monitor = ui.monitor_process(pid)
     prepare_startup_observation()
-    ui.click_menu(handle, 'Switch to XNav')
+    ui.click_menu(handle, 'Switch to SKAGER')
     ui.wait_clean_exit(monitor)
     owned.discard(previous)
-    handle, pid = ui.wait_window('OpenNav X / OpenCPN')
+    handle, pid = ui.wait_window('SKAGER / OpenCPN')
     owned.add(pid)
     ready()
     data()
@@ -205,7 +210,7 @@ try:
     identity = json.loads(selftest.read_text())
     assert identity.get('xnav_hardware_output_policy') == 'status-only'
     assert identity['test_fixtures'] is False and identity['build_purpose'] == 'INSTALLED PRODUCT'
-    assert identity['version'] == '0.4.0-beta2' and identity['commit'] == os.environ['GITHUB_SHA']
+    assert identity['version'] == '0.4.0-beta2' and identity['commit'] == args.expected_commit
     assert not identity['profile_initialized'] and not identity['plugins_loaded']
     helper_probe = subprocess.run([str(helper), '--commissioning-protocol-self-test'],
                                   cwd=helper.parent, env=env, capture_output=True, timeout=10)
@@ -221,7 +226,7 @@ try:
     check('Exact extracted package inventory/hash and actual fixture-free executable identity verified')
     check('Extracted app/helper execute matching guarded-restart capability probes without profile initialization')
 
-    launch('Run-XNav.cmd', 'OpenNav X / OpenCPN')
+    launch('Run-SKAGER.cmd', 'SKAGER / OpenCPN')
     live = data()
     no_demo_controls()
     for name in ('Latitude', 'Battery SOC', 'Motor electrical power', 'Depth below transducer'):
@@ -235,14 +240,14 @@ try:
         data(lambda value: value['runtime']['display']['light'] == mode)
         rgb = capture('navigation-' + ('day-restored' if mode == 'Day' else mode.lower()), chart=mode == 'Day')
         if mode == 'Night':
-            report['chart_rendering'].append(charts.presentation(rgb,'XNav','Night','Product Night coastline'))
+            report['chart_rendering'].append(chart_visibility(rgb,'XNav','Night','Product Night coastline'))
     ui.click_text(pid, 'Energy')
     data(lambda value: value['ui_page'] == 'Energy')
     capture('energy-unavailable', chart=False)
     no_demo_controls()
     ui.click_text(pid, 'Settings')
     data(lambda value: value['ui_page']=='Settings')
-    ui.assert_prototype_drawer(handle,'OpenNav preferences')
+    ui.assert_prototype_drawer(handle,'SKAGER preferences')
     capture('preferences', chart=False)
     no_demo_controls()
     ui.open_system(pid)
@@ -259,13 +264,13 @@ try:
     close()
     check('Out-of-box product shows real unavailable state, no Demo controls and Day/Dusk/Night chart content')
 
-    launch('Run-Legacy.cmd', 'OpenCPN / Legacy')
+    launch('Run-Legacy.cmd', 'SKAGER Legacy / OpenCPN')
     capture('legacy-start')
     restart_xnav_from_legacy('legacy-to-xnav')
     close()
     check('Legacy launcher and Legacy-to-XNav retain real coastline and isolated profile')
 
-    launch('Run-XNav.cmd', 'OpenNav X / OpenCPN')
+    launch('Run-SKAGER.cmd', 'SKAGER / OpenCPN')
     capture('xnav-before-legacy')
     monitor = ui.monitor_process(pid)
     previous = pid
@@ -274,7 +279,7 @@ try:
     ui.click_text(pid, 'Open Legacy OpenCPN')
     ui.wait_clean_exit(monitor)
     owned.discard(previous)
-    handle, pid = ui.wait_window('OpenCPN / Legacy')
+    handle, pid = ui.wait_window('SKAGER Legacy / OpenCPN')
     owned.add(pid)
     ready()
     capture('xnav-to-legacy')
@@ -282,7 +287,7 @@ try:
     close()
     check('Product XNav-to-Legacy-to-XNav controlled restart preserves coastline')
 
-    launch('Run-Safe.cmd', 'OpenNav Safe Mode / OpenCPN')
+    launch('Run-Safe.cmd', 'SKAGER Safe Mode / OpenCPN')
     capture('safe')
     restart_xnav_from_legacy('safe-to-xnav')
     close()

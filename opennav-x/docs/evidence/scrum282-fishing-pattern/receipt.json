@@ -1,0 +1,114 @@
+{
+  "baseCommit": "48c2f8b8d5d4103bcbaacc45a18c4e6a238d4c52",
+  "upstreamCommit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "pattern": {
+    "original": "FSHFAC03",
+    "originalRcid": 2001,
+    "alias": "XNFISH03",
+    "aliasRcid": 60017,
+    "lookupId": 65,
+    "lookupRcid": 32101,
+    "sameNamePointRcid": 2067,
+    "tile": [
+      948,
+      1160,
+      24,
+      24
+    ]
+  },
+  "files": {
+    "chartsymbols.xml": {
+      "sha256": "8cbb73353b2f5ccc0eab644a309e5353064679b31fbdc3ea455737c8ad142d67",
+      "bytes": 2247045
+    },
+    "S52RAZDS.RLE": {
+      "sha256": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26",
+      "bytes": 1305627
+    },
+    "rastersymbols-day.png": {
+      "sha256": "b4436a44415da71372cc0bd1aacece44b6bd984bb06c67de63472edc1ab8db35",
+      "bytes": 200713
+    },
+    "rastersymbols-dusk.png": {
+      "sha256": "6c51b448e7035f8f938231eb63f6bfc21a8723e1df84a63064625ff13b3d1bff",
+      "bytes": 175038
+    },
+    "rastersymbols-dark.png": {
+      "sha256": "149e1b4eb945d8e5661d2625bc1e6f0398a8bee9bb24be4d00af6efb44457803",
+      "bytes": 170342
+    }
+  },
+  "fishingPatternArtwork": {
+    "rastersymbols-day.png": {
+      "name": "XNFISH03",
+      "RCID": "60017",
+      "tile": [
+        948,
+        1160,
+        24,
+        24
+      ],
+      "pixels": 48,
+      "rgb": [
+        156,
+        134,
+        150
+      ],
+      "alphaSha256": "6fd32cd07301655501afc6e16ebb9e40f072a771bb5c604f4959425e1cc5c6fb",
+      "stockVectorCellPreserved": true
+    },
+    "rastersymbols-dusk.png": {
+      "name": "XNFISH03",
+      "RCID": "60017",
+      "tile": [
+        948,
+        1160,
+        24,
+        24
+      ],
+      "pixels": 48,
+      "rgb": [
+        184,
+        160,
+        177
+      ],
+      "alphaSha256": "6fd32cd07301655501afc6e16ebb9e40f072a771bb5c604f4959425e1cc5c6fb",
+      "stockVectorCellPreserved": true
+    },
+    "rastersymbols-dark.png": {
+      "name": "XNFISH03",
+      "RCID": "60017",
+      "tile": [
+        948,
+        1160,
+        24,
+        24
+      ],
+      "pixels": 48,
+      "rgb": [
+        113,
+        99,
+        110
+      ],
+      "alphaSha256": "6fd32cd07301655501afc6e16ebb9e40f072a771bb5c604f4959425e1cc5c6fb",
+      "stockVectorCellPreserved": true
+    }
+  },
+  "manifestSha256": "a2446d9e732f6628c4274b8cc72f5b6ea385c14c0869de1167200ef6ed85263b",
+  "images": {
+    "DAY_BRIGHT-cell.png": "0ee2a24c3a454df41eb7fc9c9abe4aac16c05d8392fd6257adaa91bef6990a52",
+    "DUSK-cell.png": "690c7e9fdb98a9f847e7b19b6bcb5b4938ebe4648c5cf3139f4c25d32eadedd3",
+    "NIGHT-cell.png": "d509dc091822001bce859d103dfad76ff8af63cb23eee806c5068db133c8b452",
+    "DAY_BRIGHT-glyph.png": "174a7be6e2f0e30a869a23c3c510e6e15c80abc5258299d3c3a1ade7113dcb46",
+    "DUSK-glyph.png": "bf674ccf5f7c19a6c617385610b2752cb7cda569d040adbbe0da581a856095f4",
+    "NIGHT-glyph.png": "8e5d5571eac0abca1333fa818e4766df3b878a8e5c4f93303055ae34a380fab7",
+    "three-theme-cells.png": "bbfec531098be4fd5d5b3b6018a37a7eaa01c926914ef2b2bbc18190375f3546"
+  },
+  "sourceInputs": {
+    "src/integration/ChartFishingPattern.h": "85b9c323be6cea456087d6e1205e5a755aadd0f99080184e01a712e4d6ee89c6",
+    "tools/chart_fishing_pattern.py": "e1974aeab8ba857f0b58db5d5240ef807cf32a7c3ee7f11b4b62699b872e8e3b",
+    "patches/opencpn-5.12.4-chart-presentation.patch": "34cba17e0e12fcc4802eaace6bfddb3dd7b8e75fe961fda46bd3aeed959b4e43",
+    "patches/ocharts-skager-presentation.patch": "3af3d5c1b5ce4ea66d2fa4f3afbc5f1e1606940afcf73c9d775cb9b8b0c88fb2"
+  },
+  "scope": "Resource/actual-loader/cell-buffer evidence; grid is a diagram, not polygon/GL/native/private DLL or boat acceptance"
+}

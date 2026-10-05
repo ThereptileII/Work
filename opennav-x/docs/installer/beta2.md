@@ -2,12 +2,12 @@
 
 Beta 2 keeps the accepted installation architecture: an exact-hash-gated,
 per-user application beside the original OpenCPN. The real OpenCPN profile,
-charts, connections, routes and plugins remain shared by installed XNav, Legacy
+charts, connections, routes and plugins remain shared by installed SKAGER, Legacy
 and Safe. There is no profile import or duplicate chart database. The historical
 `OpenNavXAlpha1` owner/root/registry identity remains intentional migration state.
 Normal product captions use the active release version.
 
-`OpenNavX-Beta2-Setup.exe` presents Welcome, detected OpenCPN, recovery backup,
+`SKAGER-Beta2-Setup.exe` presents Welcome, detected OpenCPN, recovery backup,
 shortcut options, Ready, installation/validation and Finish. Original OpenCPN
 must match the established 5.12.4 i386 executable SHA-256; its version label or
 registry registration alone does not authorize installation. Unsupported copies
@@ -29,19 +29,31 @@ accepted Beta 1 remains valid as the explicitly retained upgrade/rollback fixtur
 Reserved portable/test markers, Demo launchers and fixture resources are checked
 both after payload extraction and **after preserving unowned additions**, before
 the loader check or atomic publication. An inherited portable marker must never
-silently redirect installed XNav to a different profile. A rejected update/repair
+silently redirect installed SKAGER to a different profile. A rejected update/repair
 leaves the active generation, state, originals and navigation data unchanged;
 the offending addition remains available in its original generation for review.
 Rollback checks the retained generation for the same markers before its loader
 check and publication, including markers added after that generation was saved.
 
-The wizard offers optional Legacy and Safe shortcuts, with XNav and maintenance
+The wizard offers optional Legacy and Safe shortcuts, with SKAGER and maintenance
 always available. Shortcut choices are saved with the application generation and
 restored on rollback. Normal updates/repairs preserve them unless the wizard
 explicitly changes them. Windows Installed Apps provides maintenance/uninstall.
 All previously accepted ownership, reparse, payload-bound, concurrent transaction,
 locked-file, interrupted-copy, atomic-publication and modified-file retention
 protections remain mandatory.
+
+## Delivery channel
+
+Development defaults to **STAGING** under the later
+[delivery policy](../delivery-workflow.md). Standard handoff uses a versioned
+GitHub Release containing the exact package, corresponding source, hashes and
+build/source identity. Releases in both channels remain draft while public access
+is closed. Production readiness/promotion requires explicit user instruction,
+reuses the selected Staging package bytes and records its channel separately
+from the immutable package version. Promotion does not authorize public opening
+or a design review. The installer term “staging” above means temporary transaction
+files; it does not select the STAGING delivery channel.
 
 ## Qualification
 

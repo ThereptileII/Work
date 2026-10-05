@@ -1,0 +1,1217 @@
+[
+  {
+    "identity": {
+      "id": "17",
+      "RCID": "32053",
+      "name": "BUISGL"
+    },
+    "type": "Area",
+    "table": "Plain",
+    "selectors": [
+      "FUNCTN33",
+      "CONVIS1"
+    ],
+    "instruction": "AC(XNSTR);TX(OBJNAM,1,2,2,'15110',0,0,CHBLK,26);LS(SOLD,1,CHBLK)",
+    "displayCategory": "Standard",
+    "priority": "Point Symbol"
+  },
+  {
+    "identity": {
+      "id": "18",
+      "RCID": "32054",
+      "name": "BUISGL"
+    },
+    "type": "Area",
+    "table": "Plain",
+    "selectors": [
+      "FUNCTN33"
+    ],
+    "instruction": "AC(XNSTR);TX(OBJNAM,1,2,2,'15110',0,0,CHBLK,26);LS(SOLD,1,LANDF)",
+    "displayCategory": "Other",
+    "priority": "Point Symbol"
+  },
+  {
+    "identity": {
+      "id": "19",
+      "RCID": "32055",
+      "name": "BUISGL"
+    },
+    "type": "Area",
+    "table": "Plain",
+    "selectors": [
+      "CONVIS1"
+    ],
+    "instruction": "AC(XNSTR);LS(SOLD,1,CHBLK)",
+    "displayCategory": "Standard",
+    "priority": "Point Symbol"
+  },
+  {
+    "identity": {
+      "id": "20",
+      "RCID": "32056",
+      "name": "BUISGL"
+    },
+    "type": "Area",
+    "table": "Plain",
+    "selectors": [],
+    "instruction": "AC(XNSTR);LS(SOLD,1,LANDF)",
+    "displayCategory": "Other",
+    "priority": "Point Symbol"
+  },
+  {
+    "identity": {
+      "id": "61",
+      "RCID": "32097",
+      "name": "FLODOC"
+    },
+    "type": "Area",
+    "table": "Plain",
+    "selectors": [],
+    "instruction": "AC(XNSTR);LS(SOLD,2,CSTLN)",
+    "displayCategory": "Displaybase",
+    "priority": "Line Symbol"
+  },
+  {
+    "identity": {
+      "id": "98",
+      "RCID": "32134",
+      "name": "MORFAC"
+    },
+    "type": "Area",
+    "table": "Plain",
+    "selectors": [],
+    "instruction": "AC(XNSTR);LS(SOLD,1,CHBLK)",
+    "displayCategory": "Standard",
+    "priority": "Area Symbol"
+  },
+  {
+    "identity": {
+      "id": "135",
+      "RCID": "32171",
+      "name": "PONTON"
+    },
+    "type": "Area",
+    "table": "Plain",
+    "selectors": [],
+    "instruction": "AC(XNSTR);LS(SOLD,2,CSTLN)",
+    "displayCategory": "Displaybase",
+    "priority": "Line Symbol"
+  },
+  {
+    "identity": {
+      "id": "357",
+      "RCID": "32392",
+      "name": "BUISGL"
+    },
+    "type": "Area",
+    "table": "Symbolized",
+    "selectors": [
+      "FUNCTN33",
+      "CONVIS1"
+    ],
+    "instruction": "AC(XNSTR);TX(OBJNAM,1,2,2,'15110',0,0,CHBLK,26);LS(SOLD,1,CHBLK)",
+    "displayCategory": "Standard",
+    "priority": "Point Symbol"
+  },
+  {
+    "identity": {
+      "id": "358",
+      "RCID": "32393",
+      "name": "BUISGL"
+    },
+    "type": "Area",
+    "table": "Symbolized",
+    "selectors": [
+      "FUNCTN33"
+    ],
+    "instruction": "AC(XNSTR);TX(OBJNAM,1,2,2,'15110',0,0,CHBLK,26);LS(SOLD,1,LANDF)",
+    "displayCategory": "Other",
+    "priority": "Point Symbol"
+  },
+  {
+    "identity": {
+      "id": "359",
+      "RCID": "32394",
+      "name": "BUISGL"
+    },
+    "type": "Area",
+    "table": "Symbolized",
+    "selectors": [
+      "CONVIS1"
+    ],
+    "instruction": "AC(XNSTR);LS(SOLD,1,CHBLK)",
+    "displayCategory": "Standard",
+    "priority": "Point Symbol"
+  },
+  {
+    "identity": {
+      "id": "360",
+      "RCID": "32395",
+      "name": "BUISGL"
+    },
+    "type": "Area",
+    "table": "Symbolized",
+    "selectors": [],
+    "instruction": "AC(XNSTR);LS(SOLD,1,LANDF)",
+    "displayCategory": "Other",
+    "priority": "Point Symbol"
+  },
+  {
+    "identity": {
+      "id": "401",
+      "RCID": "32436",
+      "name": "FLODOC"
+    },
+    "type": "Area",
+    "table": "Symbolized",
+    "selectors": [],
+    "instruction": "AC(XNSTR);LS(SOLD,2,CSTLN)",
+    "displayCategory": "Displaybase",
+    "priority": "Line Symbol"
+  },
+  {
+    "identity": {
+      "id": "438",
+      "RCID": "32473",
+      "name": "MORFAC"
+    },
+    "type": "Area",
+    "table": "Symbolized",
+    "selectors": [],
+    "instruction": "AC(XNSTR);LS(SOLD,1,CHBLK)",
+    "displayCategory": "Displaybase",
+    "priority": "Area Symbol"
+  },
+  {
+    "identity": {
+      "id": "477",
+      "RCID": "32512",
+      "name": "PONTON"
+    },
+    "type": "Area",
+    "table": "Symbolized",
+    "selectors": [],
+    "instruction": "AC(XNSTR);LS(SOLD,2,CSTLN)",
+    "displayCategory": "Displaybase",
+    "priority": "Line Symbol"
+  },
+  {
+    "identity": {
+      "id": "748",
+      "RCID": "31824",
+      "name": "FLODOC"
+    },
+    "type": "Line",
+    "table": "Lines",
+    "selectors": [],
+    "instruction": "LS(SOLD,3,CSTLN)",
+    "displayCategory": "Displaybase",
+    "priority": "Line Symbol"
+  },
+  {
+    "identity": {
+      "id": "767",
+      "RCID": "31843",
+      "name": "MORFAC"
+    },
+    "type": "Line",
+    "table": "Lines",
+    "selectors": [
+      "CATMOR4"
+    ],
+    "instruction": "LS(SOLD,2,CSTLN)",
+    "displayCategory": "Displaybase",
+    "priority": "Area Symbol"
+  },
+  {
+    "identity": {
+      "id": "768",
+      "RCID": "31844",
+      "name": "MORFAC"
+    },
+    "type": "Line",
+    "table": "Lines",
+    "selectors": [
+      "CATMOR6"
+    ],
+    "instruction": "LS(DASH,1,CHMGF)",
+    "displayCategory": "Displaybase",
+    "priority": "Area Symbol"
+  },
+  {
+    "identity": {
+      "id": "769",
+      "RCID": "31845",
+      "name": "MORFAC"
+    },
+    "type": "Line",
+    "table": "Lines",
+    "selectors": [],
+    "instruction": "LS(SOLD,2,CSTLN)",
+    "displayCategory": "Displaybase",
+    "priority": "Area Symbol"
+  },
+  {
+    "identity": {
+      "id": "791",
+      "RCID": "31867",
+      "name": "PONTON"
+    },
+    "type": "Line",
+    "table": "Lines",
+    "selectors": [],
+    "instruction": "LS(SOLD,2,CSTLN)",
+    "displayCategory": "Displaybase",
+    "priority": "Line Symbol"
+  },
+  {
+    "identity": {
+      "id": "1068",
+      "RCID": "31120",
+      "name": "BUISGL"
+    },
+    "type": "Point",
+    "table": "Simplified",
+    "selectors": [
+      "FUNCTN33",
+      "CONVIS1",
+      "OBJNAM"
+    ],
+    "instruction": "SY(POSGEN03);TX(OBJNAM,3,2,2,'15110',1,0,CHBLK,26)",
+    "displayCategory": "Standard",
+    "priority": "Area Symbol"
+  },
+  {
+    "identity": {
+      "id": "1069",
+      "RCID": "31121",
+      "name": "BUISGL"
+    },
+    "type": "Point",
+    "table": "Simplified",
+    "selectors": [
+      "FUNCTN20",
+      "CONVIS1"
+    ],
+    "instruction": "SY(BUIREL13)",
+    "displayCategory": "Standard",
+    "priority": "Area Symbol"
+  },
+  {
+    "identity": {
+      "id": "1070",
+      "RCID": "31122",
+      "name": "BUISGL"
+    },
+    "type": "Point",
+    "table": "Simplified",
+    "selectors": [
+      "FUNCTN21",
+      "CONVIS1"
+    ],
+    "instruction": "SY(BUIREL13)",
+    "displayCategory": "Standard",
+    "priority": "Area Symbol"
+  },
+  {
+    "identity": {
+      "id": "1071",
+      "RCID": "31123",
+      "name": "BUISGL"
+    },
+    "type": "Point",
+    "table": "Simplified",
+    "selectors": [
+      "FUNCTN22",
+      "CONVIS1"
+    ],
+    "instruction": "SY(BUIREL14)",
+    "displayCategory": "Standard",
+    "priority": "Area Symbol"
+  },
+  {
+    "identity": {
+      "id": "1072",
+      "RCID": "31124",
+      "name": "BUISGL"
+    },
+    "type": "Point",
+    "table": "Simplified",
+    "selectors": [
+      "FUNCTN23",
+      "CONVIS1"
+    ],
+    "instruction": "SY(BUIREL14)",
+    "displayCategory": "Standard",
+    "priority": "Area Symbol"
+  },
+  {
+    "identity": {
+      "id": "1073",
+      "RCID": "31125",
+      "name": "BUISGL"
+    },
+    "type": "Point",
+    "table": "Simplified",
+    "selectors": [
+      "FUNCTN24",
+      "CONVIS1"
+    ],
+    "instruction": "SY(BUIREL14)",
+    "displayCategory": "Standard",
+    "priority": "Area Symbol"
+  },
+  {
+    "identity": {
+      "id": "1074",
+      "RCID": "31126",
+      "name": "BUISGL"
+    },
+    "type": "Point",
+    "table": "Simplified",
+    "selectors": [
+      "FUNCTN25",
+      "CONVIS1"
+    ],
+    "instruction": "SY(BUIREL14)",
+    "displayCategory": "Standard",
+    "priority": "Area Symbol"
+  },
+  {
+    "identity": {
+      "id": "1075",
+      "RCID": "31127",
+      "name": "BUISGL"
+    },
+    "type": "Point",
+    "table": "Simplified",
+    "selectors": [
+      "FUNCTN26",
+      "CONVIS1"
+    ],
+    "instruction": "SY(BUIREL15)",
+    "displayCategory": "Standard",
+    "priority": "Area Symbol"
+  },
+  {
+    "identity": {
+      "id": "1076",
+      "RCID": "31128",
+      "name": "BUISGL"
+    },
+    "type": "Point",
+    "table": "Simplified",
+    "selectors": [
+      "FUNCTN27",
+      "CONVIS1"
+    ],
+    "instruction": "SY(BUIREL15)",
+    "displayCategory": "Standard",
+    "priority": "Area Symbol"
+  },
+  {
+    "identity": {
+      "id": "1077",
+      "RCID": "31129",
+      "name": "BUISGL"
+    },
+    "type": "Point",
+    "table": "Simplified",
+    "selectors": [
+      "FUNCTN33",
+      "CONVIS1"
+    ],
+    "instruction": "SY(POSGEN03)",
+    "displayCategory": "Standard",
+    "priority": "Area Symbol"
+  },
+  {
+    "identity": {
+      "id": "1078",
+      "RCID": "31130",
+      "name": "BUISGL"
+    },
+    "type": "Point",
+    "table": "Simplified",
+    "selectors": [
+      "FUNCTN35",
+      "CONVIS1"
+    ],
+    "instruction": "SY(TNKCON12)",
+    "displayCategory": "Standard",
+    "priority": "Area Symbol"
+  },
+  {
+    "identity": {
+      "id": "1079",
+      "RCID": "31131",
+      "name": "BUISGL"
+    },
+    "type": "Point",
+    "table": "Simplified",
+    "selectors": [
+      "FUNCTN33",
+      "OBJNAM"
+    ],
+    "instruction": "SY(POSGEN03);TX(OBJNAM,3,2,2,'15110',1,0,CHBLK,26)",
+    "displayCategory": "Other",
+    "priority": "Point Symbol"
+  },
+  {
+    "identity": {
+      "id": "1080",
+      "RCID": "31132",
+      "name": "BUISGL"
+    },
+    "type": "Point",
+    "table": "Simplified",
+    "selectors": [
+      "FUNCTN20"
+    ],
+    "instruction": "SY(BUIREL01)",
+    "displayCategory": "Other",
+    "priority": "Point Symbol"
+  },
+  {
+    "identity": {
+      "id": "1081",
+      "RCID": "31133",
+      "name": "BUISGL"
+    },
+    "type": "Point",
+    "table": "Simplified",
+    "selectors": [
+      "FUNCTN21"
+    ],
+    "instruction": "SY(BUIREL01)",
+    "displayCategory": "Other",
+    "priority": "Point Symbol"
+  },
+  {
+    "identity": {
+      "id": "1082",
+      "RCID": "31134",
+      "name": "BUISGL"
+    },
+    "type": "Point",
+    "table": "Simplified",
+    "selectors": [
+      "FUNCTN22"
+    ],
+    "instruction": "SY(BUIREL04)",
+    "displayCategory": "Other",
+    "priority": "Point Symbol"
+  },
+  {
+    "identity": {
+      "id": "1083",
+      "RCID": "31135",
+      "name": "BUISGL"
+    },
+    "type": "Point",
+    "table": "Simplified",
+    "selectors": [
+      "FUNCTN23"
+    ],
+    "instruction": "SY(BUIREL04)",
+    "displayCategory": "Other",
+    "priority": "Point Symbol"
+  },
+  {
+    "identity": {
+      "id": "1084",
+      "RCID": "31136",
+      "name": "BUISGL"
+    },
+    "type": "Point",
+    "table": "Simplified",
+    "selectors": [
+      "FUNCTN24"
+    ],
+    "instruction": "SY(BUIREL04)",
+    "displayCategory": "Other",
+    "priority": "Point Symbol"
+  },
+  {
+    "identity": {
+      "id": "1085",
+      "RCID": "31137",
+      "name": "BUISGL"
+    },
+    "type": "Point",
+    "table": "Simplified",
+    "selectors": [
+      "FUNCTN25"
+    ],
+    "instruction": "SY(BUIREL04)",
+    "displayCategory": "Other",
+    "priority": "Point Symbol"
+  },
+  {
+    "identity": {
+      "id": "1086",
+      "RCID": "31138",
+      "name": "BUISGL"
+    },
+    "type": "Point",
+    "table": "Simplified",
+    "selectors": [
+      "FUNCTN26"
+    ],
+    "instruction": "SY(BUIREL05)",
+    "displayCategory": "Other",
+    "priority": "Point Symbol"
+  },
+  {
+    "identity": {
+      "id": "1087",
+      "RCID": "31139",
+      "name": "BUISGL"
+    },
+    "type": "Point",
+    "table": "Simplified",
+    "selectors": [
+      "FUNCTN27"
+    ],
+    "instruction": "SY(BUIREL05)",
+    "displayCategory": "Other",
+    "priority": "Point Symbol"
+  },
+  {
+    "identity": {
+      "id": "1088",
+      "RCID": "31140",
+      "name": "BUISGL"
+    },
+    "type": "Point",
+    "table": "Simplified",
+    "selectors": [
+      "FUNCTN33"
+    ],
+    "instruction": "SY(POSGEN03)",
+    "displayCategory": "Other",
+    "priority": "Point Symbol"
+  },
+  {
+    "identity": {
+      "id": "1089",
+      "RCID": "31141",
+      "name": "BUISGL"
+    },
+    "type": "Point",
+    "table": "Simplified",
+    "selectors": [
+      "FUNCTN35"
+    ],
+    "instruction": "SY(TNKCON02)",
+    "displayCategory": "Other",
+    "priority": "Point Symbol"
+  },
+  {
+    "identity": {
+      "id": "1090",
+      "RCID": "31142",
+      "name": "BUISGL"
+    },
+    "type": "Point",
+    "table": "Simplified",
+    "selectors": [
+      "CONVIS1"
+    ],
+    "instruction": "SY(BUISGL11)",
+    "displayCategory": "Standard",
+    "priority": "Area Symbol"
+  },
+  {
+    "identity": {
+      "id": "1091",
+      "RCID": "31143",
+      "name": "BUISGL"
+    },
+    "type": "Point",
+    "table": "Simplified",
+    "selectors": [],
+    "instruction": "SY(BUISGL01)",
+    "displayCategory": "Other",
+    "priority": "Point Symbol"
+  },
+  {
+    "identity": {
+      "id": "1181",
+      "RCID": "31233",
+      "name": "MORFAC"
+    },
+    "type": "Point",
+    "table": "Simplified",
+    "selectors": [
+      "CATMOR1"
+    ],
+    "instruction": "SY(MORFAC03)",
+    "displayCategory": "Standard",
+    "priority": "Area Symbol"
+  },
+  {
+    "identity": {
+      "id": "1182",
+      "RCID": "31234",
+      "name": "MORFAC"
+    },
+    "type": "Point",
+    "table": "Simplified",
+    "selectors": [
+      "CATMOR2"
+    ],
+    "instruction": "SY(MORFAC04)",
+    "displayCategory": "Standard",
+    "priority": "Area Symbol"
+  },
+  {
+    "identity": {
+      "id": "1183",
+      "RCID": "31235",
+      "name": "MORFAC"
+    },
+    "type": "Point",
+    "table": "Simplified",
+    "selectors": [
+      "CATMOR3"
+    ],
+    "instruction": "SY(PILPNT02)",
+    "displayCategory": "Other",
+    "priority": "Area Symbol"
+  },
+  {
+    "identity": {
+      "id": "1184",
+      "RCID": "31236",
+      "name": "MORFAC"
+    },
+    "type": "Point",
+    "table": "Simplified",
+    "selectors": [
+      "CATMOR5"
+    ],
+    "instruction": "SY(PILPNT02)",
+    "displayCategory": "Standard",
+    "priority": "Area Symbol"
+  },
+  {
+    "identity": {
+      "id": "1185",
+      "RCID": "31237",
+      "name": "MORFAC"
+    },
+    "type": "Point",
+    "table": "Simplified",
+    "selectors": [
+      "CATMOR7"
+    ],
+    "instruction": "SY(BOYMOR11)",
+    "displayCategory": "Standard",
+    "priority": "Hazards"
+  },
+  {
+    "identity": {
+      "id": "1186",
+      "RCID": "31238",
+      "name": "MORFAC"
+    },
+    "type": "Point",
+    "table": "Simplified",
+    "selectors": [],
+    "instruction": "SY(MORFAC03)",
+    "displayCategory": "Standard",
+    "priority": "Area Symbol"
+  },
+  {
+    "identity": {
+      "id": "1998",
+      "RCID": "30269",
+      "name": "BUISGL"
+    },
+    "type": "Point",
+    "table": "Paper",
+    "selectors": [
+      "FUNCTN33",
+      "CONVIS1",
+      "OBJNAM"
+    ],
+    "instruction": "SY(POSGEN03);TX(OBJNAM,3,2,2,'15110',1,0,CHBLK,26)",
+    "displayCategory": "Standard",
+    "priority": "Area Symbol"
+  },
+  {
+    "identity": {
+      "id": "1999",
+      "RCID": "30270",
+      "name": "BUISGL"
+    },
+    "type": "Point",
+    "table": "Paper",
+    "selectors": [
+      "FUNCTN20",
+      "CONVIS1"
+    ],
+    "instruction": "SY(BUIREL13)",
+    "displayCategory": "Standard",
+    "priority": "Area Symbol"
+  },
+  {
+    "identity": {
+      "id": "2000",
+      "RCID": "30271",
+      "name": "BUISGL"
+    },
+    "type": "Point",
+    "table": "Paper",
+    "selectors": [
+      "FUNCTN21",
+      "CONVIS1"
+    ],
+    "instruction": "SY(BUIREL13)",
+    "displayCategory": "Standard",
+    "priority": "Area Symbol"
+  },
+  {
+    "identity": {
+      "id": "2001",
+      "RCID": "30272",
+      "name": "BUISGL"
+    },
+    "type": "Point",
+    "table": "Paper",
+    "selectors": [
+      "FUNCTN22",
+      "CONVIS1"
+    ],
+    "instruction": "SY(BUIREL14)",
+    "displayCategory": "Standard",
+    "priority": "Area Symbol"
+  },
+  {
+    "identity": {
+      "id": "2002",
+      "RCID": "30273",
+      "name": "BUISGL"
+    },
+    "type": "Point",
+    "table": "Paper",
+    "selectors": [
+      "FUNCTN23",
+      "CONVIS1"
+    ],
+    "instruction": "SY(BUIREL14)",
+    "displayCategory": "Standard",
+    "priority": "Area Symbol"
+  },
+  {
+    "identity": {
+      "id": "2003",
+      "RCID": "30274",
+      "name": "BUISGL"
+    },
+    "type": "Point",
+    "table": "Paper",
+    "selectors": [
+      "FUNCTN24",
+      "CONVIS1"
+    ],
+    "instruction": "SY(BUIREL14)",
+    "displayCategory": "Standard",
+    "priority": "Area Symbol"
+  },
+  {
+    "identity": {
+      "id": "2004",
+      "RCID": "30275",
+      "name": "BUISGL"
+    },
+    "type": "Point",
+    "table": "Paper",
+    "selectors": [
+      "FUNCTN25",
+      "CONVIS1"
+    ],
+    "instruction": "SY(BUIREL14)",
+    "displayCategory": "Standard",
+    "priority": "Area Symbol"
+  },
+  {
+    "identity": {
+      "id": "2005",
+      "RCID": "30276",
+      "name": "BUISGL"
+    },
+    "type": "Point",
+    "table": "Paper",
+    "selectors": [
+      "FUNCTN26",
+      "CONVIS1"
+    ],
+    "instruction": "SY(BUIREL15)",
+    "displayCategory": "Standard",
+    "priority": "Area Symbol"
+  },
+  {
+    "identity": {
+      "id": "2006",
+      "RCID": "30277",
+      "name": "BUISGL"
+    },
+    "type": "Point",
+    "table": "Paper",
+    "selectors": [
+      "FUNCTN27",
+      "CONVIS1"
+    ],
+    "instruction": "SY(BUIREL15)",
+    "displayCategory": "Standard",
+    "priority": "Area Symbol"
+  },
+  {
+    "identity": {
+      "id": "2007",
+      "RCID": "30278",
+      "name": "BUISGL"
+    },
+    "type": "Point",
+    "table": "Paper",
+    "selectors": [
+      "FUNCTN33",
+      "CONVIS1"
+    ],
+    "instruction": "SY(POSGEN03)",
+    "displayCategory": "Standard",
+    "priority": "Area Symbol"
+  },
+  {
+    "identity": {
+      "id": "2008",
+      "RCID": "30279",
+      "name": "BUISGL"
+    },
+    "type": "Point",
+    "table": "Paper",
+    "selectors": [
+      "FUNCTN35",
+      "CONVIS1"
+    ],
+    "instruction": "SY(TNKCON12)",
+    "displayCategory": "Standard",
+    "priority": "Area Symbol"
+  },
+  {
+    "identity": {
+      "id": "2009",
+      "RCID": "30280",
+      "name": "BUISGL"
+    },
+    "type": "Point",
+    "table": "Paper",
+    "selectors": [
+      "FUNCTN33",
+      "OBJNAM"
+    ],
+    "instruction": "SY(POSGEN03);TX(OBJNAM,3,2,2,'15110',1,0,CHBLK,26)",
+    "displayCategory": "Other",
+    "priority": "Point Symbol"
+  },
+  {
+    "identity": {
+      "id": "2010",
+      "RCID": "30281",
+      "name": "BUISGL"
+    },
+    "type": "Point",
+    "table": "Paper",
+    "selectors": [
+      "FUNCTN20"
+    ],
+    "instruction": "SY(BUIREL01)",
+    "displayCategory": "Other",
+    "priority": "Point Symbol"
+  },
+  {
+    "identity": {
+      "id": "2011",
+      "RCID": "30282",
+      "name": "BUISGL"
+    },
+    "type": "Point",
+    "table": "Paper",
+    "selectors": [
+      "FUNCTN21"
+    ],
+    "instruction": "SY(BUIREL01)",
+    "displayCategory": "Other",
+    "priority": "Point Symbol"
+  },
+  {
+    "identity": {
+      "id": "2012",
+      "RCID": "30283",
+      "name": "BUISGL"
+    },
+    "type": "Point",
+    "table": "Paper",
+    "selectors": [
+      "FUNCTN22"
+    ],
+    "instruction": "SY(BUIREL04)",
+    "displayCategory": "Other",
+    "priority": "Point Symbol"
+  },
+  {
+    "identity": {
+      "id": "2013",
+      "RCID": "30284",
+      "name": "BUISGL"
+    },
+    "type": "Point",
+    "table": "Paper",
+    "selectors": [
+      "FUNCTN23"
+    ],
+    "instruction": "SY(BUIREL04)",
+    "displayCategory": "Other",
+    "priority": "Point Symbol"
+  },
+  {
+    "identity": {
+      "id": "2014",
+      "RCID": "30285",
+      "name": "BUISGL"
+    },
+    "type": "Point",
+    "table": "Paper",
+    "selectors": [
+      "FUNCTN24"
+    ],
+    "instruction": "SY(BUIREL04)",
+    "displayCategory": "Other",
+    "priority": "Point Symbol"
+  },
+  {
+    "identity": {
+      "id": "2015",
+      "RCID": "30286",
+      "name": "BUISGL"
+    },
+    "type": "Point",
+    "table": "Paper",
+    "selectors": [
+      "FUNCTN25"
+    ],
+    "instruction": "SY(BUIREL04)",
+    "displayCategory": "Other",
+    "priority": "Point Symbol"
+  },
+  {
+    "identity": {
+      "id": "2016",
+      "RCID": "30287",
+      "name": "BUISGL"
+    },
+    "type": "Point",
+    "table": "Paper",
+    "selectors": [
+      "FUNCTN26"
+    ],
+    "instruction": "SY(BUIREL05)",
+    "displayCategory": "Other",
+    "priority": "Point Symbol"
+  },
+  {
+    "identity": {
+      "id": "2017",
+      "RCID": "30288",
+      "name": "BUISGL"
+    },
+    "type": "Point",
+    "table": "Paper",
+    "selectors": [
+      "FUNCTN27"
+    ],
+    "instruction": "SY(BUIREL05)",
+    "displayCategory": "Other",
+    "priority": "Point Symbol"
+  },
+  {
+    "identity": {
+      "id": "2018",
+      "RCID": "30289",
+      "name": "BUISGL"
+    },
+    "type": "Point",
+    "table": "Paper",
+    "selectors": [
+      "FUNCTN33"
+    ],
+    "instruction": "SY(POSGEN03)",
+    "displayCategory": "Other",
+    "priority": "Point Symbol"
+  },
+  {
+    "identity": {
+      "id": "2019",
+      "RCID": "30290",
+      "name": "BUISGL"
+    },
+    "type": "Point",
+    "table": "Paper",
+    "selectors": [
+      "FUNCTN35"
+    ],
+    "instruction": "SY(TNKCON02)",
+    "displayCategory": "Other",
+    "priority": "Point Symbol"
+  },
+  {
+    "identity": {
+      "id": "2020",
+      "RCID": "30291",
+      "name": "BUISGL"
+    },
+    "type": "Point",
+    "table": "Paper",
+    "selectors": [
+      "CONVIS1"
+    ],
+    "instruction": "SY(BUISGL11)",
+    "displayCategory": "Standard",
+    "priority": "Area Symbol"
+  },
+  {
+    "identity": {
+      "id": "2021",
+      "RCID": "30292",
+      "name": "BUISGL"
+    },
+    "type": "Point",
+    "table": "Paper",
+    "selectors": [],
+    "instruction": "SY(BUISGL01)",
+    "displayCategory": "Other",
+    "priority": "Point Symbol"
+  },
+  {
+    "identity": {
+      "id": "2297",
+      "RCID": "30454",
+      "name": "MORFAC"
+    },
+    "type": "Point",
+    "table": "Paper",
+    "selectors": [
+      "CATMOR7",
+      "BOYSHP3"
+    ],
+    "instruction": "SY(BOYMOR01)",
+    "displayCategory": "Standard",
+    "priority": "Hazards"
+  },
+  {
+    "identity": {
+      "id": "2298",
+      "RCID": "30455",
+      "name": "MORFAC"
+    },
+    "type": "Point",
+    "table": "Paper",
+    "selectors": [
+      "CATMOR7",
+      "BOYSHP6"
+    ],
+    "instruction": "SY(BOYMOR03)",
+    "displayCategory": "Standard",
+    "priority": "Hazards"
+  },
+  {
+    "identity": {
+      "id": "2299",
+      "RCID": "30456",
+      "name": "MORFAC"
+    },
+    "type": "Point",
+    "table": "Paper",
+    "selectors": [
+      "CATMOR1"
+    ],
+    "instruction": "SY(MORFAC03)",
+    "displayCategory": "Standard",
+    "priority": "Area Symbol"
+  },
+  {
+    "identity": {
+      "id": "2300",
+      "RCID": "30457",
+      "name": "MORFAC"
+    },
+    "type": "Point",
+    "table": "Paper",
+    "selectors": [
+      "CATMOR2"
+    ],
+    "instruction": "SY(MORFAC04)",
+    "displayCategory": "Standard",
+    "priority": "Area Symbol"
+  },
+  {
+    "identity": {
+      "id": "2301",
+      "RCID": "30458",
+      "name": "MORFAC"
+    },
+    "type": "Point",
+    "table": "Paper",
+    "selectors": [
+      "CATMOR3"
+    ],
+    "instruction": "SY(PILPNT02)",
+    "displayCategory": "Other",
+    "priority": "Area Symbol"
+  },
+  {
+    "identity": {
+      "id": "2302",
+      "RCID": "30459",
+      "name": "MORFAC"
+    },
+    "type": "Point",
+    "table": "Paper",
+    "selectors": [
+      "CATMOR5"
+    ],
+    "instruction": "SY(PILPNT02)",
+    "displayCategory": "Standard",
+    "priority": "Area Symbol"
+  },
+  {
+    "identity": {
+      "id": "2303",
+      "RCID": "30460",
+      "name": "MORFAC"
+    },
+    "type": "Point",
+    "table": "Paper",
+    "selectors": [
+      "CATMOR7"
+    ],
+    "instruction": "SY(BOYMOR11)",
+    "displayCategory": "Standard",
+    "priority": "Hazards"
+  },
+  {
+    "identity": {
+      "id": "2304",
+      "RCID": "30461",
+      "name": "MORFAC"
+    },
+    "type": "Point",
+    "table": "Paper",
+    "selectors": [],
+    "instruction": "SY(MORFAC03)",
+    "displayCategory": "Standard",
+    "priority": "Area Symbol"
+  }
+]

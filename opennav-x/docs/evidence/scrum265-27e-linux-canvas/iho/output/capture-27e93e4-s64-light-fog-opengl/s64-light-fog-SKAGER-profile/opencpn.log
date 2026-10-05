@@ -1,0 +1,211 @@
+22:46:02.201 MESSAGE ocpn_app.cpp:1273 
+
+________
+
+22:46:02.201    INFO logger.cpp:131 ------- OpenCPN version 5.12.4 restarted at 2026-10-03 -------
+
+22:46:02.201    INFO logger.cpp:131 Using loglevel INFO
+22:46:02.201 MESSAGE ocpn_app.cpp:1296 wxWidgets version: wxWidgets 3.2.11 Linux 64 bit wxGTK
+22:46:02.212 MESSAGE ocpn_app.cpp:1301 OS Version reports as:  7.2
+22:46:02.212 MESSAGE ocpn_app.cpp:1303 MemoryStatus:  mem_total: 7807 mb,  mem_initial: 831 mb
+22:46:02.212 MESSAGE ocpn_app.cpp:1315 OCPN_OSDetail:  x86_64 ; Omarchy ; 4.0.4 ; omarchy ; arch
+22:46:02.212 MESSAGE ocpn_app.cpp:1319 SData_Locn is /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/
+22:46:02.212 MESSAGE ocpn_app.cpp:1337 PrivateDataDir is /tmp/skager-capture-ytucm6s8/s64-light-fog-SKAGER
+22:46:02.214 MESSAGE ocpn_app.cpp:1403 Using existing Config_File: /tmp/skager-capture-ytucm6s8/s64-light-fog-SKAGER/opencpn.conf
+22:46:02.214 MESSAGE navutil.cpp:1130 winPluginDir, read from ini file: 
+22:46:02.214 MESSAGE navutil.cpp:1177 Setting Viewpoint Lat/Lon -32.376, 61.0307
+22:46:02.214 MESSAGE navutil.cpp:3051 Switch InlandEcdis mode Off
+22:46:02.214 MESSAGE ConfigMgr.cpp:526 Creating new Configs catalog: /tmp/skager-capture-ytucm6s8/s64-light-fog-SKAGER/Configs/configs.xml
+22:46:02.214 MESSAGE ConfigMgr.cpp:547 Loading Configs catalog: /tmp/skager-capture-ytucm6s8/s64-light-fog-SKAGER/Configs/configs.xml
+22:46:02.251 MESSAGE OpenCPNIntegration.cpp:375 SKAGER startup: xnav
+22:46:02.252 MESSAGE styles.cpp:841 Styles loading from /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/styles.xml
+22:46:02.255 MESSAGE styles.cpp:818 No styles found at: /home/standard/
+22:46:02.255 MESSAGE styles.cpp:818 No styles found at: /home/standard/.opencpn/
+22:46:02.266 MESSAGE styles.cpp:775 Using SVG Icons
+22:46:02.266 MESSAGE ocpn_app.cpp:1467 Detected display size (horizontal): 338 mm
+22:46:02.266 MESSAGE OCPNPlatform.cpp:1034 Getting DefaultSystemLocale...
+22:46:02.268 MESSAGE ocpn_app.cpp:1507 System default Language:  en_US
+22:46:02.268 MESSAGE ocpn_app.cpp:1510 Config file language:  
+22:46:02.268 MESSAGE ocpn_app.cpp:1516 Config file language empty, using system default:  en_US
+22:46:02.268 MESSAGE ocpn_app.cpp:1522 Adjusted App language:  en_US
+22:46:02.268 MESSAGE OCPNPlatform.cpp:1115 ChangeLocale: Language load for:  en_US
+22:46:02.278 MESSAGE OCPNPlatform.cpp:1168 ChangeLocale: Locale Init OK for:  en_US
+22:46:02.278 MESSAGE OCPNPlatform.cpp:1192 Loading catalog for opencpn core.
+22:46:02.282 MESSAGE OCPNPlatform.cpp:1034 Getting DefaultSystemLocale...
+22:46:02.282 MESSAGE ocpn_app.cpp:1529 Opencpn language set to:  en_US
+22:46:02.283 MESSAGE ocpn_app.cpp:1767 Creating MyFrame...size(896, 560)  position(0, 0)
+22:46:02.309 WARNING navmsg_filter.cpp:202 Bad system filter path: /tmp/skager-capture-ytucm6s8/s64-light-fog-SKAGER/filters
+22:46:02.314 MESSAGE ocpn_frame.cpp:832  **** Connect stuff
+22:46:02.315 MESSAGE OCPNPlatform.cpp:923 Starting OpenGL test...
+22:46:02.315 MESSAGE OCPNPlatform.cpp:733 Starting OpenGL test utility: "/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/bin/opencpn-glutil" opengl-info "/tmp/skager-capture-ytucm6s8/s64-light-fog-SKAGER/gl_caps.json"
+22:46:02.593 MESSAGE OCPNPlatform.cpp:930 OpenGL test complete.
+22:46:02.593 MESSAGE OCPNPlatform.cpp:952 OpenGL determined CAPABLE.
+22:46:02.600 MESSAGE chcanv.cpp:1030 Creating glChartCanvas
+22:46:02.786 MESSAGE chcanv.cpp:2444 Metrics:  m_display_size_mm: 338     g_Platform->getDisplaySize():  1280:800   
+22:46:02.786 MESSAGE chcanv.cpp:2450 monitor size: 1280 800
+22:46:02.786 MESSAGE TCDataSource.cpp:50 Loading Tide/Current data source: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/tcdata/harmonics-dwf-20210110-free.tcd
+22:46:02.870 MESSAGE TCDataSource.cpp:50 Loading Tide/Current data source: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/tcdata/HARMONICS_NO_US.IDX
+22:46:02.918 MESSAGE glChartCanvas.cpp:1089 OpenGL-> Renderer String: llvmpipe (LLVM 22.1.8, 256 bits)
+22:46:02.918 MESSAGE glChartCanvas.cpp:1098 OpenGL-> Version reported:  4.6 (Compatibility Profile) Mesa 26.2.2-arch1.1
+22:46:02.918 MESSAGE glChartCanvas.cpp:1106 OpenGL-> GLSL Version reported:  4.60
+22:46:02.922 MESSAGE glChartCanvas.cpp:1120 GLEW init success!n
+22:46:02.924 MESSAGE glChartCanvas.cpp:1187 OpenGL-> Texture rectangle format: de1
+22:46:02.924 MESSAGE glChartCanvas.cpp:1202 OpenGL-> Using Vertexbuffer Objects
+22:46:02.928 MESSAGE glChartCanvas.cpp:1060 OpenGL-> Framebuffer OK, size = 894
+22:46:02.928 MESSAGE glChartCanvas.cpp:1270 OpenGL-> Using Framebuffer Objects
+22:46:02.928 MESSAGE glChartCanvas.cpp:1273 OpenGL-> Using FBO Stencil buffer
+22:46:02.928 MESSAGE glChartCanvas.cpp:1280 OpenGL-> Using Stencil buffer clipping
+22:46:02.928 MESSAGE glChartCanvas.cpp:1285 OpenGL-> Using Scissor Clipping
+22:46:02.928 MESSAGE glChartCanvas.cpp:1426 OpenGL-> Not Using compression
+22:46:02.928 MESSAGE glChartCanvas.cpp:1296 OpenGL-> Minimum cartographic line width:  1.0
+22:46:02.928 MESSAGE glChartCanvas.cpp:1299 OpenGL-> Minimum symbol line width:  1.0
+22:46:03.387 MESSAGE glChartCanvas.cpp:606 BuildFBO 3
+22:46:03.391 MESSAGE glChartCanvas.cpp:1060 OpenGL-> Framebuffer OK, size = 894
+22:46:03.407 MESSAGE chartdb.cpp:219 ChartDB Cache policy:  Max open chart limit is 20.
+22:46:03.407 MESSAGE ocpn_app.cpp:1926 GPS Watchdog Timeout is: 10 sec.
+22:46:03.408 MESSAGE ocpn_app.cpp:2020 OpenCPN Initialized in 1532 ms.
+22:46:03.911 MESSAGE glChartCanvas.cpp:606 BuildFBO 3
+22:46:03.913 MESSAGE glChartCanvas.cpp:1060 OpenGL-> Framebuffer OK, size = 894
+22:46:03.952 MESSAGE glChartCanvas.cpp:606 BuildFBO 3
+22:46:03.955 MESSAGE glChartCanvas.cpp:1060 OpenGL-> Framebuffer OK, size = 894
+22:46:04.015 MESSAGE glChartCanvas.cpp:606 BuildFBO 3
+22:46:04.016 MESSAGE glChartCanvas.cpp:1060 OpenGL-> Framebuffer OK, size = 670
+22:46:04.029 MESSAGE ocpn_frame.cpp:4755 OnInitTimer...0
+22:46:04.029 MESSAGE chartdb.cpp:219 ChartDB Cache policy:  Max open chart limit is 20.
+22:46:04.034 MESSAGE chartdbs.cpp:1805 check_cm93 opened dir OK:  /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/scrum265-27e93e4/iho/fixture
+22:46:04.063 MESSAGE glChartCanvas.cpp:606 BuildFBO 3
+22:46:04.063 MESSAGE glChartCanvas.cpp:1060 OpenGL-> Framebuffer OK, size = 670
+22:46:04.064 MESSAGE glChartCanvas.cpp:606 BuildFBO 3
+22:46:04.064 MESSAGE glChartCanvas.cpp:1060 OpenGL-> Framebuffer OK, size = 670
+22:46:04.064 MESSAGE glChartCanvas.cpp:606 BuildFBO 3
+22:46:04.066 MESSAGE glChartCanvas.cpp:1060 OpenGL-> Framebuffer OK, size = 1054
+22:46:04.066 MESSAGE glChartCanvas.cpp:606 BuildFBO 3
+22:46:04.068 MESSAGE glChartCanvas.cpp:1060 OpenGL-> Framebuffer OK, size = 1054
+22:46:04.135 MESSAGE glChartCanvas.cpp:606 BuildFBO 3
+22:46:04.138 MESSAGE glChartCanvas.cpp:1060 OpenGL-> Framebuffer OK, size = 1054
+22:46:04.172 MESSAGE glChartCanvas.cpp:606 BuildFBO 3
+22:46:04.173 MESSAGE glChartCanvas.cpp:1060 OpenGL-> Framebuffer OK, size = 1054
+22:46:04.204 MESSAGE glChartCanvas.cpp:606 BuildFBO 3
+22:46:04.205 MESSAGE glChartCanvas.cpp:1060 OpenGL-> Framebuffer OK, size = 1054
+22:46:04.280 MESSAGE glChartCanvas.cpp:606 BuildFBO 3
+22:46:04.280 MESSAGE glChartCanvas.cpp:1060 OpenGL-> Framebuffer OK, size = 1054
+22:46:04.380 MESSAGE glChartCanvas.cpp:606 BuildFBO 3
+22:46:04.381 MESSAGE glChartCanvas.cpp:1060 OpenGL-> Framebuffer OK, size = 1014
+22:46:04.429 MESSAGE chartdbs.cpp:1980 Searching directory: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/scrum265-27e93e4/iho/fixture for *.kap
+22:46:04.429 MESSAGE chartdbs.cpp:1805 check_cm93 opened dir OK:  /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/scrum265-27e93e4/iho/fixture
+22:46:04.429 MESSAGE chartdbs.cpp:1980 Searching directory: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/scrum265-27e93e4/iho/fixture for *.geo
+22:46:04.429 MESSAGE chartdbs.cpp:1805 check_cm93 opened dir OK:  /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/scrum265-27e93e4/iho/fixture
+22:46:04.429 MESSAGE chartdbs.cpp:1980 Searching directory: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/scrum265-27e93e4/iho/fixture for *.000
+22:46:04.429 MESSAGE chartdbs.cpp:1805 check_cm93 opened dir OK:  /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/scrum265-27e93e4/iho/fixture
+22:46:04.430 MESSAGE chartdbs.cpp:2535 Loading chart data for /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/scrum265-27e93e4/iho/fixture/GB4X0000.000
+22:46:04.469 MESSAGE chartsymbols.cpp:699 ChartSymbols loaded from /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/opennav/chart-style/v1/chartsymbols.xml
+22:46:04.489 MESSAGE ChartPresentation.cpp:175 SKAGER chart presentation: verified SKAGER resources
+22:46:04.489 MESSAGE ocpn_frame.cpp:8174 Using s57data in /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/s57data
+22:46:04.532 MESSAGE chartdbs.cpp:2229    Adding chart file: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/scrum265-27e93e4/iho/fixture/GB4X0000.000
+22:46:04.532 MESSAGE chartdbs.cpp:1980 Searching directory: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/scrum265-27e93e4/iho/fixture for *.s57
+22:46:04.532 MESSAGE chartdbs.cpp:1805 check_cm93 opened dir OK:  /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/scrum265-27e93e4/iho/fixture
+22:46:04.532 MESSAGE chartdbs.cpp:1980 Searching directory: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/scrum265-27e93e4/iho/fixture for 00300000.a
+22:46:04.532 MESSAGE chartdbs.cpp:1805 check_cm93 opened dir OK:  /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/scrum265-27e93e4/iho/fixture
+22:46:04.532 MESSAGE chartdbs.cpp:1980 Searching directory: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/scrum265-27e93e4/iho/fixture for *.mbtiles
+22:46:04.532 MESSAGE chartdbs.cpp:1805 check_cm93 opened dir OK:  /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/scrum265-27e93e4/iho/fixture
+22:46:04.533 MESSAGE chartdb.cpp:1169 Creating new chart
+22:46:04.533 MESSAGE chartdb.cpp:1283 Initializing Chart /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/scrum265-27e93e4/iho/fixture/GB4X0000.000
+22:46:04.533 MESSAGE s57chart.cpp:2713 S57chart::Checking SENC file: /tmp/skager-capture-ytucm6s8/s64-light-fog-SKAGER/SENC/2EEBF87CE8B1_GB4X0000.S57
+22:46:04.533 MESSAGE s57chart.cpp:2816     Rebuilding SENC due to missing SENC file.
+22:46:05.018 MESSAGE waypointman_gui.cpp:83 DPMM: 3.78698   ScaleFactorExp: 1
+22:46:05.018 MESSAGE waypointman_gui.cpp:90 Looking for UserIcons at /tmp/skager-capture-ytucm6s8/s64-light-fog-SKAGER/UserIcons/
+22:46:05.198 MESSAGE ocpn_frame.cpp:4755 OnInitTimer...1
+22:46:05.198 MESSAGE comm_drv_factory.cpp:54 MakeCommDriver: TCP:127.0.0.1:45867
+22:46:05.198 MESSAGE comm_drv_n0183_net.cpp:259 Opening TCP connection to 127.0.0.1:45867
+22:46:06.004 MESSAGE ocpn_frame.cpp:4755 OnInitTimer...2
+22:46:06.004 MESSAGE plugin_loader.cpp:474 PluginLoader: loading plugins from /home/standard/.local/lib/opencpn;/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/lib/opencpn
+22:46:06.004 MESSAGE plugin_loader.cpp:295 Using LD_LIBRARY_PATH: /home/standard/.local/lib/opencpn:/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/lib/opencpn:/home/standard/Projects/X-nav/.local/sysroot/usr/lib
+22:46:06.004 MESSAGE plugin_loader.cpp:327 Using PATH: /home/standard/.local/bin:/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/bin:/home/standard/Projects/X-nav/.local/sysroot/usr/bin:/home/standard/.codex/tmp/arg0/codex-arg0iyLsZ3:/home/standard/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/home/standard/.local/share/mise/installs/codex/latest/bin:/home/standard/.local/share/mise/installs/gh/latest/gh_2.101.0_linux_amd64/bin:/home/standard/.local/share/mise/installs/node/26.8.1/bin:/home/standard/.local/share/mise/shims:/usr/share/omarchy/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/home/standard/.local/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl:/home/standard/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/usr/lib/chatgpt/resources
+22:46:06.004 MESSAGE plugin_loader.cpp:479 Loading plugins from dir: /home/standard/.local/lib/opencpn
+22:46:06.004 MESSAGE plugin_loader.cpp:724 PluginLoader searching for PlugIns in location /home/standard/.local/lib/opencpn
+22:46:06.004 MESSAGE plugin_loader.cpp:738    Directory /home/standard/.local/lib/opencpn does not exist.
+22:46:06.004 MESSAGE plugin_loader.cpp:479 Loading plugins from dir: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/lib/opencpn
+22:46:06.004 MESSAGE plugin_loader.cpp:724 PluginLoader searching for PlugIns in location /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/lib/opencpn
+22:46:06.004 MESSAGE plugin_loader.cpp:762 Found 4 candidates
+22:46:06.004 MESSAGE plugin_loader.cpp:500 Checking plugin candidate: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/lib/opencpn/libchartdldr_pi.so
+22:46:06.004 MESSAGE plugin_loader.cpp:587 Checking plugin compatibility: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/lib/opencpn/libchartdldr_pi.so
+22:46:06.007 MESSAGE plugin_loader.cpp:1487 Plugin is compatible: true
+22:46:06.007 MESSAGE plugin_loader.cpp:1503 PluginLoader: Loading PlugIn: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/lib/opencpn/libchartdldr_pi.so
+22:46:06.040 MESSAGE plugin_loader.cpp:500 Checking plugin candidate: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/lib/opencpn/libdashboard_pi.so
+22:46:06.040 MESSAGE plugin_loader.cpp:587 Checking plugin compatibility: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/lib/opencpn/libdashboard_pi.so
+22:46:06.042 MESSAGE plugin_loader.cpp:1487 Plugin is compatible: true
+22:46:06.042 MESSAGE plugin_loader.cpp:1503 PluginLoader: Loading PlugIn: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/lib/opencpn/libdashboard_pi.so
+22:46:06.065 MESSAGE plugin_loader.cpp:500 Checking plugin candidate: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/lib/opencpn/libgrib_pi.so
+22:46:06.065 MESSAGE plugin_loader.cpp:587 Checking plugin compatibility: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/lib/opencpn/libgrib_pi.so
+22:46:06.067 MESSAGE plugin_loader.cpp:1487 Plugin is compatible: true
+22:46:06.067 MESSAGE plugin_loader.cpp:1503 PluginLoader: Loading PlugIn: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/lib/opencpn/libgrib_pi.so
+22:46:06.088 MESSAGE plugin_loader.cpp:500 Checking plugin candidate: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/lib/opencpn/libwmm_pi.so
+22:46:06.089 MESSAGE plugin_loader.cpp:587 Checking plugin compatibility: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/lib/opencpn/libwmm_pi.so
+22:46:06.090 MESSAGE plugin_loader.cpp:1487 Plugin is compatible: true
+22:46:06.090 MESSAGE plugin_loader.cpp:1503 PluginLoader: Loading PlugIn: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/lib/opencpn/libwmm_pi.so
+22:46:06.138 MESSAGE glChartCanvas.cpp:606 BuildFBO 3
+22:46:06.141 MESSAGE glChartCanvas.cpp:1060 OpenGL-> Framebuffer OK, size = 1014
+22:46:06.207 MESSAGE OCPNPlatform.cpp:1115 ChangeLocale: Language load for:  en_US
+22:46:06.217 MESSAGE OCPNPlatform.cpp:1168 ChangeLocale: Locale Init OK for:  en_US
+22:46:06.217 MESSAGE OCPNPlatform.cpp:1192 Loading catalog for opencpn core.
+22:46:06.220 MESSAGE OCPNPlatform.cpp:1034 Getting DefaultSystemLocale...
+22:46:06.220 MESSAGE comm_drv_n0183_net.cpp:448 TCP NetworkDataStream connection established: TCP:127.0.0.1:45867
+22:46:06.287 MESSAGE ocpn_frame.cpp:4755 OnInitTimer...3
+22:46:06.388 MESSAGE ocpn_frame.cpp:4755 OnInitTimer...4
+22:46:06.536 MESSAGE OCPNPlatform.cpp:923 Starting OpenGL test...
+22:46:06.536 MESSAGE OCPNPlatform.cpp:952 OpenGL determined CAPABLE.
+22:46:06.539 MESSAGE OCPNPlatform.cpp:923 Starting OpenGL test...
+22:46:06.539 MESSAGE OCPNPlatform.cpp:952 OpenGL determined CAPABLE.
+22:46:06.985 MESSAGE options.cpp:5299 options: got device count: 3
+22:46:07.103 MESSAGE ocpn_frame.cpp:4755 OnInitTimer...5
+22:46:07.203 MESSAGE ocpn_frame.cpp:4755 OnInitTimer...6
+22:46:07.304 MESSAGE ocpn_frame.cpp:4755 OnInitTimer...7
+22:46:07.304 MESSAGE ocpn_frame.cpp:5039 OnInitTimer...Last Call
+22:46:07.304 MESSAGE ocpn_frame.cpp:5068 OnInitTimer...Finalize Canvases
+22:46:07.304 MESSAGE glChartCanvas.cpp:606 BuildFBO 3
+22:46:07.308 MESSAGE glChartCanvas.cpp:1060 OpenGL-> Framebuffer OK, size = 1014
+22:46:07.358 MESSAGE glChartCanvas.cpp:606 BuildFBO 3
+22:46:07.360 MESSAGE glChartCanvas.cpp:1060 OpenGL-> Framebuffer OK, size = 1014
+22:46:09.042 MESSAGE glChartCanvas.cpp:606 BuildFBO 3
+22:46:09.042 MESSAGE glChartCanvas.cpp:1060 OpenGL-> Framebuffer OK, size = 1014
+22:46:09.200 MESSAGE waypointman_gui.cpp:83 DPMM: 3.78698   ScaleFactorExp: 1
+22:46:09.200 MESSAGE waypointman_gui.cpp:90 Looking for UserIcons at /tmp/skager-capture-ytucm6s8/s64-light-fog-SKAGER/UserIcons/
+22:46:09.213 MESSAGE glChartCanvas.cpp:606 BuildFBO 3
+22:46:09.213 MESSAGE glChartCanvas.cpp:1060 OpenGL-> Framebuffer OK, size = 1012
+22:46:09.216 MESSAGE glChartCanvas.cpp:1060 OpenGL-> Framebuffer OK, size = 1014
+22:46:10.990 MESSAGE glChartCanvas.cpp:606 BuildFBO 3
+22:46:10.991 MESSAGE glChartCanvas.cpp:1060 OpenGL-> Framebuffer OK, size = 1014
+22:46:11.145 MESSAGE waypointman_gui.cpp:83 DPMM: 3.78698   ScaleFactorExp: 1
+22:46:11.145 MESSAGE waypointman_gui.cpp:90 Looking for UserIcons at /tmp/skager-capture-ytucm6s8/s64-light-fog-SKAGER/UserIcons/
+22:46:11.162 MESSAGE glChartCanvas.cpp:606 BuildFBO 3
+22:46:11.162 MESSAGE glChartCanvas.cpp:1060 OpenGL-> Framebuffer OK, size = 1012
+22:46:11.165 MESSAGE glChartCanvas.cpp:1060 OpenGL-> Framebuffer OK, size = 1014
+22:46:13.418 MESSAGE glChartCanvas.cpp:606 BuildFBO 3
+22:46:13.418 MESSAGE glChartCanvas.cpp:1060 OpenGL-> Framebuffer OK, size = 1014
+22:46:13.567 MESSAGE waypointman_gui.cpp:83 DPMM: 3.78698   ScaleFactorExp: 1
+22:46:13.567 MESSAGE waypointman_gui.cpp:90 Looking for UserIcons at /tmp/skager-capture-ytucm6s8/s64-light-fog-SKAGER/UserIcons/
+22:46:13.570 MESSAGE glChartCanvas.cpp:606 BuildFBO 3
+22:46:13.570 MESSAGE glChartCanvas.cpp:1060 OpenGL-> Framebuffer OK, size = 1012
+22:46:13.572 MESSAGE glChartCanvas.cpp:1060 OpenGL-> Framebuffer OK, size = 1014
+22:46:15.727 MESSAGE ocpn_app.cpp:2121 opencpn::MyApp starting exit.
+22:46:15.727 MESSAGE ocpn_app.cpp:2161 LOGBOOK:  2026-10-03 20:46:15 UTC OFF: Lat    0.00000 Lon    0.00000
+22:46:15.727 MESSAGE ocpn_app.cpp:2189 opencpn::MyApp exiting cleanly...
+
+22:46:15.729 MESSAGE ocpn_frame.cpp:5690 Got quitflag from SIGNAL
+22:46:15.792 MESSAGE OpenCPNIntegration.cpp:1037 SKAGER close preparation: preserving shared configuration
+22:46:15.792 MESSAGE RecoveryStore.cpp:83 SKAGER clean close; startup recovery cleared
+22:46:15.792 MESSAGE glChartCanvas.cpp:606 BuildFBO 3
+22:46:15.793 MESSAGE glChartCanvas.cpp:1060 OpenGL-> Framebuffer OK, size = 1014
+22:46:15.857 MESSAGE glChartCanvas.cpp:606 BuildFBO 3
+22:46:15.857 MESSAGE glChartCanvas.cpp:1060 OpenGL-> Framebuffer OK, size = 1014
+22:46:15.859 MESSAGE glChartCanvas.cpp:1060 OpenGL-> Framebuffer OK, size = 1278
+22:46:15.894 MESSAGE ocpn_frame.cpp:1831 opencpn::MyFrame exiting cleanly.
+22:46:15.909 MESSAGE chartdb.cpp:287 Chart cache PlugIn purge
+22:46:15.910 MESSAGE comm_drv_n0183_net.cpp:555 Closing NMEA NetworkDataStream 45867
+22:46:15.910 MESSAGE ocpn_frame.cpp:2000 gFrame destroyed.
+22:46:15.910 MESSAGE ocpn_app.cpp:2121 opencpn::MyApp starting exit.
+22:46:15.910 MESSAGE ocpn_app.cpp:2161 LOGBOOK:  2026-10-03 20:46:15 UTC OFF: Lat   47.60000 Lon -122.36000 COG   90.00000 SOG   3.00 kts
+22:46:15.910 MESSAGE TCDataSource.cpp:41 UnLoading Tide/Current data source: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/tcdata/harmonics-dwf-20210110-free.tcd
+22:46:15.918 MESSAGE TCDataSource.cpp:41 UnLoading Tide/Current data source: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/tcdata/HARMONICS_NO_US.IDX
+22:46:15.922 MESSAGE ocpn_app.cpp:2189 opencpn::MyApp exiting cleanly...
+

@@ -6,6 +6,7 @@
 #include <fstream>
 #include <iostream>
 #include <memory>
+#include <cstdint>
 #include <stdexcept>
 #include <wx/app.h>
 #include <wx/dcbuffer.h>
@@ -18,6 +19,9 @@
 #include <wx/sizer.h>
 #include <wx/timer.h>
 #include <wx/uiaction.h>
+#ifdef __WXMSW__
+#include <wx/msw/wrapwin.h>
+#endif
 #ifdef __WXGTK__
 #include <gtk/gtk.h>
 #endif
@@ -57,7 +61,17 @@ public:
               100,772,12,p.c.attention);
     });
     ui::SettingsDrawerActions actions;
-    actions.page=[this](ui::ProductPage p){++navigations_;last_page_=p;};
+    actions.page=[this](ui::ProductPage p){
+      ++navigations_;last_page_=p;
+#ifdef __WXMSW__
+      if(activation_repro_ && p==ui::ProductPage::EnergySettings) {
+        ActivationEvidence("battery-callback");
+        // Mirror Shell::ShowProduct: leave the cached drawer and use its owner.
+        panel_->Dismiss();
+        ::SetForegroundWindow(static_cast<HWND>(frame_->GetHandle()));
+      }
+#endif
+    };
     actions.advanced=[this]{++advanced_;};
     actions.plugins=[this]{++plugins_;};
     actions.fullscreen=[this]{++fullscreen_;};
@@ -95,7 +109,7 @@ public:
     frame_->Show();
     timer_.SetOwner(this);
     Bind(wxEVT_TIMER,&TestApp::Step,this);
-    timer_.Start(350);
+    timer_.StartOnce(350);
     return true;
   }
   int OnRun() override { wxApp::OnRun(); return failed_?1:0; }
@@ -148,7 +162,7 @@ private:
     wxCommandEvent event(wxEVT_BUTTON,b->GetId());event.SetEventObject(b);
     b->GetEventHandler()->ProcessEvent(event);
   }
-  void Capture(const char *name) {
+  void Capture(const char *name, bool canonical=true) {
     Check(frame_->GetClientSize()==wxSize(1280,800),"canonical native screen");
     const int width=display_.scale_percent==125?460:display_.scale_percent==150?480:432;
     Check(panel_->GetScreenRect()==wxRect(frame_->ClientToScreen({1080-width,80}),wxSize(width,674)),
@@ -169,11 +183,76 @@ private:
     memory.SelectObject(wxNullBitmap);
     Check(bitmap.SaveFile(output_+"/"+name+".png",wxBITMAP_TYPE_PNG),"write capture");
 #endif
-    names_.push_back(name);
+    if(canonical)names_.push_back(name);
   }
+#ifdef __WXMSW__
+  static void JsonText(std::ostream &out,const wxString &value) {
+    out<<'"';
+    for(unsigned char c:value.ToStdString(wxConvUTF8)) {
+      if(c=='"' || c=='\\')out<<'\\'<<c;
+      else if(c<32) {const char *hex="0123456789abcdef";out<<"\\u00"<<hex[c>>4]<<hex[c&15];}
+      else out<<c;
+    }
+    out<<'"';
+  }
+  static void NativeWindow(std::ostream &out,HWND window) {
+    wchar_t name[256]={},kind[128]={};
+    if(window) {::GetWindowTextW(window,name,256);::GetClassNameW(window,kind,128);}
+    out<<"{\"hwnd\":"<<reinterpret_cast<std::uintptr_t>(window)<<",\"class\":";
+    JsonText(out,kind);out<<",\"caption\":";JsonText(out,name);out<<'}';
+  }
+  static void Rect(std::ostream &out,const wxRect &r) {
+    out<<"{\"x\":"<<r.x<<",\"y\":"<<r.y<<",\"width\":"<<r.width<<",\"height\":"<<r.height<<'}';
+  }
+  void ActivationEvidence(const char *phase) {
+    auto *sensor=Find(panel_,"Sensors");auto *battery=Find(panel_,"Advanced battery model");
+    auto *body=ScrollBody();const auto scroll=body->GetViewStart();
+    const auto rect=sensor->GetScreenRect();
+    const POINT point{rect.x+rect.width/2,rect.y+rect.height/2};
+    const POINT cached{sensor_before_.x+sensor_before_.width/2,sensor_before_.y+sensor_before_.height/2};
+    int ux=0,uy=0;body->GetScrollPixelsPerUnit(&ux,&uy);
+    std::ofstream out((output_+"/activation/evidence.jsonl").ToStdString(),std::ios::app);
+    out<<"{\"phase\":\""<<phase<<"\",\"step\":"<<step_-1<<",\"scroll\":["<<scroll.x<<','<<scroll.y
+       <<"],\"pixels_per_unit\":["<<ux<<','<<uy<<"],\"focus\":";
+    NativeWindow(out,::GetFocus());out<<",\"foreground\":";NativeWindow(out,::GetForegroundWindow());
+    out<<",\"drawer\":";NativeWindow(out,static_cast<HWND>(panel_->GetHandle()));
+    out<<",\"sensor\":";NativeWindow(out,static_cast<HWND>(sensor->GetHandle()));
+    out<<",\"sensor_rect\":";Rect(out,rect);out<<",\"body_rect\":";Rect(out,body->GetScreenRect());
+    out<<",\"battery_rect\":";Rect(out,battery?battery->GetScreenRect():wxRect{});
+    out<<",\"current_sensor_hit\":";NativeWindow(out,::WindowFromPoint(point));
+    out<<",\"cached_sensor_rect\":";Rect(out,sensor_before_);
+    out<<",\"cached_sensor_hit\":";NativeWindow(out,::WindowFromPoint(cached));out<<"}\n";
+  }
+  void ActivateSurface(wxWindow *surface) {
+    const auto hwnd=static_cast<HWND>(surface->GetHandle());
+    ::SetForegroundWindow(hwnd);
+    // Single-shot Step cannot reenter while native activation events are pumped.
+    for(int i=0;i<60 && ::GetForegroundWindow()!=hwnd;++i) {
+      wxMilliSleep(50);wxTheApp->Yield(true);
+    }
+    Check(::GetForegroundWindow()==hwnd,"activation repro foreground is the requested surface");
+  }
+  void NativeClick(wxWindow *target) {
+    Check(target && target->IsShownOnScreen() && target->IsEnabled(),"activation repro target visible and enabled");
+    const auto rect=target->GetScreenRect();
+    Check(ScrollBody()->GetScreenRect().Contains(rect),"activation repro pointer target fully contained");
+    const POINT point{rect.x+rect.width/2,rect.y+rect.height/2};
+    const auto hwnd=static_cast<HWND>(target->GetHandle());
+    Check(::GetForegroundWindow()==static_cast<HWND>(panel_->GetHandle()),"activation repro drawer owns input");
+    Check(::WindowFromPoint(point)==hwnd && ::IsWindowEnabled(hwnd),"activation repro exact HWND before pointer move");
+    wxUIActionSimulator input;
+    Check(input.MouseMove(point.x,point.y),"activation repro real pointer move");
+    Check(::WindowFromPoint(point)==hwnd && ::IsWindowEnabled(hwnd),"activation repro exact HWND before mouse-down");
+    Check(input.MouseClick(),"activation repro real pointer click");
+  }
+#endif
   void Step(wxTimerEvent &) {
+    if(finished_)return;
+    const int current=step_++;
+    std::cout<<"Settings step "<<current<<" begin; captures="<<names_.size()
+             <<"; display saves="<<display_saves_<<std::endl;
     try {
-      switch(step_++) {
+      switch(current) {
       case 0: Feed(); break;
       case 1:
         {
@@ -353,21 +432,164 @@ private:
       case 13: Check(light_==ui::LightMode::Night,"night callback applied");Capture("display-night");Click("Toggle fullscreen");break;
       case 14: Check(fullscreen_==1,"fullscreen invokes one display callback");Click("Personalise instruments");break;
       case 15: Check(navigations_==2 && last_page_==ui::ProductPage::RailLayout,"rail configuration preserved");
+        display_.scale_percent=100;panel_->SetDisplayPreferences(display_);Feed();
         Click("System");break;
       case 16:
-        Check(Find(panel_,"Legacy mode") && !Find(panel_,"Legacy mode")->IsEnabled(),"unavailable restart action disabled");
+        {
+          auto *unavailable=new ui::XNavSettingsDrawer(*frame_,{});
+          unavailable->Select(ui::SettingsSection::System);
+          const auto *advanced=Find(unavailable,"Advanced / Legacy Settings");
+          Check(advanced && !advanced->IsEnabled(),"missing upstream settings callback disables direct action");
+          unavailable->Destroy();
+        }
         Check(!Find(panel_,"AUTO") && !Find(panel_,"STBY"),"preferences cannot execute physical controls");
-        Capture("system-night");Click("Diagnostics");break;
-      case 17: Check(diagnostics_==1,"diagnostics callback once");Click("Radar");break;
-      case 18: Capture("settings-radar-night");Click("Autopilot");break;
-      case 19: Capture("settings-autopilot-night");Click("Close");break;
-      case 20: Check(closed_==1 && !panel_->IsShown(),"close hides only preferences");Finish();break;
+        for(const auto *label:{"Installation & recovery","Updates","Backups","About & licenses","Run vessel setup"}) {
+          auto *unavailable=Find(panel_,label);
+          Check(unavailable && !unavailable->IsEnabled(),"unavailable System capability is disabled");
+          wxCommandEvent event(wxEVT_BUTTON,unavailable->GetId());event.SetEventObject(unavailable);
+          unavailable->GetEventHandler()->ProcessEvent(event);
+        }
+        wxTheApp->Yield(true);
+        Check(advanced_==1 && navigations_==2 && diagnostics_==0 && plugins_==0,
+              "unavailable System rows cannot delegate actions");
+        Capture("system-night");
+        ScrollBody()->Scroll(0,1000);wxTheApp->Yield(true);
+        Check(ScrollBody()->GetScreenRect().Contains(Find(panel_,"Advanced / Legacy Settings")->GetScreenRect()),
+              "direct Advanced action is reachable by scrolling");
+        Capture("system-bottom-night",false);
+        Click("Advanced / Legacy Settings");break;
+      case 17:
+        Check(advanced_==2 && navigations_==2,"Advanced settings delegates directly without opening XNav preferences");
+        Click("Interface & recovery");wxTheApp->Yield(true);
+        Check(navigations_==3 && last_page_==ui::ProductPage::System,"real interface recovery remains accessible");
+        Click("Help & guides");wxTheApp->Yield(true);
+        Check(panel_->Section()==ui::SettingsSection::Help,"limited Help row opens existing Help tab");
+        panel_->Select(ui::SettingsSection::System);wxTheApp->Yield(true);
+        for(const bool back:{false,true}) {
+          wxKeyEvent key(wxEVT_CHAR_HOOK);key.m_keyCode=back?WXK_LEFT:WXK_ESCAPE;key.m_altDown=back;
+          key.SetEventObject(panel_);panel_->ProcessWindowEvent(key);wxTheApp->Yield(true);
+          Check(!panel_->IsShown(),"System root respects Escape and Alt-Left dismissal");
+          panel_->Open(wxRect(frame_->ClientToScreen({80,68}),wxSize(1014,698)));wxTheApp->Yield(true);
+          Check(ScrollBody()->GetViewStart()==wxPoint(0,0),"System reopens at the root scroll position");
+        }
+        Click("Diagnostics");break;
+      case 18: Check(diagnostics_==1,"diagnostics callback once");Click("Radar");break;
+      case 19: Capture("settings-radar-night");Click("Autopilot");break;
+      case 20: Capture("settings-autopilot-night");Click("Close");break;
+      case 21:
+        Check(closed_==3 && !panel_->IsShown(),"close hides only preferences");
+        display_.scale_percent=100;
+        panel_->SetDisplayPreferences(display_);
+        panel_->Select(ui::SettingsSection::Vessel);
+        Feed();
+        break;
+      case 22:
+        {
+          // Reproduce the retained offset after reaching Advanced battery model.
+          // Scroll the real component body; no fixture-only product hooks.
+          auto *body=ScrollBody();
+          body->Scroll(0,body->GetVirtualSize().y);
+          Check(body->GetViewStart().y>0,"Vessel body overflows at canonical size");
+          Check(!body->GetScreenRect().Contains(Find(panel_,"Sensors")->GetScreenRect()),
+                "scrolled Sensors tab starts outside the body viewport");
+          const auto offset=body->GetViewStart();
+          light_=ui::LightMode::Dusk;Feed();
+          Check(body->GetViewStart()==offset,"live state and theme refresh preserve scroll");
+          panel_->Dismiss();
+          panel_->Open(wxRect(frame_->ClientToScreen({80,68}),wxSize(1014,698)));
+        }
+        break;
+      case 23:
+        {
+          auto *body=ScrollBody();
+          Check(body->GetViewStart()==wxPoint(0,0),"root Preferences reopening resets body scroll");
+          Check(panel_->Section()==ui::SettingsSection::Vessel,"reopening preserves selected section");
+          for(const auto *tab:{"Vessel","Navigation","Sensors","Autopilot","Radar","Display","System","Help"}) {
+            auto *b=Find(panel_,tab);
+            Check(b && b->IsShownOnScreen() && b->IsEnabled() &&
+                  body->GetScreenRect().Contains(b->GetScreenRect()),
+                  "reopened section fully visible and enabled in body viewport");
+          }
+          auto *sensor=Find(panel_,"Sensors");
+          const auto rect=sensor->GetScreenRect();
+          wxUIActionSimulator input;
+          Check(input.MouseMove(rect.x+rect.width/2,rect.y+rect.height/2) && input.MouseClick(),
+                "reopened Sensors section receives real pointer input");
+        }
+        break;
+      case 24:
+        Check(panel_->Section()==ui::SettingsSection::Sensors,"pointer reaches Sensors after root reopen");
+        Check(saves_==2 && display_saves_==2,"reopening does not save settings");
+#ifdef __WXMSW__
+        Check(wxFileName::Mkdir(output_+"/activation",wxS_DIR_DEFAULT,wxPATH_MKDIR_FULL),"create separate activation evidence directory");
+        activation_repro_=true;
+        panel_->Select(ui::SettingsSection::Vessel);Feed();
+        ActivateSurface(panel_);
+        break;
+      case 25:
+        ScrollBody()->Scroll(0,ScrollBody()->GetVirtualSize().y);
+        activation_navigations_=navigations_;
+        NativeClick(Find(panel_,"Advanced battery model"));
+        break;
+      case 26:
+        Check(navigations_==activation_navigations_+1 && last_page_==ui::ProductPage::EnergySettings,
+              "physical battery click reaches owner callback once");
+        Check(!panel_->IsShown(),"owner page callback dismisses cached Preferences");
+        Check(::GetForegroundWindow()==static_cast<HWND>(frame_->GetHandle()),"owner active before root Preferences reopen");
+        ActivationEvidence("owner-before-reopen");
+        panel_->Open(wxRect(frame_->ClientToScreen({80,68}),wxSize(1014,698)));
+        ActivationEvidence("reopened-before-owner-activation");
+        break;
+      case 27:
+        // Present/Raise may foreground the drawer on Windows. Exercise the
+        // actual owner-to-drawer transition explicitly instead of assuming
+        // that ShowWithoutActivating kept the owner in the foreground.
+        ActivateSurface(frame_);
+        ActivationEvidence("owner-after-reopen");
+        break;
+      case 28:
+        sensor_before_=Find(panel_,"Sensors")->GetScreenRect();
+        ActivationEvidence("before-activation");
+        Capture("activation/before-activation",false);
+        Check(ScrollBody()->GetViewStart()==wxPoint(0,0),"root reopen initially resets scroll before activation");
+        Check(::GetForegroundWindow()==static_cast<HWND>(frame_->GetHandle()),"explicit owner deactivation settled before pointer activation");
+        Check(::WindowFromPoint(POINT{sensor_before_.x+sensor_before_.width/2,sensor_before_.y+sensor_before_.height/2})==
+              static_cast<HWND>(Find(panel_,"Sensors")->GetHandle()),"Sensors initially passes exact native pointer hit");
+        ActivateSurface(panel_);
+        ActivationEvidence("after-activation-immediate");
+        break;
+      case 29:
+        ActivationEvidence("after-activation-settled");
+        Capture("activation/after-activation",false);
+        Check(ScrollBody()->GetViewStart()==wxPoint(0,0),"drawer activation must preserve root Preferences scroll reset");
+        Check(Find(panel_,"Sensors")->GetScreenRect()==sensor_before_,"Sensors must not move when reopened drawer activates");
+        NativeClick(Find(panel_,"Sensors"));
+        break;
+      case 30:
+        Check(panel_->Section()==ui::SettingsSection::Sensors,"physical Sensors click works after owner to drawer activation");
+        Check(saves_==2 && display_saves_==2,"activation transition does not save settings");
+        ActivationEvidence("sensors-selected");
+#endif
+        Finish();break;
       }
     } catch(const std::exception &e) {
       failed_=true;std::cerr<<e.what()<<std::endl;Finish();
     }
+    std::cout<<"Settings step "<<current<<" end; captures="<<names_.size()
+             <<"; display saves="<<display_saves_<<std::endl;
+    // Display popup checks yield to real native events. A repeating timer can
+    // enter the next scenario before this one submits Apply (wxMSW WM_TIMER).
+    // Rearm only after the entire current scenario, keeping the same cadence.
+    if(!finished_)timer_.StartOnce(350);
+  }
+  ui::XNavScroll *ScrollBody() {
+    for(auto *child:panel_->GetChildren())
+      if(auto *body=dynamic_cast<ui::XNavScroll *>(child))return body;
+    throw std::runtime_error("Preferences scroll body missing");
   }
   void Finish() {
+    if(finished_)return;
+    finished_=true;
     timer_.Stop();
     std::ofstream f((output_+"/result.json").ToStdString());
     f<<"{\"passed\":"<<(failed_?"false":"true")<<",\"checks\":"<<checks_<<",\"captures\":[";
@@ -387,7 +609,12 @@ private:
   ui::LightMode light_=ui::LightMode::Day;
   std::vector<std::string> names_;
   int step_=0,checks_=0,closed_=0;
-  bool failed_=false;
+  bool failed_=false,finished_=false;
+#ifdef __WXMSW__
+  bool activation_repro_=false;
+  int activation_navigations_=0;
+  wxRect sensor_before_;
+#endif
 };
 } // namespace
 wxIMPLEMENT_APP_NO_MAIN(TestApp);

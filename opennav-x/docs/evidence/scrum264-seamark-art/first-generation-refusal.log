@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "/home/standard/Projects/X-nav-worktrees/scrum264-symbol-family-audit/tools/generate-xnav-chart-style.py", line 224, in <module>
+    a=p.parse_args();m=generate(a.source,a.output)
+                       ~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "/home/standard/Projects/X-nav-worktrees/scrum264-symbol-family-audit/tools/generate-xnav-chart-style.py", line 164, in generate
+    xml=chart_seamark_art.relocate(xml)
+  File "/home/standard/Projects/X-nav-worktrees/scrum264-symbol-family-audit/tools/chart_seamark_art.py", line 105, in relocate
+    stock = source_node(tree,spec)
+  File "/home/standard/Projects/X-nav-worktrees/scrum264-symbol-family-audit/tools/chart_seamark_art.py", line 31, in source_node
+    assert node.findtext('prefer-bitmap') not in ('no', 'false')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

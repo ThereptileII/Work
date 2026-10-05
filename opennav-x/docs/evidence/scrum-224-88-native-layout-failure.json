@@ -1,0 +1,25 @@
+{
+  "commit": "88c141ba9fee5c28e12b5f4ac0f7e7550d1a8ca6",
+  "run": 37033702537,
+  "job": 110931302712,
+  "artifact": 11243187367,
+  "bytes": 24506235,
+  "sha256": "669fdfb18be092d6c353efc0fadd623934915518178d744ba1cf4e5c0fa62684",
+  "entries": 8798,
+  "result": "FAILED: obsolete chart-layout oracle omits required Layers control",
+  "compiler_passed": true,
+  "product_acceptance": false,
+  "boat_acceptance": false,
+  "tests": {
+    "tests": 138,
+    "failures": 0,
+    "disabled": 0,
+    "skipped": 0
+  },
+  "cause": "Same strict six-control oracle failure already reproduced on Linux and corrected in ffe. No new independent compile/crash cause observed.",
+  "screenshot": "scrum-224-88-native-layout-failure.png",
+  "limitations": [
+    "Full native post-layout, fixture-free product, installer, DPI, endurance and release qualification did not execute.",
+    "Curl reported1569/1569 exercised cases passing from2072 considered; this is dependency evidence, not qualified application package."
+  ]
+}

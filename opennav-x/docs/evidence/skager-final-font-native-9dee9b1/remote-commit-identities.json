@@ -1,0 +1,18 @@
+{
+  "aa95750b0abbd9ffa646407019b3393f2e7b5bce": {
+    "sha": "aa95750b0abbd9ffa646407019b3393f2e7b5bce",
+    "tree": "ffadb958481063b613d08a20d10bc6e37ce1a5b5",
+    "parents": [
+      "1c3e32d68b2e12892a62e6fe28d61cfaa2377a45"
+    ],
+    "message": "Complete prototype chart typeface, classified symbols and smaller SKAGER identity\n\nExact local source9dee9b148f4d6ebdd20bb4c49229fe19340df209; independently reconstructed4174-entry mapped treeffadb958481063b613d08a20d10bc6e37ce1a5b5. Includes audited native path repair and70-private-object baseline; final font change retains Standard/Legacy and designated label fallbacks."
+  },
+  "44b80a6902c5293913711a9238cb61f7af6b5030": {
+    "sha": "44b80a6902c5293913711a9238cb61f7af6b5030",
+    "tree": "ffadb958481063b613d08a20d10bc6e37ce1a5b5",
+    "parents": [
+      "aa95750b0abbd9ffa646407019b3393f2e7b5bce"
+    ],
+    "message": "[chart-units] Qualify final SKAGER chart and typeface source\n\nUnchanged Git tree ffadb958481063b613d08a20d10bc6e37ce1a5b5 and exact local application source 9dee9b148f4d6ebdd20bb4c49229fe19340df209. Select the bounded core chart compilation group; private compilation is already running against identical bytes at aa95750."
+  }
+}

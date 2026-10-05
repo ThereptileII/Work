@@ -1,0 +1,205 @@
+MSBuild version 17.14.60+43b635718 for .NET Framework
+Build started 10/3/2026 5:01:37 AM.
+
+     1>Project "D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\build\ALL_BUILD.vcxproj" on node 1 (default targets).
+     1>Project "D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\build\ALL_BUILD.vcxproj" (1) is building "D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\build\ZERO_CHECK.vcxproj" (2) on node 1 (default targets).
+     2>PrepareForBuild:
+         Creating directory "Win32\Release\ZERO_CHECK\".
+         Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+         Creating directory "D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\build\Release\".
+         Creating directory "Win32\Release\ZERO_CHECK\ZERO_CHECK.tlog\".
+       InitializeBuildStatus:
+         Creating "Win32\Release\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+         Touching "Win32\Release\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild".
+       CustomBuild:
+         1>Checking Build System
+       FinalizeBuildStatus:
+         Deleting file "Win32\Release\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild".
+         Touching "Win32\Release\ZERO_CHECK\ZERO_CHECK.tlog\ZERO_CHECK.lastbuildstate".
+     2>Done Building Project "D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\build\ZERO_CHECK.vcxproj" (default targets).
+     1>Project "D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\build\ALL_BUILD.vcxproj" (1) is building "D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\build\fixture_good.vcxproj" (3) on node 1 (default targets).
+     3>PrepareForBuild:
+         Creating directory "fixture_good.dir\Release\".
+         Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+         Creating directory "fixture_good.dir\Release\fixture_good.tlog\".
+       InitializeBuildStatus:
+         Creating "fixture_good.dir\Release\fixture_good.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+         Touching "fixture_good.dir\Release\fixture_good.tlog\unsuccessfulbuild".
+       CustomBuild:
+         Building Custom Rule D:/a/Work/Work/opennav-x/tests/windows_ocharts_loader/CMakeLists.txt
+       ClCompile:
+         C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\bin\HostX64\x86\CL.exe /c /I"D:\a\Work\Work\opennav-x\src" /nologo /W4 /WX- /diagnostics:column /O2 /Ob2 /Oy- /D _WINDLL /D _UNICODE /D UNICODE /D WIN32 /D _WINDOWS /D NDEBUG /D WXUSINGDLL /D UNICODE /D _UNICODE /D "CMAKE_INTDIR=\"Release\"" /D fixture_good_EXPORTS /EHsc /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /std:c++17 /Fo"fixture_good.dir\Release\\" /Fd"fixture_good.dir\Release\vc143.pdb" /external:W0 /Gd /TP /analyze- /errorReport:queue  /external:I "D:/a/Work/Work/opennav-x/build/windows-ocharts-loader-guards/sdk/wx/lib/vc14x_dll/mswu" /external:I "D:/a/Work/Work/opennav-x/build/windows-ocharts-loader-guards/sdk/wx/include" /utf-8 "D:\a\Work\Work\opennav-x\tests\windows_ocharts_loader\fixture.cpp"
+         fixture.cpp
+     1>Project "D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\build\ALL_BUILD.vcxproj" (1) is building "D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\build\fixture_no_create.vcxproj" (4) on node 1 (default targets).
+     4>PrepareForBuild:
+         Creating directory "fixture_no_create.dir\Release\".
+         Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+         Creating directory "fixture_no_create.dir\Release\fixture_.D3241B44.tlog\".
+       InitializeBuildStatus:
+         Creating "fixture_no_create.dir\Release\fixture_.D3241B44.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+         Touching "fixture_no_create.dir\Release\fixture_.D3241B44.tlog\unsuccessfulbuild".
+       CustomBuild:
+         Building Custom Rule D:/a/Work/Work/opennav-x/tests/windows_ocharts_loader/CMakeLists.txt
+       ClCompile:
+         C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\bin\HostX64\x86\CL.exe /c /I"D:\a\Work\Work\opennav-x\src" /nologo /W4 /WX- /diagnostics:column /O2 /Ob2 /Oy- /D _WINDLL /D _UNICODE /D UNICODE /D WIN32 /D _WINDOWS /D NDEBUG /D OMIT_CREATE /D WXUSINGDLL /D UNICODE /D _UNICODE /D "CMAKE_INTDIR=\"Release\"" /D fixture_no_create_EXPORTS /EHsc /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /std:c++17 /Fo"fixture_no_create.dir\Release\\" /Fd"fixture_no_create.dir\Release\vc143.pdb" /external:W0 /Gd /TP /analyze- /errorReport:queue  /external:I "D:/a/Work/Work/opennav-x/build/windows-ocharts-loader-guards/sdk/wx/lib/vc14x_dll/mswu" /external:I "D:/a/Work/Work/opennav-x/build/windows-ocharts-loader-guards/sdk/wx/include" /utf-8 "D:\a\Work\Work\opennav-x\tests\windows_ocharts_loader\fixture.cpp"
+     1>Project "D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\build\ALL_BUILD.vcxproj" (1) is building "D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\build\fixture_no_bind.vcxproj" (5) on node 2 (default targets).
+     5>PrepareForBuild:
+         Creating directory "fixture_no_bind.dir\Release\".
+         Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+         Creating directory "fixture_no_bind.dir\Release\fixture_no_bind.tlog\".
+       InitializeBuildStatus:
+         Creating "fixture_no_bind.dir\Release\fixture_no_bind.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+         Touching "fixture_no_bind.dir\Release\fixture_no_bind.tlog\unsuccessfulbuild".
+     4>ClCompile:
+         fixture.cpp
+     5>CustomBuild:
+         Building Custom Rule D:/a/Work/Work/opennav-x/tests/windows_ocharts_loader/CMakeLists.txt
+       ClCompile:
+         C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\bin\HostX64\x86\CL.exe /c /I"D:\a\Work\Work\opennav-x\src" /nologo /W4 /WX- /diagnostics:column /O2 /Ob2 /Oy- /D _WINDLL /D _UNICODE /D UNICODE /D WIN32 /D _WINDOWS /D NDEBUG /D OMIT_BIND /D WXUSINGDLL /D UNICODE /D _UNICODE /D "CMAKE_INTDIR=\"Release\"" /D fixture_no_bind_EXPORTS /EHsc /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /std:c++17 /Fo"fixture_no_bind.dir\Release\\" /Fd"fixture_no_bind.dir\Release\vc143.pdb" /external:W0 /Gd /TP /analyze- /errorReport:queue  /external:I "D:/a/Work/Work/opennav-x/build/windows-ocharts-loader-guards/sdk/wx/lib/vc14x_dll/mswu" /external:I "D:/a/Work/Work/opennav-x/build/windows-ocharts-loader-guards/sdk/wx/include" /utf-8 "D:\a\Work\Work\opennav-x\tests\windows_ocharts_loader\fixture.cpp"
+         fixture.cpp
+     4>Link:
+         C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\bin\HostX64\x86\link.exe /ERRORREPORT:QUEUE /OUT:"D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\build\Release\fixture_no_create.dll" /INCREMENTAL:NO /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /DEF:"D:/a/Work/Work/opennav-x/build/windows-ocharts-loader-guards/build/no_create.def" /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:"D:/a/Work/Work/opennav-x/build/windows-ocharts-loader-guards/build/Release/fixture_no_create.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:/a/Work/Work/opennav-x/build/windows-ocharts-loader-guards/build/Release/fixture_no_create.lib" /MACHINE:X86 /SAFESEH  /machine:X86 /DLL fixture_no_create.dir\Release\fixture.obj
+            Creating library D:/a/Work/Work/opennav-x/build/windows-ocharts-loader-guards/build/Release/fixture_no_create.lib and object D:/a/Work/Work/opennav-x/build/windows-ocharts-loader-guards/build/Release/fixture_no_create.exp
+         fixture_no_create.vcxproj -> D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\build\Release\fixture_no_create.dll
+     3>D:\a\Work\Work\opennav-x\tests\windows_ocharts_loader\fixture.cpp(44,1): warning C4702: unreachable code [D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\build\fixture_good.vcxproj]
+     5>D:\a\Work\Work\opennav-x\tests\windows_ocharts_loader\fixture.cpp(44,1): warning C4702: unreachable code [D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\build\fixture_no_bind.vcxproj]
+     3>Link:
+         C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\bin\HostX64\x86\link.exe /ERRORREPORT:QUEUE /OUT:"D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\build\Release\fixture_good.dll" /INCREMENTAL:NO /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /DEF:"D:/a/Work/Work/opennav-x/build/windows-ocharts-loader-guards/build/good.def" /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:"D:/a/Work/Work/opennav-x/build/windows-ocharts-loader-guards/build/Release/fixture_good.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:/a/Work/Work/opennav-x/build/windows-ocharts-loader-guards/build/Release/fixture_good.lib" /MACHINE:X86 /SAFESEH  /machine:X86 /DLL fixture_good.dir\Release\fixture.obj
+     5>Link:
+         C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\bin\HostX64\x86\link.exe /ERRORREPORT:QUEUE /OUT:"D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\build\Release\fixture_no_bind.dll" /INCREMENTAL:NO /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /DEF:"D:/a/Work/Work/opennav-x/build/windows-ocharts-loader-guards/build/no_bind.def" /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:"D:/a/Work/Work/opennav-x/build/windows-ocharts-loader-guards/build/Release/fixture_no_bind.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:/a/Work/Work/opennav-x/build/windows-ocharts-loader-guards/build/Release/fixture_no_bind.lib" /MACHINE:X86 /SAFESEH  /machine:X86 /DLL fixture_no_bind.dir\Release\fixture.obj
+     3>Link:
+            Creating library D:/a/Work/Work/opennav-x/build/windows-ocharts-loader-guards/build/Release/fixture_good.lib and object D:/a/Work/Work/opennav-x/build/windows-ocharts-loader-guards/build/Release/fixture_good.exp
+     5>Link:
+            Creating library D:/a/Work/Work/opennav-x/build/windows-ocharts-loader-guards/build/Release/fixture_no_bind.lib and object D:/a/Work/Work/opennav-x/build/windows-ocharts-loader-guards/build/Release/fixture_no_bind.exp
+     3>Link:
+         fixture_good.vcxproj -> D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\build\Release\fixture_good.dll
+       FinalizeBuildStatus:
+         Deleting file "fixture_good.dir\Release\fixture_good.tlog\unsuccessfulbuild".
+         Touching "fixture_good.dir\Release\fixture_good.tlog\fixture_good.lastbuildstate".
+     3>Done Building Project "D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\build\fixture_good.vcxproj" (default targets).
+     4>FinalizeBuildStatus:
+         Deleting file "fixture_no_create.dir\Release\fixture_.D3241B44.tlog\unsuccessfulbuild".
+         Touching "fixture_no_create.dir\Release\fixture_.D3241B44.tlog\fixture_no_create.lastbuildstate".
+     4>Done Building Project "D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\build\fixture_no_create.vcxproj" (default targets).
+     5>Link:
+         fixture_no_bind.vcxproj -> D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\build\Release\fixture_no_bind.dll
+     1>Project "D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\build\ALL_BUILD.vcxproj" (1) is building "D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\build\fixture_no_destroy.vcxproj" (6) on node 1 (default targets).
+     6>PrepareForBuild:
+         Creating directory "fixture_no_destroy.dir\Release\".
+         Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+         Creating directory "fixture_no_destroy.dir\Release\fixture_.1219BF95.tlog\".
+       InitializeBuildStatus:
+         Creating "fixture_no_destroy.dir\Release\fixture_.1219BF95.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+         Touching "fixture_no_destroy.dir\Release\fixture_.1219BF95.tlog\unsuccessfulbuild".
+     5>FinalizeBuildStatus:
+         Deleting file "fixture_no_bind.dir\Release\fixture_no_bind.tlog\unsuccessfulbuild".
+         Touching "fixture_no_bind.dir\Release\fixture_no_bind.tlog\fixture_no_bind.lastbuildstate".
+     5>Done Building Project "D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\build\fixture_no_bind.vcxproj" (default targets).
+     6>CustomBuild:
+         Building Custom Rule D:/a/Work/Work/opennav-x/tests/windows_ocharts_loader/CMakeLists.txt
+       ClCompile:
+         C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\bin\HostX64\x86\CL.exe /c /I"D:\a\Work\Work\opennav-x\src" /nologo /W4 /WX- /diagnostics:column /O2 /Ob2 /Oy- /D _WINDLL /D _UNICODE /D UNICODE /D WIN32 /D _WINDOWS /D NDEBUG /D OMIT_DESTROY /D WXUSINGDLL /D UNICODE /D _UNICODE /D "CMAKE_INTDIR=\"Release\"" /D fixture_no_destroy_EXPORTS /EHsc /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /std:c++17 /Fo"fixture_no_destroy.dir\Release\\" /Fd"fixture_no_destroy.dir\Release\vc143.pdb" /external:W0 /Gd /TP /analyze- /errorReport:queue  /external:I "D:/a/Work/Work/opennav-x/build/windows-ocharts-loader-guards/sdk/wx/lib/vc14x_dll/mswu" /external:I "D:/a/Work/Work/opennav-x/build/windows-ocharts-loader-guards/sdk/wx/include" /utf-8 "D:\a\Work\Work\opennav-x\tests\windows_ocharts_loader\fixture.cpp"
+     1>Project "D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\build\ALL_BUILD.vcxproj" (1) is building "D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\build\fixture_no_status.vcxproj" (7) on node 2 (default targets).
+     7>PrepareForBuild:
+         Creating directory "fixture_no_status.dir\Release\".
+         Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+         Creating directory "fixture_no_status.dir\Release\fixture_.7C403C0C.tlog\".
+       InitializeBuildStatus:
+         Creating "fixture_no_status.dir\Release\fixture_.7C403C0C.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+         Touching "fixture_no_status.dir\Release\fixture_.7C403C0C.tlog\unsuccessfulbuild".
+     6>ClCompile:
+         fixture.cpp
+     1>Project "D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\build\ALL_BUILD.vcxproj" (1) is building "D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\build\ocharts_loader_test.vcxproj" (8) on node 1 (default targets).
+     8>PrepareForBuild:
+         Creating directory "ocharts_loader_test.dir\Release\".
+         Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+         Creating directory "ocharts_loader_test.dir\Release\ocharts_.780F0B18.tlog\".
+     7>CustomBuild:
+         Building Custom Rule D:/a/Work/Work/opennav-x/tests/windows_ocharts_loader/CMakeLists.txt
+     8>InitializeBuildStatus:
+         Creating "ocharts_loader_test.dir\Release\ocharts_.780F0B18.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+         Touching "ocharts_loader_test.dir\Release\ocharts_.780F0B18.tlog\unsuccessfulbuild".
+       CustomBuild:
+         Building Custom Rule D:/a/Work/Work/opennav-x/tests/windows_ocharts_loader/CMakeLists.txt
+     7>ClCompile:
+         C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\bin\HostX64\x86\CL.exe /c /I"D:\a\Work\Work\opennav-x\src" /nologo /W4 /WX- /diagnostics:column /O2 /Ob2 /Oy- /D _WINDLL /D _UNICODE /D UNICODE /D WIN32 /D _WINDOWS /D NDEBUG /D OMIT_STATUS /D WXUSINGDLL /D UNICODE /D _UNICODE /D "CMAKE_INTDIR=\"Release\"" /D fixture_no_status_EXPORTS /EHsc /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /std:c++17 /Fo"fixture_no_status.dir\Release\\" /Fd"fixture_no_status.dir\Release\vc143.pdb" /external:W0 /Gd /TP /analyze- /errorReport:queue  /external:I "D:/a/Work/Work/opennav-x/build/windows-ocharts-loader-guards/sdk/wx/lib/vc14x_dll/mswu" /external:I "D:/a/Work/Work/opennav-x/build/windows-ocharts-loader-guards/sdk/wx/include" /utf-8 "D:\a\Work\Work\opennav-x\tests\windows_ocharts_loader\fixture.cpp"
+     8>ClCompile:
+         C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\bin\HostX64\x86\CL.exe /c /I"D:\a\Work\Work\opennav-x\src" /I"D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\sdk\picosha2" /nologo /W4 /WX- /diagnostics:column /O2 /Ob2 /Oy- /D _UNICODE /D UNICODE /D WIN32 /D _WINDOWS /D NDEBUG /D WXUSINGDLL /D UNICODE /D _UNICODE /D "CMAKE_INTDIR=\"Release\"" /EHsc /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /std:c++17 /Fo"ocharts_loader_test.dir\Release\\" /Fd"ocharts_loader_test.dir\Release\vc143.pdb" /external:W0 /Gd /TP /analyze- /errorReport:queue  /external:I "D:/a/Work/Work/opennav-x/build/windows-ocharts-loader-guards/sdk/wx/lib/vc14x_dll/mswu" /external:I "D:/a/Work/Work/opennav-x/build/windows-ocharts-loader-guards/sdk/wx/include" /utf-8 "D:\a\Work\Work\opennav-x\tests\windows_ocharts_loader\loader_test.cpp" "D:\a\Work\Work\opennav-x\src\integration\OChartsModuleLoader.cpp" "D:\a\Work\Work\opennav-x\src\integration\PluginPresentationLoader.cpp"
+     7>ClCompile:
+         fixture.cpp
+     8>ClCompile:
+         loader_test.cpp
+     6>D:\a\Work\Work\opennav-x\tests\windows_ocharts_loader\fixture.cpp(44,1): warning C4702: unreachable code [D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\build\fixture_no_destroy.vcxproj]
+     6>Link:
+         C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\bin\HostX64\x86\link.exe /ERRORREPORT:QUEUE /OUT:"D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\build\Release\fixture_no_destroy.dll" /INCREMENTAL:NO /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /DEF:"D:/a/Work/Work/opennav-x/build/windows-ocharts-loader-guards/build/no_destroy.def" /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:"D:/a/Work/Work/opennav-x/build/windows-ocharts-loader-guards/build/Release/fixture_no_destroy.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:/a/Work/Work/opennav-x/build/windows-ocharts-loader-guards/build/Release/fixture_no_destroy.lib" /MACHINE:X86 /SAFESEH  /machine:X86 /DLL fixture_no_destroy.dir\Release\fixture.obj
+     7>D:\a\Work\Work\opennav-x\tests\windows_ocharts_loader\fixture.cpp(44,1): warning C4702: unreachable code [D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\build\fixture_no_status.vcxproj]
+       Link:
+            Creating library D:/a/Work/Work/opennav-x/build/windows-ocharts-loader-guards/build/Release/fixture_no_destroy.lib and object D:/a/Work/Work/opennav-x/build/windows-ocharts-loader-guards/build/Release/fixture_no_destroy.exp
+     7>Link:
+         C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\bin\HostX64\x86\link.exe /ERRORREPORT:QUEUE /OUT:"D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\build\Release\fixture_no_status.dll" /INCREMENTAL:NO /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /DEF:"D:/a/Work/Work/opennav-x/build/windows-ocharts-loader-guards/build/no_status.def" /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:"D:/a/Work/Work/opennav-x/build/windows-ocharts-loader-guards/build/Release/fixture_no_status.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:/a/Work/Work/opennav-x/build/windows-ocharts-loader-guards/build/Release/fixture_no_status.lib" /MACHINE:X86 /SAFESEH  /machine:X86 /DLL fixture_no_status.dir\Release\fixture.obj
+     6>Link:
+         fixture_no_destroy.vcxproj -> D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\build\Release\fixture_no_destroy.dll
+       FinalizeBuildStatus:
+         Deleting file "fixture_no_destroy.dir\Release\fixture_.1219BF95.tlog\unsuccessfulbuild".
+         Touching "fixture_no_destroy.dir\Release\fixture_.1219BF95.tlog\fixture_no_destroy.lastbuildstate".
+     6>Done Building Project "D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\build\fixture_no_destroy.vcxproj" (default targets).
+     7>Link:
+            Creating library D:/a/Work/Work/opennav-x/build/windows-ocharts-loader-guards/build/Release/fixture_no_status.lib and object D:/a/Work/Work/opennav-x/build/windows-ocharts-loader-guards/build/Release/fixture_no_status.exp
+         fixture_no_status.vcxproj -> D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\build\Release\fixture_no_status.dll
+       FinalizeBuildStatus:
+         Deleting file "fixture_no_status.dir\Release\fixture_.7C403C0C.tlog\unsuccessfulbuild".
+         Touching "fixture_no_status.dir\Release\fixture_.7C403C0C.tlog\fixture_no_status.lastbuildstate".
+     7>Done Building Project "D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\build\fixture_no_status.vcxproj" (default targets).
+     8>ClCompile:
+         OChartsModuleLoader.cpp
+         PluginPresentationLoader.cpp
+         Generating Code...
+       Link:
+         C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\bin\HostX64\x86\link.exe /ERRORREPORT:QUEUE /OUT:"D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\build\Release\ocharts_loader_test.exe" /INCREMENTAL:NO /NOLOGO "D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\sdk\wx\lib\vc14x_dll\wxbase32u.lib" "D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\sdk\wx\lib\vc14x_dll\wxmsw32u_core.lib" "D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\sdk\wx\lib\vc14x_dll\wxpng.lib" "D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\sdk\wx\lib\vc14x_dll\wxtiff.lib" "D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\sdk\wx\lib\vc14x_dll\wxjpeg.lib" "D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\sdk\wx\lib\vc14x_dll\wxzlib.lib" "D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\sdk\wx\lib\vc14x_dll\wxregexu.lib" "D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\sdk\wx\lib\vc14x_dll\wxexpat.lib" gdiplus.lib msimg32.lib winmm.lib comctl32.lib uuid.lib oleacc.lib uxtheme.lib rpcrt4.lib shlwapi.lib version.lib wsock32.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:"D:/a/Work/Work/opennav-x/build/windows-ocharts-loader-guards/build/Release/ocharts_loader_test.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:/a/Work/Work/opennav-x/build/windows-ocharts-loader-guards/build/Release/ocharts_loader_test.lib" /MACHINE:X86 /SAFESEH  /machine:X86 ocharts_loader_test.dir\Release\loader_test.obj
+         ocharts_loader_test.dir\Release\OChartsModuleLoader.obj
+         ocharts_loader_test.dir\Release\PluginPresentationLoader.obj
+         ocharts_loader_test.vcxproj -> D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\build\Release\ocharts_loader_test.exe
+       FinalizeBuildStatus:
+         Deleting file "ocharts_loader_test.dir\Release\ocharts_.780F0B18.tlog\unsuccessfulbuild".
+         Touching "ocharts_loader_test.dir\Release\ocharts_.780F0B18.tlog\ocharts_loader_test.lastbuildstate".
+     8>Done Building Project "D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\build\ocharts_loader_test.vcxproj" (default targets).
+     1>PrepareForBuild:
+         Creating directory "Win32\Release\ALL_BUILD\".
+         Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+         Creating directory "Win32\Release\ALL_BUILD\ALL_BUILD.tlog\".
+       InitializeBuildStatus:
+         Creating "Win32\Release\ALL_BUILD\ALL_BUILD.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+         Touching "Win32\Release\ALL_BUILD\ALL_BUILD.tlog\unsuccessfulbuild".
+       CustomBuild:
+         Building Custom Rule D:/a/Work/Work/opennav-x/tests/windows_ocharts_loader/CMakeLists.txt
+       FinalizeBuildStatus:
+         Deleting file "Win32\Release\ALL_BUILD\ALL_BUILD.tlog\unsuccessfulbuild".
+         Touching "Win32\Release\ALL_BUILD\ALL_BUILD.tlog\ALL_BUILD.lastbuildstate".
+     1>Done Building Project "D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\build\ALL_BUILD.vcxproj" (default targets).
+
+Build succeeded.
+
+       "D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\build\ALL_BUILD.vcxproj" (default target) (1) ->
+       "D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\build\fixture_good.vcxproj" (default target) (3) ->
+       (ClCompile target) -> 
+         D:\a\Work\Work\opennav-x\tests\windows_ocharts_loader\fixture.cpp(44,1): warning C4702: unreachable code [D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\build\fixture_good.vcxproj]
+
+
+       "D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\build\ALL_BUILD.vcxproj" (default target) (1) ->
+       "D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\build\fixture_no_bind.vcxproj" (default target) (5) ->
+         D:\a\Work\Work\opennav-x\tests\windows_ocharts_loader\fixture.cpp(44,1): warning C4702: unreachable code [D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\build\fixture_no_bind.vcxproj]
+
+
+       "D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\build\ALL_BUILD.vcxproj" (default target) (1) ->
+       "D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\build\fixture_no_destroy.vcxproj" (default target) (6) ->
+         D:\a\Work\Work\opennav-x\tests\windows_ocharts_loader\fixture.cpp(44,1): warning C4702: unreachable code [D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\build\fixture_no_destroy.vcxproj]
+
+
+       "D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\build\ALL_BUILD.vcxproj" (default target) (1) ->
+       "D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\build\fixture_no_status.vcxproj" (default target) (7) ->
+         D:\a\Work\Work\opennav-x\tests\windows_ocharts_loader\fixture.cpp(44,1): warning C4702: unreachable code [D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\build\fixture_no_status.vcxproj]
+
+    4 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:12.00

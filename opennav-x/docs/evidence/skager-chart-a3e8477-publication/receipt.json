@@ -1,0 +1,55 @@
+{
+  "local": "a3e84771652c920479517f0d16a1dd6133c440d2",
+  "product": "843dd57306bc62e440678519bd265bdc95a7cf99",
+  "workflow": "babe712e83285cf697bbd0019f71124f6c3fc36a",
+  "tree": "8ea6f0cad58dd7d0249867b9125ea25a245da52a",
+  "mappedBlobs": 2951,
+  "unrelated": 8,
+  "published": "7a9e5496347cf8c0dd31aafc373b65f8621fe5a0",
+  "runId": 37100591834,
+  "runUrl": "https://github.com/ThereptileII/Work/actions/runs/37100591834",
+  "basePublished": "5d6c5cf44cb72f8166b2ab67115bccd568336e35",
+  "qualification": "pending",
+  "unrelatedFiles": [
+    {
+      "path": ".gitignore",
+      "sha": "836dcb198dc3a11606e65359e1f7f266aa47fffc",
+      "mode": "100644"
+    },
+    {
+      "path": "Motor_read_old.ino",
+      "sha": "1329cf966f841c2346b965a0b8f89b95b562e874",
+      "mode": "100644"
+    },
+    {
+      "path": "Nissan_ev_to_NMEA_and_wifi.ino",
+      "sha": "28befb15813a1cd4c14b07aa551a98f158b23f5f",
+      "mode": "100644"
+    },
+    {
+      "path": "README.md",
+      "sha": "598c21a9af4a311aadcc27ebe12804aa9f355b59",
+      "mode": "100644"
+    },
+    {
+      "path": "Switchbank_relay.ino",
+      "sha": "6972976ff70c8e99b3e5dac5a459360d5a37d1ed",
+      "mode": "100644"
+    },
+    {
+      "path": "autopilotcontroller.ino",
+      "sha": "4cd19a744e43afad013fe1952c38efc9dd0409ab",
+      "mode": "100644"
+    },
+    {
+      "path": "throttlecontroller.ino",
+      "sha": "4ff5fb25e64266b690c720e3d2773192071fafc8",
+      "mode": "100644"
+    },
+    {
+      "path": "xboxcontroller.ino",
+      "sha": "4a40a332ca23a302eac6b2f7f87b41d67c1a6c64",
+      "mode": "100644"
+    }
+  ]
+}

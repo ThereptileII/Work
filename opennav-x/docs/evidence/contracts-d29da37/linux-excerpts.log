@@ -1,0 +1,199 @@
+90: 2026-10-04T07:00:25.1017453Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +d29da372af86c01cb2817f932891fd9408d882fe:refs/remotes/origin/opennav-x-beta2-ui
+92: 2026-10-04T07:00:29.9146986Z  * [new ref]         d29da372af86c01cb2817f932891fd9408d882fe -> origin/opennav-x-beta2-ui
+104: 2026-10-04T07:00:30.6333913Z d29da372af86c01cb2817f932891fd9408d882fe
+118: 2026-10-04T07:00:31.4594878Z Ran 11 tests in 0.638s
+120: 2026-10-04T07:00:31.4595112Z OK
+123: 2026-10-04T07:00:31.5656232Z Ran 9 tests in 0.051s
+125: 2026-10-04T07:00:31.5656376Z OK
+128: 2026-10-04T07:00:31.7130859Z Ran 17 tests in 0.089s
+130: 2026-10-04T07:00:31.7131057Z OK
+141: 2026-10-04T07:00:31.7976584Z test_capture_and_verify_refuse_symlinks_inside_inventory (__main__.DependencyReceiptTests.test_capture_and_verify_refuse_symlinks_inside_inventory) ... ok
+142: 2026-10-04T07:00:31.7987949Z test_capture_refuses_symlinked_root_or_ancestor (__main__.DependencyReceiptTests.test_capture_refuses_symlinked_root_or_ancestor) ... ok
+143: 2026-10-04T07:00:31.8000566Z test_capture_verify_round_trip_binds_context_and_all_file_bytes (__main__.DependencyReceiptTests.test_capture_verify_round_trip_binds_context_and_all_file_bytes) ... ok
+144: 2026-10-04T07:00:31.8086790Z test_cli_context_parser_rejects_duplicate_json_keys (__main__.DependencyReceiptTests.test_cli_context_parser_rejects_duplicate_json_keys) ... ok
+145: 2026-10-04T07:00:31.8098558Z test_context_must_be_complete_canonical_and_from_same_job (__main__.DependencyReceiptTests.test_context_must_be_complete_canonical_and_from_same_job) ... ok
+146: 2026-10-04T07:00:34.8475243Z test_inventory_bounds_total_entries_before_materializing_large_tree (__main__.DependencyReceiptTests.test_inventory_bounds_total_entries_before_materializing_large_tree) ... ok
+147: 2026-10-04T07:00:35.6986262Z test_inventory_rejects_more_than_the_supported_file_count (__main__.DependencyReceiptTests.test_inventory_rejects_more_than_the_supported_file_count) ... ok
+148: 2026-10-04T07:00:35.7052679Z test_inventory_rejects_windows_stream_and_reserved_names (__main__.DependencyReceiptTests.test_inventory_rejects_windows_stream_and_reserved_names) ... ok
+149: 2026-10-04T07:00:35.7095848Z test_receipt_paths_and_roots_reject_escape_and_windows_aliases (__main__.DependencyReceiptTests.test_receipt_paths_and_roots_reject_escape_and_windows_aliases) ... ok
+150: 2026-10-04T07:00:35.7116230Z test_receipt_rejects_malformed_unknown_and_duplicate_json_fields (__main__.DependencyReceiptTests.test_receipt_rejects_malformed_unknown_and_duplicate_json_fields) ... ok
+151: 2026-10-04T07:00:35.7151152Z test_root_count_context_count_and_oversized_receipt_limits (__main__.DependencyReceiptTests.test_root_count_context_count_and_oversized_receipt_limits) ... ok
+152: 2026-10-04T07:00:35.7163959Z test_verification_rejects_a_different_workspace_even_with_identical_bytes (__main__.DependencyReceiptTests.test_verification_rejects_a_different_workspace_even_with_identical_bytes) ... ok
+153: 2026-10-04T07:00:35.7187190Z test_verification_rejects_changed_missing_and_added_files (__main__.DependencyReceiptTests.test_verification_rejects_changed_missing_and_added_files) ... ok
+154: 2026-10-04T07:00:35.7197342Z test_verify_refuses_a_symlinked_receipt (__main__.DependencyReceiptTests.test_verify_refuses_a_symlinked_receipt) ... ok
+155: 2026-10-04T07:00:35.7206596Z test_walk_errors_do_not_silently_create_partial_inventory (__main__.DependencyReceiptTests.test_walk_errors_do_not_silently_create_partial_inventory) ... ok
+158: 2026-10-04T07:00:35.7207537Z Ran 15 tests in 3.925s
+160: 2026-10-04T07:00:35.7207739Z OK
+161: 2026-10-04T07:00:35.8245930Z test_alternate_zlib_record_path_is_fixed_and_cannot_escape (__main__.WindowsDependencyEvidenceTests.test_alternate_zlib_record_path_is_fixed_and_cannot_escape) ... ok
+162: 2026-10-04T07:00:35.8557594Z test_alternate_zlib_record_requires_pinned_build_evidence_and_plain_path (__main__.WindowsDependencyEvidenceTests.test_alternate_zlib_record_requires_pinned_build_evidence_and_plain_path) ... ok
+163: 2026-10-04T07:00:35.8706314Z test_changed_curl_dependency_manifest_hash_is_rejected (__main__.WindowsDependencyEvidenceTests.test_changed_curl_dependency_manifest_hash_is_rejected) ... ok
+164: 2026-10-04T07:00:35.8783893Z test_changed_prefix_output_is_rejected (__main__.WindowsDependencyEvidenceTests.test_changed_prefix_output_is_rejected) ... ok
+165: 2026-10-04T07:00:35.8872577Z test_complete_inert_fixture_matches_producer_and_installed_evidence (__main__.WindowsDependencyEvidenceTests.test_complete_inert_fixture_matches_producer_and_installed_evidence) ... ok
+166: 2026-10-04T07:00:35.9099177Z test_contradictory_failure_summaries_are_rejected_in_either_order (__main__.WindowsDependencyEvidenceTests.test_contradictory_failure_summaries_are_rejected_in_either_order) ... ok
+167: 2026-10-04T07:00:35.9236764Z test_curl_retained_log_hash_and_test_summary_must_match (__main__.WindowsDependencyEvidenceTests.test_curl_retained_log_hash_and_test_summary_must_match) ... ok
+168: 2026-10-04T07:00:35.9358054Z test_manifest_source_and_retained_zlib_source_record_must_match (__main__.WindowsDependencyEvidenceTests.test_manifest_source_and_retained_zlib_source_record_must_match) ... ok
+169: 2026-10-04T07:00:35.9435432Z test_mismatched_or_missing_producer_manifest_is_rejected (__main__.WindowsDependencyEvidenceTests.test_mismatched_or_missing_producer_manifest_is_rejected) ... ok
+170: 2026-10-04T07:00:35.9769707Z test_missing_or_failed_native_test_summaries_are_rejected (__main__.WindowsDependencyEvidenceTests.test_missing_or_failed_native_test_summaries_are_rejected) ... ok
+171: 2026-10-04T07:00:36.0105913Z test_openssl_allows_only_the_source_proven_non_fips_prep_notests (__main__.WindowsDependencyEvidenceTests.test_openssl_allows_only_the_source_proven_non_fips_prep_notests) ... ok
+172: 2026-10-04T07:00:36.0746653Z test_openssl_crlf_encodings_keep_raw_hash_and_strict_result_sequence (__main__.WindowsDependencyEvidenceTests.test_openssl_crlf_encodings_keep_raw_hash_and_strict_result_sequence) ... ok
+173: 2026-10-04T07:00:36.0924638Z test_preserved_first_success_record_survives_later_source_only_preflight (__main__.WindowsDependencyEvidenceTests.test_preserved_first_success_record_survives_later_source_only_preflight) ... ok
+174: 2026-10-04T07:00:36.1026468Z test_strict_json_rejects_duplicate_keys_and_accepts_utf8_bom (__main__.WindowsDependencyEvidenceTests.test_strict_json_rejects_duplicate_keys_and_accepts_utf8_bom) ... ok
+177: 2026-10-04T07:00:36.1027469Z Ran 14 tests in 0.287s
+179: 2026-10-04T07:00:36.1027667Z OK
+180: 2026-10-04T07:00:36.1821543Z test_build_and_ais_share_parent_setup_before_producer (__main__.SameJobReuseReceiptTests.test_build_and_ais_share_parent_setup_before_producer) ... ok
+181: 2026-10-04T07:00:36.1903913Z test_capture_never_replaces_existing_receipt_or_preserved_source (__main__.SameJobReuseReceiptTests.test_capture_never_replaces_existing_receipt_or_preserved_source) ... ok
+182: 2026-10-04T07:00:36.2053319Z test_changed_prefix_bytes_or_extra_file_refuse_reuse (__main__.SameJobReuseReceiptTests.test_changed_prefix_bytes_or_extra_file_refuse_reuse) ... ok
+183: 2026-10-04T07:00:36.2407291Z test_changed_producer_fact_log_or_input_refuses_reuse (__main__.SameJobReuseReceiptTests.test_changed_producer_fact_log_or_input_refuses_reuse) ... ok
+184: 2026-10-04T07:00:36.2521382Z test_checkout_root_workflow_is_bound_by_commit_not_nested_path (__main__.SameJobReuseReceiptTests.test_checkout_root_workflow_is_bound_by_commit_not_nested_path) ... ok
+185: 2026-10-04T07:00:36.2660088Z test_different_job_attempt_commit_and_non_ci_context_refuse (__main__.SameJobReuseReceiptTests.test_different_job_attempt_commit_and_non_ci_context_refuse) ... ok
+186: 2026-10-04T07:00:36.2774695Z test_existing_gettext_receipt_is_bound_without_refresh (__main__.SameJobReuseReceiptTests.test_existing_gettext_receipt_is_bound_without_refresh) ... ok
+187: 2026-10-04T07:00:36.2925312Z test_first_success_round_trip_and_later_preflight_overwrite (__main__.SameJobReuseReceiptTests.test_first_success_round_trip_and_later_preflight_overwrite) ... ok
+188: 2026-10-04T07:00:36.2980810Z test_late_capture_failure_removes_preserved_copy_without_receipt (__main__.SameJobReuseReceiptTests.test_late_capture_failure_removes_preserved_copy_without_receipt) ... ok
+189: 2026-10-04T07:00:36.3096920Z test_missing_fact_and_tampered_preserved_source_refuse_reuse (__main__.SameJobReuseReceiptTests.test_missing_fact_and_tampered_preserved_source_refuse_reuse) ... ok
+190: 2026-10-04T07:00:36.3147839Z test_missing_success_assertion_or_failed_evidence_never_writes_receipt (__main__.SameJobReuseReceiptTests.test_missing_success_assertion_or_failed_evidence_never_writes_receipt) ... ok
+191: 2026-10-04T07:00:36.3259093Z test_parent_initialization_source_is_bound (__main__.SameJobReuseReceiptTests.test_parent_initialization_source_is_bound) ... ok
+192: 2026-10-04T07:00:36.3449747Z test_zlib_facts_from_actual_producer_paths_are_consumed_and_bound (__main__.SameJobReuseReceiptTests.test_zlib_facts_from_actual_producer_paths_are_consumed_and_bound) ... ok
+195: 2026-10-04T07:00:36.3450736Z Ran 13 tests in 0.168s
+197: 2026-10-04T07:00:36.3450931Z OK
+200: 2026-10-04T07:00:36.4744868Z Ran 4 tests in 0.033s
+202: 2026-10-04T07:00:36.4745058Z OK
+203: 2026-10-04T07:00:36.4752841Z Restaged verified Win32 dependency cache from same-job producer prefixes
+208: 2026-10-04T07:01:24.3689649Z Native version probe stream, refusal, and deadline tests passed
+213: 2026-10-04T07:01:24.5047016Z test_constructor_seeds_and_preserves_actual_prepared_profile (__main__.PeerBoundaryTests.test_constructor_seeds_and_preserves_actual_prepared_profile) ... ok
+214: 2026-10-04T07:01:24.6661560Z test_current_platform_listener_ownership_and_closed_pid (__main__.PeerBoundaryTests.test_current_platform_listener_ownership_and_closed_pid) ... ok
+215: 2026-10-04T07:01:24.6868293Z test_duplicate_credential_is_rejected (__main__.PeerBoundaryTests.test_duplicate_credential_is_rejected) ... ok
+216: 2026-10-04T07:01:24.7269696Z test_existing_credential_and_certificate_refuse_without_mutation (__main__.PeerBoundaryTests.test_existing_credential_and_certificate_refuse_without_mutation) ... ok
+217: 2026-10-04T07:01:24.7653776Z test_ipv6_listener_is_owned_and_rejected (__main__.PeerBoundaryTests.test_ipv6_listener_is_owned_and_rejected) ... ok
+218: 2026-10-04T07:01:24.7654209Z test_native_row_layouts_are_explicit (__main__.PeerBoundaryTests.test_native_row_layouts_are_explicit) ... ok
+219: 2026-10-04T07:01:24.8263127Z test_tampering_with_cert_key_or_credentials_fails_closed (__main__.PeerBoundaryTests.test_tampering_with_cert_key_or_credentials_fails_closed) ... ok
+222: 2026-10-04T07:01:24.8263896Z Ran 7 tests in 0.345s
+224: 2026-10-04T07:01:24.8264088Z OK
+225: 2026-10-04T07:01:24.8389739Z ##[group]Run python opennav-x/tools/test-third-party-notice-checkout.py
+226: 2026-10-04T07:01:24.8390053Z [36;1mpython opennav-x/tools/test-third-party-notice-checkout.py[0m
+229: 2026-10-04T07:01:24.9289615Z PASS: OpenSSL 3.5.9, curl 8.22.0 and zlib 1.3.2 notices remain byte-identical with core.autocrlf=true; negative control transforms unprotected LF notices to CRLF
+236: 2026-10-04T07:01:25.0005638Z Ran 12 tests in 0.017s
+238: 2026-10-04T07:01:25.0005836Z OK
+243: 2026-10-04T07:01:25.5064689Z 48 actual installer output-policy checks passed; no installer operation invoked
+471: 2026-10-04T07:01:35.6392323Z test_corruption_refused (__main__.NavigationCopy.test_corruption_refused) ... ok
+472: 2026-10-04T07:01:35.6509092Z test_duplicate_row_detected (__main__.NavigationCopy.test_duplicate_row_detected) ... ok
+473: 2026-10-04T07:01:35.6597164Z test_hash_mismatch_refused (__main__.NavigationCopy.test_hash_mismatch_refused) ... ok
+474: 2026-10-04T07:01:35.6857617Z test_live_journal_refused (__main__.NavigationCopy.test_live_journal_refused) ... ok
+475: 2026-10-04T07:01:35.7004628Z test_missing_navigation_table_refused (__main__.NavigationCopy.test_missing_navigation_table_refused) ... ok
+476: 2026-10-04T07:01:35.7091762Z test_non_utf8_text_preserved_without_decode (__main__.NavigationCopy.test_non_utf8_text_preserved_without_decode) ... ok
+477: 2026-10-04T07:01:35.7197978Z test_row_order_does_not_change_content (__main__.NavigationCopy.test_row_order_does_not_change_content) ... ok
+478: 2026-10-04T07:01:35.7302806Z test_same_count_changed_value_detected (__main__.NavigationCopy.test_same_count_changed_value_detected) ... ok
+479: 2026-10-04T07:01:35.7404255Z test_schema_change_detected (__main__.NavigationCopy.test_schema_change_detected) ... ok
+480: 2026-10-04T07:01:35.7511215Z test_storage_type_change_detected (__main__.NavigationCopy.test_storage_type_change_detected) ... ok
+481: 2026-10-04T07:01:35.7604749Z test_symlink_refused (__main__.NavigationCopy.test_symlink_refused) ... ok
+484: 2026-10-04T07:01:35.7605427Z Ran 11 tests in 0.131s
+486: 2026-10-04T07:01:35.7605835Z OK
+753: 2026-10-04T07:02:17.2238968Z  1/94 Test  #1: geographic_chart_name_boundary .................   Passed    0.00 sec
+755: 2026-10-04T07:02:17.2257887Z  2/94 Test  #2: display_prototype_geometry .....................   Passed    0.00 sec
+757: 2026-10-04T07:02:17.2333561Z  3/94 Test  #3: early_startup_fixtures_isolation ...............   Passed    0.01 sec
+759: 2026-10-04T07:02:17.2379758Z  4/94 Test  #4: early_startup_product_isolation ................   Passed    0.00 sec
+761: 2026-10-04T07:02:17.2425786Z  5/94 Test  #5: early_startup_msw_excluded_isolation ...........   Passed    0.00 sec
+763: 2026-10-04T07:02:17.2480556Z  6/94 Test  #6: fixture_marker_publication .....................   Passed    0.01 sec
+765: 2026-10-04T07:02:17.2496122Z  7/94 Test  #7: passage_view_provenance ........................   Passed    0.00 sec
+767: 2026-10-04T07:02:17.2510929Z  8/94 Test  #8: instrument_view_provenance .....................   Passed    0.00 sec
+769: 2026-10-04T07:02:17.2531404Z  9/94 Test  #9: footer_view_provenance .........................   Passed    0.00 sec
+771: 2026-10-04T07:02:17.2553012Z 10/94 Test #10: horizon_view_provenance ........................   Passed    0.00 sec
+773: 2026-10-04T07:02:17.2567137Z 11/94 Test #11: source_health_view_provenance ..................   Passed    0.00 sec
+775: 2026-10-04T07:02:17.2579050Z 12/94 Test #12: build_policy_product ...........................   Passed    0.00 sec
+777: 2026-10-04T07:02:17.2590929Z 13/94 Test #13: build_policy_fixtures ..........................   Passed    0.00 sec
+779: 2026-10-04T07:02:17.2602879Z 14/94 Test #14: pilot_output_product_policy ....................   Passed    0.00 sec
+781: 2026-10-04T07:02:17.2614290Z 15/94 Test #15: pilot_output_loopback_policy ...................   Passed    0.00 sec
+783: 2026-10-04T07:02:17.2626321Z 16/94 Test #16: ais_selection_lifetime .........................   Passed    0.00 sec
+785: 2026-10-04T07:02:17.2648993Z 17/94 Test #17: ais_report_health ..............................   Passed    0.00 sec
+787: 2026-10-04T07:02:17.8626683Z 18/94 Test #18: online_ais_cache_and_precedence ................   Passed    0.60 sec
+789: 2026-10-04T07:02:17.8642489Z 19/94 Test #19: chart_canvas_night_ink .........................   Passed    0.00 sec
+791: 2026-10-04T07:02:17.8669747Z 20/94 Test #20: online_ais_chart_presentation ..................   Passed    0.00 sec
+793: 2026-10-04T07:02:17.8687801Z 21/94 Test #21: aisstream_untrusted_json_and_subscription ......   Passed    0.00 sec
+795: 2026-10-04T07:02:17.8701039Z 22/94 Test #22: aisstream_session_lifecycle ....................   Passed    0.00 sec
+797: 2026-10-04T07:02:17.8712603Z 23/94 Test #23: ais_credentials_protected_storage ..............   Passed    0.00 sec
+799: 2026-10-04T07:02:17.8725129Z 24/94 Test #24: operational_alert_sensors ......................   Passed    0.00 sec
+801: 2026-10-04T07:02:17.8737189Z 25/94 Test #25: operational_alert_alarms .......................   Passed    0.00 sec
+803: 2026-10-04T07:02:17.9473312Z 26/94 Test #26: operational_alert_lifecycle ....................   Passed    0.07 sec
+805: 2026-10-04T07:02:17.9488491Z 27/94 Test #27: field_report_privacy ...........................   Passed    0.00 sec
+807: 2026-10-04T07:02:17.9621042Z 28/94 Test #28: field_report_limits ............................   Passed    0.01 sec
+809: 2026-10-04T07:02:17.9639643Z 29/94 Test #29: field_report_recording .........................   Passed    0.00 sec
+811: 2026-10-04T07:02:17.9651085Z 30/94 Test #30: windows_sdk_macro_contract .....................   Passed    0.00 sec
+813: 2026-10-04T07:02:17.9664401Z 31/94 Test #31: boat_n2k_binding ...............................   Passed    0.00 sec
+815: 2026-10-04T07:02:17.9675720Z 32/94 Test #32: boat_n2k_mapping ...............................   Passed    0.00 sec
+817: 2026-10-04T07:02:17.9687170Z 33/94 Test #33: boat_n2k_expiry ................................   Passed    0.00 sec
+819: 2026-10-04T07:02:17.9698328Z 34/94 Test #34: boat_actual_producer_expiry ....................   Passed    0.00 sec
+821: 2026-10-04T07:02:17.9717673Z 35/94 Test #35: n2k_source_identity ............................   Passed    0.00 sec
+823: 2026-10-04T07:02:17.9729632Z 36/94 Test #36: st4000_identity ................................   Passed    0.00 sec
+825: 2026-10-04T07:02:17.9740710Z 37/94 Test #37: st4000_feedback ................................   Passed    0.00 sec
+827: 2026-10-04T07:02:17.9751594Z 38/94 Test #38: st4000_encoding ................................   Passed    0.00 sec
+829: 2026-10-04T07:02:17.9763353Z 39/94 Test #39: st4000_commands ................................   Passed    0.00 sec
+831: 2026-10-04T07:02:17.9775955Z 40/94 Test #40: st4000_discovery ...............................   Passed    0.00 sec
+833: 2026-10-04T07:02:17.9787364Z 41/94 Test #41: st4000_actual_firmware_parser ..................   Passed    0.00 sec
+835: 2026-10-04T07:02:17.9824356Z 42/94 Test #42: recording_roundtrip_age ........................   Passed    0.00 sec
+837: 2026-10-04T07:02:17.9858666Z 43/94 Test #43: recording_privacy ..............................   Passed    0.00 sec
+839: 2026-10-04T07:02:17.9930257Z 44/94 Test #44: recording_malformed_input ......................   Passed    0.01 sec
+841: 2026-10-04T07:02:17.9953050Z 45/94 Test #45: recording_replay_clock .........................   Passed    0.00 sec
+843: 2026-10-04T07:02:17.9982592Z 46/94 Test #46: recording_calibration_pairs ....................   Passed    0.00 sec
+845: 2026-10-04T07:02:18.0117009Z 47/94 Test #47: recording_storage_rotation .....................   Passed    0.01 sec
+847: 2026-10-04T07:02:18.0157986Z 48/94 Test #48: recording_control_isolation ....................   Passed    0.00 sec
+849: 2026-10-04T07:02:18.0193374Z 49/94 Test #49: installed_resource_defaults ....................   Passed    0.00 sec
+851: 2026-10-04T07:02:18.0505912Z 50/94 Test #50: hardware_output_package_policy .................   Passed    0.03 sec
+853: 2026-10-04T07:02:18.2950355Z 51/94 Test #51: production_runtime_generator_absence ...........   Passed    0.24 sec
+855: 2026-10-04T07:02:18.3518027Z 52/94 Test #52: diagnostic_snapshot_publication ................   Passed    0.06 sec
+857: 2026-10-04T07:02:18.6665033Z 53/94 Test #53: navigation_chart_layout_geometry ...............   Passed    0.31 sec
+859: 2026-10-04T07:02:18.7015644Z 54/94 Test #54: windows_route_summary_layout_contract ..........   Passed    0.03 sec
+861: 2026-10-04T07:02:18.7460560Z 55/94 Test #55: preview_preferences_action_selection ...........   Passed    0.04 sec
+863: 2026-10-04T07:02:18.7786423Z 56/94 Test #56: native_dpi_preferences_pan_target ..............   Passed    0.03 sec
+865: 2026-10-04T07:02:18.8073799Z 57/94 Test #57: native_reference_fullscreen_surface_contract ...   Passed    0.03 sec
+867: 2026-10-04T07:02:19.0161394Z 58/94 Test #58: native_diagnostic_geometry_observation .........   Passed    0.21 sec
+869: 2026-10-04T07:02:19.0214282Z 59/94 Test #59: commissioning_restart_wire_contract ............   Passed    0.01 sec
+871: 2026-10-04T07:02:19.0525934Z 60/94 Test #60: commissioning_restart_package_capability .......   Passed    0.03 sec
+873: 2026-10-04T07:02:19.0847117Z 61/94 Test #61: startup_log_rotation_contract ..................   Passed    0.03 sec
+874: 2026-10-04T07:02:19.0848069Z       Start 62: installer_expected_version_notice
+875: 2026-10-04T07:02:19.1172860Z 62/94 Test #62: installer_expected_version_notice ..............   Passed    0.03 sec
+877: 2026-10-04T07:02:21.0460745Z 63/94 Test #63: restart_lifecycle_contract .....................   Passed    1.93 sec
+879: 2026-10-04T07:02:21.0473841Z 64/94 Test #64: startup_recovery_contract ......................   Passed    0.00 sec
+881: 2026-10-04T07:02:21.0485665Z 65/94 Test #65: startup_mode_contract ..........................   Passed    0.00 sec
+883: 2026-10-04T07:02:21.0497720Z 66/94 Test #66: vessel_quality_contract ........................   Passed    0.00 sec
+885: 2026-10-04T07:02:21.0509223Z 67/94 Test #67: navigation_input_contract ......................   Passed    0.00 sec
+887: 2026-10-04T07:02:21.0521505Z 68/94 Test #68: sensor_source_selection ........................   Passed    0.00 sec
+889: 2026-10-04T07:02:21.0534809Z 69/94 Test #69: sensor_source_validity .........................   Passed    0.00 sec
+891: 2026-10-04T07:02:21.0547416Z 70/94 Test #70: sensor_source_health ...........................   Passed    0.00 sec
+893: 2026-10-04T07:02:21.0559393Z 71/94 Test #71: sensor_battery_coherence .......................   Passed    0.00 sec
+895: 2026-10-04T07:02:21.0573169Z 72/94 Test #72: route_progress_contract ........................   Passed    0.00 sec
+897: 2026-10-04T07:02:21.0976002Z 73/94 Test #73: energy_input_quality ...........................   Passed    0.00 sec
+899: 2026-10-04T07:02:21.0994035Z 74/94 Test #74: energy_prediction_contract .....................   Passed    0.00 sec
+901: 2026-10-04T07:02:21.1007124Z 75/94 Test #75: energy_curve_import ............................   Passed    0.00 sec
+903: 2026-10-04T07:02:21.1019492Z 76/94 Test #76: energy_live_configuration ......................   Passed    0.00 sec
+905: 2026-10-04T07:02:21.1032925Z 77/94 Test #77: smartnav_operational_failures ..................   Passed    0.00 sec
+907: 2026-10-04T07:02:21.1046258Z 78/94 Test #78: smartnav_route_timeline ........................   Passed    0.00 sec
+909: 2026-10-04T07:02:21.1059529Z 79/94 Test #79: smartnav_energy_ais_events .....................   Passed    0.00 sec
+911: 2026-10-04T07:02:21.1083677Z 80/94 Test #80: smartnav_chart_corridor ........................   Passed    0.00 sec
+913: 2026-10-04T07:02:21.1096004Z 81/94 Test #81: autopilot_manual_feedback ......................   Passed    0.00 sec
+915: 2026-10-04T07:02:21.1107842Z 82/94 Test #82: autopilot_failures .............................   Passed    0.00 sec
+917: 2026-10-04T07:02:21.1119573Z 83/94 Test #83: autopilot_ack_evidence .........................   Passed    0.00 sec
+919: 2026-10-04T07:02:21.1131268Z 84/94 Test #84: radar_capability_contract ......................   Passed    0.00 sec
+921: 2026-10-04T07:02:21.1147175Z 85/94 Test #85: settings_record_roundtrip ......................   Passed    0.00 sec
+923: 2026-10-04T07:02:21.1164082Z 86/94 Test #86: settings_invalid_configuration .................   Passed    0.00 sec
+925: 2026-10-04T07:02:21.1178047Z 87/94 Test #87: settings_live_energy_freshness .................   Passed    0.00 sec
+927: 2026-10-04T07:02:21.1193432Z 88/94 Test #88: settings_display_selection .....................   Passed    0.00 sec
+929: 2026-10-04T07:02:21.1209353Z 89/94 Test #89: settings_explicit_propulsion_mappings ..........   Passed    0.00 sec
+931: 2026-10-04T07:02:21.1226279Z 90/94 Test #90: settings_pilot_permission ......................   Passed    0.00 sec
+933: 2026-10-04T07:02:21.1245180Z 91/94 Test #91: preview_demo_contract ..........................   Passed    0.00 sec
+935: 2026-10-04T07:02:21.1262793Z 92/94 Test #92: portable_profile_contract ......................   Passed    0.00 sec
+937: 2026-10-04T07:02:21.1280059Z 93/94 Test #93: preview_resources_contract .....................   Passed    0.00 sec
+939: 2026-10-04T07:02:21.1292481Z 94/94 Test #94: restart_arguments_contract .....................   Passed    0.00 sec
+941: 2026-10-04T07:02:21.1295586Z 100% tests passed, 0 tests failed out of 94
+943: 2026-10-04T07:02:21.1295848Z Total Test time (real) =   3.91 sec
+951: 2026-10-04T07:02:23.0782570Z     Test #63: restart_lifecycle_contract .......   Passed    1.93 sec
+953: 2026-10-04T07:02:25.0073474Z     Test #63: restart_lifecycle_contract .......   Passed    1.93 sec
+955: 2026-10-04T07:02:26.9358204Z     Test #63: restart_lifecycle_contract .......   Passed    1.93 sec
+957: 2026-10-04T07:02:28.8664371Z     Test #63: restart_lifecycle_contract .......   Passed    1.93 sec
+959: 2026-10-04T07:02:30.7948621Z     Test #63: restart_lifecycle_contract .......   Passed    1.93 sec
+961: 2026-10-04T07:02:32.7236607Z     Test #63: restart_lifecycle_contract .......   Passed    1.93 sec
+963: 2026-10-04T07:02:34.6526296Z     Test #63: restart_lifecycle_contract .......   Passed    1.93 sec
+965: 2026-10-04T07:02:36.5816725Z     Test #63: restart_lifecycle_contract .......   Passed    1.93 sec
+967: 2026-10-04T07:02:38.5103087Z     Test #63: restart_lifecycle_contract .......   Passed    1.93 sec
+969: 2026-10-04T07:02:40.4395764Z 1/1 Test #63: restart_lifecycle_contract .......   Passed    1.93 sec
+971: 2026-10-04T07:02:40.4398384Z 100% tests passed, 0 tests failed out of 1
+973: 2026-10-04T07:02:40.4398635Z Total Test time (real) =  19.29 sec
+988: 2026-10-04T07:02:40.5850540Z Cleaning up orphan processes

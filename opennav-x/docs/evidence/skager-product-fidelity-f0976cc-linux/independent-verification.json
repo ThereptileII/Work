@@ -1,0 +1,135 @@
+{
+  "commit": "f0976cc65ea63d3ed6f60ac53ec38a856d11b66b",
+  "binary_sha256": "97c6ee19043a3fe6bd66a099451c26c8a0f5e2f3cf77b8e2fe626f2ab3e38e3e",
+  "manifest_sha256": "7c1f9e41f7dbd99b322a5c1cc9a4c0b73b8ad3ba3505c7da89f05ddc5e4abe39",
+  "captures": [
+    {
+      "renderer": "software",
+      "name": "SKAGER-Day",
+      "sha256": "23b0225c7c0cc131f5966fa693f63da411665b8f23f0a814275b3b7d8b3464e6",
+      "water_pixels": 352260,
+      "land_or_built_area_pixels": 102499
+    },
+    {
+      "renderer": "software",
+      "name": "SKAGER-Dusk",
+      "sha256": "f0cf50dd4f92405ff7585ae7a7ac1c03b79e209fe9fd28c5f1788fbe91b047ee",
+      "water_pixels": 352565,
+      "land_or_built_area_pixels": 102523
+    },
+    {
+      "renderer": "software",
+      "name": "SKAGER-Night",
+      "sha256": "7d1b566b4a1e860e3c02de06989417ed6b8f90cebecb584575d0634c7a800723",
+      "water_pixels": 352923,
+      "land_or_built_area_pixels": 102578
+    },
+    {
+      "renderer": "software",
+      "name": "SKAGER-Day-return",
+      "sha256": "f6516b3702be6f8001d685021d8a8e7e68b07d753a8a6c55afb24dd9cae41f64",
+      "water_pixels": 352260,
+      "land_or_built_area_pixels": 102499
+    },
+    {
+      "renderer": "software",
+      "name": "Standard-Day",
+      "sha256": "a0e8833f273422d094f26161f19ad85b9ec11ba4f772b6709e1623c2b8f2e6f8",
+      "water_pixels": 347200,
+      "land_or_built_area_pixels": 84816
+    },
+    {
+      "renderer": "software",
+      "name": "Standard-Dusk",
+      "sha256": "242867a1a98a02d7aad30b24ee80fd9db41f28cd39b3d5fc03b33413e7373d0c",
+      "water_pixels": 349060,
+      "land_or_built_area_pixels": 84931
+    },
+    {
+      "renderer": "software",
+      "name": "Standard-Night",
+      "sha256": "5a6c55359fc819307a0603343662c39428fac501df12087b4423293b2bfc8b45",
+      "water_pixels": 349884,
+      "land_or_built_area_pixels": 85067
+    },
+    {
+      "renderer": "software",
+      "name": "Standard-Day-return",
+      "sha256": "cc2e1521feac96ba2eea4b64acbfa0e9858328aeccfd2de6cf7fe4c9f5b6fa1e",
+      "water_pixels": 347200,
+      "land_or_built_area_pixels": 84816
+    },
+    {
+      "renderer": "opengl",
+      "name": "SKAGER-Day",
+      "sha256": "b142edf8fb45ff7ebfccb6310cb6a2810b85f52126556784eee1a901141c3fef",
+      "water_pixels": 357245,
+      "land_or_built_area_pixels": 103783
+    },
+    {
+      "renderer": "opengl",
+      "name": "SKAGER-Dusk",
+      "sha256": "b1f5da9f7c01c8853f7a5feb5ccc345a7982ee34c05c9024657964c51b0b3586",
+      "water_pixels": 358134,
+      "land_or_built_area_pixels": 103809
+    },
+    {
+      "renderer": "opengl",
+      "name": "SKAGER-Night",
+      "sha256": "c9f038d58c4594fea60569bcf804bdd4b9cce0d27114c17da2d1d0f81769c6ab",
+      "water_pixels": 358279,
+      "land_or_built_area_pixels": 103840
+    },
+    {
+      "renderer": "opengl",
+      "name": "SKAGER-Day-return",
+      "sha256": "79cc998565ac4fc3179f75851dd113c96774f6221935fb4d5c7dcd3136fcc6c1",
+      "water_pixels": 357245,
+      "land_or_built_area_pixels": 103783
+    },
+    {
+      "renderer": "opengl",
+      "name": "Standard-Day",
+      "sha256": "321863eb5d1e60e63cb6a2d5f9951f66ff3c0028af3a4bbed2ae98b9bcd518ba",
+      "water_pixels": 353471,
+      "land_or_built_area_pixels": 85928
+    },
+    {
+      "renderer": "opengl",
+      "name": "Standard-Dusk",
+      "sha256": "4568a1b322600e549e68e81b24b0a4937e54bf07ff28ec94fe86ab496f41bd94",
+      "water_pixels": 355524,
+      "land_or_built_area_pixels": 86014
+    },
+    {
+      "renderer": "opengl",
+      "name": "Standard-Night",
+      "sha256": "4e57e00cb865a111558cdba3881f21a06220e50c08b6d3b15177b7b8f146a0d4",
+      "water_pixels": 356065,
+      "land_or_built_area_pixels": 86155
+    },
+    {
+      "renderer": "opengl",
+      "name": "Standard-Day-return",
+      "sha256": "7fa7065298bae129ffa50cdac451c464e201b3ff1bc831fb95a5779a9701fddd",
+      "water_pixels": 353471,
+      "land_or_built_area_pixels": 85928
+    }
+  ],
+  "day_return_exact_chart_and_wordmark": [
+    "software/SKAGER",
+    "software/Standard",
+    "opengl/SKAGER",
+    "opengl/Standard"
+  ],
+  "standard_exact_baseline_chart": [
+    "software/Day",
+    "software/Dusk",
+    "software/Night",
+    "opengl/Day",
+    "opengl/Dusk",
+    "opengl/Night"
+  ],
+  "status": "passed",
+  "visually_inspected_original_images": 16
+}

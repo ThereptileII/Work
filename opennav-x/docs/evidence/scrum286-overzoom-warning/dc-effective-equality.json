@@ -1,0 +1,20 @@
+{
+  "actualPreparedPath": "/home/standard/Projects/X-nav-worktrees/scrum275-linux-e6ef384/build/integration-source/gui/src/ocpndc.cpp",
+  "preparedFileSha256": "79c287a5aa908e1f1780b520633aaff61f14b4875903d5a7fcc72d4a982aa7bc",
+  "unchangedMethods": {
+    "void ocpnDC::SetGLStipple(": "bc9a3015158c7dd1d416e90a5e1ead43e1ae2f23ac6197eb166539599d100a0c",
+    "void ocpnDC::SetPen(": "fac7da4523cd6f500cfe8b264cfdf4839d53a5bc3bfd2d315159368515902b49",
+    "void ocpnDC::SetBrush(": "9dae462016a090ba4e3aae790d5ed1f30d1df36ab8d63e4d5ab784ea09804797",
+    "void ocpnDC::SetFont(": "bdaec386da39cab6341980bdf6dc2e7c7deeb2f7694f1091a9ff0f6dda498aaf",
+    "void ocpnDC::SetTextForeground(": "14edd95e3f80c790099aabc42a96a999a8b45730150c818453ae260471a8c13c",
+    "const wxPen &ocpnDC::GetPen(": "ad903d9e352050935b3267278fc8629f88785365d37a8263d5a8e495b76b4db5",
+    "const wxBrush &ocpnDC::GetBrush(": "dd344d27013e77a4ed2be5a081892743410b184c5712780f466a9b8f6f7a6f72",
+    "const wxFont &ocpnDC::GetFont(": "6696ee00c4db99ddaba0a566f9e7c7895a581e4136cbbeb11f538863921c6407",
+    "bool ocpnDC::ConfigurePen(": "f40f8fe22cfaf2005772b2a82c98f1690bf038091160cd1a619ce43c3a9b1a4a",
+    "bool ocpnDC::ConfigureBrush(": "18376388a66f197ea0cb8fd447a658e9951382afe5ca181a0e832dc92aa5bc4a",
+    "void ocpnDC::drawrrhelperGLES2(": "6fb28e2b8a380c1cdb47247c90d13dcee9cb0ef42e836d6adc57096ee277469c",
+    "void ocpnDC::DrawRoundedRectangle(": "84459f808f9b48739d40cf8d1ea860a296fc62c9fc70a93b7c99707379cd9dbf",
+    "void ocpnDC::DrawLine(": "cefb40d89f1b8a71755f9a126e7ace7929ee1843c6eaf80f6808f45d96076f59",
+    "void ocpnDC::DrawText(": "d779a528de5a7033d3a9e5e00bc2c720c8a1771867430a2e506218a68ef5434b"
+  }
+}

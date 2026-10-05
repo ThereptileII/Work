@@ -1,0 +1,89 @@
+{
+  "newConcreteDefect": false,
+  "projects": {
+    "ais_provider_test_client": {
+      "sourceCount": 2,
+      "runtime": "MultiThreadedDLL",
+      "outputs": {
+        "OutDir": "D:\\a\\Work\\Work\\opennav-x\\evidence\\local\\ais-native-runtime\\build\\bin\\Release\\",
+        "TargetName": "ais_provider_test_client",
+        "TargetExt": ".exe"
+      }
+    },
+    "ais_session_native": {
+      "sourceCount": 1,
+      "runtime": "MultiThreadedDLL",
+      "outputs": {
+        "OutDir": "D:\\a\\Work\\Work\\opennav-x\\evidence\\local\\ais-native-runtime\\build\\bin\\Release\\",
+        "TargetName": "ais_session_native",
+        "TargetExt": ".exe"
+      }
+    },
+    "ais_transport_test_client": {
+      "sourceCount": 1,
+      "runtime": "MultiThreadedDLL",
+      "outputs": {
+        "OutDir": "D:\\a\\Work\\Work\\opennav-x\\evidence\\local\\ais-native-runtime\\build\\bin\\Release\\",
+        "TargetName": "ais_transport_test_client",
+        "TargetExt": ".exe"
+      }
+    },
+    "ixwebsocket": {
+      "sourceCount": 37,
+      "runtime": "MultiThreadedDLL",
+      "outputs": {
+        "OutDir": "D:\\a\\Work\\Work\\opennav-x\\evidence\\local\\ais-native-runtime\\build\\fixtures\\ixwebsocket\\Release\\",
+        "TargetName": "ixwebsocket",
+        "TargetExt": ".lib"
+      }
+    },
+    "opennav_ais": {
+      "sourceCount": 4,
+      "runtime": "MultiThreadedDLL",
+      "outputs": {
+        "OutDir": "D:\\a\\Work\\Work\\opennav-x\\evidence\\local\\ais-native-runtime\\build\\fixtures\\opennav\\Release\\",
+        "TargetName": "opennav_ais",
+        "TargetExt": ".lib"
+      }
+    },
+    "opennav_ais_codec": {
+      "sourceCount": 2,
+      "runtime": "MultiThreadedDLL",
+      "outputs": {
+        "OutDir": "D:\\a\\Work\\Work\\opennav-x\\evidence\\local\\ais-native-runtime\\build\\fixtures\\opennav\\Release\\",
+        "TargetName": "opennav_ais_codec",
+        "TargetExt": ".lib"
+      }
+    },
+    "opennav_ais_credentials": {
+      "sourceCount": 2,
+      "runtime": "MultiThreadedDLL",
+      "outputs": {
+        "OutDir": "D:\\a\\Work\\Work\\opennav-x\\evidence\\local\\ais-native-runtime\\build\\fixtures\\opennav\\Release\\",
+        "TargetName": "opennav_ais_credentials",
+        "TargetExt": ".lib"
+      }
+    },
+    "opennav_vessel": {
+      "sourceCount": 6,
+      "runtime": "MultiThreadedDLL",
+      "outputs": {
+        "OutDir": "D:\\a\\Work\\Work\\opennav-x\\evidence\\local\\ais-native-runtime\\build\\fixtures\\opennav\\Release\\",
+        "TargetName": "opennav_vessel",
+        "TargetExt": ".lib"
+      }
+    }
+  },
+  "sourceCount": 55,
+  "allSourcePathsAllowedAndRecordedAtOriginalCapture": true,
+  "expectedJsonIncludeFilesPresent": 35,
+  "retainedStagedCacheFilesRehashed": 155,
+  "requiredTlsToolConfigAndDllCopiesRecorded": [
+    "build/ais-runtime-inputs/openssl/bin/openssl.exe",
+    "build/ais-runtime-inputs/openssl/bin/libssl-3.dll",
+    "build/ais-runtime-inputs/openssl/bin/libcrypto-3.dll",
+    "build/ais-runtime-inputs/openssl/ssl/openssl.cnf",
+    "build/ais-runtime-inputs/zlib/bin/zlib1.dll"
+  ],
+  "nativeCompilationAndRuntimeNotExecuted": true
+}

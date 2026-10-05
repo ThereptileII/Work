@@ -1,0 +1,67 @@
+{
+  "base_commit": "1a02ae083501eb05feeef7879e6ee450c076be69",
+  "upstream_commit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "checks": 62,
+  "software_fixture": "actual wxGraphicsContext raster",
+  "GL_fixture": "recorded submissions, not driver output",
+  "native_windows_acceptance": false,
+  "source_sha256": {
+    "src/integration/ChartRouteWaypoint.cpp": "170f0e56158858966ae31b4274a88d775a5a361e92c62004f0d01549ae5e1f8d",
+    "src/integration/ChartRouteWaypoint.h": "c07dd7130df2971af1bbae1d95f9bf92add5348717405431692165324083dd53",
+    "src/integration/ChartWaypointIcon.h": "c9960ef0eb5dbb45ea7d866f6d406ef6e35822a60a95db251b2f063d4b703616",
+    "src/integration/OpenCPN.cmake": "a1da08d911c6a39afe9053fcae2488b428be611e8d62b4de33d52ef841492915",
+    "patches/opencpn-5.12.4-chart-presentation.patch": "ffe51399dd7ba1f0c14cf6854a1c8e8af72d6476b01c4d3a859e299cb5947a6d",
+    "tests/route_waypoint_test.cpp": "b87ed374b1bdf0ecdf6a4484552ef047e483097db794347e63d138821d6f9067",
+    "tools/test-route-waypoint.py": "ba08584827796ba0be9b6fe4c703698169b3b0c5dd09821b89805a6f42270d1b"
+  },
+  "production_objects": [
+    {
+      "source": "/home/standard/Projects/X-nav-worktrees/waypoint-touch-regression/src/integration/ChartRouteWaypoint.cpp",
+      "gl": false,
+      "exit": 0
+    },
+    {
+      "source": "/home/standard/Projects/X-nav-worktrees/skager-product-integration/build/integration-source/gui/src/route_point_gui.cpp",
+      "gl": false,
+      "exit": 0
+    },
+    {
+      "source": "/home/standard/Projects/X-nav-worktrees/skager-product-integration/build/integration-source/gui/src/waypointman_gui.cpp",
+      "gl": false,
+      "exit": 0
+    },
+    {
+      "source": "/home/standard/Projects/X-nav-worktrees/waypoint-touch-regression/src/integration/ChartRouteWaypoint.cpp",
+      "gl": true,
+      "exit": 0
+    },
+    {
+      "source": "/home/standard/Projects/X-nav-worktrees/skager-product-integration/build/integration-source/gui/src/route_point_gui.cpp",
+      "gl": true,
+      "exit": 0
+    },
+    {
+      "source": "/home/standard/Projects/X-nav-worktrees/skager-product-integration/build/integration-source/gui/src/waypointman_gui.cpp",
+      "gl": true,
+      "exit": 0
+    }
+  ],
+  "limits": [
+    "active destination and special/custom waypoint artwork retained",
+    "native Windows DPI/font/GL and boat pending",
+    "integrated active-route ENC capture pending"
+  ],
+  "final_routepoint_objects": [
+    {
+      "source": "/home/standard/Projects/X-nav-worktrees/skager-product-integration/build/integration-source/gui/src/route_point_gui.cpp",
+      "gl": false,
+      "exit": 0
+    },
+    {
+      "source": "/home/standard/Projects/X-nav-worktrees/skager-product-integration/build/integration-source/gui/src/route_point_gui.cpp",
+      "gl": true,
+      "exit": 0
+    }
+  ],
+  "all_nine_patch_source_match": true
+}

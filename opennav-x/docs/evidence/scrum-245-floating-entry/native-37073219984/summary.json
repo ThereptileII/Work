@@ -1,0 +1,616 @@
+{
+  "status": "passed",
+  "scope": "isolated native Win32 floating-surface console link and lifecycle only",
+  "candidate": "e67f70e7dafc31b6da9d34d5eab8690a9eab09c8",
+  "floatingInputs": {
+    "tests/floating_surface_test.cpp": {
+      "bytes": 5166,
+      "sha256": "1deb0ae291b19f0877640b9be1d33b2076f38dd093c883a4dded6866d499d70c"
+    },
+    "src/ui/FloatingSurface.cpp": {
+      "bytes": 1807,
+      "sha256": "596d399bb797abc0a255a992391ba012172c4bf963658f7c9527534f88f830b9"
+    },
+    "tests/windows_floating_surface/CMakeLists.txt": {
+      "bytes": 1211,
+      "sha256": "179ac7f23478118b1611434bf207d9db952aaf2a3e21b793e729f62c49c47222"
+    },
+    "tools/test-windows-changed-units.py": {
+      "bytes": 36334,
+      "sha256": "0587e09f062a48cf6ba413a440fe5ed1e8f1e103033746d38c875812855a3a32"
+    },
+    "tools/windows-wx.lock.json": {
+      "bytes": 1017,
+      "sha256": "2fb563c4de7819d4b10d7a567e59510cd033c3b9cb55ce4ebb654964da60267f"
+    },
+    "tools/windows-ui.py": {
+      "bytes": 37012,
+      "sha256": "f85183515287b57cacc2ff44666f26f0c44f7592e7443e6feab0200f3e30da93"
+    },
+    "../.github/workflows/skager-windows-changed-units.yml": {
+      "bytes": 6122,
+      "sha256": "3e1ead3588e8dfe2ba47e68aba5d1c65ba489d280064ecb14978844e14b45810"
+    },
+    "src\\adapters\\Autopilot.h": {
+      "bytes": 3170,
+      "sha256": "d5f393abc88b683fbfd357199060bad6adfc370fba3bf0661c8e77b8a47dcae0"
+    },
+    "src\\adapters\\BoatN2k.h": {
+      "bytes": 1237,
+      "sha256": "8adaae11367144e972b95d86c1e0c8efac6f561865b979d3cab5678aa4998a20"
+    },
+    "src\\adapters\\Radar.h": {
+      "bytes": 973,
+      "sha256": "42886f9ea8d7eae305710697910ff83cee9c5c6de463f409d5f1cc105c6e37d4"
+    },
+    "src\\adapters\\RadarSimulator.h": {
+      "bytes": 1032,
+      "sha256": "48598e42f8ac884f6c545a60e06abf35f60d0023be3d1a0b5abf92e78dfef4bc"
+    },
+    "src\\adapters\\SimulatedAutopilot.h": {
+      "bytes": 755,
+      "sha256": "37813cb5881fa9cd01f72caf7a10a5650c62574f10d73ef14ef2de378d74e3ed"
+    },
+    "src\\adapters\\St4000Pilot.h": {
+      "bytes": 2939,
+      "sha256": "021cd738bf04e2b6fa119bae74cb8733375bf9402c3a1fb38e58be5a25c2e362"
+    },
+    "src\\ais\\AisStreamCodec.h": {
+      "bytes": 1055,
+      "sha256": "e403f4396eaf1117ed086b61c97dec3321f06cffeea03d30f89cd389865300a4"
+    },
+    "src\\ais\\AisStreamProvider.h": {
+      "bytes": 1441,
+      "sha256": "c270a7eb52a730657125393cc86ed0b668fb5d4d1c1d8cee50595af682a7867b"
+    },
+    "src\\ais\\AisStreamSession.h": {
+      "bytes": 1401,
+      "sha256": "734e9580726235281b6ba0af251ee0bd74d5c3290550057980ff260456a38419"
+    },
+    "src\\ais\\ChartTargets.h": {
+      "bytes": 1507,
+      "sha256": "f490800a28210336e6725272502a821b2ea7c45de0d116ce85bae12a12985af3"
+    },
+    "src\\ais\\Credentials.h": {
+      "bytes": 1652,
+      "sha256": "713083a4dac1152a04b28c7f850be196b49b958dbe291abb89c6d2f8929b7556"
+    },
+    "src\\ais\\Provider.h": {
+      "bytes": 1256,
+      "sha256": "75c56c74f25c7102a32966dad45c8013ba32daa74ce7754ccda247790d872a97"
+    },
+    "src\\ais\\Subscription.h": {
+      "bytes": 1290,
+      "sha256": "4e8e8c56144fb54a89ea5764b3d0ca7bba04ce71d8fa601fb12ff87c8bea851b"
+    },
+    "src\\ais\\TargetCache.h": {
+      "bytes": 1512,
+      "sha256": "1d989f1144362c987670b49ea6882549ae16226c806cbbb6f3fb1d6b1f497d08"
+    },
+    "src\\application\\Alerts.h": {
+      "bytes": 1397,
+      "sha256": "37bac6ef4b600307926fa6be108dac7e03dace5bf9475d930155f688295ce3ae"
+    },
+    "src\\application\\AnchorView.h": {
+      "bytes": 784,
+      "sha256": "fd0c3b328f381a7770980246d3517bd9b31b94b4ec333b6f5c160859bd99384b"
+    },
+    "src\\application\\Brand.h": {
+      "bytes": 646,
+      "sha256": "c8e806cc089fabc0459ccd24814dfcc201b1f98074f7596bc7eab70fcf11d958"
+    },
+    "src\\application\\DisplayPreferences.h": {
+      "bytes": 1531,
+      "sha256": "97c3c707ae93755861afd6f1966a99ed0a9978a0426559af94e2efc42caf73a4"
+    },
+    "src\\application\\EnergyView.h": {
+      "bytes": 794,
+      "sha256": "d7d04994a0fd76aa9d781645cda2c19ac3d552347bacc9bac4b10902b3dc53a3"
+    },
+    "src\\application\\FooterView.h": {
+      "bytes": 1063,
+      "sha256": "3edb2426b50ef661e898cc22b39f9dfadf2275ac39b710cdfe99d684cb9fc798"
+    },
+    "src\\application\\HorizonView.h": {
+      "bytes": 2326,
+      "sha256": "b145ce8579436ec4469925382b4d27313c7d6611f2058a6f8193a2d2217bcc0f"
+    },
+    "src\\application\\InstrumentView.h": {
+      "bytes": 1043,
+      "sha256": "22b4c9f8441e1b12c4fbc941a287dbd7a78aa8da8c064204a33ea5484b23d261"
+    },
+    "src\\application\\MarineMapping.h": {
+      "bytes": 633,
+      "sha256": "ba4f4b8f9e6a13a21f9bfa05c2bb997c57a772d43df3e27b5ba5d9a833648dad"
+    },
+    "src\\application\\NavigationObjects.h": {
+      "bytes": 5595,
+      "sha256": "de12a33b594f2358c7ad89626b5488ddb30c0ddea26aade9056c62906fd6fae9"
+    },
+    "src\\application\\OnlineAis.h": {
+      "bytes": 675,
+      "sha256": "fad3eff83e885552c5dc14ec4ed3a5291201192d1896213211eed359bbf66be3"
+    },
+    "src\\application\\PassageView.h": {
+      "bytes": 961,
+      "sha256": "69924da9d3e28daa5eb0ddd84514182b185639655a59040e226000a245d0eed9"
+    },
+    "src\\application\\PilotPresentation.h": {
+      "bytes": 845,
+      "sha256": "2bd5271a8b4748cb9e876205491127f9db605daa31030cc2401065d297064cc3"
+    },
+    "src\\application\\Settings.h": {
+      "bytes": 1678,
+      "sha256": "fc669bc064446a0f79e41b01a8d299cc3974f79d5ceca5313b9f1c1e38f3c434"
+    },
+    "src\\application\\SkagerBrandAsset.h": {
+      "bytes": 838156,
+      "sha256": "cc9f469181717b4fb80986b9406d2d6d078bfdb5971d2e68f6b4072b8dcd2019"
+    },
+    "src\\application\\SourceHealthView.h": {
+      "bytes": 1247,
+      "sha256": "66f1560221cd0dbbf0340a4b2493d1a99196e665facb3f3e595422bd2c7dc445"
+    },
+    "src\\application\\Version.h": {
+      "bytes": 146,
+      "sha256": "65df3b593eb8542121a4bffa4770d38aaa0aacf9238501a6d9f141dc09d5780f"
+    },
+    "src\\diagnostics\\Calibration.h": {
+      "bytes": 702,
+      "sha256": "9474a9575874ba77498e1d27c873aeff7f24a305386a2640b1c513a118f17094"
+    },
+    "src\\diagnostics\\Commissioning.h": {
+      "bytes": 1883,
+      "sha256": "937282067f0f5d528958687f562771867cfd6a5d4323ed202286b2cd41399e30"
+    },
+    "src\\diagnostics\\FieldReport.h": {
+      "bytes": 1926,
+      "sha256": "e1f6678f3ecb4c39cfb2193ca10f8b3b3a98f7b6481a9e3043bdd243e2a934f8"
+    },
+    "src\\diagnostics\\Recorder.h": {
+      "bytes": 1614,
+      "sha256": "ebffa0320b4c8923af98da1aa6157925377a0d8ca8fdfc9da68866bc36538c2f"
+    },
+    "src\\diagnostics\\Recording.h": {
+      "bytes": 1419,
+      "sha256": "e92512571791cc23435701b1049ac2a9dd620676a14e6c29ac26db1c2f2b773d"
+    },
+    "src\\diagnostics\\Replay.h": {
+      "bytes": 879,
+      "sha256": "c66025f56e6e1dc0740d422550fb8a122f02375eb699b89f06e76b7b4251cdbf"
+    },
+    "src\\diagnostics\\TestEarlyStartupTrace.h": {
+      "bytes": 5292,
+      "sha256": "573627d4408479af3f141ea527bbdb91a4fc560ff6719bcb37b756b9bb3570bd"
+    },
+    "src\\diagnostics\\TestUiTrace.h": {
+      "bytes": 2164,
+      "sha256": "f6faeb6c59a1f481200b46e8eb964414aefc6b6c75e43480d9dd4e8c993d60af"
+    },
+    "src\\integration\\AisObservationTime.h": {
+      "bytes": 1368,
+      "sha256": "8bfcd502ad97fd12d1bb1cfc70e5f219c2196669e1ab51f397bac20bfe575585"
+    },
+    "src\\integration\\AisViewport.h": {
+      "bytes": 521,
+      "sha256": "7e175f53c8b456cd2041e645c3ddd92f897de2f4a6065bc07ce1b0aea7c09f4e"
+    },
+    "src\\integration\\AnchorGeometry.h": {
+      "bytes": 449,
+      "sha256": "21be594f49aea5535550ee721960ace4f585bd37df3671f5aabe9d19f2512cdc"
+    },
+    "src\\integration\\BuildFeatures.h": {
+      "bytes": 1480,
+      "sha256": "e604b96d4cef358828562c0a6659fc669b2d4b6d463d1699f1904fdadd17b2e9"
+    },
+    "src\\integration\\ChartCogPredictor.h": {
+      "bytes": 2978,
+      "sha256": "9664a641118b13dd2b1b83676a7b14c85558725cfc104f3b39de07ba79d33f5c"
+    },
+    "src\\integration\\ChartNameTypography.h": {
+      "bytes": 969,
+      "sha256": "dd4d244b8236eae0b365361136b6d4ca7b8bdbbf4b7af2bf312812cf9534aadd"
+    },
+    "src\\integration\\ChartPresentation.h": {
+      "bytes": 2687,
+      "sha256": "e70b385659489cadc15555ed42d1b648ee3a4adaa561045a31316c740282184f"
+    },
+    "src\\integration\\ChartRouteGeometry.h": {
+      "bytes": 2966,
+      "sha256": "507d39e89c68da5bba2e4fe5cd7bb66f596cbe4f663277cc9c101d43d85ae96e"
+    },
+    "src\\integration\\DashboardPresentation.h": {
+      "bytes": 1213,
+      "sha256": "9fe73e89c16faf2516388504c20be76dceacd14bedf85e17a77059ee2e6962d4"
+    },
+    "src\\integration\\DashboardPresentationApi.h": {
+      "bytes": 957,
+      "sha256": "171d9acd7fe95512f8066544af02c9b0bebbd675fc1e670dfa4c7a76f37464bb"
+    },
+    "src\\integration\\ExternalJson.h": {
+      "bytes": 1977,
+      "sha256": "e531b5383f5c5ef3437167ef057c20e305ba5458665fb85e861e4045f316b03b"
+    },
+    "src\\integration\\InstalledResources.h": {
+      "bytes": 747,
+      "sha256": "d5b362c08330545b82a3489fcc8d0ef6de28a98bb84a02e37308f7a74aa87301"
+    },
+    "src\\integration\\InstallerSelfTest.h": {
+      "bytes": 388,
+      "sha256": "3f1757ad3eed2925141797f39188cc0e665b0694954ecc54836e47359e475716"
+    },
+    "src\\integration\\MarineBridge.h": {
+      "bytes": 2187,
+      "sha256": "b0262f54d6b146227fee2f113568b0c61c97cac54042010744e2e252644cae37"
+    },
+    "src\\integration\\MarineDecoder.h": {
+      "bytes": 1223,
+      "sha256": "1bc82ee5b52d8dd1ef642ca639ddbbf14024b107f02f63cc29f65d2c8bc078d2"
+    },
+    "src\\integration\\N2kSourceIdentity.h": {
+      "bytes": 1162,
+      "sha256": "132d43703c9680ed58d7b290a95cb6886db5cdd7b8a897291d406ff9087024df"
+    },
+    "src\\integration\\NavigationActions.h": {
+      "bytes": 325,
+      "sha256": "477db7de4a269907a81bd61ccdea052389dc06de7e2fd8ac9f6c3d1b09a1f1b8"
+    },
+    "src\\integration\\NavigationBridge.h": {
+      "bytes": 667,
+      "sha256": "a62ebbfe6a8a72b89f408a2915d7e4c0dee29718af3f9cca8084e109dd260962"
+    },
+    "src\\integration\\NavigationObjects.h": {
+      "bytes": 2811,
+      "sha256": "261f00a3f7d3623a7ad15a7dc8733375815fc1cc6ca86a45b190dee7c44e0822"
+    },
+    "src\\integration\\OnlineAis.h": {
+      "bytes": 1234,
+      "sha256": "72b3b48bf8bb3db2950baf10a2448ba54616d850a5296d19be0c2b97c8394c7f"
+    },
+    "src\\integration\\OnlineAisLabels.h": {
+      "bytes": 2718,
+      "sha256": "41834557e4c1103a46456c53279e08d7be03da141448cf8c717a35757720a847"
+    },
+    "src\\integration\\OnlineAisOverlay.h": {
+      "bytes": 706,
+      "sha256": "a3b9c1e73c093bd72b5d8c60f89bff9590c66fe0ae2a978004d180ff1af284f7"
+    },
+    "src\\integration\\OpenCPNIntegration.h": {
+      "bytes": 2264,
+      "sha256": "3be63fe6107e03dbf0264d8c4cff9417be0176010e5d85be984f621d053656e8"
+    },
+    "src\\integration\\OpenCPNPilot.h": {
+      "bytes": 1361,
+      "sha256": "06439b06afea0f9a5b6ab9b64958b21a19ae6fc5cbc3bfaecca9270e4550779a"
+    },
+    "src\\integration\\OpenCPNRouteReader.h": {
+      "bytes": 339,
+      "sha256": "e9f48e6a9071b8c3cb8b010dc28b8ed3f5d25769113e74e6770f8b0e020588e5"
+    },
+    "src\\integration\\PilotOutputPolicy.h": {
+      "bytes": 1266,
+      "sha256": "f67f2b90cb69122e570c0c473740a22a8f7945bfbe834e0b9c8736d31693c070"
+    },
+    "src\\integration\\PreviewDiagnostics.h": {
+      "bytes": 1010,
+      "sha256": "ec04b753385caa35ef1eea810e0fca89c144dd1b2c265dbc3c5cd6394d610544"
+    },
+    "src\\integration\\PreviewResources.h": {
+      "bytes": 506,
+      "sha256": "379157e1b0f2f263672a1bb2284c632b62f0aa6fcc33ea6b8d02a71fcb69d1a5"
+    },
+    "src\\integration\\RecoveryStore.h": {
+      "bytes": 1085,
+      "sha256": "e97019769724018de9b006827ba47f1f549e9b33b09bb459d4b31aea71f6a0c3"
+    },
+    "src\\integration\\RoutePassWatch.h": {
+      "bytes": 979,
+      "sha256": "50314e94b84a2494c662746931bc049d51889d0c70277877bcbe80923c3f8014"
+    },
+    "src\\integration\\RouteProgressInput.h": {
+      "bytes": 2072,
+      "sha256": "619d8da50a43471fcaeb4d39dc2fed9a5aecdba7eebbf935bde5c2356ac693b7"
+    },
+    "src\\integration\\RuntimeDiagnostics.h": {
+      "bytes": 280,
+      "sha256": "efd8bee0389c1c37018ed6498002470c0bbe726da4480ec8d575285c79515877"
+    },
+    "src\\integration\\SettingsStore.h": {
+      "bytes": 1248,
+      "sha256": "094cdeb56ca8de492cee6589addf6fbb932c9a1d909225fd26836a07edcb2e2c"
+    },
+    "src\\integration\\StartupMode.h": {
+      "bytes": 1658,
+      "sha256": "537a56c92fdff93bb30e886663f22b5bca8693622e2fd35d5aa583f98c3aded6"
+    },
+    "src\\integration\\StartupRecovery.h": {
+      "bytes": 505,
+      "sha256": "8afcd5287771dc6d851c5077b6101708f6e6a774c1585d94c641b67ea2c66329"
+    },
+    "src\\platform\\PlatformIntegration.h": {
+      "bytes": 410,
+      "sha256": "9ffd392fcc3f9537f5466e847c113c5394c0a290965bb863286b528c07c70628"
+    },
+    "src\\platform\\PortableProfile.h": {
+      "bytes": 901,
+      "sha256": "1c27cd3569783acfa54ece9fda044cc08e513038f11456ec8c594f91bd9bf02a"
+    },
+    "src\\platform\\windows\\CommissioningRestartNative.h": {
+      "bytes": 628,
+      "sha256": "ce960ac8e4dc6a651d9d54b982cfc9d4a77799a76048fec4185d0ced9472c988"
+    },
+    "src\\platform\\windows\\CommissioningRestartProtocol.h": {
+      "bytes": 2197,
+      "sha256": "382838e4be0b9c76191e4b0274348f6d8a088f16b28f7b5e0627feab924a3a45"
+    },
+    "src\\platform\\windows\\WindowsArguments.h": {
+      "bytes": 606,
+      "sha256": "00cc83e0616a343d795efc0512307494dbc16f295e32de8be282b45a51c4a356"
+    },
+    "src\\smartnav\\Advisories.h": {
+      "bytes": 1160,
+      "sha256": "856e64811bbd1ed7a7316876bad7921cabe44349d96fa59b017157e71aa3f6d0"
+    },
+    "src\\smartnav\\Energy.h": {
+      "bytes": 2908,
+      "sha256": "430c0786dc58b08118af5be2a257cb84e7e5b3b093e67963b55f3dcd71ddafda"
+    },
+    "src\\smartnav\\EnergyConfiguration.h": {
+      "bytes": 1633,
+      "sha256": "613d12c7616c82735a7b83eae8991ffe87be52d28a354e0dd795a234d9110805"
+    },
+    "src\\smartnav\\HazardLookAhead.h": {
+      "bytes": 2122,
+      "sha256": "a3104265132791a53efc4fd5195004c3d435c2c45ec259214b839a4c1980b2ef"
+    },
+    "src\\smartnav\\VesselEnergy.h": {
+      "bytes": 661,
+      "sha256": "9495730083ffd080804375f5772ed4b83eab18eca7562b2a42d60402c3f5158c"
+    },
+    "src\\ui\\AisDrawer.h": {
+      "bytes": 1577,
+      "sha256": "bd02ed86622c5980a13aa76490dd88b5ec6cd5f6b53f0bf5e3289b49a246d367"
+    },
+    "src\\ui\\AlertDrawer.h": {
+      "bytes": 801,
+      "sha256": "bd22502d72e85af48c40be2fb8dfcade4b06a35378027f176cd98b02d959b5a3"
+    },
+    "src\\ui\\AnchorDrawer.h": {
+      "bytes": 729,
+      "sha256": "f895bf606b5d5252d32a9f23d894652fcd5b137c62051467058a47fd47af8e72"
+    },
+    "src\\ui\\Branding.h": {
+      "bytes": 468,
+      "sha256": "516210df4403747e90a00f0bc01aea29727c39f95cc3da2f3c7dd5f8b5a60f6d"
+    },
+    "src\\ui\\ChartPresentationDrawer.h": {
+      "bytes": 1614,
+      "sha256": "423c2b8fd9c352d1948f0dfff3cd627425e0db0bb39c100245db1df6fe682d65"
+    },
+    "src\\ui\\ChoiceField.h": {
+      "bytes": 1261,
+      "sha256": "4d430575eb88ed993b4edbdd8816e33fe59fac51fa4272e9430463698bfb5bc2"
+    },
+    "src\\ui\\ContextCard.h": {
+      "bytes": 2201,
+      "sha256": "5db0df1dc0445a6e13c63e41c02e0046dc7b6c84445209c3996ecec5568344fd"
+    },
+    "src\\ui\\Controls.h": {
+      "bytes": 8870,
+      "sha256": "d4b51f651c5e8c783255b262ad39fa713a1e8de7a5a7031e2c3986b1a2e76443"
+    },
+    "src\\ui\\DisplaySizing.h": {
+      "bytes": 802,
+      "sha256": "7e793a2f65f32b4e3776f110f02096697ce3b079824b1a1295674594e815f665"
+    },
+    "src\\ui\\Drawer.h": {
+      "bytes": 1345,
+      "sha256": "0fadde15dd3bf02988edb0957295e42a77f593b16d4341eb5c97d8818f2d9a6a"
+    },
+    "src\\ui\\FloatingSurface.h": {
+      "bytes": 1516,
+      "sha256": "780ca6b752b782c09c169dc41b1cdf96e32ccc0edb1f487376b4eb8ad652ebae"
+    },
+    "src\\ui\\HealthDrawer.h": {
+      "bytes": 801,
+      "sha256": "43966ab5109b944a5d0e25be19124b15523a42c27198d6a4a4b3372f79e752c0"
+    },
+    "src\\ui\\Horizon.h": {
+      "bytes": 1209,
+      "sha256": "fd7c7ba619fb3082a936ec6ed07ef5ddf134adfb523de52211866858a248166b"
+    },
+    "src\\ui\\InstrumentPanel.h": {
+      "bytes": 1211,
+      "sha256": "6376c6fbd735ed12db061811027a97d687c7820596333af6f0d86d659717cc88"
+    },
+    "src\\ui\\ListView.h": {
+      "bytes": 995,
+      "sha256": "a397ff2f4f2a88123a42eea21a9dc47985f6e45d8fb5bda4252ae301495cdf82"
+    },
+    "src\\ui\\PassageDrawer.h": {
+      "bytes": 1170,
+      "sha256": "f34d49f7c61eae6a3da4cb670157f28937ff9b77a0b7c39cc4af9af50eb6e87b"
+    },
+    "src\\ui\\PilotDrawer.h": {
+      "bytes": 1218,
+      "sha256": "6f8fdf3faa9eb74725e055170e4a875807bf383166f64a9b56a0ef10800e4f45"
+    },
+    "src\\ui\\PreviewPanel.h": {
+      "bytes": 1393,
+      "sha256": "5f2eef47ca6cf464bdc238548a3f24a1a46430ae9ec50936d2724377b98ce6b7"
+    },
+    "src\\ui\\ProductPanel.h": {
+      "bytes": 6807,
+      "sha256": "3da91f7a2fe2d243979911b31fa84cd4e0ab67adf2defe75a451ae1633ff7b12"
+    },
+    "src\\ui\\PrototypeGeometry.h": {
+      "bytes": 4668,
+      "sha256": "66ff1725a0f035f0b2dd8ac7f47671cd4813a014eee12d35dc89d7fcdd5a4008"
+    },
+    "src\\ui\\PrototypeIcons.h": {
+      "bytes": 3553,
+      "sha256": "622e3b6d6b45048c2240c37e78e40dc28018e32c0ec4e58b930145630f09e452"
+    },
+    "src\\ui\\RadarPanel.h": {
+      "bytes": 1116,
+      "sha256": "609c2350bc59af5c62334b1409aa9582a22fe45b9c177b6f942b2b3389ad9116"
+    },
+    "src\\ui\\Range.h": {
+      "bytes": 646,
+      "sha256": "f2c4d0fe6403d56d355be6545f7a7cb8eed28b918e4e3da639f36baa776f966b"
+    },
+    "src\\ui\\SearchDrawer.h": {
+      "bytes": 1365,
+      "sha256": "e24976785a63018f075209a5cdc60f9b3d276a7aaa88038e074457ab53aab0ee"
+    },
+    "src\\ui\\SettingsDrawer.h": {
+      "bytes": 2967,
+      "sha256": "8ff2af660629fb1d1e993169648e5bccdf21c55a3119ada4859c5bf982d22b7e"
+    },
+    "src\\ui\\Sheet.h": {
+      "bytes": 783,
+      "sha256": "d9643fce8a83fdfc0d20879e3a4e53d31b96429a749ca9a6ae7d8d8f2e1f313e"
+    },
+    "src\\ui\\Shell.h": {
+      "bytes": 11504,
+      "sha256": "ed906bc58b88d78fea6b6378bd5998b5c8cedff1d882d83653ced52b8efaec05"
+    },
+    "src\\ui\\StatusFooter.h": {
+      "bytes": 983,
+      "sha256": "87349fe2d12f5ee7979784bfd250ca9369d666c0ab2d507cac604e98bc1db981"
+    },
+    "src\\ui\\Theme.h": {
+      "bytes": 4104,
+      "sha256": "1ceb85b81b78e48c773fe73d41f5f426581e15a62bf61527ccdaa8f7aea9cd70"
+    },
+    "src\\vessel\\AisHealth.h": {
+      "bytes": 463,
+      "sha256": "025a4dcda9c99df1149d0ef39eec08883010a70a4517ddad7f659bdb3bfe2199"
+    },
+    "src\\vessel\\AisSelection.h": {
+      "bytes": 509,
+      "sha256": "77d49846f2e25aeebeac3d72c390b6f5acca8f245eb10f0d2cd9590f8286c22a"
+    },
+    "src\\vessel\\AisState.h": {
+      "bytes": 1396,
+      "sha256": "c79c8399c874cce536b2b2c7d0c24bf3fd6ada3bfaa931172cb7144006364347"
+    },
+    "src\\vessel\\DataItems.h": {
+      "bytes": 3784,
+      "sha256": "a9e0d677dac56b690fcd4d6fe66b26231a59a67c56d5d447efdb8d83b8e8bcfc"
+    },
+    "src\\vessel\\DemoSource.h": {
+      "bytes": 1235,
+      "sha256": "cf2663ba46f46bce282a2ddbab8a8cf5b73d54edfa59b8593305071b3f758a4a"
+    },
+    "src\\vessel\\DisplayItems.h": {
+      "bytes": 2029,
+      "sha256": "c844eb6b9b865327794f18ea3fc151fe7c8097ee959e03dd9b184c935f975d42"
+    },
+    "src\\vessel\\NavigationInput.h": {
+      "bytes": 725,
+      "sha256": "f782f89ea3baa7bb6ee43b9e5ea8a2cb389eb61d003671b4ec53595c14c6bb63"
+    },
+    "src\\vessel\\RouteProgress.h": {
+      "bytes": 2516,
+      "sha256": "89f2372d82eb044951ce0f366dce1eddf4c81e0f5c9d1a0f0fff723d36b4d1f0"
+    },
+    "src\\vessel\\SensorRegistry.h": {
+      "bytes": 3437,
+      "sha256": "2d56e5f57cac1e88b79d931918cedc048a83a7aa4bb9480453b9b0ff4c26cab9"
+    },
+    "src\\vessel\\VesselState.h": {
+      "bytes": 4128,
+      "sha256": "75ce9ab1d972d034fd77d770dee34e9f50874de5d587ca5ce4c19d52d5966d24"
+    }
+  },
+  "floatingSurface": {
+    "executable": {
+      "bytes": 69120,
+      "sha256": "8bfca5c6b4f7063a22dad39d5dd60918b7f0b4dbc1d0fce807a67b09754b50a1"
+    },
+    "runtime": {
+      "wxbase32u_vc14x.dll": {
+        "source": "D:\\a\\Work\\Work\\opennav-x\\build\\windows-changed-unit-sdk\\wx\\lib\\vc14x_dll\\wxbase32u_vc14x.dll",
+        "bytes": 2523136,
+        "sha256": "0aa3800ac7981091f46a45342620e169d158790a6f55e96ca86e772ef567f338"
+      },
+      "wxmsw32u_core_vc14x.dll": {
+        "source": "D:\\a\\Work\\Work\\opennav-x\\build\\windows-changed-unit-sdk\\wx\\lib\\vc14x_dll\\wxmsw32u_core_vc14x.dll",
+        "bytes": 7467008,
+        "sha256": "beadbd9824a90d54e25f899afb9cf45611e7f74c9e0a0ceb6531e0bf6d21bdc3"
+      },
+      "concrt140.dll": {
+        "source": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Redist\\MSVC\\14.44.35112\\x86\\Microsoft.VC143.CRT\\concrt140.dll",
+        "bytes": 259688,
+        "sha256": "a2b04c69868b08a600518ebbad1661d38de4dd0e0a8e638c22d4641d410e50b1"
+      },
+      "msvcp140.dll": {
+        "source": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Redist\\MSVC\\14.44.35112\\x86\\Microsoft.VC143.CRT\\msvcp140.dll",
+        "bytes": 447616,
+        "sha256": "97e71a3c697fb1ab3af777db39009e4602525e8c3aff0837ecc7031cba188165"
+      },
+      "msvcp140_1.dll": {
+        "source": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Redist\\MSVC\\14.44.35112\\x86\\Microsoft.VC143.CRT\\msvcp140_1.dll",
+        "bytes": 33896,
+        "sha256": "01a58552686d0c6b9fd67a7ac81169fc0013aedf59a8efdc611f94907489a31c"
+      },
+      "msvcp140_2.dll": {
+        "source": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Redist\\MSVC\\14.44.35112\\x86\\Microsoft.VC143.CRT\\msvcp140_2.dll",
+        "bytes": 294992,
+        "sha256": "2a5365e03cc6e78b408dfca81537f3734bf3d7cf9cc13ae33204dfbc641dbe43"
+      },
+      "msvcp140_atomic_wait.dll": {
+        "source": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Redist\\MSVC\\14.44.35112\\x86\\Microsoft.VC143.CRT\\msvcp140_atomic_wait.dll",
+        "bytes": 47240,
+        "sha256": "c4a2bae74e008a5bb2445f9078c14df9dcb03267248dfa64e7d04cdc8af5208e"
+      },
+      "msvcp140_codecvt_ids.dll": {
+        "source": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Redist\\MSVC\\14.44.35112\\x86\\Microsoft.VC143.CRT\\msvcp140_codecvt_ids.dll",
+        "bytes": 30824,
+        "sha256": "a5cbecfd9b8892ec9a60e30fef7ef2158032c6d91efdfbaca87c082bcd48bfa9"
+      },
+      "vccorlib140.dll": {
+        "source": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Redist\\MSVC\\14.44.35112\\x86\\Microsoft.VC143.CRT\\vccorlib140.dll",
+        "bytes": 287360,
+        "sha256": "89ed5a6877a87ec3ec9fe4a0fb14dc950599f0b67318e746084a0c333a6c865f"
+      },
+      "vcruntime140.dll": {
+        "source": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Redist\\MSVC\\14.44.35112\\x86\\Microsoft.VC143.CRT\\vcruntime140.dll",
+        "bytes": 91216,
+        "sha256": "a9d7732a3c3de09f0601a7fa2555093dcb49f08e2fc62a86091461f0f38393ed"
+      },
+      "vcruntime140_threads.dll": {
+        "source": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Redist\\MSVC\\14.44.35112\\x86\\Microsoft.VC143.CRT\\vcruntime140_threads.dll",
+        "bytes": 36000,
+        "sha256": "bb2b1d16187562376fc888059e2cbbf26c5404f6a4bb7197d1d01b970f199667"
+      }
+    },
+    "checks": 12,
+    "exitCode": 0,
+    "fixtureOnly": true
+  },
+  "desktop": {
+    "before": [
+      1024,
+      768,
+      32
+    ],
+    "after": [
+      1440,
+      900,
+      32
+    ]
+  },
+  "legacyControl": {
+    "source": {
+      "bytes": 5093,
+      "sha256": "650569435b2938bcba80eea9e2feddc4cd33f0e885199e45dcabc78a7ecf2848"
+    },
+    "expectedErrors": [
+      "LNK2019 _main",
+      "LNK1120"
+    ]
+  },
+  "nativeProductAcceptance": false
+}

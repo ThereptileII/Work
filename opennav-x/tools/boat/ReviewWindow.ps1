@@ -1,7 +1,7 @@
 # Read-only vessel/UI review. No application launch or equipment commands.
 . (Join-Path $PSScriptRoot 'Common.ps1')
 function Get-WindowReviewActions {
-  return @('Capture','Resize1280x800','Menu','Navigation','Routes','Waypoints','AIS','Instruments','Advice','PilotView','Anchor','Settings','Sources','Display','ToggleFullscreen','ToggleOrientation','Route','Energy','Diagnostics','System','Alerts','Escape','CyclePalette','ZoomIn','ZoomOut','Center','PanRight','PageUp','PageDown','SelectFirstVisibleWaypoint','SelectFirstVisibleAis')
+  return @('Capture','Resize1280x800','Menu','Navigation','Routes','Waypoints','AIS','Instruments','Advice','PilotView','Anchor','Settings','Sources','Display','ToggleFullscreen','ToggleOrientation','Route','Energy','Diagnostics','System','Alerts','Escape','CyclePalette','ZoomIn','ZoomOut','Center','PanRight','PageUp','PageDown','SelectFirstVisibleWaypoint','SelectFirstVisibleAis','Layers','ChartPalettePreferences','RevealChartPalettePreference')
 }
 function Convert-WindowReviewChart($Data,[string]$Commit,[datetime]$Written,[datetime]$Now) {
   if($Commit -cnotmatch '^[a-f0-9]{40}$' -or $Written -gt $Now -or ($Now-$Written).TotalSeconds -gt 5 -or $Data.build_commit -cne $Commit -or
@@ -29,6 +29,45 @@ function Invoke-WindowReviewPan([IntPtr]$Frame,[int]$ProcessId,[string]$Workspac
   $chart=Convert-WindowReviewChart $data $Commit $written ([datetime]::UtcNow)
   [OpenNavX.ReviewWindowNative]::PanRight($Frame,$ProcessId,$chart)
 }
+function Convert-WindowReviewAis($Data,[string]$Commit,[datetime]$Written,[datetime]$Now,[string]$Page) {
+  if($Page -cnotin @('AIS targets','AIS target') -or $Commit -cnotmatch '^[a-f0-9]{40}$' -or
+     $Written -gt $Now -or ($Now-$Written).TotalSeconds -gt 5 -or $Data.build_commit -cne $Commit -or
+     $Data.build_purpose -cne 'INSTALLED PRODUCT' -or $Data.data_mode -cne 'OPENCPN selected navigation' -or
+     $Data.ui_page -cne $Page -or $Data.runtime.display.route_creation_active -isnot [bool] -or
+     $Data.runtime.display.route_creation_active -ne $false){throw 'Fresh exact installed AIS page observation required.'}
+  $tick=[string]$Data.runtime.ui_update.ticks
+  [UInt64]$parsedTick=0
+  if($tick -cnotmatch '^[0-9]{1,20}$' -or -not [UInt64]::TryParse($tick,[ref]$parsedTick)){throw 'Exact AIS observation tick required.'}
+  $mmsi=$Data.runtime.ais_selected_mmsi
+  if(($mmsi -isnot [int] -and $mmsi -isnot [long]) -or
+     ($Page -ceq 'AIS targets' -and $mmsi -ne 0) -or
+     ($Page -ceq 'AIS target' -and ($mmsi -lt 1 -or $mmsi -gt 999999999))){throw 'Current selected AIS identity does not match the observed page.'}
+  return [pscustomobject]@{tick=$parsedTick;selectedMmsi=[int]$mmsi}
+}
+function Invoke-WindowReviewSelection([IntPtr]$Frame,[int]$ProcessId,[string]$Action,[string]$Workspace,[string]$Commit) {
+  $identity=[OpenNavX.ReviewWindowNative]::AssertFrame($Frame,$ProcessId)
+  if($Action -cne 'SelectFirstVisibleAis' -or $identity.Shell -cne 'prototype') {
+    return [OpenNavX.ReviewWindowNative]::SelectRow($Frame,$ProcessId,$Action)
+  }
+  $config=Get-Target $Workspace
+  $path=Assert-LocalPath (Join-Path (Join-Path $config.profileDirectory 'opennav-logs') 'opennav-diagnostics.json')
+  $before=Convert-WindowReviewAis (Read-Record $path) $Commit (Get-Item -LiteralPath $path).LastWriteTimeUtc ([datetime]::UtcNow) 'AIS targets'
+  $selected=[OpenNavX.ReviewWindowNative]::SelectRow($Frame,$ProcessId,$Action)
+  # Wait for observation only. Never repeat the sole selection input, and never
+  # infer a target identity from the pixels or manufacture HWNDs for painted rows.
+  $deadline=[datetime]::UtcNow.AddSeconds(3)
+  do {
+    [OpenNavX.ReviewWindowNative]::AssertPrototypeAisDetail($Frame,$ProcessId)
+    $current=[OpenNavX.ReviewWindowNative]::AssertFrame($Frame,$ProcessId)
+    if(@($current.Surfaces|Where-Object {$_.Title -ceq 'SKAGER vessel traffic' -and $_.Handle -eq $selected.SurfaceHandle}).Count -ne 1){throw 'Traffic drawer changed while awaiting its selected identity.'}
+    try {
+      $after=Convert-WindowReviewAis (Read-Record $path) $Commit (Get-Item -LiteralPath $path).LastWriteTimeUtc ([datetime]::UtcNow) 'AIS target'
+      if($after.tick -gt $before.tick) {$selected.SelectedMmsi=$after.selectedMmsi;return $selected}
+    } catch {if([datetime]::UtcNow -ge $deadline){throw}}
+    Start-Sleep -Milliseconds 100
+  } while([datetime]::UtcNow -lt $deadline)
+  throw 'Selection has no fresh current AIS identity; no input retry.'
+}
 function Assert-WindowReviewPolicy($Job,$Installed,$Build,$Launch,$Request,[datetime]$Now) {
   if($Job.action -cne 'ReviewWindow' -or $Job.reviewAction -cnotin (Get-WindowReviewActions)){throw 'Unsupported read-only window action.'}
   if($Job.buildCommit -cnotmatch '^[a-f0-9]{40}$' -or $Job.generation -cnotmatch '^[a-f0-9]{32}$' -or
@@ -39,7 +78,7 @@ function Assert-WindowReviewPolicy($Job,$Installed,$Build,$Launch,$Request,[date
       $Build.version -cne '0.4.0-beta2' -or $Build.commit -cne $Job.buildCommit -or $Build.executable_sha256 -cne $Job.executableSha256){throw 'Only the exact fixture-free installed product may be reviewed.'}
   if($Launch.status -cne 'passed' -or $Launch.action -cne 'Launch' -or $Launch.mode -cne '--xnav' -or $Launch.pid -ne $Job.processId -or
       $Request.action -cne 'Launch' -or $Request.mode -cne '--xnav' -or $Request.executable -ine $Job.executable -or
-      $Request.executableSha256 -cne $Job.executableSha256 -or $Request.workspace -ine $Job.workspace){throw 'Successful audited installed XNav launch is required.'}
+      $Request.executableSha256 -cne $Job.executableSha256 -or $Request.workspace -ine $Job.workspace){throw 'Successful audited installed SKAGER launch is required.'}
   $at=[datetime]::Parse($Launch.utc).ToUniversalTime()
   if($at -gt $Now -or ($Now-$at).TotalHours -gt 4){throw 'Window review requires a recent audited launch.'}
 }
@@ -128,7 +167,7 @@ function Invoke-WindowReview($Job) {
         'Resize1280x800' {$resize=[OpenNavX.ReviewWindowNative]::Resize1280x800($frame,$process.Id)}
         'Escape' {[OpenNavX.ReviewWindowNative]::Escape($frame,$process.Id)}
         'PanRight' {Invoke-WindowReviewPan $frame $process.Id $Job.workspace $Job.buildCommit}
-        {$_ -cin @('SelectFirstVisibleWaypoint','SelectFirstVisibleAis')} {$selection=[OpenNavX.ReviewWindowNative]::SelectRow($frame,$process.Id,$Job.reviewAction)}
+        {$_ -cin @('SelectFirstVisibleWaypoint','SelectFirstVisibleAis')} {$selection=Invoke-WindowReviewSelection $frame $process.Id $Job.reviewAction $Job.workspace $Job.buildCommit}
         default {[OpenNavX.ReviewWindowNative]::Click($frame,$process.Id,$Job.reviewAction)}
       }
       $after=Save-WindowReviewImage $frame $process.Id (Join-Path $directory 'after.png')

@@ -1,0 +1,10 @@
+/tmp/skager-capture-hmil6zjz/s64-light-fog-SKAGER
+Verified private clean application 45d73e831409d602e8205f32fcba08947ea370bc and exact upstream result of nine patches
+Traceback (most recent call last):
+  File "/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/combined-symbols-45d73e8/iho/capture-s64.py", line 169, in <module>
+    app_pid=int(wait(lambda:pid_file.read_text() if pid_file.exists() else None))
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/combined-symbols-45d73e8/iho/capture-s64.py", line 85, in wait
+    if app and app.poll() is not None:raise AssertionError(('app exited',app.returncode))
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ('app exited', 1)

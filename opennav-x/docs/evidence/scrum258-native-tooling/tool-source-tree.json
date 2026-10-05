@@ -1,0 +1,954 @@
+[
+  {
+    "path": ".github/workflows/opennav-boat-tools.yml",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "c261a71c7da1741503a0d9c92caa629d53a82853",
+    "size": 14184,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/c261a71c7da1741503a0d9c92caa629d53a82853"
+  },
+  {
+    "path": "opennav-x/tools/boat/AisCredentialImport.cs",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "b1a129f17c4f7cb26efe87a661b5dc8489126ed7",
+    "size": 4519,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/b1a129f17c4f7cb26efe87a661b5dc8489126ed7"
+  },
+  {
+    "path": "opennav-x/tools/boat/AisCredentialPipe.cs",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "7261ee046f8b69b5e9dc4f78e5fef4826a214096",
+    "size": 3726,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/7261ee046f8b69b5e9dc4f78e5fef4826a214096"
+  },
+  {
+    "path": "opennav-x/tools/boat/ChartHelperShutdown.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "1be0a958634c738cd9e4e4de7e2aae3ad928c52c",
+    "size": 7694,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/1be0a958634c738cd9e4e4de7e2aae3ad928c52c"
+  },
+  {
+    "path": "opennav-x/tools/boat/ChartHelperShutdownNative.cs",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "623647b0a992b9bcccc08adf30409f029aa0b05a",
+    "size": 8639,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/623647b0a992b9bcccc08adf30409f029aa0b05a"
+  },
+  {
+    "path": "opennav-x/tools/boat/ColdBaseline.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "1edd8ae75a532830e67f6649dbb6a25d50ea5318",
+    "size": 6703,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/1edd8ae75a532830e67f6649dbb6a25d50ea5318"
+  },
+  {
+    "path": "opennav-x/tools/boat/ColdChartHelper.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "7c11e2bac1ae2017cd287e16a6ac2835ca2cc669",
+    "size": 6473,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/7c11e2bac1ae2017cd287e16a6ac2835ca2cc669"
+  },
+  {
+    "path": "opennav-x/tools/boat/Commissioning.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "4c881653e66d3f55da8ec502d56afcfca42e7a94",
+    "size": 12033,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/4c881653e66d3f55da8ec502d56afcfca42e7a94"
+  },
+  {
+    "path": "opennav-x/tools/boat/CommissioningBaseline.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "2d197d9acc94cf81e01f6d3188f492c4f9eb55c9",
+    "size": 23597,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/2d197d9acc94cf81e01f6d3188f492c4f9eb55c9"
+  },
+  {
+    "path": "opennav-x/tools/boat/Common.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "53ba546347e1bde5477a317abc231d2f3e90641d",
+    "size": 18199,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/53ba546347e1bde5477a317abc231d2f3e90641d"
+  },
+  {
+    "path": "opennav-x/tools/boat/InstalledResourceReview.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "e69a4cfb6b6e595b98a9ee87720cbf64d96de749",
+    "size": 4343,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/e69a4cfb6b6e595b98a9ee87720cbf64d96de749"
+  },
+  {
+    "path": "opennav-x/tools/boat/InstalledWelcome.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "51961a1d8b514c76094d2507045ec37f1f531b65",
+    "size": 19166,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/51961a1d8b514c76094d2507045ec37f1f531b65"
+  },
+  {
+    "path": "opennav-x/tools/boat/InteractiveJob.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "496774e450355d7c85d44a8fc49a140edf9b8796",
+    "size": 10421,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/496774e450355d7c85d44a8fc49a140edf9b8796"
+  },
+  {
+    "path": "opennav-x/tools/boat/OfficialUpgradePolicy.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "d5b55da89252048e2fedfc1ad10893e9170018cd",
+    "size": 7891,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/d5b55da89252048e2fedfc1ad10893e9170018cd"
+  },
+  {
+    "path": "opennav-x/tools/boat/OfficialWizardNative.cs",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "67b612797fd3e9d97152f8b8c1549764af91f3fa",
+    "size": 12124,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/67b612797fd3e9d97152f8b8c1549764af91f3fa"
+  },
+  {
+    "path": "opennav-x/tools/boat/OrphanChartHelper.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "90e3bfc584e44fb077894b45a343093758ff1b1d",
+    "size": 4674,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/90e3bfc584e44fb077894b45a343093758ff1b1d"
+  },
+  {
+    "path": "opennav-x/tools/boat/PortableReview.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "08c531429e8c7c1fc912794172add0c81f674313",
+    "size": 9798,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/08c531429e8c7c1fc912794172add0c81f674313"
+  },
+  {
+    "path": "opennav-x/tools/boat/Preparation.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "860ff2ab4d02bf887e99351209c0ca6239fad97e",
+    "size": 21218,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/860ff2ab4d02bf887e99351209c0ca6239fad97e"
+  },
+  {
+    "path": "opennav-x/tools/boat/RendererLog.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "2ed9ccd1eefc5d350a9544f76915e2ffdc9a37b8",
+    "size": 11020,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/2ed9ccd1eefc5d350a9544f76915e2ffdc9a37b8"
+  },
+  {
+    "path": "opennav-x/tools/boat/RestartAuiPersistence.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "5ccceb7a6dd8015ef784021f79e6fa2d616d528b",
+    "size": 5575,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/5ccceb7a6dd8015ef784021f79e6fa2d616d528b"
+  },
+  {
+    "path": "opennav-x/tools/boat/RestartCommissioning.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "1cdb5b300f7a3f32ac08a983218dc6e9e42c36c1",
+    "size": 23484,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/1cdb5b300f7a3f32ac08a983218dc6e9e42c36c1"
+  },
+  {
+    "path": "opennav-x/tools/boat/RestartCommissioningArm.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "6ab3241b7ebbcff1557fe1df1d9857e6c557979b",
+    "size": 5115,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/6ab3241b7ebbcff1557fe1df1d9857e6c557979b"
+  },
+  {
+    "path": "opennav-x/tools/boat/RestartCommissioningBroker.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "6a3b85552ea9884bc89c90196ba58b3cfb731305",
+    "size": 8698,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/6a3b85552ea9884bc89c90196ba58b3cfb731305"
+  },
+  {
+    "path": "opennav-x/tools/boat/RestartCommissioningNative.cs",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "2c1f6fb56507e37522752a1448645278677d5a61",
+    "size": 9105,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/2c1f6fb56507e37522752a1448645278677d5a61"
+  },
+  {
+    "path": "opennav-x/tools/boat/RestartCommissioningPolicy.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "2cbc3a44edb8149870618c66d352f0c5a8f3f7e3",
+    "size": 11731,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/2cbc3a44edb8149870618c66d352f0c5a8f3f7e3"
+  },
+  {
+    "path": "opennav-x/tools/boat/RestartCommissioningPrepare.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "ebd00ead841d9733a65344443aae670735467cb3",
+    "size": 3702,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/ebd00ead841d9733a65344443aae670735467cb3"
+  },
+  {
+    "path": "opennav-x/tools/boat/RestartDashboardPersistence.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "75868b70cf94db1d4772a54807143b1520093e76",
+    "size": 1321,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/75868b70cf94db1d4772a54807143b1520093e76"
+  },
+  {
+    "path": "opennav-x/tools/boat/RestartWindowNative.cs",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "efa7ca1971011a3191c737b5ee2bb3260788fb69",
+    "size": 16094,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/efa7ca1971011a3191c737b5ee2bb3260788fb69"
+  },
+  {
+    "path": "opennav-x/tools/boat/RestartWindowReview.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "ec2d4ecb637c55e275b7ded8418d73ede6a899b8",
+    "size": 12871,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/ec2d4ecb637c55e275b7ded8418d73ede6a899b8"
+  },
+  {
+    "path": "opennav-x/tools/boat/RetirementPolicy.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "d21cd410483dd3656c1302203b9eec6451c183f3",
+    "size": 783,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/d21cd410483dd3656c1302203b9eec6451c183f3"
+  },
+  {
+    "path": "opennav-x/tools/boat/ReviewWindow.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "0200ee6ec948c9b8f46dc005350b2c4e94c53505",
+    "size": 11372,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/0200ee6ec948c9b8f46dc005350b2c4e94c53505"
+  },
+  {
+    "path": "opennav-x/tools/boat/ReviewWindowNative.cs",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "bdec4dd90e98687cd78f450ddae068d2940b7995",
+    "size": 37940,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/bdec4dd90e98687cd78f450ddae068d2940b7995"
+  },
+  {
+    "path": "opennav-x/tools/boat/SourceCheckout.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "7f6084d0275098f7be2f038a4c652d9f4b2e1839",
+    "size": 9358,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/7f6084d0275098f7be2f038a4c652d9f4b2e1839"
+  },
+  {
+    "path": "opennav-x/tools/boat/StartupLog.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "dd5c8c742286677084167830943675d0b82ac966",
+    "size": 1513,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/dd5c8c742286677084167830943675d0b82ac966"
+  },
+  {
+    "path": "opennav-x/tools/boat/StockReview.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "073fb1d4f0210816b12d51a4ff03cf57fd589ad8",
+    "size": 16450,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/073fb1d4f0210816b12d51a4ff03cf57fd589ad8"
+  },
+  {
+    "path": "opennav-x/tools/boat/StockReviewNative.cs",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "c7813aa3e994740ee632b342b1805f29e678c0cd",
+    "size": 20106,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/c7813aa3e994740ee632b342b1805f29e678c0cd"
+  },
+  {
+    "path": "opennav-x/tools/boat/StockWelcome.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "d3cd25b40f50c43ee886ca63232f3b77042bf2b9",
+    "size": 14537,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/d3cd25b40f50c43ee886ca63232f3b77042bf2b9"
+  },
+  {
+    "path": "opennav-x/tools/boat/StockWelcomeNative.cs",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "8e7f7bb5eec9f1256a0d421afd3abaadb8c7bee7",
+    "size": 31394,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/8e7f7bb5eec9f1256a0d421afd3abaadb8c7bee7"
+  },
+  {
+    "path": "opennav-x/tools/boat/audit-navigation-copy.py",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "c737349639c2489826161874ba655d0652fc4c84",
+    "size": 5818,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/c737349639c2489826161874ba655d0652fc4c84"
+  },
+  {
+    "path": "opennav-x/tools/boat/backup-environment.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "1971cd58f60fe4649b0bf86728377fce35aef671",
+    "size": 5566,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/1971cd58f60fe4649b0bf86728377fce35aef671"
+  },
+  {
+    "path": "opennav-x/tools/boat/backup-managed-plugins.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "54ff785485ac5318e076de5de4e35f3e1ed40e52",
+    "size": 3743,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/54ff785485ac5318e076de5de4e35f3e1ed40e52"
+  },
+  {
+    "path": "opennav-x/tools/boat/boat-target.example.json",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "bc1dd2089fcf11fbd321bc063b45efb3f3b9da5c",
+    "size": 915,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/bc1dd2089fcf11fbd321bc063b45efb3f3b9da5c"
+  },
+  {
+    "path": "opennav-x/tools/boat/build.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "74e3a86035339d8a19e5004084b0d7042e8ce28e",
+    "size": 1205,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/74e3a86035339d8a19e5004084b0d7042e8ce28e"
+  },
+  {
+    "path": "opennav-x/tools/boat/cancel-visible-firewall.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "7f083ccc94cd055f6a846f625d48f7386078e11e",
+    "size": 7532,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/7f083ccc94cd055f6a846f625d48f7386078e11e"
+  },
+  {
+    "path": "opennav-x/tools/boat/capture-cold-baseline.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "872be54e2566a24b14f9fcbf7df17e13e9f5ad99",
+    "size": 11221,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/872be54e2566a24b14f9fcbf7df17e13e9f5ad99"
+  },
+  {
+    "path": "opennav-x/tools/boat/capture-ui.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "99a1747175359bed24ad422e1fd475cd206f5dfa",
+    "size": 697,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/99a1747175359bed24ad422e1fd475cd206f5dfa"
+  },
+  {
+    "path": "opennav-x/tools/boat/collect-logs.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "3c6c9885b18db5e0fe630f036ee26d54870d4ca2",
+    "size": 1349,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/3c6c9885b18db5e0fe630f036ee26d54870d4ca2"
+  },
+  {
+    "path": "opennav-x/tools/boat/commission-read-only.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "4abbe7b70ff1f4f2e9f72a6156f345b6a51ca222",
+    "size": 20916,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/4abbe7b70ff1f4f2e9f72a6156f345b6a51ca222"
+  },
+  {
+    "path": "opennav-x/tools/boat/dismiss-windows-firewall.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "e921294c19fcb26bc379b63f9f3b76dda7452af5",
+    "size": 5926,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/e921294c19fcb26bc379b63f9f3b76dda7452af5"
+  },
+  {
+    "path": "opennav-x/tools/boat/import-ais-credential.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "8d2788cc1190256a0ed6769e98d4e0e291c556d8",
+    "size": 753,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/8d2788cc1190256a0ed6769e98d4e0e291c556d8"
+  },
+  {
+    "path": "opennav-x/tools/boat/import-ais-desktop-credential.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "ba50fc00aaf8b16053813fdf8918e4898db6a2a9",
+    "size": 5217,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/ba50fc00aaf8b16053813fdf8918e4898db6a2a9"
+  },
+  {
+    "path": "opennav-x/tools/boat/initialize-target.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "f954d071fcb996425c6f562aab007bcf2e097d2a",
+    "size": 1082,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/f954d071fcb996425c6f562aab007bcf2e097d2a"
+  },
+  {
+    "path": "opennav-x/tools/boat/inspect-chart-inputs.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "d7d914bcb9096d3eb9ad43c54168dcdf1bd82b76",
+    "size": 1510,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/d7d914bcb9096d3eb9ad43c54168dcdf1bd82b76"
+  },
+  {
+    "path": "opennav-x/tools/boat/inspect-partial-backup.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "417289825ddfb244036ae34f68c17fa87e0177fd",
+    "size": 1718,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/417289825ddfb244036ae34f68c17fa87e0177fd"
+  },
+  {
+    "path": "opennav-x/tools/boat/inspect-windows-prompt.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "d06f6f20d98edbe1a53a58339422741bf8cdccb4",
+    "size": 10430,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/d06f6f20d98edbe1a53a58339422741bf8cdccb4"
+  },
+  {
+    "path": "opennav-x/tools/boat/inspect.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "759818268516642e3962d891a08523751405e3e7",
+    "size": 3982,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/759818268516642e3962d891a08523751405e3e7"
+  },
+  {
+    "path": "opennav-x/tools/boat/install.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "0e04fa10b620b8cacd840742c62623005d4716d6",
+    "size": 2802,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/0e04fa10b620b8cacd840742c62623005d4716d6"
+  },
+  {
+    "path": "opennav-x/tools/boat/maintain.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "5fa526a5e6ca02bec22fec33cf540cf6331cb2f5",
+    "size": 1766,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/5fa526a5e6ca02bec22fec33cf540cf6331cb2f5"
+  },
+  {
+    "path": "opennav-x/tools/boat/observe-stock-renderer.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "3dbe438b2b53950222dc0f7cd4d0a69d3eaefc75",
+    "size": 4683,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/3dbe438b2b53950222dc0f7cd4d0a69d3eaefc75"
+  },
+  {
+    "path": "opennav-x/tools/boat/portable-review.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "41758b1292a4260860c61ff022caee10c64262ea",
+    "size": 2249,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/41758b1292a4260860c61ff022caee10c64262ea"
+  },
+  {
+    "path": "opennav-x/tools/boat/prepare-baseline-adoption.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "64fde15971e6fe2a70b692493fb245d438221f54",
+    "size": 6022,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/64fde15971e6fe2a70b692493fb245d438221f54"
+  },
+  {
+    "path": "opennav-x/tools/boat/prepare-portable-review.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "1c80a7ce60cbe857be2cd9464eccd98a14046fac",
+    "size": 5165,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/1c80a7ce60cbe857be2cd9464eccd98a14046fac"
+  },
+  {
+    "path": "opennav-x/tools/boat/probe-online-ais-desktop.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "2dc34dfe10b2576305702afaa1956097a204db09",
+    "size": 2888,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/2dc34dfe10b2576305702afaa1956097a204db09"
+  },
+  {
+    "path": "opennav-x/tools/boat/probe-online-ais.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "652a3489f6a3f3aa2463eb677e40d70754655ba4",
+    "size": 5256,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/652a3489f6a3f3aa2463eb677e40d70754655ba4"
+  },
+  {
+    "path": "opennav-x/tools/boat/recover-cold-chart-helpers.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "2aebe5c1147076782a3ba5b8cfd722f8ddf786b2",
+    "size": 7261,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/2aebe5c1147076782a3ba5b8cfd722f8ddf786b2"
+  },
+  {
+    "path": "opennav-x/tools/boat/recover-zero-profile.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "a77a06bb6e31f1e89b2312b3819189b69c0162f4",
+    "size": 5903,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/a77a06bb6e31f1e89b2312b3819189b69c0162f4"
+  },
+  {
+    "path": "opennav-x/tools/boat/repair.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "9936364da78845de3d465ce7e4cad02ba41d996b",
+    "size": 136,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/9936364da78845de3d465ce7e4cad02ba41d996b"
+  },
+  {
+    "path": "opennav-x/tools/boat/retire-download.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "165bd7ae499398e257f42bfab768b85064e74d62",
+    "size": 2615,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/165bd7ae499398e257f42bfab768b85064e74d62"
+  },
+  {
+    "path": "opennav-x/tools/boat/retire-portable.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "3afc1785d75e359d505c9831d34d59c02c08c2d6",
+    "size": 3377,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/3afc1785d75e359d505c9831d34d59c02c08c2d6"
+  },
+  {
+    "path": "opennav-x/tools/boat/review-installed-welcome.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "e4752855d4558b493f1c0f60c7cb95ee0035c631",
+    "size": 2144,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/e4752855d4558b493f1c0f60c7cb95ee0035c631"
+  },
+  {
+    "path": "opennav-x/tools/boat/review-restart-window.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "b9fe6891593c01f4c58ca0ce412d25728ad63d24",
+    "size": 3218,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/b9fe6891593c01f4c58ca0ce412d25728ad63d24"
+  },
+  {
+    "path": "opennav-x/tools/boat/review-stock.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "13d789551ba78204261892dbe63cf0d6afbe2dc1",
+    "size": 2552,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/13d789551ba78204261892dbe63cf0d6afbe2dc1"
+  },
+  {
+    "path": "opennav-x/tools/boat/review-window.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "7794193f6244ecb8565b036fb014407e6d7b51c3",
+    "size": 1946,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/7794193f6244ecb8565b036fb014407e6d7b51c3"
+  },
+  {
+    "path": "opennav-x/tools/boat/rollback.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "c08e72a69c1ff8d0775a05b8bc8e27adc6a91825",
+    "size": 138,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/c08e72a69c1ff8d0775a05b8bc8e27adc6a91825"
+  },
+  {
+    "path": "opennav-x/tools/boat/run-legacy.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "902bde60e818b8fd9246c446dee4b22e8264bf32",
+    "size": 134,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/902bde60e818b8fd9246c446dee4b22e8264bf32"
+  },
+  {
+    "path": "opennav-x/tools/boat/run-mode.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "44c5f98271c6a1ad89ba49d419fd737201b1ad84",
+    "size": 927,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/44c5f98271c6a1ad89ba49d419fd737201b1ad84"
+  },
+  {
+    "path": "opennav-x/tools/boat/run-safe.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "643efbba305bc12fe193c163dd85be60d1ae53d4",
+    "size": 132,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/643efbba305bc12fe193c163dd85be60d1ae53d4"
+  },
+  {
+    "path": "opennav-x/tools/boat/run-stock.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "7072f14869086b655cbb549221b80e7b7dd2034e",
+    "size": 485,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/7072f14869086b655cbb549221b80e7b7dd2034e"
+  },
+  {
+    "path": "opennav-x/tools/boat/run-xnav.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "3d2038f3ae00384fff20e2f473778b4dee9dac04",
+    "size": 132,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/3d2038f3ae00384fff20e2f473778b4dee9dac04"
+  },
+  {
+    "path": "opennav-x/tools/boat/smoke-test.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "59d356777188af00ea9cda430bab8f6a5328046a",
+    "size": 2657,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/59d356777188af00ea9cda430bab8f6a5328046a"
+  },
+  {
+    "path": "opennav-x/tools/boat/stage-review-tools.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "6376967ca4d5463e260811f94a0b4964db98a98d",
+    "size": 3229,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/6376967ca4d5463e260811f94a0b4964db98a98d"
+  },
+  {
+    "path": "opennav-x/tools/boat/start-official-upgrade.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "1af89f65a282fc145050bb1e15055c733a407848",
+    "size": 8168,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/1af89f65a282fc145050bb1e15055c733a407848"
+  },
+  {
+    "path": "opennav-x/tools/boat/stop-chart-helper.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "4bc4f80ffb38cab7f64b31f9624ad78e64d00c34",
+    "size": 2699,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/4bc4f80ffb38cab7f64b31f9624ad78e64d00c34"
+  },
+  {
+    "path": "opennav-x/tools/boat/stop-orphan-chart-helper.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "e7fcaaa6df4606f990c0d81854537dad8422bb45",
+    "size": 2376,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/e7fcaaa6df4606f990c0d81854537dad8422bb45"
+  },
+  {
+    "path": "opennav-x/tools/boat/stop.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "56a7638861f081a159fb5ff59b96cec4cb833116",
+    "size": 365,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/56a7638861f081a159fb5ff59b96cec4cb833116"
+  },
+  {
+    "path": "opennav-x/tools/boat/test-ais-credential-import.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "24e3950bc247030ae67ea6beea4dc8739ca8f868",
+    "size": 2557,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/24e3950bc247030ae67ea6beea4dc8739ca8f868"
+  },
+  {
+    "path": "opennav-x/tools/boat/test-baseline-adoption.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "01937c8fd236d104aa3d3dda4c792e23dc8c654e",
+    "size": 29020,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/01937c8fd236d104aa3d3dda4c792e23dc8c654e"
+  },
+  {
+    "path": "opennav-x/tools/boat/test-boat-tools.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "642f159160dcde0b72b2774feb66e166a82f3be9",
+    "size": 34405,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/642f159160dcde0b72b2774feb66e166a82f3be9"
+  },
+  {
+    "path": "opennav-x/tools/boat/test-broker-fixture-contracts.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "910ad82c70da2d8f7675fd1e230feb21ca00a7d1",
+    "size": 6429,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/910ad82c70da2d8f7675fd1e230feb21ca00a7d1"
+  },
+  {
+    "path": "opennav-x/tools/boat/test-chart-helper-attempts.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "0bedd4ff7caf5fb0104c8e0d21670bf8ee180461",
+    "size": 19038,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/0bedd4ff7caf5fb0104c8e0d21670bf8ee180461"
+  },
+  {
+    "path": "opennav-x/tools/boat/test-chart-helper-shutdown.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "768e974e08e64bafe3b2c205e0d8e04aa3efda70",
+    "size": 7979,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/768e974e08e64bafe3b2c205e0d8e04aa3efda70"
+  },
+  {
+    "path": "opennav-x/tools/boat/test-cold-baseline.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "b24a6dbda100bb8d81cb1831cfa307e6a2072d05",
+    "size": 33677,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/b24a6dbda100bb8d81cb1831cfa307e6a2072d05"
+  },
+  {
+    "path": "opennav-x/tools/boat/test-cold-helper-policy.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "f7317f032b8209c880c391529df078a4fbda89e2",
+    "size": 6550,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/f7317f032b8209c880c391529df078a4fbda89e2"
+  },
+  {
+    "path": "opennav-x/tools/boat/test-cold-helper-workflow.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "b1a7972953a2368ea1c5897ce0000eaea62c0e98",
+    "size": 13628,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/b1a7972953a2368ea1c5897ce0000eaea62c0e98"
+  },
+  {
+    "path": "opennav-x/tools/boat/test-commissioning-launch.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "d9e926b253aceb654139c6ab8e09456ff1a2ca1a",
+    "size": 21584,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/d9e926b253aceb654139c6ab8e09456ff1a2ca1a"
+  },
+  {
+    "path": "opennav-x/tools/boat/test-commissioning.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "7d3e6ab54850a7bed7fd78f9f2b7c39a21b7ca50",
+    "size": 33174,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/7d3e6ab54850a7bed7fd78f9f2b7c39a21b7ca50"
+  },
+  {
+    "path": "opennav-x/tools/boat/test-installed-welcome.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "ace0da083f70a4f8c12ddfcd731cc235439b6723",
+    "size": 12058,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/ace0da083f70a4f8c12ddfcd731cc235439b6723"
+  },
+  {
+    "path": "opennav-x/tools/boat/test-navigation-copy.py",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "d5dba34b27150787b96882398e1dcb2686ce445d",
+    "size": 4097,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/d5dba34b27150787b96882398e1dcb2686ce445d"
+  },
+  {
+    "path": "opennav-x/tools/boat/test-official-upgrade-policy.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "cbce56268d8f68abe457815511e2279620c30648",
+    "size": 13829,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/cbce56268d8f68abe457815511e2279620c30648"
+  },
+  {
+    "path": "opennav-x/tools/boat/test-orphan-chart-helper.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "6aa89923b11f0aa3980f216835d020488075060e",
+    "size": 3296,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/6aa89923b11f0aa3980f216835d020488075060e"
+  },
+  {
+    "path": "opennav-x/tools/boat/test-preparation.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "d019cf85d8783110b25657ec4a6da974036761f9",
+    "size": 29791,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/d019cf85d8783110b25657ec4a6da974036761f9"
+  },
+  {
+    "path": "opennav-x/tools/boat/test-renderer-log.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "4901c24ee1fbffbe3a8755c9e58629928abca2ab",
+    "size": 11716,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/4901c24ee1fbffbe3a8755c9e58629928abca2ab"
+  },
+  {
+    "path": "opennav-x/tools/boat/test-restart-aui-persistence.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "a124f148c6c74c31ed0dd8d78611522f8f2bf4c5",
+    "size": 5306,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/a124f148c6c74c31ed0dd8d78611522f8f2bf4c5"
+  },
+  {
+    "path": "opennav-x/tools/boat/test-restart-commissioning.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "76a1dd58e81fcaef0b331550acc2d857bb29f47d",
+    "size": 27684,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/76a1dd58e81fcaef0b331550acc2d857bb29f47d"
+  },
+  {
+    "path": "opennav-x/tools/boat/test-restart-window-review.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "2cd0b230f59d0bfc7dd3ccdefaf5f5150c046223",
+    "size": 14404,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/2cd0b230f59d0bfc7dd3ccdefaf5f5150c046223"
+  },
+  {
+    "path": "opennav-x/tools/boat/test-review-staging.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "da94608b03c3771d70a9dbc35668aec0149d6c94",
+    "size": 4798,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/da94608b03c3771d70a9dbc35668aec0149d6c94"
+  },
+  {
+    "path": "opennav-x/tools/boat/test-review-window.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "381e50fc2d761a52bf90959d7cf31e8c5152fa06",
+    "size": 17971,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/381e50fc2d761a52bf90959d7cf31e8c5152fa06"
+  },
+  {
+    "path": "opennav-x/tools/boat/test-source-checkout.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "0659a4bfd520977e5bdb10edd98bc79d65592819",
+    "size": 13653,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/0659a4bfd520977e5bdb10edd98bc79d65592819"
+  },
+  {
+    "path": "opennav-x/tools/boat/test-startup-log.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "39d081522801dabd246b1bdb4446dffe8d4aeb9f",
+    "size": 3002,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/39d081522801dabd246b1bdb4446dffe8d4aeb9f"
+  },
+  {
+    "path": "opennav-x/tools/boat/test-stock-chart.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "c7cc884489c8d98b63e885445f98165820221050",
+    "size": 4552,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/c7cc884489c8d98b63e885445f98165820221050"
+  },
+  {
+    "path": "opennav-x/tools/boat/test-stock-review.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "1d2e52d01dc70ba9ec8b8fddbe9f8db7e1118606",
+    "size": 7284,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/1d2e52d01dc70ba9ec8b8fddbe9f8db7e1118606"
+  },
+  {
+    "path": "opennav-x/tools/boat/test-stock-welcome.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "f3da589b3842e172a987057aa50ca34d63b7c059",
+    "size": 31966,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/f3da589b3842e172a987057aa50ca34d63b7c059"
+  },
+  {
+    "path": "opennav-x/tools/boat/uninstall.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "eeab55a7a69d71db06919ee33125e137cef6a243",
+    "size": 139,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/eeab55a7a69d71db06919ee33125e137cef6a243"
+  },
+  {
+    "path": "opennav-x/tools/boat/update-source.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "9d947eb3702bfe8b8c575e868a27b1edf133537d",
+    "size": 327,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/9d947eb3702bfe8b8c575e868a27b1edf133537d"
+  },
+  {
+    "path": "opennav-x/tools/boat/update.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "124a72c53637c33a480aa259aab68511706f2065",
+    "size": 334,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/124a72c53637c33a480aa259aab68511706f2065"
+  },
+  {
+    "path": "opennav-x/tools/boat/upgrade-official-opencpn.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "e1033eedd0cbecf7bcd49f5f00232be8f20e1195",
+    "size": 15977,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/e1033eedd0cbecf7bcd49f5f00232be8f20e1195"
+  },
+  {
+    "path": "opennav-x/tools/boat/upgrade-stock.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "7b5be0235887fb1b38ff24876547edcb94cca3e8",
+    "size": 16955,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/7b5be0235887fb1b38ff24876547edcb94cca3e8"
+  },
+  {
+    "path": "opennav-x/tools/boat/verify-commissioning-launch.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "7dd5c53451875741c55bbfb3725ffd936be4815f",
+    "size": 8173,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/7dd5c53451875741c55bbfb3725ffd936be4815f"
+  },
+  {
+    "path": "opennav-x/tools/test-commissioning-prepare-arm-windows.ps1",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "edceb982ca61105a968e6f7045acb17e11074463",
+    "size": 20483,
+    "url": "https://api.github.com/repos/ThereptileII/Work/git/blobs/edceb982ca61105a968e6f7045acb17e11074463"
+  }
+]

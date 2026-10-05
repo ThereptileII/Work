@@ -1,0 +1,340 @@
+{
+  "schema": 1,
+  "scope": "Authenticated interim CI stage observation; not terminal package or boat acceptance",
+  "observedUtc": "2026-10-04 01:56:39 UTC",
+  "run": {
+    "id": 37164360050,
+    "head_sha": "17ab044a1e5222dc71791ac8118454219efe8734",
+    "run_attempt": 1,
+    "event": "push",
+    "path": ".github/workflows/opennav-baseline.yml",
+    "status": "in_progress",
+    "conclusion": null,
+    "html_url": "https://github.com/ThereptileII/Work/actions/runs/37164360050"
+  },
+  "job": {
+    "id": 111325149619,
+    "name": "Native MSVC XNav / Legacy / Safe slice",
+    "head_sha": "17ab044a1e5222dc71791ac8118454219efe8734",
+    "run_attempt": 1,
+    "status": "in_progress",
+    "conclusion": null,
+    "html_url": "https://github.com/ThereptileII/Work/actions/runs/37164360050/job/111325149619",
+    "started_at": "2026-10-04T00:21:41Z",
+    "completed_at": null,
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1,
+        "started_at": "2026-10-04T00:21:42Z",
+        "completed_at": "2026-10-04T00:21:43Z"
+      },
+      {
+        "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2,
+        "started_at": "2026-10-04T00:21:43Z",
+        "completed_at": "2026-10-04T00:21:55Z"
+      },
+      {
+        "name": "Preserve native Perl for OpenSSL and install curl's POSIX test host",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3,
+        "started_at": "2026-10-04T00:21:55Z",
+        "completed_at": "2026-10-04T00:21:55Z"
+      },
+      {
+        "name": "Run msys2/setup-msys2@66cd2cce69caa17b53920067426061ca1de3a884",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 4,
+        "started_at": "2026-10-04T00:21:55Z",
+        "completed_at": "2026-10-04T00:22:06Z"
+      },
+      {
+        "name": "Select explicit curl test Perl",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 5,
+        "started_at": "2026-10-04T00:22:06Z",
+        "completed_at": "2026-10-04T00:22:06Z"
+      },
+      {
+        "name": "Verify native curl test-host binding before dependency compilation",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 6,
+        "started_at": "2026-10-04T00:22:06Z",
+        "completed_at": "2026-10-04T00:22:21Z"
+      },
+      {
+        "name": "Fetch pinned source",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 7,
+        "started_at": "2026-10-04T00:22:21Z",
+        "completed_at": "2026-10-04T00:22:28Z"
+      },
+      {
+        "name": "Build and exercise integrated modes",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 8,
+        "started_at": "2026-10-04T00:22:28Z",
+        "completed_at": "2026-10-04T01:47:37Z"
+      },
+      {
+        "name": "Verify packaged source reproduces the curl certificate-tool patch",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 9,
+        "started_at": "2026-10-04T01:47:37Z",
+        "completed_at": "2026-10-04T01:47:39Z"
+      },
+      {
+        "name": "Installed native peer CLI refuses key changes on the disposable runner",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 10,
+        "started_at": "2026-10-04T01:47:39Z",
+        "completed_at": "2026-10-04T01:47:39Z"
+      },
+      {
+        "name": "Staged native loader check without profile initialization",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 11,
+        "started_at": "2026-10-04T01:47:39Z",
+        "completed_at": "2026-10-04T01:47:40Z"
+      },
+      {
+        "name": "Native pointer chart gestures, waypoint Go To and route creation",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 12,
+        "started_at": "2026-10-04T01:47:40Z",
+        "completed_at": "2026-10-04T01:48:38Z"
+      },
+      {
+        "name": "Preserve failed native chart interaction evidence",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 13,
+        "started_at": "2026-10-04T01:48:38Z",
+        "completed_at": "2026-10-04T01:48:38Z"
+      },
+      {
+        "name": "Repeat native crash-recovery returns with separate evidence",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 14,
+        "started_at": "2026-10-04T01:48:38Z",
+        "completed_at": "2026-10-04T01:49:14Z"
+      },
+      {
+        "name": "Retain complete fixture UI and scenario regression suite",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 15,
+        "started_at": "2026-10-04T01:49:14Z",
+        "completed_at": "2026-10-04T01:52:27Z"
+      },
+      {
+        "name": "Preserve first fixture failure before independent display checks",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 16,
+        "started_at": "2026-10-04T01:52:27Z",
+        "completed_at": "2026-10-04T01:52:27Z"
+      },
+      {
+        "name": "Capture successful same-job Windows dependency closure",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 17,
+        "started_at": "2026-10-04T01:52:27Z",
+        "completed_at": "2026-10-04T01:52:29Z"
+      },
+      {
+        "name": "Native AIS observation and transport with same-job maintained TLS",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 18,
+        "started_at": "2026-10-04T01:52:29Z",
+        "completed_at": "2026-10-04T01:55:11Z"
+      },
+      {
+        "name": "Build native installed product without synthetic data",
+        "status": "in_progress",
+        "conclusion": null,
+        "number": 19,
+        "started_at": "2026-10-04T01:55:11Z",
+        "completed_at": null
+      },
+      {
+        "name": "Preserve failed production transcript before independent display checks",
+        "status": "pending",
+        "conclusion": null,
+        "number": 20,
+        "started_at": null,
+        "completed_at": null
+      },
+      {
+        "name": "Resolve private chart imports in the real host without plugin initialization",
+        "status": "pending",
+        "conclusion": null,
+        "number": 21,
+        "started_at": null,
+        "completed_at": null
+      },
+      {
+        "name": "Native public Downloader Windows trust and rejection gate",
+        "status": "pending",
+        "conclusion": null,
+        "number": 22,
+        "started_at": null,
+        "completed_at": null
+      },
+      {
+        "name": "Exact peer response buffer on native MSVC Win32",
+        "status": "pending",
+        "conclusion": null,
+        "number": 23,
+        "started_at": null,
+        "completed_at": null
+      },
+      {
+        "name": "Package and test the fixture-free recovery distribution",
+        "status": "pending",
+        "conclusion": null,
+        "number": 24,
+        "started_at": null,
+        "completed_at": null
+      },
+      {
+        "name": "Preserve failed portable interaction evidence immediately",
+        "status": "pending",
+        "conclusion": null,
+        "number": 25,
+        "started_at": null,
+        "completed_at": null
+      },
+      {
+        "name": "Build and exercise candidate Beta installer",
+        "status": "pending",
+        "conclusion": null,
+        "number": 26,
+        "started_at": null,
+        "completed_at": null
+      },
+      {
+        "name": "Preserve failed installer transaction before remaining UI checks",
+        "status": "pending",
+        "conclusion": null,
+        "number": 27,
+        "started_at": null,
+        "completed_at": null
+      },
+      {
+        "name": "Native 100 / 125 / 150 percent DPI and touch interactions",
+        "status": "pending",
+        "conclusion": null,
+        "number": 28,
+        "started_at": null,
+        "completed_at": null
+      },
+      {
+        "name": "Preserve failed DPI interaction evidence immediately",
+        "status": "pending",
+        "conclusion": null,
+        "number": 29,
+        "started_at": null,
+        "completed_at": null
+      },
+      {
+        "name": "Public ENC chart and plugin rendering gate",
+        "status": "pending",
+        "conclusion": null,
+        "number": 30,
+        "started_at": null,
+        "completed_at": null
+      },
+      {
+        "name": "Require same-run restart qualification before delivering any product artifact",
+        "status": "pending",
+        "conclusion": null,
+        "number": 31,
+        "started_at": null,
+        "completed_at": null
+      },
+      {
+        "name": "Verify exact restart qualification identity",
+        "status": "pending",
+        "conclusion": null,
+        "number": 32,
+        "started_at": null,
+        "completed_at": null
+      },
+      {
+        "name": "Prepare development boat review after native functional gates",
+        "status": "pending",
+        "conclusion": null,
+        "number": 33,
+        "started_at": null,
+        "completed_at": null
+      },
+      {
+        "name": "Upload development review only while endurance runs",
+        "status": "pending",
+        "conclusion": null,
+        "number": 34,
+        "started_at": null,
+        "completed_at": null
+      },
+      {
+        "name": "Actual elapsed-time native trip and resource stability",
+        "status": "pending",
+        "conclusion": null,
+        "number": 35,
+        "started_at": null,
+        "completed_at": null
+      },
+      {
+        "name": "Collect tested Beta downloads and hashes",
+        "status": "pending",
+        "conclusion": null,
+        "number": 36,
+        "started_at": null,
+        "completed_at": null
+      },
+      {
+        "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+        "status": "pending",
+        "conclusion": null,
+        "number": 37,
+        "started_at": null,
+        "completed_at": null
+      },
+      {
+        "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+        "status": "pending",
+        "conclusion": null,
+        "number": 38,
+        "started_at": null,
+        "completed_at": null
+      },
+      {
+        "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+        "status": "pending",
+        "conclusion": null,
+        "number": 76,
+        "started_at": null,
+        "completed_at": null
+      }
+    ]
+  }
+}

@@ -1,0 +1,4 @@
+# Preserve original fixture outputs and extracted source bytes, including whitespace.
+*.log -text -whitespace
+*.inc -text -whitespace
+objects/config.h -text -whitespace

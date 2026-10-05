@@ -1,0 +1,30 @@
+{
+  "scope": "actual atlas construction/cache branch with GL upload capture; not GPU/application/Windows acceptance",
+  "sourceSha256": "172bf0eecab51041449bae8433729297b55c703a414051b82be9f23066cae518",
+  "extractedSha256": "4de70f2ea5e79473f97f48fb63cbad1caf9c4cc4df5f71f6d10e33f74c25e3b0",
+  "command": [
+    "c++",
+    "-std=c++17",
+    "-DOPENNAV_X",
+    "-DocpnUSE_GL",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum266-selector-cache/src",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/upstream/OpenCPN/libs/s52plib/src",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum266-selector-cache/.local/selector-cache/original",
+    "/home/standard/Projects/X-nav-worktrees/scrum266-selector-cache/tests/chart_selector_cache_test.cpp",
+    "-I/home/standard/Projects/X-nav/.local/sysroot/usr/lib/wx/include/gtk3-unicode-3.2",
+    "-I/home/standard/Projects/X-nav/.local/sysroot/usr/include/wx-3.2",
+    "-DWXUSINGDLL",
+    "-D__WXGTK3__",
+    "-D__WXGTK__",
+    "-D_FILE_OFFSET_BITS=64",
+    "-L/home/standard/Projects/X-nav/.local/sysroot/usr/lib",
+    "-lwx_gtk3u_core-3.2",
+    "-lwx_baseu-3.2",
+    "-Wl,-rpath,/home/standard/Projects/X-nav/.local/sysroot/usr/lib",
+    "-o",
+    "/home/standard/Projects/X-nav-worktrees/scrum266-selector-cache/.local/selector-cache/original/selector-cache"
+  ],
+  "exitCode": 1,
+  "expectedStaleFailure": true,
+  "expectationMet": true
+}

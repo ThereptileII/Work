@@ -1,0 +1,124 @@
+{
+  "sourceCommit": "dfa7b721ef6eca3f084f77e95dd8e2adc20bde4b",
+  "upstreamCommit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "patches": [
+    {
+      "path": "patches/opencpn-5.12.4-xnav.patch",
+      "sha256": "dfbacadf42502d1d0366745b3a187d256e620b0d2ea7dba9e8912c46e999e0b3"
+    },
+    {
+      "path": "patches/opencpn-5.12.4-regression-tests.patch",
+      "sha256": "3ef13652b8f3717d836883d2fbb7a18f35dbd2ca1162ac991fe339e61392dff1"
+    },
+    {
+      "path": "patches/opencpn-5.12.4-ais-transport.patch",
+      "sha256": "d343a0a7a77817c55b16734516b7d686dbfc2eb3f4207b43b6099d7d98c9b2f6"
+    },
+    {
+      "path": "patches/opencpn-5.12.4-chart-presentation.patch",
+      "sha256": "1ab4a3311b889efd234e91f56946edbd5b652a75fd148cc81ab306c4f73c2a9e"
+    },
+    {
+      "path": "patches/opencpn-5.12.4-maintained-curl.patch",
+      "sha256": "dafa1fec0a69e3a1195db726c2cb26ceeb7535b5e25476ac2e4658d910f44e48"
+    },
+    {
+      "path": "patches/opencpn-5.12.4-download-trust.patch",
+      "sha256": "04763cb038ad088a722e76d4f85bde7e356489b697a373458195336d4278412b"
+    },
+    {
+      "path": "patches/opencpn-5.12.4-wxcurl-trust.patch",
+      "sha256": "f3ad76fc07b80e6f2c01331894ce5e685f6aa4456a2a3c761e3115c8c21f3d6b"
+    },
+    {
+      "path": "patches/opencpn-5.12.4-peer-response-buffer.patch",
+      "sha256": "c335f361766a6982c3d096e93f7c149179deb33134668e110111ac4980064e15"
+    },
+    {
+      "path": "patches/opencpn-5.12.4-peer-unavailable.patch",
+      "sha256": "5bf1c2ae4b09043ce18151f766aebd2b881b993f352000e34399de7e8b36b6d3"
+    }
+  ],
+  "patchedTree": "4efcf110ac10920b0b8cbfbd6726a51c6a3adfac",
+  "trackedSourceMatches": true,
+  "priorCleanBuild": "6dafd29db791c773793c2b1155c358cc81452fc2",
+  "targetedLinkFix": "7d9c35a",
+  "scope": "Linux developer integration compile/link and regression only; no Windows/private DLL/visual/boat acceptance",
+  "build": "passed (223 incremental steps after preserved clean-build failure and targeted link fix)",
+  "ctest": {
+    "passed": 147,
+    "failed": 0,
+    "seconds": 22.71
+  },
+  "fixtures": {
+    "geographicName": 5776,
+    "lightLabel": 48,
+    "wordmark": 129262,
+    "routeLabel": 93,
+    "onboardAis": 24751
+  },
+  "flags": {
+    "OCPN_BUILD_TEST": true,
+    "OPENNAV_BUILD_TESTS": false,
+    "OPENNAV_ENABLE_ROUTE_SCENARIO": true,
+    "XNAV_ENABLE_TEST_FIXTURES": true,
+    "XNAV_ENABLE_PILOT_LOOPBACK_TESTS": true,
+    "SKAGER_OCHARTS_PACKAGE": ""
+  },
+  "files": {
+    "build/xnav-linux/opencpn": {
+      "bytes": 26053888,
+      "sha256": "4ad98de214ce7d7fe617832a308d7c05bb26fe15ce08c1987e1a8b29ef3a8f23"
+    },
+    "build/xnav-install/bin/opencpn": {
+      "bytes": 26053888,
+      "sha256": "e4825535e767c011d336701ae72abc7a817ad7a2c8100dbe462b94419d738ac5"
+    },
+    "build/xnav-linux/opennav-chart-style/v1/manifest.json": {
+      "bytes": 24210,
+      "sha256": "03533971dfba1bb3cb2cba6ab52b1528a56b4f27c8b4fc118b4b503c25b4bdde"
+    },
+    "build/xnav-linux/include/OpenNavBuild.h": {
+      "bytes": 243,
+      "sha256": "3cdadd8a43a0487c4e6e4cf66fc68dc2829be1bc22a97f5fda12048c71893cc9"
+    }
+  },
+  "evidence": {
+    "build.log.gz": {
+      "bytes": 3614,
+      "sha256": "14bb6e1c75ffbf95fa027e2a79d3de558a88809eaa73c0440e42c7006e302f5b"
+    },
+    "configure.log.gz": {
+      "bytes": 2270,
+      "sha256": "651dc6a41c12ab47e6606d378023f56bce452f3b279a483a29345f0348cdeb2c"
+    },
+    "ctest.log": {
+      "bytes": 27401,
+      "sha256": "9387548ffd369c4a95714973b315d949579cb38abc17585734831b177e19877b"
+    },
+    "ctest.xml": {
+      "bytes": 121605,
+      "sha256": "3bfad75fc79b73300d361cf5b6e10136830119cf062798495da5d3e7d2d8164b"
+    },
+    "failed-6daf-build.log.gz": {
+      "bytes": 12547,
+      "sha256": "99a3f77b1fc41df6962e65db0fe8a11c876a0f2ceb66e14a57915f522da85301"
+    },
+    "fixtures-and-first-ctest.log.gz": {
+      "bytes": 13676,
+      "sha256": "d3b482630dc2e90265b737b5d8750511ca83d2448d14411ed5e7a8947ca47911"
+    },
+    "install.log.gz": {
+      "bytes": 5162,
+      "sha256": "dd146c1dcfc0fab2674c6cb457afe47dcc077cc5da29a82b068ee0238b2cccd0"
+    },
+    "passed-7d9-executables.sha256": {
+      "bytes": 198,
+      "sha256": "6e1c6d0454504562d0135c8c8a8d7e71c496945dabdcdce573fb8d4cacbf95d0"
+    },
+    "passed-7d9-links.log.gz": {
+      "bytes": 2541,
+      "sha256": "154b1a193038301d4783dacb28f05a9dbe447b642f7456f06b68717c98e4fc38"
+    }
+  }
+}

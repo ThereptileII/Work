@@ -1,0 +1,89 @@
+{
+  "schema": "SKAGER.BoatReadOnlyReadiness.1",
+  "timeUtc": "2026-10-03T04:47:40.7882065Z",
+  "sshReachable": true,
+  "errors": [],
+  "profile": {
+    "bytes": 21492,
+    "sha256": "d891d88c62657139e1b1c6ff7d9e8acdae726a4e116dbc844126992a39adbdb6"
+  },
+  "installState": {
+    "bytes": 461,
+    "sha256": "a6ec7cda54cf855ef3ce78bbe63090bf1a799345c0713dc545c2ccc0a003952d"
+  },
+  "stock": {
+    "identity": {
+      "bytes": 11624448,
+      "sha256": "7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c"
+    },
+    "version": "5,12,4",
+    "exactSupportedIdentity": true
+  },
+  "profileTargetMatches": true,
+  "installed": {
+    "commit": "a3e6e0812e01d2aee8f0b83807527b9a0c0fc79a",
+    "version": "0.3.0-beta1",
+    "ownership": {
+      "bytes": 466817,
+      "sha256": "c18363e5a0dd2ed907a92d857660aabdf19e2acf6660481baf7cb3034a431683"
+    },
+    "executable": {
+      "bytes": 13170688,
+      "sha256": "6f20acea9f90c840e0dcfbbf70782c2f1fc2480be7439058b48947cc9f7b91b6"
+    },
+    "executableMatchesOwnership": true
+  },
+  "navigationProcesses": [],
+  "remoteServices": [
+    {
+      "name": "RustDesk",
+      "status": "Running",
+      "startType": "Automatic"
+    },
+    {
+      "name": "sshd",
+      "status": "Running",
+      "startType": "Automatic"
+    },
+    {
+      "name": "Tailscale",
+      "status": "Running",
+      "startType": "Automatic"
+    }
+  ],
+  "remoteProcessCounts": {
+    "sshd": 3,
+    "tailscale": 3,
+    "rustdesk": 3
+  },
+  "rustdeskEstablishedTcp": 0,
+  "display": [
+    {
+      "width": 1920,
+      "height": 1080,
+      "driverVersion": "32.0.101.7088"
+    }
+  ],
+  "displayDpi": {
+    "appliedDpi": 144,
+    "logPixels": null,
+    "source": "Current-user desktop registry, not a rendered-window measurement"
+  },
+  "tailscale": {
+    "backendState": "Running",
+    "selfOnline": true,
+    "healthWarningCount": 0
+  },
+  "reviewToolsPresent": true,
+  "commissioningMarkerPresent": false,
+  "profileAfter": {
+    "bytes": 21492,
+    "sha256": "d891d88c62657139e1b1c6ff7d9e8acdae726a4e116dbc844126992a39adbdb6"
+  },
+  "installStateAfter": {
+    "bytes": 461,
+    "sha256": "a6ec7cda54cf855ef3ce78bbe63090bf1a799345c0713dc545c2ccc0a003952d"
+  },
+  "profileUnchanged": true,
+  "installStateUnchanged": true
+}

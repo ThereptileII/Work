@@ -1,0 +1,104 @@
+{
+  "runId": "37155858878",
+  "runAttempt": "1",
+  "commit": "4ddf1f383e495150551946dd36103cd77cea85eb",
+  "artifact": {
+    "id": 11287093978,
+    "name": "windows-integration-4ddf1f383e495150551946dd36103cd77cea85eb",
+    "size_in_bytes": 58474264,
+    "url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/11287093978",
+    "archive_download_url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/11287093978/zip",
+    "expired": false,
+    "created_at": "2026-10-03T23:24:10Z",
+    "expires_at": "2027-01-01T21:39:18Z",
+    "updated_at": "2026-10-03T23:24:10Z",
+    "digest": "sha256:a23b33366a3c119f724e47b77360082068791bd3f8204f8b8104b60db64fd8fd",
+    "workflow_run": {
+      "id": 37155858878,
+      "repository_id": 864043804,
+      "head_repository_id": 864043804,
+      "head_branch": "opennav-x-beta2-ui",
+      "head_sha": "4ddf1f383e495150551946dd36103cd77cea85eb"
+    }
+  },
+  "archive": {
+    "sha256": "a23b33366a3c119f724e47b77360082068791bd3f8204f8b8104b60db64fd8fd",
+    "bytes": 58474264,
+    "entries": 14014,
+    "allCrcPassed": true
+  },
+  "firstError": "KeyError: 'Include'",
+  "offlineSameNodeError": "KeyError: 'Include'",
+  "failureBoundary": "ais_session_native.vcxproj ItemDefinitionGroup/ProjectReference metadata read as an ItemGroup dependency edge",
+  "actualAISCompilationOrRuntime": false,
+  "maintainedToolReprobes": "OpenSSL parent+child and zlib parent+child verified",
+  "primaryFiles": {
+    "evidence/local/ais-native-runtime/report.json": {
+      "bytes": 160324,
+      "sha256": "08cd3c604f3b6405992372d561ae19b4e4690a413ca5a255eea91b87ff221e6b"
+    },
+    "evidence/local/ais-native-runtime/configure.log": {
+      "bytes": 1593,
+      "sha256": "3770e583c076a05c630152bdaf769f9a994690b49a0f1b0a21fc033c4ddc6ab2"
+    },
+    "evidence/local/ais-native-runtime/build/ais_session_native.vcxproj": {
+      "bytes": 63017,
+      "sha256": "7f9eae02e9f83a151e576c9c5c9220abb3a643bcd98491607bba061464f4a36e"
+    },
+    "evidence/local/ais-runtime-openssl-tool-check.log": {
+      "bytes": 800,
+      "sha256": "ab9bcb71b04340df0bb529f90690a1be53de63f66aeab5907d05593ab6c39944"
+    },
+    "evidence/local/ais-runtime-zlib-tool-check.log": {
+      "bytes": 702,
+      "sha256": "9b1688d59a399fa8a929956b85bda798167233ea392e39db68c01002e3cddd96"
+    },
+    "evidence/local/ais-runtime-gettext-check.log": {
+      "bytes": 82,
+      "sha256": "dfd4f9b5a1e1da7c6bbd11d9a5908c133c673daeb18eda6b29a06fb0bc3749e2"
+    },
+    "evidence/local/ais-runtime-guards.log": {
+      "bytes": 106,
+      "sha256": "45f9eff500276d5f54b97829bdfc267ce1d5c61ddc5c3c8b1b3b7817be27c615"
+    }
+  },
+  "structuralEdgeInspection": {
+    "ais_session_native": [
+      "ZERO_CHECK",
+      "opennav_ais",
+      "opennav_ais_codec",
+      "opennav_vessel"
+    ],
+    "opennav_vessel": [
+      "ZERO_CHECK"
+    ],
+    "opennav_ais_codec": [
+      "ZERO_CHECK",
+      "opennav_ais",
+      "opennav_vessel"
+    ],
+    "opennav_ais": [
+      "ZERO_CHECK",
+      "opennav_vessel"
+    ],
+    "ais_provider_test_client": [
+      "ZERO_CHECK",
+      "ixwebsocket",
+      "opennav_ais",
+      "opennav_ais_codec",
+      "opennav_ais_credentials",
+      "opennav_vessel"
+    ],
+    "opennav_ais_credentials": [
+      "ZERO_CHECK"
+    ],
+    "ixwebsocket": [
+      "ZERO_CHECK"
+    ],
+    "ais_transport_test_client": [
+      "ZERO_CHECK",
+      "ixwebsocket"
+    ]
+  },
+  "inspectionIsRuntimeProof": false
+}

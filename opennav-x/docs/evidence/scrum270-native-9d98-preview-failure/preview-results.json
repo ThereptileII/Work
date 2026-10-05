@@ -1,0 +1,1381 @@
+{
+  "authority": "native Windows fixture-enabled disposable test tree",
+  "checks": [
+    "Disposable fixture tree uses exact tested native install; never included in product package",
+    "Bottom route summary lays out after narrow-to-wide resize",
+    "Persistent page controls scroll diagnostics and return to top without native scrollbars",
+    "Native manual test enable/AUTO/+1/STANDBY/disable with fresh feedback and disabled OFF controls",
+    "Prototype navigation and eight retained product views captured; advanced frame accelerators remain covered",
+    "Native battery assumption sheet saves explicit live configuration; DEMO remains separate",
+    "Native palettes, data-rail presets and instrument selection preserve telemetry provenance",
+    "Energy, source, vessel-safety and radar settings pages captured"
+  ],
+  "screenshots": [
+    "preview-01-navigation-day.png",
+    "preview-11-startup-xnav.png",
+    "preview-02-navigation-night.png",
+    "preview-03-route.png",
+    "preview-04-energy.png",
+    "preview-05-diagnostics.png",
+    "alpha-instruments.png",
+    "beta-night-instruments.png",
+    "alpha-ais.png",
+    "beta-night-ais.png",
+    "alpha-smartnav.png",
+    "beta-night-smartnav.png",
+    "alpha-autopilot.png",
+    "beta-night-autopilot.png",
+    "alpha-autopilot-confirmed.png",
+    "alpha-anchor.png",
+    "beta-night-anchor.png",
+    "alpha-settings.png",
+    "beta-night-settings.png",
+    "alpha-routes.png",
+    "beta-night-routes.png",
+    "alpha-waypoints.png",
+    "beta-night-waypoints.png",
+    "beta-vessel-preferences-form.png",
+    "alpha-energy-settings.png",
+    "beta-night-energy-settings.png",
+    "alpha-energy-settings-saved.png",
+    "alpha-sources.png",
+    "beta-night-sources.png",
+    "alpha-vessel-settings.png",
+    "beta-night-vessel-settings.png",
+    "alpha-radar-status.png",
+    "beta-night-radar-status.png",
+    "alpha-display.png",
+    "beta-night-display.png",
+    "alpha-display-dusk.png",
+    "alpha-display-night.png",
+    "alpha-energy-rail.png"
+  ],
+  "higher_dpi": "Not exercised by this hosted desktop; manual validation remains open",
+  "display": {
+    "before": [
+      1920,
+      1080,
+      32
+    ],
+    "after": [
+      1920,
+      1080,
+      32
+    ]
+  },
+  "runtime_path": "C:\\Windows\\System32;C:\\Windows",
+  "executable_sha256": "38cbeb89e8dac9e900e905fbe134b72afdf09dfe02749cb7c1576f4216e39150",
+  "launches": [
+    {
+      "phase": "launch 1: Run-XNav-Demo.cmd",
+      "pid": 748,
+      "arguments": [
+        "C:\\Windows\\system32\\cmd.exe",
+        "/d",
+        "/c",
+        "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\OpenNav preview asvvtjbr\\OpenNavX-CI-Fixtures\\Run-XNav-Demo.cmd"
+      ],
+      "stdout": "preview-launch-01.stdout.log",
+      "stderr": "preview-launch-01.stderr.log",
+      "return_code_before_cleanup": null
+    }
+  ],
+  "process_events": [
+    {
+      "event": "direct-launch",
+      "phase": "launch 1: Run-XNav-Demo.cmd",
+      "monotonic_ms": 6021937,
+      "processes": [],
+      "pid": 748
+    },
+    {
+      "event": "await-window",
+      "phase": "launch 1: Run-XNav-Demo.cmd",
+      "monotonic_ms": 6021937,
+      "processes": [],
+      "title": "SKAGER / OpenCPN",
+      "expected_pid": null
+    },
+    {
+      "event": "window-found",
+      "phase": "launch 1: Run-XNav-Demo.cmd",
+      "monotonic_ms": 6023359,
+      "handle": 2097812,
+      "pid": 1636,
+      "title": "SKAGER / OpenCPN"
+    },
+    {
+      "event": "failure-cleanup-terminate",
+      "phase": "launch 1: Run-XNav-Demo.cmd",
+      "monotonic_ms": 6138640,
+      "pid": 1636
+    }
+  ],
+  "last_observed_window": {
+    "handle": 2097812,
+    "pid": 1636,
+    "title": "SKAGER / OpenCPN",
+    "phase": "launch 1: Run-XNav-Demo.cmd"
+  },
+  "initial_outer_pixels": [
+    1280,
+    800
+  ],
+  "chart_rendering": [
+    {
+      "phase": "Direct XNav startup",
+      "reference_color_fractions": {
+        "eeeee2": 0.3257510729613734,
+        "d5e5e5": 0.6184191702432046
+      },
+      "coastline_visible": true,
+      "style": "XNav",
+      "light": "Day",
+      "source": "immutable HTML effective chart-canvas colors"
+    },
+    {
+      "phase": "Night world-chart land/water palette",
+      "reference_color_fractions": {
+        "1d2925": 0.3257510729613734,
+        "0e171c": 0.6184191702432046
+      },
+      "coastline_visible": true,
+      "style": "XNav",
+      "light": "Night",
+      "source": "immutable HTML effective chart-canvas colors"
+    }
+  ],
+  "pointer_actions": [
+    {
+      "label": "Day",
+      "page": "Navigation",
+      "target": {
+        "x": 1171,
+        "height": 44,
+        "accessible_name": "Cycle day, dusk and night palettes",
+        "width": 44,
+        "label": "Day",
+        "y": 43,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Dusk",
+      "page": "Navigation",
+      "target": {
+        "x": 1171,
+        "height": 44,
+        "accessible_name": "Cycle day, dusk and night palettes",
+        "width": 44,
+        "label": "Dusk",
+        "y": 43,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Night",
+      "page": "Navigation",
+      "target": {
+        "x": 1171,
+        "height": 44,
+        "accessible_name": "Cycle day, dusk and night palettes",
+        "width": 44,
+        "label": "Night",
+        "y": 43,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Passage",
+      "page": "Navigation",
+      "target": {
+        "x": 17,
+        "height": 61,
+        "accessible_name": "Route",
+        "width": 61,
+        "label": "Passage",
+        "y": 179,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Energy",
+      "page": "Route",
+      "target": {
+        "x": 17,
+        "height": 61,
+        "accessible_name": "Energy",
+        "width": 61,
+        "label": "Energy",
+        "y": 331,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Settings",
+      "page": "Energy",
+      "target": {
+        "x": 17,
+        "height": 61,
+        "accessible_name": "Open navigation menu",
+        "width": 61,
+        "label": "Settings",
+        "y": 637,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "System",
+      "page": "Settings",
+      "target": {
+        "x": 663,
+        "height": 37,
+        "accessible_name": "Settings section: System",
+        "width": 56,
+        "label": "System",
+        "y": 263,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Instruments",
+      "page": "Diagnostics",
+      "target": {
+        "x": 17,
+        "height": 61,
+        "accessible_name": "Vessel instruments",
+        "width": 61,
+        "label": "Instruments",
+        "y": 397,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Day",
+      "page": "Vessel instruments",
+      "target": {
+        "x": 1171,
+        "height": 44,
+        "accessible_name": "Cycle day, dusk and night palettes",
+        "width": 44,
+        "label": "Day",
+        "y": 43,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Dusk",
+      "page": "Vessel instruments",
+      "target": {
+        "x": 1171,
+        "height": 44,
+        "accessible_name": "Cycle day, dusk and night palettes",
+        "width": 44,
+        "label": "Dusk",
+        "y": 43,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Night",
+      "page": "Vessel instruments",
+      "target": {
+        "x": 1171,
+        "height": 44,
+        "accessible_name": "Cycle day, dusk and night palettes",
+        "width": 44,
+        "label": "Night",
+        "y": 43,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Traffic",
+      "page": "Vessel instruments",
+      "target": {
+        "x": 17,
+        "height": 61,
+        "accessible_name": "AIS targets",
+        "width": 61,
+        "label": "Traffic",
+        "y": 245,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Day",
+      "page": "AIS targets",
+      "target": {
+        "x": 1171,
+        "height": 44,
+        "accessible_name": "Cycle day, dusk and night palettes",
+        "width": 44,
+        "label": "Day",
+        "y": 43,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Dusk",
+      "page": "AIS targets",
+      "target": {
+        "x": 1171,
+        "height": 44,
+        "accessible_name": "Cycle day, dusk and night palettes",
+        "width": 44,
+        "label": "Dusk",
+        "y": 43,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Night",
+      "page": "AIS targets",
+      "target": {
+        "x": 1171,
+        "height": 44,
+        "accessible_name": "Cycle day, dusk and night palettes",
+        "width": 44,
+        "label": "Night",
+        "y": 43,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Day",
+      "page": "SmartNav",
+      "target": {
+        "x": 1171,
+        "height": 44,
+        "accessible_name": "Cycle day, dusk and night palettes",
+        "width": 44,
+        "label": "Day",
+        "y": 43,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Dusk",
+      "page": "SmartNav",
+      "target": {
+        "x": 1171,
+        "height": 44,
+        "accessible_name": "Cycle day, dusk and night palettes",
+        "width": 44,
+        "label": "Dusk",
+        "y": 43,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Night",
+      "page": "SmartNav",
+      "target": {
+        "x": 1171,
+        "height": 44,
+        "accessible_name": "Cycle day, dusk and night palettes",
+        "width": 44,
+        "label": "Night",
+        "y": 43,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Day",
+      "page": "Manual autopilot",
+      "target": {
+        "x": 1171,
+        "height": 44,
+        "accessible_name": "Cycle day, dusk and night palettes",
+        "width": 44,
+        "label": "Day",
+        "y": 43,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Dusk",
+      "page": "Manual autopilot",
+      "target": {
+        "x": 1171,
+        "height": 44,
+        "accessible_name": "Cycle day, dusk and night palettes",
+        "width": 44,
+        "label": "Dusk",
+        "y": 43,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Night",
+      "page": "Manual autopilot",
+      "target": {
+        "x": 1171,
+        "height": 44,
+        "accessible_name": "Cycle day, dusk and night palettes",
+        "width": 44,
+        "label": "Night",
+        "y": 43,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Enable control",
+      "page": "Manual autopilot",
+      "target": {
+        "x": 1001,
+        "height": 49,
+        "accessible_name": "Enable control",
+        "width": 48,
+        "label": "Enable control",
+        "y": 643,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Auto",
+      "page": "Manual autopilot",
+      "target": {
+        "x": 878,
+        "height": 48,
+        "accessible_name": "Auto",
+        "width": 171,
+        "label": "Auto",
+        "y": 512,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "+1\u00b0",
+      "page": "Manual autopilot",
+      "target": {
+        "x": 877,
+        "height": 48,
+        "accessible_name": "+1\u00b0 magnetic course",
+        "width": 82,
+        "label": "+1\u00b0",
+        "y": 444,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Standby",
+      "page": "Manual autopilot",
+      "target": {
+        "x": 697,
+        "height": 48,
+        "accessible_name": "Standby",
+        "width": 172,
+        "label": "Standby",
+        "y": 512,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Enable control",
+      "page": "Manual autopilot",
+      "target": {
+        "x": 1001,
+        "height": 49,
+        "accessible_name": "Enable control",
+        "width": 48,
+        "label": "Enable control",
+        "y": 643,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Anchor",
+      "page": "Manual autopilot",
+      "target": {
+        "x": 17,
+        "height": 61,
+        "accessible_name": "Anchor watch",
+        "width": 61,
+        "label": "Anchor",
+        "y": 463,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Day",
+      "page": "Anchor watch",
+      "target": {
+        "x": 1171,
+        "height": 44,
+        "accessible_name": "Cycle day, dusk and night palettes",
+        "width": 44,
+        "label": "Day",
+        "y": 43,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Dusk",
+      "page": "Anchor watch",
+      "target": {
+        "x": 1171,
+        "height": 44,
+        "accessible_name": "Cycle day, dusk and night palettes",
+        "width": 44,
+        "label": "Dusk",
+        "y": 43,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Night",
+      "page": "Anchor watch",
+      "target": {
+        "x": 1171,
+        "height": 44,
+        "accessible_name": "Cycle day, dusk and night palettes",
+        "width": 44,
+        "label": "Night",
+        "y": 43,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Settings",
+      "page": "Anchor watch",
+      "target": {
+        "x": 17,
+        "height": 61,
+        "accessible_name": "Open navigation menu",
+        "width": 61,
+        "label": "Settings",
+        "y": 637,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Day",
+      "page": "Settings",
+      "target": {
+        "x": 1171,
+        "height": 44,
+        "accessible_name": "Cycle day, dusk and night palettes",
+        "width": 44,
+        "label": "Day",
+        "y": 43,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Dusk",
+      "page": "Settings",
+      "target": {
+        "x": 1171,
+        "height": 44,
+        "accessible_name": "Cycle day, dusk and night palettes",
+        "width": 44,
+        "label": "Dusk",
+        "y": 43,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Night",
+      "page": "Settings",
+      "target": {
+        "x": 1171,
+        "height": 44,
+        "accessible_name": "Cycle day, dusk and night palettes",
+        "width": 44,
+        "label": "Night",
+        "y": 43,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Day",
+      "page": "Routes",
+      "target": {
+        "x": 1171,
+        "height": 44,
+        "accessible_name": "Cycle day, dusk and night palettes",
+        "width": 44,
+        "label": "Day",
+        "y": 43,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Dusk",
+      "page": "Routes",
+      "target": {
+        "x": 1171,
+        "height": 44,
+        "accessible_name": "Cycle day, dusk and night palettes",
+        "width": 44,
+        "label": "Dusk",
+        "y": 43,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Night",
+      "page": "Routes",
+      "target": {
+        "x": 1171,
+        "height": 44,
+        "accessible_name": "Cycle day, dusk and night palettes",
+        "width": 44,
+        "label": "Night",
+        "y": 43,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Day",
+      "page": "Waypoints",
+      "target": {
+        "x": 1171,
+        "height": 44,
+        "accessible_name": "Cycle day, dusk and night palettes",
+        "width": 44,
+        "label": "Day",
+        "y": 43,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Dusk",
+      "page": "Waypoints",
+      "target": {
+        "x": 1171,
+        "height": 44,
+        "accessible_name": "Cycle day, dusk and night palettes",
+        "width": 44,
+        "label": "Dusk",
+        "y": 43,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Night",
+      "page": "Waypoints",
+      "target": {
+        "x": 1171,
+        "height": 44,
+        "accessible_name": "Cycle day, dusk and night palettes",
+        "width": 44,
+        "label": "Night",
+        "y": 43,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Settings",
+      "page": "Waypoints",
+      "target": {
+        "x": 17,
+        "height": 61,
+        "accessible_name": "Open navigation menu",
+        "width": 61,
+        "label": "Settings",
+        "y": 637,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Vessel",
+      "page": "Settings",
+      "target": {
+        "x": 663,
+        "height": 37,
+        "accessible_name": "Settings section: Vessel",
+        "width": 52,
+        "label": "Vessel",
+        "y": 221,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Day",
+      "page": "Energy configuration",
+      "target": {
+        "x": 1171,
+        "height": 44,
+        "accessible_name": "Cycle day, dusk and night palettes",
+        "width": 44,
+        "label": "Day",
+        "y": 43,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Dusk",
+      "page": "Energy configuration",
+      "target": {
+        "x": 1171,
+        "height": 44,
+        "accessible_name": "Cycle day, dusk and night palettes",
+        "width": 44,
+        "label": "Dusk",
+        "y": 43,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Night",
+      "page": "Energy configuration",
+      "target": {
+        "x": 1171,
+        "height": 44,
+        "accessible_name": "Cycle day, dusk and night palettes",
+        "width": 44,
+        "label": "Night",
+        "y": 43,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Settings",
+      "page": "Energy configuration",
+      "target": {
+        "x": 17,
+        "height": 61,
+        "accessible_name": "Open navigation menu",
+        "width": 61,
+        "label": "Settings",
+        "y": 637,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Sensors",
+      "page": "Settings",
+      "target": {
+        "x": 800,
+        "height": 37,
+        "accessible_name": "Settings section: Sensors",
+        "width": 59,
+        "label": "Sensors",
+        "y": 221,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Manage sensors",
+      "page": "Settings",
+      "target": {
+        "x": 663,
+        "height": 72,
+        "accessible_name": "Manage sensors",
+        "width": 386,
+        "label": "Manage sensors",
+        "y": 467,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Day",
+      "page": "Data Sources",
+      "target": {
+        "x": 1171,
+        "height": 44,
+        "accessible_name": "Cycle day, dusk and night palettes",
+        "width": 44,
+        "label": "Day",
+        "y": 43,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Dusk",
+      "page": "Data Sources",
+      "target": {
+        "x": 1171,
+        "height": 44,
+        "accessible_name": "Cycle day, dusk and night palettes",
+        "width": 44,
+        "label": "Dusk",
+        "y": 43,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Night",
+      "page": "Data Sources",
+      "target": {
+        "x": 1171,
+        "height": 44,
+        "accessible_name": "Cycle day, dusk and night palettes",
+        "width": 44,
+        "label": "Night",
+        "y": 43,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Settings",
+      "page": "Data Sources",
+      "target": {
+        "x": 17,
+        "height": 61,
+        "accessible_name": "Open navigation menu",
+        "width": 61,
+        "label": "Settings",
+        "y": 637,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Vessel",
+      "page": "Settings",
+      "target": {
+        "x": 663,
+        "height": 37,
+        "accessible_name": "Settings section: Vessel",
+        "width": 52,
+        "label": "Vessel",
+        "y": 221,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Day",
+      "page": "Vessel safety settings",
+      "target": {
+        "x": 1171,
+        "height": 44,
+        "accessible_name": "Cycle day, dusk and night palettes",
+        "width": 44,
+        "label": "Day",
+        "y": 43,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Dusk",
+      "page": "Vessel safety settings",
+      "target": {
+        "x": 1171,
+        "height": 44,
+        "accessible_name": "Cycle day, dusk and night palettes",
+        "width": 44,
+        "label": "Dusk",
+        "y": 43,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Night",
+      "page": "Vessel safety settings",
+      "target": {
+        "x": 1171,
+        "height": 44,
+        "accessible_name": "Cycle day, dusk and night palettes",
+        "width": 44,
+        "label": "Night",
+        "y": 43,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Settings",
+      "page": "Vessel safety settings",
+      "target": {
+        "x": 17,
+        "height": 61,
+        "accessible_name": "Open navigation menu",
+        "width": 61,
+        "label": "Settings",
+        "y": 637,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Radar",
+      "page": "Settings",
+      "target": {
+        "x": 936,
+        "height": 37,
+        "accessible_name": "Settings section: Radar",
+        "width": 50,
+        "label": "Radar",
+        "y": 221,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Radar status",
+      "page": "Settings",
+      "target": {
+        "x": 663,
+        "height": 72,
+        "accessible_name": "Radar status",
+        "width": 386,
+        "label": "Radar status",
+        "y": 427,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Day",
+      "page": "Radar status",
+      "target": {
+        "x": 1171,
+        "height": 44,
+        "accessible_name": "Cycle day, dusk and night palettes",
+        "width": 44,
+        "label": "Day",
+        "y": 43,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Dusk",
+      "page": "Radar status",
+      "target": {
+        "x": 1171,
+        "height": 44,
+        "accessible_name": "Cycle day, dusk and night palettes",
+        "width": 44,
+        "label": "Dusk",
+        "y": 43,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Night",
+      "page": "Radar status",
+      "target": {
+        "x": 1171,
+        "height": 44,
+        "accessible_name": "Cycle day, dusk and night palettes",
+        "width": 44,
+        "label": "Night",
+        "y": 43,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Settings",
+      "page": "Radar status",
+      "target": {
+        "x": 17,
+        "height": 61,
+        "accessible_name": "Open navigation menu",
+        "width": 61,
+        "label": "Settings",
+        "y": 637,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Navigation",
+      "page": "Settings",
+      "target": {
+        "x": 720,
+        "height": 37,
+        "accessible_name": "Settings section: Navigation",
+        "width": 75,
+        "label": "Navigation",
+        "y": 221,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Chart presentation",
+      "page": "Settings",
+      "target": {
+        "x": 663,
+        "height": 72,
+        "accessible_name": "Chart presentation",
+        "width": 386,
+        "label": "Chart presentation",
+        "y": 395,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Day",
+      "page": "Display",
+      "target": {
+        "x": 1171,
+        "height": 44,
+        "accessible_name": "Cycle day, dusk and night palettes",
+        "width": 44,
+        "label": "Day",
+        "y": 43,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Dusk",
+      "page": "Display",
+      "target": {
+        "x": 1171,
+        "height": 44,
+        "accessible_name": "Cycle day, dusk and night palettes",
+        "width": 44,
+        "label": "Dusk",
+        "y": 43,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Night",
+      "page": "Display",
+      "target": {
+        "x": 1171,
+        "height": 44,
+        "accessible_name": "Cycle day, dusk and night palettes",
+        "width": 44,
+        "label": "Night",
+        "y": 43,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Chart",
+      "page": "Data rail layout",
+      "target": {
+        "x": 17,
+        "height": 61,
+        "accessible_name": "Navigation",
+        "width": 61,
+        "label": "Chart",
+        "y": 113,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Settings",
+      "page": "Navigation",
+      "target": {
+        "x": 17,
+        "height": 61,
+        "accessible_name": "Open navigation menu",
+        "width": 61,
+        "label": "Settings",
+        "y": 637,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Navigation",
+      "page": "Settings",
+      "target": {
+        "x": 720,
+        "height": 37,
+        "accessible_name": "Settings section: Navigation",
+        "width": 75,
+        "label": "Navigation",
+        "y": 221,
+        "visible": true,
+        "enabled": true
+      }
+    },
+    {
+      "label": "Chart presentation",
+      "page": "Settings",
+      "target": {
+        "x": 663,
+        "height": 72,
+        "accessible_name": "Chart presentation",
+        "width": 386,
+        "label": "Chart presentation",
+        "y": 395,
+        "visible": true,
+        "enabled": true
+      }
+    }
+  ],
+  "page_visibility": [
+    {
+      "page": "SKAGER passage",
+      "native_pixels": [
+        398,
+        635
+      ],
+      "visible_and_uncovered": true
+    },
+    {
+      "page": "Energy",
+      "native_pixels": [
+        998,
+        659
+      ],
+      "visible_and_uncovered": true
+    },
+    {
+      "page": "Diagnostics",
+      "native_pixels": [
+        998,
+        659
+      ],
+      "visible_and_uncovered": true
+    }
+  ],
+  "grouped_regions": [
+    [
+      {
+        "x": 120,
+        "height": 540,
+        "width": 480,
+        "label": "Wind and heading",
+        "y": 245,
+        "visible": false,
+        "enabled": true
+      },
+      {
+        "x": 618,
+        "height": 126,
+        "width": 212,
+        "label": "SPEED OVER GROUND",
+        "y": 245,
+        "visible": true,
+        "enabled": true
+      },
+      {
+        "x": 842,
+        "height": 126,
+        "width": 212,
+        "label": "COURSE OVER GROUND",
+        "y": 245,
+        "visible": true,
+        "enabled": true
+      },
+      {
+        "x": 618,
+        "height": 126,
+        "width": 212,
+        "label": "SPEED THROUGH WATER",
+        "y": 383,
+        "visible": true,
+        "enabled": true
+      },
+      {
+        "x": 842,
+        "height": 126,
+        "width": 212,
+        "label": "DEPTH / TRANSDUCER",
+        "y": 383,
+        "visible": true,
+        "enabled": true
+      },
+      {
+        "x": 618,
+        "height": 126,
+        "width": 212,
+        "label": "APPARENT WIND",
+        "y": 521,
+        "visible": false,
+        "enabled": true
+      },
+      {
+        "x": 842,
+        "height": 126,
+        "width": 212,
+        "label": "APPARENT WIND ANGLE",
+        "y": 521,
+        "visible": false,
+        "enabled": true
+      },
+      {
+        "x": 618,
+        "height": 126,
+        "width": 212,
+        "label": "HEEL",
+        "y": 659,
+        "visible": false,
+        "enabled": true
+      },
+      {
+        "x": 842,
+        "height": 126,
+        "width": 212,
+        "label": "WATER TEMPERATURE",
+        "y": 659,
+        "visible": false,
+        "enabled": true
+      },
+      {
+        "x": 618,
+        "height": 126,
+        "width": 212,
+        "label": "PRESSURE",
+        "y": 797,
+        "visible": false,
+        "enabled": true
+      },
+      {
+        "x": 842,
+        "height": 126,
+        "width": 212,
+        "label": "RUDDER",
+        "y": 797,
+        "visible": false,
+        "enabled": true
+      }
+    ]
+  ],
+  "night_surfaces": [
+    {
+      "phase": "Vessel instruments",
+      "bright_fraction": 0.0,
+      "scope": "Primary client area; OS caption/file picker excluded"
+    },
+    {
+      "phase": "AIS targets",
+      "bright_fraction": 0.0,
+      "scope": "Primary client area; OS caption/file picker excluded"
+    },
+    {
+      "phase": "SmartNav",
+      "bright_fraction": 0.0,
+      "scope": "Primary client area; OS caption/file picker excluded"
+    },
+    {
+      "phase": "Manual autopilot",
+      "bright_fraction": 0.0,
+      "scope": "Primary client area; OS caption/file picker excluded"
+    },
+    {
+      "phase": "Anchor watch",
+      "bright_fraction": 0.0,
+      "scope": "Primary client area; OS caption/file picker excluded"
+    },
+    {
+      "phase": "Settings",
+      "bright_fraction": 0.0,
+      "scope": "Primary client area; OS caption/file picker excluded"
+    },
+    {
+      "phase": "Routes",
+      "bright_fraction": 0.0,
+      "scope": "Primary client area; OS caption/file picker excluded"
+    },
+    {
+      "phase": "Waypoints",
+      "bright_fraction": 0.0,
+      "scope": "Primary client area; OS caption/file picker excluded"
+    },
+    {
+      "phase": "Energy configuration",
+      "bright_fraction": 0.0,
+      "scope": "Primary client area; OS caption/file picker excluded"
+    },
+    {
+      "phase": "Data Sources",
+      "bright_fraction": 0.0,
+      "scope": "Primary client area; OS caption/file picker excluded"
+    },
+    {
+      "phase": "Vessel safety settings",
+      "bright_fraction": 0.0,
+      "scope": "Primary client area; OS caption/file picker excluded"
+    },
+    {
+      "phase": "Radar status",
+      "bright_fraction": 0.0,
+      "scope": "Primary client area; OS caption/file picker excluded"
+    },
+    {
+      "phase": "Display",
+      "bright_fraction": 0.0,
+      "scope": "Primary client area; OS caption/file picker excluded"
+    }
+  ],
+  "pilot_drawer": [
+    {
+      "bounds": {
+        "x": 674,
+        "height": 635,
+        "width": 398,
+        "y": 111
+      },
+      "course_controls": 8
+    }
+  ],
+  "vessel_preferences_form": {
+    "fields": [
+      "Field: Vessel name",
+      "Field: Draft \u00b7 metres",
+      "Field: Safety depth \u00b7 metres",
+      "Field: Usable battery capacity \u00b7 kWh",
+      "Field: Minimum reserve \u00b7 %"
+    ],
+    "save": {
+      "label": "Save vessel profile",
+      "enabled": true
+    }
+  },
+  "vessel_form_captured": true,
+  "error": "KeyError('remaining_nm')",
+  "failure_inventory": "preview-failure-inventory.json"
+}

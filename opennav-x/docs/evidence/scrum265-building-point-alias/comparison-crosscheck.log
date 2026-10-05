@@ -1,0 +1,8 @@
+Final evidence cross-check (not an application test):
+Initial assertion comparing pinned BUISGL11 to effective generated BUISGL11 failed.
+Read-only RGBA comparison found exactly 2 different pixels in Day, Dusk and Night.
+All three effective BUISGL11 tiles equal the sealed prior generated atlas exactly.
+BUISGL01 remains exactly equal to pinned source in all themes.
+First pinned-source comparison retained separately. Main comparison now uses the
+actual prior generated BUISGL11 tile and asserts its equality with new output.
+No production/resource change was made in response to this evidence correction.

@@ -1,0 +1,326 @@
+{
+  "schema": 1,
+  "sourceCommit": "5c05eb55c15b67d4014df55896d95452e9cc9d64",
+  "files": {
+    "README.md": {
+      "bytes": 4300,
+      "sha256": "0c3c80d739c271e806865639d28c7f71f4037ee99d44e9356c2a469f59fbd31d"
+    },
+    "actual-pixel-observations.json": {
+      "bytes": 18511,
+      "sha256": "6532af1205324861fffa86f2b6047e590363e0d86b4af946ab7ddeaa9e329508"
+    },
+    "build.exit": {
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    "build.log": {
+      "bytes": 161370,
+      "sha256": "62c252027bcbcc4d8eb8fe7a48afc012e9162da27308a9252d6217b19b004a3d"
+    },
+    "collector/advance-patched-source.py": {
+      "bytes": 2226,
+      "sha256": "e346a7819de1ffc11203b341d8f3f43830b0eaabd60c5b3fde544de91ed62af1"
+    },
+    "collector/build-once.sh": {
+      "bytes": 2020,
+      "sha256": "662d27956c6b1c9e1407ebb25b37f9ea2471f42f91a73e1084011f48195e6f8c"
+    },
+    "collector/pier57/cache-inputs-readonly.py": {
+      "bytes": 4630,
+      "sha256": "0528801cfb7b27faa8027869ad8ee5ab07b6475e27544c6bf93f04e6e8c1750d"
+    },
+    "collector/pier57/capture-final.py": {
+      "bytes": 22252,
+      "sha256": "246c50a79b534d61f4bc4d4e6b18d133b7ebd52cd4a7f2ea90b2e50186e1be54"
+    },
+    "collector/pier57/compare-captures.py": {
+      "bytes": 3093,
+      "sha256": "69e79f12892304898016d2485ab8ac9cad47743df8b853105901f99eb2c4f0fd"
+    },
+    "collector/pier57/run-capture-isolated.sh": {
+      "bytes": 649,
+      "sha256": "68379428fc4b9ede9c0e36b547548bdcafd0f9440adf0a8089ba7b0a410280fb"
+    },
+    "collector/pier57/seal-inputs.py": {
+      "bytes": 2770,
+      "sha256": "4f8ebc5a805843b2698513726fa4ba51a12f31831e1faa4660101b4fd170ecf5"
+    },
+    "collector/pier57/seal-isolated.sh": {
+      "bytes": 647,
+      "sha256": "2480bddf7bdcdaee2dc1dae8e5c2421e54def790c81dcc8bad60119da5f7c4e7"
+    },
+    "collector/pier57/wordmark-reference.json": {
+      "bytes": 1043,
+      "sha256": "5f605f1da28ce02284ce741a739030632bf62add4b7b14323259b29ae939638c"
+    },
+    "collector/pier57/wordmark-reference.png": {
+      "bytes": 134549,
+      "sha256": "24ab654bebf47824fe198fb17c7b0e535d21402376b5cd1bb50b86533851b4ed"
+    },
+    "collector/preparation.json": {
+      "bytes": 1607,
+      "sha256": "e61aa74cf37b03a6c8720ed50776b0f53696ac2da3b8fd836e1aeb7a13184e89"
+    },
+    "collector/run-pier57.sh": {
+      "bytes": 1211,
+      "sha256": "0741e28d9607b2e3aedc0a60f091cf9455e18824474c0186457e975d67713d86"
+    },
+    "frozen-inputs.json": {
+      "bytes": 1158,
+      "sha256": "513ef73a51a10e7ec5807877d1b07c7473e70b96656dbe0bc1f98b7e67a116c6"
+    },
+    "integrated-tests.log": {
+      "bytes": 27401,
+      "sha256": "43ed129fba8e4da3c5377b2dcc298aba8181587e50a3dc9fe9285df82b35cb75"
+    },
+    "integrated-tests.xml": {
+      "bytes": 121705,
+      "sha256": "188010fb58a1e4dcc761fd59d9fa3c80d8603035f46e5ff54f276ba16c324b36"
+    },
+    "pier57/opengl/SKAGER-Day-return.json": {
+      "bytes": 31408,
+      "sha256": "bc51b19248e7931a05a941bc2a6477d9baf3421a682ac9cd86d14bb0a5dabb2b"
+    },
+    "pier57/opengl/SKAGER-Day-return.png": {
+      "bytes": 96192,
+      "sha256": "1cceee617d02db1113f118ee24e23604226cd9817cf55017c6618bf44721cd63"
+    },
+    "pier57/opengl/SKAGER-Day.json": {
+      "bytes": 28513,
+      "sha256": "bd571cc439919b87555218a33001749cfd9dcbbdecf02bb2f01fa3633bd09b95"
+    },
+    "pier57/opengl/SKAGER-Day.png": {
+      "bytes": 96175,
+      "sha256": "44265c5e5de7ca959eec96721fb899f08773ed37b61adf2cbb4b9f54199d4d91"
+    },
+    "pier57/opengl/SKAGER-Night.json": {
+      "bytes": 31411,
+      "sha256": "eda23389cf97b6a3293ad45455be751f705a2feb3d4c2bbe08094a6784aafb9e"
+    },
+    "pier57/opengl/SKAGER-Night.png": {
+      "bytes": 94194,
+      "sha256": "68a5e2b3343361b8057cd1c2328ec7bfe64937953b0e7e686a30315d41d1281f"
+    },
+    "pier57/opengl/SKAGER-launch.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "pier57/opengl/SKAGER-profile/gl_caps.json": {
+      "bytes": 11377,
+      "sha256": "ead54ccd3d4e399b3a837b3603e1de6ba3aa72c4f52a8935d847af1fda81768f"
+    },
+    "pier57/opengl/SKAGER-profile/opencpn.conf": {
+      "bytes": 12088,
+      "sha256": "9a67640d92e2f9d599647145fc695860650d235f9a0a830fb2e6a1741b156c5b"
+    },
+    "pier57/opengl/SKAGER-profile/opencpn.log": {
+      "bytes": 20276,
+      "sha256": "ce42b64be74fd94e7dc16229efd8f8358b20d5f71ce9968785ea921061b93d3a"
+    },
+    "pier57/opengl/SKAGER-profile/opennav-diagnostics.json": {
+      "bytes": 36806,
+      "sha256": "9d252a2dafaa0ccc6358609c793ffc55adfbf1b57d414174165b4ea7e87ebc01"
+    },
+    "pier57/opengl/Standard-Day-return.json": {
+      "bytes": 31403,
+      "sha256": "0f459f200140b1f9a1dc90ad37833e69ba0e3f490b72fade23daa55b1bee6c3d"
+    },
+    "pier57/opengl/Standard-Day-return.png": {
+      "bytes": 103717,
+      "sha256": "6e61f08cf10a24ed08610fe4eb1c9cb858d2644ef0192245c42ac2e055afcc2c"
+    },
+    "pier57/opengl/Standard-Day.json": {
+      "bytes": 28510,
+      "sha256": "0a124d6f074abedb6ca9ecd260132a55bdf6320e3212aa52f49731425770c867"
+    },
+    "pier57/opengl/Standard-Day.png": {
+      "bytes": 103291,
+      "sha256": "2032720a7609c8b71ea8b26ffe2218f60498acf0d2f6e872ecddad279733e62f"
+    },
+    "pier57/opengl/Standard-Night.json": {
+      "bytes": 31406,
+      "sha256": "adad63b0ee3e6f584be50051871ed231683b65f4dba40c9d2b486aeb7ef19ce6"
+    },
+    "pier57/opengl/Standard-Night.png": {
+      "bytes": 94944,
+      "sha256": "998f1472e8b5d817ec58775383d6a6e4fd3257f19d8540c0300a51173a05d866"
+    },
+    "pier57/opengl/Standard-launch.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "pier57/opengl/Standard-profile/gl_caps.json": {
+      "bytes": 11377,
+      "sha256": "ead54ccd3d4e399b3a837b3603e1de6ba3aa72c4f52a8935d847af1fda81768f"
+    },
+    "pier57/opengl/Standard-profile/opencpn.conf": {
+      "bytes": 12092,
+      "sha256": "8997162932af35acdc04ded6d3c37f4a98ff8178229f41036c3ac677bd8bd321"
+    },
+    "pier57/opengl/Standard-profile/opencpn.log": {
+      "bytes": 20183,
+      "sha256": "d03dc15a65c8fe9fd91ab0deb74016fa1daab8fdb66710773e1a428bfbdbd2bb"
+    },
+    "pier57/opengl/Standard-profile/opennav-diagnostics.json": {
+      "bytes": 36797,
+      "sha256": "f33d30674b42cd79ce6c2136ad95284a20e70564c3824fb1c4b8248f967daef8"
+    },
+    "pier57/opengl/controlled-input.json": {
+      "bytes": 8882,
+      "sha256": "f94f89cbf65385867ccdbd4af172bb668c0616caded4d41bff6664b565bf2701"
+    },
+    "pier57/opengl/historical-comparison.json": {
+      "bytes": 1875,
+      "sha256": "0d76eb9da00b586a0c88a7e7d1d18e9a9864ce23b7a8f9ad9371cc4eca0f25a2"
+    },
+    "pier57/opengl/loader-selftest.json": {
+      "bytes": 715,
+      "sha256": "b1d50c2ea9a8f9839864790e8a2605d030e4efc1375f2691848ad36acc1dad74"
+    },
+    "pier57/opengl/pier57-5c05eb5-opengl-comparison.log": {
+      "bytes": 525,
+      "sha256": "a10e9886d4cb0b1ee70dd36a6968794ec5c0df9f8aa0f4dcf61c89fa9894c166"
+    },
+    "pier57/opengl/pier57-5c05eb5-opengl.log": {
+      "bytes": 4294,
+      "sha256": "93d3f28cf4636adbdc262fdd72cf628ffedf251be6de2dc5967b203317f93754"
+    },
+    "pier57/opengl/report.json": {
+      "bytes": 32759,
+      "sha256": "6febc785be973a257e7477068f54a1ebc874cff35c6f528c8e658e694cc9191b"
+    },
+    "pier57/opengl/toolbar-only-mask.png": {
+      "bytes": 1194,
+      "sha256": "aeb54235be4c349da6e7acfd260976dc9b1ab616ba0761e14975c5de251c89dd"
+    },
+    "pier57/software/SKAGER-Day-return.json": {
+      "bytes": 31404,
+      "sha256": "955739a20282948f998af2df7a3540eacab248e1fe69432ffb80e1d1505b02db"
+    },
+    "pier57/software/SKAGER-Day-return.png": {
+      "bytes": 132348,
+      "sha256": "44c249bcc7b32ad4216293033fcc5eda2349f706f409806234d8f969ef4bd837"
+    },
+    "pier57/software/SKAGER-Day.json": {
+      "bytes": 28514,
+      "sha256": "eb814e0c213f5402d929f549dfc43284c812453611e16712c528b5530b3f29c2"
+    },
+    "pier57/software/SKAGER-Day.png": {
+      "bytes": 132342,
+      "sha256": "9a52f84c45fa90b376783684e3e28567ce697e58842a8f0d879cdb7f566b8a32"
+    },
+    "pier57/software/SKAGER-Night.json": {
+      "bytes": 31408,
+      "sha256": "ba8fac3c55b0c1ed01ef7a501f2d9deda1efee43f10747a6c1bacb3eb98568cc"
+    },
+    "pier57/software/SKAGER-Night.png": {
+      "bytes": 127874,
+      "sha256": "c2090d9e86b4ee618b5208fb92dafc09917a278b77bf150a2a5be3fe214e3962"
+    },
+    "pier57/software/SKAGER-launch.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "pier57/software/SKAGER-profile/opencpn.conf": {
+      "bytes": 12088,
+      "sha256": "2ae5770be67811eb9f0ef8ae9edbcdbd284e675c4c8cdf9124e984253bc0f07b"
+    },
+    "pier57/software/SKAGER-profile/opencpn.log": {
+      "bytes": 14771,
+      "sha256": "6438554d26b87c05ac8074e9b65cdf028f724d82490805cd3aee00781b9d1f7e"
+    },
+    "pier57/software/SKAGER-profile/opennav-diagnostics.json": {
+      "bytes": 36802,
+      "sha256": "47bc6c7e27a0e5fd50aebff066defc4981939bf3a332c8ff74525cff1d8666c7"
+    },
+    "pier57/software/Standard-Day-return.json": {
+      "bytes": 31401,
+      "sha256": "3e5e55d5a58fa7efa720d01368a1cd647c82e8f020607e47ee552e5abb20f418"
+    },
+    "pier57/software/Standard-Day-return.png": {
+      "bytes": 142630,
+      "sha256": "e21a9ec2d56c9e9865fad39f8cbab4bf42506a6958e6967ba93c53e73f9981af"
+    },
+    "pier57/software/Standard-Day.json": {
+      "bytes": 28514,
+      "sha256": "2a7f98655711b587db46d34a87bee818bcc9159ada86fd6e2c16e9da2d245bd7"
+    },
+    "pier57/software/Standard-Day.png": {
+      "bytes": 142640,
+      "sha256": "d176480e081e8bcd93a36112d662e65a4857ccbab33282cb2bb3b4ae9b3a33f8"
+    },
+    "pier57/software/Standard-Night.json": {
+      "bytes": 31399,
+      "sha256": "ec780afbecdd61b35d178ec069e27ca753ab8658898087a035ebbf3c7510afd7"
+    },
+    "pier57/software/Standard-Night.png": {
+      "bytes": 124514,
+      "sha256": "9ca08c4f532c983ff8d2fb00ba2281dd48342a47968aa3eb8dc0428ebba93101"
+    },
+    "pier57/software/Standard-launch.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "pier57/software/Standard-profile/opencpn.conf": {
+      "bytes": 12092,
+      "sha256": "6d5d5fefb100ee7788bfdfc9ae2ddfb73de60b444e7777806bd0510a8885301f"
+    },
+    "pier57/software/Standard-profile/opencpn.log": {
+      "bytes": 14676,
+      "sha256": "a9b24922f8a173c57e640b3aaa566278565d958976654cad5e78006980d65366"
+    },
+    "pier57/software/Standard-profile/opennav-diagnostics.json": {
+      "bytes": 36799,
+      "sha256": "22d57325261e7a8bf44aec7821af2d7f069e7590a096a10d7c22107f21c7a60c"
+    },
+    "pier57/software/controlled-input.json": {
+      "bytes": 9158,
+      "sha256": "539c04d6babbd16fb43dd7f4c08480c42af0e22175b59636d875fe4ae143f478"
+    },
+    "pier57/software/historical-comparison.json": {
+      "bytes": 1875,
+      "sha256": "54aae053ae3a75f9a8696d3b4b1073a3d97afe1f52387b6af5827d6209d2efe4"
+    },
+    "pier57/software/loader-selftest.json": {
+      "bytes": 715,
+      "sha256": "b1d50c2ea9a8f9839864790e8a2605d030e4efc1375f2691848ad36acc1dad74"
+    },
+    "pier57/software/pier57-5c05eb5-software-comparison.log": {
+      "bytes": 527,
+      "sha256": "b625858a2299120f8e89197331bf7cc45269f0af77d319366a0d35d31b4e2399"
+    },
+    "pier57/software/pier57-5c05eb5-software.log": {
+      "bytes": 4296,
+      "sha256": "98b69c882b6aeaf2d04695633c824d849eb1cb94200c2d2ab79c7e711a1fab01"
+    },
+    "pier57/software/report.json": {
+      "bytes": 32757,
+      "sha256": "83d64a73f25d470f89dbfbaef8a7e8f27a40dde223a5312ce742176be54c5f03"
+    },
+    "pier57/software/toolbar-only-mask.png": {
+      "bytes": 1194,
+      "sha256": "aeb54235be4c349da6e7acfd260976dc9b1ab616ba0761e14975c5de251c89dd"
+    },
+    "pier57-review-sheet.png": {
+      "bytes": 342422,
+      "sha256": "19a39fd7bc589367f0635611dcc448ca981be97d5f4331820f06ba3e0f2794f1"
+    },
+    "seal.log": {
+      "bytes": 3652,
+      "sha256": "cde8815a9c0b81489ca7d5eec0e1b99536c7662ae9d2b4ee4be9aa64eefb391a"
+    },
+    "snapshot-receipt.json": {
+      "bytes": 704,
+      "sha256": "1b24c1a3c89efd286dec9fb2133b8a7b0d5a19b4e62ce80d324e73614585622c"
+    },
+    "source-advance.json": {
+      "bytes": 712,
+      "sha256": "f453158b22014aef0b33eecb8bba42ef67a8f2ca2bd4b7b1c8353dea47199c94"
+    },
+    "staged-inputs.json": {
+      "bytes": 3534,
+      "sha256": "a69c2f784a24527767f0d095b2f785a7869477b968f8134848f121f83b2d3c81"
+    }
+  }
+}

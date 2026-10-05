@@ -1,0 +1,7 @@
+theme 0 10000 cache hits 24098us
+solid=1471 contrast glyph pixels=211
+theme 1 10000 cache hits 22154us
+solid=1471 contrast glyph pixels=209
+theme 2 10000 cache hits 22651us
+solid=1471 contrast glyph pixels=196
+93 route label checks passed

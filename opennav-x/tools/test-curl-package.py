@@ -152,6 +152,92 @@ class CurlPackageBoundaryTests(unittest.TestCase):
         (self.install / 'libcurl.dll').write_bytes(self.libcurl)
         (self.install / 'zlib1.dll').write_bytes(self.zlib)
 
+    def _producer_layout(self):
+        """Actual separate-prefix layout, with inert fixture outputs only."""
+        import importlib.util
+        spec = importlib.util.spec_from_file_location('adapter_prepare', Path(__file__).with_name('prepare-ocharts-adapter.py'))
+        prep = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(prep)
+        self.zlib_prefix = self.root / 'zlib-prefix'
+        self.zlib_prefix.mkdir()
+        openssl = json.loads((self.install / 'openssl-build.json').read_text(encoding='utf-8-sig'))
+        for name in curl_package.OPENSSL_OUTPUTS:
+            path = self.openssl_prefix / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            if name != 'bin/openssl.exe':
+                path.write_bytes(name.encode())
+            openssl['outputs'][name] = self._record(path.read_bytes())
+        self._write_json(self.openssl_prefix / 'openssl-build.json', openssl)
+        zlib = json.loads((self.install / 'zlib-build.json').read_text(encoding='utf-8-sig'))
+        self._write_json(self.zlib_prefix / 'zlib-build.json', zlib)
+        curl = json.loads((self.install / 'curl-build.json').read_text(encoding='utf-8-sig'))
+        for library, prefix, manifest in [('curl', self.install, curl), ('zlib', self.zlib_prefix, zlib)]:
+            for name in manifest['outputs']:
+                path = prefix / name
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(self.libcurl if name == 'bin/libcurl.dll' else self.zlib if name == 'bin/zlib1.dll' else name.encode())
+        for library, prefix in [('openssl', self.openssl_prefix), ('zlib', self.zlib_prefix)]:
+            curl['dependencies'][library]['prefix'] = str(prefix)
+            curl['dependencies'][library]['manifestSha256'] = curl_package._sha256(prefix / (library + '-build.json'))
+            (self.install / (library + '-build.json')).unlink()
+        self._write_json(self.install / 'curl-build.json', curl)
+        return lambda: prep.verify_producer_dependencies(self.install, self.openssl_prefix, self.zlib_prefix)
+
+    def test_separate_producer_prefixes_and_default_package_refusal(self):
+        verify = self._producer_layout()
+        self.assertEqual(set(verify()), {'curl','zlib'})
+        # The original call still refuses this layout: no automatic prefix trust.
+        with self.assertRaises((ValueError, FileNotFoundError)):
+            curl_package.verify_manifest(self.install, 'curl')
+
+    def test_producer_wrong_expected_or_recorded_prefix_rejected(self):
+        verify = self._producer_layout()
+        for value in ({}, {'openssl':self.openssl_prefix}, {'openssl':self.install,'zlib':self.zlib_prefix}):
+            with self.subTest(value=value), self.assertRaises(ValueError):
+                curl_package.verify_manifest(self.install,'curl',dependency_prefixes=value)
+        path = self.install / 'curl-build.json'
+        original = path.read_bytes()
+        for library in ('openssl','zlib'):
+            manifest = json.loads(original.decode('utf-8-sig'))
+            manifest['dependencies'][library]['prefix'] = str(self.install)
+            self._write_json(path, manifest)
+            with self.subTest(library=library), self.assertRaisesRegex(ValueError,'prefix differs'):
+                verify()
+        path.write_bytes(original)
+
+    def test_producer_missing_changed_manifests_and_outputs_rejected(self):
+        verify = self._producer_layout()
+        paths = [self.openssl_prefix/'openssl-build.json', self.zlib_prefix/'zlib-build.json',
+                 self.openssl_prefix/'bin/openssl.exe', self.openssl_prefix/'lib/libssl.lib',
+                 self.zlib_prefix/'bin/zlib1.dll', self.install/'lib/libcurl.lib',
+                 self.install/'include/curl/curl.h']
+        for path in paths:
+            original = path.read_bytes()
+            for missing in (False,True):
+                if missing: path.unlink()
+                else: path.write_bytes(original+b'changed')
+                with self.subTest(path=path.name,missing=missing), self.assertRaises((ValueError,FileNotFoundError)):
+                    verify()
+                path.write_bytes(original)
+        self.assertEqual(set(verify()), {'curl','zlib'})
+
+    def test_producer_no_colocated_decoy_or_relative_prefix_fallback(self):
+        verify = self._producer_layout()
+        for library,prefix in [('openssl',self.openssl_prefix),('zlib',self.zlib_prefix)]:
+            source=prefix/(library+'-build.json')
+            original=source.read_bytes()
+            (self.install/source.name).write_bytes(original)
+            source.unlink()
+            with self.subTest(library=library), self.assertRaises(ValueError):
+                verify()
+            source.write_bytes(original)
+        path=self.install/'curl-build.json'
+        manifest=json.loads(path.read_text(encoding='utf-8-sig'))
+        manifest['dependencies']['openssl']['prefix']='openssl-prefix'
+        self._write_json(path,manifest)
+        with self.assertRaisesRegex(ValueError,'prefix differs'):
+            verify()
+
     def _verify(self):
         return curl_package.verify_curl_package_inputs(self.install, self.cache, self.notices)
 

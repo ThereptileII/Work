@@ -9,6 +9,8 @@ $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 
 $Root = Split-Path $PSScriptRoot -Parent
+$ProducerScript = $PSCommandPath
+. (Join-Path $PSScriptRoot 'windows-curl-environment.ps1')
 $Evidence = Join-Path $Root 'evidence/local'
 $NativeLog = Join-Path $Evidence 'windows-curl-native-output.log'
 if (-not $VerifyToolFactsOnly) {
@@ -162,6 +164,7 @@ if (-not $DumpbinCandidates.Count) { throw 'MSVC Win32 dumpbin missing' }
 $Dumpbin = $DumpbinCandidates[0]
 $ToolFacts = Resolve-File (Join-Path $PSScriptRoot 'windows-native-tool-facts.ps1') 'Native tool-facts helper'
 $CMakeFactsInclude = Resolve-File (Join-Path $PSScriptRoot 'windows-native-tool-facts.cmake') 'Native CMake tool-facts include'
+$ImportLayoutInclude = Resolve-File (Join-Path $PSScriptRoot 'windows-curl-import-layout.cmake') 'Curl import layout include'
 $Facts = Join-Path $Evidence 'windows-curl-parent-tool-facts.json'
 foreach ($Tool in @('cmake.exe','perl.exe')) {
     if (-not (Get-Command $Tool -CommandType Application -ErrorAction SilentlyContinue)) { throw "curl build prerequisite missing: $Tool" }
@@ -179,6 +182,7 @@ $TestPerlRecord = [ordered]@{
     os=$TestPerlOs; runtimePath=$MsysRuntime; runtimeSha256=Digest $MsysRuntime
     runtimeBytes=(Get-Item -LiteralPath $MsysRuntime).Length
 }
+Invoke-WindowsCurlEnvironment -VisualStudio $VisualStudio -TestPerl $TestPerl -Action {
 if ($VerifyToolFactsOnly) {
     $BuiltManifest = Get-Content -LiteralPath (Join-Path $Prefix 'curl-build.json') -Raw | ConvertFrom-Json
     $BuiltHost = $BuiltManifest.buildSteps.testHost
@@ -192,8 +196,8 @@ if ($VerifyToolFactsOnly) {
     # Normal curl capture occurs after configure with these dependency DLL
     # directories prepended. Recreate that build PATH before live reprobe.
     $env:PATH = "$(Join-Path $Build 'lib/Release');$(Join-Path $OpenSslPrefix 'bin');$(Join-Path $ZlibPrefix 'bin');$env:PATH"
-    & $ToolFacts -Mode Verify -Kind curl-parent -Output $Facts -ProducerScript $PSCommandPath `
-        -Vswhere $Vswhere -VisualStudio $VisualStudio -Dumpbin $Dumpbin `
+    & $ToolFacts -Mode Verify -Kind curl-parent -Output $Facts -ProducerScript $ProducerScript `
+        -Vswhere $Vswhere -VisualStudio $VisualStudio -VcVars (Join-Path $VisualStudio 'VC/Auxiliary/Build/vcvarsall.bat') -Dumpbin $Dumpbin `
         -CMakeCache (Join-Path $Build 'CMakeCache.txt') -CMakeHookFacts (Join-Path $Build 'xnav-native-cmake-tools.txt') `
         -CurlTestPerl $TestPerl
     Write-Output 'Reprobed captured curl build-environment tool facts'
@@ -244,7 +248,10 @@ try {
     if ($ResolvedTool -ine $OpenSslExe) { throw 'curl certificate probe resolved a different OpenSSL executable' }
     Push-Location $ProbeDir
     try {
-        Invoke-Checked perl.exe @($GenServ,'test',(Split-Path $HostCertConfig -Leaf))
+        # MSYS Perl treats backslashes in __FILE__ as ordinary characters.
+        # genserv.pl derives its certificate-config directory with dirname().
+        # Pass the same slash form used by curl's CMake custom command.
+        Invoke-Checked $TestPerl @($GenServ.Replace('\','/'),'test',(Split-Path $HostCertConfig -Leaf))
         $CaCert = Resolve-File (Join-Path $ProbeDir 'test-ca.cacert') 'Generated upstream curl CA certificate'
         $CaKey = Resolve-File (Join-Path $ProbeDir 'test-ca.key') 'Generated upstream curl CA key'
         $HostCert = Resolve-File (Join-Path $ProbeDir 'test-localhost.crt') 'Generated upstream curl host certificate'
@@ -265,10 +272,11 @@ try {
 Add-Content -LiteralPath $NativeLog -Value 'curl upstream certificate generation probe passed' -Encoding UTF8
 
 $Configure = @('-S',$Source,'-B',$Build,'-G','Visual Studio 17 2022','-A','Win32',
-    "-DCMAKE_INSTALL_PREFIX=$Prefix","-DCMAKE_PROJECT_INCLUDE=$($CMakeFactsInclude.Replace('\','/'))",
+    "-DCMAKE_INSTALL_PREFIX=$Prefix","-DCMAKE_PROJECT_INCLUDE=$($CMakeFactsInclude.Replace('\','/'));$($ImportLayoutInclude.Replace('\','/'))",
     "-DPERL_EXECUTABLE:FILEPATH=$TestPerl",
     '-DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreadedDLL',
     '-DBUILD_SHARED_LIBS=ON','-DBUILD_STATIC_LIBS=OFF','-DBUILD_CURL_EXE=ON','-DBUILD_TESTING=ON',
+    '-DIMPORT_LIB_SUFFIX:STRING=',
     '-DBUILD_EXAMPLES=OFF','-DBUILD_LIBCURL_DOCS=OFF','-DBUILD_MISC_DOCS=OFF',
     '-DCURL_USE_OPENSSL=ON','-DCURL_USE_SCHANNEL=OFF','-DCURL_STATIC_CRT=OFF','-DCURL_USE_CMAKECONFIG=OFF',
     "-DOPENSSL_ROOT_DIR=$OpenSslPrefix","-DOPENSSL_INCLUDE_DIR=$OpenSslPrefix/include",
@@ -279,6 +287,13 @@ $Configure = @('-S',$Source,'-B',$Build,'-G','Visual Studio 17 2022','-A','Win32
     '-DUSE_WIN32_IDN=ON','-DCURL_DISABLE_FORM_API=OFF','-DHTTP_ONLY=OFF',
     '-DCURL_CA_BUNDLE=none','-DCURL_CA_PATH=none','-DCURL_CA_FALLBACK=OFF','-DCURL_DISABLE_CA_SEARCH=ON','-DCURL_CA_SEARCH_SAFE=OFF')
 Invoke-Checked cmake.exe $Configure
+$ImportLayoutPath = Resolve-File (Join-Path $Build 'xnav-curl-import-Release.txt') 'Generated curl import layout'
+$ConfiguredImport = [IO.File]::ReadAllText($ImportLayoutPath).Trim()
+$ExpectedBuildImport = [IO.Path]::GetFullPath((Join-Path $Build 'lib/Release/libcurl.lib'))
+if ([IO.Path]::GetFullPath($ConfiguredImport) -ine $ExpectedBuildImport) {
+    throw "Configured curl import path differs from the producer contract: $ConfiguredImport"
+}
+Copy-Item -LiteralPath $ImportLayoutPath -Destination (Join-Path $Evidence 'windows-curl-import-Release.txt') -Force
 $CacheText = Get-Content -LiteralPath (Join-Path $Build 'CMakeCache.txt') -Raw
 if ($CacheText -notmatch '(?m)^PERL_EXECUTABLE:FILEPATH=(.+)$' -or
     (Resolve-Path -LiteralPath $Matches[1].Trim()).Path -ine $TestPerl) {
@@ -289,11 +304,17 @@ foreach ($RequiredPath in @((Join-Path $OpenSslPrefix 'include'),$OpenSslSslLib,
     if ($CacheText.Replace('\','/') -notlike "*$CmakePath*") { throw "CMake did not bind the explicit dependency path: $RequiredPath" }
 }
 $env:PATH = "$(Join-Path $Build 'lib/Release');$(Join-Path $OpenSslPrefix 'bin');$(Join-Path $ZlibPrefix 'bin');$env:PATH"
-& $ToolFacts -Mode Capture -Kind curl-parent -Output $Facts -ProducerScript $PSCommandPath `
-    -Vswhere $Vswhere -VisualStudio $VisualStudio -Dumpbin $Dumpbin `
+& $ToolFacts -Mode Capture -Kind curl-parent -Output $Facts -ProducerScript $ProducerScript `
+    -Vswhere $Vswhere -VisualStudio $VisualStudio -VcVars (Join-Path $VisualStudio 'VC/Auxiliary/Build/vcvarsall.bat') -Dumpbin $Dumpbin `
     -CMakeCache (Join-Path $Build 'CMakeCache.txt') -CMakeHookFacts (Join-Path $Build 'xnav-native-cmake-tools.txt') `
     -CurlTestPerl $TestPerl
+Invoke-WindowsCurlSourceChecks -TestPerl $TestPerl -Source $Source -Build $Build `
+    -Evidence (Join-Path $Evidence 'windows-curl-source-preflight') | Tee-Object -FilePath $NativeLog -Append
 Invoke-Checked cmake.exe @('--build',$Build,'--config','Release','--parallel','2')
+# Do not spend the upstream suite on a producer whose actual linker output
+# cannot satisfy the declared install/cache contract. No rename or fallback.
+$BuiltImport = Resolve-File $ExpectedBuildImport 'Built curl import library before upstream tests'
+if ((Get-Item -LiteralPath $BuiltImport).Length -le 0) { throw 'Built curl import library is empty' }
 Invoke-Checked cmake.exe @('--build',$Build,'--config','Release','--target','tests','--parallel','2')
 $TestSummary = $null
 foreach ($Line in [IO.File]::ReadLines($NativeLog)) {
@@ -307,8 +328,8 @@ if ($TestsReported -le 0 -or $TestsPassed -ne $TestsReported) {
     throw "curl upstream tests did not execute and pass a nonzero set: $TestsPassed/$TestsReported"
 }
 Invoke-Checked cmake.exe @('--install',$Build,'--config','Release')
-& $ToolFacts -Mode Verify -Kind curl-parent -Output $Facts -ProducerScript $PSCommandPath `
-    -Vswhere $Vswhere -VisualStudio $VisualStudio -Dumpbin $Dumpbin `
+& $ToolFacts -Mode Verify -Kind curl-parent -Output $Facts -ProducerScript $ProducerScript `
+    -Vswhere $Vswhere -VisualStudio $VisualStudio -VcVars (Join-Path $VisualStudio 'VC/Auxiliary/Build/vcvarsall.bat') -Dumpbin $Dumpbin `
     -CMakeCache (Join-Path $Build 'CMakeCache.txt') -CMakeHookFacts (Join-Path $Build 'xnav-native-cmake-tools.txt') `
     -CurlTestPerl $TestPerl
 
@@ -382,3 +403,4 @@ $Json | Set-Content -LiteralPath (Join-Path $Prefix 'curl-build.json') -Encoding
 $Json | Set-Content -LiteralPath (Join-Path $Cache 'curl-build.json') -Encoding UTF8
 $Json | Set-Content -LiteralPath (Join-Path $Evidence 'windows-curl-build.json') -Encoding UTF8
 Write-Output "Built and verified curl $($Lock.version) with OpenSSL $($Lock.opensslVersion) for Win32/x86"
+}

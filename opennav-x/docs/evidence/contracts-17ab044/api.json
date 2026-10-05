@@ -1,0 +1,316 @@
+{
+  "run": {
+    "id": 37164360050,
+    "head_sha": "17ab044a1e5222dc71791ac8118454219efe8734",
+    "path": ".github/workflows/opennav-baseline.yml",
+    "run_attempt": 1,
+    "status": "in_progress",
+    "conclusion": null,
+    "created_at": "2026-10-04T00:15:02Z",
+    "run_started_at": "2026-10-04T00:15:02Z",
+    "html_url": "https://github.com/ThereptileII/Work/actions/runs/37164360050"
+  },
+  "jobs": [
+    {
+      "id": 111324138073,
+      "name": "contracts (ubuntu-24.04)",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 37164360050,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Verify published distribution inputs before compilation",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Verify corresponding-source archive structure and integrity",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Same-job dependency evidence, tamper refusal and cache staging contracts",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Native version probe stream identity and bounded failure contracts",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Native version probe contracts in Windows PowerShell 5.1",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 7
+        },
+        {
+          "name": "Peer boundary monitor rejects tampering and filters listeners by process",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Preserve reviewed notice bytes through Windows Git checkout",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        },
+        {
+          "name": "Verify relocated installer completion and failed fixture retention",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10
+        },
+        {
+          "name": "Installer rejects unqualified XNav output policies",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11
+        },
+        {
+          "name": "Staged installer normal and delay import closure fixtures",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12
+        },
+        {
+          "name": "Verify the exact boat translator parser for host interoperability tests",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13
+        },
+        {
+          "name": "Prepare reviewed boat producer expiry and actual codec oracle",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14
+        },
+        {
+          "name": "Installer filesystem contracts in native Windows PowerShell 5.1",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 15
+        },
+        {
+          "name": "Portable maintenance refusal and recovery identity contracts",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16
+        },
+        {
+          "name": "Configure Linux contracts",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17
+        },
+        {
+          "name": "Configure contracts for the supported Windows application ABI",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 18
+        },
+        {
+          "name": "Run cmake --build opennav-x/build/contracts --config Release",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19
+        },
+        {
+          "name": "Run ctest --test-dir opennav-x/build/contracts -C Release --output-on-failure",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 20
+        },
+        {
+          "name": "Repeat the restart handoff with deliberately delayed result publication",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 42
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 43
+        }
+      ]
+    },
+    {
+      "id": 111324138106,
+      "name": "contracts (windows-2022)",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 37164360050,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Verify published distribution inputs before compilation",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Verify corresponding-source archive structure and integrity",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Same-job dependency evidence, tamper refusal and cache staging contracts",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Native version probe stream identity and bounded failure contracts",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Native version probe contracts in Windows PowerShell 5.1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Peer boundary monitor rejects tampering and filters listeners by process",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Preserve reviewed notice bytes through Windows Git checkout",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        },
+        {
+          "name": "Verify relocated installer completion and failed fixture retention",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10
+        },
+        {
+          "name": "Installer rejects unqualified XNav output policies",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11
+        },
+        {
+          "name": "Staged installer normal and delay import closure fixtures",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12
+        },
+        {
+          "name": "Verify the exact boat translator parser for host interoperability tests",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13
+        },
+        {
+          "name": "Prepare reviewed boat producer expiry and actual codec oracle",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14
+        },
+        {
+          "name": "Installer filesystem contracts in native Windows PowerShell 5.1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15
+        },
+        {
+          "name": "Portable maintenance refusal and recovery identity contracts",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 16
+        },
+        {
+          "name": "Configure Linux contracts",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 17
+        },
+        {
+          "name": "Configure contracts for the supported Windows application ABI",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18
+        },
+        {
+          "name": "Run cmake --build opennav-x/build/contracts --config Release",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19
+        },
+        {
+          "name": "Run ctest --test-dir opennav-x/build/contracts -C Release --output-on-failure",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 20
+        },
+        {
+          "name": "Repeat the restart handoff with deliberately delayed result publication",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 42
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 43
+        }
+      ]
+    }
+  ],
+  "artifactQuery": {
+    "name": "contracts",
+    "artifacts": []
+  },
+  "individualJobApiUnavailable": "Connector refused individual /actions/jobs endpoint; run-jobs API and exact checkout in both original logs supply job/run/source binding."
+}

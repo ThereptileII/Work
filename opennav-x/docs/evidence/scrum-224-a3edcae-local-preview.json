@@ -1,0 +1,89 @@
+{
+  "issues": [
+    "SCRUM-224",
+    "SCRUM-228",
+    "SCRUM-230"
+  ],
+  "date": "2026-10-02",
+  "authority": "Coherent local Linux development build and one traced full-preview execution; not native Windows, endurance, package or boat qualification",
+  "source_commit": "a3edcaef2904bf1450e306f3e086164479ec7f6f",
+  "executable_sha256": "cb195d7356f5891aa2c4831b64f3bc8f33f0fe9e4fc4670c696200858b404985",
+  "executable_bytes": 25721672,
+  "build": {
+    "result": "passed",
+    "target": "opencpn",
+    "steps": 30,
+    "jobs": 2,
+    "elapsed_seconds": 95.577,
+    "current_upstream_patch_count": 9,
+    "temporary_overlay_diagnostics_absent": true,
+    "prior_747_and_671_binaries_preserved": true,
+    "build_log_sha256": "75993d31254556079c285c1c81886cae4b568cd75e22915116d7dbc3e1529810"
+  },
+  "short_viewport_gate": {
+    "status": "observed; bounded correctness gate passed, not endurance",
+    "source_commit": "a3edcaef2904bf1450e306f3e086164479ec7f6f",
+    "results_sha256": "dc32516a5aef4249c58f56dbe7fd3c3e8be7482cafdba7fba94923e60c6c7747",
+    "findings": [
+      "All floating controls painted at correct positions before first input and at end",
+      "Actual plus and minus button activation changed scale 0.003 -> 0.006 -> 0.003",
+      "Center stayed 59.08,18.5 with follow false",
+      "Palette button activated Day -> Dusk",
+      "Strict navigation control layout and coastline/palette checks passed"
+    ],
+    "owner": "chart_layer_boundary"
+  },
+  "full_preview": {
+    "result": "FAILED",
+    "exit_code": 1,
+    "elapsed_seconds": 128.804,
+    "failed_assertion": "tools/smoke-preview.py:688: arrival_soc absent from stale energy and remaining_nm absent from stale route",
+    "error": "AssertionError()",
+    "completed_check_groups": [
+      "Persistent page controls scroll diagnostics and return to top without native scrollbars",
+      "Prototype navigation and eight retained product views captured; advanced frame accelerators remain covered",
+      "Energy, source, vessel-safety and radar settings pages captured",
+      "Moving position, SOC, route distance and advisory destination SOC change"
+    ],
+    "screenshot_count": 33,
+    "pointer_action_count": 58,
+    "source_results_sha256": "bc3e43fa8233cd7d94d121b1bfaff4f2ec4f7f43a16880ca662b05dddcc59d7c",
+    "stdout_log_sha256": "4dc5189ab969989170e8704d0711c84d1d9ece14d4d4ce411412b2368136c035",
+    "process_signal_trace_enabled": true,
+    "timing_limitation": "Tracing can change timing. This run neither proves nor disproves an intermittent failure outside its reached scope.",
+    "app_cleanup_exit_code": 0,
+    "lifecycle_reached": false,
+    "rerun_performed": false
+  },
+  "observed_failure": {
+    "sample_age_ms": 5038,
+    "sample_stale_after_ms": 5000,
+    "battery_soc_quality": "STALE",
+    "route_state": "StalePosition",
+    "route_remaining_nm_present": false,
+    "energy_arrival_soc": 32.25925926,
+    "energy_arrival_quality": "LIMITED / AGING INPUTS",
+    "screenshot": "At approximately 5.2 seconds the visible Energy UI already shows unavailable values/dashes and Battery SOC stale.",
+    "interpretation": "The exported snapshot contains fresh stale-state fields alongside an aging energy estimate. This establishes an inconsistent snapshot/transition observation; it is not evidence that the failure screenshot displays stale advice. No causal link to the GTK overlay fix is established."
+  },
+  "retained_files": [
+    {
+      "path": "docs/evidence/scrum-230-a3edcae-stale-snapshot.json",
+      "sha256": "b93afed43c8f097cdd4ba18ec0a6509332e802a57cf2829f4806f5413bafa8dd",
+      "bytes": 2330
+    },
+    {
+      "path": "docs/evidence/scrum-230-a3edcae-stale-ui.png",
+      "sha256": "18e6f6085f6a3c0cba7d9116cafa7ff5232d9b8bc772dc1eefcc1a9085214bfe",
+      "bytes": 86441
+    }
+  ],
+  "remaining_gates": [
+    "SCRUM-230 snapshot coherence investigation remains In Progress",
+    "Original747 Legacy-to-XNav failure remains unexplained: killed descendant identity/sender not proven; the separate single clean minimal trace did not waive it",
+    "This full preview did not reach lifecycle, Safe or direct-start assertions",
+    "Corrected Windows Display caller still needs native execution",
+    "Native Windows, physical boat and exact replacement candidate qualification remain open"
+  ],
+  "safety": "Fixture-only disposable profile. No credential/private configuration export, boat operation, full CTest run or CI dispatch."
+}

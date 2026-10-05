@@ -1,0 +1,20 @@
+/tmp/skager-capture-tg63awun/SKAGER
+/home/standard/Projects/X-nav-worktrees/scrum264-real-enc-scenes/.local/pier57-capture/capture-pier57.py:170: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum264-real-enc-scenes/.local/pier57-capture/capture-pier57.py:170: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum264-real-enc-scenes/.local/pier57-capture/capture-pier57.py:170: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum264-real-enc-scenes/.local/pier57-capture/capture-pier57.py:170: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+/tmp/skager-capture-tg63awun/Standard
+/home/standard/Projects/X-nav-worktrees/scrum264-real-enc-scenes/.local/pier57-capture/capture-pier57.py:170: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum264-real-enc-scenes/.local/pier57-capture/capture-pier57.py:170: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum264-real-enc-scenes/.local/pier57-capture/capture-pier57.py:170: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum264-real-enc-scenes/.local/pier57-capture/capture-pier57.py:170: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+Verified private clean application a3e84771652c920479517f0d16a1dd6133c440d2 and exact upstream result of nine patches
+Eight exact-build real-ENC theme-cycle captures passed: /home/standard/Projects/X-nav-worktrees/scrum264-real-enc-scenes/.local/pier57-capture/output/capture-pier57-a3e-opengl

@@ -56,8 +56,42 @@ FooterView PresentFooter(const vessel::VesselState &vessel, const AnchorState &a
     v.cog = course.str();
     if (v.cog_state == SignalState::Aging) v.cog += " AGING";
   } else if (v.cog_state == SignalState::Stale) v.cog = "STALE";
-  // No owned cross-track error contract exists yet. Do not derive it from
-  // route coordinates or borrow a retained OpenCPN value as a live reading.
+  if (anchor.waypoint_id.empty() && nav.route && Current(v.position_state)) {
+    const auto route = vessel::AssessRoute(*nav.route, now);
+    // A newer current fix may follow the completed progress pass, but a
+    // different source, older fix, or expired publication is not its evidence.
+    const bool selected = nav.latitude_deg.source == nav.route->position_source &&
+                          nav.route->position_observed_at &&
+                          nav.latitude_deg.observed_at >= *nav.route->position_observed_at;
+    if (route.quality == vessel::Quality::Stale) {
+      v.xte = "STALE";
+      v.xte_state = SignalState::Stale;
+      v.xte_hint = "Cross-track error stale; wait for current route progress";
+    } else if (selected && route.cross_track_error_nm && route.cross_track_direction) {
+      const double factor = nav.route->distance_units_per_nm;
+      const double distance = *route.cross_track_error_nm * factor;
+      if (std::isfinite(factor) && factor > 0 && std::isfinite(distance) &&
+          !nav.route->distance_unit.empty()) {
+        std::ostringstream xte; xte.imbue(std::locale::classic());
+        const bool left = *route.cross_track_direction == vessel::CrossTrackDirection::Left;
+        const bool zero = *route.cross_track_error_nm == 0.;
+        if (!zero && left) xte << "← ";
+        xte << std::fixed << std::setprecision(factor < 10 ? 3 : 0)
+            << distance << ' ' << nav.route->distance_unit;
+        if (!zero && !left) xte << " →";
+        v.xte_state = route.quality == vessel::Quality::Aging
+                          ? SignalState::Aging : SignalState::Current;
+        if (v.xte_state == SignalState::Aging) xte << " AGING";
+        v.xte = xte.str();
+        v.xte_hint = zero ? "On route; no cross-track correction"
+                         : left ? "Steer left toward route (OpenCPN)"
+                                : "Steer right toward route (OpenCPN)";
+      } else {
+        v.xte_state = SignalState::Invalid;
+        v.xte_hint = "Cross-track display units unavailable";
+      }
+    }
+  }
   bool attention = false;
   std::set<std::string> seen;
   const std::set<std::string> onboard{"gps","heading","depth","wind","motor",

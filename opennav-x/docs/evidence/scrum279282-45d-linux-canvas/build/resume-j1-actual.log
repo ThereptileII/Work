@@ -1,0 +1,932 @@
+[1/119] cd /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-linux/libs/libdnet && /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/.local/sysroot/usr/bin/cmake -E echo Built\ the\ libdnet\ library
+Built the libdnet library
+[2/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/chartdb.cpp.o
+[3/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/chartimg.cpp.o
+[4/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/chcanv.cpp.o
+[5/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/cm93.cpp.o
+[6/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/compass.cpp.o
+[7/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/concanv.cpp.o
+[8/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/ConfigMgr.cpp.o
+[9/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/connection_edit.cpp.o
+[10/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/connections_dlg.cpp.o
+[11/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/conn_params_panel.cpp.o
+[12/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/DetailSlider.cpp.o
+[13/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/displays.cpp.o
+[14/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/download_mgr.cpp.o
+[15/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/GoToPositionDialog.cpp.o
+[16/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/gshhs.cpp.o
+[17/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/iENCToolbar.cpp.o
+[18/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/kml.cpp.o
+[19/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/LinkPropDlg.cpp.o
+[20/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/load_errors_dlg.cpp.o
+[21/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/MarkInfo.cpp.o
+[22/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/mbtiles/mbtiles.cpp.o
+[23/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/mbtiles/tile_thread.cpp.o
+[24/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/mbtiles/tile_cache.cpp.o
+[25/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/MUIBar.cpp.o
+[26/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/navutil.cpp.o
+[27/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/notification_manager_gui.cpp.o
+[28/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/ocpn_app.cpp.o
+[29/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/ocpn_plugin_gui.cpp.o
+[30/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/ocpndc.cpp.o
+[31/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/ocpn_frame.cpp.o
+[32/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/OCPNListCtrl.cpp.o
+[33/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/ocpn_pixel.cpp.o
+[34/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/OCPNPlatform.cpp.o
+[35/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/options.cpp.o
+[36/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/peer_client_dlg.cpp.o
+[37/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/piano.cpp.o
+[38/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/pluginmanager.cpp.o
+[39/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/printout_chart.cpp.o
+[40/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/printtable.cpp.o
+[41/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/Quilt.cpp.o
+[42/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/RolloverWin.cpp.o
+[43/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/route_gui.cpp.o
+[44/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/routemanagerdialog.cpp.o
+[45/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/routeman_gui.cpp.o
+[46/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/route_point_gui.cpp.o
+[47/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/route_printout.cpp.o
+[48/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/RoutePropDlgImpl.cpp.o
+[49/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/s57obj.cpp.o
+[50/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/s57chart.cpp.o
+[51/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/S57QueryDialog.cpp.o
+[52/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/SencManager.cpp.o
+[53/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/SendToGpsDlg.cpp.o
+[54/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/SendToPeerDlg.cpp.o
+[55/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/shapefile_basemap.cpp.o
+[56/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/styles.cpp.o
+[57/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/tcmgr.cpp.o
+[58/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/TCWin.cpp.o
+[59/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/thumbwin.cpp.o
+[60/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/toolbar.cpp.o
+[61/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/track_gui.cpp.o
+[62/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/track_printout.cpp.o
+[63/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/TrackPropDlg.cpp.o
+[64/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/udev_rule_mgr.cpp.o
+[65/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/undo.cpp.o
+[66/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/update_mgr.cpp.o
+[67/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/viewport.cpp.o
+[68/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/initwiz/wiz_ui.cpp.o
+[69/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/shaders.cpp.o
+[70/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/glTextureDescriptor.cpp.o
+[71/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/glTexCache.cpp.o
+[72/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/glChartCanvas.cpp.o
+[73/119] Building CXX object CMakeFiles/opencpn.dir/gui/src/glTextureManager.cpp.o
+[74/119] Building CXX object CMakeFiles/opencpn.dir/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/src/integration/OpenCPNIntegration.cpp.o
+[75/119] Building CXX object CMakeFiles/opencpn.dir/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/src/integration/OnlineAisOverlay.cpp.o
+[76/119] Building CXX object CMakeFiles/opencpn.dir/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/src/integration/OnboardAisPresentation.cpp.o
+[77/119] Building CXX object CMakeFiles/opencpn.dir/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/src/integration/PreviewDiagnostics.cpp.o
+[78/119] Building CXX object CMakeFiles/opencpn.dir/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/src/integration/RuntimeDiagnostics.cpp.o
+[79/119] Building CXX object CMakeFiles/opencpn.dir/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/src/integration/InstallerSelfTest.cpp.o
+[80/119] Building CXX object CMakeFiles/opencpn.dir/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/src/integration/NavigationObjects.cpp.o
+[81/119] Building CXX object CMakeFiles/opencpn.dir/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/src/integration/NavigationActions.cpp.o
+[82/119] Building CXX object CMakeFiles/opencpn.dir/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/tests/RouteProgressScenario.cpp.o
+[83/119] Building CXX object CMakeFiles/opencpn.dir/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/tests/NavigationObjectScenario.cpp.o
+[84/119] Building CXX object CMakeFiles/opencpn.dir/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/src/integration/ChartPresentation.cpp.o
+[85/119] Building CXX object CMakeFiles/opencpn.dir/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/src/integration/OChartsPresentation.cpp.o
+[86/119] Building CXX object CMakeFiles/opencpn.dir/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/src/integration/ChartRouteWaypoint.cpp.o
+[87/119] Building CXX object CMakeFiles/opencpn.dir/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/src/integration/ChartRouteLabel.cpp.o
+[88/119] Building CXX object CMakeFiles/opencpn.dir/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/src/integration/ChartRouteUnderlay.cpp.o
+[89/119] Linking CXX static library libs/ShapefileCpp/libShapefileCppLib.a
+[90/119] Building CXX object model/CMakeFiles/_model_src.dir/src/autopilot_output.cpp.o
+[91/119] Building CXX object model/CMakeFiles/_model_src.dir/src/base_platform.cpp.o
+[92/119] Building CXX object model/CMakeFiles/_model_src.dir/src/catalog_handler.cpp.o
+[93/119] Building CXX object model/CMakeFiles/_model_src.dir/src/certificates.cpp.o
+[94/119] Building CXX object model/CMakeFiles/_model_src.dir/src/chartdata_input_stream.cpp.o
+[95/119] Building CXX object model/CMakeFiles/_model_src.dir/src/comm_drv_factory.cpp.o
+[96/119] Building CXX object model/CMakeFiles/_model_src.dir/src/comm_drv_internal.cpp.o
+[97/119] Building CXX object model/CMakeFiles/_model_src.dir/src/comm_drv_n0183_serial.cpp.o
+[98/119] Building CXX object model/CMakeFiles/_model_src.dir/src/comm_drv_n2k_serial.cpp.o
+[99/119] Building CXX object model/CMakeFiles/_model_src.dir/src/comm_n0183_output.cpp.o
+[100/119] Building CXX object model/CMakeFiles/_model_src.dir/src/config_vars.cpp.o
+[101/119] Building CXX object model/CMakeFiles/_model_src.dir/src/garmin_protocol_mgr.cpp.o
+[102/119] Building CXX object model/CMakeFiles/_model_src.dir/src/mdns_service.cpp.o
+[103/119] Building CXX object model/CMakeFiles/_model_src.dir/src/multiplexer.cpp.o
+[104/119] Building CXX object model/CMakeFiles/_model_src.dir/src/ocpn_plugin.cpp.o
+[105/119] Building CXX object model/CMakeFiles/_model_src.dir/src/peer_client.cpp.o
+[106/119] Building CXX object model/CMakeFiles/_model_src.dir/src/plugin_api.cpp.o
+[107/119] Building CXX object model/CMakeFiles/_model_src.dir/src/plugin_comm.cpp.o
+[108/119] Building CXX object model/CMakeFiles/_model_src.dir/src/plugin_handler.cpp.o
+[109/119] Building CXX object model/CMakeFiles/_model_src.dir/src/plugin_loader.cpp.o
+[110/119] Building CXX object model/CMakeFiles/_model_src.dir/src/plugin_paths.cpp.o
+[111/119] Building CXX object model/CMakeFiles/_model_src.dir/src/rest_server.cpp.o
+[112/119] Building CXX object model/CMakeFiles/_model_src.dir/src/routeman.cpp.o
+[113/119] Building CXX object model/CMakeFiles/_model_src.dir/src/semantic_vers.cpp.o
+[114/119] Building CXX object model/CMakeFiles/_model_src.dir/src/ser_ports.cpp.o
+[115/119] Building CXX object model/CMakeFiles/_model_src.dir/src/std_serial_io.cpp.o
+[116/119] Building CXX object model/CMakeFiles/_model_src.dir/src/comm_drv_n2k_socketcan.cpp.o
+[117/119] Building CXX object model/CMakeFiles/_model_src.dir/src/linux_devices.cpp.o
+[118/119] Building CXX object model/CMakeFiles/_model_src.dir/src/garmin_wrapper.cpp.o
+[119/119] Linking CXX executable opencpn
+
+real	13m7.734s
+user	12m29.006s
+sys	0m30.390s
+-- Install configuration: "Release"
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/license.txt
+-- Installing: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/bin/opencpn
+-- Set non-toolchain portion of runtime path of "/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/bin/opencpn" to ""
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/LINUX_DEVICES.md
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/ocpn-plugins.xml
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/styles.xml
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/toolicons_journeyman.png
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/toolicons_journeyman_flat.png
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/toolicons_traditional.png
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/iconRMinus.png
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/iconRPlus.png
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/iconMinimum.png
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/iconStandard.png
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/iconUserStd.png
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/iconAll.png
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/DragHandle.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/eye.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/eyex.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/eyeGray.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/iENC_All.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/iENC_Minimum.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/iENC_Standard.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/iENC_UserStd.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/iENC_RPlus.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/iENC_RMinus.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/package-x-generic.png
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/plus.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/filters/all-data.filter.json
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/filters/all-nmea.filter.json
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/filters/default.filter.json
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/filters/malformed.filter.json
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/filters/nmea-input.filter.json
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/filters/nmea-output.filter.json
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/filters/plugin-msg.filter.json
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/1st-Active-Waypoint.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/1st-Anchorage.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/1st-Diamond.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/1st-Man-Overboard.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/1st-No-Anchoring.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Activity-Campfire.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Activity-Camping.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Activity-Diving-Scuba-Flag.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Activity-Diving-Scuba-Tank.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Activity-Diving-Snorkel.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Activity-Diving-Spearing.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Activity-Fishing.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Authority-Customs.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Authority-Health.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Authority-Immigration.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Authority-Police.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Authority-Quarantine-Area.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Authority-Quarantine-Building.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Authority-Quarantine-Flag.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/DragHandle.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Hazard-Airplane.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Hazard-Animals-Crocodile.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Hazard-Animals-Jellyfish.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Hazard-Animals-Shark.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Hazard-Danger.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Hazard-Dredging.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Hazard-Fish-Aquatic-Farm.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Hazard-Fish-Lobster-String.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Hazard-Fish-Nets.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Hazard-Lighthouse.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Hazard-Obstruction-Deep.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Hazard-Obstruction-Dry.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Hazard-Obstruction-Shallow.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Hazard-Oil-Platform.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Hazard-Overfalls.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Hazard-Pollution-Air.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Hazard-Pollution-Bio.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Hazard-Pollution-Nuclear.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Hazard-Pollution-Oil.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Hazard-Pollution-Quarantine-Area.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Hazard-Power-Cable.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Hazard-Power-Line1.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Hazard-Power-Line2.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Hazard-Rock-Awash.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Hazard-Rock-Exposed.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Hazard-Sandbar.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Hazard-Snag.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Hazard-Warning.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Hazard-Wind-Farm.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Hazard-Wreck1.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Hazard-Wreck2.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Info-Fish-Haven.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Info-Fish-Pelagic.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Info-Fish-Reef.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Info-Fish-Shark.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Info-Fish-Whale.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Info-Fish.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Info-Info.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Info-No-Discharge.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Info-Photo.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Info-Video.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Landmarks-Bridge1.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Landmarks-Bridge2.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Landmarks-Bridge3.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Landmarks-Pier1.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Landmarks-Pier2.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Landmarks-Pier3.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Landmarks-Stream-River.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Landmarks-Waterfall.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Marks-Active-Waypoint.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Marks-Beacon-Danger.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Marks-Beacon-SafeWater.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Marks-Blank.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Marks-Boarding-Location.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Marks-Boundary.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Marks-Buoy-Danger.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Marks-Buoy-Safe-Water.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Marks-Buoy-TypeA.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Marks-Buoy-TypeB.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Marks-Cardinal-East-Lighted.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Marks-Cardinal-East.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Marks-Cardinal-Nord-Lighted.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Marks-Cardinal-Nord.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Marks-Cardinal-North-Lighted.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Marks-Cardinal-North.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Marks-Cardinal-South-Lighted.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Marks-Cardinal-South.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Marks-Cardinal-West-Lighted.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Marks-Cardinal-West.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Marks-Caution-Lighted.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Marks-Caution.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Marks-Danger-Topmark-Lighted.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Marks-Danger-Topmark.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Marks-Lateral-Port-IALA-A-Lighted.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Marks-Lateral-Port-IALA-A.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Marks-Lateral-Port-IALA-B-Lighted.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Marks-Lateral-Port-IALA-B.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Marks-Lateral-Starboard-IALA-A-Lighted.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Marks-Lateral-Starboard-IALA-A.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Marks-Lateral-Starboard-IALA-B-Lighted.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Marks-Lateral-Starboard-IALA-B.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Marks-Light-Green.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Marks-Light-Red-Green.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Marks-Light-Red.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Marks-Light-TypeA.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Marks-Light-TypeB.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Marks-Light-Vessel.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Marks-Mooring-Buoy-Super.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Marks-Mooring-Buoy.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Marks-Mooring-Float.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Marks-Mooring-Pile.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Marks-New-Danger-Lighted.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Marks-New-Danger.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Marks-Race-Committee-Start-Boat.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Marks-Race-Finish.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Marks-Race-Start.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Marks-Race-Tetrahedron-Mark1.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Marks-Race-Tetrahedron-Mark2.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Marks-Race-Tetrahedron-Mark3.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Marks-Race-Tetrahedron-Mark4.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Marks-Race-Tetrahedron-Mark5.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Marks-Safe-Water-Lighted.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Marks-Safe-Water.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Sea-Current-Eastbound.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Sea-Current-N-Eastbound.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Sea-Current-N-Westbound.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Sea-Current-Northbound.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Sea-Current-S-Eastbound.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Sea-Current-S-Westbound.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Sea-Current-Southbound.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Sea-Current-Westbound.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Sea-DepthA-Black.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Sea-DepthA-Blue.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Sea-DepthA-Green.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Sea-DepthA-Magenta.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Sea-DepthA-Orange.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Sea-DepthA-Red.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Sea-DepthA-White.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Sea-DepthA-Yellow.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Sea-DepthB-Black.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Sea-DepthB-Blue.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Sea-DepthB-Green.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Sea-DepthB-Magenta.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Sea-DepthB-Orange.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Sea-DepthB-Red.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Sea-DepthB-White.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Sea-DepthB-Yellow.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Sea-Eddies-Black.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Sea-Eddies-Blue.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Sea-Eddies-Green.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Sea-Eddies-Magenta.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Sea-Eddies-Orange.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Sea-Eddies-Red.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Sea-Eddies-White.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Sea-Eddies-Yellow.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Sea-Floor-Coral.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Sea-Floor-Sea-Weed.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Sea-Floor-Text-Clay.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Sea-Floor-Text-Coral.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Sea-Floor-Text-Grass.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Sea-Floor-Text-Mud.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Sea-Floor-Text-Rock.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Sea-Floor-Text-Sand.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Sea-Height-Black.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Sea-Height-Blue.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Sea-Height-Green.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Sea-Height-Magenta.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Sea-Height-Orange.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Sea-Height-Red.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Sea-Height-White.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Sea-Height-Yellow.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Service-Chandlery.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Service-Dock-Dinghy.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Service-Dock.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Service-Food.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Service-Fuel-Jerry-Diesel.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Service-Fuel-Jerry-Petrol.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Service-Fuel-Jerry.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Service-Fuel-LPG.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Service-Fuel-Pump-Diesel-Petrol.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Service-Fuel-Pump-Diesel.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Service-Fuel-Pump-Petrol.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Service-Grocery1.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Service-Grocery2.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Service-Haulout.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Service-Ice1.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Service-Ice2.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Service-Ice3.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Service-Internet-Cafe.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Service-Internet-WiFi.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Service-Laundry.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Service-Marina.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Service-Public-Landing.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Service-Pump-Out-Boat.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Service-Pump-Out-Facility.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Service-Repairs.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Service-Water1.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Service-Water2.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Service-Wine&Dine.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Service-Yacht-Club.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Anchor1.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Anchor2.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Anchor3.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Arrow-Black.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Arrow-Blue.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Arrow-Green.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Arrow-Magenta.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Arrow-Orange.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Arrow-Red.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Arrow-White.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Arrow-Yellow.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Circle-Black.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Circle-Blue.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Circle-Green.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Circle-Magenta.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Circle-Orange.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Circle-Red.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Circle-White.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Circle-Yellow.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Circle.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Diamond-Black.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Diamond-Blue.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Diamond-Green.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Diamond-Magenta.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Diamond-Orange.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Diamond-Red.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Diamond-White.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Diamond-Yellow.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Empty.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Exclamation-Black.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Exclamation-Blue.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Exclamation-Green.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Exclamation-Magenta.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Exclamation-Orange.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Exclamation-Red.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Exclamation-White.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Exclamation-Yellow.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Glow-LargeBlack.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Glow-LargeBlue.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Glow-LargeGreen.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Glow-LargeMagenta.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Glow-LargeOrange.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Glow-LargeRed.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Glow-LargeWhite.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Glow-LargeYellow.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Glow-Small-Black.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Glow-Small-Blue.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Glow-Small-Green.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Glow-Small-Magenta.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Glow-Small-Orange.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Glow-Small-Red.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Glow-Small-White.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Glow-Small-Yellow.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Pin-Black.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Pin-Blue.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Pin-Green.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Pin-Magenta.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Pin-Orange.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Pin-Red.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Pin-White.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Pin-Yellow.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Question-Black.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Question-Blue.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Question-Green.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Question-Magenta.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Question-Orange.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Question-Red.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Question-White.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Question-Yellow.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Spot-Black.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Spot-Blue.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Spot-Green.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Spot-Magenta.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Spot-Orange.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Spot-Red.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Spot-White.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Spot-Yellow.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Square-Black.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Square-Blue.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Square-Green.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Square-Magenta.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Square-Orange.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Square-Red.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Square-White.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Square-Yellow.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Square.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Star-Black.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Star-Blue.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Star-Green.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Star-Magenta.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Star-Orange.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Star-Red.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Star-White.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Star-Yellow.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Tick-Black.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Tick-Blue.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Tick-Green.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Tick-Magenta.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Tick-Orange.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Tick-Red.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Tick-White.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Tick-Yellow.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-Triangle.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-X-Large-Black.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-X-Large-Blue.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-X-Large-Green.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-X-Large-Magenta.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-X-Large-Orange.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-X-Large-Red.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-X-Large-White.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-X-Large-Yellow.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-X-Small-Black.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-X-Small-Blue.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-X-Small-Green.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-X-Small-Magenta.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-X-Small-Orange.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-X-Small-Red.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-X-Small-White.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Symbol-X-Small-Yellow.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Weather-Hurricane-NH.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Weather-Hurricane-SH.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Weather-Tropical Depression.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Weather-Tropical High.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Weather-Tropical-Storm-NH.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/markicons/Weather-Tropical-Storm-SH.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/4WayMove.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/AIS.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/AIS_AlertGeneral.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/AIS_AlertGeneral_Active.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/AIS_AlertGeneral_Active_rollover.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/AIS_AlertGeneral_rollover.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/AIS_Disabled.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/AIS_Disabled_rollover.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/AIS_Normal_Active.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/AIS_Normal_Active_rollover.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/AIS_Suppressed.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/AIS_Suppressed_Active.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/AIS_Suppressed_Active_rollover.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/AIS_Suppressed_rollover.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/AIS_rollover.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/CompassRose.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/CompassRoseBlue.png
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/CompassRoseBlue.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/colorscheme.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/colorscheme_rollover.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/current.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/current_rollover.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/current_rollover_toggled.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/current_toggled.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/down.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/emblem-default.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/emblem-download.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/emblem-legacy-update.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/emblem-readonly.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/emblem-system.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/emblem-unmanaged.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/follow.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/follow_rollover.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/follow_rollover_toggled.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/follow_toggled.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/ghost.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/gps1Bar.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/gps2Bar.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/gps3Bar.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/gpsGrn.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/gpsGry.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/gpsRed.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/grabber.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/grabber_ext.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/grabber_hi.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/help.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/help_rollover.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/left.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/mob.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/mob_btn.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/mob_btn_rollover.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/packageBox.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/pencil.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/print.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/print_rollover.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/right.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/route.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/route_manager.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/route_manager_rollover.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/route_rollover.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/route_rollover_toggled.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/route_toggled.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/scin.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/scin_disabled.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/scin_rollover.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/scout.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/scout_disabled.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/scout_rollover.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/settings.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/settings_disabled.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/settings_rollover.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/text.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/text_rollover.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/text_rollover_toggled.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/text_toggled.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/tide.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/tide_rollover.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/tide_rollover_toggled.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/tide_toggled.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/track.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/track_rollover.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/track_rollover_toggled.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/track_toggled.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/up.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/zoomin.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/zoomin_rollover.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/zoomout.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/traditional/zoomout_rollover.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/journeyman
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/journeyman/CompassRose.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/journeyman/CompassRoseBlue.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/journeyman/gps1Bar.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/journeyman/gps2Bar.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/journeyman/gps3Bar.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/journeyman/gpsGrn.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/journeyman/gpsGry.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/journeyman/gpsRed.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/journeyman_flat
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/journeyman_flat/CompassRose.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/journeyman_flat/CompassRoseBlue.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/journeyman_flat/gps1Bar.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/journeyman_flat/gps2Bar.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/journeyman_flat/gps3Bar.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/journeyman_flat/gpsGrn.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/journeyman_flat/gpsGry.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/journeyman_flat/gpsRed.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/CompassRose.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/CompassRoseBlue.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/CompassRoseMag.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/Dashboard.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/Dashboard_rollover.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/Dashboard_rollover_toggled.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/Dashboard_toggled.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/GRIB.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/GRIB_rollover.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/GRIB_rollover_toggled.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/GRIB_toggled.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/MUI_RMD.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/MUI_Sconfig_1.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/MUI_Sconfig_2.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/MUI_colorscheme.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/MUI_follow.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/MUI_follow_active.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/MUI_follow_ahead.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/MUI_help.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/MUI_menu.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/MUI_menu_rollover.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/MUI_print.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/MUI_route.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/MUI_route_rollover_toggled.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/MUI_route_toggled.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/MUI_settings.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/MUI_settings_disabled.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/MUI_track.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/MUI_track_rollover.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/MUI_track_rollover_toggled.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/MUI_track_toggled.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/MUI_zoom-in.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/MUI_zoom-out.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/WMM.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/X_mult.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/check_mark.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/circle-off.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/circle-on.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/exclaim_mark.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/gps1Bar.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/gps2Bar.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/gps3Bar.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/gpsGrn.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/gpsGry.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/gpsRed.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/mob_btn.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/notification-critical-1.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/notification-critical-2.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/notification-critical.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/notification-info-1.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/notification-info-2.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/notification-info.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/notification-warning-1.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/notification-warning-2.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/notification-warning.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/setting_gear.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/uidata/MUI_flat/trash_bin.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/s57data/attdecode.csv
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/s57data/S52RAZDS.RLE
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/s57data/s57attributes.csv
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/s57data/s57expectedinput.csv
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/s57data/s57objectclasses.csv
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/s57data/rastersymbols-dark.png
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/s57data/rastersymbols-day.png
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/s57data/rastersymbols-dusk.png
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/s57data/chartsymbols.xml
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/tcdata/HARMONICS_NO_US
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/tcdata/HARMONICS_NO_US.IDX
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/tcdata/harmonics-dwf-20210110-free.tcd
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/tcdata/README.harmonics
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/gshhs/poly-c-1.dat
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/gshhs/wdb_borders_c.b
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/gshhs/wdb_rivers_c.b
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/basemap_shp/basemap_crude_10x10.cpg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/basemap_shp/basemap_crude_10x10.prj
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/basemap_shp/basemap_crude_10x10.shp
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/basemap_shp/basemap_crude_10x10.dbf
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/basemap_shp/basemap_crude_10x10.qmd
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/basemap_shp/basemap_crude_10x10.shx
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/basemap_shp/basemap_low.cpg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/basemap_shp/basemap_low.prj
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/basemap_shp/basemap_low.shx
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/basemap_shp/basemap_low.dbf
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/basemap_shp/basemap_low.shp
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/ssfndata/FreeSans.sfn
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/COPYING.gplv2
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/COPYING.gplv3
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/COPYING.lgplv2
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/COPYING.lgplv3
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/LICENSING
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/CoC-909_2013-InlandECDIS_20170308s.pdf
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/CoC-1973_2018-InlandECDIS_20220912.pdf
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/doc/opencpn/copyright
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/license.html
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/authors.html
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/opencpn.png
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/doc/opencpn/changelog
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/sounds
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/sounds/1bells.wav
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/sounds/2bells.wav
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/sounds/README.bells
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/sounds/beep1.wav
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/sounds/beep3.wav
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/sounds/beep_ssl.wav
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/sounds/phonering1.wav
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/doc/help_web.html
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/icons/hicolor/48x48/apps/opencpn.png
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/icons/hicolor/64x64/apps/opencpn.png
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/icons/hicolor/scalable/apps/opencpn.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/applications/opencpn.desktop
+-- Installing: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/metainfo/opencpn.appdata.xml
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/man/man1/opencpn.1
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/man/man1/opencpn-cmd.1
+-- Skipped installing udev dongle rule
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/cs/LC_MESSAGES/opencpn.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/da/LC_MESSAGES/opencpn.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/de/LC_MESSAGES/opencpn.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/es/LC_MESSAGES/opencpn.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/fr/LC_MESSAGES/opencpn.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/it/LC_MESSAGES/opencpn.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/nl/LC_MESSAGES/opencpn.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/pl/LC_MESSAGES/opencpn.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/ru/LC_MESSAGES/opencpn.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/sv/LC_MESSAGES/opencpn.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/et/LC_MESSAGES/opencpn.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/pt_PT/LC_MESSAGES/opencpn.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/pt_BR/LC_MESSAGES/opencpn.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/nb_NO/LC_MESSAGES/opencpn.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/tr_TR/LC_MESSAGES/opencpn.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/fi_FI/LC_MESSAGES/opencpn.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/el_GR/LC_MESSAGES/opencpn.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/zh_TW/LC_MESSAGES/opencpn.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/zh_CN/LC_MESSAGES/opencpn.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/hu_HU/LC_MESSAGES/opencpn.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/gl_ES/LC_MESSAGES/opencpn.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/ca_ES/LC_MESSAGES/opencpn.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/ar_SA/LC_MESSAGES/opencpn.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/ja_JP/LC_MESSAGES/opencpn.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/vi_VN/LC_MESSAGES/opencpn.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/he_IL/LC_MESSAGES/opencpn.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/en_GB/LC_MESSAGES/opencpn.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/lib/opencpn/libchartdldr_pi.so
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/plugins/chartdldr_pi/data
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/plugins/chartdldr_pi/data/button_down.png
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/plugins/chartdldr_pi/data/button_right.png
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/plugins/chartdldr_pi/data/chart_sources.xml
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/plugins/chartdldr_pi/data/file.png
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/plugins/chartdldr_pi/data/folder.png
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/plugins/chartdldr_pi/data/folder215.png
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/plugins/chartdldr_pi/data/open182.png
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/ar_SA/LC_MESSAGES/opencpn-chartdldr_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/bg_BG/LC_MESSAGES/opencpn-chartdldr_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/ca_ES/LC_MESSAGES/opencpn-chartdldr_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/cs_CZ/LC_MESSAGES/opencpn-chartdldr_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/da_DK/LC_MESSAGES/opencpn-chartdldr_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/de_DE/LC_MESSAGES/opencpn-chartdldr_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/el_GR/LC_MESSAGES/opencpn-chartdldr_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/en_GB/LC_MESSAGES/opencpn-chartdldr_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/es_ES/LC_MESSAGES/opencpn-chartdldr_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/et_EE/LC_MESSAGES/opencpn-chartdldr_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/fi_FI/LC_MESSAGES/opencpn-chartdldr_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/fil_PH/LC_MESSAGES/opencpn-chartdldr_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/fr_FR/LC_MESSAGES/opencpn-chartdldr_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/gl_ES/LC_MESSAGES/opencpn-chartdldr_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/he_IL/LC_MESSAGES/opencpn-chartdldr_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/hi_IN/LC_MESSAGES/opencpn-chartdldr_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/hu_HU/LC_MESSAGES/opencpn-chartdldr_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/id_ID/LC_MESSAGES/opencpn-chartdldr_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/is_IS/LC_MESSAGES/opencpn-chartdldr_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/it_IT/LC_MESSAGES/opencpn-chartdldr_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/ja_JP/LC_MESSAGES/opencpn-chartdldr_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/ko_KR/LC_MESSAGES/opencpn-chartdldr_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/mr_IN/LC_MESSAGES/opencpn-chartdldr_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/nb_NO/LC_MESSAGES/opencpn-chartdldr_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/nl_NL/LC_MESSAGES/opencpn-chartdldr_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/pl_PL/LC_MESSAGES/opencpn-chartdldr_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/pt_BR/LC_MESSAGES/opencpn-chartdldr_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/pt_PT/LC_MESSAGES/opencpn-chartdldr_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/ro_RO/LC_MESSAGES/opencpn-chartdldr_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/ru_RU/LC_MESSAGES/opencpn-chartdldr_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/sv_SE/LC_MESSAGES/opencpn-chartdldr_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/th_TH/LC_MESSAGES/opencpn-chartdldr_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/tr_TR/LC_MESSAGES/opencpn-chartdldr_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/vi_VN/LC_MESSAGES/opencpn-chartdldr_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/zh_CN/LC_MESSAGES/opencpn-chartdldr_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/zh_TW/LC_MESSAGES/opencpn-chartdldr_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/lib/opencpn/libdashboard_pi.so
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/plugins/dashboard_pi/data
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/plugins/dashboard_pi/data/Dashboard.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/plugins/dashboard_pi/data/Dashboard_rollover.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/plugins/dashboard_pi/data/Dashboard_toggled.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/plugins/dashboard_pi/data/dashboard_pi.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/plugins/dashboard_pi/data/dial.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/plugins/dashboard_pi/data/instrument.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/plugins/dashboard_pi/data/minus.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/plugins/dashboard_pi/data/plus.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/ar_SA/LC_MESSAGES/opencpn-dashboard_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/bg_BG/LC_MESSAGES/opencpn-dashboard_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/ca_ES/LC_MESSAGES/opencpn-dashboard_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/cs_CZ/LC_MESSAGES/opencpn-dashboard_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/da_DK/LC_MESSAGES/opencpn-dashboard_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/de_DE/LC_MESSAGES/opencpn-dashboard_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/el_GR/LC_MESSAGES/opencpn-dashboard_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/en_GB/LC_MESSAGES/opencpn-dashboard_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/es_ES/LC_MESSAGES/opencpn-dashboard_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/et_EE/LC_MESSAGES/opencpn-dashboard_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/fi_FI/LC_MESSAGES/opencpn-dashboard_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/fil_PH/LC_MESSAGES/opencpn-dashboard_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/fr_FR/LC_MESSAGES/opencpn-dashboard_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/gl_ES/LC_MESSAGES/opencpn-dashboard_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/he_IL/LC_MESSAGES/opencpn-dashboard_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/hi_IN/LC_MESSAGES/opencpn-dashboard_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/hu_HU/LC_MESSAGES/opencpn-dashboard_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/id_ID/LC_MESSAGES/opencpn-dashboard_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/is_IS/LC_MESSAGES/opencpn-dashboard_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/it_IT/LC_MESSAGES/opencpn-dashboard_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/ja_JP/LC_MESSAGES/opencpn-dashboard_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/ko_KR/LC_MESSAGES/opencpn-dashboard_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/mr_IN/LC_MESSAGES/opencpn-dashboard_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/nb_NO/LC_MESSAGES/opencpn-dashboard_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/nl_NL/LC_MESSAGES/opencpn-dashboard_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/pl_PL/LC_MESSAGES/opencpn-dashboard_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/pt_BR/LC_MESSAGES/opencpn-dashboard_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/pt_PT/LC_MESSAGES/opencpn-dashboard_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/ro_RO/LC_MESSAGES/opencpn-dashboard_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/ru_RU/LC_MESSAGES/opencpn-dashboard_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/sv_SE/LC_MESSAGES/opencpn-dashboard_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/th_TH/LC_MESSAGES/opencpn-dashboard_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/tr_TR/LC_MESSAGES/opencpn-dashboard_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/vi_VN/LC_MESSAGES/opencpn-dashboard_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/zh_CN/LC_MESSAGES/opencpn-dashboard_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/zh_TW/LC_MESSAGES/opencpn-dashboard_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/lib/opencpn/libgrib_pi.so
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/plugins/grib_pi/data
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/plugins/grib_pi/data/altitude.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/plugins/grib_pi/data/curdata.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/plugins/grib_pi/data/grib.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/plugins/grib_pi/data/grib_panel_icon.png
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/plugins/grib_pi/data/grib_rollover.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/plugins/grib_pi/data/grib_toggled.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/plugins/grib_pi/data/ncurdata.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/plugins/grib_pi/data/next.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/plugins/grib_pi/data/now.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/plugins/grib_pi/data/openfile.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/plugins/grib_pi/data/play.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/plugins/grib_pi/data/prev.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/plugins/grib_pi/data/request.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/plugins/grib_pi/data/request_end.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/plugins/grib_pi/data/selzone.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/plugins/grib_pi/data/setting.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/plugins/grib_pi/data/slider.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/plugins/grib_pi/data/sources.json
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/plugins/grib_pi/data/stop.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/plugins/grib_pi/data/zoomto.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/ar_SA/LC_MESSAGES/opencpn-grib_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/bg_BG/LC_MESSAGES/opencpn-grib_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/ca_ES/LC_MESSAGES/opencpn-grib_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/cs_CZ/LC_MESSAGES/opencpn-grib_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/da_DK/LC_MESSAGES/opencpn-grib_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/de_DE/LC_MESSAGES/opencpn-grib_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/el_GR/LC_MESSAGES/opencpn-grib_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/en_GB/LC_MESSAGES/opencpn-grib_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/es_ES/LC_MESSAGES/opencpn-grib_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/et_EE/LC_MESSAGES/opencpn-grib_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/fi_FI/LC_MESSAGES/opencpn-grib_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/fil_PH/LC_MESSAGES/opencpn-grib_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/fr_FR/LC_MESSAGES/opencpn-grib_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/gl_ES/LC_MESSAGES/opencpn-grib_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/he_IL/LC_MESSAGES/opencpn-grib_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/hi_IN/LC_MESSAGES/opencpn-grib_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/hu_HU/LC_MESSAGES/opencpn-grib_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/id_ID/LC_MESSAGES/opencpn-grib_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/is_IS/LC_MESSAGES/opencpn-grib_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/it_IT/LC_MESSAGES/opencpn-grib_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/ja_JP/LC_MESSAGES/opencpn-grib_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/ko_KR/LC_MESSAGES/opencpn-grib_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/mr_IN/LC_MESSAGES/opencpn-grib_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/nb_NO/LC_MESSAGES/opencpn-grib_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/nl_NL/LC_MESSAGES/opencpn-grib_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/pl_PL/LC_MESSAGES/opencpn-grib_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/pt_BR/LC_MESSAGES/opencpn-grib_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/pt_PT/LC_MESSAGES/opencpn-grib_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/ro_RO/LC_MESSAGES/opencpn-grib_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/ru_RU/LC_MESSAGES/opencpn-grib_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/sv_SE/LC_MESSAGES/opencpn-grib_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/th_TH/LC_MESSAGES/opencpn-grib_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/tr_TR/LC_MESSAGES/opencpn-grib_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/vi_VN/LC_MESSAGES/opencpn-grib_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/zh_CN/LC_MESSAGES/opencpn-grib_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/zh_TW/LC_MESSAGES/opencpn-grib_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/lib/opencpn/libwmm_pi.so
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/plugins/wmm_pi/data
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/plugins/wmm_pi/data/WMM.COF
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/plugins/wmm_pi/data/wmm_live.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/plugins/wmm_pi/data/wmm_pi.svg
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/ar_SA/LC_MESSAGES/opencpn-wmm_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/bg_BG/LC_MESSAGES/opencpn-wmm_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/ca_ES/LC_MESSAGES/opencpn-wmm_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/cs_CZ/LC_MESSAGES/opencpn-wmm_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/da_DK/LC_MESSAGES/opencpn-wmm_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/de_DE/LC_MESSAGES/opencpn-wmm_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/el_GR/LC_MESSAGES/opencpn-wmm_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/en_GB/LC_MESSAGES/opencpn-wmm_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/es_ES/LC_MESSAGES/opencpn-wmm_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/et_EE/LC_MESSAGES/opencpn-wmm_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/fi_FI/LC_MESSAGES/opencpn-wmm_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/fil_PH/LC_MESSAGES/opencpn-wmm_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/fr_FR/LC_MESSAGES/opencpn-wmm_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/gl_ES/LC_MESSAGES/opencpn-wmm_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/he_IL/LC_MESSAGES/opencpn-wmm_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/hi_IN/LC_MESSAGES/opencpn-wmm_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/hu_HU/LC_MESSAGES/opencpn-wmm_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/id_ID/LC_MESSAGES/opencpn-wmm_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/is_IS/LC_MESSAGES/opencpn-wmm_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/it_IT/LC_MESSAGES/opencpn-wmm_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/ja_JP/LC_MESSAGES/opencpn-wmm_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/ko_KR/LC_MESSAGES/opencpn-wmm_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/mr_IN/LC_MESSAGES/opencpn-wmm_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/nb_NO/LC_MESSAGES/opencpn-wmm_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/nl_NL/LC_MESSAGES/opencpn-wmm_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/pl_PL/LC_MESSAGES/opencpn-wmm_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/pt_BR/LC_MESSAGES/opencpn-wmm_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/pt_PT/LC_MESSAGES/opencpn-wmm_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/ro_RO/LC_MESSAGES/opencpn-wmm_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/ru_RU/LC_MESSAGES/opencpn-wmm_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/sv_SE/LC_MESSAGES/opencpn-wmm_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/th_TH/LC_MESSAGES/opencpn-wmm_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/tr_TR/LC_MESSAGES/opencpn-wmm_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/vi_VN/LC_MESSAGES/opencpn-wmm_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/zh_CN/LC_MESSAGES/opencpn-wmm_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/locale/zh_TW/LC_MESSAGES/opencpn-wmm_pi.mo
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/bin/opencpn-cmd
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/bin/opencpn-glutil
+-- Installing: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/opennav/chart-style/v1/chartsymbols.xml
+-- Up-to-date: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/opennav/chart-style/v1/S52RAZDS.RLE
+-- Installing: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/opennav/chart-style/v1/rastersymbols-day.png
+-- Installing: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/opennav/chart-style/v1/rastersymbols-dusk.png
+-- Installing: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/opennav/chart-style/v1/rastersymbols-dark.png
+-- Installing: /home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/build/xnav-install/share/opencpn/opennav/chart-style/v1/manifest.json

@@ -1,0 +1,134 @@
+{
+  "scope": "Historical exact-source Linux integrated job; not newer SKAGER source, Windows, boat or complete workflow acceptance.",
+  "commit": "4c597955f96647a9c7b837139aa2732f2c3a3fa5",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/37063131823",
+  "job": 111024324351,
+  "jobConclusion": "success",
+  "artifact": {
+    "id": 11258463010,
+    "bytes": 19494308,
+    "sha256": "17766c72fbd7cab898dc9b94344c349f4414ea5d6559bb3f21ad8c0c2470fbc0",
+    "entries": 4248,
+    "allZipCrcChecksPassed": true
+  },
+  "endurance": {
+    "status": "passed",
+    "requested_seconds": 10800,
+    "release_duration": true,
+    "authority": "Linux development",
+    "scope": "Actual process, DEMO vessel/route/AIS, software chart, repeated UI and dropout recovery; no hardware commands",
+    "samples": 1080,
+    "screenshots": [
+      "start.png",
+      "end.png"
+    ],
+    "harness_commit": "4c597955f96647a9c7b837139aa2732f2c3a3fa5",
+    "harness_sha256": "7cf8e122462d3ea5ec2d360fea1995ced41937e80e583df064a28dcba2aa5773",
+    "executable": {
+      "path": "/home/runner/work/Work/Work/opennav-x/build/xnav-install/bin/opencpn",
+      "bytes": 24145040,
+      "mtime_ns": 1790974896000000000,
+      "sha256": "57eabffaceeba15ab6655e2c5cffa5aad57a0ced62849d062c6305d0de00b1e8"
+    },
+    "build_commit": "4c597955f96647a9c7b837139aa2732f2c3a3fa5",
+    "binary_matches_harness_commit": true,
+    "startup_seconds": 3.7277550750000046,
+    "elapsed_seconds": 10800.018788869002,
+    "resource_growth": {
+      "resident_bytes": -647168.0,
+      "handles": 0.0,
+      "threads": 0.0
+    },
+    "growth_limits": {
+      "resident_bytes": 134217728,
+      "private_bytes": 134217728,
+      "handles": 32,
+      "gdi_objects": 64,
+      "user_objects": 64,
+      "threads": 8
+    },
+    "cpu_percent_one_core": 2.75697556998894,
+    "maximum_page_observation_seconds": 1.3513314440001523,
+    "ui_observation_limit_seconds": 8,
+    "route_progress_samples": 765,
+    "actionCount": 540,
+    "viewportObservationCount": 270,
+    "staleDropouts": 45,
+    "unavailableDropouts": 45,
+    "recoveries": 90,
+    "metricElapsedFirst": 3.007,
+    "metricElapsedLast": 10790.19,
+    "monotonicMetricElapsed": true
+  },
+  "tests": {
+    "xnav-linux-tests": {
+      "total": 147,
+      "failures": 0,
+      "skipped": 0,
+      "testcasesIndependentlyCounted": 147
+    },
+    "production-linux-tests": {
+      "total": 147,
+      "failures": 0,
+      "skipped": 0,
+      "testcasesIndependentlyCounted": 147
+    }
+  },
+  "productionLoader": {
+    "status": "passed",
+    "checks": 5,
+    "loader": {
+      "upstream": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+      "commissioning_restart_protocol": 0,
+      "version": "0.4.0-beta2",
+      "commit": "4c597955f96647a9c7b837139aa2732f2c3a3fa5",
+      "compiler": "GNU 13.3.0 / 8 byte pointers",
+      "plugins_loaded": false,
+      "test_fixtures": false,
+      "resources": {
+        "gshhs/poly-c-1.dat": true,
+        "s57data/s57objectclasses.csv": true,
+        "uidata/styles.xml": true,
+        "s57data/chartsymbols.xml": true
+      },
+      "normal_config_directory": "/etc",
+      "passed": true,
+      "xnav_hardware_output_policy": "status-only",
+      "build_purpose": "INSTALLED PRODUCT",
+      "profile_initialized": false,
+      "contract": "OpenNavX.LoaderSelfTest.1"
+    },
+    "app_sha256": "b0e3095ccbac848509a44b421538b7ff608f571fd7eb500dce84a490822a4eaf"
+  },
+  "artifactFiles": {
+    "soak/results.json": {
+      "bytes": 1069190,
+      "sha256": "40ad18ced2625f6bfd061f3e4bf4a3bd34abe76cb84be617e68cac651b4a0edb"
+    },
+    "soak/metrics.jsonl": {
+      "bytes": 781777,
+      "sha256": "cee5e2abb5895c8bfb102c1e70b902bd2fd8904a930e62785cf2295849606eec"
+    },
+    "xnav-linux-tests.xml": {
+      "bytes": 126686,
+      "sha256": "62558ab51646d5d3e5666a2c007c93b568a2a270352df735d6eba5bb6f382053"
+    },
+    "xnav-linux-tests.log": {
+      "bytes": 27492,
+      "sha256": "65b3452285f96ff26065facb2eab1a3077834c679b00a0b757b31accfd81e17c"
+    },
+    "production-linux-tests.xml": {
+      "bytes": 127539,
+      "sha256": "89258a6a570eb80473685c7d77e3b0d084ef33d39c1297ff7a3ff744ffe5a271"
+    },
+    "production-linux-tests.log": {
+      "bytes": 27504,
+      "sha256": "5ef27332250bce0a6d5e04ca6c6e721a689b6c8e5ebd2325e77acb241466fb50"
+    },
+    "installer-loader-selftest.json": {
+      "bytes": 842,
+      "sha256": "be1bf23b0370f110dcebd45f7f78a6912641b4d317fe7d92c7f153a376a7b6b1"
+    }
+  },
+  "binaryIdentityLimit": "Recorded by original harness; artifact does not include executable for independent binary rehash."
+}

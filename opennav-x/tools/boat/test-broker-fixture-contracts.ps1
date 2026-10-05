@@ -46,6 +46,16 @@ try {
  $parsed=Read-RestartIni $path
  if($parsed.Count -ne 4){throw 'Restart parser sees extra fixture settings'}
  $checks.Add('Actual restart parser accepts the full-size synthetic profile')
+ foreach($palette in @('XNav','Standard')) {
+  $paletteBytes=New-BrokerFixtureProfileBytes $palette
+  $inputPalette=Get-CommissioningInputBytes $paletteBytes
+  $palettePath=Join-Path $temporary ('palette-'+$palette+'.ini');[IO.File]::WriteAllBytes($palettePath,$inputPalette)
+  $parsedPalette=Read-RestartIni $palettePath;Assert-InputOnlyProfile $parsedPalette
+  if($paletteBytes.Length -ne 21380 -or $parsedPalette.Count -ne 5 -or $parsedPalette['OpenNav/ChartPresentationV1'] -cne $palette){throw 'Palette fixture changed recovered-root size or parsed identity.'}
+  $delta=@(0..($paletteBytes.Length-1)|Where-Object {$paletteBytes[$_] -ne $inputPalette[$_]})
+  if($delta.Count -ne 1 -or $paletteBytes[$delta[0]] -ne 49 -or $inputPalette[$delta[0]] -ne 48){throw 'Palette fixture changed the exact input-only transformation.'}
+  $checks.Add('Actual '+$palette+' fixture retains fixed root size, exact palette and one-byte input-only transform')
+ }
  foreach($name in $script:RestartDependencies){
   if($name -cnotmatch '^[A-Za-z0-9.-]+$' -or -not[IO.File]::Exists((Join-Path $PSScriptRoot $name))){throw ('Missing source dependency: '+$name)}
   Copy-Item -LiteralPath (Join-Path $PSScriptRoot $name) -Destination (Join-Path $temporary $name)
@@ -58,6 +68,16 @@ try {
  # fail before any launch or pipe operation.
  . (Join-Path $temporary 'Commissioning.ps1')
  $checks.Add('Copied broker dependency closure imports the actual commissioning audit and resource policy')
+ if(@($script:RestartDependencies|Where-Object {$_ -ceq 'ColdBaseline.ps1'}).Count -ne 1){throw 'Cold baseline reader must be pinned exactly once in every fresh restart session'}
+ $cold=Join-Path $temporary 'ColdBaseline.ps1';$coldSaved=$cold+'.saved'
+ if((Get-FileHash -LiteralPath $cold -Algorithm SHA256).Hash -cne (Get-FileHash -LiteralPath (Join-Path $PSScriptRoot 'ColdBaseline.ps1') -Algorithm SHA256).Hash){throw 'Cold baseline copy differs from session dependency source'}
+ $checks.Add('Fresh restart dependency closure pins exactly one byte-identical cold-baseline reader')
+ Move-Item -LiteralPath $cold -Destination $coldSaved
+ try {
+   $refused=$false;try{. (Join-Path $temporary 'Commissioning.ps1')}catch{$refused=$true}
+   if(-not $refused){throw 'Missing cold-baseline dependency did not refuse the composed commissioning reader'}
+ } finally {Move-Item -LiteralPath $coldSaved -Destination $cold}
+ $checks.Add('Missing cold-baseline module refuses composed audit import before any launch or pipe')
  $resource=Join-Path $temporary 'InstalledResourceReview.ps1';$saved=$resource+'.saved'
  Move-Item -LiteralPath $resource -Destination $saved
  try {

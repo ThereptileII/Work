@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "scope": "Read-only boat UI helper, inert native windows; no installed application or live AIS acceptance",
+  "productCommit": "982a2b54d06bea4de9507b11e445dae00651d06f",
+  "helperCommit": "d8ab00139604130fd09a9ce7cac09dbb209fc5df",
+  "failedRun": "https://github.com/ThereptileII/Work/actions/runs/37275661450",
+  "failure": "PowerShell 5.1 lacks the ulong type alias; changed to the UInt64 CLR type",
+  "passedRun": "https://github.com/ThereptileII/Work/actions/runs/37275927401",
+  "job": 111652818109,
+  "artifact": 11330192290,
+  "sha256": "24eaf1cc189f8f9262caa60ef8c4c68d0faeb66b6b90b8ee3f8a14670e962e17",
+  "downloadedHashVerified": true,
+  "policyChecksPassed": 255,
+  "restartPolicyChecksPassed": 187,
+  "nativeWindowCasesPassed": 64,
+  "newAisCases": 11,
+  "nativeHelperSha256": "b2df6954cc880d4347d648c569ed8789c2bed3e6cda782f8b011368709bf68f3",
+  "fixtureSha256": "06211a58c0498edc1bcdd299b40c45441c9d1c916f1da85cee1b649b064dcdee",
+  "nativeCoverage": "Captionless MSAA-named virtual list; first visible row only; hidden, ambiguous, clipped, obscured, mutated and unconfirmed identities refused",
+  "physicalOutput": false,
+  "applicationRebuiltForCorrection": false
+}

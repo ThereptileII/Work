@@ -1,0 +1,22 @@
+{
+  "sourceCommit": "f0976cc65ea63d3ed6f60ac53ec38a856d11b66b",
+  "publishedCommit": "9a4231f45d978321c612a6a1de66d735d531bbaa",
+  "publishedTree": "7e3ff0698f111fc751c21ffdd86a55019bdb294b",
+  "buildExit": 0,
+  "incrementalSteps": 28,
+  "precedingCombinedSource": "6dd6665396b465100986cd418e38ba099a117612",
+  "precedingBuildSteps": 98,
+  "nativeCompileRun": "https://github.com/ThereptileII/Work/actions/runs/37085103227",
+  "limits": [
+    "Linux development build only",
+    "Not Windows, installer, boat, or visual acceptance",
+    "Staged rederived resources compared byte-for-byte",
+    "Fixture-enabled build uses isolated test profiles and loopback only; not an installed product"
+  ],
+  "files": {
+    "staged-inputs.json": "f51f30357410717181afa04527116ee2b1a13c1afb102addbad07c48737e1c0c",
+    "focused-build.log": "44f30df1125aabeef7e839d20b27acfbe42693cd37ff273ba89768c5c79645fc",
+    "configure.log": "e0565ae1f491ee5c53da8b48565c6eaaf4f02838e1edd37978230e47a46fabd2",
+    "build-inputs.log": "cb3c7ef2b59a47a7d8e48f11ab2762cf9dd63cc019452bdfef03ee0ef12d53c1"
+  }
+}

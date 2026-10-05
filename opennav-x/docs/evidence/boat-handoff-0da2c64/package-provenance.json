@@ -1,0 +1,100 @@
+{
+  "schema": 1,
+  "applicationCommit": "0da2c64379d5a9cc4b9b2bd068de6e0b69816577",
+  "producerRun": 37207119257,
+  "producerQualification": "FAILED installer test helper after35checks; not a release",
+  "transferCommit": "860f8e85cdf781f629a534554d44191f100a7687",
+  "transferRun": 37215439699,
+  "transferArtifact": {
+    "id": 11308016959,
+    "bytes": 407924068,
+    "sha256": "67c473b5c4814d5ddaf8d569fac0d6e22753a30dfe9b08cf04be11f13704624b",
+    "verified": true
+  },
+  "transferReceipt": {
+    "schema": 1,
+    "operation": "verified transfer of unchanged retained bytes only",
+    "qualification": "FAILED - diagnostic retest inputs only; not for installation or delivery",
+    "installerSuite": "FAILED; no qualification override",
+    "execution": "No application, installer, helper, test or downloaded code executed",
+    "producer": {
+      "repository": "ThereptileII/Work",
+      "commit": "0da2c64379d5a9cc4b9b2bd068de6e0b69816577",
+      "runId": 37207119257,
+      "runAttempt": 1,
+      "workflow": ".github/workflows/opennav-baseline.yml",
+      "event": "push"
+    },
+    "originalArtifact": {
+      "id": 11307907593,
+      "name": "unqualified-windows-installer-inputs-0da2c64379d5a9cc4b9b2bd068de6e0b69816577",
+      "bytes": 700027780,
+      "sha256": "50efe1704bd8641ca199d623f0496fb532fa8c5005e4bb2749c3532e1aa1ccda",
+      "expired": false,
+      "expiresAt": "2027-01-02T13:51:31Z",
+      "entries": 1849,
+      "expandedBytes": 699636890,
+      "allMemberCrcVerified": true,
+      "safeUniqueRegularPaths": true
+    },
+    "transferRun": {
+      "runId": "37215439699",
+      "runAttempt": "1",
+      "workflowCommit": "860f8e85cdf781f629a534554d44191f100a7687"
+    },
+    "files": [
+      {
+        "path": "SKAGER-Beta2-Setup.exe",
+        "originalMember": "build/beta-installer/SKAGER-Beta2-Setup.exe",
+        "bytes": 47266202,
+        "sha256": "db5e2c4647b400c5fc5e8629a472a5133eb3f3fc2a5f4b65a3018d44248ba0b5"
+      },
+      {
+        "path": "package.json",
+        "originalMember": "build/beta-installer/package.json",
+        "bytes": 155294,
+        "sha256": "00bf905126ba9f3f20e77842196e67fc5e3aeea9dd1d466d621578ed7cb0744c"
+      },
+      {
+        "path": "SKAGER-Beta2-Portable-Recovery.zip",
+        "originalMember": "build/developer-preview/SKAGER-Beta2-Portable-Recovery.zip",
+        "bytes": 51895842,
+        "sha256": "825aad54693c143189ae0c21ecb3f85c546724b2f452fa2cc0d882f83a6d3663"
+      },
+      {
+        "path": "SKAGER-Beta2-source.zip",
+        "originalMember": "build/developer-preview/SKAGER-Beta2-source.zip",
+        "bytes": 308184328,
+        "sha256": "188f865d29aae2cec0a59cd5473708fade2f066a3c6d2a9f41a50731db377b8a"
+      },
+      {
+        "path": "Lifecycle.ps1",
+        "originalMember": "opennav-x/installer/windows/Lifecycle.ps1",
+        "container": "SKAGER-Beta2-source.zip",
+        "bytes": 49256,
+        "sha256": "944ca88e8abcd9107f20f28f812988655d1a4c85acdd06dfa042931ef61c9153"
+      },
+      {
+        "path": "unqualified-installer-inputs.json",
+        "originalMember": "evidence/local/unqualified-installer-inputs.json",
+        "bytes": 369554,
+        "sha256": "9dc81015e1231cfeba94d0846fd4a859d1f49ea3beb9ab268c39c603be14b108"
+      }
+    ]
+  },
+  "recoveryVerification": {
+    "application_commit": "0da2c64379d5a9cc4b9b2bd068de6e0b69816577",
+    "executable_sha256": "2d05dc2153273424a3849ec0bd4a3ea3618ad2a4049ac6cbbbaf615c2fc208b8",
+    "archive_sha256": "825aad54693c143189ae0c21ecb3f85c546724b2f452fa2cc0d882f83a6d3663",
+    "archive_crc": "all passed",
+    "file_manifest_sha256": "a0c615c5b10fddf11eb30f1d9747ef749df008c1dfc9a20990aa7d897893b238",
+    "verified_files": 1015,
+    "product_build_sha256": "700a4b851ca1657c516c8ced54b4f2e06f727b0f09efde92fad3b8b7adda8138",
+    "packaged_profile_sha256": "4c37cdd2faf9a9e92819a32fdda1232592d8cac284c511a88c1446ea551994c2",
+    "config_version_string": "Version 5.12.4+37fd0cd Build 2026-10-04",
+    "manifestBinding": "Manifest read from independently SHA256-bound original recovery archive; all payload checked"
+  },
+  "privateAdapterVerification": "actual retained bytes/source/resource manifests verified; no execution",
+  "boatStatus": "Exact candidate installed and launched; responsive at welcome warning behind Windows update reminder; left open. Full navigation startup pending acknowledgement.",
+  "userScope": "Install, start, verify responding and leave open; no additional visual/endurance runs"
+}

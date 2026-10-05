@@ -1,0 +1,17 @@
+{
+  "schema": 1,
+  "localCommit": "8a0ed1f646e2551a55639c1cc3fb609cc2652464",
+  "remoteCommit": "442960ba55277845e171f9b95a38838f66c23981",
+  "remoteTree": "3b74065f9f9886ebe73f33f85b71ca8bb469865e",
+  "mappedEntries": 4689,
+  "independentlyVerified": true,
+  "preservedUnrelatedRootFiles": 8,
+  "runId": 37126951293,
+  "runAttempt": 1,
+  "runUrl": "https://github.com/ThereptileII/Work/actions/runs/37126951293",
+  "priorFailedRun": 37120549213,
+  "priorApplicationRemote": "9d98a500916e8a7f59dac9735427dde6d3c7d2e5",
+  "productionSrcPatchesResourcesCmakeUnchanged": true,
+  "scope": "Corrected preview validity predicate and immediate failure-evidence upload; include independently qualified review tooling. Native/full/boat gates remain pending.",
+  "boatApplicationChanged": false
+}

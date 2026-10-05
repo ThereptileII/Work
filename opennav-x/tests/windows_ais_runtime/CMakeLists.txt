@@ -1,0 +1,22 @@
+cmake_minimum_required(VERSION 3.24)
+project(OpenNavAisNativeRuntime LANGUAGES C CXX)
+if(NOT MSVC OR NOT CMAKE_SIZEOF_VOID_P EQUAL 4)
+  message(FATAL_ERROR "AIS runtime gate requires native MSVC Win32")
+endif()
+# This tracked recipe is copied to a fresh private source directory. Its only
+# cache/buildwin payload is copied from the existing verified same-job receipt.
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDLL")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+set(OPENNAV_BUILD_UI_COMPONENTS OFF CACHE BOOL "" FORCE)
+set(XNAV_ENABLE_TEST_FIXTURES OFF CACHE BOOL "" FORCE)
+set(XNAV_ENABLE_PILOT_LOOPBACK_TESTS OFF CACHE BOOL "" FORCE)
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+set(USE_MBED_TLS OFF CACHE BOOL "" FORCE)
+set(USE_SECURE_TRANSPORT OFF CACHE BOOL "" FORCE)
+# Match the upstream Windows parent include root, which standalone IX lacks.
+include_directories(BEFORE "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/include")
+set(ZLIB_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/include" CACHE PATH "" FORCE)
+set(ZLIB_LIBRARY "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/zlib1.lib" CACHE FILEPATH "" FORCE)
+add_subdirectory("${OPENNAV_ROOT}/tests/ais_transport" fixtures)
+add_executable(ais_session_native "${OPENNAV_ROOT}/tests/ais_session_tests.cpp")
+target_link_libraries(ais_session_native PRIVATE opennav_ais_codec)

@@ -62,8 +62,120 @@ XNavAisDrawer::XNavAisDrawer(wxWindow &owner,
                              std::function<void(int)> show_on_chart)
     : XNavDrawer(owner, "OpenNav vessel traffic"), actions_(std::move(actions)),
       show_on_chart_(std::move(show_on_chart)) {
+  // Native scrollbars are hidden; own wheel routing explicitly, including
+  // painted child windows. Pixel units also keep touch movement continuous.
+  body_->SetScrollRate(0, 1);
+  body_->SetName("AIS scroll body");
+  Bind(wxEVT_SHOW, [this](wxShowEvent &event) {
+    CancelDrag();
+    if (event.IsShown()) {
+      body_->Scroll(0, 0); // A reopened panel starts at its heading.
+      wheel_remainder_ = 0;
+    }
+    event.Skip();
+  });
+  body_->Bind(wxEVT_MOUSE_CAPTURE_LOST, [this](wxMouseCaptureLostEvent &) {
+    drag_origin_ = nullptr;
+    dragging_ = false;
+  });
   on_back = [this] { List(); };
   Build();
+}
+void XNavAisDrawer::CancelDrag() {
+  drag_origin_ = nullptr;
+  dragging_ = false;
+  if (body_->HasCapture()) body_->ReleaseMouse();
+}
+void XNavAisDrawer::ScrollWheel(const wxMouseEvent &event) {
+  if (event.GetWheelAxis() != wxMOUSE_WHEEL_VERTICAL || !event.GetWheelDelta())
+    return;
+  const int distance = event.IsPageScroll() ? body_->GetClientSize().y
+      : FromDIP(24) * event.GetLinesPerAction();
+  wheel_remainder_ -= double(event.GetWheelRotation()) * distance /
+                      event.GetWheelDelta();
+  const int pixels = static_cast<int>(wheel_remainder_);
+  wheel_remainder_ -= pixels;
+  const int maximum = std::max(0, body_->GetVirtualSize().y - body_->GetClientSize().y);
+  const int next = std::clamp(body_->GetViewStart().y + pixels, 0, maximum);
+  body_->Scroll(0, next);
+  if (next == 0 || next == maximum) wheel_remainder_ = 0;
+}
+int XNavAisDrawer::FilterEvent(wxEvent &event) {
+  const auto type = event.GetEventType();
+  if (type != wxEVT_MOUSEWHEEL && type != wxEVT_LEFT_DOWN &&
+      type != wxEVT_LEFT_UP && type != wxEVT_MOTION && type != wxEVT_GESTURE_PAN)
+    return XNavDrawer::FilterEvent(event);
+  if (!IsShownOnScreen() || !IsEnabled()) return XNavDrawer::FilterEvent(event);
+  for (auto *window : wxTopLevelWindows)
+    if (auto *dialog = dynamic_cast<wxDialog *>(window); dialog && dialog->IsModal()) {
+      CancelDrag();
+      return XNavDrawer::FilterEvent(event);
+    }
+  auto *window = dynamic_cast<wxWindow *>(event.GetEventObject());
+  bool in_body = false, in_drawer = false;
+  for (auto *parent = window; parent; parent = parent->GetParent()) {
+    // A modal/popup owned by the drawer is a separate input surface.
+    if (parent != this && parent->IsTopLevel()) break;
+    in_body |= parent == body_;
+    in_drawer |= parent == this;
+  }
+  auto *mouse = dynamic_cast<wxMouseEvent *>(&event);
+  if (mouse && type == wxEVT_MOUSEWHEEL && in_drawer) {
+    if (window == list_) return Event_Skip; // The bounded vessel list owns its viewport.
+    if (in_body) ScrollWheel(*mouse);
+    return Event_Processed; // Never chain a boundary wheel into the chart.
+  }
+  if (type == wxEVT_GESTURE_PAN) {
+    // Native touch recognition takes over from any synthesized mouse press.
+    if (!forwarding_drag_) CancelDrag();
+    return XNavDrawer::FilterEvent(event);
+  }
+  if (!mouse || !window) return XNavDrawer::FilterEvent(event);
+  if (type == wxEVT_LEFT_DOWN && in_body) {
+    CancelDrag();
+    drag_origin_ = window;
+    drag_start_ = drag_last_ = window->ClientToScreen(mouse->GetPosition());
+  } else if (type == wxEVT_MOTION && drag_origin_) {
+    if (!mouse->LeftIsDown()) { CancelDrag(); return Event_Skip; }
+    const auto position = window->ClientToScreen(mouse->GetPosition());
+    const bool start = !dragging_;
+    if (start) {
+      if (std::abs(position.y - drag_start_.y) < FromDIP(6)) return Event_Skip;
+      if (drag_origin_ == radius_ &&
+          std::abs(position.x-drag_start_.x) >= std::abs(position.y-drag_start_.y))
+        return Event_Skip; // Horizontal range adjustment owns its gesture.
+      // Cancel a pressed button/row before taking capture: releasing a drag
+      // must never activate the control originally under the finger.
+      if (auto *captured = wxWindow::GetCapture()) {
+        captured->ReleaseMouse();
+        wxMouseCaptureLostEvent lost(captured->GetId());
+        lost.SetEventObject(captured);
+        captured->GetEventHandler()->ProcessEvent(lost);
+      }
+      dragging_ = true;
+      body_->CaptureMouse();
+    }
+    wxPanGestureEvent pan;
+    pan.SetDelta(position - drag_last_);
+    pan.SetGestureStart(start);
+    // Dispatch directly to the existing pan implementation. List rows keep
+    // their virtual viewport; the rest of the panel scrolls as one body.
+    if (drag_origin_ == list_) {
+      pan.SetEventObject(list_);
+      forwarding_drag_ = true;
+      list_->GetEventHandler()->ProcessEvent(pan);
+      forwarding_drag_ = false;
+    } else {
+      body_->Pan(pan);
+    }
+    drag_last_ = position;
+    return Event_Processed;
+  } else if (type == wxEVT_LEFT_UP && drag_origin_) {
+    const bool consumed = dragging_;
+    CancelDrag();
+    if (consumed) return Event_Processed;
+  }
+  return XNavDrawer::FilterEvent(event);
 }
 void XNavAisDrawer::List() {
   view_ = View::List;
@@ -101,7 +213,7 @@ void XNavAisDrawer::Update(const vessel::AisState &display,
   now_ = now;
   if (light != light_) {
     SetLight(light);
-    Build();
+    Build(false);
   }
   RefreshValues();
 }
@@ -144,14 +256,20 @@ void XNavAisDrawer::AddVisual(int height,
   content_->Add(panel, 0, wxEXPAND | wxBOTTOM, FromDIP(after));
   visuals_.push_back(panel);
 }
-void XNavAisDrawer::Build() {
+void XNavAisDrawer::Build(bool reset_scroll) {
+  const int previous_scroll = reset_scroll ? 0 : body_->GetViewStart().y;
+  CancelDrag();
+  wheel_remainder_ = 0;
   ClearBody();
   list_ = nullptr;
   range_ = cpa_ = show_ = nullptr;
+  radius_ = nullptr;
+  apply_radius_ = nullptr;
   visuals_.clear();
   buttons_.clear();
   if (view_ == View::List) {
     auto *segment = new wxPanel(body_, wxID_ANY);
+    EnableScrollGesture(*segment);
     segment->SetBackgroundColour(Colour(Theme(light_).surface));
     segment->SetBackgroundStyle(wxBG_STYLE_PAINT);
     segment->Bind(wxEVT_PAINT, [this, segment](wxPaintEvent &) {
@@ -190,12 +308,16 @@ void XNavAisDrawer::Build() {
       Target(std::stoi(identity));
     };
     content_->Add(list_, 0, wxEXPAND | wxBOTTOM, FromDIP(20));
-    AddVisual(60, [this](XNavPainter &p, int width) {
+    AddVisual(84, [this](XNavPainter &p, int width) {
       p.Text("Online AIS", 0, 0, 12, p.c.secondary);
       p.Text(Connection(online_.feed.health.connection), width - 110, 0, 12,
              p.c.primary, false, 110);
-      p.Text("Select a vessel for its position, age and source.", 0, 28, 11,
+      p.Text(online_.enabled && online_.feed.health.last_position == vessel::Time{}
+                 ? "No online position reports received yet."
+                 : "Select a vessel for its position, age and source.", 0, 28, 11,
              p.c.secondary, false, width);
+      p.Text(wxString::Format("Online radius: %d nm around chart center",online_.radius_nm),
+             0, 54, 11, p.c.secondary, false, width);
     });
     Button("Online AIS settings", [this] {
       view_ = View::Settings;
@@ -292,21 +414,26 @@ void XNavAisDrawer::Build() {
     });
     show_->SetRole(ButtonRole::Primary);
   } else {
-    AddText("Optional internet traffic for the current chart area. Onboard AIS "
+    AddText("Optional internet traffic around the chart center. Onboard AIS "
             "remains the navigation source.");
-    AddVisual(62, [this](XNavPainter &p, int width) {
+    AddVisual(88, [this](XNavPainter &p, int width) {
       p.Text("Online AIS", 0, 0, 13, p.c.secondary);
       p.Text(Connection(online_.feed.health.connection), width - 120, 0, 13,
              p.c.primary, false, 120);
       p.Text("AISStream key", 0, 30, 12, p.c.secondary);
       p.Text(online_.credential_present ? "Stored securely" : "Not configured",
              width - 120, 30, 11, p.c.primary, false, 120);
+      p.Text(online_.feed.health.last_position == vessel::Time{}
+                 ? "No online position reports received yet."
+                 : wxString::Format("%zu online targets inside this radius",
+                                     online_.feed.targets.targets.size()),
+             0,58,11,p.c.secondary,false,width);
     });
     auto update = [this](application::CommandResult result) {
       message_ = W(result.message);
       if (actions_.read)
         online_ = actions_.read(now_);
-      Build();
+      Build(false);
     };
     auto *off = Button(
         "Off",
@@ -324,6 +451,30 @@ void XNavAisDrawer::Build() {
         },
         bool(actions_.enable));
     on->SetSelected(online_.enabled);
+    AddVisual(52, [this](XNavPainter &p, int width) {
+      p.Text("ONLINE AIS RADIUS",0,0,11,p.c.secondary);
+      p.Text(wxString::Format("%d nm",radius_ ? radius_->GetValue() : online_.radius_nm),
+             0,25,17,p.c.primary,true,width);
+    }, 0);
+    radius_ = new XNavRange(body_, "Online AIS radius", ais::MinimumRadiusNm,
+                            ais::MaximumRadiusNm, 1, online_.radius_nm);
+    radius_->SetLight(light_);
+    radius_->Enable(bool(actions_.set_radius_nm));
+    content_->Add(radius_,0,wxEXPAND);
+    AddVisual(28, [](XNavPainter &p, int width) {
+      p.Text("1 nm",0,0,11,p.c.secondary);
+      p.Text("200 nm",width-70,0,11,p.c.secondary,false,70);
+    },8);
+    apply_radius_ = Button("Apply radius",[this,update] {
+      if (radius_ && actions_.set_radius_nm)
+        update(actions_.set_radius_nm(radius_->GetValue()));
+    },false);
+    radius_->on_change = [this](int value) {
+      if (apply_radius_) apply_radius_->Enable(bool(actions_.set_radius_nm) && value != online_.radius_nm);
+      for (auto *panel : visuals_) panel->Refresh(false);
+    };
+    AddText("Radius is measured from the chart center, not your vessel. "
+            "Apply to save. Subscription updates are limited to once every five seconds.",11);
     if (online_.credential_writable) {
       Button(
           "Set AISStream key", [this] { StoreKey(); },
@@ -347,6 +498,7 @@ void XNavAisDrawer::Build() {
   RefreshValues();
   body_->FitInside();
   body_->Layout();
+  body_->Scroll(0, previous_scroll);
 }
 void XNavAisDrawer::RefreshValues() {
   if (view_ == View::List) {
@@ -498,6 +650,6 @@ void XNavAisDrawer::StoreKey() {
   entry->ChangeValue("");
   if (actions_.read)
     online_ = actions_.read(now_);
-  Build();
+  Build(false);
 }
 } // namespace opennav::ui

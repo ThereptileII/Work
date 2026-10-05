@@ -1,0 +1,4 @@
+/home/standard/Projects/X-nav-worktrees/scrum253-night-canvas/docs/evidence/skager-product-fidelity-f0976cc-linux/verify-evidence.py:49: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  px=list(im.crop((80,68,1094,634)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum253-night-canvas/docs/evidence/skager-product-fidelity-f0976cc-linux/verify-evidence.py:49: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  px=list(im.crop((80,68,1094,634)).getdata())

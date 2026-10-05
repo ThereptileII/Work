@@ -1,0 +1,17 @@
+/tmp/skager-capture-m8gv7mrz/s64-light-fog-SKAGER
+/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/scrum268-metric-326/capture-s64.py:170: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/scrum268-metric-326/capture-s64.py:170: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/scrum268-metric-326/capture-s64.py:170: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/scrum268-metric-326/capture-s64.py:170: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels=collections.Counter(image.crop((x,y,x+w,y+h)).getdata())
+Evidence-only HEAD: 7fd0752a1ca355b6f6d62b988fdc7028c19cb903
+Verified private clean application 326daf73cdbeb0e7219ccb47b88967bc6a67ceaf and exact upstream result of nine patches
+Traceback (most recent call last):
+  File "/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/scrum268-metric-326/capture-s64.py", line 180, in <module>
+    i.require(ImageChops.difference(day_chart,image.crop(chart_bounds)).getbbox() is None,'Whole chart Day-return differs')
+  File "/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/evidence/local/scrum268-metric-326/cache-inputs-readonly.py", line 21, in require
+    raise RuntimeError(message)
+RuntimeError: Whole chart Day-return differs

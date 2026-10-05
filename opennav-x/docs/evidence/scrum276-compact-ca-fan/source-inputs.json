@@ -1,0 +1,26 @@
+{
+  "base": "e6ef3843dc604368d32bc823c770bec76d890b69",
+  "files": {
+    "src/integration/ChartCaFan.h": "18f57fd41fa2503412ac96f0571793e8de38d6b7f7a7b5547d219fe7113b7dc8",
+    "tests/chart_ca_fan_test.cpp": "2c354c65bfdc3ec33f590ecd18b6b61eeb0d48f96a44777d304e25f152869daa",
+    "tests/chart_ca_fan_state.inc": "5eb961c4c55375e02521c38f310f41ab17fcf4cf42a0e560f745d85f1e832056",
+    "tools/test-ca-fan.py": "da7cd3f459eb727387a1bace5c3d8d4e1846b2cb2ce7ddb2d52d46adb239603d",
+    "tools/prepare-ocharts-adapter.py": "64c6545bad387a5ceb24e71c86253d32566622bbb9df89c5d3af1fc7ba6fb05d",
+    "patches/opencpn-5.12.4-chart-presentation.patch": "487d6c34ceb1dee498f4da0ad5986d211e7935e9f21a7968511c198e60fcf1f3",
+    "patches/ocharts-skager-presentation.patch": "1f0865912b45fe24b01641cb0887fdccfcdc86577aad795fb986d06fc8608d9f",
+    "docs/design/prototype/src/light-sectors.js": "c74bd994ef4726b69cc6118c7a4058588fe273a59b5cfc87283e090d47a7ce7b",
+    "docs/design/prototype/src/chart-symbols.css": "ca7ec18b38bf682600b6c3c39c5798c94b00bbaddd5589119d5fcb77ad599cb3",
+    "docs/design/prototype/src/style.css": "f943f5c91e2b260067e97a80d47fc923b64c3bb715c73a58ce1d4a6bf7a1bb46"
+  },
+  "exercisedConditionalSources": {
+    "core": {
+      "path": "/home/standard/Projects/X-nav-worktrees/scrum276-ca-fan/.local/core/libs/s52plib/src/s52cnsy.cpp",
+      "sha256": "b27ece30ace23032d0b916c392230d1523e734cbf51a47338085a04a80fc2a7e"
+    },
+    "private": {
+      "path": "/home/standard/Projects/X-nav-worktrees/scrum276-ca-fan/.local/private/libs/s52plib/src/s52cnsy.cpp",
+      "sha256": "9a6194f9eb488ac5f25b67ef8e96b97d27acfc5b5748bb0e18e60adb998c9e50"
+    }
+  },
+  "compiledHeaderSha256": "18f57fd41fa2503412ac96f0571793e8de38d6b7f7a7b5547d219fe7113b7dc8"
+}
