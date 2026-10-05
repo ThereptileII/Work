@@ -17,8 +17,10 @@ filtering without exposing the credential or vessel position.
 
 The focused shared suite passes 11/11 components plus the added actual-source
 anchor-renderer test. These receipts identify a dirty development worktree, not
-a release. The next gate is one coordinated integrated Linux/native Windows
-Staging build with authenticated SDK reuse. The boat remains on the previously
+a release. The initial native preflight found and corrected an obsolete build-test
+parameter-order assertion before full Windows compilation. The corrected
+helper passes native run 37267103145. Integrated Linux/native Windows Staging
+qualification with authenticated SDK reuse remains pending. The boat remains on the previously
 installed candidate until a qualified replacement is available. No Production
 promotion or broad design/endurance campaign is requested. See the
 [batch evidence](evidence/2026-10-05-boat-feedback/README.md).

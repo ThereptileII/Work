@@ -134,6 +134,39 @@ remote Beta 2 validation. No propulsion, switching or radar-transmit command is
 part of this checklist. Physical command tests require separate explicit approval.
 SmartNav advice must never execute a steering command.
 
+## October boat-feedback checks
+
+Use existing chart information and read-only data first. For saving/editing
+objects or trying navigation/anchor transitions, use deliberately created test
+objects in an appropriate supervised session. Do not issue equipment commands.
+
+1. Open AIS. Scroll the list with a wheel and, when physically aboard, touch.
+   Select a target without accidentally selecting one after a drag.
+2. Set Online AIS radius and Apply. It is measured around the **chart center**,
+   so panning changes the search area. Allow the subscription update to finish.
+   Check the selected radius survives a normal restart. For a missing-traffic
+   report, include the diagnostic counts and whether targets were expected in
+   that same area; do not send the API key or private coordinates.
+3. Select an existing route on the chart. Check its summary opens and closes
+   predictably. Inspect chart objects and expand their details; missing source
+   information must remain explicitly unavailable.
+4. In a supervised object-editing session, create a test waypoint or route,
+   enter a name, save it and reopen it. Try Cancel/Escape while editing a second
+   draft and confirm the saved name is unchanged.
+5. With valid navigation input and an active test route, check remaining
+   distance and cross-track error. With input unavailable, confirm they do not
+   appear fresh or become an invented zero.
+6. For an existing anchor watch, check its distance and ring. In a supervised
+   transition test, starting a route must ask before stopping anchor watch;
+   cancelling must preserve the watch and saved anchor marks must remain.
+7. With a supported pilot status source, check mode/heading become available
+   through the existing connection and visibly age on source loss. Leave
+   physical command output disabled.
+8. Check the reported chart details at the boat's current display settings:
+   ownship, route colors, scale legend, light sectors/towers and anchor mark.
+   Custom icons and Standard presentation should retain their normal behavior.
+   Record only relevant mismatches; a broad design review is not required.
+
 ## Maintenance checks
 
 In a disposable Windows environment, exercise update, repair, rollback,

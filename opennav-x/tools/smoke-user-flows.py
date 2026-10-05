@@ -184,8 +184,10 @@ def control(label, enabled=True, accessible_name=None):
                        and (accessible_name is None or row.get('accessible_name')==accessible_name)]
         # The owned modal is traversed after its underlying page. A confirmed
         # action can intentionally share its caption with that page action.
+        # Inline name-editor Cancel remains visible even with no modal open;
+        # only the sheet's exact accessible name establishes this exception.
         return len(selected) == 1 or (len(selected) > 1 and any(
-            row['label'] == 'Cancel' and row['visible']
+            row['label'] == 'Cancel' and row.get('accessible_name') == 'Cancel' and row['visible']
             for row in record['runtime']['display']['interaction_controls']))
     data(ready)
     rectangle = selected[-1]
@@ -246,7 +248,8 @@ def no_context(record):
 
 def type_name(title, value):
     if windows:
-        ui.set_dialog_fields(app.pid, title, [value, ''] if title == 'Save route' else [value])
+        # Both creation paths now use the shared Name + Description sheet.
+        ui.set_dialog_fields(app.pid, title, [value, ''])
     else:
         # Focusing the top-level X11 window can move keyboard focus away from
         # GTK's edit widget. Use its actual native field rectangle instead.

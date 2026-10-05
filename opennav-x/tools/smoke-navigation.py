@@ -531,9 +531,10 @@ try:
                 if predicate(latest):return latest
                 time.sleep(.15)
             raise AssertionError((description,latest))
-        def context_controls(sample,label):
+        def context_controls(sample,label,accessible_name=None):
             return [c for c in sample['runtime']['display'].get('interaction_controls',[])
-                    if c['label']==label and c['visible']]
+                    if c['label']==label and c['visible'] and
+                    (accessible_name is None or c.get('accessible_name')==accessible_name)]
         def focus_context():
             if windows:return
             # Bare Xvfb has no window manager to enforce transient-owner
@@ -541,7 +542,7 @@ try:
             # desktop ownership explicitly; mouse down/up still hit the real
             # card controls. Native Windows receives no focus workaround.
             found=subprocess.run(['xdotool','search','--all','--onlyvisible','--pid',str(app.pid),
-                                  '--name','^SKAGER ((AIS|waypoint) context|vessel traffic)$'],env=env,
+                                  '--name','^SKAGER ((AIS|waypoint|route) context|vessel traffic)$'],env=env,
                                  capture_output=True,text=True)
             cards=found.stdout.splitlines()
             assert len(cards)<=1,('Multiple compact contexts',cards)
@@ -575,10 +576,10 @@ try:
                     ctypes.byref(wx),ctypes.byref(wy),ctypes.byref(mask)),'Pointer left the test display'
                 return {'window':child.value,'x':rx.value,'y':ry.value,'buttons':mask.value}
             finally:x11.XCloseDisplay(display)
-        def click_object(label):
-            latest=wait_object(lambda s:any(c['enabled'] for c in context_controls(s,label)),
+        def click_object(label,accessible_name=None):
+            latest=wait_object(lambda s:any(c['enabled'] for c in context_controls(s,label,accessible_name)),
                                'Visible enabled action '+label)
-            choices=context_controls(latest,label)
+            choices=context_controls(latest,label,accessible_name)
             unique={(c['x'],c['y'],c['width'],c['height']):c for c in choices if c['enabled']}
             assert len(unique)==1,('Ambiguous context action',label,choices)
             choice=next(iter(unique.values()))
@@ -737,7 +738,7 @@ try:
                     rgb = capture(current)
                     if current=='route-detail-renamed':
                         click_object('Activate route')
-                        wait_object(lambda s:context_controls(s,'Cancel') and context_controls(s,'Activate'),
+                        wait_object(lambda s:context_controls(s,'Cancel','Cancel') and context_controls(s,'Activate','Activate'),
                                     'Actual activation confirmation is open')
                         (profile/'route-modal-opened').write_text('Owned activation confirmation visible.\n')
                         modal_deadline=time.monotonic()+8
@@ -750,11 +751,13 @@ try:
                         # Two refresh intervals while the dialog is alive: an
                         # Update-driven DestroyChildren would invalidate it.
                         time.sleep(2.2)
-                        wait_object(lambda s:context_controls(s,'Cancel') and context_controls(s,'Activate'),
+                        wait_object(lambda s:context_controls(s,'Cancel','Cancel') and context_controls(s,'Activate','Activate'),
                                     'Route change must not rebuild a live modal sheet')
                         capture('route-detail-stale-confirmation')
-                        click_object('Activate')
-                        wait_object(lambda s:not context_controls(s,'Cancel'),
+                        click_object('Activate',accessible_name='Activate')
+                        # Inline name-editor Cancel stays visible on the detail
+                        # page; only the owned confirmation must disappear.
+                        wait_object(lambda s:not context_controls(s,'Cancel','Cancel'),
                                     'Stale confirmation closes normally')
                         (profile/'route-modal-confirmed').write_text('Confirmed original activation intent after external edit.\n')
                     if current in route_phases:
@@ -834,14 +837,14 @@ try:
             ui.click_text(app.pid,'Settings');ui.click_text(app.pid,'Navigation');ui.click_text(app.pid,'Waypoints')
             ui.click_text(app.pid,'ALPHA TEST edited / mark');ui.click_text(app.pid,'Edit waypoint')
             ui.set_text_in_dialog(app.pid,'Edit waypoint','ALPHA TEST edited','ALPHA TEST UI edited')
-            ui.click_text(app.pid,'Save');time.sleep(.6)
+            click_object('Save',accessible_name='Save');time.sleep(.6)
             assert any(c=='ALPHA TEST UI edited' for _,c in ui.children(handle))
             capture('waypoint-edit-sheet-result')
-            ui.click_text(app.pid,'Delete waypoint');ui.click_text(app.pid,'Cancel')
+            ui.click_text(app.pid,'Delete waypoint');click_object('Cancel',accessible_name='Cancel')
             assert any(c=='ALPHA TEST UI edited' for _,c in ui.children(handle)), 'Cancel changed the mark'
             ui.click_text(app.pid,'Edit waypoint')
             ui.set_text_in_dialog(app.pid,'Edit waypoint','ALPHA TEST UI edited','ALPHA TEST edited')
-            ui.click_text(app.pid,'Save')
+            click_object('Save',accessible_name='Save')
             report['native_edit_confirmation']='Themed property sheet saves and refreshes; delete cancellation preserves mark'
     elif boat:
         def snapshot(name):

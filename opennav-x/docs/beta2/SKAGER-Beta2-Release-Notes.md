@@ -12,6 +12,34 @@ GitHub Release, kept in draft while access is closed. Development defaults to
 STAGING; Production promotion requires explicit user instruction and preserves
 the selected package bytes and embedded version.
 
+## October boat-feedback staging increment
+
+This increment carries the reported boat fixes and requested small workflow
+upgrades. Its exact commit and qualification status accompany the release.
+
+- AIS lists support wheel and touch scrolling. Online AIS adds a saved **1–200
+  nm radius around the chart center** with an explicit Apply action. Source
+  diagnostics now distinguish incoming messages, subscription progress, cached
+  traffic and traffic inside that radius. A connected service can legitimately
+  have no traffic in an area; the reported missing-target case still requires
+  same-area application confirmation.
+- Routes and waypoints use focused inline name editing, and new marks can suggest
+  a nearby charted name when unambiguous. Existing names are preserved. Route
+  selection opens a compact context card; chart information retains the complete
+  underlying object details in an expandable SKAGER view.
+- Active-route cross-track error comes from OpenCPN's normal navigation update.
+  Anchor distance follows the current valid position. Switching between route
+  navigation and anchor watch is explicit and preserves saved marks.
+- Supported autopilot status can be discovered passively through existing
+  OpenCPN connections without configuring a second connection. This does not
+  enable equipment control or turn transmitted commands into confirmed state.
+- Reported scale-legend, inactive-route, dimension-scaled ownship, light-sector,
+  classified lighthouse-tower and anchor-watch presentation gaps are addressed.
+  Navigational geometry, alarm meaning and custom symbols are preserved.
+
+Follow the short boat-feedback section in the test guide. Physical touch and
+actual chart/data results must be recorded separately from automated tests.
+
 ## Changes in this candidate
 
 - A chart workspace with route/passage, traffic, instruments, alerts and source

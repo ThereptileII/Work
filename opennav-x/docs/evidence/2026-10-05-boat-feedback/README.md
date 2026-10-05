@@ -67,3 +67,20 @@ No API key, private chart data or vessel coordinates are included.
 
 No physical autopilot, propulsion or radar command, remote-access change,
 endurance run or Production publication is part of this batch.
+
+## First native preflight correction
+
+[Staging run 37266663445](https://github.com/ThereptileII/Work/actions/runs/37266663445)
+failed before full Windows compilation on an obsolete helper assertion which
+required PrivateOCharts to be the last build-script parameter. The approved
+delivery/dependency options made that assumption invalid. The production
+opt-in, maintained-dependency validation and installed TLS-before-deferral
+checks were still present.
+
+The corrected AST/order test passes in the focused native
+[run 37267103145](https://github.com/ThereptileII/Work/actions/runs/37267103145).
+Its downloaded artifact matches the authenticated GitHub digest; see the
+[receipt](loader-helper-native.json). Existing rejection cases and eight
+installed-TLS/delivery contexts pass. No SDK producer input changed and no full
+Windows application was built for this helper repair. Packaged release notes
+and the short feedback test guide accompany the next Staging candidate.
