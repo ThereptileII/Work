@@ -36,8 +36,8 @@ function Convert-WindowReviewAis($Data,[string]$Commit,[datetime]$Written,[datet
      $Data.ui_page -cne $Page -or $Data.runtime.display.route_creation_active -isnot [bool] -or
      $Data.runtime.display.route_creation_active -ne $false){throw 'Fresh exact installed AIS page observation required.'}
   $tick=[string]$Data.runtime.ui_update.ticks
-  [ulong]$parsedTick=0
-  if($tick -cnotmatch '^[0-9]{1,20}$' -or -not [ulong]::TryParse($tick,[ref]$parsedTick)){throw 'Exact AIS observation tick required.'}
+  [UInt64]$parsedTick=0
+  if($tick -cnotmatch '^[0-9]{1,20}$' -or -not [UInt64]::TryParse($tick,[ref]$parsedTick)){throw 'Exact AIS observation tick required.'}
   $mmsi=$Data.runtime.ais_selected_mmsi
   if(($mmsi -isnot [int] -and $mmsi -isnot [long]) -or
      ($Page -ceq 'AIS targets' -and $mmsi -ne 0) -or
