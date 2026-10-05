@@ -133,3 +133,33 @@ The first route point has no incoming planned leg. Its OpenCPN route-properties
 course is not initialized by the route constructor, so the bridge never reads
 that field for the first point, including when constructing a revision identity.
 Subsequent leg courses are the stored values set by normal upstream route logic.
+
+## Names (SCRUM-298)
+
+Saved route and waypoint pages expose a themed inline name field with Save and
+Cancel. Context editing uses the same themed sheet and validation. Typing and
+Cancel do not write storage; failed saves retain the draft. Background object
+refresh preserves dirty text, and a save still submits the exact originally
+rendered identity/revision to the existing OpenCPN update/rollback boundary.
+Protected or active objects remain read-only; Demo and Replay disable saves.
+
+Only creation sheets request a name suggestion. The bridge examines already
+loaded native S57 charts in the current canvas or composed quilt, using the
+pinned point-object query and explicit OBJNAM/NOBJNM attributes. It never opens
+another chart, queries a plugin/network source, or turns chart filenames,
+soundings, area labels or hazards into names. Relevant named harbour facilities,
+berths, landmarks, lights, buoys and beacons within 0.5 NM are candidates. The
+closest distinct name must be more than 0.025 NM ahead of the next name; ties,
+missing coverage, unsupported/raster charts, excessive query results and polar
+positions use a deterministic coordinate name. Overlapping chart copies of the
+same name are deduplicated. A new route uses its destination point and a “To”
+prefix. Users may override any suggestion. Existing names are never changed by
+lookup, and a named route draft retains its user's name.
+
+The portable naming fixture covers deterministic selection, ambiguity, missing
+candidates, bounds, Unicode, user overrides, cancel and failed saves. The isolated
+native field fixture covers actual text/button events, theme refresh, replay,
+Escape, read-only state and draft retention. The native object scenario also
+checks that lookup cannot rename existing objects and invalid names cannot alter
+their revisions. These focused checks do not replace Windows UI/DPI, real chart
+coverage or restart/persisted-database qualification.

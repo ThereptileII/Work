@@ -164,6 +164,8 @@ function(opennav_attach_route_tests)
     add_executable(ais_drawer_test "${OPENNAV_ROOT}/tests/ais_drawer_test.cpp")
     target_link_libraries(ais_drawer_test PRIVATE opennav_ui)
     target_compile_features(ais_drawer_test PRIVATE cxx_std_17)
+    include("${OPENNAV_ROOT}/cmake/BoatFeedbackTests.cmake")
+    opennav_attach_boat_feedback_tests()
     if(LINUX)
       find_package(PkgConfig REQUIRED)
       pkg_check_modules(OPENNAV_UI_TEST_GTK REQUIRED IMPORTED_TARGET gtk+-3.0)
@@ -273,6 +275,9 @@ set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
   "${OPENNAV_ROOT}/tools/chart_cable_paint.py"
   "${OPENNAV_ROOT}/tools/chart_structure_paint.py"
   "${OPENNAV_ROOT}/tools/chart_building_point.py"
+  "${OPENNAV_ROOT}/tools/chart_light_tower.py"
+  "${OPENNAV_ROOT}/tools/derive-light-tower.py"
+  "${OPENNAV_ROOT}/resources/chart-style/v1/light-tower/recipe.json"
   "${OPENNAV_ROOT}/resources/chart-style/v1/building-point/recipe.json"
   "${OPENNAV_ROOT}/tools/chart_construction_hatch.py"
   "${OPENNAV_ROOT}/tools/chart_service_art.py"
@@ -436,6 +441,7 @@ target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/ChartPre
   "${OPENNAV_ROOT}/src/integration/OChartsPresentation.cpp"
   "${OPENNAV_ROOT}/src/integration/OChartsModuleLoader.cpp"
   "${OPENNAV_ROOT}/src/integration/ChartRouteWaypoint.cpp"
+  "${OPENNAV_ROOT}/src/integration/ChartAnchorWatch.cpp"
   "${OPENNAV_ROOT}/src/integration/ChartRouteLabel.cpp"
   "${OPENNAV_ROOT}/src/integration/ChartRouteUnderlay.cpp"
   "${OPENNAV_ROOT}/src/integration/ChartRouteUnderlayGeometry.cpp")

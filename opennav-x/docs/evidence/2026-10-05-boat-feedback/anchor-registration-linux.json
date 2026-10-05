@@ -1,0 +1,7 @@
+{
+  "target": "chart_anchor_watch_renderer_test",
+  "passed": true,
+  "exit_code": 0,
+  "binary_sha256": "b4147f745baf7b17e99e98cdc401fd2ac6e922c2c048d158904955983a90907f",
+  "scope": "Only new twelfth offline renderer target; existing eleven not rerun"
+}

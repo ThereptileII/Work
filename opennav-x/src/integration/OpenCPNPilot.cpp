@@ -49,14 +49,14 @@ OpenCPNPilot::OpenCPNPilot(std::function<bool()> allowed)
                 [this](ObservedEvt &) {
                   if (registry_generation_ < UINT32_MAX)
                     ++registry_generation_;
-                  pilot_.Poll(vessel::Clock::now());
+                  Poll(vessel::Clock::now());
                 });
   listeners_.push_back(std::move(changes));
   for (const auto pgn : {60928u, 65379u, 65360u, 127250u}) {
     auto listener = std::make_unique<ObsListener>();
     listener->Init(Nmea2000Msg(pgn), [this, pgn](ObservedEvt &event) {
       const auto m = UnpackEvtPointer<Nmea2000Msg>(event);
-      if (!m || !m->source || m->source->iface != binding_.interface_id ||
+      if (!m || !m->source ||
           m->payload.size() != 22 || m->payload[0] != 0x93 ||
           m->payload[12] != 8 || m->payload[7] >= 254)
         return;
@@ -73,14 +73,15 @@ OpenCPNPilot::OpenCPNPilot(std::function<bool()> allowed)
       const auto at =
           now - std::chrono::duration_cast<vessel::Clock::duration>(age);
       if (const auto *network =
-              dynamic_cast<CommDriverN2KNet *>(Driver(binding_.interface_id)))
+              dynamic_cast<CommDriverN2KNet *>(Driver(m->source->iface)))
         if (at < network->GetConnectionChangedAt())
           return;
-      pilot_.Observe({m->source->iface, pgn, m->payload[7],
+      const adapters::PilotN2kFrame frame{m->source->iface, pgn, m->payload[7],
                       std::vector<std::uint8_t>(m->payload.begin() + 13,
                                                 m->payload.begin() + 21),
-                      at},
-                     now);
+                      at};
+      status_.Observe(frame, now);
+      pilot_.Observe(frame, now);
     });
     listeners_.push_back(std::move(listener));
   }
@@ -92,11 +93,18 @@ void OpenCPNPilot::Configure(const adapters::St4000Binding &binding) {
 }
 adapters::PilotFeedback OpenCPNPilot::GetState() const {
   MainThread();
-  return pilot_.GetState();
+  return PilotLoopbackTestsEnabled() ? pilot_.GetState()
+                                   : status_.GetState(vessel::Clock::now());
+}
+std::string OpenCPNPilot::Description() const {
+  MainThread();
+  return PilotLoopbackTestsEnabled() ? pilot_.Status()
+                                   : status_.Description(vessel::Clock::now());
 }
 void OpenCPNPilot::Poll(vessel::Time now) {
   MainThread();
   pilot_.Poll(now);
+  status_.Poll(now);
 }
 adapters::PilotTransportStatus
 OpenCPNPilot::Status(const std::string &iface) const {
@@ -135,8 +143,8 @@ OpenCPNPilot::Status(const std::string &iface) const {
                     output_allowed_ && output_allowed_() &&
                     PilotOutputPermitted(Endpoint(driver));
   status.detail =
-      !PilotLoopbackTestsEnabled() ? "Status only; SKAGER equipment output unavailable in this product"
-      : !status.connected         ? "OpenCPN network disconnected"
+      !status.connected ? "OpenCPN network disconnected"
+      : !PilotLoopbackTestsEnabled() ? "Status only; SKAGER equipment output unavailable in this product"
       : params.NetProtocol != TCP ? "Status only; N2K UDP output is unsupported"
       : params.IOSelect != DS_TYPE_INPUT_OUTPUT
           ? "Status only; bidirectional OpenCPN connection required"

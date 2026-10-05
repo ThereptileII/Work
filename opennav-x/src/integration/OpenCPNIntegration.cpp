@@ -430,6 +430,7 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
     application::OnlineAisState value;
     if (!online_ais) return value;
     value.enabled = online_ais->Enabled();
+    value.radius_nm = online_ais->RadiusNm();
     value.credential_present = online_ais->CredentialPresent();
 #ifdef __WXMSW__
     value.credential_writable = true;
@@ -439,6 +440,10 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
   };
   actions.online_ais.enable = [](bool enabled) {
     return online_ais ? online_ais->Enable(enabled)
+        : application::CommandResult{false, "Online AIS unavailable during shutdown"};
+  };
+  actions.online_ais.set_radius_nm = [](int radius) {
+    return online_ais ? online_ais->SetRadiusNm(radius)
         : application::CommandResult{false, "Online AIS unavailable during shutdown"};
   };
   actions.online_ais.store_key = [](const ais::Secret &key) {
@@ -459,7 +464,8 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
       auto &vp = canvas->GetVP();
       const auto &box = vp.GetBBox();
       copied = integration::AisViewport(vp.IsValid() && box.GetValid(),
-          box.GetMinLat(), box.GetMaxLat(), box.GetMinLon(), box.GetMaxLon());
+          box.GetMinLat(), box.GetMaxLat(), box.GetMinLon(), box.GetMaxLon(),
+          ais::AreaCenter{vp.clat, vp.clon});
     }
     online_ais->ObserveViewport(copied, live_allowed && !restart &&
         (!commissioning || !commissioning->Replaying()));
@@ -568,10 +574,11 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
   for (auto *window : frame.GetChildren())
     if (auto *canvas = dynamic_cast<ChartCanvas *>(window))
       canvas->SetShowGPSCompassWindow(false);
-  actions.navigation=integration::MakeNavigationActions(frame,[]{return selected_navigation.navigation;},[]{
-    auto copy=anchor_state;
-    if(!copy.waypoint_id.empty() && copy.waypoint_id!=g_AW1GUID.ToStdString(wxConvUTF8) && copy.waypoint_id!=g_AW2GUID.ToStdString(wxConvUTF8)){copy={};copy.state="Anchor watch changed; waiting for normal observation";}
-    return copy;
+  actions.navigation=integration::MakeNavigationActions(frame,[]{return selected_navigation.navigation;},[](vessel::Time now){
+    auto current=integration::ObserveAnchor(selected_navigation.navigation,now);
+    application::RetainAnchorHistory(current,anchor_state);
+    anchor_state=std::move(current);
+    return anchor_state;
   });
   actions.navigation =
       application::GuardNavigationChanges(std::move(actions.navigation), [] {
@@ -720,6 +727,13 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
       health["credential_present"] = online_ais->CredentialPresent();
       health["connection_state"] = static_cast<int>(copy.health.connection);
       health["subscription_confirmed"] = copy.health.subscription_confirmed;
+      health["subscription_pending"] = copy.health.subscription_pending;
+      health["subscription_awaiting_confirmation"] = copy.health.subscription_awaiting_confirmation;
+      health["radius_nm"] = online_ais->RadiusNm();
+      health["cached_positions"] = static_cast<int>(copy.cached_position_count);
+      health["in_radius_positions"] = static_cast<int>(copy.targets.targets.size());
+      health["received_messages"] = wxString::Format("%llu", static_cast<unsigned long long>(copy.health.received_messages));
+      health["ignored_messages"] = wxString::Format("%llu", static_cast<unsigned long long>(copy.health.ignored_messages));
       health["targets"] = static_cast<int>(copy.targets.targets.size());
       health["accepted"] = wxString::Format("%llu", static_cast<unsigned long long>(copy.health.accepted));
       health["rejected"] = wxString::Format("%llu", static_cast<unsigned long long>(copy.health.rejected));
@@ -985,6 +999,30 @@ bool ShowChartContext(double latitude, double longitude) {
   longitude = std::remainder(longitude, 360.0);
   host->CallAfter([latitude, longitude] {
     if (shell) shell->ShowChartContext({latitude, longitude});
+  });
+  return true;
+}
+bool ShowChartInformation(const wxString &html, double latitude, double longitude) {
+  if (!IsXNav() || !shell || !host || restart) return false;
+  if (std::isfinite(longitude)) longitude = std::remainder(longitude, 360.0);
+  auto info = application::ParseChartInfo(html.ToStdString(wxConvUTF8), latitude, longitude);
+  const wxWeakRef<ui::Shell> target(shell.get());
+  const wxWeakRef<wxWindow> owner(host);
+  host->CallAfter([info = std::move(info), target, owner]() mutable {
+    if (!owner || !host || owner.get() != host || !target || shell.get() != target.get() ||
+        !IsXNav() || restart) return;
+    shell->ShowChartInformation(std::move(info));
+  });
+  return true;
+}
+bool ShowRouteContext(const std::string &id, bool hover) {
+  if (!IsXNav() || !shell || !host || restart || id.empty()) return false;
+  const wxWeakRef<ui::Shell> target(shell.get());
+  const wxWeakRef<wxWindow> owner(host);
+  host->CallAfter([id, hover, target, owner] {
+    if (!owner || !host || owner.get() != host || !target || shell.get() != target.get() ||
+        !IsXNav() || restart) return;
+    shell->ShowRouteContext(id, hover);
   });
   return true;
 }

@@ -18,6 +18,8 @@ public:
   ais::ProviderSnapshot Read(vessel::Time now) const;
   bool Enabled() const { return enabled_; }
   bool CredentialPresent() const { return credential_present_; }
+  int RadiusNm() const { return radius_nm_; }
+  application::CommandResult SetRadiusNm(int radius_nm);
   application::CommandResult Enable(bool enabled);
   application::CommandResult StoreKey(const ais::Secret &key);
   application::CommandResult RemoveKey();
@@ -27,5 +29,8 @@ private:
   std::unique_ptr<ais::IAisCredentials> credentials_;
   std::unique_ptr<ais::IOnlineAisProvider> provider_;
   bool enabled_ = false, credential_present_ = false;
+  int radius_nm_ = ais::DefaultRadiusNm;
+  bool live_allowed_ = false;
+  std::optional<ais::Viewport> viewport_, radius_area_;
 };
 } // namespace opennav::integration

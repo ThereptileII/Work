@@ -16,9 +16,12 @@ class App : public wxApp { public: bool OnInit() override { return true; } };
 wxIMPLEMENT_APP_NO_MAIN(App);
 constexpr int GLOBAL_COLOR_SCHEME_DAY = 0, GLOBAL_COLOR_SCHEME_DUSK = 1,
               GLOBAL_COLOR_SCHEME_NIGHT = 2;
+constexpr int SHIP_NORMAL = 0, SHIP_LOWACCURACY = 1, SHIP_INVALID = 2;
 class ChartCanvas {
  public:
   int scheme = 0, dpi_percent = 100;
+  int m_ownship_state = SHIP_NORMAL;
+  int GetOwnShipState() const { return m_ownship_state; }
   int GetColorScheme() const { return scheme; }
   int FromDIP(int value) const { return value * dpi_percent / 100; }
 };
@@ -30,11 +33,16 @@ class ocpnDC {
   wxBrush brush{*wxBLUE}, painted_brush;
   std::vector<wxPoint> points, bounds;
   int paints = 0;
+  int circles = 0;
   wxPen GetPen() const { return pen; }
   wxBrush GetBrush() const { return brush; }
   void SetPen(wxPen value) { pen = value; }
   void SetBrush(wxBrush value) { brush = value; }
   void CalcBoundingBox(int x, int y) { bounds.emplace_back(x, y); }
+  void StrokeCircle(double x, double y, double radius) {
+    ++paints; ++circles; points.clear(); painted_pen=pen; painted_brush=brush;
+    target.SetPen(pen); target.SetBrush(brush); target.DrawCircle(x,y,radius);
+  }
   void StrokePolygon(int count, wxPoint *value, int x, int y) {
     ++paints; points.assign(value, value + count);
     painted_pen = pen; painted_brush = brush; bounds.clear();
@@ -133,6 +141,29 @@ int main(int argc, char **argv) {
                                    || Triangle(dc.points[1],dc.points[3],dc.points[2],p); };
     Check(inside({100,100}), "GL strip misses body");
     Check(!inside({100,115}), "GL strip fills stern notch");
+    // The scaled bitmap setting on the boat carries independent physical
+    // length/beam. Preserve both dimensions rather than reverting to fixed art.
+    Check(DrawChartOwnship(dc,canvas,100,100,0,2,.5,true), "scaled vessel refused");
+    int minx=1000,maxx=-1000,miny=1000,maxy=-1000;
+    for(auto p:dc.points){minx=std::min(minx,p.x);maxx=std::max(maxx,p.x);
+      miny=std::min(miny,p.y);maxy=std::max(maxy,p.y);}
+    Check(maxx-minx==22 && maxy-miny==70,"scaled vessel lost beam or length");
+    for(double stretch:{0.,-1.,std::numeric_limits<double>::infinity(),std::numeric_limits<double>::quiet_NaN()})
+      Check(!DrawChartOwnship(dc,canvas,100,100,0,1,stretch),"invalid beam painted");
+    int circles=dc.circles;
+    Check(DrawChartOwnship(dc,canvas,100,100,0,1,1,false) && dc.circles==circles+1,
+          "missing heading/course must not invent a north-facing vessel");
+    for(auto state:{SHIP_LOWACCURACY,SHIP_INVALID}) {
+      canvas.m_ownship_state=state;
+      circles=dc.circles;
+      Check(draw() && dc.circles==circles+1,"unqualified position must not show healthy chevron");
+      Check(dc.painted_brush.GetColour()==Color(state==SHIP_LOWACCURACY
+                  ? opennav::ui::Theme(opennav::ui::LightMode::Day).attention
+                  : opennav::ui::FloatingTheme(opennav::ui::LightMode::Day).secondary),
+            "unqualified position lost quality palette");
+      Check(dc.GetPen()==original_pen && dc.GetBrush()==original_brush,"quality marker leaked DC state");
+    }
+    canvas.m_ownship_state=SHIP_NORMAL;
     target.SetBackground(wxBrush(wxColour(50,60,65))); target.Clear();
     const std::array<double,4> angles{0,41,90,180};
     for (int theme=0;theme<3;++theme) {

@@ -19,6 +19,7 @@
 #include "model/route_point.h"
 #include "model/config_vars.h"
 #include <wx/graphics.h>
+#include <wx/dcclient.h>
 #include <memory>
 #ifdef ocpnUSE_GL
 #include "shaders.h"
@@ -215,6 +216,7 @@ bool ChartBackground(ColorScheme scheme, wxColour &land, wxColour &water) {
   return true;
 }
 bool XNavChartRequested() { return requested; }
+bool XNavChartPresentationActive() { return wxIsMainThread() && xnav_mode && active; }
 bool ChartActiveRouteInk(ChartCanvas &canvas, wxColour &ink) {
   if (!wxIsMainThread() || !xnav_mode || !active) return false;
   const auto mode = canvas.GetColorScheme() == GLOBAL_COLOR_SCHEME_NIGHT
@@ -223,9 +225,19 @@ bool ChartActiveRouteInk(ChartCanvas &canvas, wxColour &ink) {
   ink = ui::Colour(ChartCanvasInk(mode, ui::ActiveRouteInk(mode)));
   return true;
 }
+bool ChartRouteInk(ChartCanvas &canvas, Route &route, wxColour &ink) {
+  if (!ChartActiveRouteInk(canvas, ink)) return false;
+  const auto mode = canvas.GetColorScheme() == GLOBAL_COLOR_SCHEME_NIGHT
+      ? ui::LightMode::Night : canvas.GetColorScheme() == GLOBAL_COLOR_SCHEME_DUSK
+      ? ui::LightMode::Dusk : ui::LightMode::Day;
+  if (route.m_bRtIsSelected)
+    ink = ui::Colour(ChartCanvasInk(mode, ui::Theme(mode).ais));
+  else if (!route.m_bRtIsActive)
+    ink = ui::Colour(ChartCanvasInk(mode, ui::FloatingTheme(mode).secondary));
+  return true;
+}
 bool DefaultChartRouteStyle(Route &route) {
-  if (!route.IsVisible() || !route.m_bRtIsActive || route.m_bRtIsSelected ||
-      route.m_bIsBeingEdited || route.m_hiliteWidth ||
+  if (!route.IsVisible() || route.m_bIsBeingEdited || route.m_hiliteWidth ||
       route.m_width != WIDTH_UNDEFINED || route.m_style != wxPENSTYLE_INVALID ||
       !route.m_Colour.empty() || g_route_line_width != 2)
     return false;
@@ -239,6 +251,9 @@ bool DrawChartRouteSegment(ocpnDC &dc, ChartCanvas &canvas, double ax, double ay
                             double bx, double by, bool join_start, bool join_end) {
   wxColour ink;
   if (!ChartActiveRouteInk(canvas, ink)) return false;
+  // RouteGui resolves active/inactive/selected ink immediately before painting
+  // each segment; waypoint painting may have changed the DC in the meantime.
+  if (dc.GetPen().IsOk()) ink = dc.GetPen().GetColour();
   int width = 0, height = 0; dc.GetSize(&width, &height);
   auto triangles = ChartRouteSegmentMesh(ax, ay, bx, by,
       canvas.FromDIP(100) / 100.0, width, height, join_start, join_end);
@@ -352,10 +367,12 @@ bool DrawChartCogPredictor(ocpnDC &dc, ChartCanvas &canvas,
   return true;
 }
 bool DrawChartOwnship(ocpnDC &dc, ChartCanvas &canvas, double x, double y,
-                      double angle, double scale) {
+                      double angle, double scale, double stretch_x,
+                      bool direction_available) {
   if (!wxIsMainThread() || !xnav_mode || !active ||
       !std::isfinite(x) || !std::isfinite(y) || !std::isfinite(angle) ||
-      !std::isfinite(scale) || scale <= 0)
+      !std::isfinite(scale) || scale <= 0 ||
+      !std::isfinite(stretch_x) || stretch_x <= 0 || stretch_x > 100)
     return false;
   // Immutable prototype index.html ownShipHeading: M0-19 11 16 0 10-11 16Z.
   // These are logical chart SVG pixels, not vessel dimensions or meters.
@@ -365,7 +382,7 @@ bool DrawChartOwnship(ocpnDC &dc, ChartCanvas &canvas, double x, double y,
   // wx integer coordinates. Refuse unusable geometry and let upstream draw.
   constexpr double safe_limit = (std::numeric_limits<int>::max)() / 2.0;
   if (!std::isfinite(scale) || scale <= 0 ||
-      (std::max)(std::abs(x), std::abs(y)) + 64 * scale > safe_limit)
+      (std::max)(std::abs(x), std::abs(y)) + 64 * scale * (std::max)(1., stretch_x) > safe_limit)
     return false;
   // Start at the right stern: ocpnDC's four-point GL strip then uses the
   // notch-to-bow diagonal, inside this concave polygon. Starting at the bow
@@ -375,7 +392,7 @@ bool DrawChartOwnship(ocpnDC &dc, ChartCanvas &canvas, double x, double y,
   const double c = std::cos(angle), s = std::sin(angle);
   int left = 0, right = 0, top = 0, bottom = 0;
   for (std::size_t i = 0; i < outline.size(); ++i) {
-    const double px = outline[i].x * scale, py = outline[i].y * scale;
+    const double px = outline[i].x * scale * stretch_x, py = outline[i].y * scale;
     points[i] = wxPoint(std::lround(x + px * c - py * s),
                         std::lround(y + px * s + py * c));
     if (!i) {
@@ -405,10 +422,21 @@ bool DrawChartOwnship(ocpnDC &dc, ChartCanvas &canvas, double x, double y,
   wxPen pen(ink(ui::FloatingTheme(mode).surface),
             (std::max)(1, static_cast<int>(std::lround(3 * scale))));
   pen.SetJoin(wxJOIN_MITER);
-  dc.SetPen(pen); dc.SetBrush(wxBrush(ink(ui::ActiveRouteInk(mode))));
+  const auto fill = canvas.GetOwnShipState() == SHIP_NORMAL ? ui::ActiveRouteInk(mode)
+      : canvas.GetOwnShipState() == SHIP_LOWACCURACY ? ui::Theme(mode).attention
+      : ui::FloatingTheme(mode).secondary;
+  dc.SetPen(pen); dc.SetBrush(wxBrush(ink(fill)));
   // The shared DC path is native in software and GL; no stock texture tint or
   // ownship texture cache can retain a previous light-mode color.
-  dc.StrokePolygon(points.size(), points.data(), 0, 0);
+  if (direction_available && canvas.GetOwnShipState() == SHIP_NORMAL)
+    dc.StrokePolygon(points.size(), points.data(), 0, 0);
+  else {
+    // Without current heading/course, a north-facing vessel would invent a
+    // direction. A themed position ring deliberately carries no orientation.
+    const int radius = (std::max)(5, static_cast<int>(std::lround(7 * (std::min)(scale, 3.))));
+    dc.StrokeCircle(x, y, radius);
+    left = x-radius; right = x+radius; top = y-radius; bottom = y+radius;
+  }
   const int margin = static_cast<int>(std::ceil(6 * scale)); // Miter + rounding.
   dc.CalcBoundingBox(left - margin, top - margin);
   dc.CalcBoundingBox(right + margin, bottom + margin);
@@ -508,7 +536,11 @@ bool ChartScaleGeometry(ChartCanvas &canvas, int &x, int &y,
       canvas.GetClientSize().x < canvas.FromDIP(480)) return false;
   // .map-bottom-left: 28px inset, native Follow boat width 142px, 25px gap.
   x = canvas.FromDIP(28 + 142 + 25);
-  y = canvas.GetClientSize().y - canvas.FromDIP(37);
+  // The prototype puts the bracket above its label, with a 5px gap. Project
+  // the real distance at the bracket's actual row, not at the label baseline.
+  wxClientDC metrics(&canvas);
+  metrics.SetFont(ui::UiFont(canvas, 8));
+  y = canvas.GetClientSize().y - canvas.FromDIP(37 + 5) - metrics.GetCharHeight();
   // Upstream halves this span, selects a nice distance in the user's units,
   // then projects that actual distance back to pixels. Never draw a fixed
   // 65px bar with an independently guessed distance label.
@@ -528,8 +560,8 @@ bool DrawChartScale(ocpnDC &dc, ChartCanvas &canvas, const wxString &label,
   dc.SetFont(ui::UiFont(canvas, 8)); dc.SetTextForeground(ink);
   int width = 0, height = 0; dc.GetTextExtent(label, &width, &height);
   const int arm = canvas.FromDIP(5), gap = canvas.FromDIP(5);
-  const int top = y - arm - gap - height;
-  if (top >= 0) {
+  const int top = y - arm, bottom = y + gap + height;
+  if (top >= 0 && bottom <= canvas.GetClientSize().y) {
     // A real ENC can have a sounding directly behind this legend. Give the
     // scale a small neutral backing so charted depth cannot read as scale text.
     // The illustrative HTML never exercises this overlap; distance is still
@@ -538,18 +570,18 @@ bool DrawChartScale(ocpnDC &dc, ChartCanvas &canvas, const wxString &label,
     dc.SetPen(*wxTRANSPARENT_PEN);
     dc.SetBrush(wxBrush(ui::Colour(ui::FloatingTheme(mode).surface)));
     dc.DrawRoundedRectangle(x - pad, top - pad,
-        (std::max)(length, width) + 2 * pad, y - top + 1 + 2 * pad,
+        (std::max)(length, width) + 2 * pad, bottom - top + 1 + 2 * pad,
         canvas.FromDIP(3));
     dc.SetPen(wxPen(ink, canvas.FromDIP(1)));
-    dc.DrawText(label, x, top);
+    dc.DrawText(label, x, y + gap);
     dc.DrawLine(x, y - arm, x, y);
     dc.DrawLine(x, y, x + length, y);
     dc.DrawLine(x + length, y, x + length, y - arm);
     bounds = wxRect(x - pad, top - pad, (std::max)(length, width) + 2 * pad,
-                    y - top + 1 + 2 * pad);
+                    bottom - top + 1 + 2 * pad);
   }
   dc.SetBrush(old_brush); dc.SetPen(old_pen); dc.SetFont(old_font); dc.SetTextForeground(old_ink);
-  return top >= 0;
+  return top >= 0 && bottom <= canvas.GetClientSize().y;
 }
 application::CommandResult SetXNavChartRequested(bool enabled) {
   if (!wxIsMainThread() || !preferences || !xnav_mode)

@@ -24,6 +24,14 @@ rays also present in `src/chart-marker-art.js`; the historical
 final function no longer supplies. This distinction does not authorize
 substituting a generic light glyph for an ENC object's physical tower type.
 
+SCRUM-308 adds a [classified light-support tower ink extension](reviews/scrum308-light-support-tower.md).
+Only exact Simplified LNDMRK CATLMK17/FUNCTN33 representations receive owned
+Day/Dusk/Night inks. The effective ordinary/conspicuous tower shapes, alpha,
+14×26 size and 6,22 geographic pivot remain unchanged; no generic LIGHTS glyph
+replaces a physical tower. Unknown/special/Paper/Standard cases remain stock.
+This closes a supported theme gap, not exact tower-artwork conformance or proof
+of the boat object's identity. Native/boat acceptance remains open.
+
 The integrated SCRUM-279–282 follow-on at `45d73e8` adds the supplied marina,
 UWTROC03/UWTROC04 rock and WRECKS05 wreck artwork, fishing-area motif and cable
 waveform. The [combined resource proof](../evidence/scrum279-283-combined/README.md)

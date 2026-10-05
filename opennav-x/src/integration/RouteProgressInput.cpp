@@ -81,7 +81,9 @@ RouteProgressSnapshot RouteProgressInput::Describe(const RouteRead& r, Time now)
   if (r.position.latitude_deg.value && r.position.longitude_deg.value)
     s.position_observed_at = r.position.latitude_deg.observed_at;
   s.position_source = r.position.latitude_deg.source;
-  s.source = "OpenCPN 5.12.4 normal route progress: active range + subsequent stored legs (NM)";
+  s.source = "OpenCPN 5.12.4 normal route progress: active range + subsequent stored legs; cross-track error (NM)";
+  s.distance_units_per_nm = r.distance_units_per_nm;
+  s.distance_unit = r.distance_unit;
   return s;
 }
 void RouteProgressInput::Publish(RouteProgressSnapshot result) {
@@ -95,6 +97,8 @@ void RouteProgressInput::Complete(const RouteRead& before, const RouteRead& afte
     auto rejected = *current_;
     rejected.state = RouteState::OutOfOrder; rejected.remaining_distance_nm.reset();
     rejected.remaining_steps.clear();
+    rejected.cross_track_error_nm.reset();
+    rejected.cross_track_direction.reset();
     Publish(std::move(rejected));
     return;
   }
@@ -141,6 +145,17 @@ void RouteProgressInput::Complete(const RouteRead& before, const RouteRead& afte
       if (!std::isfinite(distance)) s.state = RouteState::ArithmeticLimit;
       if (s.state == RouteState::Valid) {
         s.remaining_distance_nm = distance;
+        // Copy only the completed normal pass. Do not derive XTE from route
+        // geometry, retain it through a waypoint advance, or guess direction.
+        if (after.cross_track_error_nm &&
+            std::isfinite(*after.cross_track_error_nm) &&
+            *after.cross_track_error_nm >= 0 && after.cross_track_direction &&
+            (*after.cross_track_direction == -1 || *after.cross_track_direction == 1)) {
+          s.cross_track_error_nm = after.cross_track_error_nm;
+          s.cross_track_direction = *after.cross_track_direction < 0
+                                       ? CrossTrackDirection::Left
+                                       : CrossTrackDirection::Right;
+        }
         for (std::size_t i = *after.route.active_index; i < after.route.points.size(); ++i) {
           const auto& p = after.route.points[i];
           const bool first = i == *after.route.active_index;
@@ -166,6 +181,8 @@ void RouteProgressInput::CheckCurrent(const RouteCopy& current, Time now) {
       ? RouteState::ActivePointChanged : RouteState::RouteChanged;
   s.remaining_distance_nm.reset();
   s.remaining_steps.clear();
+  s.cross_track_error_nm.reset();
+  s.cross_track_direction.reset();
   (void)now;  // A consumer request cannot renew the observation timestamp.
   Publish(std::move(s));
 }

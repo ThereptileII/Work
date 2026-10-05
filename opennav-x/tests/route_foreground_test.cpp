@@ -34,6 +34,8 @@ struct ChartCanvas {
 };
 struct ocpnDC {
   wxDC *native = nullptr; int m_canvasIndex = 0;
+  wxPen pen;
+  wxPen GetPen() { return pen; }
   void GetSize(int *w,int *h) { *w=640; *h=360; }
   wxDC *GetDC() { return native; }
   void CalcBoundingBox(int x,int y) { if(native) native->CalcBoundingBox(x,y); }
@@ -90,11 +92,12 @@ int main(int argc,char **argv) {
     using namespace opennav::integration;
     Route r;
     Check(DefaultChartRouteStyle(r),"untouched default eligible");
-    for(bool *v : {&r.m_bRtIsSelected,&r.m_bIsBeingEdited}) {
+    r.m_bRtIsSelected=true;Check(DefaultChartRouteStyle(r),"selected route lost native presentation");r.m_bRtIsSelected=false;
+    for(bool *v : {&r.m_bIsBeingEdited}) {
       *v=true; Check(!DefaultChartRouteStyle(r),"special route state eligible"); *v=false;
     }
     r.m_bVisible=false; Check(!DefaultChartRouteStyle(r),"hidden eligible"); r.m_bVisible=true;
-    r.m_bRtIsActive=false; Check(!DefaultChartRouteStyle(r),"inactive eligible"); r.m_bRtIsActive=true;
+    r.m_bRtIsActive=false; Check(DefaultChartRouteStyle(r),"inactive route lost native presentation"); r.m_bRtIsActive=true;
     r.m_width=2; Check(!DefaultChartRouteStyle(r),"explicit route width eligible"); r.m_width=-1;
     r.m_style=wxPENSTYLE_SOLID; Check(!DefaultChartRouteStyle(r),"explicit style eligible"); r.m_style=wxPENSTYLE_INVALID;
     r.m_Colour="Red"; Check(!DefaultChartRouteStyle(r),"custom color eligible"); r.m_Colour.clear();
@@ -127,6 +130,10 @@ int main(int argc,char **argv) {
     }
     enabled=false; const int before=draws;
     Check(!DrawChartRouteSegment(gl,canvas,20,40,120,40,true,true)&&draws==before,"Standard/Legacy/Safe painted"); enabled=true;
+    gl.pen=wxPen(wxColour(205,141,172));
+    Check(DrawChartRouteSegment(gl,canvas,20,40,120,40,true,true),"selected ink refused");
+    Check(shader.color[0]==205/256.f && shader.color[1]==141/256.f && shader.color[2]==172/256.f,
+          "resolved selected route ink was replaced by active ink");
     wxInitAllImageHandlers(); wxBitmap bmp(640,360,24); wxMemoryDC target(bmp);
     target.SetBackground(wxBrush(wxColour(213,229,229)));target.Clear();
     ocpnDC dc; dc.native=&target;

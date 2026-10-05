@@ -11,6 +11,7 @@
 #include <deque>
 #include <limits>
 #include "integration/ChartLightSymbol.h"
+#include "integration/ChartLightTowerSymbol.h"
 #include "integration/ChartSpecialBuoySymbol.h"
 #include "integration/ChartYellowBuoySymbol.h"
 #define private public
@@ -155,6 +156,7 @@ static void CheckPillarDispatch(s52plib& owner,std::map<wxString,Rule*>& symbols
 }
 
 #include "chart_yellow_buoy_cases.inc"
+#include "chart_light_tower_cases.inc"
 
 static void CheckLightDispatch(s52plib& owner,std::map<wxString,Rule*>& symbols) {
   for(int i=11;i<=13;++i) {
@@ -306,6 +308,7 @@ int main(int argc, char **argv) {
             tile.GetBlue(4,4)==buildingFill[theme][2]);
       Check(tile.SaveFile(out+"/XNBLDG01-"+themes[theme]+".png",wxBITMAP_TYPE_PNG));
     }
+    CheckTowerDispatch(owner,symbols,doc.child("chartsymbols").child("lookups"),loader);
     CheckLightDispatch(owner,symbols);
     CheckPillarDispatch(owner,symbols); CheckYellowDispatch(owner,symbols); CheckYellowLookups(owner,doc.child("chartsymbols").child("lookups"));
     for (auto &entry:symbols) {

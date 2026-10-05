@@ -1,6 +1,7 @@
 #include "ui/ProductPanel.h"
 #include "ui/Sheet.h"
 #include "integration/BuildFeatures.h"
+#include "application/PilotPresentation.h"
 
 namespace opennav::ui {
 namespace {
@@ -8,6 +9,24 @@ wxString W(const std::string &s) { return wxString::FromUTF8(s); }
 } // namespace
 void ProductPanel::PilotSettings() {
   const bool test_output = integration::PilotLoopbackTestsEnabled();
+  if (!test_output) {
+    Heading("Autopilot status", "Live feedback through OpenCPN");
+    LiveText([](const auto &s) {
+      const auto view = application::PresentPilot(
+          s.pilot, s.now, false, s.vessel.replayed);
+      return W(view.state + " / " + view.connection);
+    });
+    Text("Uses the existing OpenCPN receive connections, including the connection used by AutoTrack. No separate SKAGER pilot setup is required. Status appears only after a supported device identity and fresh physical pilot feedback are observed.");
+    LiveText([](const auto &s) { return W(s.pilot.adapter_status); });
+    Text("Status only. SKAGER equipment commands are unavailable; use the physical helm. Connection settings and AutoTrack configuration remain in OpenCPN.");
+    BeginActions(2);
+    Action("Back to autopilot", [this] { ShowPage(ProductPage::Pilot, mode_); });
+    Action("OpenCPN preferences", [this] {
+      if (actions_.navigation.legacy_settings) actions_.navigation.legacy_settings();
+    }, bool(actions_.navigation.legacy_settings));
+    EndActions();
+    return;
+  }
   Heading("Autopilot setup", test_output ? "Developer loopback test only" : "Pilot status / equipment control unavailable");
   const auto &b = state_.settings.pilot;
   LiveText([](const auto &s) {

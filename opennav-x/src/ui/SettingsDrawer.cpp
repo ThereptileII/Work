@@ -367,10 +367,10 @@ void XNavSettingsDrawer::Build() {
         p.Text("Control",0,12,12,p.c.secondary);p.TextWeight(state_.pilot.enabled?"Enabled":"Off",width/2,12,12,p.c.primary,500,width/2,true);
         p.Rule(0,40,width);p.Text(state_.pilot.fresh?"Current pilot feedback":"Pilot feedback unavailable",0,58,12,p.c.secondary,false,width);
       });
-      Page("Adapter & capabilities","Connection, acknowledgement and modes",XNavIcon::Settings,ProductPage::PilotSettings);
+      Page("Pilot connection","Status from your OpenCPN connection",XNavIcon::Settings,ProductPage::PilotSettings);
       Page("Helm controls","Standby, Auto and heading adjustments",XNavIcon::Instruments,ProductPage::Pilot);
-      CopyBlock(90,[](XNavPainter &p,int width){p.Text("Steering requires explicit control enablement",0,18,11,p.c.secondary,false,width);
-        p.Text("and confirmation from the adapter.",0,39,11,p.c.secondary,false,width);});
+      CopyBlock(90,[](XNavPainter &p,int width){p.Text("This installation observes pilot status only.",0,18,11,p.c.secondary,false,width);
+        p.Text("Use the pilot's own controls to steer.",0,39,11,p.c.secondary,false,width);});
       break;
     case SettingsSection::Radar:
       CopyBlock(104,[this](XNavPainter &p,int width){p.TextTracked("RADAR",0,4,9,p.c.accent,650,1.17);

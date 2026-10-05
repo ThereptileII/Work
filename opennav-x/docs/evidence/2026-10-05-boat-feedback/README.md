@@ -1,0 +1,69 @@
+# Boat feedback batch — 2026-10-05
+
+The user authorized all 16 remaining boat bugs and their requested upgrades.
+Delivery stays Staging; this record does not authorize Production promotion.
+Each issue receives its own code-fix update. Jira remains the authoritative
+acceptance/status tracker. Code completion is separate from native acceptance.
+
+## Implemented increments
+
+| Jira | Change | Local commit |
+|---|---|---|
+| SCRUM-305 | Fresh coherent upstream anchor distance | ebdd271 |
+| SCRUM-295, SCRUM-307 | Passive pilot status on existing data connection; no duplicate status-only setup | f1a6c60 |
+| SCRUM-296 | Prototype scale-legend ordering with actual projected scale | ab23609 |
+| SCRUM-302 | AIS wheel/touch scroll, release capture, preserve list position | 8f2bc76 |
+| SCRUM-300 | Confirm anchor/route transition while preserving saved marks | caeacd8 |
+| SCRUM-291 | Consistent inactive/selected default-route style | 1b0bc00 |
+| SCRUM-299 | Actual completed-pass OpenCPN XTE in the footer | 9776f99 |
+| SCRUM-309 | Complete chart-object information in a native drawer | caaa20f |
+| SCRUM-294 | Dimension-scaled ownship prototype glyph; unavailable direction remains unoriented | 8f053c0 |
+| SCRUM-306 | Persistent chart-centered 1–200 NM AIS radius; missing-target investigation remains open | f77cb02 |
+| SCRUM-298 | Inline waypoint/route names and truthful chart-based defaults | 5abef0b |
+| SCRUM-297 | Contextual route card from upstream chart selection/hover | 4d125a4 |
+| SCRUM-303 | Theme-aware light-hover sector inks; unchanged geometry | afa010f |
+| SCRUM-308 | Classified light-support tower palette, preserved navigation shapes | 36011cc |
+| SCRUM-304 | Anchor-watch prototype mark/ring, alarm priority and custom-icon preservation | 842da56 |
+
+## Focused verification
+
+[Eleven shared component suites](components-linux.json) passed, linked against
+production component libraries. Their receipt deliberately records the
+configured commit and **dirty worktree**; it is not clean release evidence.
+The subsequent [twelfth anchor renderer target](anchor-registration-linux.json)
+also passed, without rerunning the other eleven. Its compiled painter is the
+production source, with isolated observation stubs and the actual prepared
+upstream ring method. Three widget test mains were corrected to propagate a
+failed assertion through `OnRun`, rather than trusting an ignored `OnExit`
+return. Early failed GTK/display attempts remain in local build evidence.
+
+Targeted checks additionally exercise pinned Mercator anchor geometry,
+route-progress/XTE validity, ownship/route presentation, actual S-52
+loader/lookup/render boundaries and source-locked atlas derivation. Their
+individual issue records give scope and counts. Pixel/assertion counts are not
+presented as thousands of independent user scenarios. Actual changed application
+source units compile locally. All nine patches reproduce against the pinned
+5.12.4 source at 37fd0cddb7334fe489e9f18aa163977a9c5c84f7.
+
+The shared offline suite is registered once for Linux and native Windows after
+fixture application compilation. Runtime binaries and the configured commit are
+identified in its receipt. This does not require another application build.
+No SDK producer recipe changed; the authenticated dependency bundle is reused.
+
+## Still pending
+
+One coordinated integrated Linux/native Windows Staging candidate is required,
+then the relevant installed boat checks. No integrated Windows application,
+OpenGL context, installer, physical chart or boat acceptance is claimed here.
+
+SCRUM-306 is still In Progress. The older verified isolated read-only probe
+received 31 real targets/45 accepted reports in a public test region, while the
+installed product remained connected with zero counted reports outside that
+region. The actual sent area is absent from its diagnostics; geography is a
+hypothesis, not an established root cause. See the
+[redacted read-only evidence](../scrum306-boat-readonly-20261005.json).
+The new radius and commissioning diagnostics need current-application validation.
+No API key, private chart data or vessel coordinates are included.
+
+No physical autopilot, propulsion or radar command, remote-access change,
+endurance run or Production publication is part of this batch.

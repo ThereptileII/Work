@@ -129,6 +129,41 @@ antimeridian distances against pinned geometry/stored legs and legacy traversal.
 It also reverses/edits/deletes objects, tests duplicate GUID/object membership,
 checks worker-thread rejection and simulates a nested edit-then-restore event.
 
+## Cross-track presentation (SCRUM-299)
+
+The owned publication now also carries optional cross-track error magnitude in
+nautical miles and an explicit direction **to steer toward the route**. The
+reader copies `GetCurrentXTEToActivePoint()` and `GetXTEDir()` only while native
+progress data is valid. These values are published only after the same coherent
+completed normal pass as remaining route distance. Every route/position/pass
+invalidation clears both magnitude and direction; assessment withholds them when
+either observation age or position age expires. Missing XTE does not invalidate
+an independently valid remaining distance. No geometry or control runs in a read.
+
+Pinned `model/src/routeman.cpp` maps negative `XTEDir` to `Left` in APB/RMB, and
+positive to `Right`; `gui/src/routeman_gui.cpp` generates exactly -1/+1. Unknown
+direction, negative/non-finite magnitude or an incomplete pair stays unavailable.
+This direction is not the vessel's side of the route. The footer's arrows carry
+explicit help text, “Steer left/right toward route (OpenCPN).” A genuine zero
+has no corrective arrow. The footer also requires current coherent selected GPS
+from the same source, with a timestamp at least as recent as the publication's
+position, and suppresses guidance while an anchor watch is active.
+
+OpenCPN's unit label and conversion factor are copied as presentation preferences;
+canonical XTE remains in NM. Small values retain three decimal places for NM,
+statute miles and kilometres; metre/foot displays use whole units. Aging values
+are labelled, and missing/stale values cannot become zero. Recording formats are
+unchanged: existing recordings carry no XTE and show it unavailable rather than
+reconstructing it from stored geometry.
+
+The portable route and footer regressions exercise directions, real zero,
+invalid/missing values, source changes, freshness and existing invalidation
+paths. The model reader test compares native getters and unit conversion. The
+native route scenario additionally compares every valid snapshot against actual
+completed OpenCPN progress and checks that rejected snapshots retain neither
+XTE field. The earlier release evidence above does not qualify this addition;
+native Windows and boat validation remain required.
+
 `smoke-navigation.py --route-fixture` feeds synthetic NMEA into a private
 loopback-only profile. An opt-in test-build driver creates disposable routes and
 observes normal application timer passes through activation, arrival, skip,

@@ -1,10 +1,17 @@
 #pragma once
 #include "vessel/VesselState.h"
+#include <optional>
 #include <vector>
 
 namespace opennav::ais {
+// Product-supported selection range, not a claimed AISStream service limit.
+inline constexpr int MinimumRadiusNm = 1, MaximumRadiusNm = 200,
+                     DefaultRadiusNm = 25;
+struct AreaCenter { double latitude, longitude; };
 struct Viewport {
   double south = 0, north = 0, west = 0, east = 0;
+  std::optional<AreaCenter> center = std::nullopt;
+  bool exact_area = false; // Explicit radius changes must also shrink the area.
 };
 struct BoundingBox {
   double south, west, north, east;
@@ -20,6 +27,9 @@ class SubscriptionPolicy {
   void Sent(vessel::Time at);
   void Confirmed() { confirmed_ = awaiting_confirmation_; awaiting_confirmation_ = false; }
   bool IsConfirmed() const { return confirmed_; }
+  bool HasDesiredArea() const { return !desired_.empty(); }
+  bool HasPendingChange() const;
+  bool AwaitingConfirmation() const { return awaiting_confirmation_; }
  private:
   std::vector<BoundingBox> desired_, sent_;
   vessel::Time last_sent_{};

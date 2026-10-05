@@ -16,6 +16,8 @@ SELECTED=('XNCON066','XNCON067','XNCAN072','XNCAN073','XNCAN072','XNCAN073','XNC
           'XNLAT014','XNLAT013','XNLAT024','XNLAT023','XNLAT024','XNLAT023','XNLAT014','XNLAT013')
 
 def restore_tiles(before,after):
+    from chart_light_tower_resources_tests import restore_towers
+    restore_towers(before,after)
     from chart_hazard_resources_tests import restore_hazards
     restore_hazards(before,after)
     # Separately verified SCRUM-282 AP source-art tile.
@@ -106,7 +108,7 @@ def verify_seamarks(source,output,metadata,check):
                 elif i in (2,3,4,5):check(head.find('rect').attrib=={'x':'-2.6','y':'-11','width':'5.2','height':'4.5','rx':'.4'})
                 elif i==8:check([n.attrib for n in head]==[{'cy':'-12','r':'2.2'},{'cy':'-6','r':'2.2'}])
                 elif i==9:check(head.find('circle').attrib=={'cy':'-9','r':'3'})
-    check(len(current.find('symbols'))==len(stock.find('symbols'))+16)
+    check(len(current.find('symbols'))==len(stock.find('symbols'))+18)
     # No physical topmark, special-purpose (including actual white/orange),
     # inland beacon, Paper Chart body, other light or cardinal node changes here.
     for name in ('BOYSPP11','BCNGEN01','LIGHTS11','LIGHTS12','LIGHTS13','LITDEF11','LIGHTS81','LIGHTS82','QUESMRK1'):

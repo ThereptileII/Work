@@ -5,5 +5,5 @@ namespace opennav::integration {
 application::NavigationActions
 MakeNavigationActions(MyFrame &frame,
                       std::function<vessel::Navigation()> position,
-                      std::function<application::AnchorState()> anchor);
+                      std::function<application::AnchorState(vessel::Time)> anchor);
 }

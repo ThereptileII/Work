@@ -23,7 +23,11 @@ bool IsAisSelected(int mmsi);
 void DrawOnlineAis(ocpnDC &dc, ViewPort &vp, ChartCanvas *canvas);
 bool ShowOnlineAisAt(ChartCanvas &canvas, int x, int y);
 bool ShowNavigationObjectCard(const std::string& id,bool route);
+bool ShowRouteContext(const std::string &id, bool hover = false);
 bool ShowChartContext(double latitude, double longitude);
+// Owned native presentation of the upstream's complete chart query result.
+// False preserves the normal Legacy/Safe object-query path.
+bool ShowChartInformation(const wxString &html, double latitude, double longitude);
 // Application-thread acquisition; returned immutable values may be retained.
 vessel::RouteProgress CurrentRouteProgress();
 void AddCommandLine(wxCmdLineParser& parser);

@@ -3260,3 +3260,618 @@ diff --git a/gui/include/gui/notification_manager_gui.h b/gui/include/gui/notifi
  
    if (g_pi_manager) {
      ViewPort &vp = m_pParentCanvas->GetVP();
+diff --git a/gui/src/route_gui.cpp b/gui/src/route_gui.cpp
+--- a/gui/src/route_gui.cpp
++++ b/gui/src/route_gui.cpp
+@@ -128,7 +128,7 @@
+ #ifdef OPENNAV_X
+     wxColour xnav_ink;
+     if (opennav::integration::DefaultChartRouteStyle(m_route) &&
+-        opennav::integration::ChartActiveRouteInk(*canvas, xnav_ink)) {
++        opennav::integration::ChartRouteInk(*canvas, m_route, xnav_ink)) {
+       spen.SetColour(xnav_ink);
+       dc.SetPen(spen);
+       dc.SetBrush(wxBrush(xnav_ink));
+@@ -236,7 +236,7 @@
+   };
+ #ifdef OPENNAV_X
+   wxColour underlay_ink;
+-  if (xnav_route && opennav::integration::ChartActiveRouteInk(*canvas, underlay_ink)) {
++  if (xnav_route && opennav::integration::ChartRouteInk(*canvas, m_route, underlay_ink)) {
+     opennav::integration::ChartRouteUnderlay underlay;
+     draw_pass(&underlay);
+     underlay.Draw(dc, *canvas);
+@@ -285,6 +285,13 @@
+ 
+   bool xnav_painted = false;
+ #ifdef OPENNAV_X
++  wxColour route_ink;
++  if (xnav_route && canvas && opennav::integration::ChartRouteInk(*canvas, m_route, route_ink)) {
++    auto route_pen = dc.GetPen();
++    route_pen.SetColour(route_ink);
++    dc.SetPen(route_pen);
++    dc.SetBrush(wxBrush(route_ink));
++  }
+   if (xnav_route && canvas)
+     xnav_painted = opennav::integration::DrawChartRouteSegment(
+         dc, *canvas, xa, ya, xb, yb, join_start, join_end);
+@@ -436,7 +443,7 @@
+ #ifdef OPENNAV_X
+   wxColour xnav_ink;
+   if (opennav::integration::DefaultChartRouteStyle(m_route) &&
+-      opennav::integration::ChartActiveRouteInk(*canvas, xnav_ink)) {
++      opennav::integration::ChartRouteInk(*canvas, m_route, xnav_ink)) {
+     auto pen = dc.GetPen();
+     pen.SetColour(xnav_ink);
+     dc.SetPen(pen);
+@@ -516,7 +523,7 @@
+ 
+ #ifdef OPENNAV_X
+   if (opennav::integration::DefaultChartRouteStyle(m_route))
+-    opennav::integration::ChartActiveRouteInk(*canvas, col);
++    opennav::integration::ChartRouteInk(*canvas, m_route, col);
+ #endif
+   wxPenStyle style = wxPENSTYLE_SOLID;
+   if (m_route.m_style != wxPENSTYLE_INVALID) style = m_route.m_style;
+@@ -535,7 +542,7 @@
+ #ifdef OPENNAV_X
+   xnav_route = opennav::integration::DefaultChartRouteStyle(m_route);
+   wxColour underlay_ink;
+-  if (xnav_route && opennav::integration::ChartActiveRouteInk(*canvas, underlay_ink)) {
++  if (xnav_route && opennav::integration::ChartRouteInk(*canvas, m_route, underlay_ink)) {
+     opennav::integration::ChartRouteUnderlay underlay;
+     DrawGLLines(vp, &dc, canvas, false, &underlay);
+     underlay.Draw(dc, *canvas);
+@@ -713,7 +720,7 @@
+ #ifdef OPENNAV_X
+   wxColour underlay_ink;
+   if (opennav::integration::DefaultChartRouteStyle(m_route) &&
+-      opennav::integration::ChartActiveRouteInk(*canvas, underlay_ink))
++      opennav::integration::ChartRouteInk(*canvas, m_route, underlay_ink))
+     underlay_margin = static_cast<int>(ceil(12.0 * canvas->FromDIP(100) / 100.0)) + 1;
+ #endif
+   if (m_route.m_bVisible) {
+diff --git a/gui/src/chcanv.cpp b/gui/src/chcanv.cpp
+--- a/gui/src/chcanv.cpp
++++ b/gui/src/chcanv.cpp
+@@ -10472,11 +10472,15 @@
+     objText << _T("</font>");
+     objText << _T("</body></html>");
+ 
+-    if (Chs57 || target_plugin_chart || (filecount > 1)) {
++    bool skager_query = false;
++#ifdef OPENNAV_X
++    skager_query = opennav::ShowChartInformation(objText, zlat, zlon);
++#endif
++    if (!skager_query && (Chs57 || target_plugin_chart || (filecount > 1))) {
+       g_pObjectQueryDialog->SetHTMLPage(objText);
+       g_pObjectQueryDialog->Show();
+     }
+-    if ((!Chs57 && filecount == 1)) {  // only one file?, show direktly
++    if (!skager_query && (!Chs57 && filecount == 1)) {  // only one file?, show direktly
+       // generate an event to avoid double code
+       wxHtmlLinkInfo hli(filenameOK);
+       wxHtmlLinkEvent hle(1, hli);
+diff --git a/gui/src/chcanv.cpp b/gui/src/chcanv.cpp
+--- a/gui/src/chcanv.cpp
++++ b/gui/src/chcanv.cpp
+@@ -6383,8 +6383,22 @@
+           int h = os_bm.GetHeight();
+           img_height = h;
+ 
+-          dc.DrawBitmap(os_bm, lShipMidPoint.m_x - w / 2,
+-                        lShipMidPoint.m_y - h / 2, true);
++          bool skager_scaled = false;
++#ifdef OPENNAV_X
++          if (!m_pos_image_user) {
++            const bool direction = std::isfinite(gHdt) || std::isfinite(gCog);
++            const double length = ownShipLength * scale_factor_y;
++            const double beam = ownShipWidth * scale_factor_x;
++            if (length > 0 && beam > 0)
++              skager_scaled = opennav::integration::DrawChartOwnship(
++                  dc, *this, direction ? lShipMidPoint.m_x : lGPSPoint.m_x,
++                  direction ? lShipMidPoint.m_y : lGPSPoint.m_y, icon_rad - PI / 2,
++                  length / (35. * (FromDIP(100) / 100.)), beam * 35. / (length * 22.), direction);
++          }
++#endif
++          if (!skager_scaled)
++            dc.DrawBitmap(os_bm, lShipMidPoint.m_x - w / 2,
++                          lShipMidPoint.m_y - h / 2, true);
+ 
+           // Maintain dirty box,, missing in __WXMSW__ library
+           dc.CalcBoundingBox(lShipMidPoint.m_x - w / 2,
+@@ -6460,12 +6474,12 @@
+ 
+         bool xnav_ownship = false;
+ #ifdef OPENNAV_X
+-        if (g_OwnShipIconType == 0 && !m_pos_image_user &&
+-            m_ownship_state == SHIP_NORMAL)
++        if (g_OwnShipIconType == 0 && !m_pos_image_user)
+           xnav_ownship = opennav::integration::DrawChartOwnship(
+               dc, *this, lShipMidPoint.m_x, lShipMidPoint.m_y,
+               icon_rad - PI / 2,
+-              g_ShipScaleFactorExp > 1 ? log(g_ShipScaleFactorExp) + 1.0 : 1.0);
++              g_ShipScaleFactorExp > 1 ? log(g_ShipScaleFactorExp) + 1.0 : 1.0,
++              1., std::isfinite(gHdt) || std::isfinite(gCog));
+ #endif
+         if (!xnav_ownship) {
+           dc.DrawBitmap(os_bm, lShipMidPoint.m_x - w / 2,
+diff --git a/gui/src/glChartCanvas.cpp b/gui/src/glChartCanvas.cpp
+--- a/gui/src/glChartCanvas.cpp
++++ b/gui/src/glChartCanvas.cpp
+@@ -2578,13 +2578,13 @@
+         coords[7] = h / 2;
+ 
+ #ifdef OPENNAV_X
+-        if (!m_pParentCanvas->m_pos_image_user &&
+-            m_pParentCanvas->m_ownship_state == SHIP_NORMAL) {
++        if (!m_pParentCanvas->m_pos_image_user) {
+           glDisable(GL_TEXTURE_2D);
+           xnav_ownship = opennav::integration::DrawChartOwnship(
+               dc, *m_pParentCanvas, lShipMidPoint.m_x, lShipMidPoint.m_y,
+               icon_rad - PI / 2,
+-              g_ShipScaleFactorExp > 1 ? log(g_ShipScaleFactorExp) + 1.0 : 1.0);
++              g_ShipScaleFactorExp > 1 ? log(g_ShipScaleFactorExp) + 1.0 : 1.0,
++              1., std::isfinite(gHdt) || std::isfinite(gCog));
+           if (!xnav_ownship) glEnable(GL_TEXTURE_2D);
+         }
+ #endif
+@@ -2629,9 +2629,21 @@
+         coords[6] = -w / 2;
+         coords[7] = h / 2;
+ 
+-        RenderSingleTexture(dc, coords, uv, m_pParentCanvas->GetpVP(),
+-                            lShipMidPoint.m_x, lShipMidPoint.m_y,
+-                            icon_rad - PI / 2);
++#ifdef OPENNAV_X
++        if (!m_pParentCanvas->m_pos_image_user && h > 0 && w > 0) {
++          const bool direction = std::isfinite(gHdt) || std::isfinite(gCog);
++          glDisable(GL_TEXTURE_2D);
++          xnav_ownship = opennav::integration::DrawChartOwnship(
++              dc, *m_pParentCanvas, direction ? lShipMidPoint.m_x : lGPSPoint.m_x,
++              direction ? lShipMidPoint.m_y : lGPSPoint.m_y, icon_rad - PI / 2,
++              h / (35. * (m_pParentCanvas->FromDIP(100) / 100.)), w * 35. / (h * 22.), direction);
++          if (!xnav_ownship) glEnable(GL_TEXTURE_2D);
++        }
++#endif
++        if (!xnav_ownship)
++          RenderSingleTexture(dc, coords, uv, m_pParentCanvas->GetpVP(),
++                              lShipMidPoint.m_x, lShipMidPoint.m_y,
++                              icon_rad - PI / 2);
+ 
+         glDisable(GL_TEXTURE_2D);
+       } else if (g_OwnShipIconType == 2) {  // Scaled Vector
+@@ -2727,7 +2739,7 @@
+       //      Reference point, where the GPS antenna is
+       if (m_pParentCanvas->m_pos_image_user) gps_circle_radius = 1;
+ 
+-      if (!xnav_ownship) {
++      if (!xnav_ownship || g_OwnShipIconType != 0) {
+         wxPen ppPen1(GetGlobalColor(_T ( "UBLCK" )), 1, wxPENSTYLE_SOLID);
+         dc.SetPen(ppPen1);
+         dc.SetBrush(wxBrush(GetGlobalColor(_T ( "CHWHT" ))));
+diff --git a/gui/src/chcanv.cpp b/gui/src/chcanv.cpp
+--- a/gui/src/chcanv.cpp
++++ b/gui/src/chcanv.cpp
+@@ -10512,6 +10512,11 @@
+ 
+     SetCursor(wxCURSOR_ARROW);
+   }
++#ifdef OPENNAV_X
++  else if (opennav::IsXNav()) {
++    opennav::ShowChartInformation(wxEmptyString, zlat, zlon);
++  }
++#endif
+ }
+ 
+ void ChartCanvas::ShowMarkPropertiesDialog(RoutePoint *markPoint) {
+diff --git a/gui/include/gui/chcanv.h b/gui/include/gui/chcanv.h
+--- a/gui/include/gui/chcanv.h
++++ b/gui/include/gui/chcanv.h
+@@ -506,6 +506,9 @@
+   double GetPixPerMM() { return m_pix_per_mm; }
+ 
+   void SetOwnShipState(ownship_state_t state) { m_ownship_state = state; }
++#ifdef OPENNAV_X
++  ownship_state_t GetOwnShipState() const { return m_ownship_state; }
++#endif
+   void SetCursorStatus(double cursor_lat, double cursor_lon);
+   void GetCursorLatLon(double *lat, double *lon);
+   /** Pans (moves) the canvas by the specified physical pixels in x and y
+diff --git a/gui/src/chcanv.cpp b/gui/src/chcanv.cpp
+--- a/gui/src/chcanv.cpp
++++ b/gui/src/chcanv.cpp
+@@ -74,6 +74,7 @@
+ #include "chcanv.h"
+ #ifdef OPENNAV_X
+ #include "integration/ChartPresentation.h"
++#include "integration/ChartAnchorWatch.h"
+ #endif
+ #include "ChInfoWin.h"
+ #include "cm93.h"  // for chart outline draw
+@@ -13006,22 +13007,58 @@
+     dc.SetBrush(*ppBrush);
+ 
+     if (lpp1 > 0) {
+-      dc.SetPen(ppPeng);
++      wxPen ring_pen=ppPeng;
++#ifdef OPENNAV_X
++      wxColour ring_ink;
++      if(opennav::integration::ChartAnchorWatchInk(*this,AnchorAlertOn1,bGPSValid,false,ring_ink)) {
++        ring_pen.SetColour(ring_ink);
++        ring_pen.SetWidth(FromDIP(AnchorAlertOn1 ? 4 : 2));
++        if(!AnchorAlertOn1 && !bGPSValid) ring_pen.SetStyle(wxPENSTYLE_SHORT_DASH);
++      }
++#endif
++      dc.SetPen(ring_pen);
+       dc.StrokeCircle(lAnchorPoint1.x, lAnchorPoint1.y, fabs(lpp1));
+     }
+ 
+     if (lpp2 > 0) {
+-      dc.SetPen(ppPeng);
++      wxPen ring_pen=ppPeng;
++#ifdef OPENNAV_X
++      wxColour ring_ink;
++      if(opennav::integration::ChartAnchorWatchInk(*this,AnchorAlertOn2,bGPSValid,false,ring_ink)) {
++        ring_pen.SetColour(ring_ink);
++        ring_pen.SetWidth(FromDIP(AnchorAlertOn2 ? 4 : 2));
++        if(!AnchorAlertOn2 && !bGPSValid) ring_pen.SetStyle(wxPENSTYLE_SHORT_DASH);
++      }
++#endif
++      dc.SetPen(ring_pen);
+       dc.StrokeCircle(lAnchorPoint2.x, lAnchorPoint2.y, fabs(lpp2));
+     }
+ 
+     if (lpp1 < 0) {
+-      dc.SetPen(ppPenr);
++      wxPen ring_pen=ppPenr;
++#ifdef OPENNAV_X
++      wxColour ring_ink;
++      if(opennav::integration::ChartAnchorWatchInk(*this,AnchorAlertOn1,bGPSValid,true,ring_ink)) {
++        ring_pen.SetColour(ring_ink);
++        ring_pen.SetWidth(FromDIP(AnchorAlertOn1 ? 4 : 2));
++        if(!AnchorAlertOn1 && !bGPSValid) ring_pen.SetStyle(wxPENSTYLE_SHORT_DASH);
++      }
++#endif
++      dc.SetPen(ring_pen);
+       dc.StrokeCircle(lAnchorPoint1.x, lAnchorPoint1.y, fabs(lpp1));
+     }
+ 
+     if (lpp2 < 0) {
+-      dc.SetPen(ppPenr);
++      wxPen ring_pen=ppPenr;
++#ifdef OPENNAV_X
++      wxColour ring_ink;
++      if(opennav::integration::ChartAnchorWatchInk(*this,AnchorAlertOn2,bGPSValid,true,ring_ink)) {
++        ring_pen.SetColour(ring_ink);
++        ring_pen.SetWidth(FromDIP(AnchorAlertOn2 ? 4 : 2));
++        if(!AnchorAlertOn2 && !bGPSValid) ring_pen.SetStyle(wxPENSTYLE_SHORT_DASH);
++      }
++#endif
++      dc.SetPen(ring_pen);
+       dc.StrokeCircle(lAnchorPoint2.x, lAnchorPoint2.y, fabs(lpp2));
+     }
+   }
+diff --git a/gui/src/route_point_gui.cpp b/gui/src/route_point_gui.cpp
+--- a/gui/src/route_point_gui.cpp
++++ b/gui/src/route_point_gui.cpp
+@@ -47,6 +47,7 @@
+ #include "viewport.h"
+ #include "waypointman_gui.h"
+ #include "integration/ChartRouteWaypoint.h"
++#include "integration/ChartAnchorWatch.h"
+ #include "integration/ChartRouteLabel.h"
+ #include "integration/ChartRouteLabelRaster.h"
+ 
+@@ -124,6 +125,8 @@
+ 
+   //    Calculate the mark drawing extents
+   wxRect r1(r.x - sx2, r.y - sy2, sx2 * 2, sy2 * 2);  // the bitmap extents
++  if (const int anchor_extent=opennav::integration::ChartAnchorWatchExtent(*canvas,m_point))
++    r1.Union(wxRect(r.x-anchor_extent,r.y-anchor_extent,2*anchor_extent,2*anchor_extent));
+   if (skager_ordinal) {
+     const int extent = opennav::integration::ChartRouteWaypointExtent(*canvas);
+     r1.Union(wxRect(r.x-extent, r.y-extent, 2*extent, 2*extent));
+@@ -189,7 +192,8 @@
+   if (m_point.m_bBlink && (gFrame->nBlinkerTick & 1)) bDrawHL = true;
+ 
+   if ((!bDrawHL) && (NULL != m_point.m_pbmIcon)) {
+-    if (!opennav::integration::DrawChartRouteWaypoint(
++    if (!opennav::integration::DrawChartAnchorMark(dc, *canvas, m_point, r.x, r.y) &&
++        !opennav::integration::DrawChartRouteWaypoint(
+             dc, *canvas, r.x, r.y, skager_ordinal))
+       dc.DrawBitmap(*pbm, r.x - pbm->GetWidth()/2, r.y - pbm->GetHeight()/2, true);
+     // on MSW, the dc Bounding box is not updated on DrawBitmap() method.
+@@ -326,6 +330,8 @@
+ 
+   //    Calculate the mark drawing extents
+   wxRect r1(r.x - sx2, r.y - sy2, sx2 * 2, sy2 * 2);  // the bitmap extents
++  if (const int anchor_extent=opennav::integration::ChartAnchorWatchExtent(*canvas,m_point))
++    r1.Union(wxRect(r.x-anchor_extent,r.y-anchor_extent,2*anchor_extent,2*anchor_extent));
+   if (skager_ordinal) {
+     const int extent = opennav::integration::ChartRouteWaypointExtent(*canvas);
+     r1.Union(wxRect(r.x-extent, r.y-extent, 2*extent, 2*extent));
+@@ -427,6 +433,7 @@
+   if (m_point.m_bBlink && (gFrame->nBlinkerTick & 1)) bDrawHL = true;
+ 
+   if ((!bDrawHL) && (NULL != m_point.m_pbmIcon) &&
++      !opennav::integration::DrawChartAnchorMark(dc, *canvas, m_point, r.x, r.y) &&
+       !opennav::integration::DrawChartRouteWaypoint(
+           dc, *canvas, r.x, r.y, skager_ordinal)) {
+     int glw, glh;
+diff --git a/libs/s52plib/src/s52plib.cpp b/libs/s52plib/src/s52plib.cpp
+--- a/libs/s52plib/src/s52plib.cpp
++++ b/libs/s52plib/src/s52plib.cpp
+@@ -70,6 +70,7 @@
+ #include "s52plib.h"
+ #ifdef OPENNAV_X
+ #include "integration/ChartLightSymbol.h"
++#include "integration/ChartLightTowerSymbol.h"
+ #include "integration/ChartCaFan.h"
+ #include "integration/ChartCaAllRound.h"
+ #include "integration/ChartFishingPattern.h"
+@@ -3557,6 +3558,16 @@
+       if (found != _symb_sym->end() && found->second &&
+           found->second->definition.SYDF == 'R' &&
+           !memcmp(found->second->name.SYNM, buoyAlias, 8))
++        paintRule = found->second;
++    }
++    const char *towerAlias = opennav::integration::PresentationLightTowerAlias(
++        m_presentationLightSymbols, rzRules->LUP && rzRules->LUP->TNAM == SIMPLIFIED,
++        rzRules->LUP ? rzRules->LUP->RCID : 0, rzRules->obj, paintRule->name.SYNM);
++    if (towerAlias && paintRule->definition.SYDF == 'R') {
++      auto found = _symb_sym->find(wxString::FromUTF8(towerAlias));
++      if (found != _symb_sym->end() && found->second &&
++          found->second->definition.SYDF == 'R' &&
++          !memcmp(found->second->name.SYNM, towerAlias, 8))
+         paintRule = found->second;
+     }
+ #endif
+diff --git a/gui/src/chcanv.cpp b/gui/src/chcanv.cpp
+--- a/gui/src/chcanv.cpp
++++ b/gui/src/chcanv.cpp
+@@ -4145,6 +4145,10 @@
+             } else
+               s << _T("   ----   ----");
+           }
++#ifdef OPENNAV_X
++          if (!m_routeState && (!m_pAISRolloverWin || !m_pAISRolloverWin->IsActive()))
++            opennav::ShowRouteContext(pr->GetGUID().ToStdString(wxConvUTF8), true);
++#endif
+           m_pRouteRolloverWin->SetString(s);
+ 
+           m_pRouteRolloverWin->SetBestPosition(mouse_x, mouse_y, 16, 16,
+@@ -10870,8 +10874,8 @@
+         opennav::ShowNavigationObjectCard(
+             m_pFoundRoutePoint->m_GUID.ToStdString(wxConvUTF8), false)) return true;
+     if ((seltype & SELTYPE_ROUTESEGMENT) && m_pSelectedRoute &&
+-        opennav::ShowNavigationObjectCard(
+-            m_pSelectedRoute->GetGUID().ToStdString(wxConvUTF8), true)) return true;
++        opennav::ShowRouteContext(
++            m_pSelectedRoute->GetGUID().ToStdString(wxConvUTF8))) return true;
+     if (seltype == SELTYPE_UNKNOWN) {
+       if (opennav::ShowOnlineAisAt(*this, x, y)) return true;
+       double latitude, longitude;
+@@ -12618,7 +12622,11 @@
+       m_brepaint_piano = true;
+     }
+ 
+-    if (m_pRouteRolloverWin) {
++    if (m_pRouteRolloverWin
++#ifdef OPENNAV_X
++        && !opennav::IsXNav()
++#endif
++    ) {
+       m_pRouteRolloverWin->Draw(dc);
+       m_brepaint_piano = true;
+     }
+diff --git a/gui/src/glChartCanvas.cpp b/gui/src/glChartCanvas.cpp
+--- a/gui/src/glChartCanvas.cpp
++++ b/gui/src/glChartCanvas.cpp
+@@ -4606,7 +4606,11 @@
+     if (m_pParentCanvas->m_pTrackRolloverWin)
+       m_pParentCanvas->m_pTrackRolloverWin->Draw(gldc);
+ 
+-    if (m_pParentCanvas->m_pRouteRolloverWin)
++    if (m_pParentCanvas->m_pRouteRolloverWin
++#ifdef OPENNAV_X
++        && !opennav::IsXNav()
++#endif
++    )
+       m_pParentCanvas->m_pRouteRolloverWin->Draw(gldc);
+ 
+     if (m_pParentCanvas->m_pAISRolloverWin)
+diff --git a/gui/src/s57chart.cpp b/gui/src/s57chart.cpp
+--- a/gui/src/s57chart.cpp
++++ b/gui/src/s57chart.cpp
+@@ -1,3 +1,7 @@
++#ifdef OPENNAV_X
++#include "integration/ChartLightHover.h"
++#include "integration/ChartPresentation.h"
++#endif
+ /***************************************************************************
+  *
+  * Project:  OpenCPN
+@@ -6339,8 +6343,14 @@
+       penWidth = wxMin(20, penWidth);
+       penWidth = wxMax(5, penWidth);
+ 
++      wxColour sectorInk=sectorlegs[i].color;
++#ifdef OPENNAV_X
++      const bool skagerLight=opennav::integration::XNavChartPresentationActive();
++      const wxString skagerScheme=ps52plib ? ps52plib->GetPLIBColorScheme() : wxString();
++      sectorInk=opennav::integration::ExtendedLightSectorInk(skagerLight,sectorInk,skagerScheme);
++#endif
+       int legOpacity;
+-      wxPen *arcpen = wxThePenList->FindOrCreatePen(sectorlegs[i].color,
++      wxPen *arcpen = wxThePenList->FindOrCreatePen(sectorInk,
+                                                     penWidth, wxPENSTYLE_SOLID);
+       arcpen->SetCap(wxCAP_BUTT);
+       dc.SetPen(*arcpen);
+@@ -6373,7 +6383,7 @@
+         arcpen = wxThePenList->FindOrCreatePen(wxColor(0, 0, 0, 0), 1,
+                                                wxPENSTYLE_SOLID);
+         dc.SetPen(*arcpen);
+-        wxColor c = sectorlegs[i].color;
++        wxColor c = sectorInk;
+         c.Set(c.Red(), c.Green(), c.Blue(), 0.6 * c.Alpha());
+         dc.SetBrush(wxBrush(c));
+         dc.StrokePolygon(3, yellowCone, 0, 0);
+@@ -6390,7 +6400,11 @@
+         legOpacity = 128;
+       }
+ 
+-      arcpen = wxThePenList->FindOrCreatePen(wxColor(0, 0, 0, legOpacity), 1,
++      wxColour boundaryInk(0,0,0,legOpacity);
++#ifdef OPENNAV_X
++      boundaryInk=opennav::integration::ExtendedLightBoundaryInk(skagerLight,skagerScheme,legOpacity);
++#endif
++      arcpen = wxThePenList->FindOrCreatePen(boundaryInk, 1,
+                                              wxPENSTYLE_SOLID);
+       dc.SetPen(*arcpen);
+ 
+@@ -6467,6 +6481,12 @@
+       arcw = wxMin(20, arcw);
+       arcw = wxMax(5, arcw);
+ 
++      wxColour sectorInk=sectorlegs[i].color;
++#ifdef OPENNAV_X
++      const bool skagerLight=opennav::integration::XNavChartPresentationActive();
++      const wxString skagerScheme=ps52plib ? ps52plib->GetPLIBColorScheme() : wxString();
++      sectorInk=opennav::integration::ExtendedLightSectorInk(skagerLight,sectorInk,skagerScheme);
++#endif
+       int legOpacity;
+ 
+       float angle1, angle2;
+@@ -6486,7 +6506,7 @@
+         wxPen *arcpen = wxThePenList->FindOrCreatePen(wxColor(0, 0, 0, 0), 1,
+                                                       wxPENSTYLE_SOLID);
+         dc.SetPen(*arcpen);
+-        wxColor c = sectorlegs[i].color;
++        wxColor c = sectorInk;
+         c.Set(c.Red(), c.Green(), c.Blue(), 0.6 * c.Alpha());
+         dc.SetBrush(wxBrush(c));
+         dc.StrokePolygon(3, yellowCone, 0, 0);
+@@ -6543,7 +6563,7 @@
+         glUniform2fv(centerloc, 1, ctrv);
+ 
+         //  Circle color
+-        wxColour colorb = sectorlegs[i].color;
++        wxColour colorb = sectorInk;
+         float colorv[4];
+         colorv[0] = colorb.Red() / float(256);
+         colorv[1] = colorb.Green() / float(256);
+@@ -6630,7 +6650,11 @@
+ 
+ #if 1
+ 
+-      wxPen *arcpen = wxThePenList->FindOrCreatePen(wxColor(0, 0, 0, 128), 1,
++      wxColour boundaryInk(0,0,0,128);
++#ifdef OPENNAV_X
++      boundaryInk=opennav::integration::ExtendedLightBoundaryInk(skagerLight,skagerScheme,128);
++#endif
++      wxPen *arcpen = wxThePenList->FindOrCreatePen(boundaryInk, 1,
+                                                     wxPENSTYLE_SOLID);
+       dc.SetPen(*arcpen);
+ 
+diff --git a/model/include/model/MarkIcon.h b/model/include/model/MarkIcon.h
+--- a/model/include/model/MarkIcon.h
++++ b/model/include/model/MarkIcon.h
+@@ -43,6 +43,7 @@
+   bool preScaled;
+   // Only the verified shipped default route diamond; replacements revoke it.
+   bool skagerPinnedRouteDiamond = false;
++  bool skagerPinnedAnchor = false;
+ 
+   unsigned int icon_texture, tex_w, tex_h;
+   wxImage iconImage;
+diff --git a/gui/include/gui/waypointman_gui.h b/gui/include/gui/waypointman_gui.h
+--- a/gui/include/gui/waypointman_gui.h
++++ b/gui/include/gui/waypointman_gui.h
+@@ -43,6 +43,7 @@
+   unsigned int GetIconTexture(const wxBitmap *pmb, int &glw, int &glh);
+ 
+   bool IsPinnedRouteDiamond(const wxString &key, const wxBitmap *bitmap) const;
++  bool IsPinnedAnchor(const wxString &key, const wxBitmap *bitmap) const;
+   void ReloadRoutepointIcons();
+ 
+ private:
+diff --git a/gui/src/waypointman_gui.cpp b/gui/src/waypointman_gui.cpp
+--- a/gui/src/waypointman_gui.cpp
++++ b/gui/src/waypointman_gui.cpp
+@@ -201,6 +201,7 @@
+   pmi->icon_texture = 0; /* invalidate */
+   pmi->preScaled = false;
+   pmi->skagerPinnedRouteDiamond = false; // User/plugin replacement, even same key.
++  pmi->skagerPinnedAnchor = false;
+   pmi->iconImage = pbm->ConvertToImage();
+   pmi->m_blistImageOK = false;
+   delete pbm;
+@@ -625,6 +626,10 @@
+       opennav::integration::IsPinnedRouteDiamond(fileName) &&
+       opennav::integration::SameRouteDiamondPixels(image,
+           LoadSVG(fileName, (int)bm_size, (int)bm_size, NULL, false).ConvertToImage());
++  pmi->skagerPinnedAnchor = key == "anchor" &&
++      opennav::integration::IsPinnedAnchor(fileName) &&
++      opennav::integration::SameRouteDiamondPixels(image,
++          LoadSVG(fileName, (int)bm_size, (int)bm_size, NULL, false).ConvertToImage());
+   pmi->iconImage = imageClip;
+   pmi->m_blistImageOK = false;
+ 
+@@ -676,6 +681,17 @@
+     const auto *icon = static_cast<MarkIcon *>(m_waypoint_man.m_pIconArray->Item(i));
+     if (icon->icon_name == key)
+       return icon->skagerPinnedRouteDiamond && icon->piconBitmap == bitmap;
++  }
++  return false; // Never inherit GetIconBitmap's missing-key fallback.
++}
++
++bool WayPointmanGui::IsPinnedAnchor(const wxString &key,
++                                            const wxBitmap *bitmap) const {
++  if (key != "anchor" || !bitmap || !bitmap->IsOk()) return false;
++  for (unsigned int i = 0; i < m_waypoint_man.m_pIconArray->GetCount(); ++i) {
++    const auto *icon = static_cast<MarkIcon *>(m_waypoint_man.m_pIconArray->Item(i));
++    if (icon->icon_name == key)
++      return icon->skagerPinnedAnchor && icon->piconBitmap == bitmap;
+   }
+   return false; // Never inherit GetIconBitmap's missing-key fallback.
+ }
+diff --git a/gui/src/route_point_gui.cpp b/gui/src/route_point_gui.cpp
+--- a/gui/src/route_point_gui.cpp
++++ b/gui/src/route_point_gui.cpp
+@@ -125,7 +125,7 @@
+ 
+   //    Calculate the mark drawing extents
+   wxRect r1(r.x - sx2, r.y - sy2, sx2 * 2, sy2 * 2);  // the bitmap extents
+-  if (const int anchor_extent=opennav::integration::ChartAnchorWatchExtent(*canvas,m_point))
++  if (const int anchor_extent=opennav::integration::ChartAnchorWatchExtent(*canvas,m_point,WayPointmanGui(*pWayPointMan).IsPinnedAnchor(m_point.m_IconName,m_point.m_pbmIcon)))
+     r1.Union(wxRect(r.x-anchor_extent,r.y-anchor_extent,2*anchor_extent,2*anchor_extent));
+   if (skager_ordinal) {
+     const int extent = opennav::integration::ChartRouteWaypointExtent(*canvas);
+@@ -192,7 +192,7 @@
+   if (m_point.m_bBlink && (gFrame->nBlinkerTick & 1)) bDrawHL = true;
+ 
+   if ((!bDrawHL) && (NULL != m_point.m_pbmIcon)) {
+-    if (!opennav::integration::DrawChartAnchorMark(dc, *canvas, m_point, r.x, r.y) &&
++    if (!opennav::integration::DrawChartAnchorMark(dc, *canvas, m_point, r.x, r.y,WayPointmanGui(*pWayPointMan).IsPinnedAnchor(m_point.m_IconName,m_point.m_pbmIcon)) &&
+         !opennav::integration::DrawChartRouteWaypoint(
+             dc, *canvas, r.x, r.y, skager_ordinal))
+       dc.DrawBitmap(*pbm, r.x - pbm->GetWidth()/2, r.y - pbm->GetHeight()/2, true);
+@@ -330,7 +330,7 @@
+ 
+   //    Calculate the mark drawing extents
+   wxRect r1(r.x - sx2, r.y - sy2, sx2 * 2, sy2 * 2);  // the bitmap extents
+-  if (const int anchor_extent=opennav::integration::ChartAnchorWatchExtent(*canvas,m_point))
++  if (const int anchor_extent=opennav::integration::ChartAnchorWatchExtent(*canvas,m_point,WayPointmanGui(*pWayPointMan).IsPinnedAnchor(m_point.m_IconName,m_point.m_pbmIcon)))
+     r1.Union(wxRect(r.x-anchor_extent,r.y-anchor_extent,2*anchor_extent,2*anchor_extent));
+   if (skager_ordinal) {
+     const int extent = opennav::integration::ChartRouteWaypointExtent(*canvas);
+@@ -433,7 +433,7 @@
+   if (m_point.m_bBlink && (gFrame->nBlinkerTick & 1)) bDrawHL = true;
+ 
+   if ((!bDrawHL) && (NULL != m_point.m_pbmIcon) &&
+-      !opennav::integration::DrawChartAnchorMark(dc, *canvas, m_point, r.x, r.y) &&
++      !opennav::integration::DrawChartAnchorMark(dc, *canvas, m_point, r.x, r.y,WayPointmanGui(*pWayPointMan).IsPinnedAnchor(m_point.m_IconName,m_point.m_pbmIcon)) &&
+       !opennav::integration::DrawChartRouteWaypoint(
+           dc, *canvas, r.x, r.y, skager_ordinal)) {
+     int glw, glh;

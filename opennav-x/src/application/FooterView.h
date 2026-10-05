@@ -10,6 +10,8 @@ struct FooterView {
   std::string health_source = "Vessel data", health_summary = "0 live signals";
   SignalState position_state = SignalState::Unavailable;
   SignalState cog_state = SignalState::Unavailable;
+  SignalState xte_state = SignalState::Unavailable;
+  std::string xte_hint = "Cross-track error unavailable";
   SignalState health_state = SignalState::Unavailable;
   unsigned live_signals = 0, aging_signals = 0, stale_signals = 0;
   bool historical = false;

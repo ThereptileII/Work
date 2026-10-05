@@ -38,6 +38,7 @@ struct ChartCanvas {
   VP *GetpVP() { return &vp; }
 };
 struct ocpnDC {
+  wxPen GetPen() { return wxNullPen; }
   wxDC *native = nullptr;
   int m_canvasIndex = 0;
   void GetSize(int *w, int *h) {

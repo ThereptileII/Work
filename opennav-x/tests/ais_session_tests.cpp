@@ -90,9 +90,77 @@ void observation_checks() {
     CHECK(!current.Opened(start + 20s, observed));
   }
 }
+void diagnostic_checks() {
+  ais::AisStreamSession session;
+  auto read=session.Read(start);
+  CHECK(read.health.received_messages==0 && read.health.ignored_messages==0);
+  CHECK(!read.health.subscription_pending && !read.health.subscription_awaiting_confirmation);
+  CHECK(read.cached_position_count==0);
+  CHECK(session.Enable(true,start));
+  CHECK(!session.Read(start).health.subscription_pending); // no area is not global
+  CHECK(session.ObserveViewport({59,60,18,19}));
+  CHECK(session.Read(start).health.subscription_pending);
+  CHECK(session.Connecting(start));
+  CHECK(session.Opened(start));
+  CHECK(session.Read(start).health.subscription_pending);
+  CHECK(!session.Read(start).health.subscription_awaiting_confirmation);
+  CHECK(session.SubscriptionSent(start));
+  read=session.Read(start);
+  CHECK(!read.health.subscription_pending && read.health.subscription_awaiting_confirmation);
+  CHECK(!read.health.subscription_confirmed);
+  const std::string unsupported=R"({"MessageType":"SafetyRelatedBroadcastMessage","Message":{}})";
+  session.Receive(unsupported,start+1s,wall,0);
+  read=session.Read(start+1s);
+  CHECK(read.health.received_messages==1 && read.health.ignored_messages==1);
+  CHECK(read.health.accepted==0 && read.health.rejected==0); // zero reports is not zero messages
+  session.Receive(confirmation,start+2s,wall,0);
+  read=session.Read(start+2s);
+  CHECK(read.health.received_messages==2 && read.health.ignored_messages==1);
+  CHECK(read.health.subscription_confirmed && !read.health.subscription_pending &&
+        !read.health.subscription_awaiting_confirmation);
+  session.Receive(position,start+3s,wall,0);
+  session.Receive("{invalid",start+4s,wall,0);
+  read=session.Read(start+4s);
+  CHECK(read.health.received_messages==4 && read.health.ignored_messages==1);
+  CHECK(read.health.accepted==1 && read.health.rejected==1 && read.cached_position_count==1);
+  CHECK(session.ObserveViewport({40,41,10,11}));
+  read=session.Read(start+4s);
+  CHECK(read.health.subscription_pending && read.health.subscription_confirmed &&
+        !read.health.subscription_awaiting_confirmation); // old area confirmed; next waits for cadence
+  CHECK(session.PendingSubscription(start+4s).empty());
+  CHECK(session.SubscriptionSent(start+5s));
+  read=session.Read(start+5s);
+  CHECK(!read.health.subscription_pending && !read.health.subscription_confirmed &&
+        read.health.subscription_awaiting_confirmation);
+  CHECK(session.ObserveViewport({30,31,10,11}));
+  read=session.Read(start+5s);
+  CHECK(read.health.subscription_pending && read.health.subscription_awaiting_confirmation);
+  session.Receive(confirmation,start+6s,wall,0);
+  read=session.Read(start+6s);
+  CHECK(read.health.subscription_confirmed && read.health.subscription_pending &&
+        !read.health.subscription_awaiting_confirmation);
+  const auto before=session.Read(start+6s);
+  const auto expired=session.Read(start+11min);
+  CHECK(expired.cached_position_count==0 && expired.health.accepted==1);
+  CHECK(expired.health.received_messages==before.health.received_messages);
+  CHECK(session.Read(start+6s).cached_position_count==1); // diagnostic reads never advance session
+  session.Disconnected(start+7s,0);
+  read=session.Read(start+7s);
+  CHECK(read.health.subscription_pending && !read.health.subscription_confirmed &&
+        !read.health.subscription_awaiting_confirmation);
+  CHECK(session.Enable(false,start+8s));
+  read=session.Read(start+8s);
+  CHECK(!read.health.subscription_pending && !read.health.subscription_awaiting_confirmation);
+  CHECK(read.cached_position_count==0 && read.health.received_messages==5);
+  session.Receive(unsupported,start+9s,wall,0);
+  CHECK(session.Read(start+9s).health.received_messages==5); // disabled callback does not count
+  CHECK(session.Enable(true,start+10s));
+  CHECK(session.Read(start+10s).health.subscription_pending); // reconnect even when last area sent
+}
 int main() {
   try {
     observation_checks();
+    diagnostic_checks();
     ais::AisStreamSession session;
     CHECK(!session.NeedsConnection(start));
     CHECK(session.ShouldClose());

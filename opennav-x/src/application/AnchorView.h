@@ -7,6 +7,9 @@ struct AnchorView {
   bool inner_alarm=false;
   std::string identity, reason;
   std::optional<double> distance_m, radius_m, gps_age_s, history_minutes;
+  std::optional<double> display_distance;
+  std::string distance_unit;
+  int distance_decimals = 0;
   std::optional<AnchorFix> vessel_position;
   std::vector<AnchorFix> history;
   vessel::Assessment depth, wind, battery;

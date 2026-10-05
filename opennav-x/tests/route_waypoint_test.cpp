@@ -120,7 +120,8 @@ int main(int argc,char**argv){
  a.eligible=false;Check(!ordinal(),"custom selected emergency route");a.eligible=true;
  a.list.Set({&p,&q,&p});Check(!ordinal(),"repeat within active route");a.list.Set({&q,&p,&r});
  b.list.Set({&p});routes.Set({&a,&b});Check(!ordinal(),"shared hidden route");routes.Set({&a});
- manager.active=&b;Check(!ordinal(),"other active route");manager.active=&a;
+ manager.active=&b;Check(ordinal()==2,"inactive route keeps its actual ordinal");
+ manager.active=nullptr;Check(ordinal()==2,"route library needs no active navigation");manager.active=&a;
  a.list.nodes.assign(100,{&q});a.list.nodes[99].data=&p;
  for(int i=0;i<99;++i)a.list.nodes[i].next=&a.list.nodes[i+1];
  Check(!ordinal(),"ordinal 100 retained stock");a.list.Set({&q,&p,&r});

@@ -1,4 +1,27 @@
-# SKAGER status — 2026-10-04
+# SKAGER status — 2026-10-05
+
+## Remaining boat feedback — coordinated Staging batch
+
+All 16 reported items have been investigated; **15 code fixes are implemented**
+and remain in Jira Testing pending native/boat confirmation. The changes include
+passive pilot discovery, coherent anchor distance, anchor/route transitions,
+route/waypoint naming and contextual cards, actual XTE, chart-object information,
+AIS list scrolling and the reported chart/anchor/ownship presentation defects.
+
+SCRUM-306 remains In Progress: its radius-control upgrade is implemented, but
+the installed missing-target symptom is not yet proven fixed. An isolated live
+probe received real traffic; that does not qualify the current application's
+chart/list path. Coordinate-free commissioning diagnostics are being added to
+separate incoming reports, subscription state, cached positions and radius
+filtering without exposing the credential or vessel position.
+
+The focused shared suite passes 11/11 components plus the added actual-source
+anchor-renderer test. These receipts identify a dirty development worktree, not
+a release. The next gate is one coordinated integrated Linux/native Windows
+Staging build with authenticated SDK reuse. The boat remains on the previously
+installed candidate until a qualified replacement is available. No Production
+promotion or broad design/endurance campaign is requested. See the
+[batch evidence](evidence/2026-10-05-boat-feedback/README.md).
 
 ## Online AIS freeze: first narrow repair — SCRUM-301
 

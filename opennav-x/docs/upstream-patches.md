@@ -1,5 +1,35 @@
 # Direct OpenCPN Upstream Modifications
 
+## Boat feedback integration — SCRUM-291 / 294–300 / 303–309
+
+The existing reviewed hooks remain pinned to OpenCPN 5.12.4. This batch adds:
+
+* Completed normal route-progress capture of `GetCurrentXTEToActivePoint` and
+  `GetXTEDir`; no OpenNav-triggered route update or autopilot getter call.
+* Native chart-position/object query presentation using the complete upstream
+  object-query output. Legacy/Safe keep their original dialog path.
+* Existing route hit-testing/rollover copied into an owned route context card;
+  track and AIS rollovers retain their original semantics.
+* Prototype ownship paint for verified fixed/scaled bitmap cases and a read-only
+  ownship-state getter. Custom/scaled-vector exceptions preserve upstream.
+* Theme ink at the actual compiled S-57 light-hover painter; unchanged sector
+  geometry and Standard/Legacy fallback.
+* Narrow classified light-support tower aliases in core and private RenderSY,
+  preserving ordinary/conspicuous shapes and all original lookup resources.
+* Anchor-watch paint hooks using the existing selected watch identities/radii.
+  Mark provenance verifies the pinned anchor SVG hash/pixels; user/plugin
+  replacement revokes provenance. Both render paths preserve custom marks.
+
+Waypoint/route operations continue through the existing OpenCPN storage and
+change-notification boundary. Chart-derived suggested names use only already
+loaded native ENC objects with bounded queries, never an independent database.
+Read-only pilot discovery uses existing OpenCPN connections and fresh identity/
+feedback. It does not enable physical command output.
+
+The [batch evidence](evidence/2026-10-05-boat-feedback/README.md) links individual
+increments and focused checks. All patches reproduce exactly against the pin.
+Integrated native Windows and boat acceptance remain distinct pending gates.
+
 ## Ordinary chart typeface (SCRUM-263)
 
 The core and private libraries gain an optional presentation-owned text face,

@@ -34,11 +34,11 @@ std::vector<BoundingBox> Boxes(Viewport v,double margin) {
   return {{south,west,north,east}};
 }
 } // namespace
-std::vector<BoundingBox> SubscriptionArea(Viewport v) { return Boxes(v,.15); }
+std::vector<BoundingBox> SubscriptionArea(Viewport v) { return Boxes(v,v.exact_area ? 0 : .15); }
 bool SubscriptionPolicy::ObserveViewport(Viewport viewport) {
   auto visible=Boxes(viewport,0);
   if(visible.empty())return false;
-  if(Contains(sent_,visible)) {
+  if(!viewport.exact_area && Contains(sent_,visible)) {
     desired_=sent_; // coalesced pan came back inside the already subscribed margin
     return true;
   }
@@ -52,6 +52,9 @@ std::vector<BoundingBox> SubscriptionPolicy::Pending(vessel::Time now,bool conne
   const auto cadence=std::chrono::seconds(5);
   if(!sent_.empty()&&(now<last_sent_||last_sent_>vessel::Time::max()-cadence||now<last_sent_+cadence))return {};
   return Same(desired_,sent_)?std::vector<BoundingBox>{}:desired_;
+}
+bool SubscriptionPolicy::HasPendingChange() const {
+  return !desired_.empty() && !Same(desired_,sent_);
 }
 void SubscriptionPolicy::Sent(vessel::Time at) {
   sent_=desired_;last_sent_=at;confirmed_=false;awaiting_confirmation_=true;

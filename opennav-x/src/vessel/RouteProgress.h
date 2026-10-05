@@ -15,6 +15,9 @@ enum class RouteState {
   PositionMismatch, OutOfOrder, InterruptedPass, AwaitingProgress
 };
 const char* RouteStateName(RouteState state);
+// Direction to steer toward the route, matching OpenCPN APB/RMB. This is not
+// the side of the route on which the vessel lies and never a steering command.
+enum class CrossTrackDirection { Left, Right };
 
 // Owned values only. Published as shared_ptr<const ...>; safe to retain after
 // OpenCPN edits/deletes a route. This is evidence as of observation, not a live
@@ -41,6 +44,11 @@ struct RouteProgressSnapshot {
   std::string position_source;
   std::string route_name;
   std::vector<RouteStep> remaining_steps;
+  std::optional<double> cross_track_error_nm;
+  std::optional<CrossTrackDirection> cross_track_direction;
+  // Copied display preference. Canonical geometry remains nautical miles.
+  double distance_units_per_nm = 1.;
+  std::string distance_unit = "NM";
 };
 using RouteProgress = std::shared_ptr<const RouteProgressSnapshot>;
 
@@ -49,6 +57,8 @@ struct RouteAssessment {
   Quality quality = Quality::Unavailable;
   std::optional<double> remaining_distance_nm;
   std::optional<Duration> observation_age, position_age;
+  std::optional<double> cross_track_error_nm;
+  std::optional<CrossTrackDirection> cross_track_direction;
 };
 // Reading/assessing never renews either timestamp. Stale distances are withheld
 // from consumers even though the immutable historical snapshot can be retained.

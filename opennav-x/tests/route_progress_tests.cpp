@@ -22,6 +22,8 @@ RouteRead Fixture(std::size_t active = 0) {
   r.position.longitude_deg = {11,"selected GPS",t,Validity::Measured};
   r.upstream_position_valid = true; r.upstream_latitude_deg = 55; r.upstream_longitude_deg = 11;
   r.range_to_active_nm = 2;
+  r.cross_track_error_nm = .03;
+  r.cross_track_direction = -1;
   return r;
 }
 RouteProgress Evaluate(const RouteRead& r, Time now = t) {
@@ -30,6 +32,8 @@ RouteProgress Evaluate(const RouteRead& r, Time now = t) {
 void Invalid(const RouteProgress& s, RouteState state) {
   Require(s->state == state, RouteStateName(s->state));
   Require(!s->remaining_distance_nm, "Invalid route cannot become zero distance");
+  Require(!s->cross_track_error_nm && !s->cross_track_direction,
+          "Invalidated route cannot retain cross-track magnitude or direction");
   Require(!RouteDistanceSample(*s,t+1s).value, "Invalid route cannot enter advisory consumer");
 }
 void Change(const std::function<void(RouteRead&)>& edit, RouteState expected) {
@@ -113,6 +117,63 @@ int main() {
     test("position cannot postdate its progress observation", [] {
       auto snapshot=*Evaluate(Fixture());snapshot.position_observed_at=t+1s;
       Require(AssessRoute(snapshot,t+2s).state==RouteState::UncertainPosition,"Inconsistent clocks cannot age into validity");
+    });
+    test("cross-track magnitude and native steer direction", [] {
+      for (int direction : {-1, 1}) {
+        auto r = Fixture(); r.cross_track_direction = direction;
+        const auto s = Evaluate(r);
+        const auto assessed = AssessRoute(*s, t);
+        Require(assessed.cross_track_error_nm == .03, "Owned normal-pass XTE copied unchanged");
+        Require(assessed.cross_track_direction ==
+                    (direction < 0 ? CrossTrackDirection::Left : CrossTrackDirection::Right),
+                "Pinned APB/RMB direction to steer, not vessel side");
+        Require(!AssessRoute(*s, t + 5s).cross_track_error_nm,
+                "Cross-track observation expires with route publication");
+        Require(!AssessRoute(*s, t - 1ms).cross_track_error_nm,
+                "Future route cannot expose cross-track error");
+      }
+      auto zero = Fixture(); zero.cross_track_error_nm = 0.;
+      Require(AssessRoute(*Evaluate(zero), t).cross_track_error_nm == 0.,
+              "Genuine normal-pass zero remains distinct from absent XTE");
+    });
+    test("missing and invalid XTE never invalidate independent route distance", [] {
+      for (int change = 0; change < 7; ++change) {
+        auto r = Fixture();
+        switch (change) {
+        case 0: r.cross_track_error_nm.reset(); break;
+        case 1: r.cross_track_direction.reset(); break;
+        case 2: r.cross_track_error_nm = -1.; break;
+        case 3: r.cross_track_error_nm = std::numeric_limits<double>::quiet_NaN(); break;
+        case 4: r.cross_track_error_nm = std::numeric_limits<double>::infinity(); break;
+        case 5: r.cross_track_direction = 0; break;
+        case 6: r.cross_track_direction = 2; break;
+        }
+        const auto s = Evaluate(r);
+        Require(s->remaining_distance_nm == 9 && s->state == RouteState::Valid,
+                "Missing XTE does not corrupt accepted remaining distance");
+        Require(!s->cross_track_error_nm && !s->cross_track_direction,
+                "Incomplete or invalid XTE stays unavailable");
+      }
+    });
+    test("XTE changes only on a coherent completed pass", [] {
+      auto r = Fixture(); RouteProgressInput input("xte test");
+      input.Complete(r, r, t); const auto old = input.Current();
+      input.CheckCurrent(r.route, t + 1s);
+      Require(input.Current() == old && old->cross_track_error_nm == .03,
+              "Consumer read neither recalculates XTE nor refreshes its age");
+      r.cross_track_error_nm = .08; r.cross_track_direction = 1;
+      input.Complete(r, r, t + 1s);
+      Require(input.Current()->cross_track_error_nm == .08 && old->cross_track_error_nm == .03,
+              "New normal pass owns new value while retained snapshot remains immutable");
+      r.route.active_index = 1; r.route.active_point_id = "b";
+      input.Complete(r, r, t + 2s); Invalid(input.Current(), RouteState::ActivePointChanged);
+      input.Complete(r, r, t + 3s);
+      Require(input.Current()->cross_track_error_nm == .08,
+              "Stable next leg recovers with its normal progress value");
+      auto tampered = *input.Current();
+      tampered.cross_track_direction = static_cast<CrossTrackDirection>(99);
+      Require(!AssessRoute(tampered, t + 3s).cross_track_error_nm,
+              "Malformed retained direction cannot enter presentation");
     });
     test("test-only energy consumption", [] {
       const auto s=Evaluate(Fixture()); smartnav::EnergyInputs e;

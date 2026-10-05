@@ -448,6 +448,10 @@ jobs:
           python3 opennav-x/tools/test-peer-buffer.py > opennav-x/evidence/local/peer-buffer-linux.log 2>&1
       - name: Build integrated application and run regressions without exceptions
         run: bash opennav-x/tools/build-integration-linux.sh
+      - name: Run shared offline boat-feedback components on Linux
+        shell: bash
+        run: |
+          python3 opennav-x/tools/test-boat-feedback-widgets.py --manifest opennav-x/build/xnav-linux/Release/boat-feedback-tests.json --output opennav-x/evidence/local/boat-feedback-linux --expected-commit "$GITHUB_SHA" 2>&1 | tee opennav-x/evidence/local/boat-feedback-linux-runner.log
       - name: Restore GTK chart controls after startup hide, resize and owner recapture
         shell: bash
         env:
@@ -590,6 +594,11 @@ jobs:
       - name: Compile fixture application and run compiled security and unit checks
         id: integrated
         run: ./opennav-x/tools/build-pristine-windows.ps1 -Architecture Win32 -Integration -VerifyPeerCli -PrivateOCharts -DeferRuntimeQualification -DependencyBundle "$env:GITHUB_WORKSPACE/dependency-bundle" -DependencyBundleProvenance "$env:GITHUB_WORKSPACE/dependency-provenance.json"
+      - name: Run shared offline boat-feedback components on native Windows
+        shell: pwsh
+        run: |
+          python opennav-x/tools/test-boat-feedback-widgets.py --manifest opennav-x/build/xnav-windows/Release/boat-feedback-tests.json --output opennav-x/evidence/local/boat-feedback-windows --runtime-dir opennav-x/build/xnav-install --expected-commit $env:GITHUB_SHA 2>&1 | Tee-Object opennav-x/evidence/local/boat-feedback-windows-runner.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Verify packaged source reproduces the curl certificate-tool patch
         if: ${{ success() && steps.integrated.conclusion == 'success' }}
         run: |

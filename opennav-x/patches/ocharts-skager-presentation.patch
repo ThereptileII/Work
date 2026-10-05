@@ -1518,3 +1518,30 @@ diff --git a/libs/s52plib/src/s52plib.h b/libs/s52plib/src/s52plib.h
      if (fanEligible) {
        wxPoint center;
        GetPointPixSingle(rzRules, rzRules->obj->y, rzRules->obj->x, &center);
+--- a/libs/s52plib/src/s52plib.cpp
++++ b/libs/s52plib/src/s52plib.cpp
+@@ -48,6 +48,7 @@
+ #include "s52plib.h"
+ #ifdef SKAGER_OCHARTS_ADAPTER
+ #include "integration/ChartLightSymbol.h"
++#include "integration/ChartLightTowerSymbol.h"
+ #include "integration/ChartCaFan.h"
+ #include "integration/ChartCaAllRound.h"
+ #include "integration/ChartFishingPattern.h"
+@@ -3535,6 +3536,16 @@
+       if (found != _symb_sym->end() && found->second &&
+           found->second->definition.SYDF == 'R' &&
+           !memcmp(found->second->name.SYNM, buoyAlias, 8))
++        paintRule = found->second;
++    }
++    const char *towerAlias = opennav::integration::PresentationLightTowerAlias(
++        m_presentationLightSymbols, rzRules->LUP && rzRules->LUP->TNAM == SIMPLIFIED,
++        rzRules->LUP ? rzRules->LUP->RCID : 0, rzRules->obj, paintRule->name.SYNM);
++    if (towerAlias && paintRule->definition.SYDF == 'R') {
++      auto found = _symb_sym->find(wxString::FromUTF8(towerAlias));
++      if (found != _symb_sym->end() && found->second &&
++          found->second->definition.SYDF == 'R' &&
++          !memcmp(found->second->name.SYNM, towerAlias, 8))
+         paintRule = found->second;
+     }
+ #endif

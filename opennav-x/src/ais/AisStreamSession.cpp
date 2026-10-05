@@ -107,6 +107,7 @@ void AisStreamSession::Receive(const std::string &message, vessel::Time now,
       (health_.connection != Connection::Subscribing &&
        health_.connection != Connection::Connected))
     return;
+  Increment(health_.received_messages);
   const auto decoded = DecodeAisStream(message, now, wall);
   if (decoded.kind == DecodeKind::ServiceError) {
     Increment(health_.rejected);
@@ -139,6 +140,8 @@ void AisStreamSession::Receive(const std::string &message, vessel::Time now,
     Increment(accepted ? health_.accepted : health_.rejected);
   } else if (decoded.kind == DecodeKind::Invalid)
     Increment(health_.rejected);
+  else if (decoded.kind == DecodeKind::Ignored)
+    Increment(health_.ignored_messages);
 }
 void AisStreamSession::Disconnected(vessel::Time now, unsigned entropy) {
   if (!Advance(now) || !enabled_ || health_.connection == Connection::Backoff ||
@@ -174,8 +177,15 @@ ProviderSnapshot AisStreamSession::Read(vessel::Time now) const {
   snapshot.connection = connection_;
   snapshot.health.compression_enabled = compression_;
   snapshot.health.retry_at = retry_at_;
+  const bool active = health_.connection == Connection::Subscribing ||
+                      health_.connection == Connection::Connected;
+  snapshot.health.subscription_pending = enabled_ && subscription_.HasDesiredArea() &&
+      (!active || new_connection_ || subscription_.HasPendingChange());
+  snapshot.health.subscription_awaiting_confirmation = enabled_ && active &&
+      !new_connection_ && subscription_.AwaitingConfirmation();
   if (enabled_)
     snapshot.targets = cache_.Read(now);
+  snapshot.cached_position_count = static_cast<std::uint32_t>(snapshot.targets.targets.size());
   return snapshot;
 }
 } // namespace opennav::ais

@@ -1,5 +1,6 @@
 #pragma once
 #include "adapters/St4000Pilot.h"
+#include "integration/PilotStatusDiscovery.h"
 #include "observable.h"
 #include <functional>
 #include <memory>
@@ -16,7 +17,7 @@ public:
   void Poll(vessel::Time now) override;
   bool Send(const adapters::PilotRequest &request) override;
   bool RequestIdentity(vessel::Time now);
-  std::string Description() const { return pilot_.Status(); }
+  std::string Description() const;
 
 private:
   adapters::PilotTransportStatus
@@ -29,5 +30,6 @@ private:
   std::uint64_t registry_generation_ = 1;
   adapters::St4000Binding binding_;
   adapters::St4000Pilot pilot_{*this};
+  PilotStatusDiscovery status_{*this};
 };
 } // namespace opennav::integration

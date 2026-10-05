@@ -109,7 +109,8 @@ void XNavAnchorDrawer::Command() {
     if (!ConfirmSheet(*this, light_, "Set anchor watch",
                       wxString::Format(
                           "Create an anchor mark at the current GPS position "
-                          "and start an OpenCPN watch with a %d m radius?",
+                          "and start an OpenCPN watch with a %d m radius? "
+                          "Active route navigation will stop; the route and its waypoints are kept.",
                           radius),
                       "Set anchor"))
       return;
@@ -211,9 +212,11 @@ void XNavAnchorDrawer::Paint(wxPaintEvent &) {
   centered("S", 259, 8, p.c.muted);
   p.Text("W", width / 2 - 109, 155, 8, p.c.muted);
   p.Text("E", width / 2 + 102, 155, 8, p.c.muted);
-  centered(Number(view_.distance_m), 141, 36,
+  centered(Number(view_.display_distance, view_.distance_decimals), 141, 36,
            view_.alarm ? p.c.alarm : p.c.primary);
-  centered("metres from anchor", 189, 10, p.c.muted);
+  centered(view_.distance_unit.empty() ? "distance from anchor"
+                                       : W(view_.distance_unit) + " from anchor",
+           189, 10, p.c.muted);
   p.Text(view_.inner_alarm ? "Alarm inside radius" : "Alarm radius", 0, 292, 12,
          p.c.secondary);
   p.TextWeight(Number(view_.active

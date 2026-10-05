@@ -7,4 +7,9 @@ namespace opennav::integration {
 std::optional<application::AnchorFix> ProjectAnchorPosition(
     application::Coordinate anchor, application::Coordinate position,
     vessel::Time observed_at, const std::string &position_source);
+// Refresh an owned presentation snapshot from the selected fix. The upstream
+// caller additionally verifies bGPSValid and equality with its accepted fix.
+// Never processes or changes the alarm; a read cannot refresh GPS timestamps.
+void ObserveAnchorPosition(application::AnchorState &watch,
+                           const vessel::Navigation &position, vessel::Time now);
 }

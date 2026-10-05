@@ -58,6 +58,8 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
     verify_yellow_buoy(source,output,check)
     from chart_building_point_resources_tests import verify as verify_building_point
     verify_building_point(source,output,check)
+    from chart_light_tower_resources_tests import verify as verify_light_tower
+    verify_light_tower(source,output,check)
     from chart_cardinal_resources_tests import verify_cardinals
     verify_cardinals(source,output,data,check)
     from chart_hazard_resources_tests import verify_hazards
@@ -153,7 +155,7 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
         styled=b.findall("symbols/symbol[name='"+name+"']")[-1].find('bitmap')
         styled.attrib=stock.attrib.copy()
         for tag in ('pivot','graphics-location'):styled.find(tag).attrib=stock.find(tag).attrib.copy()
-    for name in (*ALIASES,'XNSPPW01','XNBCNG01','XNSPPY01','XNSPPT01','XNBLDG01'):b.find('symbols').remove(b.find("symbols/symbol[name='"+name+"']"))
+    for name in (*ALIASES,'XNSPPW01','XNBCNG01','XNSPPY01','XNSPPT01','XNBLDG01','XNLTWR01','XNLTWR03'):b.find('symbols').remove(b.find("symbols/symbol[name='"+name+"']"))
     # Independently prove/undo the exact cable waveform before whole-tree proof.
     cables=b.findall("line-styles/line-style[name='CBLSUB06']")
     check(len(cables)==1 and cables[0].attrib=={'RCID':'2012'})

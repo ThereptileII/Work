@@ -4,6 +4,7 @@
 #include "ui/PreviewPanel.h"
 #include "ui/ProductPanel.h"
 #include "ui/ContextCard.h"
+#include "ui/RouteContextCard.h"
 #include "ui/Horizon.h"
 #include "ui/FloatingSurface.h"
 #include "ui/AisDrawer.h"
@@ -15,6 +16,7 @@
 #include "ui/HealthDrawer.h"
 #include "ui/SearchDrawer.h"
 #include "ui/ChartPresentationDrawer.h"
+#include "ui/ChartInfoDrawer.h"
 #include "ui/StatusFooter.h"
 #include "integration/BuildFeatures.h"
 #if XNAV_ENABLE_TEST_FIXTURES
@@ -110,6 +112,7 @@ public:
   bool FooterMiddleVisible() const { return footer_->MiddleVisible(); }
   const application::FooterView &NavigationFooter() const { return footer_->View(); }
   std::optional<wxRect> DrawerRegion() const {
+    if (chart_info_drawer_ && chart_info_drawer_->IsShown()) return chart_info_drawer_->GetScreenRect();
     if (chart_presentation_drawer_ && chart_presentation_drawer_->IsShown()) return chart_presentation_drawer_->GetScreenRect();
     if (search_drawer_ && search_drawer_->IsShown()) return search_drawer_->GetScreenRect();
     if (health_drawer_ && health_drawer_->IsShown()) return health_drawer_->GetScreenRect();
@@ -127,11 +130,13 @@ public:
   bool RouteCreationActive() const { return actions_.route_creating && actions_.route_creating(); }
   const char *LightName() const;
   void ShowObject(const std::string &id, bool route);
+  void ShowRouteContext(const std::string &id, bool hover = false);
   void AfterCanvasLayoutChanged();
   bool OwnsPane(const wxWindow *window) const;
   bool OwnsManager(const wxAuiManager &manager) const { return &manager == &manager_; }
   bool LoadPersistentPerspective(const wxString &perspective);
   void ShowChartContext(application::Coordinate position);
+  void ShowChartInformation(application::ChartInfo info);
 
 private:
   wxPanel *MakePane(const wxString &name, wxAuiPaneInfo placement);
@@ -188,6 +193,7 @@ private:
   XNavHealthDrawer *health_drawer_ = nullptr;
   XNavSearchDrawer *search_drawer_ = nullptr;
   XNavChartPresentationDrawer *chart_presentation_drawer_ = nullptr;
+  XNavChartInfoDrawer *chart_info_drawer_ = nullptr;
   PilotDrawerActions pilot_actions_;
   application::AlertCenter alerts_;
   wxPanel *alert_pane_ = nullptr;
@@ -212,6 +218,9 @@ private:
   PreviewPanel *page_ = nullptr;
   ProductPanel *product_ = nullptr;
   wxWeakRef<XNavContextCard> context_;
+  wxWeakRef<XNavRouteContextCard> route_context_;
+  std::string context_route_;
+  application::RouteHoverGate route_hover_;
   std::string context_waypoint_;
   int context_mmsi_ = 0;
   std::optional<application::Coordinate> context_position_;

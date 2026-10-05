@@ -15,6 +15,14 @@ inline bool IsPinnedRouteDiamond(const wxString &path) {
   return picosha2::hash256_hex_string(bytes) ==
       "ebb4c7e751b9d21db60d1bbf1041eb5434616b6b90570cd7ca478480263e8a9d";
 }
+inline bool IsPinnedAnchor(const wxString &path) {
+  wxFFile file(path, "rb");
+  if (!file.IsOpened() || file.Length() != 892) return false;
+  std::vector<unsigned char> bytes(892);
+  if (file.Read(bytes.data(), bytes.size()) != bytes.size()) return false;
+  return picosha2::hash256_hex_string(bytes) ==
+      "1c8fee23eafd8dfe3299e627fc45652557c250f3b018cfa4da52d5e2e9b89d64";
+}
 // The upstream disk SVG cache is keyed by path and dimensions, not content.
 // A valid source hash cannot by itself establish what was actually decoded.
 inline bool SameRouteDiamondPixels(const wxImage &loaded, const wxImage &fresh) {

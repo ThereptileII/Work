@@ -10,7 +10,11 @@ struct ProviderHealth {
   Connection connection = Connection::Disabled;
   vessel::Time state_since{}, last_position{};
   std::uint64_t accepted = 0, rejected = 0, reconnects = 0;
+  // Complete data messages received by an active session, including service
+  // confirmations and unsupported message kinds. Never count these as reports.
+  std::uint64_t received_messages = 0, ignored_messages = 0;
   bool subscription_confirmed = false;
+  bool subscription_pending = false, subscription_awaiting_confirmation = false;
   bool compression_enabled = false;
   vessel::Time retry_at{};
   // Diagnostics are enums/counters; no server text, subscription JSON or key.
@@ -31,6 +35,9 @@ struct ProviderSnapshot {
   vessel::AisState targets;
   ProviderHealth health;
   ConnectionObservation connection;
+  // Eligible unexpired positioned cache entries before any presentation-radius
+  // filtering. Static-only cache entries do not establish a vessel position.
+  std::uint32_t cached_position_count = 0;
 };
 class IAisProvider {
  public:

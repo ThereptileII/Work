@@ -1,0 +1,200 @@
+{
+  "issue": "SCRUM-308",
+  "scope": "Known Simplified LNDMRK light-support tower role extension; retains effective pinned raster shape and conspicuous distinction. No boat object identity or exact tower artwork conformance claim.",
+  "checks": {
+    "towerResources": 216,
+    "wholeAtlasAndPriorSeamarks": 53258,
+    "actualLoaderLookupAndRenderSY": 50373,
+    "actualLoaderExitCode": 0,
+    "privatePatchesReproducePinnedSources": true
+  },
+  "inputSha256": {
+    "src/integration/ChartLightTowerSymbol.h": "08fdc23732735e15df65860c6c48b2a5b555d94b925560dcf29909fddafa0821",
+    "tools/chart_light_tower.py": "87fe74dab672d1d7001cb2e674ea4af4720e3db8025404f1e7e9423f8d02c721",
+    "tools/derive-light-tower.py": "ac8026d946a9d741c9f1399eed52802467cda6d28d1483315dd47932ba17a8f3",
+    "tools/generate-xnav-chart-style.py": "3f9b05b4bca77373ee173fb26a22879f5b2515ae69a807e9000d24ce2ed19e1c",
+    "resources/chart-style/v1/light-tower/recipe.json": "4c98e642f74df3af80d89f456267694fb59a085169e5d7a7701a9f089ca60a5b",
+    "tests/chart_light_tower_resources_tests.py": "bcd86c70d6f89861bb3bddc2a07b77a787df80570f99f28b9b25b68e92a4de60",
+    "tests/chart_light_tower_cases.inc": "ddd453f3176516dddb2d698fd094d2e646effe731545bcb097a36de785cf3ed3",
+    "tests/chart_seamark_loader_test.cpp": "3b6602392ff036bb2c162f4c5d0b6be1fcf6d660b184457016ec0b4f8fab27c7",
+    "patches/ocharts-skager-presentation.patch": "b3c838dec078f5c9bf2bc10d0ef491a068ee076d6725ea7598042290bf27f923"
+  },
+  "resources": {
+    "chartsymbols.xml": {
+      "sha256": "3c4965bace522c3e215c97acb7fea6ae177e22e0aded01426c7a7ac4d3b23975",
+      "bytes": 2248411
+    },
+    "S52RAZDS.RLE": {
+      "sha256": "560e1a1df493d7ae4c8506da814ad936adb13ef93c6f1e2abc93f2819860ff26",
+      "bytes": 1305627
+    },
+    "rastersymbols-day.png": {
+      "sha256": "de599d5cdfa448b0e493bf16ae46734f6f9f735b18ff329c3fcb4e3c223b38e7",
+      "bytes": 202192
+    },
+    "rastersymbols-dusk.png": {
+      "sha256": "fee8f68b64d5d987a6102bbec0841af1cb4e9d8c0eac29cec378c14dc38fc58d",
+      "bytes": 176537
+    },
+    "rastersymbols-dark.png": {
+      "sha256": "670f4c4bcdb36e6e03cfd4ce6360e10e4eefd41f03d7bf58181ee61e3d40d09e",
+      "bytes": 171759
+    }
+  },
+  "towerTiles": {
+    "rastersymbols-day.png": {
+      "XNLTWR01": {
+        "source": "TOWERS01",
+        "tile": [
+          980,
+          1160,
+          14,
+          26
+        ],
+        "pivot": [
+          6,
+          22
+        ],
+        "outlineRole": "XNGEO",
+        "fillRole": "DEPMD",
+        "rgbaSha256": "b594a17f690810e1dd96b312ac78b1ca8aacf415e84041e76492bf7e468a823f",
+        "alphaSha256": "58beeeae351be3f2e8a3616b4c2a7f255f2ce314a1fa915575bb305cbd089c8f",
+        "recipeSha256": "4c98e642f74df3af80d89f456267694fb59a085169e5d7a7701a9f089ca60a5b",
+        "originalSymbolsAndLookupsUnchanged": true
+      },
+      "XNLTWR03": {
+        "source": "TOWERS03",
+        "tile": [
+          1004,
+          1160,
+          14,
+          26
+        ],
+        "pivot": [
+          6,
+          22
+        ],
+        "outlineRole": "XNBLO",
+        "fillRole": "DEPMD",
+        "rgbaSha256": "c612bacecc4f765434661617f4e75720d038aef45cba953130eaefb573fe96b0",
+        "alphaSha256": "69753ad1ba5771401375a4216f56d5b9351656b21c6c018c6219df33f5fec789",
+        "recipeSha256": "4c98e642f74df3af80d89f456267694fb59a085169e5d7a7701a9f089ca60a5b",
+        "originalSymbolsAndLookupsUnchanged": true
+      }
+    },
+    "rastersymbols-dusk.png": {
+      "XNLTWR01": {
+        "source": "TOWERS01",
+        "tile": [
+          980,
+          1160,
+          14,
+          26
+        ],
+        "pivot": [
+          6,
+          22
+        ],
+        "outlineRole": "XNGEO",
+        "fillRole": "DEPMD",
+        "rgbaSha256": "0df4d826d207aa0a895e65498dc81d0f44cb79f633b6f38e443a62e9bcfe6e76",
+        "alphaSha256": "58beeeae351be3f2e8a3616b4c2a7f255f2ce314a1fa915575bb305cbd089c8f",
+        "recipeSha256": "4c98e642f74df3af80d89f456267694fb59a085169e5d7a7701a9f089ca60a5b",
+        "originalSymbolsAndLookupsUnchanged": true
+      },
+      "XNLTWR03": {
+        "source": "TOWERS03",
+        "tile": [
+          1004,
+          1160,
+          14,
+          26
+        ],
+        "pivot": [
+          6,
+          22
+        ],
+        "outlineRole": "XNBLO",
+        "fillRole": "DEPMD",
+        "rgbaSha256": "9ad19dd0f4d4b6bee499255f403b446a3ba09d9681889527a0a3b2710b0c2186",
+        "alphaSha256": "69753ad1ba5771401375a4216f56d5b9351656b21c6c018c6219df33f5fec789",
+        "recipeSha256": "4c98e642f74df3af80d89f456267694fb59a085169e5d7a7701a9f089ca60a5b",
+        "originalSymbolsAndLookupsUnchanged": true
+      }
+    },
+    "rastersymbols-dark.png": {
+      "XNLTWR01": {
+        "source": "TOWERS01",
+        "tile": [
+          980,
+          1160,
+          14,
+          26
+        ],
+        "pivot": [
+          6,
+          22
+        ],
+        "outlineRole": "XNGEO",
+        "fillRole": "DEPMD",
+        "rgbaSha256": "a583f4a5a2043b52a668008691f9801e2eca4e7e3f8644b0db5e06adb996570f",
+        "alphaSha256": "58beeeae351be3f2e8a3616b4c2a7f255f2ce314a1fa915575bb305cbd089c8f",
+        "recipeSha256": "4c98e642f74df3af80d89f456267694fb59a085169e5d7a7701a9f089ca60a5b",
+        "originalSymbolsAndLookupsUnchanged": true
+      },
+      "XNLTWR03": {
+        "source": "TOWERS03",
+        "tile": [
+          1004,
+          1160,
+          14,
+          26
+        ],
+        "pivot": [
+          6,
+          22
+        ],
+        "outlineRole": "XNBLO",
+        "fillRole": "DEPMD",
+        "rgbaSha256": "afdf6684e3f0175a87c532be65a04254d0cf38a9a335bc69f721ef94f89a10ea",
+        "alphaSha256": "69753ad1ba5771401375a4216f56d5b9351656b21c6c018c6219df33f5fec789",
+        "recipeSha256": "4c98e642f74df3af80d89f456267694fb59a085169e5d7a7701a9f089ca60a5b",
+        "originalSymbolsAndLookupsUnchanged": true
+      }
+    }
+  },
+  "actualMethods": {
+    "renderBodySha256": "a68522af40ee97811cfb6abdae29fc0297033641cd4b52271184b41e14b91e95",
+    "yellowHeadBodySha256": "70ca7443909731676251ee2e23c0679362cd39e1ed90d12f9410de47170287c5",
+    "objectRenderBodySha256": "1b7a9b780f78a5a88a8f49b6a9a17205bbdaf6bd7415ad656deca9757319e64f",
+    "lookupBodySha256": "420a51cb824ce4989c943f751d93f3a4a94ae451493020f519099838f923801f",
+    "lookupSortBodySha256": "03d9f9b2e9074c9bf33270099eb6e1e085e5a7c37eeb1bbec806e16dd8f0bc91",
+    "privateRenderBodySha256": "aa096215b6f7f2b5d86da123081fa90462106c71c543400d7cf12f43634338f7",
+    "conditionalBodies": {
+      "bool GetDoubleAttr(S57Obj *obj,": "8b6265dac68354442f997323d69402c74109ad739bf1bef5ffff29e66c8f9dc6",
+      "bool GetStringAttr(S57Obj *obj,": "2db63d26fe99b691db51b93409cf56540c0ef58fcc7f8bf3c2cc2acc99deadd4",
+      "static int _parseList(": "ced9b3c05e34beefcbca7f060d1eb7f77368e6517037a5d09c766b77ad6ff077",
+      "static void *LIGHTS06(void *param)\n": "99dbc4761c76b92cb502e561b0fa7a748f58e2b3dbe267f90851cf1f569b5471"
+    },
+    "limits": "Actual loader/RenderSY/conditional bodies; fixture objects and recorded painter calls. No full canvas, GL draw, plugin or boat."
+  },
+  "privateLoaderSourceProof": {
+    "source": "build/scrum308-light-tower/private-original/libs/s52plib/src/chartsymbols.cpp",
+    "gitBlob": "30ae2477b4b8ba748a8cd6f046079e8607b8151f",
+    "sha256": "a88dd1739236032b23548a70e45bf9b8c649118678b36743ee5e754b47e6c208",
+    "byteIdenticalExecutedMethods": {
+      "ProcessSymbols": "afab3a5b9ff1435e42fddc2cf3f35aab76aa7b288ede6023a8f2a2db0e1d5cf4",
+      "BuildSymbol": "81ca854f5c3775390ad0297fa87ea29973141dde92c569f53bed1bc10b48fc29",
+      "GetImage": "c1356cfc1caf5641e5b4e5782b0bea362f4a877ee3ac7290072eab0a1f4f4a48",
+      "GetGLTextureRect": "638c5bf010c8e4a6ce39f84e80e2b2b36b7e3746464a331a4df027eb78ed0927"
+    },
+    "scope": "Actual owned-resource validation executes; shared method bodies match. Private DLL renderer and GL atlas upload remain unexecuted."
+  },
+  "output": "50373 actual pinned loader checks passed; GL context and native Windows acceptance remain open\n",
+  "limitations": [
+    "Fixtures use public pinned resources and invented object attributes, not boat chart data.",
+    "Core and private loader/RenderSY bodies compare exactly after macro normalization; no plugin DLL is loaded.",
+    "Scale checks retain raster dispatch metadata; no full chart canvas, GL atlas upload, physical GPU, native Windows or boat acceptance.",
+    "The exact observed boat object and its attributes remain unproven."
+  ]
+}

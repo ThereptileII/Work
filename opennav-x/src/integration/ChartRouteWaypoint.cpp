@@ -35,9 +35,6 @@ static int RoutePointOrdinal(ChartCanvas &canvas, RoutePoint &point,
       &point == pAnchorWatchPoint2 ||
       (point.m_bShowWaypointRangeRings && point.m_iWaypointRangeRingsNumber))
     return 0;
-  auto *active = g_pRouteMan->GetpActiveRoute();
-  if (!active || !DefaultChartRouteStyle(*active) || active->m_bIsBeingCreated)
-    return 0;
   int ordinal = 0, occurrences = 0, visited = 0;
   // GetIndexOf returns the first match: insufficient for repeated/shared points.
   // Count pointer identity across all actual routes, including hidden routes.
@@ -50,7 +47,8 @@ static int RoutePointOrdinal(ChartCanvas &canvas, RoutePoint &point,
       ++index;
       if (p->GetData() != &point) continue;
       if (++occurrences > 1) return 0;
-      if (route == active) ordinal = index;
+      if (DefaultChartRouteStyle(*route) && !route->m_bIsBeingCreated)
+        ordinal = index;
     }
   }
   // Two digits fit the prototype circle. Larger routes retain upstream icons;

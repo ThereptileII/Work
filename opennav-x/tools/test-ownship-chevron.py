@@ -17,7 +17,10 @@ a.output = a.output.resolve()
 source = (ROOT / 'src/integration/ChartPresentation.cpp').read_text()
 start = source.index('bool DrawChartOwnship(')
 end = source.index('\n}', start) + 2
-(a.output / 'production-ownship.h').write_text(source[start:end])
+header = (ROOT / 'src/integration/ChartPresentation.h').read_text()
+declaration = header[header.index('bool DrawChartOwnship('):]
+declaration = declaration[:declaration.index(';') + 1]
+(a.output / 'production-ownship.h').write_text(declaration + '\n' + source[start:end])
 # The immutable SVG supplies the independent geometry oracle, in original order.
 prototype = (ROOT / 'docs/design/prototype/index.html').read_text()
 path = re.search(r'id="ownShipHeading"[^>]*>\s*<path d="([^"]+)"', prototype)[1]

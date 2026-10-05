@@ -59,8 +59,8 @@ XNavPilotDrawer::XNavPilotDrawer(wxWindow &owner, PilotDrawerActions callbacks)
     queued_ = true;
     CallAfter([this] { Toggle(); });
   });
-  settings_ = new XNavButton(panel_, wxID_ANY, "Autopilot setup & diagnostics",
-                             "Autopilot setup & diagnostics");
+  settings_ = new XNavButton(panel_, wxID_ANY, "Autopilot status & diagnostics",
+                             "Autopilot status & diagnostics");
   settings_->SetRole(ButtonRole::Quiet);
   settings_->Bind(wxEVT_BUTTON, [this](wxCommandEvent &) {
     if (actions_.settings)
@@ -268,7 +268,7 @@ void XNavPilotDrawer::Paint(wxPaintEvent &) {
           : "Explicit consent is required before heading controls become available.",
       0, 442, 11, 16, width - 62, p.c.muted, 2);
   p.Rule(0, 486, width);
-  p.Text("Adapter", 0, 500, 12, p.c.secondary);
+  p.Text("Pilot feedback", 0, 500, 12, p.c.secondary);
   p.TextWeight(W(view_.connection), 110, 500, 12, p.c.primary, 500, width - 110,
                true);
   p.Rule(0, 531, width);

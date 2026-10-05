@@ -76,6 +76,21 @@ struct AnchorState {
   vessel::Time observed_at{};
   std::vector<AnchorFix> recent_positions;
   std::optional<AnchorFix> vessel_position;
+  // Owned presentation preference copied from OpenCPN. Geometry and watch
+  // configuration remain in metres; no UI dependency on upstream globals.
+  double distance_units_per_m = 1.;
+  std::string distance_unit = "m";
+};
+// Exact owned selection for a human-confirmed transition. Both upstream watch
+// slots are included; no route activation may silently leave a second watch.
+struct AnchorWatchSelection {
+  bool available = false;
+  std::vector<Waypoint> watches;
+  std::string reason;
+};
+struct NavigationNameSuggestion {
+  std::string name;
+  bool from_chart = false;
 };
 // UI receives owned values and explicit human-command callbacks. The service
 // implementation remains inside the OpenCPN integration boundary.
@@ -91,9 +106,15 @@ struct NavigationActions {
   std::function<std::optional<Route>(const std::string &)> route;
   std::function<WaypointContext(const std::string &, vessel::Time)> waypoint_context;
   std::function<vessel::AisState(vessel::Time)> ais;
-  std::function<AnchorState()> anchor;
+  std::function<AnchorState(vessel::Time)> anchor;
+  std::function<AnchorWatchSelection()> anchor_watches;
+  // New-object defaults only. Existing names are never refreshed from charts.
+  std::function<NavigationNameSuggestion(Coordinate)> suggest_waypoint_name;
+  std::function<NavigationNameSuggestion()> suggest_route_name;
   std::function<std::optional<Coordinate>()> chart_position;
   std::function<CommandResult(const Route &)> activate, reverse, deactivate;
+  std::function<CommandResult(const Route &, const AnchorWatchSelection &)>
+      activate_after_anchor;
   std::function<CommandResult(const Route &, const std::string &,
                               const std::string &)>
       edit_route;

@@ -1,4 +1,6 @@
 #include "integration/NavigationObjects.h"
+#include "application/AnchorRouteTransition.h"
+#include "application/NavigationNaming.h"
 #include "integration/AnchorGeometry.h"
 #include "integration/AisObservationTime.h"
 #include "MarkInfo.h"
@@ -6,10 +8,13 @@
 #include "chcanv.h"
 #include "chartdb.h"
 #include "s52plib.h"
+#include "s57chart.h"
+#include <memory>
 #include "model/ais_decoder.h"
 #include "model/ais_target_data.h"
 #include "model/georef.h"
 #include "model/navobj_db.h"
+#include "model/navutil_base.h"
 #include "model/own_ship.h"
 #include "model/plugin_comm.h"
 #include "model/route.h"
@@ -176,8 +181,7 @@ RoutePoint *Resolve(const application::Waypoint &selected) {
   return match && Copy(match).revision == selected.revision ? match : nullptr;
 }
 bool TextValid(const std::string &name, const std::string &description) {
-  return !name.empty() && name.size() <= 128 && description.size() <= 2048 &&
-         name.find('\0') == std::string::npos &&
+  return application::ValidNavigationName(name) && description.size() <= 2048 &&
          description.find('\0') == std::string::npos;
 }
 bool Position(const vessel::Navigation &n, vessel::Time now) {
@@ -216,6 +220,68 @@ CommandResult NavigateTo(RoutePoint *destination, bool existing) {
   return {true, "Go To started", String(route->GetGUID())};
 }
 } // namespace
+application::NavigationNameSuggestion CopyNavigationNameSuggestion(
+    MyFrame &frame, application::Coordinate position, bool route) {
+  Thread();
+  const auto fallback = [&] { return application::SuggestNavigationName(position, route, {}); };
+  auto *canvas = frame.GetPrimaryCanvas();
+  if (!canvas || !ps52plib || !ChartData || !ChartData->IsValid() || ChartData->IsBusy() ||
+      !std::isfinite(position.latitude_deg) || std::abs(position.latitude_deg) > 85 ||
+      !std::isfinite(position.longitude_deg) || std::abs(position.longitude_deg) > 180)
+    return fallback();
+  std::set<ChartBase *> charts;
+  if (!canvas->GetQuiltMode()) {
+    if (canvas->m_singleChart) charts.insert(canvas->m_singleChart);
+  } else {
+    const auto indexes = canvas->GetQuiltIndexArray();
+    if (indexes.size() > 32) return fallback();
+    const auto *cache = ChartData->GetChartCache();
+    if (!cache || cache->size() > 1000) return fallback();
+    for (std::size_t i = 0; i < cache->size(); ++i) {
+      const auto *entry = static_cast<CacheEntry *>(cache->Item(i));
+      if (entry && entry->pChart && entry->b_in_use &&
+          std::find(indexes.begin(), indexes.end(), entry->dbIndex) != indexes.end())
+        charts.insert(static_cast<ChartBase *>(entry->pChart));
+    }
+  }
+  std::vector<application::ChartNameCandidate> names;
+  // GetFirstQuiltChart/GetNextQuiltChart can open charts. Use only existing
+  // cache pointers above; never load charts or call plugin/network lookup.
+  // The pinned native query owns its list, not the borrowed chart objects.
+  const double radius = .5 / (60. * std::cos(position.latitude_deg * std::acos(-1.) / 180.));
+  for (auto *base : charts) {
+    auto *chart = dynamic_cast<s57chart *>(base);
+    if (!chart) continue;
+    std::unique_ptr<ListOfObjRazRules> objects(chart->GetObjRuleListAtLatLon(
+        position.latitude_deg, position.longitude_deg, radius, &canvas->GetVP(), MASK_POINT));
+    if (!objects) continue;
+    if (objects->GetCount() > 1024) return fallback();
+    for (auto *node = objects->GetFirst(); node; node = node->GetNext()) {
+      const auto *rule = node->GetData();
+      auto *object = rule ? rule->obj : nullptr;
+      if (!object || object->Primitive_type != GEO_POINT || object->npt != 1 ||
+          !application::RelevantChartNameFeature(std::string(object->FeatureName, 6))) continue;
+      const auto attribute = [&](const char *key) {
+        const int index = object->GetAttributeIndex(key);
+        if (index < 0 || !object->attVal || static_cast<std::size_t>(index) >= object->attVal->size())
+          return wxString{};
+        const auto *value = object->attVal->Item(index);
+        if (!value || value->valType != OGR_STR || !value->value) return wxString{};
+        return object->GetAttrValueAsString(key).Trim(true).Trim(false);
+      };
+      auto name = attribute("OBJNAM");
+      if (name.empty()) name = attribute("NOBJNM");
+      if (name.empty() || !std::isfinite(object->m_lat) || !std::isfinite(object->m_lon) ||
+          std::abs(object->m_lat) > 90 || std::abs(object->m_lon) > 180) continue;
+      double distance = 0;
+      DistanceBearingMercator(position.latitude_deg, position.longitude_deg,
+                              object->m_lat, object->m_lon, nullptr, &distance);
+      names.push_back({String(name), distance});
+      if (names.size() > 1024) return fallback();
+    }
+  }
+  return application::SuggestNavigationName(position, route, names);
+}
 application::WaypointContext CopyWaypointContext(
     const std::string &id, const vessel::Navigation &position, vessel::Time now) {
   Thread();
@@ -302,11 +368,43 @@ std::optional<application::Route> CopyNavigationRoute(const std::string &id) {
   }
   return match ? std::optional<application::Route>(Copy(match)) : std::nullopt;
 }
-application::CommandResult ActivateRoute(const application::Route &selected,
-                                         const vessel::Navigation &position) {
+application::AnchorWatchSelection CopyAnchorWatchSelection() {
+  Thread();
+  application::AnchorWatchSelection selection;
+  selection.reason = "Anchor watch changed or unavailable; refresh selection";
+  for (const auto &slot : {std::make_pair(pAnchorWatchPoint1, g_AW1GUID),
+                           std::make_pair(pAnchorWatchPoint2, g_AW2GUID)}) {
+    auto *point = slot.first;
+    const auto id = String(slot.second);
+    if (!point && id.empty()) continue;
+    if (!point || id.empty() || !pWayPointMan) return selection;
+    bool registered = false;
+    int identities = 0;
+    for (auto *node = pWayPointMan->GetWaypointList()->GetFirst(); node;
+         node = node->GetNext()) {
+      auto *candidate = node->GetData();
+      registered |= candidate == point;
+      if (candidate && String(candidate->m_GUID) == id) ++identities;
+    }
+    // Check membership before dereferencing a retained upstream pointer.
+    if (!registered || identities != 1) return selection;
+    auto copy = Copy(point);
+    if (copy.id != id || copy.revision.empty() ||
+        (!selection.watches.empty() && selection.watches.front().id == id))
+      return selection;
+    selection.watches.push_back(std::move(copy));
+  }
+  selection.available = true;
+  selection.reason.clear();
+  return selection;
+}
+namespace {
+application::CommandResult ActivateRouteTransition(
+    const application::Route &selected, const vessel::Navigation &position,
+    const application::AnchorWatchSelection *confirmed) {
   Thread();
   auto *route = Resolve(selected);
-  if (!route || !Copy(route).editable || route->GetnPoints() < 2)
+  if (!g_pRouteMan || !route || !Copy(route).editable || route->GetnPoints() < 2)
     return {
         false,
         "Route changed, active, protected or being edited; refresh selection",
@@ -317,13 +415,46 @@ application::CommandResult ActivateRoute(const application::Route &selected,
             {}};
   auto *best =
       g_pRouteMan->FindBestActivatePoint(route, gLat, gLon, gCog, gSog);
-  route->SetVisible(true);
-  g_pRouteMan->ActivateRoute(route, best);
-  const bool saved = NavObj_dB::GetInstance().UpdateRoute(route);
-  return {saved,
-          saved ? "Route activated using OpenCPN"
-                : "Route active but persistence failed; inspect diagnostics",
-          selected.id};
+  const auto watches = CopyAnchorWatchSelection();
+  return application::CommitRouteActivation(watches, confirmed, [&] {
+    const bool visible = route->IsVisible();
+    route->SetVisible(true);
+    if (NavObj_dB::GetInstance().UpdateRoute(route)) return true;
+    route->SetVisible(visible);
+    return false;
+  }, [&]() -> application::CommandResult {
+    // Match the pinned chart activation path. Deactivation clears progress,
+    // not the route or its marks; ordinary ActivateRoute does not do this.
+    if (g_pRouteMan->GetpActiveRoute() && !g_pRouteMan->DeactivateRoute())
+      return {false, "Could not stop current navigation; anchor watch retained"};
+    // This transition preserves every mark, including SKAGER-created anchors.
+    // Explicit ClearAnchor has a separate, confirmed temporary-mark lifecycle.
+    pAnchorWatchPoint1 = pAnchorWatchPoint2 = nullptr;
+    g_AW1GUID.Clear();
+    g_AW2GUID.Clear();
+    AnchorAlertOn1 = AnchorAlertOn2 = false;
+    for (const auto &watch : watches.watches) {
+      wxJSONValue message;
+      message["GUID"] = wxString::FromUTF8(watch.id);
+      SendJSONMessageToAllPlugins("OCPN_ANCHOR_WATCH_CLEARED", message);
+    }
+    // At the pinned revision this call returns true and delegates plugin-owned
+    // route handling normally. Do not introduce an alternate progress engine.
+    const bool activated = g_pRouteMan->ActivateRoute(route, best);
+    return {activated, activated ? "Route activated using OpenCPN"
+                                  : "Route activation failed; anchor watch stopped",
+            selected.id};
+  });
+}
+} // namespace
+application::CommandResult ActivateRoute(const application::Route &selected,
+                                         const vessel::Navigation &position) {
+  return ActivateRouteTransition(selected, position, nullptr);
+}
+application::CommandResult ActivateRouteAfterAnchor(
+    const application::Route &selected, const vessel::Navigation &position,
+    const application::AnchorWatchSelection &confirmed) {
+  return ActivateRouteTransition(selected, position, &confirmed);
 }
 application::CommandResult StopRoute(const application::Route &selected) {
   Thread();
@@ -447,6 +578,8 @@ application::CommandResult GoTo(application::Coordinate destination,
                                  const std::string &name,
                                  const vessel::Navigation &position) {
   Thread();
+  if (pAnchorWatchPoint1 || pAnchorWatchPoint2 || !g_AW1GUID.empty() || !g_AW2GUID.empty())
+    return {false, "Stop the anchor watch before starting Go To", {}};
   if (!g_pRouteMan || !pRouteList || !pSelect || !pWayPointMan ||
       !Position(position, vessel::Clock::now()))
     return {false, "Go To requires a current GPS position", {}};
@@ -466,6 +599,8 @@ application::CommandResult GoTo(application::Coordinate destination,
 application::CommandResult GoToWaypoint(const application::Waypoint &selected,
                                          const vessel::Navigation &position) {
   Thread();
+  if (pAnchorWatchPoint1 || pAnchorWatchPoint2 || !g_AW1GUID.empty() || !g_AW2GUID.empty())
+    return {false, "Stop the anchor watch before starting Go To", {}};
   auto *point = Resolve(selected);
   if (!point || !Copy(point).editable)
     return {false, "Waypoint changed or protected; select it again", {}};
@@ -581,6 +716,8 @@ application::AnchorState ObserveAnchor(const vessel::Navigation &position,
   s.observed_at = now;
   s.source = "OpenCPN normal anchor watch";
   s.state = "No anchor watch";
+  s.distance_units_per_m = toUsrDistance(1. / 1852.);
+  s.distance_unit = String(getUsrDistanceUnit());
   auto *point = pAnchorWatchPoint1 ? pAnchorWatchPoint1 : pAnchorWatchPoint2;
   if (!point || !pWayPointMan)
     return s;
@@ -607,18 +744,7 @@ application::AnchorState ObserveAnchor(const vessel::Navigation &position,
   s.state =
       s.alarm ? "OpenCPN anchor alarm" : "Watching; no drag-intelligence claim";
   if (Position(position, now)) {
-    double bearing, distance;
-    DistanceBearingMercator(point->m_lat, point->m_lon, gLat, gLon, &bearing,
-                            &distance);
-    if (std::isfinite(distance * 1852) && distance >= 0) {
-      s.distance_m = {distance * 1852, s.source,
-                      position.latitude_deg.observed_at,
-                      vessel::Validity::Measured};
-      s.distance_m.freshness = position.latitude_deg.freshness;
-      s.vessel_position = ProjectAnchorPosition(*s.anchor, {gLat,gLon},
-                                                position.latitude_deg.observed_at,
-                                                position.latitude_deg.source);
-    }
+    ObserveAnchorPosition(s, position, now);
   } else
     s.state = "Position unavailable/stale; anchor watch needs attention";
   return s;
@@ -626,7 +752,7 @@ application::AnchorState ObserveAnchor(const vessel::Navigation &position,
 application::CommandResult StartAnchor(const vessel::Navigation &position,
                                        double radius) {
   Thread();
-  if (pAnchorWatchPoint1 || pAnchorWatchPoint2)
+  if (pAnchorWatchPoint1 || pAnchorWatchPoint2 || !g_AW1GUID.empty() || !g_AW2GUID.empty())
     return {
         false,
         "An upstream anchor watch already exists; clear it explicitly first",
@@ -637,7 +763,7 @@ application::CommandResult StartAnchor(const vessel::Navigation &position,
     return {false,
             "Fresh position and whole-metre radius within OpenCPN anchor limits required",
             {}};
-  if (!pWayPointMan || !pSelect)
+  if (!pWayPointMan || !pSelect || !g_pRouteMan)
     return {false, "Navigation storage unavailable", {}};
   auto *point = new RoutePoint(
       *position.latitude_deg.value, *position.longitude_deg.value, "anchor",
@@ -646,13 +772,31 @@ application::CommandResult StartAnchor(const vessel::Navigation &position,
   // Human-readable ownership annotation; the clear path also recognizes the
   // exact historical descriptions for upgrade continuity.
   point->m_MarkDescription = "SKAGER temporary anchor watch";
-  if (!NavObj_dB::GetInstance().InsertRoutePoint(point)) {
+  // Persist first: a failed anchor save must leave navigation running. The
+  // pinned DeactivateRoute clears active progress without deleting the route.
+  const auto started = application::CommitAnchorWatch(
+      [&] { return NavObj_dB::GetInstance().InsertRoutePoint(point); },
+      [] { return !g_pRouteMan->GetpActiveRoute() || g_pRouteMan->DeactivateRoute(); },
+      [&] { return NavObj_dB::GetInstance().DeleteRoutePoint(point); },
+      [&] {
+        pSelect->AddSelectableRoutePoint(point->m_lat, point->m_lon, point);
+        pAnchorWatchPoint1 = point;
+        g_AW1GUID = point->m_GUID;
+      });
+  if (started == application::AnchorStartResult::SaveFailed ||
+      started == application::AnchorStartResult::StopFailed) {
     delete point;
-    return {false, "Anchor save failed; watch unchanged", {}};
+    return {false, started == application::AnchorStartResult::SaveFailed
+                       ? "Anchor save failed; navigation and watch unchanged"
+                       : "Could not stop navigation; anchor watch unchanged", {}};
   }
-  pSelect->AddSelectableRoutePoint(point->m_lat, point->m_lon, point);
-  pAnchorWatchPoint1 = point;
-  g_AW1GUID = point->m_GUID;
+  if (started == application::AnchorStartResult::RollbackFailed) {
+    // Keep failed rollback data visible/selectable and report its identity;
+    // never leave an invisible persisted orphan or arm a conflicting watch.
+    pSelect->AddSelectableRoutePoint(point->m_lat, point->m_lon, point);
+    return {false, "Could not stop navigation or remove saved anchor mark; watch not armed",
+            String(point->m_GUID)};
+  }
   wxJSONValue message;
   message["GUID"] = g_AW1GUID;
   SendJSONMessageToAllPlugins("OCPN_ANCHOR_WATCH_SET", message);

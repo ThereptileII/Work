@@ -25,6 +25,8 @@ PilotPresentation PresentPilot(const adapters::PilotView &pilot,
                      f.mode != adapters::PilotMode::Unavailable && f.sequence &&
                      !f.source.empty() && f.observed_at <= now &&
                      now - f.observed_at < std::chrono::seconds(3);
+  p.available = fresh;
+  p.degraded = !replayed && !fresh && f.sequence;
   p.mode = fresh ? f.mode : adapters::PilotMode::Unavailable;
   p.commanded = p.mode == adapters::PilotMode::Auto;
   if (fresh) {
@@ -50,7 +52,8 @@ PilotPresentation PresentPilot(const adapters::PilotView &pilot,
   p.state = p.pending ? "AWAITING ACKNOWLEDGEMENT"
             : fresh   ? adapters::PilotModeName(p.mode)
                       : "STATUS UNAVAILABLE";
-  p.connection = fresh ? "Connected" : "Unavailable";
+  p.connection = fresh ? "Receiving feedback"
+                       : p.degraded ? "Feedback lost" : "Waiting for feedback";
   p.note = p.enabled ? "Manual control enabled for this session. Mode and "
                        "heading require measured pilot feedback."
                      : "Control is off. Enable it only after configuring and "
@@ -88,7 +91,11 @@ PilotPresentation PresentPilot(const adapters::PilotView &pilot,
   }
   if (pilot.output_unavailable && !replayed) {
     p.pending = false;
-    p.note = "Status only. SKAGER equipment control is unavailable in this product. Use the physical helm.";
+    p.state = fresh ? adapters::PilotModeName(p.mode)
+                    : p.degraded ? "FEEDBACK LOST" : "STATUS UNAVAILABLE";
+    p.note = fresh ? "Live pilot feedback. Status only; use the physical helm for control."
+                  : p.degraded ? "Pilot feedback is stale or lost. Status only; check the OpenCPN connection and use the physical helm."
+                               : "Waiting for accepted pilot feedback from OpenCPN. Status only; use the physical helm.";
   }
   return p;
 }

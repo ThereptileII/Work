@@ -28,6 +28,7 @@ import chart_day_neutral_ink
 import chart_structure_paint
 import chart_construction_hatch
 import chart_building_point
+import chart_light_tower
 import chart_fishing_pattern
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -119,6 +120,7 @@ def validate_resource_changes(original, styled, colors):
     chart_generic_beacon_art.restore_for_validation(before, after)
     chart_yellow_buoy_art.restore_for_validation(before, after)
     chart_building_point.restore_for_validation(before, after)
+    chart_light_tower.restore_for_validation(before, after)
     chart_seamark_art.restore_for_validation(before, after)
     # Added nodes must not make whitespace significant in the identity check.
     for tree in (before,after):
@@ -198,6 +200,7 @@ def generate(source, output):
     xml=chart_generic_beacon_art.relocate(xml)
     xml=chart_yellow_buoy_art.relocate(xml)
     xml=chart_building_point.relocate(xml)
+    xml=chart_light_tower.relocate(xml)
     xml=chart_fishing_pattern.relocate(xml)
     validate_resource_changes(original['chartsymbols.xml'],xml,colors)
     result=dict(original);result['chartsymbols.xml']=xml.encode('utf-8')
@@ -224,6 +227,7 @@ def generate(source, output):
     generic_beacon = {}
     yellow_buoy = {}
     building_point = {}
+    light_tower = {}
     fishing_pattern = {}
     for table, name in [('DAY_BRIGHT','rastersymbols-day.png'),
                         ('DUSK','rastersymbols-dusk.png'),
@@ -237,6 +241,7 @@ def generate(source, output):
         result[name], generic_beacon[name] = chart_generic_beacon_art.paint(result[name], table)
         result[name], yellow_buoy[name] = chart_yellow_buoy_art.paint(result[name], table)
         result[name], building_point[name] = chart_building_point.paint(result[name], table, colors[table])
+        result[name], light_tower[name] = chart_light_tower.paint(result[name], original[name], table, colors[table])
         result[name], fishing_pattern[name] = chart_fishing_pattern.paint(result[name], table)
         result[name], construction_hatch[name] = chart_construction_hatch.paint(result[name], table, colors[table][chart_construction_hatch.COLOR])
     output.mkdir(parents=True,exist_ok=True)
@@ -258,6 +263,7 @@ def generate(source, output):
               'genericBeaconArtwork':generic_beacon,
               'yellowBuoyArtwork':yellow_buoy,
               'buildingPointArtwork':building_point,
+              'lightTowerArtwork':light_tower,
               'fishingPatternArtwork':fishing_pattern,
               'geographicNameLookups':geography_count,
               'structuralAreaPaint':{'color':'XNSTR','lookupIds':sorted(chart_structure_paint.RULES),

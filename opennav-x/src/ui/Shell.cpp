@@ -1,4 +1,5 @@
 #include "ui/Shell.h"
+#include "ui/NameEditor.h"
 #include "application/Brand.h"
 #include "application/SkagerBrandAsset.h"
 #include "ui/SkagerWordmark.h"
@@ -327,9 +328,11 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   auto *actions_row = new wxBoxSizer(wxHORIZONTAL);
   auto *route_host=route_actions_;
   finish_route_ = Button(route_host, "Done", "Name and save this route", [this] {
-    const auto fields=EditSheet(frame_,mode_,"Save route",
+    const auto suggestion=actions_.navigation.suggest_route_name
+        ? actions_.navigation.suggest_route_name() : application::NavigationNameSuggestion{};
+    const auto fields=EditNavigationNameSheet(frame_,mode_,"Save route",
       "Name this route. You can activate it after saving.",
-      {{"Name","",128},{"Description","",2048}},"Save route",display_.scale_percent);
+      suggestion.name,"","Save route",display_.scale_percent);
     if(!fields || !actions_.navigation.finish_route_named) return;
     const auto result=actions_.navigation.finish_route_named((*fields)[0],(*fields)[1]);
     if(result.ok) { Tick(); ShowObject(result.identity,true); }
@@ -519,6 +522,7 @@ Shell::~Shell() {
   if (alert_drawer_) { alert_drawer_->Dismiss(); alert_drawer_->Destroy(); alert_drawer_ = nullptr; }
   if (search_drawer_) { search_drawer_->Dismiss(); search_drawer_->Destroy(); search_drawer_ = nullptr; }
   if (chart_presentation_drawer_) { chart_presentation_drawer_->Dismiss(); chart_presentation_drawer_->Destroy(); chart_presentation_drawer_ = nullptr; }
+  if (chart_info_drawer_) { chart_info_drawer_->Dismiss(); chart_info_drawer_->Destroy(); chart_info_drawer_ = nullptr; }
   if (health_drawer_) { health_drawer_->Dismiss(); health_drawer_->Destroy(); health_drawer_ = nullptr; }
   if (pilot_drawer_) { pilot_drawer_->Dismiss(); pilot_drawer_->Destroy(); pilot_drawer_ = nullptr; }
   for (const auto &c : commands_)
@@ -620,7 +624,8 @@ std::vector<ProductGeometry> Shell::InteractionControls() const {
 }
 
 bool Shell::HasTransientSurface() const {
-  if (DrawerRegion() || (context_ && context_->IsShownOnScreen())) return true;
+  if (DrawerRegion() || (context_ && context_->IsShownOnScreen()) ||
+      (route_context_ && route_context_->IsShownOnScreen())) return true;
   for (auto *window : wxTopLevelWindows) {
     auto *dialog = dynamic_cast<wxDialog *>(window);
     if (!dialog || !dialog->IsModal()) continue;
@@ -833,7 +838,8 @@ void Shell::ApplyOwnedScale() {
                     static_cast<XNavDrawer *>(alert_drawer_),
                     static_cast<XNavDrawer *>(health_drawer_),
                     static_cast<XNavDrawer *>(search_drawer_),
-                    static_cast<XNavDrawer *>(chart_presentation_drawer_)})
+                    static_cast<XNavDrawer *>(chart_presentation_drawer_),
+                    static_cast<XNavDrawer *>(chart_info_drawer_)})
     if(drawer)drawer->SetInterfaceScale(percent);
 }
 
@@ -912,7 +918,7 @@ void Shell::Tick() {
       p.ais = actions_.navigation.ais(now);
     horizon_ais_=p.ais;
     if (!simulation_ && !replay && actions_.navigation.anchor)
-      p.anchor = actions_.navigation.anchor();
+      p.anchor = actions_.navigation.anchor(now);
     else
       p.anchor.state = "Historical data / anchor controls unavailable";
     if(anchor_drawer_&&anchor_drawer_->IsShown()) {
@@ -1007,6 +1013,10 @@ void Shell::Tick() {
     chart_presentation_drawer_->Update(actions_.navigation.chart_presentation
         ? actions_.navigation.chart_presentation() : application::ChartPresentationState{},mode_);
     chart_presentation_drawer_->Present(DrawerWorkspace());
+  }
+  if (chart_info_drawer_ && chart_info_drawer_->IsShown()) {
+    chart_info_drawer_->UpdateLight(mode_);
+    chart_info_drawer_->Present(DrawerWorkspace());
   }
   if (passage_drawer_ && passage_drawer_->IsShown()) {
     passage_drawer_->Update(state_, field_snapshot_.advice, energy, now, mode_);
@@ -1140,6 +1150,7 @@ void Shell::UpdateScrollControls() {
 }
 
 std::string Shell::PageTitle() const {
+  if (chart_info_drawer_ && chart_info_drawer_->IsShown()) return "Chart information";
   if (search_drawer_ && search_drawer_->IsShown()) return "Chart search";
   if (chart_presentation_drawer_ && chart_presentation_drawer_->IsShown()) return "Chart presentation";
   if (health_drawer_ && health_drawer_->IsShown()) return "Source health";
@@ -1191,6 +1202,7 @@ void Shell::ShowNavigation() {
   CloseContext();
   if (search_drawer_) search_drawer_->Dismiss();
   if (chart_presentation_drawer_) chart_presentation_drawer_->Dismiss();
+  if (chart_info_drawer_) chart_info_drawer_->Dismiss();
   if (health_drawer_) health_drawer_->Dismiss();
   if (alert_drawer_) alert_drawer_->Dismiss();
   if (pilot_drawer_) pilot_drawer_->Dismiss();
@@ -1272,6 +1284,44 @@ void Shell::ShowObject(const std::string &id, bool route) {
   });
   UpdateContext(vessel::Clock::now());
   if (context_) { context_->Show(); context_->Raise(); UpdateContext(vessel::Clock::now()); }
+}
+void Shell::ShowRouteContext(const std::string &id, bool hover) {
+  if (id.empty()) return;
+  if (route_context_ && route_context_->IsShown() && context_route_ == id) {
+    UpdateContext(vessel::Clock::now());
+    return;
+  }
+  // Hover is advisory: it must neither replace an open task nor take focus
+  // from chart interaction. Explicit pointer/touch selection may replace it.
+  if (hover && (HasTransientSurface() || manager_.GetPane(page_).IsShown() ||
+      (product_ && manager_.GetPane(product_).IsShown()))) return;
+  if (hover) {
+    const auto pointer = wxGetMousePosition();
+    if (!route_hover_.Accept(id, pointer.x, pointer.y)) return;
+  }
+  if (hover) CloseContext();
+  else ShowNavigation();
+  context_route_ = id;
+  const std::weak_ptr<int> lifetime = context_lifetime_;
+  route_context_ = new XNavRouteContextCard(frame_, id,
+      [this, lifetime](RouteContextAction action, const std::string &selected_id) {
+    if (lifetime.expired()) return;
+    const auto route = actions_.navigation.route ? actions_.navigation.route(selected_id)
+                                                 : std::nullopt;
+    const auto current = application::PresentRouteContext(selected_id, route);
+    if (!current.available) return;
+    if (action == RouteContextAction::Details) ShowObject(selected_id, true);
+    else if (current.can_view && actions_.navigation.view_route) {
+      ShowNavigation();
+      actions_.navigation.view_route(selected_id);
+    }
+  }, [this, lifetime, id] {
+    if (lifetime.expired()) return;
+    const auto pointer = wxGetMousePosition();
+    route_hover_.Accept(id, pointer.x, pointer.y);
+  });
+  UpdateContext(vessel::Clock::now());
+  if (route_context_) route_context_->ShowWithoutActivating();
 }
 void Shell::ShowAis(int mmsi) {
   ShowTraffic(mmsi);
@@ -1465,6 +1515,9 @@ void Shell::ShowAlerts() {
   alert_drawer_->Present(DrawerWorkspace());Tick();
 }
 void Shell::CloseContext() {
+  if (route_context_) route_context_->Dismiss();
+  route_context_ = nullptr;
+  context_route_.clear();
   if (context_) context_->Dismiss();
   context_ = nullptr;
   context_waypoint_.clear();
@@ -1492,6 +1545,19 @@ void Shell::ShowHealth() {
   health_drawer_->Present(DrawerWorkspace());Tick();
 }
 void Shell::UpdateContext(vessel::Time now) {
+  if (route_context_ && !route_context_->IsBeingDeleted()) {
+    route_context_->UpdateRoute(actions_.navigation.route
+        ? actions_.navigation.route(context_route_) : std::nullopt, mode_);
+    for (const auto &name : actions_.navigation_panes) {
+      const auto &pane = manager_.GetPane(name);
+      if (pane.IsOk() && pane.IsShown() && pane.window) {
+        if (!route_context_->Place(pane.window->GetScreenRect())) CloseContext();
+        return;
+      }
+    }
+    CloseContext();
+    return;
+  }
   if (!context_ || context_->IsBeingDeleted()) return;
   const bool live = !state_.simulated && !state_.replayed;
   if (context_mmsi_) {
@@ -1528,6 +1594,7 @@ void Shell::ShowPage(PreviewPage page) {
   CloseContext();
   if (search_drawer_) search_drawer_->Dismiss();
   if (chart_presentation_drawer_) chart_presentation_drawer_->Dismiss();
+  if (chart_info_drawer_) chart_info_drawer_->Dismiss();
   if (health_drawer_) health_drawer_->Dismiss();
   if (alert_drawer_) alert_drawer_->Dismiss();
   if (pilot_drawer_) pilot_drawer_->Dismiss();
@@ -1680,6 +1747,14 @@ void Shell::AfterCanvasLayoutChanged() {
   manager_.Update();
 }
 
+void Shell::ShowChartInformation(application::ChartInfo info) {
+  ShowNavigation();
+  if (!chart_info_drawer_) chart_info_drawer_ = new XNavChartInfoDrawer(frame_);
+  chart_info_drawer_->SetInterfaceScale(display_.scale_percent);
+  chart_info_drawer_->Open(std::move(info), DrawerWorkspace(), mode_);
+  PlaceChartControls();
+}
+
 void Shell::ShowChartContext(application::Coordinate position) {
   ShowNavigation();
   context_position_ = position;
@@ -1701,9 +1776,11 @@ void Shell::ShowChartContext(application::Coordinate position) {
         result(actions_.navigation.go_to(position, "Go To"));
     } else if (action == ContextAction::CreateWaypoint && actions_.navigation.create_waypoint) {
       if (!live()) return;
-      const auto fields = EditSheet(frame_, mode_, "Create waypoint", "Save this chart position.",
-                                    {{"Name", "Waypoint", 128}}, "Save", display_.scale_percent);
-      if (fields && live()) result(actions_.navigation.create_waypoint(position, (*fields)[0], ""));
+      const auto suggestion=actions_.navigation.suggest_waypoint_name
+          ? actions_.navigation.suggest_waypoint_name(position) : application::NavigationNameSuggestion{};
+      const auto fields = EditNavigationNameSheet(frame_, mode_, "Create waypoint", "Save this chart position.",
+                                    suggestion.name,"", "Save", display_.scale_percent);
+      if (fields && live()) result(actions_.navigation.create_waypoint(position, (*fields)[0], (*fields)[1]));
     } else if (action == ContextAction::Measure && actions_.navigation.measure) {
       actions_.navigation.measure();
     } else if (action == ContextAction::Info && actions_.navigation.object_info_at) {
