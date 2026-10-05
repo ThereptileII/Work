@@ -120,3 +120,36 @@ and re-observes the watch afterward. Seven added cases cover removal,
 replacement (including retained GUID/revision), modification, unavailable state,
 an added watch and unchanged success. The actual integration syntax and focused
 CMake target pass. Native qualification remains pending for the replacement.
+
+## Native component diagnosis and retention correction
+
+Replacement `30a0bb7853c1fa879d682cdc70b2d72204eb5977` in
+[run 37270689330](https://github.com/ThereptileII/Work/actions/runs/37270689330)
+successfully compiles the Windows application and passes 144/144 integrated
+CTests. Twelve shared component executables pass, including all four previously
+misconfigured entry points and the callback-lifetime fixture. AIS scrolling
+fails after 22 successful assertions at its outside-owner input count.
+
+The focused native reproduction confirms one pre-existing native owner motion,
+followed by exactly one delivery of each explicitly dispatched outside event.
+The test now separates incidental owner motion from explicitly dispatched and
+child-origin input. Both original lifetime non-leak assertions remain, and three
+new immediate assertions require exactly one outside delivery. The corrected
+fixture passes 47 checks on Linux and native Windows, including its OS pointer
+drag. [The downloaded evidence](ais-scroll-native.json) identifies both the
+failed diagnostic and successful correction; no application code changed.
+
+The initial shared-suite placement mistakenly preceded compiled-input retention.
+It now runs in downstream qualification after authenticated restore, preserving
+the original producer manifest and all thirteen executable hashes. Fixed names
+and paths are verified before rebasing, producer/harness identities stay separate,
+and any failure still prevents delivery. Twenty focused retention/refusal tests,
+two attempt-selection tests and three workflow-policy checks pass locally. Older
+archives without the required components are refused. This corrects scheduling;
+it does not turn the failed application's run into installer acceptance.
+
+The boat development checkout is at `30a0bb7`; all 118 boat helper files match
+the reviewed source. The installed application remains `0da2c64`. The development
+checkout update did not change or launch the installed application. A fresh cold
+backup, profile-preserving commissioning transition and exact accepted installer
+are still required before replacement.

@@ -13,7 +13,7 @@ AIS list scrolling and the reported chart/anchor/ownship presentation defects.
 SCRUM-306 remains In Progress: its radius-control upgrade is implemented, but
 the installed missing-target symptom is not yet proven fixed. An isolated live
 probe received real traffic; that does not qualify the current application's
-chart/list path. Coordinate-free commissioning diagnostics are being added to
+chart/list path. Coordinate-free commissioning diagnostics are implemented to
 separate incoming reports, subscription state, cached positions and radius
 filtering without exposing the credential or vessel position.
 
@@ -40,6 +40,19 @@ seven additional cases in the same fixture. Four native fixture entry-point
 settings found in the superseded logs are corrected; application code is
 unchanged by that build-setting repair. The next candidate includes all three
 corrections, without another design or endurance campaign.
+
+Candidate `30a0bb7853c1fa879d682cdc70b2d72204eb5977` compiles on native
+Windows and passes 144/144 integrated CTests. Twelve of thirteen new shared
+components pass; the AIS scroll fixture failed because an ordinary native owner
+mouse-motion event contaminated its lifetime counter. The isolated native
+diagnostic reproduced the extra event, then the corrected fixture passed all
+47 checks in run 37273670351, preserving the original assertions and adding
+three exact-dispatch checks. Application code is unchanged by this correction.
+See [downloaded native evidence](evidence/2026-10-05-boat-feedback/ais-scroll-native.json).
+The new component step is moved after immutable build retention, so future
+runtime-helper failures retain the compiled inputs. Replacement integrated
+packaging and boat acceptance remain pending; the failed run did not produce
+a qualified installer.
 
 ## Online AIS freeze: first narrow repair — SCRUM-301
 
