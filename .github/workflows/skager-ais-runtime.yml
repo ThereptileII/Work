@@ -61,7 +61,7 @@ jobs:
       - name: Verify SDK once before the AIS consumer repeats verification
         shell: pwsh
         run: |
-          ./opennav-x/tools/test-dependency-reprobe-evidence.ps1
+          & pwsh -NoProfile -File opennav-x/tools/test-dependency-reprobe-evidence.ps1
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           ./opennav-x/tools/build-pristine-windows.ps1 -Architecture Win32 -Integration -VerifyDependencyBundleOnly -DependencyBundle "$env:GITHUB_WORKSPACE/dependency-bundle" -DependencyBundleProvenance "$env:GITHUB_WORKSPACE/dependency-provenance.json"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
@@ -72,6 +72,15 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python opennav-x/tools/test-ais-runtime-windows.py --dependency-bundle "$env:GITHUB_WORKSPACE/dependency-bundle" --dependency-bundle-provenance "$env:GITHUB_WORKSPACE/dependency-provenance.json"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Require two separately retained native reprobes
+        shell: pwsh
+        run: |
+          $Probes = @(Get-ChildItem opennav-x/evidence/local -Directory -Filter 'dependency-reprobe-*')
+          if ($Probes.Count -ne 2) { throw 'Both native verification invocations must have executed' }
+          foreach ($Probe in $Probes) {
+            $Transcript = Get-Content (Join-Path $Probe.FullName 'windows-xnav-Win32.log') -Raw
+            if (-not $Transcript.Contains('Cross-run dependency live reprobe and stage passed:')) { throw 'Native reprobe success evidence missing' }
+          }
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
