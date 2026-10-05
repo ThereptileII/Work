@@ -2,11 +2,12 @@
 
 ## Current increment — SCRUM-312 navigation warning and secure startup
 
-Selected after the user asked for the next software feature. Implementing finite
+Selected after the user asked for the next software feature. Implemented finite
 authenticated human-wait/continue/cancel phases around the original OpenCPN
 warning; healthy startup still requires the existing 30-second ready shell and
-durable checkpoint. Focused native qualification is in progress; integrated
-package and installed acceptance remain pending. The boat's c0d8d85 app remains
+durable checkpoint. Focused Linux/native qualification passes on `4cd191cb`
+([native run](https://github.com/ThereptileII/Work/actions/runs/37377435744)); integrated
+package and installed acceptance remain pending. [Evidence](evidence/2026-10-05-startup-warning/README.md). The boat's c0d8d85 app remains
 unchanged; no actuator commands. [Contract](installer/startup-human-wait.md).
 
 Pilot component follow-up: 14 native contracts, 6 presentation cases and 161 button

@@ -1,0 +1,77 @@
+{
+  "jira": "SCRUM-312",
+  "status": "focused Linux/native boundary qualification passed; integrated installed acceptance pending",
+  "sourceCommit": "4cd191cb73d5178d485961b8d0b1b92300e2d15d",
+  "localSourceCommit": "a59f422db38ed20bd47391df018daa67b92cbbc4",
+  "upstreamCommit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "sourceHashes": {
+    "src/integration/UpdateStartupReceipt.h": "83dd6df844e949d89a9e48767fda6bc989a7b8c757b947a2b20f358f0003e68e",
+    "src/integration/UpdateStartupReceipt.cpp": "2f657ef2800406508f5a2cc02ea85e8a006bd8dc9590e24433d1efdc8d9e3aca",
+    "patches/opencpn-5.12.4-xnav.patch": "c75ba8c04399ea3c06e277eaa6dfd57cecd554903912850217ba8a3c543ceee0",
+    "installer/windows/UpdateTransaction.ps1": "f2f3bf727a2af81fab972b678e5a55185b0bc45cf803d16bf137f01498bc21bc",
+    "tools/update-verifier/launcher/launcher.go": "c244aca8ddf86e652d604850c871547606a5e1567d70f30a113b7b85b671c395"
+  },
+  "linux": {
+    "receiptPolicy": "passed",
+    "launcherPassedEntriesIncludingSubtests": 85,
+    "addedSupervisorBudgetRegression": "passed",
+    "boatBootstrapPolicyAssertions": 42,
+    "receiverRecordsAndEmbeddedCSharp": "passed; native pipe cases explicitly skipped",
+    "allReviewedPatchesApply": 10,
+    "integratedUnit": {
+      "unit": "ocpn_app",
+      "source": "gui/src/ocpn_app.cpp",
+      "source_sha256": "5e7b3006119b51c81f0e55a23a55b8be955d9cace15b1c2ecb9dd377785389c5",
+      "unchanged_during_compile": true,
+      "returncode": 0,
+      "elapsed_seconds": 13.46
+    },
+    "integratedUnitScope": "Complete changed ocpn_app translation unit only; reused existing Linux generated/dependency headers and inherited fixture-enabled command flags. No application build/link/runtime/native-Windows qualification.",
+    "finalReceiverRecordsAndEmbeddedCSharp": "passed after bounded pipe buffer adjustment"
+  },
+  "native": {
+    "initialRun": "https://github.com/ThereptileII/Work/actions/runs/37376772613",
+    "initialOutcome": "Linux job and native Go launcher pass; existing native receipt cases pass; new multi-frame fixture failed with frame-length; actual modal and recovery later steps did not run",
+    "correction": "PowerShell5 JSON array enumeration helper; production pipe buffer sized to bounded 3-record burst without changing parser limits",
+    "replacement": {
+      "run": "https://github.com/ThereptileII/Work/actions/runs/37377435744",
+      "commit": "4cd191cb73d5178d485961b8d0b1b92300e2d15d",
+      "job": 111990160221,
+      "result": "passed",
+      "ordinaryReceiptCases": 10,
+      "boundedPhaseCases": 25,
+      "suspendedLoaderCases": 2,
+      "productionSenderFixtureCases": 10,
+      "actualPinnedDialogCases": [
+        "Agree after original startup deadline",
+        "Cancel",
+        "unanswered finite timeout",
+        "fast Agree"
+      ],
+      "existingSupervisorAndInstallerRecovery": "passed",
+      "nativeBoatBootstrapPolicy": "passed",
+      "evidenceArtifact": {
+        "id": 11371489994,
+        "name": "startup-warning-native-4cd191cb73d5178d485961b8d0b1b92300e2d15d",
+        "bytes": 16921,
+        "sha256ReportedByGitHub": "a4355d2f5267aed743a3708bba2942eb481048360d7ff3e51d1e46e5238c7a75",
+        "localArchiveInspection": "not performed: connector download link returned HTTP403/1010 from local host; pass based on successful native job/steps and logs, not independently downloaded artifact bytes"
+      }
+    }
+  },
+  "boat": {
+    "changed": false,
+    "currentInstalledCommit": "c0d8d85fb602e86d40e2f3f1be32307919702408",
+    "physicalCommandsSent": false
+  },
+  "openAcceptance": [
+    "linked native integrated product build",
+    "exact new package installer/startup/recovery qualification",
+    "boat changed-version warning and known-good receipt without bypass"
+  ],
+  "developmentInvocationNotes": [
+    "Initial standalone target name was unavailable in reused pilot build; direct strict C++ compilation then passed.",
+    "Initial documentation edit command used wrong working directory and made no edits; corrected invocation committed.",
+    "Initial focused Go name selected no cases; corrected exact-name test passed."
+  ]
+}
