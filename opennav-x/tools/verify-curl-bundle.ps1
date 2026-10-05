@@ -3,12 +3,18 @@
 param(
     [Parameter(Mandatory=$true)][string]$DependencyBundle,
     [Parameter(Mandatory=$true)][string]$DependencyBundleProvenance,
-    [Parameter(Mandatory=$true)][string]$Python
+    [Parameter(Mandatory=$true)][string]$Python,
+    [string]$RuntimeEvidenceDirectory = ''
 )
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 $Root = Split-Path $PSScriptRoot -Parent
 $Evidence = Join-Path $Root 'evidence/local'
+# Only fresh consumer observations may move; original tool-fact reads below
+# remain bound to evidence/local and the authenticated producer inventory.
+$RuntimeEvidence = if ($RuntimeEvidenceDirectory) { $RuntimeEvidenceDirectory } else { $Evidence }
+$RuntimeReport = Join-Path $RuntimeEvidence ("openssl-consumer-runtime-" + [guid]::NewGuid().ToString('N') + '.json')
+if (Test-Path -LiteralPath $RuntimeReport) { throw 'Consumer runtime observation must be fresh' }
 $OpenSslPrefix = Join-Path $Root 'build/windows-openssl-3.5.9/install'
 $ZlibPrefix = Join-Path $Root 'build/windows-zlib-1.3.2/install'
 $Build = Join-Path $Root 'build/windows-curl-8.22.0/build'
@@ -38,7 +44,7 @@ Checked-Python $VerificationArguments
 Checked-Python @((Join-Path $PSScriptRoot 'verify-openssl-runtime.py'),
     '--manifest', (Join-Path $OpenSslPrefix 'openssl-build.json'),
     '--executable', (Join-Path $OpenSslPrefix 'bin/openssl.exe'),
-    '--output', (Join-Path $Evidence 'openssl-consumer-runtime.json'))
+    '--output', $RuntimeReport)
 
 # Keep tool selection and environment ordering identical to the original
 # build-curl-windows.ps1 VerifyToolFactsOnly branch, including its parent PATH.

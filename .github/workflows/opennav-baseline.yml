@@ -591,6 +591,18 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: python opennav-x/tools/fetch_ci_inputs.py dependencies --selection opennav-x/tools/windows-dependency-bundle.lock.json --output dependency-bundle --provenance dependency-provenance.json
+      - name: Prepare authenticated AIS inputs before application compilation
+        run: |
+          python opennav-x/tools/prepare-integration.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python opennav-x/tools/windows_dependency_bundle.py restore --root opennav-x --bundle dependency-bundle --provenance dependency-provenance.json
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Native AIS observation and transport with verified maintained TLS
+        run: |
+          python opennav-x/tools/test-ais-runtime-gate.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python opennav-x/tools/test-ais-runtime-windows.py --dependency-bundle dependency-bundle --dependency-bundle-provenance dependency-provenance.json
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Compile fixture application and run compiled security and unit checks
         id: integrated
         run: ./opennav-x/tools/build-pristine-windows.ps1 -Architecture Win32 -Integration -VerifyPeerCli -PrivateOCharts -DeferRuntimeQualification -DependencyBundle "$env:GITHUB_WORKSPACE/dependency-bundle" -DependencyBundleProvenance "$env:GITHUB_WORKSPACE/dependency-provenance.json"
@@ -603,12 +615,6 @@ jobs:
       # positive early-test receipt instead of revisiting the GUI-created home.
       - name: Installed native peer CLI refuses key changes on the disposable runner
         run: python opennav-x/tools/peer-cli-receipt.py verify --cli opennav-x/build/xnav-install/opencpn-cmd.exe --receipt opennav-x/evidence/local/windows-peer-cli-receipt.json
-      - name: Native AIS observation and transport with verified maintained TLS
-        run: |
-          python opennav-x/tools/test-ais-runtime-gate.py
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          python opennav-x/tools/test-ais-runtime-windows.py --dependency-bundle dependency-bundle --dependency-bundle-provenance dependency-provenance.json
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Compile fixture-free product and run installed security and unit checks
         id: production
         run: ./opennav-x/tools/build-pristine-windows.ps1 -Architecture Win32 -Integration -Production -PrivateOCharts -ReusePrivateOCharts -DeferRuntimeQualification -DependencyBundle "$env:GITHUB_WORKSPACE/dependency-bundle" -DependencyBundleProvenance "$env:GITHUB_WORKSPACE/dependency-provenance.json"

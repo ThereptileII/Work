@@ -66,6 +66,8 @@ class SameJobReuseReceiptTests(unittest.TestCase):
         command = ('test-ais-runtime-windows.py --dependency-bundle dependency-bundle '
                    '--dependency-bundle-provenance dependency-provenance.json')
         self.assertIn(command, producer)
+        self.assertLess(producer.index('windows_dependency_bundle.py restore'), producer.index(command))
+        self.assertLess(producer.index(command), producer.index('Compile fixture application'))
         self.assertLess(producer.index(command), producer.index('staging_build_inputs.py seal'))
         self.assertNotIn('--fixture-success', producer)
         self.assertNotIn('test-ais-runtime-windows.py', qualification)

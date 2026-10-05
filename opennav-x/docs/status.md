@@ -54,6 +54,21 @@ runtime-helper failures retain the compiled inputs. Replacement integrated
 packaging and boat acceptance remain pending; the failed run did not produce
 a qualified installer.
 
+Replacement `982a2b54d06bea4de9507b11e445dae00651d06f` also compiles
+on Windows and passes 144/144 CTests. Its following AIS dependency reprobe
+stops because it tries to reuse the initial build's curl diagnostic directory;
+the diagnostic correctly refuses overwriting earlier evidence. This is a build
+orchestration failure, not evidence of an application crash or TLS failure.
+The producer SDK remains unchanged. A focused repeated-reprobe correction must
+pass native Windows before the next application build. The AIS security gate
+is moved before expensive application compilation so it fails early.
+
+Separate helper corrections pass 199 delivery-policy checks on each platform
+and 64 inert native window cases, including modern AIS row selection. Their
+receipts identify helper revisions separately from the application. The boat
+source checkout is `d8ab001`; all 118 helper files match reviewed bytes. The
+installed application remains `0da2c64`; no live AIS acceptance is inferred.
+
 ## Online AIS freeze: first narrow repair — SCRUM-301
 
 The provider no longer holds its UI/state lock while sending a subscription.

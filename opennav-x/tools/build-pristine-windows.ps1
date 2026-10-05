@@ -50,6 +50,12 @@ if ($PrivateOCharts -and (-not $Integration -or $env:GITHUB_ACTIONS -cne 'true' 
 }
 $Variant = if ($Production) { 'production' } elseif ($Integration) { 'xnav' } else { 'pristine' }
 $Evidence = Join-Path $Root 'evidence/local'
+if ($VerifyDependencyBundleOnly) {
+    # Reprobes must not overwrite the original transcript, interpreter/gettext
+    # receipts or curl preflight. Keep every invocation's diagnostics separate.
+    $Evidence = Join-Path $Evidence ("dependency-reprobe-" + [guid]::NewGuid().ToString('N'))
+    if (Test-Path -LiteralPath $Evidence) { throw 'Dependency reprobe evidence must be fresh' }
+}
 New-Item -ItemType Directory -Force $Evidence | Out-Null
 Start-Transcript -Path (Join-Path $Evidence "windows-$Variant-$Architecture.log")
 # Capture the entry interpreter before dependency setup changes PATH. CMake's
@@ -252,7 +258,7 @@ try {
                 $env:PATH = "$(Split-Path $env:SKAGER_CURL_TEST_PERL -Parent);$env:PATH"
                 & (Join-Path $PSScriptRoot 'verify-curl-bundle.ps1') `
                     -DependencyBundle $DependencyBundle -DependencyBundleProvenance $DependencyBundleProvenance `
-                    -Python $BuildPython
+                    -Python $BuildPython -RuntimeEvidenceDirectory $Evidence
             } finally { $env:PATH = $BeforeCurlPath }
             Run python (@((Join-Path $PSScriptRoot 'windows_dependency_bundle.py'), 'stage') + $BundleArguments)
             Write-Output "Cross-run dependency live reprobe and stage passed: $([DateTime]::UtcNow.ToString('o'))"

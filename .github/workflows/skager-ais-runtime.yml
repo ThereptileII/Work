@@ -58,6 +58,13 @@ jobs:
         run: |
           python opennav-x/tools/windows_dependency_bundle.py restore --root opennav-x --bundle "$env:GITHUB_WORKSPACE/dependency-bundle" --provenance "$env:GITHUB_WORKSPACE/dependency-provenance.json"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Verify SDK once before the AIS consumer repeats verification
+        shell: pwsh
+        run: |
+          ./opennav-x/tools/test-dependency-reprobe-evidence.ps1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          ./opennav-x/tools/build-pristine-windows.ps1 -Architecture Win32 -Integration -VerifyDependencyBundleOnly -DependencyBundle "$env:GITHUB_WORKSPACE/dependency-bundle" -DependencyBundleProvenance "$env:GITHUB_WORKSPACE/dependency-provenance.json"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Reprobe SDK and build only native AIS test clients
         shell: pwsh
         run: |

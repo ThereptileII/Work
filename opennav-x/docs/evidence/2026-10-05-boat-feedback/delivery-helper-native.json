@@ -1,0 +1,34 @@
+{
+  "schema": 1,
+  "scope": "Delivery-helper portability and retained-input policy; no application qualification",
+  "productCommit": "982a2b54d06bea4de9507b11e445dae00651d06f",
+  "helperCommit": "41d13a76c70ace1f3ac3a501f56e44f77facdc18",
+  "failedRun": "https://github.com/ThereptileII/Work/actions/runs/37274337877",
+  "passedRun": "https://github.com/ThereptileII/Work/actions/runs/37275662788",
+  "corrections": [
+    "Locate workflows at the enclosing published repository root",
+    "Canonicalize inert temporary paths to match resolved Windows long paths"
+  ],
+  "runtimeSecurityAssertionsChanged": false,
+  "applicationRebuiltForCorrection": false,
+  "platforms": [
+    {
+      "platform": "Linux",
+      "job": 111652009974,
+      "suitesPassed": 13,
+      "testsPassed": 199,
+      "artifact": 11329957453,
+      "sha256": "587def5140906d801a852d0d1bf1e7a5accc1cf9e51360352d8955fe5fe4df65",
+      "downloadedHashVerified": true
+    },
+    {
+      "platform": "Windows",
+      "job": 111652010194,
+      "suitesPassed": 13,
+      "testsPassed": 199,
+      "artifact": 11330495903,
+      "sha256": "35f96eb4dafc34479b8cf7dc90b9ea175893f035d3bc460ab5bb956f70ab83eb",
+      "downloadedHashVerified": true
+    }
+  ]
+}

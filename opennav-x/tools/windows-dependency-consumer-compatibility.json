@@ -10,10 +10,10 @@
         },
         "tools/build-pristine-windows.ps1": {
           "originalSha256": "232c452bbded83b413dbf91c2e5a3686a9c32590180532345b0aa3ed5ea10064",
-          "currentSha256": "3e8f5c35520ea3d6295c20823caa2a8dca427eba77de928cd0f9aaa35495ff9a"
+          "currentSha256": "558159819ef1e1832aa92a2ff960bff17787a99a4dfb92ca77b6fed4e9410eb5"
         }
       },
-      "reason": "Exact LF checkout pair for the consumer-only OpenSSL runtime CPUINFO correction established by diagnostic run 37234440416. Original dependency producer scripts, compiler inputs, binaries, manifests, native tool receipts, artifact bytes and workflow remain unchanged. Keep these current consumer helpers during restore and run the independent native curl consumer probe with the original producer identity. No line-ending normalization during verification."
+      "reason": "Exact LF checkout pair for the consumer-only OpenSSL runtime CPUINFO correction established by diagnostic run 37234440416. Original dependency producer scripts, compiler inputs, binaries, manifests, native tool receipts, artifact bytes and workflow remain unchanged. Keep these current consumer helpers during restore and run the independent native curl consumer probe with the original producer identity. No line-ending normalization during verification. Dependency-only consumer reprobes now keep fresh per-invocation diagnostics and OpenSSL observations without replacing initial application evidence; native toolchain, source, hash and TLS checks remain unchanged."
     },
     {
       "producerCommit": "1b25542aea3f9ab62c83c5d7a3ecdac9652f7d3e",
@@ -24,10 +24,10 @@
         },
         "tools/build-pristine-windows.ps1": {
           "originalSha256": "2a1fd321ade8c6603f318be6367363bffddf06d1679045f248825038a29f7ada",
-          "currentSha256": "23f90a989546768c4101f4e8cb8cdaaaaf22e0b4bf3361c055f3e5093c2b9c27"
+          "currentSha256": "4d57a2066fd48c2bbff5c5b80bbcc9df0266cfd0ad134878699cf488614ec519"
         }
       },
-      "reason": "Exact CRLF checkout pair for the consumer-only OpenSSL runtime CPUINFO correction established by diagnostic run 37234440416. Original dependency producer scripts, compiler inputs, binaries, manifests, native tool receipts, artifact bytes and workflow remain unchanged. Keep these current consumer helpers during restore and run the independent native curl consumer probe with the original producer identity. No line-ending normalization during verification."
+      "reason": "Exact CRLF checkout pair for the consumer-only OpenSSL runtime CPUINFO correction established by diagnostic run 37234440416. Original dependency producer scripts, compiler inputs, binaries, manifests, native tool receipts, artifact bytes and workflow remain unchanged. Keep these current consumer helpers during restore and run the independent native curl consumer probe with the original producer identity. No line-ending normalization during verification. Dependency-only consumer reprobes now keep fresh per-invocation diagnostics and OpenSSL observations without replacing initial application evidence; native toolchain, source, hash and TLS checks remain unchanged."
     }
   ]
 }

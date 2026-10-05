@@ -153,3 +153,10 @@ the reviewed source. The installed application remains `0da2c64`. The developmen
 checkout update did not change or launch the installed application. A fresh cold
 backup, profile-preserving commissioning transition and exact accepted installer
 are still required before replacement.
+
+The separate delivery-policy run then exposed test portability assumptions:
+published workflows live above `opennav-x`, and Windows TEMP can use a short
+path spelling. Correcting only those test expectations passes 199 checks in
+13 suites on each platform. [Downloaded receipts](delivery-helper-native.json)
+bind the helper revision independently of application candidate `982a2b54`.
+The running application build was not cancelled or restarted for this correction.
