@@ -83,6 +83,12 @@ function(opennav_attach_boat_feedback_tests)
   separate_arguments(anchor_wx_flags NATIVE_COMMAND "${wxWidgets_CXX_FLAGS}")
   target_compile_options(chart_anchor_watch_renderer_test PRIVATE ${anchor_wx_flags})
   target_link_libraries(chart_anchor_watch_renderer_test PRIVATE ${wxWidgets_LIBRARIES})
+  if(WIN32)
+    # wxIMPLEMENT_APP supplies WinMain on wxMSW. Console-main fixtures below
+    # keep their console subsystem and normal inherited diagnostic streams.
+    set_target_properties(${boat_feedback_widgets} chart_anchor_watch_renderer_test
+      PROPERTIES WIN32_EXECUTABLE TRUE)
+  endif()
   set(boat_feedback_targets ${boat_feedback_models} ${boat_feedback_widgets}
     chart_light_hover_tests ais_drawer_scroll_test online_ais_radius_test
     chart_anchor_watch_renderer_test route_activation_callbacks_test)
