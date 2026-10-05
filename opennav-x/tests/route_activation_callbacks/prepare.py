@@ -12,15 +12,17 @@ parser.add_argument('--source', type=Path, required=True)
 parser.add_argument('--output', type=Path, required=True)
 args = parser.parse_args()
 source = args.source.read_text(encoding='utf-8')
-signature = 'application::CommandResult ActivateRouteTransition('
-start = source.index(signature)
-brace = source.index('{', start)
-depth = 1
-end = brace + 1
-while depth:
-    depth += (source[end] == '{') - (source[end] == '}')
-    end += 1
-production = source[start:end]
+def function(name):
+    start = source.index('application::CommandResult ' + name + '(')
+    brace = source.index('{', start)
+    depth = 1
+    end = brace + 1
+    while depth:
+        depth += (source[end] == '{') - (source[end] == '}')
+        end += 1
+    return source[start:end]
+
+production = function('ActivateRouteTransition') + '\n' + function('NotifyAnchorStarted')
 preamble = r'''
 #include "application/AnchorRouteTransition.h"
 #include <functional>
@@ -183,7 +185,27 @@ void RunChecks() {
   pAnchorWatchPoint1=pAnchorWatchPoint2=nullptr; g_AW1GUID.Clear();g_AW2GUID.Clear();
   Check(ActivateRouteTransition(selected,vessel::Navigation{},nullptr).ok && notifications==0 && activations==1,
         "Ordinary no-watch activation stays available");
-  std::cout<<"Route activation callback boundaries passed: 33 mutation cases and normal/failure paths\n";
+  for(int mutation=0;mutation<7;++mutation) {
+    Reset(); pAnchorWatchPoint2=nullptr; g_AW2GUID.Clear();
+    replacement_anchor.id="replacement-anchor";
+    on_notify=[mutation] {
+      switch(mutation) {
+      case 0: pAnchorWatchPoint1=nullptr; g_AW1GUID.Clear(); break;
+      case 1: pAnchorWatchPoint1=&replacement_anchor; g_AW1GUID="replacement-anchor"; break;
+      case 2: watch_revision="moved or edited"; break;
+      case 3: watch_valid=false; break;
+      case 4: replacement_anchor.id="anchor1"; pAnchorWatchPoint1=&replacement_anchor; break;
+      case 5: pAnchorWatchPoint2=&anchor2; g_AW2GUID="anchor2"; break;
+      case 6: break;
+      }
+    };
+    const auto result=NotifyAnchorStarted("anchor1");
+    Check(result.ok==(mutation==6) && result.identity=="anchor1" && notifications==1,
+          "Anchor SET must report callback deletion/replacement/edit truthfully using owned identity");
+    if(mutation==1 || mutation==4)
+      Check(pAnchorWatchPoint1==&replacement_anchor,"Anchor SET overwrote a callback replacement");
+  }
+  std::cout<<"Route activation callback boundaries passed: 33 mutation cases, 7 anchor SET cases and normal/failure paths\n";
 }
 int main() {
   try { RunChecks(); return 0; }

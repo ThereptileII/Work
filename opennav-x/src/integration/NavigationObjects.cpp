@@ -399,6 +399,20 @@ application::AnchorWatchSelection CopyAnchorWatchSelection() {
   return selection;
 }
 namespace {
+application::CommandResult NotifyAnchorStarted(const std::string &id) {
+  const auto expected = CopyAnchorWatchSelection();
+  // Addresses are identity tokens only: never dereference them after dispatch.
+  const auto *first = pAnchorWatchPoint1;
+  const auto *second = pAnchorWatchPoint2;
+  wxJSONValue message;
+  message["GUID"] = wxString::FromUTF8(id);
+  SendJSONMessageToAllPlugins("OCPN_ANCHOR_WATCH_SET", message);
+  const auto current = CopyAnchorWatchSelection();
+  if (pAnchorWatchPoint1 != first || pAnchorWatchPoint2 != second ||
+      !application::SameAnchorWatchSelection(expected, current))
+    return {false, "Anchor watch changed during notification; review current state", id};
+  return {true, "Anchor watch set", id};
+}
 application::CommandResult ActivateRouteTransition(
     const application::Route &selected, const vessel::Navigation &position,
     const application::AnchorWatchSelection *confirmed) {
@@ -854,10 +868,7 @@ application::CommandResult StartAnchor(const vessel::Navigation &position,
     return {false, "Could not stop navigation or remove saved anchor mark; watch not armed",
             String(point->m_GUID)};
   }
-  wxJSONValue message;
-  message["GUID"] = g_AW1GUID;
-  SendJSONMessageToAllPlugins("OCPN_ANCHOR_WATCH_SET", message);
-  return {true, "Anchor watch set", String(point->m_GUID)};
+  return NotifyAnchorStarted(String(point->m_GUID));
 }
 application::CommandResult ClearAnchor(const std::string &id) {
   Thread();

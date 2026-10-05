@@ -95,3 +95,6 @@ the native application gate; portable tests do not qualify Windows or boat use.
 An additional native fixture compiles the actual integration transition and
 tests 33 callback mutations plus normal and failure paths. It is included in the
 shared Linux/Windows component gate; it has no hardware or profile access.
+The same fixture also covers seven watch-set notification cases. Setting a watch
+copies its identity before plugin dispatch, then checks registered watch state;
+deletion, replacement or edits cannot cause a stale-pointer read or false success.

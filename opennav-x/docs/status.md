@@ -33,8 +33,13 @@ the selected route during the new anchor-to-route transition. Candidate
 replacement re-resolves and validates state after those callbacks. Its focused
 actual-function fixture passes 33 mutation cases plus normal/failure paths;
 the previous source fails with the expected stale-pointer error. The held candidate's contract
-gates pass 97 Linux and 94 Windows tests; integrated builds are still running.
+gates passed 97 Linux and 94 Windows tests; integrated runs were superseded.
 Those results do not qualify the corrected replacement.
+The equivalent inherited watch-set callback is also corrected and covered by
+seven additional cases in the same fixture. Four native fixture entry-point
+settings found in the superseded logs are corrected; application code is
+unchanged by that build-setting repair. The next candidate includes all three
+corrections, without another design or endurance campaign.
 
 ## Online AIS freeze: first narrow repair — SCRUM-301
 

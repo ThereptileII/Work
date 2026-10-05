@@ -107,3 +107,16 @@ unit passes the actual application syntax check, and its CMake target builds
 and runs locally. It becomes the thirteenth shared native component without
 rerunning the other twelve locally. Replacement integrated qualification is
 still required; the old candidate is not relabelled as fixed.
+
+Completed logs from the superseded run also expose four fixture-only MSVC
+`LNK2019 _main` failures: pinned wxWidgets 3.2.8 supplies `WinMain` for their
+`wxIMPLEMENT_APP` entry points. The shared and standalone CMake targets now
+select the Windows GUI subsystem only for those four fixtures; explicit-main
+fixtures remain console applications. This is not an application linker defect.
+
+The bounded review also found the equivalent inherited watch-set notification
+lifetime issue. The anchor now copies owned identity before notifying plugins
+and re-observes the watch afterward. Seven added cases cover removal,
+replacement (including retained GUID/revision), modification, unavailable state,
+an added watch and unchanged success. The actual integration syntax and focused
+CMake target pass. Native qualification remains pending for the replacement.
