@@ -34,6 +34,16 @@ masked the original receiver failure. This is not evidence of a real application
 crash. Failure diagnosis and fixture cleanup are being corrected without changing
 production authentication or timeout rules; Windows application compilation has
 not started for this request. Packaged runtime and boat acceptance remain pending.
+The isolated diagnostic run
+[37329174360](https://github.com/ThereptileII/Work/actions/runs/37329174360)
+identifies a test deadline defect: the inert CLR child reached its entry point
+after the fixture's five-second listener had already closed. The healthy fixture
+now allows 30 seconds and deliberately delays six seconds before connecting;
+production remains at 90 seconds. A separate source-supported early-loader race
+is corrected by deferring full executable inspection until the connection is
+established, before reading the receipt; native suspended-process success and
+wrong-hash cases are required. Neither correction is accepted until that focused
+native gate passes.
 
 The first focused native run,
 [37294573113](https://github.com/ThereptileII/Work/actions/runs/37294573113),

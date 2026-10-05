@@ -416,5 +416,25 @@
       },
       "diagnosticRepair": "Preserve original failure, receiver reason and phase timing; exact fixture-owned child cleanup only"
     }
+  },
+  "lifecycleTimeoutDiagnostic": {
+    "url": "https://github.com/ThereptileII/Work/actions/runs/37329174360",
+    "commit": "79a8a5118e8b1bbc12501148f4c81f0ba5b355be",
+    "result": "failed with original receiver/client timing retained",
+    "receiverCreatedUtc": "2026-10-05T15:00:14.7079993Z",
+    "processStartRecordedUtc": "2026-10-05T15:00:14.8173935Z",
+    "receiverFailureUtc": "2026-10-05T15:00:19.9042723Z",
+    "receiverReason": "connect-timeout",
+    "clientMainUtc": "2026-10-05T15:00:20.0762397Z",
+    "clientConnectUtc": "2026-10-05T15:00:20.7170674Z",
+    "clientExitCode": 70,
+    "cause": "Inert CLR startup reached Main after the fixture five-second listener deadline; client attempted connection after the listener closed.",
+    "productionTimeoutMs": 90000,
+    "productionTimeoutChanged": false,
+    "artifact": {
+      "id": 11353247892,
+      "sha256": "dfd7617a85fff2f30b5c9e9f1b592b249a8fb2f0541a72c3534918bb81fb23b4",
+      "downloadedAndVerified": true
+    }
   }
 }

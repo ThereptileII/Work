@@ -125,6 +125,11 @@ namespace Skager {
   static string Hash(string path) {
    using(var file=File.OpenRead(path)) using(var sha=SHA256.Create()) return BitConverter.ToString(sha.ComputeHash(file)).Replace("-","").ToLowerInvariant();
   }
+  static bool SameLiveProcess(Process process,long ticks) {
+   using(var fresh=Process.GetProcessById(process.Id)) {
+    return !process.HasExited && !fresh.HasExited && fresh.StartTime.ToUniversalTime().Ticks==ticks;
+   }
+  }
   static bool ExactProcess(Process process,long ticks,string image,string hash) {
    try {
     using(var fresh=Process.GetProcessById(process.Id)) {
@@ -141,7 +146,10 @@ namespace Skager {
    string stage="process-before-connect";
    try {
     long ticks=process.StartTime.ToUniversalTime().Ticks;
-    if(ticks<created.Ticks || !ExactProcess(process,ticks,image,hash)) return Reject(stage);
+    // The loader need not have initialized MainModule immediately after
+    // CreateProcess. Bind live PID/start time now; require full image/hash
+    // identity after its pipe connection, before reading any receipt bytes.
+    if(ticks<created.Ticks || !SameLiveProcess(process,ticks)) return Reject(stage);
     stage="connect";
     if(!connection.Wait(timeoutMs)) return Reject("connect-timeout");
     uint client;

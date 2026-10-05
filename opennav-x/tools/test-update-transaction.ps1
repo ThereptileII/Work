@@ -125,13 +125,77 @@ try {
   Check ($source.Count -eq 1) 'Expected one exact native receiver source.'
   Add-Type -TypeDefinition $source[0].Value
   Write-Host 'PASS: exact embedded native receiver compiles.'
+  # Test-only CREATE_SUSPENDED fixture: no installed application or equipment.
+  Add-Type -TypeDefinition @'
+using System;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+public sealed class SuspendedUpdateClient : IDisposable {
+ [StructLayout(LayoutKind.Sequential,CharSet=CharSet.Unicode)]
+ struct StartupInfo {
+  public int cb; public string reserved,desktop,title;
+  public int x,y,xSize,ySize,xCount,yCount,fill,flags;
+  public short show,reservedBytes; public IntPtr reservedPointer,input,output,error;
+ }
+ [StructLayout(LayoutKind.Sequential)]
+ struct ProcessInfo { public IntPtr process,thread; public int pid,tid; }
+ [DllImport("kernel32.dll",CharSet=CharSet.Unicode,SetLastError=true)]
+ static extern bool CreateProcess(string application,StringBuilder command,IntPtr processSecurity,IntPtr threadSecurity,
+  bool inherit,uint flags,IntPtr environment,string directory,ref StartupInfo startup,out ProcessInfo info);
+ [DllImport("kernel32.dll",SetLastError=true)] static extern uint ResumeThread(IntPtr thread);
+ [DllImport("kernel32.dll")] static extern bool CloseHandle(IntPtr handle);
+ [DllImport("kernel32.dll")] static extern bool TerminateProcess(IntPtr process,uint exitCode);
+ IntPtr thread; public Process Child { get; private set; }
+ public Task<bool> Receiver { get; private set; }
+ readonly ManualResetEvent entered=new ManualResetEvent(false);
+ public SuspendedUpdateClient(string executable,string script,string pipe,string frame) {
+  var startup=new StartupInfo();startup.cb=Marshal.SizeOf(typeof(StartupInfo));
+  var command=new StringBuilder("\""+executable+"\" -NoProfile -NonInteractive -File \""+script+"\" -SuspendedPipe \""+pipe+"\" -SuspendedFrame \""+frame+"\"");
+  ProcessInfo info;
+  if(!CreateProcess(executable,command,IntPtr.Zero,IntPtr.Zero,false,0x08000004,IntPtr.Zero,null,ref startup,out info))
+   throw new Win32Exception(Marshal.GetLastWin32Error());
+  thread=info.thread;
+  try { Child=Process.GetProcessById(info.pid);var held=Child.Handle; }
+  catch { TerminateProcess(info.process,70);CloseHandle(thread);thread=IntPtr.Zero;entered.Dispose();if(Child!=null) Child.Dispose();throw; }
+  finally { CloseHandle(info.process); }
+ }
+ public bool BeginReceive(object server,string image,string hash,string frame) {
+  Receiver=Task<bool>.Factory.StartNew(delegate {
+   entered.Set();
+   return (bool)server.GetType().GetMethod("Receive").Invoke(server,new object[]{Child,image,hash,frame,5000});
+  });
+  return entered.WaitOne(1000);
+ }
+ public void Resume() {
+  if(ResumeThread(thread)!=1) throw new Win32Exception(Marshal.GetLastWin32Error());
+ }
+ public void Dispose() {
+  try {
+   // Exact newly created inert child only; retain its handle across cleanup.
+   if(Child!=null) { if(!Child.HasExited) { Child.Kill();if(!Child.WaitForExit(5000)) throw new Exception("Inert child cleanup timed out."); } }
+   if(Receiver!=null && !Receiver.Wait(5000)) throw new Exception("Inert receiver cleanup timed out.");
+  } finally { if(Child!=null) Child.Dispose();if(thread!=IntPtr.Zero) CloseHandle(thread);entered.Dispose(); }
+ }
+}
+'@
+  Write-Host 'PASS: suspended-child native regression interop compiles.'
   if ([Environment]::OSVersion.Platform -ne [PlatformID]::Win32NT) {
     Write-Host 'SKIP: Windows authenticated pipe/PID/ACL fixtures require native Windows; Linux results do not qualify them.'
     return
   }
   $childFile=Join-Path $fixture 'inert-client.ps1'
   [IO.File]::WriteAllText($childFile,@'
+param([string]$SuspendedPipe,[string]$SuspendedFrame)
 $ErrorActionPreference='Stop'
+if($SuspendedPipe) {
+ $env:SKAGER_UPDATE_PIPE=$SuspendedPipe
+ $env:SKAGER_FIXTURE_FRAME=[Text.Encoding]::ASCII.GetString([Convert]::FromBase64String($SuspendedFrame))
+ $env:SKAGER_FIXTURE_WRITER='yes'
+}
 if ($env:SKAGER_FIXTURE_WRITER -eq 'yes') {
  $pipe=New-Object IO.Pipes.NamedPipeClientStream('.', $env:SKAGER_UPDATE_PIPE,[IO.Pipes.PipeDirection]::Out)
  try {
@@ -188,6 +252,31 @@ Start-Sleep -Seconds 10
       foreach ($process in @($child,$impostor)) { if ($process) { if (-not $process.HasExited) { $process.Kill(); $process.WaitForExit() }; $process.Dispose() } }
     }
     Write-Host ('PASS: native '+$case)
+  }
+  foreach($wrongHash in @($false,$true)) {
+    $pending=NewRecord;$pending.candidate.executableSha256=HashFile $executable
+    $session=New-UpdateStartupSession $pending;$suspended=$null
+    try {
+      $frame=Get-UpdateReadyFrame $pending.candidate $session
+      $encoded=[Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes($frame))
+      $suspended=New-Object SuspendedUpdateClient($executable,$childFile,$session.pipe,$encoded)
+      $hash=if($wrongHash){'0'*64}else{$pending.candidate.executableSha256}
+      Check ($suspended.BeginReceive($session.server,$executable,$hash,$frame)) 'Suspended receiver worker did not start.'
+      Check (-not $suspended.Receiver.Wait(500)) 'Receiver rejected live suspended child before its loader could initialize.'
+      Check ($null -eq $session.server.VerifiedFrame) 'Suspended child cannot already provide startup proof.'
+      $suspended.Resume()
+      Check ($suspended.Receiver.Wait(5000)) 'Resumed inert receiver did not finish within its existing deadline.'
+      Check ($suspended.Receiver.Result -eq (-not $wrongHash)) ('Suspended startup result differs; receiver: '+$session.server.FailureReason)
+      if($wrongHash) {
+        Check ($session.server.FailureReason -ceq 'client-identity' -and $null -eq $session.server.VerifiedFrame) 'Deferred full image/hash identity must reject before accepting a frame.'
+      } else {
+        Check ($session.server.VerifiedFrame -ceq $frame -and $session.server.VerifiedHash -ceq $hash) 'Resumed child receipt did not bind exact authenticated identity.'
+      }
+    } finally {
+      $session.server.Dispose()
+      if($suspended){$suspended.Dispose()}
+    }
+    Write-Host ('PASS: native suspended-loader startup; wrongHash='+$wrongHash)
   }
   function StopInertFixtureApplications {
     foreach ($p in @(Get-Process -Name opencpn -ErrorAction SilentlyContinue)) {

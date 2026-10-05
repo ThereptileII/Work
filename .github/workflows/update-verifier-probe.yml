@@ -122,6 +122,8 @@ jobs:
         shell: powershell
         run: |
           New-Item -ItemType Directory -Path opennav-x/build/updater-native -Force | Out-Null
+          & ./opennav-x/tools/test-update-transaction.ps1 *>&1 | Tee-Object -FilePath opennav-x/build/updater-native/transaction-tests.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           & ./opennav-x/tools/test-updater-installer-integration.ps1 *>&1 | Tee-Object -FilePath opennav-x/build/updater-native/installer-transaction-tests.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

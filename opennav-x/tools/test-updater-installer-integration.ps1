@@ -96,6 +96,9 @@ class InertLifecycleFixture {
   if(args.Length!=1 || args[0]!="--xnav") return 64;
   Note("main");
   try {
+  // Deterministically cross the previous fixture's five-second receiver
+  // boundary. This inert delay is not an application startup-health claim.
+  Note("deliberate-delay-start-6000ms");Thread.Sleep(6000);Note("deliberate-delay-finished");
   using(var pipe=new NamedPipeClientStream(".",Environment.GetEnvironmentVariable("SKAGER_UPDATE_PIPE"),PipeDirection.Out)) {
    Note("connect-start-5000ms");pipe.Connect(5000);Note("connected");
    string frame="SKAGER-UPDATE-READY/1 "+Environment.GetEnvironmentVariable("SKAGER_UPDATE_GENERATION")+" __COMMIT__ "+Environment.GetEnvironmentVariable("SKAGER_UPDATE_CHALLENGE")+"\n";
@@ -143,12 +146,15 @@ function Qualify([string]$Id) {
   try {
     $generation=Get-SupervisedGeneration $Root $Id;$expectedHash=$generation.identity.executableSha256
     $phase='receiver-create';$session=New-UpdateHealthSession $generation.identity
-    Diagnostic $phase @{generation=$Id;elapsedMs=$clock.ElapsedMilliseconds;receiverTimeoutMs=5000;clientConnectTimeoutMs=5000;clientHoldMs=10000}
+    Diagnostic $phase @{generation=$Id;elapsedMs=$clock.ElapsedMilliseconds;receiverTimeoutMs=30000;deliberateClientDelayMs=6000;clientConnectTimeoutMs=5000;clientHoldMs=10000}
     $phase='process-start';$process=Start-SupervisedGeneration $generation $session
     $null=$process.get_Handle();$ticks=$process.StartTime.ToUniversalTime().Ticks
     Diagnostic $phase @{generation=$Id;elapsedMs=$clock.ElapsedMilliseconds;pid=$process.Id;startedUtcTicks=$ticks;executableSha256=$expectedHash}
     $phase='authenticated-receive'
-    $accepted=Wait-UpdateGenerationStartupSuccess $generation.identity $session $process $generation.executable 5000
+    # Native probe 37329174360 measured CLR Main after the old five-second
+    # deadline. Allow bounded cold startup plus the deliberate six-second
+    # regression delay. Production's 90-second timeout remains unchanged.
+    $accepted=Wait-UpdateGenerationStartupSuccess $generation.identity $session $process $generation.executable 30000
     Diagnostic $phase @{generation=$Id;elapsedMs=$clock.ElapsedMilliseconds;accepted=$accepted;receiverReason=$session.server.FailureReason;processExited=$process.HasExited}
     Check $accepted 'Actual receiver authenticates live inert generation'
     $phase='known-good-receipt'
@@ -165,8 +171,9 @@ function Qualify([string]$Id) {
       $stop=Join-Path $generation.directory 'app/fixture-stop'
       try {
         [IO.File]::WriteAllText($stop,'stop',$Utf8)
-        # This includes the existing client connect+hold maximum, but a late
-        # CLR Main can still miss it. Never let cleanup hide the primary cause.
+        # Cooperative cleanup remains bounded independently of the receiver.
+        # Late CLR startup/deliberate delay may outlive it on a failure; never
+        # let that replace the authenticated receiver's primary failure.
         if(-not $process.WaitForExit(15000)) {
           Diagnostic 'cooperative-stop-timeout' @{generation=$Id;pid=$process.Id;elapsedMs=$clock.ElapsedMilliseconds}
           $script:RetainFixture=$true
