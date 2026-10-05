@@ -412,6 +412,10 @@ func TestLauncherConfirmedInstallerAndExactSupervisorHandoff(t *testing.T) {
 			return processResult{}, nil
 		}
 		if hasAction(spec, "LaunchPending") {
+			// Outer custody must cover bounded human consent and recovery.
+			if spec.limit < 90*time.Second+5*time.Minute+90*time.Second+10*time.Second+2*time.Minute || spec.limit > 11*time.Minute {
+				t.Fatal("supervisor custody wait does not cover bounded consent and recovery")
+			}
 			if spec.arguments[5] != fixtureRoot+"/generations/"+nextGeneration+"/UpdateSupervisor.ps1" || spec.arguments[len(spec.arguments)-1] != strings.Repeat("e", 32) {
 				t.Fatal("supervisor used wrong generation or transaction")
 			}

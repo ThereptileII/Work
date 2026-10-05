@@ -1,0 +1,106 @@
+{
+  "scope": "Focused offline code/component qualification; not product installation or physical pilot acceptance",
+  "jira": [
+    "SCRUM-295",
+    "SCRUM-307",
+    "SCRUM-313",
+    "SCRUM-19"
+  ],
+  "sourceCommit": "ac11f5ea3a18af9031cccc9030a7271259bd4b8c",
+  "localSourceCommit": "44261a7",
+  "upstreamCommit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "linux": {
+    "pilotContractTests": 14,
+    "presentationCases": 6,
+    "buttonInteractionChecks": 161,
+    "serialSanitizers": {
+      "pin": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+      "patch_apply_check": "passed",
+      "tests": "passed",
+      "patch_sha256": "dec4ac8fec412df9b20acb14778aeb15565b52caeb4c064cb1562b51ece4c251",
+      "patched_serial_sha256": "f4c4d1d18f92a746464f6101b55c5215ac5d1791477edc0c39ecaf0daa0c3574",
+      "sanitizers": true,
+      "scope": "Exact extracted SendMessage and serial serializer; real N2kMsg; fake queue/listener. No serial I/O, worker, reconnect or permission qualification.",
+      "original_regression": "ASan heap-buffer-overflow in PayloadToName confirmed with three-byte PGN59904",
+      "originalFailureLogSha256": "4fa2d80068afe0e0abe80d0cd821bc792357c7eef5885d2030c647a68827e5c3"
+    },
+    "sourcePackageTests": 12,
+    "curlSourcePackageTest": 1,
+    "completeUnits": {
+      "pin": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+      "patches": {
+        "patches/opencpn-5.12.4-xnav.patch": "dfbacadf42502d1d0366745b3a187d256e620b0d2ea7dba9e8912c46e999e0b3",
+        "patches/opencpn-5.12.4-regression-tests.patch": "3ef13652b8f3717d836883d2fbb7a18f35dbd2ca1162ac991fe339e61392dff1",
+        "patches/opencpn-5.12.4-ais-transport.patch": "ee6689b8943284347fadca9564892b31db4c43db2a007412ac3fdc2072d07fd7",
+        "patches/opencpn-5.12.4-chart-presentation.patch": "cde774b225c2f63ecbd0f1bc0c32ec0f681862b826314b4ed1b05738e63c5c81",
+        "patches/opencpn-5.12.4-maintained-curl.patch": "dafa1fec0a69e3a1195db726c2cb26ceeb7535b5e25476ac2e4658d910f44e48",
+        "patches/opencpn-5.12.4-download-trust.patch": "04763cb038ad088a722e76d4f85bde7e356489b697a373458195336d4278412b",
+        "patches/opencpn-5.12.4-wxcurl-trust.patch": "f3ad76fc07b80e6f2c01331894ce5e685f6aa4456a2a3c761e3115c8c21f3d6b",
+        "patches/opencpn-5.12.4-peer-response-buffer.patch": "c335f361766a6982c3d096e93f7c149179deb33134668e110111ac4980064e15",
+        "patches/opencpn-5.12.4-peer-unavailable.patch": "5bf1c2ae4b09043ce18151f766aebd2b881b993f352000e34399de7e8b36b6d3",
+        "patches/opencpn-5.12.4-pilot-serial.patch": "dec4ac8fec412df9b20acb14778aeb15565b52caeb4c064cb1562b51ece4c251"
+      },
+      "scope": "Three complete current translation units only; reused existing Linux generated/dependency headers and inherited fixture-enabled command flags. No application build/link/runtime/native-Windows qualification.",
+      "units": [
+        {
+          "unit": "OpenCPNPilot",
+          "source": "OpenCPNPilot.cpp",
+          "source_sha256": "dd892e35f446b19a085e1c088165010ed9c61f3a3fa01a52c870bb9455af8b61",
+          "unchanged_during_compile": true,
+          "returncode": 0,
+          "elapsed_seconds": 11.1
+        },
+        {
+          "unit": "OpenCPNIntegration",
+          "source": "OpenCPNIntegration.cpp",
+          "source_sha256": "05dbbd33e53f8a0990518fd6845a19bfd229eaf05e19d7b0e0b055021fa33b71",
+          "unchanged_during_compile": true,
+          "returncode": 0,
+          "elapsed_seconds": 22.49
+        },
+        {
+          "unit": "comm_drv_n2k_serial",
+          "source": "comm_drv_n2k_serial.cpp",
+          "source_sha256": "f4c4d1d18f92a746464f6101b55c5215ac5d1791477edc0c39ecaf0daa0c3574",
+          "unchanged_during_compile": true,
+          "returncode": 0,
+          "elapsed_seconds": 9.65
+        }
+      ]
+    }
+  },
+  "native": {
+    "run": "https://github.com/ThereptileII/Work/actions/runs/37374840798",
+    "status": "initial run failed only at serial harness CMake path parsing",
+    "pilotContractTests": 14,
+    "presentationCases": 6,
+    "buttonInteractionChecks": 161,
+    "serialRetest": {
+      "run": "https://github.com/ThereptileII/Work/actions/runs/37375801162",
+      "commit": "0a6bd2b30ea20aef91e010741c0270872d6f86a5",
+      "localCommit": "354a4b9",
+      "status": "passed",
+      "tests": 1,
+      "changes": "helper typed forward-slash CMake PATH and serial-only CI; production serial patch unchanged"
+    }
+  },
+  "boat": {
+    "installedCommit": "c0d8d85fb602e86d40e2f3f1be32307919702408",
+    "exeSha256": "8ed5cc1fad45bfc9cda13f98ec0b55cf18270b45a348764673aa7702c12c192c",
+    "privateReadOnlyReportHashes": {
+      "boat-pilot-first.json": "d42b0583169e9d8c1c71a943e79a4021805a17b054ee601bb0a9aa7848e596d0",
+      "boat-pilot-sources.json": "aa1cc3bea16bae440d72e08849d657d2482c22c1daaa0c4658fecee52d5e9be6"
+    },
+    "liveMarineInputObserved": true,
+    "pilotIdentityVerified": false,
+    "pilotFresh": false,
+    "pilotFeedbackSequence": 0,
+    "physicalCommandsSent": false,
+    "connectionDirectionChanged": false,
+    "pluginsRestored": false,
+    "applicationRestarted": false,
+    "controlQualification": "pending",
+    "securedVesselConfirmation": "pending"
+  },
+  "remainingQualification": "Live identity/status evidence, serial generation/queue/write/receive provenance, controlled manual output policy, native integrated product and physical feedback tests remain open; no issue declared Done"
+}

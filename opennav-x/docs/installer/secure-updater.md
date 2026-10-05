@@ -89,6 +89,10 @@ Safe, an early exit and an unready shell cannot acknowledge successful XNav
 startup. The supervisor stores a DPAPI current-user protected known-good receipt
 only after authenticating the live process.
 
+The actual OpenCPN navigation warning reports an authenticated, bounded
+[human-wait phase](startup-human-wait.md). Waiting/Agree are not healthy receipts;
+the thirty-second readiness and durable recovery checkpoint remain mandatory.
+
 A failed or interrupted update restores the exact prior verified generation
 through the existing locked lifecycle engine. A still-running candidate is
 asked to close gracefully; inability to close preserves the pending state and

@@ -1,0 +1,60 @@
+{
+  "commit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "repository": "https://github.com/OpenCPN/OpenCPN",
+  "files": [
+    {
+      "path": "gui/src/ocpn_frame.cpp",
+      "url": "https://raw.githubusercontent.com/OpenCPN/OpenCPN/37fd0cddb7334fe489e9f18aa163977a9c5c84f7/gui/src/ocpn_frame.cpp",
+      "bytes": 255520,
+      "sha256": "f08b976c4e34583c19cc5c9825617f7681fa5aa3395e657cf32ad1622123d8d2"
+    },
+    {
+      "path": "gui/src/ocpn_app.cpp",
+      "url": "https://raw.githubusercontent.com/OpenCPN/OpenCPN/37fd0cddb7334fe489e9f18aa163977a9c5c84f7/gui/src/ocpn_app.cpp",
+      "bytes": 62716,
+      "sha256": "c7c32721d549ddd5d69a214da606a02c2175bf1c43c48536e9bc3181c8c1e396"
+    },
+    {
+      "path": "libs/gui/src/dialog_alert.cpp",
+      "url": "https://raw.githubusercontent.com/OpenCPN/OpenCPN/37fd0cddb7334fe489e9f18aa163977a9c5c84f7/libs/gui/src/dialog_alert.cpp",
+      "bytes": 4955,
+      "sha256": "ab91ebc26c3e9a33e05e59ebeb7926d8cc7a255e03a119044750675e5851631a"
+    },
+    {
+      "path": "libs/gui/src/dialog_base.cpp",
+      "url": "https://raw.githubusercontent.com/OpenCPN/OpenCPN/37fd0cddb7334fe489e9f18aa163977a9c5c84f7/libs/gui/src/dialog_base.cpp",
+      "bytes": 4257,
+      "sha256": "e1b8700af868d3a3c86226190e938ac42b8a02e95d5540cf8a64e49fd0bdf8b3"
+    },
+    {
+      "path": "libs/gui/src/ui_utils.cpp",
+      "url": "https://raw.githubusercontent.com/OpenCPN/OpenCPN/37fd0cddb7334fe489e9f18aa163977a9c5c84f7/libs/gui/src/ui_utils.cpp",
+      "bytes": 2415,
+      "sha256": "e909e7f63560aa3445bc519b1f00eadd151885e3495e61f0f9b0dfc96118036e"
+    },
+    {
+      "path": "libs/gui/include/dialog_alert.h",
+      "url": "https://raw.githubusercontent.com/OpenCPN/OpenCPN/37fd0cddb7334fe489e9f18aa163977a9c5c84f7/libs/gui/include/dialog_alert.h",
+      "bytes": 3638,
+      "sha256": "8a01a1e1b9d3d1b008315f14cc595a1a83a1ba1d1bf6b8f310281164a27d8a88"
+    },
+    {
+      "path": "libs/gui/include/dialog_base.h",
+      "url": "https://raw.githubusercontent.com/OpenCPN/OpenCPN/37fd0cddb7334fe489e9f18aa163977a9c5c84f7/libs/gui/include/dialog_base.h",
+      "bytes": 2171,
+      "sha256": "2ed8625594dc704f3bded0ba77d5ecac115aac192a39ae1442dcc94e4fda828b"
+    },
+    {
+      "path": "libs/gui/include/dialog_footer.h",
+      "url": "https://raw.githubusercontent.com/OpenCPN/OpenCPN/37fd0cddb7334fe489e9f18aa163977a9c5c84f7/libs/gui/include/dialog_footer.h",
+      "bytes": 1674,
+      "sha256": "a76b9c2f2cb8252afc7d17c2b0ca76e94c83aabcc6db81a0938cc243487c40f6"
+    },
+    {
+      "path": "libs/gui/include/ui_utils.h",
+      "url": "https://raw.githubusercontent.com/OpenCPN/OpenCPN/37fd0cddb7334fe489e9f18aa163977a9c5c84f7/libs/gui/include/ui_utils.h",
+      "bytes": 2822,
+      "sha256": "ef0901ba6afe9810a8f5ddf97ca786b93b8a0e36b8f1668faef72f4e3aa938eb"
+    }
+  ]
+}

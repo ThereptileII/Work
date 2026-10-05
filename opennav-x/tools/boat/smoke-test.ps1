@@ -13,7 +13,7 @@ $running=$null
 $log=Assert-LocalPath (Join-Path $config.profileDirectory 'opencpn.log')
 $beforeLog=Read-StartupLogBytes $log
 try {
-  $running=Invoke-InteractiveJob $Workspace ([pscustomobject]@{action=$(if($UseStartupLauncher){'LaunchStartup'}else{'Launch'});executable=$installed.executable;executableSha256=(Get-Digest $installed.executable);mode='--xnav'}) -TimeoutSeconds $(if($UseStartupLauncher){150}else{90})
+  $running=Invoke-InteractiveJob $Workspace ([pscustomobject]@{action=$(if($UseStartupLauncher){'LaunchStartup'}else{'Launch'});executable=$installed.executable;executableSha256=(Get-Digest $installed.executable);mode='--xnav'}) -TimeoutSeconds $(if($UseStartupLauncher){720}else{90})
   Start-Sleep -Seconds $ObserveSeconds
   $process=Get-Process -Id $running.pid -ErrorAction Stop
   try {

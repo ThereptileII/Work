@@ -102,8 +102,10 @@ namespace Skager {
   public string VerifiedImage { get; private set; }
   public string VerifiedHash { get; private set; }
   public string FailureReason { get; private set; }
+  public string Phase { get; private set; }
   bool Reject(string reason) { FailureReason=reason; return false; }
   public UpdateStartupPipe(string name) {
+   Phase="startup";
    IntPtr descriptor = IntPtr.Zero; uint size;
    var sid = WindowsIdentity.GetCurrent().User.Value;
    if (!ConvertStringSecurityDescriptorToSecurityDescriptor("D:P(A;;GA;;;"+sid+")",1,out descriptor,out size)) throw new IOException("Cannot restrict startup pipe ACL.");
@@ -139,10 +141,16 @@ namespace Skager {
    } catch { return false; }
   }
   public bool Receive(Process process,string image,string hash,string expected,int timeoutMs) {
+   return Receive(process,image,hash,expected,timeoutMs,300000);
+  }
+  public bool Receive(Process process,string image,string hash,string expected,int timeoutMs,int humanWaitMs) {
    if(consumed) throw new InvalidOperationException("Startup receipt already consumed.");
    consumed=true;
-   if(timeoutMs<1 || timeoutMs>180000 || expected.Length>256) throw new ArgumentException("Invalid startup receipt bound.");
+   if(timeoutMs<1 || timeoutMs>180000 || humanWaitMs<1 || humanWaitMs>300000 || expected.Length>256 ||
+      !expected.StartsWith("SKAGER-UPDATE-READY/1 ",StringComparison.Ordinal) || !expected.EndsWith("\n",StringComparison.Ordinal))
+    throw new ArgumentException("Invalid startup receipt bound.");
    var elapsed=Stopwatch.StartNew();
+   long deadline=timeoutMs;
    string stage="process-before-connect";
    try {
     long ticks=process.StartTime.ToUniversalTime().Ticks;
@@ -156,24 +164,58 @@ namespace Skager {
     stage="client-identity";
     if(!GetNamedPipeClientProcessId(pipe.SafePipeHandle,out client)) return Reject("client-pid-win32-"+Marshal.GetLastWin32Error());
     if(client!=(uint)process.Id || !ExactProcess(process,ticks,image,hash)) return Reject(stage);
+    var waitFrame=expected.Replace("SKAGER-UPDATE-READY/1 ","SKAGER-UPDATE-WAIT/1 ");
+    var continueFrame=expected.Replace("SKAGER-UPDATE-READY/1 ","SKAGER-UPDATE-CONTINUE/1 ");
+    var cancelFrame=expected.Replace("SKAGER-UPDATE-READY/1 ","SKAGER-UPDATE-CANCEL/1 ");
+    var record=new byte[256]; int used=0, records=0;
+    var buffer=new byte[257];
+    string terminal=null;
     stage="frame-read";
-    var wanted=Encoding.ASCII.GetBytes(expected);
-    var buffer=new byte[257]; int used=0;
-    while(used<buffer.Length) {
-     int remaining=timeoutMs-(int)elapsed.ElapsedMilliseconds;
-     if(remaining<=0) return Reject("read-timeout");
-     var read=pipe.ReadAsync(buffer,used,buffer.Length-used);
-     if(!read.Wait(remaining)) return Reject("read-timeout");
+    while(true) {
+     var read=pipe.ReadAsync(buffer,0,buffer.Length);
+     while(true) {
+      long remaining=deadline-elapsed.ElapsedMilliseconds;
+      if(remaining<=0) return Reject(Phase=="awaiting-human" ? "human-wait-timeout" : Phase=="resuming" ? "health-timeout" : "read-timeout");
+      if(read.Wait((int)Math.Min(remaining,250))) break;
+      if(!SameLiveProcess(process,ticks)) return Reject("process-during-read");
+     }
      int count=read.Result;
-     if(count==0) break;
-     used+=count;
-     if(used>wanted.Length) return Reject("frame-oversized");
+     if(elapsed.ElapsedMilliseconds>=deadline) return Reject(Phase=="awaiting-human" ? "human-wait-timeout" : Phase=="resuming" ? "health-timeout" : "read-timeout");
+     if(count==0) {
+      if(used!=0 || terminal==null) return Reject("frame-length");
+      if(!ExactProcess(process,ticks,image,hash)) return Reject("process-after-read");
+      if(elapsed.ElapsedMilliseconds>=deadline) return Reject("verification-timeout");
+      if(terminal=="cancel") { Phase="cancelled";return Reject("human-cancelled"); }
+      Phase="healthy";
+      VerifiedFrame=expected; VerifiedImage=Path.GetFullPath(image); VerifiedHash=hash;
+      return true;
+     }
+     for(int i=0;i<count;i++) {
+      if(terminal!=null) return Reject("frame-trailing");
+      if(used==record.Length) return Reject("frame-oversized");
+      byte value=buffer[i];
+      if(value>127) return Reject("frame-encoding");
+      record[used++]=value;
+      if(value!=10) continue;
+      if(++records>3) return Reject("frame-count");
+      var frame=Encoding.ASCII.GetString(record,0,used);used=0;
+      // Every phase has the same complete identity/challenge, and each
+      // transition rechecks the original live process, exact path and hash.
+      if(!ExactProcess(process,ticks,image,hash)) return Reject("process-before-phase");
+      if(elapsed.ElapsedMilliseconds>=deadline) return Reject(Phase=="awaiting-human" ? "human-wait-timeout" : Phase=="resuming" ? "health-timeout" : "read-timeout");
+      if(frame==waitFrame && Phase=="startup" && records==1) {
+       Phase="awaiting-human";deadline=elapsed.ElapsedMilliseconds+humanWaitMs;
+      } else if(frame==continueFrame && Phase=="awaiting-human" && records==2) {
+       Phase="resuming";deadline=elapsed.ElapsedMilliseconds+timeoutMs;
+      } else if(frame==cancelFrame && Phase=="awaiting-human" && records==2) {
+       // Cancellation is not health. Require bounded EOF, without granting a
+       // new deadline; trailing records can never be reinterpreted as success.
+       Phase="cancelled";terminal="cancel";
+      } else if(frame==expected && (Phase=="startup" || Phase=="resuming")) {
+       terminal="ready";
+      } else return Reject("frame-mismatch-or-order");
+     }
     }
-    if(used!=wanted.Length) return Reject("frame-length");
-    for(int i=0;i<used;i++) if(buffer[i]!=wanted[i]) return Reject("frame-mismatch");
-    if(elapsed.ElapsedMilliseconds>timeoutMs || !ExactProcess(process,ticks,image,hash)) return Reject("process-after-read");
-    VerifiedFrame=expected; VerifiedImage=Path.GetFullPath(image); VerifiedHash=hash;
-    return true;
    } catch(Exception error) {
     // Diagnostic category/HRESULT only: never expose frame, challenge or paths.
     error=error.GetBaseException();

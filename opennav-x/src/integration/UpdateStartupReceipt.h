@@ -8,6 +8,7 @@ namespace opennav::integration {
 struct UpdateStartupReceiptEnvelope {
   std::string pipe;
   std::string message;
+  bool terminal = true;
 };
 
 // Pure policy; the platform entry point supplies the compiled commit, never an
@@ -18,11 +19,15 @@ class UpdateStartupReceiptState final {
   using Time = std::chrono::steady_clock::time_point;
   void Capture(const std::string& pipe, const std::string& generation,
                const std::string& challenge, const std::string& compiled_commit);
+  // Called only around the actual upstream modal on the application thread.
+  std::optional<UpdateStartupReceiptEnvelope> NavigationWarning(bool waiting, bool accepted);
   void ObserveReady(bool xnav_ui_ready, Time now);
   void RecoveryCheckpointReached();
   std::optional<UpdateStartupReceiptEnvelope> TakeReady();
 
  private:
+  enum class Warning { None, Waiting, Accepted, Cancelled, Invalid };
+  Warning warning_ = Warning::None;
   bool captured_ = false;
   bool checkpoint_ = false;
   std::optional<UpdateStartupReceiptEnvelope> envelope_;
@@ -33,6 +38,9 @@ class UpdateStartupReceiptState final {
 // plugins/child launches; all three environment fields are removed even when
 // malformed or the eventual mode is Legacy/Safe. Non-Windows entry points no-op.
 void CaptureUpdateStartupReceipt() noexcept;
+// No auto-consent: report entering/leaving the actual OpenCPN warning only.
+// A waiting or cancelled warning can never acknowledge successful startup.
+void NotifyUpdateNavigationWarning(bool waiting, bool accepted) noexcept;
 // Feed only from the actual XNav event-loop health path. A false observation
 // resets this receipt's independent continuous 30-second readiness period.
 void ObserveUpdateStartupHealth(bool xnav_ui_ready,

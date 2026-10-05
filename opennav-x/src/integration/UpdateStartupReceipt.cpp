@@ -11,6 +11,9 @@
 #include <process.h>
 #include <cstdlib>
 #include <memory>
+#include <mutex>
+#include <condition_variable>
+#include <deque>
 #include "OpenNavBuild.h"
 #endif
 
@@ -39,8 +42,32 @@ void UpdateStartupReceiptState::Capture(
                 " " + challenge + "\n"};
 }
 
+std::optional<UpdateStartupReceiptEnvelope>
+UpdateStartupReceiptState::NavigationWarning(bool waiting, bool accepted) {
+  ready_since_.reset();
+  last_observed_.reset();
+  checkpoint_ = false;
+  if (!envelope_) return {};
+  if ((waiting && (accepted || warning_ != Warning::None)) ||
+      (!waiting && warning_ != Warning::Waiting)) {
+    warning_ = Warning::Invalid;
+    envelope_.reset();
+    return {};
+  }
+  warning_ = waiting ? Warning::Waiting :
+      accepted ? Warning::Accepted : Warning::Cancelled;
+  auto phase = *envelope_;
+  const auto identity = phase.message.substr(std::string("SKAGER-UPDATE-READY/1").size());
+  phase.message = std::string(waiting ? "SKAGER-UPDATE-WAIT/1" :
+      accepted ? "SKAGER-UPDATE-CONTINUE/1" : "SKAGER-UPDATE-CANCEL/1") + identity;
+  phase.terminal = !waiting && !accepted;
+  if (phase.terminal) envelope_.reset();
+  return phase;
+}
+
 void UpdateStartupReceiptState::ObserveReady(bool ready, Time now) {
-  if (!ready) {
+  if (!ready || warning_ == Warning::Waiting || warning_ == Warning::Cancelled ||
+      warning_ == Warning::Invalid) {
     ready_since_.reset();
     last_observed_.reset();
     return;
@@ -53,7 +80,8 @@ void UpdateStartupReceiptState::ObserveReady(bool ready, Time now) {
 void UpdateStartupReceiptState::RecoveryCheckpointReached() { checkpoint_ = true; }
 
 std::optional<UpdateStartupReceiptEnvelope> UpdateStartupReceiptState::TakeReady() {
-  if (!checkpoint_ || !ready_since_ || !last_observed_ ||
+  if (warning_ == Warning::Waiting || warning_ == Warning::Cancelled ||
+      warning_ == Warning::Invalid || !checkpoint_ || !ready_since_ || !last_observed_ ||
       *last_observed_ - *ready_since_ < std::chrono::seconds(30)) return {};
   auto result = std::move(envelope_);
   envelope_.reset();
@@ -73,49 +101,94 @@ struct Handle {
   }
 };
 
+// One bounded FIFO and one worker for the entire supervised startup. This
+// preserves WAIT -> CONTINUE -> READY ordering even when the user accepts at
+// once. Only owned bytes cross threads; no wx object or mutable UI is retained.
+struct StartupTransport {
+  std::mutex mutex;
+  std::condition_variable changed;
+  std::deque<UpdateStartupReceiptEnvelope> queued;
+  unsigned submitted = 0;
+  bool started = false;
+  bool closed = false;
+};
+
+bool WriteEnvelope(HANDLE pipe, const std::string& message) {
+  const Handle event{CreateEventW(nullptr, TRUE, FALSE, nullptr)};
+  if (!event.value) return false;
+  OVERLAPPED operation{};
+  operation.hEvent = event.value;
+  DWORD written = 0;
+  BOOL sent = WriteFile(pipe, message.data(), static_cast<DWORD>(message.size()),
+                       &written, &operation);
+  if (!sent && GetLastError() == ERROR_IO_PENDING) {
+    if (WaitForSingleObject(event.value, 250) != WAIT_OBJECT_0) {
+      CancelIoEx(pipe, &operation);
+      // Retain the OVERLAPPED and bytes until cancellation completes. This is
+      // the isolated worker, never the application/UI thread.
+      WaitForSingleObject(event.value, INFINITE);
+      GetOverlappedResult(pipe, &operation, &written, FALSE);
+      return false;
+    }
+    sent = GetOverlappedResult(pipe, &operation, &written, FALSE);
+  }
+  return sent && written == message.size();
+}
+
 unsigned __stdcall SendReceipt(void* argument) noexcept {
-  // Sole ownership belongs to this worker: no wx objects, UI pointers or
-  // mutable application state survive across the asynchronous boundary.
-  const std::unique_ptr<UpdateStartupReceiptEnvelope> envelope(
-      static_cast<UpdateStartupReceiptEnvelope*>(argument));
+  const std::unique_ptr<std::shared_ptr<StartupTransport>> owned(
+      static_cast<std::shared_ptr<StartupTransport>*>(argument));
+  const auto state = *owned;
   try {
+    std::unique_lock<std::mutex> lock(state->mutex);
+    const auto name = state->queued.front().pipe;
+    lock.unlock();
     const auto pipe_name = std::wstring(L"\\\\.\\pipe\\") +
-        std::wstring(envelope->pipe.begin(), envelope->pipe.end());
+        std::wstring(name.begin(), name.end());
     const Handle pipe{CreateFileW(pipe_name.c_str(), GENERIC_WRITE, 0, nullptr,
                                  OPEN_EXISTING, FILE_FLAG_OVERLAPPED, nullptr)};
-    if (pipe.value == INVALID_HANDLE_VALUE) return 0;
-    const Handle event{CreateEventW(nullptr, TRUE, FALSE, nullptr)};
-    if (!event.value) return 0;
-    OVERLAPPED operation{};
-    operation.hEvent = event.value;
-    DWORD written = 0;
-    const BOOL sent = WriteFile(pipe.value, envelope->message.data(),
-        static_cast<DWORD>(envelope->message.size()), &written, &operation);
-    if (!sent && GetLastError() == ERROR_IO_PENDING) {
-      if (WaitForSingleObject(event.value, 250) != WAIT_OBJECT_0) {
-        CancelIoEx(pipe.value, &operation);
-        // Cancellation completion must retain the OVERLAPPED and its buffer.
-        // It is waited out only on this independent worker, never the UI.
-        WaitForSingleObject(event.value, INFINITE);
+    if (pipe.value != INVALID_HANDLE_VALUE) {
+      const auto deadline = std::chrono::steady_clock::now() + std::chrono::minutes(8);
+      for (;;) {
+        lock.lock();
+        if (!state->changed.wait_until(lock, deadline, [&] {
+              return !state->queued.empty() || state->closed;
+            }) || state->closed || std::chrono::steady_clock::now() >= deadline) break;
+        auto envelope = std::move(state->queued.front());
+        state->queued.pop_front();
+        lock.unlock();
+        if (envelope.pipe != name || !WriteEnvelope(pipe.value, envelope.message) ||
+            envelope.terminal) break;
       }
-      GetOverlappedResult(pipe.value, &operation, &written, FALSE);
+      if (lock.owns_lock()) lock.unlock();
     }
-    // Closing sends EOF. Do not FlushFileBuffers (which waits for the peer),
-    // retry, infer acceptance, alter recovery state or launch another process.
+    // Final close sends EOF. No FlushFileBuffers, retry or acceptance inference.
   } catch (...) {}
+  { std::lock_guard<std::mutex> lock(state->mutex);
+    state->closed = true;
+    state->queued.clear(); }
   return 0;
 }
 
-void SendReadyReceipt() {
-  auto envelope = Receipt().TakeReady();
+void SendEnvelope(std::optional<UpdateStartupReceiptEnvelope> envelope) {
   if (!envelope) return;
-  auto owned = std::make_unique<UpdateStartupReceiptEnvelope>(std::move(*envelope));
-  const auto thread = _beginthreadex(nullptr, 0, &SendReceipt, owned.get(), 0, nullptr);
-  if (thread) {
+  static const auto state = std::make_shared<StartupTransport>();
+  std::lock_guard<std::mutex> lock(state->mutex);
+  if (state->closed || state->submitted >= 3) return;
+  state->queued.push_back(std::move(*envelope));
+  ++state->submitted;
+  if (!state->started) {
+    auto owned = std::make_unique<std::shared_ptr<StartupTransport>>(state);
+    const auto thread = _beginthreadex(nullptr, 0, &SendReceipt, owned.get(), 0, nullptr);
+    if (!thread) { state->closed = true; state->queued.clear(); return; }
+    state->started = true;
     owned.release();
     CloseHandle(reinterpret_cast<HANDLE>(thread));
   }
+  state->changed.notify_one();
 }
+
+void SendReadyReceipt() { SendEnvelope(Receipt().TakeReady()); }
 
 struct EnvironmentField {
   wchar_t value[128]{};
@@ -162,6 +235,15 @@ void CaptureUpdateStartupReceipt() noexcept {
     else
       Receipt().Capture({}, {}, {}, {});
   } catch (...) {}
+#endif
+}
+
+void NotifyUpdateNavigationWarning(bool waiting, bool accepted) noexcept {
+#ifdef _WIN32
+  try { SendEnvelope(Receipt().NavigationWarning(waiting, accepted)); } catch (...) {}
+#else
+  (void)waiting;
+  (void)accepted;
 #endif
 }
 

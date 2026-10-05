@@ -1,0 +1,32 @@
+cmake_minimum_required(VERSION 3.24)
+project(StartupWarningBoundary LANGUAGES CXX)
+if(NOT WIN32)
+  message(FATAL_ERROR "This fixture requires disposable native Windows")
+endif()
+if(NOT IS_DIRECTORY "${WARNING_UPSTREAM}" OR NOT IS_DIRECTORY "${WARNING_GENERATED}")
+  message(FATAL_ERROR "Hash-verified upstream files and extracted boundaries required")
+endif()
+find_package(wxWidgets 3.2 REQUIRED COMPONENTS core base html)
+include(${wxWidgets_USE_FILE})
+set(OPENNAV_BUILD_COMMIT "0123456789012345678901234567890123456789")
+set(OPENNAV_BUILD_RUN "isolated exact navigation warning fixture")
+set(OPENNAV_BUILD_DATE "fixture")
+configure_file(../../src/integration/OpenNavBuild.h.in
+  "${CMAKE_CURRENT_BINARY_DIR}/generated/OpenNavBuild.h" @ONLY)
+set(receipt ../../src/integration/UpdateStartupReceipt.cpp)
+add_executable(startup_warning_native warning_native.cpp ${receipt}
+  "${WARNING_UPSTREAM}/libs/gui/src/dialog_alert.cpp"
+  "${WARNING_UPSTREAM}/libs/gui/src/dialog_base.cpp"
+  "${WARNING_UPSTREAM}/libs/gui/src/ui_utils.cpp")
+target_include_directories(startup_warning_native PRIVATE
+  "${WARNING_UPSTREAM}/libs/gui/include" "${WARNING_GENERATED}")
+target_link_libraries(startup_warning_native PRIVATE ${wxWidgets_LIBRARIES})
+add_executable(update_startup_receipt_tests ../update_startup_receipt_tests.cpp ${receipt})
+add_executable(update_startup_receipt_native_test ../update_startup_receipt_native_test.cpp ${receipt})
+foreach(target startup_warning_native update_startup_receipt_tests update_startup_receipt_native_test)
+  target_include_directories(${target} PRIVATE ../../src "${CMAKE_CURRENT_BINARY_DIR}/generated")
+  target_compile_features(${target} PRIVATE cxx_std_17)
+  if(MSVC)
+    target_compile_options(${target} PRIVATE /utf-8 /W4)
+  endif()
+endforeach()

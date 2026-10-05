@@ -1621,3 +1621,12 @@ overzoom asset. [Focused source/painter proof](evidence/scrum286-overzoom-warnin
 passes. The [actual core application comparison](evidence/scrum286-98d2c45-linux-canvas/README.md)
 also passes, with changes confined to the old warning region and identical
 Standard chart controls. Native Windows and boat readability remain separate.
+
+## SCRUM-312: supervised navigation-warning phases
+
+The core XNav patch adds two notifications around the pinned desktop
+`MyApp::OnInit` call to `ShowNavWarning`, gated by selected XNav mode. It preserves
+the original warning, condition, return and config semantics. The integration
+reports waiting/actual choice to the updater; it cannot choose for the user.
+See [startup protocol](installer/startup-human-wait.md). The modal precedes
+`Attach` and deferred initialization, so shell-only reporting is insufficient.

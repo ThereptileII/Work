@@ -32,7 +32,7 @@ function HashWorker([string]$Path) {
  } finally { if($stream){$stream.Dispose()};$sha.Dispose() }
 }
 $hash=HashWorker $Worker
-foreach($case in @('healthy','no-marker','interrupted','invalid-request','wrong-expected-commit')) {
+foreach($case in @('healthy','no-marker','interrupted','invalid-request','wrong-expected-commit','warning-agree','warning-cancel','warning-timeout','warning-no-checkpoint','warning-fast')) {
  $record=New-UpdatePendingRecord (Identity 'a') (Identity 'b')
  $record.candidate.commit=$Commit
  if($case -eq 'wrong-expected-commit'){$record.candidate.commit='e'*40}
@@ -49,10 +49,12 @@ foreach($case in @('healthy','no-marker','interrupted','invalid-request','wrong-
   if($case -eq 'invalid-request'){$start.EnvironmentVariables['SKAGER_UPDATE_CHALLENGE']='invalid'}
   # An attacker-selected environment commit must never replace compiled code identity.
   $start.EnvironmentVariables['SKAGER_UPDATE_COMMIT']='f'*40
-  $start.EnvironmentVariables['SKAGER_RECEIPT_FIXTURE_MODE']=$(if($case -in @('no-marker','interrupted')){$case}else{'healthy'})
+  $start.EnvironmentVariables['SKAGER_RECEIPT_FIXTURE_MODE']=$(if($case -in @('no-marker','interrupted') -or $case.StartsWith('warning-')){$case}else{'healthy'})
   $process=[Diagnostics.Process]::Start($start)
-  $accepted=Wait-UpdateStartupSuccess $record $session $process $Worker 3000
-  Check ($accepted -eq ($case -eq 'healthy')) ('Unexpected receipt decision: '+$case)
+  if($case.StartsWith('warning-')) {
+   $accepted=$session.server.Receive($process,$Worker,$hash,(Get-UpdateReadyFrame $record.candidate $session),1500,3000)
+  } else { $accepted=Wait-UpdateStartupSuccess $record $session $process $Worker 3000 }
+  Check ($accepted -eq ($case -in @('healthy','warning-agree','warning-fast'))) ('Unexpected receipt decision: '+$case)
  } finally {
   $session.server.Dispose()
   if($process) {
@@ -370,7 +372,7 @@ def main():
                  '-File', harness, '-Module', ROOT / 'installer/windows/UpdateTransaction.ps1',
                  '-Worker', clients['update_startup_receipt_native_test'],
                  '-Evidence', evidence, '-Commit', FIXTURE_COMMIT],
-                evidence / 'receipt-native.log', timeout=45)
+                evidence / 'receipt-native.log', timeout=75)
         test_prompt(clients['skager-update-prompt'], evidence)
         for name, client in clients.items():
             if api.record(client) != report['executables'][name]:

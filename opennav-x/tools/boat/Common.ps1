@@ -228,7 +228,7 @@ function Invoke-InteractiveJob([string]$Workspace,$Job,[int]$TimeoutSeconds=90) 
   $name='OpenNavX-Boat-'+[guid]::NewGuid().ToString('N')
   $action=New-ScheduledTaskAction -Execute (Join-Path $env:WINDIR 'System32\WindowsPowerShell\v1.0\powershell.exe') -Argument ('-NoProfile -NonInteractive -ExecutionPolicy Bypass -File "'+$script+'" -Request "'+$request+'"')
   $principal=New-ScheduledTaskPrincipal -UserId $sid -LogonType Interactive -RunLevel Limited
-  $settings=New-ScheduledTaskSettingsSet -ExecutionTimeLimit (New-TimeSpan -Minutes 5) -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries
+  $settings=New-ScheduledTaskSettingsSet -ExecutionTimeLimit (New-TimeSpan -Minutes $(if($Job.action -ceq 'LaunchStartup'){15}else{5})) -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries
   $task=$null
   try {
     $task=Register-ScheduledTask -TaskName $name -Action $action -Principal $principal -Settings $settings

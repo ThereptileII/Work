@@ -12,4 +12,4 @@ if($PSBoundParameters.ContainsKey('RestartSessionRecord') -or $PSBoundParameters
   $job|Add-Member restartSessionSha256 $RestartSessionSha256
   $null=Get-OptionalRestartBinding $job $installed $config $launchEnvironment
 }
-Invoke-InteractiveJob $Workspace $job -TimeoutSeconds $(if($UseStartupLauncher){150}else{90}) | ConvertTo-Json -Depth 8
+Invoke-InteractiveJob $Workspace $job -TimeoutSeconds $(if($UseStartupLauncher){720}else{90}) | ConvertTo-Json -Depth 8

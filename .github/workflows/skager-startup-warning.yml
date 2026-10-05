@@ -1,0 +1,80 @@
+name: SKAGER authenticated startup warning
+on:
+  push:
+    branches: [skager-startup-warning]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  policy:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+        with:
+          go-version-file: opennav-x/tools/update-verifier/go.mod
+          cache-dependency-path: opennav-x/tools/update-verifier/go.sum
+      - name: Focused startup and launcher policies
+        working-directory: opennav-x
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence/local/startup-warning-linux
+          c++ -std=c++17 -Wall -Wextra -Werror -Isrc tests/update_startup_receipt_tests.cpp src/integration/UpdateStartupReceipt.cpp -o evidence/local/startup-warning-linux/receipt-tests
+          evidence/local/startup-warning-linux/receipt-tests | tee evidence/local/startup-warning-linux/receipt.log
+          (cd tools/update-verifier && go test -count=1 -json ./launcher) > evidence/local/startup-warning-linux/launcher.json
+          pwsh -NoProfile -File tools/test-update-transaction.ps1 | tee evidence/local/startup-warning-linux/transaction.log
+          pwsh -NoProfile -File tools/boat/test-startup-launcher.ps1 -PortableContracts > evidence/local/startup-warning-linux/boat-policy.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: startup-warning-linux-${{ github.sha }}
+          path: opennav-x/evidence/local/startup-warning-linux
+          if-no-files-found: error
+  native:
+    runs-on: windows-2022
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+        with:
+          go-version-file: opennav-x/tools/update-verifier/go.mod
+          cache-dependency-path: opennav-x/tools/update-verifier/go.sum
+      - name: Native Win32 launcher policies
+        shell: pwsh
+        env:
+          GOARCH: '386'
+        working-directory: opennav-x/tools/update-verifier
+        run: |
+          $ErrorActionPreference='Stop'
+          New-Item -ItemType Directory -Force ../../evidence/local/startup-warning-native | Out-Null
+          go test -count=1 -json ./launcher > ../../evidence/local/startup-warning-native/launcher.json
+          if ($LASTEXITCODE -ne 0) {exit $LASTEXITCODE}
+      - name: Native authenticated phases and conservative recovery
+        shell: powershell
+        run: |
+          & opennav-x/tools/test-update-transaction.ps1 *>&1 | Tee-Object opennav-x/evidence/local/startup-warning-native/transaction.log
+          if ($LASTEXITCODE -ne 0) {exit $LASTEXITCODE}
+          & opennav-x/tools/test-updater-installer-integration.ps1 *>&1 | Tee-Object opennav-x/evidence/local/startup-warning-native/recovery.log
+          if ($LASTEXITCODE -ne 0) {exit $LASTEXITCODE}
+      - name: Actual pinned OpenCPN warning and production receipt transport
+        shell: pwsh
+        run: |
+          python opennav-x/tools/test-startup-warning-native.py --evidence opennav-x/evidence/local/startup-warning-native/components
+          if ($LASTEXITCODE -ne 0) {exit $LASTEXITCODE}
+      - name: Native boat-launcher process observation policy
+        shell: powershell
+        run: |
+          & opennav-x/tools/boat/test-startup-launcher.ps1 | Out-File opennav-x/evidence/local/startup-warning-native/boat-policy.json
+          if ($LASTEXITCODE -ne 0) {exit $LASTEXITCODE}
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: startup-warning-native-${{ github.sha }}
+          path: |
+            opennav-x/evidence/local/startup-warning-native/*.json
+            opennav-x/evidence/local/startup-warning-native/*.log
+            opennav-x/evidence/local/startup-warning-native/components/*.json
+            opennav-x/evidence/local/startup-warning-native/components/*.log
+          if-no-files-found: error

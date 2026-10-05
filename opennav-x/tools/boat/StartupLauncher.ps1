@@ -128,7 +128,7 @@ function Invoke-StartupLauncher($Job) {
     $start.WorkingDirectory=$environment.workingDirectory;$start.EnvironmentVariables['PATH']=$environment.path
     $started=[Diagnostics.Process]::Start($start);$null=$started.get_Handle()
     $launcher=[pscustomobject]@{process=$started;pid=$started.Id;startedTicks=$started.StartTime.ToUniversalTime().Ticks;exitTicks=0L;sid=$sid;session=$session;image=$start.FileName;sha256=$context.files['app/skager-start.exe'].sha256}
-    $deadline=[DateTime]::UtcNow.AddSeconds(120)
+    $deadline=[DateTime]::UtcNow.AddSeconds(690) # Receiver phases plus bounded recovery; never auto-acknowledge.
     $systems=@([Environment]::GetFolderPath('System'),[Environment]::GetFolderPath('SystemX86')) | Select-Object -Unique
     $engines=@{};foreach ($system in $systems) {if($system){$path=Assert-LocalPath (Join-Path $system 'WindowsPowerShell/v1.0/powershell.exe');$engines[$path]=Get-Digest $path}}
     while (-not $app -and [DateTime]::UtcNow -lt $deadline) {

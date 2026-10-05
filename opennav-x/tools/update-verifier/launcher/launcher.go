@@ -368,7 +368,10 @@ func invokeSupervisor(ctx context.Context, p platform, g *generation, action, tr
 		}
 		args = append(args, "-Transaction", transaction)
 	}
-	result, err := p.wait(ctx, processSpec{executable: engine, directory: g.layout.app, arguments: args, limit: 4 * time.Minute})
+	// Receiver budgets: initial 90s + one authenticated human wait (300s) +
+	// health 90s, then graceful close/recovery (10s + 120s). Keep the outer
+	// custody wait above that finite total; never kill a running transaction.
+	result, err := p.wait(ctx, processSpec{executable: engine, directory: g.layout.app, arguments: args, limit: 11 * time.Minute})
 	if result.timedOut && result.done != nil {
 		<-result.done
 	}

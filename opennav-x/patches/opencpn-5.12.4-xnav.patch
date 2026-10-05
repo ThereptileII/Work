@@ -184,18 +184,19 @@ diff --git a/gui/src/ocpn_app.cpp b/gui/src/ocpn_app.cpp
 index a7670a674..1542f919c 100644
 --- a/gui/src/ocpn_app.cpp
 +++ b/gui/src/ocpn_app.cpp
-@@ -22,6 +22,10 @@
+@@ -22,6 +22,11 @@
   *   Free Software Foundation, Inc.,                                       *
   *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
   **************************************************************************/
 +#ifdef OPENNAV_X
 +#include "integration/OpenCPNIntegration.h"
 +#include "integration/InstallerSelfTest.h"
++#include "integration/UpdateStartupReceipt.h"
 +#endif
  #include "config.h"
  
  #ifdef __MINGW32__
-@@ -768,7 +772,18 @@ wxString newPrivateFileName(wxString, const char *name,
+@@ -768,7 +773,18 @@ wxString newPrivateFileName(wxString, const char *name,
  //------------------------------------------------------------------------------
  // MyApp
  //------------------------------------------------------------------------------
@@ -214,7 +215,7 @@ index a7670a674..1542f919c 100644
  
  BEGIN_EVENT_TABLE(MyApp, wxApp)
  EVT_ACTIVATE_APP(MyApp::OnActivateApp)
-@@ -843,6 +858,12 @@ bool MyApp::OpenFile(const std::string &path) {
+@@ -843,6 +859,12 @@ bool MyApp::OpenFile(const std::string &path) {
  
  #ifndef __ANDROID__
  void MyApp::OnInitCmdLine(wxCmdLineParser &parser) {
@@ -227,7 +228,7 @@ index a7670a674..1542f919c 100644
    // Add OpenCPN specific command line options. Help message
    // is hardcoded in kUsage;
    parser.AddSwitch("h", "help", "", wxCMD_LINE_OPTION_HELP);
-@@ -894,19 +915,45 @@ static void ParseLoglevel(wxCmdLineParser &parser) {
+@@ -894,19 +916,45 @@ static void ParseLoglevel(wxCmdLineParser &parser) {
  
  #ifndef __ANDROID__
  bool MyApp::OnCmdLineHelp(wxCmdLineParser &parser) {
@@ -273,7 +274,7 @@ index a7670a674..1542f919c 100644
    g_start_fullscreen = parser.Found("fullscreen");
    g_bdisable_opengl = parser.Found("no_opengl");
    g_rebuild_gl_cache = parser.Found("rebuild_gl_raster_cache");
-@@ -917,20 +964,43 @@ bool MyApp::OnCmdLineParsed(wxCmdLineParser &parser) {
+@@ -917,20 +965,43 @@ bool MyApp::OnCmdLineParsed(wxCmdLineParser &parser) {
      g_unit_test_1 = static_cast<int>(number);
      if (g_unit_test_1 == 0) g_unit_test_1 = -1;
    }
@@ -317,7 +318,7 @@ index a7670a674..1542f919c 100644
        "unit_test_2",
        "p",
        "fullscreen",
-@@ -1024,8 +1094,34 @@ MyApp::MyApp()
+@@ -1024,8 +1095,34 @@ MyApp::MyApp()
  #endif     // __linux__
  }
  
@@ -352,7 +353,7 @@ index a7670a674..1542f919c 100644
  #ifdef __ANDROID__
    androidEnableBackButton(false);
    androidEnableOptionItems(false);
-@@ -1100,6 +1196,10 @@ bool MyApp::OnInit() {
+@@ -1100,6 +1197,10 @@ bool MyApp::OnInit() {
    }
  
  #ifndef __ANDROID__
@@ -363,7 +364,7 @@ index a7670a674..1542f919c 100644
    // Check if last run failed, set up safe_mode.
    if (!safe_mode::get_mode()) {
      safe_mode::check_last_start();
-@@ -1151,9 +1251,15 @@ bool MyApp::OnInit() {
+@@ -1151,9 +1252,15 @@ bool MyApp::OnInit() {
    noteman.ScrubNotificationDirectory(30);
  
    //      Establish Log File location
@@ -379,7 +380,7 @@ index a7670a674..1542f919c 100644
  
  #ifdef __WXMSW__
  
-@@ -1314,6 +1420,9 @@ bool MyApp::OnInit() {
+@@ -1314,6 +1421,9 @@ bool MyApp::OnInit() {
    pConfig = g_Platform->GetConfigObject();
    InitBaseConfig(pConfig);
    pConfig->LoadMyConfig();
@@ -389,7 +390,7 @@ index a7670a674..1542f919c 100644
  
    //  Override for some safe and nice default values if the config file was
    //  created from scratch
-@@ -1509,6 +1618,10 @@ bool MyApp::OnInit() {
+@@ -1509,6 +1619,10 @@ bool MyApp::OnInit() {
  
    InitRestListeners();
  
@@ -400,7 +401,27 @@ index a7670a674..1542f919c 100644
    //      Establish the GSHHS Dataset location
    gDefaultWorldMapLocation = "gshhs";
    gDefaultWorldMapLocation.Prepend(g_Platform->GetSharedDataDir());
-@@ -1977,7 +2090,11 @@ bool MyApp::OnInit() {
+@@ -1934,8 +2048,18 @@ bool MyApp::OnInit() {
+   //  Send the Welcome/warning message if it has never been sent before,
+   //  or if the version string has changed at all
+   //  We defer until here to allow for localization of the message
+   if (!n_NavMessageShown || (vs != g_config_version_string)) {
+-    if (!ShowNavWarning()) return false;
++#ifdef OPENNAV_X
++    const bool xnav_nav_warning = opennav::IsXNav();
++    if (xnav_nav_warning)
++      opennav::integration::NotifyUpdateNavigationWarning(true, false);
++#endif
++    const bool nav_warning_accepted = ShowNavWarning();
++#ifdef OPENNAV_X
++    if (xnav_nav_warning)
++      opennav::integration::NotifyUpdateNavigationWarning(false, nav_warning_accepted);
++#endif
++    if (!nav_warning_accepted) return false;
+     n_NavMessageShown = 1;
+     pConfig->Flush();
+   }
+@@ -1977,7 +2101,11 @@ bool MyApp::OnInit() {
    std::vector<std::string> ipv4_addrs = get_local_ipv4_addresses();
  
    // If network connection is available, start the server and mDNS client
@@ -413,7 +434,7 @@ index a7670a674..1542f919c 100644
      std::string ipAddr = ipv4_addrs[0];
  
      wxString data_dir = g_Platform->GetPrivateDataDir();
-@@ -1990,10 +2107,16 @@ bool MyApp::OnInit() {
+@@ -1990,10 +2118,16 @@ bool MyApp::OnInit() {
      StartMDNSService(g_hostname.ToStdString(), "opencpn-object-control-service",
                       8000);
    }
@@ -430,7 +451,7 @@ index a7670a674..1542f919c 100644
    wxLogMessage(_T("opencpn::MyApp starting exit."));
    m_checker.OnExit();
    m_usb_watcher.Stop();
-@@ -2118,6 +2241,9 @@ int MyApp::OnExit() {
+@@ -2118,6 +2252,9 @@ int MyApp::OnExit() {
    g_Platform->OnExit_2();
    safe_mode::clear_check();
    delete g_Platform;

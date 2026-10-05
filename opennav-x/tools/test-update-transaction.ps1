@@ -166,7 +166,7 @@ public sealed class SuspendedUpdateClient : IDisposable {
  public bool BeginReceive(object server,string image,string hash,string frame) {
   Receiver=Task<bool>.Factory.StartNew(delegate {
    entered.Set();
-   return (bool)server.GetType().GetMethod("Receive").Invoke(server,new object[]{Child,image,hash,frame,5000});
+   return (bool)server.GetType().GetMethod("Receive",new Type[]{typeof(Process),typeof(string),typeof(string),typeof(string),typeof(int)}).Invoke(server,new object[]{Child,image,hash,frame,5000});
   });
   return entered.WaitOne(1000);
  }
@@ -200,20 +200,29 @@ if ($env:SKAGER_FIXTURE_WRITER -eq 'yes') {
  $pipe=New-Object IO.Pipes.NamedPipeClientStream('.', $env:SKAGER_UPDATE_PIPE,[IO.Pipes.PipeDirection]::Out)
  try {
   $pipe.Connect(5000)
-  $bytes=[Text.Encoding]::ASCII.GetBytes($env:SKAGER_FIXTURE_FRAME)
-  $pipe.Write($bytes,0,$bytes.Length); $pipe.Flush()
+  if ($env:SKAGER_FIXTURE_PHASES) {
+   foreach ($part in @($env:SKAGER_FIXTURE_PHASES | ConvertFrom-Json)) {
+    if ($part.delayBefore) { Start-Sleep -Milliseconds $part.delayBefore }
+    $bytes=[Text.Encoding]::ASCII.GetBytes($part.frame)
+    $pipe.Write($bytes,0,$bytes.Length); $pipe.Flush()
+   }
+  } else {
+   $bytes=[Text.Encoding]::ASCII.GetBytes($env:SKAGER_FIXTURE_FRAME)
+   $pipe.Write($bytes,0,$bytes.Length); $pipe.Flush()
+  }
  } finally { $pipe.Dispose() }
 }
 if ($env:SKAGER_FIXTURE_CLOSED) { [IO.File]::WriteAllText($env:SKAGER_FIXTURE_CLOSED,'pipe-closed') }
 Start-Sleep -Seconds 10
 '@)
   $executable=[Diagnostics.Process]::GetCurrentProcess().MainModule.FileName
-  function StartClient($Session,[string]$Frame,[bool]$Writer=$true) {
+  function StartClient($Session,[string]$Frame,[bool]$Writer=$true,[string]$Phases='') {
     $start=New-Object Diagnostics.ProcessStartInfo
     $start.FileName=$executable; $start.UseShellExecute=$false; $start.CreateNoWindow=$true
     $start.Arguments='-NoProfile -NonInteractive -File "'+$childFile+'"'
     $start.EnvironmentVariables['SKAGER_UPDATE_PIPE']=$Session.pipe
     $start.EnvironmentVariables['SKAGER_FIXTURE_FRAME']=$Frame
+    $start.EnvironmentVariables['SKAGER_FIXTURE_PHASES']=$Phases
     $start.EnvironmentVariables['SKAGER_FIXTURE_WRITER']=$(if($Writer){'yes'}else{'no'})
     $start.EnvironmentVariables['SKAGER_FIXTURE_CLOSED']=Join-Path $fixture ($Session.session+'.closed')
     return [Diagnostics.Process]::Start($start)
@@ -252,6 +261,93 @@ Start-Sleep -Seconds 10
       foreach ($process in @($child,$impostor)) { if ($process) { if (-not $process.HasExited) { $process.Kill(); $process.WaitForExit() }; $process.Dispose() } }
     }
     Write-Host ('PASS: native '+$case)
+  }
+  function PhasePart([string]$Frame,[int]$Delay=0) {
+    return [pscustomobject]@{frame=$Frame;delayBefore=$Delay}
+  }
+  foreach ($badHumanLimit in @(0,300001)) {
+    $pending=NewRecord
+    $session=New-UpdateStartupSession $pending
+    try {
+      $ready=Get-UpdateReadyFrame $pending.candidate $session
+      Reject { $session.server.Receive([Diagnostics.Process]::GetCurrentProcess(),$executable,'0'*64,$ready,3000,$badHumanLimit) }
+      Check ($null -eq $session.server.VerifiedFrame) 'Invalid human deadline produced startup proof.'
+    } finally { $session.server.Dispose() }
+  }
+  Write-Host 'PASS: human-wait deadline is positive and capped at five minutes.'
+  foreach ($case in @('wait-accept','wait-accept-after-initial-deadline','fragmented-phases',
+      'wait-cancel','wait-eof','continue-eof','wait-ready','continue-first','cancel-first',
+      'repeated-wait','repeated-continue','ready-trailing','cancel-trailing','unknown-phase',
+      'spoof-wait-challenge','spoof-wait-generation','spoof-wait-commit','spoof-continue',
+      'spoof-cancel','spoof-wait-pid','truncated-wait','oversized-phase','human-timeout',
+      'health-timeout','ready-without-eof')) {
+    $pending=NewRecord; $pending.candidate.executableSha256=HashFile $executable
+    $session=New-UpdateStartupSession $pending
+    Write-UpdatePendingRecord $path $pending
+    $child=$null; $impostor=$null
+    try {
+      $ready=Get-UpdateReadyFrame $pending.candidate $session
+      $wait=$ready.Replace('SKAGER-UPDATE-READY/1 ','SKAGER-UPDATE-WAIT/1 ')
+      $continue=$ready.Replace('SKAGER-UPDATE-READY/1 ','SKAGER-UPDATE-CONTINUE/1 ')
+      $cancel=$ready.Replace('SKAGER-UPDATE-READY/1 ','SKAGER-UPDATE-CANCEL/1 ')
+      $parts=@((PhasePart $wait),(PhasePart $continue),(PhasePart $ready))
+      $humanMs=1500; $expectedReason=''; $expectedPhase=''
+      switch ($case) {
+        'wait-accept-after-initial-deadline' {
+          $humanMs=6000
+          # WAIT may exceed startup's 3s test limit; CONTINUE grants a fresh
+          # bounded health interval. Neither requires real-time 30s UI health
+          # in this inert receiver fixture; the production sender tests do.
+          $parts=@((PhasePart $wait),(PhasePart $continue 3500),(PhasePart $ready 2000))
+        }
+        'fragmented-phases' {
+          $parts=@((PhasePart $wait.Substring(0,20)),(PhasePart $wait.Substring(20)),
+            (PhasePart ($continue+$ready)))
+        }
+        'wait-cancel' { $parts=@((PhasePart $wait),(PhasePart $cancel));$expectedReason='human-cancelled';$expectedPhase='cancelled' }
+        'wait-eof' { $parts=@((PhasePart $wait));$expectedReason='frame-length';$expectedPhase='awaiting-human' }
+        'continue-eof' { $parts=@((PhasePart $wait),(PhasePart $continue));$expectedReason='frame-length';$expectedPhase='resuming' }
+        'wait-ready' { $parts=@((PhasePart ($wait+$ready))) }
+        'continue-first' { $parts=@((PhasePart $continue)) }
+        'cancel-first' { $parts=@((PhasePart $cancel)) }
+        'repeated-wait' { $parts=@((PhasePart $wait),(PhasePart $wait 50),(PhasePart $continue)) }
+        'repeated-continue' { $parts=@((PhasePart ($wait+$continue+$continue+$ready))) }
+        'ready-trailing' { $parts=@((PhasePart ($wait+$continue+$ready+'x')));$expectedReason='frame-trailing' }
+        'cancel-trailing' { $parts=@((PhasePart ($wait+$cancel+$ready)));$expectedReason='frame-trailing' }
+        'unknown-phase' { $parts=@((PhasePart $wait.Replace('WAIT/1','ALIVE/1'))) }
+        'spoof-wait-challenge' { $parts=@((PhasePart $wait.Replace($session.challenge,('0'*64)))) }
+        'spoof-wait-generation' { $parts=@((PhasePart $wait.Replace($pending.candidate.generation,('c'*32)))) }
+        'spoof-wait-commit' { $parts=@((PhasePart $wait.Replace($pending.candidate.commit,('c'*40)))) }
+        'spoof-continue' { $parts=@((PhasePart $wait),(PhasePart $continue.Replace($session.challenge,('0'*64)))) }
+        'spoof-cancel' { $parts=@((PhasePart $wait),(PhasePart $cancel.Replace($session.challenge,('0'*64)))) }
+        'spoof-wait-pid' { $parts=@((PhasePart $wait));$expectedReason='client-identity' }
+        'truncated-wait' { $parts=@((PhasePart $wait.TrimEnd([char]10)));$expectedReason='frame-length' }
+        'oversized-phase' { $parts=@((PhasePart ('x'*257)));$expectedReason='frame-oversized' }
+        'human-timeout' { $humanMs=180;$parts=@((PhasePart $wait),(PhasePart $continue 400));$expectedReason='human-wait-timeout';$expectedPhase='awaiting-human' }
+        'health-timeout' { $parts=@((PhasePart ($wait+$continue)),(PhasePart $ready 3500));$expectedReason='health-timeout';$expectedPhase='resuming' }
+        'ready-without-eof' { $parts=@((PhasePart $ready),(PhasePart '' 3500));$expectedReason='read-timeout' }
+      }
+      $json=ConvertTo-Json -InputObject $parts -Compress
+      $child=StartClient $session '' ($case -ne 'spoof-wait-pid') $json
+      if ($case -eq 'spoof-wait-pid') { $impostor=StartClient $session '' $true $json }
+      $passed=$session.server.Receive($child,$executable,$pending.candidate.executableSha256,$ready,3000,$humanMs)
+      $success=$case -in @('wait-accept','wait-accept-after-initial-deadline','fragmented-phases')
+      Check ($passed -eq $success) ('Unexpected phase result: '+$case+'; receiver: '+$session.server.FailureReason)
+      if ($success) {
+        Check ($session.server.Phase -ceq 'healthy' -and $session.server.VerifiedFrame -ceq $ready) 'Only final exact READY plus EOF may establish health.'
+      } else {
+        Check ($null -eq $session.server.VerifiedFrame -and $null -eq $session.server.VerifiedHash) 'Intermediate/rejected phase became health proof.'
+        Reject { Write-UpdateKnownGoodReceipt (Join-Path $fixture ($case+'.receipt')) $pending.candidate $session $executable }
+        Check (-not (Test-Path -LiteralPath (Join-Path $fixture ($case+'.receipt')))) 'Intermediate/rejected phase wrote a known-good receipt.'
+        if (-not $expectedReason) { $expectedReason='frame-mismatch-or-order' }
+        Check ($session.server.FailureReason -ceq $expectedReason) ('Wrong phase refusal category: '+$case+'; '+$session.server.FailureReason)
+        if ($expectedPhase) { Check ($session.server.Phase -ceq $expectedPhase) ('Wrong observed phase: '+$case) }
+      }
+    } finally {
+      $session.server.Dispose()
+      foreach ($process in @($child,$impostor)) { if ($process) { if (-not $process.HasExited) { $process.Kill(); $process.WaitForExit() }; $process.Dispose() } }
+    }
+    Write-Host ('PASS: native bounded phase '+$case)
   }
   foreach($wrongHash in @($false,$true)) {
     $pending=NewRecord;$pending.candidate.executableSha256=HashFile $executable

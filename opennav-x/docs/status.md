@@ -1,5 +1,19 @@
 # SKAGER status — 2026-10-05
 
+## Current increment — SCRUM-312 navigation warning and secure startup
+
+Selected after the user asked for the next software feature. Implementing finite
+authenticated human-wait/continue/cancel phases around the original OpenCPN
+warning; healthy startup still requires the existing 30-second ready shell and
+durable checkpoint. Focused native qualification is in progress; integrated
+package and installed acceptance remain pending. The boat's c0d8d85 app remains
+unchanged; no actuator commands. [Contract](installer/startup-human-wait.md).
+
+Pilot component follow-up: 14 native contracts, 6 presentation cases and 161 button
+checks passed; the serial harness Windows-path correction subsequently passed
+its focused native run without repeating those suites. [Evidence](evidence/2026-10-05-pilot-integration/README.md). Physical pilot identity/response and
+serial reconnect/output qualification remain open in SCRUM-295/313/19.
+
 ## Autopilot follow-up — not yet physically qualified
 
 SCRUM-295/307/313 are being investigated against the actual existing AutoTrack /
@@ -19,7 +33,8 @@ delivery. Six manual command encodings are tested against the actual pinned
 bridge parser; all button events and disabled-state boundaries are exercised in
 an isolated component. TRACK/WIND remain unavailable.
 
-Focused Linux checks pass; native Windows checks are pending for this increment.
+Focused Linux and native component checks pass; integrated Windows/product
+qualification remains pending for this increment.
 These source/test changes are not yet a new installed product. Physical
 STANDBY/AUTO/course tests require the user's separately requested secured-vessel
 confirmation and a qualified transport; neither is inferred from simulated

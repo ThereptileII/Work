@@ -25,8 +25,11 @@ Window titles or PID numbers alone are not acceptance evidence.
 Success requires launcher exit zero, the installed generation's authenticated
 DPAPI startup receipt, the exact live application's responsive window and a fresh
 initialization log marker. The receipt comes from the installed supervisor's
-30-second continuous health check, with its existing 90-second deadline. The
-helper allows 120 seconds overall; dispatch allows 150 seconds. Failure does not
+30-second continuous health check. The [human-wait protocol](startup-human-wait.md)
+allows one authenticated navigation-warning decision interval without accepting
+the warning automatically. The helper allows 690 seconds overall; dispatch allows
+720 seconds, and its interactive task has a 15-minute bound. Other interactive
+tasks retain their existing bounds. Failure does not
 retry, kill or close the application. Inspect the interactive desktop and follow
 the existing normal-close and commissioning restoration procedure before any
 further launch or maintenance.
