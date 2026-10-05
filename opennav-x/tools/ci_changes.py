@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 from pathlib import Path, PurePosixPath
 import re
 import subprocess
@@ -196,6 +197,25 @@ def select(repo: Path, base: str, head: str, layout: str = 'local', *,
                         error='Missing, ambiguous or unreadable Git history; build conservatively')
 
 
+def staging_build_requested(repo: Path, head: str, event: str, ref: str) -> bool:
+    """Only the checked-out commit's exact trailer on a trusted Staging push."""
+    if event != 'push' or ref != 'refs/heads/staging':
+        return False
+    try:
+        checked_out = resolve(repo, 'HEAD')
+        if resolve(repo, head) != checked_out:
+            return False
+        message, trailers = git(repo, 'show', '-s', '--format=%B%x00%(trailers:only,unfold=true)',
+                                checked_out).decode('utf-8').split('\0', 1)
+        final_block = message.rstrip('\n').rsplit('\n\n', 1)[-1].splitlines()
+        requests = [line for line in trailers.splitlines()
+                    if line.partition(':')[0].lower() == 'skager-staging-build']
+        return (requests == ['Skager-Staging-Build: true'] and
+                final_block.count('Skager-Staging-Build: true') == 1)
+    except (OSError, ValueError, UnicodeError, subprocess.SubprocessError):
+        return False
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--repo', type=Path, default=Path('.'))
@@ -204,10 +224,13 @@ def main() -> int:
     parser.add_argument('--layout', choices=('local', 'monorepo'), default='local')
     parser.add_argument('--merge-base', action='store_true', help='PR comparison; push uses exact base/head')
     parser.add_argument('--force-product', action='store_true', help='Explicit manual Staging build only')
+    parser.add_argument('--staging-request', action='store_true', help='Honor exact HEAD trailer only on a Staging push')
     parser.add_argument('--github-output', type=Path)
     args = parser.parse_args()
+    requested = args.staging_request and staging_build_requested(
+        args.repo, args.head, os.environ.get('GITHUB_EVENT_NAME', ''), os.environ.get('GITHUB_REF', ''))
     result = select(args.repo, args.base, args.head, args.layout,
-                    merge_base=args.merge_base, force_product=args.force_product)
+                    merge_base=args.merge_base, force_product=args.force_product or requested)
     print(json.dumps(result, indent=2, ensure_ascii=True))
     if args.github_output:
         with args.github_output.open('a', encoding='utf-8') as output:

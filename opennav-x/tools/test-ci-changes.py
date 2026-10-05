@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Focused selection contracts, including real Git rename/delete/history cases."""
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -107,9 +108,9 @@ class GitRangeTests(unittest.TestCase):
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(content)
 
-    def commit(self):
+    def commit(self, message='fixture'):
         self.run_git('add', '-A')
-        self.run_git('commit', '-qm', 'fixture')
+        self.run_git('commit', '-qm', message)
         return self.run_git('rev-parse', 'HEAD')
 
     def commit_unusual_path(self, name, content):
@@ -130,6 +131,41 @@ class GitRangeTests(unittest.TestCase):
             object_id = object_command('mktree', '-z', data=record)
             mode, kind = '040000', 'tree'
         return self.run_git('commit-tree', object_id, '-p', self.initial, '-m', 'unusual-path fixture')
+
+    def test_exact_staging_request_trailer_and_event_scope(self):
+        request = 'Skager-Staging-Build: true'
+        for index, (message, accepted) in enumerate((
+                ('helper fix\n\n' + request, True),
+                ('helper fix\n\n' + request + '\nSigned-off-by: Fixture <fixture@example.invalid>', True),
+                ('ordinary helper edit', False), ('mention ' + request, False),
+                ('helper fix\n\n' + request + '\n\nordinary body text', False),
+                ('helper fix\n\nSkager-Staging-Build: false', False),
+                ('helper fix\n\nSkager-Staging-Build: True', False),
+                ('helper fix\n\nSkager-Staging-Build:true', False),
+                ('helper fix\n\n' + request + '\n continuation', False),
+                ('helper fix\n\nskager-staging-build: true', False),
+                ('helper fix\n\n' + request + '\n' + request, False),
+                ('helper fix\n\n' + request + '\nSkager-Staging-Build: false', False),
+                ('helper fix\n\n' + request + ' $(touch injected)', False))):
+            self.write('docs/request.md', str(index))
+            head = self.commit(message)
+            with self.subTest(message=message):
+                self.assertEqual(ci.staging_build_requested(self.repo, head, 'push', 'refs/heads/staging'), accepted)
+            if accepted:
+                for event, ref in (('pull_request', 'refs/heads/staging'), ('pull_request_target', 'refs/heads/staging'),
+                                   ('push', 'refs/heads/main'), ('push', 'refs/tags/staging'),
+                                   ('workflow_dispatch', 'refs/heads/staging'), ('', '')):
+                    self.assertFalse(ci.staging_build_requested(self.repo, head, event, ref))
+                self.assertFalse(ci.staging_build_requested(self.repo, self.initial, 'push', 'refs/heads/staging'))
+            command = [sys.executable, str(Path(ci.__file__).resolve()), '--repo', str(self.repo),
+                       '--base', self.initial, '--head', head, '--staging-request']
+            result = json.loads(subprocess.check_output(command, env=dict(os.environ,
+                GITHUB_EVENT_NAME='push', GITHUB_REF='refs/heads/staging')))
+            self.assertEqual(result['product'], accepted)
+            self.assertEqual(result['dependencies'], accepted)
+            self.assertFalse((self.repo / 'injected').exists())
+            self.assertNotIn('design', result)
+            self.assertNotIn('extended', result)
 
     def test_docs_range_and_empty_range(self):
         self.write('docs/notes.md', 'ordinary docs\n')

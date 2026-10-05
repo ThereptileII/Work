@@ -46,7 +46,7 @@ jobs:
         run: |
           import os, subprocess, sys
           command = [sys.executable, 'opennav-x/tools/ci_changes.py', '--repo', '.',
-                     '--layout', 'monorepo', '--base', os.environ['BASE'], '--head', os.environ['HEAD'],
+                     '--layout', 'monorepo', '--staging-request', '--base', os.environ['BASE'], '--head', os.environ['HEAD'],
                      '--github-output', os.environ['GITHUB_OUTPUT']]
           if os.environ['MANUAL'] == 'true': command.append('--force-product')
           subprocess.run(command, check=True)

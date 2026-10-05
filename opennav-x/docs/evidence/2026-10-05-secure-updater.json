@@ -113,6 +113,33 @@
     },
     "correctionLocalCommit": "e3abd7d",
     "validatorOrSdkChanged": false,
-    "nativeCorrectionVerified": false
+    "nativeCorrectionVerified": true,
+    "linux": {
+      "status": "passed",
+      "fixtureCTestPassed": 152,
+      "productionCTestPassed": 152,
+      "functionalRuntimeChecks": "passed",
+      "endurance": "not requested"
+    },
+    "nativeCorrectionEvidence": {
+      "url": "https://github.com/ThereptileII/Work/actions/runs/37304055112",
+      "commit": "4adb0004f8e1e9df12b814260cdbb754be7ca275",
+      "status": "passed",
+      "dependencyReprobesPassed": 2,
+      "tlsLifecyclesPassed": 8,
+      "transportScenariosPassed": 18,
+      "sessionChecksPassed": 216,
+      "downloadedArtifact": {
+        "id": 11342124777,
+        "sha256": "b84a0f643e20b12e2332ecb6e5cdafefc8e01e493c0d214ff07a49f2db1aa528"
+      }
+    }
+  },
+  "helperOnlyDeliveryAttempt": {
+    "url": "https://github.com/ThereptileII/Work/actions/runs/37306797494",
+    "commit": "4adb0004f8e1e9df12b814260cdbb754be7ca275",
+    "selection": "helper-only",
+    "productJobs": "skipped",
+    "packageProduced": false
   }
 }

@@ -61,8 +61,17 @@ the environment. The retained OpenSSL facts differ only in `PATHSha256`; all
 recorded tool binaries, versions and other fields match. Go setup is moved after
 the existing dependency/application checks, immediately before updater packaging.
 A focused ordering regression passes; no SDK identity check is relaxed and the
-approved dependency bundle is unchanged. Native confirmation precedes another
-Staging attempt. No Windows package was produced by this failed attempt.
+approved dependency bundle is unchanged. Native confirmation passes in
+[37304055112](https://github.com/ThereptileII/Work/actions/runs/37304055112)
+at `4adb0004f8e1e9df12b814260cdbb754be7ca275`: both dependency reprobes,
+eight TLS lifecycles, 18 transport scenarios and 216 session checks. The earlier
+Staging Linux job also passed 152/152 tests in each of its fixture and production
+builds, plus its functional runtime checks. No Windows package was produced by
+that failed attempt. Automatic run
+[37306797494](https://github.com/ThereptileII/Work/actions/runs/37306797494)
+correctly selects helpers only for the workflow correction and skips product
+jobs; it is not an integrated acceptance or a new package. An explicit Staging
+build request is needed to qualify the corrected packaged application.
 
 The frozen boat-feedback Staging run
 [37283380247](https://github.com/ThereptileII/Work/actions/runs/37283380247)

@@ -51,6 +51,15 @@ When a new package is produced, all exact-source and license gates still apply.
 Manual product selection is a Staging build request and does not request design
 validation or Production promotion.
 
+For an explicitly requested new Staging candidate after helper-only corrections,
+put the exact trailer `Skager-Staging-Build: true` in the final trailer block of
+the pushed commit. The selector accepts it only once, on a `push` to
+`refs/heads/staging`, from the exact checked-out HEAD. Prose mentions, duplicate
+or conflicting trailers, pull requests, other branches and tags do not force a
+build. This selects the same product/dependency gates as `--force-product`;
+design and extended scenarios stay off unless explicitly requested separately.
+Ordinary helper edits continue to skip product builds.
+
 ## Verify dependency SDKs before consumption
 
 `skager-windows-dependencies.yml` produces the maintained native Win32

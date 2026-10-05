@@ -404,6 +404,9 @@ class WorkflowPolicy(unittest.TestCase):
         command = '\n'.join(step.get('run','') for step in selector['steps'])
         self.assertIn('ci_changes.py', command)
         self.assertIn('--force-product', command)
+        self.assertIn('--staging-request', command)
+        self.assertNotIn('head_commit.message', command)
+        self.assertNotIn('contains(', command)
         for name in set(staging.REQUIRED_JOBS) - {'publish-staging'}:
             job = jobs[name]
             self.assertIn("needs.changes.outputs.product == 'true'", job.get('if',''), name)
