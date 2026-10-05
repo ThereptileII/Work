@@ -141,5 +141,83 @@
     "selection": "helper-only",
     "productJobs": "skipped",
     "packageProduced": false
+  },
+  "requestedStagingAttempt": {
+    "url": "https://github.com/ThereptileII/Work/actions/runs/37308001424",
+    "commit": "c8023dc6ca77e760229ef2e47269dae3b2c55e8c",
+    "localImplementation": "f50bb13677439dafd96fe9739633f80371915eeb",
+    "status": "failed: Windows configuration before application compilation",
+    "linuxUpdater": {
+      "topLevelPassed": 63,
+      "includingSubcasesPassed": 288,
+      "failed": 0
+    },
+    "windowsUpdater": {
+      "topLevelPassed": 72,
+      "includingSubcasesPassed": 302,
+      "failed": 0
+    },
+    "nativePopupReceiptShortcutLifecycle": "passed",
+    "downloadedArtifacts": [
+      {
+        "id": 11344935426,
+        "sha256": "516ad47d263bd331b0fdb23bbe4dd58a889ae1e53603a04209712568310f17f7"
+      },
+      {
+        "id": 11345305122,
+        "sha256": "a9718a8784433b64347205f0465db559c93f62d45644fcae392162a1633e3c99"
+      },
+      {
+        "id": 11344342804,
+        "sha256": "f9feadd26cab318a52d464e954e10a3cc3a3907a9938a2b6ee4e29a2b160fc41"
+      }
+    ],
+    "stockWarningFailure": {
+      "job": 111757472569,
+      "locale": "en_US",
+      "status": "cancelled after guarded refusal",
+      "agreeSent": false,
+      "observed": "same-process disabled owner remained foreground instead of the enabled warning",
+      "initialFailureUtc": "2026-10-05T12:17:03Z",
+      "jobCancelledUtc": "2026-10-05T12:26:40Z",
+      "downloadedArtifact": {
+        "id": 11345242143,
+        "sha256": "083afe2024b1c81cfc7dd11540e37a9be7c1d1c57615226ee8b97e7956fe6efd"
+      },
+      "sameCommitSwedishCase": "passed",
+      "retry": {
+        "job": 111770882085,
+        "status": "passed",
+        "sameCommit": true,
+        "guardsChanged": false,
+        "artifact": {
+          "id": 11346751845,
+          "sha256": "8aa419586cae532b2b25e052dc8843e5a73e1c18e75970767e752a520ca16dcc",
+          "downloaded": false
+        }
+      }
+    },
+    "linuxIntegrated": {
+      "status": "passed",
+      "fixtureCTestPassed": 152,
+      "productionCTestPassed": 152,
+      "runtimeChecks": "passed",
+      "endurance": "skipped by user direction"
+    },
+    "windowsIntegrated": {
+      "job": 111771439139,
+      "status": "failed before application compilation",
+      "failureUtc": "2026-10-05T13:05:39Z",
+      "missing": [
+        "LibArchive_LIBRARY",
+        "LibArchive_INCLUDE_DIR"
+      ],
+      "cause": "Early maintained-TLS staging places cache/buildwin/libcurl.dll; pinned win_deps.bat uses that file as its entire-stock-bundle sentinel and skips LibArchive and other stock support files.",
+      "downloadedArtifact": {
+        "id": 11347495582,
+        "sha256": "04583d1e8d0635161b068c924704f9cc9695d5db05a7ecaa0777ca3e1b7877ec"
+      },
+      "correction": "Consumer-only verified stock-sentinel preparation and whole native configure-only preflight in progress; no SDK producer or identity relaxation."
+    }
   }
 }

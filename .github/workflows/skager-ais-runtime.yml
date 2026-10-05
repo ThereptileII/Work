@@ -15,7 +15,7 @@ concurrency:
 jobs:
   native-ais-runtime:
     runs-on: windows-2022
-    timeout-minutes: 20
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - name: Preserve native Perl before installing the curl test host
@@ -81,6 +81,13 @@ jobs:
             $Transcript = Get-Content (Join-Path $Probe.FullName 'windows-xnav-Win32.log') -Raw
             if (-not $Transcript.Contains('Cross-run dependency live reprobe and stage passed:')) { throw 'Native reprobe success evidence missing' }
           }
+      - name: Verify cold stock support and configure the complete native application without compiling it
+        shell: pwsh
+        run: |
+          python opennav-x/tools/test-prepare-windows-stock-deps.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python opennav-x/tools/test-windows-stock-configure.py --root opennav-x --bundle "$env:GITHUB_WORKSPACE/dependency-bundle" --provenance "$env:GITHUB_WORKSPACE/dependency-provenance.json"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:

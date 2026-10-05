@@ -607,6 +607,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python opennav-x/tools/test-ais-runtime-windows.py --dependency-bundle dependency-bundle --dependency-bundle-provenance dependency-provenance.json
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Prepare stock support after maintained AIS cache staging
+        run: python opennav-x/tools/prepare-windows-stock-deps.py --root opennav-x --bundle "$env:GITHUB_WORKSPACE/dependency-bundle" --provenance "$env:GITHUB_WORKSPACE/dependency-provenance.json" --report opennav-x/evidence/local/windows-stock-preparation.json
       - name: Compile fixture application and run compiled security and unit checks
         id: integrated
         run: ./opennav-x/tools/build-pristine-windows.ps1 -Architecture Win32 -Integration -VerifyPeerCli -PrivateOCharts -DeferRuntimeQualification -DependencyBundle "$env:GITHUB_WORKSPACE/dependency-bundle" -DependencyBundleProvenance "$env:GITHUB_WORKSPACE/dependency-provenance.json"

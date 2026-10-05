@@ -60,6 +60,18 @@ build. This selects the same product/dependency gates as `--force-product`;
 design and extended scenarios stay off unless explicitly requested separately.
 Ordinary helper edits continue to skip product builds.
 
+The native AIS reprobe stages maintained curl before the application driver runs.
+Upstream `win_deps.bat` uses `cache/buildwin/libcurl.dll` as the marker for its
+entire stock support bundle, including LibArchive. Before the fixture build,
+`prepare-windows-stock-deps.py` authenticates the restored SDK and pinned batch,
+checks that this disposable marker matches the maintained Win32 curl prefix,
+and removes only that marker when stock support is incomplete. Unknown bytes
+or redirected paths fail closed. The unchanged driver then provisions stock
+support and restages authenticated TLS before compilation; producer prefixes
+and their fingerprints are unchanged. The focused AIS workflow checks this cold
+cache sequence and full native CMake configuration without compiling/installing
+the application; private chart adapter compilation and release gates remain separate.
+
 ## Verify dependency SDKs before consumption
 
 `skager-windows-dependencies.yml` produces the maintained native Win32

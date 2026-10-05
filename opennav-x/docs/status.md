@@ -73,6 +73,20 @@ correctly selects helpers only for the workflow correction and skips product
 jobs; it is not an integrated acceptance or a new package. An explicit Staging
 build request is needed to qualify the corrected packaged application.
 
+The explicit replacement request
+[37308001424](https://github.com/ThereptileII/Work/actions/runs/37308001424)
+at `c8023dc6ca77e760229ef2e47269dae3b2c55e8c` again passes both Linux
+builds (152/152 each), functional runtime checks and all focused updater checks.
+The guarded stock-warning case initially refused a foreground mismatch; the
+same-commit single-job retry passes without changing its guards. Native Windows
+then stops during configuration, before application compilation: an early
+maintained-TLS cache file satisfies the pinned upstream batch's whole-stock-bundle
+sentinel, so stock LibArchive headers/library are absent. The correction is a
+consumer-only, verified cache preparation step, followed by an actual native
+configure-only preflight before another full build. The immutable SDK and its
+identity checks remain unchanged. No Windows package or installed updater
+acceptance is claimed from this run.
+
 The frozen boat-feedback Staging run
 [37283380247](https://github.com/ThereptileII/Work/actions/runs/37283380247)
 failed before application compilation because relative dependency paths changed
