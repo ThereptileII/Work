@@ -369,13 +369,18 @@ try {
         [IO.File]::WriteAllBytes($path,$saved)
       }
       $originalAcl=(Get-Acl -LiteralPath $navFixture).Sddl
+      # Keep the original filesystem object: Set-Acl may normalize inheritance
+      # control flags, so reapplying its SDDL is not an exact cleanup operation.
+      $aclOriginal=Join-Path $workspace ('acl-original-'+[guid]::NewGuid().ToString('N'))
+      [IO.File]::Move($navFixture,$aclOriginal)
+      [IO.File]::Copy($aclOriginal,$navFixture)
       $changedAcl=New-Object Security.AccessControl.FileSecurity
       $changedAcl.SetSecurityDescriptorSddlForm($originalAcl)
       $everyone=New-Object Security.Principal.SecurityIdentifier('S-1-1-0')
       $changedAcl.AddAccessRule((New-Object Security.AccessControl.FileSystemAccessRule($everyone,'Read','Allow')))
       Set-Acl -LiteralPath $navFixture -AclObject $changedAcl
       try {Reject {& $invoke -Action InspectRestore @arguments @choice} 'late other-profile ACL mutation'}finally{
-        $restoreAcl=New-Object Security.AccessControl.FileSecurity;$restoreAcl.SetSecurityDescriptorSddlForm($originalAcl);Set-Acl -LiteralPath $navFixture -AclObject $restoreAcl
+        [IO.File]::Delete($navFixture);[IO.File]::Move($aclOriginal,$navFixture)
       }
       $fixtureContext.session=2;Reject {& $invoke -Action InspectRestore @arguments @choice} 'changed actual session';$fixtureContext.session=1
       $checks.Add('Native preservation refuses late INI/navigation/plugin bytes, unrelated profile ACL and actual session changes')
@@ -410,4 +415,5 @@ try {
     }
   }
   [pscustomobject]@{status='passed';environment=$(if($native){'native-windows-disposable-filesystem'}else{'linux-powershell-portable-contracts'});count=$checks.Count;checks=@($checks);boatAccess=$false;applicationLaunched=$false;productOrBoatAcceptance=$false} | ConvertTo-Json -Depth 6
+} catch { Write-Output $_.ScriptStackTrace; throw
 } finally { $env:PATH=$originalTestSearchPath;Remove-Item -LiteralPath $testRoot -Recurse -Force }
