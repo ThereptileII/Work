@@ -1,0 +1,41 @@
+name: SKAGER native serial bounds follow-up
+on:
+  push:
+    branches: [skager-pilot-serial-focus]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  serial:
+    runs-on: windows-2022
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          repository: OpenCPN/OpenCPN
+          ref: 37fd0cddb7334fe489e9f18aa163977a9c5c84f7
+          path: pilot-pinned-upstream
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /model/src/comm_drv_n2k_serial.cpp
+            /libs/N2KParser/src/N2kMsg.cpp
+            /libs/N2KParser/include/N2kMsg.h
+            /libs/N2KParser/include/N2kDef.h
+      - name: Native Win32 serial bounds without equipment or sanitizers
+        env:
+          CMAKE_GENERATOR: Visual Studio 17 2022
+          CMAKE_GENERATOR_PLATFORM: Win32
+        shell: pwsh
+        run: |
+          python opennav-x/tests/pilot_serial_bounds/run.py --upstream pilot-pinned-upstream --build-dir opennav-x/evidence/local/pilot-serial-native 2>&1 | Tee-Object opennav-x/evidence/local/pilot-serial-native.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: pilot-serial-native-${{ github.sha }}
+          path: |
+            opennav-x/evidence/local/pilot-serial-native.log
+            opennav-x/evidence/local/pilot-serial-native/evidence.json
+            opennav-x/evidence/local/pilot-serial-native/build/Testing/Temporary/LastTest.log
+          if-no-files-found: error

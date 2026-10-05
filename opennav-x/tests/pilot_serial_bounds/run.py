@@ -33,7 +33,7 @@ run("git", "apply", "--check", patch, cwd=source)
 run("git", "apply", patch, cwd=source)
 run("git", "apply", "--reverse", "--check", patch, cwd=source)
 run("cmake", "-S", HERE, "-B", build / "build",
-    f"-DOPENCPN_SOURCE_DIR={source}",
+    f"-DOPENCPN_SOURCE_DIR:PATH={source.as_posix()}",
     f"-DPILOT_SERIAL_SANITIZE={'ON' if args.sanitize else 'OFF'}")
 run("cmake", "--build", build / "build", "--config", "Debug", "--parallel", "2")
 run("ctest", "--test-dir", build / "build", "-C", "Debug", "--output-on-failure")
