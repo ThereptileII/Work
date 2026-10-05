@@ -219,5 +219,29 @@
       },
       "correction": "Consumer-only verified stock-sentinel preparation and whole native configure-only preflight in progress; no SDK producer or identity relaxation."
     }
+  },
+  "stockProvisioningCorrection": {
+    "url": "https://github.com/ThereptileII/Work/actions/runs/37316217945",
+    "commit": "4540022d67dae14b9067b57e2af21c27404964d2",
+    "localImplementation": "cdc591d2816989e9acde2dd386637220f1a8b7ce",
+    "status": "passed",
+    "downloadedArtifact": {
+      "id": 11348920400,
+      "sha256": "b7fc8f609cdb9b6fe3d9a6d65bc4fbbaa023613707c205d588c93de775e49b7c"
+    },
+    "verifiedSentinelRemoved": true,
+    "fullNativeConfigure": "passed; optional private chart adapter omitted",
+    "applicationBuilt": false,
+    "applicationInstalled": false,
+    "producerPrefixesUnchanged": true,
+    "producerPrefixInventorySha256": "2a2a9e78a316c71c171db37f223285537ffaa78401bb81f0bfa5ce01f14f053a",
+    "libArchive": {
+      "LibArchive_LIBRARY": "D:/a/Work/Work/opennav-x/build/integration-source/cache/buildwin/archive.lib",
+      "LibArchive_INCLUDE_DIR": "D:/a/Work/Work/opennav-x/build/integration-source/cache/buildwin/include"
+    },
+    "dependencyReprobesPassed": 2,
+    "tlsLifecyclesPassed": 8,
+    "transportScenariosPassed": 18,
+    "sessionChecksPassed": 216
   }
 }

@@ -86,6 +86,15 @@ consumer-only, verified cache preparation step, followed by an actual native
 configure-only preflight before another full build. The immutable SDK and its
 identity checks remain unchanged. No Windows package or installed updater
 acceptance is claimed from this run.
+The consumer correction passes focused native run
+[37316217945](https://github.com/ThereptileII/Work/actions/runs/37316217945)
+at `4540022d67dae14b9067b57e2af21c27404964d2`: both SDK reprobes,
+AIS security checks, stock provisioning, authenticated TLS restaging and complete
+Win32 CMake configuration pass. Downloaded evidence proves producer prefixes
+unchanged and LibArchive selected from the stock cache. This probe omits the
+optional private chart adapter and does not build/install the application.
+The corrected product snapshot is now explicitly requested for combined Staging
+packaging; the boat remains unchanged pending its result.
 
 The frozen boat-feedback Staging run
 [37283380247](https://github.com/ThereptileII/Work/actions/runs/37283380247)
