@@ -1,9 +1,12 @@
 {
-  "scope": "Secure updater implementation, native packaged mechanics and retained Staging delivery; signed live-channel and boat acceptance pending",
+  "scope": "Secure updater implementation and retained Staging delivery; boat settings preserved and manual candidate running after reviewed navigation-warning acknowledgement; initial authenticated bootstrap remains failed; signed live-channel and guarded boat transition acceptance pending",
   "jira": [
     "SCRUM-23",
     "SCRUM-25",
-    "SCRUM-26"
+    "SCRUM-26",
+    "SCRUM-310",
+    "SCRUM-311",
+    "SCRUM-312"
   ],
   "secondRun": {
     "url": "https://github.com/ThereptileII/Work/actions/runs/37298291972",
@@ -652,6 +655,119 @@
     }
   },
   "boatUpdaterPreparation": {
+    "status": "manual installation verified; input-only commissioning active; exact candidate left running after incident recovery",
+    "setupStagedAndHashVerified": true,
+    "setupExecuted": true,
+    "installationMode": "manual qualified Setup; not a signed offered update",
+    "installedCommit": "c0d8d85fb602e86d40e2f3f1be32307919702408",
+    "packageSha256": "a31deccb8f5d90c8fcc9b1b6d54384501c081c714296f6dd250c33bc1cd07d42",
+    "ownedExecutableSha256": "8ed5cc1fad45bfc9cda13f98ec0b55cf18270b45a348764673aa7702c12c192c",
+    "ownershipSha256": "2a6bb03831dbd8e6b066b59b4700b434e2554c6759975e96d7c8bb314c9bdd2a",
+    "stateSha256": "669dd108b871688d42acf0be228151c42cfadb4ddfe71ffa0dfdd98598509d15",
+    "managedFilesHashVerified": 980,
+    "supportedStockUnchanged": true,
+    "stockExecutableSha256": "7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c",
+    "applicationChanged": true,
+    "settingsPreserved": true,
+    "freshCommissioning": {
+      "status": "input-only-prepared",
+      "preparedRecordSha256": "5fc304b8dff2062a6e9f5d4fb4b4e238dfc1bb5b6061205f163be727dc0305ee",
+      "appliedReceiptSha256": "131e73e72fcd7250495cb72e05fa6738aac758f255669b58f99e59e94ec191f1",
+      "inputOnlyProfileSha256": "8d81390a0961ac9e841a3ff7c2f57c7005ee25b17abf33820ee5d31cdd2150bf",
+      "launchAuditStillRequired": false,
+      "launchAuditSha256": "6271e6b35bde8d068b72a93e91ba8c2e40a036cb08c0c8b64887e66312ba0e60",
+      "launchAuditPublished": true
+    },
+    "hardwareCommandsSent": false,
+    "publicUpdateServiceConfigured": false,
+    "blockingIssue": "SCRUM-312"
+  },
+  "boatApplicationModified": true,
+  "boatSupportFilesStaged": true,
+  "sessionPreservation": {
+    "issue": "SCRUM-310",
+    "status": "Done",
+    "scope": "Explicit preservation of the reviewed closed session; no automatic migration or launch authority",
+    "qualification": {
+      "url": "https://github.com/ThereptileII/Work/actions/runs/37362804219",
+      "helperCommit": "10371eb06f481fce72791a1dcfaa2b6fbdc883ee",
+      "sourceLocalCommit": "73e6702",
+      "status": "passed",
+      "linux": {
+        "preservation": 85,
+        "adoption": 127
+      },
+      "windows": {
+        "status": "passed",
+        "job": 111941180869,
+        "preservation": 85,
+        "adoption": 178,
+        "actualTransaction": 27,
+        "artifactSha256": "a08afe7cbc03bc4a697cc784f1a8e219308ec68e92fbe0433d0dc07f50b67b9e",
+        "logSha256": "7f7d854fba4bc5436fe83a91d71a31002cf03326b8e8875de354971defd8d753"
+      },
+      "nativeIsolated": {
+        "checks": 85,
+        "status": "passed",
+        "reportSha256": "432f2df9b884f9cbeb3f9781ecbb195d2fedbf4f69bfe8a73e2ed918bb1b7a7b",
+        "scope": "Private disposable temporary files only"
+      }
+    },
+    "historicalFailuresRetained": {
+      "nativeFixtureRuns": [
+        37357797892,
+        37358227937
+      ],
+      "originalLfPinHelperCommit": "3d8eaf7e9debc835e6518dc825200aa219dda1ea",
+      "originalLfPinNativeTransactionRun": 37361798106,
+      "actualInspection": "refused before mutation because Linux LF resource pins differed from exact Windows CRLF files",
+      "correction": "Only the two exact Windows resource hashes, pin assertion and encoding documentation changed; no runtime normalization or alternate LF hashes"
+    },
+    "actualPreservation": {
+      "status": "completed",
+      "reviewedSettingsChangesPreserved": 17,
+      "profileBackup": {
+        "files": 2400,
+        "bytes": 1181602021,
+        "location": "private local evidence only"
+      },
+      "onlyLiveIniChange": "Original COM8 direction byte restored from 0 to 1",
+      "proposalSha256": "f810bbb4ea5e53bff8a47ebe92fb270df648468dda1c0ccab4a546071fe75e07",
+      "preservedBaselineIniSha256": "585841fde777cde066dbdb18f976ce8701075c1c9ef94a04623c0fbe4ed60a65",
+      "restoreReceiptSha256": "404e0af6a6da0495b38666b0dd90d6cc8ca0f797bb4792f22b16d1cf064119e8",
+      "completedBaselineReceiptSha256": "42e2eb92f82f09b35c9031fcb6386bbe5239a76a163b3dad4b8c80f907470501",
+      "applicationLaunched": false,
+      "doNotAutoLaunch": true,
+      "originalPluginInventoryRestored": true
+    },
+    "wmmWindowsSourceProof": {
+      "pinnedSourceCommit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+      "allSixStockAndInstalledFilesEqualExactWindowsGitCheckout": true,
+      "runtimeNewlineNormalization": false,
+      "resources": [
+        {
+          "name": "WMM.COF",
+          "bytes": 4647,
+          "sha256": "b766a66b3438b91f01a037ab9cf24c3e48dd3bbf32b00ddc8328bf99291aa805",
+          "crlfSequences": 93
+        },
+        {
+          "name": "wmm_live.svg",
+          "bytes": 4735,
+          "sha256": "044064c5a0af3fc3d41fb884155f8dc3a7638b6de375af722f7862546481267f",
+          "crlfSequences": 0
+        },
+        {
+          "name": "wmm_pi.svg",
+          "bytes": 10039,
+          "sha256": "194f32ab7a0e257920500f67449ad244b4eaca13be6759d2cb4ed31646e0a617",
+          "crlfSequences": 112
+        }
+      ],
+      "scopeLimit": "Exact stock-to-parent-generation location only; old-generation-to-new-generation location is a separate unqualified preservation case"
+    }
+  },
+  "historicalBoatUpdaterPreparation": {
     "setupStagedAndHashVerified": true,
     "setupExecuted": false,
     "applicationChanged": false,
@@ -662,6 +778,83 @@
     "hardwareCommandsSent": false,
     "publicUpdateServiceConfigured": false
   },
-  "boatApplicationModified": false,
-  "boatSupportFilesStaged": true
+  "boatBootstrapFailure": {
+    "status": "failed",
+    "productCommit": "c0d8d85fb602e86d40e2f3f1be32307919702408",
+    "issue": "SCRUM-312",
+    "issueStatus": "In Progress",
+    "exactInteractiveObservation": "Standard OpenCPN navigation warning waiting for human Agree before InitTimer/deferred initialization",
+    "authenticatedHealthyStartup": false,
+    "supervisorStartupDeadlineSeconds": 90,
+    "monitorDeadlinesSeconds": [
+      120,
+      150
+    ],
+    "crashProven": false,
+    "causeBoundary": "The observed modal human decision precedes startup health; a timeout does not establish a crash",
+    "requiredCorrection": "Finite authenticated human-wait handling while preserving actual human consent and subsequent authenticated health; do not bypass the modal or claim readiness",
+    "originalTimeoutEvidenceRetained": true,
+    "latestStartupRecovery": {
+      "status": "application running after separately reviewed standard navigation-warning acknowledgement; not an accepted bootstrap",
+      "observationUtc": "2026-10-05T20:44:43.4938693Z",
+      "sameApplicationProcessRetained": true,
+      "responding": true,
+      "executableSha256": "8ed5cc1fad45bfc9cda13f98ec0b55cf18270b45a348764673aa7702c12c192c",
+      "warningAcknowledgement": {
+        "status": "delivered once after exact dialog inspection",
+        "reviewedImageSha256": "93a3b0e32c90f83d5d3f6013726714f545bf437fd4147bd48a5c55b77043ee02",
+        "inspectionSha256": "2b8ceb31a6dbaf11b910d509bf88b61ed62c98281938f7e1986599afb33d9b57",
+        "transportResultSha256": "90ae60974c3054e75a98a54c6849c0777d925ae936bb1d420b5bf5900279121b",
+        "helperSha256": "30b795046b6ace03303a5db391ab40cf88d33589eade3fbdd002e26dc5341c48",
+        "portableAndNativePolicyChecksEach": 10,
+        "productAutomaticallyAcknowledgesWarning": false,
+        "originalTypedVariableCollisionRefusalRetained": true
+      },
+      "deferredInitializationObserved": true,
+      "normalProcessingHealthyLogObservedSeconds": 30,
+      "enabledVisibleMainWindowObserved": true,
+      "windowObservationTransportSha256": "ddd6c418280b6eb1f99a6edde9456ac52924fac1b19a6899ffa0794e642649d1",
+      "windowObservationHelperSha256": "d2e073e10f60e7060a2a4092304165593f458b3369568532207c9bc75b2c06a8",
+      "runtimeObservationTransportSha256": "72ea5a9057d4158669f41deb6a9f365a17267579645978aeb68363ae00891ada",
+      "authenticatedStartupHealthAccepted": false,
+      "durableKnownGoodReceiptCreated": false,
+      "obsoleteLauncherFailureDialog": {
+        "status": "normal single close of exact incident launcher; expected failure exit 1",
+        "applicationLaunched": false,
+        "exitCode": 1,
+        "resultSha256": "a9335057262191057859b955f2d6aba813c13191426762f370506e40a4604ee5",
+        "helperSha256": "18d3c1ae0b617753ff847e8587238634b1aa502c6360f5890208bbea1a7bddc9",
+        "portableAndNativePolicyChecksEach": 21,
+        "nativePolicyResultSha256": "4628724be50e8591bcd93af43fa3436da7506b17b0c0980adcf63a80acc176a9"
+      },
+      "finalRunningObservationSha256": "e1ff20e3c0977d2ce4a58ebac1fe59f1ada125ada88a097ebdf2b030490f5fa0",
+      "failedLauncherAbsent": true,
+      "applicationRestarted": false,
+      "applicationClosed": false,
+      "productHumanWaitFixImplemented": false,
+      "designReviewPerformed": false,
+      "scopeLimit": "Incident recovery and responsive candidate handoff only; no signed update offer, authenticated bootstrap or rollback acceptance"
+    },
+    "interactiveObservationTransportSha256": "5677a76979748f167655e6e4aa50238c29ac70a197f663f59af061292bc3c22c",
+    "interactiveObservationSha256": "695baab7aa06a5f486756cbbb015d28b4b44eebafa34f422048b9b983958539e",
+    "failedBootstrapResultSha256": "64e6eaa78ab4ecf640e65586ebab708aaf61c45e2307b209568cebfa48f8cff3",
+    "requestSha256": "34007e0a85102896da267d5ad378fb046d9f00d8b302b6025f7656e3349fe30d"
+  },
+  "privateSignedChannelAndBoatTransition": {
+    "issue": "SCRUM-311",
+    "privateHttps": "pending",
+    "realSignedOfferAndBoatTransition": "pending",
+    "bootstrapDoesNotQualifySignedUpdate": true,
+    "publicUpdateServiceConfigured": false,
+    "productionPromotion": false
+  },
+  "boatUserTest": {
+    "guide": "docs/installer/boat-updater-test-case.md",
+    "desktopFile": "SKAGER - Test c0d8d85.txt",
+    "guideSha256": "11358af2e407ec10f1fa56a6b055c478dd811428d71ce72d7e82640abff1c155",
+    "status": "provided; user result pending",
+    "scope": "five-minute charts, page navigation, normal restart and saved-settings check",
+    "signedUpdatePopupExpected": false,
+    "hardwareControlTest": false
+  }
 }
