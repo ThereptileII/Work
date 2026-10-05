@@ -159,7 +159,7 @@ function Get-CommissioningIniDiff([string]$Before,[string]$After) {
     [pscustomobject]@{key=$_;before=$beforeValues[$_];after=$afterValues[$_]}
   })
 }
-function Assert-CommissioningProtectedValues($Before,$After,[string]$InstalledBasemapDefault='') {
+function Assert-CommissioningProtectedValues($Before,$After,[string]$InstalledBasemapDefault='',$WmmResourceProof=$null) {
   Assert-InputOnlyProfile $After
   foreach ($key in @(@($Before.Keys)+@($After.Keys) | Sort-Object -Unique)) {
     if ($key -match '^(Settings/NMEADataSource/|Directories/|ChartDirectories/)' -and $Before[$key] -cne $After[$key]) {
@@ -169,6 +169,8 @@ function Assert-CommissioningProtectedValues($Before,$After,[string]$InstalledBa
       if ($key -ceq 'Directories/BaseShapefileDir' -and $Before.ContainsKey($key) -and
           $Before[$key] -ceq '' -and $InstalledBasemapDefault -and
           $After[$key] -ceq $InstalledBasemapDefault) { continue }
+      if($key -ceq 'Directories/WMMDataLocation' -and $WmmResourceProof -and
+          $Before[$key] -ceq $WmmResourceProof.stockLocation -and $After[$key] -ceq $WmmResourceProof.installedLocation){continue}
       throw 'Navigation, chart path or connection configuration changed; automatic baseline restore refused.'
     }
   }

@@ -300,7 +300,7 @@ function Assert-PreservedAlphaSettings([string]$Value) {
     foreach($item in $items){if($item -cnotin $known){throw 'Unknown preserved display item.'}}
   }
 }
-function Assert-SessionPreservationReview([string]$Before,[string]$After,$Review,[datetime]$At=[datetime]::UtcNow,[string]$InstalledBasemapDefault='') {
+function Assert-SessionPreservationReview([string]$Before,[string]$After,$Review,[datetime]$At=[datetime]::UtcNow,[string]$InstalledBasemapDefault='',$WmmResourceProof=$null) {
   if($Review.schema -ne 1 -or $Review.owner -cne 'OpenNavX.SessionPreservationReview.1' -or
       $Review.beforeSha256 -cne (Get-Digest $Before) -or $Review.afterSha256 -cne (Get-Digest $After) -or
       $Review.provenance -cne 'current-user-state;origin-unverified' -or
@@ -309,7 +309,7 @@ function Assert-SessionPreservationReview([string]$Before,[string]$After,$Review
   $reviewed=[datetime]::Parse($Review.reviewedUtc).ToUniversalTime()
   if($reviewed -gt $At -or ($At-$reviewed).TotalHours -gt 24){throw 'Preservation review expired or future-dated.'}
   $old=Read-ProfileForAudit $Before;$new=Read-ProfileForAudit $After
-  Assert-CommissioningProtectedValues $old $new $InstalledBasemapDefault
+  Assert-CommissioningProtectedValues $old $new $InstalledBasemapDefault $WmmResourceProof
   # Navigation source priorities, route persistence and all unknown plugin
   # settings remain fixed. The one explicit WMM switch below is preservation,
   # not approval to load a DLL. Every future launch needs a new plugin audit.
@@ -356,6 +356,8 @@ function Assert-SessionPreservationReview([string]$Before,[string]$After,$Review
       }
     }elseif($key -ceq 'Directories/BaseShapefileDir' -and $InstalledBasemapDefault -and $change.before -ceq '' -and $change.after -ceq $InstalledBasemapDefault){
       # Existing hash-bound resource proof; never an arbitrary chart path.
+    }elseif($key -ceq 'Directories/WMMDataLocation' -and $WmmResourceProof -and $change.before -ceq $WmmResourceProof.stockLocation -and $change.after -ceq $WmmResourceProof.installedLocation){
+      # Frozen owned/pinned WMM resources prove only this exact save-time delta.
     }else{throw ('Current-state preservation needs a separate key policy: '+$key)}
   }
   $null=Get-CommissioningOutputBytes ([IO.File]::ReadAllBytes($After))
@@ -387,7 +389,9 @@ function Read-SessionPreservationProposal([string]$Workspace,[string]$Path,[stri
   if($approval.parentPreparedSha256 -cne $ParentHash -or $approval.inspectionSha256 -cne $value.inspectionSha256){throw 'Preservation review belongs to another inspection.'}
   $resourceProof=if($inspection.PSObject.Properties['resourceProof']){$inspection.resourceProof}else{$null}
   $default=Assert-CommissioningResourceProof $parent $resourceProof
-  $changes=@(Assert-SessionPreservationReview (Join-Path $parentDir 'input-only.ini') $saved $approval ([datetime]::Parse($value.createdUtc).ToUniversalTime()) $default)
+  $wmmProof=if($inspection.PSObject.Properties['wmmResourceProof']){$inspection.wmmResourceProof}else{$null}
+  $wmmProof=Assert-CommissioningWmmResourceProof $parent $wmmProof
+  $changes=@(Assert-SessionPreservationReview (Join-Path $parentDir 'input-only.ini') $saved $approval ([datetime]::Parse($value.createdUtc).ToUniversalTime()) $default $wmmProof)
   if($changes.Count -ne $value.changedKeys){throw 'Preservation review count differs.'}
   return [pscustomobject]@{value=$value;directory=$directory;baseline=$baseline;sha256=$Hash}
 }
@@ -438,6 +442,8 @@ function Assert-SessionPreservationLiveState($Proof,$Context) {
   $parent=Read-SessionPreservationParent $Proof.value.parentPrepared $Proof.value.parentPreparedSha256;$parentDir=[IO.Path]::GetDirectoryName($Proof.value.parentPrepared)
   Assert-CommissioningContext $parent.context $Context
   $inspection=Read-Record $Proof.value.inspection
+  $wmmProof=if($inspection.PSObject.Properties['wmmResourceProof']){$inspection.wmmResourceProof}else{$null}
+  Assert-CommissioningWmmLiveProof $parent $wmmProof
   $snapshot=$inspection.profileBeforeRestore|ConvertTo-Json -Depth 8|ConvertFrom-Json
   $ini=Join-Path $Context.profile 'opencpn.ini';$current=Get-Digest $ini
   if($current -cnotin @($Proof.value.currentIniSha256,$Proof.value.baselineSha256)){throw 'Current bytes are neither preserved input nor exact recovery target.'}

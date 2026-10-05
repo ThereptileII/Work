@@ -183,20 +183,21 @@ if ($Action -ceq 'InspectRestore') {
   Assert-PreparationAcl $prepared.originalAcl (Get-Acl -LiteralPath $ini).Sddl -AllowDaclAutoInherited
   # A partial Apply may still have the untouched baseline. Otherwise all
   # reviewed input connections and chart directories must remain unchanged.
-  $resourceProof=$null
+  $resourceProof=$null;$wmmResourceProof=$null
   if ($currentHash -cne $restoreHash) {
     $before=Read-ProfileForAudit $inputProfile;$after=Read-ProfileForAudit $ini
     if ($before['Directories/BaseShapefileDir'] -cne $after['Directories/BaseShapefileDir']) {
       $resourceProof=Get-CommissioningResourceProof $prepared
     }
-    Assert-CommissioningProtectedValues $before $after (Assert-CommissioningResourceProof $prepared $resourceProof)
+    if($before['Directories/WMMDataLocation'] -cne $after['Directories/WMMDataLocation']){$wmmResourceProof=Get-CommissioningWmmResourceProof $prepared}
+    Assert-CommissioningProtectedValues $before $after (Assert-CommissioningResourceProof $prepared $resourceProof) $wmmResourceProof
   }
   $id=[guid]::NewGuid().ToString('N')
   $saved=Join-Path $directory ('post-session-'+$id+'.ini')
   Copy-PreparationFile $ini $saved $currentHash (Get-Item -LiteralPath $ini).Length
   $snapshot=Get-PreparationTree $context.profile
   $output=Join-Path $directory ('restore-inspection-'+$id+'.json')
-  Write-Record $output @{schema=1;owner='OpenNavX.ReadOnlyCommissioning.RestoreInspection.1';recordSha256=$ExpectedRecordSha256;createdUtc=[DateTime]::UtcNow.ToString('o');context=$context;currentIniSha256=$currentHash;savedIni=$saved;resourceProof=$resourceProof;profileBeforeRestore=$snapshot;diff=@(Get-CommissioningIniDiff $original $saved);currentAcl=(Get-Acl -LiteralPath $ini).Sddl;applicationLaunched=$false;requiresOperatorDiffReview=$true}
+  Write-Record $output @{schema=1;owner='OpenNavX.ReadOnlyCommissioning.RestoreInspection.1';recordSha256=$ExpectedRecordSha256;createdUtc=[DateTime]::UtcNow.ToString('o');context=$context;currentIniSha256=$currentHash;savedIni=$saved;resourceProof=$resourceProof;wmmResourceProof=$wmmResourceProof;profileBeforeRestore=$snapshot;diff=@(Get-CommissioningIniDiff $original $saved);currentAcl=(Get-Acl -LiteralPath $ini).Sddl;applicationLaunched=$false;requiresOperatorDiffReview=$true}
   [pscustomobject]@{status='review-required';inspection=$output;inspectionSha256=(Get-Digest $output);currentIniSha256=$currentHash;applicationLaunched=$false} | ConvertTo-Json
   return
 }
@@ -209,6 +210,7 @@ Assert-CommissioningContext $inspected.context $context
 if ($inspected.PSObject.Properties['resourceProof'] -and $inspected.resourceProof -and -not $adoption -and -not $preservation) {
   throw 'An installed resource default requires explicit source-reviewed adoption, not erasure by original-baseline restore.'
 }
+if($inspected.PSObject.Properties['wmmResourceProof'] -and $inspected.wmmResourceProof -and -not $preservation){throw 'WMM resource-location change requires explicit preservation; neither legacy restore nor automatic migration may erase/adopt it.'}
 Assert-PreparationTree $inspected.profileBeforeRestore
 Assert-PreparationAcl $inspected.currentAcl (Get-Acl -LiteralPath $ini).Sddl
 Assert-PreparationAcl $prepared.originalAcl $inspected.currentAcl -AllowDaclAutoInherited

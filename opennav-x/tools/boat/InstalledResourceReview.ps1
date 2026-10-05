@@ -53,3 +53,79 @@ function Get-CommissioningResourceProof($Prepared) {
   $null=Assert-CommissioningResourceProof $Prepared $proof
   return $proof
 }
+
+# Pinned OpenCPN 37fd0cddb7334fe489e9f18aa163977a9c5c84f7 wmm_pi.cpp:
+# LoadConfig ignores this preference and derives shared-data/plugins/wmm_pi/data/;
+# SaveConfig (also called by DeInit) writes that derived location. This proof is
+# for explicit preservation only. It never supplies a migration/launch permission.
+function Get-CommissioningWmmResourcePins {
+  return [ordered]@{
+    'WMM.COF'='dfa8597825af4e0b87ff4198a5b4fb661b3c49f4cd090cd0164e0259b075582f'
+    'wmm_live.svg'='044064c5a0af3fc3d41fb884155f8dc3a7638b6de375af722f7862546481267f'
+    'wmm_pi.svg'='e055e85ce274aa37b78a9169e7d0dd3c182e0d268864a519d537cad870a9655d'
+  }
+}
+function Get-CommissioningWmmLocation([string]$Application) {
+  # wxFileConfig stores doubled backslashes, including the final separator.
+  return ((Join-Path $Application 'plugins/wmm_pi/data')+[IO.Path]::DirectorySeparatorChar).Replace('\','\\')
+}
+function Assert-CommissioningWmmResourceProof($Prepared,$Proof) {
+  if(-not $Proof){return $null}
+  $context=$Prepared.context;$expected=$context.installation
+  if(-not $expected -or $Proof.schema -ne 1 -or $Proof.owner -cne 'OpenNavX.InstalledWmmResourceReview.1' -or
+      $Proof.generation -cne $expected.generation -or $Proof.commit -cne $expected.commit -or
+      $Proof.stateSha256 -cne $expected.stateSha256 -or $Proof.ownershipSha256 -cne $expected.ownershipSha256 -or
+      $Proof.stockLocation -cne (Get-CommissioningWmmLocation $context.application) -or
+      $Proof.installedLocation -cne (Get-CommissioningWmmLocation (Join-Path $expected.generation 'app')) -or
+      $Proof.ownershipBase64 -isnot [string] -or $Proof.ownershipBase64.Length -gt 1398104){throw 'Exact parent-generation WMM resource proof required.'}
+  $raw=[Convert]::FromBase64String($Proof.ownershipBase64)
+  if($raw.Length -le 0 -or $raw.Length -gt 1048576 -or (Get-CommissioningHash $raw) -cne $expected.ownershipSha256){throw 'Frozen WMM ownership bytes differ from the original generation.'}
+  $ownership=(New-Object Text.UTF8Encoding($false,$true)).GetString($raw)|ConvertFrom-Json
+  if($ownership.owner -cne 'OpenNavX.Alpha1.SideBySide.1' -or $ownership.commit -cne $expected.commit){throw 'Frozen WMM ownership identity differs.'}
+  $pins=Get-CommissioningWmmResourcePins
+  if(@($Proof.resources).Count -ne $pins.Count){throw 'Complete pinned WMM resource set required.'}
+  foreach($name in $pins.Keys){
+    $file=@($Proof.resources|Where-Object{$_.name -ceq $name})
+    $relative='app/plugins/wmm_pi/data/'+$name
+    $owned=@($ownership.managedFiles|Where-Object{$_.path -ieq $relative})
+    if($file.Count -ne 1 -or $file[0].sha256 -cne $pins[$name] -or $file[0].bytes -le 0 -or $file[0].bytes -gt 1048576 -or
+        $owned.Count -ne 1 -or $owned[0].path -cne $relative -or $owned[0].sha256 -cne $pins[$name]){throw 'WMM resource must match pinned source bytes and unique package ownership.'}
+  }
+  return $Proof
+}
+function Get-CommissioningWmmResourceProof($Prepared) {
+  $expected=$Prepared.context.installation
+  if(-not $expected){throw 'Stock-only commissioning has no installed WMM resource proof.'}
+  $installed=Get-Installed
+  $ownershipPath=Assert-LocalPath (Join-Path $installed.generation 'ownership.json')
+  if($installed.generation -cne $expected.generation -or $installed.executable -cne $expected.executable -or
+      $installed.ownership.commit -cne $expected.commit -or (Get-Digest $installed.executable) -cne $expected.executableSha256 -or
+      (Get-Digest (Join-Path $installed.root 'state.json')) -cne $expected.stateSha256 -or
+      (Get-Item -LiteralPath $ownershipPath).Length -gt 1048576 -or (Get-Digest $ownershipPath) -cne $expected.ownershipSha256){throw 'Current WMM installation differs from cold preparation.'}
+  $pins=Get-CommissioningWmmResourcePins;$resources=@();$reference=$null
+  foreach($application in @($Prepared.context.application,(Join-Path $expected.generation 'app'))){
+    $directory=Assert-LocalPath (Join-Path $application 'plugins/wmm_pi/data')
+    $items=@(Get-ChildItem -LiteralPath $directory -Force)
+    if($items.Count -ne $pins.Count){throw 'Unexpected WMM resource directory contents.'}
+    $resources=@()
+    foreach($name in $pins.Keys){
+      $found=@($items|Where-Object{$_.Name -ceq $name})
+      if($found.Count -ne 1 -or $found[0].PSIsContainer -or $found[0].Length -le 0 -or $found[0].Length -gt 1048576){throw 'Unexpected WMM resource object.'}
+      $file=Assert-LocalPath $found[0].FullName;$hash=Get-Digest $file
+      if($hash -cne $pins[$name]){throw 'Installed/stock WMM resources differ from pinned source bytes.'}
+      $resources+=([pscustomobject]@{name=$name;sha256=$hash;bytes=$found[0].Length})
+    }
+    if($reference -and ($reference|ConvertTo-Json -Compress) -cne ($resources|ConvertTo-Json -Compress)){throw 'Stock and installed WMM resources differ.'}
+    $reference=$resources
+  }
+  $proof=[pscustomobject]@{schema=1;owner='OpenNavX.InstalledWmmResourceReview.1';generation=$expected.generation;commit=$expected.commit;
+    stateSha256=$expected.stateSha256;ownershipSha256=$expected.ownershipSha256;ownershipBase64=[Convert]::ToBase64String([IO.File]::ReadAllBytes($ownershipPath));
+    stockLocation=(Get-CommissioningWmmLocation $Prepared.context.application);installedLocation=(Get-CommissioningWmmLocation (Join-Path $expected.generation 'app'));resources=$resources}
+  return Assert-CommissioningWmmResourceProof $Prepared $proof
+}
+function Assert-CommissioningWmmLiveProof($Prepared,$Proof) {
+  if(-not $Proof){return}
+  $null=Assert-CommissioningWmmResourceProof $Prepared $Proof
+  $current=Get-CommissioningWmmResourceProof $Prepared
+  if(($current|ConvertTo-Json -Depth 8 -Compress) -cne ($Proof|ConvertTo-Json -Depth 8 -Compress)){throw 'WMM resource evidence changed since cold inspection.'}
+}

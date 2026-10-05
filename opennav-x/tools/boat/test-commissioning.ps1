@@ -321,17 +321,40 @@ try {
       $checks.Add('Native subsequent Inventory/Prepare requires explicit lineage and fresh source plan; Apply/Restore preserves the adopted configuration')
     }
     if($PreservationFixture) {
+      # Exercise the actual WMM proof/entrypoints with explicitly inert resource
+      # pins; the portable suite separately asserts the immutable production pins.
+      $wmmGeneration=Join-Path $testRoot 'wmm-owned/generation';$wmmInstall=Split-Path $wmmGeneration -Parent
+      $fixtureWmmPins=[ordered]@{};$wmmOwned=@()
+      foreach($root in @($app,(Join-Path $wmmGeneration 'app'))){$null=New-Item -ItemType Directory (Join-Path $root 'plugins/wmm_pi/data') -Force}
+      foreach($name in @('WMM.COF','wmm_live.svg','wmm_pi.svg')) {
+        foreach($root in @($app,(Join-Path $wmmGeneration 'app'))){[IO.File]::WriteAllText((Join-Path $root ('plugins/wmm_pi/data/'+$name)),('Inert WMM resource '+$name),$encoding)}
+        $fixtureWmmPins[$name]=Get-Digest (Join-Path $app ('plugins/wmm_pi/data/'+$name))
+        $wmmOwned+=@{path=('app/plugins/wmm_pi/data/'+$name);sha256=$fixtureWmmPins[$name]}
+      }
+      function Get-CommissioningWmmResourcePins {return $fixtureWmmPins}
+      $wmmExe=Join-Path $wmmGeneration 'app/opencpn.exe';[IO.File]::WriteAllText($wmmExe,'INERT; never executed',$encoding)
+      $wmmOwn=Join-Path $wmmGeneration 'ownership.json';Write-Record $wmmOwn @{owner='OpenNavX.Alpha1.SideBySide.1';commit=('a'*40);managedFiles=$wmmOwned}
+      $wmmState=Join-Path $wmmInstall 'state.json';Write-Record $wmmState @{fixture='original installed state'}
+      $fixtureWmmInstalled=[pscustomobject]@{root=$wmmInstall;generation=$wmmGeneration;executable=$wmmExe;ownership=(Read-Record $wmmOwn)}
+      function Get-Installed {return $fixtureWmmInstalled}
+      $fixtureContext.installation=[pscustomobject]@{root=$wmmInstall;generation=$wmmGeneration;executable=$wmmExe;commit=('a'*40);
+        executableSha256=(Get-Digest $wmmExe);stateSha256=(Get-Digest $wmmState);ownershipSha256=(Get-Digest $wmmOwn)}
+      $wmmBefore=Get-CommissioningWmmLocation $app;$wmmAfter=Get-CommissioningWmmLocation (Join-Path $wmmGeneration 'app')
+      $wmmBaseline=[IO.File]::ReadAllText($fixtureIni).Replace('[Directories]',("[Directories]`r`nWMMDataLocation="+$wmmBefore))
+      $excess=$encoding.GetByteCount($wmmBaseline)-21380
+      $wmmBaseline=$wmmBaseline.Replace(('#'+('x'*($padding-3))),('#'+('x'*($padding-3-$excess))))
+      [IO.File]::WriteAllText($fixtureIni,$wmmBaseline,$encoding);$script:CommissioningBaseline=Get-Digest $fixtureIni
+      if((Get-Item $fixtureIni).Length -ne 21380){throw 'WMM baseline must retain exact fixture root length'}
       $preservationBase=[IO.File]::ReadAllBytes($fixtureIni)
       $navFixture=Join-Path $profileDirectory 'navobj.xml';[IO.File]::WriteAllText($navFixture,'<gpx>inert unchanged route fixture</gpx>',$encoding)
       $navHash=Get-Digest $navFixture
-      $fixtureContext.installation=[pscustomobject]@{generation='inert-old-generation';commit=('a'*40)}
       $preserveBody=[IO.File]::ReadAllText((Join-Path $PSScriptRoot 'prepare-session-preservation.ps1')).Replace(". (Join-Path `$PSScriptRoot 'Commissioning.ps1')",'')
       $preparePreservation=[scriptblock]::Create($preserveBody)
       function New-PreservationFixture {
         [IO.File]::WriteAllBytes($fixtureIni,$preservationBase)
         $transactionArgs=New-FixtureTransaction;$null=& $invoke -Action Apply @transactionArgs
         $alpha='OpenNavXSettings 1\n"battery" ""\n"capacity" "20"\n"consumption" "measured"\n"corridor" "50"\n"current" "unconfigured"\n"display.instruments" "sog,depth"\n"display.rail" "sog,heading"\n"draft" "1"\n"efficiency" ""\n"hotel" ""\n"margin" "1"\n"minimum_speed" "1"\n"model_source" ""\n"reserve" "20"\n'
-        $currentText=[IO.File]::ReadAllText($fixtureIni).Replace('PersistActiveRoute=0',"PersistActiveRoute=0`r`nActiveRoute=11111111-2222-3333-4444-555555555555")
+        $currentText=[IO.File]::ReadAllText($fixtureIni).Replace($wmmBefore,$wmmAfter).Replace('PersistActiveRoute=0',"PersistActiveRoute=0`r`nActiveRoute=11111111-2222-3333-4444-555555555555")
         $currentText+="[OpenNav]`r`nAlphaSettings=$alpha`r`n[OpenNav/OnlineAIS/v1]`r`nEnabled=1`r`n[PlugIns/wmm_pi.dll]`r`nbEnabled=1`r`n[Settings/GlobalState]`r`nFrameWinX=1280`r`n"
         [IO.File]::WriteAllText($fixtureIni,$currentText,$encoding)
         $seen=(& $invoke -Action InspectRestore @transactionArgs)|ConvertFrom-Json
@@ -357,6 +380,13 @@ try {
       }
       $fixture=New-PreservationFixture;$arguments=$fixture.arguments;$choice=$fixture.choice
       $parentDir=[IO.Path]::GetDirectoryName($arguments.Record)
+      foreach($path in @($wmmOwn,(Join-Path $wmmGeneration 'app/plugins/wmm_pi/data/WMM.COF'))) {
+        $saved=[IO.File]::ReadAllBytes($path);[IO.File]::AppendAllText($path,' late WMM mutation')
+        Reject {& $invoke -Action InspectRestore @arguments @choice} 'late owned WMM manifest/resource drift'
+        [IO.File]::WriteAllBytes($path,$saved)
+      }
+      Reject {& $invoke -Action Restore @arguments -Inspection $fixture.inspection.inspection -ExpectedInspectionSha256 $fixture.inspection.inspectionSha256 -ReviewedCurrentIniSha256 $fixture.inspection.currentIniSha256} 'WMM delta cannot be erased by legacy baseline restore'
+      $checks.Add('Native WMM stock-to-parent path proof requires explicit preservation and refuses live owned resource/manifest drift')
       $before=Get-Digest $fixtureIni;$quarantineState=Read-Record $arguments.Record
       Reject {Read-CommissioningBaseline $workspace $fixture.proposal.proposal $fixture.proposal.proposalSha256} 'proposed preservation is not a usable baseline'
       $lock=Open-CommissioningRestoreLock $parentDir
@@ -403,6 +433,7 @@ try {
       }
       $checks.Add('Native preservation resumes exact target after intent, INI publication, first DLL return and durable completion; legacy fallback refused')
       $fixtureContext.installation=[pscustomobject]@{generation='inert-new-generation';commit=('b'*40)}
+      Remove-Item -LiteralPath $wmmGeneration -Recurse -Force # Historical proof must not reopen retired resource files.
       $baselineArgs=@{BaselineRecord=$restored.baselineRecord;ExpectedBaselineSha256=$restored.baselineRecordSha256}
       $nextInventory=(& $invoke -Action Inventory -Workspace $workspace @baselineArgs)|ConvertFrom-Json
       $nextData=Read-Record $nextInventory.record

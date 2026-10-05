@@ -45,7 +45,10 @@ if ($resourceProof) {
     throw 'Installed resource evidence changed since cold inspection.'
   }
 }
-$changes=@(Assert-SessionPreservationReview (Join-Path $parentDir 'input-only.ini') $inspected.savedIni $review ([datetime]::UtcNow) $default)
+$wmmProof=if($inspected.PSObject.Properties['wmmResourceProof']){$inspected.wmmResourceProof}else{$null}
+$wmmProof=Assert-CommissioningWmmResourceProof $prepared $wmmProof
+Assert-CommissioningWmmLiveProof $prepared $wmmProof
+$changes=@(Assert-SessionPreservationReview (Join-Path $parentDir 'input-only.ini') $inspected.savedIni $review ([datetime]::UtcNow) $default $wmmProof)
 $bytes=Get-CommissioningOutputBytes ([IO.File]::ReadAllBytes($inspected.savedIni))
 $acls=Get-SessionPreservationAcls (@($inspected.profileBeforeRestore)+@($inventory.trees)) $prepared.quarantine
 $directory=New-PreparationDirectory $context 'session-preservation'
@@ -58,6 +61,7 @@ try{$stream.Write($bytes,0,$bytes.Length);$stream.Flush($true)}finally{$stream.D
 Assert-PreparationTree $inspected.profileBeforeRestore;Assert-CommissioningTrees $inventory.trees $prepared.quarantine -AllowMoved
 Assert-CommissioningContext $context (Get-CommissioningContext $Workspace)
 Assert-SessionPreservationAcls $acls (Get-SessionPreservationAcls (@($inspected.profileBeforeRestore)+@($inventory.trees)) $prepared.quarantine) $ini
+Assert-CommissioningWmmLiveProof $prepared $wmmProof
 $proposal=Join-Path $directory 'proposal.json'
 Write-Record $proposal @{schema=1;owner=$script:SessionPreservationOwner;status='proposed';createdUtc=[datetime]::UtcNow.ToString('o');
   parentPrepared=$record;parentPreparedSha256=$ExpectedRecordSha256;inspection=$inspectionPath;inspectionSha256=$ExpectedInspectionSha256;

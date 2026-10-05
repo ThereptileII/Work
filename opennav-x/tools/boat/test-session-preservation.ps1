@@ -25,6 +25,70 @@ try{
   $directory=Join-Path $workspace 'runs/20261002-000000-session-preservation-bbbbbbbb';$profile=Join-Path $testRoot 'profile';$plugins=Join-Path $testRoot 'plugins'
   $null=New-Item -ItemType Directory -Path $parent,$directory,$profile,$plugins -Force
   $encoding=New-Object Text.UTF8Encoding($false,$true)
+  # Exact production pins are checked before the inert resource byte adapter.
+  $pinnedWmm=Get-CommissioningWmmResourcePins
+  Pass 'WMM proof pins the three exact reviewed upstream resources' {
+    if($pinnedWmm.Count -ne 3 -or $pinnedWmm['WMM.COF'] -cne 'dfa8597825af4e0b87ff4198a5b4fb661b3c49f4cd090cd0164e0259b075582f' -or
+       $pinnedWmm['wmm_live.svg'] -cne '044064c5a0af3fc3d41fb884155f8dc3a7638b6de375af722f7862546481267f' -or
+       $pinnedWmm['wmm_pi.svg'] -cne 'e055e85ce274aa37b78a9169e7d0dd3c182e0d268864a519d537cad870a9655d'){throw 'Production WMM pins changed'}
+  }
+  $originalWmmPins=${function:Get-CommissioningWmmResourcePins};$originalInstalled=${function:Get-Installed}
+  try {
+    $wmmRoot=Join-Path $testRoot 'wmm';$wmmStock=Join-Path $wmmRoot 'stock';$wmmInstall=Join-Path $wmmRoot 'installed';$wmmGeneration=Join-Path $wmmInstall 'generations/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+    foreach($appRoot in @($wmmStock,(Join-Path $wmmGeneration 'app'))){$null=New-Item -ItemType Directory (Join-Path $appRoot 'plugins/wmm_pi/data') -Force}
+    $script:wmmFixturePins=[ordered]@{};$owned=@()
+    foreach($name in $pinnedWmm.Keys){
+      foreach($appRoot in @($wmmStock,(Join-Path $wmmGeneration 'app'))){[IO.File]::WriteAllText((Join-Path $appRoot ('plugins/wmm_pi/data/'+$name)),('inert WMM resource '+$name),$encoding)}
+      $script:wmmFixturePins[$name]=Get-Digest (Join-Path $wmmStock ('plugins/wmm_pi/data/'+$name))
+      $owned+=@{path=('app/plugins/wmm_pi/data/'+$name);sha256=$script:wmmFixturePins[$name]}
+    }
+    function Get-CommissioningWmmResourcePins {return $script:wmmFixturePins}
+    $wmmExe=Join-Path $wmmGeneration 'app/opencpn.exe';[IO.File]::WriteAllText($wmmExe,'INERT; never executed',$encoding)
+    $wmmOwn=Join-Path $wmmGeneration 'ownership.json';Write-Record $wmmOwn @{owner='OpenNavX.Alpha1.SideBySide.1';commit=('a'*40);managedFiles=$owned}
+    $wmmState=Join-Path $wmmInstall 'state.json';Write-Record $wmmState @{fixture='old state'}
+    $script:wmmInstalled=[pscustomobject]@{root=$wmmInstall;generation=$wmmGeneration;executable=$wmmExe;ownership=(Read-Record $wmmOwn)}
+    function Get-Installed {return $script:wmmInstalled}
+    $wmmParent=[pscustomobject]@{context=[pscustomobject]@{application=$wmmStock;installation=[pscustomobject]@{generation=$wmmGeneration;executable=$wmmExe;commit=('a'*40);executableSha256=(Get-Digest $wmmExe);ownershipSha256=(Get-Digest $wmmOwn);stateSha256=(Get-Digest $wmmState)}}}
+    $wmmProof=Get-CommissioningWmmResourceProof $wmmParent
+    Pass 'WMM stock and owned installed resources freeze exact parent identity and manifest bytes' {$null=Assert-CommissioningWmmResourceProof $wmmParent (Clone $wmmProof);Assert-CommissioningWmmLiveProof $wmmParent $wmmProof}
+    foreach($field in @('owner','generation','commit','stateSha256','ownershipSha256','stockLocation','installedLocation','ownershipBase64')){Refuse ('Changed WMM proof '+$field) {$bad=Clone $wmmProof;$bad.$field='changed';Assert-CommissioningWmmResourceProof $wmmParent $bad}}
+    Refuse 'Missing WMM resource proof entry' {$bad=Clone $wmmProof;$bad.resources=@($bad.resources|Select-Object -Skip 1);Assert-CommissioningWmmResourceProof $wmmParent $bad}
+    Refuse 'Changed frozen WMM resource hash' {$bad=Clone $wmmProof;$bad.resources[0].sha256='0'*64;Assert-CommissioningWmmResourceProof $wmmParent $bad}
+    foreach($kind in @('missing','hash','duplicate')) {
+      Refuse ('Frozen WMM manifest must actually own each exact resource: '+$kind) {
+        $badOwn=Clone $script:wmmInstalled.ownership
+        if($kind -ceq 'missing'){$badOwn.managedFiles=@($badOwn.managedFiles|Select-Object -Skip 1)}
+        elseif($kind -ceq 'hash'){$badOwn.managedFiles[0].sha256='0'*64}
+        else{$badOwn.managedFiles+=@($badOwn.managedFiles[0])}
+        $raw=$encoding.GetBytes(($badOwn|ConvertTo-Json -Depth 8));$bad=Clone $wmmProof;$parentCopy=Clone $wmmParent
+        $bad.ownershipBase64=[Convert]::ToBase64String($raw);$bad.ownershipSha256=Get-CommissioningHash $raw;$parentCopy.context.installation.ownershipSha256=$bad.ownershipSha256
+        Assert-CommissioningWmmResourceProof $parentCopy $bad
+      }
+    }
+    foreach($path in @($wmmExe,$wmmOwn,$wmmState,(Join-Path $wmmStock 'plugins/wmm_pi/data/WMM.COF'),(Join-Path $wmmGeneration 'app/plugins/wmm_pi/data/wmm_pi.svg'))){
+      $savedBytes=[IO.File]::ReadAllBytes($path);[IO.File]::WriteAllText($path,'changed');Refuse 'Live WMM executable/manifest/state/stock/installed resource drift' {Assert-CommissioningWmmLiveProof $wmmParent $wmmProof};[IO.File]::WriteAllBytes($path,$savedBytes)
+    }
+    $extra=Join-Path $wmmGeneration 'app/plugins/wmm_pi/data/extra';[IO.File]::WriteAllText($extra,'extra');Refuse 'Unowned additional WMM resource refused' {Get-CommissioningWmmResourceProof $wmmParent};Remove-Item $extra
+    $wmmBefore=Join-Path $wmmRoot 'before.ini';$wmmAfter=Join-Path $wmmRoot 'after.ini'
+    $wmmText="[Settings]`r`nPersistActiveRoute=0`r`n[Settings/NMEADataSource]`r`nDataConnections=0;0;;0;1;COM8;115200;0;0;0;;0;;0;0;1;0;1;Fixture;0;;0`r`n[Directories]`r`nWMMDataLocation="+$wmmProof.stockLocation+"`r`n"
+    [IO.File]::WriteAllText($wmmBefore,$wmmText,$encoding);[IO.File]::WriteAllText($wmmAfter,$wmmText.Replace($wmmProof.stockLocation,$wmmProof.installedLocation),$encoding)
+    $wmmReview=Review $wmmBefore $wmmAfter
+    Pass 'Explicit WMM preservation keeps exactly the derived location and trailing separator' {$null=Assert-SessionPreservationReview $wmmBefore $wmmAfter $wmmReview ([datetime]::UtcNow) '' $wmmProof}
+    Refuse 'WMM change without resource proof is still protected' {Assert-SessionPreservationReview $wmmBefore $wmmAfter $wmmReview}
+    $migration=Clone $wmmReview;$migration.owner='OpenNavX.ProfileMigrationReview.1'
+    Refuse 'Owned WMM change does not broaden automatic migration' {Assert-CommissioningMigrationReview $wmmBefore $wmmAfter $migration}
+    foreach($badPath in @(($wmmProof.installedLocation+'other'),($wmmProof.installedLocation.TrimEnd([IO.Path]::DirectorySeparatorChar)),($wmmProof.stockLocation+'other'))){
+      [IO.File]::WriteAllText($wmmAfter,$wmmText.Replace($wmmProof.stockLocation,$badPath),$encoding);$badReview=Review $wmmBefore $wmmAfter
+      Refuse 'Reviewed arbitrary WMM location or missing trailing separator refused' {Assert-SessionPreservationReview $wmmBefore $wmmAfter $badReview ([datetime]::UtcNow) '' $wmmProof}
+    }
+    [IO.File]::WriteAllText($wmmBefore,$wmmText.Replace($wmmProof.stockLocation,($wmmProof.installedLocation+'old/')),$encoding)
+    [IO.File]::WriteAllText($wmmAfter,$wmmText.Replace($wmmProof.stockLocation,$wmmProof.installedLocation),$encoding)
+    $badReview=Review $wmmBefore $wmmAfter
+    Refuse 'Historical-generation-to-new-generation location is a separate unsupported preservation case' {Assert-SessionPreservationReview $wmmBefore $wmmAfter $badReview ([datetime]::UtcNow) '' $wmmProof}
+    $script:wmmInstalled.generation='retired';Remove-Item $wmmGeneration -Recurse -Force
+    Pass 'Historical WMM ownership proof remains readable after the old generation is retired' {$null=Assert-CommissioningWmmResourceProof $wmmParent (Clone $wmmProof)}
+    Refuse 'Historical proof cannot satisfy current WMM verification after generation change' {Assert-CommissioningWmmLiveProof $wmmParent $wmmProof}
+  } finally {Set-Item Function:Get-CommissioningWmmResourcePins $originalWmmPins;Set-Item Function:Get-Installed $originalInstalled}
   $text="[Settings]`r`nPersistActiveRoute=0`r`nActiveRoute=`r`nLocale=sv`r`nLocaleOverride=sv_SE`r`nConfigVersionString=Version 5.12.4+37fd0cd Build 2026-09-27`r`nGPUTextureMemSize=64`r`n[Settings/NMEADataSource]`r`nDataConnections=0;0;;0;1;COM8;115200;0;1;0;;0;;0;0;1;0;1;Fixture;0;;0`r`n[Directories]`r`nChartDir=original`r`n[PlugIns/wmm_pi.dll]`r`nbEnabled=0`r`n[Settings/GlobalState]`r`nFrameWinX=1024`r`n"
   $text+='#'+(' '*(21380-$encoding.GetByteCount($text)-3))+"`r`n"
   $baseline=Join-Path $parent 'baseline.ini';$inputFile=Join-Path $parent 'input-only.ini';$current=Join-Path $profile 'opencpn.ini'

@@ -42,7 +42,8 @@ A stored UUID is preserved; it is neither cleared nor treated as proof of a
 currently active or inactive route. Unknown keys, source priorities, connection
 changes, arbitrary chart directories, plugin settings beyond the explicit WMM
 flag, and embedded vessel source/control mappings are refused. The existing
-hash-bound installed basemap-default proof is the only resource-path exception.
+hash-bound installed basemap-default proof and the explicit WMM case below are
+the only resource-path exceptions.
 New cases require their own bounded policy and qualification.
 
 Restore with the original `commission-read-only.ps1 -Action Restore` arguments
@@ -76,3 +77,36 @@ Focused checks:
   entrypoints, full backups/ACL checks, interruption and generation transition.
   Outside CI, this requires `-IsolatedLocal`. It never runs OpenCPN or hardware.
 - Existing baseline-adoption and commissioning checks remain required.
+
+## Observed WMM save-time location
+
+The additional explicit preservation case admits only
+`Directories/WMMDataLocation` from the supported stock application's
+`plugins/wmm_pi/data/` to the **current parent generation's**
+`app/plugins/wmm_pi/data/`. Both values must exactly match wxFileConfig's escaped
+backslashes, including the trailing separator. Old generation A to new generation
+B is a distinct future case and is currently refused; this is not general
+cross-update profile migration support.
+
+Pinned OpenCPN `37fd0cddb7334fe489e9f18aa163977a9c5c84f7`
+`plugins/wmm_pi/src/wmm_pi.cpp` derives this location from shared application data
+in `LoadConfig`, leaves the preference read disabled, and writes the derived
+location in `SaveConfig`, including during `DeInit`. The magnetic model loader
+independently opens `WMM.COF` below the same shared-data directory. Preserving the
+written value does not enable WMM or grant launch/output authority.
+
+Closed inspection freezes a separate `wmmResourceProof`, including the original
+ownership manifest bytes/hash, parent generation/state/commit, exact before/after
+locations, and the three files `WMM.COF`, `wmm_live.svg`, and `wmm_pi.svg`. Both
+stock and installed trees must contain exactly these regular files, match the
+reviewed upstream hashes, and match unique managed-file ownership entries.
+Additional files, redirects, altered bytes, missing ownership or arbitrary paths
+are refused. The proof remains historical evidence after that generation retires.
+
+The same exact resources and original installation are checked again before
+proposal publication and each live preservation restoration boundary. Each
+changed INI key still needs its own explicit decision. Legacy baseline restore
+cannot erase this delta, and automatic migration adoption still refuses it.
+Native disposable preservation tests exercise this case with documented inert
+resource-byte bindings; the portable contracts separately lock the production
+resource hashes. Neither test accesses the boat.
