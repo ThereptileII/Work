@@ -23,7 +23,8 @@ jobs:
         run: |
           $Evidence = 'opennav-x/evidence/local/session-preservation'
           New-Item -ItemType Directory -Path $Evidence -Force | Out-Null
-          $Portable = if ($env:RUNNER_OS -eq 'Windows') { @() } else { @('-PortableContracts') }
+          [string[]]$Portable = @()
+          if ($env:RUNNER_OS -ne 'Windows') { $Portable = @('-PortableContracts') }
           $Engine = if ($env:RUNNER_OS -eq 'Windows') { "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" } else { 'pwsh' }
           foreach ($Suite in @('session-preservation', 'baseline-adoption')) {
             & $Engine -NoProfile -File "opennav-x/tools/boat/test-$Suite.ps1" @Portable 2>&1 | Tee-Object "$Evidence/$Suite.log"
@@ -31,7 +32,7 @@ jobs:
           }
       - name: Actual disposable closed-session transaction and interruptions
         if: runner.os == 'Windows'
-        shell: powershell
+        shell: pwsh
         run: |
           & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -File opennav-x/tools/boat/test-commissioning.ps1 -PreservationFixture 2>&1 | Tee-Object opennav-x/evidence/local/session-preservation/transaction.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

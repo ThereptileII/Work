@@ -371,7 +371,8 @@ try {
       $originalAcl=(Get-Acl -LiteralPath $navFixture).Sddl
       $changedAcl=New-Object Security.AccessControl.FileSecurity
       $changedAcl.SetSecurityDescriptorSddlForm($originalAcl)
-      $changedAcl.AddAccessRule((New-Object Security.AccessControl.FileSystemAccessRule('S-1-1-0','Read','Allow')))
+      $everyone=New-Object Security.Principal.SecurityIdentifier('S-1-1-0')
+      $changedAcl.AddAccessRule((New-Object Security.AccessControl.FileSystemAccessRule($everyone,'Read','Allow')))
       Set-Acl -LiteralPath $navFixture -AclObject $changedAcl
       try {Reject {& $invoke -Action InspectRestore @arguments @choice} 'late other-profile ACL mutation'}finally{
         $restoreAcl=New-Object Security.AccessControl.FileSecurity;$restoreAcl.SetSecurityDescriptorSddlForm($originalAcl);Set-Acl -LiteralPath $navFixture -AclObject $restoreAcl
