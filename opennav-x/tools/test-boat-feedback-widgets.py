@@ -17,14 +17,8 @@ import sys
 import time
 
 ROOT = Path(__file__).resolve().parents[1]
-TESTS = {
-    'chart_info_tests', 'pilot_status_tests', 'anchor_route_transition_tests',
-    'navigation_naming_tests', 'route_context_tests', 'chart_info_drawer_test',
-    'navigation_name_editor_test', 'route_context_card_test',
-    'chart_light_hover_tests', 'ais_drawer_scroll_test', 'online_ais_radius_test',
-    'chart_anchor_watch_renderer_test',
-    'route_activation_callbacks_test',
-}
+from staging_build_inputs import FEEDBACK_TESTS as TESTS, restored_feedback
+
 
 
 def main():
@@ -33,11 +27,14 @@ def main():
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--runtime-dir', action='append', type=Path, default=[])
     parser.add_argument('--expected-commit', help='CI checkout commit; defaults to current checkout')
+    parser.add_argument('--compiled-input-receipt', type=Path)
     args = parser.parse_args()
     manifest = json.loads(args.manifest.read_text(encoding='utf-8'))
     commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
     expected = args.expected_commit or commit
-    if not re.fullmatch('[0-9a-f]{40}', expected) or manifest.get('commit') != expected or commit != expected:
+    if args.compiled_input_receipt:
+        manifest = restored_feedback(ROOT, args.manifest, args.compiled_input_receipt, expected, commit)
+    if not re.fullmatch('[0-9a-f]{40}', expected) or manifest.get('commit') != expected or (not args.compiled_input_receipt and commit != expected):
         raise RuntimeError('Configured manifest, requested commit and checkout must match; reconfigure the focused targets')
     entries = manifest.get('tests', [])
     names = [entry.get('name') for entry in entries]
@@ -65,7 +62,8 @@ def main():
             raise RuntimeError('Offline widget checks require xvfb-run for an isolated desktop')
     dirty = bool(subprocess.check_output(['git', 'status', '--porcelain'], cwd=ROOT, text=True).strip())
     result = {
-        'schema': 1, 'source_commit': commit, 'source_dirty': dirty,
+        'schema': 1, 'source_commit': expected, 'harness_commit': commit, 'source_dirty': dirty if expected == commit else None, 'harness_dirty': dirty,
+        'restore_receipt_sha256': hashlib.sha256(args.compiled_input_receipt.read_bytes()).hexdigest() if args.compiled_input_receipt else None,
         'platform': sys.platform, 'manifest_sha256': hashlib.sha256(args.manifest.read_bytes()).hexdigest(),
         'scope': 'Offline production component libraries with owned fixtures; no product/profile/chart/network/hardware acceptance',
         'passed': True, 'tests': [],

@@ -11,6 +11,12 @@ function Check([string]$Script, [string[]]$Arguments = @()) {
     & python (Join-Path $PSScriptRoot $Script) @Arguments
     if ($LASTEXITCODE -ne 0) { throw "Staging qualification failed: $Script" }
 }
+# Run the same thirteen compiled components only after immutable input restore.
+# The runner verifies the original manifest and each fixed executable against the
+# restore receipt, rebasing paths while keeping producer/harness identities distinct.
+Check 'test-boat-feedback-widgets.py' @('--manifest', "$Root/build/xnav-windows/Release/boat-feedback-tests.json",
+    '--output', "$Root/evidence/local/boat-feedback-windows", '--runtime-dir', "$Root/build/xnav-install",
+    '--expected-commit', $ProductCommit, '--compiled-input-receipt', "$Root/evidence/local/staging-inputs.json")
 # These are the existing native application gates, moved after immutable
 # compile/package retention. This script contains no compiler/package producer.
 Check 'smoke-installer-selftest.py' @('--expect-test-loopback', '--app', "$Root/build/xnav-install/opencpn.exe")

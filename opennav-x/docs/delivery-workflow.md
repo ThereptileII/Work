@@ -81,6 +81,14 @@ changes. Promote the exact qualified package; never silently substitute a
 newly compiled executable. Channel identity must not require changing the
 qualified binary's embedded version at promotion time.
 
+The shared thirteen boat-feedback component executables and their original
+producer manifest are retained before desktop qualification. Qualification runs
+those same binaries after authenticated restoration, with no fixture compilation.
+Absolute producer paths are validated against the fixed component inventory and
+rebased under the restored workspace; the original manifest bytes remain intact.
+Results retain separate producer and harness commits. Missing components, changed
+hashes or a failed component still block delivery; retention is not acceptance.
+
 Reuse evidence only when its relevant code, dependencies, environment and
 package inputs are unchanged and recorded. Keep failures visible. Separate
 affected downstream jobs so an installer test failure need not restart the

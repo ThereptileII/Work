@@ -9,7 +9,7 @@ import argparse
 import hashlib
 import json
 import os
-from pathlib import Path, PurePosixPath
+from pathlib import Path, PurePosixPath, PureWindowsPath
 import re
 import shutil
 import stat
@@ -28,7 +28,18 @@ MAX_MANIFEST = 32 * 1024**2
 INSTALLS = ('build/xnav-install', 'build/production-install')
 VARIANTS = ('xnav', 'production')
 PACKAGE_ROOT = 'build/developer-preview/SKAGER-Beta2-Portable-Recovery'
+FEEDBACK_MANIFEST = 'build/xnav-windows/Release/boat-feedback-tests.json'
+FEEDBACK_TESTS = {
+    'chart_info_tests', 'pilot_status_tests', 'anchor_route_transition_tests',
+    'navigation_naming_tests', 'route_context_tests', 'chart_info_drawer_test',
+    'navigation_name_editor_test', 'route_context_card_test',
+    'chart_light_hover_tests', 'ais_drawer_scroll_test', 'online_ais_radius_test',
+    'chart_anchor_watch_renderer_test', 'route_activation_callbacks_test',
+}
+FEEDBACK_BINARIES = {name: 'build/xnav-windows/Release/' + name + '.exe'
+                     for name in FEEDBACK_TESTS}
 FIXED_FILES = {
+    FEEDBACK_MANIFEST,
     'build/beta-installer/SKAGER-Beta2-Setup.exe',
     'build/beta-installer/package.json', 'build/beta-installer/payload.zip',
     'build/beta-installer/SKAGER-Beta2-Setup.exe.sha256',
@@ -68,6 +79,8 @@ for variant in VARIANTS:
                      f'build/{variant}-windows/include/config.h',
                      f'build/{variant}-windows/include/OpenNavBuild.h'})
 REQUIRED.add('build/xnav-install/opencpn-cmd.exe')
+REQUIRED.add(FEEDBACK_MANIFEST)
+REQUIRED.update(FEEDBACK_BINARIES.values())
 
 
 def require(condition, message):
@@ -175,7 +188,65 @@ def validate_inventory(names):
                     f'Missing compiled {variant} test executable: {binary}')
 
 
+def feedback_binding(root, expected_commit):
+    """Bind original producer paths to fixed retained files; never execute paths from JSON."""
+    manifest_path = plain_file(root, FEEDBACK_MANIFEST)
+    require(manifest_path.stat().st_size <= MAX_MANIFEST, 'Feedback manifest exceeds bound')
+    manifest = strict_json(manifest_path.read_bytes())
+    require(set(manifest) == {'schema', 'commit', 'tests'} and
+            type(manifest['schema']) is int and manifest['schema'] == 1 and
+            manifest['commit'] == expected_commit, 'Feedback manifest producer differs')
+    entries = manifest['tests']
+    require(isinstance(entries, list) and len(entries) == len(FEEDBACK_TESTS) and
+            all(isinstance(entry, dict) and set(entry) == {'name', 'path'} and
+                isinstance(entry['name'], str) and isinstance(entry['path'], str)
+                for entry in entries), 'Invalid feedback manifest entries')
+    require({entry['name'] for entry in entries} == FEEDBACK_TESTS,
+            'Feedback manifest must contain each fixed component once')
+    prefixes = set()
+    for entry in entries:
+        path = entry['path']
+        suffix = '/' + FEEDBACK_BINARIES[entry['name']]
+        require(path.endswith(suffix) and '\\' not in path and '\x00' not in path,
+                'Feedback executable outside fixed retained paths')
+        prefix = path[:-len(suffix)]
+        windows = PureWindowsPath(prefix)
+        require(windows.is_absolute() and re.fullmatch('[A-Za-z]:', windows.drive) and
+                prefix == windows.as_posix(), 'Invalid feedback producer root')
+        safe_name(prefix[3:])
+        prefixes.add(prefix)
+    require(len(prefixes) == 1, 'Feedback executable producer roots differ')
+    return dict(manifestSha256=sha(manifest_path), binaries=[
+        dict(name=name, path=FEEDBACK_BINARIES[name],
+             sha256=sha(plain_file(root, FEEDBACK_BINARIES[name])))
+        for name in sorted(FEEDBACK_TESTS)])
+
+
+def restored_feedback(root, manifest_path, receipt_path, product_commit, harness_commit):
+    """Rebase only sealed, restored component identities for a known CI harness."""
+    root = Path(root).resolve()
+    require(Path(manifest_path).resolve() == root / FEEDBACK_MANIFEST,
+            'Only the retained original feedback manifest may be used')
+    receipt = strict_json(Path(receipt_path).read_bytes())
+    expected = receipt.get('producer', {})
+    require(expected == producer(expected.get('commit'), expected.get('runId'),
+                                 expected.get('runAttempt'), expected.get('job')) and
+            expected['commit'] == product_commit and
+            receipt.get('schema') == 1 and receipt.get('kind') == KIND and
+            receipt.get('status') == 'restored' and receipt.get('qualification') == 'not-run' and
+            receipt.get('harnessCommit') == harness_commit and
+            receipt.get('workspaceRoot') == str(root) and
+            re.fullmatch('[0-9a-f]{64}', receipt.get('archiveSha256', '')),
+            'Feedback restore receipt producer/harness/workspace differs')
+    require(receipt.get('boatFeedback') == feedback_binding(root, product_commit),
+            'Feedback manifest or executable differs from sealed restore receipt')
+    return dict(schema=1, commit=product_commit, tests=[
+        dict(name=name, path=str(root / FEEDBACK_BINARIES[name]))
+        for name in sorted(FEEDBACK_TESTS)])
+
+
 def validate_content(root, names, expected):
+    feedback_binding(root, expected['commit'])
     def read(name):
         return plain_file(root, name).read_bytes()
     def digest(name):
@@ -361,7 +432,8 @@ def restore(root, archive, archive_sha256, expected, harness_commit, receipt_pat
                    harnessCommit=harness_commit, workspaceRoot=str(root), archiveSha256=archive_sha256,
                    sourceArchiveSha256=next(record['sha256'] for record in records
                        if record['path']=='build/developer-preview/SKAGER-Beta2-source.zip'),
-                   manifestSha256=hashlib.sha256(encoded).hexdigest(), files=len(names))
+                   manifestSha256=hashlib.sha256(encoded).hexdigest(), files=len(names),
+                   boatFeedback=feedback_binding(root, expected['commit']))
     receipt_path.parent.mkdir(parents=True, exist_ok=True)
     with receipt_path.open('x', encoding='utf-8') as stream:
         stream.write(json.dumps(receipt, indent=2) + '\n')

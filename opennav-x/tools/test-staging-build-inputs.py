@@ -2,6 +2,7 @@
 """Inert artifact-boundary tests; no application, compiler or Windows execution."""
 import hashlib
 import io
+import importlib.util
 import json
 import os
 from pathlib import Path
@@ -43,6 +44,9 @@ class Boundary(unittest.TestCase):
                 '<testsuite tests="1" failures="0" errors="0"><testcase name="native-contract"/></testsuite>').encode()
             for name in ('tests.exe', 'buffer_tests.exe'):
                 files[f'build/{variant}-windows/test/Release/{name}'] = b'inert test PE'
+        files[inputs.FEEDBACK_MANIFEST] = json.dumps(dict(schema=1, commit=COMMIT, tests=[
+            dict(name=name, path='D:/a/Work/Work/opennav-x/' + path)
+            for name, path in sorted(inputs.FEEDBACK_BINARIES.items())])).encode()
         files['build/production-install/opencpn.exe'] = b'inert product PE'
         files[inputs.PACKAGE_ROOT + '/app/opencpn.exe'] = b'inert product PE'
         files['build/xnav-install/opencpn-cmd.exe'] = b'inert peer CLI'
@@ -100,6 +104,115 @@ class Boundary(unittest.TestCase):
         self.assertFalse((self.consumer / 'build/integration-source').exists())
         for name in inputs.inventory(self.producer):
             self.assertEqual((self.consumer / name).read_bytes(), (self.producer / name).read_bytes())
+
+    def test_feedback_paths_rebase_without_relabeling_or_executing(self):
+        self.seal(); restored = self.restore()
+        original = self.producer / inputs.FEEDBACK_MANIFEST
+        self.assertEqual((self.consumer / inputs.FEEDBACK_MANIFEST).read_bytes(), original.read_bytes())
+        manifest = inputs.restored_feedback(self.consumer, self.consumer / inputs.FEEDBACK_MANIFEST,
+                                            self.receipt, COMMIT, HARNESS)
+        self.assertEqual(manifest['commit'], COMMIT)
+        self.assertEqual(restored['harnessCommit'], HARNESS)
+        self.assertEqual(restored['boatFeedback']['manifestSha256'], inputs.sha(original))
+        self.assertEqual(len(manifest['tests']), 13)
+        for entry in manifest['tests']:
+            self.assertEqual(entry['path'], str(self.consumer / inputs.FEEDBACK_BINARIES[entry['name']]))
+
+    def test_feedback_manifest_rejects_arbitrary_paths_duplicate_names_and_wrong_commit(self):
+        path = self.producer / inputs.FEEDBACK_MANIFEST
+        original = path.read_bytes()
+        mutations = [
+            lambda m: m.update(commit=HARNESS),
+            lambda m: m['tests'].pop(),
+            lambda m: m['tests'].__setitem__(0, m['tests'][1]),
+            lambda m: m['tests'][0].update(path='D:/foreign/arbitrary.exe'),
+            lambda m: m['tests'][0].update(path='D:/a/../escape/' + inputs.FEEDBACK_BINARIES[m['tests'][0]['name']]),
+            lambda m: m['tests'][0].update(path='D:/another/root/' + inputs.FEEDBACK_BINARIES[m['tests'][0]['name']]),
+            lambda m: m['tests'][0].update(path='//server/share/' + inputs.FEEDBACK_BINARIES[m['tests'][0]['name']]),
+        ]
+        for index, mutation in enumerate(mutations):
+            manifest = json.loads(original); mutation(manifest); path.write_text(json.dumps(manifest))
+            with self.subTest(index=index), self.assertRaises(ValueError): self.seal()
+            self.assertFalse(self.output.exists())
+        path.write_bytes(original)
+
+    def test_missing_feedback_manifest_or_any_component_never_seals(self):
+        for name in [inputs.FEEDBACK_MANIFEST, *inputs.FEEDBACK_BINARIES.values()]:
+            path = self.producer / name; saved = path.read_bytes(); path.unlink()
+            with self.subTest(name=name), self.assertRaisesRegex(ValueError, 'Missing required'): self.seal()
+            path.write_bytes(saved)
+
+    def test_feedback_tampering_after_restore_is_refused(self):
+        self.seal(); self.restore()
+        for name in [inputs.FEEDBACK_MANIFEST, *inputs.FEEDBACK_BINARIES.values()]:
+            path = self.consumer / name; saved = path.read_bytes()
+            path.write_bytes(saved + b' ')
+            with self.subTest(name=name), self.assertRaisesRegex(ValueError, 'sealed restore receipt'):
+                inputs.restored_feedback(self.consumer, self.consumer / inputs.FEEDBACK_MANIFEST,
+                                         self.receipt, COMMIT, HARNESS)
+            path.write_bytes(saved)
+
+    def test_feedback_wrong_receipt_identity_and_manifest_location_are_refused(self):
+        self.seal(); self.restore()
+        for product, harness, manifest in [
+            (HARNESS, HARNESS, self.consumer / inputs.FEEDBACK_MANIFEST),
+            (COMMIT, COMMIT, self.consumer / inputs.FEEDBACK_MANIFEST),
+            (COMMIT, HARNESS, self.producer / inputs.FEEDBACK_MANIFEST),
+        ]:
+            with self.subTest(product=product, harness=harness, manifest=manifest), self.assertRaises(ValueError):
+                inputs.restored_feedback(self.consumer, manifest, self.receipt, product, harness)
+        record = json.loads(self.receipt.read_bytes()); record['workspaceRoot'] = str(self.producer)
+        self.receipt.write_text(json.dumps(record))
+        with self.assertRaisesRegex(ValueError, 'workspace differs'):
+            inputs.restored_feedback(self.consumer, self.consumer / inputs.FEEDBACK_MANIFEST,
+                                     self.receipt, COMMIT, HARNESS)
+
+    def test_relocated_runner_preserves_failure_gate_and_distinct_identities(self):
+        self.seal(); self.restore()
+        spec = importlib.util.spec_from_file_location('feedback_runner',
+            Path(__file__).with_name('test-boat-feedback-widgets.py'))
+        runner = importlib.util.module_from_spec(spec); spec.loader.exec_module(runner)
+        commands = []
+        def process(command, **kwargs):
+            commands.append(command)
+            child = mock.MagicMock()
+            child.__enter__.return_value = child
+            child.communicate.return_value = (b'fixture output', b'')
+            child.returncode = 1 if len(commands) == 1 else 0
+            return child
+        output = self.consumer / 'evidence/local/components'
+        argv = ['runner', '--manifest', str(self.consumer / inputs.FEEDBACK_MANIFEST),
+                '--compiled-input-receipt', str(self.receipt), '--expected-commit', COMMIT,
+                '--output', str(output)]
+        with mock.patch.object(runner, 'ROOT', self.consumer), \
+             mock.patch.object(runner.sys, 'argv', argv), \
+             mock.patch.object(runner.sys, 'platform', 'win32'), \
+             mock.patch.dict(os.environ, {'GITHUB_ACTIONS': 'true'}), \
+             mock.patch.object(runner.subprocess, 'check_output', side_effect=[HARNESS, '']), \
+             mock.patch.object(runner.subprocess, 'Popen', side_effect=process), \
+             mock.patch('builtins.print'):
+            self.assertEqual(runner.main(), 1)
+        self.assertEqual(len(commands), 13)
+        self.assertEqual({command[0] for command in commands},
+                         {str(self.consumer / path) for path in inputs.FEEDBACK_BINARIES.values()})
+        result = json.loads((output / 'result.json').read_bytes())
+        self.assertFalse(result['passed'])
+        self.assertEqual(result['source_commit'], COMMIT)
+        self.assertEqual(result['harness_commit'], HARNESS)
+        self.assertIsNone(result['source_dirty'])
+        self.assertEqual(len(result['tests']), 13)
+        self.assertEqual(result['manifest_sha256'], inputs.sha(self.consumer / inputs.FEEDBACK_MANIFEST))
+
+    def test_gui_gate_occurs_only_after_restore_and_never_compiles(self):
+        repo = Path(__file__).resolve().parents[1]
+        workflow = (repo / '.github/workflows/opennav-baseline.yml').read_text()
+        producer = workflow.split('  windows-integration:', 1)[1].split('  windows-qualification:', 1)[0]
+        self.assertNotIn('test-boat-feedback-widgets.py', producer)
+        qualification = (repo / 'tools/qualify-staging-windows.ps1').read_text()
+        self.assertIn("Check 'test-boat-feedback-widgets.py'", qualification)
+        self.assertIn("'--compiled-input-receipt'", qualification)
+        self.assertNotIn('cmake --build', qualification)
+        self.assertNotIn('build-pristine-windows', qualification)
 
     def test_sealing_is_deterministic(self):
         # Force different ZIP clock ticks without sleeping. A filename passed

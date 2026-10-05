@@ -24,7 +24,14 @@ public:
     owner_ = new wxFrame(nullptr, wxID_ANY, "AIS scroll test", {0, 0}, {1280, 800});
     owner_->Bind(wxEVT_MOUSEWHEEL, [this](wxMouseEvent &) { ++outside_wheels_; });
     owner_->Bind(wxEVT_GESTURE_PAN, [this](wxPanGestureEvent &) { ++outside_pans_; });
-    owner_->Bind(wxEVT_MOTION, [this](wxMouseEvent &) { ++outside_moves_; });
+    owner_->Bind(wxEVT_MOTION, [this](wxMouseEvent &event) {
+      // wxMSW may deliver real owner motion after showing windows or changing
+      // capture. It is not one of the fixture's explicitly dispatched gestures.
+      // Count all synchronous fixture delivery, including forwarded events,
+      // and any child-origin motion reaching the owner outside that dispatch.
+      if (dispatch_origin_ || event.GetEventObject() != owner_) ++outside_moves_;
+      else ++incidental_owner_moves_;
+    });
     owner_->Show();
     application::OnlineAisActions online_actions;
     online_actions.read = [this](vessel::Time) { return online_; };
@@ -114,12 +121,16 @@ public:
         Check(actions_ == 1 && !wxWindow::GetCapture(),
               "native touch pan cancels button press and capture");
         OwnerInputCounts("before explicit outside input");
+        const int wheels = outside_wheels_, pans = outside_pans_, moves = outside_moves_;
         Wheel(*owner_, -120);
         OwnerInputCounts("after outside wheel");
+        Check(outside_wheels_ == wheels + 1, "outside wheel reaches owner exactly once");
         Pan(*owner_, -60);
         OwnerInputCounts("after outside pan");
+        Check(outside_pans_ == pans + 1, "outside pan reaches owner exactly once");
         Mouse(*owner_, wxEVT_MOTION, {10, 10}, true);
         OwnerInputCounts("after outside motion");
+        Check(outside_moves_ == moves + 1, "outside motion reaches owner exactly once");
         Check(outside_wheels_ == 1 && outside_pans_ == 1 && outside_moves_ == 1,
               "outside chart-owner input is unaffected");
         drawer_->List();
@@ -266,23 +277,33 @@ private:
   }
   void OwnerInputCounts(const char *stage) const {
     std::cout << "OWNER INPUT " << stage << " wheel=" << outside_wheels_
-              << " pan=" << outside_pans_ << " motion=" << outside_moves_ << '\n';
+              << " pan=" << outside_pans_ << " motion=" << outside_moves_
+              << " incidental-motion=" << incidental_owner_moves_ << '\n';
+  }
+  void Dispatch(wxWindow &target, wxEvent &event) {
+    struct RestoreOrigin {
+      wxWindow *&slot;
+      wxWindow *previous;
+      ~RestoreOrigin() { slot = previous; }
+    } restore{dispatch_origin_, dispatch_origin_};
+    dispatch_origin_ = &target;
+    target.GetEventHandler()->ProcessEvent(event);
   }
   void Wheel(wxWindow &target, int rotation) {
     wxMouseEvent wheel(wxEVT_MOUSEWHEEL);
     wheel.SetEventObject(&target); wheel.SetPosition({30, 20});
     wheel.m_wheelRotation = rotation; wheel.m_wheelDelta = 120; wheel.m_linesPerAction = 3;
-    target.GetEventHandler()->ProcessEvent(wheel);
+    Dispatch(target, wheel);
   }
   void Pan(wxWindow &target, int y) {
     wxPanGestureEvent pan;
     pan.SetEventObject(&target); pan.SetGestureStart(); pan.SetDelta({0, y});
-    target.GetEventHandler()->ProcessEvent(pan);
+    Dispatch(target, pan);
   }
   void Mouse(wxWindow &target, wxEventType type, wxPoint point, bool down = false) {
     wxMouseEvent event(type);
     event.SetEventObject(&target); event.SetPosition(point); event.m_leftDown = down;
-    target.GetEventHandler()->ProcessEvent(event);
+    Dispatch(target, event);
   }
   void Drag(wxWindow &target, int dy) {
     const auto begin = target.ClientToScreen({40, 20});
@@ -310,6 +331,8 @@ private:
   std::size_t step_ = 0;
   int result_ = 0, checks_ = 0, actions_ = 0, selected_ = 0;
   int outside_wheels_ = 0, outside_pans_ = 0, outside_moves_ = 0;
+  int incidental_owner_moves_ = 0;
+  wxWindow *dispatch_origin_ = nullptr;
 };
 }
 wxIMPLEMENT_APP_NO_MAIN(Test);

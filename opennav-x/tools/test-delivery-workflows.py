@@ -429,6 +429,7 @@ class WorkflowPolicy(unittest.TestCase):
         for command in commands:
             self.assertNotRegex(command, r'smoke-(?:navigation|modes|pilot|portable|installer-windows|charts|preview|user-flows)')
             self.assertNotIn('--fixture-success', command)
+            self.assertNotIn('test-boat-feedback-widgets.py', command)
         downstream = jobs['windows-qualification']
         self.assertIn('windows-integration', downstream['needs'])
         restore = next(i for i, step in enumerate(downstream['steps']) if 'staging_build_inputs.py restore ' in step.get('run',''))
@@ -449,7 +450,7 @@ class WorkflowPolicy(unittest.TestCase):
         for command in commands:
             self.assertNotRegex(command, r'(?i)(build-pristine|cmake\s+(?:--build|-S)|msbuild|package-alpha-installer|package-preview|makensis)')
         runner = commands[-1]
-        for script in ('smoke-installer-selftest.py','smoke-modes-windows.py','smoke-navigation.py',
+        for script in ('test-boat-feedback-widgets.py','smoke-installer-selftest.py','smoke-modes-windows.py','smoke-navigation.py',
                        'smoke-signalk.py','smoke-recording.py','smoke-pilot.py','smoke-recovery.py',
                        'smoke-user-flows.py','smoke-portable-production.py','smoke-installer-windows.py','smoke-charts.py'):
             self.assertIn("Check '"+script+"'", runner)
