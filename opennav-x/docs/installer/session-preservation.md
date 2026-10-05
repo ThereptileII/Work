@@ -99,7 +99,7 @@ Closed inspection freezes a separate `wmmResourceProof`, including the original
 ownership manifest bytes/hash, parent generation/state/commit, exact before/after
 locations, and the three files `WMM.COF`, `wmm_live.svg`, and `wmm_pi.svg`. Both
 stock and installed trees must contain exactly these regular files, match the
-reviewed upstream hashes, and match unique managed-file ownership entries.
+reviewed Windows checkout hashes, and match unique managed-file ownership entries.
 Additional files, redirects, altered bytes, missing ownership or arbitrary paths
 are refused. The proof remains historical evidence after that generation retires.
 
@@ -110,3 +110,17 @@ cannot erase this delta, and automatic migration adoption still refuses it.
 Native disposable preservation tests exercise this case with documented inert
 resource-byte bindings; the portable contracts separately lock the production
 resource hashes. Neither test accesses the boat.
+
+The Windows resource hashes use the exact pinned Git source after its Windows
+`core.autocrlf=true` checkout conversion. Read-only evidence confirmed both the
+validated stock and installed copies are byte-identical to that conversion:
+
+| Resource | Bytes | SHA256 |
+| --- | ---: | --- |
+| `WMM.COF` | 4647 | `b766a66b3438b91f01a037ab9cf24c3e48dd3bbf32b00ddc8328bf99291aa805` |
+| `wmm_live.svg` | 4735 | `044064c5a0af3fc3d41fb884155f8dc3a7638b6de375af722f7862546481267f` |
+| `wmm_pi.svg` | 10039 | `194f32ab7a0e257920500f67449ad244b4eaca13be6759d2cb4ed31646e0a617` |
+
+`WMM.COF` has 93 CRLF sequences and `wmm_pi.svg` has 112; `wmm_live.svg`
+has no line terminators. Runtime checks hash the original bytes directly.
+They do not normalize newlines or admit the Linux LF variants.

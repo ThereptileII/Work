@@ -27,10 +27,10 @@ try{
   $encoding=New-Object Text.UTF8Encoding($false,$true)
   # Exact production pins are checked before the inert resource byte adapter.
   $pinnedWmm=Get-CommissioningWmmResourcePins
-  Pass 'WMM proof pins the three exact reviewed upstream resources' {
-    if($pinnedWmm.Count -ne 3 -or $pinnedWmm['WMM.COF'] -cne 'dfa8597825af4e0b87ff4198a5b4fb661b3c49f4cd090cd0164e0259b075582f' -or
+  Pass 'WMM proof pins the three exact reviewed Windows checkout resources' {
+    if($pinnedWmm.Count -ne 3 -or $pinnedWmm['WMM.COF'] -cne 'b766a66b3438b91f01a037ab9cf24c3e48dd3bbf32b00ddc8328bf99291aa805' -or
        $pinnedWmm['wmm_live.svg'] -cne '044064c5a0af3fc3d41fb884155f8dc3a7638b6de375af722f7862546481267f' -or
-       $pinnedWmm['wmm_pi.svg'] -cne 'e055e85ce274aa37b78a9169e7d0dd3c182e0d268864a519d537cad870a9655d'){throw 'Production WMM pins changed'}
+       $pinnedWmm['wmm_pi.svg'] -cne '194f32ab7a0e257920500f67449ad244b4eaca13be6759d2cb4ed31646e0a617'){throw 'Production WMM pins changed'}
   }
   $originalWmmPins=${function:Get-CommissioningWmmResourcePins};$originalInstalled=${function:Get-Installed}
   try {

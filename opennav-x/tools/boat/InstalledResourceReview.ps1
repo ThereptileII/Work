@@ -58,11 +58,14 @@ function Get-CommissioningResourceProof($Prepared) {
 # LoadConfig ignores this preference and derives shared-data/plugins/wmm_pi/data/;
 # SaveConfig (also called by DeInit) writes that derived location. This proof is
 # for explicit preservation only. It never supplies a migration/launch permission.
+# Exact Windows Git checkout bytes (core.autocrlf=true): WMM.COF and
+# wmm_pi.svg use CRLF; wmm_live.svg has no line terminators. No runtime
+# newline normalization or alternate LF hashes are accepted.
 function Get-CommissioningWmmResourcePins {
   return [ordered]@{
-    'WMM.COF'='dfa8597825af4e0b87ff4198a5b4fb661b3c49f4cd090cd0164e0259b075582f'
+    'WMM.COF'='b766a66b3438b91f01a037ab9cf24c3e48dd3bbf32b00ddc8328bf99291aa805'
     'wmm_live.svg'='044064c5a0af3fc3d41fb884155f8dc3a7638b6de375af722f7862546481267f'
-    'wmm_pi.svg'='e055e85ce274aa37b78a9169e7d0dd3c182e0d268864a519d537cad870a9655d'
+    'wmm_pi.svg'='194f32ab7a0e257920500f67449ad244b4eaca13be6759d2cb4ed31646e0a617'
   }
 }
 function Get-CommissioningWmmLocation([string]$Application) {
