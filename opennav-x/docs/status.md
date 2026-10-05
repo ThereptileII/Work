@@ -6,15 +6,23 @@ Current Staging candidate `c0d8d85fb602e86d40e2f3f1be32307919702408`
 ([run 37330218586](https://github.com/ThereptileII/Work/actions/runs/37330218586))
 has passed Linux integration (152/152 tests in each variant), both native Windows
 builds (144/144 each), security checks and installer/recovery packaging. Exact
-compiled inputs are sealed and retained. Installed runtime qualification passed
-real launcher startup, supervised Setup startup, and rollback of an intentionally
-broken candidate, then failed the restored application's 30-second normal-close
-check. The helper omitted OpenCPN's fresh deferred-initialization readiness check;
-upstream explicitly ignores close requests before that point. A helper-only
-correction and retest will reuse the exact package bytes. The failed run did not
-preserve its application log, so this source finding is not claimed as proven
-run timing. Chart smoke was skipped after that failure; package and boat
-acceptance remain pending. Its actual-Lifecycle step passed all 46 checks,
+compiled inputs are sealed and retained. The original runtime job passed real
+launcher startup, supervised Setup startup and corrupt-candidate rollback, then
+failed the restored application's normal-close check. Its failed evidence remains.
+The helper now waits for fresh OpenCPN deferred initialization before issuing the
+single close request, without changing the 30-second exit deadline.
+
+The separate retained retest
+([37344321589](https://github.com/ThereptileII/Work/actions/runs/37344321589),
+harness `1bd62fd727dfe712889aed3910befb75179f7314`) passes all four actual
+updater checks, nine bounded Staging installer checks and the previously skipped
+chart gate against those unchanged binaries. Restored startup was ready at 3.656
+seconds and closed by 4.422 seconds. The downloaded evidence SHA-256 is recorded
+in the linked receipt. The original 17 passing runtime checks are retained;
+there was no application rebuild. An explicit provenance composition is being
+prepared for draft Staging delivery; boat acceptance remains pending.
+
+The original actual-Lifecycle step also passed all 46 checks,
 including a deliberate six-second child startup delay, authenticated after about
 7.8 seconds. Suspended-loader healthy/wrong-hash cases also pass. This supersedes
 the pending focused corrections below, without turning inert fixture results

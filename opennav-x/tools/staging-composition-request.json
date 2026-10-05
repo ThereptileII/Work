@@ -1,0 +1,138 @@
+{
+  "schema": 1,
+  "repository": "ThereptileII/Work",
+  "producer": {
+    "commit": "c0d8d85fb602e86d40e2f3f1be32307919702408",
+    "runId": "37330218586",
+    "runAttempt": "1"
+  },
+  "build": {
+    "artifactId": "11357053892",
+    "artifactName": "staging-build-c0d8d85fb602e86d40e2f3f1be32307919702408-run37330218586-attempt1",
+    "artifactDigest": "sha256:2dd4f62ef8c03dad4bf0aac54813f773b919aeed07008489c377cafd7b890a6b",
+    "archiveSha256": "b3a7492d6998291428a635b0d615c2de1da62627ed440bfc46c4b2fb5b5fcfb9"
+  },
+  "original": {
+    "jobId": "111861197301",
+    "artifactId": "11358637734",
+    "artifactName": "windows-qualification-c0d8d85fb602e86d40e2f3f1be32307919702408-attempt1",
+    "artifactDigest": "sha256:34477111a5671b850cca213603a2865e0647befadf59804e2c0fc64ba1f1d207",
+    "prefixReports": [
+      {
+        "path": "boat-feedback-windows/result.json",
+        "sha256": "ad6a62ab5fe432af24ed17a2d7510001c5439cc81bf253704b5a127054fa846e"
+      },
+      {
+        "path": "boat-input-results.json",
+        "sha256": "fc15f2db372eca4b6d76c862ef9a347efe385ee0fc74be09e926e3bb0cba5ea0"
+      },
+      {
+        "path": "installer-loader-selftest.json",
+        "sha256": "d1f75e2aa26489f9370fa3a2613bb9c0b6ba2042f1d18c115006de4b68faee1c"
+      },
+      {
+        "path": "installer-staging.json",
+        "sha256": "6db01f703f150b79109201448a4f66bf6c3f9a8af2c40e100b8eb3f51216d294"
+      },
+      {
+        "path": "instruments-input-results.json",
+        "sha256": "c5babad4acc80d655c0fc5a68f28b79e55b2ccba1988df58a825e025d624885b"
+      },
+      {
+        "path": "mode-cycle-results.json",
+        "sha256": "476366e8fc9094f166ddf718cbf583ea3eb93a38afab2bdf688bce64e309e288"
+      },
+      {
+        "path": "n2k-input-results.json",
+        "sha256": "99ffb3b324480b6db93314fb4ab8b00306579172f3beadb0013305cf8769d273"
+      },
+      {
+        "path": "navigation-input-results.json",
+        "sha256": "d5069f3cddd608b705f48e57ee8e36efc0afd6b7b2c0d1982a09423ed33dad2d"
+      },
+      {
+        "path": "objects-input-results.json",
+        "sha256": "c0e36bcb91fba69737694b313c40ea9fc183af08bc09ed526412abcfc744baca"
+      },
+      {
+        "path": "packaged-updater.json",
+        "sha256": "56f17cf332f65bbef9765ca28035d75772f5a370179f11ae770c5397715566a7"
+      },
+      {
+        "path": "pilot-results.json",
+        "sha256": "14feb9e8d6fff9af6eb1a876070cb8a1ebd37ca8d6fadc99fd4bb78f1da42ac8"
+      },
+      {
+        "path": "pilot-status-only/pilot-opennav-diagnostics.json",
+        "sha256": "4dbbcfa71026941eccf3542e1cfdf4facaaf5209cb0c188bce98672ae956c579"
+      },
+      {
+        "path": "pilot-status-only/pilot-results.json",
+        "sha256": "7b662d30e8c8638550d183798a4e9c650a8ae2ae8032a07743312109fe0caa84"
+      },
+      {
+        "path": "production-recovery-results.json",
+        "sha256": "dcb103978b4c0c6d396788332ac95b6578205ba77f5ba214a694bcdcd7afae92"
+      },
+      {
+        "path": "recording-results.json",
+        "sha256": "e9a3c8a5fdb5da2bb886c26de35ab7ed92c6281d0ce8dbfbefce0789da0d7b05"
+      },
+      {
+        "path": "recovery-results.json",
+        "sha256": "dcf349345dda417fa5e03f0198ba3a161b52282b319f0db2c57b376b9237fe86"
+      },
+      {
+        "path": "route-input-results.json",
+        "sha256": "370ce8f90ab7563b470dd005ef8b378e20891a248a53b5cf12cc81ec2ff79603"
+      },
+      {
+        "path": "route-standard-input-results.json",
+        "sha256": "20960f8fdafaad14d24d106bdf5c9f5079e5c967ce2af52220bc9f79bdc85fca"
+      },
+      {
+        "path": "signalk-results.json",
+        "sha256": "ad3e67a2620af945937117577f8ea1f741eb152ecee129ed3171bcdeeea25781"
+      },
+      {
+        "path": "staging-inputs.json",
+        "sha256": "2aa1e2a12236bccd0bf0243795d83c1cc180cdc0fd4e8e1e2c89ab961815a1a8"
+      },
+      {
+        "path": "user-flows-results.json",
+        "sha256": "25a937b056981b68c076c63eb0dc7c80e7e1469f4572a987d2c9f0908abc57f4"
+      }
+    ]
+  },
+  "retest": {
+    "commit": "1bd62fd727dfe712889aed3910befb75179f7314",
+    "runId": "37344321589",
+    "runAttempt": "1",
+    "jobId": "111878966644",
+    "artifactId": "11360663392",
+    "artifactName": "staging-retest-evidence-37330218586-attempt1-harness1bd62fd727dfe712889aed3910befb75179f7314-run37344321589-attempt1",
+    "artifactDigest": "sha256:10a5cbdbc98a19b5fe46853e350a3e806bfa417d5315c237caf462f12769613b",
+    "reports": [
+      {
+        "path": "charts-results.json",
+        "sha256": "ee70033007f9311fceeaf58e9e86d8d48ac1c35639a86c1f35a78c909a1e31c4"
+      },
+      {
+        "path": "installer-staging.json",
+        "sha256": "0b6dacbdd4c6385fd22c6c2634ab1c8969085b4052a768efff3c5d6ffbef5b6f"
+      },
+      {
+        "path": "packaged-updater.json",
+        "sha256": "af53e1143aa9b9c5a2ad5561952f3b8c16291a34f78a6644fde4b577d007817f"
+      },
+      {
+        "path": "staging-inputs.json",
+        "sha256": "07f7faaca54031685643faf9651370bb96f183f239c7b7cc3af7119174cb1465"
+      },
+      {
+        "path": "staging-retest.json",
+        "sha256": "548a2409a6266ef0b105070ca69e3df0c64a9115d664e72a27dc39e85c096e4c"
+      }
+    ]
+  }
+}

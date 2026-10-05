@@ -454,7 +454,7 @@
     "url": "https://github.com/ThereptileII/Work/actions/runs/37330218586",
     "commit": "c0d8d85fb602e86d40e2f3f1be32307919702408",
     "localProductSource": "7a2bedcf6b0e4e52e51e3d2bb2c4414b5e97c504",
-    "status": "runtime-qualification-failed",
+    "status": "original-run-failed; retained-installer-and-chart-retest-passed",
     "criticalClarification": "Separate mandatory actual-Lifecycle step executed and passed. Earlier isolated combined helper green did not execute that case.",
     "boatModified": false,
     "publicUpdateServiceConfigured": false,
@@ -477,7 +477,7 @@
       }
     },
     "windowsApplicationJob": 111835972162,
-    "packagedRuntime": "failed-after-three-updater-mechanics-passed",
+    "packagedRuntime": "passed-via-authenticated-separate-retained-retest",
     "boatAcceptance": "pending",
     "linuxIntegration": {
       "job": 111832675961,
@@ -540,7 +540,7 @@
       },
       "securityChecks": "passed",
       "packaging": "passed",
-      "packagedRuntime": "failed-after-three-updater-mechanics-passed",
+      "packagedRuntime": "passed-via-authenticated-separate-retained-retest",
       "evidenceArtifact": {
         "id": 11356954060,
         "sha256": "74d4943e045bf1b95182cbe218a3c548794620ecaadae2405b3e5afaf0cf4ffa",
@@ -559,7 +559,7 @@
       "manifestSha256": "44736b5fb4a5b3c1d71c3cd72a44dea0d505436a247605fc629e8589a7503e6d",
       "producerAttempt": 1,
       "downloaded": false,
-      "qualification": "installer-shutdown-failed; helper-only retest pending"
+      "qualification": "original passed runtime prefix plus successful exact-byte installer/chart retest; draft composition pending"
     },
     "windowsQualificationJob": 111861197301,
     "runtimeFailure": {
@@ -575,12 +575,38 @@
       "failure": "Restored known-good application did not exit within unchanged 30-second close deadline",
       "sourceFinding": "Pinned OpenCPN ignores OnCloseWindow before g_bDeferredInitDone. Restored-startup helper lacked the existing fresh finalization-log readiness precondition. Actual failed run did not preserve application log, so timing causality is not claimed proven.",
       "pending": [
-        "helper-only fresh-readiness correction and retained installer retest",
-        "chart smoke skipped after original installer failure",
-        "draft Staging delivery",
+        "draft Staging composition and delivery",
         "boat acceptance"
       ],
       "recompileRequired": false
+    },
+    "retainedRetest": {
+      "url": "https://github.com/ThereptileII/Work/actions/runs/37344321589",
+      "harnessCommit": "1bd62fd727dfe712889aed3910befb75179f7314",
+      "localHelperSource": "6e6e3cd4799c2c406efeac7817c43079b233a76b",
+      "scope": "installer-charts",
+      "status": "passed",
+      "applicationRecompiled": false,
+      "productCommit": "c0d8d85fb602e86d40e2f3f1be32307919702408",
+      "sourceFinding": "Fresh deferred initialization is now observed before the single normal close. Close deadline remains 30 seconds. Earlier failed timing unproven without app log.",
+      "artifactId": 11360663392,
+      "artifactSha256": "10a5cbdbc98a19b5fe46853e350a3e806bfa417d5315c237caf462f12769613b",
+      "downloadedAndVerified": true,
+      "installerChecks": 9,
+      "packagedUpdaterChecks": 4,
+      "charts": "passed; physical GPU and design acceptance separate",
+      "restoredStartupReadySeconds": 3.656,
+      "restoredTotalSeconds": 4.422,
+      "scopeLimit": "Same-version actual Setup/bootstrap/recovery mechanics; not signed service release selection or boat acceptance"
+    },
+    "boatReadOnlyHealth": {
+      "observedUtc": "2026-10-05T16:59:19.3535555Z",
+      "status": "responding",
+      "commit": "0da2c64379d5a9cc4b9b2bd068de6e0b69816577",
+      "executableSha256": "2d05dc2153273424a3849ec0bd4a3ea3618ad2a4049ac6cbbbaf615c2fc208b8",
+      "stockSha256": "7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c",
+      "applicationChanged": false,
+      "rawLogsIncluded": false
     }
   }
 }

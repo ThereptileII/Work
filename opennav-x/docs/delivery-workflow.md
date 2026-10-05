@@ -89,6 +89,22 @@ rebased under the restored workspace; the original manifest bytes remain intact.
 Results retain separate producer and harness commits. Missing components, changed
 hashes or a failed component still block delivery; retention is not acceptance.
 
+A corrected helper may qualify the retained candidate through an explicit
+composed Staging record. This is separate from the original same-run format:
+the original failed job stays failed. The composition must authenticate the
+original required successful jobs, a reviewed closed inventory of passed
+runtime reports, and the successful replacement checks against the exact sealed
+inputs. It must identify the product, original evidence, corrected harness and
+composition run separately. It cannot substitute arbitrary gates or infer a
+pass from a file hash alone. Missing evidence stops delivery.
+
+The composition workflow assembles the original installer, recovery archive,
+source and packaged documents without rebuilding or copying newer helper-branch
+documentation into the product. The newly retained test-support archive belongs
+to the composition run. Draft publication requires its assembly job to pass;
+later fetching/promotion also requires the completed composition run to pass.
+This does not start Production promotion or public access.
+
 Reuse evidence only when its relevant code, dependencies, environment and
 package inputs are unchanged and recorded. Keep failures visible. Separate
 affected downstream jobs so an installer test failure need not restart the

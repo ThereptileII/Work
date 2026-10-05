@@ -168,10 +168,20 @@ repository's default branch also contains a separate firmware project.
 - **Re-run failed jobs**: a desktop-qualification failure inherits the completed
   build's original artifact and attempt. The successful compiler job stays done.
 - **SKAGER retained Staging checks**: for a corrected test helper, choose its
-  source branch, original build run and attempt, and `installer` or `all` scope.
+  source branch, original build run and attempt, and `installer`,
+  `installer-charts` or `all` scope.
   This authenticates/downloads the original compiled inputs, uses the candidate's
   installer engine and records the new helper revision. It creates diagnostic
   evidence, never a new executable or an automatically accepted release.
+  The narrowly named `skager-staging-retest` push branch uses a committed exact
+  artifact selection and runs only installer plus charts. It is useful when
+  those were the failed and subsequently skipped checks; it does not repeat
+  completed application compilation or earlier functional checks.
+- **SKAGER composed Staging delivery**: after those replacement checks pass,
+  an explicit committed request authenticates original and replacement evidence
+  and assembles a draft Release from frozen inputs. Product and helper identities
+  remain separate, and the original failed run is preserved. This is not a way
+  to waive a failed gate or claim a new binary was tested.
 - **SKAGER Production**: remains the separate explicit named-candidate promotion
   flow. No design review, rebranding or application compilation is added to it.
 

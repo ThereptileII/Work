@@ -124,6 +124,11 @@ def check_tag(tag):
 def local_record(directory):
     record = manifest.verify(directory)
     qualification = read_json(directory / 'QUALIFICATION.json')
+    if qualification.get('schemaVersion') == 2:
+        from staging_composition import validate_qualification
+        support = read_json(directory / 'RETEST_SUPPORT.json')
+        validate_qualification(qualification, record, support)
+        return record, support
     require(set(qualification) == {'schemaVersion', 'channel', 'commit', 'runId', 'runAttempt',
             'gates', 'designReview', 'endurance', 'publicAccess'}, 'Unexpected Staging qualification fields')
     require(type(qualification['schemaVersion']) is int and qualification['schemaVersion'] == 1 and
@@ -219,6 +224,17 @@ def retain_release(gh, directory, record, tag, *, production=False, receipt=None
 
 def publish_staging(gh, directory):
     record, support = local_record(directory)
+    qualification = read_json(directory / 'QUALIFICATION.json')
+    if qualification.get('schemaVersion') == 2:
+        from staging_composition import verify_provenance
+        execution = qualification['composition']['execution']
+        require(execution == dict(commit=os.environ.get('GITHUB_SHA'),
+                                  runId=os.environ.get('GITHUB_RUN_ID'),
+                                  runAttempt=os.environ.get('GITHUB_RUN_ATTEMPT')),
+                'Current composition identity differs')
+        verify_provenance(gh, qualification, complete=False)
+        retain_release(gh, directory, record, staging_tag(record))
+        return
     require(os.environ.get('GITHUB_SHA') == record['commit'] and
             os.environ.get('GITHUB_RUN_ID') == record['runId'] and
             os.environ.get('GITHUB_RUN_ATTEMPT') == record['runAttempt'], 'Current producer identity differs')
@@ -254,8 +270,13 @@ def fetch_staging(gh, tag, directory):
             gh.download(assets[name], stage / name)
         record, support = local_record(stage)
         require(staging_tag(record) == tag and record['commit'] == commit, 'Staging tag/commit differs')
-        producer(gh, record, complete=True)
-        support_producer(gh, record, support)
+        qualification = read_json(stage / 'QUALIFICATION.json')
+        if qualification.get('schemaVersion') == 2:
+            from staging_composition import verify_provenance
+            verify_provenance(gh, qualification, complete=True)
+        else:
+            producer(gh, record, complete=True)
+            support_producer(gh, record, support)
         directory.mkdir(parents=True, exist_ok=True)
         for path in stage.iterdir():
             with path.open('rb') as src, (directory / path.name).open('xb') as dst:
@@ -263,6 +284,7 @@ def fetch_staging(gh, tag, directory):
     output = os.environ.get('GITHUB_OUTPUT')
     if output:
         values = {'commit': sha(record['commit']), 'run_id': decimal(record['runId']),
+                  'support_run_id': decimal(support['runId']),
                   'support_artifact': support['artifactName'], 'candidate_id': record['candidateId']}
         with open(output, 'a', encoding='utf-8') as stream:
             for key, value in values.items():
@@ -294,7 +316,12 @@ def publish_production(gh, directory, tag, confirmation, instruction, report_pat
             report['gates'] == dict(installer='passed', functional='passed', package='passed', linux='passed'),
             'Exact-package qualification did not pass or identity differs')
     # All approval and local integrity gates precede any Production API request.
-    producer(gh, record, complete=True)
+    qualification = read_json(directory / 'QUALIFICATION.json')
+    if qualification.get('schemaVersion') == 2:
+        from staging_composition import verify_provenance
+        verify_provenance(gh, qualification, complete=True)
+    else:
+        producer(gh, record, complete=True)
     source = gh.release(tag)
     check_release(source, tag, record['commit'], True)
     with tempfile.TemporaryDirectory() as tmp:

@@ -1,0 +1,83 @@
+name: SKAGER composed Staging delivery
+on:
+  push:
+    branches: [skager-staging-compose]
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: skager-staging-compose
+  cancel-in-progress: false
+env:
+  SKAGER_DESIGN_VALIDATION: 'false'
+  PYTHONUTF8: '1'
+jobs:
+  assemble:
+    name: Compose retained Staging evidence
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/skager-staging-compose') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    outputs:
+      product_commit: ${{ steps.compose.outputs.product_commit }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Check composition authorization and unchanged delivery guards
+        run: |
+          python3 opennav-x/tools/test-staging-composition.py
+          python3 opennav-x/tools/test-composed-delivery.py
+          python3 opennav-x/tools/test-github-release-delivery.py
+      - name: Authenticate original and corrected checks; assemble frozen bytes
+        id: compose
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 opennav-x/tools/staging_composition.py --request opennav-x/tools/staging-composition-request.json --output composed-staging
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: staging-retest-${{ steps.compose.outputs.product_commit }}-attempt${{ github.run_attempt }}
+          path: composed-staging/support/SKAGER-Beta2-Retest-Support.zip
+          compression-level: 0
+          if-no-files-found: error
+          retention-days: 90
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: composed-staging-candidate-${{ github.run_id }}-attempt${{ github.run_attempt }}
+          path: composed-staging/release
+          compression-level: 0
+          if-no-files-found: error
+          retention-days: 90
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: composed-staging-installer-${{ steps.compose.outputs.product_commit }}-run${{ github.run_id }}-attempt${{ github.run_attempt }}
+          path: |
+            composed-staging/release/SKAGER-Beta2-Setup.exe
+            composed-staging/release/SHA256SUMS.txt
+            composed-staging/release/RELEASE.json
+            composed-staging/release/QUALIFICATION.json
+          compression-level: 0
+          if-no-files-found: error
+          retention-days: 90
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: composed-staging-evidence-${{ github.sha }}-run${{ github.run_id }}-attempt${{ github.run_attempt }}
+          path: composed-staging/evidence
+          if-no-files-found: error
+  publish:
+    name: Record composed draft Staging Release
+    needs: assemble
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: composed-staging-candidate-${{ github.run_id }}-attempt${{ github.run_attempt }}
+          path: composed-release
+      - name: Recheck complete provenance and retain a draft Staging release
+        env:
+          GH_TOKEN: ${{ secrets.SKAGER_RELEASE_TOKEN || github.token }}
+        run: python3 opennav-x/tools/github_release_delivery.py publish-staging --directory composed-release

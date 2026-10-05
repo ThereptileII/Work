@@ -30,6 +30,7 @@ jobs:
     outputs:
       commit: ${{ steps.source.outputs.commit }}
       run_id: ${{ steps.source.outputs.run_id }}
+      support_run_id: ${{ steps.source.outputs.support_run_id }}
       support_artifact: ${{ steps.source.outputs.support_artifact }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
@@ -75,7 +76,7 @@ jobs:
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
           name: ${{ needs.inspect.outputs.support_artifact }}
-          run-id: ${{ needs.inspect.outputs.run_id }}
+          run-id: ${{ needs.inspect.outputs.support_run_id }}
           github-token: ${{ github.token }}
           path: retained-support
       - name: Verify support archive and preserve the published package bytes
