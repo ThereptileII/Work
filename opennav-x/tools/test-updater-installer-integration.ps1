@@ -198,3 +198,6 @@ try {
   if(Test-Path -LiteralPath $Registry){Remove-Item -LiteralPath $Registry -Recurse -Force}
   if(Test-Path -LiteralPath $Fixture){Remove-Item -LiteralPath $Fixture -Recurse -Force}
 }
+# Expected negative child runs leave LASTEXITCODE=1. Success is determined by
+# every assertion and cleanup above, not the most recent injected child failure.
+exit 0

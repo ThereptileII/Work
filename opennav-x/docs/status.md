@@ -16,9 +16,24 @@ at `891acf93408a8d094811f144bd3373337f4865b9` passed Linux Go tests but
 found an elevated-Windows directory-owner mismatch and a queued popup-choice
 race. Both have source corrections; that failed run is not acceptance of the
 corrections. Local combined Go checks and actual PowerShell contract checks pass;
-native authenticated pipe/ACL/process, installer and actual application gates
-remain pending. No product trust root, signing secret or public update endpoint
-is invented or bundled. Production activation remains a separate gate.
+native authenticated pipe/process, installer and actual application gates
+remain pending. The second focused run
+[37298291972](https://github.com/ThereptileII/Work/actions/runs/37298291972)
+at `658c70d93c549a47e79ca380bbef01857da35d1a` verifies the owner and choice
+corrections: all 67 top-level Windows Go tests (285 including subcases) and all
+96 native dialog checks pass. It still fails overall: compiler-source packaging
+rejects setup-go's provisioned junction, a receipt helper inherits a PowerShell
+module-path problem, and fast candidate startup fails authenticated receipt.
+These failures are retained; the listener-order correction is a hypothesis until
+its native delayed-receive case passes. See [the focused evidence](evidence/2026-10-05-secure-updater.json).
+
+The next focused run
+[37300372946](https://github.com/ThereptileII/Work/actions/runs/37300372946)
+at `4dc7bb97bdb2708180f6ae52fb3dc4a85c5bae67` contains those corrections,
+the download/cancel window, isolated signing preparation and independent native
+installer-recovery checks. Its result is pending. No product trust root, signing
+secret or public update endpoint is invented or bundled. Production activation
+remains a separate gate.
 
 The frozen boat-feedback Staging run
 [37283380247](https://github.com/ThereptileII/Work/actions/runs/37283380247)

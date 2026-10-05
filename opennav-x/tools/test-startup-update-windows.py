@@ -83,8 +83,34 @@ def test_prompt(client, evidence):
         wintypes.LPARAM, wintypes.UINT, wintypes.UINT, ctypes.POINTER(ctypes.c_size_t)]
     user32.SendMessageTimeoutW.restype = wintypes.LPARAM
     user32.IsWindowVisible.argtypes = [wintypes.HWND]
+    user32.SetForegroundWindow.argtypes = [wintypes.HWND]
+    user32.GetForegroundWindow.restype = wintypes.HWND
+
+    class KeyInput(ctypes.Structure):
+        _fields_ = [('vk', wintypes.WORD), ('scan', wintypes.WORD),
+                    ('flags', wintypes.DWORD), ('time', wintypes.DWORD),
+                    ('extra', ctypes.c_size_t)]
+
+    class MouseInput(ctypes.Structure):
+        _fields_ = [('x', wintypes.LONG), ('y', wintypes.LONG),
+                    ('data', wintypes.DWORD), ('flags', wintypes.DWORD),
+                    ('time', wintypes.DWORD), ('extra', ctypes.c_size_t)]
+
+    class InputData(ctypes.Union):
+        _fields_ = [('keyboard', KeyInput), ('mouse', MouseInput)]
+
+    class Input(ctypes.Structure):
+        _fields_ = [('type', wintypes.DWORD), ('data', InputData)]
+
+    user32.SendInput.argtypes = [wintypes.UINT, ctypes.POINTER(Input), ctypes.c_int]
+    user32.SendInput.restype = wintypes.UINT
     valid = (('a' * 64) + '\n0.6.0-beta.1\n' + ('b' * 40) + '\n').encode('ascii')
     results = []
+
+    def record(result):
+        results.append(result)
+        (evidence / 'prompt-protocol.json').write_text(json.dumps(results, indent=2) + '\n')
+
     for name, data in (
         ('empty', b''), ('missing-final-lf', valid[:-1]), ('extra-line', valid + b'\n'),
         ('crlf', valid.replace(b'\n', b'\r\n')), ('non-ascii', valid + b'\xff'),
@@ -96,7 +122,7 @@ def test_prompt(client, evidence):
                                stderr=subprocess.PIPE, timeout=8)
         if child.returncode != 2:
             raise ValueError('Malformed prompt request did not fail closed: ' + name)
-        results.append({'case': name, 'exit': child.returncode})
+        record({'case': name, 'exit': child.returncode})
     child = subprocess.Popen([client], stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE)
     try:
@@ -104,7 +130,7 @@ def test_prompt(client, evidence):
         child.stdin.flush()  # Deliberately withhold EOF: no UI is permitted.
         if child.wait(timeout=8) != 2:
             raise ValueError('Prompt accepted input without bounded EOF')
-        results.append({'case': 'missing-eof', 'exit': child.returncode})
+        record({'case': 'missing-eof', 'exit': child.returncode})
     finally:
         if child.poll() is None:
             child.kill()
@@ -116,7 +142,7 @@ def test_prompt(client, evidence):
                                stderr=subprocess.PIPE, timeout=8)
     if child.returncode != 2:
         raise ValueError('Prompt accepted file instead of pipe')
-    results.append({'case': 'disk-input', 'exit': child.returncode})
+    record({'case': 'disk-input', 'exit': child.returncode})
 
     def title(handle):
         value = ctypes.create_unicode_buffer(512)
@@ -172,7 +198,7 @@ def test_prompt(client, evidence):
             child.communicate(timeout=8)
             if child.returncode != expected:
                 raise ValueError('Installed prompt returned incorrect choice: ' + choice)
-            results.append({'case': choice, 'exit': child.returncode})
+            record({'case': choice, 'exit': child.returncode})
         finally:
             if child.poll() is None:
                 child.kill()
@@ -189,17 +215,21 @@ def test_prompt(client, evidence):
                                stderr=subprocess.PIPE, timeout=8)
         if child.returncode != expected:
             raise ValueError('Incorrect download-progress protocol decision: ' + name)
-        results.append({'case': name, 'exit': child.returncode})
+        record({'case': name, 'exit': child.returncode})
     with disk.open('rb') as source:
         child = subprocess.run(progress, stdin=source, stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE, timeout=8)
     if child.returncode != 2:
         raise ValueError('Download progress accepted non-pipe stdin')
-    results.append({'case': 'progress-disk-input', 'exit': child.returncode})
+    record({'case': 'progress-disk-input', 'exit': child.returncode})
 
     for action, expected in (('eof', 0), ('cancel', 1), ('escape', 1),
                              ('close', 1), ('content', 2), ('cancel-burst', 1),
                              ('close-then-eof', 1)):
+        case = 'progress-' + action
+        print('SCENARIO ' + case, flush=True)
+        (evidence / 'prompt-protocol-current.json').write_text(
+            json.dumps({'case': case, 'status': 'running'}, indent=2) + '\n')
         child = subprocess.Popen(progress, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                  stderr=subprocess.PIPE)
         try:
@@ -216,9 +246,17 @@ def test_prompt(client, evidence):
                 child.stdin.write(b'x')
                 child.stdin.flush()
             elif action == 'escape':
-                for message in (0x0100, 0x0101):
-                    if not user32.PostMessageW(dialog, message, 0x1B, 0):
-                        raise ValueError('Could not send Escape to download progress')
+                # wxMSW generates CHAR_HOOK from WH_KEYBOARD. Posted window
+                # messages do not reproduce this native keyboard-input path.
+                user32.SetForegroundWindow(dialog)
+                if user32.GetForegroundWindow() != dialog:
+                    raise ValueError('Download progress lacks foreground keyboard focus')
+                events = (Input * 2)()
+                for index, flags in enumerate((0, 2)):  # KEYEVENTF_KEYUP
+                    events[index].type = 1  # INPUT_KEYBOARD
+                    events[index].data.keyboard = KeyInput(0x1B, 0, flags, 0, 0)
+                if user32.SendInput(2, events, ctypes.sizeof(Input)) != 2:
+                    raise ValueError('Could not inject native Escape into download progress')
             elif action == 'close':
                 if not user32.PostMessageW(dialog, 0x0010, 0, 0):
                     raise ValueError('Could not close download progress')
@@ -238,18 +276,24 @@ def test_prompt(client, evidence):
                     user32.PostMessageW(dialog, 0x0010, 0, 0)
             # Keep the parent's pipe open while waiting: cancelling must stop
             # the worker independently, never wait for the downloader's EOF.
-            child.wait(timeout=3)
+            try:
+                child.wait(timeout=3)
+            except subprocess.TimeoutExpired as error:
+                (evidence / 'prompt-protocol-current.json').write_text(
+                    json.dumps({'case': case, 'status': 'failed', 'timeoutSeconds': 3},
+                               indent=2) + '\n')
+                raise ValueError(case + ' did not exit within 3 seconds') from error
             elapsed = time.monotonic() - started
             child.communicate()
             if child.returncode != expected:
                 raise ValueError('Incorrect native download-progress result: ' + action)
-            results.append({'case': 'progress-' + action, 'exit': child.returncode,
-                            'exitSeconds': elapsed})
+            record({'case': case, 'exit': child.returncode, 'exitSeconds': elapsed})
+            (evidence / 'prompt-protocol-current.json').write_text(
+                json.dumps({'case': case, 'status': 'passed'}, indent=2) + '\n')
         finally:
             if child.poll() is None:
                 child.kill()
                 child.communicate()
-    (evidence / 'prompt-protocol.json').write_text(json.dumps(results, indent=2) + '\n')
 
 
 def main():
@@ -320,7 +364,6 @@ def main():
             api.run([client], evidence / (name + '.log'), timeout=60)
             if api.record(client) != report['executables'][name]:
                 raise ValueError('Fixture executable changed during replay: ' + name)
-        test_prompt(clients['skager-update-prompt'], evidence)
         harness = evidence / 'receipt-native.ps1'
         harness.write_text(RECEIPT_HARNESS)
         api.run(['powershell.exe', '-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass',
@@ -328,6 +371,7 @@ def main():
                  '-Worker', clients['update_startup_receipt_native_test'],
                  '-Evidence', evidence, '-Commit', FIXTURE_COMMIT],
                 evidence / 'receipt-native.log', timeout=45)
+        test_prompt(clients['skager-update-prompt'], evidence)
         for name, client in clients.items():
             if api.record(client) != report['executables'][name]:
                 raise ValueError('Fixture executable changed during replay: ' + name)
