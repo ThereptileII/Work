@@ -113,9 +113,13 @@ public:
       [this] {
         Check(actions_ == 1 && !wxWindow::GetCapture(),
               "native touch pan cancels button press and capture");
+        OwnerInputCounts("before explicit outside input");
         Wheel(*owner_, -120);
+        OwnerInputCounts("after outside wheel");
         Pan(*owner_, -60);
+        OwnerInputCounts("after outside pan");
         Mouse(*owner_, wxEVT_MOTION, {10, 10}, true);
+        OwnerInputCounts("after outside motion");
         Check(outside_wheels_ == 1 && outside_pans_ == 1 && outside_moves_ == 1,
               "outside chart-owner input is unaffected");
         drawer_->List();
@@ -259,6 +263,10 @@ private:
   void Check(bool value, const char *message) {
     if (!value) throw std::runtime_error(message);
     ++checks_; std::cout << "PASS " << message << '\n';
+  }
+  void OwnerInputCounts(const char *stage) const {
+    std::cout << "OWNER INPUT " << stage << " wheel=" << outside_wheels_
+              << " pan=" << outside_pans_ << " motion=" << outside_moves_ << '\n';
   }
   void Wheel(wxWindow &target, int rotation) {
     wxMouseEvent wheel(wxEVT_MOUSEWHEEL);
