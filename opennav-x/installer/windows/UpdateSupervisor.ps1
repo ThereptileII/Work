@@ -200,7 +200,7 @@ function Invoke-UpdateSupervision([string]$InstallationRoot,[string]$Action,[str
       $session=New-UpdateHealthSession $generation.identity
       $process=Start-SupervisedGeneration $generation $session
       if (-not (Wait-UpdateGenerationStartupSuccess $generation.identity $session $process $generation.executable)) {
-        throw 'Current generation did not provide authenticated healthy startup; no known-good receipt was created.'
+        throw ('Current generation did not provide authenticated healthy startup; no known-good receipt was created. Receiver: '+$session.server.FailureReason)
       }
       $known=Get-UpdateKnownGoodPath $InstallationRoot $generation.identity
       $null=New-Item -ItemType Directory -Path ([IO.Path]::GetDirectoryName($known)) -Force
@@ -226,7 +226,7 @@ function Invoke-UpdateSupervision([string]$InstallationRoot,[string]$Action,[str
         $process=Start-SupervisedGeneration $generation $session
         $pending.processId=$process.Id; $pending.processStartTicks=$process.StartTime.ToUniversalTime().Ticks.ToString()
         Write-UpdatePendingRecord (Join-Path $InstallationRoot 'update-pending.json') $pending
-        if (-not (Wait-UpdateStartupSuccess $pending $session $process $generation.executable)) { throw 'Candidate startup health was not authenticated.' }
+        if (-not (Wait-UpdateStartupSuccess $pending $session $process $generation.executable)) { throw ('Candidate startup health was not authenticated. Receiver: '+$session.server.FailureReason) }
         $known=Get-UpdateKnownGoodPath $InstallationRoot $generation.identity
         $null=New-Item -ItemType Directory -Path ([IO.Path]::GetDirectoryName($known)) -Force
         Write-UpdateKnownGoodReceipt $known $generation.identity $session $generation.executable

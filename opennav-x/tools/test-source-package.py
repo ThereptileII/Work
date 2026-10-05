@@ -108,6 +108,28 @@ class SourceDistributionTests(unittest.TestCase):
             self.assertEqual(references['bundledDependencySources'][0]['path'], name)
             self.assertEqual(references['files'][name]['sha256'], hashlib.sha256(contents).hexdigest())
 
+    def test_reusable_updater_gate_is_required_and_packaged_exactly(self):
+        self.workflow.write_text('jobs:\n  updater:\n    uses: ./.github/workflows/update-verifier-probe.yml\n')
+        self.git(self.repository, 'add', '.')
+        self.git(self.repository, 'commit', '-qm', 'reference updater gate')
+        commit = self.git(self.repository, 'rev-parse', 'HEAD').strip()
+        with self.assertRaisesRegex(ValueError, 'reusable updater'):
+            source_package.source_inventory(self.root, commit)
+        updater = self.workflow.with_name('update-verifier-probe.yml')
+        updater.write_text('name: exact native updater gate\n')
+        self.git(self.repository, 'add', '.')
+        self.git(self.repository, 'commit', '-qm', 'include updater gate')
+        commit = self.git(self.repository, 'rev-parse', 'HEAD').strip()
+        archive = self.repository / 'source-with-updater-gate.zip'
+        references = source_package.create_source_archive(self.root, commit, archive)
+        name = '.github/workflows/update-verifier-probe.yml'
+        with zipfile.ZipFile(archive) as source:
+            self.assertEqual(source.read(name), updater.read_bytes())
+            self.assertIn(name, references['workflows'])
+        updater.write_text('uncommitted updater gate\n')
+        with self.assertRaisesRegex(ValueError, 'CI recipe differs'):
+            source_package.source_inventory(self.root, commit)
+
     def test_unsafe_dependency_archive_path_is_refused(self):
         dependency = self.repository / 'openssl.tar.gz'
         dependency.write_bytes(b'inert')

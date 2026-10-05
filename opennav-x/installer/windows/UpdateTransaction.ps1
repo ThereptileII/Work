@@ -95,11 +95,14 @@ namespace Skager {
   [DllImport("kernel32.dll", SetLastError=true)]
   static extern bool GetNamedPipeClientProcessId(SafePipeHandle pipe,out uint pid);
   readonly NamedPipeServerStream pipe;
+  readonly System.Threading.Tasks.Task connection;
   readonly DateTime created = DateTime.UtcNow;
   bool consumed;
   public string VerifiedFrame { get; private set; }
   public string VerifiedImage { get; private set; }
   public string VerifiedHash { get; private set; }
+  public string FailureReason { get; private set; }
+  bool Reject(string reason) { FailureReason=reason; return false; }
   public UpdateStartupPipe(string name) {
    IntPtr descriptor = IntPtr.Zero; uint size;
    var sid = WindowsIdentity.GetCurrent().User.Value;
@@ -109,7 +112,13 @@ namespace Skager {
     // Inbound, overlapped, first instance; byte mode, remote clients refused.
     var handle=CreateNamedPipe(@"\\.\pipe\"+name,0x40080001,8,1,256,256,0,ref security);
     if (handle.IsInvalid) { handle.Dispose(); throw new IOException("Cannot create exclusive local startup pipe."); }
-    try { pipe=new NamedPipeServerStream(PipeDirection.In,true,false,handle); }
+    try {
+     pipe=new NamedPipeServerStream(PipeDirection.In,true,false,handle);
+     // Arm ConnectNamedPipe before the caller can launch its child. A fast
+     // client may write and close while the caller durably records its PID;
+     // starting the connect only in Receive then loses that valid connection.
+     connection=pipe.WaitForConnectionAsync();
+    }
     catch { handle.Dispose(); throw; }
    } finally { LocalFree(descriptor); }
   }
@@ -129,32 +138,39 @@ namespace Skager {
    consumed=true;
    if(timeoutMs<1 || timeoutMs>180000 || expected.Length>256) throw new ArgumentException("Invalid startup receipt bound.");
    var elapsed=Stopwatch.StartNew();
+   string stage="process-before-connect";
    try {
     long ticks=process.StartTime.ToUniversalTime().Ticks;
-    if(ticks<created.Ticks || !ExactProcess(process,ticks,image,hash)) return false;
-    var connect=pipe.WaitForConnectionAsync();
-    if(!connect.Wait(timeoutMs)) return false;
+    if(ticks<created.Ticks || !ExactProcess(process,ticks,image,hash)) return Reject(stage);
+    stage="connect";
+    if(!connection.Wait(timeoutMs)) return Reject("connect-timeout");
     uint client;
-    if(!GetNamedPipeClientProcessId(pipe.SafePipeHandle,out client) || client!=(uint)process.Id || !ExactProcess(process,ticks,image,hash)) return false;
+    stage="client-identity";
+    if(!GetNamedPipeClientProcessId(pipe.SafePipeHandle,out client)) return Reject("client-pid-win32-"+Marshal.GetLastWin32Error());
+    if(client!=(uint)process.Id || !ExactProcess(process,ticks,image,hash)) return Reject(stage);
+    stage="frame-read";
     var wanted=Encoding.ASCII.GetBytes(expected);
     var buffer=new byte[257]; int used=0;
     while(used<buffer.Length) {
      int remaining=timeoutMs-(int)elapsed.ElapsedMilliseconds;
-     if(remaining<=0) return false;
+     if(remaining<=0) return Reject("read-timeout");
      var read=pipe.ReadAsync(buffer,used,buffer.Length-used);
-     if(!read.Wait(remaining)) return false;
+     if(!read.Wait(remaining)) return Reject("read-timeout");
      int count=read.Result;
      if(count==0) break;
      used+=count;
-     if(used>wanted.Length) return false;
+     if(used>wanted.Length) return Reject("frame-oversized");
     }
-    if(used!=wanted.Length) return false;
-    for(int i=0;i<used;i++) if(buffer[i]!=wanted[i]) return false;
-    if(elapsed.ElapsedMilliseconds>timeoutMs || !ExactProcess(process,ticks,image,hash)) return false;
+    if(used!=wanted.Length) return Reject("frame-length");
+    for(int i=0;i<used;i++) if(buffer[i]!=wanted[i]) return Reject("frame-mismatch");
+    if(elapsed.ElapsedMilliseconds>timeoutMs || !ExactProcess(process,ticks,image,hash)) return Reject("process-after-read");
     VerifiedFrame=expected; VerifiedImage=Path.GetFullPath(image); VerifiedHash=hash;
     return true;
-   } catch { return false; }
-   finally { pipe.Dispose(); }
+   } catch(Exception error) {
+    // Diagnostic category/HRESULT only: never expose frame, challenge or paths.
+    error=error.GetBaseException();
+    return Reject(stage+":"+error.GetType().Name+":0x"+error.HResult.ToString("X8"));
+   } finally { pipe.Dispose(); }
   }
   public void Dispose() { pipe.Dispose(); }
  }

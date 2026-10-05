@@ -22,7 +22,16 @@ function Identity([char]$Digit) {
  return [pscustomobject]@{generation=([string]$Digit)*32;commit=([string]$Digit)*40;
   packageSha256=([string]$Digit)*64;executableSha256=([string]$Digit)*64}
 }
-$hash=(Get-FileHash -LiteralPath $Worker -Algorithm SHA256).Hash.ToLowerInvariant()
+function HashWorker([string]$Path) {
+ # The native host may inherit pwsh's PSModulePath; do not require module
+ # auto-discovery to authenticate the actual compiled sender executable.
+ $sha=[Security.Cryptography.SHA256]::Create(); $stream=$null
+ try {
+  $stream=[IO.File]::OpenRead($Path)
+  return ([BitConverter]::ToString($sha.ComputeHash($stream))).Replace('-','').ToLowerInvariant()
+ } finally { if($stream){$stream.Dispose()};$sha.Dispose() }
+}
+$hash=HashWorker $Worker
 foreach($case in @('healthy','no-marker','interrupted','invalid-request','wrong-expected-commit')) {
  $record=New-UpdatePendingRecord (Identity 'a') (Identity 'b')
  $record.candidate.commit=$Commit
@@ -70,6 +79,9 @@ def test_prompt(client, evidence):
     user32.GetWindowThreadProcessId.argtypes = [wintypes.HWND, ctypes.POINTER(wintypes.DWORD)]
     user32.GetWindowTextW.argtypes = [wintypes.HWND, wintypes.LPWSTR, ctypes.c_int]
     user32.PostMessageW.argtypes = [wintypes.HWND, wintypes.UINT, wintypes.WPARAM, wintypes.LPARAM]
+    user32.SendMessageTimeoutW.argtypes = [wintypes.HWND, wintypes.UINT, wintypes.WPARAM,
+        wintypes.LPARAM, wintypes.UINT, wintypes.UINT, ctypes.POINTER(ctypes.c_size_t)]
+    user32.SendMessageTimeoutW.restype = wintypes.LPARAM
     user32.IsWindowVisible.argtypes = [wintypes.HWND]
     valid = (('a' * 64) + '\n0.6.0-beta.1\n' + ('b' * 40) + '\n').encode('ascii')
     results = []
@@ -111,6 +123,39 @@ def test_prompt(client, evidence):
         user32.GetWindowTextW(handle, value, len(value))
         return value.value
 
+    def find_dialog(child, caption):
+        selected = []
+        until = time.monotonic() + 8
+        while time.monotonic() < until and child.poll() is None and not selected:
+            @callback
+            def window(handle, unused):
+                owner = wintypes.DWORD()
+                user32.GetWindowThreadProcessId(handle, ctypes.byref(owner))
+                if (owner.value == child.pid and title(handle) == caption
+                        and user32.IsWindowVisible(handle)):
+                    selected.append(handle)
+                return True
+            user32.EnumWindows(window, 0)
+            if not selected:
+                time.sleep(.02)
+        if len(selected) != 1:
+            raise ValueError('Installed prompt did not show its unique native dialog: ' + caption)
+        return selected[0]
+
+    def click_button(dialog, label):
+        buttons = []
+        @callback
+        def control(handle, unused):
+            if title(handle) == label and user32.IsWindowVisible(handle):
+                buttons.append(handle)
+            return True
+        user32.EnumChildWindows(dialog, control, 0)
+        if len(buttons) != 1:
+            raise ValueError('Native prompt button not uniquely accessible: ' + label)
+        for message, flags in ((0x0201, 1), (0x0202, 0)):
+            if not user32.PostMessageW(buttons[0], message, flags, (20 << 16) | 20):
+                raise ValueError('Could not deliver native prompt button input')
+
     for choice, expected in (('LATER', 0), ('UPDATE NOW', 10), ('close', 0)):
         child = subprocess.Popen([client], stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                  stderr=subprocess.PIPE)
@@ -118,42 +163,88 @@ def test_prompt(client, evidence):
             child.stdin.write(valid)
             child.stdin.close()
             child.stdin = None
-            selected = []
-            until = time.monotonic() + 8
-            while time.monotonic() < until and child.poll() is None and not selected:
-                @callback
-                def window(handle, unused):
-                    owner = wintypes.DWORD()
-                    user32.GetWindowThreadProcessId(handle, ctypes.byref(owner))
-                    if (owner.value == child.pid and title(handle) == 'SKAGER software update'
-                            and user32.IsWindowVisible(handle)):
-                        selected.append(handle)
-                    return True
-                user32.EnumWindows(window, 0)
-                if not selected:
-                    time.sleep(.02)
-            if not selected:
-                raise ValueError('Installed prompt did not show its native dialog: ' + choice)
+            dialog = find_dialog(child, 'SKAGER software update')
             if choice == 'close':
-                if not user32.PostMessageW(selected[0], 0x0010, 0, 0):
+                if not user32.PostMessageW(dialog, 0x0010, 0, 0):
                     raise ValueError('Could not close installed popup')
             else:
-                buttons = []
-                @callback
-                def control(handle, unused):
-                    if title(handle) == choice and user32.IsWindowVisible(handle):
-                        buttons.append(handle)
-                    return True
-                user32.EnumChildWindows(selected[0], control, 0)
-                if len(buttons) != 1:
-                    raise ValueError('Native prompt button not uniquely accessible: ' + choice)
-                for message, flags in ((0x0201, 1), (0x0202, 0)):
-                    if not user32.PostMessageW(buttons[0], message, flags, (20 << 16) | 20):
-                        raise ValueError('Could not deliver native prompt button input')
+                click_button(dialog, choice)
             child.communicate(timeout=8)
             if child.returncode != expected:
                 raise ValueError('Installed prompt returned incorrect choice: ' + choice)
             results.append({'case': choice, 'exit': child.returncode})
+        finally:
+            if child.poll() is None:
+                child.kill()
+                child.communicate()
+
+    progress = [client, '--download-progress']
+    for name, args, data, expected in (
+        ('progress-immediate-eof', progress, b'', 0),
+        ('progress-content', progress, b'x', 2),
+        ('progress-nul-content', progress, b'\0', 2),
+        ('progress-extra-argument', progress + ['unexpected'], b'', 2),
+    ):
+        child = subprocess.run(args, input=data, stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE, timeout=8)
+        if child.returncode != expected:
+            raise ValueError('Incorrect download-progress protocol decision: ' + name)
+        results.append({'case': name, 'exit': child.returncode})
+    with disk.open('rb') as source:
+        child = subprocess.run(progress, stdin=source, stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE, timeout=8)
+    if child.returncode != 2:
+        raise ValueError('Download progress accepted non-pipe stdin')
+    results.append({'case': 'progress-disk-input', 'exit': child.returncode})
+
+    for action, expected in (('eof', 0), ('cancel', 1), ('escape', 1),
+                             ('close', 1), ('content', 2), ('cancel-burst', 1),
+                             ('close-then-eof', 1)):
+        child = subprocess.Popen(progress, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                                 stderr=subprocess.PIPE)
+        try:
+            dialog = find_dialog(child, 'SKAGER update download')
+            # Empty but still-open stdin must keep the visible window alive.
+            time.sleep(.1)
+            if child.poll() is not None or not user32.IsWindowVisible(dialog):
+                raise ValueError('Progress disappeared before EOF or a user decision')
+            started = time.monotonic()
+            if action == 'eof':
+                child.stdin.close()
+                child.stdin = None
+            elif action == 'content':
+                child.stdin.write(b'x')
+                child.stdin.flush()
+            elif action == 'escape':
+                for message in (0x0100, 0x0101):
+                    if not user32.PostMessageW(dialog, message, 0x1B, 0):
+                        raise ValueError('Could not send Escape to download progress')
+            elif action == 'close':
+                if not user32.PostMessageW(dialog, 0x0010, 0, 0):
+                    raise ValueError('Could not close download progress')
+            elif action == 'close-then-eof':
+                handled = ctypes.c_size_t()
+                # Synchronous close delivers the cancellation handler first;
+                # later EOF must never overwrite the accepted cancellation.
+                if not user32.SendMessageTimeoutW(dialog, 0x0010, 0, 0, 3, 2000,
+                                                  ctypes.byref(handled)):
+                    raise ValueError('Could not deliver ordered progress cancellation')
+                child.stdin.close()
+                child.stdin = None
+            else:
+                click_button(dialog, 'CANCEL')
+                if action == 'cancel-burst':
+                    # Queue a second close while the first cancellation drains.
+                    user32.PostMessageW(dialog, 0x0010, 0, 0)
+            # Keep the parent's pipe open while waiting: cancelling must stop
+            # the worker independently, never wait for the downloader's EOF.
+            child.wait(timeout=3)
+            elapsed = time.monotonic() - started
+            child.communicate()
+            if child.returncode != expected:
+                raise ValueError('Incorrect native download-progress result: ' + action)
+            results.append({'case': 'progress-' + action, 'exit': child.returncode,
+                            'exitSeconds': elapsed})
         finally:
             if child.poll() is None:
                 child.kill()

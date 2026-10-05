@@ -92,6 +92,9 @@ type fakePlatform struct {
 	lockBusy         bool
 	onLock           func()
 	readsWhileLocked int
+	progressWindow   *fakeProgress
+	progressSpecs    []processSpec
+	progressError    error
 }
 
 func (f *fakePlatform) executable() (string, error) { return f.self, nil }
@@ -144,6 +147,42 @@ func (f *fakePlatform) start(spec processSpec) error {
 	f.starts = append(f.starts, spec)
 	return nil
 }
+
+func (f *fakePlatform) progress(executable, directory string) (downloadProgress, error) {
+	f.progressSpecs = append(f.progressSpecs, processSpec{executable: executable, directory: directory, arguments: []string{"--download-progress"}})
+	if f.progressError != nil {
+		return nil, f.progressError
+	}
+	if f.progressWindow == nil {
+		f.progressWindow = &fakeProgress{exited: make(chan struct{})}
+	}
+	return f.progressWindow, nil
+}
+
+type fakeProgress struct {
+	exited           chan struct{}
+	finishError      error
+	finished, closed bool
+	onFinish         func()
+}
+
+func (p *fakeProgress) done() <-chan struct{} { return p.exited }
+func (p *fakeProgress) finish(ctx context.Context) error {
+	if p.onFinish != nil {
+		p.onFinish()
+	}
+	select {
+	case <-p.exited:
+		return errors.New("early progress exit")
+	default:
+	}
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+	p.finished = true
+	return p.finishError
+}
+func (p *fakeProgress) close() { p.closed = true }
 
 type fakeLock struct{ platform *fakePlatform }
 
@@ -363,6 +402,9 @@ func TestLauncherConfirmedInstallerAndExactSupervisorHandoff(t *testing.T) {
 			return processResult{code: 10}, nil
 		}
 		if spec.executable == f.prepared.path() {
+			if f.p.progressWindow == nil || !f.p.progressWindow.finished || !f.p.progressWindow.closed {
+				t.Fatal("installer started before progress completion")
+			}
 			if f.prepared.closed || !reflect.DeepEqual(spec.arguments, []string{"/S", "/ACTION=Update", "/SUPERVISED=1"}) || spec.limit != 15*time.Minute {
 				t.Fatal("installer lost custody or fixed arguments")
 			}

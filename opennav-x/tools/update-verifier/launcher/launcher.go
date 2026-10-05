@@ -33,6 +33,7 @@ type platform interface {
 	powershell() (string, error)
 	wait(context.Context, processSpec) (processResult, error)
 	start(processSpec) error
+	progress(string, string) (downloadProgress, error)
 }
 type preparation interface {
 	path() string
@@ -277,7 +278,9 @@ func run(ctx context.Context, args []string, s services) error {
 	if err != nil {
 		return ordinary(ctx, s.platform, g, state.Stock, mode)
 	}
-	prepared, err := s.prepare(ctx, config, observed, candidate.Consent)
+	prepared, err := prepareWithProgress(ctx, s.platform, l.app, func(downloadCtx context.Context) (preparation, error) {
+		return s.prepare(downloadCtx, config, observed, candidate.Consent)
+	})
 	if err != nil {
 		return ordinary(ctx, s.platform, g, state.Stock, mode)
 	}

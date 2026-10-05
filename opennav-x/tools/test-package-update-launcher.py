@@ -2,8 +2,10 @@
 """Disposable packaging checks; no native build, network, or product execution."""
 import importlib.util
 import json
+import os
 from pathlib import Path
 import struct
+import subprocess
 import tempfile
 import unittest
 from unittest import mock
@@ -28,7 +30,16 @@ class PackageTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(prefix='skager-source-fixture-')
         self.addCleanup(self.temp.cleanup)
-        self.root = Path(self.temp.name)
+        self.root = Path(self.temp.name).resolve()
+
+    def directory_alias(self, alias, target):
+        if os.name == 'nt':
+            # Junctions need no symlink privilege on the native Windows runner.
+            command = Path(os.environ['SystemRoot']) / 'System32/cmd.exe'
+            subprocess.run([str(command), '/d', '/c', 'mklink', '/J', str(alias), str(target)],
+                           check=True, capture_output=True, timeout=10)
+        else:
+            alias.symlink_to(target, target_is_directory=True)
 
     def test_upstream_notice_bytes_and_inventory_are_preserved(self):
         notice = self.root / 'LICENSE'
@@ -76,6 +87,64 @@ class PackageTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'reparse'):
             package.Inventory().add(link, 'module/link')
 
+    def test_provisioned_alias_does_not_allow_source_or_output_aliases(self):
+        source = self.root / 'real-source'
+        source.mkdir()
+        (source / 'source.go').write_text('package fixture\n', encoding='utf-8')
+        alias = self.root / 'provisioned-alias'
+        self.directory_alias(alias, source)
+        self.assertEqual(package.provisioned_source_root(alias, 'GOROOT'), source)
+        with self.assertRaises(ValueError) as failure:
+            package.Inventory().tree(alias, 'module')
+        self.assertIn('Corresponding-source tree', str(failure.exception))
+        self.assertIn('component=' + repr(str(alias)), str(failure.exception))
+        with self.assertRaises(ValueError) as failure:
+            package.prepare_outputs(alias)
+        self.assertIn('Package install directory', str(failure.exception))
+        self.assertIn('component=' + repr(str(alias)), str(failure.exception))
+        # A link beneath a canonical root remains forbidden, including a child
+        # directory that os.walk would otherwise silently omit from the bundle.
+        cache = self.root / 'cache'
+        cache.mkdir()
+        interior = cache / 'module'
+        self.directory_alias(interior, source)
+        canonical = package.provisioned_source_root(cache, 'GOMODCACHE')
+        with self.assertRaisesRegex(ValueError, 'reparse'):
+            package.module_cache_source(interior / 'source.go', canonical)
+        with self.assertRaisesRegex(ValueError, 'reparse'):
+            package.Inventory().tree(canonical, 'modules')
+        install = self.root / 'install'
+        (install / 'opennav').mkdir(parents=True)
+        output_alias = install / 'opennav/third-party'
+        self.directory_alias(output_alias, source)
+        with self.assertRaises(ValueError) as failure:
+            package.prepare_outputs(install)
+        self.assertIn('Package source-bundle output', str(failure.exception))
+        self.assertIn('component=' + repr(str(output_alias)), str(failure.exception))
+        self.assertEqual(list(source.iterdir()), [source / 'source.go'])
+
+    def test_module_inputs_stay_below_canonical_cache(self):
+        cache = self.root / 'cache'
+        cache.mkdir()
+        module = cache / 'module'
+        module.mkdir()
+        source = module / 'go.mod'
+        source.write_text('module fixture\n', encoding='utf-8')
+        self.assertEqual(package.module_cache_source(source, cache), source)
+        for path, error in ((self.root / 'outside', 'outside'), (cache, 'whole'),
+                            (cache / 'module/../escape', 'traversal'), (Path('relative'), 'absolute')):
+            with self.subTest(path=path), self.assertRaisesRegex(ValueError, error):
+                package.module_cache_source(path, cache)
+        # The first download may create the cache, but no output path receives
+        # the provisioned-root allowance.
+        alias = self.root / 'cache-parent'
+        self.directory_alias(alias, cache)
+        missing = alias / 'new-cache'
+        self.assertEqual(package.provisioned_source_root(missing, 'GOMODCACHE', allow_missing=True),
+                         cache / 'new-cache')
+        with self.assertRaisesRegex(ValueError, 'Unrecognized'):
+            package.provisioned_source_root(alias, 'Package install directory')
+
     def test_existing_output_is_preserved(self):
         output = self.root / 'skager-start.exe'
         output.write_bytes(b'preserve')
@@ -109,6 +178,12 @@ class PackageTests(unittest.TestCase):
         self.assertEqual(list(self.root.iterdir()), [])
 
     def test_source_is_complete_before_build_and_record_has_relative_bundle(self):
+        self.package_fixture()
+
+    def test_setup_go_junctions_use_only_canonical_compiler_and_source_roots(self):
+        self.package_fixture(redirected_roots=True)
+
+    def package_fixture(self, redirected_roots=False):
         repo = self.root / 'repo'
         module = repo / 'tools/update-verifier'
         module.mkdir(parents=True)
@@ -129,8 +204,18 @@ class PackageTests(unittest.TestCase):
             (dependency / name).write_text(data, encoding='utf-8')
         install = self.root / 'install'
         install.mkdir()
-        go = self.root / 'go.exe'
+        go = goroot / 'bin/go.exe'
+        go.parent.mkdir()
         go.write_bytes(b'never executed')
+        selected_go = go
+        reported_goroot = goroot
+        reported_cache = dependency.parent
+        if redirected_roots:
+            reported_goroot = self.root / 'setup-go-junction'
+            reported_cache = self.root / 'module-cache-junction'
+            self.directory_alias(reported_goroot, goroot)
+            self.directory_alias(reported_cache, dependency.parent)
+            selected_go = reported_goroot / 'bin/go.exe'
         commit = 'a' * 40
         events = []
 
@@ -143,8 +228,11 @@ class PackageTests(unittest.TestCase):
                     return ''
                 if command[1] == 'ls-files':
                     return '\0'.join(tracked) + '\0'
+            self.assertEqual(Path(command[0]), go)
             if command[1] == 'env':
-                return json.dumps({'GOVERSION': package.GO_VERSION, 'GOROOT': str(goroot), 'GOHOSTOS': 'windows', 'GOMOD': str(module / 'go.mod')})
+                return json.dumps({'GOVERSION': package.GO_VERSION, 'GOROOT': str(reported_goroot), 'GOHOSTOS': 'windows', 'GOMOD': str(module / 'go.mod'), 'GOMODCACHE': str(reported_cache)})
+            self.assertEqual(environment['GOROOT'], str(goroot))
+            self.assertEqual(environment['GOMODCACHE'], str(dependency.parent))
             if command[1:3] == ['mod', 'download']:
                 return json.dumps({'Path': 'public.example/dependency', 'Version': 'v1.0.0', 'Dir': str(dependency),
                                    'GoMod': str(dependency / 'go.mod'), 'Sum': 'h1:source', 'GoModSum': 'h1:module'})
@@ -172,7 +260,7 @@ class PackageTests(unittest.TestCase):
             self.fail('Unexpected external command in fixture')
 
         with mock.patch.object(package, 'ROOT', repo), mock.patch.object(package, 'is_native_windows', return_value=True), mock.patch.object(package, 'run', side_effect=run):
-            result = package.package(install, commit, str(go))
+            result = package.package(install, commit, str(selected_go))
         self.assertEqual(result['sourceBundle']['archive'], 'opennav/third-party/updater/updater-source.zip')
         self.assertEqual(result['sourceBundle']['path'], 'third-party-sources/skager-updater-source.zip')
         self.assertNotIn('private-producer-path', result['buildInfo'])

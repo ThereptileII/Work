@@ -117,3 +117,74 @@ func TestNativeStartupLockRefusesConcurrentMaintenance(t *testing.T) {
 	}
 	third.Close()
 }
+
+func TestNativeInertProgressChild(t *testing.T) {
+	mode := os.Getenv("SKAGER_LAUNCHER_PROGRESS_CHILD")
+	if mode == "" {
+		return
+	}
+	kind, err := windows.GetFileType(windows.Handle(os.Stdin.Fd()))
+	if err != nil || kind != windows.FILE_TYPE_PIPE || os.Getenv("SKAGER_UPDATE_CHALLENGE") != "" {
+		os.Exit(2)
+	}
+	if mode == "cancel" {
+		os.Exit(1)
+	}
+	if mode == "early-zero" {
+		os.Exit(0)
+	}
+	data, err := io.ReadAll(io.LimitReader(os.Stdin, 1))
+	if err != nil || len(data) != 0 {
+		os.Exit(2)
+	}
+	if mode == "cancel-at-eof" {
+		os.Exit(1)
+	}
+	if mode == "stall-after-eof" {
+		time.Sleep(time.Minute)
+		os.Exit(2)
+	}
+	os.Exit(0)
+}
+
+func TestNativeProgressPipeLifecycle(t *testing.T) {
+	for _, mode := range []string{"complete", "cancel", "early-zero", "cancel-at-eof", "stall-after-eof"} {
+		t.Run(mode, func(t *testing.T) {
+			t.Setenv("SKAGER_LAUNCHER_PROGRESS_CHILD", mode)
+			t.Setenv("SKAGER_UPDATE_CHALLENGE", "must-not-be-inherited")
+			executable, err := os.Executable()
+			if err != nil {
+				t.Fatal(err)
+			}
+			command := nativeCommand(processSpec{executable: executable, directory: filepath.Dir(executable), arguments: []string{"-test.run=^TestNativeInertProgressChild$"}})
+			progress, err := startProgressCommand(command)
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer progress.close()
+			if mode == "cancel" || mode == "early-zero" {
+				select {
+				case <-progress.done():
+				case <-time.After(10 * time.Second):
+					t.Fatal("inert progress child did not exit")
+				}
+			}
+			limit := 10 * time.Second
+			if mode == "stall-after-eof" {
+				limit = 100 * time.Millisecond
+			}
+			ctx, cancel := context.WithTimeout(context.Background(), limit)
+			defer cancel()
+			err = progress.finish(ctx)
+			if (err == nil) != (mode == "complete") {
+				t.Fatalf("progress result mode=%s: %v", mode, err)
+			}
+			progress.close()
+			select {
+			case <-progress.done():
+			case <-time.After(time.Second):
+				t.Fatal("inert progress child leaked after close")
+			}
+		})
+	}
+}

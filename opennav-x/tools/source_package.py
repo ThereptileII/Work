@@ -54,9 +54,14 @@ def source_inventory(root, commit):
     repository = Path(git(root, 'rev-parse', '--show-toplevel').decode().strip())
     workflows = [name for name in git(repository, 'ls-tree', '-r', '--name-only', commit,
                                      '--', '.github/workflows').decode().splitlines()
-                 if name.startswith('.github/workflows/opennav-') and name.endswith('.yml')]
+                 if (name.startswith('.github/workflows/opennav-') or
+                     name == '.github/workflows/update-verifier-probe.yml') and name.endswith('.yml')]
     if '.github/workflows/opennav-baseline.yml' not in workflows:
         raise ValueError('Exact root GitHub Actions workflow is missing from source package')
+    baseline = git(repository, 'show', commit + ':.github/workflows/opennav-baseline.yml')
+    if (b'./.github/workflows/update-verifier-probe.yml' in baseline and
+            '.github/workflows/update-verifier-probe.yml' not in workflows):
+        raise ValueError('Required reusable updater build gate is missing from source package')
     # Git applies the checkout's text/EOL policy; CRLF on native Windows is not
     # an uncommitted recipe. The archive still records the exact checkout bytes.
     for name in workflows:

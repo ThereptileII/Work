@@ -140,6 +140,7 @@ if ($env:SKAGER_FIXTURE_WRITER -eq 'yes') {
   $pipe.Write($bytes,0,$bytes.Length); $pipe.Flush()
  } finally { $pipe.Dispose() }
 }
+if ($env:SKAGER_FIXTURE_CLOSED) { [IO.File]::WriteAllText($env:SKAGER_FIXTURE_CLOSED,'pipe-closed') }
 Start-Sleep -Seconds 10
 '@)
   $executable=[Diagnostics.Process]::GetCurrentProcess().MainModule.FileName
@@ -150,9 +151,10 @@ Start-Sleep -Seconds 10
     $start.EnvironmentVariables['SKAGER_UPDATE_PIPE']=$Session.pipe
     $start.EnvironmentVariables['SKAGER_FIXTURE_FRAME']=$Frame
     $start.EnvironmentVariables['SKAGER_FIXTURE_WRITER']=$(if($Writer){'yes'}else{'no'})
+    $start.EnvironmentVariables['SKAGER_FIXTURE_CLOSED']=Join-Path $fixture ($Session.session+'.closed')
     return [Diagnostics.Process]::Start($start)
   }
-  foreach ($case in @('healthy','wrong-challenge','wrong-commit','wrong-generation','wrong-pid','wrong-hash','oversized','timeout','dead-child')) {
+  foreach ($case in @('healthy','healthy-delayed-receive','wrong-challenge','wrong-commit','wrong-generation','wrong-pid','wrong-hash','oversized','timeout','dead-child')) {
     $pending=NewRecord; $pending.candidate.executableSha256=HashFile $executable
     $session=New-UpdateStartupSession $pending
     Write-UpdatePendingRecord $path $pending
@@ -169,8 +171,17 @@ Start-Sleep -Seconds 10
       if ($case -eq 'wrong-pid') { $impostor=StartClient $session $frame }
       if ($case -eq 'wrong-hash') { $pending.candidate.executableSha256='0'*64 }
       if ($case -eq 'dead-child') { $child.Kill(); $child.WaitForExit() }
+      if ($case -eq 'healthy-delayed-receive') {
+        # Require the client to have closed its pipe before Receive begins.
+        # This marker controls fixture ordering only; all normal OS/PID/hash/
+        # exact-frame authentication still runs before accepting startup.
+        $closed=Join-Path $fixture ($session.session+'.closed')
+        $deadline=[DateTime]::UtcNow.AddSeconds(5)
+        while (-not (Test-Path -LiteralPath $closed) -and [DateTime]::UtcNow -lt $deadline) { Start-Sleep -Milliseconds 10 }
+        Check (Test-Path -LiteralPath $closed) 'Inert writer did not finish before delayed receive.'
+      }
       $passed=Wait-UpdateStartupSuccess $pending $session $child $executable 5000
-      Check ($passed -eq ($case -eq 'healthy')) ('Unexpected authenticated startup result: '+$case)
+      Check ($passed -eq ($case -in @('healthy','healthy-delayed-receive'))) ('Unexpected authenticated startup result: '+$case+'; receiver: '+$session.server.FailureReason)
       if ($case -eq 'healthy') { Reject { Wait-UpdateStartupSuccess $pending $session $child $executable 100 } }
     } finally {
       $session.server.Dispose()

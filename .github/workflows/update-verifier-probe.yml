@@ -63,7 +63,16 @@ jobs:
         run: |
           & ../test-update-transaction.ps1 *>&1 | Tee-Object -FilePath ../../build/updater-native/transaction-tests.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Actual installer interrupted rollback and historical generations
+        if: always() && runner.os == 'Windows'
+        shell: powershell
+        run: |
           & ../test-updater-installer-integration.ps1 *>&1 | Tee-Object -FilePath ../../build/updater-native/installer-transaction-tests.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Signing boundary without certificates or private keys
+        shell: pwsh
+        run: |
+          & ../test-sign-release-policy.ps1
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
@@ -81,6 +90,7 @@ jobs:
       - name: Build only the startup model and native popup
         run: python opennav-x/tools/test-startup-update-windows.py --evidence opennav-x/build/startup-update-native-evidence
       - name: Native updater shortcut preservation
+        if: always()
         shell: powershell
         run: ./opennav-x/tools/test-installer-shortcuts.ps1
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

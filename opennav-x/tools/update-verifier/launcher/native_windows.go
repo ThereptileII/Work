@@ -308,3 +308,85 @@ func (nativePlatform) privateDirectory(name string, create bool) error {
 	}
 	return nil
 }
+
+// progress starts only the adjacent, already held prompt, with no identity,
+// URL, artifact path or other data in its dedicated empty-stdin protocol.
+func (nativePlatform) progress(executable, directory string) (downloadProgress, error) {
+	if _, err := localPath(executable); err != nil {
+		return nil, err
+	}
+	if !strings.EqualFold(path.Base(strings.ReplaceAll(executable, "\\", "/")), "skager-update-prompt.exe") {
+		return nil, errors.New("unexpected progress helper")
+	}
+	command := nativeCommand(processSpec{executable: executable, directory: directory, arguments: []string{"--download-progress"}})
+	return startProgressCommand(command)
+}
+
+type nativeProgress struct {
+	command *exec.Cmd
+	input   *os.File
+	exited  chan struct{}
+	waitErr error
+}
+
+func startProgressCommand(command *exec.Cmd) (*nativeProgress, error) {
+	reader, writer, err := os.Pipe()
+	if err != nil {
+		return nil, errors.New("progress pipe unavailable")
+	}
+	command.Stdin = reader
+	if err := command.Start(); err != nil {
+		_ = reader.Close()
+		_ = writer.Close()
+		return nil, errors.New("progress helper did not start")
+	}
+	_ = reader.Close()
+	progress := &nativeProgress{command: command, input: writer, exited: make(chan struct{})}
+	go func() {
+		progress.waitErr = command.Wait()
+		close(progress.exited)
+	}()
+	return progress, nil
+}
+func (p *nativeProgress) done() <-chan struct{} { return p.exited }
+func (p *nativeProgress) finish(ctx context.Context) error {
+	if err := ctx.Err(); err != nil {
+		return err
+	}
+	select {
+	case <-p.exited:
+		return errors.New("progress helper exited before completion")
+	default:
+	}
+	// No bytes are ever written. Only EOF grants the prompt permission to
+	// report successful completion; Cancel/error exits are always nonzero.
+	if err := p.input.Close(); err != nil {
+		return errors.New("progress completion signal failed")
+	}
+	select {
+	case <-p.exited:
+		if p.waitErr != nil || p.command.ProcessState.ExitCode() != 0 || ctx.Err() != nil {
+			return errors.New("progress completion was cancelled or failed")
+		}
+		return nil
+	case <-ctx.Done():
+		return errors.New("progress completion wait expired")
+	}
+}
+func (p *nativeProgress) close() {
+	_ = p.input.Close()
+	select {
+	case <-p.exited:
+		return
+	default:
+	}
+	// This handle is exclusively the inert prompt. No transaction process is
+	// managed here, and cleanup cannot cancel a running installer.
+	_ = p.command.Process.Kill()
+	timer := time.NewTimer(5 * time.Second)
+	defer timer.Stop()
+	select {
+	case <-p.exited:
+	case <-timer.C:
+	}
+}

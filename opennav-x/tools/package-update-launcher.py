@@ -36,7 +36,7 @@ def digest(path):
     return h.hexdigest()
 
 
-def plain_path(path):
+def plain_path(path, boundary='Source/output path'):
     path = Path(os.path.abspath(path))
     for parent in (path, *path.parents):
         try:
@@ -44,8 +44,45 @@ def plain_path(path):
         except FileNotFoundError:
             continue
         if stat.S_ISLNK(entry.st_mode) or getattr(entry, 'st_file_attributes', 0) & 0x400:
-            raise ValueError('Source/output path contains a link or reparse point')
+            # Filesystem components are diagnostic data, not command output or
+            # environment dumps. repr keeps control characters out of the log.
+            raise ValueError(f'{boundary} contains a link or reparse point: component={str(parent)!r}')
     return path
+
+
+def provisioned_source_root(path, role, *, allow_missing=False):
+    """Resolve only build-provisioned compiler/runtime/cache roots, then recheck.
+
+    setup-go deliberately exposes its Windows tool cache through a junction
+    (C:\\hostedtoolcache\\... -> D:\\hostedtoolcache\\...). This allowance never
+    applies to checkout inputs, inventory children, package paths or outputs.
+    """
+    if role not in ('Go compiler', 'GOROOT', 'GOMODCACHE'):
+        raise ValueError('Unrecognized provisioned source boundary')
+    selected = Path(os.path.abspath(path))
+    resolved = selected.resolve(strict=not allow_missing)
+    resolved = plain_path(resolved, boundary=f'Canonical provisioned {role}')
+    if role == 'Go compiler':
+        if not resolved.is_file():
+            raise ValueError('Provisioned Go compiler is not a regular file')
+    elif resolved.exists() and not resolved.is_dir():
+        raise ValueError(f'Provisioned {role} is not a directory')
+    return resolved
+
+
+def module_cache_source(path, cache):
+    """Compiler-reported module inputs must stay below the pinned cache root."""
+    selected = Path(path)
+    if not selected.is_absolute() or '..' in selected.parts:
+        raise ValueError('Verified module source requires an absolute path without traversal')
+    selected = plain_path(selected, boundary='Verified module-cache source')
+    try:
+        relative = selected.relative_to(cache)
+    except ValueError as error:
+        raise ValueError('Verified module source is outside the provisioned GOMODCACHE') from error
+    if not relative.parts:
+        raise ValueError('Verified module source cannot be the whole module cache')
+    return selected
 
 
 def run(command, directory, environment=None):
@@ -89,7 +126,7 @@ class Inventory:
         self.total = 0
 
     def add(self, source, name):
-        source = plain_path(source)
+        source = plain_path(source, boundary='Corresponding-source file')
         name = archive_name(name)
         info = source.stat()
         if not stat.S_ISREG(info.st_mode) or info.st_size > MAX_FILE_BYTES:
@@ -100,13 +137,13 @@ class Inventory:
         self.total += info.st_size
 
     def tree(self, directory, prefix):
-        directory = plain_path(directory)
+        directory = plain_path(directory, boundary='Corresponding-source tree')
         if not directory.is_dir():
             raise ValueError('Corresponding-source directory missing')
         for current, directories, files in os.walk(directory, followlinks=False):
             directories.sort()
             for child in directories:
-                plain_path(Path(current) / child)
+                plain_path(Path(current) / child, boundary='Corresponding-source child directory')
             for child in sorted(files):
                 source = Path(current) / child
                 self.add(source, prefix + '/' + source.relative_to(directory).as_posix())
@@ -120,7 +157,7 @@ class Inventory:
         with zipfile.ZipFile(archive, 'x', zipfile.ZIP_DEFLATED, compresslevel=6) as target:
             for name, item in sorted(self.files.items()):
                 # Detect source/cache mutation between inventory and packaging.
-                source = plain_path(item['source'])
+                source = plain_path(item['source'], boundary='Inventoried corresponding-source file')
                 if source.stat().st_size != item['bytes'] or digest(source) != item['sha256']:
                     raise ValueError('Corresponding source changed before archiving')
                 info = zipfile.ZipInfo(name)
@@ -159,11 +196,11 @@ def validate_pe32(path):
 
 
 def prepare_outputs(install):
-    install = plain_path(install)
+    install = plain_path(install, boundary='Package install directory')
     if not install.is_dir():
         raise ValueError('Existing application install directory required')
-    binary = plain_path(install / 'skager-start.exe')
-    sources = plain_path(install / 'opennav/third-party/updater')
+    binary = plain_path(install / 'skager-start.exe', boundary='Package launcher output')
+    sources = plain_path(install / 'opennav/third-party/updater', boundary='Package source-bundle output')
     if binary.exists() or sources.exists():
         raise ValueError('Refusing to overwrite existing updater outputs')
     return install, binary, sources
@@ -180,14 +217,22 @@ def package(install, commit, go):
     if run(['git', 'status', '--porcelain=v1', '--untracked-files=all', '--', '.'], ROOT).strip():
         raise ValueError('Packaging requires committed source and no untracked source inputs')
     module = ROOT / 'tools/update-verifier'
-    go = str(plain_path(shutil.which(go) or go))
+    compiler = provisioned_source_root(shutil.which(go) or go, 'Go compiler')
+    go = str(compiler)
     environment = dict(os.environ, GOOS='windows', GOARCH='386', GO386='sse2', CGO_ENABLED='0',
                        GOTOOLCHAIN='local', GOWORK='off', GOFLAGS='-mod=readonly', GOEXPERIMENT='')
-    tool = json.loads(run([go, 'env', '-json', 'GOVERSION', 'GOROOT', 'GOHOSTOS', 'GOMOD'], module, environment))
+    tool = json.loads(run([go, 'env', '-json', 'GOVERSION', 'GOROOT', 'GOHOSTOS', 'GOMOD', 'GOMODCACHE'], module, environment))
     if tool['GOVERSION'] != GO_VERSION or tool['GOHOSTOS'] != 'windows' or Path(tool['GOMOD']).resolve() != (module / 'go.mod').resolve():
         raise ValueError('Pinned native Go 1.27.1 and exact launcher module are required')
-    goroot = plain_path(tool['GOROOT'])
-    if (goroot / 'VERSION').read_text(encoding='utf-8').splitlines()[0] != GO_VERSION:
+    goroot = provisioned_source_root(tool['GOROOT'], 'GOROOT')
+    if compiler != plain_path(goroot / 'bin/go.exe', boundary='Pinned GOROOT compiler'):
+        raise ValueError('Selected compiler is outside the provisioned GOROOT/bin/go.exe')
+    # A first build may populate an absent module cache. Resolve its existing
+    # provisioned ancestors now, and require the canonical directory after the
+    # bounded download. Pin both roots so later commands cannot reuse aliases.
+    module_cache = provisioned_source_root(tool['GOMODCACHE'], 'GOMODCACHE', allow_missing=True)
+    environment.update(GOROOT=str(goroot), GOMODCACHE=str(module_cache))
+    if plain_path(goroot / 'VERSION', boundary='Provisioned Go VERSION').read_text(encoding='utf-8').splitlines()[0] != GO_VERSION:
         raise ValueError('Go source version and compiler disagree')
     tracked = run(['git', 'ls-files', '-z', '--', 'tools/update-verifier', 'tools/package-update-launcher.py', 'LICENSE'], ROOT).split('\0')
     tracked = [name for name in tracked if name]
@@ -208,6 +253,8 @@ def package(install, commit, go):
         for name in ('go.mod', 'go.sum'):
             shutil.copyfile(module / name, provision / name)
         downloads = json_stream(run([go, 'mod', 'download', '-json', 'all'], provision, environment))
+        if provisioned_source_root(module_cache, 'GOMODCACHE') != module_cache:
+            raise ValueError('Provisioned module-cache root changed during download')
         if (provision / 'go.mod').read_bytes() != (module / 'go.mod').read_bytes():
             raise ValueError('Source provisioning changed the pinned module graph')
         run([go, 'mod', 'verify'], provision, environment)
@@ -233,14 +280,14 @@ def package(install, commit, go):
             if source is None:
                 raise ValueError('Every resolved module must have verified complete source')
             prefix = archive_name('modules/' + item['Path'] + '@' + item['Version'])
-            inventory.tree(source['Dir'], prefix)
+            inventory.tree(module_cache_source(source['Dir'], module_cache), prefix)
             licenses = [name for name in inventory.files if name.startswith(prefix + '/')
                         and PurePosixPath(name).name.upper().startswith(('LICENSE', 'COPYING'))]
             if not licenses:
                 raise ValueError('Dependency source lacks its upstream license notice')
             # Module zip contents may omit go.mod for legacy repositories; the
             # authenticated module-file bytes are still supplied separately.
-            inventory.add(source['GoMod'], 'module-locks/' + item['Path'] + '@' + item['Version'] + '.mod')
+            inventory.add(module_cache_source(source['GoMod'], module_cache), 'module-locks/' + item['Path'] + '@' + item['Version'] + '.mod')
             references.append({'path': item['Path'], 'version': item['Version'], 'sum': source['Sum'],
                                'goModSum': source['GoModSum'], 'sourcePrefix': prefix})
         if mains != 1:
@@ -281,7 +328,7 @@ def package(install, commit, go):
         # Publish only verified outputs. A partial publication is preserved and
         # a subsequent run refuses it rather than overwriting package evidence.
         prepare_outputs(install)
-        plain_path(final_sources.parent).mkdir(parents=True, exist_ok=True)
+        plain_path(final_sources.parent, boundary='Package source-bundle parent').mkdir(parents=True, exist_ok=True)
         source_directory.rename(final_sources)
         with binary.open('rb') as source, final_binary.open('xb') as target:
             shutil.copyfileobj(source, target, 1 << 20)

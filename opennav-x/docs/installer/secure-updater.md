@@ -17,6 +17,11 @@ An eligible signed offer opens a separate native **Update Now / Later** dialog.
 Escape, close, timeout and Later continue startup; no second prompt appears in
 that session. The first choice is latched, including queued repeated clicks.
 
+During acquisition a separate native progress window provides Cancel. Cancelling
+this phase aborts verification/download, discards the prepared artifact and
+continues the current application. The progress process must confirm completion
+before the installer starts. Cancellation never kills an executing installer.
+
 Update Now binds the entire parsed release policy, version and commit. A second
 authenticated refresh must return that same policy before acquisition. A changed
 offer requires fresh consent on a later startup. Release versions must increase:
@@ -111,3 +116,11 @@ license review and full installed update/rollback qualification. No signing key,
 fixture trust root, automatic production promotion or public endpoint is supplied
 by this implementation. An unconfigured installation remains fully usable and
 can be updated with a separately obtained, verified installer.
+
+The [Windows signing interface](code-signing.md) is prepared separately. Its
+default operation checks prerequisites and creates an isolated unsigned copy;
+signing requires an explicitly selected existing certificate and separate Sign
+operation. No certificate/key is supplied and no release workflow silently signs
+or changes previously accepted artifacts. A new automatic release also requires
+an increased embedded product version matching its signed policy, rather than
+relabeling another commit with the same version.
