@@ -30,7 +30,10 @@ def zipped(entries):
 class Boundary(unittest.TestCase):
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory()
-        self.base = Path(self.temporary.name)
+        # Windows TEMP can use an 8.3 spelling (RUNNER~1). Production restore
+        # resolves its workspace; construct the inert fixture under that same
+        # canonical spelling while retaining exact path-equality assertions.
+        self.base = Path(self.temporary.name).resolve()
         self.producer = self.base / 'producer'
         self.consumer = self.base / 'consumer'
         self.producer.mkdir(); self.consumer.mkdir()
@@ -205,7 +208,15 @@ class Boundary(unittest.TestCase):
 
     def test_gui_gate_occurs_only_after_restore_and_never_compiles(self):
         repo = Path(__file__).resolve().parents[1]
-        workflow = (repo / '.github/workflows/opennav-baseline.yml').read_text()
+        # Published source is under opennav-x/; workflow files stay at the
+        # enclosing repository root. Local standalone checkouts keep them here.
+        for path in (repo / '.github/workflows/opennav-baseline.yml',
+                     repo.parent / '.github/workflows/opennav-baseline.yml'):
+            if path.is_file():
+                workflow = path.read_text()
+                break
+        else:
+            self.fail('Baseline workflow missing from project and repository roots')
         producer = workflow.split('  windows-integration:', 1)[1].split('  windows-qualification:', 1)[0]
         self.assertNotIn('test-boat-feedback-widgets.py', producer)
         qualification = (repo / 'tools/qualify-staging-windows.ps1').read_text()

@@ -1,0 +1,37 @@
+name: SKAGER boat AIS read-only helper checks
+on:
+  push:
+    branches: [skager-boat-ais-check]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: skager-boat-ais-check-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  native-helper:
+    runs-on: windows-2022
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Verify read-only action policy and compile exact helper
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path opennav-x/evidence/local/boat-ais-helper -Force | Out-Null
+          foreach ($Name in @('review-window','restart-window-review')) {
+            & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -File "opennav-x/tools/boat/test-$Name.ps1" 2>&1 | Tee-Object -FilePath "opennav-x/evidence/local/boat-ais-helper/$Name.log"
+            if ($LASTEXITCODE -ne 0) { throw "Read-only action policy failed: $Name" }
+          }
+      - name: Prepare disposable CI display only
+        run: python opennav-x/tools/prepare-stock-review-desktop.py
+      - name: Verify owned AIS row selection and refusal cases on inert windows
+        shell: pwsh
+        run: |
+          & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -ExecutionPolicy Bypass -File opennav-x/tools/test-display-window-native.ps1 -Evidence opennav-x/evidence/local/boat-ais-helper/native 2>&1 | Tee-Object -FilePath opennav-x/evidence/local/boat-ais-helper/native.log
+          if ($LASTEXITCODE -ne 0) { throw 'Native inert-window action check failed' }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: boat-ais-helper-${{ github.sha }}-attempt${{ github.run_attempt }}
+          path: opennav-x/evidence/local/boat-ais-helper
+          if-no-files-found: error

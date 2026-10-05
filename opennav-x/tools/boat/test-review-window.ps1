@@ -214,6 +214,46 @@ Refuse 'Overlapping first native rows are ambiguous' {[OpenNavX.ReviewWindowNati
 Refuse 'A null row is invalid' {[OpenNavX.ReviewWindowNative]::ChooseSelectionRow($waypoint,$wpPage,@($null))}
 Refuse 'An invalid native HWND is refused' {[OpenNavX.ReviewWindowNative]::ChooseSelectionRow($waypoint,$wpPage,@((Row 0 'A / mark')))}
 Refuse 'Bounded row inventory refuses unbounded input' {[OpenNavX.ReviewWindowNative]::ChooseSelectionRow($waypoint,$wpPage,(New-Object 'OpenNavX.ReviewWindowNative+SelectionRow[]' 4097))}
+$aisData=[pscustomobject]@{build_commit=('a'*40);build_purpose='INSTALLED PRODUCT';data_mode='OPENCPN selected navigation';ui_page='AIS targets';
+ runtime=[pscustomobject]@{ais_selected_mmsi=0;ui_update=[pscustomobject]@{ticks='10'};display=[pscustomobject]@{route_creation_active=$false}}}
+Pass 'Modern traffic list observation has no preselected identity' {
+ $value=Convert-WindowReviewAis $aisData ('a'*40) $now $now 'AIS targets'
+ if($value.tick -ne 10 -or $value.selectedMmsi -ne 0){throw 'Unexpected list identity.'}
+}
+Pass 'Modern detail requires an actual positive current MMSI' {
+ $value=CopyValue $aisData;$value.ui_page='AIS target';$value.runtime.ais_selected_mmsi=265000001;$value.runtime.ui_update.ticks='11'
+ $observed=Convert-WindowReviewAis $value ('a'*40) $now $now 'AIS target'
+ if($observed.tick -ne 11 -or $observed.selectedMmsi -ne 265000001){throw 'Selected identity changed.'}
+}
+foreach($field in @('build_commit','build_purpose','data_mode','ui_page')) {
+ Refuse ('AIS observation refuses mismatched '+$field) {$value=CopyValue $aisData;$value.$field='wrong';Convert-WindowReviewAis $value ('a'*40) $now $now 'AIS targets'}
+}
+foreach($written in @($now.AddSeconds(-6),$now.AddSeconds(1))) {
+ Refuse 'AIS observations refuse stale/future files' {Convert-WindowReviewAis $aisData ('a'*40) $written $now 'AIS targets'}
+}
+foreach($mmsi in @(0,-1,1000000000,'265000001',$null)) {
+ Refuse 'Target detail refuses missing malformed or out-of-range identity' {
+  $value=CopyValue $aisData;$value.ui_page='AIS target';$value.runtime.ais_selected_mmsi=$mmsi
+  Convert-WindowReviewAis $value ('a'*40) $now $now 'AIS target'
+ }
+}
+foreach($tick in @('-1','not-a-tick','18446744073709551616','',$null)) {
+ Refuse 'AIS observations require bounded numeric publication ticks' {$value=CopyValue $aisData;$value.runtime.ui_update.ticks=$tick;Convert-WindowReviewAis $value ('a'*40) $now $now 'AIS targets'}
+}
+foreach($active in @($true,'false',$null)) {
+ Refuse 'AIS review refuses active or ambiguous route creation' {$value=CopyValue $aisData;$value.runtime.display.route_creation_active=$active;Convert-WindowReviewAis $value ('a'*40) $now $now 'AIS targets'}
+}
+Pass 'Modern AIS selection remains bound to actual accessible list and page titles' {
+ $root=[IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..').Replace('\',[IO.Path]::DirectorySeparatorChar))
+ $list=[IO.File]::ReadAllText((Join-Path $root 'src/ui/ListView.cpp'))
+ $drawer=[IO.File]::ReadAllText((Join-Path $root 'src/ui/AisDrawer.cpp'))
+ foreach($literal in @('SetName("Vessel traffic list")','(position.y + offset_) / FromDIP(71)','rows_[row].identity == pressed')) {
+  if(-not $list.Contains($literal)){throw 'Reviewed virtual list identity/hit/press contract changed.'}
+ }
+ foreach($literal in @('SetName("AIS scroll body")','return view_ == View::Target ? "AIS target"',': "AIS targets"','"Show on chart"')) {
+  if(-not $drawer.Contains($literal)){throw 'Reviewed AIS drawer names changed.'}
+ }
+}
 foreach($action in @('Select','SelectAisByName','SelectWaypointById','RestartLegacy','RestartSafe','RestartXNav','GO TO','SelectFirstVisibleAIS')) {
   Refuse "No arbitrary row or mode-restart native action: $action" {[OpenNavX.ReviewWindowNative]::SelectionPage($action)}
 }

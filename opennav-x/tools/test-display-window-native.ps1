@@ -40,6 +40,13 @@ try {
   @('Capture','prototype-rail-duplicate',''),@('Capture','prototype-modal',''),
   @('Navigation','prototype-normal','Chart'),@('Route','prototype-normal','Passage'),
   @('AIS','prototype-normal','Traffic'),@('Instruments','prototype-normal','Instruments'),
+  @('SelectFirstVisibleAis','prototype-ais-list','AIS_FIRST_VISIBLE_ROW'),
+  @('SelectFirstVisibleAis','prototype-ais-empty',''),@('SelectFirstVisibleAis','prototype-ais-wrong-name',''),
+  @('SelectFirstVisibleAis','prototype-ais-duplicate-list',''),@('SelectFirstVisibleAis','prototype-ais-clipped-list',''),
+  @('SelectFirstVisibleAis','prototype-ais-overlay',''),@('SelectFirstVisibleAis','prototype-ais-rename-down',''),
+  @('SelectFirstVisibleAis','prototype-ais-replace-down',''),@('SelectFirstVisibleAis','prototype-ais-move-down',''),
+  @('SelectFirstVisibleAis','prototype-ais-no-identity','AIS_FIRST_VISIBLE_ROW','refuse-after-selection'),
+  @('SelectFirstVisibleAis','prototype-ais-old-tick','AIS_FIRST_VISIBLE_ROW','refuse-after-selection'),
   @('CyclePalette','prototype-normal','Status Day'))) {
   $directory=Join-Path ([IO.Path]::GetTempPath()) ('opennav-display-window-'+[guid]::NewGuid().ToString('N'));$null=New-Item -ItemType Directory -Path $directory
   $fixtureCase=if($spec[1] -cin @('missing-diagnostics','stale-diagnostics','wrong-commit')){'normal'}else{$spec[1]}
@@ -90,13 +97,19 @@ try {
       if($spec[1] -ceq 'stale-diagnostics'){[IO.File]::SetLastWriteTimeUtc($diagnostic,[datetime]::UtcNow.AddSeconds(-10))}
      }
      Invoke-WindowReviewPan ([IntPtr]$ready.handle) $process.Id $directory $commit
+    } elseif($spec[0] -ceq 'SelectFirstVisibleAis') {
+     $script:displayProfile=$directory
+     $selection=Invoke-WindowReviewSelection ([IntPtr]$ready.handle) $process.Id $spec[0] $directory ('a'*40)
+     if(-not $selection.Prototype -or $selection.SelectedMmsi -ne 265000001){throw 'Modern AIS selection lacks its observed identity.'}
     } else {[OpenNavX.ReviewWindowNative]::Click([IntPtr]$ready.handle,$process.Id,$spec[0])}
     $after=[OpenNavX.ReviewWindowNative]::AssertFrame([IntPtr]$ready.handle,$process.Id)
     }
    } catch {$refused=$true;$reason=$_.Exception.Message}
    $clickPath=Join-Path $directory 'clicks.txt';[string[]]$clicks=@()
    if(Test-Path -LiteralPath $clickPath){$clicks=@(Get-Content -LiteralPath $clickPath)}
-   if($spec[2] -ceq 'CAPTURE') {
+   if($spec.Count -eq 4 -and $spec[3] -ceq 'refuse-after-selection') {
+    if(-not $refused -or ($clicks -join ',') -cne $spec[2]){throw 'Unconfirmed AIS identity must refuse after exactly one inert row selection.'}
+   } elseif($spec[2] -ceq 'CAPTURE') {
     if($refused -or @($clicks).Count -or $before.Shell -cne 'prototype' -or $before.Surfaces.Count -lt 3){throw ('Native prototype capture failed: '+$spec[1]+': '+$reason)}
    } elseif($spec[2] -ceq 'RESIZED'){
     if($refused -or @($clicks).Count -or $after.Maximized -or $after.Bounds.Width -ne 1280 -or $after.Bounds.Height -ne 800){throw ('Native fixed resize failed: '+$spec[1]+': '+$reason)}
