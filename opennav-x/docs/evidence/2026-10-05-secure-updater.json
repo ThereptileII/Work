@@ -243,5 +243,136 @@
     "tlsLifecyclesPassed": 8,
     "transportScenariosPassed": 18,
     "sessionChecksPassed": 216
+  },
+  "correctedStagingAttempt": {
+    "url": "https://github.com/ThereptileII/Work/actions/runs/37317835346",
+    "commit": "c330f33883a9af0e7fc7b95d4cbcf916a3ff576d",
+    "localImplementation": "990220ba7c29609beb3dbde0b902dbc94f61c1a3",
+    "status": "running",
+    "updaterFocusedChecks": "passed",
+    "packageAcceptance": "pending",
+    "focusedDownloadVerification": {
+      "linuxGo": {
+        "topLevelPassed": 63,
+        "includingSubcasesPassed": 288,
+        "failed": 0
+      },
+      "windowsGo": {
+        "topLevelPassed": 72,
+        "includingSubcasesPassed": 302,
+        "failed": 0
+      },
+      "nativeDialogChecksPassed": 96,
+      "nativePromptProtocolCasesPassed": 26,
+      "downloadedArtifacts": [
+        {
+          "id": 11349386464,
+          "sha256": "81b97a9ac3d0dbf7fdc892a5100bba7fd07c4af4614b6c89d285adfaffd375de"
+        },
+        {
+          "id": 11349251181,
+          "sha256": "1225adfc1dd080b384d3d0271d4838ef8454e105b7ec606fbe664162393e1454"
+        },
+        {
+          "id": 11348856071,
+          "sha256": "2e5b9802f070b7249370fbaa57efe9fd0ef0fddfc571f2cfcf1265746e464d30"
+        }
+      ]
+    }
+  },
+  "boatLauncherTooling": {
+    "localImplementation": "47b4b33",
+    "qualificationLocal": "ecd6f71fd228eef2cc47c88d205093c1916d750c",
+    "commit": "934a829adc5f151a400122a5e7473d064779d80f",
+    "url": "https://github.com/ThereptileII/Work/actions/runs/37318355365",
+    "status": "failed test-helper workflow path lookup; no staged bundle",
+    "nativeStartupChecksPassed": 45,
+    "existingWindowAndBrokerGates": "passed",
+    "downloadedPolicyArtifact": {
+      "id": 11349321517,
+      "sha256": "9a56c35a2626cbc8d8b5914cd01593d5e13674313a3b3bcf5a01bfa16e3cfe73"
+    },
+    "correctionLocal": "4d36e166ff61a7227a2c3bf573894a4eef189ac1",
+    "correctionScope": "Test discovers actual Git checkout root for workflows instead of assuming .github inside opennav-x",
+    "installedBootstrap": "pending",
+    "signedOffersAndRollback": "pending",
+    "boatModified": false,
+    "correctionVerified": {
+      "url": "https://github.com/ThereptileII/Work/actions/runs/37319036023",
+      "commit": "8522367f3395cc5eb76b1b8df0a8f2d8113b6354",
+      "status": "passed",
+      "downloadedArtifact": {
+        "id": 11349113100,
+        "sha256": "d09963c08826e778cdd17cc76d397876ace522cf171f218ace43189d14de9f0f"
+      },
+      "archiveSha256": "f816fe14ebf9205312155b8e591c9ef8b8470518fa8a19a71d5ff7a7d26d1515",
+      "manifestSha256": "8267ccc2607182ffe268e8dc233f1e509d0ad29fc7fcda8f8adff21d4243e4c0",
+      "filesVerified": 119,
+      "gates": [
+        {
+          "gate": "broker",
+          "receiptSha256": "130c9a4649455d5c9cc9aa30a12c991d215a7dc1d8e365503e21148af550eb60"
+        },
+        {
+          "gate": "policy",
+          "receiptSha256": "c919f3aee6b3e29f7ea6feac0fa8f74cbaed77da6868b61a6e6da57c5f642bd0"
+        },
+        {
+          "gate": "window",
+          "receiptSha256": "bd0bb53271d88f458870e17adc784ec7a599c8500631a68f3d17cdef3e5638b0"
+        }
+      ],
+      "nativeStartupChecksPassed": 45,
+      "stagedOnBoat": false,
+      "applicationAcceptance": false
+    }
+  },
+  "boatReadOnlyRefresh": {
+    "utc": "2026-10-05T13:42:00Z",
+    "reachable": true,
+    "installedVersion": "0.4.0-beta2",
+    "installedCommit": "0da2c64379d5a9cc4b9b2bd068de6e0b69816577",
+    "ownedExecutableSha256": "2d05dc2153273424a3849ec0bd4a3ea3618ad2a4049ac6cbbbaf615c2fc208b8",
+    "applicationResponding": true,
+    "activeReadOnlyCommissioning": true,
+    "pendingUpdaterTransaction": false,
+    "remoteAccessServices": "running",
+    "boatModified": false,
+    "limitation": "Read-only SSH metadata, not an interactive UI or new updater acceptance test"
+  },
+  "combinedStagingPackagingFailure": {
+    "url": "https://github.com/ThereptileII/Work/actions/runs/37317835346",
+    "commit": "c330f33883a9af0e7fc7b95d4cbcf916a3ff576d",
+    "localImplementation": "990220ba7c29609beb3dbde0b902dbc94f61c1a3",
+    "overall": "failed",
+    "linux": {
+      "fixtureTestsPassed": 152,
+      "fixtureFreeTestsPassed": 152,
+      "functionalRuntime": "passed"
+    },
+    "windows": {
+      "job": 111792189734,
+      "fixtureTestsPassed": 144,
+      "fixtureFreeTestsPassed": 144,
+      "compilation": "passed",
+      "privateChartImportResolution": "passed",
+      "publicDownloaderTrust": "passed",
+      "peerBuffer": "passed",
+      "packaging": "failed before updater output",
+      "installedApplicationRuntime": "not run"
+    },
+    "failure": "Packaging requires committed source and no untracked source inputs",
+    "causeEvidence": [
+      "Remote c330f338 opennav-x/upstream tree contains only .gitkeep, unlike the local tracked OpenCPN gitlink. The workflow explicitly clones OpenCPN there before packaging, creating untracked source within the packager whole-project cleanliness boundary.",
+      "The clean focused updater-contracts job already builds and verifies the native launcher/source bundle for this exact commit. Reusing that same-run artifact avoids duplicate compilation and a dirty integrated workspace."
+    ],
+    "artifact": {
+      "id": 11349994184,
+      "sha256": "62c954572b56bddcaefca3d020b8aee82f7ea68fcc899d5e052da7fc86d0403e",
+      "downloadedAndVerified": true
+    },
+    "retentionGap": "Only evidence/local was uploaded; compiled application installs were not sealed before this packaging step. No app binary recovery is claimed from the failed run.",
+    "boatModified": false,
+    "qualifiedPackage": false
   }
 }

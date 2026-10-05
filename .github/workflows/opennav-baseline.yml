@@ -624,6 +624,22 @@ jobs:
       - name: Compile fixture-free product and run installed security and unit checks
         id: production
         run: ./opennav-x/tools/build-pristine-windows.ps1 -Architecture Win32 -Integration -Production -PrivateOCharts -ReusePrivateOCharts -DeferRuntimeQualification -DependencyBundle "$env:GITHUB_WORKSPACE/dependency-bundle" -DependencyBundleProvenance "$env:GITHUB_WORKSPACE/dependency-provenance.json"
+      # Upload compiled recovery BEFORE updater/ZIP/Setup packaging. This is
+      # diagnostic retention only; downstream qualification still requires the
+      # existing complete STAGING_BUILD_INPUTS seal and every original gate.
+      - name: Check prepackage recovery retention with disposable real Git trees
+        run: python opennav-x/tools/test-compiled-recovery.py -v
+      - name: Retain both native applications and exact tracked source before packaging
+        id: compiled_recovery
+        run: python opennav-x/tools/compiled_recovery.py --root opennav-x --output compiled-recovery --producer-commit $env:GITHUB_SHA --producer-run-id $env:GITHUB_RUN_ID --producer-run-attempt $env:GITHUB_RUN_ATTEMPT
+      - name: Upload unqualified compiled recovery before packaging can fail
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: compiled-recovery-${{ github.sha }}-run${{ github.run_id }}-attempt${{ github.run_attempt }}
+          path: compiled-recovery
+          compression-level: 0
+          if-no-files-found: error
+          retention-days: 90
       - name: Resolve private chart imports in the real host without plugin initialization
         id: private_module
         run: |
@@ -639,14 +655,15 @@ jobs:
         run: |
           python opennav-x/tools/test-peer-buffer.py > opennav-x/evidence/local/peer-buffer-windows.log 2>&1
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-      # Dependency reprobes require the original producer PATH byte-for-byte.
-      # Provision Go only after both application passes and their reprobes.
-      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+      # Reuse the same-run clean native producer. The integrated checkout now
+      # contains fetched upstream/cache inputs and must not compile a second Go
+      # launcher or change the authenticated dependency PATH.
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
-          go-version-file: opennav-x/tools/update-verifier/go.mod
-          cache-dependency-path: opennav-x/tools/update-verifier/go.sum
-      - name: Build verified startup updater and retain dependency source/licenses
-        run: python opennav-x/tools/package-update-launcher.py --install opennav-x/build/production-install
+          name: update-verifier-windows-2022-386-${{ github.sha }}
+          path: opennav-x/build/updater-qualified
+      - name: Stage exact qualified startup updater and retained dependency source
+        run: python opennav-x/tools/updater_package.py --source-install opennav-x/build/updater-qualified/install --install opennav-x/build/production-install --commit $env:GITHUB_SHA
       - name: Package fixture-free recovery before desktop qualification
         run: ./opennav-x/tools/package-preview-windows.ps1 -DeferRuntimeQualification
       - name: Compile exact installer without running its desktop qualification yet

@@ -8,6 +8,13 @@ if (-not $native -and -not $PortableContracts) {throw 'Native Windows is require
 if ($native -and -not $IsolatedLocal -and $env:GITHUB_ACTIONS -ne 'true') {throw 'Default mode requires disposable native Windows CI; use -IsolatedLocal explicitly for temporary-file-only local checks.'}
 if ($IsolatedLocal -and @(Get-Process -Name opencpn -ErrorAction SilentlyContinue).Count) {throw 'Close OpenCPN/XNav normally before isolated local filesystem checks.'}
 $testEnvironment=if ($IsolatedLocal) {'native-windows-isolated-local-filesystem'} else {'native-windows-ci-filesystem'}
+# Exercise the opt-in launcher boundary in this established native/portable gate.
+$LASTEXITCODE=0
+$startupOutput=& (Join-Path $PSScriptRoot 'test-startup-launcher.ps1') -PortableContracts:$PortableContracts -IsolatedLocal:$IsolatedLocal
+if(-not $? -or $LASTEXITCODE -ne 0){throw 'Startup launcher helper checks failed.'}
+$startupLauncher=($startupOutput -join "`n")|ConvertFrom-Json
+if($startupLauncher.schema -ne 1 -or $startupLauncher.status -cne 'passed' -or
+   ($native -and $startupLauncher.nativeObservation -cne 'passed')){throw 'Startup launcher helper result is not qualified for this environment.'}
 . (Join-Path $PSScriptRoot 'Common.ps1')
 . (Join-Path $PSScriptRoot 'RetirementPolicy.ps1')
 $root=Join-Path ([IO.Path]::GetTempPath()) ('OpenNav boat tools '+[guid]::NewGuid().ToString('N'))
@@ -111,7 +118,7 @@ try {
   }
   $checks.Add('Default ZIP policy preserved; executable retirement requires explicit opt-in and exact accepted Beta1 setup name/hash')
   if (-not $native) {
-    [pscustomobject]@{status='passed';environment='linux-portable-maintenance-contracts';scope='Unique temporary files only; no application, profile, registry or hardware access';checks=@($checks);count=$checks.Count} | ConvertTo-Json -Depth 5
+    [pscustomobject]@{status='passed';environment='linux-portable-maintenance-contracts';scope='Unique temporary files only; no application, profile, registry or hardware access';checks=@($checks);count=$checks.Count;startupLauncher=$startupLauncher} | ConvertTo-Json -Depth 5
     return
   }
   $stock=Join-Path $root 'stock';$profile=Join-Path $root 'profile';$workspace=Join-Path $root 'workspace'
@@ -391,5 +398,5 @@ try {
   $rejected=$false;try {$null=Read-UpgradeRecord $upgradeRecord $upgradeHash} catch {$rejected=$true}
   if (-not $rejected) {throw 'Changed stock maintenance record accepted.'}
   $checks.Add('Stock preflight/wizard evidence requires its exact recorded SHA-256')
-  [pscustomobject]@{status='passed';environment=$testEnvironment;scope='Unique temporary files only; no application, real profile, registry, service or hardware operations';checks=@($checks);count=$checks.Count} | ConvertTo-Json -Depth 5
+  [pscustomobject]@{status='passed';environment=$testEnvironment;scope='Unique temporary files only; no application, real profile, registry, service or hardware operations';checks=@($checks);count=$checks.Count;startupLauncher=$startupLauncher} | ConvertTo-Json -Depth 5
 } finally {Remove-Item -LiteralPath $root -Recurse -Force}

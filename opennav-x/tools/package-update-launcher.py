@@ -100,6 +100,18 @@ def run(command, directory, environment=None):
     return data
 
 
+def require_clean_sources(phase):
+    status = run(['git', 'status', '--porcelain=v1', '--untracked-files=all', '--', '.'], ROOT)
+    if status.strip():
+        # Status/path only: never dump file contents. Escape controls and bound
+        # diagnostics even if a generated tree contains thousands of files.
+        lines = status.splitlines()
+        shown = [line[:240] for line in lines[:12]]
+        raise ValueError(f'{phase}: committed source and no untracked source inputs required; '
+                         f'gitStatus={json.dumps(shown, ensure_ascii=True)}; '
+                         f'additionalEntries={max(0, len(lines) - len(shown))}')
+
+
 def json_stream(text):
     decoder = json.JSONDecoder()
     result = []
@@ -214,8 +226,7 @@ def package(install, commit, go):
         raise ValueError('Exact product commit is required (--commit or GITHUB_SHA)')
     if run(['git', 'rev-parse', 'HEAD'], ROOT).strip() != commit:
         raise ValueError('Launcher source is not the selected product commit')
-    if run(['git', 'status', '--porcelain=v1', '--untracked-files=all', '--', '.'], ROOT).strip():
-        raise ValueError('Packaging requires committed source and no untracked source inputs')
+    require_clean_sources('Before launcher packaging')
     module = ROOT / 'tools/update-verifier'
     compiler = provisioned_source_root(shutil.which(go) or go, 'Go compiler')
     go = str(compiler)
@@ -309,8 +320,7 @@ def package(install, commit, go):
         run([go, 'build', '-mod=readonly', '-trimpath', '-buildvcs=true', '-ldflags=-H=windowsgui',
              '-o', str(binary), './cmd/skager-start'], module, environment)
         run([go, 'mod', 'verify'], module, environment)
-        if run(['git', 'status', '--porcelain=v1', '--untracked-files=all', '--', '.'], ROOT).strip():
-            raise ValueError('Product sources changed during launcher packaging')
+        require_clean_sources('Product sources changed during launcher packaging')
         validate_pe32(binary)
         build_info = run([go, 'version', '-m', str(binary)], module, environment)
         for expected in (GO_VERSION, 'path\texample.com/opennav-update-verifier/cmd/skager-start',

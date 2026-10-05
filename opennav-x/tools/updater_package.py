@@ -1,11 +1,14 @@
 """Verify the copied launcher/source pair before installed or recovery packaging."""
+import argparse
 import base64
 import hashlib
 import json
+import os
 from pathlib import Path, PurePosixPath
 import re
 import stat
 import struct
+import tempfile
 
 GO_VERSION = 'go1.27.1'
 MAIN_MODULE = 'example.com/opennav-update-verifier'
@@ -18,10 +21,15 @@ SHA256 = re.compile(r'[a-f0-9]{64}\Z')
 COMMIT = re.compile(r'[a-f0-9]{40}\Z')
 
 
-def _plain(path):
+def _plain(path, *, allow_missing=False):
     path = Path(path).absolute()
     for component in (path, *path.parents):
-        entry = component.lstat()
+        try:
+            entry = component.lstat()
+        except FileNotFoundError:
+            if allow_missing:
+                continue
+            raise
         if stat.S_ISLNK(entry.st_mode) or getattr(entry, 'st_file_attributes', 0) & 0x400:
             raise ValueError('Updater package contains a link or reparse point')
     return path
@@ -177,3 +185,82 @@ def verify_updater_package(app, commit):
         raise ValueError('Updater binary or corresponding source changed after production')
     _pe32(binary)
     return {'archive': archive, 'path': BUNDLE_PATH, 'sha256': bundle['sha256'], 'reference': bundle['reference']}
+
+
+TRANSFER_FILES = {
+    'skager-start.exe': MAX_BINARY_BYTES,
+    SOURCE_RELATIVE: MAX_ARCHIVE_BYTES,
+    'opennav/third-party/updater/build.json': MAX_RECORD_BYTES,
+}
+
+
+def copy_verified_updater_package(source_install, install, commit):
+    """Transfer only a verified same-commit producer closure, without rebuilding.
+
+    The caller must authenticate the artifact's successful same-run producer.
+    These local checks bind its exact bytes/commit, not its remote provenance.
+    Partial publication is preserved and cannot be silently overwritten.
+    """
+    source_install = _plain(source_install)
+    verify_updater_package(source_install, commit)
+    allowed = set(TRANSFER_FILES)
+    directories = {str(parent).replace('\\', '/') for name in allowed
+                   for parent in Path(name).parents if str(parent) != '.'}
+    for current, children, files in os.walk(source_install, followlinks=False):
+        for name in children + files:
+            child = _plain(Path(current) / name)
+            relative = child.relative_to(source_install).as_posix()
+            if relative not in allowed | directories:
+                raise ValueError('Unexpected updater producer install entry: ' + repr(relative))
+    identities = {name: (_file(source_install / name, limit).stat().st_size,
+                         _hash(source_install / name)) for name, limit in TRANSFER_FILES.items()}
+    install = _plain(install)
+    if not install.is_dir():
+        raise ValueError('Existing product install directory required')
+    for name in ('skager-start.exe', 'opennav/third-party/updater', 'update-trust.json'):
+        destination = _plain(install / name, allow_missing=True)
+        if destination.exists():
+            raise ValueError('Refusing to overwrite updater outputs or bundle trust configuration')
+    with tempfile.TemporaryDirectory(prefix='.updater-transfer-', dir=install) as temporary:
+        staging = Path(temporary)
+        for name, (size, checksum) in identities.items():
+            destination = staging / name
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            remaining = size
+            with _file(source_install / name, TRANSFER_FILES[name]).open('rb') as source, destination.open('xb') as target:
+                while remaining:
+                    data = source.read(min(1 << 20, remaining))
+                    if not data:
+                        raise ValueError('Updater producer file truncated during transfer')
+                    target.write(data)
+                    remaining -= len(data)
+                if source.read(1):
+                    raise ValueError('Updater producer file grew during transfer')
+                target.flush()
+                os.fsync(target.fileno())
+            if _hash(destination) != checksum:
+                raise ValueError('Updater producer bytes changed during transfer')
+        verify_updater_package(staging, commit)
+        # Publish the source closure first; a failure keeps evidence and blocks
+        # retries, rather than accepting an incomplete launcher/source pair.
+        parent = _plain(install / 'opennav/third-party', allow_missing=True)
+        parent.mkdir(parents=True, exist_ok=True)
+        (parent / 'updater').mkdir()
+        # Hard links publish the verified bytes exclusively on this volume;
+        # unlike POSIX rename they cannot replace racing existing files.
+        for name in (SOURCE_RELATIVE, 'opennav/third-party/updater/build.json', 'skager-start.exe'):
+            os.link(staging / name, install / name)
+    return verify_updater_package(install, commit)
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--source-install', type=Path, required=True)
+    parser.add_argument('--install', type=Path, required=True)
+    parser.add_argument('--commit', required=True)
+    args = parser.parse_args()
+    try:
+        result = copy_verified_updater_package(args.source_install, args.install, args.commit)
+    except (ValueError, OSError) as error:
+        raise SystemExit(str(error)) from error
+    print(json.dumps(result, default=str, indent=2))

@@ -10,6 +10,18 @@ recovery checkpoint; failed/interrupted startup restores the verified previous
 generation. Legacy, Safe and portable recovery keep their direct startup paths.
 See [the implementation contract](installer/secure-updater.md).
 
+The latest integrated candidate is **not packaged or qualified**. At
+`c330f33883a9af0e7fc7b95d4cbcf916a3ff576d`,
+[run 37317835346](https://github.com/ThereptileII/Work/actions/runs/37317835346)
+passes both Linux builds (152/152 tests each), both Windows builds (144/144 each),
+and the compiled security checks. Packaging then correctly refuses untracked
+source: the published repository lacks the local upstream gitlink, so its
+explicit OpenCPN clone dirties the integrated checkout. The narrow correction
+reuses the exact native launcher/source artifact already built by that run's
+successful clean updater job, retaining all source/commit/hash checks. Early
+compiled-output retention is also being added; the failed run retained diagnostic
+evidence but no recoverable application package. No boat installation changed.
+
 The first focused native run,
 [37294573113](https://github.com/ThereptileII/Work/actions/runs/37294573113),
 at `891acf93408a8d094811f144bd3373337f4865b9` passed Linux Go tests but

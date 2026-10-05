@@ -108,6 +108,23 @@ long-running suites run as separate background work with retained logs; report
 pending, failed and skipped gates truthfully. The user-directed endurance skip
 continues until explicitly changed.
 
+Before Windows updater/ZIP/Setup packaging, retain and upload a distinct
+`compiled-recovery-<commit>-run<run>-attempt<attempt>` artifact. Its
+`COMPILED_RECOVERY.zip` contains both compiled install trees, generated identity
+headers/test binaries, and actual tracked product/integration/recipe bytes with
+HEAD references and dirty-source provenance. It excludes arbitrary untracked
+source and is explicitly unqualified; it cannot substitute for the normal sealed
+Staging inputs. Investigate a failure against these bytes without claiming a
+successful package or relabeling their producer.
+
+The native updater is compiled once in the clean, same-run updater-contracts
+job. The integrated application job requires that job's success, downloads its
+exact commit-named artifact, and verifies/copies only the launcher, build record
+and corresponding-source ZIP. Do not rebuild it in the integrated checkout:
+that tree contains fetched upstream/cache inputs and is intentionally unsuitable
+for the updater's strict clean-source build check. Keep that check unchanged and
+keep Go setup out of the immutable dependency reprobe environment.
+
 ## Preserve failed producer outputs
 
 A failed producer never becomes an eligible SDK. If compilation/tests complete

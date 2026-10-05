@@ -41,6 +41,21 @@ class PackageTests(unittest.TestCase):
         else:
             alias.symlink_to(target, target_is_directory=True)
 
+    def test_clean_source_guard_reports_bounded_paths_without_relaxation(self):
+        with mock.patch.object(package, 'run', return_value=''):
+            package.require_clean_sources('before')
+        status = '?? upstream/OpenCPN/\n M tools/update-verifier/go.sum\n' + ('?? ' + 'x' * 300 + '\n') * 15
+        with mock.patch.object(package, 'run', return_value=status) as run:
+            with self.assertRaises(ValueError) as failure:
+                package.require_clean_sources('before')
+        detail = str(failure.exception)
+        self.assertIn('upstream/OpenCPN/', detail)
+        self.assertIn(' M tools/update-verifier/go.sum', detail)
+        self.assertIn('additionalEntries=5', detail)
+        self.assertLess(len(detail), 3500)
+        self.assertNotIn('\n', detail)
+        self.assertEqual(run.call_args.args[0][-2:], ['--', '.'])
+
     def test_upstream_notice_bytes_and_inventory_are_preserved(self):
         notice = self.root / 'LICENSE'
         notice.write_bytes(b'Original copyright\r\nOriginal license\r\n')

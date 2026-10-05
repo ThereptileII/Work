@@ -4,6 +4,7 @@ import base64
 import copy
 import hashlib
 import json
+import os
 from pathlib import Path
 import struct
 import tempfile
@@ -11,7 +12,7 @@ import unittest
 from unittest import mock
 import zipfile
 
-from updater_package import verify_updater_package, GO_VERSION, MAIN_MODULE, SOURCE_RELATIVE, BUNDLE_PATH
+from updater_package import copy_verified_updater_package, verify_updater_package, GO_VERSION, MAIN_MODULE, SOURCE_RELATIVE, BUNDLE_PATH
 
 
 class UpdaterPackageTests(unittest.TestCase):
@@ -54,6 +55,80 @@ class UpdaterPackageTests(unittest.TestCase):
 
     def write(self, record=None):
         self.record_file.write_text(json.dumps(record or self.record), encoding='utf-8')
+
+    def destination(self):
+        directory = tempfile.TemporaryDirectory(prefix='skager-updater-destination-')
+        self.addCleanup(directory.cleanup)
+        return Path(directory.name)
+
+    def test_verified_transfer_preserves_producer_and_existing_product(self):
+        install = self.destination()
+        stock = install / 'opencpn.exe'; stock.write_bytes(b'preserved product')
+        originals = {str(p.relative_to(self.app)): p.read_bytes() for p in self.app.rglob('*') if p.is_file()}
+        result = copy_verified_updater_package(self.app, install, self.commit)
+        self.assertEqual(result, verify_updater_package(install, self.commit))
+        self.assertEqual(stock.read_bytes(), b'preserved product')
+        for name, data in originals.items():
+            self.assertEqual((self.app / name).read_bytes(), data)
+            self.assertEqual((install / name).read_bytes(), data)
+        self.assertFalse(list(install.glob('.updater-transfer-*')))
+        with self.assertRaisesRegex(ValueError, 'overwrite'):
+            copy_verified_updater_package(self.app, install, self.commit)
+
+    def test_transfer_refuses_wrong_commit_unknown_closure_and_existing_outputs(self):
+        install = self.destination()
+        with self.assertRaisesRegex(ValueError, 'commit'):
+            copy_verified_updater_package(self.app, install, 'b' * 40)
+        for name in ('unknown.txt', 'opennav/third-party/updater/unknown.txt'):
+            extra = self.app / name; extra.write_bytes(b'unknown')
+            with self.assertRaisesRegex(ValueError, 'Unexpected updater producer'):
+                copy_verified_updater_package(self.app, install, self.commit)
+            extra.unlink()
+        self.assertEqual(list(install.iterdir()), [])
+        for name in ('skager-start.exe', 'update-trust.json'):
+            existing = install / name; existing.write_bytes(b'preserve')
+            with self.assertRaisesRegex(ValueError, 'overwrite'):
+                copy_verified_updater_package(self.app, install, self.commit)
+            self.assertEqual(existing.read_bytes(), b'preserve')
+            existing.unlink()
+        existing = install / 'opennav/third-party/updater'; existing.mkdir(parents=True)
+        with self.assertRaisesRegex(ValueError, 'overwrite'):
+            copy_verified_updater_package(self.app, install, self.commit)
+
+    def test_transfer_rejects_corruption_before_publication(self):
+        install = self.destination()
+        original_verify = verify_updater_package
+        def mutate_staged(app, commit):
+            if app != self.app:
+                (app / 'skager-start.exe').write_bytes(b'changed in transit')
+            return original_verify(app, commit)
+        with mock.patch('updater_package.verify_updater_package', side_effect=mutate_staged):
+            with self.assertRaises(ValueError):
+                copy_verified_updater_package(self.app, install, self.commit)
+        self.assertEqual(list(install.iterdir()), [])
+
+    def test_transfer_refuses_linked_destination_and_racing_output(self):
+        install = self.destination(); outside = self.destination()
+        link = install / 'opennav'
+        try:
+            link.symlink_to(outside, target_is_directory=True)
+        except OSError:
+            self.skipTest('Host cannot create disposable symlink')
+        with self.assertRaisesRegex(ValueError, 'reparse'):
+            copy_verified_updater_package(self.app, install, self.commit)
+        self.assertEqual(list(outside.iterdir()), [])
+        link.unlink()
+        original_link = os.link
+        def race(source, destination):
+            if destination.name == 'skager-start.exe':
+                destination.write_bytes(b'racing output')
+            return original_link(source, destination)
+        with mock.patch('updater_package.os.link', side_effect=race):
+            with self.assertRaises(FileExistsError):
+                copy_verified_updater_package(self.app, install, self.commit)
+        self.assertEqual((install / 'skager-start.exe').read_bytes(), b'racing output')
+        with self.assertRaisesRegex(ValueError, 'overwrite'):
+            copy_verified_updater_package(self.app, install, self.commit)
 
     def test_returns_actual_copied_source_descriptor_without_archive_expansion(self):
         with mock.patch.object(zipfile, 'ZipFile', side_effect=AssertionError('Must not expand dependency source again')):

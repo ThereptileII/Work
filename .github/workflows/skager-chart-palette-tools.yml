@@ -19,7 +19,7 @@ jobs:
         run: |
           $Out = 'opennav-x/evidence/local/palette269-policy'
           New-Item -ItemType Directory -Path $Out -Force | Out-Null
-          foreach ($Suite in @('restart-commissioning','restart-window-review','review-window','broker-fixture-contracts','review-staging')) {
+          foreach ($Suite in @('restart-commissioning','restart-window-review','review-window','broker-fixture-contracts','review-staging','startup-launcher')) {
             & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -File "opennav-x/tools/boat/test-$Suite.ps1" 2>&1 | Tee-Object -FilePath "$Out/$Suite.json"
             if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           }
@@ -85,7 +85,7 @@ jobs:
           path: opennav-x/evidence/local/palette269-broker
           if-no-files-found: error
   bundle:
-    name: Exact tested 117-file tool archive and receipt
+    name: Exact tested 119-file tool archive and receipt
     needs: [policy, window, broker]
     runs-on: windows-2022
     timeout-minutes: 5

@@ -322,23 +322,28 @@ class WorkflowPolicy(unittest.TestCase):
             with self.subTest(workflow=path.name):
                 yaml.load(path.read_text(), Loader=StrictLoader)
 
-    def test_updater_go_setup_follows_native_dependency_reprobes(self):
-        steps = workflow('opennav-baseline.yml')['jobs']['windows-integration']['steps']
-        setup = [index for index, step in enumerate(steps)
-                 if step.get('uses', '').startswith('actions/setup-go@')]
-        self.assertEqual(len(setup), 1)
-        go = setup[0]
-        package = [index for index, step in enumerate(steps)
-                   if 'tools/package-update-launcher.py' in step.get('run', '')]
-        self.assertEqual(package, [go + 1])
-        # Both application builds revalidate the producer's exact PATH; AIS
-        # performs its own earlier reprobe. setup-go changes that PATH globally.
-        for marker in ('tools/test-ais-runtime-windows.py', '-VerifyPeerCli', '-Production'):
-            probes = [index for index, step in enumerate(steps) if marker in step.get('run', '')]
-            self.assertTrue(probes, marker)
-            self.assertTrue(all(index < go for index in probes), marker)
-        self.assertEqual(steps[go]['with']['go-version-file'], 'opennav-x/tools/update-verifier/go.mod')
-        self.assertEqual(steps[go]['with']['cache-dependency-path'], 'opennav-x/tools/update-verifier/go.sum')
+    def test_updater_reuses_same_run_verified_native_package(self):
+        data = workflow('opennav-baseline.yml')
+        job = data['jobs']['windows-integration']
+        self.assertIn('updater-contracts', job['needs'])
+        steps = job['steps']
+        self.assertFalse(any(step.get('uses', '').startswith('actions/setup-go@') for step in steps))
+        self.assertFalse(any('tools/package-update-launcher.py' in step.get('run', '') for step in steps))
+        transfer = [(index, step) for index, step in enumerate(steps)
+                    if 'tools/updater_package.py' in step.get('run', '')]
+        self.assertEqual(len(transfer), 1)
+        index, step = transfer[0]
+        download = steps[index - 1]
+        self.assertTrue(download['uses'].startswith('actions/download-artifact@'))
+        self.assertEqual(download['with'], {
+            'name': 'update-verifier-windows-2022-386-${{ github.sha }}',
+            'path': 'opennav-x/build/updater-qualified'})
+        self.assertIn('--commit $env:GITHUB_SHA', step['run'])
+        self.assertIn('--source-install opennav-x/build/updater-qualified/install', step['run'])
+        self.assertIn('--install opennav-x/build/production-install', step['run'])
+        retention = next(i for i, item in enumerate(steps) if item.get('id') == 'compiled_recovery')
+        self.assertLess(retention, index)
+        self.assertTrue(steps[retention + 1]['uses'].startswith('actions/upload-artifact@'))
 
     def test_production_is_manual_and_promotes_only_after_qualification(self):
         data = workflow('skager-production.yml')

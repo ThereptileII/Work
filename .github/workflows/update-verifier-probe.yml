@@ -57,6 +57,15 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python -c "import os,sys; from pathlib import Path; sys.path.insert(0,'..'); from updater_package import verify_updater_package; verify_updater_package(Path('../../build/updater-native/install'), os.environ['GITHUB_SHA'])"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Verify retained launcher transfer without rebuilding
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          New-Item -ItemType Directory -Path ../../build/updater-native/copied-install -Force | Out-Null
+          python ../updater_package.py --source-install ../../build/updater-native/install --install ../../build/updater-native/copied-install --commit $env:GITHUB_SHA
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python ../test-compiled-recovery.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Native authenticated startup and interruption records
         if: always() && runner.os == 'Windows'
         shell: powershell

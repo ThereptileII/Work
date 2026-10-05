@@ -14,7 +14,8 @@ ROOT = Path(__file__).resolve().parents[1]
 LOCK = ROOT / 'tools/boat-review-composition.json'
 GATES = {
     'policy': ['restart-commissioning.json', 'restart-window-review.json',
-               'review-window.json', 'broker-fixture-contracts.json', 'review-staging.json'],
+               'review-window.json', 'broker-fixture-contracts.json', 'review-staging.json',
+               'startup-launcher.json'],
     'window': ['native-window-results.json', 'chart-palette/native-palette-results.json'],
     'broker': ['broker/broker-result.json', 'prepare-arm/prepare-arm-result.json'],
 }
@@ -47,10 +48,12 @@ def identity():
 def composition():
     lock = read(LOCK)
     names = lock['files']
-    if lock['schema'] != 1 or len(names) != 117 or len(set(x.casefold() for x in names)) != 117:
-        raise ValueError('Exact retained 117-file composition required')
+    if lock['schema'] != 1 or len(names) != 119 or len(set(x.casefold() for x in names)) != 119:
+        raise ValueError('Exact 119-file composition with guarded startup helper required')
     if names != sorted(names) or any(not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._-]*\.(ps1|cs|py|json)', x) for x in names):
         raise ValueError('Invalid flat tool inventory')
+    if not {'StartupLauncher.ps1', 'test-startup-launcher.ps1'} <= set(names):
+        raise ValueError('Guarded startup helper and its focused test required')
     if 'inspect-fonts.ps1' in names:
         raise ValueError('Unrelated added font operator is outside this composition')
     return names
@@ -85,6 +88,24 @@ def verify_reports(gate, directory):
             if field in report and report[field] is not False:
                 raise ValueError('Unexpected non-fixture scope: ' + name)
         reports.append(dict(path=name, sha256=digest(path.read_bytes())))
+    if gate == 'policy':
+        startup = read(directory / 'startup-launcher.json')
+        if (startup.get('schema') != 1 or
+                startup.get('environment') != 'native-windows-inert-process' or
+                startup.get('nativeObservation') != 'passed' or
+                startup.get('installedBootstrap') != 'pending' or
+                startup.get('signedOffersAndRollback') != 'pending'):
+            raise ValueError('Native startup helper proof and its acceptance limits required')
+        checks = startup.get('checks', [])
+        if (not isinstance(checks, list) or len(checks) < 45 or
+                startup.get('count') != len(checks) or
+                any(not isinstance(check, str) or not check for check in checks)):
+            raise ValueError('Native startup helper check matrix incomplete')
+        expected = [dict(path='tools/boat/' + name,
+                         sha256=digest((ROOT / 'tools/boat' / name).read_bytes()))
+                    for name in ('StartupLauncher.ps1', 'test-startup-launcher.ps1')]
+        if startup.get('sourceFiles') != expected:
+            raise ValueError('Startup helper report does not bind exact tested source bytes')
     if gate == 'window':
         cases = read(directory / GATES[gate][1])['cases']
         if len(cases) != 16 or any(x.get('fixtureExitCode') != 0 for x in cases):
