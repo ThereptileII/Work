@@ -374,5 +374,47 @@
     "retentionGap": "Only evidence/local was uploaded; compiled application installs were not sealed before this packaging step. No app binary recovery is claimed from the failed run.",
     "boatModified": false,
     "qualifiedPackage": false
+  },
+  "nativeUpdaterTransfer": {
+    "url": "https://github.com/ThereptileII/Work/actions/runs/37326068134",
+    "commit": "e0ae050cdd59fe1309628f020344ccd8ffdbd10b",
+    "localImplementation": "da585da4d5478590cdcadd5757f0bf18a814d3d7",
+    "result": "passed",
+    "windowsPackageRules": 12,
+    "windowsSourceRules": 11,
+    "nativeRecoveryFixtures": 7,
+    "exactNativeTransfer": "passed; downloaded install and copied-install launcher/build record/source ZIP bytes independently equal",
+    "artifact": {
+      "id": 11351798892,
+      "sha256": "4d301ba8bde9ea13c414715f8a7238fda02b7816d7b9e90bb8a8e5e22418f8d2",
+      "downloadedAndVerified": true
+    },
+    "applicationBuilt": false,
+    "boatModified": false
+  },
+  "replacementStagingRequest": {
+    "commit": "c15ecddc0fadd7ba18bde97976f04ea03da9df06",
+    "url": "https://github.com/ThereptileII/Work/actions/runs/37326986679",
+    "sameTreeAsFocusedProbe": true,
+    "status": "Windows prerequisite failed; Linux still running",
+    "publicUpdateServiceConfigured": false,
+    "windowsPrerequisiteFailure": {
+      "job": 111820241849,
+      "fixture": "tools/test-updater-installer-integration.ps1",
+      "lastPassed": "Pending creation refuses an unqualified previous generation",
+      "visibleErrors": [
+        "Final cleanup could not remove still-live inert old-generation opencpn.exe",
+        "Inert NamedPipeClientStream.Connect(5000) later reported TimeoutException"
+      ],
+      "rootCause": "Not established: original receiver/assertion failure masked by cleanup",
+      "productionGuardChange": false,
+      "applicationCompiled": false,
+      "artifact": {
+        "id": 11352892085,
+        "sha256": "704a386cd620c30c24319fdb151d833557bcbd0cf0662d6fe9622c24ad1d22c4",
+        "downloaded": false
+      },
+      "diagnosticRepair": "Preserve original failure, receiver reason and phase timing; exact fixture-owned child cleanup only"
+    }
   }
 }

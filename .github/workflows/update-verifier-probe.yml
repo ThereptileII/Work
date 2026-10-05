@@ -2,7 +2,7 @@ name: Update verifier probe
 
 on:
   push:
-    branches: [skager-update-verifier]
+    branches: [skager-update-verifier, skager-updater-lifecycle]
   pull_request:
     paths:
       - opennav-x/tools/update-verifier/**
@@ -15,6 +15,7 @@ permissions:
 
 jobs:
   verify:
+    if: ${{ github.ref != 'refs/heads/skager-updater-lifecycle' }}
     timeout-minutes: 15
     strategy:
       matrix:
@@ -91,6 +92,7 @@ jobs:
           if-no-files-found: error
 
   startup-popup:
+    if: ${{ github.ref != 'refs/heads/skager-updater-lifecycle' }}
     name: Native startup update interactions
     runs-on: windows-2022
     timeout-minutes: 15
@@ -107,4 +109,24 @@ jobs:
         with:
           name: startup-update-native-${{ github.sha }}
           path: opennav-x/build/startup-update-native-evidence
+          if-no-files-found: error
+
+  lifecycle-only:
+    if: ${{ github.ref == 'refs/heads/skager-updater-lifecycle' }}
+    name: Focused actual Lifecycle startup diagnostics
+    runs-on: windows-2022
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Exercise only the actual Lifecycle with inert processes
+        shell: powershell
+        run: |
+          New-Item -ItemType Directory -Path opennav-x/build/updater-native -Force | Out-Null
+          & ./opennav-x/tools/test-updater-installer-integration.ps1 *>&1 | Tee-Object -FilePath opennav-x/build/updater-native/installer-transaction-tests.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: updater-lifecycle-${{ github.sha }}-attempt${{ github.run_attempt }}
+          path: opennav-x/build/updater-native
           if-no-files-found: error

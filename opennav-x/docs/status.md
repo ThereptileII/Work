@@ -21,6 +21,19 @@ reuses the exact native launcher/source artifact already built by that run's
 successful clean updater job, retaining all source/commit/hash checks. Early
 compiled-output retention is also being added; the failed run retained diagnostic
 evidence but no recoverable application package. No boat installation changed.
+The transfer/recovery correction passes focused native
+[run 37326068134](https://github.com/ThereptileII/Work/actions/runs/37326068134)
+at `e0ae050cdd59fe1309628f020344ccd8ffdbd10b`. Downloaded original and
+copied launcher/source bytes match exactly; seven native early-retention fixtures
+pass. The same implementation tree is now requested as Staging candidate
+`c15ecddc0fadd7ba18bde97976f04ea03da9df06` in
+[run 37326986679](https://github.com/ThereptileII/Work/actions/runs/37326986679).
+Its Windows prerequisite stopped in the isolated actual-Lifecycle fixture:
+a generated inert child timed out connecting to the startup pipe and cleanup
+masked the original receiver failure. This is not evidence of a real application
+crash. Failure diagnosis and fixture cleanup are being corrected without changing
+production authentication or timeout rules; Windows application compilation has
+not started for this request. Packaged runtime and boat acceptance remain pending.
 
 The first focused native run,
 [37294573113](https://github.com/ThereptileII/Work/actions/runs/37294573113),

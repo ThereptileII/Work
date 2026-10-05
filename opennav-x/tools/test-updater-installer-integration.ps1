@@ -41,6 +41,17 @@ $Fixture=Join-Path ([IO.Path]::GetTempPath()) ('SkagerLifecycleTest-'+[guid]::Ne
 $Registry='HKCU:\Software\SkagerLifecycleTests\'+[guid]::NewGuid().ToString('N')
 $Root=Join-Path $Fixture 'installation';$Programs=Join-Path $Fixture 'Programs'
 $SessionLog=New-Object 'Collections.Generic.List[string]';$Checks=0
+$DiagnosticDirectory=Join-Path $PSScriptRoot '../build/updater-native'
+$null=[IO.Directory]::CreateDirectory($DiagnosticDirectory)
+$DiagnosticPath=Join-Path $DiagnosticDirectory ('installer-fixture-'+[IO.Path]::GetFileName($Fixture)+'.jsonl')
+$RetainFixture=$false
+function Diagnostic([string]$Phase,$Details) {
+  $record=@{utc=[DateTime]::UtcNow.ToString('o');phase=$Phase;details=$Details}
+  $line=$record | ConvertTo-Json -Depth 6 -Compress
+  try {[IO.File]::AppendAllText($DiagnosticPath,$line+[Environment]::NewLine,$Utf8)}
+  catch {Write-Host ('FIXTURE-DIAGNOSTIC-WRITE-FAILED: '+$_.Exception.GetType().Name)}
+  Write-Host ('FIXTURE: '+$line)
+}
 $powerShell=Join-Path ([Environment]::GetFolderPath('System')) 'WindowsPowerShell/v1.0/powershell.exe'
 function Check([bool]$Condition,[string]$Message) { if(-not $Condition){throw ('FAILED: '+$Message)};$script:Checks++;Write-Host ('PASS: '+$Message) }
 function Reject([scriptblock]$Operation,[string]$Message) { $failed=$false;try{& $Operation | Out-Null}catch{$failed=$true};Check $failed $Message }
@@ -66,9 +77,16 @@ using System.IO;
 using System.IO.Pipes;
 using System.Text;
 using System.Threading;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 class InertLifecycleFixture {
  [DllImport("kernel32.dll")] static extern uint GetErrorMode();
+ static readonly Stopwatch Clock=Stopwatch.StartNew();
+ static void Note(string stage) {
+  try { File.AppendAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"fixture-client.log"),
+   DateTime.UtcNow.ToString("o")+" elapsedMs="+Clock.ElapsedMilliseconds+" pid="+Process.GetCurrentProcess().Id+" stage="+stage+Environment.NewLine); }
+  catch { /* Diagnostics never change pipe authentication or process lifetime. */ }
+ }
  static int Main(string[] args) {
   if(args.Length==2 && args[0]=="--opennav-self-test") {
    if((GetErrorMode() & 0x8003)!=0x8003) return 65;
@@ -76,15 +94,23 @@ class InertLifecycleFixture {
    return 0;
   }
   if(args.Length!=1 || args[0]!="--xnav") return 64;
+  Note("main");
+  try {
   using(var pipe=new NamedPipeClientStream(".",Environment.GetEnvironmentVariable("SKAGER_UPDATE_PIPE"),PipeDirection.Out)) {
-   pipe.Connect(5000);
+   Note("connect-start-5000ms");pipe.Connect(5000);Note("connected");
    string frame="SKAGER-UPDATE-READY/1 "+Environment.GetEnvironmentVariable("SKAGER_UPDATE_GENERATION")+" __COMMIT__ "+Environment.GetEnvironmentVariable("SKAGER_UPDATE_CHALLENGE")+"\n";
-   byte[] bytes=Encoding.ASCII.GetBytes(frame);pipe.Write(bytes,0,bytes.Length);pipe.Flush();
+   byte[] bytes=Encoding.ASCII.GetBytes(frame);pipe.Write(bytes,0,bytes.Length);pipe.Flush();Note("frame-written");
   }
   // Only a fixture-local sentinel can stop this inert process. No profile,
   // plugin, chart, network or equipment code is present in this executable.
+  Note("hold-start-10000ms");
   for(int i=0;i<1000 && !File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"fixture-stop"));i++) Thread.Sleep(10);
-  return 0;
+  Note("normal-exit");return 0;
+  } catch(Exception error) {
+   // An unhandled CLR exception can outlive the test under Windows Error
+   // Reporting. Record a bounded nonsecret category and exit deterministically.
+   Note("failed:"+error.GetType().Name+":0x"+error.HResult.ToString("X8"));return 70;
+  }
  }
 }
 '@
@@ -112,21 +138,75 @@ function CheckLink([string]$Id,[string]$Target) {
   Check ($link.TargetPath -ieq (Join-Path (Generation $Id) $Target) -and $link.Arguments -ceq '--xnav') 'Selected generation has exact startup target and arguments'
 }
 function Qualify([string]$Id) {
-  $generation=Get-SupervisedGeneration $Root $Id;$session=New-UpdateHealthSession $generation.identity;$process=$null
+  $generation=$null;$session=$null;$process=$null;$primary=$null;$cleanup=$null
+  $phase='generation-verification';$clock=[Diagnostics.Stopwatch]::StartNew();$ticks=0L;$expectedHash=''
   try {
-    $process=Start-SupervisedGeneration $generation $session
-    Check (Wait-UpdateGenerationStartupSuccess $generation.identity $session $process $generation.executable 5000) 'Actual receiver authenticates live inert generation'
+    $generation=Get-SupervisedGeneration $Root $Id;$expectedHash=$generation.identity.executableSha256
+    $phase='receiver-create';$session=New-UpdateHealthSession $generation.identity
+    Diagnostic $phase @{generation=$Id;elapsedMs=$clock.ElapsedMilliseconds;receiverTimeoutMs=5000;clientConnectTimeoutMs=5000;clientHoldMs=10000}
+    $phase='process-start';$process=Start-SupervisedGeneration $generation $session
+    $null=$process.get_Handle();$ticks=$process.StartTime.ToUniversalTime().Ticks
+    Diagnostic $phase @{generation=$Id;elapsedMs=$clock.ElapsedMilliseconds;pid=$process.Id;startedUtcTicks=$ticks;executableSha256=$expectedHash}
+    $phase='authenticated-receive'
+    $accepted=Wait-UpdateGenerationStartupSuccess $generation.identity $session $process $generation.executable 5000
+    Diagnostic $phase @{generation=$Id;elapsedMs=$clock.ElapsedMilliseconds;accepted=$accepted;receiverReason=$session.server.FailureReason;processExited=$process.HasExited}
+    Check $accepted 'Actual receiver authenticates live inert generation'
+    $phase='known-good-receipt'
     $path=Get-UpdateKnownGoodPath $Root $generation.identity
     $null=[IO.Directory]::CreateDirectory([IO.Path]::GetDirectoryName($path))
     Write-UpdateKnownGoodReceipt $path $generation.identity $session $generation.executable
     Assert-UpdateKnownGoodReceipt $path $generation.identity
+  } catch {
+    $primary=$_
+    Diagnostic 'qualification-failed' @{at=$phase;generation=$Id;elapsedMs=$clock.ElapsedMilliseconds;error=$_.Exception.Message;receiverReason=$(if($session){$session.server.FailureReason}else{$null})}
   } finally {
+    try {if($session){$session.server.Dispose()}} catch {$cleanup=$_}
     if($process){
-      $stop=Join-Path $generation.directory 'app/fixture-stop';[IO.File]::WriteAllText($stop,'stop',$Utf8)
-      try{if(-not $process.WaitForExit(12000)){throw 'Inert fixture did not exit.'}}finally{$process.Dispose();Remove-Item -LiteralPath $stop}
+      $stop=Join-Path $generation.directory 'app/fixture-stop'
+      try {
+        [IO.File]::WriteAllText($stop,'stop',$Utf8)
+        # This includes the existing client connect+hold maximum, but a late
+        # CLR Main can still miss it. Never let cleanup hide the primary cause.
+        if(-not $process.WaitForExit(15000)) {
+          Diagnostic 'cooperative-stop-timeout' @{generation=$Id;pid=$process.Id;elapsedMs=$clock.ElapsedMilliseconds}
+          $script:RetainFixture=$true
+          $prefix=[IO.Path]::GetFullPath((Join-Path $Fixture 'installation/generations')).TrimEnd('\')+'\'
+          $expected=[IO.Path]::GetFullPath($generation.executable)
+          if($ticks -le 0 -or -not $expected.StartsWith($prefix,[StringComparison]::OrdinalIgnoreCase) -or
+             $expected -ine (Join-Path $generation.directory 'app/opencpn.exe') -or
+             $process.StartTime.ToUniversalTime().Ticks -ne $ticks -or
+             [IO.Path]::GetFullPath($process.MainModule.FileName) -ine $expected -or (Hash $expected) -cne $expectedHash) {throw 'Inert process identity changed; fixture retained without signaling.'}
+          # Only this retained handle to our freshly compiled inert temp EXE
+          # can be terminated. No production cleanup or image-name killing.
+          $process.Kill()
+          if(-not $process.WaitForExit(5000)){throw 'Exact inert child did not terminate; fixture retained.'}
+          $script:RetainFixture=$false
+          Diagnostic 'inert-only-termination' @{generation=$Id;pid=$process.Id;startedUtcTicks=$ticks;executableSha256=$expectedHash;elapsedMs=$clock.ElapsedMilliseconds}
+          throw 'Inert fixture required failure-only termination after cooperative deadline.'
+        }
+        $exit=$process.get_ExitCode()
+        Diagnostic 'process-exit' @{generation=$Id;pid=$process.Id;exitCode=$exit;elapsedMs=$clock.ElapsedMilliseconds}
+        if($exit -ne 0){throw ('Inert fixture returned '+$exit)}
+      } catch {if(-not $cleanup){$cleanup=$_};Diagnostic 'qualification-cleanup-failed' @{error=$_.Exception.Message;elapsedMs=$clock.ElapsedMilliseconds}}
+      finally {
+        try {if(-not $process.HasExited){$script:RetainFixture=$true}} catch {$script:RetainFixture=$true}
+        $process.Dispose()
+        if(Test-Path -LiteralPath $stop){try{Remove-Item -LiteralPath $stop}catch{if(-not $cleanup){$cleanup=$_}}}
+        $clientLog=Join-Path $generation.directory 'app/fixture-client.log'
+        if(Test-Path -LiteralPath $clientLog){
+          try {
+            if((Get-Item -LiteralPath $clientLog).Length -gt 16384){throw 'Inert client diagnostic exceeds bound.'}
+            $saved=Join-Path $DiagnosticDirectory ('installer-fixture-'+[IO.Path]::GetFileName($Fixture)+'-'+$Id+'-client.log')
+            Copy-Item -LiteralPath $clientLog -Destination $saved
+            Diagnostic 'client-log-retained' @{generation=$Id;path=$saved}
+            Remove-Item -LiteralPath $clientLog
+          } catch {if(-not $cleanup){$cleanup=$_}}
+        } else {Diagnostic 'client-log-missing' @{generation=$Id;elapsedMs=$clock.ElapsedMilliseconds}}
+      }
     }
-    $session.server.Dispose()
   }
+  if($primary){throw $primary}
+  if($cleanup){throw $cleanup}
 }
 function Pending([string]$Candidate,[string]$Previous,[bool]$Publish=$true) {
   AtomicJson (Join-Path $Root 'state.json') (State $Previous)
@@ -144,6 +224,7 @@ function CheckRestored([string]$Previous,$Pending) {
   Check ((Test-UpdateIdentityEqual $archive.candidate $Pending.candidate) -and (Test-UpdateIdentityEqual $archive.previous $Pending.previous)) 'Archived transaction preserves both exact generation identities'
   CheckLink $Previous 'app/skager-start.exe'
 }
+$primaryFailure=$null;$finalCleanup=$null
 try {
   $null=[IO.Directory]::CreateDirectory($Root);$null=[IO.Directory]::CreateDirectory($Programs)
   AtomicJson (Join-Path $Root 'owner.json') @{owner=$Owner}
@@ -194,10 +275,19 @@ try {
   Check $true 'All immutable generation file inventories still verify after recovery'
   Check ((Hash $stockFile) -ceq $Stock.sha256 -and (Hash $profile) -ceq $profileHash) 'Stock and navigation-data sentinels remain byte-identical'
   Write-Host "$Checks actual-Lifecycle native integration checks passed. Inert fixture evidence only; no real application qualification."
+} catch {
+  $primaryFailure=$_
+  Diagnostic 'fixture-primary-failure' @{error=$_.Exception.Message;position=$_.InvocationInfo.PositionMessage}
 } finally {
-  if(Test-Path -LiteralPath $Registry){Remove-Item -LiteralPath $Registry -Recurse -Force}
-  if(Test-Path -LiteralPath $Fixture){Remove-Item -LiteralPath $Fixture -Recurse -Force}
+  try {if(Test-Path -LiteralPath $Registry){Remove-Item -LiteralPath $Registry -Recurse -Force}} catch {$finalCleanup=$_}
+  try {
+    if($RetainFixture){Diagnostic 'fixture-retained' @{path=$Fixture;reason='unresolved exact inert child'}}
+    elseif(Test-Path -LiteralPath $Fixture){Remove-Item -LiteralPath $Fixture -Recurse -Force}
+  } catch {if(-not $finalCleanup){$finalCleanup=$_}}
+  if($finalCleanup){Diagnostic 'fixture-final-cleanup-failed' @{error=$finalCleanup.Exception.Message}}
 }
+if($primaryFailure){throw $primaryFailure}
+if($finalCleanup){throw $finalCleanup}
 # Expected negative child runs leave LASTEXITCODE=1. Success is determined by
 # every assertion and cleanup above, not the most recent injected child failure.
 exit 0
