@@ -84,3 +84,26 @@ Its downloaded artifact matches the authenticated GitHub digest; see the
 installed-TLS/delivery contexts pass. No SDK producer input changed and no full
 Windows application was built for this helper repair. Packaged release notes
 and the short feedback test guide accompany the next Staging candidate.
+
+## Callback-lifetime review hold
+
+The coordinated candidate `ff7ae5d84884b8369acdd5eba9666152869ad497`
+([run 37267805917](https://github.com/ThereptileII/Work/actions/runs/37267805917))
+passes 97 Linux and 94 native Windows contract cases and the separate native
+commissioning/restart/private-loader prerequisite jobs. Integrated compilation
+was still running when parallel source review found SCRUM-300 retaining route
+and waypoint pointers across synchronous plugin callbacks. A handler can delete
+or replace those objects. The issue returns to In Progress for actual boundary
+revalidation and a mutation regression. This candidate must not be installed
+with the known defect; no pass or qualification is inferred from compilation.
+
+The correction resolves owned route identity/revision, current navigation,
+selected position and watches after persistence, deactivation and each
+synchronous notification. It selects the best point only immediately before
+native activation. The fixture extracts the actual production function; 33
+mutation cases plus normal/failure paths pass. The prior source fails with
+`Stale raw Route pointer dereferenced after callback`. The changed integration
+unit passes the actual application syntax check, and its CMake target builds
+and runs locally. It becomes the thirteenth shared native component without
+rerunning the other twelve locally. Replacement integrated qualification is
+still required; the old candidate is not relabelled as fixed.

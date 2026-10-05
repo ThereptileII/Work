@@ -21,7 +21,10 @@
     "disabledAndCleared": true,
     "chartOrUiAccepted": false,
     "credential": "Existing interactive user's protected credential; never read by orchestration or emitted in output",
-    "cleanup": {"probeProcesses": 0, "temporaryProbeTasks": 0},
+    "cleanup": {
+      "probeProcesses": 0,
+      "temporaryProbeTasks": 0
+    },
     "negativePreparation": "First invocation exited 1 without an aggregate result. Retried with the reviewed process-local ExecutionPolicy Bypass invocation; no system policy changed. No success was inferred from the first attempt."
   },
   "runningProduct": {
@@ -52,5 +55,25 @@
     "Qualify the current product's provider-to-list/chart path separately; this old isolated probe is not evidence that SCRUM-306 is fixed.",
     "No product restart, UI/geography change, raw server frame capture, credential export or physical equipment operation was performed."
   ],
-  "privateDataIncluded": false
+  "privateDataIncluded": false,
+  "stockholmFollowup": {
+    "observedUtc": "2026-10-05T05:30:49.4685031Z",
+    "commit": "c86c6a7558bfa028fcb6de36b11f6a2a875a22b7",
+    "durationSeconds": 45,
+    "publicTestRegion": "stockholm",
+    "exitCode": 0,
+    "subscriptionConfirmed": true,
+    "peakTargetCount": 74,
+    "acceptedReports": 96,
+    "rejectedReports": 0,
+    "reconnects": 0,
+    "disabledAndCleared": true,
+    "cleanup": {
+      "probeProcesses": 0,
+      "temporaryProbeTasks": 0
+    },
+    "buildInfoAndScriptHashesReverified": true,
+    "productOrProfileChanged": false,
+    "scope": "Same verified older isolated internet-only probe; not current product acceptance or same-area diagnosis"
+  }
 }

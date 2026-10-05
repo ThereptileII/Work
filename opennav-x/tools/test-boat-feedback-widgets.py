@@ -23,6 +23,7 @@ TESTS = {
     'navigation_name_editor_test', 'route_context_card_test',
     'chart_light_hover_tests', 'ais_drawer_scroll_test', 'online_ais_radius_test',
     'chart_anchor_watch_renderer_test',
+    'route_activation_callbacks_test',
 }
 
 

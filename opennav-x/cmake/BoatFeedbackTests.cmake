@@ -43,6 +43,19 @@ function(opennav_attach_boat_feedback_tests)
   # boundary. The generated functions come from the same prepared/pinned core
   # sources as the product; no fixture headers may reach a production target.
   find_package(Python3 REQUIRED COMPONENTS Interpreter)
+  # Exercise the actual integration transition with synchronous plugin mutation
+  # callbacks. This fixture owns no chart/profile/hardware state.
+  set(route_callback_source "${CMAKE_CURRENT_BINARY_DIR}/boat-feedback-route-callbacks.cpp")
+  add_custom_command(OUTPUT "${route_callback_source}"
+    COMMAND "${Python3_EXECUTABLE}" "${OPENNAV_ROOT}/tests/route_activation_callbacks/prepare.py"
+      --source "${OPENNAV_ROOT}/src/integration/NavigationObjects.cpp"
+      --output "${route_callback_source}"
+    DEPENDS "${OPENNAV_ROOT}/tests/route_activation_callbacks/prepare.py"
+      "${OPENNAV_ROOT}/src/integration/NavigationObjects.cpp"
+      "${OPENNAV_ROOT}/src/application/AnchorRouteTransition.h"
+    VERBATIM)
+  add_executable(route_activation_callbacks_test "${route_callback_source}")
+  target_link_libraries(route_activation_callbacks_test PRIVATE opennav_application)
   set(OPENNAV_BOAT_FEEDBACK_PREPARED_SOURCE "${OPENNAV_ROOT}/build/integration-source"
     CACHE PATH "Prepared pinned OpenCPN sources for boat-feedback renderer tests")
   set(OPENNAV_BOAT_FEEDBACK_PINNED_SOURCE "${OPENNAV_ROOT}/upstream/OpenCPN"
@@ -72,7 +85,7 @@ function(opennav_attach_boat_feedback_tests)
   target_link_libraries(chart_anchor_watch_renderer_test PRIVATE ${wxWidgets_LIBRARIES})
   set(boat_feedback_targets ${boat_feedback_models} ${boat_feedback_widgets}
     chart_light_hover_tests ais_drawer_scroll_test online_ais_radius_test
-    chart_anchor_watch_renderer_test)
+    chart_anchor_watch_renderer_test route_activation_callbacks_test)
   set(boat_feedback_manifest "{\n  \"schema\": 1,\n  \"commit\": \"${boat_feedback_commit}\",\n  \"tests\": [")
   set(boat_feedback_separator "")
   foreach(name IN LISTS boat_feedback_targets)

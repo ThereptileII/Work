@@ -100,8 +100,13 @@ deferred call. Legacy continues down the original dialog path.
 A narrow hook observes after normal `MyFrame::ProcessAnchorWatch`. It copies the
 registered watch mark, upstream radius convention and alarm state. The displayed
 distance uses the pinned OpenCPN `DistanceBearingMercator` path; no independent
-drag detector is introduced. The snapshot retains source, observation time and
-selected-position time. Movement history is bounded and only advances on new
+drag detector is introduced. The presentation callback also observes at the
+consumer's tick time, so a selected fix received since the last watch hook is
+checked against the current snapshot rather than the previous one. This does not
+run alarm processing or advance the fix's receipt time. The snapshot retains
+source, observation time and selected-position time as specified in the
+[anchor presentation contract](anchor-presentation-contract.md).
+Movement history is bounded and only advances on new
 position observations. Clearing retains the mark, emits the normal plugin
 notification and invalidates the displayed watch; setting an existing watch is
 never implicit. Demo cannot set or clear a real anchor watch.

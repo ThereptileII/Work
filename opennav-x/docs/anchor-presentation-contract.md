@@ -11,6 +11,15 @@ current and coherent, with `bGPSValid` and coordinates equal to OpenCPN's
 accepted position. Consumers hold no route/waypoint pointers. Observation does
 not change the selected fix's timestamp or process the alarm.
 
+`AnchorState.observed_at` records this presentation read, not a new GPS receipt
+or alarm-processing time. `distance_m.observed_at` and
+`vessel_position.observed_at` retain the selected latitude/longitude receipt
+time in the monotonic `vessel::Clock` domain. The distance sample identifies
+the OpenCPN watch calculation as its source; `vessel_position.position_source`
+retains the selected GPS source used to check coherence. The distance sample
+also retains the selected latitude's freshness policy. These fields do not claim
+a physical sensor measurement timestamp.
+
 Pinned source inspected: `gui/src/ocpn_frame.cpp::ProcessAnchorWatch` and
 `AnchorDistFix`, and `model/src/georef.cpp::DistanceBearingMercator` at
 `37fd0cddb7334fe489e9f18aa163977a9c5c84f7`. Positive watch radius alarms outside;
@@ -49,6 +58,8 @@ with the pinned OpenCPN routine for cardinal positions and an antimeridian
 crossing. The separate
 widget executable cannot access charts, profiles or equipment and is never
 installed. It checks presentation, range input and confirmation cancellation.
+The SCRUM-305 timing and distance-unit correction still requires native Windows
+and boat validation; the earlier component coverage does not qualify those gates.
 
 Setting an anchor in XNav now stops active OpenCPN route navigation only after
 the new anchor mark is saved. It reuses pinned `Routeman::DeactivateRoute`, which
@@ -64,6 +75,13 @@ mark revisions, after the modal interaction. Changed, added, missing or
 unavailable watches require a fresh decision. Route persistence is checked
 before clearing watch state. The transition preserves all anchor marks,
 including temporary SKAGER marks, and then uses native route activation.
+Route and waypoint pointers are not retained across persistence, deactivation
+or synchronous watch-clear plugin callbacks. The transition resolves the owned
+route identity/revision again and checks navigation, selected position and watch
+state. A callback-created route or watch is never silently replaced. Activation
+is refused if state changes; already delivered watch-clear notifications are
+not misrepresented as reversible. The best activation point is chosen only
+after those checks, immediately before the pinned native activation call.
 Explicit manual watch clearing retains its separately confirmed temporary-mark
 removal behavior. Go To is refused while a watch is active and directs the user
 to stop it first; it does not silently bypass the confirmation. Replay blocks
@@ -74,3 +92,6 @@ selection, persistence ordering/failure and replay using the production helpers.
 The native navigation-object scenario additionally checks actual route/watch
 transitions and registered/persisted mark preservation. These assertions require
 the native application gate; portable tests do not qualify Windows or boat use.
+An additional native fixture compiles the actual integration transition and
+tests 33 callback mutations plus normal and failure paths. It is included in the
+shared Linux/Windows component gate; it has no hardware or profile access.

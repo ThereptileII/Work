@@ -3,7 +3,9 @@
 ## Remaining boat feedback — coordinated Staging batch
 
 All 16 reported items have been investigated; **15 code fixes are implemented**
-and remain in Jira Testing pending native/boat confirmation. The changes include
+and await native/boat confirmation. SCRUM-300's callback-lifetime correction is
+included in the replacement; SCRUM-306 still needs installed target reception
+confirmed. The changes include
 passive pilot discovery, coherent anchor distance, anchor/route transitions,
 route/waypoint naming and contextual cards, actual XTE, chart-object information,
 AIS list scrolling and the reported chart/anchor/ownship presentation defects.
@@ -24,6 +26,15 @@ qualification with authenticated SDK reuse remains pending. The boat remains on 
 installed candidate until a qualified replacement is available. No Production
 promotion or broad design/endurance campaign is requested. See the
 [batch evidence](evidence/2026-10-05-boat-feedback/README.md).
+
+Pre-deployment review found that synchronous OpenCPN plugin callbacks can change
+the selected route during the new anchor-to-route transition. Candidate
+`ff7ae5d84884b8369acdd5eba9666152869ad497` is held from boat installation. The
+replacement re-resolves and validates state after those callbacks. Its focused
+actual-function fixture passes 33 mutation cases plus normal/failure paths;
+the previous source fails with the expected stale-pointer error. The held candidate's contract
+gates pass 97 Linux and 94 Windows tests; integrated builds are still running.
+Those results do not qualify the corrected replacement.
 
 ## Online AIS freeze: first narrow repair — SCRUM-301
 

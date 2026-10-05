@@ -10,6 +10,10 @@ the actual source boundary, not a claim that every role is a separate C++ class.
 | XNavIconButton | `ui/Controls.*`, `XNavIconButton` | Shared vector icons including Center, zoom, Back and menu; accessible text retained |
 | XNavCard | `XNavPainter::Card` | Shared rounded dark surface, quiet heading and border treatment |
 | XNavContextCard | `ui/ContextCard.*` | Modeless chart-bounded AIS, waypoint and chart-position cards; copied state, explicit actions, outside/Escape dismissal, no pointer grab |
+| XNavRouteContextCard | `ui/RouteContextCard.*`, `application/RouteContext.*` | Chart-bounded modeless route summary; copied identity/state/endpoints, View on chart and Details. Hover does not take focus or replace an open task; Close/outside/Escape dismisses; no activation callback |
+| XNavNameEditor | `ui/NameEditor.*`, `application/NavigationNaming.h` | Inline Route name / Waypoint name, explicit Save or Enter; Cancel/Escape restores the saved name without leaving details. Changed drafts survive timer/theme refreshes; invalid/read-only/stale writes cannot silently replace saved data |
+| Navigation naming sheet | `ui/NameEditor.*`, `EditNavigationNameSheet` | Shared themed Name and optional Description fields for creation and fuller edits; chart-derived suggestions or coordinate fallback for new objects only; explicit Save/Cancel with draft retained after invalid input |
+| XNavChartInfoDrawer | `ui/ChartInfoDrawer.*`, `application/ChartInfo.*` | Read-only chart information sections, concise summaries and Show all chart details / Hide chart details. Preserves unknown fields and attachment references as inert text; empty/truncated notices remain explicit; shares drawer scrolling and Day/Dusk/Night roles |
 | Product value group | `ProductPanel::Visual` plus `XNavPainter` | Owned-state instrument, pilot, AIS detail, anchor and alert groups |
 | XNavSheet | `ui/Sheet.*`, `EditSheet`/`ConfirmSheet` | Focused dark modal, explicit actions, bounded fields, scrollable content; no write before acceptance |
 | XNavDataValue | `ui/Controls.*`, `XNavDataValue` | Freshness/provenance-aware number; compact rail layout and standard larger layout |
@@ -45,7 +49,10 @@ than using fixed coordinates from an older UI.
 ## Deliberate native boundaries
 
 Advanced OpenCPN settings, plugin dialogs and system file pickers remain native
-and may be bright. Text-entry controls live inside themed XNav sheets. No
+and may be bright. Text-entry controls live inside themed XNav sheets and the
+inline saved-object name editor. In XNav, chart object information uses the
+owned read-only drawer; Legacy retains OpenCPN Object Query. Chart/plugin
+selection and value formatting remain upstream responsibilities. No
 placeholder slider, radar transmitter control or unsupported pilot mode is
 presented as working. Popup/card changes are immediate; decorative animation
 has not been added to navigation data.

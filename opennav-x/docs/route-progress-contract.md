@@ -57,6 +57,10 @@ the age of an old retained snapshot cannot detect a later route edit.
 - Route GUID and revision scope/revision number.
 - Active waypoint GUID and **zero-based** index; total waypoint count.
 - Optional remaining distance in **nautical miles**. Missing is never zero.
+- Optional cross-track magnitude in **nautical miles** paired with an explicit
+  steer-left/steer-right direction; see the SCRUM-299 rules below.
+- Copied display-unit label and units-per-nautical-mile conversion factor;
+  canonical distances and their validity remain unchanged.
 - Completed-progress observation time and separate position observation time,
   both in the process's monotonic `vessel::Clock` domain, not UTC.
 - Explicit validity/rejection state; progress and position provenance strings.

@@ -413,34 +413,91 @@ application::CommandResult ActivateRouteTransition(
     return {false,
             "Fresh selected position is required to choose an activation point",
             {}};
-  auto *best =
-      g_pRouteMan->FindBestActivatePoint(route, gLat, gLon, gCog, gSog);
   const auto watches = CopyAnchorWatchSelection();
+  std::optional<application::Route> previous_active;
+  if (auto *active = g_pRouteMan->GetpActiveRoute()) {
+    if (!g_pRouteMan->IsRouteValid(active))
+      return {false, "Current navigation changed; refresh selection"};
+    previous_active = Copy(active);
+  }
+  auto prepared = selected;
   return application::CommitRouteActivation(watches, confirmed, [&] {
     const bool visible = route->IsVisible();
     route->SetVisible(true);
-    if (NavObj_dB::GetInstance().UpdateRoute(route)) return true;
-    route->SetVisible(visible);
-    return false;
+    prepared = Copy(route); // Include our own persisted visibility change.
+    const bool saved = NavObj_dB::GetInstance().UpdateRoute(route);
+    route = nullptr; // Database error handling can dispatch nested events.
+    if (!saved)
+      if (auto *current = Resolve(prepared)) current->SetVisible(visible);
+    return saved;
   }, [&]() -> application::CommandResult {
-    // Match the pinned chart activation path. Deactivation clears progress,
-    // not the route or its marks; ordinary ActivateRoute does not do this.
+    const auto ready = [&] {
+      auto *current = Resolve(prepared);
+      return g_pRouteMan && current && Copy(current).editable &&
+             current->GetnPoints() >= 2 &&
+             Position(position, vessel::Clock::now());
+    };
+    const auto same_navigation = [&] {
+      if (!g_pRouteMan) return false;
+      auto *active = g_pRouteMan->GetpActiveRoute();
+      return previous_active
+                 ? active && Resolve(*previous_active) == active
+                 : !active;
+    };
+    if (!ready() || !same_navigation() ||
+        !application::SameAnchorWatchSelection(
+            watches, CopyAnchorWatchSelection()))
+      return {false,
+              "Route, position or anchor watch changed while saving; "
+              "refresh selection"};
+    // Treat native deactivation as a callback boundary too. A handler must not
+    // cause a newly active route or changed watch to be silently overwritten.
     if (g_pRouteMan->GetpActiveRoute() && !g_pRouteMan->DeactivateRoute())
       return {false, "Could not stop current navigation; anchor watch retained"};
+    if (!ready() || g_pRouteMan->GetpActiveRoute() ||
+        !application::SameAnchorWatchSelection(
+            watches, CopyAnchorWatchSelection()))
+      return {false,
+              "Route, position or anchor watch changed while stopping navigation; "
+              "refresh selection"};
+    auto *current = Resolve(prepared);
     // This transition preserves every mark, including SKAGER-created anchors.
     // Explicit ClearAnchor has a separate, confirmed temporary-mark lifecycle.
     pAnchorWatchPoint1 = pAnchorWatchPoint2 = nullptr;
     g_AW1GUID.Clear();
     g_AW2GUID.Clear();
     AnchorAlertOn1 = AnchorAlertOn2 = false;
+    // Clearing a watch can change a shared waypoint's editability/revision.
+    // Capture that known local change before any plugin callback is dispatched.
+    prepared = Copy(current);
+    current = nullptr;
+    const auto cleared = CopyAnchorWatchSelection();
+    bool changed = !cleared.available || !cleared.watches.empty();
     for (const auto &watch : watches.watches) {
       wxJSONValue message;
       message["GUID"] = wxString::FromUTF8(watch.id);
       SendJSONMessageToAllPlugins("OCPN_ANCHOR_WATCH_CLEARED", message);
+      // Plugin messaging is synchronous and may delete/replace routes, edit
+      // points, activate another route or arm a watch. Keep only owned copies
+      // across it, and still notify every watch which we actually cleared.
+      changed =
+          !ready() || !g_pRouteMan || g_pRouteMan->GetpActiveRoute() ||
+          !application::SameAnchorWatchSelection(
+              cleared, CopyAnchorWatchSelection()) ||
+          changed;
     }
-    // At the pinned revision this call returns true and delegates plugin-owned
-    // route handling normally. Do not introduce an alternate progress engine.
-    const bool activated = g_pRouteMan->ActivateRoute(route, best);
+    if (changed || !ready())
+      return {false,
+              "Navigation changed during anchor notification; "
+              "requested route not activated",
+              selected.id};
+    current = Resolve(prepared);
+    auto *best =
+        g_pRouteMan->FindBestActivatePoint(current, gLat, gLon, gCog, gSog);
+    // Pinned ActivateRoute/ActivateRoutePoint publish through wxQueueEvent,
+    // not synchronous plugin messaging. No external callback occurs between
+    // this final resolution/point selection and the native activation call.
+    const bool activated = g_pRouteMan->ActivateRoute(current, best);
     return {activated, activated ? "Route activated using OpenCPN"
                                   : "Route activation failed; anchor watch stopped",
             selected.id};

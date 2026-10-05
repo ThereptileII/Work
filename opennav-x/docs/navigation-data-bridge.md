@@ -75,12 +75,28 @@ Alpha [marine-input contract](marine-input-contract.md) adds normalized vessel
 fields through the upstream bus, with passing Linux/native Windows qualification
 at `7bc36e4`. Physical sensor validation remains open.
 
-## Remaining active-route distance
+## Active-route progress
 
 The read-only route observer uses selected position provenance while observing
 normal OpenCPN route progress. Its contract, lifetime/coherence rules and tests
 are documented separately in [route-progress-contract.md](route-progress-contract.md).
 The original navigation subscriber and displayed SOG/COG behavior remain unchanged.
+The same owned publication carries SCRUM-299 cross-track error magnitude in
+nautical miles and OpenCPN's direction to steer toward the route. It shares the
+completed-pass and selected-position validity/freshness checks; reading it does
+not calculate route geometry or send steering commands. Display-unit conversion
+does not change the canonical nautical-mile value. Missing cross-track data stays
+unavailable and does not invalidate independently valid remaining distance.
+
+## Anchor observations
+
+SCRUM-305 refreshes the owned anchor presentation from the current selected fix
+at the consumer's tick time, as well as after the normal OpenCPN watch pass.
+The fix retains its original receipt timestamp and selected-navigation source;
+the copied alarm remains OpenCPN's last processed alarm. A UI read neither
+processes the watch nor renews GPS freshness. The field timing, metre-based
+geometry and display-unit conversion are detailed in the
+[anchor presentation contract](anchor-presentation-contract.md).
 
 ## Developer Preview consumers
 
