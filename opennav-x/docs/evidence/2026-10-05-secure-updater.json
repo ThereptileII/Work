@@ -558,7 +558,7 @@
       "manifestSha256": "44736b5fb4a5b3c1d71c3cd72a44dea0d505436a247605fc629e8589a7503e6d",
       "producerAttempt": 1,
       "downloaded": false,
-      "qualification": "original passed runtime prefix plus successful exact-byte installer/chart retest; draft composition pending"
+      "qualification": "original passed runtime prefix plus successful exact-byte installer/chart retest; authenticated composition and publication-only draft delivery passed"
     },
     "windowsQualificationJob": 111861197301,
     "runtimeFailure": {
@@ -574,8 +574,8 @@
       "failure": "Restored known-good application did not exit within unchanged 30-second close deadline",
       "sourceFinding": "Pinned OpenCPN ignores OnCloseWindow before g_bDeferredInitDone. Restored-startup helper lacked the existing fresh finalization-log readiness precondition. Actual failed run did not preserve application log, so timing causality is not claimed proven.",
       "pending": [
-        "draft Staging composition and delivery",
-        "boat acceptance"
+        "boat acceptance",
+        "signed live-channel selection and consent acceptance"
       ],
       "recompileRequired": false
     },
@@ -636,7 +636,20 @@
       "downloadedAndVerified": true
     },
     "setupSha256": "d43b63e69c094026a7d3cfc749e2f3f09966a090dc9979dc1deaacc18d3fb49f",
-    "continuation": "pending"
+    "continuation": {
+      "runId": "37350987228",
+      "url": "https://github.com/ThereptileII/Work/actions/runs/37350987228",
+      "commit": "b1b407d3d0570cec75b6d1bb7fdf9805390528d6",
+      "status": "passed",
+      "draftReleaseId": 403963091,
+      "draftUrl": "https://github.com/ThereptileII/Work/releases/tag/untagged-17c2e26c8768e056f05b",
+      "assetCount": 12,
+      "originalPayloadCount": 11,
+      "transportReceiptSha256": "5e1f3659f7b24677d3829f0e516d789f0477eba8ba9a172b222738fd4e20cf6f",
+      "allAssetDigestsMatchFrozenManifest": true,
+      "publicAccess": false,
+      "productRebuilt": false
+    }
   },
   "boatUpdaterPreparation": {
     "setupStagedAndHashVerified": true,
