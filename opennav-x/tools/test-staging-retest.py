@@ -4,6 +4,9 @@ import importlib.util
 import json
 from pathlib import Path
 import unittest
+import os
+import subprocess
+from unittest import mock
 from github_release_delivery import GitHub
 
 spec = importlib.util.spec_from_file_location('staging_retest', Path(__file__).with_name('retest-staging-windows.py'))
@@ -49,6 +52,98 @@ class Selection(unittest.TestCase):
         for artifacts in ([earlier], [exact, dict(exact, id=3)]):
             with self.subTest(artifacts=artifacts), self.assertRaisesRegex(ValueError, 'missing or ambiguous'):
                 retest.selection_for_run(Transport(artifacts), '123', '2')
+
+
+class PinnedRetest(unittest.TestCase):
+    def setUp(self):
+        self.path = retest.ROOT / 'tools/staging-installer-retest.json'
+        self.request = json.loads(self.path.read_text())
+        self.environment = dict(GITHUB_EVENT_NAME='push', GITHUB_REF='refs/heads/skager-staging-retest',
+                                GITHUB_REPOSITORY='ThereptileII/Work', GITHUB_SHA='f'*40)
+
+    def test_only_exact_trusted_push_and_installer_charts_selection(self):
+        with mock.patch.dict(os.environ, self.environment, clear=True):
+            self.assertEqual(retest.pinned_selection(self.path), self.request)
+            for event, ref in [('pull_request','refs/heads/skager-staging-retest'),
+                               ('push','refs/heads/staging'),('push','refs/tags/skager-staging-retest')]:
+                with mock.patch.dict(os.environ, GITHUB_EVENT_NAME=event, GITHUB_REF=ref):
+                    with self.assertRaisesRegex(ValueError,'trusted branch'):
+                        retest.pinned_selection(self.path)
+            for mutation in (dict(scope='all'),dict(schema=True),dict(archiveSha256='invalid')):
+                with mock.patch.object(retest,'read_json',return_value=dict(self.request,**mutation)):
+                    with self.assertRaises(ValueError):retest.pinned_selection(self.path)
+            with self.assertRaisesRegex(ValueError,'committed installer'):
+                retest.pinned_selection(self.path.with_name('another.json'))
+
+    def test_push_cli_refuses_unpinned_prepare_and_broader_scope_before_effects(self):
+        environment=dict(self.environment,GITHUB_ACTIONS='true',RUNNER_ENVIRONMENT='github-hosted')
+        for arguments in (['prepare','--producer-run-id','37330218586','--producer-run-attempt','1'],
+                          ['test','--scope','all'],['test','--scope','installer']):
+            with mock.patch.dict(os.environ,environment,clear=True), \
+                 mock.patch.object(retest.sys,'platform','win32'), \
+                 mock.patch.object(retest.sys,'argv',['retest']+arguments), \
+                 mock.patch.object(retest,'prepare') as prepare, \
+                 mock.patch.object(retest,'run_checks') as checks:
+                with self.assertRaisesRegex(ValueError,'only the pinned'):
+                    retest.main()
+                prepare.assert_not_called();checks.assert_not_called()
+
+    def test_prepare_keeps_exact_artifact_and_product_harness_separate(self):
+        request = self.request
+        with mock.patch.dict(os.environ,self.environment,clear=True), \
+             mock.patch.object(retest,'fetch',return_value={'archiveSha256':request['archiveSha256']}) as fetch, \
+             mock.patch.object(retest.subprocess,'check_output',return_value='f'*40), \
+             mock.patch.object(retest,'restore') as restore:
+            self.assertEqual(retest.prepare(None,None,self.path),request['artifact']['headSha'])
+            self.assertEqual(fetch.call_args.args[1],request['artifact'])
+            self.assertEqual(fetch.call_args.kwargs,dict(kind='staging'))
+            arguments=restore.call_args.args
+            self.assertEqual(arguments[2],request['archiveSha256'])
+            self.assertEqual(arguments[3]['commit'],request['artifact']['headSha'])
+            self.assertEqual(arguments[3]['runId'],'37330218586')
+            self.assertEqual(arguments[3]['runAttempt'],'1')
+            self.assertEqual(arguments[4],'f'*40)
+            fetch.return_value={'archiveSha256':'e'*64};restore.reset_mock()
+            with self.assertRaisesRegex(ValueError,'inner retained archive'):
+                retest.prepare(None,None,self.path)
+            restore.assert_not_called()
+
+    def test_installer_then_existing_chart_command_and_failure_stops(self):
+        for failure in (None,0,1):
+            report=dict(status='running',productCommit=COMMIT,releaseQualification=False)
+            calls=[]
+            def execute(command,**kwargs):
+                calls.append(command)
+                if len(calls)-1==failure:raise subprocess.CalledProcessError(1,command)
+            with mock.patch.object(retest.subprocess,'run',side_effect=execute):
+                if failure is None:retest.run_checks('installer-charts',report,lambda:None)
+                else:
+                    with self.assertRaises(subprocess.CalledProcessError):
+                        retest.run_checks('installer-charts',report,lambda:None)
+            self.assertEqual(calls[0],[retest.sys.executable,str(retest.ROOT/'tools/smoke-installer-windows.py'),
+                '--mode','staging','--compiled-input-receipt',str(retest.ROOT/'evidence/local/staging-inputs.json')])
+            if failure!=0:
+                self.assertEqual(calls[1],[retest.sys.executable,str(retest.ROOT/'tools/smoke-charts.py')])
+            self.assertEqual([c['status'] for c in report['checks']],
+                             ['passed','passed'] if failure is None else ['failed','not-run'] if failure==0 else ['passed','failed'])
+            self.assertEqual(report['status'],'passed' if failure is None else 'failed')
+            self.assertFalse(report['releaseQualification'])
+
+    def test_workflow_keeps_dispatch_and_exact_push_without_build_or_promotion(self):
+        import yaml
+        checkout=Path(subprocess.check_output(['git','-C',str(retest.ROOT),'rev-parse','--show-toplevel'],text=True).strip())
+        # BaseLoader keeps GitHub's 'on' as a string instead of YAML1.1 bool.
+        workflow=yaml.load((checkout/'.github/workflows/skager-staging-retest.yml').read_text(),Loader=yaml.BaseLoader)
+        self.assertEqual(set(workflow['on']),{'push','workflow_dispatch'})
+        self.assertEqual(workflow['on']['push']['branches'],['skager-staging-retest'])
+        self.assertIn('installer-charts',workflow['on']['workflow_dispatch']['inputs']['scope']['options'])
+        self.assertEqual(workflow['env']['SKAGER_DESIGN_VALIDATION'],'false')
+        steps=workflow['jobs']['retest']['steps']
+        test=next(x for x in steps if 'RETEST_SCOPE' in x.get('env',{}))
+        self.assertEqual(test['env']['RETEST_SCOPE'],"${{ github.event_name == 'push' && 'installer-charts' || inputs.scope }}")
+        self.assertNotIn('GH_TOKEN',test['env'])
+        for step in steps:
+            self.assertNotRegex(step.get('run',''),r'(?i)(build-pristine|cmake|msbuild|makensis|gh release|package-preview|package-alpha)')
 
 
 if __name__ == '__main__':

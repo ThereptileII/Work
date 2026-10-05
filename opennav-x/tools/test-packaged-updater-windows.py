@@ -7,6 +7,7 @@ No standalone destructive entrypoint, build, download, or product trust fixture.
 """
 import ctypes
 import hashlib
+import importlib.util
 import json
 import os
 from pathlib import Path
@@ -14,6 +15,36 @@ import re
 import subprocess
 import sys
 import time
+
+
+_startup_spec = importlib.util.spec_from_file_location(
+    'packaged_updater_startup_log', Path(__file__).with_name('startup-log.py'))
+_startup = importlib.util.module_from_spec(_startup_spec)
+_startup_spec.loader.exec_module(_startup)
+
+
+def startup_log(profile):
+    path = profile / 'opencpn.log'
+    if not path.exists():
+        return b''
+    with path.open('rb') as stream:
+        content = stream.read(4 * 1024 * 1024 + 1)
+    if len(content) > 4 * 1024 * 1024:
+        raise RuntimeError('Installed startup log exceeds the observation bound')
+    return content
+
+
+def wait_startup_ready(profile, before):
+    # Same fresh append/rotation policy and deadline as installer smoke. A
+    # visible shell and an exited launcher do not prove deferred init finished:
+    # pinned OpenCPN explicitly ignores WM_CLOSE until g_bDeferredInitDone.
+    deadline = time.monotonic() + 45
+    while time.monotonic() < deadline:
+        if _startup.initialized_since(before, startup_log(profile)):
+            time.sleep(.6)
+            return
+        time.sleep(.1)
+    raise RuntimeError('Installed app did not complete fresh startup before close')
 
 
 def digest(path):
@@ -107,34 +138,62 @@ def qualify(*, install, setup, stock, profile, evidence, powershell, commit,
         assert not any(title == 'SKAGER / OpenCPN' for _, _, title in ui.windows())
         log = evidence / ('packaged-updater-' + phase + '.log')
         assert not log.exists()
+        before_log = startup_log(profile)
         start = time.monotonic()
+        operation = {'phase': phase, 'generation': identifier, 'log': log.name,
+                     'status': 'running', 'lastStage': 'launch'}
+        report['operations'].append(operation)
         with log.open('xb') as stream:
             parent = subprocess.Popen(arguments, stdout=stream, stderr=subprocess.STDOUT)
             owned.add(parent.pid)
             try:
                 # Locate the actual app child, not the launcher/supervisor PID.
                 # Its final image must match the exact generation before any UI action.
+                operation['lastStage'] = 'window-discovery'
                 window, pid = ui.wait_window('SKAGER / OpenCPN', timeout=90)
                 assert process_image(pid).samefile(executable), 'Wrong generation opened the application window'
                 owned.add(pid)
+                operation['lastStage'] = 'launcher-completion'
                 assert parent.wait(timeout=max(1, 240-(time.monotonic()-start))) == 0, str(log)
+                operation['lastStage'] = 'fresh-startup-readiness'
+                wait_startup_ready(profile, before_log)
+                operation['startupReadySeconds'] = round(time.monotonic()-start, 3)
                 assert ui.IsWindowEnabled(window), 'Startup remains blocked by a modal dialog'
                 if authenticate:
+                    operation['lastStage'] = 'receipt-authentication'
                     audit_receipt(identifier, phase)
                     assert time.monotonic()-start >= 30, 'Real continuous startup health checkpoint did not elapse'
                 # The production CloseMainWindow path remains separately tested;
                 # this fixture requests the normal visible application close.
                 monitor = ui.monitor_process(pid)
+                operation['lastStage'] = 'normal-close'
+                operation['closeRequestedSeconds'] = round(time.monotonic()-start, 3)
                 ui.close(window)
                 ui.wait_clean_exit(monitor, timeout_ms=30000)
                 owned.discard(pid)
+            except BaseException as error:
+                operation.update(status='failed', error=repr(error),
+                                 seconds=round(time.monotonic()-start, 3))
+                # Keep the actual disposable app's bounded startup log, even if
+                # stdout is empty. Capture failure must not replace the cause.
+                try:
+                    content = startup_log(profile)
+                    saved = evidence / ('packaged-updater-' + phase + '-startup.log')
+                    with saved.open('xb') as diagnostic:
+                        diagnostic.write(content)
+                    operation['startupLog'] = {'path': saved.name, 'bytes': len(content),
+                                               'sha256': hashlib.sha256(content).hexdigest(),
+                                               'freshInitialization': _startup.initialized_since(before_log, content)}
+                except (OSError, RuntimeError) as capture_error:
+                    operation['startupLogError'] = repr(capture_error)
+                raise
             finally:
                 if parent.poll() is not None:
                     owned.discard(parent.pid)
         assert navigation_matches(), 'Shared navigation fixtures changed across supervised startup'
         assert inventory(stock.parent) == stock_before, 'Supported stock installation changed'
-        report['operations'].append({'phase': phase, 'generation': identifier,
-                                     'seconds': round(time.monotonic()-start, 3), 'log': log.name})
+        operation.update(status='passed', lastStage='complete',
+                         seconds=round(time.monotonic()-start, 3))
 
     audit = evidence / 'packaged-updater-receipt-audit.ps1'
     assert not audit.exists()

@@ -2,6 +2,30 @@
 
 ## Secure startup updater — implementation and focused qualification
 
+Current Staging candidate `c0d8d85fb602e86d40e2f3f1be32307919702408`
+([run 37330218586](https://github.com/ThereptileII/Work/actions/runs/37330218586))
+has passed Linux integration (152/152 tests in each variant), both native Windows
+builds (144/144 each), security checks and installer/recovery packaging. Exact
+compiled inputs are sealed and retained. Installed runtime qualification passed
+real launcher startup, supervised Setup startup, and rollback of an intentionally
+broken candidate, then failed the restored application's 30-second normal-close
+check. The helper omitted OpenCPN's fresh deferred-initialization readiness check;
+upstream explicitly ignores close requests before that point. A helper-only
+correction and retest will reuse the exact package bytes. The failed run did not
+preserve its application log, so this source finding is not claimed as proven
+run timing. Chart smoke was skipped after that failure; package and boat
+acceptance remain pending. Its actual-Lifecycle step passed all 46 checks,
+including a deliberate six-second child startup delay, authenticated after about
+7.8 seconds. Suspended-loader healthy/wrong-hash cases also pass. This supersedes
+the pending focused corrections below, without turning inert fixture results
+into packaged application or boat acceptance. The earlier isolated green probe
+did not execute the delayed Lifecycle script; that omission remains recorded.
+The qualified 119-file boat tool bundle is staged separately. No boat application,
+profile or public update configuration has changed. A controlled signed channel
+and protected signing operations (SCRUM-72/73) are still needed for SCRUM-23's
+authenticated no-update/offer/Later/offline boat acceptance; an unconfigured
+bootstrap is not a substitute for those scenarios.
+
 SCRUM-23/25/26 are Testing. The new installed launcher composes retained
 signed trust, measured OpenCPN compatibility, explicit Update Now/Later consent,
 verified installer custody and the existing transactional lifecycle. Candidate
@@ -10,7 +34,7 @@ recovery checkpoint; failed/interrupted startup restores the verified previous
 generation. Legacy, Safe and portable recovery keep their direct startup paths.
 See [the implementation contract](installer/secure-updater.md).
 
-The latest integrated candidate is **not packaged or qualified**. At
+The earlier integration attempt was **not packaged or qualified**. At
 `c330f33883a9af0e7fc7b95d4cbcf916a3ff576d`,
 [run 37317835346](https://github.com/ThereptileII/Work/actions/runs/37317835346)
 passes both Linux builds (152/152 tests each), both Windows builds (144/144 each),

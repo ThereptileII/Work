@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "scope": "installer-charts",
+  "artifact": {
+    "repository": "ThereptileII/Work",
+    "runId": "37330218586",
+    "runAttempt": "1",
+    "headSha": "c0d8d85fb602e86d40e2f3f1be32307919702408",
+    "artifactId": "11357053892",
+    "artifactName": "staging-build-c0d8d85fb602e86d40e2f3f1be32307919702408-run37330218586-attempt1",
+    "artifactDigest": "sha256:2dd4f62ef8c03dad4bf0aac54813f773b919aeed07008489c377cafd7b890a6b"
+  },
+  "archiveSha256": "b3a7492d6998291428a635b0d615c2de1da62627ed440bfc46c4b2fb5b5fcfb9"
+}

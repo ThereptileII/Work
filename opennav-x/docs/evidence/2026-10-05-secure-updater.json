@@ -436,5 +436,151 @@
       "sha256": "dfd7617a85fff2f30b5c9e9f1b592b249a8fb2f0541a72c3534918bb81fb23b4",
       "downloadedAndVerified": true
     }
+  },
+  "suspendedStartupProbe": {
+    "url": "https://github.com/ThereptileII/Work/actions/runs/37329886396",
+    "commit": "2d4520d8beea5901824b8109e54ccd61dad3b54d",
+    "actualReceiptTests": "passed, including suspended healthy/wrong-hash and native supervisor rollback cases",
+    "delayedLifecycleTest": "NOT RUN: composite probe step exited on null LASTEXITCODE before second script; overall green does not qualify that case",
+    "artifact": {
+      "id": 11353522688,
+      "sha256": "3643e9cd7febd6cbb5fadec2feac0355e400e28d6352771796d0db30887d3b51",
+      "downloaded": false
+    },
+    "productPipeline": "Full updater workflow already uses separate steps, so delayed Lifecycle remains a mandatory prebuild gate for c0d8d85fb602e86d40e2f3f1be32307919702408",
+    "helperCorrection": "Separate the two isolated probe steps; null exit-code is not a process failure"
+  },
+  "currentStagingRequest": {
+    "url": "https://github.com/ThereptileII/Work/actions/runs/37330218586",
+    "commit": "c0d8d85fb602e86d40e2f3f1be32307919702408",
+    "localProductSource": "7a2bedcf6b0e4e52e51e3d2bb2c4414b5e97c504",
+    "status": "runtime-qualification-failed",
+    "criticalClarification": "Separate mandatory actual-Lifecycle step executed and passed. Earlier isolated combined helper green did not execute that case.",
+    "boatModified": false,
+    "publicUpdateServiceConfigured": false,
+    "nativeUpdaterPrerequisite": {
+      "job": 111832676523,
+      "status": "passed",
+      "actualLifecycleChecks": 46,
+      "deliberateClientDelayMs": 6000,
+      "authenticatedElapsedMs": 7796,
+      "suspendedHealthyAndWrongHash": "passed",
+      "artifact": {
+        "id": 11354745786,
+        "sha256": "e3f05753a72edd0721be71eb637927ef6563fbd8f0b26ea8c3904c62564f500e",
+        "downloadedAndVerified": true
+      },
+      "goTests": {
+        "topLevel": 72,
+        "includingSubcases": 302,
+        "failed": 0
+      }
+    },
+    "windowsApplicationJob": 111835972162,
+    "packagedRuntime": "failed-after-three-updater-mechanics-passed",
+    "boatAcceptance": "pending",
+    "linuxIntegration": {
+      "job": 111832675961,
+      "status": "passed",
+      "fixtureTests": {
+        "passed": 152,
+        "failed": 0
+      },
+      "fixtureFreeTests": {
+        "passed": 152,
+        "failed": 0
+      },
+      "functionalRuntime": "passed"
+    },
+    "boatToolPreparation": {
+      "status": "staged-only",
+      "toolCommit": "8522367f3395cc5eb76b1b8df0a8f2d8113b6354",
+      "qualifiedRun": 37319036023,
+      "files": 119,
+      "archiveSha256": "f816fe14ebf9205312155b8e591c9ef8b8470518fa8a19a71d5ff7a7d26d1515",
+      "manifestSha256": "8267ccc2607182ffe268e8dc233f1e509d0ad29fc7fcda8f8adff21d4243e4c0",
+      "completionSha256": "87a26d2d8691ef841ebf7592354b978d54f95e2cd56ae64b6ff805f478017033",
+      "applicationChanged": false,
+      "profileChanged": false,
+      "remoteAccessChanged": false,
+      "commandsToHardware": false,
+      "scope": "Separate native-qualified tool copy only; current application remains running. Default PowerShell execution policy initially refused helper execution; documented per-process option used without changing persistent policy."
+    },
+    "nativePopup": {
+      "job": 111832676511,
+      "status": "passed",
+      "dialogChecks": 96,
+      "promptAndProgressCases": 26,
+      "actualReceiptCases": 5,
+      "artifact": {
+        "id": 11354347215,
+        "sha256": "e47b9e91e00c7328dc3c04fe45273ce9fb64ac036a41bd1578b4a1b78a57c014",
+        "downloadedAndVerified": true
+      },
+      "scope": "Isolated native model/prompt/sender-receiver; no packaged application, boat or visual-design acceptance"
+    },
+    "earlyCompiledRetention": {
+      "status": "uploaded-unqualified",
+      "artifactId": 11357596592,
+      "artifactSha256": "6579e3516d5704b7f667438f0bddffed251809ff7c8af37ec8d17b896cacaf9e",
+      "artifactBytes": 411482055,
+      "downloaded": false,
+      "scope": "Both native application outputs retained before packaging; metadata provenance only, not package qualification"
+    },
+    "windowsBuild": {
+      "job": 111835972162,
+      "status": "passed",
+      "fixtureTests": {
+        "passed": 144,
+        "failed": 0
+      },
+      "fixtureFreeTests": {
+        "passed": 144,
+        "failed": 0
+      },
+      "securityChecks": "passed",
+      "packaging": "passed",
+      "packagedRuntime": "failed-after-three-updater-mechanics-passed",
+      "evidenceArtifact": {
+        "id": 11356954060,
+        "sha256": "74d4943e045bf1b95182cbe218a3c548794620ecaadae2405b3e5afaf0cf4ffa",
+        "downloadedAndVerified": true
+      },
+      "productExecutableSha256": "8ed5cc1fad45bfc9cda13f98ec0b55cf18270b45a348764673aa7702c12c192c",
+      "productVersion": "0.4.0-beta2",
+      "updateStartupHealth": 1,
+      "hardwareOutputPolicy": "status-only",
+      "testFixtures": false
+    },
+    "sealedBuildInputs": {
+      "artifactId": 11357053892,
+      "artifactSha256": "2dd4f62ef8c03dad4bf0aac54813f773b919aeed07008489c377cafd7b890a6b",
+      "archiveSha256": "b3a7492d6998291428a635b0d615c2de1da62627ed440bfc46c4b2fb5b5fcfb9",
+      "manifestSha256": "44736b5fb4a5b3c1d71c3cd72a44dea0d505436a247605fc629e8589a7503e6d",
+      "producerAttempt": 1,
+      "downloaded": false,
+      "qualification": "installer-shutdown-failed; helper-only retest pending"
+    },
+    "windowsQualificationJob": 111861197301,
+    "runtimeFailure": {
+      "job": 111861197301,
+      "artifactId": 11358637734,
+      "artifactSha256": "34477111a5671b850cca213603a2865e0647befadf59804e2c0fc64ba1f1d207",
+      "downloadedAndVerified": true,
+      "passed": [
+        "real installed launcher and authenticated application receipt",
+        "supervised Setup and authenticated startup finalization",
+        "fault-injected corrupt candidate refused and previous generation restored without profile changes"
+      ],
+      "failure": "Restored known-good application did not exit within unchanged 30-second close deadline",
+      "sourceFinding": "Pinned OpenCPN ignores OnCloseWindow before g_bDeferredInitDone. Restored-startup helper lacked the existing fresh finalization-log readiness precondition. Actual failed run did not preserve application log, so timing causality is not claimed proven.",
+      "pending": [
+        "helper-only fresh-readiness correction and retained installer retest",
+        "chart smoke skipped after original installer failure",
+        "draft Staging delivery",
+        "boat acceptance"
+      ],
+      "recompileRequired": false
+    }
   }
 }

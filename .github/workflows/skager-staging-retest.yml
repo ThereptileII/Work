@@ -1,5 +1,7 @@
 name: SKAGER retained Staging checks
 on:
+  push:
+    branches: [skager-staging-retest]
   workflow_dispatch:
     inputs:
       build_run:
@@ -13,7 +15,7 @@ on:
       scope:
         description: Relevant checks to repeat; never rebuild or publish
         type: choice
-        options: [installer, all]
+        options: [installer, installer-charts, all]
         default: installer
 permissions:
   contents: read
@@ -22,27 +24,37 @@ env:
   SKAGER_DESIGN_VALIDATION: 'false'
   PYTHONUTF8: '1'
 concurrency:
-  group: skager-staging-retest-${{ inputs.build_run }}-${{ inputs.build_attempt }}
+  group: skager-staging-retest-${{ inputs.build_run || github.ref }}-${{ inputs.build_attempt || 'pinned' }}
   cancel-in-progress: false
 jobs:
   retest:
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/skager-staging-retest') }}
     runs-on: windows-2022
     timeout-minutes: 120
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - name: Authenticate successful producer and restore exact retained inputs
+        id: prepare
         env:
           GH_TOKEN: ${{ github.token }}
           BUILD_RUN: ${{ inputs.build_run }}
           BUILD_ATTEMPT: ${{ inputs.build_attempt }}
-        run: python opennav-x/tools/retest-staging-windows.py prepare --producer-run-id $env:BUILD_RUN --producer-run-attempt $env:BUILD_ATTEMPT
+        run: |
+          $Arguments = @('prepare')
+          if ($env:GITHUB_EVENT_NAME -ceq 'push') {
+            $Arguments += @('--selection', 'opennav-x/tools/staging-installer-retest.json')
+          } else {
+            $Arguments += @('--producer-run-id', $env:BUILD_RUN, '--producer-run-attempt', $env:BUILD_ATTEMPT)
+          }
+          python opennav-x/tools/retest-staging-windows.py @Arguments
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Run selected checks without compiler or download credentials
         env:
-          RETEST_SCOPE: ${{ inputs.scope }}
+          RETEST_SCOPE: ${{ github.event_name == 'push' && 'installer-charts' || inputs.scope }}
         run: python opennav-x/tools/retest-staging-windows.py test --scope $env:RETEST_SCOPE
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
-          name: staging-retest-evidence-${{ inputs.build_run }}-attempt${{ inputs.build_attempt }}-harness${{ github.sha }}-run${{ github.run_id }}-attempt${{ github.run_attempt }}
+          name: staging-retest-evidence-${{ steps.prepare.outputs.producer_run || inputs.build_run || 'unrestored' }}-attempt${{ steps.prepare.outputs.producer_attempt || inputs.build_attempt || 'unknown' }}-harness${{ github.sha }}-run${{ github.run_id }}-attempt${{ github.run_attempt }}
           path: opennav-x/evidence/local
           if-no-files-found: error

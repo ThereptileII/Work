@@ -3,12 +3,15 @@
 import ast
 from contextlib import contextmanager
 import json
+import hashlib
+import importlib.util
 from pathlib import Path
 import shutil
 import subprocess
 import tempfile
 from types import SimpleNamespace
 import unittest
+from unittest import mock
 
 SOURCE = Path(__file__).with_name('smoke-installer-windows.py')
 TREE = ast.parse(SOURCE.read_text())
@@ -141,6 +144,92 @@ class Completion(unittest.TestCase):
             Path(directory, 'stock.exe').write_bytes(b'fixture')
         self.assertFalse(Path(directory).exists())
         self.assertNotIn('retained_failed_fixture', self.report)
+
+
+class PackagedStartupCompletion(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.root = Path(self.temp.name)
+        self.profile = self.root / 'profile'; self.profile.mkdir()
+        (self.root / 'app').mkdir()
+        self.executable = self.root / 'app/opencpn.exe'
+        self.executable.write_bytes(b'inert file; never execute')
+        self.log = self.profile / 'opencpn.log'
+        self.ready = b'------- OpenCPN version fixture\nOnInitTimer...Finalize Canvases\n'
+        self.log.write_bytes(self.ready)  # The old completed run is not readiness.
+        self.clock = 0.0; self.publish_at = None; self.rotation = False
+        self.closed = []; self.exit_waits = []; self.close_failure = False
+        self.report = {'operations': []}; self.owned = set()
+        def sleep(seconds):
+            self.clock += seconds
+            if self.publish_at is not None and self.clock >= self.publish_at:
+                self.log.write_bytes((b'rotated\n' if self.rotation else self.ready) + self.ready)
+        source = SOURCE.with_name('test-packaged-updater-windows.py')
+        spec = importlib.util.spec_from_file_location('packaged_completion_fixture', source)
+        self.helper = importlib.util.module_from_spec(spec); spec.loader.exec_module(self.helper)
+        self.time = SimpleNamespace(monotonic=lambda: self.clock, sleep=sleep)
+        self.clock_patch = mock.patch.object(self.helper, 'time', self.time); self.clock_patch.start()
+        nested = next(node for node in ast.walk(ast.parse(source.read_text()))
+                      if isinstance(node, ast.FunctionDef) and node.name == 'launch_and_close')
+        def wait_exit(handle, timeout_ms):
+            self.exit_waits.append(timeout_ms)
+            if self.close_failure:
+                raise RuntimeError('original close failure')
+        parent = SimpleNamespace(pid=1, wait=lambda **kw: 0, poll=lambda: 0)
+        environment = dict(
+            generation=lambda identifier: self.root, profile=self.profile,
+            evidence=self.root, report=self.report, owned=self.owned,
+            stock=self.root / 'stock/opencpn.exe', stock_before={},
+            inventory=lambda path: {}, navigation_matches=lambda: True,
+            startup_log=self.helper.startup_log, wait_startup_ready=self.helper.wait_startup_ready,
+            _startup=self.helper._startup, hashlib=hashlib, time=self.time,
+            process_image=lambda pid: self.executable,
+            subprocess=SimpleNamespace(Popen=lambda *args, **kw: parent, STDOUT=subprocess.STDOUT),
+            ui=SimpleNamespace(windows=lambda: [], wait_window=lambda *args, **kw: (10, 2),
+                               IsWindowEnabled=lambda handle: True, monitor_process=lambda pid: 20,
+                               close=lambda handle: self.closed.append(self.clock), wait_clean_exit=wait_exit))
+        exec(compile(ast.Module(body=[nested], type_ignores=[]), str(source), 'exec'), environment)
+        self.launch = environment['launch_and_close']
+
+    def tearDown(self):
+        self.clock_patch.stop(); self.temp.cleanup()
+
+    def test_visible_window_and_exited_launcher_wait_for_fresh_deferred_init(self):
+        self.publish_at = 6
+        self.launch(['inert'], 'fixture', 'restored-startup', False)
+        self.assertEqual(len(self.closed), 1)
+        self.assertGreaterEqual(self.closed[0], 6.6)
+        self.assertEqual(self.exit_waits, [30000])
+        self.assertEqual(self.report['operations'][0]['status'], 'passed')
+        self.assertFalse(self.owned)
+
+    def test_rotated_fresh_log_uses_existing_readiness_policy(self):
+        self.publish_at = 6; self.rotation = True
+        self.launch(['inert'], 'fixture', 'rotated-startup', False)
+        self.assertGreaterEqual(self.closed[0], 6.6)
+        self.assertEqual(self.exit_waits, [30000])
+
+    def test_stale_ready_log_never_closes_or_claims_startup(self):
+        with self.assertRaisesRegex(RuntimeError, 'fresh startup'):
+            self.launch(['inert'], 'fixture', 'incomplete-startup', False)
+        self.assertFalse(self.closed); self.assertFalse(self.exit_waits)
+        self.assertLess(self.clock, 46)
+        record = self.report['operations'][0]
+        self.assertEqual(record['lastStage'], 'fresh-startup-readiness')
+        self.assertFalse(record['startupLog']['freshInitialization'])
+        self.assertIn(2, self.owned)  # Existing outer failure cleanup owns child.
+
+    def test_close_failure_stays_failure_with_bounded_actual_log(self):
+        self.publish_at = 6; self.close_failure = True
+        with self.assertRaisesRegex(RuntimeError, 'original close failure'):
+            self.launch(['inert'], 'fixture', 'failed-close', False)
+        self.assertEqual(self.exit_waits, [30000]); self.assertEqual(len(self.closed), 1)
+        record = self.report['operations'][0]
+        self.assertEqual(record['lastStage'], 'normal-close')
+        self.assertEqual(record['status'], 'failed')
+        self.assertTrue(record['startupLog']['freshInitialization'])
+        self.assertEqual((self.root / record['startupLog']['path']).read_bytes(), self.log.read_bytes())
+        self.assertEqual(record['startupLog']['sha256'], hashlib.sha256(self.log.read_bytes()).hexdigest())
 
 
 if __name__ == '__main__':
