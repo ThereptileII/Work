@@ -105,6 +105,14 @@ popup interactions. Staging requires these checks before expensive Windows
 application compilation. The integrated installer and actual application still
 need their exact-commit Windows/boat acceptance; fixture tests are not that proof.
 
+The installed-package smoke additionally bootstraps the actual launcher and
+application, applies the exact Setup with supervised mode, verifies its live
+startup receipt, then tests guarded fallback after an explicit invalid-PE fault
+in a disposable installed candidate. Stock/profile preservation is checked.
+This same-package sequence proves transaction mechanics, not selection of a
+new signed release. Historical retained packages without the health contract
+report this check as not applicable; current health-capable packages must pass.
+
 Native packaging includes the launcher, native prompt and exact corresponding
 source: main module, all resolved dependency sources/notices, Go standard-library
 source and build identity. The source ZIP and launcher hashes are checked again

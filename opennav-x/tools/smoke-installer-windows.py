@@ -625,6 +625,22 @@ try:
         p,h,rgb=launch(generation()/'app/opencpn.exe',['--xnav'],'SKAGER / OpenCPN',profile,'installer-00-clean-candidate')
         chart_check(rgb,'XNav','Clean installed XNav');close(p,h);assert fixture_snapshot(profile)==expected
         stable_resources(profile,stock)
+        # Reuse this exact disposable package, supported stock and shared profile.
+        # Same-version transitions qualify updater mechanics, not release selection.
+        startup_health=json.loads((generation()/'ownership.json').read_text(encoding='utf-8-sig')).get('updateStartupHealth',0)
+        assert type(startup_health) is int and startup_health in (0,1),'Unknown startup health contract'
+        if startup_health==1:
+            packaged_updater=module('test-packaged-updater-windows')
+            report['packaged_updater']=packaged_updater.qualify(
+                install=INSTALL,setup=SETUP,stock=original,profile=profile,evidence=EVIDENCE,
+                powershell=PS,commit=product['commit'],executable_sha256=sha(ROOT/'build/production-install/opencpn.exe'),
+                ui=ui,owned=owned,inventory=inventory,navigation_matches=lambda: fixture_snapshot(profile)==expected)
+        else:
+            assert args.retained_package or args.compiled_input_receipt,'Current build must support authenticated startup health'
+            report['packaged_updater']={'status':'not-applicable','reason':'Retained package has no authenticated startup health support',
+                                       'updateStartupHealth':0,'commit':product['commit']}
+        assert fixture_snapshot(profile)==expected and inventory(stock)==stock_before
+        stable_resources(profile,stock)
         before=inventory(profile)
         engine('Rollback')
         assert not (INSTALL/'state.json').exists()

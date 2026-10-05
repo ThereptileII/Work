@@ -1,17 +1,31 @@
 {
   "scope": "Focused secure updater components; not packaged application or boat acceptance",
-  "jira": ["SCRUM-23", "SCRUM-25", "SCRUM-26"],
+  "jira": [
+    "SCRUM-23",
+    "SCRUM-25",
+    "SCRUM-26"
+  ],
   "secondRun": {
     "url": "https://github.com/ThereptileII/Work/actions/runs/37298291972",
     "commit": "658c70d93c549a47e79ca380bbef01857da35d1a",
     "localImplementation": "dd46049ff6e0f04c2b97992c10037351553679f2",
     "overall": "failed",
     "linuxGo": "passed",
-    "windowsGo": {"topLevelPassed": 67, "includingSubcasesPassed": 285, "failed": 0},
+    "windowsGo": {
+      "topLevelPassed": 67,
+      "includingSubcasesPassed": 285,
+      "failed": 0
+    },
     "nativeDialogChecksPassed": 96,
     "downloadedArtifacts": [
-      {"id": 11339123970, "sha256": "23955a17736a63ad349b5a3749182ec8e934006b716f5287bbe2ae30e841823f"},
-      {"id": 11340302997, "sha256": "fe3dc7ae50669493094961588a459e196697692339daf73d6ac584ce301431b4"}
+      {
+        "id": 11339123970,
+        "sha256": "23955a17736a63ad349b5a3749182ec8e934006b716f5287bbe2ae30e841823f"
+      },
+      {
+        "id": 11340302997,
+        "sha256": "fe3dc7ae50669493094961588a459e196697692339daf73d6ac584ce301431b4"
+      }
     ],
     "failures": [
       "Source packager rejected setup-go's selected compiler junction before packaging",
@@ -23,9 +37,65 @@
     "url": "https://github.com/ThereptileII/Work/actions/runs/37300372946",
     "commit": "4dc7bb97bdb2708180f6ae52fb3dc4a85c5bae67",
     "localImplementation": "b181058e2a70119fda5576ceb1e6e104f17dff72",
-    "overall": "pending"
+    "overall": "failed",
+    "windowsTopLevelPassed": 72,
+    "windowsIncludingSubcasesPassed": 302,
+    "nativeShortcutsPassed": 305,
+    "actualLifecycleChecksPassed": 46,
+    "failures": [
+      "Helper retained expected negative-child LASTEXITCODE despite all46 assertions passing",
+      "Progress protocol helper timed out; case absent in old evidence; posted Escape did not model actual native keyboard input"
+    ],
+    "downloadedArtifacts": [
+      {
+        "id": 11341822186,
+        "sha256": "e2a969d3831b39067e35ff92fb54ca8d20aa804f55e3f91102105d2c4c8f4b02"
+      },
+      {
+        "id": 11341621885,
+        "sha256": "f7f0b11ef7d76a26bd5ab3239ca05251022c0d862be338e5d99a74cb1c184849"
+      }
+    ]
   },
   "boatModified": false,
   "publicUpdateServiceConfigured": false,
-  "productionPromotion": false
+  "productionPromotion": false,
+  "fourthRun": {
+    "url": "https://github.com/ThereptileII/Work/actions/runs/37301261353",
+    "commit": "7f1686d60b89740fe2c8783b648517e9f32313a7",
+    "localImplementation": "a9f1d076e0875d556ffda586bed51cad1b83b154",
+    "overall": "passed",
+    "linuxGo": {
+      "topLevelPassed": 63,
+      "includingSubcasesPassed": 288,
+      "failed": 0
+    },
+    "windowsGo": {
+      "topLevelPassed": 72,
+      "includingSubcasesPassed": 302,
+      "failed": 0
+    },
+    "nativeDialogChecksPassed": 96,
+    "nativePromptProtocolCasesPassed": 26,
+    "actualReceiptSenderReceiverCasesPassed": 5,
+    "nativeShortcutChecksPassed": 305,
+    "actualLifecycleIsolatedChecksPassed": 46,
+    "nativeSourcePackaging": "passed",
+    "inertSigningPolicy": "passed; no certificate or key use",
+    "downloadedArtifacts": [
+      {
+        "id": 11340932930,
+        "sha256": "06d37d47d08cc57d056be162b896ab0cef82c95a6511841e7bfdb8a6a6187edd"
+      },
+      {
+        "id": 11340893572,
+        "sha256": "d350389a4a013bf5904af1aa58564bf2ae966e638968d60418741eda567f5b7a"
+      },
+      {
+        "id": 11340783188,
+        "sha256": "aaae5c3a7ac9960e146648ef76e950d41d1158e55827bd8bae38c239d654c511"
+      }
+    ]
+  },
+  "packagedApplicationAcceptance": "pending"
 }

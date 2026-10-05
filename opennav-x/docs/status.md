@@ -27,13 +27,31 @@ module-path problem, and fast candidate startup fails authenticated receipt.
 These failures are retained; the listener-order correction is a hypothesis until
 its native delayed-receive case passes. See [the focused evidence](evidence/2026-10-05-secure-updater.json).
 
-The next focused run
+The third focused run
 [37300372946](https://github.com/ThereptileII/Work/actions/runs/37300372946)
 at `4dc7bb97bdb2708180f6ae52fb3dc4a85c5bae67` contains those corrections,
 the download/cancel window, isolated signing preparation and independent native
-installer-recovery checks. Its result is pending. No product trust root, signing
-secret or public update endpoint is invented or bundled. Production activation
-remains a separate gate.
+installer-recovery checks. Source packaging and authenticated startup pass;
+46 actual-Lifecycle assertions pass but the helper incorrectly retains the last
+intentionally failed child's exit code. The progress helper times out without
+preserving its case; it also used a posted key message which does not represent
+native Escape input. Helper-only corrections preserve all assertions and bounds.
+
+The corrected focused run
+[37301261353](https://github.com/ThereptileII/Work/actions/runs/37301261353)
+passes at `7f1686d60b89740fe2c8783b648517e9f32313a7`: 63 top-level Linux
+Go tests (288 including subcases), 72 Windows Go tests (302 including subcases),
+96 native dialog checks, 26 prompt/progress protocol cases, five actual receipt
+sender/receiver scenarios, 305 shortcut checks and 46 actual-Lifecycle checks.
+Native launcher/source packaging and the inert signing boundary pass as well.
+Downloaded evidence hashes are recorded in the linked receipt.
+
+The next combined Staging candidate adds real packaged launcher bootstrap,
+supervised installation, authenticated application startup and an explicitly
+faulted disposable candidate's guarded rollback to installer smoke. Those
+integrated results and boat acceptance remain pending. No product trust root,
+signing secret or public update endpoint is invented or bundled. Production
+activation remains a separate gate.
 
 The frozen boat-feedback Staging run
 [37283380247](https://github.com/ThereptileII/Work/actions/runs/37283380247)
