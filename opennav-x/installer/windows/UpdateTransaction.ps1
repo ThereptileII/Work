@@ -112,7 +112,9 @@ namespace Skager {
    try {
     var security = new SA { length=Marshal.SizeOf(typeof(SA)), descriptor=descriptor, inherit=0 };
     // Inbound, overlapped, first instance; byte mode, remote clients refused.
-    var handle=CreateNamedPipe(@"\\.\pipe\"+name,0x40080001,8,1,256,256,0,ref security);
+    // Buffer the entire bounded three-record burst while image/hash checks
+    // run; protocol parsing still limits each record to 256 bytes, three total.
+    var handle=CreateNamedPipe(@"\\.\pipe\"+name,0x40080001,8,1,256,1024,0,ref security);
     if (handle.IsInvalid) { handle.Dispose(); throw new IOException("Cannot create exclusive local startup pipe."); }
     try {
      pipe=new NamedPipeServerStream(PipeDirection.In,true,false,handle);

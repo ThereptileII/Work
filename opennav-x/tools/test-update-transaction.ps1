@@ -183,6 +183,18 @@ public sealed class SuspendedUpdateClient : IDisposable {
 }
 '@
   Write-Host 'PASS: suspended-child native regression interop compiles.'
+  # Windows PowerShell 5.1 preserves a parsed JSON array as one pipeline item.
+  # Assign it first, then enumerate its elements, as the native writer does.
+  $phaseJson=ConvertTo-Json -InputObject @(
+    @{frame='WAIT';delayBefore=0},@{frame='CONTINUE';delayBefore=0},@{frame='READY';delayBefore=0}) -Compress
+  $phaseParts=ConvertFrom-Json $phaseJson
+  $phaseNames=New-Object 'Collections.Generic.List[string]'
+  foreach ($part in $phaseParts) {
+    Check ($part.frame -is [string] -and $part.delayBefore -isnot [array]) 'Parsed phase must provide a scalar frame and delay.'
+    $phaseNames.Add($part.frame)
+  }
+  Check (($phaseNames -join ',') -ceq 'WAIT,CONTINUE,READY') 'Parsed phase-array iteration lost protocol order.'
+  Write-Host 'PASS: direct parsed phase-array iteration retains three scalar records.'
   if ([Environment]::OSVersion.Platform -ne [PlatformID]::Win32NT) {
     Write-Host 'SKIP: Windows authenticated pipe/PID/ACL fixtures require native Windows; Linux results do not qualify them.'
     return
@@ -201,7 +213,8 @@ if ($env:SKAGER_FIXTURE_WRITER -eq 'yes') {
  try {
   $pipe.Connect(5000)
   if ($env:SKAGER_FIXTURE_PHASES) {
-   foreach ($part in @($env:SKAGER_FIXTURE_PHASES | ConvertFrom-Json)) {
+   $parts=ConvertFrom-Json $env:SKAGER_FIXTURE_PHASES
+   foreach ($part in $parts) {
     if ($part.delayBefore) { Start-Sleep -Milliseconds $part.delayBefore }
     $bytes=[Text.Encoding]::ASCII.GetBytes($part.frame)
     $pipe.Write($bytes,0,$bytes.Length); $pipe.Flush()
@@ -210,6 +223,14 @@ if ($env:SKAGER_FIXTURE_WRITER -eq 'yes') {
    $bytes=[Text.Encoding]::ASCII.GetBytes($env:SKAGER_FIXTURE_FRAME)
    $pipe.Write($bytes,0,$bytes.Length); $pipe.Flush()
   }
+ } catch {
+  # Preserve a bounded diagnostic category only, never frame/challenge text or
+  # a PowerShell error rendering containing the phase environment argument.
+  $failure=$_.Exception.GetBaseException()
+  if ($env:SKAGER_FIXTURE_FAILURE) {
+   [IO.File]::WriteAllText($env:SKAGER_FIXTURE_FAILURE,('{0}:0x{1:X8}' -f $failure.GetType().FullName,$failure.HResult))
+  }
+  exit 73
  } finally { $pipe.Dispose() }
 }
 if ($env:SKAGER_FIXTURE_CLOSED) { [IO.File]::WriteAllText($env:SKAGER_FIXTURE_CLOSED,'pipe-closed') }
@@ -225,7 +246,13 @@ Start-Sleep -Seconds 10
     $start.EnvironmentVariables['SKAGER_FIXTURE_PHASES']=$Phases
     $start.EnvironmentVariables['SKAGER_FIXTURE_WRITER']=$(if($Writer){'yes'}else{'no'})
     $start.EnvironmentVariables['SKAGER_FIXTURE_CLOSED']=Join-Path $fixture ($Session.session+'.closed')
+    $start.EnvironmentVariables['SKAGER_FIXTURE_FAILURE']=Join-Path $fixture ($Session.session+'.failure')
     return [Diagnostics.Process]::Start($start)
+  }
+  function ClientFailure($Session) {
+    $failure=Join-Path $fixture ($Session.session+'.failure')
+    if (Test-Path -LiteralPath $failure) { return [IO.File]::ReadAllText($failure) }
+    return 'none recorded'
   }
   foreach ($case in @('healthy','healthy-delayed-receive','wrong-challenge','wrong-commit','wrong-generation','wrong-pid','wrong-hash','oversized','timeout','dead-child')) {
     $pending=NewRecord; $pending.candidate.executableSha256=HashFile $executable
@@ -332,7 +359,7 @@ Start-Sleep -Seconds 10
       if ($case -eq 'spoof-wait-pid') { $impostor=StartClient $session '' $true $json }
       $passed=$session.server.Receive($child,$executable,$pending.candidate.executableSha256,$ready,3000,$humanMs)
       $success=$case -in @('wait-accept','wait-accept-after-initial-deadline','fragmented-phases')
-      Check ($passed -eq $success) ('Unexpected phase result: '+$case+'; receiver: '+$session.server.FailureReason)
+      Check ($passed -eq $success) ('Unexpected phase result: '+$case+'; receiver: '+$session.server.FailureReason+'; child: '+(ClientFailure $session))
       if ($success) {
         Check ($session.server.Phase -ceq 'healthy' -and $session.server.VerifiedFrame -ceq $ready) 'Only final exact READY plus EOF may establish health.'
       } else {
