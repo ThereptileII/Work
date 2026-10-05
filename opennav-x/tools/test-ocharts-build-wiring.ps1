@@ -18,15 +18,37 @@ foreach ($Name in @('Digest','Assert-ManifestRecord','Build-PrivateOCharts')) {
 }
 $Text = $Ast.Extent.Text
 $Call = $Text.IndexOf('if ($PrivateOCharts) { Build-PrivateOCharts')
-if ($Call -lt $Text.IndexOf('Maintained curl manifest does not prove') -or
-    $Call -gt $Text.IndexOf("Run cmake (@('-S',")) {
+$DependencyCheck = $Text.IndexOf('Maintained curl manifest does not prove')
+$Configure = $Text.IndexOf("Run cmake (@('-S',")
+if ($Call -lt 0 -or $DependencyCheck -lt 0 -or $Configure -lt 0 -or
+    $Call -lt $DependencyCheck -or $Call -gt $Configure) {
     throw 'Private build must follow maintained dependency checks and precede host configure'
 }
-if ($Text -notmatch '\[switch\]\$PrivateOCharts\)' -or
-    $Text -notmatch '"-DSKAGER_OCHARTS_PACKAGE=\$OChartsPackage"' -or
-    $Text.IndexOf('if ($PrivateOCharts -and $Production)') -lt $Text.IndexOf("Run ctest @(")) {
-    throw 'Opt-in/package/installed TLS gate wiring changed'
+# PrivateOCharts remains an explicit default-off switch regardless of which
+# approved delivery/dependency parameters follow it in the param block.
+$PrivateParameters = @($Ast.ParamBlock.Parameters | Where-Object {
+    $_.Name.VariablePath.UserPath -ceq 'PrivateOCharts'
+})
+if ($PrivateParameters.Count -ne 1 -or
+    $PrivateParameters[0].StaticType -ne [Management.Automation.SwitchParameter] -or
+    $null -ne $PrivateParameters[0].DefaultValue -or
+    $Text -notmatch '"-DSKAGER_OCHARTS_PACKAGE=\$OChartsPackage"') {
+    throw 'Explicit default-off private opt-in/package wiring changed'
 }
+$PrivateProbeNodes = @($Ast.FindAll({param($Node)
+    $Node -is [Management.Automation.Language.IfStatementAst] -and
+    $Node.Clauses.Count -eq 1 -and
+    $Node.Clauses[0].Item1.Extent.Text -ceq '$PrivateOCharts -and $Production'
+},$true))
+$Tests = $Text.IndexOf('Run ctest @(')
+$DeferredReturn = $Text.IndexOf('if ($DeferRuntimeQualification) {')
+if ($PrivateProbeNodes.Count -ne 1 -or $Tests -lt 0 -or $DeferredReturn -lt 0 -or
+    $PrivateProbeNodes[0].Extent.StartOffset -lt $Tests -or
+    $PrivateProbeNodes[0].Extent.EndOffset -gt $DeferredReturn) {
+    throw 'Installed private TLS gate must follow CTest and precede deferred runtime return'
+}
+$PrivateProbeText = $PrivateProbeNodes[0].Extent.Text.Replace('$PSScriptRoot', "'" + $PSScriptRoot.Replace("'","''") + "'")
+$PrivateProbe = [scriptblock]::Create($PrivateProbeText)
 if (-not $Text.Contains("'-A', " + '$Architecture, $PythonCMakeArgument,') -or
     -not $Text.Contains("if (" + '$Program' + " -ceq 'python') { " + '$Program = $BuildPython }') -or
     $Text.IndexOf('$PythonIdentityJson = & python') -gt $Text.IndexOf('function Run(')) {
@@ -90,6 +112,26 @@ function Reject([scriptblock]$Action,[string]$Case) {
 }
 try {
     $env:GITHUB_RUN_ID='123';$env:GITHUB_RUN_ATTEMPT='1';$env:GITHUB_JOB='windows-integration';$env:GITHUB_SHA='fixture-commit'
+    # Execute the real installed-probe guard with only native work mocked.
+    # Deferring GUI/runtime qualification must never defer installed TLS checks.
+    foreach ($PrivateOCharts in @($false,$true)) {
+        foreach ($Production in @($false,$true)) {
+            foreach ($DeferRuntimeQualification in @($false,$true)) {
+                $Calls.Clear()
+                & $PrivateProbe
+                $Expected = if ($PrivateOCharts -and $Production) { 1 } else { 0 }
+                if ($Calls.Count -ne $Expected) { throw 'Installed private TLS gate selected the wrong build context' }
+                if ($Expected -and ($Calls[0].program -cne 'pwsh' -or
+                    $Calls[0].arguments -notcontains (Join-Path $PSScriptRoot 'test-downloader-trust-windows.ps1') -or
+                    $Calls[0].arguments -notcontains 'production-install' -or
+                    $Calls[0].arguments -notcontains '-OChartsPrepared' -or
+                    $Calls[0].arguments -notcontains (Join-Path $Root 'build/ocharts-prepared'))) {
+                    throw 'Installed private TLS gate lost its actual validator or prepared-package input'
+                }
+            }
+        }
+    }
+    $Calls.Clear()
     $Guards=@($Ast.FindAll({param($Node)
         $Node -is [Management.Automation.Language.IfStatementAst] -and
         $Node.Extent.Text.Contains("throw 'Private adapter build requires the explicit disposable Windows integration job'")
@@ -142,8 +184,8 @@ try {
     $Fail='--package';Reject {Build-PrivateOCharts $true} 'current resource/package verification failure';$Fail=''
     $Missing=Join-Path $Root 'build/ocharts-prepared/sdk/lib/curl.lib';Remove-Item $Missing
     Reject {Build-PrivateOCharts $true} 'receipt-only SDK reuse'
-    Write-Output 'Private build wiring passed: PowerShell parse/order, first build, exact reuse, and 17 rejection cases; no native compile claimed.'
+    Write-Output 'Private build wiring passed: PowerShell parse/order, eight installed TLS/defer contexts, first build, exact reuse, and 17 rejection cases; no native compile claimed.'
 } finally {
     foreach($Key in $OldEnv.Keys){[Environment]::SetEnvironmentVariable($Key,$OldEnv[$Key])}
-    Remove-Item -LiteralPath $Fixture -Recurse -Force
+    if (Test-Path -LiteralPath $Fixture) { Remove-Item -LiteralPath $Fixture -Recurse -Force }
 }
