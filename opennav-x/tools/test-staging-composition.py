@@ -219,6 +219,37 @@ class CompositionTests(unittest.TestCase):
             archive.seek(0)
             with self.assertRaises(ValueError): c.selected_zip(archive, ['safe.json'])
 
+    def test_source_only_opaque_link_is_hash_bound_and_never_selected(self):
+        name = 'OpenCPN-5.12.4-integrated/data/opaque-link'
+        target = b'../../outside-source'
+
+        def source_zip(*, text=target, record=None, member=name, mode=stat.S_IFLNK, extra=None):
+            archive = io.BytesIO()
+            if record is None: record = dict(gitMode='120000', sha256=c.digest(target))
+            with zipfile.ZipFile(archive, 'w') as z:
+                z.writestr('safe.json', '{"frozen":true}')
+                z.writestr('SOURCE_REFERENCE.json', json.dumps(dict(files={member:record})))
+                info = zipfile.ZipInfo(member); info.external_attr = (mode | 0o777) << 16
+                z.writestr(info, text)
+                if extra: z.writestr(extra, 'unexpected')
+            archive.seek(0)
+            return archive
+
+        wanted = ['SOURCE_REFERENCE.json', 'safe.json']
+        result = c.selected_source_zip(source_zip(), wanted)
+        self.assertEqual(set(result), set(wanted))
+        self.assertEqual(result['safe.json'], b'{"frozen":true}')
+        # The exact same link is still forbidden at the ordinary evidence boundary.
+        with self.assertRaisesRegex(ValueError, 'Linked, special or oversized ZIP member:.*opaque-link'):
+            c.selected_zip(source_zip(), wanted)
+        with self.assertRaisesRegex(ValueError, 'Source symlink cannot be selected:.*opaque-link'):
+            c.selected_source_zip(source_zip(), wanted+[name])
+        for overrides in [dict(text=b'changed target'), dict(record=dict(gitMode='100644',sha256=c.digest(target))),
+                          dict(record={}), dict(text=b'x'*4097), dict(mode=stat.S_IFIFO),
+                          dict(member='../escape'), dict(extra=name+'/child'), dict(extra=name.upper())]:
+            with self.subTest(overrides=overrides), self.assertRaises(ValueError):
+                c.selected_source_zip(source_zip(**overrides), wanted)
+
     def test_report_pins_are_checked_before_json_semantics(self):
         with tempfile.TemporaryDirectory() as tmp:
             archive = Path(tmp)/'reports.zip'
@@ -277,9 +308,14 @@ class CompositionTests(unittest.TestCase):
                 if name.endswith('.md'): members['opennav-x/docs/beta2/'+name] = ('FROZEN PRODUCT '+name).encode()
             source = preview/'SKAGER-Beta2-source.zip'
             references = dict(productCommit=PRODUCT, files={n:dict(sha256=c.digest(b)) for n,b in members.items()})
+            link_name = 'OpenCPN-5.12.4-integrated/data/frozen-link'
+            link_text = b'../../unselected-and-never-followed'
+            references['files'][link_name] = dict(gitMode='120000', sha256=c.digest(link_text))
             with zipfile.ZipFile(source,'w') as z:
                 for name, data in members.items(): z.writestr(name,data)
                 z.writestr('SOURCE_REFERENCE.json',json.dumps(references))
+                link = zipfile.ZipInfo(link_name); link.external_attr = (stat.S_IFLNK | 0o777) << 16
+                z.writestr(link, link_text)
             before = {p.name:p.read_bytes() for p in (source,setup,recovery)}
             old_raw = {'production-recovery-results.json':json.dumps(dict(status='passed',package_sha256=c.inputs.sha(recovery))).encode()}
             new_raw = {'installer-staging.json':json.dumps(dict(status='passed',setup_sha256=c.inputs.sha(setup))).encode()}
@@ -300,6 +336,7 @@ class CompositionTests(unittest.TestCase):
                 if name.endswith('.md'):
                     self.assertEqual((release/name).read_bytes(),members['opennav-x/docs/beta2/'+name])
             self.assertFalse((tree/'build/developer-preview/CHANGED').exists())
+            self.assertFalse((tree/'OpenCPN-5.12.4-integrated').exists())
 
 
 if __name__ == '__main__':

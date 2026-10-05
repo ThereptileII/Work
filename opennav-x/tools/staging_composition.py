@@ -250,9 +250,19 @@ def verify_provenance(gh, q, complete=False):
 
 def selected_zip(archive, wanted, *, max_file=MAX_REPORT):
     """Validate every member before reading only a fixed selected set; no extractall."""
+    return _selected_zip(archive, wanted, max_file=max_file, source_links=False)
+
+
+def selected_source_zip(archive, wanted):
+    """Preserve git symlinks as verified, unselected opaque source bytes only."""
+    require('SOURCE_REFERENCE.json' in wanted, 'Source reference must be selected')
+    return _selected_zip(archive, wanted, max_file=MAX_REPORT, source_links=True)
+
+
+def _selected_zip(archive, wanted, *, max_file, source_links):
     with zipfile.ZipFile(archive) as z:
         entries = z.infolist(); require(0 < len(entries) <= inputs.MAX_FILES, 'ZIP member count exceeds bound')
-        seen = set(); files = {}; total = 0
+        seen = set(); files = {}; links = {}; total = 0
         for item in entries:
             require(item.orig_filename == item.filename and not item.flag_bits & 1, 'Unsafe ZIP member')
             name = item.filename[:-1] if item.is_dir() else item.filename
@@ -260,9 +270,14 @@ def selected_zip(archive, wanted, *, max_file=MAX_REPORT):
             require(name.casefold() not in seen, 'Aliased ZIP member')
             seen.add(name.casefold()); total += item.file_size
             kind = stat.S_IFMT(item.external_attr >> 16)
-            require(kind in ((0, stat.S_IFDIR) if item.is_dir() else (0, stat.S_IFREG)) and
+            source_link = source_links and not item.is_dir() and kind == stat.S_IFLNK
+            require((source_link or kind in ((0, stat.S_IFDIR) if item.is_dir() else (0, stat.S_IFREG))) and
                     0 <= item.file_size <= inputs.MAX_FILE and total <= inputs.MAX_TOTAL,
-                    'Linked, special or oversized ZIP member')
+                    'Linked, special or oversized ZIP member: ' + repr(name))
+            if source_link:
+                require(name not in wanted, 'Source symlink cannot be selected: ' + repr(name))
+                require(0 < item.file_size <= 4096, 'Source symlink text exceeds bound: ' + repr(name))
+                links[name] = item
             if not item.is_dir(): files[name] = item
         require(set(wanted) <= set(files), 'Missing frozen source/evidence input')
         for name in files:
@@ -272,6 +287,15 @@ def selected_zip(archive, wanted, *, max_file=MAX_REPORT):
         for name in wanted:
             require(files[name].file_size <= max_file, 'Selected ZIP member exceeds bound')
             result[name] = z.read(files[name])
+        if links:
+            reference = inputs.strict_json(result['SOURCE_REFERENCE.json'])
+            require(isinstance(reference, dict) and isinstance(reference.get('files'), dict),
+                    'Source reference inventory required for opaque symlinks')
+            for name, item in links.items():
+                record = reference['files'].get(name)
+                require(isinstance(record, dict) and record.get('gitMode') == '120000' and
+                        record.get('sha256') == digest(z.read(item)),
+                        'Opaque source symlink text/mode differs from source reference: ' + repr(name))
         return result
 
 
@@ -401,7 +425,7 @@ def assemble_frozen_payloads(tree, old_raw, new_raw, product_commit):
     """Run only the fixed assembler from the authenticated original source ZIP."""
     source_names = ['tools/alpha-artifacts.py', 'tools/hardware_output_policy.py', 'release/qualification.json',
                     *('docs/beta2/' + name for name in manifest.PRODUCT_FILES if name.endswith('.md'))]
-    source = selected_zip(tree / 'build/developer-preview/SKAGER-Beta2-source.zip',
+    source = selected_source_zip(tree / 'build/developer-preview/SKAGER-Beta2-source.zip',
                           ['SOURCE_REFERENCE.json', *('opennav-x/' + n for n in source_names)])
     reference = inputs.strict_json(source['SOURCE_REFERENCE.json'])
     require(reference['productCommit'] == product_commit, 'Frozen source identity differs')
