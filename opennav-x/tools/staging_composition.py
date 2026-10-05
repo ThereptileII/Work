@@ -27,6 +27,10 @@ WORKFLOW = '.github/workflows/skager-staging-compose.yml'
 BASELINE = '.github/workflows/opennav-baseline.yml'
 RETEST = '.github/workflows/skager-staging-retest.yml'
 ASSEMBLE_JOB = 'Compose retained Staging evidence'
+COMPOSE_PUBLISH_JOB = 'Record composed draft Staging Release'
+PUBLICATION_WORKFLOW = '.github/workflows/skager-staging-publish.yml'
+PUBLICATION_REQUEST = 'opennav-x/tools/staging-publication-request.json'
+PUBLICATION_JOB = 'Resume composed draft Staging publication'
 RUNTIME_JOB = 'Qualify retained native Staging inputs'
 REQUIRED_JOBS = (
     'contracts (ubuntu-24.04)', 'contracts (windows-2022)',
@@ -246,6 +250,80 @@ def verify_provenance(gh, q, complete=False):
                     (('GITHUB_SHA', 'commit'), ('GITHUB_RUN_ID', 'runId'), ('GITHUB_RUN_ATTEMPT', 'runAttempt'))) and
                 os.environ.get('GITHUB_REF') == 'refs/heads/skager-staging-compose',
                 'Publisher must retain actual composition identity')
+
+
+def validate_publication_request(request):
+    _fields(request, ('schemaVersion', 'kind', 'repository', 'composition', 'candidateArtifact',
+                      'qualificationSha256', 'manifestSha256', 'releaseId'))
+    require(type(request['schemaVersion']) is int and request['schemaVersion'] == 1 and
+            request['kind'] == 'staging-publication-resume' and request['repository'] == REPOSITORY,
+            'Unsupported publication-only request')
+    _identity(request['composition'])
+    _match('[1-9][0-9]{0,19}', request['releaseId'])
+    for key in ('qualificationSha256', 'manifestSha256'):
+        _match('[a-f0-9]{64}', request[key])
+    a = request['candidateArtifact']; e = request['composition']
+    _fields(a, ('artifactId', 'artifactName', 'artifactDigest', 'size'))
+    _match('[1-9][0-9]{0,19}', a['artifactId']); _match('sha256:[a-f0-9]{64}', a['artifactDigest'])
+    require(a['artifactName'] == f"composed-staging-candidate-{e['runId']}-attempt{e['runAttempt']}" and
+            type(a['size']) is int and 0 < a['size'] <= MAX_ARTIFACT, 'Retained composition artifact differs')
+
+
+def publication_receipt(request, request_sha, publisher):
+    validate_publication_request(request); _identity(publisher); _match('[a-f0-9]{64}', request_sha)
+    return dict(schemaVersion=1, kind='staging-publication-resume', request=request,
+                requestPath=PUBLICATION_REQUEST, requestSha256=request_sha, publisher=publisher)
+
+
+def verify_publication_provenance(gh, q, publication, *, manifest_sha256,
+                                  qualification_sha256, release_id, complete):
+    """Transport continuation only: no new product qualification or assembly."""
+    _fields(publication, ('schemaVersion', 'kind', 'request', 'requestPath', 'requestSha256', 'publisher'))
+    require(type(publication['schemaVersion']) is int and publication['schemaVersion'] == 1 and
+            publication['kind'] == 'staging-publication-resume' and publication['requestPath'] == PUBLICATION_REQUEST,
+            'Unsupported publication transport receipt')
+    request = publication['request']; validate_publication_request(request)
+    publisher = publication['publisher']; _identity(publisher)
+    _match('[a-f0-9]{64}', publication['requestSha256'])
+    require(type(q.get('schemaVersion')) is int and q['schemaVersion'] == 2 and
+            request['composition'] == q['composition']['execution'] and
+            request['manifestSha256'] == manifest_sha256 and request['qualificationSha256'] == qualification_sha256 and
+            request['releaseId'] == str(release_id), 'Publication request does not bind this exact frozen draft')
+    require(publisher['runId'] != request['composition']['runId'], 'Publication must use its own run identity')
+    response = gh.api(f"{gh.base}/contents/{PUBLICATION_REQUEST}?ref={publisher['commit']}")
+    require(response.get('type') == 'file' and response.get('encoding') == 'base64' and
+            type(response.get('size')) is int and 0 < response['size'] <= 1024**2 and
+            isinstance(response.get('content'), str) and len(response['content']) <= 2 * 1024**2,
+            'Committed publication request unavailable')
+    raw = base64.b64decode(''.join(response['content'].split()), validate=True)
+    require(len(raw) == response['size'] and digest(raw) == publication['requestSha256'] and
+            inputs.strict_json(raw) == request, 'Transport receipt differs from committed publication request')
+    _verify_request(gh, q); _verify_inputs(gh, q)
+    original = request['composition']
+    _run(gh, original, WORKFLOW, conclusion='failure')
+    jobs = gh.pages(f"{gh.base}/actions/runs/{original['runId']}/attempts/{original['runAttempt']}/jobs")
+    require(len(jobs) == 2 and {j.get('name') for j in jobs} == {ASSEMBLE_JOB, COMPOSE_PUBLISH_JOB},
+            'Publication-only failure requires exactly the reviewed composition jobs')
+    _job(jobs, original, ASSEMBLE_JOB, 'success')
+    _job(jobs, original, COMPOSE_PUBLISH_JOB, 'failure')
+    artifact = _artifact(gh, request['candidateArtifact'], original)
+    require(artifact['size_in_bytes'] == request['candidateArtifact']['size'], 'Retained candidate size differs')
+    run = _run(gh, publisher, PUBLICATION_WORKFLOW, conclusion='success' if complete else None)
+    require(run.get('head_branch') == 'skager-staging-publish', 'Unapproved publication branch')
+    jobs = gh.pages(f"{gh.base}/actions/runs/{publisher['runId']}/attempts/{publisher['runAttempt']}/jobs")
+    require(len(jobs) == 1 and jobs[0].get('name') == PUBLICATION_JOB, 'Unexpected publication job closure')
+    if complete:
+        _job(jobs, publisher, PUBLICATION_JOB, 'success')
+    else:
+        j = jobs[0]
+        require(run.get('status') == 'in_progress' and run.get('conclusion') is None and
+                j.get('status') == 'in_progress' and j.get('conclusion') is None and
+                str(j.get('run_id')) == publisher['runId'] and str(j.get('run_attempt')) == publisher['runAttempt'] and
+                j.get('head_sha') == publisher['commit'] and os.environ.get('GITHUB_REPOSITORY') == REPOSITORY and
+                os.environ.get('GITHUB_REF') == 'refs/heads/skager-staging-publish' and
+                all(os.environ.get(env) == publisher[key] for env, key in
+                    (('GITHUB_SHA', 'commit'), ('GITHUB_RUN_ID', 'runId'), ('GITHUB_RUN_ATTEMPT', 'runAttempt'))),
+                'Resume must retain the actual active publication job identity')
 
 
 def selected_zip(archive, wanted, *, max_file=MAX_REPORT):

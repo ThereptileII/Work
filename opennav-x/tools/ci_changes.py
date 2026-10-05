@@ -44,6 +44,7 @@ HELPER_TOOLS = frozenset('''
 ci_changes.py staging_build_inputs.py github_release_delivery.py production-qualification.py
 fetch_ci_inputs.py qualify-staging-windows.ps1 retest-staging-windows.py
 staging_composition.py staging-composition-request.json staging-installer-retest.json
+staging-publication-request.json
 staging-qualification.py retain-release-inputs.py prepare-release-retest.py
 beta2_handoff.py alpha-artifacts.py chart-render-check.py diagnostic-geometry.py
 diagnostic_snapshot.py installer-welcome.py installer-deny-directory.ps1

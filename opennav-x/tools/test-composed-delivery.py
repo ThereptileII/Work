@@ -105,6 +105,151 @@ class DeliveryIntegration(unittest.TestCase):
             (base.root/name).write_text(json.dumps(value))
         (base.root/'RELEASE.json').unlink();base.record=base.fixture.create()
 
+    def publication(self):
+        base=self.composed();base.publish();gh=base.gh
+        release=gh.releases[base.tag]
+        self.missing=next(a['name'] for a in release['assets'] if a['name'].endswith('-source.zip'))
+        release['assets'][:]=[a for a in release['assets'] if a['name']!=self.missing]
+        original=self.q['composition']['execution']
+        gh.runs['44'].update(status='completed',conclusion='failure')
+        gh.run_jobs['44'].append(dict(gh.run_jobs['44'][0],name=composition.COMPOSE_PUBLISH_JOB,conclusion='failure',id=998))
+        request=dict(schemaVersion=1,kind='staging-publication-resume',repository=composition.REPOSITORY,
+            composition=original,candidateArtifact=dict(artifactId='14',artifactName='composed-staging-candidate-44-attempt1',
+                artifactDigest='sha256:'+'d'*64,size=456),releaseId=str(release['id']),
+            qualificationSha256=delivery.file_hash(base.root/'QUALIFICATION.json'),
+            manifestSha256=delivery.file_hash(base.root/'RELEASE.json'))
+        raw=json.dumps(request,sort_keys=True).encode()
+        publisher=dict(commit='4'*40,runId='45',runAttempt='1')
+        self.publication_receipt=composition.publication_receipt(request,composition.digest(raw),publisher)
+        gh.artifacts['14']=dict(id=14,name=request['candidateArtifact']['artifactName'],digest=request['candidateArtifact']['artifactDigest'],
+            size_in_bytes=456,expired=False,workflow_run=dict(id=44,head_sha=original['commit']))
+        gh.runs['45']=dict(gh.runs['44'],id=45,head_sha=publisher['commit'],path=composition.PUBLICATION_WORKFLOW,
+            head_branch='skager-staging-publish',status='in_progress',conclusion=None)
+        gh.run_jobs['45']=[dict(gh.run_jobs['44'][0],id=997,name=composition.PUBLICATION_JOB,run_id=45,
+            head_sha=publisher['commit'],status='in_progress',conclusion=None)]
+        api=gh.api
+        def publication_api(endpoint):
+            if '/contents/'+composition.PUBLICATION_REQUEST+'?' in endpoint:
+                gh.calls.append(('api',endpoint))
+                return dict(type='file',encoding='base64',size=len(raw),content=base64.b64encode(raw).decode())
+            return api(endpoint)
+        gh.api=publication_api
+        os.environ.update(GITHUB_SHA=publisher['commit'],GITHUB_RUN_ID='45',GITHUB_RUN_ATTEMPT='1',
+            GITHUB_REF='refs/heads/skager-staging-publish',GITHUB_REPOSITORY=composition.REPOSITORY)
+        gh.calls.clear()
+        return base
+
+    def finish_publication(self, base):
+        base.gh.runs['45'].update(status='completed',conclusion='success')
+        base.gh.run_jobs['45'][0].update(status='completed',conclusion='success')
+
+    def test_resume_preserves_frozen_assets_and_fetch_excludes_transport_receipt(self):
+        base=self.publication();before={p.name:p.read_bytes() for p in base.root.iterdir()}
+        delivery.resume_retained(base.gh,base.root,self.publication_receipt)
+        self.assertEqual([c[1] for c in base.gh.calls if c[0]=='upload'],[self.missing,delivery.PUBLICATION_RECEIPT])
+        self.assertFalse(any(c[0]=='create' for c in base.gh.calls))
+        target=base.work/'fetched'
+        with self.assertRaises(ValueError):delivery.fetch_staging(base.gh,base.tag,target)
+        self.assertFalse(target.exists())
+        self.finish_publication(base)
+        delivery.fetch_staging(base.gh,base.tag,target)
+        self.assertEqual({p.name:p.read_bytes() for p in target.iterdir()},before)
+        delivery.local_record(target)
+        self.assertEqual(base.gh.runs['44']['conclusion'],'failure')
+        self.assertEqual(base.gh.runs['42']['conclusion'],'failure')
+        report,_=base.report();base.promote(report)
+        self.assertIn('skager-production-'+base.record['candidateId'],base.gh.releases)
+
+    def test_uncertain_upload_requires_fresh_exact_bytes(self):
+        base=self.publication();upload=base.gh.upload
+        def uncertain(release,path):
+            upload(release,path)
+            raise delivery.GitHubTransportError('safe simulated connection error')
+        base.gh.upload=uncertain
+        delivery.resume_retained(base.gh,base.root,self.publication_receipt)
+        self.assertEqual([c[1] for c in base.gh.calls if c[0]=='upload'],[self.missing,delivery.PUBLICATION_RECEIPT])
+        self.assertTrue(any(c==('download',self.missing) for c in base.gh.calls))
+
+    def test_missing_or_wrong_uncertain_upload_never_attests(self):
+        base=self.publication();upload=base.gh.upload
+        for wrong in (False,True):
+            with self.subTest(wrong=wrong):
+                def uncertain(release,path):
+                    if wrong:
+                        upload(release,path)
+                        asset=release['assets'][-1];base.gh.blobs[asset['id']]=b'x'*asset['size']
+                    raise delivery.GitHubTransportError('safe simulated connection error')
+                base.gh.upload=uncertain
+                with self.assertRaises(ValueError):delivery.resume_retained(base.gh,base.root,self.publication_receipt)
+                self.assertFalse(any(a['name']==delivery.PUBLICATION_RECEIPT for a in base.gh.releases[base.tag]['assets']))
+
+    def test_existing_mismatch_and_extra_assets_refuse_before_upload(self):
+        base=self.publication();release=base.gh.releases[base.tag];asset=release['assets'][0]
+        original=base.gh.blobs[asset['id']]
+        base.gh.blobs[asset['id']]=b'x'*len(original)
+        with self.assertRaises(ValueError):delivery.resume_retained(base.gh,base.root,self.publication_receipt)
+        self.assertFalse(any(c[0]=='upload' for c in base.gh.calls))
+        base.gh.blobs[asset['id']]=original
+        release['assets'].append(dict(asset,name='extra.json',id=987))
+        with self.assertRaises(ValueError):delivery.resume_retained(base.gh,base.root,self.publication_receipt)
+        self.assertFalse(any(c[0]=='upload' for c in base.gh.calls))
+
+    def test_publication_failure_shape_identity_and_pins_are_not_gate_overrides(self):
+        base=self.publication()
+        changes=[(base.gh.run_jobs['44'][0],'conclusion','failure'),
+            (base.gh.run_jobs['44'][1],'conclusion','success'),
+            (base.gh.run_jobs['42'][0],'conclusion','failure'),
+            (base.gh.runs['43'],'conclusion','failure'),
+            (base.gh.runs['45'],'head_branch','other'),
+            (base.gh.artifacts['14'],'digest','sha256:'+'e'*64),
+            (self.publication_receipt['request'],'releaseId','999'),
+            (self.publication_receipt,'requestSha256','f'*64)]
+        for obj,key,value in changes:
+            with self.subTest(key=key,value=value):
+                old=obj[key];obj[key]=value
+                try:
+                    with self.assertRaises(ValueError):delivery.resume_retained(base.gh,base.root,self.publication_receipt)
+                    self.assertFalse(any(c[0]=='upload' for c in base.gh.calls))
+                finally:obj[key]=old
+        with patch.dict(os.environ,GITHUB_RUN_ATTEMPT='2'):
+            with self.assertRaises(ValueError):delivery.resume_retained(base.gh,base.root,self.publication_receipt)
+        base.gh.run_jobs['44'].append(dict(base.gh.run_jobs['44'][0],name='unexpected gate'))
+        with self.assertRaises(ValueError):delivery.resume_retained(base.gh,base.root,self.publication_receipt)
+
+    def test_prior_failed_publisher_receipt_is_not_overwritten_or_accepted(self):
+        base=self.publication();delivery.resume_retained(base.gh,base.root,self.publication_receipt)
+        base.gh.runs['45'].update(status='completed',conclusion='failure')
+        base.gh.run_jobs['45'][0].update(status='completed',conclusion='failure')
+        target=base.work/'refused'
+        with self.assertRaises(ValueError):delivery.fetch_staging(base.gh,base.tag,target)
+        self.assertFalse(target.exists())
+        base.gh.runs['45'].update(status='in_progress',conclusion=None)
+        base.gh.run_jobs['45'][0].update(status='in_progress',conclusion=None)
+        # Even an unrelated already retained receipt cannot be replaced during an active resume.
+        receipt=next(a for a in base.gh.releases[base.tag]['assets'] if a['name']==delivery.PUBLICATION_RECEIPT)
+        data=json.loads(base.gh.blobs[receipt['id']]);data['publisher']['runId']='46'
+        base.gh.blobs[receipt['id']]=json.dumps(data).encode();receipt['size']=len(base.gh.blobs[receipt['id']])
+        base.gh.calls.clear()
+        with self.assertRaisesRegex(delivery.PublicationReceiptConflict,'Review is required'):
+            delivery.resume_retained(base.gh,base.root,self.publication_receipt)
+        self.assertFalse(any(c[0]=='upload' for c in base.gh.calls))
+
+    def test_retained_candidate_flat_extraction_and_safe_diagnostics(self):
+        import zipfile
+        base=self.composed();archive=base.work/'candidate.zip'
+        with zipfile.ZipFile(archive,'w') as stream:
+            for path in base.root.iterdir():stream.write(path,path.name)
+        target=base.work/'unpacked';delivery.unpack_candidate(archive,target)
+        self.assertEqual({p.name:p.read_bytes() for p in target.iterdir()},
+                         {p.name:p.read_bytes() for p in base.root.iterdir()})
+        with zipfile.ZipFile(archive,'a') as stream:stream.writestr('../escape','bad')
+        with self.assertRaises(ValueError):delivery.unpack_candidate(archive,base.work/'bad')
+        self.assertFalse((base.work/'bad').exists())
+        error=delivery.transport_error(subprocess.CompletedProcess([],1,stderr=b'HTTP 502 unexpected EOF secret=DO_NOT_PRINT'),
+            'upload asset=SKAGER-Beta2-Source.zip; bytes=123; release=1')
+        self.assertIn('http=502',str(error));self.assertIn('category=connection',str(error))
+        self.assertNotIn('DO_NOT_PRINT',str(error));self.assertNotIn('secret=',str(error))
+
     def test_v2_real_validation_and_provenance_precede_draft_publication(self):
         base=self.composed()
         delivery.publish_staging(base.gh,base.root)

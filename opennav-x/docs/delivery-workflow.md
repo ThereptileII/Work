@@ -102,8 +102,18 @@ The composition workflow assembles the original installer, recovery archive,
 source and packaged documents without rebuilding or copying newer helper-branch
 documentation into the product. The newly retained test-support archive belongs
 to the composition run. Draft publication requires its assembly job to pass;
-later fetching/promotion also requires the completed composition run to pass.
-This does not start Production promotion or public access.
+later fetching/promotion also requires completed delivery evidence.
+
+If assembly succeeds but uploading the draft fails, use the separate retained
+publication workflow. Its committed request pins the original assembly, candidate
+artifact digest, qualification and manifest hashes, and existing draft identity.
+It verifies existing uploaded bytes and adds only missing assets. It does not
+rebuild, reassemble, overwrite an asset, change qualification, or waive a failed
+product test. A separate `STAGING_PUBLICATION.json` transport receipt binds the
+successful continuation; consumers verify both original assembly evidence and
+the completed continuation. The failed upload remains recorded. Ordinary
+composition without this receipt still requires its entire run to pass.
+Neither path starts Production promotion or public access.
 
 Reuse evidence only when its relevant code, dependencies, environment and
 package inputs are unchanged and recorded. Keep failures visible. Separate

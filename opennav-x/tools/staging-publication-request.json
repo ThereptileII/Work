@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "kind": "staging-publication-resume",
+  "repository": "ThereptileII/Work",
+  "composition": {
+    "commit": "64d14a0aa97446c6e7646d837e628fa4fcf4d0fd",
+    "runId": "37348369038",
+    "runAttempt": "1"
+  },
+  "candidateArtifact": {
+    "artifactId": "11361686451",
+    "artifactName": "composed-staging-candidate-37348369038-attempt1",
+    "artifactDigest": "sha256:d45f2964363278d15a1e4e1b1e6f65953fd86ddedd6334dac048ecfe352504f2",
+    "size": 816964608
+  },
+  "qualificationSha256": "1d40189ef42d3318e27d789696c874df776cca7e34c866229d995f2c65ee4f37",
+  "manifestSha256": "4a815abfd99a0cb722e8c0e8761e55e613164360f0653bf3104a1ab80a2a44d6",
+  "releaseId": "403963091"
+}

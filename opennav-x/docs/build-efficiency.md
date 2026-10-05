@@ -182,6 +182,11 @@ repository's default branch also contains a separate firmware project.
   and assembles a draft Release from frozen inputs. Product and helper identities
   remain separate, and the original failed run is preserved. This is not a way
   to waive a failed gate or claim a new binary was tested.
+- **SKAGER retained Staging publication**: if uploading a successfully assembled
+  draft fails, authenticate its retained candidate and resume only missing draft
+  assets. Keep frozen package/qualification/manifest bytes, original assembly
+  evidence and a separate successful publication receipt. Do not rebuild or run
+  application tests to repair a release transport failure.
 - **SKAGER Production**: remains the separate explicit named-candidate promotion
   flow. No design review, rebranding or application compilation is added to it.
 

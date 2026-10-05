@@ -1,5 +1,5 @@
 {
-  "scope": "Focused secure updater components; not packaged application or boat acceptance",
+  "scope": "Secure updater implementation, native packaged mechanics and retained Staging delivery; signed live-channel and boat acceptance pending",
   "jira": [
     "SCRUM-23",
     "SCRUM-25",
@@ -57,7 +57,6 @@
       }
     ]
   },
-  "boatModified": false,
   "publicUpdateServiceConfigured": false,
   "productionPromotion": false,
   "fourthRun": {
@@ -608,5 +607,48 @@
       "applicationChanged": false,
       "rawLogsIncluded": false
     }
-  }
+  },
+  "retainedStagingComposition": {
+    "firstAttempt": {
+      "runId": "37347237222",
+      "status": "failed-source-reader",
+      "originalFailurePreserved": true
+    },
+    "runId": "37348369038",
+    "url": "https://github.com/ThereptileII/Work/actions/runs/37348369038",
+    "helperCommit": "64d14a0aa97446c6e7646d837e628fa4fcf4d0fd",
+    "productCommit": "c0d8d85fb602e86d40e2f3f1be32307919702408",
+    "assemblyJob": 111892646593,
+    "assembly": "passed",
+    "publicationJob": 111893653334,
+    "publication": "failed-last-source-archive-upload; transport cause unproven",
+    "draftReleaseId": 403963091,
+    "publicAccess": false,
+    "productRebuilt": false,
+    "applicationsRetested": false,
+    "candidateArtifact": {
+      "id": 11361686451,
+      "sha256": "d45f2964363278d15a1e4e1b1e6f65953fd86ddedd6334dac048ecfe352504f2"
+    },
+    "installerArtifact": {
+      "id": 11362140524,
+      "sha256": "31f0eb4bdd931f06062e3f0d80840639f5a72dcb41743759a10215d6759167db",
+      "downloadedAndVerified": true
+    },
+    "setupSha256": "d43b63e69c094026a7d3cfc749e2f3f09966a090dc9979dc1deaacc18d3fb49f",
+    "continuation": "pending"
+  },
+  "boatUpdaterPreparation": {
+    "setupStagedAndHashVerified": true,
+    "setupExecuted": false,
+    "applicationChanged": false,
+    "profileChanged": false,
+    "oldApplicationLeftRunning": true,
+    "blockingIssue": "SCRUM-310",
+    "review": "Active commissioning contains substantive vessel-settings, online-AIS, plugin and route-state changes. Existing safe restoration/adoption cannot preserve every change; old baseline was not restored. Private profile and evidence remain local.",
+    "hardwareCommandsSent": false,
+    "publicUpdateServiceConfigured": false
+  },
+  "boatApplicationModified": false,
+  "boatSupportFilesStaged": true
 }
