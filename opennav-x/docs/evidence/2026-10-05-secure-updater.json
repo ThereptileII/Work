@@ -243,5 +243,31 @@
     "tlsLifecyclesPassed": 8,
     "transportScenariosPassed": 18,
     "sessionChecksPassed": 216
+  },
+  "correctedStagingAttempt": {
+    "url": "https://github.com/ThereptileII/Work/actions/runs/37317835346",
+    "commit": "c330f33883a9af0e7fc7b95d4cbcf916a3ff576d",
+    "localImplementation": "990220ba7c29609beb3dbde0b902dbc94f61c1a3",
+    "status": "running",
+    "updaterFocusedChecks": "passed",
+    "packageAcceptance": "pending"
+  },
+  "boatLauncherTooling": {
+    "localImplementation": "47b4b33",
+    "qualificationLocal": "ecd6f71fd228eef2cc47c88d205093c1916d750c",
+    "commit": "934a829adc5f151a400122a5e7473d064779d80f",
+    "url": "https://github.com/ThereptileII/Work/actions/runs/37318355365",
+    "status": "failed test-helper workflow path lookup; no staged bundle",
+    "nativeStartupChecksPassed": 45,
+    "existingWindowAndBrokerGates": "passed",
+    "downloadedPolicyArtifact": {
+      "id": 11349321517,
+      "sha256": "9a56c35a2626cbc8d8b5914cd01593d5e13674313a3b3bcf5a01bfa16e3cfe73"
+    },
+    "correctionLocal": "4d36e166ff61a7227a2c3bf573894a4eef189ac1",
+    "correctionScope": "Test discovers actual Git checkout root for workflows instead of assuming .github inside opennav-x",
+    "installedBootstrap": "pending",
+    "signedOffersAndRollback": "pending",
+    "boatModified": false
   }
 }

@@ -74,7 +74,8 @@ class QualificationTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError,'exact tested source bytes'):q.verify_reports('policy',folder)
 
     def test_workflow_runs_focused_startup_before_policy_seal_and_keeps_other_gates(self):
-        workflow=(q.ROOT/'.github/workflows/skager-chart-palette-tools.yml').read_text()
+        checkout=Path(q.git('rev-parse','--show-toplevel').decode().strip())
+        workflow=(checkout/'.github/workflows/skager-chart-palette-tools.yml').read_text()
         self.assertIn("'review-staging','startup-launcher'",workflow)
         self.assertLess(workflow.index("'startup-launcher'"),workflow.index('--gate policy'))
         self.assertIn('needs: [policy, window, broker]',workflow)
