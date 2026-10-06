@@ -229,6 +229,12 @@ def restored_feedback(root, manifest_path, receipt_path, product_commit, harness
     require(Path(manifest_path).resolve() == root / FEEDBACK_MANIFEST,
             'Only the retained original feedback manifest may be used')
     receipt = strict_json(Path(receipt_path).read_bytes())
+    if receipt.get('kind') == 'skager-recovered-prepackage-staging-inputs':
+        from recovered_staging import validated_receipt
+        receipt = validated_receipt(root, receipt_path, product_commit, harness_commit)
+        return dict(schema=1, commit=product_commit, tests=[
+            dict(name=name, path=str(root / FEEDBACK_BINARIES[name]))
+            for name in sorted(FEEDBACK_TESTS)])
     expected = receipt.get('producer', {})
     require(expected == producer(expected.get('commit'), expected.get('runId'),
                                  expected.get('runAttempt'), expected.get('job')) and

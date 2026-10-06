@@ -165,8 +165,12 @@ def prepare_compiled(receipt_path,root,harness_commit):
     if receipt_path.is_symlink() or not receipt_path.is_file():
         raise ValueError('Compiled input receipt must be a regular restored file')
     restored=staging_inputs.strict_json(receipt_path.read_bytes())
+    recovered = restored.get('kind') == 'skager-recovered-prepackage-staging-inputs'
+    if recovered:
+        from recovered_staging import validated_receipt
+        restored = validated_receipt(root, receipt_path, restored.get('producer',{}).get('commit'), harness_commit)
     if (type(restored.get('schema')) is not int or restored.get('schema')!=1 or
-            restored.get('kind')!=staging_inputs.KIND or
+            (not recovered and restored.get('kind')!=staging_inputs.KIND) or
             restored.get('status')!='restored' or restored.get('qualification')!='not-run' or
             restored.get('workspaceRoot')!=str(root) or restored.get('harnessCommit')!=harness_commit):
         raise ValueError('Compiled input receipt root, harness or restore authority differs')
@@ -189,6 +193,7 @@ def prepare_compiled(receipt_path,root,harness_commit):
     source=prepare_source_engine(archive,root,expected['commit'])
     return {**source,'product_commit':expected['commit'],
             'compiled_input_receipt_sha256':sha(receipt_path),'compiled_input_producer':expected,
+            'compiled_input_kind':restored['kind'],'packaging_origin':restored.get('packaging') if recovered else None,
             'source_archive_sha256':sha(archive)}
 
 

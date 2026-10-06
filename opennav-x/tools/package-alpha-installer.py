@@ -13,10 +13,19 @@ from hardware_output_policy import require_product_output_policy
 from product_version import read_product_version, windows_product_version
 ROOT = Path(__file__).resolve().parents[1]
 p=argparse.ArgumentParser()
+p.add_argument('--source-root',type=Path,help='Clean exact product checkout; packaging helper may be newer')
+p.add_argument('--product-commit',help='Exact product identity independent of packaging run')
 p.add_argument('--preview',type=Path,required=True)
 p.add_argument('--output',type=Path,required=True)
 p.add_argument('--candidate',action='store_true',help='Disposable lifecycle qualification only; not a release allowlist')
 a=p.parse_args()
+if bool(a.source_root) != bool(a.product_commit): raise SystemExit('Explicit packaging requires source root and product commit')
+if a.source_root: ROOT=a.source_root.resolve(strict=True)
+if a.product_commit and (re.fullmatch('[0-9a-f]{40}',a.product_commit) is None or
+        subprocess.check_output(['git','-C',str(ROOT),'rev-parse','HEAD'],text=True).strip()!=a.product_commit):
+    raise SystemExit('Explicit product checkout differs from packaging identity')
+if a.product_commit and subprocess.run(['git','-C',str(ROOT),'diff','--quiet','HEAD','--','.']).returncode:
+    raise SystemExit('Explicit product source has tracked changes')
 if os.name != 'nt': raise SystemExit('Build the installer with native NSIS on Windows')
 if a.output.exists(): raise SystemExit('Use a fresh installer output directory')
 manifest=json.loads((ROOT/'installer/windows/compatibility.json').read_text())
@@ -42,7 +51,9 @@ with zipfile.ZipFile(a.output/'payload.zip','w',zipfile.ZIP_DEFLATED,compresslev
             path=f.relative_to(preview).as_posix()
             data=f.read_bytes();z.writestr(path,data)
             records.append({'path':path,'sha256':hashlib.sha256(data).hexdigest()})
-commit=os.environ['GITHUB_SHA']
+commit=a.product_commit or os.environ['GITHUB_SHA']
+if json.loads((preview/'docs/PRODUCT_BUILD.json').read_text())['commit'] != commit:
+    raise SystemExit('Recovery commit differs from installer product identity')
 version=read_product_version(ROOT/'src/application/Version.h')
 if manifest['openNavVersion'] != version:
     raise SystemExit('Compatibility manifest version differs from the product source')

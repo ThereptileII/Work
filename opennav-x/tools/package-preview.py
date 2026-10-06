@@ -23,6 +23,8 @@ from product_version import read_product_version
 
 ROOT = Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser()
+parser.add_argument('--source-root', type=Path, help='Clean exact product checkout; packaging helper may be newer')
+parser.add_argument('--product-commit', help='Exact product source and compiled identity; independent of packaging run')
 parser.add_argument('--install', type=Path, required=True)
 parser.add_argument('--build', type=Path, required=True)
 parser.add_argument('--runtime', type=Path, required=True)
@@ -40,8 +42,17 @@ if os.name != 'nt':
     raise SystemExit('Recovery packaging and executable verification require native Windows')
 if bool(args.update_trust_config) != bool(args.update_trust_validator):
     raise SystemExit('Public trust selection requires both source and trusted validator')
+if bool(args.source_root) != bool(args.product_commit):
+    raise SystemExit('Explicit product packaging requires both source root and commit')
+if args.source_root:
+    ROOT = args.source_root.resolve(strict=True)
 product_version = read_product_version(ROOT / 'src/application/Version.h')
-commit = os.environ.get('GITHUB_SHA') or subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
+commit = args.product_commit or os.environ.get('GITHUB_SHA') or subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
+if args.product_commit and (re.fullmatch('[0-9a-f]{40}', commit) is None or
+        subprocess.check_output(['git', '-C', str(ROOT), 'rev-parse', 'HEAD'], text=True).strip() != commit):
+    raise SystemExit('Explicit product checkout differs from packaging identity')
+if args.product_commit and subprocess.run(['git','-C',str(ROOT),'diff','--quiet','HEAD','--','.']).returncode:
+    raise SystemExit('Explicit product source has tracked changes')
 selected_trust = (select_update_trust(ROOT, commit, args.update_trust_config, args.update_trust_validator)
                   if args.update_trust_config else None)
 openssl_source = verify_openssl_package_inputs(
@@ -117,10 +128,13 @@ if not (ROOT / 'docs/beta2/SKAGER-Beta2-Release-Notes.md').is_file():
     raise SystemExit('Beta 2 release notes are required in every recovery/installer package')
 for file in (ROOT / 'docs/beta2').glob('*.md'):
     shutil.copy2(file, destination / 'docs' / file.name)
-run = 'https://github.com/' + os.environ.get('GITHUB_REPOSITORY', 'ThereptileII/Work') + '/actions/runs/' + os.environ.get('GITHUB_RUN_ID', 'local')
+packaging_run = 'https://github.com/' + os.environ.get('GITHUB_REPOSITORY', 'ThereptileII/Work') + '/actions/runs/' + os.environ.get('GITHUB_RUN_ID', 'local')
 build_header = (args.build / 'include/OpenNavBuild.h').read_text()
 def build_value(key):
     return re.search(r'#define ' + key + r' "([^"]+)"', build_header).group(1)
+compiled_run_id = build_value('OPENNAV_BUILD_RUN')
+compiled_run = ('https://github.com/ThereptileII/Work/actions/runs/' + compiled_run_id
+                if re.fullmatch('[1-9][0-9]{0,19}', compiled_run_id) else compiled_run_id)
 if build_value('OPENNAV_BUILD_COMMIT') != commit:
     raise SystemExit('Executable build commit does not match package commit')
 updater_source = verify_updater_package(app, commit)
@@ -173,6 +187,9 @@ for file in destination.rglob('*'):
         raise SystemExit('Test/demo artifact refused in product package: ' + str(relative))
 (destination / 'docs/PRODUCT_BUILD.json').write_text(json.dumps({
     'version': product_version, 'commit': commit, 'test_fixtures': False,
+    'compiled_ci_run': compiled_run_id,
+    'packaging_ci_run': os.environ.get('GITHUB_RUN_ID', 'local'),
+    'packaging_helper_commit': os.environ.get('GITHUB_SHA', commit),
     'build_purpose': 'INSTALLED PRODUCT',
     'xnav_hardware_output_policy': actual['xnav_hardware_output_policy'],
     'xnav_manual_control_contract': actual.get('xnav_manual_control_contract', 0),
@@ -193,7 +210,9 @@ info = f'''# Build information
 - Compiler: {build_value('OPENNAV_BUILD_COMPILER')}
 - Architecture: Win32/x86 application and plugin ABI; Windows 10/11 x64 host
 - Build date (UTC): {build_value('OPENNAV_BUILD_DATE')}
-- CI run: {run}
+- Compiler CI run: {compiled_run}
+- Packaging CI run: {packaging_run}
+- Packaging helper commit: `{os.environ.get("GITHUB_SHA", commit)}`
 - Modes: SKAGER, Legacy, Safe; package-local recovery profile only
 - Build purpose: INSTALLED PRODUCT; test fixtures compiled OFF
 - No synthetic vessel-data source or scenario launcher is included
