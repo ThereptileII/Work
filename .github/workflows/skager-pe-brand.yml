@@ -1,0 +1,37 @@
+name: SKAGER native NSIS version metadata
+on:
+  push:
+    branches: [skager-pe-brand]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native:
+    runs-on: windows-2022
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Verify real inert NSIS resources without running an installer
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          $out='opennav-x/evidence/local/nsis-version'
+          New-Item -ItemType Directory -Force $out | Out-Null
+          $compiler=Join-Path ${env:ProgramFiles(x86)} 'NSIS/makensis.exe'
+          if(-not (Test-Path -LiteralPath $compiler -PathType Leaf)){throw 'Native NSIS compiler required; no skipped acceptance'}
+          & $compiler /VERSION | Tee-Object "$out/compiler.txt"
+          if($LASTEXITCODE -ne 0){exit $LASTEXITCODE}
+          @{commit=$env:GITHUB_SHA;compilerSha256=(Get-FileHash $compiler -Algorithm SHA256).Hash.ToLowerInvariant();
+            scope='Inert generated PE resources only; no Setup execution or application build'} |
+            ConvertTo-Json | Set-Content "$out/identity.json"
+          python opennav-x/tools/test-skager-pe-brand.py -v 2>&1 | Tee-Object "$out/tests.log"
+          if($LASTEXITCODE -ne 0){exit $LASTEXITCODE}
+          if(Select-String -Path "$out/tests.log" -Pattern 'skipped=|\.\.\. skipped' -Quiet){throw 'Native resource fixture skipped'}
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: nsis-version-${{ github.sha }}-run${{ github.run_id }}-attempt${{ github.run_attempt }}
+          path: opennav-x/evidence/local/nsis-version
+          if-no-files-found: error
