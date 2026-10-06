@@ -5,10 +5,13 @@ param([Parameter(Mandatory=$true)][string]$Request)
 $job=Read-Record $Request
 $result=@{status='failed';action=$job.action;utc=[DateTime]::UtcNow.ToString('o')}
 try {
-  if ($job.action -cnotin @('Launch','LaunchStartup','LaunchPortableReview','Close','Capture','ReviewWindow','LaunchStock','ReviewStock','ReviewInstalledWelcome','RequestGuardedMode','ReviewRestartChild')) { throw 'Unsupported interactive action.' }
+  if ($job.action -cnotin @('Launch','LaunchStartup','LaunchPortableReview','Close','Capture','ReviewWindow','LaunchStock','ReviewStock','ReviewInstalledWelcome','RequestGuardedMode','ReviewRestartChild','LaunchManualPilot','CloseManualPilot')) { throw 'Unsupported interactive action.' }
   $exe=Assert-LocalPath $job.executable
   if ((Get-Digest $exe) -cne $job.executableSha256) { throw 'Application changed between dispatch and interactive execution.' }
-  if ($job.action -ceq 'LaunchStartup') {
+  if ($job.action -cin @('LaunchManualPilot','CloseManualPilot')) {
+    . (Join-Path $PSScriptRoot 'ManualPilotCommissioning.ps1')
+    $result=Invoke-ManualPilotInteractive $job
+  } elseif ($job.action -ceq 'LaunchStartup') {
     . (Join-Path $PSScriptRoot 'StartupLauncher.ps1')
     $result=Invoke-StartupLauncher $job
   } elseif ($job.action -cin @('RequestGuardedMode','ReviewRestartChild')) {

@@ -1,0 +1,24 @@
+{
+  "issue": "SCRUM-313",
+  "base_commit": "3fe0e0c621b0dc8733ae5b3ca903fe2be6d6f33b",
+  "source_sha256": {
+    "tools/boat/ManualPilotCommissioning.ps1": "4ac14f51df62ab86cd7609852f8906bdedc851135e645144af9e0888f2bc0321",
+    "tools/boat/commission-manual-pilot.ps1": "d7f8c074af643d548ec97b5d8b9967e1e1c519c0afa12f8d217eeaa0b85dffa8",
+    "tools/boat/test-manual-pilot-commissioning.ps1": "a68cc312ead872854e33d273d344962224c9e421bbfd28f7a5832fca330c887f",
+    "tools/boat/Common.ps1": "6a5a6f328fe735878af232bed08ef8b73e91810a90858dea50fd8b409e102028",
+    "tools/boat/InteractiveJob.ps1": "f9dc5f8599538a9e2ce0dba18211d2e9c60240dbe9571dcc70168ca3d1f19177",
+    "tools/boat/commission-read-only.ps1": "2d514061b678fde6b1f27163f3fea86d2fd84d92d432bcd5f5a40b4f6607c1c2"
+  },
+  "checks": {
+    "manual_pilot_portable": 63,
+    "existing_read_only_launch_refusals": 11,
+    "deployment_version": 41
+  },
+  "environment": "Linux PowerShell 7 portable/inert fixtures",
+  "native_windows": "pending separate root-owned Win32/System32 and SysWOW64 PowerShell gate",
+  "application_launched": false,
+  "scheduled_task_started": false,
+  "serial_port_opened": false,
+  "boat_accessed": false,
+  "scope": "Actual child transaction, exact ownership and profile checks, atomic temp-file publication, parent lock exclusion and interrupted rollback; OS identity/signature/process discovery are explicit fixture doubles. Real task/process launch/close and hardware response unqualified."
+}

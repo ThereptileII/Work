@@ -1,0 +1,76 @@
+name: SKAGER manual pilot commissioning helper
+on:
+  push:
+    branches: [skager-manual-pilot-commissioning]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native:
+    name: Windows PowerShell 5.1 / ${{ matrix.bits }}-bit
+    runs-on: windows-2022
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - bits: 64
+            system: System32
+          - bits: 32
+            system: SysWOW64
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Isolated commissioning, deployment identity and read-only launch refusals
+        shell: pwsh
+        env:
+          TEST_BITS: ${{ matrix.bits }}
+          TEST_SYSTEM: ${{ matrix.system }}
+        run: |
+          $ErrorActionPreference='Stop'
+          $PSNativeCommandUseErrorActionPreference=$false
+          $evidence=Join-Path $env:GITHUB_WORKSPACE ('opennav-x/evidence/local/manual-pilot-commissioning-'+$env:TEST_BITS)
+          New-Item -ItemType Directory -Force $evidence | Out-Null
+          $engine=Join-Path $env:SystemRoot ($env:TEST_SYSTEM+'\WindowsPowerShell\v1.0\powershell.exe')
+          $commit=(git rev-parse HEAD).Trim()
+          if ($LASTEXITCODE -ne 0 -or $commit -cne $env:GITHUB_SHA) { throw 'Checkout differs from exact workflow commit.' }
+          @{commit=$commit;bits=[int]$env:TEST_BITS;engine=$engine;runner=$env:RUNNER_ENVIRONMENT;
+            scope='Disposable fixture files only; no OpenCPN build, boat access or hardware output'} |
+            ConvertTo-Json | Set-Content (Join-Path $evidence 'identity.json') -Encoding utf8
+          # Invoke the exact native engines from a 64-bit host so System32 is
+          # not redirected. Each child proves its real version and bitness.
+          if (-not [Environment]::Is64BitProcess) { throw 'A 64-bit dispatch host is required.' }
+          $runner=Join-Path $evidence 'fixture-runner.ps1'
+          @'
+          param([string]$TestFile,[int]$ExpectedBits)
+          $ErrorActionPreference='Stop'
+          Set-StrictMode -Version Latest
+          try {
+            $bits=if([Environment]::Is64BitProcess){64}else{32}
+            if ($env:GITHUB_ACTIONS -cne 'true' -or $env:RUNNER_ENVIRONMENT -cne 'github-hosted') { throw 'Disposable hosted CI required.' }
+            if ($PSVersionTable.PSEdition -cne 'Desktop' -or $PSVersionTable.PSVersion.Major -ne 5 -or $PSVersionTable.PSVersion.Minor -ne 1 -or $bits -ne $ExpectedBits) { throw 'Wrong native PowerShell version or bitness.' }
+            Write-Output ('Commit: '+$env:GITHUB_SHA+'; PowerShell: '+$PSVersionTable.PSVersion+'; bits: '+$bits+'; home: '+$PSHOME)
+            Write-Output ('Fixture SHA256: '+(Get-FileHash -LiteralPath $TestFile -Algorithm SHA256).Hash)
+            & $TestFile
+            if (-not $?) { throw 'Fixture failed.' }
+            exit 0
+          } catch { Write-Output ($_ | Out-String); exit 1 }
+          '@ | Set-Content $runner -Encoding utf8
+          $results=@()
+          foreach ($name in @('test-manual-pilot-commissioning','test-deployment-version','test-commissioning-launch')) {
+            $test=Join-Path $env:GITHUB_WORKSPACE ('opennav-x/tools/boat/'+$name+'.ps1')
+            & $engine -NoProfile -NonInteractive -ExecutionPolicy Bypass -File $runner -TestFile $test -ExpectedBits $env:TEST_BITS 2>&1 |
+              Tee-Object -FilePath (Join-Path $evidence ($name+'.log'))
+            $code=$LASTEXITCODE
+            $results+=@{test=$name;exitCode=$code}
+            @{commit=$commit;bits=[int]$env:TEST_BITS;tests=$results} |
+              ConvertTo-Json -Depth 4 | Set-Content (Join-Path $evidence 'results.json') -Encoding utf8
+          }
+          if (@($results | Where-Object { $_.exitCode -ne 0 }).Count) { throw 'One or more native helper fixtures failed; inspect retained logs.' }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: manual-pilot-commissioning-${{ github.sha }}-${{ matrix.bits }}bit-attempt${{ github.run_attempt }}
+          path: opennav-x/evidence/local/manual-pilot-commissioning-${{ matrix.bits }}
+          if-no-files-found: error

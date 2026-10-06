@@ -12,6 +12,7 @@ param(
   [string]$PreservationProposal,[string]$ExpectedPreservationSha256
 )
 . (Join-Path $PSScriptRoot 'Commissioning.ps1')
+Assert-NoManualPilotChild $Workspace
 if(($BaselineRecord -or $ExpectedBaselineSha256) -and $Action -cnotin @('Inventory','Prepare')){throw 'Baseline selection belongs only to a new Inventory/Prepare.'}
 if(($AdoptionProposal -or $ExpectedAdoptionSha256) -and $Action -cnotin @('InspectRestore','Restore')){throw 'Adoption belongs only to explicit inspected restoration.'}
 if(($PreservationProposal -or $ExpectedPreservationSha256) -and $Action -cnotin @('InspectRestore','Restore')){throw 'Preservation belongs only to explicit inspected restoration.'}
@@ -163,6 +164,8 @@ if ($Action -ceq 'Apply') {
 }
 $restoreLock=Open-CommissioningRestoreLock $directory
 try {
+# Prepare may have created child ownership while this restore waited for the lock.
+Assert-NoManualPilotChild $Workspace
 $activeRecord=Read-Record $active
 if ($activeRecord.schema -ne 1 -or $activeRecord.owner -cne $script:CommissioningOwner -or $activeRecord.record -ine $recordPath -or $activeRecord.recordSha256 -cne $ExpectedRecordSha256) { throw 'Active transaction ownership mismatch.' }
 Assert-ClosedCommissioning

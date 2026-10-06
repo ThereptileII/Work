@@ -163,7 +163,11 @@ function Assert-PluginAudit([string[]]$Candidates,$Records) {
   }
   if ($seen.Count -ne @($Candidates).Count) { throw 'Plugin inventory incomplete; disabled plugins also require startup review.' }
 }
+function Assert-NoManualPilotChild([string]$Workspace) {
+  if(Test-Path -LiteralPath (Join-Path (Assert-LocalPath $Workspace) 'manual-pilot-active.json')){throw 'Manual child owns this profile; read-only launch is unavailable until child rollback.'}
+}
 function Assert-ReadOnlyAudit($Config,$Installed,[string]$Workspace) {
+  Assert-NoManualPilotChild $Workspace
   # An operator/code inspection creates this short-lived attestation only after
   # examining real connection directions, plugins and active-route state.
   # Never edit the live profile to make a test pass or silently disable sensors.
@@ -227,10 +231,18 @@ function Invoke-ReviewedNormalClose([Diagnostics.Process]$Process,[int]$Expected
   }
 }
 function Invoke-InteractiveJob([string]$Workspace,$Job,[int]$TimeoutSeconds=90) {
-  $directory=New-RunDirectory $Workspace $Job.action.ToLowerInvariant()
+  $manual=$Job.action -cin @('LaunchManualPilot','CloseManualPilot')
+  $engine=$null
+  if($manual) {
+    . (Join-Path $PSScriptRoot 'ManualPilotCommissioning.ps1')
+    $v=Read-ManualPilot $Workspace $Job.manualRecord $Job.manualRecordSha256 -Active -Launching:($Job.action -ceq 'LaunchManualPilot')
+    $engine=Get-ManualPilotEngine
+    if($engine.path -ine $v.record.engine.path -or $engine.sha256 -cne $v.record.engine.sha256){throw 'Bound signed task host changed.'}
+    $directory=New-PreparationDirectory $v.context $Job.action.ToLowerInvariant()
+  }else{$directory=New-RunDirectory $Workspace $Job.action.ToLowerInvariant()}
   $request=Join-Path $directory 'request.json';$result=Join-Path $directory 'result.json'
   $Job | Add-Member -NotePropertyName resultPath -NotePropertyValue $result
-  if ($Job.action -cin @('Launch','LaunchStartup','ReviewWindow','LaunchStock','ReviewStock','ReviewInstalledWelcome','RequestGuardedMode','ReviewRestartChild')) { $Job | Add-Member -NotePropertyName workspace -NotePropertyValue (Assert-LocalPath $Workspace) }
+  if ($Job.action -cin @('Launch','LaunchStartup','ReviewWindow','LaunchStock','ReviewStock','ReviewInstalledWelcome','RequestGuardedMode','ReviewRestartChild','LaunchManualPilot','CloseManualPilot')) { $Job | Add-Member -NotePropertyName workspace -NotePropertyValue (Assert-LocalPath $Workspace) }
   Write-Record $request $Job
   $script=Assert-LocalPath (Join-Path $PSScriptRoot 'InteractiveJob.ps1')
   $sid=[Security.Principal.WindowsIdentity]::GetCurrent().User.Value
@@ -239,12 +251,16 @@ function Invoke-InteractiveJob([string]$Workspace,$Job,[int]$TimeoutSeconds=90) 
   })
   if ($explorer.Count -ne 1) { throw 'One unlocked interactive desktop for this SSH account is required; no task started.' }
   $name='OpenNavX-Boat-'+[guid]::NewGuid().ToString('N')
-  $action=New-ScheduledTaskAction -Execute (Join-Path $env:WINDIR 'System32\WindowsPowerShell\v1.0\powershell.exe') -Argument ('-NoProfile -NonInteractive -ExecutionPolicy Bypass -File "'+$script+'" -Request "'+$request+'"')
+  $hostImage=if($manual){$engine.path}else{Join-Path $env:WINDIR 'System32\WindowsPowerShell\v1.0\powershell.exe'}
+  $action=New-ScheduledTaskAction -Execute $hostImage -Argument ('-NoProfile -NonInteractive -ExecutionPolicy Bypass -File "'+$script+'" -Request "'+$request+'"')
   $principal=New-ScheduledTaskPrincipal -UserId $sid -LogonType Interactive -RunLevel Limited
   $settings=New-ScheduledTaskSettingsSet -ExecutionTimeLimit (New-TimeSpan -Minutes $(if($Job.action -ceq 'LaunchStartup'){15}else{5})) -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries
   $task=$null
   try {
     $task=Register-ScheduledTask -TaskName $name -Action $action -Principal $principal -Settings $settings
+    if($manual){
+      Assert-RestartTaskIdentity (Get-ScheduledTask -TaskName $name) ([pscustomobject]@{execute=$hostImage;arguments=$action.Arguments}) $sid
+    }
     Start-ScheduledTask -TaskName $name
     $deadline=[DateTime]::UtcNow.AddSeconds($TimeoutSeconds)
     while (-not [IO.File]::Exists($result) -and [DateTime]::UtcNow -lt $deadline) { Start-Sleep -Milliseconds 250 }
