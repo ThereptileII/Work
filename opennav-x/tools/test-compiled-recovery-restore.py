@@ -16,7 +16,12 @@ import compiled_recovery_restore as r
 
 def write_zip(path, values):
     with zipfile.ZipFile(path, 'w', zipfile.ZIP_DEFLATED) as z:
-        for name, data in values.items(): z.writestr(r.sealed.archive_entry(name), data)
+        for name, data in values.items():
+            info = r.sealed.archive_entry(name)
+            # These adversarial fixtures must put the requested raw name on the
+            # wire: ZipInfo's constructor otherwise sanitizes it on Windows.
+            info.filename = info.orig_filename = name
+            z.writestr(info, data)
 
 
 def record(data): return dict(size=len(data), sha256=r.digest(data))
@@ -84,6 +89,21 @@ class TrustTests(unittest.TestCase):
             info=r.sealed.archive_entry('link');info.external_attr=(0o120777<<16)
             with zipfile.ZipFile(path,'w') as z:z.writestr(info,b'../outside')
             with zipfile.ZipFile(path) as z,self.assertRaises(ValueError):r.zip_index(z)
+
+
+    def test_windows_reader_normalization_of_real_raw_zip_is_refused(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path=Path(tmp)/'raw.zip'
+            # Exercise Windows ZipInfo behavior even when running this on Linux.
+            with patch.object(zipfile.os, 'sep', '\\'):
+                for raw, normalized in ((r'x\y','x/y'),('name\x00tail','name')):
+                    write_zip(path,{raw:b'inert'})
+                    self.assertIn(raw.encode(),path.read_bytes())
+                    with zipfile.ZipFile(path) as z:
+                        self.assertEqual(z.infolist()[0].orig_filename,raw)
+                        self.assertEqual(z.infolist()[0].filename,normalized)
+                        with self.assertRaisesRegex(ValueError,'normalized an unsafe raw name'):
+                            r.zip_index(z)
 
 
 class RestoreTests(unittest.TestCase):

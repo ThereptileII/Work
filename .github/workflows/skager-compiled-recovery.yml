@@ -29,9 +29,10 @@ jobs:
       - name: Check recovery boundaries with inert fixtures
         shell: pwsh
         run: |
-          python opennav-x/tools/test-compiled-recovery-restore.py
+          New-Item -ItemType Directory -Force opennav-x/evidence/local/compiled-recovery | Out-Null
+          python opennav-x/tools/test-compiled-recovery-restore.py 2>&1 | Tee-Object opennav-x/evidence/local/compiled-recovery/restore-contracts.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          python opennav-x/tools/test-recovered-staging.py
+          python opennav-x/tools/test-recovered-staging.py 2>&1 | Tee-Object opennav-x/evidence/local/compiled-recovery/qualification-contracts.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Reconstruct exact original reviewed source without compiling
         shell: pwsh

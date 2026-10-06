@@ -126,7 +126,10 @@ def zip_index(stream):
     result, folded = {}, set()
     for entry in entries:
         name = entry.orig_filename
-        require(name == entry.filename and not entry.is_dir() and not entry.flag_bits & 1 and
+        # ZipInfo normalizes backslashes on Windows (and truncates NULs).
+        # Reject the raw/normalized alias before considering its safe spelling.
+        require(name == entry.filename, 'ZIP reader normalized an unsafe raw name')
+        require(not entry.is_dir() and not entry.flag_bits & 1 and
                 stat.S_IFMT(entry.external_attr >> 16) in (0, stat.S_IFREG) and
                 0 <= entry.file_size <= sealed.MAX_FILE, 'Nonregular/encrypted/oversized ZIP input')
         safe_name(name)
