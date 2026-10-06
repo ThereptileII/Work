@@ -1,0 +1,100 @@
+name: SKAGER exact Linux product pilot recheck
+on:
+  push:
+    branches: [skager-product-pilot-recheck]
+  workflow_dispatch:
+permissions:
+  contents: read
+env:
+  SKAGER_DESIGN_VALIDATION: 'false'
+  PRODUCT_COMMIT: 0db45cb92509c29ef4d1fc33d0c76dc7cf511b97
+concurrency:
+  group: skager-product-pilot-recheck
+  cancel-in-progress: false
+jobs:
+  pilot:
+    name: Exact Linux fixture-free pilot TCP refusal
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Check corrected policy helper
+        run: python3 opennav-x/tools/test-smoke-pilot-policy.py
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: 0db45cb92509c29ef4d1fc33d0c76dc7cf511b97
+          path: candidate
+      - name: Fetch pinned source and provision disposable Linux dependencies
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          set -euo pipefail
+          test "$(git -C candidate rev-parse HEAD)" = "$PRODUCT_COMMIT"
+          git -C candidate diff --exit-code
+          git clone --depth 1 --branch Release_5.12.4 https://github.com/OpenCPN/OpenCPN.git candidate/opennav-x/upstream/OpenCPN
+          python3 candidate/opennav-x/tools/verify-upstream.py
+          sudo apt-get update
+          sudo apt-get install -y equivs devscripts ninja-build xvfb xdotool imagemagick
+          sudo mk-build-deps --install --remove --tool='apt-get -y --no-install-recommends' candidate/opennav-x/upstream/OpenCPN/ci/control
+          sudo locale-gen sv_SE.UTF-8 en_US.UTF-8
+          mkdir -p "$HOME/.opencpn"
+      # The original Linux job retained evidence but not executables. Build only
+      # the exact fixture-free candidate here; do not repeat the fixture build,
+      # 152 already-passed tests, other UI suites, design or endurance work.
+      - name: Build exact unchanged fixture-free product
+        run: |
+          set -euo pipefail
+          git -C candidate diff --exit-code
+          bash candidate/opennav-x/tools/build-production-linux.sh --build-only
+      - name: Retain compiled Linux bytes before the corrected smoke
+        run: |
+          set -euo pipefail
+          mkdir -p retained-linux
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, subprocess
+          root = pathlib.Path('candidate/opennav-x')
+          assert subprocess.check_output(['git','-C','candidate','rev-parse','HEAD'],text=True).strip() == os.environ['PRODUCT_COMMIT']
+          subprocess.run(['git','-C','candidate','diff','--exit-code'],check=True)
+          paths = sorted(p for p in (root/'build/production-install').rglob('*') if p.is_file())
+          assert paths and (root/'build/production-install/bin/opencpn') in paths
+          record = dict(schema=1, productCommit=os.environ['PRODUCT_COMMIT'], harnessCommit=os.environ['GITHUB_SHA'],
+                        runId=os.environ['GITHUB_RUN_ID'], runAttempt=os.environ['GITHUB_RUN_ATTEMPT'],
+                        status='compiled-unqualified', files={p.relative_to(root).as_posix():hashlib.file_digest(p.open('rb'),'sha256').hexdigest() for p in paths})
+          pathlib.Path('retained-linux/identity.json').write_text(json.dumps(record,indent=2)+'\n')
+          PY
+          tar -C candidate/opennav-x -czf retained-linux/COMPILED_LINUX.tar.gz build/production-install build/production-linux/include/config.h
+          sha256sum retained-linux/COMPILED_LINUX.tar.gz > retained-linux/SHA256SUMS.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: compiled-linux-pilot-${{ env.PRODUCT_COMMIT }}-run${{ github.run_id }}-attempt${{ github.run_attempt }}
+          path: retained-linux
+          compression-level: 0
+          if-no-files-found: error
+      - name: Apply helper-only correction and exercise actual product refusal
+        run: |
+          set -euo pipefail
+          cp opennav-x/tools/smoke-pilot.py candidate/opennav-x/tools/smoke-pilot.py
+          test "$(git -C candidate diff --name-only)" = 'opennav-x/tools/smoke-pilot.py'
+          python3 candidate/opennav-x/tools/smoke-pilot.py --production
+      - name: Verify tested binary identity and record separate helper provenance
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib
+          root=pathlib.Path('candidate/opennav-x'); record=json.loads(pathlib.Path('retained-linux/identity.json').read_text())
+          for name, expected in record['files'].items():
+              assert hashlib.file_digest((root/name).open('rb'),'sha256').hexdigest() == expected, name
+          report=root/'evidence/local/pilot-status-only/pilot-results.json'
+          result=json.loads(report.read_text()) if report.exists() else None
+          record.update(status='passed' if result and result.get('result') == 'passed; screenshot review required' and result.get('received_bytes') == 0 and not result.get('error') else 'failed',
+                        smokeHelperSha256=hashlib.file_digest(pathlib.Path('opennav-x/tools/smoke-pilot.py').open('rb'),'sha256').hexdigest(),
+                        preservedCompiledFiles=True, priorRunId='37424595899', priorFailedJobId='112141333543')
+          (root/'evidence/local/pilot-recheck.json').write_text(json.dumps(record,indent=2)+'\n')
+          assert record['status'] == 'passed', 'Corrected pilot smoke did not pass'
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: linux-product-pilot-${{ env.PRODUCT_COMMIT }}-harness${{ github.sha }}-run${{ github.run_id }}-attempt${{ github.run_attempt }}
+          path: candidate/opennav-x/evidence/local
+          if-no-files-found: error
