@@ -22,7 +22,7 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           persist-credentials: false
-      - name: Isolated commissioning, deployment identity and read-only launch refusals
+      - name: Isolated commissioning, one-action UI, preservation and launch refusals
         shell: pwsh
         env:
           TEST_BITS: ${{ matrix.bits }}
@@ -58,7 +58,7 @@ jobs:
           } catch { Write-Output ($_ | Out-String); exit 1 }
           '@ | Set-Content $runner -Encoding utf8
           $results=@()
-          foreach ($name in @('test-manual-pilot-commissioning','test-deployment-version','test-commissioning-launch')) {
+          foreach ($name in @('test-manual-pilot-commissioning','test-manual-pilot-ui','test-manual-pilot-preservation','test-session-preservation','test-deployment-version','test-commissioning-launch')) {
             $test=Join-Path $env:GITHUB_WORKSPACE ('opennav-x/tools/boat/'+$name+'.ps1')
             & $engine -NoProfile -NonInteractive -ExecutionPolicy Bypass -File $runner -TestFile $test -ExpectedBits $env:TEST_BITS 2>&1 |
               Tee-Object -FilePath (Join-Path $evidence ($name+'.log'))

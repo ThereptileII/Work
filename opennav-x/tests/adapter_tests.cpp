@@ -125,11 +125,14 @@ class SessionFeedback final : public IAutopilot {
 public:
   PilotFeedback feedback;
   bool session=false;
-  unsigned changes=0;
+  bool revoke_on_stale=false;
+  unsigned changes=0, sends=0;
   PilotCapabilities Capabilities() const override { return {false,true,true,false,false,true,true}; }
   PilotFeedback GetState() const override { return feedback; }
-  void Poll(vessel::Time) override {}
-  bool Send(const PilotRequest&) override { return session; }
+  void Poll(vessel::Time now) override {
+    if(revoke_on_stale && now-feedback.observed_at>=3s) session=false;
+  }
+  bool Send(const PilotRequest&) override { if(!session)return false; ++sends;return true; }
   void SetControlEnabled(bool enabled) override { session=enabled; ++changes; }
   bool ControlEnabled() const override { return session; }
 };
@@ -194,6 +197,49 @@ void Evidence() {
   manual.Tick(epoch+3s);
   Check(!live.session && !manual.GetState(epoch+3s).enabled,"stale live feedback disables transport as well as buttons");
   Check(live.changes==4,"every live session change reaches transport cancellation hook");
+
+  for(const bool adapter_revokes:{false,true}) {
+    SessionFeedback source;
+    source.feedback=SimulatedAutopilot(epoch).GetState();
+    source.revoke_on_stale=adapter_revokes;
+    ManualAutopilot tracked(source);
+    tracked.Enable(true,epoch);
+    const auto request=tracked.Request(PilotAction::Auto,0,epoch+2s);
+    Check(request.state==CommandState::Pending && source.sends==1,"one request accepted before feedback loss");
+    tracked.Tick(epoch+3s); // Feedback stale; request still has two seconds left.
+    auto state=tracked.GetState(epoch+3s);
+    Check(!state.enabled && !source.session && !state.fresh &&
+          state.command.state==CommandState::Pending && state.command.request.id==request.request.id,
+          "automatic stale revocation stops output without cancelling the accepted request deadline");
+    source.feedback.mode=PilotMode::Auto;
+    source.feedback.sequence++;
+    source.feedback.observed_at=epoch+3500ms;
+    // A cancelled queue may now report fresh telemetry with no old write proof.
+    source.feedback.command_confirmation_allowed=true;
+    tracked.Tick(epoch+3500ms);
+    Check(tracked.GetState(epoch+3500ms).fresh && !tracked.GetState(epoch+3500ms).enabled &&
+          tracked.GetState(epoch+3500ms).command.state==CommandState::Pending && source.sends==1,
+          "fresh recovery neither re-enables nor confirms a revoked command");
+    if(adapter_revokes) tracked.Enable(true,epoch+4s);
+    tracked.Tick(epoch+4999ms);
+    Check(tracked.GetState(epoch+4999ms).command.state==CommandState::Pending,
+          "even explicit re-enable cannot recreate old write proof before the deadline");
+    tracked.Tick(epoch+5s);
+    Check(tracked.GetState(epoch+5s).command.state==CommandState::TimedOut &&
+          tracked.GetState(epoch+5s).command.request.id==request.request.id && source.sends==1,
+          "original accepted request times out exactly once without retransmit");
+    const auto log_size=tracked.Log().size();
+    tracked.Tick(epoch+6s);
+    Check(tracked.GetState(epoch+6s).command.state==CommandState::TimedOut &&
+          tracked.Log().size()==log_size && source.sends==1,"timeout remains terminal after fresh recovery");
+    tracked.Enable(true,epoch+6s);
+    Check(tracked.Request(PilotAction::Standby,0,epoch+6s).state==CommandState::Pending && source.sends==2,
+          "new explicit session and command can still request standby");
+    tracked.Enable(false,epoch+6100ms);
+    tracked.Tick(epoch+10s);
+    Check(tracked.GetState(epoch+10s).command.state==CommandState::Disabled && !source.session && source.sends==2,
+          "explicit user disable keeps its unknown-outcome cancellation semantics");
+  }
 }
 void Radar() {
   UnavailableRadar absent;

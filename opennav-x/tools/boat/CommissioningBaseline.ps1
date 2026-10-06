@@ -369,7 +369,98 @@ function Assert-PreservedAlphaSettings([string]$Value) {
     foreach($item in $items){if($item -cnotin $known){throw 'Unknown preserved display item.'}}
   }
 }
-function Assert-SessionPreservationReview([string]$Before,[string]$After,$Review,[datetime]$At=[datetime]::UtcNow,[string]$InstalledBasemapDefault='',$WmmResourceProof=$null) {
+# An explicit completed manual child may preserve its exact OFF binding. This
+# proof grants no launch/control authority and never consults the current install:
+# historical baseline rereads must remain valid after its generation is retired.
+function Read-PreservedManualBinding([string]$Alpha,[bool]$RequireBinding) {
+  if($Alpha.Length -gt 65536 -or -not $Alpha.StartsWith('OpenNavXSettings 1\n') -or $Alpha -match '[\x00-\x1f\x7f]'){throw 'Unsupported manual settings encoding.'}
+  $remainder=$Alpha;$values=@{}
+  foreach($field in @('interface','name','permission')) {
+    $pattern='(?<=\\n)"pilot\.'+$field+'" "([^"\\\x00-\x1f]*)"\\n'
+    $matches=[regex]::Matches($Alpha,$pattern)
+    if($matches.Count -gt 1 -or $matches.Count -ne [regex]::Matches($Alpha,'(?<=\\n)"pilot\.'+$field+'" ').Count){throw 'Ambiguous manual binding scalar.'}
+    $values[$field]=if($matches.Count){$matches[0].Groups[1].Value}else{''}
+    $remainder=[regex]::Replace($remainder,$pattern,'')
+  }
+  if([regex]::IsMatch($remainder,'(?<=\\n)"pilot\.')){throw 'Unknown manual binding field.'}
+  if($values.interface -cnotin @('','COM8') -or $values.permission -cnotin @('','display-only') -or $values.name -cnotmatch '^(?:|[a-f0-9]{16})$'){throw 'Manual preservation requires COM8 and permission OFF.'}
+  if($RequireBinding -and ($values.interface -cne 'COM8' -or $values.permission -cne 'display-only' -or -not $values.name)){throw 'Complete display-only translator binding required.'}
+  if($values.name) {
+    $name=[Convert]::ToUInt64($values.name,16)
+    if((($name -shr 21) -band 0x7ff) -ne 1851 -or (($name -shr 40) -band 0xff) -ne 135 -or
+       (($name -shr 49) -band 0x7f) -ne 40 -or (($name -shr 60) -band 7) -ne 4){throw 'Unsupported translator NAME.'}
+  }
+  return $remainder
+}
+function Read-ManualChildPreservationProof([string]$Workspace,[string]$ParentRecord,[string]$ParentHash,[string]$After,$Selection,[switch]$Live) {
+  if(@($Selection.PSObject.Properties).Count -ne 4){throw 'Exact explicit manual-child selection required.'}
+  foreach($field in @('completionSha256','inspectionSha256')){if($Selection.$field -cnotmatch '^[a-f0-9]{64}$'){throw 'Exact manual-child evidence hashes required.'}}
+  $completePath=Assert-LocalPath $Selection.completion;$directory=[IO.Path]::GetDirectoryName($completePath)
+  $inspectionPath=Assert-LocalPath $Selection.inspection
+  if([IO.Path]::GetFileName($completePath) -cne 'rolled-back.json' -or
+     [IO.Path]::GetDirectoryName($directory) -ine (Join-Path $Workspace 'runs') -or
+     [IO.Path]::GetFileName($directory) -cnotmatch '^\d{8}-\d{6}-manual-pilot-[a-f0-9]{8}$' -or
+     [IO.Path]::GetDirectoryName($inspectionPath) -ine $directory -or
+     [IO.Path]::GetFileName($inspectionPath) -cnotmatch '^inspection-[a-f0-9]{32}\.json$' -or
+     (Get-Digest $completePath) -cne $Selection.completionSha256 -or (Get-Digest $inspectionPath) -cne $Selection.inspectionSha256){throw 'Selected completed child or inspection changed.'}
+  $complete=Read-Record $completePath;$inspection=Read-Record $inspectionPath
+  $recordPath=Join-Path $directory 'prepared.json';$record=Read-Record $recordPath
+  $intent=Read-Record (Join-Path $directory 'rollback-intent.json')
+  $owner='OpenNavX.ManualPilotCommissioning.1'
+  $recordHash=Get-Digest $recordPath
+  if($record.schema -ne 1 -or $record.owner -cne $owner -or $record.status -cne 'prepared' -or
+     $complete.owner -cne $owner -or $complete.recordSha256 -cne $recordHash -or
+     $inspection.owner -cne $owner -or $inspection.recordSha256 -cne $recordHash -or
+     $intent.owner -cne $owner -or $intent.recordSha256 -cne $recordHash -or
+     $intent.inspectionSha256 -cne $Selection.inspectionSha256 -or
+     $intent.beforeSha256 -cne $inspection.currentIniSha256 -or $intent.afterSha256 -cne $complete.profileSha256){throw 'Incomplete or substituted manual rollback lineage.'}
+  foreach($flag in @($complete.pluginsRestored,$complete.launchPermission,$intent.pluginsRestored)){if($flag -isnot [bool] -or $flag){throw 'Manual proof cannot restore plugins or grant launch authority.'}}
+  Assert-TrueBoolean $complete.parentRemainsActive 'Manual rollback retained parent ownership'
+  $parent=Read-SessionPreservationParent $ParentRecord $ParentHash
+  if($record.parentRecord -ine $ParentRecord -or $record.parentDirectory -ine [IO.Path]::GetDirectoryName($ParentRecord) -or
+     $record.parentActiveSha256 -cnotmatch '^[a-f0-9]{64}$'){throw 'Manual child belongs to another parent transaction.'}
+  $parentProof=@($record.proofFiles|Where-Object {$_.path -ieq $ParentRecord})
+  if($parentProof.Count -ne 1 -or $parentProof[0].sha256 -cne $ParentHash){throw 'Manual child does not bind this exact parent.'}
+  Assert-CommissioningContext $parent.context $record.context
+  Assert-ColdPrivateEvidence $directory $parent.context.sid
+  $installation=$parent.context.installation;$candidate=$record.candidate
+  if(-not $installation -or $candidate.generation -cnotmatch '^[a-f0-9]{32}$' -or
+     $candidate.generation -cne [IO.Path]::GetFileName($installation.generation) -or
+     $candidate.commit -cne $installation.commit -or $candidate.ownershipSha256 -cne $installation.ownershipSha256 -or
+     $candidate.executableSha256 -cne $installation.executableSha256){throw 'Manual child generation differs from its original parent.'}
+  foreach($field in @('commit','ownershipSha256','executableSha256','packageSha256')) {
+    $pattern=if($field -ceq 'commit'){'^[a-f0-9]{40}$'}else{'^[a-f0-9]{64}$'}
+    if($candidate.$field -cnotmatch $pattern){throw 'Malformed manual candidate identity.'}
+  }
+  if($Live) {
+    Assert-NoManualPilotChild $Workspace
+    $activePath=Join-Path $Workspace 'commissioning-active.json';$active=Read-Record $activePath
+    if((Get-Digest $activePath) -cne $record.parentActiveSha256 -or $active.record -ine $ParentRecord -or $active.recordSha256 -cne $ParentHash){throw 'Completed manual child no longer belongs to this active parent.'}
+  }
+  $input=Join-Path $directory 'input.ini';$output=Join-Path $directory 'output.ini';$rollback=Join-Path $directory 'rollback.ini'
+  $saved=Join-Path $directory ([IO.Path]::GetFileNameWithoutExtension($inspectionPath)+'.ini')
+  foreach($file in @($input,$output,$rollback,$saved,$After)) {
+    $size=(Get-Item -LiteralPath (Assert-LocalPath $file)).Length
+    if($size -le 0 -or $size -gt 4194304){throw 'Manual profile evidence exceeds bounded profile size.'}
+  }
+  if($inspection.savedIni -ine $saved -or (Get-Digest $saved) -cne $inspection.currentIniSha256 -or
+     (Get-Digest $input) -cne $record.inputSha256 -or (Get-Digest $output) -cne $record.outputSha256 -or
+     (Get-Digest $rollback) -cne $complete.profileSha256 -or (Get-Digest $After) -cne $complete.profileSha256 -or
+     (Get-CommissioningHash (Get-CommissioningOutputBytes ([IO.File]::ReadAllBytes($input)))) -cne $record.outputSha256 -or
+     (Get-CommissioningHash (Get-CommissioningInputBytes ([IO.File]::ReadAllBytes($saved)))) -cne $complete.profileSha256){throw 'Manual profile input/output/inspection/rollback bytes changed.'}
+  foreach($file in @($input,$output)) {
+    $proof=@($record.proofFiles|Where-Object {$_.path -ieq $file})
+    if($proof.Count -ne 1 -or $proof[0].sha256 -cne (Get-Digest $file)){throw 'Manual prepared profile proof changed.'}
+  }
+  $beforeValues=Read-ProfileForAudit $input;$afterValues=Read-ProfileForAudit $rollback
+  Assert-InputOnlyProfile $beforeValues;Assert-InputOnlyProfile $afterValues
+  foreach($values in @($beforeValues,$afterValues)){if($values['Settings/PersistActiveRoute'] -cne '0' -or $values['Settings/ActiveRoute'] -or $values['Directories/pluginInstallDir']){throw 'Manual proof has an active route or custom plugin loader.'}}
+  $beforeAlpha=$beforeValues['OpenNav/AlphaSettings'];$afterAlpha=$afterValues['OpenNav/AlphaSettings']
+  if((Read-PreservedManualBinding $beforeAlpha $false) -cne (Read-PreservedManualBinding $afterAlpha $true)){throw 'Completed child changed opaque settings beyond the exact pilot binding.'}
+  return [pscustomobject]@{beforeAlpha=$beforeAlpha;afterAlpha=$afterAlpha;currentIniSha256=$complete.profileSha256}
+}
+function Assert-SessionPreservationReview([string]$Before,[string]$After,$Review,[datetime]$At=[datetime]::UtcNow,[string]$InstalledBasemapDefault='',$WmmResourceProof=$null,$ManualChildProof=$null) {
+  if($ManualChildProof -and $ManualChildProof.currentIniSha256 -cne (Get-Digest $After)){throw 'Manual proof belongs to another current profile.'}
   if($Review.schema -ne 1 -or $Review.owner -cne 'OpenNavX.SessionPreservationReview.1' -or
       $Review.beforeSha256 -cne (Get-Digest $Before) -or $Review.afterSha256 -cne (Get-Digest $After) -or
       $Review.provenance -cne 'current-user-state;origin-unverified' -or
@@ -399,10 +490,19 @@ function Assert-SessionPreservationReview([string]$Before,[string]$After,$Review
       if($null -ne $change.before){Assert-RestartScalar $display[$key] $change.before}
     }elseif($key -ceq 'OpenNav/AlphaSettings'){
       if($null -eq $change.after){throw 'Settings deletion requires separate review.'}
-      if($null -ne $change.before){
-        try {Assert-PreservedAlphaSettings $change.after;Assert-PreservedAlphaSettings $change.before}
-        catch {Assert-PreservedSetupSettingsDelta $change.before $change.after}
-      }else{Assert-PreservedAlphaSettings $change.after}
+      $settingsAfter=$change.after
+      if($ManualChildProof) {
+        if($change.after -cne $ManualChildProof.afterAlpha){throw 'Manual binding differs from the selected completed child.'}
+        # Admit only the proven child delta; all earlier settings changes still
+        # pass the existing policy against the child's original input bytes.
+        $settingsAfter=$ManualChildProof.beforeAlpha
+      }
+      if($change.before -cne $settingsAfter) {
+        if($null -ne $change.before){
+          try {Assert-PreservedAlphaSettings $settingsAfter;Assert-PreservedAlphaSettings $change.before}
+          catch {Assert-PreservedSetupSettingsDelta $change.before $settingsAfter}
+        }else{Assert-PreservedAlphaSettings $settingsAfter}
+      }
     }elseif($key -cin @('OpenNav/BoatSetupV1','OpenNav/DisplayPreferencesV1','OpenNav/VesselName','Settings/GlobalState/S52_MAR_SAFETY_CONTOUR')){
       if($null -eq $change.after){throw 'Setup preference deletion requires separate review.'}
       Assert-PreservedSetupPreference $key $change.after
@@ -467,7 +567,11 @@ function Read-SessionPreservationProposal([string]$Workspace,[string]$Path,[stri
   $default=Assert-CommissioningResourceProof $parent $resourceProof
   $wmmProof=if($inspection.PSObject.Properties['wmmResourceProof']){$inspection.wmmResourceProof}else{$null}
   $wmmProof=Assert-CommissioningWmmResourceProof $parent $wmmProof
-  $changes=@(Assert-SessionPreservationReview (Join-Path $parentDir 'input-only.ini') $saved $approval ([datetime]::Parse($value.createdUtc).ToUniversalTime()) $default $wmmProof)
+  $manualProof=$null
+  if($value.PSObject.Properties['manualChild']) {
+    $manualProof=Read-ManualChildPreservationProof $Workspace $ParentRecord $ParentHash $saved $value.manualChild
+  }
+  $changes=@(Assert-SessionPreservationReview (Join-Path $parentDir 'input-only.ini') $saved $approval ([datetime]::Parse($value.createdUtc).ToUniversalTime()) $default $wmmProof $manualProof)
   if($changes.Count -ne $value.changedKeys){throw 'Preservation review count differs.'}
   return [pscustomobject]@{value=$value;directory=$directory;baseline=$baseline;sha256=$Hash}
 }

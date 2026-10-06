@@ -275,13 +275,26 @@ try:
         pilot(lambda p:p.get('command_state')=='TimedOut',timeout=10)
         assert len(sent)==before+1,'No automatic resend after missing feedback'
         time.sleep(1)
-        state=pilot(lambda p:not p.get('fresh'))
+        state=pilot(lambda p:not p.get('fresh') and not p.get('enabled'))
         capture('pilot-03-communication-loss')
+        # Stale feedback now revokes the entire live session, including STANDBY.
+        # Prove the stronger boundary instead of the old stale-output exception.
+        previous=state['command_id'];wire_before=received_bytes[0]
+        click('Standby',170,406,enabled=False);time.sleep(.8)
+        state=pilot()
+        assert not state['enabled'] and state['command_id']==previous and state['command_state']=='TimedOut',state
+        assert len(sent)==before+1 and received_bytes[0]==wire_before,'Stale disabled click must create no request or output'
+        silence.clear()
+        state=pilot(lambda p:p.get('fresh'))
+        assert not state['enabled'] and state['command_state']=='TimedOut',state
+        assert len(sent)==before+1 and received_bytes[0]==wire_before,'Fresh recovery cannot retry or re-enable output'
+        click('Enable control');confirm('Enable manual control')
+        pilot(lambda p:p.get('enabled'))
         click('Standby',170,406)
         deadline=time.monotonic()+5
         while len(sent)<before+2 and time.monotonic()<deadline:time.sleep(.1)
-        assert len(sent)==before+2 and sent[-1]['key']==0,'Standby may be attempted with stale mode'
-        silence.clear();pilot(lambda p:p.get('command_state')=='Confirmed' and p.get('mode')=='STANDBY')
+        assert len(sent)==before+2 and sent[-1]['key']==0,'Only explicit re-enable and fresh manual STANDBY may send'
+        pilot(lambda p:p.get('command_state')=='Confirmed' and p.get('mode')=='STANDBY')
         claims[0]=False;disconnect.set()
         pilot(lambda p:not p.get('enabled'),timeout=12)
         # The same configured driver reconnects: its old NAME must not survive.
@@ -298,7 +311,8 @@ try:
         report['checks']=['Read-only startup despite saved manual permission',
           'Actual UI and OpenCPN TCP serialization of AUTO/-1/+1/-10/+10/STANDBY',
           'New matching physical-style feedback confirms; no optimistic target change',
-          'Missing feedback times out without retry; manual STANDBY remains available',
+          'Missing feedback revokes session immediately and times out without retry',
+          'Stale STANDBY emits nothing; fresh recovery stays OFF until explicit re-enable',
           'Same-driver reconnect clears identity and session enablement; new claim required',
           'Live TRACK/WIND unavailable; no SmartNav control path']
     if windows:monitor=ui.monitor_process(app.pid);ui.close(handle);ui.wait_clean_exit(monitor)

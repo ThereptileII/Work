@@ -1,0 +1,7 @@
+{
+  "status": "passed",
+  "checks": 314,
+  "nativeInertClick": false,
+  "scope": "Actual C# selector/action policy and PS runtime guards; P/Invoke compiled; native Windows additionally creates and clicks its own inert fixture; no physical/product input",
+  "nativeWindows": false
+}

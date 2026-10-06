@@ -97,3 +97,80 @@ mocked OS identity, signing and process discovery. Windows retains real native
 file metadata/ACL publication checks. No fixture starts a task/application,
 executes a plugin, opens a COM port or sends a command. Actual task/scheduler,
 product startup and boat feedback qualification remain separate gates.
+
+## One-action manual UI helper
+
+`manual-pilot-ui.ps1` is a separate opt-in UI path under the active manual child.
+It does not extend `ReviewWindowNative`'s read-only action allowlist. Stage and
+qualify the complete helper tree **before Prepare**: the child pins that tree and
+refuses edits after preparation. Its candidate remains the exact previously
+qualified package; a helper revision does not change the package revision.
+
+Each invocation requires `-Workspace`, `-Record`, `-ExpectedRecordSha256`, an
+explicit `-Action`, and a new 32-digit lowercase hexadecimal `-Nonce`. Every
+invocation revalidates the signed current-user interactive host, active parent
+and child, exact runtime/quarantine/tool trees, PID/start time/session/SID/executable,
+current profile, no pending update, and fresh real-product diagnostics. It holds
+both transaction locks. Ordinary session changes use the existing preservation
+policy; only the already reviewed pilot binding/permission delta is separately
+admitted. No actual profile bytes are written by this helper.
+
+The helper requires the actual application/sheet to be in the foreground. It
+returns only allowlisted native control metadata, compatible COM8 identities and
+pilot diagnostics. Hidden, clipped, disabled, obscured or ambiguous controls are
+refused. Expose a clipped configuration control using an explicit `ScrollDown`
+or `ScrollUp` action; these operate the real page scroll buttons only while the
+Autopilot configuration page is visible. No coordinate or arbitrary text target
+is accepted.
+
+Actions are individually selected; this list is a human procedure, never a
+scripted command sequence:
+
+- `Observe` records current controls and actual pilot mode, source, freshness,
+  sequence, epoch, command ID/state and optional magnetic heading values/qualities.
+  Missing angle values remain null. It never invents physical acknowledgement.
+- `OpenSettings`, `PilotTab`, `PilotConnection` navigate to the real configuration
+  page; `Advanced` exposes identity setup. `OpenPilot` or `BackToPilot` opens the
+  manual drawer. Each navigation action is one native click.
+- `OpenIdentity` opens the real identity sheet. `SetInterface -Value COM8` edits
+  that field only. `SaveIdentity` can save an empty NAME to allow a subsequent
+  `RefreshIdentity` request. Discovery remains the product's rate-limited
+  non-steering address-claim request, never an automatic operation.
+- After observing a real compatible claim, `SetName -Value <observed-name>` edits
+  the NAME field. Both setting and saving a nonempty NAME require the exact unique
+  compatible NAME from the actual configuration identity controls, a verified
+  identity and recent (at most 30 seconds old) COM8 PGN 60928 at its displayed
+  address. A heading PGN/address alone is insufficient. `SaveIdentity` is separate
+  and returns product permission to display-only. Refresh again if the product
+  needs a new claim after binding.
+- With fresh matching physical mode feedback, `Permit` opens the permission
+  sheet; `AcceptPermission` explicitly clicks **Save manual permission**.
+  `Enable -ExpectedEpoch <observed-epoch>` opens the session sheet;
+  `AcceptEnable -ExpectedEpoch <observed-epoch>` explicitly clicks **Enable manual
+  control**. Both accept actions require their exact owned foreground dialog.
+- `Standby`, `Auto`, `Minus1`, `Plus1`, `Minus10`, `Plus10` require the caller's
+  current `-ExpectedEpoch` and `-ExpectedCommandId` from observation, actual fresh
+  compatible feedback, saved permission and enabled session. `Auto` only opens
+  its confirmation sheet; `AcceptAuto` with the same reviewed epoch/command ID
+  explicitly clicks **Request AUTO**. Course changes require actual AUTO mode.
+  Unresolved commands block further commands except explicit STANDBY preemption.
+- `CancelIdentity`, `CancelPermission`, `CancelEnable`, `CancelAuto` click Cancel
+  on their exact sheet. `Disable` can only switch an already enabled session off.
+  `DisplayOnly` clicks **Return to display-only** before ordinary child Close,
+  inspection and byte-inverse rollback. No plugin DLL is restored.
+
+A durable nonce-bound intent precedes input. The helper sends one button
+press/release pair or one field edit, never a sequence or retry. Its success means
+only that UI input was dispatched; even a timeout may have delivered input.
+Observe and inspect actual physical feedback plus the product's exact-command
+confirmation before proceeding. Do not reinterpret a fresh sequence, a serial
+write or a successful native click as command confirmation. TRACK/WIND and raw
+NMEA/serial interfaces are absent.
+
+`test-manual-pilot-ui.ps1 -PortableContracts` runs inert selector, state and profile
+contracts on Linux PowerShell7. On disposable Windows CI, run without switches
+under both supported PowerShell bitnesses. It additionally creates its own native
+fixture, resolves and clicks one harmless counter button, verifies disabled-target
+refusal and destroys its windows. It never attaches to a product or boat. Actual
+wxWidgets accessibility, dialogs and physical feedback remain candidate/boat
+qualification gates; these fixtures do not claim them.

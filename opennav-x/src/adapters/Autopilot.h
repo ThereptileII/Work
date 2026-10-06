@@ -81,6 +81,7 @@ private:
   void Record(CommandState state, const std::string &detail, vessel::Time now);
   IAutopilot &adapter_;
   bool enabled_ = false;
+  bool confirmation_revoked_ = false;
   std::uint64_t next_id_ = 1, feedback_sequence_ = 0;
   std::uint64_t connection_epoch_ = 0;
   std::string feedback_source_;

@@ -231,7 +231,7 @@ function Invoke-ReviewedNormalClose([Diagnostics.Process]$Process,[int]$Expected
   }
 }
 function Invoke-InteractiveJob([string]$Workspace,$Job,[int]$TimeoutSeconds=90) {
-  $manual=$Job.action -cin @('LaunchManualPilot','CloseManualPilot')
+  $manual=$Job.action -cin @('LaunchManualPilot','CloseManualPilot','ManualPilotUi')
   $engine=$null
   if($manual) {
     . (Join-Path $PSScriptRoot 'ManualPilotCommissioning.ps1')
@@ -242,7 +242,7 @@ function Invoke-InteractiveJob([string]$Workspace,$Job,[int]$TimeoutSeconds=90) 
   }else{$directory=New-RunDirectory $Workspace $Job.action.ToLowerInvariant()}
   $request=Join-Path $directory 'request.json';$result=Join-Path $directory 'result.json'
   $Job | Add-Member -NotePropertyName resultPath -NotePropertyValue $result
-  if ($Job.action -cin @('Launch','LaunchStartup','ReviewWindow','LaunchStock','ReviewStock','ReviewInstalledWelcome','RequestGuardedMode','ReviewRestartChild','LaunchManualPilot','CloseManualPilot')) { $Job | Add-Member -NotePropertyName workspace -NotePropertyValue (Assert-LocalPath $Workspace) }
+  if ($Job.action -cin @('Launch','LaunchStartup','ReviewWindow','LaunchStock','ReviewStock','ReviewInstalledWelcome','RequestGuardedMode','ReviewRestartChild','LaunchManualPilot','CloseManualPilot','ManualPilotUi')) { $Job | Add-Member -NotePropertyName workspace -NotePropertyValue (Assert-LocalPath $Workspace) }
   Write-Record $request $Job
   $script=Assert-LocalPath (Join-Path $PSScriptRoot 'InteractiveJob.ps1')
   $sid=[Security.Principal.WindowsIdentity]::GetCurrent().User.Value

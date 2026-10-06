@@ -109,6 +109,7 @@ PilotCommand ManualAutopilot::Request(PilotAction action, double delta,
     Record(CommandState::Rejected,
            "Superseded by manual STANDBY; earlier outcome is unknown", now);
   command_ = {{next_id_, action, delta, now}, CommandState::None, {}, now};
+  confirmation_revoked_ = false;
   expected_heading_.reset();
   if (next_id_ == std::numeric_limits<std::uint64_t>::max()) {
     Record(CommandState::Disabled,
@@ -169,8 +170,8 @@ PilotCommand ManualAutopilot::Request(PilotAction action, double delta,
   if (!adapter_.Send(command_.request))
     Record(CommandState::Rejected, "Adapter rejected transmission", now);
   else
-    Record(CommandState::Pending, "Sent; awaiting new matching pilot feedback",
-           now);
+    Record(CommandState::Pending,
+           "Accepted by transport; awaiting new matching pilot feedback", now);
   return command_;
 }
 void ManualAutopilot::Tick(vessel::Time now) {
@@ -178,8 +179,14 @@ void ManualAutopilot::Tick(vessel::Time now) {
   const auto capabilities = adapter_.Capabilities();
   if (enabled_ && !capabilities.simulated &&
       (!adapter_.ControlEnabled() || !capabilities.manual_control || !Fresh(adapter_.GetState(), now))) {
-    Enable(false, now); // Reconnection never silently re-enables live output.
-    return;
+    // Revoke queued output immediately, but automatic session loss cannot
+    // cancel the outcome/deadline of a request already accepted by transport.
+    // Explicit user disable still records Disabled through Enable(false).
+    adapter_.SetControlEnabled(false);
+    enabled_ = false;
+    // Disable can discard the queued-write watermark. Even a later explicit
+    // re-enable must not confirm this old request without its write proof.
+    confirmation_revoked_ = true;
   }
   if (command_.state != CommandState::Pending)
     return;
@@ -198,6 +205,8 @@ void ManualAutopilot::Tick(vessel::Time now) {
            "Pilot identity/connection changed; previous outcome unknown", now);
     return;
   }
+  if (confirmation_revoked_)
+    return;
   bool matches = feedback.command_confirmation_allowed && Fresh(feedback, now) &&
                  feedback.sequence > feedback_sequence_ &&
                  feedback.observed_at > command_.request.issued_at &&

@@ -70,6 +70,18 @@ The separate manual pilot child transaction passed native 32/64-bit PowerShell
 qualification and independently verified downloads; [helper evidence](evidence/2026-10-06-pilot-manual-tools/native.json)
 does not claim actual UI actions or physical pilot feedback.
 
+The exact SDK correction then passed its native restore/reprobe run `37419757974`
+without rebuilding dependency libraries. The earlier integrated Linux run also
+found a pilot status regression: stale feedback correctly revoked control but
+overwrote an outstanding command's timeout. Automatic revocation now keeps the
+original timeout while cancelling output and permanently revoking confirmation
+for that request. Focused red/green coverage passes. The smoke test replaces its
+obsolete stale-STANDBY exception with no-request/no-byte assertions and requires
+fresh feedback plus explicit re-enable. Integrated qualification remains pending.
+The separate one-action manual UI and completed-child binding-preservation
+helpers have focused portable coverage; native execution and physical boat
+feedback remain gates, not completed tests.
+
 ## Previous increment — SCRUM-312 navigation warning and secure startup
 
 Selected after the user asked for the next software feature. Implemented finite

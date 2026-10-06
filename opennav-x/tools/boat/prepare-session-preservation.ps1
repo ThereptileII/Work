@@ -8,9 +8,17 @@ param(
   [Parameter(Mandatory=$true)][string]$Inspection,
   [Parameter(Mandatory=$true)][ValidatePattern('^[a-f0-9]{64}$')][string]$ExpectedInspectionSha256,
   [Parameter(Mandatory=$true)][string]$PreservationReview,
-  [Parameter(Mandatory=$true)][ValidatePattern('^[a-f0-9]{64}$')][string]$ExpectedReviewSha256
+  [Parameter(Mandatory=$true)][ValidatePattern('^[a-f0-9]{64}$')][string]$ExpectedReviewSha256,
+  [string]$ManualChildCompletion,[string]$ExpectedManualChildCompletionSha256,
+  [string]$ManualChildInspection,[string]$ExpectedManualChildInspectionSha256
 )
 . (Join-Path $PSScriptRoot 'Commissioning.ps1')
+$manualSelection=$null
+$manualArguments=@($ManualChildCompletion,$ExpectedManualChildCompletionSha256,$ManualChildInspection,$ExpectedManualChildInspectionSha256)
+if(@($manualArguments|Where-Object {$_}).Count) {
+  if(@($manualArguments|Where-Object {$_}).Count -ne 4){throw 'Supply all four exact manual-child completion/inspection path/hash arguments, or none.'}
+  $manualSelection=[pscustomobject]@{completion=$ManualChildCompletion;completionSha256=$ExpectedManualChildCompletionSha256;inspection=$ManualChildInspection;inspectionSha256=$ExpectedManualChildInspectionSha256}
+}
 $context=Get-CommissioningContext $Workspace;$record=Assert-LocalPath $Record;$parentDir=[IO.Path]::GetDirectoryName($record)
 if([IO.Path]::GetFileName($record) -cne 'prepared.json' -or [IO.Path]::GetDirectoryName($parentDir) -ine (Join-Path $context.workspace 'runs') -or
    (Get-Digest $record) -cne $ExpectedRecordSha256){throw 'Expected exact original commissioning transaction.'}
@@ -48,7 +56,9 @@ if ($resourceProof) {
 $wmmProof=if($inspected.PSObject.Properties['wmmResourceProof']){$inspected.wmmResourceProof}else{$null}
 $wmmProof=Assert-CommissioningWmmResourceProof $prepared $wmmProof
 Assert-CommissioningWmmLiveProof $prepared $wmmProof
-$changes=@(Assert-SessionPreservationReview (Join-Path $parentDir 'input-only.ini') $inspected.savedIni $review ([datetime]::UtcNow) $default $wmmProof)
+$manualProof=$null
+if($manualSelection){$manualProof=Read-ManualChildPreservationProof $context.workspace $record $ExpectedRecordSha256 $inspected.savedIni $manualSelection -Live}
+$changes=@(Assert-SessionPreservationReview (Join-Path $parentDir 'input-only.ini') $inspected.savedIni $review ([datetime]::UtcNow) $default $wmmProof $manualProof)
 $bytes=Get-CommissioningOutputBytes ([IO.File]::ReadAllBytes($inspected.savedIni))
 $acls=Get-SessionPreservationAcls (@($inspected.profileBeforeRestore)+@($inventory.trees)) $prepared.quarantine
 $directory=New-PreparationDirectory $context 'session-preservation'
@@ -63,11 +73,13 @@ Assert-CommissioningContext $context (Get-CommissioningContext $Workspace)
 Assert-SessionPreservationAcls $acls (Get-SessionPreservationAcls (@($inspected.profileBeforeRestore)+@($inventory.trees)) $prepared.quarantine) $ini
 Assert-CommissioningWmmLiveProof $prepared $wmmProof
 $proposal=Join-Path $directory 'proposal.json'
-Write-Record $proposal @{schema=1;owner=$script:SessionPreservationOwner;status='proposed';createdUtc=[datetime]::UtcNow.ToString('o');
+$proposalValue=@{schema=1;owner=$script:SessionPreservationOwner;status='proposed';createdUtc=[datetime]::UtcNow.ToString('o');
   parentPrepared=$record;parentPreparedSha256=$ExpectedRecordSha256;inspection=$inspectionPath;inspectionSha256=$ExpectedInspectionSha256;
   currentIniSha256=$inspected.currentIniSha256;reviewSha256=$ExpectedReviewSha256;baselineSha256=(Get-Digest $baseline);baselineBytes=$bytes.Length;
   provenance='current-user-state;origin-unverified';launchPermission=$false;acls=$acls;
   changedKeys=$changes.Count;onlyReversedConnectionByte=$true;applicationLaunched=$false;profileChanged=$false;sourceReviewStillRequired=$true}
+if($manualSelection){$proposalValue.manualChild=$manualSelection}
+Write-Record $proposal $proposalValue
 $proof=Read-SessionPreservationProposal $context.workspace $proposal (Get-Digest $proposal) $record $ExpectedRecordSha256
 Assert-SessionPreservationLiveState $proof (Get-CommissioningContext $Workspace)
 [pscustomobject]@{status='proposed-only';proposal=$proposal;proposalSha256=(Get-Digest $proposal);baselineSha256=(Get-Digest $baseline);

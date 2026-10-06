@@ -26,4 +26,11 @@ Negative cases reject arbitrary changes to every allowed helper, altered origina
 hashes, different producers and a changed dependency recipe. The reconstructed
 Windows producer fingerprint exactly matches the selected artifact:
 `cf9d9024a09681e06bc77a5e8a7b93ba4bd171191a68a5fceee3ff6f4bf15cf4`.
-Native restore/reprobe and the corrected integrated build remain pending.
+Native restore/reprobe passed at `38b199614735b2beec48a16d6223255f2e2264ee`
+in [run 37419757974](https://github.com/ThereptileII/Work/actions/runs/37419757974).
+The recorded restore and fresh native probes took 79.8818824 seconds without
+compiling replacement dependency libraries. Downloaded artifact `11393170150`
+passed ZIP integrity and the authenticated SHA-256:
+`ab237203fd3ca139af77b3e19ee4fa87c295100141b2c5c25d56fd297a617ebb`.
+This qualifies dependency reuse, not the application. Integrated qualification
+remains pending after the separately discovered pilot timeout regression.
