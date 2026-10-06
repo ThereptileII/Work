@@ -3,34 +3,54 @@
 Use the installed candidate identified in the handoff. These are user checks for
 SCRUM-28, SCRUM-29, SCRUM-312 and SCRUM-313; this guide does not record a pass.
 
-1. **Startup warning.** If OpenCPN shows its navigation warning, read it and
-   choose whether to accept. Startup must wait for your choice; cancelling must
-   not open the helm or count as successful startup. An existing profile may
-   already have accepted the warning, so it need not appear on every launch.
+Before changing anything, use **Settings → System → Export settings backup**
+to save this boat's current `.skager-backup` file. Keep the existing profile;
+there is no need to create a fresh profile or reset boat data for these checks.
 
-2. **Boat setup.** A fresh profile opens **Boat Setup & Sensor Check**. An
-   existing profile is preserved: open **Settings → Vessel → Run boat setup**.
-   Try **Later** after editing a field: nothing should be saved, and unfinished
-   setup should return on the next start. Reopen it and review **Your vessel**,
-   **Display**, **Sources**, **Energy**, **Helm control** and **System summary**.
-   Use **Check again** for a new sensor reading. Leave unknown assumptions blank;
-   blank chart safety depth keeps its existing value. Only **Save & open helm**
-   saves the changes. Restart and check the saved values. **Run boat setup**
-   starts another review with current values; it does not erase the profile or
-   restore factory defaults. Setup must never enable pilot control.
+1. **Startup warning (SCRUM-312).** If OpenCPN shows its navigation warning,
+   leave it open briefly, then read it and choose whether to accept. The helm
+   must not open before acceptance. During a supervised startup check, the
+   decision window is five minutes; acceptance is followed by initialization
+   and a separate 30-second readiness check. Cancelling must not let that
+   application reach the helm or count as successful startup; record any
+   separate recovery or previous-version launch separately. If the warning
+   does not appear, record
+   **Not shown on this profile**; an existing acceptance can legitimately
+   suppress it. Do not reset the profile just to force the warning.
 
-3. **Settings backup.** Under **Settings → System**, choose **Export settings
-   backup** and save the `.skager-backup` file. Make one harmless display change,
-   then choose **Import settings backup**. At **Review settings restore**, first
-   cancel and check that your change remains. Import again, check the vessel,
-   display, source and calibration summary, then choose **Restore settings**.
-   Verify the saved display returns and pilot control is OFF. Invalid or
-   incompatible files must report failure without restoring anything.
+2. **Boat setup (SCRUM-28).** An ordinary update must preserve the existing boat
+   profile and must not automatically reopen completed setup. Open **Settings
+   → Vessel → Run boat setup**. Temporarily edit the vessel name, then choose
+   **Later**. Reopen setup and verify the original name remains: Later discards
+   field edits, while the requested setup review remains pending for the next
+   start. **Run boat setup** uses current values; it is not a factory reset.
 
-   Backups exclude charts, licenses, credentials, routes, tracks, waypoints,
-   OpenCPN connections, plugins, pilot identity and control permission. Restore
-   retains the local pilot identity but revokes control permission. Check source
-   choices and calibration for this boat before relying on them.
+   Review **Your vessel → Display → Sources → Energy → Helm control → System
+   summary**. Keep this boat's existing draft, safety depth and battery values;
+   do not invent values for an unknown setting. Blank chart safety depth keeps
+   its current value. **Check again** refreshes the displayed observations;
+   missing or stale sensors must remain identified as such. Make only a small
+   display change, check the final summary, then choose **Save & open helm**.
+   Restart normally: the display change should persist, completed setup should
+   stay closed, and pilot control must remain OFF. On an actual fresh profile,
+   setup opens automatically and Later leaves it pending.
+
+3. **Settings backup (SCRUM-29).** Choose **Settings → System → Import settings
+   backup** and select the same boat's file saved above. At **Review settings
+   restore**, first cancel: the display change from step 2 must remain. Import
+   again and review the vessel, display, energy, source and calibration summary.
+   Choose **Restore settings**: the original display should return and pilot
+   control must be OFF. Restart and verify those restored values persist.
+
+   Restore replaces the settings listed in that summary, including source
+   choices, calibration and configured safety assumptions; it is not merely a
+   display reset. An unconfigured chart safety depth in the backup preserves
+   the current value. Backups exclude charts, licenses, credentials, routes,
+   tracks, waypoints, OpenCPN connections, plugins, pilot identity and control
+   permission. Restore retains local pilot identity but revokes control
+   permission. Check the restored source choices and calibration for this boat.
+   If an invalid or incompatible file is selected, expect an error with no
+   restoration; cancelling the review must also leave settings unchanged.
 
 4. **Pilot: your checks after the operator test.** Open **Autopilot** and compare
    mode and available heading readings with the physical pilot. Missing or stale

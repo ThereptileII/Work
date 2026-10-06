@@ -1,9 +1,11 @@
 # SKAGER Beta 2 — release notes
 
-**Version 0.4.0-beta2.2 · Staging candidate · release acceptance pending**
+**Version 0.4.0-beta2.3 · Staging candidate · release acceptance pending**
 
 ## This Staging increment
 
+- The first-start boat setup now keeps focus during OpenCPN's delayed frame
+  activation, so a button press is not cancelled while the setup sheet is open.
 - Guided boat setup is available from Preferences → Vessel. Fresh installed
   profiles can complete it on first start; existing installations are preserved.
   Later leaves the draft unsaved. Sensor checks use live observations only.

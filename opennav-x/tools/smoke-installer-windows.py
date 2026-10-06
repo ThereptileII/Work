@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Disposable native Windows installer lifecycle, shared profile and chart gate."""
 from hardware_output_policy import require_product_output_policy
+from diagnostic_snapshot import read_json_snapshot
+from smoke_startup import defer_boat_setup, native_setup_window
 import argparse
 import ctypes
 from contextlib import contextmanager
@@ -419,6 +421,11 @@ def launch(exe,mode,title,profile,name,welcome_transition=None):
         report.setdefault('versionNotices',[]).append(dict(proof,pid=p.pid,screenshot=image.name,transition=welcome_transition))
         check('Expected '+welcome_transition+' safety notice captured and acknowledged through its visible Agree button')
     h,pid=ui.wait_window(title,p.pid,timeout=45);wait_ready(profile,before)
+    if title=='SKAGER / OpenCPN':
+        report.setdefault('first_start_setup',[]).append(defer_boat_setup(
+            lambda:read_json_snapshot(profile/'opennav-diagnostics.json'),
+            lambda target:ui.pointer_text(pid,'Later'),
+            native_window=lambda:native_setup_window(ui,pid)))
     assert ui.IsWindowEnabled(h),'Application startup is still blocked by a modal dialog'
     image=EVIDENCE/(name+'.png');rgb=ui.capture(h,image)
     report['screenshots'].append(image.name)
@@ -761,6 +768,10 @@ try:
             chart_check(rgb,'Standard','Installed XNav to Legacy')
             before=startup_baseline(profile);monitor=ui.monitor_process(pid);ui.click_menu(h,'Switch to SKAGER');ui.wait_clean_exit(monitor);owned.discard(pid)
             h,pid=ui.wait_window('SKAGER / OpenCPN');owned.add(pid);wait_ready(profile,before)
+            report.setdefault('first_start_setup',[]).append(defer_boat_setup(
+                lambda:read_json_snapshot(profile/'opennav-diagnostics.json'),
+                lambda target:ui.pointer_text(pid,'Later'),
+                native_window=lambda:native_setup_window(ui,pid)))
             rgb=ui.capture(h,EVIDENCE/'installer-04-returned-xnav.png');report['screenshots'].append('installer-04-returned-xnav.png')
             chart_check(rgb,'XNav','Installed XNav Legacy XNav')
             monitor=ui.monitor_process(pid);ui.close(h);ui.wait_clean_exit(monitor);owned.discard(pid)

@@ -14,7 +14,7 @@ import tempfile
 import threading
 import time
 from diagnostic_snapshot import read_json_snapshot
-from smoke_startup import defer_boat_setup
+from smoke_startup import defer_boat_setup, native_setup_window
 
 
 def exact_native_reference_desktop(display):
@@ -338,7 +338,8 @@ try:
                 str(target['x']+target['width']//2),str(target['y']+target['height']//2),
                 'click','1'],env=env,check=True)
     report['first_start_setup']=defer_boat_setup(
-        lambda:read_json_snapshot(profile/'opennav-diagnostics.json'),defer_setup_click)
+        lambda:read_json_snapshot(profile/'opennav-diagnostics.json'),defer_setup_click,
+        native_window=(lambda:native_setup_window(ui,app.pid)) if windows else None)
 
     def capture(name):
         path = evidence / f'{prefix}-{name}.png'

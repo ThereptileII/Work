@@ -12,6 +12,7 @@ import sys
 import tempfile
 import time
 from diagnostic_snapshot import read_json_snapshot
+from smoke_startup import defer_boat_setup
 from peer_boundary import PeerBoundary
 
 root = Path(__file__).resolve().parents[1]
@@ -134,6 +135,13 @@ def ready(count):
         time.sleep(.2)
     raise RuntimeError('Initialization did not finish')
 
+def defer_setup_click(target):
+    dialogs=xdo('search','--all','--onlyvisible','--pid',pid,
+                '--name','^Boat Setup & Sensor Check$').splitlines()
+    assert len(dialogs)==1, ('Expected one owned first-start setup sheet',dialogs)
+    xdo('windowraise',dialogs[0],'mousemove',target['x']+target['width']//2,
+        target['y']+target['height']//2,'click',1)
+
 def capture(name):
     time.sleep(.35)
     subprocess.run(['import', '-window', 'root', str(evidence / (name + '-linux.png'))], env=env, check=True)
@@ -201,6 +209,7 @@ try:
     app = launch('01-xnav-and-controlled-restarts', '--no_opengl', '--xnav')
     handle, pid = window('SKAGER / OpenCPN', app)
     ready(1)
+    report.setdefault('first_start_setup',[]).append(defer_boat_setup(observe,defer_setup_click))
     capture('01-xnav-unavailable')
     action('Day',light='Dusk')
     capture('02-xnav-dusk')
@@ -252,6 +261,7 @@ try:
     wait_exit(pid)
     handle, pid = window('SKAGER / OpenCPN')
     ready(3)
+    report.setdefault('first_start_setup',[]).append(defer_boat_setup(observe,defer_setup_click))
     saved('Legacy to XNav')
     capture('06-xnav-after-legacy')
     assert (profile / 'opencpn-ipc').is_socket(), 'OpenCPN IPC socket was not created'
@@ -269,6 +279,7 @@ try:
     normal = launch('05-normal-after-safe', '--no_opengl')
     handle, pid = window('SKAGER / OpenCPN', normal)
     ready(5)
+    report.setdefault('first_start_setup',[]).append(defer_boat_setup(observe,defer_setup_click))
     remote_quit('06-normal-quit')
     assert normal.wait(timeout=30) == 0
     owned_pids.discard(normal.pid)

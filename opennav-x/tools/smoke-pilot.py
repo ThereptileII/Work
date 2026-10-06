@@ -20,8 +20,22 @@ import threading
 import time
 from diagnostic_snapshot import read_json_snapshot
 
+def require_product_tcp_refusal(snapshot):
+    """Global serial capability never authorizes this product's TCP test peer."""
+    require_product_output_policy(snapshot)
+    assert snapshot['test_fixtures'] is False and snapshot['runtime']['test_fixtures'] is False
+    assert snapshot['build_purpose'] == 'INSTALLED PRODUCT'
+    pilot = snapshot['runtime']['pilot']
+    manual_serial = snapshot['xnav_hardware_output_policy'] == 'manual-commissioning'
+    assert pilot['output_unavailable'] is (not manual_serial), 'Global output declaration differs from product policy'
+    assert pilot['configured_permission'] is True, 'Fixture must retain saved manual permission'
+    for field in ('enabled', 'serial_session_enabled', 'control_capability',
+                  'simulated', 'track_capability', 'wind_capability'):
+        assert pilot[field] is False, f'Product TCP peer must not gain {field}'
+    return 'Enable control' if manual_serial else 'Control unavailable'
+
 parser=argparse.ArgumentParser()
-parser.add_argument('--production',action='store_true',help='Verify passive product despite saved manual permission')
+parser.add_argument('--production',action='store_true',help='Verify product TCP output refusal despite saved manual permission')
 args=parser.parse_args()
 root=Path(__file__).resolve().parents[1]
 windows=sys.platform=='win32'
@@ -234,15 +248,15 @@ try:
     assert pilot()['command_id']==previous and not sent,'Disabled control must not request or send a command'
     report['checks'].append('Control OFF disables AUTO; physical click creates no request or output')
     if args.production:
-        require_product_output_policy(data())
-        assert state['output_unavailable'] and not state['control_capability']
-        for label in ['Control unavailable','Standby','Auto','Track','Wind','−10°','−1°','+1°','+10°']:
+        enable_label = require_product_tcp_refusal(data())
+        for label in [enable_label,'Standby','Auto','Track','Wind','−10°','−1°','+1°','+10°']:
             click(label,enabled=False)
         time.sleep(1)
         assert pilot()['command_id']==previous and received_bytes[0]==0,'No product command, partial frame or identity request may reach the wire'
         capture('pilot-product-disabled')
         silence.set()
         pilot(lambda p:not p.get('fresh'),timeout=8)
+        require_product_tcp_refusal(data())
         assert received_bytes[0]==0,'Feedback loss must not transmit'
         silence.clear();claims[0]=False;disconnect.set()
         deadline=time.monotonic()+15
@@ -250,8 +264,9 @@ try:
         assert connections[0]>=2,'Expected upstream reconnect'
         claims[0]=True
         state=pilot(lambda p:p.get('fresh') and p.get('mode')=='STANDBY')
+        require_product_tcp_refusal(data())
         assert not state['enabled'] and not state['control_capability'] and received_bytes[0]==0
-        report['checks'].extend(['Saved manual permission cannot enable product output',
+        report['checks'].extend(['Saved manual permission cannot enable product TCP output',
           'Every displayed command and enable action disabled despite fresh compatible feedback',
           'Zero wire output including identity discovery across loss/reconnect',
           'Passive observed pilot status survives reconnection'])

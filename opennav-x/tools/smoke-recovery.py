@@ -11,7 +11,7 @@ import sys
 import tempfile
 import time
 from diagnostic_snapshot import read_json_snapshot
-from smoke_startup import defer_boat_setup
+from smoke_startup import defer_boat_setup, native_setup_window
 root=Path(__file__).resolve().parents[1]
 windows=sys.platform=='win32'
 evidence=root/'evidence/local';evidence.mkdir(parents=True,exist_ok=True)
@@ -92,7 +92,8 @@ try:
         while int(read()['runtime']['ui_update']['ticks'])<setup_tick+3:
             assert time.monotonic()<deadline, 'Recovery startup publication did not advance'
             time.sleep(.1)
-        report.setdefault('first_start_setup',[]).append(defer_boat_setup(read,defer_setup_click))
+        report.setdefault('first_start_setup',[]).append(defer_boat_setup(read,defer_setup_click,
+            native_window=(lambda:native_setup_window(ui,pid)) if windows else None))
         state=(profile/'opennav-startup.state').read_text()
         assert 'pending 1' in state and f'failures {count-1}' in state,state
         if count==1:

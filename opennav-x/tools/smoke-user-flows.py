@@ -20,7 +20,7 @@ import threading
 import time
 from contextlib import closing
 from diagnostic_snapshot import read_json_snapshot
-from smoke_startup import defer_boat_setup
+from smoke_startup import defer_boat_setup, native_setup_window
 
 root = Path(__file__).resolve().parents[1]
 windows = sys.platform == 'win32'
@@ -343,7 +343,8 @@ try:
             assert len(dialogs)==1, ('Expected one owned first-start setup sheet',dialogs)
             xdo('windowraise',dialogs[0])
             physical_click(target['x']+target['width']//2,target['y']+target['height']//2)
-    report['first_start_setup']=defer_boat_setup(data,defer_setup_click)
+    report['first_start_setup']=defer_boat_setup(data,defer_setup_click,
+        native_window=(lambda:native_setup_window(ui,app.pid)) if windows else None)
     click('North')
     control('Course')
     course_before = data()

@@ -145,6 +145,14 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - name: Verify published distribution inputs before compilation
         run: python opennav-x/tools/verify-distribution-inputs.py
+      - name: Check corrected setup, executable-version and pilot smoke helpers
+        shell: python
+        run: |
+          import subprocess, sys
+          for script in ("test-smoke-startup.py", "test-skager-pe-brand.py",
+                         "test-smoke-pilot-policy.py"):
+              subprocess.run([sys.executable, "opennav-x/tools/" + script],
+                             check=True, timeout=120)
       - name: Verify corresponding-source archive structure and integrity
         run: |
           python opennav-x/tools/test-source-package.py

@@ -151,16 +151,22 @@ def expected_versions(version, setup=False):
     # product identity and both Setup identities identify the SKAGER release.
     return {'strings': {'ProductVersion': version,
                         'FileVersion': version if setup else '5,12,4'},
+            # NSIS 3.10 leaves dwStrucVersion zero, independently of the
+            # actual file/product version DWORDs. The application RC emits 1.0.
+            # https://github.com/NSIS-Dev/nsis/blob/v310/Source/ResourceVersionInfo.cpp#L98-L104
+            'fixed_structure_version': 0 if setup else 0x00010000,
             'fixed': {'file': product if setup else (5, 12, 4, 0), 'product': product}}
 
 
-def check_fixed_version(data, expected):
+def check_fixed_version(data, expected, *, structure_version=0x00010000):
     # VS_FIXEDFILEINFO is exactly thirteen little-endian DWORDs.
     if len(data) != 52:
         raise ValueError('Invalid fixed PE version information length')
     values = struct.unpack('<13I', data)
-    if values[:2] != (0xFEEF04BD, 0x00010000):
-        raise ValueError('Invalid fixed PE version information signature/version')
+    if values[:2] != (0xFEEF04BD, structure_version):
+        raise ValueError('Invalid fixed PE version information signature/version: '
+                         f'signature=0x{values[0]:08x}, structure=0x{values[1]:08x}; '
+                         f'expected signature=0xfeef04bd, structure=0x{structure_version:08x}')
     observed = {name: (values[offset] >> 16, values[offset] & 65535,
                        values[offset + 1] >> 16, values[offset + 1] & 65535)
                 for name, offset in (('file', 2), ('product', 4))}
@@ -193,8 +199,10 @@ def inspect(path, expected, metadata, version):
             for field, values in fields.items():
                 if not values or any(value != required[field] for value in values):
                     raise ValueError(f'{path.name} {field} mismatch: {values}')
-            fixed = check_fixed_version(resources.fixed_version(data), version['fixed'])
-            versions.append({'id': name, 'language': language, 'fields': fields, 'fixed': fixed})
+            fixed = check_fixed_version(resources.fixed_version(data), version['fixed'],
+                                        structure_version=version['fixed_structure_version'])
+            versions.append({'id': name, 'language': language, 'fields': fields, 'fixed': fixed,
+                             'fixedStructureVersion': version['fixed_structure_version']})
     finally:
         resources.close()
     if not groups or not versions:

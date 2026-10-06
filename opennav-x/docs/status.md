@@ -3,10 +3,27 @@
 ## Current Staging batch — SCRUM-311/312/313/28/29
 
 The user selected these five issues for parallel implementation and explicitly
-authorized actual manual autopilot commands. The combined candidate is
-`0.4.0-beta2.2`; its native build and boat acceptance are pending. No new boat
+authorized actual manual autopilot commands. The replacement candidate is
+`0.4.0-beta2.3`; native integrated and boat acceptance remain pending. The `.2`
+candidate compiled and packaged but failed native first-start interaction:
+main-window activation cancelled a held setup button before release. The
+replacement adds the missing modeless setup guard and keeps the existing
+focus-loss cancellation. No new boat
 installation or physical command has yet occurred. The existing `c0d8d85` boat
 application remains the last installed candidate.
+
+The retained `.2` native failure is run `37440993866` (helper `be33cd4`, product
+`0db45cb`). Its trace records pointer down, focus, blur while pressed, then
+pointer up without activation. The exact activating callback was not traced;
+the source and focused red/green test identify the unguarded delayed-recapture
+path. Ten preceding isolated startup checks passed but do not override this
+complete-run failure. The narrow guard passed the native Win32 red/green check
+in run `37443443071` at `dcab13c`: original focus loss cancelled activation;
+the corrected guard preserved focus and produced exactly one activation.
+The downloaded artifact hash and replacement-source comparison are recorded in
+[native evidence](evidence/2026-10-06-staging-batch/modeless-recapture-native.json).
+One replacement product build follows this component proof. See
+[focus evidence](evidence/scrum28-modeless-setup-recapture.md).
 
 - **SCRUM-28:** six-step first-run boat setup, explicit Later/reset, live source
   health and atomic preference saving. Existing profiles remain read-only until

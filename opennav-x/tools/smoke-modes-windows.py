@@ -9,6 +9,7 @@ import sys
 import time
 import uuid
 from diagnostic_snapshot import read_json_snapshot
+from smoke_startup import defer_boat_setup, native_setup_window
 from peer_boundary import PeerBoundary
 
 def module(name):
@@ -69,6 +70,9 @@ def saved(step):
 try:
     handle, pid = ui.wait_window('SKAGER / OpenCPN', pid)
     ready(1)
+    report.setdefault('first_start_setup',[]).append(defer_boat_setup(
+        data,lambda target:ui.pointer_text(pid,'Later'),
+        native_window=lambda:native_setup_window(ui,pid)))
     capture_chart('01-xnav-unavailable.png')
     ui.cycle_light(pid)
     data(lambda d:d['runtime']['display']['light']=='Dusk')
@@ -106,6 +110,9 @@ try:
     assert next_pid != pid
     handle, pid = next_handle, next_pid
     ready(3)
+    report.setdefault('first_start_setup',[]).append(defer_boat_setup(
+        data,lambda target:ui.pointer_text(pid,'Later'),
+        native_window=lambda:native_setup_window(ui,pid)))
     saved('Legacy to XNav')
     data(lambda d:d['data_mode']!='DEMO')
     capture_chart('06-xnav-after-legacy.png')
@@ -126,6 +133,9 @@ try:
     normal = subprocess.Popen([str(exe), '--configdir', str(profile), '--no_opengl'])
     handle, pid = ui.wait_window('SKAGER / OpenCPN', normal.pid)
     ready(5)
+    report.setdefault('first_start_setup',[]).append(defer_boat_setup(
+        data,lambda target:ui.pointer_text(pid,'Later'),
+        native_window=lambda:native_setup_window(ui,pid)))
     ui.close(handle)
     assert normal.wait(timeout=30) == 0
     saved('Persisted XNav after Safe Mode')

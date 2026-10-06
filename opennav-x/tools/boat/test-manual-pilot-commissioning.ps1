@@ -101,15 +101,28 @@ try {
  [IO.File]::WriteAllBytes($diagnosticStage,$newBytes)
  [IO.File]::SetLastWriteTimeUtc($diagnosticStage,$now)
  if($native){Initialize-PreparationNative}
- $script:replacementAttempted=$false;$script:replacementDenied=$false
+ $script:replacementAttempted=$false;$script:replacementDenied=$false;$script:replacementErrorCode=$null
  function Get-ManualPilotDiagnosticsMetadata([IO.FileStream]$Stream) {
   # Deterministic interleaving: exact old bytes have been read, and the publisher
   # tries replacing the path before metadata is fetched. No timers or sleeps.
   $script:replacementAttempted=$true
   if($native) {
    try{[OpenNavX.PreparationNative]::Publish($diagnosticStage,$diagnosticPath)}catch{
-    $errorCode=$_.Exception.GetBaseException().NativeErrorCode
-    if($errorCode -ne 32){throw};$script:replacementDenied=$true
+    $cause=$_.Exception.GetBaseException()
+    $code=if($cause -is [ComponentModel.Win32Exception]){$cause.NativeErrorCode}else{'not-Win32Exception'}
+    # MoveFileEx(REPLACE_EXISTING|WRITE_THROUGH) can report ACCESS_DENIED (5)
+    # or SHARING_VIOLATION (32) for the destination held without delete sharing.
+    # Require that actual native denial AND both exact files to survive; the
+    # same publication must then succeed after the reader releases its handle.
+    if($cause -isnot [ComponentModel.Win32Exception] -or $code -notin @(5,32)){
+     throw ('Unexpected held-publication refusal: nativeCode='+$code+'; type='+$cause.GetType().FullName+'; message='+$cause.Message)
+    }
+    try {
+     Same (Get-Digest $diagnosticPath) (Get-CommissioningHash $oldBytes)
+     Same (Get-Digest $diagnosticStage) (Get-CommissioningHash $newBytes)
+     Same ([IO.File]::GetLastWriteTimeUtc($diagnosticPath)) $oldWritten
+    } catch {throw ('Held-publication refusal did not preserve original/stage: nativeCode='+$code+'; '+$_.Exception.Message)}
+    $script:replacementErrorCode=$code;$script:replacementDenied=$true
    }
    Refuse {$writer=[IO.File]::Open($diagnosticPath,[IO.FileMode]::Open,[IO.FileAccess]::Write,[IO.FileShare]::ReadWrite);$writer.Dispose()}
   } else {[IO.File]::Move($diagnosticStage,$diagnosticPath,$true)}
@@ -124,7 +137,12 @@ try {
  }
  # The stale/pre-process observation cannot borrow the new publication's date.
  Refuse {Assert-ManualPilotStartupDiagnostics $held.data ('b'*40) $held.writtenUtc $now.AddSeconds(-1) $now}
- if($native){[OpenNavX.PreparationNative]::Publish($diagnosticStage,$diagnosticPath)}
+ if($native){
+  try{[OpenNavX.PreparationNative]::Publish($diagnosticStage,$diagnosticPath)}catch{
+   throw ('Publication must succeed after the read handle is released; held nativeCode='+$replacementErrorCode+'; '+$_.Exception.GetBaseException().Message)
+  }
+  Check {if(Test-Path -LiteralPath $diagnosticStage){throw 'Successful rename retained the stage unexpectedly'}}
+ }
  $next=Read-ManualPilotDiagnosticsSnapshot $diagnosticPath
  Check {Same $next.data.route.state 'Valid';Same $next.sha256 (Get-CommissioningHash $newBytes);Same $next.writtenUtc ([IO.File]::GetLastWriteTimeUtc($diagnosticPath))}
  Refuse {Assert-ManualPilotStartupDiagnostics $next.data ('b'*40) $next.writtenUtc $now.AddSeconds(-1) $now}
@@ -249,5 +267,5 @@ try {
  Refuse {& $parentGuard}
  Check {Same (Get-Digest $ini) $beforeGuardHash;if(Test-Path $plugin){throw 'Parent guard allowed plugin restoration'}}
  Remove-Item -LiteralPath (Join-Path $workspace 'manual-pilot-active.json')
- [pscustomobject]@{status='passed';checks=$checks;nativeMetadata=$native;scope='Inert real transaction/file publication plus mocked OS identity/signature/process discovery; no actual launch, close, task, port, boat or plugin execution'}|ConvertTo-Json
+ [pscustomobject]@{status='passed';checks=$checks;nativeMetadata=$native;heldPublicationNativeError=$replacementErrorCode;scope='Inert real transaction/file publication plus mocked OS identity/signature/process discovery; no actual launch, close, task, port, boat or plugin execution'}|ConvertTo-Json
 }finally{Remove-Item -LiteralPath $fixtureRoot -Recurse -Force}

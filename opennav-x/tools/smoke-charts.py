@@ -21,7 +21,7 @@ import time
 import urllib.request
 import zipfile
 from diagnostic_snapshot import read_json_snapshot
-from smoke_startup import defer_boat_setup
+from smoke_startup import defer_boat_setup, native_setup_window
 root=Path(__file__).resolve().parents[1];windows=sys.platform=='win32'
 evidence=root/'evidence/local';evidence.mkdir(parents=True,exist_ok=True)
 url='https://www.charts.noaa.gov/ENCs/US5SEAFL.zip'
@@ -241,7 +241,8 @@ try:
   # Defer legitimate first-start setup explicitly before chart interactions.
   setup_tick=int(data()['runtime']['ui_update']['ticks'])
   data(lambda d:int(d['runtime']['ui_update']['ticks'])>=setup_tick+3)
-  setup=defer_boat_setup(data,defer_setup_click)
+  setup=defer_boat_setup(data,defer_setup_click,
+    native_window=(lambda:native_setup_window(ui,pid)) if windows else None)
   d=data(enc);entry={'requested_rendering':rendering,'runtime':d['runtime'],'startup_to_enc_seconds':round(time.monotonic()-start,3),'captures':[],'first_start_setup':setup}
   entry['workspace_startup']=workspace.assert_restored(d['runtime']['test_workspace_perspective'],suppressed=True)
   assert all(row['visible'] for row in d['runtime']['display']['rail_regions']), 'Restoring plugin workspace hid XNav rail'

@@ -2,6 +2,8 @@
 #include "ui/FloatingSurface.h"
 #include <wx/app.h>
 #include <wx/button.h>
+#include <wx/dialog.h>
+#include <wx/weakref.h>
 #include <wx/sizer.h>
 #include <wx/timer.h>
 #include <wx/uiaction.h>
@@ -16,16 +18,24 @@
 namespace opennav::ui {
 class Shell {
  public:
+  explicit Shell(wxFrame& frame):frame_(frame){}
+  wxFrame& frame_;
+  wxWeakRef<wxDialog> boat_setup_;
+  wxWindow *context_=nullptr,*route_context_=nullptr;
+  bool drawer=false;
+  bool DrawerRegion() const {return drawer;}
+  bool HasTransientSurface() const;
   std::vector<wxWindow*> chart_overlays_;
   void RestackChartControls();
 };
 #include "shell-restack.inc"
+#include "shell-transient.inc"
 }
 namespace opennav {
 ui::Shell* shell=nullptr;
-bool xnav=true,transient=false;
+bool xnav=true;
 bool IsXNav(){return xnav;}
-bool HasXNavTransientSurface(){return xnav && transient;}
+bool HasXNavTransientSurface(){return shell && IsXNav() && shell->HasTransientSurface();}
 #include "integration-recapture.inc"
 }
 class MyFrame : public wxFrame {
@@ -47,7 +57,8 @@ class App final:public wxApp {
   auto* button=new wxButton(surface,wxID_ANY,"+",wxDefaultPosition,{44,44});
   button->Bind(wxEVT_BUTTON,[this](wxCommandEvent&){++clicks;});
   auto* tools=new wxBoxSizer(wxHORIZONTAL);tools->Add(button);surface->SetSizerAndFit(tools);
-  model.chart_overlays_.push_back(surface);opennav::shell=&model;
+  model=new opennav::ui::Shell(*owner);
+  model->chart_overlays_.push_back(surface);opennav::shell=model;
   owner->Show();surface->Present({980,549});
   timer.SetOwner(this);Bind(wxEVT_TIMER,&App::Step,this);timer.StartOnce(150);return true;
  }
@@ -95,21 +106,35 @@ class App final:public wxApp {
    Check(clicks==1&&canvas_clicks==0,"repaired control receives click instead of chart");
    opennav::xnav=false;Fire();Check(NativeAbove(owner,surface),"Legacy recapture retains upstream raise");
    opennav::xnav=true;surface->RestackAboveOwner();
-   opennav::transient=true;int before=owner->raises;Fire();Check(owner->raises==before,"existing transient surface guard suppresses raise");
-   opennav::transient=false;surface->Hide();Fire();Check(!gtk_widget_get_visible(surface->GetHandle()),"recapture does not show explicitly hidden surface");
+   model->drawer=true;int before=owner->raises;Fire();Check(owner->raises==before,"existing transient surface guard suppresses raise");
+   model->drawer=false;surface->Hide();Fire();Check(!gtk_widget_get_visible(surface->GetHandle()),"recapture does not show explicitly hidden surface");
    Check(!surface->IsShown(),"logical hidden state unchanged");
    surface->Present({980,549});break;}
   case 5:{
-   other=new wxFrame(nullptr,wxID_ANY,"TEST unrelated window",{0,0},{80,80},wxBORDER_NONE);other->Show();other->Raise();break;}
+   setup=new wxDialog(owner,wxID_ANY,"TEST modeless boat setup");
+   model->boat_setup_=setup;
+   int before=owner->raises;Fire();Check(owner->raises==before+1,"hidden setup permits recapture");
+   setup->Show();break;}
   case 6:{
+   Check(setup->IsShownOnScreen()&&!setup->IsModal(),"real owned setup is visible and modeless");
+   int before=owner->raises;Fire();Check(owner->raises==before,"visible modeless setup suppresses recapture");
+   opennav::xnav=false;Fire();Check(owner->raises==before+1,"Legacy still raises with modeless setup present");
+   opennav::xnav=true;setup->Hide();Fire();Check(owner->raises==before+2,"hidden modeless setup no longer suppresses recapture");
+   setup->Destroy();setup=nullptr;break;}
+  case 7:{
+   Check(!model->boat_setup_,"destroyed setup weak reference clears");
+   int before=owner->raises;Fire();Check(owner->raises==before+1,"destroyed setup permits recapture");
+   surface->RestackAboveOwner();
+   other=new wxFrame(nullptr,wxID_ANY,"TEST unrelated window",{0,0},{80,80},wxBORDER_NONE);other->Show();other->Raise();break;}
+  case 8:{
    auto* focus=wxWindow::FindFocus();surface->RestackAboveOwner();
    Check(NativeAbove(other,surface),"restack stays below unrelated higher window");
    Check(wxWindow::FindFocus()==focus,"restack does not steal unrelated focus");
    std::cout<<checks<<" native recapture checks passed\n";Finish();return;}
  }timer.StartOnce(150);}catch(const std::exception& e){std::cerr<<"FAILED: "<<e.what()<<'\n';failed=true;Finish();}}
- void Finish(){timer.Stop();opennav::shell=nullptr;if(other)other->Destroy();surface->Destroy();owner->Destroy();ExitMainLoop();}
+ void Finish(){timer.Stop();opennav::shell=nullptr;delete model;if(setup)setup->Destroy();if(other)other->Destroy();surface->Destroy();owner->Destroy();ExitMainLoop();}
  MyFrame* owner=nullptr;wxPanel* canvas=nullptr;opennav::ui::XNavFloatingSurface* surface=nullptr;wxFrame* other=nullptr;
- opennav::ui::Shell model;wxTimer timer;int step=0,checks=0,clicks=0,canvas_clicks=0;bool failed=false;
+ opennav::ui::Shell* model=nullptr;wxDialog* setup=nullptr;wxTimer timer;int step=0,checks=0,clicks=0,canvas_clicks=0;bool failed=false;
 };
 }
 wxIMPLEMENT_APP_NO_MAIN(App);
