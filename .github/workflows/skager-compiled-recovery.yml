@@ -30,6 +30,8 @@ jobs:
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force opennav-x/evidence/local/compiled-recovery | Out-Null
+          python opennav-x/tools/test-smoke-startup.py 2>&1 | Tee-Object opennav-x/evidence/local/compiled-recovery/startup-contracts.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python opennav-x/tools/test-compiled-recovery-restore.py 2>&1 | Tee-Object opennav-x/evidence/local/compiled-recovery/restore-contracts.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python opennav-x/tools/test-recovered-staging.py 2>&1 | Tee-Object opennav-x/evidence/local/compiled-recovery/qualification-contracts.log

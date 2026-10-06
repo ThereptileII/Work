@@ -12,6 +12,7 @@ import sys
 import tempfile
 import time
 from diagnostic_snapshot import read_json_snapshot
+from smoke_startup import defer_boat_setup, native_setup_window
 assert sys.platform=='win32','Native Windows required'
 assert os.environ.get('GITHUB_ACTIONS')=='true','Disposable GitHub desktop only'
 root=Path(__file__).resolve().parents[1]
@@ -396,6 +397,9 @@ try:
         with (evidence/'dpi-launch.log').open('a') as out:
             app=subprocess.Popen([str(exe),'--configdir',str(profile),'--no_opengl','--xnav'],env=env,stdout=out,stderr=out)
         count+=1;owned.add(app.pid);handle,pid=ui.wait_window('SKAGER / OpenCPN',app.pid);ready();ui.size_window(handle)
+        report.setdefault('first_start_setup',[]).append(defer_boat_setup(
+            data,lambda target:ui.pointer_text(pid,'Later'),
+            native_window=lambda:native_setup_window(ui,pid)))
         observed=ui.GetDpiForWindow(handle);assert observed==96*scale//100,(scale,observed,'Actual application DPI must match request')
         d=data(lambda d:d['data_mode']=='OPENCPN selected navigation' and any(f'DPI: {observed}' in s for s in d['build_info']))
         entry={'percent':scale,'GetDpiForWindow':observed,'wxDpi':observed,'buttons':main_buttons(scale),'chart_rendering':[]}
