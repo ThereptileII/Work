@@ -2,6 +2,7 @@
 #include "ui/SettingsDrawer.h"
 #include "ui/DisplaySizing.h"
 #include "application/Version.h"
+#include "integration/BuildFeatures.h"
 #include <wx/dcbuffer.h>
 #include <wx/graphics.h>
 #include <wx/sizer.h>
@@ -370,8 +371,17 @@ void XNavSettingsDrawer::Build() {
       });
       Page("Pilot connection","Status from your OpenCPN connection",XNavIcon::Settings,ProductPage::PilotSettings);
       Page("Helm controls","Standby, Auto and heading adjustments",XNavIcon::Instruments,ProductPage::Pilot);
-      CopyBlock(90,[](XNavPainter &p,int width){p.Text("This installation observes pilot status only.",0,18,11,p.c.secondary,false,width);
-        p.Text("Use the pilot's own controls to steer.",0,39,11,p.c.secondary,false,width);});
+      CopyBlock(90,[](XNavPainter &p,int width){
+        const bool loopback=integration::PilotLoopbackTestsEnabled();
+        const bool manual=integration::PilotManualSerialEnabled();
+        p.Text(loopback ? "Developer loopback testing only; control starts OFF."
+                       : manual ? "Manual serial control is available; each session starts OFF."
+                                : "This installation observes pilot status only.",
+               0,18,11,p.c.secondary,false,width);
+        p.Text(loopback ? "Physical equipment commands are unavailable."
+                       : manual ? "Enable it explicitly. SmartNav never steers."
+                                : "Use the pilot's own controls to steer.",
+               0,39,11,p.c.secondary,false,width);});
       break;
     case SettingsSection::Radar:
       CopyBlock(104,[this](XNavPainter &p,int width){p.TextTracked("RADAR",0,4,9,p.c.accent,650,1.17);

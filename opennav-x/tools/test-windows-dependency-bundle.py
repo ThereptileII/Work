@@ -279,11 +279,13 @@ class BundleTests(fixtures.WindowsDependencyEvidenceTests):
                 with self.assertRaisesRegex(ValueError, 'exact reviewed compatibility'):
                     bundle.verify_bundle(self.root, self.output, self.authority)
         self._write_json(self.root / bundle.CONSUMER_COMPATIBILITY, policy)
-        helper = self.root / 'tools/windows_dependency_bundle.py'
-        helper.write_bytes(current['tools/windows_dependency_bundle.py'] + b'# unapproved\n')
-        with self.assertRaisesRegex(ValueError, 'exact reviewed compatibility'):
-            bundle.verify_bundle(self.root, self.output, self.authority)
-        helper.write_bytes(current['tools/windows_dependency_bundle.py'])
+        for name in sorted(bundle.CONSUMER_FILES):
+            with self.subTest(unapproved_helper=name):
+                helper = self.root / name
+                helper.write_bytes(current[name] + b'# unapproved\n')
+                with self.assertRaisesRegex(ValueError, 'exact reviewed compatibility'):
+                    bundle.verify_bundle(self.root, self.output, self.authority)
+                helper.write_bytes(current[name])
         producer = self.root / 'tools/build-curl-windows.ps1'
         producer.write_bytes(producer.read_bytes() + b'# actual producer changed\n')
         with self.assertRaisesRegex(ValueError, 'inputs changed'):
@@ -305,6 +307,22 @@ class BundleTests(fixtures.WindowsDependencyEvidenceTests):
             entry['files'][name]['currentSha256'] == actual[name] for name in bundle.CONSUMER_FILES)]
         self.assertEqual(len(matches), 1)
         self.assertEqual(matches[0]['producerCommit'], bundle.COMPATIBLE_PRODUCER)
+
+    def test_pinned_reuse_change_is_only_the_reviewed_application_patch(self):
+        # Check both explicit checkout encodings; runtime verification never
+        # normalizes bytes. The old/new hashes must prove this exact one-line diff.
+        source = Path(__file__).resolve().parent.parent
+        name = 'tools/windows_dependency_reuse.py'
+        data = (source / name).read_bytes().replace(b'\r\n', b'\n')
+        added = b'    "opencpn-5.12.4-pilot-serial.patch",\n'
+        self.assertEqual(data.count(added), 1)
+        policy = json.loads((source / bundle.CONSUMER_COMPATIBILITY).read_text())
+        for newline in (b'\n', b'\r\n'):
+            current = data.replace(b'\n', newline)
+            original = data.replace(added, b'').replace(b'\n', newline)
+            expected = {'originalSha256': bundle.hashlib.sha256(original).hexdigest(),
+                        'currentSha256': bundle.hashlib.sha256(current).hexdigest()}
+            self.assertEqual(sum(entry['files'][name] == expected for entry in policy['entries']), 1)
 
     def test_live_tool_reprobe_is_required_in_orchestrator(self):
         text = Path(__file__).with_name('build-pristine-windows.ps1').read_text()

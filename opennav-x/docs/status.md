@@ -58,6 +58,18 @@ application compilation had not started. Candidate `.2` includes that correction
 and requires fresh integrated qualification. Neither `.1` attempt is an accepted
 boat package.
 
+The subsequent `.2` preflight found a partial-download cancellation/EOF race;
+the download still failed closed. A deterministic red/green case and the Go
+suite cover the correction. Run `37418273537` then passed native startup,
+serial, boat recovery and Windows contract checks, but refused SDK reuse before
+Windows application compilation. The only newly differing SDK fingerprint input
+adds the application pilot patch to a same-job inventory. Exact reviewed hash
+compatibility preserves the immutable dependency bytes and all native probes;
+see [the source comparison](evidence/2026-10-06-staging-batch/dependency-consumer.md).
+The separate manual pilot child transaction passed native 32/64-bit PowerShell
+qualification and independently verified downloads; [helper evidence](evidence/2026-10-06-pilot-manual-tools/native.json)
+does not claim actual UI actions or physical pilot feedback.
+
 ## Previous increment — SCRUM-312 navigation warning and secure startup
 
 Selected after the user asked for the next software feature. Implemented finite

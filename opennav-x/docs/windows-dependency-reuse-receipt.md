@@ -81,3 +81,27 @@ results, not a full native producer build or proof that the integrated
 same-job production path successfully skipped and restaged dependencies.
 Application/package acceptance, native reuse qualification and timing
 improvements remain unproven.
+
+## Exact cross-run consumer compatibility for the pilot patch
+
+Windows run `37418273537` rejected the selected immutable SDK before application
+compilation because `windows_dependency_reuse.py` had changed. Source review
+against the original producer inputs found exactly one new line in that helper:
+`opencpn-5.12.4-pilot-serial.patch` was added to its same-job `PATCHES` tuple.
+The dependency-only branch of `build-pristine-windows.ps1` skips
+`prepare-integration.py` and returns immediately after sealing the maintained
+OpenSSL/zlib/curl SDK; it does not apply or compile that OpenCPN application patch.
+All other SDK fingerprint inputs and the dedicated producer workflow match the
+original producer, apart from the two already reviewed consumer helper changes.
+
+The compatibility policy now pins all three complete original/current helper
+hash pairs, separately for LF and CRLF checkouts, exclusively for producer
+`1b25542aea3f9ab62c83c5d7a3ecdac9652f7d3e` / run `37230581131`. The current
+same-job receipt helper is retained, including its new pilot patch input.
+The SDK fingerprint algorithm and original artifact, manifest, input hashes and
+receipts remain unchanged. Compatibility substitutes the authenticated original
+hashes only for the exact reviewed consumer closure when comparing fingerprints.
+Different helper bytes, producer commits, dependency recipes, workflow, source,
+ABI, native toolchain, runner image, Python or payload inventory still refuse;
+native reprobes remain mandatory. No line-ending normalization occurs in the
+verifier. This correction does not itself qualify a new Windows application.

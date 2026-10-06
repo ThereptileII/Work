@@ -31,7 +31,10 @@ WORKFLOW = '.github/workflows/skager-windows-dependencies.yml'
 JOB = 'windows-dependencies'
 CONSUMER_COMPATIBILITY = 'tools/windows-dependency-consumer-compatibility.json'
 COMPATIBLE_PRODUCER = '1b25542aea3f9ab62c83c5d7a3ecdac9652f7d3e'
-CONSUMER_FILES = frozenset({'tools/windows_dependency_bundle.py', 'tools/build-pristine-windows.ps1'})
+# Same-job application patch inventory may change without rebuilding the SDK.
+# Every exception still pins the complete original/current helper bytes.
+CONSUMER_FILES = frozenset({'tools/windows_dependency_bundle.py', 'tools/build-pristine-windows.ps1',
+                            'tools/windows_dependency_reuse.py'})
 ABI = {'architecture': 'Win32', 'abi': 'x86', 'runtime': 'MultiThreadedDLL (/MD)',
        'openssl': '3.5.9', 'zlib': '1.3.2', 'curl': '8.22.0'}
 # Only producer-relevant bytes: application/UI patches do not invalidate this

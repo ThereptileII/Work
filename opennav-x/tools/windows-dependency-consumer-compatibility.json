@@ -6,28 +6,36 @@
       "files": {
         "tools/windows_dependency_bundle.py": {
           "originalSha256": "c9301e3cfbcd25f68c10fa1ae1c3f0af37e1b583721310955f7cad8c3687b6ae",
-          "currentSha256": "859f37dd2917b9c74e7e824673866166be31274ebd44ae73a77ae8b4cf3992da"
+          "currentSha256": "8c60716cb5675f7677c6ff29bbccd9d9abe26876a412c88bc14685c15a97218d"
         },
         "tools/build-pristine-windows.ps1": {
           "originalSha256": "232c452bbded83b413dbf91c2e5a3686a9c32590180532345b0aa3ed5ea10064",
           "currentSha256": "558159819ef1e1832aa92a2ff960bff17787a99a4dfb92ca77b6fed4e9410eb5"
+        },
+        "tools/windows_dependency_reuse.py": {
+          "originalSha256": "4c653c5d787345effcac91c54bd27753c58a1e9430e8a8ef0bbf137e7b162ea7",
+          "currentSha256": "ee089aa8c3ba5998be6d5d049aa76c3e22ca4125ed12ee4cb53a33d8a19d075e"
         }
       },
-      "reason": "Exact LF checkout pair for the consumer-only OpenSSL runtime CPUINFO correction established by diagnostic run 37234440416. Original dependency producer scripts, compiler inputs, binaries, manifests, native tool receipts, artifact bytes and workflow remain unchanged. Keep these current consumer helpers during restore and run the independent native curl consumer probe with the original producer identity. No line-ending normalization during verification. Dependency-only consumer reprobes now keep fresh per-invocation diagnostics and OpenSSL observations without replacing initial application evidence; native toolchain, source, hash and TLS checks remain unchanged."
+      "reason": "Exact LF checkout pair for the consumer-only OpenSSL runtime CPUINFO correction established by diagnostic run 37234440416. Original dependency producer scripts, compiler inputs, binaries, manifests, native tool receipts, artifact bytes and workflow remain unchanged. Keep these current consumer helpers during restore and run the independent native curl consumer probe with the original producer identity. No line-ending normalization during verification. Dependency-only consumer reprobes now keep fresh per-invocation diagnostics and OpenSSL observations without replacing initial application evidence; native toolchain, source, hash and TLS checks remain unchanged. The same-job receipt helper adds only opencpn-5.12.4-pilot-serial.patch to PATCHES; the dependency-only producer skips prepare-integration and does not consume this application patch. Retain the complete current same-job patch inventory while binding this exact three-file consumer closure to the original producer. No producer inputs, artifact bytes, toolchain or ABI exceptions are added."
     },
     {
       "producerCommit": "1b25542aea3f9ab62c83c5d7a3ecdac9652f7d3e",
       "files": {
         "tools/windows_dependency_bundle.py": {
           "originalSha256": "5938c907570e872571b96f9e95b5d25edfe9dca1860efaa16405545aea14b9f3",
-          "currentSha256": "8c8277072b008e8a70af565a03f48605041fe85961c9cdc68337951d8856096f"
+          "currentSha256": "bc2dae00aa61cd074a4b26ac7e96a1f056896ee2dc34df11edd37fa7e2a7d3a7"
         },
         "tools/build-pristine-windows.ps1": {
           "originalSha256": "2a1fd321ade8c6603f318be6367363bffddf06d1679045f248825038a29f7ada",
           "currentSha256": "4d57a2066fd48c2bbff5c5b80bbcc9df0266cfd0ad134878699cf488614ec519"
+        },
+        "tools/windows_dependency_reuse.py": {
+          "originalSha256": "1fad985f94b0493511810d25a8323555b0d30468d0b71b46fd9bcdcb43dcf113",
+          "currentSha256": "3d24f69d94db10d1affadc35a7f2746b5d68ae43dcb9e1f2fa7e4967c7768a8c"
         }
       },
-      "reason": "Exact CRLF checkout pair for the consumer-only OpenSSL runtime CPUINFO correction established by diagnostic run 37234440416. Original dependency producer scripts, compiler inputs, binaries, manifests, native tool receipts, artifact bytes and workflow remain unchanged. Keep these current consumer helpers during restore and run the independent native curl consumer probe with the original producer identity. No line-ending normalization during verification. Dependency-only consumer reprobes now keep fresh per-invocation diagnostics and OpenSSL observations without replacing initial application evidence; native toolchain, source, hash and TLS checks remain unchanged."
+      "reason": "Exact CRLF checkout pair for the consumer-only OpenSSL runtime CPUINFO correction established by diagnostic run 37234440416. Original dependency producer scripts, compiler inputs, binaries, manifests, native tool receipts, artifact bytes and workflow remain unchanged. Keep these current consumer helpers during restore and run the independent native curl consumer probe with the original producer identity. No line-ending normalization during verification. Dependency-only consumer reprobes now keep fresh per-invocation diagnostics and OpenSSL observations without replacing initial application evidence; native toolchain, source, hash and TLS checks remain unchanged. The same-job receipt helper adds only opencpn-5.12.4-pilot-serial.patch to PATCHES; the dependency-only producer skips prepare-integration and does not consume this application patch. Retain the complete current same-job patch inventory while binding this exact three-file consumer closure to the original producer. No producer inputs, artifact bytes, toolchain or ABI exceptions are added."
     }
   ]
 }

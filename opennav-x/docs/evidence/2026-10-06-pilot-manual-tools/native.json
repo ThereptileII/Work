@@ -1,0 +1,32 @@
+{
+  "helperCommit": "f1b5632167cae1d5f9ebb6b3bb4502c05b2b6e92",
+  "productCommit": "e3a85a2bc6102bf0cae76fd28108ed61a6ac13ea",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/37418785410",
+  "scope": "Manual child transaction and existing launch/version contracts; no physical commands or application build",
+  "nativePowerShell": "Windows PowerShell 5.1",
+  "artifacts": [
+    {
+      "bits": 64,
+      "id": 11392420389,
+      "sha256": "0f2bde403e29a52aef1eea3f81146a60c98ee7df42982b162019d74ce9646e93",
+      "downloadedDigestVerified": true,
+      "zipIntegrityVerified": true,
+      "manualTransaction": "passed",
+      "deploymentVersion": "passed",
+      "readOnlyLaunchRefusals": "passed"
+    },
+    {
+      "bits": 32,
+      "id": 11391848403,
+      "sha256": "b1444cef9b547ebe079c6224f22d6362f5e40f23eed91b0c135bb57d18ef9713",
+      "downloadedDigestVerified": true,
+      "zipIntegrityVerified": true,
+      "manualTransaction": "passed",
+      "deploymentVersion": "passed",
+      "readOnlyLaunchRefusals": "passed"
+    }
+  ],
+  "sourceMapping": "All 7193 local tracked blobs at bf9ba76a656fc3833776c055783f7429e62c5a16 match the mapped remote helper tree, including file modes.",
+  "review": "Separate focused static review confirmed parent-lock exclusion, pinned managed-file verification and pending-update refusal fixes.",
+  "notQualified": ["actual scheduled interactive launch", "physical pilot identity", "physical command feedback"]
+}
