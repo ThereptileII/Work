@@ -21,7 +21,7 @@ namespace OpenNavX {
     [DllImport("user32.dll")] private static extern bool TranslateMessage(ref Message m);
     [DllImport("user32.dll")] private static extern IntPtr DispatchMessageW(ref Message m);
     [DllImport("kernel32.dll",CharSet=CharSet.Unicode)] private static extern IntPtr GetModuleHandleW(string name);
-    private readonly Procedure procedure;private readonly string name;private readonly IntPtr instance;private IntPtr button;
+    private readonly Procedure procedure;private readonly string name;private readonly IntPtr instance;private IntPtr button,overlay;
     public IntPtr Frame {get;private set;} public int Clicks {get;private set;}
     public ManualPilotUiFixture(){
       name="OpenNavXInertPilotUi"+Guid.NewGuid().ToString("N");instance=GetModuleHandleW(null);
@@ -39,6 +39,16 @@ namespace OpenNavX {
       }catch{Dispose();throw;}
     }
     private IntPtr Child(string cls,string text,IntPtr parent,int x,int y,int w,int h,int id){var child=CreateWindowExW(0,cls,text,0x50000000,x,y,w,h,parent,new IntPtr(id),instance,IntPtr.Zero);if(child==IntPtr.Zero)throw new InvalidOperationException("Inert child creation failed.");return child;}
+    public void ShowOverlay(string title,bool outside){
+      ClearOverlay();
+      overlay=CreateWindowExW(0,name,title,0x90000000,outside?1100:230,450,300,60,Frame,IntPtr.Zero,instance,IntPtr.Zero);
+      if(overlay==IntPtr.Zero)throw new InvalidOperationException("Inert overlay creation failed.");
+      var labels=title=="SKAGER chart tools"?new[]{"Measure","Waypoint","+","\u2212"}:
+        title=="SKAGER chart orientation"?new[]{"North"}:title=="SKAGER chart layers"?new[]{"Layers"}:new[]{"Follow boat"};
+      int x=0;foreach(var label in labels){Child("BUTTON",label,overlay,x,5,70,45,0);x+=75;}
+      SetForegroundWindow(Frame);Pump();
+    }
+    public void ClearOverlay(){if(overlay!=IntPtr.Zero){DestroyWindow(overlay);overlay=IntPtr.Zero;}Pump();}
     public void Disable(){EnableWindow(button,false);Pump();}
     public void Pump(){Message m;int count=0;while(PeekMessageW(out m,IntPtr.Zero,0,0,1)){if(++count>2000)throw new InvalidOperationException("Inert message pump exceeded bound.");TranslateMessage(ref m);DispatchMessageW(ref m);}}
     public void Dispose(){if(Frame!=IntPtr.Zero){DestroyWindow(Frame);Frame=IntPtr.Zero;}UnregisterClassW(name,instance);GC.KeepAlive(procedure);}

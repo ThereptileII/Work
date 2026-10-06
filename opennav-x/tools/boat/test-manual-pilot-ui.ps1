@@ -32,6 +32,11 @@ foreach($action in $actions){
  if($action -cnotin @('OpenSettings','OpenPilot')){Refuse {[OpenNavX.ReviewWindowNative]::ActionLabels($action)}}
 }
 foreach($action in @('Track','Wind','SendNmea','WM_COMMAND','Click','SetText','auto')){Refuse {[OpenNavX.ManualPilotUiNative]::Target($action)}}
+foreach($title in @('SKAGER chart tools','SKAGER chart orientation','SKAGER chart layers','SKAGER follow boat')){
+ Check {Same ([OpenNavX.ManualPilotUiNative]::IsPassiveChartSurface($title)) $true}
+ Refuse {[OpenNavX.ManualPilotUiNative]::Target($title)}
+}
+foreach($title in @('SKAGER preferences','SKAGER chart tools extra','Unreviewed overlay')){Check {Same ([OpenNavX.ManualPilotUiNative]::IsPassiveChartSurface($title)) $false}}
 $name='c0508700e76004d2';$nonce='a'*32
 Check {Assert-ManualPilotUiAction 'Observe' '' $nonce}
 Check {Assert-ManualPilotUiAction 'SetName' $name $nonce}
@@ -116,6 +121,15 @@ if([Environment]::OSVersion.Platform -eq 'Win32NT') {
   $fixture=New-Object OpenNavX.ManualPilotUiFixture
   $processId=[Diagnostics.Process]::GetCurrentProcess().Id
   Check {$snapshot=[OpenNavX.ManualPilotUiNative]::Observe($fixture.Frame,$processId);Same ([OpenNavX.ManualPilotUiNative]::Choose('Advanced',$snapshot.Modal,$snapshot.Controls)).Label 'Advanced connection setup'}
+  foreach($title in @('SKAGER chart tools','SKAGER chart orientation','SKAGER chart layers','SKAGER follow boat')){
+   $fixture.ShowOverlay($title,$false)
+   Check {$snapshot=[OpenNavX.ManualPilotUiNative]::Observe($fixture.Frame,$processId);if(@($snapshot.Controls|Where-Object {$_.Context -ceq $title}).Count){throw 'Passive overlay became an action root'}}
+  }
+  $fixture.ShowOverlay('Unreviewed overlay',$false)
+  Refuse {[OpenNavX.ManualPilotUiNative]::Observe($fixture.Frame,$processId)}
+  $fixture.ShowOverlay('SKAGER chart tools',$true)
+  Refuse {[OpenNavX.ManualPilotUiNative]::Observe($fixture.Frame,$processId)}
+  $fixture.ShowOverlay('SKAGER chart tools',$false)
   Check {[OpenNavX.ManualPilotUiNative]::Act($fixture.Frame,$processId,'Advanced','');$fixture.Pump();Same $fixture.Clicks 1}
   $fixture.Disable()
   Refuse {[OpenNavX.ManualPilotUiNative]::Act($fixture.Frame,$processId,'Advanced','')}

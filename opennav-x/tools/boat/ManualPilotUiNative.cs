@@ -52,6 +52,7 @@ namespace OpenNavX {
     private static bool Contains(Rect a,Rect b){return b.Left>=a.Left && b.Top>=a.Top && b.Right<=a.Right && b.Bottom<=a.Bottom;}
     private static bool Owned(IntPtr h,IntPtr frame,int pid){for(int i=0;i<8 && h!=IntPtr.Zero;i++,h=GetWindow(h,4)){if(Pid(h)!=(uint)pid)return false;if(h==frame)return true;}return false;}
     private static bool Rail(IntPtr h,int pid){var labels=new List<string>();foreach(var c in Children(h))if(GetParent(c)==h && IsWindowVisible(c) && Pid(c)==(uint)pid && Class(c)!="Static")labels.Add(Text(c));return ReviewWindowNative.IsPrototypeNavigation(labels.ToArray());}
+    public static bool IsPassiveChartSurface(string title){return title=="SKAGER chart tools" || title=="SKAGER chart orientation" || title=="SKAGER chart layers" || title=="SKAGER follow boat";}
     private static bool Modal(string title){return title=="ST4000 translator identity" || title=="Permit manual pilot commands?" || title=="Enable physical pilot control?" || title=="Request AUTO";}
     // Pure policy is shared by the actual HWND resolver and inert fixtures.
     public static string[] Target(string action){switch(action){
@@ -103,18 +104,28 @@ namespace OpenNavX {
       if(frame==IntPtr.Zero || Pid(frame)!=(uint)pid || GetParent(frame)!=IntPtr.Zero || !IsWindowVisible(frame) || IsIconic(frame))throw new InvalidOperationException("Exact main frame unavailable.");
       var children=Children(frame);bool pilotPage=false;foreach(var h in children)if(IsWindowVisible(h) && Text(h)==Page)pilotPage=true;int rails=0;foreach(var h in children)if(GetParent(h)==frame && Rail(h,pid))rails++;
       if(rails!=1)throw new InvalidOperationException("Unique installed prototype frame required.");
-      var roots=new List<IntPtr>();roots.Add(frame);IntPtr sheet=IntPtr.Zero;string modal="";Exception failure=null;
+      var passive=new List<IntPtr>();var roots=new List<IntPtr>();roots.Add(frame);IntPtr sheet=IntPtr.Zero;string modal="";Exception failure=null;
       EnumWindows(delegate(IntPtr h,IntPtr p){try{
         if(h==frame || !IsWindowVisible(h) || Pid(h)!=(uint)pid)return true;
         if(!Owned(h,frame,pid))throw new InvalidOperationException("Unrelated process window is visible.");
-        var title=Text(h);if(Modal(title)) {if(sheet!=IntPtr.Zero)throw new InvalidOperationException("Multiple modal sheets.");sheet=h;modal=title;}
+        var title=Text(h);
+        // Existing capture policy validates these normal chart overlays. They
+        // remain passive: do not enumerate their children as action targets.
+        if(IsPassiveChartSurface(title)){passive.Add(h);return true;}
+        if(Modal(title)) {if(sheet!=IntPtr.Zero)throw new InvalidOperationException("Multiple modal sheets.");sheet=h;modal=title;}
         else if(title!="SKAGER autopilot" && title!="SKAGER preferences")throw new InvalidOperationException("Unreviewed owned window is visible.");
         roots.Add(h);return true;
       }catch(Exception e){failure=e;return false;}},IntPtr.Zero);
       if(failure!=null)throw failure;
       var foreground=GetForegroundWindow();if(sheet!=IntPtr.Zero){
-        if(IsWindowEnabled(frame) || foreground!=sheet || !IsWindowEnabled(sheet))throw new InvalidOperationException("Exact owned modal must hold foreground.");
-      }else{ReviewWindowNative.AssertFrame(frame,pid);}
+        if(passive.Count!=0 || IsWindowEnabled(frame) || foreground!=sheet || !IsWindowEnabled(sheet))throw new InvalidOperationException("Exact owned modal must hold foreground.");
+      }else{
+        var verified=ReviewWindowNative.AssertFrame(frame,pid);
+        foreach(var h in passive){bool found=false;
+          foreach(var surface in verified.Surfaces)if(surface.Handle==h.ToInt64() && surface.Title==Text(h))found=true;
+          if(!found)throw new InvalidOperationException("Passive chart overlay was not validated by the read-only surface policy.");
+        }
+      }
       var controls=new List<Control>();var identities=new List<Identity>();string iface=null,name=null;
       foreach(var root in roots)foreach(var h in Children(root)){
         if(Pid(h)!=(uint)pid)throw new InvalidOperationException("Foreign child window.");
