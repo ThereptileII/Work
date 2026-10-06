@@ -227,6 +227,11 @@ func copyVerifiedDownload(ctx context.Context, source io.Reader, destination io.
 	hash := sha256.New()
 	limited := io.LimitReader(downloadContextReader{ctx: ctx, reader: source}, artifact.Bytes+1)
 	n, err := io.CopyBuffer(io.MultiWriter(destination, hash), limited, make([]byte, 32<<10))
+	// Cancellation can race a chunked response's final EOF. Preserve the
+	// caller's cancellation even when the transport returns EOF without error.
+	if canceled := ctx.Err(); canceled != nil {
+		return canceled
+	}
 	if err != nil {
 		return downloadError(ctx, "artifact transfer failed")
 	}

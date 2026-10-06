@@ -284,3 +284,20 @@ func TestDownloadMissingDirectoryAndCanceledContext(t *testing.T) {
 	}
 	assertDownloadDirectoryEmpty(t, dir)
 }
+
+type cancelAtEOFReader struct{ cancel context.CancelFunc }
+
+func (r cancelAtEOFReader) Read(p []byte) (int, error) {
+	r.cancel()
+	return copy(p, "part"), io.EOF
+}
+
+func TestDownloadCancellationAtTransportEOF(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	err := copyVerifiedDownload(ctx, cancelAtEOFReader{cancel}, io.Discard,
+		downloadTestArtifact("https://example.invalid", "partial payload"))
+	if !errors.Is(err, context.Canceled) {
+		t.Fatalf("EOF racing cancellation: got %v want context canceled", err)
+	}
+}
