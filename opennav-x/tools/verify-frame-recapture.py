@@ -13,7 +13,7 @@ frame=method(added,'void MyFrame::OnRecaptureTimer(')
 assert frame.index('Raise();')<frame.index('opennav::AfterFrameRecapture();')
 assert '#if defined(OPENNAV_X) && defined(__WXGTK__)' in frame
 if a.negative_no_hook:frame=frame.replace('  opennav::AfterFrameRecapture();','  /* negative control: omit hook */')
-inputs={'frame-recapture.inc':frame,'integration-recapture.inc':method((ROOT/'src/integration/OpenCPNIntegration.cpp').read_text(),'void AfterFrameRecapture()'),'shell-restack.inc':method((ROOT/'src/ui/Shell.cpp').read_text(),'void Shell::RestackChartControls()')}
+inputs={'frame-recapture.inc':frame,'integration-recapture.inc':method((ROOT/'src/integration/OpenCPNIntegration.cpp').read_text(),'void AfterFrameRecapture()'),'shell-transient.inc':method((ROOT/'src/ui/Shell.cpp').read_text(),'bool Shell::HasTransientSurface() const'),'shell-restack.inc':method((ROOT/'src/ui/Shell.cpp').read_text(),'void Shell::RestackChartControls()')}
 for name,text in inputs.items():(out/name).write_text(text+'\n')
 config=[str(a.wx_config),'--prefix='+str(a.wx_prefix)];flags=shlex.split(subprocess.check_output(config+['--cxxflags'],text=True));libs=shlex.split(subprocess.check_output(config+['--libs','core,base'],text=True));gtk=shlex.split(subprocess.check_output(['pkg-config','--cflags','--libs','gtk+-3.0','x11'],text=True))
 commands=[]

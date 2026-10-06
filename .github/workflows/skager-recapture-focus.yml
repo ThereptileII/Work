@@ -1,0 +1,34 @@
+name: SKAGER modeless setup focus regression
+on:
+  push:
+    branches: [skager-recapture-focus]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: skager-recapture-focus-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  native:
+    runs-on: windows-2022
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Prepare disposable CI desktop
+        shell: pwsh
+        run: |
+          python opennav-x/tools/prepare-stock-review-desktop.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Check extraction and reproduce native button focus regression
+        shell: pwsh
+        run: |
+          python opennav-x/tools/test-frame-recapture-extraction.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python opennav-x/tools/test-frame-recapture-windows.py --evidence opennav-x/evidence/local/frame-recapture-windows
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: frame-recapture-native-${{ github.sha }}
+          path: opennav-x/evidence/local/frame-recapture-windows
+          if-no-files-found: error

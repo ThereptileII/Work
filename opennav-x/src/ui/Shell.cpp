@@ -627,6 +627,7 @@ std::vector<ProductGeometry> Shell::InteractionControls() const {
 }
 
 bool Shell::HasTransientSurface() const {
+  if (boat_setup_ && boat_setup_->IsShownOnScreen()) return true;
   if (DrawerRegion() || (context_ && context_->IsShownOnScreen()) ||
       (route_context_ && route_context_->IsShownOnScreen())) return true;
   for (auto *window : wxTopLevelWindows) {
