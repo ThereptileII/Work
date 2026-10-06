@@ -4,7 +4,7 @@ import ctypes
 from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
-from smoke_startup import defer_boat_setup, native_setup_window
+from smoke_startup import defer_boat_setup, native_setup_window, native_setup_observation
 
 
 def snapshot(labels, tick=10):
@@ -100,6 +100,66 @@ class StartupTests(unittest.TestCase):
         with self.assertRaises(AssertionError):native_setup_window(ui,7)
         rows[:]=[(20,7,'Another Later dialog')]
         self.assertIsNone(native_setup_window(ui,7))
+
+    def test_opt_in_observer_records_success_without_another_click(self):
+        before=snapshot(SETUP);after=snapshot([],11)
+        records=iter([before,after]);observed=[];clicks=[]
+        result=defer_boat_setup(lambda:next(records),clicks.append,
+            observe=lambda phase,sample,target:observed.append((phase,sample,target)))
+        self.assertEqual(result['status'],'deferred-with-Later')
+        self.assertEqual([phase for phase,_,_ in observed],['before-click','after-click'])
+        self.assertIs(observed[0][1],before);self.assertIs(observed[1][1],after)
+        self.assertEqual(clicks,[observed[0][2]])
+
+    def test_opt_in_observer_retains_timeout_without_retry_or_false_success(self):
+        before=snapshot(SETUP);after=snapshot(SETUP,11)
+        records=iter([before,after]);observed=[];clicks=[]
+        with patch('smoke_startup.time.monotonic',side_effect=[0,0,2]),patch('smoke_startup.time.sleep'):
+            with self.assertRaisesRegex(AssertionError,'did not close'):
+                defer_boat_setup(lambda:next(records),clicks.append,timeout=1,
+                    observe=lambda phase,sample,target:observed.append((phase,sample,target)))
+        self.assertEqual([phase for phase,_,_ in observed],['before-click','after-click','timeout'])
+        self.assertIs(observed[-1][1],after);self.assertEqual(len(clicks),1)
+
+    def test_native_observer_only_reads_focus_capture_hit_and_owned_windows(self):
+        class Rect(ctypes.Structure):
+            _fields_=[(name,ctypes.c_long) for name in ('left','top','right','bottom')]
+        class Point(ctypes.Structure):
+            _fields_=[('x',ctypes.c_long),('y',ctypes.c_long)]
+        declared=[]
+        def declare(dll,name,*signature):
+            declared.append(name)
+            if name=='GetForegroundWindow':return lambda:20
+            if name=='GetGUIThreadInfo':
+                def info(thread,pointer):
+                    value=pointer._obj;value.focus=21;value.capture=21;value.flags=0
+                    return True
+                return info
+            if name=='GetCursorPos':
+                def cursor(pointer):pointer._obj.x=80;pointer._obj.y=44;return True
+                return cursor
+            raise AssertionError('Observer requested unexpected API '+name)
+        def class_name(handle,buffer,length):buffer.value='#32770' if handle==20 else 'wxWindowNR';return 8
+        def owner(handle,pointer):pointer._obj.value=7;return 11
+        def bounds(handle,pointer):
+            rect=pointer._obj;rect.left=10;rect.top=20;rect.right=150;rect.bottom=68
+            return True
+        ui=SimpleNamespace(C=ctypes,W=SimpleNamespace(RECT=Rect,POINT=Point,DWORD=ctypes.c_ulong,
+                                                     HWND=ctypes.c_void_p,BOOL=ctypes.c_int),
+            user=object(),declare=declare,GetClassNameW=class_name,GetWindowThreadProcessId=owner,
+            GetWindowRect=bounds,text=lambda h:'Boat Setup & Sensor Check' if h==20 else 'Later',
+            IsWindowVisible=lambda h:True,IsWindowEnabled=lambda h:True,
+            WindowFromPoint=lambda p:21,windows=lambda pid:[(20,pid,'Boat Setup & Sensor Check')],
+            children=lambda h:[(21,'Later')])
+        result=native_setup_observation(ui,7,dict(x=10,y=20,width=140,height=48))
+        self.assertEqual(declared,['GetForegroundWindow','GetGUIThreadInfo','GetCursorPos'])
+        self.assertEqual(result['foreground']['handle'],20)
+        self.assertEqual(result['foreground_thread']['focus']['handle'],21)
+        self.assertEqual(result['foreground_thread']['capture']['handle'],21)
+        self.assertEqual(result['target_hit']['pid'],7)
+        self.assertEqual(result['target_midpoint'],[80,44])
+        self.assertEqual(result['cursor'],[80,44])
+        self.assertEqual([c['title'] for c in result['later_controls']],['Later'])
 
     def test_unclosed_sheet_does_not_bypass_layout_gate(self):
         clicks=[]

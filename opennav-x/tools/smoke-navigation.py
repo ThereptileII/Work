@@ -14,7 +14,7 @@ import tempfile
 import threading
 import time
 from diagnostic_snapshot import read_json_snapshot
-from smoke_startup import defer_boat_setup, native_setup_window
+from smoke_startup import defer_boat_setup, native_setup_window, native_setup_observation
 
 
 def exact_native_reference_desktop(display):
@@ -27,9 +27,13 @@ parser = argparse.ArgumentParser(description=__doc__)
 mode = parser.add_mutually_exclusive_group()
 for flag in ('route-fixture', 'route-fixture-standard', 'instruments', 'objects', 'n2k', 'boat'):
     mode.add_argument('--'+flag, action='store_true')
+parser.add_argument('--trace-setup-pointer', action='store_true',
+                    help='Read-only native startup evidence for the isolated instruments fixture')
 parser.add_argument('--theme', choices=('Day', 'Dusk', 'Night'), default='Day')
 parser.add_argument('--renderer', choices=('software', 'opengl'), default='software')
 args = parser.parse_args()
+if args.trace_setup_pointer and (not args.instruments or sys.platform != 'win32'):
+    parser.error('--trace-setup-pointer requires native Windows --instruments')
 route_standard = args.route_fixture_standard
 route_fixture = args.route_fixture or route_standard
 instruments, objects, boat = args.instruments, args.objects, args.boat
@@ -205,6 +209,10 @@ def transmit():
 thread = threading.Thread(target=transmit, daemon=True)
 thread.start()
 env = dict(os.environ)
+if args.trace_setup_pointer:
+    assert (profile/'OPENNAV_TEST_PROFILE').is_file(), 'Pointer trace requires the real disposable profile marker'
+    env['OPENNAV_TEST_UI_TRACE']='pointer'
+    env['OPENNAV_TEST_UI_TRACE_FILE']=str((profile/'opennav-ui-trace.log').resolve())
 xserver = app = None
 report = {'authority': 'native Windows' if windows else 'Linux development',
           'fixture': 'Synthetic NMEA over loopback; no external devices or production profile',
@@ -337,9 +345,20 @@ try:
             subprocess.run(['xdotool','windowraise',dialogs[0],'mousemove',
                 str(target['x']+target['width']//2),str(target['y']+target['height']//2),
                 'click','1'],env=env,check=True)
+    def observe_setup(phase, sample, target):
+        observation={'phase':phase,'monotonic_ns':time.monotonic_ns(),
+                     'target':target,'diagnostic':sample}
+        try:
+            observation['native']=native_setup_observation(ui,app.pid,target)
+        except Exception as error:
+            observation['native_observation_error']=repr(error)
+        path=evidence/f'{prefix}-setup-{phase}.json'
+        path.write_text(json.dumps(observation,indent=2)+'\n')
+        report.setdefault('setup_pointer_evidence',[]).append(path.name)
     report['first_start_setup']=defer_boat_setup(
         lambda:read_json_snapshot(profile/'opennav-diagnostics.json'),defer_setup_click,
-        native_window=(lambda:native_setup_window(ui,app.pid)) if windows else None)
+        native_window=(lambda:native_setup_window(ui,app.pid)) if windows else None,
+        observe=observe_setup if args.trace_setup_pointer else None)
 
     def capture(name):
         path = evidence / f'{prefix}-{name}.png'
@@ -1127,6 +1146,15 @@ try:
                           'Route and restored waypoint persisted in existing OpenCPN navobj.db']
     report['result'] = 'loopback transport and lifecycle passed; numeric and stale screenshot review required'
 finally:
+    # Preserve the failed surface before fixture cleanup closes its process.
+    if args.trace_setup_pointer and sys.exc_info()[0] and app and app.poll() is None:
+        try:
+            failure=evidence/f'{prefix}-setup-failure.png'
+            frame=next(h for h,pid,title in ui.windows(app.pid) if title=='SKAGER / OpenCPN')
+            ui.capture(frame,failure,resize=False,screen_pixels=True)
+            report['screenshots'].append(failure.name)
+        except Exception as error:
+            report['setup_failure_capture_error']=repr(error)
     stop.set()
     thread.join(timeout=3)
     server.close()
