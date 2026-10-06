@@ -7,7 +7,7 @@ $Source = Join-Path $PSScriptRoot '../installer/windows/Lifecycle.ps1'
 $ParseErrors = $null
 $Ast = [System.Management.Automation.Language.Parser]::ParseFile($Source, [ref]$null, [ref]$ParseErrors)
 if ($ParseErrors) { throw ($ParseErrors | Out-String) }
-foreach ($Name in @('Log','Hash','PlainPath','RelativePath','ReadJson','Assert-StatusOnlyOutput','Resolve-OutputPolicy','AtomicJson','PeArchitecture','FileRecords','VerifyFiles','SelfTest','ExtractPayload','PreserveAdditions','AssertInstalledContent','PeU16','PeU32','PeRvaOffset','PeImportName','GetPeImports','GetCandidateSystemX86','AssertCandidateTlsRuntime','Failure')) {
+foreach ($Name in @('Log','Hash','PlainPath','RelativePath','ReadJson','Assert-StatusOnlyOutput','Assert-ProductOutputPolicy','Resolve-OutputPolicy','AtomicJson','PeArchitecture','FileRecords','VerifyFiles','SelfTest','ExtractPayload','PreserveAdditions','AssertInstalledContent','PeU16','PeU32','PeRvaOffset','PeImportName','GetPeImports','GetCandidateSystemX86','AssertCandidateTlsRuntime','Failure')) {
   $Definitions = @($Ast.FindAll({ param($Node) $Node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and $Node.Name -eq $Name }, $true))
   if ($Definitions.Count -ne 1) { throw "Expected one actual engine function: $Name" }
   . ([scriptblock]::Create($Definitions[0].Extent.Text))

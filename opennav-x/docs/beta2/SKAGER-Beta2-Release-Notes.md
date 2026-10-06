@@ -1,6 +1,6 @@
 # SKAGER Beta 2 — release notes
 
-**Version 0.4.0-beta2.1 · Staging candidate · release acceptance pending**
+**Version 0.4.0-beta2.2 · Staging candidate · release acceptance pending**
 
 ## This Staging increment
 

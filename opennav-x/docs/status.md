@@ -4,7 +4,7 @@
 
 The user selected these five issues for parallel implementation and explicitly
 authorized actual manual autopilot commands. The combined candidate is
-`0.4.0-beta2.1`; its native build and boat acceptance are pending. No new boat
+`0.4.0-beta2.2`; its native build and boat acceptance are pending. No new boat
 installation or physical command has yet occurred. The existing `c0d8d85` boat
 application remains the last installed candidate.
 
@@ -47,6 +47,16 @@ required build/package gates. No design campaign, endurance run, Production
 promotion or website work is included. The later physical permission supersedes
 older requests for consent below; measured identity/feedback and qualified
 transport gates still apply before any command.
+
+The `.1` source correction at `584e0c824eeca3d37be8a6c1c20fbf34c97210b0`
+passed native setup/backup/startup interactions, all three native serial
+harnesses and native boat maintenance/restoration. Its Windows contract preflight
+then exposed a test harness import omission: the extracted installer self-test
+called the new output-policy function without importing it. The harness now
+imports that actual function; the failed assertion was not removed. Windows
+application compilation had not started. Candidate `.2` includes that correction
+and requires fresh integrated qualification. Neither `.1` attempt is an accepted
+boat package.
 
 ## Previous increment — SCRUM-312 navigation warning and secure startup
 
