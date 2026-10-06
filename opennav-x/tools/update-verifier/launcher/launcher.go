@@ -188,7 +188,8 @@ func run(ctx context.Context, args []string, s services) error {
 	if len(args) == 1 {
 		mode = args[0]
 	}
-	if mode != "--xnav" && mode != "--legacy" && mode != "--safe-mode" && mode != "--initialize-trust" {
+	privateBootstrap := strings.HasPrefix(mode, "--boat-bootstrap=")
+	if !privateBootstrap && mode != "--xnav" && mode != "--legacy" && mode != "--safe-mode" && mode != "--initialize-trust" {
 		return errors.New("unsupported startup mode")
 	}
 	exe, err := s.platform.executable()
@@ -202,6 +203,9 @@ func run(ctx context.Context, args []string, s services) error {
 	state, err := readState(s.platform, l)
 	if err != nil {
 		return err
+	}
+	if privateBootstrap {
+		return bootstrap(ctx, s.platform, l, state, strings.TrimPrefix(mode, "--boat-bootstrap="))
 	}
 	if mode != "--initialize-trust" {
 		pending, err := pendingExists(s.platform, l)

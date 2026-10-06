@@ -1,0 +1,24 @@
+{
+  "scope": "Manual commissioning helper only; no application or physical command acceptance",
+  "commit": "a134215cd4d372eed237850b40524f1686f67ec4",
+  "localSource": "8c6b62a",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/37421498782",
+  "engines": "Windows PowerShell 5.1.20348.5622, native 32-bit and 64-bit",
+  "result": "passed",
+  "perEngine": {
+    "manualTransaction": 63,
+    "uiChecksIncludingNativeInertClick": 335,
+    "completedChildPreservation": 37,
+    "existingSessionPreservation": "passed",
+    "deploymentVersion": "passed",
+    "readOnlyLaunchRefusal": "passed"
+  },
+  "artifacts": [
+    {"id": 11393580288, "bits": 64, "sha256": "4dbb65011188fe3240699745f292816afa612c1fa74f126edad7dc1e57915673"},
+    {"id": 11392928607, "bits": 32, "sha256": "273c8ed5a9e231bd24f79f2abf7334ef189a055983adf31bec2fb2a96ffe630a"}
+  ],
+  "downloadedZipIntegrityAndAuthenticatedHashesVerified": true,
+  "all7203LocalGitBlobAndModeIdentitiesMatchedRemoteTree": true,
+  "knownFinding": "Normal passive chart overlays initially caused refusal. The helper now reuses the existing exact ownership/signature/bounds validation without making those overlays action targets.",
+  "remaining": ["actual wxWidgets product interaction", "exact qualified installed candidate", "observed physical pilot identity and responses"]
+}

@@ -34,7 +34,7 @@ function Assert-StartupParentChain($App,$Launcher,$Bridge,[bool]$HadReceipt) {
   if ($App.parentPid -ne $parent.pid -or $App.startedTicks -lt $parent.startedTicks -or
       ($parent.exitTicks -and $App.startedTicks -gt $parent.exitTicks)) { throw 'Actual application is not the exact retained launcher/supervisor child.' }
 }
-function Assert-StartupCommandArguments([string[]]$Arguments,[string]$Image,[string]$Root,[string]$Supervisor,[bool]$Bridge,[string[]]$CommandImages=@()) {
+function Assert-StartupCommandArguments([string[]]$Arguments,[string]$Image,[string]$Root,[string]$Supervisor,[bool]$Bridge,[string[]]$CommandImages=@(),[string]$BootstrapExpectation='') {
   $permitted=@($Image)
   if($Bridge -and $CommandImages.Count){$permitted=@($CommandImages)}
   if ($Arguments.Count -lt 1 -or $permitted -inotcontains $Arguments[0].Replace('/','\')) { throw 'Observed startup command image changed.' }
@@ -42,10 +42,11 @@ function Assert-StartupCommandArguments([string[]]$Arguments,[string]$Image,[str
     if ($Arguments.Count -ne 2 -or $Arguments[1] -cne '--xnav') { throw 'Unexpected actual application startup arguments.' }
     return
   }
-  if ($Arguments.Count -ne 11 -or $Arguments[1] -cne '-NoProfile' -or $Arguments[2] -cne '-NonInteractive' -or
+  if ($BootstrapExpectation -cnotmatch '^[a-f0-9]{32}:absent$' -or $Arguments.Count -ne 13 -or $Arguments[1] -cne '-NoProfile' -or $Arguments[2] -cne '-NonInteractive' -or
       $Arguments[3] -cne '-ExecutionPolicy' -or $Arguments[4] -cne 'Bypass' -or $Arguments[5] -cne '-File' -or
       $Arguments[6].Replace('/','\') -ine $Supervisor -or $Arguments[7] -cne '-InstallationRoot' -or
-      $Arguments[8].Replace('/','\') -ine $Root -or $Arguments[9] -cne '-Action' -or $Arguments[10] -cne 'QualifyCurrent') { throw 'Unexpected startup supervisor command.' }
+      $Arguments[8].Replace('/','\') -ine $Root -or $Arguments[9] -cne '-Action' -or $Arguments[10] -cne 'QualifyCurrent' -or
+      $Arguments[11] -cne '-BootstrapExpectation' -or $Arguments[12] -cne $BootstrapExpectation) { throw 'Unexpected startup supervisor command.' }
 }
 function Initialize-StartupArguments {
   if ('OpenNavX.StartupArguments' -as [type]) { return }
@@ -117,14 +118,21 @@ function Invoke-StartupLauncher($Job) {
     # Import only the hash-verified installed receipt verifier, not installer entrypoints.
     . ($context.files['UpdateTransaction.ps1'].path)
     $hadReceipt=Test-Path -LiteralPath $receipt
-    if ($hadReceipt) { Assert-UpdateKnownGoodReceipt $receipt $context.identity }
+    $receiptExpectation='absent'
+    if ($hadReceipt) {
+      # Retain the exact verified receipt through direct child creation.
+      $held.Add([IO.File]::Open($receipt,[IO.FileMode]::Open,[IO.FileAccess]::Read,[IO.FileShare]::Read))
+      Assert-UpdateKnownGoodReceipt $receipt $context.identity
+      $receiptExpectation=Get-Digest $receipt
+    }
+    $bootstrapExpectation=$context.identity.generation+':'+$receiptExpectation
     Initialize-StartupArguments
     $log=Assert-LocalPath (Join-Path $config.profileDirectory 'opencpn.log')
     $before=Read-StartupLogBytes $log
     if (@(Get-Process -Name opencpn -ErrorAction SilentlyContinue).Count) { throw 'An OpenCPN instance is already running. Close it normally first.' }
     if ((Get-Digest $target) -cne $targetHash) { throw 'Audited target changed before launcher creation.' }
     $start=New-Object Diagnostics.ProcessStartInfo
-    $start.FileName=$context.files['app/skager-start.exe'].path;$start.Arguments='--xnav';$start.UseShellExecute=$false
+    $start.FileName=$context.files['app/skager-start.exe'].path;$start.Arguments='--boat-bootstrap='+$bootstrapExpectation;$start.UseShellExecute=$false
     $start.WorkingDirectory=$environment.workingDirectory;$start.EnvironmentVariables['PATH']=$environment.path
     $started=[Diagnostics.Process]::Start($start);$null=$started.get_Handle()
     $launcher=[pscustomobject]@{process=$started;pid=$started.Id;startedTicks=$started.StartTime.ToUniversalTime().Ticks;exitTicks=0L;sid=$sid;session=$session;image=$start.FileName;sha256=$context.files['app/skager-start.exe'].sha256}
@@ -139,7 +147,7 @@ function Invoke-StartupLauncher($Job) {
           $bridge=Get-StartupObservedProcess $parents[0] $sid $session
           if (-not $engines.ContainsKey($bridge.image)) { throw 'Bootstrap did not launch verified system PowerShell.' }
           Assert-StartupObservedIdentity $bridge $bridge.image $engines[$bridge.image] $sid $session $launcher.startedTicks
-          Assert-StartupCommandArguments $bridge.arguments $bridge.image $installed.root $context.files['UpdateSupervisor.ps1'].path $true @($engines.Keys)
+          Assert-StartupCommandArguments $bridge.arguments $bridge.image $installed.root $context.files['UpdateSupervisor.ps1'].path $true @($engines.Keys) $bootstrapExpectation
         }
       }
       $children=@(Get-CimInstance Win32_Process -Filter "Name='opencpn.exe'" -OperationTimeoutSec 3)

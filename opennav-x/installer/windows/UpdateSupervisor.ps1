@@ -5,6 +5,7 @@
 param(
   [Alias('Action')][ValidateSet('LaunchPending','RecoverPending','QualifyCurrent')][string]$SupervisorAction='RecoverPending',
   [Alias('Transaction')][ValidatePattern('^(|[a-f0-9]{32})$')][string]$SupervisorTransaction='',
+  [string]$BootstrapExpectation='',
   [Alias('InstallationRoot')][string]$SupervisorInstallationRoot=(Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) 'OpenNavXAlpha1')
 )
 Set-StrictMode -Version Latest
@@ -141,6 +142,21 @@ function Complete-SupervisedRollback([string]$InstallationRoot,[string]$Transact
 function Assert-NoUpdateApplication {
   if (@(Get-Process -Name opencpn -ErrorAction SilentlyContinue).Count) { throw 'Close OpenCPN, SKAGER, Legacy and Safe Mode before supervised startup.' }
 }
+# The private wrapper selects this ancestry before dispatch. Never change it
+# because a receipt appeared while the launcher handed off the transaction lock.
+# This is a restrictive condition, not commissioning or signature authority.
+function Assert-UpdateBootstrapExpectation([string]$InstallationRoot,[string]$Expected,[IO.FileStream]$Lock) {
+  if ($Expected -cnotmatch '^([a-f0-9]{32}):absent$') { throw 'Invalid private bootstrap expectation.' }
+  $generation=$Expected.Substring(0,32)
+  Assert-UpdateTransactionLock $InstallationRoot $Lock
+  $state=Get-SupervisedInstallState $InstallationRoot
+  if ($state.current -cne $generation) { throw 'Private bootstrap generation changed.' }
+  foreach ($path in @((Join-Path $InstallationRoot 'update-pending.json'),
+      (Join-Path $InstallationRoot ('known-good/'+$generation+'.receipt')),
+      (Join-Path $InstallationRoot ('generations/'+$generation+'/app/update-trust.json')))) {
+    if (Test-Path -LiteralPath (Assert-UpdateRecordPath $path)) { throw 'Private bootstrap receipt, trust or pending state changed.' }
+  }
+}
 function Start-SupervisedGeneration($Generation,$Session) {
   Assert-NoUpdateApplication
   if ((Get-UpdateFileHash $Generation.executable) -cne $Generation.identity.executableSha256) { throw 'Executable changed before launch.' }
@@ -194,7 +210,9 @@ function Invoke-UpdateGuardedRollback([string]$InstallationRoot,$Pending) {
   $state=Get-SupervisedInstallState $InstallationRoot
   if ($state.current -cne $Pending.previous.generation -or (Test-Path -LiteralPath (Join-Path $InstallationRoot 'update-pending.json'))) { throw 'Guarded rollback did not restore and finalize the recorded generation.' }
 }
-function Invoke-UpdateSupervision([string]$InstallationRoot,[string]$Action,[string]$Transaction='') {
+function Invoke-UpdateSupervision([string]$InstallationRoot,[string]$Action,[string]$Transaction='',[string]$BootstrapExpectation='') {
+  $privateBootstrap=$PSBoundParameters.ContainsKey('BootstrapExpectation')
+  if ($privateBootstrap -and ($Action -cne 'QualifyCurrent' -or $BootstrapExpectation -cnotmatch '^[a-f0-9]{32}:absent$')) { throw 'Private bootstrap requires an exact qualification expectation.' }
   if ([Environment]::OSVersion.Platform -ne [PlatformID]::Win32NT) { throw 'Supervised application startup requires native Windows.' }
   $state=Get-SupervisedInstallState $InstallationRoot
   $lockPath=Assert-UpdateRecordPath (Join-Path $InstallationRoot 'transaction.lock')
@@ -207,6 +225,7 @@ function Invoke-UpdateSupervision([string]$InstallationRoot,[string]$Action,[str
       if (Test-Path -LiteralPath (Join-Path $InstallationRoot 'update-pending.json')) { throw 'Recover the pending update before qualifying current startup.' }
       $generation=Get-SupervisedGeneration $InstallationRoot $state.current
       $session=New-UpdateHealthSession $generation.identity
+      if ($privateBootstrap) { Assert-UpdateBootstrapExpectation $InstallationRoot $BootstrapExpectation $lock }
       $process=Start-SupervisedGeneration $generation $session
       if (-not (Wait-UpdateGenerationStartupSuccess $generation.identity $session $process $generation.executable)) {
         throw ('Current generation did not provide authenticated healthy startup; no known-good receipt was created. Receiver: '+$session.server.FailureReason)
@@ -259,6 +278,10 @@ function Invoke-UpdateSupervision([string]$InstallationRoot,[string]$Action,[str
   if ($rollback) { Invoke-UpdateGuardedRollback $InstallationRoot $rollback; return 'previous-restored' }
 }
 if ($MyInvocation.InvocationName -ne '.') {
-  try { Write-Output (Invoke-UpdateSupervision $SupervisorInstallationRoot $SupervisorAction $SupervisorTransaction); exit 0 }
+  try {
+    $privateArguments=@{}
+    if ($PSBoundParameters.ContainsKey('BootstrapExpectation')) { $privateArguments.BootstrapExpectation=$BootstrapExpectation }
+    Write-Output (Invoke-UpdateSupervision $SupervisorInstallationRoot $SupervisorAction $SupervisorTransaction @privateArguments); exit 0
+  }
   catch { Write-Error -ErrorRecord $_; exit 1 }
 }

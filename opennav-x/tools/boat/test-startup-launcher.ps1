@@ -71,12 +71,14 @@ try {
  Assert-StartupCommandArguments @('C:\owned\opencpn.exe','--xnav') 'C:\owned\opencpn.exe' '' '' $false
  Reject {Assert-StartupCommandArguments @('C:\owned\opencpn.exe','--xnav','--portable') 'C:\owned\opencpn.exe' '' '' $false} 'Profile/mode additions refuse'
  $system='C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe';$wow='C:\Windows\SysWOW64\WindowsPowerShell\v1.0\powershell.exe'
- $arguments=@($system,'-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File','C:/owned/UpdateSupervisor.ps1','-InstallationRoot','C:/owned','-Action','QualifyCurrent')
- Assert-StartupCommandArguments $arguments $wow 'C:\owned' 'C:\owned\UpdateSupervisor.ps1' $true @($system,$wow)
+ $arguments=@($system,'-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File','C:/owned/UpdateSupervisor.ps1','-InstallationRoot','C:/owned','-Action','QualifyCurrent','-BootstrapExpectation',($id+':absent'))
+ Assert-StartupCommandArguments $arguments $wow 'C:\owned' 'C:\owned\UpdateSupervisor.ps1' $true @($system,$wow) ($id+':absent')
  Check $true 'WOW64 command spelling accepts only independently verified system engine paths'
- $changed=@($arguments);$changed[10]='LaunchPending';Reject {Assert-StartupCommandArguments $changed $wow 'C:\owned' 'C:\owned\UpdateSupervisor.ps1' $true @($system,$wow)} 'Update/recovery action refuses in bootstrap-only helper'
- $changed=@($arguments);$changed[6]='C:\unowned.ps1';Reject {Assert-StartupCommandArguments $changed $wow 'C:\owned' 'C:\owned\UpdateSupervisor.ps1' $true @($system,$wow)} 'Unowned supervisor command refuses'
- $changed=@($arguments);$changed[0]='C:\other\powershell.exe';Reject {Assert-StartupCommandArguments $changed $wow 'C:\owned' 'C:\owned\UpdateSupervisor.ps1' $true @($system,$wow)} 'Arbitrary interpreter path refuses'
+ $changed=@($arguments);$changed[10]='LaunchPending';Reject {Assert-StartupCommandArguments $changed $wow 'C:\owned' 'C:\owned\UpdateSupervisor.ps1' $true @($system,$wow) ($id+':absent')} 'Update/recovery action refuses in bootstrap-only helper'
+ $changed=@($arguments);$changed[6]='C:\unowned.ps1';Reject {Assert-StartupCommandArguments $changed $wow 'C:\owned' 'C:\owned\UpdateSupervisor.ps1' $true @($system,$wow) ($id+':absent')} 'Unowned supervisor command refuses'
+ $changed=@($arguments);$changed[0]='C:\other\powershell.exe';Reject {Assert-StartupCommandArguments $changed $wow 'C:\owned' 'C:\owned\UpdateSupervisor.ps1' $true @($system,$wow) ($id+':absent')} 'Arbitrary interpreter path refuses'
+ $changed=@($arguments);$changed[12]=('b'*32)+':absent';Reject {Assert-StartupCommandArguments $changed $wow 'C:\owned' 'C:\owned\UpdateSupervisor.ps1' $true @($system,$wow) ($id+':absent')} 'Another bootstrap generation refuses'
+ $changed=@($arguments);$changed[12]='';Reject {Assert-StartupCommandArguments $changed $wow 'C:\owned' 'C:\owned\UpdateSupervisor.ps1' $true @($system,$wow) ($id+':absent')} 'Missing private route expectation refuses'
  Initialize-StartupArguments
  Check $true 'Exact Windows argument-parser interop compiles'
  if($native){
