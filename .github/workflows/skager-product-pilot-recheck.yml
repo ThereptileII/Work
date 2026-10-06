@@ -45,24 +45,29 @@ jobs:
         run: |
           set -euo pipefail
           git -C candidate diff --exit-code
-          bash candidate/opennav-x/tools/build-production-linux.sh --build-only
+          # Let unchanged product CMake derive identity from its own Git checkout.
+          # The outer workflow keeps its actual helper SHA and run metadata.
+          env -u GITHUB_SHA bash candidate/opennav-x/tools/build-production-linux.sh --build-only
       - name: Retain compiled Linux bytes before the corrected smoke
         run: |
           set -euo pipefail
           mkdir -p retained-linux
           python3 - <<'PY'
-          import hashlib, json, os, pathlib, subprocess
+          import hashlib, json, os, pathlib, re, subprocess
           root = pathlib.Path('candidate/opennav-x')
           assert subprocess.check_output(['git','-C','candidate','rev-parse','HEAD'],text=True).strip() == os.environ['PRODUCT_COMMIT']
           subprocess.run(['git','-C','candidate','diff','--exit-code'],check=True)
+          header = root/'build/production-linux/include/OpenNavBuild.h'
+          embedded = re.findall(r'^#define OPENNAV_BUILD_COMMIT "([0-9a-f]{40})"$', header.read_text(), re.MULTILINE)
+          assert embedded == [os.environ['PRODUCT_COMMIT']], 'Compiled product identity differs from its source checkout'
           paths = sorted(p for p in (root/'build/production-install').rglob('*') if p.is_file())
           assert paths and (root/'build/production-install/bin/opencpn') in paths
-          record = dict(schema=1, productCommit=os.environ['PRODUCT_COMMIT'], harnessCommit=os.environ['GITHUB_SHA'],
+          record = dict(schema=1, productCommit=os.environ['PRODUCT_COMMIT'], embeddedBuildCommit=embedded[0], harnessCommit=os.environ['GITHUB_SHA'],
                         runId=os.environ['GITHUB_RUN_ID'], runAttempt=os.environ['GITHUB_RUN_ATTEMPT'],
                         status='compiled-unqualified', files={p.relative_to(root).as_posix():hashlib.file_digest(p.open('rb'),'sha256').hexdigest() for p in paths})
           pathlib.Path('retained-linux/identity.json').write_text(json.dumps(record,indent=2)+'\n')
           PY
-          tar -C candidate/opennav-x -czf retained-linux/COMPILED_LINUX.tar.gz build/production-install build/production-linux/include/config.h
+          tar -C candidate/opennav-x -czf retained-linux/COMPILED_LINUX.tar.gz build/production-install build/production-linux/include/config.h build/production-linux/include/OpenNavBuild.h
           sha256sum retained-linux/COMPILED_LINUX.tar.gz > retained-linux/SHA256SUMS.txt
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
@@ -86,11 +91,14 @@ jobs:
               assert hashlib.file_digest((root/name).open('rb'),'sha256').hexdigest() == expected, name
           report=root/'evidence/local/pilot-status-only/pilot-results.json'
           result=json.loads(report.read_text()) if report.exists() else None
-          record.update(status='passed' if result and result.get('result') == 'passed; screenshot review required' and result.get('received_bytes') == 0 and not result.get('error') else 'failed',
+          diagnostic_path=root/'evidence/local/pilot-status-only/pilot-opennav-diagnostics.json'
+          diagnostic=json.loads(diagnostic_path.read_text()) if diagnostic_path.exists() else {}
+          observed_commit=diagnostic.get('build_commit')
+          record.update(status='passed' if observed_commit == record['embeddedBuildCommit'] == os.environ['PRODUCT_COMMIT'] and result and result.get('result') == 'passed; screenshot review required' and result.get('received_bytes') == 0 and not result.get('error') else 'failed',
                         smokeHelperSha256=hashlib.file_digest(pathlib.Path('opennav-x/tools/smoke-pilot.py').open('rb'),'sha256').hexdigest(),
-                        preservedCompiledFiles=True, priorRunId='37424595899', priorFailedJobId='112141333543')
+                        observedBuildCommit=observed_commit, preservedCompiledFiles=True, priorRunId='37424595899', priorFailedJobId='112141333543')
           (root/'evidence/local/pilot-recheck.json').write_text(json.dumps(record,indent=2)+'\n')
-          assert record['status'] == 'passed', 'Corrected pilot smoke did not pass'
+          assert record['status'] == 'passed', 'Corrected pilot smoke or actual product identity did not pass'
           PY
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
