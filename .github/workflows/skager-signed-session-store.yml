@@ -58,7 +58,7 @@ jobs:
           } catch { Write-Output ($_ | Out-String); exit 1 }
           '@ | Set-Content $runner -Encoding utf8
           $results=@()
-          foreach ($name in @('test-signed-update-session','test-signed-update-session-store')) {
+          foreach ($name in @('test-signed-update-session','test-signed-update-operations','test-signed-update-session-store')) {
             $test=Join-Path $env:GITHUB_WORKSPACE ('opennav-x/tools/boat/'+$name+'.ps1')
             & $engine -NoProfile -NonInteractive -ExecutionPolicy Bypass -File $runner -TestFile $test -ExpectedBits $env:TEST_BITS 2>&1 |
               Tee-Object -FilePath (Join-Path $evidence ($name+'.log'))

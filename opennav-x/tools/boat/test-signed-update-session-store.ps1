@@ -161,6 +161,80 @@ try {
   $p=$s.directory;Close-SignedUpdateStore $h
   Reject {New-SignedUpdateStore $p (Json $binding)} ('Storage '+$fault+' failure persists armed denial')
  }
+ # Opt-in operation stores use the same durable writer, owner and anti-replay
+ # custody, with a monotonic event sequence independent of receipt count.
+ function EventRequest($Store,[string]$Action,$Evidence) {
+  $o=$Store.operations
+  return [pscustomobject]@{session=$o.session.binding.session;sequence=@($o.events).Count+1;action=$Action;requestNonce=(Hash (500+@($o.events).Count));previousEventSha256=$o.headSha256;evidence=$Evidence}
+ }
+ function Event($Store,[string]$Handle,[string]$Action,$Evidence) {return Add-SignedUpdateStoreEvent $Handle (Json (EventRequest $Store $Action $Evidence))}
+ $preparation=[pscustomobject]@{identity=$new;stateSha256=$commissioned.stateSha256;ownershipSha256=$commissioned.ownershipSha256;preparedSha256=$commissioned.preparedSha256;transactionDirectory='C:\private\runs\candidate';contextSha256=(Hash 201);planSha256=(Hash 202);inventorySha256=(Hash 203);quarantineSha256=(Hash 204);baselineSha256=$restored.profileSha256;sourceReviewSha256=$binding.release.sourceReviewSha256}
+ $h=Fresh;$s=Get-SignedStoreLive $h
+ Reject {Event $s $h PreviousRestored $restored} 'Legacy custody cannot silently opt into operations'
+ Close-SignedUpdateStore $h
+ $p=PrivateDirectory;$h=New-SignedUpdateStore $p (Json $binding) -OperationEvents;$s=Get-SignedStoreLive $h
+ Reject {Add-SignedUpdateStoreReceipt $h (Json (Request $h PreviousRestored $restored 500))} 'Receipt-only API cannot bypass operation mode'
+ $null=Event $s $h PreviousRestored $restored
+ $r=EventRequest $s CandidatePreparationArmed $preparation
+ $duplicate=([Text.Encoding]::UTF8.GetString((Json $r))).Replace('"sequence":2','"sequence":2,"Sequence":2')
+ Reject {Add-SignedUpdateStoreEvent $h (Raw $duplicate)} 'Operation parser rejects case-folded duplicate head/sequence keys'
+ $null=Add-SignedUpdateStoreEvent $h (Json $r)
+ $denial=[pscustomobject]@{preparationEventSha256=$s.operations.events[1].eventSha256;denialSha256=(Hash 205)}
+ $r=EventRequest $s DeniedBeforeLaunch $denial;$e=Add-SignedUpdateStoreEvent $h (Json $r)
+ Reject {Add-SignedUpdateStoreEvent $h (Json $r)} 'Lost denied response cannot append twice'
+ $e.evidence.denialSha256=Hash 999
+ Check ($s.operations.events[-1].evidence.denialSha256 -ceq $denial.denialSha256) 'Returned operation cannot mutate live owner state'
+ Reject {Event $s $h CandidateCommissioned $commissioned} 'Denied live store cannot return to candidate approval'
+ $intent=[pscustomobject]@{identity=$new;stateSha256=$preparation.stateSha256;ownershipSha256=$preparation.ownershipSha256;preparedSha256=$preparation.preparedSha256;transactionDirectory=$preparation.transactionDirectory;preparationEventSha256=$s.operations.events[1].eventSha256;denialEventSha256=$s.operations.events[2].eventSha256;inspectionSha256=(Hash 206);currentProfileSha256=(Hash 207);targetProfileSha256=$preparation.baselineSha256;targetTreesSha256=(Hash 208);preservationSha256=$null}
+ $null=Event $s $h DeniedRestoreIntent $intent
+ $complete=[pscustomobject]@{identity=$new;stateSha256=$preparation.stateSha256;ownershipSha256=$preparation.ownershipSha256;preparedSha256=$preparation.preparedSha256;transactionDirectory=$preparation.transactionDirectory;restoreIntentEventSha256=$s.operations.events[-1].eventSha256;inspectionSha256=$intent.inspectionSha256;restoreCompletionSha256=(Hash 209);profileSha256=$intent.targetProfileSha256;treesSha256=$intent.targetTreesSha256;activeMarkerAbsent=$true}
+ $null=Event $s $h CandidateDeniedRestored $complete
+ Check ($s.session.receipts.Count -eq 1 -and $s.operations.events.Count -eq 5) 'Durable denied restoration does not forge commissioning/launch receipts'
+ $bytes=Read-SignedStoreHeldBytes $s;$lines=([Text.Encoding]::UTF8.GetString($bytes)).TrimEnd("`n").Split("`n")
+ Check ($lines.Count -eq 6) 'One durable frame per operation including non-receipt transitions'
+ $prefix=[byte[]]@();$previous=('0'*64)
+ for($i=0;$i -lt $lines.Count;$i++) {
+  $f=ConvertFrom-SignedStoreJson (Raw $lines[$i])
+  Check ($f.schema -eq 2 -and $f.sequence -eq $i -and $f.previousFrameSha256 -ceq $previous) 'Operation frame head/sequence coherent'
+  $replay=New-SignedUpdateOperationSession $binding 1000
+  foreach($e in $f.state.events){$request=[pscustomobject]@{session=$e.session;sequence=$e.sequence;action=$e.action;requestNonce=$e.requestNonce;previousEventSha256=$e.previousEventSha256;evidence=$e.evidence};$null=Add-SignedUpdateOperationEvent $replay $request $e.recordedUnix}
+  Check ((Get-SignedUpdateReceiptHash $replay) -ceq (Get-SignedUpdateReceiptHash $f.state)) 'Durable operation state independently replays for inspection only'
+  $prefix=[byte[]]($prefix+(Raw ($lines[$i]+"`n")));$previous=Get-SignedStoreDigest $prefix
+ }
+ Reject {Event $s $h CandidatePreparationArmed $preparation} 'Completed denied operation store stays terminal'
+ Close-SignedUpdateStore $h
+ Reject {Add-SignedUpdateStoreEvent $h (Json $r)} 'Closed operation owner cannot resume'
+ Reject {New-SignedUpdateStore $p (Json $binding) -OperationEvents} 'Completed operation disk marker cannot rearm'
+ # Exercise lost/failed spawn consumption across the actual append/flush boundary.
+ foreach($fault in @('lost-response','before','partial','after','replay','identity','expired')) {
+  $h=New-SignedUpdateStore (PrivateDirectory) (Json $binding) -OperationEvents;$s=Get-SignedStoreLive $h
+  $null=Event $s $h PreviousRestored $restored;$null=Event $s $h CandidatePreparationArmed $preparation
+  $null=Event $s $h CandidateCommissioned $commissioned
+  $before=Read-SignedStoreHeldBytes $s
+  $spawn=[pscustomobject]@{commissionReceiptSha256=$s.session.receipts[-1].receiptSha256;creationRequestSha256=(Hash 210);environmentSha256=$commissioned.environmentSha256}
+  $r=EventRequest $s CandidateSpawnConsumed $spawn
+  if($fault -cin @('before','partial','after')) {
+   $script:faultMode=$fault
+   function Write-SignedStoreFrame($Store,[byte[]]$Bytes){
+    if($script:faultMode -eq 'partial'){$Store.stream.Position=$Store.stream.Length;$Store.stream.Write($Bytes,0,17);$Store.stream.Flush($true)}
+    elseif($script:faultMode -eq 'after'){& $script:writeImpl $Store $Bytes}
+    throw 'Injected operation append failure'
+   }
+   Reject {Add-SignedUpdateStoreEvent $h (Json $r)} ('Consumed spawn storage fault '+$fault)
+   ${function:Write-SignedStoreFrame}=$writeImpl
+  } else {
+   $null=Add-SignedUpdateStoreEvent $h (Json $r) # Deliberately discard result.
+   if($fault -ceq 'replay'){$s.stream.SetLength(0);$s.stream.Write($before,0,$before.Length);$s.stream.Flush($true)}
+   elseif($fault -ceq 'identity'){function Get-SignedStoreOwner {return [pscustomobject]@{changed=$true}}}
+   elseif($fault -ceq 'expired'){$script:clock=4000}
+  }
+  Reject {Add-SignedUpdateStoreEvent $h (Json $r)} ('No spawn replay after '+$fault)
+  $script:clock=1000;${function:Get-SignedStoreOwner}=$ownerImpl
+  $denial=[pscustomobject]@{preparationEventSha256=$s.operations.events[1].eventSha256;denialSha256=(Hash 211)}
+  Reject {Event $s $h DeniedBeforeLaunch $denial} ('No false unlaunched recovery after '+$fault)
+  $p=$s.directory;Close-SignedUpdateStore $h
+  Reject {New-SignedUpdateStore $p (Json $binding) -OperationEvents} 'Uncertain operation custody cannot resume from disk'
+ }
  if($native){
   # Actual Windows security and file-identity behavior, not portable substitutes.
   $p=PrivateDirectory;$acl=Get-Acl -LiteralPath $p

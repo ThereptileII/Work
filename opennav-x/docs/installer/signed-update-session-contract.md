@@ -1,11 +1,32 @@
 # Signed boat update session contract (SCRUM-311)
 
-This is an implemented **pure receipt model**, not an enabled boat update path.
+This is an implemented **pure receipt model** with a separately qualified,
+non-resumable journal store, not an enabled boat update path.
 `tools/boat/SignedUpdateSession.ps1` records four ordered transitions and rejects
 missing identities, reused requests, skipped steps, expired sessions, mutated
 receipt chains and transferred commissioning evidence. It performs no file,
 network, process, profile, signature, commissioning or launch operation. Receipt
 hashes are content bindings, not signatures and not launch permission.
+
+`SignedUpdateSessionStore.ps1` adds exclusive same-process custody around that
+reducer. It creates one private, write-through armed journal with its owner and
+protected Windows ACL supplied atomically. Held file and ancestor handles reject
+replacement, reparse paths and multiple file links. Each flushed frame contains
+the complete state and head; the live owner retains the exact prior bytes/hash.
+Duplicate or case-folded JSON keys, invalid UTF-8, oversized input, reordered or
+replayed transitions, changed identity, expiry and storage faults refuse.
+
+This store deliberately cannot resume a disk journal after owner loss. A whole
+disk rollback cannot be detected from disk records alone. Close or failure leaves
+the armed record in place; there is no delete, disarm or reopen API. Returned
+receipts record consumed transitions and are not reusable launch tokens. Native
+Windows PowerShell 5.1 x86/x64 passed 90 inert store checks and the existing 49
+reducer checks at helper `43972f2be2cf5a809b7edaa5dc9d6ca759491678`,
+[run 37429822450](https://github.com/ThereptileII/Work/actions/runs/37429822450).
+This does not implement IPC peer authentication, actual artifact verification,
+installer/spawn hooks, selected-directory policy or interrupted-update recovery.
+Those integrations must reject missing/abandoned custody once armed, including
+ordinary startup; the current product does not yet call this store.
 
 ## Four transitions
 
@@ -21,6 +42,85 @@ Receipt 4 ends the fallback branch. The in-memory session permits no additional
 transition. Refused requests leave it unchanged. Copies returned to the caller
 cannot mutate the retained receipt. An installed version, prior healthy receipt,
 disabled plugin flag or package signature never replaces commissioning evidence.
+
+## Opt-in operation journal foundation
+
+`SignedUpdateOperations.ps1` now wraps the unchanged four-receipt reducer with
+one bounded event sequence and head. It models the denied-before-launch branch;
+it does **not** establish a broker, authenticate an artifact, prove that no
+process started, or perform restoration. Only a future trusted broker with
+continuous native custody may supply evidence after verifying the real operation.
+The existing receipt-only APIs remain available for their original inert model.
+They must not be used as a substitute for the operation boundary during future
+signed-flow integration.
+
+`New-SignedUpdateStore(directory, bindingJson, -OperationEvents)` opts into
+schema-2 frames. `Add-SignedUpdateStoreEvent(handle, requestJson)` then accepts a
+closed request containing `session`, integer `sequence`, `action`, unique
+`requestNonce`, `previousEventSha256`, and `evidence`. Every operation **and**
+normal receipt advances that same event sequence/head. The receipt-only append
+API refuses operation stores, and operation appends refuse receipt-only stores.
+The original four receipt bodies keep their original sequence and hash chain
+inside the operation state. A returned event is a consumed journal record, never
+an allow token. The initial event head equals the binding hash; subsequent
+requests bind the preceding returned `eventSha256`.
+
+The only paths are:
+
+| Current state | Permitted next event |
+| --- | --- |
+| New session | `PreviousRestored` (normal receipt 1) |
+| Previous restored | `CandidatePreparationArmed` |
+| Preparation armed | `CandidateCommissioned` (receipt 2), or irreversible `DeniedBeforeLaunch` |
+| Candidate commissioned | `CandidateSpawnConsumed` |
+| Candidate spawn consumed | `CandidateRestored` (receipt 3), after independently proven normal closure/restoration |
+| Candidate restored | `FallbackCommissioned` (receipt 4) |
+| Fallback commissioned | `FallbackSpawnConsumed`, terminal |
+| Denied before launch | `DeniedRestoreIntent` |
+| Denied restore intent | `CandidateDeniedRestored`, terminal |
+
+A healthy successor needs no invented restoration after its consumed spawn.
+For the narrow denied branch, even receipt 2 without a consumed spawn is refused:
+it must use a separately designed recovery path, never be relabelled as denied.
+
+Preparation binds the exact authenticated successor, selected state/ownership,
+prepared transaction hash and bounded local transaction-directory spelling,
+context, plan, inventory, quarantine, source review, and receipt 1's restored
+profile baseline. It must be durably consumed **before Apply**. Receipt 2 must
+match that preparation. Spawn consumption binds the exact commissioning receipt,
+creation-request hash and audited environment; it must be durably consumed
+**before any native creation or ALLOW transmission**.
+
+Denial references the armed preparation and refusal evidence. Restore intent
+references that denial and the same candidate/transaction, pins inspection,
+current profile, target profile and complete target-tree hashes, and binds an
+explicit preservation proof when choosing a different profile from the original
+restored baseline. Completion must match those target/inspection hashes and
+record removal of the active marker. The broker still has to inspect the actual
+files, closed processes, locks, ACLs, selected pointer and marker absence: hash
+strings and `activeMarkerAbsent=true` cannot independently prove them. No
+successful Apply or commissioning receipt is fabricated for partial Apply.
+
+A denied completion leaves only receipt 1 in the normal chain. It grants no
+pointer rollback, fallback commissioning, launch, disarm or automatic retry.
+Failure before an active transaction exists remains an attention case; this
+foundation does not fabricate restoration of an unstarted mutation.
+
+All requests replay-check the bounded history before mutation. Both append APIs
+share the existing owner/ACL/handle verification, strict JSON parser, durable
+write/flush and current disk-head checks. Failed writes poison live custody;
+whole-journal rollback, changed owner, expiry and owner loss refuse. A consumed
+spawn with a missing response or unrecorded child cannot become an unlaunched
+denial. Losing any response does not permit replay of its nonce/head. Disk
+inspection can replay events for verification, but cannot resume live custody.
+
+The operation foundation has portable inert coverage in
+`test-signed-update-operations.ps1` and the extended store tests. Its native
+PowerShell 5.1 x86/x64 qualification remains pending; the earlier native store run
+above predates this addition. Actual broker/IPC, shared commissioning mutation
+exclusion, selected-generation custody, artifact verification, every spawn hook,
+and interrupted-process recovery remain unimplemented. No product caller uses
+this mode, and this change does not qualify live signed updates.
 
 ## Data contract
 
@@ -143,5 +243,8 @@ broker needs native one-use audit/spawn custody and interrupted/denied review
 handling: a candidate commissioning transaction can be partly applied before
 receipt 2 exists, and must then be restored under the candidate pointer without
 inventing a successful commissioning receipt. The four-receipt normal-branch
-model does not implement this missing recovery branch. No callback, state-handle
-release, generic approval flag or bootstrap guard relaxation was added.
+model alone cannot establish this missing recovery authority. The opt-in operation
+journal above models denial/restoration ordering, but the native broker must still
+prove uninterrupted no-spawn custody and validate the actual partial transaction.
+No callback, state-handle release, generic approval flag or bootstrap guard
+relaxation was added.

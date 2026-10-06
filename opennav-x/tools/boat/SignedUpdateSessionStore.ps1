@@ -8,7 +8,7 @@
 # rollback. Receipts returned here are consumed records, NOT reusable allow tokens.
 Set-StrictMode -Version Latest
 $ErrorActionPreference='Stop'
-. (Join-Path $PSScriptRoot 'SignedUpdateSession.ps1')
+. (Join-Path $PSScriptRoot 'SignedUpdateOperations.ps1')
 # Do not reset custody when this file is dot-sourced twice in the same scope.
 if(-not (Get-Variable SignedUpdateStores -Scope Script -ErrorAction SilentlyContinue)){$script:SignedUpdateStores=@{}}
 if(-not ('SignedUpdateStoreNative' -as [type])) {
@@ -202,7 +202,7 @@ function Assert-SignedStoreCurrent($Store) {
     if($bytes.Length -ne $Store.length -or (Get-SignedStoreDigest $bytes) -cne $Store.digest){throw 'Armed journal/head changed or replayed.'}
     $now=Get-SignedStoreNow
     $null=New-SignedUpdateSession $Store.session.binding $now
-    if($now -lt $Store.session.lastUnix){throw 'Clock moved backward.'}
+    if($now -lt $Store.session.lastUnix -or ($null -ne $Store.operations -and $now -lt $Store.operations.lastUnix)){throw 'Clock moved backward.'}
     return $now
   } catch {$Store.poisoned=$true;throw}
 }
@@ -210,9 +210,11 @@ function Get-SignedStoreLive([string]$Handle) {
   if(-not $script:SignedUpdateStores.ContainsKey($Handle)){throw 'No exclusive live signed-update custody. Disk records cannot resume it.'}
   return $script:SignedUpdateStores[$Handle]
 }
-function New-SignedUpdateStore([string]$Directory,[byte[]]$BindingJson) {
+function New-SignedUpdateStore([string]$Directory,[byte[]]$BindingJson,[switch]$OperationEvents) {
   $binding=ConvertFrom-SignedStoreJson $BindingJson
   $session=New-SignedUpdateSession $binding (Get-SignedStoreNow)
+  $operations=$null
+  if($OperationEvents){$operations=New-SignedUpdateOperationSession $binding $session.lastUnix;$session=$operations.session}
   $owner=Get-SignedStoreOwner
   $pins=Enter-SignedStoreDirectory $Directory $owner
   $stream=$null
@@ -220,9 +222,10 @@ function New-SignedUpdateStore([string]$Directory,[byte[]]$BindingJson) {
     $path=Join-Path $Directory 'signed-update-armed.jsonl'
     # CreateNew refuses missing-custodian leftovers, including corrupt/empty files.
     $stream=New-SignedStoreFile $path $owner.sid
-    $store=@{directory=$Directory;path=$path;stream=$stream;pins=$pins;owner=$owner;ownerSha256=(Get-SignedUpdateReceiptHash $owner);session=$session;poisoned=$false;length=0;digest=('0'*64)}
+    $store=@{directory=$Directory;path=$path;stream=$stream;pins=$pins;owner=$owner;ownerSha256=(Get-SignedUpdateReceiptHash $owner);session=$session;operations=$operations;poisoned=$false;length=0;digest=('0'*64)}
     Assert-SignedStoreNative $store
     $frame=[pscustomobject][ordered]@{schema=1;owner=$owner;sequence=0;previousFrameSha256=('0'*64);state=$session}
+    if($OperationEvents){$frame.schema=2;$frame.state=$operations}
     $bytes=Get-SignedStoreBytes $frame;$bytes=[byte[]]($bytes+10)
     Write-SignedStoreFrame $store $bytes
     $store.length=$bytes.Length;$store.digest=Get-SignedStoreDigest $bytes
@@ -239,10 +242,26 @@ function New-SignedUpdateStore([string]$Directory,[byte[]]$BindingJson) {
 function Add-SignedUpdateStoreReceipt([string]$Handle,[byte[]]$RequestJson) {
   $store=Get-SignedStoreLive $Handle
   $now=Assert-SignedStoreCurrent $store
+  if($null -ne $store.operations){throw 'Operation-event custody requires Add-SignedUpdateStoreEvent; receipt-only bypass refused.'}
   $request=ConvertFrom-SignedStoreJson $RequestJson
   $next=Copy-SignedUpdateValue $store.session
   $receipt=Add-SignedUpdateReceipt $next $request $now
-  $frame=[pscustomobject][ordered]@{schema=1;owner=$store.owner;sequence=@($next.receipts).Count;previousFrameSha256=$store.digest;state=$next}
+  Write-SignedStoreTransition $store $next $null
+  return Copy-SignedUpdateValue $receipt
+}
+function Add-SignedUpdateStoreEvent([string]$Handle,[byte[]]$RequestJson) {
+  $store=Get-SignedStoreLive $Handle
+  $now=Assert-SignedStoreCurrent $store
+  if($null -eq $store.operations){throw 'Operation events require an explicitly armed operation store.'}
+  $request=ConvertFrom-SignedStoreJson $RequestJson
+  $next=Copy-SignedUpdateValue $store.operations
+  $event=Add-SignedUpdateOperationEvent $next $request $now
+  Write-SignedStoreTransition $store $next.session $next
+  return Copy-SignedUpdateValue $event
+}
+function Write-SignedStoreTransition($Store,$NextSession,$Operations) {
+  $frame=[pscustomobject][ordered]@{schema=1;owner=$Store.owner;sequence=@($NextSession.receipts).Count;previousFrameSha256=$Store.digest;state=$NextSession}
+  if($null -ne $Operations){$frame.schema=2;$frame.sequence=@($Operations.events).Count;$frame.state=$Operations}
   $bytes=Get-SignedStoreBytes $frame;$bytes=[byte[]]($bytes+10)
   try {
     # Retain the prior complete journal in memory as the anti-replay anchor.
@@ -250,11 +269,10 @@ function Add-SignedUpdateStoreReceipt([string]$Handle,[byte[]]$RequestJson) {
     $expected=[byte[]]($old+$bytes)
     if($expected.Length -gt 262144){throw 'Journal bound exceeded.'}
     Write-SignedStoreFrame $store $bytes
-    $store.length=$expected.Length;$store.digest=Get-SignedStoreDigest $expected;$store.session=$next
+    $store.length=$expected.Length;$store.digest=Get-SignedStoreDigest $expected;$store.session=$NextSession;$store.operations=$Operations
     $null=Assert-SignedStoreCurrent $store
   } catch {$store.poisoned=$true;throw}
-  # Request is already consumed durably, even if the caller loses this result.
-  return Copy-SignedUpdateValue $receipt
+  # Transition is consumed durably before either API can return a result.
 }
 function Close-SignedUpdateStore([string]$Handle) {
   $store=Get-SignedStoreLive $Handle
