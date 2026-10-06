@@ -14,6 +14,16 @@ the original reviewed patches applied to pinned OpenCPN. It restores compiled
 bytes, original successful security evidence, the same-product qualified updater,
 and verified dependency source archives. It does not compile an application.
 
+The existing curl packaging verifier also checks the original certificate-tool
+executable. Recovery restores that single authenticated SDK member to its fixed
+original build path solely for file-hash and PE inspection; it never executes it.
+Both retained curl/OpenSSL manifest pairs and the SDK inventory must agree with
+the fixed tool hash. This separate `verificationOnlyTool` receipt is checked
+before and after qualification. No SDK environment receipt is reused and no
+application or package file changes. Earlier failed recovery attempts remain
+failed evidence, including the Windows malformed-ZIP fixture correction and
+the missing certificate-tool input.
+
 New packaging uses the original clean source checkout and explicit product commit.
 `PRODUCT_BUILD.json` identifies the original `compiled_ci_run`, the actual new
 `packaging_ci_run`, and `packaging_helper_commit`. Build information labels both

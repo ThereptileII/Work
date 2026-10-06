@@ -85,6 +85,8 @@ def validated_receipt(root, receipt_path, product_commit, harness_commit):
     origin_path = sealed.plain_file(root, RESTORE_RECORD)
     sealed.require(sealed.sha(origin_path) == record.get('originReceiptSha256'), 'Original recovery receipt changed')
     origin = validate_origin(read(origin_path))
+    from compiled_recovery_restore import verify_certificate_tool
+    verify_certificate_tool(origin, root)
     sealed.require(record.get('producer') == origin['producer'] and record['packaging'] == origin['recovery'],
                    'Compilation and packaging origins differ')
     records = record.get('files')
@@ -105,6 +107,8 @@ def prepare(product_root, origin_path, harness_root=ROOT):
     product_root, harness_root = Path(product_root).resolve(), Path(harness_root).resolve()
     identity = current_identity(harness_root)
     origin = validate_origin(read(origin_path))
+    from compiled_recovery_restore import verify_certificate_tool
+    verify_certificate_tool(origin, harness_root)
     sealed.require(origin['workspaceRoot'] == str(product_root) and origin['recovery'] == identity,
                    'Restoration belongs to another source tree or workflow run')
     unchanged(product_root, origin['files'])

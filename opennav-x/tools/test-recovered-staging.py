@@ -42,6 +42,7 @@ class Recovery(unittest.TestCase):
         self.origin_path = self.fixture.base / 'origin.json'
         self.origin_path.write_text(json.dumps(self.origin))
         for patch in (mock.patch.object(recovery,'current_identity',return_value=IDENTITY),
+                      mock.patch('compiled_recovery_restore.verify_certificate_tool',return_value=None),
                       mock.patch.object(recovery,'validate_origin',side_effect=lambda value:value)):
             patch.start();self.addCleanup(patch.stop)
 
@@ -73,6 +74,14 @@ class Recovery(unittest.TestCase):
         (self.source/'build/production-install/opencpn.exe').write_bytes(b'changed')
         with self.assertRaisesRegex(ValueError,'retained input changed'): self.prepare()
         self.assertFalse((self.root/recovery.RECEIPT).exists())
+
+    def test_missing_verification_tool_blocks_preparation_and_acceptance(self):
+        with mock.patch('compiled_recovery_restore.verify_certificate_tool',side_effect=ValueError('missing verified tool')):
+            with self.assertRaisesRegex(ValueError,'missing verified tool'):self.prepare()
+        self.assertFalse((self.root/recovery.RECEIPT).exists())
+        self.prepare()
+        with mock.patch('compiled_recovery_restore.verify_certificate_tool',side_effect=ValueError('changed verified tool')):
+            with self.assertRaisesRegex(ValueError,'changed verified tool'):self.validate()
 
     def test_qualification_refuses_changed_payload_origin_or_run(self):
         self.prepare()

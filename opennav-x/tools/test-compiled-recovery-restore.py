@@ -125,14 +125,27 @@ class RestoreTests(unittest.TestCase):
             p=patch.object(module,name,value);p.start();self.addCleanup(p.stop)
         pin(r,'COMMIT',commit);pin(r,'PRODUCER',r.sealed.producer(commit,r.RUN,'1'));pin(r.recovery,'PINNED_UPSTREAM',upstream_commit)
         self.identity=dict(commit='f'*40,runId='999',runAttempt='1')
+        self.harness=self.base/'harness';self.harness.mkdir()
+        pin(r,'__file__',str(self.harness/'tools/compiled_recovery_restore.py'))
+        self.tool_bytes=b'inert certificate tool; never executed'
+        tool=dict(r.VERIFICATION_TOOL,**record(self.tool_bytes))
+        tool['path']=str(self.harness/tool['relativePath'])
+        pin(r,'VERIFICATION_TOOL',tool);self.tool_target=Path(tool['path'])
+        ssl=json.dumps(dict(outputs={'bin/openssl.exe':dict(bytes=tool['size'],sha256=tool['sha256'])},
+                            versionOutput='OpenSSL 3.5.9 inert fixture')).encode()
+        curl=json.dumps(dict(buildSteps=dict(certificateTool=dict(path=tool['path'],bytes=tool['size'],sha256=tool['sha256'],
+                versionOutput='OpenSSL 3.5.9 inert fixture')),dependencies=dict(openssl=dict(manifestSha256=r.digest(ssl),
+                prefix=str(self.tool_target.parent.parent))))).encode()
         compiled={}
         for variant in r.sealed.VARIANTS:
+            compiled[f'build/{variant}-install/openssl-build.json']=ssl
+            compiled[f'build/{variant}-install/curl-build.json']=curl
             for binary in ('opencpn.exe','opennav-restart.exe'):compiled[f'build/{variant}-install/{binary}']=b'inert; never executed'
             for header in ('config.h','OpenNavBuild.h'):compiled[f'build/{variant}-windows/include/{header}']=f'#define OPENNAV_BUILD_COMMIT "{commit}"\n'.encode()
         compiled[r.sealed.FEEDBACK_MANIFEST]=json.dumps(dict(schema=1,commit=commit,tests=[dict(name=n,path='D:/a/Work/Work/opennav-x/'+p) for n,p in sorted(r.sealed.FEEDBACK_BINARIES.items())])).encode()
         for name in r.sealed.FEEDBACK_BINARIES.values():compiled[name]=b'inert test; never executed'
         for name,data in compiled.items():p=self.root/name;p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(data)
-        retained=self.base/'retained';original=r.recovery.retain(self.root,retained,r.PRODUCER)
+        retained=self.base/'retained';self.inner=retained/r.recovery.ARCHIVE;original=r.recovery.retain(self.root,retained,r.PRODUCER)
         with zipfile.ZipFile(retained/r.recovery.ARCHIVE) as z:manifest=r.strict_json(z.read(r.recovery.MANIFEST))
         self.manifest=manifest;self.source_files={x['path']:{k:x[k] for k in ('size','sha256')} for x in manifest['files']}
         for name in compiled:(self.root/name).unlink()
@@ -141,7 +154,10 @@ class RestoreTests(unittest.TestCase):
         updater={'install/'+n:b'inert updater boundary' for n in r.UPDATER_NAMES}
         sources={'openssl-3.5.9.tar.gz':record(b'inert source')};pin(r,'DEPENDENCY_SOURCES',sources)
         sdk={'payload/build/dependency-downloads/'+n:b'inert source' for n in sources}
-        sdk['bundle.json']=json.dumps(dict(files={'build/dependency-downloads/'+n:dict(bytes=v['size'],sha256=v['sha256']) for n,v in sources.items()})).encode()
+        sdk[tool['sdkMember']]=self.tool_bytes
+        sdk_records={'build/dependency-downloads/'+n:dict(bytes=v['size'],sha256=v['sha256']) for n,v in sources.items()}
+        sdk_records[tool['relativePath']]=dict(bytes=tool['size'],sha256=tool['sha256'])
+        sdk['bundle.json']=json.dumps(dict(files=sdk_records)).encode()
         self.paths={k:self.base/(k+'.zip') for k in r.ARTIFACTS}
         write_zip(self.paths['compiled'],{r.recovery.ARCHIVE:(retained/r.recovery.ARCHIVE).read_bytes(),'receipt.json':(retained/'receipt.json').read_bytes()})
         for kind,values in [('evidence',late),('updater',updater),('sdk',sdk)]:write_zip(self.paths[kind],values)
@@ -162,6 +178,9 @@ class RestoreTests(unittest.TestCase):
 
     def test_exact_source_and_every_restored_byte_are_bound(self):
         result=self.run_restore();r.validate_receipt(result);r.verify_files(self.root,result['files'])
+        self.assertEqual(r.verify_certificate_tool(result,self.harness),self.tool_target)
+        self.assertEqual(self.tool_target.read_bytes(),self.tool_bytes)
+        self.assertNotIn(r.VERIFICATION_TOOL['relativePath'],result['files'])
         self.assertEqual(result['files'],self.all);self.assertEqual(result['producer'],r.PRODUCER)
         self.assertEqual(result['recovery'],self.identity);self.assertEqual(result['originalConclusion'],'failure')
         self.assertEqual(result['qualification'],'not-run');self.assertFalse((self.root/'source').exists())
@@ -173,6 +192,81 @@ class RestoreTests(unittest.TestCase):
             else:bad['recovery']['runId']=r.RUN
             with self.subTest(mutate=mutate),self.assertRaises(ValueError):r.validate_receipt(bad)
         with self.assertRaises(ValueError):self.run_restore()
+
+    def test_tool_receipt_closed_fixed_and_offline_then_actual_bytes_checked(self):
+        result=self.run_restore()
+        self.tool_target.unlink()
+        r.validate_receipt(result)  # Delivery parsing never needs the tool present.
+        with self.assertRaises(ValueError):r.verify_certificate_tool(result,self.harness)
+        self.tool_target.write_bytes(b'wrong')
+        with self.assertRaises(ValueError):r.verify_certificate_tool(result,self.harness)
+        for field,value in [('path',str(self.base/'outside.exe')),('relativePath','../outside.exe'),
+                            ('sha256','0'*64),('size',1),('purpose','execute'),('extra',True)]:
+            bad=copy.deepcopy(result);bad['verificationOnlyTool'][field]=value
+            with self.subTest(field=field),self.assertRaises(ValueError):r.validate_receipt(bad)
+        with self.assertRaises(ValueError):r.verify_certificate_tool(result,self.root)
+
+    def test_tool_preexisting_and_redirected_parent_refuse_before_restore(self):
+        self.tool_target.parent.mkdir(parents=True);self.tool_target.write_bytes(self.tool_bytes)
+        with self.assertRaisesRegex(ValueError,'overwrite'):self.run_restore()
+        self.assertEqual(self.tool_target.read_bytes(),self.tool_bytes)
+        self.assertFalse((self.root/'build/production-install/opencpn.exe').exists())
+        self.tool_target.unlink();self.tool_target.parent.rmdir()
+        outside=self.base/'outside';outside.mkdir()
+        try:self.tool_target.parent.symlink_to(outside,target_is_directory=True)
+        except OSError:self.skipTest('Symlink creation unavailable')
+        with self.assertRaises(ValueError):self.run_restore()
+        self.assertFalse(list(outside.iterdir()))
+
+    def test_tool_sdk_inventory_and_bytes_and_original_manifests_must_agree(self):
+        with zipfile.ZipFile(self.paths['sdk']) as z:sdk={n:z.read(n) for n in z.namelist()}
+        for mutation in ('bytes','inventory','missing'):
+            bad=dict(sdk)
+            if mutation=='bytes':bad[r.VERIFICATION_TOOL['sdkMember']]=b'wrong'
+            elif mutation=='missing':del bad[r.VERIFICATION_TOOL['sdkMember']]
+            else:
+                bundle=json.loads(bad['bundle.json']);bundle['files'][r.VERIFICATION_TOOL['relativePath']]['sha256']='0'*64
+                bad['bundle.json']=json.dumps(bundle).encode()
+            path=self.base/'bad-sdk.zip';write_zip(path,bad)
+            with self.subTest(mutation=mutation),self.assertRaises((ValueError,KeyError)):
+                r.validate_certificate_tool(self.inner,path,self.harness)
+        with zipfile.ZipFile(self.inner) as z:original={n:z.read(n) for n in z.namelist()}
+        for variant in r.sealed.VARIANTS:
+            for mutation in ('path','prefix','hash','manifest','version'):
+                bad=dict(original);name=f'build/{variant}-install/curl-build.json';curl=json.loads(bad[name])
+                if mutation=='path':curl['buildSteps']['certificateTool']['path']=str(self.base/'outside.exe')
+                elif mutation=='prefix':curl['dependencies']['openssl']['prefix']=str(self.base/'outside')
+                elif mutation=='hash':curl['buildSteps']['certificateTool']['sha256']='0'*64
+                elif mutation=='manifest':curl['dependencies']['openssl']['manifestSha256']='0'*64
+                else:curl['buildSteps']['certificateTool']['versionOutput']='OpenSSL 3.5.9 different'
+                bad[name]=json.dumps(curl).encode();path=self.base/'bad-inner.zip';write_zip(path,bad)
+                with self.subTest(variant=variant,mutation=mutation),self.assertRaises(ValueError):
+                    r.validate_certificate_tool(path,self.paths['sdk'],self.harness)
+        self.assertFalse(self.tool_target.exists())
+
+    def test_tool_cleanup_on_post_creation_failure_and_no_preexisting_cleanup(self):
+        with patch.object(r,'verify_certificate_tool',side_effect=ValueError('injected tool verification failure')):
+            with self.assertRaises(ValueError):self.run_restore()
+        self.assertFalse(self.tool_target.exists());self.assertFalse(self.receipt.exists())
+        r.verify_files(self.root,self.all)  # Original partial recovery stays intact.
+
+
+    def test_tool_exclusive_creation_race_preserves_existing_file(self):
+        original=r.validate_certificate_tool
+        def racing(*args):
+            target=original(*args);target.parent.mkdir(parents=True);target.write_bytes(b'racing preexisting file')
+            return target
+        with patch.object(r,'validate_certificate_tool',side_effect=racing):
+            with self.assertRaises(FileExistsError):self.run_restore()
+        self.assertEqual(self.tool_target.read_bytes(),b'racing preexisting file')
+        self.assertFalse(self.receipt.exists())
+
+    def test_receipt_write_failure_removes_only_new_tool_and_receipt(self):
+        with patch.object(r.os,'fsync',side_effect=[None,OSError('injected receipt sync failure')]):
+            with self.assertRaises(OSError):self.run_restore()
+        self.assertFalse(self.tool_target.exists());self.assertFalse(self.receipt.exists())
+        r.verify_files(self.root,self.all)
+
 
     def test_product_or_integrated_source_change_refuses_before_copy(self):
         for path in (self.root/'app.cpp',self.root/'build/integration-source/upstream.cpp'):

@@ -4,13 +4,14 @@
 The new packaging workflow owns its own identity. This helper performs no build,
 package, application launch, SDK installation or release publication. Inert SDK
 source archives are selected from the authenticated original dependency artifact;
-none of its executable/compiler payload or environment receipts are imported.
+one pinned openssl.exe is restored solely for the existing packager byte/PE check,
+never executed. No compiler payload or SDK environment receipts are imported.
 """
 import argparse
 import hashlib
 import json
 import os
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 import re
 import stat
 import tempfile
@@ -66,6 +67,14 @@ LATE_FILES_SHA = '78e4a596fdc5801586e6f0aecd907f43d11a53b3eebb6ec82375baea7a7d50
 UPDATER_FILES_SHA = 'b8f89868a11b8e0a7f7bda47d76584da6dce19a305a143537535c9497028cfcf'
 ALL_FILES_SHA = 'c243bd9e1379873461eaa6888532db1bb5c266ebb92c26d85bb4e2a1a1bb61e1'
 ALL_FILES_COUNT = 3484
+# The original curl provenance checker reads this exact path; do not rewrite its
+# historical manifest or import a runnable SDK environment to satisfy that check.
+VERIFICATION_TOOL = dict(
+    path=r'D:\a\Work\Work\opennav-x\build\windows-openssl-3.5.9\install\bin\openssl.exe',
+    relativePath='build/windows-openssl-3.5.9/install/bin/openssl.exe',
+    sdkMember='payload/build/windows-openssl-3.5.9/install/bin/openssl.exe',
+    size=722944, sha256='e538ab95debb62adb94914e61144690965ea7db2251d95085471a59454250b6b',
+    purpose='packager byte/PE verification only; never executed')
 DEPENDENCY_SOURCES = {
     'openssl-3.5.9.tar.gz': dict(size=53279637, sha256='603f5602e2eef00d77fbd429d34dcd5822bb301757a1bc9cdb24c670f1eb859a'),
     'curl-8.22.0.tar.xz': dict(size=2953092, sha256='f7ef3ae8a22e521f289803fe93543eb64c329b58aa73a9e224dfd915a2a5f4f7'),
@@ -303,6 +312,51 @@ def validate_additions(paths):
     return [('evidence', late_map, late), ('updater', updater_map, updater), ('sdk', sdk_map, sdk)]
 
 
+def certificate_tool_target(harness_root):
+    target = plain(plain(harness_root) / VERIFICATION_TOOL['relativePath'], missing=True)
+    require(target == Path(VERIFICATION_TOOL['path']), 'Certificate tool is not at the fixed original harness path')
+    return target
+
+
+def validate_certificate_tool(inner, sdk, harness_root):
+    target = certificate_tool_target(harness_root)
+    require(not target.exists(), 'Certificate tool would overwrite an existing file')
+    expected = dict(bytes=VERIFICATION_TOOL['size'], sha256=VERIFICATION_TOOL['sha256'])
+    with zipfile.ZipFile(inner) as z:
+        index = zip_index(z)
+        for variant in sealed.VARIANTS:
+            prefix = f'build/{variant}-install/'
+            raw = read_bounded(z, index[prefix + 'openssl-build.json'])
+            openssl = strict_json(raw)
+            curl = strict_json(read_bounded(z, index[prefix + 'curl-build.json']))
+            tool = curl['buildSteps']['certificateTool']
+            fields(tool, ('path', 'bytes', 'sha256', 'versionOutput'))
+            require(tool['path'] == VERIFICATION_TOOL['path'] and
+                    {k: tool[k] for k in expected} == expected and
+                    openssl['outputs']['bin/openssl.exe'] == expected and
+                    isinstance(tool['versionOutput'], str) and tool['versionOutput'].startswith('OpenSSL 3.5.9 ') and
+                    tool['versionOutput'] == openssl['versionOutput'] and
+                    curl['dependencies']['openssl']['manifestSha256'] == digest(raw) and
+                    PureWindowsPath(curl['dependencies']['openssl']['prefix']) / 'bin/openssl.exe' == PureWindowsPath(tool['path']),
+                    'Original installed certificate-tool provenance differs')
+    with zipfile.ZipFile(sdk) as z:
+        index = zip_index(z)
+        bundle = strict_json(read_bounded(z, index['bundle.json']))
+        require(bundle['files'][VERIFICATION_TOOL['relativePath']] == expected and
+                file_record(z, index[VERIFICATION_TOOL['sdkMember']]) ==
+                dict(size=expected['bytes'], sha256=expected['sha256']), 'SDK certificate-tool bytes/inventory differ')
+    return target
+
+
+def verify_certificate_tool(receipt, harness_root):
+    # Separate filesystem check: validate_receipt remains a pure offline parser.
+    require(receipt['verificationOnlyTool'] == VERIFICATION_TOOL, 'Verification-only tool receipt differs')
+    target = plain(certificate_tool_target(harness_root))
+    require(target.is_file() and target.stat().st_size == VERIFICATION_TOOL['size'] and
+            sealed.sha(target) == VERIFICATION_TOOL['sha256'], 'Verification-only certificate tool changed')
+    return target
+
+
 def verify_files(root, records):
     for name, record in records.items():
         path = plain(root / safe_name(name))
@@ -319,13 +373,14 @@ def validate_identity(identity):
 def validate_receipt(record):
     fields(record, ('schema', 'kind', 'status', 'qualification', 'packaging', 'producer', 'recovery',
                     'originalConclusion', 'originalFailureStep', 'artifacts', 'archiveSha256', 'manifestSha256',
-                    'sourceManifestSha256', 'files', 'reusedEvidence', 'boatFeedback', 'workspaceRoot'))
+                    'sourceManifestSha256', 'files', 'reusedEvidence', 'boatFeedback', 'workspaceRoot', 'verificationOnlyTool'))
     require(type(record['schema']) is int and record['schema'] == 1 and record['kind'] == KIND and
             record['status'] == 'restored' and record['qualification'] == record['packaging'] == 'not-run' and
             record['producer'] == PRODUCER and record['originalConclusion'] == 'failure' and
             record['originalFailureStep'] == FAILURE_STEP and record['artifacts'] == ARTIFACTS and
             record['archiveSha256'] == INNER_SHA and record['manifestSha256'] == MANIFEST_SHA and
             record['sourceManifestSha256'] == SOURCES_SHA, 'Exact recovery receipt authority differs')
+    require(record['verificationOnlyTool'] == VERIFICATION_TOOL, 'Verification-only tool receipt differs')
     validate_identity(record['recovery'])
     files = record['files']
     require(isinstance(files, dict) and len(files) == ALL_FILES_COUNT and object_digest(files) == ALL_FILES_SHA,
@@ -352,6 +407,8 @@ def restore(root, paths, receipt_path, identity):
         inner, manifest, files, compiled = validate_compiled(paths['compiled'], temporary)
         verify_sources(root, manifest, files)
         additions = validate_additions(paths)
+        harness_root = Path(__file__).resolve().parents[1]
+        tool_target = validate_certificate_tool(inner, paths['sdk'], harness_root)
         retained = dict(compiled)
         for _, _, records in additions:
             require(not set(retained) & set(records), 'Recovery overlays an original byte')
@@ -380,12 +437,35 @@ def restore(root, paths, receipt_path, identity):
             artifacts=ARTIFACTS, archiveSha256=INNER_SHA, manifestSha256=MANIFEST_SHA,
             sourceManifestSha256=SOURCES_SHA, files=retained,
             reusedEvidence=sorted(n for _, _, records in additions[:1] for n in records),
-            boatFeedback=sealed.feedback_binding(root, COMMIT), workspaceRoot=str(root))
+            boatFeedback=sealed.feedback_binding(root, COMMIT), workspaceRoot=str(root),
+            verificationOnlyTool=dict(VERIFICATION_TOOL))
         validate_receipt(record)
-        receipt_path.parent.mkdir(parents=True, exist_ok=True)
-        with receipt_path.open('xb') as output:
-            output.write(sealed.canonical(record)); output.flush(); os.fsync(output.fileno())
-        return record
+        # Only this one authenticated SDK executable is materialized, without
+        # dependencies or execution. Exclusive creation never replaces a file.
+        created = receipt_created = False
+        try:
+            tool_target = plain(tool_target, missing=True)
+            tool_target.parent.mkdir(parents=True, exist_ok=True)
+            with zipfile.ZipFile(paths['sdk']) as z:
+                index = zip_index(z)
+                data = read_bounded(z, index[VERIFICATION_TOOL['sdkMember']], VERIFICATION_TOOL['size'])
+                require(len(data) == VERIFICATION_TOOL['size'] and digest(data) == VERIFICATION_TOOL['sha256'],
+                        'SDK certificate tool changed before creation')
+            with tool_target.open('xb') as output:
+                created = True
+                output.write(data); output.flush(); os.fsync(output.fileno())
+            verify_certificate_tool(record, harness_root)
+            receipt_path.parent.mkdir(parents=True, exist_ok=True)
+            with receipt_path.open('xb') as output:
+                receipt_created = True
+                output.write(sealed.canonical(record)); output.flush(); os.fsync(output.fileno())
+            return record
+        except BaseException:
+            if receipt_created:
+                plain(receipt_path).unlink()
+            if created:
+                plain(tool_target).unlink()
+            raise
 
 
 def main():
