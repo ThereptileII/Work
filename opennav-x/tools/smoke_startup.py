@@ -38,10 +38,25 @@ def defer_boat_setup(read, click, *, native_window=None, timeout=8):
     that sheet without accepting an unrelated Later dialog.
     """
     before = read()
+    witness = native_window() if native_window else None
+    if witness is not None:
+        initial_tick = int(before['runtime']['ui_update']['ticks'])
+        def has_setup_controls(record):
+            return any(c['label'] in _SETUP_FIELDS | {'Later', 'Back', 'Continue'}
+                       for c in record['runtime']['display']['interaction_controls'])
+        if not has_setup_controls(before):
+            # Deferred native creation can precede its first 1 Hz diagnostic
+            # publication. Wait for evidence, never click from the window alone.
+            deadline = time.monotonic() + timeout
+            while (not has_setup_controls(before) or
+                   int(before['runtime']['ui_update']['ticks']) <= initial_tick):
+                assert time.monotonic() < deadline, 'Owned boat setup controls were not published before deadline'
+                time.sleep(.1)
+                before = read()
+                assert native_window() == witness, 'Owned boat setup changed before initial publication'
     controls = before['runtime']['display']['interaction_controls']
     visible = [c for c in controls if c['visible']]
     labels = {c['label'] for c in visible}
-    witness = native_window() if native_window else None
     if witness is not None:
         actions = {label: [c for c in visible if c['label'] == label and _inside(c, witness)]
                    for label in ('Later', 'Back', 'Continue')}

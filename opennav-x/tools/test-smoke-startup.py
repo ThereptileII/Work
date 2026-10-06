@@ -67,6 +67,52 @@ class StartupTests(unittest.TestCase):
                     native_window=lambda:dict(x=0,y=0,width=660,height=620))
             self.assertEqual(clicks,[])
 
+    def test_native_creation_waits_for_advanced_initial_publication_before_click(self):
+        # Even actions appearing in the same old tick cannot qualify input.
+        records=iter([snapshot([]),snapshot(['Later','Back','Continue']),
+                      snapshot(['Later','Back','Continue'],11),snapshot([],12)])
+        bounds=dict(x=0,y=0,width=660,height=620)
+        windows=iter([bounds,bounds,bounds,None])
+        observations=[];clicks=[]
+        def read():
+            value=next(records);observations.append(value);return value
+        def click(target):
+            self.assertEqual(observations[-1]['runtime']['ui_update']['ticks'],11)
+            clicks.append(target)
+        with patch('smoke_startup.time.sleep'):
+            result=defer_boat_setup(read,click,native_window=lambda:next(windows))
+        self.assertEqual(len(clicks),1)
+        self.assertEqual(result,dict(status='deferred-with-Later',before_ticks=11,after_ticks=12))
+
+    def test_native_never_published_controls_timeout_without_input(self):
+        clicks=[]
+        with patch('smoke_startup.time.monotonic',side_effect=[0,0,2]),patch('smoke_startup.time.sleep'):
+            with self.assertRaisesRegex(AssertionError,'not published'):
+                defer_boat_setup(lambda:snapshot([]),clicks.append,timeout=1,
+                    native_window=lambda:dict(x=0,y=0,width=660,height=620))
+        self.assertEqual(clicks,[])
+
+    def test_delayed_wrong_step_ambiguous_hidden_or_clipped_controls_still_refuse(self):
+        cases=[snapshot(['Later','Back','Continue'],11) for _ in range(4)]
+        cases[0]['runtime']['display']['interaction_controls'][1]['enabled']=True
+        cases[1]['runtime']['display']['interaction_controls'].append(
+            dict(cases[1]['runtime']['display']['interaction_controls'][0]))
+        cases[2]['runtime']['display']['interaction_controls'][0]['visible']=False
+        cases[3]['runtime']['display']['interaction_controls'][0]['x']=1000
+        for invalid in cases:
+            records=iter([snapshot([]),invalid]);clicks=[]
+            with patch('smoke_startup.time.sleep'),self.assertRaises(AssertionError):
+                defer_boat_setup(lambda:next(records),clicks.append,
+                    native_window=lambda:dict(x=0,y=0,width=660,height=620))
+            self.assertEqual(clicks,[])
+
+    def test_native_window_change_during_publication_wait_refuses(self):
+        records=iter([snapshot([]),snapshot(['Later','Back','Continue'],11)])
+        windows=iter([dict(x=0,y=0,width=660,height=620),None]);clicks=[]
+        with patch('smoke_startup.time.sleep'),self.assertRaisesRegex(AssertionError,'changed before'):
+            defer_boat_setup(lambda:next(records),clicks.append,native_window=lambda:next(windows))
+        self.assertEqual(clicks,[])
+
     def test_setup_actions_without_fields_or_native_witness_refuse(self):
         for witness in (None,lambda:None):
             clicks=[]

@@ -12,6 +12,7 @@ import tempfile
 from types import SimpleNamespace
 import unittest
 from unittest import mock
+from diagnostic_snapshot import read_json_snapshot
 
 SOURCE = Path(__file__).with_name('smoke-installer-windows.py')
 TREE = ast.parse(SOURCE.read_text())
@@ -144,6 +145,65 @@ class Completion(unittest.TestCase):
             Path(directory, 'stock.exe').write_bytes(b'fixture')
         self.assertFalse(Path(directory).exists())
         self.assertNotIn('retained_failed_fixture', self.report)
+
+
+class InstalledSetupDiagnostics(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.profile = Path(self.temp.name)
+        self.diagnostics = self.profile / 'opennav-logs/opennav-diagnostics.json'
+        self.diagnostics.parent.mkdir()
+        # A portable/previous fixture snapshot must never qualify this installed run.
+        (self.profile / 'opennav-diagnostics.json').write_text('{"tick": 999}')
+        calls = [node for node in ast.walk(TREE) if isinstance(node, ast.Call)
+                 and isinstance(node.func, ast.Name) and node.func.id == 'defer_boat_setup']
+        self.assertEqual(len(calls), 1)
+        installed_calls = [node for node in ast.walk(TREE) if isinstance(node, ast.Call)
+                           and isinstance(node.func, ast.Name) and node.func.id == 'defer_installed_setup']
+        self.assertEqual(len(installed_calls), 2)  # Initial launch and controlled Legacy return.
+        environment = dict(profile=self.profile, read_json_snapshot=lambda path:
+                           read_json_snapshot(path, timeout=0))
+        self.readers = [eval(compile(ast.Expression(call.args[0]), str(SOURCE), 'eval'),
+                             environment) for call in calls]
+
+    def test_both_installed_readers_observe_current_nested_publications(self):
+        for tick in (1, 2):
+            pending = self.diagnostics.with_suffix('.pending')
+            pending.write_text(json.dumps({'tick': tick}))
+            pending.replace(self.diagnostics)
+            for read in self.readers:
+                self.assertEqual(read(), {'tick': tick})
+
+    def test_missing_installed_snapshot_never_uses_root_decoy(self):
+        for read in self.readers:
+            with self.assertRaises(FileNotFoundError):
+                read()
+
+    def test_malformed_installed_snapshot_remains_failure(self):
+        self.diagnostics.write_text('{broken')
+        for read in self.readers:
+            with self.assertRaises(json.JSONDecodeError):
+                read()
+
+    def test_setup_failure_retains_snapshot_and_witness_without_hiding_error(self):
+        self.diagnostics.write_text('{"tick": 7}')
+        report = {}
+        failure = AssertionError('original setup failure')
+        def reject(*args, **kwargs):
+            raise failure
+        environment = dict(read_json_snapshot=read_json_snapshot, defer_boat_setup=reject,
+                           native_setup_window=lambda ui,pid: {'x': 1, 'pid': pid},
+                           ui=object(), EVIDENCE=self.profile, report=report, json=json)
+        function = next(node for node in TREE.body if isinstance(node, ast.FunctionDef)
+                        and node.name == 'defer_installed_setup')
+        exec(compile(ast.Module(body=[function],type_ignores=[]),str(SOURCE),'exec'),environment)
+        with self.assertRaises(AssertionError) as raised:
+            environment['defer_installed_setup'](self.profile,7)
+        self.assertIs(raised.exception,failure)
+        observation=json.loads((self.profile/report['setup_failure_observation']).read_text())
+        self.assertEqual(observation,{'pid':7,'diagnostics':{'tick':7},
+                                      'native_setup_window':{'x':1,'pid':7}})
 
 
 class PackagedStartupCompletion(unittest.TestCase):

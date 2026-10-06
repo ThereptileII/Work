@@ -365,6 +365,26 @@ def wait_ready(profile,before):
 def startup_baseline(profile):
     p=profile/'opencpn.log'
     return p.read_bytes() if p.exists() else b''
+def defer_installed_setup(profile,pid):
+    try:
+        return defer_boat_setup(
+            lambda:read_json_snapshot(profile/'opennav-logs'/'opennav-diagnostics.json'),
+            lambda target:ui.pointer_text(pid,'Later'),
+            native_window=lambda:native_setup_window(ui,pid))
+    except Exception:
+        observation={'pid':pid}
+        for name,observe in (
+                ('diagnostics',lambda:read_json_snapshot(profile/'opennav-logs'/'opennav-diagnostics.json')),
+                ('native_setup_window',lambda:native_setup_window(ui,pid))):
+            try:observation[name]=observe()
+            except Exception as error:observation[name+'_error']=repr(error)
+        try:
+            path=EVIDENCE/'installer-setup-failure.json'
+            path.write_text(json.dumps(observation,indent=2)+'\n',encoding='utf-8')
+            report['setup_failure_observation']=path.name
+        except Exception as error:
+            report['setup_failure_capture_error']=repr(error)
+        raise
 def fixture_snapshot(profile):
     shutil.copy2(profile/'opencpn.ini',profile/'opencpn.conf')
     return fixtures.snapshot(profile)
@@ -422,10 +442,7 @@ def launch(exe,mode,title,profile,name,welcome_transition=None):
         check('Expected '+welcome_transition+' safety notice captured and acknowledged through its visible Agree button')
     h,pid=ui.wait_window(title,p.pid,timeout=45);wait_ready(profile,before)
     if title=='SKAGER / OpenCPN':
-        report.setdefault('first_start_setup',[]).append(defer_boat_setup(
-            lambda:read_json_snapshot(profile/'opennav-diagnostics.json'),
-            lambda target:ui.pointer_text(pid,'Later'),
-            native_window=lambda:native_setup_window(ui,pid)))
+        report.setdefault('first_start_setup',[]).append(defer_installed_setup(profile,pid))
     assert ui.IsWindowEnabled(h),'Application startup is still blocked by a modal dialog'
     image=EVIDENCE/(name+'.png');rgb=ui.capture(h,image)
     report['screenshots'].append(image.name)
@@ -768,10 +785,7 @@ try:
             chart_check(rgb,'Standard','Installed XNav to Legacy')
             before=startup_baseline(profile);monitor=ui.monitor_process(pid);ui.click_menu(h,'Switch to SKAGER');ui.wait_clean_exit(monitor);owned.discard(pid)
             h,pid=ui.wait_window('SKAGER / OpenCPN');owned.add(pid);wait_ready(profile,before)
-            report.setdefault('first_start_setup',[]).append(defer_boat_setup(
-                lambda:read_json_snapshot(profile/'opennav-diagnostics.json'),
-                lambda target:ui.pointer_text(pid,'Later'),
-                native_window=lambda:native_setup_window(ui,pid)))
+            report.setdefault('first_start_setup',[]).append(defer_installed_setup(profile,pid))
             rgb=ui.capture(h,EVIDENCE/'installer-04-returned-xnav.png');report['screenshots'].append('installer-04-returned-xnav.png')
             chart_check(rgb,'XNav','Installed XNav Legacy XNav')
             monitor=ui.monitor_process(pid);ui.close(h);ui.wait_clean_exit(monitor);owned.discard(pid)
