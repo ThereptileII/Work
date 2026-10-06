@@ -66,14 +66,15 @@ class DependencyAuthorityTests(unittest.TestCase):
             workflow = root / GATE.bundle_api.WORKFLOW
             workflow.parent.mkdir(parents=True)
             workflow.write_text('inert producer workflow')
-            verifier = root / 'tools/windows_dependency_bundle.py'
-            verifier.parent.mkdir(parents=True)
-            verifier.write_text('inert unchanged verifier')
-            driver = root / 'tools/build-pristine-windows.ps1'
-            driver.write_text('inert unchanged orchestration')
+            # Supply the complete declared consumer closure so the real verifier
+            # reaches the tampered prefix instead of failing on a missing helper.
+            consumers = sorted(GATE.bundle_api.CONSUMER_FILES)
+            for name in consumers:
+                helper = root / name
+                helper.parent.mkdir(parents=True, exist_ok=True)
+                helper.write_text('inert unchanged consumer: ' + name)
             roots = [prefix.relative_to(root).as_posix(), GATE.bundle_api.WORKFLOW,
-                     'tools/windows_dependency_bundle.py',
-                     'tools/build-pristine-windows.ps1']
+                     *consumers]
             expected = GATE.receipt._inventory(root, roots)
             document = {'roots': roots, 'files': expected}
             source.write_text('modified')
