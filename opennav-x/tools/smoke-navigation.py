@@ -14,6 +14,7 @@ import tempfile
 import threading
 import time
 from diagnostic_snapshot import read_json_snapshot
+from smoke_startup import defer_boat_setup
 
 
 def exact_native_reference_desktop(display):
@@ -322,6 +323,22 @@ try:
     report['initial_resize_publication']={'before_ticks':resize_tick,
         'after_ticks':int(current['runtime']['ui_update']['ticks']),
         'footer':current['runtime']['display']['footer_region']}
+
+    # Fresh live profiles legitimately show setup above the chart. Defer it
+    # through its real UI before asserting permanent navigation geometry.
+    # Dedicated setup fixtures retain completion/save coverage.
+    def defer_setup_click(target):
+        if windows:
+            ui.pointer_text(app.pid, 'Later')
+        else:
+            dialogs=subprocess.check_output(['xdotool','search','--all','--onlyvisible',
+                '--pid',str(app.pid),'--name','^Boat Setup & Sensor Check$'],env=env,text=True).splitlines()
+            assert len(dialogs)==1, ('Expected one owned first-start setup sheet',dialogs)
+            subprocess.run(['xdotool','windowraise',dialogs[0],'mousemove',
+                str(target['x']+target['width']//2),str(target['y']+target['height']//2),
+                'click','1'],env=env,check=True)
+    report['first_start_setup']=defer_boat_setup(
+        lambda:read_json_snapshot(profile/'opennav-diagnostics.json'),defer_setup_click)
 
     def capture(name):
         path = evidence / f'{prefix}-{name}.png'

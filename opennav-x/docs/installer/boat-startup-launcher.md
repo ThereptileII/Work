@@ -1,7 +1,7 @@
 # Bootstrap-only installed launcher check
 
 `tools/boat/run-xnav.ps1 -Workspace C:\XNav -UseStartupLauncher` is an explicit
-opt-in to the installed `skager-start.exe --xnav` path. Without this switch,
+opt-in to the installed launcher's private bootstrap route. Without this switch,
 existing boat launch behavior is unchanged. Use this command only after the
 existing profile, plugin and read-only commissioning preparation and audit have
 passed for the exact installed generation and interactive account. It leaves the
@@ -21,6 +21,18 @@ SHA-256 and exact arguments. First startup must include the observed system
 PowerShell `QualifyCurrent` child; a missed or ambiguous ancestor is a refusal.
 An existing valid known-good receipt permits the direct launcher child path.
 Window titles or PID numbers alone are not acceptance evidence.
+
+The wrapper passes a restrictive `--boat-bootstrap=<generation>:<receipt>`
+expectation, where receipt is its exact SHA-256 or `absent`. This grants no new
+commissioning authority. The launcher rechecks the selected generation, absence
+of trust/pending state and receipt expectation while holding the transaction
+lock. An existing receipt is held against writes/deletion through direct spawn.
+For first startup, the supervisor reacquires that lock and rechecks absence
+immediately before creating the application. A changed receipt or generation
+refuses; it cannot switch ancestry or fall through to ordinary startup/recovery.
+The updated wrapper requires the corresponding launcher/supervisor implementation;
+an older launcher safely rejects the private argument. This does not supply the
+separate signed-update commissioning handoff or qualify an installed boat run.
 
 Success requires launcher exit zero, the installed generation's authenticated
 DPAPI startup receipt, the exact live application's responsive window and a fresh

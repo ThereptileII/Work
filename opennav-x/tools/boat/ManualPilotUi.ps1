@@ -28,6 +28,7 @@ function Assert-ManualPilotUiDiagnostics($Data,[string]$Commit,[datetime]$Writte
   foreach($value in @($Data.runtime.pilot.enabled,$Data.runtime.pilot.serial_session_enabled,$Data.runtime.pilot.configured_permission,$Data.runtime.pilot.fresh,$Data.runtime.pilot.control_capability)) {
     if($value -isnot [bool]){throw 'Missing real pilot state.'}
   }
+  Assert-ManualPilotNoActiveRoute $Data $Written $Started $Now
 }
 function Assert-ManualPilotUiState([string]$Action,[string]$Value,$Pilot,$Binding,$Snapshot,[string]$Epoch,[string]$CommandId) {
   if($Action -ceq 'SaveIdentity') {
@@ -92,11 +93,11 @@ function Assert-ManualPilotUiProfile($V) {
 }
 function Get-ManualPilotUiObservation($V,$Process,$Snapshot) {
   $path=Join-Path $V.context.profile 'opennav-logs/opennav-diagnostics.json'
-  $data=Read-Record $path
-  Assert-ManualPilotUiDiagnostics $data $V.record.candidate.commit (Get-Item $path).LastWriteTimeUtc $Process.StartTime.ToUniversalTime() ([datetime]::UtcNow)
+  $diagnosticSnapshot=Read-ManualPilotDiagnosticsSnapshot $path;$data=$diagnosticSnapshot.data
+  Assert-ManualPilotUiDiagnostics $data $V.record.candidate.commit $diagnosticSnapshot.writtenUtc $Process.StartTime.ToUniversalTime() ([datetime]::UtcNow)
   $p=$data.runtime.pilot
   # Never return full diagnostics, chart/route positions, logs, or arbitrary text.
-  return [pscustomobject]@{pilot=$p;public=[pscustomobject]@{utc=[datetime]::UtcNow.ToString('o');modal=$Snapshot.Modal;controls=$Snapshot.Controls;identities=$Snapshot.Identities;identityInterface=$(if($Snapshot.InterfaceValue -ceq 'COM8'){'COM8'}else{'unset-or-unexpected'});identityName=$(if([OpenNavX.ManualPilotUiNative]::CompatibleName($Snapshot.NameValue)){$Snapshot.NameValue}else{'unset-or-unexpected'});
+  return [pscustomobject]@{pilot=$p;public=[pscustomobject]@{utc=[datetime]::UtcNow.ToString('o');diagnosticsSha256=$diagnosticSnapshot.sha256;diagnosticsWrittenUtc=$diagnosticSnapshot.writtenUtc.ToString('o');modal=$Snapshot.Modal;controls=$Snapshot.Controls;identities=$Snapshot.Identities;identityInterface=$(if($Snapshot.InterfaceValue -ceq 'COM8'){'COM8'}else{'unset-or-unexpected'});identityName=$(if([OpenNavX.ManualPilotUiNative]::CompatibleName($Snapshot.NameValue)){$Snapshot.NameValue}else{'unset-or-unexpected'});
     pilot=[pscustomobject]@{fresh=$p.fresh;mode=$p.mode;source=$p.source;feedbackSequence=$p.feedback_sequence;connectionEpoch=$p.connection_epoch;
       enabled=$p.enabled;serialSessionEnabled=$p.serial_session_enabled;configuredPermission=$p.configured_permission;
       commandId=$p.command_id;commandState=$p.command_state;

@@ -20,6 +20,7 @@ import threading
 import time
 from contextlib import closing
 from diagnostic_snapshot import read_json_snapshot
+from smoke_startup import defer_boat_setup
 
 root = Path(__file__).resolve().parents[1]
 windows = sys.platform == 'win32'
@@ -333,6 +334,16 @@ try:
         handle = xdo('search', '--all', '--onlyvisible', '--pid', app.pid, '--name', '^SKAGER / OpenCPN$').splitlines()[0]
         xdo('windowsize', handle, 1280, 800, 'windowmove', handle, 0, 0, 'windowfocus', handle)
     time.sleep(2)
+    def defer_setup_click(target):
+        if windows:
+            ui.pointer_text(app.pid, 'Later')
+        else:
+            dialogs=xdo('search','--all','--onlyvisible','--pid',app.pid,
+                        '--name','^Boat Setup & Sensor Check$').splitlines()
+            assert len(dialogs)==1, ('Expected one owned first-start setup sheet',dialogs)
+            xdo('windowraise',dialogs[0])
+            physical_click(target['x']+target['width']//2,target['y']+target['height']//2)
+    report['first_start_setup']=defer_boat_setup(data,defer_setup_click)
     click('North')
     control('Course')
     course_before = data()

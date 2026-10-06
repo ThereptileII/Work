@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "date": "2026-10-06",
+  "scope": "Focused native preflight and integrated Linux progression; no accepted installer or physical commands",
+  "nativePreflight": {
+    "commit": "dd31ae643a28fcf3e79e6b6190a93c073f6a47f0",
+    "run": "https://github.com/ThereptileII/Work/actions/runs/37422324401",
+    "artifactId": 11393862325,
+    "downloadSha256": "c244bb12cfa2f880387dae3be5d38961d096f2510b7b70ddbcce1785882a0c60",
+    "zipIntegrityVerified": true,
+    "checks": {
+      "providerTlsLifecycles": 8,
+      "transportCases": 18,
+      "sessionChecks": 178
+    },
+    "passed": true,
+    "fullApplicationConfigurePassed": true,
+    "applicationCompiled": false,
+    "dependencyLibrariesRebuilt": false
+  },
+  "integratedLinux": {
+    "commit": "b62dea51d8c3b1bdb58b740712ab61a02b3f6199",
+    "run": "https://github.com/ThereptileII/Work/actions/runs/37421283197",
+    "artifactId": 11393733109,
+    "downloadSha256": "088952aa1f39aeec8e79526ac1bfc03fe6ffa54081ce2e00c11141e8f261a73c",
+    "zipIntegrityVerified": true,
+    "applicationBuildPassed": true,
+    "pilotSmokeChecks": [
+      "Read-only startup despite saved manual permission",
+      "Actual UI and OpenCPN TCP serialization of AUTO/-1/+1/-10/+10/STANDBY",
+      "New matching physical-style feedback confirms; no optimistic target change",
+      "Missing feedback revokes session immediately and times out without retry",
+      "Stale STANDBY emits nothing; fresh recovery stays OFF until explicit re-enable",
+      "Same-driver reconnect clears identity and session enablement; new claim required",
+      "Live TRACK/WIND unavailable; no SmartNav control path"
+    ],
+    "pilotHardware": "NONE; loopback simulated translator",
+    "overallPassed": false,
+    "failure": "Navigation-object smoke inspected permanent navigation layout while new first-start setup sheet remained open. Existing layout assertions retained; explicit Later handling is being corrected."
+  },
+  "boatAcceptance": false,
+  "physicalCommandsSent": false
+}

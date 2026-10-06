@@ -48,6 +48,9 @@ $now=[datetime]::UtcNow
 $p=[pscustomobject]@{enabled=$false;serial_session_enabled=$false;configured_permission=$false;simulated=$false;track_capability=$false;wind_capability=$false;output_unavailable=$false;fresh=$true;source="ST4000 / NMEA2000 / COM8/NAME-$name/source-204";mode='STANDBY';feedback_sequence='3';connection_epoch='7';command_id='0';command_state='None';control_capability=$true;
  discovery=[pscustomobject]@{verified_identities=1;identity_conflicts=0;traffic_limit_exceeded=$false};receive_diagnostics=[pscustomobject]@{sources=@([pscustomobject]@{interface='COM8';pgn=60928;address=204;age_ms='20'})}}
 $diag=[pscustomobject]@{build_commit=('b'*40);build_purpose='INSTALLED PRODUCT';data_mode='OPENCPN selected navigation';xnav_hardware_output_policy='manual-commissioning';xnav_manual_control_contract=1;test_fixtures=$false;runtime=[pscustomobject]@{test_fixtures=$false;pilot=$p;display=[pscustomobject]@{route_creation_active=$false};replay=[pscustomobject]@{active=$false}}}
+ $diag | Add-Member publication_clock 'live monotonic clock'
+ $diag | Add-Member publication_monotonic_ms '10000'
+ $diag | Add-Member route ([pscustomobject]@{state='NoActiveRoute';id='';waypoint='';waypoint_count=0;source='OpenCPN 5.12.4 normal route progress: active range + subsequent stored legs; cross-track error (NM)';revision='1';revision_scope='SKAGER session 123456789';observed_monotonic_ms='9900';quality='Unavailable'})
 Check {Assert-ManualPilotUiDiagnostics $diag ('b'*40) $now $now.AddSeconds(-10) $now}
 Refuse {Assert-ManualPilotUiDiagnostics $diag ('b'*40) $now.AddSeconds(-6) $now.AddSeconds(-10) $now}
 Refuse {Assert-ManualPilotUiDiagnostics $diag ('b'*40) $now.AddSeconds(-11) $now.AddSeconds(-10) $now}
@@ -55,6 +58,12 @@ Refuse {Assert-ManualPilotUiDiagnostics $diag ('c'*40) $now $now.AddSeconds(-10)
 foreach($field in @('simulated','track_capability','wind_capability','output_unavailable')){$bad=Clone $diag;$bad.runtime.pilot.$field=$true;Refuse {Assert-ManualPilotUiDiagnostics $bad ('b'*40) $now $now.AddSeconds(-10) $now}}
 foreach($field in @('test_fixtures','xnav_manual_control_contract','data_mode')){$bad=Clone $diag;$bad.$field='unexpected';Refuse {Assert-ManualPilotUiDiagnostics $bad ('b'*40) $now $now.AddSeconds(-10) $now}}
 $bad=Clone $diag;$bad.runtime.test_fixtures=$true;Refuse {Assert-ManualPilotUiDiagnostics $bad ('b'*40) $now $now.AddSeconds(-10) $now}
+# Guard is shared by startup and every observation/input. A current file
+# containing retained stale NoActiveRoute cannot authorize a session action.
+$bad=Clone $diag;$bad.publication_monotonic_ms='16000'
+Refuse {Assert-ManualPilotUiDiagnostics $bad ('b'*40) $now.AddSeconds(6) $now.AddSeconds(-10) $now.AddSeconds(6)}
+foreach($state in @('Valid','MissingPosition','AwaitingProgress','InvalidRoute')){$bad=Clone $diag;$bad.route.state=$state;Refuse {Assert-ManualPilotUiDiagnostics $bad ('b'*40) $now $now.AddSeconds(-10) $now}}
+$bad=Clone $diag;$bad.route=$null;Refuse {Assert-ManualPilotUiDiagnostics $bad ('b'*40) $now $now.AddSeconds(-10) $now}
 $binding=[pscustomobject]@{interface='COM8';name=$name;permission='display-only'}
 $snapshot=[pscustomobject]@{Identities=$identities;InterfaceValue='COM8';NameValue=$name}
 Check {Assert-ManualPilotUiState SetName $name $p $binding $snapshot '' ''}
@@ -92,7 +101,7 @@ try {
  $alpha='OpenNavXSettings 1\n"battery" "existing source"\n"curve" "opaque calibration"\n'
  $manual=$alpha+'"pilot.interface" "COM8"\n"pilot.name" "c0508700e76004d2"\n"pilot.permission" "manual"\n'
  $connection='0;0;;0;1;COM8;115200;0;1;0;;0;;0;0;1;0;1;Gateway;0;;0'
- $text="[Settings]`r`nPersistActiveRoute=0`r`nActiveRoute=`r`n[Settings/NMEADataSource]`r`nDataConnections=$connection`r`n[Settings/GlobalState]`r`nFrameWinX=1024`r`n[OpenNav]`r`nAlphaSettings=$alpha`r`n"
+ $text="[Settings]`r`nPersistActiveRoute=0`r`nActiveRoute=12345678-90AB-cdef-1234-567890abcdef`r`n[Settings/NMEADataSource]`r`nDataConnections=$connection`r`n[Settings/GlobalState]`r`nFrameWinX=1024`r`n[OpenNav]`r`nAlphaSettings=$alpha`r`n"
  $output=Join-Path $fixtureRoot 'output.ini';$current=Join-Path $fixtureRoot 'opencpn.ini'
  $encoding=New-Object Text.UTF8Encoding($false)
  [IO.File]::WriteAllText($output,$text,$encoding)
@@ -101,7 +110,7 @@ try {
  $v=[pscustomobject]@{paths=[pscustomobject]@{directory=$fixtureRoot};context=[pscustomobject]@{profile=$fixtureRoot}}
  $beforeHash=Get-Digest $current
  Check {Same (Assert-ManualPilotUiProfile $v).permission 'manual';Same (Get-Digest $current) $beforeHash}
- foreach($bad in @($live.Replace('opaque calibration','changed'),$live.Replace('ActiveRoute=','ActiveRoute=unexpected-route'),($live+"UnknownLiveField=1`r`n"))){
+ foreach($bad in @($live.Replace('opaque calibration','changed'),$live.Replace('12345678-90AB-cdef-1234-567890abcdef','aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee'),$live.Replace('12345678-90AB-cdef-1234-567890abcdef',''),$live.Replace('ActiveRoute=','ActiveRoute=unexpected-route'),($live+"UnknownLiveField=1`r`n"))){
   [IO.File]::WriteAllText($current,$bad,$encoding);$badHash=Get-Digest $current
   Refuse {Assert-ManualPilotUiProfile $v};Check {Same (Get-Digest $current) $badHash}
  }

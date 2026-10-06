@@ -9,10 +9,34 @@ The root coordinator alone handles the authorized physical six-command procedure
 Prerequisites are a qualified installed **manual-commissioning / contract1**
 candidate, complete fresh parent read-only audit and applied plugin quarantine,
 closed application/helper processes, and the existing enabled serial NMEA2000
-COM8 connection. Other outputs, active/stored routes, custom plugin roots,
-pending updates, unknown hashes and saved manual permission refuse preparation.
+COM8 connection. Route persistence must be exactly OFF. An empty stored
+`ActiveRoute` or a syntactically valid GUID is retained verbatim; malformed route
+IDs, other outputs, custom plugin roots, pending updates, unknown hashes and saved
+manual permission refuse preparation.
 The normal existing `OpenNav/AlphaSettings` record must already exist. New/default
 vessel settings must be established and independently preserved before this child.
+
+The pinned `model/src/routeman.cpp` constructor initializes no active route and
+only activates the saved GUID when `g_persist_active_route` is true (lines110–119).
+`navutil.cpp` reads and writes the GUID independently of that flag. Keeping an
+inert saved GUID therefore preserves existing user data without activating it.
+The manual child and completed-child preservation proof reject any change or
+clearing of that stored value; this does not relax general route/source policy.
+
+Startup acceptance and every manual UI observation/input additionally require the
+actual top-level `route` diagnostic from `OpenCPNRouteReader`/`RouteProgressInput`:
+`NoActiveRoute`, empty live route/waypoint IDs, zero waypoints, positive revision,
+process-local revision scope and the exact normal-progress source. Missing,
+awaiting, invalid or active route data cannot substitute for inactivity.
+The completed observation's age at publication plus the diagnostic file's age
+must total at most five seconds. `AssessRoute` does not age non-Valid states, so
+a newly written file containing an old `NoActiveRoute` remains unacceptable.
+Consumer reads may invalidate progress but never renew its observation timestamp. Diagnostics bytes, timestamp and SHA-256 are read
+from one held, ordinary single-link file (maximum 4 MiB). Its Win32 read-sharing
+mode denies concurrent write/delete/replacement; metadata comes from the held
+handle rather than another path lookup. Startup evidence records that exact
+snapshot digest. A replaced diagnostic path cannot lend its date to older bytes.
+No route is activated, deactivated, erased or rewritten by these guards.
 
 The caller supplies exact commit, installed generation ID, executable hash,
 ownership hash and package hash. Qualification is an independently reviewed JSON
@@ -46,7 +70,8 @@ Use the entry point's explicit actions in order:
    registered task definition is checked. Only `--xnav` is launched, once. An
    intent precedes start and a durable PID/start-time receipt precedes polling.
    The helper waits for fresh exact-build diagnostics showing both session flags,
-   configured permission, simulation, replay, TRACK/WIND and route creation OFF.
+   configured permission, simulation, replay, TRACK/WIND and route creation OFF,
+   plus a fresh explicit normal-progress `NoActiveRoute` observation.
    Timeout/failure retains ownership; it does not retry or kill the process.
 4. In the product, inspect fresh identity and feedback. Configure exact `COM8`
    and an observed compatible NAME. Saving a new NAME requires another observed

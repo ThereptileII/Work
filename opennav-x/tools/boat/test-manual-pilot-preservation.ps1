@@ -57,7 +57,7 @@ try {
   $alpha='OpenNavXSettings 1\n"capacity" "20"\n"reserve" "20"\n"draft" "1"\n"model_source" "opaque provenance"\n"curve" "opaque calibration"\n'
   $bound=$alpha+'"pilot.interface" "COM8"\n"pilot.name" "c0508700e76004d2"\n"pilot.permission" "display-only"\n'
   $connection='0;0;;0;1;COM8;115200;0;0;0;;0;;0;0;1;0;1;Gateway;0;;0'
-  $text="[Settings]`r`nPersistActiveRoute=0`r`nActiveRoute=`r`n[Settings/NMEADataSource]`r`nDataConnections=$connection`r`n[OpenNav]`r`nAlphaSettings=$alpha`r`n"
+  $text="[Settings]`r`nPersistActiveRoute=0`r`nActiveRoute=12345678-90AB-cdef-1234-567890abcdef`r`n[Settings/NMEADataSource]`r`nDataConnections=$connection`r`n[OpenNav]`r`nAlphaSettings=$alpha`r`n"
   $text+=';'+('x'*(21380-$encoding.GetByteCount($text)-3))+"`r`n"
   $baseline=Join-Path $parent 'baseline.ini';[IO.File]::WriteAllBytes($baseline,(Get-CommissioningOutputBytes $encoding.GetBytes($text)));$script:CommissioningBaseline=Get-Digest $baseline
   $parentInput=Join-Path $parent 'input-only.ini';[IO.File]::WriteAllText($parentInput,$text,$encoding)
@@ -79,6 +79,21 @@ try {
   foreach($flag in @('pluginsRestored','parentRemainsActive','launchPermission')){
     $selection=MakeChild $bound {} {param($c)$c.$flag=-not $c.$flag};Refuse {Proof $selection}
   }
+  # Keep a real inert mixed-case GUID through the complete historical lineage.
+  # Rebinding every child hash must not admit a changed or cleared stored GUID.
+  foreach($nextGuid in @('aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee','')) {
+    $selection=MakeChild
+    $rollback=Join-Path $child 'rollback.ini';$saved=Join-Path $child ('inspection-'+('d'*32)+'.ini')
+    foreach($path in @($rollback,$saved,$current)){[IO.File]::WriteAllText($path,([IO.File]::ReadAllText($path).Replace('12345678-90AB-cdef-1234-567890abcdef',$nextGuid)),$encoding)}
+    $i=Read-Record $childInspection;$i.currentIniSha256=Get-Digest $saved;SetJson $childInspection $i
+    $intentPath=Join-Path $child 'rollback-intent.json';$intent=Read-Record $intentPath
+    $intent.inspectionSha256=Get-Digest $childInspection;$intent.beforeSha256=Get-Digest $saved;$intent.afterSha256=Get-Digest $rollback;SetJson $intentPath $intent
+    $c=Read-Record $completion;$c.profileSha256=Get-Digest $rollback;SetJson $completion $c
+    $selection.inspectionSha256=Get-Digest $childInspection;$selection.completionSha256=Get-Digest $completion
+    Refuse {Proof $selection}
+  }
+  foreach($value in @('some-route','{12345678-90ab-cdef-1234-567890abcdef}')){Refuse {Assert-ManualInactiveRouteSettings @{'Settings/PersistActiveRoute'='0';'Settings/ActiveRoute'=$value}}}
+  Refuse {Assert-ManualInactiveRouteSettings @{'Settings/PersistActiveRoute'='1';'Settings/ActiveRoute'='12345678-90ab-cdef-1234-567890abcdef'}}
   $selection=MakeChild
   $marker=Join-Path $workspace 'manual-pilot-active.json';SetJson $marker @{fixture='still active'};Refuse {Proof $selection -Live};Remove-Item $marker
   $badSelection=$selection|ConvertTo-Json|ConvertFrom-Json;$badSelection.completionSha256='0'*64;Refuse {Proof $badSelection}

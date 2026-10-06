@@ -369,6 +369,16 @@ function Assert-PreservedAlphaSettings([string]$Value) {
     foreach($item in $items){if($item -cnotin $known){throw 'Unknown preserved display item.'}}
   }
 }
+function Assert-ManualInactiveRouteSettings($Values) {
+  # A saved GUID is inert with persistence OFF: pinned Routeman activates it
+  # only under g_persist_active_route. Preserve it; runtime inactivity is proved
+  # separately from the completed normal route-progress observation.
+  $saved=$Values['Settings/ActiveRoute']
+  if($Values['Settings/PersistActiveRoute'] -cne '0' -or
+     ($null -ne $saved -and $saved -cne '' -and $saved -cnotmatch '\A[a-fA-F0-9]{8}-(?:[a-fA-F0-9]{4}-){3}[a-fA-F0-9]{12}\z')) {
+    throw 'Manual commissioning requires persistence OFF and an empty or valid inert stored route GUID.'
+  }
+}
 # An explicit completed manual child may preserve its exact OFF binding. This
 # proof grants no launch/control authority and never consults the current install:
 # historical baseline rereads must remain valid after its generation is retired.
@@ -454,7 +464,8 @@ function Read-ManualChildPreservationProof([string]$Workspace,[string]$ParentRec
   }
   $beforeValues=Read-ProfileForAudit $input;$afterValues=Read-ProfileForAudit $rollback
   Assert-InputOnlyProfile $beforeValues;Assert-InputOnlyProfile $afterValues
-  foreach($values in @($beforeValues,$afterValues)){if($values['Settings/PersistActiveRoute'] -cne '0' -or $values['Settings/ActiveRoute'] -or $values['Directories/pluginInstallDir']){throw 'Manual proof has an active route or custom plugin loader.'}}
+  foreach($values in @($beforeValues,$afterValues)){Assert-ManualInactiveRouteSettings $values;if($values['Directories/pluginInstallDir']){throw 'Manual proof has a custom plugin loader.'}}
+  if($beforeValues['Settings/ActiveRoute'] -cne $afterValues['Settings/ActiveRoute']){throw 'Completed manual child changed the inert stored route GUID.'}
   $beforeAlpha=$beforeValues['OpenNav/AlphaSettings'];$afterAlpha=$afterValues['OpenNav/AlphaSettings']
   if((Read-PreservedManualBinding $beforeAlpha $false) -cne (Read-PreservedManualBinding $afterAlpha $true)){throw 'Completed child changed opaque settings beyond the exact pilot binding.'}
   return [pscustomobject]@{beforeAlpha=$beforeAlpha;afterAlpha=$afterAlpha;currentIniSha256=$complete.profileSha256}

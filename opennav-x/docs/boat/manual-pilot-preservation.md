@@ -27,7 +27,10 @@ The parent inspection must contain exactly the completed child's rollback
 profile bytes. An active child, later profile edits, another parent, another
 original generation, changed evidence, a non-COM8 binding, unsupported NAME,
 unknown pilot fields or saved manual permission refuses preservation. The
-child's prior input and final settings must match in every opaque byte after
+child's route persistence must remain exactly OFF. Its inert stored route GUID
+may be empty or a valid GUID and must remain verbatim, including case; clearing
+or replacing it refuses the proof. The child's prior input and final settings
+must match in every opaque byte after
 removing the three narrowly parsed pilot scalars. Earlier settings differences
 still pass the existing parent policy, and every actual parent-profile change
 still needs the existing explicit independent review.

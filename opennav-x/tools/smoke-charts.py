@@ -21,6 +21,7 @@ import time
 import urllib.request
 import zipfile
 from diagnostic_snapshot import read_json_snapshot
+from smoke_startup import defer_boat_setup
 root=Path(__file__).resolve().parents[1];windows=sys.platform=='win32'
 evidence=root/'evidence/local';evidence.mkdir(parents=True,exist_ok=True)
 url='https://www.charts.noaa.gov/ENCs/US5SEAFL.zip'
@@ -135,6 +136,13 @@ def data(predicate=lambda d:True):
  if 'd' in locals():
   (evidence/'charts-failed-diagnostic.json').write_text(json.dumps(d,indent=2)+'\n')
  raise RuntimeError('Chart diagnostic assertion timed out')
+def defer_setup_click(target):
+ if windows:ui.pointer_text(pid,'Later')
+ else:
+  dialogs=xdo('search','--all','--onlyvisible','--pid',pid,'--name','^Boat Setup & Sensor Check$').splitlines()
+  assert len(dialogs)==1, ('Expected one owned first-start setup sheet',dialogs)
+  xdo('windowraise',dialogs[0],'mousemove',target['x']+target['width']//2,
+      target['y']+target['height']//2,'click',1)
 def chart(c):return c['runtime']['chart']
 def enc(d):return any(c['file']=='US5SEAFL.000' for c in chart(d).get('quilt_members',[]))
 def reference_cell(d,name):return any(c['file']==name and c['index']==chart(d)['quilt_reference'] for c in chart(d).get('quilt_members',[]))
@@ -229,7 +237,12 @@ try:
   owned.add(app.pid);count+=1;handle,pid=window('SKAGER / OpenCPN');ready()
   if windows:ui.size_window(handle)
   else:xdo('windowsize',handle,1280,800,'windowmove',handle,0,0)
-  d=data(enc);entry={'requested_rendering':rendering,'runtime':d['runtime'],'startup_to_enc_seconds':round(time.monotonic()-start,3),'captures':[]}
+  # Seeded plugin/navigation fixtures still have no prior OpenNav settings.
+  # Defer legitimate first-start setup explicitly before chart interactions.
+  setup_tick=int(data()['runtime']['ui_update']['ticks'])
+  data(lambda d:int(d['runtime']['ui_update']['ticks'])>=setup_tick+3)
+  setup=defer_boat_setup(data,defer_setup_click)
+  d=data(enc);entry={'requested_rendering':rendering,'runtime':d['runtime'],'startup_to_enc_seconds':round(time.monotonic()-start,3),'captures':[],'first_start_setup':setup}
   entry['workspace_startup']=workspace.assert_restored(d['runtime']['test_workspace_perspective'],suppressed=True)
   assert all(row['visible'] for row in d['runtime']['display']['rail_regions']), 'Restoring plugin workspace hid XNav rail'
   if rendering=='software':assert not chart(d)['opengl_enabled']

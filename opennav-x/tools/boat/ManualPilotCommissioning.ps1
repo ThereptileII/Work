@@ -46,9 +46,8 @@ function Assert-ManualPilotCandidate($Installed,$Expected,$Quarantine=@()) {
   }
 }
 function Assert-ManualPilotProfile($Values,[bool]$Output) {
-  # No persisted route selection is admitted, even with persistence disabled.
-  if($Values['Settings/PersistActiveRoute'] -cne '0' -or $Values['Settings/ActiveRoute'] -or
-     $Values['Directories/pluginInstallDir']){throw 'No active route or custom plugin loader may accompany manual commissioning.'}
+  Assert-ManualInactiveRouteSettings $Values
+  if($Values['Directories/pluginInstallDir']){throw 'No custom plugin loader may accompany manual commissioning.'}
   $connections=$Values['Settings/NMEADataSource/DataConnections'];$count=0
   if(-not $connections){throw 'Existing COM8 connection required.'}
   foreach($connection in $connections.Split('|')) {
@@ -94,6 +93,7 @@ function Assert-ManualPilotDelta([string]$Before,[string]$After) {
 function Assert-ManualPilotProfileDelta([string]$Before,[string]$After) {
   $old=Read-ProfileForAudit $Before;$new=Read-ProfileForAudit $After
   Assert-ManualPilotProfile $old $true;Assert-ManualPilotProfile $new $true
+  if($old['Settings/ActiveRoute'] -cne $new['Settings/ActiveRoute']){throw 'Manual session must preserve the inert stored route GUID verbatim.'}
   $diff=@(Get-CommissioningIniDiff $Before $After)
   if($diff.Count -gt 64){throw 'Too many profile changes for bounded manual review.'}
   $binding=Assert-ManualPilotDelta $old['OpenNav/AlphaSettings'] $new['OpenNav/AlphaSettings']
@@ -328,6 +328,65 @@ function Rollback-ManualPilot([string]$Workspace,[string]$Record,[string]$Hash,[
     return [pscustomobject]@{status='rolled-back';profileSha256=$targetHash;pluginsRestored=$false;parentRemainsActive=$true}
   }finally{if($lock){$lock.Dispose()};$parentLock.Dispose()}
 }
+function Initialize-ManualPilotDiagnosticsNative {
+  if(-not ('OpenNavX.ManualPilotDiagnosticsNative' -as [type])) {
+    Add-Type -Path (Join-Path $PSScriptRoot 'ManualPilotDiagnosticsNative.cs')
+  }
+}
+function Get-ManualPilotDiagnosticsMetadata([IO.FileStream]$Stream) {
+  return [OpenNavX.ManualPilotDiagnosticsNative]::Inspect($Stream.SafeFileHandle)
+}
+function Read-ManualPilotDiagnosticsSnapshot([string]$Path) {
+  Initialize-ManualPilotDiagnosticsNative
+  $path=Assert-LocalPath $Path
+  # Win32 FileShare.Read excludes existing/new writers and delete/rename. The
+  # producer may skip a publication while held; no replacement or read retry is
+  # performed here. Metadata remains tied to the handle, even if a path changes.
+  $stream=[IO.File]::Open($path,[IO.FileMode]::Open,[IO.FileAccess]::Read,[IO.FileShare]::Read)
+  try {
+    $length=$stream.Length
+    if($length -le 0 -or $length -gt 4194304){throw 'Diagnostics snapshot size outside bound.'}
+    $bytes=New-Object byte[] ([int]$length);$offset=0
+    while($offset -lt $bytes.Length) {
+      $read=$stream.Read($bytes,$offset,$bytes.Length-$offset)
+      if($read -le 0){throw 'Diagnostics snapshot was truncated.'};$offset+=$read
+    }
+    if($stream.ReadByte() -ne -1){throw 'Diagnostics snapshot grew during read.'}
+    $metadata=Get-ManualPilotDiagnosticsMetadata $stream
+    Assert-PreparationAttributes $metadata.Attributes
+    if($metadata.Length -ne $bytes.Length){throw 'Held diagnostics metadata differs from its exact bytes.'}
+    $sha256=Get-CommissioningHash $bytes
+    $encoding=New-Object Text.UTF8Encoding($false,$true)
+    $data=$encoding.GetString($bytes)|ConvertFrom-Json
+    return [pscustomobject]@{data=$data;writtenUtc=$metadata.WrittenUtc;sha256=$sha256;bytes=$bytes.Length}
+  }finally{$stream.Dispose()}
+}
+function Assert-ManualPilotNoActiveRoute($Data,[datetime]$Written,[datetime]$Started,[datetime]$Now) {
+  # NoActiveRoute is a real model state, not absent/invalid distance. Its quality
+  # is Unavailable and AssessRoute returns before ageing non-Valid states, so
+  # assess the original completed-pass timestamp ourselves. UI reads cannot
+  # renew it (RouteProgressInput::CheckCurrent); a new file mtime is insufficient.
+  $route=$Data.route
+  if($Written -lt $Started -or $Written -gt $Now -or ($Now-$Written).TotalMilliseconds -gt 5000 -or
+     $Data.publication_clock -cne 'live monotonic clock' -or
+     $route.state -cne 'NoActiveRoute' -or $route.id -isnot [string] -or $route.id -cne '' -or
+     $route.waypoint -isnot [string] -or $route.waypoint -cne '' -or
+     ($route.waypoint_count -isnot [int] -and $route.waypoint_count -isnot [long]) -or $route.waypoint_count -ne 0 -or
+     $route.source -cne 'OpenCPN 5.12.4 normal route progress: active range + subsequent stored legs; cross-track error (NM)' -or
+     $route.revision_scope -cnotmatch '\ASKAGER session [0-9]+\z') {
+    throw 'Fresh explicit normal-progress NoActiveRoute proof required; unavailable route data is not inactivity.'
+  }
+  $published=[uint64]0;$observed=[uint64]0;$revision=[uint64]0
+  foreach($value in @($Data.publication_monotonic_ms,$route.observed_monotonic_ms,$route.revision)) {
+    if($value -isnot [string] -or $value -cnotmatch '\A[1-9][0-9]{0,19}\z'){throw 'Valid live route observation timestamps/revision required.'}
+  }
+  if(-not [uint64]::TryParse($Data.publication_monotonic_ms,[ref]$published) -or
+     -not [uint64]::TryParse($route.observed_monotonic_ms,[ref]$observed) -or
+     -not [uint64]::TryParse($route.revision,[ref]$revision) -or $observed -gt $published -or
+     ([decimal]$published-[decimal]$observed)+[decimal]($Now-$Written).TotalMilliseconds -gt 5000) {
+    throw 'Route observation is stale, future-dated or invalid; fresh UI publication cannot renew it.'
+  }
+}
 function Assert-ManualPilotStartupDiagnostics($Data,[string]$Commit,[datetime]$Written,[datetime]$Started,[datetime]$Now) {
   if($Written -lt $Started -or $Written -gt $Now -or ($Now-$Written).TotalSeconds -gt 5 -or
      $Data.build_commit -cne $Commit -or $Data.build_purpose -cne 'INSTALLED PRODUCT' -or
@@ -338,6 +397,7 @@ function Assert-ManualPilotStartupDiagnostics($Data,[string]$Commit,[datetime]$W
     if($value -isnot [bool] -or $value){throw 'Default-off manual commissioning diagnostics failed.'}
   }
   if($Data.runtime.replay.active -isnot [bool] -or $Data.runtime.replay.active){throw 'Replay cannot accompany physical manual commissioning.'}
+  Assert-ManualPilotNoActiveRoute $Data $Written $Started $Now
 }
 function Assert-ManualPilotInteractive($V) {
   $actual=Get-ManualPilotEngine;$expected=$V.record.engine
@@ -401,11 +461,12 @@ function Invoke-ManualPilotInteractive($Job) {
         $deadline=[datetime]::UtcNow.AddSeconds(15);$verifiedOff=$false
         do {
           try {
-            Assert-ManualPilotStartupDiagnostics (Read-Record $diagnostics) $receipt.commit (Get-Item $diagnostics).LastWriteTimeUtc $process.StartTime.ToUniversalTime() ([datetime]::UtcNow)
+            $diagnosticSnapshot=Read-ManualPilotDiagnosticsSnapshot $diagnostics
+            Assert-ManualPilotStartupDiagnostics $diagnosticSnapshot.data $receipt.commit $diagnosticSnapshot.writtenUtc $process.StartTime.ToUniversalTime() ([datetime]::UtcNow)
             $verifiedOff=$true
           }catch {if([datetime]::UtcNow -ge $deadline){throw};Start-Sleep -Milliseconds 250}
         }while(-not $verifiedOff)
-        Write-Record (Join-Path $v.paths.directory 'startup-off.json') @{owner=$script:ManualPilotOwner;recordSha256=$Job.manualRecordSha256;pid=$process.Id;diagnosticsSha256=(Get-Digest $diagnostics);verifiedUtc=[datetime]::UtcNow.ToString('o')}
+        Write-Record (Join-Path $v.paths.directory 'startup-off.json') @{owner=$script:ManualPilotOwner;recordSha256=$Job.manualRecordSha256;pid=$process.Id;diagnosticsSha256=$diagnosticSnapshot.sha256;diagnosticsWrittenUtc=$diagnosticSnapshot.writtenUtc.ToString('o');verifiedUtc=[datetime]::UtcNow.ToString('o')}
         return [pscustomobject]@{status='passed';action=$Job.action;pid=$process.Id;startedTicks=$receipt.startedTicks;commit=$receipt.commit;commandsSent=$false;sessionControlVerifiedOff=$true}
       }finally{$process.Dispose()}
     }

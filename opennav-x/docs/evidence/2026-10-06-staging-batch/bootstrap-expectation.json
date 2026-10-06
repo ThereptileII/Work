@@ -1,0 +1,20 @@
+{
+  "commit": "fcab311d96c715fd04309da371c6d7aab76c36c2",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/37422054025",
+  "scope": "Private no-trust bootstrap receipt race; not signed-update or installed boat qualification",
+  "result": "passed",
+  "nativeWindows": ["PowerShell 5.1 32-bit", "PowerShell 5.1 64-bit", "Go launcher tests GOARCH=386"],
+  "checks": [
+    "Exact generation and receipt expectation; existing receipt held against write/delete",
+    "Actual supervisor orchestration rejects late receipt/trust/pending/generation mutation before application creation",
+    "Missing/malformed private request refuses without fallback",
+    "Existing wrapper process observation and ancestry checks pass"
+  ],
+  "artifacts": [
+    {"id": 11393730963, "sha256": "eb0ce587a3c22759d877ef67b0fe4d3f5f531e4ee38598c5c8ccb2b2f3bc65ed"},
+    {"id": 11393422500, "sha256": "4a557fa4e118233fd863baf67c51a0a3208bf83b08c36e078e0555938c6db4ee"},
+    {"id": 11393052978, "sha256": "f0046e1974136df6ba6697dbef75dff840a4d120786140cbeb9f79a18c884afd"}
+  ],
+  "downloadedZipIntegrityAndAuthenticatedHashesVerified": true,
+  "remaining": ["qualified package containing this launcher", "installed bootstrap", "signed-session commissioning handoff", "private HTTPS activation", "signed predecessor/successor boat tests"]
+}

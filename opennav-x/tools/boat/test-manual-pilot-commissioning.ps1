@@ -47,21 +47,109 @@ try {
  foreach($bad in @($bound.Replace('opaque calibration','changed'),$bound.Replace('COM8','COM9'),$bound.Replace('c0508700e76004d2','0000000000000000'),$bound.Replace('display-only','manual'),($bound+'"pilot.name" "c0508700e76004d2"\n'),($bound+'"pilot.other" "x"\n'),$bound.Replace('"COM8"','"C\\OM8"'))){Refuse {Assert-ManualPilotDelta $alpha $bad}}
  $now=[datetime]::UtcNow
  $diag=[pscustomobject]@{build_commit=('b'*40);build_purpose='INSTALLED PRODUCT';data_mode='OPENCPN selected navigation';xnav_hardware_output_policy='manual-commissioning';xnav_manual_control_contract=1;runtime=[pscustomobject]@{pilot=[pscustomobject]@{enabled=$false;serial_session_enabled=$false;configured_permission=$false;simulated=$false;track_capability=$false;wind_capability=$false};display=[pscustomobject]@{route_creation_active=$false};replay=[pscustomobject]@{active=$false}}}
+ $diag | Add-Member publication_clock 'live monotonic clock'
+ $diag | Add-Member publication_monotonic_ms '10000'
+ $diag | Add-Member route ([pscustomobject]@{state='NoActiveRoute';id='';waypoint='';waypoint_count=0;source='OpenCPN 5.12.4 normal route progress: active range + subsequent stored legs; cross-track error (NM)';revision='1';revision_scope='SKAGER session 123456789';observed_monotonic_ms='9900';quality='Unavailable'})
  Check {Assert-ManualPilotStartupDiagnostics $diag ('b'*40) $now $now.AddSeconds(-1) $now}
  foreach($field in @('enabled','serial_session_enabled','configured_permission','simulated','track_capability','wind_capability')){
   $bad=Clone $diag;$bad.runtime.pilot.$field=$true;Refuse {Assert-ManualPilotStartupDiagnostics $bad ('b'*40) $now $now.AddSeconds(-1) $now}
  }
  Refuse {Assert-ManualPilotStartupDiagnostics $diag ('c'*40) $now $now.AddSeconds(-1) $now}
  Refuse {Assert-ManualPilotStartupDiagnostics $diag ('b'*40) $now.AddSeconds(-10) $now.AddSeconds(-1) $now}
+ # The route state is explicit; unavailable/missing/active data never proves
+ # inactivity. NoActiveRoute quality is legitimately Unavailable.
+ foreach($state in @('Valid','MissingPosition','AwaitingProgress','InvalidRoute','StalePosition')) {
+  $bad=Clone $diag;$bad.route.state=$state;Refuse {Assert-ManualPilotStartupDiagnostics $bad ('b'*40) $now $now.AddSeconds(-1) $now}
+ }
+ foreach($field in @('id','waypoint','source','revision_scope')) {
+  $bad=Clone $diag;$bad.route.$field='unexpected';Refuse {Assert-ManualPilotStartupDiagnostics $bad ('b'*40) $now $now.AddSeconds(-1) $now}
+ }
+ foreach($value in @($null,'0','10001','4999','18446744073709551616',10000)) {
+  $bad=Clone $diag;$bad.route.observed_monotonic_ms=$value;Refuse {Assert-ManualPilotStartupDiagnostics $bad ('b'*40) $now $now.AddSeconds(-1) $now}
+ }
+ $bad=Clone $diag;$bad.route=$null;Refuse {Assert-ManualPilotStartupDiagnostics $bad ('b'*40) $now $now.AddSeconds(-1) $now}
+ $bad=Clone $diag;$bad.route.id=$null;Refuse {Assert-ManualPilotStartupDiagnostics $bad ('b'*40) $now $now.AddSeconds(-1) $now}
+ $bad=Clone $diag;$bad.route.waypoint_count=1;Refuse {Assert-ManualPilotStartupDiagnostics $bad ('b'*40) $now $now.AddSeconds(-1) $now}
+ $bad=Clone $diag;$bad.route.revision='0';Refuse {Assert-ManualPilotStartupDiagnostics $bad ('b'*40) $now $now.AddSeconds(-1) $now}
+ $bad=Clone $diag;$bad.publication_clock='recorded session clock';Refuse {Assert-ManualPilotStartupDiagnostics $bad ('b'*40) $now $now.AddSeconds(-1) $now}
+ # Simulate a UI read republishing unchanged retained route state six seconds
+ # later. Its fresh file date and new publication time must not renew the pass.
+ $bad=Clone $diag;$bad.publication_monotonic_ms='16000'
+ Refuse {Assert-ManualPilotStartupDiagnostics $bad ('b'*40) $now.AddSeconds(6) $now.AddSeconds(-1) $now.AddSeconds(6)}
+ # File age and age-at-publication both count toward the five-second bound.
+ $bad=Clone $diag;$bad.route.observed_monotonic_ms='6000'
+ Refuse {Assert-ManualPilotStartupDiagnostics $bad ('b'*40) $now.AddSeconds(-2) $now.AddSeconds(-10) $now}
+ # Exercise the production bounded reader, parser, hash and handle lifetime.
+ # The Unix-only adapter reads metadata from that SAME held handle; Win32 uses
+ # the actual GetFileInformationByHandle implementation with no metadata shim.
+ Initialize-ManualPilotDiagnosticsNative
+ if(-not $native) {
+  function Get-ManualPilotDiagnosticsMetadata([IO.FileStream]$Stream) {
+   return [pscustomobject]@{Length=$Stream.Length;Attributes=0x80;WrittenUtc=[IO.File]::GetLastWriteTimeUtc($Stream.SafeFileHandle)}
+  }
+ }
+ $realDiagnosticMetadata=${function:Get-ManualPilotDiagnosticsMetadata}
+ $script:diagnosticPath=Join-Path $fixtureRoot 'diagnostics.json'
+ $script:diagnosticStage=Join-Path $fixtureRoot 'diagnostics.pending'
+ $utf8=New-Object Text.UTF8Encoding($false)
+ $oldBytes=$utf8.GetBytes(($diag|ConvertTo-Json -Depth 32))
+ [IO.File]::WriteAllBytes($diagnosticPath,$oldBytes)
+ [IO.File]::SetLastWriteTimeUtc($diagnosticPath,$now.AddMinutes(-30))
+ $oldWritten=[IO.File]::GetLastWriteTimeUtc($diagnosticPath)
+ $newDiag=Clone $diag;$newDiag.route.state='Valid';$newDiag.route.id='active-route'
+ $newBytes=$utf8.GetBytes(($newDiag|ConvertTo-Json -Depth 32))
+ [IO.File]::WriteAllBytes($diagnosticStage,$newBytes)
+ [IO.File]::SetLastWriteTimeUtc($diagnosticStage,$now)
+ if($native){Initialize-PreparationNative}
+ $script:replacementAttempted=$false;$script:replacementDenied=$false
+ function Get-ManualPilotDiagnosticsMetadata([IO.FileStream]$Stream) {
+  # Deterministic interleaving: exact old bytes have been read, and the publisher
+  # tries replacing the path before metadata is fetched. No timers or sleeps.
+  $script:replacementAttempted=$true
+  if($native) {
+   try{[OpenNavX.PreparationNative]::Publish($diagnosticStage,$diagnosticPath)}catch{
+    $errorCode=$_.Exception.GetBaseException().NativeErrorCode
+    if($errorCode -ne 32){throw};$script:replacementDenied=$true
+   }
+   Refuse {$writer=[IO.File]::Open($diagnosticPath,[IO.FileMode]::Open,[IO.FileAccess]::Write,[IO.FileShare]::ReadWrite);$writer.Dispose()}
+  } else {[IO.File]::Move($diagnosticStage,$diagnosticPath,$true)}
+  return & $script:realDiagnosticMetadata $Stream
+ }
+ try{$held=Read-ManualPilotDiagnosticsSnapshot $diagnosticPath}finally{Set-Item Function:Get-ManualPilotDiagnosticsMetadata $realDiagnosticMetadata}
+ Check {
+  Same $replacementAttempted $true
+  Same $held.data.route.state 'NoActiveRoute';Same $held.sha256 (Get-CommissioningHash $oldBytes)
+  Same $held.writtenUtc $oldWritten;Same $held.bytes $oldBytes.Length
+  if($native){Same $replacementDenied $true}
+ }
+ # The stale/pre-process observation cannot borrow the new publication's date.
+ Refuse {Assert-ManualPilotStartupDiagnostics $held.data ('b'*40) $held.writtenUtc $now.AddSeconds(-1) $now}
+ if($native){[OpenNavX.PreparationNative]::Publish($diagnosticStage,$diagnosticPath)}
+ $next=Read-ManualPilotDiagnosticsSnapshot $diagnosticPath
+ Check {Same $next.data.route.state 'Valid';Same $next.sha256 (Get-CommissioningHash $newBytes);Same $next.writtenUtc ([IO.File]::GetLastWriteTimeUtc($diagnosticPath))}
+ Refuse {Assert-ManualPilotStartupDiagnostics $next.data ('b'*40) $next.writtenUtc $now.AddSeconds(-1) $now}
+ if($native) {
+  $linked=Join-Path $fixtureRoot 'diagnostics-link.json'
+  $null=New-Item -ItemType HardLink -Path $linked -Target $diagnosticPath
+  try{Refuse {Read-ManualPilotDiagnosticsSnapshot $diagnosticPath}}finally{Remove-Item -LiteralPath $linked}
+  Check {Same (Read-ManualPilotDiagnosticsSnapshot $diagnosticPath).sha256 (Get-CommissioningHash $newBytes)}
+ }
+ foreach($invalid in @([byte[]]@(),[byte[]]@(0xff),$utf8.GetBytes('{'),(New-Object byte[] 4194305))) {
+  [IO.File]::WriteAllBytes($diagnosticPath,$invalid)
+  Refuse {Read-ManualPilotDiagnosticsSnapshot $diagnosticPath}
+  # Both successful and failed reads must release the exclusive read handle.
+  Check {$writer=[IO.File]::Open($diagnosticPath,[IO.FileMode]::Open,[IO.FileAccess]::Write,[IO.FileShare]::None);$writer.Dispose()}
+ }
  $script:workspace=Join-Path $fixtureRoot 'workspace';$profile=Join-Path $fixtureRoot 'profile';$generation=Join-Path $fixtureRoot 'generation';$plugins=Join-Path $generation 'app/plugins';$script:fakeTools=Join-Path $fixtureRoot 'tools'
  foreach($d in @($workspace,$profile,$generation,$plugins,$fakeTools)){ $null=New-Item -ItemType Directory $d -Force }
  [IO.File]::WriteAllText((Join-Path $fakeTools 'helper.txt'),'inert tool identity')
  $script:ini=Join-Path $profile 'opencpn.ini';$null=New-Item -ItemType Directory (Join-Path $generation 'app') -Force;$script:exe=Join-Path $generation 'app/opencpn.exe'
  [IO.File]::WriteAllText($exe,'inert, never executed')
  $connection='0;0;;0;1;COM8;115200;0;0;0;;0;;0;0;1;0;1;Gateway;0;;0'
- $text="[Settings]`r`nPersistActiveRoute=0`r`nActiveRoute=`r`n[Settings/NMEADataSource]`r`nDataConnections=$connection`r`n[Settings/GlobalState]`r`nFrameWinX=1024`r`n[OpenNav]`r`nAlphaSettings=$alpha`r`n"
+ $text="[Settings]`r`nPersistActiveRoute=0`r`nActiveRoute=12345678-90AB-cdef-1234-567890abcdef`r`n[Settings/NMEADataSource]`r`nDataConnections=$connection`r`n[Settings/GlobalState]`r`nFrameWinX=1024`r`n[OpenNav]`r`nAlphaSettings=$alpha`r`n"
  [IO.File]::WriteAllText($ini,$text,(New-Object Text.UTF8Encoding($false)));$script:baselineHash=Get-Digest $ini
  Check {Assert-ManualPilotProfile (Read-ProfileForAudit $ini) $false}
+ Check {$empty=Read-ProfileForAudit $ini;$empty['Settings/ActiveRoute']='';Assert-ManualPilotProfile $empty $false}
  foreach($bad in @($text.Replace('PersistActiveRoute=0','PersistActiveRoute=1'),$text.Replace('ActiveRoute=','ActiveRoute=some-route'),$text.Replace('COM8','COM9'),$text.Replace($connection,$connection+'|'+$connection),$text.Replace($connection,$connection+'|'+$connection.Replace('COM8','COM9').Replace(';0;0;0;;',';0;1;0;;')))){
   $badIni=Join-Path $fixtureRoot 'bad.ini';[IO.File]::WriteAllText($badIni,$bad);Refuse {Assert-ManualPilotProfile (Read-ProfileForAudit $badIni) $false}
  }
@@ -136,7 +224,7 @@ try {
  Check {Assert-ManualPilotProfile (Read-ProfileForAudit $ini) $false;if(-not(Test-Path (Join-Path $workspace 'manual-pilot-active.json'))){throw 'Interruption lost ownership'}}
  $script:interrupt=$false
  $rolled=Rollback-ManualPilot $workspace $prepared.record $prepared.recordSha256 $inspection.inspection $inspection.inspectionSha256 $inspection.currentIniSha256
- Check {Same $rolled.status 'rolled-back';Same ((Read-ProfileForAudit $ini)['OpenNav/AlphaSettings']) $bound;if(Test-Path $plugin){throw 'Quarantine lost'};if(-not(Test-Path (Join-Path $workspace 'commissioning-active.json'))){throw 'Parent ownership lost'}}
+ Check {Same $rolled.status 'rolled-back';Same ((Read-ProfileForAudit $ini)['OpenNav/AlphaSettings']) $bound;Same ((Read-ProfileForAudit $ini)['Settings/ActiveRoute']) '12345678-90AB-cdef-1234-567890abcdef';if(Test-Path $plugin){throw 'Quarantine lost'};if(-not(Test-Path (Join-Path $workspace 'commissioning-active.json'))){throw 'Parent ownership lost'}}
  Refuse {Read-ManualPilot $workspace $prepared.record $prepared.recordSha256 -Active -Launching}
  # Apply interruption before publication still owns the parent and can roll back.
  $script:baselineHash=Get-Digest $ini

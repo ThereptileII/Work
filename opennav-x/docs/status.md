@@ -77,10 +77,20 @@ overwrote an outstanding command's timeout. Automatic revocation now keeps the
 original timeout while cancelling output and permanently revoking confirmation
 for that request. Focused red/green coverage passes. The smoke test replaces its
 obsolete stale-STANDBY exception with no-request/no-byte assertions and requires
-fresh feedback plus explicit re-enable. Integrated qualification remains pending.
-The separate one-action manual UI and completed-child binding-preservation
-helpers have focused portable coverage; native execution and physical boat
-feedback remain gates, not completed tests.
+fresh feedback plus explicit re-enable. Run `37421283197` now passes the
+integrated Linux build and pilot smoke, plus the preceding live-data checks. Its
+next navigation-object smoke stopped because the new first-start boat-setup
+sheet had not been deferred before inspecting permanent chart controls. This
+is being corrected without removing the existing layout assertions. Native AIS
+transport/TLS/session and cold full-application configure preflight passed at
+`dd31ae64`, run `37422324401`; dependency libraries were reused, not rebuilt.
+[Downloaded-artifact evidence](evidence/2026-10-06-staging-batch/integration-followup.json)
+records the exact boundaries and the incomplete full candidate.
+The one-action manual UI and completed-child binding-preservation helpers passed
+native 32/64-bit PowerShell at `a134215c`, run `37421498782`; actual boat UI and
+physical feedback remain unperformed. A subsequent bounded helper correction
+will preserve an inert retained route GUID only with persistence OFF and fresh
+explicit runtime NoActiveRoute proof; it needs its own native qualification.
 
 ## Previous increment — SCRUM-312 navigation warning and secure startup
 
