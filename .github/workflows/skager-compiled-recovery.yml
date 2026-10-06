@@ -40,7 +40,7 @@ jobs:
         run: |
           python opennav-x/tools/compiled_recovery_restore.py --root original-product/opennav-x --downloads compiled-recovery-downloads --receipt compiled-recovery-origin.json --harness-commit $env:GITHUB_SHA --run-id $env:GITHUB_RUN_ID --run-attempt $env:GITHUB_RUN_ATTEMPT
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-      - name: Trace only the isolated instruments setup interaction
+      - name: Reproduce bounded first-start interaction without instrument checks
         shell: pwsh
         run: |
           # Original source closure and every retained binary were verified above.
@@ -49,13 +49,25 @@ jobs:
           foreach ($Name in @('smoke-navigation.py', 'smoke_startup.py')) {
             Copy-Item -LiteralPath "opennav-x/tools/$Name" -Destination "$Product/tools/$Name"
           }
-          python "$Product/tools/smoke-navigation.py" --instruments --trace-setup-pointer
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $Output = Join-Path $env:GITHUB_WORKSPACE 'setup-pointer-probes'
+          New-Item -ItemType Directory $Output | Out-Null
+          for ($Index=1; $Index -le 10; $Index++) {
+            if (Get-Process opencpn -ErrorAction SilentlyContinue) { throw 'Prior application did not exit' }
+            $Attempt = Join-Path $Output ('probe-{0:d2}' -f $Index)
+            New-Item -ItemType Directory $Attempt | Out-Null
+            python "$Product/tools/smoke-navigation.py" --instruments --trace-setup-pointer --setup-only 2>&1 | Tee-Object (Join-Path $Attempt 'run.log')
+            $Code = $LASTEXITCODE
+            Get-ChildItem -LiteralPath "$Product/evidence/local" | Where-Object { $_.Name -like 'instruments-*' } | Move-Item -Destination $Attempt
+            @{schema=1;scope='isolated first-start pointer probe';index=$Index;exitCode=$Code;productCommit='0db45cb92509c29ef4d1fc33d0c76dc7cf511b97';helperCommit=$env:GITHUB_SHA;runId=$env:GITHUB_RUN_ID;qualification=$false} | ConvertTo-Json | Set-Content (Join-Path $Attempt 'probe.json')
+            # Stop at the first failure; do not retry it into a green result.
+            if ($Code -ne 0) { exit $Code }
+          }
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
           name: setup-pointer-investigation-0db45cb-harness${{ github.sha }}-run${{ github.run_id }}
           path: |
+            setup-pointer-probes
             original-product/opennav-x/evidence/local/instruments-*
             compiled-recovery-origin.json
           if-no-files-found: error

@@ -27,11 +27,15 @@ parser = argparse.ArgumentParser(description=__doc__)
 mode = parser.add_mutually_exclusive_group()
 for flag in ('route-fixture', 'route-fixture-standard', 'instruments', 'objects', 'n2k', 'boat'):
     mode.add_argument('--'+flag, action='store_true')
+parser.add_argument('--setup-only', action='store_true',
+                    help='Stop after actual setup deferral and clean close; no navigation qualification')
 parser.add_argument('--trace-setup-pointer', action='store_true',
                     help='Read-only native startup evidence for the isolated instruments fixture')
 parser.add_argument('--theme', choices=('Day', 'Dusk', 'Night'), default='Day')
 parser.add_argument('--renderer', choices=('software', 'opengl'), default='software')
 args = parser.parse_args()
+if args.setup_only and (not args.instruments or not args.trace_setup_pointer or sys.platform != 'win32'):
+    parser.error('--setup-only requires native Windows --instruments --trace-setup-pointer')
 if args.trace_setup_pointer and (not args.instruments or sys.platform != 'win32'):
     parser.error('--trace-setup-pointer requires native Windows --instruments')
 route_standard = args.route_fixture_standard
@@ -236,6 +240,10 @@ if instruments:
                           'tws_kn': 12.8, 'twa_deg': 94, 'rudder_deg': -4,
                           'water_temperature_c': 15.4}
 
+if args.setup_only:
+    report['scope']='First-start pointer probe only; navigation and instruments checks not run'
+    report['expected']={'first_start_setup':'deferred-with-Later','normal_exit':0}
+
 try:
     native_reference_fullscreen = False
     if windows:
@@ -359,6 +367,15 @@ try:
         lambda:read_json_snapshot(profile/'opennav-diagnostics.json'),defer_setup_click,
         native_window=(lambda:native_setup_window(ui,app.pid)) if windows else None,
         observe=observe_setup if args.trace_setup_pointer else None)
+    if args.setup_only:
+        assert report['first_start_setup']['status']=='deferred-with-Later', 'Startup probe requires the actual first-start sheet and Later action'
+        stop.set()
+        thread.join(timeout=3)
+        ui.close(handle)
+        report['normal_exit']=app.wait(timeout=30)
+        assert report['normal_exit']==0, 'Startup pointer probe did not close normally'
+        report['result']='startup pointer probe passed'
+        raise SystemExit(0)  # Finally retains this probe's diagnostics and trace.
 
     def capture(name):
         path = evidence / f'{prefix}-{name}.png'

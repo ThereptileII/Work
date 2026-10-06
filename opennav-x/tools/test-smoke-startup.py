@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 """Inert snapshot tests: no application, display or profile changes."""
+import argparse
+import ast
 import ctypes
+import contextlib
+import io
+from pathlib import Path
 from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
@@ -160,6 +165,56 @@ class StartupTests(unittest.TestCase):
         self.assertEqual(result['target_midpoint'],[80,44])
         self.assertEqual(result['cursor'],[80,44])
         self.assertEqual([c['title'] for c in result['later_controls']],['Later'])
+
+    def test_setup_only_argument_contract_before_any_fixture_io(self):
+        tree=ast.parse(Path(__file__).with_name('smoke-navigation.py').read_text())
+        start=next(i for i,n in enumerate(tree.body) if isinstance(n,ast.Assign) and
+                   any(isinstance(t,ast.Name) and t.id=='parser' for t in n.targets))
+        end=next(i for i,n in enumerate(tree.body) if isinstance(n,ast.Assign) and
+                 any(isinstance(t,ast.Name) and t.id=='route_standard' for t in n.targets))
+        parser_code=compile(ast.Module(body=tree.body[start:end],type_ignores=[]),'navigation-arguments','exec')
+        valid=['probe','--setup-only','--instruments','--trace-setup-pointer']
+        with patch('sys.argv',valid):
+            ns={'argparse':argparse,'sys':SimpleNamespace(platform='win32'),'__doc__':'Probe'}
+            exec(parser_code,ns)
+            self.assertTrue(ns['args'].setup_only)
+        for platform,argv in [('win32',['probe','--setup-only']),
+                              ('win32',['probe','--setup-only','--instruments']),
+                              ('win32',['probe','--setup-only','--objects','--trace-setup-pointer']),
+                              ('linux',valid)]:
+            with patch('sys.argv',argv),contextlib.redirect_stderr(io.StringIO()):
+                with self.assertRaises(SystemExit) as failure:
+                    exec(parser_code,{'argparse':argparse,'sys':SimpleNamespace(platform=platform),'__doc__':'Probe'})
+            self.assertEqual(failure.exception.code,2)
+
+    def run_setup_only_exit(self,status,exit_code):
+        tree=ast.parse(Path(__file__).with_name('smoke-navigation.py').read_text())
+        main=next(n for n in tree.body if isinstance(n,ast.Try) and n.finalbody)
+        block=next(n for n in main.body if isinstance(n,ast.If) and isinstance(n.test,ast.Attribute)
+                   and n.test.attr=='setup_only')
+        events=[]
+        report={'first_start_setup':{'status':status}}
+        ns=dict(args=SimpleNamespace(setup_only=True),report=report,handle=99,
+                stop=SimpleNamespace(set=lambda:events.append('stop-input')),
+                thread=SimpleNamespace(join=lambda **kw:events.append('join-input')),
+                ui=SimpleNamespace(close=lambda h:events.append(('close',h))),
+                app=SimpleNamespace(wait=lambda **kw:exit_code))
+        return compile(ast.Module(body=[block],type_ignores=[]),'navigation-probe-exit','exec'),ns,events
+
+    def test_setup_only_success_is_explicit_and_exits_before_navigation(self):
+        code,ns,events=self.run_setup_only_exit('deferred-with-Later',0)
+        with self.assertRaises(SystemExit) as completed:exec(code,ns)
+        self.assertEqual(completed.exception.code,0)
+        self.assertEqual(ns['report']['result'],'startup pointer probe passed')
+        self.assertEqual(ns['report']['normal_exit'],0)
+        self.assertEqual(events,['stop-input','join-input',('close',99)])
+
+    def test_setup_only_missing_sheet_or_unclean_exit_never_reports_pass(self):
+        for status,exit_code in [('not-present',0),('deferred-with-Later',1)]:
+            code,ns,events=self.run_setup_only_exit(status,exit_code)
+            with self.assertRaises(AssertionError):exec(code,ns)
+            self.assertNotIn('result',ns['report'])
+            if status=='not-present':self.assertEqual(events,[])
 
     def test_unclosed_sheet_does_not_bypass_layout_gate(self):
         clicks=[]
