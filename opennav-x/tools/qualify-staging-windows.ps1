@@ -24,7 +24,8 @@ Check 'smoke-modes-windows.py'
 Check 'smoke-navigation.py'
 Check 'smoke-navigation.py' @('--route-fixture')
 Check 'smoke-navigation.py' @('--route-fixture-standard')
-Check 'smoke-navigation.py' @('--instruments')
+# Retain actual pointer evidence for the previously intermittent first-start click.
+Check 'smoke-navigation.py' @('--instruments', '--trace-setup-pointer')
 Check 'smoke-navigation.py' @('--n2k')
 Check 'smoke-navigation.py' @('--boat')
 Check 'smoke-signalk.py'

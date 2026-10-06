@@ -1,4 +1,4 @@
-name: SKAGER retained-binary setup pointer investigation
+name: SKAGER exact prepackage recovery
 on:
   push:
     branches: [skager-compiled-recovery]
@@ -16,7 +16,7 @@ jobs:
   recover:
     if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/skager-compiled-recovery') }}
     runs-on: windows-2022
-    timeout-minutes: 30
+    timeout-minutes: 150
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
@@ -26,6 +26,16 @@ jobs:
           ref: 0db45cb92509c29ef4d1fc33d0c76dc7cf511b97
           path: original-product
           persist-credentials: false
+      - name: Check recovery boundaries with inert fixtures
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force opennav-x/evidence/local/compiled-recovery | Out-Null
+          python opennav-x/tools/test-smoke-startup.py 2>&1 | Tee-Object opennav-x/evidence/local/compiled-recovery/startup-contracts.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python opennav-x/tools/test-compiled-recovery-restore.py 2>&1 | Tee-Object opennav-x/evidence/local/compiled-recovery/restore-contracts.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python opennav-x/tools/test-recovered-staging.py 2>&1 | Tee-Object opennav-x/evidence/local/compiled-recovery/qualification-contracts.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Reconstruct exact original reviewed source without compiling
         shell: pwsh
         run: |
@@ -40,35 +50,56 @@ jobs:
         run: |
           python opennav-x/tools/compiled_recovery_restore.py --root original-product/opennav-x --downloads compiled-recovery-downloads --receipt compiled-recovery-origin.json --harness-commit $env:GITHUB_SHA --run-id $env:GITHUB_RUN_ID --run-attempt $env:GITHUB_RUN_ATTEMPT
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-      - name: Reproduce bounded first-start interaction without instrument checks
+      - name: Stage original qualified updater without compilation
         shell: pwsh
         run: |
-          # Original source closure and every retained binary were verified above.
-          # Overlay only diagnostic helpers afterwards; this is not qualification.
+          python original-product/opennav-x/tools/updater_package.py --source-install original-product/opennav-x/build/updater-qualified/install --install original-product/opennav-x/build/production-install --commit 0db45cb92509c29ef4d1fc33d0c76dc7cf511b97
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Repackage original application with explicit distinct product identity
+        shell: pwsh
+        run: |
           $Product = (Resolve-Path original-product/opennav-x).Path
-          foreach ($Name in @('smoke-navigation.py', 'smoke_startup.py')) {
-            Copy-Item -LiteralPath "opennav-x/tools/$Name" -Destination "$Product/tools/$Name"
+          $Vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          $VS = & $Vswhere -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+          if (-not $VS) { throw 'Licensed native MSVC runtime not found' }
+          $Runtime = Get-ChildItem "$VS\VC\Redist\MSVC\*\x86\Microsoft.VC143.CRT" -Directory | Sort-Object FullName -Descending | Select-Object -First 1
+          if (-not $Runtime) { throw 'Licensed x86 app-local runtime not found' }
+          python opennav-x/tools/package-preview.py --source-root $Product --product-commit 0db45cb92509c29ef4d1fc33d0c76dc7cf511b97 --install "$Product/build/production-install" --build "$Product/build/production-windows" --runtime $Runtime.FullName --output "$Product/build/developer-preview" --openssl-source-cache "$Product/build/dependency-downloads/openssl-3.5.9.tar.gz" --dependency-source-cache "$Product/build/dependency-downloads"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          foreach ($Name in @('production-package-selftest.json','production-restart-selftest.json')) {
+            Copy-Item -LiteralPath "$Product/build/developer-preview/$Name" -Destination "$Product/evidence/local/$Name"
           }
-          $Output = Join-Path $env:GITHUB_WORKSPACE 'setup-pointer-probes'
-          New-Item -ItemType Directory $Output | Out-Null
-          for ($Index=1; $Index -le 10; $Index++) {
-            if (Get-Process opencpn -ErrorAction SilentlyContinue) { throw 'Prior application did not exit' }
-            $Attempt = Join-Path $Output ('probe-{0:d2}' -f $Index)
-            New-Item -ItemType Directory $Attempt | Out-Null
-            python "$Product/tools/smoke-navigation.py" --instruments --trace-setup-pointer --setup-only 2>&1 | Tee-Object (Join-Path $Attempt 'run.log')
-            $Code = $LASTEXITCODE
-            Get-ChildItem -LiteralPath "$Product/evidence/local" | Where-Object { $_.Name -like 'instruments-*' } | Move-Item -Destination $Attempt
-            @{schema=1;scope='isolated first-start pointer probe';index=$Index;exitCode=$Code;productCommit='0db45cb92509c29ef4d1fc33d0c76dc7cf511b97';helperCommit=$env:GITHUB_SHA;runId=$env:GITHUB_RUN_ID;qualification=$false} | ConvertTo-Json | Set-Content (Join-Path $Attempt 'probe.json')
-            # Stop at the first failure; do not retry it into a green result.
-            if ($Code -ne 0) { exit $Code }
-          }
+          python opennav-x/tools/verify-preview-pe.py "$Product/build/developer-preview/SKAGER-Beta2-Portable-Recovery/app" --report "$Product/evidence/local/preview-dll-audit.json"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $Candidate = @()
+          $Compatibility = Get-Content "$Product/installer/windows/compatibility.json" -Raw | ConvertFrom-Json
+          if ($Compatibility.supportedOpenCpn.Count -eq 0) { $Candidate = @('--candidate') }
+          python opennav-x/tools/package-alpha-installer.py --source-root $Product --product-commit 0db45cb92509c29ef4d1fc33d0c76dc7cf511b97 --preview "$Product/build/developer-preview/SKAGER-Beta2-Portable-Recovery" --output "$Product/build/beta-installer" @Candidate
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python opennav-x/tools/verify-skager-pe-brand.py --expected-version 0.4.0-beta2.2 --application "$Product/build/developer-preview/SKAGER-Beta2-Portable-Recovery/app/opencpn.exe" --setup "$Product/build/beta-installer/SKAGER-Beta2-Setup.exe" --report "$Product/evidence/local/installer-skager-pe-brand.json"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Seal recovered inputs with separate compilation and packaging origins
+        shell: pwsh
+        run: |
+          python opennav-x/tools/recovered_staging.py prepare --product-root original-product/opennav-x --origin-receipt compiled-recovery-origin.json
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: recovered-staging-0db45cb92509c29ef4d1fc33d0c76dc7cf511b97-harness${{ github.sha }}-run${{ github.run_id }}-attempt${{ github.run_attempt }}
+          path: opennav-x/build/recovered-staging
+          compression-level: 0
+          if-no-files-found: error
+          retention-days: 90
+      - name: Complete all native fixture and product qualification without compiler credentials
+        shell: pwsh
+        run: python opennav-x/tools/recovered_staging.py qualify
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
-          name: setup-pointer-investigation-0db45cb-harness${{ github.sha }}-run${{ github.run_id }}
+          name: recovered-native-evidence-0db45cb92509c29ef4d1fc33d0c76dc7cf511b97-harness${{ github.sha }}-run${{ github.run_id }}-attempt${{ github.run_attempt }}
           path: |
-            setup-pointer-probes
-            original-product/opennav-x/evidence/local/instruments-*
+            opennav-x/evidence/local
+            original-product/opennav-x/evidence/local
             compiled-recovery-origin.json
           if-no-files-found: error
-          retention-days: 30
+          retention-days: 90
