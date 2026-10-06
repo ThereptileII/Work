@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "scope": "Repeated native SDK consumer verification and focused AIS; no application or boat qualification",
+  "commit": "7397e057137303cb9371d16d6133d319361bf84e",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/37282487804",
+  "job": 111673560527,
+  "artifact": 11332249319,
+  "artifactSha256": "a4c4e095deb6f69827723dcebce0288796bfd67185733f4df8111ee2009d4de7",
+  "downloadedHashVerified": true,
+  "nativeReprobes": [
+    "dependency-reprobe-db84e149380144a39ea8c310272fd702",
+    "dependency-reprobe-7d03b69fed8d4e1ab3b4bcd1264c6ff8"
+  ],
+  "bothNativeSuccessTranscriptsVerified": true,
+  "originalProducerCommit": "1b25542aea3f9ab62c83c5d7a3ecdac9652f7d3e",
+  "originalProducerRun": 37230581131,
+  "dependencyBuilds": false,
+  "applicationBuilds": false,
+  "providerTlsLifecyclesPassed": 8,
+  "transportScenariosPassed": 18,
+  "actualSessionChecksPassed": 216,
+  "countNote": "Session count comes from session.log; report.json requestedChecks.sessionChecks retains the older 178 baseline and is not the actual result.",
+  "previousAttempt": {
+    "run": 37277511537,
+    "conclusion": "Single native AIS verification passed, but first native verification was skipped by an unset LASTEXITCODE; not repeated-native proof."
+  },
+  "stagingSelectedCommit": "7397e057137303cb9371d16d6133d319361bf84e",
+  "productAcceptance": false,
+  "boatAcceptance": false
+}

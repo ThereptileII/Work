@@ -1,4 +1,4 @@
-param([switch]$DeferRuntimeQualification)
+param([switch]$DeferRuntimeQualification,[string]$UpdateTrustConfig,[string]$UpdateTrustValidator)
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 if ($DeferRuntimeQualification -and $env:GITHUB_ACTIONS -cne 'true') {
@@ -12,10 +12,20 @@ $Runtime = Get-ChildItem "$VS\VC\Redist\MSVC\*\x86\Microsoft.VC143.CRT" -Directo
     Sort-Object FullName -Descending | Select-Object -First 1
 if (-not $Runtime) { throw 'App-local x86 MSVC redistributable directory not found' }
 $Output = Join-Path $Root 'build/developer-preview'
+$TrustArguments = @()
+if ($UpdateTrustConfig -or $UpdateTrustValidator) {
+    if (-not $UpdateTrustConfig -or -not $UpdateTrustValidator) { throw 'Explicit public trust input and qualified validator are both required' }
+    $ValidatorRecord = Get-Content -LiteralPath ([IO.Path]::ChangeExtension($UpdateTrustValidator, '.json')) -Raw | ConvertFrom-Json
+    if ($ValidatorRecord.schema -ne 1 -or $ValidatorRecord.commit -cne $env:GITHUB_SHA -or
+        $ValidatorRecord.sha256 -cne (Get-FileHash -LiteralPath $UpdateTrustValidator -Algorithm SHA256).Hash.ToLowerInvariant()) {
+        throw 'Trust validator is not the exact same-commit native producer output'
+    }
+    $TrustArguments = @('--update-trust-config',$UpdateTrustConfig,'--update-trust-validator',$UpdateTrustValidator)
+}
 python (Join-Path $PSScriptRoot 'package-preview.py') --install "$Root/build/production-install" `
     --build "$Root/build/production-windows" --runtime $Runtime.FullName --output $Output `
     --openssl-source-cache "$Root/build/dependency-downloads/openssl-3.5.9.tar.gz" `
-    --dependency-source-cache "$Root/build/dependency-downloads"
+    --dependency-source-cache "$Root/build/dependency-downloads" @TrustArguments
 $AssemblyExit = $LASTEXITCODE
 $Evidence = Join-Path $Root 'evidence/local'
 $null = New-Item -ItemType Directory -Path $Evidence -Force

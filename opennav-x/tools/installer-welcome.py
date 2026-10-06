@@ -4,23 +4,26 @@ No UI, process or profile operation occurs here. Actual notice capture and the
 single visible Agree action stay in the native lifecycle harness.
 """
 import re
+from product_version import validate_product_version
 
 OWNER = 'OpenNavX.Alpha1.SideBySide.1'
 STOCK_SHA256 = '7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c'
 
 
-def version_transition(kind, executable_sha256, ownership, beta1_commit, candidate_commit):
+def version_transition(kind, executable_sha256, ownership, beta1_commit, candidate_commit,
+                       candidate_version='0.4.0-beta2'):
     """Require the exact owned version/executable before expecting a notice."""
+    validate_product_version(candidate_version)
     if not re.fullmatch('[a-f0-9]{64}', executable_sha256):
         raise ValueError('Exact executable digest required')
     if kind == 'candidate-to-stock':
         if ownership is not None or executable_sha256 != STOCK_SHA256:
             raise ValueError('Exact restored stock executable required')
-        return {'from': '0.4.0-beta2', 'to': 'stock 5.12.4', 'executableSha256': executable_sha256}
+        return {'from': candidate_version, 'to': 'stock 5.12.4', 'executableSha256': executable_sha256}
     if kind == 'candidate-to-beta1':
-        version, commit, previous = '0.3.0-beta1', beta1_commit, '0.4.0-beta2'
+        version, commit, previous = '0.3.0-beta1', beta1_commit, candidate_version
     elif kind == 'beta1-to-candidate':
-        version, commit, previous = '0.4.0-beta2', candidate_commit, '0.3.0-beta1'
+        version, commit, previous = candidate_version, candidate_commit, '0.3.0-beta1'
     else:
         raise ValueError('Unreviewed welcome transition')
     if not re.fullmatch('[a-f0-9]{40}', commit):

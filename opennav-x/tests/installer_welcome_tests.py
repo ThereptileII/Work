@@ -2,8 +2,10 @@
 import importlib.util
 from pathlib import Path
 import unittest
+import sys
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / 'tools'))
 spec = importlib.util.spec_from_file_location('installer_welcome', ROOT / 'tools/installer-welcome.py')
 policy = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(policy)
@@ -16,6 +18,15 @@ def ownership(version='0.3.0-beta1', commit=BETA1):
 
 
 class ExpectedVersionNotice(unittest.TestCase):
+    def test_successor_requires_exact_selected_version(self):
+        version = '0.4.0-beta2.1'
+        new = policy.version_transition('beta1-to-candidate', EXE,
+                ownership(version, CANDIDATE), BETA1, CANDIDATE, version)
+        self.assertEqual(new['to'], version)
+        with self.assertRaises(ValueError):
+            policy.version_transition('beta1-to-candidate', EXE,
+                ownership('0.4.0-beta2', CANDIDATE), BETA1, CANDIDATE, version)
+
     def test_real_sequence_requires_both_version_transitions(self):
         old = policy.version_transition('candidate-to-beta1', EXE, ownership(), BETA1, CANDIDATE)
         new = policy.version_transition('beta1-to-candidate', EXE, ownership('0.4.0-beta2', CANDIDATE), BETA1, CANDIDATE)

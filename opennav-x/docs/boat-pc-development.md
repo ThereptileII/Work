@@ -38,7 +38,9 @@ live chart/UI acceptance.
    installed deployment/launch scripts independently reject unsupported stock hashes.
 4. Commit, pass Linux/native Windows CI, and obtain the exact installer and its
    SHA-256 from the accepted artifact. Transfer via the established SSH alias.
-   `install.ps1` or `update.ps1` requires that hash and exact expected commit;
+   `install.ps1` or `update.ps1` requires that hash, exact expected commit and
+   `-ExpectedVersion` from the accepted artifact (`0.4.0-beta2` or
+   `0.4.0-beta2.N`, with canonical N from 1 through 65535);
    it does not fetch an unpinned latest release or launch the application.
 5. Inspect real connection output directions, every discoverable plugin and route
    state. Record a short-lived read-only audit of the exact profile INI, plugin

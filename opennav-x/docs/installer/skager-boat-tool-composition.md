@@ -78,7 +78,10 @@ for a package hash.
    Verify returned staging identity. Use one coherent staged directory for the
    whole new session; never change pinned files or toolDirectory afterward.
 3. Use preserved qualified `update.ps1 -Workspace $W -Setup $Setup -Sha256
-   $AcceptedSetupSha -ExpectedCommit $Candidate`. The supported stock executable,
+   $AcceptedSetupSha -ExpectedCommit $Candidate -ExpectedVersion $AcceptedVersion`.
+   Use a freshly native-qualified helper revision for this explicit version
+   parameter; older preserved wrappers accept only the original Beta 2 version.
+   The supported stock executable,
    closed processes, absent active transaction, cold recovery, Setup bytes,
    installer result and installed ownership must pass. This does not launch.
 4. From the composed tools, run `commission-read-only.ps1 -Action Inventory

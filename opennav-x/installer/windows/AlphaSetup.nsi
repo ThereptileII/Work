@@ -10,10 +10,11 @@ UninstallCaption "SKAGER Maintenance"
 OutFile "${OUTPUT}"
 RequestExecutionLevel user
 SetCompressor /SOLID lzma
-VIProductVersion "0.4.0.0"
+VIProductVersion "${PRODUCT_VERSION_NUMERIC}"
 VIAddVersionKey "ProductName" "SKAGER Beta 2"
 VIAddVersionKey "FileDescription" "Version-gated SKAGER Beta setup"
-VIAddVersionKey "FileVersion" "0.4.0-beta2"
+VIAddVersionKey "FileVersion" "${PRODUCT_VERSION}"
+VIAddVersionKey "ProductVersion" "${PRODUCT_VERSION}"
 VIAddVersionKey "LegalCopyright" "OpenCPN and SKAGER contributors; GPL"
 Var StockPath
 Var Action

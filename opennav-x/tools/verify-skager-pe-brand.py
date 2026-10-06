@@ -8,6 +8,7 @@ import os
 from pathlib import Path
 import re
 import struct
+from product_version import read_product_version, validate_product_version, windows_product_version
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -125,9 +126,47 @@ class Resources:
             value, size = ctypes.c_void_p(), ctypes.c_uint32()
             if self.v.VerQueryValueW(buffer, f'\\StringFileInfo\\{name}\\{field}', ctypes.byref(value), ctypes.byref(size)):
                 values.append(ctypes.wstring_at(value, size.value).rstrip('\0'))
+            else:
+                raise ValueError(f'Missing PE version field {field} in table {name}')
         if not values:
             raise ValueError(f'Missing PE version field {field}')
         return values
+
+    def fixed_version(self, data):
+        buffer = ctypes.create_string_buffer(data)
+        value, size = ctypes.c_void_p(), ctypes.c_uint32()
+        if not self.v.VerQueryValueW(buffer, '\\', ctypes.byref(value), ctypes.byref(size)):
+            raise ValueError('Missing fixed PE version information')
+        start = ctypes.addressof(buffer)
+        if (size.value != 52 or not value.value or value.value < start or
+                value.value + size.value > start + len(data)):
+            raise ValueError('Invalid fixed PE version information bounds')
+        return ctypes.string_at(value, size.value)
+
+
+def expected_versions(version, setup=False):
+    version = validate_product_version(version)
+    product = windows_product_version(version)
+    # The application retains the pinned upstream file/ABI identity. Its
+    # product identity and both Setup identities identify the SKAGER release.
+    return {'strings': {'ProductVersion': version,
+                        'FileVersion': version if setup else '5,12,4'},
+            'fixed': {'file': product if setup else (5, 12, 4, 0), 'product': product}}
+
+
+def check_fixed_version(data, expected):
+    # VS_FIXEDFILEINFO is exactly thirteen little-endian DWORDs.
+    if len(data) != 52:
+        raise ValueError('Invalid fixed PE version information length')
+    values = struct.unpack('<13I', data)
+    if values[:2] != (0xFEEF04BD, 0x00010000):
+        raise ValueError('Invalid fixed PE version information signature/version')
+    observed = {name: (values[offset] >> 16, values[offset] & 65535,
+                       values[offset + 1] >> 16, values[offset + 1] & 65535)
+                for name, offset in (('file', 2), ('product', 4))}
+    if observed != expected:
+        raise ValueError(f'Numeric PE version mismatch: {observed}')
+    return observed
 
 
 def expected_metadata(text, setup=False):
@@ -138,7 +177,7 @@ def expected_metadata(text, setup=False):
     return values
 
 
-def inspect(path, expected, metadata):
+def inspect(path, expected, metadata, version):
     before = path.read_bytes()
     resources = Resources(path)
     try:
@@ -147,13 +186,15 @@ def inspect(path, expected, metadata):
             frames = check_group(resources.read(14, name, language), lambda ident: resources.read(3, ident, language), expected)
             groups.append({'id': name, 'language': language, 'frames': frames})
         versions = []
+        required = {**metadata, **version['strings']}
         for name, language in resources.entries(16):
             data = resources.read(16, name, language)
-            fields = {field: resources.version(data, field) for field in metadata}
+            fields = {field: resources.version(data, field) for field in required}
             for field, values in fields.items():
-                if any(value != metadata[field] for value in values):
+                if not values or any(value != required[field] for value in values):
                     raise ValueError(f'{path.name} {field} mismatch: {values}')
-            versions.append({'id': name, 'language': language, 'fields': fields})
+            fixed = check_fixed_version(resources.fixed_version(data), version['fixed'])
+            versions.append({'id': name, 'language': language, 'fields': fields, 'fixed': fixed})
     finally:
         resources.close()
     if not groups or not versions:
@@ -168,7 +209,10 @@ def main():
     parser.add_argument('--application', type=Path, required=True)
     parser.add_argument('--setup', type=Path, required=True)
     parser.add_argument('--report', type=Path, required=True)
+    parser.add_argument('--expected-version', help='Explicit frozen product version; defaults to checked-out Version.h')
     args = parser.parse_args()
+    version = (validate_product_version(args.expected_version) if args.expected_version is not None
+               else read_product_version(ROOT / 'src/application/Version.h'))
     provenance = json.loads((ROOT / 'resources/branding/provenance.json').read_text())
     icon = (ROOT / 'resources/branding/skager.ico').read_bytes()
     if sha(icon) != provenance['outputs']['resources/branding/skager.ico']:
@@ -178,14 +222,15 @@ def main():
         raise ValueError('Approved ICO size declaration mismatch')
     rc = ROOT / 'src/integration/Skager.rc.in'
     nsi = ROOT / 'installer/windows/AlphaSetup.nsi'
-    report = {'schema': 1, 'scope': 'native data-only final PE branding; no application/setup execution',
+    report = {'schema': 1, 'scope': 'native data-only final PE branding and exact versions; no application/setup execution',
+              'expectedProductVersion': version,
               'approvedIconSha256': sha(icon), 'requiredSizes': sorted(expected),
               'inputs': {str(p.relative_to(ROOT)): sha(p.read_bytes()) for p in (rc, nsi)},
-              'application': inspect(args.application, expected, expected_metadata(rc.read_text())),
-              'setup': inspect(args.setup, expected, expected_metadata(nsi.read_text(), setup=True))}
+              'application': inspect(args.application, expected, expected_metadata(rc.read_text()), expected_versions(version)),
+              'setup': inspect(args.setup, expected, expected_metadata(nsi.read_text(), setup=True), expected_versions(version, setup=True))}
     args.report.parent.mkdir(parents=True, exist_ok=True)
     args.report.write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
-    print('Application and Setup: exact approved icon frames and SKAGER metadata verified')
+    print('Application and Setup: exact approved icon frames, SKAGER metadata and version resources verified')
 
 
 if __name__ == '__main__':

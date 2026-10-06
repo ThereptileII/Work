@@ -2,6 +2,19 @@
 # synthetic input, process termination, or automatic privilege elevation.
 Set-StrictMode -Version Latest
 $ErrorActionPreference='Stop'
+function Assert-BoatDeploymentVersion([string]$Version) {
+  if ($Version -cnotmatch '\A0\.4\.0-beta2(?:\.([1-9][0-9]{0,4}))?\z' -or
+      ($Matches[1] -and [int]$Matches[1] -gt 65535)) {
+    throw 'Expected canonical 0.4.0-beta2 or 0.4.0-beta2.N (1..65535).'
+  }
+}
+function Assert-BoatDeploymentIdentity($Ownership,[string]$ExpectedCommit,[string]$ExpectedVersion) {
+  Assert-BoatDeploymentVersion $ExpectedVersion
+  if ($Ownership.commit -isnot [string] -or $Ownership.version -isnot [string] -or
+      $Ownership.commit -cne $ExpectedCommit -or $Ownership.version -cne $ExpectedVersion) {
+    throw 'Installed identity differs from expected Beta 2 CI artifact.'
+  }
+}
 function Assert-LocalPath([string]$Path) {
   if ($Path -notmatch '^[A-Za-z]:\\' -or $Path -match '[\x00-\x1f"]') { throw 'Use an absolute local Windows path.' }
   $full=[IO.Path]::GetFullPath($Path).TrimEnd('\')

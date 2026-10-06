@@ -16,6 +16,8 @@ $startupLauncher=($startupOutput -join "`n")|ConvertFrom-Json
 if($startupLauncher.schema -ne 1 -or $startupLauncher.status -cne 'passed' -or
    ($native -and $startupLauncher.nativeObservation -cne 'passed')){throw 'Startup launcher helper result is not qualified for this environment.'}
 . (Join-Path $PSScriptRoot 'Common.ps1')
+$versionOutput=& (Join-Path $PSScriptRoot 'test-deployment-version.ps1')
+if(-not $?){throw 'Deployment version helper checks failed.'}
 . (Join-Path $PSScriptRoot 'RetirementPolicy.ps1')
 $root=Join-Path ([IO.Path]::GetTempPath()) ('OpenNav boat tools '+[guid]::NewGuid().ToString('N'))
 $null=New-Item -ItemType Directory -Path $root
@@ -88,7 +90,7 @@ try {
   if ($native) {
     foreach ($action in @('Install','Update','Repair')) {
       $rejected=$false
-      try {$null=& (Join-Path $PSScriptRoot 'install.ps1') -Workspace $maintenanceWorkspace -Setup (Join-Path $root 'never-execute.exe') -Sha256 ('0'*64) -ExpectedCommit ('a'*40) -Action $action}
+      try {$null=& (Join-Path $PSScriptRoot 'install.ps1') -Workspace $maintenanceWorkspace -Setup (Join-Path $root 'never-execute.exe') -Sha256 ('0'*64) -ExpectedCommit ('a'*40) -ExpectedVersion '0.4.0-beta2' -Action $action}
       catch {$rejected=$_.Exception.Message -like 'Restore the active read-only commissioning*'}
       if (-not $rejected) {throw 'Setup wrapper did not reject active commissioning before target/setup access.'}
     }
@@ -118,7 +120,7 @@ try {
   }
   $checks.Add('Default ZIP policy preserved; executable retirement requires explicit opt-in and exact accepted Beta1 setup name/hash')
   if (-not $native) {
-    [pscustomobject]@{status='passed';environment='linux-portable-maintenance-contracts';scope='Unique temporary files only; no application, profile, registry or hardware access';checks=@($checks);count=$checks.Count;startupLauncher=$startupLauncher} | ConvertTo-Json -Depth 5
+    [pscustomobject]@{status='passed';environment='linux-portable-maintenance-contracts';scope='Unique temporary files only; no application, profile, registry or hardware access';checks=@($checks);count=$checks.Count;startupLauncher=$startupLauncher;deploymentVersion=$versionOutput} | ConvertTo-Json -Depth 5
     return
   }
   $stock=Join-Path $root 'stock';$profile=Join-Path $root 'profile';$workspace=Join-Path $root 'workspace'
@@ -398,5 +400,5 @@ try {
   $rejected=$false;try {$null=Read-UpgradeRecord $upgradeRecord $upgradeHash} catch {$rejected=$true}
   if (-not $rejected) {throw 'Changed stock maintenance record accepted.'}
   $checks.Add('Stock preflight/wizard evidence requires its exact recorded SHA-256')
-  [pscustomobject]@{status='passed';environment=$testEnvironment;scope='Unique temporary files only; no application, real profile, registry, service or hardware operations';checks=@($checks);count=$checks.Count;startupLauncher=$startupLauncher} | ConvertTo-Json -Depth 5
+  [pscustomobject]@{status='passed';environment=$testEnvironment;scope='Unique temporary files only; no application, real profile, registry, service or hardware operations';checks=@($checks);count=$checks.Count;startupLauncher=$startupLauncher;deploymentVersion=$versionOutput} | ConvertTo-Json -Depth 5
 } finally {Remove-Item -LiteralPath $root -Recurse -Force}

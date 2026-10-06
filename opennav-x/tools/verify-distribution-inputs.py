@@ -3,6 +3,7 @@
 import json
 import re
 from pathlib import Path
+from product_version import read_product_version
 
 root = Path(__file__).resolve().parents[1]
 required = (
@@ -21,8 +22,8 @@ if missing:
     raise SystemExit('Missing distribution inputs: ' + ', '.join(missing))
 manifest = json.loads((root / 'installer/windows/compatibility.json').read_text())
 assert isinstance(manifest['supportedOpenCpn'], list)
-version = re.search(r'Version\[\] = "([^"]+)"', (root/'src/application/Version.h').read_text()).group(1)
-assert version == manifest['openNavVersion'] == '0.4.0-beta2'
+version = read_product_version(root/'src/application/Version.h')
+assert version == manifest['openNavVersion']
 assert all(entry['integrationPackage'] == 'SKAGER-Beta2-Setup.exe' for entry in manifest['supportedOpenCpn'])
 assert (root/'src/integration/BuildFeatures.h').is_file()
 assert 'option(XNAV_ENABLE_TEST_FIXTURES' in (root/'CMakeLists.txt').read_text()

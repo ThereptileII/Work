@@ -4,9 +4,11 @@ param(
   [Parameter(Mandatory=$true)][string]$Setup,
   [Parameter(Mandatory=$true)][ValidatePattern('^[a-f0-9]{64}$')][string]$Sha256,
   [Parameter(Mandatory=$true)][ValidatePattern('^[a-f0-9]{40}$')][string]$ExpectedCommit,
+  [Parameter(Mandatory=$true)][string]$ExpectedVersion,
   [ValidateSet('Install','Update','Repair')][string]$Action='Install'
 )
 . (Join-Path $PSScriptRoot 'Common.ps1')
+Assert-BoatDeploymentVersion $ExpectedVersion
 Assert-NoActiveCommissioning $Workspace
 $config=Get-Target $Workspace
 $setup=Assert-LocalPath $Setup
@@ -33,6 +35,6 @@ try {
 $record=Read-Record $report
 if ($record.status -cne 'passed') { throw 'Installer did not report successful validation.' }
 $installed=Get-Installed
-if ($installed.ownership.commit -cne $ExpectedCommit -or $installed.ownership.version -cne '0.4.0-beta2') { throw 'Installed identity differs from expected Beta 2 CI artifact.' }
+Assert-BoatDeploymentIdentity $installed.ownership $ExpectedCommit $ExpectedVersion
 Write-Record (Join-Path $directory 'deployment.json') @{status='installed';buildCommit=$ExpectedCommit;setupSha256=$Sha256;version=$installed.ownership.version;stockSha256=(Get-Digest $config.stockExecutable);launchPending=$true;note='No application or hardware command launched. Renew read-only profile/plugin audit before smoke testing.'}
 Get-Content -LiteralPath (Join-Path $directory 'deployment.json') -Raw

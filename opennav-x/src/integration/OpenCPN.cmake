@@ -257,6 +257,18 @@ if(MSVC)
   # The explicit integration hook runs after upstream's resource configuration.
   # Replace only the disposable build output, keeping resource ID 0 (frame icon),
   # executable filename, version and upstream source/stock install unchanged.
+  execute_process(COMMAND "${Python3_EXECUTABLE}" "${OPENNAV_ROOT}/tools/product-version-resource.py"
+    RESULT_VARIABLE skager_version_result OUTPUT_VARIABLE skager_version_resource
+    OUTPUT_STRIP_TRAILING_WHITESPACE)
+  if(NOT skager_version_result EQUAL 0)
+    message(FATAL_ERROR "SKAGER product version is invalid")
+  endif()
+  string(REPLACE "\n" ";" skager_version_resource "${skager_version_resource}")
+  list(GET skager_version_resource 0 SKAGER_PRODUCT_VERSION)
+  list(GET skager_version_resource 1 SKAGER_RESOURCE_VERSION)
+  set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
+    "${OPENNAV_ROOT}/src/application/Version.h"
+    "${OPENNAV_ROOT}/tools/product_version.py")
   configure_file("${OPENNAV_ROOT}/src/integration/Skager.rc.in"
     "${CMAKE_BINARY_DIR}/opencpn.rc" @ONLY)
 endif()
