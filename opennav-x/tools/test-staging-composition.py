@@ -96,6 +96,44 @@ def report_fixture(q):
     return original, retest, frozen
 
 
+def path_failure_fixture():
+    request, _, _, _, _ = fixture()
+    p = c.PATH_FAILURE_PRODUCER
+    request.update(schema=2, producer=copy.deepcopy(p))
+    request['build'].update(archiveSha256=c.PATH_FAILURE_ARCHIVE,
+        artifactName=f"staging-build-{p['commit']}-run{p['runId']}-attempt{p['runAttempt']}")
+    request['original'].update(jobId=c.PATH_FAILURE_JOB,
+        artifactName=f"windows-qualification-{p['commit']}-attempt{p['runAttempt']}",
+        prefixReports=[dict(path=n,sha256=h) for n,h in c.PATH_PREFIX_HASHES.items()])
+    request['retest'].update(commit=c.PATH_FAILURE_HARNESS,
+        artifactName=f"staging-retest-evidence-{p['runId']}-attempt1-harness{c.PATH_FAILURE_HARNESS}-run200-attempt2")
+    raw = json.dumps(request).encode()
+    q = c.qualification(request, c.digest(raw), dict(commit=COMPOSER,runId='300',runAttempt='3'))
+    old, new, frozen = report_fixture(fixture()[2])
+    replacements = {PRODUCT:p['commit'], HARNESS:c.PATH_FAILURE_HARNESS, '100':p['runId'], 'd'*64:c.PATH_FAILURE_ARCHIVE}
+    def replace(value):
+        if isinstance(value, dict):return {k:replace(v) for k,v in value.items()}
+        if isinstance(value, list):return [replace(v) for v in value]
+        if isinstance(value, str):return replacements.get(value,value)
+        return value
+    old,new,frozen = replace([old,new,frozen])
+    del old['packaged-updater.json']
+    old['installer-staging.json'] = dict(status='failed',mode='staging',
+        error="FileNotFoundError(2, 'No such file or directory')", product_commit=p['commit'],
+        harness_commit=p['commit'], test_source_sha256=c.PATH_FAILURE_SOURCE,
+        checks=copy.deepcopy(c.PATH_INSTALLER_CHECKS),first_start_setup=[])
+    old['pilot-results.json']['checks'] = c.MANUAL_PILOT_CHECKS.copy()
+    old['pilot-status-only/pilot-results.json']['checks'] = c.PASSIVE_PILOT_CHECKS.copy()
+    for report in (old['pilot-status-only/pilot-opennav-diagnostics.json'], old['production-recovery-results.json']['build']):
+        report.update(xnav_hardware_output_policy='manual-commissioning',xnav_manual_control_contract=1)
+    old['pilot-status-only/pilot-opennav-diagnostics.json']['runtime']['pilot'].update(
+        output_unavailable=False,configured_permission=True,serial_session_enabled=False,
+        track_capability=False,wind_capability=False,simulated=False)
+    new['installer-staging.json']['test_source_sha256'] = c.PATH_FIXED_SOURCE
+    new['installer-staging.json']['packaged_updater'] = copy.deepcopy(new['packaged-updater.json'])
+    return request,raw,q,old,new,frozen
+
+
 class FakeGitHub:
     repo = c.REPOSITORY
     base = 'repos/' + c.REPOSITORY
@@ -111,7 +149,8 @@ class FakeGitHub:
                                     head_sha=identity['commit'], path=workflow, status='completed', conclusion=result,
                                     head_repository=dict(full_name=self.repo), event='push', head_branch='skager-staging-compose')
             if workflow == c.BASELINE:
-                jobs = [(name, 'success', '1') for name in c.REQUIRED_JOBS] + [(c.RUNTIME_JOB, 'failure', '102')]
+                jobs = [(name, 'success', '1') for name in c.REQUIRED_JOBS] + [(c.RUNTIME_JOB, 'failure', request['original']['jobId'])]
+                if request['schema'] == 2:jobs.append(('pilot-serial-contracts / serial', 'success', '104'))
             elif workflow == c.RETEST:
                 jobs = [('retest', 'success', '201')]
             else:
@@ -119,6 +158,12 @@ class FakeGitHub:
             self.data[prefix + '/jobs'] = [dict(name=name, status='completed', conclusion=result, id=int(jobid),
                                                run_id=int(identity['runId']), run_attempt=int(identity['runAttempt']),
                                                head_sha=identity['commit']) for name, result, jobid in jobs]
+        if request['schema'] == 2:
+            self.data[f"{self.base}/compare/{c.PATH_FAILURE_PRODUCER['commit']}...{c.PATH_FAILURE_HARNESS}"] = dict(
+                base_commit=dict(sha=c.PATH_FAILURE_PRODUCER['commit']),
+                merge_base_commit=dict(sha=c.PATH_FAILURE_PRODUCER['commit']),status='ahead',total_commits=1,
+                commits=[dict(sha=c.PATH_FAILURE_HARNESS)],
+                files=[dict(filename=n,sha=h,status='modified') for n,h in c.PATH_HARNESS_DELTA.items()])
         for pin, identity in ((request['build'], request['producer']), (request['original'], request['producer']),
                               (request['retest'], request['retest'])):
             self.data[f"{self.base}/actions/artifacts/{pin['artifactId']}"] = dict(
@@ -138,6 +183,92 @@ class CompositionTests(unittest.TestCase):
     def setUp(self):
         self.request, self.raw, self.q, self.record, self.support = fixture()
         self.gh = FakeGitHub(self.request, self.raw, self.q)
+
+    def test_exact_early_path_failure_and_complete_retest_are_supported(self):
+        request,raw,q,old,new,frozen = path_failure_fixture()
+        c.validate_request(request)
+        c.validate_reports(old,new,q,frozen)
+        gh = FakeGitHub(request,raw,q)
+        c.verify_provenance(gh,q,complete=True)
+        self.assertNotIn('packaged-updater.json',old)
+        self.assertEqual(gh.data[f"{gh.base}/actions/runs/{c.PATH_FAILURE_PRODUCER['runId']}/attempts/1"]['conclusion'],'failure')
+        record = dict(request['producer'],channel='staging')
+        support = dict(self.support,commit=record['commit'],artifactName=f"staging-retest-{record['commit']}-attempt3")
+        c.validate_qualification(q,record,support)
+
+    def test_path_failure_cannot_transfer_origin_harness_or_report_authority(self):
+        request,raw,q,old,new,frozen = path_failure_fixture()
+        for section,key,value in [('producer','commit',PRODUCT),('producer','runId','999'),
+                                  ('original','jobId','888'),('build','archiveSha256','0'*64),
+                                  ('retest','commit',HARNESS),
+                                  ('retest','commit','5d6c28e9cfd488f761799828bb93dd6ae34af400')]:
+            changed = copy.deepcopy(request);changed[section][key]=value
+            with self.subTest(section=section,key=key),self.assertRaises(ValueError):c.validate_request(changed)
+        for name in ('packaged-updater.json','charts-results.json'):
+            changed=copy.deepcopy(request);changed['original']['prefixReports'].append(dict(path=name,sha256='0'*64))
+            with self.assertRaises(ValueError):c.validate_request(changed)
+        changed=copy.deepcopy(request);changed['original']['prefixReports'][0]['sha256']='0'*64
+        with self.assertRaises(ValueError):c.validate_request(changed)
+        gh=FakeGitHub(request,raw,q)
+        jobs=f"{gh.base}/actions/runs/{c.PATH_FAILURE_PRODUCER['runId']}/attempts/1/jobs"
+        gh.data[jobs][-1]['conclusion']='failure'
+        with self.assertRaises(ValueError):c.verify_provenance(gh,q,complete=True)
+
+    def test_path_harness_must_be_only_exact_five_reviewed_git_blobs(self):
+        request,raw,q,*_=path_failure_fixture()
+        endpoint=f"{FakeGitHub.base}/compare/{c.PATH_FAILURE_PRODUCER['commit']}...{c.PATH_FAILURE_HARNESS}"
+        for mutation in ('extra-product','different-blob','removed-file','renamed-file','other-parent','extra-commit'):
+            gh=FakeGitHub(request,raw,q);comparison=gh.data[endpoint]
+            if mutation=='extra-product':comparison['files'].append(dict(filename='opennav-x/src/changed.cpp',sha='a'*40,status='modified'))
+            if mutation=='different-blob':comparison['files'][0]['sha']='a'*40
+            if mutation=='removed-file':comparison['files'].pop()
+            if mutation=='renamed-file':comparison['files'][0]['status']='renamed'
+            if mutation=='other-parent':comparison['merge_base_commit']['sha']='a'*40
+            if mutation=='extra-commit':comparison['total_commits']=2
+            with self.subTest(mutation=mutation),self.assertRaises(ValueError):c.verify_provenance(gh,q,complete=True)
+
+    def test_manual_prefix_retains_zero_wire_and_all_current_checks(self):
+        _,_,q,old,new,frozen=path_failure_fixture()
+        pilot='pilot-status-only/pilot-opennav-diagnostics.json'
+        mutations=[('pilot-results.json',('checks',),c.MANUAL_PILOT_CHECKS[:-1]),
+            ('pilot-status-only/pilot-results.json',('wire_output',),['output']),
+            ('pilot-status-only/pilot-results.json',('sent',),['request']),
+            ('pilot-status-only/pilot-results.json',('received_bytes',),1),
+            (pilot,('xnav_manual_control_contract',),True),
+            (pilot,('xnav_hardware_output_policy',),'status-only'),
+            (pilot,('runtime','pilot','serial_session_enabled'),True),
+            (pilot,('runtime','pilot','control_capability'),True),
+            (pilot,('runtime','pilot','configured_permission'),False),
+            (pilot,('runtime','pilot','fresh'),False),
+            (pilot,('runtime','pilot','track_capability'),True),
+            (pilot,('runtime','pilot','wind_capability'),True),
+            ('mode-cycle-results.json',('peer_boundary',0,'owned_tcp_listener_ports'),[1234]),
+            ('production-recovery-results.json',('build','xnav_manual_control_contract'),0),
+            ('production-recovery-results.json',('chart_rendering',0,'coastline_visible'),False)]
+        for name,path,value in mutations:
+            changed=copy.deepcopy(old);target=changed[name]
+            for key in path[:-1]:target=target[key]
+            target[path[-1]]=value
+            with self.subTest(name=name,path=path),self.assertRaises(ValueError):c.validate_reports(changed,new,q,frozen)
+
+    def test_no_unreached_updater_prefix_or_partial_suffix_substitution(self):
+        _,_,q,old,new,frozen=path_failure_fixture()
+        for key,value in [('error',c.FAILURE),('checks',c.PATH_INSTALLER_CHECKS[:-1]),
+                          ('first_start_setup',[dict(status='not-present')]),('packaged_updater',dict(status='passed')),
+                          ('test_source_sha256',c.PATH_FIXED_SOURCE)]:
+            changed=copy.deepcopy(old);changed['installer-staging.json'][key]=value
+            with self.subTest(key=key),self.assertRaises(ValueError):c.validate_reports(changed,new,q,frozen)
+        changed=copy.deepcopy(old);changed['packaged-updater.json']=copy.deepcopy(new['packaged-updater.json'])
+        with self.assertRaises(ValueError):c.validate_reports(changed,new,q,frozen)
+        for name,key,value in [('packaged-updater.json','checks',c.UPDATER_CHECKS[:3]),
+                              ('packaged-updater.json','status','not-run'),
+                              ('packaged-updater.json','executableSha256','a'*64),
+                              ('installer-staging.json','test_source_sha256',c.PATH_FAILURE_SOURCE),
+                              ('installer-staging.json','test_source_sha256','5c4080cb24f8b8fb585953bd8cf3d246b981db50da2060eb751434e09fb9aa1d'),
+                              ('staging-retest.json','archiveSha256','a'*64),
+                              ('charts-results.json','result','not-run')]:
+            changed=copy.deepcopy(new);changed[name][key]=value
+            with self.subTest(name=name,key=key),self.assertRaises(ValueError):c.validate_reports(old,changed,q,frozen)
 
     def test_original_failed_run_and_distinct_completed_composition_are_valid(self):
         c.validate_qualification(self.q, self.record, self.support)
@@ -249,6 +380,16 @@ class CompositionTests(unittest.TestCase):
                           dict(member='../escape'), dict(extra=name+'/child'), dict(extra=name.upper())]:
             with self.subTest(overrides=overrides), self.assertRaises(ValueError):
                 c.selected_source_zip(source_zip(**overrides), wanted)
+
+    def test_unreached_original_updater_report_cannot_hide_outside_selected_prefix(self):
+        for name in ('packaged-updater.json','PACKAGED-UPDATER.JSON'):
+            archive=io.BytesIO()
+            with zipfile.ZipFile(archive,'w') as z:
+                z.writestr('installer-staging.json','{}');z.writestr(name,'{}')
+            archive.seek(0)
+            with self.subTest(name=name),self.assertRaisesRegex(ValueError,'unreached'):
+                c._reports(archive,[dict(path='installer-staging.json',sha256=c.digest(b'{}'))],
+                           forbidden=('packaged-updater.json',))
 
     def test_report_pins_are_checked_before_json_semantics(self):
         with tempfile.TemporaryDirectory() as tmp:

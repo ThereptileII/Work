@@ -71,6 +71,71 @@ GATES = dict(linux='passed', windows='passed', installer='passed', package='pass
 MAX_ARTIFACT = 8 * 1024**3
 MAX_REPORT = 32 * 1024**2
 FAILURE = "RuntimeError('Native process did not exit within the deadline')"
+# Schema 2 admits only the reviewed 3d7 installer diagnostic-path failure.
+# These are authenticated original report bytes, not a generic failed-job waiver.
+PATH_FAILURE_PRODUCER = dict(commit='3d7d2a44467c1b1ede917b78e5b183da2cfa023f', runId='37443942170', runAttempt='1')
+PATH_FAILURE_JOB = '112226269010'
+PATH_FAILURE_ARCHIVE = '0011c2c324aefb63cdd5eda45efcf167b8c0bb60dab5d93ee9990b58e7db3e04'
+PATH_FAILURE_HARNESS = '80c7c5121446e191faab66cc56be51385f639b0b'
+PATH_FAILURE_SOURCE = '1b2056ba1332e2b7f80cea598048b20882c23f1d4482b95979387f5578dd211d'
+# Native report hashes the executed CRLF checkout; Git blob binding below remains exact.
+PATH_FIXED_SOURCE = '76540a7b6a33280971f74ccc89456637942f66ee9a31df8d3cbae4b410d46b4f'
+PATH_HARNESS_DELTA = {
+    'opennav-x/tools/smoke-installer-windows.py': '9c056dda463be622a6e19074070c8e23968b6de7',
+    'opennav-x/tools/smoke_startup.py': '34d4fa4084c9854e1dfac042754d95b60e0254d6',
+    'opennav-x/tools/test-installer-completion.py': '6fd2da39a880a6ea5f170945d243fa7a30642c79',
+    'opennav-x/tools/test-smoke-startup.py': '565a01a90b00bc91723fbf703de94854ee40fdbc',
+    'opennav-x/tools/staging-installer-retest.json': '53e8976590322af5c106c6dd6ce954758e9eadd3',
+}
+PATH_PREFIX_HASHES = {
+    'boat-feedback-windows/result.json': '16f4139b723375c460fd827e2907cd5caa15a8fc8268e6da1891598166091a42',
+    'boat-input-results.json': '40dc129053d3e2dfd0d84c06224dc6c13ca3dd0f908db4bbb92b704d0802754c',
+    'installer-loader-selftest.json': '959c9d26c35e54df0d12cfe26f95a71b7b26be12cf469a88d4f065c09e7ff6d8',
+    'installer-staging.json': '38f6dc905716aac050fede0fb5ce44020f11b11f5ef5539e7a73464183f5d202',
+    'instruments-input-results.json': '774a624f0b66c871e8effee5bd7f5f09f87ab1af12d04baa4f038eecfcbeb7e6',
+    'mode-cycle-results.json': 'ecf968dd5c72c5e47d2f077f712ed9c6ccfe518a1d06d68e16a45a0fd0dc0a13',
+    'n2k-input-results.json': '55dcba82a4fffb522f8f40fd5a505338343f706bb0ab63556cbcea824d3b4cb6',
+    'navigation-input-results.json': 'ef80c041b26934e9e59f38b06ab0c2dfbc9543e35b5862ca4537f67c0b3e6251',
+    'objects-input-results.json': '7e658a47240aeb6fe2ec498192fbf35e37605f120c07c1ce1079846e87626bc9',
+    'pilot-results.json': '1341594521daa68da069a14ab208624256b0692b230b2d54edd4a53f75fb1ea9',
+    'pilot-status-only/pilot-opennav-diagnostics.json': 'd5ada7a8e437e87a0e41289ec8c4c06f18947a74d16462a67390777affd7e5c8',
+    'pilot-status-only/pilot-results.json': 'f9876bd0f4b42f264933ba0384d953a7d8a94879ecd3e76c46cdbd51b18e951c',
+    'production-recovery-results.json': 'ca4645a189347c76da4cade6bb3f2e7266f13f5b68642cecdf3e1099e045a187',
+    'recording-results.json': '0860cbf3e571c81408247fd4d6725ed632d99cb082b2aa1b0eb9a7ecd8b58565',
+    'recovery-results.json': '22677b1b3ac1c7bfa10bcb75515285c62eec2e48865453dba8e8a9d920dce6b5',
+    'route-input-results.json': '860c0b5e32df550b7afbb7fb2e710ddc4152714a723602f855deb16418d33f6d',
+    'route-standard-input-results.json': '52c6148868428e1e6a63d41d4390d8cb93644e1de3d23e9fb13ddf6172e33f65',
+    'signalk-results.json': '0ba5de156cf3a7e53670f464169cfde7dee904421962099d213427ed13892dbf',
+    'staging-inputs.json': '84ee3caff2b3da37c28843714a8bf4ee5435381e8afc5aa7f0068b806d8818c8',
+    'user-flows-results.json': 'ef6ffd226f4f5d80fdb77d0f482036f480659a298d75ac8b5ef7df602e12ceef',
+}
+PATH_INSTALLER_CHECKS = [
+    'Official supported OpenCPN installed and exact PE executable SHA-256 verified',
+    'Registry discovery handles the official build-suffixed key and verifies its exact hash without modification',
+    'Conventional wizard opens without command-line options; default Install and path input work; Cancel changes no installation',
+    'A foreign SKAGER Start-menu group is refused before root creation; its same-name shortcut and stock remain unchanged',
+    'Unknown installation ownership refused without adding logs or changing files',
+    'Unknown executable hash refused; rejected tree and existing profile unchanged; install root and all shortcut groups absent',
+    'Fresh install refuses each unmanaged stock plugin legacy TLS DLL and preserves stock/profile without publication',
+    'Actual Beta 2 wizard detection, recovery, shortcuts, ready, validation and Finish pass without command-line options',
+]
+MANUAL_PILOT_CHECKS = [
+    'Read-only startup despite saved manual permission',
+    'Actual UI and OpenCPN TCP serialization of AUTO/-1/+1/-10/+10/STANDBY',
+    'New matching physical-style feedback confirms; no optimistic target change',
+    'Missing feedback revokes session immediately and times out without retry',
+    'Stale STANDBY emits nothing; fresh recovery stays OFF until explicit re-enable',
+    'Same-driver reconnect clears identity and session enablement; new claim required',
+    'Live TRACK/WIND unavailable; no SmartNav control path',
+]
+PASSIVE_PILOT_CHECKS = [
+    'Control OFF disables AUTO; physical click creates no request or output',
+    'Saved manual permission cannot enable product TCP output',
+    'Every displayed command and enable action disabled despite fresh compatible feedback',
+    'Zero wire output including identity discovery across loss/reconnect',
+    'Passive observed pilot status survives reconnection',
+]
+
 require = manifest.require
 
 
@@ -106,7 +171,7 @@ def _pins(items, required):
 
 def validate_request(request):
     _fields(request, ('schema', 'repository', 'producer', 'build', 'original', 'retest'))
-    require(type(request['schema']) is int and request['schema'] == 1 and
+    require(type(request['schema']) is int and request['schema'] in (1, 2) and
             request['repository'] == REPOSITORY, 'Unsupported composition request')
     p = request['producer']; _identity(p)
     artifact_keys = {'artifactId', 'artifactName', 'artifactDigest'}
@@ -126,8 +191,18 @@ def validate_request(request):
             request['original']['artifactName'] == f"windows-qualification-{p['commit']}-attempt{p['runAttempt']}" and
             r['artifactName'] == f"staging-retest-evidence-{p['runId']}-attempt{p['runAttempt']}-harness{r['commit']}-run{r['runId']}-attempt{r['runAttempt']}",
             'Artifact name does not bind exact producer/retest identity')
-    _pins(request['original']['prefixReports'], PREFIX_REPORTS)
+    _pins(request['original']['prefixReports'], prefix_reports(request))
+    if request['schema'] == 2:
+        require(p == PATH_FAILURE_PRODUCER and request['original']['jobId'] == PATH_FAILURE_JOB and
+                request['build']['archiveSha256'] == PATH_FAILURE_ARCHIVE and r['commit'] == PATH_FAILURE_HARNESS,
+                'Only the reviewed diagnostic-path producer and corrected harness are supported')
+        require({i['path']: i['sha256'] for i in request['original']['prefixReports']} == PATH_PREFIX_HASHES,
+                'Original diagnostic-path reports differ from the reviewed failure/prefix')
     _pins(r['reports'], RETEST_REPORTS)
+
+
+def prefix_reports(request):
+    return frozenset(PATH_PREFIX_HASHES) if request['schema'] == 2 else PREFIX_REPORTS
 
 
 def request_from_qualification(q):
@@ -208,14 +283,33 @@ def _verify_inputs(gh, q):
     require(gh.repo == REPOSITORY, 'Composition repository differs')
     _run(gh, p, BASELINE, conclusion='failure')
     jobs = gh.pages(f"{gh.base}/actions/runs/{p['runId']}/attempts/{p['runAttempt']}/jobs")
-    for name in REQUIRED_JOBS:
+    for name in REQUIRED_JOBS + (('pilot-serial-contracts / serial',) if c['schema'] == 2 else ()):
         _job(jobs, p, name, 'success')
     _job(jobs, p, RUNTIME_JOB, 'failure', c['original']['jobId'])
+    if c['schema'] == 2:
+        _verify_path_harness(gh)
     _run(gh, r, RETEST, conclusion='success')
     jobs = gh.pages(f"{gh.base}/actions/runs/{r['runId']}/attempts/{r['runAttempt']}/jobs")
     _job(jobs, r, 'retest', 'success', r['jobId'])
     for pin, identity in ((c['build'], p), (c['original'], p), (r, r)):
         _artifact(gh, pin, identity)
+
+
+def _verify_path_harness(gh):
+    # Five reviewed files: installed diagnostic paths/failure capture, bounded
+    # fresh setup publication wait, their tests and the artifact selector.
+    # The earlier path-only retest failed; it is not qualification authority.
+    comparison = gh.api(f"{gh.base}/compare/{PATH_FAILURE_PRODUCER['commit']}...{PATH_FAILURE_HARNESS}")
+    require(comparison.get('base_commit', {}).get('sha') == PATH_FAILURE_PRODUCER['commit'] and
+            comparison.get('merge_base_commit', {}).get('sha') == PATH_FAILURE_PRODUCER['commit'] and
+            comparison.get('status') == 'ahead' and comparison.get('total_commits') == 1 and
+            [item.get('sha') for item in comparison.get('commits', [])] == [PATH_FAILURE_HARNESS],
+            'Corrected harness must be the reviewed direct-child source change')
+    files = comparison.get('files', [])
+    require(len(files) == len(PATH_HARNESS_DELTA) and
+            all(item.get('status') == 'modified' and not item.get('previous_filename') for item in files) and
+            {item.get('filename'): item.get('sha') for item in files} == PATH_HARNESS_DELTA,
+            'Retest changed unreviewed product/workflow/helper bytes')
 
 
 def _verify_request(gh, q):
@@ -385,7 +479,11 @@ def _download(gh, pin, identity, path):
             'Downloaded artifact digest/size differs')
 
 
-def _reports(archive, pins):
+def _reports(archive, pins, *, forbidden=()):
+    if forbidden:
+        with zipfile.ZipFile(archive) as z:
+            require(not set(forbidden) & {n.casefold() for n in z.namelist()},
+                    'Unexpected unreached original report')
     raw = selected_zip(archive, [p['path'] for p in pins])
     for pin in pins:
         require(digest(raw[pin['path']]) == pin['sha256'], 'Reviewed report hash differs: ' + pin['path'])
@@ -398,8 +496,9 @@ def _eq(value, expected, message):
 
 def validate_reports(original, retest, q, frozen):
     """Fixed semantic checks in addition to the request's exact reviewed hashes."""
-    require(set(original) == PREFIX_REPORTS and set(retest) == RETEST_REPORTS, 'Incomplete report coverage')
+    require(set(original) == prefix_reports(q['composition']) and set(retest) == RETEST_REPORTS, 'Incomplete report coverage')
     p = q['composition']['producer']; commit = p['commit']; c = q['composition']
+    path_failure = c['schema'] == 2
     for reports, harness in ((original, commit), (retest, c['retest']['commit'])):
         r = reports['staging-inputs.json']
         require(r['status'] == 'restored' and r['qualification'] == 'not-run' and
@@ -442,12 +541,16 @@ def validate_reports(original, retest, q, frozen):
     require(r['result'] == 'passed' and r['phase'] == 'done' and len(r['checks']) == 28 and
             r['late_connection_added_after_deferred'] is True, 'Object contract incomplete')
     expected_results = {'recording-results.json': ('passed; screenshot review required', 6),
-                        'pilot-results.json': ('passed; screenshot review required', 6),
+                        'pilot-results.json': ('passed; screenshot review required', 7 if path_failure else 6),
                         'recovery-results.json': ('passed; native screenshot review required', 5),
                         'user-flows-results.json': ('passed; native screenshots require review', 8),
                         'pilot-status-only/pilot-results.json': ('passed; screenshot review required', 5)}
     for name, (result, count) in expected_results.items():
         require(original[name]['result'] == result and len(original[name]['checks']) == count, 'Runtime gate incomplete')
+    if path_failure:
+        require(original['pilot-results.json']['checks'] == MANUAL_PILOT_CHECKS and
+                original['pilot-status-only/pilot-results.json']['checks'] == PASSIVE_PILOT_CHECKS,
+                'Current manual and passive pilot assertions differ')
     signal = original['signalk-results.json']
     require(signal['status'] == 'passed' and signal['build_commit'] == commit and
             signal['transport_errors'] == [] and len(signal['checks']) == 5, 'Signal K gate differs')
@@ -458,27 +561,48 @@ def validate_reports(original, retest, q, frozen):
             pilot['received_bytes'] == 0, 'Installed product emitted control bytes')
     diag = original['pilot-status-only/pilot-opennav-diagnostics.json']
     require(diag['build_commit'] == commit and diag['test_fixtures'] is False and
-            diag['build_purpose'] == 'INSTALLED PRODUCT' and diag['xnav_hardware_output_policy'] == 'status-only',
+            diag['build_purpose'] == 'INSTALLED PRODUCT' and
+            diag['xnav_hardware_output_policy'] == ('manual-commissioning' if path_failure else 'status-only'),
             'Installed product identity/output policy differs')
     passive = diag['runtime']['pilot']
-    require(passive['output_unavailable'] is True and passive['control_capability'] is False and
+    require(passive['output_unavailable'] is (not path_failure) and passive['control_capability'] is False and
             passive['enabled'] is False and passive['command_id'] == '0' and passive['command_state'] == 'None' and
             passive['fresh'] is True and passive['mode'] == 'STANDBY', 'Installed pilot gate was not passive/fresh')
+    if path_failure:
+        _eq(diag['xnav_manual_control_contract'], 1, 'Unknown manual product contract')
+        require(passive['configured_permission'] is True and passive['serial_session_enabled'] is False and
+                passive['track_capability'] is False and passive['wind_capability'] is False and
+                passive['simulated'] is False, 'Manual policy bypassed passive TCP/default-session gates')
     recovery = original['production-recovery-results.json']
     require(recovery['status'] == 'passed' and len(recovery['checks']) == 7 and
             recovery['build']['commit'] == commit and recovery['build']['test_fixtures'] is False and
             recovery['build']['build_purpose'] == 'INSTALLED PRODUCT' and
-            recovery['build']['xnav_hardware_output_policy'] == 'status-only' and
+            recovery['build']['xnav_hardware_output_policy'] == ('manual-commissioning' if path_failure else 'status-only') and
             recovery['design_validation'] == 'not requested' and recovery['files_verified'] == 1019 and
             len(recovery['chart_rendering']) == 10 and
             all(s['coastline_visible'] is True for s in recovery['chart_rendering']), 'Original recovery gate differs')
-    for name in ('installer-staging.json', 'packaged-updater.json'):
-        require(original[name]['status'] == 'failed' and original[name]['error'] == FAILURE,
-                'Original failure must remain the reviewed early-close failure')
-    require(original['packaged-updater.json']['checks'] == UPDATER_CHECKS[:3] and
-            original['packaged-updater.json']['commit'] == commit and
-            original['packaged-updater.json']['faultInjection']['restored'] is True,
-            'Original updater failure progressed outside the reviewed boundary')
+    if path_failure:
+        _eq(recovery['build']['xnav_manual_control_contract'], 1, 'Recovery manual contract differs')
+        failed = original['installer-staging.json']
+        require(failed['status'] == 'failed' and failed['mode'] == 'staging' and
+                failed['error'] == "FileNotFoundError(2, 'No such file or directory')" and
+                failed['product_commit'] == failed['harness_commit'] == commit and
+                failed['test_source_sha256'] == PATH_FAILURE_SOURCE and failed['checks'] == PATH_INSTALLER_CHECKS and
+                failed['first_start_setup'] == [] and 'packaged_updater' not in failed,
+                'Original failure must remain before setup deferral and all packaged-updater checks')
+        require(retest['installer-staging.json']['test_source_sha256'] == PATH_FIXED_SOURCE,
+                'Retest did not use the reviewed diagnostic path correction')
+    else:
+        for name in ('installer-staging.json', 'packaged-updater.json'):
+            require(original[name]['status'] == 'failed' and original[name]['error'] == FAILURE,
+                    'Original failure must remain the reviewed early-close failure')
+        require(original['packaged-updater.json']['checks'] == UPDATER_CHECKS[:3] and
+                original['packaged-updater.json']['commit'] == commit and
+                original['packaged-updater.json']['faultInjection']['restored'] is True,
+                'Original updater failure progressed outside the reviewed boundary')
+    if path_failure:
+        require(retest['installer-staging.json'].get('packaged_updater') == retest['packaged-updater.json'],
+                'Passing installer must retain the complete fresh updater result')
     result = retest['staging-retest.json']
     require(result['status'] == 'passed' and result['scope'] == 'installer-charts' and
             result['productCommit'] == commit and result['producer'] == original['staging-inputs.json']['producer'] and
@@ -553,7 +677,8 @@ def assemble(gh, request_path, output):
     receipt = inputs.restore(tree, downloads / 'build/STAGING_BUILD_INPUTS.zip', request['build']['archiveSha256'],
                              inputs.producer(p['commit'], p['runId'], p['runAttempt']), execution['commit'],
                              evidence / 'restored.json')
-    old_raw, original = _reports(downloads / 'original.zip', request['original']['prefixReports'])
+    old_raw, original = _reports(downloads / 'original.zip', request['original']['prefixReports'],
+                                 forbidden=('packaged-updater.json',) if request['schema'] == 2 else ())
     new_raw, retest = _reports(downloads / 'retest.zip', r['reports'])
     for group, reports in (('original', old_raw), ('retest', new_raw)):
         for name, data in reports.items():
@@ -562,10 +687,16 @@ def assemble(gh, request_path, output):
     require(digest(old_raw['staging-inputs.json']) == original['boat-feedback-windows/result.json']['restore_receipt_sha256'],
             'Original component receipt does not bind original restoration')
     require(original['installer-loader-selftest.json']['app_sha256'] == inputs.sha(tree / 'build/xnav-install/opencpn.exe') and
-            original['production-recovery-results.json']['build']['executable_sha256'] == inputs.sha(tree / 'build/production-install/opencpn.exe') and
-            original['packaged-updater.json']['executableSha256'] == inputs.sha(tree / 'build/production-install/opencpn.exe') and
-            original['packaged-updater.json']['setupSha256'] == inputs.sha(tree / 'build/beta-installer/SKAGER-Beta2-Setup.exe'),
+            original['production-recovery-results.json']['build']['executable_sha256'] == inputs.sha(tree / 'build/production-install/opencpn.exe'),
             'Original runtime report tested different retained executable/Setup bytes')
+    if request['schema'] == 1:
+        require(original['packaged-updater.json']['executableSha256'] == inputs.sha(tree / 'build/production-install/opencpn.exe') and
+                original['packaged-updater.json']['setupSha256'] == inputs.sha(tree / 'build/beta-installer/SKAGER-Beta2-Setup.exe'),
+                'Original updater tested different retained executable/Setup bytes')
+    else:
+        require(original['installer-staging.json']['unsupported_build_preservation']['setup_sha256'] ==
+                inputs.sha(tree / 'build/beta-installer/SKAGER-Beta2-Setup.exe'),
+                'Original early installer checked different retained Setup bytes')
     for reports, name, filename in ((original, 'production-recovery-results.json',
                                      'build/developer-preview/SKAGER-Beta2-Portable-Recovery.zip'),
                                     (retest, 'installer-staging.json', 'build/beta-installer/SKAGER-Beta2-Setup.exe')):
