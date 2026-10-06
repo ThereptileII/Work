@@ -9,7 +9,7 @@ wxString W(const std::string &s) { return wxString::FromUTF8(s); }
 } // namespace
 void ProductPanel::PilotSettings() {
   const bool test_output = integration::PilotLoopbackTestsEnabled();
-  if (!test_output) {
+  if (!test_output && !integration::PilotManualSerialEnabled()) {
     Heading("Autopilot status", "Live feedback through OpenCPN");
     LiveText([](const auto &s) {
       const auto view = application::PresentPilot(
@@ -27,35 +27,35 @@ void ProductPanel::PilotSettings() {
     EndActions();
     return;
   }
-  Heading("Autopilot setup", test_output ? "Developer loopback test only" : "Pilot status / equipment control unavailable");
+  Heading("Autopilot setup", test_output ? "Developer loopback test only" : "Manual serial commissioning / control starts OFF");
   const auto &b = state_.settings.pilot;
   LiveText([](const auto &s) {
-    return wxString(!integration::PilotLoopbackTestsEnabled() ? "Status only / SKAGER cannot command equipment" : s.settings.pilot.permit_control ? "Loopback test permission configured" : "Autopilot control OFF") +
+    return wxString(s.settings.pilot.permit_control ? "Manual commissioning permission configured" : "Autopilot control OFF") +
            (s.pilot.fresh ? " / Connected" : " / Waiting for pilot feedback");
   });
   Text(test_output ? "Loopback testing only. Manual control must also be enabled each session. SmartNav never steers the vessel."
-                  : "This product displays observed pilot status. Physical equipment commands are unavailable. Use the physical helm. Saved permissions from older builds cannot enable SKAGER control.");
+                  : "Manual commissioning uses the existing bidirectional OpenCPN Actisense serial connection. Verify the observed translator identity, permit manual control, then explicitly enable this session. Keep physical STANDBY available. SmartNav never steers.");
   BeginActions(2);
   Action("Back to manual autopilot", [this] { ShowPage(ProductPage::Pilot, mode_); });
-  if (test_output) Action(b.permit_control ? "Return to display-only" : "Permit loopback test control...", [this] {
+  Action(b.permit_control ? "Return to display-only" : "Permit manual commissioning...", [this] {
     auto s = actions_.settings();
-    if (!s.pilot.permit_control && !ConfirmSheet(*this, mode_, "Permit local pilot test commands?",
-        "Only the verified local TCP test peer can receive output. Actual test control stays OFF until you enable it for this session.",
-        "Save test permission")) return;
+    if (!s.pilot.permit_control && !ConfirmSheet(*this, mode_, "Permit manual pilot commands?",
+        "Only the exact observed translator on the selected connection can receive the six manual commands. Control stays OFF until you enable it for this session. Keep the physical helm available.",
+        "Save manual permission")) return;
     s.pilot.permit_control = !s.pilot.permit_control;
     SaveSettings(s);
-  }, !b.interface_id.empty() && !state_.vessel.replayed && !state_.vessel.simulated);
+  }, !b.interface_id.empty() && !b.name.empty() && !state_.vessel.replayed && !state_.vessel.simulated);
   Action(pilot_advanced_ ? "Hide connection details" : "Advanced connection setup", [this] {
     pilot_advanced_ = !pilot_advanced_; Build();
   });
   EndActions();
   if (!pilot_advanced_) {
     Text(test_output ? "STANDBY, AUTO and course changes are restricted to a verified local test peer. TRACK and WIND remain unavailable."
-                    : "STANDBY, AUTO, TRACK, WIND and course controls are unavailable. Advanced setup binds read-only feedback to the correct observed device.");
+                    : "Only STANDBY, AUTO and -1/+1/-10/+10 are supported. TRACK and WIND remain unavailable. Reconnects and stale feedback disable the session.");
     return;
   }
   Heading("Connection & diagnostics", "Advanced / Exact device identity");
-  Text("The ST4000 translator publishes physical SeaTalk feedback through the NMEA 2000 adapter. Binding an observed identity enables status display only; it does not qualify an equipment control path.");
+  Text("Select the same existing serial connection used by AutoTrack. Refresh identity if this PC joined the bus after the translator. Copy only an actually observed NAME. A heading address alone never identifies a pilot.");
   Text("Interface: " + W(b.interface_id.empty() ? "Unconfigured" : b.interface_id) +
        "\nNAME: " + W(b.name.empty() ? "Unconfigured" : b.name));
   LiveText([](const auto &s) { return W(s.pilot.adapter_status); });
@@ -67,7 +67,7 @@ void ProductPanel::PilotSettings() {
         const auto fields = EditSheet(
             *this, mode_, "ST4000 translator identity",
             "Use the exact observed OpenCPN interface and 16 lowercase "
-            "hexadecimal NAME digits. "
+            "hexadecimal NAME digits. Leave NAME empty to request identity first. "
             "Do not use a guessed address or a decimal message label. Saving "
             "always returns to display-only.",
             {{"OpenCPN NMEA2000 interface", W(s.pilot.interface_id), 200},
@@ -78,7 +78,7 @@ void ProductPanel::PilotSettings() {
         SaveSettings(s);
       },
       !state_.vessel.replayed);
-  if (test_output) Action(
+  Action(
       "Refresh device identity",
       [this] {
         if (actions_.pilot_identity)
@@ -107,7 +107,7 @@ void ProductPanel::PilotSettings() {
     if (s.pilot_sources.empty())
       return wxString("No compatible translator claim observed. "
                       "Verify the receive connection and wait for an observed address claim. "
-                      "The installed product does not request identity on the bus.");
+                      "Refresh device identity sends one non-steering address-claim request on the selected bidirectional connection; it does not enable control.");
     wxString text;
     for (const auto &identity : s.pilot_sources)
       text += W(identity) + "\n";

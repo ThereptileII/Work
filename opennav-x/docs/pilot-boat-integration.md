@@ -63,16 +63,65 @@ Native component checks exercise every button callback, duplicate queued events,
 pending commands and disabled controls. TRACK/WIND remain unavailable; no
 unverified mode is advertised as supported. SmartNav never invokes commands.
 
-The product's final output sink remains closed. The existing isolated TCP
-loopback tests qualify only a test transport, not the boat's serial path.
-The first serial correction removes a reproduced memory overread and serializer
-bounds error; it does not yet resolve reconnect queues, short-write handling,
-fresh receive provenance or an enabled manual-control session. A transmitted
-packet or accepted queue entry must never display CONFIRMED.
+## Manual serial commissioning contract (2026-10-06)
 
-Physical testing requires separate explicit authorization with a person present,
-steering gear clear and physical STANDBY available. Before that, do not restore
-output-capable plugins or a bidirectional connection as a shortcut. A bounded
-ISO60928 discovery request is a distinct future commissioning operation, with
-steering still disabled and the transport checked first. Physical command,
-timeout/reconnect and observed-response acceptance remains open in Jira.
+The new product policy is `manual-commissioning`, contract version1. It is not
+labelled `status-only`. Normal installation, configuration and every process
+start with control OFF. Fixture builds cannot reach a physical serial endpoint;
+the existing isolated TCP loopback fixture remains test-only. Native Windows
+and actual boat acceptance of this new software are pending until separately
+recorded. The prior 2026-10-05 observations above remain historical evidence.
+
+Use **Autopilot setup → Advanced connection setup** to select the same existing
+OpenCPN Actisense serial connection used by AutoTrack. Saving a selected interface
+with an empty NAME permits only an explicit **Refresh device identity** request.
+This sends PGN59904 requesting60928, once at most per five seconds, on that
+selected enabled bidirectional connection. It cannot enable steering. There is
+no automatic request on startup, reconnect, polling or diagnostics reads. Copy
+only a compatible NAME actually observed on that connection; address204 or a
+heading report is insufficient. Saving identity always clears saved permission.
+
+After identity and physical feedback are observed, an operator can save manual
+commissioning permission and then separately enable control for the session.
+The final sink independently checks the concrete serial driver, bidirectional
+connection, enabled/current epoch, session, configured exact identity/address,
+physical mode younger than three seconds, and exact six-command encoding. AUTO
+also requires fresh measured magnetic heading; course changes require confirmed
+AUTO and fresh measured locked heading. TRACK/WIND remain unavailable, and
+SmartNav has no command path. Saved permission alone never opens the sink.
+
+The controller permits one unresolved command (STANDBY may preempt it), suppresses
+repeated requests for250ms, and times out at three seconds without retry. The
+worker accepts at most one queued pilot/discovery frame, discards it after500ms,
+and purges on disable, disconnect, read/write failure or close. STANDBY atomically
+replaces an unsent pilot command so a queued AUTO cannot outlive its cancellation. Reconnect never
+restores the session or identity. A write already started cannot be recalled.
+Close requests worker stop and joins it before freeing the connection. It does
+not rely on the worker having entered its main loop; failed thread creation or
+startup is cleaned up before the driver can be used.
+Session revocation also occurs on stale/unavailable feedback, identity conflict,
+source-settings changes, replay requests, DEMO changes, mode restart and close.
+These events cancel unsent pilot commands rather than just greying the buttons.
+
+Receive provenance originates in the serial worker, before the first read of
+each frame, and includes its connection epoch. A delayed application event cannot
+refresh an old physical sample. A command can be confirmed only by a subsequent
+matching physical mode/heading frame captured after the actual complete serial
+write of that exact command's monotonic queue ticket. A preceding command's
+completed write cannot satisfy this gate. Neither queue acceptance nor a
+transmit notification confirms it.
+
+Runtime diagnostics expose `pilot.enabled`, `pilot.serial_session_enabled`,
+`pilot.configured_permission`, `pilot.control_capability`, feedback sequence and
+connection epoch. Default/new-profile checks require both enabled fields and
+configured permission false, with TRACK/WIND false. Product identity reports
+`xnav_hardware_output_policy=manual-commissioning` and
+`xnav_manual_control_contract=1`. Native qualification, transport failure and
+actual physical response must be recorded against exact candidate bytes.
+
+The user subsequently authorized actual manual commissioning. Only the root
+coordinator operates the boat after the software/native gates; this software
+work performed no port access, connection/profile change or physical command.
+Physical feedback, command, timeout/reconnect and observed-response acceptance
+remains open in Jira until recorded. Keep a person present, steering gear clear
+and physical STANDBY available during that separately controlled operation.

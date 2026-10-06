@@ -63,7 +63,10 @@ void ValidateSt4000Binding(const St4000Binding &b) {
   for (const unsigned char c : b.interface_id)
     if (c < 32 || c == 127)
       throw std::invalid_argument("Invalid pilot interface text");
-  ParsePilotName(b.name);
+  // A selected interface without a NAME permits explicit identity discovery,
+  // never steering. Saving an empty identity cannot retain control permission.
+  if (!b.name.empty()) ParsePilotName(b.name);
+  else if (b.permit_control) throw std::invalid_argument("Observed NAME required for control");
 }
 std::vector<std::uint8_t> EncodeSt4000Command(const PilotRequest &r) {
   if (!r.id || !std::isfinite(r.delta_deg))

@@ -1,0 +1,43 @@
+{
+  "scope": "Three complete current translation units only; reused existing Linux generated/dependency headers with XNAV_ENABLE_TEST_FIXTURES=0 and XNAV_ENABLE_PILOT_LOOPBACK_TESTS=0 product command flags. No application build/link/runtime/native-Windows qualification.",
+  "pin": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "product_defines": {
+    "XNAV_ENABLE_TEST_FIXTURES": 0,
+    "XNAV_ENABLE_PILOT_LOOPBACK_TESTS": 0
+  },
+  "patches": {
+    "patches/opencpn-5.12.4-xnav.patch": "c75ba8c04399ea3c06e277eaa6dfd57cecd554903912850217ba8a3c543ceee0",
+    "patches/opencpn-5.12.4-regression-tests.patch": "3ef13652b8f3717d836883d2fbb7a18f35dbd2ca1162ac991fe339e61392dff1",
+    "patches/opencpn-5.12.4-ais-transport.patch": "ee6689b8943284347fadca9564892b31db4c43db2a007412ac3fdc2072d07fd7",
+    "patches/opencpn-5.12.4-chart-presentation.patch": "cde774b225c2f63ecbd0f1bc0c32ec0f681862b826314b4ed1b05738e63c5c81",
+    "patches/opencpn-5.12.4-maintained-curl.patch": "dafa1fec0a69e3a1195db726c2cb26ceeb7535b5e25476ac2e4658d910f44e48",
+    "patches/opencpn-5.12.4-download-trust.patch": "04763cb038ad088a722e76d4f85bde7e356489b697a373458195336d4278412b",
+    "patches/opencpn-5.12.4-wxcurl-trust.patch": "f3ad76fc07b80e6f2c01331894ce5e685f6aa4456a2a3c761e3115c8c21f3d6b",
+    "patches/opencpn-5.12.4-peer-response-buffer.patch": "c335f361766a6982c3d096e93f7c149179deb33134668e110111ac4980064e15",
+    "patches/opencpn-5.12.4-peer-unavailable.patch": "5bf1c2ae4b09043ce18151f766aebd2b881b993f352000e34399de7e8b36b6d3",
+    "patches/opencpn-5.12.4-pilot-serial.patch": "7db46c9770dc1937e8e659976bdb41be7f8b2e0b7ec55a4997eea83cc74542be"
+  },
+  "units": [
+    {
+      "unit": "OpenCPNPilot",
+      "source_sha256": "9954f5a13526095055023b85194c6495d7658b356ec4afcc3ead7a0e91a98ee7",
+      "unchanged_during_compile": true,
+      "returncode": 0,
+      "elapsed_seconds": 10.32
+    },
+    {
+      "unit": "OpenCPNIntegration",
+      "source_sha256": "3f6b9df7046562e1a4ece254375b7b3c19212ce59df434a8341a378eb9e3cec6",
+      "unchanged_during_compile": true,
+      "returncode": 0,
+      "elapsed_seconds": 22.36
+    },
+    {
+      "unit": "comm_drv_n2k_serial",
+      "source_sha256": "c80e19f554744b596fdd789f8970d5491a8566b3b02977241e92343128e9a69a",
+      "unchanged_during_compile": true,
+      "returncode": 0,
+      "elapsed_seconds": 10.35
+    }
+  ]
+}

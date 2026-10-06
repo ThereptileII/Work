@@ -1,5 +1,7 @@
 #include "ui/Shell.h"
+#include <wx/msgdlg.h>
 #include "ui/NameEditor.h"
+#include "ui/SettingsBackupUi.h"
 #include "application/Brand.h"
 #include "application/SkagerBrandAsset.h"
 #include "ui/SkagerWordmark.h"
@@ -512,6 +514,7 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
 }
 
 Shell::~Shell() {
+  if (boat_setup_) { boat_setup_->Destroy(); boat_setup_ = nullptr; }
   timer_.Stop();
   context_lifetime_.reset();
   CloseContext();
@@ -1432,6 +1435,46 @@ void Shell::ShowChartPresentation() {
       ? actions_.navigation.chart_presentation() : application::ChartPresentationState{},mode_);
   PlaceChartControls();
 }
+void Shell::ShowBoatSetup(bool explicit_reset) {
+  if (boat_setup_) { boat_setup_->Raise(); return; }
+  if (simulation_ || state_.replayed || !actions_.settings || !actions_.save_setup) return;
+  if (explicit_reset) {
+    if (!actions_.request_setup) return;
+    const auto result = actions_.request_setup();
+    if (!result.ok) { wxMessageBox(wxString::FromUTF8(result.message), "Boat setup", wxOK|wxICON_ERROR, &frame_); return; }
+  } else if (!actions_.setup_state || actions_.setup_state()!=application::BoatSetupState::Pending) return;
+  ShowNavigation();
+  application::BoatSetupDraft draft;
+  draft.settings=actions_.settings(); draft.display=display_;
+  draft.vessel_name=actions_.vessel_name ? actions_.vessel_name() : "";
+  if(actions_.chart_safety_depth_m) draft.safety_depth_m=actions_.chart_safety_depth_m();
+  BoatSetupActions setup;
+  const std::weak_ptr<int> lifetime=context_lifetime_;
+  setup.sensors=[this,lifetime] {
+    if(lifetime.expired()) return std::vector<std::string>{"Live sensor check unavailable"};
+    const auto live=actions_.live_state ? actions_.live_state() : state_;
+    return application::BoatSetupSensorSummary(live,
+        actions_.source_health ? actions_.source_health() : std::vector<vessel::SourceHealth>{},vessel::Clock::now());
+  };
+  setup.save=[this,lifetime,draft](const application::BoatSetupDraft& next) {
+    if(lifetime.expired()) return application::CommandResult{false,"Helm closed"};
+    if(simulation_ || state_.replayed) return application::CommandResult{false,"Return to Live before saving setup"};
+    // Modeless setup must never overwrite edits made in another settings view.
+    if(application::EncodeSettings(actions_.settings())!=application::EncodeSettings(draft.settings) ||
+       (actions_.display && application::EncodeDisplayPreferences(actions_.display())!=application::EncodeDisplayPreferences(draft.display)) ||
+       (actions_.vessel_name && actions_.vessel_name()!=draft.vessel_name) ||
+       (actions_.chart_safety_depth_m && application::SettingNumber(actions_.chart_safety_depth_m())!=application::SettingNumber(draft.safety_depth_m)))
+      return application::CommandResult{false,"Settings changed while setup was open. Close and reopen setup to review the current values."};
+    const auto result=actions_.save_setup(next);
+    if(result.ok) {
+      display_=next.display; ApplyOwnedScale(); responsive_class_=-1; ApplyResponsiveLayout();
+      if(settings_drawer_) settings_drawer_->SetDisplayPreferences(display_);
+      Tick();
+    }
+    return result;
+  };
+  boat_setup_=ShowBoatSetupDialog(frame_,std::move(draft),std::move(setup),mode_);
+}
 void Shell::ShowSettings() {
   ShowNavigation();
   if (!settings_drawer_) {
@@ -1448,12 +1491,32 @@ void Shell::ShowSettings() {
     actions.diagnostics = [this] { ShowPage(PreviewPage::Diagnostics); };
     actions.fullscreen = [this] { frame_.ShowFullScreen(!frame_.IsFullScreen()); };
     actions.theme = [this](LightMode mode) { SetLight(mode); };
+    actions.boat_setup = [this] { ShowBoatSetup(true); };
     actions.settings = actions_.settings;
     actions.display = actions_.display;
     actions.save_display = [this](const application::DisplayPreferences &next) {
       return ApplyDisplayPreferences(next);
     };
     actions.save_vessel = actions_.save_vessel;
+    if (actions_.backup_settings) actions.backup_export = [this] {
+      ExportSettingsBackup(frame_,mode_,display_.scale_percent,actions_.backup_settings);
+    };
+    if (actions_.restore_settings) actions.backup_import = [this] {
+      ImportSettingsBackup(frame_,mode_,display_.scale_percent,[this](const auto &backup) {
+        const auto result=actions_.restore_settings(backup);
+        if (result.ok) {
+          display_=backup.display;
+          ApplyOwnedScale(); responsive_class_=-1; ApplyResponsiveLayout();
+          if (settings_drawer_) {
+            settings_drawer_->ResetDraft();
+            settings_drawer_->SetDisplayPreferences(display_);
+            settings_drawer_->Present(DrawerWorkspace());
+          }
+          Tick();
+        }
+        return result;
+      });
+    };
     actions.legacy = actions_.legacy;
     actions.safe = actions_.safe;
     settings_drawer_ = new XNavSettingsDrawer(frame_, std::move(actions));

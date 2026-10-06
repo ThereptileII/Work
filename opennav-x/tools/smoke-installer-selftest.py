@@ -8,7 +8,7 @@ from pathlib import Path
 import shutil
 import subprocess
 import tempfile
-from hardware_output_policy import require_status_only
+from hardware_output_policy import require_product_output_policy
 
 ROOT = Path(__file__).resolve().parents[1]
 p = argparse.ArgumentParser()
@@ -33,7 +33,7 @@ with tempfile.TemporaryDirectory(prefix='opennav loader ') as temporary:
         assert d.get('test_fixtures') is True and d.get('build_purpose') == 'DEVELOPER TEST BUILD'
         assert d.get('xnav_hardware_output_policy') == 'test-loopback-only'
     else:
-        require_status_only(d)
+        require_product_output_policy(d)
     assert d['passed'] and not d['profile_initialized'] and not d['plugins_loaded'], d
     assert d['upstream'] == '37fd0cddb7334fe489e9f18aa163977a9c5c84f7'
     original = report.read_bytes()

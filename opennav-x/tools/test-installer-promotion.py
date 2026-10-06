@@ -14,13 +14,14 @@ import unittest
 import zipfile
 
 import staging_build_inputs as staging_inputs
+from hardware_output_policy import require_product_output_policy
 
 SOURCE=Path(__file__).with_name('smoke-installer-windows.py')
 TREE=ast.parse(SOURCE.read_text())
 FUNCTIONS=ast.Module(body=[node for node in TREE.body if isinstance(node,ast.FunctionDef)
     and node.name in ('arguments','archive_members','prepare_retained','prepare_source_engine','prepare_compiled','sha')],type_ignores=[])
 ENV=dict(argparse=argparse,Path=Path,PurePosixPath=PurePosixPath,re=re,hashlib=hashlib,
-         json=json,shutil=shutil,zipfile=zipfile,staging_inputs=staging_inputs)
+         json=json,shutil=shutil,zipfile=zipfile,staging_inputs=staging_inputs,require_product_output_policy=require_product_output_policy)
 exec(compile(FUNCTIONS,str(SOURCE),'exec'),ENV)
 COMMIT='a'*40
 

@@ -1,0 +1,35 @@
+{
+  "issue": "SCRUM-313",
+  "base_commit": "9d2965a360657916e80d86df8766948e963d5e51",
+  "changed_code_sha256": {
+    "patches/opencpn-5.12.4-pilot-serial.patch": "7db46c9770dc1937e8e659976bdb41be7f8b2e0b7ec55a4997eea83cc74542be",
+    "tests/pilot_serial_bounds/extract.py": "73d8315dc4ff45089c4539acaa8dcdb953b30a4c8b5ef0e053c3fa9359aa67e7",
+    "tests/pilot_serial_bounds/lifecycle.cpp": "43624abcc4e6cd7ae82e4cc8cab713f7bbd92610249e6bf72351e343dab46033",
+    "tests/pilot_serial_bounds/CMakeLists.txt": "b2277f7fb61cdd423017d95309fc07d4af1056d2b14d53bf7633d277a0c45104"
+  },
+  "actual_source_harness": {
+    "pin": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+    "patch_apply_check": "passed",
+    "tests": "passed",
+    "patch_sha256": "7db46c9770dc1937e8e659976bdb41be7f8b2e0b7ec55a4997eea83cc74542be",
+    "patched_serial_sha256": "c80e19f554744b596fdd789f8970d5491a8566b3b02977241e92343128e9a69a",
+    "sanitizers": true,
+    "pilot_gate_sha256": "9954f5a13526095055023b85194c6495d7658b356ec4afcc3ead7a0e91a98ee7",
+    "serial_state_sha256": "568ef132606acac20616c4828f16f818ca9349b4863359c24d6633cf68fb4a4a",
+    "serial_framer_sha256": "53ebdc39ce09b8ec26f720981fa0cea91ca2f6af0690e33b1e4c16c8d223a6fc",
+    "scope": "Actual writer, pilot sink, receive handler, serial write function, queue/session/epoch state and framer; real N2kMsg. Fake port/listener, no hardware."
+  },
+  "lifecycle_regressions": [
+    "Close before Entry becomes active joins before delete",
+    "Create failure deletes wrapper without Run",
+    "Run failure cancels created thread and joins before delete",
+    "Active close joins; repeated close is idempotent",
+    "Duplicate Open cannot replace an owned worker"
+  ],
+  "harness_tests_passed": 3,
+  "complete_serial_unit_compile": 0,
+  "native_msvc": "pending root gate",
+  "actual_wx_scheduler": "not exercised by deterministic lifecycle double",
+  "boat_accessed": false,
+  "application_build": false
+}

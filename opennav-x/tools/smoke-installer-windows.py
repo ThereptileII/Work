@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Disposable native Windows installer lifecycle, shared profile and chart gate."""
+from hardware_output_policy import require_product_output_policy
 import argparse
 import ctypes
 from contextlib import contextmanager
@@ -98,9 +99,9 @@ def prepare_retained(directory,root,expected_commit):
         if any(not name.startswith(prefix) for name in members):
             raise ValueError('Unexpected recovery archive root')
         product=json.loads(recovery.read(prefix+'docs/PRODUCT_BUILD.json'))
+        require_product_output_policy(product)
         if (product['commit']!=expected_commit or product.get('test_fixtures') is not False or
-                product.get('build_purpose')!='INSTALLED PRODUCT' or
-                product.get('xnav_hardware_output_policy')!='status-only'):
+                product.get('build_purpose')!='INSTALLED PRODUCT'):
             raise ValueError('Retained package must be the exact fixture-free, status-only product')
         for name,entry in members.items():
             if entry.is_dir():continue
@@ -180,9 +181,9 @@ def prepare_compiled(receipt_path,root,harness_commit):
     product=staging_inputs.strict_json(staging_inputs.plain_file(
         root,staging_inputs.PACKAGE_ROOT+'/docs/PRODUCT_BUILD.json').read_bytes())
     executable=staging_inputs.plain_file(root,'build/production-install/opencpn.exe')
+    require_product_output_policy(product)
     if (product.get('commit')!=expected['commit'] or product.get('test_fixtures') is not False or
             product.get('build_purpose')!='INSTALLED PRODUCT' or
-            product.get('xnav_hardware_output_policy')!='status-only' or
             product.get('executable_sha256')!=sha(executable)):
         raise ValueError('Compiled product differs from restored candidate identity')
     source=prepare_source_engine(archive,root,expected['commit'])
@@ -388,7 +389,7 @@ def launch(exe,mode,title,profile,name,welcome_transition=None):
             assert exe.samefile(original) and not (INSTALL/'state.json').exists()
         accepted=json.loads((ROOT/'tools/accepted-beta1.lock.json').read_text())
         candidate=json.loads((ROOT/'build/developer-preview/SKAGER-Beta2-Portable-Recovery/docs/PRODUCT_BUILD.json').read_text())
-        proof=welcome.version_transition(welcome_transition,sha(exe),ownership,accepted['commit'],candidate['commit'])
+        proof=welcome.version_transition(welcome_transition,sha(exe),ownership,accepted['commit'],candidate['commit'],candidate['version'])
     before=startup_baseline(profile)
     p=subprocess.Popen([str(exe),'--no_opengl',*mode]);owned.add(p.pid)
     if proof:
@@ -502,7 +503,7 @@ try:
     elif args.compiled_input_receipt:
         report.update(prepare_compiled(args.compiled_input_receipt,ROOT,report['harness_commit']))
     product=json.loads((ROOT/'build/developer-preview/SKAGER-Beta2-Portable-Recovery/docs/PRODUCT_BUILD.json').read_text())
-    assert product.get('xnav_hardware_output_policy')=='status-only'
+    require_product_output_policy(product)
     report['product_commit']=product['commit']
     assert not INSTALL.exists(),'Runner must not contain a previous/user Alpha installation'
     report['display']=ui.ensure_desktop()
@@ -705,7 +706,7 @@ try:
             check('Accepted Beta 1 release installs and opens real coastline with shared fixtures')
             setup('Update',original)
             assert state()['previous']==prior_generation
-            assert json.loads((generation()/'ownership.json').read_text())['version']=='0.4.0-beta2'
+            assert json.loads((generation()/'ownership.json').read_text())['version']==product['version']
             assert json.loads((generation()/'ownership.json').read_text())['shellLayout']=='OpenNavX.SkagerStartMenu.1'
             assert sha(generation()/'app/opencpn.exe')==sha(ROOT/'build/production-install/opencpn.exe')
             assert inventory(profile)==before and inventory(stock)==stock_before
@@ -716,7 +717,7 @@ try:
             latest=max(recoveries,key=lambda p:p.stat().st_mtime_ns)
             recovery=json.loads(latest.read_text(encoding='utf-8-sig'))
             assert recovery['before']['current']==prior_generation
-            assert recovery['stock']['sha256']==STOCK_HASH and recovery['nextVersion']=='0.4.0-beta2'
+            assert recovery['stock']['sha256']==STOCK_HASH and recovery['nextVersion']==product['version']
             check('Versioned recovery record identifies exact Beta 1 generation, stock hash and Beta 2 target before update')
             # Exercise the genuine older immutable engine after rollback, not a
             # same-version mock. Its original group must remain usable and its
@@ -1016,7 +1017,7 @@ try:
             check('Original official OpenCPN still loads charts and shared navigation data after uninstall')
             before=inventory(profile)
             setup('Install',original)
-            assert json.loads((generation()/'ownership.json').read_text())['version']=='0.4.0-beta2'
+            assert json.loads((generation()/'ownership.json').read_text())['version']==product['version']
             assert json.loads((generation()/'ownership.json').read_text())['shellLayout']=='OpenNavX.SkagerStartMenu.1'
             assert inventory(profile)==before and inventory(stock)==stock_before
             check('Beta 2 reinstall after uninstall preserves original stock, shared profile and retained custom additions')

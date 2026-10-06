@@ -11,8 +11,12 @@ struct PilotOutputEndpoint {
   bool connected = false, actisense = false;
   std::string configured_address, peer_address;
   int configured_port = 0, peer_port = 0;
+  bool serial = false;
 };
 inline bool PilotOutputPermitted(const PilotOutputEndpoint &e) {
+  if (e.serial)
+    return PilotManualSerialEnabled() && !e.tcp && e.bidirectional && e.enabled &&
+           e.connected && e.actisense;
   return PilotLoopbackTestsEnabled() && e.tcp && e.bidirectional && e.enabled &&
          e.connected && e.actisense && e.configured_address == "127.0.0.1" &&
          e.peer_address == "127.0.0.1" && e.configured_port > 0 &&
@@ -21,7 +25,7 @@ inline bool PilotOutputPermitted(const PilotOutputEndpoint &e) {
 template <class Send>
 bool DispatchPilotOutput(const PilotOutputEndpoint &endpoint, Send &&send) {
   // This final sink guard is independent of adapter capabilities and session
-  // enablement. Product builds cannot invoke even a permissive callback.
+  // enablement. Only the qualified serial class or isolated test peer can pass.
   if (!PilotOutputPermitted(endpoint)) return false;
   return std::forward<Send>(send)();
 }

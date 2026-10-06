@@ -3,28 +3,61 @@
 ## Actual serial pilot boundary — SCRUM-313
 
 The tenth reviewed patch file, `patches/opencpn-5.12.4-pilot-serial.patch`,
-changes only `model/src/comm_drv_n2k_serial.cpp` at the pinned 5.12.4 revision.
-It removes an outgoing eight-byte payload read which overran a three-byte
-ISO address-claim request. Arbitrary transmitted data is no longer interpreted
-as a source NAME. Existing transmit notifications retain type `0x94`, an unknown
-NAME and null source address; they cannot constitute received physical feedback.
-Message/address type, payload length, priority and PGN are checked before use.
-The serializer's index/storage now handles the full legal 223-byte payload,
-including escaped bytes. No worker means failure; a successful return means
-queue acceptance only.
+modifies the pinned serial driver/header, adds two small serial state/framing
+headers, and introduces a derived `Nmea2000SerialMsg` receive envelope. The
+public base message layout remains unchanged for existing plugins. The original
+short-payload overread and serializer bounds corrections remain included.
 
-The isolated `tests/pilot_serial_bounds` target extracts the actual patched
-writer and serializer and links the pinned `N2kMsg.cpp`. Its queue/listener are
-fakes: no port is opened. The original exact source reproduces the short-request
-overread under ASan; the patched source passes ASan/UBSan locally. Native results
-are recorded separately. Source archives and Windows source-reconstruction
-inventories include the new patch; no existing history/evidence is rewritten.
+The shared serial worker now uses one bounded complete-frame decoder on Linux
+and Windows. Its receive timestamp is captured before the first blocking read
+of a frame, and survives delivery through both event queues. Only complete
+`0x93` messages with consistent length and checksum enter navigation listeners;
+old connection epochs and frames delayed three seconds are rejected. Outgoing
+`0x94` notifications remain distinct from physical feedback. Management replies
+retain their existing decoder with length checks before its fixed offsets.
 
-This patch does **not** qualify serial hardware control. Queued messages across
-reconnects, physical write failures, receive timestamps, connection generations
-and explicit per-session permission remain separate SCRUM-313 requirements.
-No plugin output permission, connection direction or automatic pilot control is
-changed. See [the boat integration inspection](pilot-boat-integration.md).
+A mutex protects connection generation, output queue, pilot permission and the
+final serial write. Disconnect/read error, partial/zero/exception write, and
+close purge the queue. Reconnect advances the epoch and clears pilot permission.
+No failed write is retried. Management enqueue attempts are bounded even when
+an active worker rejects output because its port is disconnected/full. The separate pilot API accepts only the exact six
+known manual command encodings or the non-steering ISO60928 request. Pilot
+commands require an explicit session; discovery does not enable one. At most
+one pilot/discovery item is pending, with a 500ms residence limit. Exact STANDBY
+atomically replaces an unsent pilot item; it never leaves an older AUTO queued. Ordinary
+OpenCPN/plugin output retains its queue capacity of20, but cannot survive a
+connection reset. Disable removes queued pilot output and is synchronized with
+an in-progress write; a completed write cannot be recalled.
+
+The worker is explicitly joinable. `Close` always publishes stop, purges output,
+joins without dispatching GUI callbacks, and only then destroys the worker; an
+active flag is not a lifetime test. Both run and active flags are atomic. Failed
+`Create` deletes only the unstarted wrapper; failed `Run` cancels the created
+thread and joins before deletion. Read/write timeouts remain250ms, with retry
+sleep checking stop every50ms. No detached worker or timeout-based abandonment
+can retain a freed driver. An OS/device driver that fails to return from port
+open/close can still delay shutdown: there is no unsafe forced termination.
+Only the internal concrete serial class changes layout; `Nmea2000Msg`, driver
+base classes and `ocpn_plugin.h` remain unchanged. Native Win32 compilation and
+actual framework/port lifecycle qualification remain required.
+
+The prior `flushOutput()` after writing was removed: the pinned serial library
+implements it as `PurgeComm(PURGE_TXCLEAR)` on Windows and `tcflush(TCOFLUSH)` on
+Linux, discarding pending bytes. Full OS write completion is recorded only as
+transport provenance. Each pilot enqueue returns its own monotonic ticket under
+that same lock. Only completion of that exact ticket opens the acknowledgement
+gate; a prior AUTO completing before a later STANDBY enqueue cannot substitute
+for the STANDBY write. Ticket exhaustion fails closed without wrapping. The
+pilot adapter still requires later matching physical
+mode/heading feedback; it never infers confirmation from queue or write success.
+
+`tests/pilot_serial_bounds` executes the actual patched writer, serializer,
+pilot API, receive handler and serial-write function, plus the production state
+and framing headers. Its second target extracts the actual OpenCPNPilot final
+sink/session functions and uses the real ST4000 adapter. Framework, registry,
+port and listener collaborators are fake; no hardware is opened. Native and
+physical acceptance remain distinct gates. See [the integration contract](pilot-boat-integration.md)
+and [2026-10-06 software evidence](evidence/2026-10-06-pilot-serial/README.md).
 
 ## Boat feedback integration — SCRUM-291 / 294–300 / 303–309
 

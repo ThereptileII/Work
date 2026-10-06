@@ -17,7 +17,7 @@ int main() {
     const bool test = PilotLoopbackTestsEnabled();
     Check(DispatchPilotOutput(local, send) == test, "Product must reject even a fully valid loopback endpoint");
     Check(sends == (test ? 1 : 0), "Denied sink never invokes callback");
-    Check(HardwareOutputPolicy() == (test ? "test-loopback-only" : "status-only"), "Executed capability is explicit");
+    Check(HardwareOutputPolicy() == (test ? "test-loopback-only" : PilotManualSerialEnabled() ? "manual-commissioning" : "status-only"), "Executed capability is explicit");
     if (test) {
       Check(TestFixturesEnabled() && BuildPurpose() == "DEVELOPER TEST BUILD", "Output test build cannot impersonate product");
       Check(!DispatchPilotOutput(local, [] { return false; }), "Transport failure is not upgraded to success");
@@ -58,6 +58,21 @@ int main() {
       Check(setenv(variable,"1",1) == 0,"Test environment set");
 #endif
       Check(PilotOutputPermitted(local) == test,"Runtime environment cannot upgrade build policy");
+    }
+    PilotOutputEndpoint serial;
+    serial.serial = serial.enabled = serial.bidirectional = serial.connected = serial.actisense = true;
+    Check(PilotOutputPermitted(serial) == PilotManualSerialEnabled(), "serial transport is product-only commissioning capability");
+    const int before_serial = sends;
+    Check(DispatchPilotOutput(serial, send) == PilotManualSerialEnabled(), "serial final endpoint dispatch");
+    Check(sends == before_serial + (PilotManualSerialEnabled() ? 1 : 0), "fixture build cannot reach physical serial");
+    for (int flag=0; flag<5; ++flag) {
+      auto e=serial;
+      if(flag==0)e.enabled=false;
+      if(flag==1)e.bidirectional=false;
+      if(flag==2)e.connected=false;
+      if(flag==3)e.actisense=false;
+      if(flag==4)e.tcp=true;
+      Check(!DispatchPilotOutput(e,send), "serial closed on missing exact transport prerequisite");
     }
     std::cout << HardwareOutputPolicy() << ": transport sink denial matrix passed\n";
   } catch (const std::exception &e) {

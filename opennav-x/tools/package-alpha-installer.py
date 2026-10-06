@@ -9,7 +9,8 @@ from pathlib import Path
 import shutil
 import subprocess
 import zipfile
-from hardware_output_policy import require_status_only
+from hardware_output_policy import require_product_output_policy
+from product_version import read_product_version, windows_product_version
 ROOT = Path(__file__).resolve().parents[1]
 p=argparse.ArgumentParser()
 p.add_argument('--preview',type=Path,required=True)
@@ -32,7 +33,7 @@ subprocess.run([os.sys.executable, str(ROOT/'tools/verify-skager-brand.py')], ch
 preview=a.preview.resolve()
 if not (preview/'docs/SKAGER-Beta2-Release-Notes.md').is_file():
     raise SystemExit('Installer requires the recovery package release notes')
-require_status_only(json.loads((preview/'docs/PRODUCT_BUILD.json').read_text()))
+require_product_output_policy(json.loads((preview/'docs/PRODUCT_BUILD.json').read_text()))
 with zipfile.ZipFile(a.output/'payload.zip','w',zipfile.ZIP_DEFLATED,compresslevel=6) as z:
     records=[]
     for directory in ('app','docs'):
@@ -42,7 +43,11 @@ with zipfile.ZipFile(a.output/'payload.zip','w',zipfile.ZIP_DEFLATED,compresslev
             data=f.read_bytes();z.writestr(path,data)
             records.append({'path':path,'sha256':hashlib.sha256(data).hexdigest()})
 commit=os.environ['GITHUB_SHA']
-version=re.search(r'Version\[\] = "([^"]+)"',(ROOT/'src/application/Version.h').read_text()).group(1)
+version=read_product_version(ROOT/'src/application/Version.h')
+if manifest['openNavVersion'] != version:
+    raise SystemExit('Compatibility manifest version differs from the product source')
+if json.loads((preview/'docs/PRODUCT_BUILD.json').read_text())['version'] != version:
+    raise SystemExit('Recovery version differs from the installer source')
 package={'schema':1,'version':version,'commit':commit,
          'payloadSha256':hashlib.sha256((a.output/'payload.zip').read_bytes()).hexdigest(),
          'supportedOpenCpn':manifest['supportedOpenCpn'],'files':records,
@@ -52,6 +57,8 @@ compiler=Path(os.environ.get('ProgramFiles(x86)','C:/Program Files (x86)'))/'NSI
 if not compiler.exists(): raise SystemExit('Native NSIS compiler missing')
 setup=a.output/'SKAGER-Beta2-Setup.exe'
 subprocess.run([str(compiler),'/V3',f'/DOUTPUT={setup.resolve()}',
+               f'/DPRODUCT_VERSION={version}',
+               '/DPRODUCT_VERSION_NUMERIC='+'.'.join(map(str,windows_product_version(version))),
                f'/DPACKAGE={a.output.resolve()}',
                f'/DENGINE={ROOT / "installer/windows/Lifecycle.ps1"}',
                f'/DUPDATE_TRANSACTION={ROOT / "installer/windows/UpdateTransaction.ps1"}',

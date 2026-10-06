@@ -1,6 +1,21 @@
 // Only framework/driver collaborators are stubs. The writer and serial encoder
 // below are extracted verbatim from production; tN2kMsg is linked unchanged.
 #include <N2kMsg.h>
+// Simulate Win32 headers without NOMINMAX. Production helpers must coexist
+// with these macros; the portable harness itself otherwise has no SDK headers.
+#include <chrono>
+#include <cstdint>
+#include <deque>
+#include <limits>
+#include <mutex>
+#include <vector>
+#include <utility>
+#define max(a,b) WINDOWS_MAX_MACRO_MUST_NOT_EXPAND(a,b)
+#define min(a,b) WINDOWS_MIN_MACRO_MUST_NOT_EXPAND(a,b)
+#include "model/comm_drv_n2k_serial_state.h"
+#undef max
+#undef min
+#include "model/comm_drv_n2k_serial_framer.h"
 #include <cstdint>
 #include <cstring>
 #include <iostream>
@@ -46,6 +61,11 @@ struct Nmea2000Msg : NavMsg {
               std::shared_ptr<const NavAddr2000> from, int prio = 6)
       : PGN{pgn}, payload(data), source(from), priority(prio) {}
 };
+struct Nmea2000SerialMsg : Nmea2000Msg {
+  using Nmea2000Msg::Nmea2000Msg;
+  N2kSerialState::Clock::time_point received_at{};
+  uint64_t connection_generation = 0;
+};
 struct FakeQueue {
   bool accepts = true;
   unsigned attempts = 0;
@@ -62,10 +82,22 @@ struct FakeListener {
     messages.push_back(std::move(message));
   }
 };
+enum { DS_TYPE_INPUT, DS_TYPE_OUTPUT, DS_TYPE_INPUT_OUTPUT };
+struct CommDriverN2KSerialEvent {
+  std::shared_ptr<std::vector<unsigned char>> payload;
+  N2kSerialState::Clock::time_point received_at{};
+  uint64_t connection_generation = 0;
+  auto GetPayload() { return payload; }
+};
 struct CommDriverN2KSerial {
   std::string iface = "FAKE-NO-PHYSICAL-PORT";
   bool m_closing = false;
   bool active = true;
+  N2kSerialState m_serial_state;
+  struct { bool bEnabled = true; int IOSelect = DS_TYPE_INPUT_OUTPUT; } m_params;
+  void ProcessManagementPacket(std::vector<unsigned char>*) {}
+  void handle_N2K_SERIAL_RAW(CommDriverN2KSerialEvent&);
+  bool SendPilotMessage(std::shared_ptr<const NavMsg>, std::shared_ptr<const NavAddr>, uint64_t, uint64_t* = nullptr);
   FakeQueue queue;
   FakeQueue* worker = &queue;
   FakeListener m_listener;
@@ -74,9 +106,28 @@ struct CommDriverN2KSerial {
   std::shared_ptr<NavAddr2000> GetAddress(uint64_t name) {
     return std::make_shared<NavAddr2000>(iface, N2kName(name));
   }
+  int SendMgmtMsg(unsigned char*,size_t,unsigned char,int,bool*);
   bool SendMessage(std::shared_ptr<const NavMsg>, std::shared_ptr<const NavAddr>);
 };
 
+struct CommDriverN2KSerialThread {
+  struct Port {
+    bool open = true, throws = false;
+    size_t count = 0, purges = 0;
+    bool isOpen() { return open; }
+    size_t write(uint8_t*, size_t size) {
+      if (throws) throw std::runtime_error("fake write error");
+      return std::min(size, count);
+    }
+    void flushOutput() { ++purges; }
+  } m_serial;
+  size_t WriteComPortPhysical(std::vector<unsigned char>);
+  size_t WriteComPortPhysical(unsigned char*, size_t);
+};
+#define DEBUG_LOG std::cerr
+unsigned sleeps=0;
+void wxMilliSleep(int){++sleeps;}
+void wxYieldIfNeeded(){}
 #define ESCAPE 0x10
 #define STARTOFTEXT 0x02
 #define ENDOFTEXT 0x03
@@ -136,8 +187,10 @@ void Rejected(std::shared_ptr<const NavMsg> msg,
   Check(driver.queue.attempts == 0 && driver.m_listener.messages.empty(),
         "invalid input has no queue/listener effects");
 }
+void LifecycleTests();
 int main() {
   try {
+    LifecycleTests();
     const std::vector<unsigned char> request{0, 0xee, 0};
     {
       CommDriverN2KSerial driver;
@@ -214,4 +267,112 @@ int main() {
     std::cerr << "FAIL " << error.what() << '\n';
     return 1;
   }
+}
+
+
+void LifecycleTests() {
+  using Clock = N2kSerialState::Clock;
+  const std::vector<unsigned char> bytes{1,2,3};
+  N2kSerialState state;
+  Check(!state.Enqueue(bytes), "closed queue rejects all output");
+  state.Connection(true);
+  auto epoch = state.Get().epoch;
+  auto now = Clock::now();
+  Check(!state.Enqueue(bytes, true, epoch, now), "serial session starts OFF");
+  Check(state.Enqueue(bytes, true, epoch, now, false), "explicit discovery allowed without steering session");
+  int writes = 0;
+  Check(state.WriteOne([&](auto& b) { ++writes; return b.size(); }, now) == 1, "nonsteering request written once");
+  Check(state.Get().pilot_writes == 0, "discovery is not command write provenance");
+  state.EnablePilot(true);
+  Check(state.Enqueue(bytes, true, epoch, now), "session accepts one pilot item");
+  Check(!state.Enqueue(bytes, true, epoch, now), "second pilot item refused");
+  state.EnablePilot(false);
+  Check(state.WriteOne([&](auto& b) { ++writes; return b.size(); }, now) == 0 && writes == 1, "disable cancels unsent pilot");
+  state.EnablePilot(true);
+  Check(state.Enqueue(bytes, true, epoch, now), "queue before disconnect");
+  state.Connection(false); state.Connection(true);
+  Check(state.Get().epoch != epoch && state.WriteOne([&](auto& b) { ++writes; return b.size(); }) == 0, "reconnect purges and advances epoch");
+  Check(!state.Enqueue(bytes, true, epoch, now), "stale epoch rejected");
+  epoch = state.Get().epoch;
+  Check(!state.Enqueue(bytes, true, epoch, now), "reconnect never restores session");
+  state.EnablePilot(true);
+  Check(state.Enqueue(bytes, true, epoch, now), "queue timeout item");
+  Check(state.WriteOne([&](auto& b) { ++writes; return b.size(); }, now + std::chrono::milliseconds(500)) == 0, "500ms expired item never transmitted");
+  Check(writes == 1, "expired and cancelled items never wrote");
+  Check(state.Enqueue(bytes, true, epoch), "queue short-write item");
+  Check(state.Enqueue(bytes), "queue unrelated output behind pilot");
+  Check(state.WriteOne([](auto&) { return size_t(1); }) == -1 && !state.Get().connected, "partial write invalidates connection");
+  state.Connection(true); state.EnablePilot(true);
+  Check(state.WriteOne([](auto&) { throw std::runtime_error("must not replay"); return size_t(3); }) == 0, "failure purges all queued output");
+  epoch = state.Get().epoch;
+  Check(state.Enqueue(bytes, true, epoch), "queue successful write");
+  Check(state.WriteOne([](auto& b) { return b.size(); }) == 1 && state.Get().pilot_writes == 1 && state.Get().pilot_written_at >= now, "completed write has monotonic provenance");
+  Check(state.Enqueue(bytes, true, epoch), "queue exception item");
+  Check(state.WriteOne([](auto&) -> size_t { throw std::runtime_error("write callback failure"); }) == -1 && !state.Get().connected, "throwing writer invalidates/purges without retry");
+  state.Connection(true);
+  for (unsigned i=0; i<20; ++i) Check(state.Enqueue(bytes), "bounded legacy queue capacity");
+  Check(!state.Enqueue(bytes), "queue capacity refuses overflow");
+  state.Connection(false);
+
+  CommDriverN2KSerial driver;
+  driver.m_serial_state.Connection(true);
+  epoch = driver.m_serial_state.Get().epoch;
+  auto dest = Destination(42);
+  std::vector<unsigned char> cmd{1,0x63,0xff,0,0xff,3,1,0x3b,7,3,4,6,0x40};
+  uint64_t command_ticket = 99;
+  Check(!driver.SendPilotMessage(Message(cmd,126208,3),dest,epoch,&command_ticket) && command_ticket == 0, "actual pilot sink disabled by default and returns no ticket");
+  driver.m_serial_state.EnablePilot(true);
+  driver.m_params.IOSelect = DS_TYPE_INPUT;
+  Check(!driver.SendPilotMessage(Message(cmd,126208,3),dest,epoch), "actual sink refuses input-only connection");
+  driver.m_params.IOSelect = DS_TYPE_INPUT_OUTPUT;
+  Check(driver.SendPilotMessage(Message(cmd,126208,3),dest,epoch,&command_ticket) && command_ticket != 0, "actual sink returns this addressed command ticket");
+  Check(!driver.SendPilotMessage(Message(cmd,126208,3),dest,epoch), "actual sink pending limit");
+  Check(driver.m_serial_state.WriteOne([&](auto& b) { Wire(b,126208,3,42,cmd); return b.size(); }) == 1 && driver.m_serial_state.Get().pilot_written_ticket == command_ticket, "actual serial command encoding and exact completed ticket");
+  Check(driver.SendPilotMessage(Message(cmd,126208,3),dest,epoch), "queue AUTO before STANDBY preemption");
+  auto standby = cmd; standby.back() = 0;
+  Check(driver.SendPilotMessage(Message(standby,126208,3),dest,epoch), "STANDBY replaces unsent AUTO atomically");
+  Check(driver.m_serial_state.WriteOne([&](auto& b) { Wire(b,126208,3,42,standby); return b.size(); }) == 1, "only replacement STANDBY is written");
+  Check(driver.m_serial_state.WriteOne([](auto& b) { return b.size(); }) == 0, "preempted AUTO never replayed");
+  driver.m_serial_state.EnablePilot(false);
+  Check(driver.SendPilotMessage(Message({0,0xee,0}),Destination(),epoch), "actual ISO identity request while steering OFF");
+
+  // Actual receive handler: precise type, size, checksum and worker provenance.
+  std::vector<unsigned char> rx{0x93,19,3,0x63,0xff,0,255,42,0,0,0,0,8,0x3b,0x9f,0x40,0,0xff,0xff,0xff,0xff,0};
+  unsigned sum=0; for(auto b:rx)sum+=b; rx.back()=static_cast<unsigned char>(-sum);
+  CommDriverN2KSerialEvent event{std::make_shared<std::vector<unsigned char>>(rx),Clock::now(),epoch};
+  driver.handle_N2K_SERIAL_RAW(event);
+  auto received = std::dynamic_pointer_cast<const Nmea2000SerialMsg>(driver.m_listener.messages.at(0));
+  Check(driver.m_listener.messages.size()==2 && received && received->received_at==event.received_at && received->connection_generation==epoch, "actual RX preserves worker timestamp and epoch");
+  driver.m_listener.messages.clear();
+  auto valid_at=event.received_at;
+  event.received_at=Clock::now()-std::chrono::seconds(4);driver.handle_N2K_SERIAL_RAW(event);
+  event.received_at=valid_at;event.connection_generation=epoch+1;driver.handle_N2K_SERIAL_RAW(event);
+  event.connection_generation=epoch;event.payload->at(0)=0x94;driver.handle_N2K_SERIAL_RAW(event);
+  event.payload=std::make_shared<std::vector<unsigned char>>(std::vector<unsigned char>{0x93});driver.handle_N2K_SERIAL_RAW(event);
+  Check(driver.m_listener.messages.empty(), "delayed, wrong epoch, TX echo and short frame never feedback");
+
+  N2kSerialFramer framer;
+  std::vector<unsigned char> wire{0x10,2,0x93,0x10,0x10,5,0x10,3};
+  int frames=0;
+  auto emit=[&](auto& body, auto at, auto generation) { ++frames; Check(body==std::vector<unsigned char>({0x93,0x10,5}) && at==now && generation==9,"framer preserves first read provenance across partial chunks and DLE escaping"); };
+  framer.Feed(wire.data(),4,now,9,emit);
+  framer.Feed(wire.data()+4,4,now+std::chrono::seconds(1),9,emit);
+  Check(frames==1,"one complete frame");
+  framer.Feed(wire.data(),4,now,9,emit);framer.Reset();
+  framer.Feed(wire.data()+4,4,now,10,emit);
+  Check(frames==1,"reconnect drops partial frame");
+  std::vector<unsigned char> oversized(520,7);oversized[0]=0x10;oversized[1]=2;
+  oversized.push_back(0x10);oversized.push_back(3);
+  framer.Feed(oversized.data(),oversized.size(),now,9,emit);
+  Check(frames==1,"oversized frame discarded");
+
+  CommDriverN2KSerial management;
+  management.queue.accepts=false;
+  unsigned char mgmt[]{0x42};
+  Check(management.SendMgmtMsg(mgmt,1,0x41,0,nullptr)==1 && management.queue.attempts==10 && sleeps==10,"actual management enqueue terminates on disconnected/full active worker");
+  CommDriverN2KSerialThread worker;
+  worker.m_serial.count=3;
+  Check(worker.WriteComPortPhysical(bytes)==3 && worker.m_serial.purges==0,"actual write never discards output using flushOutput");
+  worker.m_serial.count=1;Check(worker.WriteComPortPhysical(bytes)==1,"actual short write preserved for fail-closed queue");
+  worker.m_serial.throws=true;Check(worker.WriteComPortPhysical(bytes)==0,"write exception is failure");
 }

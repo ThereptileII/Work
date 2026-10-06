@@ -15,7 +15,7 @@ args = parser.parse_args()
 build = args.build_dir.resolve()
 source = build / "source"
 source.mkdir(parents=True, exist_ok=True)
-files = ["model/src/comm_drv_n2k_serial.cpp", "libs/N2KParser/src/N2kMsg.cpp",
+files = ["model/src/comm_drv_n2k_serial.cpp", "model/include/model/comm_drv_n2k_serial.h", "model/include/model/comm_navmsg.h", "libs/N2KParser/src/N2kMsg.cpp",
          "libs/N2KParser/include/N2kMsg.h", "libs/N2KParser/include/N2kDef.h"]
 for name in files:
     target = source / name
@@ -28,6 +28,8 @@ def run(*command, cwd=None):
 
 # Independent tiny repository keeps git apply from discovering the parent repo.
 run("git", "init", "-q", source)
+for generated in ("comm_drv_n2k_serial_state.h", "comm_drv_n2k_serial_framer.h"):
+    (source / "model/include/model" / generated).unlink(missing_ok=True)
 patch = HERE.parents[1] / "patches/opencpn-5.12.4-pilot-serial.patch"
 run("git", "apply", "--check", patch, cwd=source)
 run("git", "apply", patch, cwd=source)
@@ -42,5 +44,8 @@ run("ctest", "--test-dir", build / "build", "-C", "Debug", "--output-on-failure"
     "patch_sha256": hashlib.sha256(patch.read_bytes()).hexdigest(),
     "patched_serial_sha256": hashlib.sha256((source / files[0]).read_bytes()).hexdigest(),
     "sanitizers": args.sanitize,
-    "scope": "Exact extracted SendMessage and serial serializer; real N2kMsg; fake queue/listener. No serial I/O, worker, reconnect or permission qualification."
+    "pilot_gate_sha256": hashlib.sha256((HERE.parents[1] / "src/integration/OpenCPNPilot.cpp").read_bytes()).hexdigest(),
+    "serial_state_sha256": hashlib.sha256((source / "model/include/model/comm_drv_n2k_serial_state.h").read_bytes()).hexdigest(),
+    "serial_framer_sha256": hashlib.sha256((source / "model/include/model/comm_drv_n2k_serial_framer.h").read_bytes()).hexdigest(),
+    "scope": "Actual writer, pilot sink, receive handler, serial write function, queue/session/epoch state and framer; real N2kMsg. Fake port/listener, no hardware."
 }, indent=2) + "\n")

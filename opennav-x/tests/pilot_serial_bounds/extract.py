@@ -19,4 +19,29 @@ writer = section("static uint64_t PayloadToName(",
 serializer = section("#define MaxActisenseMsgBuf", "")
 output.write_text("// SHA256 of complete source: " +
                   hashlib.sha256(source.read_bytes()).hexdigest() + "\n" +
-                  serializer + "\n" + writer)
+                  serializer + "\n" + writer + "\n" +
+                  section("void CommDriverN2KSerial::handle_N2K_SERIAL_RAW(",
+                          "int CommDriverN2KSerial::GetMfgCode()") + "\n" +
+                  section("int CommDriverN2KSerial::SendMgmtMsg(", "int CommDriverN2KSerial::SetTXPGN(") + "\n" +
+                  section("size_t CommDriverN2KSerialThread::WriteComPortPhysical(\n    std::vector<unsigned char> msg)",
+                          "bool CommDriverN2KSerialThread::SetOutMsg("))
+
+gate = (Path(__file__).resolve().parents[2] / "src/integration/OpenCPNPilot.cpp").read_text()
+start = "bool OpenCPNPilot::Send(const adapters::PilotRequest &r)"
+if gate.count(start) != 1:
+    raise SystemExit("Pilot gate source boundary changed")
+state_start = "adapters::PilotFeedback OpenCPNPilot::GetState() const"
+state_end = "std::string OpenCPNPilot::Description() const"
+if gate.count(state_start) != 1 or gate.count(state_end) != 1:
+    raise SystemExit("Pilot state source boundary changed")
+(output.parent / "actual_gate.inc").write_text(
+    gate[gate.index(state_start):gate.index(state_end)] + gate[gate.index(start):])
+
+(output.parent / "actual_lifecycle.inc").write_text(
+    section("bool CommDriverN2KSerial::Open() {", "static uint64_t PayloadToName("))
+# Constructor selection and flag type are outside extracted method bodies.
+header = source.parents[1] / "include/model/comm_drv_n2k_serial.h"
+if ": wxThread(wxTHREAD_JOINABLE)" not in data:
+    raise SystemExit("Serial worker must have explicit joinable ownership")
+if "std::atomic_bool m_bsec_thread_active" not in header.read_text():
+    raise SystemExit("Cross-thread active flag must be atomic")

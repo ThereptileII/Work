@@ -64,6 +64,7 @@ void WritePreviewDiagnostics(const std::string &path,
   report["build_purpose"] = wxString::FromUTF8(BuildPurpose().data());
   report["test_fixtures"] = TestFixturesEnabled();
   report["xnav_hardware_output_policy"] = wxString::FromUTF8(HardwareOutputPolicy().data());
+  report["xnav_manual_control_contract"] = PilotManualSerialEnabled() ? 1 : 0;
   for (const auto &line : info)
     report["build_info"].Append(wxString::FromUTF8(line));
   for (const auto &item : vessel::DataItems(state)) {

@@ -83,6 +83,19 @@ function Assert-StatusOnlyOutput($Result) {
     throw 'Unqualified SKAGER equipment-output build refused. A status-only product is required.'
   }
 }
+function Assert-ProductOutputPolicy($Result) {
+  if ($Result -and $Result.PSObject.Properties['xnav_hardware_output_policy'] -and
+      $Result.xnav_hardware_output_policy -is [string] -and $Result.xnav_hardware_output_policy -ceq 'manual-commissioning') {
+    if ($Result.PSObject.Properties['xnav_manual_control_contract'] -and
+        $Result.xnav_manual_control_contract -is [int] -and $Result.xnav_manual_control_contract -eq 1) { return }
+    throw 'Manual commissioning requires the exact versioned control contract.'
+  }
+  Assert-StatusOnlyOutput $Result
+  if ($Result.PSObject.Properties['xnav_manual_control_contract'] -and
+      ($Result.xnav_manual_control_contract -isnot [int] -or $Result.xnav_manual_control_contract -ne 0)) {
+    throw 'Status-only product declares a contradictory manual control contract.'
+  }
+}
 function Assert-InstalledProduct($Result) {
   if (-not $Result -or -not $Result.PSObject.Properties['test_fixtures'] -or
       $Result.test_fixtures -isnot [bool] -or $Result.test_fixtures -ne $false -or
@@ -95,8 +108,8 @@ function Resolve-OutputPolicy($Result, [bool]$RecordedRecovery = $false) {
   if ($RecordedRecovery -and $Result -and -not $Result.PSObject.Properties['xnav_hardware_output_policy']) {
     return 'historical-unqualified'
   }
-  Assert-StatusOnlyOutput $Result
-  return 'status-only'
+  Assert-ProductOutputPolicy $Result
+  return $Result.xnav_hardware_output_policy
 }
 function Test-ExactRepairPackage($Previous, $Package, [string]$ManifestHash) {
   return $Previous -and $Package -and $ManifestHash -cmatch '^[a-f0-9]{64}$' -and
@@ -854,7 +867,7 @@ try {
           if ($matches.Count -ne 1 -or (Hash (RelativePath $stage $helper)) -cne $matches[0].sha256) { throw 'Startup update helper is not part of the exact package.' }
         }
       } elseif ($SupervisedUpdate) { throw 'Candidate does not support authenticated startup.' }
-      AtomicJson (Join-Path $stage 'ownership.json') @{owner=$Owner; version=$package.version; commit=$package.commit; packageSha256=$ManifestSha256; xnavHardwareOutputPolicy=$outputPolicy; shellLayout='OpenNavX.SkagerStartMenu.1'; updateStartupHealth=$startupHealth; shortcutModes=$modes; files=@(FileRecords $stage); managedFiles=@(FileRecords $maintenance | ForEach-Object { [pscustomobject]@{path=('maintenance/'+$_.path);sha256=$_.sha256} }) + @($package.files) + @([pscustomobject]@{path='UpdateTransaction.ps1';sha256=(Hash (Join-Path $stage 'UpdateTransaction.ps1'))}, [pscustomobject]@{path='UpdateSupervisor.ps1';sha256=(Hash (Join-Path $stage 'UpdateSupervisor.ps1'))}, [pscustomobject]@{path='Lifecycle.ps1';sha256=(Hash (Join-Path $stage 'Lifecycle.ps1'))}, [pscustomobject]@{path='Maintain.exe';sha256=(Hash (Join-Path $stage 'Maintain.exe'))}, [pscustomobject]@{path='app/OPENNAV_INSTALLED_STOCK';sha256=(Hash $locator)}); importedPlugins=$retained}
+      AtomicJson (Join-Path $stage 'ownership.json') @{owner=$Owner; version=$package.version; commit=$package.commit; packageSha256=$ManifestSha256; xnavHardwareOutputPolicy=$outputPolicy; xnavManualControlContract=$(if ($outputPolicy -ceq 'manual-commissioning') { 1 } else { 0 }); shellLayout='OpenNavX.SkagerStartMenu.1'; updateStartupHealth=$startupHealth; shortcutModes=$modes; files=@(FileRecords $stage); managedFiles=@(FileRecords $maintenance | ForEach-Object { [pscustomobject]@{path=('maintenance/'+$_.path);sha256=$_.sha256} }) + @($package.files) + @([pscustomobject]@{path='UpdateTransaction.ps1';sha256=(Hash (Join-Path $stage 'UpdateTransaction.ps1'))}, [pscustomobject]@{path='UpdateSupervisor.ps1';sha256=(Hash (Join-Path $stage 'UpdateSupervisor.ps1'))}, [pscustomobject]@{path='Lifecycle.ps1';sha256=(Hash (Join-Path $stage 'Lifecycle.ps1'))}, [pscustomobject]@{path='Maintain.exe';sha256=(Hash (Join-Path $stage 'Maintain.exe'))}, [pscustomobject]@{path='app/OPENNAV_INSTALLED_STOCK';sha256=(Hash $locator)}); importedPlugins=$retained}
       $previous = ''; if ($state) { $previous = $state.current }
       $next = @{owner=$Owner;schema=1;stock=$stock;current=$id;previous=$previous;shortcutModes=$modes}
       if ($SupervisedUpdate) {

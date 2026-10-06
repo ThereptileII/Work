@@ -1,0 +1,46 @@
+{
+  "issue": "SCRUM-313",
+  "base_commit": "f14861ea0d09c7275a4dda800893dbe1ba88e59a",
+  "changed_code_sha256": {
+    "patches/opencpn-5.12.4-pilot-serial.patch": "89e38e993b7e9e0547aa1375e309b2a4707957e48521197b304e64bca998842c",
+    "src/integration/OpenCPNPilot.cpp": "9954f5a13526095055023b85194c6495d7658b356ec4afcc3ead7a0e91a98ee7",
+    "src/integration/OpenCPNPilot.h": "02a513b269e1baa5886b5d9d6be926ad5cbe8b4f9aa599f35b5cefb39e139130",
+    "tests/pilot_serial_bounds/extract.py": "cc82290a82ea9e92a0810c9f869e00e12310b49eebb60f785114c891bbdcfdfb",
+    "tests/pilot_serial_bounds/gate.cpp": "feb62ebb7f1ee5da2f10fa6cfa907a0fd5ad7d86488c8bddcf382076ccf76da0",
+    "tests/pilot_serial_bounds/probe.cpp": "e312375eec43c51af4eeb2f174ece0b896231c4a754a576a2ef84d205c41fac7"
+  },
+  "actual_source_harness": {
+    "pin": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+    "patch_apply_check": "passed",
+    "tests": "passed",
+    "patch_sha256": "89e38e993b7e9e0547aa1375e309b2a4707957e48521197b304e64bca998842c",
+    "patched_serial_sha256": "2944aa347b676cb760745d96672fb39e0a6059e69dce9104f85bf7f6c5bd78b1",
+    "sanitizers": true,
+    "pilot_gate_sha256": "9954f5a13526095055023b85194c6495d7658b356ec4afcc3ead7a0e91a98ee7",
+    "serial_state_sha256": "568ef132606acac20616c4828f16f818ca9349b4863359c24d6633cf68fb4a4a",
+    "serial_framer_sha256": "53ebdc39ce09b8ec26f720981fa0cea91ca2f6af0690e33b1e4c16c8d223a6fc",
+    "scope": "Actual writer, pilot sink, receive handler, serial write function, queue/session/epoch state and framer; real N2kMsg. Fake port/listener, no hardware."
+  },
+  "complete_unit_compile": [
+    {
+      "unit": "comm_drv_n2k_serial",
+      "returncode": 0
+    },
+    {
+      "unit": "OpenCPNPilot",
+      "returncode": 0
+    }
+  ],
+  "regressions": [
+    "Exact queue ticket equality excludes previous completed AUTO when STANDBY remains queued",
+    "Actual GetState retains serial write-time boundary for received feedback",
+    "Actual SendPilotMessage returns assigned ticket and zero on rejection",
+    "Windows min/max macro exposure compiled in actual production state helper"
+  ],
+  "native_msvc": "pending root gate",
+  "boat_accessed": false,
+  "upstream_sparse_inputs_to_add": [
+    "model/include/model/comm_drv_n2k_serial.h",
+    "model/include/model/comm_navmsg.h"
+  ]
+}

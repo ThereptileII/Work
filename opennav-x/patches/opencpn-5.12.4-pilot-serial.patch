@@ -1,7 +1,341 @@
-diff --git a/model/src/comm_drv_n2k_serial.cpp b/model/src/comm_drv_n2k_serial.cpp
---- a/model/src/comm_drv_n2k_serial.cpp
-+++ b/model/src/comm_drv_n2k_serial.cpp
-@@ -374,10 +374,21 @@
+diff --git i/model/include/model/comm_drv_n2k_serial.h w/model/include/model/comm_drv_n2k_serial.h
+index d5df2d3..00d7a57 100644
+--- i/model/include/model/comm_drv_n2k_serial.h
++++ w/model/include/model/comm_drv_n2k_serial.h
+@@ -27,6 +27,7 @@
+ #define _COMMDRIVERN2KSERIAL_H
+ 
+ #include <atomic>
++#include "model/comm_drv_n2k_serial_state.h"
+ 
+ #include <wx/thread.h>
+ 
+@@ -50,6 +51,15 @@
+ #define MsgTypeN2kRequest 0x94
+ using namespace std::literals::chrono_literals;
+ 
++// Preserve the public Nmea2000Msg layout used by existing plugins. Only the
++// real serial receive path creates this provenance-bearing derived message.
++class Nmea2000SerialMsg final : public Nmea2000Msg {
++public:
++  using Nmea2000Msg::Nmea2000Msg;
++  std::chrono::steady_clock::time_point received_at{};
++  uint64_t connection_generation = 0;
++};
++
+ class CommDriverN2KSerialThread;  // fwd
+ class CommDriverN2KSerialEvent;
+ 
+@@ -71,6 +81,12 @@ public:
+                    std::shared_ptr<const NavAddr> addr) override;
+ 
+   void AddTxPGN(int pgn);
++  N2kSerialState::Snapshot GetSerialState() const { return m_serial_state.Get(); }
++  void EnablePilotOutput(bool enabled) { m_serial_state.EnablePilot(enabled); }
++  bool SendPilotMessage(std::shared_ptr<const NavMsg> msg,
++                        std::shared_ptr<const NavAddr> addr, uint64_t epoch,
++                        uint64_t* ticket = nullptr);
++  N2kSerialState m_serial_state;
+ 
+   int SetTXPGN(int pgn) override;
+ 
+@@ -114,7 +130,7 @@ private:
+   int m_handshake;
+ 
+   CommDriverN2KSerialThread* m_pSecondary_Thread;
+-  bool m_bsec_thread_active;
++  std::atomic_bool m_bsec_thread_active{false};
+ 
+   DriverListener& m_listener;
+ 
+diff --git i/model/include/model/comm_drv_n2k_serial_framer.h w/model/include/model/comm_drv_n2k_serial_framer.h
+new file mode 100644
+index 0000000..cbf9116
+--- /dev/null
++++ w/model/include/model/comm_drv_n2k_serial_framer.h
+@@ -0,0 +1,34 @@
++#ifndef COMM_DRV_N2K_SERIAL_FRAMER_H
++#define COMM_DRV_N2K_SERIAL_FRAMER_H
++#include <chrono>
++#include <cstdint>
++#include <vector>
++// Complete bounded Actisense frames, timestamped at first chunk read (before
++// the blocking read). A partly received old frame cannot acknowledge a command.
++class N2kSerialFramer {
++public:
++  using Time = std::chrono::steady_clock::time_point;
++  void Reset() { data_.clear(); in_frame_ = escape_ = false; }
++  template<class Emit>
++  void Feed(const unsigned char* bytes, size_t size, Time at, uint64_t epoch, Emit emit) {
++    for (size_t i = 0; i < size; ++i) {
++      auto byte = bytes[i];
++      if (escape_) {
++        escape_ = false;
++        if (byte == 2) { data_.clear(); in_frame_ = true; at_ = at; epoch_ = epoch; continue; }
++        if (byte == 3 && in_frame_) { emit(data_, at_, epoch_); Reset(); continue; }
++        if (byte != 0x10) { Reset(); continue; }
++      } else if (byte == 0x10) { escape_ = true; continue; }
++      if (in_frame_) {
++        if (data_.size() >= 512) Reset();
++        else data_.push_back(byte);
++      }
++    }
++  }
++private:
++  std::vector<unsigned char> data_;
++  bool in_frame_ = false, escape_ = false;
++  Time at_{};
++  uint64_t epoch_ = 0;
++};
++#endif
+diff --git i/model/include/model/comm_drv_n2k_serial_state.h w/model/include/model/comm_drv_n2k_serial_state.h
+new file mode 100644
+index 0000000..57e826e
+--- /dev/null
++++ w/model/include/model/comm_drv_n2k_serial_state.h
+@@ -0,0 +1,117 @@
++#ifndef COMM_DRV_N2K_SERIAL_STATE_H
++#define COMM_DRV_N2K_SERIAL_STATE_H
++#include <chrono>
++#include <cstdint>
++#include <deque>
++#include <limits>
++#include <mutex>
++#include <vector>
++#include <utility>
++
++// Shared by the application and serial worker. A queue result is never delivery
++// or physical acknowledgement. All state and the final write share one lock.
++class N2kSerialState {
++public:
++  using Clock = std::chrono::steady_clock;
++  struct Snapshot {
++    bool connected = false;
++    uint64_t epoch = 0;
++    Clock::time_point changed_at{};
++    uint64_t pilot_writes = 0;
++    uint64_t pilot_written_ticket = 0;
++    Clock::time_point pilot_written_at{};
++  };
++  Snapshot Get() const {
++    std::lock_guard<std::mutex> lock(mutex_);
++    return state_;
++  }
++  void Connection(bool connected) {
++    std::lock_guard<std::mutex> lock(mutex_);
++    Transition(connected);
++  }
++  void EnablePilot(bool enabled) {
++    std::lock_guard<std::mutex> lock(mutex_);
++    pilot_enabled_ = enabled && state_.connected;
++    // A disable/enable boundary can never retain an old command.
++    for (auto it = queue_.begin(); it != queue_.end();)
++      if (it->pilot) it = queue_.erase(it); else ++it;
++  }
++  bool Enqueue(const std::vector<unsigned char>& bytes, bool pilot = false,
++               uint64_t expected_epoch = 0, Clock::time_point now = Clock::now(),
++               bool session_required = true, bool replace_pilot = false,
++               uint64_t* ticket = nullptr) {
++    std::lock_guard<std::mutex> lock(mutex_);
++    if (ticket) *ticket = 0;
++    if (pilot && next_ticket_ == (std::numeric_limits<uint64_t>::max)()) {
++      Transition(false); return false;
++    }
++    if (!state_.connected || bytes.empty() || bytes.size() > 512 ||
++        (pilot && ((session_required && !pilot_enabled_) || expected_epoch != state_.epoch))) return false;
++    if (pilot) {
++      for (auto it = queue_.begin(); it != queue_.end();) {
++        if (it->pilot) {
++          if (!replace_pilot) return false;
++          it = queue_.erase(it);
++        } else ++it;
++      }
++    }
++    if (queue_.size() >= 20) return false;
++    const auto assigned_ticket = pilot ? ++next_ticket_ : 0;
++    queue_.push_back({bytes, pilot, state_.epoch, now, session_required, assigned_ticket});
++    if (ticket) *ticket = assigned_ticket;
++    return true;
++  }
++  // 0: nothing eligible; 1: a complete write; -1: failed/partial write.
++  // Holding the lock linearizes disable/reconnect against write. The serial
++  // driver's bounded write timeout bounds the wait for a concurrent disable.
++  template<class Write>
++  int WriteOne(Write write, Clock::time_point now = Clock::now()) {
++    std::lock_guard<std::mutex> lock(mutex_);
++    while (!queue_.empty()) {
++      auto item = std::move(queue_.front()); queue_.pop_front();
++      if (!state_.connected || item.epoch != state_.epoch ||
++          (item.pilot && ((item.session_required && !pilot_enabled_) || now < item.queued ||
++                         now - item.queued >= std::chrono::milliseconds(500)))) continue;
++      size_t written = 0;
++      try { written = write(item.bytes); }
++      catch (...) { Transition(false); return -1; }
++      if (written == item.bytes.size()) {
++        if (item.pilot && item.session_required) {
++          if (state_.pilot_writes == (std::numeric_limits<uint64_t>::max)()) { Transition(false); return -1; }
++          ++state_.pilot_writes;
++          state_.pilot_written_ticket = item.ticket;
++          state_.pilot_written_at = Clock::now();
++        }
++        return 1;
++      }
++      // Never retry an uncertain write, and purge everything before reopen.
++      Transition(false);
++      return -1;
++    }
++    return 0;
++  }
++private:
++  struct Item {
++    std::vector<unsigned char> bytes;
++    bool pilot;
++    uint64_t epoch;
++    Clock::time_point queued;
++    bool session_required;
++    uint64_t ticket;
++  };
++  void Transition(bool connected) {
++    queue_.clear();
++    pilot_enabled_ = false;
++    if (state_.connected != connected) {
++      if (state_.epoch != (std::numeric_limits<uint64_t>::max)()) ++state_.epoch;
++      state_.changed_at = Clock::now();
++    }
++    state_.connected = connected && state_.epoch != (std::numeric_limits<uint64_t>::max)();
++  }
++  mutable std::mutex mutex_;
++  Snapshot state_;
++  bool pilot_enabled_ = false;
++  uint64_t next_ticket_ = 0;
++  std::deque<Item> queue_;
++};
++#endif
+diff --git i/model/src/comm_drv_n2k_serial.cpp w/model/src/comm_drv_n2k_serial.cpp
+index 7687354..9dc00f3 100644
+--- i/model/src/comm_drv_n2k_serial.cpp
++++ w/model/src/comm_drv_n2k_serial.cpp
+@@ -37,6 +37,7 @@
+ #include <wx/log.h>
+ 
+ #include "model/comm_drv_n2k_serial.h"
++#include "model/comm_drv_n2k_serial_framer.h"
+ #include "model/comm_navmsg_bus.h"
+ #include "model/comm_drv_registry.h"
+ #include "model/logger.h"
+@@ -181,7 +182,7 @@ private:
+   int m_baud;
+   int m_n_timeout;
+ 
+-  n2k_atomic_queue<std::vector<unsigned char>> out_que;
++
+   DriverStats m_driver_stats;
+   mutable std::mutex m_stats_mutex;
+ #ifdef __WXMSW__
+@@ -214,6 +215,9 @@ public:
+ 
+ private:
+   std::shared_ptr<std::vector<unsigned char>> m_payload;
++public:
++  std::chrono::steady_clock::time_point received_at{};
++  uint64_t connection_generation = 0;
+ };
+ 
+ //========================================================================
+@@ -249,7 +253,7 @@ CommDriverN2KSerial::CommDriverN2KSerial(const ConnectionParams* params,
+   m_driver_stats.driver_iface = m_params.GetStrippedDSPort();
+   m_driver_stats.available = false;
+ 
+-  Open();
++  if (!Open()) return;
+ 
+   wxMilliSleep(100);
+   GetMfgCode();
+@@ -316,50 +320,52 @@ DriverStats CommDriverN2KSerial::GetDriverStats() const {
+ }
+ 
+ bool CommDriverN2KSerial::Open() {
+-  wxString comx;
+-  comx = m_params.GetDSPort().AfterFirst(':');  // strip "Serial:"
+-
+-  comx =
+-      comx.BeforeFirst(' ');  // strip off any description provided by Windows
+-
+ #ifndef ANDROID
+-  //    Kick off the  RX thread
+-  SetSecondaryThread(new CommDriverN2KSerialThread(this, comx, m_BaudRate));
++  if (m_pSecondary_Thread) return false;
++  const auto comx = m_params.GetDSPort().AfterFirst(':').BeforeFirst(' ');
++  auto* worker = new CommDriverN2KSerialThread(this, comx, m_BaudRate);
++  if (worker->Create() != wxTHREAD_NO_ERROR) {
++    delete worker;  // Create failed: there is no native thread to join.
++    return false;
++  }
++  SetSecondaryThread(worker);
+   SetThreadRunFlag(1);
+-  GetSecondaryThread()->Run();
++  if (worker->Run() != wxTHREAD_NO_ERROR) {
++    SetThreadRunFlag(0);
++    // A successfully created native thread can still be suspended. Delete
++    // cancels/resumes that state; Wait also joins it on POSIX. Never Kill it.
++    worker->Delete(nullptr, wxTHREAD_WAIT_BLOCK);
++    worker->Wait(wxTHREAD_WAIT_BLOCK);
++    delete worker;
++    SetSecondaryThread(nullptr);
++    SetThreadRunFlag(-1);
++    SetSecThreadInActive();
++    return false;
++  }
+ #endif
+-
+   return true;
+ }
+ 
+ void CommDriverN2KSerial::Close() {
+   wxLogMessage(
+       wxString::Format(_T("Closing N2K Driver %s"), m_portstring.c_str()));
+-
+   m_stats_timer.Stop();
+   m_closing = true;
+-
+-  //    Kill off the Secondary RX Thread if alive
++  // Publish stop even when Entry has not started yet. The active flag is
++  // diagnostic only and cannot establish worker lifetime.
++  SetThreadRunFlag(0);
++  m_serial_state.Connection(false);
++#ifndef ANDROID
+   if (m_pSecondary_Thread) {
+-    if (m_bsec_thread_active)  // Try to be sure thread object is still alive
+-    {
+-      wxLogMessage(_T("Stopping Secondary Thread"));
+-
+-      m_Thread_run_flag = 0;
+-      int tsec = 10;
+-      while ((m_Thread_run_flag >= 0) && (tsec--)) wxSleep(1);
+-
+-      wxString msg;
+-      if (m_Thread_run_flag < 0)
+-        msg.Printf(_T("Stopped in %d sec."), 10 - tsec);
+-      else
+-        msg.Printf(_T("Not Stopped after 10 sec."));
+-      wxLogMessage(msg);
+-    }
+-
+-    m_pSecondary_Thread = NULL;
+-    m_bsec_thread_active = false;
++    // Read/write have 250 ms timeouts; retry sleep checks stop every 50 ms.
++    // Block without pumping callbacks, and retain the parent until joined.
++    m_pSecondary_Thread->Wait(wxTHREAD_WAIT_BLOCK);
++    delete m_pSecondary_Thread;
++    m_pSecondary_Thread = nullptr;
+   }
++#endif
++  SetSecThreadInActive();
++  SetThreadRunFlag(-1);
+ }
+ static uint64_t PayloadToName(const std::vector<unsigned char> payload) {
+   uint64_t name;
+@@ -374,10 +380,21 @@ bool CommDriverN2KSerial::SendMessage(std::shared_ptr<const NavMsg> msg,
  #ifndef ANDROID
  
    auto msg_n2k = std::dynamic_pointer_cast<const Nmea2000Msg>(msg);
@@ -25,7 +359,7 @@ diff --git a/model/src/comm_drv_n2k_serial.cpp b/model/src/comm_drv_n2k_serial.c
  
    tN2kMsg N2kMsg;  // automatically sets destination 255
    N2kMsg.SetPGN(_pgn);
-@@ -388,15 +399,18 @@
+@@ -388,15 +405,18 @@ bool CommDriverN2KSerial::SendMessage(std::shared_ptr<const NavMsg> msg,
  
    const std::vector<uint8_t> acti_pkg = BufferToActisenseFormat(N2kMsg);
  
@@ -48,7 +382,7 @@ diff --git a/model/src/comm_drv_n2k_serial.cpp b/model/src/comm_drv_n2k_serial.c
  
    // Notify listeners
    m_listener.Notify(std::move(msg_internal));
-@@ -406,6 +420,7 @@
+@@ -406,6 +426,7 @@ bool CommDriverN2KSerial::SendMessage(std::shared_ptr<const NavMsg> msg,
      if (IsSecThreadActive()) {
        int retry = 10;
        while (retry) {
@@ -56,16 +390,609 @@ diff --git a/model/src/comm_drv_n2k_serial.cpp b/model/src/comm_drv_n2k_serial.c
          if (GetSecondaryThread()->SetOutMsg(acti_pkg))
            return true;
          else
-@@ -416,7 +431,7 @@
+@@ -416,7 +437,39 @@ bool CommDriverN2KSerial::SendMessage(std::shared_ptr<const NavMsg> msg,
        return false;
    }
  #endif
 -  return true;
 +  return false;
++}
++
++bool CommDriverN2KSerial::SendPilotMessage(std::shared_ptr<const NavMsg> msg,
++    std::shared_ptr<const NavAddr> addr, uint64_t epoch, uint64_t* ticket) {
++  if (ticket) *ticket = 0;
++#ifndef ANDROID
++  auto n2k = std::dynamic_pointer_cast<const Nmea2000Msg>(msg);
++  auto destination = std::dynamic_pointer_cast<const NavAddr2000>(addr);
++  if (m_closing || !m_params.bEnabled || m_params.IOSelect != DS_TYPE_INPUT_OUTPUT ||
++      !n2k || !destination || destination->name.value.Name ||
++      destination->iface != iface || n2k->payload.empty() ||
++      n2k->payload.size() > tN2kMsg::MaxDataLen || n2k->priority < 0 || n2k->priority > 7 ||
++      !((n2k->PGN.pgn == 126208 && destination->address < 254 && n2k->payload.size() == 13) ||
++        (n2k->PGN.pgn == 59904 && destination->address == 255 &&
++         n2k->payload == std::vector<unsigned char>{0, 0xee, 0}))) return false;
++  if (n2k->PGN.pgn == 126208) {
++    const std::vector<unsigned char> prefix{1, 0x63, 0xff, 0, 0xff, 3, 1, 0x3b, 7, 3, 4, 6};
++    if (n2k->priority != 3 || !std::equal(prefix.begin(), prefix.end(), n2k->payload.begin())) return false;
++    const auto key = n2k->payload.back();
++    if (key != 0 && key != 0x40 && key != 0x51 && key != 0x7f && key != 0xd1 && key != 0x50) return false;
++  } else if (n2k->priority != 6) return false;
++  tN2kMsg encoded;
++  encoded.SetPGN(n2k->PGN.pgn);
++  encoded.Priority = n2k->priority;
++  encoded.Destination = destination->address;
++  for (auto byte : n2k->payload) encoded.AddByte(byte);
++  return m_serial_state.Enqueue(BufferToActisenseFormat(encoded), true, epoch,
++                               N2kSerialState::Clock::now(), n2k->PGN.pgn != 59904,
++                               n2k->PGN.pgn == 126208 && n2k->payload.back() == 0, ticket);
++#else
++  return false;
++#endif
  }
  
  void CommDriverN2KSerial::ProcessManagementPacket(
-@@ -1146,15 +1161,22 @@
+@@ -470,33 +523,31 @@ void CommDriverN2KSerial::ProcessManagementPacket(
+ 
+ void CommDriverN2KSerial::handle_N2K_SERIAL_RAW(
+     CommDriverN2KSerialEvent& event) {
++  const auto state = m_serial_state.Get();
++  const auto now = std::chrono::steady_clock::now();
+   auto p = event.GetPayload();
+-
+-  std::vector<unsigned char>* payload = p.get();
+-
+-  if (payload->at(0) == 0xA0) {
+-    ProcessManagementPacket(payload);
++  if (m_closing || !p || p->size() < 3 || !state.connected ||
++      event.connection_generation != state.epoch || event.received_at < state.changed_at ||
++      event.received_at > now || now - event.received_at >= std::chrono::seconds(3)) return;
++  unsigned sum = 0;
++  for (auto byte : *p) sum += byte;
++  if ((sum & 255) || p->size() != size_t((*p)[1]) + 3) return;
++  if ((*p)[0] == 0xA0) {
++    const auto code = (*p)[2];
++    const size_t minimum = code == 0x41 ? 47 : code == 0x42 ? 24 : 4;
++    if (p->size() >= minimum) ProcessManagementPacket(p.get());
+     return;
+   }
+-
+-  // If port INPUT is not set, filter the mesage here
+-  if (m_params.IOSelect != DS_TYPE_OUTPUT) {
+-    // extract PGN
+-    uint64_t pgn = 0;
+-    unsigned char* c = (unsigned char*)&pgn;
+-    *c++ = payload->at(3);
+-    *c++ = payload->at(4);
+-    *c++ = payload->at(5);
+-
+-    auto name = PayloadToName(*payload);
+-    auto msg =
+-        std::make_shared<const Nmea2000Msg>(pgn, *payload, GetAddress(name));
+-    auto msg_all =
+-        std::make_shared<const Nmea2000Msg>(1, *payload, GetAddress(name));
+-
+-    m_listener.Notify(std::move(msg));
+-    m_listener.Notify(std::move(msg_all));
+-  }
++  if (m_params.IOSelect == DS_TYPE_OUTPUT || (*p)[0] != 0x93 || p->size() < 14 ||
++      p->size() != size_t((*p)[12]) + 14 || (*p)[7] >= 254) return;
++  uint64_t pgn = uint64_t((*p)[3]) | (uint64_t((*p)[4]) << 8) | (uint64_t((*p)[5]) << 16);
++  auto source = std::make_shared<NavAddr2000>(iface, (*p)[7]);
++  auto msg = std::make_shared<Nmea2000SerialMsg>(pgn, *p, source);
++  auto all = std::make_shared<Nmea2000SerialMsg>(1, *p, source);
++  msg->received_at = all->received_at = event.received_at;
++  msg->connection_generation = all->connection_generation = event.connection_generation;
++  m_listener.Notify(std::move(msg));
++  m_listener.Notify(std::move(all));
+ }
+ 
+ int CommDriverN2KSerial::GetMfgCode() {
+@@ -544,23 +595,15 @@ int CommDriverN2KSerial::SendMgmtMsg(unsigned char* string, size_t string_size,
+ 
+   // Send the msg
+   bool bsent = false;
+-  bool not_done = true;
+-  int ntry_outer = 10;
+-  while (not_done) {
+-    if (GetSecondaryThread() && IsSecThreadActive()) {
+-      int retry = 10;
+-      while (retry) {
+-        if (GetSecondaryThread()->SetOutMsg(msg)) {
+-          bsent = true;
+-          not_done = false;
+-          break;
+-        } else
+-          retry--;
+-      }
+-    } else {
+-      wxMilliSleep(100);
+-      if (ntry_outer-- <= 0) not_done = false;
++  // A live worker can have a disconnected/full queue. Bound that case too;
++  // otherwise the historical retry loop never terminates on queue rejection.
++  for (int attempt = 0; attempt < 10; ++attempt) {
++    if (GetSecondaryThread() && IsSecThreadActive() &&
++        GetSecondaryThread()->SetOutMsg(msg)) {
++      bsent = true;
++      break;
+     }
++    wxMilliSleep(100);
+   }
+ 
+   if (!bsent) return 1;
+@@ -661,7 +704,7 @@ void CommDriverN2KSerial::AddTxPGN(int pgn) {
+ 
+ CommDriverN2KSerialThread::CommDriverN2KSerialThread(
+     CommDriverN2KSerial* Launcher, const wxString& PortName,
+-    const wxString& strBaudRate) {
++    const wxString& strBaudRate) : wxThread(wxTHREAD_JOINABLE) {
+   m_pParentDriver = Launcher;  // This thread's immediate "parent"
+ 
+   m_PortName = PortName;
+@@ -682,7 +725,6 @@ CommDriverN2KSerialThread::CommDriverN2KSerialThread(
+     m_driver_stats.available = false;
+   }
+ 
+-  Create();
+ }
+ 
+ CommDriverN2KSerialThread::~CommDriverN2KSerialThread(void) {
+@@ -707,10 +749,13 @@ bool CommDriverN2KSerialThread::OpenComPortPhysical(const wxString& com_name,
+     // std::cerr << "Unhandled Exception while opening serial port: " <<
+     // e.what() << std::endl;
+   }
+-  return m_serial.isOpen();
++  const bool opened = m_serial.isOpen();
++  m_pParentDriver->m_serial_state.Connection(opened);
++  return opened;
+ }
+ 
+ void CommDriverN2KSerialThread::CloseComPortPhysical() {
++  m_pParentDriver->m_serial_state.Connection(false);
+   try {
+     m_serial.close();
+   } catch (std::exception&) {
+@@ -750,7 +795,7 @@ size_t CommDriverN2KSerialThread::WriteComPortPhysical(unsigned char* msg,
+   if (!m_serial.isOpen()) return 0;
+   try {
+     size_t status = m_serial.write((uint8_t*)msg, length);
+-    if (status) m_serial.flushOutput();
++    // flushOutput discards pending bytes (PurgeComm/tcflush); never purge a write.
+     return status;
+   } catch (std::exception& e) {
+     DEBUG_LOG << "Unhandled Exception while writing to serial port: "
+@@ -761,384 +806,63 @@ size_t CommDriverN2KSerialThread::WriteComPortPhysical(unsigned char* msg,
+ 
+ bool CommDriverN2KSerialThread::SetOutMsg(
+     const std::vector<unsigned char>& msg) {
+-  if (out_que.size() < OUT_QUEUE_LENGTH) {
+-    out_que.push(msg);
+-    return true;
+-  }
+-  return false;
++  return m_pParentDriver->m_serial_state.Enqueue(msg);
+ }
+ 
+-#ifndef __WXMSW__
+ void* CommDriverN2KSerialThread::Entry() {
+-  bool not_done = true;
+-  bool nl_found = false;
+-  wxString msg;
+-  uint8_t rdata[2000];
+-  circular_buffer<uint8_t> circle(DS_RX_BUFFER_SIZE);
+-  int ib = 0;
+-
+-  //    Request the com port from the comm manager
+-  if (!OpenComPortPhysical(m_PortName, m_baud)) {
+-    wxString msg(_T("NMEA input device open failed: "));
+-    msg.Append(m_PortName);
+-    ThreadMessage(msg);
+-    std::lock_guard lock(m_stats_mutex);
+-    m_driver_stats.available = false;
+-
+-    // goto thread_exit; // This means we will not be trying to connect = The
+-    // device must be connected when the thread is created. Does not seem to be
+-    // needed/what we want as the reconnection logic is able to pick it up
+-    // whenever it actually appears (Of course given it appears with the
+-    // expected device name).
+-  } else {
+-    wxMilliSleep(100);
+-    std::lock_guard lock(m_stats_mutex);
+-    m_driver_stats.available = true;
+-    SetGatewayOperationMode();
+-  }
+-
+-  m_pParentDriver->SetSecThreadActive();  // I am alive
+-
+-  //    The main loop
+-  static size_t retries = 0;
+-
+-  bool bInMsg = false;
+-  bool bGotESC = false;
+-  bool bGotSOT = false;
+-
+-  while ((not_done) && (m_pParentDriver->m_Thread_run_flag > 0)) {
+-    if (TestDestroy()) not_done = false;  // smooth exit
+-
+-    uint8_t next_byte = 0;
+-    int newdata = 0;
+-    if (m_serial.isOpen()) {
+-      try {
+-        newdata = m_serial.read(rdata, 1000);
+-      } catch (std::exception& e) {
+-        // std::cerr << "Serial read exception: " << e.what() << std::endl;
+-        std::lock_guard lock(m_stats_mutex);
+-        m_driver_stats.error_count++;
+-
+-        if (10 < retries++) {
+-          // We timed out waiting for the next character 10 times, let's close
+-          // the port so that the reconnection logic kicks in and tries to fix
+-          // our connection.
+-          CloseComPortPhysical();
+-          retries = 0;
+-        }
++  m_pParentDriver->SetSecThreadActive();
++  N2kSerialFramer framer;
++  unsigned retries = 0;
++  while (!TestDestroy() && m_pParentDriver->m_Thread_run_flag > 0) {
++    if (!m_serial.isOpen()) {
++      framer.Reset();
++      if (!OpenComPortPhysical(m_PortName, m_baud)) {
++        retries = (std::min)(retries + 1, 10u);
++        for (unsigned tick = 0; tick < 5 * retries &&
++             m_pParentDriver->m_Thread_run_flag > 0 && !TestDestroy(); ++tick)
++          wxMilliSleep(50);
++        continue;
+       }
+-    } else {
+-      // Reconnection logic. Let's try to reopen the port while waiting longer
+-      // every time (until we simply keep trying every 2.5 seconds)
+-      // std::cerr << "Serial port seems closed." << std::endl;
+-      wxMilliSleep(250 * retries);
++      retries = 0;
++      if (m_pParentDriver->m_Thread_run_flag <= 0) break;
++      SetGatewayOperationMode();
++      { std::lock_guard lock(m_stats_mutex); m_driver_stats.available = true; }
++    }
++    uint8_t data[1000];
++    size_t size = 0;
++    const auto read_at = std::chrono::steady_clock::now();
++    const auto state = m_pParentDriver->m_serial_state.Get();
++    try { size = m_serial.read(data, sizeof(data)); }
++    catch (const std::exception&) {
++      { std::lock_guard lock(m_stats_mutex); ++m_driver_stats.error_count; }
+       CloseComPortPhysical();
+-      if (OpenComPortPhysical(m_PortName, m_baud)) {
+-        SetGatewayOperationMode();
+-        std::lock_guard lock(m_stats_mutex);
+-        m_driver_stats.available = true;
+-        retries = 0;
+-      } else if (retries < 10) {
+-        std::lock_guard lock(m_stats_mutex);
+-        m_driver_stats.available = false;
+-        retries++;
+-      }
++      continue;
+     }
+-
+-    if (newdata > 0) {
+-      std::lock_guard lock(m_stats_mutex);
+-      m_driver_stats.rx_count += newdata;
+-
+-      for (int i = 0; i < newdata; i++) {
+-        circle.put(rdata[i]);
+-      }
+-    }
+-
+-    while (!circle.empty()) {
+-      if (ib >= DS_RX_BUFFER_SIZE) ib = 0;
+-      uint8_t next_byte = circle.get();
+-
+-      if (bInMsg) {
+-        if (bGotESC) {
+-          if (ESCAPE == next_byte) {
+-            rx_buffer[ib++] = next_byte;
+-            bGotESC = false;
+-          }
+-        }
+-
+-        if (bGotESC && (ENDOFTEXT == next_byte)) {
+-          // Process packet
+-          //    Copy the message into a std::vector
+-
+-          auto buffer = std::make_shared<std::vector<unsigned char>>(
+-              rx_buffer, rx_buffer + ib);
+-          std::vector<unsigned char>* vec = buffer.get();
+-
+-          ib = 0;
+-          // tak_ptr = tptr;
+-          bInMsg = false;
+-          bGotESC = false;
+-
+-          //           printf("raw ");
+-          //              for (unsigned int i = 0; i < vec->size(); i++)
+-          //                printf("%02X ", vec->at(i));
+-          //              printf("\n");
+-
+-          // Message is finished
+-          // Send the captured raw data vector pointer to the thread's "parent"
+-          //  thereby releasing the thread for further data capture
+-          CommDriverN2KSerialEvent Nevent(wxEVT_COMMDRIVER_N2K_SERIAL, 0);
+-          Nevent.SetPayload(buffer);
+-          m_pParentDriver->AddPendingEvent(Nevent);
+-
+-        } else {
+-          bGotESC = (next_byte == ESCAPE);
+-
+-          if (!bGotESC) {
+-            rx_buffer[ib++] = next_byte;
+-          }
+-        }
+-      }
+-
+-      else {
+-        if (STARTOFTEXT == next_byte) {
+-          bGotSOT = false;
+-          if (bGotESC) {
+-            bGotSOT = true;
+-          }
+-        } else {
+-          bGotESC = (next_byte == ESCAPE);
+-          if (bGotSOT) {
+-            bGotSOT = false;
+-            bInMsg = true;
+-
+-            rx_buffer[ib++] = next_byte;
+-          }
+-        }
+-      }
+-    }  // if newdata > 0
+-
+-    //      Check for any pending output message
+-#if 1
+-    bool b_qdata = !out_que.empty();
+-
+-    while (b_qdata) {
+-      //  Take a copy of message
+-      std::vector<unsigned char> qmsg = out_que.front();
+-      out_que.pop();
+-
+-      if (static_cast<size_t>(-1) == WriteComPortPhysical(qmsg) &&
+-          10 < retries++) {
+-        // We failed to write the port 10 times, let's close the port so that
+-        // the reconnection logic kicks in and tries to fix our connection.
+-        retries = 0;
+-        CloseComPortPhysical();
+-      }
+-
+-      b_qdata = !out_que.empty();
+-    }  // while b_qdata
+-
+-#endif
+-  }  // while ((not_done)
+-
+-  // thread_exit:
++    { std::lock_guard lock(m_stats_mutex); m_driver_stats.rx_count += size; }
++    if (m_pParentDriver->m_Thread_run_flag <= 0) break;
++    framer.Feed(data, size, read_at, state.epoch, [this](const auto& frame, auto at, auto epoch) {
++      CommDriverN2KSerialEvent event(wxEVT_COMMDRIVER_N2K_SERIAL, 0);
++      event.SetPayload(std::make_shared<std::vector<unsigned char>>(frame));
++      event.received_at = at;
++      event.connection_generation = epoch;
++      m_pParentDriver->AddPendingEvent(event);
++    });
++    int written;
++    do {
++      written = m_pParentDriver->m_serial_state.WriteOne([this](const auto& bytes) {
++        const auto count = WriteComPortPhysical(bytes);
++        std::lock_guard lock(m_stats_mutex); m_driver_stats.tx_count += count;
++        return count;
++      });
++    } while (written > 0 && m_pParentDriver->m_Thread_run_flag > 0);
++    if (written < 0) CloseComPortPhysical();
++  }
+   CloseComPortPhysical();
+-  m_pParentDriver->SetSecThreadInActive();  // I am dead
++  m_pParentDriver->SetSecThreadInActive();
+   m_pParentDriver->m_Thread_run_flag = -1;
+-
+-  std::lock_guard lock(m_stats_mutex);
+-  m_driver_stats.available = false;
+-
+-  return 0;
++  return nullptr;
+ }
+ 
+-#else
+-void* CommDriverN2KSerialThread::Entry() {
+-  bool not_done = true;
+-  bool nl_found = false;
+-  wxString msg;
+-  circular_buffer<uint8_t> circle(DS_RX_BUFFER_SIZE);
+-
+-  //    Request the com port from the comm manager
+-  if (!OpenComPortPhysical(m_PortName, m_baud)) {
+-    wxString msg(_T("NMEA input device open failed: "));
+-    msg.Append(m_PortName);
+-    ThreadMessage(msg);
+-    std::lock_guard lock(m_stats_mutex);
+-    m_driver_stats.available = false;
+-
+-    // goto thread_exit; // This means we will not be trying to connect = The
+-    // device must be connected when the thread is created. Does not seem to be
+-    // needed/what we want as the reconnection logic is able to pick it up
+-    // whenever it actually appears (Of course given it appears with the
+-    // expected device name).
+-  } else {
+-    SetGatewayOperationMode();
+-    std::lock_guard lock(m_stats_mutex);
+-    m_driver_stats.available = true;
+-  }
+-
+-  m_pParentDriver->SetSecThreadActive();  // I am alive
+-
+-  //    The main loop
+-  static size_t retries = 0;
+-
+-  bool bInMsg = false;
+-  bool bGotESC = false;
+-  bool bGotSOT = false;
+-
+-  while ((not_done) && (m_pParentDriver->m_Thread_run_flag > 0)) {
+-    if (TestDestroy()) not_done = false;  // smooth exit
+-
+-    uint8_t next_byte = 0;
+-    int newdata = -1;
+-    uint8_t rdata[2000];
+-
+-    if (m_serial.isOpen()) {
+-      try {
+-        newdata = m_serial.read(rdata, 200);
+-      } catch (std::exception& e) {
+-        // std::cerr << "Serial read exception: " << e.what() << std::endl;
+-        if (10 < retries++) {
+-          // We timed out waiting for the next character 10 times, let's close
+-          // the port so that the reconnection logic kicks in and tries to fix
+-          // our connection.
+-          CloseComPortPhysical();
+-          retries = 0;
+-        }
+-      }
+-    } else {
+-      // Reconnection logic. Let's try to reopen the port while waiting longer
+-      // every time (until we simply keep trying every 2.5 seconds)
+-      // std::cerr << "Serial port seems closed." << std::endl;
+-      wxMilliSleep(250 * retries);
+-      CloseComPortPhysical();
+-      if (OpenComPortPhysical(m_PortName, m_baud)) {
+-        std::lock_guard lock(m_stats_mutex);
+-        m_driver_stats.available = true;
+-        SetGatewayOperationMode();
+-        retries = 0;
+-      } else if (retries < 10)
+-        retries++;
+-    }
+-
+-    if (newdata > 0) {
+-      for (int i = 0; i < newdata; i++) {
+-        circle.put(rdata[i]);
+-      }
+-    }
+-
+-    while (!circle.empty()) {
+-      uint8_t next_byte = circle.get();
+-
+-      if (1) {
+-        if (bInMsg) {
+-          if (bGotESC) {
+-            if (ESCAPE == next_byte) {
+-              *put_ptr++ = next_byte;
+-              if ((put_ptr - rx_buffer) > DS_RX_BUFFER_SIZE)
+-                put_ptr = rx_buffer;
+-              bGotESC = false;
+-            } else if (ENDOFTEXT == next_byte) {
+-              // Process packet
+-              //    Copy the message into a std::vector
+-
+-              auto buffer = std::make_shared<std::vector<unsigned char>>();
+-              std::vector<unsigned char>* vec = buffer.get();
+-
+-              unsigned char* tptr;
+-              tptr = tak_ptr;
+-
+-              while ((tptr != put_ptr)) {
+-                vec->push_back(*tptr++);
+-                if ((tptr - rx_buffer) > DS_RX_BUFFER_SIZE) tptr = rx_buffer;
+-              }
+-
+-              tak_ptr = tptr;
+-              bInMsg = false;
+-              bGotESC = false;
+-
+-              // Message is finished
+-              // Send the captured raw data vector pointer to the thread's
+-              // "parent"
+-              //  thereby releasing the thread for further data capture
+-              CommDriverN2KSerialEvent Nevent(wxEVT_COMMDRIVER_N2K_SERIAL, 0);
+-              Nevent.SetPayload(buffer);
+-              m_pParentDriver->AddPendingEvent(Nevent);
+-              std::lock_guard lock(m_stats_mutex);
+-              m_driver_stats.rx_count += vec->size();
+-            } else if (next_byte == STARTOFTEXT) {
+-              put_ptr = rx_buffer;
+-              bGotESC = false;
+-            } else {
+-              put_ptr = rx_buffer;
+-              bInMsg = false;
+-              bGotESC = false;
+-            }
+-
+-          } else {
+-            bGotESC = (next_byte == ESCAPE);
+-
+-            if (!bGotESC) {
+-              *put_ptr++ = next_byte;
+-              if ((put_ptr - rx_buffer) > DS_RX_BUFFER_SIZE)
+-                put_ptr = rx_buffer;
+-            }
+-          }
+-        }
+-
+-        else {
+-          if (STARTOFTEXT == next_byte) {
+-            bGotSOT = false;
+-            if (bGotESC) {
+-              bGotSOT = true;
+-            }
+-          } else {
+-            bGotESC = (next_byte == ESCAPE);
+-            if (bGotSOT) {
+-              bGotSOT = false;
+-              bInMsg = true;
+-
+-              *put_ptr++ = next_byte;
+-              if ((put_ptr - rx_buffer) > DS_RX_BUFFER_SIZE)
+-                put_ptr = rx_buffer;
+-            }
+-          }
+-        }
+-      }  // if newdata > 0
+-    }  // while
+-
+-    //      Check for any pending output message
+-    bool b_qdata = !out_que.empty();
+-
+-    while (b_qdata) {
+-      //  Take a copy of message
+-      std::vector<unsigned char> qmsg = out_que.front();
+-      out_que.pop();
+-
+-      if (static_cast<size_t>(-1) == WriteComPortPhysical(qmsg) &&
+-          10 < retries++) {
+-        // We failed to write the port 10 times, let's close the port so that
+-        // the reconnection logic kicks in and tries to fix our connection.
+-        retries = 0;
+-        CloseComPortPhysical();
+-      }
+-      std::lock_guard lock(m_stats_mutex);
+-      m_driver_stats.tx_count += qmsg.size();
+-
+-      b_qdata = !out_que.empty();
+-    }  // while b_qdata
+-  }  // while ((not_done)
+-
+-  // thread_exit:
+-  CloseComPortPhysical();
+-  m_pParentDriver->SetSecThreadInActive();  // I am dead
+-  m_pParentDriver->m_Thread_run_flag = -1;
+-
+-  return 0;
+-}
+-
+-#endif  //  wxmsw Entry()
+ 
+ #endif  // Android
+ 
+@@ -1146,15 +870,22 @@ void* CommDriverN2KSerialThread::Entry() {
  // Actisense Format:
  // <10><02><93><length (1)><priority (1)><PGN (3)><destination (1)><source
  // (1)><time (4)><len (1)><data (len)><CRC (1)><10><03>

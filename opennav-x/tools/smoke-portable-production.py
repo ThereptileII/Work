@@ -6,6 +6,7 @@ hash-audited, and real bundled coastline pixels must survive every mode restart.
 The separate fixture-enabled integration suite remains mandatory.
 """
 import argparse
+from hardware_output_policy import require_product_output_policy
 import hashlib
 import importlib.util
 import json
@@ -18,6 +19,7 @@ import tempfile
 import time
 import zipfile
 from restart_capability import verified_restart_protocol
+from product_version import validate_product_version
 
 ROOT = Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser()
@@ -198,7 +200,7 @@ try:
     forbidden = {'OPENNAV_TEST_PROFILE', 'OPENNAV_ROUTE_FIXTURE', 'OPENNAV_OBJECT_FIXTURE', 'scenarios.json'}
     assert not any(file.name in forbidden or 'demo' in (part.casefold() for part in file.relative_to(package).parts) for file in package.rglob('*'))
     build = json.loads((package / 'docs/PRODUCT_BUILD.json').read_text())
-    assert build.get('xnav_hardware_output_policy') == 'status-only'
+    require_product_output_policy(build)
     assert build['test_fixtures'] is False and build['build_purpose'] == 'INSTALLED PRODUCT'
     assert build['executable_sha256'] == sha(exe)
     helper = package / 'app/opennav-restart.exe'
@@ -208,9 +210,10 @@ try:
                             capture_output=True, timeout=30)
     assert tested.returncode == 0
     identity = json.loads(selftest.read_text())
-    assert identity.get('xnav_hardware_output_policy') == 'status-only'
+    require_product_output_policy(identity)
     assert identity['test_fixtures'] is False and identity['build_purpose'] == 'INSTALLED PRODUCT'
-    assert identity['version'] == '0.4.0-beta2' and identity['commit'] == args.expected_commit
+    assert identity['version'] == validate_product_version(build['version'])
+    assert identity['commit'] == build['commit'] == args.expected_commit
     assert not identity['profile_initialized'] and not identity['plugins_loaded']
     helper_probe = subprocess.run([str(helper), '--commissioning-protocol-self-test'],
                                   cwd=helper.parent, env=env, capture_output=True, timeout=10)

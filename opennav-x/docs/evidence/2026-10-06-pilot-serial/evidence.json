@@ -1,0 +1,133 @@
+{
+  "date": "2026-10-06",
+  "issue": "SCRUM-313",
+  "base_commit": "177aa2319edffb04e19d7fdc8ceb7453d4195875",
+  "code_sha256": {
+    "patches/opencpn-5.12.4-pilot-serial.patch": "ae2beb5728718116bf2ec6cbe2dcc5fe18186f56d4c96ed5e308b10729cd06ca",
+    "src/adapters/Autopilot.cpp": "077a47577afb15dd95b1ae3614c425703f7f3d551e135c9cc4955b7c9dd27d6f",
+    "src/adapters/Autopilot.h": "5f664929ab8bf904382a9e01c465420ea1bec6288432b891d677c45675cb8934",
+    "src/adapters/St4000Pilot.cpp": "bff5f562a99dc7a01bd0e4ec2e1796797cdd8df8b88ab19b67ddcac07e4a0cdb",
+    "src/integration/BuildFeatures.h": "c9ad5c07c01f746ccd66b54cbbec60c6cc316f90335ec9f9ca235e9cb6026146",
+    "src/integration/InstallerSelfTest.cpp": "23e9f583d998d3ab30fd001fa5c3250f834a2a4ef048996ad3f33f20c78574b1",
+    "src/integration/OpenCPNIntegration.cpp": "cd94ef4d64667454377ae588475f9ccdc9a69085cc7b701124b92254f498fbce",
+    "src/integration/OpenCPNPilot.cpp": "b345ac484bc9481d625fd4f0a2ebbdfdfd401499ad004279aaac0fb09bfde477",
+    "src/integration/OpenCPNPilot.h": "7b58a2b838022fc5d98bb2dedd18d9e268f62bdbf675eba0de500693c2924035",
+    "src/integration/PilotOutputPolicy.h": "cbf577918d06c9e7c2e9df4a1bc9f42ac1d90e8d81ce16047a7c567b426306a0",
+    "src/integration/PreviewDiagnostics.cpp": "9dcd24548ab71fc1da6ca75feb763aad5de70ca670f62c57d303b818ea61684d",
+    "src/ui/PilotSettings.cpp": "402a25319c9c9eba1d929f727576b7120b9201b60868409e3387eb0bf9c7d984",
+    "tests/adapter_tests.cpp": "e30e9add21e0e52f28cd6f12fc6cdfc3c080c92d7330c1c6cf2f14f4a0f46810",
+    "tests/pilot_output_policy_tests.cpp": "17fb19f703525e59bf3dd89a8bfddce84246ee398ba0924f1441a42024de2020",
+    "tests/pilot_serial_bounds/CMakeLists.txt": "6037a86667714a2dca1defa396035b2b41b4452f4e523f54fb7c4b0eb908a65d",
+    "tests/pilot_serial_bounds/README.md": "9da638995754207206d4b3ed9130aac994f688503057dd71a4c05964b420a92c",
+    "tests/pilot_serial_bounds/extract.py": "d2c2910b6f7879652db0a8b923fb846e2c830b6818b07225270f4e403054f11b",
+    "tests/pilot_serial_bounds/probe.cpp": "b614ed04dd93de6cda5e17be5e8ee78279648966b2ca11bb3628b5b52753d65e",
+    "tests/pilot_serial_bounds/run.py": "4a91baaa9f7566c3f3776f4360bab01acaa65a285edcbc86a4ea198b220f439d",
+    "tests/pilot_serial_bounds/gate.cpp": "d74dca26bf4fc79f04751922d3967a11ac0f30c20e126b7053bb3f4db560e5fd"
+  },
+  "portable_contracts": {
+    "passed": 14,
+    "failed": 0,
+    "rechecked_after_live_session_assertions": {
+      "passed": 3,
+      "failed": 0
+    }
+  },
+  "serial_actual_source": {
+    "pin": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+    "patch_apply_check": "passed",
+    "tests": "passed",
+    "patch_sha256": "ae2beb5728718116bf2ec6cbe2dcc5fe18186f56d4c96ed5e308b10729cd06ca",
+    "patched_serial_sha256": "018e61e599d9eae04df2983ad2d22d891d5a016250c2c29d1ba247e23a9ef82b",
+    "sanitizers": true,
+    "pilot_gate_sha256": "b345ac484bc9481d625fd4f0a2ebbdfdfd401499ad004279aaac0fb09bfde477",
+    "serial_state_sha256": "5a19611a5e7ed9402e9ee38b2064de9b4a588e6434833434045dffc52102bd68",
+    "serial_framer_sha256": "53ebdc39ce09b8ec26f720981fa0cea91ca2f6af0690e33b1e4c16c8d223a6fc",
+    "scope": "Actual writer, pilot sink, receive handler, serial write function, queue/session/epoch state and framer; real N2kMsg. Fake port/listener, no hardware."
+  },
+  "native_windows": "pending root qualification",
+  "full_application": "not built by this task",
+  "boat": {
+    "accessed": false,
+    "transmitted": false,
+    "profile_changed": false,
+    "physical_acceptance": "pending root operation"
+  },
+  "limitations": [
+    "Fake registry/port/listener collaborators in offline tests",
+    "Complete Linux units use retained generated and dependency headers, no link",
+    "No complete application event-loop or native serial hardware validation",
+    "Exact integrated native candidate and physical response acceptance required"
+  ],
+  "complete_changed_units": {
+    "pin": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+    "patches": {
+      "patches/opencpn-5.12.4-xnav.patch": "c75ba8c04399ea3c06e277eaa6dfd57cecd554903912850217ba8a3c543ceee0",
+      "patches/opencpn-5.12.4-regression-tests.patch": "3ef13652b8f3717d836883d2fbb7a18f35dbd2ca1162ac991fe339e61392dff1",
+      "patches/opencpn-5.12.4-ais-transport.patch": "ee6689b8943284347fadca9564892b31db4c43db2a007412ac3fdc2072d07fd7",
+      "patches/opencpn-5.12.4-chart-presentation.patch": "cde774b225c2f63ecbd0f1bc0c32ec0f681862b826314b4ed1b05738e63c5c81",
+      "patches/opencpn-5.12.4-maintained-curl.patch": "dafa1fec0a69e3a1195db726c2cb26ceeb7535b5e25476ac2e4658d910f44e48",
+      "patches/opencpn-5.12.4-download-trust.patch": "04763cb038ad088a722e76d4f85bde7e356489b697a373458195336d4278412b",
+      "patches/opencpn-5.12.4-wxcurl-trust.patch": "f3ad76fc07b80e6f2c01331894ce5e685f6aa4456a2a3c761e3115c8c21f3d6b",
+      "patches/opencpn-5.12.4-peer-response-buffer.patch": "c335f361766a6982c3d096e93f7c149179deb33134668e110111ac4980064e15",
+      "patches/opencpn-5.12.4-peer-unavailable.patch": "5bf1c2ae4b09043ce18151f766aebd2b881b993f352000e34399de7e8b36b6d3",
+      "patches/opencpn-5.12.4-pilot-serial.patch": "ae2beb5728718116bf2ec6cbe2dcc5fe18186f56d4c96ed5e308b10729cd06ca"
+    },
+    "scope": "Six complete changed translation units only; reused generated/dependency headers, normal product flags explicitly selected. No application build/link/runtime/native-Windows qualification.",
+    "units": [
+      {
+        "unit": "PilotSettings",
+        "source": "/home/standard/Projects/X-nav-worktrees/pilot-transport-313/src/ui/PilotSettings.cpp",
+        "source_sha256": "402a25319c9c9eba1d929f727576b7120b9201b60868409e3387eb0bf9c7d984",
+        "unchanged_during_compile": true,
+        "returncode": 0,
+        "elapsed_seconds": 12.94,
+        "log": "/tmp/pilot313-units/PilotSettings.log"
+      },
+      {
+        "unit": "InstallerSelfTest",
+        "source": "/home/standard/Projects/X-nav-worktrees/pilot-transport-313/src/integration/InstallerSelfTest.cpp",
+        "source_sha256": "23e9f583d998d3ab30fd001fa5c3250f834a2a4ef048996ad3f33f20c78574b1",
+        "unchanged_during_compile": true,
+        "returncode": 0,
+        "elapsed_seconds": 8.88,
+        "log": "/tmp/pilot313-units/InstallerSelfTest.log"
+      },
+      {
+        "unit": "PreviewDiagnostics",
+        "source": "/home/standard/Projects/X-nav-worktrees/pilot-transport-313/src/integration/PreviewDiagnostics.cpp",
+        "source_sha256": "9dcd24548ab71fc1da6ca75feb763aad5de70ca670f62c57d303b818ea61684d",
+        "unchanged_during_compile": true,
+        "returncode": 0,
+        "elapsed_seconds": 14.09,
+        "log": "/tmp/pilot313-units/PreviewDiagnostics.log"
+      },
+      {
+        "unit": "OpenCPNPilot",
+        "source": "/home/standard/Projects/X-nav-worktrees/pilot-transport-313/src/integration/OpenCPNPilot.cpp",
+        "source_sha256": "b345ac484bc9481d625fd4f0a2ebbdfdfd401499ad004279aaac0fb09bfde477",
+        "unchanged_during_compile": true,
+        "returncode": 0,
+        "elapsed_seconds": 19.13,
+        "log": "/tmp/pilot313-units/OpenCPNPilot.log"
+      },
+      {
+        "unit": "OpenCPNIntegration",
+        "source": "/home/standard/Projects/X-nav-worktrees/pilot-transport-313/src/integration/OpenCPNIntegration.cpp",
+        "source_sha256": "cd94ef4d64667454377ae588475f9ccdc9a69085cc7b701124b92254f498fbce",
+        "unchanged_during_compile": true,
+        "returncode": 0,
+        "elapsed_seconds": 28.62,
+        "log": "/tmp/pilot313-units/OpenCPNIntegration.log"
+      },
+      {
+        "unit": "comm_drv_n2k_serial",
+        "source": "/tmp/pilot313-units/source/model/src/comm_drv_n2k_serial.cpp",
+        "source_sha256": "018e61e599d9eae04df2983ad2d22d891d5a016250c2c29d1ba247e23a9ef82b",
+        "unchanged_during_compile": true,
+        "returncode": 0,
+        "elapsed_seconds": 16.62,
+        "log": "/tmp/pilot313-units/comm_drv_n2k_serial.log"
+      }
+    ]
+  }
+}

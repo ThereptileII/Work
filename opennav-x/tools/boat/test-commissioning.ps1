@@ -355,7 +355,7 @@ try {
         $transactionArgs=New-FixtureTransaction;$null=& $invoke -Action Apply @transactionArgs
         $alpha='OpenNavXSettings 1\n"battery" ""\n"capacity" "20"\n"consumption" "measured"\n"corridor" "50"\n"current" "unconfigured"\n"display.instruments" "sog,depth"\n"display.rail" "sog,heading"\n"draft" "1"\n"efficiency" ""\n"hotel" ""\n"margin" "1"\n"minimum_speed" "1"\n"model_source" ""\n"reserve" "20"\n'
         $currentText=[IO.File]::ReadAllText($fixtureIni).Replace($wmmBefore,$wmmAfter).Replace('PersistActiveRoute=0',"PersistActiveRoute=0`r`nActiveRoute=11111111-2222-3333-4444-555555555555")
-        $currentText+="[OpenNav]`r`nAlphaSettings=$alpha`r`n[OpenNav/OnlineAIS/v1]`r`nEnabled=1`r`n[PlugIns/wmm_pi.dll]`r`nbEnabled=1`r`n[Settings/GlobalState]`r`nFrameWinX=1280`r`n"
+        $currentText+="[OpenNav]`r`nAlphaSettings=$alpha`r`nBoatSetupV1=v1|complete`r`nDisplayPreferencesV1=v1|125|chart`r`nVesselName=M/S Fixture`r`n[OpenNav/OnlineAIS/v1]`r`nEnabled=1`r`n[PlugIns/wmm_pi.dll]`r`nbEnabled=1`r`n[Settings/GlobalState]`r`nFrameWinX=1280`r`nS52_MAR_SAFETY_CONTOUR=3.5`r`n"
         [IO.File]::WriteAllText($fixtureIni,$currentText,$encoding)
         $seen=(& $invoke -Action InspectRestore @transactionArgs)|ConvertFrom-Json
         $inspected=Read-Record $seen.inspection;$parent=[IO.Path]::GetDirectoryName($transactionArgs.Record)

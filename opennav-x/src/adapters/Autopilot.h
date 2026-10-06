@@ -30,6 +30,10 @@ struct PilotFeedback {
   std::uint64_t sequence = 0;
   std::string source;
   std::uint64_t connection_epoch = 0;
+  // Receive state remains visible while a serial write is queued. Confirmation
+  // alone waits for the transport's complete-write watermark.
+  bool command_confirmation_allowed = true;
+  vessel::Time command_written_at{};
 };
 struct PilotRequest {
   std::uint64_t id = 0;
@@ -46,6 +50,9 @@ public:
   virtual PilotFeedback GetState() const = 0;
   virtual void Poll(vessel::Time now) = 0;
   virtual bool Send(const PilotRequest &request) = 0;
+  // Transport implementations use this to cancel queued output on disable.
+  virtual void SetControlEnabled(bool) {}
+  virtual bool ControlEnabled() const { return true; }
 };
 struct PilotCommand {
   PilotRequest request;

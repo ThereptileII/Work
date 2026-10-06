@@ -1,4 +1,5 @@
 #pragma once
+#include "application/SettingsBackup.h"
 
 #include "ui/Controls.h"
 #include "ui/PreviewPanel.h"
@@ -10,6 +11,8 @@
 #include "ui/AisDrawer.h"
 #include "ui/PassageDrawer.h"
 #include "ui/SettingsDrawer.h"
+#include "ui/BoatSetupDialog.h"
+#include <wx/dialog.h>
 #include "ui/AnchorDrawer.h"
 #include "ui/PilotDrawer.h"
 #include "ui/AlertDrawer.h"
@@ -69,6 +72,11 @@ struct ShellActions {
   std::function<double()> chart_safety_depth_m;
   std::function<application::CommandResult(const application::Settings &,
                                            const std::string &, double)> save_vessel;
+  std::function<application::SettingsBackup()> backup_settings;
+  std::function<application::CommandResult(const application::SettingsBackup &)> restore_settings;
+  std::function<application::BoatSetupState()> setup_state;
+  std::function<application::CommandResult()> request_setup;
+  std::function<application::CommandResult(const application::BoatSetupDraft&)> save_setup;
   std::function<std::string()> settings_status;
   std::function<std::string()> boat_bridge_status;
   std::function<application::CommandResult(const application::Settings &)>
@@ -98,6 +106,7 @@ public:
   const std::vector<application::Alert> &Alerts() const { return alerts_.Current(); }
   void UpdateState(const vessel::VesselState &state);
   void ShowAis(int mmsi);
+  void ShowBoatSetup(bool explicit_reset = false);
   const smartnav::NavigationAdvice &Advice() const { return field_snapshot_.advice; }
   int SelectedAis() const { return ais_selection_.Selected(vessel::Clock::now()); }
   int PageScrollPosition() const;
@@ -186,6 +195,7 @@ private:
   application::OnlineAisState online_ais_state_;
   XNavAisDrawer *ais_drawer_ = nullptr;
   XNavPassageDrawer *passage_drawer_ = nullptr;
+  wxWeakRef<wxDialog> boat_setup_;
   XNavSettingsDrawer *settings_drawer_ = nullptr;
   XNavAnchorDrawer *anchor_drawer_ = nullptr;
   XNavPilotDrawer *pilot_drawer_ = nullptr;

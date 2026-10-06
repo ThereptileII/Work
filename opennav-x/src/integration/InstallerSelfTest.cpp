@@ -61,6 +61,7 @@ int RunInstallerSelfTest() {
   report["update_startup_health"] = 0;
 #endif
   report["xnav_hardware_output_policy"] = wxString::FromUTF8(HardwareOutputPolicy().data());
+  report["xnav_manual_control_contract"] = PilotManualSerialEnabled() ? 1 : 0;
   report["upstream"] = wxString("37fd0cddb7334fe489e9f18aa163977a9c5c84f7");
   report["compiler"] = wxString(OPENNAV_BUILD_COMPILER);
   report["profile_initialized"] = false;

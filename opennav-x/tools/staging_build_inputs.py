@@ -6,6 +6,7 @@ Actions metadata/job outputs. A manifest inside an untrusted ZIP is not authorit
 These receipts prove retained input integrity, never Staging/Production acceptance.
 """
 import argparse
+from hardware_output_policy import require_product_output_policy
 import hashlib
 import json
 import os
@@ -278,12 +279,12 @@ def validate_content(root, names, expected):
                 'Native TLS trust check did not pass with verified cleanup')
     product = strict_json(read(PACKAGE_ROOT + '/docs/PRODUCT_BUILD.json'))
     exe_digest = digest('build/production-install/opencpn.exe')
+    require_product_output_policy(product)
     require(product.get('commit') == expected['commit'] and product.get('test_fixtures') is False and
             product.get('build_purpose') == 'INSTALLED PRODUCT' and
-            product.get('xnav_hardware_output_policy') == 'status-only' and
             product.get('executable_sha256') == exe_digest and
             digest(PACKAGE_ROOT + '/app/opencpn.exe') == exe_digest,
-            'Retained product identity or status-only boundary differs')
+            'Retained product identity or versioned output boundary differs')
     package = strict_json(read('build/beta-installer/package.json'))
     require(package.get('commit') == expected['commit'] and
             package.get('payloadSha256') == digest('build/beta-installer/payload.zip'),

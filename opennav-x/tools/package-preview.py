@@ -14,7 +14,7 @@ import re
 import shutil
 import subprocess
 import zipfile
-from hardware_output_policy import require_status_only
+from hardware_output_policy import require_product_output_policy
 from restart_capability import verified_restart_protocol
 from openssl_package import verify_openssl_package_inputs, verify_packaged_openssl
 from curl_package import verify_curl_package_inputs, verify_packaged_curl
@@ -150,7 +150,7 @@ finally:
 if checked.returncode != 0 or not selftest_path.is_file():
     raise SystemExit('Packaged executable loader self-test failed')
 actual = json.loads(selftest_path.read_text(encoding='utf-8-sig'))
-require_status_only(actual)
+require_product_output_policy(actual)
 if (actual.get('passed') is not True or actual.get('test_fixtures') is not False or
         actual.get('build_purpose') != 'INSTALLED PRODUCT' or actual.get('commit') != commit or
         actual.get('version') != product_version or actual.get('profile_initialized') is not False or
@@ -175,6 +175,7 @@ for file in destination.rglob('*'):
     'version': product_version, 'commit': commit, 'test_fixtures': False,
     'build_purpose': 'INSTALLED PRODUCT',
     'xnav_hardware_output_policy': actual['xnav_hardware_output_policy'],
+    'xnav_manual_control_contract': actual.get('xnav_manual_control_contract', 0),
     'executable_sha256': hashlib.sha256((app / 'opencpn.exe').read_bytes()).hexdigest(),
     'restart_helper_sha256': hashlib.sha256((app / 'opennav-restart.exe').read_bytes()).hexdigest(),
     'commissioning_restart_protocol': restart_protocol,

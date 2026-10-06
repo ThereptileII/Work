@@ -16,7 +16,7 @@ permissions:
 jobs:
   verify:
     if: ${{ github.ref != 'refs/heads/skager-updater-lifecycle' }}
-    timeout-minutes: 15
+    timeout-minutes: 20
     strategy:
       matrix:
         include:
@@ -58,6 +58,24 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python -c "import os,sys; from pathlib import Path; sys.path.insert(0,'..'); from updater_package import verify_updater_package; verify_updater_package(Path('../../build/updater-native/install'), os.environ['GITHUB_SHA'])"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Build same-commit read-only trust validator
+        if: runner.os == 'Windows'
+        shell: python
+        run: |
+          import hashlib, json, os, subprocess
+          from pathlib import Path
+          binary = Path('../../build/updater-native/skager-repository.exe')
+          subprocess.run(['go', 'build', '-trimpath', '-buildvcs=true', '-o', str(binary), './cmd/skager-repository'], check=True)
+          info = subprocess.check_output(['go', 'version', '-m', str(binary)], text=True)
+          fields = {}
+          for line in info.splitlines():
+              entry = line.strip()
+              if entry.startswith('build\tvcs.'):
+                  key, value = entry[6:].split('=', 1)
+                  fields[key] = value
+          if fields.get('vcs.revision') != os.environ['GITHUB_SHA'] or fields.get('vcs.modified') != 'false':
+              raise SystemExit('Trust validator must come from the exact clean product commit')
+          binary.with_suffix('.json').write_text(json.dumps({'schema': 1, 'commit': os.environ['GITHUB_SHA'], 'sha256': hashlib.sha256(binary.read_bytes()).hexdigest(), 'buildInfo': info}, indent=2)+'\n', encoding='utf-8')
       - name: Verify retained launcher transfer without rebuilding
         if: runner.os == 'Windows'
         shell: powershell
@@ -95,11 +113,15 @@ jobs:
     if: ${{ github.ref != 'refs/heads/skager-updater-lifecycle' }}
     name: Native startup update interactions
     runs-on: windows-2022
-    timeout-minutes: 15
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - name: Build only the startup model and native popup
         run: python opennav-x/tools/test-startup-update-windows.py --evidence opennav-x/build/startup-update-native-evidence
+      - name: Exact upstream navigation warning and authenticated startup phases
+        run: python opennav-x/tools/test-startup-warning-native.py --evidence opennav-x/build/startup-warning-native-evidence
+      - name: Native first-start setup and settings backup transactions
+        run: python opennav-x/tools/test-staging-settings-windows.py --evidence opennav-x/build/staging-settings-native-evidence
       - name: Native updater shortcut preservation
         if: always()
         shell: powershell
@@ -108,7 +130,10 @@ jobs:
         if: always()
         with:
           name: startup-update-native-${{ github.sha }}
-          path: opennav-x/build/startup-update-native-evidence
+          path: |
+            opennav-x/build/startup-update-native-evidence
+            opennav-x/build/startup-warning-native-evidence
+            opennav-x/build/staging-settings-native-evidence
           if-no-files-found: error
 
   lifecycle-only:

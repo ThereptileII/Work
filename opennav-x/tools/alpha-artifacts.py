@@ -10,7 +10,7 @@ import json
 import os
 from pathlib import Path
 import shutil
-from hardware_output_policy import require_status_only
+from hardware_output_policy import require_product_output_policy
 
 ROOT = Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser()
@@ -29,7 +29,7 @@ for name in ('production-recovery-results.json', 'installer-staging.json'):
     if record.get('status') != 'passed':
         raise SystemExit('Product artifact assembly requires passed native gate: ' + name)
 product = json.loads((ROOT / 'build/developer-preview/SKAGER-Beta2-Portable-Recovery/docs/PRODUCT_BUILD.json').read_text())
-require_status_only(product)
+require_product_output_policy(product)
 if product.get('test_fixtures') is not False or product.get('build_purpose') != 'INSTALLED PRODUCT' or product['commit'] != os.environ['GITHUB_SHA']:
     raise SystemExit('Artifact set must contain the exact fixture-free product commit')
 output = ROOT / ('build/beta-boat-review' if args.boat_review else 'build/beta-artifacts')

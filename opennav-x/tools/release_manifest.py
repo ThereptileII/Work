@@ -5,6 +5,7 @@ This is an offline integrity check, not a signature or release qualification.
 The publisher must establish trusted CI provenance before using these records.
 """
 import argparse
+from hardware_output_policy import require_product_output_policy
 import hashlib
 import json
 from pathlib import Path, PurePosixPath
@@ -142,9 +143,9 @@ def check_product(files, commit, version):
                     for item in archive.infolist()), 'Portable archive links refused')
         prefix = 'SKAGER-Beta2-Portable-Recovery/'
         build = read_metadata(archive, prefix + 'docs/PRODUCT_BUILD.json')
+        require_product_output_policy(build)
         require(build.get('commit') == commit and build.get('version') == version and
-                build.get('test_fixtures') is False and build.get('build_purpose') == 'INSTALLED PRODUCT'
-                and build.get('xnav_hardware_output_policy') == 'status-only',
+                build.get('test_fixtures') is False and build.get('build_purpose') == 'INSTALLED PRODUCT',
                 'Portable product identity/policy differs')
         with archive.open(prefix + 'app/opencpn.exe') as executable:
             hasher = hashlib.sha256()

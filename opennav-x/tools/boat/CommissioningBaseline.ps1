@@ -269,6 +269,75 @@ function Open-CommissioningRestoreLock([string]$Directory) {
   try {return [IO.File]::Open($path,[IO.FileMode]::OpenOrCreate,[IO.FileAccess]::ReadWrite,[IO.FileShare]::None)}
   catch {throw 'Another inspection/restoration owns this transaction; no mutation attempted.'}
 }
+function Assert-PreservedSetupScalar([string]$Value,[double]$Minimum,[double]$Maximum,[bool]$AllowEmpty=$false) {
+  # Settings.cpp ParseSettingNumber/ValidateSettings and SettingsStore's chart
+  # contour bound. No culture-sensitive commas, NaN or infinite spellings.
+  if($AllowEmpty -and $Value -ceq ''){return}
+  if($Value.Length -gt 64 -or $Value -cnotmatch '^-?[0-9]+(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?$'){throw 'Invalid preserved setup scalar.'}
+  $number=[double]::Parse($Value,[Globalization.CultureInfo]::InvariantCulture)
+  if([double]::IsNaN($number) -or [double]::IsInfinity($number) -or $number -lt $Minimum -or $number -gt $Maximum){throw 'Preserved setup scalar outside current source bounds.'}
+}
+function Assert-PreservedVesselName([string]$Value) {
+  # wxFileConfig Save (wxWidgets 3.2): backslashes escaped; surrounding quotes
+  # only for an initial quote or edge whitespace. Quoted embedded quotes escape.
+  $quoted=$Value.StartsWith('"');$text=$Value
+  if($quoted){if($Value.Length -lt 2 -or -not $Value.EndsWith('"')){throw 'Unbalanced vessel-name encoding.'};$text=$Value.Substring(1,$Value.Length-2)}
+  $decoded=New-Object Text.StringBuilder
+  for($i=0;$i -lt $text.Length;$i++){
+    $c=$text[$i]
+    if($c -eq '\'){
+      $i++;if($i -ge $text.Length -or ($text[$i] -ne '\' -and (-not $quoted -or $text[$i] -ne '"'))){throw 'Unsupported/control vessel-name escape.'}
+      $c=$text[$i]
+    }
+    if([int]$c -lt 32 -or [int]$c -eq 127){throw 'Vessel name contains a control character.'}
+    $null=$decoded.Append($c)
+  }
+  $name=$decoded.ToString();$utf8=New-Object Text.UTF8Encoding($false,$true)
+  if($utf8.GetByteCount($name) -gt 128 -or ($name.Length -gt 0 -and [string]::IsNullOrWhiteSpace($name))){throw 'Vessel name exceeds source bounds or is only whitespace.'}
+  $canonical=$name.Replace('\','\\')
+  if($name.Length -gt 0 -and ($name.StartsWith('"') -or [char]::IsWhiteSpace($name[0]) -or [char]::IsWhiteSpace($name[$name.Length-1]))){$canonical='"'+$canonical.Replace('"','\"')+'"'}
+  if($canonical -cne $Value){throw 'Noncanonical vessel-name encoding requires separate review.'}
+}
+function Assert-PreservedSetupPreference([string]$Key,[string]$Value) {
+  switch -CaseSensitive ($Key) {
+    'OpenNav/BoatSetupV1' {if($Value -cnotin @('v1|pending','v1|complete','v1|existing')){throw 'Unknown BoatSetup progress record.'}}
+    'OpenNav/DisplayPreferencesV1' {if($Value -cnotmatch '^v1\|(100|125|150)\|(balanced|chart|instruments)$'){throw 'Unknown display preferences record.'}}
+    'OpenNav/VesselName' {Assert-PreservedVesselName $Value}
+    'Settings/GlobalState/S52_MAR_SAFETY_CONTOUR' {Assert-PreservedSetupScalar $Value 0 1000000}
+    default {throw 'Unknown setup preference; no generic OpenNav admission.'}
+  }
+}
+function Assert-PreservedSetupSettingsDelta([string]$Before,[string]$After) {
+  # Do not decode/re-serialize opaque source mappings, calibration or identity.
+  # Replace only unescaped complete known scalar lines, then demand that every
+  # remaining byte matches. std::quoted escapes embedded quotes, so quoted
+  # multiline values cannot impersonate these field delimiters.
+  $normalized=New-Object 'Collections.Generic.List[string]'
+  foreach($record in @($Before,$After)){
+    if($record.Length -gt 131072 -or -not $record.StartsWith('OpenNavXSettings 1\n') -or $record -match '[\x00-\x1f\x7f]'){throw 'Unsupported vessel-settings delta encoding.'}
+    if([regex]::Matches($record,'(?<=\\n)"model_source" "').Count -ne 1 -or
+       [regex]::Matches($record,'(?<=\\n)"pilot.permission" "').Count -gt 1){throw 'Duplicate or missing protected/provenance field.'}
+    $copy=$record
+    foreach($key in @('capacity','reserve','draft')){
+      $pattern='(?<=\\n)"'+$key+'" "([^"\\\x00-\x1f]*)"(?=\\n)'
+      $matches=[regex]::Matches($copy,$pattern)
+      if($matches.Count -ne 1){throw 'Missing or duplicate setup scalar field.'}
+      $value=$matches[0].Groups[1].Value
+      switch($key){'capacity'{Assert-PreservedSetupScalar $value .001 100000 $true};'reserve'{Assert-PreservedSetupScalar $value 0 100 $true};'draft'{Assert-PreservedSetupScalar $value 0 100 $true}}
+      $copy=[regex]::Replace($copy,$pattern,('"'+$key+'" "<reviewed-scalar>"'))
+    }
+    # Existing Vessel form writes this exact provenance. Setup itself preserves
+    # any preexisting provenance, including unknown source text, unchanged.
+    $copy=[regex]::Replace($copy,'(?<=\\n)"model_source" "(?:|User-configured usable battery energy and reserve / OpenCPN profile)"(?=\\n)','"model_source" "<reviewed-provenance>"')
+    $normalized.Add($copy)
+  }
+  if($normalized[0] -ceq $normalized[1]){return}
+  # SettingsStore::RestoreBackup keeps the local binding but always revokes
+  # permission. No reverse transition or identity/source edit is admitted.
+  $beforeOff=[regex]::Replace($normalized[0],'(?<=\\n)"pilot.permission" "manual"(?=\\n)','"pilot.permission" "display-only"')
+  if($beforeOff -cne $normalized[0] -and $beforeOff -ceq $normalized[1]){return}
+  throw 'Setup preservation cannot change source mappings, calibration, pilot identity or grant control.'
+}
 function Assert-PreservedAlphaSettings([string]$Value) {
   # Settings.cpp EncodeSettings and wxFileConfig's literal newline encoding.
   # Deliberately exclude pilot/bridge, sensor mappings, calibration and unknown
@@ -283,7 +352,7 @@ function Assert-PreservedAlphaSettings([string]$Value) {
   }
   $required=@('battery','capacity','consumption','corridor','current','display.instruments','display.rail','draft','efficiency','hotel','margin','minimum_speed','model_source','reserve')
   foreach($key in $required){if(-not $fields.ContainsKey($key)){throw 'Unknown protected vessel settings field set.'}}
-  if($fields['battery'] -cne '' -or $fields['model_source'] -cne '' -or $fields['consumption'] -cne 'measured' -or
+  if($fields['battery'] -cne '' -or $fields['model_source'] -cnotin @('','User-configured usable battery energy and reserve / OpenCPN profile') -or $fields['consumption'] -cne 'measured' -or
       $fields['current'] -cnotin @('unconfigured','charge','discharge')){throw 'Source binding or calibrated model needs separate preservation policy.'}
   $bounds=@{capacity=@(.001,100000);reserve=@(0,100);minimum_speed=@(.1,20);hotel=@(0,10000);efficiency=@(.001,1);draft=@(0,100);margin=@(0,100);corridor=@(1,10000)}
   foreach($key in $bounds.Keys){
@@ -329,8 +398,15 @@ function Assert-SessionPreservationReview([string]$Before,[string]$After,$Review
       Assert-RestartScalar $display[$key] $change.after
       if($null -ne $change.before){Assert-RestartScalar $display[$key] $change.before}
     }elseif($key -ceq 'OpenNav/AlphaSettings'){
-      Assert-PreservedAlphaSettings $change.after
-      if($null -ne $change.before){Assert-PreservedAlphaSettings $change.before}
+      if($null -eq $change.after){throw 'Settings deletion requires separate review.'}
+      if($null -ne $change.before){
+        try {Assert-PreservedAlphaSettings $change.after;Assert-PreservedAlphaSettings $change.before}
+        catch {Assert-PreservedSetupSettingsDelta $change.before $change.after}
+      }else{Assert-PreservedAlphaSettings $change.after}
+    }elseif($key -cin @('OpenNav/BoatSetupV1','OpenNav/DisplayPreferencesV1','OpenNav/VesselName','Settings/GlobalState/S52_MAR_SAFETY_CONTOUR')){
+      if($null -eq $change.after){throw 'Setup preference deletion requires separate review.'}
+      Assert-PreservedSetupPreference $key $change.after
+      if($null -ne $change.before){Assert-PreservedSetupPreference $key $change.before}
     }elseif($key -ceq 'OpenNav/OnlineAIS/v1/Enabled' -or $key -ceq 'PlugIns/wmm_pi.dll/bEnabled'){
       if($change.after -cnotin @('0','1') -or ($null -ne $change.before -and $change.before -cnotin @('0','1'))){throw 'Preserved enable flag must be an exact boolean.'}
     }elseif($key -ceq 'Settings/ActiveRoute'){

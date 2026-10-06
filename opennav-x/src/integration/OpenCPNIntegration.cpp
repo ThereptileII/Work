@@ -111,6 +111,7 @@ std::shared_ptr<diagnostics::Commissioning> commissioning;
 std::unique_ptr<NavigationBridge> navigation;
 std::unique_ptr<integration::MarineBridge> marine;
 std::unique_ptr<integration::SettingsStore> settings;
+bool fresh_setup_profile = false;
 std::unique_ptr<integration::RecoveryStore> recovery;
 bool recovery_safe = false;
 bool recovery_notice_scheduled = false;
@@ -154,6 +155,7 @@ void RequestMode(InterfaceMode mode,bool safe=false) {
                  "SKAGER recovery", wxOK | wxICON_ERROR, host);
     return;
   }
+  if (pilots) pilots->live.Enable(false, vessel::Clock::now());
   restart = mode;
   restart_safe=safe;
   // OpenCPN may refuse close while initialising, compressing or updating charts.
@@ -335,6 +337,11 @@ void InitializeResourceDefaults(wxFileConfig& config) {
 }
 
 void SelectMode(wxFileConfig& config, bool upstream_safe) {
+  // Snapshot before BeginXNav creates a startup journal. Earlier generations
+  // always left that journal, including profiles with no vessel configuration.
+  fresh_setup_profile = !preview_paths && !config.HasGroup("/OpenNav") &&
+      !wxFileExists(wxFileName(g_BasePlatform->GetPrivateDataDir(),
+                              "opennav-startup.state").GetFullPath());
   if (preview_paths) {
     const auto basemap = integration::PreviewBasemapDefault(
         preview_paths->root, gWorldShapefileLocation.ToStdString(wxConvUTF8));
@@ -391,9 +398,10 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
     return;
   }
   frame.SetTitle(application::brand::WindowTitle);
-  settings = std::make_unique<integration::SettingsStore>(config);
+  settings = std::make_unique<integration::SettingsStore>(config, fresh_setup_profile);
   marine = std::make_unique<integration::MarineBridge>();
   auto configure_sources = [] {
+    if (pilots) pilots->live.Enable(false, vessel::Clock::now());
     marine->SetBindings(settings->Read().signal_k_mappings);
     marine->SetBoatBridge(settings->Read().boat_bridge);
     for (const auto &q : vessel::Quantities()) {
@@ -408,6 +416,7 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
   ui::ShellActions actions;
   commissioning = std::make_shared<diagnostics::Commissioning>(
       std::filesystem::u8path(diagnostic_directory) / "recordings", [] {
+        if (pilots) pilots->live.Enable(false, vessel::Clock::now());
         for (const auto &driver :
              CommDriverRegistry::GetInstance().GetDrivers()) {
           const auto attributes = driver->GetAttributes();
@@ -533,6 +542,48 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
     }
     return result;
   };
+  actions.backup_settings = [] {
+    return application::SettingsBackup{settings->Read(),settings->Display(),
+        settings->VesselName(),S52_getMarinerParam(S52_MAR_SAFETY_CONTOUR)};
+  };
+  actions.restore_settings = [&frame,configure_sources](const application::SettingsBackup &backup) {
+    if (restart || (commissioning && commissioning->Replaying()))
+      return application::CommandResult{false,"Stop REPLAY or finish restart before restoring settings"};
+    const auto result=settings->RestoreBackup(backup);
+    if (!result.ok) return result;
+    if (pilots) {
+      pilots->live.Enable(false,vessel::Clock::now());
+      pilots->hardware.Configure(settings->Read().pilot);
+    }
+    configure_sources();
+    if (std::isfinite(backup.chart_safety_depth_m)) {
+      S52_setMarinerParam(S52_MAR_SAFETY_DEPTH,backup.chart_safety_depth_m);
+      S52_setMarinerParam(S52_MAR_SAFETY_CONTOUR,backup.chart_safety_depth_m);
+      if (ps52plib) { ps52plib->UpdateMarinerParams(); ps52plib->GenerateStateHash(); }
+      if (auto *canvas=frame.GetPrimaryCanvas()) canvas->ZoomCanvasSimple(1.0001);
+      frame.InvalidateAllGL(); frame.RefreshAllCanvas(false);
+    }
+    return result;
+  };
+  actions.setup_state = [] { return settings->SetupState(); };
+  actions.request_setup = [] {
+    if (restart || (commissioning && commissioning->Replaying()))
+      return application::CommandResult{false,"Stop REPLAY or finish restart before opening setup"};
+    return settings->RequestBoatSetup();
+  };
+  actions.save_setup = [&frame](const application::BoatSetupDraft& draft) {
+    if (restart || (commissioning && commissioning->Replaying()))
+      return application::CommandResult{false,"Stop REPLAY or finish restart before saving setup"};
+    const auto result = settings->SaveBoatSetup(draft);
+    if (result.ok && std::isfinite(draft.safety_depth_m)) {
+      S52_setMarinerParam(S52_MAR_SAFETY_DEPTH,draft.safety_depth_m);
+      S52_setMarinerParam(S52_MAR_SAFETY_CONTOUR,draft.safety_depth_m);
+      if(ps52plib) { ps52plib->UpdateMarinerParams(); ps52plib->GenerateStateHash(); }
+      if(auto* canvas=frame.GetPrimaryCanvas()) canvas->ZoomCanvasSimple(1.0001);
+      frame.InvalidateAllGL(); frame.RefreshAllCanvas(false);
+    }
+    return result;
+  };
   actions.settings_status = [] { return settings->Status(); };
   actions.chart_style_status = integration::ChartPresentationStatus;
   actions.chart_style_requested = integration::XNavChartRequested;
@@ -588,7 +639,7 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
       });
   actions.route_creating=[&frame]{return frame.GetPrimaryCanvas()->m_routeState>0;};
   pilots = std::make_unique<PilotServices>([] {
-    return integration::PilotLoopbackTestsEnabled() && pilots && !pilots->was_demo && !restart &&
+    return (integration::PilotLoopbackTestsEnabled() || integration::PilotManualSerialEnabled()) && pilots && !pilots->was_demo && !restart &&
            (!commissioning || commissioning->AllowsHardwareControl());
   });
   pilots->was_demo = demo;
@@ -623,7 +674,7 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
     const auto before = p.GetState(now).command.state;
     p.Tick(now);
     auto view = p.GetState(now);
-    view.output_unavailable = !simulated && !integration::PilotLoopbackTestsEnabled();
+    view.output_unavailable = !simulated && !integration::PilotLoopbackTestsEnabled() && !integration::PilotManualSerialEnabled();
     view.adapter_status = simulated ? "DEMO / simulated feedback" : pilots->hardware.Description();
     if (before != view.command.state)
       wxLogMessage("SKAGER manual pilot %llu: %s / %s",
@@ -865,7 +916,9 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
       auto &pilot = runtime["pilot"];
       pilot["simulated"] = state.simulated;
       pilot["enabled"] = view.enabled;
-      pilot["output_unavailable"] = !state.simulated && !integration::PilotLoopbackTestsEnabled();
+      pilot["serial_session_enabled"] = !state.simulated && pilots->hardware.SessionEnabled();
+      pilot["configured_permission"] = settings->Read().pilot.permit_control;
+      pilot["output_unavailable"] = !state.simulated && !integration::PilotLoopbackTestsEnabled() && !integration::PilotManualSerialEnabled();
       pilot["fresh"] = view.fresh;
       pilot["mode"] = wxString::FromUTF8(adapters::PilotModeName(view.feedback.mode));
       pilot["source"] = wxString::FromUTF8(view.feedback.source);
@@ -978,6 +1031,9 @@ void AfterDeferredInitialization() {
     palette.SetColorScheme(global_color_scheme);
     gShapeBasemap.SetBasemapLandColor(palette.land);
     host->GetPrimaryCanvas()->ReloadVP();
+  }
+  if (shell && host && !demo && !preview_paths) {
+    host->CallAfter([] { if (shell && host && !restart) shell->ShowBoatSetup(); });
   }
   if (!recovery_safe || recovery_notice_scheduled || !host) return;
   recovery_notice_scheduled = true;
@@ -1119,6 +1175,7 @@ void AppendModeMenu(wxMenu& menu) {
 }
 
 bool PrepareClose(wxFileConfig& config) {
+  if (pilots) pilots->live.Enable(false, vessel::Clock::now());
   wxLogMessage("SKAGER close preparation: preserving shared configuration");
   if (restart && !restart_safe) {
     wxString previous;

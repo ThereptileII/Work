@@ -245,6 +245,7 @@ void XNavSettingsDrawer::VesselForm(){
   message_->SetFont(UiFont(*this,11));
   message_->SetForegroundColour(Colour(Theme(light_).secondary));
   content_->Add(message_,0,wxEXPAND|wxBOTTOM,FromDIP(12));
+  Button("Run boat setup",actions_.boat_setup);
   Page("Advanced vessel model","Advisory corridor margin and vessel assumptions",XNavIcon::Ownship,ProductPage::VesselSettings);
   Page("Advanced battery model","Measured consumption and battery source",XNavIcon::Energy,ProductPage::EnergySettings);
 }
@@ -417,7 +418,8 @@ void XNavSettingsDrawer::Build() {
       });
       Link("Installation & recovery","Installer unavailable; recovery controls below",XNavIcon::Download,{});
       Link("Updates","Update controls unavailable",XNavIcon::Refresh,{});
-      Link("Backups","Backup and restore controls unavailable",XNavIcon::Shield,{});
+      Link("Export settings backup","Vessel, display, sources and calibration",XNavIcon::Shield,actions_.backup_export);
+      Link("Import settings backup","Validate and review before restoring",XNavIcon::Shield,actions_.backup_import);
       Link("Diagnostics","Versions, data quality and source health",XNavIcon::Instruments,actions_.diagnostics);
       Link("Plugins","OpenCPN adapters and plugin settings",XNavIcon::Layers,actions_.plugins);
       Link("Help & guides","Basic help; guides unavailable",XNavIcon::Info,

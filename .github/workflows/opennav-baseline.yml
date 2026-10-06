@@ -54,6 +54,10 @@ jobs:
     if: ${{ needs.changes.outputs.product == 'true' }}
     needs: changes
     uses: ./.github/workflows/update-verifier-probe.yml
+  pilot-serial-contracts:
+    if: ${{ needs.changes.outputs.product == 'true' }}
+    needs: changes
+    uses: ./.github/workflows/skager-pilot-serial-focus.yml
   native-private-chart-loader:
     if: ${{ needs.changes.outputs.product == 'true' }}
     needs: changes
@@ -199,6 +203,10 @@ jobs:
           pwsh -NoProfile -File opennav-x/tools/boat/test-renderer-log.ps1
           pwsh -NoProfile -File opennav-x/tools/boat/test-baseline-adoption.ps1 -PortableContracts
           pwsh -NoProfile -File opennav-x/tools/boat/test-broker-fixture-contracts.ps1
+          pwsh -NoProfile -File opennav-x/tools/boat/test-setup-preservation.ps1 -PortableContracts
+          pwsh -NoProfile -File opennav-x/tools/boat/test-signed-update-session.ps1
+          python3 opennav-x/tools/test-staging-origin.py
+          python3 opennav-x/tools/test-staging-keyring.py
           python3 opennav-x/tools/boat/test-navigation-copy.py -v
       - name: Configure Linux contracts
         if: runner.os == 'Linux'
@@ -222,11 +230,16 @@ jobs:
         run: |
           New-Item -ItemType Directory -Path opennav-x/evidence/local -Force | Out-Null
           $Failed = @()
-          foreach ($Suite in @('boat-tools', 'official-upgrade-policy', 'preparation', 'commissioning', 'commissioning-launch', 'review-window', 'review-staging', 'source-checkout', 'ais-credential-import', 'restart-commissioning', 'restart-aui-persistence', 'stock-review', 'stock-chart', 'startup-log', 'renderer-log', 'baseline-adoption', 'broker-fixture-contracts', 'restart-window-review', 'stock-welcome', 'installed-welcome')) {
+          foreach ($Suite in @('boat-tools', 'official-upgrade-policy', 'preparation', 'commissioning', 'commissioning-launch', 'review-window', 'review-staging', 'source-checkout', 'ais-credential-import', 'restart-commissioning', 'restart-aui-persistence', 'stock-review', 'stock-chart', 'startup-log', 'renderer-log', 'baseline-adoption', 'broker-fixture-contracts', 'restart-window-review', 'stock-welcome', 'installed-welcome', 'session-preservation', 'setup-preservation', 'signed-update-session')) {
             & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -File "opennav-x/tools/boat/test-$Suite.ps1" 2>&1 | Tee-Object -FilePath "opennav-x/evidence/local/maintenance-$Suite.log"
             if ($LASTEXITCODE -ne 0) { $Failed += $Suite }
           }
           if ($Failed.Count -ne 0) { throw ('Required maintenance suites failed: ' + ($Failed -join ', ')) }
+      - name: Preserve setup preferences through an actual disposable restoration
+        shell: powershell
+        run: |
+          ./opennav-x/tools/boat/test-commissioning.ps1 -PreservationFixture 2>&1 | Tee-Object -FilePath opennav-x/evidence/local/maintenance-setup-restoration.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Verify closed navigation copies without vessel data
         run: |
           python opennav-x/tools/boat/test-navigation-copy.py -v 2>&1 | Tee-Object -FilePath opennav-x/evidence/local/maintenance-navigation-copy.log
@@ -554,7 +567,7 @@ jobs:
     permissions:
       contents: read
       actions: read
-    needs: [changes, contracts, native-restart-window, native-stock-welcome, native-private-chart-loader, updater-contracts]
+    needs: [changes, contracts, native-restart-window, native-stock-welcome, native-private-chart-loader, updater-contracts, pilot-serial-contracts]
     runs-on: windows-2022
     timeout-minutes: 240
     outputs:

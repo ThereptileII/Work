@@ -121,6 +121,18 @@ public:
     return true;
   }
 };
+class SessionFeedback final : public IAutopilot {
+public:
+  PilotFeedback feedback;
+  bool session=false;
+  unsigned changes=0;
+  PilotCapabilities Capabilities() const override { return {false,true,true,false,false,true,true}; }
+  PilotFeedback GetState() const override { return feedback; }
+  void Poll(vessel::Time) override {}
+  bool Send(const PilotRequest&) override { return session; }
+  void SetControlEnabled(bool enabled) override { session=enabled; ++changes; }
+  bool ControlEnabled() const override { return session; }
+};
 void Evidence() {
   ControlledFeedback source;
   source.feedback = SimulatedAutopilot(epoch).GetState();
@@ -136,6 +148,14 @@ void Evidence() {
         "Cached state and sequence not acknowledgement");
   source.feedback.sequence++;
   source.feedback.observed_at = epoch + 1s;
+  source.feedback.command_confirmation_allowed=false;
+  pilot.Tick(epoch+1s);
+  Check(pilot.GetState(epoch+1s).command.state==CommandState::Pending,"fresh receive before queued serial write cannot acknowledge");
+  source.feedback.command_confirmation_allowed=true;
+  source.feedback.command_written_at=epoch+1500ms;
+  pilot.Tick(epoch+1s);
+  Check(pilot.GetState(epoch+1s).command.state==CommandState::Pending,"receive predating completed serial write cannot acknowledge");
+  source.feedback.command_written_at=epoch+500ms;
   pilot.Tick(epoch + 1s);
   Check(pilot.GetState(epoch + 1s).command.state == CommandState::Confirmed,
         "New matching state evidence");
@@ -161,6 +181,19 @@ void Evidence() {
   Check(pilot.GetState(epoch + 5s).command.state == CommandState::TimedOut,
         "Late state cannot retroactively confirm");
   Check(source.sends == 3, "No automatic retransmit");
+  SessionFeedback live;
+  live.feedback=SimulatedAutopilot(epoch).GetState();
+  ManualAutopilot manual(live);
+  Check(!manual.GetState(epoch).enabled && !live.session,"both control layers start OFF");
+  manual.Enable(true,epoch);
+  Check(live.session,"explicit enable reaches transport barrier");
+  live.session=false; // Worker disconnected before the next UI tick.
+  manual.Tick(epoch+1s);
+  Check(!manual.GetState(epoch+1s).enabled && !live.session,"worker revocation disables controller, no silent session recovery");
+  manual.Enable(true,epoch+1s);
+  manual.Tick(epoch+3s);
+  Check(!live.session && !manual.GetState(epoch+3s).enabled,"stale live feedback disables transport as well as buttons");
+  Check(live.changes==4,"every live session change reaches transport cancellation hook");
 }
 void Radar() {
   UnavailableRadar absent;

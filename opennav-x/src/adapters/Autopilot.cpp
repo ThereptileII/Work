@@ -73,6 +73,7 @@ void ManualAutopilot::Record(CommandState state, const std::string &detail,
   log_.push_back(command_);
 }
 void ManualAutopilot::Enable(bool value, vessel::Time now) {
+  adapter_.SetControlEnabled(value);
   enabled_ = value;
   if (!value && command_.state == CommandState::Pending)
     Record(CommandState::Disabled,
@@ -175,7 +176,8 @@ PilotCommand ManualAutopilot::Request(PilotAction action, double delta,
 void ManualAutopilot::Tick(vessel::Time now) {
   adapter_.Poll(now);
   const auto capabilities = adapter_.Capabilities();
-  if (enabled_ && !capabilities.simulated && !capabilities.manual_control) {
+  if (enabled_ && !capabilities.simulated &&
+      (!adapter_.ControlEnabled() || !capabilities.manual_control || !Fresh(adapter_.GetState(), now))) {
     Enable(false, now); // Reconnection never silently re-enables live output.
     return;
   }
@@ -196,15 +198,17 @@ void ManualAutopilot::Tick(vessel::Time now) {
            "Pilot identity/connection changed; previous outcome unknown", now);
     return;
   }
-  bool matches = Fresh(feedback, now) &&
+  bool matches = feedback.command_confirmation_allowed && Fresh(feedback, now) &&
                  feedback.sequence > feedback_sequence_ &&
                  feedback.observed_at > command_.request.issued_at &&
+                 feedback.observed_at > feedback.command_written_at &&
                  feedback.mode == RequestedMode(command_.request.action);
   if (expected_heading_)
     matches =
         matches && Heading(feedback.locked_heading_magnetic_deg, now) &&
         feedback.locked_heading_magnetic_deg.observed_at >
             command_.request.issued_at &&
+        feedback.locked_heading_magnetic_deg.observed_at > feedback.command_written_at &&
         std::abs(std::remainder(*feedback.locked_heading_magnetic_deg.value -
                                     *expected_heading_,
                                 360.0)) <= .5;

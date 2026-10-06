@@ -5,14 +5,15 @@ if(NOT EXISTS "${OPENCPN_SOURCE_DIR}/model/src/comm_drv_n2k_serial.cpp")
   message(FATAL_ERROR "OPENCPN_SOURCE_DIR must name the patched pinned source")
 endif()
 set(serial_source "${OPENCPN_SOURCE_DIR}/model/src/comm_drv_n2k_serial.cpp")
-set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${serial_source}")
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${serial_source}"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../../src/integration/OpenCPNPilot.cpp")
 execute_process(COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/extract.py"
   "${serial_source}" "${CMAKE_CURRENT_BINARY_DIR}/actual_writer.inc"
   COMMAND_ERROR_IS_FATAL ANY)
 add_executable(pilot_serial_bounds probe.cpp
   "${OPENCPN_SOURCE_DIR}/libs/N2KParser/src/N2kMsg.cpp")
 target_include_directories(pilot_serial_bounds PRIVATE "${CMAKE_CURRENT_BINARY_DIR}"
-  "${OPENCPN_SOURCE_DIR}/libs/N2KParser/include")
+  "${OPENCPN_SOURCE_DIR}/libs/N2KParser/include" "${OPENCPN_SOURCE_DIR}/model/include")
 target_compile_features(pilot_serial_bounds PRIVATE cxx_std_17)
 option(PILOT_SERIAL_SANITIZE "Run with AddressSanitizer and UBSan (GCC/Clang)" OFF)
 if(PILOT_SERIAL_SANITIZE)
@@ -24,3 +25,24 @@ if(PILOT_SERIAL_SANITIZE)
 endif()
 enable_testing()
 add_test(NAME pilot_serial_bounds COMMAND pilot_serial_bounds)
+set_tests_properties(pilot_serial_bounds PROPERTIES TIMEOUT 10)
+
+add_executable(pilot_serial_gate gate.cpp ../../src/adapters/St4000Pilot.cpp)
+target_include_directories(pilot_serial_gate PRIVATE "${CMAKE_CURRENT_BINARY_DIR}"
+  ../../src "${OPENCPN_SOURCE_DIR}/model/include")
+target_compile_features(pilot_serial_gate PRIVATE cxx_std_17)
+if(PILOT_SERIAL_SANITIZE)
+  target_compile_options(pilot_serial_gate PRIVATE -fsanitize=address,undefined -fno-omit-frame-pointer)
+  target_link_options(pilot_serial_gate PRIVATE -fsanitize=address,undefined)
+endif()
+add_test(NAME pilot_serial_gate COMMAND pilot_serial_gate)
+
+add_executable(pilot_serial_lifecycle lifecycle.cpp)
+target_include_directories(pilot_serial_lifecycle PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
+target_compile_features(pilot_serial_lifecycle PRIVATE cxx_std_17)
+if(PILOT_SERIAL_SANITIZE)
+  target_compile_options(pilot_serial_lifecycle PRIVATE -fsanitize=address,undefined -fno-omit-frame-pointer)
+  target_link_options(pilot_serial_lifecycle PRIVATE -fsanitize=address,undefined)
+endif()
+add_test(NAME pilot_serial_lifecycle COMMAND pilot_serial_lifecycle)
+set_tests_properties(pilot_serial_lifecycle PROPERTIES TIMEOUT 10)

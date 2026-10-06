@@ -12,7 +12,7 @@ enum class SettingsSection { Vessel, Navigation, Sensors, Autopilot, Radar, Disp
 struct SettingsDrawerActions {
   std::function<void(ProductPage)> page;
   std::function<void()> advanced, plugins, diagnostics, fullscreen, legacy, safe,
-      chart_presentation;
+      chart_presentation, backup_export, backup_import, boat_setup;
   std::function<void(LightMode)> theme;
   std::function<application::DisplayPreferences()> display;
   std::function<application::CommandResult(const application::DisplayPreferences &)> save_display;

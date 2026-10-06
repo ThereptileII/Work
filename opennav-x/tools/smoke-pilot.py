@@ -4,6 +4,7 @@
 No serial/CAN interface or physical pilot is opened. This is desktop software
 qualification, not evidence of boat command delivery.
 """
+from hardware_output_policy import require_product_output_policy
 import argparse
 import importlib.util
 import json
@@ -233,7 +234,7 @@ try:
     assert pilot()['command_id']==previous and not sent,'Disabled control must not request or send a command'
     report['checks'].append('Control OFF disables AUTO; physical click creates no request or output')
     if args.production:
-        assert data()['xnav_hardware_output_policy']=='status-only'
+        require_product_output_policy(data())
         assert state['output_unavailable'] and not state['control_capability']
         for label in ['Control unavailable','Standby','Auto','Track','Wind','−10°','−1°','+1°','+10°']:
             click(label,enabled=False)

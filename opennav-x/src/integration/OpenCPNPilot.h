@@ -12,12 +12,16 @@ class OpenCPNPilot final : public adapters::IAutopilot,
                            private adapters::IN2kPilotTransport {
 public:
   explicit OpenCPNPilot(std::function<bool()> output_allowed);
+  ~OpenCPNPilot() override;
   void Configure(const adapters::St4000Binding &binding);
   adapters::PilotCapabilities Capabilities() const override;
   adapters::PilotFeedback GetState() const override;
   void Poll(vessel::Time now) override;
   bool Send(const adapters::PilotRequest &request) override;
   bool RequestIdentity(vessel::Time now);
+  void SetControlEnabled(bool enabled) override;
+  bool ControlEnabled() const override { return session_enabled_; }
+  bool SessionEnabled() const { return session_enabled_; }
   std::string Description() const;
   PilotStatusDiscovery::Diagnostics DiscoveryDiagnostics(vessel::Time now) const;
   PilotTrafficDiagnostics::Snapshot TrafficDiagnostics() const;
@@ -32,6 +36,10 @@ private:
   std::function<bool()> output_allowed_;
   std::uint64_t registry_generation_ = 1;
   adapters::St4000Binding binding_;
+  bool session_enabled_ = false;
+  std::uint64_t session_epoch_ = 0, awaited_write_ticket_ = 0;
+  bool awaiting_serial_write_ = false;
+  std::optional<vessel::Time> last_discovery_;
   adapters::St4000Pilot pilot_{*this};
   PilotStatusDiscovery status_{*this};
   PilotTrafficDiagnostics traffic_;

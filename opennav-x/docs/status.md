@@ -1,6 +1,54 @@
-# SKAGER status — 2026-10-05
+# SKAGER status — 2026-10-06
 
-## Current increment — SCRUM-312 navigation warning and secure startup
+## Current Staging batch — SCRUM-311/312/313/28/29
+
+The user selected these five issues for parallel implementation and explicitly
+authorized actual manual autopilot commands. The combined candidate is
+`0.4.0-beta2.1`; its native build and boat acceptance are pending. No new boat
+installation or physical command has yet occurred. The existing `c0d8d85` boat
+application remains the last installed candidate.
+
+- **SCRUM-28:** six-step first-run boat setup, explicit Later/reset, live source
+  health and atomic preference saving. Existing profiles remain read-only until
+  the user saves. The dialog scrolls within the display workarea at increased
+  scaling, with its action buttons kept visible.
+- **SCRUM-29:** bounded, versioned settings export/import with preview and
+  transactional restore. Credentials, charts, navigation files and pilot
+  permission are excluded; restore turns control off and retains local binding.
+- **SCRUM-312:** the already qualified native navigation-warning/healthy-startup
+  fix is included in the combined application candidate.
+- **SCRUM-313:** selected Actisense serial transport supports only the six
+  explicitly enabled manual commands. Confirmation requires the exact command's
+  completed write and subsequent fresh physical pilot feedback. Queue expiry,
+  reconnect isolation and joined worker shutdown are covered by focused tests.
+  Fresh installations and every new session start with control off. TRACK/WIND
+  and autonomous control remain unavailable. Physical qualification is pending.
+- **SCRUM-311:** the private repository is initialized with four distinct keys
+  in the existing encrypted Secret Service collection. The bounded loopback
+  origin and key custody checks pass. HTTPS activation remains pending and the
+  actual installed updater/boat commissioning handoff is not implemented. The
+  four-phase receipt reducer is only an offline contract. This candidate keeps
+  its existing no-trust startup behavior; it does not claim live signed-update
+  acceptance or ship test trust. See [private evidence](evidence/2026-10-06-staging-batch/private-origin.json).
+
+Combined setup/backup checks pass (6/6). Fourteen pilot contracts, three
+actual-source sanitizer harnesses, exact-ticket regression and complete Linux
+component compilation pass within their recorded scopes. Narrow setup-preservation
+checks (73) and existing preservation checks (85) pass; the actual native
+restoration remains a CI gate. [Pilot evidence](evidence/2026-10-06-pilot-serial/README.md)
+retains the acknowledgement race and worker-lifetime findings and their fixes.
+Protected-key custody tests (8), origin tests (6), versioned output-policy checks
+and package-input checks pass. These are focused preflight results, not a new
+Windows, boat or release acceptance claim.
+
+One integrated Staging build is requested after the combined source preflight.
+The native setup/backup checks and serial harness run alongside the existing
+required build/package gates. No design campaign, endurance run, Production
+promotion or website work is included. The later physical permission supersedes
+older requests for consent below; measured identity/feedback and qualified
+transport gates still apply before any command.
+
+## Previous increment — SCRUM-312 navigation warning and secure startup
 
 Selected after the user asked for the next software feature. Implemented finite
 authenticated human-wait/continue/cancel phases around the original OpenCPN

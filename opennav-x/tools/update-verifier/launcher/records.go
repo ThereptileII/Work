@@ -104,6 +104,7 @@ type ownership struct {
 	Commit         string       `json:"commit"`
 	PackageSHA256  string       `json:"packageSha256"`
 	HardwarePolicy string       `json:"xnavHardwareOutputPolicy"`
+	ManualControl  int          `json:"xnavManualControlContract"`
 	Health         int          `json:"updateStartupHealth"`
 	Files          []fileRecord `json:"files"`
 	Managed        []fileRecord `json:"managedFiles"`
@@ -219,7 +220,7 @@ func parseOwnership(data []byte, directory string) (ownership, map[string]string
 	if err := decodeRecord(data, &o, []string{"owner", "version", "commit", "packageSha256", "xnavHardwareOutputPolicy", "files", "managedFiles"}, false); err != nil {
 		return o, nil, err
 	}
-	if _, err := releasepolicy.ParseSemVer(o.Version); err != nil || o.Owner != owner || !commitPattern.MatchString(o.Commit) || !hashPattern.MatchString(o.PackageSHA256) || o.HardwarePolicy != "status-only" || (o.Health != 0 && o.Health != 1) || len(o.Files) < 1 || len(o.Files) > 12000 || len(o.Managed) < 1 || len(o.Managed) > 12000 {
+	if _, err := releasepolicy.ParseSemVer(o.Version); err != nil || o.Owner != owner || !commitPattern.MatchString(o.Commit) || !hashPattern.MatchString(o.PackageSHA256) || !supportedHardwarePolicy(o.HardwarePolicy, o.ManualControl) || (o.Health != 0 && o.Health != 1) || len(o.Files) < 1 || len(o.Files) > 12000 || len(o.Managed) < 1 || len(o.Managed) > 12000 {
 		return o, nil, errors.New("invalid generation ownership")
 	}
 	files := map[string]string{}
@@ -282,4 +283,9 @@ func parseTrust(data []byte) (trustRecord, error) {
 }
 func preparationConfig(l layout, o ownership, t trustRecord) verifier.PrepareConfig {
 	return verifier.PrepareConfig{Trust: verifier.TrustConfig{BootstrapRoot: t.Root, MetadataURL: t.MetadataURL, Channel: t.Channel}, StateDirectory: filepath.FromSlash(l.root + "/update-trust/" + t.Channel), ArtifactDirectory: filepath.FromSlash(l.root + "/update-artifacts"), ArtifactOrigin: t.ArtifactOrigin, Installed: releasepolicy.Installed{Version: o.Version, Commit: o.Commit}, OpenCpnAllowlist: t.Allowlist}
+}
+
+// Capability admission never enables an adapter or restores a control session.
+func supportedHardwarePolicy(policy string, contract int) bool {
+	return (policy == "status-only" && contract == 0) || (policy == "manual-commissioning" && contract == 1)
 }

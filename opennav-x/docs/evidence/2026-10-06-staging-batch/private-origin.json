@@ -1,0 +1,17 @@
+{
+  "scope": "Private Staging only; no HTTPS/live offer/package or boat acceptance",
+  "operatorSourceCommit": "72d76825d464fa339bba2a3dd801ca78f47415e2",
+  "operatorExecutableSha256": "f0e372cdef7908e5fba43172af561d38464cc4593a8e0fc2a7ca26f885e61827",
+  "origin": "https://omarchy.tail5878fc.ts.net",
+  "publicTrustSha256": "4cd61f55731732a06c4e303506f29bc5f46d8bde9c296ae76680d2dee4d27826",
+  "publicRootSha256": "a041ec78891a5e3d8896385ed939b691a32ed0ec11e291fb25de773754515d57",
+  "custody": "Four distinct role seeds in Secret Service default encrypted collection, fixed private-Staging scope; root not offline-isolated",
+  "initialization": "Initial custody run stopped after creating four keys before repository creation. Fresh independent inventory confirmed exact complete set; explicit coordinator recovery reused those keys without regeneration, overwrite or export. Public config validator passed.",
+  "tests": [
+    "Eight fake custody boundary tests",
+    "Real CLI and descriptor execution with ephemeral keys passed",
+    "Real stored private repository initialized; public trust validation passed"
+  ],
+  "hosting": "Tailscale Serve/HTTPS authentication pending; no timestamp or release published",
+  "privateKeyFiles": false
+}

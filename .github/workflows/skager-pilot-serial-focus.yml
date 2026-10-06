@@ -3,6 +3,7 @@ on:
   push:
     branches: [skager-pilot-serial-focus]
   workflow_dispatch:
+  workflow_call:
 permissions:
   contents: read
 jobs:
@@ -19,6 +20,8 @@ jobs:
           sparse-checkout-cone-mode: false
           sparse-checkout: |
             /model/src/comm_drv_n2k_serial.cpp
+            /model/include/model/comm_drv_n2k_serial.h
+            /model/include/model/comm_navmsg.h
             /libs/N2KParser/src/N2kMsg.cpp
             /libs/N2KParser/include/N2kMsg.h
             /libs/N2KParser/include/N2kDef.h

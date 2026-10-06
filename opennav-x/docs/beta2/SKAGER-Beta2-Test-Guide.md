@@ -29,6 +29,23 @@ restart procedure. Do not bypass a refused transition with an unreviewed direct
 launch. An ordinary close followed by another shortcut is recorded separately
 from a successful in-application mode switch.
 
+## This Staging increment: setup and backup
+
+1. On an existing installation, verify the setup guide does not open merely
+   because SKAGER was updated. Open **Preferences → Vessel → Run boat setup**.
+2. Step through vessel, display, sensors and energy. Sensor entries must describe
+   current observations or missing/stale data. Close with **Later** and confirm
+   draft changes were not saved. Reopen, review the summary and save deliberately.
+3. Open **Preferences → System → Export settings** and save a backup somewhere
+   you control. It contains SKAGER preferences, not your charts or navigation
+   database. Keep it private: a vessel name/source configuration may identify you.
+4. Change one harmless display preference, then choose **Import settings**.
+   Cancel at the preview first and confirm nothing changed. Import again and
+   confirm the saved preference returns. Restart normally and check persistence.
+5. Verify autopilot permission is OFF after restore. A settings backup must never
+   activate equipment. Real command tests belong to the separately authorized
+   commissioning procedure and must stop on missing or unexpected feedback.
+
 ## Navigation and functional usability checks
 
 Start with the boat PC's existing resolution and Windows scaling; record both.

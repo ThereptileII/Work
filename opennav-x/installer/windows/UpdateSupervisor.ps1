@@ -42,7 +42,15 @@ function Get-SupervisedGeneration([string]$InstallationRoot, [string]$Generation
   if ($Generation -cnotmatch '^[a-f0-9]{32}$') { throw 'Invalid supervised generation.' }
   $directory=Assert-UpdateRecordPath (Join-Path (Join-Path $InstallationRoot 'generations') $Generation)
   $owned=Read-UpdateOwnedJson (Join-Path $directory 'ownership.json')
-  if ($owned.owner -cne 'OpenNavX.Alpha1.SideBySide.1' -or $owned.xnavHardwareOutputPolicy -cne 'status-only') { throw 'Supervised startup requires an owned status-only product.' }
+  $manual = $owned.xnavHardwareOutputPolicy -ceq 'manual-commissioning' -and
+      $owned.PSObject.Properties['xnavManualControlContract'] -and
+      $owned.xnavManualControlContract -is [int] -and $owned.xnavManualControlContract -eq 1
+  $passive = $owned.xnavHardwareOutputPolicy -ceq 'status-only' -and
+      (-not $owned.PSObject.Properties['xnavManualControlContract'] -or
+       ($owned.xnavManualControlContract -is [int] -and $owned.xnavManualControlContract -eq 0))
+  if ($owned.owner -cne 'OpenNavX.Alpha1.SideBySide.1' -or (-not $passive -and -not $manual)) {
+    throw 'Supervised startup requires a recognized owned equipment-output contract.'
+  }
   if (-not $owned.PSObject.Properties['updateStartupHealth'] -or $owned.updateStartupHealth -ne 1) { throw 'This generation does not support authenticated startup health.' }
   $files=@($owned.files); $managed=@($owned.managedFiles)
   if ($files.Count -lt 1 -or $files.Count -gt 12000 -or $managed.Count -lt 1 -or $managed.Count -gt 12000) { throw 'Invalid generation inventory.' }
@@ -143,7 +151,8 @@ function Start-SupervisedGeneration($Generation,$Session) {
   $start.EnvironmentVariables['SKAGER_UPDATE_GENERATION']=$Generation.identity.generation
   $start.EnvironmentVariables['SKAGER_UPDATE_CHALLENGE']=$Session.challenge
   # Ordinary installed XNav startup: no alternate profile, demo, hardware, or
-  # connection arguments. Existing application status-only gates remain active.
+  # connection arguments. The application's declared output contract and
+  # explicit configuration/session gates remain active.
   return [Diagnostics.Process]::Start($start)
 }
 function Stop-SupervisedProcess([Diagnostics.Process]$Process,[string]$Executable,[string]$StartTicks='') {

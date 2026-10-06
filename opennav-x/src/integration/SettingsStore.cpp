@@ -7,6 +7,7 @@ namespace {
 constexpr const char *key = "/OpenNav/AlphaSettings";
 constexpr const char *name_key = "/OpenNav/VesselName";
 constexpr const char *chart_key = "/Settings/GlobalState/S52_MAR_SAFETY_CONTOUR";
+constexpr const char *setup_key = "/OpenNav/BoatSetupV1";
 constexpr const char *display_key = "/OpenNav/DisplayPreferencesV1";
 bool ValidName(const std::string &name) {
   if (name.empty()) return true;  // Unconfigured is a real profile state.
@@ -16,9 +17,23 @@ bool ValidName(const std::string &name) {
   return !wxString::FromUTF8(name).empty();
 }
 }
-SettingsStore::SettingsStore(wxFileConfig &config) : config_(config) {
+SettingsStore::SettingsStore(wxFileConfig &config, bool fresh_profile) : config_(config) {
   if (!wxIsMainThread())
     throw std::logic_error("Settings require the application thread");
+  wxString setup_record;
+  const bool has_setup = config_.Read(setup_key, &setup_record);
+  setup_state_ = application::ReadBoatSetupState(has_setup
+      ? std::make_optional(setup_record.ToStdString(wxConvUTF8)) : std::nullopt, fresh_profile);
+  if (!has_setup && fresh_profile) {
+    // A durable pending marker survives Later/restarts; existing profiles never
+    // become new merely because a product update adds this feature.
+    // Reading an existing profile stays read-only. Its pre-startup profile or
+    // journal evidence already suppresses automatic setup on later versions.
+    if (!config_.Write(setup_key, "v1|pending") || !config_.Flush()) {
+      setup_state_ = application::BoatSetupState::Invalid;
+      wxLogWarning("SKAGER setup progress could not be initialized");
+    }
+  }
   wxString stored_display;
   if (config_.Read(display_key, &stored_display)) {
     try {
@@ -47,6 +62,90 @@ SettingsStore::SettingsStore(wxFileConfig &config) : config_(config) {
         std::string("Settings rejected; live model disabled: ") + e.what();
     wxLogWarning("SKAGER %s", wxString::FromUTF8(status_));
   }
+}
+application::CommandResult SettingsStore::RestoreBackup(
+    const application::SettingsBackup &backup) {
+  if (!wxIsMainThread()) return {false, "Settings require the application thread"};
+  try {
+    application::ValidateSettingsBackup(backup);
+    auto next = backup.settings;
+    next.pilot = settings_.pilot; // Local identity never travels in a backup.
+    next.pilot.permit_control = false;
+    const char *keys[]{key, name_key, display_key, chart_key};
+    const wxString values[]{wxString::FromUTF8(application::EncodeSettings(next)),
+        wxString::FromUTF8(backup.vessel_name),
+        wxString::FromUTF8(application::EncodeDisplayPreferences(backup.display)),
+        wxString::FromUTF8(application::SettingNumber(backup.chart_safety_depth_m))};
+    const int count = std::isfinite(backup.chart_safety_depth_m) ? 4 : 3;
+    wxString previous[4]; bool existed[4]{};
+    for (int i=0; i<count; ++i) existed[i]=config_.Read(keys[i], &previous[i]);
+    bool written=true;
+    for (int i=0; i<count && written; ++i) written=config_.Write(keys[i],values[i]);
+    if (!written || !config_.Flush()) {
+      bool restored=true;
+      for (int i=0; i<count; ++i)
+        restored=(existed[i] ? config_.Write(keys[i],previous[i])
+            : (!config_.HasEntry(keys[i]) || config_.DeleteEntry(keys[i]))) && restored;
+      restored=config_.Flush() && restored;
+      return {false, restored ? "Restore failed; previous settings restored"
+          : "Restore and storage rollback failed; inspect storage before restarting"};
+    }
+    settings_=next; vessel_name_=backup.vessel_name; display_=backup.display;
+    display_status_="Restored display preferences";
+    status_="Settings restored; pilot control OFF. Verify vessel sources and calibration.";
+    return {true,status_};
+  } catch (const std::exception &e) { return {false,e.what()}; }
+}
+application::CommandResult SettingsStore::RequestBoatSetup() {
+  if (!wxIsMainThread()) return {false, "Settings require the application thread"};
+  wxString previous;
+  const bool existed = config_.Read(setup_key, &previous);
+  if (!config_.Write(setup_key, wxString("v1|pending")) || !config_.Flush()) {
+    if (existed) config_.Write(setup_key, previous);
+    else config_.DeleteEntry(setup_key);
+    const bool restored = config_.Flush();
+    return {false, restored ? "Setup could not be restarted; previous progress retained"
+                            : "Setup progress save/restore failed; inspect storage"};
+  }
+  setup_state_ = application::BoatSetupState::Pending;
+  return {true, "Setup restarted; all existing settings retained"};
+}
+application::CommandResult SettingsStore::SaveBoatSetup(const application::BoatSetupDraft& draft) {
+  if (!wxIsMainThread()) return {false, "Settings require the application thread"};
+  try {
+    application::ValidateBoatSetup(draft);
+    if (!ValidName(draft.vessel_name)) return {false, "Invalid vessel name"};
+    // This surface owns only these assumptions; source mappings, calibration,
+    // pilot permissions and all other configuration remain unchanged.
+    auto next = settings_;
+    next.hazard.draft_m = draft.settings.hazard.draft_m;
+    next.energy.battery.capacity_kwh = draft.settings.energy.battery.capacity_kwh;
+    next.energy.battery.reserve_soc_percent = draft.settings.energy.battery.reserve_soc_percent;
+    const char* keys[]{key,name_key,display_key,chart_key,setup_key};
+    const wxString values[]{wxString::FromUTF8(application::EncodeSettings(next)),
+      wxString::FromUTF8(draft.vessel_name),
+      wxString::FromUTF8(application::EncodeDisplayPreferences(draft.display)),
+      wxString::FromUTF8(application::SettingNumber(draft.safety_depth_m)), "v1|complete"};
+    wxString previous[5]; bool existed[5]{};
+    for(int i=0;i<5;++i) existed[i]=config_.Read(keys[i],&previous[i]);
+    bool written=true;
+    for(int i=0;i<5 && written;++i) {
+      if(i==3 && !std::isfinite(draft.safety_depth_m)) continue;
+      written=config_.Write(keys[i],values[i]);
+    }
+    if(!written || !config_.Flush()) {
+      bool restored=true;
+      for(int i=0;i<5;++i) restored=(existed[i]?config_.Write(keys[i],previous[i]):
+          (!config_.HasEntry(keys[i]) || config_.DeleteEntry(keys[i]))) && restored;
+      restored=config_.Flush() && restored;
+      return {false,restored?"Setup could not be saved; previous values restored":
+        "Setup save/restore failed; inspect storage before restarting"};
+    }
+    settings_=std::move(next);vessel_name_=draft.vessel_name;display_=draft.display;
+    setup_state_=application::BoatSetupState::Complete;
+    status_="Boat setup saved; no sensor observations or control permissions changed";
+    return {true,status_};
+  } catch(const std::exception& e) { return {false,e.what()}; }
 }
 application::CommandResult SettingsStore::SaveDisplay(
     const application::DisplayPreferences &next) {

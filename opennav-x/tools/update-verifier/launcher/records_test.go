@@ -166,3 +166,33 @@ func TestLauncherPEArchitectureIsMeasured(t *testing.T) {
 		})
 	}
 }
+
+func TestVersionedManualControlOwnership(t *testing.T) {
+	f := newLaunchFixture(t)
+	directory := fixtureRoot + "/generations/" + fixtureGeneration
+	o, _, err := parseOwnership(f.p.files[directory+"/ownership.json"], directory)
+	if err != nil {
+		t.Fatal(err)
+	}
+	o.HardwarePolicy = "manual-commissioning"
+	for _, v := range []int{0, -1, 1, 2} {
+		o.ManualControl = v
+		_, _, e := parseOwnership(jsonBytes(t, o), directory)
+		if (e == nil) != (v == 1) {
+			t.Fatalf("control contract %d admitted=%v", v, e == nil)
+		}
+	}
+	o.HardwarePolicy = "status-only"
+	o.ManualControl = 1
+	if _, _, e := parseOwnership(jsonBytes(t, o), directory); e == nil {
+		t.Fatal("contradictory control capability")
+	}
+	o.HardwarePolicy = "manual-commissioning"
+	original := jsonBytes(t, o)
+	for _, value := range []string{`true`, `false`, `"1"`, `1.0`, `null`} {
+		bad := bytes.Replace(original, []byte(`"xnavManualControlContract":1`), []byte(`"xnavManualControlContract":`+value), 1)
+		if _, _, e := parseOwnership(bad, directory); e == nil {
+			t.Fatalf("coerced control contract %s", value)
+		}
+	}
+}

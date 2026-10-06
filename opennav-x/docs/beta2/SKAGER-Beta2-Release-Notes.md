@@ -1,6 +1,25 @@
 # SKAGER Beta 2 — release notes
 
-**Version 0.4.0-beta2 · evaluation candidate · release acceptance pending**
+**Version 0.4.0-beta2.1 · Staging candidate · release acceptance pending**
+
+## This Staging increment
+
+- Guided boat setup is available from Preferences → Vessel. Fresh installed
+  profiles can complete it on first start; existing installations are preserved.
+  Later leaves the draft unsaved. Sensor checks use live observations only.
+- Preferences → System can export and restore SKAGER settings. Backups exclude
+  charts, routes, connection credentials and autopilot permissions. Restoring
+  settings switches pilot control OFF and requires source/calibration review.
+- The original OpenCPN navigation warning remains a human decision. The startup
+  updater now waits for it within a finite deadline without declaring the
+  application healthy before normal initialization finishes.
+- The manual pilot path uses the selected OpenCPN Actisense serial connection.
+  Control remains OFF until explicitly configured and enabled for the session;
+  exact device identity and fresh measured feedback are required. Sending a
+  message alone does not confirm a command. TRACK and WIND remain unavailable.
+- Private signed-update repository tooling is included in the corresponding
+  source. Live signed boat update acceptance remains separate from package
+  startup and rollback checks; consult the exact release qualification record.
 
 SKAGER adds a navigation workspace to the supported OpenCPN installation,
 with access to its familiar Legacy interface and a Safe Mode recovery path.
@@ -81,14 +100,16 @@ original names and hashes; they are never relabeled or repackaged.
 
 ## Limitations to review
 
-- SKAGER equipment output remains status-only. SmartNav is advisory and does
-  not steer. No physical actuator operation is authorized by these notes.
+- Manual pilot commissioning supports STANDBY, AUTO and ±1°/±10° only after
+  explicit configuration, session enablement and fresh device feedback. Default
+  control is OFF. SmartNav cannot steer; propulsion, radar transmission and
+  switching output are unavailable. Package notes do not authorize physical tests.
 - Internet AIS is optional, off by default, and may be delayed or incomplete.
   It supplements onboard observations and does not replace an AIS receiver or
   keeping watch. Keep account keys out of screenshots and support reports.
-- Custom radar integration, chart-corridor hazard coverage and the guided
-  first-start commissioning flow remain incomplete. Missing warnings never
-  establish safe water.
+- Custom radar integration and chart-corridor hazard coverage remain incomplete.
+  Guided setup is not vessel commissioning or navigation approval. Missing
+  warnings never establish safe water.
 - Native typography, layout, 100/125/150% Windows DPI, physical touch and the
   actual boat GPU/display require their own evidence within the applicable review
   scope. Design-only validation is scheduled only on explicit user request;

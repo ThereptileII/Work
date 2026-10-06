@@ -6,6 +6,7 @@ are deliberately not evidence of release-policy upgrade selection or trust setup
 No standalone destructive entrypoint, build, download, or product trust fixture.
 """
 import ctypes
+from hardware_output_policy import require_product_output_policy
 import hashlib
 import importlib.util
 import json
@@ -89,7 +90,8 @@ def qualify(*, install, setup, stock, profile, evidence, powershell, commit,
         record = read(directory / 'ownership.json')
         assert record['owner'] == 'OpenNavX.Alpha1.SideBySide.1'
         assert record['commit'] == commit and record['updateStartupHealth'] == 1
-        assert record['xnavHardwareOutputPolicy'] == 'status-only'
+        require_product_output_policy({'xnav_hardware_output_policy': record['xnavHardwareOutputPolicy'],
+                                       'xnav_manual_control_contract': record.get('xnavManualControlContract', 0)})
         assert not (directory / 'app/update-trust.json').exists(), 'No product trust provisioning in this fixture'
         assert digest(directory / 'app/opencpn.exe') == executable_sha256
         for path in ('app/opencpn.exe', 'app/skager-start.exe', 'UpdateSupervisor.ps1', 'UpdateTransaction.ps1', 'Lifecycle.ps1'):

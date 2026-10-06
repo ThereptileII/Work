@@ -19,9 +19,15 @@ building this ZIP alone does not establish acceptance.
 - Actual boat battery capacity, current direction, sensor mapping and propulsion
   calibration require comparison with the physical system. Advisory energy
   estimates are not a navigation guarantee.
-- Pilot control is disabled by default. The supported adapter still requires
-  physical commissioning; no real actuator command is authorized by the remote
-  Beta 2 procedure. TRACK/WIND and autonomous steering are unavailable.
+- Pilot control is disabled by default. The selected Actisense serial adapter
+  requires explicit configured permission, session enablement, exact bridge
+  identity and fresh physical feedback. Physical commissioning requires separate
+  explicit authorization; simulated success is not physical acceptance.
+  TRACK/WIND and autonomous steering are unavailable.
+- Private signed-update hosting and live boat Update Now/rollback qualification
+  remain separate gates. The installed successor and any fallback must receive
+  a fresh boat source/plugin audit before launch. Do not bypass a commissioning
+  refusal or treat same-version installer tests as signed-update acceptance.
 - Live chart-corridor hazard queries and the custom Pathfinder radar receive/control
   integration remain incomplete. Lack of a detected hazard never means safe water.
 - Native OpenCPN/Legacy/plugin dialogs may retain their desktop styling and bright

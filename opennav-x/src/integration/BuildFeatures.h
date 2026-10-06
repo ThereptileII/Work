@@ -31,9 +31,11 @@ constexpr std::string_view BuildPurpose() {
 constexpr bool PilotLoopbackTestsEnabled() {
   return XNAV_ENABLE_PILOT_LOOPBACK_TESTS == 1;
 }
-// No public product capability permits XNav-owned physical equipment output.
-// Stock OpenCPN connections/plugins are separate and preserve their semantics.
+// Physical output is serial commissioning only; settings and every new session
+// start OFF. Fixture builds can never reach physical equipment.
+constexpr bool PilotManualSerialEnabled() { return !TestFixturesEnabled(); }
 constexpr std::string_view HardwareOutputPolicy() {
-  return PilotLoopbackTestsEnabled() ? "test-loopback-only" : "status-only";
+  return PilotLoopbackTestsEnabled() ? "test-loopback-only" :
+         PilotManualSerialEnabled() ? "manual-commissioning" : "status-only";
 }
 } // namespace opennav::integration

@@ -5,7 +5,7 @@ $root = Split-Path $PSScriptRoot -Parent
 $tokens=$null; $errors=$null
 $ast=[Management.Automation.Language.Parser]::ParseFile((Join-Path $root 'installer/windows/Lifecycle.ps1'),[ref]$tokens,[ref]$errors)
 if($errors.Count){throw 'Installer parser errors'}
-foreach($name in @('Assert-StatusOnlyOutput','Assert-InstalledProduct','Resolve-OutputPolicy','Test-ExactRepairPackage')) {
+foreach($name in @('Assert-StatusOnlyOutput','Assert-ProductOutputPolicy','Assert-InstalledProduct','Resolve-OutputPolicy','Test-ExactRepairPackage')) {
   $functions=@($ast.FindAll({param($n) $n -is [Management.Automation.Language.FunctionDefinitionAst] -and $n.Name -eq $name},$true))
   if($functions.Count -ne 1){throw 'Missing unique actual output validator'}
   . ([scriptblock]::Create($functions[0].Extent.Text))
@@ -77,3 +77,15 @@ try{Assert-InstalledProduct $unqualified;Assert-StatusOnlyOutput $unqualified}ca
 if(-not $rejected){throw 'Valid product identity bypassed output restriction'}
 $count++
 Write-Output "$count actual installer output-policy checks passed; no installer operation invoked"
+
+# New command-capable products need exact versioned admission; this never enables a session.
+$manual=[pscustomobject]@{xnav_hardware_output_policy='manual-commissioning';xnav_manual_control_contract=1}
+if ((Resolve-OutputPolicy $manual) -cne 'manual-commissioning') { throw 'Truthful manual capability refused' }
+foreach ($version in @($null,$true,$false,'1',0,2,1.5)) {
+  $invalid=[pscustomobject]@{xnav_hardware_output_policy='manual-commissioning';xnav_manual_control_contract=$version}
+  $refused=$false;try { Resolve-OutputPolicy $invalid } catch { $refused=$true }
+  if (-not $refused) { throw 'Invalid manual contract admitted' }
+}
+$refused=$false;try { Assert-StatusOnlyOutput $manual } catch { $refused=$true }
+if (-not $refused) { throw 'Command-capable product relabelled status-only' }
+Write-Output '9 versioned manual-commissioning policy checks passed; no equipment/session enabled'
