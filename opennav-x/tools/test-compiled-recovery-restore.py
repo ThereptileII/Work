@@ -109,7 +109,9 @@ class TrustTests(unittest.TestCase):
 class RestoreTests(unittest.TestCase):
     def setUp(self):
         self.temp=tempfile.TemporaryDirectory();self.addCleanup(self.temp.cleanup)
-        self.base=Path(self.temp.name);self.repo=self.base/'repo';self.root=self.repo/'opennav-x';self.root.mkdir(parents=True)
+        # Windows TEMP may contain an 8.3 username alias; module discovery uses
+        # resolve(), so construct the inert expected paths from that same form.
+        self.base=Path(self.temp.name).resolve();self.repo=self.base/'repo';self.root=self.repo/'opennav-x';self.root.mkdir(parents=True)
         def git(where,*args): return subprocess.check_output(['git','-C',str(where),*args],stderr=subprocess.DEVNULL)
         self.git=git
         git(self.repo,'init','-q');git(self.repo,'config','user.email','inert@example.invalid');git(self.repo,'config','user.name','Inert')
