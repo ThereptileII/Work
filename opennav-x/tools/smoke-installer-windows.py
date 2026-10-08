@@ -354,6 +354,30 @@ def deny_generation_creation():
         if acl_file.exists():
             run_acl(restore=True)
             acl_file.unlink()
+def diagnostics_path(profile,timeout=20):
+    """Where the INSTALLED application publishes its diagnostics.
+
+    These launches use no --configdir, exactly as a user's shortcut does, so
+    the product writes to <private data>/opennav-logs instead of the shared
+    profile root (see the diagnostic_directory fallback in
+    src/integration/OpenCPNIntegration.cpp). Accept either location so this
+    helper stays correct if a launch later passes --configdir, and wait for
+    the first snapshot tick rather than racing it.
+    """
+    candidates=[profile/'opennav-logs/opennav-diagnostics.json',
+                profile/'opennav-diagnostics.json']
+    deadline=time.monotonic()+timeout
+    while True:
+        for path in candidates:
+            if path.exists():return path
+        if time.monotonic()>=deadline:
+            # Report what actually exists so a genuine publication failure is
+            # distinguishable from another path change.
+            present=sorted(str(q.relative_to(profile)) for q in profile.glob('*'))
+            raise RuntimeError('Installed application published no diagnostics snapshot. '
+                               'Looked for '+' and '.join(str(c) for c in candidates)+
+                               '. Profile now contains: '+', '.join(present))
+        time.sleep(.1)
 def wait_ready(profile,before):
     deadline=time.monotonic()+45
     while time.monotonic()<deadline:
@@ -423,7 +447,7 @@ def launch(exe,mode,title,profile,name,welcome_transition=None):
     h,pid=ui.wait_window(title,p.pid,timeout=45);wait_ready(profile,before)
     if title=='SKAGER / OpenCPN':
         report.setdefault('first_start_setup',[]).append(defer_boat_setup(
-            lambda:read_json_snapshot(profile/'opennav-diagnostics.json'),
+            lambda:read_json_snapshot(diagnostics_path(profile)),
             lambda target:ui.pointer_text(pid,'Later'),
             native_window=lambda:native_setup_window(ui,pid)))
     assert ui.IsWindowEnabled(h),'Application startup is still blocked by a modal dialog'
@@ -769,7 +793,7 @@ try:
             before=startup_baseline(profile);monitor=ui.monitor_process(pid);ui.click_menu(h,'Switch to SKAGER');ui.wait_clean_exit(monitor);owned.discard(pid)
             h,pid=ui.wait_window('SKAGER / OpenCPN');owned.add(pid);wait_ready(profile,before)
             report.setdefault('first_start_setup',[]).append(defer_boat_setup(
-                lambda:read_json_snapshot(profile/'opennav-diagnostics.json'),
+                lambda:read_json_snapshot(diagnostics_path(profile)),
                 lambda target:ui.pointer_text(pid,'Later'),
                 native_window=lambda:native_setup_window(ui,pid)))
             rgb=ui.capture(h,EVIDENCE/'installer-04-returned-xnav.png');report['screenshots'].append('installer-04-returned-xnav.png')
