@@ -16,7 +16,7 @@ void ProductPanel::PilotSettings() {
           s.pilot, s.now, false, s.vessel.replayed);
       return W(view.state + " / " + view.connection);
     });
-    Text("Uses the existing OpenCPN receive connections, including the connection used by AutoTrack. No separate SKAGER pilot setup is required. Status appears only after a supported device identity and fresh physical pilot feedback are observed.");
+    Text("Uses the existing OpenCPN receive connections, including the connection used by AutoTrack. No separate SKAGER pilot setup is required. As with AutoTrack, status appears as soon as fresh vendor-coded physical pilot status is observed; a missed address claim does not hide the pilot.");
     LiveText([](const auto &s) { return W(s.pilot.adapter_status); });
     Text("Status only. SKAGER equipment commands are unavailable; use the physical helm. Connection settings and AutoTrack configuration remain in OpenCPN.");
     BeginActions(2);
@@ -34,17 +34,41 @@ void ProductPanel::PilotSettings() {
            (s.pilot.fresh ? " / Connected" : " / Waiting for pilot feedback");
   });
   Text(test_output ? "Loopback testing only. Manual control must also be enabled each session. SmartNav never steers the vessel."
-                  : "Manual commissioning uses the existing bidirectional OpenCPN Actisense serial connection. Verify the observed translator identity, permit manual control, then explicitly enable this session. Keep physical STANDBY available. SmartNav never steers.");
+                  : "Like AutoTrack, SKAGER finds the pilot from its live status on the existing OpenCPN NMEA 2000 connection. Bind the detected pilot, permit manual control, then explicitly enable each session. Keep physical STANDBY available. SmartNav never steers.");
   BeginActions(2);
   Action("Back to manual autopilot", [this] { ShowPage(ProductPage::Pilot, mode_); });
+  // SCRUM-295: one explicit confirmation binds the single live pilot seen on
+  // OpenCPN's connections (NAME when observed, else its status address).
+  // Binding never grants control permission and always resets it to OFF.
+  Action("Use detected pilot", [this] {
+    const auto detected = actions_.pilot_detected ? actions_.pilot_detected() : std::nullopt;
+    if (!detected) {
+      Result({false, "No single live pilot detected. Check that the pilot is powered "
+                     "and its status reaches the OpenCPN NMEA 2000 connection."});
+      return;
+    }
+    const auto identity = detected->name.empty()
+        ? "status address " + detected->address
+        : "NAME " + detected->name;
+    if (!ConfirmSheet(*this, mode_, "Use detected pilot?",
+            W("Bind SKAGER to the pilot reporting live status on " +
+              detected->interface_id + " (" + identity + "). Manual control stays OFF "
+              "until you permit it and enable a session."),
+            "Use this pilot")) return;
+    auto s = actions_.settings();
+    s.pilot = *detected;
+    s.pilot.permit_control = false;
+    SaveSettings(s);
+  }, !state_.vessel.replayed && !state_.vessel.simulated && bool(actions_.pilot_detected));
   Action(b.permit_control ? "Return to display-only" : "Permit manual commissioning...", [this] {
     auto s = actions_.settings();
     if (!s.pilot.permit_control && !ConfirmSheet(*this, mode_, "Permit manual pilot commands?",
-        "Only the exact observed translator on the selected connection can receive the six manual commands. Control stays OFF until you enable it for this session. Keep the physical helm available.",
+        "Only the bound pilot on the selected connection can receive the six manual commands, and only while it reports fresh physical status. Control stays OFF until you enable it for this session. Keep the physical helm available.",
         "Save manual permission")) return;
     s.pilot.permit_control = !s.pilot.permit_control;
     SaveSettings(s);
-  }, !b.interface_id.empty() && !b.name.empty() && !state_.vessel.replayed && !state_.vessel.simulated);
+  }, !b.interface_id.empty() && (!b.name.empty() || !b.address.empty()) &&
+         !state_.vessel.replayed && !state_.vessel.simulated);
   Action(pilot_advanced_ ? "Hide connection details" : "Advanced connection setup", [this] {
     pilot_advanced_ = !pilot_advanced_; Build();
   });
@@ -55,9 +79,10 @@ void ProductPanel::PilotSettings() {
     return;
   }
   Heading("Connection & diagnostics", "Advanced / Exact device identity");
-  Text("Select the same existing serial connection used by AutoTrack. Refresh identity if this PC joined the bus after the translator. Copy only an actually observed NAME. A heading address alone never identifies a pilot.");
+  Text("Normally use \"Use detected pilot\". Manual entry: select the same existing connection used by AutoTrack and copy only an actually observed NAME. Refresh identity if this PC joined the bus after the translator.");
   Text("Interface: " + W(b.interface_id.empty() ? "Unconfigured" : b.interface_id) +
-       "\nNAME: " + W(b.name.empty() ? "Unconfigured" : b.name));
+       "\nNAME: " + W(b.name.empty() ? "Not observed" : b.name) +
+       "\nStatus address: " + W(b.address.empty() ? "Not bound" : b.address));
   LiveText([](const auto &s) { return W(s.pilot.adapter_status); });
   BeginActions(2);
   Action(

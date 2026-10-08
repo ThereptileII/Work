@@ -290,6 +290,57 @@ void Discovery() {
   Check(!a.Send({1, PilotAction::Standby, 0, epoch + 8s}) && t.sent.size() == 1,
         "Discovery permission cannot enable control");
 }
+// SCRUM-295: AutoTrack-equivalent address binding when no NAME claim is seen.
+void AddressBinding() {
+  Check(ParsePilotAddress("204") == 204 && ParsePilotAddress("0") == 0 &&
+            ParsePilotAddress("253") == 253, "Decimal pilot status addresses");
+  for (const char *bad : {"", "254", "255", "-1", "0204", "20a", "1000"})
+    Check(!ParsePilotAddress(bad), "Invalid/global/null addresses rejected");
+  ValidateSt4000Binding({"test-n2k", "", true, "204"});
+  Reject([] { ValidateSt4000Binding({"test-n2k", "", true, "254"}); });
+  Reject([] { ValidateSt4000Binding({"test-n2k", "", true, ""}); });
+  Transport t;
+  St4000Pilot a(t);
+  ManualAutopilot p(a);
+  a.Configure({"test-n2k", "", false, "204"});
+  a.Observe(Mode(PilotMode::Standby, epoch), epoch);
+  Check(a.GetState().mode == PilotMode::Standby && a.Address() == 204 &&
+            a.GetState().source.find("status-address/source-204") != std::string::npos,
+        "Bound status address supplies state without a claim");
+  auto other = Mode(PilotMode::Auto, epoch + 1ms);
+  other.source = 205;
+  a.Observe(other, epoch + 1ms);
+  Check(a.GetState().mode == PilotMode::Standby, "Other addresses are ignored");
+  Check(!a.Capabilities().manual_control && t.sent.empty(),
+        "Address binding is display-only without permission; observing never sends");
+  a.Configure({"test-n2k", "", true, "204"});
+  a.Observe(Mode(PilotMode::Standby, epoch + 2ms), epoch + 2ms);
+  a.Observe(Heading(330, epoch + 2ms), epoch + 2ms);
+  Check(a.Capabilities().manual_control, "Permitted address binding is controllable");
+  a.Observe(Claim(epoch + 3ms), epoch + 3ms);
+  Check(a.Capabilities().manual_control && a.Address() == 204,
+        "The pilot's own compatible claim does not conflict");
+  p.Enable(true, epoch + 4ms);
+  Check(p.Request(PilotAction::Auto, 0, epoch + 4ms).state == CommandState::Pending &&
+            t.sent.size() == 1 && t.sent[0].destination == 204 &&
+            t.sent[0].pgn == 126208 && t.sent[0].priority == 3,
+        "Commands go only to the bound status address");
+  a.Observe(Claim(epoch + 5ms, 204, 0x1234), epoch + 5ms);
+  Check(!a.Capabilities().manual_control && !a.Address() &&
+            a.GetState().mode == PilotMode::Unavailable,
+        "A foreign device claiming the address revokes control and status");
+  a.Observe(Mode(PilotMode::Auto, epoch + 6ms), epoch + 6ms);
+  Check(a.GetState().mode == PilotMode::Unavailable, "Conflict does not auto-heal");
+  St4000Pilot b(t);
+  b.Configure({"test-n2k", "", true, "204"});
+  b.Observe(Mode(PilotMode::Auto, epoch + 10ms), epoch + 10ms);
+  ++t.status.epoch;
+  b.Poll(epoch + 11ms);
+  Check(b.GetState().mode == PilotMode::Unavailable && b.Address() == 204,
+        "Reconnect keeps the bound address but drops old status");
+  b.Observe(Mode(PilotMode::Auto, epoch + 12ms), epoch + 12ms);
+  Check(b.GetState().mode == PilotMode::Auto, "Fresh status after reconnect restores state");
+}
 int main(int argc, char **argv) {
   try {
     const std::string group = argc > 1 ? argv[1] : "";
@@ -303,6 +354,8 @@ int main(int argc, char **argv) {
       Commands();
     else if (group == "discovery")
       Discovery();
+    else if (group == "address")
+      AddressBinding();
     else
       throw std::runtime_error("Unknown test");
     std::cout << "PASS " << group << '\n';

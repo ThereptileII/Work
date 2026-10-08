@@ -44,6 +44,23 @@ public:
       } else {
         traffic_limit_exceeded_ = true;
       }
+      // SCRUM-295 (AutoTrack-equivalent): vendor-coded physical mode traffic
+      // identifies a status candidate by its source address, even when this PC
+      // joined after the address claim. Its frames still pass the strict
+      // adapter parser; a NAME candidate for the same address takes priority.
+      const auto address_key = std::make_pair(frame.interface_id,
+          "address-" + std::to_string(frame.source));
+      if (!candidates_.count(address_key)) {
+        if (candidates_.size() >= 32) {
+          overflow_ = true;
+          return;
+        }
+        auto candidate = std::make_unique<Candidate>(
+            static_cast<adapters::IN2kPilotTransport &>(*this));
+        candidate->pilot.Configure(
+            {frame.interface_id, "", false, std::to_string(frame.source)});
+        candidates_.emplace(address_key, std::move(candidate));
+      }
     }
     if (frame.pgn == 60928 && frame.data.size() == 8) {
       std::uint64_t name = 0;
@@ -92,6 +109,8 @@ public:
     Diagnostics result;
     result.traffic_limit_exceeded = traffic_limit_exceeded_;
     for (const auto &[key, candidate] : candidates_) {
+      // Diagnostics describe NAME identity; address candidates have none.
+      if (IsAddressKey(key.second)) continue;
       const auto status = Status(key.first);
       if (candidate->pilot.Address() && status.connected &&
           candidate->identity_epoch == status.epoch)
@@ -112,7 +131,7 @@ public:
       }
       bool identified = false;
       for (const auto &[identity, candidate] : candidates_)
-        if (identity.first == key.first &&
+        if (identity.first == key.first && !IsAddressKey(identity.second) &&
             candidate->identity_epoch == traffic.epoch &&
             candidate->pilot.Address() == key.second) identified = true;
       if (!identified) ++result.fresh_mode_sources_without_identity;
@@ -124,6 +143,7 @@ public:
     if (overflow_) return {};
     const Candidate *selected = nullptr;
     for (const auto &[key, candidate] : candidates_) {
+      if (Shadowed(key)) continue;
       const auto feedback = candidate->pilot.GetState();
       if (!Fresh(feedback, now)) continue;
       if (selected) return {}; // Multiple physical pilots: no inferred choice.
@@ -133,7 +153,7 @@ public:
     // Preserve the fact of previously accepted feedback for a degraded display,
     // but never retain its mode/headings as current after connection loss.
     for (const auto &[key, candidate] : candidates_) {
-      if (!candidate->last_observed.sequence) continue;
+      if (Shadowed(key) || !candidate->last_observed.sequence) continue;
       if (selected) return {};
       selected = candidate.get();
     }
@@ -149,7 +169,7 @@ public:
     if (overflow_) return "Pilot discovery limit exceeded; status unavailable";
     unsigned fresh = 0;
     for (const auto &[key, candidate] : candidates_)
-      if (Fresh(candidate->pilot.GetState(), now)) ++fresh;
+      if (!Shadowed(key) && Fresh(candidate->pilot.GetState(), now)) ++fresh;
     if (fresh > 1)
       return "Multiple pilots provide live feedback; pilot status is ambiguous";
     const auto state = GetState(now);
@@ -158,8 +178,6 @@ public:
     if (diagnostics.identity_conflicts)
       return "Pilot address/NAME conflict; identity verification required / " +
              diagnostics.conflict_source;
-    if (diagnostics.fresh_mode_sources_without_identity)
-      return "Compatible pilot mode traffic received without a verified address claim; pilot identity and status remain unavailable";
     if (state.sequence)
       return "Pilot feedback stale, invalid or connection lost / " + state.source;
     if (diagnostics.verified_identities)
@@ -168,7 +186,26 @@ public:
       return "Previously observed pilot mode traffic is stale; waiting for a compatible address claim and fresh physical feedback";
     if (diagnostics.traffic_limit_exceeded)
       return "Pilot traffic diagnostic limit exceeded; waiting for a compatible address claim and physical feedback";
-    return "Waiting for a compatible address claim and physical pilot feedback on an OpenCPN receive connection";
+    return "Waiting for physical pilot status on an OpenCPN receive connection";
+  }
+
+  // The single live pilot as a binding the operator can confirm in setup:
+  // interface, plus NAME when its claim was observed, else status address.
+  std::optional<adapters::St4000Binding> Detected(vessel::Time now) const {
+    if (overflow_) return std::nullopt;
+    std::optional<adapters::St4000Binding> found;
+    for (const auto &[key, candidate] : candidates_) {
+      if (Shadowed(key) || !Fresh(candidate->pilot.GetState(), now) ||
+          !candidate->pilot.Address()) continue;
+      if (found) return std::nullopt; // Ambiguous: never pick one.
+      adapters::St4000Binding binding{key.first, "", false, ""};
+      if (IsAddressKey(key.second))
+        binding.address = std::to_string(*candidate->pilot.Address());
+      else
+        binding.name = key.second;
+      found = binding;
+    }
+    return found;
   }
 
 private:
@@ -183,6 +220,26 @@ private:
     vessel::Time observed_at;
     std::uint64_t epoch;
   };
+  static bool IsAddressKey(const std::string &key) {
+    return key.rfind("address-", 0) == 0;
+  }
+  // An address candidate is not selectable when a NAME candidate on the same
+  // interface already reports status from that address (one device, one
+  // status), or when any NAME identity conflict exists on that interface.
+  bool Shadowed(const std::pair<std::string, std::string> &key) const {
+    if (!IsAddressKey(key.second)) return false;
+    const auto self = candidates_.find(key);
+    if (self == candidates_.end()) return false;
+    for (const auto &[other, candidate] : candidates_) {
+      if (other.first != key.first || IsAddressKey(other.second)) continue;
+      if (candidate->identity_conflict) return true;
+      if (self->second->pilot.Address() &&
+          candidate->pilot.Address() == self->second->pilot.Address() &&
+          candidate->pilot.GetState().sequence)
+        return true;
+    }
+    return false;
+  }
   static bool ValidMode(const adapters::PilotN2kFrame &frame) {
     if (frame.pgn != 65379 || frame.data.size() != 8 ||
         frame.data[0] != 0x3b || frame.data[1] != 0x9f) return false;

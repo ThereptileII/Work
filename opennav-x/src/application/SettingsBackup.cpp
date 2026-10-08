@@ -37,6 +37,7 @@ bool ValidUtf8(const std::string &s, bool name = false) {
 void ValidateSettingsBackup(const SettingsBackup &b) {
   ValidateSettings(b.settings);
   Require(b.settings.pilot.interface_id.empty() && b.settings.pilot.name.empty() &&
+          b.settings.pilot.address.empty() &&
       !b.settings.pilot.permit_control, "Pilot binding and control permissions are excluded from backups");
   Require(ValidUtf8(b.vessel_name,true), "Invalid backup vessel name");
   Require(ValidUtf8(EncodeSettings(b.settings)), "Backup settings must use valid UTF-8");

@@ -2,6 +2,7 @@
 #include "integration/ChartPresentation.h"
 #include "integration/ChartCanvasInk.h"
 #include "integration/OnlineAisLabels.h"
+#include "application/ChartDeclutter.h"
 #include "ui/Theme.h"
 #include "chcanv.h"
 #include "ocpndc.h"
@@ -76,8 +77,12 @@ void OnlineAisOverlay::Draw(ocpnDC &dc, ViewPort &vp, ChartCanvas &canvas) const
   }
   // Labels are only part of verified XNav chart presentation. Standard keeps
   // its existing supplemental symbols, with no new label styling.
+  // SCRUM-317: names are secondary detail and drop first when zoomed out;
+  // every current target symbol (and its age state) is still drawn.
+  const auto detail=application::ChartDetailForScale(vp.chart_scale);
   wxColour land,water;
-  if(ChartBackground(canvas.GetColorScheme(),land,water)) {
+  if(application::ShowSecondaryLabels(detail) &&
+     ChartBackground(canvas.GetColorScheme(),land,water)) {
     DrawOnlineAisLabels(dc,canvas,mode,{vp.pix_width,vp.pix_height},positioned);
   }
   // Symbols, age/provenance marks and selection rings stay above their own
@@ -109,6 +114,7 @@ void OnlineAisOverlay::Draw(ocpnDC &dc, ViewPort &vp, ChartCanvas &canvas) const
       if(t.age==ais::TargetAge::Lost)dc.DrawLine(point.x-r,point.y+r,point.x+r,point.y-r);
     } else {
       // One small provenance dot, not an ONLINE label over every target.
+      // Kept at every zoom: it is the online/onboard source identity.
       dc.SetPen(*wxTRANSPARENT_PEN);dc.SetBrush(wxBrush(stroke));
       dc.DrawCircle(point.x+canvas.FromDIP(10),point.y+canvas.FromDIP(10),canvas.FromDIP(2));
     }

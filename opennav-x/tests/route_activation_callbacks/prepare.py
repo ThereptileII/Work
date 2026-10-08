@@ -119,6 +119,16 @@ application::AnchorWatchSelection CopyAnchorWatchSelection() {
 void SendJSONMessageToAllPlugins(const char *,const wxJSONValue &) {
   ++notifications; if(on_notify) on_notify();
 }
+// SCRUM-314 fixture: records which stopped watches had their owned mark
+// removed after activation, with a configurable outcome.
+enum class AnchorMarkRemoval { NotOwned, Removed, Busy, Failed };
+std::vector<std::string> removed_marks;
+AnchorMarkRemoval removal_result=AnchorMarkRemoval::Removed;
+AnchorMarkRemoval RemoveOwnedAnchorMark(const std::string &id) {
+  Check(!pAnchorWatchPoint1 && !pAnchorWatchPoint2,"Mark removal ran while a watch still held it");
+  Check(active_route!=nullptr,"Mark removal ran before activation");
+  removed_marks.push_back(id); return removal_result;
+}
 '''
 checks = r'''
 Route *AddRoute(const std::string &id) {
@@ -130,6 +140,7 @@ void Reset() {
   routes.clear(); on_save={}; on_deactivate={}; on_notify={};
   save_ok=stop_ok=gps_valid=watch_valid=true; shared_anchor=false; watch_revision="initial";
   saves=stops=notifications=activations=best_reads=0; active_route=nullptr; g_pRouteMan=&manager;
+  removed_marks.clear(); removal_result=AnchorMarkRemoval::Removed;
   gLat=57; gLon=16;
   pAnchorWatchPoint1=&anchor1; pAnchorWatchPoint2=&anchor2;
   g_AW1GUID="anchor1"; g_AW2GUID="anchor2"; AnchorAlertOn1=AnchorAlertOn2=true;
@@ -160,6 +171,7 @@ void RunChecks() {
     if(boundary==2) on_notify=change;
     const auto result=ActivateRouteTransition(selected,vessel::Navigation{},&consent);
     Check(!result.ok && activations==0 && best_reads==0,"Callback mutation reached point selection/activation");
+    Check(removed_marks.empty(),"Refused activation removed an anchor mark");
     if(boundary<2 && mutation!=6)
       Check(pAnchorWatchPoint1==&anchor1 && pAnchorWatchPoint2==&anchor2,"Pre-clear callback failure stopped watches");
     if(boundary==2) Check(notifications==2,"Both actually cleared watch notifications must be delivered");
@@ -172,6 +184,17 @@ void RunChecks() {
     const auto result=ActivateRouteTransition(selected,vessel::Navigation{},&consent);
     Check(result.ok && activations==1 && best_reads==1 && notifications==2,
           "Unchanged route activates once, including watch shared with a route point");
+    Check(removed_marks==std::vector<std::string>{"anchor1","anchor2"} &&
+              result.message=="Route activated using OpenCPN",
+          "Both stopped watches had their owned temporary mark removed after activation");
+  }
+  for(auto outcome:{AnchorMarkRemoval::Busy,AnchorMarkRemoval::Failed}) {
+    Reset(); removal_result=outcome;
+    auto *target=AddRoute("requested"); const auto selected=Copy(target);
+    const auto consent=CopyAnchorWatchSelection();
+    const auto result=ActivateRouteTransition(selected,vessel::Navigation{},&consent);
+    Check(result.ok && activations==1 && result.message.find("could not be removed")!=std::string::npos,
+          "Activation stays successful and reports a retained temporary mark");
   }
   Reset(); auto *target=AddRoute("requested"); active_route=AddRoute("previous-active");
   auto selected=Copy(target); auto consent=CopyAnchorWatchSelection();

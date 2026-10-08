@@ -2,6 +2,7 @@
 #include "adapters/Autopilot.h"
 #include <array>
 #include <functional>
+#include <optional>
 
 namespace opennav::adapters {
 // The explicitly configured boat translator, not arbitrary Raymarine equipment.
@@ -10,7 +11,13 @@ namespace opennav::adapters {
 struct St4000Binding {
   std::string interface_id, name;
   bool permit_control = false;
+  // SCRUM-295 (AutoTrack-equivalent): when no NAME claim was observed, the
+  // pilot may be bound to the decimal source address (0..253) that publishes
+  // vendor-coded physical pilot status. Ignored when NAME is set. A later
+  // incompatible claim for that address is treated as an identity conflict.
+  std::string address;
 };
+std::optional<std::uint8_t> ParsePilotAddress(const std::string &address);
 void ValidateSt4000Binding(const St4000Binding &binding);
 std::uint64_t ParsePilotName(const std::string &name);
 std::string FormatPilotName(std::uint64_t name);
@@ -60,6 +67,7 @@ private:
   IN2kPilotTransport &transport_;
   St4000Binding binding_;
   std::uint64_t wanted_name_ = 0, transport_epoch_ = 0;
+  std::optional<std::uint8_t> bound_address_;
   PilotFeedback feedback_;
   std::optional<std::uint8_t> address_;
   std::array<std::optional<vessel::Time>, 254> claims_{};

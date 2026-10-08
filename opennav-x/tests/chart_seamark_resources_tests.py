@@ -16,6 +16,9 @@ SELECTED=('XNCON066','XNCON067','XNCAN072','XNCAN073','XNCAN072','XNCAN073','XNC
           'XNLAT014','XNLAT013','XNLAT024','XNLAT023','XNLAT024','XNLAT023','XNLAT014','XNLAT013')
 
 def restore_tiles(before,after):
+    # SCRUM-323 Night aid pixels have their own exact proof in the main test.
+    import chart_night_aids
+    chart_night_aids.restore_from_pinned_day(before,after)
     from chart_light_tower_resources_tests import restore_towers
     restore_towers(before,after)
     from chart_hazard_resources_tests import restore_hazards

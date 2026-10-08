@@ -58,7 +58,6 @@ struct Shader {
 Shader shader; Shader *pcolor_tri_shader_program[2]{&shader,&shader};
 namespace opennav::integration {
 bool enabled=true,xnav_mode=true,active=true;
-CogPredictorStyleOwnership cog_style;
 bool ChartActiveRouteInk(ChartCanvas &c,wxColour &ink) {
   if(!enabled) return false;
   const unsigned colors[]{0x267c76,0xb0dfc8,0x71937e}; auto v=colors[c.theme];
@@ -87,30 +86,15 @@ int main(int argc,char **argv) {
   if(!wxEntryStart(argc,argv)||!wxTheApp->CallOnInit()) return 2;
   try {
     using namespace opennav::integration;
-    wxStringInputStream empty(""); wxFileConfig config(empty);
-    auto capture=[&]{CaptureChartCogPredictorStyle(config);};
     auto owns=[&](int width=3,int density=3,int style=105,const wxString& color="rgb(255,0,0)") {
       return UseChartCogPredictorStyle(width,style,color,density);
     };
-    capture();Check(owns(),"fresh factory paint not owned");
-    config.Write("/Settings/OwnshipCOGPredictorWidth",3L);
-    config.Write("/Settings/OwnshipCOGPredictorStyle",105L);
-    config.Write("/Settings/OwnshipCOGPredictorColor","rgb(255,0,0)");
-    capture();Check(owns(),"saved factory appearance not owned");
-    Check(owns(3,5)&&owns(5,5)&&owns(5,2),"density mutation incorrectly treated as preference change");
-    Check(!owns(6,5)&&!owns(5,5),"runtime custom width did not revoke ownership");
-    capture();Check(!owns(3,3,100)&&!owns(),"runtime custom style did not revoke");
-    capture();Check(!owns(3,3,105,"blue")&&!owns(),"runtime custom color did not revoke");
-    config.Write("/Settings/OwnshipCOGPredictorWidth",4L);capture();Check(!owns(4),"saved custom width owned");
-    config.Write("/Settings/OwnshipCOGPredictorWidth","invalid");capture();Check(!owns(),"invalid width owned");
-    config.Write("/Settings/OwnshipCOGPredictorWidth",3L);
-    config.Write("/Settings/OwnshipCOGPredictorStyle",100L);capture();Check(!owns(3,3,100),"saved custom style owned");
-    config.Write("/Settings/OwnshipCOGPredictorStyle",105L);
-    config.Write("/Settings/OwnshipCOGPredictorColor","blue");capture();Check(!owns(3,3,105,"blue"),"saved custom color owned");
-    config.Write("/Settings/OwnshipCOGPredictorColor","rgb(255,0,0)");capture();
-    xnav_mode=false;Check(!owns(),"Legacy/Safe owns predictor");xnav_mode=true;
+    // SCRUM-321: verified XNav presentation owns predictor paint regardless of
+    // legacy OpenCPN pen preferences, which keep applying outside XNav.
+    Check(owns()&&owns(6,5)&&owns(3,3,100)&&owns(3,3,105,"blue"),
+          "custom OpenCPN predictor pen revoked XNav presentation");
+    xnav_mode=false;Check(!owns()&&!owns(6,5),"Legacy/Safe owns predictor");xnav_mode=true;
     active=false;Check(!owns(),"Standard/unverified owns predictor");active=true;
-    Check(config.ReadLong("/Settings/OwnshipCOGPredictorWidth",-1)==3,"paint gate changed persisted width");
     for(double dpi : {1.,1.25,1.5,2.}) {
       auto mesh=ChartCogPredictorMesh(20,40,120,40,dpi,640,360);
       double lo=1e9,hi=-1e9;
@@ -142,6 +126,19 @@ int main(int argc,char **argv) {
     }
     int before=draws;Check(DrawChartCogPredictor(gl,canvas,-7,50,2,50)&&draws==before,"empty visible dash fell back to a solid line");
     enabled=false;Check(!DrawChartCogPredictor(gl,canvas,20,40,120,40),"disabled presentation drew");enabled=true;
+    // Heading line: finer 1px 2/4 dash at .5 opacity, distinct from COG.
+    for(double dpi : {1.,1.5}) {
+      auto mesh=ChartHeadingPredictorMesh(20,40,120,40,dpi,640,360);
+      double lo=1e9,hi=-1e9;
+      for(size_t i=1;i<mesh.size();i+=2){lo=std::min(lo,double(mesh[i]));hi=std::max(hi,double(mesh[i]));}
+      Check(std::abs(hi-lo-1*dpi)<1e-5,"heading line width");
+      Check(Contains(mesh,20+1*dpi,40)&&!Contains(mesh,20+4*dpi,40)&&Contains(mesh,20+7*dpi,40),
+            "heading dash 2/4 phase");
+    }
+    Check(ChartPredictorMesh(0,0,10,10,1,640,360,0,2,4).empty()&&
+          ChartPredictorMesh(0,0,10,10,1,640,360,1,NAN,4).empty(),"invalid dash geometry accepted");
+    Check(DrawChartHeadingPredictor(gl,canvas,20,40,120,40)&&std::abs(shader.color[3]-.5f)<1e-6,
+          "GL heading line alpha");
     wxInitAllImageHandlers();wxBitmap bmp(640,360,24);wxMemoryDC target(bmp);
     const wxColour backdrop(213,229,229);target.SetBackground(wxBrush(backdrop));target.Clear();
     target.SetPen(wxPen(*wxRED,5));target.SetBrush(*wxBLUE_BRUSH);

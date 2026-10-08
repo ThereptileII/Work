@@ -44,7 +44,6 @@ namespace {
 wxFileConfig *preferences = nullptr;
 bool xnav_mode = false, requested = true, active = false;
 std::string status = "Standard OpenCPN presentation";
-CogPredictorStyleOwnership cog_style;
 constexpr const char *key = "/OpenNav/ChartPresentationV1";
 wxString ResourceDirectory() {
   if (!g_BasePlatform) return {};
@@ -113,27 +112,11 @@ bool Verify(const wxString &folder) {
   }
   return true;
 }
-void CaptureChartCogPredictorStyle(wxFileConfig &config) {
-  // Snapshot configuration before ShipIndicatorsDraw can increase its width.
-  // Saved factory defaults count as equivalent; do not rewrite any preference.
-  long cog_width = 3, cog_pen_style = 105;
-  wxString cog_color = "rgb(255,0,0)";
-  const bool valid_width = !config.HasEntry("/Settings/OwnshipCOGPredictorWidth") ||
-      config.Read("/Settings/OwnshipCOGPredictorWidth", &cog_width);
-  const bool valid_style = !config.HasEntry("/Settings/OwnshipCOGPredictorStyle") ||
-      config.Read("/Settings/OwnshipCOGPredictorStyle", &cog_pen_style);
-  const bool valid_color = !config.HasEntry("/Settings/OwnshipCOGPredictorColor") ||
-      config.Read("/Settings/OwnshipCOGPredictorColor", &cog_color);
-  cog_style.Capture(valid_width && cog_width == 3 ? 3 : -1,
-      valid_style && cog_pen_style == 105 ? 105 : -1,
-      valid_color && wxColour(cog_color) == wxColour(255, 0, 0));
-}
 } // namespace
 void ConfigureChartPresentation(wxFileConfig &config, bool xnav) {
   if (!wxIsMainThread())
     return;
   preferences = &config;
-  CaptureChartCogPredictorStyle(config);
   xnav_mode = xnav;
   RegisterPluginPresentationLoader(xnav ? LoadQualifiedOChartsPresentation : nullptr);
   active = false;
@@ -304,19 +287,27 @@ bool DrawChartRouteSegment(ocpnDC &dc, ChartCanvas &canvas, double ax, double ay
 }
 bool UseChartCogPredictorStyle(int width, int style, const wxString &color,
                                int density_width) {
-  if (!wxIsMainThread()) return false;
-  const bool owned = cog_style.BeforeDensity(width, style,
-      wxColour(color) == wxColour(255, 0, 0), density_width);
-  return xnav_mode && active && owned;
+  // SCRUM-321: verified XNav presentation owns the predictor appearance, as
+  // it owns route and ownship paint. The user's OpenCPN pen preferences are
+  // neither read nor rewritten here and still apply in Standard/Legacy/Safe.
+  // Geometry, time horizon and validity remain upstream.
+  (void)width; (void)style; (void)color; (void)density_width;
+  return wxIsMainThread() && xnav_mode && active;
 }
-bool DrawChartCogPredictor(ocpnDC &dc, ChartCanvas &canvas,
-                           double ax, double ay, double bx, double by) {
+namespace {
+bool DrawChartPredictor(ocpnDC &dc, ChartCanvas &canvas, double ax, double ay,
+                        double bx, double by, bool heading) {
   wxColour ink;
   if (!ChartActiveRouteInk(canvas, ink)) return false;
   int width=0, height=0; dc.GetSize(&width,&height);
   bool valid = false;
-  auto triangles=ChartCogPredictorMesh(ax,ay,bx,by,
-      canvas.FromDIP(100)/100.0,width,height,&valid);
+  const double scale = canvas.FromDIP(100)/100.0;
+  auto triangles = heading
+      ? ChartHeadingPredictorMesh(ax,ay,bx,by,scale,width,height,&valid)
+      : ChartCogPredictorMesh(ax,ay,bx,by,scale,width,height,&valid);
+  // Prototype COG opacity .65 (166/255); the heading line recedes at .5.
+  const unsigned char alpha8 = heading ? 128 : 166;
+  const float alpha = heading ? .5f : .65f;
   if (triangles.empty()) return valid;
   if (auto *native=dc.GetDC()) {
     std::unique_ptr<wxGraphicsContext> gc(
@@ -329,7 +320,7 @@ bool DrawChartCogPredictor(ocpnDC &dc, ChartCanvas &canvas,
       path.AddLineToPoint(triangles[i+4],triangles[i+5]); path.CloseSubpath();
     }
     // wxColour's 8-bit alpha rounds the prototype's .65 to 166/255.
-    gc->SetBrush(wxBrush(wxColour(ink.Red(),ink.Green(),ink.Blue(),166)));
+    gc->SetBrush(wxBrush(wxColour(ink.Red(),ink.Green(),ink.Blue(),alpha8)));
     gc->FillPath(path,wxWINDING_RULE);
   } else {
 #ifdef ocpnUSE_GL
@@ -348,7 +339,7 @@ bool DrawChartCogPredictor(ocpnDC &dc, ChartCanvas &canvas,
     shader->Bind();
     shader->SetUniformMatrix4fv("MVMatrix",
         reinterpret_cast<GLfloat *>(canvas.GetpVP()->vp_matrix_transform));
-    float color[]={ink.Red()/256.f,ink.Green()/256.f,ink.Blue()/256.f,.65f};
+    float color[]={ink.Red()/256.f,ink.Green()/256.f,ink.Blue()/256.f,alpha};
     shader->SetUniform4fv("color",color);
     shader->SetAttributePointerf("position",triangles.data());
     glDrawArrays(GL_TRIANGLES,0,triangles.size()/2);
@@ -365,6 +356,15 @@ bool DrawChartCogPredictor(ocpnDC &dc, ChartCanvas &canvas,
     dc.CalcBoundingBox(std::ceil(triangles[i]),std::ceil(triangles[i+1]));
   }
   return true;
+}
+}  // namespace
+bool DrawChartCogPredictor(ocpnDC &dc, ChartCanvas &canvas,
+                           double ax, double ay, double bx, double by) {
+  return DrawChartPredictor(dc, canvas, ax, ay, bx, by, false);
+}
+bool DrawChartHeadingPredictor(ocpnDC &dc, ChartCanvas &canvas,
+                               double ax, double ay, double bx, double by) {
+  return DrawChartPredictor(dc, canvas, ax, ay, bx, by, true);
 }
 bool DrawChartOwnship(ocpnDC &dc, ChartCanvas &canvas, double x, double y,
                       double angle, double scale, double stretch_x,

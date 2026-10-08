@@ -110,7 +110,8 @@ void ProductPanel::Back() {
   case ProductPage::RailLayout: case ProductPage::InstrumentLayout: parent = ProductPage::Display; break;
   case ProductPage::EnergySettings: case ProductPage::VesselSettings:
   case ProductPage::NavigationSettings: case ProductPage::Sources:
-  case ProductPage::Display: case ProductPage::Radar: parent = ProductPage::Settings; break;
+  case ProductPage::Display: case ProductPage::Radar:
+  case ProductPage::Weather: parent = ProductPage::Settings; break;
   case ProductPage::Commissioning: case ProductPage::FieldReport: parent = ProductPage::System; break;
   default: break;
   }
@@ -280,6 +281,7 @@ std::string ProductPanel::PageTitle() const {
   case ProductPage::BoatMapping: return "Motor & battery setup";
   case ProductPage::SourcesAdvanced: return "Advanced source details";
   case ProductPage::SourceHealth: return "Source health";
+  case ProductPage::Weather: return "Weather";
   case ProductPage::FieldReport:
     return "Field diagnostic bundle";
   case ProductPage::Home:
@@ -508,6 +510,7 @@ void ProductPanel::Update(const ProductState &state, LightMode mode) {
     instruments_->Update(state.vessel, state.settings.instruments, state.now, mode);
     if (size != instruments_->GetMinSize()) { Layout(); FitInside(); }
   }
+  if (page_ == ProductPage::Weather || page_ == ProductPage::RouteDetail) RefreshWeather();
   for (auto *visual : visuals_) visual->Refresh(false);
   for (auto &v : values_)
     v.first->SetReading(v.second(state), state.now);
@@ -609,7 +612,7 @@ void ProductPanel::RouteActions() {
                 return ConfirmSheet(*this, mode_,
                     stops_anchor ? "Stop anchor watch and activate route?" : "Activate route",
                     stops_anchor
-                        ? "Anchor monitoring will stop. Your anchor mark is kept. Start navigating this route?"
+                        ? "Anchor monitoring will stop and its temporary anchor mark is removed. Start navigating this route?"
                         : "This changes OpenCPN navigation. Existing configured OpenCPN output connections retain their normal behavior.",
                     stops_anchor ? "Stop watch & activate" : "Activate");
               });
@@ -655,6 +658,7 @@ void ProductPanel::RouteActions() {
       p.Rule(60, 72, width - 84);
     });
   }
+  RouteForecast();
   Text("Route options", 18);
   BeginActions(3);
   Action(
@@ -693,7 +697,28 @@ void ProductPanel::RouteActions() {
           Result(actions_.navigation.reverse(selected));
       },
       route_.editable && static_cast<bool>(actions_.navigation.reverse))->SetRole(ButtonRole::Quiet);
+  Action(
+      "Delete route",
+      [this, selected] {
+        if (!ConfirmSheet(*this, mode_, "Delete route",
+                          W("Delete “") + Name(selected.name, selected.id) +
+                              W("”? Points used only by this route are removed. "
+                                "Waypoints shared with other routes or saved as "
+                                "marks are kept."),
+                          "Delete route", interface_scale_))
+          return; // Cancel leaves all data unchanged.
+        auto result = actions_.navigation.delete_route(selected);
+        if (result.ok) {
+          ShowPage(ProductPage::Routes, mode_);
+          result.identity.clear(); // The deleted identity must not be reopened.
+        }
+        Result(result);
+      },
+      !state_.vessel.simulated && !state_.vessel.replayed && route_.editable &&
+          static_cast<bool>(actions_.navigation.delete_route))->SetRole(ButtonRole::Critical);
   EndActions();
+  if (route_.active)
+    Text("To delete this route, stop navigation first.");
   Action("Back to routes", [this] { ShowPage(ProductPage::Routes, mode_); })->SetRole(ButtonRole::Quiet);
 }
 void ProductPanel::PointActions() {
@@ -968,6 +993,8 @@ void ProductPanel::Build() {
     Text("CHART LOOK-AHEAD / Unavailable", 18);
     Text("Chart hazard look-ahead is unavailable. Depth is measured at the "
          "boat, not ahead. Always inspect the chart and surroundings.");
+  } else if (page_ == ProductPage::Weather) {
+    WeatherPage();
   } else if (page_ == ProductPage::PilotSettings)
     PilotSettings();
   else if (page_ == ProductPage::Pilot)

@@ -55,8 +55,20 @@ std::string FormatPilotName(std::uint64_t name) {
   out << std::hex << std::setfill('0') << std::setw(16) << name;
   return out.str();
 }
+std::optional<std::uint8_t> ParsePilotAddress(const std::string &address) {
+  if (address.empty() || address.size() > 3) return std::nullopt;
+  unsigned value = 0;
+  for (const auto c : address) {
+    if (c < '0' || c > '9') return std::nullopt;
+    value = value * 10 + unsigned(c - '0');
+  }
+  // 254 (cannot claim) and 255 (global) never identify a pilot.
+  if (value > 253 || (address.size() > 1 && address[0] == '0')) return std::nullopt;
+  return static_cast<std::uint8_t>(value);
+}
 void ValidateSt4000Binding(const St4000Binding &b) {
-  if (b.interface_id.empty() && b.name.empty() && !b.permit_control)
+  if (b.interface_id.empty() && b.name.empty() && b.address.empty() &&
+      !b.permit_control)
     return;
   if (b.interface_id.empty() || b.interface_id.size() > 200)
     throw std::invalid_argument("Select an existing OpenCPN N2K interface");
@@ -65,8 +77,11 @@ void ValidateSt4000Binding(const St4000Binding &b) {
       throw std::invalid_argument("Invalid pilot interface text");
   // A selected interface without a NAME permits explicit identity discovery,
   // never steering. Saving an empty identity cannot retain control permission.
+  if (!b.address.empty() && !ParsePilotAddress(b.address))
+    throw std::invalid_argument("Pilot address must be an observed decimal source 0-253");
   if (!b.name.empty()) ParsePilotName(b.name);
-  else if (b.permit_control) throw std::invalid_argument("Observed NAME required for control");
+  else if (b.permit_control && b.address.empty())
+    throw std::invalid_argument("Observed NAME or pilot status address required for control");
 }
 std::vector<std::uint8_t> EncodeSt4000Command(const PilotRequest &r) {
   if (!r.id || !std::isfinite(r.delta_deg))
@@ -116,41 +131,46 @@ void St4000Pilot::Invalidate(const std::string &why) {
 void St4000Pilot::Configure(const St4000Binding &binding) {
   ValidateSt4000Binding(binding);
   if (binding.interface_id == binding_.interface_id &&
-      binding.name == binding_.name) {
+      binding.name == binding_.name && binding.address == binding_.address) {
     binding_.permit_control = binding.permit_control;
     return; // A permission toggle must not clear an identity conflict.
   }
   binding_ = binding;
   wanted_name_ = binding.name.empty() ? 0 : ParsePilotName(binding.name);
-  address_.reset();
+  bound_address_ = wanted_name_ ? std::nullopt : ParsePilotAddress(binding.address);
+  address_ = bound_address_;
   claims_ = {};
   conflict_ = false;
   connected_ = false;
   last_send_.reset();
   last_identity_request_.reset();
   Invalidate(wanted_name_ ? "Waiting for translator address claim"
-                          : "Translator not configured; control OFF");
+             : bound_address_ ? "Waiting for physical pilot status from the bound address"
+                              : "Translator not configured; control OFF");
 }
 void St4000Pilot::Poll(vessel::Time) {
-  if (!wanted_name_)
+  if (!wanted_name_ && !bound_address_)
     return;
   const auto status = transport_.Status(binding_.interface_id);
   if (connected_ != status.connected || transport_epoch_ != status.epoch) {
     connected_ = status.connected;
     transport_epoch_ = status.epoch;
-    address_.reset();
+    // A NAME binding must be re-claimed. An address binding keeps its address
+    // but needs fresh physical status from it on the new connection epoch.
+    address_ = conflict_ ? std::nullopt : bound_address_;
     claims_ = {};
-    Invalidate("Connection changed; new translator identity required");
+    Invalidate(bound_address_ ? "Connection changed; waiting for fresh pilot status"
+                              : "Connection changed; new translator identity required");
   }
 }
 std::string St4000Pilot::Source() const {
-  return "ST4000 / NMEA2000 / " + binding_.interface_id + "/NAME-" +
-         binding_.name + "/source-" +
-         (address_ ? std::to_string(*address_) : "unavailable");
+  return "ST4000 / NMEA2000 / " + binding_.interface_id +
+         (wanted_name_ ? "/NAME-" + binding_.name : std::string("/status-address")) +
+         "/source-" + (address_ ? std::to_string(*address_) : "unavailable");
 }
 void St4000Pilot::Observe(const PilotN2kFrame &f, vessel::Time now) {
   Poll(now);
-  if (!wanted_name_ || !connected_ || conflict_ ||
+  if ((!wanted_name_ && !bound_address_) || !connected_ || conflict_ ||
       f.interface_id != binding_.interface_id || f.source >= 254 ||
       f.observed_at < vessel::Time{} || f.observed_at > now ||
       now - f.observed_at >= std::chrono::seconds(3))
@@ -163,6 +183,17 @@ void St4000Pilot::Observe(const PilotN2kFrame &f, vessel::Time now) {
     std::uint64_t name = 0;
     for (unsigned i = 0; i < 8; ++i)
       name |= std::uint64_t(f.data[i]) << (i * 8);
+    if (bound_address_) {
+      // Address binding: a device of another class claiming the pilot's
+      // address means the address no longer identifies this pilot.
+      if (f.source == *bound_address_ && !ValidName(name)) {
+        conflict_ = true;
+        address_.reset();
+        Invalidate("Another device claimed the pilot address; verify the pilot "
+                   "before binding it again");
+      }
+      return;
+    }
     if ((name == wanted_name_ && address_ && *address_ != f.source) ||
         (name != wanted_name_ && address_ && *address_ == f.source)) {
       conflict_ = true;
@@ -175,8 +206,11 @@ void St4000Pilot::Observe(const PilotN2kFrame &f, vessel::Time now) {
     }
     return;
   }
-  if (!address_ || f.source != *address_ || !claims_[f.source] ||
-      f.observed_at <= *claims_[f.source])
+  if (!address_ || f.source != *address_)
+    return;
+  // A NAME binding only trusts traffic after the observed claim; an address
+  // binding trusts the vendor-coded status from that address (as AutoTrack).
+  if (wanted_name_ && (!claims_[f.source] || f.observed_at <= *claims_[f.source]))
     return;
   const auto source = Source();
   if (f.pgn == 65379) {
@@ -225,8 +259,9 @@ void St4000Pilot::Observe(const PilotN2kFrame &f, vessel::Time now) {
 }
 PilotCapabilities St4000Pilot::Capabilities() const {
   const auto s = transport_.Status(binding_.interface_id);
-  const bool verified = wanted_name_ && address_ && !conflict_ && connected_ &&
-                        s.connected && s.epoch == transport_epoch_;
+  const bool verified = (wanted_name_ || bound_address_) && address_ &&
+                        !conflict_ && connected_ && s.connected &&
+                        s.epoch == transport_epoch_;
   return {false,
           true,
           true,

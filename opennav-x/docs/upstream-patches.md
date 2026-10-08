@@ -1663,3 +1663,46 @@ the original warning, condition, return and config semantics. The integration
 reports waiting/actual choice to the updater; it cannot choose for the user.
 See [startup protocol](installer/startup-human-wait.md). The modal precedes
 `Attach` and deferred initialization, so shell-only reporting is insufficient.
+
+## 2026-10-07 boat-feedback batch (SCRUM-317/318/319/320/316/321)
+
+Appended to `opencpn-5.12.4-chart-presentation.patch`. Every hook is
+`OPENNAV_X`-guarded and limited to XNav mode; Standard/Legacy/Safe keep stock
+behavior. No later patch in the series touches these files. Not yet compiled,
+natively qualified or boat-reviewed.
+
+- `gui/src/chcanv.cpp`, `gui/include/gui/chcanv.h` (SCRUM-320/316): route
+  rollover no longer opens the XNav route card; it only shows a hand cursor.
+  New non-virtual `ChartCanvas::XNavPrimarySelect` runs on an explicit click
+  or tap (pointer-down/up within a 5 px pointer or 12 px touch slop, no route
+  creation, measure or point drag). Priority: onboard AIS (nearest symbol,
+  then lowest MMSI), online AIS overlay, nearest visible waypoint/route point,
+  first visible route leg. A consumed tap does not pan or recenter. Pointer
+  clicks run after the stock LeftUp handling so mark-press edit state is
+  already cleaned up; touch taps run before the stock touch selection unless
+  a point is already in its drag-handle edit state. Press state lives in a
+  file-local struct so the shared class layout is unchanged. Right-click
+  context behavior is unchanged.
+- `gui/src/chcanv.cpp` `ShipIndicatorsDraw` (SCRUM-321): in verified XNav
+  presentation the HDT pointer is replaced by an XNav heading line whose length
+  uses the COG time horizon (SOG x predictor minutes). Below 0.2 kn, or without
+  SOG, only a fixed tick shows direction. A NaN heading draws nothing, as stock.
+- `gui/src/route_point_gui.cpp` (SCRUM-318/319): `ChartWaypointMarker`
+  replaces the narrower ordinal eligibility. Route points (numbered, unnumbered,
+  active next, passed, selected) and standalone generic-icon waypoints use the
+  XNav marker; MOB, anchor watch, layers, meaningful icons, custom-styled routes
+  and live drag handles keep stock icons. The XNav active point does not blink,
+  and XNav markers draw their own selection ring instead of the legacy box.
+  Standalone markers draw their own name label (stock name skipped).
+  `gui/src/route_gui.cpp` software path repaints only the XNav marker glyph
+  of each route point after the legs (`RoutePointGui::DrawXNavMarker`), so
+  markers sit above the line as in the prototype while name labels stay below
+  it. `RouteGui::DrawGL` uses the same order for default-styled visible
+  XNav routes: points and labels, then legs, then marker glyphs.
+- `libs/s52plib/src/s52plib.{h,cpp}`, `gui/src/ocpn_frame.cpp`,
+  `gui/src/pluginmanager.cpp`, `chcanv.cpp` S52 plugin config (SCRUM-317):
+  `SetXNavScaminDeclutter(opennav::IsXNav())` is set once after the
+  presentation library is created. Render-time SCAMIN and super-SCAMIN checks
+  apply when either the user preference or XNav declutter is on; the stored
+  `bUseSCAMIN`/`bUseSUPER_SCAMIN` preferences are never written. Chart plugins
+  receive the same effective values through the existing S52PLIB JSON message.

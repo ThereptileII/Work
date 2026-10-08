@@ -26,6 +26,8 @@ application::CommandResult ActivateRouteAfterAnchor(
     const application::AnchorWatchSelection &confirmed);
 application::CommandResult StopRoute(const application::Route &selected);
 application::CommandResult ReverseRoute(const application::Route &selected);
+// Inactive, unprotected routes only. Uses the stock Route Manager deletion.
+application::CommandResult DeleteRoute(const application::Route &selected);
 application::CommandResult EditRoute(const application::Route &selected,
                                      const std::string &name,
                                      const std::string &description);

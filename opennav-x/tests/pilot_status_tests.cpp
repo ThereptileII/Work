@@ -38,29 +38,42 @@ adapters::PilotN2kFrame Mode(vessel::Time at, unsigned address = 204,
 void Discovery() {
   Transport transport;
   integration::PilotStatusDiscovery pilot(transport);
+  // SCRUM-295: like AutoTrack, vendor-coded physical status is enough to see
+  // the pilot when this PC joined after the bridge's one-time address claim.
   pilot.Observe(Mode(start), start);
-  Check(pilot.GetState(start).mode == adapters::PilotMode::Unavailable,
-        "Mode traffic without observed identity cannot establish availability");
-  pilot.Observe(Claim(start), start);
-  Check(pilot.GetState(start).mode == adapters::PilotMode::Unavailable,
-        "An identity claim is not physical pilot status");
-  pilot.Observe(Mode(start + 1ms, 205), start + 1ms);
+  auto seen = pilot.GetState(start);
+  Check(seen.mode == adapters::PilotMode::Auto && seen.sequence &&
+            seen.source.find("status-address/source-204") != std::string::npos,
+        "Vendor-coded mode traffic establishes status without an observed claim");
+  auto detected = pilot.Detected(start);
+  Check(detected && detected->interface_id == "existing-opencpn" &&
+            detected->address == "204" && detected->name.empty() &&
+            !detected->permit_control,
+        "The detected pilot is offered as an address binding, never as permission");
+  pilot.Observe(Claim(start + 1ms), start + 1ms);
+  Check(pilot.GetState(start + 1ms).mode == adapters::PilotMode::Auto,
+        "A claim without new status keeps the live address status");
   pilot.Observe(Mode(start + 2ms, 204, "other-interface"), start + 2ms);
   Check(pilot.GetState(start + 2ms).mode == adapters::PilotMode::Unavailable,
-        "An unrelated address or connection cannot supply pilot status");
-  pilot.Observe(Mode(start + 3ms), start + 3ms);
-  const auto feedback = pilot.GetState(start + 3ms);
+        "A second live pilot source is ambiguous, not an arbitrary choice");
+  Check(!pilot.Detected(start + 2ms), "Ambiguity offers no binding");
+  pilot.Poll(start + 3003ms);
+  pilot.Observe(Mode(start + 3003ms), start + 3003ms);
+  const auto feedback = pilot.GetState(start + 3003ms);
   Check(feedback.mode == adapters::PilotMode::Auto && feedback.sequence,
         "Live accepted feedback is discovered without separate XNav setup");
   Check(feedback.source.find("NAME-" + adapters::FormatPilotName(identity)) !=
-            std::string::npos, "Observed exact identity is retained");
+            std::string::npos, "An observed exact identity takes precedence");
+  detected = pilot.Detected(start + 3003ms);
+  Check(detected && detected->name == adapters::FormatPilotName(identity) &&
+            detected->address.empty(), "A NAME identity is offered when observed");
   adapters::PilotView view;
   view.feedback = feedback;
   view.fresh = true;
   view.output_unavailable = true;
   view.enabled = true; // Old saved/session permissions must have no effect.
   view.capabilities = {false, true, true, true, true, true, true};
-  auto shown = application::PresentPilot(view, start + 3ms, true, false);
+  auto shown = application::PresentPilot(view, start + 3003ms, true, false);
   Check(shown.available && shown.mode == adapters::PilotMode::Auto,
         "Status-only policy must not hide observed availability");
   Check(!shown.enabled && !shown.can_toggle && !shown.standby &&
@@ -80,8 +93,10 @@ void Rejection() {
     if (invalid == 4) claim.observed_at = start - 3s;
     pilot.Observe(claim, start);
     pilot.Observe(Mode(start + 1ms), start + 1ms);
-    Check(pilot.GetState(start + 1ms).mode == adapters::PilotMode::Unavailable,
-          "Invalid, unknown, stale and future identities remain unavailable");
+    const auto state = pilot.GetState(start + 1ms);
+    Check(state.source.find("NAME-") == std::string::npos &&
+              pilot.GetDiagnostics(start + 1ms).verified_identities == 0,
+          "Invalid, unknown, stale and future identities are never accepted");
   }
   Transport transport;
   integration::PilotStatusDiscovery pilot(transport);
@@ -126,15 +141,15 @@ void LossAndRecovery() {
   ++transport.connection.epoch;
   pilot.Poll(start + 4002ms);
   pilot.Observe(Mode(start + 4003ms), start + 4003ms);
-  Check(pilot.GetState(start + 4003ms).mode == adapters::PilotMode::Unavailable,
-        "A new connection requires a newly observed identity");
-  Check(pilot.Description(start + 4003ms).find("without a verified address claim") !=
-            std::string::npos,
-        "New mode traffic after reconnect explains the missing claim despite old feedback history");
+  const auto reconnected = pilot.GetState(start + 4003ms);
+  Check(reconnected.mode == adapters::PilotMode::Auto &&
+            reconnected.source.find("status-address") != std::string::npos,
+        "After reconnect, fresh vendor-coded status restores availability without waiting for a claim");
   pilot.Observe(Claim(start + 4004ms), start + 4004ms);
   pilot.Observe(Mode(start + 4005ms), start + 4005ms);
-  Check(pilot.GetState(start + 4005ms).mode == adapters::PilotMode::Auto,
-        "Observed identity plus feedback recovers after connection loss");
+  Check(pilot.GetState(start + 4005ms).mode == adapters::PilotMode::Auto &&
+            pilot.GetState(start + 4005ms).source.find("NAME-") != std::string::npos,
+        "Observed identity plus feedback recovers its NAME after connection loss");
   Check(transport.sends == 0, "Recovery is passive");
 }
 void Ambiguity() {
@@ -180,6 +195,19 @@ void Ambiguity() {
             !unconfirmed_conflict.GetState(start + 1ms).sequence,
         "Conflict before any physical feedback is explicit rather than generic waiting");
 }
+void AddressConflict() {
+  Transport transport;
+  integration::PilotStatusDiscovery pilot(transport);
+  pilot.Observe(Mode(start), start);
+  Check(pilot.GetState(start).mode == adapters::PilotMode::Auto, "Address status live");
+  // Another class of device claims the pilot's address: no longer this pilot.
+  pilot.Observe(Claim(start + 1ms, 204, 0x1234), start + 1ms);
+  pilot.Observe(Mode(start + 2ms), start + 2ms);
+  Check(pilot.GetState(start + 2ms).mode == adapters::PilotMode::Unavailable &&
+            !pilot.Detected(start + 2ms),
+        "A foreign claim on the pilot address revokes address status");
+  Check(transport.sends == 0, "Address conflict handling is passive");
+}
 void TrafficDiagnostics() {
   Transport transport;
   integration::PilotStatusDiscovery pilot(transport);
@@ -191,10 +219,9 @@ void TrafficDiagnostics() {
   auto diagnostics = pilot.GetDiagnostics(start);
   Check(diagnostics.fresh_mode_sources_without_identity == 1 &&
             diagnostics.verified_identities == 0 &&
-            pilot.Description(start).find("without a verified address claim") !=
-                std::string::npos &&
-            pilot.GetState(start).mode == adapters::PilotMode::Unavailable,
-        "Mode-only startup explains missing identity without claiming availability");
+            pilot.Description(start).find("Live pilot feedback") != std::string::npos &&
+            pilot.GetState(start).mode == adapters::PilotMode::Auto,
+        "Mode-only startup shows status while diagnostics still report the missing NAME");
   pilot.Observe(Claim(start + 1ms, 204, identity, "other-interface"), start + 1ms);
   Check(pilot.GetDiagnostics(start + 1ms).fresh_mode_sources_without_identity == 1,
         "A claim on another interface cannot identify this mode source");
@@ -210,13 +237,12 @@ void TrafficDiagnostics() {
   pilot.Observe(Claim(start + 3003ms), start + 3003ms);
   Check(pilot.GetDiagnostics(start + 3003ms).verified_identities == 1 &&
             pilot.GetDiagnostics(start + 3003ms).fresh_mode_sources_without_identity == 0 &&
-            pilot.Description(start + 3003ms).find("waiting for valid physical") !=
-                std::string::npos &&
-            pilot.GetState(start + 3003ms).mode == adapters::PilotMode::Unavailable,
-        "A claim explains identity discovery but does not retroactively accept earlier mode");
+            pilot.GetState(start + 3003ms).source.find("status-address") != std::string::npos,
+        "A claim does not retroactively attach earlier mode to the NAME");
   pilot.Observe(Mode(start + 3004ms), start + 3004ms);
-  Check(pilot.GetState(start + 3004ms).mode == adapters::PilotMode::Auto,
-        "Only subsequent verified physical feedback establishes availability");
+  Check(pilot.GetState(start + 3004ms).mode == adapters::PilotMode::Auto &&
+            pilot.GetState(start + 3004ms).source.find("NAME-") != std::string::npos,
+        "Subsequent physical feedback attaches to the verified NAME");
   transport.connection.connected = false;
   pilot.Poll(start + 3005ms);
   Check(pilot.GetDiagnostics(start + 3005ms).verified_identities == 0 &&
@@ -250,8 +276,9 @@ void InvalidTrafficDiagnostics() {
   const auto diagnostics = bounded.GetDiagnostics(start);
   Check(diagnostics.fresh_mode_sources_without_identity == 32 &&
             diagnostics.traffic_limit_exceeded &&
-            bounded.GetState(start).mode == adapters::PilotMode::Unavailable,
-        "Unidentified traffic storage is bounded and never grants availability");
+            bounded.GetState(start).mode == adapters::PilotMode::Unavailable &&
+            !bounded.Detected(start),
+        "Unidentified traffic storage is bounded and an overflow grants no status");
 }
 }
 int main() {
@@ -260,6 +287,7 @@ int main() {
     Rejection();
     LossAndRecovery();
     Ambiguity();
+    AddressConflict();
     TrafficDiagnostics();
     InvalidTrafficDiagnostics();
     std::cout << "Passive pilot discovery and status tests passed\n";

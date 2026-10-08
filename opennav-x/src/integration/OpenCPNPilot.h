@@ -23,6 +23,9 @@ public:
   bool ControlEnabled() const override { return session_enabled_; }
   bool SessionEnabled() const { return session_enabled_; }
   std::string Description() const;
+  // The single live pilot seen on OpenCPN's receive connections, offered for
+  // an explicit operator binding (never permission). Empty when ambiguous.
+  std::optional<adapters::St4000Binding> DetectedBinding() const;
   PilotStatusDiscovery::Diagnostics DiscoveryDiagnostics(vessel::Time now) const;
   PilotTrafficDiagnostics::Snapshot TrafficDiagnostics() const;
 

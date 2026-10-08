@@ -10,6 +10,7 @@
 #include "ui/Controls.h"
 #include "ui/InstrumentPanel.h"
 #include "ui/RadarPanel.h"
+#include "weather/Weather.h"
 #include <wx/scrolwin.h>
 #include <wx/sizer.h>
 #include <wx/stattext.h>
@@ -45,7 +46,8 @@ enum class ProductPage {
   NavigationSettings,
   BoatMapping,
   SourcesAdvanced,
-  SourceHealth
+  SourceHealth,
+  Weather  // SCRUM-325/327/329: forecast wind and GRIBstream settings
 };
 struct ProductState {
   std::vector<application::Alert> alerts;
@@ -78,12 +80,15 @@ struct ProductActions {
   std::function<void(adapters::PilotAction, double)> pilot_command;
   std::function<void(bool)> pilot_enable;
   std::function<application::CommandResult()> pilot_identity;
+  // SCRUM-295: the single pilot detected from its live status, if any.
+  std::function<std::optional<adapters::St4000Binding>()> pilot_detected;
   std::function<std::string()> chart_style_status;
   std::function<bool()> chart_style_requested;
   std::function<application::CommandResult(bool)> set_chart_style;
   std::function<application::Settings()> settings;
   std::function<application::CommandResult(const application::Settings &)>
       save_settings;
+  application::WeatherActions weather;  // SCRUM-324/325 GRIBstream settings.
 };
 struct ProductGeometry {
   std::string label;
@@ -145,6 +150,10 @@ private:
   void DisplaySettings();
   void InstrumentSelection(bool rail);
   void SaveSettings(application::Settings settings);
+  void WeatherPage();
+  void RouteForecast();
+  void StoreWeatherToken();
+  bool RefreshWeather(bool force = false);
   ProductActions actions_;
   XNavInstrumentPanel *instruments_ = nullptr;
   XNavRadarPanel *radar_ = nullptr;
@@ -159,6 +168,9 @@ private:
   bool point_available_ = false, point_position_valid_ = false, point_can_go_ = false;
   std::chrono::steady_clock::time_point point_refreshed_at_{};
   int mmsi_ = 0;
+  weather::ForecastSnapshot weather_;
+  std::chrono::steady_clock::time_point weather_refreshed_at_{};
+  wxString weather_message_;
   vessel::Quantity source_quantity_ = vessel::Quantity::Depth;
   wxBoxSizer *body_ = nullptr;
   wxGridSizer *grid_ = nullptr;

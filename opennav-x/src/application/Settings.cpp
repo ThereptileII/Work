@@ -134,6 +134,8 @@ std::string EncodeSettings(const Settings &s) {
     r["pilot.interface"] = s.pilot.interface_id;
     r["pilot.name"] = s.pilot.name;
     r["pilot.permission"] = s.pilot.permit_control ? "manual" : "display-only";
+    // Optional: absent in older settings and for NAME bindings.
+    if (!s.pilot.address.empty()) r["pilot.address"] = s.pilot.address;
   }
   if (!s.boat_bridge.interface_id.empty()) {
     r["boat_bridge.interface"] = s.boat_bridge.interface_id;
@@ -241,6 +243,7 @@ Settings DecodeSettings(const std::string &record) {
     Require(permission == "display-only" || permission == "manual",
             "Unknown pilot permission; control cannot be enabled");
     s.pilot.permit_control = permission == "manual";
+    if (r.count("pilot.address")) s.pilot.address = take("pilot.address");
   }
   if (r.count("boat_bridge.interface")) {
     s.boat_bridge.interface_id = take("boat_bridge.interface");

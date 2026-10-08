@@ -52,12 +52,18 @@ struct ShellActions {
   application::OnlineAisActions online_ais;
   std::function<void(bool)> online_ais_tick;
   std::function<application::CommandResult(int)> view_online_ais;
+  // SCRUM-324..331: GRIBstream forecast actions and the periodic query feed
+  // (vessel, active route, chart viewport). The tick never blocks on network.
+  application::WeatherActions weather;
+  std::function<void(bool)> weather_tick;
   std::function<bool()> route_creating;
   std::function<adapters::PilotView(bool, vessel::Time)> pilot_tick;
   std::function<std::vector<adapters::PilotCommand>(bool)> pilot_log;
   std::function<void(bool, adapters::PilotAction, double)> pilot_command;
   std::function<void(bool, bool)> pilot_enable;
   std::function<application::CommandResult()> pilot_identity;
+  // SCRUM-295: the single pilot detected from its live status, if any.
+  std::function<std::optional<adapters::St4000Binding>()> pilot_detected;
   std::function<std::vector<std::string>()> pilot_sources;
   std::function<void()> restart_xnav, safe, diagnostics_folder;
   std::function<vessel::RouteProgress()> route;

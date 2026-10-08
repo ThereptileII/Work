@@ -5,9 +5,10 @@ namespace opennav::ais {
 namespace {
 class EnvironmentCredentials final : public IAisCredentials {
 public:
+  explicit EnvironmentCredentials(const char *variable) : variable_(variable) {}
   CredentialResult Read() const override {
     CredentialResult result;
-    const char *value = std::getenv("AISSTREAM_API_KEY");
+    const char *value = std::getenv(variable_);
     if (!value || !*value)
       return result;
     // Bound inspection before constructing a view/string from external input.
@@ -23,9 +24,15 @@ public:
     return CredentialStatus::ReadOnly;
   }
   CredentialStatus Remove() override { return CredentialStatus::ReadOnly; }
+
+private:
+  const char *variable_;
 };
 } // namespace
 std::unique_ptr<IAisCredentials> CreateAisCredentials() {
-  return std::make_unique<EnvironmentCredentials>();
+  return std::make_unique<EnvironmentCredentials>("AISSTREAM_API_KEY");
+}
+std::unique_ptr<IAisCredentials> CreateWeatherCredentials() {
+  return std::make_unique<EnvironmentCredentials>("SKAGER_GRIBSTREAM_TOKEN");
 }
 } // namespace opennav::ais

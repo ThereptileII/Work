@@ -10,7 +10,7 @@ using application::ChartFormat;
 // Actual immutable Windows Layers rows: four 63.5px and four 52px rows.
 constexpr std::array<double, 8> row_top{{0,63.5,115.5,179,231,283,346.5,398.5}};
 constexpr std::array<double, 8> row_height{{63.5,52,63.5,52,52,63.5,52,63.5}};
-constexpr std::array<unsigned, 3> editable_rows{{1,2,3}};
+constexpr std::array<unsigned, 4> editable_rows{{1,2,3,6}};
 constexpr std::array<const char *, 8> labels{{"Chart symbols", "ENC text labels",
     "AIS vessels", "Depth soundings", "Depth contours", "Route corridor",
     "Wind vectors", "Radar overlay"}};
@@ -152,8 +152,8 @@ void XNavChartPresentationDrawer::Update(const application::ChartPresentationSta
   ReflowNotes();
   rows_->SetBackgroundColour(Colour(Theme(mode).background));
   orientation_track_->SetBackgroundColour(Colour(Theme(mode).surface));
-  const std::array<const application::ChartLayerState *,3> states{{&state_.enc_text,&state_.ais_vessels,&state_.depth_soundings}};
-  const std::array<bool,3> callbacks{{bool(actions_.set_chart_enc_text),bool(actions_.set_chart_ais),bool(actions_.set_chart_soundings)}};
+  const std::array<const application::ChartLayerState *,4> states{{&state_.enc_text,&state_.ais_vessels,&state_.depth_soundings,&state_.wind_vectors}};
+  const std::array<bool,4> callbacks{{bool(actions_.set_chart_enc_text),bool(actions_.set_chart_ais),bool(actions_.set_chart_soundings),bool(actions_.set_chart_wind)}};
   for(unsigned i=0;i<layers_.size();++i) {
     const auto &layer=*states[i];auto *button=layers_[i];
     button->SetLightMode(mode);button->Show(layer.visible.has_value());
@@ -225,9 +225,10 @@ void XNavChartPresentationDrawer::ReflowNotes() {
 }
 
 void XNavChartPresentationDrawer::ChangeLayer(unsigned index) {
-  const std::array<const application::ChartLayerState *,3> states{{&state_.enc_text,&state_.ais_vessels,&state_.depth_soundings}};
+  const std::array<const application::ChartLayerState *,4> states{{&state_.enc_text,&state_.ais_vessels,&state_.depth_soundings,&state_.wind_vectors}};
   if(!IsShownOnScreen() || index>=states.size() || !state_.available || !states[index]->editable || !states[index]->visible)return;
-  const auto callback=index==0?actions_.set_chart_enc_text:index==1?actions_.set_chart_ais:actions_.set_chart_soundings;
+  const auto callback=index==0?actions_.set_chart_enc_text:index==1?actions_.set_chart_ais:
+      index==2?actions_.set_chart_soundings:actions_.set_chart_wind;
   if(callback)Accept(callback(!*states[index]->visible));
 }
 void XNavChartPresentationDrawer::ChangeOrientation(ChartOrientation orientation) {
@@ -276,7 +277,7 @@ void XNavChartPresentationDrawer::PaintRows(wxPaintEvent &) {
     p.Text(labels[i],0,top+label_y,12,p.c.secondary,false,width-85);
     if(!detail.empty())p.Text(detail,0,top+label_y+22,11,p.c.muted,false,width-65);
     if(i==0 || i==4)p.TextWeight("Managed",width-74,top+(height-16)/2,10,p.c.muted,400,74,true);
-    else if(i>=5 || !states[i]->visible)p.TextWeight("Unavailable",width-74,top+(height-16)/2,10,p.c.muted,400,74,true);
+    else if(i==5 || i==7 || !states[i]->visible)p.TextWeight("Unavailable",width-74,top+(height-16)/2,10,p.c.muted,400,74,true);
     p.Rule(0,std::lround(row_top[i]+row_height[i])-1,width);
   }
 }

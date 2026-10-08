@@ -125,3 +125,31 @@ work performed no port access, connection/profile change or physical command.
 Physical feedback, command, timeout/reconnect and observed-response acceptance
 remains open in Jira until recorded. Keep a person present, steering gear clear
 and physical STANDBY available during that separately controlled operation.
+
+## AutoTrack-equivalent discovery (SCRUM-295, 2026-10-07)
+
+The boat bridge sends its NAME/address claim only at startup, so a PC that
+joins later never sees it and the former NAME-only discovery reported the
+pilot as unavailable. AutoTrackRaymarine instead treats the pilot as present
+from its status traffic. SKAGER now does the same, with stricter checks:
+
+- A source address that publishes vendor-coded PGN 65379 (Raymarine 1851,
+  marine industry, a known mode) becomes a status candidate on that OpenCPN
+  connection. Its 65379/65360/127250 frames pass the same strict ST4000
+  adapter parser as before. No request or command is sent to discover it.
+- A NAME candidate for the same address takes precedence once it reports
+  status. Two live pilots, any NAME identity conflict on the connection, or a
+  foreign-class device claiming the pilot's address leave status unavailable.
+- **Autopilot setup → Use detected pilot** binds the single live pilot after
+  one confirmation: interface plus NAME when observed, otherwise its status
+  address (`pilot.address`). Binding always resets permission to OFF. Manual
+  permission and per-session enable are still separate explicit steps, and
+  every existing command gate (fresh physical status, exact six commands,
+  one pending request, physical acknowledgement, timeouts) is unchanged.
+- Commands still use the bridge's accepted PGN 126208 encoding addressed to
+  the bound address (the bridge also accepts AutoTrack's own mode/heading
+  encodings). TRACK/WIND remain unavailable; SmartNav never steers.
+
+Focused tests: `tests/pilot_status_tests.cpp`, `tests/st4000_tests.cpp`
+(`address` group) and `tests/settings_tests.cpp`. Not yet compiled, natively
+qualified or boat-verified; read-only boat verification comes first.

@@ -16,6 +16,8 @@ RouteContextView PresentRouteContext(const std::string &selected_id,
   if (!route->visible) view.status += " / HIDDEN";
   if (!route->editable) view.status += " / READ ONLY";
   view.points = route->points.size();
+  view.can_activate = !route->active && route->editable && view.points >= 2;
+  view.can_stop = route->active;
   if (!route->points.empty()) {
     const auto &first = route->points.front();
     const auto &last = route->points.back();

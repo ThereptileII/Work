@@ -901,20 +901,29 @@ void ObjectScenarioStep(const vessel::Navigation &selected) {
                   !pAnchorWatchPoint1 && !pAnchorWatchPoint2 &&
                   g_AW1GUID.empty() && g_AW2GUID.empty(),
               "Accepted transition stops both watches and activates selected native route");
-        Check(pWayPointMan->FindWaypointByGuid(anchor_id) == original_mark &&
+        Check(!pWayPointMan->FindWaypointByGuid(anchor_id) &&
                   pWayPointMan->FindWaypointByGuid(second.identity) == second_mark &&
-                  NavObj_dB::GetInstance().UpdateRoutePoint(original_mark) &&
                   NavObj_dB::GetInstance().UpdateRoutePoint(second_mark) &&
                   NavObj_dB::GetInstance().UpdateRoute(test_route),
-              "Both temporary and user anchor marks remain registered and persisted");
-        // Explicit test cleanup, separate from the non-destructive transition.
-        Check(DeleteWaypoint(Mark(anchor_id)).ok && DeleteWaypoint(Mark(second.identity)).ok,
-              "Remove preserved disposable fixture marks explicitly");
+              "Activation removes only the SKAGER temporary anchor mark; the user mark persists");
+        // Explicit test cleanup of the preserved user fixture mark.
+        Check(DeleteWaypoint(Mark(second.identity)).ok,
+              "Remove preserved disposable user fixture mark explicitly");
         const auto restarted = StartAnchor(selected, 50);
         Check(restarted.ok && !g_pRouteMan->GetpActiveRoute(),
               "Returning to anchor stops the route without deleting it");
         anchor_id = restarted.identity;
         Record("Confirmed route/anchor exclusion, cancel, stale selections, both watches and native mark persistence");
+      }
+      {
+        // A mark held in a transient chart edit (touch drag handle) must not be
+        // silently retained: the watch stays armed and the user is told why.
+        auto *held = pWayPointMan->FindWaypointByGuid(anchor_id);
+        held->m_bRPIsBeingEdited = true;
+        Check(!ClearAnchor(anchor_id).ok && pAnchorWatchPoint1 == held &&
+                  pWayPointMan->FindWaypointByGuid(anchor_id) == held,
+              "Busy owned anchor mark keeps the watch instead of leaving a stray mark");
+        held->m_bRPIsBeingEdited = false;
       }
       Check(ClearAnchor(anchor_id).ok, "Clear upstream watch");
       Check(!ClearAnchor(anchor_id).ok, "Cleared watch cannot be reused");

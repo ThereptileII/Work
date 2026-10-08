@@ -120,8 +120,11 @@ void OpenCPNPilot::Configure(const adapters::St4000Binding &binding) {
 }
 adapters::PilotFeedback OpenCPNPilot::GetState() const {
   MainThread();
-  auto feedback = !binding_.name.empty() ? pilot_.GetState()
-                                        : status_.GetState(vessel::Clock::now());
+  // A saved NAME or status-address binding uses the configured adapter;
+  // otherwise status comes from passive discovery (display only).
+  const bool bound = !binding_.name.empty() || !binding_.address.empty();
+  auto feedback = bound ? pilot_.GetState()
+                        : status_.GetState(vessel::Clock::now());
   if (awaiting_serial_write_) {
     auto *serial = dynamic_cast<CommDriverN2KSerial *>(Driver(binding_.interface_id));
     const auto state = serial ? serial->GetSerialState() : N2kSerialState::Snapshot{};
@@ -134,8 +137,13 @@ adapters::PilotFeedback OpenCPNPilot::GetState() const {
 }
 std::string OpenCPNPilot::Description() const {
   MainThread();
-  return !binding_.name.empty() ? pilot_.Status()
-                                   : status_.Description(vessel::Clock::now());
+  return !binding_.name.empty() || !binding_.address.empty()
+             ? pilot_.Status()
+             : status_.Description(vessel::Clock::now());
+}
+std::optional<adapters::St4000Binding> OpenCPNPilot::DetectedBinding() const {
+  MainThread();
+  return status_.Detected(vessel::Clock::now());
 }
 PilotStatusDiscovery::Diagnostics
 OpenCPNPilot::DiscoveryDiagnostics(vessel::Time now) const {

@@ -476,3 +476,45 @@ The orientation correction and focused core/private source evidence are in
 `docs/evidence/scrum264-oriented-light-aliases/README.md`. Actual revised
 red/green ENC captures pass in the bounded [Linux review](../evidence/scrum264-colored-lights-5c05-linux/README.md);
 native/private-chart/boat qualification remains open.
+
+## 2026-10-07 boat-feedback increments (not yet compiled or reviewed)
+
+**Waypoints (SCRUM-318/319).** All route points use the prototype
+`.map-waypoint`: r=10 ring, stroke 2, floating fill, 8px/650 ordinal. The active
+next point is a solid route-ink disc with a floating-colour ordinal and a halo,
+and it does not blink. Passed points recede (ring and ordinal mixed 55% toward
+the fill). Shared points, repeated points and routes longer than 99 points get
+an unnumbered marker with a centre dot; no ordinal is guessed or truncated.
+Selection draws a halo ring instead of the legacy highlight box. Inactive and
+selected routes use the same inks as their route line. Standalone waypoints
+with a generic icon use the prototype saved-waypoint marker: r=9 ring, a vector
+flag glyph (no font fallback), and a 10px/650 route-ink name 24 px below.
+Meaningful icons, MOB, anchor watch, layers and custom-styled routes keep stock
+artwork.
+
+**Predictor (SCRUM-321).** Verified XNav presentation now owns the COG
+predictor paint (1.2 px, 5/5 dash, .65) regardless of OpenCPN predictor pen
+preferences, which still apply in Standard/Legacy/Safe. This supersedes the
+SCRUM-239 factory-equivalence ownership; geometry, time horizon and validity
+remain upstream. The legacy HDT pointer is replaced by an XNav heading line
+(1 px, 2/4 dash, .5) whose length uses the same speed/time horizon, with a
+fixed direction tick below 0.2 kn.
+
+**Night navigation aids (SCRUM-323).** In the pinned NIGHT table the aid inks
+CHRED/CHGRN/CHYLW/CHWHT/LITRD/LITGN/LITYW become the Day ink x 0.62, which keeps
+each hue exactly. Contrast against Night water rises from about 1.1:1 to
+2.5:1 (red) up to 5.6:1 (white). Night sprite pixels change only where the
+same-coordinate Day pixel is chromatic (channel spread >= 48) with identical
+alpha; they become that Day pixel x 0.62. Neutral pixels, alpha, geometry, Day,
+Dusk and owned artwork tiles are unchanged. See `tools/chart_night_aids.py`.
+Physical boat-display contrast remains the acceptance gate.
+
+**Zoom declutter (SCRUM-317).** `application/ChartDeclutter.h` defines one
+hierarchy for every theme: Full below 1:150 000, Reduced from 1:150 000
+(waypoint and online AIS names hidden), Overview from 1:600 000 (compact r=5
+waypoint markers without ordinals or flag). Active and selected points always
+keep full detail. No target, waypoint, own-ship or alarm is hidden, and the
+online AIS provenance dot is kept. XNav mode also enforces S-52 SCAMIN and
+super-SCAMIN at render time, including for chart plugins, without writing the
+user's stored preferences. Before/after frame time and CPU on the boat PC are
+still required.

@@ -9,8 +9,9 @@ namespace opennav::ais {
 namespace {
 class WindowsCredentials final : public IAisCredentials {
 public:
-  explicit WindowsCredentials(std::wstring target)
-      : target_(std::move(target)) {}
+  explicit WindowsCredentials(std::wstring target,
+                              std::wstring user = L"SKAGER AISStream")
+      : target_(std::move(target)), user_(std::move(user)) {}
   CredentialResult Read() const override {
     CredentialResult result;
     PCREDENTIALW credential = nullptr;
@@ -45,7 +46,7 @@ public:
     entry.TargetName = const_cast<wchar_t *>(target_.c_str());
     entry.Persist =
         CRED_PERSIST_LOCAL_MACHINE; // this user, this PC; no roaming
-    entry.UserName = const_cast<wchar_t *>(L"SKAGER AISStream");
+    entry.UserName = const_cast<wchar_t *>(user_.c_str());
     entry.CredentialBlob =
         reinterpret_cast<LPBYTE>(const_cast<char *>(key.View().data()));
     entry.CredentialBlobSize = static_cast<DWORD>(key.View().size());
@@ -68,11 +69,15 @@ public:
   }
 
 private:
-  std::wstring target_;
+  std::wstring target_, user_;
 };
 } // namespace
 std::unique_ptr<IAisCredentials> CreateAisCredentials() {
   return std::make_unique<WindowsCredentials>(L"OpenNavX/AISStream/v1");
+}
+std::unique_ptr<IAisCredentials> CreateWeatherCredentials() {
+  return std::make_unique<WindowsCredentials>(L"OpenNavX/GRIBstream/v1",
+                                              L"SKAGER GRIBstream");
 }
 #ifdef OPENNAV_CREDENTIAL_TEST_SCOPE
 std::unique_ptr<IAisCredentials>

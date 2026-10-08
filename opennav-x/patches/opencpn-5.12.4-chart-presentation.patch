@@ -3875,3 +3875,585 @@ diff --git a/gui/src/route_point_gui.cpp b/gui/src/route_point_gui.cpp
        !opennav::integration::DrawChartRouteWaypoint(
            dc, *canvas, r.x, r.y, skager_ordinal)) {
      int glw, glh;
+diff --git i/gui/include/gui/chcanv.h w/gui/include/gui/chcanv.h
+index 7ba0f1c5c..f62a6c399 100644
+--- i/gui/include/gui/chcanv.h
++++ w/gui/include/gui/chcanv.h
+@@ -508,6 +508,10 @@ public:
+   void SetOwnShipState(ownship_state_t state) { m_ownship_state = state; }
+ #ifdef OPENNAV_X
+   ownship_state_t GetOwnShipState() const { return m_ownship_state; }
++  // XNav primary selection: an explicit click/tap (not a pan) on an AIS
++  // target, waypoint or route opens its owned card. Returns false when
++  // nothing selectable is under the pointer, preserving normal chart input.
++  bool XNavPrimarySelect(int event_x, int event_y);
+ #endif
+   void SetCursorStatus(double cursor_lat, double cursor_lon);
+   void GetCursorLatLon(double *lat, double *lon);
+diff --git i/gui/src/chcanv.cpp w/gui/src/chcanv.cpp
+index 20326e627..375378535 100644
+--- i/gui/src/chcanv.cpp
++++ w/gui/src/chcanv.cpp
+@@ -4146,8 +4146,9 @@ void ChartCanvas::OnRolloverPopupTimerEvent(wxTimerEvent &event) {
+               s << _T("   ----   ----");
+           }
+ #ifdef OPENNAV_X
+-          if (!m_routeState && (!m_pAISRolloverWin || !m_pAISRolloverWin->IsActive()))
+-            opennav::ShowRouteContext(pr->GetGUID().ToStdString(wxConvUTF8), true);
++          // Hover only indicates a selectable route. The XNav route card opens
++          // on an explicit click/tap (XNavPrimarySelect), never on rollover.
++          if (opennav::IsXNav() && !g_btouch) SetCursor(wxCURSOR_HAND);
+ #endif
+           m_pRouteRolloverWin->SetString(s);
+ 
+@@ -6132,6 +6133,50 @@ void ChartCanvas::ShipIndicatorsDraw(ocpnDC &dc, int img_height,
+     }
+   }
+ 
++#ifdef OPENNAV_X
++  // SCRUM-321: XNav paints the heading line itself. Its length follows the
++  // same speed/time horizon as the COG predictor (SOG x predictor minutes),
++  // instead of the fixed-distance legacy HDT pointer. With speed unavailable
++  // or below 0.2 kn only a short heading tick is shown: no invented projection.
++  // Stale/missing heading (NaN gHdt) draws nothing, exactly as upstream.
++  if (xnav_cog_style && !std::isnan(gHdt) && m_ownship_state == SHIP_NORMAL &&
++      g_OwnShipIconType == 0 && !m_pos_image_user) {
++    b_render_hdt = false;
++    const double sx = lGPSPoint.m_x + GPSOffsetPixels.x;
++    const double sy = lGPSPoint.m_y + GPSOffsetPixels.y;
++    double ex = sx, ey = sy;
++    bool have_end = false;
++    if (!std::isnan(gSog) && gSog >= 0.2 && g_ownship_predictor_minutes > 0) {
++      double end_lat, end_lon;
++      ll_gc_ll(gLat, gLon, gHdt, gSog * g_ownship_predictor_minutes / 60.,
++               &end_lat, &end_lon);
++      wxPoint end;
++      GetCanvasPointPix(end_lat, end_lon, &end);
++      ex = end.x + GPSOffsetPixels.x;
++      ey = end.y + GPSOffsetPixels.y;
++      have_end = std::hypot(ex - sx, ey - sy) >= img_height / 2;
++    }
++    if (!have_end) {
++      // Direction only: project a short geodesic step to get the screen
++      // bearing (honours chart rotation), then draw a fixed-length tick.
++      double step_lat, step_lon;
++      ll_gc_ll(gLat, gLon, gHdt, .01, &step_lat, &step_lon);
++      wxPoint step;
++      GetCanvasPointPix(step_lat, step_lon, &step);
++      const double dx = step.x + GPSOffsetPixels.x - sx;
++      const double dy = step.y + GPSOffsetPixels.y - sy;
++      const double length = std::hypot(dx, dy);
++      if (length > 0) {
++        const double tick = img_height / 2. + FromDIP(24);
++        ex = sx + dx / length * tick;
++        ey = sy + dy / length * tick;
++        have_end = true;
++      }
++    }
++    if (have_end)
++      opennav::integration::DrawChartHeadingPredictor(dc, *this, sx, sy, ex, ey);
++  }
++#endif
+   //      HDT Predictor
+   if (b_render_hdt) {
+     float hdt_dash_length = ref_dim * 0.4;
+@@ -8184,9 +8229,55 @@ void ChartCanvas::CallPopupMenu(int x, int y) {
+   // Seth: Is this refresh needed?
+   Refresh(false);  // needed for MSW, not GTK  Why??
+ }
++#ifdef OPENNAV_X
++namespace {
++// Pointer-down state for XNav primary selection. Kept out of ChartCanvas so
++// the shared header layout is identical for every translation unit.
++struct XNavPress {
++  const ChartCanvas *canvas = nullptr;
++  wxPoint at;
++  bool valid = false;
++  bool tap = false;  // Pointer LeftUp still eligible after stock handling.
++};
++XNavPress g_xnav_press;
++}  // namespace
++#endif
++
+ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
+   // For now just bail out completely if the point clicked is not on the chart
+   if (std::isnan(m_cursor_lat)) return false;
++#ifdef OPENNAV_X
++  if (opennav::IsXNav()) {
++    if (event.LeftDown()) {
++      g_xnav_press = {this, event.GetPosition(), true};
++    } else if (event.Dragging() && g_xnav_press.valid) {
++      // Touch/pointer slop: movement beyond it is a pan, never a selection.
++      const wxPoint d = event.GetPosition() - g_xnav_press.at;
++      const int slop = FromDIP(g_btouch ? 12 : 5);
++      if (g_xnav_press.canvas != this || d.x * d.x + d.y * d.y > slop * slop)
++        g_xnav_press.valid = false;
++    } else if (event.LeftUp()) {
++      g_xnav_press.tap = g_xnav_press.valid && g_xnav_press.canvas == this &&
++                         !m_routeState && !m_bMeasure_Active &&
++                         !m_bRoutePoinDragging;
++      g_xnav_press.valid = false;
++      // Touch selects points for dragging on LeftUp. Select first unless a
++      // point is already in its drag-handle edit state, so a tap opens the
++      // card without leaving the point stuck in OpenCPN edit mode.
++      if (g_btouch && g_xnav_press.tap && !m_pRoutePointEditTarget &&
++          !m_bRouteEditing && !m_bMarkEditing) {
++        g_xnav_press.tap = false;
++        int ex, ey;
++        event.GetPosition(&ex, &ey);
++        if (XNavPrimarySelect(ex, ey)) {
++          // The selection consumed the tap: no pan, recenter or rollover.
++          m_bChartDragging = false;
++          return true;
++        }
++      }
++    }
++  }
++#endif
+ 
+   //          Mouse Clicks
+   bool ret = false;  // return true if processed
+@@ -9983,6 +10074,18 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
+       m_bRoutePoinDragging = false;
+     }  // !btouch
+ 
++#ifdef OPENNAV_X
++    // Pointer click: stock LeftUp handling has ended any mark/route press
++    // without a drag, so the edit state is clean before the card opens.
++    if (opennav::IsXNav() && !g_btouch && g_xnav_press.tap) {
++      g_xnav_press.tap = false;
++      if (XNavPrimarySelect(mx, my)) {
++        m_bChartDragging = false;
++        return true;
++      }
++    }
++    g_xnav_press.tap = false;
++#endif
+     if (ret) return true;
+   }  // left up
+ 
+@@ -10863,6 +10966,77 @@ void pupHandler_PasteTrack() {
+   gFrame->RefreshAllCanvas(false);
+ }
+ 
++#ifdef OPENNAV_X
++bool ChartCanvas::XNavPrimarySelect(int event_x, int event_y) {
++  if (!opennav::IsXNav() || m_routeState || m_bMeasure_Active) return false;
++  const double slat = m_cursor_lat, slon = m_cursor_lon;
++  if (std::isnan(slat) || std::isnan(slon)) return false;
++  SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue());
++  // Squared screen distance from the pointer; ties keep a stable order.
++  const auto distance = [this, event_x, event_y](double lat, double lon) {
++    wxPoint p;
++    GetCanvasPointPix(lat, lon, &p);
++    const double dx = p.x - event_x * m_displayScale;
++    const double dy = p.y - event_y * m_displayScale;
++    return dx * dx + dy * dy;
++  };
++  // 1. Onboard AIS (same priority as the stock context menu). Overlapping
++  //    targets resolve deterministically: nearest symbol, then lowest MMSI.
++  if (m_bShowAIS && g_pAIS && pSelectAIS) {
++    SelectableItemList list =
++        pSelectAIS->FindSelectionList(ctx, slat, slon, SELTYPE_AISTARGET);
++    int best_mmsi = 0;
++    double best = 0;
++    for (auto *node = list.GetFirst(); node; node = node->GetNext()) {
++      SelectItem *item = node->GetData();
++      const int mmsi = item->GetUserData();
++      if (mmsi <= 0 || !g_pAIS->Get_Target_Data_From_MMSI(mmsi)) continue;
++      const double d = distance(item->m_slat, item->m_slon);
++      if (!best_mmsi || d < best || (d == best && mmsi < best_mmsi)) {
++        best_mmsi = mmsi;
++        best = d;
++      }
++    }
++    if (best_mmsi && opennav::ShowAisCard(best_mmsi)) {
++      m_FoundAIS_MMSI = best_mmsi;
++      return true;
++    }
++  }
++  // 2. Online AIS overlay targets (owned hit-test, same as the context path).
++  if (opennav::ShowOnlineAisAt(*this, event_x, event_y)) return true;
++  // 3. Waypoints and route points: the nearest visible point.
++  if (pSelect) {
++    SelectableItemList list =
++        pSelect->FindSelectionList(ctx, slat, slon, SELTYPE_ROUTEPOINT);
++    RoutePoint *best_point = nullptr;
++    double best = 0;
++    for (auto *node = list.GetFirst(); node; node = node->GetNext()) {
++      auto *point = (RoutePoint *)node->GetData()->m_pData1;
++      if (!point || !RoutePointGui(*point).IsVisibleSelectable(this)) continue;
++      const double d = distance(point->m_lat, point->m_lon);
++      if (!best_point || d < best) {
++        best_point = point;
++        best = d;
++      }
++    }
++    if (best_point && opennav::ShowNavigationObjectCard(
++                          best_point->m_GUID.ToStdString(wxConvUTF8), false))
++      return true;
++    // 4. Route legs: the first visible route under the pointer.
++    list = pSelect->FindSelectionList(ctx, slat, slon, SELTYPE_ROUTESEGMENT);
++    for (auto *node = list.GetFirst(); node; node = node->GetNext()) {
++      auto *route = (Route *)node->GetData()->m_pData3;
++      if (!route || !route->IsVisible() || !g_pRouteMan->IsRouteValid(route))
++        continue;
++      if (opennav::ShowRouteContext(route->GetGUID().ToStdString(wxConvUTF8)))
++        return true;
++      break;
++    }
++  }
++  return false;
++}
++#endif
++
+ bool ChartCanvas::InvokeCanvasMenu(int x, int y, int seltype) {
+ #ifdef OPENNAV_X
+   // Use upstream hit-testing and geographic conversion. OpenNav receives only
+@@ -11549,8 +11723,16 @@ void ChartCanvas::UpdateCanvasS52PLIBConfig() {
+     v[_T("OpenCPN S52PLIB ShowNationalText")] = ps52plib->m_bShowNationalTexts;
+     v[_T("OpenCPN S52PLIB ShowImportantTextOnly")] =
+         ps52plib->m_bShowS57ImportantTextOnly;
++#ifdef OPENNAV_X
++    // Chart plugins (e.g. o-charts) follow the same XNav declutter policy.
++    v[_T("OpenCPN S52PLIB UseSCAMIN")] =
++        ps52plib->m_bUseSCAMIN || XNavScaminDeclutter();
++    v[_T("OpenCPN S52PLIB UseSUPER_SCAMIN")] =
++        ps52plib->m_bUseSUPER_SCAMIN || XNavScaminDeclutter();
++#else
+     v[_T("OpenCPN S52PLIB UseSCAMIN")] = ps52plib->m_bUseSCAMIN;
+     v[_T("OpenCPN S52PLIB UseSUPER_SCAMIN")] = ps52plib->m_bUseSUPER_SCAMIN;
++#endif
+     v[_T("OpenCPN S52PLIB SymbolStyle")] = ps52plib->GetEffectiveSymbolStyle();
+     v[_T("OpenCPN S52PLIB BoundaryStyle")] = ps52plib->m_nBoundaryStyle;
+     v[_T("OpenCPN S52PLIB ColorShades")] =
+diff --git i/gui/src/ocpn_frame.cpp w/gui/src/ocpn_frame.cpp
+index a0a3635ef..d68577111 100644
+--- i/gui/src/ocpn_frame.cpp
++++ w/gui/src/ocpn_frame.cpp
+@@ -8108,6 +8108,7 @@ void LoadS57() {
+ 
+ #ifdef OPENNAV_X
+   ps52plib = opennav::integration::CreateChartPresentation(plib_data, b_force_legacy);
++  SetXNavScaminDeclutter(opennav::IsXNav());
+ #else
+   ps52plib = new s52plib(plib_data, b_force_legacy);
+ #endif
+diff --git i/gui/src/pluginmanager.cpp w/gui/src/pluginmanager.cpp
+index f5a249389..bfac65a43 100644
+--- i/gui/src/pluginmanager.cpp
++++ w/gui/src/pluginmanager.cpp
+@@ -1813,8 +1813,16 @@ void PlugInManager::SendS52ConfigToAllPlugIns(bool bReconfig) {
+     v[_T("OpenCPN S52PLIB ShowNationalText")] = ps52plib->m_bShowNationalTexts;
+     v[_T("OpenCPN S52PLIB ShowImportantTextOnly")] =
+         ps52plib->m_bShowS57ImportantTextOnly;
++#ifdef OPENNAV_X
++    // Chart plugins (e.g. o-charts) follow the same XNav declutter policy.
++    v[_T("OpenCPN S52PLIB UseSCAMIN")] =
++        ps52plib->m_bUseSCAMIN || XNavScaminDeclutter();
++    v[_T("OpenCPN S52PLIB UseSUPER_SCAMIN")] =
++        ps52plib->m_bUseSUPER_SCAMIN || XNavScaminDeclutter();
++#else
+     v[_T("OpenCPN S52PLIB UseSCAMIN")] = ps52plib->m_bUseSCAMIN;
+     v[_T("OpenCPN S52PLIB UseSUPER_SCAMIN")] = ps52plib->m_bUseSUPER_SCAMIN;
++#endif
+     v[_T("OpenCPN S52PLIB SymbolStyle")] = ps52plib->GetEffectiveSymbolStyle();
+     v[_T("OpenCPN S52PLIB BoundaryStyle")] = ps52plib->m_nBoundaryStyle;
+     v[_T("OpenCPN S52PLIB ColorShades")] =
+diff --git i/gui/src/route_point_gui.cpp w/gui/src/route_point_gui.cpp
+index f1a9ba08d..c4cb702e2 100644
+--- i/gui/src/route_point_gui.cpp
++++ w/gui/src/route_point_gui.cpp
+@@ -98,7 +98,11 @@ void RoutePointGui::Draw(ocpnDC &dc, ChartCanvas *canvas, wxPoint *rpn,
+   const int skager_label_ordinal = opennav::integration::ChartRouteLabelOrdinal(
+       *canvas, m_point, WayPointmanGui(*pWayPointMan).IsPinnedRouteDiamond(
+           m_point.m_IconName, m_point.m_pbmIcon));
+-  const int skager_ordinal = m_point.m_bIsActive ? 0 : skager_label_ordinal;
++  // XNav marker for route points, the active/passed points and standalone
++  // waypoints; 0 keeps the stock icon (see ChartWaypointMarker).
++  const int skager_ordinal = opennav::integration::ChartWaypointMarker(
++      *canvas, m_point, WayPointmanGui(*pWayPointMan).IsPinnedRouteDiamond(
++          m_point.m_IconName, m_point.m_pbmIcon));
+   wxBitmap *pbm;
+   if ((m_point.m_bIsActive) && (m_point.m_IconName != _T("mob")))
+     pbm = pWayPointMan->GetIconBitmap(_T ( "activepoint" ));
+@@ -128,8 +132,10 @@ void RoutePointGui::Draw(ocpnDC &dc, ChartCanvas *canvas, wxPoint *rpn,
+   if (const int anchor_extent=opennav::integration::ChartAnchorWatchExtent(*canvas,m_point,WayPointmanGui(*pWayPointMan).IsPinnedAnchor(m_point.m_IconName,m_point.m_pbmIcon)))
+     r1.Union(wxRect(r.x-anchor_extent,r.y-anchor_extent,2*anchor_extent,2*anchor_extent));
+   if (skager_ordinal) {
+-    const int extent = opennav::integration::ChartRouteWaypointExtent(*canvas);
+-    r1.Union(wxRect(r.x-extent, r.y-extent, 2*extent, 2*extent));
++    auto marker_bounds = opennav::integration::ChartWaypointMarkerBounds(
++        *canvas, m_point, skager_ordinal);
++    marker_bounds.Offset(r);
++    r1.Union(marker_bounds);
+   }
+ 
+   if (m_point.m_bShowName) {
+@@ -182,19 +188,21 @@ void RoutePointGui::Draw(ocpnDC &dc, ChartCanvas *canvas, wxPoint *rpn,
+   }
+ 
+   //  Highlite any selected point
+-  if (m_point.m_bPtIsSelected || m_point.m_bRPIsBeingEdited) {
++  if ((m_point.m_bPtIsSelected || m_point.m_bRPIsBeingEdited) && !skager_ordinal) {
+     AlphaBlending(dc, r.x + hilitebox.x, r.y + hilitebox.y, hilitebox.width,
+                   hilitebox.height, radius, hi_colour, transparency);
+   }
+ 
+   bool bDrawHL = false;
+ 
+-  if (m_point.m_bBlink && (gFrame->nBlinkerTick & 1)) bDrawHL = true;
++  // The XNav active point is steady; only stock icons keep the blink.
++  if (m_point.m_bBlink && (gFrame->nBlinkerTick & 1) && !skager_ordinal)
++    bDrawHL = true;
+ 
+   if ((!bDrawHL) && (NULL != m_point.m_pbmIcon)) {
+     if (!opennav::integration::DrawChartAnchorMark(dc, *canvas, m_point, r.x, r.y,WayPointmanGui(*pWayPointMan).IsPinnedAnchor(m_point.m_IconName,m_point.m_pbmIcon)) &&
+-        !opennav::integration::DrawChartRouteWaypoint(
+-            dc, *canvas, r.x, r.y, skager_ordinal))
++        !opennav::integration::DrawChartWaypointMarker(
++            dc, *canvas, &m_point, r.x, r.y, skager_ordinal))
+       dc.DrawBitmap(*pbm, r.x - pbm->GetWidth()/2, r.y - pbm->GetHeight()/2, true);
+     // on MSW, the dc Bounding box is not updated on DrawBitmap() method.
+     // Do it explicitely here for all platforms.
+@@ -204,6 +212,7 @@ void RoutePointGui::Draw(ocpnDC &dc, ChartCanvas *canvas, wxPoint *rpn,
+ 
+   if (!opennav::integration::DrawChartRouteLabel(
+           dc, *canvas, m_point, r.x, r.y, skager_label) &&
++      !opennav::integration::ChartWaypointMarkerOwnsName(skager_ordinal) &&
+       m_point.m_bShowName && m_point.m_MarkName.Length()) {
+     if (m_point.m_pMarkFont) {
+       dc.SetFont(*m_point.m_pMarkFont);
+@@ -272,10 +281,15 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
+   const int skager_label_ordinal = opennav::integration::ChartRouteLabelOrdinal(
+       *canvas, m_point, WayPointmanGui(*pWayPointMan).IsPinnedRouteDiamond(
+           m_point.m_IconName, m_point.m_pbmIcon));
+-  const int skager_ordinal = m_point.m_bIsActive ? 0 : skager_label_ordinal;
++  // XNav marker for route points, the active/passed points and standalone
++  // waypoints; 0 keeps the stock icon (see ChartWaypointMarker).
++  const int skager_ordinal = opennav::integration::ChartWaypointMarker(
++      *canvas, m_point, WayPointmanGui(*pWayPointMan).IsPinnedRouteDiamond(
++          m_point.m_IconName, m_point.m_pbmIcon));
+   // Eligibility/scale may change without a viewport change (selection, route
+   // activation, mark-size preference). Rebuild the larger presentation bounds.
+-  if (skager_label_ordinal || m_point.m_skagerLabel) m_point.m_wpBBox.Invalidate();
++  if (skager_label_ordinal || skager_ordinal || m_point.m_skagerLabel)
++    m_point.m_wpBBox.Invalidate();
+ 
+   if (m_point.m_wpBBox.GetValid() &&
+       vp.view_scale_ppm == m_point.m_wpBBox_view_scale_ppm &&
+@@ -333,8 +347,10 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
+   if (const int anchor_extent=opennav::integration::ChartAnchorWatchExtent(*canvas,m_point,WayPointmanGui(*pWayPointMan).IsPinnedAnchor(m_point.m_IconName,m_point.m_pbmIcon)))
+     r1.Union(wxRect(r.x-anchor_extent,r.y-anchor_extent,2*anchor_extent,2*anchor_extent));
+   if (skager_ordinal) {
+-    const int extent = opennav::integration::ChartRouteWaypointExtent(*canvas);
+-    r1.Union(wxRect(r.x-extent, r.y-extent, 2*extent, 2*extent));
++    auto marker_bounds = opennav::integration::ChartWaypointMarkerBounds(
++        *canvas, m_point, skager_ordinal);
++    marker_bounds.Offset(r);
++    r1.Union(marker_bounds);
+   }
+ 
+   wxRect r3 = r1;
+@@ -415,7 +431,7 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
+   // ocpnDC dc;
+ 
+   //  Highlite any selected point
+-  if (m_point.m_bPtIsSelected) {
++  if (m_point.m_bPtIsSelected && !skager_ordinal) {
+     wxColour hi_colour;
+     if (m_point.m_bBlink) {
+       wxPen *pen = g_pRouteMan->GetActiveRoutePointPen();
+@@ -430,12 +446,14 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
+ 
+   bool bDrawHL = false;
+ 
+-  if (m_point.m_bBlink && (gFrame->nBlinkerTick & 1)) bDrawHL = true;
++  // The XNav active point is steady; only stock icons keep the blink.
++  if (m_point.m_bBlink && (gFrame->nBlinkerTick & 1) && !skager_ordinal)
++    bDrawHL = true;
+ 
+   if ((!bDrawHL) && (NULL != m_point.m_pbmIcon) &&
+       !opennav::integration::DrawChartAnchorMark(dc, *canvas, m_point, r.x, r.y,WayPointmanGui(*pWayPointMan).IsPinnedAnchor(m_point.m_IconName,m_point.m_pbmIcon)) &&
+-      !opennav::integration::DrawChartRouteWaypoint(
+-          dc, *canvas, r.x, r.y, skager_ordinal)) {
++      !opennav::integration::DrawChartWaypointMarker(
++          dc, *canvas, &m_point, r.x, r.y, skager_ordinal)) {
+     int glw, glh;
+     unsigned int IconTexture =
+         WayPointmanGui(*pWayPointMan).GetIconTexture(pbm, glw, glh);
+@@ -493,6 +511,7 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
+ 
+   if (!opennav::integration::DrawChartRouteLabel(
+           dc, *canvas, m_point, r.x, r.y, skager_label) &&
++      !opennav::integration::ChartWaypointMarkerOwnsName(skager_ordinal) &&
+       m_point.m_bShowName && m_point.m_pMarkFont) {
+     int w = m_point.m_NameExtents.x, h = m_point.m_NameExtents.y;
+     if (!m_point.m_iTextTexture && w && h) {
+diff --git i/libs/s52plib/src/s52plib.cpp w/libs/s52plib/src/s52plib.cpp
+index d8a195b1b..c98434c69 100755
+--- i/libs/s52plib/src/s52plib.cpp
++++ w/libs/s52plib/src/s52plib.cpp
+@@ -156,6 +156,17 @@ WX_DEFINE_LIST(TextObjList);
+ 
+ //    Implement all arrays
+ #include <wx/arrimpl.cpp>
++
++#ifdef OPENNAV_X
++namespace {
++bool xnav_scamin_declutter = false;
++}
++void SetXNavScaminDeclutter(bool enabled) { xnav_scamin_declutter = enabled; }
++bool XNavScaminDeclutter() { return xnav_scamin_declutter; }
++#define OPENNAV_FORCE_SCAMIN xnav_scamin_declutter
++#else
++#define OPENNAV_FORCE_SCAMIN false
++#endif
+ WX_DEFINE_OBJARRAY(ArrayOfNoshow);
+ 
+ //  S52_TextC Implementation
+@@ -5909,7 +5920,7 @@ void s52plib::draw_lc_poly(wxDC *pdc, wxColor &color, int width, wxPoint *ptp,
+ int s52plib::RenderMPS(ObjRazRules *rzRules, Rules *rules) {
+   if (!m_bShowSoundg) return 0;
+ 
+-  if (m_bUseSCAMIN) {
++  if (m_bUseSCAMIN || OPENNAV_FORCE_SCAMIN) {
+     if (vp_plib.chart_scale > rzRules->obj->Scamin) return 0;
+   }
+ 
+@@ -10006,7 +10017,7 @@ bool s52plib::ObjectRenderCheckCat(ObjRazRules *rzRules) {
+     //      = 022608187ED20ACC. We shall explicitly ignore SCAMIN filtering for
+     //      these types of objects.
+ 
+-    if (m_bUseSCAMIN) {
++    if (m_bUseSCAMIN || OPENNAV_FORCE_SCAMIN) {
+       if ((DISPLAYBASE == rzRules->LUP->DISC) ||
+           (PRIO_GROUP1 == rzRules->LUP->DPRI))
+         b_visible = true;
+@@ -10042,7 +10053,7 @@ bool s52plib::ObjectRenderCheckCat(ObjRazRules *rzRules) {
+       }
+ 
+       // Check for SUPER_SCAMIN, apply if enabled
+-      if (m_bUseSUPER_SCAMIN){
++      if (m_bUseSUPER_SCAMIN || OPENNAV_FORCE_SCAMIN){
+         if (rzRules->obj->SuperScamin < 0){
+           if ( (strncmp(rzRules->obj->FeatureName, "LNDARE", 6) &&
+                 strncmp(rzRules->obj->FeatureName, "DEPARE", 6) &&
+diff --git i/libs/s52plib/src/s52plib.h w/libs/s52plib/src/s52plib.h
+index 26548b85a..fcaa36b5e 100755
+--- i/libs/s52plib/src/s52plib.h
++++ w/libs/s52plib/src/s52plib.h
+@@ -183,6 +183,14 @@ typedef struct {
+ //    s52plib definition
+ //-----------------------------------------------------------------------------
+ 
++#ifdef OPENNAV_X
++// SCRUM-317: XNav enforces SCAMIN and super-SCAMIN declutter at render time.
++// The user's stored S-52 preferences are not changed and still apply in
++// Standard/Legacy/Safe. Set once at startup from the selected interface mode.
++void SetXNavScaminDeclutter(bool enabled);
++bool XNavScaminDeclutter();
++#endif
++
+ class s52plib {
+ public:
+   s52plib(const wxString &PLib, bool b_forceLegacy = false, bool allowCwdOverride = true,
+diff --git i/gui/include/gui/route_point_gui.h w/gui/include/gui/route_point_gui.h
+index 7bf9fcf92..79de5f963 100644
+--- i/gui/include/gui/route_point_gui.h
++++ w/gui/include/gui/route_point_gui.h
+@@ -57,6 +57,11 @@ public:
+     return m_point.m_pbmIcon;
+   }
+ 
++#ifdef OPENNAV_X
++  // Repaint only the XNav marker glyph (no label/selection box), e.g. above
++  // route legs. Returns false when the point keeps its stock icon.
++  bool DrawXNavMarker(ocpnDC &dc, ChartCanvas *canvas);
++#endif
+ #ifdef ocpnUSE_GL
+   void DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
+               bool use_cached_screen_coords = false, bool vizOverride = false);
+diff --git i/gui/src/route_gui.cpp w/gui/src/route_gui.cpp
+index 09187f00a..200173f30 100644
+--- i/gui/src/route_gui.cpp
++++ w/gui/src/route_gui.cpp
+@@ -243,7 +243,17 @@ void RouteGui::Draw(ocpnDC &dc, ChartCanvas *canvas, const LLBBox &box) {
+   }
+ #endif
+   draw_pass(nullptr); // Existing normal waypoint/foreground/arrow order.
+-
++#ifdef OPENNAV_X
++  // SCRUM-318: XNav waypoint markers sit above the route line, as in the
++  // prototype (the GL path already draws points after lines). Repaint the
++  // visible points once more after the legs; positions and state unchanged.
++  // Only the marker glyph is repainted: name labels stay below the line so
++  // they never hide the leg itself.
++  if (xnav_route && m_route.m_bVisible)
++    for (auto *node = m_route.pRoutePointList->GetFirst(); node;
++         node = node->GetNext())
++      RoutePointGui(*node->GetData()).DrawXNavMarker(dc, canvas);
++#endif
+ }
+ 
+ void RouteGui::RenderSegment(ocpnDC &dc, int xa, int ya, int xb, int yb,
+diff --git i/gui/src/route_point_gui.cpp w/gui/src/route_point_gui.cpp
+index c4cb702e2..03d6d8850 100644
+--- i/gui/src/route_point_gui.cpp
++++ w/gui/src/route_point_gui.cpp
+@@ -267,6 +267,22 @@ void RoutePointGui::Draw(ocpnDC &dc, ChartCanvas *canvas, wxPoint *rpn,
+   delete pbms;  // the potentially scaled bitmap
+ }
+ 
++#ifdef OPENNAV_X
++bool RoutePointGui::DrawXNavMarker(ocpnDC &dc, ChartCanvas *canvas) {
++  if (!canvas || !pWayPointMan || !IsVisibleSelectable(canvas)) return false;
++  if (m_point.m_IconIsDirty) ReLoadIcon();
++  const int marker = opennav::integration::ChartWaypointMarker(
++      *canvas, m_point, WayPointmanGui(*pWayPointMan).IsPinnedRouteDiamond(
++          m_point.m_IconName, m_point.m_pbmIcon));
++  if (!marker) return false;
++  wxPoint r;
++  canvas->GetCanvasPointPix(m_point.m_lat, m_point.m_lon, &r);
++  if (abs(r.x) == INVALID_COORD || abs(r.y) == INVALID_COORD) return false;
++  return opennav::integration::DrawChartWaypointMarker(dc, *canvas, &m_point,
++                                                       r.x, r.y, marker);
++}
++#endif
++
+ #ifdef ocpnUSE_GL
+ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
+                            bool use_cached_screen_coords, bool bVizOverride) {
+diff --git i/gui/src/route_gui.cpp w/gui/src/route_gui.cpp
+index 200173f30..d4b3718ba 100644
+--- i/gui/src/route_gui.cpp
++++ w/gui/src/route_gui.cpp
+@@ -472,6 +472,28 @@ void RouteGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc) {
+ #ifdef ocpnUSE_GL
+   if (m_route.pRoutePointList->empty()) return;
+ 
++#ifdef OPENNAV_X
++  // SCRUM-318: same order as the software path. Points and their name labels
++  // first, then the legs, then only the XNav marker glyphs on top, so labels
++  // never hide a leg and markers are never crossed by it.
++  if (m_route.m_bVisible && opennav::integration::DefaultChartRouteStyle(m_route)) {
++    for (auto *node = m_route.pRoutePointList->GetFirst(); node;
++         node = node->GetNext()) {
++      RoutePoint *prp = node->GetData();
++      if (vp.GetBBox().ContainsMarge(prp->m_lat, prp->m_lon, .5))
++        RoutePointGui(*prp).DrawGL(vp, canvas, dc);
++    }
++    if (!vp.GetBBox().IntersectOut(m_route.GetBBox()))
++      DrawGLRouteLines(vp, canvas, dc);
++    for (auto *node = m_route.pRoutePointList->GetFirst(); node;
++         node = node->GetNext()) {
++      RoutePoint *prp = node->GetData();
++      if (vp.GetBBox().ContainsMarge(prp->m_lat, prp->m_lon, .5))
++        RoutePointGui(*prp).DrawXNavMarker(dc, canvas);
++    }
++    return;
++  }
++#endif
+   if (!vp.GetBBox().IntersectOut(m_route.GetBBox()) && m_route.m_bVisible)
+     DrawGLRouteLines(vp, canvas, dc);
+ 

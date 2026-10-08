@@ -22,8 +22,10 @@ changes cannot silently select a pilot. The cache is bounded to 32 identities.
 An observed loss is shown as degraded rather than masked by the status-only notice.
 
 This covers the inspected boat bridge's 65379, 65360 and 127250 feedback contract;
-it does not claim support for every AutoTrack device. Without a received address
-claim this session, status remains unavailable. Discovery sends no identity
+it does not claim support for every AutoTrack device. Since SCRUM-295 (2026-10-07)
+vendor-coded 65379 status also identifies a status candidate by its source address
+when no address claim was received this session, as AutoTrack does; see
+[AutoTrack-equivalent discovery](pilot-boat-integration.md#autotrack-equivalent-discovery-scrum-295-2026-10-07). Discovery sends no identity
 requests or equipment commands. Production output and its UI remain unavailable;
 the existing explicitly isolated developer loopback path is separate. Connection
 and plugin configuration remain in OpenCPN preferences.

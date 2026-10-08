@@ -1,8 +1,25 @@
 # SKAGER Beta 2 — release notes
 
-**Version 0.4.0-beta2.3 · Staging candidate · release acceptance pending**
+**Version 0.4.0-beta2.4 · Staging candidate · release acceptance pending**
 
 ## This Staging increment
+
+- Chart: a click or tap opens the AIS, waypoint or route card; hovering no
+  longer opens the route card. Route points and saved waypoints use the SKAGER
+  markers, drawn above the route line. The heading line scales with speed.
+  Buoys, beacons and lights stay visible in Night mode. Names and markers
+  simplify when zoomed out, and chart objects follow scale-based declutter.
+- Routes can be deleted from route details and activated or stopped from the
+  route card. Stopping an anchor watch, or activating a route from anchor,
+  removes the temporary anchor mark; your own waypoints are kept.
+- The autopilot is recognised from its live status, as with AutoTrack, even
+  when this PC started after the pilot. "Use detected pilot" binds it; control
+  permission and per-session enable remain separate explicit steps.
+- Optional forecast wind (GRIBstream, your own API token, off by default):
+  forecast at the boat, an optional chart wind layer and forecast along a
+  route. Forecast wind is advisory and always shown apart from measured wind.
+
+## Earlier in Beta 2
 
 - The first-start boat setup now keeps focus during OpenCPN's delayed frame
   activation, so a button press is not cancelled while the setup sheet is open.

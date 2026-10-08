@@ -12,12 +12,9 @@ p.add_argument('--wx-config',required=True)
 p.add_argument('--output',required=True,type=Path)
 a=p.parse_args();a.output.mkdir(parents=True,exist_ok=True);a.output=a.output.resolve()
 source=(ROOT/'src/integration/ChartPresentation.cpp').read_text()
-start=source.index('void CaptureChartCogPredictorStyle(')
-end=source.index('\n}',start)+2
-capture=source[start:end]
 start=source.index('bool UseChartCogPredictorStyle(')
 end=source.index('bool DrawChartOwnship(',start)
-(a.output/'production-cog.h').write_text(capture+'\n'+source[start:end])
+(a.output/'production-cog.h').write_text(source[start:end])
 html=(ROOT/'docs/design/prototype/index.html').read_text()
 attrs=re.search(r'<path d="M0-21V-100" ([^>]+)',html)[1]
 width=re.search(r'stroke-width="([^"]+)"',attrs)[1]

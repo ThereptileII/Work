@@ -11,6 +11,7 @@ import xml.etree.ElementTree as ET
 
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'tools'))
+import chart_night_aids
 spec=importlib.util.spec_from_file_location('generate',ROOT/'tools/generate-xnav-chart-style.py')
 g=importlib.util.module_from_spec(spec);spec.loader.exec_module(g)
 source=ROOT/'upstream/OpenCPN/data/s57data'
@@ -89,6 +90,11 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
             for x in (116,148,180,212):
                 start=(y*1500+x)*4
                 after[start:start+96]=before[start:start+96]
+        if name==chart_night_aids.SHEET:
+            # SCRUM-323 owned Night aid pixels: exact Day-ink target, then undo.
+            # Each changed pixel was an exact Day red/green/yellow aid ink.
+            restored=chart_night_aids.restore_pixels(day,before,after)
+            check(restored==data['nightNavigationAids']['changedPixels']>1000)
         restore_tiles(before,after)
         check(before[3::4]==after[3::4])
         changed=[i for i in range(0,len(before),4) if before[i:i+4]!=after[i:i+4]]
@@ -186,6 +192,9 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
         for before,after in zip(stock,styled):
             if before.tag=='color' and stock.attrib['name'] in data['palette'] and before.attrib['name'] in g.ALLOWED:
                 check(before.attrib['name']==after.attrib['name'])
+            elif before.tag=='color' and stock.attrib['name']==chart_night_aids.TABLE and before.attrib['name'] in chart_night_aids.ROLES:
+                rgb=tuple(data['nightNavigationAids']['colors'][before.attrib['name']])
+                check(after.attrib=={'name':before.attrib['name'],'r':str(rgb[0]),'g':str(rgb[1]),'b':str(rgb[2])})
             else:check(ET.tostring(before)==ET.tostring(after))
     html=(ROOT/'docs/design/prototype/index.html').read_text()
     for table,selector in [('DAY_BRIGHT','#app'),('DUSK','#app[data-theme=dusk]'),('NIGHT','#app[data-theme=night]')]:
@@ -236,6 +245,22 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
         check(colors['XNBUA'] not in [colors[n] for n in ['DEPDW','DEPMD','DEPMS','DEPVS','DEPIT']])
     for color in g.ALLOWED:
         check(luminance(data['palette']['NIGHT'][color])<luminance(data['palette']['DUSK'][color]))
+    # SCRUM-323: Night aid inks keep their Day hue (uniform scale) and become
+    # visible on the SKAGER Night water; stock S-52 Night inks were not.
+    day_table=a.find("color-tables/color-table[@name='DAY_BRIGHT']")
+    night_stock=a.find("color-tables/color-table[@name='NIGHT']")
+    water=data['palette']['NIGHT']['DEPDW']
+    for role in chart_night_aids.ROLES:
+        day_rgb=tuple(int(day_table.find("color[@name='"+role+"']").get(k)) for k in 'rgb')
+        stock_rgb=tuple(int(night_stock.find("color[@name='"+role+"']").get(k)) for k in 'rgb')
+        lifted=tuple(data['nightNavigationAids']['colors'][role])
+        check(lifted==tuple(round(v*chart_night_aids.FACTOR) for v in day_rgb))
+        check(contrast(lifted,water)>contrast(stock_rgb,water))
+        check(contrast(lifted,water)>=2)
+        check(luminance(lifted)<luminance(day_rgb))
+    # Lateral red and green stay distinct after the lift.
+    aids=data['nightNavigationAids']['colors']
+    check(aids['CHRED'][0]>aids['CHRED'][1] and aids['CHGRN'][1]>aids['CHGRN'][0])
     # Guard the observed invisible dark ink on the new Night water. These
     # numerical checks do not replace actual symbol/hazard review.
     check(data['palette']['DAY_BRIGHT']['CHBLK']==(83,100,95))
@@ -255,6 +280,8 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
     reject(lambda t:t.find("color-tables/color-table[@name='NIGHT']/color[@name='LANDA']").set('r','37'))
     reject(lambda t:t.find("color-tables/color-table[@name='NIGHT']/color[@name='DEPDW']").set('r','11'))
     reject(lambda t:t.find("color-tables/color-table[@name='NIGHT']/color[@name='CHBLK']").set('r','91'))
+    reject(lambda t:t.find("color-tables/color-table[@name='DUSK']/color[@name='CHGRN']").set('r','64'))
+    reject(lambda t:t.find("color-tables/color-table[@name='NIGHT']/color[@name='CHGRN']").set('r','99'))
     reject(lambda t:t.find("color-tables/color-table/color[@name='CHBRN']").set('r','1'))
     reject(lambda t:setattr(t.find("lookups/lookup[@name='OBSTRN']/instruction"),'text','AC(XNBUA)'))
     reject(lambda t:setattr(t.find("lookups/lookup[@id='16']/instruction"),'text',old.replace('AC(CHBRN)','AC(XNBUA)').replace('16120','15110')))

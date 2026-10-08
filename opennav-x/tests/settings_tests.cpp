@@ -85,6 +85,13 @@ void PilotConfiguration() {
   Reject([&] { application::DecodeSettings(bad); });
   bad = old + "\"pilot.permission\" \"manual\"\n";
   Reject([&] { application::DecodeSettings(bad); });
+  // SCRUM-295: address binding round-trips; older records simply lack it.
+  s.pilot = {"Actisense serial", "", true, "204"};
+  decoded = application::DecodeSettings(application::EncodeSettings(s));
+  Check(decoded.pilot.address == "204" && decoded.pilot.name.empty() &&
+            decoded.pilot.permit_control, "Status-address binding persists");
+  s.pilot.address = "255";
+  Reject([&] { application::EncodeSettings(s); });
 }
 void Invalid() {
   auto s = Config();

@@ -2,6 +2,7 @@
 #include "application/NavigationNaming.h"
 #include "chcanv.h"
 #include "integration/NavigationObjects.h"
+#include "integration/WeatherOverlay.h"
 #include "model/navobj_db.h"
 #include "model/route.h"
 #include "model/route_point.h"
@@ -13,6 +14,7 @@
 #include "undo.h"
 #include <cmath>
 #include <wx/log.h>
+#include <wx/thread.h>
 extern RouteManagerDialog *pRouteManagerDialog;
 extern int options_lastPage, options_subpage;
 namespace opennav::integration {
@@ -32,12 +34,49 @@ MakeNavigationActions(MyFrame &frame,
                  wxString::FromUTF8(r.message));
     return r;
   };
-  a.chart_presentation = [&frame] { return CopyChartPresentation(frame); };
-  a.set_chart_ais = [&frame](bool show) { return SetChartAis(frame, show); };
-  a.set_chart_enc_text = [&frame](bool show) { return SetChartEncText(frame, show); };
-  a.set_chart_soundings = [&frame](bool show) { return SetChartSoundings(frame, show); };
-  a.set_chart_orientation = [&frame](application::ChartOrientation mode) {
-    return SetChartOrientation(frame, mode);
+  // Forecast wind is an XNav-owned presentation layer: the layer row reports
+  // the overlay toggle and credential-free forecast state, never OpenCPN data.
+  const auto with_wind = [&frame] {
+    auto state = CopyChartPresentation(frame);
+    if (state.available)
+      state.wind_vectors = {WeatherOverlayVisible(), true, WeatherLayerReason()};
+    return state;
+  };
+  a.chart_presentation = with_wind;
+  a.set_chart_ais = [&frame, with_wind](bool show) {
+    auto r = SetChartAis(frame, show); r.state = with_wind(); return r;
+  };
+  a.set_chart_enc_text = [&frame, with_wind](bool show) {
+    auto r = SetChartEncText(frame, show); r.state = with_wind(); return r;
+  };
+  a.set_chart_soundings = [&frame, with_wind](bool show) {
+    auto r = SetChartSoundings(frame, show); r.state = with_wind(); return r;
+  };
+  a.set_chart_wind = [&frame, with_wind](bool show) {
+    application::ChartPresentationResult r;
+    if (!wxIsMainThread()) {
+      r.command = {false, "Chart presentation requires the application thread"};
+      return r;
+    }
+    SetWeatherOverlayVisible(show);
+    frame.InvalidateAllGL();
+    frame.RefreshAllCanvas(false);
+    r.state = with_wind();
+    const bool ok = r.state.wind_vectors.visible == show;
+    r.command = {ok, ok ? "Chart presentation applied"
+                        : "Chart presentation changed; inspect current state"};
+    return r;
+  };
+  a.weather_time = [] { return WeatherDisplayTime(); };
+  a.set_weather_time = [&frame](std::optional<std::chrono::system_clock::time_point> t) {
+    SetWeatherDisplayTime(t);
+    if (WeatherOverlayVisible()) {
+      frame.InvalidateAllGL();
+      frame.RefreshAllCanvas(false);
+    }
+  };
+  a.set_chart_orientation = [&frame, with_wind](application::ChartOrientation mode) {
+    auto r = SetChartOrientation(frame, mode); r.state = with_wind(); return r;
   };
   a.catalog = CopyNavigationCatalog;
   a.route = CopyNavigationRoute;
@@ -103,6 +142,7 @@ MakeNavigationActions(MyFrame &frame,
   a.delete_waypoint = [result](const auto &p) {
     return result(DeleteWaypoint(p));
   };
+  a.delete_route = [result](const auto &r) { return result(DeleteRoute(r)); };
   a.create_waypoint = [result](const auto &p, const auto &name,
                                const auto &description) {
     return result(CreateWaypoint(p, name, description));

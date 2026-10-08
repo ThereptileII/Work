@@ -32,7 +32,8 @@ private:
   wxPanel *format_ = nullptr, *rows_ = nullptr, *orientation_track_ = nullptr;
   wxPanel *notes_ = nullptr;
   std::vector<std::pair<wxString, int>> note_lines_;
-  std::array<XNavButton *, 3> layers_{}, orientations_{};
+  std::array<XNavButton *, 4> layers_{};  // ENC text, AIS, soundings, wind
+  std::array<XNavButton *, 3> orientations_{};
   XNavButton *style_ = nullptr;
   std::vector<wxPanel *> copies_;
 };

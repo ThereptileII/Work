@@ -1,6 +1,8 @@
 #pragma once
 #include "vessel/AisState.h"
+#include <chrono>
 #include <functional>
+#include <optional>
 #include <vector>
 
 namespace opennav::application {
@@ -100,6 +102,11 @@ struct NavigationActions {
   std::function<ChartPresentationResult(bool)> set_chart_ais, set_chart_enc_text,
       set_chart_soundings;
   std::function<ChartPresentationResult(ChartOrientation)> set_chart_orientation;
+  // SCRUM-328/329: forecast wind chart layer (off by default) and the shared
+  // forecast time step (nullopt = nearest to now). Presentation only.
+  std::function<ChartPresentationResult(bool)> set_chart_wind;
+  std::function<std::optional<std::chrono::system_clock::time_point>()> weather_time;
+  std::function<void(std::optional<std::chrono::system_clock::time_point>)> set_weather_time;
   std::function<CommandResult(int)> view_ais;
   std::function<Catalog()> catalog;
   // One owned selection, or unavailable for a missing/ambiguous identity.
@@ -122,6 +129,8 @@ struct NavigationActions {
                               const std::string &)>
       edit_waypoint;
   std::function<CommandResult(const Waypoint &)> delete_waypoint;
+  // Inactive, unprotected route only; shared/saved marks are kept by OpenCPN.
+  std::function<CommandResult(const Route &)> delete_route;
   std::function<CommandResult(Coordinate, const std::string &,
                               const std::string &)>
       create_waypoint;

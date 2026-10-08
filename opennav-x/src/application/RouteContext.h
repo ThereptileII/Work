@@ -6,6 +6,8 @@ struct RouteContextView {
   std::string id, name, status, departure, destination;
   std::size_t points = 0;
   bool available = false, active = false, can_view = false;
+  // Explicit human actions only; the card never infers navigation intent.
+  bool can_activate = false, can_stop = false;
 };
 RouteContextView PresentRouteContext(const std::string &selected_id,
                                     const std::optional<Route> &route);

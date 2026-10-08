@@ -33,12 +33,16 @@ bool ChartRouteInk(ChartCanvas &canvas, Route &route, wxColour &ink);
 bool DefaultChartRouteStyle(Route &route);
 bool DrawChartRouteSegment(ocpnDC &dc, ChartCanvas &canvas, double ax, double ay,
                             double bx, double by, bool join_start, bool join_end);
-// Call before upstream adjusts the global COG width for display density.
-// Captured factory-equivalent paint only; runtime custom changes revoke it.
+// True when verified XNav presentation paints the predictor lines. OpenCPN
+// pen preferences continue to apply in Standard/Legacy/Safe.
 bool UseChartCogPredictorStyle(int width, int style, const wxString &color,
                                int density_width);
 bool DrawChartCogPredictor(ocpnDC &dc, ChartCanvas &canvas,
                            double ax, double ay, double bx, double by);
+// XNav heading line from the ship to a caller-projected end point. The
+// caller derives its length from the same speed/time horizon as COG.
+bool DrawChartHeadingPredictor(ocpnDC &dc, ChartCanvas &canvas,
+                               double ax, double ay, double bx, double by);
 // Default fixed or dimension-scaled bitmap ownship artwork. Explicit custom
 // user icons retain upstream rendering. Projection, heading/COG choice and
 // vessel dimensions remain upstream; invalid direction gets no oriented glyph.

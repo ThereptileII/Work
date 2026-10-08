@@ -33,7 +33,24 @@ XNavRouteContextCard::XNavRouteContextCard(wxWindow &owner, std::string selected
   for (auto *button : {view_button_, details_button_}) button->SetMinSize(FromDIP(wxSize(156, 52)));
   actions->Add(view_button_, 1, wxEXPAND | wxRIGHT, FromDIP(8));
   actions->Add(details_button_, 1, wxEXPAND);
-  outer->Add(actions, 0, wxEXPAND | wxALL, FromDIP(12));
+  outer->Add(actions, 0, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, FromDIP(12));
+  navigate_button_ = new XNavButton(this, wxID_ANY, "Activate route",
+                                    "Activate the selected route");
+  navigate_button_->SetMinSize(FromDIP(wxSize(320, 52)));
+  navigate_button_->SetRole(ButtonRole::Primary);
+  navigate_button_->Bind(wxEVT_BUTTON, [this](wxCommandEvent &) {
+    // Dispatch only the state rendered on the button the human pressed.
+    const auto action = view_.active ? RouteContextAction::Stop : RouteContextAction::Activate;
+    if (closing_ || !view_.available ||
+        (action == RouteContextAction::Activate ? !view_.can_activate : !view_.can_stop))
+      return;
+    const auto callback = action_;
+    const auto id = selected_id_;
+    auto *parent = GetParent();
+    Dismiss();
+    parent->CallAfter([callback, action, id] { if (callback) callback(action, id); });
+  });
+  outer->Add(navigate_button_, 0, wxEXPAND | wxALL, FromDIP(12));
   const std::array<std::pair<XNavButton *, RouteContextAction>, 2> choices{{
       {view_button_, RouteContextAction::ViewOnChart},
       {details_button_, RouteContextAction::Details}}};
@@ -89,6 +106,13 @@ void XNavRouteContextCard::UpdateRoute(const std::optional<application::Route> &
   details_button_->SetLightMode(mode);
   view_button_->Enable(view_.available && view_.can_view && bool(action_));
   details_button_->Enable(view_.available && bool(action_));
+  const bool stop = view_.available && view_.active;
+  navigate_button_->SetLabel(stop ? "Stop navigation" : "Activate route");
+  navigate_button_->SetToolTip(stop ? "Stop navigating the selected route"
+                                    : "Activate the selected route");
+  navigate_button_->SetRole(stop ? ButtonRole::Critical : ButtonRole::Primary);
+  navigate_button_->SetLightMode(mode);
+  navigate_button_->Enable(bool(action_) && (stop ? view_.can_stop : view_.can_activate));
   content_->Refresh(false);
 }
 bool XNavRouteContextCard::Place(const wxRect &chart) {

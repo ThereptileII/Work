@@ -25,8 +25,13 @@ int main() {
           "Current route snapshot provides read-only action availability");
     Check(view.name == route.name && view.departure == first.name && view.destination == last.name,
           "Route identity and endpoint names come from actual supplied route");
+    Check(view.can_activate && !view.can_stop,
+          "Inactive editable route offers activation only");
     route.active = true;
     Check(PresentRouteContext(route.id, route).status == "ACTIVE ROUTE", "Active state is observed");
+    Check(!PresentRouteContext(route.id, route).can_activate &&
+              PresentRouteContext(route.id, route).can_stop,
+          "Active route offers stop, never a duplicate activation");
     Check(!PresentRouteContext("wrong-id", route).available &&
           !PresentRouteContext(route.id, {}).can_view,
           "Removed or mismatched route cannot retain available actions");
@@ -36,6 +41,8 @@ int main() {
     route.points.front().latitude_deg = std::numeric_limits<double>::quiet_NaN();
     Check(!PresentRouteContext(route.id, route).can_view,
           "Invalid coordinates cannot enable chart centering");
+    Check(!PresentRouteContext(route.id, route).can_activate,
+          "Protected route cannot be activated from the card");
     route.points.clear(); route.name.clear();
     view = PresentRouteContext(route.id, route);
     Check(view.name == "Unnamed route" && view.points == 0 && !view.can_view && view.available,

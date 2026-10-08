@@ -26,6 +26,11 @@
 #include "integration/OChartsPresentation.h"
 #include "integration/OnlineAis.h"
 #include "integration/OnlineAisOverlay.h"
+#include "integration/OnlineWeather.h"
+#include "integration/WeatherOverlay.h"
+#include "weather/GribStream.h"
+#include "weather/IxForecastTransport.h"
+#include "weather/QueryBuilder.h"
 #include "integration/AisViewport.h"
 #include "integration/StartupMode.h"
 #if XNAV_ENABLE_TEST_FIXTURES
@@ -33,6 +38,7 @@
 #endif
 #include "model/base_platform.h"
 #include "model/comm_drv_registry.h"
+#include "model/routeman.h"
 #include "model/safe_mode.h"
 #include "platform/PlatformIntegration.h"
 #include "platform/PortableProfile.h"
@@ -107,6 +113,7 @@ std::string route_test_profile,object_test_profile;
 std::unique_ptr<ui::Shell> shell;
 std::unique_ptr<integration::OnlineAis> online_ais;
 integration::OnlineAisOverlay online_chart;
+std::unique_ptr<integration::OnlineWeather> online_weather;
 std::shared_ptr<diagnostics::Commissioning> commissioning;
 std::unique_ptr<NavigationBridge> navigation;
 std::unique_ptr<integration::MarineBridge> marine;
@@ -511,6 +518,98 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
       }
     return application::CommandResult{false, "Target or chart changed; select it again"};
   };
+  // SCRUM-324..331: optional GRIBstream forecast, XNav only, default OFF.
+  // Construction never fetches; the worker owns all network and token reads.
+  online_weather = std::make_unique<integration::OnlineWeather>(config,
+      ais::CreateWeatherCredentials(),
+      std::make_unique<weather::ForecastService>(ais::CreateWeatherCredentials(),
+                                                 weather::CreateIxForecastTransport()));
+  integration::SetWeatherSource([] {
+    return online_weather ? online_weather->Read(std::chrono::system_clock::now())
+                          : weather::ForecastSnapshot{};
+  });
+  actions.weather.read = [](vessel::Time) {
+    // Freshness is decided from wall-clock fetch time, not the UI clock.
+    return online_weather ? online_weather->Read(std::chrono::system_clock::now())
+                          : weather::ForecastSnapshot{};
+  };
+  actions.weather.enable = [](bool enabled) {
+    return online_weather ? online_weather->Enable(enabled)
+        : application::CommandResult{false, "Weather unavailable during shutdown"};
+  };
+  actions.weather.store_token = [](const ais::Secret &token) {
+    return online_weather ? online_weather->StoreToken(token)
+        : application::CommandResult{false, "Credential storage unavailable during shutdown"};
+  };
+  actions.weather.remove_token = [] {
+    return online_weather ? online_weather->RemoveToken()
+        : application::CommandResult{false, "Credential storage unavailable during shutdown"};
+  };
+  actions.weather.token_present = [] { return online_weather && online_weather->TokenPresent(); };
+  actions.weather.test_connection = [] {
+    return online_weather ? online_weather->TestConnection()
+        : application::CommandResult{false, "Weather unavailable during shutdown"};
+  };
+  actions.weather.request = [](const weather::ForecastQuery &query) {
+    if (online_weather) online_weather->Request(query);
+  };
+  actions.weather.last_test = [] {
+    return online_weather ? online_weather->LastTest() : weather::ConnectionTest{};
+  };
+  actions.weather.test_pending = [] { return online_weather && online_weather->TestPending(); };
+  static std::vector<weather::Coordinate> weather_focus_route;
+  static bool weather_query_dirty = false;
+  actions.weather.focus_route = [](std::vector<weather::Coordinate> points) {
+    if (points.size() > 1000) points.resize(1000);  // SampleRoute bounds the query.
+    if (points.size() != weather_focus_route.size() ||
+        !std::equal(points.begin(), points.end(), weather_focus_route.begin(),
+                    [](const auto &a, const auto &b) {
+                      return a.latitude_deg == b.latitude_deg && a.longitude_deg == b.longitude_deg;
+                    })) {
+      weather_focus_route = std::move(points);
+      weather_query_dirty = true;  // Rebuild on the next tick, not in a minute.
+    }
+  };
+  actions.weather_tick = [&frame, last = std::chrono::steady_clock::time_point{}](bool live_allowed) mutable {
+    if (!online_weather || !online_weather->Enabled() || restart) return;
+    const auto steady = std::chrono::steady_clock::now();
+    if (!weather_query_dirty && last != std::chrono::steady_clock::time_point{} &&
+        steady - last < std::chrono::seconds(60))
+      return;
+    last = steady;
+    weather_query_dirty = false;
+    weather::QueryInputs in;
+    in.now = std::chrono::system_clock::now();
+    if (live_allowed && (!commissioning || !commissioning->Replaying())) {
+      // Fresh real fix only; never a simulated, replayed or stale position.
+      const auto now = vessel::Clock::now();
+      const auto lat = vessel::Assess(selected_navigation.navigation.latitude_deg, now);
+      const auto lon = vessel::Assess(selected_navigation.navigation.longitude_deg, now);
+      const auto fresh = [](vessel::Quality q) {
+        return q == vessel::Quality::Live || q == vessel::Quality::Aging;
+      };
+      if (fresh(lat.quality) && fresh(lon.quality) && lat.value && lon.value)
+        in.vessel = weather::Coordinate{*lat.value, *lon.value};
+    }
+    try {
+      const auto route = integration::CopyActiveRoute(g_pRouteMan);
+      if (route.active)
+        for (const auto &point : route.points)
+          in.route.push_back({point.latitude_deg, point.longitude_deg});
+    } catch (const std::exception &) {
+      in.route.clear();
+    }
+    // The active route has priority; otherwise the route the user is viewing.
+    if (in.route.empty()) in.route = weather_focus_route;
+    if (auto *canvas = frame.GetPrimaryCanvas()) {
+      auto &vp = canvas->GetVP();
+      const auto &box = vp.GetBBox();
+      if (vp.IsValid() && box.GetValid())
+        in.chart = weather::ChartBox{box.GetMinLat(), box.GetMaxLat(), box.GetMinLon(),
+                                     box.GetMaxLon()};
+    }
+    online_weather->Request(weather::BuildForecastQuery(in));
+  };
   actions.settings = [] { return settings->Read(); };
   actions.display = [] { return settings->Display(); };
   actions.save_display = [](const application::DisplayPreferences &value) {
@@ -599,6 +698,7 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
       configure_sources();
     if (result.ok && pilots &&
         (old_pilot.interface_id != s.pilot.interface_id || old_pilot.name != s.pilot.name ||
+         old_pilot.address != s.pilot.address ||
          old_pilot.permit_control != s.pilot.permit_control)) {
       pilots->live.Enable(false, vessel::Clock::now());
       pilots->hardware.Configure(s.pilot);
@@ -649,6 +749,10 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
     return application::CommandResult{
         sent, sent ? "Identity request attempted; waiting for an observed address claim"
                    : "Identity request withheld: check connection, format, isolation or five-second limit"};
+  };
+  actions.pilot_detected = []() -> std::optional<adapters::St4000Binding> {
+    if (!pilots) return std::nullopt;
+    return pilots->hardware.DetectedBinding();
   };
   actions.pilot_sources = [] {
     std::vector<std::string> result;
@@ -791,6 +895,19 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
       health["accepted"] = wxString::Format("%llu", static_cast<unsigned long long>(copy.health.accepted));
       health["rejected"] = wxString::Format("%llu", static_cast<unsigned long long>(copy.health.rejected));
       health["reconnects"] = wxString::Format("%llu", static_cast<unsigned long long>(copy.health.reconnects));
+    }
+    if (online_weather) {
+      // Credential-free: presence flag and provider status text only.
+      const auto forecast = online_weather->Read(std::chrono::system_clock::now());
+      auto &health = runtime["weather"];
+      health["enabled"] = online_weather->Enabled();
+      health["token_present"] = online_weather->TokenPresent();
+      health["model"] = wxString::FromUTF8(forecast.model);
+      health["state"] = static_cast<int>(forecast.state);
+      health["status"] = wxString::FromUTF8(forecast.status);
+      health["winds"] = static_cast<int>(forecast.winds.size());
+      if (forecast.fetched_at)
+        health["fetched_utc"] = wxString::FromUTF8(weather::gribstream::FormatUtc(*forecast.fetched_at));
     }
 #if XNAV_ENABLE_TEST_FIXTURES
     // Copied wxAUI state for the isolated plugin-workspace regression.
@@ -1131,8 +1248,11 @@ bool ShowRouteContext(const std::string &id, bool hover) {
 }
 bool IsAisSelected(int mmsi) { return IsXNav() && shell && mmsi > 0 && shell->SelectedAis() == mmsi; }
 void DrawOnlineAis(ocpnDC &dc, ViewPort &vp, ChartCanvas *canvas) {
-  if (IsXNav() && shell && canvas && !restart)
+  if (IsXNav() && shell && canvas && !restart) {
+    // Forecast wind sits under AIS targets (SCRUM-328); XNav presentation only.
+    integration::DrawWeatherOverlay(dc, vp, *canvas);
     online_chart.Draw(dc, vp, *canvas);
+  }
 }
 bool ShowOnlineAisAt(ChartCanvas &canvas, int x, int y) {
   if (!IsXNav() || !shell || restart) return false;
@@ -1205,6 +1325,8 @@ bool PrepareClose(wxFileConfig& config) {
   shell.reset();
   online_chart.Clear();
   online_ais.reset(); // Stop/join worker before configuration/host teardown.
+  integration::SetWeatherSource({});
+  online_weather.reset(); // Cancels any request and joins the worker.
   commissioning.reset();
   settings.reset();
   pilots.reset();anchor_state={};

@@ -12,11 +12,15 @@
 #include <stdexcept>
 #include "ui/Theme.h"
 #include "integration/ChartWaypointIcon.h"
+#include "integration/ChartRouteWaypoint.h"
+#include "integration/ChartCanvasInk.h"
+#include "application/ChartDeclutter.h"
+#include <wx/dcmemory.h>
 #include "model/MarkIcon.h"
 class App: public wxApp {public:bool OnInit() override{return true;}};
 wxIMPLEMENT_APP_NO_MAIN(App);
 constexpr int GLOBAL_COLOR_SCHEME_DAY=0,GLOBAL_COLOR_SCHEME_DUSK=1,GLOBAL_COLOR_SCHEME_NIGHT=2;
-struct VP{float vp_matrix_transform[16]{};};
+struct VP{float vp_matrix_transform[16]{};double chart_scale=0;};
 struct ChartCanvas:wxFrame{
  ChartCanvas():wxFrame(nullptr,wxID_ANY,"fixture"){} int dpi=100,theme=0; VP vp;
  int FromDIP(int v){return v*dpi/100;} int GetColorScheme(){return theme;}
@@ -31,14 +35,17 @@ template<class T> struct List {
 struct RoutePoint {
  wxString icon="diamond"; bool m_bIsInRoute=true,shared=false,m_bIsInLayer=false,
  m_bIsActive=false,m_bPtIsSelected=false,m_bBlink=false,m_bRPIsBeingEdited=false,
- drag=false,m_bShowWaypointRangeRings=false; int m_iWaypointRangeRingsNumber=0;
+ drag=false,m_bShowWaypointRangeRings=false,m_bShowName=true; int m_iWaypointRangeRingsNumber=0;
+ wxString name="Fixture mark";
  wxString GetIconName(){return icon;} bool IsShared(){return shared;}bool IsDragHandleEnabled(){return drag;}
+ wxString GetName(){return name;}
 };
-struct Route {List<RoutePoint> list;List<RoutePoint>*pRoutePointList=&list;bool eligible=true,m_bIsBeingCreated=false;};
+struct Route {List<RoutePoint> list;List<RoutePoint>*pRoutePointList=&list;bool eligible=true,m_bIsBeingCreated=false,
+ m_bRtIsSelected=false,m_bRtIsActive=true;};
 struct Routeman {Route*active=nullptr;RoutePoint*point=nullptr;Route*GetpActiveRoute(){return active;}RoutePoint*GetpActivePoint(){return point;}};
 Routeman manager;Routeman*g_pRouteMan=&manager;List<Route> routes;List<Route>*pRouteList=&routes;
 RoutePoint*pAnchorWatchPoint1=nullptr,*pAnchorWatchPoint2=nullptr;
-float g_MarkScaleFactorExp=1;
+float g_MarkScaleFactorExp=1;wxString g_default_wp_icon="circle",g_default_routepoint_icon="diamond";
 struct ocpnDC {
  wxDC*native=nullptr;int m_canvasIndex=0;wxFont font;wxColour ink;wxString last;
  wxDC*GetDC(){return native;}void CalcBoundingBox(int x,int y){if(native)native->CalcBoundingBox(x,y);}
@@ -58,7 +65,8 @@ void glEnable(int key){(key==GL_BLEND?blended:textured)=true;}
 void glDisable(int key){(key==GL_BLEND?blended:textured)=false;}
 void glUseProgram(int p){program=p;}void glBindTexture(int,int v){texture=v;}
 void glBlendFuncSeparate(int,int,int,int){}
-void glDrawArrays(int,int,int n){if(n!=96*3)throw std::runtime_error("circle submission");++draws;}
+int flags_drawn=0;
+void glDrawArrays(int,int,int n){if(n==9){++flags_drawn;++draws;return;}if(n!=96*3)throw std::runtime_error("circle submission");++draws;}
 struct Shader {void Bind(){program=29;}void UnBind(){program=0;}
  void SetUniformMatrix4fv(const char*,float*){}void SetUniform4fv(const char*,float*){}
  void SetAttributePointerf(const char*,float*v){radii.push_back(std::hypot(v[2]-v[0],v[3]-v[1]));}
@@ -82,6 +90,7 @@ struct WayPointman {Icons*m_pIconArray;};
 struct WayPointmanGui {WayPointman&m_waypoint_man;
  MarkIcon*ProcessIcon(wxImage image,const wxString&key,const wxString&desc,bool front=false);
  bool IsPinnedRouteDiamond(const wxString&key,const wxBitmap*bitmap)const;
+ bool IsPinnedAnchor(const wxString&key,const wxBitmap*bitmap)const;
 };
 #include "production-marker-provenance.h"
 int checks=0;void Check(bool v,const char*s){++checks;if(!v)throw std::runtime_error(s);}
@@ -127,6 +136,76 @@ int main(int argc,char**argv){
  Check(!ordinal(),"ordinal 100 retained stock");a.list.Set({&q,&p,&r});
  b.list.nodes.assign(4096,{&q});for(int i=0;i<4095;++i)b.list.nodes[i].next=&b.list.nodes[i+1];
  routes.Set({&a,&b});Check(!ordinal(),"bounded large library scan");routes.Set({&a});
+ {
+ // SCRUM-318/319: XNav markers cover the states that used to fall back to
+ // legacy icons. Eligibility never invents an ordinal or replaces meaning.
+ auto marker=[&](RoutePoint&pt,bool pinned=true){return DecodeWaypointMarker(ChartWaypointMarker(*c,pt,pinned));};
+ manager.active=&a;manager.point=nullptr;a.m_bRtIsActive=true;
+ auto m=marker(p);Check(m.valid&&m.kind==WaypointMarkerKind::RoutePoint&&m.ordinal==2&&m.role==WaypointMarkerRole::Route,"route point marker");
+ p.m_bIsActive=p.m_bBlink=true;manager.point=&p;
+ m=marker(p);Check(m.kind==WaypointMarkerKind::Active&&m.ordinal==2,"active next point uses XNav marker");
+ m=marker(q);Check(m.kind==WaypointMarkerKind::Visited&&m.ordinal==1,"passed point recedes");
+ m=marker(r);Check(m.kind==WaypointMarkerKind::RoutePoint&&m.ordinal==3,"unvisited point stays normal");
+ p.m_bIsActive=p.m_bBlink=false;manager.point=nullptr;
+ p.m_bPtIsSelected=true;Check(marker(p).valid&&marker(p).selected,"selection ring, not legacy box");p.m_bPtIsSelected=false;
+ p.shared=true;Check(marker(p).valid&&marker(p).ordinal==0,"shared point unnumbered, never guessed");p.shared=false;
+ b.list.Set({&p});routes.Set({&a,&b});Check(marker(p).valid&&marker(p).ordinal==0,"point in two routes unnumbered");routes.Set({&a});
+ p.drag=true;Check(!marker(p).valid,"live drag handle keeps OpenCPN editing");p.drag=false;
+ p.m_bIsInLayer=true;Check(!marker(p).valid,"layer content stays stock");p.m_bIsInLayer=false;
+ p.icon="mob";Check(!marker(p).valid,"MOB keeps its artwork");
+ p.icon="fuel";Check(!marker(p,false).valid,"meaningful icon keeps its artwork");
+ p.icon="circle";Check(marker(p,false).valid,"generic shape icon uses XNav marker");p.icon="diamond";
+ pAnchorWatchPoint1=&p;Check(!marker(p).valid,"anchor watch keeps anchor mark");pAnchorWatchPoint1=nullptr;
+ a.eligible=false;Check(!marker(p).valid,"custom/emergency route style stays stock");a.eligible=true;
+ a.m_bIsBeingCreated=true;Check(!marker(p).valid,"route under creation stays stock");a.m_bIsBeingCreated=false;
+ a.m_bRtIsActive=false;Check(marker(p).role==WaypointMarkerRole::Inactive,"inactive route ink");
+ a.m_bRtIsSelected=true;Check(marker(p).role==WaypointMarkerRole::SelectedRoute,"selected route ink");
+ a.m_bRtIsSelected=false;a.m_bRtIsActive=true;
+ a.list.nodes.assign(100,{&q});a.list.nodes[99].data=&p;
+ for(int i=0;i<99;++i)a.list.nodes[i].next=&a.list.nodes[i+1];
+ Check(marker(p).valid&&marker(p).ordinal==0,"ordinal 100 unnumbered, not truncated");a.list.Set({&q,&p,&r});
+ RoutePoint w;w.m_bIsInRoute=false;w.icon="circle";
+ m=marker(w,false);Check(m.valid&&m.kind==WaypointMarkerKind::Standalone&&m.ordinal==0,"standalone waypoint marker");
+ Check(ChartWaypointMarkerOwnsName(ChartWaypointMarker(*c,w,false))&&
+       !ChartWaypointMarkerOwnsName(ChartWaypointMarker(*c,p,true)),"only standalone marker owns its name");
+ w.icon="anchorage";Check(!marker(w,false).valid,"meaningful standalone icon kept");w.icon="circle";
+ style=false;Check(!marker(w,false).valid&&!marker(p).valid,"Standard/Legacy/Safe keep stock");style=true;
+ Check(EncodeWaypointMarker(WaypointMarkerKind::RoutePoint,WaypointMarkerRole::Route,100,false)==0&&
+       !DecodeWaypointMarker(0).valid&&!DecodeWaypointMarker(59999).valid,"invalid codes rejected");
+ // Every marker kind paints in software and GL with the prototype geometry.
+ wxBitmap kinds(260,60);wxMemoryDC kdc(kinds);kdc.SetBackground(wxBrush(wxColour(70,80,90)));kdc.Clear();
+ ocpnDC kd;kd.native=&kdc;c->dpi=100;g_MarkScaleFactorExp=1;c->theme=0;
+ const int codes[]{EncodeWaypointMarker(WaypointMarkerKind::RoutePoint,WaypointMarkerRole::Route,2,false),
+   EncodeWaypointMarker(WaypointMarkerKind::Active,WaypointMarkerRole::Route,3,false),
+   EncodeWaypointMarker(WaypointMarkerKind::Visited,WaypointMarkerRole::Route,1,false),
+   EncodeWaypointMarker(WaypointMarkerKind::RoutePoint,WaypointMarkerRole::Route,0,true),
+   EncodeWaypointMarker(WaypointMarkerKind::Standalone,WaypointMarkerRole::Route,0,false)};
+ for(int i=0;i<5;++i)Check(DrawChartWaypointMarker(kd,*c,&w,25+i*50,22,codes[i]),"software marker kind");
+ kdc.SelectObject(wxNullBitmap);kinds.SaveFile(wxString::FromUTF8(std::string(argv[1])+"/waypoint-marker-kinds.png"),wxBITMAP_TYPE_PNG);
+ auto ki=kinds.ConvertToImage();
+ Check(ki.GetRed(75,15)==0x26&&ki.GetGreen(75,15)==0x7c,"active marker is a solid route-ink disc");
+ Check(ki.GetRed(25,15)>200,"route marker keeps floating interior");
+ kd.native=nullptr;
+ draws=0;radii.clear();Check(DrawChartWaypointMarker(kd,*c,&w,40,40,codes[1]),"GL active marker");
+ Check(draws==4&&std::abs(radii[0]-14.5)<.01&&kd.last=="03","GL active halo, ring, disc and ordinal");
+ draws=0;flags_drawn=0;Check(DrawChartWaypointMarker(kd,*c,&w,40,40,codes[4]),"GL standalone marker");
+ Check(draws==3&&flags_drawn==1&&kd.last==w.name,"GL standalone ring, flag and owned name");
+ draws=0;Check(DrawChartWaypointMarker(kd,*c,&w,40,40,codes[3]),"GL unnumbered selected marker");
+ Check(draws==5,"GL selection ring, marker and centre dot");
+ Check(ChartWaypointMarkerBounds(*c,w,codes[4]).GetBottom()>20,"standalone bounds include the name label");
+ Check(ChartWaypointMarkerBounds(*c,p,codes[3]).GetWidth()==32,"selection ring bounds");
+ // SCRUM-317 level of detail: names drop first, then ordinals/glyphs; the
+ // active and selected points never shrink and no marker disappears.
+ c->vp.chart_scale=200000;kd.last.clear();
+ draws=0;Check(DrawChartWaypointMarker(kd,*c,&w,40,40,codes[4])&&draws==3&&kd.last.empty(),"reduced detail hides names, keeps flag marker");
+ c->vp.chart_scale=700000;
+ draws=0;flags_drawn=0;Check(DrawChartWaypointMarker(kd,*c,&w,40,40,codes[4])&&draws==3&&flags_drawn==0,"overview standalone is compact ring and dot");
+ draws=0;kd.last.clear();Check(DrawChartWaypointMarker(kd,*c,&w,40,40,codes[0])&&draws==3&&kd.last.empty(),"overview route point drops ordinal");
+ Check(ChartWaypointMarkerBounds(*c,p,codes[0]).GetWidth()==12,"compact bounds");
+ draws=0;Check(DrawChartWaypointMarker(kd,*c,&w,40,40,codes[1])&&draws==4&&kd.last=="03","active point keeps full detail");
+ Check(ChartWaypointMarkerBounds(*c,p,codes[3]).GetWidth()==32,"selected point keeps full detail");
+ c->vp.chart_scale=0;
+ }
  Check(IsPinnedRouteDiamond(wxString::FromUTF8(argv[2])),"exact stock SVG");
  auto fresh=wxBitmapBundle::FromSVGFile(wxString::FromUTF8(argv[2]),wxSize(68,68)).GetBitmap(wxSize(68,68)).ConvertToImage();
  const auto cache_path=wxString::FromUTF8(std::string(argv[1])+"/diamond-cache.png");

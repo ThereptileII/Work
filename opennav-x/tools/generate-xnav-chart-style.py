@@ -5,8 +5,8 @@ Only the enumerated palette roles, geographic-name ink, two built-up-area
 and fourteen structural fills, six structural outlines, a proven neutral
 sprite-ink mask, isolated anchor/service/cardinal artwork, eleven classified
 marine/light tiles with sixteen exact alias redirects, one construction hatch,
-one exact generic-building point alias, and cable/ferry paint
-roles may change. Original inputs are never modified.
+one exact generic-building point alias, cable/ferry paint roles, and the
+Night-only chromatic navigation-aid inks (SCRUM-323) may change. Original inputs are never modified.
 """
 import argparse
 import hashlib
@@ -30,6 +30,7 @@ import chart_construction_hatch
 import chart_building_point
 import chart_light_tower
 import chart_fishing_pattern
+import chart_night_aids
 
 ROOT=Path(__file__).resolve().parents[1]
 ALLOWED={'LANDA','CSTLN','DEPDW','DEPMD','DEPMS','DEPVS','DEPIT','DEPCN','DEPSC','SNDG1','SNDG2','CHBLK','CHGRD'}
@@ -122,6 +123,7 @@ def validate_resource_changes(original, styled, colors):
     chart_building_point.restore_for_validation(before, after)
     chart_light_tower.restore_for_validation(before, after)
     chart_seamark_art.restore_for_validation(before, after)
+    chart_night_aids.restore_for_validation(before, after)
     # Added nodes must not make whitespace significant in the identity check.
     for tree in (before,after):
         for node in tree.iter():
@@ -202,6 +204,7 @@ def generate(source, output):
     xml=chart_building_point.relocate(xml)
     xml=chart_light_tower.relocate(xml)
     xml=chart_fishing_pattern.relocate(xml)
+    xml=chart_night_aids.recolor(xml,original['chartsymbols.xml'].decode('utf-8'))
     validate_resource_changes(original['chartsymbols.xml'],xml,colors)
     result=dict(original);result['chartsymbols.xml']=xml.encode('utf-8')
     # Pinned Day ink identifies neutral CHBLK/CHGRD pixels. Theme sheets use
@@ -244,6 +247,11 @@ def generate(source, output):
         result[name], light_tower[name] = chart_light_tower.paint(result[name], original[name], table, colors[table])
         result[name], fishing_pattern[name] = chart_fishing_pattern.paint(result[name], table)
         result[name], construction_hatch[name] = chart_construction_hatch.paint(result[name], table, colors[table][chart_construction_hatch.COLOR])
+    # SCRUM-323: lift only untouched chromatic Night aid pixels (Day hue),
+    # after every owned-artwork step so their tiles and proofs are unchanged.
+    result[chart_night_aids.SHEET], night_aids = chart_night_aids.paint(
+        day_pixels, original[chart_night_aids.SHEET], result[chart_night_aids.SHEET])
+    night_aids['colors'] = chart_night_aids.night_colors(original['chartsymbols.xml'].decode('utf-8'))
     output.mkdir(parents=True,exist_ok=True)
     def write(path,content):
         if not path.exists() or path.read_bytes()!=content:path.write_bytes(content)
@@ -253,6 +261,7 @@ def generate(source, output):
               'neutralRasterInk':raster_ink, 'dayNeutralRasterInk':day_ink,
               'nightCanvas':{'brightness':.78,'roles':night_mapping,
                              'retainedSafetyInk':sorted(NIGHT_SAFETY_ROLES)},
+              'nightNavigationAids':night_aids,
               'anchorageArtwork':anchor_art,
               'serviceArtwork':service_art,
               'hazardArtwork':hazard_art,

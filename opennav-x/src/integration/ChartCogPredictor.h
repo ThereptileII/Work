@@ -3,35 +3,16 @@
 #include <cmath>
 #include <vector>
 namespace opennav::integration {
-// Ownership is presentation policy, not an inference about user intent. Values
-// equal to pinned factory paint are owned by verified SKAGER presentation.
-class CogPredictorStyleOwnership {
- public:
-  void Capture(int width, int style, bool factory_color) {
-    owned_ = width == 3 && style == 105 && factory_color;
-    expected_width_ = width;
-  }
-  bool BeforeDensity(int width, int style, bool factory_color, int density_width) {
-    if (!owned_) return false;
-    if (width != expected_width_ || style != 105 || !factory_color || density_width < 1) {
-      owned_ = false; // A runtime preference change revokes this startup capture.
-      return false;
-    }
-    expected_width_ = (std::max)(width, density_width);
-    return true;
-  }
- private:
-  bool owned_ = false;
-  int expected_width_ = 0;
-};
-
-inline std::vector<float> ChartCogPredictorMesh(double ax, double ay,
+// Dashed predictor geometry in logical px: width, dash and gap scale with DIP.
+inline std::vector<float> ChartPredictorMesh(double ax, double ay,
     double bx, double by, double scale, double viewport_width, double viewport_height,
-    bool *valid = nullptr) {
+    double width, double dash_length, double gap_length, bool *valid = nullptr) {
   if (valid) *valid = false;
   std::vector<float> triangles;
-  for (double v : {ax,ay,bx,by,scale,viewport_width,viewport_height})
+  for (double v : {ax,ay,bx,by,scale,viewport_width,viewport_height,
+                   width,dash_length,gap_length})
     if (!std::isfinite(v)) return triangles;
+  if (width <= 0 || dash_length <= 0 || gap_length < 0) return triangles;
   if (scale < .25 || scale > 16 || viewport_width <= 0 || viewport_height <= 0 ||
       viewport_width > 65536 || viewport_height > 65536 ||
       (std::max)({std::abs(ax),std::abs(ay),std::abs(bx),std::abs(by)}) > 1e9)
@@ -39,7 +20,8 @@ inline std::vector<float> ChartCogPredictorMesh(double ax, double ay,
   const double dx=bx-ax, dy=by-ay, length=std::hypot(dx,dy);
   if (length==0) return triangles;
   if (valid) *valid = true;
-  const double radius=.6*scale, dash=5*scale, period=10*scale;
+  const double radius=width/2*scale, dash=dash_length*scale,
+      period=(dash_length+gap_length)*scale;
   const double ux=dx/length, uy=dy/length, nx=-uy*radius, ny=ux*radius;
   double begin=0, end=1;
   const auto clip=[&](double p,double q) {
@@ -64,5 +46,19 @@ inline std::vector<float> ChartCogPredictorMesh(double ax, double ay,
       float(x2-nx),float(y2-ny)});
   }
   return triangles;
+}
+// Immutable prototype COG path: 1.2px, dash 5/5.
+inline std::vector<float> ChartCogPredictorMesh(double ax, double ay,
+    double bx, double by, double scale, double viewport_width, double viewport_height,
+    bool *valid = nullptr) {
+  return ChartPredictorMesh(ax, ay, bx, by, scale, viewport_width, viewport_height,
+                            1.2, 5, 5, valid);
+}
+// XNav heading line: finer 1px, 2/4 dash so it never reads as the COG vector.
+inline std::vector<float> ChartHeadingPredictorMesh(double ax, double ay,
+    double bx, double by, double scale, double viewport_width, double viewport_height,
+    bool *valid = nullptr) {
+  return ChartPredictorMesh(ax, ay, bx, by, scale, viewport_width, viewport_height,
+                            1, 2, 4, valid);
 }
 } // namespace opennav::integration

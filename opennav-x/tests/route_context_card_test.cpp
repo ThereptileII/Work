@@ -41,6 +41,8 @@ private:
         [this](ui::RouteContextAction action, const std::string &id) {
           if (id != route_.id) result_ = 1;
           if (action == ui::RouteContextAction::Details) ++details_;
+          else if (action == ui::RouteContextAction::Activate) ++activations_;
+          else if (action == ui::RouteContextAction::Stop) ++stops_;
           else ++views_;
         }, [this] { ++dismissals_; });
     card->UpdateRoute(route_, ui::LightMode::Day);
@@ -63,9 +65,24 @@ private:
         Check(card->GetBackgroundColour() == ui::Colour(ui::Theme(mode).elevated),
               "Route hover uses the current XNav theme");
       }
+      auto *stop = Find<ui::XNavButton>(card, "Stop navigation");
+      Check(stop && stop->IsEnabled() && !Find<ui::XNavButton>(card, "Activate route"),
+            "Active route offers Stop navigation, never a duplicate activation");
+      auto inactive = route_;
+      inactive.active = false;
+      card->UpdateRoute(inactive, ui::LightMode::Day);
+      Check(stop->GetLabel() == "Activate route" && stop->IsEnabled(),
+            "Inactive editable route offers Activate route");
+      auto protected_route = inactive;
+      protected_route.editable = false;
+      card->UpdateRoute(protected_route, ui::LightMode::Day);
+      Check(!stop->IsEnabled(), "Protected route cannot be activated from the card");
       card->UpdateRoute({}, ui::LightMode::Night);
-      Check(!details->IsEnabled() && !view->IsEnabled() && !card->View().available,
-            "Removed route immediately disables both actions");
+      Check(!details->IsEnabled() && !view->IsEnabled() && !stop->IsEnabled() &&
+                !card->View().available,
+            "Removed route immediately disables every action");
+      Click(*stop);
+      Check(activations_ == 0 && stops_ == 0, "Unavailable route cannot change navigation");
       Click(*details); Click(*view);
       Check(details_ == 0 && views_ == 0, "Unavailable route cannot dispatch actions");
       card->UpdateRoute(route_, ui::LightMode::Day);
@@ -75,7 +92,8 @@ private:
   }
   void AfterDetails() {
     try {
-      Check(details_ == 1 && views_ == 0, "Details dispatches the exact selected route once");
+      Check(details_ == 1 && views_ == 0 && activations_ == 0 && stops_ == 0,
+            "Details dispatches the exact selected route once");
       Check(dismissals_ == 1, "Action dismissal records the hover suppression point once");
       auto *card = Card();
       Click(*Find<ui::XNavButton>(card, "View on chart"));
@@ -103,7 +121,7 @@ private:
   }
   wxFrame *frame_ = nullptr;
   application::Route route_;
-  int result_ = 0, details_ = 0, views_ = 0, dismissals_ = 0;
+  int result_ = 0, details_ = 0, views_ = 0, dismissals_ = 0, activations_ = 0, stops_ = 0;
 };
 }
 wxIMPLEMENT_APP(TestApp);

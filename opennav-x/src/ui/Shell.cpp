@@ -9,6 +9,7 @@
 #include "smartnav/Advisories.h"
 #include "vessel/DisplayItems.h"
 #include "ui/Sheet.h"
+#include "application/AnchorRouteTransition.h"
 #include "ui/PrototypeGeometry.h"
 #include "diagnostics/TestUiTrace.h"
 #include <wx/accel.h>
@@ -408,6 +409,7 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   product_actions.set_chart_style = actions_.set_chart_style;
   product_actions.theme = [this](LightMode mode) { SetLight(mode); };
   product_actions.save_settings = actions_.save_settings;
+  product_actions.weather = actions_.weather;
   product_actions.chart = [this] { ShowNavigation(); };
   product_actions.preferences = [this] { ShowSettings(); };
   product_actions.source_health = [this] { ShowHealth(); };
@@ -448,6 +450,10 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
         (actions_.commissioning && !actions_.commissioning->AllowsHardwareControl()))
       return application::CommandResult{false, "Identity refresh requires live commissioning mode"};
     return actions_.pilot_identity();
+  };
+  product_actions.pilot_detected = [this]() -> std::optional<adapters::St4000Binding> {
+    if (simulation_ || !actions_.pilot_detected) return std::nullopt;
+    return actions_.pilot_detected();
   };
   product_ = new ProductPanel(&frame_, std::move(product_actions));
   product_->SetInterfaceScale(display_.scale_percent);
@@ -865,6 +871,7 @@ void Shell::Tick() {
   // Observe bounds on the application thread. Reading or opening a sheet
   // cannot rejuvenate the provider's retained target observations.
   if (actions_.online_ais_tick) actions_.online_ais_tick(!replay && !simulation_);
+  if (actions_.weather_tick) actions_.weather_tick(!replay && !simulation_);
   online_ais_state_ = actions_.online_ais.read
       ? actions_.online_ais.read(wall_now) : application::OnlineAisState{};
   if (replay)
@@ -1315,7 +1322,34 @@ void Shell::ShowRouteContext(const std::string &id, bool hover) {
     const auto current = application::PresentRouteContext(selected_id, route);
     if (!current.available) return;
     if (action == RouteContextAction::Details) ShowObject(selected_id, true);
-    else if (current.can_view && actions_.navigation.view_route) {
+    else if (action == RouteContextAction::Activate || action == RouteContextAction::Stop) {
+      if (!route || state_.simulated || state_.replayed) return;
+      ShowNavigation();
+      std::optional<application::CommandResult> result;
+      if (action == RouteContextAction::Activate && current.can_activate) {
+        // Same OpenCPN-owned activation and anchor-watch confirmation as the
+        // route page; a cancelled sheet leaves navigation unchanged.
+        result = application::ConfirmRouteActivation(*route, actions_.navigation,
+            [this](bool stops_anchor) {
+              return ConfirmSheet(frame_, mode_,
+                  stops_anchor ? "Stop anchor watch and activate route?" : "Activate route",
+                  stops_anchor
+                      ? "Anchor monitoring will stop and its temporary anchor mark is removed. Start navigating this route?"
+                      : "This changes OpenCPN navigation. Existing configured OpenCPN output connections retain their normal behavior.",
+                  stops_anchor ? "Stop watch & activate" : "Activate", display_.scale_percent);
+            });
+      } else if (action == RouteContextAction::Stop && current.can_stop &&
+                 actions_.navigation.deactivate &&
+                 ConfirmSheet(frame_, mode_, "Stop navigation",
+                     "This changes OpenCPN navigation. Existing configured OpenCPN "
+                     "output connections retain their normal behavior.",
+                     "Stop navigation", display_.scale_percent)) {
+        result = actions_.navigation.deactivate(*route);
+      }
+      if (result && !result->ok)
+        ConfirmSheet(frame_, mode_, "Unable to continue",
+                     wxString::FromUTF8(result->message), "Back", display_.scale_percent);
+    } else if (current.can_view && actions_.navigation.view_route) {
       ShowNavigation();
       actions_.navigation.view_route(selected_id);
     }

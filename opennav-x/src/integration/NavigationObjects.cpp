@@ -399,6 +399,35 @@ application::AnchorWatchSelection CopyAnchorWatchSelection() {
   return selection;
 }
 namespace {
+// Marks created by SKAGER for an anchor watch (and the two historical
+// descriptions) are owned temporary marks. A user may repurpose one by
+// editing its description or adding it to a route; then it is user data.
+bool OwnedTemporaryAnchor(RoutePoint *point) {
+  if (!point) return false;
+  const auto description = point->GetDescription();
+  return (description == "SKAGER temporary anchor watch" ||
+          description == "OpenNav temporary anchor watch" ||
+          description ==
+              "OpenNav anchor watch; radius stored using OpenCPN semantics") &&
+         point->m_bIsolatedMark && !point->IsShared() && !point->m_bIsInLayer;
+}
+enum class AnchorMarkRemoval { NotOwned, Removed, Busy, Failed };
+// Call only after both watch pointers have released this mark. User-created
+// or repurposed waypoints are never removed.
+AnchorMarkRemoval RemoveOwnedAnchorMark(const std::string &id) {
+  auto *point = pWayPointMan && !id.empty()
+      ? pWayPointMan->FindWaypointByGuid(id) : nullptr;
+  if (!OwnedTemporaryAnchor(point) || point == pAnchorWatchPoint1 ||
+      point == pAnchorWatchPoint2)
+    return AnchorMarkRemoval::NotOwned;
+  const auto copy = Copy(point);
+  if (copy.in_route) return AnchorMarkRemoval::NotOwned;
+  // Transient chart editing (e.g. a touch drag handle) or an open legacy
+  // properties dialog: report it instead of silently keeping the mark.
+  if (!copy.removable) return AnchorMarkRemoval::Busy;
+  return DeleteWaypoint(copy).ok ? AnchorMarkRemoval::Removed
+                                 : AnchorMarkRemoval::Failed;
+}
 application::CommandResult NotifyAnchorStarted(const std::string &id) {
   const auto expected = CopyAnchorWatchSelection();
   // Addresses are identity tokens only: never dereference them after dispatch.
@@ -475,8 +504,8 @@ application::CommandResult ActivateRouteTransition(
               "Route, position or anchor watch changed while stopping navigation; "
               "refresh selection"};
     auto *current = Resolve(prepared);
-    // This transition preserves every mark, including SKAGER-created anchors.
-    // Explicit ClearAnchor has a separate, confirmed temporary-mark lifecycle.
+    // User marks are preserved. SKAGER-created temporary anchor marks are
+    // removed after activation, exactly as when the watch is stopped directly.
     pAnchorWatchPoint1 = pAnchorWatchPoint2 = nullptr;
     g_AW1GUID.Clear();
     g_AW2GUID.Clear();
@@ -512,8 +541,19 @@ application::CommandResult ActivateRouteTransition(
     // not synchronous plugin messaging. No external callback occurs between
     // this final resolution/point selection and the native activation call.
     const bool activated = g_pRouteMan->ActivateRoute(current, best);
-    return {activated, activated ? "Route activated using OpenCPN"
-                                  : "Route activation failed; anchor watch stopped",
+    if (!activated)
+      return {false, "Route activation failed; anchor watch stopped", selected.id};
+    bool mark_retained = false;
+    for (const auto &watch : watches.watches) {
+      const auto removal = RemoveOwnedAnchorMark(watch.id);
+      mark_retained = mark_retained || removal == AnchorMarkRemoval::Busy ||
+                      removal == AnchorMarkRemoval::Failed;
+    }
+    // Activation already happened; a retained mark is reported, never hidden.
+    return {true, mark_retained
+                      ? "Route activated. The temporary anchor mark could not be "
+                        "removed; delete it from Waypoints."
+                      : "Route activated using OpenCPN",
             selected.id};
   });
 }
@@ -555,6 +595,32 @@ application::CommandResult ReverseRoute(const application::Route &selected) {
     return {false, "Could not save route reversal; restored route order", {}};
   }
   return {true, "Route reversed; waypoint names preserved", selected.id};
+}
+application::CommandResult DeleteRoute(const application::Route &selected) {
+  Thread();
+  auto *route = Resolve(selected);
+  if (!g_pRouteMan || !pRouteList || !pSelect || !route)
+    return {false, "Route changed; refresh the selection before deleting", {}};
+  // Never stop navigation as a side effect of a delete confirmation.
+  if (route->IsActive() || g_pRouteMan->GetpActiveRoute() == route)
+    return {false, "Stop navigation on this route before deleting it", {}};
+  // The MOB route has its own upstream confirmation and lifecycle.
+  if (route == pAISMOBRoute || !Copy(route).editable)
+    return {false, "This route is protected or being edited and cannot be deleted here", {}};
+  if (gFrame) gFrame->CancelAllMouseRoute();
+  // Same sequence as the stock Route Manager: OpenCPN-owned storage keeps
+  // points shared with other routes or saved as marks; only points used solely
+  // by this route are removed. No separate XNav copy is maintained.
+  NavObj_dB::GetInstance().DeleteRoute(route);
+  const bool deleted = g_pRouteMan->DeleteRoute(route);
+  route = nullptr;
+  if (!deleted) return {false, "Route delete failed; route retained", selected.id};
+  if (gFrame) {
+    gFrame->InvalidateAllCanvasUndo();
+    gFrame->RefreshAllCanvas();
+  }
+  return {true, "Route deleted. Waypoints shared with other routes or saved as marks were kept.",
+          selected.id};
 }
 application::CommandResult EditRoute(const application::Route &selected,
                                      const std::string &name,
@@ -888,23 +954,25 @@ application::CommandResult ClearAnchor(const std::string &id) {
     return {false, "Anchor changed; refresh selection", {}};
   // Upstream may watch any existing user waypoint. Only delete an unchanged
   // OpenNav-created isolated anchor; preserve a shared or repurposed user mark.
+  const auto restore = [&] {
+    if (first) { pAnchorWatchPoint1 = point; g_AW1GUID = wxString::FromUTF8(id); }
+    else { pAnchorWatchPoint2 = point; g_AW2GUID = wxString::FromUTF8(id); }
+  };
   bool removed = false;
   if (point && pWayPointMan &&
-      pWayPointMan->FindWaypointByGuid(id) == point &&
-      (point->GetDescription() == "SKAGER temporary anchor watch" ||
-       point->GetDescription() == "OpenNav temporary anchor watch" ||
-       point->GetDescription() ==
-           "OpenNav anchor watch; radius stored using OpenCPN semantics") &&
-      point->m_bIsolatedMark && !point->IsShared() && Copy(point).removable) {
-    const auto deleted = DeleteWaypoint(Copy(point));
-    if (!deleted.ok) {
-      // Restore the watch if its removal cannot be persisted. Do not claim a
-      // completed clear while leaving an unexpected live chart mark behind.
-      if (first) { pAnchorWatchPoint1 = point; g_AW1GUID = wxString::FromUTF8(id); }
-      else { pAnchorWatchPoint2 = point; g_AW2GUID = wxString::FromUTF8(id); }
+      pWayPointMan->FindWaypointByGuid(id) == point) {
+    switch (RemoveOwnedAnchorMark(id)) {
+    case AnchorMarkRemoval::Removed: removed = true; break;
+    case AnchorMarkRemoval::NotOwned: break;
+    // Restore the watch if its owned mark cannot be removed now. Do not claim
+    // a completed clear while leaving an unexpected live chart mark behind.
+    case AnchorMarkRemoval::Busy:
+      restore();
+      return {false, "Finish moving or editing the anchor mark, then stop the watch", id};
+    case AnchorMarkRemoval::Failed:
+      restore();
       return {false, "Could not remove anchor mark; watch retained", id};
     }
-    removed = true;
   }
   if (first) AnchorAlertOn1 = false;
   else AnchorAlertOn2 = false;
