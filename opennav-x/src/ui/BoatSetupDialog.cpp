@@ -1,6 +1,7 @@
 #include "ui/BoatSetupDialog.h"
 #include "ui/Controls.h"
 #include "ui/ChoiceField.h"
+#include "ui/Sheet.h"
 #include <wx/dialog.h>
 #include <wx/display.h>
 #include <wx/scrolwin.h>
@@ -53,7 +54,7 @@ class BoatSetupDialog final : public wxDialog {
       buttons->Add(button, 1, wxLEFT, FromDIP(8));
       return button;
     };
-    add("Later", [this](wxCommandEvent&) { Destroy(); }, ButtonRole::Quiet);
+    add("Later", [this](wxCommandEvent&) { Dismiss(); }, ButtonRole::Quiet);
     back_ = add("Back", [this](wxCommandEvent&) { if(Capture()) { --step_; Build(); } }, ButtonRole::Normal);
     next_ = add("Continue", [this](wxCommandEvent&) {
       if (!Capture()) return;
@@ -71,9 +72,9 @@ class BoatSetupDialog final : public wxDialog {
     const auto minimum = FromDIP(wxSize(520,420));
     SetMinSize({std::min(minimum.x, bounds.width), std::min(minimum.y, bounds.height)});
     SetSize(bounds);
-    Bind(wxEVT_CLOSE_WINDOW, [this](wxCloseEvent&) { Destroy(); });
+    Bind(wxEVT_CLOSE_WINDOW, [this](wxCloseEvent&) { Dismiss(); });
     Bind(wxEVT_CHAR_HOOK, [this](wxKeyEvent& event) {
-      if(event.GetKeyCode()==WXK_ESCAPE) Destroy(); else event.Skip();
+      if(event.GetKeyCode()==WXK_ESCAPE) Dismiss(); else event.Skip();
     });
     Build();
   }
@@ -92,7 +93,20 @@ class BoatSetupDialog final : public wxDialog {
     field->SetForegroundColour(Colour(Theme(mode_).primary));
     field->SetBackgroundColour(Colour(Theme(mode_).surface));
     field->SetMinSize(FromDIP(wxSize(-1,44)));field->SetMaxLength(index==0?128:64);
+    field->Bind(wxEVT_TEXT,[this](wxCommandEvent& event){ dirty_=true; event.Skip(); });
     content_->Add(field,0,wxEXPAND | wxBOTTOM,FromDIP(18));fields_[index]=field;
+  }
+  // Nothing reaches storage until the final step, so leaving early throws the
+  // whole draft away. Say so once the user has actually entered something;
+  // an untouched dialog still closes without ceremony (SCRUM-344).
+  void Dismiss() {
+    if (dismissing_) return;
+    dismissing_ = true;
+    if (dirty_ && !ConfirmSheet(*this, mode_, "Discard boat setup?",
+            "Nothing entered in this setup has been saved yet. Closing now "
+            "discards it and leaves your existing settings untouched.",
+            "Discard")) { dismissing_ = false; return; }
+    Destroy();
   }
   void Error(const std::string& message) { error_->SetLabel(wxString::FromUTF8(message)); error_->Wrap(FromDIP(580)); Layout(); }
   bool Capture() {
@@ -129,10 +143,12 @@ class BoatSetupDialog final : public wxDialog {
       Label("Interface scale",12);
       scale_=new XNavChoiceField(body_,wxID_ANY,{"100%","125%","150%"},"Setup interface scale");
       scale_->SetSelection((draft_.display.scale_percent-100)/25);scale_->SetLightMode(mode_);
+      scale_->Bind(wxEVT_CHOICE,[this](wxCommandEvent& event){ dirty_=true; event.Skip(); });
       content_->Add(scale_,0,wxEXPAND|wxBOTTOM,FromDIP(20));
       Label("Chart layout",12);
       layout_=new XNavChoiceField(body_,wxID_ANY,{"Balanced","Chart focus","Instrument focus"},"Setup chart layout");
       layout_->SetSelection(static_cast<int>(draft_.display.layout));layout_->SetLightMode(mode_);
+      layout_->Bind(wxEVT_CHOICE,[this](wxCommandEvent& event){ dirty_=true; event.Skip(); });
       content_->Add(layout_,0,wxEXPAND|wxBOTTOM,FromDIP(20));
     } else if(step_==2) {
       Label("Detected onboard observations at this check. Missing, aging and stale sources need attention; detection does not validate an installation.");
@@ -165,6 +181,7 @@ class BoatSetupDialog final : public wxDialog {
   int step_=0; wxScrolledWindow* body_; wxBoxSizer* content_; wxStaticText* error_;
   XNavButton *back_,*next_; std::array<wxTextCtrl*,5> fields_{};
   XNavChoiceField *scale_=nullptr,*layout_=nullptr;
+  bool dirty_=false, dismissing_=false;
 };
 }
 wxDialog* ShowBoatSetupDialog(wxWindow& parent, application::BoatSetupDraft draft,

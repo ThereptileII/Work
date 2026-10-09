@@ -96,6 +96,9 @@ class XNavButton : public wxControl {
   void SetIconSize(int pixels) { if (pixels >= 8 && pixels <= 32) { icon_size_ = pixels; Refresh(); } }
   void SetFloating(bool value = true) { floating_ = value; Refresh(); }
   void SetInlineIcon(bool value = true) { inline_icon_ = value; Refresh(); }
+  // Width an inline-icon button needs to show its whole label: the label
+  // starts 40 DIP in and is ellipsized 12 DIP short of the edge (SCRUM-356).
+  int InlineWidth(int minimum_dip) const;
   void SetCompassRotation(double radians) { if (compass_rotation_ != radians) { compass_rotation_ = radians; Refresh(); } }
   void SetSummary(const wxString &value, const wxString &detail);
   // Prototype sensor-details summary. Input semantics remain those of a button.

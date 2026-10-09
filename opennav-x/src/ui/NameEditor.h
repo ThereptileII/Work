@@ -21,12 +21,17 @@ class XNavNameEditor final : public wxPanel {
   void SaveDraft();
   void CancelDraft();
   void Buttons();
+  void PaintFrame();
   application::NavigationNameDraft draft_;
   Save save_;
   std::function<void(application::CommandResult)> result_;
+  // The prototype's input is a bordered, rounded surface; wxTextCtrl cannot
+  // draw one, so a painted frame hosts the borderless control (SCRUM-347).
+  wxPanel *frame_ = nullptr;
   wxTextCtrl *input_ = nullptr;
   XNavButton *save_button_ = nullptr, *cancel_button_ = nullptr;
-  bool editable_ = false, live_ = true;
+  LightMode light_ = LightMode::Night;
+  bool editable_ = false, live_ = true, focused_ = false;
 };
 // Same themed native sheet used for description editing, with name validation
 // and draft retention before any real storage callback is allowed.

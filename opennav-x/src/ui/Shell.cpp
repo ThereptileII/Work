@@ -234,6 +234,9 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   nav("Instruments", "Vessel instruments", XNavIcon::Instruments, [this]{ShowProduct(ProductPage::Instruments);});
   nav("Anchor", "Anchor watch", XNavIcon::Anchor, [this]{ShowProduct(ProductPage::Anchor);});
   nav("Radar", "Radar availability", XNavIcon::Radar, [this]{ShowProduct(ProductPage::Radar);});
+  // SCRUM-353: forecast weather sits with the other vessel views instead of
+  // three levels down in Settings. The glyph is the prototype's own wind mark.
+  nav("Weather", "Weather", XNavIcon::Wind, [this]{ShowProduct(ProductPage::Weather);});
   tools->AddStretchSpacer();
   // ProductPage::Home is titled "Menu", but ShowPage routes Home/Settings
   // straight to the preferences drawer, so that menu never appears. Name the
@@ -802,7 +805,10 @@ void Shell::ApplyResponsiveLayout() {
   tools->AddSpacer(dip(layout.nav_inset));
   navigation_divider_->SetMinSize(wxSize(dip(layout.navigation-43), dip(1)));
   for (std::size_t i = 0; i < navigation_page_buttons_.size(); ++i) {
-    if (i == 7) tools->AddStretchSpacer();
+    // Settings is always the last destination and sits at the foot of the
+    // rail. Anchor the stretch to it rather than to a fixed index, which put
+    // a newly added destination (Weather, SCRUM-353) at the bottom instead.
+    if (i + 1 == navigation_page_buttons_.size()) tools->AddStretchSpacer();
     auto *button = navigation_page_buttons_[i];
     button->SetMinSize(wxSize(dip(layout.navigation-19), dip(layout.nav_height)));
     tools->Add(button, 0, wxLEFT | wxRIGHT, dip(9));
@@ -1103,6 +1109,7 @@ void Shell::Tick() {
       (label=="Instruments"&&current_title=="Vessel instruments") ||
       (label=="Anchor"&&current_title=="Anchor watch") ||
       (label=="Radar"&&current_title=="Radar status") ||
+      (label=="Weather"&&current_title=="Weather") ||
       (label=="Settings"&&(current_title=="Settings"||current_title=="Menu"));
     button->SetSelected(selected);
   }

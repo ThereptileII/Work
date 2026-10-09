@@ -126,7 +126,8 @@ void XNavInstrumentPanel::Reflow() {
   const int width = ToDIP(GetClientSize().x);
   InstrumentLayout l(width, view_.tiles.size());
   SetMinSize(FromDIP(wxSize(320, l.grid_bottom + 148)));
-  close_->SetSize(FromDIP(width - 112), FromDIP(28), FromDIP(80), FromDIP(44));
+  const int close_width = close_->InlineWidth(80);  // SCRUM-356
+  close_->SetSize(FromDIP(width - 32) - close_width, FromDIP(28), close_width, FromDIP(44));
   const int split = (l.width - 9) / 2;
   rail_->SetSize(FromDIP(32), FromDIP(l.grid_bottom + 20), FromDIP(split),
                  FromDIP(48));

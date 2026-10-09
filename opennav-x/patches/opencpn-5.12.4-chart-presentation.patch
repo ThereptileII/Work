@@ -4457,3 +4457,35 @@ index 200173f30..d4b3718ba 100644
    if (!vp.GetBBox().IntersectOut(m_route.GetBBox()) && m_route.m_bVisible)
      DrawGLRouteLines(vp, canvas, dc);
  
+diff --git a/gui/src/chcanv.cpp b/gui/src/chcanv.cpp
+--- a/gui/src/chcanv.cpp
++++ b/gui/src/chcanv.cpp
+@@ -5980,6 +5980,13 @@
+   xnav_cog_style = opennav::integration::UseChartCogPredictorStyle(
+       g_cog_predictor_width, g_cog_predictor_style, g_cog_predictor_color,
+       static_cast<int>(nominal_line_width_pix));
++  // SCRUM-351: while XNav owns predictor presentation, upstream's own fallback
++  // drawing (a custom ownship icon, a low-accuracy fix) must take the palette
++  // too, never the default red preference colour.
++  if (xnav_cog_style) {
++    wxColour ink;
++    if (opennav::integration::ChartActiveRouteInk(*this, ink)) cPred = ink;
++  }
+ #endif
+   // If the calculated value is greater than the config file spec value, then
+   // use it.
+@@ -6183,6 +6190,14 @@
+ 
+     cPred.Set(g_ownship_HDTpredictor_color);
+     if (cPred == wxNullColour) cPred = PredColor();
++#ifdef OPENNAV_X
++    // SCRUM-351: the heading line re-reads its own preference; keep it in the
++    // palette whenever the XNav geometry above did not take over.
++    if (xnav_cog_style) {
++      wxColour ink;
++      if (opennav::integration::ChartActiveRouteInk(*this, ink)) cPred = ink;
++    }
++#endif
+     float hdt_width =
+         (g_ownship_HDTpredictor_width > 0 ? g_ownship_HDTpredictor_width
+                                           : g_cog_predictor_width * 0.8);

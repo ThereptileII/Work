@@ -4,6 +4,7 @@
 #include <cmath>
 #include <iomanip>
 #include <map>
+#include <tuple>
 #include <sstream>
 
 namespace opennav::application {
@@ -35,7 +36,25 @@ inline bool ValidNavigationName(const std::string &name) {
 struct ChartNameCandidate {
   std::string name;
   double distance_nm = 0;
+  std::string feature;  // S-57 acronym; empty when the producer did not supply it.
 };
+// Search radii in nautical miles, tried in order until a name is found
+// (SCRUM-350). A single fixed cap left most waypoints unnamed.
+inline const std::vector<double> &ChartNameSearchSteps() {
+  static const std::vector<double> steps{1., 2., 4.};
+  return steps;
+}
+// Lower ranks win. A harbour or a shore mark names a place better than a buoy
+// that merely happens to float nearer to it, so type outranks distance.
+inline int ChartNameFeatureRank(const std::string &feature) {
+  static const std::vector<std::string> order{
+      "HRBFAC", "ACHBRT", "BERTHS", "PILPNT", "LNDMRK", "LIGHTS",
+      "BOYLAT", "BOYCAR", "BOYISD", "BOYSAW", "BOYSPP",
+      "BCNLAT", "BCNCAR", "BCNISD", "BCNSAW", "BCNSPP"};
+  const auto it = std::find(order.begin(), order.end(), feature);
+  return it == order.end() ? static_cast<int>(order.size())
+                           : static_cast<int>(it - order.begin());
+}
 inline bool RelevantChartNameFeature(const std::string &feature) {
   // Nearby identifiable places and navigation marks; not depths, hazards,
   // broad sea/land areas, or descriptive text masquerading as an object name.
@@ -46,20 +65,33 @@ inline bool RelevantChartNameFeature(const std::string &feature) {
   return std::find(types.begin(), types.end(), feature) != types.end();
 }
 inline NavigationNameSuggestion SuggestNavigationName(
-    Coordinate position, bool route, const std::vector<ChartNameCandidate> &candidates) {
-  std::map<std::string, double> nearest_by_name;
+    Coordinate position, bool route, const std::vector<ChartNameCandidate> &candidates,
+    double limit_nm = 0) {
+  // Keep the nearest occurrence of each name, and the best rank seen for it.
+  struct Best { double distance_nm; int rank; };
+  std::map<std::string, Best> by_name;
   for (const auto &candidate : candidates) {
     if (!ValidNavigationName(candidate.name) || !std::isfinite(candidate.distance_nm) ||
-        candidate.distance_nm < 0 || candidate.distance_nm > .5) continue;
-    auto [it, added] = nearest_by_name.emplace(candidate.name, candidate.distance_nm);
-    if (!added) it->second = std::min(it->second, candidate.distance_nm);
+        candidate.distance_nm < 0) continue;
+    if (limit_nm > 0 && candidate.distance_nm > limit_nm) continue;
+    const Best entry{candidate.distance_nm, ChartNameFeatureRank(candidate.feature)};
+    auto [it, added] = by_name.emplace(candidate.name, entry);
+    if (!added) {
+      it->second.distance_nm = std::min(it->second.distance_nm, entry.distance_nm);
+      it->second.rank = std::min(it->second.rank, entry.rank);
+    }
   }
-  std::vector<std::pair<double, std::string>> ordered;
-  for (const auto &candidate : nearest_by_name) ordered.push_back({candidate.second, candidate.first});
+  // Rank first, then distance, then name so the result never depends on the
+  // order the chart happened to return objects in. A near-tie is resolved by
+  // this ordering instead of abandoning the name, which was the old behaviour
+  // and left coordinates wherever two marks sat close together.
+  std::vector<std::tuple<int, double, std::string>> ordered;
+  ordered.reserve(by_name.size());
+  for (const auto &entry : by_name)
+    ordered.push_back({entry.second.rank, entry.second.distance_nm, entry.first});
   std::sort(ordered.begin(), ordered.end());
-  // Near-ties within about 46 m are not an unambiguous nearest feature.
-  if (!ordered.empty() && (ordered.size() == 1 || ordered[1].first - ordered[0].first > .025)) {
-    const auto name = (route ? "To " : "") + ordered.front().second;
+  if (!ordered.empty()) {
+    const auto name = (route ? "To " : "") + std::get<2>(ordered.front());
     if (ValidNavigationName(name)) return {name, true};
   }
   std::ostringstream fallback; fallback.imbue(std::locale::classic());
@@ -71,6 +103,19 @@ inline NavigationNameSuggestion SuggestNavigationName(
              << ' ' << std::abs(position.longitude_deg) << (position.longitude_deg < 0 ? 'W' : 'E');
   }
   return {fallback.str(), false};
+}
+// A route is named by where it goes, not by what is nearest one end of it.
+inline NavigationNameSuggestion SuggestRouteName(const std::string &first,
+                                                 const std::string &last) {
+  if (ValidNavigationName(first) && ValidNavigationName(last)) {
+    const auto name = "From " + first + " to " + last;
+    if (ValidNavigationName(name)) return {name, true};
+  }
+  if (ValidNavigationName(last)) {
+    const auto name = "To " + last;
+    if (ValidNavigationName(name)) return {name, true};
+  }
+  return {"Route", false};
 }
 class NavigationNameDraft {
  public:

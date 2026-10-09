@@ -742,6 +742,13 @@ bool XNavDataRail::Layout() {
   return result;
 }
 
+int XNavButton::InlineWidth(int minimum_dip) const {
+  auto &self = const_cast<XNavButton &>(*this);
+  wxClientDC dc(&self);
+  dc.SetFont(UiFont(self, 11));
+  return (std::max)(FromDIP(minimum_dip),
+                    FromDIP(40) + dc.GetTextExtent(GetLabel()).x + FromDIP(14));
+}
 void XNavDataValue::SetLightMode(LightMode mode) {
   if (mode_ != mode) {
     mode_ = mode;
@@ -847,17 +854,20 @@ void XNavDataValue::Paint(wxPaintEvent&) {
     dc.SetFont(UiFont(*this,11));dc.SetTextForeground(Colour(colors.secondary));
     const bool inline_unit=unit_x+dc.GetTextExtent(unit).x<=right;
     if(inline_unit)dc.DrawText(unit,unit_x,value_y+FromDIP(value_size-13));
-    wxString status = wxString::FromUTF8(vessel::QualityName(reading_.quality));
-    if(reading_.quality==vessel::Quality::Live && !sample_.source.empty())
-      status=wxString::FromUTF8(sample_.source);
-    dc.SetFont(UiFont(*this,8));dc.SetTextForeground(Colour(stale?colors.attention:colors.muted));
+    // SCRUM-352: a live value needs no caption. The routine source and age
+    // line is gone from the rail; the source stays in the hover hint and in
+    // source health. Only a value that cannot be fully trusted (aging, stale,
+    // estimated, unavailable) still says so, because that changes its use.
+    wxString status;
+    if(reading_.quality!=vessel::Quality::Live)
+      status=wxString::FromUTF8(vessel::QualityName(reading_.quality));
     // If a long numeric value fills the rail, retain its unit on the status
     // line. Never hide the unit or clip a valid heading at a narrower DPI.
-    if(!inline_unit)status=unit+"  "+status;
-    const auto age=reading_.age ? wxString::Format("%.1f s",reading_.age->count()/1000.0) : wxString{};
-    const int age_width=dc.GetTextExtent(age).x;
-    dc.DrawText(wxControl::Ellipsize(status,dc,wxELLIPSIZE_END,std::max(1,available-age_width-FromDIP(8))),x,detail_y);
-    dc.DrawText(age,right-age_width,detail_y);
+    if(!inline_unit)status=status.empty()?unit:unit+"  "+status;
+    if(!status.empty()){
+      dc.SetFont(UiFont(*this,8));dc.SetTextForeground(Colour(stale?colors.attention:colors.muted));
+      dc.DrawText(wxControl::Ellipsize(status,dc,wxELLIPSIZE_END,std::max(1,available)),x,detail_y);
+    }
     return;
   }
   dc.SetPen(wxPen(Colour(colors.border)));

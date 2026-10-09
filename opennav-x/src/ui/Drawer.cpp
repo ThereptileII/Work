@@ -141,8 +141,11 @@ void XNavDrawer::Arrange() {
   heading_->SetSize(FromDIP(1), FromDIP(1), size.x - FromDIP(2), head);
   body_->SetSize(FromDIP(1), FromDIP(1) + head, size.x - FromDIP(2),
                  (std::max)(1, size.y - head - FromDIP(2)));
-  back_->SetSize(FromDIP(8), FromDIP(8), FromDIP(94), FromDIP(44));
-  close_->SetSize(size.x - FromDIP(96), FromDIP(18), FromDIP(86), FromDIP(44));
+  back_->SetSize(FromDIP(8), FromDIP(8), back_->InlineWidth(94), FromDIP(44));
+  // Sized from the label so "Close" is never ellipsized (SCRUM-356); the
+  // right edge stays where the prototype puts it.
+  const int close_width = close_->InlineWidth(86);
+  close_->SetSize(size.x - FromDIP(10) - close_width, FromDIP(18), close_width, FromDIP(44));
   body_->FitInside();
   body_->Layout();
   auto *renderer = wxGraphicsRenderer::GetDefaultRenderer();

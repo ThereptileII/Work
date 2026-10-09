@@ -1,6 +1,7 @@
 // SCRUM-327..331: pure forecast-wind presentation helpers.
 #include "weather/ForecastView.h"
 #include <iostream>
+#include <cmath>
 #include <stdexcept>
 
 using namespace opennav::weather;
@@ -119,6 +120,34 @@ int main() {
     Check(ArrowSpacingPx(opennav::application::ChartDetailForScale(20000)) == 64 &&
           ArrowSpacingPx(opennav::application::ChartDetailForScale(1e6)) == 120,
           "Spacing follows the shared chart detail levels");
+    // SCRUM-355: a screen grid takes the nearest model sample, but never one
+    // further than about a 0.25 degree model cell.
+    {
+      const std::vector<ForecastWind> grid{Wind(58.25, 15.50, T0, 4), Wind(58.50, 15.75, T0, 9)};
+      const auto near = NearestWindSample(grid, {58.44, 15.62});
+      Check(near && *near == 1, "Harbour cell takes the closest model sample");
+      Check(!NearestWindSample(grid, {55.0, 10.0}), "Far cell refuses a stretched sample");
+      Check(!NearestWindSample({}, {58.44, 15.62}), "No samples, no arrow");
+      Check(!NearestWindSample(grid, {std::nan(""), 15.62}), "Invalid position refused");
+      // Longitude is scaled by latitude: at 58 N a 0.5 degree east step is
+      // only ~0.26 degrees of arc, so it is within reach.
+      Check(NearestWindSample({Wind(58.0, 15.5, T0)}, {58.0, 15.0}).has_value(),
+            "Longitude distance shrinks with latitude");
+      Check(!NearestWindSample({Wind(0.0, 15.5, T0)}, {0.0, 15.0}).has_value(),
+            "Same longitude step is too far at the equator");
+      // Antimeridian: 179.9 E and 179.9 W are 0.2 degrees apart, not 359.8.
+      Check(NearestWindSample({Wind(10.0, -179.9, T0)}, {10.0, 179.9}).has_value(),
+            "Distance wraps at the antimeridian");
+    }
+    {
+      const double pitch = ArrowGridPitch(1192, 690, 64);
+      Check(pitch >= 64, "Pitch never tighter than the declutter spacing");
+      Check(std::ceil(1192 / pitch) * std::ceil(690 / pitch) <= kMaxWindArrows,
+            "Whole view fits under the arrow cap");
+      Check(ArrowGridPitch(200, 150, 120) == 120, "Small view keeps the base spacing");
+      Check(ArrowGridPitch(0, 100, 64) == 0 && ArrowGridPitch(100, 100, 0) == 0,
+            "Degenerate input gives no grid");
+    }
     const auto tri = ArrowTriangles(100, 100, 0, 10, 1);
     Check(tri.size() == 18, "Arrow is three triangles");
     Check(Near(tri[12], 100) && tri[13] < 100 - ArrowLengthPx(10) / 2 + 1,

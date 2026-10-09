@@ -120,7 +120,11 @@ void XNavRadarPanel::Reflow() {
   const auto rect = [this](int x, int y, int w, int h) {
     return wxRect(FromDIP(wxPoint(x, y)), FromDIP(wxSize(w, h)));
   };
-  close_->SetSize(rect(32 + l.width - 86, 28, 86, 44));
+  {
+    const int close_width = close_->InlineWidth(86);  // SCRUM-356
+    close_->SetSize(FromDIP(32 + l.width) - close_width, FromDIP(28),
+                    close_width, FromDIP(44));
+  }
   const int y = l.ControlsY(), right = l.right - 8;
   active_->SetSize(rect(right - 48, 40, 48, 52));
   guard_->SetSize(rect(right - 48, 414, 48, 58));

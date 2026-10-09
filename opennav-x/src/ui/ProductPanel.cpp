@@ -101,6 +101,7 @@ void ProductPanel::Back() {
   ProductPage parent = ProductPage::Home;
   switch (page_) {
   case ProductPage::Instruments:
+  case ProductPage::Weather:  // A rail destination now (SCRUM-353): back is the chart.
   case ProductPage::Home: if (actions_.chart) actions_.chart(); return;
   case ProductPage::RouteDetail: parent = ProductPage::Routes; break;
   case ProductPage::WaypointDetail: parent = ProductPage::Waypoints; break;
@@ -111,7 +112,6 @@ void ProductPanel::Back() {
   case ProductPage::EnergySettings: case ProductPage::VesselSettings:
   case ProductPage::NavigationSettings: case ProductPage::Sources:
   case ProductPage::Display: case ProductPage::Radar:
-  case ProductPage::Weather: parent = ProductPage::Settings; break;
   case ProductPage::Commissioning: case ProductPage::FieldReport: parent = ProductPage::System; break;
   default: break;
   }

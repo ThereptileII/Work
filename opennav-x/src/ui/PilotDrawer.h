@@ -30,7 +30,7 @@ private:
   wxPanel *panel_ = nullptr;
   std::array<XNavButton *, 4> course_{};
   std::array<XNavButton *, 4> modes_{};
-  XNavButton *enable_ = nullptr, *settings_ = nullptr;
+  XNavButton *enable_ = nullptr;
   bool simulated_ = false, queued_ = false;
 };
 } // namespace opennav::ui

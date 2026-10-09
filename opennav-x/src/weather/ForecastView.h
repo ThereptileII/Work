@@ -266,6 +266,47 @@ inline std::vector<std::size_t> DecimateArrows(const std::vector<ScreenPoint> &p
   return kept;
 }
 
+// SCRUM-355: arrows are laid on a screen grid, each taking the nearest model
+// sample, rather than only at the sample points. GFS is a 0.25 degree model,
+// so at harbour scale the nearest sample usually lies outside the view and
+// point-only drawing showed no arrows at all. A sample is never stretched past
+// about one model cell: where the fetched grid is coarser than that, cells stay
+// empty instead of presenting wind the forecast did not give for that place.
+constexpr double kMaxSampleDistanceDeg = 0.35;
+inline std::optional<std::size_t> NearestWindSample(const std::vector<ForecastWind> &winds,
+                                                    Coordinate at,
+                                                    double max_deg = kMaxSampleDistanceDeg) {
+  if (!std::isfinite(at.latitude_deg) || !std::isfinite(at.longitude_deg) ||
+      std::abs(at.latitude_deg) > 90 || !(max_deg > 0))
+    return std::nullopt;
+  // Equirectangular: longitude shrinks with latitude.
+  const double k = std::cos(at.latitude_deg * 3.14159265358979323846 / 180.0);
+  std::optional<std::size_t> best;
+  double best_d2 = max_deg * max_deg;
+  for (std::size_t i = 0; i < winds.size(); ++i) {
+    const auto c = WindPosition(winds[i]);
+    const double dlat = c.latitude_deg - at.latitude_deg;
+    const double dlon = std::remainder(c.longitude_deg - at.longitude_deg, 360.0) * k;
+    const double d2 = dlat * dlat + dlon * dlon;
+    if (d2 < best_d2 || (!best && d2 == best_d2)) { best_d2 = d2; best = i; }
+  }
+  return best;
+}
+// Screen-grid pitch: never tighter than the declutter spacing, and widened
+// until the whole view fits under the arrow cap, so coverage stays even
+// instead of the cap filling only the top rows.
+inline double ArrowGridPitch(double width, double height, double min_spacing,
+                             std::size_t max_count = kMaxWindArrows) {
+  if (!(width > 0) || !(height > 0) || !(min_spacing > 0) || max_count == 0) return 0;
+  double pitch = min_spacing;
+  for (int guard = 0; guard < 64; ++guard) {
+    if (std::ceil(width / pitch) * std::ceil(height / pitch) <= static_cast<double>(max_count))
+      break;
+    pitch *= 1.15;
+  }
+  return pitch;
+}
+
 // Arrow length grows with speed, bounded (logical px at 100%).
 inline double ArrowLengthPx(double speed_kn) {
   if (!std::isfinite(speed_kn) || speed_kn < 0) return 0;

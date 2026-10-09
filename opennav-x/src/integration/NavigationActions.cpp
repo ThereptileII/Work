@@ -102,9 +102,18 @@ MakeNavigationActions(MyFrame &frame,
     // Never replace a user-provided name, even when chart context changes.
     if (!route->m_RouteNameString.empty())
       return application::NavigationNameSuggestion{route->m_RouteNameString.ToStdString(wxConvUTF8), false};
-    const auto *destination = route->GetPoint(route->GetnPoints());
-    return destination ? CopyNavigationNameSuggestion(frame, {destination->m_lat, destination->m_lon}, true)
-                       : application::NavigationNameSuggestion{"Route", false};
+    // A route is named by where it runs from and to, not by whatever happens
+    // to lie near its last point (SCRUM-350).
+    const auto endpoint = [&frame](RoutePoint *point) {
+      if (!point) return std::string{};
+      const auto own = point->GetName().Trim(true).Trim(false).ToStdString(wxConvUTF8);
+      if (application::ValidNavigationName(own)) return own;
+      const auto suggested = CopyNavigationNameSuggestion(
+          frame, {point->m_lat, point->m_lon}, false);
+      return suggested.from_chart ? suggested.name : std::string{};
+    };
+    return application::SuggestRouteName(endpoint(route->GetPoint(1)),
+                                         endpoint(route->GetPoint(route->GetnPoints())));
   };
   a.view_ais = [&frame, position](int mmsi) {
     const auto now = vessel::Clock::now();

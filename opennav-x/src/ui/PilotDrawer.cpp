@@ -19,7 +19,7 @@ XNavPilotDrawer::XNavPilotDrawer(wxWindow &owner, PilotDrawerActions callbacks)
   SetHeading("HELM CONTROL", "Autopilot", false);
   panel_ = new wxPanel(body_, wxID_ANY);
   panel_->SetName("Pilot heading and controls");
-  panel_->SetMinSize(FromDIP(wxSize(300, 728)));
+  panel_->SetMinSize(FromDIP(wxSize(300, 496)));
   panel_->SetBackgroundStyle(wxBG_STYLE_PAINT);
   panel_->Bind(wxEVT_PAINT, &XNavPilotDrawer::Paint, this);
   panel_->Bind(wxEVT_SIZE, [this](wxSizeEvent &e) {
@@ -59,13 +59,6 @@ XNavPilotDrawer::XNavPilotDrawer(wxWindow &owner, PilotDrawerActions callbacks)
     queued_ = true;
     CallAfter([this] { Toggle(); });
   });
-  settings_ = new XNavButton(panel_, wxID_ANY, "Autopilot status & diagnostics",
-                             "Autopilot status & diagnostics");
-  settings_->SetRole(ButtonRole::Quiet);
-  settings_->Bind(wxEVT_BUTTON, [this](wxCommandEvent &) {
-    if (actions_.settings)
-      CallAfter([this] { actions_.settings(); });
-  });
   content_->Add(panel_, 0, wxEXPAND);
   RefreshControls();
 }
@@ -82,8 +75,10 @@ void XNavPilotDrawer::Arrange() {
     modes_[i]->SetSize(rect((i % 2) * (width + 9.) / 2., 291 + 68 * (i / 2),
                             (width - 9.) / 2., 48));
   }
-  enable_->SetSize(rect(width - 48., 422, 48., 49));
-  settings_->SetSize(rect(0, 676, width, 48));
+  // The control that arms the helm is the reason this drawer exists. It gets
+  // full width directly under the mode grid, inside the visible area, instead
+  // of a 48 px square below the fold that could not show its own label.
+  enable_->SetSize(rect(0, 424, width, 56));
 }
 void XNavPilotDrawer::Update(const adapters::PilotView &pilot,
                              vessel::Time pilot_now,
@@ -145,8 +140,6 @@ void XNavPilotDrawer::RefreshControls() {
   enable_->SetHint(enable_label);
   enable_->SetSelected(view_.enabled);
   enable_->SetLightMode(light_);
-  settings_->Enable(bool(actions_.settings));
-  settings_->SetLightMode(light_);
 }
 void XNavPilotDrawer::Request(adapters::PilotAction action, double delta) {
   if (!Allowed(action)) {
@@ -205,7 +198,11 @@ void XNavPilotDrawer::Paint(wxPaintEvent &) {
   dc.SetBackground(wxBrush(Colour(p.c.background)));
   dc.Clear();
   const int width = panel_->ToDIP(panel_->GetClientSize().x);
-  const int tag = p.Tag(W(view_.state), 0, 0, width, view_.pending);
+  // One pill says what the pilot is doing and whether we are actually hearing
+  // it, the way the prototype reads "AUTO - CONNECTED" (SCRUM-348).
+  const auto live = view_.state + (view_.available ? " \xC2\xB7 CONNECTED"
+                                                   : " \xC2\xB7 NO FEEDBACK");
+  const int tag = p.Tag(W(live), 0, 0, width, view_.pending);
   p.Tag(view_.output_unavailable ? "STATUS ONLY"
                                 : view_.enabled ? "CONTROL ENABLED" : "CONTROL OFF",
         tag + 8, 0, width - tag - 8,

@@ -105,15 +105,16 @@ PreviewPanel::PreviewPanel(wxWindow *parent)
   close_->SetRole(ButtonRole::Quiet);
   close_->SetIcon(XNavIcon::Close);
   close_->SetInlineIcon();
-  close_->SetMinSize(FromDIP(wxSize(80,44)));
+  close_->SetMinSize(wxSize(close_->InlineWidth(80),FromDIP(44)));
   close_->Bind(wxEVT_BUTTON,[this](wxCommandEvent&){if(close_action_)close_action_();});
   Bind(wxEVT_PAINT, &PreviewPanel::Paint, this);
   Bind(wxEVT_SIZE, [this](wxSizeEvent &e) {
     // Child positions are viewport-relative, but the header belongs to the
     // scrolling content. A resize must not add the current scroll offset.
+    const int close_width = close_->InlineWidth(80);  // SCRUM-356
     const auto header = CalcScrolledPosition(
-        wxPoint(GetClientSize().x-FromDIP(112),FromDIP(28)));
-    close_->SetSize(header.x,header.y,FromDIP(80),FromDIP(44));
+        wxPoint(GetClientSize().x-FromDIP(32)-close_width,FromDIP(28)));
+    close_->SetSize(header.x,header.y,close_width,FromDIP(44));
     Refresh();
     e.Skip();
   });

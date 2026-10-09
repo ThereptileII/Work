@@ -244,18 +244,21 @@ application::NavigationNameSuggestion CopyNavigationNameSuggestion(
         charts.insert(static_cast<ChartBase *>(entry->pChart));
     }
   }
-  std::vector<application::ChartNameCandidate> names;
   // GetFirstQuiltChart/GetNextQuiltChart can open charts. Use only existing
   // cache pointers above; never load charts or call plugin/network lookup.
   // The pinned native query owns its list, not the borrowed chart objects.
-  const double radius = .5 / (60. * std::cos(position.latitude_deg * std::acos(-1.) / 180.));
+  bool overflowed = false;
+  const auto collect = [&](double radius_nm) {
+    std::vector<application::ChartNameCandidate> names;
+    const double radius =
+        radius_nm / (60. * std::cos(position.latitude_deg * std::acos(-1.) / 180.));
   for (auto *base : charts) {
     auto *chart = dynamic_cast<s57chart *>(base);
     if (!chart) continue;
     std::unique_ptr<ListOfObjRazRules> objects(chart->GetObjRuleListAtLatLon(
         position.latitude_deg, position.longitude_deg, radius, &canvas->GetVP(), MASK_POINT));
     if (!objects) continue;
-    if (objects->GetCount() > 1024) return fallback();
+    if (objects->GetCount() > 1024) { overflowed = true; return names; }
     for (auto *node = objects->GetFirst(); node; node = node->GetNext()) {
       const auto *rule = node->GetData();
       auto *object = rule ? rule->obj : nullptr;
@@ -276,11 +279,21 @@ application::NavigationNameSuggestion CopyNavigationNameSuggestion(
       double distance = 0;
       DistanceBearingMercator(position.latitude_deg, position.longitude_deg,
                               object->m_lat, object->m_lon, nullptr, &distance);
-      names.push_back({String(name), distance});
-      if (names.size() > 1024) return fallback();
+      names.push_back({String(name), distance, std::string(object->FeatureName, 6)});
+      if (names.size() > 1024) { overflowed = true; return names; }
     }
   }
-  return application::SuggestNavigationName(position, route, names);
+    return names;
+  };
+  // Widen in steps rather than giving up at one fixed radius (SCRUM-350).
+  for (const double step : application::ChartNameSearchSteps()) {
+    const auto names = collect(step);
+    if (overflowed) return fallback();
+    const auto suggestion =
+        application::SuggestNavigationName(position, route, names, step);
+    if (suggestion.from_chart) return suggestion;
+  }
+  return fallback();
 }
 application::WaypointContext CopyWaypointContext(
     const std::string &id, const vessel::Navigation &position, vessel::Time now) {

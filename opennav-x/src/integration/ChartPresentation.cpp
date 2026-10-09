@@ -532,8 +532,9 @@ std::string ChartPresentationStatus() {
 }
 bool ChartScaleGeometry(ChartCanvas &canvas, int &x, int &y,
                         int &reference_width) {
-  if (!wxIsMainThread() || !xnav_mode || !active ||
-      canvas.GetClientSize().x < canvas.FromDIP(480)) return false;
+  // Narrow canvases included: in XNav the card is never drawn (SCRUM-358), and
+  // returning false here would hand the paint back to upstream's scale bar.
+  if (!wxIsMainThread() || !xnav_mode || !active) return false;
   // .map-bottom-left: 28px inset, native Follow boat width 142px, 25px gap.
   x = canvas.FromDIP(28 + 142 + 25);
   // The prototype puts the bracket above its label, with a 5px gap. Project
@@ -549,39 +550,14 @@ bool ChartScaleGeometry(ChartCanvas &canvas, int &x, int &y,
 }
 bool DrawChartScale(ocpnDC &dc, ChartCanvas &canvas, const wxString &label,
                     int x, int y, int length, wxRect &bounds) {
-  if (!wxIsMainThread() || !xnav_mode || !active || length <= 0 ||
-      x < 0 || y < 0 || length > canvas.GetClientSize().x - x) return false;
-  const auto mode = canvas.GetColorScheme() == GLOBAL_COLOR_SCHEME_NIGHT
-      ? ui::LightMode::Night : canvas.GetColorScheme() == GLOBAL_COLOR_SCHEME_DUSK
-      ? ui::LightMode::Dusk : ui::LightMode::Day;
-  const auto ink = ui::Colour(ui::FloatingTheme(mode).secondary);
-  const auto old_font = dc.GetFont(); const auto old_ink = dc.GetTextForeground();
-  const auto old_pen = dc.GetPen(); const auto old_brush = dc.GetBrush();
-  dc.SetFont(ui::UiFont(canvas, 8)); dc.SetTextForeground(ink);
-  int width = 0, height = 0; dc.GetTextExtent(label, &width, &height);
-  const int arm = canvas.FromDIP(5), gap = canvas.FromDIP(5);
-  const int top = y - arm, bottom = y + gap + height;
-  if (top >= 0 && bottom <= canvas.GetClientSize().y) {
-    // A real ENC can have a sounding directly behind this legend. Give the
-    // scale a small neutral backing so charted depth cannot read as scale text.
-    // The illustrative HTML never exercises this overlap; distance is still
-    // the exact upstream result, and the legend's content geometry is unchanged.
-    const int pad = canvas.FromDIP(4);
-    dc.SetPen(*wxTRANSPARENT_PEN);
-    dc.SetBrush(wxBrush(ui::Colour(ui::FloatingTheme(mode).surface)));
-    dc.DrawRoundedRectangle(x - pad, top - pad,
-        (std::max)(length, width) + 2 * pad, bottom - top + 1 + 2 * pad,
-        canvas.FromDIP(3));
-    dc.SetPen(wxPen(ink, canvas.FromDIP(1)));
-    dc.DrawText(label, x, y + gap);
-    dc.DrawLine(x, y - arm, x, y);
-    dc.DrawLine(x, y, x + length, y);
-    dc.DrawLine(x + length, y, x + length, y - arm);
-    bounds = wxRect(x - pad, top - pad, (std::max)(length, width) + 2 * pad,
-                    bottom - top + 1 + 2 * pad);
-  }
-  dc.SetBrush(old_brush); dc.SetPen(old_pen); dc.SetFont(old_font); dc.SetTextForeground(old_ink);
-  return top >= 0 && bottom <= canvas.GetClientSize().y;
+  if (!wxIsMainThread() || !xnav_mode || !active) return false;
+  // SCRUM-358: the scale card is removed from the main chart view; the zoom
+  // control already shows the ratio. Claiming the paint keeps upstream's own
+  // scale bar from appearing in its place, and an empty rect leaves nothing
+  // for a click to land on.
+  (void)dc; (void)canvas; (void)label; (void)x; (void)y; (void)length;
+  bounds = wxRect();
+  return true;
 }
 application::CommandResult SetXNavChartRequested(bool enabled) {
   if (!wxIsMainThread() || !preferences || !xnav_mode)
