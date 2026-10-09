@@ -220,7 +220,7 @@ private:
         }
         Check(!shell_->DrawerRegion(),"Escape closes the integrated chart drawer");
         chart_state_.ais_vessels.visible=false;
-        Press(frame_,"Open navigation menu");break;
+        Press(frame_,"Settings and preferences");break;
       case 16:
         settings_drawer_=dynamic_cast<ui::XNavSettingsDrawer *>(wxWindow::FindWindowByName("OpenNav preferences",frame_));
         Check(settings_drawer_ && settings_drawer_->IsShownOnScreen(),"Settings opens through the Shell navigation entry");

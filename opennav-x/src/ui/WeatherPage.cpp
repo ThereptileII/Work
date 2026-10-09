@@ -17,6 +17,20 @@ namespace {
 using weather::ForecastDisplay;
 wxString W(const std::string &s) { return wxString::FromUTF8(s); }
 weather::WallTime WallNow() { return weather::WallTime::clock::now(); }
+// weather::UnavailableReason sends the reader to Settings > Weather, which is
+// correct from the chart and the vessel panel but points at this very page when
+// it is shown here. Name the control that is actually in front of them instead
+// (SCRUM-336). Every other state keeps the shared wording.
+std::string ReasonHere(const weather::ForecastSnapshot &s, weather::WallTime now) {
+  switch (s.state) {
+  case weather::ForecastState::Disabled:
+    return "Weather forecasts are off. Choose Enabled below to turn them on.";
+  case weather::ForecastState::NoCredential:
+    return "No GRIBstream token stored. Choose Save token below to add one.";
+  default:
+    return weather::UnavailableReason(s, now);
+  }
+}
 wxString LocalTime(weather::WallTime t) {
   return wxDateTime(static_cast<time_t>(
       std::chrono::duration_cast<std::chrono::seconds>(t.time_since_epoch()).count()))
@@ -77,7 +91,7 @@ void ProductPanel::WeatherPage() {
            split + 12, 100, 12, p.c.secondary, false, width - split - 24);
     const auto display = weather::DisplayState(weather_, now);
     if (display == ForecastDisplay::Unavailable) {
-      p.Wrapped(W(weather::UnavailableReason(weather_, now)), 24, 56, 14, 22, split - 48,
+      p.Wrapped(W(ReasonHere(weather_, now)), 24, 56, 14, 22, split - 48,
                 p.c.secondary, 4);
       return;
     }
@@ -312,7 +326,7 @@ void ProductPanel::RouteForecast() {
     const auto forecast = weather::AssembleRouteForecast(points, from_vessel, weather_, now, sog,
                                                          "current SOG");
     if (forecast.display == ForecastDisplay::Unavailable) {
-      p.Wrapped(W(weather::UnavailableReason(weather_, now)), 0, 0, 13, 20, width, p.c.secondary, 3);
+      p.Wrapped(W(ReasonHere(weather_, now)), 0, 0, 13, 20, width, p.c.secondary, 3);
       return;
     }
     const bool stale = forecast.display == ForecastDisplay::Stale;

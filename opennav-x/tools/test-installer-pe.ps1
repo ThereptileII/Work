@@ -7,7 +7,7 @@ $source = Join-Path (Split-Path $PSScriptRoot -Parent) 'installer/windows/Lifecy
 $tokens = $null; $errors = $null
 $ast = [Management.Automation.Language.Parser]::ParseFile($source, [ref]$tokens, [ref]$errors)
 if ($errors.Count) { throw 'Lifecycle.ps1 does not parse.' }
-$names = @('PlainPath','RelativePath','PeU16','PeU32','PeRvaOffset',
+$names = @('PlainPath','RelativePath','PeU16','PeU32','PeMachine','PeRvaOffset',
   'PeImportName','GetPeImports','GetCandidateSystemX86','AssertCandidateTlsRuntime')
 $definitions = @($ast.FindAll({
   param($node)
@@ -22,6 +22,10 @@ if ([Environment]::OSVersion.Platform -ne [PlatformID]::Win32NT) {
   function RelativePath([string]$Base, [string]$Name) { Join-Path $Base $Name }
   function GetCandidateSystemX86 { return $script:fixtureSystem }
 }
+# The gate is exercised without the installer's top-level transaction, so it
+# has no session log. Capture what it reports instead of writing one.
+$script:fixtureLog = New-Object 'System.Collections.Generic.List[string]'
+function Log([string]$Message) { $script:fixtureLog.Add($Message) }
 
 function SetU16([byte[]]$Bytes, [int]$At, [int]$Value) {
   [Array]::Copy([BitConverter]::GetBytes([uint16]$Value), 0, $Bytes, $At, 2)
@@ -104,6 +108,30 @@ try {
   NewPe (Join-Path $app 'helper.drv') 'libeay32.dll'
   RequireFailure { AssertCandidateTlsRuntime (Join-Path $temp 'stage') } 'Unsupported legacy TLS runtime dependency in candidate: import libeay32.dll'
   Remove-Item -LiteralPath (Join-Path $app 'helper.drv')
+  # SCRUM-334: a retained third-party plugin binary that is not an x86 image
+  # cannot be loaded by the 32-bit host, so it is skipped for import scanning
+  # instead of aborting the installation. rtlsdr_pi ships such a file.
+  NewPe $plugin 'kernel32.dll'
+  [byte[]]$foreign = [IO.File]::ReadAllBytes($plugin)
+  SetU16 $foreign 0x84 0x8664
+  [IO.File]::WriteAllBytes($plugin, $foreign)
+  if ((PeMachine $plugin) -ne 0x8664) { throw 'PeMachine did not report the foreign machine type.' }
+  $script:fixtureLog.Clear()
+  AssertCandidateTlsRuntime (Join-Path $temp 'stage')
+  if (-not (@($script:fixtureLog) -match 'Skipped non-x86 binary')) { throw 'Skipping a foreign binary was not reported.' }
+  # The skip does not depend on what the unloadable binary imports.
+  NewPe $plugin 'libeay32.dll'
+  [byte[]]$foreign = [IO.File]::ReadAllBytes($plugin)
+  SetU16 $foreign 0x84 0x8664
+  [IO.File]::WriteAllBytes($plugin, $foreign)
+  AssertCandidateTlsRuntime (Join-Path $temp 'stage')
+  # An x86 binary carrying the same import is still refused, so the gate has
+  # not been weakened for anything the host can actually load.
+  NewPe $plugin 'libeay32.dll'
+  if ((PeMachine $plugin) -ne 0x14c) { throw 'PeMachine did not report the x86 machine type.' }
+  RequireFailure { AssertCandidateTlsRuntime (Join-Path $temp 'stage') } 'Unsupported legacy TLS runtime dependency in candidate: import libeay32.dll'
+  # Malformed x86 images keep failing with their exact diagnosis; the skip
+  # covers only a cleanly parsed foreign machine type.
   NewPe $plugin 'kernel32.dll'
   [byte[]]$broken = [IO.File]::ReadAllBytes($plugin)
   SetU32 $broken 0x300 1; SetU32 $broken 0x30c 0x7fffffff

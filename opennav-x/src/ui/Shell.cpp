@@ -235,7 +235,10 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   nav("Anchor", "Anchor watch", XNavIcon::Anchor, [this]{ShowProduct(ProductPage::Anchor);});
   nav("Radar", "Radar availability", XNavIcon::Radar, [this]{ShowProduct(ProductPage::Radar);});
   tools->AddStretchSpacer();
-  nav("Settings", "Open navigation menu", XNavIcon::Settings, [this]{ShowProduct(ProductPage::Home);});
+  // ProductPage::Home is titled "Menu", but ShowPage routes Home/Settings
+  // straight to the preferences drawer, so that menu never appears. Name the
+  // rail item after where the press actually lands (SCRUM-337).
+  nav("Settings", "Settings and preferences", XNavIcon::Settings, [this]{ShowProduct(ProductPage::Home);});
   vessel_profile_ = Button(left,"Vessel profile","Vessel profile / name not configured",[this] {
     ShowSettings();settings_drawer_->Select(SettingsSection::Vessel);
   });

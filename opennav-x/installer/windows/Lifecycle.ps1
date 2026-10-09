@@ -562,6 +562,22 @@ function PeU32([byte[]]$Bytes, [long]$At) {
   if ($At -lt 0 -or $At -gt $Bytes.Length - 4) { throw 'Truncated PE uint32.' }
   return [BitConverter]::ToUInt32($Bytes, [int]$At)
 }
+function PeMachine([string]$Path) {
+  # Header-only machine-type probe used to pre-filter the import scan. Returns
+  # 0 when the file is not a readable PE, so such files still reach
+  # GetPeImports and fail there with its exact diagnosis; only a cleanly
+  # parsed non-x86 machine type is reported for skipping.
+  $stream = [IO.File]::Open($Path, [IO.FileMode]::Open, [IO.FileAccess]::Read, [IO.FileShare]::Read)
+  try {
+    if ($stream.Length -lt 256) { return 0 }
+    [byte[]]$head = New-Object byte[] 1024
+    $read = $stream.Read($head, 0, $head.Length)
+    if ($read -lt 64 -or (PeU16 $head 0) -ne 0x5a4d) { return 0 }
+    $pe = [long](PeU32 $head 60)
+    if ($pe -lt 0 -or $pe -gt $read - 6 -or (PeU32 $head $pe) -ne 0x4550) { return 0 }
+    return [int](PeU16 $head ($pe + 4))
+  } finally { $stream.Dispose() }
+}
 function PeRvaOffset([byte[]]$Bytes, $Sections, [long]$Rva, [long]$Length) {
   if ($Rva -le 0 -or $Length -le 0 -or $Length -gt 1048576) { throw 'Invalid PE RVA range.' }
   foreach ($section in $Sections) {
@@ -688,6 +704,17 @@ function AssertCandidateTlsRuntime([string]$Directory) {
   while ($binaries.Count -gt 0) {
     $binary = $binaries.Dequeue()
     if (-not $seen.Add($binary)) { continue }
+    # This walk exists to find a legacy TLS runtime dependency, not to gate
+    # architecture. A binary whose machine type is not x86 cannot be loaded by
+    # the 32-bit OpenCPN host, so it cannot contribute such an import. Imported
+    # third-party plugins do ship them (rtlsdr_pi carries an x64 airspy.dll),
+    # and refusing those aborted the whole update for an unrelated reason. The
+    # filename sweep above still covers every file whatever its architecture.
+    $machine = PeMachine $binary
+    if ($machine -ne 0 -and $machine -ne 0x14c) {
+      Log ("Skipped non-x86 binary for import scanning: $binary")
+      continue
+    }
     foreach ($name in @(GetPeImports $binary)) {
       if ($name -ieq 'libeay32.dll' -or $name -ieq 'ssleay32.dll') {
         throw "Unsupported legacy TLS runtime dependency in candidate: import $name in $binary"
