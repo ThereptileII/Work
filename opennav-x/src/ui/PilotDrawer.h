@@ -41,6 +41,6 @@ private:
   // binding; the session is enabled as soon as it does, or abandoned.
   std::optional<vessel::Time> enable_after_bind_;
   wxString notice_;
-  std::string adapter_status_;
+  wxString blocker_;
 };
 } // namespace opennav::ui

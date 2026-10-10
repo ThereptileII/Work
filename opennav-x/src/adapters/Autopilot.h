@@ -67,6 +67,8 @@ struct PilotView {
   bool enabled = false, fresh = false;
   std::string adapter_status;
   bool output_unavailable = false;
+  // Operator-fixable reason commands cannot be sent; empty when none known.
+  std::string control_blocker;
 };
 class ManualAutopilot {
 public:

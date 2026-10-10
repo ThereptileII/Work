@@ -141,6 +141,19 @@ std::string OpenCPNPilot::Description() const {
              ? pilot_.Status()
              : status_.Description(vessel::Clock::now());
 }
+std::string OpenCPNPilot::ControlBlocker() const {
+  MainThread();
+  auto iface = binding_.interface_id;
+  if (iface.empty())
+    if (const auto detected = status_.Detected(vessel::Clock::now()))
+      iface = detected->interface_id;
+  auto *driver = iface.empty() ? nullptr : Driver(iface);
+  if (!driver) return {};
+  const auto endpoint = Endpoint(driver);
+  if (!endpoint.enabled || !endpoint.connected || endpoint.bidirectional) return {};
+  return "Turn on \"send data\" for the " + iface +
+         " NMEA 2000 connection in OpenCPN Connections";
+}
 std::optional<adapters::St4000Binding> OpenCPNPilot::DetectedBinding() const {
   MainThread();
   return status_.Detected(vessel::Clock::now());

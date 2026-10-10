@@ -26,6 +26,10 @@ public:
   // The single live pilot seen on OpenCPN's receive connections, offered for
   // an explicit operator binding (never permission). Empty when ambiguous.
   std::optional<adapters::St4000Binding> DetectedBinding() const;
+  // Plain-language reason the pilot's connection cannot carry commands (the
+  // operator can fix it in OpenCPN), or empty. Unlike AutoTrack, SKAGER only
+  // transmits where the user enabled output on the connection.
+  std::string ControlBlocker() const;
   PilotStatusDiscovery::Diagnostics DiscoveryDiagnostics(vessel::Time now) const;
   PilotTrafficDiagnostics::Snapshot TrafficDiagnostics() const;
 

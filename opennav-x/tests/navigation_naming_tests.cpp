@@ -1,4 +1,5 @@
 #include "application/NavigationNaming.h"
+#include <cmath>
 #include <iostream>
 #include <limits>
 #include <stdexcept>
@@ -41,9 +42,30 @@ int main() {
   Check(SuggestRouteName("Djurholmen","Linkoping").name=="From Djurholmen to Linkoping","route from and to");
   Check(SuggestRouteName("","Linkoping").name=="To Linkoping","route falls back to destination");
   Check(!SuggestRouteName("","").from_chart && SuggestRouteName("","").name=="Route","route fallback without endpoints");
+  // Generated point names are not quoted in a route name.
+  for (const char *generated : {"001","12","WP 3","WP007","Waypoint 58.45316N 15.60099E","Route 1.00000S 2.00000W"})
+    Check(GeneratedNavigationName(generated),"generated name recognised");
+  for (const char *chosen : {"Djurholmen","Linkopings gasthamn","Pier 3","N1","Harbor Island"})
+    Check(!GeneratedNavigationName(chosen),"chosen name kept");
   Check(!SuggestNavigationName(position,true,{{std::string(127,'a'),.1}}).from_chart,"prefix bound");
   Check(RelevantChartNameFeature("HRBFAC") && RelevantChartNameFeature("LIGHTS"),"real relevant classes");
-  Check(!RelevantChartNameFeature("DEPARE") && !RelevantChartNameFeature("WRECKS") && !RelevantChartNameFeature("LNDARE"),"exclude areas hazards");
+  // Lake and archipelago charts name islands, regions and bays, not marks.
+  Check(RelevantChartNameFeature("LNDARE") && RelevantChartNameFeature("LNDRGN") &&
+        RelevantChartNameFeature("SEAARE") && RelevantChartNameFeature("BUAARE"),"named areas are relevant");
+  Check(!RelevantChartNameFeature("DEPARE") && !RelevantChartNameFeature("WRECKS") &&
+        !RelevantChartNameFeature("OBSTRN") && !RelevantChartNameFeature("UNSARE"),"exclude depths hazards");
+  Check(SuggestNavigationName(position,false,{{"Roxen",0,"SEAARE"},{"Djurholmen",.6,"LNDARE"}}).name=="Djurholmen",
+        "an island names a waypoint before the lake it lies in");
+  Check(SuggestNavigationName(position,false,{{"Djurholmen",.6,"LNDARE"},{"Storgrundet",.3,"LNDRGN"}}).name=="Storgrundet",
+        "islands and land regions share a tier, so the nearer wins");
+  Check(SuggestNavigationName(position,false,{{"Roxen",0,"SEAARE"}}).name=="Roxen","the water body is the last resort");
+  Check(SuggestNavigationName(position,false,{{"Djurholmen",.2,"LNDARE"},{"Linkopings gasthamn",.8,"HRBFAC"}}).name=="Linkopings gasthamn",
+        "a harbour still outranks an island");
+  // Area sampling rings: start at the centre, 0.15 nm apart to a mile, then 0.3.
+  const auto first=ChartNameAreaRings(0,1), wider=ChartNameAreaRings(1,2);
+  Check(first.front()==0 && first.size()==8 && std::abs(first.back()-1)<1e-9,"first step rings end at the step");
+  Check(!wider.empty() && wider.front()>1 && std::abs(wider.back()-2)<1e-9,"wider step samples only new rings");
+  Check(ChartNameRingSamples(0)==1 && ChartNameRingSamples(.15)==8 && ChartNameRingSamples(4)==48,"ring sample bounds");
   Check(ValidNavigationName("Göteborg"),"unicode name");
   for(const auto &name : std::vector<std::string>{"","  ","bad\nname",std::string("bad\0name",8),std::string(129,'x'),"\xc0\xaf","\xed\xa0\x80","\xf4\x90\x80\x80"})
     Check(!ValidNavigationName(name),"invalid name rejected");

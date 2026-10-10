@@ -101,7 +101,7 @@ void XNavPilotDrawer::Update(const adapters::PilotView &pilot,
                 : std::nullopt;
   if (rudder_ && (*rudder_ < -180 || *rudder_ > 180))
     rudder_.reset();
-  adapter_status_ = pilot.adapter_status;
+  blocker_ = W(pilot.control_blocker);
   if (enable_after_bind_) {
     if (view_.enabled) {
       enable_after_bind_.reset();
@@ -111,9 +111,9 @@ void XNavPilotDrawer::Update(const adapters::PilotView &pilot,
     } else if (!view_.available ||
                vessel::Clock::now() - *enable_after_bind_ > std::chrono::seconds(8)) {
       enable_after_bind_.reset();
-      notice_ = "The pilot did not accept control. " +
-                W(adapter_status_.empty() ? "Check the NMEA 2000 connection sends and receives."
-                                          : adapter_status_);
+      notice_ = !blocker_.empty() ? blocker_
+                : "The pilot did not accept control. Check that it reports status "
+                  "and that OpenCPN can send on its connection.";
     }
   }
   SetLight(light);
@@ -193,7 +193,7 @@ bool XNavPilotDrawer::CanTakeControl() const {
   // permission happen behind the one confirmation instead of in a settings
   // page. Never offered without fresh feedback, in replay or status-only builds.
   return !view_.can_toggle && !view_.enabled && view_.available &&
-         !view_.output_unavailable && bool(actions_.take_control);
+         !view_.output_unavailable && blocker_.empty() && bool(actions_.take_control);
 }
 void XNavPilotDrawer::Toggle() {
   if (!(view_.can_toggle || CanTakeControl()) || !actions_.enable) {
@@ -300,8 +300,9 @@ void XNavPilotDrawer::Paint(wxPaintEvent &) {
   center(view_.commanded ? "COMMANDED / M" : "HEADING / M", 178, 8, 400, p.c.muted);
   p.TextWeight(view_.output_unavailable ? "Control unavailable" : "Enable control",
                0, 45, 14, p.c.primary, 500, width - 72);
-  if (!notice_.empty())
-    p.Wrapped(notice_, 0, 66, 10, 13, width - 72, p.c.attention, 2);
+  if (!notice_.empty() || (!blocker_.empty() && !view_.enabled))
+    p.Wrapped(!blocker_.empty() && !view_.enabled ? blocker_ : notice_, 0, 66, 10, 13, width - 72,
+              p.c.attention, 2);
   else
     p.Text(W(view_.output_unavailable ? "Status only \xE2\x80\x94 use the physical helm"
              : view_.enabled          ? "Commands go to the pilot"

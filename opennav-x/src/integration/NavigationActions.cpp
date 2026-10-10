@@ -107,7 +107,8 @@ MakeNavigationActions(MyFrame &frame,
     const auto endpoint = [&frame](RoutePoint *point) {
       if (!point) return std::string{};
       const auto own = point->GetName().Trim(true).Trim(false).ToStdString(wxConvUTF8);
-      if (application::ValidNavigationName(own)) return own;
+      if (application::ValidNavigationName(own) && !application::GeneratedNavigationName(own))
+        return own;
       const auto suggested = CopyNavigationNameSuggestion(
           frame, {point->m_lat, point->m_lon}, false);
       return suggested.from_chart ? suggested.name : std::string{};

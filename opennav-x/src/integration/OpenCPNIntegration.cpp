@@ -780,6 +780,8 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
     auto view = p.GetState(now);
     view.output_unavailable = !simulated && !integration::PilotLoopbackTestsEnabled() && !integration::PilotManualSerialEnabled();
     view.adapter_status = simulated ? "DEMO / simulated feedback" : pilots->hardware.Description();
+    if (!simulated && !view.output_unavailable)
+      view.control_blocker = pilots->hardware.ControlBlocker();
     if (before != view.command.state)
       wxLogMessage("SKAGER manual pilot %llu: %s / %s",
                    static_cast<unsigned long long>(view.command.request.id),

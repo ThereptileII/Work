@@ -415,6 +415,18 @@ private:
         Check(takes_ == 2 && enables_ == 3 && !Button("Enable control")->IsSelected(),
               "failed take-over never enables");
         Capture("autopilot-takeover-failed-day");
+        // Input-only OpenCPN connection: say what to change, offer nothing.
+        take_ok_ = true;
+        pilot_.control_blocker =
+            "Turn on \"send data\" for the COM8 NMEA 2000 connection in OpenCPN Connections";
+        Feed();
+        Check(!Button("Enable control")->IsEnabled(),
+              "an input-only connection blocks the take-over");
+        Dispatch("Enable control");
+        Check(takes_ == 2, "blocked switch cannot bind");
+        break;
+      case 31:
+        Capture("autopilot-input-only-day");
         drawer_->Dismiss();
         Check(!drawer_->IsShown(), "close restores owner");
         Finish();

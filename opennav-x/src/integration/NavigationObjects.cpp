@@ -248,10 +248,59 @@ application::NavigationNameSuggestion CopyNavigationNameSuggestion(
   // cache pointers above; never load charts or call plugin/network lookup.
   // The pinned native query owns its list, not the borrowed chart objects.
   bool overflowed = false;
+  const auto name_of = [](S57Obj *object) {
+    const auto attribute = [&](const char *key) {
+      const int index = object->GetAttributeIndex(key);
+      if (index < 0 || !object->attVal || static_cast<std::size_t>(index) >= object->attVal->size())
+        return wxString{};
+      const auto *value = object->attVal->Item(index);
+      if (!value || value->valType != OGR_STR || !value->value) return wxString{};
+      return object->GetAttrValueAsString(key).Trim(true).Trim(false);
+    };
+    auto name = attribute("OBJNAM");
+    if (name.empty()) name = attribute("NOBJNM");
+    return name;
+  };
+  // Named areas found so far: (name, class) -> nearest sampled distance. Kept
+  // across steps so widening only samples the new rings.
+  std::map<std::pair<std::string, std::string>, double> areas;
+  double sampled_to = 0;
+  const double pi = std::acos(-1.);
+  const double cos_lat = std::cos(position.latitude_deg * pi / 180.);
+  const auto sample_areas = [&](double to_nm) {
+    for (const double ring : application::ChartNameAreaRings(sampled_to, to_nm)) {
+      const int samples = application::ChartNameRingSamples(ring);
+      for (int k = 0; k < samples; ++k) {
+        const double bearing = 2. * pi * k / samples;
+        const double lat = position.latitude_deg + ring / 60. * std::cos(bearing);
+        const double lon = position.longitude_deg + ring / 60. * std::sin(bearing) / cos_lat;
+        for (auto *base : charts) {
+          auto *chart = dynamic_cast<s57chart *>(base);
+          if (!chart) continue;
+          std::unique_ptr<ListOfObjRazRules> objects(chart->GetObjRuleListAtLatLon(
+              lat, lon, 0.f, &canvas->GetVP(), MASK_AREA));
+          if (!objects) continue;
+          if (objects->GetCount() > 1024) { overflowed = true; return; }
+          for (auto *node = objects->GetFirst(); node; node = node->GetNext()) {
+            const auto *rule = node->GetData();
+            auto *object = rule ? rule->obj : nullptr;
+            if (!object || object->Primitive_type != GEO_AREA) continue;
+            const std::string feature(object->FeatureName, 6);
+            if (!application::RelevantChartNameFeature(feature)) continue;
+            const auto name = name_of(object);
+            if (name.empty()) continue;
+            auto [it, added] = areas.emplace(std::make_pair(String(name), feature), ring);
+            if (!added) it->second = std::min(it->second, ring);
+            if (areas.size() > 1024) { overflowed = true; return; }
+          }
+        }
+      }
+    }
+    sampled_to = std::max(sampled_to, to_nm);
+  };
   const auto collect = [&](double radius_nm) {
     std::vector<application::ChartNameCandidate> names;
-    const double radius =
-        radius_nm / (60. * std::cos(position.latitude_deg * std::acos(-1.) / 180.));
+    const double radius = radius_nm / (60. * cos_lat);
   for (auto *base : charts) {
     auto *chart = dynamic_cast<s57chart *>(base);
     if (!chart) continue;
@@ -264,16 +313,7 @@ application::NavigationNameSuggestion CopyNavigationNameSuggestion(
       auto *object = rule ? rule->obj : nullptr;
       if (!object || object->Primitive_type != GEO_POINT || object->npt != 1 ||
           !application::RelevantChartNameFeature(std::string(object->FeatureName, 6))) continue;
-      const auto attribute = [&](const char *key) {
-        const int index = object->GetAttributeIndex(key);
-        if (index < 0 || !object->attVal || static_cast<std::size_t>(index) >= object->attVal->size())
-          return wxString{};
-        const auto *value = object->attVal->Item(index);
-        if (!value || value->valType != OGR_STR || !value->value) return wxString{};
-        return object->GetAttrValueAsString(key).Trim(true).Trim(false);
-      };
-      auto name = attribute("OBJNAM");
-      if (name.empty()) name = attribute("NOBJNM");
+      const auto name = name_of(object);
       if (name.empty() || !std::isfinite(object->m_lat) || !std::isfinite(object->m_lon) ||
           std::abs(object->m_lat) > 90 || std::abs(object->m_lon) > 180) continue;
       double distance = 0;
@@ -283,6 +323,9 @@ application::NavigationNameSuggestion CopyNavigationNameSuggestion(
       if (names.size() > 1024) { overflowed = true; return names; }
     }
   }
+    sample_areas(radius_nm);
+    for (const auto &[key, distance] : areas)
+      names.push_back({key.first, distance, key.second});
     return names;
   };
   // Widen in steps rather than giving up at one fixed radius (SCRUM-350).
