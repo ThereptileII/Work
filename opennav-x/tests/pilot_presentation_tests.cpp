@@ -62,6 +62,14 @@ TEST(OpenNavPilotPresentation, PendingAndTimeoutNeverInventConfirmation) {
   EXPECT_EQ(v.mode, adapters::PilotMode::Auto);
   EXPECT_EQ(v.heading_magnetic_deg, 145.);
   EXPECT_NE(v.note.find("No confirmation"), std::string::npos);
+  EXPECT_EQ(v.outcome, "+10\xC2\xB0 not confirmed by the pilot");
+  p.command.request.action = adapters::PilotAction::Wind;
+  p.command.state = adapters::CommandState::Rejected;
+  EXPECT_EQ(View(p).outcome, "Wind refused by the pilot");
+  p.command.state = adapters::CommandState::Confirmed;
+  EXPECT_TRUE(View(p).outcome.empty());
+  p.command.state = adapters::CommandState::TimedOut;
+  p.command.request.action = adapters::PilotAction::AlterCourse;
   EXPECT_FALSE(View(p, stamp + 3s).heading_magnetic_deg);
   EXPECT_TRUE(View(p, stamp + 3s).standby);
 }

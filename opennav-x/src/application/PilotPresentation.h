@@ -13,6 +13,10 @@ struct PilotPresentation {
   bool standby = false, auto_mode = false, track = false, wind = false;
   bool alter_course = false, can_toggle = false;
   std::string state, connection, note;
+  // One short line naming the last request and what became of it, for the
+  // drawer: "Wind not confirmed by the pilot". Empty when there is nothing
+  // the helmsman must know (no request, or it was confirmed).
+  std::string outcome;
 };
 PilotPresentation PresentPilot(const adapters::PilotView &, vessel::Time now,
                                bool permit_control, bool replayed);

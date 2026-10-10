@@ -301,16 +301,24 @@ void XNavPilotDrawer::Paint(wxPaintEvent &) {
   center(view_.commanded ? "COMMANDED / M" : "HEADING / M", 178, 8, 400, p.c.muted);
   p.TextWeight(view_.output_unavailable ? "Control unavailable" : "Enable control",
                0, 45, 14, p.c.primary, 500, width - 72);
-  if (!notice_.empty() || (!blocker_.empty() && !view_.enabled))
-    p.Wrapped(!blocker_.empty() && !view_.enabled ? blocker_ : notice_, 0, 66, 10, 13, width - 72,
-              p.c.attention, 2);
-  else
-    p.Text(W(view_.output_unavailable ? "Status only \xE2\x80\x94 use the physical helm"
+  // One line under the switch, most important first: what must be fixed,
+  // what just failed, what is in flight, then the plain state.
+  const bool failed = view_.enabled && !view_.pending && !view_.outcome.empty();
+  wxString line;
+  bool attention = true;
+  if (!blocker_.empty() && !view_.enabled) line = blocker_;
+  else if (!notice_.empty()) line = notice_;
+  else if (failed) line = W(view_.outcome);
+  else {
+    attention = false;
+    line = W(view_.output_unavailable ? "Status only \xE2\x80\x94 use the physical helm"
+             : view_.enabled && view_.pending ? view_.outcome
              : view_.enabled          ? "Commands go to the pilot"
              : enable_after_bind_     ? "Connecting to the pilot\xE2\x80\xA6"
              : view_.available        ? "Off \xE2\x80\x94 the pilot is live"
-                                      : "Waiting for the pilot"),
-           0, 66, 10, p.c.muted, false, width - 72);
+                                      : "Waiting for the pilot");
+  }
+  p.Wrapped(line, 0, 66, 10, 13, width - 72, attention ? p.c.attention : p.c.muted, 2);
   // Connection lives in the status pill; rudder and notes were detail the
   // owner asked to drop. Equipment diagnostics stay in source health.
 }

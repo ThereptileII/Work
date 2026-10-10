@@ -1,5 +1,6 @@
 #include "application/PilotPresentation.h"
 #include <chrono>
+#include <cmath>
 
 namespace opennav::application {
 namespace {
@@ -64,6 +65,34 @@ PilotPresentation PresentPilot(const adapters::PilotView &pilot,
   if (p.pending)
     p.note = "Command sent. Waiting for new matching pilot feedback; the "
              "outcome is not yet known.";
+  {
+    const auto &r = pilot.command.request;
+    const std::string action =
+        r.action == adapters::PilotAction::Standby ? "Standby"
+        : r.action == adapters::PilotAction::Auto  ? "Auto"
+        : r.action == adapters::PilotAction::Track ? "Track"
+        : r.action == adapters::PilotAction::Wind  ? "Wind"
+        : (r.delta_deg > 0 ? "+" : "\xE2\x88\x92") +
+              std::to_string(static_cast<int>(std::lround(std::abs(r.delta_deg)))) +
+              "\xC2\xB0";
+    switch (pilot.command.state) {
+    case adapters::CommandState::Pending:
+    case adapters::CommandState::Requested:
+      p.outcome = action + " sent \xE2\x80\x94 waiting for the pilot";
+      break;
+    case adapters::CommandState::TimedOut:
+      p.outcome = action + " not confirmed by the pilot";
+      break;
+    case adapters::CommandState::Rejected:
+      p.outcome = action + " refused by the pilot";
+      break;
+    case adapters::CommandState::StaleFeedback:
+      p.outcome = action + " not sent: no current pilot feedback";
+      break;
+    default:
+      break;
+    }
+  }
   switch (pilot.command.state) {
   case adapters::CommandState::TimedOut:
     p.note = "No confirmation received. Check the physical helm. No command "
