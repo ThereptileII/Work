@@ -221,7 +221,9 @@ try:
         xdo('windowsize',handle,1280,800);xdo('windowmove',handle,0,0);xdo('windowfocus',handle)
     state=pilot(lambda p:p.get('fresh') and p.get('mode')=='STANDBY')
     assert not state['enabled'] and not sent,'Permission cannot auto-enable or emit controls'
-    assert not state['track_capability'] and not state['wind_capability']
+    # TRACK/WIND are advertised (the bridge refuses them without fresh route
+    # data or wind); permission and session enable still gate every command.
+    assert state['track_capability'] and state['wind_capability']
     show_pilot()
     bounds=data()['runtime']['display']['drawer']
     if windows:
@@ -329,7 +331,7 @@ try:
           'Missing feedback revokes session immediately and times out without retry',
           'Stale STANDBY emits nothing; fresh recovery stays OFF until explicit re-enable',
           'Same-driver reconnect clears identity and session enablement; new claim required',
-          'Live TRACK/WIND unavailable; no SmartNav control path']
+          'TRACK/WIND advertised; the bridge refuses them without route data or wind; no SmartNav control path']
     if windows:monitor=ui.monitor_process(app.pid);ui.close(handle);ui.wait_clean_exit(monitor)
     else:subprocess.run([str(exe),'--configdir',str(profile),'--remote','--quit'],env=env,check=True,capture_output=True)
     assert app.wait(timeout=30)==0

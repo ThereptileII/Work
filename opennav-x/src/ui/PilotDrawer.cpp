@@ -20,7 +20,7 @@ XNavPilotDrawer::XNavPilotDrawer(wxWindow &owner, PilotDrawerActions callbacks)
   SetHeading("HELM CONTROL", "Autopilot", false);
   panel_ = new wxPanel(body_, wxID_ANY);
   panel_->SetName("Pilot heading and controls");
-  panel_->SetMinSize(FromDIP(wxSize(300, 384)));
+  panel_->SetMinSize(FromDIP(wxSize(300, 392)));
   panel_->SetBackgroundStyle(wxBG_STYLE_PAINT);
   panel_->Bind(wxEVT_PAINT, &XNavPilotDrawer::Paint, this);
   panel_->Bind(wxEVT_SIZE, [this](wxSizeEvent &e) {
@@ -74,13 +74,14 @@ void XNavPilotDrawer::Arrange() {
   // SCRUM-348, less is more: the status pills, then the switch that arms the
   // helm, then heading and the commands. The switch is placed first because it
   // gates everything else -- on a short boat display it must never be the
-  // element that falls below the fold. Content ends at 382 DIP.
+  // element that falls below the fold. Content ends at 388 DIP.
   // Toggles draw only the switch; its label is painted to the left (Paint).
   enable_->SetSize(rect(width - 64., 36, 64., 52));
   for (std::size_t i = 0; i < course_.size(); ++i) {
-    course_[i]->SetSize(rect(i * (course_width + 7.), 228, course_width, 44));
-    modes_[i]->SetSize(rect((i % 2) * (width + 9.) / 2., 284 + 54 * (i / 2),
-                            (width - 9.) / 2., 44));
+    // 48 DIP: the product's minimum touch target, also on a short display.
+    course_[i]->SetSize(rect(i * (course_width + 7.), 226, course_width, 48));
+    modes_[i]->SetSize(rect((i % 2) * (width + 9.) / 2., 284 + 56 * (i / 2),
+                            (width - 9.) / 2., 48));
   }
 }
 void XNavPilotDrawer::Update(const adapters::PilotView &pilot,
