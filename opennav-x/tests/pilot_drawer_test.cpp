@@ -60,7 +60,15 @@ public:
       pilot_.enabled = enabled;
       Feed();
     };
-    actions.settings = [this] { ++settings_; };
+    // AutoTrack-style take-over: bind + permit behind the one enable sheet.
+    actions.take_control = [this] {
+      ++takes_;
+      permit_ = take_ok_;
+      application::CommandResult result;
+      result.ok = take_ok_;
+      result.message = take_ok_ ? "Bound" : "No single live pilot found";
+      return result;
+    };
     drawer_ = new ui::XNavPilotDrawer(*frame_, std::move(actions));
     pilot_.capabilities = {false, true, true, false, false, true, true};
     pilot_.fresh = true;
@@ -90,7 +98,7 @@ private:
       throw std::runtime_error(name);
   }
   void Feed(vessel::Time now = stamp) {
-    drawer_->Update(pilot_, now, state_, now, true, light_);
+    drawer_->Update(pilot_, now, state_, now, permit_, light_);
     drawer_->Present(wxRect(80, 68, 1014, 698));
     frame_->Refresh(false);
   }
@@ -366,6 +374,47 @@ private:
         Check(enables_ == 1 && commands_ == 6,
               "disabled product event cannot invoke an enable or command callback");
         Capture("autopilot-status-only-night");
+        // A live but never-configured pilot: the switch itself must offer the
+        // take-over (owner feedback: no separate settings page).
+        light_ = ui::LightMode::Day;
+        pilot_.output_unavailable = false;
+        pilot_.enabled = false;
+        pilot_.command.state = adapters::CommandState::Confirmed;
+        pilot_.feedback.mode = adapters::PilotMode::Standby;
+        pilot_.feedback.observed_at = stamp;
+        permit_ = false;
+        Feed();
+        Check(!drawer_->View().can_toggle, "unconfigured pilot is not yet authorized");
+        Click("Enable control");
+        break;
+      case 26:
+        Check(takes_ == 0, "no binding before confirmation");
+        Confirm("Enable physical pilot control?", true);
+        break;
+      case 27:
+        Check(takes_ == 1 && permit_, "one confirmation binds and permits");
+        Check(enables_ == 1, "session waits for the adapter to verify the binding");
+        Feed();
+        Check(enables_ == 2 && drawer_->View().enabled &&
+                  Button("Enable control")->IsSelected(),
+              "verified binding completes the confirmed enable");
+        Click("Enable control");
+        break;
+      case 28:
+        Check(enables_ == 3 && !drawer_->View().enabled, "switching off needs no sheet");
+        permit_ = false;
+        take_ok_ = false;
+        Feed();
+        Click("Enable control");
+        break;
+      case 29:
+        Confirm("Enable physical pilot control?", true);
+        break;
+      case 30:
+        Feed();
+        Check(takes_ == 2 && enables_ == 3 && !Button("Enable control")->IsSelected(),
+              "failed take-over never enables");
+        Capture("autopilot-takeover-failed-day");
         drawer_->Dismiss();
         Check(!drawer_->IsShown(), "close restores owner");
         Finish();
@@ -399,7 +448,8 @@ private:
   wxTimer timer_;
   vessel::VesselState state_;
   adapters::PilotView pilot_;
-  int enables_ = 0, settings_ = 0;
+  int enables_ = 0, takes_ = 0;
+  bool permit_ = true, take_ok_ = true;
   ui::LightMode light_ = ui::LightMode::Day;
   std::vector<std::string> names_;
   int step_ = 0, checks_ = 0, commands_ = 0;

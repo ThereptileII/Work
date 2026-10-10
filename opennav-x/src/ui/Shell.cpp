@@ -450,7 +450,21 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   };
   pilot_actions_.command = product_actions.pilot_command;
   pilot_actions_.enable = product_actions.pilot_enable;
-  pilot_actions_.settings = [this] { ShowProduct(ProductPage::PilotSettings); };
+  pilot_actions_.take_control = [this]() -> application::CommandResult {
+    if (simulation_ || !actions_.settings || !actions_.save_settings)
+      return {false, "Live pilot control is unavailable in this view"};
+    if (actions_.commissioning && !actions_.commissioning->AllowsHardwareControl())
+      return {false, "Pilot control is unavailable during replay"};
+    auto s = actions_.settings();
+    // Prefer the pilot reporting live status right now; a stored binding is
+    // kept only when nothing else is seen (e.g. its NAME was claimed earlier).
+    if (const auto detected = actions_.pilot_detected ? actions_.pilot_detected() : std::nullopt)
+      s.pilot = *detected;
+    else if (s.pilot.interface_id.empty() || (s.pilot.name.empty() && s.pilot.address.empty()))
+      return {false, "No single live pilot found on the OpenCPN NMEA 2000 connection"};
+    s.pilot.permit_control = true;
+    return actions_.save_settings(s);
+  };
   product_actions.pilot_identity = [this] {
     if (simulation_ || !actions_.pilot_identity ||
         (actions_.commissioning && !actions_.commissioning->AllowsHardwareControl()))
@@ -1641,7 +1655,7 @@ void Shell::ShowHealth() {
     callbacks.configure=[this](const application::HealthSignal &s){
       if(s.id=="online") {ShowTraffic();ais_drawer_->ShowSettings();}
       else if(s.id=="ais") ShowTraffic();
-      else if(s.id=="pilot") ShowProduct(ProductPage::PilotSettings);
+      else if(s.id=="pilot") ShowProduct(ProductPage::Pilot);
       else {
         ShowProduct(ProductPage::Sources);
         product_->ShowSource(s.quantity.value_or(vessel::Quantity::Count),mode_);

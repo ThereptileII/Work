@@ -70,15 +70,14 @@ void PhysicalStyleResponse(const bridge::Command &command, unsigned key,
   Check(!controller.next(180, output), "Confirmed command sends no extra key");
 }
 
-void UnsupportedModes() {
+void ModesNeedingBridgeInputs() {
   for (const auto action : {PilotAction::Track, PilotAction::Wind}) {
-    Check(EncodeSt4000Command({1, action, 0, {}}).empty(),
-          "SKAGER must not emit unqualified TRACK or WIND commands");
-    // The firmware parser itself supports these legacy requests. That does
-    // not grant SKAGER a capability or supply fresh navigation/wind inputs.
-    const std::vector<std::uint8_t> bytes{
-        1, 0x63, 0xff, 0, 0xff, 3, 1, 0x3b, 7, 3, 4, 6,
-        static_cast<std::uint8_t>(action == PilotAction::Track ? 0x80 : 1)};
+    // SKAGER now sends these; the firmware, not SKAGER, owns readiness.
+    const auto bytes = EncodeSt4000Command({1, action, 0, {}});
+    Check(bytes == std::vector<std::uint8_t>{
+                       1, 0x63, 0xff, 0, 0xff, 3, 1, 0x3b, 7, 3, 4, 6,
+                       static_cast<std::uint8_t>(action == PilotAction::Track ? 0x80 : 1)},
+          "SKAGER TRACK/WIND match the firmware's legacy button field");
     bridge::Command command;
     Check(bridge::parseCommand(bytes.data(), bytes.size(), command) &&
               command.type == bridge::CommandType::Mode &&
@@ -142,7 +141,7 @@ int main() {
               "Wrong industry is rejected");
       }
     }
-    UnsupportedModes();
+    ModesNeedingBridgeInputs();
     std::cout
         << "PASS pinned ST4000 parser/controller: six manual commands, synthetic SeaTalk feedback, TRACK/WIND boundaries\n";
     return 0;

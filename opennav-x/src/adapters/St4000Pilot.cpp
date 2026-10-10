@@ -91,6 +91,13 @@ std::vector<std::uint8_t> EncodeSt4000Command(const PilotRequest &r) {
     key = 0;
   else if (r.action == PilotAction::Auto && r.delta_deg == 0)
     key = 0x40;
+  // TRACK and WIND use the bridge's legacy button codes. The bridge itself
+  // refuses them (negative acknowledgement) without fresh route data plus
+  // AUTO, or fresh apparent wind, so SKAGER never has to infer readiness.
+  else if (r.action == PilotAction::Track && r.delta_deg == 0)
+    key = 0x80;
+  else if (r.action == PilotAction::Wind && r.delta_deg == 0)
+    key = 0x01;
   else if (r.action == PilotAction::AlterCourse) {
     if (r.delta_deg == 1)
       key = 0x51;
@@ -265,8 +272,8 @@ PilotCapabilities St4000Pilot::Capabilities() const {
   return {false,
           true,
           true,
-          false,
-          false,
+          true,
+          true,
           true,
           verified && s.writable && binding_.permit_control};
 }

@@ -56,8 +56,8 @@ PilotPresentation PresentPilot(const adapters::PilotView &pilot,
                        : p.degraded ? "Feedback lost" : "Waiting for feedback";
   p.note = p.enabled ? "Manual control enabled for this session. Mode and "
                        "heading require measured pilot feedback."
-                     : "Control is off. Enable it only after configuring and "
-                       "verifying the pilot in Preferences.";
+                     : "Control is off. Switch it on in the autopilot drawer; "
+                       "keep the physical helm within reach.";
   if (!fresh)
     p.note = "Pilot feedback unavailable. Check the connection and use the "
              "physical helm.";

@@ -370,7 +370,6 @@ void XNavSettingsDrawer::Build() {
         p.Text("Control",0,12,12,p.c.secondary);p.TextWeight(state_.pilot.enabled?"Enabled":"Off",width/2,12,12,p.c.primary,500,width/2,true);
         p.Rule(0,40,width);p.Text(state_.pilot.fresh?"Current pilot feedback":"Pilot feedback unavailable",0,58,12,p.c.secondary,false,width);
       });
-      Page("Pilot connection","Status from your OpenCPN connection",XNavIcon::Settings,ProductPage::PilotSettings);
       Page("Helm controls","Standby, Auto and heading adjustments",XNavIcon::Instruments,ProductPage::Pilot);
       CopyBlock(90,[](XNavPainter &p,int width){
         const bool loopback=integration::PilotLoopbackTestsEnabled();

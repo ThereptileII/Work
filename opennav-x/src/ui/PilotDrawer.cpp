@@ -1,5 +1,6 @@
 #include "ui/PilotDrawer.h"
 #include "ui/Sheet.h"
+#include <chrono>
 #include <cmath>
 #include <memory>
 #include <wx/dcbuffer.h>
@@ -19,7 +20,7 @@ XNavPilotDrawer::XNavPilotDrawer(wxWindow &owner, PilotDrawerActions callbacks)
   SetHeading("HELM CONTROL", "Autopilot", false);
   panel_ = new wxPanel(body_, wxID_ANY);
   panel_->SetName("Pilot heading and controls");
-  panel_->SetMinSize(FromDIP(wxSize(300, 496)));
+  panel_->SetMinSize(FromDIP(wxSize(300, 384)));
   panel_->SetBackgroundStyle(wxBG_STYLE_PAINT);
   panel_->Bind(wxEVT_PAINT, &XNavPilotDrawer::Paint, this);
   panel_->Bind(wxEVT_SIZE, [this](wxSizeEvent &e) {
@@ -54,7 +55,7 @@ XNavPilotDrawer::XNavPilotDrawer(wxWindow &owner, PilotDrawerActions callbacks)
       new XNavButton(panel_, wxID_ANY, "Enable control", "Enable control");
   enable_->SetToggle();
   enable_->Bind(wxEVT_BUTTON, [this](wxCommandEvent &) {
-    if (queued_ || !view_.can_toggle)
+    if (queued_ || !(view_.can_toggle || CanTakeControl()))
       return;
     queued_ = true;
     CallAfter([this] { Toggle(); });
@@ -70,15 +71,17 @@ void XNavPilotDrawer::Arrange() {
         panel_->FromDIP(wxSize(std::lround(x + w) - std::lround(x), h)));
   };
   const double course_width = (width - 21.) / 4.;
+  // SCRUM-348, less is more: the status pills, then the switch that arms the
+  // helm, then heading and the commands. The switch is placed first because it
+  // gates everything else -- on a short boat display it must never be the
+  // element that falls below the fold. Content ends at 382 DIP.
+  // Toggles draw only the switch; its label is painted to the left (Paint).
+  enable_->SetSize(rect(width - 64., 36, 64., 52));
   for (std::size_t i = 0; i < course_.size(); ++i) {
-    course_[i]->SetSize(rect(i * (course_width + 7.), 223, course_width, 48));
-    modes_[i]->SetSize(rect((i % 2) * (width + 9.) / 2., 291 + 68 * (i / 2),
-                            (width - 9.) / 2., 48));
+    course_[i]->SetSize(rect(i * (course_width + 7.), 228, course_width, 44));
+    modes_[i]->SetSize(rect((i % 2) * (width + 9.) / 2., 284 + 54 * (i / 2),
+                            (width - 9.) / 2., 44));
   }
-  // The control that arms the helm is the reason this drawer exists. It gets
-  // full width directly under the mode grid, inside the visible area, instead
-  // of a 48 px square below the fold that could not show its own label.
-  enable_->SetSize(rect(0, 424, width, 56));
 }
 void XNavPilotDrawer::Update(const adapters::PilotView &pilot,
                              vessel::Time pilot_now,
@@ -98,6 +101,21 @@ void XNavPilotDrawer::Update(const adapters::PilotView &pilot,
                 : std::nullopt;
   if (rudder_ && (*rudder_ < -180 || *rudder_ > 180))
     rudder_.reset();
+  adapter_status_ = pilot.adapter_status;
+  if (enable_after_bind_) {
+    if (view_.enabled) {
+      enable_after_bind_.reset();
+    } else if (view_.can_toggle && actions_.enable) {
+      // Consent was given on the sheet that started the take-over.
+      actions_.enable(true);
+    } else if (!view_.available ||
+               vessel::Clock::now() - *enable_after_bind_ > std::chrono::seconds(8)) {
+      enable_after_bind_.reset();
+      notice_ = "The pilot did not accept control. " +
+                W(adapter_status_.empty() ? "Check the NMEA 2000 connection sends and receives."
+                                          : adapter_status_);
+    }
+  }
   SetLight(light);
   panel_->SetBackgroundColour(Colour(Theme(light).background));
   RefreshControls();
@@ -132,13 +150,14 @@ void XNavPilotDrawer::RefreshControls() {
     modes_[i]->SetRole(view_.mode == mode ? ButtonRole::Primary
                                           : ButtonRole::Normal);
   }
-  enable_->Enable(view_.can_toggle && bool(actions_.enable));
+  enable_->Enable((view_.can_toggle || CanTakeControl()) && bool(actions_.enable) &&
+                  !enable_after_bind_);
   const wxString enable_label = view_.output_unavailable
                                     ? "Control unavailable" : "Enable control";
   enable_->SetLabel(enable_label);
   enable_->SetName(enable_label);
   enable_->SetHint(enable_label);
-  enable_->SetSelected(view_.enabled);
+  enable_->SetSelected(view_.enabled || bool(enable_after_bind_));
   enable_->SetLightMode(light_);
 }
 void XNavPilotDrawer::Request(adapters::PilotAction action, double delta) {
@@ -169,17 +188,24 @@ void XNavPilotDrawer::Request(adapters::PilotAction action, double delta) {
     actions_.command(action, delta);
   queued_ = false;
 }
+bool XNavPilotDrawer::CanTakeControl() const {
+  // A live pilot is enough to offer the switch, as in AutoTrack: binding and
+  // permission happen behind the one confirmation instead of in a settings
+  // page. Never offered without fresh feedback, in replay or status-only builds.
+  return !view_.can_toggle && !view_.enabled && view_.available &&
+         !view_.output_unavailable && bool(actions_.take_control);
+}
 void XNavPilotDrawer::Toggle() {
-  if (!view_.can_toggle || !actions_.enable) {
+  if (!(view_.can_toggle || CanTakeControl()) || !actions_.enable) {
     queued_ = false;
     return;
   }
   const bool enable = !view_.enabled;
   wxString title = "Enable physical pilot control?",
            accept = "Enable manual control";
-  wxString note = "Manual buttons can move the vessel's rudder. Confirm the "
-                  "correct pilot, a clear drive area and immediate physical "
-                  "STANDBY access. Enable lasts only for this session.";
+  wxString note = "Standby, Auto and course buttons will steer through the "
+                  "autopilot. Keep the physical helm and STANDBY within reach. "
+                  "Control switches off if pilot feedback stops, and at restart.";
 #if XNAV_ENABLE_TEST_FIXTURES
   if (simulated_) {
     title = "Enable manual simulator";
@@ -187,10 +213,26 @@ void XNavPilotDrawer::Toggle() {
     accept = "Enable DEMO";
   }
 #endif
-  if ((!enable || ConfirmSheet(*this, light_, title, note, accept)) &&
-      view_.can_toggle)
-    actions_.enable(enable);
+  if (enable && !ConfirmSheet(*this, light_, title, note, accept)) {
+    queued_ = false;
+    return;
+  }
+  notice_.clear();
+  if (!enable) {
+    enable_after_bind_.reset();
+    actions_.enable(false);
+  } else if (view_.can_toggle) {
+    actions_.enable(true);
+  } else if (CanTakeControl()) {
+    const auto result = actions_.take_control();
+    if (result.ok)
+      enable_after_bind_ = vessel::Clock::now();
+    else
+      notice_ = W(result.message);
+  }
   queued_ = false;
+  RefreshControls();
+  panel_->Refresh(false);
 }
 void XNavPilotDrawer::Paint(wxPaintEvent &) {
   wxAutoBufferedPaintDC dc(panel_);
@@ -212,8 +254,8 @@ void XNavPilotDrawer::Paint(wxPaintEvent &) {
     if (gc) {
       const double dip = panel_->FromDIP(1024) / 1024.;
       gc->Scale(dip, dip);
-      gc->Translate((width - 165.) / 2., 46.);
-      gc->Scale(.825, .825);
+      gc->Translate((width - 120.) / 2., 96.);
+      gc->Scale(.6, .6);
       gc->SetPen(wxPen(Colour(p.c.border)));
       gc->SetBrush(*wxTRANSPARENT_BRUSH);
       gc->DrawEllipse(12, 12, 176, 176);
@@ -251,30 +293,23 @@ void XNavPilotDrawer::Paint(wxPaintEvent &) {
     p.TextWeight(s, x, y, size, ink, weight);
   };
   const int heading_width =
-      panel_->ToDIP(int(UiTextWidth(*panel_, heading, 45, 350))) -
-      2 * (int(heading.length()) - 1);
-  p.TextTracked(heading, (width - heading_width) / 2, 96, 45, p.c.primary, 350,
-                -2.);
-  center(view_.commanded ? "COMMANDED HEADING / M" : "CURRENT HEADING / M", 158,
-         9, 400, p.c.muted);
-  p.Text(view_.output_unavailable ? "Equipment control unavailable" : "Enable control",
-         0, 420, 12, p.c.secondary);
-  p.Wrapped(
-      view_.output_unavailable
-          ? "Status display only. Use the physical helm."
-          : "Explicit consent is required before heading controls become available.",
-      0, 442, 11, 16, width - 62, p.c.muted, 2);
-  p.Rule(0, 486, width);
-  p.Text("Pilot feedback", 0, 500, 12, p.c.secondary);
-  p.TextWeight(W(view_.connection), 110, 500, 12, p.c.primary, 500, width - 110,
-               true);
-  p.Rule(0, 531, width);
-  p.Text("Rudder", 0, 545, 12, p.c.secondary);
-  p.TextWeight(rudder_
-                   ? wxString::Format(wxString::FromUTF8("%+.1f°"), *rudder_)
-                   : wxString::FromUTF8("—"),
-               110, 545, 12, p.c.primary, 500, width - 110, true);
-  p.Rule(0, 576, width);
-  p.Wrapped(W(view_.note), 0, 592, 11, 18, width, p.c.muted, 4);
+      panel_->ToDIP(int(UiTextWidth(*panel_, heading, 32, 350))) -
+      int(1.5 * (int(heading.length()) - 1));
+  p.TextTracked(heading, (width - heading_width) / 2, 134, 32, p.c.primary, 350,
+                -1.5);
+  center(view_.commanded ? "COMMANDED / M" : "HEADING / M", 178, 8, 400, p.c.muted);
+  p.TextWeight(view_.output_unavailable ? "Control unavailable" : "Enable control",
+               0, 45, 14, p.c.primary, 500, width - 72);
+  if (!notice_.empty())
+    p.Wrapped(notice_, 0, 66, 10, 13, width - 72, p.c.attention, 2);
+  else
+    p.Text(W(view_.output_unavailable ? "Status only \xE2\x80\x94 use the physical helm"
+             : view_.enabled          ? "Commands go to the pilot"
+             : enable_after_bind_     ? "Connecting to the pilot\xE2\x80\xA6"
+             : view_.available        ? "Off \xE2\x80\x94 the pilot is live"
+                                      : "Waiting for the pilot"),
+           0, 66, 10, p.c.muted, false, width - 72);
+  // Connection lives in the status pill; rudder and notes were detail the
+  // owner asked to drop. Equipment diagnostics stay in source health.
 }
 } // namespace opennav::ui

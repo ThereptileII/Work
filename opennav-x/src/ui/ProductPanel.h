@@ -39,7 +39,6 @@ enum class ProductPage {
   RailLayout,
   InstrumentLayout,
   Commissioning,
-  PilotSettings,
   FieldReport,
   Alerts,
   System,
@@ -139,7 +138,6 @@ private:
   void RouteActions();
   void PointActions();
   void CreateMark();
-  void PilotSettings();
   void EnergySettings();
   void CommissioningPanel();
   void FieldReportPanel();
@@ -186,7 +184,6 @@ private:
   int interface_scale_ = 100;
   int action_width_ = 200;
   bool first_heading_ = true;
-  bool pilot_advanced_ = false;
   struct LiveTextEntry {
     wxStaticText *label;
     std::function<wxString(const ProductState &)> value;

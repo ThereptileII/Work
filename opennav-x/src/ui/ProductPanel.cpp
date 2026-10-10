@@ -107,7 +107,6 @@ void ProductPanel::Back() {
   case ProductPage::WaypointDetail: parent = ProductPage::Waypoints; break;
   case ProductPage::AisDetail: parent = ProductPage::Ais; break;
   case ProductPage::SourceDetail: case ProductPage::BoatMapping: case ProductPage::SourcesAdvanced: parent = ProductPage::Sources; break;
-  case ProductPage::PilotSettings: parent = ProductPage::Pilot; break;
   case ProductPage::RailLayout: case ProductPage::InstrumentLayout: parent = ProductPage::Display; break;
   case ProductPage::EnergySettings: case ProductPage::VesselSettings:
   case ProductPage::NavigationSettings: case ProductPage::Sources:
@@ -304,8 +303,6 @@ std::string ProductPanel::PageTitle() const {
     return "SmartNav";
   case ProductPage::Pilot:
     return "Manual autopilot";
-  case ProductPage::PilotSettings:
-    return "Autopilot configuration";
   case ProductPage::Anchor:
     return "Anchor watch";
   case ProductPage::Display:
@@ -337,7 +334,7 @@ void ProductPanel::ShowPage(ProductPage page, LightMode mode) {
     actions_.preferences();
     return;
   }
-  if (page != page_) pilot_advanced_ = false;
+
   page_ = page;
   mode_ = mode;
   rebuild_pending_ = false;
@@ -995,8 +992,7 @@ void ProductPanel::Build() {
          "boat, not ahead. Always inspect the chart and surroundings.");
   } else if (page_ == ProductPage::Weather) {
     WeatherPage();
-  } else if (page_ == ProductPage::PilotSettings)
-    PilotSettings();
+  }
   else if (page_ == ProductPage::Pilot)
     Text("Autopilot controls are unavailable in this view.");
   else if (page_ == ProductPage::Anchor) {
@@ -1008,7 +1004,7 @@ void ProductPanel::Build() {
         {"VESSEL", ProductPage::VesselSettings},
         {"NAVIGATION", ProductPage::NavigationSettings},
         {"SENSORS", ProductPage::Sources},
-        {"AUTOPILOT", ProductPage::PilotSettings},
+        {"AUTOPILOT", ProductPage::Pilot},
         {"RADAR", ProductPage::Radar},
         {"DISPLAY", ProductPage::Display},
         {"SYSTEM", ProductPage::System}})

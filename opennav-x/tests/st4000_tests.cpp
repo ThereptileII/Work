@@ -155,9 +155,8 @@ void Feedback() {
   Check(a.GetState().mode == PilotMode::Unavailable,
         "Wrong vendor header invalidates mode");
   a.Observe(Mode(PilotMode::Track, epoch + 80ms), epoch + 80ms);
-  Check(a.GetState().mode == PilotMode::Track && !a.Capabilities().track &&
-            !a.Capabilities().wind,
-        "Observed modes do not grant unvalidated commands");
+  Check(a.GetState().mode == PilotMode::Track,
+        "Observed TRACK status is reported as TRACK");
   bad = Mode(PilotMode::Auto, epoch + 90ms);
   bad.data.resize(2);
   a.Observe(bad, epoch + 90ms);
@@ -201,9 +200,12 @@ void Encoding() {
       Check(bytes == expected, "Pinned firmware structural command fixture");
     }
   }
-  Check(EncodeSt4000Command({1, PilotAction::Track, 0, epoch}).empty() &&
-            EncodeSt4000Command({1, PilotAction::Wind, 0, epoch}).empty(),
-        "TRACK/WIND never transmitted by Beta live adapter");
+  Check(EncodeSt4000Command({1, PilotAction::Track, 0, epoch}).back() == 0x80 &&
+            EncodeSt4000Command({1, PilotAction::Wind, 0, epoch}).back() == 0x01,
+        "TRACK/WIND use the bridge's legacy button codes");
+  Check(EncodeSt4000Command({1, PilotAction::Track, 1, epoch}).empty() &&
+            EncodeSt4000Command({1, PilotAction::Wind, -1, epoch}).empty(),
+        "TRACK/WIND carry no course delta");
   for (const auto delta :
        {0., 2., -360., std::numeric_limits<double>::infinity(),
         std::numeric_limits<double>::quiet_NaN()})
