@@ -159,7 +159,7 @@ void ProductPanel::WeatherPage() {
     Result(result.command);
   }, layer.visible.has_value() && layer.editable && bool(actions_.navigation.set_chart_wind));
   Text("Chart wind arrows are off by default and also available in Chart layers. "
-       "Arrows point downwind; numbers are knots. Fewer arrows are drawn when zoomed out.", 12);
+       "Arrows point downwind; the speed is in the forecast box on the chart. Fewer arrows are drawn when zoomed out.", 12);
 
   // SCRUM-325: provider settings, modelled on Online AIS.
   Text("GRIBstream provider", 20);

@@ -4,7 +4,9 @@
 #include <algorithm>
 #include <chrono>
 #include <cmath>
-#include <cstdio>
+#include <iomanip>
+#include <locale>
+#include <sstream>
 #include <deque>
 #include <optional>
 #include <string>
@@ -54,10 +56,13 @@ inline std::optional<double> LiveValue(const vessel::Sample &sample, vessel::Tim
   return a.value;
 }
 
-inline std::string Format(const char *pattern, double value) {
-  char buffer[32];
-  std::snprintf(buffer, sizeof buffer, pattern, value);
-  return buffer;
+// Fixed-point text without printf: MSVC/wx headers can macro-replace
+// snprintf, and the classic locale keeps a '.' decimal separator.
+inline std::string Fixed(double value, int decimals) {
+  std::ostringstream out;
+  out.imbue(std::locale::classic());
+  out << std::fixed << std::setprecision(decimals) << value;
+  return out.str();
 }
 
 inline RailVisual RailVisualFor(const std::string &key, const vessel::VesselState &s,
@@ -79,7 +84,7 @@ inline RailVisual RailVisualFor(const std::string &key, const vessel::VesselStat
     if (safety) {
       v.marker = *safety_depth_m / std::max(full, *depth);
       v.warning = *depth < *safety_depth_m;
-      v.caption = Format("%.1f m safety", *safety_depth_m);
+      v.caption = Fixed(*safety_depth_m, 1) + " m safety";
     }
   } else if (key == "aws" || key == "tws") {
     const auto angle = LiveValue(key == "aws" ? s.wind.apparent_angle_deg
@@ -88,7 +93,7 @@ inline RailVisual RailVisualFor(const std::string &key, const vessel::VesselStat
     v.kind = RailVisual::Kind::Direction;
     // The arrow shows where the wind comes from, relative to the bow.
     v.angle_deg = *angle + 180;
-    v.value_text = Format("%.0f\xC2\xB0", std::abs(*angle));
+    v.value_text = Fixed(std::abs(*angle), 0) + "\xC2\xB0";
     v.caption = std::abs(*angle) < 0.5 || std::abs(*angle) > 179.5 ? ""
                 : *angle < 0 ? "PORT" : "STBD";
   } else if (key == "soc") {
@@ -98,7 +103,7 @@ inline RailVisual RailVisualFor(const std::string &key, const vessel::VesselStat
     v.fraction = std::clamp(*soc / 100.0, 0.0, 1.0);
     if (energy && energy->arrival.estimate && energy->arrival.estimate->soc_percent) {
       v.caption = "At destination";
-      v.value_text = Format("%.0f%%", *energy->arrival.estimate->soc_percent);
+      v.value_text = Fixed(*energy->arrival.estimate->soc_percent, 0) + "%";
     }
   }
   return v;

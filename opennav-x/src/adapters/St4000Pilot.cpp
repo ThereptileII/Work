@@ -269,13 +269,10 @@ PilotCapabilities St4000Pilot::Capabilities() const {
   const bool verified = (wanted_name_ || bound_address_) && address_ &&
                         !conflict_ && connected_ && s.connected &&
                         s.epoch == transport_epoch_;
-  return {false,
-          true,
-          true,
-          true,
-          true,
-          true,
-          verified && s.writable && binding_.permit_control};
+  // TRACK/WIND are offered only where commands can actually be sent (the
+  // bridge then decides readiness); a status-only or refused link offers none.
+  const bool manual = verified && s.writable && binding_.permit_control;
+  return {false, true, true, manual, manual, true, manual};
 }
 bool St4000Pilot::Send(const PilotRequest &r) {
   Poll(r.issued_at);
