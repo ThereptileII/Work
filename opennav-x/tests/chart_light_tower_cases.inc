@@ -25,6 +25,9 @@ static void CheckTowerDispatch(s52plib& owner,std::map<wxString,Rule*>& symbols,
     const char* source=conspicuous?"TOWERS03":"TOWERS01";
     const char* name=conspicuous?"XNLTWR03":"XNLTWR01";
     auto* stock=symbols.at(source);auto* alias=symbols.at(name);Rule saved=*stock;
+    // The tower resources remain, but a light-support tower now paints the
+    // prototype lighthouse instead of a re-inked tower (owner, 2026-10-10).
+    auto* lighthouse=symbols.at("XNLIT013");
     Check(stock->definition.SYDF=='R' && alias->definition.SYDF=='R');
     Check(alias->RCID==(conspicuous?60019:60018));
     Check(alias->pos.symb.pivot_x.SYCL==6 && alias->pos.symb.pivot_y.SYRW==22);
@@ -46,7 +49,7 @@ static void CheckTowerDispatch(s52plib& owner,std::map<wxString,Rule*>& symbols,
       owner.m_ColorScheme=theme;
       for(double scale:{.5,1.,2.,4.}) {
         owner.m_ChartScaleFactorExp=scale;draw(valid,selected);
-        Check(owner.painted==alias && owner.painter=='R' && owner.paintedPoint==wxPoint(101,202) && owner.paintedAngle==0);
+        Check(owner.painted==lighthouse && owner.painter=='R' && owner.paintedPoint==wxPoint(101,202) && owner.paintedAngle==0);
       }
       Check(loader.LoadRasterFileForColorTable(loader.FindColorTable(!std::strcmp(theme,"DAY")?"DAY_BRIGHT":theme),true,ChartCtx(false,0)));
       auto old=loader.GetImage(source),owned=loader.GetImage(name);
@@ -75,13 +78,14 @@ static void CheckTowerDispatch(s52plib& owner,std::map<wxString,Rule*>& symbols,
     }
     TowerFixture visibility(conspicuous);
     if(!conspicuous)visibility.Add("CONVIS",&visibility.visibility,OGR_INT);
-    draw(visibility,selected);Check(owner.painted==alias);
+    draw(visibility,selected);Check(owner.painted==lighthouse);
     visibility.visibility=conspicuous?2:1;draw(visibility,selected);Check(owner.painted==stock);
     TowerFixture count(conspicuous);++count.n_attr;draw(count,selected);Check(owner.painted==stock);
-    TowerFixture labelled(conspicuous);labelled.String("OBJNAM","Fixture light support");draw(labelled,selected);Check(owner.painted==alias);
-    symbols.erase(name);draw(valid,selected);Check(owner.painted==stock);symbols[name]=nullptr;draw(valid,selected);Check(owner.painted==stock);
-    symbols[name]=alias;alias->definition.SYDF='V';draw(valid,selected);Check(owner.painted==stock);alias->definition.SYDF='R';
-    const char first=alias->name.SYNM[0];alias->name.SYNM[0]='?';draw(valid,selected);Check(owner.painted==stock);alias->name.SYNM[0]=first;
+    TowerFixture labelled(conspicuous);labelled.String("OBJNAM","Fixture light support");draw(labelled,selected);Check(owner.painted==lighthouse);
+    // A missing, null, vector or misnamed lighthouse definition keeps stock.
+    symbols.erase("XNLIT013");draw(valid,selected);Check(owner.painted==stock);symbols["XNLIT013"]=nullptr;draw(valid,selected);Check(owner.painted==stock);
+    symbols["XNLIT013"]=lighthouse;lighthouse->definition.SYDF='V';draw(valid,selected);Check(owner.painted==stock);lighthouse->definition.SYDF='R';
+    const char first=lighthouse->name.SYNM[0];lighthouse->name.SYNM[0]='?';draw(valid,selected);Check(owner.painted==stock);lighthouse->name.SYNM[0]=first;
   }
   for(auto* lookup:array)delete lookup;
 }

@@ -187,6 +187,16 @@ int main() {
     {CaLightPointInventory inventory(true,heads,0);Check(inventory.size()==0);}
   }
   white.node.next=nullptr;}
+  // A fyr: the light-support tower at the light's position is its structure,
+  // so the lighthouse point still paints; a generic landmark still refuses.
+  for(const char* function:{"33","34"}) {
+    Light tower(&chart);std::memcpy(tower.FeatureName,"LNDMRK",7);
+    tower.String("CATLMK","17");tower.String("FUNCTN",function);white.node.next=&tower.node;
+    CaLightPointInventory inventory(true,heads,0);
+    if(!std::strcmp(function,"33")) {Check(inventory.size()==1);Check(inventory.Take(&white)!=nullptr);}
+    else Check(inventory.size()==0);
+  }
+  white.node.next=nullptr;
   // A real co-located sector group paints only after its last member.
   Light sector(&chart);sector.Number("SECTR1",350);sector.Number("SECTR2",15);white.node.next=&sector.node;
   {CaLightPointInventory inventory(true,heads,0);Check(inventory.size()==1);Check(!inventory.Take(&white));Check(inventory.Take(&sector));}

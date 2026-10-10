@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include "s52s57.h"
+#include "integration/ChartLightTowerSymbol.h"
 
 namespace opennav::integration {
 // This is a presentation inventory for one synchronous point pass, not a chart
@@ -69,7 +70,10 @@ class CaLightPointInventory {
             MultipointSounding(object) ||
             !std::memcmp(object->FeatureName, "LIGHTS", 6)) continue;
         auto found = groups.find({object->m_chart_context, object->x, object->y});
-        if (found != groups.end() && !CompatibleFog(node))
+        // The fyr's own tower is the light's structure, not an independent
+        // platform: its lighthouse mark belongs at the centre of the sectors.
+        if (found != groups.end() && !CompatibleFog(node) &&
+            !LightSupportTower(object))
           found->second.refused = true;
       }
     }
