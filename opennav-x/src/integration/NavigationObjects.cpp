@@ -9,6 +9,8 @@
 #include "chartdb.h"
 #include "s52plib.h"
 #include "s57chart.h"
+#include "chartimg.h"
+#include "pluginmanager.h"
 #include <memory>
 #include "model/ais_decoder.h"
 #include "model/ais_target_data.h"
@@ -25,6 +27,7 @@
 #include "undo.h"
 #include <algorithm>
 #include <cmath>
+#include <cstring>
 #include <iomanip>
 #include <limits>
 #include <map>
@@ -44,6 +47,8 @@ extern RoutePoint *pAnchorWatchPoint1, *pAnchorWatchPoint2;
 extern double AnchorPointMinDist;
 extern int g_nAWMax;
 extern bool AnchorAlertOn1, AnchorAlertOn2;
+
+extern PlugInManager *g_pi_manager;
 
 namespace opennav::integration {
 namespace {
@@ -220,6 +225,75 @@ CommandResult NavigateTo(RoutePoint *destination, bool existing) {
   return {true, "Go To started", String(route->GetGUID())};
 }
 } // namespace
+namespace {
+// One named chart object, from a native ENC or a vector plugin chart (the
+// boat's o-charts arrive as ChartPlugInWrapper, never as s57chart).
+struct NamedChartObject {
+  std::string feature, name;
+  bool point = false, area = false;
+  double lat = NAN, lon = NAN;
+};
+template <class Object>
+wxString ChartObjectName(const Object &object) {
+  if (!object.att_array || !object.attVal || object.n_attr <= 0 ||
+      object.attVal->GetCount() < static_cast<size_t>(object.n_attr)) return {};
+  for (const char *key : {"OBJNAM", "NOBJNM"}) {
+    for (int i = 0; i < object.n_attr; ++i) {
+      if (std::strncmp(object.att_array + 6 * i, key, 6)) continue;
+      const auto *value = object.attVal->Item(i);
+      if (!value || value->valType != OGR_STR || !value->value) continue;
+      const auto *text = static_cast<const char *>(value->value);
+      auto name = wxString::FromUTF8(text);
+      if (name.empty() && *text) name = wxString(text, wxConvISO8859_1);
+      name.Trim(true).Trim(false);
+      if (!name.empty()) return name;
+    }
+  }
+  return {};
+}
+template <class Object>
+NamedChartObject Describe(const Object &object) {
+  NamedChartObject result;
+  result.feature.assign(object.FeatureName, strnlen(object.FeatureName, 6));
+  result.point = object.Primitive_type == GEO_POINT && object.npt == 1;
+  result.area = object.Primitive_type == GEO_AREA;
+  result.lat = object.m_lat;
+  result.lon = object.m_lon;
+  result.name = String(ChartObjectName(object));
+  return result;
+}
+// Calls visit for each named object the chart reports at the position (points
+// within radius; areas only when they contain it). False on overflow.
+template <class Visit>
+bool VisitNamedChartObjects(ChartBase *base, ChartCanvas &canvas, double lat,
+                            double lon, float radius, int mask, Visit &&visit) {
+  if (auto *chart = dynamic_cast<s57chart *>(base)) {
+    std::unique_ptr<ListOfObjRazRules> objects(
+        chart->GetObjRuleListAtLatLon(lat, lon, radius, &canvas.GetVP(), mask));
+    if (!objects) return true;
+    if (objects->GetCount() > 1024) return false;
+    for (auto *node = objects->GetFirst(); node; node = node->GetNext()) {
+      const auto *rule = node->GetData();
+      if (rule && rule->obj) visit(Describe(*rule->obj));
+    }
+    return true;
+  }
+  auto *wrapper = dynamic_cast<ChartPlugInWrapper *>(base);
+  if (!wrapper || !g_pi_manager || wrapper->GetChartFamily() != CHART_FAMILY_VECTOR)
+    return true;
+  // The plugin's list is ours to delete; its objects belong to the chart.
+  std::unique_ptr<ListOfPI_S57Obj> objects(g_pi_manager->GetPlugInObjRuleListAtLatLon(
+      wrapper, lat, lon, std::max(radius, 1e-6f), canvas.GetVP()));
+  if (!objects) return true;
+  const bool overflow = objects->GetCount() > 1024;
+  if (!overflow)
+    for (auto *node = objects->GetFirst(); node; node = node->GetNext())
+      if (const auto *object = node->GetData()) visit(Describe(*object));
+  objects->Clear();
+  return !overflow;
+}
+} // namespace
+
 application::NavigationNameSuggestion CopyNavigationNameSuggestion(
     MyFrame &frame, application::Coordinate position, bool route) {
   Thread();
@@ -248,19 +322,6 @@ application::NavigationNameSuggestion CopyNavigationNameSuggestion(
   // cache pointers above; never load charts or call plugin/network lookup.
   // The pinned native query owns its list, not the borrowed chart objects.
   bool overflowed = false;
-  const auto name_of = [](S57Obj *object) {
-    const auto attribute = [&](const char *key) {
-      const int index = object->GetAttributeIndex(key);
-      if (index < 0 || !object->attVal || static_cast<std::size_t>(index) >= object->attVal->size())
-        return wxString{};
-      const auto *value = object->attVal->Item(index);
-      if (!value || value->valType != OGR_STR || !value->value) return wxString{};
-      return object->GetAttrValueAsString(key).Trim(true).Trim(false);
-    };
-    auto name = attribute("OBJNAM");
-    if (name.empty()) name = attribute("NOBJNM");
-    return name;
-  };
   // Named areas found so far: (name, class) -> nearest sampled distance. Kept
   // across steps so widening only samples the new rings.
   std::map<std::pair<std::string, std::string>, double> areas;
@@ -275,24 +336,14 @@ application::NavigationNameSuggestion CopyNavigationNameSuggestion(
         const double lat = position.latitude_deg + ring / 60. * std::cos(bearing);
         const double lon = position.longitude_deg + ring / 60. * std::sin(bearing) / cos_lat;
         for (auto *base : charts) {
-          auto *chart = dynamic_cast<s57chart *>(base);
-          if (!chart) continue;
-          std::unique_ptr<ListOfObjRazRules> objects(chart->GetObjRuleListAtLatLon(
-              lat, lon, 0.f, &canvas->GetVP(), MASK_AREA));
-          if (!objects) continue;
-          if (objects->GetCount() > 1024) { overflowed = true; return; }
-          for (auto *node = objects->GetFirst(); node; node = node->GetNext()) {
-            const auto *rule = node->GetData();
-            auto *object = rule ? rule->obj : nullptr;
-            if (!object || object->Primitive_type != GEO_AREA) continue;
-            const std::string feature(object->FeatureName, 6);
-            if (!application::RelevantChartNameFeature(feature)) continue;
-            const auto name = name_of(object);
-            if (name.empty()) continue;
-            auto [it, added] = areas.emplace(std::make_pair(String(name), feature), ring);
-            if (!added) it->second = std::min(it->second, ring);
-            if (areas.size() > 1024) { overflowed = true; return; }
-          }
+          const bool ok = VisitNamedChartObjects(base, *canvas, lat, lon, 0.f, MASK_AREA,
+              [&](const NamedChartObject &object) {
+                if (!object.area || object.name.empty() ||
+                    !application::RelevantChartNameFeature(object.feature)) return;
+                auto [it, added] = areas.emplace(std::make_pair(object.name, object.feature), ring);
+                if (!added) it->second = std::min(it->second, ring);
+              });
+          if (!ok || areas.size() > 1024) { overflowed = true; return; }
         }
       }
     }
@@ -300,29 +351,22 @@ application::NavigationNameSuggestion CopyNavigationNameSuggestion(
   };
   const auto collect = [&](double radius_nm) {
     std::vector<application::ChartNameCandidate> names;
-    const double radius = radius_nm / (60. * cos_lat);
-  for (auto *base : charts) {
-    auto *chart = dynamic_cast<s57chart *>(base);
-    if (!chart) continue;
-    std::unique_ptr<ListOfObjRazRules> objects(chart->GetObjRuleListAtLatLon(
-        position.latitude_deg, position.longitude_deg, radius, &canvas->GetVP(), MASK_POINT));
-    if (!objects) continue;
-    if (objects->GetCount() > 1024) { overflowed = true; return names; }
-    for (auto *node = objects->GetFirst(); node; node = node->GetNext()) {
-      const auto *rule = node->GetData();
-      auto *object = rule ? rule->obj : nullptr;
-      if (!object || object->Primitive_type != GEO_POINT || object->npt != 1 ||
-          !application::RelevantChartNameFeature(std::string(object->FeatureName, 6))) continue;
-      const auto name = name_of(object);
-      if (name.empty() || !std::isfinite(object->m_lat) || !std::isfinite(object->m_lon) ||
-          std::abs(object->m_lat) > 90 || std::abs(object->m_lon) > 180) continue;
-      double distance = 0;
-      DistanceBearingMercator(position.latitude_deg, position.longitude_deg,
-                              object->m_lat, object->m_lon, nullptr, &distance);
-      names.push_back({String(name), distance, std::string(object->FeatureName, 6)});
-      if (names.size() > 1024) { overflowed = true; return names; }
+    const float radius = static_cast<float>(radius_nm / (60. * cos_lat));
+    for (auto *base : charts) {
+      const bool ok = VisitNamedChartObjects(base, *canvas, position.latitude_deg,
+          position.longitude_deg, radius, MASK_POINT,
+          [&](const NamedChartObject &object) {
+            if (!object.point || object.name.empty() ||
+                !application::RelevantChartNameFeature(object.feature) ||
+                !std::isfinite(object.lat) || !std::isfinite(object.lon) ||
+                std::abs(object.lat) > 90 || std::abs(object.lon) > 180) return;
+            double distance = 0;
+            DistanceBearingMercator(position.latitude_deg, position.longitude_deg,
+                                    object.lat, object.lon, nullptr, &distance);
+            names.push_back({object.name, distance, object.feature});
+          });
+      if (!ok || names.size() > 1024) { overflowed = true; return names; }
     }
-  }
     sample_areas(radius_nm);
     for (const auto &[key, distance] : areas)
       names.push_back({key.first, distance, key.second});
