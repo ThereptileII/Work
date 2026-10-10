@@ -91,78 +91,6 @@ std::optional<double> DownwindAngle(ChartCanvas &canvas, ViewPort &vp,
   return std::atan2(static_cast<double>(ahead.x) - point.x,
                     -(static_cast<double>(ahead.y) - point.y));
 }
-std::vector<float> Disc(double cx, double cy, double radius) {
-  std::vector<float> v;
-  constexpr int segments = 32;
-  for (int i = 0; i < segments; ++i) {
-    const double a = i * 2 * 3.141592653589793 / segments;
-    const double b = (i + 1) * 2 * 3.141592653589793 / segments;
-    v.insert(v.end(), {float(cx), float(cy), float(cx + radius * std::cos(a)),
-                       float(cy + radius * std::sin(a)), float(cx + radius * std::cos(b)),
-                       float(cy + radius * std::sin(b))});
-  }
-  return v;
-}
-struct Layer { wxColour colour; std::vector<float> triangles; };
-struct Label { wxString text; int x, y; };
-
-// Fills opaque triangle lists in order on either render path. Same technique
-// as the XNav route waypoint marker (ChartRouteWaypoint.cpp).
-bool FillLayers(ocpnDC &dc, ChartCanvas &canvas, const std::vector<Layer> &layers) {
-  if (auto *native = dc.GetDC()) {
-    std::unique_ptr<wxGraphicsContext> gc(wxGraphicsContext::CreateFromUnknownDC(*native));
-    if (!gc) return false;
-    gc->SetPen(*wxTRANSPARENT_PEN);
-    for (const auto &layer : layers) {
-      if (layer.triangles.size() < 6) continue;
-      auto path = gc->CreatePath();
-      for (std::size_t i = 0; i + 5 < layer.triangles.size(); i += 6) {
-        path.MoveToPoint(layer.triangles[i], layer.triangles[i + 1]);
-        path.AddLineToPoint(layer.triangles[i + 2], layer.triangles[i + 3]);
-        path.AddLineToPoint(layer.triangles[i + 4], layer.triangles[i + 5]);
-        path.CloseSubpath();
-      }
-      gc->SetBrush(wxBrush(layer.colour));
-      gc->FillPath(path, wxWINDING_RULE);
-    }
-    return true;
-  }
-#ifdef ocpnUSE_GL
-  if (dc.m_canvasIndex < 0 || dc.m_canvasIndex >= 2) return false;
-  auto *shader = pcolor_tri_shader_program[dc.m_canvasIndex];
-  if (!shader || !canvas.GetpVP()) return false;
-  GLint program = 0, texture = 0, src_rgb = 0, dst_rgb = 0, src_alpha = 0, dst_alpha = 0;
-  glGetIntegerv(GL_CURRENT_PROGRAM, &program);
-  glGetIntegerv(GL_TEXTURE_BINDING_2D, &texture);
-  glGetIntegerv(GL_BLEND_SRC_RGB, &src_rgb); glGetIntegerv(GL_BLEND_DST_RGB, &dst_rgb);
-  glGetIntegerv(GL_BLEND_SRC_ALPHA, &src_alpha); glGetIntegerv(GL_BLEND_DST_ALPHA, &dst_alpha);
-  const auto blended = glIsEnabled(GL_BLEND);
-  const auto textured = glIsEnabled(GL_TEXTURE_2D);
-  glDisable(GL_BLEND);
-  shader->Bind();
-  shader->SetUniformMatrix4fv("MVMatrix",
-      reinterpret_cast<GLfloat *>(canvas.GetpVP()->vp_matrix_transform));
-  for (const auto &layer : layers) {
-    if (layer.triangles.size() < 6) continue;
-    float rgba[] = {layer.colour.Red() / 256.f, layer.colour.Green() / 256.f,
-                    layer.colour.Blue() / 256.f, 1.f};
-    shader->SetUniform4fv("color", rgba);
-    auto vertices = layer.triangles;
-    shader->SetAttributePointerf("position", vertices.data());
-    glDrawArrays(GL_TRIANGLES, 0, vertices.size() / 2);
-  }
-  shader->UnBind();
-  glUseProgram(program);
-  glBindTexture(GL_TEXTURE_2D, texture);
-  glBlendFuncSeparate(src_rgb, dst_rgb, src_alpha, dst_alpha);
-  if (textured) glEnable(GL_TEXTURE_2D); else glDisable(GL_TEXTURE_2D);
-  if (blended) glEnable(GL_BLEND); else glDisable(GL_BLEND);
-  return true;
-#else
-  (void)canvas;
-  return false;
-#endif
-}
 wxString W(const std::string &text) { return wxString::FromUTF8(text); }
 wxString LocalTime(weather::WallTime t) {
   return wxDateTime(static_cast<time_t>(
@@ -273,36 +201,60 @@ void DrawWeatherOverlay(ocpnDC &dc, ViewPort &vp, ChartCanvas &canvas) {
   if (!step) { restore(); return; }
   const auto winds = weather::WindsAt(snapshot, *step);
 
-  // SCRUM-355: lay arrows on a screen grid, each taking the nearest model
-  // sample (NearestWindSample), so a forecast that covers the view always
-  // shows. Pitch follows the declutter spacing (SCRUM-317), widened so the
-  // whole view fits under the arrow cap.
+  // SCRUM-360: arrows sit on a geographic lattice -- whole multiples of a
+  // nice degree step chosen from the zoom -- so they stay at chart positions
+  // while panning, as the prototype's wind layer does. Each lattice point
+  // takes its nearest model sample (SCRUM-355 coverage). The step follows the
+  // declutter spacing, widened so the view stays under the arrow cap.
   const double scale = canvas.FromDIP(100) / 100.0;
   const auto detail = application::ChartDetailForScale(vp.chart_scale);
   const double pitch = weather::ArrowGridPitch(vp.pix_width, vp.pix_height,
                                               weather::ArrowSpacingPx(detail) * scale);
   struct Cell { wxPoint p; weather::Coordinate at; std::size_t wind; };
   std::vector<Cell> cells;
-  if (pitch > 0) {
-    for (double y = pitch / 2; y < vp.pix_height; y += pitch)
-      for (double x = pitch / 2; x < vp.pix_width; x += pitch) {
-        const wxPoint p(static_cast<int>(std::lround(x)), static_cast<int>(std::lround(y)));
-        double lat = 0, lon = 0;
-        vp.GetLLFromPix(p, &lat, &lon);
-        const weather::Coordinate at{lat, lon};
-        if (const auto nearest = weather::NearestWindSample(winds, at))
-          cells.push_back({p, at, *nearest});
-      }
+  const auto box = vp.GetBBox();
+  const double cos_lat = std::cos(vp.clat * 3.141592653589793 / 180.0);
+  if (pitch > 0 && box.GetValid() && std::isfinite(vp.view_scale_ppm) &&
+      vp.view_scale_ppm > 0 && cos_lat > 0.05) {
+    const double metres = pitch / vp.view_scale_ppm;
+    const double lat_step = weather::NiceDegreeStep(metres / 111120.0);
+    const double lon_step = weather::NiceDegreeStep(metres / (111120.0 * cos_lat));
+    if (lat_step > 0 && lon_step > 0 &&
+        (box.GetMaxLat() - box.GetMinLat()) / lat_step < 400 &&
+        (box.GetMaxLon() - box.GetMinLon()) / lon_step < 400) {
+      for (double lat = std::floor(box.GetMinLat() / lat_step) * lat_step;
+           lat <= box.GetMaxLat() + lat_step && cells.size() < 4 * weather::kMaxWindArrows;
+           lat += lat_step)
+        for (double lon = std::floor(box.GetMinLon() / lon_step) * lon_step;
+             lon <= box.GetMaxLon() + lon_step; lon += lon_step) {
+          const weather::Coordinate at{lat, lon};
+          wxPoint p;
+          if (!Project(canvas, vp, at, p) || p.x < 0 || p.y < 0 ||
+              p.x > vp.pix_width || p.y > vp.pix_height) continue;
+          if (const auto nearest = weather::NearestWindSample(winds, at))
+            cells.push_back({p, at, *nearest});
+        }
+    }
   }
-  // --cyan (prototype .wind-arrow) with a float-text halo for contrast on
-  // light Day water. Stale: hollow muted arrows, never the live ink.
-  const auto ink = ui::Colour(ChartCanvasInk(mode, ui::NavigationContextInk(mode)));
-  const auto halo = ui::Colour(ChartCanvasInk(mode, ui::FloatingTheme(mode).primary));
+  // Prototype wind layer: open chevrons in route ink, translucent, no number
+  // per arrow (speed lives in the forecast box). Stale: muted ink.
+  const auto route = ui::Colour(ChartCanvasInk(mode, ui::ActiveRouteInk(mode)));
   const auto muted = ui::Colour(ChartCanvasInk(mode, ui::FloatingTheme(mode).secondary));
-  const auto hollow = ui::Colour(ChartCanvasInk(mode, ui::FloatingTheme(mode).surface));
-  Layer outer{stale ? muted : halo, {}}, inner{stale ? hollow : ink, {}};
-  std::vector<Label> labels;
-  const bool numbers = application::ShowSecondaryLabels(detail);
+  const auto base = stale ? muted : route;
+  const wxColour ink(base.Red(), base.Green(), base.Blue(), 150);
+  const int width = std::max(1, static_cast<int>(std::lround(1.6 * scale)));
+  std::unique_ptr<wxGraphicsContext> gc;
+  if (auto *native = dc.GetDC()) {
+    gc.reset(wxGraphicsContext::CreateFromUnknownDC(*native));
+    if (gc) gc->SetPen(wxPen(ink, width));
+  } else {
+    dc.SetPen(wxPen(ink, width));
+  }
+  const auto segment = [&](double x1, double y1, double x2, double y2) {
+    if (gc) gc->StrokeLine(x1, y1, x2, y2);
+    else dc.DrawLine(static_cast<int>(std::lround(x1)), static_cast<int>(std::lround(y1)),
+                     static_cast<int>(std::lround(x2)), static_cast<int>(std::lround(y2)), true);
+  };
   for (const auto &cell : cells) {
     const auto &w = winds[cell.wind];
     const auto p = cell.p;
@@ -311,27 +263,19 @@ void DrawWeatherOverlay(ocpnDC &dc, ViewPort &vp, ChartCanvas &canvas) {
     const auto angle = kn >= weather::kCalmKn
         ? DownwindAngle(canvas, vp, cell.at, p, w.direction_from_true_deg)
         : std::nullopt;
-    std::vector<float> o, i;
     if (angle) {
-      o = weather::ArrowTriangles(p.x, p.y, *angle, kn, scale, (stale ? 1.2 : 1.5) * scale);
-      i = weather::ArrowTriangles(p.x, p.y, *angle, kn, scale, stale ? -.6 * scale : 0);
+      const auto s = weather::ChevronSegments(p.x, p.y, *angle, scale);
+      for (std::size_t i = 0; i + 3 < s.size(); i += 4) segment(s[i], s[i + 1], s[i + 2], s[i + 3]);
     } else {
-      // Calm or unprojectable direction: a ring, never a guessed direction.
-      o = Disc(p.x, p.y, 5.5 * scale);
-      i = Disc(p.x, p.y, 3.5 * scale);
+      // Calm or unprojectable direction: a small ring, never a guessed direction.
+      const double r = 3.5 * scale;
+      for (int k = 0; k < 12; ++k) {
+        const double a = k * 3.141592653589793 / 6, b = (k + 1) * 3.141592653589793 / 6;
+        segment(p.x + r * std::cos(a), p.y + r * std::sin(a), p.x + r * std::cos(b), p.y + r * std::sin(b));
+      }
     }
-    outer.triangles.insert(outer.triangles.end(), o.begin(), o.end());
-    inner.triangles.insert(inner.triangles.end(), i.begin(), i.end());
-    if (numbers)
-      labels.push_back({wxString::Format("%.0f", kn), p.x + static_cast<int>(10 * scale),
-                        p.y + static_cast<int>(6 * scale)});
   }
-  FillLayers(dc, canvas, {outer, inner});
-  if (!labels.empty()) {
-    dc.SetFont(ui::UiFontWeight(canvas, 9, 600));
-    dc.SetTextForeground(stale ? muted : halo);
-    for (const auto &l : labels) dc.DrawText(l.text, l.x, l.y);
-  }
+  gc.reset();
   const auto step_text = W(weather::StepLabel(*step, now));
   DrawBadge(dc, canvas, vp, mode,
             {W(weather::ProvenanceLabel(snapshot, now)),

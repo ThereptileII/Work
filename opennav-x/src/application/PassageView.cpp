@@ -1,5 +1,7 @@
 #include "application/PassageView.h"
+#include <cctype>
 #include <cmath>
+#include <cstdio>
 
 namespace opennav::application {
 namespace {
@@ -78,6 +80,49 @@ PassageView PresentPassage(const vessel::VesselState &state,
     if (view.arrival_soc && *view.arrival_soc > 100)
       view.arrival_soc.reset();
     view.below_reserve = energy.arrival.estimate->below_reserve;
+  }
+  return view;
+}
+NextTurnView PresentNextTurn(const PassageView &passage) {
+  NextTurnView view;
+  if (!passage.active || !passage.current || passage.points.empty()) return view;
+  const auto &next = passage.points.front();
+  if (next.name.empty() || !next.distance_nm) return view;
+  view.visible = true;
+  std::string upper;
+  for (std::size_t i = 0; i < next.name.size(); ++i) {
+    const unsigned char c = next.name[i];
+    upper += c < 0x80 ? static_cast<char>(std::toupper(c)) : static_cast<char>(c);
+  }
+  // Common Swedish lower-case letters in UTF-8 (å ä ö -> Å Ä Ö).
+  for (const auto &[from, to] : {std::pair<const char *, const char *>{"\xC3\xA5", "\xC3\x85"},
+                                 {"\xC3\xA4", "\xC3\x84"}, {"\xC3\xB6", "\xC3\x96"}})
+    for (std::size_t at = upper.find(from); at != std::string::npos; at = upper.find(from, at + 2))
+      upper.replace(at, 2, to);
+  view.eyebrow = "NEXT \xC2\xB7 " + upper;
+  const bool last = passage.points.size() == 1;
+  char buffer[64];
+  if (last) {
+    view.headline = "Arrival";
+  } else if (next.turn_deg && std::abs(*next.turn_deg) >= 5) {
+    view.direction = *next.turn_deg > 0 ? 1 : -1;
+    view.turn_deg = static_cast<int>(std::lround(std::abs(*next.turn_deg)));
+    view.headline = view.direction > 0 ? "Starboard" : "Port";
+  } else {
+    view.headline = "Straight on";
+  }
+  std::snprintf(buffer, sizeof buffer, "%.1f nm", *next.distance_nm);
+  view.detail = buffer;
+  if (next.seconds && *next.seconds < 99 * 3600) {
+    const auto minutes = static_cast<long>(std::lround(*next.seconds / 60));
+    if (minutes < 60) std::snprintf(buffer, sizeof buffer, " \xC2\xB7 in %ld min", minutes);
+    else std::snprintf(buffer, sizeof buffer, " \xC2\xB7 in %ld h %02ld min", minutes / 60, minutes % 60);
+    view.detail += buffer;
+  }
+  if (!last && next.course_true_deg) {
+    std::snprintf(buffer, sizeof buffer, " \xC2\xB7 new course %03d\xC2\xB0",
+                  static_cast<int>(std::lround(*next.course_true_deg)) % 360);
+    view.detail += buffer;
   }
   return view;
 }

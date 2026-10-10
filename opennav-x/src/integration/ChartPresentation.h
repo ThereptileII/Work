@@ -1,4 +1,6 @@
 #pragma once
+#include <string>
+#include <functional>
 #include "application/NavigationObjects.h"
 #include <wx/colour.h>
 #include <wx/hashmap.h>
@@ -61,6 +63,12 @@ bool DrawChartScale(ocpnDC &dc, ChartCanvas &canvas, const wxString &label,
                     int x, int y, int length, wxRect &bounds);
 bool XNavChartRequested();
 bool XNavChartPresentationActive();
+// SCRUM-364: SKAGER mode draws no OpenCPN chart-stack (piano) bar. Render
+// gate only; g_bShowChartBar and the saved setting stay as the user set them,
+// so Legacy mode keeps its bar.
+bool XNavChartBarHidden();
+// SCRUM-364: the vessel name for the own-ship chip ("● Reptil · 6.3 kn").
+void SetChartVesselNameProvider(std::function<std::string()> provider);
 std::string ChartPresentationStatus();
 application::CommandResult SetXNavChartRequested(bool enabled);
 } // namespace opennav::integration

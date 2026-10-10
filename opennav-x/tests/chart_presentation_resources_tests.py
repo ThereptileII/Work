@@ -221,6 +221,10 @@ with tempfile.TemporaryDirectory(prefix='xnav-chart-test-') as d:
         if table=='DAY_BRIGHT':
             for role in ('CHBLK','CHGRD'):
                 unchanged.find("color[@name='"+role+"']").attrib.update(r='7',g='7',b='7')
+            # SCRUM-363: the prototype's near-invisible Day depth bands replace
+            # the former fills; restore those before the whole-table oracle.
+            for role,prior in (('DEPMD',(199,220,221)),('DEPMS',(173, 203, 206)),('DEPVS',(134,172,182))):
+                unchanged.find("color[@name='"+role+"']").attrib.update(dict(zip(('r','g','b'),map(str,prior))))
         check(hashlib.sha256(ET.tostring(unchanged)).hexdigest()==digest)
     # Literal effective Night colors independently confirmed against the final
     # CSS and canonical Windows pixels, not copied from generator output.

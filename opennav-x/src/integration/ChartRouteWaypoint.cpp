@@ -127,7 +127,7 @@ bool ResolvePaint(ChartCanvas &canvas, int marker, MarkerPaint &paint) {
   const auto mode = CanvasMode(canvas);
   // Same route-state inks as the route line (ChartRouteInk).
   paint.ink = decoded.role == WaypointMarkerRole::Inactive
-      ? ui::Colour(ChartCanvasInk(mode, ui::FloatingTheme(mode).secondary))
+      ? ui::Colour(ChartCanvasInk(mode, ui::InactiveRouteInk(mode)))
       : decoded.role == WaypointMarkerRole::SelectedRoute
       ? ui::Colour(ChartCanvasInk(mode, ui::Theme(mode).ais))
       : route_ink;

@@ -1,4 +1,5 @@
 #include "integration/ChartPresentation.h"
+#include "model/own_ship.h"
 #include "integration/ChartCanvasInk.h"
 #include "integration/ChartNameTypography.h"
 #include "integration/ChartTextFace.h"
@@ -200,6 +201,16 @@ bool ChartBackground(ColorScheme scheme, wxColour &land, wxColour &water) {
 }
 bool XNavChartRequested() { return requested; }
 bool XNavChartPresentationActive() { return wxIsMainThread() && xnav_mode && active; }
+bool XNavChartBarHidden() { return wxIsMainThread() && xnav_mode; }
+namespace {
+std::function<std::string()> &VesselNameProvider() {
+  static std::function<std::string()> provider;
+  return provider;
+}
+} // namespace
+void SetChartVesselNameProvider(std::function<std::string()> provider) {
+  VesselNameProvider() = std::move(provider);
+}
 bool ChartActiveRouteInk(ChartCanvas &canvas, wxColour &ink) {
   if (!wxIsMainThread() || !xnav_mode || !active) return false;
   const auto mode = canvas.GetColorScheme() == GLOBAL_COLOR_SCHEME_NIGHT
@@ -216,7 +227,7 @@ bool ChartRouteInk(ChartCanvas &canvas, Route &route, wxColour &ink) {
   if (route.m_bRtIsSelected)
     ink = ui::Colour(ChartCanvasInk(mode, ui::Theme(mode).ais));
   else if (!route.m_bRtIsActive)
-    ink = ui::Colour(ChartCanvasInk(mode, ui::FloatingTheme(mode).secondary));
+    ink = ui::Colour(ChartCanvasInk(mode, ui::InactiveRouteInk(mode)));
   return true;
 }
 bool DefaultChartRouteStyle(Route &route) {
@@ -440,6 +451,40 @@ bool DrawChartOwnship(ocpnDC &dc, ChartCanvas &canvas, double x, double y,
   const int margin = static_cast<int>(std::ceil(6 * scale)); // Miter + rounding.
   dc.CalcBoundingBox(left - margin, top - margin);
   dc.CalcBoundingBox(right + margin, bottom + margin);
+  // Prototype vessel chip: "● Reptil · 6.3 kn" below right of the vessel.
+  // Only with a normal fix and a finite SOG; never a remembered speed.
+  if (canvas.GetOwnShipState() == SHIP_NORMAL && std::isfinite(gSog) && gSog >= 0 &&
+      gSog < 100) {
+    const double ui_scale = canvas.FromDIP(100) / 100.0;
+    std::string name = VesselNameProvider() ? VesselNameProvider()() : std::string();
+    wxString text = wxString::FromUTF8(name);
+    text.Trim(true).Trim(false);
+    if (text.length() > 24) text = text.Left(23) + wxString::FromUTF8("\xE2\x80\xA6");
+    text += (text.empty() ? wxString() : wxString::FromUTF8(" \xC2\xB7 ")) +
+            wxString::Format("%.1f kn", gSog);
+    const auto old_font = dc.GetFont();
+    const auto old_ink = dc.GetTextForeground();
+    dc.SetFont(ui::UiFontWeight(canvas, 10, 600));
+    wxCoord tw = 0, th = 0;
+    dc.GetTextExtent(text, &tw, &th);
+    const int pad = static_cast<int>(std::lround(8 * ui_scale));
+    const int dot = static_cast<int>(std::lround(6 * ui_scale));
+    const int cx = static_cast<int>(std::lround(x + 24 * ui_scale));
+    const int cy = static_cast<int>(std::lround(y + 30 * ui_scale));
+    const int w = pad + dot + pad / 2 + tw + pad, h = th + pad;
+    dc.SetPen(wxPen(ink(ui::Theme(mode).border), 1));
+    dc.SetBrush(wxBrush(ink(ui::FloatingTheme(mode).surface)));
+    dc.DrawRoundedRectangle(cx, cy, w, h, static_cast<int>(std::lround(6 * ui_scale)));
+    dc.SetPen(*wxTRANSPARENT_PEN);
+    dc.SetBrush(wxBrush(ink(ui::ActiveRouteInk(mode))));
+    dc.DrawCircle(cx + pad + dot / 2, cy + h / 2, dot / 2);
+    dc.SetTextForeground(ink(ui::FloatingTheme(mode).primary));
+    dc.DrawText(text, cx + pad + dot + pad / 2, cy + (h - th) / 2);
+    dc.CalcBoundingBox(cx - 1, cy - 1);
+    dc.CalcBoundingBox(cx + w + 1, cy + h + 1);
+    dc.SetFont(old_font);
+    dc.SetTextForeground(old_ink);
+  }
   dc.SetBrush(old_brush); dc.SetPen(old_pen);
   return true;
 }

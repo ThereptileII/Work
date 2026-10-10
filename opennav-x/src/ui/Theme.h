@@ -43,6 +43,18 @@ constexpr FloatingPalette FloatingTheme(LightMode mode) {
   return FloatingTheme(LightMode::Night);
 }
 
+constexpr std::uint32_t MixInk(std::uint32_t a, std::uint32_t b, double t) {
+  const auto c = [&](int shift) {
+    const double x = ((a >> shift) & 0xFF) * (1 - t) + ((b >> shift) & 0xFF) * t;
+    return static_cast<std::uint32_t>(x + .5) << shift;
+  };
+  return c(16) | c(8) | c(0);
+}
+// SCRUM-363: an inactive route keeps the prototype's route family (teal),
+// muted toward the floating secondary ink, instead of a neutral grey.
+constexpr std::uint32_t InactiveRouteInk(LightMode mode) {
+  return MixInk(ActiveRouteInk(mode), FloatingTheme(mode).secondary, .55);
+}
 constexpr Palette Theme(LightMode mode) {
   // Supplied v8 HTML: :root and #app[data-theme], including inheritance.
   // The active button uses --mint. --cyan remains a separate context accent.

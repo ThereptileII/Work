@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 
 #include "ui/Theme.h"
 #include "vessel/VesselState.h"
@@ -163,6 +164,24 @@ class XNavIconButton final : public XNavButton {
   }
 };
 
+// SCRUM-361: the small visual under a rail value in the prototype (SOG
+// sparkline, depth meter with the safety mark, wind direction, battery bar).
+// Filled only from real data; Kind::None draws nothing.
+struct MetricVisual {
+  enum class Kind { None, Sparkline, Meter, Direction, Bar } kind = Kind::None;
+  std::vector<double> series;      // Sparkline, oldest first.
+  double fraction = -1;            // Meter/Bar fill, 0..1.
+  double marker = -1;              // Meter mark (safety depth), 0..1.
+  bool warning = false;            // Meter: value beyond the mark.
+  double angle_deg = 0;            // Direction: relative to the bow, + starboard.
+  wxString caption, value_text;    // "3.0 m safety" / "72°  PORT" / "At destination" "43%".
+  bool operator==(const MetricVisual &o) const {
+    return kind == o.kind && series == o.series && fraction == o.fraction &&
+           marker == o.marker && warning == o.warning && angle_deg == o.angle_deg &&
+           caption == o.caption && value_text == o.value_text;
+  }
+};
+
 class XNavDataValue final : public wxPanel {
  public:
   XNavDataValue(wxWindow* parent, const wxString& label, const wxString& unit,
@@ -174,6 +193,7 @@ class XNavDataValue final : public wxPanel {
   void SetMetricFontSize(int pixels) { if(metric_font_size_!=pixels){metric_font_size_ = pixels; Refresh(false);} }
   void SetMetricLabelSize(int pixels) { if(metric_label_size_!=pixels){metric_label_size_=pixels;Refresh(false);} }
   void SetContentInset(int pixels) { if(content_inset_!=pixels){content_inset_=pixels;Refresh(false);} }
+  void SetVisual(const MetricVisual &visual) { if(!(visual_==visual)){visual_=visual;Refresh(false);} }
 #if wxUSE_HELP
   wxString GetHelpTextAtPoint(const wxPoint &, wxHelpEvent::Origin) const override {
     return hint_;
@@ -192,6 +212,8 @@ class XNavDataValue final : public wxPanel {
   int metric_label_size_ = 0;
   int content_inset_ = 0;
   XNavIcon metric_icon_ = XNavIcon::None;
+  MetricVisual visual_;
+  void PaintVisual(wxDC &dc, int x, int top, int right, int bottom);
 };
 
 // Equal CSS-style rows use cumulative rounding, avoiding per-row integer

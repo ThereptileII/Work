@@ -1,4 +1,5 @@
 #include "ui/Shell.h"
+#include "ui/NextTurnCard.h"
 #include <wx/msgdlg.h>
 #include "ui/NameEditor.h"
 #include "ui/SettingsBackupUi.h"
@@ -297,7 +298,13 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   center->SetMinSize(frame_.FromDIP(wxSize(142,44)));center->SetRole(ButtonRole::Quiet);
   center->SetFloating();
   center->SetIcon(XNavIcon::Ownship);center->SetInlineIcon();
+  follow_button_=center;
   following->Add(center,1,wxEXPAND);chart_follow_->SetSizerAndFit(following);
+  // SCRUM-362: prototype next-turn card, top left of the chart.
+  chart_turn_ = overlay("OpenNav next turn");
+  auto *turn_layout = new wxBoxSizer(wxVERTICAL);
+  turn_card_ = new XNavNextTurnCard(chart_turn_, [this] { ShowPassage(); });
+  turn_layout->Add(turn_card_, 1, wxEXPAND); chart_turn_->SetSizerAndFit(turn_layout);
 
   auto *right =
       MakePane("OpenNavData", wxAuiPaneInfo().Right().Layer(5).BestSize(
@@ -715,7 +722,14 @@ void Shell::SetLight(LightMode mode) {
   ApplyTheme();
   PlaceChartControls();
 }
-void Shell::UpdateRail(const std::vector<std::string> &keys, vessel::Time now) {
+void Shell::UpdateRail(const std::vector<std::string> &keys, vessel::Time now,
+                       const smartnav::EnergyPrediction &energy) {
+  sog_history_.Observe(state_.navigation.sog_kn, now);
+  std::optional<double> safety;
+  if (actions_.chart_safety_depth_m) {
+    const double value = actions_.chart_safety_depth_m();
+    if (std::isfinite(value) && value > 0) safety = value;
+  }
   const auto items = vessel::DisplayItems(state_);
   // Four primary instruments always fit. Older profiles retain their complete
   // preference list; extra choices remain available in Instruments/settings.
@@ -751,8 +765,21 @@ void Shell::UpdateRail(const std::vector<std::string> &keys, vessel::Time now) {
   }
   for (const auto &value : rail_values_)
     for (const auto &item : items)
-      if (value.first == item.key)
+      if (value.first == item.key) {
         value.second->SetReading(*item.sample, now);
+        const auto visual = application::RailVisualFor(value.first, state_, now,
+                                                       sog_history_, safety, &energy);
+        MetricVisual m;
+        m.kind = static_cast<MetricVisual::Kind>(static_cast<int>(visual.kind));
+        m.series = visual.series;
+        m.fraction = visual.fraction;
+        m.marker = visual.marker;
+        m.warning = visual.warning;
+        m.angle_deg = visual.angle_deg;
+        m.caption = wxString::FromUTF8(visual.caption);
+        m.value_text = wxString::FromUTF8(visual.value_text);
+        value.second->SetVisual(m);
+      }
 }
 
 void Shell::UpdateAlerts() {
@@ -1056,7 +1083,29 @@ void Shell::Tick() {
     passage_drawer_->Update(state_, field_snapshot_.advice, energy, now, mode_);
     passage_drawer_->Present(DrawerWorkspace());
   }
-  UpdateRail(config.data_rail, now);
+  UpdateRail(config.data_rail, now, energy);
+  if (follow_button_ && actions_.following) {
+    // Prototype .follow-btn.active: "Following Reptil" while the chart follows.
+    const bool on = actions_.following();
+    wxString name = actions_.vessel_name ? wxString::FromUTF8(actions_.vessel_name()) : wxString();
+    name.Trim(true).Trim(false);
+    if (name.length() > 18) name = name.Left(17) + wxString::FromUTF8("\xE2\x80\xA6");
+    const wxString label = on ? (name.empty() ? wxString("Following boat") : "Following " + name)
+                              : wxString("Follow boat");
+    if (follow_button_->GetLabel() != label || follow_button_->IsSelected() != on) {
+      follow_button_->SetLabel(label);
+      follow_button_->SetSelected(on);
+      follow_button_->SetMinSize(wxSize(std::max(frame_.FromDIP(142),
+          follow_button_->InlineWidth(142)), frame_.FromDIP(44)));
+      chart_follow_->Fit();
+    }
+  }
+  {
+    const auto turn = application::PresentNextTurn(
+        application::PresentPassage(state_, field_snapshot_.advice, energy, now));
+    turn_visible_ = turn.visible;
+    if (turn_card_) turn_card_->Update(turn, mode_);
+  }
   horizon_->Update(application::PresentHorizon(state_,field_snapshot_.advice,horizon_ais_,now),mode_);
   PlaceChartControls();
   UpdateContext(wall_now);
@@ -1082,7 +1131,9 @@ void Shell::Tick() {
     if (!r.error.empty())
       label += " / RECORD ERROR";
   }
-  source_->SetTextColor(replay || simulation_ ? Theme(mode_).attention : Theme(mode_).secondary);
+  source_->SetTextColor(replay || simulation_ || label.Contains("attention") ||
+                        label == "Navigation stale"
+                            ? Theme(mode_).attention : Theme(mode_).secondary);
   if (source_->GetLabel() != label) {
     source_->SetLabel(label);
     source_->GetParent()->Layout();
@@ -1805,9 +1856,19 @@ wxString Shell::InputSummary() const {
     if (input.quality == vessel::Quality::Live || input.quality == vessel::Quality::Aging)
       return "GPS unavailable / Marine input";
   }
-  return current   ? "OpenCPN navigation"
-         : present ? "Navigation stale"
-                   : "No vessel input";
+  if (current) {
+    // Prototype .health-button: "● Systems nominal", or what needs a look,
+    // from the same per-source counts as the footer.
+    const auto &footer = footer_->View();
+    const auto attention = footer.aging_signals + footer.stale_signals;
+    if (attention)
+      return wxString::FromUTF8("\xE2\x97\x8F ") +
+             wxString::Format(attention == 1 ? "%zu source needs attention"
+                                             : "%zu sources need attention",
+                              static_cast<std::size_t>(attention));
+    return wxString::FromUTF8("\xE2\x97\x8F Systems nominal");
+  }
+  return present ? "Navigation stale" : "No vessel input";
 }
 
 void Shell::ShowSystem() {
@@ -1828,12 +1889,13 @@ void Shell::PlaceChartControls() {
   const bool available=frame_.IsShownOnScreen()&&!frame_.IsIconized()&&frame_.IsEnabled()&&
       chart.width>frame_.FromDIP(420)&&chart.height>frame_.FromDIP(240);
   for(auto *overlay:chart_overlays_) {
-    if(!available){overlay->Hide();continue;}
+    if(!available || (overlay==chart_turn_ && !turn_visible_)){overlay->Hide();continue;}
     const auto size=overlay->GetSize();
     wxPoint position;
     if(overlay==chart_tools_)position={chart.x+chart.width-size.x-frame_.FromDIP(22),chart.y+chart.height-size.y-frame_.FromDIP(37)};
     else if(overlay==chart_orientation_)position={chart.x+chart.width-size.x-frame_.FromDIP(22),chart.y+frame_.FromDIP(22)};
     else if(overlay==chart_layers_)position={chart.x+chart.width-size.x-frame_.FromDIP(34),chart.y+frame_.FromDIP(122)};
+    else if(overlay==chart_turn_)position={chart.x+frame_.FromDIP(28),chart.y+frame_.FromDIP(24)};
     else position={chart.x+frame_.FromDIP(28),chart.y+chart.height-size.y-frame_.FromDIP(37)};
     if (overlay==chart_layers_) {
       const auto tools_size=chart_tools_->GetSize();

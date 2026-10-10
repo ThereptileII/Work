@@ -15,6 +15,7 @@
 #include <dwrite.h>
 #endif
 
+#include <algorithm>
 #include <memory>
 #include <cmath>
 
@@ -779,6 +780,96 @@ void XNavDataValue::SetReading(const vessel::Sample& sample, vessel::Time now) {
   if(changed) Refresh();
 }
 
+void XNavDataValue::PaintVisual(wxDC &dc, int x, int top, int right, int bottom) {
+  using Kind = MetricVisual::Kind;
+  if (visual_.kind == Kind::None || right - x < FromDIP(40)) return;
+  const auto colors = Theme(mode_);
+  const auto cyan = Colour(NavigationContextInk(mode_));
+  const int width = right - x;
+  std::unique_ptr<wxGraphicsContext> gc(wxGraphicsContext::CreateFromUnknownDC(dc));
+  if (!gc) return;
+  const auto track = [&](int y, double fraction, wxColour fill) {
+    gc->SetPen(*wxTRANSPARENT_PEN);
+    gc->SetBrush(wxBrush(Colour(colors.selected)));
+    gc->DrawRectangle(x, y, width, FromDIP(2));
+    gc->SetBrush(wxBrush(fill));
+    gc->DrawRectangle(x, y, std::clamp(fraction, 0.0, 1.0) * width, FromDIP(2));
+  };
+  switch (visual_.kind) {
+  case Kind::Sparkline: {
+    // .sparkline: 100% x 23 px, cyan 1.1 px stroke, 8 px below the value.
+    const int h = FromDIP(17);
+    if (visual_.series.size() < 3 || bottom - top < h) return;
+    const auto [lo, hi] = std::minmax_element(visual_.series.begin(), visual_.series.end());
+    const double span = std::max(*hi - *lo, 0.5);
+    auto path = gc->CreatePath();
+    for (std::size_t i = 0; i < visual_.series.size(); ++i) {
+      const double px = x + width * double(i) / double(visual_.series.size() - 1);
+      const double py = top + h - (visual_.series[i] - *lo) / span * h;
+      if (i) path.AddLineToPoint(px, py); else path.MoveToPoint(px, py);
+    }
+    gc->SetPen(wxPen(cyan, std::max(1, FromDIP(1))));
+    gc->StrokePath(path);
+    break;
+  }
+  case Kind::Meter: {
+    // .depth-meter: 2 px track at +7, cyan fill, mark, 7 px caption right.
+    if (bottom - top < FromDIP(20) || visual_.fraction < 0) return;
+    const int y = top + FromDIP(7);
+    track(y, visual_.fraction, visual_.warning ? Colour(colors.attention) : cyan);
+    if (visual_.marker >= 0 && visual_.marker <= 1) {
+      gc->SetBrush(wxBrush(Colour(colors.attention)));
+      gc->DrawRectangle(x + visual_.marker * width - FromDIP(1), y - FromDIP(3), FromDIP(2), FromDIP(8));
+    }
+    if (!visual_.caption.empty()) {
+      gc->SetFont(UiFont(*this, 7), Colour(colors.muted));
+      double w = 0, h = 0; gc->GetTextExtent(visual_.caption, &w, &h);
+      gc->DrawText(visual_.caption, right - w, y + FromDIP(4));
+    }
+    break;
+  }
+  case Kind::Direction: {
+    // .metric-secondary: cyan arrow, angle, muted side word.
+    if (bottom - top < FromDIP(16)) return;
+    const double a = visual_.angle_deg * 3.14159265358979 / 180.0;
+    const double cx = x + FromDIP(7), cy = top + FromDIP(8), r = FromDIP(6);
+    const double dx = std::sin(a), dy = -std::cos(a);
+    gc->SetPen(wxPen(cyan, std::max(1, FromDIP(1))));
+    gc->StrokeLine(cx - dx * r, cy - dy * r, cx + dx * r, cy + dy * r);
+    for (const double side : {-0.55, 0.55}) {
+      const double b = a + 3.14159265358979 + side;
+      gc->StrokeLine(cx + dx * r, cy + dy * r, cx + dx * r + std::sin(b) * FromDIP(4),
+                     cy + dy * r - std::cos(b) * FromDIP(4));
+    }
+    gc->SetFont(UiFont(*this, 10), Colour(colors.secondary));
+    double w = 0, h = 0; gc->GetTextExtent(visual_.value_text, &w, &h);
+    gc->DrawText(visual_.value_text, x + FromDIP(20), cy - h / 2);
+    gc->SetFont(UiFont(*this, 8), Colour(colors.muted));
+    double w2 = 0, h2 = 0; gc->GetTextExtent(visual_.caption, &w2, &h2);
+    gc->DrawText(visual_.caption, x + FromDIP(26) + w, cy - h2 / 2);
+    break;
+  }
+  case Kind::Bar: {
+    // .battery-track: 5 px mint bar, then "At destination  43%".
+    if (bottom - top < FromDIP(8) || visual_.fraction < 0) return;
+    const int y = top + FromDIP(6);
+    gc->SetPen(*wxTRANSPARENT_PEN);
+    gc->SetBrush(wxBrush(Colour(colors.selected)));
+    gc->DrawRoundedRectangle(x, y, width, FromDIP(5), FromDIP(2));
+    gc->SetBrush(wxBrush(Colour(colors.accent)));
+    gc->DrawRoundedRectangle(x, y, std::clamp(visual_.fraction, 0.0, 1.0) * width, FromDIP(5), FromDIP(2));
+    if (!visual_.caption.empty() && bottom - y > FromDIP(22)) {
+      gc->SetFont(UiFont(*this, 10), Colour(colors.secondary));
+      gc->DrawText(visual_.caption, x, y + FromDIP(11));
+      gc->SetFont(UiFont(*this, 10), Colour(colors.accent));
+      double w = 0, h = 0; gc->GetTextExtent(visual_.value_text, &w, &h);
+      gc->DrawText(visual_.value_text, right - w, y + FromDIP(11));
+    }
+    break;
+  }
+  case Kind::None: break;
+  }
+}
 void XNavDataValue::Paint(wxPaintEvent&) {
   wxAutoBufferedPaintDC dc(this);
   const auto colors = Theme(mode_);
@@ -854,6 +945,7 @@ void XNavDataValue::Paint(wxPaintEvent&) {
     dc.SetFont(UiFont(*this,11));dc.SetTextForeground(Colour(colors.secondary));
     const bool inline_unit=unit_x+dc.GetTextExtent(unit).x<=right;
     if(inline_unit)dc.DrawText(unit,unit_x,value_y+FromDIP(value_size-13));
+    const int value_bottom=value_y+dc.GetTextExtent(value).y;
     // SCRUM-352: a live value needs no caption. The routine source and age
     // line is gone from the rail; the source stays in the hover hint and in
     // source health. Only a value that cannot be fully trusted (aging, stale,
@@ -868,6 +960,11 @@ void XNavDataValue::Paint(wxPaintEvent&) {
       dc.SetFont(UiFont(*this,8));dc.SetTextForeground(Colour(stale?colors.attention:colors.muted));
       dc.DrawText(wxControl::Ellipsize(status,dc,wxELLIPSIZE_END,std::max(1,available)),x,detail_y);
     }
+    // The visual sits between the value and the status line (or tile edge).
+    // A stale or missing value gets no visual: it would look current.
+    if(reading_.value && !stale)
+      PaintVisual(dc,x,value_bottom+FromDIP(4),right,
+                  (status.empty()?GetClientSize().y-FromDIP(6):detail_y-FromDIP(2)));
     return;
   }
   dc.SetPen(wxPen(Colour(colors.border)));

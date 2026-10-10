@@ -4,7 +4,7 @@
   "themes": {
     "DAY_BRIGHT": {"theme": "day", "colors": {
       "LANDA": "--land", "XNBUA": "--land", "XNSTR": "--land", "XNSHR": "--shore", "XNGEO": "--chart-text", "XNCBL": "--mark-area", "XNARE": "--mark-area", "CSTLN": "--shore", "DEPDW": "--water", "CHBLK": "--mark-black", "CHGRD": "--mark-black", "XNHAT": "--mark-black", "XNBLF": "--mark-service", "XNBLO": "--mark-black",
-      "DEPMD": "#c7dcdd", "DEPMS": "--chart-line", "DEPVS": "#86acb6", "DEPIT": "#b5c9ab",
+      "DEPMD": "#d0e2e2", "DEPMS": "#ccdedf", "DEPVS": "#c5dadc", "DEPIT": "#b5c9ab",
       "DEPCN": "--chart-line", "DEPSC": "--chart-text", "SNDG1": "--chart-text", "SNDG2": "--float-text"
     }},
     "DUSK": {"theme": "dusk", "colors": {

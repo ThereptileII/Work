@@ -618,6 +618,8 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
     return settings->SaveDisplay(value);
   };
   actions.vessel_name = [] { return settings->VesselName(); };
+  integration::SetChartVesselNameProvider(
+      [] { return settings ? settings->VesselName() : std::string(); });
   actions.chart_safety_depth_m = [] {
     return S52_getMarinerParam(S52_MAR_SAFETY_CONTOUR);
   };
@@ -814,6 +816,10 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
   actions.zoom_in = [&frame] { frame.GetPrimaryCanvas()->ZoomCanvas(2.0, false); };
   actions.zoom_out = [&frame] { frame.GetPrimaryCanvas()->ZoomCanvas(0.5, false); };
   actions.follow = [&frame] { frame.TogglebFollow(frame.GetPrimaryCanvas()); };
+  actions.following = [&frame] {
+    auto *canvas = frame.GetPrimaryCanvas();
+    return canvas && canvas->GetbFollow();
+  };
   actions.legacy = [] { RequestMode(InterfaceMode::Legacy); };
   actions.restart_xnav=[] {RequestMode(InterfaceMode::XNav);};
   actions.safe=[] {RequestMode(InterfaceMode::Legacy,true);};

@@ -97,14 +97,23 @@ class HorizonButton final:public XNavButton {
     const bool now=item_.marker==application::HorizonMarker::Now;
     const int time_size=now?8:10;
     double y=0;
+    // SCRUM-364: three lines must fit the event's actual height (shorter
+    // client areas shrink the horizon). Compress the gaps first, then use a
+    // smaller detail size; never let the last line fall off the bottom.
+    const double height=GetClientSize().y;
+    int detail_size=detail_;
+    double gap=FromDIP(gap_);
+    const auto lines=[&](int detail){return FromDIP(LineHeight(time_size)+LineHeight(title_)+LineHeight(detail));};
+    if(lines(detail_size)+2*gap>height)gap=std::max(0.,(height-lines(detail_size))/2);
+    while(detail_size>8 && lines(detail_size)+2*gap>height)--detail_size;
     const auto time=wxString::FromUTF8(item_.time);
     const double advance=DrawText(*this,*g,time,x,y,time_size,400,ink(now?c.accent:c.secondary),width);
     if(!narrow_&&!item_.secondary_time.empty())DrawText(*this,*g,wxString::FromUTF8(item_.secondary_time),x+advance+FromDIP(6),y+FromDIP(LineHeight(time_size)-LineHeight(8)),8,400,ink(c.muted),std::max(1.,width-advance-FromDIP(6)));
-    y+=FromDIP(LineHeight(time_size)+gap_);
+    y+=FromDIP(LineHeight(time_size))+gap;
     DrawText(*this,*g,wxString::FromUTF8(item_.title),x,y,title_,550,ink(c.primary),width);
-    y+=FromDIP(LineHeight(title_)+gap_);
-    const double text=DrawText(*this,*g,wxString::FromUTF8(item_.detail),x,y,detail_,400,ink(c.muted),width);
-    if(!item_.detail_accent.empty() && text<width)DrawText(*this,*g,wxString::FromUTF8(item_.detail_accent),x+text,y,detail_,400,ink(c.accent),width-text);
+    y+=FromDIP(LineHeight(title_))+gap;
+    const double text=DrawText(*this,*g,wxString::FromUTF8(item_.detail),x,y,detail_size,400,ink(c.muted),width);
+    if(!item_.detail_accent.empty() && text<width)DrawText(*this,*g,wxString::FromUTF8(item_.detail_accent),x+text,y,detail_size,400,ink(c.accent),width-text);
   }
   application::HorizonItem item_;
   std::optional<application::HorizonAction> armed_;

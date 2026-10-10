@@ -307,39 +307,35 @@ inline double ArrowGridPitch(double width, double height, double min_spacing,
   return pitch;
 }
 
-// Arrow length grows with speed, bounded (logical px at 100%).
-inline double ArrowLengthPx(double speed_kn) {
-  if (!std::isfinite(speed_kn) || speed_kn < 0) return 0;
-  return 18 + 0.6 * std::min(speed_kn, 40.0);
+// Geographic lattice step (SCRUM-360): the smallest "nice" degree value not
+// tighter than the requested one, so arrows sit at fixed chart positions that
+// pan with the chart and only re-space when the zoom changes.
+inline double NiceDegreeStep(double raw_deg) {
+  if (!std::isfinite(raw_deg) || raw_deg <= 0) return 0;
+  static const double ladder[] = {1, 2, 2.5, 5};
+  for (double decade = 1e-4; decade <= 100; decade *= 10)
+    for (const double m : ladder)
+      if (m * decade >= raw_deg) return m * decade;
+  return 0;
+}
+// Prototype wind vector (#windLayer path "m x y 18-8-6 0m6 0-3 5"): an open
+// chevron -- a shaft centred on the lattice point and two short barbs at the
+// downwind tip. Segments as x1,y1,x2,y2; angle is clockwise from screen up.
+inline std::vector<double> ChevronSegments(double x, double y, double angle_rad,
+                                           double scale) {
+  const double half = 10 * scale, barb = 6 * scale, spread = 0.52;  // ~30 deg
+  const double dx = std::sin(angle_rad), dy = -std::cos(angle_rad);
+  const double tx = x + dx * half, ty = y + dy * half;
+  const auto barb_end = [&](double side) {
+    const double a = angle_rad + 3.14159265358979 + side * spread;
+    return std::pair<double, double>{tx + std::sin(a) * barb, ty - std::cos(a) * barb};
+  };
+  const auto [l1, l2] = barb_end(1);
+  const auto [r1, r2] = barb_end(-1);
+  return {x - dx * half, y - dy * half, tx, ty, tx, ty, l1, l2, tx, ty, r1, r2};
 }
 // Below this the wind is drawn as a calm ring, not an arrow with a direction.
 constexpr double kCalmKn = 1.0;
-
-// Filled downwind arrow centred on (cx, cy) as a GL_TRIANGLES vertex list
-// (x0,y0,x1,y1,...). angle_rad: clockwise from screen up toward which the
-// air moves. grow (px) enlarges every edge for a contrasting halo.
-inline std::vector<float> ArrowTriangles(double cx, double cy, double angle_rad,
-                                         double speed_kn, double scale, double grow = 0) {
-  std::vector<float> v;
-  const double length = ArrowLengthPx(speed_kn) * scale;
-  if (!(length > 0) || !std::isfinite(angle_rad) || !std::isfinite(cx) || !std::isfinite(cy))
-    return v;
-  const double fx = std::sin(angle_rad), fy = -std::cos(angle_rad);  // forward
-  const double rx = std::cos(angle_rad), ry = std::sin(angle_rad);   // right
-  const double half = length / 2 + grow, shaft = 1.25 * scale + grow,
-               head_len = 8 * scale + grow, head_half = 5 * scale + grow;
-  const auto at = [&](double along, double across) {
-    v.push_back(static_cast<float>(cx + fx * along + rx * across));
-    v.push_back(static_cast<float>(cy + fy * along + ry * across));
-  };
-  const double neck = half - head_len;
-  // Shaft quad (two triangles).
-  at(-half, -shaft); at(neck, -shaft); at(neck, shaft);
-  at(-half, -shaft); at(neck, shaft); at(-half, shaft);
-  // Head.
-  at(half, 0); at(neck, -head_half); at(neck, head_half);
-  return v;
-}
 
 // ---- Route forecast (SCRUM-331) -------------------------------------------
 struct PassPoint {

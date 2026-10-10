@@ -148,11 +148,21 @@ int main() {
       Check(ArrowGridPitch(0, 100, 64) == 0 && ArrowGridPitch(100, 100, 0) == 0,
             "Degenerate input gives no grid");
     }
-    const auto tri = ArrowTriangles(100, 100, 0, 10, 1);
-    Check(tri.size() == 18, "Arrow is three triangles");
-    Check(Near(tri[12], 100) && tri[13] < 100 - ArrowLengthPx(10) / 2 + 1,
-          "Angle 0 points up the screen");
-    Check(ArrowTriangles(0, 0, 0, -1, 1).empty(), "Invalid speed draws nothing");
+    {
+      // SCRUM-360: a geographic lattice step never tighter than requested.
+      Check(NiceDegreeStep(0.013) == 0.02 && NiceDegreeStep(0.02) == 0.02,
+            "Lattice step rounds up to a nice value");
+      Check(Near(NiceDegreeStep(0.0021), 0.0025) && NiceDegreeStep(0.3) == 0.5,
+            "Lattice ladder includes 2.5 and 5");
+      Check(NiceDegreeStep(0) == 0 && NiceDegreeStep(-1) == 0, "Degenerate step");
+      // Prototype chevron: shaft centred on the point, barbs at the tip.
+      const auto s = ChevronSegments(100, 100, 0, 1);
+      Check(s.size() == 12, "Chevron is three segments");
+      Check(Near(s[0], 100) && Near(s[1], 110) && Near(s[2], 100) && Near(s[3], 90),
+            "Angle 0 points up the screen, centred on the lattice point");
+      Check(s[7] > 90 && s[11] > 90 && s[6] < 100 && s[10] > 100,
+            "Barbs trail the tip on both sides");
+    }
 
     // Route forecast assembly.
     std::vector<PassPoint> route{{"Start", {57.0, 16.0}, std::nullopt},

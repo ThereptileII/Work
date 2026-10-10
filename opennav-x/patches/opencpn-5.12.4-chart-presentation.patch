@@ -4489,3 +4489,84 @@ diff --git a/gui/src/chcanv.cpp b/gui/src/chcanv.cpp
      float hdt_width =
          (g_ownship_HDTpredictor_width > 0 ? g_ownship_HDTpredictor_width
                                            : g_cog_predictor_width * 0.8);
+diff --git a/gui/src/chcanv.cpp b/gui/src/chcanv.cpp
+--- a/gui/src/chcanv.cpp
++++ b/gui/src/chcanv.cpp
+@@ -1316,7 +1316,7 @@
+ 
+ int ChartCanvas::GetPianoHeight() {
+   int height = 0;
+-  if (g_bShowChartBar && GetPiano()) height = m_Piano->GetHeight();
++  if (g_bShowChartBar && !opennav::integration::XNavChartBarHidden() && GetPiano()) height = m_Piano->GetHeight();
+ 
+   return height;
+ }
+@@ -7668,7 +7668,7 @@
+   }
+ }
+ bool ChartCanvas::MouseEventChartBar(wxMouseEvent &event) {
+-  if (!g_bShowChartBar) return false;
++  if (!g_bShowChartBar || opennav::integration::XNavChartBarHidden()) return false;
+ 
+   if (!m_Piano->MouseEvent(event)) return false;
+ 
+@@ -11824,7 +11824,8 @@
+ #ifdef __WXMAC__
+   // On OS X we have to explicitly extend the region for the piano area
+   ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
+-  if (!style->chartStatusWindowTransparent && g_bShowChartBar)
++  if (!style->chartStatusWindowTransparent && g_bShowChartBar &&
++      !opennav::integration::XNavChartBarHidden())
+     height += m_Piano->GetHeight();
+ #endif  // __WXMAC__
+   wxRegion rgn_chart(0, 0, GetVP().pix_width, height);
+@@ -11845,7 +11846,7 @@
+   // subtract the chart bar if it isn't transparent, and determine if we need to
+   // paint it
+   wxRegion rgn_blit = ru;
+-  if (g_bShowChartBar) {
++  if (g_bShowChartBar && !opennav::integration::XNavChartBarHidden()) {
+     wxRect chart_bar_rect(0, GetClientSize().y - m_Piano->GetHeight(),
+                           GetClientSize().x, m_Piano->GetHeight());
+ 
+@@ -12359,7 +12360,7 @@
+         OCPNRegion chart_all_text_region(
+             wxRect(0, 0, GetVP().pix_width, GetVP().pix_height));
+ 
+-        if (g_bShowChartBar && m_Piano) {
++        if (g_bShowChartBar && !opennav::integration::XNavChartBarHidden() && m_Piano) {
+           wxRect chart_bar_rect(0, GetVP().pix_height - m_Piano->GetHeight(),
+                                 GetVP().pix_width, m_Piano->GetHeight());
+ 
+@@ -12832,7 +12833,8 @@
+       m_pAISRolloverWin->Draw(dc);
+       m_brepaint_piano = true;
+     }
+-    if (m_brepaint_piano && g_bShowChartBar) {
++    if (m_brepaint_piano && g_bShowChartBar &&
++        !opennav::integration::XNavChartBarHidden()) {
+       m_Piano->Paint(GetClientSize().y - m_Piano->GetHeight(), dc);
+     }
+ 
+@@ -14556,7 +14558,7 @@
+ 
+   if (!GetpCurrentStack()) return;
+   if (!ChartData) return;
+-  if (!g_bShowChartBar) return;
++  if (!g_bShowChartBar || opennav::integration::XNavChartBarHidden()) return;
+ 
+   int sel_type = -1;
+   int sel_family = -1;
+diff --git a/gui/src/glChartCanvas.cpp b/gui/src/glChartCanvas.cpp
+--- a/gui/src/glChartCanvas.cpp
++++ b/gui/src/glChartCanvas.cpp
+@@ -4665,7 +4665,8 @@
+ 
+ #endif
+   // render the chart bar
+-  if (g_bShowChartBar) DrawChartBar(m_gldc);
++  if (g_bShowChartBar && !opennav::integration::XNavChartBarHidden())
++    DrawChartBar(m_gldc);
+ 
+   if (m_pParentCanvas->m_Compass && m_pParentCanvas->m_bShowCompassWin &&
+       g_bShowCompassWin)

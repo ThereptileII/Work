@@ -1,4 +1,5 @@
 #pragma once
+#include "application/RailVisuals.h"
 #include "application/SettingsBackup.h"
 
 #include "ui/Controls.h"
@@ -46,6 +47,7 @@ struct ShellActions {
   // is restored before OpenCPN saves its normal perspective on close.
   std::vector<wxString> navigation_panes;
   std::function<void()> zoom_in, zoom_out, follow, legacy;
+  std::function<bool()> following;
   std::function<std::string()> chart_orientation;
   std::function<double()> chart_rotation;
   application::NavigationActions navigation;
@@ -161,7 +163,9 @@ private:
                      bool bold = false);
   void ApplyTheme();
   void SetLight(LightMode mode);
-  void UpdateRail(const std::vector<std::string> &keys, vessel::Time now);
+  void UpdateRail(const std::vector<std::string> &keys, vessel::Time now,
+                  const smartnav::EnergyPrediction &energy);
+  application::RailHistory sog_history_;
   void Tick();
   void ApplyResponsiveLayout();
   void ApplyOwnedScale();
@@ -264,7 +268,10 @@ private:
   XNavStatusFooter *footer_ = nullptr;
   wxPanel *route_actions_ = nullptr;
   XNavFloatingSurface *chart_tools_ = nullptr, *chart_orientation_ = nullptr,
-      *chart_layers_ = nullptr, *chart_follow_ = nullptr;
+      *chart_layers_ = nullptr, *chart_follow_ = nullptr, *chart_turn_ = nullptr;
+  class XNavNextTurnCard *turn_card_ = nullptr;
+  XNavButton *follow_button_ = nullptr;
+  bool turn_visible_ = false;
   std::vector<wxWindow *> chart_overlays_;
   XNavButton *page_up_ = nullptr, *page_down_ = nullptr;
   XNavButton *rail_up_ = nullptr, *rail_down_ = nullptr;
