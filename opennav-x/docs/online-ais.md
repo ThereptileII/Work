@@ -315,6 +315,17 @@ credential. Deterministic session tests separately exercise absent viewport/key,
 unconfirmed reports, malformed messages, stale/lost/expired positions,
 out-of-order callbacks, acknowledgement timeouts and repeated failures.
 
+The separately selected, non-installed `ais_outage_test_client` and
+`tests/ais_transport/outage_tests.py` add a real-clock report-silence fixture:
+more than 120 seconds without position reports while loopback TLS ping/pong
+remains responsive, followed by actual TCP teardown, bounded reconnect,
+confirmation-only lost state and fresh-report recovery. The server checks both
+owned endpoint tuples; the client checks immutable capture time/generation,
+observation clearing and retained snapshots. This is excluded from default
+builds and ordinary suites. It does not qualify packet loss, WFP lease/helper
+death, process binding or boat behavior. See
+[the scope and local evidence](evidence/scrum227-real-clock-report-outage/README.md).
+
 Native Windows development run `36466500140` passes the fixture-free product
 build and 112 integrated tests. The downloaded, digest-verified captures cover
 Traffic and Online AIS settings, default OFF, missing-key withholding, disable,

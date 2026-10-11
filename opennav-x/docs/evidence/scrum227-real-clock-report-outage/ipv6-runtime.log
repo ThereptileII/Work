@@ -1,0 +1,10 @@
+OBS 2 6 39578 50827 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1
+PHASE initial
+PHASE stale 61045
+PHASE lost 121027
+PHASE disconnected
+OBS 4 6 38988 50827 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1
+PHASE confirmed_still_lost
+PHASE recovered
+PASS 12360 real-clock outage checks
+PASS server {"clientPings": 4, "family": 6, "generations": [2, 4], "maxPongSeconds": 0.0006868239725008607, "reconnectSeconds": 2.4068586259381846, "reportSilenceSeconds": 121.24265308899339, "serverPongs": 13}

@@ -1,0 +1,114 @@
+{
+  "scope": "Linux actual AIS provider report silence over responsive disposable TLS; no packet-loss/WFP or boat qualification",
+  "recordedAt": "2026-10-11T17:08:23.922639+00:00",
+  "baseCommit": "8280f3dd7edbbeac89e18be1ed785f240417c1ec",
+  "passed": true,
+  "applicationBuild": false,
+  "nativeWindowsAcceptance": false,
+  "boatAcceptance": false,
+  "wfpAcceptance": false,
+  "packetLossAcceptance": false,
+  "realProductProcessBindingAcceptance": false,
+  "runs": [
+    {
+      "clientPings": 4,
+      "family": 4,
+      "generations": [
+        2,
+        4
+      ],
+      "maxPongSeconds": 0.0007929459679871798,
+      "reconnectSeconds": 2.207221103948541,
+      "reportSilenceSeconds": 121.24162336997688,
+      "serverPongs": 13,
+      "staleMilliseconds": 61009,
+      "lostMilliseconds": 121035,
+      "providerChecks": 12345,
+      "log": "ipv4-runtime.log"
+    },
+    {
+      "clientPings": 4,
+      "family": 6,
+      "generations": [
+        2,
+        4
+      ],
+      "maxPongSeconds": 0.0006868239725008607,
+      "reconnectSeconds": 2.4068586259381846,
+      "reportSilenceSeconds": 121.24265308899339,
+      "serverPongs": 13,
+      "staleMilliseconds": 61045,
+      "lostMilliseconds": 121027,
+      "providerChecks": 12360,
+      "log": "ipv6-runtime.log"
+    }
+  ],
+  "negativeControl": {
+    "immediateClientExit": "fixture refused acceptance; invocation exited 1 inside 22-second outer deadline",
+    "log": "early-exit-negative.log"
+  },
+  "binarySha256": "3541379e58ff859b75fba619d0bdc0c1db6cbbe886107ce8cc2776ce935e419a",
+  "focusedBuildInputs": "focused-build-inputs.json",
+  "sourceInputs": {
+    "tests/ais_transport/CMakeLists.txt": "a1e7e5699c9aa60f4306af84782c07fc97b5f4db7a2a08cbf0ee6c1f2e6eda73",
+    "tests/ais_transport/outage_client.cpp": "a45d453f47b8c2e3ec8bf7409899fba86842d5498488188814dca574a023283e",
+    "tests/ais_transport/outage_tests.py": "438b58be44be9c289913d27d0298a987298e990581636297238d0cc4b0c60d48",
+    "tests/ais_transport/provider_tests.py": "6be9091a4cd40b39d4c2ce4840311b6190d57054160fc7d199885dca1e9954dd",
+    "tests/ais_transport/network_tests.py": "df74fffc946f937e7823a96ecdd61f4a3a2fc056787ad44eb665f78ac5077294",
+    "patches/opencpn-5.12.4-ais-transport.patch": "ee6689b8943284347fadca9564892b31db4c43db2a007412ac3fdc2072d07fd7",
+    "src/ais/AisStreamCodec.cpp": "e6954856a198e5a37256c0aa1c38c29206556842c28e22be3abe4ea164ccce7b",
+    "src/ais/AisStreamCodec.h": "1cbbaa40d7a75653f973998b2b467aadc77b48c19e8e3506e7abac0c7fafb1a0",
+    "src/ais/AisStreamProvider.cpp": "237bf7c074607e2324ec01ca83fef5970a14b5f219e436a551b57265a5837fc5",
+    "src/ais/AisStreamProvider.h": "01c503d89e3e4332b1e992545c324dc13ae4be4bdadc1dc8ed5ac12ddd604b16",
+    "src/ais/AisStreamSession.cpp": "bd93715e1abfccd6d7ed1147ed23e1adc7c2aca964ffaa77e44d44326cbaf372",
+    "src/ais/AisStreamSession.h": "fcaf050125d3847b85f8487563d61c61bd8445a70686d3cc6a23c365563f63ac",
+    "src/ais/ChartTargets.cpp": "e34d835521e7963b8f87113c3c7a0c35d354a55b6aa6d0a06cf9d786a7463fb6",
+    "src/ais/ChartTargets.h": "9fcf8790b46ad9445a52d4dea5fa012ae30b8d74566e72ba30d45568e615ec93",
+    "src/ais/Credentials.cpp": "be7660cb2066c3085c769d799a9f822238cc803845b15ca515c1e99a0be7b598",
+    "src/ais/Credentials.h": "9c80fb0f08a0c807681502340f3c6884194a2ca44c38ddadeeea886572752a49",
+    "src/ais/Provider.cpp": "247feff2de6b9bc003d4c7b485bf3c520125c5223b8280f39f6517d80dfbf445",
+    "src/ais/Provider.h": "e69c8542b6608a6a8fe31bb5297b9e07bb71c8516a5e626fcf2fedca87877569",
+    "src/ais/Subscription.cpp": "d524f69d36723be6dba7ad6227c9e52ce8e1fd23c106a4003bfad5960a9f64fb",
+    "src/ais/Subscription.h": "f9769c65229aa6edc1274fb9bc60f4622b795267410eb308a5d259fe849f1795",
+    "src/ais/TargetCache.cpp": "e4c2f05536f4dd27b000dc417f35111e11b4d631fe573469097eb10ed435d22e",
+    "src/ais/TargetCache.h": "3699414c37563bbb042bd5ba47402a9bbd0b6f2e6b0b80dcf1fdb5356db2f865",
+    "src/vessel/AisHealth.h": "ae67f155b5824cd8390005c5e87a149bbe2392194c6b12afdbeec4ec12cfc30f",
+    "src/vessel/AisSelection.h": "817d888f32f93999714b04b826c4035fc22beb29fc46a0517356fbd44ae53d9d",
+    "src/vessel/AisState.h": "04722405d3d2afc609b14a6db635083d36472e09f8ac19646306240c016d14ad",
+    "src/vessel/DataItems.h": "b1cc3e13b883ef8f3aab83cf093e307cc9bcd041613b69e95b54152fc554a5e0",
+    "src/vessel/DemoSource.h": "5b1bd1fdfbca79dd83ff19e55d3b88602dd4dd92be104605bea93ae203e066c2",
+    "src/vessel/DisplayItems.h": "2527d43f21554f61fee51c6bfaa19afe3142e438137dd14dae4c7187a9641db8",
+    "src/vessel/NavigationInput.h": "f6d43eb9a8c5977467877ca4ff64dfc0116ca225f1756a1e21d3fa673364d835",
+    "src/vessel/RouteProgress.h": "713a7694cde2d3db0f5a45fd5aa0c40e458e03dc480a7586ecddf894c29a28d0",
+    "src/vessel/SensorRegistry.h": "073926087236cb6d5d12799c936c6651ab89166869e65f6df4864cd9a3d79b5e",
+    "src/vessel/VesselState.h": "37ebfc3556f851bc9532bf72922403b9a55990d1bf4860b23d0b82c66afac059"
+  },
+  "toolchain": {
+    "compiler": "g++ (GCC) 16.2.1 20260810",
+    "openssl": "OpenSSL 3.6.4 25 Aug 2026 (Library: OpenSSL 3.6.4 25 Aug 2026)",
+    "python": "Python 3.14.7"
+  },
+  "runtimeLibraries": [
+    "\tlinux-vdso.so.1 (0x00007b65f621f000)",
+    "\tlibssl.so.3 => /usr/lib/libssl.so.3 (0x00007b65f602d000)",
+    "\tlibcrypto.so.3 => /usr/lib/libcrypto.so.3 (0x00007b65f5a00000)",
+    "\tlibz.so.1 => /usr/lib/libz.so.1 (0x00007b65f6012000)",
+    "\tlibstdc++.so.6 => /usr/lib/libstdc++.so.6 (0x00007b65f5600000)",
+    "\tlibm.so.6 => /usr/lib/libm.so.6 (0x00007b65f54c9000)",
+    "\tlibgcc_s.so.1 => /usr/lib/libgcc_s.so.1 (0x00007b65f5fe3000)",
+    "\tlibc.so.6 => /usr/lib/libc.so.6 (0x00007b65f5200000)",
+    "\tlibbrotlienc.so.1 => /usr/lib/libbrotlienc.so.1 (0x00007b65f5940000)",
+    "\tlibbrotlidec.so.1 => /usr/lib/libbrotlidec.so.1 (0x00007b65f5fd4000)",
+    "\tlibzstd.so.1 => /usr/lib/libzstd.so.1 (0x00007b65f511a000)",
+    "\t/lib64/ld-linux-x86-64.so.2 => /usr/lib64/ld-linux-x86-64.so.2 (0x00007b65f6222000)",
+    "\tlibbrotlicommon.so.1 => /usr/lib/libbrotlicommon.so.1 (0x00007b65f5faf000)"
+  ],
+  "remainingGates": [
+    "CMake target execution on an equipped host",
+    "native MSVC Win32 runtime",
+    "nonzero IPv6 scope",
+    "longer WFP deadman and helper-death cleanup",
+    "qualified product/process/module/DNS binding",
+    "live boat AIS aging/reconnect and remote-access/onboard continuity"
+  ]
+}

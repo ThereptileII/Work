@@ -1,0 +1,17 @@
+Traceback (most recent call last):
+  File "/home/standard/Projects/X-nav-worktrees/ais-outage-proof-20261011/opennav-x/tests/ais_transport/outage_tests.py", line 199, in <module>
+    main()
+    ~~~~^^
+  File "/home/standard/Projects/X-nav-worktrees/ais-outage-proof-20261011/opennav-x/tests/ais_transport/outage_tests.py", line 195, in main
+    run_case(args.client, args.ipv6)
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/standard/Projects/X-nav-worktrees/ais-outage-proof-20261011/opennav-x/tests/ais_transport/outage_tests.py", line 112, in run_case
+    stream, first_area = open_stream()
+                         ~~~~~~~~~~~^^
+  File "/home/standard/Projects/X-nav-worktrees/ais-outage-proof-20261011/opennav-x/tests/ais_transport/outage_tests.py", line 81, in open_stream
+    connection, _ = server.accept()
+                    ~~~~~~~~~~~~~^^
+  File "/usr/lib/python3.14/socket.py", line 298, in accept
+    fd, addr = self._accept()
+               ~~~~~~~~~~~~^^
+TimeoutError: timed out
