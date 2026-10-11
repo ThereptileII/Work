@@ -1,8 +1,11 @@
 """Explicit first-start UI handling for isolated navigation smoke profiles."""
 import time
 
-_SETUP_FIELDS = {'Field: Vessel name', 'Field: Draft · metres',
-                 'Field: Chart safety depth · metres'}
+_REQUIRED_SETUP_FIELDS = {'Field: Vessel name', 'Field: Draft · metres'}
+# The safety-depth field is below the initial 1280x800 viewport after the beta
+# disclosure. It remains part of the sheet, but is not evidence that the first
+# visible step is incomplete when its two identifying fields and actions exist.
+_SETUP_FIELDS = _REQUIRED_SETUP_FIELDS | {'Field: Chart safety depth · metres'}
 
 
 def native_setup_window(ui, pid):
@@ -76,7 +79,7 @@ def defer_boat_setup(read, click, *, native_window=None, timeout=8):
                 'Setup-like actions lack a verified initial sheet', visible)
             return {'status': 'not-present'}
         assert native_window is None, 'Setup diagnostics lack the expected native window'
-        assert _SETUP_FIELDS | {'Later', 'Back', 'Continue'} <= labels, (
+        assert _REQUIRED_SETUP_FIELDS | {'Later', 'Back', 'Continue'} <= labels, (
             'First-start setup is incomplete; cannot safely defer it', visible)
         later = [c for c in visible if c['label'] == 'Later']
     assert len(later) == 1 and later[0]['enabled'], ('Unique enabled setup Later required', later)

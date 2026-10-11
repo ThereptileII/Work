@@ -26,6 +26,31 @@ class StartupTests(unittest.TestCase):
         self.assertEqual([c['label'] for c in clicks], ['Later'])
         self.assertEqual(result,dict(status='deferred-with-Later',before_ticks=10,after_ticks=11))
 
+    def test_scrolled_safety_depth_may_be_below_initial_viewport(self):
+        visible = [SETUP[0], SETUP[1], 'Later', 'Back', 'Continue']
+        records = iter([snapshot(visible), snapshot([], 11)])
+        clicks = []
+        with patch('smoke_startup.time.sleep'):
+            result = defer_boat_setup(lambda: next(records), clicks.append)
+        self.assertEqual([c['label'] for c in clicks], ['Later'])
+        self.assertEqual(result['status'], 'deferred-with-Later')
+
+    def test_partial_identity_or_retained_scrolled_field_refuses(self):
+        for visible in ([SETUP[0], 'Later', 'Back', 'Continue'],
+                        [SETUP[1], 'Later', 'Back', 'Continue'],
+                        [SETUP[2], 'Later', 'Back', 'Continue']):
+            clicks = []
+            with self.assertRaises(AssertionError):
+                defer_boat_setup(lambda: snapshot(visible), clicks.append)
+            self.assertEqual(clicks, [])
+        # A stale diagnostic that still contains a scrolled setup field cannot
+        # count as a closed sheet merely because its action row disappeared.
+        records = iter([snapshot(SETUP), snapshot([SETUP[2]], 11)])
+        with patch('smoke_startup.time.sleep'), self.assertRaisesRegex(
+                AssertionError, 'did not close'):
+            defer_boat_setup(lambda: next(records, snapshot([SETUP[2]], 11)),
+                             lambda _: None, timeout=.01)
+
     def test_existing_profile_or_unrelated_later_is_untouched(self):
         for labels in ([], ['Later'], ['Auto', 'Standby']):
             clicks=[]
