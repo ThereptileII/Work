@@ -449,7 +449,9 @@ void XNavSettingsDrawer::Build() {
       Link("Help & guides","Basic help; guides unavailable",XNavIcon::Info,
            [this]{Select(SettingsSection::Help);});
       Link("About & licenses","Versions, notices and OpenCPN",XNavIcon::Info,[this]{ShowAbout();});
-      Link("Run vessel setup","Setup wizard unavailable; use Vessel tab",XNavIcon::Boat,{});
+      Link("Run vessel setup",actions_.boat_setup
+          ? "Review vessel profile and connected sources" : "Setup wizard unavailable",
+          XNavIcon::Boat,actions_.boat_setup);
       Page("Interface & recovery","Legacy, Safe Mode, restart and diagnostics",XNavIcon::Shield,ProductPage::System);
       Link("Advanced / Legacy Settings",actions_.advanced
           ? "Connections, charts and additional preferences" : "OpenCPN settings unavailable",

@@ -73,9 +73,12 @@ public:
 #endif
     };
     actions.advanced=[this]{++advanced_;};
+    // Sensor connection editing has its own capability in the current drawer.
+    actions.connections=actions.advanced;
     actions.plugins=[this]{++plugins_;};
     actions.fullscreen=[this]{++fullscreen_;};
     actions.diagnostics=[this]{++diagnostics_;};
+    actions.boat_setup=[this]{++boat_setups_;};
     actions.theme=[this](ui::LightMode mode){light_=mode;Feed();};
     actions.settings=[this]{return state_.settings;};
     actions.display=[this]{return display_;};
@@ -440,10 +443,19 @@ private:
           unavailable->Select(ui::SettingsSection::System);
           const auto *advanced=Find(unavailable,"Advanced / Legacy Settings");
           Check(advanced && !advanced->IsEnabled(),"missing upstream settings callback disables direct action");
+          auto *setup=Find(unavailable,"Run vessel setup");
+          Check(setup && !setup->IsEnabled(),"missing boat setup callback disables System setup row");
+          wxCommandEvent event(wxEVT_BUTTON,setup->GetId());event.SetEventObject(setup);
+          setup->GetEventHandler()->ProcessEvent(event);
+          wxTheApp->Yield(true);
+          Check(boat_setups_==0,"disabled System setup cannot dispatch a setup action");
+          unavailable->Select(ui::SettingsSection::Vessel);
+          setup=Find(unavailable,"Run boat setup");
+          Check(setup && !setup->IsEnabled(),"missing boat setup callback also disables Vessel setup");
           unavailable->Destroy();
         }
         Check(!Find(panel_,"AUTO") && !Find(panel_,"STBY"),"preferences cannot execute physical controls");
-        for(const auto *label:{"Installation & recovery","Updates","Export settings backup","Import settings backup","Run vessel setup"}) {
+        for(const auto *label:{"Installation & recovery","Updates","Export settings backup","Import settings backup"}) {
           auto *unavailable=Find(panel_,label);
           Check(unavailable && !unavailable->IsEnabled(),"unavailable System capability is disabled");
           wxCommandEvent event(wxEVT_BUTTON,unavailable->GetId());event.SetEventObject(unavailable);
@@ -459,6 +471,11 @@ private:
         Check(ScrollBody()->GetScreenRect().Contains(Find(panel_,"Advanced / Legacy Settings")->GetScreenRect()),
               "direct Advanced action is reachable by scrolling");
         Capture("system-bottom-night",false);
+        Check(ScrollBody()->GetScreenRect().Contains(Find(panel_,"Run vessel setup")->GetScreenRect()),
+              "System setup action is reachable by scrolling");
+        Click("Run vessel setup");wxTheApp->Yield(true);
+        Check(boat_setups_==1 && saves_==2 && display_saves_==2 && navigations_==2,
+              "System setup invokes existing setup callback once without saving or navigating");
         Click("Advanced / Legacy Settings");break;
       case 17:
         Check(advanced_==2 && navigations_==2,"Advanced settings delegates directly without opening XNav preferences");
@@ -494,6 +511,9 @@ private:
           Check(body->GetViewStart().y>0,"Vessel body overflows at canonical size");
           Check(!body->GetScreenRect().Contains(Find(panel_,"Sensors")->GetScreenRect()),
                 "scrolled Sensors tab starts outside the body viewport");
+          Click("Run boat setup");wxTheApp->Yield(true);
+          Check(boat_setups_==2 && saves_==2 && display_saves_==2,
+                "Vessel setup retains the same callback without saving settings");
           const auto offset=body->GetViewStart();
           light_=ui::LightMode::Dusk;Feed();
           Check(body->GetViewStart()==offset,"live state and theme refresh preserve scroll");
@@ -607,7 +627,7 @@ private:
   application::DisplayPreferences display_;
   ui::ProductState state_;
   ui::ProductPage last_page_=ui::ProductPage::Home;
-  int navigations_=0,advanced_=0,plugins_=0,fullscreen_=0,diagnostics_=0;
+  int navigations_=0,advanced_=0,plugins_=0,fullscreen_=0,diagnostics_=0,boat_setups_=0;
   ui::LightMode light_=ui::LightMode::Day;
   std::vector<std::string> names_;
   int step_=0,checks_=0,closed_=0;
