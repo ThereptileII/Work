@@ -24,6 +24,7 @@ namespace opennav::integration {
 namespace {
 // Application thread only (asserted by every entry point).
 std::function<weather::ForecastSnapshot()> source;
+std::function<std::optional<weather::Coordinate>()> vessel_position;
 std::optional<weather::WallTime> display_time;
 bool visible = false;  // SCRUM-328: off by default, never persisted here.
 // SCRUM-357: the badge can be collapsed to a small FORECAST chip for the
@@ -109,24 +110,42 @@ void DrawBadge(ocpnDC &dc, ChartCanvas &canvas, ViewPort &vp, ui::LightMode mode
   const int pad = canvas.FromDIP(8), gap = canvas.FromDIP(2);
   // Touch-sized target even though the glyph itself is small.
   const int target = canvas.FromDIP(28), glyph = canvas.FromDIP(5);
+  const int available = vp.pix_width - 2 * pad;
+  if (available <= 2 * pad + target) { badge_hit = wxRect(); return; }
+  // Keep the provenance/value/time rows within the chart at scaled DPI.
+  const auto fit = [&](wxString text, int limit) {
+    wxCoord w = 0, h = 0;
+    dc.GetTextExtent(text, &w, &h);
+    if (w <= limit) return text;
+    const auto ellipsis = wxString::FromUTF8("\xE2\x80\xA6");
+    while (!text.empty()) {
+      text.RemoveLast();
+      dc.GetTextExtent(text + ellipsis, &w, &h);
+      if (w <= limit) return text + ellipsis;
+    }
+    return wxString();
+  };
   const auto border = wxPen(ui::Colour(attention ? ui::Theme(mode).attention
                                                  : floating.compass_light),
                             canvas.FromDIP(1));
   if (badge_collapsed) {
-    wxCoord w = 0, h = 0; dc.GetTextExtent(chip, &w, &h);
+    const auto label = fit(chip, available - 2 * pad);
+    wxCoord w = 0, h = 0; dc.GetTextExtent(label, &w, &h);
     const int box_w = w + 2 * pad, box_h = h + 2 * pad;
     const int x = std::max(pad, (vp.pix_width - box_w) / 2), y = canvas.FromDIP(12);
     dc.SetPen(border);
     dc.SetBrush(wxBrush(ui::Colour(floating.surface)));
     dc.DrawRoundedRectangle(x, y, box_w, box_h, canvas.FromDIP(8));
     dc.SetTextForeground(ui::Colour(floating.primary));
-    dc.DrawText(chip, x + pad, y + pad);
+    dc.DrawText(label, x + pad, y + pad);
     badge_hit = wxRect(x, y, box_w, std::max(box_h, target));  // Tap to expand.
     return;
   }
   wxCoord width = 0, line_height = 0;
+  std::vector<wxString> fitted;
   for (const auto &line : lines) {
-    wxCoord w = 0, h = 0; dc.GetTextExtent(line, &w, &h);
+    fitted.push_back(fit(line, available - 2 * pad - target));
+    wxCoord w = 0, h = 0; dc.GetTextExtent(fitted.back(), &w, &h);
     width = std::max(width, w); line_height = std::max(line_height, h);
   }
   const int box_w = width + 2 * pad + target,
@@ -137,7 +156,7 @@ void DrawBadge(ocpnDC &dc, ChartCanvas &canvas, ViewPort &vp, ui::LightMode mode
   dc.DrawRoundedRectangle(x, y, box_w, box_h, canvas.FromDIP(8));
   for (std::size_t i = 0; i < lines.size(); ++i) {
     dc.SetTextForeground(ui::Colour(i == 0 ? floating.primary : floating.secondary));
-    dc.DrawText(lines[i], x + pad, y + pad + static_cast<int>(i) * (line_height + gap));
+    dc.DrawText(fitted[i], x + pad, y + pad + static_cast<int>(i) * (line_height + gap));
   }
   // Close mark, vertically centred in the badge's right-hand target column.
   const int cx = x + box_w - target / 2, cy = y + box_h / 2;
@@ -148,8 +167,12 @@ void DrawBadge(ocpnDC &dc, ChartCanvas &canvas, ViewPort &vp, ui::LightMode mode
 }
 } // namespace
 
-void SetWeatherSource(std::function<weather::ForecastSnapshot()> next) {
-  if (wxIsMainThread()) source = std::move(next);
+void SetWeatherSource(std::function<weather::ForecastSnapshot()> next,
+                      std::function<std::optional<weather::Coordinate>()> position) {
+  if (wxIsMainThread()) {
+    source = std::move(next);
+    vessel_position = std::move(position);
+  }
 }
 void SetWeatherDisplayTime(std::optional<weather::WallTime> valid_time) {
   if (wxIsMainThread()) display_time = valid_time;
@@ -279,8 +302,10 @@ void DrawWeatherOverlay(ocpnDC &dc, ViewPort &vp, ChartCanvas &canvas) {
   const auto step_text = W(weather::StepLabel(*step, now));
   DrawBadge(dc, canvas, vp, mode,
             {W(weather::ProvenanceLabel(snapshot, now)),
+             W(weather::ForecastAtVesselLabel(snapshot,
+                 vessel_position ? vessel_position() : std::nullopt, *step, now)),
              "Wind valid " + LocalTime(*step) + " (" + step_text + ")" +
-                 wxString::FromUTF8(" \xC2\xB7 kn \xC2\xB7 advisory, not measured")},
+                 wxString::FromUTF8(" \xC2\xB7 advisory, not measured")},
             stale, stale ? "STALE FORECAST" : "FORECAST");
   restore();
 }

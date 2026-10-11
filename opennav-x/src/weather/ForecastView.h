@@ -229,6 +229,22 @@ inline std::string WindLabel(const ForecastWind &w) {
   return text;
 }
 
+// The caller supplies only an assessed, real Live/Aging vessel position.
+// A chart centre is never a substitute for the vessel's location.
+inline std::string ForecastAtVesselLabel(const ForecastSnapshot &snapshot,
+                                         std::optional<Coordinate> position,
+                                         WallTime valid_time, WallTime now) {
+  if (!position || !std::isfinite(position->latitude_deg) ||
+      !std::isfinite(position->longitude_deg) ||
+      std::abs(position->latitude_deg) > 90 || std::abs(position->longitude_deg) > 180)
+    return "At vessel: position unavailable";
+  if (DisplayState(snapshot, now) == ForecastDisplay::Unavailable)
+    return "At vessel: forecast unavailable";
+  const auto wind = WindNear(snapshot, *position, valid_time);
+  return wind ? "At vessel: " + WindLabel(*wind) + " true"
+              : "At vessel: no forecast coverage";
+}
+
 // ---- Chart arrows (SCRUM-317 decluttering) --------------------------------
 struct ScreenPoint { double x = 0, y = 0; };
 

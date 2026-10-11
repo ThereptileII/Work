@@ -12,7 +12,9 @@ class ChartCanvas;
 namespace opennav::integration {
 // Integration registers the owned snapshot source once at Attach; empty
 // clears it (mode restart, shutdown).
-void SetWeatherSource(std::function<weather::ForecastSnapshot()> source);
+// Position source returns only real Live/Aging Vessel Data fixes, or nullopt.
+void SetWeatherSource(std::function<weather::ForecastSnapshot()> source,
+                      std::function<std::optional<weather::Coordinate>()> vessel_position = {});
 // Forecast time step chosen in the UI; nullopt = nearest to now.
 void SetWeatherDisplayTime(std::optional<weather::WallTime> valid_time);
 std::optional<weather::WallTime> WeatherDisplayTime();

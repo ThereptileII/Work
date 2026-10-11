@@ -588,6 +588,17 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
   integration::SetWeatherSource([] {
     return online_weather ? online_weather->Read(std::chrono::system_clock::now())
                           : weather::ForecastSnapshot{};
+  }, []() -> std::optional<weather::Coordinate> {
+    if (restart || selected_navigation.simulated || selected_navigation.replayed ||
+        (commissioning && commissioning->Replaying())) return {};
+    const auto now = vessel::Clock::now();
+    const auto lat = vessel::Assess(selected_navigation.navigation.latitude_deg, now);
+    const auto lon = vessel::Assess(selected_navigation.navigation.longitude_deg, now);
+    const auto fresh = [](vessel::Quality q) {
+      return q == vessel::Quality::Live || q == vessel::Quality::Aging;
+    };
+    if (!fresh(lat.quality) || !fresh(lon.quality) || !lat.value || !lon.value) return {};
+    return weather::Coordinate{*lat.value, *lon.value};
   });
   actions.weather.read = [](vessel::Time) {
     // Freshness is decided from wall-clock fetch time, not the UI clock.

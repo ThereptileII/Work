@@ -7,7 +7,8 @@
 using namespace opennav::weather;
 using namespace std::chrono_literals;
 namespace {
-void Check(bool value, const char *why) { if (!value) throw std::runtime_error(why); }
+int checks = 0;
+void Check(bool value, const char *why) { ++checks; if (!value) throw std::runtime_error(why); }
 bool Near(double a, double b, double eps = 1e-6) { return std::abs(a - b) <= eps; }
 const WallTime T0 = WallTime{} + std::chrono::hours(500000);
 ForecastWind Wind(double lat, double lon, WallTime valid, double mps = 5, double from = 230) {
@@ -100,6 +101,42 @@ int main() {
     Check(WindNear(s, {57.0, 16.0}, T0 + 3h + 80min).has_value(), "Within time gap still covered");
     auto grid = s; grid.winds[0].grid = Coordinate{57.2, 16.0};
     Check(WindNear(grid, {57.2, 16.0}, T0).has_value(), "Grid coordinate also counts");
+
+    // SCRUM-360: chevrons omit numbers, so the chart badge retains an actual
+    // vessel-located forecast value rather than an empty unit legend.
+    Check(ForecastAtVesselLabel(s, Coordinate{57, 16}, T0 + 1h, T0) ==
+              "At vessel: 12 kn from 230\xC2\xB0 SW true",
+          "Badge shows the covered vessel wind at the selected forecast step");
+    Check(ForecastAtVesselLabel(s, std::nullopt, T0, T0) ==
+              "At vessel: position unavailable",
+          "No qualified real vessel position never falls back to the chart centre");
+    Check(ForecastAtVesselLabel(s, Coordinate{58.5, 16}, T0, T0) ==
+              "At vessel: no forecast coverage",
+          "Vessel outside coverage gets no numeric value");
+    Check(ForecastAtVesselLabel(s, Coordinate{57, 16}, T0 + 6h, T0) ==
+              "At vessel: no forecast coverage",
+          "Uncovered forecast time gets no numeric value");
+    Check(ForecastAtVesselLabel(s, Coordinate{std::nan(""), 16}, T0, T0) ==
+              "At vessel: position unavailable" &&
+          ForecastAtVesselLabel(s, Coordinate{91, 16}, T0, T0) ==
+              "At vessel: position unavailable" &&
+          ForecastAtVesselLabel(s, Coordinate{57, 181}, T0, T0) ==
+              "At vessel: position unavailable",
+          "Invalid vessel coordinates cannot acquire a forecast value");
+    Check(ForecastAtVesselLabel(Snapshot(ForecastState::Disabled), Coordinate{57, 16}, T0, T0) ==
+              "At vessel: forecast unavailable",
+          "Disabled forecast never leaks its retained values into the badge");
+    Check(ForecastAtVesselLabel(s, Coordinate{57, 16}, T0, T0 + 25h) ==
+              "At vessel: forecast unavailable",
+          "Expired forecast has no numeric badge value");
+    Check(ProvenanceLabel(s, T0 + 2h).rfind("STALE FORECAST", 0) == 0 &&
+          ForecastAtVesselLabel(s, Coordinate{57, 16}, T0 + 2h, T0 + 2h) ==
+              "At vessel: 14 kn from 230\xC2\xB0 SW true",
+          "Stale covered forecast keeps its value under mandatory stale provenance");
+    auto calm = s; calm.winds[0].speed_mps = 0;
+    Check(ForecastAtVesselLabel(calm, Coordinate{57, 16}, T0, T0) ==
+              "At vessel: 0 kn from 230\xC2\xB0 SW true",
+          "Actual calm is numeric zero, distinct from unavailable");
 
     // Arrow decimation: deterministic, spaced, bounded.
     std::vector<ScreenPoint> points;
@@ -198,6 +235,6 @@ int main() {
     std::cerr << "weather forecast view: " << error.what() << '\n';
     return 1;
   }
-  std::cout << "weather forecast view: ok\n";
+  std::cout << "weather forecast view: " << checks << " checks ok\n";
   return 0;
 }
