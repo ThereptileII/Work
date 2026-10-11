@@ -19,7 +19,7 @@ It also tries real write/delete opens on the original during binding, proving
 that the production read lock prevents both. These fixtures do not qualify the
 real adapter's import ABI or renderer.
 
-The 38 grouped checks cover:
+The first 38 grouped checks cover:
 
 - Unavailable package, actual worker thread, Safe, empty verified resource path
   (the Standard/style-ineligible boundary), and unrelated original filename.
@@ -52,12 +52,16 @@ the disposable runner scratch directory.
 Local preparation evidence: Python syntax passed, and the exact cached archive
 was read with the real extraction function: only its 2,088,960-byte DLL was
 extracted, its accepted hash matched, and its PE header verified as I386/PE32.
-The native project now has 42 groups, including two direct/delay and two
-same-directory indirect-import controls. They passed native MSVC Win32 in
-[run 38146240771](https://github.com/ThereptileII/Work/actions/runs/38146240771)
+The 42-group predecessor passed focused native run
+[38146240771](https://github.com/ThereptileII/Work/actions/runs/38146240771)
 at `840e1932fd2531f508d43459c89d39bce98fb496`. The receipt retains source,
 fixture and runtime hashes and explicitly sets product acceptance false.
-No boat action was performed.
+It includes two direct/delay and two same-directory indirect-import controls;
+its benign indirect control explicitly preloads the helper. That result does
+not prove first dependency mapping while inspection owns the sibling handle.
+The project now requires **43 groups**, adding the first-mapping control below.
+This new group is **prepared, not run** until an exact-revision native receipt
+exists. No boat action was performed for this increment.
 
 Remaining product gates: actual package/adapter import ABI, full application
 Standard/Safe selection, real plugin lifecycle, encrypted-chart rendering,
@@ -75,14 +79,33 @@ refusal, even while the stub is already mapped. The test checks original bytes
 and lock release afterward. No real obsolete TLS library or vendor code is
 executed. Source receipts now include both guard headers and the PE reader;
 fixture receipts include the stub and both importing modules. These new native
-controls passed in the focused run above. They do not exercise actual OpenCPN root
+controls passed in the 42-group predecessor above. They do not exercise actual OpenCPN root
 discovery, dependency resolution, helpers or arbitrary dynamic loads.
 
 The indirect controls add an original DLL importing a locally built helper.
 One helper imports the harmless legacy-name stub; the other is benign. The
-original has no direct legacy import. The first is refused before its DllMain;
-the second remains loadable while the guard holds the inspected files. The
-benign helper is already mapped for deterministic search resolution, so this
-does not establish first dependency mapping under the held handle. This tests
-the same-directory path only, not general Windows loader search order or plugin
-helper processes.
+original has no direct legacy import. The first is refused before its
+DllMain; the second remains loadable using an explicitly preloaded benign
+helper. This tests the same-directory disk graph and already-mapped control,
+not first mapping, general Windows loader search order or plugin helper processes.
+
+The additional `indirect_unmapped` original imports a unique inert
+`helper_unmapped.dll`, built below `Release/unmapped` so the executable directory
+has no duplicate. The test verifies that the helper is unmapped, then temporarily
+sets only its own process current directory to the private original directory
+for dependency search. It preserves the prior current directory and restores it
+on success and exception unwinding; it changes no system search configuration.
+While an explicit production `OriginalPluginTlsGuard` is alive, it checks actual
+write/delete sharing violations for both inspected files, performs the first
+native original load, and verifies the mapped helper's full path, volume/file
+index identity and SHA-256 against the inspected sibling. It repeats the lock
+checks after mapping, unloads the original and dependency, and verifies unchanged
+bytes and released inspection handles. The native log records the mapped path
+and identity; the exact receipt adds `unmappedSiblingGuardControl: true`.
+
+This control directly exercises the production guard class and native load.
+Existing fallback groups cover the fallback helper separately. A passing new
+control will establish this one benign first-mapping/inspection-handle case;
+it will not qualify general loader search, arbitrary plugins, full application
+fallback integration or SCRUM-209 closure. Source receipts include the new inert
+helper source, and fixture receipts include both the new original and helper.

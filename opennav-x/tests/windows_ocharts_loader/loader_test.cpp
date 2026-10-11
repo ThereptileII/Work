@@ -4,6 +4,7 @@
 #include <wx/init.h>
 #include <wx/log.h>
 #include <windows.h>
+#include <cwchar>
 #include <filesystem>
 #include <fstream>
 #include <functional>
@@ -37,6 +38,45 @@ bool Writable(const fs::path& path) {
   if(h==INVALID_HANDLE_VALUE) return false;
   CloseHandle(h);return true;
 }
+bool SharingDenied(const fs::path& path,DWORD access) {
+  HANDLE handle=CreateFileW(path.c_str(),access,
+      FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,nullptr,OPEN_EXISTING,
+      FILE_ATTRIBUTE_NORMAL,nullptr);
+  if(handle!=INVALID_HANDLE_VALUE) {CloseHandle(handle);return false;}
+  return GetLastError()==ERROR_SHARING_VIOLATION;
+}
+BY_HANDLE_FILE_INFORMATION FileIdentity(const fs::path& path) {
+  HANDLE handle=CreateFileW(path.c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,
+      OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,nullptr);
+  Require(handle!=INVALID_HANDLE_VALUE,"open mapped/inspected file identity");
+  BY_HANDLE_FILE_INFORMATION identity{};
+  const bool valid=GetFileInformationByHandle(handle,&identity)!=0;
+  CloseHandle(handle);Require(valid,"read mapped/inspected file identity");
+  return identity;
+}
+bool SameFile(const BY_HANDLE_FILE_INFORMATION& a,const BY_HANDLE_FILE_INFORMATION& b) {
+  return a.dwVolumeSerialNumber==b.dwVolumeSerialNumber &&
+         a.nFileIndexHigh==b.nFileIndexHigh && a.nFileIndexLow==b.nFileIndexLow;
+}
+// Change only this disposable process's current-directory search location.
+// Unlike SetDllDirectory, current_path has an exactly recoverable prior state.
+struct ScopedSearchDirectory {
+  fs::path previous=fs::current_path();
+  bool restored=false;
+  explicit ScopedSearchDirectory(const fs::path& directory) {
+    // A caller DLL-directory override can remove current-directory searching.
+    Require(GetDllDirectoryW(0,nullptr)==0,"unexpected process DLL search override");
+    fs::current_path(directory);
+  }
+  ~ScopedSearchDirectory() {
+    if(!restored) SetCurrentDirectoryW(previous.c_str());
+  }
+  void Restore() {
+    fs::current_path(previous);
+    Require(fs::current_path()==previous,"process search directory was not restored");
+    restored=true;
+  }
+};
 void NeverLoadedVendor() {
   Require(GetModuleHandleW(L"o-charts_pi.dll")==nullptr,"vendor DLL must never be loaded by mechanics tests");
 }
@@ -296,6 +336,59 @@ int main(int argc,char**argv) {
                   Writable(c.original) && Writable(helper),"indirect guard changed input or leaked lock");
       Pass(kind);
     }
+    // First mapping of a unique benign sibling while the actual production
+    // guard owns the inspected original and sibling handles. This direct class
+    // control complements (and does not replace) the fallback groups above.
+    {Case c(work,"unmapped-sibling-under-inspection-lock",vendor,good);
+      Copy(fixtures/"fixture_indirect_unmapped.dll",c.original);
+      const auto helper=c.original.parent_path()/"helper_unmapped.dll";
+      Copy(fixtures/"unmapped/helper_unmapped.dll",helper);
+      wchar_t executable_path[32768]{};
+      const auto executable_count=GetModuleFileNameW(nullptr,executable_path,32768);
+      Require(executable_count && executable_count<32768,"cannot read executable directory");
+      Require(!fs::exists(fs::path(executable_path).parent_path()/"helper_unmapped.dll"),
+              "first-map helper must have no application-directory duplicate");
+      Require(GetModuleHandleW(L"helper_unmapped.dll")==nullptr,"first-map helper was preloaded");
+      const auto original_before=Hash(c.original),helper_before=Hash(helper);
+      ScopedSearchDirectory search(c.original.parent_path());
+      wxDynamicLibrary lib;
+      {
+        OriginalPluginTlsGuard guard(W(c.original));
+        Require(guard.Refusal().empty(),"first-map benign graph refused: "+guard.Refusal());
+        for(const auto& path : {c.original,helper})
+          Require(SharingDenied(path,GENERIC_WRITE) && SharingDenied(path,DELETE),
+                  "inspection did not hold original/sibling write-delete locks");
+        const auto inspected=FileIdentity(helper);
+        Require(GetModuleHandleW(L"helper_unmapped.dll")==nullptr,
+                "inspection unexpectedly mapped benign sibling");
+        Require(lib.Load(W(c.original)),"first sibling mapping under inspection handles failed");
+        const auto mapped=GetModuleHandleW(L"helper_unmapped.dll");
+        Require(mapped!=nullptr,"original load did not map expected sibling");
+        wchar_t mapped_path[32768]{};
+        const auto count=GetModuleFileNameW(mapped,mapped_path,32768);
+        Require(count && count<32768,"cannot read mapped sibling path");
+        const fs::path actual(mapped_path);
+        Require(_wcsicmp(actual.lexically_normal().c_str(),helper.lexically_normal().c_str())==0,
+                "first-map sibling resolved outside inspected directory");
+        Require(SameFile(inspected,FileIdentity(actual)) && Hash(actual)==helper_before,
+                "mapped sibling identity differs from inspected locked file");
+        for(const auto& path : {c.original,helper})
+          Require(SharingDenied(path,GENERIC_WRITE) && SharingDenied(path,DELETE),
+                  "inspection lock disappeared during first mapping");
+        c.Events("attach\n");
+        std::cout<<"First-map sibling path: "<<actual.u8string()
+                 <<"; volume="<<inspected.dwVolumeSerialNumber
+                 <<"; file-index="<<inspected.nFileIndexHigh<<":"<<inspected.nFileIndexLow
+                 <<"; sha256="<<helper_before<<"\n";
+        Require(UnloadPluginModuleChecked(lib),"first-map original unload");
+        Require(GetModuleHandleW(L"helper_unmapped.dll")==nullptr,"first-map helper leaked after original unload");
+        c.Events("attach\ndetach\n");
+      }
+      Require(Writable(c.original) && Writable(helper) && Hash(c.original)==original_before &&
+                  Hash(helper)==helper_before,"first-map inputs changed or inspection handles leaked");
+      search.Restore();
+      Pass("previously unmapped sibling maps with inspected path/identity under live guard");
+    }
     {Case c(work,"injected-invalid-module-handle",vendor,good);Copy(good,c.original);
       wxDynamicLibrary lib;
       void* reserved=VirtualAlloc(nullptr,65536,MEM_RESERVE,PAGE_NOACCESS);
@@ -321,7 +414,7 @@ int main(int argc,char**argv) {
       Pass("injected invalid-handle refusal retains ownership");
     }
     NeverLoadedVendor();Require(Hash(vendor)==OriginalOChartsSha256,"vendor input changed");
-    std::ofstream report(argv[6]);report<<"{\"status\":\"passed\",\"checks\":"<<passed<<",\"vendorExecuted\":false,\"pluginFactoryExecuted\":false,\"invalidHandleFaultInjected\":true,\"productAcceptance\":false}\n";
-    std::cout<<"PASS "<<passed<<" native loader groups; no plugin factory/helper execution\n";return 0;
+    std::ofstream report(argv[6]);report<<"{\"status\":\"passed\",\"checks\":"<<passed<<",\"vendorExecuted\":false,\"pluginFactoryExecuted\":false,\"invalidHandleFaultInjected\":true,\"unmappedSiblingGuardControl\":true,\"productAcceptance\":false}\n";
+    std::cout<<"PASS "<<passed<<" native loader groups; no vendor or plugin factory execution\n";return 0;
   } catch(const std::exception& error) {std::cerr<<"FAIL "<<error.what()<<"\n";return 1;}
 }

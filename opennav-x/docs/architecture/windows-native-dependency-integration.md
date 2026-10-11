@@ -140,9 +140,17 @@ cycles, repeated names, malformed/missing siblings and the node bound. The
 native harmless load controls in
 `tests/windows_ocharts_loader` additionally compare successful unguarded loads
 against refusal before original DllMain, repeated loads, clean adapter fallback
-and lock lifetime. The 42 native MSVC Win32 groups passed at source commit
-`840e1932` in [focused run 38146240771](https://github.com/ThereptileII/Work/actions/runs/38146240771);
-the source evidence records their exact scope and remaining loader limitations.
+and lock lifetime. The 42-group predecessor passed focused native run
+[38146240771](https://github.com/ThereptileII/Work/actions/runs/38146240771)
+at source commit `840e1932fd2531f508d43459c89d39bce98fb496`,
+but its benign helper was explicitly preloaded. The prepared 43rd group uses a
+unique, previously unmapped benign helper without an executable-directory
+duplicate. A scoped process current-directory search change allows the actual
+native original load while an explicit production guard holds both inspected
+files; it checks write/delete sharing violations and the mapped sibling path,
+volume/file index and hash, then unloads and restores process state. That new
+first-mapping control still requires an exact-revision native run. It is direct
+guard-class/native-load evidence, not a full application fallback qualification.
 
 Before acceptance, qualify the exact integrated native candidate with default
 per-user, configured, portable and

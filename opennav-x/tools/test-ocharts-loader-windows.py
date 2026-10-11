@@ -27,6 +27,7 @@ INPUTS = (
     'tests/windows_ocharts_loader/CMakeLists.txt',
     'tests/windows_ocharts_loader/fixture.cpp',
     'tests/windows_ocharts_loader/indirect_dependency.cpp',
+    'tests/windows_ocharts_loader/unmapped_dependency.cpp',
     'tests/windows_ocharts_loader/legacy_dependency.cpp',
     'tests/windows_ocharts_loader/loader_test.cpp',
     'tests/windows_ocharts_loader/inputs.lock.json',
@@ -35,7 +36,8 @@ INPUTS = (
     'tools/windows-wx.lock.json',
 )
 VARIANTS = ('good', 'no_bind', 'no_status', 'no_create', 'no_destroy',
-            'legacy_normal', 'legacy_delay', 'indirect_legacy', 'indirect_clean')
+            'legacy_normal', 'legacy_delay', 'indirect_legacy', 'indirect_clean',
+            'indirect_unmapped')
 
 
 def identity(path):
@@ -144,7 +146,7 @@ def main():
             report['fixtures'][fixture.name] = dict(identity(fixture), pe=require_win32_dll(fixture))
         stub = fixtures / 'libeay32.dll'
         report['fixtures'][stub.name] = dict(identity(stub), pe=require_win32_dll(stub))
-        for name in ('helper_legacy.dll', 'helper_clean.dll'):
+        for name in ('helper_legacy.dll', 'helper_clean.dll', 'unmapped/helper_unmapped.dll'):
             helper = fixtures / name
             report['fixtures'][name] = dict(identity(helper), pe=require_win32_dll(helper))
         junction_original = scratch / 'original-junction'
@@ -160,8 +162,9 @@ def main():
         api.run([client, vendor, fixtures, work, junction_original, junction_adapter,
                  evidence / 'native-tests.json'], evidence / 'native-tests.log', timeout=120)
         native = json.loads((evidence / 'native-tests.json').read_text())
-        if native != {'status': 'passed', 'checks': 42, 'vendorExecuted': False,
-                      'pluginFactoryExecuted': False, 'invalidHandleFaultInjected': True, 'productAcceptance': False}:
+        if native != {'status': 'passed', 'checks': 43, 'vendorExecuted': False,
+                      'pluginFactoryExecuted': False, 'invalidHandleFaultInjected': True,
+                      'unmappedSiblingGuardControl': True, 'productAcceptance': False}:
             raise ValueError('Native guard receipt is incomplete or changed')
         report['native'] = native
         if identity(client) != report['executable'] or identity(vendor) != report['vendorInput']:
