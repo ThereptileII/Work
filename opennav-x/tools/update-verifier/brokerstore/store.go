@@ -61,8 +61,10 @@ type candidateFile interface {
 // abandoned candidate or resets its persistent CREATE_NEW stage reservation.
 type Store struct {
 	mu         sync.Mutex
+	closeMu    sync.Mutex
 	backend    storeBackend
 	closed     atomic.Bool
+	closeErr   error
 	candidates []*Candidate
 }
 type fileRecord struct {
@@ -82,6 +84,7 @@ type Candidate struct {
 	fileNames                map[string]bool
 	bytes                    int64
 	closed, poisoned, sealed bool
+	closeErr                 error
 }
 
 func validHex(s string, n int) bool {
@@ -197,11 +200,17 @@ func (s *Store) Validate() error {
 	}
 	return s.backend.check()
 }
+// Close drains owned handles once. Concurrent and repeated callers wait for and
+// receive the original cleanup result, including any retained uncertainty.
 func (s *Store) Close() error {
+	// Mark the store unavailable before draining children, but do not report
+	// completed cleanup to another caller until that original drain finishes.
+	s.closeMu.Lock()
+	defer s.closeMu.Unlock()
 	s.mu.Lock()
 	if s.closed.Swap(true) {
 		s.mu.Unlock()
-		return nil
+		return s.closeErr
 	}
 	children := s.candidates
 	s.candidates = nil
@@ -210,7 +219,8 @@ func (s *Store) Close() error {
 	for _, c := range children {
 		result = errors.Join(result, c.Close())
 	}
-	return errors.Join(result, s.backend.close())
+	s.closeErr = errors.Join(result, s.backend.close())
+	return s.closeErr
 }
 func (c *Candidate) ready() error {
 	if c.closed || c.store.closed.Load() {
@@ -391,11 +401,13 @@ func (c *Candidate) Seal(ctx context.Context, receipt []byte) (err error) {
 	c.sealed = true
 	return nil
 }
+// Close releases owned handles once and retains the original cleanup result.
+// It does not remove the durable stage reservation or authorize its reuse.
 func (c *Candidate) Close() error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	if c.closed {
-		return nil
+		return c.closeErr
 	}
 	c.closed = true
 	var result error
@@ -403,5 +415,6 @@ func (c *Candidate) Close() error {
 		result = errors.Join(result, entry.file.Close())
 	}
 	c.files = nil
-	return errors.Join(result, c.backend.close())
+	c.closeErr = errors.Join(result, c.backend.close())
+	return c.closeErr
 }

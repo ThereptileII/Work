@@ -9,6 +9,7 @@ import (
 	"io"
 	"strings"
 	"testing"
+	"time"
 )
 
 var testFault = errors.New("injected custody failure")
@@ -121,6 +122,83 @@ func testCandidate(t *testing.T) (*Store, *Candidate, *memoryCandidate) {
 func digest(s string) string { h := sha256.Sum256([]byte(s)); return hex.EncodeToString(h[:]) }
 func write(c *Candidate, name, data string) error {
 	return c.WriteFile(context.Background(), name, strings.NewReader(data), int64(len(data)), digest(data))
+}
+
+func TestCloseRetainsCleanupFailuresWithoutRetry(t *testing.T) {
+	s, m := testStore()
+	c, err := s.Begin(stageA, "client")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err = write(c, "app/a", "payload"); err != nil {
+		t.Fatal(err)
+	}
+	fileFault := errors.New("file close uncertainty")
+	candidateFault := errors.New("candidate close uncertainty")
+	storeFault := errors.New("store close uncertainty")
+	child := m.children[0]
+	file := child.files["app/a"]
+	file.closeFault, child.closeFault = fileFault, candidateFault
+	first := c.Close()
+	if !errors.Is(first, fileFault) || !errors.Is(first, candidateFault) {
+		t.Fatalf("first close lost cleanup failure: %v", first)
+	}
+	file.closeFault, child.closeFault = nil, nil
+	if next := c.Close(); next != first {
+		t.Fatalf("repeated candidate close changed original result: %v", next)
+	}
+	m.fault = storeFault
+	closed := s.Close()
+	for _, fault := range []error{fileFault, candidateFault, storeFault} {
+		if !errors.Is(closed, fault) {
+			t.Fatalf("store close lost earlier cleanup uncertainty: %v", closed)
+		}
+	}
+	m.fault = nil
+	if next := s.Close(); next != closed {
+		t.Fatalf("repeated store close changed original result: %v", next)
+	}
+	if file.closes != 1 || child.closes != 1 || m.closes != 1 {
+		t.Fatalf("native cleanup retried: file=%d candidate=%d store=%d", file.closes, child.closes, m.closes)
+	}
+}
+
+type waitingCloseStore struct {
+	memoryStore
+	entered, release chan struct{}
+}
+
+func (m *waitingCloseStore) close() error {
+	close(m.entered)
+	<-m.release
+	return m.memoryStore.close()
+}
+
+func TestConcurrentStoreCloseWaitsForOriginalCleanup(t *testing.T) {
+	m := &waitingCloseStore{memoryStore: memoryStore{fault: testFault}, entered: make(chan struct{}), release: make(chan struct{})}
+	s := &Store{backend: m}
+	first, second := make(chan error, 1), make(chan error, 1)
+	go func() { first <- s.Close() }()
+	select {
+	case <-m.entered:
+	case <-time.After(5 * time.Second):
+		t.Fatal("first close did not reach backend")
+	}
+	started := make(chan struct{})
+	go func() { close(started); second <- s.Close() }()
+	<-started
+	select {
+	case err := <-second:
+		close(m.release)
+		<-first
+		t.Fatalf("second close returned before cleanup finished: %v", err)
+	case <-time.After(50 * time.Millisecond):
+	}
+	close(m.release)
+	one, two := <-first, <-second
+	if !errors.Is(one, testFault) || two != one || m.closes != 1 {
+		t.Fatalf("concurrent close result changed/retried: first=%v second=%v closes=%d", one, two, m.closes)
+	}
 }
 
 func TestPayloadAndSeal(t *testing.T) {
@@ -326,8 +404,8 @@ func TestPersistentReservationAndClose(t *testing.T) {
 	if f.closes != 1 || m.children[0].closes != 1 || m.closes != 1 {
 		t.Fatal("independent cleanup skipped")
 	}
-	if s.Close() != nil {
-		t.Fatal("repeat close")
+	if next := s.Close(); next != e {
+		t.Fatalf("repeat close lost original cleanup result: %v", next)
 	}
 	if e = write(c, "app/b", "x"); !errors.Is(e, ErrClosed) {
 		t.Fatal(e)
