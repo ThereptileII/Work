@@ -26,6 +26,11 @@ review and explicit user GO authorize opening access. A draft release requires
 repository access and is not a public customer download. An instruction to
 promote to Production alone does not authorize publishing that draft.
 
+For interrupted publication, candidate mismatches, metadata expiry, signing
+incidents or installed update failures, use the [software incident runbook](installer/release-incident-runbook.md)
+and its [inert tabletop](installer/release-incident-tabletop.md). Recovery does not
+change the channel or public-access authority above.
+
 ## Delivery sequence
 
 Feature work → working Staging version → user feedback → frozen candidate →

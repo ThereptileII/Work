@@ -126,6 +126,11 @@ skager-repository publish --repository /private/operator/repository \
 
 ## Publication and recovery
 
+The [software incident runbook](release-incident-runbook.md) gives the operator
+decision tree, evidence collection and stop/resume criteria for interruption,
+expiry, wrong candidates and suspected signing compromise. Exercise it with the
+[inert tabletop](release-incident-tabletop.md) before operational use.
+
 Only one writer may hold `operator.lock`. The private directory must retain its
 owner-only permissions. A durable state update reserves the next metadata version
 and product floor before copying/signing. Artifact copies are bounded and rehashed;
