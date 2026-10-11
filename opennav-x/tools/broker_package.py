@@ -140,10 +140,13 @@ def _build_info(binary, declared, commit, reference):
         else:
             raise ValueError('Unsupported broker Go module metadata')
     required = {'-buildmode': 'exe', '-compiler': 'gc', '-trimpath': 'true',
-                '-ldflags': '-H=windowsgui', 'CGO_ENABLED': '0', 'GOARCH': '386',
+                'CGO_ENABLED': '0', 'GOARCH': '386',
                 'GOOS': 'windows', 'GO386': 'sse2', 'vcs': 'git',
                 'vcs.revision': commit, 'vcs.modified': 'false'}
-    if (paths != [updater.MAIN_MODULE + '/cmd/skager-update-broker'] or
+    # Pinned Go omits -ldflags with -trimpath (cmd/go/internal/load/pkg.go).
+    # GUI identity comes from the actual PE subsystem plus the declared recipe.
+    if ('-ldflags' in settings or
+            paths != [updater.MAIN_MODULE + '/cmd/skager-update-broker'] or
             mains != [[updater.MAIN_MODULE, '(devel)', '']] or
             any(settings.get(k) != v for k, v in required.items()) or
             not re.fullmatch(r'\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ', settings.get('vcs.time', ''))):

@@ -62,7 +62,7 @@ class BrokerPackageTests(unittest.TestCase):
         self.module = ('path\t' + updater.MAIN_MODULE + '/cmd/skager-update-broker\nmod\t' +
             updater.MAIN_MODULE + '\t(devel)\t\ndep\tpublic.example/module\tv1.0.0\t' + checksum + '\n' +
             ''.join('build\t' + key + '=' + value + '\n' for key, value in {
-                '-buildmode': 'exe', '-compiler': 'gc', '-trimpath': 'true', '-ldflags': '-H=windowsgui',
+                '-buildmode': 'exe', '-compiler': 'gc', '-trimpath': 'true',
                 'CGO_ENABLED': '0', 'GOARCH': '386', 'GOOS': 'windows', 'GO386': 'sse2',
                 'vcs': 'git', 'vcs.revision': self.commit, 'vcs.time': '2026-10-12T00:00:00Z',
                 'vcs.modified': 'false'}.items()))
@@ -131,7 +131,7 @@ class BrokerPackageTests(unittest.TestCase):
         for before, after in [('GOARCH=386', 'GOARCH=amd64'), ('CGO_ENABLED=0', 'CGO_ENABLED=1'),
             ('vcs.modified=false', 'vcs.modified=true'), (self.commit, 'b' * 40),
             ('/cmd/skager-update-broker', '/cmd/skager-start'), ('-trimpath=true', '-trimpath=false'),
-            ('GO386=sse2', 'GO386=softfloat'), ('-H=windowsgui', '-H=console'),
+            ('GO386=sse2', 'GO386=softfloat'), ('-compiler=gc', '-compiler=gccgo'),
             ('v1.0.0', 'v1.1.0')]:
             with self.subTest(after=after):
                 self.write_binary(self.module.replace(before, after))
@@ -140,6 +140,14 @@ class BrokerPackageTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'compiler'): self.verify()
         self.write_binary(self.module + 'build\tGOARCH=386\n')
         with self.assertRaisesRegex(ValueError, 'Duplicate'): self.verify()
+
+    def test_trimpath_rejects_anomalous_ldflags_metadata(self):
+        # Go 1.27.1 intentionally omits this setting under -trimpath, even for
+        # the actual windowsgui recipe. Matching a forged record is insufficient.
+        for flags in ('-H=windowsgui', '-H=console', ''):
+            self.write_binary(self.module + 'build\t-ldflags=' + flags + '\n')
+            with self.assertRaisesRegex(ValueError, 'build settings'):
+                self.verify()
 
     def test_mixed_commit_schema_recipe_and_source_descriptor(self):
         original = copy.deepcopy(self.record)
