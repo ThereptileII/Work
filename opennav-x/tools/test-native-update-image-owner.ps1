@@ -100,17 +100,22 @@ try {
  $nativeName=[Skager.UpdateImageOwner].GetMethod('Native',[Reflection.BindingFlags]'NonPublic,Static')
  $ownerOpen=[Skager.UpdateImageOwner].GetMethod('Open',[Reflection.BindingFlags]'NonPublic,Instance')
  foreach($kind in @('armed-barrier','image-owner')) {
-  $empty=Join-Path $fixture ('empty-pin-'+$kind);$renamed=$empty+'-renamed'
+  [string]$empty=Join-Path $fixture ('empty-pin-'+$kind);[string]$renamed=$empty+'-renamed'
+  [object[]]$directoryArguments=@([string]$empty)
   $null=[IO.Directory]::CreateDirectory($empty)
   [IO.Directory]::Move($empty,$renamed);[IO.Directory]::Move($renamed,$empty)
-  $probe=$directoryOpen.Invoke($null,@($empty))
-  try { $native=$nativeName.Invoke($null,@($probe)) } finally { $probe.Dispose() }
+  [Microsoft.Win32.SafeHandles.SafeFileHandle]$probe=$directoryOpen.Invoke($null,$directoryArguments)
+  try {
+   [object[]]$nativeArguments=@([Microsoft.Win32.SafeHandles.SafeFileHandle]$probe)
+   [string]$native=$nativeName.Invoke($null,$nativeArguments)
+  } finally { $probe.Dispose() }
   $held=$null;$directoryOwner=$null
   try {
-   if($kind -ceq 'armed-barrier') { $held=$directoryOpen.Invoke($null,@($empty)) }
+   if($kind -ceq 'armed-barrier') { $held=$directoryOpen.Invoke($null,$directoryArguments) }
    else {
     $directoryOwner=[Activator]::CreateInstance([Skager.UpdateImageOwner],$true);$owners.Add($directoryOwner)
-    $null=$ownerOpen.Invoke($directoryOwner,@($native,$true))
+    [object[]]$ownerArguments=@([string]$native,[bool]$true)
+    $null=$ownerOpen.Invoke($directoryOwner,$ownerArguments)
    }
    $sharingDenied=$false
    try { [IO.Directory]::Move($empty,$renamed) }

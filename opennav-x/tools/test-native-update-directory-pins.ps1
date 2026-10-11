@@ -38,21 +38,26 @@ $cleanupErrors=New-Object 'Collections.Generic.List[string]'
 try {
  $null=[IO.Directory]::CreateDirectory($fixture)
  foreach($kind in @('armed-barrier','image-owner')) {
-  $empty=Join-Path $fixture $kind;$renamed=$empty+'-renamed'
+  [string]$empty=Join-Path $fixture $kind;[string]$renamed=$empty+'-renamed'
+  [object[]]$directoryArguments=@([string]$empty)
   $paths.Add($empty);$paths.Add($renamed)
   $null=[IO.Directory]::CreateDirectory($empty)
   [IO.Directory]::Move($empty,$renamed);[IO.Directory]::Move($renamed,$empty)
   Check $true ($kind+' empty directory baseline rename succeeds')
   # Resolve the physical name using the exact production Native helper, then
   # close the probe so only the method under test can provide rename exclusion.
-  $probe=$directoryOpen.Invoke($null,@($empty))
-  try { $native=$nativeName.Invoke($null,@($probe)) } finally { $probe.Dispose() }
+  [Microsoft.Win32.SafeHandles.SafeFileHandle]$probe=$directoryOpen.Invoke($null,$directoryArguments)
+  try {
+   [object[]]$nativeArguments=@([Microsoft.Win32.SafeHandles.SafeFileHandle]$probe)
+   [string]$native=$nativeName.Invoke($null,$nativeArguments)
+  } finally { $probe.Dispose() }
   $held=$null;$owner=$null
   try {
-   if($kind -ceq 'armed-barrier') { $held=$directoryOpen.Invoke($null,@($empty)) }
+   if($kind -ceq 'armed-barrier') { $held=$directoryOpen.Invoke($null,$directoryArguments) }
    else {
     $owner=[Activator]::CreateInstance([Skager.UpdateImageOwner],$true)
-    $null=$ownerOpen.Invoke($owner,@($native,$true))
+    [object[]]$ownerArguments=@([string]$native,[bool]$true)
+    $null=$ownerOpen.Invoke($owner,$ownerArguments)
    }
    $sharingDenied=$false
    try { [IO.Directory]::Move($empty,$renamed) }
