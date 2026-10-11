@@ -237,7 +237,8 @@ func TestArmedUpdateOrdinaryCreatorRefusesBeforeCreateAndResume(t *testing.T) {
 		creator := &creatorFixture{resumeCount: 1}
 		spec := processSpec{expectedImageHash: strings.Repeat("a", 64)}
 		err := startOrdinary(spec, func(processSpec) (ordinaryImage, error) {
-			return unarmedOrdinaryImage{ordinaryImage: armingOrdinaryImage{creatorImage{creator}, f.p, at}, platform: f.p, root: fixtureRoot}, nil
+			return unarmedOrdinaryImage{ordinaryImage: armingOrdinaryImage{creatorImage{creator}, f.p, at},
+				checkArmed: func() error { return requireUnarmed(f.p, fixtureRoot) }}, nil
 		})
 		want := []string{"before create", "close image"}
 		if at == 2 {
@@ -246,5 +247,78 @@ func TestArmedUpdateOrdinaryCreatorRefusesBeforeCreateAndResume(t *testing.T) {
 		if !errors.Is(err, errArmedUpdateBarrier) || !reflect.DeepEqual(creator.events, want) {
 			t.Fatalf("armed ordinary custody ordering at %d: %v %v", at, creator.events, err)
 		}
+	}
+}
+
+func TestArmedUpdatePhysicalRootRequiresExactManagedGeneration(t *testing.T) {
+	physicalRoot := `\Device\HarddiskVolume7\A\SKAGER`
+	image := physicalRoot + `\generations\` + fixtureGeneration + `\app\opencpn.exe`
+	root, err := managedPhysicalInstallationRoot(image, fixtureGeneration)
+	if err != nil || root != physicalRoot {
+		t.Fatalf("physical root differs: %q %v", root, err)
+	}
+	for _, wrong := range []string{
+		physicalRoot + `\generations\` + strings.Repeat("f", 32) + `\app\opencpn.exe`,
+		physicalRoot + `\generations\` + fixtureGeneration + `\other\opencpn.exe`,
+		physicalRoot + `\generations\` + fixtureGeneration + `\app\other.exe`,
+		physicalRoot + `\generations\` + fixtureGeneration + `\app\opencpn.exe\extra`,
+	} {
+		if _, err := managedPhysicalInstallationRoot(wrong, fixtureGeneration); !errors.Is(err, errArmedUpdateBarrier) {
+			t.Fatalf("ambiguous managed physical root accepted: %q %v", wrong, err)
+		}
+	}
+}
+
+type aliasChangingOrdinaryImage struct {
+	ordinaryImage
+	beforeRecheck func()
+}
+
+func (image aliasChangingOrdinaryImage) recheck() error {
+	image.beforeRecheck()
+	return image.ordinaryImage.recheck()
+}
+
+func TestArmedUpdateHeldPhysicalRootDeniesAfterRequestAliasChanges(t *testing.T) {
+	for _, at := range []int{1, 2} {
+		t.Run(string(rune('0'+at)), func(t *testing.T) {
+			physicalA, physicalB := `\Device\HarddiskVolume7\A\SKAGER`, `\Device\HarddiskVolume7\B\SKAGER`
+			root, err := managedPhysicalInstallationRoot(physicalA+`\generations\`+fixtureGeneration+`\app\opencpn.exe`, fixtureGeneration)
+			if err != nil {
+				t.Fatal(err)
+			}
+			aliasTarget := physicalA
+			markers := map[string]bool{}
+			creator := &creatorFixture{resumeCount: 1}
+			queries := []string{}
+			bound := unarmedOrdinaryImage{ordinaryImage: creatorImage{creator}, checkArmed: func() error {
+				queries = append(queries, root)
+				if markers[root] {
+					return errArmedUpdateBarrier
+				}
+				return nil
+			}}
+			checks := 0
+			image := aliasChangingOrdinaryImage{ordinaryImage: bound, beforeRecheck: func() {
+				checks++
+				if checks == at {
+					markers[physicalA] = true
+					aliasTarget = physicalB
+				}
+			}}
+			err = startOrdinary(processSpec{expectedImageHash: strings.Repeat("a", 64)}, func(processSpec) (ordinaryImage, error) { return image, nil })
+			want := []string{"before create", "close image"}
+			if at == 2 {
+				want = []string{"before create", "create", "corroborate", "before resume", "abort suspended", "close child", "close image"}
+			}
+			if !errors.Is(err, errArmedUpdateBarrier) || !reflect.DeepEqual(creator.events, want) || aliasTarget != physicalB || markers[aliasTarget] {
+				t.Fatalf("changed alias authorized armed held image: %v %v", creator.events, err)
+			}
+			for _, queried := range queries {
+				if queried != physicalA {
+					t.Fatal("barrier queried changed request alias instead of held installation")
+				}
+			}
+		})
 	}
 }

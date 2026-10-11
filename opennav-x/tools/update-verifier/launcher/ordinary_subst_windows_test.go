@@ -13,7 +13,8 @@ import (
 // Explicitly opt in only on a disposable hosted Windows runner. This changes
 // one previously absent test-session DOS definition, with no broadcast; cleanup
 // removes only the exact owned target. It is never run on a boat or this host.
-func TestNativeOrdinarySubstRemapAfterAcquire(t *testing.T) {
+func requireNativeOrdinarySubst(t *testing.T) {
+	t.Helper()
 	if os.Getenv("SKAGER_LAUNCHER_DISPOSABLE_SUBST_TEST") != "1" {
 		t.Skip("requires explicit disposable Windows runner opt-in")
 	}
@@ -21,8 +22,10 @@ func TestNativeOrdinarySubstRemapAfterAcquire(t *testing.T) {
 	if err != nil || user.User.Sid.IsWellKnown(windows.WinLocalSystemSid) {
 		t.Fatal("test requires a confirmed local user DOS namespace, never LocalSystem/global")
 	}
-	spec, marker := ordinaryNativeFixture(t)
-	aliasRoot := filepath.Dir(spec.directory)
+}
+
+func nativeOrdinarySubstMapping(t *testing.T, aliasRoot string) (string, func(string)) {
+	t.Helper()
 	directory, err := os.Open(aliasRoot)
 	if err != nil {
 		t.Fatal(err)
@@ -96,6 +99,20 @@ func TestNativeOrdinarySubstRemapAfterAcquire(t *testing.T) {
 		}
 	}
 	define(target)
+	return device, func(target string) {
+		remove()
+		if ownedTarget != "" {
+			t.Fatal("test DOS definition could not be safely remapped")
+		}
+		define(target)
+	}
+}
+
+func TestNativeOrdinarySubstRemapAfterAcquire(t *testing.T) {
+	requireNativeOrdinarySubst(t)
+	spec, marker := ordinaryNativeFixture(t)
+	aliasRoot := filepath.Dir(spec.directory)
+	device, remap := nativeOrdinarySubstMapping(t, aliasRoot)
 	spec.executable = device + `\app\opencpn.exe`
 	spec.directory = device + `\app`
 	image, err := acquireNativeOrdinaryImage(spec)
@@ -125,11 +142,7 @@ func TestNativeOrdinarySubstRemapAfterAcquire(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	remove()
-	if ownedTarget != "" {
-		t.Fatal("test DOS definition could not be safely remapped")
-	}
-	define(otherTarget)
+	remap(otherTarget)
 	// The production state machine receives its already acquired physical owner.
 	// Repeating acquisition through the mutable DOS alias is intentionally absent.
 	if err := startOrdinary(spec, func(processSpec) (ordinaryImage, error) { return owner, nil }); err != nil {

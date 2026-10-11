@@ -3,6 +3,7 @@ package launcher
 import (
 	"context"
 	"errors"
+	"strings"
 )
 
 const armedUpdateMarker = "signed-update-armed.jsonl"
@@ -38,13 +39,21 @@ func startUnarmed(p platform, root string, spec processSpec) error {
 // before resume, where refusal can still abort an owned suspended child.
 type unarmedOrdinaryImage struct {
 	ordinaryImage
-	platform platform
-	root     string
+	checkArmed func() error
 }
 
 func (image unarmedOrdinaryImage) recheck() error {
 	if err := image.ordinaryImage.recheck(); err != nil {
 		return err
 	}
-	return requireUnarmed(image.platform, image.root)
+	return image.checkArmed()
+}
+
+func managedPhysicalInstallationRoot(image, generation string) (string, error) {
+	suffix := `\generations\` + generation + `\app\opencpn.exe`
+	if !generationPattern.MatchString(generation) || len(image) <= len(suffix) ||
+		!strings.EqualFold(image[len(image)-len(suffix):], suffix) {
+		return "", errors.Join(errArmedUpdateBarrier, errors.New("held image is outside the exact managed physical generation"))
+	}
+	return image[:len(image)-len(suffix)], nil
 }
