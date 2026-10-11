@@ -70,7 +70,12 @@ does not inspect untracked files, Git history/deleted secrets, CI protected
 storage, runner logs, remote services, gitlink contents or credentials already
 on the boat. It does not unpack nested archives. Detectors are heuristic; a
 clean checkout is not proof that no secret exists. Submodule/gitlink paths are
-listed separately in `gitlinksNotScanned`.
+listed separately in `gitlinksNotScanned` and each produces an
+`unscanned-gitlink` path/rule coverage finding. A clean parent checkout with any
+gitlink therefore remains `unreviewed-findings` with `qualificationPassed` set
+to `false`, even if the submodule is absent locally. The strict command exits 1;
+the report-only CI bridge retains the finding without claiming qualification.
+Submodule contents are not followed, fetched or inspected by this gate.
 
 Before enabling a required CI check, investigate each finding privately and
 record its path, rule, disposition and reviewer without copying its value into

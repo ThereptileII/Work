@@ -96,6 +96,39 @@ class SecretScanTests(unittest.TestCase):
         self.assertTrue(report['qualificationPassed'])
         self.assertEqual(report['status'], 'clean-checkout')
 
+    def test_unscanned_gitlink_blocks_qualification_and_remains_visible_in_ci(self):
+        self.git_fixture()
+        # Register a real index gitlink without fetching or checking out its
+        # contents. An absent submodule must not be mistaken for a clean one.
+        subprocess.run(['git', '-C', str(self.root), 'update-index', '--add',
+                        '--cacheinfo', '160000,' + '1' * 40 + ',vendor/module'],
+                       check=True, capture_output=True)
+        with patch.object(scan, 'load_scanner', return_value=self.scanner):
+            report = scan.audit_repository(self.root)
+        self.assertEqual(report['gitlinksNotScanned'], ['vendor/module'])
+        self.assertEqual(report['findings'], [
+            {'path': 'vendor/module', 'rule': 'unscanned-gitlink'}])
+        self.assertFalse(report['qualificationPassed'])
+        self.assertEqual(report['status'], 'unreviewed-findings')
+        self.assertEqual(report['trackedFiles'], 1)
+
+        # The real report must fail the strict CLI gate while remaining an
+        # explicitly unqualified report-only audit through the CI bridge.
+        for extra, expected in (([], 1), (['--report-only'], 0)):
+            with patch.object(sys, 'argv', ['secret_scanning.py', *extra]), \
+                    patch.object(scan, 'audit_repository', return_value=report), \
+                    contextlib.redirect_stdout(io.StringIO()) as logs:
+                self.assertEqual(scan.main(), expected)
+            self.assertEqual(json.loads(logs.getvalue()), report)
+        output = self.root / 'outputs'
+        with patch.object(sys, 'argv', ['ci_changes.py', '--github-output', str(output)]), \
+                patch.object(scan, 'audit_repository', return_value=report), \
+                patch.object(ci_changes, 'select', return_value=dict.fromkeys(ci_changes.FLAGS, False)), \
+                contextlib.redirect_stdout(io.StringIO()) as logs:
+            self.assertEqual(ci_changes.main(), 0)
+        self.assertEqual(json.loads(logs.getvalue())['secretScan'], report)
+        self.assertTrue(output.is_file())
+
     def test_scanner_archive_tamper_rejected_before_execution(self):
         bad = self.root / 'bad.tar.gz'
         bad.write_bytes(b'not the pinned scanner')

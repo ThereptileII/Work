@@ -215,6 +215,10 @@ def audit_repository(repo: Path, archive_path: Path | None = None) -> dict:
             self_check(scanner, directory / 'self-check')
             files, gitlinks = snapshot(repo)
             findings = scan_files(scanner, files, directory / 'checkout')
+            # A gitlink records a commit, not the files in its checkout. Listing
+            # this gap as metadata alone must never qualify a partial scan.
+            findings.extend({'path': path, 'rule': 'unscanned-gitlink'} for path in gitlinks)
+            findings.sort(key=lambda finding: (finding['path'], finding['rule']))
         return {'schema': 1, 'scanner': 'gitleaks', 'version': '8.30.1',
                 'scope': 'tracked checkout bytes; no Git history or untracked files',
                 'status': 'unreviewed-findings' if findings else 'clean-checkout',
