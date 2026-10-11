@@ -53,7 +53,8 @@ python (Join-Path $PSScriptRoot 'package-preview.py') --install "$Root/build/pro
     --runtime-vs-installation $VS --runtime-vs-version $VsVersion `
     --runtime-vs-product-id $VsProductId --runtime-vs-catalog-base64 $VsCatalogBase64 `
     --openssl-source-cache "$Root/build/dependency-downloads/openssl-3.5.9.tar.gz" `
-    --dependency-source-cache "$Root/build/dependency-downloads" @TrustArguments
+    --dependency-source-cache "$Root/build/dependency-downloads" `
+    --wx-runtime-archive "$Root/build/integration-source/cache/opennav-downloads/wxMSW-3.2.8_vc14x_ReleaseDLL.7z" @TrustArguments
 $AssemblyExit = $LASTEXITCODE
 $Evidence = Join-Path $Root 'evidence/local'
 $null = New-Item -ItemType Directory -Path $Evidence -Force
