@@ -1,5 +1,24 @@
 # SCRUM-308 — classified light-support tower ink
 
+This review records the original SCRUM-308 implementation. Its runtime
+selection and light-support co-location refusal were superseded by
+`03f6f205ce082719701e42375b1f863099aa8361` (SCRUM-359, owner instruction
+2026-10-10). Current [ChartLightTowerSymbol.h](../../../src/integration/ChartLightTowerSymbol.h)
+selects the prototype `XNLIT013` circle and four rays for the exact qualified
+Simplified LNDMRK CATLMK17/FUNCTN33 tower lookups described below, with the
+existing refusal guards. `XNLTWR01/03` remain packaged resources, not the
+current selection for those qualified records. The
+[CA inventory](../../../src/integration/ChartCaLightPoint.h) permits their
+co-located light point; other structures still refuse it. The
+[loader fixture](../../../tests/chart_light_tower_cases.inc) asserts the updated
+selection. The original resource geometry and historical verification below
+remain evidence for SCRUM-308, not a description of the later symbol choice.
+
+The reported boat object has not been identified by class, attributes or
+effective rule. This source correction does not establish its selected symbol
+or close SCRUM-359; a read-only Object Query of the exact position and installed
+candidate is still required.
+
 The source inspection establishes a supported cause class, not the identity of
 an object on the boat chart. The LIGHTS alias path handles `LIGHTS11/12/13`.
 The conservative CA point inventory refuses independently co-located `LNDMRK`

@@ -21,16 +21,29 @@ development screenshot. Its SHA-256 is
 The final embedded `lighthouseArtwork()` defines the small circle and four
 rays also present in `src/chart-marker-art.js`; the historical
 `screenshots/v7/lighthouse-detail.png` shows a tower illustration which that
-final function no longer supplies. This distinction does not authorize
-substituting a generic light glyph for an ENC object's physical tower type.
+final function no longer supplies. The current classified light-support mapping
+follows the owner's later 2026-10-10 instruction below; it does not infer an
+ENC object's class from the appearance of a tower.
 
-SCRUM-308 adds a [classified light-support tower ink extension](reviews/scrum308-light-support-tower.md).
-Only exact Simplified LNDMRK CATLMK17/FUNCTN33 representations receive owned
-Day/Dusk/Night inks. The effective ordinary/conspicuous tower shapes, alpha,
-14×26 size and 6,22 geographic pivot remain unchanged; no generic LIGHTS glyph
-replaces a physical tower. Unknown/special/Paper/Standard cases remain stock.
-This closes a supported theme gap, not exact tower-artwork conformance or proof
-of the boat object's identity. Native/boat acceptance remains open.
+SCRUM-308 originally added a [classified light-support tower ink extension](reviews/scrum308-light-support-tower.md).
+Commit `03f6f205ce082719701e42375b1f863099aa8361` superseded that runtime
+selection for SCRUM-359: [ChartLightTowerSymbol.h](../../src/integration/ChartLightTowerSymbol.h)
+now selects `XNLIT013`, the prototype circle and four rays, for exact Simplified
+LNDMRK CATLMK17/FUNCTN33 lookup RCID31199 (`TOWERS01`) or RCID31192
+(`TOWERS03`, CONVIS1). The original `XNLTWR01/03` resources remain packaged,
+but these qualified records no longer select them. Existing attribute,
+lookup, presentation and resource guards retain stock painting on refusal;
+generic towers and Paper/Standard cases remain stock. The corresponding
+[loader fixture](../../tests/chart_light_tower_cases.inc) asserts the lighthouse
+selection and refusal paths. The co-located CA light-point inventory also
+permits this exactly classified light-support tower while retaining other
+structure refusals.
+
+This source mapping does not identify the reported lighthouse north of the
+boat or prove the installed candidate's selected symbol. SCRUM-359 remains
+unresolved pending a read-only Object Query for the exact position, chart and
+installed revision, including all co-located objects and their full attributes.
+Native/boat acceptance remains open.
 
 The integrated SCRUM-279–282 follow-on at `45d73e8` adds the supplied marina,
 UWTROC03/UWTROC04 rock and WRECKS05 wreck artwork, fishing-area motif and cable
