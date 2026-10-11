@@ -133,6 +133,7 @@ namespace Skager {
   FileStream image; IntPtr child=IntPtr.Zero; bool disposed, mayHaveRun;
   public string OriginalImage { get; private set; }
   public string NativeImage { get; private set; }
+  public string ApplicationImage { get; private set; }
   public string Hash { get; private set; }
   public int ProcessId { get; private set; }
   public long CreationFileTime { get; private set; }
@@ -146,6 +147,35 @@ namespace Skager {
    var value=new StringBuilder(32768); uint count=GetFinalPathNameByHandle(handle,value,(uint)value.Capacity,2);
    if(count==0 || count>=(uint)value.Capacity) throw Failure("Native file identity");
    return value.ToString().TrimEnd('\\');
+  }
+  // The tested native host rejects GLOBALROOT as the application spelling.
+  // Select exactly one conventional application name from the held image; the
+  // DOS namespace is rechecked, not pinned. Raw child identity gates resume.
+  static string ParseApplication(string finalName,string native) {
+   var volume=System.Text.RegularExpressions.Regex.Match(native??"",@"^\\Device\\HarddiskVolume[0-9]+(?=\\|$)");
+   if(finalName==null || !finalName.StartsWith(@"\\?\",StringComparison.Ordinal) || !volume.Success) throw new IOException("Held DOS application name unavailable.");
+   string application=finalName.Substring(4);
+   if(!System.Text.RegularExpressions.Regex.IsMatch(application,@"^[A-Za-z]:\\") || application.Length<4 ||
+      !EqualNative(application.Substring(2),native.Substring(volume.Length))) throw new IOException("Held DOS application does not match its physical volume suffix.");
+   foreach(string part in application.Substring(3).Split('\\')) {
+    if(part.Length==0 || part=="." || part==".." || part.EndsWith(".",StringComparison.Ordinal) || part.EndsWith(" ",StringComparison.Ordinal) ||
+       System.Text.RegularExpressions.Regex.IsMatch(part,"[\\x00-\\x1f<>:\"/\\\\|?*]") ||
+       System.Text.RegularExpressions.Regex.IsMatch(part,@"^(CON|PRN|AUX|NUL|COM[1-9\u00b9\u00b2\u00b3]|LPT[1-9\u00b9\u00b2\u00b3])(?:\.|$)",System.Text.RegularExpressions.RegexOptions.IgnoreCase)) throw new IOException("Ambiguous held DOS application name.");
+   }
+   return application;
+  }
+  static string Application(SafeFileHandle handle,string native) {
+   var value=new StringBuilder(32768); uint count=GetFinalPathNameByHandle(handle,value,(uint)value.Capacity,0);
+   if(count==0 || count>=(uint)value.Capacity) throw Failure("Held DOS application identity");
+   return ParseApplication(value.ToString(),native);
+  }
+  void ValidateApplication(string path,Pin pin) {
+   using(var handle=CreateFile(path,pin.IsDirectory?Attributes:Read,pin.IsDirectory?3u:1u,IntPtr.Zero,3,OpenReparse|(pin.IsDirectory?Backup:0u),IntPtr.Zero)) {
+    if(handle.IsInvalid) throw Failure("Selected DOS application resolution");
+    var current=Metadata(handle);
+    if(!Same(current,pin.Identity) || (current.Attributes&Reparse)!=0 || ((current.Attributes&Directory)!=0)!=pin.IsDirectory || !EqualNative(Native(handle),pin.Native) ||
+       (!pin.IsDirectory && (current.Links!=1 || current.SizeHigh!=pin.Identity.SizeHigh || current.SizeLow!=pin.Identity.SizeLow))) throw new IOException("Selected DOS application resolution changed.");
+   }
   }
   static string NativeProcess(IntPtr handle) {
    var value=new StringBuilder(32768); uint count=(uint)value.Capacity;
@@ -179,8 +209,8 @@ namespace Skager {
    if(!System.Text.RegularExpressions.Regex.IsMatch(full,@"^[A-Za-z]:\\") || full.IndexOf(':',2)>=0 || full.IndexOf('/')>=0 || !Equal(Path.GetDirectoryName(full),parent)) throw new ArgumentException("Image requires its absolute local parent directory.");
    var owner=new UpdateImageOwner();
    try {
-    // Resolve the input drive once. Then leave the mutable DOS namespace and
-    // pin every physical ancestor, including those above a SUBST drive root.
+    // Resolve the input drive once and pin every physical ancestor, including
+    // those above a SUBST drive root. Application spelling is selected separately.
     using(var root=CreateFile(full.Substring(0,3),Attributes,3,IntPtr.Zero,3,Backup|OpenReparse,IntPtr.Zero)) {
      if(root.IsInvalid) throw Failure("Input drive root");
      var rootInfo=Metadata(root);string rootNative=Native(root);
@@ -204,6 +234,7 @@ namespace Skager {
      var file=owner.Open(walk+"\\"+Path.GetFileName(full),false);
      if(file.Identity.Volume!=volume.Identity.Volume || file.Identity.SizeHigh!=0 || file.Identity.SizeLow==0 || file.Identity.SizeLow>536870912) throw new IOException("Unsupported image size or volume.");
      owner.OriginalImage=full;owner.NativeImage=file.Native;owner.directory=walk;
+     owner.ApplicationImage=Application(file.Handle,file.Native);
      owner.image=new FileStream(file.Handle,FileAccess.Read,8192,false);
      using(var sha=SHA256.Create()) owner.Hash=BitConverter.ToString(sha.ComputeHash(owner.image)).Replace("-","").ToLowerInvariant();
      if(owner.Hash!=expectedHash) throw new IOException("Held executable hash changed before launch.");
@@ -218,6 +249,9 @@ namespace Skager {
     if(!Same(current,pin.Identity) || (current.Attributes&Reparse)!=0 || ((current.Attributes&Directory)!=0)!=pin.IsDirectory || !EqualNative(Native(pin.Handle),pin.Native) ||
        (!pin.IsDirectory && (current.Links!=1 || current.SizeHigh!=pin.Identity.SizeHigh || current.SizeLow!=pin.Identity.SizeLow))) throw new IOException("Held executable ancestry changed.");
    }
+   // The selected DOS root must still be the same held physical NTFS root.
+   ValidateApplication(ApplicationImage.Substring(0,3),pins[0]);
+   ValidateApplication(ApplicationImage,pins[pins.Count-1]);
   }
   public Process Start(ProcessStartInfo start) {
    if(CreationAttempted || disposed) throw new InvalidOperationException("Image owner is one-use.");
@@ -239,7 +273,7 @@ namespace Skager {
     // Refusal state is armed BEFORE the native call. An exception is never
     // treated as evidence that no child existed or as permission to rollback.
     CreationAttempted=true;
-    if(!CreateProcessW(Physical(NativeImage),command,IntPtr.Zero,IntPtr.Zero,false,0x404u|(start.CreateNoWindow?0x08000000u:0u),environment,Physical(directory),ref info,out result)) throw Failure("Suspended image creation");
+    if(!CreateProcessW(ApplicationImage,command,IntPtr.Zero,IntPtr.Zero,false,0x404u|(start.CreateNoWindow?0x08000000u:0u),environment,Physical(directory),ref info,out result)) throw Failure("Suspended image creation");
     child=result.Process;thread=result.Thread;ProcessId=checked((int)result.Pid);CreationFileTime=Created(child);
     Validate();
     if(!EqualNative(NativeProcess(child),NativeImage) || WaitForSingleObject(child,0)!=258) throw new IOException("Suspended child does not match held image.");

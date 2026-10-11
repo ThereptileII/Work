@@ -17,6 +17,27 @@ $source=@($ast.FindAll({param($node) $node -is [Management.Automation.Language.S
 Check ($source.Count -eq 1) 'One exact embedded native source selected'
 if(-not ('Skager.UpdateStartupPipe' -as [type])) { Add-Type -TypeDefinition $source[0].Value }
 Check ($null -ne ('Skager.UpdateImageOwner' -as [type])) 'Exact embedded owner compiles without invoking Win32'
+# Exercise the exact pure name parser without calling a native API on Linux.
+$parseApplication=[Skager.UpdateImageOwner].GetMethod('ParseApplication',[Reflection.BindingFlags]'NonPublic,Static')
+function ParseApplication([string]$FinalName,[string]$NativeName) { $parseApplication.Invoke($null,@($FinalName,$NativeName)) }
+$nativeFixture='\Device\HarddiskVolume12\held tree\app\opencpn.exe'
+Check ((ParseApplication '\\?\C:\held tree\app\opencpn.exe' $nativeFixture) -ceq 'C:\held tree\app\opencpn.exe') 'Held DOS parser strips exactly the extended prefix and preserves the physical suffix'
+Check ((ParseApplication '\\?\z:\held tree\app\opencpn.exe' $nativeFixture) -ceq 'z:\held tree\app\opencpn.exe') 'Held DOS parser accepts a conventional local drive spelling'
+foreach($name in @(
+ 'C:\held tree\app\opencpn.exe',
+ '\\?\UNC\server\held tree\app\opencpn.exe',
+ '\\?\Volume{12345678-1234-1234-1234-123456789abc}\held tree\app\opencpn.exe',
+ '\\?\GLOBALROOT\Device\HarddiskVolume12\held tree\app\opencpn.exe',
+ '\\?\C:held tree\app\opencpn.exe',
+ '\\?\C:\other tree\app\opencpn.exe',
+ '\\?\C:\Held tree\app\opencpn.exe'
+)) { Reject { ParseApplication $name $nativeFixture } 'Unsupported or physically mismatched application spelling refused' }
+foreach($tail in @('app\\opencpn.exe','app\.\opencpn.exe','app\..\opencpn.exe','app.\opencpn.exe','app \opencpn.exe','app\opencpn.exe:stream','app\open?pn.exe','app\open*pn.exe','app\open"pn.exe','app\open<pn.exe','app\open|pn.exe','app/open.exe','CON\opencpn.exe','app\LPT1.exe',('app\open'+[char]0+'pn.exe'))) {
+ # Matching suffixes deliberately bypass mismatch refusal to test unsafe components.
+ Reject { ParseApplication ('\\?\C:\'+$tail) ('\Device\HarddiskVolume12\'+$tail) } 'Ambiguous DOS application component refused'
+}
+Reject { ParseApplication '\\?\C:\app\opencpn.exe' '\Device\Mup\app\opencpn.exe' } 'Nonlocal native volume refused'
+Reject { ParseApplication '\\?\C:\' '\Device\HarddiskVolume12\' } 'Volume root cannot be selected as an executable'
 $r=New-UpdatePendingRecord (Identity 'a') (Identity 'b')
 $r.attempts=1;$r.session='c'*32;$r.nativeLaunchV1='armed'
 Assert-UpdatePendingRecord $r
@@ -102,6 +123,19 @@ try {
  MapAlias $a
  $aliased=$alias+'\app\opencpn.exe'
  $owner=[Skager.UpdateImageOwner]::Acquire($aliased,($alias+'\app'),$aHash);$owners.Add($owner)
+ Check ([string]::Equals($owner.ApplicationImage,$aExe,[StringComparison]::OrdinalIgnoreCase)) 'Application spelling derives from the held physical image rather than the original SUBST path'
+ # Simulate an unavailable or redirected selected name, without remapping a host
+ # volume drive. Validate must refuse before creation; selection is never retried.
+ $applicationProperty=[Skager.UpdateImageOwner].GetProperty('ApplicationImage')
+ foreach($selected in @($aliased,$bExe,(Join-Path $a 'app/missing.exe'))) {
+  $refusalOwner=[Skager.UpdateImageOwner]::Acquire($aExe,(Split-Path $aExe -Parent),$aHash);$owners.Add($refusalOwner)
+  $applicationProperty.SetValue($refusalOwner,$selected,$null)
+  Reject { $refusalOwner.Validate() } 'Selected application root/image/unavailable resolution refuses against actual held pins'
+  Reject { $refusalOwner.Start((StartInfo $aExe)) } 'Selected application refusal prevents native creation'
+  Check (-not $refusalOwner.CreationAttempted) 'Selected application refusal does not arm an unattempted creation'
+  Check ($refusalOwner.ApplicationImage -ceq $selected) 'Selected application refusal never substitutes or rederives a name'
+  $refusalOwner.Dispose()
+ }
  Reject { $stream=[IO.File]::OpenWrite($aExe);$stream.Dispose() } 'Retained image denies concurrent write access'
  Reject { [IO.Directory]::Move($a,($a+'-moved')) } 'Physical ancestor above SUBST root cannot be renamed while held'
  MapAlias $b

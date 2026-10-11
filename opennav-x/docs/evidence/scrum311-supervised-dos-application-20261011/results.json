@@ -1,0 +1,23 @@
+{
+  "issue": "SCRUM-311",
+  "baseCommit": "3d13f1e93f40099df20cc75edb8d77755b9a270a",
+  "checkedAtUtc": "2026-10-11T19:13:09.288478+00:00",
+  "check": "exact-source PowerShell/C# compilation, direct application-name parser, pending-record refusal policy",
+  "command": [
+    "/home/standard/Projects/X-nav/.local/pwsh/pwsh",
+    "-NoProfile",
+    "-File",
+    "opennav-x/tools/test-native-update-image-owner.ps1",
+    "-PolicyOnly"
+  ],
+  "host": "Linux",
+  "nativeWindows": false,
+  "nativeApisInvoked": false,
+  "exitCode": 0,
+  "passedChecks": 37,
+  "sourceSha256": {
+    "opennav-x/installer/windows/UpdateTransaction.ps1": "335e6d4e04075fbf9475b70d08e71013ab0be9c10841e2a22dcb834a5014dd29",
+    "opennav-x/tools/test-native-update-image-owner.ps1": "b83ff71f1f80e60b3bd78451706075ce17c3782b6ebf2dedf176113ae11c76b3"
+  },
+  "nativeExecution": "pending coordinator combined native Windows run; this receipt does not qualify Windows launch/alias/health/cleanup"
+}
