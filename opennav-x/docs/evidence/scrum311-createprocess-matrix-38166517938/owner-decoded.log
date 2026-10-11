@@ -1,0 +1,23 @@
+PASS: Production transaction source parses
+PASS: One exact embedded native source selected
+PASS: Exact embedded owner compiles without invoking Win32
+PASS: Durable armed launch refuses automatic recovery
+PASS: Historical attempted record remains readable but cannot authorize native cleanup
+PASS: Running record without PID explicitly refused
+PASS: Malformed native creation identity refused
+PASS: Malformed native creation identity refused
+PASS: Malformed native creation identity refused
+PASS: Malformed native creation identity refused
+PASS: Malformed native creation identity refused
+PASS: Disposable multi-link image created
+PASS: Actual acquired multi-link image refused
+PASS: Replacement marker has genuinely different bytes
+PASS: Retained image denies concurrent write access
+PASS: Physical ancestor above SUBST root cannot be renamed while held
+D:\a\Work\Work\opennav-x\tools\test-native-update-image-owner.ps1 : Exception calling "Start" with "1" argument(s):
+"Suspended image creation refused (Win32 87)."
+At D:\a\_temp\8fdf6551-1069-48cf-b51d-cada123d9102.ps1:7 char:3
++   & ./opennav-x/tools/test-native-update-image-owner.ps1 *>&1 | Tee-O ...
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:) [test-native-update-image-owner.ps1], MethodInvocationException
+    + FullyQualifiedErrorId : IOException,test-native-update-image-owner.ps1
