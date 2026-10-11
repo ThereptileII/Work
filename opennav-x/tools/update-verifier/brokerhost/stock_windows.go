@@ -119,7 +119,9 @@ func openStock(name string, directory bool) (windows.Handle, error) {
 	access, share := uint32(windows.GENERIC_READ), uint32(windows.FILE_SHARE_READ)
 	flags := uint32(windows.FILE_FLAG_OPEN_REPARSE_POINT)
 	if directory {
-		access = windows.FILE_READ_ATTRIBUTES
+		// Metadata-only opens do not participate in delete sharing checks.
+		// Directory list access makes this no-delete-share handle a rename pin.
+		access = windows.FILE_LIST_DIRECTORY | windows.FILE_READ_ATTRIBUTES
 		share |= windows.FILE_SHARE_WRITE
 		flags |= windows.FILE_FLAG_BACKUP_SEMANTICS
 	}
