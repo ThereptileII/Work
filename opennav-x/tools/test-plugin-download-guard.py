@@ -116,8 +116,8 @@ def probe(binary, work, name, url, ca, expected_ok):
     before = snapshot(root)
     env = dict(os.environ)
     env.pop("OPENNAV_DOWNLOADER_TEST_CA_FILE", None)
-    for name in ("http_proxy", "https_proxy", "all_proxy", "HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY"):
-        env.pop(name, None)
+    for env_key in ("http_proxy", "https_proxy", "all_proxy", "HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY"):
+        env.pop(env_key, None)
     env["NO_PROXY"] = env["no_proxy"] = "localhost,127.0.0.1"
     if ca is not None:
         env["OPENNAV_DOWNLOADER_TEST_CA_FILE"] = str(ca)
@@ -221,8 +221,11 @@ def run_cases(binary, output, ca, certificates, result, mutant=None):
         result["cases"] = []
         for name, url, ok in cases:
             result["cases"].append(probe(binary, output, name, url, ca, ok))
-        result["cases"].append(probe(binary, output, "missing_trust", good + "/valid",
-                                     output / "missing-ca.pem", False))
+        if ca is not None:
+            # Native Windows uses the real system-store branch. Its runner
+            # removes the owned root and proves trust_removed independently.
+            result["cases"].append(probe(binary, output, "missing_trust", good + "/valid",
+                                         output / "missing-ca.pem", False))
         # An actually reachable plain HTTP service proves refusal, rather than
         # treating a failed connection to a dead redirect target as success.
         if (output / "http.requests").read_text().splitlines() != ["/control"]:

@@ -69,11 +69,10 @@ no `OPENNAV_DOWNLOADER_TLS_TEST` definition or Linux wx shim. The production
 Windows native-CA branch and corrected `TrustProbeConsole` lifetime apply.
 
 Native compilation and execution have **not** run for this probe revision. A
-Windows runner must bind matching SDK/runtime bytes to the selected candidate,
-provision and remove owned test roots in its disposable trust store, and execute
-positive install and negative certificate/partial-transfer assertions. The older
-separate package orchestration was not copied because its assumptions need fresh
-candidate verification. Preparing a CMake target is not native acceptance.
+Windows runner must execute the orchestration below with authenticated matching
+SDK/runtime inputs and retain positive/negative and owned-root cleanup evidence.
+Preparing the target or passing portable orchestration tests is not native
+acceptance.
 
 ## Recorded result
 
@@ -85,3 +84,133 @@ non-MSVC/non-Win32 configure. The initial attempt's local socket permission
 failure is retained beside the successful results; no TLS assertion ran in that
 failed attempt. Native execution, installed routing/loading, installer/recovery,
 source compliance and exact release acceptance remain open in Jira.
+
+## Reviewed native orchestration entry point
+
+`tools/test-plugin-download-guard-windows.py` now orchestrates the narrow target.
+It is deliberately not wired into CI. It refuses execution except on a disposable
+GitHub-hosted Windows runner for `ThereptileII/Work`. This is a source-slice probe,
+not an installed application, plugin loader, release or boat acceptance test.
+
+The caller supplies two independent authorities:
+
+* `--dependency-bundle` and `--dependency-bundle-provenance`: the existing
+  authenticated maintained OpenSSL/zlib/curl bundle and its external provenance.
+  Restore it at its required workspace paths first. The runner verifies it and
+  repeats the native toolchain reprobes without rebuilding the product.
+* `--retained-root`, `--retained-inputs`, `--retained-inputs-sha256`, and
+  `--candidate-commit`: candidate SDK/runtime bytes plus a closed JSON inventory.
+  The SHA-256 pin must come from independent review of the candidate evidence,
+  not from a hash supplied by the same downloaded artifact. Producing or
+  authenticating that external candidate pin is a prerequisite, not something
+  this runner manufactures. It additionally compares curl SDK and maintained
+  TLS runtime bytes with the authenticated dependency producer.
+
+The retained inventory has exactly these top-level fields:
+
+```json
+{
+  "schema": 1,
+  "candidateCommit": "<exact 40-character candidate commit>",
+  "inputs": {
+    "curlInclude": "sdk/curl/include",
+    "curlImport": "sdk/curl/lib/libcurl.lib",
+    "archiveInclude": "sdk/archive/include",
+    "archiveImport": "sdk/archive/lib/archive.lib",
+    "wxRoot": "sdk/wx",
+    "wxLib": "sdk/wx/lib/vc14x_dll"
+  },
+  "runtime": {
+    "libcurl.dll": "runtime/libcurl.dll",
+    "archive.dll": "runtime/archive.dll",
+    "libssl-3.dll": "runtime/libssl-3.dll",
+    "libcrypto-3.dll": "runtime/libcrypto-3.dll",
+    "zlib1.dll": "runtime/zlib1.dll",
+    "wxbase32u_vc14x.dll": "runtime/wxbase32u_vc14x.dll",
+    "wxmsw32u_core_vc14x.dll": "runtime/wxmsw32u_core_vc14x.dll",
+    "msvcp140.dll": "runtime/msvcp140.dll",
+    "vcruntime140.dll": "runtime/vcruntime140.dll"
+  },
+  "files": {
+    "<each file below selected input directories, imports and runtime paths>": {
+      "bytes": 123,
+      "sha256": "<64 lowercase hexadecimal characters>"
+    }
+  }
+}
+```
+
+Additional required runtime DLLs belong in `runtime` and `files`; the example is
+not a claim that nine DLLs close every candidate. All paths are root-relative
+forward-slash paths. Missing, extra, changed, case-aliased, linked or reparse
+inputs fail verification. The runner copies only verified inputs into its owned
+workspace, verifies the copy, checks actual generated source/import settings,
+requires MSVC x86 `/MD`, audits native DLL dependencies, and records tool,
+executable and runtime hashes. It checks the inputs and runtime again afterward.
+
+For example, in that authorized disposable Windows job:
+
+```powershell
+python tools/test-plugin-download-guard-windows.py `
+  --dependency-bundle <authenticated-bundle> `
+  --dependency-bundle-provenance <external-provenance> `
+  --retained-root <candidate-sdk-and-runtime-root> `
+  --retained-inputs <reviewed-inventory.json> `
+  --retained-inputs-sha256 <independently-reviewed-inventory-hash> `
+  --candidate-commit <exact-candidate-sha> `
+  --upstream <pinned-OpenCPN-git-checkout> `
+  --patch-program <patch-executable> `
+  --output <new-evidence-directory>
+```
+
+The generated CA is unique to the owned temporary directory. The trust helper
+refuses an already present certificate, atomically records the previously absent
+certificate identity and run before import, and removes only that exact owned
+identity. Import/removal are bounded; final cleanup retries after partial failure.
+The public root and ownership receipt are retained, private keys are deleted,
+and a cleanup failure fails the run. No test trust override is compiled into the
+native executable. Probe children use only their verified runtime plus System32
+on PATH, with proxy and CA environment overrides removed.
+
+The native matrix has the same twelve shared positive/negative cases and the
+failed-download guard-bypass mutant. The thirteenth case removes the owned
+system root and proves the previously valid endpoint now fails before any HTTP
+request or archive allocation. It replaces Linux's missing injected-CA case,
+which is not applicable to the real Windows native-store branch. All other
+failure assertions remain unchanged. Logs, exact prepared source, generated
+projects, import lists, external input inventory and results are retained.
+
+Portable contract tests run with
+`python3 tools/test-plugin-download-guard-windows-tests.py`. They validate the
+orchestration's input boundaries and shared receipt behavior; they do not execute
+Windows trust operations or establish native acceptance. Native compile/runtime,
+owned-root cleanup under real Windows faults, matching candidate SDK provenance,
+installed routing/loading, installer/recovery and release qualification remain
+required before SCRUM-211 can be accepted.
+
+To restore an already authenticated downloaded bundle at its original Windows
+workspace location (after the trusted CI downloader has checked GitHub run/job
+success and artifact ID/digest, and written its provenance outside the artifact):
+
+```powershell
+python tools/windows_dependency_bundle.py restore --root <product-root> `
+  --bundle <unpacked-bundle-directory> --provenance <external-provenance.json>
+```
+
+The verifier deliberately rejects different runner/Python identities, workspace
+relocation, source/recipe fingerprints and toolchain drift. A refusal requires
+fresh compatible producer evidence; do not create a replacement provenance file
+from the artifact's own assertions. No maintained producer job is run by this
+new helper.
+
+To prepare the separate candidate inventory, identify the exact candidate run
+and artifact through GitHub's API, verify its digest, and retain that evidence
+outside the artifact. Obtain the matching curl, libarchive and wx SDKs from the
+candidate's reviewed build inputs (a runtime-only archive is insufficient).
+Populate the six `inputs` paths and every required `runtime` DLL mapping above.
+Use `windows_dependency_receipt._inventory` on those selected directory/file
+roots to populate `files`, preserving bytes and SHA-256 for every selected file.
+Review that inventory against the candidate build/SDK provenance, ABI and runtime
+artifact; only then pin `(Get-FileHash <inventory.json> -Algorithm SHA256).Hash`
+in the trusted invocation. This is an explicit review prerequisite: neither a
+self-authored inventory nor this helper can prove wx/libarchive provenance alone.

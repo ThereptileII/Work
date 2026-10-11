@@ -21,7 +21,7 @@ def run(args, **kwargs):
 
 
 def openssl(*args):
-    run(["openssl", *args], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    run(["openssl", *args], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=60)
 
 
 def make_ca(directory, name):
@@ -30,6 +30,11 @@ def make_ca(directory, name):
     openssl("req", "-x509", "-newkey", "rsa:2048", "-nodes", "-days", "2",
             "-subj", f"/CN={name}", "-keyout", str(key), "-out", str(cert))
     return key, cert
+
+
+def config_path(path):
+    """OpenSSL config syntax uses slashes and expands unescaped dollar signs."""
+    return '"' + path.as_posix().replace('$', '\\$').replace('"', '\\"') + '"'
 
 
 def make_leaf(directory, name, ca_key, ca_cert, dns_name, expired=False):
@@ -55,11 +60,11 @@ def make_leaf(directory, name, ca_key, ca_cert, dns_name, expired=False):
 [ca]
 default_ca=local
 [local]
-database={database}
-serial={directory / 'serial'}
-new_certs_dir={directory / 'newcerts'}
-certificate={ca_cert}
-private_key={ca_key}
+database={config_path(database)}
+serial={config_path(directory / 'serial')}
+new_certs_dir={config_path(directory / 'newcerts')}
+certificate={config_path(ca_cert)}
+private_key={config_path(ca_key)}
 default_md=sha256
 policy=policy
 x509_extensions=server

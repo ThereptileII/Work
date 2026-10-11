@@ -1,0 +1,8 @@
+RED confirmed: restoring prior proxy-loop overwrite fails the case receipt assertion.
+Traceback (most recent call last):
+  File "/home/standard/Projects/X-nav-worktrees/scrum211-native-plugin-guard/tools/test-plugin-download-guard-windows-tests.py", line 163, in test_case_name_and_negative_receipt
+    self.assertEqual(observed['case'], 'wrong_host')
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'ALL_PROXY' != 'wrong_host'
+- ALL_PROXY
++ wrong_host
