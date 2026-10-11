@@ -36,7 +36,7 @@ function Read-PinnedCommissioningRecord([string]$Path,[string]$Hash,[string]$Own
 }
 function Assert-RecordDirectory([string]$Path) {
   $path=Assert-LocalPath $Path
-  if (-not $path.StartsWith((Join-Path $context.workspace 'runs')+'\',[StringComparison]::OrdinalIgnoreCase)) { throw 'Private record must be below this workspace runs directory.' }
+  if (-not $path.StartsWith((Join-Path $context.workspace 'runs')+[IO.Path]::DirectorySeparatorChar,[StringComparison]::OrdinalIgnoreCase)) { throw 'Private record must be below this workspace runs directory.' }
   return [IO.Path]::GetDirectoryName($path)
 }
 function Save-CommissioningBytes([string]$Path,[byte[]]$Bytes) {
@@ -124,7 +124,7 @@ if ((Get-Digest $original) -cne $baselineInfo.sha256 -or (Get-Digest $inputProfi
     (Get-CommissioningHash (Get-CommissioningInputBytes ([IO.File]::ReadAllBytes($original)))) -cne $prepared.inputSha256) { throw 'Prepared exact-byte profile copies changed.' }
 foreach ($item in @($prepared.evidence)) { if ((Get-Digest $item.path) -cne $item.sha256) { throw 'Saved source review evidence changed.' } }
 foreach ($item in @($prepared.quarantine)) {
-  if (-not $item.destination.StartsWith((Join-Path $directory 'quarantine')+'\',[StringComparison]::OrdinalIgnoreCase) -or
+  if (-not $item.destination.StartsWith((Join-Path $directory 'quarantine')+[IO.Path]::DirectorySeparatorChar,[StringComparison]::OrdinalIgnoreCase) -or
       [IO.Path]::GetFileName($item.path) -notlike '*_pi.dll' -or (Get-Digest $item.backup) -cne $item.sha256) { throw 'Quarantine ownership or saved original changed.' }
 }
 $plannedMoves=@($planData.plugins | Where-Object {$_.decision -ceq 'quarantine'})
