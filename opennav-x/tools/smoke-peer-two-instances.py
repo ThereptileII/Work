@@ -272,6 +272,11 @@ def finalize_evidence(processes, xserver, outputs, evidence, report):
                     path.is_file() and path.read_bytes() == expected)
             attempt(f'profile-{index}-{name}', inspect)
     for source, destination in outputs:
+        # OpenCPN may exit before opening its optional application log. The
+        # launched child streams are mandatory; a log that was never written
+        # has no bytes to retain or redact.
+        if source.name == 'opencpn.log' and not source.exists():
+            continue
         attempt(destination.name, lambda: destination.write_bytes(redact(source.read_bytes())))
     if failures:
         report['result'] = 'FAILED'

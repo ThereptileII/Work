@@ -314,6 +314,20 @@ class PeerTwoContracts(unittest.TestCase):
             self.assertIn('[REDACTED]', retained['error'])
             self.assertEqual(destination.read_bytes(), b'ordinary output')
 
+    def test_absent_optional_application_log_does_not_fail_finalization(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source = root / 'stdout'; source.write_bytes(b'ordinary output')
+            report = {'result': 'PASS', 'profiles': []}
+            errors = peer.finalize_evidence([], None, [
+                (source, root / 'stdout-retained'),
+                (root / 'opencpn.log', root / 'opencpn-retained'),
+            ], root, report)
+            self.assertEqual(errors, [])
+            self.assertEqual((root / 'stdout-retained').read_bytes(), b'ordinary output')
+            self.assertFalse((root / 'opencpn-retained').exists())
+            self.assertEqual(json.loads((root / 'peer-two-instances-results.json').read_text())['result'], 'PASS')
+
     def test_malformed_startup_evidence_is_not_retried_as_a_race(self):
         with tempfile.TemporaryDirectory() as temporary:
             profile = Path(temporary)
