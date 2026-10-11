@@ -22,6 +22,9 @@ class ClassificationTests(unittest.TestCase):
                      'installer/windows/Lifecycle.ps1', 'docs/beta2/Release.md',
                      'docs/third-party/curl/COPYING', 'LICENSE', 'CMakeLists.txt',
                      'tools/source_package.py', 'tools/package-preview.py',
+                     'tools/component_license_inventory.py',
+                     'tools/font_inventory.py', 'tools/msvc_runtime_receipt.py',
+                     'tools/packaged_notice_gate.py',
                      'tools/chart_building_point.py', 'tests/support/VesselFixture.cpp',
                      'tests/vessel_state_tests.cpp', 'tests/installer_welcome_tests.py'):
             with self.subTest(path=path):
@@ -45,6 +48,9 @@ class ClassificationTests(unittest.TestCase):
                      'tools/test-staging-build-inputs.py',
                      'tools/secret_scanning.py', 'tools/secret-scanner.toml',
                      'tools/secret-scanner.lock.json',
+                     'tools/smoke_startup.py',
+                     'tools/test_component_license_inventory.py',
+                     'tools/test_packaged_notice_gate.py',
                      'tools/test-windows-dependency-bundle.py',
                      '.github/workflows/opennav-baseline.yml',
                      'tools/boat/RestartWindowReview.ps1', 'tools/boat/build.ps1',

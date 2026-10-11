@@ -36,6 +36,8 @@ windows_dependency_bundle.py build-windows-dependency-bundle.ps1
 '''.split())
 PRODUCT_TOOLS = frozenset('''
 source_package.py hardware_output_policy.py release_manifest.py updater_package.py
+component_license_inventory.py font_inventory.py msvc_runtime_receipt.py
+packaged_notice_gate.py
 arch-gcc-compat.cmake local-env.sh wx-config-local
 verify-distribution-inputs.py verify-preview-pe.py verify-skager-brand.py
 verify-skager-pe-brand.py verify-ocharts-adapter-package.py
@@ -43,6 +45,7 @@ verify-skager-pe-brand.py verify-ocharts-adapter-package.py
 HELPER_TOOLS = frozenset('''
 ci_changes.py staging_build_inputs.py github_release_delivery.py production-qualification.py
 secret_scanning.py secret-scanner.lock.json secret-scanner.toml
+smoke_startup.py test_component_license_inventory.py test_packaged_notice_gate.py
 fetch_ci_inputs.py qualify-staging-windows.ps1 retest-staging-windows.py
 staging_composition.py staging-composition-request.json staging-installer-retest.json
 staging-publication-request.json
