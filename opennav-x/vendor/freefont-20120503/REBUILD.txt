@@ -1,0 +1,33 @@
+FreeSans font source and conversion inputs (recorded 2026-10-11)
+
+Original editable source, unchanged:
+https://ftp.gnu.org/gnu/freefont/freefont-src-20120503.tar.gz
+SHA256 0d62e2e22655f841c3ac5fb8c8059a52fe2c09c695d9e8eda9903406e942657a
+The archive contains sfd/FreeSans.sfd (revision 2268), Makefiles, generation
+scripts, COPYING, README, AUTHORS and CREDITS. FontForge is the editing tool.
+Read BUILDING/INSTALL and sfd/Makefile inside the archive. The upstream root
+`make otf` target runs the supplied FontForge OpenType generation script.
+This SFD-to-OTF stage has NOT been independently rebuilt or claimed bit-exact.
+
+Included FreeSans.otf is the unmodified member freefont-20120503/FreeSans.otf
+from https://ftp.gnu.org/gnu/freefont/freefont-otf-20120503.tar.gz
+Archive SHA256 3a6c51868c71b006c33c4bcde63d90927e6fcca8f51c965b8ad62d021614a860
+Member SHA256 d3e9138ccf76ef516cc6af867e4e7ed8776331947235824f924c5886186b0c80
+
+Unchanged converter sources sfnconv/ttf2sfn.c and ssfn.h:
+https://gitlab.com/bztsrc/scalable-font/-/tree/79d2e48c32a09d514b1b90729f0f3c3978c72e75
+Copyright (C) 2019 bzt (bztsrc@gitlab), MIT; full notice in each source header.
+This is SSFN v1, not scalable-font2. No converter binary is supplied.
+
+From this directory on Linux with GCC and FreeType development headers:
+gcc -Wall -Wextra -ansi -pedantic -I/usr/include/freetype2 -o ttf2sfn sfnconv/ttf2sfn.c -lfreetype
+./ttf2sfn -6 -s FreeSans.otf reproduced.sfn
+sha256sum reproduced.sfn
+Expected: 4b34341dbfd211b646807bda719e81f2ab2938bcb31f9eaf9c3f26b371566a46
+Expected length: 372928 bytes.
+
+Verified using GCC 16.2.1 and FreeType 2.14.3-1. This reproduces the packaged
+OpenCPN FreeSans.sfn bytes from the included original OTF. It is a working
+reproduction, not a claim about the original historical conversion environment.
+Packaging uses these checked-in inputs offline and does not rebuild the font.
+The complete font-source/distribution legal review remains pending.

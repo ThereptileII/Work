@@ -17,6 +17,7 @@ from unittest import mock
 import zipfile
 
 import source_package
+import font_payload_test_fixture
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -70,6 +71,7 @@ class CurlPatchSourcePackageTests(unittest.TestCase):
             "opencpn-5.12.4-pilot-serial.patch",
         ):
             self._write(self.product / "patches" / name, b"fixture patch bytes\n")
+        font_payload_test_fixture.install(self, lambda name, data: self._write(self.product / name, data))
         self._git(self.checkout, "add", ".")
         self._git(self.checkout, "commit", "-qm", "source package fixture")
         self.commit = self._git(self.checkout, "rev-parse", "HEAD").strip()

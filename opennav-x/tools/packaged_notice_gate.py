@@ -11,6 +11,7 @@ import re
 import stat
 from urllib.parse import urlsplit
 import zipfile
+import freefont_payload
 
 PREFIX = 'SKAGER-Beta2-Portable-Recovery/'
 UPSTREAM = '37fd0cddb7334fe489e9f18aa163977a9c5c84f7'
@@ -125,11 +126,11 @@ def validate_archives(portable_zip, source_zip, commit):
     files = path_map(reference.get('files'))
     hashes = path_map(object_json(portable.read(PREFIX + 'FILE_SHA256.json', MAX_METADATA)))
 
-    def source_bytes(name):
+    def source_bytes(name, limit=MAX_NOTICE):
         record = files.get(name)
         require(isinstance(record, dict) and record.get('gitMode') in ('100644', '100755'),
                 'Missing/nonregular notice source reference: ' + name)
-        data = source.read(name)
+        data = source.read(name, limit)
         require(record.get('sha256') == digest(data), 'Notice source digest differs: ' + name)
         return data
 
@@ -221,6 +222,11 @@ def validate_archives(portable_zip, source_zip, commit):
                 record.get('sha256') == bundle['sha256'] and
                 source.entry(name, MAX_BUNDLE).file_size == bundle['bytes'] and
                 source.hash(name, MAX_BUNDLE) == bundle['sha256'], 'Dependency source bytes differ: ' + library)
+
+    freefont_payload.verify_sources(lambda name: source_bytes('opennav-x/' + name, MAX_BUNDLE))
+    for name in freefont_payload.NOTICE_FILES:
+        compare(freefont_payload.PACKAGE_ROOT + name.removeprefix(freefont_payload.NOTICE_ROOT),
+                'opennav-x/' + name)
 
     packaged_notices = {name[len(PREFIX):] for name, entry in portable.files.items()
                         if name.startswith(PREFIX + 'docs/licenses/') and not entry.is_dir()}

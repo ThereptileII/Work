@@ -7,6 +7,7 @@ import re
 import stat
 import subprocess
 import zipfile
+import freefont_payload
 
 PINNED_UPSTREAM = '37fd0cddb7334fe489e9f18aa163977a9c5c84f7'
 
@@ -105,6 +106,12 @@ def create_source_archive(root, commit, archive, bundled_sources=()):
     if archive.exists():
         raise ValueError('Refusing to overwrite a corresponding-source archive')
     entries, references = source_inventory(root, commit)
+    def font_source(name):
+        data, mode = entries['opennav-x/' + name]
+        if mode != '100644':
+            raise ValueError('GNU FreeFont source/notice must be a regular file: ' + name)
+        return data
+    freefont_payload.verify_sources(font_source)
     dependency_sources = []
     for item in bundled_sources:
         source = Path(item['archive'])

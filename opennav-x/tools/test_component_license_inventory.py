@@ -8,6 +8,7 @@ import unittest
 from unittest.mock import patch
 
 import font_inventory as fonts
+import font_payload_test_fixture
 import zipfile
 
 from component_license_inventory import (DEPENDENCIES, INVENTORY, NOTICES, digest,
@@ -82,6 +83,7 @@ set(s57data data/s57data/chartsymbols.xml)
 install(FILES ${ssfnData} DESTINATION ${PREFIX_PKGDATA}/ssfndata)
 install(FILES ${s57data} DESTINATION ${PREFIX_PKGDATA}/s57data)
 ''')
+        font_payload_test_fixture.install(self, lambda name, data: self.add_source('opennav-x/' + name, data), self.put)
         self.save_archive()
 
     def put(self, name, data):
@@ -105,6 +107,18 @@ install(FILES ${s57data} DESTINATION ${PREFIX_PKGDATA}/s57data)
 
     def generate(self):
         return generate_inventory(self.package, self.archive, COMMIT, self.manifests)
+
+    def test_font_source_substitution_despite_rehashed_reference(self):
+        import freefont_payload
+        for relative in freefont_payload.SOURCE_FILES:
+            name = 'opennav-x/' + relative
+            original = self.entries[name]
+            with self.subTest(name=name):
+                self.add_source(name, b'substituted source')
+                self.save_archive()
+                with self.assertRaisesRegex(ValueError, 'Pinned GNU FreeFont'):
+                    self.generate()
+                self.add_source(name, original)
 
     def test_deterministic_and_unresolved_coverage(self):
         inventory = write_inventory(self.package, self.archive, COMMIT, self.manifests)

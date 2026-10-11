@@ -12,6 +12,7 @@ import zipfile
 
 from source_package import PINNED_UPSTREAM
 import font_inventory as fonts
+import freefont_payload
 
 INVENTORY = 'docs/COMPONENT_LICENSE_INVENTORY.json'
 NOTICES = 'docs/THIRD_PARTY_NOTICES.md'
@@ -217,14 +218,21 @@ def generate_inventory(package, source_archive, commit, verified_manifests):
         assign(fonts.FREESANS_PACKAGE, 'FreeSans-SSFN')
         if files[fonts.FREESANS_PACKAGE]['sha256'] != fonts.FREESANS_SHA256:
             raise ValueError('Packaged FreeSans font differs from pinned source')
+        freefont_payload.verify_sources(lambda name: source_bytes('opennav-x/' + name))
+        font_notices = [notice(freefont_payload.PACKAGE_ROOT + name.removeprefix(freefont_payload.NOTICE_ROOT),
+                               'opennav-x/' + name, 'FreeSans-SSFN')
+                        for name in freefont_payload.NOTICE_FILES]
         components.append({
             'id': 'FreeSans-SSFN', 'evidenceStatus': 'source-file-matched-license-unresolved',
             'licenseStatus': 'unresolved',
             'source': {'path': fonts.FREESANS_SOURCE, 'sha256': fonts.FREESANS_SHA256,
                        'upstreamCommit': PINNED_UPSTREAM},
-            'runtimeFiles': [fonts.FREESANS_PACKAGE], 'notices': [],
+            'runtimeFiles': [fonts.FREESANS_PACKAGE], 'notices': font_notices,
+            'originLicense': 'GPL-3.0-or-later',
+            'sourceInputs': [{'path': 'opennav-x/' + name, 'sha256': sha}
+                             for name, sha in freefont_payload.SOURCE_FILES.items()],
             'limitations': [
-                'Font-specific license notice and original-source/conversion provenance remain unresolved.',
+                'GNU notices, editable-source archive and proven OTF-to-SSFN recipe are included; SFD-to-OTF reproducibility, optional exception and distribution/aggregation review remain unresolved.',
                 'The SSFN renderer license does not establish the font data license.',
             ],
         })

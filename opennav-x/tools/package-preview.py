@@ -216,6 +216,7 @@ for license_file in source.rglob('*'):
         target = destination / 'docs/licenses/OpenCPN' / relative
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(license_file, target)
+shutil.copytree(ROOT / 'docs/third-party/GNU-FreeFont-20120503', destination / 'docs/licenses/GNU-FreeFont-20120503')
 shutil.copytree(ROOT / 'docs/third-party/wxWidgets-3.2.8', destination / 'docs/licenses/wxWidgets-3.2.8')
 shutil.copytree(ROOT / 'docs/third-party/OpenSSL-3.5.9', destination / 'docs/licenses/OpenSSL-3.5.9')
 for library in ('curl-8.22.0', 'zlib-1.3.2'):
@@ -237,6 +238,12 @@ source artifact. Licensed charts and closed helpers are not distributed.
 The updater's exact source, Go standard-library source and dependency notices
 are in `app/opennav/third-party/updater/updater-source.zip` and the standalone
 source artifact. `build.json` binds that archive and launcher to this commit.
+The GNU FreeSans font notice is in `licenses/GNU-FreeFont-20120503/`. Its
+editable GNU source archive, original OTF and SSFN conversion source/recipe
+are included under `opennav-x/vendor/freefont-20120503/` in the source ZIP.
+SFD-to-OTF reproducibility and final distribution/compatibility review remain
+pending; this does not assert full font clearance.
+
 See `licenses/`
 for bundled OpenCPN/library notices and the installed application's license files.
 

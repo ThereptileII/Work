@@ -97,10 +97,21 @@ install list fail instead of inheriting old evidence.
 The generated JSON includes `fontEvidence`, the hashed install recipe, source-only
 Helvetica identity, and detected packaged font candidates. FreeSans remains in
 `unresolvedFiles` with category `font` even though its source is now identified.
-The generated third-party notice index still retains its unresolved license
-and conversion limitation. The new evidence in this document has not yet been
-integrated into that generated inventory or release notices. No license
-expression is assigned to this font by the current inventory.
+The generated third-party notice index preserves the unresolved final license
+review. It now lists the five GNU-specific notices copied to
+`docs/licenses/GNU-FreeFont-20120503/`, and the component records
+`originLicense: GPL-3.0-or-later` separately from its unresolved derivative
+license status. This origin field does not assert application compatibility or
+continuation of the optional embedding exception.
+
+`vendor/freefont-20120503/` contains the exact GNU editable-source archive,
+original OTF, unchanged SSFN v1 converter/header (including their MIT notices),
+and `REBUILD.txt`. The source producer includes these tracked inputs in the
+corresponding-source ZIP. `tools/freefont_payload.py` pins every byte digest;
+the source producer, component inventory and final offline notice gate require
+them. Missing or substituted source/notice inputs fail, including substitutions
+whose surrounding package/source manifests have been rehashed. Packaging adds
+no network access and performs no font conversion.
 
 SSFN/TXF and common outline/webfont magic bytes are recognized even under another
 filename. Additional font extensions are candidates, explicitly marked
@@ -132,8 +143,8 @@ not retain the OTF's full license/exception entry. Neither the matched SSFN
 example nor its README establishes an explicit continuation of the optional
 embedding exception for that converted artifact. Consequently this evidence
 supports GNU FreeFont provenance and the GPL-3.0-or-later origin, while a
-font-specific notice and license-expression decision for the shipped derivative
-remain pending. The SSFN project's MIT license covers its software; it does not
+font-specific notice is now supplied while the final license-expression decision
+for the shipped derivative remains pending. The SSFN project's MIT license covers its software; it does not
 replace the GNU font's license.
 
 Release review must address GPLv3 notice/license preservation, identification
@@ -146,8 +157,9 @@ must not be asserted to complete the preferred-source obligation. Its
 `sfd/FreeSans.sfd` identifies revision 2268, and its Makefiles provide OTF
 generation. That SFD-to-OTF stage was inspected but not rebuilt in this review.
 The font
-source, OTF-generation inputs and conversion recipe need to be incorporated
-into the reviewed source-delivery solution, with the required notices.
+source, OTF-generation inputs, conversion recipe and GNU notices are now included
+in the offline source-delivery implementation. Exact native package verification
+and final source/distribution review remain pending.
 [GNU's FAQ](https://www.gnu.org/software/freefont/FAQ.html) also distinguishes
 incorporation from distribution as a separate bundled product. Application
 compatibility/aggregation and the final distribution's obligations still need
@@ -171,3 +183,13 @@ OpenCPN commits, the decompressed SSFN example, and the independent OTF-to-SSFN
 conversion; inspection of original OTF license metadata and GNU source archive;
 `git diff --check`. This documentation-only follow-up does not qualify a new
 package or close SCRUM-59.
+
+Offline payload implementation verification (2026-10-11): real vendored GNU
+archive/member and notice equality checks (2 tests); source packaging (13 tests);
+component inventory (20 tests); offline notice gate (22 tests). The existing release-manifest entry point also
+runs those checks and the real font inputs (61 tests passing total). The vendored
+OTF and converter reproduce SHA-256
+`4b34341dbfd211b646807bda719e81f2ab2938bcb31f9eaf9c3f26b371566a46`.
+No full application build, native package qualification, push or boat operation
+was performed. SFD-to-OTF rebuilding, Helvetica/system-font/asset provenance,
+MSVC runtime terms and final legal/aggregation review remain open.

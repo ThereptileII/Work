@@ -10,6 +10,7 @@ from unittest.mock import patch
 import zipfile
 
 import source_package
+import font_payload_test_fixture
 
 
 class SourceDistributionTests(unittest.TestCase):
@@ -36,6 +37,11 @@ class SourceDistributionTests(unittest.TestCase):
                      'opencpn-5.12.4-peer-unavailable.patch',
                      'opencpn-5.12.4-pilot-serial.patch'):
             (self.root / 'patches' / name).write_text('fixture patch\n')
+        def add_font(name, data):
+            path = self.root / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(data)
+        font_payload_test_fixture.install(self, add_font)
         self.init(self.repository)
         # A Git symlink need not be creatable on a restricted Windows runner.
         # Populate its index blob directly; the archiver must preserve link text.
@@ -66,6 +72,17 @@ class SourceDistributionTests(unittest.TestCase):
         self.git(path, 'config', 'user.name', 'Source Archive Test')
         self.git(path, 'config', 'user.email', 'fixture@example.invalid')
         self.git(path, 'add', '.')
+
+    def test_committed_font_source_substitution_refuses_archive(self):
+        import freefont_payload
+        name = next(iter(freefont_payload.SOURCE_FILES))
+        (self.root / name).write_bytes(b'substituted font notice')
+        self.git(self.repository, 'add', '.')
+        self.git(self.repository, 'commit', '-qm', 'bad font source fixture')
+        commit = self.git(self.repository, 'rev-parse', 'HEAD').strip()
+        with self.assertRaisesRegex(ValueError, 'Pinned GNU FreeFont'):
+            source_package.create_source_archive(self.root, commit, self.repository / 'bad.zip')
+        self.assertFalse((self.repository / 'bad.zip').exists())
 
     def test_monorepo_recipe_patch_hashes_and_symlink(self):
         # The application build deliberately modifies the pinned upstream tree.

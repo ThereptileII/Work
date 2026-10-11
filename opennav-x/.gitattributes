@@ -5,6 +5,9 @@
 # Canonical generated renders and separate specifications live outside source files.
 docs/design/prototype/** -text
 docs/third-party/** -text
+vendor/freefont-20120503/** -text
+# Retain upstream GNU attribution bytes, including their original trailing spaces.
+docs/third-party/GNU-FreeFont-20120503/** whitespace=-blank-at-eol
 
 # Exact published historical lifecycle fixture; its pinned SHA256 is checked
 # by native shortcut regression tests before loading its original functions.

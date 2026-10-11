@@ -1,0 +1,25 @@
+GNU FreeFont / FreeSans, 20120503; converted SSFN v1 font
+
+The packaged app/ssfndata/FreeSans.sfn derives from GNU FreeFont FreeSans.otf.
+Original copyright and contributor details are preserved in AUTHORS, CREDITS,
+and README. The font origin is licensed under GNU GPL version 3 or later;
+the complete GPLv3 text is supplied in COPYING. There is no warranty.
+
+Modification: conversion from the GNU 20120503 OpenType FreeSans to SSFN v1
+outlines at maximum quality, sans-serif family. These converted bytes first
+entered OpenCPN on 2024-07-05 (743870c2ab12a852cc9f23b6e60bd2bc7eb433a9).
+SKAGER carries those bytes unchanged. The reproduced conversion was verified
+on 2026-10-11; its original historical invocation is not known.
+
+README preserves GNU's original document-embedding exception. Its preservation
+here records the original terms, without asserting that the optional exception
+was extended to the converted font. The SSFN software MIT license is separate
+from the font data's GPL terms. Application aggregation/compatibility and final
+distribution obligations remain subject to review.
+
+The accompanying SKAGER-Beta2-source.zip contains, under
+opennav-x/vendor/freefont-20120503/, the unmodified GNU editable-source archive
+(including FontForge SFD, build scripts and notices), original FreeSans.otf,
+and unchanged SSFN v1 converter/header with their MIT copyright/license
+headers. REBUILD.txt describes their provenance and conversion. These files
+are provided alongside the binary; this notice is not a substitute source offer.

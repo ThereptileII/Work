@@ -11,6 +11,8 @@ import warnings
 import zipfile
 
 import packaged_notice_gate as gate
+import font_payload_test_fixture
+import freefont_payload
 
 ROOT = Path(__file__).resolve().parents[1]
 COMMIT = '1' * 40
@@ -40,6 +42,11 @@ def fixture_entries(commit=COMMIT):
         for name in (*names, 'provenance.json'):
             data = json.dumps(provenance).encode() if name == 'provenance.json' else (directory / name).read_bytes()
             add('docs/licenses/' + library + '/' + name, 'opennav-x/docs/third-party/' + library + '/' + name, data)
+    for name in freefont_payload.SOURCE_FILES:
+        data = (ROOT / name).read_bytes()
+        source['opennav-x/' + name] = data
+        if name in freefont_payload.NOTICE_FILES:
+            portable[freefont_payload.PACKAGE_ROOT + name.removeprefix(freefont_payload.NOTICE_ROOT)] = data
     portable['docs/SOURCE_AND_LICENSES.md'] = (
         'Full project source: https://github.com/ThereptileII/Work/tree/' + commit + '/opennav-x\n'
         'Pinned OpenCPN source: https://github.com/OpenCPN/OpenCPN/tree/' + gate.UPSTREAM + '\n').encode()
@@ -57,6 +64,11 @@ class NoticeTests(unittest.TestCase):
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
         self.portable, self.source, self.reference = fixture_entries()
+        def add_source(name, data):
+            name = 'opennav-x/' + name
+            self.source[name] = data
+            self.reference['files'][name] = dict(sha256=gate.digest(data), gitMode='100644')
+        font_payload_test_fixture.install(self, add_source, self.portable.__setitem__)
         self.hashes = {name: gate.digest(data) for name, data in self.portable.items()}
         self.portable_extra, self.source_extra = [], []
 
@@ -76,10 +88,29 @@ class NoticeTests(unittest.TestCase):
                 archive.writestr(name, data)
         return gate.validate(recovery, source, COMMIT)
 
+    def test_missing_and_rehashed_font_source_or_notice_rejected(self):
+        import freefont_payload
+        for relative in freefont_payload.SOURCE_FILES:
+            name = 'opennav-x/' + relative
+            original = self.source[name]
+            record = self.reference['files'][name].copy()
+            with self.subTest(name=name, failure='missing'):
+                del self.source[name]
+                with self.assertRaises(ValueError):
+                    self.validate()
+                self.source[name] = original
+            with self.subTest(name=name, failure='rehashed substitution'):
+                self.source[name] = b'substituted source'
+                self.reference['files'][name]['sha256'] = gate.digest(self.source[name])
+                with self.assertRaisesRegex(ValueError, 'Pinned GNU FreeFont'):
+                    self.validate()
+                self.source[name] = original
+                self.reference['files'][name] = record
+
     def test_current_notice_texts_and_deterministic_report(self):
         first = self.validate()
         self.assertEqual(first, self.validate())
-        self.assertEqual(len(first['notices']), 15)
+        self.assertEqual(len(first['notices']), 20)
         self.assertEqual(list(first['notices']), sorted(first['notices']))
 
     def test_missing_each_packaged_notice(self):
