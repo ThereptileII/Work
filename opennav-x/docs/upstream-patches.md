@@ -1784,3 +1784,14 @@ Both corrections changed inert test setup only, including the private
 `forward.clean` file; neither relaxed production grammar or added an upstream
 hook. Integrated product compatibility and dependency closure remain separate
 gates.
+
+The source batch now also hashes the complete retained original-plugin and
+same-directory dependency bytes before parsing/loading them, refusing the same
+two exact known OpenSSL 3.0.5 identities already rejected by Lifecycle. This
+includes configured external plugin roots and renamed dependencies. The helper
+uses the existing pinned picosha2 implementation; no extra upstream hook or
+filename-based version inference is introduced. Portable and native fixture
+registration includes the new 241-check byte-policy test. Its direct portable
+compile passed; CMake/CTest configuration and native execution of this new
+increment remain pending. This exact-byte refusal does not qualify unknown
+versions or establish complete loader closure.

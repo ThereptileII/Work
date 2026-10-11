@@ -1,5 +1,26 @@
 # SKAGER status — 2026-10-11
 
+## Integrated source batch: armed-update denial and plugin bytes
+
+The separate source batch now integrates durable installation-root arming
+(`cad36fc1`), installed Go launcher refusal (`2aa25e1f`), PowerShell
+startup/maintenance refusal (`fa7cabd3`), known obsolete plugin-byte refusal
+(`f75682bd`) and portable/native test registration (`57168cd3`). The combined
+portable persistence gate passed 61 receipt, 129 operation, 236 private-store
+and 34 installed-store checks. Combined transaction checks passed, including
+56 new barrier policy checks. Python test-runner syntax and diff checks passed.
+These portable checks do not execute Windows file/ACL/process behavior.
+
+The fixed installed marker is a durable denial signal, never recovery or launch
+authority. Missing/corrupt/ambiguous custody cannot silently resume; there is no
+automatic disarm. Independent Claude/Codex findings and dispositions are in
+[the comparison record](evidence/scrum311-armed-claude-comparison-20261011/README.md).
+A source-proven mismatch between a held ordinary executable and a remapped
+original drive alias is being corrected before integration acceptance. The
+complete four-stage signed boat broker and native/package qualification remain
+open. No new full application build, boat change or Production promotion has
+occurred for this batch.
+
 ## Current exact-commit Staging run
 
 Commit `ec51b9261d2854d8600672ea27c97af5abeb3f6d` completed integrated
