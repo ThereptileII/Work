@@ -300,7 +300,7 @@ func run(ctx context.Context, args []string, s services) (resultErr error) {
 	prepared, err := prepareWithProgress(ctx, s.platform, l.app, func(downloadCtx context.Context) (preparation, error) {
 		return s.prepare(downloadCtx, config, observed, candidate.Consent)
 	})
-	if errors.Is(err, errArmedUpdateBarrier) {
+	if errors.Is(err, errArmedUpdateBarrier) || errors.Is(err, verifier.ErrArtifactCleanup) {
 		return err
 	}
 	if err != nil {

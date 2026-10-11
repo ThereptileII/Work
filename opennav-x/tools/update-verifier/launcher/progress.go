@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"time"
+
+	verifier "example.com/opennav-update-verifier"
 )
 
 // downloadProgress owns only the inert progress prompt. Closing it must never
@@ -70,7 +72,13 @@ func prepareWithProgress(ctx context.Context, p platform, app string, prepare fu
 		if prepared != nil {
 			cleanupErr = prepared.close()
 		}
-		return nil, errors.Join(errors.New("update preparation cancelled or failed"), cleanupErr)
+		// Preparation errors may contain transport or local details. Preserve
+		// only the known, redacted cleanup classification across this boundary.
+		refusal := errors.New("update preparation cancelled or failed")
+		if cleanupErr != nil || errors.Is(err, verifier.ErrArtifactCleanup) {
+			return nil, errors.Join(refusal, verifier.ErrArtifactCleanup)
+		}
+		return nil, refusal
 	}
 	return prepared, nil
 }

@@ -116,6 +116,9 @@ func TestPrepareUpdateSetFailureCleansBothAcquisitions(t *testing.T) {
 				}
 				t.Fatal("unsafe acquisition set returned")
 			}
+			if errors.Is(err, ErrArtifactCleanup) {
+				t.Fatal("clean acquisition refusal incorrectly marked cleanup uncertainty")
+			}
 			if f.requests.Load() != wantRecovery || f.artifactRequests.Load() != wantInstaller {
 				t.Fatalf("unexpected acquisition requests: recovery=%d installer=%d", f.requests.Load(), f.artifactRequests.Load())
 			}
@@ -145,7 +148,7 @@ func TestPreparedUpdateSetCloseAttemptsBothOwnersAfterCleanupFailures(t *testing
 		// invalidating Windows' retained read-only handle or weakening sharing.
 		artifact.path = blocked
 	}
-	if err := p.Close(); err == nil || strings.Count(err.Error(), "artifact cleanup failed") != 2 {
+	if err := p.Close(); !errors.Is(err, ErrArtifactCleanup) || strings.Count(err.Error(), "artifact cleanup failed") != 2 {
 		t.Fatalf("both cleanup errors not retained: %v", err)
 	}
 	if p.Installer.file != nil || p.Recovery.file != nil {

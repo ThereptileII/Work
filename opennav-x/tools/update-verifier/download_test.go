@@ -11,6 +11,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"sync/atomic"
 	"testing"
@@ -205,6 +206,43 @@ func TestDownloadRejectsBadResponseAndCleansPartialData(t *testing.T) {
 			}
 			assertDownloadDirectoryEmpty(t, dir)
 		})
+	}
+}
+
+func TestDownloadPartialCleanupFailureIsClassifiedAndRedacted(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("portable pathname-substitution fixture; Windows writer sharing is independently qualified")
+	}
+	dir := t.TempDir()
+	server := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusUnauthorized)
+	}))
+	defer server.Close()
+	client := server.Client()
+	client.Transport = updateSetTransport{base: client.Transport, before: func(*http.Request) {
+		entries, err := os.ReadDir(dir)
+		if err != nil || len(entries) != 1 {
+			t.Fatal("partial writer fixture unavailable")
+		}
+		name := filepath.Join(dir, entries[0].Name())
+		// Deliberately violate the protected-directory precondition to force a
+		// real removal failure. This tests cleanup reporting, not namespace safety.
+		if err := os.Rename(name, name+".retained"); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.Mkdir(name, 0700); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(filepath.Join(name, "inert"), []byte("fixture"), 0600); err != nil {
+			t.Fatal(err)
+		}
+	}}
+	result, err := downloadArtifact(context.Background(), downloadTestArtifact(server.URL, "expected"), server.URL, dir, client)
+	if result != nil || !errors.Is(err, ErrArtifactCleanup) || !strings.Contains(err.Error(), "artifact response must have status 200") {
+		t.Fatalf("partial cleanup failure lost classification or original refusal: %v", err)
+	}
+	if strings.Contains(err.Error(), dir) || strings.Contains(err.Error(), server.URL) {
+		t.Fatal("partial cleanup failure leaked a path or origin")
 	}
 }
 

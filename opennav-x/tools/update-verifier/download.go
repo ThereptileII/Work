@@ -23,6 +23,11 @@ const maxDownloadTime = 30 * time.Minute
 
 var downloadSegment = regexp.MustCompile(`^[A-Za-z0-9][A-Za-z0-9._-]*$`)
 
+// ErrArtifactCleanup marks uncertain artifact handle/file cleanup. Callers must
+// withhold startup on this classification instead of treating it as a clean
+// acquisition refusal. The fixed message contains no local path or remote data.
+var ErrArtifactCleanup = errors.New("artifact cleanup failed")
+
 // VerifiedArtifact owns a temporary file and a retained read-only handle. Close
 // releases the handle and removes the file. Do not copy this value or call Close
 // concurrently with its other methods. No method authorizes installation.
@@ -69,11 +74,11 @@ func (a *VerifiedArtifact) Close() error {
 		err := a.file.Close()
 		a.file = nil
 		if err != nil {
-			closeErr = errors.New("artifact handle close failed")
+			closeErr = errors.Join(ErrArtifactCleanup, errors.New("artifact handle close failed"))
 		}
 	}
 	if err := os.Remove(a.path); err != nil && !errors.Is(err, os.ErrNotExist) {
-		return errors.Join(closeErr, errors.New("artifact cleanup failed"))
+		return errors.Join(closeErr, ErrArtifactCleanup)
 	}
 	a.removed = true
 	return closeErr
@@ -134,10 +139,12 @@ func downloadArtifact(ctx context.Context, artifact releasepolicy.Artifact, appr
 	}
 	name := writer.Name()
 	defer func() {
-		_ = writer.Close()
 		if resultErr != nil {
+			if err := writer.Close(); err != nil && !errors.Is(err, os.ErrClosed) {
+				resultErr = errors.Join(resultErr, ErrArtifactCleanup, errors.New("partial artifact handle close failed"))
+			}
 			if err := os.Remove(name); err != nil && !errors.Is(err, os.ErrNotExist) {
-				resultErr = errors.Join(resultErr, errors.New("partial artifact cleanup failed"))
+				resultErr = errors.Join(resultErr, ErrArtifactCleanup, errors.New("partial artifact cleanup failed"))
 			}
 		}
 	}()
@@ -177,7 +184,7 @@ func downloadArtifact(ctx context.Context, artifact releasepolicy.Artifact, appr
 		return nil, errors.New("artifact sync failed")
 	}
 	if err := writer.Close(); err != nil {
-		return nil, errors.New("artifact writer close failed")
+		return nil, errors.Join(ErrArtifactCleanup, errors.New("artifact writer close failed"))
 	}
 	reader, err := openDownloadedArtifact(name)
 	if err != nil {
@@ -185,7 +192,9 @@ func downloadArtifact(ctx context.Context, artifact releasepolicy.Artifact, appr
 	}
 	defer func() {
 		if resultErr != nil {
-			_ = reader.Close()
+			if err := reader.Close(); err != nil {
+				resultErr = errors.Join(resultErr, ErrArtifactCleanup, errors.New("artifact reader close failed"))
+			}
 		}
 	}()
 	sealed, err := reader.Stat()
