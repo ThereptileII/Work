@@ -366,6 +366,11 @@ try {
         '-DOCPN_BUNDLE_TCDATA=ON', "-DCMAKE_INSTALL_PREFIX=$Install") + $OpenNavArgs)
     Run cmake @('--build', $Build, '--config', 'Release', '--parallel', '2')
     Run cmake @('--install', $Build, '--config', 'Release')
+    # Bind the final installed wx DLLs to exact members of the locked prebuilt
+    # archive. This is binary provenance, not source rebuild/legal clearance.
+    Run python @((Join-Path $PSScriptRoot 'wx_runtime_receipt.py'), 'create',
+        '--install', $Install, '--lock', (Join-Path $PSScriptRoot 'windows-wx.lock.json'),
+        '--archive', (Join-Path $Source 'cache/opennav-downloads/wxMSW-3.2.8_vc14x_ReleaseDLL.7z'))
     if ($Integration) {
         $OpenSslManifest = Get-Content (Join-Path $Source 'cache/buildwin/openssl-build.json') -Raw | ConvertFrom-Json
         $ZlibManifest = Get-Content (Join-Path $Root 'build/windows-zlib-1.3.2/install/zlib-build.json') -Raw | ConvertFrom-Json
