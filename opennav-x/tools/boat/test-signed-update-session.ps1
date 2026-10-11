@@ -1,4 +1,5 @@
-# Pure in-memory adversarial contracts. No application/profile/network access.
+# Inert signed-update helper entry point. No application/profile/network access.
+# Receipt/operation checks are in memory; store checks use disposable temp files.
 Set-StrictMode -Version Latest
 $ErrorActionPreference='Stop'
 . (Join-Path $PSScriptRoot 'SignedUpdateSession.ps1')
@@ -81,6 +82,32 @@ $null=Add-SignedUpdateReceipt $s $r 1001
 $s.receipts[0].evidence.profileSha256=Hash 900
 $r=Request $s 'CandidateCommissioned' $commissioned 101
 Reject {Add-SignedUpdateReceipt $s $r 1002} 'Modified historical profile evidence invalidates chain'
+# Retained receipt evidence is immutable for both launch branches. These are
+# journal-tamper negatives, not live filesystem/audit-to-spawn custody tests.
+foreach($action in @('candidate','fallback')){
+ foreach($field in @('profileSha256','treesSha256','generation')){
+  $s=Session
+  $null=Add-SignedUpdateReceipt $s (Request $s 'PreviousRestored' $restored 100) 1001
+  $null=Add-SignedUpdateReceipt $s (Request $s 'CandidateCommissioned' $commissioned 101) 1002
+  if($action -ceq 'fallback'){
+   $null=Add-SignedUpdateReceipt $s (Request $s 'CandidateRestored' $candidateRestored 102) 1003
+  }
+  $index=@($s.receipts).Count-1
+  if($field -ceq 'generation'){$s.receipts[$index].evidence.identity.generation=('f'*32)}
+  else{$s.receipts[$index].evidence.$field=Hash 900}
+  $before=Get-SignedUpdateReceiptHash $s
+  if($action -ceq 'candidate'){$r=Request $s 'CandidateRestored' $candidateRestored 104}
+  else{$r=Request $s 'FallbackCommissioned' $fallback 104}
+  Reject {Add-SignedUpdateReceipt $s $r 1005} ('Changed retained '+$action+' '+$field+' cannot advance')
+  Check ((Get-SignedUpdateReceiptHash $s) -ceq $before) 'Refused tampered chain is not rewritten or repaired'
+ }
+}
 $bad=Clone $binding;$bad.expiresUnix=20000;Reject {New-SignedUpdateSession $bad 1000} 'Session lifetime bound enforced'
 $bad=Clone $binding;$bad.release.packageSha256=$old.packageSha256;Reject {New-SignedUpdateSession $bad 1000} 'Same package is not an update successor'
 Write-Output ('Signed update session: '+$checks+' pure contract checks passed; no launch permission or native qualification claimed.')
+# Keep the existing portable/native CI entry point, with separate script scopes
+# for the fixtures' overridden functions and retained store custody. On Windows
+# the store suite exercises actual native ACL/share/reparse behavior; portable
+# substitutions are explicitly reported and cannot qualify that boundary.
+& (Join-Path $PSScriptRoot 'test-signed-update-operations.ps1')
+& (Join-Path $PSScriptRoot 'test-signed-update-session-store.ps1')
