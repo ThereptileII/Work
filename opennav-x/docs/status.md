@@ -1,5 +1,28 @@
 # SKAGER status — 2026-10-12
 
+## Inactive broker package/source prerequisite implemented
+
+Source revision `3c0033fc` adds a native probe for a separate, inactive broker
+bundle while preserving the original launcher-only package transfer. The broker
+reuses the exact existing corresponding-source archive, now including its build
+scripts and required shared helper. Its consumer checks actual embedded Go
+identity, Win32 GUI format, exact commit and source correspondence; authenticated
+successful remote producer provenance remains the caller's responsibility.
+
+Focused source checks pass **73 distinct Python tests**. A single retained
+Windows/386 cross-compiled executable exposed an incorrect linker-metadata
+expectation, repaired without rebuilding. Actual module-graph inspection also
+exposed sparse optional checksum fields; the producer now audits the retained
+provisioning checksums offline. The actual full-archive/native producer gate is
+still pending. [Evidence and preserved failures](evidence/scrum311-broker-package-source-20261012/README.md)
+separate source implementation, component compilation and native qualification.
+
+No application build, CI dispatch, boat deployment, service activation or
+physical command occurred. The installed boat application remains unchanged.
+Approved public bootstrap trust/origins, privileged provisioning identity,
+installation/loader custody, orphan recovery and exact-package Windows/boat
+acceptance remain open under SCRUM-311; this is not a ready updater or release.
+
 ## Native directory-custody failure corrected
 
 Actual Windows execution exposed a retained-directory defect: metadata-only

@@ -272,6 +272,25 @@ service provisioning/upgrade/removal, launcher activation, full loader dependenc
 custody, actual installation and exact-source Windows/boat update qualification
 remain separate unfinished SCRUM-311 gates.
 
+## Inactive broker package prerequisite
+
+`tools/package-update-broker.py` is a native-Windows-only producer for the fixed
+Win32 broker binary and build record. `tools/broker_package.py` verifies the
+copied binary, actual embedded Go metadata, GUI PE format and unchanged
+same-revision launcher source descriptor. The native probe uses a separate
+`broker-install` copy; the original launcher-only output and application
+package transfer remain unchanged. This does not install or enable a service.
+
+The existing source archive includes the broker command, host, build scripts
+and required shared updater verifier. Its retained provisioning checksum file
+supports an offline cache audit; the actual compile remains in the clean
+product module. No second source archive or dependency download is required.
+Go's pinned trimpath build omits linker flags from embedded metadata: the fixed
+recipe and actual PE subsystem are checked separately rather than requiring
+an impossible metadata field. Local hashes and metadata are consistency only;
+the caller must authenticate the successful same-revision producer. See the
+[source/component evidence](../evidence/scrum311-broker-package-source-20261012/README.md).
+
 ## Shared commissioning profile exclusion
 
 `CommissioningProfileLock.cs` supplies a native, machine-wide mutex for the

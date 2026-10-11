@@ -1,0 +1,98 @@
+{
+  "schema": 1,
+  "issue": "SCRUM-311",
+  "sourceCommit": "3c0033fc275573989b7a1acef0935b79aab15f2f",
+  "sourceFiles": {
+    "opennav-x/tools/broker_package.py": "393355299fd4818295739d992736f22cb6f4ac0509fa0a9e261bfa803632929c",
+    "opennav-x/tools/package-update-broker.py": "e7cbd71a7ede2cf47e51300c45ab28a41e6ed6896f73b526c825ae4009ce4748",
+    "opennav-x/tools/test-broker-package.py": "b2bc4e25d8fc9b8bc6c1920bca2a937c292edbac477476964ad8e3e3c896cf3b",
+    "opennav-x/tools/test-package-update-broker.py": "87eed248f3cef5273f6dea3d745f92bc53e3500003ee77a0ce5d91a802c4da9b",
+    "opennav-x/tools/package-update-launcher.py": "fc79a8055a20f65569898268d37e9143dba34050b20d223d7c4df8f344fac32d",
+    "opennav-x/tools/test-package-update-launcher.py": "a9b580480ae86420f845725b29090ac3ddf70afdba7ac13940196c2ca61328fa",
+    "opennav-x/tools/updater_package.py": "8d0974ceb8bf6dfdafa57a2df61899e36c0a09c612f086713b0144d6c8c6009c",
+    ".github/workflows/update-verifier-probe.yml": "3265d10beae87a41b233ca7ccefb16823892b2dda744f99bf40d7a2ca9d7a46c"
+  },
+  "focusedTests": [
+    {
+      "name": "broker producer",
+      "tests": 30,
+      "sourceCommit": "17435429fa7ece3d4cee17ba59890b261b173c81"
+    },
+    {
+      "name": "broker consumer",
+      "tests": 11,
+      "sourceCommit": "bd15f02e5e571805cbde3e58a9aac189a340d356"
+    },
+    {
+      "name": "existing launcher producer",
+      "tests": 14,
+      "sourceCommit": "75c6859d3aa21560d6091e8cb28897d301270a4a"
+    },
+    {
+      "name": "existing copied updater package",
+      "tests": 16,
+      "sourceCommit": "5e260b4a75a2bf3e96e5d6c7baad49aea00703f7"
+    },
+    {
+      "name": "workflow YAML and package reuse",
+      "tests": 2,
+      "sourceCommit": "3c0033fc275573989b7a1acef0935b79aab15f2f"
+    }
+  ],
+  "distinctFocusedTestsPassed": 73,
+  "component": {
+    "schema": 1,
+    "sourceCommit": "5e260b4a75a2bf3e96e5d6c7baad49aea00703f7",
+    "verificationCommit": "bd15f02e5e571805cbde3e58a9aac189a340d356",
+    "compiler": "go version go1.27.1 linux/amd64",
+    "target": "windows/386/sse2",
+    "binarySha256": "20b3c3d3ea04067da96e7915b841a14a9002e0165345aacbb9e2b62d507a5790",
+    "bytes": 16379392,
+    "buildInfo": "skager-update-broker.exe: go1.27.1\n\tpath\texample.com/opennav-update-verifier/cmd/skager-update-broker\n\tmod\texample.com/opennav-update-verifier\t(devel)\t\n\tdep\tgithub.com/cenkalti/backoff/v5\tv5.0.3\th1:ZN+IMa753KfX5hd8vVaMixjnqRZ3y8CuJKRKj1xcsSM=\n\tdep\tgithub.com/google/go-containerregistry\tv0.20.7\th1:24VGNpS0IwrOZ2ms2P1QE3Xa5X9p4phx0aUgzYzHW6I=\n\tdep\tgithub.com/opencontainers/go-digest\tv1.0.0\th1:apOUWs51W5PlhuyGyz9FCeeBIOUDA/6nW8Oi/yOhh5U=\n\tdep\tgithub.com/secure-systems-lab/go-securesystemslib\tv0.11.0\th1:iuCR9kcMFD4QurdKrGvPLoKZLv9YvwPYVr0473BdtFs=\n\tdep\tgithub.com/sigstore/protobuf-specs\tv0.5.0\th1:F8YTI65xOHw70NrvPwJ5PhAzsvTnuJMGLkA4FIkofAY=\n\tdep\tgithub.com/sigstore/sigstore\tv1.10.6\th1:YWhMQfTrJSK80QB1pbxjYeAwGKx+5UwWPPAY9hrPPZg=\n\tdep\tgithub.com/theupdateframework/go-tuf/v2\tv2.4.2\th1:w7976/W8uTwlsegP5nRymlpjPgrwSh+AXUf85is6nJk=\n\tdep\tgolang.org/x/crypto\tv0.50.0\th1:zO47/JPrL6vsNkINmLoo/PH1gcxpls50DNogFvB5ZGI=\n\tdep\tgolang.org/x/sys\tv0.43.0\th1:Rlag2XtaFTxp19wS8MXlJwTvoh8ArU6ezoyFsMyCTNI=\n\tdep\tgolang.org/x/term\tv0.42.0\th1:UiKe+zDFmJobeJ5ggPwOshJIVt6/Ft0rcfrXZDLWAWY=\n\tdep\tgoogle.golang.org/genproto/googleapis/api\tv0.0.0-20250825161204-c5933d9347a5\th1:BIRfGDEjiHRrk0QKZe3Xv2ieMhtgRGeLcZQ0mIVn4EY=\n\tdep\tgoogle.golang.org/protobuf\tv1.36.11\th1:fV6ZwhNocDyBLK0dj+fg8ektcVegBBuEolpbTQyBNVE=\n\tbuild\t-buildmode=exe\n\tbuild\t-compiler=gc\n\tbuild\t-trimpath=true\n\tbuild\tCGO_ENABLED=0\n\tbuild\tGOARCH=386\n\tbuild\tGOOS=windows\n\tbuild\tGO386=sse2\n\tbuild\tvcs=git\n\tbuild\tvcs.revision=5e260b4a75a2bf3e96e5d6c7baad49aea00703f7\n\tbuild\tvcs.time=2026-10-11T23:34:52Z\n\tbuild\tvcs.modified=false\n",
+    "actualEmbeddedMetadataMatchesGoVersionM": true,
+    "linkedDependenciesMatchCommittedGoSum": true,
+    "linkedDependencies": 12,
+    "lockedModuleVerification": true,
+    "nativeWindowsExecution": false,
+    "fullApplicationBuild": false,
+    "packageProduction": false,
+    "serviceProvisioningOrActivation": false,
+    "initialHelperFailure": "failed-helper.json",
+    "initialProductFailure": "failed-product-check.json",
+    "rebuiltAfterFailures": false,
+    "producerActualPeCheck": true,
+    "producerActualMetadataCheck": true,
+    "producerVerificationCommit": "17435429fa7ece3d4cee17ba59890b261b173c81"
+  },
+  "preservedFailures": [
+    {
+      "phase": "post-compile metadata helper",
+      "failure": "KeyError: Sum while collecting every go list -m record",
+      "productFailure": false,
+      "retainedCompiledBinary": true,
+      "repair": "Check actual linked dependencies against committed go.sum; reuse unchanged binary"
+    },
+    {
+      "sourceCommit": "5e260b4a75a2bf3e96e5d6c7baad49aea00703f7",
+      "phase": "actual emitted PE metadata verification",
+      "failure": "Broker actual Go build settings do not match pinned product recipe",
+      "cause": "Pinned Go omits -ldflags when -trimpath is enabled; fixtures incorrectly included that field",
+      "binaryRebuildRequired": false,
+      "nativeWindowsExecution": false
+    }
+  ],
+  "actualCommittedGraph": {
+    "dependencies": 82,
+    "missingOptionalChecksumMetadata": 63,
+    "nativeRetainedArchiveAuditExecuted": false
+  },
+  "independentReview": {
+    "kind": "bounded read-only Codex source review",
+    "finding": "Initial conditional linker metadata omission missed; actual emitted PE supplied counterexample; corrected source review found no concrete issue",
+    "claudeReviewedTheseFiles": false
+  },
+  "nativePackageQualified": false,
+  "serviceProvisionedOrActivated": false,
+  "applicationBuildOrDeployment": false,
+  "physicalCommands": false
+}
