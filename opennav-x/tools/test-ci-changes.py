@@ -43,6 +43,8 @@ class ClassificationTests(unittest.TestCase):
                      'tools/retest-staging-windows.py', 'tools/staging_composition.py',
                      'tools/staging-composition-request.json', 'tools/staging-installer-retest.json',
                      'tools/test-staging-build-inputs.py',
+                     'tools/secret_scanning.py', 'tools/secret-scanner.toml',
+                     'tools/secret-scanner.lock.json',
                      'tools/test-windows-dependency-bundle.py',
                      '.github/workflows/opennav-baseline.yml',
                      'tools/boat/RestartWindowReview.ps1', 'tools/boat/build.ps1',

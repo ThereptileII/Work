@@ -109,7 +109,8 @@ def classify_path(raw: str, layout: str) -> tuple[str, str]:
         if name.endswith('.md'):
             return 'docs', 'tool documentation outside runtime package'
         if name in DEPENDENCY_TOOLS or (path.parent == PurePosixPath('tools') and
-                                       name.endswith('.lock.json')):
+                                       name.endswith('.lock.json') and
+                                       name not in HELPER_TOOLS):
             return 'dependencies', 'reviewed dependency producer/lock input'
         if (name in PRODUCT_TOOLS or name.startswith(('package-', 'build-', 'generate-',
                                                      'derive-', 'chart_'))):
