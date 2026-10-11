@@ -330,15 +330,23 @@ class ArtifactTests(unittest.TestCase):
                         # CRT sharing can prevent an attack while the read-only
                         # descriptor is retained. Do not call that an observed
                         # replacement, or mask ACL/path/unrelated I/O failures.
-                        if os.name != "nt" or getattr(error, "winerror", None) not in (32, 33):
+                        if os.name != "nt" or getattr(error, "winerror", None) not in (5, 32, 33):
                             raise
                         self.assertEqual(snap.path.read_bytes(), snap.data)
                         self.assertEqual(m.identity(snap.path.lstat()), snap.initial)
                         snap.recheck()
                         if replace:
                             self.assertEqual(replacement.read_bytes(), snap.data)
+                        # WinError 5 is also used when Windows refuses a rename
+                        # over an open CRT descriptor. Prove this was sharing,
+                        # not a bad path/ACL, by retrying after releasing it.
+                        stack.close()
+                        if replace:
+                            os.replace(replacement, snap.path)
+                        else:
+                            snap.path.write_bytes(b"x" * len(snap.data))
                         print("Windows sharing prevented " + ("replacement" if replace else "write") +
-                              "; unchanged original rechecked; post-mutation refusal not exercised")
+                              "; unchanged original rechecked and closed-handle control succeeded")
                         continue
                     with self.assertRaises(m.Refused):
                         snap.recheck()
