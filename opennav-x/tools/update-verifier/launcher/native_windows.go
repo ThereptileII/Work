@@ -195,7 +195,7 @@ func nativeCommand(spec processSpec) *exec.Cmd {
 	}
 	return command
 }
-func (nativePlatform) wait(ctx context.Context, spec processSpec) (processResult, error) {
+func (p nativePlatform) wait(ctx context.Context, spec processSpec) (processResult, error) {
 	if err := ctx.Err(); err != nil {
 		return processResult{}, err
 	}
@@ -206,6 +206,9 @@ func (nativePlatform) wait(ctx context.Context, spec processSpec) (processResult
 		return processResult{}, errors.New("invalid child process bound")
 	}
 	command := nativeCommand(spec)
+	if err := p.managedArmedUpdateAbsent(spec.directory); err != nil {
+		return processResult{}, err
+	}
 	if err := command.Start(); err != nil {
 		return processResult{}, errors.New("verified child process did not start")
 	}
@@ -234,8 +237,8 @@ func (nativePlatform) wait(ctx context.Context, spec processSpec) (processResult
 	}
 	return processResult{timedOut: true, done: done}, errors.New("child process wait budget expired")
 }
-func (nativePlatform) start(spec processSpec) error {
-	return startOrdinary(spec, acquireNativeOrdinaryImage)
+func (p nativePlatform) start(spec processSpec) error {
+	return startOrdinary(spec, p.acquireUnarmedOrdinaryImage)
 }
 
 func privateNativeSecurity() (*windows.SECURITY_DESCRIPTOR, error) {
@@ -307,7 +310,7 @@ func (nativePlatform) privateDirectory(name string, create bool) error {
 
 // progress starts only the adjacent, already held prompt, with no identity,
 // URL, artifact path or other data in its dedicated empty-stdin protocol.
-func (nativePlatform) progress(executable, directory string) (downloadProgress, error) {
+func (p nativePlatform) progress(executable, directory string) (downloadProgress, error) {
 	if _, err := localPath(executable); err != nil {
 		return nil, err
 	}
@@ -315,6 +318,9 @@ func (nativePlatform) progress(executable, directory string) (downloadProgress, 
 		return nil, errors.New("unexpected progress helper")
 	}
 	command := nativeCommand(processSpec{executable: executable, directory: directory, arguments: []string{"--download-progress"}})
+	if err := p.managedArmedUpdateAbsent(directory); err != nil {
+		return nil, err
+	}
 	return startProgressCommand(command)
 }
 

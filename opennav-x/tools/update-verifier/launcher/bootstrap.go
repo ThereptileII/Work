@@ -41,6 +41,9 @@ func bootstrap(ctx context.Context, p platform, l layout, state installState, ex
 	if err := assertCurrent(p, g, state.Stock); err != nil {
 		return err
 	}
+	if err := requireUnarmed(p, l.root); err != nil {
+		return err
+	}
 	for _, name := range []string{l.root + "/update-pending.json", l.app + "/update-trust.json"} {
 		if _, err := p.read(name, 32768); !errors.Is(err, os.ErrNotExist) {
 			return errors.New("private bootstrap requires no pending update or configured trust")
@@ -53,7 +56,7 @@ func bootstrap(ctx context.Context, p platform, l layout, state installState, ex
 			return errors.New("selected bootstrap receipt changed")
 		}
 		defer held.Close()
-		return p.start(processSpec{executable: l.app + "/opencpn.exe", directory: l.app,
+		return startUnarmed(p, l.root, processSpec{executable: l.app + "/opencpn.exe", directory: l.app,
 			expectedImageHash: g.managed["app/opencpn.exe"], arguments: []string{"--xnav"}})
 	}
 	if _, err := p.read(receipt, 32768); !errors.Is(err, os.ErrNotExist) {
@@ -67,8 +70,11 @@ func bootstrap(ctx context.Context, p platform, l layout, state installState, ex
 		return err
 	}
 	locked = false
-	result, err := p.wait(ctx, processSpec{executable: engine, directory: l.app,
+	result, err := waitUnarmed(ctx, p, l.root, processSpec{executable: engine, directory: l.app,
 		arguments: []string{"-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-File", l.directory + "/UpdateSupervisor.ps1", "-InstallationRoot", l.root, "-Action", "QualifyCurrent", "-BootstrapExpectation", expectation}, limit: 11 * time.Minute})
+	if errors.Is(err, errArmedUpdateBarrier) {
+		return err
+	}
 	if result.timedOut && result.done != nil {
 		<-result.done
 	}

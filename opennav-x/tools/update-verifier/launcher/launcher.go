@@ -28,6 +28,7 @@ type processResult struct {
 type platform interface {
 	executable() (string, error)
 	read(string, int64) ([]byte, error)
+	armedUpdateAbsent(string) error
 	hold(string, string) (io.Closer, error)
 	measure(string) (string, error)
 	lockStartup(string) (io.Closer, error)
@@ -201,6 +202,9 @@ func run(ctx context.Context, args []string, s services) error {
 	if err != nil {
 		return err
 	}
+	if err := requireUnarmed(s.platform, l.root); err != nil {
+		return err
+	}
 	state, err := readState(s.platform, l)
 	if err != nil {
 		return err
@@ -271,7 +275,10 @@ func run(ctx context.Context, args []string, s services) error {
 	if err := assertCurrent(s.platform, g, state.Stock); err != nil {
 		return err
 	}
-	choice, err := s.platform.wait(ctx, processSpec{executable: l.app + "/skager-update-prompt.exe", directory: l.app, input: input, limit: 5 * time.Minute})
+	choice, err := waitUnarmed(ctx, s.platform, l.root, processSpec{executable: l.app + "/skager-update-prompt.exe", directory: l.app, input: input, limit: 5 * time.Minute})
+	if errors.Is(err, errArmedUpdateBarrier) {
+		return err
+	}
 	if err != nil || choice.timedOut || choice.code != 10 {
 		return ordinary(ctx, s.platform, g, state.Stock, mode)
 	}
@@ -283,9 +290,15 @@ func run(ctx context.Context, args []string, s services) error {
 	if err != nil {
 		return ordinary(ctx, s.platform, g, state.Stock, mode)
 	}
+	if err := requireUnarmed(s.platform, l.root); err != nil {
+		return err
+	}
 	prepared, err := prepareWithProgress(ctx, s.platform, l.app, func(downloadCtx context.Context) (preparation, error) {
 		return s.prepare(downloadCtx, config, observed, candidate.Consent)
 	})
+	if errors.Is(err, errArmedUpdateBarrier) {
+		return err
+	}
 	if err != nil {
 		return ordinary(ctx, s.platform, g, state.Stock, mode)
 	}
@@ -293,7 +306,10 @@ func run(ctx context.Context, args []string, s services) error {
 	if err := assertCurrent(s.platform, g, state.Stock); err != nil {
 		return err
 	}
-	result, err := s.platform.wait(ctx, processSpec{executable: prepared.path(), directory: l.app, arguments: []string{"/S", "/ACTION=Update", "/SUPERVISED=1"}, limit: 15 * time.Minute})
+	result, err := waitUnarmed(ctx, s.platform, l.root, processSpec{executable: prepared.path(), directory: l.app, arguments: []string{"/S", "/ACTION=Update", "/SUPERVISED=1"}, limit: 15 * time.Minute})
+	if errors.Is(err, errArmedUpdateBarrier) {
+		return err
+	}
 	if result.timedOut {
 		// Do not kill NSIS or release its immutable artifact while it is alive.
 		if result.done != nil {
@@ -360,7 +376,7 @@ func ordinary(ctx context.Context, p platform, g *generation, stock stockRecord,
 	if pending, err := pendingExists(p, g.layout); err != nil || pending {
 		return errors.New("pending update requires recovery; application startup withheld")
 	}
-	return p.start(processSpec{executable: g.layout.app + "/opencpn.exe", directory: g.layout.app,
+	return startUnarmed(p, g.layout.root, processSpec{executable: g.layout.app + "/opencpn.exe", directory: g.layout.app,
 		expectedImageHash: g.managed["app/opencpn.exe"], arguments: []string{mode}})
 }
 func supervise(ctx context.Context, p platform, g *generation, stock stockRecord, action, transaction string) error {
@@ -384,7 +400,10 @@ func invokeSupervisor(ctx context.Context, p platform, g *generation, action, tr
 	// Receiver budgets: initial 90s + one authenticated human wait (300s) +
 	// health 90s, then graceful close/recovery (10s + 120s). Keep the outer
 	// custody wait above that finite total; never kill a running transaction.
-	result, err := p.wait(ctx, processSpec{executable: engine, directory: g.layout.app, arguments: args, limit: 11 * time.Minute})
+	result, err := waitUnarmed(ctx, p, g.layout.root, processSpec{executable: engine, directory: g.layout.app, arguments: args, limit: 11 * time.Minute})
+	if errors.Is(err, errArmedUpdateBarrier) {
+		return err
+	}
 	if result.timedOut && result.done != nil {
 		<-result.done
 	}

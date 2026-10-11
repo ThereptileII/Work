@@ -25,6 +25,9 @@ func prepareWithProgress(ctx context.Context, p platform, app string, prepare fu
 	}
 	progress, err := p.progress(app+"/skager-update-prompt.exe", app)
 	if err != nil {
+		if errors.Is(err, errArmedUpdateBarrier) {
+			return nil, err
+		}
 		return nil, errors.New("preparation progress unavailable")
 	}
 	defer progress.close()

@@ -96,9 +96,26 @@ type fakePlatform struct {
 	progressSpecs    []processSpec
 	progressError    error
 	startError       error
+	armedError       error
+	onArmedCheck     func()
 }
 
 func (f *fakePlatform) executable() (string, error) { return f.self, nil }
+func (f *fakePlatform) armedUpdateAbsent(root string) error {
+	if root != fixtureRoot {
+		return errors.New("unexpected armed barrier root")
+	}
+	if f.onArmedCheck != nil {
+		f.onArmedCheck()
+	}
+	if f.armedError != nil {
+		return f.armedError
+	}
+	if _, present := f.files[root+"/"+armedUpdateMarker]; present {
+		return errors.New("armed marker present")
+	}
+	return nil
+}
 func (f *fakePlatform) read(name string, limit int64) ([]byte, error) {
 	if f.lockHeld && name == fixtureRoot+"/state.json" {
 		f.readsWhileLocked++

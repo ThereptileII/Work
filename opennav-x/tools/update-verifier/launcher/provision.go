@@ -21,6 +21,14 @@ type provisioner interface {
 // first initialization attempt. Interrupted/removed state requires independent
 // recovery; rerunning this command cannot establish a new rollback floor.
 func initializeTrust(p platform, g *generation) error {
+	lock, err := p.lockStartup(g.layout.root + "/transaction.lock")
+	if err != nil {
+		return err
+	}
+	defer lock.Close()
+	if err := requireUnarmed(p, g.layout.root); err != nil {
+		return err
+	}
 	data, err := p.read(g.layout.app+"/update-trust.json", maxTrustBytes)
 	if errors.Is(err, os.ErrNotExist) {
 		return nil
@@ -43,6 +51,9 @@ func initializeTrust(p platform, g *generation) error {
 	return provisionTrust(p, g.layout.root, config, data, verifier.InitializeState, verifier.ValidateState)
 }
 func provisionTrust(p platform, root string, c verifier.PrepareConfig, data []byte, initialize, validate func(string, verifier.TrustConfig) error) error {
+	if err := requireUnarmed(p, root); err != nil {
+		return err
+	}
 	fs, ok := p.(provisioner)
 	if !ok {
 		return errors.New("native trust provisioning unavailable")
@@ -72,6 +83,9 @@ func provisionTrust(p platform, root string, c verifier.PrepareConfig, data []by
 	}
 	if !errors.Is(err, os.ErrNotExist) {
 		return errors.New("trust once marker unavailable; explicit recovery required")
+	}
+	if err := requireUnarmed(p, root); err != nil {
+		return err
 	}
 	if err := fs.createMarker(name, marker); err != nil {
 		return errors.New("trust initialization already attempted or unavailable")
