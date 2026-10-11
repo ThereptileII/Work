@@ -1,0 +1,91 @@
+{
+  "schema": 1,
+  "issues": [
+    "SCRUM-98",
+    "SCRUM-22"
+  ],
+  "status": "failed-native-evidence-retained; harness-repair-prepared",
+  "runId": "38158246826",
+  "runUrl": "https://github.com/ThereptileII/Work/actions/runs/38158246826",
+  "artifact": {
+    "id": "11709613511",
+    "bytes": 24964164,
+    "sha256": "6cbedee4b09568a0d59f03b107b64d9763be720ed5546209e064e53356890661",
+    "githubDigestMatched": true,
+    "zipCrcPassed": true
+  },
+  "productCommit": "ec51b9261d2854d8600672ea27c97af5abeb3f6d",
+  "failedHarnessCommit": "e1d6f5a6d42cc20605368fe307b34a607d75acbc",
+  "repairBaseCommit": "e615446e2c1f547fd2e01d87bcf0621da0c8500a",
+  "compiledInputProducer": {
+    "repository": "ThereptileII/Work",
+    "commit": "ec51b9261d2854d8600672ea27c97af5abeb3f6d",
+    "runId": "38143022102",
+    "runAttempt": "1",
+    "job": "windows-integration",
+    "platform": "windows-2022",
+    "architecture": "Win32"
+  },
+  "retainedSourceArchiveSha256": "83021835be2e1b340b8cecd4446dc3268ebc64ad4b9b94faeadde5ea79cbbf75",
+  "failedTestSourceSha256": "791c2060f5709f2fba0219e051657d13b023b158b93fa9c283892e2a6dd6a1c4",
+  "files": {
+    "installer-staging.json": {
+      "artifactBytes": 1913,
+      "artifactSha256": "26fba5751585c582263fdf4b872106088cc248bd234d0b5a5253cc2f9253ef55",
+      "bytes": 1857,
+      "sha256": "805bb58a4e3555e756479d76443c7f9c43e6f46401992a67921fa88d9a997606",
+      "storageTransform": "CRLF converted to LF only; original bytes retained in authenticated artifact ZIP"
+    },
+    "installer-00-Preflight.json": {
+      "artifactBytes": 346,
+      "artifactSha256": "e3a5f40932f3b2210d8e16b1c81edf19dd3f7bbd5abf074c0c3aef41c4446c7d",
+      "bytes": 339,
+      "sha256": "abe66588c3c184e6cbae7debe2236f2e77560f287fd7b3ed945b0cda1d763ff8",
+      "storageTransform": "CRLF converted to LF only; original bytes retained in authenticated artifact ZIP"
+    },
+    "installer-wizard-welcome.png": {
+      "bytes": 15396,
+      "sha256": "7155dee08e9abecd98cac623f082ad2864c6602db0ff40f790f0caff924d681d"
+    },
+    "installer-failed-1.png": {
+      "bytes": 14080,
+      "sha256": "3b2cc19de477d1aeb219ab35058b9a26358c1c89f31d63b947f827ab1992aa6e"
+    }
+  },
+  "functionalObservation": {
+    "welcome": "Install SKAGER with visible Next button",
+    "failureFrame": "Selection page visibly open: OpenCPN detected, compatible5.12.4, original path input, Browse button, Install action combo and Next button",
+    "source": "Exact ec51 AlphaSetup.nsi SourcePage uses Select its original application; the absent Select the original installed phrase is only Lifecycle engine-error text",
+    "classification": "Harness source-page selector defect; no product correction established",
+    "reviewScope": "Functional wizard state only; no design or aesthetic review"
+  },
+  "officialPrerequisite": {
+    "stockExitCode": 1223,
+    "executableSha256": "7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c",
+    "exitCodeAnomaly": "Exact official package completed visibly and all hash/resource/registration postconditions passed despite 1223; Alpha lifecycle still requires zero.",
+    "causalClaim": false
+  },
+  "repair": {
+    "page": "Require exact launched visible enabled frame, current source-page identities, one enabled Edit and ComboBox with actual Install selection",
+    "preserved": [
+      "real pointer Next and Cancel with hit test",
+      "ten-second source-page deadline",
+      "exact default Install assertion and verified path write",
+      "all subsequent wizard/lifecycle and zero-exit requirements",
+      "stock/profile/unsupported preservation gates"
+    ],
+    "productInputsChanged": false,
+    "nativeAcceptance": "pending exact-helper retained installer-charts scope",
+    "dispatchPerformed": false,
+    "packageRebuildRequired": false,
+    "releaseQualification": false
+  },
+  "portableChecks": {
+    "selectionObserverTests": 11,
+    "result": "passed",
+    "logSha256": "ca972e3c6c69ddbfe35e3f132750a6ae3fab59b76e26f1280a662530dfe0013c",
+    "pythonAstSyntax": "passed for both changed helpers",
+    "gitDiffCheck": "passed",
+    "nativeAcceptance": false
+  }
+}

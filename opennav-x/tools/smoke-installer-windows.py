@@ -456,6 +456,36 @@ def launch(exe,mode,title,profile,name,welcome_transition=None):
     return p,h,rgb
 def close(p,h):
     ui.close(h);assert p.wait(timeout=30)==0;owned.discard(p.pid)
+def installer_selection_ready(frame,pid,title):
+    # The selected frame must still be the launched installer's visible,
+    # enabled window. A matching caption in another process is not evidence.
+    if (frame,pid,title) not in ui.windows(pid) or not ui.IsWindowEnabled(frame):
+        return False
+    controls=[]
+    for child,_ in ui.children(frame):
+        kind=ctypes.create_unicode_buffer(128)
+        ui.GetClassNameW(child,kind,len(kind))
+        controls.append((child,kind.value,ui.control_text(child)))
+    labels=[label for _,_,label in controls]
+    instruction=('OpenCPN must be installed separately. Select its original application. '
+                 'Setup verifies the exact version and files before making changes.')
+    if labels.count('OpenCPN detected')!=1 or labels.count(instruction)!=1:
+        return False
+    # These controls distinguish the source page from Welcome, a notice, or a
+    # stale page heading. The default must belong to the actual action combo;
+    # path writes and the existing Install assertion remain checked below.
+    if not all(len(matches)==1 and ui.IsWindowEnabled(matches[0])
+               for matches in ([child for child,kind,_ in controls if kind==wanted]
+                               for wanted in ('Edit','ComboBox'))):
+        return False
+    return next(label for _,kind,label in controls if kind=='ComboBox')=='Install'
+def wait_installer_selection(process,frame,title):
+    deadline=time.monotonic()+10
+    while time.monotonic()<deadline:
+        assert process.poll() is None,'Installer exited before its selection page'
+        if installer_selection_ready(frame,process.pid,title):return
+        time.sleep(.1)
+    raise RuntimeError('Installer selection page did not open')
 def wizard(stock,install=False):
     p=subprocess.Popen([str(SETUP)]);owned.add(p.pid)
     title='SKAGER Beta 2 Setup'
@@ -472,11 +502,7 @@ def wizard(stock,install=False):
         assert ui.SetCursorPos(point.x,point.y)
         ui.MouseEvent(2,0,0,0,0);time.sleep(.05);ui.MouseEvent(4,0,0,0,0)
     press(1)
-    deadline=time.monotonic()+10
-    while time.monotonic()<deadline:
-        if any('Select the original installed' in label for _,label in ui.children(h)):break
-        time.sleep(.1)
-    else:raise RuntimeError('Installer selection page did not open')
+    wait_installer_selection(p,h,title)
     assert any(ui.control_text(child)=='Install' for child,_ in ui.children(h)), 'Missing normal-launch Install default'
     ui.set_dialog_fields(p.pid,title,[str(stock)])
     ui.capture(h,EVIDENCE/'installer-wizard-selection.png',resize=False,screen_pixels=True)

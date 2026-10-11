@@ -1,0 +1,16 @@
+test_captured_current_page_passes_without_obsolete_error_caption (__main__.InstallerSelectionPage.test_captured_current_page_passes_without_obsolete_error_caption) ... ok
+test_delayed_real_page_publication_uses_existing_deadline (__main__.InstallerSelectionPage.test_delayed_real_page_publication_uses_existing_deadline) ... ok
+test_disabled_frame_behind_modal_is_not_ready (__main__.InstallerSelectionPage.test_disabled_frame_behind_modal_is_not_ready) ... ok
+test_foreign_same_title_and_controls_are_not_owned_evidence (__main__.InstallerSelectionPage.test_foreign_same_title_and_controls_are_not_owned_evidence) ... ok
+test_install_caption_elsewhere_cannot_fake_selected_action (__main__.InstallerSelectionPage.test_install_caption_elsewhere_cannot_fake_selected_action) ... ok
+test_missing_duplicate_or_disabled_path_and_action_controls_refused (__main__.InstallerSelectionPage.test_missing_duplicate_or_disabled_path_and_action_controls_refused) ... ok
+test_missing_or_duplicate_page_identity_refused (__main__.InstallerSelectionPage.test_missing_or_duplicate_page_identity_refused) ... ok
+test_missing_page_fails_at_existing_ten_second_bound (__main__.InstallerSelectionPage.test_missing_page_fails_at_existing_ten_second_bound) ... ok
+test_owned_setup_title_alone_does_not_make_welcome_ready (__main__.InstallerSelectionPage.test_owned_setup_title_alone_does_not_make_welcome_ready) ... ok
+test_process_exit_cannot_supply_selection_evidence (__main__.InstallerSelectionPage.test_process_exit_cannot_supply_selection_evidence) ... ok
+test_replaced_frame_handle_is_not_the_original_owned_window (__main__.InstallerSelectionPage.test_replaced_frame_handle_is_not_the_original_owned_window) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.014s
+
+OK

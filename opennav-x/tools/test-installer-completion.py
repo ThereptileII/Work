@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-"""Portable timing/fixture policy tests; no NSIS or Windows acceptance claim."""
+"""Portable installer observation/fixture tests; no native Windows acceptance."""
 import ast
 from contextlib import contextmanager
+import ctypes
 import json
 import hashlib
 import importlib.util
@@ -144,6 +145,122 @@ class Completion(unittest.TestCase):
             Path(directory, 'stock.exe').write_bytes(b'fixture')
         self.assertFalse(Path(directory).exists())
         self.assertNotIn('retained_failed_fixture', self.report)
+
+
+class InstallerSelectionPage(unittest.TestCase):
+    """Exercise the real observer against captured-page semantics and refusals."""
+    def setUp(self):
+        self.frame,self.pid,self.title=100,42,'SKAGER Beta 2 Setup'
+        # Text and control types from the retained ec51 source page and failed
+        # run38158246826 screenshot; the obsolete engine-error phrase is absent.
+        self.controls=[
+            [101,'Static','OpenCPN detected',True],
+            [102,'Static',('OpenCPN must be installed separately. Select its original application. '
+                           'Setup verifies the exact version and files before making changes.'),True],
+            [103,'Edit',r'C:\private fixture\stock OpenCPN\opencpn.exe',True],
+            [104,'ComboBox','Install',True],
+            [105,'Button','Browse...',True],
+            [106,'Button','Next >',True]]
+        self.visible=[(self.frame,self.pid,self.title)]
+        self.frame_enabled=True
+        self.clock=0.0;self.publish_at=None;self.published=None;self.exit_code=None
+        def find(handle):
+            return next(control for control in self.controls if control[0]==handle)
+        def class_name(handle,buffer,length):
+            buffer.value=find(handle)[1]
+            return len(buffer.value)
+        def enabled(handle):
+            return self.frame_enabled if handle==self.frame else find(handle)[3]
+        def sleep(seconds):
+            self.clock+=seconds
+            if self.publish_at is not None and self.clock>=self.publish_at:
+                self.controls=self.published
+        observer=ast.Module(body=[node for node in TREE.body
+            if isinstance(node,ast.FunctionDef) and node.name in
+            ('installer_selection_ready','wait_installer_selection')],type_ignores=[])
+        self.environment=dict(ctypes=ctypes,
+            ui=SimpleNamespace(windows=lambda pid:[item for item in self.visible if item[1]==pid],
+                IsWindowEnabled=enabled,GetClassNameW=class_name,
+                children=lambda frame:[(row[0],row[2]) for row in self.controls],
+                control_text=lambda handle:find(handle)[2]),
+            time=SimpleNamespace(monotonic=lambda:self.clock,sleep=sleep))
+        exec(compile(observer,str(SOURCE),'exec'),self.environment)
+        self.process=SimpleNamespace(pid=self.pid,poll=lambda:self.exit_code)
+
+    def ready(self):
+        return self.environment['installer_selection_ready'](self.frame,self.pid,self.title)
+
+    def wait(self):
+        return self.environment['wait_installer_selection'](self.process,self.frame,self.title)
+
+    def test_captured_current_page_passes_without_obsolete_error_caption(self):
+        self.assertFalse(any('Select the original installed' in row[2] for row in self.controls))
+        self.assertTrue(self.ready())
+
+    def test_owned_setup_title_alone_does_not_make_welcome_ready(self):
+        self.controls=[[101,'Static','Install SKAGER',True],[106,'Button','Next >',True]]
+        self.assertFalse(self.ready())
+
+    def test_foreign_same_title_and_controls_are_not_owned_evidence(self):
+        self.visible=[(self.frame,99,self.title)]
+        self.assertFalse(self.ready())
+
+    def test_replaced_frame_handle_is_not_the_original_owned_window(self):
+        self.visible=[(999,self.pid,self.title)]
+        self.assertFalse(self.ready())
+
+    def test_disabled_frame_behind_modal_is_not_ready(self):
+        self.frame_enabled=False
+        self.assertFalse(self.ready())
+
+    def test_install_caption_elsewhere_cannot_fake_selected_action(self):
+        self.controls[3][2]='Update'
+        self.controls.append([107,'Static','Install',True])
+        self.assertFalse(self.ready())
+
+    def test_missing_or_duplicate_page_identity_refused(self):
+        original=[row[:] for row in self.controls]
+        for identifier in (101,102):
+            for duplicate in (False,True):
+                with self.subTest(identifier=identifier,duplicate=duplicate):
+                    self.controls=[row[:] for row in original if row[0]!=identifier]
+                    if duplicate:
+                        control=next(row for row in original if row[0]==identifier)
+                        self.controls.extend([control[:],[identifier+1000,*control[1:]]])
+                    self.assertFalse(self.ready())
+
+    def test_missing_duplicate_or_disabled_path_and_action_controls_refused(self):
+        original=[row[:] for row in self.controls]
+        for identifier in (103,104):
+            for defect in ('missing','duplicate','disabled'):
+                with self.subTest(identifier=identifier,defect=defect):
+                    self.controls=[row[:] for row in original]
+                    control=next(row for row in self.controls if row[0]==identifier)
+                    if defect=='missing':self.controls.remove(control)
+                    elif defect=='duplicate':self.controls.append([identifier+1000,*control[1:]])
+                    else:control[3]=False
+                    self.assertFalse(self.ready())
+
+    def test_delayed_real_page_publication_uses_existing_deadline(self):
+        self.published=self.controls
+        self.controls=[[101,'Static','Install SKAGER',True],[106,'Button','Next >',True]]
+        self.publish_at=.4
+        self.wait()
+        self.assertGreaterEqual(self.clock,.4)
+        self.assertLess(self.clock,10)
+
+    def test_missing_page_fails_at_existing_ten_second_bound(self):
+        self.controls=[[101,'Static','Install SKAGER',True],[106,'Button','Next >',True]]
+        with self.assertRaisesRegex(RuntimeError,'Installer selection page did not open'):
+            self.wait()
+        self.assertGreaterEqual(self.clock,10)
+        self.assertLess(self.clock,10.2)
+
+    def test_process_exit_cannot_supply_selection_evidence(self):
+        self.exit_code=0
+        with self.assertRaisesRegex(AssertionError,'Installer exited before its selection page'):
+            self.wait()
+        self.assertEqual(self.clock,0)
 
 
 class PackagedStartupCompletion(unittest.TestCase):
