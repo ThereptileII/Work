@@ -422,7 +422,7 @@ def run(args):
                 raise RuntimeError("Peer evidence finalization failed; see finalization_errors")
 
 
-if __name__ == "__main__":
+def main(argv=None):
     parser = argparse.ArgumentParser()
     default_exe = ROOT / "build/xnav-install" / ("opencpn.exe" if os.name == "nt" else "bin/opencpn")
     parser.add_argument("--exe", type=Path, default=default_exe)
@@ -431,4 +431,18 @@ if __name__ == "__main__":
     parser.add_argument("--evidence", type=Path, default=ROOT / "evidence/local")
     parser.add_argument("--expected-commit")
     parser.add_argument("--compiled-input-receipt", type=Path)
-    run(parser.parse_args())
+    args = parser.parse_args(argv)
+    try:
+        run(args)
+    except BaseException:
+        # run() preserves the original exception for programmatic callers.
+        # Never let Python render its message, cause or context to CI stderr:
+        # those may contain the same credentials as the sanitized evidence.
+        print("Peer containment gate failed; see sanitized evidence if available.",
+              file=sys.stderr)
+        return 1
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

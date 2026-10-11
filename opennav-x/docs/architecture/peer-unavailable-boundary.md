@@ -84,6 +84,9 @@ streams (plus display-server output). Process cleanup, certificate inspection,
 and individual stream read/write failures are recorded independently, so one
 failure cannot skip sanitization of the remaining streams or replace the
 original gate exception. Report strings are redacted before JSON encoding.
+A CLI failure emits only a fixed unsuccessful-gate diagnostic, so exception
+messages and chains cannot disclose fixture secrets in the CI console.
+Programmatic callers still receive the original exception.
 A finalization failure also prevents a PASS result; unavailable evidence remains
 missing rather than being replaced with raw output. Its focused contracts
 also reject stale/missing binary identity, non-hosted Windows execution, malformed

@@ -5,6 +5,8 @@ import ctypes
 import hashlib
 import json
 from pathlib import Path
+import subprocess
+import sys
 import tempfile
 import types
 import unittest
@@ -19,6 +21,40 @@ spec.loader.exec_module(peer)
 
 
 class PeerTwoContracts(unittest.TestCase):
+    def test_cli_failure_never_renders_secret_exception_or_chain(self):
+        # A real child interpreter captures the outward CLI streams and status;
+        # only run() is replaced, so no application or peer is launched.
+        script = Path(peer.__file__).resolve()
+        for exception_type in ('AssertionError', 'KeyboardInterrupt', 'SystemExit'):
+            code = f'''import importlib.util, sys
+sys.path.insert(0, {str(script.parent)!r})
+spec = importlib.util.spec_from_file_location("peer_cli", {str(script)!r})
+peer = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(peer)
+def fail(args):
+    secret = b"\\n".join(peer.SECRETS).decode()
+    try:
+        raise ValueError(secret)
+    except ValueError as cause:
+        raise {exception_type}(secret) from cause
+peer.run = fail
+sys.exit(peer.main([]))
+'''
+            with self.subTest(exception_type=exception_type):
+                child = subprocess.run([sys.executable, '-c', code],
+                                       capture_output=True, timeout=20)
+                self.assertEqual(child.returncode, 1)
+                self.assertEqual(child.stdout, b'')
+                self.assertIn(b'Peer containment gate failed', child.stderr)
+                self.assertNotIn(b'Traceback', child.stderr)
+                for secret in peer.SECRETS:
+                    self.assertNotIn(secret, child.stdout + child.stderr)
+
+    def test_cli_success_returns_zero(self):
+        with patch.object(peer, 'run') as run:
+            self.assertEqual(peer.main([]), 0)
+        run.assert_called_once()
+
     def test_native_peer_topology_preserves_ordinary_and_portable_paths(self):
         self.assertEqual(peer.launch_plan('nt'), ((1, False), (2, True)))
         self.assertEqual(peer.launch_plan('posix'), ((1, False), (2, False)))
