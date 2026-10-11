@@ -53,6 +53,29 @@ class StartupTests(unittest.TestCase):
         self.assertEqual([c['label'] for c in clicks],['Later'])
         self.assertEqual(result['after_ticks'],12)
 
+    def test_native_dialog_waits_for_newer_control_publication(self):
+        # A native setup window can appear after the first canvas-finalized
+        # diagnostic snapshot. It must be the same witnessed dialog and a
+        # newer tick before automation may touch its Later control.
+        records=iter([snapshot([],10),snapshot([],10),
+                      snapshot(['Later','Back','Continue'],11),snapshot([],12)])
+        bounds=dict(x=0,y=0,width=660,height=620)
+        windows=iter([bounds,bounds,bounds,None])
+        clicks=[]
+        with patch('smoke_startup.time.sleep'):
+            result=defer_boat_setup(lambda:next(records),clicks.append,
+                                    native_window=lambda:next(windows))
+        self.assertEqual([c['label'] for c in clicks],['Later'])
+        self.assertEqual(result['before_ticks'],11)
+        self.assertEqual(result['after_ticks'],12)
+
+    def test_native_dialog_without_fresh_controls_refuses_without_input(self):
+        clicks=[]
+        with self.assertRaisesRegex(AssertionError,'no fresh published controls'):
+            defer_boat_setup(lambda:snapshot([],10),clicks.append,
+                native_window=lambda:dict(x=0,y=0,width=660,height=620),timeout=0)
+        self.assertEqual(clicks,[])
+
     def test_native_initial_actions_must_be_complete_unique_and_contained(self):
         cases=[snapshot(['Later','Continue']),snapshot(['Later','Back','Continue','Later']),
                snapshot(['Later','Back','Continue']),snapshot(['Later','Back','Continue']),

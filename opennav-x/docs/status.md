@@ -1,5 +1,36 @@
 # SKAGER status — 2026-10-11
 
+## Exact Staging run `38127571851` — build passed, release gate red
+
+Commit `5dd795be16081b4b0e521315bfc45f23a9af8251` compiled and
+passed the Linux integrated regression gate, Windows integration build,
+Windows contracts, native boat recovery/commissioning contracts and startup
+updater interactions. The overall workflow is **failed**: its retained native
+Staging qualification stopped in `boat/test-signed-update-artifacts.py` before
+later application/installer checks or Staging publication. Windows denied a
+test-only replacement of an open file with `WinError 5`; the original test
+recognized only sharing errors 32/33. This is not evidence of a product crash
+or a qualified package. The boat installation remains unchanged.
+
+Development commit `74972445` extends that test to recognize the Windows
+access-denied sharing case only after proving the open snapshot stayed intact
+and the same operation succeeds when its handle is closed. All 16 focused
+portable artifact tests pass. Native no-rebuild retest
+[`38139852479`](https://github.com/ThereptileII/Work/actions/runs/38139852479)
+passed the artifact check against the exact retained `5dd795be` application
+bytes, then stopped at the next peer smoke. The ordinary instance's owned
+first-run setup dialog was visibly open, but the first post-canvas diagnostic
+snapshot had no setup controls; the test attempted to resolve those controls
+before their next publication. The development harness now waits only for a
+newer diagnostic tick from the same witnessed dialog, and still refuses partial,
+ambiguous or missing controls without clicking. Ten focused startup and fourteen
+peer-contract tests pass locally; native recheck is pending. These are
+diagnostic retests, not new product builds or release qualification. Subsequent
+SCRUM-317 route-label decluttering and SCRUM-209 read-only module-observation
+changes remain on the development branch for the next combined build. License,
+notice and About/attribution launch-blocker work is being developed in
+separate worktrees. No Production promotion or physical command is involved.
+
 ## Current Staging qualification — correction batch not yet built
 
 The exact `bf68b355` Staging run `38122286949` passed its early Linux

@@ -42,6 +42,26 @@ def defer_boat_setup(read, click, *, native_window=None, timeout=8):
     visible = [c for c in controls if c['visible']]
     labels = {c['label'] for c in visible}
     witness = native_window() if native_window else None
+    if witness is not None and not labels & (_SETUP_FIELDS | {'Later', 'Back', 'Continue'}):
+        # The native dialog can appear just after the first post-canvas
+        # diagnostics publication. Wait only for a newer publication from that
+        # same owned dialog; partial or ambiguous setup controls still fail.
+        initial_tick = int(before['runtime']['ui_update']['ticks'])
+        deadline = time.monotonic() + timeout
+        while time.monotonic() < deadline:
+            time.sleep(.1)
+            witness = native_window()
+            assert witness is not None, 'Owned setup dialog vanished before its controls were published'
+            candidate = read()
+            if int(candidate['runtime']['ui_update']['ticks']) <= initial_tick:
+                continue
+            candidate_visible = [c for c in candidate['runtime']['display']['interaction_controls'] if c['visible']]
+            candidate_labels = {c['label'] for c in candidate_visible}
+            if candidate_labels & (_SETUP_FIELDS | {'Later', 'Back', 'Continue'}):
+                before, visible, labels = candidate, candidate_visible, candidate_labels
+                break
+        else:
+            raise AssertionError('Owned setup dialog has no fresh published controls')
     if witness is not None:
         actions = {label: [c for c in visible if c['label'] == label and _inside(c, witness)]
                    for label in ('Later', 'Back', 'Continue')}
