@@ -87,8 +87,16 @@ same-directory dependencies using the same retained-handle policy. Both portable
 compiler checks passed 9,366 existing plus 17,496 new assertions. Native
 [run `38162532440`](https://github.com/ThereptileII/Work/actions/runs/38162532440)
 stopped at MSVC linking of the harmless forwarder fixtures, before the new
-51-group runtime gate could execute. Fixture correction is in progress; this
-failed run is not native acceptance of the extension. The FreeSans upstream conversion and
+51-group runtime gate could execute. Fixture-only correction `eba68bf7` now
+constructs the nine fixed inert export forwarders in bounded reserved metadata;
+15 portable constructor methods pass. Native
+[run `38164290605`](https://github.com/ThereptileII/Work/actions/runs/38164290605)
+compiled and constructed them, and passed seven forwarder groups, including
+actual named/ordinal legacy-TLS targets and explicit `.dll` resolution. The
+final multi-dot grammar positive control failed native resolution with its
+prepared filenames. Its test-only filename alternatives are being diagnosed;
+the conservative production grammar refusal remains unchanged. Neither failed
+run is native acceptance of the extension. The FreeSans upstream conversion and
 original license evidence is integrated as `3ea17639` without a final legal
 clearance claim. Focused source/notice and real-scanner tests passed, but these
 newer commits have no integrated native package result and do not clear final
@@ -136,9 +144,23 @@ passed at exact source `1c4d3c88`: all four read/hold/measure/startup-lock cases
 refuse both aliases, release refused handles and accept the restored one-link
 file. The downloaded artifact's ZIP hash, CRC and actual named test receipt
 were independently verified. This run built no application and skipped the
-broader suites. General process-creation custody and authenticated signed
-successor/fallback boat commissioning remain open; the broader supervisor draft
-was withdrawn and existing boat guards remain unchanged.
+broader suites. The later source batch integrates the native PowerShell image
+owner (`8e93c5cc`): held physical NTFS image/ancestors, explicit suspended
+creation, raw child identity, a single resume attempt and versioned interruption
+records. Portable policy/embedded-source checks pass. Its focused native
+[run `38163791374`](https://github.com/ThereptileII/Work/actions/runs/38163791374)
+at `01ac92a6` passed actual file/ancestor protections but failed CreateProcessW
+with Win32 87 before resume after the SUBST remap. A bounded inert parameter
+matrix is being prepared; no cause or native acceptance is inferred.
+Ordinary Go creation (`948d43e3`, source `5a803d94`) now also receives the managed
+image hash and holds the physical image/ancestry through suspended creation and
+one resume. Its independent source review found no additional concrete defect;
+27 Linux groups / 143 including subtests and both Windows cross-compiles pass.
+Its actual Windows execution and GLOBALROOT image/CWD compatibility remain
+pending, including the separately documented counterpart failure.
+General process/script/helper/module custody and authenticated signed
+successor/fallback boat commissioning remain open. Existing boat guards and
+the installed boat package remain unchanged.
 
 ## Exact-byte Staging native retest passed; replacement source is not built
 
