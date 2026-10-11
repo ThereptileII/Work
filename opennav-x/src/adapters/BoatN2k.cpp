@@ -150,10 +150,25 @@ void BoatN2k::Map(std::vector<vessel::SensorObservation> &samples,
       o.source_id += "/explicit-boat-motor-temperature";
       o.sample.source += " / configured boat motor-temperature field";
     }
-    // Do not alter retained validity here: Assess is repeated on copied output
+    // Do not alter retained validity here: Assess is repeated on copied candidates
     // so losing/recovering heartbeat never refreshes a measurement timestamp.
     (void)now;
   }
+}
+vessel::VesselState BoatN2k::Merge(const vessel::SensorRegistry &sources,
+                                  vessel::VesselState navigation,
+                                  vessel::Time now) const {
+  return sources.Merge(std::move(navigation), now,
+      [this](vessel::Sample &sample, Quantity quantity, vessel::Time at) {
+        Assess(sample, quantity, at);
+      });
+}
+std::vector<vessel::SourceHealth> BoatN2k::Health(
+    const vessel::SensorRegistry &sources, vessel::Time now) const {
+  return sources.Health(now,
+      [this](vessel::Sample &sample, Quantity quantity, vessel::Time at) {
+        Assess(sample, quantity, at);
+      });
 }
 std::string BoatN2k::Status(vessel::Time now) const {
   if (binding_.interface_id.empty())

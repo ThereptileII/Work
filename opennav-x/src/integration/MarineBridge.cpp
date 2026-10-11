@@ -146,7 +146,8 @@ void MarineBridge::Accept(std::vector<vessel::SensorObservation> observations,
         "Marine observation requires the application thread");
   boat_.Map(observations,now);
   for (auto &observation : observations) {
-    boat_.Assess(observation.sample,observation.quantity,now);
+    // Retain raw validity: current producer expiry is assessed on copies before
+    // selection in both Merge and Health. Reading never renews these timestamps.
     const auto time = observation.sample.observed_at;
     const auto admission = sources_.Observe(std::move(observation), now);
     if ((admission == vessel::Admission::Accepted ||
@@ -157,10 +158,7 @@ void MarineBridge::Accept(std::vector<vessel::SensorObservation> observations,
 }
 vessel::VesselState MarineBridge::Merge(vessel::VesselState state,
                                         vessel::Time now) const {
-  auto result = sources_.Merge(std::move(state), now);
-  for(const auto &q:vessel::Quantities())
-    boat_.Assess(vessel::Field(result,q.quantity),q.quantity,now);
-  vessel::NormalizePropulsionStates(result);
+  auto result = boat_.Merge(sources_, std::move(state), now);
   if (last_received_)
     result.connectivity.status = {"Observed marine instrument input",
                                   "OpenCPN input bus", *last_received_,
@@ -173,8 +171,6 @@ void MarineBridge::SetBoatBridge(const adapters::BoatN2kBinding &binding) {
   boat_.Configure(binding);boat_binding_=binding;
 }
 std::vector<vessel::SourceHealth> MarineBridge::Health(vessel::Time now) const {
-  auto values=sources_.Health(now);
-  for(auto &value:values)boat_.Assess(value.sample,value.quantity,now);
-  return values;
+  return boat_.Health(sources_, now);
 }
 } // namespace opennav::integration

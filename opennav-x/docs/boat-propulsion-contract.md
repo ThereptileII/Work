@@ -50,6 +50,13 @@ expired group suppresses its values. Recovery requires new observations after
 the expiry transition. Read/paint cannot renew timestamps. These bounds describe
 producer expiry plus observed transport age, not exact original sensor latency.
 
+Automatic source selection and its health selected flags apply current producer
+validity to copied candidates before ranking. A producer-expired or uncertain
+boat source cannot hide a fresh measured alternate. Explicit pins still retain
+the selected source's unavailable/uncertain state without fallback. Retained raw
+observations and timestamps remain unchanged; heartbeat recovery alone cannot
+restore a sample from before producer expiry (SCRUM-368).
+
 The existing v1 bridge remains inspectable through the bound adapter, with
 UNCERTAIN values and dependent battery power/energy withheld. Binding removal
 returns generic PGN meanings and clears candidates; do not interpret the known

@@ -1,5 +1,24 @@
 # SKAGER status — 2026-10-11
 
+## Replacement Staging candidate — source integration pending native gates
+
+The first combined Staging run, `38121327021` at `b3cef57c`, was deliberately
+cancelled before its native application build. Its early checks passed, but a
+focused audit found that a C6v2 producer could expire after automatic sensor
+selection, temporarily hiding a healthy alternative source. `SCRUM-368` now
+assesses current producer validity on owned copies before selecting or reporting
+health. The focused 83-check regression includes heartbeat and group expiry,
+fallback, explicit pins, fresh recovery and retained timestamps; integrated
+Linux, native Windows and boat acceptance remain pending.
+
+The replacement source also binds any future retained peer retest to the
+authenticated producer receipt and executable hash, and adds a focused
+PluginHandler/Downloader download-to-archive guard. Its 13 Linux loopback
+cases pass; native Win32 execution, full plugin routing and installer acceptance
+are still open under `SCRUM-211`. These source checks do not qualify a package.
+The boat remains on the earlier `f1a1e68c` installation; no new software has
+been installed and no physical output has been sent in this batch.
+
 ## Current boat-feedback integration — source checks, not a new candidate
 
 The boat still runs the previously installed `f1a1e68c` prototype-parity

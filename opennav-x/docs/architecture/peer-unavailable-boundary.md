@@ -59,6 +59,12 @@ evidence, not a packet capture or acceptance of a replacement trust protocol.
 Porting the historical concurrent harness from `eb92c9d8` does not transfer that
 commit's runtime evidence: the integrated Linux and native Windows jobs must run
 this gate for the exact new candidate.
+For helper-only retained retests, the qualifier passes the original product
+commit separately from the current test-source commit. A different product
+identity requires the authenticated restore receipt bound to the current
+harness and workspace; its retained manifest must also match the exact tested
+executable. Missing or mismatched receipts, manifests and binaries fail before
+application launch. Ordinary runs still require the current checkout identity.
 Linux runs it after the integrated install and CTest in
 `tools/build-integration-linux.sh`. Native Windows runs it against retained
 exact-build inputs in `tools/qualify-staging-windows.ps1`, after mode startup.

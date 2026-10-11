@@ -22,7 +22,9 @@ Check 'test-boat-feedback-widgets.py' @('--manifest', "$Root/build/xnav-windows/
 Check 'smoke-installer-selftest.py' @('--expect-test-loopback', '--app', "$Root/build/xnav-install/opencpn.exe")
 Check 'smoke-modes-windows.py'
 Check 'test-peer-two-instances.py'
-Check 'smoke-peer-two-instances.py'
+$PeerArguments = @('--expected-commit', $ProductCommit)
+if ($CompiledRetest) { $PeerArguments += @('--compiled-input-receipt', "$Root/evidence/local/staging-inputs.json") }
+Check 'smoke-peer-two-instances.py' $PeerArguments
 Check 'smoke-navigation.py'
 Check 'smoke-navigation.py' @('--route-fixture')
 Check 'smoke-navigation.py' @('--route-fixture-standard')

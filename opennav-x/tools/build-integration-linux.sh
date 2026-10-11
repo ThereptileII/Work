@@ -4,6 +4,10 @@ root="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$root"
 if [[ -x .local/sysroot/usr/bin/cmake ]]; then source tools/local-env.sh; fi
 mkdir -p evidence/local
+# Exercise the pinned PluginHandler download/install boundary before the costly
+# integrated compile. Keep each focused run's retained result distinct.
+plugin_guard_run="$(mktemp -d evidence/local/plugin-download-guard.XXXXXX)"
+python3 tools/test-plugin-download-guard.py --output "$plugin_guard_run/results"
 python tools/prepare-integration.py
 args=(-G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_POLICY_VERSION_MINIMUM=3.5
   -DOCPN_BUILD_TEST=ON -DOCPN_BUNDLE_DOCS=OFF -DOCPN_BUNDLE_GSHHS=ON

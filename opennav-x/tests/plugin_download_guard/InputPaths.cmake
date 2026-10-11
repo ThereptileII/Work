@@ -1,0 +1,26 @@
+# Normalize the native input boundary before source expansion or wx discovery.
+# Literal replacement preserves Windows drive/UNC spelling on every host.
+foreach(probe_path IN ITEMS SOURCE_DIR TOOLS_DIR CURL_INCLUDE CURL_IMPORT
+    ARCHIVE_INCLUDE ARCHIVE_IMPORT wxWidgets_ROOT_DIR wxWidgets_LIB_DIR)
+  if(DEFINED ${probe_path})
+    string(REPLACE "\\" "/" ${probe_path} "${${probe_path}}")
+  endif()
+endforeach()
+unset(probe_path)
+
+foreach(required IN ITEMS SOURCE_DIR TOOLS_DIR CURL_INCLUDE CURL_IMPORT ARCHIVE_INCLUDE ARCHIVE_IMPORT)
+  if(NOT DEFINED ${required} OR "${${required}}" STREQUAL "")
+    message(FATAL_ERROR "Missing ${required}")
+  endif()
+endforeach()
+foreach(required IN ITEMS SOURCE_DIR TOOLS_DIR CURL_INCLUDE ARCHIVE_INCLUDE)
+  if(NOT IS_DIRECTORY "${${required}}")
+    message(FATAL_ERROR "Required native probe directory is missing: ${required}")
+  endif()
+endforeach()
+foreach(required IN ITEMS CURL_IMPORT ARCHIVE_IMPORT)
+  if(NOT EXISTS "${${required}}" OR IS_DIRECTORY "${${required}}")
+    message(FATAL_ERROR "Required native probe file is missing: ${required}")
+  endif()
+endforeach()
+unset(required)

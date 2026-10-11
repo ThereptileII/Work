@@ -14,10 +14,14 @@ import importlib.util
 import json
 import os
 from pathlib import Path
+import re
 import subprocess
 import sys
 import tempfile
 import time
+import zipfile
+
+import staging_build_inputs as staging_inputs
 
 from diagnostic_snapshot import read_json_snapshot
 from smoke_startup import defer_boat_setup, native_setup_window
@@ -80,7 +84,58 @@ def redact(content):
 
 def require_build(diagnostic, expected):
     if diagnostic.get("build_commit") != expected:
-        raise AssertionError("running binary does not match the exact test source commit")
+        raise AssertionError("running binary does not match the exact product commit")
+
+
+def product_identity(exe, build, requested, receipt_path, harness, root=ROOT):
+    """Consume the prior authenticated restore; never treat a caller SHA as authority."""
+    expected = requested if requested is not None else harness
+    require = staging_inputs.require
+    require(isinstance(expected, str) and re.fullmatch('[0-9a-f]{40}', expected),
+            'Exact product commit required')
+    if receipt_path is None:
+        require(expected == harness, 'A different product commit requires a restored input receipt')
+        return expected, None
+    root = root.resolve()
+    receipt_file = staging_inputs.plain_file(root, 'evidence/local/staging-inputs.json')
+    require(receipt_path.absolute() == receipt_file, 'Only the authenticated staging restore receipt may be used')
+    raw = receipt_file.read_bytes()
+    receipt = staging_inputs.strict_json(raw)
+    require(isinstance(receipt, dict), 'Invalid staging restore receipt')
+    identity = receipt.get('producer', {})
+    require(isinstance(identity, dict), 'Invalid staging restore producer')
+    require(identity == staging_inputs.producer(identity.get('commit'), identity.get('runId'),
+                                                identity.get('runAttempt'), identity.get('job')) and
+            identity['commit'] == expected and type(receipt.get('schema')) is int and
+            receipt['schema'] == 1 and receipt.get('kind') == staging_inputs.KIND and
+            receipt.get('status') == 'restored' and receipt.get('qualification') == 'not-run' and
+            receipt.get('workspaceRoot') == str(root) and receipt.get('harnessCommit') == harness,
+            'Peer restore receipt producer, harness or workspace differs')
+    for field in ('archiveSha256', 'manifestSha256'):
+        require(isinstance(receipt.get(field), str) and
+                re.fullmatch('[0-9a-f]{64}', receipt[field]), 'Invalid restore digest')
+    executable_name = 'build/xnav-install/opencpn.exe'
+    executable = staging_inputs.plain_file(root, executable_name)
+    require(exe == executable and build == root / 'build/xnav-windows',
+            'Peer test requires the fixed restored application and build paths')
+    # The restore already authenticated the archive against Actions metadata.
+    # Its receipt binds this manifest, which in turn binds the executable bytes.
+    archive = staging_inputs.plain_file(root, 'build/retained-staging-download/STAGING_BUILD_INPUTS.zip')
+    with zipfile.ZipFile(archive) as source:
+        entries = [entry for entry in source.infolist() if entry.filename == staging_inputs.MANIFEST]
+        require(len(entries) == 1 and entries[0].file_size <= staging_inputs.MAX_MANIFEST,
+                'Missing or ambiguous retained input manifest')
+        encoded = source.read(entries[0])
+    require(hashlib.sha256(encoded).hexdigest() == receipt['manifestSha256'],
+            'Retained input manifest differs from authenticated restore')
+    manifest = staging_inputs.strict_json(encoded)
+    require(manifest.get('producer') == identity, 'Retained manifest producer differs')
+    records = [record for record in manifest['files'] if record['path'] == executable_name]
+    require(len(records) == 1 and type(records[0]['size']) is int and
+            records[0]['size'] == executable.stat().st_size and
+            records[0]['sha256'] == staging_inputs.sha(executable),
+            'Peer executable differs from authenticated restore')
+    return expected, hashlib.sha256(raw).hexdigest()
 
 
 def assert_no_secrets(profile, stdout, stderr):
@@ -117,12 +172,15 @@ def defer_setup(process, profile, env):
 
 def run(args):
     exe, build = args.exe.resolve(strict=True), args.build.resolve(strict=True)
+    harness = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
+    expected, receipt_sha = product_identity(
+        exe, build, args.expected_commit, args.compiled_input_receipt, harness)
     temp_parent = native_temp_root()
     evidence = args.evidence.resolve()
     evidence.mkdir(parents=True, exist_ok=True)
     report = {"authority": "native Windows CI" if os.name == "nt" else "Linux development",
-              "test_source_commit": subprocess.check_output(
-                  ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
+              "test_source_commit": harness, "product_commit": expected,
+              "restore_receipt_sha256": receipt_sha,
               "test_script_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
               "executable_sha256": hashlib.sha256(exe.read_bytes()).hexdigest(),
               "profiles": [], "observations": [], "result": "FAILED"}
@@ -169,7 +227,7 @@ def run(args):
             # not exercise this state.
             for index, (process, profile, *_) in enumerate(processes):
                 diagnostic = wait_ready(process, profile)
-                require_build(diagnostic, report["test_source_commit"])
+                require_build(diagnostic, report["product_commit"])
                 report["profiles"][index]["build_commit"] = diagnostic["build_commit"]
                 report["profiles"][index]["first_start_setup"] = defer_setup(process, profile, env)
                 report["observations"].append({"startup_pid": process.pid})
@@ -236,4 +294,6 @@ if __name__ == "__main__":
     parser.add_argument("--build", type=Path, default=ROOT / "build" /
                         ("xnav-windows" if os.name == "nt" else "xnav-linux"))
     parser.add_argument("--evidence", type=Path, default=ROOT / "evidence/local")
+    parser.add_argument("--expected-commit")
+    parser.add_argument("--compiled-input-receipt", type=Path)
     run(parser.parse_args())

@@ -1,0 +1,457 @@
+{
+  "status": "passed",
+  "scope": "actual source plugin download guard with fixture application routing",
+  "limitations": [
+    "Linux source-slice probe; not full installed PluginHandler or plugin ABI/UI acceptance",
+    "Fixture substitutes application path routing, metadata container, logging and temp allocation",
+    "Unexpected archive-error cleanup fails the probe; rollback is not qualified",
+    "Linux uses existing test-only CA and wx filesystem adapters; native Windows remains required"
+  ],
+  "source": {
+    "upstreamCommit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+    "patchedSourceSha256": {
+      "model/src/plugin_handler.cpp": "912c756ea9d1b17eb8411132feae7c0136345e327f79d522bae478a36a218471",
+      "model/src/downloader.cpp": "6163ffeab05b71573e56c568e89616237817226ad2a65558e1f32ea2b7ad81ab",
+      "model/include/model/downloader.h": "147a517339966a59375ba5af0ce4fec052b9fd3c35bdc05e54d2453d27682346"
+    },
+    "patchSha256": "04763cb038ad088a722e76d4f85bde7e356489b697a373458195336d4278412b",
+    "unchangedFunctionSlices": [
+      {
+        "signature": "static std::string dirListPath(",
+        "firstLine": 181,
+        "sha256": "d15deaf8144cfb22b5995cdeb1770b9d5f520c4f5cb769df76aba03fa20a8178"
+      },
+      {
+        "signature": "std::string PluginHandler::FileListPath(",
+        "firstLine": 428,
+        "sha256": "7196287882adf0d75938c084e7fa60def3560d6f15e5684a11fb10e1683d7739"
+      },
+      {
+        "signature": "std::string PluginHandler::VersionPath(",
+        "firstLine": 433,
+        "sha256": "29afe00ab446b984705bfc4fb5516928502abc7a4a36348f976ca04f38d78146"
+      },
+      {
+        "signature": "static void saveFilelist(",
+        "firstLine": 462,
+        "sha256": "5bcaea0bf6a982abc6f71447daacc0e15ab055cdb95b0832b7db5ac126baef04"
+      },
+      {
+        "signature": "static void saveDirlist(",
+        "firstLine": 473,
+        "sha256": "6f07f5a2a0ac3367c531b699821439b321aacea3684610515719a2de1f518d74"
+      },
+      {
+        "signature": "static void saveVersion(",
+        "firstLine": 488,
+        "sha256": "16987664ee291b3d0f5a509b062a293647dc00ed4e192dfb859bec3502a0196e"
+      },
+      {
+        "signature": "static int copy_data(",
+        "firstLine": 499,
+        "sha256": "cd88071dc95c3c1f9178a8eabbd14a1aca945eba917635b572505effb095d426"
+      },
+      {
+        "signature": "bool PluginHandler::ArchiveCheck(",
+        "firstLine": 829,
+        "sha256": "f064226df44a6a6b7be26358b5b15034de950014cf382bcd1e732143c50663f1"
+      },
+      {
+        "signature": "bool PluginHandler::ExplodeTarball(",
+        "firstLine": 840,
+        "sha256": "ceb60d89aad26ea39931cf100cd48ab3117bbe731d6470acdb6daf33d21e28db"
+      },
+      {
+        "signature": "bool PluginHandler::ExtractTarball(",
+        "firstLine": 924,
+        "sha256": "f021655fe3c862c505652f61e8a58770f4cd9e20e8d1b6d04046b7a13fcd8cc4"
+      },
+      {
+        "signature": "bool PluginHandler::InstallPlugin(PluginMetadata plugin, std::string path)",
+        "firstLine": 1216,
+        "sha256": "bef21b05a2a74ef6365ac58f413e19d0cc2b1230dd2cc64ea0ff2eb3d30ad75f"
+      },
+      {
+        "signature": "bool PluginHandler::InstallPlugin(PluginMetadata plugin)",
+        "firstLine": 1232,
+        "sha256": "724071092aade2c4f53789dbf6b9c6353e5cafde05c3316038a8ae4d78869dab"
+      }
+    ],
+    "probeSha256": "8ba024c3dbf129aed6eee9aeaf157d09d981a18676c94507736fd910ef868554",
+    "harnessSha256": {
+      "tools/test-plugin-download-guard.py": "4e89077f8ec2e275956414b786078471997cf4bf5d52f6223a3ee657ad1daef6",
+      "tools/plugin-download-guard-server.py": "3d350de5393dd3f98a462c0be3fd95eb5c4028e361c4752735cd7cb607aac529",
+      "tools/test-downloader-trust.py": "5bc4d97b9a233a5d2da17984741bd5df44b506cffaa8ba0803b671f85df0c8de",
+      "tools/TrustProbeConsole.h": "9f78cfb60b40454fdbeaf4fc4a868b3f82e55f8aa94f565665f50fda42764edc",
+      "tools/downloader-trust-shim/wx/filename.h": "b17447e65f93514190606465e3787add90ecb74b0bd18bd32f5e6529641f912f",
+      "tools/downloader-trust-shim/wx/log.h": "4352f17860c99f1640aef101f19d97fb08a1e4148362bc712fbfa9d180ab16f3",
+      "tests/plugin_download_guard/CMakeLists.txt": "c92188025bfadaa827402df48577621979ce23c22c6473462645507e748a6e42",
+      "tests/plugin_download_guard/InputPaths.cmake": "e91bf9c73ee0a42610fbbd561b9c389b36d1a88e2795f9c1da3a2654e8d2f444"
+    }
+  },
+  "libraries": {
+    "libcurl": "8.22.0",
+    "libarchive": "3.8.9"
+  },
+  "archiveSha256": "e75ae5cbfbcf9021bcdfda43e868816316179d6218f0dd2b855db909e0d37d48",
+  "cases": [
+    {
+      "case": "ALL_PROXY",
+      "passed": true,
+      "accepted": true,
+      "archiveOpens": 1,
+      "archiveEntries": 2,
+      "installedFilesAndRecordsUnchanged": false,
+      "error": "",
+      "before": {
+        "installed": "directory",
+        "installed/existing.txt": "c30791be216caad02885ddbb40d37532faff113b6cf2245d0fda6ef2d2c065ee",
+        "records": "directory",
+        "records/fixture.dirs": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "records/fixture.files": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "records/fixture.version": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "temporary": "directory"
+      },
+      "after": {
+        "installed": "directory",
+        "installed/existing.txt": "52c1070311cd22e4166904645ab91c4b3d6b45b6ccde753f41a16a3880cf6dfa",
+        "installed/new.txt": "499094d6a7d66bfa1efdde53a06dc9ea6e26cd6dc67d35fe9fe3fac5ac34af12",
+        "records": "directory",
+        "records/fixture.dirs": "4035b33671a180119c219a09524ac58919c7d9f2dfee3a3ba52735b6808848e2",
+        "records/fixture.files": "ba3ebe35c1ec2c14ad203c6b7f7133a42bd8fcc72e929b959d52cb3f57c99800",
+        "records/fixture.version": "53c234e5e8472b6ac51c1ae1cab3fe06fad053beb8ebfd8977b010655bfdd3c3",
+        "temporary": "directory",
+        "temporary/download.tar": "e75ae5cbfbcf9021bcdfda43e868816316179d6218f0dd2b855db909e0d37d48"
+      }
+    },
+    {
+      "case": "ALL_PROXY",
+      "passed": true,
+      "accepted": true,
+      "archiveOpens": 1,
+      "archiveEntries": 2,
+      "installedFilesAndRecordsUnchanged": false,
+      "error": "",
+      "before": {
+        "installed": "directory",
+        "installed/existing.txt": "c30791be216caad02885ddbb40d37532faff113b6cf2245d0fda6ef2d2c065ee",
+        "records": "directory",
+        "records/fixture.dirs": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "records/fixture.files": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "records/fixture.version": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "temporary": "directory"
+      },
+      "after": {
+        "installed": "directory",
+        "installed/existing.txt": "52c1070311cd22e4166904645ab91c4b3d6b45b6ccde753f41a16a3880cf6dfa",
+        "installed/new.txt": "499094d6a7d66bfa1efdde53a06dc9ea6e26cd6dc67d35fe9fe3fac5ac34af12",
+        "records": "directory",
+        "records/fixture.dirs": "8dd559ab59b92cbceae2fbeac5fea2492dd40e2819a04e5055ad487ee791ec80",
+        "records/fixture.files": "a09e01664870ea40e60359d862c197819d8ecb33d3ea7c4b0f75b11082682175",
+        "records/fixture.version": "53c234e5e8472b6ac51c1ae1cab3fe06fad053beb8ebfd8977b010655bfdd3c3",
+        "temporary": "directory",
+        "temporary/download.tar": "e75ae5cbfbcf9021bcdfda43e868816316179d6218f0dd2b855db909e0d37d48"
+      }
+    },
+    {
+      "case": "ALL_PROXY",
+      "passed": true,
+      "accepted": false,
+      "archiveOpens": 0,
+      "archiveEntries": 0,
+      "installedFilesAndRecordsUnchanged": true,
+      "error": "Cannot download plugin: Fixture [Protocol \"http\" is disabled (in redirect)]",
+      "before": {
+        "installed": "directory",
+        "installed/existing.txt": "c30791be216caad02885ddbb40d37532faff113b6cf2245d0fda6ef2d2c065ee",
+        "records": "directory",
+        "records/fixture.dirs": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "records/fixture.files": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "records/fixture.version": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "temporary": "directory"
+      },
+      "after": {
+        "installed": "directory",
+        "installed/existing.txt": "c30791be216caad02885ddbb40d37532faff113b6cf2245d0fda6ef2d2c065ee",
+        "records": "directory",
+        "records/fixture.dirs": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "records/fixture.files": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "records/fixture.version": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "temporary": "directory"
+      }
+    },
+    {
+      "case": "ALL_PROXY",
+      "passed": true,
+      "accepted": false,
+      "archiveOpens": 0,
+      "archiveEntries": 0,
+      "installedFilesAndRecordsUnchanged": true,
+      "error": "Cannot download plugin: Fixture [Protocol \"file\" is disabled (in redirect)]",
+      "before": {
+        "installed": "directory",
+        "installed/existing.txt": "c30791be216caad02885ddbb40d37532faff113b6cf2245d0fda6ef2d2c065ee",
+        "records": "directory",
+        "records/fixture.dirs": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "records/fixture.files": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "records/fixture.version": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "temporary": "directory"
+      },
+      "after": {
+        "installed": "directory",
+        "installed/existing.txt": "c30791be216caad02885ddbb40d37532faff113b6cf2245d0fda6ef2d2c065ee",
+        "records": "directory",
+        "records/fixture.dirs": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "records/fixture.files": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "records/fixture.version": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "temporary": "directory"
+      }
+    },
+    {
+      "case": "ALL_PROXY",
+      "passed": true,
+      "accepted": false,
+      "archiveOpens": 0,
+      "archiveEntries": 0,
+      "installedFilesAndRecordsUnchanged": true,
+      "error": "Cannot download plugin: Fixture [Public download URL must use HTTPS]",
+      "before": {
+        "installed": "directory",
+        "installed/existing.txt": "c30791be216caad02885ddbb40d37532faff113b6cf2245d0fda6ef2d2c065ee",
+        "records": "directory",
+        "records/fixture.dirs": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "records/fixture.files": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "records/fixture.version": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "temporary": "directory"
+      },
+      "after": {
+        "installed": "directory",
+        "installed/existing.txt": "c30791be216caad02885ddbb40d37532faff113b6cf2245d0fda6ef2d2c065ee",
+        "records": "directory",
+        "records/fixture.dirs": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "records/fixture.files": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "records/fixture.version": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "temporary": "directory"
+      }
+    },
+    {
+      "case": "ALL_PROXY",
+      "passed": true,
+      "accepted": false,
+      "archiveOpens": 0,
+      "archiveEntries": 0,
+      "installedFilesAndRecordsUnchanged": true,
+      "error": "Cannot download plugin: Fixture [OpenSSL SSL_read: OpenSSL/3.6.4: error:0A000126:SSL routines::unexpected eof while reading, errno 0]",
+      "before": {
+        "installed": "directory",
+        "installed/existing.txt": "c30791be216caad02885ddbb40d37532faff113b6cf2245d0fda6ef2d2c065ee",
+        "records": "directory",
+        "records/fixture.dirs": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "records/fixture.files": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "records/fixture.version": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "temporary": "directory"
+      },
+      "after": {
+        "installed": "directory",
+        "installed/existing.txt": "c30791be216caad02885ddbb40d37532faff113b6cf2245d0fda6ef2d2c065ee",
+        "records": "directory",
+        "records/fixture.dirs": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "records/fixture.files": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "records/fixture.version": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "temporary": "directory"
+      }
+    },
+    {
+      "case": "ALL_PROXY",
+      "passed": true,
+      "accepted": false,
+      "archiveOpens": 0,
+      "archiveEntries": 0,
+      "installedFilesAndRecordsUnchanged": true,
+      "error": "Cannot download plugin: Fixture [SSL certificate OpenSSL verify result: unable to get local issuer certificate (20)]",
+      "before": {
+        "installed": "directory",
+        "installed/existing.txt": "c30791be216caad02885ddbb40d37532faff113b6cf2245d0fda6ef2d2c065ee",
+        "records": "directory",
+        "records/fixture.dirs": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "records/fixture.files": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "records/fixture.version": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "temporary": "directory"
+      },
+      "after": {
+        "installed": "directory",
+        "installed/existing.txt": "c30791be216caad02885ddbb40d37532faff113b6cf2245d0fda6ef2d2c065ee",
+        "records": "directory",
+        "records/fixture.dirs": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "records/fixture.files": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "records/fixture.version": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "temporary": "directory"
+      }
+    },
+    {
+      "case": "ALL_PROXY",
+      "passed": true,
+      "accepted": false,
+      "archiveOpens": 0,
+      "archiveEntries": 0,
+      "installedFilesAndRecordsUnchanged": true,
+      "error": "Cannot download plugin: Fixture [SSL certificate OpenSSL verify result: unable to get local issuer certificate (20)]",
+      "before": {
+        "installed": "directory",
+        "installed/existing.txt": "c30791be216caad02885ddbb40d37532faff113b6cf2245d0fda6ef2d2c065ee",
+        "records": "directory",
+        "records/fixture.dirs": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "records/fixture.files": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "records/fixture.version": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "temporary": "directory"
+      },
+      "after": {
+        "installed": "directory",
+        "installed/existing.txt": "c30791be216caad02885ddbb40d37532faff113b6cf2245d0fda6ef2d2c065ee",
+        "records": "directory",
+        "records/fixture.dirs": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "records/fixture.files": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "records/fixture.version": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "temporary": "directory"
+      }
+    },
+    {
+      "case": "ALL_PROXY",
+      "passed": true,
+      "accepted": false,
+      "archiveOpens": 0,
+      "archiveEntries": 0,
+      "installedFilesAndRecordsUnchanged": true,
+      "error": "Cannot download plugin: Fixture [SSL certificate OpenSSL verify result: certificate has expired (10)]",
+      "before": {
+        "installed": "directory",
+        "installed/existing.txt": "c30791be216caad02885ddbb40d37532faff113b6cf2245d0fda6ef2d2c065ee",
+        "records": "directory",
+        "records/fixture.dirs": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "records/fixture.files": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "records/fixture.version": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "temporary": "directory"
+      },
+      "after": {
+        "installed": "directory",
+        "installed/existing.txt": "c30791be216caad02885ddbb40d37532faff113b6cf2245d0fda6ef2d2c065ee",
+        "records": "directory",
+        "records/fixture.dirs": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "records/fixture.files": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "records/fixture.version": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "temporary": "directory"
+      }
+    },
+    {
+      "case": "ALL_PROXY",
+      "passed": true,
+      "accepted": false,
+      "archiveOpens": 0,
+      "archiveEntries": 0,
+      "installedFilesAndRecordsUnchanged": true,
+      "error": "Cannot download plugin: Fixture [SSL certificate OpenSSL verify result: certificate has expired (10)]",
+      "before": {
+        "installed": "directory",
+        "installed/existing.txt": "c30791be216caad02885ddbb40d37532faff113b6cf2245d0fda6ef2d2c065ee",
+        "records": "directory",
+        "records/fixture.dirs": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "records/fixture.files": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "records/fixture.version": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "temporary": "directory"
+      },
+      "after": {
+        "installed": "directory",
+        "installed/existing.txt": "c30791be216caad02885ddbb40d37532faff113b6cf2245d0fda6ef2d2c065ee",
+        "records": "directory",
+        "records/fixture.dirs": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "records/fixture.files": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "records/fixture.version": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "temporary": "directory"
+      }
+    },
+    {
+      "case": "ALL_PROXY",
+      "passed": true,
+      "accepted": false,
+      "archiveOpens": 0,
+      "archiveEntries": 0,
+      "installedFilesAndRecordsUnchanged": true,
+      "error": "Cannot download plugin: Fixture [SSL: no alternative certificate subject name matches target hostname 'localhost']",
+      "before": {
+        "installed": "directory",
+        "installed/existing.txt": "c30791be216caad02885ddbb40d37532faff113b6cf2245d0fda6ef2d2c065ee",
+        "records": "directory",
+        "records/fixture.dirs": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "records/fixture.files": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "records/fixture.version": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "temporary": "directory"
+      },
+      "after": {
+        "installed": "directory",
+        "installed/existing.txt": "c30791be216caad02885ddbb40d37532faff113b6cf2245d0fda6ef2d2c065ee",
+        "records": "directory",
+        "records/fixture.dirs": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "records/fixture.files": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "records/fixture.version": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "temporary": "directory"
+      }
+    },
+    {
+      "case": "ALL_PROXY",
+      "passed": true,
+      "accepted": false,
+      "archiveOpens": 0,
+      "archiveEntries": 0,
+      "installedFilesAndRecordsUnchanged": true,
+      "error": "Cannot download plugin: Fixture [SSL: no alternative certificate subject name matches target hostname 'localhost']",
+      "before": {
+        "installed": "directory",
+        "installed/existing.txt": "c30791be216caad02885ddbb40d37532faff113b6cf2245d0fda6ef2d2c065ee",
+        "records": "directory",
+        "records/fixture.dirs": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "records/fixture.files": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "records/fixture.version": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "temporary": "directory"
+      },
+      "after": {
+        "installed": "directory",
+        "installed/existing.txt": "c30791be216caad02885ddbb40d37532faff113b6cf2245d0fda6ef2d2c065ee",
+        "records": "directory",
+        "records/fixture.dirs": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "records/fixture.files": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "records/fixture.version": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "temporary": "directory"
+      }
+    },
+    {
+      "case": "ALL_PROXY",
+      "passed": true,
+      "accepted": false,
+      "archiveOpens": 0,
+      "archiveEntries": 0,
+      "installedFilesAndRecordsUnchanged": true,
+      "error": "Cannot download plugin: Fixture [error adding trust anchors from file: /tmp/scrum211-plugin-evidence/missing-ca.pem]",
+      "before": {
+        "installed": "directory",
+        "installed/existing.txt": "c30791be216caad02885ddbb40d37532faff113b6cf2245d0fda6ef2d2c065ee",
+        "records": "directory",
+        "records/fixture.dirs": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "records/fixture.files": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "records/fixture.version": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "temporary": "directory"
+      },
+      "after": {
+        "installed": "directory",
+        "installed/existing.txt": "c30791be216caad02885ddbb40d37532faff113b6cf2245d0fda6ef2d2c065ee",
+        "records": "directory",
+        "records/fixture.dirs": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "records/fixture.files": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "records/fixture.version": "7c5d5c99bb5e08fdf8cb70953cc19159493c692ee01e3cda97d5aec633279cde",
+        "temporary": "directory"
+      }
+    }
+  ],
+  "httpTargetReachable": true,
+  "forbiddenHttpRequests": 0,
+  "ignoredFailureMutation": "rejected: failed download entered archive installation"
+}

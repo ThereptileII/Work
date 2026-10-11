@@ -166,7 +166,8 @@ Admission SensorRegistry::Observe(SensorObservation o, Time now) {
   candidates[o.source_id] = std::move(o);
   return valid ? Admission::Accepted : Admission::InvalidValue;
 }
-SourceSelection SensorRegistry::Select(Quantity q, Time now) const {
+SourceSelection SensorRegistry::Select(Quantity q, Time now,
+                                       const SourceAssessment &assess) const {
   const auto policy = Policy(q);
   SourceSelection result;
   result.sample.freshness = policy.freshness;
@@ -177,12 +178,16 @@ SourceSelection SensorRegistry::Select(Quantity q, Time now) const {
   if (set == sources_.end())
     return result;
   const SensorObservation *selected = nullptr;
+  Sample selected_sample;
   int best = 4;
   for (const auto &entry : set->second) {
     const auto &o = entry.second;
     if (!policy.pinned_source.empty() && entry.first != policy.pinned_source)
       continue;
-    const auto a = Assess(o.sample, now, policy.freshness);
+    auto sample = o.sample;
+    if (assess)
+      assess(sample, q, now);
+    const auto a = Assess(sample, now, policy.freshness);
     const int rank = a.quality == Quality::Live || a.quality == Quality::Aging
                          ? 0
                      : a.quality == Quality::Estimated ? 1
@@ -191,11 +196,12 @@ SourceSelection SensorRegistry::Select(Quantity q, Time now) const {
     if (!selected || rank < best ||
         (rank == best && o.priority < selected->priority)) {
       selected = &o;
+      selected_sample = std::move(sample);
       best = rank;
     }
   }
   if (selected) {
-    result.sample = selected->sample;
+    result.sample = std::move(selected_sample);
     result.sample.freshness = policy.freshness;
     result.selected_source = selected->source_id;
     result.reason = !policy.pinned_source.empty()
@@ -205,9 +211,10 @@ SourceSelection SensorRegistry::Select(Quantity q, Time now) const {
   }
   return result;
 }
-VesselState SensorRegistry::Merge(VesselState s, Time now) const {
+VesselState SensorRegistry::Merge(VesselState s, Time now,
+                                  const SourceAssessment &assess) const {
   for (const auto &q : Quantities())
-    Field(s, q.quantity) = Select(q.quantity, now).sample;
+    Field(s, q.quantity) = Select(q.quantity, now, assess).sample;
   NormalizePropulsionStates(s);
   return s;
 }
@@ -235,12 +242,15 @@ void NormalizePropulsionStates(VesselState &s) {
     s.propulsion.regeneration.value = names[static_cast<unsigned>(*regen.value)];
   }
 }
-std::vector<SourceHealth> SensorRegistry::Health(Time now) const {
+std::vector<SourceHealth> SensorRegistry::Health(
+    Time now, const SourceAssessment &assess) const {
   std::vector<SourceHealth> result;
   for (const auto &group : sources_) {
-    const auto selected = Select(group.first, now);
+    const auto selected = Select(group.first, now, assess);
     for (const auto &entry : group.second) {
       auto sample = entry.second.sample;
+      if (assess)
+        assess(sample, group.first, now);
       sample.freshness = Policy(group.first).freshness;
       result.push_back({group.first, entry.first, sample,
                         selected.selected_source == entry.first,

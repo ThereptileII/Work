@@ -23,6 +23,12 @@ public:
            vessel::Time now) const;
   void Assess(vessel::Sample &sample, vessel::Quantity quantity,
               vessel::Time now) const;
+  // Current producer validity applies to copies before selection, never to
+  // retained observations or their timestamps.
+  vessel::VesselState Merge(const vessel::SensorRegistry &sources,
+                           vessel::VesselState navigation, vessel::Time now) const;
+  std::vector<vessel::SourceHealth> Health(const vessel::SensorRegistry &sources,
+                                         vessel::Time now) const;
   std::string Status(vessel::Time now) const;
 
 private:

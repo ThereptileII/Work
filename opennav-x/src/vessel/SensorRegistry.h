@@ -1,6 +1,7 @@
 #pragma once
 #include "vessel/VesselState.h"
 #include <cstdint>
+#include <functional>
 #include <map>
 #include <vector>
 
@@ -85,6 +86,10 @@ struct SourceHealth {
   std::uint64_t invalid_observations = 0;
 };
 
+// Assess current producer state on a copy before ranking; callbacks must not
+// renew observation timestamps. Retained observations remain unchanged.
+using SourceAssessment = std::function<void(Sample &, Quantity, Time)>;
+
 // Application-thread reducer, with owned values only. Reads never mutate the
 // receipt watermark or renew age. Each quantity has a bounded candidate set.
 class SensorRegistry {
@@ -92,9 +97,12 @@ public:
   Admission Observe(SensorObservation observation, Time now);
   void Configure(Quantity quantity, SourcePolicy policy);
   SourcePolicy Policy(Quantity quantity) const;
-  SourceSelection Select(Quantity quantity, Time now) const;
-  VesselState Merge(VesselState selected_navigation, Time now) const;
-  std::vector<SourceHealth> Health(Time now) const;
+  SourceSelection Select(Quantity quantity, Time now,
+                         const SourceAssessment &assess = {}) const;
+  VesselState Merge(VesselState selected_navigation, Time now,
+                    const SourceAssessment &assess = {}) const;
+  std::vector<SourceHealth> Health(Time now,
+                                 const SourceAssessment &assess = {}) const;
   void Clear();
 
 private:
