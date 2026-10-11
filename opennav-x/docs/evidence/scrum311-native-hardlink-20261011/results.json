@@ -45,9 +45,47 @@
   "signedBoatAcceptance": false,
   "physicalHardware": "none",
   "limitations": [
-    "Windows hardlink fixture compiled but not executed; no native red/green result claimed",
+    "Focused Windows Win32 hardlink fixture passed; no native before-fix red run, full launcher suite or Windows x64 execution is claimed",
     "Link count checked on acquired handle at acquisition; no continuous path namespace custody claim",
     "No supervisor, commissioning, broker, launch-authority or health identity changes",
-    "No application build, dispatch, push, private-origin or physical operation"
-  ]
+    "No application/package build, private-origin, signed-boat or physical operation; native workflow dispatch was performed by coordinator before this evidence-only update"
+  ],
+  "focusedNativeHardlinkAcceptance": true,
+  "nativeWindowsAcceptanceScope": "Full updater qualification remains open; focused native hardlink acceptance is recorded separately",
+  "nativeEvidence": {
+    "runURL": "https://github.com/ThereptileII/Work/actions/runs/38159970075",
+    "runId": 38159970075,
+    "jobId": 114530639767,
+    "coordinatorCommit": "1c4d3c88ef61771b43193d76fb71017c101166fd",
+    "go": "go version go1.27.1 windows/amd64",
+    "GOARCH": "386",
+    "command": "go test -count=1 -json ./launcher -run '^TestNativeOwnedFileAcquisitionRejectsHardlinks$'",
+    "passed": true,
+    "passedConsumers": [
+      "read",
+      "hold",
+      "measure",
+      "startup-lock"
+    ],
+    "sourceMatchesRecordedHashes": true,
+    "artifact": {
+      "id": 11708879513,
+      "sha256": "3e26325403357acc5a851f242c8d19dbd8b709adcbe8534c71a38f15f4e30108",
+      "verification": "Coordinator downloaded archive and verified SHA256 and ZIP CRC; this evidence update copied retained receipt/test bytes unchanged"
+    },
+    "retainedFiles": {
+      "native-38159970075/receipt.json": {
+        "sha256": "2113b1c4148d75e17f2582e58f2d2da0ca68bff2b50272e79bdf52efb857864e",
+        "bytes": 273
+      },
+      "native-38159970075/tests.json": {
+        "sha256": "c523aacf15af3a37d2dbf37049b64e7c1a346692c6008c797c719a2dac5cb8fc",
+        "bytes": 5203
+      }
+    },
+    "applicationBuild": false,
+    "commissioningAcceptance": false,
+    "fullLauncherSuiteRun": false,
+    "windowsX64Execution": false
+  }
 }

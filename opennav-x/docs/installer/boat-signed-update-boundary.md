@@ -158,12 +158,24 @@ acquisition, and releasing any successful owner must permit cleanup. The
 fixture does not launch an application, shell, installer or physical output.
 
 The Linux launcher suite passed with pinned Go 1.27.1 and offline cached
-dependencies. Windows x86 and x64 launcher test helpers cross-compiled; they
-were **not executed**. These checks establish portable regressions and native
-compilation only. [Focused results](../evidence/scrum311-native-hardlink-20261011/results.json)
-record the exact commands and source hashes. Native Windows must run
-`go test ./launcher -run '^TestNativeOwnedFileAcquisitionRejectsHardlinks$' -count=1`
-and the existing launcher suite before accepting the native invariant.
+dependencies; Windows x86 and x64 launcher test helpers cross-compiled.
+The focused native Win32 fixture then passed in
+[run 38159970075](https://github.com/ThereptileII/Work/actions/runs/38159970075),
+job `114530639767`, at exact coordinator commit
+`1c4d3c88ef61771b43193d76fb71017c101166fd` with Go 1.27.1 and `GOARCH=386`.
+All four actual native consumers (`read`, `hold`, `measure`, `startup-lock`)
+passed. The tested source bytes match the hashes recorded for this increment.
+This qualifies the focused acquired-handle hardlink invariant only; the native
+full launcher suite and x64 execution were not run in that job.
+
+[Focused results](../evidence/scrum311-native-hardlink-20261011/results.json)
+record commands, exact identity and hashes of the unchanged
+[raw receipt](../evidence/scrum311-native-hardlink-20261011/native-38159970075/receipt.json)
+and [raw test events](../evidence/scrum311-native-hardlink-20261011/native-38159970075/tests.json).
+The coordinator downloaded artifact `11708879513`, verified ZIP CRC and SHA256
+`3e26325403357acc5a851f242c8d19dbd8b709adcbe8534c71a38f15f4e30108`.
+No application or package build was performed; other verifier, popup and
+lifecycle suites were outside this focused run.
 
 This is an acquisition-time link-count refusal, not continuous namespace,
 loader, profile or generation custody, nor signed-update launch authorization.

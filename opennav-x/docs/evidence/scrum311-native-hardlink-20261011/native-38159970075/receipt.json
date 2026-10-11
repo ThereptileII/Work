@@ -1,0 +1,9 @@
+{
+  "commit": "1c4d3c88ef61771b43193d76fb71017c101166fd",
+  "go": "go version go1.27.1 windows/amd64",
+  "arch": "386",
+  "test": "TestNativeOwnedFileAcquisitionRejectsHardlinks",
+  "passed": true,
+  "applicationBuild": false,
+  "commissioningAcceptance": false
+}
