@@ -16,8 +16,8 @@ Audited product base: `cf27ce18`; pinned OpenCPN source:
 
 The font metadata identifies GNU FreeSans Normal 2012, FreeSans Regular,
 version 0412.2268, GNU Freefont contributors, and the GNU FreeFont project URL.
-This identifies the claimed upstream family; it does not establish the exact
-original source archive or the conversion recipe that produced these SSFN bytes.
+The independent upstream comparison and reproduction below establish the
+original OTF input and a working conversion recipe, beyond this metadata claim.
 
 The supplied older recovery ZIP at
 `evidence/local/boat-beta2/final-79-artifacts/beta-candidate-79a95c4f39063c20ca4d5a98c3147080d9813077/OpenNavX-Beta2-Portable-Recovery.zip`
@@ -27,6 +27,62 @@ matched the pinned source above. This is historical package evidence only.
 The exact current Staging recovery ZIP was not available locally and was not
 downloaded for this bounded task. Exact current/native package inspection remains
 pending; neither source review nor the older artifact qualifies a new package.
+
+## Upstream byte match and reproduced conversion
+
+Follow-up evidence collected on 2026-10-11:
+
+- OpenCPN first added these bytes in commit
+  [`743870c2ab12a852cc9f23b6e60bd2bc7eb433a9`](https://github.com/OpenCPN/OpenCPN/commit/743870c2ab12a852cc9f23b6e60bd2bc7eb433a9)
+  (2024-07-05, “Refine MUIBar chart scale text size/layout.”). The commit adds
+  the font, renderer and install rules, but no original font or conversion recipe.
+  Its font bytes are unchanged at the pinned OpenCPN revision.
+- The original **SSFN v1** project, `bztsrc/scalable-font`, at commit
+  [`79d2e48c32a09d514b1b90729f0f3c3978c72e75`](https://gitlab.com/bztsrc/scalable-font/-/tree/79d2e48c32a09d514b1b90729f0f3c3978c72e75)
+  contains [`fonts/FreeSans.sfn.gz`](https://gitlab.com/bztsrc/scalable-font/-/raw/79d2e48c32a09d514b1b90729f0f3c3978c72e75/fonts/FreeSans.sfn.gz).
+  Decompression produces exactly the pinned OpenCPN font, verified by direct
+  byte equality as well as SHA-256. This is not the newer `scalable-font2`
+  project, whose format uses `SFN2` magic.
+- The same revision's
+  [`fonts/README.md`](https://gitlab.com/bztsrc/scalable-font/-/blob/79d2e48c32a09d514b1b90729f0f3c3978c72e75/fonts/README.md)
+  identifies that example as converted from GNU FreeFont's `FreeSans.otf` at
+  maximum quality. Its
+  [`converter documentation`](https://gitlab.com/bztsrc/scalable-font/-/blob/79d2e48c32a09d514b1b90729f0f3c3978c72e75/docs/ecosystem.md)
+  identifies `ttf2sfn`, which uses FreeType to convert outline fonts.
+- An independent conversion of `freefont-20120503/FreeSans.otf` from GNU's
+  [`freefont-otf-20120503.tar.gz`](https://ftp.gnu.org/gnu/freefont/freefont-otf-20120503.tar.gz)
+  using the unchanged converter and header at that SSFN revision reproduces
+  the OpenCPN font byte-for-byte. This proves a reproducible conversion from
+  that input; it does not claim to recover the original converter invocation
+  or historical build environment.
+
+| Downloaded input | Bytes | SHA-256 |
+| --- | ---: | --- |
+| SSFN v1 `fonts/FreeSans.sfn.gz` | 231,476 | `e8f3043bc89b59722248c34f37e37fdf75a4bf6ca58bab8d858c3140a35a2c1b` |
+| GNU `freefont-otf-20120503.tar.gz` | 4,487,813 | `3a6c51868c71b006c33c4bcde63d90927e6fcca8f51c965b8ad62d021614a860` |
+| Archive member `FreeSans.otf` | 856,800 | `d3e9138ccf76ef516cc6af867e4e7ed8776331947235824f924c5886186b0c80` |
+| GNU `freefont-src-20120503.tar.gz` | 6,505,962 | `0d62e2e22655f841c3ac5fb8c8059a52fe2c09c695d9e8eda9903406e942657a` |
+| Source archive member `sfd/FreeSans.sfd` | 3,946,801 | `9dfad4bb43eb8c9cd366f33336844f1b6ace870ee7b652af7147bf3cc8a3df1e` |
+| SSFN v1 `sfnconv/ttf2sfn.c` | 47,937 | `7886cb314de625e06f1071ccead43a20aac956b2ef883eb6d5dbc587763b82c4` |
+| SSFN v1 `ssfn.h` | 57,291 | `f2e179248ba1a313da821fcb8181828a7164871846e2863113548e2bdbb213d2` |
+
+Reproduction used GCC 16.2.1 and FreeType package 2.14.3-1 on Linux, with the
+upstream source layout (`sfnconv/ttf2sfn.c` includes `../ssfn.h`):
+
+```sh
+gcc -Wall -Wextra -ansi -pedantic -I/usr/include/freetype2 \
+  -o ttf2sfn sfnconv/ttf2sfn.c -lfreetype
+./ttf2sfn -6 -s FreeSans.otf reproduced.sfn
+sha256sum reproduced.sfn
+# 4b34341dbfd211b646807bda719e81f2ab2938bcb31f9eaf9c3f26b371566a46
+```
+
+The output is 372,928 bytes. `-6` selects maximum quality; `-s` selects the
+sans-serif family. A first run without `-s` differed only at header byte 8,
+which defaults to the serif family. The corrected invocation needs no manual
+output modification. Compilation emitted a C99 integer-constant warning from
+the installed FreeType headers; conversion completed successfully. No product
+font, package input, or installed application was changed during this check.
 
 ## What the inventory now enforces
 
@@ -41,8 +97,10 @@ install list fail instead of inheriting old evidence.
 The generated JSON includes `fontEvidence`, the hashed install recipe, source-only
 Helvetica identity, and detected packaged font candidates. FreeSans remains in
 `unresolvedFiles` with category `font` even though its source is now identified.
-The generated third-party notice index explicitly retains its unresolved license
-and conversion limitation. No license expression is assigned to this font.
+The generated third-party notice index still retains its unresolved license
+and conversion limitation. The new evidence in this document has not yet been
+integrated into that generated inventory or release notices. No license
+expression is assigned to this font by the current inventory.
 
 SSFN/TXF and common outline/webfont magic bytes are recognized even under another
 filename. Additional font extensions are candidates, explicitly marked
@@ -60,14 +118,41 @@ by themselves establish all terms applicable to this converted font. The SSFN
 renderer header's license is a separate software component and must not be
 assigned to the font data.
 
-[GNU FreeFont's license page](https://www.gnu.org/s/freefont/license.html)
-describes GPL version 3 or later and a document-embedding exception for its fonts.
-That public upstream statement is useful review input, but this task has not
-proven the original font/conversion chain or a specific exception grant for the
-pinned `.sfn` artifact. A font-specific notice, original-source identity,
-conversion provenance and corresponding-source/license review remain required.
-Helvetica's source-only license provenance also remains unreviewed. No legal
-compatibility or redistribution approval is inferred here.
+The verified original OTF contains an explicit **GPL version 3 or later**
+grant and the document-embedding exception in its OpenType name-table entry 13.
+The same GNU archive's `README` includes those terms, and its `COPYING` contains
+GPLv3. This is direct evidence for the original input's terms, not a license
+inferred from the filename. The
+[GNU FreeFont license page](https://www.gnu.org/s/freefont/license.html)
+confirms that distributing font software and modified fonts remains subject to
+the GPL; its document exception does not exempt application font distribution.
+
+The SSFN converter copies selected names and the copyright string, but does
+not retain the OTF's full license/exception entry. Neither the matched SSFN
+example nor its README establishes an explicit continuation of the optional
+embedding exception for that converted artifact. Consequently this evidence
+supports GNU FreeFont provenance and the GPL-3.0-or-later origin, while a
+font-specific notice and license-expression decision for the shipped derivative
+remain pending. The SSFN project's MIT license covers its software; it does not
+replace the GNU font's license.
+
+Release review must address GPLv3 notice/license preservation, identification
+of modifications, and corresponding-source delivery under the applicable
+distribution method ([GPLv3 sections 1, 4–6](https://www.gnu.org/licenses/gpl-3.0.html)).
+GNU supplies a separate
+[`freefont-src-20120503.tar.gz`](https://ftp.gnu.org/gnu/freefont/freefont-src-20120503.tar.gz)
+with editable FontForge sources; the original OTF plus the converted SSFN alone
+must not be asserted to complete the preferred-source obligation. Its
+`sfd/FreeSans.sfd` identifies revision 2268, and its Makefiles provide OTF
+generation. That SFD-to-OTF stage was inspected but not rebuilt in this review.
+The font
+source, OTF-generation inputs and conversion recipe need to be incorporated
+into the reviewed source-delivery solution, with the required notices.
+[GNU's FAQ](https://www.gnu.org/software/freefont/FAQ.html) also distinguishes
+incorporation from distribution as a separate bundled product. Application
+compatibility/aggregation and the final distribution's obligations still need
+review; no broad redistribution approval is inferred from the byte match.
+Helvetica's source-only license provenance also remains unreviewed.
 
 `src/ui/Controls.cpp:159`, `src/integration/ChartTextFace.h`,
 `src/integration/ChartSoundingFont.h`, and `src/integration/ChartPresentation.cpp`
@@ -76,7 +161,13 @@ APIs. Those system-font requests do not identify or clear FreeSans, and this
 patch copies no Windows system font. Lettering in branding/chart assets remains
 a separate unresolved inventory scope. Full SCRUM-59 completion is not claimed.
 
-Focused verification: `python tools/test_component_license_inventory.py`
+Initial inventory verification: `python tools/test_component_license_inventory.py`
 (19 tests), plus direct read-only checks of the pinned upstream font hashes and
 CMake install lists. Fixtures use inert font stand-ins and do not claim to test
 font rendering or establish licensing rights.
+
+Follow-up verification: direct byte equality across the introducing and pinned
+OpenCPN commits, the decompressed SSFN example, and the independent OTF-to-SSFN
+conversion; inspection of original OTF license metadata and GNU source archive;
+`git diff --check`. This documentation-only follow-up does not qualify a new
+package or close SCRUM-59.
