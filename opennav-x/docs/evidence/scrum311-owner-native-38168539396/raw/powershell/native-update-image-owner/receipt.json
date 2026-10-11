@@ -1,0 +1,19 @@
+﻿{
+    "productAcceptance":  false,
+    "boatAcceptance":  false,
+    "processBits":  64,
+    "os":  "Microsoft Windows NT 10.0.20348.0",
+    "run":  "38168539396",
+    "powerShell":  "5.1.20348.5622",
+    "commit":  "b08f9a1cf3360ff10e075b8b0134e5c39ac15f73",
+    "passed":  true,
+    "applicationBuild":  false,
+    "inputs":  {
+                   "installer/windows/UpdateSupervisor.ps1":  "093f812db22b00b64b5131662be8a5ab1de0e12782c38f253547f0d8a830d02e",
+                   "tools/test-native-update-image-owner.ps1":  "c661bfe4c26cc43d699460a82cd236a95f299b5e7ed9901dfcb667e6c6f3f380",
+                   "installer/windows/UpdateTransaction.ps1":  "9bbf18e649d86d36ba42e6169510b75016a1aba1705b30d506ceb7f11e6e451c",
+                   "tools/fixtures/update-image-marker.cs":  "aa0501b2430447d027797572d3fbdfadf0660578a9220ab13f1253b8f8a173c6",
+                   "tools/test-update-transaction.ps1":  "9efce2fa77de57b49a0daba9414a92e7dc2fadb0fa3b8dc63232629e193ee94b"
+               },
+    "attempt":  "1"
+}

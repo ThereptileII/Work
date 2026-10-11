@@ -1,0 +1,950 @@
+Native Win32 ordinary image ownership	Set up job	﻿2026-10-11T19:33:43.7997100Z Current runner version: '2.337.0'
+Native Win32 ordinary image ownership	Set up job	2026-10-11T19:33:43.8056796Z ##[group]Runner Image Provisioner
+Native Win32 ordinary image ownership	Set up job	2026-10-11T19:33:43.8057625Z Hosted Compute Agent
+Native Win32 ordinary image ownership	Set up job	2026-10-11T19:33:43.8058171Z Version: 20261002.596
+Native Win32 ordinary image ownership	Set up job	2026-10-11T19:33:43.8058725Z Commit: c3d12f3313a95f25162a1503be624f3b0617f8c0
+Native Win32 ordinary image ownership	Set up job	2026-10-11T19:33:43.8059363Z Build Date: 2026-10-02T22:28:27Z
+Native Win32 ordinary image ownership	Set up job	2026-10-11T19:33:43.8059980Z Worker ID: {009b268c-3523-4668-a7e9-1030df5a40d3}
+Native Win32 ordinary image ownership	Set up job	2026-10-11T19:33:43.8060622Z Region: centralus
+Native Win32 ordinary image ownership	Set up job	2026-10-11T19:33:43.8061170Z Cloud: Azure
+Native Win32 ordinary image ownership	Set up job	2026-10-11T19:33:43.8061630Z ##[endgroup]
+Native Win32 ordinary image ownership	Set up job	2026-10-11T19:33:43.8062792Z ##[group]Operating System
+Native Win32 ordinary image ownership	Set up job	2026-10-11T19:33:43.8063369Z Microsoft Windows Server 2022
+Native Win32 ordinary image ownership	Set up job	2026-10-11T19:33:43.8063915Z 10.0.20348
+Native Win32 ordinary image ownership	Set up job	2026-10-11T19:33:43.8064383Z Datacenter
+Native Win32 ordinary image ownership	Set up job	2026-10-11T19:33:43.8064833Z ##[endgroup]
+Native Win32 ordinary image ownership	Set up job	2026-10-11T19:33:43.8065280Z ##[group]Runner Image
+Native Win32 ordinary image ownership	Set up job	2026-10-11T19:33:43.8065801Z Image: windows-2022
+Native Win32 ordinary image ownership	Set up job	2026-10-11T19:33:43.8066284Z Version: 20261004.326.1
+Native Win32 ordinary image ownership	Set up job	2026-10-11T19:33:43.8067300Z Included Software: https://github.com/actions/runner-images/blob/win22/20261004.326/images/windows/Windows2022-Readme.md
+Native Win32 ordinary image ownership	Set up job	2026-10-11T19:33:43.8070002Z Image Release: https://github.com/actions/runner-images/releases/tag/win22%2F20261004.326
+Native Win32 ordinary image ownership	Set up job	2026-10-11T19:33:43.8070860Z ##[endgroup]
+Native Win32 ordinary image ownership	Set up job	2026-10-11T19:33:43.8071868Z ##[group]GITHUB_TOKEN Permissions
+Native Win32 ordinary image ownership	Set up job	2026-10-11T19:33:43.8073874Z Contents: read
+Native Win32 ordinary image ownership	Set up job	2026-10-11T19:33:43.8074363Z Metadata: read
+Native Win32 ordinary image ownership	Set up job	2026-10-11T19:33:43.8074854Z ##[endgroup]
+Native Win32 ordinary image ownership	Set up job	2026-10-11T19:33:43.8076794Z Secret source: Actions
+Native Win32 ordinary image ownership	Set up job	2026-10-11T19:33:43.8077565Z Cache mode: write
+Native Win32 ordinary image ownership	Set up job	2026-10-11T19:33:43.8078230Z Prepare workflow directory
+Native Win32 ordinary image ownership	Set up job	2026-10-11T19:33:43.8470715Z Prepare all required actions
+Native Win32 ordinary image ownership	Set up job	2026-10-11T19:33:43.8519527Z Getting action download info
+Native Win32 ordinary image ownership	Set up job	2026-10-11T19:33:44.1239146Z Download action repository 'actions/checkout@11d5960a326750d5838078e36cf38b85af677262' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+Native Win32 ordinary image ownership	Set up job	2026-10-11T19:33:44.2093723Z Download action repository 'actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16' (SHA:924ae3a1cded613372ab5595356fb5720e22ba16)
+Native Win32 ordinary image ownership	Set up job	2026-10-11T19:33:44.7200994Z Download action repository 'actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+Native Win32 ordinary image ownership	Set up job	2026-10-11T19:33:45.0067817Z Complete job name: Native Win32 ordinary image ownership
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	﻿2026-10-11T19:33:45.1456385Z ##[group]Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.1458224Z with:
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.1458782Z   repository: ThereptileII/Work
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.1463338Z   token: ***
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.1463900Z   ssh-strict: true
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.1464434Z   ssh-user: git
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.1464973Z   persist-credentials: true
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.1465528Z   clean: true
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.1466050Z   sparse-checkout-cone-mode: true
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.1466682Z   fetch-depth: 1
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.1467175Z   fetch-tags: false
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.1467681Z   show-progress: true
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.1468210Z   lfs: false
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.1468729Z   submodules: false
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.1469329Z   set-safe-directory: true
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.1469953Z   allow-unsafe-pr-checkout: false
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.1470744Z env:
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.1471213Z   GOARCH: 386
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.1471750Z   GOTOOLCHAIN: local
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.1472309Z   SKAGER_LAUNCHER_DISPOSABLE_SUBST_TEST: 1
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.1473047Z ##[endgroup]
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.2917341Z Syncing repository: ThereptileII/Work
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.2919431Z ##[group]Getting Git version info
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.2920156Z Working directory is 'D:\a\Work\Work'
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.3733051Z [command]"C:\Program Files\Git\bin\git.exe" version
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.6495183Z git version 2.56.0.windows.1
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.6543971Z ##[endgroup]
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.6567967Z Temporarily overriding HOME='D:\a\_temp\33b47f4e-7eb8-425e-9745-64a2ce38294c' before making global git config changes
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.6569436Z Adding repository directory to the temporary git global config as a safe directory
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.6579905Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\Work\Work
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.7097430Z Deleting the contents of 'D:\a\Work\Work'
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.7102821Z ##[group]Initializing the repository
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.7113357Z [command]"C:\Program Files\Git\bin\git.exe" init D:\a\Work\Work
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.7790476Z Initialized empty Git repository in D:/a/Work/Work/.git/
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.7838681Z [command]"C:\Program Files\Git\bin\git.exe" remote add origin https://github.com/ThereptileII/Work
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.8347606Z ##[endgroup]
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.8349950Z ##[group]Disabling automatic garbage collection
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.8357789Z [command]"C:\Program Files\Git\bin\git.exe" config --local gc.auto 0
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.8720530Z ##[endgroup]
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.8721461Z ##[group]Setting up auth
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.8734433Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.9050512Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:47.0041115Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:47.0346884Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:47.5062313Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:47.5385385Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:48.0052670Z [command]"C:\Program Files\Git\bin\git.exe" config --local http.https://github.com/.extraheader "AUTHORIZATION: basic ***"
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:48.0348222Z ##[endgroup]
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:48.0349062Z ##[group]Fetching the repository
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:48.0361554Z [command]"C:\Program Files\Git\bin\git.exe" -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +b08f9a1cf3360ff10e075b8b0134e5c39ac15f73:refs/remotes/origin/codex/source-batch-20261011
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:52.3878589Z From https://github.com/ThereptileII/Work
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:52.3879841Z  * [new ref]         b08f9a1cf3360ff10e075b8b0134e5c39ac15f73 -> origin/codex/source-batch-20261011
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:52.3917138Z ##[endgroup]
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:52.3917957Z ##[group]Determining the checkout info
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:52.3919857Z ##[endgroup]
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:52.3933604Z [command]"C:\Program Files\Git\bin\git.exe" sparse-checkout disable
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:52.4347449Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all extensions.worktreeConfig
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:52.4693782Z ##[group]Checking out the ref
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:52.4704351Z [command]"C:\Program Files\Git\bin\git.exe" checkout --progress --force -B codex/source-batch-20261011 refs/remotes/origin/codex/source-batch-20261011
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:53.5369540Z Updating files:  31% (2404/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:53.5564505Z Updating files:  32% (2482/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:53.5721907Z Updating files:  33% (2559/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:53.5844413Z Updating files:  34% (2637/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:53.6149902Z Updating files:  35% (2714/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:53.6341021Z Updating files:  36% (2792/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:53.6561901Z Updating files:  37% (2869/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:53.6731721Z Updating files:  38% (2947/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:53.6902660Z Updating files:  39% (3025/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:53.7144066Z Updating files:  40% (3102/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:53.7252836Z Updating files:  41% (3180/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:53.7470536Z Updating files:  42% (3257/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:53.7573295Z Updating files:  43% (3335/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:53.7755594Z Updating files:  44% (3412/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:53.7978099Z Updating files:  45% (3490/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:53.8142768Z Updating files:  46% (3567/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:53.8425770Z Updating files:  47% (3645/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:53.8595430Z Updating files:  48% (3722/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.0057552Z Updating files:  49% (3800/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.0171613Z Updating files:  50% (3877/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.0474134Z Updating files:  51% (3955/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.0750687Z Updating files:  52% (4033/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.0829073Z Updating files:  53% (4110/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.0910695Z Updating files:  54% (4188/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.1083851Z Updating files:  55% (4265/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.1364011Z Updating files:  56% (4343/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.1625223Z Updating files:  57% (4420/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.1889264Z Updating files:  58% (4498/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.1967782Z Updating files:  59% (4575/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.2045156Z Updating files:  60% (4653/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.2144881Z Updating files:  61% (4730/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.2335787Z Updating files:  62% (4808/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.2568355Z Updating files:  63% (4886/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.2736724Z Updating files:  64% (4963/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.3032940Z Updating files:  65% (5041/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.3161805Z Updating files:  66% (5118/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.3274135Z Updating files:  67% (5196/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.3515606Z Updating files:  68% (5273/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.4006867Z Updating files:  69% (5351/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.4289784Z Updating files:  70% (5428/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.4846301Z Updating files:  71% (5506/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.5155534Z Updating files:  72% (5583/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.5173952Z Updating files:  73% (5661/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.5475889Z Updating files:  73% (5664/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.5857266Z Updating files:  74% (5738/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.6252026Z Updating files:  75% (5816/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.6750122Z Updating files:  76% (5894/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.7271537Z Updating files:  77% (5971/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.7698124Z Updating files:  78% (6049/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.7865502Z Updating files:  79% (6126/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.8118834Z Updating files:  80% (6204/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.8317264Z Updating files:  81% (6281/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.8393003Z Updating files:  82% (6359/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.8478344Z Updating files:  83% (6436/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.8595354Z Updating files:  84% (6514/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.8700490Z Updating files:  85% (6591/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.8799432Z Updating files:  86% (6669/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.8909731Z Updating files:  87% (6746/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.9025382Z Updating files:  88% (6824/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.9137002Z Updating files:  89% (6902/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.9239989Z Updating files:  90% (6979/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.9357758Z Updating files:  91% (7057/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.9495721Z Updating files:  92% (7134/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.9622344Z Updating files:  93% (7212/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.9735778Z Updating files:  94% (7289/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.9874867Z Updating files:  95% (7367/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:55.0001023Z Updating files:  96% (7444/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:55.0133951Z Updating files:  97% (7522/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:55.0243591Z Updating files:  98% (7599/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:55.0519965Z Updating files:  99% (7677/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:55.0520653Z Updating files: 100% (7754/7754)
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:55.0521019Z Updating files: 100% (7754/7754), done.
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:55.0718866Z Switched to a new branch 'codex/source-batch-20261011'
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:55.0739556Z branch 'codex/source-batch-20261011' set up to track 'origin/codex/source-batch-20261011'.
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:55.1012109Z ##[endgroup]
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:55.1400583Z [command]"C:\Program Files\Git\bin\git.exe" log -1 --format=%H
+Native Win32 ordinary image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:55.1677626Z b08f9a1cf3360ff10e075b8b0134e5c39ac15f73
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	﻿2026-10-11T19:33:55.2132461Z ##[group]Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:33:55.2132996Z with:
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:33:55.2133366Z   go-version-file: opennav-x/tools/update-verifier/go.mod
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:33:55.2133871Z   cache-dependency-path: opennav-x/tools/update-verifier/go.sum
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:33:55.2134257Z   check-latest: false
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:33:55.2136946Z   token: ***
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:33:55.2137242Z   cache: true
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:33:55.2137487Z env:
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:33:55.2137730Z   GOARCH: 386
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:33:55.2137974Z   GOTOOLCHAIN: local
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:33:55.2138289Z   SKAGER_LAUNCHER_DISPOSABLE_SUBST_TEST: 1
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:33:55.2138622Z ##[endgroup]
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:33:55.3803468Z Setup go version spec 1.27.1
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:33:55.3818034Z Attempting to download 1.27.1...
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:33:56.0686212Z matching 1.27.1...
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:33:56.0720941Z Acquiring 1.27.1 from https://github.com/actions/go-versions/releases/download/1.27.1-33583469715/go-1.27.1-win32-x64.zip
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:33:56.7639975Z Extracting Go...
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:33:56.8480340Z [command]"C:\Program Files\PowerShell\7\pwsh.exe" -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Unrestricted -Command "$ErrorActionPreference = 'Stop' ; try { Add-Type -AssemblyName System.IO.Compression.ZipFile } catch { } ; try { [System.IO.Compression.ZipFile]::ExtractToDirectory('D:\a\_temp\go-1.27.1-win32-x64.zip', 'D:\a\_temp\4e828aaf-882d-4953-8b21-374e53d1484a', $true) } catch { if (($_.Exception.GetType().FullName -eq 'System.Management.Automation.MethodException') -or ($_.Exception.GetType().FullName -eq 'System.Management.Automation.RuntimeException') ){ Expand-Archive -LiteralPath 'D:\a\_temp\go-1.27.1-win32-x64.zip' -DestinationPath 'D:\a\_temp\4e828aaf-882d-4953-8b21-374e53d1484a' -Force } else { throw $_ } } ;"
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:33:59.9103903Z Successfully extracted go to D:\a\_temp\4e828aaf-882d-4953-8b21-374e53d1484a
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:33:59.9104720Z Adding to the cache ...
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:11.6033213Z Created link C:\hostedtoolcache\windows\go\1.27.1\x64 => D:\hostedtoolcache\windows\go\1.27.1\x64
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:11.6037292Z Created link C:\hostedtoolcache\windows\go\1.27.1\x64.complete => D:\hostedtoolcache\windows\go\1.27.1\x64.complete
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:11.6038149Z Successfully cached go to C:\hostedtoolcache\windows\go\1.27.1\x64
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:11.6044080Z Added go to the path
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:11.6046939Z Successfully set up Go version 1.27.1
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:11.9112464Z [command]C:\hostedtoolcache\windows\go\1.27.1\x64\bin\go.exe env GOCACHE
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:11.9156232Z [command]C:\hostedtoolcache\windows\go\1.27.1\x64\bin\go.exe env GOMODCACHE
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:11.9368441Z C:\Users\runneradmin\AppData\Local\go-build
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:11.9414969Z C:\Users\runneradmin\go\pkg\mod
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:12.1795977Z Cache hit for: setup-go-Windows-x64-go-1.27.1-cf2b44d24939f17091479987591e5e3b3e82c9a7e2362f83e2365dae393385ba
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:13.0706508Z Received 48468844 of 48468844 (100.0%), 65.3 MBs/sec
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:13.0709279Z Cache Size: ~46 MB (48468844 B)
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:13.0748522Z [command]"C:\Program Files\Git\usr\bin\tar.exe" -xf D:/a/_temp/f74b585d-f5a0-4fdf-9e0e-df4a93e707ed/cache.tzst -P -C D:/a/Work/Work --force-local --use-compress-program "zstd -d"
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:19.5644917Z Cache restored successfully
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:19.5699809Z Cache restored from key: setup-go-Windows-x64-go-1.27.1-cf2b44d24939f17091479987591e5e3b3e82c9a7e2362f83e2365dae393385ba
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:19.5734570Z go version go1.27.1 windows/amd64
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:19.5734972Z 
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:19.5735515Z ##[group]go env
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:19.7771617Z set AR=ar
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:19.7772229Z set CC=gcc
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:19.7772706Z set CGO_CFLAGS=-O2 -g
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:19.7773037Z set CGO_CPPFLAGS=
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:19.7773361Z set CGO_CXXFLAGS=-O2 -g
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:19.7773627Z set CGO_ENABLED=0
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:19.7774187Z set CGO_FFLAGS=-O2 -g
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:19.7774469Z set CGO_LDFLAGS=-O2 -g
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:19.7774750Z set CXX=g++
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:19.7777089Z set GCCGO=gccgo
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:19.7777338Z set GO111MODULE=
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:19.7777576Z set GO386=sse2
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:19.7777860Z set GOARCH=386
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:19.7778093Z set GOAUTH=netrc
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:19.7778399Z set GOBIN=C:\Users\runneradmin\go\bin
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:19.7778793Z set GOCACHE=C:\Users\runneradmin\AppData\Local\go-build
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:19.7779204Z set GOCACHEPROG=
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:19.7779454Z set GODEBUG=
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:19.7779749Z set GOENV=C:\Users\runneradmin\AppData\Roaming\go\env
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:19.7780163Z set GOEXE=.exe
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:19.7780462Z set GOEXPERIMENT=
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:19.7780729Z set GOFIPS140=off
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:19.7780984Z set GOFLAGS=
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:19.7781713Z set GOGCCFLAGS=-m32 -Wl,--no-gc-sections -fmessage-length=0 -ffile-prefix-map=C:\Users\RUNNER~1\AppData\Local\Temp\go-build269435890=/tmp/go-build -gno-record-gcc-switches
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:19.7782516Z set GOHOSTARCH=amd64
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:19.7782796Z set GOHOSTOS=windows
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:19.7783065Z set GOINSECURE=
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:19.7783322Z set GOMOD=NUL
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:19.7783646Z set GOMODCACHE=C:\Users\runneradmin\go\pkg\mod
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:19.7783992Z set GONOPROXY=
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:19.7784242Z set GONOSUMDB=
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:19.7784524Z set GOOS=windows
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:19.7784875Z set GOPACKAGESDRIVER=
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:19.7785215Z set GOPATH=C:\Users\runneradmin\go
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:19.7785620Z set GOPRIVATE=
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:19.7785963Z set GOPROXY=https://proxy.golang.org,direct
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:19.7786378Z set GOROOT=C:\hostedtoolcache\windows\go\1.27.1\x64
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:19.7786747Z set GOSUMDB=sum.golang.org
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:19.7787044Z set GOTELEMETRY=local
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:19.7787470Z set GOTELEMETRYDIR=C:\Users\runneradmin\AppData\Roaming\go\telemetry
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:19.7787854Z set GOTMPDIR=
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:19.7788140Z set GOTOOLCHAIN=local
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:19.7788517Z set GOTOOLDIR=C:\hostedtoolcache\windows\go\1.27.1\x64\pkg\tool\windows_amd64
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:19.7788976Z set GOVCS=
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:19.7789216Z set GOVERSION=go1.27.1
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:19.7789463Z set GOWORK=
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:19.7789735Z set PKG_CONFIG=pkg-config
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:19.7789928Z 
+Native Win32 ordinary image ownership	Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:19.7790379Z ##[endgroup]
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	﻿2026-10-11T19:34:19.8132736Z ##[group]Run $ErrorActionPreference = 'Stop'
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:19.8133535Z ^[[36;1m$ErrorActionPreference = 'Stop'^[[0m
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:19.8134142Z ^[[36;1mNew-Item -ItemType Directory -Force ../../build/updater-ordinary-image | Out-Null^[[0m
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:19.8135069Z ^[[36;1mgo test -count=1 -json ./launcher -run '^TestNativeOrdinary' | Tee-Object ../../build/updater-ordinary-image/tests.json^[[0m
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:19.8135860Z ^[[36;1mif ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }^[[0m
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:19.8136317Z ^[[36;1m@'^[[0m
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:19.8136691Z ^[[36;1mimport hashlib, json, os, subprocess^[[0m
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:19.8137201Z ^[[36;1mfrom pathlib import Path^[[0m
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:19.8137691Z ^[[36;1mevidence = Path('../../build/updater-ordinary-image')^[[0m
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:19.8138380Z ^[[36;1mrows = [json.loads(line) for line in (evidence/'tests.json').read_text(encoding='utf-8-sig').splitlines()]^[[0m
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:19.8140364Z ^[[36;1mexpected = ['TestNativeOrdinaryActualCreator','TestNativeOrdinaryPhysicalCustodyBeforeResume','TestNativeOrdinaryWrongHashAndHardlinkRefuse','TestNativeOrdinarySuspendedRefusalCleanup','TestNativeOrdinaryNameAndEnvironmentBounds','TestNativeOrdinarySubstRemapAfterAcquire','TestNativeOrdinaryDOSApplicationBounds','TestNativeOrdinarySelectedApplicationCorruptionRefuses','TestNativeOrdinaryWrongSuspendedImageRefuses']^[[0m
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:19.8142226Z ^[[36;1mfor name in expected:^[[0m
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:19.8142805Z ^[[36;1m    assert any(row.get('Action') == 'pass' and row.get('Test') == name for row in rows), 'Required native fixture did not pass: '+name^[[0m
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:19.8144249Z ^[[36;1massert not any(row.get('Action') in ('skip','fail') for row in rows), 'Native fixture was skipped or failed'^[[0m
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:19.8144988Z ^[[36;1minputs = {str(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(Path('launcher').glob('*.go'))}^[[0m
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:19.8146374Z ^[[36;1mreceipt = {'commit': os.environ['GITHUB_SHA'], 'run': os.environ['GITHUB_RUN_ID'], 'attempt': os.environ['GITHUB_RUN_ATTEMPT'], 'go': subprocess.check_output(['go','version'], text=True).strip(), 'arch':os.environ['GOARCH'], 'testsRequired':expected, 'inputs':inputs, 'passed':True, 'applicationBuild':False, 'productAcceptance':False, 'boatAcceptance':False}^[[0m
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:19.8147821Z ^[[36;1m(evidence/'receipt.json').write_text(json.dumps(receipt,indent=2)+'\n',encoding='utf-8')^[[0m
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:19.8148307Z ^[[36;1m'@ | python -^[[0m
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:19.8148638Z ^[[36;1mif ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }^[[0m
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:19.8478928Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:19.8479420Z env:
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:19.8479733Z   GOARCH: 386
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:19.8480022Z   GOTOOLCHAIN: local
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:19.8480341Z   SKAGER_LAUNCHER_DISPOSABLE_SUBST_TEST: 1
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:19.8480682Z ##[endgroup]
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:21.8274704Z {"Time":"2026-10-11T19:34:21.815942Z","Action":"start","Package":"example.com/opennav-update-verifier/launcher"}
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:21.9163996Z {"Time":"2026-10-11T19:34:21.9147781Z","Action":"run","Package":"example.com/opennav-update-verifier/launcher","Test":"TestNativeOrdinaryDOSApplicationBounds"}
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:21.9168147Z {"Time":"2026-10-11T19:34:21.9147781Z","Action":"output","Package":"example.com/opennav-update-verifier/launcher","Test":"TestNativeOrdinaryDOSApplicationBounds","Output":"=== RUN   TestNativeOrdinaryDOSApplicationBounds\n","OutputType":"frame"}
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:21.9173191Z {"Time":"2026-10-11T19:34:21.9147781Z","Action":"output","Package":"example.com/opennav-update-verifier/launcher","Test":"TestNativeOrdinaryDOSApplicationBounds","Output":"--- PASS: TestNativeOrdinaryDOSApplicationBounds (0.00s)\n","OutputType":"frame"}
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:21.9175682Z {"Time":"2026-10-11T19:34:21.9147781Z","Action":"pass","Package":"example.com/opennav-update-verifier/launcher","Test":"TestNativeOrdinaryDOSApplicationBounds","Elapsed":0}
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:21.9178177Z {"Time":"2026-10-11T19:34:21.9147781Z","Action":"run","Package":"example.com/opennav-update-verifier/launcher","Test":"TestNativeOrdinarySelectedApplicationCorruptionRefuses"}
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:21.9183011Z {"Time":"2026-10-11T19:34:21.9147781Z","Action":"output","Package":"example.com/opennav-update-verifier/launcher","Test":"TestNativeOrdinarySelectedApplicationCorruptionRefuses","Output":"=== RUN   TestNativeOrdinarySelectedApplicationCorruptionRefuses\n","OutputType":"frame"}
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:22.0570504Z {"Time":"2026-10-11T19:34:22.050134Z","Action":"output","Package":"example.com/opennav-update-verifier/launcher","Test":"TestNativeOrdinarySelectedApplicationCorruptionRefuses","Output":"--- PASS: TestNativeOrdinarySelectedApplicationCorruptionRefuses (0.14s)\n","OutputType":"frame"}
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:22.0573651Z {"Time":"2026-10-11T19:34:22.0559429Z","Action":"pass","Package":"example.com/opennav-update-verifier/launcher","Test":"TestNativeOrdinarySelectedApplicationCorruptionRefuses","Elapsed":0.14}
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:22.0575405Z {"Time":"2026-10-11T19:34:22.0559429Z","Action":"run","Package":"example.com/opennav-update-verifier/launcher","Test":"TestNativeOrdinaryWrongSuspendedImageRefuses"}
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:22.0577107Z {"Time":"2026-10-11T19:34:22.0559429Z","Action":"output","Package":"example.com/opennav-update-verifier/launcher","Test":"TestNativeOrdinaryWrongSuspendedImageRefuses","Output":"=== RUN   TestNativeOrdinaryWrongSuspendedImageRefuses\n","OutputType":"frame"}
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:22.3442934Z {"Time":"2026-10-11T19:34:22.3423293Z","Action":"output","Package":"example.com/opennav-update-verifier/launcher","Test":"TestNativeOrdinaryWrongSuspendedImageRefuses","Output":"--- PASS: TestNativeOrdinaryWrongSuspendedImageRefuses (0.29s)\n","OutputType":"frame"}
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:22.3446780Z {"Time":"2026-10-11T19:34:22.3423293Z","Action":"pass","Package":"example.com/opennav-update-verifier/launcher","Test":"TestNativeOrdinaryWrongSuspendedImageRefuses","Elapsed":0.29}
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:22.3448954Z {"Time":"2026-10-11T19:34:22.3423293Z","Action":"run","Package":"example.com/opennav-update-verifier/launcher","Test":"TestNativeOrdinaryChild"}
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:22.3450694Z {"Time":"2026-10-11T19:34:22.3423293Z","Action":"output","Package":"example.com/opennav-update-verifier/launcher","Test":"TestNativeOrdinaryChild","Output":"=== RUN   TestNativeOrdinaryChild\n","OutputType":"frame"}
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:22.3453285Z {"Time":"2026-10-11T19:34:22.3428445Z","Action":"output","Package":"example.com/opennav-update-verifier/launcher","Test":"TestNativeOrdinaryChild","Output":"--- PASS: TestNativeOrdinaryChild (0.00s)\n","OutputType":"frame"}
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:22.3457142Z {"Time":"2026-10-11T19:34:22.3429105Z","Action":"pass","Package":"example.com/opennav-update-verifier/launcher","Test":"TestNativeOrdinaryChild","Elapsed":0}
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:22.3460253Z {"Time":"2026-10-11T19:34:22.3429105Z","Action":"run","Package":"example.com/opennav-update-verifier/launcher","Test":"TestNativeOrdinaryActualCreator"}
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:22.3462756Z {"Time":"2026-10-11T19:34:22.3429391Z","Action":"output","Package":"example.com/opennav-update-verifier/launcher","Test":"TestNativeOrdinaryActualCreator","Output":"=== RUN   TestNativeOrdinaryActualCreator\n","OutputType":"frame"}
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:22.6707343Z {"Time":"2026-10-11T19:34:22.6693862Z","Action":"output","Package":"example.com/opennav-update-verifier/launcher","Test":"TestNativeOrdinaryActualCreator","Output":"--- PASS: TestNativeOrdinaryActualCreator (0.33s)\n","OutputType":"frame"}
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:22.6710409Z {"Time":"2026-10-11T19:34:22.6693862Z","Action":"pass","Package":"example.com/opennav-update-verifier/launcher","Test":"TestNativeOrdinaryActualCreator","Elapsed":0.33}
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:22.6712549Z {"Time":"2026-10-11T19:34:22.6693862Z","Action":"run","Package":"example.com/opennav-update-verifier/launcher","Test":"TestNativeOrdinaryPhysicalCustodyBeforeResume"}
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:22.6714436Z {"Time":"2026-10-11T19:34:22.6693862Z","Action":"output","Package":"example.com/opennav-update-verifier/launcher","Test":"TestNativeOrdinaryPhysicalCustodyBeforeResume","Output":"=== RUN   TestNativeOrdinaryPhysicalCustodyBeforeResume\n","OutputType":"frame"}
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:23.4616034Z {"Time":"2026-10-11T19:34:23.4602733Z","Action":"output","Package":"example.com/opennav-update-verifier/launcher","Test":"TestNativeOrdinaryPhysicalCustodyBeforeResume","Output":"--- PASS: TestNativeOrdinaryPhysicalCustodyBeforeResume (0.79s)\n","OutputType":"frame"}
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:23.4619463Z {"Time":"2026-10-11T19:34:23.4602733Z","Action":"pass","Package":"example.com/opennav-update-verifier/launcher","Test":"TestNativeOrdinaryPhysicalCustodyBeforeResume","Elapsed":0.79}
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:23.4622465Z {"Time":"2026-10-11T19:34:23.4602733Z","Action":"run","Package":"example.com/opennav-update-verifier/launcher","Test":"TestNativeOrdinaryWrongHashAndHardlinkRefuse"}
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:23.4624774Z {"Time":"2026-10-11T19:34:23.4602733Z","Action":"output","Package":"example.com/opennav-update-verifier/launcher","Test":"TestNativeOrdinaryWrongHashAndHardlinkRefuse","Output":"=== RUN   TestNativeOrdinaryWrongHashAndHardlinkRefuse\n","OutputType":"frame"}
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:23.4627402Z {"Time":"2026-10-11T19:34:23.4602733Z","Action":"run","Package":"example.com/opennav-update-verifier/launcher","Test":"TestNativeOrdinaryWrongHashAndHardlinkRefuse/hash"}
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:23.4630057Z {"Time":"2026-10-11T19:34:23.4602733Z","Action":"output","Package":"example.com/opennav-update-verifier/launcher","Test":"TestNativeOrdinaryWrongHashAndHardlinkRefuse/hash","Output":"=== RUN   TestNativeOrdinaryWrongHashAndHardlinkRefuse/hash\n","OutputType":"frame"}
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:23.5631702Z {"Time":"2026-10-11T19:34:23.5580179Z","Action":"output","Package":"example.com/opennav-update-verifier/launcher","Test":"TestNativeOrdinaryWrongHashAndHardlinkRefuse/hash","Output":"--- PASS: TestNativeOrdinaryWrongHashAndHardlinkRefuse/hash (0.10s)\n","OutputType":"frame"}
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:23.5634791Z {"Time":"2026-10-11T19:34:23.5620776Z","Action":"pass","Package":"example.com/opennav-update-verifier/launcher","Test":"TestNativeOrdinaryWrongHashAndHardlinkRefuse/hash","Elapsed":0.1}
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:23.5636782Z {"Time":"2026-10-11T19:34:23.5620776Z","Action":"run","Package":"example.com/opennav-update-verifier/launcher","Test":"TestNativeOrdinaryWrongHashAndHardlinkRefuse/hardlink"}
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:23.5639212Z {"Time":"2026-10-11T19:34:23.5621166Z","Action":"output","Package":"example.com/opennav-update-verifier/launcher","Test":"TestNativeOrdinaryWrongHashAndHardlinkRefuse/hardlink","Output":"=== RUN   TestNativeOrdinaryWrongHashAndHardlinkRefuse/hardlink\n","OutputType":"frame"}
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:24.2575777Z {"Time":"2026-10-11T19:34:24.2563733Z","Action":"output","Package":"example.com/opennav-update-verifier/launcher","Test":"TestNativeOrdinaryWrongHashAndHardlinkRefuse/hardlink","Output":"--- PASS: TestNativeOrdinaryWrongHashAndHardlinkRefuse/hardlink (0.69s)\n","OutputType":"frame"}
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:24.2578533Z {"Time":"2026-10-11T19:34:24.2563733Z","Action":"pass","Package":"example.com/opennav-update-verifier/launcher","Test":"TestNativeOrdinaryWrongHashAndHardlinkRefuse/hardlink","Elapsed":0.69}
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:24.2580926Z {"Time":"2026-10-11T19:34:24.2563733Z","Action":"output","Package":"example.com/opennav-update-verifier/launcher","Test":"TestNativeOrdinaryWrongHashAndHardlinkRefuse","Output":"--- PASS: TestNativeOrdinaryWrongHashAndHardlinkRefuse (0.80s)\n","OutputType":"frame"}
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:24.2583025Z {"Time":"2026-10-11T19:34:24.2563733Z","Action":"pass","Package":"example.com/opennav-update-verifier/launcher","Test":"TestNativeOrdinaryWrongHashAndHardlinkRefuse","Elapsed":0.8}
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:24.2584879Z {"Time":"2026-10-11T19:34:24.2563733Z","Action":"run","Package":"example.com/opennav-update-verifier/launcher","Test":"TestNativeOrdinarySuspendedRefusalCleanup"}
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:24.2587064Z {"Time":"2026-10-11T19:34:24.2563733Z","Action":"output","Package":"example.com/opennav-update-verifier/launcher","Test":"TestNativeOrdinarySuspendedRefusalCleanup","Output":"=== RUN   TestNativeOrdinarySuspendedRefusalCleanup\n","OutputType":"frame"}
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:26.0640400Z {"Time":"2026-10-11T19:34:26.0625956Z","Action":"output","Package":"example.com/opennav-update-verifier/launcher","Test":"TestNativeOrdinarySuspendedRefusalCleanup","Output":"--- PASS: TestNativeOrdinarySuspendedRefusalCleanup (1.81s)\n","OutputType":"frame"}
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:26.0643147Z {"Time":"2026-10-11T19:34:26.0631513Z","Action":"pass","Package":"example.com/opennav-update-verifier/launcher","Test":"TestNativeOrdinarySuspendedRefusalCleanup","Elapsed":1.81}
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:26.0645007Z {"Time":"2026-10-11T19:34:26.0631513Z","Action":"run","Package":"example.com/opennav-update-verifier/launcher","Test":"TestNativeOrdinaryNameAndEnvironmentBounds"}
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:26.0647678Z {"Time":"2026-10-11T19:34:26.0631826Z","Action":"output","Package":"example.com/opennav-update-verifier/launcher","Test":"TestNativeOrdinaryNameAndEnvironmentBounds","Output":"=== RUN   TestNativeOrdinaryNameAndEnvironmentBounds\n","OutputType":"frame"}
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:26.0650512Z {"Time":"2026-10-11T19:34:26.0631826Z","Action":"output","Package":"example.com/opennav-update-verifier/launcher","Test":"TestNativeOrdinaryNameAndEnvironmentBounds","Output":"--- PASS: TestNativeOrdinaryNameAndEnvironmentBounds (0.00s)\n","OutputType":"frame"}
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:26.0653356Z {"Time":"2026-10-11T19:34:26.0631826Z","Action":"pass","Package":"example.com/opennav-update-verifier/launcher","Test":"TestNativeOrdinaryNameAndEnvironmentBounds","Elapsed":0}
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:26.0655639Z {"Time":"2026-10-11T19:34:26.0631826Z","Action":"run","Package":"example.com/opennav-update-verifier/launcher","Test":"TestNativeOrdinarySubstRemapAfterAcquire"}
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:26.0657717Z {"Time":"2026-10-11T19:34:26.0631826Z","Action":"output","Package":"example.com/opennav-update-verifier/launcher","Test":"TestNativeOrdinarySubstRemapAfterAcquire","Output":"=== RUN   TestNativeOrdinarySubstRemapAfterAcquire\n","OutputType":"frame"}
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:27.7277858Z {"Time":"2026-10-11T19:34:27.723315Z","Action":"output","Package":"example.com/opennav-update-verifier/launcher","Test":"TestNativeOrdinarySubstRemapAfterAcquire","Output":"--- PASS: TestNativeOrdinarySubstRemapAfterAcquire (1.66s)\n","OutputType":"frame"}
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:27.7280584Z {"Time":"2026-10-11T19:34:27.7268782Z","Action":"pass","Package":"example.com/opennav-update-verifier/launcher","Test":"TestNativeOrdinarySubstRemapAfterAcquire","Elapsed":1.66}
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:27.7281873Z {"Time":"2026-10-11T19:34:27.7268782Z","Action":"output","Package":"example.com/opennav-update-verifier/launcher","Output":"PASS\n","OutputType":"frame"}
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:27.7330578Z {"Time":"2026-10-11T19:34:27.7324064Z","Action":"output","Package":"example.com/opennav-update-verifier/launcher","Output":"ok  \texample.com/opennav-update-verifier/launcher\t5.917s\n"}
+Native Win32 ordinary image ownership	Exercise actual ordinary creator and owned SUBST-remap fixtures	2026-10-11T19:34:27.7332542Z {"Time":"2026-10-11T19:34:27.7324064Z","Action":"pass","Package":"example.com/opennav-update-verifier/launcher","Elapsed":5.917}
+Native Win32 ordinary image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	﻿2026-10-11T19:34:29.0637885Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+Native Win32 ordinary image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T19:34:29.0638521Z with:
+Native Win32 ordinary image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T19:34:29.0638963Z   name: native-ordinary-image-owner-b08f9a1cf3360ff10e075b8b0134e5c39ac15f73
+Native Win32 ordinary image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T19:34:29.0639522Z   path: opennav-x/build/updater-ordinary-image
+Native Win32 ordinary image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T19:34:29.0639886Z   if-no-files-found: error
+Native Win32 ordinary image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T19:34:29.0640235Z   retention-days: 90
+Native Win32 ordinary image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T19:34:29.0640524Z   compression-level: 6
+Native Win32 ordinary image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T19:34:29.0640792Z   overwrite: false
+Native Win32 ordinary image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T19:34:29.0641110Z   include-hidden-files: false
+Native Win32 ordinary image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T19:34:29.0641400Z env:
+Native Win32 ordinary image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T19:34:29.0641672Z   GOARCH: 386
+Native Win32 ordinary image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T19:34:29.0641930Z   GOTOOLCHAIN: local
+Native Win32 ordinary image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T19:34:29.0642222Z   SKAGER_LAUNCHER_DISPOSABLE_SUBST_TEST: 1
+Native Win32 ordinary image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T19:34:29.0642577Z ##[endgroup]
+Native Win32 ordinary image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T19:34:29.2467555Z (node:6044) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+Native Win32 ordinary image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T19:34:29.2468399Z (Use `node --trace-deprecation ...` to show where the warning was created)
+Native Win32 ordinary image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T19:34:29.2540029Z With the provided path, there will be 2 files uploaded
+Native Win32 ordinary image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T19:34:29.2546333Z Artifact name is valid!
+Native Win32 ordinary image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T19:34:29.2549095Z Root directory input is valid!
+Native Win32 ordinary image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T19:34:29.5374343Z Beginning upload of artifact content to blob storage
+Native Win32 ordinary image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T19:34:29.5573310Z (node:6044) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+Native Win32 ordinary image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T19:34:29.7216018Z Uploaded bytes 2524
+Native Win32 ordinary image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T19:34:29.7654490Z Finished uploading artifact content to blob storage!
+Native Win32 ordinary image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T19:34:29.7656710Z SHA256 digest of uploaded artifact zip is 979b4e7917fbc5fb4d66b6be201ef3439a4ede326132fe97e1dedd3667ad1869
+Native Win32 ordinary image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T19:34:29.7659054Z Finalizing artifact upload
+Native Win32 ordinary image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T19:34:30.0215303Z Artifact native-ordinary-image-owner-b08f9a1cf3360ff10e075b8b0134e5c39ac15f73.zip successfully finalized. Artifact ID 11712094915
+Native Win32 ordinary image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T19:34:30.0217114Z Artifact native-ordinary-image-owner-b08f9a1cf3360ff10e075b8b0134e5c39ac15f73 has been successfully uploaded! Final size is 2524 bytes. Artifact ID is 11712094915
+Native Win32 ordinary image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T19:34:30.0229163Z Artifact download URL: https://github.com/ThereptileII/Work/actions/runs/38168539396/artifacts/11712094915
+Native Win32 ordinary image ownership	Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	﻿2026-10-11T19:34:30.0568007Z Post job cleanup.
+Native Win32 ordinary image ownership	Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:30.3053197Z [command]C:\hostedtoolcache\windows\go\1.27.1\x64\bin\go.exe env GOCACHE
+Native Win32 ordinary image ownership	Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:30.3159783Z [command]C:\hostedtoolcache\windows\go\1.27.1\x64\bin\go.exe env GOMODCACHE
+Native Win32 ordinary image ownership	Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:30.3460450Z C:\Users\runneradmin\go\pkg\mod
+Native Win32 ordinary image ownership	Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:30.3474281Z C:\Users\runneradmin\AppData\Local\go-build
+Native Win32 ordinary image ownership	Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16	2026-10-11T19:34:30.3488259Z Cache hit occurred on the primary key setup-go-Windows-x64-go-1.27.1-cf2b44d24939f17091479987591e5e3b3e82c9a7e2362f83e2365dae393385ba, not saving cache.
+Native Win32 ordinary image ownership	Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	﻿2026-10-11T19:34:30.3831157Z Post job cleanup.
+Native Win32 ordinary image ownership	Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:34:30.5828908Z [command]"C:\Program Files\Git\bin\git.exe" version
+Native Win32 ordinary image ownership	Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:34:30.6134229Z git version 2.56.0.windows.1
+Native Win32 ordinary image ownership	Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:34:30.6201163Z Temporarily overriding HOME='D:\a\_temp\3c691769-a76b-48e8-8b40-a10f1e388dbc' before making global git config changes
+Native Win32 ordinary image ownership	Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:34:30.6202464Z Adding repository directory to the temporary git global config as a safe directory
+Native Win32 ordinary image ownership	Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:34:30.6213148Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\Work\Work
+Native Win32 ordinary image ownership	Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:34:30.6523730Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+Native Win32 ordinary image ownership	Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:34:30.6842766Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+Native Win32 ordinary image ownership	Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:34:31.2007819Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+Native Win32 ordinary image ownership	Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:34:31.2345997Z http.https://github.com/.extraheader
+Native Win32 ordinary image ownership	Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:34:31.2394632Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all http.https://github.com/.extraheader
+Native Win32 ordinary image ownership	Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:34:31.2718299Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+Native Win32 ordinary image ownership	Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:34:31.7542034Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+Native Win32 ordinary image ownership	Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:34:31.7863050Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+Native Win32 ordinary image ownership	Complete job	﻿2026-10-11T19:34:32.3206283Z Cleaning up orphan processes
+Native Win32 ordinary image ownership	Complete job	2026-10-11T19:34:32.3254612Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@11d5960a326750d5838078e36cf38b85af677262, actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+Windows PowerShell 5.1 supervised image ownership	Set up job	﻿2026-10-11T19:33:43.9626778Z Current runner version: '2.337.0'
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T19:33:43.9823390Z ##[group]Runner Image Provisioner
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T19:33:43.9824371Z Hosted Compute Agent
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T19:33:43.9824903Z Version: 20261002.596
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T19:33:43.9825574Z Commit: c3d12f3313a95f25162a1503be624f3b0617f8c0
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T19:33:43.9826298Z Build Date: 2026-10-02T22:28:27Z
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T19:33:43.9826908Z Worker ID: {23371922-abc9-4bcb-9348-8e2ec3e999ed}
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T19:33:43.9827570Z Region: southcentralus
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T19:33:43.9828094Z Cloud: Azure
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T19:33:43.9828577Z ##[endgroup]
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T19:33:43.9829888Z ##[group]Operating System
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T19:33:43.9830588Z Microsoft Windows Server 2022
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T19:33:43.9831173Z 10.0.20348
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T19:33:43.9831710Z Datacenter
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T19:33:43.9832228Z ##[endgroup]
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T19:33:43.9832756Z ##[group]Runner Image
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T19:33:43.9833274Z Image: windows-2022
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T19:33:43.9833815Z Version: 20261004.326.1
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T19:33:43.9834809Z Included Software: https://github.com/actions/runner-images/blob/win22/20261004.326/images/windows/Windows2022-Readme.md
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T19:33:43.9836779Z Image Release: https://github.com/actions/runner-images/releases/tag/win22%2F20261004.326
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T19:33:43.9837641Z ##[endgroup]
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T19:33:43.9838659Z ##[group]GITHUB_TOKEN Permissions
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T19:33:43.9840905Z Contents: read
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T19:33:43.9841445Z Metadata: read
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T19:33:43.9841920Z ##[endgroup]
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T19:33:43.9843958Z Secret source: Actions
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T19:33:43.9844761Z Cache mode: write
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T19:33:43.9845399Z Prepare workflow directory
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T19:33:44.0233605Z Prepare all required actions
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T19:33:44.0283038Z Getting action download info
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T19:33:44.3044447Z Download action repository 'actions/checkout@11d5960a326750d5838078e36cf38b85af677262' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T19:33:44.3951957Z Download action repository 'actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T19:33:44.7489160Z Complete job name: Windows PowerShell 5.1 supervised image ownership
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	﻿2026-10-11T19:33:44.9267948Z ##[group]Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:44.9270147Z with:
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:44.9270717Z   repository: ThereptileII/Work
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:44.9275547Z   token: ***
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:44.9276083Z   ssh-strict: true
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:44.9276685Z   ssh-user: git
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:44.9277334Z   persist-credentials: true
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:44.9278043Z   clean: true
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:44.9278709Z   sparse-checkout-cone-mode: true
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:44.9279482Z   fetch-depth: 1
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:44.9280173Z   fetch-tags: false
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:44.9280918Z   show-progress: true
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:44.9281611Z   lfs: false
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:44.9282213Z   submodules: false
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:44.9282861Z   set-safe-directory: true
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:44.9283674Z   allow-unsafe-pr-checkout: false
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:44.9284829Z ##[endgroup]
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.0745489Z Syncing repository: ThereptileII/Work
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.0747373Z ##[group]Getting Git version info
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.0748074Z Working directory is 'D:\a\Work\Work'
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.1612587Z [command]"C:\Program Files\Git\bin\git.exe" version
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.6343139Z git version 2.56.0.windows.1
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.6389005Z ##[endgroup]
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.6409507Z Temporarily overriding HOME='D:\a\_temp\d01d9533-9d07-4d03-982d-a078af189e56' before making global git config changes
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.6412591Z Adding repository directory to the temporary git global config as a safe directory
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.6420002Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\Work\Work
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.7015881Z Deleting the contents of 'D:\a\Work\Work'
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.7021351Z ##[group]Initializing the repository
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.7030387Z [command]"C:\Program Files\Git\bin\git.exe" init D:\a\Work\Work
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.8126938Z Initialized empty Git repository in D:/a/Work/Work/.git/
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.8174387Z [command]"C:\Program Files\Git\bin\git.exe" remote add origin https://github.com/ThereptileII/Work
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.8835603Z ##[endgroup]
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.8837537Z ##[group]Disabling automatic garbage collection
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.8839328Z [command]"C:\Program Files\Git\bin\git.exe" config --local gc.auto 0
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.9246805Z ##[endgroup]
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.9250409Z ##[group]Setting up auth
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.9258123Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:45.9586178Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:47.4519943Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:47.4831224Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:47.9886911Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:48.0202849Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:48.5108525Z [command]"C:\Program Files\Git\bin\git.exe" config --local http.https://github.com/.extraheader "AUTHORIZATION: basic ***"
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:48.5434426Z ##[endgroup]
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:48.5435708Z ##[group]Fetching the repository
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:48.5452272Z [command]"C:\Program Files\Git\bin\git.exe" -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +b08f9a1cf3360ff10e075b8b0134e5c39ac15f73:refs/remotes/origin/codex/source-batch-20261011
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:53.2392781Z From https://github.com/ThereptileII/Work
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:53.2395866Z  * [new ref]         b08f9a1cf3360ff10e075b8b0134e5c39ac15f73 -> origin/codex/source-batch-20261011
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:53.2431664Z ##[endgroup]
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:53.2432485Z ##[group]Determining the checkout info
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:53.2434309Z ##[endgroup]
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:53.2445443Z [command]"C:\Program Files\Git\bin\git.exe" sparse-checkout disable
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:53.2891431Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all extensions.worktreeConfig
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:53.3197198Z ##[group]Checking out the ref
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:53.3207970Z [command]"C:\Program Files\Git\bin\git.exe" checkout --progress --force -B codex/source-batch-20261011 refs/remotes/origin/codex/source-batch-20261011
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.4208544Z Updating files:  28% (2207/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.4529206Z Updating files:  29% (2249/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.4744868Z Updating files:  30% (2327/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.4945866Z Updating files:  31% (2404/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.5146536Z Updating files:  32% (2482/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.5317884Z Updating files:  33% (2559/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.5429282Z Updating files:  34% (2637/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.5734148Z Updating files:  35% (2714/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.5913802Z Updating files:  36% (2792/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.6128913Z Updating files:  37% (2869/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.6303766Z Updating files:  38% (2947/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.6475525Z Updating files:  39% (3025/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.6714017Z Updating files:  40% (3102/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.6823764Z Updating files:  41% (3180/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.7043259Z Updating files:  42% (3257/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.7136351Z Updating files:  43% (3335/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.7325810Z Updating files:  44% (3412/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.7548781Z Updating files:  45% (3490/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.7721965Z Updating files:  46% (3567/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.8016425Z Updating files:  47% (3645/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.8175527Z Updating files:  48% (3722/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.8429525Z Updating files:  49% (3800/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.8537761Z Updating files:  50% (3877/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.8830774Z Updating files:  51% (3955/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.9103838Z Updating files:  52% (4033/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.9195681Z Updating files:  53% (4110/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.9280372Z Updating files:  54% (4188/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.9450986Z Updating files:  55% (4265/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:54.9740239Z Updating files:  56% (4343/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:55.0045162Z Updating files:  57% (4420/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:55.0314659Z Updating files:  58% (4498/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:55.0408510Z Updating files:  59% (4575/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:55.0495836Z Updating files:  60% (4653/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:55.0594544Z Updating files:  61% (4730/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:55.0795872Z Updating files:  62% (4808/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:55.1030020Z Updating files:  63% (4886/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:55.1187763Z Updating files:  64% (4963/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:55.1493155Z Updating files:  65% (5041/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:55.1630295Z Updating files:  66% (5118/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:55.1741990Z Updating files:  67% (5196/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:55.1989757Z Updating files:  68% (5273/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:55.2502723Z Updating files:  69% (5351/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:55.2792029Z Updating files:  70% (5428/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:55.3359025Z Updating files:  71% (5506/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:55.3666802Z Updating files:  72% (5583/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:55.3686571Z Updating files:  73% (5661/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:55.3986729Z Updating files:  73% (5664/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:55.4382429Z Updating files:  74% (5738/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:55.4787472Z Updating files:  75% (5816/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:55.5298533Z Updating files:  76% (5894/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:55.5859601Z Updating files:  77% (5971/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:55.7084485Z Updating files:  78% (6049/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:55.7245671Z Updating files:  79% (6126/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:55.7529632Z Updating files:  80% (6204/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:55.7729193Z Updating files:  81% (6281/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:55.7809963Z Updating files:  82% (6359/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:55.7900858Z Updating files:  83% (6436/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:55.8022060Z Updating files:  84% (6514/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:55.8126742Z Updating files:  85% (6591/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:55.8234449Z Updating files:  86% (6669/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:55.8344953Z Updating files:  87% (6746/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:55.8458471Z Updating files:  88% (6824/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:55.8577561Z Updating files:  89% (6902/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:55.8681396Z Updating files:  90% (6979/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:55.8798560Z Updating files:  91% (7057/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:55.8936284Z Updating files:  92% (7134/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:55.9068672Z Updating files:  93% (7212/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:55.9186894Z Updating files:  94% (7289/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:55.9340711Z Updating files:  95% (7367/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:55.9521313Z Updating files:  96% (7444/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:55.9679292Z Updating files:  97% (7522/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:55.9819439Z Updating files:  98% (7599/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:56.0139275Z Updating files:  99% (7677/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:56.0139919Z Updating files: 100% (7754/7754)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:56.0140371Z Updating files: 100% (7754/7754), done.
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:56.0524876Z Switched to a new branch 'codex/source-batch-20261011'
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:56.0540120Z branch 'codex/source-batch-20261011' set up to track 'origin/codex/source-batch-20261011'.
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:56.0827695Z ##[endgroup]
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:56.1170281Z [command]"C:\Program Files\Git\bin\git.exe" log -1 --format=%H
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:33:56.1460672Z b08f9a1cf3360ff10e075b8b0134e5c39ac15f73
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	﻿2026-10-11T19:33:56.1914694Z ##[group]Run $ErrorActionPreference = 'Stop'
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:33:56.1915797Z ^[[36;1m$ErrorActionPreference = 'Stop'^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:33:56.1916282Z ^[[36;1m$Evidence = 'opennav-x/evidence/local/native-update-image-owner'^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:33:56.1916835Z ^[[36;1mNew-Item -ItemType Directory -Force $Evidence | Out-Null^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:33:56.1917529Z ^[[36;1mif ($PSVersionTable.PSVersion.Major -ne 5 -or [IntPtr]::Size -ne 8) { throw 'Windows PowerShell 5.1 x64 required.' }^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:33:56.1918093Z ^[[36;1mtry {^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:33:56.1918573Z ^[[36;1m  & ./opennav-x/tools/test-native-update-image-owner.ps1 *>&1 | Tee-Object "$Evidence/owner.log"^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:33:56.1919228Z ^[[36;1m} catch { $_ | Out-File "$Evidence/owner.log" -Append; throw }^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:33:56.1919703Z ^[[36;1mif ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:33:56.1920081Z ^[[36;1mtry {^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:33:56.1920554Z ^[[36;1m  & ./opennav-x/tools/test-update-transaction.ps1 *>&1 | Tee-Object "$Evidence/transaction.log"^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:33:56.1921292Z ^[[36;1m} catch { $_ | Out-File "$Evidence/transaction.log" -Append; throw }^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:33:56.1921771Z ^[[36;1mif ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:33:56.1922130Z ^[[36;1m$Inputs = @{}^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:33:56.1923074Z ^[[36;1mforeach ($Path in @('installer/windows/UpdateTransaction.ps1','installer/windows/UpdateSupervisor.ps1','tools/test-native-update-image-owner.ps1','tools/test-update-transaction.ps1','tools/fixtures/update-image-marker.cs')) {^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:33:56.1924313Z ^[[36;1m  $Inputs[$Path] = (Get-FileHash -LiteralPath (Join-Path 'opennav-x' $Path) -Algorithm SHA256).Hash.ToLowerInvariant()^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:33:56.1924896Z ^[[36;1m}^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:33:56.1926227Z ^[[36;1m@{commit=$env:GITHUB_SHA;run=$env:GITHUB_RUN_ID;attempt=$env:GITHUB_RUN_ATTEMPT;powerShell=$PSVersionTable.PSVersion.ToString();processBits=([IntPtr]::Size*8);os=[Environment]::OSVersion.VersionString;inputs=$Inputs;passed=$true;applicationBuild=$false;productAcceptance=$false;boatAcceptance=$false} | ConvertTo-Json -Depth 5 | Out-File "$Evidence/receipt.json" -Encoding utf8^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:33:56.2013622Z shell: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.EXE -command ". '{0}'"
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:33:56.2014167Z ##[endgroup]
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:01.0834946Z PASS: Production transaction source parses
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:01.1164633Z PASS: One exact embedded native source selected
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:02.4293954Z PASS: Exact embedded owner compiles without invoking Win32
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:02.4457445Z PASS: Held DOS parser strips exactly the extended prefix and preserves the physical suffix
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:02.4469370Z PASS: Held DOS parser accepts a conventional local drive spelling
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:02.5828816Z PASS: Unsupported or physically mismatched application spelling refused
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:02.5848981Z PASS: Unsupported or physically mismatched application spelling refused
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:02.5868735Z PASS: Unsupported or physically mismatched application spelling refused
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:02.5887213Z PASS: Unsupported or physically mismatched application spelling refused
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:02.5905771Z PASS: Unsupported or physically mismatched application spelling refused
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:02.5925028Z PASS: Unsupported or physically mismatched application spelling refused
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:02.5943340Z PASS: Unsupported or physically mismatched application spelling refused
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:02.5977822Z PASS: Ambiguous DOS application component refused
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:02.5995955Z PASS: Ambiguous DOS application component refused
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:02.6014395Z PASS: Ambiguous DOS application component refused
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:02.6032826Z PASS: Ambiguous DOS application component refused
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:02.6050743Z PASS: Ambiguous DOS application component refused
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:02.6069644Z PASS: Ambiguous DOS application component refused
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:02.6090542Z PASS: Ambiguous DOS application component refused
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:02.6110375Z PASS: Ambiguous DOS application component refused
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:02.6129239Z PASS: Ambiguous DOS application component refused
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:02.6147237Z PASS: Ambiguous DOS application component refused
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:02.6165742Z PASS: Ambiguous DOS application component refused
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:02.6184584Z PASS: Ambiguous DOS application component refused
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:02.6203399Z PASS: Ambiguous DOS application component refused
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:02.6222604Z PASS: Ambiguous DOS application component refused
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:02.6247401Z PASS: Ambiguous DOS application component refused
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:02.6269309Z PASS: Nonlocal native volume refused
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:02.6291023Z PASS: Volume root cannot be selected as an executable
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:02.7227257Z PASS: Durable armed launch refuses automatic recovery
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:03.6790483Z PASS: Historical attempted record remains readable but cannot authorize native cleanup
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:03.6861573Z PASS: Running record without PID explicitly refused
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:03.6894598Z PASS: Malformed native creation identity refused
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:03.6922246Z PASS: Malformed native creation identity refused
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:03.6943978Z PASS: Malformed native creation identity refused
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:03.6962934Z PASS: Malformed native creation identity refused
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:03.6984439Z PASS: Malformed native creation identity refused
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:06.0619571Z PASS: Disposable multi-link image created
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:06.0927107Z PASS: Actual acquired multi-link image refused
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:06.0992780Z PASS: Replacement marker has genuinely different bytes
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:06.3426282Z PASS: Application spelling derives from the held physical image rather than the original SUBST path
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:06.3536914Z PASS: Selected application root/image/unavailable resolution refuses against actual held pins
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:06.3760779Z PASS: Selected application refusal prevents native creation
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:06.3780245Z PASS: Selected application refusal does not arm an unattempted creation
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:06.3788548Z PASS: Selected application refusal never substitutes or rederives a name
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:06.3852341Z PASS: Selected application root/image/unavailable resolution refuses against actual held pins
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:06.3874148Z PASS: Selected application refusal prevents native creation
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:06.3882570Z PASS: Selected application refusal does not arm an unattempted creation
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:06.3899955Z PASS: Selected application refusal never substitutes or rederives a name
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:06.3935277Z PASS: Selected application root/image/unavailable resolution refuses against actual held pins
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:06.3955805Z PASS: Selected application refusal prevents native creation
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:06.3964395Z PASS: Selected application refusal does not arm an unattempted creation
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:06.3972860Z PASS: Selected application refusal never substitutes or rederives a name
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:06.4137949Z PASS: Retained image denies concurrent write access
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:06.4302660Z PASS: Physical ancestor above SUBST root cannot be renamed while held
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:09.8785843Z PASS: Alias remap before creation never executes replacement bytes
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:09.8851399Z PASS: Inert marker exposes its main window for the actual normal-close test
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:09.8886766Z PASS: Created child remains bound to retained physical image after DOS remap
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:10.3431343Z PASS: Native owner normally closes its original child after alias remap
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:10.3486488Z PASS: Image and all directory pins release after owned child closure
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:10.8034112Z PASS: Actual supervisor health retains PID/challenge/frame checks across DOS remap
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:10.8074014Z PASS: Receipt audit spelling remains original validated DOS path
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:10.8096445Z PASS: Health records the separate held native image identity
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:10.8398498Z PASS: Actual supervisor normal cleanup closes owned child across DOS remap
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:10.8515339Z PASS: Changed expected hash refused before creation
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:10.8537996Z PASS: Hash refusal does not become uncertain native creation
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:10.8616529Z PASS: Unsupported inherited stream request refused before creation
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:10.8628716Z PASS: Argument refusal does not become uncertain native creation
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:11.2142393Z PASS: Native invalid-image creation refused
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:11.2167059Z PASS: Actual CreateProcess refusal denies fallback
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:11.2244027Z PASS: Resume fault binds to one exact production branch
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:11.3586690Z PASS: Uncertain resume result refuses successful start
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:11.4300514Z PASS: Resume uncertainty preserves the possibly running owned child
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:11.4548638Z PASS: Test alone normally closes its inert uncertain child
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:11.5611331Z PASS: Wrong creation identity never signals interrupted child
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:11.5621330Z PASS: Wrong creation identity preserves live inert child
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:11.5876496Z PASS: Fresh native cleanup normally closes only the recorded matching child
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:11.5887959Z PASS: Replacement image never executed in any native fixture
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:11.5904211Z PASS: focused suspended image/alias/health/normal/interrupted cleanup fixtures only; no full custody or product 
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:11.5904956Z acceptance.
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:11.7883466Z PASS: exact identities, atomic replacement, bounded attempt, interruption recovery, malformed/oversized/untrusted JSON 
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:11.7884319Z rejection.
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:12.4678333Z PASS: real exclusive Lifecycle lock, owned inventory/hash validation, dot-source isolation, missing/forged known-good 
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:12.4679019Z refusal without installation changes.
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:12.4810513Z PASS: exact embedded native receiver compiles.
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:12.5664634Z PASS: suspended-child native regression interop compiles.
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:12.5723016Z PASS: direct parsed phase-array iteration retains three scalar records.
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:12.9799004Z PASS: native healthy
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:13.2746294Z PASS: native healthy-delayed-receive
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:13.5577113Z PASS: native wrong-challenge
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:13.8401583Z PASS: native wrong-commit
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:14.1174619Z PASS: native wrong-generation
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:14.4480608Z PASS: native wrong-pid
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:14.7185932Z PASS: native wrong-hash
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:15.0015538Z PASS: native oversized
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:20.0401160Z PASS: native timeout
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:20.0698087Z PASS: native dead-child
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:20.0844130Z PASS: human-wait deadline is positive and capped at five minutes.
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:20.3952337Z PASS: native bounded phase wait-accept
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:26.1957826Z PASS: native bounded phase wait-accept-after-initial-deadline
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:26.5043183Z PASS: native bounded phase fragmented-phases
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:26.8057355Z PASS: native bounded phase wait-cancel
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:27.1101238Z PASS: native bounded phase wait-eof
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:27.4144597Z PASS: native bounded phase continue-eof
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:27.7137730Z PASS: native bounded phase wait-ready
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:28.0441180Z PASS: native bounded phase continue-first
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:28.3703951Z PASS: native bounded phase cancel-first
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:28.7291850Z PASS: native bounded phase repeated-wait
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:29.0368111Z PASS: native bounded phase repeated-continue
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:29.3608553Z PASS: native bounded phase ready-trailing
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:29.6622160Z PASS: native bounded phase cancel-trailing
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:29.9595710Z PASS: native bounded phase unknown-phase
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:30.2615845Z PASS: native bounded phase spoof-wait-challenge
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:30.5613083Z PASS: native bounded phase spoof-wait-generation
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:30.8814420Z PASS: native bounded phase spoof-wait-commit
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:31.1870748Z PASS: native bounded phase spoof-continue
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:31.4804973Z PASS: native bounded phase spoof-cancel
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:31.8035278Z PASS: native bounded phase spoof-wait-pid
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:32.1071863Z PASS: native bounded phase truncated-wait
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:32.3988817Z PASS: native bounded phase oversized-phase
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:32.8876052Z PASS: native bounded phase human-timeout
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:36.2121558Z PASS: native bounded phase health-timeout
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:39.2582629Z PASS: native bounded phase ready-without-eof
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:40.0485082Z PASS: native suspended-loader startup; wrongHash=False
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:40.7997012Z PASS: native suspended-loader startup; wrongHash=True
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:40.9715720Z PASS: emitted inert application is PE32/x86 with CLR 32BITREQUIRED.
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:41.3909594Z PASS: emitted inert application is PE32/x86 with CLR 32BITREQUIRED.
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:41.9733165Z PASS: native supervisor known-good bootstrap, proof-only protected receipt, candidate one-shot startup, and healthy 
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:41.9733879Z completion.
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:42.0879743Z PASS: emitted inert application is PE32/x86 with CLR 32BITREQUIRED.
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:42.6116745Z WARNING: Supervised candidate failed: Candidate startup health was not authenticated. Receiver: frame-mismatch-or-order
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:44.6141292Z PASS: native failed startup closes inert child and invokes separately locked guarded rollback.
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:44.7283312Z PASS: emitted inert application is PE32/x86 with CLR 32BITREQUIRED.
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:45.1800641Z PASS: uncertain interrupted creation refuses rollback and retains evidence without launching candidate.
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:45.3151577Z PASS: emitted inert application is PE32/x86 with CLR 32BITREQUIRED.
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:45.7633658Z WARNING: Supervised candidate failed: Exception calling "StartOwned" with "2" argument(s): "Unsupported native creation
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:45.7634997Z  
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:45.7643673Z WARNING: request."
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:46.6953610Z PASS: actual acquired owner pre-create refusal preserves proven-no-create rollback.
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:46.8095977Z PASS: emitted inert application is PE32/x86 with CLR 32BITREQUIRED.
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:47.1893138Z WARNING: Supervised candidate failed: Generation file changed: app/opencpn.exe
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:48.1377349Z PASS: native candidate integrity failure uses known-good previous rollback engine without launching candidate.
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:48.2512907Z PASS: emitted inert application is PE32/x86 with CLR 32BITREQUIRED.
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:48.7286057Z WARNING: Supervised candidate failed: Candidate startup health was not authenticated. Receiver: frame-mismatch-or-order
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:59.7877152Z PASS: native failed graceful close preserves live process, selected generation and pending recovery; later recovery 
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:59.7877855Z restores previous.
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:34:59.8995155Z PASS: emitted inert application is PE32/x86 with CLR 32BITREQUIRED.
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:35:00.3603448Z WARNING: Supervised candidate failed: Injected lost managed return after native resume.
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:35:00.3916388Z PASS: lost managed return after native resume preserves pending/live child and never falls back.
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:35:00.5053521Z PASS: emitted inert application is PE32/x86 with CLR 32BITREQUIRED.
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:35:00.9540215Z WARNING: Supervised candidate failed: Injected native identity persistence refusal.
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:35:00.9748476Z PASS: actual native creation followed by identity-persistence refusal retains live candidate/pending and never falls 
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T19:35:00.9749593Z back.
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	﻿2026-10-11T19:35:01.0568760Z ##[group]Run $ErrorActionPreference = 'Stop'
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:01.0569565Z ^[[36;1m$ErrorActionPreference = 'Stop'^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:01.0570026Z ^[[36;1m$Driver = Join-Path $env:RUNNER_TEMP 'skager-image-owner-x86.ps1'^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:01.0570512Z ^[[36;1m@'^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:01.0570888Z ^[[36;1m$ErrorActionPreference = 'Stop'^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:01.0571376Z ^[[36;1m$Evidence = 'opennav-x/evidence/local/native-update-image-owner-x86'^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:01.0572163Z ^[[36;1mNew-Item -ItemType Directory -Force $Evidence | Out-Null^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:01.0572847Z ^[[36;1mif ($PSVersionTable.PSVersion.Major -ne 5 -or [IntPtr]::Size -ne 4) { throw 'Windows PowerShell 5.1 x86 required.' }^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:01.0573510Z ^[[36;1mtry {^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:01.0574053Z ^[[36;1m  & ./opennav-x/tools/test-native-update-image-owner.ps1 *>&1 | Tee-Object "$Evidence/owner.log"^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:01.0574694Z ^[[36;1m} catch { $_ | Out-File "$Evidence/owner.log" -Append; throw }^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:01.0575334Z ^[[36;1mif ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:01.0575711Z ^[[36;1mtry {^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:01.0576191Z ^[[36;1m  & ./opennav-x/tools/test-update-transaction.ps1 *>&1 | Tee-Object "$Evidence/transaction.log"^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:01.0576811Z ^[[36;1m} catch { $_ | Out-File "$Evidence/transaction.log" -Append; throw }^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:01.0577291Z ^[[36;1mif ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:01.0577766Z ^[[36;1m$Inputs = @{}^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:01.0578758Z ^[[36;1mforeach ($Path in @('installer/windows/UpdateTransaction.ps1','installer/windows/UpdateSupervisor.ps1','tools/test-native-update-image-owner.ps1','tools/test-update-transaction.ps1','tools/fixtures/update-image-marker.cs')) {^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:01.0580069Z ^[[36;1m  $Inputs[$Path] = (Get-FileHash -LiteralPath (Join-Path 'opennav-x' $Path) -Algorithm SHA256).Hash.ToLowerInvariant()^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:01.0580682Z ^[[36;1m}^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:01.0582001Z ^[[36;1m@{commit=$env:GITHUB_SHA;run=$env:GITHUB_RUN_ID;attempt=$env:GITHUB_RUN_ATTEMPT;powerShell=$PSVersionTable.PSVersion.ToString();processBits=([IntPtr]::Size*8);os=[Environment]::OSVersion.VersionString;inputs=$Inputs;passed=$true;applicationBuild=$false;productAcceptance=$false;boatAcceptance=$false} | ConvertTo-Json -Depth 5 | Out-File "$Evidence/receipt.json" -Encoding utf8^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:01.0583501Z ^[[36;1m'@ | Set-Content -LiteralPath $Driver -Encoding UTF8^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:01.0584190Z ^[[36;1m& "$env:WINDIR/SysWOW64/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -NonInteractive -ExecutionPolicy Bypass -File $Driver^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:01.0584928Z ^[[36;1mif ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:01.0625661Z shell: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.EXE -command ". '{0}'"
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:01.0626155Z ##[endgroup]
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:08.4759984Z PASS: Production transaction source parses
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:08.5190468Z PASS: One exact embedded native source selected
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:09.3599878Z PASS: Exact embedded owner compiles without invoking Win32
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:09.4105452Z PASS: Held DOS parser strips exactly the extended prefix and preserves the physical suffix
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:09.4116897Z PASS: Held DOS parser accepts a conventional local drive spelling
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:09.6900813Z PASS: Unsupported or physically mismatched application spelling refused
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:09.6919102Z PASS: Unsupported or physically mismatched application spelling refused
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:09.6937039Z PASS: Unsupported or physically mismatched application spelling refused
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:09.6954364Z PASS: Unsupported or physically mismatched application spelling refused
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:09.6972395Z PASS: Unsupported or physically mismatched application spelling refused
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:09.6989511Z PASS: Unsupported or physically mismatched application spelling refused
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:09.7009496Z PASS: Unsupported or physically mismatched application spelling refused
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:09.7040286Z PASS: Ambiguous DOS application component refused
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:09.7057260Z PASS: Ambiguous DOS application component refused
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:09.7075274Z PASS: Ambiguous DOS application component refused
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:09.7092338Z PASS: Ambiguous DOS application component refused
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:09.7109266Z PASS: Ambiguous DOS application component refused
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:09.7125978Z PASS: Ambiguous DOS application component refused
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:09.7143254Z PASS: Ambiguous DOS application component refused
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:09.7160193Z PASS: Ambiguous DOS application component refused
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:09.7179240Z PASS: Ambiguous DOS application component refused
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:09.7196403Z PASS: Ambiguous DOS application component refused
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:09.7213656Z PASS: Ambiguous DOS application component refused
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:09.7230729Z PASS: Ambiguous DOS application component refused
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:09.7247536Z PASS: Ambiguous DOS application component refused
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:09.7264617Z PASS: Ambiguous DOS application component refused
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:09.7281336Z PASS: Ambiguous DOS application component refused
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:09.7302445Z PASS: Nonlocal native volume refused
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:09.7321346Z PASS: Volume root cannot be selected as an executable
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:09.7919527Z PASS: Durable armed launch refuses automatic recovery
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:10.7200519Z PASS: Historical attempted record remains readable but cannot authorize native cleanup
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:10.7304186Z PASS: Running record without PID explicitly refused
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:10.7333665Z PASS: Malformed native creation identity refused
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:10.7357003Z PASS: Malformed native creation identity refused
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:10.7375084Z PASS: Malformed native creation identity refused
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:10.7395628Z PASS: Malformed native creation identity refused
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:10.7412555Z PASS: Malformed native creation identity refused
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:11.6162822Z PASS: Disposable multi-link image created
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:11.6424658Z PASS: Actual acquired multi-link image refused
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:11.6546672Z PASS: Replacement marker has genuinely different bytes
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:11.7022720Z PASS: Application spelling derives from the held physical image rather than the original SUBST path
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:11.7148317Z PASS: Selected application root/image/unavailable resolution refuses against actual held pins
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:11.7477324Z PASS: Selected application refusal prevents native creation
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:11.7492188Z PASS: Selected application refusal does not arm an unattempted creation
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:11.7501144Z PASS: Selected application refusal never substitutes or rederives a name
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:11.7570851Z PASS: Selected application root/image/unavailable resolution refuses against actual held pins
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:11.7600309Z PASS: Selected application refusal prevents native creation
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:11.7611405Z PASS: Selected application refusal does not arm an unattempted creation
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:11.7626135Z PASS: Selected application refusal never substitutes or rederives a name
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:11.7679865Z PASS: Selected application root/image/unavailable resolution refuses against actual held pins
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:11.7701869Z PASS: Selected application refusal prevents native creation
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:11.7710524Z PASS: Selected application refusal does not arm an unattempted creation
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:11.7719113Z PASS: Selected application refusal never substitutes or rederives a name
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:11.8100698Z PASS: Retained image denies concurrent write access
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:11.8296708Z PASS: Physical ancestor above SUBST root cannot be renamed while held
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:11.9123341Z PASS: Alias remap before creation never executes replacement bytes
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:11.9186618Z PASS: Inert marker exposes its main window for the actual normal-close test
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:11.9228723Z PASS: Created child remains bound to retained physical image after DOS remap
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:11.9483708Z PASS: Native owner normally closes its original child after alias remap
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:11.9523753Z PASS: Image and all directory pins release after owned child closure
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:12.3273798Z PASS: Actual supervisor health retains PID/challenge/frame checks across DOS remap
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:12.3300464Z PASS: Receipt audit spelling remains original validated DOS path
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:12.3318233Z PASS: Health records the separate held native image identity
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:12.3588659Z PASS: Actual supervisor normal cleanup closes owned child across DOS remap
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:12.3681607Z PASS: Changed expected hash refused before creation
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:12.3699492Z PASS: Hash refusal does not become uncertain native creation
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:12.4167948Z PASS: Unsupported inherited stream request refused before creation
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:12.4177251Z PASS: Argument refusal does not become uncertain native creation
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:12.4768520Z PASS: Native invalid-image creation refused
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:12.4787981Z PASS: Actual CreateProcess refusal denies fallback
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:12.4898834Z PASS: Resume fault binds to one exact production branch
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:12.6188340Z PASS: Uncertain resume result refuses successful start
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:12.6823378Z PASS: Resume uncertainty preserves the possibly running owned child
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:12.7044010Z PASS: Test alone normally closes its inert uncertain child
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:12.8160507Z PASS: Wrong creation identity never signals interrupted child
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:12.8173375Z PASS: Wrong creation identity preserves live inert child
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:12.8449393Z PASS: Fresh native cleanup normally closes only the recorded matching child
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:12.8460311Z PASS: Replacement image never executed in any native fixture
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:12.8477865Z PASS: focused suspended image/alias/health/normal/interrupted cleanup fixtures only; no full custody or product 
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:12.8478953Z acceptance.
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:13.0161542Z PASS: exact identities, atomic replacement, bounded attempt, interruption recovery, malformed/oversized/untrusted JSON 
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:13.0162224Z rejection.
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:13.6768260Z PASS: real exclusive Lifecycle lock, owned inventory/hash validation, dot-source isolation, missing/forged known-good 
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:13.6769057Z refusal without installation changes.
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:13.6938515Z PASS: exact embedded native receiver compiles.
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:13.7871657Z PASS: suspended-child native regression interop compiles.
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:13.7913925Z PASS: direct parsed phase-array iteration retains three scalar records.
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:14.2920673Z PASS: native healthy
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:14.6999414Z PASS: native healthy-delayed-receive
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:15.0980653Z PASS: native wrong-challenge
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:15.4953940Z PASS: native wrong-commit
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:15.8842475Z PASS: native wrong-generation
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:16.3268515Z PASS: native wrong-pid
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:16.7137023Z PASS: native wrong-hash
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:17.1122448Z PASS: native oversized
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:22.1446660Z PASS: native timeout
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:22.1801011Z PASS: native dead-child
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:22.1929027Z PASS: human-wait deadline is positive and capped at five minutes.
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:22.6158096Z PASS: native bounded phase wait-accept
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:28.5296215Z PASS: native bounded phase wait-accept-after-initial-deadline
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:28.8754895Z PASS: native bounded phase fragmented-phases
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:29.2102875Z PASS: native bounded phase wait-cancel
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:29.5429729Z PASS: native bounded phase wait-eof
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:29.8755797Z PASS: native bounded phase continue-eof
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:30.2047125Z PASS: native bounded phase wait-ready
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:30.5351539Z PASS: native bounded phase continue-first
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:30.8742257Z PASS: native bounded phase cancel-first
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:31.2639207Z PASS: native bounded phase repeated-wait
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:31.5971945Z PASS: native bounded phase repeated-continue
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:31.9317256Z PASS: native bounded phase ready-trailing
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:32.2663067Z PASS: native bounded phase cancel-trailing
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:32.5918799Z PASS: native bounded phase unknown-phase
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:32.9236085Z PASS: native bounded phase spoof-wait-challenge
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:33.2531737Z PASS: native bounded phase spoof-wait-generation
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:33.6251137Z PASS: native bounded phase spoof-wait-commit
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:33.9596360Z PASS: native bounded phase spoof-continue
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:34.2922160Z PASS: native bounded phase spoof-cancel
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:34.6668544Z PASS: native bounded phase spoof-wait-pid
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:35.0045960Z PASS: native bounded phase truncated-wait
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:35.3422435Z PASS: native bounded phase oversized-phase
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:35.8596388Z PASS: native bounded phase human-timeout
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:39.2139654Z PASS: native bounded phase health-timeout
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:42.2501358Z PASS: native bounded phase ready-without-eof
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:43.0883496Z PASS: native suspended-loader startup; wrongHash=False
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:43.8786199Z PASS: native suspended-loader startup; wrongHash=True
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:44.0431248Z PASS: emitted inert application is PE32/x86 with CLR 32BITREQUIRED.
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:44.5097788Z PASS: emitted inert application is PE32/x86 with CLR 32BITREQUIRED.
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:45.2430198Z PASS: native supervisor known-good bootstrap, proof-only protected receipt, candidate one-shot startup, and healthy 
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:45.2431268Z completion.
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:45.3746571Z PASS: emitted inert application is PE32/x86 with CLR 32BITREQUIRED.
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:45.9438570Z WARNING: Supervised candidate failed: Candidate startup health was not authenticated. Receiver: frame-mismatch-or-order
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:47.9951750Z PASS: native failed startup closes inert child and invokes separately locked guarded rollback.
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:48.1317508Z PASS: emitted inert application is PE32/x86 with CLR 32BITREQUIRED.
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:48.5865174Z PASS: uncertain interrupted creation refuses rollback and retains evidence without launching candidate.
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:48.7197463Z PASS: emitted inert application is PE32/x86 with CLR 32BITREQUIRED.
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:49.2435300Z WARNING: Supervised candidate failed: Exception calling "StartOwned" with "2" argument(s): "Unsupported native creation
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:49.2436131Z  
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:49.2443347Z WARNING: request."
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:50.1803867Z PASS: actual acquired owner pre-create refusal preserves proven-no-create rollback.
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:50.3224881Z PASS: emitted inert application is PE32/x86 with CLR 32BITREQUIRED.
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:50.7726804Z WARNING: Supervised candidate failed: Generation file changed: app/opencpn.exe
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:51.7213771Z PASS: native candidate integrity failure uses known-good previous rollback engine without launching candidate.
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:51.8538826Z PASS: emitted inert application is PE32/x86 with CLR 32BITREQUIRED.
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:35:52.3976413Z WARNING: Supervised candidate failed: Candidate startup health was not authenticated. Receiver: frame-mismatch-or-order
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:36:03.6085601Z PASS: native failed graceful close preserves live process, selected generation and pending recovery; later recovery 
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:36:03.6086660Z restores previous.
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:36:04.2221402Z PASS: emitted inert application is PE32/x86 with CLR 32BITREQUIRED.
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:36:05.7104608Z WARNING: Supervised candidate failed: Injected lost managed return after native resume.
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:36:05.7481080Z PASS: lost managed return after native resume preserves pending/live child and never falls back.
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:36:06.9496522Z PASS: emitted inert application is PE32/x86 with CLR 32BITREQUIRED.
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:36:07.7845744Z WARNING: Supervised candidate failed: Injected native identity persistence refusal.
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:36:07.8129730Z PASS: actual native creation followed by identity-persistence refusal retains live candidate/pending and never falls 
+Windows PowerShell 5.1 supervised image ownership	Exercise the same supervisor under Windows PowerShell 5.1 x86	2026-10-11T19:36:07.8130880Z back.
+Windows PowerShell 5.1 supervised image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	﻿2026-10-11T19:36:09.2230732Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+Windows PowerShell 5.1 supervised image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T19:36:09.2231406Z with:
+Windows PowerShell 5.1 supervised image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T19:36:09.2231851Z   name: native-update-image-owner-b08f9a1cf3360ff10e075b8b0134e5c39ac15f73
+Windows PowerShell 5.1 supervised image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T19:36:09.2233439Z   path: opennav-x/evidence/local/native-update-image-owner
+Windows PowerShell 5.1 supervised image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	opennav-x/evidence/local/native-update-image-owner-x86
+Windows PowerShell 5.1 supervised image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	opennav-x/evidence/local/native-update-createprocess
+Windows PowerShell 5.1 supervised image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	opennav-x/evidence/local/native-update-createprocess.log
+Windows PowerShell 5.1 supervised image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	
+Windows PowerShell 5.1 supervised image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T19:36:09.2259894Z   if-no-files-found: error
+Windows PowerShell 5.1 supervised image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T19:36:09.2260894Z   retention-days: 90
+Windows PowerShell 5.1 supervised image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T19:36:09.2261223Z   compression-level: 6
+Windows PowerShell 5.1 supervised image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T19:36:09.2261513Z   overwrite: false
+Windows PowerShell 5.1 supervised image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T19:36:09.2261862Z   include-hidden-files: false
+Windows PowerShell 5.1 supervised image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T19:36:09.2262649Z ##[endgroup]
+Windows PowerShell 5.1 supervised image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T19:36:09.4536243Z (node:7088) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+Windows PowerShell 5.1 supervised image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T19:36:09.4537718Z (Use `node --trace-deprecation ...` to show where the warning was created)
+Windows PowerShell 5.1 supervised image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T19:36:09.4634911Z Multiple search paths detected. Calculating the least common ancestor of all paths
+Windows PowerShell 5.1 supervised image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T19:36:09.4639325Z The least common ancestor is D:\a\Work\Work\opennav-x\evidence\local. This will be the root directory of the artifact
+Windows PowerShell 5.1 supervised image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T19:36:09.4640830Z With the provided path, there will be 6 files uploaded
+Windows PowerShell 5.1 supervised image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T19:36:09.4644958Z Artifact name is valid!
+Windows PowerShell 5.1 supervised image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T19:36:09.4646716Z Root directory input is valid!
+Windows PowerShell 5.1 supervised image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T19:36:09.7719819Z Beginning upload of artifact content to blob storage
+Windows PowerShell 5.1 supervised image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T19:36:09.8187391Z (node:7088) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+Windows PowerShell 5.1 supervised image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T19:36:09.9828563Z Uploaded bytes 8060
+Windows PowerShell 5.1 supervised image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T19:36:10.0356489Z Finished uploading artifact content to blob storage!
+Windows PowerShell 5.1 supervised image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T19:36:10.0357767Z SHA256 digest of uploaded artifact zip is 637ae5ae78a97001853b34303bf4b74546549982e3bd9faf5582d4a1305f8866
+Windows PowerShell 5.1 supervised image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T19:36:10.0359511Z Finalizing artifact upload
+Windows PowerShell 5.1 supervised image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T19:36:10.2592167Z Artifact native-update-image-owner-b08f9a1cf3360ff10e075b8b0134e5c39ac15f73.zip successfully finalized. Artifact ID 11713700138
+Windows PowerShell 5.1 supervised image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T19:36:10.2595041Z Artifact native-update-image-owner-b08f9a1cf3360ff10e075b8b0134e5c39ac15f73 has been successfully uploaded! Final size is 8060 bytes. Artifact ID is 11713700138
+Windows PowerShell 5.1 supervised image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T19:36:10.2601326Z Artifact download URL: https://github.com/ThereptileII/Work/actions/runs/38168539396/artifacts/11713700138
+Windows PowerShell 5.1 supervised image ownership	Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	﻿2026-10-11T19:36:10.3113243Z Post job cleanup.
+Windows PowerShell 5.1 supervised image ownership	Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:36:10.5691024Z [command]"C:\Program Files\Git\bin\git.exe" version
+Windows PowerShell 5.1 supervised image ownership	Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:36:10.5998686Z git version 2.56.0.windows.1
+Windows PowerShell 5.1 supervised image ownership	Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:36:10.6103579Z Temporarily overriding HOME='D:\a\_temp\5a757003-8cdb-44da-9ff1-7a88bb961e10' before making global git config changes
+Windows PowerShell 5.1 supervised image ownership	Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:36:10.6104793Z Adding repository directory to the temporary git global config as a safe directory
+Windows PowerShell 5.1 supervised image ownership	Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:36:10.6116080Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\Work\Work
+Windows PowerShell 5.1 supervised image ownership	Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:36:10.6543600Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+Windows PowerShell 5.1 supervised image ownership	Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:36:10.6966992Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+Windows PowerShell 5.1 supervised image ownership	Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:36:11.4720163Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+Windows PowerShell 5.1 supervised image ownership	Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:36:11.5047331Z http.https://github.com/.extraheader
+Windows PowerShell 5.1 supervised image ownership	Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:36:11.5092851Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all http.https://github.com/.extraheader
+Windows PowerShell 5.1 supervised image ownership	Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:36:11.5419104Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+Windows PowerShell 5.1 supervised image ownership	Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:36:12.2095083Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+Windows PowerShell 5.1 supervised image ownership	Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T19:36:12.2444135Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+Windows PowerShell 5.1 supervised image ownership	Complete job	﻿2026-10-11T19:36:13.0765416Z Cleaning up orphan processes
+Windows PowerShell 5.1 supervised image ownership	Complete job	2026-10-11T19:36:13.1854727Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@11d5960a326750d5838078e36cf38b85af677262, actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

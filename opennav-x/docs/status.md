@@ -205,7 +205,23 @@ The same exact source passed the changed plugin module-name gate in
 `b77dedb2` refuses reserved device stems before sibling lookup and preserves
 original filename case. The 9,885 import assertions were run with portable
 ASan/UBSan, not by that Windows harness. These bounded results do not qualify
-general plugin closure or the integrated application.
+general plugin closure or the integrated application. The
+[changed-source native receipt](evidence/scrum209-module-name-native-38167423509/README.md)
+retains the exact inputs and results.
+
+Final focused owner confirmation
+[38168539396](https://github.com/ThereptileII/Work/actions/runs/38168539396)
+**passed** at exact `b08f9a1cf3360ff10e075b8b0134e5c39ac15f73`.
+PowerShell 5.1 x64 and x86 each completed 79 owner assertions and 60 transaction
+summaries; Go Win32 completed ten top-level groups and two subtests without
+skips. The final fixture correction explicitly compiles/validates x86 inert
+applications and preserves the first error when cleanup also fails. The
+production owner/cleanup source is unchanged by these fixture repairs. Both
+artifact digests, eight CRCs, three architecture-specific passed receipts and
+25 unique source hashes are verified in
+[the exact native evidence](evidence/scrum311-owner-native-38168539396/README.md).
+This is selected owner/transaction qualification; it does not qualify a new
+integrated application, signed commissioning broker or boat package.
 General process/script/helper/module custody and authenticated signed
 successor/fallback boat commissioning remain open. Existing boat guards and
 the installed boat package remain unchanged.

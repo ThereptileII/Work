@@ -1,0 +1,170 @@
+{
+  "commit": "b08f9a1cf3360ff10e075b8b0134e5c39ac15f73",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/38168539396",
+  "attempt": 1,
+  "conclusion": "success",
+  "artifacts": [
+    {
+      "id": 11713700138,
+      "name": "native-update-image-owner-b08f9a1cf3360ff10e075b8b0134e5c39ac15f73",
+      "bytes": 8060,
+      "sha256": "637ae5ae78a97001853b34303bf4b74546549982e3bd9faf5582d4a1305f8866",
+      "crcMembers": 6
+    },
+    {
+      "id": 11712094915,
+      "name": "native-ordinary-image-owner-b08f9a1cf3360ff10e075b8b0134e5c39ac15f73",
+      "bytes": 2524,
+      "sha256": "979b4e7917fbc5fb4d66b6be201ef3439a4ede326132fe97e1dedd3667ad1869",
+      "crcMembers": 2
+    }
+  ],
+  "sourcesCRLF": {
+    "opennav-x/installer/windows/UpdateSupervisor.ps1": "093f812db22b00b64b5131662be8a5ab1de0e12782c38f253547f0d8a830d02e",
+    "opennav-x/tools/test-native-update-image-owner.ps1": "c661bfe4c26cc43d699460a82cd236a95f299b5e7ed9901dfcb667e6c6f3f380",
+    "opennav-x/installer/windows/UpdateTransaction.ps1": "9bbf18e649d86d36ba42e6169510b75016a1aba1705b30d506ceb7f11e6e451c",
+    "opennav-x/tools/fixtures/update-image-marker.cs": "aa0501b2430447d027797572d3fbdfadf0660578a9220ab13f1253b8f8a173c6",
+    "opennav-x/tools/test-update-transaction.ps1": "9efce2fa77de57b49a0daba9414a92e7dc2fadb0fa3b8dc63232629e193ee94b",
+    "opennav-x/tools/update-verifier/launcher/bootstrap.go": "c172ef876147acaefc20fe20cb2c226aa68b03a1b287ef7efa75e61acc2cdb03",
+    "opennav-x/tools/update-verifier/launcher/bootstrap_test.go": "6ebf9dcda427b750c9a48455cb0d78a76b4a8d41d4bac63a470847a01d763e20",
+    "opennav-x/tools/update-verifier/launcher/launcher.go": "1280698b2da3fbd4272facf181f20333c467874f85d6127b08d90b97f4d92d69",
+    "opennav-x/tools/update-verifier/launcher/launcher_test.go": "90da011f19550cd5f62551b079ef68cf169c90d6e2414b0c895461b58ae40634",
+    "opennav-x/tools/update-verifier/launcher/native_other.go": "557b1614747b6cccef6b5e81f148137fb23fa23150ba96173ab0d8319b431ae0",
+    "opennav-x/tools/update-verifier/launcher/native_windows.go": "3fae145cdb92064256ac4fec7c74320b5ee06932347f90ea8605ff63af5c165e",
+    "opennav-x/tools/update-verifier/launcher/native_windows_test.go": "f60548fa4226d5bdb2cc01efc1b727cef741ebe5913ad658c318ef643d029fd7",
+    "opennav-x/tools/update-verifier/launcher/ordinary_application_windows_test.go": "5d8aaeb4f55c4ffc187017fc4612814f13237d248be21177a748f1601d77a4c9",
+    "opennav-x/tools/update-verifier/launcher/ordinary_creator.go": "5a96edc11e969155f941f8d54b22609dad1bebd6fb544307e460c92f5b2b9e80",
+    "opennav-x/tools/update-verifier/launcher/ordinary_creator_test.go": "daa3dba0f6129630953e5bcdeeb4503ec82d2fd67cb11448bebb0e2026aacbe5",
+    "opennav-x/tools/update-verifier/launcher/ordinary_native_windows.go": "43cabe642e6f1cff58e678d443e236151cdde97ed16311882b2f3dbb57e08119",
+    "opennav-x/tools/update-verifier/launcher/ordinary_native_windows_test.go": "e2f1e4b9aa127f77eec8b5ff6197f6fd28633b8a5e513c4bd3580b07c8ba1c13",
+    "opennav-x/tools/update-verifier/launcher/ordinary_subst_windows_test.go": "feb0fe3ff076a0d34f7cf28f6c1fe56f3596beed72c84bae8476421a03ff073f",
+    "opennav-x/tools/update-verifier/launcher/pe.go": "5652411de36f35d9b1a9d9fc1b9fd02c5e8d7eeedd57e22fe51dbec721a972b5",
+    "opennav-x/tools/update-verifier/launcher/prelaunch_boundary_test.go": "c3454b4556aa651c4aa3b7e038b4b5df908ea746d55afd03748feeed3540e4ca",
+    "opennav-x/tools/update-verifier/launcher/progress.go": "11ba48169a45f0a924650551eba8f3be46dbf0015c9db16f5c43771372d6e3c9",
+    "opennav-x/tools/update-verifier/launcher/progress_test.go": "b3c5aaa96cbd1169068b84645295f714c9faff423ec91215dca2ca70b9c01582",
+    "opennav-x/tools/update-verifier/launcher/provision.go": "7bc57a52cbddffd7aaaffb4ab451925f3a6cd29648100e2416f22ba5cf109eeb",
+    "opennav-x/tools/update-verifier/launcher/records.go": "0902f8e246dc53afd353301fc2e19888fed412e861b9e157add148170a6fd449",
+    "opennav-x/tools/update-verifier/launcher/records_test.go": "e449d5ba9d85154683948f1fcf6361a48def17a1dfaa74b62ee19d8d8861ccba"
+  },
+  "rawMembers": [
+    {
+      "path": "raw/powershell/native-update-image-owner/owner.log",
+      "bytes": 10076,
+      "sha256": "8318159b9031d3ad17aedfecf556d78d69049f40039cd75869230df63cf61661"
+    },
+    {
+      "path": "raw/powershell/native-update-image-owner/transaction.log",
+      "bytes": 8206,
+      "sha256": "99147aac7911190922a624841db6bc03219e5161e26ebb00f25d1a265af60926"
+    },
+    {
+      "path": "raw/powershell/native-update-image-owner/receipt.json",
+      "bytes": 1038,
+      "sha256": "11d0e1162701b85c34d7359e8c4cff9a60e0752cb0af9202ec2bff0a0e48c706"
+    },
+    {
+      "path": "raw/powershell/native-update-image-owner-x86/owner.log",
+      "bytes": 10076,
+      "sha256": "8318159b9031d3ad17aedfecf556d78d69049f40039cd75869230df63cf61661"
+    },
+    {
+      "path": "raw/powershell/native-update-image-owner-x86/receipt.json",
+      "bytes": 1038,
+      "sha256": "692e9035957872d66af1f84cacef2ee2f11a9fa83d50bc957b0cc8c32f62b250"
+    },
+    {
+      "path": "raw/powershell/native-update-image-owner-x86/transaction.log",
+      "bytes": 8206,
+      "sha256": "99147aac7911190922a624841db6bc03219e5161e26ebb00f25d1a265af60926"
+    },
+    {
+      "path": "raw/go/tests.json",
+      "bytes": 10942,
+      "sha256": "cfb14c232dfa5bb9f4adcbc87198109b79fc354a1ff4a0daa66ba7c96b8b2235"
+    },
+    {
+      "path": "raw/go/receipt.json",
+      "bytes": 2896,
+      "sha256": "55d19f153cb8752c76cc3bb1fbc39eb0f0ca7536dd0cd6910bef160197d677ef"
+    }
+  ],
+  "powershellLogs": {
+    "powershell/native-update-image-owner/owner.log": {
+      "passLines": 79
+    },
+    "powershell/native-update-image-owner/transaction.log": {
+      "passLines": 60
+    },
+    "powershell/native-update-image-owner-x86/owner.log": {
+      "passLines": 79
+    },
+    "powershell/native-update-image-owner-x86/transaction.log": {
+      "passLines": 60
+    }
+  },
+  "go": {
+    "arch": "386",
+    "version": "go version go1.27.1 windows/amd64",
+    "topLevelPasses": 10,
+    "subtestPasses": 2,
+    "requiredFixtures": [
+      "TestNativeOrdinaryActualCreator",
+      "TestNativeOrdinaryPhysicalCustodyBeforeResume",
+      "TestNativeOrdinaryWrongHashAndHardlinkRefuse",
+      "TestNativeOrdinarySuspendedRefusalCleanup",
+      "TestNativeOrdinaryNameAndEnvironmentBounds",
+      "TestNativeOrdinarySubstRemapAfterAcquire",
+      "TestNativeOrdinaryDOSApplicationBounds",
+      "TestNativeOrdinarySelectedApplicationCorruptionRefuses",
+      "TestNativeOrdinaryWrongSuspendedImageRefuses"
+    ],
+    "skips": 0
+  },
+  "jobs": [
+    {
+      "id": 114556069170,
+      "name": "Native Win32 ordinary image ownership",
+      "conclusion": "success",
+      "startedAt": "2026-10-11T19:33:42Z",
+      "completedAt": "2026-10-11T19:34:34Z"
+    },
+    {
+      "id": 114556069356,
+      "name": "Windows PowerShell 5.1 supervised image ownership",
+      "conclusion": "success",
+      "startedAt": "2026-10-11T19:33:43Z",
+      "completedAt": "2026-10-11T19:36:14Z"
+    },
+    {
+      "id": 114556069998,
+      "name": "Native startup update interactions",
+      "conclusion": "skipped",
+      "startedAt": "2026-10-11T19:33:41Z",
+      "completedAt": "2026-10-11T19:33:40Z"
+    },
+    {
+      "id": 114556070376,
+      "name": "Focused actual Lifecycle startup diagnostics",
+      "conclusion": "skipped",
+      "startedAt": "2026-10-11T19:33:41Z",
+      "completedAt": "2026-10-11T19:33:40Z"
+    },
+    {
+      "id": 114556070438,
+      "name": "Native Win32 owned-file acquisition",
+      "conclusion": "skipped",
+      "startedAt": "2026-10-11T19:33:41Z",
+      "completedAt": "2026-10-11T19:33:40Z"
+    },
+    {
+      "id": 114556095964,
+      "name": "verify",
+      "conclusion": "skipped",
+      "startedAt": "2026-10-11T19:33:48Z",
+      "completedAt": "2026-10-11T19:33:40Z"
+    }
+  ],
+  "applicationBuild": false,
+  "productAcceptance": false,
+  "boatAcceptance": false
+}

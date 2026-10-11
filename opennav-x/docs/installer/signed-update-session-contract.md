@@ -373,7 +373,15 @@ receipt exists. [The audited partial result](../evidence/scrum311-owner-native-3
 remains an overall failure. Test-only correction `8ed247a5` compiles that
 transaction application explicitly as x86, verifies PE32/CLR 32BITREQUIRED and
 preserves the first error if cleanup also fails. Native confirmation remains
-pending; production owner/cleanup source is unchanged by this correction.
+pending at that increment; production owner/cleanup source is unchanged by this
+correction. Final focused confirmation
+[38168539396](https://github.com/ThereptileII/Work/actions/runs/38168539396)
+passed at exact `b08f9a1cf3360ff10e075b8b0134e5c39ac15f73`: both PowerShell
+host widths completed owner and transaction checks, and Go Win32 completed its
+required actual-creator/refusal/SUBST fixtures without skips. The
+[audited native receipt](../evidence/scrum311-owner-native-38168539396/README.md)
+retains exact inputs and architecture evidence. This qualifies the selected
+image-owner mechanics, not the broader commissioning/custody boundary below.
 The separate [ordinary Go creator increment](../evidence/scrum311-held-ordinary-image-20261011/README.md)
 covers ordinary/fallback source paths, with Linux/cross-compile evidence only.
 Lifecycle self-test, helper/script/shortcut roots and loader/profile/environment
