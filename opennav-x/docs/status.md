@@ -24,11 +24,18 @@ selection-page wording. Its captured native screenshot proves the page was
 open. Helper correction `d8bd6c86` checks the exact launched enabled frame and
 current page/control identity; 11 focused observer tests pass while the original
 pointer, deadline, default-action and preservation assertions remain. Only
-installer/chart checks are now being repeated in no-rebuild
+installer/chart checks were repeated in no-rebuild
 [run `38160318032`](https://github.com/ThereptileII/Work/actions/runs/38160318032)
 against the same retained `ec51b926` application bytes. That selected native
-installer/chart run **passed** on 2026-10-11; its downloaded raw evidence is
-being independently checked. This is a selected exact-byte retest, not an
+installer/chart run **passed** on 2026-10-11; the artifact hash, all 1,985
+member CRCs and 19 retained raw members have been independently verified in
+[the native evidence receipt](evidence/scrum98-retained-native-38160318032/README.md).
+Nine named installer checks, seven operation receipts (two passes and five
+expected refusals), four nested updater checks and 18 functional chart captures
+passed. Requested OpenGL was rejected by the hosted environment, so both chart
+phases exercised software fallback. The official prerequisite returned exit
+1223 despite verified installation postconditions; this anomaly remains recorded.
+This is a selected exact-byte retest, not an
 integrated qualification of the newer source batch. The original Linux failure
 remains. This commit has **not** yet
 produced an accepted boat
@@ -74,7 +81,14 @@ precondition before the new load. The corrected bounded string query
 [run `38159170047`](https://github.com/ThereptileII/Work/actions/runs/38159170047),
 including first mapping, exact mapped sibling identity/hash, live write/delete
 locks, unload and search-state restoration. This is focused guard evidence,
-not an integrated application or plugin-closure acceptance. The FreeSans upstream conversion and
+not an integrated application or plugin-closure acceptance. A reviewed extension
+(`f5ebd020`) now inspects bounded declared export forwarders and follows eligible
+same-directory dependencies using the same retained-handle policy. Both portable
+compiler checks passed 9,366 existing plus 17,496 new assertions. Native
+[run `38162532440`](https://github.com/ThereptileII/Work/actions/runs/38162532440)
+stopped at MSVC linking of the harmless forwarder fixtures, before the new
+51-group runtime gate could execute. Fixture correction is in progress; this
+failed run is not native acceptance of the extension. The FreeSans upstream conversion and
 original license evidence is integrated as `3ea17639` without a final legal
 clearance claim. Focused source/notice and real-scanner tests passed, but these
 newer commits have no integrated native package result and do not clear final
@@ -103,9 +117,16 @@ native helper watchdog, independent 150-second helper-only job deadline and
 fresh 180-second inert clients. Eleven portable refusal/evidence methods pass;
 watchdog exit and forced helper death remain distinct. The manual-only focused
 native [run `38161766040`](https://github.com/ThereptileII/Work/actions/runs/38161766040)
-at `4f423a80` is pending. It only targets newly compiled loopback marker clients
-on a disposable hosted Windows runner. It does not build the application,
-filter product/boat traffic or qualify product endpoint binding and continuity.
+at `4f423a80` **passed**. The independently audited artifact retains all eight
+client logs, strict dual-family filter readbacks and exact-GUID cleanup audits.
+Both 122-second blocked-retry windows passed without marker success; controls
+remained connected. The watchdog exited 124 at 135.047 seconds, and forced
+helper termination exited 1 at 123.047 seconds; both recovered with new marker
+connections. The configured 150/180-second outer timers did not expire and are
+not claimed as exercised kill paths. See [the native receipt and limits](evidence/scrum227-long-native-38161766040/README.md).
+It only targets newly compiled loopback marker clients on a disposable hosted
+Windows runner. It does not build the application, filter product/boat traffic
+or qualify product endpoint binding, provider behavior or boat continuity.
 
 A separate narrow updater change (`5792c4e9`) refuses files with more than one
 hardlink using metadata from the actual acquired native handle, before granting

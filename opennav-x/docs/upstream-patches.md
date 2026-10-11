@@ -1765,8 +1765,12 @@ PluginHandler, package/installer and release acceptance remain required.
 ### SCRUM-209 original plugin import refusal
 
 The existing `model/src/plugin_loader.cpp` presentation-fallback hook now also
-runs a Windows-only direct/delay legacy TLS import refusal immediately before
-loading the original plugin. The hook already covers initial/reload discovery
+runs a Windows-only legacy TLS dependency refusal immediately before loading
+the original plugin. It inspects declared normal/delay imports and bounded
+export forwarders, following eligible same-directory sibling DLLs while retaining
+inspection handles. Unsupported ambiguous forwarder spellings fail closed.
+This bounded graph does not establish general loader resolution or dynamic/helper
+dependency closure. The hook already covers initial/reload discovery
 and ordinary fallback from every upstream plugin root. No additional upstream
 patch, root-selection change or pristine Legacy mutation is introduced. See
 [the precise partial enforcement boundary and pending native gates](architecture/windows-native-dependency-integration.md#original-plugin-pre-load-refusal).
