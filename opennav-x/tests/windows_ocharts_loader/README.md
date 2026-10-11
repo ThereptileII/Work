@@ -63,6 +63,25 @@ The project now requires **43 groups**, adding the first-mapping control below.
 This new group is **prepared, not run** until an exact-revision native receipt
 exists. No boat action was performed for this increment.
 
+The first 43-group attempt,
+[38158753749](https://github.com/ThereptileII/Work/actions/runs/38158753749) at
+integrated revision `1f756424`, compiled and passed all prior 42 groups. The new
+group stopped before original load at the fixture's process DLL-directory
+assertion. Its zero-capacity `GetDllDirectoryW` query incorrectly treated a
+required buffer size as an actual nonempty path, so this failure establishes
+neither a nonempty override nor a product loader failure. The failed run is
+retained as evidence. The repair reads a bounded output buffer, distinguishes
+an empty string from an API error, logs the actual path/length and rejects a
+genuine nonempty override without changing it. After the scoped current-directory
+change, it also verifies the queried DLL-directory string is unchanged. It
+never calls `SetDllDirectory`, preserving the distinct empty-string/NULL states.
+The repaired 43-group control still requires an exact-revision native receipt.
+
+API/source references: [GetDllDirectoryW return contract](https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-getdlldirectoryw),
+[SetDllDirectoryW empty-string and NULL semantics](https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-setdlldirectoryw),
+and [pinned wx 3.2.8 native load wrapper](https://github.com/wxWidgets/wxWidgets/blob/v3.2.8/src/msw/dlmsw.cpp#L185)
+(ordinary `LoadLibrary`, with no search-state setter in this wrapper).
+
 Remaining product gates: actual package/adapter import ABI, full application
 Standard/Safe selection, real plugin lifecycle, encrypted-chart rendering,
 licensing behavior and physical hardware. The mechanics tests do not replace

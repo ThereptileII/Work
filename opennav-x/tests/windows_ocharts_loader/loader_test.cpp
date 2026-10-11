@@ -58,14 +58,30 @@ bool SameFile(const BY_HANDLE_FILE_INFORMATION& a,const BY_HANDLE_FILE_INFORMATI
   return a.dwVolumeSerialNumber==b.dwVolumeSerialNumber &&
          a.nFileIndexHigh==b.nFileIndexHigh && a.nFileIndexLow==b.nFileIndexLow;
 }
+std::wstring CurrentDllDirectory() {
+  wchar_t directory[32768]{};
+  SetLastError(ERROR_SUCCESS);
+  const auto length=GetDllDirectoryW(32768,directory);
+  const auto error=GetLastError();
+  Require(length<32768,"process DLL directory exceeds bounded query buffer");
+  Require(length!=0 || error==ERROR_SUCCESS,
+          "cannot read process DLL directory; Win32 error="+std::to_string(error));
+  Require(directory[length]==L'\0',"process DLL directory query is not terminated");
+  return std::wstring(directory,length);
+}
 // Change only this disposable process's current-directory search location.
 // Unlike SetDllDirectory, current_path has an exactly recoverable prior state.
 struct ScopedSearchDirectory {
   fs::path previous=fs::current_path();
+  std::wstring dll_directory=CurrentDllDirectory();
   bool restored=false;
   explicit ScopedSearchDirectory(const fs::path& directory) {
-    // A caller DLL-directory override can remove current-directory searching.
-    Require(GetDllDirectoryW(0,nullptr)==0,"unexpected process DLL search override");
+    // A zero-capacity query reports required size, not actual path length.
+    // Read/log the string; leave the DLL-directory setting entirely untouched.
+    std::cout<<"First-map process DLL directory: '"<<fs::path(dll_directory).u8string()
+             <<"'; characters="<<dll_directory.size()<<"\n";
+    Require(dll_directory.empty(),"unexpected nonempty process DLL search override: "+
+            fs::path(dll_directory).u8string());
     fs::current_path(directory);
   }
   ~ScopedSearchDirectory() {
@@ -74,6 +90,7 @@ struct ScopedSearchDirectory {
   void Restore() {
     fs::current_path(previous);
     Require(fs::current_path()==previous,"process search directory was not restored");
+    Require(CurrentDllDirectory()==dll_directory,"process DLL directory changed during first-map control");
     restored=true;
   }
 };

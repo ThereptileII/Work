@@ -151,6 +151,12 @@ files; it checks write/delete sharing violations and the mapped sibling path,
 volume/file index and hash, then unloads and restores process state. That new
 first-mapping control still requires an exact-revision native run. It is direct
 guard-class/native-load evidence, not a full application fallback qualification.
+The first attempt, native run
+[38158753749](https://github.com/ThereptileII/Work/actions/runs/38158753749) at
+`1f756424`, compiled and passed the prior 42 groups but stopped before new-group
+mapping at an incorrect zero-capacity `GetDllDirectoryW` fixture assertion.
+The bounded string-query repair is prepared; that failed evidence remains
+retained, and no product loader failure or new native pass is inferred from it.
 
 Before acceptance, qualify the exact integrated native candidate with default
 per-user, configured, portable and
