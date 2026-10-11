@@ -19,10 +19,16 @@ host; all 19 focused tests pass with export/redaction assertions retained.
 The existing binaries are under a separate no-rebuild native retest,
 [run `38158246826`](https://github.com/ThereptileII/Work/actions/runs/38158246826),
 using harness `e1d6f5a6`. It passed the corrected peer check and subsequent
-application/recovery checks, but failed in the installer wizard because the
-selection page was not found. Saved native evidence is under investigation;
-no cause or product pass is inferred from that timeout. The original Linux
-failure also remains. This commit has **not** yet produced an accepted boat
+application/recovery checks, but the installer test then waited for obsolete
+selection-page wording. Its captured native screenshot proves the page was
+open. Helper correction `d8bd6c86` checks the exact launched enabled frame and
+current page/control identity; 11 focused observer tests pass while the original
+pointer, deadline, default-action and preservation assertions remain. Only
+installer/chart checks are now being repeated in no-rebuild
+[run `38160318032`](https://github.com/ThereptileII/Work/actions/runs/38160318032)
+against the same retained `ec51b926` application bytes. Native acceptance is
+pending and the original Linux failure remains. This commit has **not** yet
+produced an accepted boat
 package. The installed
 boat application remains at `f1a1e68c` and no Production promotion is in scope.
 See [the exact Linux failure record](evidence/2026-10-11-staging-linux-setup-harness.md).
@@ -87,6 +93,18 @@ This fixture is excluded from ordinary builds/suites and does not qualify WFP
 packet loss, helper-death, product/process/DNS binding, native Windows or boat
 continuity. CMake was unavailable locally; the retained direct compiler recipe
 built the actual provider and pinned patched IX source.
+
+A separate narrow updater change (`5792c4e9`) refuses files with more than one
+hardlink using metadata from the actual acquired native handle, before granting
+an owner. The focused native Win32
+[run `38159970075`](https://github.com/ThereptileII/Work/actions/runs/38159970075)
+passed at exact source `1c4d3c88`: all four read/hold/measure/startup-lock cases
+refuse both aliases, release refused handles and accept the restored one-link
+file. The downloaded artifact's ZIP hash, CRC and actual named test receipt
+were independently verified. This run built no application and skipped the
+broader suites. General process-creation custody and authenticated signed
+successor/fallback boat commissioning remain open; the broader supervisor draft
+was withdrawn and existing boat guards remain unchanged.
 
 ## Exact-byte Staging native retest passed; replacement source is not built
 
