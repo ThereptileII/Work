@@ -158,7 +158,7 @@ try {
  $identity=Identity 'a';$identity.executableSha256=$aHash
  $generation=[pscustomobject]@{directory=($alias+'\');executable=$aliased;identity=$identity}
  $session=New-UpdateHealthSession $identity;$owners.Add($session.server)
- $child=Start-SupervisedGeneration $generation $session;$children.Add($child)
+ $child=Start-SupervisedGeneration $generation $session $fixture;$children.Add($child)
  MapAlias $b
  Check (Wait-UpdateGenerationStartupSuccess $identity $session $child $aliased 10000) 'Actual supervisor health retains PID/challenge/frame checks across DOS remap'
  Check ([string]::Equals($session.server.VerifiedImage,$aliased,[StringComparison]::OrdinalIgnoreCase)) 'Receipt audit spelling remains original validated DOS path'

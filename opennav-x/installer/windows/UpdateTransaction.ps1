@@ -41,6 +41,16 @@ function New-UpdatePendingRecord($Candidate, $Previous) {
   Assert-UpdatePendingRecord $record
   return $record
 }
+# Presence is a restriction only: no journal bytes or receipt grant permission.
+function Assert-NoSignedUpdateArmed([string]$InstallationRoot, [bool]$AllowMissingRoot=$false) {
+  try {
+    Initialize-UpdatePipeType
+    [Skager.UpdateArmedBarrier]::AssertAbsent($InstallationRoot,$AllowMissingRoot)
+  } catch {
+    $_.Exception.Data['SkagerSignedUpdateRestriction']=$true
+    throw
+  }
+}
 function Assert-UpdateRecordPath([string]$Path) {
   if (-not [IO.Path]::IsPathRooted($Path) -or $Path -match '[\x00-\x1f]' -or $Path.StartsWith('\\')) { throw 'Update record requires an absolute local path.' }
   if ([Environment]::OSVersion.Platform -eq [PlatformID]::Win32NT -and $Path -notmatch '^[A-Za-z]:[\\/]') { throw 'Update record requires an absolute local drive path.' }
@@ -97,6 +107,81 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Microsoft.Win32.SafeHandles;
 namespace Skager {
+ public static class UpdateArmedBarrier {
+  const uint Invalid=0xffffffff, Directory=0x10, Reparse=0x400;
+  [StructLayout(LayoutKind.Sequential,Pack=4)] struct Info {
+   public uint Attributes; public long Created,Accessed,Written;
+   public uint Volume,SizeHigh,SizeLow,Links,IndexHigh,IndexLow;
+  }
+  [DllImport("kernel32.dll",CharSet=CharSet.Unicode,SetLastError=true,ExactSpelling=true)]
+  static extern uint GetFileAttributesW(string path);
+  [DllImport("kernel32.dll",CharSet=CharSet.Unicode,SetLastError=true)]
+  static extern SafeFileHandle CreateFile(string path,uint access,uint share,IntPtr security,uint disposition,uint flags,IntPtr template);
+  [DllImport("kernel32.dll",SetLastError=true)] static extern bool GetFileInformationByHandle(SafeFileHandle handle,out Info info);
+  [DllImport("kernel32.dll",CharSet=CharSet.Unicode,SetLastError=true)]
+  static extern uint GetFinalPathNameByHandle(SafeFileHandle handle,StringBuilder name,uint length,uint flags);
+  static uint Attributes(string path) {
+   uint attributes=GetFileAttributesW(path);
+   if(attributes==Invalid) throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());
+   return attributes;
+  }
+  public static void AssertAbsent(string root,bool allowMissingRoot) {
+   if(Environment.OSVersion.Platform!=PlatformID.Win32NT) throw new InvalidOperationException("Armed-session lookup requires native Windows.");
+   var pins=new System.Collections.Generic.List<SafeFileHandle>();
+   string nativeDrive=null;
+   Func<string,string> physical=delegate(string path) { return nativeDrive==null?path:@"\\?\GLOBALROOT"+nativeDrive+"\\"+path.Substring(3); };
+   try {
+    CheckAbsent(root,allowMissingRoot,delegate(string path) { return Attributes(physical(path)); },delegate(string path) {
+     // Hold plain ancestors against write/delete replacement during lookup.
+     uint attributes=Attributes(physical(path));
+     if((attributes&(Directory|Reparse))!=Directory) return attributes;
+     var handle=CreateFile(physical(path),0x80,1,IntPtr.Zero,3,0x02200000,IntPtr.Zero);
+     if(handle.IsInvalid) { int error=Marshal.GetLastWin32Error(); handle.Dispose(); throw new System.ComponentModel.Win32Exception(error); }
+     pins.Add(handle); Info info;
+     if(!GetFileInformationByHandle(handle,out info)) throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());
+     if(nativeDrive==null) {
+      var name=new StringBuilder(32768); uint length=GetFinalPathNameByHandle(handle,name,(uint)name.Capacity,2);
+      if(length==0 || length>=(uint)name.Capacity) throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());
+      nativeDrive=name.ToString().TrimEnd('\\');
+      if(!System.Text.RegularExpressions.Regex.IsMatch(nativeDrive,@"^\\Device\\HarddiskVolume[0-9]+(?:\\|$)")) throw new IOException("Armed-session root is not a local physical volume.");
+     }
+     return info.Attributes;
+    });
+   } finally { foreach(var pin in pins) pin.Dispose(); }
+  }
+  // The injected attribute reader is private and used only by inert policy tests.
+  // Only FILE_NOT_FOUND is absence; PATH_NOT_FOUND, ACL and all other failures deny.
+  static void CheckAbsent(string root,bool allowMissingRoot,Func<string,uint> read,Func<string,uint> directory) {
+   if(String.IsNullOrEmpty(root) || !System.Text.RegularExpressions.Regex.IsMatch(root,@"^[A-Za-z]:[\\/]") || root.Length<4)
+    throw new InvalidOperationException("Armed-session installation root is ambiguous.");
+   root=root.Replace('/','\\');
+   if(root.EndsWith("\\")) root=root.Substring(0,root.Length-1);
+   string[] parts=root.Substring(3).Split('\\');
+   foreach(string part in parts) {
+    if(part.Length==0 || part=="." || part==".." || part.EndsWith(".") || part.EndsWith(" ") ||
+       part.IndexOfAny(new char[]{':','*','?','"','<','>','|'})>=0 ||
+       System.Text.RegularExpressions.Regex.IsMatch(part,@"[\x00-\x1f]|^(?i:CON|PRN|AUX|NUL|COM[0-9]|LPT[0-9])(?:\.|$)"))
+     throw new InvalidOperationException("Armed-session installation root is ambiguous.");
+   }
+   string walk=root.Substring(0,3);
+   uint attributes=directory(walk);
+   if((attributes&(Directory|Reparse))!=Directory) throw new InvalidOperationException("Armed-session ancestor is not a plain directory.");
+   foreach(string part in parts) {
+    walk=walk.TrimEnd('\\')+"\\"+part;
+    try { attributes=directory(walk); }
+    catch(System.ComponentModel.Win32Exception error) {
+     // Fresh installation only: a checked existing ancestor plus an exact missing
+     // component proves this not-yet-created root absent. Recheck after creation.
+     if(allowMissingRoot && error.NativeErrorCode==2) return;
+     throw;
+    }
+    if((attributes&(Directory|Reparse))!=Directory) throw new InvalidOperationException("Armed-session ancestor is not a plain directory.");
+   }
+   try { read(root+"\\signed-update-armed.jsonl"); }
+   catch(System.ComponentModel.Win32Exception error) { if(error.NativeErrorCode==2) return; throw; }
+   throw new InvalidOperationException("Signed update session is armed; ordinary startup and maintenance are restricted. No automatic recovery or disarm is available.");
+  }
+ }
  public sealed class UpdateImageOwner : IDisposable {
   const uint Read=0x80000000, Attributes=0x80, Directory=0x10, Reparse=0x400;
   const uint OpenReparse=0x00200000, Backup=0x02000000;

@@ -90,6 +90,7 @@ function Assert-UpdateTransactionLock([string]$InstallationRoot,[IO.FileStream]$
 }
 function New-SupervisedUpdatePending([string]$InstallationRoot,[string]$CandidateGeneration,[string]$PreviousGeneration,[IO.FileStream]$Lock) {
   Assert-UpdateTransactionLock $InstallationRoot $Lock
+  Assert-NoSignedUpdateArmed $InstallationRoot
   $state=Get-SupervisedInstallState $InstallationRoot
   if ($state.current -cne $PreviousGeneration) { throw 'Previous generation changed before supervised update.' }
   $path=Assert-UpdateRecordPath (Join-Path $InstallationRoot 'update-pending.json')
@@ -98,6 +99,7 @@ function New-SupervisedUpdatePending([string]$InstallationRoot,[string]$Candidat
   Assert-UpdateKnownGoodReceipt (Get-UpdateKnownGoodPath $InstallationRoot $previous.identity) $previous.identity
   $candidate=Get-SupervisedGeneration $InstallationRoot $CandidateGeneration
   $record=New-UpdatePendingRecord $candidate.identity $previous.identity
+  Assert-NoSignedUpdateArmed $InstallationRoot
   Write-UpdatePendingRecord $path $record
   return $record
 }
@@ -115,6 +117,7 @@ function Get-ValidatedUpdatePending([string]$InstallationRoot,[string]$Transacti
 }
 function Assert-SupervisedRollback([string]$InstallationRoot,[string]$Transaction,[IO.FileStream]$Lock) {
   Assert-UpdateTransactionLock $InstallationRoot $Lock
+  Assert-NoSignedUpdateArmed $InstallationRoot
   if ($Transaction -cnotmatch '^[a-f0-9]{32}$') { throw 'Guarded rollback requires the pending transaction.' }
   $context=Get-ValidatedUpdatePending $InstallationRoot $Transaction
   if ($context.decision -cne 'restore-previous') { throw 'Guarded rollback requires the current candidate and exact previous generation.' }
@@ -123,18 +126,25 @@ function Assert-SupervisedRollback([string]$InstallationRoot,[string]$Transactio
   return $context.pending
 }
 function Complete-UpdatePending([string]$InstallationRoot,$Pending,[string]$Outcome) {
+  Assert-NoSignedUpdateArmed $InstallationRoot
   if ($Outcome -notin @('healthy','restored','unpublished')) { throw 'Unknown supervised update outcome.' }
   $history=Assert-UpdateRecordPath (Join-Path $InstallationRoot 'update-history')
+  Assert-NoSignedUpdateArmed $InstallationRoot
   $null=New-Item -ItemType Directory -Path $history -Force
   $archive=Join-Path $history ($Pending.transaction+'-'+$Outcome+'.json')
   if (Test-Path -LiteralPath $archive) {
     $existing=Read-UpdatePendingRecord $archive
     if ($existing.transaction -cne $Pending.transaction -or -not (Test-UpdateIdentityEqual $existing.candidate $Pending.candidate) -or -not (Test-UpdateIdentityEqual $existing.previous $Pending.previous)) { throw 'Conflicting supervised update history.' }
-  } else { Write-UpdatePendingRecord $archive $Pending }
+  } else {
+    Assert-NoSignedUpdateArmed $InstallationRoot
+    Write-UpdatePendingRecord $archive $Pending
+  }
+  Assert-NoSignedUpdateArmed $InstallationRoot
   Remove-Item -LiteralPath (Assert-UpdateRecordPath (Join-Path $InstallationRoot 'update-pending.json'))
 }
 function Complete-SupervisedRollback([string]$InstallationRoot,[string]$Transaction,[IO.FileStream]$Lock) {
   Assert-UpdateTransactionLock $InstallationRoot $Lock
+  Assert-NoSignedUpdateArmed $InstallationRoot
   $context=Get-ValidatedUpdatePending $InstallationRoot $Transaction
   if ($context.decision -cne 'retain-previous') { throw 'Previous generation was not restored.' }
   Complete-UpdatePending $InstallationRoot $context.pending 'restored'
@@ -157,7 +167,8 @@ function Assert-UpdateBootstrapExpectation([string]$InstallationRoot,[string]$Ex
     if (Test-Path -LiteralPath (Assert-UpdateRecordPath $path)) { throw 'Private bootstrap receipt, trust or pending state changed.' }
   }
 }
-function Start-SupervisedGeneration($Generation,$Session) {
+function Start-SupervisedGeneration($Generation,$Session,[string]$InstallationRoot) {
+  Assert-NoSignedUpdateArmed $InstallationRoot
   Assert-NoUpdateApplication
   $start=New-Object Diagnostics.ProcessStartInfo
   $start.FileName=$Generation.executable; $start.Arguments='--xnav'
@@ -168,6 +179,7 @@ function Start-SupervisedGeneration($Generation,$Session) {
   # Ordinary installed XNav startup: no alternate profile, demo, hardware, or
   # connection arguments. The application's declared output contract and
   # explicit configuration/session gates remain active.
+  Assert-NoSignedUpdateArmed $InstallationRoot
   return $Session.server.StartOwned($start,$Generation.identity.executableSha256)
 }
 function Stop-SupervisedProcess([Diagnostics.Process]$Process,[string]$Executable,[string]$StartTicks='',$Session=$null) {
@@ -177,6 +189,7 @@ function Stop-SupervisedProcess([Diagnostics.Process]$Process,[string]$Executabl
   $Session.server.CloseOwned($Process,10000)
 }
 function Stop-InterruptedUpdateCandidate([string]$InstallationRoot,$Pending) {
+  Assert-NoSignedUpdateArmed $InstallationRoot
   if ($Pending.attempts -eq 1 -and (-not $Pending.PSObject.Properties['nativeLaunchV1'] -or $Pending.nativeLaunchV1 -cne 'running')) {
     throw 'Interrupted launch has no confirmed native-v1 creation identity; pending evidence retained for manual recovery.'
   }
@@ -185,14 +198,19 @@ function Stop-InterruptedUpdateCandidate([string]$InstallationRoot,$Pending) {
   foreach ($process in @(Get-Process -Name opencpn -ErrorAction SilentlyContinue)) {
     try {
       if ($Pending.attempts -eq 1) {
+        Assert-NoSignedUpdateArmed $InstallationRoot
         $null=[Skager.UpdateImageOwner]::CloseInterrupted($process,$candidatePath,$Pending.candidate.executableSha256,[int]$Pending.processId,[long]$Pending.processCreationFileTimeV1,10000)
       }
-    } catch { throw 'Interrupted candidate identity/normal closure could not be established; pending evidence retained.' }
+    } catch {
+      if ($_.Exception.Data['SkagerSignedUpdateRestriction']) { throw }
+      throw 'Interrupted candidate identity/normal closure could not be established; pending evidence retained.'
+    }
     finally { $process.Dispose() }
   }
   Assert-NoUpdateApplication
 }
 function Invoke-UpdateGuardedRollback([string]$InstallationRoot,$Pending) {
+  Assert-NoSignedUpdateArmed $InstallationRoot
   # Called ONLY after releasing transaction.lock. Lifecycle acquires it again
   # and uses -UpdateTransaction to recheck the exact current/previous identities.
   $previous=Get-SupervisedGeneration $InstallationRoot $Pending.previous.generation
@@ -203,6 +221,7 @@ function Invoke-UpdateGuardedRollback([string]$InstallationRoot,$Pending) {
   $start=New-Object Diagnostics.ProcessStartInfo
   $start.FileName=$powerShell; $start.UseShellExecute=$false
   $start.Arguments='-NoProfile -NonInteractive -ExecutionPolicy Bypass -File "'+$engine+'" -Action Rollback -UpdateTransaction '+$Pending.transaction
+  Assert-NoSignedUpdateArmed $InstallationRoot
   $process=[Diagnostics.Process]::Start($start)
   try {
     if (-not $process.WaitForExit(120000)) { throw 'Guarded rollback has not completed; its process retains the installation lock. Inspect recovery before retrying.' }
@@ -215,24 +234,31 @@ function Invoke-UpdateSupervision([string]$InstallationRoot,[string]$Action,[str
   $privateBootstrap=$PSBoundParameters.ContainsKey('BootstrapExpectation')
   if ($privateBootstrap -and ($Action -cne 'QualifyCurrent' -or $BootstrapExpectation -cnotmatch '^[a-f0-9]{32}:absent$')) { throw 'Private bootstrap requires an exact qualification expectation.' }
   if ([Environment]::OSVersion.Platform -ne [PlatformID]::Win32NT) { throw 'Supervised application startup requires native Windows.' }
+  Assert-NoSignedUpdateArmed $InstallationRoot
   $state=Get-SupervisedInstallState $InstallationRoot
   $lockPath=Assert-UpdateRecordPath (Join-Path $InstallationRoot 'transaction.lock')
+  Assert-NoSignedUpdateArmed $InstallationRoot
   $lock=[IO.File]::Open($lockPath,[IO.FileMode]::OpenOrCreate,[IO.FileAccess]::ReadWrite,[IO.FileShare]::None)
   $session=$null; $process=$null; $rollback=$null; $creationRecorded=$false
   try {
     Assert-UpdateTransactionLock $InstallationRoot $lock
+    Assert-NoSignedUpdateArmed $InstallationRoot
     $state=Get-SupervisedInstallState $InstallationRoot
     if ($Action -ceq 'QualifyCurrent') {
       if (Test-Path -LiteralPath (Join-Path $InstallationRoot 'update-pending.json')) { throw 'Recover the pending update before qualifying current startup.' }
       $generation=Get-SupervisedGeneration $InstallationRoot $state.current
+      Assert-NoSignedUpdateArmed $InstallationRoot
       $session=New-UpdateHealthSession $generation.identity
       if ($privateBootstrap) { Assert-UpdateBootstrapExpectation $InstallationRoot $BootstrapExpectation $lock }
-      $process=Start-SupervisedGeneration $generation $session
+      $process=Start-SupervisedGeneration $generation $session $InstallationRoot
+      Assert-NoSignedUpdateArmed $InstallationRoot
       if (-not (Wait-UpdateGenerationStartupSuccess $generation.identity $session $process $generation.executable)) {
         throw ('Current generation did not provide authenticated healthy startup; no known-good receipt was created. Receiver: '+$session.server.FailureReason)
       }
       $known=Get-UpdateKnownGoodPath $InstallationRoot $generation.identity
+      Assert-NoSignedUpdateArmed $InstallationRoot
       $null=New-Item -ItemType Directory -Path ([IO.Path]::GetDirectoryName($known)) -Force
+      Assert-NoSignedUpdateArmed $InstallationRoot
       Write-UpdateKnownGoodReceipt $known $generation.identity $session $generation.executable
       return 'current-qualified'
     }
@@ -250,20 +276,30 @@ function Invoke-UpdateSupervision([string]$InstallationRoot,[string]$Action,[str
       try {
         $generation=Get-SupervisedGeneration $InstallationRoot $pending.candidate.generation
         if (-not (Test-UpdateIdentityEqual $generation.identity $pending.candidate)) { throw 'Candidate identity changed before launch.' }
+        Assert-NoSignedUpdateArmed $InstallationRoot
         $session=New-UpdateStartupSession $pending
+        Assert-NoSignedUpdateArmed $InstallationRoot
         Write-UpdatePendingRecord (Join-Path $InstallationRoot 'update-pending.json') $pending
-        $process=Start-SupervisedGeneration $generation $session
+        $process=Start-SupervisedGeneration $generation $session $InstallationRoot
         $pending.processId=$process.Id; $pending.processStartTicks=$process.StartTime.ToUniversalTime().Ticks.ToString()
         $pending.processCreationFileTimeV1=$session.server.OwnedCreationFileTime.ToString(); $pending.nativeLaunchV1='running'
+        Assert-NoSignedUpdateArmed $InstallationRoot
         Write-UpdatePendingRecord (Join-Path $InstallationRoot 'update-pending.json') $pending
         $creationRecorded=$true
+        Assert-NoSignedUpdateArmed $InstallationRoot
         if (-not (Wait-UpdateStartupSuccess $pending $session $process $generation.executable)) { throw ('Candidate startup health was not authenticated. Receiver: '+$session.server.FailureReason) }
         $known=Get-UpdateKnownGoodPath $InstallationRoot $generation.identity
+        Assert-NoSignedUpdateArmed $InstallationRoot
         $null=New-Item -ItemType Directory -Path ([IO.Path]::GetDirectoryName($known)) -Force
+        Assert-NoSignedUpdateArmed $InstallationRoot
         Write-UpdateKnownGoodReceipt $known $generation.identity $session $generation.executable
         Complete-UpdatePending $InstallationRoot $pending 'healthy'
         return 'candidate-qualified'
       } catch {
+        if ($_.Exception.Data['SkagerSignedUpdateRestriction']) {
+          if ($process) { Stop-SupervisedProcess $process $generation.executable $pending.processStartTicks $session }
+          throw
+        }
         Write-Warning ('Supervised candidate failed: '+$_.Exception.Message)
         if ($session -and ($session.server.UncertainCreation -or ($session.server.NativeCreationAttempted -and (-not $process -or -not $creationRecorded)))) {
           throw 'Native candidate creation outcome was not durably confirmed; no fallback or rollback, pending evidence retained.'

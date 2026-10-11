@@ -24,8 +24,10 @@ $Utf8 = New-Object System.Text.UTF8Encoding($false)
 $SessionLog = New-Object System.Collections.Generic.List[string]
 $TransactionLock = $null
 $OwnsRoot = $false
+$CreatedRoot = $false
 $LastStartupHealth = 0
 $RecoveredSupervised = $false
+$SignedUpdateRestriction = ''
 . (Join-Path $PSScriptRoot 'UpdateSupervisor.ps1')
 if ($SupervisedUpdate -and $Action -ne 'Update') { throw 'Supervised startup is only valid for an update.' }
 if ($UpdateTransaction -and $Action -ne 'Rollback') { throw 'Update recovery identity is only valid for rollback.' }
@@ -116,13 +118,18 @@ function Test-ExactRepairPackage($Previous, $Package, [string]$ManifestHash) {
     $Previous.packageSha256 -ceq $ManifestHash -and $Previous.commit -ceq $Package.commit -and
     $Previous.version -ceq $Package.version
 }
+function Assert-LifecycleMutation {
+  Assert-NoSignedUpdateArmed $Root
+}
 function AtomicJson([string]$Path, $Value) {
+  Assert-NoSignedUpdateArmed $Root ($Action -eq 'Preflight')
   $null = PlainPath $Path
   $temp = $Path + '.' + [guid]::NewGuid().ToString('N') + '.tmp'
   $bytes = $Utf8.GetBytes(($Value | ConvertTo-Json -Depth 16))
   try {
     $file = New-Object IO.FileStream($temp, [IO.FileMode]::CreateNew, [IO.FileAccess]::Write, [IO.FileShare]::None)
     try { $file.Write($bytes, 0, $bytes.Length); $file.Flush($true) } finally { $file.Dispose() }
+    Assert-NoSignedUpdateArmed $Root ($Action -eq 'Preflight')
     # Windows PowerShell 5.1 converts $null to an empty string for this .NET
     # string parameter; File.Replace rejects that as an invalid backup path.
     if (Test-Path -LiteralPath $Path) { [IO.File]::Replace($temp, $Path, [System.Management.Automation.Language.NullString]::Value) }
@@ -231,6 +238,7 @@ function ReadGeneration([string]$Id) {
   return $manifest
 }
 function SelfTest([string]$Directory, [string]$Commit, [string]$Version, [bool]$RecordedRecovery = $false) {
+  Assert-LifecycleMutation
   $reportPath = Join-Path $Directory ('loader-' + [guid]::NewGuid().ToString('N') + '.json')
   $exe = Join-Path $Directory 'app\opencpn.exe'
   $null = PeArchitecture $exe
@@ -271,6 +279,7 @@ namespace OpenNav {
   $oldMode = [OpenNav.InstallerErrorMode]::GetErrorMode()
   try {
     $null = [OpenNav.InstallerErrorMode]::SetErrorMode($oldMode -bor 0x8003)
+    Assert-LifecycleMutation
     $process = [Diagnostics.Process]::Start($start)
   } finally { $null = [OpenNav.InstallerErrorMode]::SetErrorMode($oldMode) }
   try {
@@ -304,6 +313,7 @@ namespace OpenNav {
     }
     Log 'Normal OpenCPN profile location accessible; profile content not modified.'
   }
+  Assert-LifecycleMutation
   Remove-Item -LiteralPath $reportPath
   Log "Loader/resource self-test passed for $Commit"
   return $outputPolicy
@@ -396,6 +406,7 @@ function AssertShellOwnership {
   }
 }
 function RemoveShortcutGroup([string]$Group) {
+  Assert-LifecycleMutation
   if (-not (Test-Path -LiteralPath $Group)) { return }
   $null = PlainPath $Group
   $shell = New-Object -ComObject WScript.Shell
@@ -403,11 +414,13 @@ function RemoveShortcutGroup([string]$Group) {
   foreach ($file in $files) { AssertShortcut $file.FullName $shell }
   foreach ($file in $files) {
     AssertShortcut $file.FullName $shell
+    Assert-LifecycleMutation
     Remove-Item -LiteralPath $file.FullName
   }
-  if (@(Get-ChildItem -LiteralPath $Group -Force).Count -eq 0) { Remove-Item -LiteralPath $Group }
+  if (@(Get-ChildItem -LiteralPath $Group -Force).Count -eq 0) { Assert-LifecycleMutation; Remove-Item -LiteralPath $Group }
 }
 function PublishShell($State) {
+  Assert-LifecycleMutation
   AssertShellOwnership
   $directory = Generation $State.current
   $generation = ReadGeneration $State.current
@@ -422,6 +435,7 @@ function PublishShell($State) {
     # maintenance shortcut until the new-only group is completely gone.
     RemoveShortcutGroup (Join-Path $Programs 'SKAGER')
   }
+  Assert-LifecycleMutation
   $null = New-Item -ItemType Directory -Path $group -Force
   $shell = New-Object -ComObject WScript.Shell
   $selected = @('xnav','legacy','safe')
@@ -432,7 +446,7 @@ function PublishShell($State) {
     $path = Join-Path $group $name
     if (Test-Path -LiteralPath $path) { AssertShortcut $path $shell }
     if ($spec.mode -ne 'maintenance' -and $spec.mode -notin $selected) {
-      if (Test-Path -LiteralPath $path) { Remove-Item -LiteralPath $path }; continue
+      if (Test-Path -LiteralPath $path) { Assert-LifecycleMutation; Remove-Item -LiteralPath $path }; continue
     }
     $link = $shell.CreateShortcut($path)
     $link.TargetPath = RelativePath $directory $spec.target
@@ -440,6 +454,7 @@ function PublishShell($State) {
     $link.WorkingDirectory = $directory
     if ($spec.work) { $link.WorkingDirectory = Join-Path $directory $spec.work }
     $link.Description = if ($skager) { 'SKAGER - shared OpenCPN profile' } else { 'OpenNav X - shared OpenCPN profile' }
+    Assert-LifecycleMutation
     $link.Save()
     AssertShortcut $path $shell
   }
@@ -447,6 +462,7 @@ function PublishShell($State) {
   # State is already durable; Recover can finish either direction after a crash.
   Failure 'after-shortcuts'
   foreach ($other in @(ShellGroups)) { if ($other -cne $group) { RemoveShortcutGroup $other } }
+  Assert-LifecycleMutation
   $null = New-Item -Path $Registry -Force
   foreach ($entry in @{
     DisplayName=$caption; DisplayVersion=$generation.version; Publisher=$(if ($skager) { 'SKAGER project' } else { 'OpenNav X project' });
@@ -454,14 +470,16 @@ function PublishShell($State) {
     UninstallString=('"'+(Join-Path $directory 'Maintain.exe')+'" /ACTION=Uninstall');
     ModifyPath=('"'+(Join-Path $directory 'Maintain.exe')+'"');
     OpenNavOwner=$Owner
-  }.GetEnumerator()) { $null = New-ItemProperty -Path $Registry -Name $entry.Key -Value $entry.Value -PropertyType String -Force }
+  }.GetEnumerator()) { Assert-LifecycleMutation; $null = New-ItemProperty -Path $Registry -Name $entry.Key -Value $entry.Value -PropertyType String -Force }
 }
 function RemoveShell {
+  Assert-LifecycleMutation
   AssertShellOwnership
   foreach ($group in @(ShellGroups)) { RemoveShortcutGroup $group }
-  if (Test-Path -LiteralPath $Registry) { Remove-Item -LiteralPath $Registry -Recurse }
+  if (Test-Path -LiteralPath $Registry) { Assert-LifecycleMutation; Remove-Item -LiteralPath $Registry -Recurse }
 }
 function RemoveOwnedGenerations {
+  Assert-LifecycleMutation
   $base = Join-Path $Root 'generations'
   if (-not (Test-Path -LiteralPath $base)) { return }
   foreach ($directory in Get-ChildItem -LiteralPath $base -Directory) {
@@ -476,8 +494,11 @@ function RemoveOwnedGenerations {
       $target = RelativePath $path $file.path
       if (-not [IO.File]::Exists($target)) { continue }
       if ((Hash $target) -ceq $file.sha256) {
-        try { Remove-Item -LiteralPath $target }
-        catch { Log ('Retained locked owned file: ' + $directory.Name + '/' + $file.path) }
+        try { Assert-LifecycleMutation; Remove-Item -LiteralPath $target }
+        catch {
+          if ($_.Exception.Data['SkagerSignedUpdateRestriction']) { throw }
+          Log ('Retained locked owned file: ' + $directory.Name + '/' + $file.path)
+        }
       } else { Log ('Retained modified file: ' + $directory.Name + '/' + $file.path) }
     }
     # Imported/custom additions and ownership provenance are intentionally kept.
@@ -491,6 +512,7 @@ function Failure([string]$Point) {
   }
 }
 function Recover {
+  Assert-LifecycleMutation
   $journalPath = Join-Path $Root 'transaction.json'
   if (-not (Test-Path -LiteralPath $journalPath)) { return }
   $journal = ReadJson $journalPath
@@ -499,9 +521,11 @@ function Recover {
   if ($current) { PublishShell $current } else { RemoveShell }
   # State is the atomic commit point. Unpublished trees are retained for diagnosis.
   Log ('Recovered transaction at atomic state: ' + $journal.action)
+  Assert-LifecycleMutation
   Remove-Item -LiteralPath $journalPath
 }
 function ExtractPayload([string]$Zip, [string]$Directory, $Files) {
+  Assert-LifecycleMutation
   Add-Type -AssemblyName System.IO.Compression.FileSystem
   $wanted = @{}
   foreach ($f in $Files) { $null = RelativePath $Directory $f.path; if ($wanted.ContainsKey($f.path)) { throw 'Duplicate payload path.' }; $wanted[$f.path] = $f.sha256 }
@@ -514,7 +538,9 @@ function ExtractPayload([string]$Zip, [string]$Directory, $Files) {
       if (-not $wanted.ContainsKey($entry.FullName)) { throw 'Unexpected ZIP entry.' }
       $total += $entry.Length
       if ($entry.Length -lt 0 -or $total -gt 2147483648) { throw 'Payload exceeds extraction bounds.' }
+      Assert-LifecycleMutation
       $null = New-Item -ItemType Directory -Path ([IO.Path]::GetDirectoryName($path)) -Force
+      Assert-LifecycleMutation
       [IO.Compression.ZipFileExtensions]::ExtractToFile($entry, $path, $false)
       Failure 'during-extraction'
     }
@@ -522,6 +548,7 @@ function ExtractPayload([string]$Zip, [string]$Directory, $Files) {
   VerifyFiles $Directory $Files
 }
 function PreserveAdditions([string]$Source, [string]$Destination, $Known) {
+  Assert-LifecycleMutation
   if (-not (Test-Path -LiteralPath $Source)) { return @() }
   $knownMap = @{}; foreach ($f in $Known) { $knownMap[$f.path] = $true }
   $retained = @()
@@ -532,7 +559,9 @@ function PreserveAdditions([string]$Source, [string]$Destination, $Known) {
       if ((Hash $target) -cne $f.sha256) { throw "Custom addition conflicts with new payload: $($f.path)" }
       continue
     }
+    Assert-LifecycleMutation
     $null = New-Item -ItemType Directory -Path ([IO.Path]::GetDirectoryName($target)) -Force
+    Assert-LifecycleMutation
     Copy-Item -LiteralPath (RelativePath $Source $f.path) -Destination $target
     $retained += $f
   }
@@ -754,6 +783,13 @@ function AssertCandidateTlsRuntime([string]$Directory) {
 }
 
 try {
+  # Check the supplied spelling before PlainPath can normalize ambiguity away.
+  try { Assert-NoSignedUpdateArmed $Root ($Action -in @('Install','Update','Preflight')) }
+  catch {
+    if ($Action -notin @('Preflight','Diagnostics')) { throw }
+    $SignedUpdateRestriction=$_.Exception.Message
+    Log ('Read-only inspection; startup and maintenance restricted: '+$SignedUpdateRestriction)
+  }
   $Root = PlainPath $Root
   foreach ($group in @(ShellGroups)) { $null = PlainPath $group }
   $state = ReadState
@@ -794,6 +830,7 @@ try {
   if ($Action -eq 'Preflight') {
     if ($SummaryPath) {
       $summary = PlainPath $SummaryPath
+      Assert-NoSignedUpdateArmed $Root $true
       if (Test-Path -LiteralPath $summary) { throw 'Preflight summary must use a new path.' }
       $existing = ''; $suggested = 'Install'
       $selected = @('xnav','legacy','safe')
@@ -802,16 +839,17 @@ try {
         if ($state.PSObject.Properties['shortcutModes']) { $selected = @($state.shortcutModes) }
       }
       # The wizard reads only this private temporary INI. Never execute its values.
+      Assert-NoSignedUpdateArmed $Root $true
       [IO.File]::WriteAllLines($summary, @('[Preflight]', ('Stock=' + $stock.path),
         ('StockVersion=' + $stock.version), ('StockHash=' + $stock.sha256), ('Version=' + $package.version),
         ('Existing=' + $existing), ('SuggestedAction=' + $suggested), ('Root=' + $Root),
-        ('Recovery=' + (Join-Path $Root 'recovery')),
+        ('Recovery=' + (Join-Path $Root 'recovery')), ('SignedUpdateRestricted='+[int][bool]$SignedUpdateRestriction),
         ('LegacyShortcut=' + [int]('legacy' -in $selected)), ('SafeShortcut=' + [int]('safe' -in $selected))), [Text.Encoding]::Unicode)
     }
     Log 'Preflight passed; no installed files or profiles changed.'
   }
   elseif ($Action -eq 'Diagnostics') {
-    $result = @{owner=$Owner; state=$state; files=@(); stockVerified=$false}
+    $result = @{owner=$Owner; state=$state; files=@(); stockVerified=$false; signedUpdateRestriction=$SignedUpdateRestriction}
     if ($state) {
       $result.stockVerified = (Hash $state.stock.path) -ceq $state.stock.sha256
       $g = ReadGeneration $state.current
@@ -831,13 +869,16 @@ try {
       if ((Get-ItemProperty -LiteralPath $Registry).OpenNavOwner -ne $Owner) { throw 'Unknown registry ownership.' }
     }
     if (-not (Test-Path -LiteralPath $Root)) {
+      Assert-NoSignedUpdateArmed $Root $true
       $null = New-Item -ItemType Directory -Path $Root
-      AtomicJson (Join-Path $Root 'owner.json') @{owner=$Owner}
-      $OwnsRoot = $true
+      $CreatedRoot = $true
     }
+    Assert-LifecycleMutation
     $TransactionLock = [IO.File]::Open((Join-Path $Root 'transaction.lock'), [IO.FileMode]::OpenOrCreate, [IO.FileAccess]::ReadWrite, [IO.FileShare]::None)
     # The installed launcher holds this same lock across its current-generation
     # check and process creation. Recheck under the lock before any recovery/write.
+    Assert-LifecycleMutation
+    if ($CreatedRoot) { AtomicJson (Join-Path $Root 'owner.json') @{owner=$Owner}; $OwnsRoot = $true }
     AssertClosed
     Recover
     $state = ReadState
@@ -860,6 +901,7 @@ try {
       # Immutable previous generations are the application backup. Capture the
       # exact before-state durably before staging; never copy/restore user data.
       $recovery = PlainPath (Join-Path $Root 'recovery')
+      Assert-LifecycleMutation
       $null = New-Item -ItemType Directory -Path $recovery -Force
       AtomicJson (Join-Path $recovery ([DateTime]::UtcNow.ToString('yyyyMMdd-HHmmss-fff') + '-' + [guid]::NewGuid().ToString('N') + '.json')) @{
         schema=1; owner=$Owner; timestamp=[DateTime]::UtcNow.ToString('o'); action=$Action;
@@ -868,25 +910,33 @@ try {
       }
       Log 'Recovery record durable; verified original OpenCPN and previous integration remain available.'
       $id = [guid]::NewGuid().ToString('N'); $stage = Generation $id
+      Assert-LifecycleMutation
       $null = New-Item -ItemType Directory -Path $stage -Force
       ExtractPayload (Join-Path $PackageDirectory 'payload.zip') $stage $package.files
       AssertInstalledContent $stage $package.version
       # Normal OpenCPN persists absolute default resource paths. Point new
       # defaults at the untouched stock installation, not a removable generation.
       $locator = Join-Path $stage 'app\OPENNAV_INSTALLED_STOCK'
+      Assert-LifecycleMutation
       [IO.File]::WriteAllText($locator, $stock.path, $Utf8)
+      Assert-LifecycleMutation
       Copy-Item -LiteralPath $PSCommandPath -Destination (Join-Path $stage 'Lifecycle.ps1')
       foreach ($helper in @('UpdateTransaction.ps1','UpdateSupervisor.ps1')) {
+        Assert-LifecycleMutation
         Copy-Item -LiteralPath (Join-Path $PSScriptRoot $helper) -Destination (Join-Path $stage $helper)
       }
+      Assert-LifecycleMutation
       Copy-Item -LiteralPath (Join-Path $PackageDirectory 'Maintain.exe') -Destination (Join-Path $stage 'Maintain.exe')
       $maintenance = Join-Path $stage 'maintenance'
+      Assert-LifecycleMutation
       $null = New-Item -ItemType Directory -Path $maintenance
       foreach ($name in @('package.json','payload.zip','Maintain.exe')) {
+        Assert-LifecycleMutation
         Copy-Item -LiteralPath (Join-Path $PackageDirectory $name) -Destination (Join-Path $maintenance $name)
       }
 
       foreach ($name in @('UpdateTransaction.ps1','UpdateSupervisor.ps1')) {
+        Assert-LifecycleMutation
         Copy-Item -LiteralPath (Join-Path $PSScriptRoot $name) -Destination (Join-Path $maintenance $name)
       }
 
@@ -922,12 +972,14 @@ try {
       AtomicJson (Join-Path $Root 'state.json') $next
       Failure 'after-commit'
       PublishShell $next
+      Assert-LifecycleMutation
       Remove-Item -LiteralPath (Join-Path $Root 'transaction.json')
       if ($startupHealth -eq 1) {
         $provision = New-Object Diagnostics.ProcessStartInfo
         $provision.FileName = Join-Path $stage 'app\skager-start.exe'
         $provision.Arguments = '--initialize-trust'
         $provision.UseShellExecute = $false; $provision.CreateNoWindow = $true
+        Assert-LifecycleMutation
         $init = [Diagnostics.Process]::Start($provision)
         try {
           if (-not $init.WaitForExit(15000)) { throw 'Update trust provisioning did not finish; current installed app remains recoverable.' }
@@ -953,13 +1005,16 @@ try {
       AtomicJson (Join-Path $Root 'state.json') $next
       Failure 'after-commit'
       PublishShell $next
+      Assert-LifecycleMutation
       Remove-Item -LiteralPath (Join-Path $Root 'transaction.json')
       if ($UpdateTransaction) { Complete-SupervisedRollback -InstallationRoot $Root -Transaction $UpdateTransaction -Lock $TransactionLock }
       Log 'Rollback restored prior exact application generation; newer navigation data retained.'
     } elseif ($Action -in @('Uninstall','Rollback')) {
       AtomicJson (Join-Path $Root 'transaction.json') @{owner=$Owner;action='Uninstall';before=$state;after=$null}
       RemoveShell
+      Assert-LifecycleMutation
       Remove-Item -LiteralPath (Join-Path $Root 'state.json')
+      Assert-LifecycleMutation
       Remove-Item -LiteralPath (Join-Path $Root 'transaction.json')
       RemoveOwnedGenerations
       Log 'Integration unregistered and verified owned files removed. Modified/custom additions and diagnostics retained; original OpenCPN unchanged.'
@@ -973,11 +1028,13 @@ try {
   if ($Report) { try { AtomicJson (PlainPath $Report) @{status='failed';action=$Action;error=$_.Exception.Message;log=@($SessionLog)} } catch {} }
   exit 1
 } finally {
-  if ($TransactionLock) { $TransactionLock.Dispose() }
   if ($OwnsRoot -and (Test-Path -LiteralPath (Join-Path $Root 'owner.json'))) {
     try {
+      Assert-LifecycleMutation
       $logs = PlainPath (Join-Path $Root 'logs'); $null = New-Item -ItemType Directory -Path $logs -Force
+      Assert-LifecycleMutation
       [IO.File]::WriteAllLines((Join-Path $logs ([DateTime]::UtcNow.ToString('yyyyMMdd-HHmmss-fff')+'-'+$Action+'.log')), $SessionLog, $Utf8)
     } catch {}
   }
+  if ($TransactionLock) { $TransactionLock.Dispose() }
 }

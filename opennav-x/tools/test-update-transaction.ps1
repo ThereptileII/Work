@@ -221,6 +221,9 @@ public sealed class SuspendedUpdateClient : IDisposable {
   }
   Check (($phaseNames -join ',') -ceq 'WAIT,CONTINUE,READY') 'Parsed phase-array iteration lost protocol order.'
   Write-Host 'PASS: direct parsed phase-array iteration retains three scalar records.'
+  # Include the armed-session restriction in this existing focused gate.
+  & (Join-Path $PSScriptRoot 'test-signed-update-armed-barrier.ps1')
+  if ($LASTEXITCODE -ne 0) { throw 'Signed update armed-session barrier checks failed.' }
   if ([Environment]::OSVersion.Platform -ne [PlatformID]::Win32NT) {
     Write-Host 'SKIP: Windows authenticated pipe/PID/ACL fixtures require native Windows; Linux results do not qualify them.'
     return
@@ -529,7 +532,7 @@ class InertStartupFixture {
     $pending=StageFixturePending
     $savedStarter=${function:Start-SupervisedGeneration}
     try {
-      function Start-SupervisedGeneration($Generation,$Session) {
+      function Start-SupervisedGeneration($Generation,$Session,[string]$InstallationRoot) {
         $request=New-Object Diagnostics.ProcessStartInfo
         $request.FileName=$Generation.executable;$request.WorkingDirectory=Join-Path $Generation.directory 'app'
         $request.UseShellExecute=$false;$request.RedirectStandardOutput=$true
@@ -563,8 +566,8 @@ class InertStartupFixture {
     $pending=StageFixturePending
     $savedStarter=${function:Start-SupervisedGeneration}
     try {
-      function Start-SupervisedGeneration($Generation,$Session) {
-        $created=& $savedStarter $Generation $Session
+      function Start-SupervisedGeneration($Generation,$Session,[string]$InstallationRoot) {
+        $created=& $savedStarter $Generation $Session $InstallationRoot
         try { throw 'Injected lost managed return after native resume.' }
         finally { $created.Dispose() }
       }
