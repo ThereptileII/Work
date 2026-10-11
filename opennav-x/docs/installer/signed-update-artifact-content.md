@@ -2,8 +2,10 @@
 
 `tools/boat/signed_update_artifacts.py` is a standalone, read-only Python
 library. It is not called by the product, launcher, supervisor, broker,
-commissioning scripts, journal store or CI. It never starts a process, changes
-a profile, signs a receipt or returns launch permission.
+commissioning scripts or journal store. CI exercises its disposable-file test
+suite through `tools/qualify-staging-windows.ps1` during Staging qualification and
+retained-package retests. The library never starts a process, changes a profile,
+signs a receipt or returns launch permission.
 
 This increment addresses the gap between plausible hash strings in the inert
 signed-session model and the contents of actual supplied artifact files. It
@@ -92,7 +94,8 @@ against a coordinated adversary restoring old contents/metadata between
 observations, or against changes after a file's final check. Descriptors close
 before the report returns. Native retained handles, shared mutation exclusion,
 all spawn hooks and actual prelaunch verification remain unimplemented here.
-No Windows/native qualification or production/boat acceptance is claimed.
+Native fixture execution below does not qualify retained custody or establish
+production/boat acceptance.
 
 ## Focused verification
 
@@ -102,14 +105,26 @@ From `opennav-x`, run:
 python3 tools/boat/test-signed-update-artifacts.py
 ```
 
-Twelve test methods pass on Linux using only disposable temporary files. They
-cover all twelve changed/missing artifact cases, re-pinned candidate/profile/
+The original twelve test methods passed on Linux using only disposable temporary
+files. They cover all twelve changed/missing artifact cases, re-pinned candidate/profile/
 chain mismatches, stale/future reviews, unsupported hashes and schemas,
 duplicate/invalid/oversized JSON, unsafe source paths, linked ancestors,
 hardlinks, file aliases, empty/oversized/nonregular files, same-byte replacement
 and in-place mutation. The positive control also verifies that all artifact
 bytes remain unchanged and that success explicitly denies launch authority.
-PowerShell and native Windows checks remain pending; no runtime was downloaded.
+Four additional tests cover separate Windows path/descriptor metadata baselines
+and refusal on common-identity or later metadata mutation.
+
+The later [retained Windows retest 38140837201](https://github.com/ThereptileII/Work/actions/runs/38140837201)
+passed all **16 artifact-content tests** and the complete selected qualifier
+(`scope=all`, `checks=[all:passed]`). Its signed-session entry point also passed
+61 receipt, 129 operation and 245 store checks on each native Windows PowerShell
+5.1 x64 and x86 host. The helper evidence belongs to harness
+`efec7a4e19d8e36298f4d23db175540b7b2ede10`; the unchanged retained compiled product
+is `5dd795be16081b4b0e521315bfc45f23a9af8251`. See the
+[retained-run provenance](../evidence/2026-10-11-retained-staging-retest.md).
+This resolves the native fixture execution gap, not the live signed flow,
+private HTTPS delivery, actual commissioning or boat acceptance gates.
 
 The two symlink tests are separate: Windows error 1314 (missing symbolic-link
 privilege) reports an explicit skipped fixture, not a passed refusal. Alias,

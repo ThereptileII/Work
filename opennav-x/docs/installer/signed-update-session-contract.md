@@ -243,17 +243,28 @@ from `e738891d`; it excludes their workflow changes and unrelated ancestors.
 The combined entry point passed **61 receipt, 129 operation and 128 store checks**
 on local PowerShell 7/Linux (`nativeWindows=False`). Portable store fixtures
 substitute only the unsupported native boundary; these results do not qualify
-Windows ACL/share/reparse custody. Exact integrated native Windows PowerShell 5.1
-x86/x64 execution remains pending. Run this same entry point under each native
-host; the historical `43972f2b` run above cannot qualify the later operation code
-or this combined revision. The added Go launcher negatives also remain pending
-because a local Go compiler was unavailable; use the module's pinned toolchain
-for `go test ./launcher -run 'TestInstalled' -count=1` and `go test ./launcher`.
+Windows ACL/share/reparse custody. The historical `43972f2b` run above likewise
+cannot qualify the later operation code or this combined revision. The added Go
+launcher negatives were not run in that local check because a Go compiler was
+unavailable; their execution is separate from the signed-helper results below.
+Their separate verification still requires the module's pinned toolchain for
+`go test ./launcher -run 'TestInstalled' -count=1` and `go test ./launcher`.
+
+The later [retained Windows retest 38140837201](https://github.com/ThereptileII/Work/actions/runs/38140837201)
+passed **61 receipt, 129 operation and 245 store checks on each of Windows
+PowerShell 5.1 x64 and x86**, including the denied-recovery fault fixtures below.
+It also passed **16 artifact-content tests** and the complete selected qualifier
+(`scope=all`, `checks=[all:passed]`). These helper results belong to harness
+`efec7a4e19d8e36298f4d23db175540b7b2ede10`; the retained compiled product remains
+`5dd795be16081b4b0e521315bfc45f23a9af8251`. The retest did not rebuild or relabel
+that product, and does not qualify later product revisions. See the
+[retained-run provenance](../evidence/2026-10-11-retained-staging-retest.md).
 
 Native broker/orchestration, durable-journal crash and replay tests, stale/racing
 loader/profile proof tests, exact successor/fallback marker-process fixtures and
-live signed-offer boat qualification remain unimplemented/unqualified. No claim
-of safe live Update Now or automatic fallback follows from this model passing.
+live signed flow, private HTTPS delivery, actual commissioning and boat
+qualification remain unimplemented/unqualified. No claim of safe live Update Now
+or automatic fallback follows from this model passing.
 
 ### Denied-recovery persistence fault fixtures (2026-10-11)
 
@@ -277,11 +288,12 @@ restoration tests. They do not validate the artifact inspector's snapshots,
 claim that no child started, perform Apply/Restore, or authorize recovery or
 launch. The content inspector remains a separate read-only boundary without
 native retained custody. No production caller or workflow changes were made.
-Execution of these new cases is **pending**: PowerShell was unavailable in the
-local environment, and no runtime was downloaded. The existing qualifier invokes
-the combined entry point on native Windows x64 and x86; an earlier run or the
-frozen candidate predating this change cannot qualify these cases.
-[Source checks and pending execution evidence](../evidence/scrum311-denied-recovery-faults-20261011/results.json).
+Their initial [source-check record](../evidence/scrum311-denied-recovery-faults-20261011/results.json)
+retains the historical local execution gap: PowerShell was unavailable and no
+runtime was downloaded. The later retained retest above executed these cases
+successfully as part of the 245 store checks on each native host. This resolves
+that fixture execution gap at harness `efec7a4e`; it does not qualify live
+interruption, restoration or launch behavior in the retained product.
 
 ### Source-bound implementation handoff
 
