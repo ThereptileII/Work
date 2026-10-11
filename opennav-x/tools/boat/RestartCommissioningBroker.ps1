@@ -21,7 +21,7 @@ if($parent.createdFiletime -cne $ParentCreatedFiletime -or [DateTime]::FromFileT
 # Keep a genuine process handle open through exit and audit; PID reuse cannot
 # satisfy this handle or the separately checked peer/request creation times.
 $parentHandle=Get-Process -Id $ParentProcessId
-$pipe=$null;$directory=$null;$ownsDirectory=$false;$allowIssued=$false
+$pipe=$null;$directory=$null;$ownsDirectory=$false;$allowIssued=$false;$profileLock=$null
 try {
  $null=$parentHandle.Handle
  if($parentHandle.HasExited -or $parentHandle.StartTime.ToUniversalTime().ToFileTimeUtc().ToString() -cne $ParentCreatedFiletime){throw 'Parent exited/reused while arming.'}
@@ -43,6 +43,8 @@ try {
  Assert-RestartRequest $request $session $parent $Mode $peer.ToString()
  if($helper.createdFiletime -cne $request['helperCreatedFiletime'] -or [long]$helper.createdFiletime -lt [long]$parent.createdFiletime){throw 'Helper creation identity differs.'}
  if(-not $parentHandle.WaitForExit(1000) -or $parentHandle.ExitCode -ne 0){throw 'The inspected parent has not exited normally.'}
+ . (Join-Path $PSScriptRoot 'Commissioning.ps1')
+ $profileLock=Open-CommissioningProfileLock ([IO.Path]::GetDirectoryName($session.profile))
  $requestHash=Get-RestartBytesHash $payload
  Save-RestartWire (Join-Path $directory 'request.json') $payload
  # All plugin helpers must now be closed. The sole restart helper lives outside
@@ -100,4 +102,4 @@ try {
  if($pipe -and $pipe.IsConnected -and -not $allowIssued){try{[OpenNavX.RestartCommissioningNative]::WriteFrame($pipe,[OpenNavX.RestartCommissioningNative]::Reply([string[]]@($script:RestartMagic,'DENY')),[DateTime]::UtcNow.AddSeconds(2))}catch{}}
  if($ownsDirectory -and (Test-Path -LiteralPath $directory)){Write-Record (Join-Path $directory 'failure.json') @{owner=$script:RestartOwner;status=$(if($allowIssued){'uncertain-or-failed-consumed-permit'}else{'denied'});message=$_.Exception.Message;at=[DateTime]::UtcNow.ToString('o')}}
  throw
-} finally {if($pipe){$pipe.Dispose()};$parentHandle.Dispose()}
+} finally {if($pipe){$pipe.Dispose()};$parentHandle.Dispose();if($profileLock){$profileLock.Dispose()}}

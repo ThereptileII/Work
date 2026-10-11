@@ -33,7 +33,11 @@ try {
     # Repeat the complete guard inside the interactive session, immediately
     # before launch. A queued task is not a reusable safety approval.
     $restartBinding=$null
+    $profileLock=$null
+    try {
     if ($job.action -eq 'Launch') {
+      . (Join-Path $PSScriptRoot 'Commissioning.ps1')
+      $profileLock=Open-CommissioningProfileLock (Join-Path ([Environment]::GetFolderPath('CommonApplicationData')) 'opencpn')
       $targetHash=Get-Digest (Join-Path $job.workspace 'boat-target.json')
       $config=Get-Target $job.workspace;$installed=Get-Installed
       if ((Assert-LocalPath $installed.executable) -ine $exe) { throw 'Installed generation changed since dispatch.' }
@@ -81,6 +85,7 @@ try {
       if ($process.HasExited -or -not $process.MainWindowHandle) { throw 'Application failed to expose its normal window; inspect logs and Safe Mode.' }
       $result.pid=$process.Id;$result.mode=$job.mode;$result.status='passed'
     } finally {$process.Dispose()}
+    } finally {if ($profileLock) {$profileLock.Dispose()}}
   } elseif ($job.action -ceq 'ReviewWindow') {
     . (Join-Path $PSScriptRoot 'ReviewWindow.ps1')
     $result=Invoke-WindowReview $job

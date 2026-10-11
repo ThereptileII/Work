@@ -80,6 +80,47 @@ handle/ACL operations. Native ACL/path and combined installed entry-point
 qualification remain pending for the changed source; earlier image-owner passes
 do not qualify this additional boundary.
 
+## Shared commissioning profile exclusion
+
+`CommissioningProfileLock.cs` supplies a native, machine-wide mutex for the
+cooperating boat tools. Its key uses the held physical profile directory's full
+volume/file identity (`FILE_ID_INFO`) plus the fixed `opencpn.ini` leaf. The
+workspace, DOS drive alias and replaceable INI file identity are not keys.
+Acquisition holds plain, non-reparse directory ancestors and a protected
+owner/SYSTEM mutex without modifying profile bytes or filesystem permissions.
+Missing/ambiguous ancestry, contention, in-process recursive acquisition and an
+observed abandoned acquisition refuse.
+
+Actual Apply, InspectRestore and Restore take this exclusion before their final
+context checks and retain it through completion/failure. Installed direct cold
+launch and startup-launch observation retain it from before the final audit
+through child readiness; the guarded restart broker holds it after proven normal
+parent exit through audit, ALLOW and child identity receipt. Stock coexistence
+launch also uses it. The new C# dependency is pinned in each fresh restart tool
+inventory. The existing transaction-specific restore lock and all durable
+commissioning checks remain required.
+
+This is stable-path exclusion among these cooperating entry points, **not**
+complete audit-to-spawn custody or signed-flow completion. Callers still use DOS
+paths for their I/O; malicious retargeting after acquisition is not prevented by
+this mutex. Directory handles do not exclude new loader children, and other
+processes/entry points that do not take this lock are not serialized. An observed
+abandoned acquisition is refused, but Windows mutex abandonment is transient:
+a later successful acquisition does not prove recovery or authorize launch.
+Existing durable commissioning/armed markers must still be inspected, never
+inferred away from lock state. This adds no signed-session bypass or recovery
+permission.
+
+The existing commissioning gate now invokes
+`test-commissioning-profile-lock.ps1`. Its native fixtures cover independent
+process contention, same-process recursion, distinct profiles, atomic INI
+replacement, directory replacement refusal, SUBST alias identity, reparse and
+malformed/missing paths, owner loss, original bytes and unchanged directory ACL.
+Only its original inert PowerShell fixture child may be force-cleaned on a
+fixture timeout; product launch/close policy is unchanged. Linux compiles the
+exact C# and verifies unsupported-platform refusal, with native behavior
+explicitly unexecuted until the combined Windows gate.
+
 ## Four transitions
 
 | Receipt | Required real operation before recording it | Operation that may follow only through the still-unimplemented native boundary |

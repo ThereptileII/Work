@@ -94,6 +94,9 @@ function Invoke-StartupLauncher($Job) {
   if ([Environment]::OSVersion.Platform -ne [PlatformID]::Win32NT) { throw 'Native interactive Windows is required.' }
   if ($Job.action -cne 'LaunchStartup' -or $Job.mode -cne '--xnav' -or
       $Job.PSObject.Properties['restartSessionRecord'] -or $Job.PSObject.Properties['restartSessionSha256']) { throw 'Bootstrap-only launch cannot combine modes or restart commissioning.' }
+  . (Join-Path $PSScriptRoot 'Commissioning.ps1')
+  $profileLock=Open-CommissioningProfileLock (Join-Path ([Environment]::GetFolderPath('CommonApplicationData')) 'opencpn')
+  try {
   $workspace=Assert-LocalPath $Job.workspace
   $target=Join-Path $workspace 'boat-target.json';$targetHash=Get-Digest $target
   $config=Get-Target $workspace;$installed=Get-Installed
@@ -180,4 +183,5 @@ function Invoke-StartupLauncher($Job) {
     foreach ($entry in @($app,$bridge,$launcher)) { if ($entry) { $entry.process.Dispose() } }
     foreach ($handle in $held) { $handle.Dispose() }
   }
+  } finally {$profileLock.Dispose()}
 }

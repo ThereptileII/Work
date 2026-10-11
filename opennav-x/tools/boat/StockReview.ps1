@@ -169,6 +169,8 @@ function Invoke-StockReview($Job) {
 }
 function Invoke-StockLaunch($Job) {
   Assert-StockRequest $Job
+  $profileLock=Open-CommissioningProfileLock (Join-Path ([Environment]::GetFolderPath('CommonApplicationData')) 'opencpn')
+  try {
   $config=Get-StockTarget $Job.workspace
   if ($config.stockExecutable -ine $Job.executable -or
       (Get-Digest (Join-Path $Job.workspace 'boat-target.json')) -cne $Job.targetSha256) { throw 'Stock target/audit changed between dispatch and execution.' }
@@ -195,4 +197,5 @@ function Invoke-StockLaunch($Job) {
       sid=[Security.Principal.WindowsIdentity]::GetCurrent().User.Value;sessionId=$process.SessionId;executableSha256=$Job.executableSha256;targetSha256=$Job.targetSha256;
       commissioning=$config.stockReadOnlyAudit.commissioning;profile='Shared normal OpenCPN profile';actuatorCommandsIssuedByTool=$false;physicalBusSilenceNotClaimed=$true;restartBrokerArmed=$false}
   } finally { $process.Dispose() }
+  } finally {$profileLock.Dispose()}
 }

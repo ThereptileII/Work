@@ -18,6 +18,14 @@ if(($AdoptionProposal -or $ExpectedAdoptionSha256) -and $Action -cnotin @('Inspe
 if(($PreservationProposal -or $ExpectedPreservationSha256) -and $Action -cnotin @('InspectRestore','Restore')){throw 'Preservation belongs only to explicit inspected restoration.'}
 if(($PreservationProposal -or $ExpectedPreservationSha256) -and ($AdoptionProposal -or $ExpectedAdoptionSha256)){throw 'Choose one exact restoration policy; preservation and migration cannot be combined.'}
 $context=Get-CommissioningContext $Workspace
+$profileLock=$null
+try {
+if ($Action -cin @('Apply','InspectRestore','Restore')) {
+  $profileLock=Open-CommissioningProfileLock $context.profile
+  # A competing workspace may have completed while the first context was read.
+  Assert-CommissioningContext $context (Get-CommissioningContext $Workspace)
+  Assert-NoManualPilotChild $Workspace
+}
 $ini=Join-Path $context.profile 'opencpn.ini'
 $active=Join-Path $context.workspace 'commissioning-active.json'
 function Read-PinnedCommissioningRecord([string]$Path,[string]$Hash,[string]$Owner) {
@@ -272,3 +280,4 @@ Remove-Item -LiteralPath $active
 [pscustomobject]@{status='restored';verification=$complete;verificationSha256=(Get-Digest $complete);baselineRecord=$adoptedRecord;baselineRecordSha256=$(if($adoptedRecord){Get-Digest $adoptedRecord}else{$null});applicationLaunched=$false;doNotAutoLaunch=$true} | ConvertTo-Json
 
 } finally {$restoreLock.Dispose()}
+} finally {if ($profileLock) {$profileLock.Dispose()}}

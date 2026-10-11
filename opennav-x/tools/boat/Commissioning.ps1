@@ -3,6 +3,13 @@
 $script:CommissioningOwner='OpenNavX.ReadOnlyCommissioning.1'
 $script:CommissioningBaseline='a2e416b7d35d6d2f82dcf6b3a97136a8fba5a133435c2047e07e09022426aef9'
 
+function Open-CommissioningProfileLock([string]$ProfileDirectory) {
+  if (-not ('OpenNavX.CommissioningProfileLock' -as [type])) {
+    Add-Type -Path (Join-Path $PSScriptRoot 'CommissioningProfileLock.cs')
+  }
+  return [OpenNavX.CommissioningProfileLock]::Acquire($ProfileDirectory)
+}
+
 function Get-CommissioningHash([byte[]]$Bytes) {
   $algorithm=[Security.Cryptography.SHA256]::Create()
   try { return ([BitConverter]::ToString($algorithm.ComputeHash($Bytes))).Replace('-','').ToLowerInvariant() }

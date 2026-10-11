@@ -445,6 +445,8 @@ try {
       $checks.Add('Native preserved historical lineage supports fresh Inventory/Prepare after generation change without launching or altering settings')
     }
   }
+  $lockArguments=@{PortableContracts=$PortableContracts;IsolatedLocal=$IsolatedLocal}
+  & (Join-Path $PSScriptRoot 'test-commissioning-profile-lock.ps1') @lockArguments
   [pscustomobject]@{status='passed';environment=$(if($native){'native-windows-disposable-filesystem'}else{'linux-powershell-portable-contracts'});count=$checks.Count;checks=@($checks);boatAccess=$false;applicationLaunched=$false;productOrBoatAcceptance=$false} | ConvertTo-Json -Depth 6
 } catch { Write-Output $_.ScriptStackTrace; throw
 } finally { $env:PATH=$originalTestSearchPath;Remove-Item -LiteralPath $testRoot -Recurse -Force }

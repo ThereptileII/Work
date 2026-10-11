@@ -1,5 +1,27 @@
 # SKAGER status — 2026-10-11
 
+## Route-detail names and commissioning source integration
+
+The remaining route-detail naming omission is integrated at `69bedee2`: planned
+waypoints reuse the existing guarded name editor and OpenCPN persistence action.
+Successful saves retain the route page/scroll and other unfinished drafts;
+Cancel/rejection keep existing behavior. The isolated implementation passed 63
+existing naming checks and its changed wxWidgets unit syntax check. Native and
+boat edit/save/reopen, protected-point and multi-draft interaction remain pending.
+
+The next source increment adds shared physical-profile exclusion to cooperating
+commissioning Apply/inspection/restoration and real direct/startup/restart/stock
+launch paths. It changes no profile bytes or filesystem ACLs merely to acquire
+the lock. This is not recursive loader namespace custody, protection against
+caller DOS-alias retargeting, durable recovery authority or a complete signed
+updater broker; those limits are explicit in the
+[session contract](installer/signed-update-session-contract.md#shared-commissioning-profile-exclusion).
+The focused portable commissioning gate passed its 12 groups plus the new exact
+C# compile/unsupported-platform refusal. Restart dependency closure passed 26
+checks. New native contention, identity, SUBST, reparse, abandonment and
+preservation fixtures are wired into the existing commissioning gate but have
+not executed on Windows. No full product build or boat modification has occurred.
+
 ## Integrated source batch: armed-update denial and plugin bytes
 
 The separate source batch now integrates durable installation-root arming
