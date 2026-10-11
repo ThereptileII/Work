@@ -1,5 +1,17 @@
 # SKAGER status — 2026-10-11
 
+## Chart forecast value restored in source
+
+Commit `ef724724` restores the forecast speed/direction to the expanded chart
+forecast box after per-arrow values were removed (SCRUM-360). The value is
+explicitly located at the vessel using assessed real Live/Aging position and
+actual forecast coverage; missing position/coverage remains unavailable. Forecast
+time, stale/source and advisory labels remain separate from measured wind.
+The existing forecast-view suite passed 670 assertions, including nine added
+cases; changed overlay syntax passed. The larger integration unit's syntax check
+stopped at the existing missing `shapefil.h` dependency. Combined native build and
+boat product behavior remain pending; no new application build was started.
+
 ## Authenticated Recovery and installer-manifest identity integrated
 
 Commits `e4bf7627` and `f44d3764` join authenticated Recovery acquisition to
@@ -27,7 +39,13 @@ itself completed. The combined focused check passed 49 assertions across 11
 temporary-file transactions against store source SHA-256
 `83928135ce3196565a7cedb322508edfccda5d12f38e83f28c62c5bb65105a92`.
 The portable signed-session gate now includes this check. It uses explicit
-unsupported-Windows adapters; native Windows behavior is still pending. This
+unsupported-Windows adapters. A separate exact-source native temporary-file
+fixture has since passed 106 assertions under each Windows PowerShell 5.1 x86/x64
+host on the boat PC (212 total). Real NTFS handles/ACL/SACL/mutex and restoration
+code execute, with synthetic bounded identity/context/closed-process/baseline
+substitutions explicitly recorded in the [native receipt](evidence/scrum311-previous-restore-native-20261011/README.md).
+The native qualifier now registers that fixture in a fresh process per host;
+actual installed updater behavior remains pending. This
 operation supplies no install/spawn authority and is not product-wired. See the
 [operation contract](installer/signed-update-session-contract.md#concrete-previous-generation-restoration).
 

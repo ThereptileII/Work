@@ -232,8 +232,15 @@ The portable suite passed 55 assertions across 12 actual temporary-file
 transactions against the integrated store. It copies the exact transaction
 scripts and substitutes only unsupported Windows identity/ACL/mutex/handle
 boundaries; Restore and preservation/journal logic are real. It is registered
-only in the portable signed-session gate. Native Windows 5.1 x86/x64 remains
-required and unperformed for this operation. The engine still uses DOS paths,
+in the portable signed-session gate. A separate fresh-host native fixture now
+passes 106 assertions under each Windows PowerShell 5.1 x86/x64 host on the boat
+PC (212 total). It retains real native owner/store/handles/ACL/SACL/mutex and
+transaction code, with explicitly synthetic bounded context, closed-process
+observation and baseline. The unmodified public baseline refusal is checked
+before that test-only substitution. See the [exact-source native receipt](../evidence/scrum311-previous-restore-native-20261011/README.md).
+The native Staging qualifier registers that fixture in separate processes;
+actual installed-context and integrated updater qualification remain pending.
+The engine still uses DOS paths,
 and its profile-lock release/reacquisition leaves a checked gap: this is not
 continuous namespace custody. The operation is not connected to product
 startup and cannot install, create/terminate a process or grant launch authority.

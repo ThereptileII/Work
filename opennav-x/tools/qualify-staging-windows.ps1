@@ -34,6 +34,13 @@ foreach ($HostArchitecture in @(
     if ($LASTEXITCODE -ne 0) {
         throw "Signed-update custody contracts failed: Windows PowerShell 5.1 $($HostArchitecture.Name)"
     }
+    # Separate fresh host: this fixture must load exact native helper types,
+    # never reuse the preceding suite's test adapters or cached Add-Type source.
+    & $PowerShell -NoProfile -NonInteractive -File (Join-Path $PSScriptRoot 'boat/test-signed-update-previous-restore-windows.ps1') 2>&1 |
+        Tee-Object -FilePath (Join-Path $SignedUpdateEvidence ($HostArchitecture.Name + '-previous-restore.log'))
+    if ($LASTEXITCODE -ne 0) {
+        throw "Native previous-restoration contracts failed: Windows PowerShell 5.1 $($HostArchitecture.Name)"
+    }
 }
 # The content inspector has no launch authority. Native NTFS identity and
 # reparse behavior still matter, so exercise its bounded files on Windows.
