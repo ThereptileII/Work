@@ -1711,6 +1711,22 @@ natively qualified or boat-reviewed.
   `bUseSCAMIN`/`bUseSUPER_SCAMIN` preferences are never written. Chart plugins
   receive the same effective values through the existing S52PLIB JSON message.
 
+The 2026-10-11 SCRUM-317 follow-up changes only the XNav marker resolver, not
+the upstream hooks: it collects the first active-point index during the existing
+route-uniqueness walk, removing a second owner-route walk for progress state.
+No cache, culling, label policy, 4096-node guard or marker semantics changes.
+`python3 tools/test-route-marker-cost.py` exercises the production resolver and
+emergency-style predicate without a GUI. For one 4095-point active route and a
+non-active point, the old resolver makes 12,286 node advances; the changed one
+makes 8,191. The unchanged emergency-style scan is included in those totals.
+Optional `--reference <previous-ChartRouteWaypoint.cpp>` checks old/new results
+across deterministic topology/state mutations. The original source fails the
+walk-cost regression. This establishes avoidable source-level work, not the
+boat hang's cause or a frame-time improvement. Per-point library/style scans
+and the separate label-ordinal lookup remain. Exact-revision native Windows
+frame time, CPU/memory, UI-thread samples and physical boat acceptance remain
+required under SCRUM-317.
+
 ## HTTPS scheme spelling in wxCurl redirects (SCRUM-211) — 2026-10-11
 
 The core and private o-charts wxCurl trust patches now identify the `https:`

@@ -198,6 +198,9 @@ int ChartWaypointMarker(ChartCanvas &canvas, RoutePoint &point, bool pinned_icon
   if (!pRouteList) return 0;
   Route *owner = nullptr;
   int ordinal = 0, occurrences = 0, visited = 0;
+  auto *active_route = g_pRouteMan->GetpActiveRoute();
+  auto *active_point = g_pRouteMan->GetpActivePoint();
+  int active_index = 0;
   for (auto *r = pRouteList->GetFirst(); r; r = r->GetNext()) {
     if (++visited > 4096) return 0;  // Bound paint work for large libraries.
     auto *route = r->GetData();
@@ -205,6 +208,12 @@ int ChartWaypointMarker(ChartCanvas &canvas, RoutePoint &point, bool pinned_icon
     for (auto *p = route->pRoutePointList->GetFirst(); p; p = p->GetNext()) {
       if (++visited > 4096) return 0;
       ++index;
+      // The mandatory uniqueness walk already visits the active route. Keep
+      // its first active-point index here instead of rescanning the owner for
+      // every marker. All state is local to this application-thread call.
+      if (active_point && !active_index && route == active_route &&
+          p->GetData() == active_point)
+        active_index = index;
       if (p->GetData() != &point) continue;
       // A custom/emergency-styled or being-created route owns its own paint.
       if (!DefaultChartRouteStyle(*route) || route->m_bIsBeingCreated) return 0;
@@ -212,6 +221,7 @@ int ChartWaypointMarker(ChartCanvas &canvas, RoutePoint &point, bool pinned_icon
     }
   }
   if (!owner) return 0;
+  const int point_index = ordinal;
   // Never truncate, wrap or guess an ordinal: shared/repeated points and
   // routes longer than 99 points use the unnumbered marker.
   if (occurrences > 1 || point.IsShared() || ordinal > 99) ordinal = 0;
@@ -221,18 +231,10 @@ int ChartWaypointMarker(ChartCanvas &canvas, RoutePoint &point, bool pinned_icon
     else if (!owner->m_bRtIsActive) role = WaypointMarkerRole::Inactive;
   }
   auto kind = WaypointMarkerKind::RoutePoint;
-  auto *active_route = g_pRouteMan->GetpActiveRoute();
-  auto *active_point = g_pRouteMan->GetpActivePoint();
   if (point.m_bIsActive && active_point == &point) {
     kind = WaypointMarkerKind::Active;
   } else if (active_route == owner && active_point && occurrences == 1) {
     // Points before the active point on the active route have been passed.
-    int index = 0, active_index = 0, point_index = 0;
-    for (auto *p = owner->pRoutePointList->GetFirst(); p; p = p->GetNext()) {
-      ++index;
-      if (p->GetData() == active_point && !active_index) active_index = index;
-      if (p->GetData() == &point && !point_index) point_index = index;
-    }
     if (active_index && point_index && point_index < active_index)
       kind = WaypointMarkerKind::Visited;
   }
