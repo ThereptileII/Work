@@ -152,7 +152,10 @@ def validate_archives(portable_zip, source_zip, commit):
     upstream_notices = sorted(name for name in files if name.startswith(upstream_prefix) and
         PurePosixPath(name).name.lower().startswith(('copying', 'license', 'copyright')) and
         'cache' not in PurePosixPath(name).parts)
-    require(upstream_prefix + 'COPYING' in upstream_notices, 'Missing pinned OpenCPN COPYING reference')
+    # This pinned release has four named license texts, not a bare COPYING.
+    for name in ('COPYING.gplv2', 'COPYING.gplv3', 'COPYING.lgplv2', 'COPYING.lgplv3'):
+        require(upstream_prefix + name in upstream_notices,
+                'Missing pinned OpenCPN license reference: ' + name)
     for name in upstream_notices:
         compare('docs/licenses/OpenCPN/' + name[len(upstream_prefix):], name)
 

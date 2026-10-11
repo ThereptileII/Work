@@ -21,7 +21,10 @@ def fixture_entries(commit=COMMIT):
     def add(packaged, original, content):
         portable[packaged] = source[original] = content
     add('docs/licenses/SKAGER-COPYING.txt', 'opennav-x/LICENSE', (ROOT / 'LICENSE').read_bytes())
-    add('docs/licenses/OpenCPN/COPYING', 'OpenCPN-5.12.4-integrated/COPYING', b'Inert pinned upstream notice\n')
+    # Actual root notice names at the pinned OpenCPN revision; no bare COPYING.
+    for name in ('COPYING.gplv2', 'COPYING.gplv3', 'COPYING.lgplv2', 'COPYING.lgplv3'):
+        add('docs/licenses/OpenCPN/' + name, 'OpenCPN-5.12.4-integrated/' + name,
+            ('Inert pinned upstream notice: ' + name + '\n').encode())
     bundles = []
     for library, names in gate.LIBRARIES.items():
         directory = ROOT / 'docs/third-party' / library
@@ -76,7 +79,7 @@ class NoticeTests(unittest.TestCase):
     def test_current_notice_texts_and_deterministic_report(self):
         first = self.validate()
         self.assertEqual(first, self.validate())
-        self.assertEqual(len(first['notices']), 12)
+        self.assertEqual(len(first['notices']), 15)
         self.assertEqual(list(first['notices']), sorted(first['notices']))
 
     def test_missing_each_packaged_notice(self):
@@ -86,6 +89,15 @@ class NoticeTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, 'Missing notice/source'):
                     self.validate()
                 self.portable[name] = data
+
+    def test_missing_each_pinned_upstream_license_reference(self):
+        for name in ('COPYING.gplv2', 'COPYING.gplv3', 'COPYING.lgplv2', 'COPYING.lgplv3'):
+            with self.subTest(name=name):
+                path = 'OpenCPN-5.12.4-integrated/' + name
+                record = self.reference['files'].pop(path)
+                with self.assertRaisesRegex(ValueError, 'Missing pinned OpenCPN license reference'):
+                    self.validate()
+                self.reference['files'][path] = record
 
     def test_rehashed_tampered_packaged_notice(self):
         name = 'docs/licenses/curl-8.22.0/LICENSE.txt'
