@@ -1,0 +1,6 @@
+ok  	example.com/opennav-update-verifier	2.875s
+ok  	example.com/opennav-update-verifier/cmd/skager-repository	0.050s
+?   	example.com/opennav-update-verifier/cmd/skager-start	[no test files]
+ok  	example.com/opennav-update-verifier/launcher	0.188s
+ok  	example.com/opennav-update-verifier/releasepolicy	0.010s
+ok  	example.com/opennav-update-verifier/repository	0.202s

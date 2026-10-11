@@ -1,12 +1,49 @@
 package launcher
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
 	"strings"
 	"testing"
 )
+
+func TestOrdinaryPendingPublicationBeforeCreationRefusesAllModes(t *testing.T) {
+	for _, mode := range []string{"--xnav", "--legacy", "--safe-mode"} {
+		for _, record := range []string{"pending", "empty", "oversized"} {
+			t.Run(mode+"/"+record, func(t *testing.T) {
+				f := newLaunchFixture(t)
+				initial := f.state
+				f.publishSuccessor()
+				pendingPath := fixtureRoot + "/update-pending.json"
+				pending := f.p.files[pendingPath]
+				// Lifecycle publishes pending before changing state.json. Model
+				// interruption there, after the launcher's entry check but before
+				// its final creation lock; the selected generation never changes.
+				f.state = initial
+				f.storeState()
+				delete(f.p.files, pendingPath)
+				delete(f.p.files, fixtureRoot+"/generations/"+fixtureGeneration+"/app/update-trust.json")
+				if record == "empty" {
+					pending = nil
+				} else if record == "oversized" {
+					pending = bytes.Repeat([]byte("x"), 4097)
+				}
+				f.p.onLock = func() { f.p.files[pendingPath] = pending }
+				if err := run(context.Background(), []string{mode}, f.s); err == nil {
+					t.Fatal("pending recovery published before process creation was bypassed")
+				}
+				if len(f.p.starts) != 0 || len(f.p.waits) != 0 || f.p.lockHeld || f.p.readsWhileLocked != 1 {
+					t.Fatal("pending recovery was not refused under the creation lock")
+				}
+				if retained, exists := f.p.files[pendingPath]; !exists || !bytes.Equal(retained, pending) {
+					t.Fatal("refusal changed pending recovery evidence")
+				}
+			})
+		}
+	}
+}
 
 // These exercise the existing installed-launch boundary with inert process
 // doubles. They do not supply commissioning authority or emulate Windows file

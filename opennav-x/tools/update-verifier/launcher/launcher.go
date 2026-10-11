@@ -352,6 +352,13 @@ func ordinary(ctx context.Context, p platform, g *generation, stock stockRecord,
 	if err := assertCurrent(p, g, stock); err != nil {
 		return err
 	}
+	// Pending is published before the new selected pointer. An interrupted
+	// installer can therefore leave this same generation selected while recovery
+	// is required. Recheck under the lock, including Later/offline and fallback;
+	// only a proven absent record permits ordinary process creation.
+	if pending, err := pendingExists(p, g.layout); err != nil || pending {
+		return errors.New("pending update requires recovery; application startup withheld")
+	}
 	return p.start(processSpec{executable: g.layout.app + "/opencpn.exe", directory: g.layout.app, arguments: []string{mode}})
 }
 func supervise(ctx context.Context, p platform, g *generation, stock stockRecord, action, transaction string) error {

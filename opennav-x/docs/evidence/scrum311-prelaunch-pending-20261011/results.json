@@ -1,0 +1,45 @@
+{
+  "baseCommit": "607dcfa217f8c84b03d4c17cb50843ae1a278aeb",
+  "scope": "Final pending-record absence check under existing ordinary startup lock; no session authority or broker integration",
+  "toolchain": {
+    "version": "go1.27.1 linux/amd64",
+    "url": "https://go.dev/dl/go1.27.1.linux-amd64.tar.gz",
+    "metadata": "https://go.dev/dl/?mode=json&include=all",
+    "sha256": "63d339f0da5ab53635a56f2490a7984dfe12dfcff22ad749f63edaf590168445"
+  },
+  "environment": {
+    "GOTOOLCHAIN": "local",
+    "GOPROXY": "off",
+    "GOSUMDB": "off"
+  },
+  "red": {
+    "command": "go test ./launcher -run '^TestOrdinaryPendingPublicationBeforeCreationRefusesAllModes$' -count=1",
+    "exit": 1,
+    "failedCases": 9,
+    "log": "red.log"
+  },
+  "green": [
+    {
+      "command": "go test ./launcher -count=1",
+      "exit": 0,
+      "log": "launcher.log"
+    },
+    {
+      "command": "go test ./... -count=1",
+      "exit": 0,
+      "log": "verifier.log"
+    }
+  ],
+  "sourceSha256": {
+    "tools/update-verifier/launcher/launcher.go": "d09d2672b267937999e9a8fe18b1be9c0c2ba17960e67564fbfa409fe06bd04a",
+    "tools/update-verifier/launcher/prelaunch_boundary_test.go": "998e5e1d0b8ab8fb55ea8656ec0d8d0a0311fcd9a5391485bf0a97e4891c7a0d"
+  },
+  "nativeWindowsAcceptance": false,
+  "signedBoatAcceptance": false,
+  "physicalHardware": "none",
+  "limitations": [
+    "Native process creation, Windows file sharing and ACL behavior not qualified by Go doubles",
+    "No private origin, signing keys or session-record launch authority involved",
+    "SCRUM-311 prelaunch commissioning and broker custody remain incomplete"
+  ]
+}

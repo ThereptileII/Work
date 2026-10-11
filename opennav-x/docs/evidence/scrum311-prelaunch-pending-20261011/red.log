@@ -1,0 +1,22 @@
+--- FAIL: TestOrdinaryPendingPublicationBeforeCreationRefusesAllModes (0.01s)
+    --- FAIL: TestOrdinaryPendingPublicationBeforeCreationRefusesAllModes/--xnav/pending (0.00s)
+        prelaunch_boundary_test.go:35: pending recovery published before process creation was bypassed
+    --- FAIL: TestOrdinaryPendingPublicationBeforeCreationRefusesAllModes/--xnav/empty (0.00s)
+        prelaunch_boundary_test.go:35: pending recovery published before process creation was bypassed
+    --- FAIL: TestOrdinaryPendingPublicationBeforeCreationRefusesAllModes/--xnav/oversized (0.00s)
+        prelaunch_boundary_test.go:35: pending recovery published before process creation was bypassed
+    --- FAIL: TestOrdinaryPendingPublicationBeforeCreationRefusesAllModes/--legacy/pending (0.00s)
+        prelaunch_boundary_test.go:35: pending recovery published before process creation was bypassed
+    --- FAIL: TestOrdinaryPendingPublicationBeforeCreationRefusesAllModes/--legacy/empty (0.00s)
+        prelaunch_boundary_test.go:35: pending recovery published before process creation was bypassed
+    --- FAIL: TestOrdinaryPendingPublicationBeforeCreationRefusesAllModes/--legacy/oversized (0.00s)
+        prelaunch_boundary_test.go:35: pending recovery published before process creation was bypassed
+    --- FAIL: TestOrdinaryPendingPublicationBeforeCreationRefusesAllModes/--safe-mode/pending (0.00s)
+        prelaunch_boundary_test.go:35: pending recovery published before process creation was bypassed
+    --- FAIL: TestOrdinaryPendingPublicationBeforeCreationRefusesAllModes/--safe-mode/empty (0.00s)
+        prelaunch_boundary_test.go:35: pending recovery published before process creation was bypassed
+    --- FAIL: TestOrdinaryPendingPublicationBeforeCreationRefusesAllModes/--safe-mode/oversized (0.00s)
+        prelaunch_boundary_test.go:35: pending recovery published before process creation was bypassed
+FAIL
+FAIL	example.com/opennav-update-verifier/launcher	0.016s
+FAIL

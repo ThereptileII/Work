@@ -109,3 +109,29 @@ for the combined portable checks and still-pending native/Go qualification.
 There is no safe source-grounded assumption that their existence establishes
 authenticated IPC, live artifact validation, shared mutation custody or coverage
 of every process-creation entry. The bootstrap trust/pending refusals remain.
+
+## Final ordinary-start pending check (2026-10-11)
+
+`Lifecycle.ps1` publishes the pending update before `state.json`. If installation
+is interrupted between those writes, the old generation stays selected while
+recovery is required. A launcher already past its initial pending check could
+previously start that generation because `ordinary` rechecked only the pointer
+and stock identity under `transaction.lock`.
+
+`ordinary` now also requires the pending record to be provably absent while
+holding that same lock through process creation. Presence or a read failure
+refuses startup without modifying recovery evidence. This covers XNav, Later,
+offline, Legacy, Safe and ordinary fallback dispatch; existing supervisor
+qualification/recovery checks remain separate.
+
+Nine deterministic cases failed on the original behavior and pass with the
+guard: all three startup modes with a pending, empty or oversized record
+published at lock acquisition, without changing the selected generation.
+The complete Go launcher and updater-verifier module suites passed on Linux
+using the official pinned Go 1.27.1 toolchain and cached dependencies with
+`GOPROXY=off GOSUMDB=off`. [Evidence and toolchain provenance](../evidence/scrum311-prelaunch-pending-20261011/results.json)
+retain the red run and both successful suites.
+
+This narrow installed-launcher fix does not authenticate session-helper records,
+add broker or commissioning authority, or qualify the missing native custody
+boundary. SCRUM-311 and native Windows/signed boat acceptance remain open.
