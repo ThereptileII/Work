@@ -1,0 +1,374 @@
+{
+  "passed": true,
+  "scope": "disposable-loopback-WFP-only",
+  "boat_qualified": false,
+  "started_utc": "2026-10-11T17:57:25Z",
+  "source_commit": "4f423a8000378abc502406d85ba4bde0fb187ad1",
+  "github_sha": "4f423a8000378abc502406d85ba4bde0fb187ad1",
+  "os": "Windows-2022Server-10.0.20348-SP0",
+  "windows_version": [
+    10,
+    0,
+    20348,
+    2,
+    ""
+  ],
+  "admin": true,
+  "phases": [
+    {
+      "name": "deadman-expiry",
+      "passed": true,
+      "command": [
+        "D:\\a\\_temp\\xnav-ais-outage-521502b377b340fcbbb798eda72f3165\\xnav-ais-outage-filter.exe",
+        "59914",
+        "5540",
+        "7044",
+        "fcf6a096911eae96330aeb83ef7b6c91b42184096b29429c69dab0cad12512ca"
+      ],
+      "runner_job_deadline_seconds": 150,
+      "identity": {
+        "event": "prepared",
+        "sublayer": "9f9d4f62-f712-47eb-98ab-cbe348b76bee",
+        "filter4": "5b3ca7f3-097e-4af5-9f93-36996e97d5a1",
+        "filter6": "65d08afc-c72f-48c1-84c6-44b904bca7a0",
+        "port": 59914,
+        "maximum_lifetime_ms": 135000,
+        "lifetime_start_tick": 382640,
+        "received_monotonic": 382.656
+      },
+      "armed_monotonic": 382.671,
+      "active": {
+        "event": "active",
+        "scope_verified": true,
+        "families": [
+          4,
+          6
+        ],
+        "action": "block",
+        "dynamic": true,
+        "commit_before_tick": 382671,
+        "commit_after_tick": 382671,
+        "received_monotonic": 382.671
+      },
+      "quiet_window_seconds": 122.0,
+      "blocked": {
+        "4": {
+          "echoes_after_grace": 0,
+          "connections_after_grace": 0,
+          "failed_retries_after_grace": 1112,
+          "maximum_retry_gap_seconds": 0.125,
+          "established_flow_failed": true,
+          "process_alive": true
+        },
+        "6": {
+          "echoes_after_grace": 0,
+          "connections_after_grace": 0,
+          "failed_retries_after_grace": 1113,
+          "maximum_retry_gap_seconds": 0.125,
+          "established_flow_failed": true,
+          "process_alive": true
+        }
+      },
+      "control_during_block": {
+        "4": {
+          "echoes": 1113,
+          "errors": 0
+        },
+        "6": {
+          "echoes": 1114,
+          "errors": 0
+        }
+      },
+      "cleanup_action": "deadman-expiry",
+      "cleanup_requested_tick": 505703,
+      "helper_exit": 124,
+      "helper_elapsed_seconds": 135.04699999999997,
+      "cleanup": [
+        {
+          "command": [
+            "D:\\a\\_temp\\xnav-ais-outage-521502b377b340fcbbb798eda72f3165\\xnav-ais-outage-filter.exe",
+            "--audit",
+            "9f9d4f62-f712-47eb-98ab-cbe348b76bee",
+            "5b3ca7f3-097e-4af5-9f93-36996e97d5a1",
+            "65d08afc-c72f-48c1-84c6-44b904bca7a0"
+          ],
+          "exit": 0,
+          "stdout": "{\"event\":\"environment\",\"admin\":true,\"bfe_state\":4}\n{\"event\":\"audit\",\"owned_objects_absent\":true}\n",
+          "stderr": ""
+        }
+      ],
+      "recovered": true,
+      "control": {
+        "4": {
+          "echoes": 1234,
+          "maximum_gap_seconds": 0.1560000000000059,
+          "errors": 0,
+          "connections": 1
+        },
+        "6": {
+          "echoes": 1234,
+          "maximum_gap_seconds": 0.1560000000000059,
+          "errors": 0,
+          "connections": 1
+        }
+      },
+      "no_marker_success_before_native_cleanup": true,
+      "runner_job_deadline_fired": false,
+      "runner_job_errors": []
+    },
+    {
+      "name": "forced-death",
+      "passed": true,
+      "command": [
+        "D:\\a\\_temp\\xnav-ais-outage-521502b377b340fcbbb798eda72f3165\\xnav-ais-outage-filter.exe",
+        "62443",
+        "2948",
+        "6136",
+        "fcf6a096911eae96330aeb83ef7b6c91b42184096b29429c69dab0cad12512ca"
+      ],
+      "runner_job_deadline_seconds": 150,
+      "identity": {
+        "event": "prepared",
+        "sublayer": "746cb82a-864f-40b8-bf87-1978193e3127",
+        "filter4": "7f5c5079-d103-4b09-a015-c18b37d4ebb3",
+        "filter6": "27c6145d-f0fb-4c52-9e8f-c241ef5d7837",
+        "port": 62443,
+        "maximum_lifetime_ms": 135000,
+        "lifetime_start_tick": 518390,
+        "received_monotonic": 518.39
+      },
+      "armed_monotonic": 518.421,
+      "active": {
+        "event": "active",
+        "scope_verified": true,
+        "families": [
+          4,
+          6
+        ],
+        "action": "block",
+        "dynamic": true,
+        "commit_before_tick": 518421,
+        "commit_after_tick": 518421,
+        "received_monotonic": 518.421
+      },
+      "quiet_window_seconds": 122.0,
+      "blocked": {
+        "4": {
+          "echoes_after_grace": 0,
+          "connections_after_grace": 0,
+          "failed_retries_after_grace": 1112,
+          "maximum_retry_gap_seconds": 0.125,
+          "established_flow_failed": true,
+          "process_alive": true
+        },
+        "6": {
+          "echoes_after_grace": 0,
+          "connections_after_grace": 0,
+          "failed_retries_after_grace": 1112,
+          "maximum_retry_gap_seconds": 0.125,
+          "established_flow_failed": true,
+          "process_alive": true
+        }
+      },
+      "control_during_block": {
+        "4": {
+          "echoes": 1113,
+          "errors": 0
+        },
+        "6": {
+          "echoes": 1115,
+          "errors": 0
+        }
+      },
+      "cleanup_action": "forced-death",
+      "cleanup_requested_tick": 641437,
+      "helper_exit": 1,
+      "helper_elapsed_seconds": 123.04700000000003,
+      "cleanup": [
+        {
+          "command": [
+            "D:\\a\\_temp\\xnav-ais-outage-521502b377b340fcbbb798eda72f3165\\xnav-ais-outage-filter.exe",
+            "--audit",
+            "746cb82a-864f-40b8-bf87-1978193e3127",
+            "7f5c5079-d103-4b09-a015-c18b37d4ebb3",
+            "27c6145d-f0fb-4c52-9e8f-c241ef5d7837"
+          ],
+          "exit": 0,
+          "stdout": "{\"event\":\"environment\",\"admin\":true,\"bfe_state\":4}\n{\"event\":\"audit\",\"owned_objects_absent\":true}\n",
+          "stderr": ""
+        }
+      ],
+      "recovered": true,
+      "control": {
+        "4": {
+          "echoes": 1122,
+          "maximum_gap_seconds": 0.1570000000000391,
+          "errors": 0,
+          "connections": 1
+        },
+        "6": {
+          "echoes": 1124,
+          "maximum_gap_seconds": 0.125,
+          "errors": 0,
+          "connections": 1
+        }
+      },
+      "no_marker_success_before_native_cleanup": true,
+      "runner_job_deadline_fired": false,
+      "runner_job_errors": []
+    }
+  ],
+  "long_deadman_proof": true,
+  "bfe_query": {
+    "exit": 0,
+    "stdout": "\nSERVICE_NAME: BFE \n        TYPE               : 20  WIN32_SHARE_PROCESS  \n        STATE              : 4  RUNNING \n                                (STOPPABLE, NOT_PAUSABLE, IGNORES_SHUTDOWN)\n        WIN32_EXIT_CODE    : 0  (0x0)\n        SERVICE_EXIT_CODE  : 0  (0x0)\n        CHECKPOINT         : 0x0\n        WAIT_HINT          : 0x0\n",
+    "stderr": ""
+  },
+  "compiler": {
+    "path": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x86\\cl.exe",
+    "version": "usage: cl [ option... ] filename... [ /link linkoption... ]\nMicrosoft (R) C/C++ Optimizing Compiler Version 19.44.35229 for x86\nCopyright (C) Microsoft Corporation.  All rights reserved.\n\n"
+  },
+  "source_sha256": {
+    "tests\\windows_ais_outage\\guard.h": "5ffa17f6802b129a3e8b3d76028de0d1e3ecb921c8ce4dcdd33ba8f9eb92e6d5",
+    "tests\\windows_ais_outage\\marker.cpp": "44b629b2d504bb4b8823e1b7e55c93af4f6c056d764e675dea9670ab78d7d0bc",
+    "tests\\windows_ais_outage\\filter.cpp": "507b20a0afac9d3cd8c14fad5c900c264ad4ac8d91f887c812342cf460778787",
+    "tools\\test-windows-ais-outage.py": "5a762910a57a55e7a3ecc25411a83f1bcc76b81fc32e177b77f58577a5dc7512"
+  },
+  "runtime_directory": "D:\\a\\_temp\\xnav-ais-outage-521502b377b340fcbbb798eda72f3165",
+  "build_commands": [
+    [
+      "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x86\\cl.exe",
+      "/nologo",
+      "/std:c++17",
+      "/EHsc",
+      "/W4",
+      "/O2",
+      "/MT",
+      "/DUNICODE",
+      "/D_UNICODE",
+      "/D_WIN32_WINNT=0x0602",
+      "/FoD:\\a\\_temp\\xnav-ais-outage-521502b377b340fcbbb798eda72f3165\\marker.obj",
+      "/FeD:\\a\\_temp\\xnav-ais-outage-521502b377b340fcbbb798eda72f3165\\xnav-ais-outage-marker.exe",
+      "/DOUTAGE_LONG_PROOF=1",
+      "D:\\a\\Work\\Work\\opennav-x\\tests\\windows_ais_outage\\marker.cpp",
+      "/link",
+      "ws2_32.lib"
+    ],
+    [
+      "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x86\\cl.exe",
+      "/nologo",
+      "/std:c++17",
+      "/EHsc",
+      "/W4",
+      "/O2",
+      "/MT",
+      "/DUNICODE",
+      "/D_UNICODE",
+      "/D_WIN32_WINNT=0x0602",
+      "/FoD:\\a\\_temp\\xnav-ais-outage-521502b377b340fcbbb798eda72f3165\\control.obj",
+      "/FeD:\\a\\_temp\\xnav-ais-outage-521502b377b340fcbbb798eda72f3165\\xnav-ais-outage-control.exe",
+      "/DOUTAGE_CONTROL=1",
+      "/DOUTAGE_LONG_PROOF=1",
+      "D:\\a\\Work\\Work\\opennav-x\\tests\\windows_ais_outage\\marker.cpp",
+      "/link",
+      "ws2_32.lib"
+    ],
+    [
+      "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x86\\cl.exe",
+      "/nologo",
+      "/std:c++17",
+      "/EHsc",
+      "/W4",
+      "/O2",
+      "/MT",
+      "/DUNICODE",
+      "/D_UNICODE",
+      "/D_WIN32_WINNT=0x0602",
+      "/FoD:\\a\\_temp\\xnav-ais-outage-521502b377b340fcbbb798eda72f3165\\filter.obj",
+      "/FeD:\\a\\_temp\\xnav-ais-outage-521502b377b340fcbbb798eda72f3165\\xnav-ais-outage-filter.exe",
+      "/DOUTAGE_LONG_PROOF=1",
+      "D:\\a\\Work\\Work\\opennav-x\\tests\\windows_ais_outage\\filter.cpp",
+      "/link",
+      "ws2_32.lib",
+      "fwpuclnt.lib",
+      "rpcrt4.lib",
+      "bcrypt.lib",
+      "advapi32.lib"
+    ]
+  ],
+  "binary_sha256": {
+    "xnav-ais-outage-control.exe": "9f753196bfe66df3c64e1f871780c47c87faabe1a3d5a2ffbedd8e1c335f95e6",
+    "xnav-ais-outage-filter.exe": "84050b2ba40a94e3238ad517566a11473f40417c7e77e37aa8ee95233f782ee4",
+    "xnav-ais-outage-marker.exe": "fcf6a096911eae96330aeb83ef7b6c91b42184096b29429c69dab0cad12512ca"
+  },
+  "baselines": [
+    {
+      "phase": "deadman-expiry",
+      "server": {
+        "addresses": [
+          "127.0.0.1",
+          "::1"
+        ],
+        "port": 59914,
+        "ipv6_only": true
+      },
+      "clients": {
+        "marker4": {
+          "pid": 5540,
+          "echoes": 6,
+          "connection": 1
+        },
+        "marker6": {
+          "pid": 7044,
+          "echoes": 6,
+          "connection": 1
+        },
+        "control4": {
+          "pid": 6996,
+          "echoes": 6,
+          "connection": 1
+        },
+        "control6": {
+          "pid": 7068,
+          "echoes": 6,
+          "connection": 1
+        }
+      }
+    },
+    {
+      "phase": "forced-death",
+      "server": {
+        "addresses": [
+          "127.0.0.1",
+          "::1"
+        ],
+        "port": 62443,
+        "ipv6_only": true
+      },
+      "clients": {
+        "marker4": {
+          "pid": 2948,
+          "echoes": 6,
+          "connection": 1
+        },
+        "marker6": {
+          "pid": 6136,
+          "echoes": 6,
+          "connection": 1
+        },
+        "control4": {
+          "pid": 4328,
+          "echoes": 6,
+          "connection": 1
+        },
+        "control6": {
+          "pid": 5532,
+          "echoes": 6,
+          "connection": 1
+        }
+      }
+    }
+  ],
+  "finalization_errors": [],
+  "finished_utc": "2026-10-11T18:01:56Z"
+}

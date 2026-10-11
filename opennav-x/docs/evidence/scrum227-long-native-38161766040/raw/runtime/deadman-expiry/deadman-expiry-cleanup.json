@@ -1,0 +1,14 @@
+[
+  {
+    "command": [
+      "D:\\a\\_temp\\xnav-ais-outage-521502b377b340fcbbb798eda72f3165\\xnav-ais-outage-filter.exe",
+      "--audit",
+      "9f9d4f62-f712-47eb-98ab-cbe348b76bee",
+      "5b3ca7f3-097e-4af5-9f93-36996e97d5a1",
+      "65d08afc-c72f-48c1-84c6-44b904bca7a0"
+    ],
+    "exit": 0,
+    "stdout": "{\"event\":\"environment\",\"admin\":true,\"bfe_state\":4}\n{\"event\":\"audit\",\"owned_objects_absent\":true}\n",
+    "stderr": ""
+  }
+]

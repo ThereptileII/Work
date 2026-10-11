@@ -1,0 +1,5 @@
+disposable-outage	Exercise long deadman with inert loopback markers only	2026-10-11T17:57:19.7796628Z ^[[36;1mcall "$developer" -arch=x86 -host_arch=x64^[[0m
+disposable-outage	Exercise long deadman with inert loopback markers only	2026-10-11T17:57:19.7797797Z ^[[36;1mpython opennav-x/tools/test-windows-ais-outage.py --output "$env:RUNNER_TEMP\skager-ais-long-deadman" --confirm-disposable --long-deadman^[[0m
+disposable-outage	Exercise long deadman with inert loopback markers only	2026-10-11T17:57:19.7911225Z   XNAV_DISPOSABLE_AIS_OUTAGE: 1
+disposable-outage	Exercise long deadman with inert loopback markers only	2026-10-11T18:01:56.4409266Z     "version": "usage: cl [ option... ] filename... [ /link linkoption... ]\nMicrosoft (R) C/C++ Optimizing Compiler Version 19.44.35229 for x86\nCopyright (C) Microsoft Corporation.  All rights reserved.\n\n"
+disposable-outage	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T18:01:57.6825622Z Artifact disposable-ais-long-deadman-4f423a8000378abc502406d85ba4bde0fb187ad1-run38161766040.zip successfully finalized. Artifact ID 11710626983

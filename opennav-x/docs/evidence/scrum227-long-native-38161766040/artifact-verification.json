@@ -1,0 +1,149 @@
+{
+  "verified_utc": "2026-10-11T18:05:44Z",
+  "artifact_id": 11710626983,
+  "artifact_name": "disposable-ais-long-deadman-4f423a8000378abc502406d85ba4bde0fb187ad1-run38161766040",
+  "zip_bytes": 731977,
+  "api_size_bytes": 731977,
+  "zip_sha256": "f259e9dc75fe0a266f92aabf1caf1b9a7533c6c928d029c93a6a39dade8a2cd7",
+  "api_digest": "sha256:f259e9dc75fe0a266f92aabf1caf1b9a7533c6c928d029c93a6a39dade8a2cd7",
+  "api_digest_match": true,
+  "zip_all_member_crcs_passed": true,
+  "zip_member_count": 22,
+  "retained_members": [
+    {
+      "archive_member": "runtime/control-compile.log",
+      "retained_path": "raw/runtime/control-compile.log",
+      "bytes": 12,
+      "crc32": "1a85f134",
+      "sha256": "8afdb414b58a73cb2f47a265d8ff00ea1474aba7f1ac07f212eea11addbfaf92"
+    },
+    {
+      "archive_member": "result.json",
+      "retained_path": "raw/result.json",
+      "bytes": 11998,
+      "crc32": "16ac50b7",
+      "sha256": "366cc37bc2604b04c0171a87afca419503f95fc0cfee5d8677c84948a4702030"
+    },
+    {
+      "archive_member": "runtime/deadman-expiry/control4.jsonl",
+      "retained_path": "raw/runtime/deadman-expiry/control4.jsonl",
+      "bytes": 124021,
+      "crc32": "fc503815",
+      "sha256": "f1d734eed005981dc55f72bc7b7a3e5ec664d97276a9da29556d9587e666071f"
+    },
+    {
+      "archive_member": "runtime/deadman-expiry/control6.jsonl",
+      "retained_path": "raw/runtime/deadman-expiry/control6.jsonl",
+      "bytes": 124046,
+      "crc32": "ca79d074",
+      "sha256": "8813d3a529ac628dc3bf422f43c4fb1b46746ea568054872e9f49b50754deee7"
+    },
+    {
+      "archive_member": "runtime/deadman-expiry/deadman-expiry-cleanup.json",
+      "retained_path": "raw/runtime/deadman-expiry/deadman-expiry-cleanup.json",
+      "bytes": 467,
+      "crc32": "91c7ad88",
+      "sha256": "de03515bf104fa4859346101b5348ff36b565dd30ef2966b1795191c4529c736"
+    },
+    {
+      "archive_member": "runtime/deadman-expiry/marker4.jsonl",
+      "retained_path": "raw/runtime/deadman-expiry/marker4.jsonl",
+      "bytes": 91847,
+      "crc32": "c51c6702",
+      "sha256": "3738ff971d6143f63fee8ce7bf5f9497043e9d267921b0ec433b403d5608c1e3"
+    },
+    {
+      "archive_member": "runtime/deadman-expiry/deadman-expiry-helper.jsonl",
+      "retained_path": "raw/runtime/deadman-expiry/deadman-expiry-helper.jsonl",
+      "bytes": 6898,
+      "crc32": "2553dad7",
+      "sha256": "6a05c8c6222f08cc0c7f0c0b2e381baf944d8e214526a3c3054ad0c0c050be67"
+    },
+    {
+      "archive_member": "runtime/deadman-expiry/marker6.jsonl",
+      "retained_path": "raw/runtime/deadman-expiry/marker6.jsonl",
+      "bytes": 91781,
+      "crc32": "f0593a25",
+      "sha256": "1949a4a7fcb1fda3794e78037a79f77588a097ffb45533826d1f715754740009"
+    },
+    {
+      "archive_member": "runtime/filter-compile.log",
+      "retained_path": "raw/runtime/filter-compile.log",
+      "bytes": 2047,
+      "crc32": "fb933143",
+      "sha256": "b4cc1f6415e5bae97f3a9f0b818c92458b168a9e8abb9fa0da2b21c8496a446d"
+    },
+    {
+      "archive_member": "runtime/forced-death/control4.jsonl",
+      "retained_path": "raw/runtime/forced-death/control4.jsonl",
+      "bytes": 112713,
+      "crc32": "aa4b2868",
+      "sha256": "02f684d5145c226af4bd313381f52c1372bea66b326c0c005878359e7ae9b4b4"
+    },
+    {
+      "archive_member": "runtime/forced-death/control6.jsonl",
+      "retained_path": "raw/runtime/forced-death/control6.jsonl",
+      "bytes": 112914,
+      "crc32": "04acf121",
+      "sha256": "1904ad3702c9b6d84b6eb7592d03e5b42db8b2e9b4deb5691c2e6af9a4f071e0"
+    },
+    {
+      "archive_member": "runtime/forced-death/forced-death-cleanup.json",
+      "retained_path": "raw/runtime/forced-death/forced-death-cleanup.json",
+      "bytes": 467,
+      "crc32": "969fb4a5",
+      "sha256": "5b356c3d74e4907d707ab09dff7753790bb82353ac01be7b1c900eb7861cc5b7"
+    },
+    {
+      "archive_member": "runtime/forced-death/forced-death-helper.jsonl",
+      "retained_path": "raw/runtime/forced-death/forced-death-helper.jsonl",
+      "bytes": 6894,
+      "crc32": "10f22aa9",
+      "sha256": "28915581f41a3643521d6b4e1c7c8e3ba993160e97fb904285a11a114b04f6f9"
+    },
+    {
+      "archive_member": "runtime/forced-death/marker4.jsonl",
+      "retained_path": "raw/runtime/forced-death/marker4.jsonl",
+      "bytes": 83651,
+      "crc32": "da1e01f6",
+      "sha256": "081effd1b1003607663ccdb3799fa456c46b4e27949d7e990dee21434f9f8197"
+    },
+    {
+      "archive_member": "runtime/forced-death/marker6.jsonl",
+      "retained_path": "raw/runtime/forced-death/marker6.jsonl",
+      "bytes": 83656,
+      "crc32": "b656d75b",
+      "sha256": "f864a9121c9dba320acc39e05dc55cbe4a58f43fa4be8ad880af6a1ed12fb472"
+    },
+    {
+      "archive_member": "runtime/marker-compile.log",
+      "retained_path": "raw/runtime/marker-compile.log",
+      "bytes": 12,
+      "crc32": "1a85f134",
+      "sha256": "8afdb414b58a73cb2f47a265d8ff00ea1474aba7f1ac07f212eea11addbfaf92"
+    }
+  ],
+  "excluded_members": [
+    "runtime/control.obj",
+    "runtime/filter.obj",
+    "runtime/marker.obj",
+    "runtime/xnav-ais-outage-control.exe",
+    "runtime/xnav-ais-outage-filter.exe",
+    "runtime/xnav-ais-outage-marker.exe"
+  ],
+  "private_download_directory": "/home/standard/Projects/.tmp-scrum227-long-native-38161766040",
+  "full_job_log_sha256": "8e7b55622310f22aaa2f6c26619844228149b1756e7ddcdc7c338329aaca275a",
+  "raw_api_sha256": {
+    "run-api.json": "c034a9412380adf91435e213a35b444128d2490b37e7cb7c474b92ad5c4debe5",
+    "job-api.json": "6e1ed63caf8ec4e2909a1189600857823e2d137922e632aac9fbe1015c3539a1",
+    "artifacts-api.json": "1936b5794eb30ea6ca1362f49672164afc1ca6d203f3269311c34a79d11114f9"
+  },
+  "job_log_excerpt": {
+    "path": "raw/job-launch-excerpts.log",
+    "lines": 5,
+    "sha256": "10d5d9b43bc5a0495e3e58d1a2b7269d422e3e61b39ee3e38d6c621f80d1d974",
+    "selection": "Unmodified full job-log lines containing x86 environment setup, exact opt-in long command, required disposable guard, compiler version or artifact finalization ID."
+  },
+  "duplicate_zip_member_names": [],
+  "run_job_source_bindings_verified": true
+}

@@ -1,0 +1,2 @@
+# Preserve downloaded Windows receipts and logs byte for byte.
+raw/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

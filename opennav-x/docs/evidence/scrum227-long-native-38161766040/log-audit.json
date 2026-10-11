@@ -1,0 +1,284 @@
+{
+  "audited_utc": "2026-10-11T18:05:44Z",
+  "run_id": 38161766040,
+  "job_id": 114535990532,
+  "source_commit": "4f423a8000378abc502406d85ba4bde0fb187ad1",
+  "scope": "disposable-loopback-WFP-only",
+  "boat_qualified": false,
+  "os": "Windows-2022Server-10.0.20348-SP0",
+  "compiler": {
+    "path": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x86\\cl.exe",
+    "version": "usage: cl [ option... ] filename... [ /link linkoption... ]\nMicrosoft (R) C/C++ Optimizing Compiler Version 19.44.35229 for x86\nCopyright (C) Microsoft Corporation.  All rights reserved.\n\n"
+  },
+  "source_identity_checks": [
+    {
+      "path": "opennav-x/tests/windows_ais_outage/guard.h",
+      "recorded_windows_checkout_sha256": "5ffa17f6802b129a3e8b3d76028de0d1e3ecb921c8ce4dcdd33ba8f9eb92e6d5",
+      "git_blob_sha256": "6eb1a3d721ac89a3248f8acb575040e502ba99af238de440ab1f4ccb2bb93333",
+      "identity_check": "exact git blob with Windows CRLF checkout line endings"
+    },
+    {
+      "path": "opennav-x/tests/windows_ais_outage/marker.cpp",
+      "recorded_windows_checkout_sha256": "44b629b2d504bb4b8823e1b7e55c93af4f6c056d764e675dea9670ab78d7d0bc",
+      "git_blob_sha256": "0ea755faf09c066411f31cf6b61627f0dcb3d54c30cb4d875b12098af8ef9012",
+      "identity_check": "exact git blob with Windows CRLF checkout line endings"
+    },
+    {
+      "path": "opennav-x/tests/windows_ais_outage/filter.cpp",
+      "recorded_windows_checkout_sha256": "507b20a0afac9d3cd8c14fad5c900c264ad4ac8d91f887c812342cf460778787",
+      "git_blob_sha256": "a67b031f17b4062ce62c134412582fe7ee83dd8effdf105332b13aa0bfb21012",
+      "identity_check": "exact git blob with Windows CRLF checkout line endings"
+    },
+    {
+      "path": "opennav-x/tools/test-windows-ais-outage.py",
+      "recorded_windows_checkout_sha256": "5a762910a57a55e7a3ecc25411a83f1bcc76b81fc32e177b77f58577a5dc7512",
+      "git_blob_sha256": "8275b50f33f4ef7ed47b38c9c8c781f7898e7f25e791c4c9f627d48e7b2dd8e5",
+      "identity_check": "exact git blob with Windows CRLF checkout line endings"
+    }
+  ],
+  "binary_identity_checks": [
+    {
+      "name": "xnav-ais-outage-control.exe",
+      "sha256": "9f753196bfe66df3c64e1f871780c47c87faabe1a3d5a2ffbedd8e1c335f95e6",
+      "bytes": 226816,
+      "pe_machine": "0x014c",
+      "architecture": "x86 / Win32",
+      "retained_in_git": false
+    },
+    {
+      "name": "xnav-ais-outage-filter.exe",
+      "sha256": "84050b2ba40a94e3238ad517566a11473f40417c7e77e37aa8ee95233f782ee4",
+      "bytes": 252416,
+      "pe_machine": "0x014c",
+      "architecture": "x86 / Win32",
+      "retained_in_git": false
+    },
+    {
+      "name": "xnav-ais-outage-marker.exe",
+      "sha256": "fcf6a096911eae96330aeb83ef7b6c91b42184096b29429c69dab0cad12512ca",
+      "bytes": 226816,
+      "pe_machine": "0x014c",
+      "architecture": "x86 / Win32",
+      "retained_in_git": false
+    }
+  ],
+  "phases": [
+    {
+      "name": "deadman-expiry",
+      "helper_exit": 124,
+      "helper_elapsed_seconds": 135.04699999999997,
+      "reported_quiet_seconds": 122.0,
+      "reported_quiet_metrics": {
+        "4": {
+          "echoes_after_grace": 0,
+          "connections_after_grace": 0,
+          "failed_retries_after_grace": 1112,
+          "maximum_retry_gap_seconds": 0.125,
+          "established_flow_failed": true,
+          "process_alive": true
+        },
+        "6": {
+          "echoes_after_grace": 0,
+          "connections_after_grace": 0,
+          "failed_retries_after_grace": 1113,
+          "maximum_retry_gap_seconds": 0.125,
+          "established_flow_failed": true,
+          "process_alive": true
+        }
+      },
+      "fixed_native_helper_lifetime_ms": 135000,
+      "fixed_runner_job_deadline_seconds": 150,
+      "runner_job_deadline_fired": false,
+      "exact_owned_guid_absence_audit_passed": true,
+      "owned_guids": {
+        "sublayer": "9f9d4f62-f712-47eb-98ab-cbe348b76bee",
+        "filter4": "5b3ca7f3-097e-4af5-9f93-36996e97d5a1",
+        "filter6": "65d08afc-c72f-48c1-84c6-44b904bca7a0"
+      },
+      "strict_dual_family_readback_verified": true,
+      "clients": {
+        "marker4": {
+          "events": 1241,
+          "all_event_counts": {
+            "connected": 2,
+            "echo": 7,
+            "flow_error": 1,
+            "connect_fail": 1231
+          },
+          "baseline_echoes_before_commit": 6,
+          "native_block_interval_start_tick": 383671,
+          "native_block_interval_end_tick": 517640,
+          "native_block_interval_ms": 133969,
+          "failed_retries_in_native_interval": 1222,
+          "maximum_native_retry_gap_ms": 125,
+          "no_success_before_cleanup_boundary": true,
+          "recovery_connection": 2,
+          "recovery_first_echo_tick": 517765,
+          "recovery_after_boundary_ms": 125
+        },
+        "marker6": {
+          "events": 1240,
+          "all_event_counts": {
+            "connected": 2,
+            "echo": 7,
+            "flow_error": 1,
+            "connect_fail": 1230
+          },
+          "baseline_echoes_before_commit": 6,
+          "native_block_interval_start_tick": 383671,
+          "native_block_interval_end_tick": 517640,
+          "native_block_interval_ms": 133969,
+          "failed_retries_in_native_interval": 1222,
+          "maximum_native_retry_gap_ms": 125,
+          "no_success_before_cleanup_boundary": true,
+          "recovery_connection": 2,
+          "recovery_first_echo_tick": 517734,
+          "recovery_after_boundary_ms": 94
+        },
+        "control4": {
+          "events": 1241,
+          "all_event_counts": {
+            "connected": 1,
+            "echo": 1240
+          },
+          "baseline_echoes_before_commit": 6,
+          "maximum_between_echo_native_gap_ms": 156,
+          "reported_phase_echoes": 1234,
+          "reported_phase_maximum_received_gap_seconds": 0.1560000000000059,
+          "errors": 0,
+          "connections": 1
+        },
+        "control6": {
+          "events": 1241,
+          "all_event_counts": {
+            "connected": 1,
+            "echo": 1240
+          },
+          "baseline_echoes_before_commit": 6,
+          "maximum_between_echo_native_gap_ms": 156,
+          "reported_phase_echoes": 1234,
+          "reported_phase_maximum_received_gap_seconds": 0.1560000000000059,
+          "errors": 0,
+          "connections": 1
+        }
+      }
+    },
+    {
+      "name": "forced-death",
+      "helper_exit": 1,
+      "helper_elapsed_seconds": 123.04700000000003,
+      "reported_quiet_seconds": 122.0,
+      "reported_quiet_metrics": {
+        "4": {
+          "echoes_after_grace": 0,
+          "connections_after_grace": 0,
+          "failed_retries_after_grace": 1112,
+          "maximum_retry_gap_seconds": 0.125,
+          "established_flow_failed": true,
+          "process_alive": true
+        },
+        "6": {
+          "echoes_after_grace": 0,
+          "connections_after_grace": 0,
+          "failed_retries_after_grace": 1112,
+          "maximum_retry_gap_seconds": 0.125,
+          "established_flow_failed": true,
+          "process_alive": true
+        }
+      },
+      "fixed_native_helper_lifetime_ms": 135000,
+      "fixed_runner_job_deadline_seconds": 150,
+      "runner_job_deadline_fired": false,
+      "exact_owned_guid_absence_audit_passed": true,
+      "owned_guids": {
+        "sublayer": "746cb82a-864f-40b8-bf87-1978193e3127",
+        "filter4": "7f5c5079-d103-4b09-a015-c18b37d4ebb3",
+        "filter6": "27c6145d-f0fb-4c52-9e8f-c241ef5d7837"
+      },
+      "strict_dual_family_readback_verified": true,
+      "clients": {
+        "marker4": {
+          "events": 1130,
+          "all_event_counts": {
+            "connected": 2,
+            "echo": 7,
+            "flow_error": 1,
+            "connect_fail": 1120
+          },
+          "baseline_echoes_before_commit": 6,
+          "native_block_interval_start_tick": 519421,
+          "native_block_interval_end_tick": 641437,
+          "native_block_interval_ms": 122016,
+          "failed_retries_in_native_interval": 1112,
+          "maximum_native_retry_gap_ms": 125,
+          "no_success_before_cleanup_boundary": true,
+          "recovery_connection": 2,
+          "recovery_first_echo_tick": 641484,
+          "recovery_after_boundary_ms": 47
+        },
+        "marker6": {
+          "events": 1130,
+          "all_event_counts": {
+            "connected": 2,
+            "echo": 7,
+            "flow_error": 1,
+            "connect_fail": 1120
+          },
+          "baseline_echoes_before_commit": 6,
+          "native_block_interval_start_tick": 519421,
+          "native_block_interval_end_tick": 641437,
+          "native_block_interval_ms": 122016,
+          "failed_retries_in_native_interval": 1112,
+          "maximum_native_retry_gap_ms": 125,
+          "no_success_before_cleanup_boundary": true,
+          "recovery_connection": 2,
+          "recovery_first_echo_tick": 641500,
+          "recovery_after_boundary_ms": 63
+        },
+        "control4": {
+          "events": 1129,
+          "all_event_counts": {
+            "connected": 1,
+            "echo": 1128
+          },
+          "baseline_echoes_before_commit": 6,
+          "maximum_between_echo_native_gap_ms": 157,
+          "reported_phase_echoes": 1122,
+          "reported_phase_maximum_received_gap_seconds": 0.1570000000000391,
+          "errors": 0,
+          "connections": 1
+        },
+        "control6": {
+          "events": 1131,
+          "all_event_counts": {
+            "connected": 1,
+            "echo": 1130
+          },
+          "baseline_echoes_before_commit": 6,
+          "maximum_between_echo_native_gap_ms": 125,
+          "reported_phase_echoes": 1124,
+          "reported_phase_maximum_received_gap_seconds": 0.125,
+          "errors": 0,
+          "connections": 1
+        }
+      }
+    }
+  ],
+  "finalization_errors": [],
+  "audit_limits": [
+    "Native log intervals start at commit_after_tick+1000 and end at the nominal watchdog tick or sampled pre-kill tick. They are independently derived, not identical to the runner received-monotonic quiet window.",
+    "Nominal watchdog tick is a no-early-success cutoff, not precise cleanup timestamp; boundary-to-recovery deltas are not process-death-to-recovery measurements.",
+    "Fresh exact-GUID audit and post-audit recovery ordering are asserted by the source-bound runner; raw audit files contain no independent audit-completion clock.",
+    "150-second helper job and 180-second client deadlines were configured; neither deadline expiry was exercised.",
+    "Only inert path-scoped IPv4/IPv6 loopback echo clients; no real AIS provider, product executable, public endpoint, remote access or boat acceptance."
+  ],
+  "fixed_deadlines": {
+    "helper_native_ms": 135000,
+    "runner_helper_job_seconds": 150,
+    "client_native_ms": 180000,
+    "long_build_macro_present_in_all_three_compile_commands": true,
+    "native_watchdog_expiry_exercised": true,
+    "runner_job_expiry_exercised": false,
+    "client_expiry_exercised": false
+  }
+}
