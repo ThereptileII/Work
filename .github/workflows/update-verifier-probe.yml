@@ -14,7 +14,11 @@ on:
         type: boolean
         default: false
       image_owner_only:
-        description: Run only native supervised image ownership with inert children
+        description: Run focused native supervised and ordinary image ownership with inert children
+        type: boolean
+        default: false
+      diagnose_image_creation:
+        description: Also run the suspended-only creation diagnostic matrix
         type: boolean
         default: false
   workflow_call:
@@ -213,6 +217,7 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - name: Observe suspended-only native creation parameter matrix
+        if: inputs.diagnose_image_creation
         run: |
           $ErrorActionPreference = 'Stop'
           $Evidence = 'opennav-x/evidence/local/native-update-createprocess'
@@ -225,7 +230,28 @@ jobs:
           $ErrorActionPreference = 'Stop'
           $Evidence = 'opennav-x/evidence/local/native-update-image-owner'
           New-Item -ItemType Directory -Force $Evidence | Out-Null
-          if ($PSVersionTable.PSVersion.Major -ne 5) { throw 'Windows PowerShell 5.1 required.' }
+          if ($PSVersionTable.PSVersion.Major -ne 5 -or [IntPtr]::Size -ne 8) { throw 'Windows PowerShell 5.1 x64 required.' }
+          try {
+            & ./opennav-x/tools/test-native-update-image-owner.ps1 *>&1 | Tee-Object "$Evidence/owner.log"
+          } catch { $_ | Out-File "$Evidence/owner.log" -Append; throw }
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          try {
+            & ./opennav-x/tools/test-update-transaction.ps1 *>&1 | Tee-Object "$Evidence/transaction.log"
+          } catch { $_ | Out-File "$Evidence/transaction.log" -Append; throw }
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $Inputs = @{}
+          foreach ($Path in @('installer/windows/UpdateTransaction.ps1','installer/windows/UpdateSupervisor.ps1','tools/test-native-update-image-owner.ps1','tools/test-update-transaction.ps1','tools/fixtures/update-image-marker.cs')) {
+            $Inputs[$Path] = (Get-FileHash -LiteralPath (Join-Path 'opennav-x' $Path) -Algorithm SHA256).Hash.ToLowerInvariant()
+          }
+          @{commit=$env:GITHUB_SHA;run=$env:GITHUB_RUN_ID;attempt=$env:GITHUB_RUN_ATTEMPT;powerShell=$PSVersionTable.PSVersion.ToString();processBits=([IntPtr]::Size*8);os=[Environment]::OSVersion.VersionString;inputs=$Inputs;passed=$true;applicationBuild=$false;productAcceptance=$false;boatAcceptance=$false} | ConvertTo-Json -Depth 5 | Out-File "$Evidence/receipt.json" -Encoding utf8
+      - name: Exercise the same supervisor under Windows PowerShell 5.1 x86
+        if: always()
+        shell: C:\Windows\SysWOW64\WindowsPowerShell\v1.0\powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File {0}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $Evidence = 'opennav-x/evidence/local/native-update-image-owner-x86'
+          New-Item -ItemType Directory -Force $Evidence | Out-Null
+          if ($PSVersionTable.PSVersion.Major -ne 5 -or [IntPtr]::Size -ne 4) { throw 'Windows PowerShell 5.1 x86 required.' }
           try {
             & ./opennav-x/tools/test-native-update-image-owner.ps1 *>&1 | Tee-Object "$Evidence/owner.log"
           } catch { $_ | Out-File "$Evidence/owner.log" -Append; throw }
@@ -245,7 +271,55 @@ jobs:
           name: native-update-image-owner-${{ github.sha }}
           path: |
             opennav-x/evidence/local/native-update-image-owner
+            opennav-x/evidence/local/native-update-image-owner-x86
             opennav-x/evidence/local/native-update-createprocess
             opennav-x/evidence/local/native-update-createprocess.log
+          if-no-files-found: error
+          retention-days: 90
+
+  ordinary-owner:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.image_owner_only && !inputs.owned_files_only }}
+    name: Native Win32 ordinary image ownership
+    runs-on: windows-2022
+    timeout-minutes: 12
+    defaults:
+      run:
+        working-directory: opennav-x/tools/update-verifier
+    env:
+      GOARCH: '386'
+      GOTOOLCHAIN: local
+      SKAGER_LAUNCHER_DISPOSABLE_SUBST_TEST: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+        with:
+          go-version-file: opennav-x/tools/update-verifier/go.mod
+          cache-dependency-path: opennav-x/tools/update-verifier/go.sum
+      - name: Exercise actual ordinary creator and owned SUBST-remap fixtures
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          New-Item -ItemType Directory -Force ../../build/updater-ordinary-image | Out-Null
+          go test -count=1 -json ./launcher -run '^TestNativeOrdinary' | Tee-Object ../../build/updater-ordinary-image/tests.json
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          @'
+          import hashlib, json, os, subprocess
+          from pathlib import Path
+          evidence = Path('../../build/updater-ordinary-image')
+          rows = [json.loads(line) for line in (evidence/'tests.json').read_text(encoding='utf-8-sig').splitlines()]
+          expected = ['TestNativeOrdinaryActualCreator','TestNativeOrdinaryPhysicalCustodyBeforeResume','TestNativeOrdinaryWrongHashAndHardlinkRefuse','TestNativeOrdinarySuspendedRefusalCleanup','TestNativeOrdinaryNameAndEnvironmentBounds','TestNativeOrdinarySubstRemapAfterAcquire','TestNativeOrdinaryDOSApplicationBounds','TestNativeOrdinarySelectedApplicationCorruptionRefuses','TestNativeOrdinaryWrongSuspendedImageRefuses']
+          for name in expected:
+              assert any(row.get('Action') == 'pass' and row.get('Test') == name for row in rows), 'Required native fixture did not pass: '+name
+          assert not any(row.get('Action') in ('skip','fail') for row in rows), 'Native fixture was skipped or failed'
+          inputs = {str(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(Path('launcher').glob('*.go'))}
+          receipt = {'commit': os.environ['GITHUB_SHA'], 'run': os.environ['GITHUB_RUN_ID'], 'attempt': os.environ['GITHUB_RUN_ATTEMPT'], 'go': subprocess.check_output(['go','version'], text=True).strip(), 'arch':os.environ['GOARCH'], 'testsRequired':expected, 'inputs':inputs, 'passed':True, 'applicationBuild':False, 'productAcceptance':False, 'boatAcceptance':False}
+          (evidence/'receipt.json').write_text(json.dumps(receipt,indent=2)+'\n',encoding='utf-8')
+          '@ | python -
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: native-ordinary-image-owner-${{ github.sha }}
+          path: opennav-x/build/updater-ordinary-image
           if-no-files-found: error
           retention-days: 90
