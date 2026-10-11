@@ -38,6 +38,7 @@ class ClassificationTests(unittest.TestCase):
                      'tools/fetch_ci_inputs.py', 'tools/qualify-staging-windows.ps1',
                      'tools/collect-zoom-evidence.py', 'tools/openssl_loaded.py',
                      'tools/win32-pe-import-probe.cpp', 'tools/win32_plugin_inventory.py',
+                     'tools/win32_module_observation.py',
                      'tools/plugin-guard-owned-trust.ps1',
                      'tools/retest-staging-windows.py', 'tools/staging_composition.py',
                      'tools/staging-composition-request.json', 'tools/staging-installer-retest.json',
