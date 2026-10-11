@@ -80,6 +80,34 @@ handle/ACL operations. Native ACL/path and combined installed entry-point
 qualification remain pending for the changed source; earlier image-owner passes
 do not qualify this additional boundary.
 
+### Physical installed-store paths
+
+Installed arming captures the requested DOS drive once and obtains the native
+volume path from that retained handle. It verifies the held volume is local,
+fixed and NTFS, then pins its complete physical ancestry, including ancestors
+above a SUBST target. Subsequent transaction-lock, owner/state-record and marker
+opens use that physical path. Private-journal creation follows the same rule.
+The original DOS spellings remain diagnostic fields; they are not recaptured
+as mutation authority. Marker/journal checks also verify the held file is the
+expected child of its held directory. Native record opens avoid .NET Framework
+normalization of `GLOBALROOT` paths.
+
+Failed initialization attempts all independent cleanup even if stream disposal
+also fails, preserving the original error and any created denial marker. The
+focused portable results are 236 private-store and 38 installed-store checks;
+the latter includes injected cleanup failures. Windows-only fixtures remap a
+temporary SUBST alias after capture, verify the lock/marker or journal belongs
+to physical A rather than new target B, and refuse renaming an ancestor above
+the captured target. Those fixtures and the changed Windows 5.1 x86/x64 APIs
+remain unexecuted; portable adapters do not qualify native custody.
+
+This binds these store operations to retained physical directories. It does
+not prevent additions throughout a loader namespace or supply the missing
+authenticated signed-update broker. Directory-change notifications are not
+exclusive custody, and temporarily changing a DACL does not revoke rights from
+pre-existing handles. No `nativeCustodyQualified` claim or signed spawn is
+enabled by this store change.
+
 ## Shared commissioning profile exclusion
 
 `CommissioningProfileLock.cs` supplies a native, machine-wide mutex for the

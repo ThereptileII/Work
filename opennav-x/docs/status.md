@@ -1,5 +1,20 @@
 # SKAGER status — 2026-10-11
 
+## Physical signed-store path correction
+
+The source batch now binds installed arming's transaction lock, owner/state
+reads and marker creation, plus private-journal creation, to physical paths
+derived from retained native handles. It pins physical ancestors above mapped
+drive targets and verifies the held marker/journal's parent. Initialization
+cleanup retains the original failure and attempts all independent releases,
+including when a failed stream flush also makes disposal fail. Focused checks
+passed 236 private-store and 38 installed-store assertions. Initial attempts
+failed because the system temporary directory exhausted its quota; the same
+checks passed using the project temporary directory. Native Windows 5.1
+x86/x64 and new SUBST-remap fixtures remain pending. This is a store correction,
+not complete loader custody or signed broker acceptance. See the
+[physical path contract](installer/signed-update-session-contract.md#physical-installed-store-paths).
+
 ## Integrated dependency provenance refinement
 
 Source batch `3bc1478b` connects verified updater/adapter source and notice

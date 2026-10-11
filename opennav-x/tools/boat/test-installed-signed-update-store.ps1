@@ -14,8 +14,9 @@ function Hash([int]$N){return $N.ToString('x64')}
 function Get-SignedStoreNow {return 1000L}
 $binding=[pscustomobject]@{session=(Hash 1);previous=[pscustomobject]@{generation=('a'*32);commit=('a'*40);packageSha256=('a'*64);executableSha256=('c'*64)};release=[pscustomobject]@{commit=('b'*40);packageSha256=('b'*64);executableSha256=('d'*64);policySha256=(Hash 2);sourceReviewSha256=(Hash 3)};previousCommissioningSha256=(Hash 4);fallbackSourceReviewSha256=(Hash 5);createdUnix=1000;expiresUnix=4000}
 function WriteJson([string]$Path,$Value){[IO.File]::WriteAllBytes($Path,(Get-SignedStoreBytes $Value))}
-function Fresh {
-  $root=Join-Path $script:fixture ([guid]::NewGuid().ToString('N'))
+function Fresh([string]$Parent=$script:fixture,[string]$Name='') {
+  if(-not $Name){$Name=[guid]::NewGuid().ToString('N')}
+  $root=Join-Path $Parent $Name
   $null=[IO.Directory]::CreateDirectory($root)
   WriteJson (Join-Path $root 'owner.json') @{owner='OpenNavX.Alpha1.SideBySide.1'}
   WriteJson (Join-Path $root 'state.json') @{schema=1;owner='OpenNavX.Alpha1.SideBySide.1';current=$script:binding.previous.generation}
@@ -44,6 +45,9 @@ try {
       return ,@()
     }
     function Open-SignedInstallationLock([string]$Root){return [IO.File]::Open((Join-Path $Root 'transaction.lock'),[IO.FileMode]::OpenOrCreate,[IO.FileAccess]::ReadWrite,[IO.FileShare]::None)}
+    function Get-SignedStorePinnedDirectory([string]$Requested,$Pins){return $Requested}
+    function Assert-SignedStoreChild($Stream,$Pins){if($Stream.SafeFileHandle.IsClosed){throw 'Closed fixture marker'}}
+    function Open-SignedInstallationRecordFile([string]$Path){return [IO.File]::Open($Path,[IO.FileMode]::Open,[IO.FileAccess]::Read,[IO.FileShare]::Read)}
     function Assert-SignedInstallationHandle($Stream,[string]$Sid=''){if($Stream.SafeFileHandle.IsClosed){throw 'Closed fixture handle'}}
     function Enter-SignedStoreDirectory([string]$Directory,$Owner){if(-not [IO.Directory]::Exists($Directory)){throw 'Missing private fixture directory'};return ,@()}
     function New-SignedStoreFile([string]$Path,[string]$Sid){return [IO.FileStream]::new($Path,[IO.FileMode]::CreateNew,[IO.FileAccess]::ReadWrite,[IO.FileShare]::None,4096,[IO.FileOptions]::WriteThrough)}
@@ -91,6 +95,106 @@ try {
   $lock=Open-SignedInstallationLock $f.root;$lock.Dispose();Check $true 'Failed arming releases transaction lock without erasing denial'
   ${function:Write-SignedStoreFrame}=$write
   Check ($script:SignedUpdateStores.Count -eq 0) 'Failed/closed sessions retain no live handle authority'
+  if(-not $native){
+    # A write failure can be followed by another error while disposing the
+    # stream. Exercise cleanup, not Windows handle semantics, with inert probes.
+    $saved=@{}
+    foreach($name in @('Enter-SignedInstallationRoot','Get-SignedStorePinnedDirectory','Open-SignedInstallationLock','New-SignedStoreFile','Write-SignedStoreFrame','Enter-SignedStoreDirectory','Assert-SignedStoreNative','Enter-SignedInstallationBarrier')){
+      $saved[$name]=(Get-Item ('Function:'+ $name)).ScriptBlock
+    }
+    function New-DisposeProbe([bool]$Fails=$false){
+      $probe=[pscustomobject]@{disposed=$false;fails=$Fails}
+      $probe | Add-Member -MemberType ScriptMethod -Name Dispose -Value {$this.disposed=$true;if($this.fails){throw 'Injected dispose failure'}}
+      return $probe
+    }
+    try {
+      $f=Fresh;$probeStream=New-DisposeProbe $true;$probeLock=New-DisposeProbe
+      $probePins=@((New-DisposeProbe $true),(New-DisposeProbe))
+      function Enter-SignedInstallationRoot([string]$Root){return ,$script:probePins}
+      function Get-SignedStorePinnedDirectory([string]$Requested,$Pins){return $Requested}
+      function Open-SignedInstallationLock([string]$Root){return $script:probeLock}
+      function New-SignedStoreFile([string]$Path,[string]$Sid){return $script:probeStream}
+      function Write-SignedStoreFrame($Store,[byte[]]$Bytes){throw 'Original arming write failure'}
+      $errorText='';try{$null=Enter-SignedInstallationBarrier $f.root $binding (Get-SignedStoreOwner)}catch{$errorText=$_.Exception.Message}
+      Check ($errorText -ceq 'Original arming write failure') 'Cleanup errors preserve the original root arming failure'
+      Check ($probeStream.disposed -and $probeLock.disposed -and $probePins[0].disposed -and $probePins[1].disposed) 'Root failure attempts every independent handle cleanup'
+      $probeStream=New-DisposeProbe $true;$probePins=@((New-DisposeProbe $true),(New-DisposeProbe))
+      $probeBarrier=@{stream=(New-DisposeProbe);lock=(New-DisposeProbe);pins=@((New-DisposeProbe))}
+      function Enter-SignedInstallationBarrier([string]$Root,$Binding,$Owner){return $script:probeBarrier}
+      function Enter-SignedStoreDirectory([string]$Directory,$Owner){return ,$script:probePins}
+      function Assert-SignedStoreNative($Store){throw 'Original journal validation failure'}
+      $errorText='';try{$null=New-SignedUpdateStore $f.journal (Get-SignedStoreBytes $binding) -InstallationRoot $f.root}catch{$errorText=$_.Exception.Message}
+      Check ($errorText -ceq 'Original journal validation failure') 'Cleanup errors preserve the original journal failure'
+      Check ($probeStream.disposed -and $probePins[0].disposed -and $probePins[1].disposed -and $probeBarrier.stream.disposed -and $probeBarrier.lock.disposed -and $probeBarrier.pins[0].disposed) 'Journal failure releases its independent resources and installed barrier'
+    } finally {foreach($name in $saved.Keys){Set-Item -Path ('Function:'+ $name) -Value $saved[$name]}}
+  }
+  if($native){
+    # Real native capture/remap tests. All paths and mappings belong only to
+    # this disposable fixture; no application/profile or physical output.
+    $rootImpl=${function:Enter-SignedInstallationRoot}
+    $directoryImpl=${function:Enter-SignedStoreDirectory}
+    $subst=Join-Path ([Environment]::GetFolderPath('System')) 'subst.exe'
+    $drive=$null
+    foreach($letter in @('Z','Y','X','W','V','U','T','S','R','Q','P')){
+      if([IO.Directory]::GetLogicalDrives() -inotcontains ($letter+':\')){$drive=$letter+':';break}
+    }
+    if(-not $drive){throw 'No free drive for native isolated alias fixture.'}
+    $mapped=$false
+    function Set-FixtureAlias([string]$Target){
+      if($script:mapped){& $script:subst $script:drive /D | Out-Null;if($LASTEXITCODE -ne 0){throw 'Fixture alias removal failed.'};$script:mapped=$false}
+      & $script:subst $script:drive $Target | Out-Null
+      if($LASTEXITCODE -ne 0){throw 'Fixture alias creation failed.'}
+      $script:mapped=$true
+    }
+    try {
+      $parentA=Join-Path $fixture 'capture-a';$parentB=Join-Path $fixture 'capture-b'
+      $null=[IO.Directory]::CreateDirectory($parentA);$null=[IO.Directory]::CreateDirectory($parentB)
+      $targetA=Join-Path $parentA 'nested';$targetB=Join-Path $parentB 'nested'
+      $null=[IO.Directory]::CreateDirectory($targetA);$null=[IO.Directory]::CreateDirectory($targetB)
+      $a=Fresh $targetA 'installation';$b=Fresh $targetB 'installation'
+      Set-FixtureAlias $targetA
+      $alias=$drive+'\installation'
+      function Enter-SignedInstallationRoot([string]$Root){
+        $pins=& $script:rootImpl $Root
+        try {Set-FixtureAlias $script:targetB;return ,$pins} catch {foreach($pin in $pins){$pin.Dispose()};throw}
+      }
+      $h=New-SignedUpdateStore $a.journal (Get-SignedStoreBytes $binding) -InstallationRoot $alias
+      try {
+        $s=Get-SignedStoreLive $h
+        Check ([IO.File]::Exists($a.marker)) 'Root marker is created in captured physical A after alias remap to B'
+        Check (-not [IO.File]::Exists($b.marker)) 'Remapped B installation stays unarmed and unchanged'
+        Check (-not [IO.File]::Exists((Join-Path $b.root 'transaction.lock'))) 'Arming lock stays with captured A, not remapped B'
+        Check ($s.installationBarrier.root -ceq $alias -and $s.installationBarrier.physicalRoot.StartsWith('\\?\GLOBALROOT\Device\HarddiskVolume',[StringComparison]::OrdinalIgnoreCase)) 'Logical spelling is diagnostic; retained root is physical'
+        $null=Assert-SignedStoreCurrent $s;Check $true 'Live root/journal verification survives original alias remap'
+        Reject {[IO.Directory]::Move($parentA,$parentA+'-moved')} 'Actual physical ancestor above captured SUBST target stays pinned'
+      } finally {Close-SignedUpdateStore $h}
+      ${function:Enter-SignedInstallationRoot}=$rootImpl
+
+      $parentA=Join-Path $fixture 'journal-capture-a';$parentB=Join-Path $fixture 'journal-capture-b'
+      $null=[IO.Directory]::CreateDirectory($parentA);$null=[IO.Directory]::CreateDirectory($parentB)
+      $targetA=Join-Path $parentA 'nested';$targetB=Join-Path $parentB 'nested'
+      $null=[IO.Directory]::CreateDirectory($targetA);$null=[IO.Directory]::CreateDirectory($targetB)
+      $a=Fresh $targetA 'installation';$b=Fresh $targetB 'installation'
+      Set-FixtureAlias $targetA
+      $aliasDirectory=$drive+'\installation\private-journal'
+      function Enter-SignedStoreDirectory([string]$Directory,$Owner){
+        $pins=& $script:directoryImpl $Directory $Owner
+        try {Set-FixtureAlias $script:targetB;return ,$pins} catch {foreach($pin in $pins){$pin.Dispose()};throw}
+      }
+      $h=New-SignedUpdateStore $aliasDirectory (Get-SignedStoreBytes $binding)
+      try {
+        $s=Get-SignedStoreLive $h
+        Check ([IO.File]::Exists((Join-Path $a.journal 'signed-update-armed.jsonl'))) 'Private journal is created in captured physical A'
+        Check (-not [IO.File]::Exists((Join-Path $b.journal 'signed-update-armed.jsonl'))) 'Remapped B private directory stays unchanged'
+        $null=Assert-SignedStoreCurrent $s;Check $true 'Private stream remains bound to held ancestry after alias remap'
+        Reject {[IO.Directory]::Move($parentA,$parentA+'-moved')} 'Private journal pins physical ancestors above SUBST target'
+      } finally {Close-SignedUpdateStore $h}
+    } finally {
+      ${function:Enter-SignedInstallationRoot}=$rootImpl
+      ${function:Enter-SignedStoreDirectory}=$directoryImpl
+      if($mapped){& $subst $drive /D | Out-Null;if($LASTEXITCODE -ne 0){throw 'Fixture alias cleanup failed.'}}
+    }
+  }
   [pscustomobject]@{status='passed';count=$checks;native=$native;scope='inert installed barrier and private store only';applicationLaunched=$false;profileAccess=$false} | ConvertTo-Json -Compress
 } finally {
   ${function:Write-SignedStoreFrame}=$write

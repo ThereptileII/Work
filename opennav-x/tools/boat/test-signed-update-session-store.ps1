@@ -53,6 +53,7 @@ try {
   Check (-not (Test-Path -LiteralPath (Join-Path $p 'signed-update-armed.jsonl'))) 'Native refusal created no marker'
   function Get-SignedStoreOwner {return [pscustomobject]@{sid='fixture';pid=$PID;createdFiletime='fixture';sessionId=1;image='inert';imageSha256=(Hash 500)}}
   function Enter-SignedStoreDirectory([string]$Directory,$Owner){if(-not [IO.Directory]::Exists($Directory)){throw 'Missing fixture directory'};return ,@()}
+  function Get-SignedStorePinnedDirectory([string]$Requested,$Pins){return $Requested}
   function New-SignedStoreFile([string]$Path,[string]$Sid){return [IO.FileStream]::new($Path,[IO.FileMode]::CreateNew,[IO.FileAccess]::ReadWrite,[IO.FileShare]::None,4096,[IO.FileOptions]::WriteThrough)}
   function Assert-SignedStoreNative($Store){if(-not [IO.File]::Exists($Store.path)){throw 'Missing armed file'};if($Store.stream.SafeFileHandle.IsClosed){throw 'Closed fixture handle'}}
   $ownerImpl=${function:Get-SignedStoreOwner};$nativeImpl=${function:Assert-SignedStoreNative}

@@ -71,6 +71,11 @@ public static class SignedUpdateStoreNative {
   [DllImport("kernel32.dll",CharSet=CharSet.Unicode,SetLastError=true)]
   static extern SafeFileHandle CreateFile(string path,uint access,uint share,IntPtr security,uint mode,uint flags,IntPtr template);
   [DllImport("kernel32.dll",SetLastError=true)] static extern bool GetFileInformationByHandle(SafeFileHandle h,out Info info);
+  [DllImport("kernel32.dll",CharSet=CharSet.Unicode,SetLastError=true)]
+  static extern uint GetFinalPathNameByHandleW(SafeFileHandle h,StringBuilder name,uint length,uint flags);
+  [DllImport("kernel32.dll",CharSet=CharSet.Unicode,SetLastError=true)]
+  static extern bool GetVolumeInformationByHandleW(SafeFileHandle h,StringBuilder volume,uint volumeLength,out uint serial,out uint componentLength,out uint flags,StringBuilder filesystem,uint filesystemLength);
+  [DllImport("kernel32.dll",CharSet=CharSet.Unicode)] static extern uint GetDriveTypeW(string root);
   [StructLayout(LayoutKind.Sequential)] struct SecurityAttributes {
     public int Length; public IntPtr Descriptor; [MarshalAs(UnmanagedType.Bool)] public bool Inherit;
   }
@@ -107,21 +112,72 @@ public static class SignedUpdateStoreNative {
       Check(h,false);var stream=new FileStream(h,FileAccess.ReadWrite,4096,false);h=null;return stream;
     }finally{if(h!=null)h.Dispose();}
   }
+  public static FileStream ReadRecord(string path){
+    // Use a native physical spelling directly, including on .NET Framework.
+    SafeFileHandle h=CreateFile(path,0x80000000,1,IntPtr.Zero,3,0x00200000,IntPtr.Zero);
+    try{
+      if(h.IsInvalid)throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());
+      Check(h,false);var stream=new FileStream(h,FileAccess.Read,4096,false);h=null;return stream;
+    }finally{if(h!=null)h.Dispose();}
+  }
   public static void Check(SafeFileHandle h,bool directory){
     Info i;if(h.IsClosed||h.IsInvalid||!GetFileInformationByHandle(h,out i))throw new IOException("Custody handle lost.");
     if((i.Attributes&0x400)!=0 || ((i.Attributes&0x10)!=0)!=directory || (!directory&&i.Links!=1))throw new IOException("Reparse/type/hardlink refused.");
   }
   public static SafeFileHandle[] PinDirectories(string path){
     if(!System.Text.RegularExpressions.Regex.IsMatch(path,@"^[A-Za-z]:\\") || path.Length>240 || path!=Path.GetFullPath(path) || path.IndexOf('/')>=0)throw new IOException("Canonical local directory required.");
-    var drive=new DriveInfo(Path.GetPathRoot(path));if(drive.DriveType!=DriveType.Fixed||drive.DriveFormat!="NTFS")throw new IOException("Local fixed NTFS required.");
+    string drive=Path.GetPathRoot(path);var parts=path.Substring(drive.Length).Split('\\');
+    foreach(string part in parts)
+      if(part.Length==0||part=="."||part==".."||part.EndsWith(".")||part.EndsWith(" ")||part.IndexOf(':')>=0)throw new IOException("Noncanonical directory.");
     var pins=new List<SafeFileHandle>();try{
-      string current=Path.GetPathRoot(path);var parts=path.Substring(current.Length).Split('\\');
-      for(int n=-1;n<parts.Length;n++){
-        if(n>=0){string part=parts[n];if(part.Length==0||part=="."||part==".."||part.EndsWith(".")||part.EndsWith(" ")||part.IndexOf(':')>=0)throw new IOException("Noncanonical directory.");current=Path.Combine(current,part);}
-        // Pin each ancestor before resolving its child. Deny directory rename/delete.
-        var h=CreateFile(current,0x20080,3,IntPtr.Zero,3,0x02200000,IntPtr.Zero);pins.Add(h);Check(h,true);
-      }return pins.ToArray();
+      // Capture the DOS drive only once. Subsequent opens never resolve that
+      // mutable alias again, and each returned handle must name the expected child.
+      var first=CreateFile(drive,0x20080,3,IntPtr.Zero,3,0x02200000,IntPtr.Zero);pins.Add(first);Check(first,true);
+      string captured=NativeName(first);
+      var filesystem=new StringBuilder(64);uint serial,component,flags;
+      if(!GetVolumeInformationByHandleW(first,null,0,out serial,out component,out flags,filesystem,(uint)filesystem.Capacity) || filesystem.ToString()!="NTFS")throw new IOException("Held volume must be NTFS.");
+      var volume=new StringBuilder(32768);
+      uint count=GetFinalPathNameByHandleW(first,volume,(uint)volume.Capacity,1); // VOLUME_NAME_GUID
+      var match=System.Text.RegularExpressions.Regex.Match(volume.ToString(),@"^(\\\\\?\\Volume\{[a-fA-F0-9-]{36}\}\\)");
+      if(count==0||count>=volume.Capacity||!match.Success||GetDriveTypeW(match.Groups[1].Value)!=3)throw new IOException("Held volume must be a local fixed disk.");
+      // A SUBST root may itself be far below the volume root. Pin its actual
+      // physical ancestors too, not just descendants of the requested alias.
+      var device=System.Text.RegularExpressions.Regex.Match(captured,@"^\\Device\\HarddiskVolume[0-9]+",System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+      string current=device.Value;
+      PinPhysical(pins,current,true);
+      string suffix=captured.Substring(current.Length);
+      if(suffix.Length>0)foreach(string part in suffix.Substring(1).Split('\\')){
+        current+="\\"+part;PinPhysical(pins,current,false);
+      }
+      if(!String.Equals(NativeName(first),captured,StringComparison.OrdinalIgnoreCase))throw new IOException("Captured alias target moved during ancestry acquisition.");
+      foreach(string part in parts){
+        current+="\\"+part;
+        PinPhysical(pins,current,false);
+      }
+      return pins.ToArray();
     }catch{foreach(var h in pins)h.Dispose();throw;}
+  }
+  static void PinPhysical(List<SafeFileHandle> pins,string name,bool volumeRoot){
+    var h=CreateFile(@"\\?\GLOBALROOT"+name+(volumeRoot?"\\":""),0x20080,3,IntPtr.Zero,3,0x02200000,IntPtr.Zero);
+    pins.Add(h);Check(h,true);
+    if(!String.Equals(NativeName(h),name,StringComparison.OrdinalIgnoreCase))throw new IOException("Held directory physical identity differs.");
+  }
+  public static string NativeName(SafeFileHandle handle){
+    if(handle==null||handle.IsInvalid||handle.IsClosed)throw new IOException("Native identity handle unavailable.");
+    var name=new StringBuilder(32768);uint count=GetFinalPathNameByHandleW(handle,name,(uint)name.Capacity,2); // VOLUME_NAME_NT
+    if(count==0||count>=name.Capacity)throw new IOException("Native identity unavailable.");
+    string value=name.ToString().TrimEnd('\\');
+    if(!System.Text.RegularExpressions.Regex.IsMatch(value,@"^\\Device\\HarddiskVolume[0-9]+(?:\\|$)",System.Text.RegularExpressions.RegexOptions.IgnoreCase))throw new IOException("Local physical disk identity required.");
+    return value;
+  }
+  public static string PhysicalDirectory(SafeFileHandle[] pins){
+    if(pins==null||pins.Length==0)throw new IOException("Held directory ancestry required.");
+    foreach(var pin in pins)Check(pin,true);
+    return @"\\?\GLOBALROOT"+NativeName(pins[pins.Length-1]);
+  }
+  public static void CheckChild(SafeFileHandle child,SafeFileHandle parent){
+    Check(child,false);Check(parent,true);
+    if(!String.Equals(NativeName(child),NativeName(parent)+"\\signed-update-armed.jsonl",StringComparison.OrdinalIgnoreCase))throw new IOException("Armed file is outside its held physical directory.");
   }
 }
 '@
@@ -185,15 +241,25 @@ function New-SignedStoreFile([string]$Path,[string]$Sid) {
 function Enter-SignedInstallationRoot([string]$Root) {
   return ,([SignedUpdateStoreNative]::PinDirectories($Root))
 }
+function Get-SignedStorePinnedDirectory([string]$Requested,$Pins) {
+  # Requested is retained for diagnostics only; never reopen it after capture.
+  return [SignedUpdateStoreNative]::PhysicalDirectory($Pins)
+}
+function Assert-SignedStoreChild($Stream,$Pins) {
+  [SignedUpdateStoreNative]::CheckChild($Stream.SafeFileHandle,$Pins[-1])
+}
 function Open-SignedInstallationLock([string]$Root) {
-  return [SignedUpdateStoreNative]::InstallationLock((Join-Path $Root 'transaction.lock'))
+  return [SignedUpdateStoreNative]::InstallationLock([IO.Path]::Combine($Root,'transaction.lock'))
 }
 function Assert-SignedInstallationHandle($Stream,[string]$Sid='') {
   [SignedUpdateStoreNative]::Check($Stream.SafeFileHandle,$false)
   if($Sid){Assert-SignedStoreAcl $Stream.SafeFileHandle $Sid $false}
 }
+function Open-SignedInstallationRecordFile([string]$Path) {
+  return [SignedUpdateStoreNative]::ReadRecord($Path)
+}
 function Read-SignedInstallationRecord([string]$Path) {
-  $stream=[IO.File]::Open($Path,[IO.FileMode]::Open,[IO.FileAccess]::Read,[IO.FileShare]::Read)
+  $stream=Open-SignedInstallationRecordFile $Path
   try {
     Assert-SignedInstallationHandle $stream
     if($stream.Length -lt 1 -or $stream.Length -gt 32768){throw 'Installed arming record exceeds bound.'}
@@ -206,17 +272,19 @@ function Enter-SignedInstallationBarrier([string]$Root,$Binding,$Owner) {
   $pins=@();$lock=$null;$stream=$null
   try {
     $pins=Enter-SignedInstallationRoot $Root
-    $lock=Open-SignedInstallationLock $Root
-    $rootOwner=Read-SignedInstallationRecord (Join-Path $Root 'owner.json')
-    $state=Read-SignedInstallationRecord (Join-Path $Root 'state.json')
+    $physicalRoot=Get-SignedStorePinnedDirectory $Root $pins
+    $lock=Open-SignedInstallationLock $physicalRoot
+    $rootOwner=Read-SignedInstallationRecord ([IO.Path]::Combine($physicalRoot,'owner.json'))
+    $state=Read-SignedInstallationRecord ([IO.Path]::Combine($physicalRoot,'state.json'))
     if($rootOwner.owner -cne 'OpenNavX.Alpha1.SideBySide.1' -or
        $state.owner -cne $rootOwner.owner -or ($state.schema -isnot [int] -and $state.schema -isnot [long]) -or $state.schema -ne 1 -or
        $state.current -cne $Binding.previous.generation){throw 'Signed arming requires the exact selected owned installation.'}
     $path=Join-Path $Root 'signed-update-armed.jsonl'
     # This root marker is a durable DENIAL, never an approval or resumable token.
     # CreateNew atomically refuses any abandoned marker, including empty bytes.
-    $stream=New-SignedStoreFile $path $Owner.sid
-    $barrier=@{root=$Root;path=$path;stream=$stream;pins=$pins;lock=$lock;owner=$Owner;length=0;digest=('0'*64)}
+    $physicalPath=[IO.Path]::Combine($physicalRoot,'signed-update-armed.jsonl')
+    $stream=New-SignedStoreFile $physicalPath $Owner.sid
+    $barrier=@{root=$Root;path=$path;physicalRoot=$physicalRoot;physicalPath=$physicalPath;stream=$stream;pins=$pins;lock=$lock;owner=$Owner;length=0;digest=('0'*64)}
     $body=[pscustomobject][ordered]@{schema=1;owner='SKAGER.SignedUpdateBarrier.1';session=$Binding.session;bindingSha256=(Get-SignedUpdateReceiptHash $Binding);previousGeneration=$Binding.previous.generation;createdUnix=(Get-SignedStoreNow)}
     $bytes=[byte[]]((Get-SignedStoreBytes $body)+10)
     Write-SignedStoreFrame $barrier $bytes
@@ -224,13 +292,19 @@ function Enter-SignedInstallationBarrier([string]$Root,$Binding,$Owner) {
     Assert-SignedInstallationBarrier $barrier
     return $barrier
   } catch {
-    if($stream){$stream.Dispose()};if($lock){$lock.Dispose()};foreach($pin in $pins){$pin.Dispose()}
+    $failure=$_
+    # A failed flush can also make Dispose throw. Release every independent
+    # handle anyway, and report the original arming failure to the caller.
+    if($stream){try{$stream.Dispose()}catch{}}
+    if($lock){try{$lock.Dispose()}catch{}}
+    foreach($pin in $pins){try{$pin.Dispose()}catch{}}
     # Never erase a successfully created marker after partial/failed arming.
-    throw
+    throw $failure
   }
 }
 function Assert-SignedInstallationBarrier($Barrier) {
   foreach($pin in $Barrier.pins){[SignedUpdateStoreNative]::Check($pin,$true)}
+  Assert-SignedStoreChild $Barrier.stream $Barrier.pins
   Assert-SignedInstallationHandle $Barrier.stream $Barrier.owner.sid
   $bytes=Read-SignedStoreHeldBytes $Barrier
   if($bytes.Length -ne $Barrier.length -or (Get-SignedStoreDigest $bytes) -cne $Barrier.digest){throw 'Installed signed-update barrier changed.'}
@@ -244,6 +318,7 @@ function Close-SignedInstallationBarrier($Barrier) {
 function Assert-SignedStoreNative($Store) {
   foreach($pin in $Store.pins){[SignedUpdateStoreNative]::Check($pin,$true)}
   [SignedUpdateStoreNative]::Check($Store.stream.SafeFileHandle,$false)
+  Assert-SignedStoreChild $Store.stream $Store.pins
   Assert-SignedStoreAcl $Store.pins[-1] $Store.owner.sid $true
   Assert-SignedStoreAcl $Store.stream.SafeFileHandle $Store.owner.sid $false
   if($Store.ContainsKey('installationBarrier') -and $Store.installationBarrier){Assert-SignedInstallationBarrier $Store.installationBarrier}
@@ -293,9 +368,11 @@ function New-SignedUpdateStore([string]$Directory,[byte[]]$BindingJson,[switch]$
     if($InstallationRoot){$barrier=Enter-SignedInstallationBarrier $InstallationRoot $binding $owner}
     $pins=Enter-SignedStoreDirectory $Directory $owner
     $path=Join-Path $Directory 'signed-update-armed.jsonl'
+    $physicalDirectory=Get-SignedStorePinnedDirectory $Directory $pins
+    $physicalPath=[IO.Path]::Combine($physicalDirectory,'signed-update-armed.jsonl')
     # CreateNew refuses missing-custodian leftovers, including corrupt/empty files.
-    $stream=New-SignedStoreFile $path $owner.sid
-    $store=@{directory=$Directory;path=$path;stream=$stream;pins=$pins;installationBarrier=$barrier;owner=$owner;ownerSha256=(Get-SignedUpdateReceiptHash $owner);session=$session;operations=$operations;poisoned=$false;length=0;digest=('0'*64)}
+    $stream=New-SignedStoreFile $physicalPath $owner.sid
+    $store=@{directory=$Directory;path=$path;physicalDirectory=$physicalDirectory;physicalPath=$physicalPath;stream=$stream;pins=$pins;installationBarrier=$barrier;owner=$owner;ownerSha256=(Get-SignedUpdateReceiptHash $owner);session=$session;operations=$operations;poisoned=$false;length=0;digest=('0'*64)}
     Assert-SignedStoreNative $store
     $frame=[pscustomobject][ordered]@{schema=1;owner=$owner;sequence=0;previousFrameSha256=('0'*64);state=$session}
     if($OperationEvents){$frame.schema=2;$frame.state=$operations}
@@ -311,10 +388,12 @@ function New-SignedUpdateStore([string]$Directory,[byte[]]$BindingJson,[switch]$
     $script:SignedUpdateStores.Add($handle,$store)
     return $handle
   } catch {
-    if($stream){$stream.Dispose()};foreach($pin in $pins){$pin.Dispose()}
-    if($barrier){Close-SignedInstallationBarrier $barrier}
+    $failure=$_
+    if($stream){try{$stream.Dispose()}catch{}}
+    foreach($pin in $pins){try{$pin.Dispose()}catch{}}
+    if($barrier){try{Close-SignedInstallationBarrier $barrier}catch{}}
     # Preserve any created marker, even on initial write failure.
-    throw
+    throw $failure
   }
 }
 function Add-SignedUpdateStoreReceipt([string]$Handle,[byte[]]$RequestJson) {
