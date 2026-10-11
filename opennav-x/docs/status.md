@@ -26,8 +26,11 @@ current page/control identity; 11 focused observer tests pass while the original
 pointer, deadline, default-action and preservation assertions remain. Only
 installer/chart checks are now being repeated in no-rebuild
 [run `38160318032`](https://github.com/ThereptileII/Work/actions/runs/38160318032)
-against the same retained `ec51b926` application bytes. Native acceptance is
-pending and the original Linux failure remains. This commit has **not** yet
+against the same retained `ec51b926` application bytes. That selected native
+installer/chart run **passed** on 2026-10-11; its downloaded raw evidence is
+being independently checked. This is a selected exact-byte retest, not an
+integrated qualification of the newer source batch. The original Linux failure
+remains. This commit has **not** yet
 produced an accepted boat
 package. The installed
 boat application remains at `f1a1e68c` and no Production promotion is in scope.
@@ -93,6 +96,16 @@ This fixture is excluded from ordinary builds/suites and does not qualify WFP
 packet loss, helper-death, product/process/DNS binding, native Windows or boat
 continuity. CMake was unavailable locally; the retained direct compiler recipe
 built the actual provider and pinned patched IX source.
+
+The test-only WFP safeguard is recovered from its accepted historical lineage
+and extended by `3bb00adb`: a fixed 122-second blocked-retry window, 135-second
+native helper watchdog, independent 150-second helper-only job deadline and
+fresh 180-second inert clients. Eleven portable refusal/evidence methods pass;
+watchdog exit and forced helper death remain distinct. The manual-only focused
+native [run `38161766040`](https://github.com/ThereptileII/Work/actions/runs/38161766040)
+at `4f423a80` is pending. It only targets newly compiled loopback marker clients
+on a disposable hosted Windows runner. It does not build the application,
+filter product/boat traffic or qualify product endpoint binding and continuity.
 
 A separate narrow updater change (`5792c4e9`) refuses files with more than one
 hardlink using metadata from the actual acquired native handle, before granting
