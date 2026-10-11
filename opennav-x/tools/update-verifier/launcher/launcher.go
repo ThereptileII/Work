@@ -15,6 +15,7 @@ import (
 
 type processSpec struct {
 	executable, directory string
+	expectedImageHash     string // Ordinary application creation only; managed inventory authority.
 	arguments             []string
 	input                 []byte
 	limit                 time.Duration
@@ -359,7 +360,8 @@ func ordinary(ctx context.Context, p platform, g *generation, stock stockRecord,
 	if pending, err := pendingExists(p, g.layout); err != nil || pending {
 		return errors.New("pending update requires recovery; application startup withheld")
 	}
-	return p.start(processSpec{executable: g.layout.app + "/opencpn.exe", directory: g.layout.app, arguments: []string{mode}})
+	return p.start(processSpec{executable: g.layout.app + "/opencpn.exe", directory: g.layout.app,
+		expectedImageHash: g.managed["app/opencpn.exe"], arguments: []string{mode}})
 }
 func supervise(ctx context.Context, p platform, g *generation, stock stockRecord, action, transaction string) error {
 	if err := assertCurrent(p, g, stock); err != nil {

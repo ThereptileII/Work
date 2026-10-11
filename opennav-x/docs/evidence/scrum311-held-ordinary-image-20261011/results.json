@@ -1,0 +1,101 @@
+{
+  "issue": "SCRUM-311",
+  "selection_comment": "11326",
+  "baseline_commit": "560721d704f7895ff8b08eb15f269936bfb66d76",
+  "toolchain": {
+    "version": "go version go1.27.1 linux/amd64",
+    "binary_sha256": "30969f97169d7f43fe6a085873d75613adc21e30818a8c61d95bd27275df4624",
+    "path": "/tmp/skager-go-1.27.1/go/bin/go"
+  },
+  "checks": [
+    {
+      "name": "linux-launcher",
+      "cwd": "/home/standard/Projects/X-nav-worktrees/scrum311-held-ordinary-image/opennav-x/tools/update-verifier",
+      "argv": [
+        "/tmp/skager-go-1.27.1/go/bin/go",
+        "test",
+        "./launcher",
+        "-count=1",
+        "-v"
+      ],
+      "environment": {
+        "TMPDIR": "/home/standard/Projects/X-nav-worktrees/scrum311-held-ordinary-image/opennav-x/evidence/local/.tmp",
+        "GOTOOLCHAIN": "local",
+        "GOPROXY": "off",
+        "GOSUMDB": "off"
+      },
+      "exit_code": 0,
+      "passed_top_level_groups": 27,
+      "passed_groups_including_subtests": 143
+    },
+    {
+      "name": "windows-386-crosscompile",
+      "cwd": "/home/standard/Projects/X-nav-worktrees/scrum311-held-ordinary-image/opennav-x/tools/update-verifier",
+      "argv": [
+        "/tmp/skager-go-1.27.1/go/bin/go",
+        "test",
+        "-c",
+        "./launcher",
+        "-o",
+        "/home/standard/Projects/X-nav-worktrees/scrum311-held-ordinary-image/opennav-x/evidence/local/.tmp/ordinary-launcher-386.test.exe"
+      ],
+      "environment": {
+        "TMPDIR": "/home/standard/Projects/X-nav-worktrees/scrum311-held-ordinary-image/opennav-x/evidence/local/.tmp",
+        "GOTOOLCHAIN": "local",
+        "GOPROXY": "off",
+        "GOSUMDB": "off",
+        "GOOS": "windows",
+        "GOARCH": "386"
+      },
+      "exit_code": 0,
+      "binary_sha256": "f66272fc4ebad48ad0352caac7343a932cb7d99853ee99eccb5bb9f43ea498c0"
+    },
+    {
+      "name": "windows-amd64-crosscompile",
+      "cwd": "/home/standard/Projects/X-nav-worktrees/scrum311-held-ordinary-image/opennav-x/tools/update-verifier",
+      "argv": [
+        "/tmp/skager-go-1.27.1/go/bin/go",
+        "test",
+        "-c",
+        "./launcher",
+        "-o",
+        "/home/standard/Projects/X-nav-worktrees/scrum311-held-ordinary-image/opennav-x/evidence/local/.tmp/ordinary-launcher-amd64.test.exe"
+      ],
+      "environment": {
+        "TMPDIR": "/home/standard/Projects/X-nav-worktrees/scrum311-held-ordinary-image/opennav-x/evidence/local/.tmp",
+        "GOTOOLCHAIN": "local",
+        "GOPROXY": "off",
+        "GOSUMDB": "off",
+        "GOOS": "windows",
+        "GOARCH": "amd64"
+      },
+      "exit_code": 0,
+      "binary_sha256": "262a54bb21fd7038d63cb8ea8e6a461fe4448971786f98a95291de532e5982b7"
+    }
+  ],
+  "source_inputs": {
+    "opennav-x/tools/update-verifier/launcher/bootstrap.go": "1eb22e2a4ca7fe7792e21b4d465d9642818d308731ba68946c5ff2aa7343fd98",
+    "opennav-x/tools/update-verifier/launcher/bootstrap_test.go": "86734fbc490f467f306bf7c1c9efbd01cf1e7ac344f3d81603377435a785f342",
+    "opennav-x/tools/update-verifier/launcher/launcher.go": "696f4e10d0417bdf6fb6fcdbd7eba76b2e323616775632ed42d9ca84b7e4421e",
+    "opennav-x/tools/update-verifier/launcher/launcher_test.go": "05188d790fed8a2e58a84b44bc696214b14b10315d1fc7103ec049699dcecf25",
+    "opennav-x/tools/update-verifier/launcher/native_other.go": "25fc7941f21121f009116d56276b38c7599cd0cb14b860edef3bf804ffdb6393",
+    "opennav-x/tools/update-verifier/launcher/native_windows.go": "02004b44e3cf601a55e433df6fd5b117de2702d9207a3443481c1184063b6e02",
+    "opennav-x/tools/update-verifier/launcher/native_windows_test.go": "a1e52aa46b4e6347a533d9286d1d0a5d8e2b1f0459f490b20fff00a1525f9eb5",
+    "opennav-x/tools/update-verifier/launcher/ordinary_creator.go": "6a9eb316f0d1b1c29cf0f2ae0e873e81ea03abec95481ba42068bbe598347901",
+    "opennav-x/tools/update-verifier/launcher/ordinary_creator_test.go": "3d4a82974c087d032a863e9b46cd4243bd613d5a2761889ea9b2457370634229",
+    "opennav-x/tools/update-verifier/launcher/ordinary_native_windows.go": "61516465e045b1b37eb9c99f1a1449bf854a461040bb8b1235a021333778fd66",
+    "opennav-x/tools/update-verifier/launcher/ordinary_native_windows_test.go": "465c4be12b85cef698bc9af3fa6c2a4addd2f0813a526fceb0686950745297a6",
+    "opennav-x/tools/update-verifier/launcher/ordinary_subst_windows_test.go": "e98bb97c54c19fa24b0350e477950363e9f747bcdea674d75bcb98369fb22f19",
+    "opennav-x/tools/update-verifier/launcher/pe.go": "1c183830b8a3b76e2f0490177c3adb26bcd72b87935f761c482339a8f9129c9a",
+    "opennav-x/tools/update-verifier/launcher/prelaunch_boundary_test.go": "998e5e1d0b8ab8fb55ea8656ec0d8d0a0311fcd9a5391485bf0a97e4891c7a0d",
+    "opennav-x/tools/update-verifier/launcher/progress.go": "6f7db310cdad35abcd4a348adfe2f7c61a6ab9447049f55daeefbd4cbe1dec1e",
+    "opennav-x/tools/update-verifier/launcher/progress_test.go": "7768c763ebe6d88e8b63201d167642b83b1f0ae1a3186f0feffb11fc2efa5eaf",
+    "opennav-x/tools/update-verifier/launcher/provision.go": "ddb2d4a00086272264c2e73f1ad03c5710a0ad257dac7c13fa9dedd4bf951801",
+    "opennav-x/tools/update-verifier/launcher/records.go": "4878e4242bb40361e98d6af68911d1c9f2950b44577ff8f823cbfc48cdc28504",
+    "opennav-x/tools/update-verifier/launcher/records_test.go": "2da20e0f780eaf924fff0d4c07b28130644e11c99dd83fc030519af382d6c75d",
+    "opennav-x/tools/update-verifier/go.mod": "fd81c9c980c701e666c3a59c25f1e0b2a458d672b86b106240bd842574e96d31",
+    "opennav-x/tools/update-verifier/go.sum": "66bc1ae7fcb8f87edc8ce36dc1b73406da1e869c4d061203e1992ffaa38ea603"
+  },
+  "native_execution": "NOT RUN: coordinator-only Windows inert/native and real OpenCPN compatibility gates pending",
+  "boundaries": "No full app build, dispatch, push, PowerShell/workflow/status edits, vendor execution, network or boat/physical operation."
+}

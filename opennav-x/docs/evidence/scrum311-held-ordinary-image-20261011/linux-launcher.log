@@ -1,0 +1,288 @@
+=== RUN   TestPrivateBootstrapReceiptSelection
+=== RUN   TestPrivateBootstrapReceiptSelection/direct
+=== RUN   TestPrivateBootstrapReceiptSelection/absent
+=== RUN   TestPrivateBootstrapReceiptSelection/created
+=== RUN   TestPrivateBootstrapReceiptSelection/removed
+=== RUN   TestPrivateBootstrapReceiptSelection/replaced
+=== RUN   TestPrivateBootstrapReceiptSelection/generation
+=== RUN   TestPrivateBootstrapReceiptSelection/pending
+=== RUN   TestPrivateBootstrapReceiptSelection/trust
+=== RUN   TestPrivateBootstrapReceiptSelection/malformed
+=== RUN   TestPrivateBootstrapReceiptSelection/missing
+--- PASS: TestPrivateBootstrapReceiptSelection (0.01s)
+    --- PASS: TestPrivateBootstrapReceiptSelection/direct (0.00s)
+    --- PASS: TestPrivateBootstrapReceiptSelection/absent (0.00s)
+    --- PASS: TestPrivateBootstrapReceiptSelection/created (0.00s)
+    --- PASS: TestPrivateBootstrapReceiptSelection/removed (0.00s)
+    --- PASS: TestPrivateBootstrapReceiptSelection/replaced (0.00s)
+    --- PASS: TestPrivateBootstrapReceiptSelection/generation (0.00s)
+    --- PASS: TestPrivateBootstrapReceiptSelection/pending (0.00s)
+    --- PASS: TestPrivateBootstrapReceiptSelection/trust (0.00s)
+    --- PASS: TestPrivateBootstrapReceiptSelection/malformed (0.00s)
+    --- PASS: TestPrivateBootstrapReceiptSelection/missing (0.00s)
+=== RUN   TestPrivateBootstrapRejectsUnboundRequests
+--- PASS: TestPrivateBootstrapRejectsUnboundRequests (0.00s)
+=== RUN   TestPrivateBootstrapSupervisorRefusalNeverFallsBack
+--- PASS: TestPrivateBootstrapSupervisorRefusalNeverFallsBack (0.00s)
+=== RUN   TestLauncherOfflineModesAndFirstQualification
+=== RUN   TestLauncherOfflineModesAndFirstQualification/missing_config
+=== RUN   TestLauncherOfflineModesAndFirstQualification/bad_config
+=== RUN   TestLauncherOfflineModesAndFirstQualification/first_startup
+=== RUN   TestLauncherOfflineModesAndFirstQualification/legacy
+=== RUN   TestLauncherOfflineModesAndFirstQualification/safe
+=== RUN   TestLauncherOfflineModesAndFirstQualification/historical
+=== RUN   TestLauncherOfflineModesAndFirstQualification/check_offline
+=== RUN   TestLauncherOfflineModesAndFirstQualification/current
+--- PASS: TestLauncherOfflineModesAndFirstQualification (0.01s)
+    --- PASS: TestLauncherOfflineModesAndFirstQualification/missing_config (0.00s)
+    --- PASS: TestLauncherOfflineModesAndFirstQualification/bad_config (0.00s)
+    --- PASS: TestLauncherOfflineModesAndFirstQualification/first_startup (0.00s)
+    --- PASS: TestLauncherOfflineModesAndFirstQualification/legacy (0.00s)
+    --- PASS: TestLauncherOfflineModesAndFirstQualification/safe (0.00s)
+    --- PASS: TestLauncherOfflineModesAndFirstQualification/historical (0.00s)
+    --- PASS: TestLauncherOfflineModesAndFirstQualification/check_offline (0.00s)
+    --- PASS: TestLauncherOfflineModesAndFirstQualification/current (0.00s)
+=== RUN   TestLauncherLaterNeverPreparesAndUsesBoundedPipe
+=== RUN   TestLauncherLaterNeverPreparesAndUsesBoundedPipe/A
+=== RUN   TestLauncherLaterNeverPreparesAndUsesBoundedPipe/B
+=== RUN   TestLauncherLaterNeverPreparesAndUsesBoundedPipe/L
+--- PASS: TestLauncherLaterNeverPreparesAndUsesBoundedPipe (0.00s)
+    --- PASS: TestLauncherLaterNeverPreparesAndUsesBoundedPipe/A (0.00s)
+    --- PASS: TestLauncherLaterNeverPreparesAndUsesBoundedPipe/B (0.00s)
+    --- PASS: TestLauncherLaterNeverPreparesAndUsesBoundedPipe/L (0.00s)
+=== RUN   TestLauncherConfirmedInstallerAndExactSupervisorHandoff
+--- PASS: TestLauncherConfirmedInstallerAndExactSupervisorHandoff (0.00s)
+=== RUN   TestLauncherRejectsPointerTamperAndInstallerFailure
+=== RUN   TestLauncherRejectsPointerTamperAndInstallerFailure/stale_shortcut
+=== RUN   TestLauncherRejectsPointerTamperAndInstallerFailure/helper_tamper
+=== RUN   TestLauncherRejectsPointerTamperAndInstallerFailure/stock_tamper
+=== RUN   TestLauncherRejectsPointerTamperAndInstallerFailure/changed_after_consent
+=== RUN   TestLauncherRejectsPointerTamperAndInstallerFailure/prepare_failure
+=== RUN   TestLauncherRejectsPointerTamperAndInstallerFailure/installer_failure
+=== RUN   TestLauncherRejectsPointerTamperAndInstallerFailure/no_pending
+=== RUN   TestLauncherRejectsPointerTamperAndInstallerFailure/wrong_pending
+=== RUN   TestLauncherRejectsPointerTamperAndInstallerFailure/timed_out
+--- PASS: TestLauncherRejectsPointerTamperAndInstallerFailure (0.01s)
+    --- PASS: TestLauncherRejectsPointerTamperAndInstallerFailure/stale_shortcut (0.00s)
+    --- PASS: TestLauncherRejectsPointerTamperAndInstallerFailure/helper_tamper (0.00s)
+    --- PASS: TestLauncherRejectsPointerTamperAndInstallerFailure/stock_tamper (0.00s)
+    --- PASS: TestLauncherRejectsPointerTamperAndInstallerFailure/changed_after_consent (0.00s)
+    --- PASS: TestLauncherRejectsPointerTamperAndInstallerFailure/prepare_failure (0.00s)
+    --- PASS: TestLauncherRejectsPointerTamperAndInstallerFailure/installer_failure (0.00s)
+    --- PASS: TestLauncherRejectsPointerTamperAndInstallerFailure/no_pending (0.00s)
+    --- PASS: TestLauncherRejectsPointerTamperAndInstallerFailure/wrong_pending (0.00s)
+    --- PASS: TestLauncherRejectsPointerTamperAndInstallerFailure/timed_out (0.00s)
+=== RUN   TestLauncherPendingRecoveryPrecedesNetwork
+=== RUN   TestLauncherPendingRecoveryPrecedesNetwork/app/opencpn.exe
+=== RUN   TestLauncherPendingRecoveryPrecedesNetwork/UpdateSupervisor.ps1
+=== RUN   TestLauncherPendingRecoveryPrecedesNetwork/Lifecycle.ps1
+=== RUN   TestLauncherPendingRecoveryPrecedesNetwork/state_committed_before_shortcut
+--- PASS: TestLauncherPendingRecoveryPrecedesNetwork (0.01s)
+    --- PASS: TestLauncherPendingRecoveryPrecedesNetwork/app/opencpn.exe (0.00s)
+    --- PASS: TestLauncherPendingRecoveryPrecedesNetwork/UpdateSupervisor.ps1 (0.00s)
+    --- PASS: TestLauncherPendingRecoveryPrecedesNetwork/Lifecycle.ps1 (0.00s)
+    --- PASS: TestLauncherPendingRecoveryPrecedesNetwork/state_committed_before_shortcut (0.00s)
+=== RUN   TestProvisioningOnceMarkerSurvivesFailureAndNeverResets
+--- PASS: TestProvisioningOnceMarkerSurvivesFailureAndNeverResets (0.00s)
+=== RUN   TestPreviousLauncherRecoveryExceptionCannotAuthorizeUnrelatedEntry
+=== RUN   TestPreviousLauncherRecoveryExceptionCannotAuthorizeUnrelatedEntry/unrelated_generation
+=== RUN   TestPreviousLauncherRecoveryExceptionCannotAuthorizeUnrelatedEntry/running_image_changed
+=== RUN   TestPreviousLauncherRecoveryExceptionCannotAuthorizeUnrelatedEntry/previous_identity_changed
+--- PASS: TestPreviousLauncherRecoveryExceptionCannotAuthorizeUnrelatedEntry (0.00s)
+    --- PASS: TestPreviousLauncherRecoveryExceptionCannotAuthorizeUnrelatedEntry/unrelated_generation (0.00s)
+    --- PASS: TestPreviousLauncherRecoveryExceptionCannotAuthorizeUnrelatedEntry/running_image_changed (0.00s)
+    --- PASS: TestPreviousLauncherRecoveryExceptionCannotAuthorizeUnrelatedEntry/previous_identity_changed (0.00s)
+=== RUN   TestExplicitProvisioningWithoutInstalledConfigIsInert
+--- PASS: TestExplicitProvisioningWithoutInstalledConfigIsInert (0.00s)
+=== RUN   TestOrdinaryStartupSerializesFinalPointerReadAndProcessCreation
+=== RUN   TestOrdinaryStartupSerializesFinalPointerReadAndProcessCreation/available
+=== RUN   TestOrdinaryStartupSerializesFinalPointerReadAndProcessCreation/installer_owns_lock
+=== RUN   TestOrdinaryStartupSerializesFinalPointerReadAndProcessCreation/pointer_changed_before_lock
+--- PASS: TestOrdinaryStartupSerializesFinalPointerReadAndProcessCreation (0.00s)
+    --- PASS: TestOrdinaryStartupSerializesFinalPointerReadAndProcessCreation/available (0.00s)
+    --- PASS: TestOrdinaryStartupSerializesFinalPointerReadAndProcessCreation/installer_owns_lock (0.00s)
+    --- PASS: TestOrdinaryStartupSerializesFinalPointerReadAndProcessCreation/pointer_changed_before_lock (0.00s)
+=== RUN   TestOrdinaryCreatorCustodyAndNoRetry
+=== RUN   TestOrdinaryCreatorCustodyAndNoRetry/success
+=== RUN   TestOrdinaryCreatorCustodyAndNoRetry/acquisition_refusal
+=== RUN   TestOrdinaryCreatorCustodyAndNoRetry/held_metadata_changed_before_create
+=== RUN   TestOrdinaryCreatorCustodyAndNoRetry/uncertain_create
+=== RUN   TestOrdinaryCreatorCustodyAndNoRetry/raw_identity_or_image_differs
+=== RUN   TestOrdinaryCreatorCustodyAndNoRetry/held_metadata_changed_before_resume
+=== RUN   TestOrdinaryCreatorCustodyAndNoRetry/uncertain_resume
+=== RUN   TestOrdinaryCreatorCustodyAndNoRetry/already_resumed
+=== RUN   TestOrdinaryCreatorCustodyAndNoRetry/extra_suspension
+--- PASS: TestOrdinaryCreatorCustodyAndNoRetry (0.00s)
+    --- PASS: TestOrdinaryCreatorCustodyAndNoRetry/success (0.00s)
+    --- PASS: TestOrdinaryCreatorCustodyAndNoRetry/acquisition_refusal (0.00s)
+    --- PASS: TestOrdinaryCreatorCustodyAndNoRetry/held_metadata_changed_before_create (0.00s)
+    --- PASS: TestOrdinaryCreatorCustodyAndNoRetry/uncertain_create (0.00s)
+    --- PASS: TestOrdinaryCreatorCustodyAndNoRetry/raw_identity_or_image_differs (0.00s)
+    --- PASS: TestOrdinaryCreatorCustodyAndNoRetry/held_metadata_changed_before_resume (0.00s)
+    --- PASS: TestOrdinaryCreatorCustodyAndNoRetry/uncertain_resume (0.00s)
+    --- PASS: TestOrdinaryCreatorCustodyAndNoRetry/already_resumed (0.00s)
+    --- PASS: TestOrdinaryCreatorCustodyAndNoRetry/extra_suspension (0.00s)
+=== RUN   TestOrdinaryCreatorRejectsMissingManagedExpectationBeforeAcquire
+--- PASS: TestOrdinaryCreatorRejectsMissingManagedExpectationBeforeAcquire (0.00s)
+=== RUN   TestOrdinaryCreatorFailurePropagatesAcrossEntryRoutes
+=== RUN   TestOrdinaryCreatorFailurePropagatesAcrossEntryRoutes/xnav
+=== RUN   TestOrdinaryCreatorFailurePropagatesAcrossEntryRoutes/legacy
+=== RUN   TestOrdinaryCreatorFailurePropagatesAcrossEntryRoutes/safe
+=== RUN   TestOrdinaryCreatorFailurePropagatesAcrossEntryRoutes/later
+=== RUN   TestOrdinaryCreatorFailurePropagatesAcrossEntryRoutes/bootstrap
+=== RUN   TestOrdinaryCreatorFailurePropagatesAcrossEntryRoutes/recovery
+=== RUN   TestOrdinaryCreatorFailurePropagatesAcrossEntryRoutes/fallback
+--- PASS: TestOrdinaryCreatorFailurePropagatesAcrossEntryRoutes (0.00s)
+    --- PASS: TestOrdinaryCreatorFailurePropagatesAcrossEntryRoutes/xnav (0.00s)
+    --- PASS: TestOrdinaryCreatorFailurePropagatesAcrossEntryRoutes/legacy (0.00s)
+    --- PASS: TestOrdinaryCreatorFailurePropagatesAcrossEntryRoutes/safe (0.00s)
+    --- PASS: TestOrdinaryCreatorFailurePropagatesAcrossEntryRoutes/later (0.00s)
+    --- PASS: TestOrdinaryCreatorFailurePropagatesAcrossEntryRoutes/bootstrap (0.00s)
+    --- PASS: TestOrdinaryCreatorFailurePropagatesAcrossEntryRoutes/recovery (0.00s)
+    --- PASS: TestOrdinaryCreatorFailurePropagatesAcrossEntryRoutes/fallback (0.00s)
+=== RUN   TestOrdinaryPendingPublicationBeforeCreationRefusesAllModes
+=== RUN   TestOrdinaryPendingPublicationBeforeCreationRefusesAllModes/--xnav/pending
+=== RUN   TestOrdinaryPendingPublicationBeforeCreationRefusesAllModes/--xnav/empty
+=== RUN   TestOrdinaryPendingPublicationBeforeCreationRefusesAllModes/--xnav/oversized
+=== RUN   TestOrdinaryPendingPublicationBeforeCreationRefusesAllModes/--legacy/pending
+=== RUN   TestOrdinaryPendingPublicationBeforeCreationRefusesAllModes/--legacy/empty
+=== RUN   TestOrdinaryPendingPublicationBeforeCreationRefusesAllModes/--legacy/oversized
+=== RUN   TestOrdinaryPendingPublicationBeforeCreationRefusesAllModes/--safe-mode/pending
+=== RUN   TestOrdinaryPendingPublicationBeforeCreationRefusesAllModes/--safe-mode/empty
+=== RUN   TestOrdinaryPendingPublicationBeforeCreationRefusesAllModes/--safe-mode/oversized
+--- PASS: TestOrdinaryPendingPublicationBeforeCreationRefusesAllModes (0.01s)
+    --- PASS: TestOrdinaryPendingPublicationBeforeCreationRefusesAllModes/--xnav/pending (0.00s)
+    --- PASS: TestOrdinaryPendingPublicationBeforeCreationRefusesAllModes/--xnav/empty (0.00s)
+    --- PASS: TestOrdinaryPendingPublicationBeforeCreationRefusesAllModes/--xnav/oversized (0.00s)
+    --- PASS: TestOrdinaryPendingPublicationBeforeCreationRefusesAllModes/--legacy/pending (0.00s)
+    --- PASS: TestOrdinaryPendingPublicationBeforeCreationRefusesAllModes/--legacy/empty (0.00s)
+    --- PASS: TestOrdinaryPendingPublicationBeforeCreationRefusesAllModes/--legacy/oversized (0.00s)
+    --- PASS: TestOrdinaryPendingPublicationBeforeCreationRefusesAllModes/--safe-mode/pending (0.00s)
+    --- PASS: TestOrdinaryPendingPublicationBeforeCreationRefusesAllModes/--safe-mode/empty (0.00s)
+    --- PASS: TestOrdinaryPendingPublicationBeforeCreationRefusesAllModes/--safe-mode/oversized (0.00s)
+=== RUN   TestInstalledSuccessorRejectsChangedIdentityAndConsumedAttempt
+=== RUN   TestInstalledSuccessorRejectsChangedIdentityAndConsumedAttempt/current_generation
+=== RUN   TestInstalledSuccessorRejectsChangedIdentityAndConsumedAttempt/stock_identity
+=== RUN   TestInstalledSuccessorRejectsChangedIdentityAndConsumedAttempt/candidate_generation
+=== RUN   TestInstalledSuccessorRejectsChangedIdentityAndConsumedAttempt/candidate_commit
+=== RUN   TestInstalledSuccessorRejectsChangedIdentityAndConsumedAttempt/candidate_package
+=== RUN   TestInstalledSuccessorRejectsChangedIdentityAndConsumedAttempt/candidate_executable
+=== RUN   TestInstalledSuccessorRejectsChangedIdentityAndConsumedAttempt/previous_generation
+=== RUN   TestInstalledSuccessorRejectsChangedIdentityAndConsumedAttempt/consumed_attempt
+=== RUN   TestInstalledSuccessorRejectsChangedIdentityAndConsumedAttempt/session_without_attempt
+--- PASS: TestInstalledSuccessorRejectsChangedIdentityAndConsumedAttempt (0.01s)
+    --- PASS: TestInstalledSuccessorRejectsChangedIdentityAndConsumedAttempt/current_generation (0.00s)
+    --- PASS: TestInstalledSuccessorRejectsChangedIdentityAndConsumedAttempt/stock_identity (0.00s)
+    --- PASS: TestInstalledSuccessorRejectsChangedIdentityAndConsumedAttempt/candidate_generation (0.00s)
+    --- PASS: TestInstalledSuccessorRejectsChangedIdentityAndConsumedAttempt/candidate_commit (0.00s)
+    --- PASS: TestInstalledSuccessorRejectsChangedIdentityAndConsumedAttempt/candidate_package (0.00s)
+    --- PASS: TestInstalledSuccessorRejectsChangedIdentityAndConsumedAttempt/candidate_executable (0.00s)
+    --- PASS: TestInstalledSuccessorRejectsChangedIdentityAndConsumedAttempt/previous_generation (0.00s)
+    --- PASS: TestInstalledSuccessorRejectsChangedIdentityAndConsumedAttempt/consumed_attempt (0.00s)
+    --- PASS: TestInstalledSuccessorRejectsChangedIdentityAndConsumedAttempt/session_without_attempt (0.00s)
+=== RUN   TestInstalledUncertainSupervisorNeverRetriesOrFallsBack
+=== RUN   TestInstalledUncertainSupervisorNeverRetriesOrFallsBack/lost_response
+=== RUN   TestInstalledUncertainSupervisorNeverRetriesOrFallsBack/timeout
+=== RUN   TestInstalledUncertainSupervisorNeverRetriesOrFallsBack/nonzero_exit
+--- PASS: TestInstalledUncertainSupervisorNeverRetriesOrFallsBack (0.00s)
+    --- PASS: TestInstalledUncertainSupervisorNeverRetriesOrFallsBack/lost_response (0.00s)
+    --- PASS: TestInstalledUncertainSupervisorNeverRetriesOrFallsBack/timeout (0.00s)
+    --- PASS: TestInstalledUncertainSupervisorNeverRetriesOrFallsBack/nonzero_exit (0.00s)
+=== RUN   TestInstalledFallbackRechecksPointerUnderCreationLock
+--- PASS: TestInstalledFallbackRechecksPointerUnderCreationLock (0.00s)
+=== RUN   TestDownloadProgressCancellationNeverStartsInstaller
+=== RUN   TestDownloadProgressCancellationNeverStartsInstaller/cannot_start
+=== RUN   TestDownloadProgressCancellationNeverStartsInstaller/already_exited
+=== RUN   TestDownloadProgressCancellationNeverStartsInstaller/cancel_during_preparation
+=== RUN   TestDownloadProgressCancellationNeverStartsInstaller/exit_at_completion
+=== RUN   TestDownloadProgressCancellationNeverStartsInstaller/exit_during_finish
+=== RUN   TestDownloadProgressCancellationNeverStartsInstaller/finish_error
+=== RUN   TestDownloadProgressCancellationNeverStartsInstaller/artifact_with_error
+--- PASS: TestDownloadProgressCancellationNeverStartsInstaller (0.01s)
+    --- PASS: TestDownloadProgressCancellationNeverStartsInstaller/cannot_start (0.00s)
+    --- PASS: TestDownloadProgressCancellationNeverStartsInstaller/already_exited (0.00s)
+    --- PASS: TestDownloadProgressCancellationNeverStartsInstaller/cancel_during_preparation (0.00s)
+    --- PASS: TestDownloadProgressCancellationNeverStartsInstaller/exit_at_completion (0.00s)
+    --- PASS: TestDownloadProgressCancellationNeverStartsInstaller/exit_during_finish (0.00s)
+    --- PASS: TestDownloadProgressCancellationNeverStartsInstaller/finish_error (0.00s)
+    --- PASS: TestDownloadProgressCancellationNeverStartsInstaller/artifact_with_error (0.00s)
+=== RUN   TestDownloadProgressParentCancellationAtCompletionDiscardsArtifact
+--- PASS: TestDownloadProgressParentCancellationAtCompletionDiscardsArtifact (0.00s)
+=== RUN   TestDownloadProgressSuccessfulCustodyIsTransferredAfterCompletion
+--- PASS: TestDownloadProgressSuccessfulCustodyIsTransferredAfterCompletion (0.00s)
+=== RUN   TestLauncherPathDerivationRejectsAmbiguity
+--- PASS: TestLauncherPathDerivationRejectsAmbiguity (0.00s)
+=== RUN   TestLauncherStrictTrustConfiguration
+=== RUN   TestLauncherStrictTrustConfiguration/unknown
+=== RUN   TestLauncherStrictTrustConfiguration/duplicate
+=== RUN   TestLauncherStrictTrustConfiguration/alias
+=== RUN   TestLauncherStrictTrustConfiguration/nested_alias
+=== RUN   TestLauncherStrictTrustConfiguration/missing
+=== RUN   TestLauncherStrictTrustConfiguration/trailing
+=== RUN   TestLauncherStrictTrustConfiguration/http
+=== RUN   TestLauncherStrictTrustConfiguration/credentials
+=== RUN   TestLauncherStrictTrustConfiguration/query
+=== RUN   TestLauncherStrictTrustConfiguration/origin_path
+=== RUN   TestLauncherStrictTrustConfiguration/unknown_channel
+=== RUN   TestLauncherStrictTrustConfiguration/unknown_baseline
+=== RUN   TestLauncherStrictTrustConfiguration/unknown_arch
+=== RUN   TestLauncherStrictTrustConfiguration/duplicate_allowlist
+=== RUN   TestLauncherStrictTrustConfiguration/bad_root
+=== RUN   TestLauncherStrictTrustConfiguration/oversize
+--- PASS: TestLauncherStrictTrustConfiguration (0.01s)
+    --- PASS: TestLauncherStrictTrustConfiguration/unknown (0.00s)
+    --- PASS: TestLauncherStrictTrustConfiguration/duplicate (0.00s)
+    --- PASS: TestLauncherStrictTrustConfiguration/alias (0.00s)
+    --- PASS: TestLauncherStrictTrustConfiguration/nested_alias (0.00s)
+    --- PASS: TestLauncherStrictTrustConfiguration/missing (0.00s)
+    --- PASS: TestLauncherStrictTrustConfiguration/trailing (0.00s)
+    --- PASS: TestLauncherStrictTrustConfiguration/http (0.00s)
+    --- PASS: TestLauncherStrictTrustConfiguration/credentials (0.00s)
+    --- PASS: TestLauncherStrictTrustConfiguration/query (0.00s)
+    --- PASS: TestLauncherStrictTrustConfiguration/origin_path (0.00s)
+    --- PASS: TestLauncherStrictTrustConfiguration/unknown_channel (0.00s)
+    --- PASS: TestLauncherStrictTrustConfiguration/unknown_baseline (0.00s)
+    --- PASS: TestLauncherStrictTrustConfiguration/unknown_arch (0.00s)
+    --- PASS: TestLauncherStrictTrustConfiguration/duplicate_allowlist (0.00s)
+    --- PASS: TestLauncherStrictTrustConfiguration/bad_root (0.00s)
+    --- PASS: TestLauncherStrictTrustConfiguration/oversize (0.00s)
+=== RUN   TestLauncherStateAndInventoryFailures
+=== RUN   TestLauncherStateAndInventoryFailures/owner
+=== RUN   TestLauncherStateAndInventoryFailures/generation
+=== RUN   TestLauncherStateAndInventoryFailures/stock_relative
+=== RUN   TestLauncherStateAndInventoryFailures/duplicate_key
+=== RUN   TestLauncherStateAndInventoryFailures/oversize
+=== RUN   TestLauncherStateAndInventoryFailures/duplicate_inventory
+=== RUN   TestLauncherStateAndInventoryFailures/unmanaged_helper
+=== RUN   TestLauncherStateAndInventoryFailures/conflicting_hash
+=== RUN   TestLauncherStateAndInventoryFailures/traversal
+=== RUN   TestLauncherStateAndInventoryFailures/non-status-only
+--- PASS: TestLauncherStateAndInventoryFailures (0.00s)
+    --- PASS: TestLauncherStateAndInventoryFailures/owner (0.00s)
+    --- PASS: TestLauncherStateAndInventoryFailures/generation (0.00s)
+    --- PASS: TestLauncherStateAndInventoryFailures/stock_relative (0.00s)
+    --- PASS: TestLauncherStateAndInventoryFailures/duplicate_key (0.00s)
+    --- PASS: TestLauncherStateAndInventoryFailures/oversize (0.00s)
+    --- PASS: TestLauncherStateAndInventoryFailures/duplicate_inventory (0.00s)
+    --- PASS: TestLauncherStateAndInventoryFailures/unmanaged_helper (0.00s)
+    --- PASS: TestLauncherStateAndInventoryFailures/conflicting_hash (0.00s)
+    --- PASS: TestLauncherStateAndInventoryFailures/traversal (0.00s)
+    --- PASS: TestLauncherStateAndInventoryFailures/non-status-only (0.00s)
+=== RUN   TestLauncherPEArchitectureIsMeasured
+=== RUN   TestLauncherPEArchitectureIsMeasured/short
+=== RUN   TestLauncherPEArchitectureIsMeasured/dos
+=== RUN   TestLauncherPEArchitectureIsMeasured/offset
+=== RUN   TestLauncherPEArchitectureIsMeasured/signature
+=== RUN   TestLauncherPEArchitectureIsMeasured/x64
+=== RUN   TestLauncherPEArchitectureIsMeasured/PE32+
+--- PASS: TestLauncherPEArchitectureIsMeasured (0.00s)
+    --- PASS: TestLauncherPEArchitectureIsMeasured/short (0.00s)
+    --- PASS: TestLauncherPEArchitectureIsMeasured/dos (0.00s)
+    --- PASS: TestLauncherPEArchitectureIsMeasured/offset (0.00s)
+    --- PASS: TestLauncherPEArchitectureIsMeasured/signature (0.00s)
+    --- PASS: TestLauncherPEArchitectureIsMeasured/x64 (0.00s)
+    --- PASS: TestLauncherPEArchitectureIsMeasured/PE32+ (0.00s)
+=== RUN   TestVersionedManualControlOwnership
+--- PASS: TestVersionedManualControlOwnership (0.00s)
+PASS
+ok  	example.com/opennav-update-verifier/launcher	0.092s

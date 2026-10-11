@@ -235,11 +235,7 @@ func (nativePlatform) wait(ctx context.Context, spec processSpec) (processResult
 	return processResult{timedOut: true, done: done}, errors.New("child process wait budget expired")
 }
 func (nativePlatform) start(spec processSpec) error {
-	command := nativeCommand(spec)
-	if err := command.Start(); err != nil {
-		return errors.New("verified application did not start")
-	}
-	return command.Process.Release()
+	return startOrdinary(spec, acquireNativeOrdinaryImage)
 }
 
 func privateNativeSecurity() (*windows.SECURITY_DESCRIPTOR, error) {

@@ -53,7 +53,8 @@ func bootstrap(ctx context.Context, p platform, l layout, state installState, ex
 			return errors.New("selected bootstrap receipt changed")
 		}
 		defer held.Close()
-		return p.start(processSpec{executable: l.app + "/opencpn.exe", directory: l.app, arguments: []string{"--xnav"}})
+		return p.start(processSpec{executable: l.app + "/opencpn.exe", directory: l.app,
+			expectedImageHash: g.managed["app/opencpn.exe"], arguments: []string{"--xnav"}})
 	}
 	if _, err := p.read(receipt, 32768); !errors.Is(err, os.ErrNotExist) {
 		return errors.New("bootstrap receipt appeared before qualification")
