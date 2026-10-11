@@ -42,7 +42,7 @@ system fonts or lettering embedded in images have been cleared. These limits
 keep SCRUM-59 open; this slice does not produce a complete SPDX/CycloneDX SBOM
 or approve public delivery.
 
-Focused check: `python tools/test-component-license-inventory.py`. Fixtures are
+Focused check: `python tools/test_component_license_inventory.py`. Fixtures are
 inert package/source bytes; they cover deterministic output and rejected
 runtime, manifest, notice and source tampering, missing embedded notices,
 ambiguous records and paths. Native package assembly still requires the next

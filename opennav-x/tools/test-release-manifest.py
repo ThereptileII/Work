@@ -13,6 +13,8 @@ import zipfile
 
 import release_manifest as release
 from test_packaged_notice_gate import fixture_entries
+import test_packaged_notice_gate
+import test_component_license_inventory
 
 COMMIT = '1' * 40
 VERSION = '0.4.0-beta2'
@@ -314,6 +316,15 @@ class ManifestTests(unittest.TestCase):
         self.archives([(link, 'app/opencpn.exe')])
         with self.assertRaises(ValueError):
             self.create()
+
+
+def load_tests(loader, tests, pattern):
+    # The existing delivery CI invokes this release-boundary entry point.
+    # Keep notice and inventory refusal contracts in that same gate without
+    # changing the workflow or adding another product build.
+    for module in (test_packaged_notice_gate, test_component_license_inventory):
+        tests.addTests(loader.loadTestsFromModule(module))
+    return tests
 
 
 if __name__ == '__main__':
