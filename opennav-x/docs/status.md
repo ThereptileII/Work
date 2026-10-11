@@ -16,6 +16,13 @@ unsupported-Windows adapters; native Windows behavior is still pending. This
 operation supplies no install/spawn authority and is not product-wired. See the
 [operation contract](installer/signed-update-session-contract.md#concrete-previous-generation-restoration).
 
+Independent review then identified a cleanup exception after durable event
+append that could leave the live store usable. The amended operation poisons
+custody on release failure, attempts both independent lock releases and emits
+success only after cleanup. The extended real-engine fixture passed 55 checks
+across 12 temporary-file transactions, including actual restored state with a
+consumed event but no usable custody after failed release.
+
 ## Physical signed-store path correction
 
 The source batch now binds installed arming's transaction lock, owner/state

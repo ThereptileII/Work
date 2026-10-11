@@ -178,9 +178,11 @@ marker and unchanged selected generation/state/ownership. Only then does it
 derive and append `PreviousRestored` to the live store. Failure after starting
 Restore poisons that store and retains the installed denial marker; even an
 actually completed restoration cannot publish a success event after failed
-postchecks or journal persistence.
+postchecks or journal persistence. A lock-release failure also poisons custody,
+attempts both independent releases and withholds the success result. Any event
+already appended remains consumed; cleanup cannot turn it into retry authority.
 
-The portable suite passed 49 assertions across 11 actual temporary-file
+The portable suite passed 55 assertions across 12 actual temporary-file
 transactions against the integrated store. It copies the exact transaction
 scripts and substitutes only unsupported Windows identity/ACL/mutex/handle
 boundaries; Restore and preservation/journal logic are real. It is registered

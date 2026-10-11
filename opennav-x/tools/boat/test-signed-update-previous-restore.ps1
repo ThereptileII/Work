@@ -219,6 +219,22 @@ try {
   Check ($case.store.poisoned -and $case.store.stream.Length -eq $journalLength -and $case.store.digest -ceq $journalDigest) 'Failed publication poisons live custody and leaves prior durable journal unchanged'
   NoEvent $case 'Write failure retains installed denial and no event'
   ${function:Write-SignedStoreFrame}=$write;Close-SignedUpdateStore $case.handle
+  $case=Fresh;$profileAcquire=${function:Open-CommissioningProfileLock}
+  function Open-CommissioningProfileLock([string]$ProfileDirectory){
+    $held=& $profileAcquire $ProfileDirectory
+    $probe=[pscustomobject]@{held=$held}
+    $probe|Add-Member -MemberType ScriptMethod -Name Dispose -Value {$this.held.Dispose();throw 'Injected post-engine lock disposal failure'}
+    return $probe
+  }
+  $published=@();$cleanupError=''
+  try{$published=@(Complete $case)}catch{$cleanupError=$_.Exception.Message}
+  Check ($cleanupError -like '*Injected post-engine lock disposal failure*' -and $published.Count -eq 0) 'Failed lock cleanup cannot emit operation success'
+  Check ($case.store.poisoned -and @($case.store.operations.events).Count -eq 1) 'Cleanup failure poisons custody after consumed PreviousRestored event'
+  Check ((Get-Digest $case.ini) -ceq $global:SignedPreviousFixture.baseline -and -not [IO.File]::Exists($case.active) -and [IO.File]::Exists((Join-Path $case.root 'signed-update-armed.jsonl'))) 'Cleanup failure retains real restoration, consumed journal and installed denial'
+  $released=Open-SignedInstallationLock $case.root;$released.Dispose()
+  Check $true 'Profile disposal failure still releases independent installation lock'
+  Reject {Assert-SignedStoreCurrent $case.store} 'Consumed event cannot authorize further operations after cleanup failure'
+  ${function:Open-CommissioningProfileLock}=$profileAcquire;Close-SignedUpdateStore $case.handle
   [pscustomobject]@{status='passed';count=$checks.Count;checks=@($checks);scope='exact real offline engine and live durable store on disposable files with Windows boundary adapters';storeSourceSha256=((Get-FileHash -LiteralPath $StoreSource).Hash.ToLowerInvariant());nativeCustodyAccepted=$false;productWired=$false;applicationLaunched=$false;boatAccess=$false}|ConvertTo-Json -Depth 5
 } finally {
   ${function:Write-SignedStoreFrame}=$write

@@ -100,7 +100,7 @@ function Invoke-SignedUpdatePreviousRestore {
   $store=Get-SignedStoreLive $StoreHandle
   $null=Assert-SignedStoreCurrent $store;Assert-SignedPreviousRootBinding $store
   $lock=Open-SignedInstallationLock $store.installationBarrier.physicalRoot
-  $profileLock=$null;$operationStarted=$false
+  $profileLock=$null;$operationStarted=$false;$primaryFailure=$null;$completed=$null
   try {
     $selectedInput=Get-SignedPreviousInputs $store $Workspace $Record $ExpectedRecordSha256
     $inspectionRecord=Read-SignedPreviousRecord $Inspection $ExpectedInspectionSha256 'OpenNavX.ReadOnlyCommissioning.RestoreInspection.1'
@@ -173,9 +173,21 @@ function Invoke-SignedUpdatePreviousRestore {
     $request=[pscustomobject]@{session=$store.session.binding.session;sequence=1;action='PreviousRestored';
       requestNonce=$RequestNonce;previousEventSha256=$store.operations.headSha256;evidence=$evidence}
     $event=Add-SignedUpdateStoreEvent $StoreHandle (Get-SignedStoreBytes $request)
-    return [pscustomobject]@{status='previous-restored';event=$event;inspection=$Inspection;completion=$result.verification;
+    $completed=[pscustomobject]@{status='previous-restored';event=$event;inspection=$Inspection;completion=$result.verification;
       preservationBaseline=$result.baselineRecord;applicationLaunched=$false;launchAuthority=$false;
       scope='Actual offline restoration evidence consumed by live store; no installer/spawn authorization or enabled signed broker.'}
-  } catch {if($operationStarted){$store.poisoned=$true};throw}
-  finally {try {if($profileLock){$profileLock.Dispose()}} finally {$lock.Dispose()}}
+  } catch {$primaryFailure=$_;if($operationStarted){$store.poisoned=$true};throw}
+  finally {
+    $cleanupFailure=$null
+    try {if($profileLock){$profileLock.Dispose()}} catch {$cleanupFailure=$_}
+    try {$lock.Dispose()} catch {if(-not $cleanupFailure){$cleanupFailure=$_}}
+    if($cleanupFailure){
+      $store.poisoned=$true
+      # Keep any consumed event and denial marker; neither can be rolled back
+      # into permission to retry. A primary operation error retains its cause.
+      if(-not $primaryFailure){throw $cleanupFailure}
+    }
+  }
+  # Do not emit success until both independent lock releases have completed.
+  return $completed
 }
