@@ -247,6 +247,13 @@ in the Windows evidence and `tools/windows-wx.lock.json` in the source archive.
 OpenSSL uses Apache-2.0. GPL/Apache compatibility and the complete source/license
 set remain explicit release-review gates; package assembly does not approve them.
 ''', encoding='utf-8')
+# Complete exact source plus root CI recipe, not an expiring download offer.
+from source_package import create_source_archive
+create_source_archive(ROOT, commit, args.output / 'SKAGER-Beta2-source.zip',
+                      [openssl_source['sourceBundle']] + curl_sources['sourceBundles'] + adapter_sources + [updater_source])
+from component_license_inventory import write_inventory
+write_inventory(destination, args.output / 'SKAGER-Beta2-source.zip', commit,
+                {'OpenSSL': openssl_source['manifest'], **curl_sources['manifests']})
 manifest = {str(f.relative_to(destination)).replace('\\', '/'): hashlib.sha256(f.read_bytes()).hexdigest()
             for f in sorted(destination.rglob('*')) if f.is_file()}
 (destination / 'FILE_SHA256.json').write_text(json.dumps(manifest, indent=2) + '\n')
@@ -255,8 +262,4 @@ with zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED, compresslevel=6) as z:
     for file in sorted(destination.rglob('*')):
         if file.is_file(): z.write(file, file.relative_to(args.output))
 (archive.with_suffix('.zip.sha256')).write_text(hashlib.sha256(archive.read_bytes()).hexdigest() + '  ' + archive.name + '\n')
-# Complete exact source plus root CI recipe, not an expiring download offer.
-from source_package import create_source_archive
-create_source_archive(ROOT, commit, args.output / 'SKAGER-Beta2-source.zip',
-                      [openssl_source['sourceBundle']] + curl_sources['sourceBundles'] + adapter_sources + [updater_source])
 print(archive)
