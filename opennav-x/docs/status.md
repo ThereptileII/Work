@@ -1,5 +1,26 @@
 # SKAGER status — 2026-10-11
 
+## Current Staging qualification — correction batch not yet built
+
+The exact `bf68b355` Staging run `38122286949` passed its early Linux
+contracts and fixture-free compilation but failed the integrated pilot smoke:
+a fresh, bidirectional TCP status source made **Enable control** clickable
+although product policy forbids TCP pilot output. Independent review found no
+wire-output bypass. The compiled integration now uses the same endpoint policy
+as the final output sink before offering control setup, while preserving the
+qualified serial confirmation flow. Focused checks passed across three build
+policies, including 216 offline drawer assertions; the unchanged product smoke
+and native Windows gate still require a new exact-commit build. The prior run's
+Windows job is still pending at this writing and cannot accept the correction.
+
+The next Staging source batch also includes virtual-time Online AIS outage
+checks (251 focused session assertions), an inert passive zoom collector,
+signed-update custody foundations and their native x86/x64 qualification
+wiring, plus an installer refusal for unqualified non-x86 executable helpers.
+The helper foundations do **not** yet authorize a live update. Native
+PowerShell, installed plugin loading, full installer lifecycle and boat checks
+remain open. No new package is accepted and the boat installation is unchanged.
+
 ## Replacement Staging candidate — source integration pending native gates
 
 The first combined Staging run, `38121327021` at `b3cef57c`, was deliberately
