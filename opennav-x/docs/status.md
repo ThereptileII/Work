@@ -1,5 +1,18 @@
 # SKAGER status — 2026-10-11
 
+## Integrated dependency provenance refinement
+
+Source batch `3bc1478b` connects verified updater/adapter source and notice
+records, wxWidgets archive-member evidence and the MSVC runtime receipt to the
+generated package inventory. The preceding commits retain the actual selected
+Visual Studio product/catalog identity (`c6ae26d1`), verify installed wx DLLs
+against the locked runtime archive (`61283d05`) and pass that archive explicitly
+to packaging (`201ffe3c`). The combined focused check passed 59 tests. Native
+Windows version APIs, PowerShell argument transport, 7z decoding and complete
+package assembly remain pending. These records establish specific byte/source
+associations, not redistribution entitlement or legal clearance; SCRUM-59
+remains open. See the [inventory contract](compliance/component-license-inventory.md).
+
 ## Route-detail names and commissioning source integration
 
 The remaining route-detail naming omission is integrated at `69bedee2`: planned
@@ -9,7 +22,7 @@ Cancel/rejection keep existing behavior. The isolated implementation passed 63
 existing naming checks and its changed wxWidgets unit syntax check. Native and
 boat edit/save/reopen, protected-point and multi-draft interaction remain pending.
 
-The next source increment adds shared physical-profile exclusion to cooperating
+Commit `bd79eb42` adds shared physical-profile exclusion to cooperating
 commissioning Apply/inspection/restoration and real direct/startup/restart/stock
 launch paths. It changes no profile bytes or filesystem ACLs merely to acquire
 the lock. This is not recursive loader namespace custody, protection against
@@ -20,7 +33,8 @@ The focused portable commissioning gate passed its 12 groups plus the new exact
 C# compile/unsupported-platform refusal. Restart dependency closure passed 26
 checks. New native contention, identity, SUBST, reparse, abandonment and
 preservation fixtures are wired into the existing commissioning gate but have
-not executed on Windows. No full product build or boat modification has occurred.
+not executed on Windows. The focused startup-policy gate passed 44 checks.
+No full product build or boat modification has occurred.
 
 ## Integrated source batch: armed-update denial and plugin bytes
 

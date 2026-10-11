@@ -81,6 +81,14 @@ qualified by this documentation audit.
 
 ## Evidence needed for the selected release
 
+Source refinement after this audit: `c6ae26d1` adds the actual selected
+`visualStudio.productId` and bounded catalog metadata to schema 2; `3bc1478b`
+associates that receipt with final package bytes in the component inventory.
+These changes address the missing product-identity fields described above, not
+runner/release qualification or entitlement. The original `ec51b926` audit and
+its historical receipt remain unchanged. Native transport/version-resource
+verification and applicable full terms still require evidence.
+
 These are unresolved evidence requirements under SCRUM-59 / SCRUM-57, not new
 approvals or a second backlog:
 

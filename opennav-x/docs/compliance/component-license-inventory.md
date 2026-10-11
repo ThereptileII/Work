@@ -22,7 +22,12 @@ ambiguous evidence:
 - OpenSSL, curl and zlib notices against committed provenance; their final DLLs
   and retained manifests against the already verified dependency build records;
   their bundled source archive bytes against the same declared source identity.
-- wxWidgets notice bytes against the committed per-file provenance hashes.
+- wxWidgets notice bytes against the committed per-file provenance hashes;
+  final DLL bytes against the exact members of the locked ReleaseDLL archive.
+- Verified updater and optional o-charts adapter descriptors against their
+  packaged source bundles, manifests, project inputs and retained notices.
+- The MSVC receipt against the copied CRT bytes, selected product/catalog
+  identity and source/copy equality evidence.
 - Duplicate JSON keys, duplicate source archive members, Windows case aliases
   and package symlinks are rejected instead of choosing one interpretation.
 
@@ -33,11 +38,12 @@ Windows, installer and release qualification checks remain necessary.
 
 The status is deliberately `incomplete-review-required`. Matched evidence does
 not establish legal compatibility, attribution completeness, or redistribution
-rights. OpenCPN embedded third-party code, wxWidgets runtime/source association,
+rights. OpenCPN embedded third-party code, wxWidgets source/rebuild association,
 MSVC redistribution terms, updater and o-charts individual terms still require
 review. Other runtime files are inventoried without guessed ownership.
 `docs/MSVC_RUNTIME_RECEIPT.json` separately records the actual selected Visual
-Studio installation directory/version, VC143 x86 redistributable directory/version,
+Studio installation directory/version and product/catalog identity,
+VC143 x86 redistributable directory/version,
 and every copied CRT DLL's name, numeric file/product version, size and SHA-256.
 Assembly fails if a required source DLL is absent, the selected directory does
 not belong to that Visual Studio redist, a DLL is not x86 PE or lacks version
@@ -80,3 +86,28 @@ candidates; an extension alone is explicitly not a validated font format.
 deterministic receipts, missing source/versions, architecture, copy corruption,
 source changes and copied-version mismatch. Actual Windows version-resource
 inspection and the packaged receipt require the next native packaging gate.
+
+## Runtime association refinement — 2026-10-11
+
+Schema 2 of the MSVC receipt retains the actual selected `vswhere` product ID
+and bounded allowlisted catalog fields. That identity is not proof of an edition's
+license, entitlement or redistribution terms. The inventory labels its result
+`runtime-copy-identity-matched` while keeping legal review unresolved.
+
+The build writes `wx-runtime-receipt.json` after installation. Packaging requires
+the exact retained locked archive and rechecks the receipt against its members
+and final installed DLLs. The inventory binds those copied DLLs, the receipt and
+the committed lock together as `runtime-archive-notice-matched`. This proves
+archive-member equality, not a wxWidgets rebuild from corresponding source.
+
+Updater and adapter runtime-source links are derived from the same verified
+descriptors supplied to source-archive generation. The inventory revalidates
+nested source members, manifests, project inputs and notices; it does not accept
+unmatched runtime files as attributed merely because a source ZIP exists.
+Successful matching remains `runtime-source-notice-matched`, with component
+legal review still required. No record authenticates arbitrary third-party
+archives or replaces the existing producer validators.
+
+The integrated MSVC, wx, inventory and packaging-caller focused suite passed
+59 tests at `3bc1478b`. Native Windows assembly and the exact release's legal
+review remain outstanding; no new full application build was requested.
