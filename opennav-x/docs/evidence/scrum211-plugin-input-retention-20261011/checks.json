@@ -1,0 +1,47 @@
+{
+  "baseCommit": "8e93c5cccf1aa5033f2201325c68b8f3f20c3dd0",
+  "boatAcceptance": false,
+  "checks": [
+    {
+      "command": "python opennav-x/tools/test-retain-plugin-guard-inputs.py",
+      "exitCode": 0,
+      "passed": 29,
+      "retention": "Exact completed tool stdout saved unchanged; no extra test rerun.",
+      "stdout": "capture-tests.txt",
+      "stdoutSha256": "d49658a90a97e833cb904787c0052fce4c1bb83507f003dd84fb1fa10778f2f4"
+    },
+    {
+      "command": "python opennav-x/tools/test-plugin-download-guard-windows-tests.py",
+      "exitCode": 0,
+      "passed": 19,
+      "retention": "Direct stdout/stderr file redirection.",
+      "stdout": "runner-contract-tests.txt",
+      "stdoutSha256": "7b463216f90894d621ce0941a2d2f82f290811a72962ad9d4c5fc10d999bbafc"
+    }
+  ],
+  "date": "2026-10-11",
+  "issue": "SCRUM-211",
+  "nativeAcceptance": false,
+  "nativeCaptureExecuted": false,
+  "productAcceptance": false,
+  "remaining": [
+    "Actual GitHub-hosted Win32 producer capture",
+    "Independent SDK/runtime artifact and inventory review and externally supplied SHA256 pin",
+    "Existing independently pinned native PluginHandler guard runner and maintained TLS reprobes",
+    "Installed/plugin/boat acceptance remains separate"
+  ],
+  "requiresIndependentInventoryPin": true,
+  "schema": 1,
+  "selectionComment": "11330",
+  "sourceSha256": {
+    "tools/build-pristine-windows.ps1": "558159819ef1e1832aa92a2ff960bff17787a99a4dfb92ca77b6fed4e9410eb5",
+    "tools/retain-plugin-guard-inputs.py": "50fed3971a1583a73852914bfbac295390a1af7b245c8221a40b03172a1002a3",
+    "tools/test-ais-runtime-windows.py": "b4aeb14ae4825216876401b03736a40c2e5c5d918650d7c3e45c3f8d4c27de8b",
+    "tools/test-plugin-download-guard-windows-tests.py": "63216f193428bb624062e5d1d8a5512023d650a301bee25b0820c57eb6f0b90f",
+    "tools/test-plugin-download-guard-windows.py": "aedc5e5ceae04ecde700f82c97a44e921c75e1cee915ef9973fd5c5f25716da5",
+    "tools/test-retain-plugin-guard-inputs.py": "f382da2207f2e508a1a7c2159222b5008d9fdc026fc83bcfaf6f69236ea35e12",
+    "tools/windows_dependency_bundle.py": "8c60716cb5675f7677c6ff29bbccd9d9abe26876a412c88bc14685c15a97218d",
+    "tools/windows_dependency_receipt.py": "74457dce87d6529773b743be4c7afa9059cd8182662dcbfebea6f8b07142d350",
+    "tools/windows_dependency_stage.py": "1c009a9bd10ef56df87bcd6912c364ac024b0640a7f5087996665a8b05140bec"
+  }
+}
