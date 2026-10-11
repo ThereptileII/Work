@@ -302,6 +302,21 @@ func physicalParents(name string) ([]string, error) {
 	}
 	return parents, nil
 }
+
+// openImageDirectoryPin requests directory data/list access so the omitted
+// FILE_SHARE_DELETE participates in sharing checks. Metadata-only access does
+// not prevent rename, even when FILE_SHARE_DELETE is omitted (MS-FSA 2.1.5.1.2.2).
+// The caller still validates directory type, reparse status, ACL and physical path.
+func openImageDirectoryPin(path string) (windows.Handle, error) {
+	ptr, err := windows.UTF16PtrFromString(path)
+	if err != nil {
+		return windows.InvalidHandle, err
+	}
+	return windows.CreateFile(ptr, windows.FILE_LIST_DIRECTORY|windows.READ_CONTROL|windows.FILE_READ_ATTRIBUTES,
+		windows.FILE_SHARE_READ|windows.FILE_SHARE_WRITE, nil, windows.OPEN_EXISTING,
+		windows.FILE_FLAG_OPEN_REPARSE_POINT|windows.FILE_FLAG_BACKUP_SEMANTICS, 0)
+}
+
 func pinImage(path string) (pins *imagePins, err error) {
 	pins = &imagePins{}
 	owned := pins
@@ -346,11 +361,7 @@ func pinImage(path string) (pins *imagePins, err error) {
 		if i == 0 {
 			spelling += `\`
 		} // Open the root directory, not the volume device.
-		ptr, e := windows.UTF16PtrFromString(spelling)
-		if e != nil {
-			return nil, e
-		}
-		h, e := windows.CreateFile(ptr, windows.READ_CONTROL|windows.FILE_READ_ATTRIBUTES, windows.FILE_SHARE_READ|windows.FILE_SHARE_WRITE, nil, windows.OPEN_EXISTING, windows.FILE_FLAG_OPEN_REPARSE_POINT|windows.FILE_FLAG_BACKUP_SEMANTICS, 0)
+		h, e := openImageDirectoryPin(spelling)
 		if e != nil {
 			return nil, e
 		}
