@@ -54,14 +54,24 @@ transitions rather than assuming status-category queries identify each column.
 ## Development strategy and task sizing
 
 Use many small, bounded parallel tasks when the work can be split cleanly.
-The user's latest model instruction is **Astra High** for subagents; it supersedes
-the earlier Luna/Sol allocation. The root agent is the single coordinator for
+The user's latest model instruction is **GPT-6.1 Sol** for Codex subagents, with
+**Claude** as an independent specialist through the existing scoped read-only
+review wrapper. This supersedes the earlier Astra High and Luna/Sol allocation.
+Use isolated worktrees for delegated implementation; retain the wrapper's
+snapshot, secret-exclusion and read-only boundaries for Claude reviews. Codex
+owns final decisions and integration. The root agent is the single coordinator for
 integration, full application builds and releases. Tie every task to its Jira
 issue, assign non-overlapping file ownership and acceptance criteria, and return
 focused test results to the coordinator. Subagents must not independently
 start duplicate full builds, deliveries or boat operations. Integrate a coherent
 batch and inspect the combined change; request one build/delivery when its
 product inputs require it. Keep context limited and handoffs concise.
+
+Use [the scoped Claude workflow](../tools/agents/README.md) for bounded
+architecture, debugging, security, regression and code reviews. Its immutable
+snapshot permits independent Codex work without concurrent edits by Claude.
+The wrapper's pinned Opus model routing and read-only child specialists remain
+in force; never bypass a denied external transfer or silently change models.
 
 Choose checks from actual build and package inputs, following
 [build efficiency](docs/build-efficiency.md). Ordinary documentation and test
