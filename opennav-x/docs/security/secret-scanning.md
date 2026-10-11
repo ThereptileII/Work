@@ -15,13 +15,21 @@ self-checks before inspecting the repository. An offline archive may be supplied
 with `--scanner-archive`; the same pin is mandatory.
 
 Every tracked checkout file is copied into a private, temporary snapshot under
-the ignored product `.local` directory and scanned under an opaque filename.
+the ignored product `.local` directory and presented under an opaque filename.
 This prevents source filename/path allowlists, `.gitignore`, `.gitleaksignore`,
 source-provided scanner configuration and inline `gitleaks:allow` markers from
 hiding a credential. Symlink text is scanned without following its target.
 The pinned scanner's complete built-in rule set and value heuristics remain;
 there are no repository exclusions or accepted-finding baseline. Its default
 path exclusions cannot match the opaque `.scan` filenames.
+
+The pinned scanner skips some binary content by MIME type even under an opaque
+filename. The runner converts its privately captured skip diagnostic into an
+`unsupported-binary-input` path/rule finding, and marks NUL-containing or
+non-UTF-8 files `unsupported-text-encoding`. A real PDF fixture verifies the
+skip-diagnostic contract on every run. These files cannot yield a clean
+qualification until their coverage is reviewed; the scanner does **not** claim
+to inspect their raw bytes or reliably decode every text encoding.
 
 Only original tracked paths and rule IDs are retained per finding. The scanner
 report template contains no match, secret, source line, author or fingerprint.
@@ -82,7 +90,11 @@ The CI bridge likewise downloads it once per selector invocation; its scan
 self-check is bounded and no application compilation is started. The optional
 offline archive avoids the download but does not bypass verification.
 
-Local measurement on the isolated `113d2175` checkout: 7,323 tracked files
-(244.8 MB), 30.76 seconds including download/self-check, and 179 unique
-path/rule findings after opaque-name scanning. All used `generic-api-key`.
-This is a local measurement, not a hosted-runner timing guarantee.
+The pre-binary-coverage measurement on isolated `113d2175` was 7,323 tracked
+files (244.8 MB), 30.76 seconds including download/self-check, and 179 unique
+`generic-api-key` path/rule findings. After the binary/encoding correction,
+the integrated `f15d09a9` checkout audit took 29.53 seconds for 7,331 tracked
+files and reported 179 `generic-api-key`, 224 `unsupported-binary-input`, and
+1,684 `unsupported-text-encoding` path/rule findings. The categories can overlap
+on a path. Qualification remained false. These are local measurements, not
+hosted-runner timing guarantees or reviewed false-positive dispositions.
