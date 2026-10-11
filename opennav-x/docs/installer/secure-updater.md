@@ -21,6 +21,10 @@ During acquisition a separate native progress window provides Cancel. Cancelling
 this phase aborts verification/download, discards both prepared artifacts and
 continues the current application. The progress process must confirm completion
 before the installer starts. Cancellation never kills an executing installer.
+An actual artifact handle/file cleanup failure is different from a clean
+cancellation: the fixed redacted cleanup error withholds startup and requires
+inspection. Network/refusal errors without that classification retain ordinary
+startup. This distinction uses error identity, never matching message text.
 
 Update Now binds the entire parsed release policy, version and commit. A second
 authenticated refresh must return that same policy before acquisition. A changed

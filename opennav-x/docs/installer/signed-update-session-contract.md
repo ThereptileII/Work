@@ -161,7 +161,14 @@ The preparation owns both read-only artifact handles and the derived Recovery
 identity until the existing installer/launcher operation finishes. Installer
 timeout retains both handles until that exact child exits. Failure/cancellation
 and caller cleanup attempt both independent releases and preserve cleanup
-failures. Existing `PrepareUpdate` and `PrepareRecovery` APIs remain available;
+failures. The actual launcher must distinguish uncertain artifact cleanup from
+a clean refusal: `e75a2c55` propagates fixed `ErrArtifactCleanup` identity through
+progress redaction and withholds startup at `run`. Error text alone is not the
+classification. Clean cancellation, offline transport and missing old sidecars
+retain ordinary-start fallback; private paths/transport details are not surfaced.
+Three additional combined-root tests and seven actual-caller subcases pass;
+the deliberately violated Unix pathname-removal fixture does not claim native
+Windows sharing qualification. Existing `PrepareUpdate` and `PrepareRecovery` APIs remain available;
 neither an arbitrary archive nor a caller-provided policy can enter this set.
 Five new combined-root tests and nine subcases pass, including a signed server
 offer change during acquisition, invalid/old Recovery, Setup failure, cancellation

@@ -9,6 +9,11 @@ download. Both read-only owners remain held through the existing operation and
 timeout handling, with independent cleanup failures preserved. The combined-root
 focused check passed five new tests and nine subcases; the isolated broader
 preparation/launcher regression and Windows/x86 compile checks also passed.
+Follow-up `e75a2c55` fixes the actual caller swallowing those cleanup failures:
+fixed redacted error identity now withholds startup only for uncertain cleanup;
+clean cancellation/network/old-sidecar refusal retains ordinary fallback. Three
+additional combined-root tests and seven subcases passed. The partial-removal
+fixture is Unix-only; no Windows sharing result is inferred from it.
 No native execution, signed broker authority or Setup embedded-manifest proof is
 inferred. Protected-from-creation loader custody and actual creator-bound denial
 remain required source work before full updater qualification. See the
