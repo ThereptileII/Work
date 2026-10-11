@@ -75,8 +75,67 @@ foreach($name in @('InteractiveJob.ps1','StartupLauncher.ps1','RestartCommission
 }
 $dependencySource=[IO.File]::ReadAllText((Join-Path $PSScriptRoot 'RestartCommissioning.ps1'))
 Check ($dependencySource.Contains("'InstalledLaunchBarrier.ps1'")) 'Restart session hash closure includes the guard'
+# Declaring P/Invoke is portable; only the native branch uses its default adapter.
+Add-Type -TypeDefinition @'
+using System;using System.ComponentModel;using System.Runtime.InteropServices;
+public sealed class InstalledBarrierFixtureAlias {
+ [DllImport("kernel32.dll",CharSet=CharSet.Unicode,SetLastError=true)] static extern bool DefineDosDevice(uint flags,string name,string target);
+ [DllImport("kernel32.dll",CharSet=CharSet.Unicode,SetLastError=true)] static extern uint QueryDosDevice(string name,[Out]char[] targets,int length);
+ [DllImport("kernel32.dll",EntryPoint="GetLogicalDrives",SetLastError=true)] static extern uint NativeGetLogicalDrives();
+ public static uint GetLogicalDrives(){uint mask=NativeGetLogicalDrives();if(mask==0){int code=Marshal.GetLastWin32Error();throw new Win32Exception(code,"Cannot prove unused fixture alias; Win32 error "+code);}return mask;}
+ readonly Func<uint,string,string,bool> define;readonly Func<string,string[]> query;readonly Func<int> error;
+ public string Name {get;private set;}public string Target {get;private set;}public bool Created {get;private set;}
+ public InstalledBarrierFixtureAlias():this(DefineDosDevice,ReadTargets,Marshal.GetLastWin32Error){}
+ public InstalledBarrierFixtureAlias(Func<uint,string,string,bool> define,Func<string,string[]> query,Func<int> error){this.define=define;this.query=query;this.error=error;}
+ static string[] ReadTargets(string name){char[] buffer=new char[32768];uint count=QueryDosDevice(name,buffer,buffer.Length);if(count==0){int code=Marshal.GetLastWin32Error();if(code==2)return new string[0];throw new Win32Exception(code,"Cannot query fixture alias "+name+"; Win32 error "+code);}if(count>=buffer.Length)throw new InvalidOperationException("Fixture alias query is truncated.");return new string(buffer,0,(int)count).Split(new char[]{'\0'},StringSplitOptions.RemoveEmptyEntries);}
+ public void Create(string name,string dosTarget){
+  if(Created)throw new InvalidOperationException("Fixture already owns an alias.");
+  if(query(name).Length!=0)throw new InvalidOperationException("Selected fixture alias already has a mapping: "+name);
+  if(dosTarget.Length<3||!((dosTarget[0]>='A'&&dosTarget[0]<='Z')||(dosTarget[0]>='a'&&dosTarget[0]<='z'))||dosTarget[1]!=':'||dosTarget[2]!='\\')throw new InvalidOperationException("Fixture alias requires a local DOS target.");
+  string raw=@"\??\"+dosTarget;
+  if(!define(1,name,raw)){int code=error();throw new Win32Exception(code,"Cannot create fixture alias "+name+" -> "+raw+"; Win32 error "+code);}
+  // Ownership begins only after success; retain the exact target on all later errors.
+  Name=name;Target=raw;Created=true;VerifyOwned();
+ }
+ void VerifyOwned(){string[] targets=query(Name);if(targets.Length!=1||!String.Equals(targets[0],Target,StringComparison.Ordinal))throw new InvalidOperationException("Fixture alias ownership uncertain: "+Name+" expected "+Target+"; observed "+String.Join(", ",targets));}
+ public void Remove(){
+  if(!Created)return;
+  VerifyOwned();
+  // Never pop an unspecified target or another mapping from the DOS-device stack.
+  if(!define(7,Name,Target)){int code=error();throw new Win32Exception(code,"Cannot remove exact fixture alias "+Name+" -> "+Target+"; Win32 error "+code);}
+  Created=false;Target=null;
+ }
+}
+public sealed class InstalledBarrierAliasAdapter {
+ public string[] Targets=new string[0];public bool FailCreate,FailRemove;public int Calls;public uint LastFlags;public string LastTarget;
+ public bool Define(uint flags,string name,string target){Calls++;LastFlags=flags;LastTarget=target;if(flags==1){if(FailCreate)return false;Targets=new string[]{target};return true;}if(flags!=7||FailRemove)return false;Targets=new string[0];return true;}
+ public string[] Query(string name){return Targets;}public int Error(){return 87;}
+ public InstalledBarrierFixtureAlias NewOwner(){return new InstalledBarrierFixtureAlias(Define,Query,Error);}
+}
+'@
+# Deterministic alias/recovery cases use injected adapters, never native calls.
+$adapter=New-Object InstalledBarrierAliasAdapter;$aliasOwner=$adapter.NewOwner();$adapter.FailCreate=$true
+$createError=$null;try{$aliasOwner.Create('Z:','C:\fixture-A')}catch{$createError=$_.Exception.GetBaseException()}
+Check ($createError -is [ComponentModel.Win32Exception] -and $createError.NativeErrorCode -eq 87 -and $createError.Message.Contains('Win32 error 87')) 'Failed creation reports immediate native error without claiming alias ownership'
+$aliasOwner.Remove();Check (-not $aliasOwner.Created -and $adapter.Calls -eq 1) 'Cleanup after failed creation never removes a selected alias'
+$adapter.FailCreate=$false;$aliasOwner.Create('Z:','C:\fixture-A');$ownedTarget=$aliasOwner.Target
+Check ($aliasOwner.Created -and $ownedTarget -ceq '\??\C:\fixture-A') 'Successful creation retains the exact actual raw target'
+$adapter.Targets=@('\??\C:\foreign')
+Reject {$aliasOwner.Remove()} 'Changed alias target refuses cleanup without removing another mapping'
+Check ($adapter.Calls -eq 2 -and $aliasOwner.Target -ceq $ownedTarget) 'Uncertain ownership preserves target and makes no removal call'
+$adapter.Targets=@($ownedTarget,$ownedTarget)
+Reject {$aliasOwner.Remove()} 'Ambiguous identical stacked mapping refuses cleanup'
+$adapter.Targets=@($ownedTarget);$adapter.FailRemove=$true
+Reject {$aliasOwner.Remove()} 'Exact removal failure retains ownership for recovery'
+Check ($aliasOwner.Created -and $aliasOwner.Target -ceq $ownedTarget -and $adapter.LastFlags -eq 7 -and $adapter.LastTarget -ceq $ownedTarget) 'Removal specifies raw target and exact-match flags'
+$adapter.FailRemove=$false;$aliasOwner.Remove();$adapter.FailCreate=$true
+Reject {$aliasOwner.Create('Z:','C:\fixture-B')} 'Failed retarget creation does not retain removed A ownership'
+$calls=$adapter.Calls;$aliasOwner.Remove();Check (-not $aliasOwner.Created -and $adapter.Calls -eq $calls) 'Retarget failure cleanup never pops an unowned mapping'
+$adapter.FailCreate=$false;$aliasOwner.Create('Z:','C:\fixture-B')
+Check ($aliasOwner.Target -ceq '\??\C:\fixture-B') 'Successful retarget records B for exact cleanup'
+$aliasOwner.Remove()
 $sourceFiles=@('InteractiveJob.ps1','StartupLauncher.ps1','RestartCommissioningBroker.ps1','InstalledLaunchBarrier.ps1','test-installed-launch-barrier.ps1')|ForEach-Object {[pscustomobject]@{path=('tools/boat/'+$_);sha256=(Get-FileHash -LiteralPath (Join-Path $PSScriptRoot $_) -Algorithm SHA256).Hash.ToLowerInvariant()}}
-$nativeStatus='not-executed-portable-contracts';$root=$null;$alias=$null;$guards=New-Object 'Collections.Generic.List[object]'
+$nativeStatus='not-executed-portable-contracts';$root=$null;$alias=$null;$aliasOwner=$null;$primaryFailure=$null;$guards=New-Object 'Collections.Generic.List[object]'
 try {
  if($native){
   $root=Join-Path ([IO.Path]::GetTempPath()) ('skager-launch-barrier-'+[guid]::NewGuid().ToString('N'))
@@ -101,22 +160,16 @@ try {
    }
    $guard.owner.Dispose();$guards.Remove($guard)|Out-Null
   }
-  Add-Type -TypeDefinition @'
-using System;using System.Runtime.InteropServices;
-public static class InstalledBarrierFixtureAlias {
- [DllImport("kernel32.dll",CharSet=CharSet.Unicode,SetLastError=true)] public static extern bool DefineDosDevice(uint flags,string name,string target);
- [DllImport("kernel32.dll")] public static extern uint GetLogicalDrives();
-}
-'@
   $mask=[InstalledBarrierFixtureAlias]::GetLogicalDrives()
   if($mask -eq 0){throw 'Cannot prove unused fixture alias.'}
   foreach($letter in [char[]]'ZYXWVUTSRQPONMLKJIHGFED') {if(($mask -band (1 -shl ([int]$letter-65))) -eq 0){$alias=[string]$letter+':';break}}
   if(-not $alias){throw 'No unused private fixture alias available.'}
-  if(-not [InstalledBarrierFixtureAlias]::DefineDosDevice(0,$alias,$installed[0].root)){throw 'Cannot create isolated fixture alias.'}
+  $aliasOwner=New-Object InstalledBarrierFixtureAlias
+  $aliasOwner.Create($alias,$installed[0].root)
   $aliasInstall=[pscustomobject]@{generation=($alias+'\generations\'+$id);state=@{current=$id};ownership=$installed[0].ownership}
   $guard=Open-InstalledLaunchBarrier $aliasInstall;$guards.Add($guard)
-  if(-not [InstalledBarrierFixtureAlias]::DefineDosDevice(2,$alias,$installed[0].root)){throw 'Cannot remove initial fixture alias.'}
-  if(-not [InstalledBarrierFixtureAlias]::DefineDosDevice(0,$alias,$installed[1].root)){throw 'Cannot retarget isolated fixture alias.'}
+  $aliasOwner.Remove()
+  $aliasOwner.Create($alias,$installed[1].root)
   $leaf=Join-Path $installed[0].root 'signed-update-armed.jsonl';[IO.File]::WriteAllText($leaf,'A remains armed; B has no marker')
   try {
    $message='';try{Assert-InstalledLaunchBarrier $guard}catch{$message=$_.Exception.GetBaseException().Message}
@@ -125,10 +178,21 @@ public static class InstalledBarrierFixtureAlias {
   Reject {Assert-InstalledLaunchBarrier $guard} 'Native retargeted request refuses even after A marker removed'
   $nativeStatus='passed-inert-files-no-process-created'
  }
+} catch {
+ $primaryFailure=$_
+ throw
 } finally {
- foreach($guard in $guards){$guard.owner.Dispose()}
- if($alias -and -not [InstalledBarrierFixtureAlias]::DefineDosDevice(2,$alias,$null)){throw 'Fixture alias cleanup failed.'}
- if($root){Remove-Item -LiteralPath $root -Recurse -Force}
+ $cleanupFailures=New-Object 'Collections.Generic.List[Exception]'
+ foreach($guard in $guards){try{$guard.owner.Dispose()}catch{$cleanupFailures.Add($_.Exception)}}
+ if($aliasOwner){try{$aliasOwner.Remove()}catch{$cleanupFailures.Add($_.Exception)}}
+ if($root){
+  if($aliasOwner -and $aliasOwner.Created){[Console]::Error.WriteLine('Retained inert fixture root for exact alias recovery: '+$root+'; alias='+$aliasOwner.Name+'; target='+$aliasOwner.Target)}
+  else{try{Remove-Item -LiteralPath $root -Recurse -Force}catch{$cleanupFailures.Add($_.Exception)}}
+ }
+ if($cleanupFailures.Count -gt 0){
+  if($primaryFailure){foreach($failure in $cleanupFailures){[Console]::Error.WriteLine('Additional fixture cleanup failure; original failure preserved: '+$failure.Message)}}
+  else{throw [AggregateException]::new('Inert fixture cleanup failed; native result is not a pass.',$cleanupFailures.ToArray())}
+ }
 }
 [pscustomobject]@{schema=1;status='passed';checks=@($checks);nativeBehavior=$nativeStatus;sourceFiles=@($sourceFiles);applicationLaunched=$false;
  scope='Fixed marker restriction at actual entrypoints; no continuously pinned absence or signed broker authority'}|ConvertTo-Json -Depth 4 -Compress
