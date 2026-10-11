@@ -73,6 +73,16 @@ under checked existing ancestors. They do not authorize mutation of an existing
 root: after root creation, strict marker-absence checks run before and under
 `transaction.lock`, before ownership, recovery or installed state writes.
 
+Retained native directory owners request `FILE_LIST_DIRECTORY` as well as
+metadata access while omitting share-delete. A metadata-only handle does not
+provide the claimed Windows rename exclusion. Empty-directory native tests
+verify sharing refusal while held and successful rename after release, without
+letting a descendant image handle mask an ineffective ancestor pin. This applies
+to Go ordinary/armed launch ancestry, the C# barrier/image owner, and the new
+broker store/image/stock ancestry. It does not continuously pin a DOS alias,
+freeze reparse metadata, exclude earlier writable handles or prove loader
+custody. See the [exact-source native evidence](../evidence/scrum311-directory-pins-native-20261012/README.md).
+
 The option without an installation root remains an inert/private store API; it
 does not arm installed entry points or authorize a product operation. The
 installed option itself supplies **only denial and persistence**, not proof of

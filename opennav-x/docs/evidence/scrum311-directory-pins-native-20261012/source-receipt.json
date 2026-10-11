@@ -1,0 +1,201 @@
+{
+  "schema": 1,
+  "date": "2026-10-12",
+  "scope": "native-inert-files-only-not-product-release",
+  "applicationLaunched": false,
+  "hardwareCommandsSent": false,
+  "broker": {
+    "sourceCommit": "11486212968d3f8e9e8277270c6def2c52d1c62b",
+    "binaryArchitecture": "windows/386",
+    "binaries": [
+      {
+        "package": "brokerstore",
+        "file": "brokerstore-windows386.test.exe",
+        "sha256": "bca40067c5ebe72cafb48bc42bcb78c97b0012ae49ed561c74ebb0602aa2198d",
+        "tests": "^(TestNativeProtectedDirectoryAndRenamePin|TestNativeExistingDeleteHandleRefusesPin|TestNativeOpenRefusesOrdinaryPrincipal|TestPhysicalNamespaceValidation|TestNativeCandidateCapacityCountsForeignReservations|TestAncestorMutationPolicy)$"
+      },
+      {
+        "package": "brokerpipe",
+        "file": "brokerpipe-windows386.test.exe",
+        "sha256": "ad7950d5cf924d82ba65ce08862999927ca8231c3e7350c4977a8cc6a57c35a2",
+        "tests": "^(TestNativeABIAndNoClientInstanceRight|TestProtectedDescriptorRefusesUserControlAndUnknownOwner|TestPhysicalAncestorsCannotHideBehindDosAlias|TestNativeImageDirectoryPinBlocksRenameUntilClosed)$"
+      },
+      {
+        "package": "brokerhost",
+        "file": "brokerhost-windows386.test.exe",
+        "sha256": "23f50f8fdb049a67d999d7b91af906d208f6f69673db0b0c0f5c5e86ea836bbe",
+        "tests": "^TestNativeStockDirectoryRenamePin$"
+      }
+    ],
+    "sourceFiles": {
+      "opennav-x/tools/update-verifier/brokerstore/store.go": "e8ff8d72137b2ef9d0a46e4083b13fd0f3ebc58b0a2230dbca071c424ae44d95",
+      "opennav-x/tools/update-verifier/brokerstore/store_other.go": "2ee65d35005b02b4dc5df4e875abef691c9f6e0797c538eb45a4738f8d5a1471",
+      "opennav-x/tools/update-verifier/brokerstore/store_other_test.go": "bd91da3f5c2bc8b89427f01c9d1794273e9df89428057cf46c6e482a7ec013fb",
+      "opennav-x/tools/update-verifier/brokerstore/store_test.go": "b408f7d58b0c8882d4b82ffa2c677d9abfc7941091dbb9b0e1a8b829191dd5dc",
+      "opennav-x/tools/update-verifier/brokerstore/store_windows.go": "f71766d2cf121aa025f4c192185a871a49e1a5019ac672d610619a0e4c36d1e2",
+      "opennav-x/tools/update-verifier/brokerstore/store_windows_test.go": "adfd8483298c0ea671f6745f10f05ce6fbbb8ae9332dd7e5ee18d9af7e26be3d",
+      "opennav-x/tools/update-verifier/brokerpipe/identity_windows.go": "918e5d33f6285879975d721f238697b2aecd02e812609b1b65bbf498e4f6dc43",
+      "opennav-x/tools/update-verifier/brokerpipe/identity_windows_test.go": "0ac0c4dbf9fa5d7e166335c97366a2893ce3f6bd8685f872f24696ac022ad77d",
+      "opennav-x/tools/update-verifier/brokerpipe/io_windows.go": "21535a8fd5b4451526c90cc96d8d34b278efdf8083e0c283c97ea06b0d1127cd",
+      "opennav-x/tools/update-verifier/brokerpipe/native_other.go": "0d5f19877bb9f89af7da90c3cfd554d66d4975406375011b9e7d5548417674ec",
+      "opennav-x/tools/update-verifier/brokerpipe/native_other_test.go": "132d144ffc094a5c926045e028fa688f21243f091e04bdd1ebef1442defb9f4c",
+      "opennav-x/tools/update-verifier/brokerpipe/native_windows.go": "cfd23707af2121c6d8e6cd7e11c5802bc4263053610cdb844a18c571a946fba0",
+      "opennav-x/tools/update-verifier/brokerpipe/protocol.go": "fb93ef6553219fbcf6d9a4ec0a20d180784cd61800e61b7009f532a80c7400f4",
+      "opennav-x/tools/update-verifier/brokerpipe/protocol_test.go": "277666766bfae8d8554e9749e23c1a89bf596fcca3c9888b3771d36b457e544a",
+      "opennav-x/tools/update-verifier/brokerhost/host_other.go": "eeb3862835627232fa3d3767dd82f17fa04b4f06960532007e31d3075d30e4b7",
+      "opennav-x/tools/update-verifier/brokerhost/host_windows.go": "c8ada4236cc42c23432771a805e965623f23bfb2d54068a0758efdde790a4d14",
+      "opennav-x/tools/update-verifier/brokerhost/operation.go": "d1949833f4a1f8db58f14d2fc8030b6272cb1c2cf44ae9cf4252fb62bd848a9b",
+      "opennav-x/tools/update-verifier/brokerhost/operation_test.go": "f7c499c6f870eb3e9835ff48396633480c2016acad1744a4ae40bd42a9b3a9cd",
+      "opennav-x/tools/update-verifier/brokerhost/registration.go": "425f6e29e582d20ed296b4e3834285bbf36ee88fad5d71587a2d8c5773fceb1b",
+      "opennav-x/tools/update-verifier/brokerhost/registration_test.go": "ce5d8ccac8cc1d78556faa2bbd9fd1c78093e540bdbd48cdf71224e98ccc31c2",
+      "opennav-x/tools/update-verifier/brokerhost/stock_windows.go": "ac3ee1f3f21e897acf840ee962007adb3a3643721692c27fc3b344d8e0cc388b",
+      "opennav-x/tools/update-verifier/brokerhost/stock_windows_test.go": "50277c518a7604d0aeb30e0d2d56f9ff38ed7f8de6d1b1d520705dd68d2937b2",
+      "opennav-x/tools/update-verifier/go.mod": "fd81c9c980c701e666c3a59c25f1e0b2a458d672b86b106240bd842574e96d31",
+      "opennav-x/tools/update-verifier/go.sum": "66bc1ae7fcb8f87edc8ce36dc1b73406da1e869c4d061203e1992ffaa38ea603"
+    }
+  },
+  "launcher": {
+    "sourceCommit": "cd85b15e10aff7db1086a5e33a474cfc7f408da6",
+    "sources": [
+      {
+        "path": "opennav-x/tools/boat/test-installed-launch-barrier.ps1",
+        "sha256": "b6e2e25eac911940e46dbdc600a42b44bbfe3c7542faea1fcb492da61a7f86cb"
+      },
+      {
+        "path": "opennav-x/tools/boat/InstalledLaunchBarrier.ps1",
+        "sha256": "e774089aa6a6f42d30a48c9fa08f689bb489c95501fe4d18a417b72183327b82"
+      },
+      {
+        "path": "opennav-x/tools/boat/InteractiveJob.ps1",
+        "sha256": "3933ad10d2961ee0c6956e6bfbe5c213194fbc96c19883678825ad096e83a39c"
+      },
+      {
+        "path": "opennav-x/tools/boat/StartupLauncher.ps1",
+        "sha256": "645e1cb472d5ae47843ea614ed97f5033be09cd5a2b85f341af923d96e1d191f"
+      },
+      {
+        "path": "opennav-x/tools/boat/RestartCommissioningBroker.ps1",
+        "sha256": "9c3e4b981f75ca8945d856617ae5cba037dcb9ccfc876bcbf87148ee94d8a6dd"
+      },
+      {
+        "path": "opennav-x/tools/boat/RestartCommissioning.ps1",
+        "sha256": "255ea3fead542079ca0695371d942e9c7a774963796835e81ab52f3e0b3cb1ae"
+      },
+      {
+        "path": "opennav-x/installer/windows/UpdateTransaction.ps1",
+        "sha256": "5010661fb187b1cdf39d086aee6ac977da22490f976ce16e8c66e7bc5b0132c6"
+      },
+      {
+        "path": "opennav-x/tools/test-native-update-directory-pins.ps1",
+        "sha256": "dff3ae5fe6d47578e47c19da22c8c269352160b3d77388e37295bc2a0a567fad"
+      }
+    ],
+    "binary": {
+      "path": "launcher-windows386.test.exe",
+      "sha256": "5f70aacffca13dbbc9326f7185e7de9a3517be2904f365c2924796d211055973"
+    },
+    "nativeFilter": "^(TestNativeArmedDirectoryPinBlocksRenameUntilClosed|TestNativeArmedBarrierPresentTypesAndMissingParentRefuse|TestNativeArmedBarrierOnlyExactMissingLeafProvesAbsence)$",
+    "helperCommit": "3c8bbee6b7d6dccefcfcbacf0239628b3870f7cf",
+    "runnerSha256": "db359be837eddd02276f81888c1491cfcea2a4c091447bc1488ef8f7e2c442f3",
+    "goSourceFiles": {
+      "opennav-x/tools/update-verifier/launcher/acquisition_set_test.go": "cb0b522600df6915c5ec5e12efc734ccd4f9c77ed4c15f563bd7ffa429039a5a",
+      "opennav-x/tools/update-verifier/launcher/armed_barrier.go": "0b084736f0cb4f8e084481b09e619740720791df068f72895d0a245272479629",
+      "opennav-x/tools/update-verifier/launcher/armed_barrier_test.go": "803b22be6f66204b69339bdee170d91d8bc2b0e0dd6a6d0b54767522a007c92a",
+      "opennav-x/tools/update-verifier/launcher/armed_barrier_windows.go": "ac74b9818062f0e8a80162cebd948d4d0e41708b25be6cd00ad3f641bbf5cf57",
+      "opennav-x/tools/update-verifier/launcher/armed_barrier_windows_test.go": "044da79fccee5f09ee3e0b039c0313d3f78f0aff0c92245d189261d3042b07c4",
+      "opennav-x/tools/update-verifier/launcher/bootstrap.go": "15a55395e78f161474e0f1fe87f2551350fb5503d5247f922a5c309747e74900",
+      "opennav-x/tools/update-verifier/launcher/bootstrap_test.go": "86734fbc490f467f306bf7c1c9efbd01cf1e7ac344f3d81603377435a785f342",
+      "opennav-x/tools/update-verifier/launcher/launcher.go": "fd6094d5d3980baee5bef25107d012d3a9da8ed3ef6f70189a338dabfdef3e1a",
+      "opennav-x/tools/update-verifier/launcher/launcher_test.go": "c21b5ce6f4841e39e71190f1b8477026fa595b58ea4de113d26acb48141fb35a",
+      "opennav-x/tools/update-verifier/launcher/native_other.go": "25fc7941f21121f009116d56276b38c7599cd0cb14b860edef3bf804ffdb6393",
+      "opennav-x/tools/update-verifier/launcher/native_windows.go": "2f2803806406f06d7eab777c89560816525cd1252824e3b1ec90dfe7ada556da",
+      "opennav-x/tools/update-verifier/launcher/native_windows_test.go": "a1e52aa46b4e6347a533d9286d1d0a5d8e2b1f0459f490b20fff00a1525f9eb5",
+      "opennav-x/tools/update-verifier/launcher/ordinary_application_windows_test.go": "869351b10db40ac7bb1e604fa888b581e5f4307d751d38b2180579a6e845b8ff",
+      "opennav-x/tools/update-verifier/launcher/ordinary_creator.go": "6a9eb316f0d1b1c29cf0f2ae0e873e81ea03abec95481ba42068bbe598347901",
+      "opennav-x/tools/update-verifier/launcher/ordinary_creator_test.go": "3d4a82974c087d032a863e9b46cd4243bd613d5a2761889ea9b2457370634229",
+      "opennav-x/tools/update-verifier/launcher/ordinary_native_windows.go": "8c68d13f4c407c5a28bbce5dd36f8fe497b8f2edcf70690ed5d56231ea69a682",
+      "opennav-x/tools/update-verifier/launcher/ordinary_native_windows_test.go": "37fd23fa34578bcc997537a266b3d18547e90d248ad1b1b1f03d94451a759fef",
+      "opennav-x/tools/update-verifier/launcher/ordinary_subst_windows_test.go": "9bfe8f65f8b8c147bcf9bf065bb83785ab4923c08f4d0a6785aee08b7990a04f",
+      "opennav-x/tools/update-verifier/launcher/pe.go": "1c183830b8a3b76e2f0490177c3adb26bcd72b87935f761c482339a8f9129c9a",
+      "opennav-x/tools/update-verifier/launcher/prelaunch_boundary_test.go": "998e5e1d0b8ab8fb55ea8656ec0d8d0a0311fcd9a5391485bf0a97e4891c7a0d",
+      "opennav-x/tools/update-verifier/launcher/progress.go": "d02954a9783aab605f2d74bc80de68ed0643fc13ba741e95a44657e21d9a6afd",
+      "opennav-x/tools/update-verifier/launcher/progress_test.go": "7768c763ebe6d88e8b63201d167642b83b1f0ae1a3186f0feffb11fc2efa5eaf",
+      "opennav-x/tools/update-verifier/launcher/provision.go": "61557b718bf3a86c68acd094195e27d7647907e5312d87fe213d295094cacfd7",
+      "opennav-x/tools/update-verifier/launcher/records.go": "4878e4242bb40361e98d6af68911d1c9f2950b44577ff8f823cbfc48cdc28504",
+      "opennav-x/tools/update-verifier/launcher/records_test.go": "2da20e0f780eaf924fff0d4c07b28130644e11c99dd83fc030519af382d6c75d",
+      "opennav-x/tools/update-verifier/go.mod": "fd81c9c980c701e666c3a59c25f1e0b2a458d672b86b106240bd842574e96d31",
+      "opennav-x/tools/update-verifier/go.sum": "66bc1ae7fcb8f87edc8ce36dc1b73406da1e869c4d061203e1992ffaa38ea603"
+    }
+  },
+  "results": {
+    "broker": {
+      "groups": 11,
+      "subcases": 26,
+      "packagesPassed": 3
+    },
+    "launcherGo": {
+      "groups": 3,
+      "subcases": 4
+    },
+    "installedBarrierX64": {
+      "checks": 60,
+      "status": "passed"
+    },
+    "installedBarrierX86": {
+      "checks": 60,
+      "status": "passed"
+    },
+    "csharpDirectoryPinsX64": {
+      "status": "passed",
+      "checks": [
+        "Production transaction source parses",
+        "One exact embedded production native source selected",
+        "Exact production types compile without native invocation",
+        "Exact private production directory methods resolved",
+        "armed-barrier empty directory baseline rename succeeds",
+        "armed-barrier empty directory rename reports exact sharing error 32 while pinned",
+        "armed-barrier empty directory rename succeeds after release",
+        "image-owner empty directory baseline rename succeeds",
+        "image-owner empty directory rename reports exact sharing error 32 while pinned",
+        "image-owner empty directory rename succeeds after release",
+        "Only empty disposable fixture directories removed; cleanup errors: ",
+        "native production directory pins; no child process or application/profile interaction."
+      ],
+      "checkCount": 12
+    },
+    "csharpDirectoryPinsX86": {
+      "status": "passed",
+      "checks": [
+        "Production transaction source parses",
+        "One exact embedded production native source selected",
+        "Exact production types compile without native invocation",
+        "Exact private production directory methods resolved",
+        "armed-barrier empty directory baseline rename succeeds",
+        "armed-barrier empty directory rename reports exact sharing error 32 while pinned",
+        "armed-barrier empty directory rename succeeds after release",
+        "image-owner empty directory baseline rename succeeds",
+        "image-owner empty directory rename reports exact sharing error 32 while pinned",
+        "image-owner empty directory rename succeeds after release",
+        "Only empty disposable fixture directories removed; cleanup errors: ",
+        "native production directory pins; no child process or application/profile interaction."
+      ],
+      "checkCount": 12
+    }
+  },
+  "logHashes": {
+    "native-launchbarrier-d579c27b/broker-native-tests-attempt2.log": "c0b04e5b4d60632bceff3c3beb1e356eea043a834ce43cdf0c4be241772bfdc5",
+    "native-broker-pins-11486212/native-results-attempt2.log": "ab3205acc1c1a7de0b9fd70796ff2346dbf4722a7fa256c6895d86a1339b1d5a",
+    "native-launch-pins-cd85b15e/native-results-complete.log": "cb25090b37e37a3db4901d5d2e45ae9945850524be0528818a6c8995ef152f81",
+    "native-launch-pins-cd85b15e/barrier-x86.log": "2c16939ba0fee8af042fdbb1cdb1f2cd2d4e8884525bb780ca8f947c8dd60081",
+    "native-launch-pins-cd85b15e/directory-pins-x64-attempt2.log": "734e33cf08012167aa1debfac3b3d7d395d2d1d1d07aee5d8a1a876182b01638",
+    "native-launch-pins-cd85b15e/directory-pins-x86-attempt2.log": "734e33cf08012167aa1debfac3b3d7d395d2d1d1d07aee5d8a1a876182b01638"
+  },
+  "directoryFixture": {
+    "helperCommit": "054f9a79f8d78474c7a85e562d9a1e83bfa9b847",
+    "productionCommit": "cd85b15e10aff7db1086a5e33a474cfc7f408da6",
+    "sourceFiles": {
+      "opennav-x/tools/test-native-update-directory-pins.ps1": "03acef49b111170de6e4f80d2dee5a4d6b08240092f5ac8365226df26520c331",
+      "opennav-x/tools/test-native-update-image-owner.ps1": "9e6cf0925f1a7a87fb772970434a0e1cb3e069d28f861186f7c7dfc2b2458351"
+    }
+  }
+}

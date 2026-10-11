@@ -1,5 +1,27 @@
 # SKAGER status — 2026-10-12
 
+## Native directory-custody failure corrected
+
+Actual Windows execution exposed a retained-directory defect: metadata-only
+handles did not enforce the claimed rename exclusion. `aa9fe37c`, `31175848`,
+`11486212` and `cd85b15e` add directory list access to the existing protected-store,
+pipe, stock and launch owners without relaxing sharing/ACL/identity checks.
+Empty-directory tests require refusal while held and successful rename after
+release; conflicting pre-existing delete access also refuses acquisition.
+
+Focused native boat tests pass: broker Go/Win32 **11 groups + 26 subcases**;
+launcher Go/Win32 **3 groups + 4 subcases**; installed launch-barrier **60 checks
+per x64/x86 Windows PowerShell 5.1 host**; actual C# directory-owner opens **12
+checks per host**. The latter uses helper-only correction `054f9a79` against
+unchanged `cd85b15e` production bytes. Failed fixture/wrapper results are retained.
+The running application, profile and hardware configuration were not changed.
+These are native component results, not a native MSVC application build or full
+authenticated service/update qualification. See the
+[exact-source evidence](evidence/scrum311-directory-pins-native-20261012/README.md).
+SCRUM-311 remains In Progress; provisioning/trust, installation/loader custody,
+orphan recovery and exact-package acceptance remain open. No full application
+build, CI dispatch, deployment or physical command occurred.
+
 ## Authenticated protected staging joined in source
 
 Source commit `3d0b68d3` joins real `PrepareUpdateSet` and retained Recovery
@@ -52,9 +74,10 @@ bounded, held, hash-verified bytes; it is not reopened after hashing.
 
 The combined-root focused helper passed **39 portable checks**. The isolated
 increment also passed 44 existing startup checks, 309 restart checks, 26 broker
-fixture checks and eight qualifier tests. Native inert-file/SUBST cases are
-registered but **not executed**; current composition requires their exact-source
-native evidence rather than accepting portable results. These remain point-in-time
+fixture checks and eight qualifier tests. Native inert-file/SUBST cases were
+unexecuted at that source increment. The focused follow-up above now records
+their exact-source native component evidence; actual-entry/product integration
+still requires qualification. These remain point-in-time
 absence checks, not continuous namespace custody, no-child proof or signed
 broker authority. No boat launch, application build or hardware command was
 performed for this increment.
