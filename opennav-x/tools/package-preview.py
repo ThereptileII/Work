@@ -20,7 +20,9 @@ from openssl_package import verify_openssl_package_inputs, verify_packaged_opens
 from curl_package import verify_curl_package_inputs, verify_packaged_curl
 from updater_package import verify_updater_package, select_update_trust, copy_selected_update_trust
 from product_version import read_product_version
-from msvc_runtime_receipt import copy_msvc_runtime, write_runtime_receipt
+from msvc_runtime_receipt import (copy_msvc_runtime, write_runtime_receipt,
+                                  parse_visual_studio_catalog_base64)
+from wx_runtime_receipt import verify_runtime_receipt
 
 ROOT = Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser()
@@ -29,11 +31,15 @@ parser.add_argument('--build', type=Path, required=True)
 parser.add_argument('--runtime', type=Path, required=True)
 parser.add_argument('--runtime-vs-installation', type=Path, required=True)
 parser.add_argument('--runtime-vs-version', required=True)
+parser.add_argument('--runtime-vs-product-id', required=True)
+parser.add_argument('--runtime-vs-catalog-base64', default='e30=')
 parser.add_argument('--output', type=Path, required=True)
 parser.add_argument('--openssl-source-cache', type=Path, required=True,
                     help='Preverified upstream source tar; packaging never downloads it')
 parser.add_argument('--dependency-source-cache', type=Path, required=True,
                     help='Preverified curl and zlib source archives; no packaging downloads')
+parser.add_argument('--wx-runtime-archive', type=Path, required=True,
+                    help='Existing locked wx ReleaseDLL archive; no packaging downloads')
 parser.add_argument('--update-trust-config', type=Path,
                     help='Explicit committed installer/windows/staging-update-trust.json selection')
 parser.add_argument('--update-trust-validator', type=Path,
@@ -61,7 +67,9 @@ app = destination / 'app'
 if not (app / 'opencpn.exe').is_file() or not (app / 'opennav-restart.exe').is_file():
     raise SystemExit('Native executable/restart helper missing from CMake install')
 runtime_receipt = copy_msvc_runtime(args.runtime, app, args.runtime_vs_installation,
-                                    args.runtime_vs_version)
+                                    args.runtime_vs_version, args.runtime_vs_product_id,
+                                    parse_visual_studio_catalog_base64(args.runtime_vs_catalog_base64))
+wx_receipt = verify_runtime_receipt(app, ROOT / 'tools/windows-wx.lock.json', args.wx_runtime_archive)
 verify_packaged_openssl(app, openssl_source['manifest'])
 verify_packaged_curl(app, curl_sources['manifests'])
 adapter_spec = importlib.util.spec_from_file_location('ocharts_package', ROOT / 'tools/verify-ocharts-adapter-package.py')
@@ -265,7 +273,9 @@ create_source_archive(ROOT, commit, args.output / 'SKAGER-Beta2-source.zip',
                       [openssl_source['sourceBundle']] + curl_sources['sourceBundles'] + adapter_sources + [updater_source])
 from component_license_inventory import write_inventory
 write_inventory(destination, args.output / 'SKAGER-Beta2-source.zip', commit,
-                {'OpenSSL': openssl_source['manifest'], **curl_sources['manifests']})
+                {'OpenSSL': openssl_source['manifest'], **curl_sources['manifests']},
+                verified_runtime_sources=[updater_source, *adapter_sources], verified_wx=wx_receipt,
+                verified_msvc=runtime_receipt)
 manifest = {str(f.relative_to(destination)).replace('\\', '/'): hashlib.sha256(f.read_bytes()).hexdigest()
             for f in sorted(destination.rglob('*')) if f.is_file()}
 (destination / 'FILE_SHA256.json').write_text(json.dumps(manifest, indent=2) + '\n')

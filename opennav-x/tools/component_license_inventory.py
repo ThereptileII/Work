@@ -6,7 +6,8 @@ module does not authenticate arbitrary archives supplied by a third party.
 """
 import hashlib
 import json
-from pathlib import Path, PurePosixPath
+import stat
+from pathlib import Path, PurePosixPath, PureWindowsPath
 import re
 import zipfile
 
@@ -56,11 +57,14 @@ def require_path(name):
         raise ValueError('Unsafe inventory path: ' + str(name))
 
 
-def generate_inventory(package, source_archive, commit, verified_manifests):
+def generate_inventory(package, source_archive, commit, verified_manifests, *,
+                       verified_runtime_sources=(), verified_wx=None, verified_msvc=None):
     """Return JSON-compatible inventory, rechecking every declared evidence link.
 
     verified_manifests is the result of the existing OpenSSL and curl/zlib
-    package validators, not untrusted records loaded by this generator.
+    package validators. Runtime descriptors and receipts likewise come from
+    the existing adapter/updater, wx archive and MSVC copy validators; these
+    parameters are not an authentication API for third-party metadata.
     """
     package, source_archive = Path(package), Path(source_archive)
     if re.fullmatch('[0-9a-f]{40}', commit) is None:
@@ -101,7 +105,7 @@ def generate_inventory(package, source_archive, commit, verified_manifests):
 
     with zipfile.ZipFile(source_archive) as archive:
         names = archive.namelist()
-        if len(set(names)) != len(names):
+        if len({name.casefold() for name in names}) != len(names):
             raise ValueError('Ambiguous duplicate corresponding-source member')
         refs = read_json(archive.read('SOURCE_REFERENCE.json'))
         if refs.get('productCommit') != commit or refs.get('upstreamCommit') != PINNED_UPSTREAM:
@@ -124,6 +128,60 @@ def generate_inventory(package, source_archive, commit, verified_manifests):
             if files[package_name]['sha256'] != expected:
                 raise ValueError('Packaged notice differs from corresponding source: ' + package_name)
             return {'path': package_name, 'sourcePath': source_name, 'sha256': expected}
+
+        def runtime_bundle(descriptor, packaged, component):
+            if not isinstance(descriptor, dict) or set(descriptor) != {'archive', 'path', 'sha256', 'reference'}:
+                raise ValueError('Invalid verified runtime source descriptor')
+            name = descriptor['path']
+            require_path(name)
+            assign(packaged, component)
+            record = files[packaged]
+            matches = [item for item in refs.get('bundledDependencySources', [])
+                       if item.get('path') == name]
+            if (len(matches) != 1 or matches[0] != {
+                    'path': name, **record, 'reference': descriptor['reference']} or
+                    descriptor['sha256'] != record['sha256'] or
+                    Path(descriptor['archive']).resolve() != (package / packaged).resolve()):
+                raise ValueError('Verified runtime/source bundle differs: ' + component)
+            source = source_files.get(name)
+            if (not isinstance(source, dict) or source.get('gitMode') != '100644' or
+                    source.get('sha256') != record['sha256']):
+                raise ValueError('Missing runtime source payload: ' + component)
+            with archive.open(name) as stream:
+                hashed, size = hashlib.sha256(), 0
+                for block in iter(lambda: stream.read(1024 * 1024), b''):
+                    hashed.update(block)
+                    size += len(block)
+            if size != record['bytes'] or hashed.hexdigest() != record['sha256']:
+                raise ValueError('Runtime source payload differs: ' + component)
+            return {'path': name, **record, 'reference': descriptor['reference']}
+
+        def nested_sources(path):
+            nested = zipfile.ZipFile(package / path)
+            try:
+                entries = nested.infolist()
+                if (len(entries) > 100000 or
+                        len({item.filename.casefold() for item in entries}) != len(entries) or
+                        sum(item.file_size for item in entries) > 2 << 30):
+                    raise ValueError('Ambiguous or oversized runtime source archive')
+                for item in entries:
+                    require_path(item.filename)
+                    mode = stat.S_IFMT(item.external_attr >> 16)
+                    if item.is_dir() or mode not in (0, stat.S_IFREG) or item.file_size > 256 << 20:
+                        raise ValueError('Nonregular or oversized runtime source member')
+            except Exception:
+                nested.close()
+                raise
+            return nested
+
+        def nested_notice(nested, member, packaged):
+            if member not in nested.namelist():
+                raise ValueError('Runtime source notice missing: ' + member)
+            data = nested.read(member)
+            if not data:
+                raise ValueError('Empty runtime source notice')
+            return {'path': packaged, 'sourceMember': member,
+                    'sha256': digest(data), 'bytes': len(data)}
 
         product_notices = [notice('docs/licenses/SKAGER-COPYING.txt',
                                   'opennav-x/LICENSE', 'skager')]
@@ -194,6 +252,108 @@ def generate_inventory(package, source_archive, commit, verified_manifests):
                                'source': {'path': bundle['path'], 'sha256': source['sha256'], 'url': source['url']},
                                'buildManifest': manifest_path, 'runtimeFiles': runtime_files,
                                'notices': [license_notice, provenance_notice]})
+        runtime_sources = {}
+        allowed_sources = {'third-party-sources/skager-updater-source.zip': 'updater',
+                           'third-party-sources/skager-ocharts-source.zip': 'o-charts-adapter'}
+        for descriptor in verified_runtime_sources:
+            if (not isinstance(descriptor, dict) or descriptor.get('path') not in allowed_sources or
+                    descriptor['path'] in runtime_sources):
+                raise ValueError('Unexpected or duplicate verified runtime source')
+            runtime_sources[descriptor['path']] = descriptor
+        for source_path, component in allowed_sources.items():
+            updater = component == 'updater'
+            root = 'app/opennav/third-party/' + ('updater/' if updater else 'ocharts/')
+            runtime = 'app/' + ('skager-start.exe' if updater else 'skager-ocharts-adapter.dll')
+            manifest_path = root + ('build.json' if updater else 'manifest.json')
+            packaged_source = root + ('updater-source.zip' if updater else 'corresponding-source.zip')
+            present = runtime in files or any(name.startswith(root) for name in files)
+            descriptor = runtime_sources.get(source_path)
+            if not present and descriptor is None:
+                continue
+            if not present or descriptor is None:
+                raise ValueError('Runtime requires verified source descriptor: ' + component)
+            source = runtime_bundle(descriptor, packaged_source, component)
+            assign(runtime, component)
+            assign(manifest_path, component)
+            manifest = read_json((package / manifest_path).read_bytes())
+            reference = descriptor['reference']
+            with nested_sources(packaged_source) as nested:
+                if updater:
+                    from updater_package import _reference, _build_info, GO_VERSION
+                    _reference(reference, commit)
+                    if (set(manifest) != {'schema', 'productCommit', 'goVersion', 'binary', 'sourceBundle', 'buildInfo'} or
+                            type(manifest['schema']) is not int or manifest['schema'] != 1 or
+                            manifest['productCommit'] != commit or manifest['goVersion'] != GO_VERSION or
+                            manifest['binary'] != {'path': 'skager-start.exe', 'sha256': files[runtime]['sha256']} or
+                            manifest['sourceBundle'] != {'archive': packaged_source.removeprefix('app/'),
+                                'path': source_path, 'sha256': source['sha256'], 'reference': reference}):
+                        raise ValueError('Updater runtime/source manifest differs')
+                    _build_info(manifest['buildInfo'], commit)
+                    nested_reference = read_json(nested.read('SOURCE_REFERENCE.json'))
+                    indexed = nested_reference.pop('files', None)
+                    if (nested_reference != reference or not isinstance(indexed, dict) or
+                            set(indexed) != set(nested.namelist()) - {'SOURCE_REFERENCE.json'}):
+                        raise ValueError('Updater nested source inventory differs')
+                    for name, record in indexed.items():
+                        if not isinstance(record, dict) or set(record) != {'sha256', 'bytes'}:
+                            raise ValueError('Invalid updater source file record')
+                        with nested.open(name) as stream:
+                            actual = hashlib.file_digest(stream, 'sha256').hexdigest()
+                        if (type(record['bytes']) is not int or record['bytes'] != nested.getinfo(name).file_size or
+                                record['sha256'] != actual):
+                            raise ValueError('Updater nested source bytes differ')
+                        if name.startswith('project/') and actual != digest(source_bytes(
+                                'opennav-x/' + name.removeprefix('project/'))):
+                            raise ValueError('Updater corresponding product source differs')
+                    required_notices = ['project/LICENSE', GO_VERSION + '/LICENSE']
+                    for module in reference['modules']:
+                        matches = sorted(name for name in indexed if name.startswith(module['sourcePrefix'] + '/') and
+                                         PurePosixPath(name).name.upper().startswith(('LICENSE', 'COPYING')))
+                        if not matches:
+                            raise ValueError('Updater module source notice missing: ' + module['path'])
+                        required_notices.extend(matches)
+                    notices = [nested_notice(nested, name, packaged_source)
+                               for name in sorted(set(required_notices))]
+                else:
+                    expected_fields = {'schema', 'kind', 'bindingVersion', 'source', 'inputs',
+                                       'chartResourceManifest', 'chartResourceHeader', 'dll', 'imports',
+                                       'exports', 'dependencies', 'correspondingSource', 'qualification'}
+                    if (set(manifest) != expected_fields or type(manifest['schema']) is not int or manifest['schema'] != 1 or
+                            manifest['kind'] != 'skager-ocharts-adapter' or manifest['bindingVersion'] != 1 or
+                            manifest['source'] != reference or
+                            manifest['dll'] != {**files[runtime], 'name': 'skager-ocharts-adapter.dll', 'machine': 'I386'} or
+                            manifest['correspondingSource'] != {**files[packaged_source], 'path': 'corresponding-source.zip'}):
+                        raise ValueError('Adapter runtime/source manifest differs')
+                    lock_path = 'tools/ocharts-adapter-source.lock.json'
+                    lock_data = source_bytes('opennav-x/' + lock_path).replace(b'\r\n', b'\n')
+                    lock = read_json(lock_data)
+                    if reference != {'repository': lock['source']['repository'], 'commit': lock['source']['commit'],
+                                     'gitlinkCommit': lock['gitlink']['commit'], 'manifestSha256': digest(lock_data)}:
+                        raise ValueError('Adapter source identity differs from committed lock')
+                    expected = {'product/' + name for name in manifest['inputs']}
+                    expected |= {'source/' + name for name in lock['source']['files']}
+                    expected |= {'source/opencpn-libs/' + name for name in lock['gitlink']['files']}
+                    if set(nested.namelist()) != expected:
+                        raise ValueError('Adapter nested source inventory differs')
+                    for name, record in manifest['inputs'].items():
+                        data = source_bytes('opennav-x/' + name).replace(b'\r\n', b'\n')
+                        if record != {'sha256': digest(data), 'bytes': len(data)} or nested.read('product/' + name) != data:
+                            raise ValueError('Adapter corresponding product source differs')
+                    for group in ('source', 'gitlink'):
+                        for name, record in lock[group]['files'].items():
+                            member = 'source/' + ('opencpn-libs/' if group == 'gitlink' else '') + name
+                            data = nested.read(member)
+                            blob = hashlib.sha1(b'blob ' + str(len(data)).encode('ascii') + b'\0' + data).hexdigest()
+                            if record != {'bytes': len(data), 'gitBlob': blob}:
+                                raise ValueError('Adapter corresponding upstream source differs')
+                    notices = [nested_notice(nested, name, packaged_source) for name in sorted(expected)
+                               if PurePosixPath(name).name.upper().startswith(('LICENSE', 'COPYING', 'NOTICE', 'COPYRIGHT'))]
+                    if not any(item['sourceMember'] == 'source/COPYING' for item in notices):
+                        raise ValueError('Adapter upstream source notice missing')
+            components.append({'id': component, 'evidenceStatus': 'runtime-source-notice-matched',
+                               'source': source, 'buildManifest': manifest_path, 'runtimeFiles': [runtime],
+                               'notices': notices, 'licenseStatus': 'unresolved-review-required',
+                               'limitations': ['Verified provenance does not establish license compatibility or redistribution rights.']})
         wx_prefix = 'docs/licenses/wxWidgets-3.2.8/'
         wx_source = 'opennav-x/docs/third-party/wxWidgets-3.2.8/'
         wx_notices = [notice(wx_prefix + 'provenance.json', wx_source + 'provenance.json', 'wxWidgets')]
@@ -205,10 +365,101 @@ def generate_inventory(package, source_archive, commit, verified_manifests):
             if record['sha256'] != item['sha256']:
                 raise ValueError('wxWidgets notice provenance differs')
             wx_notices.append(record)
-        components.append({'id': 'wxWidgets', 'version': wx['version'],
-                           'source': {'commit': wx['commit']},
-                           'evidenceStatus': 'source-notice-matched', 'notices': wx_notices,
-                           'limitations': ['Runtime-to-upstream-source mapping is not established by this inventory.']})
+        wx_component = {'id': 'wxWidgets', 'version': wx['version'],
+                        'source': {'commit': wx['commit']},
+                        'evidenceStatus': 'source-notice-matched', 'notices': wx_notices,
+                        'licenseStatus': 'unresolved-review-required',
+                        'limitations': ['Binary archive membership does not establish source rebuild equivalence or legal clearance.']}
+        wx_candidates = {name for name in files if name.startswith('app/') and
+                         PurePosixPath(name).name.casefold().startswith('wx') and name.casefold().endswith('.dll')}
+        receipt_path = 'app/wx-runtime-receipt.json'
+        if verified_wx is not None or wx_candidates or receipt_path in files:
+            if not isinstance(verified_wx, dict) or set(verified_wx) != {
+                    'schema', 'component', 'version', 'abi', 'archive', 'files', 'scope'}:
+                raise ValueError('wxWidgets runtime requires verified receipt')
+            assign(receipt_path, 'wxWidgets')
+            if read_json((package / receipt_path).read_bytes()) != verified_wx:
+                raise ValueError('Packaged wxWidgets receipt differs')
+            lock_path = 'opennav-x/tools/windows-wx.lock.json'
+            lock_data = source_bytes(lock_path)
+            lock = read_json(lock_data)
+            release = [item for item in lock['archives'] if item.get('file') == 'wxMSW-3.2.8_vc14x_ReleaseDLL.7z']
+            if (type(verified_wx['schema']) is not int or verified_wx['schema'] != 1 or
+                    verified_wx['component'] != 'wxWidgets' or verified_wx['version'] != wx['version'] or
+                    lock['version'] != wx['version'] or verified_wx['abi'] != lock['abi'] or
+                    len(release) != 1 or verified_wx['archive'] != release[0] or
+                    verified_wx['scope'] != 'prebuilt-runtime-archive-members-only' or
+                    not isinstance(verified_wx['files'], list) or not verified_wx['files']):
+                raise ValueError('wxWidgets runtime archive identity differs from committed lock')
+            runtime_files = []
+            for item in verified_wx['files']:
+                if not isinstance(item, dict) or set(item) != {'path', 'member', 'sha256', 'bytes'}:
+                    raise ValueError('Invalid wxWidgets runtime file record')
+                require_path(item['path'])
+                name = 'app/' + item['path']
+                if (name not in wx_candidates or item['member'] != 'lib/vc14x_dll/' + PurePosixPath(name).name or
+                        type(item['bytes']) is not int or files[name] != {'sha256': item['sha256'], 'bytes': item['bytes']}):
+                    raise ValueError('wxWidgets packaged runtime differs from verified receipt')
+                assign(name, 'wxWidgets')
+                runtime_files.append(name)
+            if set(runtime_files) != wx_candidates or runtime_files != sorted(runtime_files):
+                raise ValueError('wxWidgets runtime inventory differs')
+            wx_component.update({'evidenceStatus': 'runtime-archive-notice-matched',
+                                 'runtimeArchive': verified_wx['archive'], 'buildReceipt': receipt_path,
+                                 'runtimeFiles': runtime_files,
+                                 'runtimeLock': {'path': lock_path, 'sha256': digest(lock_data)}})
+        components.append(wx_component)
+        msvc_receipt_path = 'docs/MSVC_RUNTIME_RECEIPT.json'
+        if verified_msvc is not None or msvc_receipt_path in files:
+            from msvc_runtime_receipt import _visual_studio_identity
+            if not isinstance(verified_msvc, dict) or set(verified_msvc) != {
+                    'schemaVersion', 'component', 'architecture', 'family', 'visualStudio',
+                    'redistributable', 'files', 'sourceCopyEquality', 'legalStatus'}:
+                raise ValueError('MSVC runtime requires verified copy receipt')
+            assign(msvc_receipt_path, 'MSVC-runtime')
+            if read_json((package / msvc_receipt_path).read_bytes()) != verified_msvc:
+                raise ValueError('Packaged MSVC copy receipt differs')
+            vs, redist = verified_msvc['visualStudio'], verified_msvc['redistributable']
+            if (not isinstance(vs, dict) or set(vs) != {'installationDirectory', 'installationVersion', 'productId', 'catalog'} or
+                    not isinstance(redist, dict) or set(redist) != {'directory', 'version'} or
+                    not all(isinstance(value, str) for value in (vs['installationDirectory'], vs['installationVersion'],
+                                                                redist['directory'], redist['version']))):
+                raise ValueError('Invalid MSVC toolchain identity')
+            if (type(verified_msvc['schemaVersion']) is not int or verified_msvc['schemaVersion'] != 2 or
+                    verified_msvc['component'] != 'Microsoft Visual C++ runtime' or
+                    verified_msvc['architecture'] != 'x86' or verified_msvc['family'] != 'Microsoft.VC143.CRT' or
+                    verified_msvc['sourceCopyEquality'] != 'verified' or
+                    verified_msvc['legalStatus'] != 'redistribution-terms-unresolved-review-required' or
+                    not PureWindowsPath(vs['installationDirectory']).is_absolute() or
+                    re.fullmatch(r'\d+(?:\.\d+){2,3}', vs['installationVersion']) is None or
+                    re.fullmatch(r'\d+(?:\.\d+){2,3}', redist['version']) is None or
+                    PureWindowsPath(redist['directory']) != PureWindowsPath(vs['installationDirectory']) /
+                        'VC/Redist/MSVC' / redist['version'] / 'x86/Microsoft.VC143.CRT' or
+                    _visual_studio_identity(vs['installationDirectory'], vs['installationVersion'],
+                                            vs['productId'], vs['catalog']) != vs or
+                    not isinstance(verified_msvc['files'], list) or not 1 <= len(verified_msvc['files']) <= 256):
+                raise ValueError('MSVC copy receipt identity differs')
+            runtime_files = []
+            for item in verified_msvc['files']:
+                if not isinstance(item, dict) or set(item) != {'name', 'bytes', 'sha256', 'fileVersion', 'productVersion'}:
+                    raise ValueError('Invalid MSVC copied file record')
+                require_path(item['name'])
+                name = 'app/' + item['name']
+                if (len(PurePosixPath(item['name']).parts) != 1 or not item['name'].casefold().endswith('.dll') or
+                        type(item['bytes']) is not int or files.get(name) != {'sha256': item['sha256'], 'bytes': item['bytes']} or
+                        any(not isinstance(item[key], str) or re.fullmatch(r'\d+(?:\.\d+){3}', item[key]) is None
+                            for key in ('fileVersion', 'productVersion'))):
+                    raise ValueError('MSVC packaged runtime differs from verified copy receipt')
+                assign(name, 'MSVC-runtime')
+                runtime_files.append(name)
+            if (runtime_files != sorted(runtime_files, key=str.casefold) or
+                    not {'app/msvcp140.dll', 'app/vcruntime140.dll'} <= set(runtime_files)):
+                raise ValueError('MSVC copied runtime inventory differs')
+            components.append({'id': 'MSVC-runtime', 'evidenceStatus': 'runtime-copy-identity-matched',
+                               'buildReceipt': msvc_receipt_path, 'runtimeFiles': runtime_files,
+                               'toolchain': vs, 'redistributable': redist, 'notices': [],
+                               'licenseStatus': 'redistribution-terms-and-entitlement-unresolved-review-required',
+                               'limitations': ['Copy identity does not establish Microsoft source, notices, redistribution rights or entitlement.']})
         font_cmake_path = 'OpenCPN-5.12.4-integrated/CMakeLists.txt'
         install_lists = fonts.inspect_install_lists(source_bytes(font_cmake_path).decode('utf-8-sig'))
         for source_path, expected in ((fonts.FREESANS_SOURCE, fonts.FREESANS_SHA256),
@@ -273,8 +524,8 @@ def generate_inventory(package, source_archive, commit, verified_manifests):
             'files': files, 'unresolvedFiles': unresolved}
 
 
-def write_inventory(package, source_archive, commit, verified_manifests):
-    inventory = generate_inventory(package, source_archive, commit, verified_manifests)
+def write_inventory(package, source_archive, commit, verified_manifests, **verified_runtime):
+    inventory = generate_inventory(package, source_archive, commit, verified_manifests, **verified_runtime)
     package = Path(package)
     text = ['# Third-party notice inventory', '',
             'Product commit: `' + commit + '`', '',
@@ -286,9 +537,13 @@ def write_inventory(package, source_archive, commit, verified_manifests):
                      'Evidence: ' + component['evidenceStatus'] + '.', ''])
         if 'declaredLicense' in component:
             text.extend(['Recorded license identifier: ' + component['declaredLicense'] + '.', ''])
+        if 'licenseStatus' in component:
+            text.extend(['Review status: ' + component['licenseStatus'] + '.', ''])
         for item in component['notices']:
             relative = item['path'].removeprefix('docs/')
-            text.append('- [' + relative + '](' + relative + ')')
+            target = relative if item['path'].startswith('docs/') else '../' + item['path']
+            text.append('- [' + relative + '](' + target + ')' +
+                        (' — source member `' + item['sourceMember'] + '`' if 'sourceMember' in item else ''))
         text.extend(['', *component.get('limitations', []), ''])
     text.extend(['## Unresolved coverage', '', *inventory['limitations'][:3], '',
                  str(len(inventory['unresolvedFiles'])) + ' packaged files lack reviewed component/license attribution; see the machine-readable inventory.', ''])
