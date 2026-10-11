@@ -144,7 +144,8 @@ example nor its README establishes an explicit continuation of the optional
 embedding exception for that converted artifact. Consequently this evidence
 supports GNU FreeFont provenance and the GPL-3.0-or-later origin, while a
 font-specific notice is now supplied while the final license-expression decision
-for the shipped derivative remains pending. The SSFN project's MIT license covers its software; it does not
+for the shipped derivative remains pending. The SSFN project's MIT license
+covers its software; it does not
 replace the GNU font's license.
 
 Release review must address GPLv3 notice/license preservation, identification
@@ -183,7 +184,6 @@ OpenCPN commits, the decompressed SSFN example, and the independent OTF-to-SSFN
 conversion; inspection of original OTF license metadata and GNU source archive;
 `git diff --check`. This documentation-only follow-up does not qualify a new
 package or close SCRUM-59.
-
 Offline payload implementation verification (2026-10-11): real vendored GNU
 archive/member and notice equality checks (2 tests); source packaging (13 tests);
 component inventory (20 tests); offline notice gate (22 tests). The existing release-manifest entry point also
