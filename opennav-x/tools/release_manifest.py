@@ -6,6 +6,7 @@ The publisher must establish trusted CI provenance before using these records.
 """
 import argparse
 from hardware_output_policy import require_product_output_policy
+from packaged_notice_gate import validate as validate_packaged_notices
 import hashlib
 import json
 from pathlib import Path, PurePosixPath
@@ -165,6 +166,8 @@ def check_product(files, commit, version):
         require(isinstance(source_files, dict) and isinstance(source_files.get(notes_path), dict)
                 and source_files[notes_path].get('sha256') == digest(notes)
                 and archive.read(notes_path) == notes, 'Corresponding source release notes differ')
+    validate_packaged_notices(files['SKAGER-Beta2-Portable-Recovery.zip'],
+                              files['SKAGER-Beta2-source.zip'], commit)
 
 
 def design_review(files):

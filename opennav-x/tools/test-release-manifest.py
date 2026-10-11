@@ -12,6 +12,7 @@ import warnings
 import zipfile
 
 import release_manifest as release
+from test_packaged_notice_gate import fixture_entries
 
 COMMIT = '1' * 40
 VERSION = '0.4.0-beta2'
@@ -29,10 +30,9 @@ class ManifestTests(unittest.TestCase):
         self.build = dict(version=VERSION, commit=COMMIT, test_fixtures=False,
                           build_purpose='INSTALLED PRODUCT', xnav_hardware_output_policy='status-only',
                           executable_sha256=release.digest(b'inert exe'))
-        self.source = dict(productCommit=COMMIT, upstreamCommit=release.UPSTREAM,
-                           openCpnVersion='5.12.4', files={
-                               'opennav-x/docs/beta2/SKAGER-Beta2-Release-Notes.md':
-                                   {'sha256': release.digest(self.notes)}})
+        self.notices, self.source_entries, self.source = fixture_entries(COMMIT)
+        self.source['files']['opennav-x/docs/beta2/SKAGER-Beta2-Release-Notes.md'] = {
+            'sha256': release.digest(self.notes), 'gitMode': '100644'}
         self.archives()
 
     def archives(self, portable_extra=()):
@@ -43,11 +43,15 @@ class ManifestTests(unittest.TestCase):
                 (prefix + 'app/opencpn.exe', b'inert exe'),
                 (prefix + 'docs/SKAGER-Beta2-Release-Notes.md', self.notes),
                 (prefix + 'FILE_SHA256.json', json.dumps({
-                    'docs/SKAGER-Beta2-Release-Notes.md': release.digest(self.notes)})),
+                    'docs/SKAGER-Beta2-Release-Notes.md': release.digest(self.notes),
+                    **{name: release.digest(data) for name, data in self.notices.items()}})),
+                *((prefix + name, data) for name, data in self.notices.items()),
                 *portable_extra,
             ]:
                 archive.writestr(name, data)
         with zipfile.ZipFile(self.root / 'SKAGER-Beta2-source.zip', 'w') as archive:
+            for name, data in self.source_entries.items():
+                archive.writestr(name, data)
             archive.writestr('SOURCE_REFERENCE.json', json.dumps(self.source))
             archive.writestr('opennav-x/docs/beta2/SKAGER-Beta2-Release-Notes.md', self.notes)
         self.sums()
@@ -63,6 +67,24 @@ class ManifestTests(unittest.TestCase):
 
     def rewrite(self, record):
         (self.root / release.MANIFEST).write_text(json.dumps(record))
+
+    def test_notice_gate_enforced_by_create_and_verify(self):
+        name = 'docs/licenses/curl-8.22.0/LICENSE.txt'
+        original = self.notices.pop(name)
+        self.archives()
+        with self.assertRaisesRegex(ValueError, 'Missing notice/source'):
+            self.create()
+        self.notices[name] = original
+        self.archives()
+        record = self.create()
+        self.notices[name] = original + b'tamper'
+        self.archives()
+        record['files'] = [release.file_record(self.root / name)
+                           for name in sorted(release.RELEASE_FILES)]
+        record['inventorySha256'] = release.digest(release.canonical(record['files']))
+        self.rewrite(record)
+        with self.assertRaisesRegex(ValueError, 'differs from corresponding source'):
+            release.verify(self.root)
 
     def test_default_staging_and_readonly_verification(self):
         record = self.create()

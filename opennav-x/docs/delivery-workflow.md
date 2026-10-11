@@ -71,6 +71,23 @@ automatically block promotion under this newer user decision. A mixed issue's
 functional or safety defects remain release blockers independently of its
 design-conformance work. Do not mark the whole issue Done without its evidence.
 
+## Packaged notice and source consistency
+
+Release manifest creation and verification run `tools/packaged_notice_gate.py`
+against the recovery and corresponding-source ZIPs without extraction or network
+access. The bounded check compares the packaged SKAGER, pinned OpenCPN,
+wxWidgets, OpenSSL, curl and zlib notices with their exact source inventory and
+component provenance; the declared OpenSSL, curl and zlib source bundle bytes
+must match too. Missing notices, changed contents, nonregular notice members,
+duplicate/case-colliding references and ambiguous same-commit source URLs fail.
+The existing release manifest schema and source archive format are unchanged.
+
+This deterministic integrity result does not establish license compatibility,
+complete dependency/font/artwork coverage or legal acceptance. Trusted CI custody,
+updater and optional o-charts producer checks, native package qualification and
+the source/license release review remain separate requirements. A passing inert
+fixture test does not qualify a real release archive.
+
 ## Avoid repeated builds
 
 Retain immutable application/package artifacts before downstream qualification.
