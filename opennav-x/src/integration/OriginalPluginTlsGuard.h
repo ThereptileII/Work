@@ -1,6 +1,7 @@
 #pragma once
 #ifdef _WIN32
 #include "integration/Win32PluginTlsImports.h"
+#include "integration/PluginTlsBytePolicy.h"
 #include <wx/msw/wrapwin.h>
 #include <wx/filename.h>
 #include <wx/string.h>
@@ -39,7 +40,8 @@ class OriginalPluginTlsGuard {
         return;
       }
       refusal_ = RefuseLegacyPluginLocalTlsClosure(bytes,
-          [&](const std::string& module) { return ReadSibling(directory, module); });
+          [&](const std::string& module) { return ReadSibling(directory, module); },
+          RefuseKnownObsoletePluginTlsBytes);
     } catch (const std::exception&) {
       refusal_ = "Cannot allocate plugin import inspection";
     }

@@ -74,14 +74,26 @@ struct PluginTlsLocalModule {
   std::string error;
 };
 
+// Same exact stock OpenCPN 5.12.4 OpenSSL 3.0.5 identities as Lifecycle.ps1.
+// This denies known bytes, including renamed copies; it does not qualify other
+// OpenSSL builds or the complete Windows dependency search.
+inline std::string RefuseKnownObsoletePluginTlsSha256(const std::string& digest) {
+  if (digest == "2bede6f2840cfe0a4e88d5c3fa648c170509c9ceed438c7e8440340541ca0446")
+    return "Known obsolete TLS runtime: OpenSSL 3.0.5 libssl-3.dll";
+  if (digest == "05752a0550349337af8b7e25362d527f6a30261dd3d1e4db61bf707c9fac589d")
+    return "Known obsolete TLS runtime: OpenSSL 3.0.5 libcrypto-3.dll";
+  return {};
+}
+
 // Inspect the bounded, declarative import/forwarder graph whose DLL basenames resolve
 // beside the original plugin. `read_local` must read and hold each found file
 // across the eventual LoadLibrary call. Missing sibling modules may resolve in
 // the application/system/PATH loader search; this function makes no claim about
 // those paths, dynamic loads or child processes.
-template <typename ReadLocal>
+template <typename ReadLocal, typename InspectBytes>
 std::string RefuseLegacyPluginLocalTlsClosure(
-    const std::vector<unsigned char>& root, ReadLocal read_local) {
+    const std::vector<unsigned char>& root, ReadLocal read_local,
+    InspectBytes inspect_bytes) {
   constexpr std::size_t max_nodes = 256;
   constexpr std::size_t max_bytes = 256u * 1024u * 1024u;
   std::deque<std::vector<unsigned char>> pending;
@@ -91,6 +103,8 @@ std::string RefuseLegacyPluginLocalTlsClosure(
   while (!pending.empty()) {
     auto bytes = std::move(pending.front());
     pending.pop_front();
+    const auto byte_refusal = inspect_bytes(bytes);
+    if (!byte_refusal.empty()) return byte_refusal;
     const auto imports = ReadWin32PeImports(bytes);
     const auto denied = RefuseLegacyPluginTlsImports(imports);
     if (!denied.empty()) return denied;
@@ -141,5 +155,14 @@ std::string RefuseLegacyPluginLocalTlsClosure(
     }
   }
   return {};
+}
+
+// Reader-only compatibility seam. The production OriginalPluginTlsGuard always
+// supplies the retained-byte hash policy through the three-argument overload.
+template <typename ReadLocal>
+std::string RefuseLegacyPluginLocalTlsClosure(
+    const std::vector<unsigned char>& root, ReadLocal read_local) {
+  return RefuseLegacyPluginLocalTlsClosure(root, read_local,
+      [](const std::vector<unsigned char>&) { return std::string{}; });
 }
 }
