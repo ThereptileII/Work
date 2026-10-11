@@ -1,0 +1,1 @@
+PASS: exact inert marker C# syntax parses without executing the fixture or a native API.

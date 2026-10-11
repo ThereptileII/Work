@@ -1,0 +1,38 @@
+PASS: Production transaction source parses
+PASS: One exact embedded native source selected
+PASS: Exact embedded owner compiles without invoking Win32
+PASS: Held DOS parser strips exactly the extended prefix and preserves the physical suffix
+PASS: Held DOS parser accepts a conventional local drive spelling
+PASS: Unsupported or physically mismatched application spelling refused
+PASS: Unsupported or physically mismatched application spelling refused
+PASS: Unsupported or physically mismatched application spelling refused
+PASS: Unsupported or physically mismatched application spelling refused
+PASS: Unsupported or physically mismatched application spelling refused
+PASS: Unsupported or physically mismatched application spelling refused
+PASS: Unsupported or physically mismatched application spelling refused
+PASS: Ambiguous DOS application component refused
+PASS: Ambiguous DOS application component refused
+PASS: Ambiguous DOS application component refused
+PASS: Ambiguous DOS application component refused
+PASS: Ambiguous DOS application component refused
+PASS: Ambiguous DOS application component refused
+PASS: Ambiguous DOS application component refused
+PASS: Ambiguous DOS application component refused
+PASS: Ambiguous DOS application component refused
+PASS: Ambiguous DOS application component refused
+PASS: Ambiguous DOS application component refused
+PASS: Ambiguous DOS application component refused
+PASS: Ambiguous DOS application component refused
+PASS: Ambiguous DOS application component refused
+PASS: Ambiguous DOS application component refused
+PASS: Nonlocal native volume refused
+PASS: Volume root cannot be selected as an executable
+PASS: Durable armed launch refuses automatic recovery
+PASS: Historical attempted record remains readable but cannot authorize native cleanup
+PASS: Running record without PID explicitly refused
+PASS: Malformed native creation identity refused
+PASS: Malformed native creation identity refused
+PASS: Malformed native creation identity refused
+PASS: Malformed native creation identity refused
+PASS: Malformed native creation identity refused
+SKIP: native creation/alias/health/cleanup require Windows; portable compilation is not native qualification.

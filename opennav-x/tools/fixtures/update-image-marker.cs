@@ -12,7 +12,9 @@ internal static class UpdateImageMarker {
    string root=Environment.GetEnvironmentVariable("SKAGER_IMAGE_FIXTURE_ROOT");
    string label=FixtureImage;
    if(String.IsNullOrEmpty(root) || (label!="A" && label!="B")) return 125;
-   var form=new Form { ShowInTaskbar=false,Opacity=0,Width=1,Height=1,Text="Inert update image fixture" };
+   // Process.CloseMainWindow discovers visible, unowned top-level windows.
+   // Keep this inert fixture discoverable so normal owner cleanup is tested.
+   var form=new Form { ShowInTaskbar=true,Opacity=1,Width=1,Height=1,Text="Inert update image fixture" };
    form.Shown+=delegate {
     // The child only writes to its parent's unique disposable fixture root.
     File.WriteAllText(Path.Combine(root,"marker-"+label),"started");

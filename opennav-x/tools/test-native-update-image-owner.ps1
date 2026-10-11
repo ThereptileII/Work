@@ -142,6 +142,8 @@ try {
  $child=$owner.Start((StartInfo $aliased));$children.Add($child)
  WaitMarker 'marker-A'
  Check (-not [IO.File]::Exists((Join-Path $fixture 'marker-B'))) 'Alias remap before creation never executes replacement bytes'
+ $child.Refresh()
+ Check ($child.MainWindowHandle -ne [IntPtr]::Zero) 'Inert marker exposes its main window for the actual normal-close test'
  Check ($owner.Matches($child,$aliased,$aHash)) 'Created child remains bound to retained physical image after DOS remap'
  $owner.Close($child,10000)
  Check $child.HasExited 'Native owner normally closes its original child after alias remap'

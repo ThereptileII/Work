@@ -1,0 +1,57 @@
+{
+  "issue": "SCRUM-311",
+  "failedRunId": 38167390164,
+  "failedCandidate": "6445d67e27c6b6f4254849556efea28248204711",
+  "failedRunConclusion": "failure",
+  "artifactId": 11712727661,
+  "artifactSha256": "95b796a8bc582f31cba18633b4953e68b61f309c4b0599d503a1c0faff3b735e",
+  "rawOwnerLog": {
+    "retained": "raw/owner.log",
+    "bytes": 8276,
+    "sha256": "9a0ba8d8dc2b8da3d8e7c8787307df2d4dbbf820705e0babe244db00b3c140a3",
+    "passLinesBeforeFirstClose": 57
+  },
+  "observedFailure": "First UpdateImageOwner.Close after marker-A and Matches passed; health fixture had not been reached. No preceding health exception is evidenced.",
+  "sourceSupportedExplanation": "ShowInTaskbar=false causes an owned WinForms top-level window; Framework MainWindowFinder excludes owned/invisible windows. Raw failing log did not record the window handle, so this is a source-supported fixture diagnosis pending native confirmation.",
+  "change": "Only visible/unowned inert marker Form settings and a fresh MainWindowHandle assertion; actual owner.Close and raw-exit gate remain.",
+  "sourceHashes": [
+    {
+      "path": "opennav-x/tools/fixtures/update-image-marker.cs",
+      "failedCandidateGitSha256": "87690fb841d03d3e8bfed6f9b10e67aa46c49b83c3c2c93cb5377b96d26f4943",
+      "currentGitSha256": "38c9e5af2a44aa8bb743f6c7373d8408e28d1d9daf1af5713b64748de5aba234",
+      "changed": true
+    },
+    {
+      "path": "opennav-x/tools/test-native-update-image-owner.ps1",
+      "failedCandidateGitSha256": "b83ff71f1f80e60b3bd78451706075ce17c3782b6ebf2dedf176113ae11c76b3",
+      "currentGitSha256": "ac46d7365cbcbfa6990d7cb2984dafd4bed5b03dbf2ded9c118ea7203ec782a4",
+      "changed": true
+    },
+    {
+      "path": "opennav-x/installer/windows/UpdateTransaction.ps1",
+      "failedCandidateGitSha256": "335e6d4e04075fbf9475b70d08e71013ab0be9c10841e2a22dcb834a5014dd29",
+      "currentGitSha256": "335e6d4e04075fbf9475b70d08e71013ab0be9c10841e2a22dcb834a5014dd29",
+      "changed": false
+    }
+  ],
+  "portablePolicy": {
+    "exitCode": 0,
+    "passChecks": 37,
+    "nativeApisInvoked": false
+  },
+  "markerSyntax": {
+    "exitCode": 0,
+    "nativeApisInvoked": false,
+    "semanticWindowsFormsCompilation": false
+  },
+  "nativeVerification": "pending coordinator run; no native fixture rerun here",
+  "productionSourceChanged": false,
+  "productAcceptance": false,
+  "boatAcceptance": false,
+  "sources": [
+    "https://github.com/microsoft/referencesource/blob/main/System/services/monitoring/system/diagnosticts/ProcessManager.cs",
+    "https://referencesource.microsoft.com/System.Windows.Forms/winforms/Managed/System/WinForms/Form.cs.html",
+    "https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.process.mainwindowhandle"
+  ],
+  "checkedAtUtc": "2026-10-11T19:22:55.911667+00:00"
+}
