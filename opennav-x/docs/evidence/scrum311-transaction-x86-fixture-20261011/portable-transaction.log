@@ -1,0 +1,6 @@
+PASS: exact identities, atomic replacement, bounded attempt, interruption recovery, malformed/oversized/untrusted JSON rejection.
+PASS: real exclusive Lifecycle lock, owned inventory/hash validation, dot-source isolation, missing/forged known-good refusal without installation changes.
+PASS: exact embedded native receiver compiles.
+PASS: suspended-child native regression interop compiles.
+PASS: direct parsed phase-array iteration retains three scalar records.
+SKIP: Windows authenticated pipe/PID/ACL fixtures require native Windows; Linux results do not qualify them.

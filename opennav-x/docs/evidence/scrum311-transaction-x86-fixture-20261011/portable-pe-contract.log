@@ -1,0 +1,5 @@
+PASS: exact output contract accepts X86 compiler-emitted PE without execution.
+PASS: exact output contract refuses AnyCpu compiler-emitted PE without execution.
+PASS: exact output contract refuses X64 compiler-emitted PE without execution.
+PASS: exact output contract refuses a truncated PE.
+PASS: exact transaction script parses; no native API or emitted executable was invoked.

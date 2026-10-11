@@ -1,0 +1,16 @@
+{
+  "issue": "SCRUM-311",
+  "failedRunId": 38167897619,
+  "failedCandidate": "0e808824d9ff2d6a4890e608d72805df16174cd8",
+  "sourceSha256": "bdb7fe6cc4629b069f1fb5dd38c8a55ff07044349700460e019400b315e35f69",
+  "change": "Framework csc /platform:x86; emitted PE32/Machine0x14c/CLR32BITREQUIRED check; preserve primary errors while reporting secondary cleanup failures",
+  "portableTransaction": "passed: 5 summaries; exact embedded production receiver and suspended fixture interop compile; native skipped",
+  "portableOutputContract": "passed: independently emitted X86 accepted; AnyCpu/X64/truncated PE refused; exact script parsed",
+  "nativeApisInvoked": false,
+  "executablesInvoked": false,
+  "windowsFrameworkCompilerInvoked": false,
+  "productChanged": false,
+  "nativeVerification": "pending coordinator run",
+  "diagnosis": "Source-supported AnyCPU/x64 fixture vs x86 MainModule inspection explanation; original pre-cleanup exception was masked and not recorded. Prior full run remains failed.",
+  "checkedAtUtc": "2026-10-11T19:32:46.040255+00:00"
+}

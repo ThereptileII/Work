@@ -24,7 +24,33 @@ function HashFile([string]$Path) {
   try { return ([BitConverter]::ToString($sha.ComputeHash($stream))).Replace('-','').ToLowerInvariant() }
   finally { $stream.Dispose(); $sha.Dispose() }
 }
+# Check the compiler's actual output before copying or launching an inert app.
+# PE32 alone also describes AnyCPU; CLR 32BITREQUIRED is needed for the Win32 ABI.
+function Assert-InertX86Application([string]$Path) {
+  $bytes=[IO.File]::ReadAllBytes($Path)
+  Check ($bytes.Length -ge 64) 'Inert executable has no complete DOS header.'
+  $pe=[BitConverter]::ToInt32($bytes,60)
+  Check ($pe -ge 64 -and $pe -le $bytes.Length-24) 'Inert executable has no bounded PE header.'
+  Check ([BitConverter]::ToUInt32($bytes,$pe) -eq 0x4550 -and [BitConverter]::ToUInt16($bytes,$pe+4) -eq 0x14c) 'Inert executable must target x86.'
+  $optional=$pe+24;$optionalSize=[BitConverter]::ToUInt16($bytes,$pe+20)
+  Check ($optionalSize -ge 224 -and $optional+$optionalSize -le $bytes.Length -and [BitConverter]::ToUInt16($bytes,$optional) -eq 0x10b) 'Inert executable must have a bounded PE32 header.'
+  Check ([BitConverter]::ToUInt32($bytes,$optional+92) -ge 15 -and [BitConverter]::ToUInt32($bytes,$optional+212) -ge 72) 'Inert executable has no complete CLR directory.'
+  $clrRva=[BitConverter]::ToUInt32($bytes,$optional+208)
+  $sections=[BitConverter]::ToUInt16($bytes,$pe+6);$table=$optional+$optionalSize
+  Check ($sections -ge 1 -and $sections -le 96 -and $table+$sections*40 -le $bytes.Length) 'Inert executable has no bounded section table.'
+  $clr=-1L
+  for($i=0;$i -lt $sections;$i++) {
+    $section=$table+$i*40
+    $virtual=[int64][BitConverter]::ToUInt32($bytes,$section+12)
+    $size=[int64][BitConverter]::ToUInt32($bytes,$section+16)
+    $raw=[int64][BitConverter]::ToUInt32($bytes,$section+20)
+    if($clrRva -ge $virtual -and [int64]$clrRva+72 -le $virtual+$size) { $clr=[int64]$clrRva-$virtual+$raw;break }
+  }
+  Check ($clr -ge 0 -and $clr+72 -le $bytes.Length) 'Inert executable CLR header is outside its file.'
+  Check (([BitConverter]::ToUInt32($bytes,[int]$clr+16) -band 2) -ne 0) 'Inert executable must require the 32-bit CLR; AnyCPU is unsupported.'
+}
 $fixture = Join-Path ([IO.Path]::GetTempPath()) ('skager-update-fixture-' + [guid]::NewGuid().ToString('N'))
+$fixtureFailure=$null
 try {
   $null = New-Item -ItemType Directory -Path $fixture
   $path = Join-Path $fixture 'pending.json'
@@ -432,7 +458,16 @@ class InertStartupFixture {
 }
 '@
     $source=$source.Replace('InertStartupFixture',('InertStartupFixture'+[guid]::NewGuid().ToString('N'))).Replace('__DIGIT__',[string]$Digit).Replace('__CHALLENGE__',$challenge).Replace('__STAY__',[string]$StayMilliseconds)
-    Add-Type -TypeDefinition $source -OutputAssembly $output -OutputType ConsoleApplication
+    # The supported application ABI is x86 on both supervisor host widths.
+    # An AnyCPU executable can run x64 and break the x86 fixture's MainModule
+    # inspection/cleanup. Use the same Framework compiler as the owner fixture.
+    $sourceFile=[IO.Path]::ChangeExtension($output,'.cs')
+    [IO.File]::WriteAllText($sourceFile,$source)
+    $compiler=Join-Path ([Runtime.InteropServices.RuntimeEnvironment]::GetRuntimeDirectory()) 'csc.exe'
+    & $compiler /nologo /target:exe /platform:x86 ('/out:'+$output) $sourceFile
+    Check ($LASTEXITCODE -eq 0 -and [IO.File]::Exists($output)) 'Inert x86 application compilation failed.'
+    Assert-InertX86Application $output
+    Write-Host 'PASS: emitted inert application is PE32/x86 with CLR 32BITREQUIRED.'
     return $output
   }
   function StageFixturePending {
@@ -446,6 +481,7 @@ class InertStartupFixture {
       return $pending
     } finally { $held.Dispose() }
   }
+  $applicationFailure=$null
   try {
     $previous=FixtureGeneration 'b' (CompileInertApplication 'b' $true 60000)
     Check ((Invoke-UpdateSupervision $install 'QualifyCurrent') -ceq 'current-qualified') 'Authenticated current startup was not qualified.'
@@ -560,7 +596,25 @@ class InertStartupFixture {
       Check (@(Get-Process -Name opencpn -ErrorAction SilentlyContinue).Count -eq 1) 'Uncertain persistence forcibly closed or retried the candidate.'
       Write-Host 'PASS: actual native creation followed by identity-persistence refusal retains live candidate/pending and never falls back.'
     } finally { Set-Item -LiteralPath Function:Write-UpdatePendingRecord -Value $savedPendingWriter }
-  } finally { StopInertFixtureApplications }
+  } catch {
+    $applicationFailure=$_
+    Write-Warning ('Native application fixture failed before cleanup: '+$_.Exception.Message)
+    throw
+  } finally {
+    try { StopInertFixtureApplications } catch {
+      if(-not $applicationFailure) { throw }
+      Write-Warning ('Inert application cleanup also failed: '+$_.Exception.Message)
+    }
+  }
+} catch {
+  $fixtureFailure=$_
+  Write-Warning ('Transaction fixture failed before final removal: '+$_.Exception.Message)
+  throw
 } finally {
-  if (Test-Path -LiteralPath $fixture) { Remove-Item -LiteralPath $fixture -Recurse -Force }
+  try {
+    if (Test-Path -LiteralPath $fixture) { Remove-Item -LiteralPath $fixture -Recurse -Force }
+  } catch {
+    if(-not $fixtureFailure) { throw }
+    Write-Warning ('Final fixture removal also failed; fixture retained: '+$_.Exception.Message)
+  }
 }
