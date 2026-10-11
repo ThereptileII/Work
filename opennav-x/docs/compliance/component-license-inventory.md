@@ -50,6 +50,9 @@ Selection still follows the wrapper's latest installed Visual Studio/CRT policy;
 this records that choice rather than pinning future builds to the same runtime.
 It neither supplies Microsoft terms nor establishes redistribution rights, so
 MSVC legal review and SCRUM-59 remain unresolved.
+The [Microsoft terms and provenance audit](msvc-runtime-redistribution.md)
+records the official redistribution references, limits of the current receipt,
+and edition/entitlement evidence still required for the selected release.
 
 Packaged fonts and image assets are explicitly categorized as unresolved when
 no reviewed attribution exists. No packaged font file does not mean that
