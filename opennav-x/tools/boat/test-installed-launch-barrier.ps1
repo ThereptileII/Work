@@ -136,6 +136,14 @@ Check ($aliasOwner.Target -ceq '\??\C:\fixture-B') 'Successful retarget records 
 $aliasOwner.Remove()
 $sourceFiles=@('InteractiveJob.ps1','StartupLauncher.ps1','RestartCommissioningBroker.ps1','InstalledLaunchBarrier.ps1','test-installed-launch-barrier.ps1')|ForEach-Object {[pscustomobject]@{path=('tools/boat/'+$_);sha256=(Get-FileHash -LiteralPath (Join-Path $PSScriptRoot $_) -Algorithm SHA256).Hash.ToLowerInvariant()}}
 $nativeStatus='not-executed-portable-contracts';$root=$null;$alias=$null;$aliasOwner=$null;$primaryFailure=$null;$guards=New-Object 'Collections.Generic.List[object]'
+function Write-FixtureFailureContext([string]$Message){
+ $owned=$false;$ownedTarget=$null
+ if($aliasOwner){$owned=$aliasOwner.Created;$ownedTarget=$aliasOwner.Target}
+ [Console]::Error.WriteLine(([pscustomobject]@{schema=1;status='failed';completedCheckCount=$checks.Count;checks=@($checks);
+  nativeBehavior=$(if($native){'failed-inert-fixture-no-process-created'}else{'not-executed-portable-contracts'});
+  sourceFiles=@($sourceFiles);applicationLaunched=$false;failure=$Message;selectedAlias=$alias;aliasCreated=$owned;ownedAliasTarget=$ownedTarget;
+  fixtureRoot=$root;scope='Failed fixture diagnostics only; completed checks do not qualify native behavior'}|ConvertTo-Json -Depth 4 -Compress))
+}
 try {
  if($native){
   $root=Join-Path ([IO.Path]::GetTempPath()) ('skager-launch-barrier-'+[guid]::NewGuid().ToString('N'))
@@ -180,18 +188,23 @@ try {
  }
 } catch {
  $primaryFailure=$_
+ try{Write-FixtureFailureContext $_.Exception.GetBaseException().Message}catch{} # Diagnostics must not replace the original failure.
  throw
 } finally {
  $cleanupFailures=New-Object 'Collections.Generic.List[Exception]'
  foreach($guard in $guards){try{$guard.owner.Dispose()}catch{$cleanupFailures.Add($_.Exception)}}
  if($aliasOwner){try{$aliasOwner.Remove()}catch{$cleanupFailures.Add($_.Exception)}}
  if($root){
-  if($aliasOwner -and $aliasOwner.Created){[Console]::Error.WriteLine('Retained inert fixture root for exact alias recovery: '+$root+'; alias='+$aliasOwner.Name+'; target='+$aliasOwner.Target)}
+  if($aliasOwner -and $aliasOwner.Created){try{[Console]::Error.WriteLine('Retained inert fixture root for exact alias recovery: '+$root+'; alias='+$aliasOwner.Name+'; target='+$aliasOwner.Target)}catch{}}
   else{try{Remove-Item -LiteralPath $root -Recurse -Force}catch{$cleanupFailures.Add($_.Exception)}}
  }
  if($cleanupFailures.Count -gt 0){
-  if($primaryFailure){foreach($failure in $cleanupFailures){[Console]::Error.WriteLine('Additional fixture cleanup failure; original failure preserved: '+$failure.Message)}}
-  else{throw [AggregateException]::new('Inert fixture cleanup failed; native result is not a pass.',$cleanupFailures.ToArray())}
+  if($primaryFailure){foreach($failure in $cleanupFailures){try{[Console]::Error.WriteLine('Additional fixture cleanup failure; original failure preserved: '+$failure.Message)}catch{}}}
+  else{
+   $cleanupMessage='Inert fixture cleanup failed; native result is not a pass.'
+   try{Write-FixtureFailureContext $cleanupMessage}catch{}
+   throw [AggregateException]::new($cleanupMessage,$cleanupFailures.ToArray())
+  }
  }
 }
 [pscustomobject]@{schema=1;status='passed';checks=@($checks);nativeBehavior=$nativeStatus;sourceFiles=@($sourceFiles);applicationLaunched=$false;

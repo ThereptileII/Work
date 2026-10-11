@@ -10,6 +10,10 @@ $parseErrors=$null;$ast=[Management.Automation.Language.Parser]::ParseFile($fixt
 if($parseErrors){throw 'Fixture parse failed.'}
 $blocks=@($ast.FindAll({param($node)$node -is [Management.Automation.Language.TryStatementAst] -and $node.Finally -and $node.Finally.Extent.Text.Contains('Additional fixture cleanup failure; original failure preserved:')},$true))
 if($blocks.Count -ne 1 -or $blocks[0].CatchClauses.Count -ne 1){throw 'Cannot identify actual fixture cleanup boundary.'}
+$contextBlocks=@($ast.FindAll({param($node)$node -is [Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -ceq 'Write-FixtureFailureContext'},$true))
+if($contextBlocks.Count -ne 1){throw 'Cannot identify actual failed-context writer.'}
+. ([scriptblock]::Create($contextBlocks[0].Extent.Text))
+$sourceFiles=$receipt.sourceFiles;$native=$false;$alias='Z:'
 $cleanupHarness=[scriptblock]::Create('try {if($injectPrimary){throw "ORIGINAL FIXTURE FAILURE"}} catch '+$blocks[0].CatchClauses[0].Body.Extent.Text+' finally '+$blocks[0].Finally.Extent.Text)
 Add-Type -TypeDefinition @'
 using System;
@@ -44,4 +48,5 @@ $adapter=New-Object InstalledBarrierAliasAdapter;$aliasOwner=$adapter.NewOwner()
 $root=Join-Path ([IO.Path]::GetTempPath()) ('skager-barrier-cleanup-'+[guid]::NewGuid().ToString('N'))
 $null=New-Item -ItemType Directory -Path $root
 try{. $cleanupHarness;Check (-not $aliasOwner.Created -and -not [IO.Directory]::Exists($root)) 'Successful exact alias cleanup removes only the inert fixture tree'}finally{if([IO.Directory]::Exists($root)){Remove-Item -LiteralPath $root -Recurse -Force}}
+Check ($receipt.status -ceq 'passed' -and $receipt.checks.Count -eq 50) 'Failure-context support preserves all portable fixture checks'
 [pscustomobject]@{schema=1;status='passed';checks=@($checks);nativeBehavior='not-executed-portable-contracts';applicationLaunched=$false}|ConvertTo-Json -Depth 3 -Compress
