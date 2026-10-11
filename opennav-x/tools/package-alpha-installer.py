@@ -67,4 +67,8 @@ subprocess.run([str(compiler),'/V3',f'/DOUTPUT={setup.resolve()}',
                '/DMANIFEST_SHA256='+hashlib.sha256(record.read_bytes()).hexdigest(),
                str(ROOT/'installer/windows/AlphaSetup.nsi')],check=True)
 (setup.with_suffix('.exe.sha256')).write_text(hashlib.sha256(setup.read_bytes()).hexdigest()+'  '+setup.name+'\n')
+# Retain the exact NSIS-embedded manifest only after payload/Setup generation.
+# It lives outside app/docs, avoiding an inner payload/manifest hash cycle.
+from installer_package_receipt import retain_installer_package
+retain_installer_package(preview, a.output, commit, version, manifest['supportedOpenCpn'])
 print(setup)
