@@ -10,8 +10,8 @@ $null=New-Item -ItemType Directory -Path $evidence
 $module=Join-Path $PSScriptRoot '../installer/windows/UpdateTransaction.ps1'
 $moduleHash=(Get-FileHash -LiteralPath $module -Algorithm SHA256).Hash.ToLowerInvariant()
 $scriptHash=(Get-FileHash -LiteralPath $PSCommandPath -Algorithm SHA256).Hash.ToLowerInvariant()
-$report=[ordered]@{status='failed';productAcceptance=$false;nativeExecuted=$false;resumeAttempted=$false;productionSourceSha256=$moduleHash;diagnosticSourceSha256=$scriptHash;pointerBytes=[IntPtr]::Size;rows=@();aliasAudits=@()}
-$owner=$null;$fixture='';$alias='';$aliases=New-Object 'Collections.Generic.List[string]'
+$report=[ordered]@{status='failed';productAcceptance=$false;nativeExecuted=$false;resumeAttempted=$false;productionSourceSha256=$moduleHash;diagnosticSourceSha256=$scriptHash;pointerBytes=[IntPtr]::Size;expectedRows=17;rows=@();aliasAudits=@()}
+$owner=$null;$guidLease=$null;$fixture='';$alias='';$aliases=New-Object 'Collections.Generic.List[string]'
 try {
  $tokens=$null;$errors=$null
  $ast=[Management.Automation.Language.Parser]::ParseFile($module,[ref]$tokens,[ref]$errors)
@@ -26,13 +26,75 @@ using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
+using Microsoft.Win32.SafeHandles;
 public sealed class NativeCreationObservation {
  public bool Created, CleanupConfirmed, NativeImageMatches;
  public int Win32Error; public uint Pid; public string NativeImage, Failure;
 }
 public sealed class NativeAliasObservation { public int Win32Error;public string[] Targets; }
+public sealed class GuidFixtureLease : IDisposable {
+ public string Path, RootPath, NativeImage, NativeRoot;
+ public uint VolumeSerial, FileIndexHigh, FileIndexLow; public int HeldAncestors;
+ internal SafeFileHandle File, Root, HeldFile;
+ internal object HeldRootIdentity;
+ public void Dispose() { if(File!=null) File.Dispose();if(Root!=null) Root.Dispose(); }
+}
 public static class NativeCreationDiagnostic {
  static readonly BindingFlags Private=BindingFlags.NonPublic|BindingFlags.Static;
+ static object Metadata(Type owner,SafeFileHandle file) { return owner.GetMethod("Metadata",Private).Invoke(null,new object[]{file}); }
+ static uint Field(object info,string name) { return (uint)info.GetType().GetField(name).GetValue(info); }
+ static string Native(Type owner,SafeFileHandle file) { return (string)owner.GetMethod("Native",Private).Invoke(null,new object[]{file}); }
+ static bool Same(Type owner,object a,object b) { return (bool)owner.GetMethod("Same",Private).Invoke(null,new[]{a,b}); }
+ static SafeFileHandle Reopen(Type owner,string path,bool directory) {
+  var handle=(SafeFileHandle)owner.GetMethod("CreateFile",Private).Invoke(null,
+   new object[]{path,directory?0x80u:0x80000000u,directory?3u:1u,IntPtr.Zero,3u,0x00200000u|(directory?0x02000000u:0u),IntPtr.Zero});
+  int error=Marshal.GetLastWin32Error();
+  if(handle.IsInvalid) {handle.Dispose();throw new InvalidOperationException("Held-derived GUID reopen refused: "+error);}
+  return handle;
+ }
+ public static string[] ValidateGuidNames(string path,string nativeImage) {
+   var match=System.Text.RegularExpressions.Regex.Match(path,@"\A(?<root>\\\\\?\\Volume\{[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}\}\\)(?<suffix>[^:\x00]+)\z");
+   var native=System.Text.RegularExpressions.Regex.Match(nativeImage,@"\A(?<root>\\Device\\HarddiskVolume[0-9]+)\\(?<suffix>.+)\z");
+   if(!match.Success || !native.Success || !String.Equals(match.Groups["suffix"].Value,native.Groups["suffix"].Value,StringComparison.Ordinal)) throw new InvalidOperationException("Held-derived GUID grammar/suffix differs from held NT file.");
+   foreach(string component in match.Groups["suffix"].Value.Split('\\'))
+    if(component.Length==0 || component=="." || component==".." || component.IndexOf('/')>=0 || component.EndsWith(".",StringComparison.Ordinal) || component.EndsWith(" ",StringComparison.Ordinal)) throw new InvalidOperationException("Ambiguous GUID fixture suffix.");
+   return new[]{match.Groups["root"].Value,native.Groups["root"].Value};
+ }
+ public static GuidFixtureLease AcquireGuid(Type owner,object instance) {
+  var lease=new GuidFixtureLease();
+  try {
+   var stream=(System.IO.FileStream)owner.GetField("image",BindingFlags.NonPublic|BindingFlags.Instance).GetValue(instance);
+   lease.HeldFile=stream.SafeFileHandle;
+   lease.NativeImage=(string)owner.GetProperty("NativeImage").GetValue(instance,null);
+   var path=new StringBuilder(32768);
+   // FILE_NAME_NORMALIZED (0) | VOLUME_NAME_GUID (1), on the held file only.
+   uint count=(uint)owner.GetMethod("GetFinalPathNameByHandle",Private).Invoke(null,new object[]{lease.HeldFile,path,32768u,1u});
+   int error=Marshal.GetLastWin32Error();
+   if(count==0 || count>=32768) throw new InvalidOperationException("Held-derived volume GUID unavailable: "+error);
+   lease.Path=path.ToString();
+   var roots=ValidateGuidNames(lease.Path,lease.NativeImage);
+   lease.RootPath=roots[0];lease.NativeRoot=roots[1];
+   var pins=(System.Collections.IList)owner.GetField("pins",BindingFlags.NonPublic|BindingFlags.Instance).GetValue(instance);
+   lease.HeldAncestors=pins.Count-1;
+   if(pins.Count<2) throw new InvalidOperationException("Missing held physical ancestry.");
+   lease.HeldRootIdentity=pins[0].GetType().GetField("Identity").GetValue(pins[0]);
+   lease.Root=Reopen(owner,lease.RootPath,true);lease.File=Reopen(owner,lease.Path,false);
+   ValidateGuid(owner,instance,lease);
+   var info=Metadata(owner,lease.HeldFile);
+   lease.VolumeSerial=Field(info,"Volume");lease.FileIndexHigh=Field(info,"IndexHigh");lease.FileIndexLow=Field(info,"IndexLow");
+   return lease;
+  } catch {lease.Dispose();throw;}
+ }
+ public static void ValidateGuid(Type owner,object instance,GuidFixtureLease lease) {
+  owner.GetMethod("Validate").Invoke(instance,null);
+  var held=Metadata(owner,lease.HeldFile);var reopened=Metadata(owner,lease.File);var root=Metadata(owner,lease.Root);
+  if(!Same(owner,held,reopened) || !Same(owner,lease.HeldRootIdentity,root) ||
+     (Field(reopened,"Attributes")&0x410u)!=0 || Field(reopened,"Links")!=1 ||
+     Field(held,"SizeHigh")!=Field(reopened,"SizeHigh") || Field(held,"SizeLow")!=Field(reopened,"SizeLow") ||
+     (Field(root,"Attributes")&0x410u)!=0x10u ||
+     !String.Equals(Native(owner,lease.File),lease.NativeImage,StringComparison.Ordinal) ||
+     !String.Equals(Native(owner,lease.Root),lease.NativeRoot,StringComparison.Ordinal)) throw new InvalidOperationException("GUID reopen does not retain exact held NT volume/file identity.");
+ }
  public static string[] Layout(Type owner) {
   var startup=owner.GetNestedType("Startup",BindingFlags.NonPublic);
   var child=owner.GetNestedType("Child",BindingFlags.NonPublic);
@@ -48,7 +110,7 @@ public static class NativeCreationDiagnostic {
   return output.ToArray();
  }
  // There is deliberately no ResumeThread invocation anywhere in this helper.
- public static NativeCreationObservation Observe(Type owner,string application,object directory,IntPtr environment,uint flags,string expectedNative) {
+ public static NativeCreationObservation Observe(Type owner,string application,string argv0,object directory,IntPtr environment,uint flags,string expectedNative) {
   if((flags&4u)==0) throw new ArgumentException("All diagnostic children must be created suspended.");
   var startupType=owner.GetNestedType("Startup",BindingFlags.NonPublic);
   var childType=owner.GetNestedType("Child",BindingFlags.NonPublic);
@@ -57,7 +119,7 @@ public static class NativeCreationDiagnostic {
   // PowerShell converts $null to String.Empty for a string parameter. Keep an
   // object boundary so inherited-CWD rows pass an actual native NULL instead.
   string currentDirectory=directory==null?null:(string)directory;
-  var args=new object[]{application,new StringBuilder("\""+application+"\""),IntPtr.Zero,IntPtr.Zero,false,flags,environment,currentDirectory,startup,Activator.CreateInstance(childType)};
+  var args=new object[]{application,new StringBuilder("\""+argv0+"\""),IntPtr.Zero,IntPtr.Zero,false,flags,environment,currentDirectory,startup,Activator.CreateInstance(childType)};
   var method=owner.GetMethod("CreateProcessW",Private);
   bool created=(bool)method.Invoke(null,args);
   int error=Marshal.GetLastWin32Error(); // Capture before any other native call.
@@ -183,30 +245,50 @@ public static class NativeCreationDiagnostic {
  foreach($control in @(@('inherited-env_unicode-flag','inherited',[uint32]0x404),@('inherited-env_suspended-only','inherited',[uint32]4),@('minimal-unicode','minimal',[uint32]0x404),@('owner-unicode_no-window','owner',[uint32]0x08000404))){
   $cases.Add([pscustomobject]@{name=$control[0];application=$aExe;directory=$dosDirectory;environment=$control[1];flags=$control[2]})
  }
+ # The original ten rows above keep their exact application/argv0 pairing.
+ foreach($cross in @(@('globalroot-app_basename-argv0',$physical,[IO.Path]::GetFileName($aExe)),@('globalroot-app_dos-argv0',$physical,$aExe),@('dos-app_globalroot-argv0',$aExe,$physical))){
+  $cases.Add([pscustomobject]@{name=$cross[0];application=$cross[1];argv0=$cross[2];directory=$physicalDirectory;environment='owner';flags=[uint32]0x404})
+ }
  $report.nativeExecuted=$true;$report.fixtureImageSha256=$aHash;$report.replacementImageSha256=$bHash
  $report.heldNativeImage=$owner.NativeImage;$report.aliasRemapped=$true;$report.environmentCharacterCount=$ownerEnvironment.Length
- foreach($case in $cases){
-  $owner.Validate();$environment=[IntPtr]::Zero
+ foreach($phase in @('original-and-crossed','held-guid')){
+  $activeCases=$cases
+  if($phase -eq 'held-guid'){
+ $guidLease=[NativeCreationDiagnostic]::AcquireGuid([Skager.UpdateImageOwner],$owner)
+ $report.guidValidation=[ordered]@{path=$guidLease.Path;root=$guidLease.RootPath;pathUtf16Length=$guidLease.Path.Length;nativeImage=$guidLease.NativeImage;nativeRoot=$guidLease.NativeRoot;volumeSerial=$guidLease.VolumeSerial;fileIndexHigh=$guidLease.FileIndexHigh;fileIndexLow=$guidLease.FileIndexLow;heldAncestors=$guidLease.HeldAncestors;normalizedFromHeldFile=$true;reopenedRootAndFileIdentityMatch=$true;dosFallback=$false;namespaceLinkPinned=$false}
+  $activeCases=New-Object 'Collections.Generic.List[object]'
+ foreach($directory in @(@('inherited',$null),@('dos',$dosDirectory),@('globalroot',$physicalDirectory))){
+  $activeCases.Add([pscustomobject]@{name='guid-app_'+$directory[0]+'-cwd_guid-argv0';application=$guidLease.Path;argv0=$guidLease.Path;directory=$directory[1];environment='owner';flags=[uint32]0x404})
+ }
+ $activeCases.Add([pscustomobject]@{name='guid-app_globalroot-argv0_globalroot-cwd';application=$guidLease.Path;argv0=$physical;directory=$physicalDirectory;environment='owner';flags=[uint32]0x404})
+  }
+  foreach($case in $activeCases){
+  $owner.Validate();if($guidLease){[NativeCreationDiagnostic]::ValidateGuid([Skager.UpdateImageOwner],$owner,$guidLease)};$environment=[IntPtr]::Zero
   try {
    if($case.environment -ne 'inherited'){
     $block=if($case.environment -eq 'owner'){$ownerEnvironment}else{$minimalEnvironment}
     $environment=[Runtime.InteropServices.Marshal]::StringToHGlobalUni($block)
    }
-   $observed=[NativeCreationDiagnostic]::Observe([Skager.UpdateImageOwner],$case.application,$case.directory,$environment,$case.flags,$owner.NativeImage)
-   $report.rows+= [ordered]@{name=$case.name;application=$case.application;applicationUtf16Length=$case.application.Length;directory=$case.directory;directoryIsNull=($null -eq $case.directory);directoryUtf16Length=$(if($null -eq $case.directory){$null}else{$case.directory.Length});commandUtf16Length=($case.application.Length+2);environment=$case.environment;flags=$case.flags;created=$observed.Created;win32Error=$observed.Win32Error;pid=$observed.Pid;nativeImage=$observed.NativeImage;nativeImageMatches=$observed.NativeImageMatches;cleanupConfirmed=$observed.CleanupConfirmed;failure=$observed.Failure}
+   $argv0=if($case.PSObject.Properties.Name -contains 'argv0'){$case.argv0}else{$case.application}
+   $observed=[NativeCreationDiagnostic]::Observe([Skager.UpdateImageOwner],$case.application,$argv0,$case.directory,$environment,$case.flags,$owner.NativeImage)
+   $report.rows+= [ordered]@{name=$case.name;application=$case.application;applicationUtf16Length=$case.application.Length;argv0=$argv0;argv0Utf16Length=$argv0.Length;directory=$case.directory;directoryIsNull=($null -eq $case.directory);directoryUtf16Length=$(if($null -eq $case.directory){$null}else{$case.directory.Length});commandUtf16Length=($argv0.Length+2);environment=$case.environment;flags=$case.flags;created=$observed.Created;win32Error=$observed.Win32Error;pid=$observed.Pid;nativeImage=$observed.NativeImage;nativeImageMatches=$observed.NativeImageMatches;cleanupConfirmed=$observed.CleanupConfirmed;failure=$observed.Failure}
    $report | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath (Join-Path $evidence 'diagnostic.json') -Encoding UTF8
    Write-Host ('OBSERVED: '+$case.name+' created='+$observed.Created+' Win32='+$observed.Win32Error+' cleanup='+$observed.CleanupConfirmed)
    if(-not $observed.CleanupConfirmed -or $observed.Failure){throw 'Diagnostic child ownership/cleanup failed; remaining cases refused.'}
   } finally {if($environment -ne [IntPtr]::Zero){[Runtime.InteropServices.Marshal]::FreeHGlobal($environment)}}
  }
- if($report.rows.Count -ne 10 -or -not $report.rows[1].created){throw 'Incomplete observations or failed physical DOS baseline.'}
+ }
+ $baseline=@($report.rows | Where-Object {$_.name -ceq 'dos-app_dos-cwd_owner-unicode'})
+ $uniqueNames=@($report.rows | ForEach-Object {$_.name} | Select-Object -Unique)
+ if($report.rows.Count -ne $report.expectedRows -or $uniqueNames.Count -ne $report.expectedRows -or $baseline.Count -ne 1 -or -not $baseline[0].created){throw 'Incomplete named observations or failed physical DOS baseline.'}
  if([IO.File]::Exists($unexpectedMarker)){throw 'Inert marker executed despite suspended-only diagnostic.'}
  $owner.Validate();$report.status='observed'
- Write-Host 'OBSERVED ONLY: ten bounded rows; no resumed child and no product acceptance.'
+ Write-Host 'OBSERVED ONLY: seventeen bounded rows; no resumed child and no product acceptance.'
 } catch {
  $report.error=$_.Exception.ToString();throw
 } finally {
  $cleanup=$true
+ if($guidLease){try{$guidLease.Dispose()}catch{$cleanup=$false}}
  if($owner){try{$owner.Dispose()}catch{$cleanup=$false}}
  for($i=$aliases.Count-1;$i -ge 0;$i--){
   try {

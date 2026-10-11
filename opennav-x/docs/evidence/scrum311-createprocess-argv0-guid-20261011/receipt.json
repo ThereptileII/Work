@@ -1,0 +1,23 @@
+{
+  "baseline": "afa5fbcf33cbf93f0f6c3f74fd72acf0b22086bf",
+  "diagnosticSha256": "1de8ffe2017d17f5b015f6d6ccf9d3ebb6825c34dc3fba8dd004585bc985fd9d",
+  "productionSourceSha256": "312685e4402c20efded897cb607ae8126643f43a8af34d6684b0494e1ffd4ca4",
+  "productionUnchanged": true,
+  "expectedNativeRows": 17,
+  "nativeExecuted": false,
+  "portableChecks": {
+    "exactEmbeddedOwnerAndHelperCompile": "passed",
+    "canonicalGuidNtPair": "passed",
+    "malformedGuidNtPairsRefused": 13,
+    "missingSuspendedFlagRefusedBeforeNative": "passed",
+    "trueNullCwdAndIndependentQuotedArgv0ManagedMock": "passed",
+    "nonWindowsRefusalZeroRowsAndZeroAliasMutations": "passed",
+    "originalTenCaseDefinitionsByteIdentical": "passed",
+    "noResumeInvocation": "passed"
+  },
+  "limits": [
+    "Linux PowerShell 7.6.6 managed checks only; Windows PowerShell 5.1/native execution pending.",
+    "GUID file/root identity validation retains physical pins but does not pin the GUID namespace link.",
+    "No product acceptance, production fallback, workflow change, or resumed child."
+  ]
+}
