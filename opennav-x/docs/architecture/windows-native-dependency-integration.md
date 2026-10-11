@@ -50,6 +50,17 @@ fixtures on Linux. Native PowerShell 5.1 in both host bitnesses, retained-plugin
 install/update/repair refusal, exact rollback and real package qualification
 remain required.
 
+The existing early native private-chart module check also compares its actual
+mapped `libssl-3.dll` and `libcrypto-3.dll` paths and observed byte identities
+against the installed OpenSSL build manifest. Missing/duplicate modules, a
+different directory even with matching bytes, changed hashes, or inconsistent
+output/cache provenance fail the check. The manifest and installed DLLs must
+remain unchanged across the observation. This adds no new application entry
+point and leaves dependency producer inputs unchanged. Portable negative
+fixtures cover the comparison; exact-candidate native execution remains pending.
+This is early-host loader evidence, not ordinary external-plugin session or
+TLS-traffic qualification, and post-exit file hashes are not in-memory hashes.
+
 Source identities remain in `tools/windows-openssl.lock.json`,
 `tools/windows-zlib.lock.json` and `tools/windows-curl.lock.json`. Native output
 is retained by the producer scripts under `evidence/local`, including

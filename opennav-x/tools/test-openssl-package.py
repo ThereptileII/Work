@@ -9,6 +9,7 @@ import unittest
 from unittest.mock import patch
 
 import openssl_package
+import openssl_loaded
 from openssl_package import verify_openssl_package_inputs, verify_packaged_openssl
 
 
@@ -155,6 +156,61 @@ class OpenSslPackageTests(unittest.TestCase):
         (package / 'libssl-3.dll').write_bytes(pe() + b'runtime overwrite')
         with self.assertRaisesRegex(ValueError, 'Packaged OpenSSL DLL differs'):
             verify_packaged_openssl(package, checked['manifest'])
+
+    def loaded(self):
+        return {str(self.install / Path(name).name): dict(self.manifest['outputs'][name])
+                for name in openssl_package.OPENSSL_FILES}
+
+    def test_loaded_native_paths_and_bytes_match_installed_provenance(self):
+        loaded = self.loaded()
+        loaded[str(self.install / 'unrelated.dll')] = {'sha256': '0' * 64, 'bytes': 1}
+        result = openssl_loaded.verify_loaded_openssl(self.install, self.manifest, loaded)
+        self.assertEqual(set(result), {'libssl-3.dll', 'libcrypto-3.dll'})
+        self.assertEqual(result['libssl-3.dll']['path'], str(self.install / 'libssl-3.dll'))
+
+    def test_missing_or_duplicate_loaded_tls_module_is_refused(self):
+        for name in ('libssl-3.dll', 'libcrypto-3.dll'):
+            for duplicate in (False, True):
+                with self.subTest(name=name, duplicate=duplicate):
+                    loaded = self.loaded()
+                    record = loaded[str(self.install / name)]
+                    if duplicate:
+                        loaded[str(self.root / name.upper())] = record
+                    else:
+                        del loaded[str(self.install / name)]
+                    with self.assertRaisesRegex(ValueError, 'missing or duplicated'):
+                        openssl_loaded.verify_loaded_openssl(self.install, self.manifest, loaded)
+
+    def test_loaded_tls_from_other_directory_refused_even_with_matching_bytes(self):
+        for external in (self.root / 'plugin' / 'libssl-3.dll', Path('libssl-3.dll')):
+            with self.subTest(path=external):
+                loaded = self.loaded()
+                loaded[str(external)] = loaded.pop(str(self.install / 'libssl-3.dll'))
+                with self.assertRaisesRegex(ValueError, 'path or bytes differ'):
+                    openssl_loaded.verify_loaded_openssl(self.install, self.manifest, loaded)
+
+    def test_changed_loaded_hash_or_size_is_refused(self):
+        for field, value in (('sha256', '0' * 64), ('bytes', 1)):
+            with self.subTest(field=field):
+                loaded = self.loaded()
+                loaded[str(self.install / 'libssl-3.dll')][field] = value
+                with self.assertRaisesRegex(ValueError, 'path or bytes differ'):
+                    openssl_loaded.verify_loaded_openssl(self.install, self.manifest, loaded)
+
+    def test_loaded_tls_cannot_relabel_wrong_version_or_architecture(self):
+        for field, value in (('version', '3.0.5'), ('architecture', 'x64'), ('abi', 'x64')):
+            with self.subTest(field=field), self.assertRaisesRegex(ValueError, 'maintained Win32'):
+                openssl_loaded.verify_loaded_openssl(self.install, {**self.manifest, field: value}, self.loaded())
+
+    def test_loaded_output_cache_disagreement_and_post_observation_mutation_refused(self):
+        loaded = self.loaded()
+        self.manifest['outputs']['bin/libssl-3.dll']['sha256'] = '0' * 64
+        loaded[str(self.install / 'libssl-3.dll')]['sha256'] = '0' * 64
+        with self.assertRaisesRegex(ValueError, 'output/cache provenance differs'):
+            openssl_loaded.verify_loaded_openssl(self.install, self.manifest, loaded)
+        (self.install / 'libcrypto-3.dll').write_bytes(b'changed after observation')
+        with self.assertRaisesRegex(ValueError, 'Packaged OpenSSL DLL differs'):
+            openssl_loaded.verify_loaded_openssl(self.install, self.manifest, loaded)
 
 
 if __name__ == '__main__':

@@ -9,6 +9,9 @@ from pathlib import Path
 import subprocess
 import sys
 
+import openssl_package
+import openssl_loaded
+
 ROOT=Path(__file__).resolve().parents[1]
 
 def identity(path):
@@ -44,6 +47,7 @@ def main():
     sources={}
     for name in (
         'tools/test-chart-module-windows.py','tools/test-ocharts-loader-windows.py',
+        'tools/openssl_package.py','tools/openssl_loaded.py',
         'tools/test-windows-changed-units.py','tests/windows_ocharts_loader/inputs.lock.json',
         'src/integration/InstallerSelfTest.cpp','src/integration/InstallerSelfTest.h',
         'src/integration/ChartModuleCheck.cpp','src/integration/ChartModuleCheck.h',
@@ -66,7 +70,10 @@ def main():
     sources[os.path.relpath(workflow,ROOT).replace('\\','/')]=identity(workflow)
     (evidence/'source-identities.json').write_text(json.dumps(sources,indent=2)+'\n')
     exe=install/'opencpn.exe';adapter=install/'skager-ocharts-adapter.dll'
-    before={name:identity(install/name) for name in ('opencpn.exe','skager-ocharts-adapter.dll')}
+    before={name:identity(install/name) for name in ('opencpn.exe','skager-ocharts-adapter.dll',
+        'openssl-build.json','libssl-3.dll','libcrypto-3.dll')}
+    openssl_manifest=openssl_package._read_json(install/'openssl-build.json','installed OpenSSL manifest')
+    openssl_package.verify_packaged_openssl(install,openssl_manifest)
     profiles=[Path(os.environ[key])/'opencpn' for key in ('APPDATA','LOCALAPPDATA','PROGRAMDATA')]
     def snapshot():
         values={}
@@ -122,11 +129,14 @@ def main():
             path=Path(name)
             if not path.is_absolute() or not path.is_file():
                 raise ValueError('Observed runtime path is not an existing absolute file')
+            if str(path) in loaded:
+                raise ValueError('Observed runtime inventory repeats a module path')
             loaded[str(path)]=identity(path)
         if {exe,adapter}-set(map(Path,loaded)):
             raise ValueError('Actual loaded-module inventory omitted host or private module')
         summary['loadedRuntime']=loaded
         (evidence/'loaded-runtime-identities.json').write_text(json.dumps(loaded,indent=2)+'\n')
+        summary['loadedOpenSSL']=openssl_loaded.verify_loaded_openssl(install,openssl_manifest,loaded)
         # Controlled identity-only mutation. It must fail before private or
         # original execution; restore the exact original bytes in finally.
         raw=original.read_bytes()
