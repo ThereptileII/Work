@@ -143,20 +143,24 @@ against refusal before original DllMain, repeated loads, clean adapter fallback
 and lock lifetime. The 42-group predecessor passed focused native run
 [38146240771](https://github.com/ThereptileII/Work/actions/runs/38146240771)
 at source commit `840e1932fd2531f508d43459c89d39bce98fb496`,
-but its benign helper was explicitly preloaded. The prepared 43rd group uses a
+but its benign helper was explicitly preloaded. The 43rd group uses a
 unique, previously unmapped benign helper without an executable-directory
 duplicate. A scoped process current-directory search change allows the actual
 native original load while an explicit production guard holds both inspected
 files; it checks write/delete sharing violations and the mapped sibling path,
 volume/file index and hash, then unloads and restores process state. That new
-first-mapping control still requires an exact-revision native run. It is direct
+first-mapping control passed all 43 groups at `e615446e` in
+[native run 38159170047](https://github.com/ThereptileII/Work/actions/runs/38159170047).
+It is direct
 guard-class/native-load evidence, not a full application fallback qualification.
 The first attempt, native run
 [38158753749](https://github.com/ThereptileII/Work/actions/runs/38158753749) at
 `1f756424`, compiled and passed the prior 42 groups but stopped before new-group
 mapping at an incorrect zero-capacity `GetDllDirectoryW` fixture assertion.
-The bounded string-query repair is prepared; that failed evidence remains
-retained, and no product loader failure or new native pass is inferred from it.
+The bounded string-query repair then passed the exact-revision run above;
+the failed attempt remains retained without being interpreted as a product
+loader failure. Source and native receipts are linked from
+[the scope record](../evidence/2026-10-11-scrum209-local-import-closure.md).
 
 Before acceptance, qualify the exact integrated native candidate with default
 per-user, configured, portable and
@@ -165,4 +169,4 @@ supported plugins and OpenCPN unloadable diagnostics; observed normal/delay/
 transitive/dynamic/helper identities; TLS/certificate failure behavior; and
 install/update/repair/rollback/uninstall preservation. Broader loader enforcement
 and native/boat acceptance remain open. This source change does not qualify the
-currently running Staging artifact or authorize public beta.
+frozen Staging artifact or authorize public beta.

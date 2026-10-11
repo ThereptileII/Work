@@ -32,8 +32,31 @@ The test-only `libeay32.dll` is an inert locally compiled symbol stub, not
 OpenSSL. The new indirect fixture chain is original → sibling helper → that
 stub, with a benign sibling-control variant. No target boat, real vendor DLL,
 network or production application was executed for this slice. The benign
-native helper is preloaded to control DLL search resolution; these checks do
-not prove a first dependency mapping while its inspection handle is held.
+native helper in the 42-group predecessor is preloaded to control DLL search
+resolution; those checks do not prove a first dependency mapping while its
+inspection handle is held.
+
+The separate first-mapping control initially stopped before the new load in
+[run 38158753749](https://github.com/ThereptileII/Work/actions/runs/38158753749)
+at `1f756424`: a zero-capacity `GetDllDirectoryW` query was incorrectly treated
+as an actual nonempty path. That failed evidence is preserved. The bounded
+string-query correction passed **43 native MSVC Win32 groups** in
+[run 38159170047](https://github.com/ThereptileII/Work/actions/runs/38159170047)
+at exact source `e615446e2c1f547fd2e01d87bcf0621da0c8500a`.
+The new helper was not mapped and had no application-directory duplicate.
+While inspection handles remained live, the actual original load mapped it
+from the inspected sibling path with matching volume/file index and SHA-256;
+write/delete attempts were refused. Unload, released inspection handles,
+unchanged input bytes and restored process search state passed.
+The receipt explicitly keeps product acceptance false. Raw downloaded
+[summary](scrum209-first-map-native-20261011/summary.json),
+[native receipt](scrum209-first-map-native-20261011/native-tests.json) and
+[log](scrum209-first-map-native-20261011/native-tests.log) are retained.
+Summary SHA-256:
+`96995dbb0e9957d6001820973fca71caa386ef200b3c2e5f080836bc39720fc3`.
+All 21 source receipts match after Windows CRLF checkout conversion; this is
+not a claim of identical raw Linux checkout hashes. No application rebuild,
+vendor execution or boat action occurred.
 
 Limits: the observed sibling graph is not a complete Windows loader graph.
 Application, PATH, already mapped, SxS/manifest, KnownDLL and API-set choices;

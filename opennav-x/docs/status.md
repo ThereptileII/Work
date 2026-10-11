@@ -2,20 +2,32 @@
 
 ## Current exact-commit Staging run
 
-Commit `ec51b9261d2854d8600672ea27c97af5abeb3f6d` is under integrated
-Staging qualification in [run `38143022102`](https://github.com/ThereptileII/Work/actions/runs/38143022102).
+Commit `ec51b9261d2854d8600672ea27c97af5abeb3f6d` completed integrated
+Staging [run `38143022102`](https://github.com/ThereptileII/Work/actions/runs/38143022102)
+with an overall **failure**.
 The Linux and Windows contract jobs, native updater checks, chart-loader guard,
 restart boundary and boat-recovery contracts have passed. The integrated Linux
 application compiled and its 152/152 CTests passed, but the overall Linux gate
 failed in the first-start mode-cycle smoke: a third setup field was below the
 initial 1280×800 scroll viewport, and the harness incorrectly required it to be
 visible. This is a harness refusal, not evidence of an application crash. The
-native Windows application/installer qualification is still running; this
-commit has **not** yet produced an accepted boat package. The installed
+native Windows producer built both application policies and the installer,
+but its downstream qualification stopped in the peer harness: a test-only
+export fault did not match a Windows-normalized temporary path. Correction
+`27e4a1d3` resolves both paths and deliberately exercises a path alias on every
+host; all 19 focused tests pass with export/redaction assertions retained.
+The existing binaries are under a separate no-rebuild native retest,
+[run `38158246826`](https://github.com/ThereptileII/Work/actions/runs/38158246826),
+using harness `e1d6f5a6`. It passed the corrected peer check and subsequent
+application/recovery checks, but failed in the installer wizard because the
+selection page was not found. Saved native evidence is under investigation;
+no cause or product pass is inferred from that timeout. The original Linux
+failure also remains. This commit has **not** yet produced an accepted boat
+package. The installed
 boat application remains at `f1a1e68c` and no Production promotion is in scope.
 See [the exact Linux failure record](evidence/2026-10-11-staging-linux-setup-harness.md).
 
-The next source batch is isolated from this running candidate. It carries the
+The next source batch is isolated from this frozen candidate. It carries the
 reviewed offline FreeSans original/editable source, converter and notices
 (`15e00b94`), corrected retained-updater evidence (`7b7856b2`), and a
 fail-closed secret-scanner correction for unscanned Git submodules (`be83c6b9`).
@@ -33,13 +45,27 @@ route style for repeated occurrences of one waypoint pointer within a single
 marker call. The 4,095-repeat control falls from 16,773,121 to 8,191 node
 advances; 4,095 distinct points remain at 8,191, with 16,106 differential
 checks. This still does not qualify chart responsiveness on Windows or the boat.
-The batch also carries a narrow SCRUM-209 original-plugin guard (`465e0c33`)
+The batch also carries a bounded SCRUM-209 original-plugin guard (`465e0c33`,
+extended by `840e1932`)
 that refuses declared normal/delay imports of legacy TLS DLLs before the
-shared original load path, including configured external plugin roots. It does
-not inspect transitive or dynamic loads. Independent review caught an incorrect
-native receipt count in the prepared guard tests; `a4fd4cec` corrects it from
-38 to 40. The bounded PE reader passed 9,353 portable checks, while the new
-native DLL controls have **not** run. The FreeSans upstream conversion and
+shared original load path, including configured external plugin roots. It
+also follows declared imports through same-directory sibling DLLs while
+holding their inspection handles; extensionless module imports are normalized
+before sibling lookup. It does not establish general Windows loader resolution,
+dynamic/helper closure or full application compatibility. The bounded PE reader
+passed 9,366 portable checks. All 42 focused native MSVC Win32 loader groups
+passed in [run `38146240771`](https://github.com/ThereptileII/Work/actions/runs/38146240771)
+at `840e1932`; the benign sibling was preloaded in that proof. An additional 43rd
+group (`1f756424`) additionally tests first mapping under live inspection
+handles. Its first native attempt,
+[run `38158753749`](https://github.com/ThereptileII/Work/actions/runs/38158753749),
+compiled and passed the prior 42 groups but refused its own DLL-search
+precondition before the new load. The corrected bounded string query
+(`e615446e`) passed all **43 groups** in
+[run `38159170047`](https://github.com/ThereptileII/Work/actions/runs/38159170047),
+including first mapping, exact mapped sibling identity/hash, live write/delete
+locks, unload and search-state restoration. This is focused guard evidence,
+not an integrated application or plugin-closure acceptance. The FreeSans upstream conversion and
 original license evidence is integrated as `3ea17639` without a final legal
 clearance claim. Focused source/notice and real-scanner tests passed, but these
 newer commits have no integrated native package result and do not clear final
@@ -49,6 +75,18 @@ The peer-containment CLI also now emits a fixed failure diagnostic rather than
 printing an exception chain that could contain test credentials (`c0ee37c1`).
 All 19 focused peer-harness tests pass, including subprocess stderr checks;
 SCRUM-212's product/native acceptance remains open.
+
+The opt-in SCRUM-227 report-silence fixture (`8be05c69`) passed actual-provider
+loopback TLS on IPv4 and IPv6. Each withheld position reports for 121.24 real
+seconds while ping/pong remained responsive, observed stale/lost status without
+refreshing retained receipts, then verified TCP teardown, cleared connection
+observation, bounded reconnect, confirmation-only still-lost state and fresh
+report recovery. Exact inputs, runtime metrics and the early-exit negative
+control are retained in [the focused evidence](evidence/scrum227-real-clock-report-outage/README.md).
+This fixture is excluded from ordinary builds/suites and does not qualify WFP
+packet loss, helper-death, product/process/DNS binding, native Windows or boat
+continuity. CMake was unavailable locally; the retained direct compiler recipe
+built the actual provider and pinned patched IX source.
 
 ## Exact-byte Staging native retest passed; replacement source is not built
 

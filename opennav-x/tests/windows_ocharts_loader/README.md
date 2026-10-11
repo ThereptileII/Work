@@ -60,8 +60,10 @@ It includes two direct/delay and two same-directory indirect-import controls;
 its benign indirect control explicitly preloads the helper. That result does
 not prove first dependency mapping while inspection owns the sibling handle.
 The project now requires **43 groups**, adding the first-mapping control below.
-This new group is **prepared, not run** until an exact-revision native receipt
-exists. No boat action was performed for this increment.
+They passed at `e615446e2c1f547fd2e01d87bcf0621da0c8500a` in
+[native run 38159170047](https://github.com/ThereptileII/Work/actions/runs/38159170047).
+The receipt records `unmappedSiblingGuardControl: true` and product acceptance
+false. No boat action was performed for this increment.
 
 The first 43-group attempt,
 [38158753749](https://github.com/ThereptileII/Work/actions/runs/38158753749) at
@@ -75,7 +77,7 @@ an empty string from an API error, logs the actual path/length and rejects a
 genuine nonempty override without changing it. After the scoped current-directory
 change, it also verifies the queried DLL-directory string is unchanged. It
 never calls `SetDllDirectory`, preserving the distinct empty-string/NULL states.
-The repaired 43-group control still requires an exact-revision native receipt.
+The repaired 43-group control passed the exact-revision native run above.
 
 API/source references: [GetDllDirectoryW return contract](https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-getdlldirectoryw),
 [SetDllDirectoryW empty-string and NULL semantics](https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-setdlldirectoryw),
@@ -123,8 +125,8 @@ bytes and released inspection handles. The native log records the mapped path
 and identity; the exact receipt adds `unmappedSiblingGuardControl: true`.
 
 This control directly exercises the production guard class and native load.
-Existing fallback groups cover the fallback helper separately. A passing new
-control will establish this one benign first-mapping/inspection-handle case;
-it will not qualify general loader search, arbitrary plugins, full application
+Existing fallback groups cover the fallback helper separately. The passing new
+control establishes this one benign first-mapping/inspection-handle case;
+it does not qualify general loader search, arbitrary plugins, full application
 fallback integration or SCRUM-209 closure. Source receipts include the new inert
 helper source, and fixture receipts include both the new original and helper.
