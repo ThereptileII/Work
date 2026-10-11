@@ -19,6 +19,7 @@ import (
 
 type ordinaryNativeReceipt struct {
 	Image, Directory string
+	Argv0            string
 	UpdateVariables  []string
 	InheritedHandle  bool
 	PID              uint32
@@ -38,7 +39,7 @@ func TestNativeOrdinaryChild(t *testing.T) {
 	if windows.QueryFullProcessImageName(windows.CurrentProcess(), 1, &buffer[0], &size) != nil {
 		os.Exit(3)
 	}
-	receipt := ordinaryNativeReceipt{Image: windows.UTF16ToString(buffer[:size]), PID: windows.GetCurrentProcessId()}
+	receipt := ordinaryNativeReceipt{Image: windows.UTF16ToString(buffer[:size]), Argv0: os.Args[0], PID: windows.GetCurrentProcessId()}
 	dir, err := os.Open(".")
 	if err != nil {
 		os.Exit(4)
@@ -150,6 +151,7 @@ func TestNativeOrdinaryActualCreator(t *testing.T) {
 	receipt := readOrdinaryNativeReceipt(t, marker)
 	parent := expected[:strings.LastIndex(expected, `\`)]
 	if !strings.EqualFold(receipt.Image, expected) || !strings.EqualFold(receipt.Directory, parent) ||
+		!strings.EqualFold(receipt.Argv0, physicalWin32(expected)) ||
 		len(receipt.UpdateVariables) != 0 || receipt.InheritedHandle {
 		t.Fatalf("ordinary physical image/CWD/environment/handle control: %+v", receipt)
 	}
@@ -163,6 +165,9 @@ func TestNativeOrdinaryPhysicalCustodyBeforeResume(t *testing.T) {
 	}
 	owner := acquired.(*nativeOrdinaryImage)
 	defer owner.Close()
+	if len(owner.application) < 3 || owner.application[1:3] != `:\` || strings.HasPrefix(owner.application, `\\`) {
+		t.Fatal("held image did not supply a single local DOS application spelling")
+	}
 	_, expectedParents, err := physicalAncestors(owner.name)
 	if err != nil || len(owner.parents) < 4 || len(owner.parents) != len(expectedParents) {
 		t.Fatal("true physical volume root/ancestor coverage missing")

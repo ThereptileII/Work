@@ -1,0 +1,106 @@
+{
+  "issue": "SCRUM-311",
+  "base_commit": "25bb19e45ab68c5040bb66314d3bc0ed4b654da0",
+  "toolchain": {
+    "path": "/tmp/skager-go-1.27.1/go/bin/go",
+    "version": "go version go1.27.1 linux/amd64",
+    "binary_sha256": "30969f97169d7f43fe6a085873d75613adc21e30818a8c61d95bd27275df4624"
+  },
+  "coordinator_reported_native_selection_evidence": {
+    "run": "38166517938",
+    "commit": "3d13f1e9",
+    "rows": 17,
+    "observation": "GLOBALROOT and all four held-handle-derived GUID lpApplicationName cases fail with error 87; DOS application plus physical GLOBALROOT argv[0]/CWD succeeds. No diagnostic marker resumed. This source patch has not run natively."
+  },
+  "contract": {
+    "application": "Select exactly one normalized local DOS application spelling from the held image handle using GetFinalPathNameByHandle flag 0; strip only the exact extended-path prefix, require safe local-drive components and exact physical suffix. Never rederive, retry or fall back.",
+    "recheck": "Before create and before resume, retain physical image/ancestor/hash checks and reopen the selected DOS drive root and file to compare native NT names and file identities with held pins.",
+    "namespace_limit": "The DOS namespace is mutable and is not pinned. A substitution affecting the application must be detected by lookup corroboration and the suspended child native-image check before resume. QueryFullProcessImageName is corroboration, not mapped-section file-ID proof.",
+    "preserved": "Physical NT owner identity, GLOBALROOT argv[0]/CWD, no implicit application search or inherited handles, raw process/thread/creation-time/image/liveness checks, exactly one suspended create and one resume; no retry after uncertainty.",
+    "excluded": "No general DLL, resource, environment or mapped-section identity custody is claimed."
+  },
+  "checks": [
+    {
+      "name": "linux-launcher",
+      "argv": [
+        "/tmp/skager-go-1.27.1/go/bin/go",
+        "test",
+        "./launcher",
+        "-count=1",
+        "-json"
+      ],
+      "environment": {
+        "GOTOOLCHAIN": "local",
+        "GOPROXY": "off",
+        "GOSUMDB": "off",
+        "TMPDIR": "/home/standard/Projects/X-nav-worktrees/scrum311-go-volumeguid-20261011/opennav-x/evidence/local/scrum311-ordinary-dos-application/.tmp"
+      },
+      "exit_code": 0,
+      "passed_top_level_groups": 27,
+      "passed_groups_including_subtests": 143,
+      "log_sha256": "20cd20418b54c776df8f66b7620fe67fb7f05387b1ee48cd3a8b4cd5c5348d0a"
+    },
+    {
+      "name": "windows-386-crosscompile",
+      "argv": [
+        "/tmp/skager-go-1.27.1/go/bin/go",
+        "test",
+        "-c",
+        "./launcher",
+        "-o",
+        "/home/standard/Projects/X-nav-worktrees/scrum311-go-volumeguid-20261011/opennav-x/evidence/local/scrum311-ordinary-dos-application/.tmp/launcher-386.test.exe"
+      ],
+      "environment": {
+        "GOTOOLCHAIN": "local",
+        "GOPROXY": "off",
+        "GOSUMDB": "off",
+        "TMPDIR": "/home/standard/Projects/X-nav-worktrees/scrum311-go-volumeguid-20261011/opennav-x/evidence/local/scrum311-ordinary-dos-application/.tmp",
+        "GOOS": "windows",
+        "GOARCH": "386"
+      },
+      "exit_code": 0,
+      "binary_sha256": "1f8776fab31068a69021dac8d2defff13aad451b98e5320f2f11b5cc0487cb43",
+      "native_execution": false
+    },
+    {
+      "name": "windows-amd64-crosscompile",
+      "argv": [
+        "/tmp/skager-go-1.27.1/go/bin/go",
+        "test",
+        "-c",
+        "./launcher",
+        "-o",
+        "/home/standard/Projects/X-nav-worktrees/scrum311-go-volumeguid-20261011/opennav-x/evidence/local/scrum311-ordinary-dos-application/.tmp/launcher-amd64.test.exe"
+      ],
+      "environment": {
+        "GOTOOLCHAIN": "local",
+        "GOPROXY": "off",
+        "GOSUMDB": "off",
+        "TMPDIR": "/home/standard/Projects/X-nav-worktrees/scrum311-go-volumeguid-20261011/opennav-x/evidence/local/scrum311-ordinary-dos-application/.tmp",
+        "GOOS": "windows",
+        "GOARCH": "amd64"
+      },
+      "exit_code": 0,
+      "binary_sha256": "8a56ff9e0b409358612d3ff07a81b2668b8e08702f307149fee8de4677fd4665",
+      "native_execution": false
+    }
+  ],
+  "source_inputs": {
+    "opennav-x/tools/update-verifier/launcher/ordinary_native_windows.go": "e835257f7482c29f45eb0882f482ffcc67d517a5823d760ef194119c76475697",
+    "opennav-x/tools/update-verifier/launcher/ordinary_native_windows_test.go": "37fd23fa34578bcc997537a266b3d18547e90d248ad1b1b1f03d94451a759fef",
+    "opennav-x/tools/update-verifier/launcher/ordinary_application_windows_test.go": "869351b10db40ac7bb1e604fa888b581e5f4307d751d38b2180579a6e845b8ff",
+    "opennav-x/tools/update-verifier/launcher/ordinary_creator.go": "6a9eb316f0d1b1c29cf0f2ae0e873e81ea03abec95481ba42068bbe598347901",
+    "opennav-x/tools/update-verifier/launcher/ordinary_creator_test.go": "3d4a82974c087d032a863e9b46cd4243bd613d5a2761889ea9b2457370634229",
+    "opennav-x/tools/update-verifier/launcher/ordinary_subst_windows_test.go": "e98bb97c54c19fa24b0350e477950363e9f747bcdea674d75bcb98369fb22f19",
+    "opennav-x/tools/update-verifier/go.mod": "fd81c9c980c701e666c3a59c25f1e0b2a458d672b86b106240bd842574e96d31",
+    "opennav-x/tools/update-verifier/go.sum": "66bc1ae7fcb8f87edc8ce36dc1b73406da1e869c4d061203e1992ffaa38ea603"
+  },
+  "native_tests_added": [
+    "TestNativeOrdinaryDOSApplicationBounds",
+    "TestNativeOrdinarySelectedApplicationCorruptionRefuses",
+    "TestNativeOrdinaryWrongSuspendedImageRefuses"
+  ],
+  "existing_native_guards": "Inert child exact selection and argument count retained; disposable SUBST test opt-in and LocalSystem refusal unchanged. Wrong-image test selects a different copied inert test executable and proves refusal/owned suspended cleanup without executing either marker.",
+  "pending": "Coordinator must run exact-revision native Windows Go386 ordinary tests and existing disposable SUBST fixture. Cross-compilation and Linux pass do not qualify native Windows or real OpenCPN compatibility.",
+  "boundaries": "No full application build, native dispatch, PowerShell/workflow/status edit, Claude review, dependency download, network or boat/physical operation."
+}

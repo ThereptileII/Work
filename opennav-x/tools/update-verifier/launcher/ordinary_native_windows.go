@@ -12,15 +12,18 @@ import (
 	"golang.org/x/sys/windows"
 )
 
-// Only an acquired NTFS handle supplies the physical name. DOS drives (including
-// SUBST), volume GUID aliases and the caller's spelling are discovery inputs.
+// Only an acquired NTFS handle supplies the physical name. CreateProcess needs
+// one compatible DOS application spelling derived from that same held handle.
+// Its namespace is not pinned: lookups and the suspended child's native image
+// must corroborate the physical owner before resume; there is no path retry.
 // QueryFullProcessImageName is corroboration, not a mapped-section file-ID query.
 type nativeOrdinaryImage struct {
-	file     *os.File
-	info     windows.ByHandleFileInformation
-	name     string
-	expected string
-	parents  []nativeOrdinaryDirectory
+	file        *os.File
+	info        windows.ByHandleFileInformation
+	name        string
+	application string
+	expected    string
+	parents     []nativeOrdinaryDirectory
 }
 
 type nativeOrdinaryDirectory struct {
@@ -82,6 +85,30 @@ func physicalAncestors(name string) (string, []string, error) {
 }
 
 func physicalWin32(name string) string { return `\\?\GLOBALROOT` + name }
+
+func ordinaryApplicationPath(name, physical string) (string, error) {
+	// Strip only the exact extended-path prefix returned by the held handle.
+	name = strings.TrimPrefix(name, `\\?\`)
+	canonical, err := localPath(name)
+	if err != nil {
+		return "", errors.New("ordinary application requires a local DOS spelling")
+	}
+	root, _, err := physicalAncestors(physical)
+	canonical = strings.ReplaceAll(canonical, "/", `\`)
+	if err != nil || !strings.EqualFold(canonical[2:], physical[len(root):]) {
+		return "", errors.New("ordinary DOS application suffix differs from held physical image")
+	}
+	return canonical, nil
+}
+
+func nativeOrdinaryApplication(handle windows.Handle, physical string) (string, error) {
+	buffer := make([]uint16, 32768)
+	n, err := windows.GetFinalPathNameByHandle(handle, &buffer[0], uint32(len(buffer)), 0) // VOLUME_NAME_DOS, FILE_NAME_NORMALIZED
+	if err != nil || n == 0 || n >= uint32(len(buffer)) {
+		return "", errors.New("held ordinary DOS application name unavailable or outside bound")
+	}
+	return ordinaryApplicationPath(windows.UTF16ToString(buffer[:n]), physical)
+}
 
 func sameNativeIdentity(a, b windows.ByHandleFileInformation) bool {
 	return a.VolumeSerialNumber == b.VolumeSerialNumber && a.FileIndexHigh == b.FileIndexHigh &&
@@ -166,6 +193,10 @@ func acquireNativeOrdinaryImage(spec processSpec) (ordinaryImage, error) {
 			}
 		}
 	}
+	owner.application, err = nativeOrdinaryApplication(handle, owner.name)
+	if err != nil {
+		return nil, err
+	}
 	if err := owner.recheck(); err != nil {
 		return nil, err
 	}
@@ -213,8 +244,8 @@ func (owner *nativeOrdinaryImage) recheck() error {
 	if err != nil || !hashPattern.MatchString(owner.expected) || actual != owner.expected {
 		return errors.New("held ordinary image hash differs")
 	}
-	// Reopen only the pinned physical spelling and compare its actual identity.
-	// Neither a DOS drive nor a GUID alias participates in this final lookup.
+	// Reopen the pinned physical spelling before corroborating the separately
+	// selected, mutable DOS application lookup.
 	pointer, err := windows.UTF16PtrFromString(physicalWin32(owner.name))
 	if err != nil {
 		return err
@@ -227,6 +258,48 @@ func (owner *nativeOrdinaryImage) recheck() error {
 	var reopened windows.ByHandleFileInformation
 	if windows.GetFileInformationByHandle(h, &reopened) != nil || !sameNativeImage(owner.info, reopened) {
 		return errors.New("physical image lookup identity differs")
+	}
+	return owner.recheckApplication()
+}
+
+func (owner *nativeOrdinaryImage) recheckApplication() error {
+	application, err := ordinaryApplicationPath(owner.application, owner.name)
+	if err != nil || application != owner.application || len(owner.parents) == 0 {
+		return errors.New("selected ordinary DOS application spelling changed")
+	}
+	root, err := windows.UTF16PtrFromString(application[:3])
+	if err != nil {
+		return err
+	}
+	h, err := windows.CreateFile(root, windows.FILE_READ_ATTRIBUTES,
+		windows.FILE_SHARE_READ|windows.FILE_SHARE_WRITE, nil, windows.OPEN_EXISTING,
+		windows.FILE_FLAG_BACKUP_SEMANTICS|windows.FILE_FLAG_OPEN_REPARSE_POINT, 0)
+	if err != nil {
+		return errors.New("selected ordinary DOS root lookup failed")
+	}
+	defer windows.CloseHandle(h)
+	var info windows.ByHandleFileInformation
+	name, err := nativePhysicalName(h)
+	if err != nil || windows.GetFileInformationByHandle(h, &info) != nil ||
+		!sameNativeIdentity(owner.parents[0].info, info) ||
+		info.FileAttributes&windows.FILE_ATTRIBUTE_DIRECTORY == 0 || info.FileAttributes&windows.FILE_ATTRIBUTE_REPARSE_POINT != 0 ||
+		!strings.EqualFold(strings.TrimSuffix(name, `\`), owner.parents[0].name) {
+		return errors.New("selected ordinary DOS root differs from held physical root")
+	}
+	pointer, err := windows.UTF16PtrFromString(application)
+	if err != nil {
+		return err
+	}
+	image, err := windows.CreateFile(pointer, windows.GENERIC_READ, windows.FILE_SHARE_READ,
+		nil, windows.OPEN_EXISTING, windows.FILE_FLAG_OPEN_REPARSE_POINT, 0)
+	if err != nil {
+		return errors.New("selected ordinary DOS image lookup failed")
+	}
+	defer windows.CloseHandle(image)
+	name, err = nativePhysicalName(image)
+	if err != nil || windows.GetFileInformationByHandle(image, &info) != nil ||
+		!sameNativeImage(owner.info, info) || !strings.EqualFold(name, owner.name) {
+		return errors.New("selected ordinary DOS image differs from held physical image")
 	}
 	return nil
 }
@@ -265,7 +338,7 @@ func filetimeValue(t windows.Filetime) uint64 {
 
 func (owner *nativeOrdinaryImage) create(spec processSpec) (ordinaryChild, error) {
 	physical := physicalWin32(owner.name)
-	application, err := windows.UTF16PtrFromString(physical)
+	application, err := windows.UTF16PtrFromString(owner.application)
 	if err != nil {
 		return nil, err
 	}
