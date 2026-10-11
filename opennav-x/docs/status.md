@@ -29,6 +29,20 @@ The helper foundations do **not** yet authorize a live update. Native
 PowerShell, installed plugin loading, full installer lifecycle and boat checks
 remain open. No new package is accepted and the boat installation is unchanged.
 
+Before the next combined build, focused review found and corrected a Windows
+metadata mismatch in two read-only security observers: Python can report
+different creation/change timestamps and suffix-derived execute bits for a
+path and its open descriptor. Both observers now compare common identity fields
+across those sources and retain separate full baselines for mutation checks.
+The focused artifact, plugin-inventory, change-selector, peer-topology and
+plugin-guard orchestration checks pass locally. The plugin guard's real Linux
+TLS matrix passed 13/13, including a rejected guard-bypass mutation. Its new
+native orchestrator is not yet a Windows acceptance result: candidate SDK and
+runtime provenance must be independently reviewed before execution on a
+disposable Windows runner. The pending Staging selection requests one product
+build and reuses the unchanged dependency producer; no new Staging run or boat
+deployment has occurred for these corrections.
+
 ## Replacement Staging candidate — source integration pending native gates
 
 The first combined Staging run, `38121327021` at `b3cef57c`, was deliberately
