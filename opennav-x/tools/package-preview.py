@@ -20,12 +20,15 @@ from openssl_package import verify_openssl_package_inputs, verify_packaged_opens
 from curl_package import verify_curl_package_inputs, verify_packaged_curl
 from updater_package import verify_updater_package, select_update_trust, copy_selected_update_trust
 from product_version import read_product_version
+from msvc_runtime_receipt import copy_msvc_runtime, write_runtime_receipt
 
 ROOT = Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser()
 parser.add_argument('--install', type=Path, required=True)
 parser.add_argument('--build', type=Path, required=True)
 parser.add_argument('--runtime', type=Path, required=True)
+parser.add_argument('--runtime-vs-installation', type=Path, required=True)
+parser.add_argument('--runtime-vs-version', required=True)
 parser.add_argument('--output', type=Path, required=True)
 parser.add_argument('--openssl-source-cache', type=Path, required=True,
                     help='Preverified upstream source tar; packaging never downloads it')
@@ -57,11 +60,8 @@ shutil.copytree(args.install, destination / 'app')
 app = destination / 'app'
 if not (app / 'opencpn.exe').is_file() or not (app / 'opennav-restart.exe').is_file():
     raise SystemExit('Native executable/restart helper missing from CMake install')
-for dll in args.runtime.glob('*.dll'):
-    shutil.copy2(dll, app / dll.name)
-for required in ['msvcp140.dll', 'vcruntime140.dll']:
-    if not (app / required).is_file():
-        raise SystemExit('App-local MSVC runtime missing: ' + required)
+runtime_receipt = copy_msvc_runtime(args.runtime, app, args.runtime_vs_installation,
+                                    args.runtime_vs_version)
 verify_packaged_openssl(app, openssl_source['manifest'])
 verify_packaged_curl(app, curl_sources['manifests'])
 adapter_spec = importlib.util.spec_from_file_location('ocharts_package', ROOT / 'tools/verify-ocharts-adapter-package.py')
@@ -71,6 +71,7 @@ adapter_sources = adapter_package.installed_source_bundle(app, args.build)
 (app / 'OPENNAV_PORTABLE_PREVIEW').write_text('SKAGER portable Beta 2 recovery\n')
 for directory in ['profile', 'logs', 'docs/licenses']:
     (destination / directory).mkdir(parents=True)
+write_runtime_receipt(runtime_receipt, destination / 'docs/MSVC_RUNTIME_RECEIPT.json')
 # PluginPaths::InitWindowsPaths and GetPluginDataPath use PrivateDataDir/plugins
 # in portable mode, independently of the platform's app/plugins directory.
 # Retain the installed resources and provide the same bundled plugins at that
@@ -240,6 +241,10 @@ See `licenses/`
 for bundled OpenCPN/library notices and the installed application's license files.
 
 MSVC runtime DLLs are the x86 redistributable files from the licensed CI toolchain.
+`MSVC_RUNTIME_RECEIPT.json` records the selected Visual Studio/redist directories
+and versions, DLL file/product versions and hashes, and verified source/copy equality.
+It is provenance evidence only; Microsoft redistribution terms and permission
+remain unresolved release-review gates. No Microsoft license is asserted here.
 Application-local deployment is described by Microsoft:
 https://learn.microsoft.com/en-us/cpp/windows/redistributing-visual-cpp-files
 wxWidgets uses the wxWindows Library Licence; dependency provenance is retained

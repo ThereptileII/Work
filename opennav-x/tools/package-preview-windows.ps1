@@ -6,7 +6,10 @@ if ($DeferRuntimeQualification -and $env:GITHUB_ACTIONS -cne 'true') {
 }
 $Root = Split-Path $PSScriptRoot -Parent
 $Vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
-$VS = & $Vswhere -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+$VsSelection = @(& $Vswhere -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -format json | ConvertFrom-Json)
+if ($LASTEXITCODE -ne 0 -or $VsSelection.Count -ne 1) { throw 'Unique native MSVC toolchain selection failed' }
+$VS = $VsSelection[0].installationPath
+$VsVersion = $VsSelection[0].installationVersion
 if (-not $VS) { throw 'Native licensed MSVC toolchain not found' }
 $Runtime = Get-ChildItem "$VS\VC\Redist\MSVC\*\x86\Microsoft.VC143.CRT" -Directory |
     Sort-Object FullName -Descending | Select-Object -First 1
@@ -24,6 +27,7 @@ if ($UpdateTrustConfig -or $UpdateTrustValidator) {
 }
 python (Join-Path $PSScriptRoot 'package-preview.py') --install "$Root/build/production-install" `
     --build "$Root/build/production-windows" --runtime $Runtime.FullName --output $Output `
+    --runtime-vs-installation $VS --runtime-vs-version $VsVersion `
     --openssl-source-cache "$Root/build/dependency-downloads/openssl-3.5.9.tar.gz" `
     --dependency-source-cache "$Root/build/dependency-downloads" @TrustArguments
 $AssemblyExit = $LASTEXITCODE
