@@ -70,7 +70,7 @@ func openNativeArmedDirectory(name string) (nativeOrdinaryDirectory, error) {
 	if err != nil {
 		return nativeOrdinaryDirectory{}, err
 	}
-	handle, err := windows.CreateFile(pointer, windows.FILE_READ_ATTRIBUTES,
+	handle, err := windows.CreateFile(pointer, windows.FILE_LIST_DIRECTORY|windows.FILE_READ_ATTRIBUTES,
 		windows.FILE_SHARE_READ|windows.FILE_SHARE_WRITE, nil, windows.OPEN_EXISTING,
 		windows.FILE_FLAG_BACKUP_SEMANTICS|windows.FILE_FLAG_OPEN_REPARSE_POINT, 0)
 	if err != nil {

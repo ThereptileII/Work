@@ -193,3 +193,39 @@ func TestNativeArmedBarrierHeldImageRefusesAfterSubstRemap(t *testing.T) {
 		})
 	}
 }
+
+// An empty directory avoids a child image handle masking an ineffective pin.
+func TestNativeArmedDirectoryPinBlocksRenameUntilClosed(t *testing.T) {
+	name := filepath.Join(t.TempDir(), "empty")
+	if err := os.Mkdir(name, 0700); err != nil {
+		t.Fatal(err)
+	}
+	renamed := name + "-renamed"
+	if err := os.Rename(name, renamed); err != nil {
+		t.Fatal("baseline rename:", err)
+	}
+	if err := os.Rename(renamed, name); err != nil {
+		t.Fatal("baseline restore:", err)
+	}
+	pin, err := openNativeArmedDirectory(name)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() {
+		if pin.handle != windows.InvalidHandle {
+			if err := windows.CloseHandle(pin.handle); err != nil {
+				t.Error("close directory pin:", err)
+			}
+		}
+	}()
+	if err := os.Rename(name, renamed); !errors.Is(err, windows.ERROR_SHARING_VIOLATION) {
+		t.Fatalf("empty directory rename while pinned must report sharing violation, got %v", err)
+	}
+	if err := windows.CloseHandle(pin.handle); err != nil {
+		t.Fatal(err)
+	}
+	pin.handle = windows.InvalidHandle
+	if err := os.Rename(name, renamed); err != nil {
+		t.Fatal("rename after close:", err)
+	}
+}

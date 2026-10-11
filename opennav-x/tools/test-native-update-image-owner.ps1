@@ -94,6 +94,35 @@ function StartInfo([string]$Executable) {
 }
 try {
  $null=New-Item -ItemType Directory -Path $fixture
+ # Use the actual private production opens on empty directories: no held
+ # executable below them can accidentally supply rename exclusion.
+ $directoryOpen=[Skager.UpdateArmedBarrier].GetMethod('OpenDirectory',[Reflection.BindingFlags]'NonPublic,Static')
+ $nativeName=[Skager.UpdateImageOwner].GetMethod('Native',[Reflection.BindingFlags]'NonPublic,Static')
+ $ownerOpen=[Skager.UpdateImageOwner].GetMethod('Open',[Reflection.BindingFlags]'NonPublic,Instance')
+ foreach($kind in @('armed-barrier','image-owner')) {
+  $empty=Join-Path $fixture ('empty-pin-'+$kind);$renamed=$empty+'-renamed'
+  $null=[IO.Directory]::CreateDirectory($empty)
+  [IO.Directory]::Move($empty,$renamed);[IO.Directory]::Move($renamed,$empty)
+  $probe=$directoryOpen.Invoke($null,@($empty))
+  try { $native=$nativeName.Invoke($null,@($probe)) } finally { $probe.Dispose() }
+  $held=$null;$directoryOwner=$null
+  try {
+   if($kind -ceq 'armed-barrier') { $held=$directoryOpen.Invoke($null,@($empty)) }
+   else {
+    $directoryOwner=[Activator]::CreateInstance([Skager.UpdateImageOwner],$true);$owners.Add($directoryOwner)
+    $null=$ownerOpen.Invoke($directoryOwner,@($native,$true))
+   }
+   $sharingDenied=$false
+   try { [IO.Directory]::Move($empty,$renamed) }
+   catch { $sharingDenied=($_.Exception.GetBaseException().HResult -band 0xffff) -eq 32 }
+   Check $sharingDenied ($kind+' empty directory rename reports sharing violation while pinned')
+  } finally {
+   if($null -ne $held){$held.Dispose()}
+   if($null -ne $directoryOwner){$directoryOwner.Dispose()}
+  }
+  [IO.Directory]::Move($empty,$renamed)
+  Check ([IO.Directory]::Exists($renamed) -and -not [IO.Directory]::Exists($empty)) ($kind+' empty directory rename succeeds after pin release')
+ }
  $a=Join-Path $fixture 'A';$b=Join-Path $fixture 'B'
  foreach($root in @($a,$b)){ $null=New-Item -ItemType Directory -Path (Join-Path $root 'app') -Force }
  $aExe=Join-Path $a 'app/opencpn.exe';$bExe=Join-Path $b 'app/opencpn.exe'

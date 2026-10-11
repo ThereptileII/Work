@@ -125,6 +125,12 @@ namespace Skager {
    if(attributes==Invalid) throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());
    return attributes;
   }
+  // FILE_LIST_DIRECTORY makes no-share-delete enforceable; metadata access alone does not.
+  static SafeFileHandle OpenDirectory(string path) {
+   var handle=CreateFile(path,0x81,1,IntPtr.Zero,3,0x02200000,IntPtr.Zero);
+   if(handle.IsInvalid) { int error=Marshal.GetLastWin32Error(); handle.Dispose(); throw new System.ComponentModel.Win32Exception(error); }
+   return handle;
+  }
   public static void AssertAbsent(string root,bool allowMissingRoot) {
    if(Environment.OSVersion.Platform!=PlatformID.Win32NT) throw new InvalidOperationException("Armed-session lookup requires native Windows.");
    var pins=new System.Collections.Generic.List<SafeFileHandle>();
@@ -135,8 +141,7 @@ namespace Skager {
      // Hold plain ancestors against write/delete replacement during lookup.
      uint attributes=Attributes(physical(path));
      if((attributes&(Directory|Reparse))!=Directory) return attributes;
-     var handle=CreateFile(physical(path),0x80,1,IntPtr.Zero,3,0x02200000,IntPtr.Zero);
-     if(handle.IsInvalid) { int error=Marshal.GetLastWin32Error(); handle.Dispose(); throw new System.ComponentModel.Win32Exception(error); }
+     var handle=OpenDirectory(physical(path));
      pins.Add(handle); Info info;
      if(!GetFileInformationByHandle(handle,out info)) throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());
      if(nativeDrive==null) {
@@ -183,7 +188,7 @@ namespace Skager {
   }
  }
  public sealed class UpdateImageOwner : IDisposable {
-  const uint Read=0x80000000, Attributes=0x80, Directory=0x10, Reparse=0x400;
+  const uint Read=0x80000000, Attributes=0x80, ListDirectory=0x1, Directory=0x10, Reparse=0x400;
   const uint OpenReparse=0x00200000, Backup=0x02000000;
   sealed class Pin {
    public SafeFileHandle Handle; public string Native; public Info Identity; public bool IsDirectory;
@@ -278,7 +283,7 @@ namespace Skager {
   static bool Same(Info a,Info b) { return a.Volume==b.Volume && a.IndexHigh==b.IndexHigh && a.IndexLow==b.IndexLow; }
   static string Physical(string path) { return @"\\?\GLOBALROOT"+path+(System.Text.RegularExpressions.Regex.IsMatch(path,@"^\\Device\\HarddiskVolume[0-9]+$")?"\\":""); }
   Pin Open(string path,bool isDirectory) {
-   var handle=CreateFile(Physical(path),isDirectory?Attributes:Read,isDirectory?3u:1u,IntPtr.Zero,3,OpenReparse|(isDirectory?Backup:0u),IntPtr.Zero);
+   var handle=CreateFile(Physical(path),isDirectory?(Attributes|ListDirectory):Read,isDirectory?3u:1u,IntPtr.Zero,3,OpenReparse|(isDirectory?Backup:0u),IntPtr.Zero);
    if(handle.IsInvalid) { handle.Dispose(); throw Failure("Image ancestry acquisition"); }
    try {
     var info=Metadata(handle);
