@@ -253,7 +253,13 @@ sys.exit(peer.main([]))
         for fault in faults:
             with self.subTest(fault=fault), tempfile.TemporaryDirectory() as temporary:
                 root = Path(temporary)
-                evidence = root / 'evidence'
+                # Exercise a noncanonical spelling on every host, like a Windows
+                # temporary path whose short name/junction resolves differently.
+                (root / 'path-alias').mkdir()
+                root = root / 'path-alias' / '..'
+                # run() resolves its evidence destination before exporting. The
+                # injector must compare the same paths or its failure is missed.
+                evidence = (root / 'evidence').resolve()
                 exe = root / 'inert.exe'; exe.write_bytes(b'never launched')
                 build = root / 'build'; build.mkdir()
                 raw = b'prefix\n' + b'\n'.join(peer.SECRETS) + b'\nsuffix'
@@ -333,6 +339,10 @@ sys.exit(peer.main([]))
                     self.assertIn('original failed gate: [REDACTED]', report['error'])
                     if fault != 'none':
                         self.assertTrue(report['finalization_errors'])
+                    if fault == 'export':
+                        self.assertIn({'stage': 'peer-two-1.opencpn.log', 'error': 'OSError'},
+                                      report['finalization_errors'])
+                        self.assertFalse((evidence / 'peer-two-1.opencpn.log').exists())
 
     def test_finalization_failure_invalidates_pass_and_redacts_multiline_report(self):
         with tempfile.TemporaryDirectory() as temporary:

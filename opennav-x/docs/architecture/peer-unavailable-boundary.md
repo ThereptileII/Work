@@ -87,6 +87,16 @@ original gate exception. Report strings are redacted before JSON encoding.
 A CLI failure emits only a fixed unsuccessful-gate diagnostic, so exception
 messages and chains cannot disclose fixture secrets in the CI console.
 Programmatic callers still receive the original exception.
+The synthetic failure tests deliberately use a noncanonical temporary path and
+resolve their export destination exactly as the harness does. This keeps export
+fault injection effective when Windows canonicalizes a temporary path; the
+export case requires its named failure and an absent destination, alongside the
+original exception, redaction and independent-stream checks. Native Staging run
+`38143022102`, job `114490515378`, failed this test because its export fault was
+not injected (`finalization_errors` was absent). A deterministic path-alias
+reproduction reaches the same export-only failure; the retained log does not
+identify the runner's original temporary-path spelling. The helper correction
+does not qualify the retained application or replace the failed native run.
 A finalization failure also prevents a PASS result; unavailable evidence remains
 missing rather than being replaced with raw output. Its focused contracts
 also reject stale/missing binary identity, non-hosted Windows execution, malformed
