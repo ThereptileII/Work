@@ -52,6 +52,50 @@ class SecretScanTests(unittest.TestCase):
         self.assertIn({'path': 'release.env', 'rule': 'generic-api-key'}, findings)
         self.assertNotIn(secret, json.dumps(findings))
 
+    def test_binary_headers_cannot_silently_qualify(self):
+        fixture = ('ghp_' + 'Ab3dE7gH9jK2mN4pQ6rS8tU0vW1xY5zC0D2F').encode()
+        files = {name: header + b'\ntoken="' + fixture + b'"\n'
+                 for name, header in (
+                     ('public.pdf', b'%PDF-1.7'),
+                     ('program.elf', b'\x7fELF' + b'\0' * 128),
+                     ('program.exe', b'MZ' + b'\0' * 128),
+                 )}
+        findings = self.scanner_findings(files)
+        for name in files:
+            self.assertIn({'path': name, 'rule': 'unsupported-binary-input'}, findings)
+        self.assertNotIn(fixture.decode(), json.dumps(findings))
+        self.assertNotIn(fixture, (self.root / 'scan/report.json').read_bytes())
+
+        # Exercise the actual qualification decision, not just the scan result.
+        self.git_fixture()
+        for name, data in files.items():
+            (self.root / name).write_bytes(data)
+        subprocess.run(['git', '-C', str(self.root), 'add', *files],
+                       check=True, capture_output=True)
+        with patch.object(scan, 'load_scanner', return_value=self.scanner):
+            report = scan.audit_repository(self.root)
+        self.assertFalse(report['qualificationPassed'])
+        self.assertEqual(report['status'], 'unreviewed-findings')
+
+    def test_unsupported_text_encoding_requires_review(self):
+        fixture = 'token="ghp_' + 'Ab3dE7gH9jK2mN4pQ6rS8tU0vW1xY5zC0D2F' + '"'
+        # Gitleaks does not normalize these encodings. They must not silently
+        # qualify even when its regex rules return no credential finding.
+        files = {encoding: fixture.encode(encoding)
+                 for encoding in ('utf-16', 'utf-16-le', 'utf-16-be', 'utf-32')}
+        files['non-utf8'] = b'public \xff fixture'
+        findings = self.scanner_findings(files)
+        for name in files:
+            self.assertIn({'path': name, 'rule': 'unsupported-text-encoding'}, findings)
+        self.assertNotIn(fixture, json.dumps(findings))
+
+    def test_supported_public_checkout_still_qualifies(self):
+        self.git_fixture()
+        with patch.object(scan, 'load_scanner', return_value=self.scanner):
+            report = scan.audit_repository(self.root)
+        self.assertTrue(report['qualificationPassed'])
+        self.assertEqual(report['status'], 'clean-checkout')
+
     def test_scanner_archive_tamper_rejected_before_execution(self):
         bad = self.root / 'bad.tar.gz'
         bad.write_bytes(b'not the pinned scanner')

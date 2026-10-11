@@ -79,15 +79,28 @@ def scan_files(scanner: Path, files: dict[str, bytes], directory: Path) -> list[
     No source .gitignore/config/inline allowance or filename-extension exclusion
     can hide a tracked credential. Symlink text is supplied by snapshot(), never
     followed. Original paths are restored only in the sanitized result.
+
+    Gitleaks silently skips application/* binary content even with opaque names.
+    Its pinned debug diagnostic is consumed privately and converted into an
+    unsupported-binary-input review finding. Unsupported text encodings also
+    require review: UTF-16/32 and arbitrary non-UTF-8 bytes are not normalized.
+    These coverage findings prevent a partial scan from qualifying as clean.
     """
     directory.mkdir()
     inputs = directory / 'inputs'
     inputs.mkdir()
     paths = {}
+    unsupported = set()
     for index, (name, data) in enumerate(sorted(files.items())):
         scan_name = f'{index:08d}.scan'
         (inputs / scan_name).write_bytes(data)
         paths[scan_name] = name
+        try:
+            data.decode('utf-8')
+            if b'\0' in data:
+                raise UnicodeError()
+        except UnicodeError:
+            unsupported.add((name, 'unsupported-text-encoding'))
     report = directory / 'report.json'
     template = directory / 'report.tmpl'
     template.write_text(REPORT_TEMPLATE, encoding='utf-8')
@@ -97,7 +110,7 @@ def scan_files(scanner: Path, files: dict[str, bytes], directory: Path) -> list[
     command = [str(scanner), 'dir', str(inputs), '--config', str(TOOLS / 'secret-scanner.toml'),
                '--report-format', 'template', '--report-template', str(template),
                '--report-path', str(report), '--redact=100', '--no-banner', '--no-color',
-               '--log-level', 'error', '--ignore-gitleaks-allow',
+               '--log-level', 'debug', '--ignore-gitleaks-allow',
                '--gitleaks-ignore-path', str(ignore), '--timeout', '120',
                '--max-decode-depth', '5', '--max-archive-depth', '0']
     result = subprocess.run(command, capture_output=True, timeout=135, env=env, cwd=directory)
@@ -118,9 +131,20 @@ def scan_files(scanner: Path, files: dict[str, bytes], directory: Path) -> list[
             sanitized.add((paths[path.name], finding['rule']))
         if bool(findings) != (result.returncode == 1):
             raise ValueError()
+        # The pinned scanner emits one diagnostic for each skipped binary.
+        # Only our generated basename is consumed; never forward diagnostics,
+        # MIME values or arbitrary scanner paths. The self-check below verifies
+        # this version-specific contract against the real scanner on every run.
+        for line in result.stderr.decode('utf-8', errors='replace').splitlines():
+            if ' DBG skipping binary file ' not in line:
+                continue
+            matched = re.search(r'[/\\]([0-9]{8}\.scan)"?$', line)
+            if matched is None or matched[1] not in paths:
+                raise ValueError()
+            unsupported.add((paths[matched[1]], 'unsupported-binary-input'))
     except (ValueError, KeyError, TypeError, OSError):
         raise ScanError('Secret scanner report is invalid; raw diagnostics suppressed.') from None
-    return [{'path': path, 'rule': rule} for path, rule in sorted(sanitized)]
+    return [{'path': path, 'rule': rule} for path, rule in sorted(sanitized | unsupported)]
 
 
 def snapshot(repo: Path) -> tuple[dict[str, bytes], list[str]]:
@@ -164,10 +188,12 @@ def self_check(scanner: Path, directory: Path) -> None:
         'signing.pem': ('-----BEGIN ' + 'RSA PRIVATE KEY-----\n' +
                         'MII' + suffix * 3 + '\n-----END RSA PRIVATE KEY-----\n').encode(),
         'public.pem': ('-----BEGIN PUBLIC KEY-----\n' + suffix + '\n-----END PUBLIC KEY-----\n').encode(),
+        'binary.pdf': ('%PDF-1.7\ntoken = "ghp_' + suffix + '"\n').encode(),
     }, directory)
     observed = {(item['path'], item['rule']) for item in findings}
     if (('token.txt', 'github-pat') not in observed or
             ('signing.pem', 'private-key') not in observed or
+            ('binary.pdf', 'unsupported-binary-input') not in observed or
             any(path == 'public.pem' for path, _ in observed)):
         raise ScanError('Pinned scanner seeded-secret self-check failed.')
 
