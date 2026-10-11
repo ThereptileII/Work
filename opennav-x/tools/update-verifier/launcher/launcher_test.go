@@ -237,14 +237,20 @@ func (f *fakePlatform) privateDirectory(name string, create bool) error {
 }
 
 type fakePreparation struct {
-	artifactPath string
-	p            releasepolicy.Policy
-	closed       bool
+	artifactPath                    string
+	p                               releasepolicy.Policy
+	closed                          bool
+	installerClosed, recoveryClosed bool
+	closeError                      error
 }
 
 func (p *fakePreparation) path() string                 { return p.artifactPath }
 func (p *fakePreparation) policy() releasepolicy.Policy { return p.p }
-func (p *fakePreparation) close() error                 { p.closed = true; return nil }
+func (p *fakePreparation) close() error {
+	p.closed = true
+	p.installerClosed, p.recoveryClosed = true, true
+	return p.closeError
+}
 
 type launchFixture struct {
 	p                *fakePlatform
@@ -426,13 +432,16 @@ func TestLauncherConfirmedInstallerAndExactSupervisorHandoff(t *testing.T) {
 			if f.p.progressWindow == nil || !f.p.progressWindow.finished || !f.p.progressWindow.closed {
 				t.Fatal("installer started before progress completion")
 			}
-			if f.prepared.closed || !reflect.DeepEqual(spec.arguments, []string{"/S", "/ACTION=Update", "/SUPERVISED=1"}) || spec.limit != 15*time.Minute {
+			if f.prepared.closed || f.prepared.installerClosed || f.prepared.recoveryClosed || !reflect.DeepEqual(spec.arguments, []string{"/S", "/ACTION=Update", "/SUPERVISED=1"}) || spec.limit != 15*time.Minute {
 				t.Fatal("installer lost custody or fixed arguments")
 			}
 			f.publishSuccessor()
 			return processResult{}, nil
 		}
 		if hasAction(spec, "LaunchPending") {
+			if f.prepared.installerClosed || f.prepared.recoveryClosed {
+				t.Fatal("supervisor lost an acquisition owner")
+			}
 			// Outer custody must cover bounded human consent and recovery.
 			if spec.limit < 90*time.Second+5*time.Minute+90*time.Second+10*time.Second+2*time.Minute || spec.limit > 11*time.Minute {
 				t.Fatal("supervisor custody wait does not cover bounded consent and recovery")
@@ -449,7 +458,7 @@ func TestLauncherConfirmedInstallerAndExactSupervisorHandoff(t *testing.T) {
 	if err := run(context.Background(), nil, f.s); err != nil {
 		t.Fatal(err)
 	}
-	if f.checks != 1 || f.prepares != 1 || !f.prepared.closed || len(f.p.waits) != 3 || len(f.p.starts) != 0 {
+	if f.checks != 1 || f.prepares != 1 || !f.prepared.closed || !f.prepared.installerClosed || !f.prepared.recoveryClosed || len(f.p.waits) != 3 || len(f.p.starts) != 0 {
 		t.Fatal("unexpected update process lifecycle")
 	}
 }

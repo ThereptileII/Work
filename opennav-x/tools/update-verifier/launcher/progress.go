@@ -66,10 +66,11 @@ func prepareWithProgress(ctx context.Context, p platform, app string, prepare fu
 		err = downloadCtx.Err()
 	}
 	if err != nil {
+		var cleanupErr error
 		if prepared != nil {
-			_ = prepared.close()
+			cleanupErr = prepared.close()
 		}
-		return nil, errors.New("update preparation cancelled or failed")
+		return nil, errors.Join(errors.New("update preparation cancelled or failed"), cleanupErr)
 	}
 	return prepared, nil
 }

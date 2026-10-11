@@ -56,6 +56,34 @@ type PreparedUpdate struct {
 	Artifact *VerifiedArtifact
 }
 
+// PreparedUpdateSet owns the confirmed Setup and Recovery read-only handles
+// from one freshly authenticated eligible policy. RecoveryIdentity identifies
+// actual Recovery contents, including the exact Lifecycle manifest sidecar.
+// The sidecar does not independently prove Setup's embedded manifest or grant
+// installer, commissioning, broker or launch authority. Keep BOTH artifacts
+// alive throughout separately authorized use; do not copy or close concurrently.
+type PreparedUpdateSet struct {
+	Policy           releasepolicy.Policy
+	Consent          ConsentIdentity
+	Installer        *VerifiedArtifact
+	Recovery         *VerifiedArtifact
+	RecoveryIdentity RecoveryIdentity
+}
+
+func (p *PreparedUpdateSet) Close() error {
+	if p == nil {
+		return nil
+	}
+	var installerErr, recoveryErr error
+	if p.Installer != nil {
+		installerErr = p.Installer.Close()
+	}
+	if p.Recovery != nil {
+		recoveryErr = p.Recovery.Close()
+	}
+	return errors.Join(installerErr, recoveryErr)
+}
+
 func (p *PreparedUpdate) Close() error {
 	if p == nil || p.Artifact == nil {
 		return nil
@@ -80,6 +108,59 @@ func CheckUpdate(ctx context.Context, config PrepareConfig, observed releasepoli
 // are the same as CheckUpdate and DownloadArtifact.
 func PrepareUpdate(ctx context.Context, config PrepareConfig, observed releasepolicy.OpenCpn, consent ConsentIdentity) (*PreparedUpdate, error) {
 	return prepareUpdate(ctx, config, observed, consent, nil)
+}
+
+// PrepareUpdateSet is the installed Update Now acquisition path. It refreshes
+// the real protected-state check once, requires exact upgrade consent, and
+// acquires both artifacts from that same candidate policy. Older Recovery ZIPs
+// without installer/package.json refuse before Setup acquisition; their outer
+// hashes are never substituted for the missing Lifecycle manifest identity.
+func PrepareUpdateSet(ctx context.Context, config PrepareConfig, observed releasepolicy.OpenCpn, consent ConsentIdentity) (*PreparedUpdateSet, error) {
+	return prepareUpdateSet(ctx, config, observed, consent, nil)
+}
+
+func prepareUpdateSet(ctx context.Context, config PrepareConfig, observed releasepolicy.OpenCpn, consent ConsentIdentity, client *http.Client) (_ *PreparedUpdateSet, resultErr error) {
+	if !validConsentIdentity(consent) {
+		return nil, errors.New("exact confirmed update identity required")
+	}
+	candidate, err := checkUpdate(ctx, config, observed, client)
+	if err != nil {
+		return nil, err
+	}
+	if candidate.Decision != releasepolicy.Upgrade || candidate.Consent != consent {
+		return nil, errors.New("update set requires the exact confirmed eligible upgrade")
+	}
+	// Validate both origins before acquiring either artifact. checkUpdate already
+	// validates the installer; the recovery must obey the same installed origin.
+	if err := validateDownload(candidate.Policy.Recovery, config.ArtifactOrigin); err != nil {
+		return nil, errors.New("signed recovery differs from installed acquisition policy")
+	}
+	recovery, err := acquireRecovery(ctx, config, candidate, client)
+	if err != nil {
+		return nil, err
+	}
+	set := &PreparedUpdateSet{Policy: candidate.Policy, Consent: candidate.Consent,
+		Recovery: recovery.Artifact, RecoveryIdentity: recovery.Identity}
+	defer func() {
+		if resultErr != nil {
+			resultErr = errors.Join(resultErr, set.Close())
+		}
+	}()
+	if !set.RecoveryIdentity.LifecycleManifestAvailable {
+		return nil, errors.New("authenticated recovery lacks the exact Lifecycle manifest sidecar")
+	}
+	if client == nil {
+		set.Installer, err = DownloadArtifact(ctx, candidate.Policy.Installer, config.ArtifactOrigin, config.ArtifactDirectory)
+	} else {
+		set.Installer, err = downloadArtifact(ctx, candidate.Policy.Installer, config.ArtifactOrigin, config.ArtifactDirectory, client)
+	}
+	if err != nil {
+		return nil, err
+	}
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+	return set, nil
 }
 
 // Client injection is private and exists only for signed local TLS fixtures.

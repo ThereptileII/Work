@@ -42,9 +42,13 @@ type preparation interface {
 	policy() releasepolicy.Policy
 	close() error
 }
-type acquired struct{ prepared *verifier.PreparedUpdate }
 
-func (a acquired) path() string                 { return a.prepared.Artifact.Path() }
+// The installed preparation lifetime owns both artifacts. Inner Recovery
+// identity is retained by the set; it is not Setup embedded-resource proof or
+// signed commissioning/broker authority.
+type acquired struct{ prepared *verifier.PreparedUpdateSet }
+
+func (a acquired) path() string                 { return a.prepared.Installer.Path() }
 func (a acquired) policy() releasepolicy.Policy { return a.prepared.Policy }
 func (a acquired) close() error                 { return a.prepared.Close() }
 
@@ -69,7 +73,7 @@ func Run(ctx context.Context, arguments []string) error {
 		return err
 	}
 	return run(ctx, arguments, services{platform: p, check: verifier.CheckUpdate, prepare: func(ctx context.Context, c verifier.PrepareConfig, o releasepolicy.OpenCpn, i verifier.ConsentIdentity) (preparation, error) {
-		v, err := verifier.PrepareUpdate(ctx, c, o, i)
+		v, err := verifier.PrepareUpdateSet(ctx, c, o, i)
 		if err != nil {
 			return nil, err
 		}
@@ -179,7 +183,7 @@ func pendingExists(p platform, l layout) (bool, error) {
 	return true, nil
 }
 
-func run(ctx context.Context, args []string, s services) error {
+func run(ctx context.Context, args []string, s services) (resultErr error) {
 	if ctx == nil {
 		return errors.New("launcher context required")
 	}
@@ -302,7 +306,7 @@ func run(ctx context.Context, args []string, s services) error {
 	if err != nil {
 		return ordinary(ctx, s.platform, g, state.Stock, mode)
 	}
-	defer prepared.close()
+	defer func() { resultErr = errors.Join(resultErr, prepared.close()) }()
 	if err := assertCurrent(s.platform, g, state.Stock); err != nil {
 		return err
 	}

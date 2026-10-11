@@ -82,7 +82,15 @@ func prepareRecovery(ctx context.Context, config PrepareConfig, observed release
 	if err := validateDownload(candidate.Policy.Recovery, config.ArtifactOrigin); err != nil {
 		return nil, errors.New("signed recovery differs from installed acquisition policy")
 	}
+	return acquireRecovery(ctx, config, candidate, client)
+}
+
+// candidate is supplied only by an in-process authenticated check. Sharing this
+// acquisition step lets the installed set retain one policy snapshot for both
+// artifacts rather than authenticate independently between their downloads.
+func acquireRecovery(ctx context.Context, config PrepareConfig, candidate UpdateCandidate, client *http.Client) (_ *PreparedRecovery, resultErr error) {
 	var artifact *VerifiedArtifact
+	var err error
 	if client == nil {
 		artifact, err = DownloadArtifact(ctx, candidate.Policy.Recovery, config.ArtifactOrigin, config.ArtifactDirectory)
 	} else {
