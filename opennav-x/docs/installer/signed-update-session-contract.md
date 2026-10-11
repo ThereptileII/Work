@@ -248,6 +248,12 @@ and `StageRecovery` streams to the concrete protected candidate. The store is
 revalidated around acquisition, extraction, cleanup and sealing. Both artifact
 cleanup attempts must succeed before a bounded staging receipt is published.
 Owners are released and final validation passes before a success response.
+`Candidate.Close` and `Store.Close` attempt their owned cleanup only once and
+retain the complete original result. Repeated calls cannot turn cleanup
+uncertainty into success. Concurrent store closes wait for the first drain to
+finish and return that same result; the store becomes unavailable before its
+children drain. These semantics release handles, not durable reservations, and
+do not classify abandoned candidates or authorize their deletion/reuse.
 Failures return fixed redacted refusal and no successful result. Partial
 reservations remain protected and cannot be retried with the same ID; there is
 no wildcard deletion or eviction. Recovery/reconciliation is still required.

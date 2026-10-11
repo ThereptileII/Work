@@ -1,0 +1,37 @@
+{
+  "schema": 1,
+  "sourceCommit": "4fc0704ea8c912fade6849de6af85c16c1dac118",
+  "files": [
+    {
+      "path": "opennav-x/tools/update-verifier/brokerstore/store.go",
+      "sha256": "0ff4210f460edf1a28dbfc148fe156c9b1a5a76e8bab0b4306cc87cd73b6fe56"
+    },
+    {
+      "path": "opennav-x/tools/update-verifier/brokerstore/store_test.go",
+      "sha256": "6d0cc4ce1bb3de9e5711ef4d6a26ce5d49def7400d4398e1488050a9b64f56fb"
+    }
+  ],
+  "verification": {
+    "platform": "Linux",
+    "toolchain": "Go 1.27.1",
+    "flags": [
+      "-race",
+      "-count=1"
+    ],
+    "topLevelTests": 9,
+    "faultSubcases": 13,
+    "result": "PASS",
+    "recordType": "curated from observed tool output, not raw transcript"
+  },
+  "before": {
+    "result": "FAIL",
+    "newTestsFailed": 2,
+    "failureMessages": [
+      "repeated candidate close changed original result: <nil>",
+      "second close returned before cleanup finished: <nil>"
+    ]
+  },
+  "nativeExecution": false,
+  "applicationBuild": false,
+  "claudeReview": "not executed; expanded private-source consent pending"
+}

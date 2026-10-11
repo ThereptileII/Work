@@ -1,5 +1,17 @@
 # SKAGER status — 2026-10-12
 
+## Broker cleanup retains uncertainty
+
+`4fc0704e` fixes two reproduced owner-close defects: repeated close no longer
+erases cleanup errors, and concurrent store close waits for the original drain.
+Nine focused Linux test groups, including thirteen fault subcases, pass with Go
+race detection; independent Codex source review found no concrete defect.
+[Evidence](evidence/scrum311-close-results-20261012/README.md) records the failing
+before cases, changed expectations and exact source. Native qualification and
+crash/orphan recovery remain open. The requested expanded Claude investigation
+has not run because exact private-source transfer approval is pending. No full
+application build, CI dispatch, boat change or physical command occurred.
+
 ## Inactive broker package/source prerequisite implemented
 
 Source revision `3c0033fc` adds a native probe for a separate, inactive broker
