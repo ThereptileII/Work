@@ -1,0 +1,8 @@
+{
+    "status":  "failed",
+    "error":  "Existing shortcut directory has no verified SKAGER owner; preserve and inspect it.",
+    "action":  "Install",
+    "log":  [
+                "2026-10-11T17:39:46.2313057Z FAILED: Existing shortcut directory has no verified SKAGER owner; preserve and inspect it."
+            ]
+}

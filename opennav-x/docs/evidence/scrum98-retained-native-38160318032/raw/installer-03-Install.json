@@ -1,0 +1,8 @@
+{
+    "status":  "failed",
+    "error":  "Unsupported OpenCPN executable. SHA-256: 80cb9a5cd0623d5463d349d7168ceac403ac48eceb3641c1db1df987b633825c. No application or profile files modified.",
+    "action":  "Install",
+    "log":  [
+                "2026-10-11T17:40:19.9347177Z FAILED: Unsupported OpenCPN executable. SHA-256: 80cb9a5cd0623d5463d349d7168ceac403ac48eceb3641c1db1df987b633825c. No application or profile files modified."
+            ]
+}

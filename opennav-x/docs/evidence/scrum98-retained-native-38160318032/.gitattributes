@@ -1,0 +1,2 @@
+# Preserve downloaded raw receipts exactly, including original Windows CRLF.
+raw/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

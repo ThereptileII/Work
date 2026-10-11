@@ -1,0 +1,163 @@
+{
+  "verified_utc": "2026-10-11T17:59:43Z",
+  "repository": "ThereptileII/Work",
+  "run_id": 38160318032,
+  "job_id": 114531665650,
+  "artifact_id": 11710123312,
+  "artifact_name": "staging-retest-evidence-38143022102-attempt1-harnessd8bd6c86cd8d6f93d49f8696fc3ef8c3110a540c-run38160318032-attempt1",
+  "zip_bytes": 15048995,
+  "api_size_bytes": 15048995,
+  "zip_sha256": "e293ee7524d777cc5c10a61857b5283a5097249da4c6608dbc0516305c55f93e",
+  "api_digest": "sha256:e293ee7524d777cc5c10a61857b5283a5097249da4c6608dbc0516305c55f93e",
+  "api_digest_matches_zip_sha256": true,
+  "zip_crc_all_members_passed": true,
+  "zip_member_count": 1985,
+  "duplicate_zip_member_names": [],
+  "retained_members": [
+    {
+      "archive_member": "staging-inputs.json",
+      "retained_path": "raw/staging-inputs.json",
+      "bytes": 3870,
+      "crc32": "53554a7e",
+      "sha256": "0666a4ff4ed489b31538292281da2c20342064c1152f0360419f698d42b71435"
+    },
+    {
+      "archive_member": "staging-producer.json",
+      "retained_path": "raw/staging-producer.json",
+      "bytes": 612,
+      "crc32": "c268bb2f",
+      "sha256": "1139b235c4db410b564b8ea29e170a76a44532b7546163e979cacf6183f69adf"
+    },
+    {
+      "archive_member": "staging-retest.json",
+      "retained_path": "raw/staging-retest.json",
+      "bytes": 763,
+      "crc32": "a68c72de",
+      "sha256": "40e50a9e823f2ef1d3e721894684350cf096f94b2b3e3f723988e892103c2da5"
+    },
+    {
+      "archive_member": "installer-staging.json",
+      "retained_path": "raw/installer-staging.json",
+      "bytes": 11726,
+      "crc32": "a3b3dc51",
+      "sha256": "1bcef4140b15f013b08f53ba8089df7942fb8c4360a197715fc46f17f951521d"
+    },
+    {
+      "archive_member": "installer-official-prerequisite.json",
+      "retained_path": "raw/installer-official-prerequisite.json",
+      "bytes": 38272,
+      "crc32": "d5c66379",
+      "sha256": "6287807c47deec3d0b284ca81553e36bc7ba74784321f3a62abb4c8c1bbc2019"
+    },
+    {
+      "archive_member": "packaged-updater.json",
+      "retained_path": "raw/packaged-updater.json",
+      "bytes": 6471,
+      "crc32": "1963ef72",
+      "sha256": "fc3d7b4254cce6f52b1a406d8e6fe78c8a3949ffa7319a1976c10ec25d78e02d"
+    },
+    {
+      "archive_member": "charts-results.json",
+      "retained_path": "raw/charts-results.json",
+      "bytes": 62119,
+      "crc32": "34dbda88",
+      "sha256": "2c1fa2270912d4fe5625d8c8b5e5ab163f10e641aaff4cce6aef03ae20cf90ae"
+    },
+    {
+      "archive_member": "installer-00-Preflight.json",
+      "retained_path": "raw/installer-00-Preflight.json",
+      "bytes": 346,
+      "crc32": "1c4036b5",
+      "sha256": "a6fa9c5dba06f8f930e11dc566c5971fa13c44e592c3df0fda225cbab590b390"
+    },
+    {
+      "archive_member": "installer-01-Install.json",
+      "retained_path": "raw/installer-01-Install.json",
+      "bytes": 327,
+      "crc32": "6daf7a5d",
+      "sha256": "d5fc9b3ace4c7891215f2cf81f6e5937bd12563c26948b526b1d951f0311efc6"
+    },
+    {
+      "archive_member": "installer-02-Install.json",
+      "retained_path": "raw/installer-02-Install.json",
+      "bytes": 209,
+      "crc32": "e57d6e4b",
+      "sha256": "07716803800c218aaa834f9e4bcb4cd2e08ba8aff5df24e480169c088705ab47"
+    },
+    {
+      "archive_member": "installer-03-Install.json",
+      "retained_path": "raw/installer-03-Install.json",
+      "bytes": 459,
+      "crc32": "52d63506",
+      "sha256": "25c957ab93d2e3e86b9695156c49db45e201b04253e93662b8f25f7f41f086cc"
+    },
+    {
+      "archive_member": "installer-04-Install.json",
+      "retained_path": "raw/installer-04-Install.json",
+      "bytes": 827,
+      "crc32": "4a813b75",
+      "sha256": "e232dd39dbb2f00b3033cf9f6ad6f89b1a120118064cec6339b8f6d911c31ac3"
+    },
+    {
+      "archive_member": "installer-05-Install.json",
+      "retained_path": "raw/installer-05-Install.json",
+      "bytes": 827,
+      "crc32": "f1ff966b",
+      "sha256": "4ca8e2a8ca1a6cf8646b3664c704b6d8adff5b355f6950d7f2a86448d913a54e"
+    },
+    {
+      "archive_member": "installer-06-Rollback.json",
+      "retained_path": "raw/installer-06-Rollback.json",
+      "bytes": 275,
+      "crc32": "9a9a2b54",
+      "sha256": "5125d80be45a477ea9ced803f7f86e07ab7074c23a4022824bcd9fd11f0ba184"
+    },
+    {
+      "archive_member": "packaged-updater-bootstrap-receipt.log",
+      "retained_path": "raw/packaged-updater-bootstrap-receipt.log",
+      "bytes": 55,
+      "crc32": "786f9063",
+      "sha256": "bd10d484f13cabcf6a2e4b71a9c5473124d4a0453c4119d56e3d0b55be24ee1b"
+    },
+    {
+      "archive_member": "packaged-updater-broken-candidate-recovery.log",
+      "retained_path": "raw/packaged-updater-broken-candidate-recovery.log",
+      "bytes": 423,
+      "crc32": "a3b61308",
+      "sha256": "b6f8ebbdbe41abd2a5023fdb0f88d3e0a3bd100dceaf94411e5cab1d1df8511c"
+    },
+    {
+      "archive_member": "packaged-updater-healthy-startup-receipt.log",
+      "retained_path": "raw/packaged-updater-healthy-startup-receipt.log",
+      "bytes": 55,
+      "crc32": "786f9063",
+      "sha256": "bd10d484f13cabcf6a2e4b71a9c5473124d4a0453c4119d56e3d0b55be24ee1b"
+    },
+    {
+      "archive_member": "packaged-updater-healthy-startup.log",
+      "retained_path": "raw/packaged-updater-healthy-startup.log",
+      "bytes": 21,
+      "crc32": "c3c99414",
+      "sha256": "b862d11f130126d2d696d2b5c9908ff0c1574d5eeb57451f1035fdea85e607e3"
+    },
+    {
+      "archive_member": "packaged-updater-restored-receipt.log",
+      "retained_path": "raw/packaged-updater-restored-receipt.log",
+      "bytes": 55,
+      "crc32": "786f9063",
+      "sha256": "bd10d484f13cabcf6a2e4b71a9c5473124d4a0453c4119d56e3d0b55be24ee1b"
+    }
+  ],
+  "excluded": "ZIP, binaries, build trees, chart data, images, profiles and unrelated/inherited test evidence",
+  "private_download_directory": "/home/standard/Projects/.tmp-scrum98-retained-native-38160318032",
+  "raw_api_receipts": {
+    "run-api.json": "e311493bdd4b30b4a31c50d3b31c7c86c47680d56ed05e94d80fa3983c01deba",
+    "job-api.json": "d6c8d88521f12324ebe41c509c7a571d345e3574cc08c4e186c009153992bf01",
+    "artifacts-api.json": "7875cf52d497986adb7dc77a47fee7cea2d158c81c3d57cb446025cea1d2b6e8",
+    "producer-artifact-api.json": "19d324d51bc044d721b05cf24bff01a32c8c6e3a7a20b6fa8409072679df209c"
+  },
+  "full_job_log_sha256": "431d4b7c9b3dc23854b34797cd102964649a52c56959ab0dbcd0ddad6ee079f4",
+  "selected_job_log_lines": 14,
+  "derived_renderer_log_source": "charts-results.json renderer_log array, preserving original string values in order",
+  "run_job_harness_identity_bindings_verified": true
+}

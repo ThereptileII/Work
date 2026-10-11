@@ -1,0 +1,7 @@
+{
+    "status":  "passed",
+    "action":  "Rollback",
+    "log":  [
+                "2026-10-11T17:53:59.5045307Z Integration unregistered and verified owned files removed. Modified/custom additions and diagnostics retained; original OpenCPN unchanged."
+            ]
+}

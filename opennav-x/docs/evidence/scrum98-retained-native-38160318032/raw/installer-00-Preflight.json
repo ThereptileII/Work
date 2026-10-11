@@ -1,0 +1,8 @@
+{
+    "status":  "passed",
+    "action":  "Preflight",
+    "log":  [
+                "2026-10-11T17:39:12.2618382Z Supported OpenCPN 5.12.4 x86 SHA-256 7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c",
+                "2026-10-11T17:39:12.4340586Z Preflight passed; no installed files or profiles changed."
+            ]
+}

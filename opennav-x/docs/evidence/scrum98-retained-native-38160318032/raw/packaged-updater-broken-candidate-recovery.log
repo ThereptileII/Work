@@ -1,0 +1,5 @@
+WARNING: Supervised candidate failed: Generation file changed: app/opencpn.exe
+2026-10-11T17:52:42.5270958Z Normal OpenCPN profile location accessible; profile content not modified.
+2026-10-11T17:52:42.5583902Z Loader/resource self-test passed for ec51b9261d2854d8600672ea27c97af5abeb3f6d
+2026-10-11T17:53:05.5877378Z Rollback restored prior exact application generation; newer navigation data retained.
+previous-restored

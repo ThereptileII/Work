@@ -1,0 +1,161 @@
+{
+  "status": "passed",
+  "scope": "real package, same-version supervised installation and authenticated startup; no release-selection or TUF acceptance",
+  "commit": "ec51b9261d2854d8600672ea27c97af5abeb3f6d",
+  "setupSha256": "747348f33da43eb0b411cfd2e7bcbafa84c03cc5a4f0bca130cbd046b39b1808",
+  "executableSha256": "03e252e3044584e41000de5468dc705ebeff1f2ab7e45fd1ce9787c64a014ae9",
+  "testSourceSha256": "ca278305c2fafe632a97e3e28e58316d4623cf8f391a8ea6917d24a1b558f506",
+  "operations": [
+    {
+      "phase": "bootstrap",
+      "generation": "2ae9d189f7f84da78e006cf3ef9360e5",
+      "log": "packaged-updater-bootstrap.log",
+      "status": "passed",
+      "lastStage": "complete",
+      "startupReadySeconds": 59.609,
+      "closeRequestedSeconds": 85.453,
+      "seconds": 86.265
+    },
+    {
+      "phase": "bootstrap-receipt",
+      "seconds": 25.844,
+      "log": "packaged-updater-bootstrap-receipt.log"
+    },
+    {
+      "phase": "bootstrap-receipt-proof",
+      "generation": "2ae9d189f7f84da78e006cf3ef9360e5",
+      "receiptSha256": "fc9cd6ddc2eeed4b115d35b83f246ccc5ebe0d12cc463671fdbd5344377923b7"
+    },
+    {
+      "phase": "healthy-setup",
+      "seconds": 127.0,
+      "log": "packaged-updater-healthy-setup.log"
+    },
+    {
+      "phase": "healthy-pending",
+      "record": {
+        "schema": 1,
+        "owner": "SKAGER.UpdateStartup.1",
+        "transaction": "ef6e3bdbc90b4c88b1a828039bc9795f",
+        "candidate": {
+          "generation": "7d09fb8bd4ae4185808ba364dac32d1e",
+          "commit": "ec51b9261d2854d8600672ea27c97af5abeb3f6d",
+          "packageSha256": "1c4f1008408f57474fed3c28acdcaf82abd563c338738b5f6a3d549274a2d4ff",
+          "executableSha256": "03e252e3044584e41000de5468dc705ebeff1f2ab7e45fd1ce9787c64a014ae9"
+        },
+        "previous": {
+          "generation": "2ae9d189f7f84da78e006cf3ef9360e5",
+          "commit": "ec51b9261d2854d8600672ea27c97af5abeb3f6d",
+          "packageSha256": "1c4f1008408f57474fed3c28acdcaf82abd563c338738b5f6a3d549274a2d4ff",
+          "executableSha256": "03e252e3044584e41000de5468dc705ebeff1f2ab7e45fd1ce9787c64a014ae9"
+        },
+        "attempts": 0,
+        "session": "",
+        "processId": 0,
+        "processStartTicks": ""
+      }
+    },
+    {
+      "phase": "healthy-startup",
+      "generation": "7d09fb8bd4ae4185808ba364dac32d1e",
+      "log": "packaged-updater-healthy-startup.log",
+      "status": "passed",
+      "lastStage": "complete",
+      "startupReadySeconds": 78.578,
+      "closeRequestedSeconds": 99.828,
+      "seconds": 100.625
+    },
+    {
+      "phase": "healthy-startup-receipt",
+      "seconds": 21.25,
+      "log": "packaged-updater-healthy-startup-receipt.log"
+    },
+    {
+      "phase": "healthy-startup-receipt-proof",
+      "generation": "7d09fb8bd4ae4185808ba364dac32d1e",
+      "receiptSha256": "de5c849179e6980384c4d7c9b5aa2de8e0bee29f2ada2cc8383afd903924307d"
+    },
+    {
+      "phase": "healthy-archive",
+      "transaction": "ef6e3bdbc90b4c88b1a828039bc9795f",
+      "attempts": 1,
+      "archiveSha256": "2417fd1c3fb7f628cc14701118990c08e88fcbbd0bbd22eea4e14ceba7755a48"
+    },
+    {
+      "phase": "broken-setup",
+      "seconds": 128.031,
+      "log": "packaged-updater-broken-setup.log"
+    },
+    {
+      "phase": "broken-pending",
+      "record": {
+        "schema": 1,
+        "owner": "SKAGER.UpdateStartup.1",
+        "transaction": "44adb2f011764391adc93f8c5379863c",
+        "candidate": {
+          "generation": "e847d4ec38c9473790168d493afe2e2b",
+          "commit": "ec51b9261d2854d8600672ea27c97af5abeb3f6d",
+          "packageSha256": "1c4f1008408f57474fed3c28acdcaf82abd563c338738b5f6a3d549274a2d4ff",
+          "executableSha256": "03e252e3044584e41000de5468dc705ebeff1f2ab7e45fd1ce9787c64a014ae9"
+        },
+        "previous": {
+          "generation": "7d09fb8bd4ae4185808ba364dac32d1e",
+          "commit": "ec51b9261d2854d8600672ea27c97af5abeb3f6d",
+          "packageSha256": "1c4f1008408f57474fed3c28acdcaf82abd563c338738b5f6a3d549274a2d4ff",
+          "executableSha256": "03e252e3044584e41000de5468dc705ebeff1f2ab7e45fd1ce9787c64a014ae9"
+        },
+        "attempts": 0,
+        "session": "",
+        "processId": 0,
+        "processStartTicks": ""
+      }
+    },
+    {
+      "phase": "broken-candidate-recovery",
+      "seconds": 124.719,
+      "log": "packaged-updater-broken-candidate-recovery.log"
+    },
+    {
+      "phase": "restored-archive",
+      "transaction": "44adb2f011764391adc93f8c5379863c",
+      "attempts": 0,
+      "archiveSha256": "aa99b0ba805da52c960f8df464faaff26e4a66119f77cd12cd6c3c628103c6b8"
+    },
+    {
+      "phase": "restored-startup",
+      "generation": "7d09fb8bd4ae4185808ba364dac32d1e",
+      "log": "packaged-updater-restored-startup.log",
+      "status": "passed",
+      "lastStage": "complete",
+      "startupReadySeconds": 3.656,
+      "closeRequestedSeconds": 3.656,
+      "seconds": 4.438
+    },
+    {
+      "phase": "restored-receipt",
+      "seconds": 21.359,
+      "log": "packaged-updater-restored-receipt.log"
+    },
+    {
+      "phase": "restored-receipt-proof",
+      "generation": "7d09fb8bd4ae4185808ba364dac32d1e",
+      "receiptSha256": "de5c849179e6980384c4d7c9b5aa2de8e0bee29f2ada2cc8383afd903924307d"
+    }
+  ],
+  "checks": [
+    "Actual installed launcher bootstraps real application and exact authenticated health receipt",
+    "Exact Setup supervised update publishes pending candidate; real startup authenticates and finalizes one attempt",
+    "Fault-injected candidate is refused before launch; actual guarded rollback restores verified previous without profile changes",
+    "Restored actual generation launches and closes cleanly with retained authenticated receipt"
+  ],
+  "faultInjection": {
+    "kind": "disposable installed candidate invalid PE header",
+    "generation": "e847d4ec38c9473790168d493afe2e2b",
+    "expectedSha256": "03e252e3044584e41000de5468dc705ebeff1f2ab7e45fd1ce9787c64a014ae9",
+    "corruptSha256": "aaecacdb6b7c928773d7c0e95e1a2e208ac524be6eb9d25c7bcfbf19eceb6231",
+    "ownershipSha256": "b9ce2387c209415030756637fb59e3609b7f6e040e8b46c026cb2024ba626f8c",
+    "path": "app/opencpn.exe",
+    "restored": true,
+    "recovery": "LaunchPending rejected candidate integrity before process creation; actual guarded Lifecycle restored known-good previous"
+  }
+}

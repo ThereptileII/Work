@@ -1,0 +1,28 @@
+{
+  "status": "passed",
+  "scope": "installer-charts",
+  "productCommit": "ec51b9261d2854d8600672ea27c97af5abeb3f6d",
+  "producer": {
+    "repository": "ThereptileII/Work",
+    "commit": "ec51b9261d2854d8600672ea27c97af5abeb3f6d",
+    "runId": "38143022102",
+    "runAttempt": "1",
+    "job": "windows-integration",
+    "platform": "windows-2022",
+    "architecture": "Win32"
+  },
+  "harnessCommit": "d8bd6c86cd8d6f93d49f8696fc3ef8c3110a540c",
+  "archiveSha256": "527d0aafafcb3524b4e3e3ca15c5824cbd00e779e2b989f16fcd0f7ddade6fbc",
+  "publicAccess": false,
+  "releaseQualification": false,
+  "checks": [
+    {
+      "name": "installer",
+      "status": "passed"
+    },
+    {
+      "name": "charts",
+      "status": "passed"
+    }
+  ]
+}

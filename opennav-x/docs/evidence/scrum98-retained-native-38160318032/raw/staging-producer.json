@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "repository": "ThereptileII/Work",
+  "workflowPath": ".github/workflows/opennav-baseline.yml",
+  "runId": "38143022102",
+  "runAttempt": "1",
+  "headSha": "ec51b9261d2854d8600672ea27c97af5abeb3f6d",
+  "job": "windows-integration",
+  "conclusion": "success",
+  "artifactId": "11705421033",
+  "artifactName": "staging-build-ec51b9261d2854d8600672ea27c97af5abeb3f6d-run38143022102-attempt1",
+  "artifactDigest": "sha256:e820f96d7cede2dc2d345da7ac25fba77f18459f51f35ad5c9ed931c5185b385",
+  "archiveSha256": "527d0aafafcb3524b4e3e3ca15c5824cbd00e779e2b989f16fcd0f7ddade6fbc"
+}

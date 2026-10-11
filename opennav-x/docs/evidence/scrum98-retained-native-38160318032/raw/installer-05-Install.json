@@ -1,0 +1,10 @@
+{
+    "status":  "failed",
+    "error":  "Unsupported legacy TLS runtime dependency in candidate: C:\\Users\\runneradmin\\AppData\\Local\\OpenNavXAlpha1\\generations\\038900d25d69438db0c54b0666355cce\\app\\plugins\\ssleay32.dll",
+    "action":  "Install",
+    "log":  [
+                "2026-10-11T17:41:34.4702263Z Supported OpenCPN 5.12.4 x86 SHA-256 7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c",
+                "2026-10-11T17:41:34.5640001Z Recovery record durable; verified original OpenCPN and previous integration remain available.",
+                "2026-10-11T17:42:12.3066365Z FAILED: Unsupported legacy TLS runtime dependency in candidate: C:\\Users\\runneradmin\\AppData\\Local\\OpenNavXAlpha1\\generations\\038900d25d69438db0c54b0666355cce\\app\\plugins\\ssleay32.dll"
+            ]
+}

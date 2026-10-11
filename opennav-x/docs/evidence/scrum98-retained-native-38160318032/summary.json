@@ -1,0 +1,130 @@
+{
+  "status": "passed",
+  "scope": "installer-charts",
+  "harness_commit": "d8bd6c86cd8d6f93d49f8696fc3ef8c3110a540c",
+  "frozen_product_commit": "ec51b9261d2854d8600672ea27c97af5abeb3f6d",
+  "producer": {
+    "repository": "ThereptileII/Work",
+    "commit": "ec51b9261d2854d8600672ea27c97af5abeb3f6d",
+    "runId": "38143022102",
+    "runAttempt": "1",
+    "job": "windows-integration",
+    "platform": "windows-2022",
+    "architecture": "Win32"
+  },
+  "compiled_input_archive_sha256": "527d0aafafcb3524b4e3e3ca15c5824cbd00e779e2b989f16fcd0f7ddade6fbc",
+  "restored_compiled_file_count": 4540,
+  "public_access": false,
+  "release_qualification": false,
+  "selected_check_groups": [
+    {
+      "name": "installer",
+      "status": "passed"
+    },
+    {
+      "name": "charts",
+      "status": "passed"
+    }
+  ],
+  "installer_named_check_count": 9,
+  "installer_named_checks": [
+    "Official supported OpenCPN installed and exact PE executable SHA-256 verified",
+    "Registry discovery handles the official build-suffixed key and verifies its exact hash without modification",
+    "Conventional wizard opens without command-line options; default Install and path input work; Cancel changes no installation",
+    "A foreign SKAGER Start-menu group is refused before root creation; its same-name shortcut and stock remain unchanged",
+    "Unknown installation ownership refused without adding logs or changing files",
+    "Unknown executable hash refused; rejected tree and existing profile unchanged; install root and all shortcut groups absent",
+    "Fresh install refuses each unmanaged stock plugin legacy TLS DLL and preserves stock/profile without publication",
+    "Actual Beta 2 wizard detection, recovery, shortcuts, ready, validation and Finish pass without command-line options",
+    "Exact candidate clean install and first-install rollback preserve stock/profile; real coastline and candidate hash verified"
+  ],
+  "installer_operation_count": 7,
+  "installer_authority": "native disposable Windows / PowerShell 5.1 / NSIS",
+  "design_validation": "not requested",
+  "packaged_updater_named_check_count": 4,
+  "packaged_updater_named_checks": [
+    "Actual installed launcher bootstraps real application and exact authenticated health receipt",
+    "Exact Setup supervised update publishes pending candidate; real startup authenticates and finalizes one attempt",
+    "Fault-injected candidate is refused before launch; actual guarded rollback restores verified previous without profile changes",
+    "Restored actual generation launches and closes cleanly with retained authenticated receipt"
+  ],
+  "packaged_updater_scope": "real package, same-version supervised installation and authenticated startup; no release-selection or TUF acceptance",
+  "chart_phase_count": 2,
+  "chart_phases": [
+    {
+      "requested_rendering": "software",
+      "functional_capture_metric_count": 10,
+      "startup_to_enc_seconds": 7.234,
+      "actual_opengl_enabled_at_cell_switch": false,
+      "gl_status": null,
+      "performance_scope": "CI desktop / two loaded NOAA ENCs / 3 plugins / 3.3 Hz RMC; not target navigation PC"
+    },
+    {
+      "requested_rendering": "opengl",
+      "functional_capture_metric_count": 8,
+      "startup_to_enc_seconds": 6.235,
+      "actual_opengl_enabled_at_cell_switch": false,
+      "gl_status": "host rejected OpenGL; verified upstream software fallback; hardware GL gate remains open",
+      "performance_scope": "CI desktop / two loaded NOAA ENCs / 3 plugins / 3.3 Hz RMC; not target navigation PC"
+    }
+  ],
+  "chart_result": "passed; native screenshot review and physical GPU gate remain separate",
+  "chart_fixture_scope": "Disposable rendering fixture; not redistributed as a navigation product",
+  "chart_cells": [
+    "US5SEAFL.000",
+    "US5SEAFK.000"
+  ],
+  "official_prerequisite_exit_code": 1223,
+  "official_prerequisite_exit_anomaly": "Exact official package completed visibly and all hash/resource/registration postconditions passed despite 1223; Alpha lifecycle still requires zero.",
+  "limits": [
+    "Only the selected installer-charts groups were rerun; inherited artifact files are not additional executed checks.",
+    "No screenshot/design review performed or claimed; images are deliberately not retained.",
+    "OpenGL request fell back to software; physical GPU and target navigation-PC performance gates remain open.",
+    "Updater covers same-version supervised install/authenticated startup/corrupt-candidate rollback, not release selection or TUF acceptance.",
+    "No boat, live AIS, public-access, deployment or release acceptance."
+  ],
+  "lifecycle_operation_outcomes": [
+    {
+      "report": "installer-00-Preflight.json",
+      "action": "Preflight",
+      "status": "passed",
+      "expected_refusal": false
+    },
+    {
+      "report": "installer-01-Install.json",
+      "action": "Install",
+      "status": "failed",
+      "expected_refusal": true
+    },
+    {
+      "report": "installer-02-Install.json",
+      "action": "Install",
+      "status": "failed",
+      "expected_refusal": true
+    },
+    {
+      "report": "installer-03-Install.json",
+      "action": "Install",
+      "status": "failed",
+      "expected_refusal": true
+    },
+    {
+      "report": "installer-04-Install.json",
+      "action": "Install",
+      "status": "failed",
+      "expected_refusal": true
+    },
+    {
+      "report": "installer-05-Install.json",
+      "action": "Install",
+      "status": "failed",
+      "expected_refusal": true
+    },
+    {
+      "report": "installer-06-Rollback.json",
+      "action": "Rollback",
+      "status": "passed",
+      "expected_refusal": false
+    }
+  ]
+}
