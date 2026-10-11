@@ -545,6 +545,22 @@ void ProductPanel::RouteActions() {
   // Freeze what the human saw when these controls were built. Neither a timer
   // refresh nor a modal event loop may retarget a queued command.
   const auto selected = route_;
+  const auto name_result = [this, route_id = selected.id](application::CommandResult result) {
+    const auto scroll = GetViewStart();
+    // A waypoint result identifies the point, not the route containing it.
+    result.identity.clear();
+    if (result.ok && page_ == ProductPage::RouteDetail && route_.id == route_id) {
+      if (XNavNameEditor::PreserveDrafts(
+              *this, mode_, !state_.vessel.simulated && !state_.vessel.replayed)) {
+        RefreshRoute();
+        rebuild_pending_ = true;
+      } else {
+        result.identity = route_id;
+      }
+    }
+    Result(result);
+    Scroll(scroll);
+  };
   Heading(Name(route_.name, route_.id),
           route_.active
               ? "Active passage"
@@ -553,7 +569,7 @@ void ProductPanel::RouteActions() {
       mode_, interface_scale_, selected.editable && bool(actions_.navigation.edit_route),
       [this, selected](const std::string &name) {
         return actions_.navigation.edit_route(selected, name, selected.description);
-      }, [this](application::CommandResult result) { Result(result); });
+      }, name_result);
   name_editor->Present(mode_, !state_.vessel.simulated && !state_.vessel.replayed);
   body_->Add(name_editor, 0, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, FromDIP(16));
   Visual("Passage overview", 168, [this](XNavPainter &p, wxDC &, int width) {
@@ -654,6 +670,14 @@ void ProductPanel::RouteActions() {
       p.Text(detail, 60, 40, 14, p.c.secondary, false, width - 84);
       p.Rule(60, 72, width - 84);
     });
+    auto *point_name_editor = new XNavNameEditor(*this,
+        wxString::Format("Waypoint %u name", static_cast<unsigned>(i + 1)), point.name,
+        mode_, interface_scale_, point.editable && bool(actions_.navigation.edit_waypoint),
+        [this, point](const std::string &name) {
+          return actions_.navigation.edit_waypoint(point, name, point.description);
+        }, name_result);
+    point_name_editor->Present(mode_, !state_.vessel.simulated && !state_.vessel.replayed);
+    body_->Add(point_name_editor, 0, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, FromDIP(16));
   }
   RouteForecast();
   Text("Route options", 18);
