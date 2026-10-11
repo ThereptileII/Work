@@ -27,7 +27,8 @@ PREFIX = 'project/tools/update-verifier/'
 REQUIRED_SOURCES = {PREFIX + name for name in ('cmd/skager-update-broker/main.go',
     'brokerhost/host_windows.go', 'brokerhost/operation.go', 'brokerhost/registration.go',
     'brokerhost/stock_windows.go')} | {'project/tools/package-update-broker.py',
-                                     'project/tools/broker_package.py'}
+                                     'project/tools/broker_package.py',
+                                     'project/tools/updater_package.py'}
 MAGIC = b'\xff Go buildinf:'
 START = bytes.fromhex('3077af0c9274080241e1c107e6d618e6')
 END = bytes.fromhex('f932433186182072008242104116d8f2')
