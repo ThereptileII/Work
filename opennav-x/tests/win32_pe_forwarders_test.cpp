@@ -84,6 +84,36 @@ void Tests() {
           PluginTlsLocalModule{true, found->second, {}};
     });
   };
+  // Only the supported extensionless module grammar reaches sibling lookup.
+  // Device stems must be refused before that callback for named and ordinal exports.
+  std::vector<std::string> devices{"CON", "pRn", "AuX", "nul", "ConIn$", "CONOUT$"};
+  for (unsigned digit = 1; digit <= 9; ++digit) {
+    devices.push_back("CoM" + std::to_string(digit));
+    devices.push_back("lPt" + std::to_string(digit));
+  }
+  for (const auto& device : devices)
+    for (const auto& symbol : {"fn", "#209"}) {
+      unsigned calls = 0;
+      const auto image = Image({device + "." + symbol}), before = image;
+      Check(!closure(image, {}, &calls).empty() && calls == 0,
+            "Reserved forwarded module reached sibling callback");
+      Check(image == before, "Reserved forwarder refusal modified PE bytes");
+    }
+  for (const auto& target : {"CON.dll.fn", "COM1 .fn", "LPT9.one.two"}) {
+    unsigned calls = 0;
+    Check(!closure(Image({target}), {}, &calls).empty() && calls == 0,
+          "Unsupported reserved forwarder grammar reached sibling callback");
+  }
+  for (const auto& name : {"CONsole", "COM0", "COM10", "LPT0", "LPT10", "ConIn$Extra"}) {
+    unsigned calls = 0;
+    Check(closure(Image({std::string(name) + ".fn"}),
+                  {{std::string(name) + ".dll", Image()}}, &calls).empty() && calls == 1,
+          "Ordinary forwarded module overmatched reserved device policy");
+  }
+  unsigned mixed_calls = 0;
+  Check(closure(Image({"MiXeD.#209"}), {{"MiXeD.dll", Image({"libeay32.fn"})}}, &mixed_calls)
+            .find("TLS export forwarder") != std::string::npos && mixed_calls == 1,
+        "Original-cased forwarded sibling lookup skipped TLS-bearing file");
   for (const bool delayed : {false, true}) {
     Check(closure(Import(Image(), "helper.dll", delayed),
                   {{"helper.dll", Image({"libeay32.fn"})}}).find("TLS export forwarder") != std::string::npos,

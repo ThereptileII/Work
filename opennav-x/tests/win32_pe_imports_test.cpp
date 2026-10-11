@@ -110,6 +110,53 @@ void Tests() {
              PluginTlsLocalModule{true, found->second, {}};
     });
   };
+  // Reserved device basenames must never reach a callback that opens a file.
+  std::vector<std::string> devices{"CON", "pRn", "AuX", "nul", "ConIn$", "CONOUT$"};
+  for (unsigned digit = 1; digit <= 9; ++digit) {
+    devices.push_back("CoM" + std::to_string(digit));
+    devices.push_back("lPt" + std::to_string(digit));
+  }
+  for (const auto& device : devices)
+    for (const auto& suffix : {"", ".dll", ".DLL.backup", " .dll", "   .one.two"})
+      for (const bool delayed : {false, true}) {
+        unsigned calls = 0;
+        const auto name = device + suffix;
+        const auto root = delayed ? Image({}, {name}) : Image({name});
+        const auto before = root;
+        Check(!closure(root, {}, &calls).empty() && calls == 0,
+              "Reserved normal/delay module reached sibling callback");
+        Check(root == before, "Reserved-module refusal modified PE bytes");
+      }
+  // Superscript DOS-device digit forms cannot cross the ASCII-only PE reader.
+  for (const auto& prefix : {"COM", "LPT"})
+    for (const auto& digit : {std::string(1, static_cast<char>(0xb9)),
+                              std::string(1, static_cast<char>(0xb2)),
+                              std::string(1, static_cast<char>(0xb3)),
+                              std::string("\xc2\xb9"), std::string("\xc2\xb2"), std::string("\xc2\xb3")})
+      for (const bool delayed : {false, true}) {
+        unsigned calls = 0;
+        const auto name = prefix + digit + ".dll";
+        Check(closure(delayed ? Image({}, {name}) : Image({name}), {}, &calls)
+                  .find("Non-ASCII import module name") != std::string::npos && calls == 0,
+              "Superscript device alias crossed ASCII reader or reached callback");
+      }
+  for (const auto& name : {"CONsole.dll", "PRNter.dll", "AUXiliary.dll", "NULler.dll",
+                           "COM0.dll", "COM10.dll", "LPT0.dll", "LPT10.dll",
+                           "ConIn$Extra.dll", "CONOUT$Extra.dll", "optional decoder.dll"}) {
+    unsigned calls = 0;
+    Check(closure(Image({name}), {{name, Image()}}, &calls).empty() && calls == 1,
+          "Ordinary module overmatched reserved device policy");
+  }
+  // A case-sensitive fake reader models only exact sibling lookup, not native
+  // LoadLibrary. Lowercasing these names previously skipped the TLS-bearing file.
+  for (const bool delayed : {false, true})
+    for (const auto& name : {"MiXeD.DLL", "MiXeD"}) {
+      unsigned calls = 0;
+      Check(closure(delayed ? Image({}, {name}) : Image({name}),
+                    {{name == std::string("MiXeD") ? "MiXeD.dll" : name,
+                      Image({"libeay32.dll"})}}, &calls).find("TLS import") != std::string::npos && calls == 1,
+            "Original-cased normal/delay sibling lookup skipped TLS-bearing file");
+    }
   Check(closure(Image({"helper.dll"}), {{"helper.dll", Image({"libeay32.dll"})}})
             .find("TLS import") != std::string::npos,
         "Indirect normal legacy TLS import admitted");

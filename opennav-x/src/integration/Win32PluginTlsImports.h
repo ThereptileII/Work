@@ -108,16 +108,30 @@ std::string RefuseLegacyPluginLocalTlsClosure(
           item.name.find_first_of("/\\:*?\"<>|") != std::string::npos ||
           item.name.back() == ' ' || item.name.back() == '.')
         return "Unsupported plugin import module name";
+      // Win32 reserved devices remain reserved with extensions. Refuse their
+      // stems, including spaces before the first dot, before any sibling open.
+      // The PE reader accepts ASCII only, excluding superscript-digit aliases.
+      auto stem = item.name.substr(0, item.name.find('.'));
+      while (!stem.empty() && stem.back() == ' ') stem.pop_back();
+      for (auto& c : stem)
+        if (c >= 'A' && c <= 'Z') c = static_cast<char>(c - 'A' + 'a');
+      if (stem == "con" || stem == "prn" || stem == "aux" || stem == "nul" ||
+          stem == "conin$" || stem == "conout$" ||
+          (stem.size() == 4 && (stem.compare(0, 3, "com") == 0 ||
+                               stem.compare(0, 3, "lpt") == 0) &&
+           stem[3] >= '1' && stem[3] <= '9'))
+        return "Unsupported plugin reserved module name: " + item.name;
       // LoadLibrary resolves a basename without an extension as <name>.dll.
-      // Inspect that sibling too, and deduplicate it with an explicit .dll
-      // import; otherwise an indirect legacy TLS import can evade this walk.
-      auto key = item.name;
-      if (key.find('.') == std::string::npos) key += ".dll";
+      // Keep the original spelling for case-sensitive sibling lookup; lowercase
+      // only the deduplication key shared by extensionless and .dll imports.
+      auto sibling = item.name;
+      if (sibling.find('.') == std::string::npos) sibling += ".dll";
+      auto key = sibling;
       for (auto& c : key)
         if (c >= 'A' && c <= 'Z') c = static_cast<char>(c - 'A' + 'a');
       if (!seen.insert(key).second) continue;
       if (seen.size() > max_nodes) return "Plugin import closure node budget exceeded";
-      auto local = read_local(key);
+      auto local = read_local(sibling);
       if (!local.error.empty()) return local.error;
       if (!local.found) continue;
       if (local.bytes.empty() || local.bytes.size() > max_bytes - total)

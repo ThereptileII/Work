@@ -1,0 +1,204 @@
+{
+  "base_revision": "3d13f1e93f40099df20cc75edb8d77755b9a270a",
+  "working_directory": "/home/standard/Projects/X-nav-worktrees/scrum209-module-name-review-20261011",
+  "scope": "SCRUM-209 portable reserved-device refusal and original-case sibling callback lookup only",
+  "environment": {
+    "ASAN_OPTIONS": "detect_leaks=0",
+    "UBSAN_OPTIONS": "halt_on_error=1",
+    "TMPDIR": "/home/standard/Projects/X-nav-worktrees/scrum209-module-name-review-20261011/opennav-x/evidence/local/module-name-review/tmp"
+  },
+  "sources": [
+    {
+      "path": "opennav-x/src/integration/Win32PluginTlsImports.h",
+      "base_sha256": "3c1297c6c8686e5bf709dde3606aa94b51bc616356f732df23184fd509b37e9d",
+      "checked_sha256": "b76437fe53de052ff24c17ca8affbf5ec7460ee9e6d7b006c8041519781b79a6",
+      "unchanged": false
+    },
+    {
+      "path": "opennav-x/tests/win32_pe_imports_test.cpp",
+      "base_sha256": "6ab382bcbbdeb31c4f929e9b5df8ed53589714f880409130072e8488c288aa3f",
+      "checked_sha256": "7b90f38e4590adbf77887854fee85ce127aa763c4c41180b81e5befceec8f148",
+      "unchanged": false
+    },
+    {
+      "path": "opennav-x/tests/win32_pe_forwarders_test.cpp",
+      "base_sha256": "816610a16c210ff4fb25b0def65b5490e252746ac8236e2fb7a7083920ec8066",
+      "checked_sha256": "970db8111a49d22a826714efe16768be1e4980ce8f10ceba441bbbbf9ebc94db",
+      "unchanged": false
+    },
+    {
+      "path": "opennav-x/src/integration/Win32PeImports.h",
+      "base_sha256": "f35fd4b4e0bb5d9508dd473857876eb2cfb7db4d9466cf46bb58ba424f2fb85f",
+      "checked_sha256": "f35fd4b4e0bb5d9508dd473857876eb2cfb7db4d9466cf46bb58ba424f2fb85f",
+      "unchanged": true
+    },
+    {
+      "path": "opennav-x/src/integration/OriginalPluginTlsGuard.h",
+      "base_sha256": "45c5406546eecde0ed961ffcb94302c7f2cfc8299f9aa38bcd15976861067e74",
+      "checked_sha256": "45c5406546eecde0ed961ffcb94302c7f2cfc8299f9aa38bcd15976861067e74",
+      "unchanged": true
+    }
+  ],
+  "executions": [
+    {
+      "label": "imports",
+      "compile_command": [
+        "g++",
+        "-std=c++17",
+        "-O1",
+        "-g",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "-Iopennav-x/src",
+        "opennav-x/tests/win32_pe_imports_test.cpp",
+        "-o",
+        "/home/standard/Projects/X-nav-worktrees/scrum209-module-name-review-20261011/opennav-x/evidence/local/module-name-review/imports"
+      ],
+      "compile_exit": 0,
+      "run_command": [
+        "/home/standard/Projects/X-nav-worktrees/scrum209-module-name-review-20261011/opennav-x/evidence/local/module-name-review/imports"
+      ],
+      "run_exit": 0
+    },
+    {
+      "label": "forwarders",
+      "compile_command": [
+        "g++",
+        "-std=c++17",
+        "-O1",
+        "-g",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "-Iopennav-x/src",
+        "opennav-x/tests/win32_pe_forwarders_test.cpp",
+        "-o",
+        "/home/standard/Projects/X-nav-worktrees/scrum209-module-name-review-20261011/opennav-x/evidence/local/module-name-review/forwarders"
+      ],
+      "compile_exit": 0,
+      "run_command": [
+        "/home/standard/Projects/X-nav-worktrees/scrum209-module-name-review-20261011/opennav-x/evidence/local/module-name-review/forwarders"
+      ],
+      "run_exit": 0
+    },
+    {
+      "label": "probe-baseline",
+      "compile_command": [
+        "g++",
+        "-std=c++17",
+        "-O1",
+        "-g",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "-I/home/standard/Projects/X-nav-worktrees/scrum209-module-name-review-20261011/opennav-x/evidence/local/module-name-review/baseline",
+        "-Iopennav-x/src",
+        "/home/standard/Projects/X-nav-worktrees/scrum209-module-name-review-20261011/opennav-x/docs/evidence/scrum209-module-name-review-20261011/portable-lookup-probe.cpp",
+        "-o",
+        "/home/standard/Projects/X-nav-worktrees/scrum209-module-name-review-20261011/opennav-x/evidence/local/module-name-review/probe-baseline"
+      ],
+      "compile_exit": 0,
+      "run_command": [
+        "/home/standard/Projects/X-nav-worktrees/scrum209-module-name-review-20261011/opennav-x/evidence/local/module-name-review/probe-baseline"
+      ],
+      "run_exit": 0
+    },
+    {
+      "label": "probe-fixed",
+      "compile_command": [
+        "g++",
+        "-std=c++17",
+        "-O1",
+        "-g",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "-Iopennav-x/src",
+        "/home/standard/Projects/X-nav-worktrees/scrum209-module-name-review-20261011/opennav-x/docs/evidence/scrum209-module-name-review-20261011/portable-lookup-probe.cpp",
+        "-o",
+        "/home/standard/Projects/X-nav-worktrees/scrum209-module-name-review-20261011/opennav-x/evidence/local/module-name-review/probe-fixed"
+      ],
+      "compile_exit": 0,
+      "run_command": [
+        "/home/standard/Projects/X-nav-worktrees/scrum209-module-name-review-20261011/opennav-x/evidence/local/module-name-review/probe-fixed"
+      ],
+      "run_exit": 0
+    }
+  ],
+  "retained_raw_outputs_and_probe_source": [
+    {
+      "path": "compiler-version.txt",
+      "bytes": 228,
+      "sha256": "ddba3d014b73deb2a8869cad4ab507e29a48630c8cd280adf2559e0e10891d23"
+    },
+    {
+      "path": "forwarders-compile.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "forwarders-run.txt",
+      "bytes": 56,
+      "sha256": "94f4eca0ce34e86e47478b3ea8ebf9581bc1354a3d45dc488b4fc8f2353f3c45"
+    },
+    {
+      "path": "imports-compile.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "imports-run.txt",
+      "bytes": 52,
+      "sha256": "9a6eb51841977cbd938aaff7b35ecffef5c738d7c25abccf30f7cdb2fe035e35"
+    },
+    {
+      "path": "portable-lookup-probe.cpp",
+      "bytes": 3086,
+      "sha256": "69717d73e08998b446d61db66a7ce27ddcf552a967157b90349af9f11ae45f31"
+    },
+    {
+      "path": "probe-baseline-compile.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "probe-baseline-run.txt",
+      "bytes": 407,
+      "sha256": "3925a891b2ff26e6224637605f28f01812a9b3ff09c2d6c42c48990cf7af1f27"
+    },
+    {
+      "path": "probe-fixed-compile.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "probe-fixed-run.txt",
+      "bytes": 661,
+      "sha256": "8613e20c0f9342aa05e9aae25460be151e973aace8474c8e202db32b8ecdfb0e"
+    }
+  ],
+  "derived_checks": {
+    "existing_test_assertions_deleted": 0,
+    "imports_checks": 9885,
+    "forwarders_checks": 17602,
+    "before_after_probe_rows": 7,
+    "reserved_probe_zero_callbacks_after": true,
+    "mixed_case_probe_reaches_tls_sibling_after": true,
+    "reader_and_original_guard_unchanged": true,
+    "native_execution_performed": false,
+    "native_case_sensitive_loader_bypass_proven": false
+  },
+  "raw_output_whitespace_exception": {
+    "path": "compiler-version.txt",
+    "reason": "The compiler emits a final blank line; raw stdout is retained byte-for-byte."
+  }
+}
