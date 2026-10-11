@@ -210,6 +210,110 @@ class PeerTwoContracts(unittest.TestCase):
             with self.assertRaises(RuntimeError):
                 peer.assert_no_secrets(profile, outputs[0], outputs[1])
 
+    def test_failed_gate_keeps_original_error_and_sanitizes_each_available_stream(self):
+        faults = ('none', 'cleanup', 'xserver-cleanup', 'cert.pem', 'key.pem',
+                  'opencpn.log', 'peer-two-1.stdout.log', 'peer-two-1.stderr.log',
+                  'export', 'report')
+        for fault in faults:
+            with self.subTest(fault=fault), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                evidence = root / 'evidence'
+                exe = root / 'inert.exe'; exe.write_bytes(b'never launched')
+                build = root / 'build'; build.mkdir()
+                raw = b'prefix\n' + b'\n'.join(peer.SECRETS) + b'\nsuffix'
+                original = AssertionError('original failed gate: ' + peer.SECRETS[0].decode())
+                children = []
+
+                def prepare(command, **kwargs):
+                    profile = Path(command[command.index('--profile') + 1])
+                    profile.mkdir()
+                    (profile / 'opencpn.log').write_bytes(raw)
+                    (profile / 'cert.pem').write_bytes(peer._CERT_BYTES)
+                    (profile / 'key.pem').write_bytes(peer._KEY_BYTES)
+
+                def launch(command, **kwargs):
+                    for name in ('stdout', 'stderr'):
+                        stream = kwargs[name]
+                        self.assertFalse(Path(stream.name).is_relative_to(evidence))
+                        stream.write(raw)
+                    child = Mock(pid=100 + len(children))
+                    child.poll.return_value = None
+                    child.wait.return_value = 0
+                    if ((fault == 'cleanup' and len(children) == 1) or
+                            (fault == 'xserver-cleanup' and not children)):
+                        child.terminate.side_effect = OSError('cleanup failed')
+                    children.append(child)
+                    return child
+
+                read_bytes, write_bytes, write_text = Path.read_bytes, Path.write_bytes, Path.write_text
+
+                def read(path):
+                    if path.name == fault:
+                        raise OSError('injected read failure')
+                    return read_bytes(path)
+
+                def write(path, data):
+                    if fault == 'export' and path == evidence / 'peer-two-1.opencpn.log':
+                        raise OSError('injected export failure')
+                    return write_bytes(path, data)
+
+                def write_report(path, data, **kwargs):
+                    if fault == 'report' and path.name == 'peer-two-instances-results.json':
+                        raise OSError('injected report failure')
+                    return write_text(path, data, **kwargs)
+
+                args = types.SimpleNamespace(exe=exe, build=build, evidence=evidence,
+                    expected_commit=None, compiled_input_receipt=None)
+                with patch.object(peer, 'os', types.SimpleNamespace(name='posix', environ={})), \
+                     patch.object(peer, 'native_temp_root', return_value=root), \
+                     patch.object(peer, 'product_identity', return_value=('a' * 40, None)), \
+                     patch.object(peer.subprocess, 'check_output', return_value='a' * 40), \
+                     patch.object(peer.subprocess, 'run', side_effect=prepare), \
+                     patch.object(peer.subprocess, 'Popen', side_effect=launch), \
+                     patch.object(peer.time, 'sleep'), \
+                     patch.object(peer, 'fixtures', Mock()), \
+                     patch.object(peer, 'PeerBoundary', Mock()), \
+                     patch.object(peer, 'wait_ready', side_effect=original), \
+                     patch.object(Path, 'read_bytes', read), \
+                     patch.object(Path, 'write_bytes', write), \
+                     patch.object(Path, 'write_text', write_report):
+                    with self.assertRaises(AssertionError) as caught:
+                        peer.run(args)
+                self.assertIs(caught.exception, original)
+                self.assertEqual(len(children), 3)
+                for child in children:
+                    child.terminate.assert_called_once()
+                for path in evidence.iterdir():
+                    content = path.read_bytes()
+                    self.assertFalse(any(secret in content for secret in peer.SECRETS), path.name)
+                # The second profile and display streams still export when any
+                # first-profile cleanup, certificate, read or write fails.
+                for name in ('peer-two-2.stdout.log', 'peer-two-2.stderr.log',
+                             'peer-two-xvfb.stdout.log', 'peer-two-xvfb.stderr.log'):
+                    self.assertIn(b'[REDACTED]', (evidence / name).read_bytes())
+                if fault != 'report':
+                    report = json.loads((evidence / 'peer-two-instances-results.json').read_text())
+                    self.assertEqual(report['result'], 'FAILED')
+                    self.assertIn('original failed gate: [REDACTED]', report['error'])
+                    if fault != 'none':
+                        self.assertTrue(report['finalization_errors'])
+
+    def test_finalization_failure_invalidates_pass_and_redacts_multiline_report(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source = root / 'raw'; destination = root / 'sanitized'
+            source.write_bytes(b'ordinary output')
+            report = {'result': 'PASS', 'error': peer._KEY_BYTES.decode()}
+            child = Mock(); child.poll.return_value = None
+            child.terminate.side_effect = OSError('stop failed')
+            errors = peer.finalize_evidence([], child, [(source, destination)], root, report)
+            self.assertEqual(errors, [{'stage': 'xserver-cleanup', 'error': 'OSError'}])
+            retained = json.loads((root / 'peer-two-instances-results.json').read_text())
+            self.assertEqual(retained['result'], 'FAILED')
+            self.assertNotIn(peer._KEY_BYTES.strip().decode(), retained['error'])
+            self.assertIn('[REDACTED]', retained['error'])
+            self.assertEqual(destination.read_bytes(), b'ordinary output')
+
     def test_malformed_startup_evidence_is_not_retried_as_a_race(self):
         with tempfile.TemporaryDirectory() as temporary:
             profile = Path(temporary)

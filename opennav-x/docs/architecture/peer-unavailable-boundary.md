@@ -78,7 +78,14 @@ harness captures bounded process-owned window captions and diagnostic identity
 before cleanup, without clicking controls or reading editable text.
 
 The gate rejects fixture secrets in application logs, stdout and stderr, then
-redacts all three retained output streams even on failure. Its focused contracts
+keeps raw child stdout/stderr in disposable temporary storage outside the
+artifact directory and exports only redacted copies of all three application
+streams (plus display-server output). Process cleanup, certificate inspection,
+and individual stream read/write failures are recorded independently, so one
+failure cannot skip sanitization of the remaining streams or replace the
+original gate exception. Report strings are redacted before JSON encoding.
+A finalization failure also prevents a PASS result; unavailable evidence remains
+missing rather than being replaced with raw output. Its focused contracts
 also reject stale/missing binary identity, non-hosted Windows execution, malformed
 startup JSON and an exited process. This is process/listener and supported-log
 evidence, not a packet capture or acceptance of a replacement trust protocol.

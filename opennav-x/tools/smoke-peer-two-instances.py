@@ -235,6 +235,66 @@ def launch_working_directory(profile, *, portable=False):
     return str(profile) if portable else None
 
 
+def finalize_evidence(processes, xserver, outputs, evidence, report):
+    """Publish only sanitized copies; independent failures never skip a stream.
+
+    Raw child streams stay in the disposable profile root, outside the artifact
+    directory. Even a failed stop/read/write cannot leave raw evidence behind.
+    Return failures so the caller can preserve an already-active gate exception.
+    """
+    failures = []
+
+    def attempt(stage, action):
+        try:
+            action()
+        except BaseException as error:
+            # Exception messages can themselves contain captured credentials.
+            failures.append({'stage': stage, 'error': type(error).__name__})
+
+    def stop(process):
+        if process.poll() is None:
+            process.terminate()
+            try:
+                process.wait(timeout=10)
+            except subprocess.TimeoutExpired:
+                process.kill()
+                process.wait(timeout=10)
+
+    for index, (process, *_) in enumerate(processes, 1):
+        attempt(f'profile-{index}-cleanup', lambda: stop(process))
+    if xserver is not None:
+        attempt('xserver-cleanup', lambda: stop(xserver))
+    for index, (_, profile, *_) in enumerate(processes, 1):
+        for name, expected in (('cert', _CERT_BYTES), ('key', _KEY_BYTES)):
+            def inspect():
+                path = profile / (name + '.pem')
+                report['profiles'][index - 1][name + '_preserved_at_exit'] = (
+                    path.is_file() and path.read_bytes() == expected)
+            attempt(f'profile-{index}-{name}', inspect)
+    for source, destination in outputs:
+        attempt(destination.name, lambda: destination.write_bytes(redact(source.read_bytes())))
+    if failures:
+        report['result'] = 'FAILED'
+        report['finalization_errors'] = failures
+
+    def sanitized(value):
+        # Redact before JSON encoding, which escapes multiline PEM sentinels.
+        if isinstance(value, str):
+            return redact(value.encode('utf-8')).decode('utf-8')
+        if isinstance(value, dict):
+            return {key: sanitized(item) for key, item in value.items()}
+        if isinstance(value, list):
+            return [sanitized(item) for item in value]
+        return value
+
+    attempt('results-json', lambda: (evidence / 'peer-two-instances-results.json').write_text(
+        json.dumps(sanitized(report), indent=2) + '\n', encoding='utf-8'))
+    if failures:
+        report['result'] = 'FAILED'
+        report['finalization_errors'] = failures
+    return failures
+
+
 def run(args):
     exe, build = args.exe.resolve(strict=True), args.build.resolve(strict=True)
     harness = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
@@ -250,8 +310,10 @@ def run(args):
               "executable_sha256": hashlib.sha256(exe.read_bytes()).hexdigest(),
               "profiles": [], "observations": [], "result": "FAILED"}
     processes = []
+    outputs = []
     xserver = None
-    with tempfile.TemporaryDirectory(prefix="opennav peer ", dir=temp_parent) as temporary:
+    with tempfile.TemporaryDirectory(prefix="opennav peer ", dir=temp_parent,
+                                     ignore_cleanup_errors=True) as temporary:
         base = Path(temporary)
         env = os.environ.copy()
         try:
@@ -260,8 +322,10 @@ def run(args):
                 while Path(f"/tmp/.X{display_number}-lock").exists():
                     display_number += 1
                 env["DISPLAY"] = f":{display_number}"
-                with (evidence / "peer-two-xvfb.stdout.log").open("wb") as out, \
-                        (evidence / "peer-two-xvfb.stderr.log").open("wb") as err:
+                stdout, stderr = (base / f"peer-two-xvfb.{stream}.log"
+                                  for stream in ('stdout', 'stderr'))
+                outputs.extend((path, evidence / path.name) for path in (stdout, stderr))
+                with stdout.open("wb") as out, stderr.open("wb") as err:
                     xserver = subprocess.Popen(
                         ["Xvfb", env["DISPLAY"], "-screen", "0", "1280x800x24", "-nolisten", "tcp"],
                         env=env, stdout=out, stderr=err)
@@ -287,8 +351,11 @@ def run(args):
                 fixtures.seed(profile)
                 boundary = PeerBoundary(profile)
                 expected = fixtures.snapshot(profile)
-                stdout = evidence / f"peer-two-{index}.stdout.log"
-                stderr = evidence / f"peer-two-{index}.stderr.log"
+                stdout = base / f"peer-two-{index}.stdout.log"
+                stderr = base / f"peer-two-{index}.stderr.log"
+                outputs.extend((path, evidence / path.name) for path in (stdout, stderr))
+                outputs.append((profile / "opencpn.log",
+                                evidence / f"peer-two-{index}.opencpn.log"))
                 command = launch_arguments(exe, profile, portable=portable)
                 with stdout.open("wb") as out, stderr.open("wb") as err:
                     process = subprocess.Popen(
@@ -345,33 +412,9 @@ def run(args):
                     report['windows_failure_state'].append(state)
             raise
         finally:
-            for process, *_ in processes:
-                if process.poll() is None:
-                    process.terminate()
-                    try:
-                        process.wait(timeout=10)
-                    except subprocess.TimeoutExpired:
-                        process.kill()
-                        process.wait(timeout=10)
-            # Retain the application log for a failed gate, with fixture
-            # credentials removed before it enters the CI evidence artifact.
-            for index, (_, profile, _, _, stdout, stderr) in enumerate(processes, 1):
-                cert, key = profile / "cert.pem", profile / "key.pem"
-                report["profiles"][index - 1]["cert_preserved_at_exit"] = (
-                    cert.is_file() and cert.read_bytes() == _CERT_BYTES)
-                report["profiles"][index - 1]["key_preserved_at_exit"] = (
-                    key.is_file() and key.read_bytes() == _KEY_BYTES)
-                logfile = profile / "opencpn.log"
-                if logfile.exists():
-                    (evidence / f"peer-two-{index}.opencpn.log").write_bytes(redact(logfile.read_bytes()))
-                for output in (stdout, stderr):
-                    if output.is_file():
-                        output.write_bytes(redact(output.read_bytes()))
-            if xserver is not None:
-                xserver.terminate()
-                xserver.wait(timeout=10)
-            (evidence / "peer-two-instances-results.json").write_text(
-                json.dumps(report, indent=2) + "\n", encoding="utf-8")
+            failures = finalize_evidence(processes, xserver, outputs, evidence, report)
+            if failures and sys.exc_info()[0] is None:
+                raise RuntimeError("Peer evidence finalization failed; see finalization_errors")
 
 
 if __name__ == "__main__":
