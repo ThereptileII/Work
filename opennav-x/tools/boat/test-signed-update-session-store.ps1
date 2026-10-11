@@ -235,6 +235,66 @@ try {
   $p=$s.directory;Close-SignedUpdateStore $h
   Reject {New-SignedUpdateStore $p (Json $binding) -OperationEvents} 'Uncertain operation custody cannot resume from disk'
  }
+ # Denied recovery has two independent persistence boundaries: intent before
+ # restoration, and completion after restoration. Neither a torn append nor a
+ # lost response may authorize retry/rearm or fabricate normal commissioning.
+ foreach($action in @('DeniedRestoreIntent','CandidateDeniedRestored')) {
+  foreach($fault in @('before','partial','after','lost-response')) {
+   $h=New-SignedUpdateStore (PrivateDirectory) (Json $binding) -OperationEvents;$s=Get-SignedStoreLive $h
+   $null=Event $s $h PreviousRestored $restored;$null=Event $s $h CandidatePreparationArmed $preparation
+   $denial=[pscustomobject]@{preparationEventSha256=$s.operations.events[1].eventSha256;denialSha256=(Hash 220)}
+   $null=Event $s $h DeniedBeforeLaunch $denial
+   $intent=[pscustomobject]@{identity=$new;stateSha256=$preparation.stateSha256;ownershipSha256=$preparation.ownershipSha256;preparedSha256=$preparation.preparedSha256;transactionDirectory=$preparation.transactionDirectory;preparationEventSha256=$s.operations.events[1].eventSha256;denialEventSha256=$s.operations.events[2].eventSha256;inspectionSha256=(Hash 221);currentProfileSha256=(Hash 222);targetProfileSha256=$preparation.baselineSha256;targetTreesSha256=(Hash 223);preservationSha256=$null}
+   $evidence=$intent
+   if($action -ceq 'CandidateDeniedRestored') {
+    $null=Event $s $h DeniedRestoreIntent $intent
+    $evidence=[pscustomobject]@{identity=$new;stateSha256=$preparation.stateSha256;ownershipSha256=$preparation.ownershipSha256;preparedSha256=$preparation.preparedSha256;transactionDirectory=$preparation.transactionDirectory;restoreIntentEventSha256=$s.operations.events[-1].eventSha256;inspectionSha256=$intent.inspectionSha256;restoreCompletionSha256=(Hash 224);profileSha256=$intent.targetProfileSha256;treesSha256=$intent.targetTreesSha256;activeMarkerAbsent=$true}
+   }
+   $r=EventRequest $s $action $evidence
+   $before=Read-SignedStoreHeldBytes $s;$priorState=Get-SignedUpdateReceiptHash $s.operations
+   $priorReceipts=Get-SignedUpdateReceiptHash $s.session;$priorCount=@($s.operations.events).Count
+   if($fault -ceq 'lost-response') {
+    $null=Add-SignedUpdateStoreEvent $h (Json $r) # Consume, deliberately discard response.
+    Check (-not $s.poisoned -and @($s.operations.events).Count -eq ($priorCount+1)) ($action+' consumed exactly once before lost response')
+   } else {
+    $script:faultMode=$fault
+    function Write-SignedStoreFrame($Store,[byte[]]$Bytes){
+     if($script:faultMode -ceq 'partial'){$Store.stream.Position=$Store.stream.Length;$Store.stream.Write($Bytes,0,17);$Store.stream.Flush($true)}
+     elseif($script:faultMode -ceq 'after'){& $script:writeImpl $Store $Bytes}
+     throw 'Injected denied-recovery append failure'
+    }
+    try {Reject {Add-SignedUpdateStoreEvent $h (Json $r)} ($action+' '+$fault+' returns no recovery result')}
+    finally {${function:Write-SignedStoreFrame}=$writeImpl}
+    Check $s.poisoned ($action+' '+$fault+' abandons live custody')
+    Check ((Get-SignedUpdateReceiptHash $s.operations) -ceq $priorState) ($action+' '+$fault+' does not publish unacknowledged state')
+   }
+   Check ((Get-SignedUpdateReceiptHash $s.session) -ceq $priorReceipts -and $s.session.receipts.Count -eq 1) ($action+' '+$fault+' never fabricates commissioning or restoration receipts')
+   $saved=Read-SignedStoreHeldBytes $s
+   Check ((Get-SignedStoreDigest ([byte[]]$saved[0..($before.Length-1)])) -ceq (Get-SignedStoreDigest $before)) ($action+' '+$fault+' preserves all prior durable frames')
+   if($fault -ceq 'before') {
+    Check ($saved.Length -eq $before.Length) ($action+' before-write fault leaves exact previous bytes')
+   } elseif($fault -ceq 'partial') {
+    Check ($saved.Length -eq ($before.Length+17)) ($action+' torn append remains as armed evidence')
+   } else {
+    $lines=([Text.Encoding]::UTF8.GetString($saved)).TrimEnd("`n").Split("`n")
+    Check ($lines.Count -eq ($priorCount+2)) ($action+' '+$fault+' retains one complete additional frame')
+    $frame=ConvertFrom-SignedStoreJson (Raw $lines[-1])
+    Check ($frame.schema -eq 2 -and $frame.sequence -eq ($priorCount+1) -and $frame.previousFrameSha256 -ceq (Get-SignedStoreDigest $before)) ($action+' '+$fault+' frame binds exact previous journal')
+    $replay=New-SignedUpdateOperationSession $binding 1000
+    foreach($e in $frame.state.events){$request=[pscustomobject]@{session=$e.session;sequence=$e.sequence;action=$e.action;requestNonce=$e.requestNonce;previousEventSha256=$e.previousEventSha256;evidence=$e.evidence};$null=Add-SignedUpdateOperationEvent $replay $request $e.recordedUnix}
+    Check ((Get-SignedUpdateReceiptHash $replay) -ceq (Get-SignedUpdateReceiptHash $frame.state) -and $replay.events[-1].action -ceq $action -and $replay.session.receipts.Count -eq 1) ($action+' '+$fault+' durable record replays for inspection only')
+   }
+   Reject {Add-SignedUpdateStoreEvent $h (Json $r)} ($action+' '+$fault+' cannot replay same request')
+   $retry=EventRequest $s $action $evidence;$retry.requestNonce=Hash 990
+   Reject {Add-SignedUpdateStoreEvent $h (Json $retry)} ($action+' '+$fault+' cannot retry with current sequence and fresh nonce')
+   Reject {Event $s $h CandidateCommissioned $commissioned} ($action+' '+$fault+' cannot approve candidate')
+   Reject {Event $s $h FallbackCommissioned $fallback} ($action+' '+$fault+' cannot authorize fallback')
+   Check ((Get-SignedStoreDigest (Read-SignedStoreHeldBytes $s)) -ceq (Get-SignedStoreDigest $saved)) ($action+' '+$fault+' all refusals preserve fault evidence')
+   $p=$s.directory;$file=$s.path;Close-SignedUpdateStore $h
+   Check ((Get-SignedStoreDigest ([IO.File]::ReadAllBytes($file))) -ceq (Get-SignedStoreDigest $saved)) ($action+' '+$fault+' close preserves armed journal')
+   Reject {New-SignedUpdateStore $p (Json $binding) -OperationEvents} ($action+' '+$fault+' abandoned disk cannot rearm')
+  }
+ }
  if($native){
   # Actual Windows security and file-identity behavior, not portable substitutes.
   $p=PrivateDirectory;$acl=Get-Acl -LiteralPath $p

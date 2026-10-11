@@ -1,0 +1,46 @@
+{
+  "schema": 1,
+  "issue": "SCRUM-311",
+  "scope": "Offline denied-recovery operation-store persistence fault fixtures only",
+  "baseCommit": "5dd795be16081b4b0e521315bfc45f23a9af8251",
+  "testFile": "opennav-x/tools/boat/test-signed-update-session-store.ps1",
+  "testFileSha256": "bcb0d29e386afc1d4f51ee4b86afa6b3c3fcdd5188a92f0c249516ad9a88257b",
+  "cases": {
+    "actions": [
+      "DeniedRestoreIntent",
+      "CandidateDeniedRestored"
+    ],
+    "faults": [
+      "before",
+      "partial",
+      "after",
+      "lost-response"
+    ],
+    "count": 8
+  },
+  "checks": {
+    "gitDiffCheck": "passed",
+    "testSourceAscii": "passed",
+    "productionHelpersUnchangedFromBase": "passed"
+  },
+  "execution": {
+    "portablePowerShell": "not-run",
+    "nativeWindowsPowerShell51X64": "not-run",
+    "nativeWindowsPowerShell51X86": "not-run",
+    "reason": "No local PowerShell executable found; no runtime downloaded or build started."
+  },
+  "entryPoint": "pwsh -NoProfile -File tools/boat/test-signed-update-session.ps1",
+  "nativeEntryPoint": "powershell.exe -NoProfile -File tools/boat/test-signed-update-session.ps1",
+  "qualification": {
+    "launchAuthorized": false,
+    "nativeCustodyQualified": false,
+    "actualRestorationTested": false,
+    "boatAcceptance": false
+  },
+  "unchangedProductionSha256": {
+    "opennav-x/tools/boat/SignedUpdateSession.ps1": "dab3d3cd3e6f8f3ea2033915ae4d5bcd36bdeaa2944dd6f3358048c8988f41cc",
+    "opennav-x/tools/boat/SignedUpdateOperations.ps1": "f110f54b02bae58f15abd4307198f745646921c296f3de3d05ab74245010302b",
+    "opennav-x/tools/boat/SignedUpdateSessionStore.ps1": "5ec976f3acee05f8bf180b6c2e68f19931fdc82b8341f0473e568a64eba501fc",
+    "opennav-x/tools/boat/signed_update_artifacts.py": "4a0202ae8ed91947e17fcc3d97cda541b67cb4f4c5285afbc9dce2645656df0d"
+  }
+}

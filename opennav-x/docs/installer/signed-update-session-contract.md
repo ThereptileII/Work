@@ -255,6 +255,34 @@ loader/profile proof tests, exact successor/fallback marker-process fixtures and
 live signed-offer boat qualification remain unimplemented/unqualified. No claim
 of safe live Update Now or automatic fallback follows from this model passing.
 
+### Denied-recovery persistence fault fixtures (2026-10-11)
+
+The existing store test entry point now adds eight disposable-journal cases:
+`DeniedRestoreIntent` and `CandidateDeniedRestored`, each with failure before
+write, a torn 17-byte append, failure after durable flush but before return, and
+a successfully consumed result deliberately discarded by the caller. These
+extend the earlier spawn-consumption faults to the denied recovery branch.
+
+The assertions distinguish untouched, torn and complete journal bytes, retain
+the exact prior frame prefix, replay complete frames for inspection only, and
+require the normal receipt chain to remain at receipt 1. A storage exception
+must poison live custody without publishing the proposed in-memory state.
+Replayed requests, a fresh nonce at the current sequence, candidate/fallback
+commissioning, and reopening the abandoned journal must all refuse. Closing
+custody must retain the exact fault evidence. The already-existing successful
+denied-branch fixture remains the positive control for intent then completion.
+
+These are helper persistence fixtures, not process interruption or physical
+restoration tests. They do not validate the artifact inspector's snapshots,
+claim that no child started, perform Apply/Restore, or authorize recovery or
+launch. The content inspector remains a separate read-only boundary without
+native retained custody. No production caller or workflow changes were made.
+Execution of these new cases is **pending**: PowerShell was unavailable in the
+local environment, and no runtime was downloaded. The existing qualifier invokes
+the combined entry point on native Windows x64 and x86; an earlier run or the
+frozen candidate predating this change cannot qualify these cases.
+[Source checks and pending execution evidence](../evidence/scrum311-denied-recovery-faults-20261011/results.json).
+
 ### Source-bound implementation handoff
 
 The actual signed boat boundary is deliberately still unhooked. Current
