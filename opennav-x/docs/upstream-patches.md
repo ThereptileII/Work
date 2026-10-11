@@ -1727,6 +1727,26 @@ and the separate label-ordinal lookup remain. Exact-revision native Windows
 frame time, CPU/memory, UI-thread samples and physical boat acceptance remain
 required under SCRUM-317.
 
+A second bounded SCRUM-317 follow-up compares against `f77adc1f2374e1021990df87a40221eb1df8beed`.
+Repeated point pointers within one route previously reran the same full-route
+MOB/style predicate for every occurrence. The resolver now checks that predicate
+once per containing route in each application-thread call; it still counts every
+occurrence and scans every route required by the unchanged 4096-node guard.
+No result is retained across routes or calls. This does not change the predicate,
+MOB handling, uniqueness, active-route progress, marker output or label lookup.
+
+The focused production-seam test with `--reference` to that baseline passes
+16,106 semantic/cost checks, including deterministic topology/state changes,
+custom/hidden/created/edited routes, MOB before/after duplicate points and changes
+between calls. At the maximum accepted library size, one route containing 4095
+copies of the same pointer drops from 16,773,121 to 8,191 node advances per marker.
+A route containing 4095 distinct points stays at 8,191 before and after. Running
+the new harness against the baseline source fails the duplicate-pointer cost
+assertion, while the output differential succeeds. These are source operation
+counts, not measured frame times or evidence that duplicate routes caused the
+boat report. Ordinary per-point library/style walks, separate label lookups and
+the native/physical acceptance requirements above remain.
+
 ## HTTPS scheme spelling in wxCurl redirects (SCRUM-211) — 2026-10-11
 
 The core and private o-charts wxCurl trust patches now identify the `https:`

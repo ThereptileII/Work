@@ -205,6 +205,7 @@ int ChartWaypointMarker(ChartCanvas &canvas, RoutePoint &point, bool pinned_icon
     if (++visited > 4096) return 0;  // Bound paint work for large libraries.
     auto *route = r->GetData();
     int index = 0;
+    bool style_checked = false;
     for (auto *p = route->pRoutePointList->GetFirst(); p; p = p->GetNext()) {
       if (++visited > 4096) return 0;
       ++index;
@@ -216,7 +217,13 @@ int ChartWaypointMarker(ChartCanvas &canvas, RoutePoint &point, bool pinned_icon
         active_index = index;
       if (p->GetData() != &point) continue;
       // A custom/emergency-styled or being-created route owns its own paint.
-      if (!DefaultChartRouteStyle(*route) || route->m_bIsBeingCreated) return 0;
+      // Repeated pointers in one route must still count as occurrences, but
+      // its unchanged style/MOB scan is needed only once in this app-thread
+      // call. Never retain this result across routes or paint calls.
+      if (!style_checked) {
+        if (!DefaultChartRouteStyle(*route) || route->m_bIsBeingCreated) return 0;
+        style_checked = true;
+      }
       if (++occurrences == 1) { owner = route; ordinal = index; }
     }
   }

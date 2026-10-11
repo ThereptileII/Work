@@ -66,6 +66,7 @@ PRODUCTION_CODES
 PRODUCTION_GENERIC
 PRODUCTION_MARKER
 REFERENCE_MARKER
+std::size_t last_reference_steps = 0;
 int checks=0;
 void Check(bool good, const char* why) {
   ++checks;
@@ -77,6 +78,7 @@ int Resolve(RoutePoint& point, bool pinned=true) {
 #if HAS_REFERENCE
   const auto saved=steps;
   Check(actual==ReferenceMarker(canvas,point,pinned),"Previous production result differs");
+  last_reference_steps=steps-saved;
   steps=saved;
 #endif
   return actual;
@@ -126,6 +128,24 @@ int main() {
   p.m_bIsInRoute=false;
   Check(Marker(p).kind==WaypointMarkerKind::Standalone,"Standalone marker needs no route walk"); p.m_bIsInRoute=true;
   q.icon="mob"; Check(!Resolve(p),"MOB elsewhere in owner preserves emergency artwork"); q.icon="diamond";
+  a.list.Set({&p,&p,&q});
+  Check(Marker(p).ordinal==0,"Repeated point remains unnumbered");
+  q.icon="mob"; Check(!Resolve(p),"MOB after repeated pointers remains stock");
+  a.list.Set({&q,&p,&p}); Check(!Resolve(p),"MOB before repeated pointers remains stock");
+  q.icon="diamond"; Check(Resolve(p)!=0,"MOB removal is observed on next call");
+  for (bool* flag : {&a.m_bIsBeingCreated,&a.m_bIsBeingEdited}) {
+    *flag=true; Check(!Resolve(p),"Repeated point keeps creation/edit style protection");
+    *flag=false; Check(Resolve(p)!=0,"Style flags are rechecked on next call");
+  }
+  for (int* attribute : {&a.m_hiliteWidth,&a.m_width,&a.m_style,&g_route_line_width}) {
+    const int previous=*attribute; *attribute=7;
+    Check(!Resolve(p),"Repeated point keeps custom style protection");
+    *attribute=previous;
+  }
+  a.m_Colour="red"; Check(!Resolve(p),"Repeated point keeps custom colour"); a.m_Colour.clear();
+  b.list.Set({&p,&p}); b.eligible=false; routes.Set({&a,&b});
+  Check(!Resolve(p),"A later route independently rejects shared repeated pointers");
+  b.eligible=true; routes.Set({&a});
   // Deterministic differential coverage: topology, duplicate pointers, state flags,
   // active pointer/owner changes between calls. There is no cross-call cache.
   std::mt19937 rng(317);
@@ -137,17 +157,25 @@ int main() {
       route->list.Set(contents); route->eligible=rng()%4!=0;
       route->m_bIsBeingCreated=rng()%9==0; route->m_bRtIsActive=rng()%2;
       route->m_bRtIsSelected=rng()%2;
+      route->m_bIsBeingEdited=rng()%9==0;
+      route->m_hiliteWidth=rng()%9==0 ? 1 : 0;
+      route->m_width=rng()%9==0 ? 3 : WIDTH_UNDEFINED;
+      route->m_style=rng()%9==0 ? 1 : wxPENSTYLE_INVALID;
+      route->m_Colour=rng()%9==0 ? "red" : "";
     }
     routes.Set(rng()%2 ? std::vector<Route*>{&a,&b} : std::vector<Route*>{&b,&a});
     manager.active=rng()%3==0 ? nullptr : (rng()%2 ? &a : &b);
     manager.point=rng()%3==0 ? nullptr : &points[rng()%points.size()];
     for(auto& point:points) {
+      point.icon=rng()%9==0 ? "mob" : "diamond";
       point.m_bIsActive=rng()%3==0; point.shared=rng()%4==0;
       point.m_bPtIsSelected=rng()%4==0; point.m_bRPIsBeingEdited=rng()%4==0;
       Resolve(point);
     }
   }
   a.eligible=true; a.m_bIsBeingCreated=false; a.m_bRtIsSelected=false; a.m_bRtIsActive=true;
+  a.m_bIsBeingEdited=false; a.m_hiliteWidth=0; a.m_width=WIDTH_UNDEFINED;
+  a.m_style=wxPENSTYLE_INVALID; a.m_Colour.clear();
   routes.Set({&a}); manager.active=&a;
   std::vector<RoutePoint> large(4096);
   std::vector<RoutePoint*> contents;
@@ -156,10 +184,31 @@ int main() {
   Check(Marker(large[100]).ordinal==0 && Marker(large[100]).kind==WaypointMarkerKind::Visited,
         "Raw point index above 99 still classifies visited");
   steps=0; Check(Marker(large[0]).kind==WaypointMarkerKind::Visited,"Max-budget point remains visited");
-  std::cout << "4095-point route: " << steps << " node advances per marker\n";
+  std::cout << "4095-point route: " << steps << " node advances per marker";
+#if HAS_REFERENCE
+  std::cout << "; previous production: " << last_reference_steps;
+  Check(steps<=last_reference_steps,"Unique-point route cost does not regress");
+#endif
+  std::cout << '\n';
   Check(steps==8191,"Only library walk plus unchanged emergency-style scan; no owner progress rescan");
   contents.push_back(&large[4095]); a.list.Set(contents);
   Check(!Resolve(large[0]),"4097 combined route/point nodes exceed unchanged budget");
+  // Worst bounded duplicate topology: old code ran a full MOB scan for
+  // every occurrence even though none of the route state can change here.
+  contents.assign(4095,&p); a.list.Set(contents); manager.point=&p;
+  steps=0;
+  const auto repeated=Marker(p);
+  Check(repeated.kind==WaypointMarkerKind::RoutePoint && repeated.ordinal==0,
+        "4095 repeated pointers remain unnumbered and unvisited");
+  std::cout << "4095 repeated pointers: " << steps << " node advances per marker";
+#if HAS_REFERENCE
+  std::cout << "; previous production: " << last_reference_steps;
+  Check(steps<=last_reference_steps,"Repeated-pointer route cost does not regress");
+#endif
+  std::cout << '\n';
+  Check(steps==8191,"Repeated pointers scan route style only once per route per call");
+  contents.push_back(&p); a.list.Set(contents);
+  Check(!Resolve(p),"Repeated pointers also retain the combined 4096-node cap");
   // Same object, changed order/active pointer: no stale progress or ordinal.
   a.list.Set({&r,&p,&q}); manager.point=&p;
   Check(Marker(r).ordinal==1 && Marker(r).kind==WaypointMarkerKind::Visited,"Reordering is observed immediately");
