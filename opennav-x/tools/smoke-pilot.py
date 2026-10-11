@@ -221,9 +221,9 @@ try:
         xdo('windowsize',handle,1280,800);xdo('windowmove',handle,0,0);xdo('windowfocus',handle)
     state=pilot(lambda p:p.get('fresh') and p.get('mode')=='STANDBY')
     assert not state['enabled'] and not sent,'Permission cannot auto-enable or emit controls'
-    # TRACK/WIND are advertised (the bridge refuses them without fresh route
-    # data or wind); permission and session enable still gate every command.
-    assert state['track_capability'] and state['wind_capability']
+    # TRACK/WIND are offered exactly where manual control is (the bridge then
+    # refuses them without fresh route data or wind); a refused link offers none.
+    assert state['track_capability'] == state['wind_capability'] == state['control_capability']
     show_pilot()
     bounds=data()['runtime']['display']['drawer']
     if windows:

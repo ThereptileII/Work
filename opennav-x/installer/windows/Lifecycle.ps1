@@ -691,6 +691,15 @@ function AssertCandidateTlsRuntime([string]$Directory) {
   if (-not [IO.Directory]::Exists($system)) { throw 'Windows x86 system DLL directory is missing.' }
   $binaries = New-Object 'System.Collections.Generic.Queue[string]'
   $seen = New-Object 'System.Collections.Generic.HashSet[string]' ([StringComparer]::OrdinalIgnoreCase)
+  # SCRUM-208: exact stock 5.12.4 OpenSSL 3.0.5 identities from the retained
+  # dependency audit. A plugin-local or renamed copy can arrive through
+  # PreserveAdditions after package-root hashes were checked. Refuse the new
+  # candidate without deleting plugin files or altering the stock/old generation.
+  # This is a known-byte denylist, not qualification of other plugin TLS builds.
+  $obsoleteTls = @{
+    '2bede6f2840cfe0a4e88d5c3fa648c170509c9ceed438c7e8440340541ca0446' = 'OpenSSL 3.0.5 libssl-3.dll'
+    '05752a0550349337af8b7e25362d527f6a30261dd3d1e4db61bf707c9fac589d' = 'OpenSSL 3.0.5 libcrypto-3.dll'
+  }
   foreach ($file in Get-ChildItem -LiteralPath $app -Recurse -Force -File) {
     if ($file.Extension -ieq '.dll' -or $file.Extension -ieq '.exe') {
       $binaries.Enqueue($file.FullName)
@@ -704,6 +713,10 @@ function AssertCandidateTlsRuntime([string]$Directory) {
   while ($binaries.Count -gt 0) {
     $binary = $binaries.Dequeue()
     if (-not $seen.Add($binary)) { continue }
+    $digest = Hash $binary
+    if ($obsoleteTls.ContainsKey($digest)) {
+      throw "Known obsolete TLS runtime in candidate: $($obsoleteTls[$digest]) at $binary (SHA-256 $digest)"
+    }
     # This walk exists to find a legacy TLS runtime dependency, not to gate
     # architecture. A binary whose machine type is not x86 cannot be loaded by
     # the 32-bit OpenCPN host, so it cannot contribute such an import. Imported

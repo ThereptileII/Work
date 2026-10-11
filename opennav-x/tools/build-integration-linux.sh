@@ -31,3 +31,6 @@ fi
 dbus-run-session -- ctest --test-dir build/xnav-linux/test --output-on-failure \
   --no-tests=error -E '^tests$' --timeout 90 --output-junit "$root/evidence/local/xnav-linux-tests.xml" \
   2>&1 | tee evidence/local/xnav-linux-tests.log
+# Qualify the exact installed application in two concurrent disposable profiles.
+python3 tools/test-peer-two-instances.py
+python3 tools/smoke-peer-two-instances.py

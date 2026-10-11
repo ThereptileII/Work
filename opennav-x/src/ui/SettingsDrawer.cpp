@@ -362,7 +362,7 @@ void XNavSettingsDrawer::Build() {
                   0,73,13,21,width,p.c.secondary,2);
       });
       Page("Manage sensors","Observed sources and per-signal quality",XNavIcon::Instruments,ProductPage::Sources);
-      Link("Add a sensor","NMEA 2000, NMEA 0183 or Signal K",XNavIcon::Plus,actions_.advanced);
+      Link("Add a sensor","NMEA 2000, NMEA 0183 or Signal K",XNavIcon::Plus,actions_.connections);
       Page("Source health","Freshness, cadence and dropout states",XNavIcon::Shield,ProductPage::SourceHealth);
       break;
     case SettingsSection::Autopilot:

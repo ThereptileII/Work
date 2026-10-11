@@ -73,6 +73,13 @@ extern s52plib *ps52plib;
 #include <wx/utils.h>
 #include "diagnostics/TestEarlyStartupTrace.h"
 #include "ocpn_plugin.h"
+#ifdef __WXMSW__
+#include <wx/msw/wrapwin.h>
+#include <shellapi.h>
+#include <propkey.h>
+#include <propvarutil.h>
+#include <propsys.h>
+#endif
 
 #include <algorithm>
 #include <cmath>
@@ -391,6 +398,56 @@ void SelectMode(wxFileConfig& config, bool upstream_safe) {
   wxLogMessage("SKAGER startup: %s", selected == StartupMode::Safe ? "safe" : IsXNav() ? "xnav" : "legacy");
 }
 
+#ifdef __WXMSW__
+void ClearSkagerTaskbarIdentity(IPropertyStore* properties) {
+  PROPVARIANT empty;
+  PropVariantInit(&empty);
+  properties->SetValue(PKEY_AppUserModel_ID, empty);
+  properties->SetValue(PKEY_AppUserModel_RelaunchCommand, empty);
+  properties->SetValue(PKEY_AppUserModel_RelaunchDisplayNameResource, empty);
+}
+
+bool SetSkagerTaskbarIdentity(MyFrame& frame) {
+  IPropertyStore* properties = nullptr;
+  const auto hwnd = reinterpret_cast<HWND>(frame.GetHandle());
+  if (!hwnd || FAILED(SHGetPropertyStoreForWindow(hwnd, IID_PPV_ARGS(&properties))))
+    return false;
+  const auto put = [properties](const PROPERTYKEY& key, const std::wstring& text) {
+    PROPVARIANT value;
+    PropVariantInit(&value);
+    const HRESULT init = InitPropVariantFromString(text.c_str(), &value);
+    const HRESULT result = SUCCEEDED(init) ? properties->SetValue(key, value) : init;
+    PropVariantClear(&value);
+    return SUCCEEDED(result);
+  };
+  // These two properties must precede the window ID. Windows otherwise picks
+  // one of the same-executable Start shortcuts, including OpenCPN Legacy, as
+  // the taskbar's relaunch name and Jump List command.
+  wxFileName relaunch(wxStandardPaths::Get().GetExecutablePath());
+  const wxFileName launcher(relaunch.GetPath(), "skager-start.exe");
+  if (!preview_paths && !g_bportable && launcher.FileExists())
+    relaunch = launcher;  // Preserve the installed startup/update guard.
+  const std::wstring command = L"\"" + relaunch.GetFullPath().ToStdWstring() +
+      L"\" --xnav";
+  const bool ready = put(PKEY_AppUserModel_RelaunchCommand, command) &&
+      put(PKEY_AppUserModel_RelaunchDisplayNameResource, L"SKAGER");
+  const bool assigned = ready && put(PKEY_AppUserModel_ID, L"OpenNavX.SKAGER");
+  if (!assigned) ClearSkagerTaskbarIdentity(properties);
+  properties->Release();
+  return assigned;
+}
+
+void RemoveSkagerTaskbarIdentity(MyFrame& frame) {
+  IPropertyStore* properties = nullptr;
+  const auto hwnd = reinterpret_cast<HWND>(frame.GetHandle());
+  if (hwnd && SUCCEEDED(SHGetPropertyStoreForWindow(
+                  hwnd, IID_PPV_ARGS(&properties)))) {
+    ClearSkagerTaskbarIdentity(properties);
+    properties->Release();
+  }
+}
+#endif
+
 void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
   host = &frame;
   if(preview_paths && !config.ReadBool("/OpenNav/PreviewWindowPlaced",false)) {
@@ -405,6 +462,10 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
     return;
   }
   frame.SetTitle(application::brand::WindowTitle);
+#ifdef __WXMSW__
+  if (!SetSkagerTaskbarIdentity(frame))
+    wxLogWarning("SKAGER taskbar identity could not be set");
+#endif
   settings = std::make_unique<integration::SettingsStore>(config, fresh_setup_profile);
   marine = std::make_unique<integration::MarineBridge>();
   auto configure_sources = [] {
@@ -1338,6 +1399,9 @@ bool PrepareClose(wxFileConfig& config) {
   commissioning.reset();
   settings.reset();
   pilots.reset();anchor_state={};
+#ifdef __WXMSW__
+  if (host && IsXNav()) RemoveSkagerTaskbarIdentity(*host);
+#endif
   host = nullptr;
   return true;
 }

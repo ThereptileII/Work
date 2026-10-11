@@ -94,7 +94,7 @@ inline bool RelevantChartNameFeature(const std::string &feature) {
 // a name is looked up on the chart instead of being quoted in the route name.
 inline bool GeneratedNavigationName(const std::string &name) {
   std::string s = name;
-  for (const char *prefix : {"Waypoint ", "Route ", "WP ", "WP"})
+  for (const char *prefix : {"Waypoint ", "Route ", "WP ", "WP", "NM"})
     if (s.rfind(prefix, 0) == 0) { s = s.substr(std::string(prefix).size()); break; }
   if (s.empty()) return true;
   const bool digits = std::all_of(s.begin(), s.end(), [](unsigned char c) { return std::isdigit(c); });
@@ -106,6 +106,12 @@ inline bool GeneratedNavigationName(const std::string &name) {
     else if (!std::isdigit(c) && c != '.' && c != ' ') return false;
   }
   return letters == 2;
+}
+// A new route's own numbered points may take chart names. Reused marks and
+// points from another route keep their existing identity and name.
+inline bool ShouldNameNewRoutePoint(const std::string &name, bool shared,
+                                   bool in_other_route) {
+  return !shared && !in_other_route && GeneratedNavigationName(name);
 }
 inline NavigationNameSuggestion SuggestNavigationName(
     Coordinate position, bool route, const std::vector<ChartNameCandidate> &candidates,

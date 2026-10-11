@@ -31,7 +31,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
     def _handle(self, body):
         if self.path == "/redirect":
             self._redirect(f"https://localhost:{self.server.server_port}/payload")
-        elif self.path == "/to-https" and redirect_target:
+        elif self.path in ("/to-https", "/to-target") and redirect_target:
             self._redirect(redirect_target)
         elif self.path == "/downgrade":
             self._redirect("http://localhost:9/payload")

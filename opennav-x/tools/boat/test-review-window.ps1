@@ -15,6 +15,20 @@ $installed=[pscustomobject]@{executable=$exe;state=[pscustomobject]@{current=('b
 $build=[pscustomobject]@{test_fixtures=$false;build_purpose='INSTALLED PRODUCT';version='0.4.0-beta2';commit=('a'*40);executable_sha256=('c'*64)}
 $launch=[pscustomobject]@{status='passed';action='Launch';mode='--xnav';pid=42;utc=$now.AddMinutes(-1).ToString('o')}
 $request=[pscustomobject]@{action='Launch';mode='--xnav';executable=$exe;executableSha256=('c'*64);workspace='C:\XNav'}
+Pass 'Exact later Beta 2 version remains reviewable with the same hash and launch guards' {
+  $owned=CopyValue $installed;$owned.ownership.version='0.4.0-beta2.4'
+  $built=CopyValue $build;$built.version='0.4.0-beta2.4'
+  Assert-WindowReviewPolicy $job $owned $built $launch $request $now
+}
+Refuse 'Installed and build versions must match exactly' {
+  $owned=CopyValue $installed;$owned.ownership.version='0.4.0-beta2.4'
+  Assert-WindowReviewPolicy $job $owned $build $launch $request $now
+}
+Refuse 'Unsupported future product version cannot use the review helper' {
+  $owned=CopyValue $installed;$owned.ownership.version='0.4.0-beta3'
+  $built=CopyValue $build;$built.version='0.4.0-beta3'
+  Assert-WindowReviewPolicy $job $owned $built $launch $request $now
+}
 foreach($fileName in @('ReviewWindow.ps1','review-window.ps1','../test-display-window-native.ps1','../prototype/capture-reviewed-native.ps1','../../tests/display-review/window-fixture.ps1')) {
   Pass "Parses $fileName without executing environment APIs" {
     $tokens=$null;$errors=$null;$null=[Management.Automation.Language.Parser]::ParseFile((Join-Path $PSScriptRoot $fileName),[ref]$tokens,[ref]$errors)

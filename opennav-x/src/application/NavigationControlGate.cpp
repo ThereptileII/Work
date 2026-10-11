@@ -54,6 +54,7 @@ NavigationActions GuardNavigationChanges(NavigationActions a,
   a.start_anchor = Guard(a.start_anchor, allowed);
   a.clear_anchor = Guard(a.clear_anchor, allowed);
   a.legacy_settings = Guard(a.legacy_settings, allowed);
+  a.connections_settings = Guard(a.connections_settings, allowed);
   a.plugin_settings = Guard(a.plugin_settings, allowed);
   a.legacy_route_manager = Guard(a.legacy_route_manager, allowed);
   return a;

@@ -7,12 +7,15 @@
 #include "model/route.h"
 #include "model/route_point.h"
 #include "model/routeman.h"
+#include "model/select.h"
 #include "ocpn_frame.h"
 #include "routemanagerdialog.h"
 #include "viewport.h"
 #include "vessel/AisSelection.h"
 #include "undo.h"
 #include <cmath>
+#include <utility>
+#include <vector>
 #include <wx/log.h>
 #include <wx/thread.h>
 extern RouteManagerDialog *pRouteManagerDialog;
@@ -22,6 +25,9 @@ application::NavigationActions
 MakeNavigationActions(MyFrame &frame,
                       std::function<vessel::Navigation()> position,
                       std::function<application::AnchorState(vessel::Time)> anchor) {
+  // Only XNav constructs these actions. Leave Legacy's route, mark and track
+  // selection radius unchanged while making the thin route ink easier to hit.
+  if (pSelect) pSelect->SetRouteSegmentSelectionScale(1.5f);
   application::NavigationActions a;
   auto result = [&frame](application::CommandResult r) {
     frame.InvalidateAllGL();
@@ -245,11 +251,34 @@ MakeNavigationActions(MyFrame &frame,
         title.empty() || (!description.empty() && detail.empty()))
       return application::CommandResult{false, "Enter a route name of 1–128 bytes"};
     const auto old_name = route->m_RouteNameString, old_description = route->m_RouteDescription;
+    std::vector<std::pair<RoutePoint *, wxString>> renamed_points;
+    for (int i = 1; i <= route->GetnPoints(); ++i) {
+      auto *point = route->GetPoint(i);
+      if (!point) continue;
+      bool in_other_route = false;
+      for (auto *node = pRouteList->GetFirst(); node; node = node->GetNext()) {
+        auto *other = node->GetData();
+        if (other && other != route && other->pRoutePointList->Find(point)) {
+          in_other_route = true;
+          break;
+        }
+      }
+      if (!application::ShouldNameNewRoutePoint(
+              point->GetName().ToStdString(wxConvUTF8), point->IsShared(),
+              in_other_route)) continue;
+      const auto suggested = CopyNavigationNameSuggestion(
+          frame, {point->m_lat, point->m_lon}, false);
+      if (!application::ValidNavigationName(suggested.name)) continue;
+      renamed_points.emplace_back(point, point->GetName());
+      point->SetName(wxString::FromUTF8(suggested.name));
+    }
     route->m_RouteNameString = title;
     route->m_RouteDescription = detail;
     // FinishRoute uses this same native database operation but discards its
     // result. Check persistence first, retaining the editable draft on failure.
     if (!NavObj_dB::GetInstance().UpdateRoute(route)) {
+      for (const auto &[point, previous] : renamed_points)
+        point->SetName(previous);
       route->m_RouteNameString = old_name;
       route->m_RouteDescription = old_description;
       return application::CommandResult{false, "Route could not be saved; draft retained"};
@@ -322,6 +351,20 @@ MakeNavigationActions(MyFrame &frame,
   a.toggle_ais = [&frame] { frame.ToggleAISDisplay(frame.GetPrimaryCanvas()); };
   a.fullscreen = [&frame] { frame.ToggleFullScreen(); };
   a.legacy_settings = [&frame] { frame.DoSettings(); };
+  a.connections_settings = [&frame] {
+    // Pinned OpenCPN options::CreateControls creates Display, Charts, then
+    // Connections. Open the actual connection editor, not the last-used tab.
+    // DoOptionsDialog consumes this page before showing its modeless dialog.
+    // Restore the previous preference now; OpenCPN may later remember the
+    // page the user actually leaves selected when closing its own dialog.
+    const int previous_page = options_lastPage;
+    const int previous_subpage = options_subpage;
+    options_lastPage = 2;
+    options_subpage = -1;
+    frame.DoSettings();
+    options_lastPage = previous_page;
+    options_subpage = previous_subpage;
+  };
   a.plugin_settings = [&frame] {
     // Pinned options::CreateControls creates Display, Charts, Connections,
     // Ships, User Interface, then Plugins. Plugin-added pages follow these.

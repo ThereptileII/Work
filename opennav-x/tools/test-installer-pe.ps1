@@ -7,7 +7,7 @@ $source = Join-Path (Split-Path $PSScriptRoot -Parent) 'installer/windows/Lifecy
 $tokens = $null; $errors = $null
 $ast = [Management.Automation.Language.Parser]::ParseFile($source, [ref]$tokens, [ref]$errors)
 if ($errors.Count) { throw 'Lifecycle.ps1 does not parse.' }
-$names = @('PlainPath','RelativePath','PeU16','PeU32','PeMachine','PeRvaOffset',
+$names = @('Hash','PlainPath','RelativePath','PeU16','PeU32','PeMachine','PeRvaOffset',
   'PeImportName','GetPeImports','GetCandidateSystemX86','AssertCandidateTlsRuntime')
 $definitions = @($ast.FindAll({
   param($node)
@@ -15,6 +15,16 @@ $definitions = @($ast.FindAll({
 }, $true))
 if ($definitions.Count -ne $names.Count) { throw 'Installer PE gate functions are missing or duplicated.' }
 foreach ($definition in $definitions) { . ([scriptblock]::Create($definition.Extent.Text)) }
+# Exercise the production SHA-256 function for ordinary files. Known obsolete
+# identities are injected only for named inert fixtures; no stock DLLs execute
+# or need to be copied into this source test. The candidate walk and refusal
+# remain the actual installer functions, including transitive import traversal.
+$script:realHash = ${function:Hash}
+$script:fixtureHashes = @{}
+function Hash([string]$Path) {
+  if ($script:fixtureHashes.ContainsKey($Path)) { return $script:fixtureHashes[$Path] }
+  return (& $script:realHash $Path)
+}
 # Linux can execute the parser fixtures, while Windows CI exercises the real
 # installer path guard and OS-provided SystemX86 resolver. Replace only these
 # two platform-dependent functions on Linux; all PE logic is the actual AST.
@@ -83,6 +93,26 @@ try {
   NewPe $exe 'kernel32.dll'
   NewPe $plugin 'libcurl.dll'
   NewPe (Join-Path $app 'libcurl.dll')
+  $originalPluginHash = Hash $plugin
+  foreach ($obsoleteHash in @(
+      '2bede6f2840cfe0a4e88d5c3fa648c170509c9ceed438c7e8440340541ca0446',
+      '05752a0550349337af8b7e25362d527f6a30261dd3d1e4db61bf707c9fac589d')) {
+    # A renamed retained plugin-local DLL is still rejected by byte identity.
+    $script:fixtureHashes[$plugin] = $obsoleteHash
+    RequireFailure { AssertCandidateTlsRuntime (Join-Path $temp 'stage') } ('Known obsolete TLS runtime in candidate: .*' + $obsoleteHash)
+    $script:fixtureHashes.Clear()
+    if ((Hash $plugin) -cne $originalPluginHash) { throw 'TLS rejection changed the retained plugin bytes.' }
+  }
+  # Also inspect imported local modules whose extension is neither DLL nor EXE.
+  $retainedHelper = Join-Path $plugins 'retained-tls.drv'
+  NewPe $retainedHelper
+  NewPe $plugin 'retained-tls.drv'
+  $script:fixtureHashes[$retainedHelper] = '2bede6f2840cfe0a4e88d5c3fa648c170509c9ceed438c7e8440340541ca0446'
+  RequireFailure { AssertCandidateTlsRuntime (Join-Path $temp 'stage') } 'Known obsolete TLS runtime in candidate: OpenSSL 3.0.5'
+  $script:fixtureHashes.Clear()
+  AssertCandidateTlsRuntime (Join-Path $temp 'stage')
+  Remove-Item -LiteralPath $retainedHelper
+  NewPe $plugin 'libcurl.dll'
   $controlRejected = $false
   try { RequireFailure { AssertCandidateTlsRuntime (Join-Path $temp 'stage') } 'MISSING' }
   catch { if ($_.Exception.Message -match 'Expected rejection') { $controlRejected = $true } else { throw } }

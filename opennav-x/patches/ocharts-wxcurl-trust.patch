@@ -70,7 +70,7 @@ diff --git a/libs/wxcurl/src/base.cpp b/libs/wxcurl/src/base.cpp
                      "Connection: keep-alive"); //Pretend we are a normal browser
          SetOpt(CURLOPT_FOLLOWLOCATION, 1L);
 +        SetOpt(CURLOPT_MAXREDIRS, 5L);
-+        if (wxCURL_BUF2STRING(m_szCurrFullURL).Lower().StartsWith(wxS("https://")))
++        if (wxCURL_BUF2STRING(m_szCurrFullURL).Lower().StartsWith(wxS("https:")))
 +            SetOpt(CURLOPT_REDIR_PROTOCOLS, (long)CURLPROTO_HTTPS);
  #ifdef __WXMSW__
 -        SetOpt(CURLOPT_CAINFO, "curl-ca-bundle.crt"); //Use our local certificate list on Windows

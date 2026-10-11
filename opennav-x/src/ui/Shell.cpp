@@ -149,6 +149,17 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   source_->SetMinSize(frame_.FromDIP(wxSize(120,44)));
   route_summary_ = new wxStaticText(top,wxID_ANY,"No active route",wxDefaultPosition,wxDefaultSize,wxST_ELLIPSIZE_END);
   route_summary_->SetFont(UiFont(*top,12)); route_summary_->SetMinSize(wxSize(0,-1)); labels_.push_back(route_summary_);
+  route_summary_->SetCursor(wxCursor(wxCURSOR_HAND));
+  route_summary_->SetName("Open route and saved routes");
+  route_summary_->Bind(wxEVT_LEFT_UP,[this](wxMouseEvent &) {
+    // The header is the short path into a saved passage when none is active.
+    // With an active route it opens the current progress card instead.
+    const auto route = state_.navigation.route;
+    if (route && route->state != vessel::RouteState::NoActiveRoute)
+      ShowPassage();
+    else
+      ShowProduct(ProductPage::Routes);
+  });
   row->Add(route_summary_, 1, wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT, gap * 2);
   row->Add(source_, 0, wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT, gap * 2);
   row->Add(clock_, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, gap);
@@ -1134,8 +1145,15 @@ void Shell::Tick() {
   source_->SetTextColor(replay || simulation_ || label.Contains("attention") ||
                         label == "Navigation stale"
                             ? Theme(mode_).attention : Theme(mode_).secondary);
-  if (source_->GetLabel() != label) {
-    source_->SetLabel(label);
+  // The prototype hides health wording at narrow effective viewports. Keep the
+  // complete state as the accessible name and in the health page.
+  const bool compact_health = frame_.ToDIP(frame_.GetClientSize()).x <= 1100;
+  const wxString visible_health = compact_health ? wxString::FromUTF8("\xE2\x97\x8F") : label;
+  source_->SetName(label);
+  if (source_->GetLabel() != visible_health) {
+    source_->SetLabel(visible_health);
+    source_->SetMinSize(wxSize(compact_health ? frame_.FromDIP(48)
+        : source_->InlineWidth(120), frame_.FromDIP(44)));
     source_->GetParent()->Layout();
   }
   const auto route = state_.navigation.route;
@@ -1152,6 +1170,7 @@ void Shell::Tick() {
     summary = "No active route";
   }
   if (creating) summary = "Build route / tap chart to add points";
+  else summary += wxString::FromUTF8("  \xE2\x8C\x84");
   const bool show_summary = true;
   const bool summary_layout = route_summary_->GetLabel() != summary ||
                               route_summary_->IsShown() != show_summary;
@@ -1596,6 +1615,8 @@ void Shell::ShowSettings() {
     actions.page = [this](ProductPage page) { ShowProduct(page); };
     if(actions_.navigation.legacy_settings)
       actions.advanced = [this] { ShowNavigation(); actions_.navigation.legacy_settings(); };
+    if(actions_.navigation.connections_settings)
+      actions.connections = [this] { ShowNavigation(); actions_.navigation.connections_settings(); };
     if(actions_.navigation.plugin_settings)
       actions.plugins = [this] { ShowNavigation(); actions_.navigation.plugin_settings(); };
     actions.diagnostics = [this] { ShowPage(PreviewPage::Diagnostics); };

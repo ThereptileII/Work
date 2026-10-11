@@ -146,7 +146,8 @@ struct NavigationActions {
   std::function<CommandResult(const std::string &, const std::string &)>
       finish_route_named;
   std::function<void(Coordinate)> object_info_at;
-  std::function<void()> legacy_settings, legacy_route_manager, plugin_settings;
+  std::function<void()> legacy_settings, connections_settings,
+      legacy_route_manager, plugin_settings;
   std::function<CommandResult(double)> start_anchor;
   std::function<CommandResult(const std::string &)> clear_anchor;
 };

@@ -187,6 +187,20 @@ def main():
                 f"http://localhost:{plain_port}/payload", ca_cert, True))
             results.append(probe(binary, "http_to_https",
                 f"http://localhost:{plain_port}/to-https", ca_cert, True))
+            # libcurl accepts a single slash after the HTTPS scheme. Exercise
+            # an actually reachable HTTP destination so a refused connection
+            # cannot hide a missing redirect-protocol restriction.
+            downgrade_server, downgrade_port = start_server(
+                directory, "reachable-downgrade", valid_cert, valid_key, "tls",
+                f"http://localhost:{plain_port}/payload")
+            servers.append(downgrade_server)
+            for prefix, name in (("https://", "reachable_http_downgrade"),
+                                 ("https:/", "single_slash_http_downgrade"),
+                                 ("HtTpS:/", "mixed_case_http_downgrade")):
+                results.append(probe(binary, name,
+                    f"{prefix}localhost:{downgrade_port}/to-target", ca_cert, False))
+            results.append(probe(binary, "single_slash_https",
+                f"https:/localhost:{port}/payload", ca_cert, True))
             results.extend(configure_only(binary, scheme)
                            for scheme in ("ftp", "telnet"))
             for name, cert, key in (("wrong_host", wrong_cert, wrong_key),

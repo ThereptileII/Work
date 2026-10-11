@@ -107,7 +107,7 @@ index 779ac3bce..a6c87b178 100644
 +        SetOpt(CURLOPT_MAXREDIRS, 5L);
 +
 +        wxString fullURL = wxCURL_BUF2STRING(m_szCurrFullURL).Lower();
-+        const bool isHTTPS = fullURL.StartsWith(wxS("https://"));
++        const bool isHTTPS = fullURL.StartsWith(wxS("https:"));
 +        if(isHTTPS)
 +        {
 +            // Keep FTP, Telnet and other supported initial protocols intact,

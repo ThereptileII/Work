@@ -583,7 +583,9 @@ void XNavButton::Paint(wxPaintEvent&) {
     edge = blend(Colour(colors.alarm), background, .25); ink = Colour(colors.alarm);
   } else if (role_ == ButtonRole::Quiet) {
     fill = hovered_ || pressed_ || selected_ ? Colour(colors.selected) : background;
-    ink = Colour(selected_ ? colors.accent : colors.secondary);
+    // Floating chart controls have a light surface in Day mode. The ordinary
+    // selected accent is too pale for the follow label on that surface.
+    ink = Colour(floating_ ? colors.primary : selected_ ? colors.accent : colors.secondary);
   } else if (role_ == ButtonRole::Segment) {
     fill = selected_ || hovered_ || pressed_ ? Colour(colors.selected) : background;
     ink = Colour(selected_ ? colors.primary : colors.muted);
@@ -918,6 +920,11 @@ void XNavDataValue::Paint(wxPaintEvent&) {
     const int value_y=FromDIP(label_y+(roomy?21:16));
     const auto unit=unit_.StartsWith("m /") ? wxString("m") :
         unit_=="deg true" ? wxString::FromUTF8("°T") : unit_;
+    const int visual_height = !reading_.value || stale ? 0 :
+        visual_.kind == MetricVisual::Kind::Sparkline ? FromDIP(17) :
+        visual_.kind == MetricVisual::Kind::Meter ? FromDIP(20) :
+        visual_.kind == MetricVisual::Kind::Direction ? FromDIP(16) :
+        visual_.kind == MetricVisual::Kind::Bar ? FromDIP(visual_.caption.empty() ? 8 : 27) : 0;
     dc.SetFont(UiFont(*this,11));
     const auto unit_extent=dc.GetTextExtent(unit);
     const auto fits=[&](int size) {
@@ -929,14 +936,18 @@ void XNavDataValue::Paint(wxPaintEvent&) {
       const int unit_y=FromDIP(label_y+(roomy?21:16)+size-13);
       const int content_bottom=std::max(value_y + value_extent.y,
           inline_unit ? unit_y + unit_extent.y : value_y + value_extent.y);
-      return tracked_width<=available && content_bottom+value_detail_gap<=detail_y;
+      const int visual_bottom = reading_.quality == vessel::Quality::Live && inline_unit
+          ? GetClientSize().y - FromDIP(6) : detail_y - FromDIP(2);
+      return tracked_width<=available &&
+          content_bottom+value_detail_gap+visual_height<=visual_bottom;
     };
     // Compact rows can be shorter than the prototype's normal metric card at
     // high DPI. Fit the measured glyph bounds before drawing the status line.
     while(value_size > 16 && !fits(value_size))
       value_size=std::max(16,value_size-2);
     dc.SetFont(UiFont(*this,value_size));
-    const int tracked_width=dc.GetTextExtent(value).x+tracking*(int(value.length())-1);
+    const auto value_extent = dc.GetTextExtent(value);
+    const int tracked_width=value_extent.x+tracking*(int(value.length())-1);
     dc.SetTextForeground(Colour(stale?colors.muted:colors.primary));
     wxArrayInt advances; dc.GetPartialTextExtents(value,advances);
     for(std::size_t i=0;i<value.length();++i)
@@ -945,7 +956,9 @@ void XNavDataValue::Paint(wxPaintEvent&) {
     dc.SetFont(UiFont(*this,11));dc.SetTextForeground(Colour(colors.secondary));
     const bool inline_unit=unit_x+dc.GetTextExtent(unit).x<=right;
     if(inline_unit)dc.DrawText(unit,unit_x,value_y+FromDIP(value_size-13));
-    const int value_bottom=value_y+dc.GetTextExtent(value).y;
+    // Keep the large-value font's measured height. Measuring after selecting
+    // the tiny unit font placed the sparkline/meter/arrow through the digits.
+    const int value_bottom=value_y+value_extent.y;
     // SCRUM-352: a live value needs no caption. The routine source and age
     // line is gone from the rail; the source stays in the hover hint and in
     // source health. Only a value that cannot be fully trusted (aging, stale,

@@ -469,8 +469,9 @@ bool DrawChartOwnship(ocpnDC &dc, ChartCanvas &canvas, double x, double y,
     dc.GetTextExtent(text, &tw, &th);
     const int pad = static_cast<int>(std::lround(8 * ui_scale));
     const int dot = static_cast<int>(std::lround(6 * ui_scale));
-    const int cx = static_cast<int>(std::lround(x + 24 * ui_scale));
-    const int cy = static_cast<int>(std::lround(y + 30 * ui_scale));
+    // Match the prototype's translate(22 26) beside the ownship marker.
+    const int cx = static_cast<int>(std::lround(x + 22 * ui_scale));
+    const int cy = static_cast<int>(std::lround(y + 26 * ui_scale));
     const int w = pad + dot + pad / 2 + tw + pad, h = th + pad;
     dc.SetPen(wxPen(ink(ui::Theme(mode).border), 1));
     dc.SetBrush(wxBrush(ink(ui::FloatingTheme(mode).surface)));

@@ -21,6 +21,8 @@ Check 'test-boat-feedback-widgets.py' @('--manifest', "$Root/build/xnav-windows/
 # compile/package retention. This script contains no compiler/package producer.
 Check 'smoke-installer-selftest.py' @('--expect-test-loopback', '--app', "$Root/build/xnav-install/opencpn.exe")
 Check 'smoke-modes-windows.py'
+Check 'test-peer-two-instances.py'
+Check 'smoke-peer-two-instances.py'
 Check 'smoke-navigation.py'
 Check 'smoke-navigation.py' @('--route-fixture')
 Check 'smoke-navigation.py' @('--route-fixture-standard')

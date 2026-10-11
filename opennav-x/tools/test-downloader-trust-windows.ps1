@@ -186,7 +186,7 @@ function Invoke-Case([string]$Name,[string]$Url,[bool]$Expected,[switch]$RejectS
   Write-TrustProgress 'downloader-case' $Name 'after'
   } catch { Write-TrustProgress 'downloader-case' $Name 'failure' $_.Exception.Message; throw }
 }
-function Invoke-WxCurlCase([string]$Name,[string]$Url,[bool]$Expected) {
+function Invoke-WxCurlCase([string]$Name,[string]$Url,[bool]$Expected,[bool]$ProtocolBlocked=$false) {
   Write-TrustProgress 'wxcurl-case' $Name 'before'
   try {
   $Probe=Invoke-BoundedProbe "wxcurl-$Name" (Join-Path $Runtime 'wxcurl-trust-probe.exe') @($Url);$Output=$Probe.output;$Exit=$Probe.exitCode
@@ -198,6 +198,7 @@ function Invoke-WxCurlCase([string]$Name,[string]$Url,[bool]$Expected) {
   if($GetOk -ne $Expected -or $HeadOk -ne $Expected){throw "$Name wxCurl GET/HEAD acceptance mismatch: $Output"}
   if($Expected -and ($Exit -ne 0 -or [int64]$Fields.get_bytes -ne 36)){throw "$Name wxCurl accepted the wrong payload or exit: $Output"}
   if(-not $Expected -and ($Exit -ne 1 -or -not $Fields.get_error -or -not $Fields.head_error)){throw "$Name wxCurl did not report a normal GET/HEAD rejection: $Output"}
+  if($ProtocolBlocked -and ($Fields.get_error -cne 'Unsupported protocol' -or $Fields.head_error -cne 'Unsupported protocol')){throw "$Name wxCurl must reject the redirect protocol before connecting: $Output"}
   $Record=[ordered]@{case=$Name;accepted=$GetOk;headAccepted=$HeadOk;badOptionBlocked=$true;exitCode=$Exit;getBytes=[int64]$Fields.get_bytes;getError=$Fields.get_error;headError=$Fields.head_error;output=$Output.Trim()}
   $Record|ConvertTo-Json -Depth 4|Set-Content -LiteralPath (Join-Path $Evidence "wxcurl-$Name.json") -Encoding utf8
   $WxCurlResults.Add($Record)
@@ -257,7 +258,10 @@ try {
   Invoke-Case 'https_redirect' "https://localhost:$ValidPort/redirect" $true
   Invoke-WxCurlCase 'https_redirect' "https://localhost:$ValidPort/redirect" $true
   Invoke-Case 'http_downgrade' "https://localhost:$ValidPort/downgrade" $false
-  Invoke-WxCurlCase 'http_downgrade' "https://localhost:$ValidPort/downgrade" $false
+  Invoke-WxCurlCase 'http_downgrade' "https://localhost:$ValidPort/downgrade" $false $true
+  Invoke-WxCurlCase 'single_slash_https' "https:/localhost:$ValidPort/payload" $true
+  Invoke-WxCurlCase 'single_slash_http_downgrade' "https:/localhost:$ValidPort/downgrade" $false $true
+  Invoke-WxCurlCase 'mixed_case_http_downgrade' "HtTpS:/localhost:$ValidPort/downgrade" $false $true
   Invoke-Case 'local_file_redirect' "https://localhost:$ValidPort/local-file" $false
   Invoke-WxCurlCase 'local_file_redirect' "https://localhost:$ValidPort/local-file" $false
   Invoke-Case 'partial_transfer' "https://localhost:$ValidPort/partial" $false

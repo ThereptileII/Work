@@ -1,0 +1,77 @@
+{
+  "status": "passed",
+  "cases": [
+    {
+      "case": "valid",
+      "accepted": true,
+      "downloadError": 0,
+      "headError": 0
+    },
+    {
+      "case": "https_redirect",
+      "accepted": true,
+      "downloadError": 0,
+      "headError": 0
+    },
+    {
+      "case": "http_downgrade",
+      "accepted": false,
+      "downloadError": 1,
+      "headError": 1
+    },
+    {
+      "case": "local_file_redirect",
+      "accepted": false,
+      "downloadError": 1,
+      "headError": 1
+    },
+    {
+      "case": "partial_transfer",
+      "accepted": false,
+      "downloadError": 56,
+      "headError": 0
+    },
+    {
+      "case": "wrong_host",
+      "accepted": false,
+      "downloadError": 60,
+      "headError": 60
+    },
+    {
+      "case": "untrusted",
+      "accepted": false,
+      "downloadError": 60,
+      "headError": 60
+    },
+    {
+      "case": "expired",
+      "accepted": false,
+      "downloadError": 60,
+      "headError": 60
+    },
+    {
+      "case": "write_exception",
+      "accepted": false,
+      "downloadError": 23,
+      "headError": 0
+    },
+    {
+      "case": "valid_different_cwd",
+      "accepted": true,
+      "downloadError": 0,
+      "headError": 0
+    },
+    {
+      "case": "initial_http",
+      "accepted": false,
+      "downloadError": 1,
+      "headError": 1
+    },
+    {
+      "case": "missing_trust",
+      "accepted": false,
+      "downloadError": 77,
+      "headError": 77
+    }
+  ]
+}

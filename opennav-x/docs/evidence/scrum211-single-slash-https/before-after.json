@@ -1,0 +1,59 @@
+{
+  "before": [
+    {
+      "prefix": "https://",
+      "returncode": 1,
+      "stdout": "bad_option_blocked=true\nget_ok=false\nget_bytes=0\nget_error=Unsupported protocol\nget_detail=Protocol \"http\" is disabled (in redirect)\nhead_ok=false\nhead_error=Unsupported protocol\nhead_detail=Protocol \"http\" is disabled (in redirect)\n",
+      "stderr": "stage: rejected-option check\nstage: wxCurl GET begin\nstage: wxCurl GET returned; HEAD begin\nstage: wxCurl HEAD returned\n"
+    },
+    {
+      "prefix": "https:/",
+      "returncode": 0,
+      "stdout": "bad_option_blocked=true\nget_ok=true\nget_bytes=36\nget_error=No error\nget_detail=\nhead_ok=true\nhead_error=No error\nhead_detail=\n",
+      "stderr": "stage: rejected-option check\nstage: wxCurl GET begin\nstage: wxCurl GET returned; HEAD begin\nstage: wxCurl HEAD returned\n"
+    },
+    {
+      "prefix": "https:///",
+      "returncode": 1,
+      "stdout": "bad_option_blocked=true\nget_ok=false\nget_bytes=0\nget_error=Unsupported protocol\nget_detail=Protocol \"http\" is disabled (in redirect)\nhead_ok=false\nhead_error=Unsupported protocol\nhead_detail=Protocol \"http\" is disabled (in redirect)\n",
+      "stderr": "stage: rejected-option check\nstage: wxCurl GET begin\nstage: wxCurl GET returned; HEAD begin\nstage: wxCurl HEAD returned\n"
+    },
+    {
+      "prefix": " HTTPS://",
+      "returncode": 1,
+      "stdout": "bad_option_blocked=true\nget_ok=false\nget_bytes=0\nget_error=URL using bad/illegal format or missing URL\nget_detail=URL rejected: Malformed input to a URL function\nhead_ok=false\nhead_error=URL using bad/illegal format or missing URL\nhead_detail=URL rejected: Malformed input to a URL function\n",
+      "stderr": "stage: rejected-option check\nstage: wxCurl GET begin\nstage: wxCurl GET returned; HEAD begin\nstage: wxCurl HEAD returned\n"
+    }
+  ],
+  "after": [
+    {
+      "prefix": "https://",
+      "returncode": 1,
+      "stdout": "bad_option_blocked=true\nget_ok=false\nget_bytes=0\nget_error=Unsupported protocol\nget_detail=Protocol \"http\" is disabled (in redirect)\nhead_ok=false\nhead_error=Unsupported protocol\nhead_detail=Protocol \"http\" is disabled (in redirect)\n",
+      "stderr": "stage: rejected-option check\nstage: wxCurl GET begin\nstage: wxCurl GET returned; HEAD begin\nstage: wxCurl HEAD returned\n"
+    },
+    {
+      "prefix": "https:/",
+      "returncode": 1,
+      "stdout": "bad_option_blocked=true\nget_ok=false\nget_bytes=0\nget_error=Unsupported protocol\nget_detail=Protocol \"http\" is disabled (in redirect)\nhead_ok=false\nhead_error=Unsupported protocol\nhead_detail=Protocol \"http\" is disabled (in redirect)\n",
+      "stderr": "stage: rejected-option check\nstage: wxCurl GET begin\nstage: wxCurl GET returned; HEAD begin\nstage: wxCurl HEAD returned\n"
+    },
+    {
+      "prefix": "https:///",
+      "returncode": 1,
+      "stdout": "bad_option_blocked=true\nget_ok=false\nget_bytes=0\nget_error=Unsupported protocol\nget_detail=Protocol \"http\" is disabled (in redirect)\nhead_ok=false\nhead_error=Unsupported protocol\nhead_detail=Protocol \"http\" is disabled (in redirect)\n",
+      "stderr": "stage: rejected-option check\nstage: wxCurl GET begin\nstage: wxCurl GET returned; HEAD begin\nstage: wxCurl HEAD returned\n"
+    },
+    {
+      "prefix": " HTTPS://",
+      "returncode": 1,
+      "stdout": "bad_option_blocked=true\nget_ok=false\nget_bytes=0\nget_error=URL using bad/illegal format or missing URL\nget_detail=URL rejected: Malformed input to a URL function\nhead_ok=false\nhead_error=URL using bad/illegal format or missing URL\nhead_detail=URL rejected: Malformed input to a URL function\n",
+      "stderr": "stage: rejected-option check\nstage: wxCurl GET begin\nstage: wxCurl GET returned; HEAD begin\nstage: wxCurl HEAD returned\n"
+    }
+  ],
+  "baseCommit": "777481230556dd50c3ffbc48568b1909de727632",
+  "upstreamCommit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "scope": "Actual patched core wxCurlHTTP GET/HEAD; owned loopback TLS redirects to reachable owned HTTP payload; isolated test CA",
+  "nativeWindowsAcceptance": false,
+  "packageAcceptance": false
+}

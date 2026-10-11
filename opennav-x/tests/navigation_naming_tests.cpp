@@ -43,10 +43,15 @@ int main() {
   Check(SuggestRouteName("","Linkoping").name=="To Linkoping","route falls back to destination");
   Check(!SuggestRouteName("","").from_chart && SuggestRouteName("","").name=="Route","route fallback without endpoints");
   // Generated point names are not quoted in a route name.
-  for (const char *generated : {"001","12","WP 3","WP007","Waypoint 58.45316N 15.60099E","Route 1.00000S 2.00000W"})
+  for (const char *generated : {"001","12","WP 3","WP007","NM003","Waypoint 58.45316N 15.60099E","Route 1.00000S 2.00000W"})
     Check(GeneratedNavigationName(generated),"generated name recognised");
   for (const char *chosen : {"Djurholmen","Linkopings gasthamn","Pier 3","N1","Harbor Island"})
     Check(!GeneratedNavigationName(chosen),"chosen name kept");
+  Check(ShouldNameNewRoutePoint("001", false, false),"new numbered route point gets a name");
+  Check(!ShouldNameNewRoutePoint("001", true, false) &&
+        !ShouldNameNewRoutePoint("001", false, true) &&
+        !ShouldNameNewRoutePoint("Chosen mark", false, false),
+        "reused and user-named points keep their names");
   Check(!SuggestNavigationName(position,true,{{std::string(127,'a'),.1}}).from_chart,"prefix bound");
   Check(RelevantChartNameFeature("HRBFAC") && RelevantChartNameFeature("LIGHTS"),"real relevant classes");
   // Lake and archipelago charts name islands, regions and bays, not marks.

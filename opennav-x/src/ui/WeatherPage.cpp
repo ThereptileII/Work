@@ -4,6 +4,7 @@
 #include "ui/ProductPanel.h"
 #include "ui/DisplaySizing.h"
 #include "ui/Sheet.h"
+#include "application/MeasuredWindView.h"
 #include "vessel/RouteProgress.h"
 #include "weather/ForecastView.h"
 #include <wx/datetime.h>
@@ -67,28 +68,43 @@ bool ProductPanel::RefreshWeather(bool force) {
 void ProductPanel::WeatherPage() {
   RefreshWeather(true);
   Heading("Weather", "Forecast wind / advisory, never measured onboard wind");
-  if (!actions_.weather.read) {
-    Text("Forecast wind is unavailable in this build.");
-    return;
-  }
   const auto selected = [this]() -> std::optional<weather::WallTime> {
     return actions_.navigation.weather_time ? actions_.navigation.weather_time() : std::nullopt;
   };
-  Visual("Forecast wind at vessel", 214, [this, selected](XNavPainter &p, wxDC &, int width) {
+  Visual("Forecast wind at vessel", 278, [this, selected](XNavPainter &p, wxDC &, int width) {
     const auto now = WallNow();
     const int split = width * 58 / 100;
-    p.Card(0, 0, width, 210, "FORECAST WIND AT VESSEL");
-    // Measured onboard wind stays separate and is labelled as such.
-    p.Text("MEASURED ONBOARD", split + 12, 16, 11, p.c.secondary, false, width - split - 24);
-    const auto measured = vessel::Assess(state_.vessel.wind.true_speed_kn, state_.now);
-    const bool measured_ok = measured.value && (measured.quality == vessel::Quality::Live ||
-                                                measured.quality == vessel::Quality::Aging);
-    p.Text(measured_ok ? wxString::Format("%.1f", *measured.value) : wxString::FromUTF8("\xE2\x80\x94"),
-           split + 12, 48, 36, measured_ok ? p.c.primary : p.c.muted, false, width - split - 24);
-    p.Text(measured_ok ? wxString("kn true wind speed / sensor")
-                       : wxString(measured.quality == vessel::Quality::Unavailable ? "No measured wind"
-                                  : W(vessel::QualityName(measured.quality))),
-           split + 12, 100, 12, p.c.secondary, false, width - split - 24);
+    const int measured_x = split + 12;
+    const int measured_width = width - measured_x - 12;
+    p.Card(0, 0, width, 274, "FORECAST WIND AT VESSEL");
+    // Independent source and age for every measured field; never substitute
+    // true wind or a forecast for missing apparent wind (SCRUM-366).
+    const auto measured = application::MeasureWind(state_.vessel.wind, state_.now);
+    p.Text(state_.vessel.replayed ? "REPLAYED WIND" :
+           state_.vessel.simulated ? "SIMULATED WIND" : "MEASURED ONBOARD",
+           measured_x, 16, 11, p.c.secondary, false, measured_width);
+    const auto draw_measured = [&](const char *title,
+                                   const application::MeasuredWindReading &reading,
+                                   const std::string &value, int y) {
+      p.Text(title, measured_x, y, 10, p.c.secondary, false, measured_width);
+      p.Text(W(value), measured_x, y + 16, 18,
+             reading.value ? p.c.primary : p.c.muted, false, measured_width);
+      p.Text(W(application::WindStatusText(reading)), measured_x, y + 42, 10,
+             reading.value ? p.c.secondary : p.c.muted, false, measured_width);
+      p.Text(W(application::WindSourceText(reading)), measured_x, y + 56, 10,
+             p.c.secondary, false, measured_width);
+    };
+    draw_measured("TRUE WIND SPEED", measured.true_speed,
+                  application::WindSpeedText(measured.true_speed), 40);
+    draw_measured("APPARENT WIND SPEED", measured.apparent_speed,
+                  application::WindSpeedText(measured.apparent_speed), 116);
+    draw_measured("APPARENT WIND ANGLE", measured.apparent_angle,
+                  application::WindAngleText(measured.apparent_angle), 192);
+    if (!actions_.weather.read) {
+      p.Wrapped("Forecast wind is unavailable in this build.", 24, 56, 14, 22,
+                split - 48, p.c.secondary, 4);
+      return;
+    }
     const auto display = weather::DisplayState(weather_, now);
     if (display == ForecastDisplay::Unavailable) {
       p.Wrapped(W(ReasonHere(weather_, now)), 24, 56, 14, 22, split - 48,
@@ -115,11 +131,12 @@ void ProductPanel::WeatherPage() {
              24, 108, 16, stale ? p.c.muted : p.c.primary, false, split - 48);
     }
     p.Text(W(weather::ProvenanceLabel(weather_, now)), 24, 150, 11,
-           stale ? p.c.attention : p.c.secondary, false, width - 48);
+           stale ? p.c.attention : p.c.secondary, false, split - 48);
     if (step)
       p.Text("Valid " + LocalTime(*step) + " (" + W(weather::StepLabel(*step, now)) + ")", 24, 174,
-             11, p.c.secondary, false, width - 48);
+             11, p.c.secondary, false, split - 48);
   });
+  if (!actions_.weather.read) return;
   // Forecast time step, shared with the chart wind layer.
   Visual("Forecast time", 40, [this, selected](XNavPainter &p, wxDC &, int width) {
     const auto now = WallNow();

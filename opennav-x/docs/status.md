@@ -1,6 +1,47 @@
-# SKAGER status — 2026-10-06
+# SKAGER status — 2026-10-11
 
-## Current Staging batch — SCRUM-311/312/313/28/29
+## Current boat-feedback integration — source checks, not a new candidate
+
+The boat still runs the previously installed `f1a1e68c` prototype-parity
+candidate. Its Staging run failed the Linux pilot smoke assertion after the
+native Windows integration had passed; the one-line assertion correction is
+the base of the current integration branch (`70b16aff`). No replacement
+application has been packaged or installed on the boat in this batch.
+
+The in-progress integration branch adds the observed 1280×800 rail-visual
+clearance, readable Following chip, complete header health label, closer
+ownship chip, direct saved-route entry from the header, chart-derived names for
+new numbered route points, a wider XNav-only route-segment touch target, the
+correct OpenCPN Connections tab for **Add a sensor**, independent measured
+apparent wind on Weather, and a Windows SKAGER taskbar/relaunch identity.
+Jira records the changes under SCRUM-361, 364, 298, 320, 365, 366 and 367;
+native Windows and boat acceptance are still pending. Focused source checks
+passed: 63 navigation naming assertions, measured-wind quality presentation,
+25 delivery-workflow checks, and ordered application of all ten pinned OpenCPN
+integration patches. These checks do not qualify an installer or UI rendering.
+
+The lighthouse north of the boat remains unresolved: current evidence does not
+identify that object's chart class, attributes, effective S-52 rule or selected
+symbol. The existing guarded light/landmark mapping must not be broadened by
+guesswork. A read-only Object Query on the exact installed candidate is the
+next evidence step. The next-turn card and SCRUM-317 zoom responsiveness also
+need boat observation. The earlier salmon cold-start/disclaimer observations
+remain deliberately deferred per user feedback.
+
+One combined Staging build follows the remaining scoped source fixes; no
+Production promotion or public publication is implied. The boat's Legacy/Safe
+recovery and remote-access paths are unchanged.
+
+The combined security preflight also rejects retained byte-identical stock
+OpenSSL 3.0.5 runtimes after installer addition preservation (SCRUM-208/209),
+closes a proven `https:/` wxCurl HTTPS-to-HTTP redirect bypass in core and
+private o-charts (SCRUM-211), and adds an exact-build concurrent two-instance
+peer-containment gate (SCRUM-212). The TLS redirect repair passed 17 actual
+wxCurl and 12 Downloader cases on Linux; the peer harness passed five focused
+contracts. Native Windows, full packaging and real two-instance acceptance
+remain pending. No source check here qualifies a Production release.
+
+## Earlier 2026-10-06 Staging batch — SCRUM-311/312/313/28/29
 
 The user selected these five issues for parallel implementation and explicitly
 authorized actual manual autopilot commands. The replacement candidate is

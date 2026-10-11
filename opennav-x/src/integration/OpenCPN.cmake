@@ -6,6 +6,11 @@ set(OPENNAV_BUILD_UI_COMPONENTS ON CACHE BOOL "" FORCE)
 set(OPENNAV_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 add_subdirectory("${OPENNAV_ROOT}" "${CMAKE_BINARY_DIR}/opennav")
 target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/OpenCPNIntegration.cpp")
+if(WIN32)
+  # SKAGER window relaunch identity uses SHGetPropertyStoreForWindow. Legacy
+  # keeps the normal OpenCPN shell association.
+  target_link_libraries(${PACKAGE_NAME} PRIVATE shell32 ole32)
+endif()
 target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/AnchorGeometry.cpp")
 target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/OnlineAis.cpp")
 target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/OnlineAisOverlay.cpp")

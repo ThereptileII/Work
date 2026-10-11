@@ -8,8 +8,10 @@ Windows every transfer requests libcurl's native CA store, covering HTTPS,
 FTPS and a non-TLS origin which redirects to HTTPS. This requires the
 maintained curl 8.22.0 integration from SCRUM-209.
 
-HTTPS redirects are limited to HTTPS and capped at five. This restriction is
-selected only when the initial URL is HTTPS, so existing FTP, Telnet and other
+HTTPS redirects are limited to HTTPS and capped at five. The scheme check
+includes libcurl's accepted single-slash `https:/` spelling, with case ignored;
+checking only `https://` would let that spelling bypass the redirect restriction.
+This restriction is selected only when the initial URL is HTTPS, so existing FTP, Telnet and other
 supported initial protocols are not globally disabled. An HTTP or local-file
 redirect from an HTTPS request fails in libcurl before the destination is
 accessed.

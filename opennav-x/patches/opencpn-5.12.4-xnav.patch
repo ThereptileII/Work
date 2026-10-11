@@ -1162,3 +1162,81 @@ index b84f858bd..96076d51f 100644
    m_pauimgr->DetachPane(this);
    SetSizerOrientation(orient);
    bool vertical = orient == wxVERTICAL;
+diff --git a/model/include/model/select.h b/model/include/model/select.h
+--- a/model/include/model/select.h
++++ b/model/include/model/select.h
+@@ -58,6 +58,10 @@
+   ~Select();
+ 
+   void SetSelectPixelRadius(int radius) { pixelRadius = radius; }
++  // Route segments may use a larger target without changing marks or tracks.
++  void SetRouteSegmentSelectionScale(float scale) {
++    routeSegmentScale = scale > 1.f && scale <= 2.f ? scale : 1.f;
++  }
+ 
+   bool IsSelectableRoutePointValid(RoutePoint *pRoutePoint);
+   bool AddSelectableRoutePoint(float slat, float slon,
+@@ -107,10 +111,11 @@
+ 
+ private:
+   // FIXME (leamas?) this is not model stuff.
+-  void CalcSelectRadius(SelectCtx &ctx);
++  void CalcSelectRadius(SelectCtx &ctx, int selection_type);
+ 
+   SelectableItemList *pSelectList;
+   int pixelRadius;
++  float routeSegmentScale;
+   float selectRadius;
+ };
+ 
+diff --git a/model/src/select.cpp b/model/src/select.cpp
+--- a/model/src/select.cpp
++++ b/model/src/select.cpp
+@@ -39,6 +39,7 @@
+ Select::Select() {
+   pSelectList = new SelectableItemList;
+   pixelRadius = g_BasePlatform->GetSelectRadiusPix();
++  routeSegmentScale = 1.f;
+ }
+ 
+ Select::~Select() {
+@@ -509,8 +510,10 @@
+   return false;
+ }
+ 
+-void Select::CalcSelectRadius(SelectCtx &ctx) {
+-  selectRadius = pixelRadius / (ctx.scale * 1852 * 60);
++void Select::CalcSelectRadius(SelectCtx &ctx, int selection_type) {
++  const float scale = selection_type == SELTYPE_ROUTESEGMENT
++                          ? routeSegmentScale : 1.f;
++  selectRadius = pixelRadius * scale / (ctx.scale * 1852 * 60);
+ }
+ 
+ SelectItem *Select::FindSelection(SelectCtx &ctx, float slat, float slon,
+@@ -518,7 +521,7 @@
+   float a, b, c, d;
+   SelectItem *pFindSel;
+ 
+-  CalcSelectRadius(ctx);
++  CalcSelectRadius(ctx, fseltype);
+ 
+   //    Iterate on the list
+   wxSelectableItemListNode *node = pSelectList->GetFirst();
+@@ -582,7 +585,7 @@
+     // not in the list anymore
+     return false;
+   }
+-  CalcSelectRadius(ctx);
++  CalcSelectRadius(ctx, pFindSel->m_seltype);
+ 
+   float a = pFindSel->m_slat;
+   float b = pFindSel->m_slat2;
+@@ -610,7 +613,7 @@
+   SelectItem *pFindSel;
+   SelectableItemList ret_list;
+ 
+-  CalcSelectRadius(ctx);
++  CalcSelectRadius(ctx, fseltype);
+ 
+   //    Iterate on the list
+   wxSelectableItemListNode *node = pSelectList->GetFirst();

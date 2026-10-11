@@ -1683,6 +1683,10 @@ natively qualified or boat-reviewed.
   a point is already in its drag-handle edit state. Press state lives in a
   file-local struct so the shared class layout is unchanged. Right-click
   context behavior is unchanged.
+  The XNav patch adds an opt-in 1.5× route-segment selection radius in
+  `model/src/select.cpp` and `model/include/model/select.h`. XNav enables it
+  when constructing navigation actions. Route points, tracks, AIS, and Legacy
+  keep their stock selection radii.
 - `gui/src/chcanv.cpp` `ShipIndicatorsDraw` (SCRUM-321): in verified XNav
   presentation the HDT pointer is replaced by an XNav heading line whose length
   uses the COG time horizon (SOG x predictor minutes). Below 0.2 kn, or without
@@ -1706,3 +1710,17 @@ natively qualified or boat-reviewed.
   apply when either the user preference or XNav declutter is on; the stored
   `bUseSCAMIN`/`bUseSUPER_SCAMIN` preferences are never written. Chart plugins
   receive the same effective values through the existing S52PLIB JSON message.
+
+## HTTPS scheme spelling in wxCurl redirects (SCRUM-211) — 2026-10-11
+
+The core and private o-charts wxCurl trust patches now identify the `https:`
+scheme, including libcurl's supported single-slash spelling. Actual core
+wxCurlHTTP GET/HEAD previously accepted an owned TLS-to-HTTP downgrade for
+`https:/localhost`, while rejecting the conventional `https://` spelling.
+The change preserves certificate/hostname checks, valid single-slash HTTPS,
+and the existing non-HTTPS initial protocol behavior. The actual Linux harness
+adds a reachable HTTP target and verifies conventional, single-slash and mixed-case
+downgrade refusals; the native core/private gate adds matching spelling checks
+and requires protocol rejection instead of any network failure. Evidence is in
+`docs/evidence/scrum211-single-slash-https/`. Native exact-revision execution,
+PluginHandler, package/installer and release acceptance remain required.

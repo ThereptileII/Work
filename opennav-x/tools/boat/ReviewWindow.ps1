@@ -72,10 +72,12 @@ function Assert-WindowReviewPolicy($Job,$Installed,$Build,$Launch,$Request,[date
   if($Job.action -cne 'ReviewWindow' -or $Job.reviewAction -cnotin (Get-WindowReviewActions)){throw 'Unsupported read-only window action.'}
   if($Job.buildCommit -cnotmatch '^[a-f0-9]{40}$' -or $Job.generation -cnotmatch '^[a-f0-9]{32}$' -or
       $Job.executableSha256 -cnotmatch '^[a-f0-9]{64}$' -or $Job.processId -le 0){throw 'Exact installed process/build identities required.'}
+  Assert-BoatDeploymentVersion $Installed.ownership.version
   if($Installed.state.current -cne $Job.generation -or $Installed.ownership.commit -cne $Job.buildCommit -or
-      $Installed.ownership.version -cne '0.4.0-beta2' -or $Installed.executable -ine $Job.executable){throw 'Installed generation changed.'}
+      $Installed.executable -ine $Job.executable){throw 'Installed generation changed.'}
   if($Build.test_fixtures -isnot [bool] -or $Build.test_fixtures -ne $false -or $Build.build_purpose -cne 'INSTALLED PRODUCT' -or
-      $Build.version -cne '0.4.0-beta2' -or $Build.commit -cne $Job.buildCommit -or $Build.executable_sha256 -cne $Job.executableSha256){throw 'Only the exact fixture-free installed product may be reviewed.'}
+      $Build.version -cne $Installed.ownership.version -or $Build.commit -cne $Job.buildCommit -or
+      $Build.executable_sha256 -cne $Job.executableSha256){throw 'Only the exact fixture-free installed product may be reviewed.'}
   if($Launch.status -cne 'passed' -or $Launch.action -cne 'Launch' -or $Launch.mode -cne '--xnav' -or $Launch.pid -ne $Job.processId -or
       $Request.action -cne 'Launch' -or $Request.mode -cne '--xnav' -or $Request.executable -ine $Job.executable -or
       $Request.executableSha256 -cne $Job.executableSha256 -or $Request.workspace -ine $Job.workspace){throw 'Successful audited installed SKAGER launch is required.'}

@@ -1,0 +1,103 @@
+{
+  "status": "passed",
+  "cases": [
+    {
+      "case": "valid",
+      "accepted": true,
+      "getError": "No error",
+      "headError": "No error"
+    },
+    {
+      "case": "https_redirect",
+      "accepted": true,
+      "getError": "No error",
+      "headError": "No error"
+    },
+    {
+      "case": "http_downgrade",
+      "accepted": false,
+      "getError": "Unsupported protocol",
+      "headError": "Unsupported protocol"
+    },
+    {
+      "case": "local_file_redirect",
+      "accepted": false,
+      "getError": "Unsupported protocol",
+      "headError": "Unsupported protocol"
+    },
+    {
+      "case": "valid_different_cwd",
+      "accepted": true,
+      "getError": "No error",
+      "headError": "No error"
+    },
+    {
+      "case": "plain_http",
+      "accepted": true,
+      "getError": "No error",
+      "headError": "No error"
+    },
+    {
+      "case": "http_to_https",
+      "accepted": true,
+      "getError": "No error",
+      "headError": "No error"
+    },
+    {
+      "case": "reachable_http_downgrade",
+      "accepted": false,
+      "getError": "Unsupported protocol",
+      "headError": "Unsupported protocol"
+    },
+    {
+      "case": "single_slash_http_downgrade",
+      "accepted": false,
+      "getError": "Unsupported protocol",
+      "headError": "Unsupported protocol"
+    },
+    {
+      "case": "mixed_case_http_downgrade",
+      "accepted": false,
+      "getError": "Unsupported protocol",
+      "headError": "Unsupported protocol"
+    },
+    {
+      "case": "single_slash_https",
+      "accepted": true,
+      "getError": "No error",
+      "headError": "No error"
+    },
+    {
+      "case": "ftp_configuration",
+      "accepted": true
+    },
+    {
+      "case": "telnet_configuration",
+      "accepted": true
+    },
+    {
+      "case": "wrong_host",
+      "accepted": false,
+      "getError": "SSL peer certificate or SSH remote key was not OK",
+      "headError": "SSL peer certificate or SSH remote key was not OK"
+    },
+    {
+      "case": "untrusted",
+      "accepted": false,
+      "getError": "SSL peer certificate or SSH remote key was not OK",
+      "headError": "SSL peer certificate or SSH remote key was not OK"
+    },
+    {
+      "case": "expired",
+      "accepted": false,
+      "getError": "SSL peer certificate or SSH remote key was not OK",
+      "headError": "SSL peer certificate or SSH remote key was not OK"
+    },
+    {
+      "case": "missing_trust",
+      "accepted": false,
+      "getError": "Problem with the SSL CA cert (path? access rights?)",
+      "headError": "Problem with the SSL CA cert (path? access rights?)"
+    }
+  ]
+}

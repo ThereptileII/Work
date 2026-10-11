@@ -12,7 +12,10 @@ owned loopback TLS servers, exact disposable LocalMachine Root CA lifecycle, man
 installed runtime DLLs, and verified cleanup. GET and HEAD must accept the
 36-byte payload and HTTPS redirect, while wrong-host, expired, untrusted,
 downgrade, file redirect, and removed-trust cases must reject. Every case also
-proves that a failed curl option prevents transfer execution.
+proves that a failed curl option prevents transfer execution. Single-slash HTTPS
+must still download successfully and reject HTTP redirects in lower- and mixed-case
+scheme spellings. Downgrade cases require the explicit unsupported-protocol error
+for GET and HEAD, so failure to connect to a refused destination cannot pass the gate.
 
 Linux source and PowerShell checks do not satisfy this gate. Native MSVC build,
 execution, certificate-store cleanup, and retained per-case evidence are

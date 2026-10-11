@@ -41,6 +41,28 @@ Its focused tests include actual loopback socket ownership, another process,
 terminated process rejection and profile tampering. These tests do not exercise
 or qualify a replacement peer authentication protocol.
 
+`tools/smoke-peer-two-instances.py` adds the concurrent gate alongside those
+sequential mode checks. It creates two new disconnected profiles with synthetic
+navigation objects and fake saved-key/certificate sentinels, requires both
+applications to remain alive, verifies each running build commit matches the
+test checkout, and observes each process's peer-listener boundary. Both profiles
+must preserve their navigation objects and peer state during overlap and after
+clean exit. The current first-start sheet is dismissed using its process-owned
+Later action. Native execution is restricted to disposable GitHub-hosted CI;
+Linux uses a private X server. No real peer, boat or existing profile is used.
+
+The gate rejects fixture secrets in application logs, stdout and stderr, then
+redacts all three retained output streams even on failure. Its focused contracts
+also reject stale/missing binary identity, non-hosted Windows execution, malformed
+startup JSON and an exited process. This is process/listener and supported-log
+evidence, not a packet capture or acceptance of a replacement trust protocol.
+Porting the historical concurrent harness from `eb92c9d8` does not transfer that
+commit's runtime evidence: the integrated Linux and native Windows jobs must run
+this gate for the exact new candidate.
+Linux runs it after the integrated install and CTest in
+`tools/build-integration-linux.sh`. Native Windows runs it against retained
+exact-build inputs in `tools/qualify-staging-windows.ps1`, after mode startup.
+
 The Windows integration job runs the installed CLI refusal test immediately
 after installation and dependency verification, before CTest or GUI smoke tests
 (`build-pristine-windows.ps1 -Integration -VerifyPeerCli`). The pinned CLI sets
