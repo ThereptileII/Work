@@ -22,6 +22,20 @@ inline bool PilotOutputPermitted(const PilotOutputEndpoint &e) {
          e.peer_address == "127.0.0.1" && e.configured_port > 0 &&
          e.configured_port <= 65535 && e.peer_port == e.configured_port;
 }
+inline std::string PilotControlBlocker(const PilotOutputEndpoint &e,
+                                      const std::string &iface) {
+  // Offering setup must obey the same transport boundary as the final sink.
+  // An empty reason permits only the confirmation/binding flow, never output.
+  if (!e.enabled || !e.connected)
+    return "Pilot connection unavailable: " + iface;
+  if (!e.bidirectional)
+    return "Turn on \"send data\" for the " + iface +
+           " NMEA 2000 connection in OpenCPN Connections";
+  if (!PilotOutputPermitted(e))
+    return "Control unavailable on " + iface +
+           ": this transport is not qualified for pilot output";
+  return {};
+}
 template <class Send>
 bool DispatchPilotOutput(const PilotOutputEndpoint &endpoint, Send &&send) {
   // This final sink guard is independent of adapter capabilities and session

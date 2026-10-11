@@ -15,6 +15,8 @@ int main() {
     int sends = 0;
     auto send = [&] { ++sends; return true; };
     const bool test = PilotLoopbackTestsEnabled();
+    Check(PilotControlBlocker(local, "TCP:127.0.0.1:32000").empty() == test,
+          "Product TCP must not offer the control setup switch");
     Check(DispatchPilotOutput(local, send) == test, "Product must reject even a fully valid loopback endpoint");
     Check(sends == (test ? 1 : 0), "Denied sink never invokes callback");
     Check(HardwareOutputPolicy() == (test ? "test-loopback-only" : PilotManualSerialEnabled() ? "manual-commissioning" : "status-only"), "Executed capability is explicit");
@@ -47,6 +49,8 @@ int main() {
     }
     const int before=sends;
     for (const auto &e : denied) {
+      Check(!PilotControlBlocker(e, "test endpoint").empty(),
+            "Denied transport must not offer control setup");
       Check(!PilotOutputPermitted(e), "Malformed/remote/changed endpoint denied");
       Check(!DispatchPilotOutput(e, send), "Sink independently rejects invalid endpoint");
     }
@@ -61,6 +65,13 @@ int main() {
     }
     PilotOutputEndpoint serial;
     serial.serial = serial.enabled = serial.bidirectional = serial.connected = serial.actisense = true;
+    Check(PilotControlBlocker(serial, "COM8").empty() == PilotManualSerialEnabled(),
+          "Qualified product serial retains explicit one-confirmation setup");
+    auto input_only = serial;
+    input_only.bidirectional = false;
+    Check(PilotControlBlocker(input_only, "COM8") ==
+          "Turn on \"send data\" for the COM8 NMEA 2000 connection in OpenCPN Connections",
+          "Input-only connection retains actionable guidance");
     Check(PilotOutputPermitted(serial) == PilotManualSerialEnabled(), "serial transport is product-only commissioning capability");
     const int before_serial = sends;
     Check(DispatchPilotOutput(serial, send) == PilotManualSerialEnabled(), "serial final endpoint dispatch");
@@ -72,6 +83,8 @@ int main() {
       if(flag==2)e.connected=false;
       if(flag==3)e.actisense=false;
       if(flag==4)e.tcp=true;
+      Check(!PilotControlBlocker(e, "COM8").empty(),
+            "Unqualified serial transport cannot offer setup");
       Check(!DispatchPilotOutput(e,send), "serial closed on missing exact transport prerequisite");
     }
     std::cout << HardwareOutputPolicy() << ": transport sink denial matrix passed\n";

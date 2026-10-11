@@ -1,5 +1,6 @@
 // Dedicated offline widgets. Never installed or linked into the product.
 #include "ui/PilotDrawer.h"
+#include "integration/PilotOutputPolicy.h"
 #include <cmath>
 #include <cstdlib>
 #include <fstream>
@@ -427,6 +428,32 @@ private:
         break;
       case 31:
         Capture("autopilot-input-only-day");
+        // Saved permission and fresh non-loopback TCP feedback do not qualify
+        // this transport in either product or fixture builds. Exercise the
+        // same endpoint policy used by OpenCPNPilot.
+        permit_ = true;
+        pilot_.capabilities = {};
+        pilot_.control_blocker = integration::PilotControlBlocker(
+            {true, true, true, true, true, "192.0.2.1", "192.0.2.1", 32000, 32000},
+            "TCP:192.0.2.1:32000");
+        Feed();
+        Check(drawer_->View().available && !drawer_->View().output_unavailable,
+              "refused TCP preserves live status and global serial capability");
+        Check(!Button("Enable control")->IsEnabled(),
+              "unsupported product TCP cannot offer control setup");
+        Dispatch("Enable control");
+        for (const auto *label : {"Standby", "Auto", "Track", "Wind",
+                                  "−10°", "−1°", "+1°", "+10°"}) {
+          Check(!Button(wxString::FromUTF8(label))->IsEnabled(),
+                "unsupported TCP commands remain disabled");
+          Dispatch(wxString::FromUTF8(label));
+        }
+        break;
+      case 32:
+        Check(takes_ == 2 && enables_ == 3 && commands_ == 6,
+              "disabled TCP events cannot bind, enable or command");
+        Check(!wxWindow::FindWindowByName("Enable physical pilot control?"),
+              "refused TCP must not open a futile confirmation");
         drawer_->Dismiss();
         Check(!drawer_->IsShown(), "close restores owner");
         Finish();
