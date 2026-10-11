@@ -5,6 +5,12 @@
 #include <cstring>
 #include <cwchar>
 
+#ifdef FORWARDER_FIXTURE
+// Direct local seed only. The runner redirects its export-table entry before
+// any native loader test. It is never an adapter/factory/binding operation.
+extern "C" int __cdecl fixture_forwarder_placeholder() { return 209; }
+#endif
+
 #ifdef LEGACY_IMPORT
 // Harmless test-only import: the linked DLL is built locally, never OpenSSL.
 extern "C" __declspec(dllimport) int __cdecl legacy_tls_fixture();

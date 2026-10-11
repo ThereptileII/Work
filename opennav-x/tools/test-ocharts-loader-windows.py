@@ -30,6 +30,7 @@ INPUTS = (
     'tests/windows_ocharts_loader/unmapped_dependency.cpp',
     'tests/windows_ocharts_loader/legacy_dependency.cpp',
     'tests/windows_ocharts_loader/forward_dependency.cpp',
+    'tests/windows_ocharts_loader/forwarder_fixtures.py',
     'tests/win32_pe_forwarders_test.cpp',
     'tests/windows_ocharts_loader/loader_test.cpp',
     'tests/windows_ocharts_loader/inputs.lock.json',
@@ -141,6 +142,12 @@ def main():
                  '-DwxWidgets_CONFIGURATION=mswu'], evidence / 'configure.log')
         api.run(['cmake', '--build', build, '--config', 'Release', '--parallel', '2',
                  '--', '/verbosity:normal'], evidence / 'compile.log', timeout=180)
+        forward_spec = importlib.util.spec_from_file_location('forwarder_fixtures',
+            ROOT / 'tests/windows_ocharts_loader/forwarder_fixtures.py')
+        forward_api = importlib.util.module_from_spec(forward_spec)
+        forward_spec.loader.exec_module(forward_api)
+        report['fixtureGeneration'] = forward_api.patch_fixtures(
+            build / 'Release/forwarders', evidence / 'fixture-generation.json')
         client = build / 'Release/ocharts_loader_test.exe'
         report['executable'] = identity(client)
         report['runtime'] = api.stage_native_runtime(client, wx,

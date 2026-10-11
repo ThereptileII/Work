@@ -1,0 +1,20 @@
+test_all_inputs_validate_before_write_and_failed_receipt_retained (__main__.ConstructorTests.test_all_inputs_validate_before_write_and_failed_receipt_retained) ... ok
+test_architecture_checksum_signature_and_truncation_refused (__main__.ConstructorTests.test_architecture_checksum_signature_and_truncation_refused) ... ok
+test_existing_forwarder_refused (__main__.ConstructorTests.test_existing_forwarder_refused) ... ok
+test_export_code_or_writable_owner_refused (__main__.ConstructorTests.test_export_code_or_writable_owner_refused) ... ok
+test_export_interval_must_hold_entire_target_and_tables (__main__.ConstructorTests.test_export_interval_must_hold_entire_target_and_tables) ... ok
+test_fixed_files_only_and_repeat_retains_failed_receipt (__main__.ConstructorTests.test_fixed_files_only_and_repeat_retains_failed_receipt) ... ok
+test_import_directory_or_dll_name_overlap_refused (__main__.ConstructorTests.test_import_directory_or_dll_name_overlap_refused) ... ok
+test_missing_reservation_or_name_terminator_refused (__main__.ConstructorTests.test_missing_reservation_or_name_terminator_refused) ... ok
+test_nine_exact_targets_and_only_two_bounded_deltas (__main__.ConstructorTests.test_nine_exact_targets_and_only_two_bounded_deltas) ... ok
+test_old_placeholder_alias_and_index_required (__main__.ConstructorTests.test_old_placeholder_alias_and_index_required) ... ok
+test_partial_write_failure_is_fatal_and_receipted (__main__.ConstructorTests.test_partial_write_failure_is_fatal_and_receipted) ... ok
+test_placeholder_must_point_to_code (__main__.ConstructorTests.test_placeholder_must_point_to_code) ... ok
+test_raw_and_virtual_section_overlap_refused (__main__.ConstructorTests.test_raw_and_virtual_section_overlap_refused) ... ok
+test_table_name_overlap_refused (__main__.ConstructorTests.test_table_name_overlap_refused) ... ok
+test_unknown_file_refused (__main__.ConstructorTests.test_unknown_file_refused) ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 0.076s
+
+OK

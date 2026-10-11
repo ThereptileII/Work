@@ -1,0 +1,9 @@
+PASS exact production-reader declaration: libeay32.legacy_tls_fixture
+PASS exact production-reader declaration: libeay32.#209
+PASS exact production-reader declaration: ssleay32.#209
+PASS exact production-reader declaration: forward_helper.forwarded_probe
+PASS exact production-reader declaration: forward_clean.fixture_value
+PASS exact production-reader declaration: forward_clean.#209
+PASS exact production-reader declaration: forward_clean.dll.fixture_value
+PASS exact production-reader declaration: forward.clean.fixture_value
+PASS exact production-reader declaration: libeay32.#209

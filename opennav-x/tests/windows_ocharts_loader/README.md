@@ -137,9 +137,22 @@ The project now requires **51 groups** and additionally runs the focused pure
 forwarder suite under MSVC. The eight new loader groups use only locally built
 inert DLLs: direct named and ordinal `libeay32` forwarders, an ordinal `ssleay32`
 alias, an indirect sibling forwarder, benign named/ordinal forwarders, and two
-benign ambiguous-grammar probes. The [MSVC EXPORTS syntax](https://learn.microsoft.com/en-us/cpp/build/reference/exports?view=msvc-170)
-documents both named and ordinal forwarding definitions. Every fixture's exact raw forwarder string must
-be emitted by MSVC and observed by the production reader. There are no ordinary
+benign ambiguous-grammar probes. Native run
+[38162532440](https://github.com/ThereptileII/Work/actions/runs/38162532440)
+failed while linking the eight originals and one forwarding helper; the new
+native groups did not run. Although the [MSVC EXPORTS syntax](https://learn.microsoft.com/en-us/cpp/build/reference/exports?view=msvc-170)
+documents named/ordinal forwarding, that run did not produce those fixtures.
+
+MSVC now emits direct local aliases and a fixed export-name reservation. Before
+any native test, `forwarder_fixtures.py` constructs the nine allowlisted inert PE
+forwarders by changing only the unique `forwarded_probe` EAT entry and its
+reserved read-only export-name bytes. It verifies the old exact placeholder,
+section/table bounds, unchanged size and all other bytes, and records before/after
+hashes and exact offsets in `fixture-generation.json`. It validates all nine
+inputs before writing and retains failed/partial receipts; repeated construction
+is refused. This tests **constructed PE metadata**, not MSVC's forwarding syntax.
+Every exact raw target must still be observed by the production reader, and all
+actual Windows `LoadLibrary`/`GetProcAddress` controls remain required. There are no ordinary
 dependency import descriptors for those forwarded modules.
 
 The production fallback must refuse declared legacy or unsupported-grammar
@@ -174,7 +187,9 @@ from normal/delay imports, then checked by the same TLS policy and bounded local
 graph. All list results are discarded on malformed inspected metadata.
 
 Portable checks and the retained old-policy failing fixture are recorded in
-`docs/evidence/scrum209-export-forwarders-20261011`. The new native groups and
+`docs/evidence/scrum209-export-forwarders-20261011`. The failed native link and
+focused constructor controls are recorded in
+`docs/evidence/scrum209-forwarder-fixture-repair-38162532440`. The new native groups and
 grammar observations have **not run**. This remains declared local-graph
 enforcement only; external loader roots, arbitrary dynamic/helper loads, full
 application/adapter integration, general mapped identity, TLS/certificate and
