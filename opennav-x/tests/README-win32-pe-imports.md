@@ -62,5 +62,5 @@ SHA-256 values were unchanged afterward:
 | wmm_pi.dll | 4570624 | 13 | 65f324af15f512310fe7b1606651a5d803c6a154f71677ca71e545bd54a29097 |
 
 These are parser compatibility controls, not acceptance of those old packages,
-their dependencies, or a current application revision. Native MSVC and a future
-runtime guard remain separate work.
+their dependencies, or a current application revision. Native MSVC validation
+of the new narrow runtime guard remains separate work.

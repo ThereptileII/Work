@@ -52,7 +52,8 @@ the disposable runner scratch directory.
 Local preparation evidence: Python syntax passed, and the exact cached archive
 was read with the real extraction function: only its 2,088,960-byte DLL was
 extracted, its accepted hash matched, and its PE header verified as I386/PE32.
-The native project and 38 groups are **prepared, not run** until a native workflow
+The native project now has 40 groups, including two direct/delay import refusal
+controls. Those additions are **prepared, not run** until a native workflow
 receipt exists. No CI dispatch or boat action was performed in this task.
 
 Remaining product gates: actual package/adapter import ABI, full application

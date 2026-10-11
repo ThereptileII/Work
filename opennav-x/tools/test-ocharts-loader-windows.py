@@ -155,7 +155,7 @@ def main():
         api.run([client, vendor, fixtures, work, junction_original, junction_adapter,
                  evidence / 'native-tests.json'], evidence / 'native-tests.log', timeout=120)
         native = json.loads((evidence / 'native-tests.json').read_text())
-        if native != {'status': 'passed', 'checks': 38, 'vendorExecuted': False,
+        if native != {'status': 'passed', 'checks': 40, 'vendorExecuted': False,
                       'pluginFactoryExecuted': False, 'invalidHandleFaultInjected': True, 'productAcceptance': False}:
             raise ValueError('Native guard receipt is incomplete or changed')
         report['native'] = native
