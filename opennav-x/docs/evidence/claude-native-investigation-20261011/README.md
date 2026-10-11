@@ -104,7 +104,9 @@ unproven; no policy change is made from them.
 [The module-name correction receipt](../scrum209-module-name-review-20261011/README.md)
 records 9,885 import and 17,602 forwarder portable ASan/UBSan checks and the
 before/after callback probe. Native Win32 qualification of the changed header
-and the coordinator's expanded 53-group fixture candidate remains pending.
+and the coordinator's changed-source native loader qualification remains pending
+at the time of this comparison. Added portable cases do not change the loader's
+51 named runtime groups.
 Neither the earlier 51-group pass nor these reviews close SCRUM-209, qualify
 broader plugin/dependency closure, or accept a product package. SCRUM-311's new
 real-owner implementation likewise remains unqualified by this comparison.

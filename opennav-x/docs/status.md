@@ -176,6 +176,36 @@ one resume. Its independent source review found no additional concrete defect;
 27 Linux groups / 143 including subtests and both Windows cross-compiles pass.
 Its actual Windows execution and GLOBALROOT image/CWD compatibility remain
 pending, including the separately documented counterpart failure.
+The expanded seventeen-row diagnostic at exact `3d13f1e9`,
+[38166517938](https://github.com/ThereptileII/Work/actions/runs/38166517938),
+then separated application spelling from argv[0]/CWD: eight DOS application
+rows passed, five GLOBALROOT and four held-file-derived volume-GUID application
+rows failed with 87. No child resumed; exact-owned cleanup passed. The
+[audited failure](evidence/scrum311-createprocess-matrix-38166517938/README.md)
+rules out the tested GUID remedy without asserting an exact Windows internal
+cause. [Independent scoped Claude/Sol comparison](evidence/claude-native-investigation-20261011/README.md)
+records accepted findings, rejected claims and capture limits.
+
+Corrections `7e133776` / `255fc30c` now select one DOS application spelling from
+the held image, corroborate its root/image against physical pins and retain
+physical argv[0]/CWD, suspended raw identity checks, one resume and no retries.
+The DOS namespace is rechecked, not claimed pinned. Focused native
+[38167390164](https://github.com/ThereptileII/Work/actions/runs/38167390164),
+exact `6445d67e27c6b6f4254849556efea28248204711`, passed the Go Win32 owner
+(ten top-level groups, two subtests, no skips). PowerShell x64 now created the
+correct held image after SUBST remap, but its first normal-close test failed on
+the hidden/owned inert WinForms fixture; supervisor health was not reached.
+The x86 harness did not run because its custom-shell temporary file lacked a
+`.ps1` extension. Overall this run remains **failed**; test-only window/driver
+corrections are pending, and no PowerShell owner acceptance is inferred.
+
+The same exact source passed the changed plugin module-name gate in
+[38167423509](https://github.com/ThereptileII/Work/actions/runs/38167423509):
+51 native loader groups and 17,602 native forwarder-reader assertions. Correction
+`b77dedb2` refuses reserved device stems before sibling lookup and preserves
+original filename case. The 9,885 import assertions were run with portable
+ASan/UBSan, not by that Windows harness. These bounded results do not qualify
+general plugin closure or the integrated application.
 General process/script/helper/module custody and authenticated signed
 successor/fallback boat commissioning remain open. Existing boat guards and
 the installed boat package remain unchanged.

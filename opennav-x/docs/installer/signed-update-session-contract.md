@@ -337,6 +337,28 @@ passed acquired image/ancestor protections, then refused actual creation with
 Win32 87 before resume. The physical application/CWD and other parameters need
 the bounded suspended-only diagnostic; no cause or creation acceptance is inferred.
 Actual Windows creation, alias-remap launch, health and cleanup remain pending.
+The subsequent suspended-only diagnostic
+[38166517938](https://github.com/ThereptileII/Work/actions/runs/38166517938)
+separated application spelling from argv[0] and CWD: eight conventional DOS
+application rows succeeded, five GLOBALROOT application rows failed with 87,
+and all four held-file-derived volume-GUID application rows failed with 87.
+All children remained suspended and were cleaned up. This rules out the tested
+GUID replacement; it does not identify the exact Windows internal cause.
+
+The reviewed compatibility adjustment (`7e133776`, `255fc30c`) selects exactly
+one conventional DOS application spelling from the held image handle with
+`GetFinalPathNameByHandle` flags 0. It never uses the caller's original alias as
+a fallback and never retries creation with another name. The selected name must
+have a safe local-drive grammar and match the held native volume suffix.
+Every owner recheck corroborates its DOS root and image against the retained
+physical NTFS root/image identities. The DOS namespace is **not pinned**:
+suspended-child native identity, liveness and raw-handle checks remain mandatory
+before the single resume. Physical GLOBALROOT argv[0]/CWD, held image/ancestor
+locks, one-use state, authenticated health and uncertainty/cleanup policy remain
+in force. This is a compatibility adjustment to application spelling, not
+mapped-section, general DLL/resource or environment custody. Focused native
+PowerShell 5.1 x64/x86 and Go Win32 qualification is pending in
+[38167390164](https://github.com/ThereptileII/Work/actions/runs/38167390164).
 The separate [ordinary Go creator increment](../evidence/scrum311-held-ordinary-image-20261011/README.md)
 covers ordinary/fallback source paths, with Linux/cross-compile evidence only.
 Lifecycle self-test, helper/script/shortcut roots and loader/profile/environment
