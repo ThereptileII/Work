@@ -1774,3 +1774,13 @@ dependency closure. The hook already covers initial/reload discovery
 and ordinary fallback from every upstream plugin root. No additional upstream
 patch, root-selection change or pristine Legacy mutation is introduced. See
 [the precise partial enforcement boundary and pending native gates](architecture/windows-native-dependency-integration.md#original-plugin-pre-load-refusal).
+
+The bounded forwarder extension passed all 51 native Win32 loader groups and
+17,496 reader checks in run `38164763565` at `b8d6dc05`; the exact artifact and
+source hashes are retained in
+[the native receipt](evidence/scrum209-forwarder-native-38164763565/README.md).
+Earlier fixture-link and final multi-dot filename failures remain recorded.
+Both corrections changed inert test setup only, including the private
+`forward.clean` file; neither relaxed production grammar or added an upstream
+hook. Integrated product compatibility and dependency closure remain separate
+gates.

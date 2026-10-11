@@ -94,9 +94,17 @@ constructs the nine fixed inert export forwarders in bounded reserved metadata;
 compiled and constructed them, and passed seven forwarder groups, including
 actual named/ordinal legacy-TLS targets and explicit `.dll` resolution. The
 final multi-dot grammar positive control failed native resolution with its
-prepared filenames. Its test-only filename alternatives are being diagnosed;
-the conservative production grammar refusal remains unchanged. Neither failed
-run is native acceptance of the extension. The FreeSans upstream conversion and
+prepared filenames. Test-only correction `b8d6dc05` adds the exact private
+`forward.clean` filename; production forwarder grammar is unchanged. All **51
+native loader groups** and 17,496 reader checks then passed in
+[run `38164763565`](https://github.com/ThereptileII/Work/actions/runs/38164763565)
+at exact `b8d6dc059deedf3c061681558406a37fd82e7b0b`. The multi-dot case mapped
+that exact private file, returned value 409, and passed live identity/hash,
+write/delete lock, unload and search-state assertions. All 50 artifact member
+CRCs and 56 retained records were independently audited in
+[the native evidence](evidence/scrum209-forwarder-native-38164763565/README.md).
+This qualifies bounded guard mechanics, not the integrated product or general
+plugin dependency closure. The FreeSans upstream conversion and
 original license evidence is integrated as `3ea17639` without a final legal
 clearance claim. Focused source/notice and real-scanner tests passed, but these
 newer commits have no integrated native package result and do not clear final
@@ -150,8 +158,18 @@ creation, raw child identity, a single resume attempt and versioned interruption
 records. Portable policy/embedded-source checks pass. Its focused native
 [run `38163791374`](https://github.com/ThereptileII/Work/actions/runs/38163791374)
 at `01ac92a6` passed actual file/ancestor protections but failed CreateProcessW
-with Win32 87 before resume after the SUBST remap. A bounded inert parameter
-matrix is being prepared; no cause or native acceptance is inferred.
+with Win32 87 before resume after the SUBST remap. Diagnostic `517c0679`, wired
+by `3689a75c`, ran ten suspended-only inert-marker cases in
+[run `38165504516`](https://github.com/ThereptileII/Work/actions/runs/38165504516)
+at exact `afa5fbcf33cbf93f0f6c3f74fd72acf0b22086bf`. All seven DOS
+application/command-path cases created the expected held image, including a
+GLOBALROOT current directory. All three GLOBALROOT application/command-path
+cases failed with 87 regardless of current directory. Application and argv[0]
+spelling change together in these rows, so neither parameter alone is yet
+proven causal. No marker was resumed; child and exact-owned alias cleanup
+passed. The unchanged production owner still failed with 87 and the overall
+run is **failed**; no native launch acceptance is inferred. A compatible
+physical spelling is being investigated without adding a mutable DOS fallback.
 Ordinary Go creation (`948d43e3`, source `5a803d94`) now also receives the managed
 image hash and holds the physical image/ancestry through suspended creation and
 one resume. Its independent source review found no additional concrete defect;
@@ -161,6 +179,16 @@ pending, including the separately documented counterpart failure.
 General process/script/helper/module custody and authenticated signed
 successor/fallback boat commissioning remain open. Existing boat guards and
 the installed boat package remain unchanged.
+
+SCRUM-211 now also has bounded SDK/runtime retention (`69711a06`), wired after
+the native production build by `afa5fbcf`. All 29 focused capture checks and 19
+existing runner-contract checks pass. The capture binds the actual production
+CMake SDK selection, authenticates the TLS inputs and retains the declared
+runtime DLL closure. Its generated inventory hash is informational; an
+independently reviewed external pin is still required before retained-input
+qualification. No full application build was dispatched for this helper.
+Native capture and actual retained production-runner execution remain pending;
+see [the capture contract](architecture/plugin-guard-input-retention.md).
 
 ## Exact-byte Staging native retest passed; replacement source is not built
 
