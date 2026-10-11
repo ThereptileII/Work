@@ -444,6 +444,8 @@ if(OPENNAV_BUILD_TESTS)
   target_link_libraries(installed_resources_tests PRIVATE opennav_integration)
   add_test(NAME installed_resource_defaults COMMAND installed_resources_tests)
   find_package(Python3 REQUIRED COMPONENTS Interpreter)
+  add_test(NAME ais_provider_fixture_header_cleanup COMMAND ${Python3_EXECUTABLE}
+    "${CMAKE_CURRENT_SOURCE_DIR}/tests/ais_transport/header_cleanup_tests.py")
   add_test(NAME hardware_output_package_policy COMMAND ${Python3_EXECUTABLE}
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/hardware_output_package_tests.py)
   add_test(NAME versioned_product_output_policy COMMAND ${Python3_EXECUTABLE}

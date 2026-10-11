@@ -157,10 +157,75 @@ void diagnostic_checks() {
   CHECK(session.Enable(true,start+10s));
   CHECK(session.Read(start+10s).health.subscription_pending); // reconnect even when last area sent
 }
+void outage_recovery_checks() {
+  // Virtual monotonic time isolates cache/observation semantics. This is not
+  // evidence of a real 120-second network interruption or a WFP deadman lease.
+  ais::AisStreamSession session;
+  CHECK(session.Enable(true, start));
+  CHECK(session.ObserveViewport({59, 60, 18, 19}));
+  const ais::ConnectionObservation first{
+      ais::AddressFamily::IPv4, {{{127, 0, 0, 1}}, 45000, 0},
+      {{{127, 0, 0, 1}}, 443, 0}, 1, start};
+  CHECK(session.Connecting(start));
+  CHECK(session.Opened(start, first));
+  CHECK(session.SubscriptionSent(start));
+  session.Receive(confirmation, start, wall, 0);
+  session.Receive(position, start, wall, 0);
+  const auto retained = session.Read(start);
+  CHECK(retained.targets.targets.size() == 1);
+
+  // Silent transport receipt must not refresh either the report or tuple age.
+  session.Tick(start + 61s, 0);
+  const auto stale = session.Read(start + 61s);
+  CHECK(stale.targets.targets.size() == 1);
+  CHECK(ais::Age(stale.targets.targets[0].observed_at, start + 61s) ==
+        ais::TargetAge::Stale);
+  CHECK(stale.targets.targets[0].active && !stale.targets.targets[0].lost);
+  CHECK(stale.connection.captured_at == start);
+  session.Tick(start + 121s, 0);
+  const auto lost = session.Read(start + 121s);
+  CHECK(lost.targets.targets.size() == 1);
+  CHECK(lost.targets.targets[0].lost && !lost.targets.targets[0].active);
+  CHECK(lost.targets.targets[0].observed_at == start);
+  CHECK(lost.health.accepted == 1 && lost.health.last_position == start);
+  CHECK(lost.connection.generation == 1 && lost.connection.captured_at == start);
+
+  session.Disconnected(start + 122s, 0);
+  CHECK(session.Read(start + 122s).connection.family == ais::AddressFamily::Unavailable);
+  CHECK(session.Read(start + 122s).targets.targets[0].lost);
+  CHECK(!session.Opened(start + 122s, first)); // late Open cannot restore tuple
+  auto replacement = first;
+  replacement.local.port = 45001;
+  replacement.generation = 2;
+  replacement.captured_at = start + 124s;
+  CHECK(session.Connecting(start + 124s));
+  CHECK(session.Opened(start + 124s, replacement));
+  CHECK(session.SubscriptionSent(start + 124s));
+  session.Receive(confirmation, start + 124s, wall, 0);
+  const auto confirmed = session.Read(start + 124s);
+  CHECK(confirmed.health.subscription_confirmed);
+  CHECK(confirmed.targets.targets.size() == 1);
+  CHECK(confirmed.targets.targets[0].lost && !confirmed.targets.targets[0].active);
+  CHECK(confirmed.targets.targets[0].observed_at == start);
+  CHECK(confirmed.health.accepted == 1 && confirmed.health.last_position == start);
+  CHECK(confirmed.connection.generation == 2);
+  CHECK(confirmed.connection.captured_at == start + 124s);
+
+  session.Receive(position, start + 125s, wall, 0);
+  const auto recovered = session.Read(start + 125s);
+  CHECK(recovered.targets.targets.size() == 1);
+  CHECK(recovered.targets.targets[0].active && !recovered.targets.targets[0].lost);
+  CHECK(recovered.targets.targets[0].observed_at == start + 125s);
+  CHECK(recovered.health.accepted == 2 && recovered.health.last_position == start + 125s);
+  CHECK(retained.targets.targets[0].observed_at == start && !retained.targets.targets[0].lost);
+  CHECK(lost.targets.targets[0].lost && lost.connection.generation == 1);
+  CHECK(retained.connection.local.port == 45000 && retained.connection.captured_at == start);
+}
 int main() {
   try {
     observation_checks();
     diagnostic_checks();
+    outage_recovery_checks();
     ais::AisStreamSession session;
     CHECK(!session.NeedsConnection(start));
     CHECK(session.ShouldClose());

@@ -26,6 +26,17 @@ def read(stream, length):
     return out
 
 
+def read_headers(stream):
+    request = b''
+    while b'\r\n\r\n' not in request:
+        data = stream.recv(4096)
+        if not data:
+            raise EOFError('Client closed before complete HTTP upgrade headers')
+        request += data
+        assert len(request) < 16384
+    return request
+
+
 def subscription(stream, inflater):
     header=read(stream,2)
     if not header[0]&128: raise AssertionError('Client fragmented subscription')
@@ -74,10 +85,7 @@ def run_case(client, scenario, ipv6=False, timeout=25):
                     with conn:
                         conn.settimeout(12)
                         with context.wrap_socket(conn,server_side=True) as stream:
-                            request=b''
-                            while b'\r\n\r\n' not in request:
-                                request+=stream.recv(4096)
-                                assert len(request)<16384
+                            request=read_headers(stream)
                             fields=dict(line.split(b':',1) for line in request.split(b'\r\n')[1:] if b':' in line)
                             wskey=next(v.strip() for k,v in fields.items() if k.lower()==b'sec-websocket-key')
                             accept=base64.b64encode(hashlib.sha1(wskey+b'258EAFA5-E914-47DA-95CA-C5AB0DC85B11').digest())
