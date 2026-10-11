@@ -19,6 +19,19 @@ spec.loader.exec_module(peer)
 
 
 class PeerTwoContracts(unittest.TestCase):
+    def test_native_peer_topology_preserves_ordinary_and_portable_paths(self):
+        self.assertEqual(peer.launch_plan('nt'), ((1, False), (2, True)))
+        self.assertEqual(peer.launch_plan('posix'), ((1, False), (2, False)))
+        exe, first, second = Path('opencpn.exe'), Path('profile 1'), Path('profile 2')
+        ordinary = peer.launch_arguments(exe, first)
+        portable = peer.launch_arguments(exe, second, portable=True)
+        self.assertEqual(ordinary, ['opencpn.exe', '--configdir', str(first),
+                                    '--no_opengl', '--xnav'])
+        self.assertEqual(portable, ['opencpn.exe', '--portable', '--configdir',
+                                    str(second), '--no_opengl', '--xnav'])
+        self.assertNotIn('--xnav-preview', portable)
+        self.assertNotIn('--portable', ordinary)
+
     def failure_ui(self, title='OpenCPN', caption='Existing instance is too busy'):
         def native_class(handle, buffer, length):
             buffer.value = {1: '#32770', 2: 'Static', 3: 'Edit'}[handle]

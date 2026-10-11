@@ -10,8 +10,16 @@ wire-output bypass. The compiled integration now uses the same endpoint policy
 as the final output sink before offering control setup, while preserving the
 qualified serial confirmation flow. Focused checks passed across three build
 policies, including 216 offline drawer assertions; the unchanged product smoke
-and native Windows gate still require a new exact-commit build. The prior run's
-Windows job is still pending at this writing and cannot accept the correction.
+and native Windows gate still require a new exact-commit build. That run's
+native Windows build succeeded but its retained qualification failed in the
+concurrent peer smoke before later application checks. Profile 1 stayed alive
+without a startup log or diagnostic; profile 2 reached ready state. The pinned
+OpenCPN/wxWidgets Windows single-instance mutex ignores the profile directory,
+so the original two-ordinary-process harness cannot establish its claimed
+independent profiles. The corrected pending harness starts one ordinary and
+one separately configured portable process, retains simultaneous boundary
+assertions, and captures bounded owned startup evidence on failure. This
+topology correction and the pilot product fix both await native execution.
 
 The next Staging source batch also includes virtual-time Online AIS outage
 checks (251 focused session assertions), an inert passive zoom collector,

@@ -51,6 +51,24 @@ clean exit. The current first-start sheet is dismissed using its process-owned
 Later action. Native execution is restricted to disposable GitHub-hosted CI;
 Linux uses a private X server. No real peer, boat or existing profile is used.
 
+On Windows the first profile starts as an ordinary `--configdir` application
+and reaches ready state before the second starts with `--portable --configdir`.
+OpenCPN's pinned Windows `WxInstanceCheck` uses the fixed
+`_OpenCPN_SILock` mutex name. wxWidgets MSW ignores the supplied profile
+directory when creating that mutex, so two ordinary processes in the same
+logon session cannot be the independent-profile test claimed by the earlier
+harness. Portable mode bypasses that upstream single-instance branch while
+`--configdir` still isolates navigation files and peer credentials. Both live
+processes must pass the unchanged listener, persistence, secret-output and
+exact-build assertions; the portable peer closes first. The report records
+each launch mode and argument list. This is concurrent ordinary-plus-portable
+containment, **not** evidence that two ordinary installed instances can run.
+The ordinary XNav/Legacy/Safe mode-cycle gate separately checks the installed
+startup path. Portable resource, plugin and relative-path behavior differs and
+requires its own package qualification. On any Windows startup failure the
+harness captures bounded process-owned window captions and diagnostic identity
+before cleanup, without clicking controls or reading editable text.
+
 The gate rejects fixture secrets in application logs, stdout and stderr, then
 redacts all three retained output streams even on failure. Its focused contracts
 also reject stale/missing binary identity, non-hosted Windows execution, malformed

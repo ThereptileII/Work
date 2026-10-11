@@ -216,6 +216,18 @@ def defer_setup(process, profile, env):
     return defer_boat_setup(read, click)
 
 
+def launch_arguments(exe, profile, *, portable=False):
+    # wxMSW ignores wxSingleInstanceChecker.Create's directory argument. A
+    # second ordinary --configdir process would compete for the first one's
+    # session-wide mutex rather than test a second disconnected profile.
+    return [str(exe), *(["--portable"] if portable else []),
+            "--configdir", str(profile), "--no_opengl", "--xnav"]
+
+
+def launch_plan(platform):
+    return ((1, False), (2, platform == "nt"))
+
+
 def run(args):
     exe, build = args.exe.resolve(strict=True), args.build.resolve(strict=True)
     harness = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
@@ -251,7 +263,16 @@ def run(args):
                     raise RuntimeError("private X server exited before application launch")
             else:
                 load("windows-ui").ensure_desktop()
-            for index in (1, 2):
+
+            def accept_ready(index):
+                process, profile, *_ = processes[index]
+                diagnostic = wait_ready(process, profile)
+                require_build(diagnostic, report["product_commit"])
+                report["profiles"][index]["build_commit"] = diagnostic["build_commit"]
+                report["profiles"][index]["first_start_setup"] = defer_setup(process, profile, env)
+                report["observations"].append({"startup_pid": process.pid})
+
+            for index, portable in launch_plan(os.name):
                 profile = base / f"profile {index}"
                 subprocess.run([sys.executable, str(ROOT / "tools/prepare-test-profile.py"),
                                 "--build", str(build), "--profile", str(profile)],
@@ -261,29 +282,30 @@ def run(args):
                 expected = fixtures.snapshot(profile)
                 stdout = evidence / f"peer-two-{index}.stdout.log"
                 stderr = evidence / f"peer-two-{index}.stderr.log"
+                command = launch_arguments(exe, profile, portable=portable)
                 with stdout.open("wb") as out, stderr.open("wb") as err:
-                    process = subprocess.Popen([str(exe), "--configdir", str(profile),
-                                                "--no_opengl", "--xnav"],
-                                               env=env, stdout=out, stderr=err)
+                    process = subprocess.Popen(command, env=env, stdout=out, stderr=err)
                 processes.append((process, profile, boundary, expected, stdout, stderr))
                 report["profiles"].append({"index": index, "pid": process.pid,
-                                           "profile": str(profile)})
+                                           "profile": str(profile),
+                                           "launch_mode": "portable" if portable else "ordinary",
+                                           "arguments": command[1:]})
+                if os.name == "nt" and index == 1:
+                    # Clear first-run UI before opening the second native app.
+                    # Both remain live during all boundary observations below.
+                    accept_ready(0)
             # Require both processes to be live after both independent profiles
             # have completed deferred initialization. Sequential mode tests do
             # not exercise this state.
-            for index, (process, profile, *_) in enumerate(processes):
-                diagnostic = wait_ready(process, profile)
-                require_build(diagnostic, report["product_commit"])
-                report["profiles"][index]["build_commit"] = diagnostic["build_commit"]
-                report["profiles"][index]["first_start_setup"] = defer_setup(process, profile, env)
-                report["observations"].append({"startup_pid": process.pid})
+            for index in range(1 if os.name == "nt" else 0, len(processes)):
+                accept_ready(index)
             assert all(process.poll() is None for process, *_ in processes), "two live apps required"
             for index, (process, profile, boundary, expected, stdout, stderr) in enumerate(processes):
                 observed = boundary.observe(process.pid)
                 assert fixtures.snapshot(profile) == expected, "navigation fixture changed while both apps ran"
                 assert_no_secrets(profile, stdout, stderr)
                 report["observations"][index].update(observed)
-            for process, profile, *_ in processes:
+            for process, profile, *_ in (reversed(processes) if os.name == "nt" else processes):
                 if os.name == "nt":
                     ui = load("windows-ui")
                     handle, observed_pid = ui.wait_window("SKAGER / OpenCPN", process.pid)
