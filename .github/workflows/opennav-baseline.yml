@@ -661,6 +661,26 @@ jobs:
           compression-level: 0
           if-no-files-found: error
           retention-days: 90
+      # Retain the exact SDK/runtime inputs now; a later source-slice probe
+      # requires independent review and an external inventory pin before use.
+      # Capture is not native plugin-download or product acceptance.
+      - name: Retain exact plugin-download SDK inputs for no-rebuild qualification
+        id: plugin_guard_inputs
+        if: ${{ !cancelled() && steps.production.conclusion == 'success' }}
+        run: |
+          python opennav-x/tools/retain-plugin-guard-inputs.py --root opennav-x --producer-commit "$env:GITHUB_SHA" --producer-run-id "$env:GITHUB_RUN_ID" --producer-run-attempt "$env:GITHUB_RUN_ATTEMPT" --architecture Win32 --dependency-bundle "$env:GITHUB_WORKSPACE/dependency-bundle" --dependency-bundle-provenance "$env:GITHUB_WORKSPACE/dependency-provenance.json" --output "$env:GITHUB_WORKSPACE/plugin-guard-inputs" 2>&1 | Tee-Object "opennav-x/evidence/local/plugin-guard-capture.log"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Preserve plugin-download SDK inventory and failed capture diagnostics
+        if: ${{ !cancelled() && steps.production.conclusion == 'success' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: plugin-guard-inputs-${{ github.sha }}-run${{ github.run_id }}-attempt${{ github.run_attempt }}
+          path: |
+            plugin-guard-inputs
+            opennav-x/evidence/local/plugin-guard-capture.log
+          compression-level: 0
+          if-no-files-found: warn
+          retention-days: 90
       - name: Resolve private chart imports in the real host without plugin initialization
         id: private_module
         run: |
