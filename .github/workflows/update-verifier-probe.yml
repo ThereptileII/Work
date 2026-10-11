@@ -212,6 +212,14 @@ jobs:
         shell: powershell
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Observe suspended-only native creation parameter matrix
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $Evidence = 'opennav-x/evidence/local/native-update-createprocess'
+          try {
+            & ./opennav-x/tools/diagnose-native-update-createprocess.ps1 -EvidenceDirectory $Evidence *>&1 | Tee-Object 'opennav-x/evidence/local/native-update-createprocess.log'
+          } catch { $_ | Out-File 'opennav-x/evidence/local/native-update-createprocess.log' -Append; throw }
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Exercise held images and inert supervised children only
         run: |
           $ErrorActionPreference = 'Stop'
@@ -235,6 +243,9 @@ jobs:
         if: always()
         with:
           name: native-update-image-owner-${{ github.sha }}
-          path: opennav-x/evidence/local/native-update-image-owner
+          path: |
+            opennav-x/evidence/local/native-update-image-owner
+            opennav-x/evidence/local/native-update-createprocess
+            opennav-x/evidence/local/native-update-createprocess.log
           if-no-files-found: error
           retention-days: 90
