@@ -357,8 +357,23 @@ before the single resume. Physical GLOBALROOT argv[0]/CWD, held image/ancestor
 locks, one-use state, authenticated health and uncertainty/cleanup policy remain
 in force. This is a compatibility adjustment to application spelling, not
 mapped-section, general DLL/resource or environment custody. Focused native
-PowerShell 5.1 x64/x86 and Go Win32 qualification is pending in
-[38167390164](https://github.com/ThereptileII/Work/actions/runs/38167390164).
+PowerShell 5.1 x64/x86 and Go Win32 qualification first ran in
+[38167390164](https://github.com/ThereptileII/Work/actions/runs/38167390164):
+Go passed, while the PowerShell test stopped at normal close of its hidden,
+owned inert fixture window before health checks; the x86 driver failed before
+starting the harness. [The audited failure](../evidence/scrum311-owner-native-38167390164/README.md)
+is retained. Fixture-only correction `3130b3c9` exposes a discoverable unowned
+window while retaining the actual normal-close gate; the workflow now gives the
+x86 host a named `.ps1` file. In
+[38167897619](https://github.com/ThereptileII/Work/actions/runs/38167897619),
+both owner harnesses passed 79 assertions, including health and cleanup;
+Go Win32 passed and the x64 transaction completed. The x86 transaction stopped
+later at removal of its compiled inert application; no complete x86 transaction
+receipt exists. [The audited partial result](../evidence/scrum311-owner-native-38167897619/README.md)
+remains an overall failure. Test-only correction `8ed247a5` compiles that
+transaction application explicitly as x86, verifies PE32/CLR 32BITREQUIRED and
+preserves the first error if cleanup also fails. Native confirmation remains
+pending; production owner/cleanup source is unchanged by this correction.
 The separate [ordinary Go creator increment](../evidence/scrum311-held-ordinary-image-20261011/README.md)
 covers ordinary/fallback source paths, with Linux/cross-compile evidence only.
 Lifecycle self-test, helper/script/shortcut roots and loader/profile/environment
