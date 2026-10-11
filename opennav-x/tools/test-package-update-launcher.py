@@ -198,12 +198,21 @@ class PackageTests(unittest.TestCase):
     def test_setup_go_junctions_use_only_canonical_compiler_and_source_roots(self):
         self.package_fixture(redirected_roots=True)
 
-    def package_fixture(self, redirected_roots=False):
+    def test_missing_broker_producer_recipe_is_refused(self):
+        self.package_fixture(omitted_source='tools/package-update-broker.py')
+
+    def test_missing_broker_verifier_source_is_refused(self):
+        self.package_fixture(omitted_source='tools/broker_package.py')
+
+    def package_fixture(self, redirected_roots=False, omitted_source=None):
         repo = self.root / 'repo'
         module = repo / 'tools/update-verifier'
         module.mkdir(parents=True)
-        tracked = ['LICENSE', 'tools/package-update-launcher.py', 'tools/update-verifier/go.mod',
+        tracked = ['LICENSE', 'tools/package-update-launcher.py', 'tools/package-update-broker.py',
+                   'tools/broker_package.py', 'tools/update-verifier/go.mod',
                    'tools/update-verifier/go.sum', 'tools/update-verifier/cmd/skager-start/main.go']
+        if omitted_source is not None:
+            tracked.remove(omitted_source)
         for name in tracked:
             target = repo / name
             target.parent.mkdir(parents=True, exist_ok=True)
@@ -262,6 +271,10 @@ class PackageTests(unittest.TestCase):
                     self.assertEqual(source.read('modules/public.example/dependency@v1.0.0/LICENSE'), (dependency / 'LICENSE').read_bytes())
                     self.assertEqual(source.read(package.GO_VERSION + '/LICENSE'), (goroot / 'LICENSE').read_bytes())
                     self.assertIn('project/tools/update-verifier/go.mod', source.namelist())
+                    self.assertEqual(source.read('project/tools/package-update-broker.py'),
+                                     (repo / 'tools/package-update-broker.py').read_bytes())
+                    self.assertEqual(source.read('project/tools/broker_package.py'),
+                                     (repo / 'tools/broker_package.py').read_bytes())
                     self.assertIn('provisioning/go.sum', source.namelist())
                 self.assertGreaterEqual(events.count(['mod', 'verify']), 2)
                 self.assertIn('-mod=readonly', command)
@@ -275,6 +288,11 @@ class PackageTests(unittest.TestCase):
             self.fail('Unexpected external command in fixture')
 
         with mock.patch.object(package, 'ROOT', repo), mock.patch.object(package, 'is_native_windows', return_value=True), mock.patch.object(package, 'run', side_effect=run):
+            if omitted_source is not None:
+                with self.assertRaisesRegex(ValueError, 'must be committed'):
+                    package.package(install, commit, str(selected_go))
+                self.assertFalse(any(event[0] == 'build' for event in events))
+                return
             result = package.package(install, commit, str(selected_go))
         self.assertEqual(result['sourceBundle']['archive'], 'opennav/third-party/updater/updater-source.zip')
         self.assertEqual(result['sourceBundle']['path'], 'third-party-sources/skager-updater-source.zip')

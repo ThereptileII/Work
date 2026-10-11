@@ -245,9 +245,11 @@ def package(install, commit, go):
     environment.update(GOROOT=str(goroot), GOMODCACHE=str(module_cache))
     if plain_path(goroot / 'VERSION', boundary='Provisioned Go VERSION').read_text(encoding='utf-8').splitlines()[0] != GO_VERSION:
         raise ValueError('Go source version and compiler disagree')
-    tracked = run(['git', 'ls-files', '-z', '--', 'tools/update-verifier', 'tools/package-update-launcher.py', 'LICENSE'], ROOT).split('\0')
+    tracked = run(['git', 'ls-files', '-z', '--', 'tools/update-verifier', 'tools/package-update-launcher.py',
+                   'tools/package-update-broker.py', 'tools/broker_package.py', 'LICENSE'], ROOT).split('\0')
     tracked = [name for name in tracked if name]
-    required = {'LICENSE', 'tools/package-update-launcher.py', 'tools/update-verifier/go.mod', 'tools/update-verifier/go.sum'}
+    required = {'LICENSE', 'tools/package-update-launcher.py', 'tools/package-update-broker.py',
+                'tools/broker_package.py', 'tools/update-verifier/go.mod', 'tools/update-verifier/go.sum'}
     if not required.issubset(tracked):
         raise ValueError('Exact launcher source, dependency locks, build recipe and license must be committed')
     inventory = Inventory()
