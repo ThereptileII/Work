@@ -1,0 +1,62 @@
+{
+  "scope": "portable-refusal-and-evidence-decisions-only",
+  "native_qualified": false,
+  "base_commit": "c63dee40445f4b084468e3076c7d33a90eea118a",
+  "recorded_utc": "2026-10-11T17:53:48Z",
+  "platform": "Linux-7.2.5-3-omarchy-x86_64-with-glibc2.44",
+  "python": "3.14.7 (main, Aug 10 2026, 07:46:56) [GCC 16.1.1 20260728]",
+  "test_exit": 0,
+  "test_summary": "...........\n----------------------------------------------------------------------\nRan 11 tests in 0.108s\n\nOK",
+  "linux_refusal_exit": 1,
+  "linux_refusal_result": {
+    "passed": false,
+    "scope": "disposable-loopback-WFP-only",
+    "boat_qualified": false,
+    "started_utc": "2026-10-11T17:53:48Z",
+    "error": "native Windows required",
+    "finished_utc": "2026-10-11T17:53:48Z"
+  },
+  "runtime_launched": false,
+  "source_sha256": {
+    "tests/windows_ais_outage/guard.h": "6eb1a3d721ac89a3248f8acb575040e502ba99af238de440ab1f4ccb2bb93333",
+    "tests/windows_ais_outage/filter.cpp": "a67b031f17b4062ce62c134412582fe7ee83dd8effdf105332b13aa0bfb21012",
+    "tests/windows_ais_outage/marker.cpp": "0ea755faf09c066411f31cf6b61627f0dcb3d54c30cb4d875b12098af8ef9012",
+    "tests/windows_ais_outage/runner_tests.py": "15dd7a8bbbca290286e44be25ede43bd1d8a1c48262893c29461ac866298d552",
+    "tools/test-windows-ais-outage.py": "8275b50f33f4ef7ed47b38c9c8c781f7898e7f25e791c4c9f627d48e7b2dd8e5"
+  },
+  "private_logs": "/home/standard/Projects/.tmp-ais-long-wfp/portable-evidence-20261011-175348",
+  "recovered_from": "97142aa1a99ed789380274f20ae7a5c5349d18aa",
+  "equivalent_product_root_lineage": "a6bfb8053208052694620d8d1ff1f81f2f15b7f5",
+  "recovered_lineage": {
+    "tests/windows_ais_outage/guard.h": {
+      "original_sha256": "afe5ef0683c12abc44ed8c518a574f8c1578c2c3f84e38b30fcfb9400e7714ed",
+      "equivalent_lineage_bytes_match": true,
+      "changed_lines_added": 10,
+      "changed_lines_removed": 1
+    },
+    "tests/windows_ais_outage/filter.cpp": {
+      "original_sha256": "0221fbfdb63018a149b938de4c71b10fa68885db865261147b3358181eba816d",
+      "equivalent_lineage_bytes_match": true,
+      "changed_lines_added": 4,
+      "changed_lines_removed": 2
+    },
+    "tests/windows_ais_outage/marker.cpp": {
+      "original_sha256": "eee07e23ab031846dc0cf1e4d7aacdaec4d0d901f6c433c153a0cf5b02e82560",
+      "equivalent_lineage_bytes_match": true,
+      "changed_lines_added": 1,
+      "changed_lines_removed": 1
+    },
+    "tools/test-windows-ais-outage.py": {
+      "original_sha256": "0f8e9c92e371abb0bb7e8f9fe72e33eb401181742cb8cfc9c0794316cd61bcd0",
+      "equivalent_lineage_bytes_match": true,
+      "changed_lines_added": 188,
+      "changed_lines_removed": 50
+    },
+    "docs/validation/ais-outage.md": {
+      "original_sha256": "3d7da963a6ee7577c7bc02da8835d4ba72e177864d29ca2735dbcf14121c5c31",
+      "equivalent_lineage_bytes_match": true,
+      "changed_lines_added": 7,
+      "changed_lines_removed": 0
+    }
+  }
+}
