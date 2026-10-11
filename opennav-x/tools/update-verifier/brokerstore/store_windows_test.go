@@ -36,7 +36,12 @@ func TestNativeProtectedDirectoryAndRenamePin(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer windows.CloseHandle(pin.handle)
+	closed := false
+	defer func() {
+		if !closed {
+			windows.CloseHandle(pin.handle)
+		}
+	}()
 	if err = pin.check(); err != nil {
 		t.Fatal(err)
 	}
@@ -47,8 +52,58 @@ func TestNativeProtectedDirectoryAndRenamePin(t *testing.T) {
 	if err = checkSecurity(pin.handle, altered); err == nil {
 		t.Fatal("inexact ACL accepted")
 	}
-	if err = os.Rename(path, path+"-moved"); err == nil {
-		t.Fatal("directory renamed while no-delete handle held")
+	if err = os.Rename(path, path+"-moved"); !errors.Is(err, windows.ERROR_SHARING_VIOLATION) {
+		t.Fatalf("rename while directory data-read pin held: want sharing violation, got %v", err)
+	}
+	if err = pin.check(); err != nil {
+		t.Fatal(err)
+	}
+	if err = windows.CloseHandle(pin.handle); err != nil {
+		t.Fatal(err)
+	}
+	closed = true
+	if err = os.Rename(path, path+"-moved"); err != nil {
+		t.Fatalf("rename after pin released: %v", err)
+	}
+}
+
+func TestNativeExistingDeleteHandleRefusesPin(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "preexisting-delete")
+	if err := os.Mkdir(path, 0700); err != nil {
+		t.Fatal(err)
+	}
+	pointer, err := windows.UTF16PtrFromString(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	handle, err := windows.CreateFile(pointer, windows.DELETE, windows.FILE_SHARE_READ|windows.FILE_SHARE_WRITE|windows.FILE_SHARE_DELETE, nil, windows.OPEN_EXISTING, windows.FILE_FLAG_BACKUP_SEMANTICS|windows.FILE_FLAG_OPEN_REPARSE_POINT, 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	closed := false
+	defer func() {
+		if !closed {
+			windows.CloseHandle(handle)
+		}
+	}()
+	pin, err := openPin(path, "", nil)
+	if pin != nil {
+		windows.CloseHandle(pin.handle)
+		t.Fatal("pin acquired despite pre-existing delete-access handle")
+	}
+	if !errors.Is(err, windows.ERROR_SHARING_VIOLATION) {
+		t.Fatalf("pin with pre-existing delete access: want sharing violation, got %v", err)
+	}
+	if err = windows.CloseHandle(handle); err != nil {
+		t.Fatal(err)
+	}
+	closed = true
+	pin, err = openPin(path, "", nil)
+	if err != nil {
+		t.Fatalf("pin after conflicting handle released: %v", err)
+	}
+	if err = windows.CloseHandle(pin.handle); err != nil {
+		t.Fatal(err)
 	}
 }
 func TestNativeOpenRefusesOrdinaryPrincipal(t *testing.T) {

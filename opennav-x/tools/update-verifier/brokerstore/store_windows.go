@@ -247,7 +247,11 @@ func openPin(path, expected string, security *windows.SECURITY_DESCRIPTOR) (*nat
 	if err != nil {
 		return nil, err
 	}
-	handle, err := windows.CreateFile(pointer, windows.FILE_READ_ATTRIBUTES|windows.READ_CONTROL, windows.FILE_SHARE_READ|windows.FILE_SHARE_WRITE, nil, windows.OPEN_EXISTING, windows.FILE_FLAG_BACKUP_SEMANTICS|windows.FILE_FLAG_OPEN_REPARSE_POINT, 0)
+	// Attribute/control-only opens do not participate in read/write/delete
+	// sharing enforcement. FILE_LIST_DIRECTORY is directory data-read access,
+	// so omitting FILE_SHARE_DELETE actually excludes rename/delete opens.
+	// This does not exclude child additions or replace the protected ACL policy.
+	handle, err := windows.CreateFile(pointer, windows.FILE_LIST_DIRECTORY|windows.FILE_READ_ATTRIBUTES|windows.READ_CONTROL, windows.FILE_SHARE_READ|windows.FILE_SHARE_WRITE, nil, windows.OPEN_EXISTING, windows.FILE_FLAG_BACKUP_SEMANTICS|windows.FILE_FLAG_OPEN_REPARSE_POINT, 0)
 	if err != nil {
 		return nil, err
 	}
