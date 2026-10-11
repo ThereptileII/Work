@@ -171,7 +171,10 @@ The preparation owns both read-only artifact handles and the derived Recovery
 identity until the existing installer/launcher operation finishes. Installer
 timeout retains both handles until that exact child exits. Failure/cancellation
 and caller cleanup attempt both independent releases and preserve cleanup
-failures. The actual launcher must distinguish uncertain artifact cleanup from
+failures. Each artifact's close attempts removal once; repeated closes return
+the original result without deleting a later file at the same spelling. This
+does not reconcile artifacts left after process loss. The actual launcher must
+distinguish uncertain artifact cleanup from
 a clean refusal: `e75a2c55` propagates fixed `ErrArtifactCleanup` identity through
 progress redaction and withholds startup at `run`. Error text alone is not the
 classification. Clean cancellation, offline transport and missing old sidecars

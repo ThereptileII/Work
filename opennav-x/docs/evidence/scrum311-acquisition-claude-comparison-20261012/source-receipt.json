@@ -1,0 +1,26 @@
+{
+  "kind": "security",
+  "model": "claude-opus-5",
+  "claudeVersion": "2.1.292 (Claude Code)",
+  "baseCommit": "8d8b6a0766227d7de39f0d8058622cfd8d4f6e4b",
+  "files": {
+    "opennav-x/tools/update-verifier/download.go": "3deed9471e14bedd2e5c12e58271b5588392364760c061c69eac0a02c7b984f5",
+    "opennav-x/tools/update-verifier/download_test.go": "f1f4c7396be35768a99b3713da9263d6d6366a75bf026708a1815c07ff3e2444",
+    "opennav-x/tools/update-verifier/launcher/acquisition_set_test.go": "cb0b522600df6915c5ec5e12efc734ccd4f9c77ed4c15f563bd7ffa429039a5a",
+    "opennav-x/tools/update-verifier/launcher/launcher.go": "fd6094d5d3980baee5bef25107d012d3a9da8ed3ef6f70189a338dabfdef3e1a",
+    "opennav-x/tools/update-verifier/launcher/launcher_test.go": "c21b5ce6f4841e39e71190f1b8477026fa595b58ea4de113d26acb48141fb35a",
+    "opennav-x/tools/update-verifier/launcher/progress.go": "d02954a9783aab605f2d74bc80de68ed0643fc13ba741e95a44657e21d9a6afd",
+    "opennav-x/tools/update-verifier/launcher/progress_test.go": "7768c763ebe6d88e8b63201d167642b83b1f0ae1a3186f0feffb11fc2efa5eaf",
+    "opennav-x/tools/update-verifier/launcher/records.go": "4878e4242bb40361e98d6af68911d1c9f2950b44577ff8f823cbfc48cdc28504",
+    "opennav-x/tools/update-verifier/prepare.go": "8c2a3c2be5cf4bcfc78dc470f27d918fbdc9aa01bd3904b1fb0e9e2d0c7fa584",
+    "opennav-x/tools/update-verifier/prepare_set_test.go": "b74ed9b7df1c24bec73ad48f2445b87075f22612bedbc7c04803fa729ab404bc",
+    "opennav-x/tools/update-verifier/recovery.go": "b0c7c58bafd4bb36c8491266e5cfcadbb21192ce751f94d4717b92577fe572b6"
+  },
+  "scope": "selected working-tree bytes; not full-repository or test acceptance",
+  "status": "completed",
+  "observedModels": [
+    "claude-opus-5"
+  ],
+  "durationMs": 453304,
+  "sourceChangedAfterCapture": false
+}

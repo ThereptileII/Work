@@ -1,5 +1,18 @@
 # SKAGER status — 2026-10-12
 
+## Independent acquisition review and one-attempt cleanup
+
+Claude Opus 5 completed the requested independent read-only review of 11 exact
+source/test files at `8d8b6a07`. It agreed that acquisition uses one authenticated
+offer and actual caller cleanup failures withhold startup. Full native-source
+comparison rejected its prompt-drain and installer-cancellation hypotheses.
+One latent repeated-close pathname deletion hazard was accepted and fixed in
+`135cab1f`; cleanup is attempted once and repeats retain the original result.
+Three focused download tests and Windows/x86 compilation passed in isolation;
+native execution remains pending. Crash-left artifact reconciliation and the
+full signed broker are still unfinished. See the
+[finding-by-finding comparison](evidence/scrum311-acquisition-claude-comparison-20261012/README.md).
+
 ## Direct boat launch and restart deny armed installations
 
 Commit `6004c3db` adds the missing restriction at the actual direct application
