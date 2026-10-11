@@ -68,6 +68,7 @@ type PreparedUpdateSet struct {
 	Installer        *VerifiedArtifact
 	Recovery         *VerifiedArtifact
 	RecoveryIdentity RecoveryIdentity
+	stage            *recoveryStageBinding
 }
 
 func (p *PreparedUpdateSet) Close() error {
@@ -160,6 +161,7 @@ func prepareUpdateSet(ctx context.Context, config PrepareConfig, observed releas
 	if err := ctx.Err(); err != nil {
 		return nil, err
 	}
+	sealRecoveryStage(set)
 	return set, nil
 }
 

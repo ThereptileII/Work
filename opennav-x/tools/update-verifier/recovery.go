@@ -114,7 +114,18 @@ func acquireRecovery(ctx context.Context, config PrepareConfig, candidate Update
 // No exported arbitrary-reader/artifact parser: provenance comes from the
 // authenticated check/download above. All archive reads use the retained handle.
 func readRecoveryIdentity(ctx context.Context, artifact *VerifiedArtifact, policy releasepolicy.Policy) (RecoveryIdentity, error) {
-	var empty RecoveryIdentity
+	contents, err := readRecoveryContents(ctx, artifact, policy)
+	return contents.identity, err
+}
+
+type recoveryContents struct {
+	identity  RecoveryIdentity
+	files     map[string]*zip.File
+	inventory map[string]string
+}
+
+func readRecoveryContents(ctx context.Context, artifact *VerifiedArtifact, policy releasepolicy.Policy) (recoveryContents, error) {
+	var empty recoveryContents
 	if ctx == nil || artifact == nil || artifact.file == nil {
 		return empty, errors.New("retained recovery handle required")
 	}
@@ -224,7 +235,7 @@ func readRecoveryIdentity(ctx context.Context, artifact *VerifiedArtifact, polic
 	if err := ctx.Err(); err != nil {
 		return empty, err
 	}
-	return identity, nil
+	return recoveryContents{identity: identity, files: files, inventory: inventory}, nil
 }
 
 type recoveryReaderAt struct {
