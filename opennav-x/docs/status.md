@@ -1,5 +1,46 @@
 # SKAGER status — 2026-10-11
 
+## Current exact-commit Staging run
+
+Commit `ec51b9261d2854d8600672ea27c97af5abeb3f6d` is under integrated
+Staging qualification in [run `38143022102`](https://github.com/ThereptileII/Work/actions/runs/38143022102).
+The Linux and Windows contract jobs, native updater checks, chart-loader guard,
+restart boundary and boat-recovery contracts have passed. The integrated Linux
+application compiled and its 152/152 CTests passed, but the overall Linux gate
+failed in the first-start mode-cycle smoke: a third setup field was below the
+initial 1280×800 scroll viewport, and the harness incorrectly required it to be
+visible. This is a harness refusal, not evidence of an application crash. The
+native Windows application/installer qualification is still running; this
+commit has **not** yet produced an accepted boat package. The installed
+boat application remains at `f1a1e68c` and no Production promotion is in scope.
+See [the exact Linux failure record](evidence/2026-10-11-staging-linux-setup-harness.md).
+
+The next source batch is isolated from this running candidate. It carries the
+reviewed offline FreeSans original/editable source, converter and notices
+(`15e00b94`), corrected retained-updater evidence (`7b7856b2`), and a
+fail-closed secret-scanner correction for unscanned Git submodules (`be83c6b9`).
+A factual MSVC runtime redistribution/provenance note (`1532d23b`) records the
+remaining edition, entitlement and exact-package review evidence without
+asserting legal clearance. The Linux setup helper correction (`4fbd8f92`)
+accepts the two visible identifying fields and complete action row, while
+still refusing partial identity and stale post-close controls; 13 focused
+tests pass. A bounded SCRUM-317 route-marker optimization (`2f722714`) removes
+one proven duplicate active-route traversal per eligible marker, with
+deterministic baseline/output comparison. It does not establish a fix for the
+boat's reported zoom hang; native frame and boat evidence remain outstanding.
+The batch also carries a narrow SCRUM-209 original-plugin guard (`465e0c33`)
+that refuses declared normal/delay imports of legacy TLS DLLs before the
+shared original load path, including configured external plugin roots. It does
+not inspect transitive or dynamic loads. Independent review caught an incorrect
+native receipt count in the prepared guard tests; `a4fd4cec` corrects it from
+38 to 40. The bounded PE reader passed 9,353 portable checks, while the new
+native DLL controls have **not** run. The FreeSans upstream conversion and
+original license evidence is integrated as `3ea17639` without a final legal
+clearance claim. Focused source/notice and real-scanner tests passed, but these
+newer commits have no integrated native package result and do not clear final
+license, checkout-secret, plugin dependency-closure or updater commissioning
+gates.
+
 ## Exact-byte Staging native retest passed; replacement source is not built
 
 Commit `5dd795be16081b4b0e521315bfc45f23a9af8251` compiled and
