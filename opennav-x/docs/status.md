@@ -28,6 +28,11 @@ tests pass. A bounded SCRUM-317 route-marker optimization (`2f722714`) removes
 one proven duplicate active-route traversal per eligible marker, with
 deterministic baseline/output comparison. It does not establish a fix for the
 boat's reported zoom hang; native frame and boat evidence remain outstanding.
+A second bounded SCRUM-317 change (`11a6abd9`) avoids rescanning the same
+route style for repeated occurrences of one waypoint pointer within a single
+marker call. The 4,095-repeat control falls from 16,773,121 to 8,191 node
+advances; 4,095 distinct points remain at 8,191, with 16,106 differential
+checks. This still does not qualify chart responsiveness on Windows or the boat.
 The batch also carries a narrow SCRUM-209 original-plugin guard (`465e0c33`)
 that refuses declared normal/delay imports of legacy TLS DLLs before the
 shared original load path, including configured external plugin roots. It does
