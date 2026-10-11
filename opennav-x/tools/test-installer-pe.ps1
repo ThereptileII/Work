@@ -43,6 +43,42 @@ function SetU16([byte[]]$Bytes, [int]$At, [int]$Value) {
 function SetU32([byte[]]$Bytes, [int]$At, [uint32]$Value) {
   [Array]::Copy([BitConverter]::GetBytes($Value), 0, $Bytes, $At, 4)
 }
+function SetU64([byte[]]$Bytes, [int]$At, [uint64]$Value) {
+  [Array]::Copy([BitConverter]::GetBytes($Value), 0, $Bytes, $At, 8)
+}
+function NewPe64([string]$Path, [string]$Import) {
+  # Inert PE32+ image with its own complete AMD64 optional header, section,
+  # import descriptor and 64-bit lookup/address thunks. Never execute it.
+  [byte[]]$bytes = New-Object byte[] 1536
+  SetU16 $bytes 0 0x5a4d; SetU32 $bytes 60 0x80
+  SetU32 $bytes 0x80 0x4550; SetU16 $bytes 0x84 0x8664
+  SetU16 $bytes 0x86 1; SetU16 $bytes 0x94 240
+  SetU16 $bytes 0x96 0x22  # Executable, large-address-aware, not DLL.
+  SetU16 $bytes 0x98 0x20b
+  SetU32 $bytes 0x9c 0x400; SetU32 $bytes 0xa8 0x1000
+  SetU32 $bytes 0xac 0x1000; SetU64 $bytes 0xb0 0x140000000
+  SetU32 $bytes 0xb8 0x1000; SetU32 $bytes 0xbc 0x200
+  SetU16 $bytes 0xc0 6; SetU16 $bytes 0xc8 6
+  SetU32 $bytes 0xd0 0x2000; SetU32 $bytes 0xd4 0x200
+  SetU16 $bytes 0xdc 3  # Console subsystem.
+  SetU64 $bytes 0xe0 0x100000; SetU64 $bytes 0xe8 0x1000
+  SetU64 $bytes 0xf0 0x100000; SetU64 $bytes 0xf8 0x1000
+  SetU32 $bytes 0x104 16
+  SetU32 $bytes 0x110 0x1100; SetU32 $bytes 0x114 40
+  SetU32 $bytes 0x168 0x1160; SetU32 $bytes 0x16c 16
+  [Array]::Copy([Text.Encoding]::ASCII.GetBytes('.text'), 0, $bytes, 0x188, 5)
+  SetU32 $bytes 0x190 0x400; SetU32 $bytes 0x194 0x1000
+  SetU32 $bytes 0x198 0x400; SetU32 $bytes 0x19c 0x200
+  SetU32 $bytes 0x1ac 0x60000020
+  $bytes[0x200] = 0xc3  # RET, never called by these parser fixtures.
+  SetU32 $bytes 0x300 0x1140; SetU32 $bytes 0x30c 0x1180
+  SetU32 $bytes 0x310 0x1160
+  SetU64 $bytes 0x340 0x11c0; SetU64 $bytes 0x360 0x11c0
+  $name = [Text.Encoding]::ASCII.GetBytes($Import + [char]0)
+  [Array]::Copy($name, 0, $bytes, 0x380, $name.Length)
+  [Array]::Copy([Text.Encoding]::ASCII.GetBytes('ExitProcess'), 0, $bytes, 0x3c2, 11)
+  [IO.File]::WriteAllBytes($Path, $bytes)
+}
 function NewPe([string]$Path, [string]$Import = '', [bool]$Delay = $false) {
   [byte[]]$bytes = New-Object byte[] 1536
   SetU16 $bytes 0 0x5a4d; SetU32 $bytes 60 0x80
@@ -155,6 +191,31 @@ try {
   SetU16 $foreign 0x84 0x8664
   [IO.File]::WriteAllBytes($plugin, $foreign)
   AssertCandidateTlsRuntime (Join-Path $temp 'stage')
+  # A foreign EXE can run outside the x86 host. Refuse even a clean import;
+  # the x86 scan cannot qualify its closure. Exercise a real PE32+ layout and
+  # a case-varied extension, while leaving the auxiliary-DLL exception above.
+  $auxiliary = Join-Path $plugins 'auxiliary.dll'
+  NewPe64 $auxiliary 'libeay32.dll'
+  [byte[]]$auxiliaryBytes = [IO.File]::ReadAllBytes($auxiliary)
+  SetU16 $auxiliaryBytes 0x96 0x2022  # Same PE32+ layout, DLL characteristic.
+  [IO.File]::WriteAllBytes($auxiliary, $auxiliaryBytes)
+  AssertCandidateTlsRuntime (Join-Path $temp 'stage')
+  Remove-Item -LiteralPath $auxiliary
+  $helper = Join-Path $plugins 'retained-helper.ExE'
+  foreach ($import in @('kernel32.dll', 'libeay32.dll', 'ssleay32.dll')) {
+    NewPe64 $helper $import
+    $helperHash = Hash $helper
+    RequireFailure { AssertCandidateTlsRuntime (Join-Path $temp 'stage') } 'Unqualified non-x86 executable helper in candidate: .*retained-helper.ExE'
+    if ((Hash $helper) -cne $helperHash) { throw 'Foreign executable refusal changed retained bytes.' }
+  }
+  # An unreadable PE header must still fail through the existing parser,
+  # rather than becoming an accepted foreign-machine exception.
+  [byte[]]$brokenHelper = [IO.File]::ReadAllBytes($helper)
+  SetU32 $brokenHelper 0x80 0
+  [IO.File]::WriteAllBytes($helper, $brokenHelper)
+  if ((PeMachine $helper) -ne 0) { throw 'Malformed PE header reported a usable machine type.' }
+  RequireFailure { AssertCandidateTlsRuntime (Join-Path $temp 'stage') } 'Invalid PE header:'
+  Remove-Item -LiteralPath $helper
   # An x86 binary carrying the same import is still refused, so the gate has
   # not been weakened for anything the host can actually load.
   NewPe $plugin 'libeay32.dll'

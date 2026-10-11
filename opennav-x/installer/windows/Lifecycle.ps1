@@ -717,14 +717,16 @@ function AssertCandidateTlsRuntime([string]$Directory) {
     if ($obsoleteTls.ContainsKey($digest)) {
       throw "Known obsolete TLS runtime in candidate: $($obsoleteTls[$digest]) at $binary (SHA-256 $digest)"
     }
-    # This walk exists to find a legacy TLS runtime dependency, not to gate
-    # architecture. A binary whose machine type is not x86 cannot be loaded by
-    # the 32-bit OpenCPN host, so it cannot contribute such an import. Imported
-    # third-party plugins do ship them (rtlsdr_pi carries an x64 airspy.dll),
-    # and refusing those aborted the whole update for an unrelated reason. The
-    # filename sweep above still covers every file whatever its architecture.
+    # Auxiliary foreign DLLs cannot load into the 32-bit host (rtlsdr_pi ships
+    # an x64 airspy.dll), so keep their existing import-scan exception. An EXE
+    # can instead run as a separate process; its foreign import closure is not
+    # qualified by this x86 parser. Refuse that candidate without changing the
+    # retained source. Filename and known-byte checks above still cover both.
     $machine = PeMachine $binary
     if ($machine -ne 0 -and $machine -ne 0x14c) {
+      if ([IO.Path]::GetExtension($binary) -ieq '.exe') {
+        throw "Unqualified non-x86 executable helper in candidate: $binary"
+      }
       Log ("Skipped non-x86 binary for import scanning: $binary")
       continue
     }

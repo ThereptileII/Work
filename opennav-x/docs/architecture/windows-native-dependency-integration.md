@@ -38,6 +38,12 @@ are rejected even when the old DLL itself is absent. OS dependencies resolve
 through Windows' known x86 system directory, not a caller-supplied environment
 path. This is a static import check; it cannot qualify arbitrary plugin
 `LoadLibrary` behavior or replace native plugin/runtime acceptance.
+Auxiliary non-x86 DLLs retain their import-scan exception, but non-x86
+executable helpers are refused: the 32-bit host can start a separate process,
+and the x86 parser cannot qualify that process's dependency closure. This
+refusal preserves the original files and applies before candidate publication.
+The added PE32+ executable fixtures have portable layout validation; executing
+their guard assertions under PowerShell, including native Windows, is pending.
 
 The actual installer functions pass deterministic PowerShell parser/closure
 fixtures on Linux. Native PowerShell 5.1 in both host bitnesses, retained-plugin
