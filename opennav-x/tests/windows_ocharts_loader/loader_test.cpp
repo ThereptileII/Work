@@ -438,6 +438,10 @@ int main(int argc,char**argv) {
         for(const auto* name : {"forward.dll","forward.clean.dll"}) {
           const auto path=directory/name;Copy(fixtures/"forwarders"/name,path);siblings.push_back(path);
         }
+        // Also prepare the exact extension-bearing module spelling. Native
+        // path/identity evidence below decides which harmless alternative loads.
+        const auto exact=directory/"forward.clean";
+        Copy(fixtures/"forwarders/forward.clean.dll",exact);siblings.push_back(exact);
       } else {
         const auto helper=directory/"forward_clean.dll";
         Copy(fixtures/"forwarders/forward_clean.dll",helper);siblings.push_back(helper);
@@ -491,8 +495,18 @@ int main(int argc,char**argv) {
         for(const auto& path : siblings) inspected.push_back(FileIdentity(path));
         Require(lib.Load(W(c.original)),"harmless forwarder original load");
         c.Events("attach\n");
+        SetLastError(ERROR_SUCCESS);
         const auto proc=GetProcAddress(reinterpret_cast<HMODULE>(lib.GetLibHandle()),"forwarded_probe");
-        Require(proc!=nullptr,"native forwarded export resolution failed");
+        const auto resolution_error=GetLastError();
+        if(proc==nullptr) {
+          std::string prepared;
+          for(const auto& path : siblings) {
+            if(!prepared.empty()) prepared+=", ";
+            prepared+=path.filename().u8string();
+          }
+          Require(false,"native forwarded export resolution failed; target="+std::string(test.target)+
+                  "; Win32 error="+std::to_string(resolution_error)+"; prepared filenames="+prepared);
+        }
         HMODULE owner=nullptr;
         Require(GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
                     reinterpret_cast<LPCWSTR>(proc),&owner)!=0,"native forwarder target owner");

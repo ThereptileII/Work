@@ -1,0 +1,111 @@
+{
+  "artifactId": 11711213121,
+  "runId": 38164290605,
+  "jobId": 114543504532,
+  "candidate": "eba68bf7c09560297b4ee57ffee07b13599fa3c3",
+  "archiveBytes": 29119,
+  "archiveSha256": "26833faa5c6152df7a9c75322f56063a089030d5cf495d2c58639ee3c831fcb5",
+  "apiDigest": "sha256:26833faa5c6152df7a9c75322f56063a089030d5cf495d2c58639ee3c831fcb5",
+  "apiSizeInBytes": 29119,
+  "allZipEntriesCrcClean": true,
+  "zipEntries": 49,
+  "rawRecordsByteExact": true,
+  "records": [
+    {
+      "source": "run-api.json",
+      "retained": "raw/run-api.json",
+      "bytes": 12057,
+      "sha256": "a3e6cc03e7a03889adf0ff74c96b3af3d1ddad7f483544b2c8658847b3e03586"
+    },
+    {
+      "source": "job-api.json",
+      "retained": "raw/job-api.json",
+      "bytes": 2270,
+      "sha256": "047f72c2fb2f36373156285e5b5ab69987cd3d0baf5355ce3243bb2ca50ec4c9"
+    },
+    {
+      "source": "artifacts-api.json",
+      "retained": "raw/artifacts-api.json",
+      "bytes": 783,
+      "sha256": "e87dc87c282c65e40c09a3be14a19d218494a8c19ea28ce8d28026bca5b2c816"
+    },
+    {
+      "source": "ocharts-loader-guards/compile.log",
+      "retained": "raw/ocharts-loader-guards/compile.log",
+      "bytes": 119864,
+      "sha256": "90407736b2023f9147efe996d983e28c13b1d2da991a7808fe89d3807eacfe88"
+    },
+    {
+      "source": "ocharts-loader-guards/compile.command.json",
+      "retained": "raw/ocharts-loader-guards/compile.command.json",
+      "bytes": 196,
+      "sha256": "01df2f4825e07c37d9005ac325141fedff6b5972e713c6b70a8b588ac4ed0e70"
+    },
+    {
+      "source": "ocharts-loader-guards/configure.log",
+      "retained": "raw/ocharts-loader-guards/configure.log",
+      "bytes": 1535,
+      "sha256": "af41777b721e9047e2050645d456db85353e7ba170f193bbaed710440ab7ec13"
+    },
+    {
+      "source": "ocharts-loader-guards/configure.command.json",
+      "retained": "raw/ocharts-loader-guards/configure.command.json",
+      "bytes": 587,
+      "sha256": "e0dfe3f1138f5bfacfe42e2af239d8a74586ab91661eb04d0222d3506ce8387a"
+    },
+    {
+      "source": "ocharts-loader-guards/fixture-generation.json",
+      "retained": "raw/ocharts-loader-guards/fixture-generation.json",
+      "bytes": 5661,
+      "sha256": "61525e8b431a32bb0d9c09aefeca444f60d23737f5463e8ce5559ffc51b3e3f3"
+    },
+    {
+      "source": "ocharts-loader-guards/native-pe-forwarders.log",
+      "retained": "raw/ocharts-loader-guards/native-pe-forwarders.log",
+      "bytes": 57,
+      "sha256": "722ed7657545ddcb02c055b239e27d1beff6d008948e3cbf94a650f65830c672"
+    },
+    {
+      "source": "ocharts-loader-guards/native-pe-forwarders.command.json",
+      "retained": "raw/ocharts-loader-guards/native-pe-forwarders.command.json",
+      "bytes": 122,
+      "sha256": "1c73b93ab62e3e207640ca2df1089e6417c7ad1499f65844fa9ad22bca4f612d"
+    },
+    {
+      "source": "ocharts-loader-guards/native-tests.log",
+      "retained": "raw/ocharts-loader-guards/native-tests.log",
+      "bytes": 10626,
+      "sha256": "7b08b3aba4970421bc52fdf6993248a7562530d36765debeb8cf03fdb053a3f1"
+    },
+    {
+      "source": "ocharts-loader-guards/native-tests.command.json",
+      "retained": "raw/ocharts-loader-guards/native-tests.command.json",
+      "bytes": 671,
+      "sha256": "45a084fb9b1dbee792defe9cf92aa8a59d2e7029783e01972236970991c960ce"
+    },
+    {
+      "source": "ocharts-loader-guards/summary.json",
+      "retained": "raw/ocharts-loader-guards/summary.json",
+      "bytes": 22917,
+      "sha256": "33f93bfff915473380fa4d48cbce647845ba6c49573e7d881bed79209c543052"
+    },
+    {
+      "source": "ocharts-loader-contracts/preparation.log",
+      "retained": "raw/ocharts-loader-contracts/preparation.log",
+      "bytes": 121,
+      "sha256": "040641c935acd02beee97ac8bc3dcbec1b01871ee5e943ae41ceef27c4f3992f"
+    },
+    {
+      "source": "ocharts-loader-contracts/build-wiring.log",
+      "retained": "raw/ocharts-loader-contracts/build-wiring.log",
+      "bytes": 167,
+      "sha256": "fb328f3e8b0e46ead9ac865e6339e703119488ce24f37892099e67f8b22b6a73"
+    },
+    {
+      "source": "ocharts-loader-contracts/producer-prefix.log",
+      "retained": "raw/ocharts-loader-contracts/producer-prefix.log",
+      "bytes": 2590,
+      "sha256": "40faf70953b154f14261b5befa66935bd54a849d98533662feae243555f91ac0"
+    }
+  ]
+}
