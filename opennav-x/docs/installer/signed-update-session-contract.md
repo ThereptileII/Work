@@ -98,8 +98,13 @@ focused portable results are 236 private-store and 38 installed-store checks;
 the latter includes injected cleanup failures. Windows-only fixtures remap a
 temporary SUBST alias after capture, verify the lock/marker or journal belongs
 to physical A rather than new target B, and refuse renaming an ancestor above
-the captured target. Those fixtures and the changed Windows 5.1 x86/x64 APIs
-remain unexecuted; portable adapters do not qualify native custody.
+the captured target. Those fixtures have now executed on the authorized boat PC:
+42 installed-store and 245 private-store checks passed under each native x64/x86
+Windows PowerShell host. All five transferred source hashes matched `d55641cf`.
+See the [exact-source native receipt](../evidence/scrum311-store-boat-native-20261011/README.md).
+This validates the tested store behavior, not full loader custody, application
+qualification or the separate previous-restoration operation. Portable adapters
+alone do not qualify native behavior.
 
 This binds these store operations to retained physical directories. It does
 not prevent additions throughout a loader namespace or supply the missing

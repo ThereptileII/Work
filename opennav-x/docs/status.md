@@ -33,8 +33,12 @@ cleanup retains the original failure and attempts all independent releases,
 including when a failed stream flush also makes disposal fail. Focused checks
 passed 236 private-store and 38 installed-store assertions. Initial attempts
 failed because the system temporary directory exhausted its quota; the same
-checks passed using the project temporary directory. Native Windows 5.1
-x86/x64 and new SUBST-remap fixtures remain pending. This is a store correction,
+checks passed using the project temporary directory. The exact five source/test
+hashes were then verified on the boat PC, where both native Windows PowerShell
+x86/x64 hosts passed 42 installed-store and 245 private-store checks each,
+including the new SUBST-remap fixtures (574 assertions total). See the
+[native store receipt](evidence/scrum311-store-boat-native-20261011/README.md).
+No application/profile/hardware was accessed. This is a store correction,
 not complete loader custody or signed broker acceptance. See the
 [physical path contract](installer/signed-update-session-contract.md#physical-installed-store-paths).
 

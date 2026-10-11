@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "sourceCommit": "d55641cf",
+  "sourceHashes": {
+    "SignedUpdateSession.ps1": "dab3d3cd3e6f8f3ea2033915ae4d5bcd36bdeaa2944dd6f3358048c8988f41cc",
+    "SignedUpdateOperations.ps1": "f110f54b02bae58f15abd4307198f745646921c296f3de3d05ab74245010302b",
+    "SignedUpdateSessionStore.ps1": "83928135ce3196565a7cedb322508edfccda5d12f38e83f28c62c5bb65105a92",
+    "test-signed-update-session-store.ps1": "1245e9e8ae38c6623f0eee14436693cf6c546dc366c221debb2a4010d1c5ce6e",
+    "test-installed-signed-update-store.ps1": "aa78cda16dcbad233b395ccb3498c4d2a627deae06a30b03d19492db811353ef"
+  },
+  "remoteHashesMatched": true,
+  "target": "authorized boat Windows PC",
+  "osVersion": "10.0.22631.0",
+  "defaultPowerShellVersion": "5.1.22621.5624",
+  "defaultPowerShellPointerBytes": 8,
+  "results": [
+    {
+      "architecture": "x64",
+      "shell": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+      "installedStoreChecks": 42,
+      "privateStoreChecks": 245,
+      "status": "passed",
+      "native": true
+    },
+    {
+      "architecture": "x86",
+      "shell": "C:\\Windows\\SysWOW64\\WindowsPowerShell\\v1.0\\powershell.exe",
+      "installedStoreChecks": 42,
+      "privateStoreChecks": 245,
+      "status": "passed",
+      "native": true
+    }
+  ],
+  "totalAssertions": 574,
+  "scope": "native inert store persistence, ACL, handle and test-owned SUBST cases only",
+  "applicationLaunched": false,
+  "normalProfileAccess": false,
+  "hardwareCommands": false,
+  "applicationBuild": false,
+  "ciAcceptance": false,
+  "previousRestoreOperationAccepted": false,
+  "fullSignedBrokerAccepted": false
+}
