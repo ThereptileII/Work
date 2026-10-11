@@ -236,6 +236,11 @@ stopped. Never kill it to trigger rollback, launch another installer, or remove
 pending/transaction/ownership records. The [updater supervisor](secure-updater.md)
 recovers pending state through its guarded lifecycle before ordinary startup;
 inability to close a candidate normally leaves pending state intact.
+While an installer remains running or completion is uncertain, preserve process
+and pending-transaction evidence and defer `Diagnostics` until completion is
+confirmed and no maintenance writer is active. `Diagnostics` does not acquire
+the transaction lock and cannot establish a consistent installation snapshot
+during concurrent changes.
 
 For an authorized diagnostic collection on the affected Windows account, use the
 exact reviewed maintenance script and its sibling files from that generation.
