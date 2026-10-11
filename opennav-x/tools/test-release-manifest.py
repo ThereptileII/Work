@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Offline release-boundary tests with inert archive fixtures; no app execution."""
 import copy
+import importlib.util
 import json
 from pathlib import Path
 import subprocess
@@ -16,6 +17,12 @@ from test_packaged_notice_gate import fixture_entries
 import test_packaged_notice_gate
 import test_component_license_inventory
 import test_freefont_payload
+
+_receipt_spec = importlib.util.spec_from_file_location(
+    'test_installer_package_receipt',
+    Path(__file__).with_name('test-installer-package-receipt.py'))
+test_installer_package_receipt = importlib.util.module_from_spec(_receipt_spec)
+_receipt_spec.loader.exec_module(test_installer_package_receipt)
 
 COMMIT = '1' * 40
 VERSION = '0.4.0-beta2'
@@ -321,9 +328,10 @@ class ManifestTests(unittest.TestCase):
 
 def load_tests(loader, tests, pattern):
     # The existing delivery CI invokes this release-boundary entry point.
-    # Keep notice and inventory refusal contracts in that same gate without
+    # Keep notice, inventory and exact installer identity refusals in that gate without
     # changing the workflow or adding another product build.
-    for module in (test_packaged_notice_gate, test_component_license_inventory, test_freefont_payload):
+    for module in (test_packaged_notice_gate, test_component_license_inventory,
+                   test_freefont_payload, test_installer_package_receipt):
         tests.addTests(loader.loadTestsFromModule(module))
     return tests
 

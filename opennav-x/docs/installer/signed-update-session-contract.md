@@ -1,7 +1,8 @@
 # Signed boat update session contract (SCRUM-311)
 
-This is an implemented **pure receipt model** with a separately qualified,
-non-resumable journal store, not an enabled boat update path.
+This contract covers a **pure receipt model**, a separately qualified
+non-resumable journal store, authenticated acquisition and concrete restoration
+components. It is not an enabled boat update path.
 `tools/boat/SignedUpdateSession.ps1` records four ordered transitions and rejects
 missing identities, reused requests, skipped steps, expired sessions, mutated
 receipt chains and transferred commissioning evidence. It performs no file,
@@ -23,7 +24,7 @@ receipts record consumed transitions and are not reusable launch tokens. Native
 Windows PowerShell 5.1 x86/x64 passed 90 inert store checks and the existing 49
 reducer checks at helper `43972f2be2cf5a809b7edaa5dc9d6ca759491678`,
 [run 37429822450](https://github.com/ThereptileII/Work/actions/runs/37429822450).
-This does not implement IPC peer authentication, actual artifact verification,
+The store does not implement IPC peer authentication, actual artifact verification,
 installer/spawn hooks, selected-directory policy or interrupted-update recovery.
 Those integrations must reject missing/abandoned custody once armed, including
 ordinary startup; the current product does not yet call this store.
@@ -76,9 +77,9 @@ remain required. No live signed update is enabled by this increment.
 gate. Portable execution covers actual temporary-file persistence, ordering,
 lock conflict, malformed ownership, selected-generation mismatch and injected
 root/journal write failures, with explicit substitutions for unsupported Windows
-handle/ACL operations. Native ACL/path and combined installed entry-point
-qualification remain pending for the changed source; earlier image-owner passes
-do not qualify this additional boundary.
+handle/ACL operations. The exact native store ACL/path checks are recorded below;
+combined installed entry-point qualification remains pending. Earlier image-owner
+passes do not qualify that combined boundary.
 
 ### Physical installed-store paths
 
@@ -112,6 +113,46 @@ authenticated signed-update broker. Directory-change notifications are not
 exclusive custody, and temporarily changing a DACL does not revoke rights from
 pre-existing handles. No `nativeCustodyQualified` claim or signed spawn is
 enabled by this store change.
+
+## Authenticated Recovery and exact installer identity
+
+`tools/update-verifier/recovery.go` adds `PrepareRecovery`. It repeats the real
+protected-state signed update check and exact eligible-upgrade consent comparison
+before downloading the policy's Recovery artifact. A caller-supplied policy or
+archive path cannot establish authenticity. The ZIP reader uses the retained
+authenticated file handle and verifies the outer signed hash/length again,
+bounded archive structure, safe Windows paths, unique names, complete inventory,
+CRC and actual member hashes. It derives the executable, PRODUCT_BUILD and
+inventory identities from those bytes. The focused signed TLS fixture tests
+passed seven top-level groups and 49 subcases; Windows/x86 compilation is not
+native execution or product qualification.
+
+The actual installer package manifest is distinct from the outer Setup/Recovery
+hashes. After successful NSIS generation and Setup checksum, the producer
+`tools/installer_package_receipt.py` retains the **unchanged raw** `package.json`
+at Recovery root `installer/package.json`, outside app/docs. It checks the exact
+selected compatibility identities, payload and package file list against actual
+Recovery bytes, PRODUCT_BUILD and executable/helper hashes, then rebuilds the
+Recovery inventory, ZIP and checksum before sealing/signing. App/docs, payload,
+Setup and the manifest's bytes remain unchanged; keeping the sidecar outside the
+payload avoids a hash cycle. Staged publication failures restore prior outputs,
+but this is not a multi-file crash-atomic transaction or hostile namespace custody.
+Nineteen focused producer tests pass and are included in the existing release
+manifest gate; no extra full application build is requested by that registration.
+
+The reader validates the inventoried sidecar's exact schema, complete app/docs
+file list and signed compatibility set, then reports its raw-byte SHA-256 as
+`LifecycleManifestSHA256`. Older archives without the sidecar explicitly report
+`LifecycleManifestAvailable=false`; callers must require availability for exact
+Lifecycle binding. `DeclaredPayloadSHA256` is an authenticated declaration,
+because payload.zip is not contained in Recovery. It is not a verified payload
+download. Keep the artifact handle alive through separately authorized use.
+
+These APIs authenticate and identify acquisition material. They do not extract,
+install, commission, launch, authenticate a broker peer or provide continuous
+loader custody. No product caller currently enables this path. Exact newly
+built archive/Setup correspondence and installed native/boat updater behavior
+remain required gates; isolated fixture results cannot substitute for them.
 
 ## Shared commissioning profile exclusion
 
@@ -423,7 +464,9 @@ that product, and does not qualify later product revisions. See the
 Native broker/orchestration, durable-journal crash and replay tests, stale/racing
 loader/profile proof tests, exact successor/fallback marker-process fixtures and
 live signed flow, private HTTPS delivery, actual commissioning and boat
-qualification remain unimplemented/unqualified. No claim of safe live Update Now
+qualification remain unimplemented/unqualified as an integrated updater. The
+component acquisition and restoration evidence above does not close those gates.
+No claim of safe live Update Now
 or automatic fallback follows from this model passing.
 
 ### Denied-recovery persistence fault fixtures (2026-10-11)

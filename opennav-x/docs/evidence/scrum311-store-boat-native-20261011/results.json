@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "sourceCommit": "d55641cf",
+  "sourceCommit": "d55641cf5fa30247e7801ecfb93b7eb75e387791",
   "sourceHashes": {
     "SignedUpdateSession.ps1": "dab3d3cd3e6f8f3ea2033915ae4d5bcd36bdeaa2944dd6f3358048c8988f41cc",
     "SignedUpdateOperations.ps1": "f110f54b02bae58f15abd4307198f745646921c296f3de3d05ab74245010302b",

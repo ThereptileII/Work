@@ -1,5 +1,20 @@
 # SKAGER status — 2026-10-11
 
+## Authenticated Recovery and installer-manifest identity integrated
+
+Commits `e4bf7627` and `f44d3764` join authenticated Recovery acquisition to
+the exact existing installer manifest's identity. The Go reader repeats signed
+update verification and exact consent, then reads bounded inventoried content
+through the retained authenticated archive handle. The producer retains unchanged
+`installer/package.json` after successful Setup generation, outside the payload,
+and rebuilds Recovery/inventory/checksum before signing. Missing sidecars remain
+explicitly unavailable. Focused acquisition checks passed seven groups/49
+subcases; producer checks passed 19 tests. The existing release-boundary runner
+now includes the producer checks without another workflow or full build.
+These are acquisition/identity boundaries, not an enabled signed broker or proof
+of installation/launch. Actual packaged native/boat updater qualification remains
+pending. See the [identity contract](installer/signed-update-session-contract.md#authenticated-recovery-and-exact-installer-identity).
+
 ## Real previous-generation restoration integrated
 
 Commit `b6f2667b` integrates the signed-session operation with the real existing
