@@ -1,6 +1,7 @@
 # Explicit bootstrap/no-config boat launch. No trust provisioning, profile edit,
 # update offer, retry, capture, close or force termination is performed here.
 . (Join-Path $PSScriptRoot 'StartupLog.ps1')
+. (Join-Path $PSScriptRoot 'InstalledLaunchBarrier.ps1')
 
 function Get-StartupLauncherContext($Installed) {
   if (-not $Installed.ownership.PSObject.Properties['updateStartupHealth'] -or
@@ -109,8 +110,9 @@ function Invoke-StartupLauncher($Job) {
   $session=[Diagnostics.Process]::GetCurrentProcess().SessionId
   if ((Assert-LocalPath $environment.workingDirectory) -ine [IO.Path]::GetDirectoryName($installed.executable)) { throw 'Audited application directory changed.' }
   $held=New-Object 'Collections.Generic.List[IDisposable]'
-  $launcher=$null;$bridge=$null;$app=$null
+  $launcher=$null;$bridge=$null;$app=$null;$installedLaunchBarrier=$null
   try {
+    $installedLaunchBarrier=Open-InstalledLaunchBarrier $installed 'skager-start.exe'
     # Keep selected state, ownership, target and executable/helper bytes stable.
     # No lifecycle lock is held: the real launcher/supervisor owns that lock.
     $paths=@((Join-Path $installed.root 'state.json'),(Join-Path $installed.generation 'ownership.json'),$target)+@($context.files.Values | ForEach-Object {$_.path})
@@ -137,6 +139,7 @@ function Invoke-StartupLauncher($Job) {
     $start=New-Object Diagnostics.ProcessStartInfo
     $start.FileName=$context.files['app/skager-start.exe'].path;$start.Arguments='--boat-bootstrap='+$bootstrapExpectation;$start.UseShellExecute=$false
     $start.WorkingDirectory=$environment.workingDirectory;$start.EnvironmentVariables['PATH']=$environment.path
+    Assert-InstalledLaunchBarrier $installedLaunchBarrier
     $started=[Diagnostics.Process]::Start($start);$null=$started.get_Handle()
     $launcher=[pscustomobject]@{process=$started;pid=$started.Id;startedTicks=$started.StartTime.ToUniversalTime().Ticks;exitTicks=0L;sid=$sid;session=$session;image=$start.FileName;sha256=$context.files['app/skager-start.exe'].sha256}
     $deadline=[DateTime]::UtcNow.AddSeconds(690) # Receiver phases plus bounded recovery; never auto-acknowledge.
@@ -181,7 +184,7 @@ function Invoke-StartupLauncher($Job) {
     return @{status='passed';action='LaunchStartup';scope='bootstrap/no-config only; signed offers and rollback not qualified';pid=$app.pid;processStartedUtc=$app.process.StartTime.ToUniversalTime().ToString('o');sid=$sid;sessionId=$session;mode='--xnav';generation=$context.identity.generation;buildCommit=$context.identity.commit;executableSha256=$Job.executableSha256;targetSha256=$targetHash;commissioning=$config.readOnlyAudit.commissioning;launcherPid=$launcher.pid;launcherStartedUtc=$launcher.process.StartTime.ToUniversalTime().ToString('o');startupReceiptSha256=(Get-Digest $receipt);bootstrapped=(-not $hadReceipt);startupMarkerPresent=$true;responding=$true;utc=[DateTime]::UtcNow.ToString('o')}
   } finally {
     foreach ($entry in @($app,$bridge,$launcher)) { if ($entry) { $entry.process.Dispose() } }
-    foreach ($handle in $held) { $handle.Dispose() }
+    try {foreach ($handle in $held) { $handle.Dispose() }} finally {if($installedLaunchBarrier){$installedLaunchBarrier.owner.Dispose()}}
   }
   } finally {$profileLock.Dispose()}
 }

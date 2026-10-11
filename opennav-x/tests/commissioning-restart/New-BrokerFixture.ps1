@@ -41,13 +41,14 @@ function New-BrokerFixture([string]$Directory,[string]$Binaries,[string]$SourceT
  $preparedDir=Join-Path $workspace 'runs/fixture-commissioning';$quarantine=Join-Path $preparedDir 'quarantine';$search=Join-Path $Directory 'search'
  foreach($path in @($workspace,$profile,$managed,$stockApp,$app,(Join-Path $app 'plugins'),(Join-Path $stockApp 'plugins'),(Join-Path $generation 'docs'),$preparedDir,$quarantine,$search)){$null=New-Item -ItemType Directory -Path $path -Force}
  foreach($name in @('opencpn.exe','opennav-restart.exe')){Copy-Item -LiteralPath (Join-Path $Binaries $name) -Destination (Join-Path $app $name)}
+ Copy-Item -LiteralPath (Join-Path $SourceTools '../../installer/windows/UpdateTransaction.ps1') -Destination (Join-Path $generation 'UpdateTransaction.ps1')
  $exe=Join-Path $app 'opencpn.exe';$helper=Join-Path $app 'opennav-restart.exe';$stockExe=Join-Path $stockApp 'opencpn.exe'
  [IO.File]::WriteAllText($stockExe,'Inert synthetic stock identity; never launched.')
  $commit='1'*40;$sid=[Security.Principal.WindowsIdentity]::GetCurrent().User.Value;$windowsSession=[Diagnostics.Process]::GetCurrentProcess().SessionId
  if($windowsSession -le 0){throw 'Native broker fixture needs interactive CI session; never impersonates another session.'}
  $build=Join-Path $generation 'docs/PRODUCT_BUILD.json'
  Write-Record $build @{commit=$commit;test_fixtures=$false;build_purpose='INSTALLED PRODUCT';commissioning_restart_protocol=1;executable_sha256=(Get-Digest $exe);restart_helper_sha256=(Get-Digest $helper);testOnly='Synthetic marker identity, not a qualified application'}
- $ownership=@{owner='OpenNavX.Alpha1.SideBySide.1';commit=$commit;managedFiles=@(@{path='app/opencpn.exe';sha256=(Get-Digest $exe)},@{path='app/opennav-restart.exe';sha256=(Get-Digest $helper)},@{path='docs/PRODUCT_BUILD.json';sha256=(Get-Digest $build)})}
+ $ownership=@{owner='OpenNavX.Alpha1.SideBySide.1';commit=$commit;managedFiles=@(@{path='UpdateTransaction.ps1';sha256=(Get-Digest (Join-Path $generation 'UpdateTransaction.ps1'))},@{path='app/opencpn.exe';sha256=(Get-Digest $exe)},@{path='app/opennav-restart.exe';sha256=(Get-Digest $helper)},@{path='docs/PRODUCT_BUILD.json';sha256=(Get-Digest $build)})}
  Write-Record (Join-Path $generation 'ownership.json') $ownership
  Write-Record (Join-Path $installedRoot 'state.json') @{schema=1;owner=$ownership.owner;current=$generationId;stock=@{path=$stockExe}}
  $roots=@($managed,(Join-Path $stockApp 'plugins'),(Join-Path $app 'plugins')|Sort-Object)

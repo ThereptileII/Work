@@ -10,6 +10,7 @@ param(
  [string]$ChartPalette=''
 )
 . (Join-Path $PSScriptRoot 'RestartCommissioning.ps1')
+. (Join-Path $PSScriptRoot 'InstalledLaunchBarrier.ps1')
 Assert-RestartChartPalette $Mode $ChartPalette
 Initialize-RestartNative
 $session=Read-RestartSession $SessionRecord $ExpectedSha256
@@ -21,8 +22,10 @@ if($parent.createdFiletime -cne $ParentCreatedFiletime -or [DateTime]::FromFileT
 # Keep a genuine process handle open through exit and audit; PID reuse cannot
 # satisfy this handle or the separately checked peer/request creation times.
 $parentHandle=Get-Process -Id $ParentProcessId
-$pipe=$null;$directory=$null;$ownsDirectory=$false;$allowIssued=$false;$profileLock=$null
+$pipe=$null;$directory=$null;$ownsDirectory=$false;$allowIssued=$false;$profileLock=$null;$installedLaunchBarrier=$null
 try {
+ $installedLaunchBarrier=Open-InstalledLaunchBarrier (Get-Installed)
+ if($installedLaunchBarrier.owner.OriginalImage -ine $session.executable -or $installedLaunchBarrier.owner.Hash -cne $session.executableSha256 -or $installedLaunchBarrier.generation -cne $session.generation){throw 'Held restart target differs from the exact reviewed session.'}
  $null=$parentHandle.Handle
  if($parentHandle.HasExited -or $parentHandle.StartTime.ToUniversalTime().ToFileTimeUtc().ToString() -cne $ParentCreatedFiletime){throw 'Parent exited/reused while arming.'}
  $baseline=Get-RestartBaseline $session $SessionRecord $parent
@@ -82,11 +85,13 @@ try {
  $permit=@{owner=$script:RestartOwner;status='consumed-before-allow';session=$session.session;recordSha256=$ExpectedSha256;permitId=$permitId;requestSha256=$requestHash;
  mode=$Mode;chartPalette=$ChartPalette;parent=$parent;helper=$helper;beforeSha256=$baseline.sha256;profileSha256=$postHash;issuedFiletime=$issued.ToFileTimeUtc().ToString();expiresFiletime=$expires.ToFileTimeUtc().ToString()}
  if($ChartPalette){$permit.paletteProof=$paletteProof}
+ Assert-InstalledLaunchBarrier $installedLaunchBarrier
  $permitPath=Publish-RestartPermit $directory $permit
  $fields=[string[]]@($script:RestartMagic,'ALLOW',$session.session,$ExpectedSha256,$request['nonce'],$requestHash,$permit.issuedFiletime,$permit.expiresFiletime,
  $session.executable,$session.executableSha256,$session.helper,$session.helperSha256,$session.profile,$postHash,$environment.workingDirectory,$environment.path,$permitId)
  # From this point even a failed/partial pipe write is an uncertain consumed
  # permit. Never send DENY/retry or infer that a child did not start.
+ Assert-InstalledLaunchBarrier $installedLaunchBarrier
  $allowIssued=$true
  [OpenNavX.RestartCommissioningNative]::WriteFrame($pipe,[OpenNavX.RestartCommissioningNative]::Reply($fields),$deadline)
  $receiptPayload=[OpenNavX.RestartCommissioningNative]::ReadFrame($pipe,$deadline)
@@ -102,4 +107,4 @@ try {
  if($pipe -and $pipe.IsConnected -and -not $allowIssued){try{[OpenNavX.RestartCommissioningNative]::WriteFrame($pipe,[OpenNavX.RestartCommissioningNative]::Reply([string[]]@($script:RestartMagic,'DENY')),[DateTime]::UtcNow.AddSeconds(2))}catch{}}
  if($ownsDirectory -and (Test-Path -LiteralPath $directory)){Write-Record (Join-Path $directory 'failure.json') @{owner=$script:RestartOwner;status=$(if($allowIssued){'uncertain-or-failed-consumed-permit'}else{'denied'});message=$_.Exception.Message;at=[DateTime]::UtcNow.ToString('o')}}
  throw
-} finally {if($pipe){$pipe.Dispose()};$parentHandle.Dispose();if($profileLock){$profileLock.Dispose()}}
+} finally {try {if($pipe){$pipe.Dispose()};$parentHandle.Dispose();if($profileLock){$profileLock.Dispose()}} finally {if($installedLaunchBarrier){$installedLaunchBarrier.owner.Dispose()}}}

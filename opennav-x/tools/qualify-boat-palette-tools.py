@@ -48,11 +48,12 @@ def identity():
 def composition():
     lock = read(LOCK)
     names = lock['files']
-    if lock['schema'] != 1 or len(names) != 119 or len(set(x.casefold() for x in names)) != 119:
-        raise ValueError('Exact 119-file composition with guarded startup helper required')
+    if lock['schema'] != 1 or len(names) != 121 or len(set(x.casefold() for x in names)) != 121:
+        raise ValueError('Exact 121-file composition with guarded startup helper required')
     if names != sorted(names) or any(not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._-]*\.(ps1|cs|py|json)', x) for x in names):
         raise ValueError('Invalid flat tool inventory')
-    if not {'StartupLauncher.ps1', 'test-startup-launcher.ps1'} <= set(names):
+    if not {'StartupLauncher.ps1', 'test-startup-launcher.ps1',
+            'InstalledLaunchBarrier.ps1', 'test-installed-launch-barrier.ps1'} <= set(names):
         raise ValueError('Guarded startup helper and its focused test required')
     if 'inspect-fonts.ps1' in names:
         raise ValueError('Unrelated added font operator is outside this composition')
@@ -106,6 +107,19 @@ def verify_reports(gate, directory):
                     for name in ('StartupLauncher.ps1', 'test-startup-launcher.ps1')]
         if startup.get('sourceFiles') != expected:
             raise ValueError('Startup helper report does not bind exact tested source bytes')
+        barrier = startup.get('installedLaunchBarrier', {})
+        if (barrier.get('schema') != 1 or barrier.get('status') != 'passed' or
+                barrier.get('nativeBehavior') != 'passed-inert-files-no-process-created' or
+                barrier.get('applicationLaunched') is not False or
+                not isinstance(barrier.get('checks'), list) or len(barrier['checks']) < 39):
+            raise ValueError('Native installed launch barrier checks required')
+        expected_barrier = [dict(path='tools/boat/' + name,
+                                 sha256=digest((ROOT / 'tools/boat' / name).read_bytes()))
+                            for name in ('InteractiveJob.ps1', 'StartupLauncher.ps1',
+                                         'RestartCommissioningBroker.ps1', 'InstalledLaunchBarrier.ps1',
+                                         'test-installed-launch-barrier.ps1')]
+        if barrier.get('sourceFiles') != expected_barrier:
+            raise ValueError('Installed launch barrier report does not bind exact tested source bytes')
     if gate == 'window':
         cases = read(directory / GATES[gate][1])['cases']
         if len(cases) != 16 or any(x.get('fixtureExitCode') != 0 for x in cases):

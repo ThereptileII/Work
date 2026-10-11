@@ -33,7 +33,7 @@ try {
     # Repeat the complete guard inside the interactive session, immediately
     # before launch. A queued task is not a reusable safety approval.
     $restartBinding=$null
-    $profileLock=$null
+    $profileLock=$null;$installedLaunchBarrier=$null
     try {
     if ($job.action -eq 'Launch') {
       . (Join-Path $PSScriptRoot 'Commissioning.ps1')
@@ -41,6 +41,9 @@ try {
       $targetHash=Get-Digest (Join-Path $job.workspace 'boat-target.json')
       $config=Get-Target $job.workspace;$installed=Get-Installed
       if ((Assert-LocalPath $installed.executable) -ine $exe) { throw 'Installed generation changed since dispatch.' }
+      . (Join-Path $PSScriptRoot 'InstalledLaunchBarrier.ps1')
+      $installedLaunchBarrier=Open-InstalledLaunchBarrier $installed
+      if($installedLaunchBarrier.owner.Hash -cne $job.executableSha256){throw 'Held installed launch image differs from dispatch.'}
       $launchEnvironment=Assert-ReadOnlyAudit $config $installed $job.workspace
       $restartBinding=Get-OptionalRestartBinding $job $installed $config $launchEnvironment
       if ((Get-Digest (Join-Path $job.workspace 'boat-target.json')) -cne $targetHash) { throw 'Installed launch target changed during audit.' }
@@ -69,6 +72,7 @@ try {
       Set-RestartLaunchBinding $start $restartBinding
     }
     if ($job.action -ceq 'Launch' -and (Get-Digest (Join-Path $job.workspace 'boat-target.json')) -cne $targetHash) { throw 'Installed launch target changed before process creation.' }
+    if($installedLaunchBarrier){Assert-InstalledLaunchBarrier $installedLaunchBarrier}
     $process=[Diagnostics.Process]::Start($start)
     try {
       if ($job.action -ceq 'Launch') {
@@ -85,7 +89,7 @@ try {
       if ($process.HasExited -or -not $process.MainWindowHandle) { throw 'Application failed to expose its normal window; inspect logs and Safe Mode.' }
       $result.pid=$process.Id;$result.mode=$job.mode;$result.status='passed'
     } finally {$process.Dispose()}
-    } finally {if ($profileLock) {$profileLock.Dispose()}}
+    } finally {try {if($installedLaunchBarrier){$installedLaunchBarrier.owner.Dispose()}} finally {if ($profileLock) {$profileLock.Dispose()}}}
   } elseif ($job.action -ceq 'ReviewWindow') {
     . (Join-Path $PSScriptRoot 'ReviewWindow.ps1')
     $result=Invoke-WindowReview $job

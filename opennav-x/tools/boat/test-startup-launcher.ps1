@@ -9,6 +9,12 @@ if(-not $native -and -not $PortableContracts){throw 'Use explicit portable contr
 if($native -and -not $IsolatedLocal -and $env:GITHUB_ACTIONS -ne 'true'){throw 'Disposable native CI or explicit isolated local tests required.'}
 . (Join-Path $PSScriptRoot 'Common.ps1')
 . (Join-Path $PSScriptRoot 'StartupLauncher.ps1')
+$LASTEXITCODE=0
+$barrierOutput=& (Join-Path $PSScriptRoot 'test-installed-launch-barrier.ps1') -PortableContracts:$PortableContracts -IsolatedLocal:$IsolatedLocal
+if(-not $? -or $LASTEXITCODE -ne 0){throw 'Installed launch restriction checks failed.'}
+$installedLaunchBarrier=($barrierOutput -join "`n")|ConvertFrom-Json
+if($installedLaunchBarrier.schema -ne 1 -or $installedLaunchBarrier.status -cne 'passed' -or
+   ($native -and $installedLaunchBarrier.nativeBehavior -cne 'passed-inert-files-no-process-created')){throw 'Installed launch restriction result does not match this environment.'}
 $checks=New-Object 'Collections.Generic.List[string]'
 function Check([bool]$Passed,[string]$Message){if(-not $Passed){throw $Message};$script:checks.Add($Message)}
 function Reject([scriptblock]$Call,[string]$Message){$failed=$false;try{$null=& $Call}catch{$failed=$true};Check $failed $Message}
@@ -103,5 +109,5 @@ try {
    if($observed){$observed.process.Dispose()};$child.Dispose()
   }
  }
- [pscustomobject]@{schema=1;status='passed';scope='bootstrap/no-config helper contracts only; no boat or installed application';environment=$(if($native){'native-windows-inert-process'}else{'linux-portable-contracts'});nativeObservation=$(if($native){'passed'}else{'pending'});installedBootstrap='pending';signedOffersAndRollback='pending';checks=@($checks);count=$checks.Count;sourceFiles=@($sourceFiles)}|ConvertTo-Json -Depth 5
+ [pscustomobject]@{schema=1;status='passed';scope='bootstrap/no-config helper contracts only; no boat or installed application';environment=$(if($native){'native-windows-inert-process'}else{'linux-portable-contracts'});nativeObservation=$(if($native){'passed'}else{'pending'});installedBootstrap='pending';signedOffersAndRollback='pending';checks=@($checks);count=$checks.Count;sourceFiles=@($sourceFiles);installedLaunchBarrier=$installedLaunchBarrier}|ConvertTo-Json -Depth 5
 } finally {if(Test-Path -LiteralPath $root){Remove-Item -LiteralPath $root -Recurse -Force}}
