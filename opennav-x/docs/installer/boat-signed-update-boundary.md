@@ -135,3 +135,68 @@ retain the red run and both successful suites.
 This narrow installed-launcher fix does not authenticate session-helper records,
 add broker or commissioning authority, or qualify the missing native custody
 boundary. SCRUM-311 and native Windows/signed boat acceptance remain open.
+
+
+## Native file acquisition rejects hardlinks (2026-10-11)
+
+At base `e1d6f5a6d42cc20605368fe307b34a607d75acbc`, the Go launcher queried
+`GetFileInformationByHandle` before granting a native file owner, but checked
+only directory/reparse attributes. It accepted two names for the same file,
+even when those bytes matched the declared hash. `openNativeRead` and
+`lockStartup` now require `NumberOfLinks == 1` on that actual acquired handle
+and close it on refusal. This covers record reads, executable/helper holds,
+stock-image measurement and the installation lock. Existing sharing, hash,
+size and reparse checks remain. The session store independently already refused
+multiple links; this change closes the corresponding launcher acquisition gap.
+[Microsoft documents the handle metadata link count](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/ns-fileapi-by_handle_file_information).
+
+`TestNativeOwnedFileAcquisitionRejectsHardlinks` creates only inert PE-shaped
+bytes and a hardlink in a disposable local directory. All four native consumers
+must refuse both names, return no owner and release refused handles so writes
+remain possible. Removing the alias must restore ordinary single-link
+acquisition, and releasing any successful owner must permit cleanup. The
+fixture does not launch an application, shell, installer or physical output.
+
+The Linux launcher suite passed with pinned Go 1.27.1 and offline cached
+dependencies. Windows x86 and x64 launcher test helpers cross-compiled; they
+were **not executed**. These checks establish portable regressions and native
+compilation only. [Focused results](../evidence/scrum311-native-hardlink-20261011/results.json)
+record the exact commands and source hashes. Native Windows must run
+`go test ./launcher -run '^TestNativeOwnedFileAcquisitionRejectsHardlinks$' -count=1`
+and the existing launcher suite before accepting the native invariant.
+
+This is an acquisition-time link-count refusal, not continuous namespace,
+loader, profile or generation custody, nor signed-update launch authorization.
+Commissioning and bootstrap trust/pending refusals remain unchanged. SCRUM-311
+and live signed-update/boat acceptance remain open.
+
+### Executable/path custody integration dependency
+
+A larger supervisor image/path lease was investigated and withdrawn without
+changing production supervisor code. At the same base, `Get-UpdateFileHash`
+closes its stream before `Start-SupervisedGeneration` creates the process
+(`UpdateSupervisor.ps1:22-26,160-172`). Retaining directory and file handles
+alone does not bind a DOS drive alias subsequently resolved by `Process.Start`.
+A same-logon drive mapping change can leave the old handles valid while the
+launch path names replacement bytes; rechecking that mapping immediately
+before creation still leaves a race.
+
+A possible stable launch spelling is the volume GUID path derived from each
+retained handle, with root-to-child consistency checked during acquisition.
+[GetFinalPathNameByHandle documents that path form](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-getfinalpathnamebyhandlew).
+It cannot be substituted safely as a local textual fix: startup-health
+`ExactProcess` compares `fresh.MainModule.FileName` with the original executable
+path (`UpdateTransaction.ps1:137-144`), and normal/interrupted process cleanup
+uses the same path identity (`UpdateSupervisor.ps1:174-190`). Record-path
+validation also rejects device paths (`UpdateTransaction.ps1:32-44`). Module
+paths can preserve the spelling used at load, including an extended prefix,
+[as documented for GetModuleFileName](https://learn.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-getmodulefilenamew).
+
+The necessary next boundary is a coherent retained native identity used by
+creation, authenticated health and exact-process normal/interrupted cleanup,
+with uncertain creation kept denied rather than entering automatic rollback.
+A harmless native fixture must remap a disposable drive alias between
+acquisition and creation and exercise the full supervisor/health/cleanup path:
+replacement bytes must never run, and a legitimate child must remain positively
+identifiable. No path-string relaxation, approval flag or class-only owner can
+substitute for that integration and native evidence.

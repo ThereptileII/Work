@@ -188,3 +188,62 @@ func TestNativeProgressPipeLifecycle(t *testing.T) {
 		})
 	}
 }
+
+// Only inert bytes in a disposable local directory are inspected. Each consumer
+// must reject both names of the same file, then accept it after the alias is gone.
+func TestNativeOwnedFileAcquisitionRejectsHardlinks(t *testing.T) {
+	p := nativePlatform{}
+	data := testPE()
+	operations := []struct {
+		name    string
+		acquire func(string) (io.Closer, error)
+	}{
+		{"read", func(name string) (io.Closer, error) { _, err := p.read(name, 4096); return nil, err }},
+		{"hold", func(name string) (io.Closer, error) { return p.hold(name, digest(data)) }},
+		{"measure", func(name string) (io.Closer, error) { _, err := p.measure(name); return nil, err }},
+		{"startup-lock", p.lockStartup},
+	}
+	for _, operation := range operations {
+		t.Run(operation.name, func(t *testing.T) {
+			root := strings.ReplaceAll(t.TempDir(), "\\", "/")
+			name, alias := root+"/owned", root+"/alias"
+			if err := os.WriteFile(name, data, 0600); err != nil {
+				t.Fatal(err)
+			}
+			if err := os.Link(name, alias); err != nil {
+				t.Fatal(err)
+			}
+			for _, current := range []string{name, alias} {
+				held, err := operation.acquire(current)
+				if held != nil {
+					held.Close()
+				}
+				if err == nil {
+					t.Fatalf("hardlinked file accepted: %s", current)
+				}
+				if held != nil {
+					t.Fatal("failed acquisition returned ownership")
+				}
+				// Both read and exclusive-lock leaks would deny this write.
+				if err := os.WriteFile(current, data, 0600); err != nil {
+					t.Fatalf("refused acquisition leaked its native handle: %v", err)
+				}
+			}
+			if err := os.Remove(alias); err != nil {
+				t.Fatal(err)
+			}
+			held, err := operation.acquire(name)
+			if err != nil {
+				t.Fatalf("ordinary single-link file refused: %v", err)
+			}
+			if held != nil {
+				if err := held.Close(); err != nil {
+					t.Fatal(err)
+				}
+			}
+			if err := os.Remove(name); err != nil {
+				t.Fatalf("released owner leaked its native handle: %v", err)
+			}
+		})
+	}
+}

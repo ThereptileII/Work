@@ -1,0 +1,53 @@
+{
+  "baseCommit": "e1d6f5a6d42cc20605368fe307b34a607d75acbc",
+  "scope": "Actual acquired-handle single-link refusal before Go launcher ownership grant; supervisor executable/path seam withdrawn",
+  "selectionComments": [
+    "11304",
+    "11309"
+  ],
+  "toolchain": {
+    "version": "go1.27.1 linux/amd64",
+    "sha256": "63d339f0da5ab53635a56f2490a7984dfe12dfcff22ad749f63edaf590168445",
+    "url": "https://go.dev/dl/go1.27.1.linux-amd64.tar.gz",
+    "provenance": "Existing pinned toolchain and cached dependencies; no new download"
+  },
+  "environment": {
+    "GOTOOLCHAIN": "local",
+    "GOPROXY": "off",
+    "GOSUMDB": "off",
+    "TMPDIR": "private worktree directory"
+  },
+  "passed": [
+    {
+      "command": "go test ./launcher -count=1",
+      "host": "linux/amd64",
+      "exit": 0,
+      "output": "ok example.com/opennav-update-verifier/launcher 0.477s"
+    },
+    {
+      "command": "GOOS=windows GOARCH=386 go test -c -o <private>/launcher-hardlink-386.test.exe ./launcher",
+      "host": "linux/amd64",
+      "exit": 0,
+      "nativeExecution": false
+    },
+    {
+      "command": "GOOS=windows GOARCH=amd64 go test -c -o <private>/launcher-hardlink-amd64.test.exe ./launcher",
+      "host": "linux/amd64",
+      "exit": 0,
+      "nativeExecution": false
+    }
+  ],
+  "sourceSha256": {
+    "tools/update-verifier/launcher/native_windows.go": "1a1bf8efd7a479da16f72e2249b7205504123dc6eabb032fb19dc3625788cccc",
+    "tools/update-verifier/launcher/native_windows_test.go": "a1e52aa46b4e6347a533d9286d1d0a5d8e2b1f0459f490b20fff00a1525f9eb5"
+  },
+  "nativeWindowsAcceptance": false,
+  "signedBoatAcceptance": false,
+  "physicalHardware": "none",
+  "limitations": [
+    "Windows hardlink fixture compiled but not executed; no native red/green result claimed",
+    "Link count checked on acquired handle at acquisition; no continuous path namespace custody claim",
+    "No supervisor, commissioning, broker, launch-authority or health identity changes",
+    "No application build, dispatch, push, private-origin or physical operation"
+  ]
+}

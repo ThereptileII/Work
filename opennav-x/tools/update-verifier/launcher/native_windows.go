@@ -75,9 +75,9 @@ func openNativeRead(name string) (*os.File, error) {
 		windows.CloseHandle(handle)
 		return nil, err
 	}
-	if info.FileAttributes&(windows.FILE_ATTRIBUTE_REPARSE_POINT|windows.FILE_ATTRIBUTE_DIRECTORY) != 0 {
+	if info.FileAttributes&(windows.FILE_ATTRIBUTE_REPARSE_POINT|windows.FILE_ATTRIBUTE_DIRECTORY) != 0 || info.NumberOfLinks != 1 {
 		windows.CloseHandle(handle)
-		return nil, errors.New("ordinary owned file required")
+		return nil, errors.New("ordinary singly-linked owned file required")
 	}
 	return os.NewFile(uintptr(handle), name), nil
 }
@@ -175,7 +175,7 @@ func (nativePlatform) lockStartup(name string) (io.Closer, error) {
 		windows.CloseHandle(handle)
 		return nil, err
 	}
-	if info.FileAttributes&(windows.FILE_ATTRIBUTE_REPARSE_POINT|windows.FILE_ATTRIBUTE_DIRECTORY) != 0 {
+	if info.FileAttributes&(windows.FILE_ATTRIBUTE_REPARSE_POINT|windows.FILE_ATTRIBUTE_DIRECTORY) != 0 || info.NumberOfLinks != 1 {
 		windows.CloseHandle(handle)
 		return nil, errors.New("invalid installation lock")
 	}
