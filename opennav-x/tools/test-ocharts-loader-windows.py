@@ -19,17 +19,21 @@ INPUTS = (
     'src/integration/PluginPresentationLoader.cpp',
     'src/integration/PluginPresentationLoader.h',
     'src/integration/PluginPresentationFallback.h',
+    'src/integration/OriginalPluginTlsGuard.h',
+    'src/integration/Win32PluginTlsImports.h',
+    'src/integration/Win32PeImports.h',
     'src/plugin-adapters/ChartPresentationBindingV1.h',
     'src/plugin-adapters/ocharts/BindingState.h',
     'tests/windows_ocharts_loader/CMakeLists.txt',
     'tests/windows_ocharts_loader/fixture.cpp',
+    'tests/windows_ocharts_loader/legacy_dependency.cpp',
     'tests/windows_ocharts_loader/loader_test.cpp',
     'tests/windows_ocharts_loader/inputs.lock.json',
     'tools/test-ocharts-loader-windows.py',
     'tools/test-windows-changed-units.py',
     'tools/windows-wx.lock.json',
 )
-VARIANTS = ('good', 'no_bind', 'no_status', 'no_create', 'no_destroy')
+VARIANTS = ('good', 'no_bind', 'no_status', 'no_create', 'no_destroy', 'legacy_normal', 'legacy_delay')
 
 
 def identity(path):
@@ -136,6 +140,8 @@ def main():
         for name in VARIANTS:
             fixture = fixtures / ('fixture_' + name + '.dll')
             report['fixtures'][fixture.name] = dict(identity(fixture), pe=require_win32_dll(fixture))
+        stub = fixtures / 'libeay32.dll'
+        report['fixtures'][stub.name] = dict(identity(stub), pe=require_win32_dll(stub))
         junction_original = scratch / 'original-junction'
         shared_adapter = scratch / 'shared-adapter/skager-ocharts-adapter.dll'
         shared_adapter.parent.mkdir()

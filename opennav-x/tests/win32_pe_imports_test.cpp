@@ -1,4 +1,5 @@
 #include "integration/Win32PeImports.h"
+#include "integration/Win32PluginTlsImports.h"
 #include <fstream>
 #include <iostream>
 #include <iterator>
@@ -56,6 +57,31 @@ void Reject(const Bytes& b, const char* context, const char* expected = "") {
   if (*expected) Check(result.error == expected, "Wrong rejection boundary");
 }
 void Tests() {
+  // Exercise the production refusal policy with actual normal/delay PE bytes.
+  using opennav::integration::RefuseLegacyPluginTlsImports;
+  for (const auto& name : {"libeay32.dll", "SSLEAY32.DLL", "LiBeAy32", "ssleay32.",
+                           "C:\\vendor\\libeay32.dll", "relative/ssleay32.dll",
+                           "libeay32.dll. ", "ssleay32.dll:stream", "C:libeay32.dll"}) {
+    for (const bool delayed : {false, true}) {
+      for (const bool va : {false, true}) {
+        const auto image = delayed ? Image({}, {name}, va) : Image({name});
+        const auto before = image;
+        const auto refusal = RefuseLegacyPluginTlsImports(image);
+        Check(refusal.find(delayed ? "delay import: " : "TLS import: ") != std::string::npos,
+              "Legacy TLS import reached allow branch");
+        Check(image == before, "TLS guard modified bytes");
+      }
+    }
+  }
+  Check(RefuseLegacyPluginTlsImports(Image({"libssl-3.dll", "libcrypto-3.dll", "libcurl.dll"},
+                                        {"vendor.dll", "libeay32.dll.backup"})).empty(),
+        "Ordinary imports refused or legacy basename overmatched");
+  Check(RefuseLegacyPluginTlsImports(Image()).empty(), "Import-free plugin refused");
+  auto invalid = Image(); Put(invalid, 0x84, 0x8664, 2);
+  Check(!RefuseLegacyPluginTlsImports(invalid).empty(), "Foreign machine admitted by TLS policy");
+  invalid = Image({"libeay32.dll"}); Put(invalid, 0x104, 19);
+  Check(RefuseLegacyPluginTlsImports(invalid).find("Cannot inspect") == 0,
+        "Malformed import directory admitted by TLS policy");
   // Ordinary Win32 plugin metadata: no adapter exports or fixed import allowlist.
   const std::vector<std::string> normal{"wxmsw32u_core_vc14x.dll", "libcurl.dll", "Vendor-SDK_2.dll", "KERNEL32.DLL"};
   const std::vector<std::string> delayed{"winspool.drv", "optional decoder.dll", "libcurl.dll"};

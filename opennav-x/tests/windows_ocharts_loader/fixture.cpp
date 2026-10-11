@@ -5,6 +5,14 @@
 #include <cstring>
 #include <cwchar>
 
+#ifdef LEGACY_IMPORT
+// Harmless test-only import: the linked DLL is built locally, never OpenSSL.
+extern "C" __declspec(dllimport) int __cdecl legacy_tls_fixture();
+extern "C" __declspec(dllexport) int __cdecl exercise_legacy_import() {
+  return legacy_tls_fixture();
+}
+#endif
+
 namespace {
 skager::ocharts::BindingState binding;
 void Event(const char* text) {

@@ -1,0 +1,99 @@
+{
+  "schema": 1,
+  "issue": "SCRUM-209",
+  "baseCommit": "ec51b9261d2854d8600672ea27c97af5abeb3f6d",
+  "scope": "Partial Windows original-plugin direct and declared-delay legacy TLS import refusal",
+  "upstreamCommit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "inputs": {
+    "src/integration/OriginalPluginTlsGuard.h": {
+      "bytes": 1952,
+      "sha256": "7c08ee0d623776dce59bfbc88f4375e30b5d4e64b234657a0c119655e426b278"
+    },
+    "src/integration/Win32PluginTlsImports.h": {
+      "bytes": 1420,
+      "sha256": "11c2159f2851bdfef60f9e2a0ebcab1426985e9077ffc0e687f1c8754c43cd3d"
+    },
+    "src/integration/Win32PeImports.h": {
+      "bytes": 6824,
+      "sha256": "c7b7dabc0b738ac3ca574ee2d99a344f0f4297600e52d824a82ae1189faeae8c"
+    },
+    "src/integration/PluginPresentationFallback.h": {
+      "bytes": 2265,
+      "sha256": "937cc11264d9c08da9a16a0798253f57a2aaac85270e56135d32b71dd26cb797"
+    },
+    "src/integration/PluginPresentationLoader.cpp": {
+      "bytes": 418,
+      "sha256": "4119fd2b34aaa966bfed648760b3286f60d152f09164246e9f37c62afc9e59fc"
+    },
+    "tests/win32_pe_imports_test.cpp": {
+      "bytes": 10436,
+      "sha256": "56ae9b7fb942b85f483498a52168cd0c860defc460621a32b3f63658913d683b"
+    },
+    "tools/test-win32-pe-imports.py": {
+      "bytes": 1810,
+      "sha256": "aca9dab7cf44177e691f9e288dbe42d3d9dcfe3699d584ccca4d37214eb7f130"
+    },
+    "tests/windows_ocharts_loader/CMakeLists.txt": {
+      "bytes": 2737,
+      "sha256": "fcbe12ec875207a3254fa6118e207c89a2b07d7da2c56c877f6907c90ec6ac2c"
+    },
+    "tests/windows_ocharts_loader/fixture.cpp": {
+      "bytes": 3700,
+      "sha256": "098cf27ed1054b40df6898ed19dc8b58e08bb1d15f615d11bb9d63b903c3691e"
+    },
+    "tests/windows_ocharts_loader/legacy_dependency.cpp": {
+      "bytes": 159,
+      "sha256": "061a06459561ee77b31f8ae56438fbcceb47e46b1d3b3dd1e0842e9dff951406"
+    },
+    "tests/windows_ocharts_loader/loader_test.cpp": {
+      "bytes": 20568,
+      "sha256": "d9e4a81185b4f9029be2ce41ed0b210aaac25a5ec814f23f5f20311076562e39"
+    },
+    "tools/test-ocharts-loader-windows.py": {
+      "bytes": 10155,
+      "sha256": "71cc19379910b6a000ca8f4c7a6568bb125182eff3b19f2de67847bfea0934fc"
+    },
+    "tools/test-chart-module-windows.py": {
+      "bytes": 10210,
+      "sha256": "e75b2dafe7933c8b3f99dec723fc75d3cc5f20dbcccfa12d5980a239d2a3d917"
+    },
+    "patches/opencpn-5.12.4-chart-presentation.patch": {
+      "bytes": 184251,
+      "sha256": "28ce127fd1b27795c0e0442d8666c3ff83bb026fe8ea6baaf88b5a5d5df5c73d"
+    }
+  },
+  "checks": [
+    {
+      "command": "python tools/test-win32-pe-imports.py",
+      "result": "passed",
+      "checks": 9353
+    },
+    {
+      "command": "ASAN_OPTIONS=detect_leaks=0 python tools/test-win32-pe-imports.py --sanitize --cxx clang++",
+      "result": "passed",
+      "checks": 9353,
+      "limitation": "LeakSanitizer disabled under ptrace; no leak-check acceptance"
+    },
+    {
+      "command": "python -m py_compile tools/test-ocharts-loader-windows.py tools/test-chart-module-windows.py",
+      "result": "passed"
+    },
+    {
+      "command": "git diff --check",
+      "result": "passed"
+    }
+  ],
+  "nativeLoaderControls": "prepared, not run",
+  "nativeApplicationAcceptance": false,
+  "loaderClosureAccepted": false,
+  "fullBuildRun": false,
+  "boatModified": false,
+  "remaining": [
+    "Native MSVC Win32 actual fallback/normal/delay stub tests",
+    "Native default per-user/configured/portable/app-local initial and reload paths",
+    "Supported plugin compatibility and refusal diagnostics",
+    "Transitive/dynamic/helper closure and module identities",
+    "Exact candidate TLS/certificate and installer lifecycle/recovery",
+    "Separate exact-artifact boat acceptance"
+  ]
+}

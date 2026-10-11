@@ -1,7 +1,8 @@
 # Standalone Win32 import metadata reader
 
-SCRUM-209 groundwork only. `src/integration/Win32PeImports.h` is not connected
-to the application, plugin loader, installer or a release gate. It consumes
+SCRUM-209 metadata reader. The Windows original-plugin fallback now uses it
+through `Win32PluginTlsImports.h` for a narrow direct/delay legacy TLS refusal
+(see [the boundary](../docs/architecture/windows-native-dependency-integration.md#original-plugin-pre-load-refusal)). The reader itself consumes
 caller-supplied bytes and performs no filesystem, environment, registry,
 network, process or DLL-loading operations.
 
@@ -22,11 +23,12 @@ Limits are explicit: 128 MiB input, 96 sections, 1 MiB per descriptor directory,
 Only x86 PE32 is supported. Directory ranges must have complete contiguous raw
 backing within one section or the headers. Ambiguous overlapping sections,
 virtual-only backing and unsupported delay attributes are rejected. These
-restrictions still require native qualification before any runtime use.
+restrictions still require native representative-plugin qualification; the new
+runtime caller is not accepted for public release from portable tests alone.
 
 The existing `ChartModulePe.h` is not reused: its private adapter export/import
 allowlists and blanket delay-import rejection would reject ordinary plugins.
-This new reader keeps parsing separate from such policy. A future runtime gate
+This reader keeps parsing separate from that policy. Complete runtime closure
 still needs a reviewed Windows dependency-resolution contract, file identity
 and replacement protection, enforcement at every load/reload entry point and
 native installed-host evidence. This work makes no loader-closure claim.

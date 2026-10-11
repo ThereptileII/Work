@@ -3,6 +3,8 @@
 #include <wx/dynlib.h>
 #ifdef _WIN32
 #include <wx/msw/wrapwin.h>
+#include <wx/log.h>
+#include "integration/OriginalPluginTlsGuard.h"
 #endif
 
 namespace opennav::integration {
@@ -37,6 +39,17 @@ inline PluginModuleLoadOutcome LoadPluginWithPresentationFallback(
     return library.IsLoaded() ? PluginModuleLoadOutcome::Loaded
                               : PluginModuleLoadOutcome::LoadFailed;
   if (library.IsLoaded()) return PluginModuleLoadOutcome::UnloadFailed;
+#ifdef _WIN32
+  // This central original-load branch is shared by discovery, reload and a
+  // clean adapter refusal. External/configured plugin roots need no duplicate
+  // installer path resolver. The private adapter has its own exact-byte gate.
+  OriginalPluginTlsGuard tls_guard(original);
+  if (!tls_guard.Refusal().empty()) {
+    wxLogWarning("SKAGER: refusing plugin %s: %s", original,
+                 wxString::FromUTF8(tls_guard.Refusal().c_str()));
+    return PluginModuleLoadOutcome::LoadFailed;
+  }
+#endif
   return library.Load(original) ? PluginModuleLoadOutcome::Loaded
                                 : PluginModuleLoadOutcome::LoadFailed;
 }

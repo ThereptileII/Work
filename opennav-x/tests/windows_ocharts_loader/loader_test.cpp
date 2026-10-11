@@ -218,6 +218,39 @@ int main(int argc,char**argv) {
       Require(callback_calls==3 && lib.IsLoaded(),"residue ownership lost");c.Events("attach\n");
       Require(UnloadPluginModuleChecked(lib),"residual benign module cleanup");c.Events("attach\ndetach\n");
       RegisterPluginPresentationLoader(nullptr);Pass("actual null/forwarded callback and residue-safe fallback");}
+    // These DLLs are locally built inert controls, with one real import from a
+    // locally built libeay32.dll stub. Verify the guard, not a missing-DLL error.
+    for (const auto* kind : {"legacy_normal", "legacy_delay"}) {
+      Case c(work,kind,vendor,good);
+      Copy(fixtures/(std::string("fixture_")+kind+".dll"),c.original);
+      Copy(fixtures/"libeay32.dll",c.original.parent_path()/"libeay32.dll");
+      const auto before=Hash(c.original);
+      const auto raw=Read(c.original);
+      const std::vector<unsigned char> bytes(raw.begin(),raw.end());
+      const auto policy=RefuseLegacyPluginTlsImports(bytes);
+      Require(policy.find(std::string(kind)=="legacy_delay" ? "delay import" : "TLS import")!=std::string::npos,
+              "fixture lacks intended native import metadata");
+      wxDynamicLibrary lib;RegisterPluginPresentationLoader(nullptr);
+      // Control: these exact harmless bytes are loadable without the guard.
+      // Explicitly preload the stub because normal LoadLibrary does not add the
+      // original's directory to the dependency search path.
+      wxDynamicLibrary dependency;Require(dependency.Load(W(c.original.parent_path()/"libeay32.dll")),"stub loads");
+      Require(lib.Load(W(c.original)),"unguarded control loads");
+      Require(UnloadPluginModuleChecked(lib),"unguarded control unloads");
+      c.Events("attach\ndetach\n");fs::remove(c.events);
+      for (int attempt=0;attempt<2;++attempt) {
+        Require(LoadPluginWithPresentationFallback(lib,W(c.original),{})==PluginModuleLoadOutcome::LoadFailed,
+                "legacy import crossed original load boundary");
+        Require(!lib.IsLoaded(),"refused original is mapped");c.Events("");
+      }
+      fallback_adapter=c.adapter;RegisterPluginPresentationLoader(CallbackCleanRefusal);
+      Require(LoadPluginWithPresentationFallback(lib,W(c.original),[](const wxString&){return true;})==PluginModuleLoadOutcome::LoadFailed,
+              "clean adapter refusal bypassed TLS guard");
+      Require(!lib.IsLoaded(),"legacy original mapped after adapter refusal");
+      c.Events("attach\ndetach\n");
+      Require(Hash(c.original)==before && Writable(c.original),"refusal changed original or leaked file lock");
+      RegisterPluginPresentationLoader(nullptr);Pass(kind);
+    }
     {Case c(work,"injected-invalid-module-handle",vendor,good);Copy(good,c.original);
       wxDynamicLibrary lib;
       void* reserved=VirtualAlloc(nullptr,65536,MEM_RESERVE,PAGE_NOACCESS);

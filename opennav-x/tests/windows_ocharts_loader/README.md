@@ -59,3 +59,17 @@ Remaining product gates: actual package/adapter import ABI, full application
 Standard/Safe selection, real plugin lifecycle, encrypted-chart rendering,
 licensing behavior and physical hardware. The mechanics tests do not replace
 these gates or certify a usable chart package.
+
+
+## SCRUM-209 original plugin refusal extension
+
+Two additional harmless DLLs import a locally compiled `libeay32.dll` stub,
+through real normal and MSVC delay-import tables. They are loadable without the
+guard, with attach/detach event evidence. The production fallback must refuse
+both before original DllMain, on repeated attempts and after a clean adapter
+refusal, even while the stub is already mapped. The test checks original bytes
+and lock release afterward. No real obsolete TLS library or vendor code is
+executed. Source receipts now include both guard headers and the PE reader;
+fixture receipts include the stub and both importing modules. These new native
+controls are prepared but not run. They do not exercise actual OpenCPN root
+discovery, dependency resolution, helpers or arbitrary dynamic loads.

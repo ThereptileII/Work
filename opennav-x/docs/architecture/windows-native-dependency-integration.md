@@ -84,3 +84,57 @@ Exact files are reprobed before CMake, which receives absolute tool paths.
 See [the Gettext boundary and focused proof](windows-gettext-prerequisite.md).
 This prevents a masked stock `win_deps.bat` package failure from consuming the
 maintained dependency build first; it does not bypass those dependency gates.
+
+
+## Original plugin pre-load refusal
+
+SCRUM-209 comment 11287 identified roots outside the staged installer app:
+pinned OpenCPN `PluginPaths::InitWindowsPaths` puts `GetWinPluginBaseDir` first,
+and `AbstractPlatform::GetWinPluginBaseDir` resolves configured or per-user
+plugin directories. `PluginLoader::LoadPlugIn` is the common initial/reload
+entry point. Its existing integration patch invokes
+`LoadPluginWithPresentationFallback`, including the ordinary original load
+when no presentation adapter applies or an adapter cleanly refuses.
+
+On Windows that original-load branch now constructs `OriginalPluginTlsGuard`
+before `wxDynamicLibrary::Load`. It reads the selected plugin while holding a
+read handle without write/delete sharing across the load call. The production
+byte policy refuses direct and declared-delay imports of `libeay32.dll` or
+`ssleay32.dll`, including case, qualified path, extension-less and trailing-dot
+aliases. Unknown/malformed/non-x86 metadata, unreadable files and files outside
+the reader's 128 MiB limit refuse the original load. The ordinary OpenCPN
+unloadable-plugin path receives the failure, with the detailed refusal logged.
+No plugin/profile file is rewritten or deleted. This runs for all discovered
+original paths without copying the upstream configuration resolver into Setup.
+
+The private presentation adapter retains its separate compiled exact-byte
+identity/lock/compatibility gate. Successful adapter selection does not execute
+the original and does not invoke the new original-import policy. The pristine
+OpenCPN Legacy executable is unchanged. Ordinary maintained TLS, vendor,
+optional/delay and import-free plugin metadata remains permitted by this
+narrow policy; passing it is not a statement of plugin compatibility or trust.
+
+This is **partial enforcement**, not closure of SCRUM-209. It does not traverse
+transitive imports, inspect dynamically selected DLLs or executable helpers,
+validate manifests/export forwarders, or prove loaded-module identities. It
+does not stop previously mapped code or provide a hostile-filesystem sandbox;
+path/ancestor redirection and filesystem replacement semantics need separate
+native qualification. Exact bytes of a known-good plugin are not an approval of
+its future dynamic behavior. The installer guard and read-only inventory/module
+observer retain their distinct existing scope.
+
+Focused portable checks exercise the actual reader and policy for normal and
+both delay formats, aliases, malformed/foreign inputs, ordinary controls and
+unchanged input bytes. The native harmless load controls in
+`tests/windows_ocharts_loader` additionally compare successful unguarded loads
+against refusal before original DllMain, repeated loads, clean adapter fallback
+and lock lifetime. Native checks are prepared, not executed locally.
+
+Before acceptance, run the focused MSVC Win32 loader gate and then the exact
+integrated native candidate with default per-user, configured, portable and
+app-local roots; initial/reload and successful/refused adapter paths; existing
+supported plugins and OpenCPN unloadable diagnostics; observed normal/delay/
+transitive/dynamic/helper identities; TLS/certificate failure behavior; and
+install/update/repair/rollback/uninstall preservation. Broader loader enforcement
+and native/boat acceptance remain open. This source change does not qualify the
+currently running Staging artifact or authorize public beta.
