@@ -1,0 +1,7 @@
+reserved-normal|calls=0|requested=|refusal=Unsupported plugin reserved module name: CoM1.dll.backup
+reserved-delay|calls=0|requested=|refusal=Unsupported plugin reserved module name: NUL   .dll
+mixed-normal-explicit|calls=1|requested=MiXeD.DLL|refusal=Unsupported legacy TLS import: libeay32.dll
+mixed-delay-explicit|calls=1|requested=MiXeD.DLL|refusal=Unsupported legacy TLS import: libeay32.dll
+mixed-normal-extensionless|calls=1|requested=MiXeD.dll|refusal=Unsupported legacy TLS import: libeay32.dll
+mixed-delay-extensionless|calls=1|requested=MiXeD.dll|refusal=Unsupported legacy TLS import: libeay32.dll
+ordinary-name|calls=1|requested=COM10.dll|refusal=

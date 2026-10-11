@@ -1,0 +1,101 @@
+19:19:03: Error: Failed to load shared library 'D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\cases\invalid-pe-after-exact-hash\adapter/skager-ocharts-adapter.dll' (error 193: D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\cases\invalid-pe-after-exact-hash\adapter/skager-ocharts-adapter.dll is not a valid Win32 application.)
+19:19:03: Error: Couldn't find symbol 'skager_bind_chart_presentation_v1' in a dynamic library (error 127: The specified procedure could not be found.)
+19:19:03: Error: Couldn't find symbol 'skager_chart_presentation_status_v1' in a dynamic library (error 127: The specified procedure could not be found.)
+19:19:04: Warning: SKAGER: refusing plugin D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\cases\callback-and-fallback\missing.dll: Cannot open plugin for import inspection
+19:19:04: Warning: SKAGER: refusing plugin D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\cases\legacy_normal\original/o-charts_pi.dll: Unsupported legacy TLS import: libeay32.dll
+19:19:04: Warning: SKAGER: refusing plugin D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\cases\legacy_normal\original/o-charts_pi.dll: Unsupported legacy TLS import: libeay32.dll
+19:19:04: Warning: SKAGER: refusing plugin D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\cases\legacy_normal\original/o-charts_pi.dll: Unsupported legacy TLS import: libeay32.dll
+19:19:04: Warning: SKAGER: refusing plugin D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\cases\legacy_delay\original/o-charts_pi.dll: Unsupported legacy TLS delay import: libeay32.dll
+19:19:04: Warning: SKAGER: refusing plugin D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\cases\legacy_delay\original/o-charts_pi.dll: Unsupported legacy TLS delay import: libeay32.dll
+19:19:04: Warning: SKAGER: refusing plugin D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\cases\legacy_delay\original/o-charts_pi.dll: Unsupported legacy TLS delay import: libeay32.dll
+19:19:04: Warning: SKAGER: refusing plugin D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\cases\indirect_legacy\original/o-charts_pi.dll: Unsupported legacy TLS import: libeay32.dll
+19:19:04: Warning: SKAGER: refusing plugin D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\cases\indirect_legacy\original/o-charts_pi.dll: Unsupported legacy TLS import: libeay32.dll
+19:19:04: Warning: SKAGER: refusing plugin D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\cases\forward_legacy_name\original/o-charts_pi.dll: Unsupported legacy TLS export forwarder: libeay32.legacy_tls_fixture
+19:19:04: Warning: SKAGER: refusing plugin D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\cases\forward_legacy_name\original/o-charts_pi.dll: Unsupported legacy TLS export forwarder: libeay32.legacy_tls_fixture
+19:19:04: Warning: SKAGER: refusing plugin D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\cases\forward_legacy_name\original/o-charts_pi.dll: Unsupported legacy TLS export forwarder: libeay32.legacy_tls_fixture
+19:19:04: Warning: SKAGER: refusing plugin D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\cases\forward_legacy_ordinal\original/o-charts_pi.dll: Unsupported legacy TLS export forwarder: libeay32.#209
+19:19:04: Warning: SKAGER: refusing plugin D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\cases\forward_legacy_ordinal\original/o-charts_pi.dll: Unsupported legacy TLS export forwarder: libeay32.#209
+19:19:04: Warning: SKAGER: refusing plugin D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\cases\forward_legacy_ordinal\original/o-charts_pi.dll: Unsupported legacy TLS export forwarder: libeay32.#209
+19:19:04: Warning: SKAGER: refusing plugin D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\cases\forward_ssleay_ordinal\original/o-charts_pi.dll: Unsupported legacy TLS export forwarder: ssleay32.#209
+19:19:04: Warning: SKAGER: refusing plugin D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\cases\forward_ssleay_ordinal\original/o-charts_pi.dll: Unsupported legacy TLS export forwarder: ssleay32.#209
+19:19:04: Warning: SKAGER: refusing plugin D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\cases\forward_ssleay_ordinal\original/o-charts_pi.dll: Unsupported legacy TLS export forwarder: ssleay32.#209
+19:19:04: Warning: SKAGER: refusing plugin D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\cases\forward_indirect\original/o-charts_pi.dll: Unsupported legacy TLS export forwarder: libeay32.#209
+19:19:04: Warning: SKAGER: refusing plugin D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\cases\forward_indirect\original/o-charts_pi.dll: Unsupported legacy TLS export forwarder: libeay32.#209
+19:19:04: Warning: SKAGER: refusing plugin D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\cases\forward_indirect\original/o-charts_pi.dll: Unsupported legacy TLS export forwarder: libeay32.#209
+19:19:04: Warning: SKAGER: refusing plugin D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\cases\forward_explicit_dll\original/o-charts_pi.dll: Unsupported plugin export forwarder grammar: forward_clean.dll.fixture_value
+19:19:04: Warning: SKAGER: refusing plugin D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\cases\forward_explicit_dll\original/o-charts_pi.dll: Unsupported plugin export forwarder grammar: forward_clean.dll.fixture_value
+19:19:04: Warning: SKAGER: refusing plugin D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\cases\forward_explicit_dll\original/o-charts_pi.dll: Unsupported plugin export forwarder grammar: forward_clean.dll.fixture_value
+19:19:04: Warning: SKAGER: refusing plugin D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\cases\forward_multi_dot\original/o-charts_pi.dll: Unsupported plugin export forwarder grammar: forward.clean.fixture_value
+19:19:04: Warning: SKAGER: refusing plugin D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\cases\forward_multi_dot\original/o-charts_pi.dll: Unsupported plugin export forwarder grammar: forward.clean.fixture_value
+19:19:04: Warning: SKAGER: refusing plugin D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\cases\forward_multi_dot\original/o-charts_pi.dll: Unsupported plugin export forwarder grammar: forward.clean.fixture_value
+PASS copied status matrix
+PASS unavailable
+PASS safe
+PASS not-main
+PASS standard-empty-resources
+PASS wrong-original-name
+PASS actual worker thread
+PASS wrong-original-hash
+PASS wrong-adapter-hash
+PASS wrong-adapter-size
+PASS missing-adapter
+PASS relative-original
+PASS unc-original
+PASS original-reparse-parent
+PASS adapter-reparse-parent
+PASS exclusive-original-lock
+PASS exclusive-adapter-lock
+PASS changed-adapter-after-compatibility
+PASS changed-original-after-compatibility
+PASS compatibility refused
+PASS compatibility missing
+PASS invalid PE load refused
+PASS over-capacity-utf8-resource
+PASS no_bind
+PASS no_status
+PASS no_create
+PASS no_destroy
+PASS binding-rejected
+PASS status-return
+PASS status-size
+PASS status-version
+PASS status-reserved
+PASS status-reason
+PASS status-selected
+PASS status-unknown
+PASS single bound module and lock lifetime
+PASS actual null/forwarded callback and residue-safe fallback
+PASS legacy_normal
+PASS legacy_delay
+PASS indirect_legacy
+PASS indirect_clean
+First-map process DLL directory: ''; characters=0
+First-map sibling path: D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\cases\unmapped-sibling-under-inspection-lock\original\helper_unmapped.dll; volume=771785911; file-index=65536:11645; sha256=42cc280d1e35c36e7b9a627e08b41b462dc59f11b217ffcac11d1c11ddca8e99
+PASS previously unmapped sibling maps with inspected path/identity under live guard
+First-map process DLL directory: ''; characters=0
+Native forwarder target: libeay32.legacy_tls_fixture -> D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\cases\forward_legacy_name\original\libeay32.dll; value=209; volume=771785911; file-index=65536:11653; sha256=b27d5136fd120c3b7bae0068ff9f9ddc486424e76d25ccbcc36dcec5c1f43b86; guarded=0
+PASS forward_legacy_name
+First-map process DLL directory: ''; characters=0
+Native forwarder target: libeay32.#209 -> D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\cases\forward_legacy_ordinal\original\libeay32.dll; value=209; volume=771785911; file-index=65536:11661; sha256=b27d5136fd120c3b7bae0068ff9f9ddc486424e76d25ccbcc36dcec5c1f43b86; guarded=0
+PASS forward_legacy_ordinal
+First-map process DLL directory: ''; characters=0
+Native forwarder target: ssleay32.#209 -> D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\cases\forward_ssleay_ordinal\original\ssleay32.dll; value=209; volume=771785911; file-index=65536:11669; sha256=b4d0be7feac0a07a6493069bd8dc6756d04b0e51a92641d777547941c5d31382; guarded=0
+PASS forward_ssleay_ordinal
+First-map process DLL directory: ''; characters=0
+Native forwarder target: forward_helper.forwarded_probe -> D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\cases\forward_indirect\original\libeay32.dll; value=209; volume=771785911; file-index=65536:11677; sha256=b27d5136fd120c3b7bae0068ff9f9ddc486424e76d25ccbcc36dcec5c1f43b86; guarded=0
+PASS forward_indirect
+First-map process DLL directory: ''; characters=0
+Native forwarder target: forward_clean.fixture_value -> D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\cases\forward_clean_name\original\forward_clean.DLL; value=209; volume=771785911; file-index=65536:11686; sha256=196e1bccbe03c46404a075c2e35aa87638f0c8c9ba2f092fa38455c3ee2056cc; guarded=1
+PASS forward_clean_name
+First-map process DLL directory: ''; characters=0
+Native forwarder target: forward_clean.#209 -> D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\cases\forward_clean_ordinal\original\forward_clean.DLL; value=209; volume=771785911; file-index=65536:11694; sha256=196e1bccbe03c46404a075c2e35aa87638f0c8c9ba2f092fa38455c3ee2056cc; guarded=1
+PASS forward_clean_ordinal
+First-map process DLL directory: ''; characters=0
+Native forwarder target: forward_clean.dll.fixture_value -> D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\cases\forward_explicit_dll\original\forward_clean.dll; value=209; volume=771785911; file-index=65536:11702; sha256=196e1bccbe03c46404a075c2e35aa87638f0c8c9ba2f092fa38455c3ee2056cc; guarded=0
+PASS forward_explicit_dll
+First-map process DLL directory: ''; characters=0
+Native forwarder target: forward.clean.fixture_value -> D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\cases\forward_multi_dot\original\forward.clean; value=409; volume=771785911; file-index=65536:11712; sha256=f42bec1b1049d8d6d6127a65f75a004eb2f97d2a48f9d4a44f2b0df3d3358073; guarded=0
+PASS forward_multi_dot
+Injected invalid-handle FreeLibrary error: 126
+PASS injected invalid-handle refusal retains ownership
+PASS 51 native loader groups; no vendor or plugin factory execution

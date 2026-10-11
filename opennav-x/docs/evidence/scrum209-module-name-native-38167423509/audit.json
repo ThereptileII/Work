@@ -1,0 +1,1167 @@
+{
+  "schema": 1,
+  "candidate": "6445d67e27c6b6f4254849556efea28248204711",
+  "runId": 38167423509,
+  "jobId": 114552775936,
+  "runAttempt": 1,
+  "artifactId": 11712742676,
+  "archiveBytes": 29664,
+  "archiveSha256": "7673bc0234588cc6e7089cdf1e23d4fb37b62bff6aeafd949944dab59704042b",
+  "apiDigest": "sha256:7673bc0234588cc6e7089cdf1e23d4fb37b62bff6aeafd949944dab59704042b",
+  "zipEntries": 50,
+  "allCrcClean": true,
+  "native": {
+    "status": "passed",
+    "checks": 51,
+    "vendorExecuted": false,
+    "pluginFactoryExecuted": false,
+    "invalidHandleFaultInjected": true,
+    "unmappedSiblingGuardControl": true,
+    "exportForwarderControls": true,
+    "forwarderGrammarProbes": true,
+    "productAcceptance": false
+  },
+  "readerChecks": 17602,
+  "importReaderChecks": {
+    "checks": 9885,
+    "execution": "Prior Linux GCC ASan/UBSan run only; not compiled or executed by this native fixture job",
+    "priorEvidence": "raw/prior-portable/verification.json",
+    "sourceMatchesCandidate": true
+  },
+  "compiler": {
+    "target": "MSVC Win32/x86",
+    "identification": "MSVC 19.44.35229.0",
+    "windowsSdk": "10.0.26100.0",
+    "configureCommand": [
+      "cmake",
+      "-S",
+      "D:\\a\\Work\\Work\\opennav-x\\tests\\windows_ocharts_loader",
+      "-B",
+      "D:\\a\\Work\\Work\\opennav-x\\build\\windows-ocharts-loader-guards\\build",
+      "-G",
+      "Visual Studio 17 2022",
+      "-A",
+      "Win32",
+      "-DPICOSHA2_DIR:PATH=D:/a/Work/Work/opennav-x/build/windows-ocharts-loader-guards/sdk/picosha2",
+      "-DwxWidgets_ROOT_DIR:PATH=D:/a/Work/Work/opennav-x/build/windows-ocharts-loader-guards/sdk/wx",
+      "-DwxWidgets_LIB_DIR:PATH=D:/a/Work/Work/opennav-x/build/windows-ocharts-loader-guards/sdk/wx/lib/vc14x_dll",
+      "-DwxWidgets_CONFIGURATION=mswu"
+    ],
+    "buildSucceeded": true,
+    "errors": 0,
+    "warnings": 17,
+    "warningCodes": [
+      "C4702"
+    ],
+    "warningScope": "fixture.cpp unreachable code in inert fixture targets"
+  },
+  "completedLoaderGroups": [
+    "copied status matrix",
+    "unavailable",
+    "safe",
+    "not-main",
+    "standard-empty-resources",
+    "wrong-original-name",
+    "actual worker thread",
+    "wrong-original-hash",
+    "wrong-adapter-hash",
+    "wrong-adapter-size",
+    "missing-adapter",
+    "relative-original",
+    "unc-original",
+    "original-reparse-parent",
+    "adapter-reparse-parent",
+    "exclusive-original-lock",
+    "exclusive-adapter-lock",
+    "changed-adapter-after-compatibility",
+    "changed-original-after-compatibility",
+    "compatibility refused",
+    "compatibility missing",
+    "invalid PE load refused",
+    "over-capacity-utf8-resource",
+    "no_bind",
+    "no_status",
+    "no_create",
+    "no_destroy",
+    "binding-rejected",
+    "status-return",
+    "status-size",
+    "status-version",
+    "status-reserved",
+    "status-reason",
+    "status-selected",
+    "status-unknown",
+    "single bound module and lock lifetime",
+    "actual null/forwarded callback and residue-safe fallback",
+    "legacy_normal",
+    "legacy_delay",
+    "indirect_legacy",
+    "indirect_clean",
+    "previously unmapped sibling maps with inspected path/identity under live guard",
+    "forward_legacy_name",
+    "forward_legacy_ordinal",
+    "forward_ssleay_ordinal",
+    "forward_indirect",
+    "forward_clean_name",
+    "forward_clean_ordinal",
+    "forward_explicit_dll",
+    "forward_multi_dot",
+    "injected invalid-handle refusal retains ownership"
+  ],
+  "sourceChecks": [
+    {
+      "path": "opennav-x/src/integration/OChartsModuleLoader.cpp",
+      "gitBytes": 7699,
+      "gitSha256": "3377137cd14df0acebbcbe75da4123357480ed18c27e24b6382b8b1006c8c42b",
+      "nativeBytes": 7868,
+      "nativeSha256": "3d0afe5241f42b7acb0e6f702c1258b9afaa02bb81be0102d2584d3cca24ed47",
+      "verifiedTransformation": "LF to CRLF"
+    },
+    {
+      "path": "opennav-x/src/integration/OChartsModuleLoader.h",
+      "gitBytes": 1267,
+      "gitSha256": "c73d560165d0a81f465d6de8f42d30fd81cd501fd7405dfdb9aa089a7361c23e",
+      "nativeBytes": 1296,
+      "nativeSha256": "38cdda23e1a8c9c516b5b53b9a5ee8d76285adf520395418332bf51327690896",
+      "verifiedTransformation": "LF to CRLF"
+    },
+    {
+      "path": "opennav-x/src/integration/PluginPresentationLoader.cpp",
+      "gitBytes": 418,
+      "gitSha256": "4119fd2b34aaa966bfed648760b3286f60d152f09164246e9f37c62afc9e59fc",
+      "nativeBytes": 427,
+      "nativeSha256": "a06d7e0d430172ab4e829416bcb882a27300a6d857dd2858c859280832cd1df4",
+      "verifiedTransformation": "LF to CRLF"
+    },
+    {
+      "path": "opennav-x/src/integration/PluginPresentationLoader.h",
+      "gitBytes": 695,
+      "gitSha256": "cf2c390c033aa87e6b78271c8229de1602e177dfc13ef235614a52158a4cfbc5",
+      "nativeBytes": 709,
+      "nativeSha256": "e25cc7ea7856768c41951a16edaf4ea9386213be4a0fdfafa4907764b0764213",
+      "verifiedTransformation": "LF to CRLF"
+    },
+    {
+      "path": "opennav-x/src/integration/PluginPresentationFallback.h",
+      "gitBytes": 2265,
+      "gitSha256": "937cc11264d9c08da9a16a0798253f57a2aaac85270e56135d32b71dd26cb797",
+      "nativeBytes": 2321,
+      "nativeSha256": "f97ec3d090380d343edd8ff7f574fd5276c1ed675a423506c03ed6e751f1b308",
+      "verifiedTransformation": "LF to CRLF"
+    },
+    {
+      "path": "opennav-x/src/integration/OriginalPluginTlsGuard.h",
+      "gitBytes": 4017,
+      "gitSha256": "45c5406546eecde0ed961ffcb94302c7f2cfc8299f9aa38bcd15976861067e74",
+      "nativeBytes": 4112,
+      "nativeSha256": "b4c7fdb0aacc3d7579dc9de2d344c21a5b93525b4c1396607eb16cf7aa6635c1",
+      "verifiedTransformation": "LF to CRLF"
+    },
+    {
+      "path": "opennav-x/src/integration/Win32PluginTlsImports.h",
+      "gitBytes": 6919,
+      "gitSha256": "b76437fe53de052ff24c17ca8affbf5ec7460ee9e6d7b006c8041519781b79a6",
+      "nativeBytes": 7064,
+      "nativeSha256": "13c15e53e20e9be3b0faedd4bd7f57ad49f21c8f23b24af356a154df06f7cf20",
+      "verifiedTransformation": "LF to CRLF"
+    },
+    {
+      "path": "opennav-x/src/integration/Win32PeImports.h",
+      "gitBytes": 9068,
+      "gitSha256": "f35fd4b4e0bb5d9508dd473857876eb2cfb7db4d9466cf46bb58ba424f2fb85f",
+      "nativeBytes": 9261,
+      "nativeSha256": "c990283d2f822d9ecc4fcacd942d2871376d521b21742346c9169d24be2bb336",
+      "verifiedTransformation": "LF to CRLF"
+    },
+    {
+      "path": "opennav-x/src/plugin-adapters/ChartPresentationBindingV1.h",
+      "gitBytes": 3096,
+      "gitSha256": "72a9e19e8d457cdfc543cd0ec6571bf6b6eb30a4a6f4c547f0f047c631e8967f",
+      "nativeBytes": 3172,
+      "nativeSha256": "b19186376a4aa357ba7625d2e7c26d3ad4a526d120ea61d36a857f52f3266dde",
+      "verifiedTransformation": "LF to CRLF"
+    },
+    {
+      "path": "opennav-x/src/plugin-adapters/ocharts/BindingState.h",
+      "gitBytes": 3994,
+      "gitSha256": "82e4f94910c7af63772d90d23771f5328d4c0543b94390d35be8a2d04cf07e5c",
+      "nativeBytes": 4088,
+      "nativeSha256": "c10e46310dc72621d3fac2ac272ed282aab1feb5c565db412ebb2c23062fc870",
+      "verifiedTransformation": "LF to CRLF"
+    },
+    {
+      "path": "opennav-x/tests/windows_ocharts_loader/CMakeLists.txt",
+      "gitBytes": 6556,
+      "gitSha256": "8d9b92410d5f81264715d6c0e1b113bfa5c700c97e16c8b8b926ded7e86b1515",
+      "nativeBytes": 6660,
+      "nativeSha256": "a2006b1efa7df87185a17841c55581aec444d4a6e4945b1a83df9b8689e825cd",
+      "verifiedTransformation": "LF to CRLF"
+    },
+    {
+      "path": "opennav-x/tests/windows_ocharts_loader/fixture.cpp",
+      "gitBytes": 4160,
+      "gitSha256": "3eaa800f1fff16e28d1847da4e5415e59aaf00c824bfda9b7d2b272798a57ea7",
+      "nativeBytes": 4267,
+      "nativeSha256": "6c139e401473d04397bcf27de25d7b42be615a83607ab2a451e5203ba9bde06e",
+      "verifiedTransformation": "LF to CRLF"
+    },
+    {
+      "path": "opennav-x/tests/windows_ocharts_loader/indirect_dependency.cpp",
+      "gitBytes": 318,
+      "gitSha256": "470d853b5e7e2123805b71dd01d29f284336b8aa11c8a26088caec0d572bed8a",
+      "nativeBytes": 329,
+      "nativeSha256": "877f5dabb1004a589fa921d99e4f99e7fa1862d5d997f664f7a710f3d353958c",
+      "verifiedTransformation": "LF to CRLF"
+    },
+    {
+      "path": "opennav-x/tests/windows_ocharts_loader/unmapped_dependency.cpp",
+      "gitBytes": 155,
+      "gitSha256": "d5c66095caeea9d7724d1991f02e7c03bb4dea1c36eeb11edf4c77224e469191",
+      "nativeBytes": 159,
+      "nativeSha256": "b8182f35447feb347fa17661e2b461e789f5e39474871e095d00a13b20f44ad9",
+      "verifiedTransformation": "LF to CRLF"
+    },
+    {
+      "path": "opennav-x/tests/windows_ocharts_loader/legacy_dependency.cpp",
+      "gitBytes": 159,
+      "gitSha256": "061a06459561ee77b31f8ae56438fbcceb47e46b1d3b3dd1e0842e9dff951406",
+      "nativeBytes": 161,
+      "nativeSha256": "224533908d09c37fd8bed85ac3b1a55fed0b1f0c32211e055370a34bf99a238d",
+      "verifiedTransformation": "LF to CRLF"
+    },
+    {
+      "path": "opennav-x/tests/windows_ocharts_loader/forward_dependency.cpp",
+      "gitBytes": 1058,
+      "gitSha256": "7a03c55cd753a55d7cf8fab19d3d95cff9c043f1564d383b55659b727ae694e4",
+      "nativeBytes": 1080,
+      "nativeSha256": "3c57112af69cc5e98d259344af189b212e1133586144aaa7bb67baa79b2f93a3",
+      "verifiedTransformation": "LF to CRLF"
+    },
+    {
+      "path": "opennav-x/tests/windows_ocharts_loader/forwarder_fixtures.py",
+      "gitBytes": 13076,
+      "gitSha256": "f31594e7c097628aadce0e4c4d65d135969916a4c9302cc1f87d8bfa19a0e5da",
+      "nativeBytes": 13311,
+      "nativeSha256": "cb144c4bfd4e32f6b355fc3175845743c0c28ff8960769c6918dc368c816e431",
+      "verifiedTransformation": "LF to CRLF"
+    },
+    {
+      "path": "opennav-x/tests/win32_pe_forwarders_test.cpp",
+      "gitBytes": 10958,
+      "gitSha256": "970db8111a49d22a826714efe16768be1e4980ce8f10ceba441bbbbf9ebc94db",
+      "nativeBytes": 11160,
+      "nativeSha256": "414a5f91b5c1f5fe043400de6bbe694451ff0779a44b046b7b45665542eeb8b1",
+      "verifiedTransformation": "LF to CRLF"
+    },
+    {
+      "path": "opennav-x/tests/windows_ocharts_loader/loader_test.cpp",
+      "gitBytes": 39692,
+      "gitSha256": "2c05310fcd578f32b015041939e5c126c7daea8d5fb18a80567824586ff8accb",
+      "nativeBytes": 40277,
+      "nativeSha256": "ed012d849efad0380ded46c1a7cc15c38a7caddac3ef8909e81afbfe0808d92c",
+      "verifiedTransformation": "LF to CRLF"
+    },
+    {
+      "path": "opennav-x/tests/windows_ocharts_loader/inputs.lock.json",
+      "gitBytes": 1163,
+      "gitSha256": "156ee587b620f8f8adccf8cb58c7df4c0c7676c1aa8325e07898efb0b40cf840",
+      "nativeBytes": 1183,
+      "nativeSha256": "7520333aba2a38f2bca5f4316a5faa8b229dbbb057e84dc1a57e8882bc53feae",
+      "verifiedTransformation": "LF to CRLF"
+    },
+    {
+      "path": "opennav-x/tools/test-ocharts-loader-windows.py",
+      "gitBytes": 12472,
+      "gitSha256": "3ad95052e67f2de0ba39f96e95747f85c2245d6f0b6f9071308af8280365e8ff",
+      "nativeBytes": 12689,
+      "nativeSha256": "3b9e3f5039284b267fa0f8791eaf8a9296d09e1809018fbff0c635ceb44eb3ab",
+      "verifiedTransformation": "LF to CRLF"
+    },
+    {
+      "path": "opennav-x/tools/test-windows-changed-units.py",
+      "gitBytes": 36635,
+      "gitSha256": "6d16a466787ae4e30367e619e19be9a134ca631c2213743fa0756d0c68432d3e",
+      "nativeBytes": 37232,
+      "nativeSha256": "f7a3084410a11700bb06670222b71d78c9bcc1f417599dcb030c71a56714b180",
+      "verifiedTransformation": "LF to CRLF"
+    },
+    {
+      "path": "opennav-x/tools/windows-wx.lock.json",
+      "gitBytes": 992,
+      "gitSha256": "d8ceb7b75af2803eae6aca8adb2ea404b695dc573416d3f7899b80ecaf089d28",
+      "nativeBytes": 1017,
+      "nativeSha256": "2fb563c4de7819d4b10d7a567e59510cd033c3b9cb55ce4ebb654964da60267f",
+      "verifiedTransformation": "LF to CRLF"
+    },
+    {
+      "path": ".github/workflows/skager-ocharts-loader.yml",
+      "gitBytes": 3422,
+      "gitSha256": "e06922a5590a4de1d433e24c06e813d241e9398ad07e8edd16d85d2903b3eca3",
+      "nativeBytes": 3490,
+      "nativeSha256": "3dbb11ef46d3dfb87499f2bc58f31e54b038d59458e2a3917b9678723f4e8032",
+      "verifiedTransformation": "LF to CRLF"
+    }
+  ],
+  "unchangedSourcesAgainstPrior51Run": [
+    "opennav-x/src/integration/OChartsModuleLoader.cpp",
+    "opennav-x/src/integration/OChartsModuleLoader.h",
+    "opennav-x/src/integration/PluginPresentationLoader.cpp",
+    "opennav-x/src/integration/PluginPresentationLoader.h",
+    "opennav-x/src/integration/PluginPresentationFallback.h",
+    "opennav-x/src/integration/OriginalPluginTlsGuard.h",
+    "opennav-x/src/integration/Win32PeImports.h",
+    "opennav-x/src/plugin-adapters/ChartPresentationBindingV1.h",
+    "opennav-x/src/plugin-adapters/ocharts/BindingState.h",
+    "opennav-x/tests/windows_ocharts_loader/CMakeLists.txt",
+    "opennav-x/tests/windows_ocharts_loader/fixture.cpp",
+    "opennav-x/tests/windows_ocharts_loader/indirect_dependency.cpp",
+    "opennav-x/tests/windows_ocharts_loader/unmapped_dependency.cpp",
+    "opennav-x/tests/windows_ocharts_loader/legacy_dependency.cpp",
+    "opennav-x/tests/windows_ocharts_loader/forward_dependency.cpp",
+    "opennav-x/tests/windows_ocharts_loader/forwarder_fixtures.py",
+    "opennav-x/tests/windows_ocharts_loader/loader_test.cpp",
+    "opennav-x/tests/windows_ocharts_loader/inputs.lock.json",
+    "opennav-x/tools/test-ocharts-loader-windows.py",
+    "opennav-x/tools/test-windows-changed-units.py",
+    "opennav-x/tools/windows-wx.lock.json",
+    ".github/workflows/skager-ocharts-loader.yml"
+  ],
+  "changedNativeSummarySourcesAgainstPrior51Run": [
+    "opennav-x/src/integration/Win32PluginTlsImports.h",
+    "opennav-x/tests/win32_pe_forwarders_test.cpp"
+  ],
+  "priorNativeRun": 38164763565,
+  "priorNativeCandidate": "b8d6dc059deedf3c061681558406a37fd82e7b0b",
+  "sourceAssertionAudit": {
+    "same51GroupNamesAndOrder": true,
+    "heldFileAndFirstMapAndSearchRestorationTestSourceUnchanged": true,
+    "newPortableCasesAreNotNewLoaderGroups": true,
+    "nativeCaseSensitiveFilesystemScenarioEstablished": false
+  },
+  "firstMapObservation": "First-map sibling path: D:\\a\\Work\\Work\\opennav-x\\build\\windows-ocharts-loader-guards\\cases\\unmapped-sibling-under-inspection-lock\\original\\helper_unmapped.dll; volume=771785911; file-index=65536:11645; sha256=42cc280d1e35c36e7b9a627e08b41b462dc59f11b217ffcac11d1c11ddca8e99",
+  "forwarderTargetObservations": [
+    "Native forwarder target: libeay32.legacy_tls_fixture -> D:\\a\\Work\\Work\\opennav-x\\build\\windows-ocharts-loader-guards\\cases\\forward_legacy_name\\original\\libeay32.dll; value=209; volume=771785911; file-index=65536:11653; sha256=b27d5136fd120c3b7bae0068ff9f9ddc486424e76d25ccbcc36dcec5c1f43b86; guarded=0",
+    "Native forwarder target: libeay32.#209 -> D:\\a\\Work\\Work\\opennav-x\\build\\windows-ocharts-loader-guards\\cases\\forward_legacy_ordinal\\original\\libeay32.dll; value=209; volume=771785911; file-index=65536:11661; sha256=b27d5136fd120c3b7bae0068ff9f9ddc486424e76d25ccbcc36dcec5c1f43b86; guarded=0",
+    "Native forwarder target: ssleay32.#209 -> D:\\a\\Work\\Work\\opennav-x\\build\\windows-ocharts-loader-guards\\cases\\forward_ssleay_ordinal\\original\\ssleay32.dll; value=209; volume=771785911; file-index=65536:11669; sha256=b4d0be7feac0a07a6493069bd8dc6756d04b0e51a92641d777547941c5d31382; guarded=0",
+    "Native forwarder target: forward_helper.forwarded_probe -> D:\\a\\Work\\Work\\opennav-x\\build\\windows-ocharts-loader-guards\\cases\\forward_indirect\\original\\libeay32.dll; value=209; volume=771785911; file-index=65536:11677; sha256=b27d5136fd120c3b7bae0068ff9f9ddc486424e76d25ccbcc36dcec5c1f43b86; guarded=0",
+    "Native forwarder target: forward_clean.fixture_value -> D:\\a\\Work\\Work\\opennav-x\\build\\windows-ocharts-loader-guards\\cases\\forward_clean_name\\original\\forward_clean.DLL; value=209; volume=771785911; file-index=65536:11686; sha256=196e1bccbe03c46404a075c2e35aa87638f0c8c9ba2f092fa38455c3ee2056cc; guarded=1",
+    "Native forwarder target: forward_clean.#209 -> D:\\a\\Work\\Work\\opennav-x\\build\\windows-ocharts-loader-guards\\cases\\forward_clean_ordinal\\original\\forward_clean.DLL; value=209; volume=771785911; file-index=65536:11694; sha256=196e1bccbe03c46404a075c2e35aa87638f0c8c9ba2f092fa38455c3ee2056cc; guarded=1",
+    "Native forwarder target: forward_clean.dll.fixture_value -> D:\\a\\Work\\Work\\opennav-x\\build\\windows-ocharts-loader-guards\\cases\\forward_explicit_dll\\original\\forward_clean.dll; value=209; volume=771785911; file-index=65536:11702; sha256=196e1bccbe03c46404a075c2e35aa87638f0c8c9ba2f092fa38455c3ee2056cc; guarded=0",
+    "Native forwarder target: forward.clean.fixture_value -> D:\\a\\Work\\Work\\opennav-x\\build\\windows-ocharts-loader-guards\\cases\\forward_multi_dot\\original\\forward.clean; value=409; volume=771785911; file-index=65536:11712; sha256=f42bec1b1049d8d6d6127a65f75a004eb2f97d2a48f9d4a44f2b0df3d3358073; guarded=0"
+  ],
+  "constructorChecks": {
+    "status": "passed",
+    "construction": "bounded reserved export metadata",
+    "nativeLoadability": "not established by construction",
+    "fixtures": [
+      {
+        "fixture": "fixture_forward_legacy_name.dll",
+        "target": "libeay32.legacy_tls_fixture",
+        "beforeSha256": "dd740d4a33bd88984aaeeb6650c8933570c3f3e2c151cb70117f87fe4fdee2fb",
+        "afterSha256": "5fb18fec1be41592a09770d9242dadccdb7e7d9695adb42be8258230d974eb0f",
+        "bytes": 16384,
+        "eatFileOffset": 9108,
+        "reservationFileOffset": 9188,
+        "reservationBytes": 121,
+        "forwarderRva": 14333,
+        "forwarderNulInsideExportDirectory": true,
+        "onlyReservedMetadataChanged": true,
+        "allOtherBytesAndFileSizeUnchanged": true,
+        "written": true
+      },
+      {
+        "fixture": "fixture_forward_legacy_ordinal.dll",
+        "target": "libeay32.#209",
+        "beforeSha256": "e44905cfd6f34f499aa3b896c1a50e2c7e0b410075a76e05c3cac53101dd9574",
+        "afterSha256": "5536b5bddcb519fce3cf0747d0b89d5f84934d4655883952f535d026c4efef02",
+        "bytes": 16384,
+        "eatFileOffset": 9108,
+        "reservationFileOffset": 9191,
+        "reservationBytes": 121,
+        "forwarderRva": 14336,
+        "forwarderNulInsideExportDirectory": true,
+        "onlyReservedMetadataChanged": true,
+        "allOtherBytesAndFileSizeUnchanged": true,
+        "written": true
+      },
+      {
+        "fixture": "fixture_forward_ssleay_ordinal.dll",
+        "target": "ssleay32.#209",
+        "beforeSha256": "7e6510262acd4dff57a857211855097260a53f3f9b8792dc52527b189ed9b261",
+        "afterSha256": "832e6a82cad71628fca8adf803e96af255766b5efd5d424be65eab8b575e4a9c",
+        "bytes": 16384,
+        "eatFileOffset": 9108,
+        "reservationFileOffset": 9191,
+        "reservationBytes": 121,
+        "forwarderRva": 14336,
+        "forwarderNulInsideExportDirectory": true,
+        "onlyReservedMetadataChanged": true,
+        "allOtherBytesAndFileSizeUnchanged": true,
+        "written": true
+      },
+      {
+        "fixture": "fixture_forward_indirect.dll",
+        "target": "forward_helper.forwarded_probe",
+        "beforeSha256": "dae2a384a873fac82873a7e016007859f5bcca541a1daa7825038deeebb5ca41",
+        "afterSha256": "6067aaf07310c1ac6466e5dbdb9142435a60f8718d64d776580b4c806985af2d",
+        "bytes": 16384,
+        "eatFileOffset": 9108,
+        "reservationFileOffset": 9185,
+        "reservationBytes": 121,
+        "forwarderRva": 14330,
+        "forwarderNulInsideExportDirectory": true,
+        "onlyReservedMetadataChanged": true,
+        "allOtherBytesAndFileSizeUnchanged": true,
+        "written": true
+      },
+      {
+        "fixture": "fixture_forward_clean_name.dll",
+        "target": "forward_clean.fixture_value",
+        "beforeSha256": "6d74478d99433be13d2e9496ec915c4e3d6935bc04c2c9e77f5471c3099c4cd4",
+        "afterSha256": "3a5103052364e98d6a9426c9d16e68fe2072c430117df2062418aafbfbab4f57",
+        "bytes": 16384,
+        "eatFileOffset": 9108,
+        "reservationFileOffset": 9187,
+        "reservationBytes": 121,
+        "forwarderRva": 14332,
+        "forwarderNulInsideExportDirectory": true,
+        "onlyReservedMetadataChanged": true,
+        "allOtherBytesAndFileSizeUnchanged": true,
+        "written": true
+      },
+      {
+        "fixture": "fixture_forward_clean_ordinal.dll",
+        "target": "forward_clean.#209",
+        "beforeSha256": "05530352e2536c0f1d38e8808df549cc6e21fc16684831d177c6bf5e13df35ce",
+        "afterSha256": "f69751d413fe3209d24dbaec0056e2b80adc000035fb8e719d9826ad4c20b54a",
+        "bytes": 16384,
+        "eatFileOffset": 9108,
+        "reservationFileOffset": 9190,
+        "reservationBytes": 121,
+        "forwarderRva": 14335,
+        "forwarderNulInsideExportDirectory": true,
+        "onlyReservedMetadataChanged": true,
+        "allOtherBytesAndFileSizeUnchanged": true,
+        "written": true
+      },
+      {
+        "fixture": "fixture_forward_explicit_dll.dll",
+        "target": "forward_clean.dll.fixture_value",
+        "beforeSha256": "7f2c7fbbc787df8a0d387be0e3ef8bb1865d9f4904703eced171acf4162243eb",
+        "afterSha256": "8ccbae05676f5ac666989e76dc02dc05c7cc53ca3c061d0fd478a1f5e8aa4233",
+        "bytes": 16384,
+        "eatFileOffset": 9108,
+        "reservationFileOffset": 9189,
+        "reservationBytes": 121,
+        "forwarderRva": 14334,
+        "forwarderNulInsideExportDirectory": true,
+        "onlyReservedMetadataChanged": true,
+        "allOtherBytesAndFileSizeUnchanged": true,
+        "written": true
+      },
+      {
+        "fixture": "fixture_forward_multi_dot.dll",
+        "target": "forward.clean.fixture_value",
+        "beforeSha256": "806bfb9e9c42c41406e2b2c0381cac17e01be64397819ccce55d9c98096b8138",
+        "afterSha256": "c67049b146853612d7ddbce46f7c28ea1bb516392f92ae0c3b436d84d982600a",
+        "bytes": 16384,
+        "eatFileOffset": 9108,
+        "reservationFileOffset": 9186,
+        "reservationBytes": 121,
+        "forwarderRva": 14331,
+        "forwarderNulInsideExportDirectory": true,
+        "onlyReservedMetadataChanged": true,
+        "allOtherBytesAndFileSizeUnchanged": true,
+        "written": true
+      },
+      {
+        "fixture": "forward_helper.dll",
+        "target": "libeay32.#209",
+        "beforeSha256": "01c8a417b17abcb550982a15883c4554076296ce8a5114a7c6a74dfaee46ca37",
+        "afterSha256": "a02c38b049e8d440bbde1327dbd1da14c31aa0efb1ac340f9c1b9a1eee10d706",
+        "bytes": 9216,
+        "eatFileOffset": 6528,
+        "reservationFileOffset": 6569,
+        "reservationBytes": 121,
+        "forwarderRva": 9666,
+        "forwarderNulInsideExportDirectory": true,
+        "onlyReservedMetadataChanged": true,
+        "allOtherBytesAndFileSizeUnchanged": true,
+        "written": true
+      }
+    ]
+  },
+  "constructorLimit": "Archive contains receipts, not PE binaries. Verified exact constructor source, immutable allowlist, all nine summary after-hash/length agreements and metadata assertions; no independent binary reparse was possible.",
+  "priorPortableSourceChecks": [
+    {
+      "path": "opennav-x/src/integration/Win32PluginTlsImports.h",
+      "gitSha256": "b76437fe53de052ff24c17ca8affbf5ec7460ee9e6d7b006c8041519781b79a6",
+      "matchesPriorPortableCheckedSource": true
+    },
+    {
+      "path": "opennav-x/tests/win32_pe_imports_test.cpp",
+      "gitSha256": "7b90f38e4590adbf77887854fee85ce127aa763c4c41180b81e5befceec8f148",
+      "matchesPriorPortableCheckedSource": true
+    },
+    {
+      "path": "opennav-x/tests/win32_pe_forwarders_test.cpp",
+      "gitSha256": "970db8111a49d22a826714efe16768be1e4980ce8f10ceba441bbbbf9ebc94db",
+      "matchesPriorPortableCheckedSource": true
+    },
+    {
+      "path": "opennav-x/src/integration/Win32PeImports.h",
+      "gitSha256": "f35fd4b4e0bb5d9508dd473857876eb2cfb7db4d9466cf46bb58ba424f2fb85f",
+      "matchesPriorPortableCheckedSource": true
+    },
+    {
+      "path": "opennav-x/src/integration/OriginalPluginTlsGuard.h",
+      "gitSha256": "45c5406546eecde0ed961ffcb94302c7f2cfc8299f9aa38bcd15976861067e74",
+      "matchesPriorPortableCheckedSource": true
+    }
+  ],
+  "rawFiles": [
+    {
+      "path": "raw/artifacts-api.json",
+      "bytes": 783,
+      "sha256": "ea2aef29628b036f81ea6d0f21b86d9c4952e286ffe367c80c0a4ed44789bd09"
+    },
+    {
+      "path": "raw/job.log",
+      "bytes": 46937,
+      "sha256": "68a5d6a5b2bb2e62b050af33e191e393cd71d87fd7f400f80ffc0654dbafc199"
+    },
+    {
+      "path": "raw/jobs-api.json",
+      "bytes": 3212,
+      "sha256": "bca816bdbf85221a32f65863ddfcd1e19e21deffa3b541b859257a84ed754ebc"
+    },
+    {
+      "path": "raw/ocharts-loader-contracts/build-wiring.log",
+      "bytes": 167,
+      "sha256": "fb328f3e8b0e46ead9ac865e6339e703119488ce24f37892099e67f8b22b6a73"
+    },
+    {
+      "path": "raw/ocharts-loader-contracts/preparation.log",
+      "bytes": 121,
+      "sha256": "e08cd27aeff413b96872bd2578194e8787e1c39459087a536cbc5793abd53410"
+    },
+    {
+      "path": "raw/ocharts-loader-contracts/producer-prefix.log",
+      "bytes": 2590,
+      "sha256": "f038aed8f6ec15aabfdef8c133158be7a1cc4566248ac468aa6f2ef64cfbe741"
+    },
+    {
+      "path": "raw/ocharts-loader-guards/adapter-junction.command.json",
+      "bytes": 237,
+      "sha256": "b5fdb3da5d1cf630da097de595820496ae3fbd673a830cfc458c6a9554b5db23"
+    },
+    {
+      "path": "raw/ocharts-loader-guards/adapter-junction.log",
+      "bytes": 184,
+      "sha256": "63ff7992e77b574fb951d289f9e61fe7ba706330e3c78ddba9f73e728519aca2"
+    },
+    {
+      "path": "raw/ocharts-loader-guards/compile.command.json",
+      "bytes": 196,
+      "sha256": "01df2f4825e07c37d9005ac325141fedff6b5972e713c6b70a8b588ac4ed0e70"
+    },
+    {
+      "path": "raw/ocharts-loader-guards/compile.log",
+      "bytes": 119934,
+      "sha256": "d9d581c2015a52bb540a8ccf1661e79b5e09c5d46e8b9f55324244a72bcc03f6"
+    },
+    {
+      "path": "raw/ocharts-loader-guards/configure.command.json",
+      "bytes": 587,
+      "sha256": "e0dfe3f1138f5bfacfe42e2af239d8a74586ab91661eb04d0222d3506ce8387a"
+    },
+    {
+      "path": "raw/ocharts-loader-guards/configure.log",
+      "bytes": 1535,
+      "sha256": "04534a3420ad4897687089ad6e8c4524d6d9812c5ef6c14b63b250aa89076041"
+    },
+    {
+      "path": "raw/ocharts-loader-guards/dll-events/binding-rejected.log",
+      "bytes": 48,
+      "sha256": "71bb5533853095d83a907de835df20bf56e0312541b98f54af58c374b79c4dba"
+    },
+    {
+      "path": "raw/ocharts-loader-guards/dll-events/bound-success.log",
+      "bytes": 55,
+      "sha256": "61c3906393f22c8cedefbd9f092b45dd54b0330f64ab54196128b1a205356317"
+    },
+    {
+      "path": "raw/ocharts-loader-guards/dll-events/callback-and-fallback.log",
+      "bytes": 14,
+      "sha256": "ec72b758bb29d757a3ed6a3de5e5bc5c6eb067aa51d60e4627b3e511354703fa"
+    },
+    {
+      "path": "raw/ocharts-loader-guards/dll-events/forward_clean_name.log",
+      "bytes": 58,
+      "sha256": "dc4c7e2333e4c5cdf763f0d6ffc5827e4ee4a0c1148ff21e168a78cfdbc8fc20"
+    },
+    {
+      "path": "raw/ocharts-loader-guards/dll-events/forward_clean_ordinal.log",
+      "bytes": 58,
+      "sha256": "dc4c7e2333e4c5cdf763f0d6ffc5827e4ee4a0c1148ff21e168a78cfdbc8fc20"
+    },
+    {
+      "path": "raw/ocharts-loader-guards/dll-events/forward_explicit_dll.log",
+      "bytes": 58,
+      "sha256": "dc4c7e2333e4c5cdf763f0d6ffc5827e4ee4a0c1148ff21e168a78cfdbc8fc20"
+    },
+    {
+      "path": "raw/ocharts-loader-guards/dll-events/forward_indirect.log",
+      "bytes": 58,
+      "sha256": "dc4c7e2333e4c5cdf763f0d6ffc5827e4ee4a0c1148ff21e168a78cfdbc8fc20"
+    },
+    {
+      "path": "raw/ocharts-loader-guards/dll-events/forward_legacy_name.log",
+      "bytes": 14,
+      "sha256": "ec72b758bb29d757a3ed6a3de5e5bc5c6eb067aa51d60e4627b3e511354703fa"
+    },
+    {
+      "path": "raw/ocharts-loader-guards/dll-events/forward_legacy_ordinal.log",
+      "bytes": 14,
+      "sha256": "ec72b758bb29d757a3ed6a3de5e5bc5c6eb067aa51d60e4627b3e511354703fa"
+    },
+    {
+      "path": "raw/ocharts-loader-guards/dll-events/forward_multi_dot.log",
+      "bytes": 58,
+      "sha256": "dc4c7e2333e4c5cdf763f0d6ffc5827e4ee4a0c1148ff21e168a78cfdbc8fc20"
+    },
+    {
+      "path": "raw/ocharts-loader-guards/dll-events/forward_ssleay_ordinal.log",
+      "bytes": 14,
+      "sha256": "ec72b758bb29d757a3ed6a3de5e5bc5c6eb067aa51d60e4627b3e511354703fa"
+    },
+    {
+      "path": "raw/ocharts-loader-guards/dll-events/indirect_clean.log",
+      "bytes": 14,
+      "sha256": "ec72b758bb29d757a3ed6a3de5e5bc5c6eb067aa51d60e4627b3e511354703fa"
+    },
+    {
+      "path": "raw/ocharts-loader-guards/dll-events/legacy_delay.log",
+      "bytes": 14,
+      "sha256": "ec72b758bb29d757a3ed6a3de5e5bc5c6eb067aa51d60e4627b3e511354703fa"
+    },
+    {
+      "path": "raw/ocharts-loader-guards/dll-events/legacy_normal.log",
+      "bytes": 14,
+      "sha256": "ec72b758bb29d757a3ed6a3de5e5bc5c6eb067aa51d60e4627b3e511354703fa"
+    },
+    {
+      "path": "raw/ocharts-loader-guards/dll-events/no_bind.log",
+      "bytes": 14,
+      "sha256": "ec72b758bb29d757a3ed6a3de5e5bc5c6eb067aa51d60e4627b3e511354703fa"
+    },
+    {
+      "path": "raw/ocharts-loader-guards/dll-events/no_create.log",
+      "bytes": 14,
+      "sha256": "ec72b758bb29d757a3ed6a3de5e5bc5c6eb067aa51d60e4627b3e511354703fa"
+    },
+    {
+      "path": "raw/ocharts-loader-guards/dll-events/no_destroy.log",
+      "bytes": 14,
+      "sha256": "ec72b758bb29d757a3ed6a3de5e5bc5c6eb067aa51d60e4627b3e511354703fa"
+    },
+    {
+      "path": "raw/ocharts-loader-guards/dll-events/no_status.log",
+      "bytes": 14,
+      "sha256": "ec72b758bb29d757a3ed6a3de5e5bc5c6eb067aa51d60e4627b3e511354703fa"
+    },
+    {
+      "path": "raw/ocharts-loader-guards/dll-events/status-reason.log",
+      "bytes": 55,
+      "sha256": "61c3906393f22c8cedefbd9f092b45dd54b0330f64ab54196128b1a205356317"
+    },
+    {
+      "path": "raw/ocharts-loader-guards/dll-events/status-reserved.log",
+      "bytes": 55,
+      "sha256": "61c3906393f22c8cedefbd9f092b45dd54b0330f64ab54196128b1a205356317"
+    },
+    {
+      "path": "raw/ocharts-loader-guards/dll-events/status-return.log",
+      "bytes": 55,
+      "sha256": "61c3906393f22c8cedefbd9f092b45dd54b0330f64ab54196128b1a205356317"
+    },
+    {
+      "path": "raw/ocharts-loader-guards/dll-events/status-selected.log",
+      "bytes": 55,
+      "sha256": "61c3906393f22c8cedefbd9f092b45dd54b0330f64ab54196128b1a205356317"
+    },
+    {
+      "path": "raw/ocharts-loader-guards/dll-events/status-size.log",
+      "bytes": 55,
+      "sha256": "61c3906393f22c8cedefbd9f092b45dd54b0330f64ab54196128b1a205356317"
+    },
+    {
+      "path": "raw/ocharts-loader-guards/dll-events/status-unknown.log",
+      "bytes": 55,
+      "sha256": "61c3906393f22c8cedefbd9f092b45dd54b0330f64ab54196128b1a205356317"
+    },
+    {
+      "path": "raw/ocharts-loader-guards/dll-events/status-version.log",
+      "bytes": 55,
+      "sha256": "61c3906393f22c8cedefbd9f092b45dd54b0330f64ab54196128b1a205356317"
+    },
+    {
+      "path": "raw/ocharts-loader-guards/dll-events/unmapped-sibling-under-inspection-lock.log",
+      "bytes": 14,
+      "sha256": "ec72b758bb29d757a3ed6a3de5e5bc5c6eb067aa51d60e4627b3e511354703fa"
+    },
+    {
+      "path": "raw/ocharts-loader-guards/fixture-generation.json",
+      "bytes": 5661,
+      "sha256": "0f9f0caf09c23bed7a5cba5431b9ae6f2a7ea218ba2e5510e2e7b753b107ad1c"
+    },
+    {
+      "path": "raw/ocharts-loader-guards/native-pe-forwarders.command.json",
+      "bytes": 122,
+      "sha256": "1c73b93ab62e3e207640ca2df1089e6417c7ad1499f65844fa9ad22bca4f612d"
+    },
+    {
+      "path": "raw/ocharts-loader-guards/native-pe-forwarders.log",
+      "bytes": 57,
+      "sha256": "3894a05eeb4a839ab5a291adbcf051b375906db4f2e602c0b5e67848b9a91293"
+    },
+    {
+      "path": "raw/ocharts-loader-guards/native-tests.command.json",
+      "bytes": 671,
+      "sha256": "45a084fb9b1dbee792defe9cf92aa8a59d2e7029783e01972236970991c960ce"
+    },
+    {
+      "path": "raw/ocharts-loader-guards/native-tests.json",
+      "bytes": 242,
+      "sha256": "28ef37be9524f57e90b9f3d14d4db9176c0bfa403081cb0ebae694e6337d0f85"
+    },
+    {
+      "path": "raw/ocharts-loader-guards/native-tests.log",
+      "bytes": 11069,
+      "sha256": "00bb1e2625bb544bd14eb0759cb9f74fce240ab120dfff7f48d00fef9a23a81e"
+    },
+    {
+      "path": "raw/ocharts-loader-guards/original-junction.command.json",
+      "bytes": 240,
+      "sha256": "c4c2e464b7ade4550d1f798f2af06d510537aec37f67a8962bf4e8f59f0b56d9"
+    },
+    {
+      "path": "raw/ocharts-loader-guards/original-junction.log",
+      "bytes": 187,
+      "sha256": "f58461fdcac4e1501d43c53254b819bdd05c8a6a87818bd0b2aba229f4f3f1ca"
+    },
+    {
+      "path": "raw/ocharts-loader-guards/summary.json",
+      "bytes": 23240,
+      "sha256": "b1c0ea6ab4332b8fa3e221b3e2055068717e6ed8bb7dca3fbecf36251e5874f4"
+    },
+    {
+      "path": "raw/ocharts-loader-guards/wxMSW-3.2.8_vc14x_Dev.7z.command.json",
+      "bytes": 217,
+      "sha256": "a51c0c8441f9bfadc3f8ee8fccacd99a7f22cbc881db2bcfe1cf22932861ecb4"
+    },
+    {
+      "path": "raw/ocharts-loader-guards/wxMSW-3.2.8_vc14x_Dev.7z.log",
+      "bytes": 550,
+      "sha256": "b8df3b4c6627a125ef79151781c436abff44a2260c4f65b8c5f5bbc65baca842"
+    },
+    {
+      "path": "raw/ocharts-loader-guards/wxMSW-3.2.8_vc14x_ReleaseDLL.7z.command.json",
+      "bytes": 224,
+      "sha256": "974b8df36ec1aa77641bd7aa56224253862ce10918dae9e2fe24a82263bf2e4f"
+    },
+    {
+      "path": "raw/ocharts-loader-guards/wxMSW-3.2.8_vc14x_ReleaseDLL.7z.log",
+      "bytes": 549,
+      "sha256": "8792347bd81c14ba88a5318eaf6a3b6471bda2a3121583f9b13fb29015e97db5"
+    },
+    {
+      "path": "raw/ocharts-loader-guards/wxWidgets-3.2.8-headers.7z.command.json",
+      "bytes": 219,
+      "sha256": "6b3d38f4553a0b964a8e989057e9272bb73ef43cdc0596c95a8ef7fbe5a5e570"
+    },
+    {
+      "path": "raw/ocharts-loader-guards/wxWidgets-3.2.8-headers.7z.log",
+      "bytes": 553,
+      "sha256": "d3346cc181b3a143e8e11a752b1be3bcc57e77f060db9a845d9ede0deee74b07"
+    },
+    {
+      "path": "raw/prior-portable/README.md",
+      "bytes": 5164,
+      "sha256": "0b6b477c2e91cdfd43cf407b9db52f82900b65d7833ca870de2b611c928dee3d"
+    },
+    {
+      "path": "raw/prior-portable/compiler-version.txt",
+      "bytes": 228,
+      "sha256": "ddba3d014b73deb2a8869cad4ab507e29a48630c8cd280adf2559e0e10891d23"
+    },
+    {
+      "path": "raw/prior-portable/forwarders-compile.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/prior-portable/forwarders-run.txt",
+      "bytes": 56,
+      "sha256": "94f4eca0ce34e86e47478b3ea8ebf9581bc1354a3d45dc488b4fc8f2353f3c45"
+    },
+    {
+      "path": "raw/prior-portable/imports-compile.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/prior-portable/imports-run.txt",
+      "bytes": 52,
+      "sha256": "9a6eb51841977cbd938aaff7b35ecffef5c738d7c25abccf30f7cdb2fe035e35"
+    },
+    {
+      "path": "raw/prior-portable/portable-lookup-probe.cpp",
+      "bytes": 3086,
+      "sha256": "69717d73e08998b446d61db66a7ce27ddcf552a967157b90349af9f11ae45f31"
+    },
+    {
+      "path": "raw/prior-portable/probe-baseline-compile.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/prior-portable/probe-baseline-run.txt",
+      "bytes": 407,
+      "sha256": "3925a891b2ff26e6224637605f28f01812a9b3ff09c2d6c42c48990cf7af1f27"
+    },
+    {
+      "path": "raw/prior-portable/probe-fixed-compile.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/prior-portable/probe-fixed-run.txt",
+      "bytes": 661,
+      "sha256": "8613e20c0f9342aa05e9aae25460be151e973aace8474c8e202db32b8ecdfb0e"
+    },
+    {
+      "path": "raw/prior-portable/verification.json",
+      "bytes": 7455,
+      "sha256": "51200f7becdc903aaac200231b681edffd86d6b91dd0593dcdeec415c76f85fb"
+    },
+    {
+      "path": "raw/run-api.json",
+      "bytes": 12131,
+      "sha256": "9f417680c8d572a480f7b173a79de499042ddfc8add9db061c69410ab7bade66"
+    }
+  ],
+  "rawFileCount": 66,
+  "rawTotalBytes": 250470,
+  "zipInventory": [
+    {
+      "path": "ocharts-loader-guards/adapter-junction.command.json",
+      "bytes": 237,
+      "sha256": "b5fdb3da5d1cf630da097de595820496ae3fbd673a830cfc458c6a9554b5db23",
+      "crc32": "ab515745"
+    },
+    {
+      "path": "ocharts-loader-guards/compile.command.json",
+      "bytes": 196,
+      "sha256": "01df2f4825e07c37d9005ac325141fedff6b5972e713c6b70a8b588ac4ed0e70",
+      "crc32": "25a4401e"
+    },
+    {
+      "path": "ocharts-loader-guards/adapter-junction.log",
+      "bytes": 184,
+      "sha256": "63ff7992e77b574fb951d289f9e61fe7ba706330e3c78ddba9f73e728519aca2",
+      "crc32": "b9eec43f"
+    },
+    {
+      "path": "ocharts-loader-guards/compile.log",
+      "bytes": 119934,
+      "sha256": "d9d581c2015a52bb540a8ccf1661e79b5e09c5d46e8b9f55324244a72bcc03f6",
+      "crc32": "9733523a"
+    },
+    {
+      "path": "ocharts-loader-guards/configure.command.json",
+      "bytes": 587,
+      "sha256": "e0dfe3f1138f5bfacfe42e2af239d8a74586ab91661eb04d0222d3506ce8387a",
+      "crc32": "3786629c"
+    },
+    {
+      "path": "ocharts-loader-guards/dll-events/binding-rejected.log",
+      "bytes": 48,
+      "sha256": "71bb5533853095d83a907de835df20bf56e0312541b98f54af58c374b79c4dba",
+      "crc32": "cd87f5d4"
+    },
+    {
+      "path": "ocharts-loader-guards/dll-events/bound-success.log",
+      "bytes": 55,
+      "sha256": "61c3906393f22c8cedefbd9f092b45dd54b0330f64ab54196128b1a205356317",
+      "crc32": "8ae741f0"
+    },
+    {
+      "path": "ocharts-loader-guards/configure.log",
+      "bytes": 1535,
+      "sha256": "04534a3420ad4897687089ad6e8c4524d6d9812c5ef6c14b63b250aa89076041",
+      "crc32": "1c2ca9f4"
+    },
+    {
+      "path": "ocharts-loader-guards/dll-events/callback-and-fallback.log",
+      "bytes": 14,
+      "sha256": "ec72b758bb29d757a3ed6a3de5e5bc5c6eb067aa51d60e4627b3e511354703fa",
+      "crc32": "eff12f40"
+    },
+    {
+      "path": "ocharts-loader-guards/dll-events/forward_clean_name.log",
+      "bytes": 58,
+      "sha256": "dc4c7e2333e4c5cdf763f0d6ffc5827e4ee4a0c1148ff21e168a78cfdbc8fc20",
+      "crc32": "c982cb96"
+    },
+    {
+      "path": "ocharts-loader-guards/dll-events/forward_explicit_dll.log",
+      "bytes": 58,
+      "sha256": "dc4c7e2333e4c5cdf763f0d6ffc5827e4ee4a0c1148ff21e168a78cfdbc8fc20",
+      "crc32": "c982cb96"
+    },
+    {
+      "path": "ocharts-loader-guards/dll-events/forward_clean_ordinal.log",
+      "bytes": 58,
+      "sha256": "dc4c7e2333e4c5cdf763f0d6ffc5827e4ee4a0c1148ff21e168a78cfdbc8fc20",
+      "crc32": "c982cb96"
+    },
+    {
+      "path": "ocharts-loader-guards/dll-events/forward_indirect.log",
+      "bytes": 58,
+      "sha256": "dc4c7e2333e4c5cdf763f0d6ffc5827e4ee4a0c1148ff21e168a78cfdbc8fc20",
+      "crc32": "c982cb96"
+    },
+    {
+      "path": "ocharts-loader-guards/dll-events/forward_legacy_name.log",
+      "bytes": 14,
+      "sha256": "ec72b758bb29d757a3ed6a3de5e5bc5c6eb067aa51d60e4627b3e511354703fa",
+      "crc32": "eff12f40"
+    },
+    {
+      "path": "ocharts-loader-guards/dll-events/forward_legacy_ordinal.log",
+      "bytes": 14,
+      "sha256": "ec72b758bb29d757a3ed6a3de5e5bc5c6eb067aa51d60e4627b3e511354703fa",
+      "crc32": "eff12f40"
+    },
+    {
+      "path": "ocharts-loader-guards/dll-events/forward_multi_dot.log",
+      "bytes": 58,
+      "sha256": "dc4c7e2333e4c5cdf763f0d6ffc5827e4ee4a0c1148ff21e168a78cfdbc8fc20",
+      "crc32": "c982cb96"
+    },
+    {
+      "path": "ocharts-loader-guards/dll-events/forward_ssleay_ordinal.log",
+      "bytes": 14,
+      "sha256": "ec72b758bb29d757a3ed6a3de5e5bc5c6eb067aa51d60e4627b3e511354703fa",
+      "crc32": "eff12f40"
+    },
+    {
+      "path": "ocharts-loader-guards/dll-events/indirect_clean.log",
+      "bytes": 14,
+      "sha256": "ec72b758bb29d757a3ed6a3de5e5bc5c6eb067aa51d60e4627b3e511354703fa",
+      "crc32": "eff12f40"
+    },
+    {
+      "path": "ocharts-loader-guards/dll-events/legacy_delay.log",
+      "bytes": 14,
+      "sha256": "ec72b758bb29d757a3ed6a3de5e5bc5c6eb067aa51d60e4627b3e511354703fa",
+      "crc32": "eff12f40"
+    },
+    {
+      "path": "ocharts-loader-guards/dll-events/legacy_normal.log",
+      "bytes": 14,
+      "sha256": "ec72b758bb29d757a3ed6a3de5e5bc5c6eb067aa51d60e4627b3e511354703fa",
+      "crc32": "eff12f40"
+    },
+    {
+      "path": "ocharts-loader-guards/dll-events/no_bind.log",
+      "bytes": 14,
+      "sha256": "ec72b758bb29d757a3ed6a3de5e5bc5c6eb067aa51d60e4627b3e511354703fa",
+      "crc32": "eff12f40"
+    },
+    {
+      "path": "ocharts-loader-guards/dll-events/no_create.log",
+      "bytes": 14,
+      "sha256": "ec72b758bb29d757a3ed6a3de5e5bc5c6eb067aa51d60e4627b3e511354703fa",
+      "crc32": "eff12f40"
+    },
+    {
+      "path": "ocharts-loader-guards/dll-events/no_destroy.log",
+      "bytes": 14,
+      "sha256": "ec72b758bb29d757a3ed6a3de5e5bc5c6eb067aa51d60e4627b3e511354703fa",
+      "crc32": "eff12f40"
+    },
+    {
+      "path": "ocharts-loader-guards/dll-events/no_status.log",
+      "bytes": 14,
+      "sha256": "ec72b758bb29d757a3ed6a3de5e5bc5c6eb067aa51d60e4627b3e511354703fa",
+      "crc32": "eff12f40"
+    },
+    {
+      "path": "ocharts-loader-guards/dll-events/status-reason.log",
+      "bytes": 55,
+      "sha256": "61c3906393f22c8cedefbd9f092b45dd54b0330f64ab54196128b1a205356317",
+      "crc32": "8ae741f0"
+    },
+    {
+      "path": "ocharts-loader-guards/dll-events/status-reserved.log",
+      "bytes": 55,
+      "sha256": "61c3906393f22c8cedefbd9f092b45dd54b0330f64ab54196128b1a205356317",
+      "crc32": "8ae741f0"
+    },
+    {
+      "path": "ocharts-loader-guards/dll-events/status-selected.log",
+      "bytes": 55,
+      "sha256": "61c3906393f22c8cedefbd9f092b45dd54b0330f64ab54196128b1a205356317",
+      "crc32": "8ae741f0"
+    },
+    {
+      "path": "ocharts-loader-guards/dll-events/status-return.log",
+      "bytes": 55,
+      "sha256": "61c3906393f22c8cedefbd9f092b45dd54b0330f64ab54196128b1a205356317",
+      "crc32": "8ae741f0"
+    },
+    {
+      "path": "ocharts-loader-guards/dll-events/status-size.log",
+      "bytes": 55,
+      "sha256": "61c3906393f22c8cedefbd9f092b45dd54b0330f64ab54196128b1a205356317",
+      "crc32": "8ae741f0"
+    },
+    {
+      "path": "ocharts-loader-guards/dll-events/status-unknown.log",
+      "bytes": 55,
+      "sha256": "61c3906393f22c8cedefbd9f092b45dd54b0330f64ab54196128b1a205356317",
+      "crc32": "8ae741f0"
+    },
+    {
+      "path": "ocharts-loader-guards/dll-events/status-version.log",
+      "bytes": 55,
+      "sha256": "61c3906393f22c8cedefbd9f092b45dd54b0330f64ab54196128b1a205356317",
+      "crc32": "8ae741f0"
+    },
+    {
+      "path": "ocharts-loader-guards/dll-events/unmapped-sibling-under-inspection-lock.log",
+      "bytes": 14,
+      "sha256": "ec72b758bb29d757a3ed6a3de5e5bc5c6eb067aa51d60e4627b3e511354703fa",
+      "crc32": "eff12f40"
+    },
+    {
+      "path": "ocharts-loader-guards/fixture-generation.json",
+      "bytes": 5661,
+      "sha256": "0f9f0caf09c23bed7a5cba5431b9ae6f2a7ea218ba2e5510e2e7b753b107ad1c",
+      "crc32": "b34eee31"
+    },
+    {
+      "path": "ocharts-loader-guards/native-pe-forwarders.command.json",
+      "bytes": 122,
+      "sha256": "1c73b93ab62e3e207640ca2df1089e6417c7ad1499f65844fa9ad22bca4f612d",
+      "crc32": "992992aa"
+    },
+    {
+      "path": "ocharts-loader-guards/native-pe-forwarders.log",
+      "bytes": 57,
+      "sha256": "3894a05eeb4a839ab5a291adbcf051b375906db4f2e602c0b5e67848b9a91293",
+      "crc32": "24edb4e4"
+    },
+    {
+      "path": "ocharts-loader-guards/native-tests.command.json",
+      "bytes": 671,
+      "sha256": "45a084fb9b1dbee792defe9cf92aa8a59d2e7029783e01972236970991c960ce",
+      "crc32": "11d9d761"
+    },
+    {
+      "path": "ocharts-loader-guards/native-tests.json",
+      "bytes": 242,
+      "sha256": "28ef37be9524f57e90b9f3d14d4db9176c0bfa403081cb0ebae694e6337d0f85",
+      "crc32": "38a0424f"
+    },
+    {
+      "path": "ocharts-loader-guards/native-tests.log",
+      "bytes": 11069,
+      "sha256": "00bb1e2625bb544bd14eb0759cb9f74fce240ab120dfff7f48d00fef9a23a81e",
+      "crc32": "1d885860"
+    },
+    {
+      "path": "ocharts-loader-guards/original-junction.command.json",
+      "bytes": 240,
+      "sha256": "c4c2e464b7ade4550d1f798f2af06d510537aec37f67a8962bf4e8f59f0b56d9",
+      "crc32": "b4b523cb"
+    },
+    {
+      "path": "ocharts-loader-guards/original-junction.log",
+      "bytes": 187,
+      "sha256": "f58461fdcac4e1501d43c53254b819bdd05c8a6a87818bd0b2aba229f4f3f1ca",
+      "crc32": "ceabb75a"
+    },
+    {
+      "path": "ocharts-loader-guards/summary.json",
+      "bytes": 23240,
+      "sha256": "b1c0ea6ab4332b8fa3e221b3e2055068717e6ed8bb7dca3fbecf36251e5874f4",
+      "crc32": "5fb6e2e7"
+    },
+    {
+      "path": "ocharts-loader-guards/wxMSW-3.2.8_vc14x_Dev.7z.log",
+      "bytes": 550,
+      "sha256": "b8df3b4c6627a125ef79151781c436abff44a2260c4f65b8c5f5bbc65baca842",
+      "crc32": "55c96dfa"
+    },
+    {
+      "path": "ocharts-loader-guards/wxMSW-3.2.8_vc14x_Dev.7z.command.json",
+      "bytes": 217,
+      "sha256": "a51c0c8441f9bfadc3f8ee8fccacd99a7f22cbc881db2bcfe1cf22932861ecb4",
+      "crc32": "9a2a9767"
+    },
+    {
+      "path": "ocharts-loader-guards/wxMSW-3.2.8_vc14x_ReleaseDLL.7z.command.json",
+      "bytes": 224,
+      "sha256": "974b8df36ec1aa77641bd7aa56224253862ce10918dae9e2fe24a82263bf2e4f",
+      "crc32": "7bd1b827"
+    },
+    {
+      "path": "ocharts-loader-guards/wxMSW-3.2.8_vc14x_ReleaseDLL.7z.log",
+      "bytes": 549,
+      "sha256": "8792347bd81c14ba88a5318eaf6a3b6471bda2a3121583f9b13fb29015e97db5",
+      "crc32": "afa0f219"
+    },
+    {
+      "path": "ocharts-loader-guards/wxWidgets-3.2.8-headers.7z.command.json",
+      "bytes": 219,
+      "sha256": "6b3d38f4553a0b964a8e989057e9272bb73ef43cdc0596c95a8ef7fbe5a5e570",
+      "crc32": "d1534b40"
+    },
+    {
+      "path": "ocharts-loader-guards/wxWidgets-3.2.8-headers.7z.log",
+      "bytes": 553,
+      "sha256": "d3346cc181b3a143e8e11a752b1be3bcc57e77f060db9a845d9ede0deee74b07",
+      "crc32": "06576ebd"
+    },
+    {
+      "path": "ocharts-loader-contracts/build-wiring.log",
+      "bytes": 167,
+      "sha256": "fb328f3e8b0e46ead9ac865e6339e703119488ce24f37892099e67f8b22b6a73",
+      "crc32": "2018afc6"
+    },
+    {
+      "path": "ocharts-loader-contracts/preparation.log",
+      "bytes": 121,
+      "sha256": "e08cd27aeff413b96872bd2578194e8787e1c39459087a536cbc5793abd53410",
+      "crc32": "e6f56898"
+    },
+    {
+      "path": "ocharts-loader-contracts/producer-prefix.log",
+      "bytes": 2590,
+      "sha256": "f038aed8f6ec15aabfdef8c133158be7a1cc4566248ac468aa6f2ef64cfbe741",
+      "crc32": "11873869"
+    }
+  ],
+  "acceptanceLimits": [
+    "real adapter OpenCPN import ABI and renderer integration",
+    "full app Standard/Safe selection and plugin lifecycle",
+    "genuine loaded-module unload refusal; fault test uses a reserved non-module address",
+    "forwarder grammar beyond the supported single-separator subset; native probes do not relax policy",
+    "declared local graph only; external loader roots, arbitrary dynamic/helper loads and general module identity",
+    "encrypted-chart rendering, licensing and physical hardware"
+  ],
+  "auditOperations": "Read/hash/CRC/parse retained records and exact local Git objects only. No downloads, reruns, builds, native execution, CI dispatch, network, Claude, product-doc edit, vendor/plugin factory, deployment or boat operations."
+}

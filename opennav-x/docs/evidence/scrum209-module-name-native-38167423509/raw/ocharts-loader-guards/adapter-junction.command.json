@@ -1,0 +1,9 @@
+[
+  "cmd.exe",
+  "/d",
+  "/c",
+  "mklink",
+  "/J",
+  "D:\\a\\Work\\Work\\opennav-x\\build\\windows-ocharts-loader-guards\\adapter-junction",
+  "D:\\a\\Work\\Work\\opennav-x\\build\\windows-ocharts-loader-guards\\shared-adapter"
+]

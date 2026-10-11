@@ -1,0 +1,7 @@
+reserved-normal|calls=1|requested=com1.dll.backup|refusal=
+reserved-delay|calls=1|requested=nul   .dll|refusal=
+mixed-normal-explicit|calls=1|requested=mixed.dll|refusal=
+mixed-delay-explicit|calls=1|requested=mixed.dll|refusal=
+mixed-normal-extensionless|calls=1|requested=mixed.dll|refusal=
+mixed-delay-extensionless|calls=1|requested=mixed.dll|refusal=
+ordinary-name|calls=1|requested=com10.dll|refusal=
