@@ -46,8 +46,14 @@ The required targeted Go correction is to derive and validate the final marker
 root from the held native image and exact managed-generation suffix, under its
 existing ancestor custody, rather than recapture the possibly changed alias.
 Implementation and focused regression coverage were delegated in the same
-isolated Go worktree. This finding remains open until that correction and its
-required native qualification pass.
+isolated Go worktree. Correction `7c6d1bf0926ec7e0aec6c8cb57c2444a2cd33e12`
+is integrated as `1bb4e9b5`. The final check derives the root from the held
+image's native name, validates its exact managed-generation suffix and requires
+it among the owner's held ancestors. Generic presence checks capture the drive
+once and walk/query physical paths. Offline Go 1.27.1 passed 34 launcher groups
+and 207 subtests; Windows/386 fixtures cross-compiled. New native SUBST cases
+cover armed physical A versus absent B before creation and before resume, but
+were not executed. Source correction does not replace native qualification.
 
 ## Verification boundary
 

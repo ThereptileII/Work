@@ -16,7 +16,10 @@ authority. Missing/corrupt/ambiguous custody cannot silently resume; there is no
 automatic disarm. Independent Claude/Codex findings and dispositions are in
 [the comparison record](evidence/scrum311-armed-claude-comparison-20261011/README.md).
 A source-proven mismatch between a held ordinary executable and a remapped
-original drive alias is being corrected before integration acceptance. The
+original drive alias is corrected in `1bb4e9b5`: final checks use the exact held
+image's physical installation root, and other presence checks capture the drive
+once before physical lookup. The agent's offline launcher suite passed 34 groups
+and 207 subtests; Win32 fixtures cross-compiled but have not executed. The
 complete four-stage signed boat broker and native/package qualification remain
 open. No new full application build, boat change or Production promotion has
 occurred for this batch.

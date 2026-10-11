@@ -49,6 +49,13 @@ denies; the implementation must prove leaf absence rather than interpret a
 failed `File.Exists`/`Test-Path` as permission. Checks at the existing lock and
 creation boundaries narrow races but do not claim to pin absence or authenticate
 a broker. Marker contents are never parsed into launch or rollback authority.
+The final ordinary Go creation checks derive the installation root from the held
+native executable and exact managed-generation suffix, under its existing
+ancestor custody. Remapping the original requested DOS/SUBST alias cannot select
+another root's absent marker for that held image. Other Go lookups capture the
+drive once before checking physical ancestry and the fixed leaf. PowerShell
+checks likewise resolve their own physical drive for each lookup; per-call
+resolution alone is not proof of identity binding to a previously held image.
 Normal installations with proven absent markers keep their existing behavior.
 Fresh-install/preflight checks may separately prove a missing root component
 under checked existing ancestors. They do not authorize mutation of an existing
