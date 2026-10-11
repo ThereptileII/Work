@@ -6,6 +6,10 @@ on:
   pull_request:
     paths:
       - opennav-x/tools/update-verifier/**
+      - opennav-x/tools/package-update-launcher.py
+      - opennav-x/tools/updater_package.py
+      - opennav-x/tools/test-package-update-launcher.py
+      - opennav-x/tools/test-updater-package.py
       - opennav-x/tools/broker_package.py
       - opennav-x/tools/package-update-broker.py
       - opennav-x/tools/test-broker-package.py
