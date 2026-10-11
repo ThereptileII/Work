@@ -1,0 +1,82 @@
+{
+  "schema": 1,
+  "issue": "SCRUM-365",
+  "selectionCommentId": "11319",
+  "priorImplementationCommentId": "11242",
+  "reviewDate": "2026-10-11",
+  "status": "existing-production-fix-confirmed-in-source; runtime-acceptance-pending",
+  "reviewedCoordinatorCommit": "c63dee40445f4b084468e3076c7d33a90eea118a",
+  "existingLocalIntegrationCommit": "b3cef57cc52091cbba4e2036423abf1b440bc238",
+  "priorJiraStagingCommit": "bf68b355cd319a0ef837f4119b41d4824f95022c",
+  "pinnedOpenCpnCommit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "productionSources": {
+    "opennav-x/upstream.lock.json": {
+      "bytes": 459,
+      "sha256": "20c68c0847fffcbac69c575efcc3b9c0c00c6f5f1b72460cb89976c0f2b6f0c9"
+    },
+    "opennav-x/src/integration/NavigationActions.cpp": {
+      "bytes": 17607,
+      "sha256": "b18f33885c8c1e8bc802ac973954c99c887baeb06fc37b1aaa6a626414f0c9e5"
+    },
+    "opennav-x/src/ui/Shell.cpp": {
+      "bytes": 98827,
+      "sha256": "e6a90f35f16dc99308b24891862e2d7ddf1a3bc62b52984117aaa2313a6c88cb"
+    },
+    "opennav-x/src/ui/SettingsDrawer.cpp": {
+      "bytes": 31271,
+      "sha256": "108c8e7ba0dc118b24bc00b9aaa7de9ffaffa52e54a00bb5480e9e16d2d5bde0"
+    },
+    "opennav-x/tests/settings_drawer_test.cpp": {
+      "bytes": 34792,
+      "sha256": "2fef1e58a3477ed9012695ff0814915580d9de2a89edc25123df8ef31e90c25d"
+    }
+  },
+  "pinnedUpstreamSources": {
+    "gui/src/ocpn_frame.cpp": {
+      "bytes": 255520,
+      "sha256": "f08b976c4e34583c19cc5c9825617f7681fa5aa3395e657cf32ad1622123d8d2"
+    },
+    "gui/src/options.cpp": {
+      "bytes": 352476,
+      "sha256": "1a3e86745c5521ea48a14c70a84ee9096c4f3c4d3ec18b6ae17c6f9a2e95d3a2"
+    },
+    "gui/include/gui/options.h": {
+      "bytes": 29758,
+      "sha256": "cd26b4e4863709f83f27cce5ff82d5884d9f447df0764a215465e2832709979d"
+    }
+  },
+  "findings": {
+    "connectionsPageIndex": 2,
+    "subpageOverride": -1,
+    "initialPageConsumedBeforeModelessShow": true,
+    "previousPageAndSubpageRestoredAfterDoSettings": true,
+    "advancedUsesSeparateUnforcedCallback": true,
+    "upstreamNormalClosePreferenceRetained": true,
+    "shellShowsNavigationBeforeOptions": true,
+    "connectionCreationClaimed": false,
+    "existingDrawerFixtureProvesNativePage": false
+  },
+  "scope": {
+    "routingCodeChanged": false,
+    "duplicateFixAdded": false,
+    "newTestsAdded": false,
+    "fullBuildPerformed": false,
+    "nativeRunPerformed": false,
+    "dispatchPerformed": false,
+    "pushPerformed": false,
+    "visualReviewPerformed": false,
+    "boatOrPhysicalOperationPerformed": false,
+    "packageRebuildRequiredByThisIncrement": false
+  },
+  "remainingAcceptance": [
+    "Coordinator-owned exact-candidate Windows keyboard/touch activation selects actual Connections despite a different previous Options page",
+    "Normal connection editor configuration and close/cancel return to XNav",
+    "Unrelated Advanced/Legacy routing and page/subpage preferences remain normal",
+    "Boat-PC verification recorded without an invented sensor-added state"
+  ],
+  "portableChecks": {
+    "receiptJsonParsing": "passed",
+    "diffWhitespace": "passed",
+    "runtimeAcceptance": false
+  }
+}
