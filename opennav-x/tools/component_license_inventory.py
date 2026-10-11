@@ -11,6 +11,7 @@ import re
 import zipfile
 
 from source_package import PINNED_UPSTREAM
+import font_inventory as fonts
 
 INVENTORY = 'docs/COMPONENT_LICENSE_INVENTORY.json'
 NOTICES = 'docs/THIRD_PARTY_NOTICES.md'
@@ -66,6 +67,7 @@ def generate_inventory(package, source_archive, commit, verified_manifests):
     if set(verified_manifests) != set(DEPENDENCIES):
         raise ValueError('Inventory requires all verified dependency manifests')
     files = {}
+    font_candidates = {}
     folded = set()
     for path in sorted(package.rglob('*')):
         if path.is_symlink():
@@ -79,6 +81,10 @@ def generate_inventory(package, source_archive, commit, verified_manifests):
         folded.add(name.casefold())
         if name not in GENERATED:
             files[name] = file_record(path)
+            with path.open('rb') as stream:
+                candidate = fonts.font_candidate(name, stream.read(12))
+            if candidate:
+                font_candidates[name] = candidate
     if source_archive.is_symlink() or not source_archive.is_file():
         raise ValueError('Corresponding source archive missing or unsafe')
     source_record = file_record(source_archive)
@@ -202,16 +208,49 @@ def generate_inventory(package, source_archive, commit, verified_manifests):
                            'source': {'commit': wx['commit']},
                            'evidenceStatus': 'source-notice-matched', 'notices': wx_notices,
                            'limitations': ['Runtime-to-upstream-source mapping is not established by this inventory.']})
+        font_cmake_path = 'OpenCPN-5.12.4-integrated/CMakeLists.txt'
+        install_lists = fonts.inspect_install_lists(source_bytes(font_cmake_path).decode('utf-8-sig'))
+        for source_path, expected in ((fonts.FREESANS_SOURCE, fonts.FREESANS_SHA256),
+                                      (fonts.HELVETICA_SOURCE, fonts.HELVETICA_SHA256)):
+            if digest(source_bytes(source_path)) != expected:
+                raise ValueError('Pinned font source differs: ' + source_path)
+        assign(fonts.FREESANS_PACKAGE, 'FreeSans-SSFN')
+        if files[fonts.FREESANS_PACKAGE]['sha256'] != fonts.FREESANS_SHA256:
+            raise ValueError('Packaged FreeSans font differs from pinned source')
+        components.append({
+            'id': 'FreeSans-SSFN', 'evidenceStatus': 'source-file-matched-license-unresolved',
+            'licenseStatus': 'unresolved',
+            'source': {'path': fonts.FREESANS_SOURCE, 'sha256': fonts.FREESANS_SHA256,
+                       'upstreamCommit': PINNED_UPSTREAM},
+            'runtimeFiles': [fonts.FREESANS_PACKAGE], 'notices': [],
+            'limitations': [
+                'Font-specific license notice and original-source/conversion provenance remain unresolved.',
+                'The SSFN renderer license does not establish the font data license.',
+            ],
+        })
+        font_evidence = {
+            'status': 'font-license-review-required',
+            'installRecipe': {'path': font_cmake_path, 'sha256': digest(source_bytes(font_cmake_path))},
+            'reviewedInstallLists': install_lists,
+            'textureFontSource': {'path': fonts.HELVETICA_SOURCE, 'sha256': fonts.HELVETICA_SHA256,
+                                  'installListStatus': 'absent-from-reviewed-s57data-list',
+                                  'licenseStatus': 'unresolved'},
+            'packageCandidates': [{'path': name, **record} for name, record in sorted(font_candidates.items())],
+            'limitations': ['Candidate detection covers standalone file headers/extensions, not fonts embedded in binaries or archives.',
+                            'System font requests and lettering in images are separate from bundled font files.'],
+        }
     unresolved = []
     for name, record in files.items():
         record['componentId'] = attributed.get(name)
-        if name not in attributed:
+        if name not in attributed or name in font_candidates:
             suffix = PurePosixPath(name).suffix.lower()
-            category = ('font' if suffix in {'.ttf', '.otf', '.woff', '.woff2', '.ttc'} else
+            category = ('font' if name in font_candidates else
                         'asset' if suffix in {'.png', '.svg', '.jpg', '.jpeg', '.ico', '.bmp', '.gif', '.xpm'} else
                         'runtime' if suffix in {'.dll', '.exe'} else 'other')
             unresolved.append({'path': name, 'category': category,
-                               'reason': 'No reviewed component/license attribution in this inventory.'})
+                               'reason': ('Font-specific license/source-conversion review remains unresolved.'
+                                          if name == fonts.FREESANS_PACKAGE else
+                                          'No reviewed component/license attribution in this inventory.')})
     return {'schema': 1, 'productCommit': commit,
             'sourceArchive': {'name': source_archive.name, **source_record},
             'status': 'incomplete-review-required',
@@ -221,6 +260,7 @@ def generate_inventory(package, source_archive, commit, verified_manifests):
                 'Absent font files do not establish clearance for system fonts or fonts embedded in assets.',
                 'This inventory excludes itself, THIRD_PARTY_NOTICES.md and FILE_SHA256.json; the package file manifest covers generated notices.',
             ],
+            'fontEvidence': font_evidence,
             'components': sorted(components, key=lambda item: item['id']),
             'files': files, 'unresolvedFiles': unresolved}
 

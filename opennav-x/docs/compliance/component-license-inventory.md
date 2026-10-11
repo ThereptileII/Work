@@ -47,3 +47,12 @@ inert package/source bytes; they cover deterministic output and rejected
 runtime, manifest, notice and source tampering, missing embedded notices,
 ambiguous records and paths. Native package assembly still requires the next
 coordinator-selected Windows build; a Linux fixture pass is not a native pass.
+
+## Font-source refinement
+
+The inventory now separately identifies the pinned packaged FreeSans SSFN bytes
+and source-only Helvetica TXF input, while retaining unresolved font-specific
+license/conversion provenance. See [the font provenance audit](font-provenance.md)
+for install boundaries, historical package evidence and the pending exact-native
+package gate. SSFN/TXF and common font headers/extensions are classified as font
+candidates; an extension alone is explicitly not a validated font format.

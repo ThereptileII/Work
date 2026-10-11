@@ -5,6 +5,9 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
+
+import font_inventory as fonts
 import zipfile
 
 from component_license_inventory import (DEPENDENCIES, INVENTORY, NOTICES, digest,
@@ -63,6 +66,22 @@ class InventoryTests(unittest.TestCase):
                     'opennav-x/docs/third-party/wxWidgets-3.2.8/provenance.json', json.dumps(wx).encode())
         for name in ('app/skager.ttf', 'app/icon.png', 'app/msvcp140.dll', 'app/opencpn.exe'):
             self.put(name, b'unattributed fixture')
+        # Inert stand-ins exercise byte provenance, not font rendering/licensing.
+        freesans = b'SSFN' + b'font fixture'
+        helvetica = b'\xfftxf' + b'texture fixture'
+        self.add_source(fonts.FREESANS_SOURCE, freesans)
+        self.add_source(fonts.HELVETICA_SOURCE, helvetica)
+        self.put(fonts.FREESANS_PACKAGE, freesans)
+        for name, data in (('FREESANS_SHA256', freesans), ('HELVETICA_SHA256', helvetica)):
+            override = patch.object(fonts, name, digest(data))
+            override.start()
+            self.addCleanup(override.stop)
+        self.add_source('OpenCPN-5.12.4-integrated/CMakeLists.txt', b'''
+set(ssfnData data/ssfn/FreeSans.sfn)
+set(s57data data/s57data/chartsymbols.xml)
+install(FILES ${ssfnData} DESTINATION ${PREFIX_PKGDATA}/ssfndata)
+install(FILES ${s57data} DESTINATION ${PREFIX_PKGDATA}/s57data)
+''')
         self.save_archive()
 
     def put(self, name, data):
@@ -95,8 +114,9 @@ class InventoryTests(unittest.TestCase):
         self.assertEqual(inventory['status'], 'incomplete-review-required')
         unresolved = {item['path']: item['category'] for item in inventory['unresolvedFiles']}
         self.assertEqual(unresolved, {'app/skager.ttf': 'font', 'app/icon.png': 'asset',
-                                     'app/msvcp140.dll': 'runtime', 'app/opencpn.exe': 'runtime'})
-        self.assertEqual(len(inventory['components']), 6)
+                                     'app/msvcp140.dll': 'runtime', 'app/opencpn.exe': 'runtime',
+                                     fonts.FREESANS_PACKAGE: 'font'})
+        self.assertEqual(len(inventory['components']), 7)
         self.assertEqual(inventory['files']['app/libcurl.dll']['componentId'], 'curl')
         self.assertIn('COMPONENT_LICENSE_INVENTORY.json', original[1].decode())
         self.assertNotIn(INVENTORY, inventory['files'])
@@ -177,6 +197,53 @@ class InventoryTests(unittest.TestCase):
         (self.package / 'app/linked.ttf').symlink_to('skager.ttf')
         with self.assertRaisesRegex(ValueError, 'symlink'):
             self.generate()
+
+    def test_freesans_source_mapping_keeps_license_unresolved(self):
+        inventory = self.generate()
+        component = next(c for c in inventory['components'] if c['id'] == 'FreeSans-SSFN')
+        self.assertEqual(component['licenseStatus'], 'unresolved')
+        self.assertNotIn('declaredLicense', component)
+        self.assertEqual(component['source']['path'], fonts.FREESANS_SOURCE)
+        self.assertEqual(inventory['fontEvidence']['reviewedInstallLists']['sourceOnlyUnderReviewedList'],
+                         'data/s57data/Helvetica.txf')
+        self.assertNotIn('app/s57data/Helvetica.txf', inventory['files'])
+
+    def test_freesans_missing_or_modified_rejected(self):
+        self.put(fonts.FREESANS_PACKAGE, b'SSFNwrong font')
+        with self.assertRaisesRegex(ValueError, 'Packaged FreeSans font differs'):
+            self.generate()
+        (self.package / fonts.FREESANS_PACKAGE).unlink()
+        with self.assertRaisesRegex(ValueError, 'evidence missing'):
+            self.generate()
+
+    def test_font_source_relabeling_rejected(self):
+        self.add_source(fonts.FREESANS_SOURCE, b'SSFNchanged source')
+        self.save_archive()
+        with self.assertRaisesRegex(ValueError, 'Pinned font source differs'):
+            self.generate()
+
+    def test_texture_font_install_list_expansion_requires_review(self):
+        path = 'OpenCPN-5.12.4-integrated/CMakeLists.txt'
+        self.add_source(path, self.entries[path].replace(b'data/s57data/chartsymbols.xml',
+                                                       b'data/s57data/Helvetica.txf'))
+        self.save_archive()
+        with self.assertRaisesRegex(ValueError, 'Texture font has entered'):
+            self.generate()
+
+    def test_legacy_and_renamed_fonts_remain_explicit_candidates(self):
+        self.put('app/s57data/Helvetica.txf', b'\xfftxf' + b'fixture')
+        self.put('app/font-data.bin', b'SSFN' + b'fixture')
+        self.put('app/legacy.fnt', b'not a validated font')
+        self.put('app/plain.txt', b'this text mentions a font')
+        inventory = self.generate()
+        candidates = {c['path']: c for c in inventory['fontEvidence']['packageCandidates']}
+        self.assertEqual(candidates['app/font-data.bin']['format'], 'SSFN')
+        self.assertEqual(candidates['app/s57data/Helvetica.txf']['format'], 'TXF')
+        self.assertEqual(candidates['app/legacy.fnt']['basis'], 'extension-only')
+        self.assertNotIn('app/plain.txt', candidates)
+        unresolved = {i['path']: i['category'] for i in inventory['unresolvedFiles']}
+        for name in ('app/font-data.bin', 'app/s57data/Helvetica.txf', 'app/legacy.fnt'):
+            self.assertEqual(unresolved[name], 'font')
 
     def test_duplicate_source_member_rejected(self):
         import warnings
