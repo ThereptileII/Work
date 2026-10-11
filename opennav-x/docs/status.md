@@ -1,6 +1,6 @@
 # SKAGER status — 2026-10-11
 
-## Exact Staging run `38127571851` — build passed, release gate red
+## Exact-byte Staging native retest passed; replacement source is not built
 
 Commit `5dd795be16081b4b0e521315bfc45f23a9af8251` compiled and
 passed the Linux integrated regression gate, Windows integration build,
@@ -31,13 +31,23 @@ the second portable process remained alive behind OpenCPN's missing tide/current
 harmonics modal. Its startup log showed portable resource paths made relative
 to its explicit profile while the process inherited the CI checkout working
 directory. The peer harness now starts that portable process in its own profile,
-matching the pinned upstream path convention; the new native recheck is pending.
-These are
-diagnostic retests, not new product builds or release qualification. Subsequent
-SCRUM-317 route-label decluttering, SCRUM-209 read-only module observation,
-SCRUM-59 license inventory, SCRUM-57 packaged notice/source gate and SCRUM-60
-About/attribution changes remain on the development branch for the next
-combined build; none has native package acceptance yet. No Production
+matching the pinned upstream path convention. The final retained native run
+[`38140837201`](https://github.com/ThereptileII/Work/actions/runs/38140837201)
+passed the complete selected Windows qualification against the authenticated
+`5dd795be` executable bytes, with harness `efec7a4e`; it includes two 144-test
+native XML suites, concurrent ordinary/portable peers, packaged updater,
+installer, chart, mode-cycle and recovery checks. The original workflow remains
+red; this is separate exact-byte retest evidence, not a rebuilt or newly
+published package. See [retained retest record](evidence/2026-10-11-retained-staging-retest.md).
+
+Subsequent SCRUM-317 route-label decluttering, SCRUM-209 read-only module
+observation, SCRUM-59 source/font/MSVC inventory and provenance receipts,
+SCRUM-57 packaged notice/source gate, SCRUM-60 About/attribution, SCRUM-64
+first-run disclosure, SCRUM-14 vessel-setup row and SCRUM-212 failure-safe
+peer evidence remain on the development branch for one combined Staging build.
+Focused tests pass; none has native package acceptance yet. The secret audit
+reports unresolved checkout matches and unsupported file coverage, and does
+not qualify public delivery. The boat installation is unchanged; no Production
 promotion or physical command is involved.
 
 ## Current Staging qualification — correction batch not yet built
