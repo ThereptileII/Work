@@ -13,6 +13,7 @@ import os
 from pathlib import Path
 import re
 import shutil
+import struct
 import subprocess
 import tempfile
 import zipfile
@@ -46,10 +47,10 @@ def source_inventory(module, goroot, cache, modules, reference):
     inventory = launcher.Inventory()
     tracked = launcher.run(['git', 'ls-files', '-z', '--', 'tools/update-verifier',
                             'tools/package-update-launcher.py', 'tools/package-update-broker.py',
-                            'tools/broker_package.py', 'LICENSE'], ROOT).split('\0')
+                            'tools/broker_package.py', 'tools/updater_package.py', 'LICENSE'], ROOT).split('\0')
     tracked = [name for name in tracked if name]
     required = {'LICENSE', 'tools/package-update-launcher.py', 'tools/package-update-broker.py',
-                'tools/broker_package.py', 'tools/update-verifier/go.mod',
+                'tools/broker_package.py', 'tools/updater_package.py', 'tools/update-verifier/go.mod',
                 'tools/update-verifier/go.sum', 'tools/update-verifier/cmd/skager-update-broker/main.go'}
     if not required.issubset(tracked):
         raise ValueError('Committed complete broker source and dependency locks required')
@@ -144,14 +145,33 @@ def build_info(text, commit):
             if key in settings:
                 raise ValueError('Duplicate broker Go build setting')
             settings[key] = value
-    required = {'-buildmode': 'exe', '-compiler': 'gc', '-trimpath': 'true', '-ldflags': '-H=windowsgui',
+    # Go 1.27.1 intentionally omits -ldflags from metadata under -trimpath.
+    # The fixed recipe supplies it; the PE subsystem below verifies its effect.
+    required = {'-buildmode': 'exe', '-compiler': 'gc', '-trimpath': 'true',
                 'CGO_ENABLED': '0', 'GOARCH': '386', 'GOOS': 'windows', 'GO386': 'sse2',
                 'vcs': 'git', 'vcs.revision': commit, 'vcs.modified': 'false'}
     if (paths != [launcher.MAIN_MODULE + '/cmd/skager-update-broker'] or
             any(settings.get(key) != value for key, value in required.items()) or
+            '-ldflags' in settings or
             not re.fullmatch(r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z', settings.get('vcs.time', ''))):
         raise ValueError('Actual broker Go build identity differs from selected source')
     return BINARY + ': ' + launcher.GO_VERSION + '\n' + '\n'.join(lines[1:]) + '\n'
+
+
+def validate_broker_pe(path):
+    launcher.validate_pe32(path)
+    with path.open('rb') as binary:
+        binary.seek(60)
+        offset = struct.unpack('<I', binary.read(4))[0]
+        binary.seek(offset)
+        header = binary.read(94)
+    if len(header) != 94:
+        raise ValueError('Truncated broker PE optional header')
+    optional_size = struct.unpack_from('<H', header, 20)[0]
+    if optional_size < 70 or offset + 24 + optional_size > path.stat().st_size:
+        raise ValueError('Invalid broker PE optional header size')
+    if struct.unpack_from('<H', header, 92)[0] != 2:
+        raise ValueError('Broker must use the Windows GUI PE subsystem')
 
 
 def package(install, commit, go):
@@ -192,7 +212,7 @@ def package(install, commit, go):
         check_source(inventory, descriptor)
         if updater.verify_updater_package(install, commit) != descriptor:
             raise ValueError('Launcher source closure changed during broker build')
-        launcher.validate_pe32(binary)
+        validate_broker_pe(binary)
         info = build_info(launcher.run([go, 'version', '-m', str(binary)], module, environment), commit)
         source_bundle = {'archive': updater.SOURCE_RELATIVE, 'path': descriptor['path'],
                          'sha256': descriptor['sha256'], 'reference': descriptor['reference']}

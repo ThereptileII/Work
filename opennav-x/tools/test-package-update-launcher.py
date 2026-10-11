@@ -204,12 +204,15 @@ class PackageTests(unittest.TestCase):
     def test_missing_broker_verifier_source_is_refused(self):
         self.package_fixture(omitted_source='tools/broker_package.py')
 
+    def test_missing_imported_updater_helper_is_refused(self):
+        self.package_fixture(omitted_source='tools/updater_package.py')
+
     def package_fixture(self, redirected_roots=False, omitted_source=None):
         repo = self.root / 'repo'
         module = repo / 'tools/update-verifier'
         module.mkdir(parents=True)
         tracked = ['LICENSE', 'tools/package-update-launcher.py', 'tools/package-update-broker.py',
-                   'tools/broker_package.py', 'tools/update-verifier/go.mod',
+                   'tools/broker_package.py', 'tools/updater_package.py', 'tools/update-verifier/go.mod',
                    'tools/update-verifier/go.sum', 'tools/update-verifier/cmd/skager-start/main.go']
         if omitted_source is not None:
             tracked.remove(omitted_source)
@@ -275,6 +278,8 @@ class PackageTests(unittest.TestCase):
                                      (repo / 'tools/package-update-broker.py').read_bytes())
                     self.assertEqual(source.read('project/tools/broker_package.py'),
                                      (repo / 'tools/broker_package.py').read_bytes())
+                    self.assertEqual(source.read('project/tools/updater_package.py'),
+                                     (repo / 'tools/updater_package.py').read_bytes())
                     self.assertIn('provisioning/go.sum', source.namelist())
                 self.assertGreaterEqual(events.count(['mod', 'verify']), 2)
                 self.assertIn('-mod=readonly', command)

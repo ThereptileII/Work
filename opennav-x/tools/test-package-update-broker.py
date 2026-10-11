@@ -18,12 +18,14 @@ launcher = producer.launcher
 
 
 def pe32(path):
-    content = bytearray(128)
+    content = bytearray(512)
     content[:2] = b'MZ'
     struct.pack_into('<I', content, 60, 64)
     content[64:68] = b'PE\0\0'
     struct.pack_into('<H', content, 68, 0x14c)
+    struct.pack_into('<H', content, 84, 224)
     struct.pack_into('<H', content, 88, 0x10b)
+    struct.pack_into('<H', content, 156, 2)
     path.write_bytes(content)
 
 
@@ -35,7 +37,8 @@ class BrokerProducerTests(unittest.TestCase):
         self.repo = self.root / 'repo'
         self.module = self.repo / 'tools/update-verifier'
         self.tracked = ['LICENSE', 'tools/package-update-launcher.py', 'tools/package-update-broker.py',
-                        'tools/broker_package.py', 'tools/update-verifier/go.mod', 'tools/update-verifier/go.sum',
+                        'tools/broker_package.py', 'tools/updater_package.py',
+                        'tools/update-verifier/go.mod', 'tools/update-verifier/go.sum',
                         'tools/update-verifier/cmd/skager-update-broker/main.go']
         for name in self.tracked:
             path = self.repo / name
@@ -92,7 +95,7 @@ class BrokerProducerTests(unittest.TestCase):
         self.events.clear()
 
     def metadata(self):
-        settings = {'-buildmode': 'exe', '-compiler': 'gc', '-trimpath': 'true', '-ldflags': '-H=windowsgui',
+        settings = {'-buildmode': 'exe', '-compiler': 'gc', '-trimpath': 'true',
                     'CGO_ENABLED': '0', 'GOARCH': '386', 'GOOS': 'windows', 'GO386': 'sse2',
                     'vcs': 'git', 'vcs.revision': self.commit, 'vcs.modified': 'false', 'vcs.time': '2026-10-12T12:00:00Z'}
         return ('private-path/' + producer.BINARY + ': ' + launcher.GO_VERSION + '\n\tpath\t' + launcher.MAIN_MODULE +
@@ -180,6 +183,50 @@ class BrokerProducerTests(unittest.TestCase):
         self.tracked.remove('tools/broker_package.py')
         with self.assertRaisesRegex(ValueError, 'complete broker source'):
             self.package()
+
+    def test_missing_imported_updater_helper_refuses(self):
+        self.tracked.remove('tools/updater_package.py')
+        with self.assertRaisesRegex(ValueError, 'complete broker source'):
+            self.package()
+
+    def test_trimpath_metadata_omits_linker_flags_and_gui_is_observed(self):
+        self.assertNotIn('-ldflags=', self.info)
+        result = self.package()
+        self.assertNotIn('-ldflags=', result['buildInfo'])
+        self.assertIn('-ldflags=-H=windowsgui', result['build'])
+        producer.validate_broker_pe(self.install / producer.BINARY)
+
+    def test_console_pe_refuses_publication_without_linker_metadata(self):
+        def console_binary():
+            command = next(command for command in reversed(self.events) if command[1] == 'build')
+            binary = Path(command[command.index('-o') + 1])
+            data = bytearray(binary.read_bytes())
+            struct.pack_into('<H', data, 156, 3)
+            binary.write_bytes(data)
+        self.on_build = console_binary
+        with self.assertRaisesRegex(ValueError, 'GUI PE subsystem'):
+            self.package()
+        self.assertFalse((self.install / producer.BINARY).exists())
+
+    def test_unexpected_linker_metadata_refuses(self):
+        for flags in ('-H=windows', '-H=windowsgui'):
+            with self.subTest(flags=flags):
+                self.info = self.metadata() + '\tbuild\t-ldflags=' + flags + '\n'
+                with self.assertRaisesRegex(ValueError, 'Actual broker Go build identity'):
+                    self.package()
+
+    def test_truncated_or_short_optional_pe_header_refuses(self):
+        binary = self.root / 'malformed.exe'
+        pe32(binary)
+        binary.write_bytes(binary.read_bytes()[:150])
+        with self.assertRaisesRegex(ValueError, 'Truncated broker PE optional header'):
+            producer.validate_broker_pe(binary)
+        pe32(binary)
+        data = bytearray(binary.read_bytes())
+        struct.pack_into('<H', data, 84, 26)
+        binary.write_bytes(data)
+        with self.assertRaisesRegex(ValueError, 'optional header size'):
+            producer.validate_broker_pe(binary)
 
     def test_changed_module_graph_refuses(self):
         self.modules[1]['Sum'] = 'h1:' + base64.b64encode(b'b' * 32).decode()
