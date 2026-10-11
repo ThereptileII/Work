@@ -1,0 +1,22 @@
+
+7-Zip 26.03 (x64) : Copyright (c) 1999-2026 Igor Pavlov : 2026-09-03
+
+Scanning the drive for archives:
+1 file, 33824019 bytes (33 MiB)
+
+Extracting archive: D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\sdk\wxMSW-3.2.8_vc14x_Dev.7z
+--
+Path = D:\a\Work\Work\opennav-x\build\windows-ocharts-loader-guards\sdk\wxMSW-3.2.8_vc14x_Dev.7z
+Type = 7z
+Physical Size = 33824019
+Headers Size = 1792
+Method = LZMA2:24 BCJ
+Solid = +
+Blocks = 4
+
+Everything is Ok
+
+Folders: 6
+Files: 90
+Size:       333716106
+Compressed: 33824019

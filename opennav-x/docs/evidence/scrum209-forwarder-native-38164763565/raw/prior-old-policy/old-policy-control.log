@@ -1,0 +1,2 @@
+FAIL old-policy gap: declared libeay32 export forwarder admitted
+Expected regression exit code: 1
