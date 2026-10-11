@@ -10,7 +10,30 @@ $VsSelection = @(& $Vswhere -latest -products '*' -requires Microsoft.VisualStud
 if ($LASTEXITCODE -ne 0 -or $VsSelection.Count -ne 1) { throw 'Unique native MSVC toolchain selection failed' }
 $VS = $VsSelection[0].installationPath
 $VsVersion = $VsSelection[0].installationVersion
-if (-not $VS) { throw 'Native licensed MSVC toolchain not found' }
+$ProductProperty = $VsSelection[0].PSObject.Properties['productId']
+if (-not $VS -or -not $ProductProperty -or $ProductProperty.Value -isnot [string]) {
+    throw 'Native MSVC toolchain product identity not found'
+}
+$VsProductId = $ProductProperty.Value
+# Installation product/catalog identity is not licensed-edition entitlement.
+$VsCatalog = [ordered]@{}
+$CatalogProperty = $VsSelection[0].PSObject.Properties['catalog']
+if ($CatalogProperty -and $null -ne $CatalogProperty.Value) {
+    if ($CatalogProperty.Value -isnot [PSCustomObject]) { throw 'MSVC catalog identity is not an object' }
+    foreach ($Name in @('id','buildVersion','productDisplayVersion','productLine',
+        'productLineVersion','productName','productSemanticVersion','productMilestone',
+        'productMilestoneIsPreRelease','productPatchVersion','productPreReleaseMilestoneSuffix',
+        'requiredEngineVersion')) {
+        $Property = $CatalogProperty.Value.PSObject.Properties[$Name]
+        if ($Property) {
+            if ($Property.Value -isnot [string]) { throw ('MSVC catalog identity is not text: ' + $Name) }
+            $VsCatalog[$Name] = $Property.Value
+        }
+    }
+}
+# Base64 preserves JSON quotes through Windows PowerShell 5.1 and pwsh alike.
+$VsCatalogBase64 = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes(
+    (ConvertTo-Json -InputObject $VsCatalog -Compress)))
 $Runtime = Get-ChildItem "$VS\VC\Redist\MSVC\*\x86\Microsoft.VC143.CRT" -Directory |
     Sort-Object FullName -Descending | Select-Object -First 1
 if (-not $Runtime) { throw 'App-local x86 MSVC redistributable directory not found' }
@@ -28,6 +51,7 @@ if ($UpdateTrustConfig -or $UpdateTrustValidator) {
 python (Join-Path $PSScriptRoot 'package-preview.py') --install "$Root/build/production-install" `
     --build "$Root/build/production-windows" --runtime $Runtime.FullName --output $Output `
     --runtime-vs-installation $VS --runtime-vs-version $VsVersion `
+    --runtime-vs-product-id $VsProductId --runtime-vs-catalog-base64 $VsCatalogBase64 `
     --openssl-source-cache "$Root/build/dependency-downloads/openssl-3.5.9.tar.gz" `
     --dependency-source-cache "$Root/build/dependency-downloads" @TrustArguments
 $AssemblyExit = $LASTEXITCODE

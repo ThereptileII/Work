@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Inert packaging fixtures; native Windows version-resource checks remain required."""
+import base64
 import hashlib
 import json
 import os
@@ -36,17 +37,30 @@ class RuntimeReceiptTests(unittest.TestCase):
         self.app.mkdir()
         for name in ('vcruntime140.dll', 'msvcp140.dll', 'concrt140.dll'):
             (self.runtime / name).write_bytes(pe() + name.encode())
+        self.product_id = 'Microsoft.VisualStudio.Product.Enterprise'
+        self.catalog = {'id': 'VisualStudio/17.14.0+12345.1',
+                        'buildVersion': '17.14.12345.1',
+                        'productDisplayVersion': '17.14.0', 'productName': 'Visual Studio',
+                        'productSemanticVersion': '17.14.0+12345.1',
+                        'productPreReleaseMilestoneSuffix': ''}
         self.versions = {'fileVersion': '14.44.35211.0', 'productVersion': '14.44.35211.0'}
         version_patch = patch.object(receipt, 'windows_file_versions', return_value=self.versions)
         self.version_reader = version_patch.start()
         self.addCleanup(version_patch.stop)
 
-    def copy(self):
-        return receipt.copy_msvc_runtime(self.runtime, self.app, self.vs, '17.14.12345.1')
+    def copy(self, **identity):
+        return receipt.copy_msvc_runtime(self.runtime, self.app, self.vs, '17.14.12345.1',
+                                         identity.get('product_id', self.product_id),
+                                         identity.get('catalog', self.catalog))
 
     def test_complete_sorted_receipt_is_repeatable_and_read_only(self):
         first = self.copy()
         self.assertEqual(first, self.copy())
+        self.assertEqual(first['schemaVersion'], 2)
+        self.assertEqual(first['visualStudio']['productId'], self.product_id)
+        self.assertEqual(first['visualStudio']['catalog'], self.catalog)
+        self.catalog['productName'] = 'Changed input after receipt'
+        self.assertEqual(first['visualStudio']['catalog']['productName'], 'Visual Studio')
         self.assertEqual([f['name'] for f in first['files']],
                          ['concrt140.dll', 'msvcp140.dll', 'vcruntime140.dll'])
         self.assertEqual(first['redistributable']['version'], '14.44.35211')
@@ -73,7 +87,8 @@ class RuntimeReceiptTests(unittest.TestCase):
 
     def test_wrong_vs_selection_rejected(self):
         with self.assertRaisesRegex(ValueError, 'selected Visual Studio'):
-            receipt.copy_msvc_runtime(self.runtime, self.app, self.root / 'other', '17.14.1')
+            receipt.copy_msvc_runtime(self.runtime, self.app, self.root / 'other', '17.14.1',
+                                      self.product_id, self.catalog)
 
     def test_64_bit_source_rejected(self):
         (self.runtime / 'msvcp140.dll').write_bytes(pe(0x8664))
@@ -116,6 +131,72 @@ class RuntimeReceiptTests(unittest.TestCase):
         (self.runtime / 'msvcp140.dll').symlink_to(self.runtime / 'concrt140.dll')
         with self.assertRaisesRegex(ValueError, 'redirected'):
             self.copy()
+
+    def test_actual_product_edition_is_retained_without_entitlement_claim(self):
+        for edition in ('Community', 'Professional', 'Enterprise', 'BuildTools'):
+            with self.subTest(edition=edition):
+                product_id = 'Microsoft.VisualStudio.Product.' + edition
+                value = self.copy(product_id=product_id, catalog={})
+                self.assertEqual(value['visualStudio']['productId'], product_id)
+                self.assertEqual(value['visualStudio']['catalog'], {})
+                self.assertEqual(value['legalStatus'],
+                                 'redistribution-terms-unresolved-review-required')
+                self.assertNotIn('licensed', json.dumps(value).casefold())
+
+    def test_bad_product_identity_rejected_before_inspection_or_copy(self):
+        for product_id in (None, True, '', 'Enterprise',
+                           'Microsoft.VisualStudio.Product.',
+                           'Microsoft.VisualStudio.Product.Enterprise\n',
+                           'Microsoft.VisualStudio.Product.' + 'E' * 65):
+            with self.subTest(product_id=product_id):
+                with self.assertRaisesRegex(ValueError, 'product identity'):
+                    self.copy(product_id=product_id)
+                self.version_reader.assert_not_called()
+                self.assertEqual(list(self.app.iterdir()), [])
+
+    def test_bad_catalog_rejected_before_inspection_or_copy(self):
+        for catalog in (None, [], {'licenseKey': 'not retained'}, {'id': None},
+                        {'id': True}, {'id': {}}, {'id': 'x' * 257},
+                        {'id': 'é' * 129}, {'id': 'bad\x00identity'},
+                        {'id': 'bad\nidentity'}):
+            with self.subTest(catalog=catalog):
+                with self.assertRaisesRegex(ValueError, 'catalog identity'):
+                    self.copy(catalog=catalog)
+                self.version_reader.assert_not_called()
+                self.assertEqual(list(self.app.iterdir()), [])
+
+
+class VisualStudioCatalogTransportTests(unittest.TestCase):
+    @staticmethod
+    def encoded(text):
+        return base64.b64encode(text.encode('utf-8')).decode('ascii')
+
+    def test_catalog_transport_preserves_exact_available_identity_text(self):
+        catalog = {field: 'identity' for field in receipt.VISUAL_STUDIO_CATALOG_FIELDS}
+        catalog.update(productName='Visual Studio Édition',
+                       productPreReleaseMilestoneSuffix='',
+                       productMilestoneIsPreRelease='False')
+        encoded = self.encoded(json.dumps(catalog, ensure_ascii=False))
+        self.assertEqual(receipt.parse_visual_studio_catalog_base64(encoded), catalog)
+        self.assertEqual(receipt.parse_visual_studio_catalog_base64('e30='), {})
+
+    def test_invalid_json_catalog_schema_is_closed(self):
+        for text in ('null', '[]', 'true', '{',
+                     '{"id":"first","id":"second"}',
+                     '{"licensingIdentity":"unexpected"}',
+                     '{"id":{"nested":"value"}}', '{"id":17}',
+                     '{"id":false}', '{"id":"' + 'x' * 257 + '"}',
+                     json.dumps({'id': 'bad\tidentity'})):
+            with self.subTest(text=text[:80]):
+                with self.assertRaises(ValueError):
+                    receipt.parse_visual_studio_catalog_base64(self.encoded(text))
+
+    def test_catalog_transport_is_bounded_and_strict(self):
+        for raw in (None, b'e30=', '', '*not-base64*', 'e30=\n', '/w==',
+                    self.encoded(' ' * 4097), 'A' * 5465):
+            with self.subTest(raw=str(raw)[:80]):
+                with self.assertRaises(ValueError):
+                    receipt.parse_visual_studio_catalog_base64(raw)
 
 
 class NativeVersionResourceTests(unittest.TestCase):
