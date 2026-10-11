@@ -1,0 +1,180 @@
+{
+  "schema": 1,
+  "issue": "SCRUM-209",
+  "selectionCommentId": "11322",
+  "materialCommentIds": [
+    "11287",
+    "11296",
+    "11297",
+    "11311"
+  ],
+  "baseCommit": "c63dee40445f4b084468e3076c7d33a90eea118a",
+  "status": "source-and-portable-checks-prepared; native-pending",
+  "microsoftPeReference": "https://learn.microsoft.com/en-us/windows/win32/debug/pe-format#export-address-table",
+  "oldPolicyControl": {
+    "expectedExit": 1,
+    "actualExit": 1,
+    "source": "old-policy-control.cpp",
+    "log": "old-policy-control.log",
+    "compileCommand": "TMPDIR=\"$PWD/opennav-x/evidence/local/.tmp\" g++ -std=c++17 -Wall -Wextra -Werror -Iopennav-x/src opennav-x/tests/win32_pe_forwarders_test.cpp -o opennav-x/evidence/local/old-forwarder-control",
+    "runCommand": "opennav-x/evidence/local/old-forwarder-control",
+    "baseHeaders": {
+      "src/integration/Win32PeImports.h": {
+        "bytes": 6824,
+        "sha256": "c7b7dabc0b738ac3ca574ee2d99a344f0f4297600e52d824a82ae1189faeae8c"
+      },
+      "src/integration/Win32PluginTlsImports.h": {
+        "bytes": 4051,
+        "sha256": "e1721cbf830c4b0e9b2b0cc03c059c1358b0af4cb2cb7ba010ebbca7c03d59d0"
+      }
+    }
+  },
+  "sources": {
+    "src/integration/Win32PeImports.h": {
+      "bytes": 9068,
+      "sha256": "f35fd4b4e0bb5d9508dd473857876eb2cfb7db4d9466cf46bb58ba424f2fb85f"
+    },
+    "src/integration/Win32PluginTlsImports.h": {
+      "bytes": 6029,
+      "sha256": "3c1297c6c8686e5bf709dde3606aa94b51bc616356f732df23184fd509b37e9d"
+    },
+    "src/integration/OriginalPluginTlsGuard.h": {
+      "bytes": 4017,
+      "sha256": "45c5406546eecde0ed961ffcb94302c7f2cfc8299f9aa38bcd15976861067e74"
+    },
+    "tests/win32_pe_imports_test.cpp": {
+      "bytes": 13877,
+      "sha256": "6ab382bcbbdeb31c4f929e9b5df8ed53589714f880409130072e8488c288aa3f"
+    },
+    "tests/win32_pe_forwarders_test.cpp": {
+      "bytes": 9279,
+      "sha256": "816610a16c210ff4fb25b0def65b5490e252746ac8236e2fb7a7083920ec8066"
+    },
+    "tests/windows_ocharts_loader/CMakeLists.txt": {
+      "bytes": 6956,
+      "sha256": "06bbd80b1bd2b05b662f5c104c0d7e9e7a062a87fec6ac6e0bc44216e7bfabde"
+    },
+    "tests/windows_ocharts_loader/forward_dependency.cpp": {
+      "bytes": 1058,
+      "sha256": "7a03c55cd753a55d7cf8fab19d3d95cff9c043f1564d383b55659b727ae694e4"
+    },
+    "tests/windows_ocharts_loader/legacy_dependency.cpp": {
+      "bytes": 159,
+      "sha256": "061a06459561ee77b31f8ae56438fbcceb47e46b1d3b3dd1e0842e9dff951406"
+    },
+    "tests/windows_ocharts_loader/fixture.cpp": {
+      "bytes": 3901,
+      "sha256": "61b9c2dd34604db8e5fb265b403a557e39313aad549488ec953aaad6ad10a756"
+    },
+    "tests/windows_ocharts_loader/loader_test.cpp": {
+      "bytes": 38949,
+      "sha256": "1a2fe9e8322f00e452c81290f4b650f5c42dd659922fe0850804c882a15bfdf6"
+    },
+    "tools/test-ocharts-loader-windows.py": {
+      "bytes": 11990,
+      "sha256": "8e2f848896e0464124f22b5b6a3e52970fa6f44ce9342e7256df0e702c86c8da"
+    }
+  },
+  "portableEvidence": {
+    "clang.log": {
+      "bytes": 872,
+      "sha256": "35dba0f5fd41d561e1e1257d790bb0620bca225ebffcef975816ab50275dafbd"
+    },
+    "gcc.log": {
+      "bytes": 861,
+      "sha256": "9f2ebe99533a5ef2747f293b1443938f6bc5b9365376d4e2f433335eef915aa5"
+    },
+    "old-policy-control.cpp": {
+      "bytes": 2029,
+      "sha256": "ed0a69c621eb9724ab57208386936fdc4375e30b9a94d1e4f24a8b3f9162fe2e"
+    },
+    "old-policy-control.log": {
+      "bytes": 98,
+      "sha256": "e3487a46ab8d7c43a1540e702539f1704dc2c5aa5ae2b36fc64992b5bdc5324f"
+    },
+    "source-review.md": {
+      "bytes": 4614,
+      "sha256": "0704909c3d915c6b11e9fb63758b8535b27291942a6cfaf786dcf38e3ef2e2ce"
+    }
+  },
+  "portableChecks": {
+    "gcc": {
+      "existingImportChecks": 9366,
+      "forwarderChecks": 17496,
+      "asan": true,
+      "ubsan": true,
+      "leakSanitizer": false,
+      "result": "passed",
+      "log": "gcc.log"
+    },
+    "clang": {
+      "existingImportChecks": 9366,
+      "forwarderChecks": 17496,
+      "asan": true,
+      "ubsan": true,
+      "leakSanitizer": false,
+      "result": "passed",
+      "log": "clang.log"
+    },
+    "runnerPythonAst": "passed",
+    "diffWhitespace": "passed"
+  },
+  "readerLimits": {
+    "exportDirectoryBytes": 1048576,
+    "eatEntries": 65536,
+    "forwarders": 4096,
+    "stringBytesIncludingNul": 4096,
+    "combinedDeclarationTextBytes": 1048576,
+    "nulMustRemainInsideExportDirectory": true,
+    "noPartialResultsOnFailure": true,
+    "nonforwardedExportCodeValidated": false
+  },
+  "policy": {
+    "grammar": "one separator: extensionless module.symbol or module.#ordinal (1-65535)",
+    "ambiguousDotOrExplicitDll": "unsupported grammar; refused before load; native harmless probes pending",
+    "sameLocalGraphAsImports": true,
+    "externalAndDynamicLoaderClosure": false
+  },
+  "nativeGate": {
+    "status": "not-run",
+    "expectedLoaderGroups": 51,
+    "previousPassingGroups": 43,
+    "previousPassingRun": "38159170047",
+    "newLoaderGroups": [
+      "forward_legacy_name",
+      "forward_legacy_ordinal",
+      "forward_ssleay_ordinal",
+      "forward_indirect",
+      "forward_clean_name",
+      "forward_clean_ordinal",
+      "forward_explicit_dll",
+      "forward_multi_dot"
+    ],
+    "pureForwarderMsvcTestRequired": true,
+    "benignNamedAndOrdinalRequireGuardedNativeResolution": true,
+    "refusalRequiresNoOriginalOrSiblingDllMain": true,
+    "actualAmbiguousGrammarObserved": false,
+    "coordinatorDispatchRequired": true
+  },
+  "scope": {
+    "productionHeadersChanged": true,
+    "packageRebuildRequiredForProductAcceptance": true,
+    "productAcceptance": false,
+    "fullBuildPerformed": false,
+    "workflowChanged": false,
+    "dispatchPerformed": false,
+    "pushPerformed": false,
+    "vendorExecuted": false,
+    "pluginFactoryExecuted": false,
+    "boatOperationPerformed": false,
+    "externalSourceTransferPerformed": false
+  },
+  "remainingGates": [
+    "Native MSVC51 groups and actual benign forwarding/grammar probes",
+    "Exact rebuilt app/package Standard/Legacy/Safe and original fallback integration",
+    "External loader roots, dynamic/helper/module identities and general closure",
+    "TLS/certificate behavior and installer lifecycle/recovery",
+    "Source/notice compliance and separate boat acceptance"
+  ],
+  "msvcExportsReference": "https://learn.microsoft.com/en-us/cpp/build/reference/exports?view=msvc-170"
+}

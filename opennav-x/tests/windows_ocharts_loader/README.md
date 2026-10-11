@@ -59,8 +59,8 @@ fixture and runtime hashes and explicitly sets product acceptance false.
 It includes two direct/delay and two same-directory indirect-import controls;
 its benign indirect control explicitly preloads the helper. That result does
 not prove first dependency mapping while inspection owns the sibling handle.
-The project now requires **43 groups**, adding the first-mapping control below.
-They passed at `e615446e2c1f547fd2e01d87bcf0621da0c8500a` in
+The 43-group predecessor adds the first-mapping control below.
+Those groups passed at `e615446e2c1f547fd2e01d87bcf0621da0c8500a` in
 [native run 38159170047](https://github.com/ThereptileII/Work/actions/runs/38159170047).
 The receipt records `unmappedSiblingGuardControl: true` and product acceptance
 false. No boat action was performed for this increment.
@@ -130,3 +130,53 @@ control establishes this one benign first-mapping/inspection-handle case;
 it does not qualify general loader search, arbitrary plugins, full application
 fallback integration or SCRUM-209 closure. Source receipts include the new inert
 helper source, and fixture receipts include both the new original and helper.
+
+## SCRUM-209 declared export-forwarder extension (native pending)
+
+The project now requires **51 groups** and additionally runs the focused pure
+forwarder suite under MSVC. The eight new loader groups use only locally built
+inert DLLs: direct named and ordinal `libeay32` forwarders, an ordinal `ssleay32`
+alias, an indirect sibling forwarder, benign named/ordinal forwarders, and two
+benign ambiguous-grammar probes. The [MSVC EXPORTS syntax](https://learn.microsoft.com/en-us/cpp/build/reference/exports?view=msvc-170)
+documents both named and ordinal forwarding definitions. Every fixture's exact raw forwarder string must
+be emitted by MSVC and observed by the production reader. There are no ordinary
+dependency import descriptors for those forwarded modules.
+
+The production fallback must refuse declared legacy or unsupported-grammar
+graphs before original or forwarded sibling DllMain, including repeated attempts
+and a clean adapter refusal. The indirect sibling has an explicit attach/detach
+marker. Private harmless legacy stubs provide unguarded loadability comparisons;
+they are explicitly preloaded from the case directory to avoid the older
+fixtures' application-directory duplicate. No obsolete TLS implementation runs.
+
+For simple benign `module.symbol` and `module.#ordinal`, the actual production
+guard owns original/sibling handles through both native load and
+`GetProcAddress`. The previously unmapped sibling must resolve to its inspected
+private full path, pre-mapping volume/file-index identity and SHA-256; the test
+invokes only the known inert integer export. Write/delete locks are checked
+before and after resolution, and unload, unchanged bytes, released handles and
+restored process search state remain required. New helpers live below
+`Release/forwarders`, outside the executable directory.
+
+Multiple dots and explicit `.dll` spellings remain **unsupported policy
+grammar**, not a declaration that Windows rejects those images. Two unguarded
+benign probes expose both plausible symbol/module alternatives using distinct
+integer values. Native logs record the actual resolved path, identity and value;
+neither probe relaxes the production policy. The current conservative subset
+must not be broadened based on a guessed separator rule.
+
+The reader follows Microsoft's [PE export-address-table specification](https://learn.microsoft.com/en-us/windows/win32/debug/pe-format#export-address-table):
+only EAT RVAs inside the export-directory interval declare forwarders, and each
+ASCII string including NUL must fit inside that interval. Ordinary EAT entries
+remain outside this dependency inspection; their acceptance is not executable
+code or full export-table validation. The declarations are recorded separately
+from normal/delay imports, then checked by the same TLS policy and bounded local
+graph. All list results are discarded on malformed inspected metadata.
+
+Portable checks and the retained old-policy failing fixture are recorded in
+`docs/evidence/scrum209-export-forwarders-20261011`. The new native groups and
+grammar observations have **not run**. This remains declared local-graph
+enforcement only; external loader roots, arbitrary dynamic/helper loads, full
+application/adapter integration, general mapped identity, TLS/certificate and
+installer lifecycle acceptance remain open. No vendor factory, chart, boat or
+physical operation is part of this gate.

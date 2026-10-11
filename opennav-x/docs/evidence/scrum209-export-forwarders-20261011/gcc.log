@@ -1,0 +1,12 @@
+g++ (GCC) 16.2.1 20260810
+TMPDIR=/home/standard/Projects/X-nav-worktrees/scrum209-export-forwarders/opennav-x/evidence/local/.tmp ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1
+$ g++ -std=c++17 -O1 -g -Wall -Wextra -Werror -fsanitize=address,undefined -fno-omit-frame-pointer -Iopennav-x/src opennav-x/tests/win32_pe_imports_test.cpp -o opennav-x/evidence/local/win32_pe_imports_test-gcc
+exit=0
+$ opennav-x/evidence/local/win32_pe_imports_test-gcc
+PASS: 9366 deterministic Win32 import-reader checks
+exit=0
+$ g++ -std=c++17 -O1 -g -Wall -Wextra -Werror -fsanitize=address,undefined -fno-omit-frame-pointer -Iopennav-x/src opennav-x/tests/win32_pe_forwarders_test.cpp -o opennav-x/evidence/local/win32_pe_forwarders_test-gcc
+exit=0
+$ opennav-x/evidence/local/win32_pe_forwarders_test-gcc
+PASS: 17496 deterministic Win32 export-forwarder checks
+exit=0

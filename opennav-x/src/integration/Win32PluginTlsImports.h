@@ -4,12 +4,37 @@
 #include <set>
 
 namespace opennav::integration {
-// Narrow policy over the entry DLL's declared imports, NOT a dependency-closure
+// Supported forwarder grammar is deliberately narrower than Windows' loader:
+// one separator, no explicit .dll or dotted symbol/module. Ambiguous strings
+// are unsupported here, not declared invalid Windows images. Native harmless
+// probes must establish such semantics before this policy is broadened.
+inline std::string PluginTlsForwarderModule(const std::string& target,
+                                           std::string& module) {
+  const auto dot = target.find('.');
+  if (dot == std::string::npos || !dot || dot + 1 == target.size() ||
+      target.find('.', dot + 1) != std::string::npos)
+    return "Unsupported plugin export forwarder grammar: " + target;
+  const auto symbol = target.substr(dot + 1);
+  if (symbol.front() == '#') {
+    std::uint32_t ordinal = 0;
+    if (symbol.size() == 1) return "Unsupported plugin export forwarder ordinal";
+    for (std::size_t i = 1; i < symbol.size(); ++i) {
+      if (symbol[i] < '0' || symbol[i] > '9' || ordinal > 6553)
+        return "Unsupported plugin export forwarder ordinal";
+      ordinal = ordinal * 10 + static_cast<unsigned>(symbol[i] - '0');
+      if (ordinal > 65535) return "Unsupported plugin export forwarder ordinal";
+    }
+    if (!ordinal) return "Unsupported plugin export forwarder ordinal";
+  }
+  module = target.substr(0, dot);
+  return {};
+}
+
+// Narrow policy over declared imports/forwarders, NOT a dependency-closure
 // approval. Keep the general PE reader usable for evidence without trust policy.
 inline std::string RefuseLegacyPluginTlsImports(const Win32PeImports& imports) {
   if (!imports.parsed) return "Cannot inspect plugin imports: " + imports.error;
-  for (const auto& item : imports.modules) {
-    auto name = item.name;
+  const auto legacy = [](std::string name) {
     for (auto& c : name)
       if (c >= 'A' && c <= 'Z') c = static_cast<char>(c - 'A' + 'a');
     // Include qualified paths, extension-less LoadLibrary names and Windows
@@ -21,10 +46,19 @@ inline std::string RefuseLegacyPluginTlsImports(const Win32PeImports& imports) {
     if (colon != std::string::npos) name.erase(colon);
     while (!name.empty() && (name.back() == '.' || name.back() == ' '))
       name.pop_back();
-    if (name == "libeay32.dll" || name == "ssleay32.dll" ||
-        name == "libeay32" || name == "ssleay32")
+    return name == "libeay32.dll" || name == "ssleay32.dll" ||
+           name == "libeay32" || name == "ssleay32";
+  };
+  for (const auto& item : imports.modules) {
+    if (legacy(item.name))
       return std::string("Unsupported legacy TLS ") +
              (item.delayed ? "delay import: " : "import: ") + item.name;
+  }
+  for (const auto& target : imports.forwarders) {
+    std::string module;
+    const auto unsupported = PluginTlsForwarderModule(target, module);
+    if (!unsupported.empty()) return unsupported;
+    if (legacy(module)) return "Unsupported legacy TLS export forwarder: " + target;
   }
   return {};
 }
@@ -40,7 +74,7 @@ struct PluginTlsLocalModule {
   std::string error;
 };
 
-// Inspect the bounded, declarative import graph whose DLL basenames resolve
+// Inspect the bounded, declarative import/forwarder graph whose DLL basenames resolve
 // beside the original plugin. `read_local` must read and hold each found file
 // across the eventual LoadLibrary call. Missing sibling modules may resolve in
 // the application/system/PATH loader search; this function makes no claim about
@@ -60,7 +94,14 @@ std::string RefuseLegacyPluginLocalTlsClosure(
     const auto imports = ReadWin32PeImports(bytes);
     const auto denied = RefuseLegacyPluginTlsImports(imports);
     if (!denied.empty()) return denied;
-    for (const auto& item : imports.modules) {
+    auto declarations = imports.modules;
+    for (const auto& target : imports.forwarders) {
+      std::string module;
+      const auto unsupported = PluginTlsForwarderModule(target, module);
+      if (!unsupported.empty()) return unsupported;
+      declarations.push_back({std::move(module), false});
+    }
+    for (const auto& item : declarations) {
       // PE imports conventionally name a module basename. A qualified or
       // redirected name has no safe sibling-resolution interpretation here.
       if (item.name.empty() || item.name == "." || item.name == ".." ||

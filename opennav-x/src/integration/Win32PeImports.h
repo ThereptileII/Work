@@ -16,12 +16,16 @@ struct Win32PeImports {
   bool parsed = false;
   std::vector<Win32PeImport> modules;
   std::string error;
+  // Raw ASCII module.symbol / module.#ordinal declarations, separate from
+  // normal/delay imports. Spelling/grammar and trust policy are not inferred.
+  std::vector<std::string> forwarders;
 };
 
-// Reads module names only from already supplied bytes. No file, loader, process,
+// Reads import names and declared export forwarders from supplied bytes.
+// No file, loader, process,
 // environment or registry access. Success is NOT image validity, dependency
-// resolution, export/thunk validation, ABI compatibility or executable trust.
-// Unsupported/malformed metadata returns no partial module list.
+// resolution, full export/thunk validation, ABI compatibility or executable trust.
+// Unsupported/malformed metadata returns no partial declaration lists.
 inline Win32PeImports ReadWin32PeImports(const std::vector<unsigned char>& bytes) {
   try {
     const auto require = [](bool condition, const char* message) {
@@ -141,10 +145,49 @@ inline Win32PeImports ReadWin32PeImports(const std::vector<unsigned char>& bytes
       }
       require(terminated, "Unterminated import directory");
     }
+    if (directory_count) {
+      const std::uint64_t rva = word(optional + 96, 4);
+      const std::uint64_t size = word(optional + 100, 4);
+      if (rva || size) {
+        require(rva && size >= 40 && size <= 1024u * 1024u,
+                "Invalid export directory extent");
+        const auto base = offset(rva, size);
+        const auto end = rva + size;  // offset already checked 32-bit RVA extent.
+        const std::uint64_t entries = word(base + 20, 4);
+        require(entries <= 65536, "Export address table budget exceeded");
+        if (entries) {
+          const auto eat = offset(word(base + 28, 4), entries * 4);
+          for (std::uint64_t i = 0; i < entries; ++i) {
+            const std::uint64_t target = word(eat + i * 4, 4);
+            // Zero/hole and nonforwarded exports do not declare a dependency.
+            // Their RVAs are deliberately not validated as executable code.
+            if (target < rva || target >= end) continue;
+            require(result.forwarders.size() < 4096,
+                    "Export forwarder budget exceeded");
+            std::string name;
+            bool terminated = false;
+            for (unsigned n = 0; n < 4096; ++n) {
+              // Include NUL in the export-directory boundary check, even when
+              // bytes beyond the directory still have valid raw backing.
+              require(target + n < end, "Export forwarder crosses directory boundary");
+              const auto c = bytes[offset(target + n, 1)];
+              if (!c) { terminated = true; break; }
+              require(c >= 32 && c <= 126, "Non-ASCII export forwarder");
+              name += static_cast<char>(c);
+            }
+            require(terminated && !name.empty(), "Empty or oversized export forwarder");
+            require(name_bytes <= 1024u * 1024u - name.size(),
+                    "Declaration name budget exceeded");
+            name_bytes += name.size();
+            result.forwarders.push_back(std::move(name));
+          }
+        }
+      }
+    }
     result.parsed = true;
     return result;
   } catch (const std::exception& failure) {
-    return {false, {}, failure.what()};
+    return {false, {}, failure.what(), {}};
   }
 }
 }  // namespace opennav::integration

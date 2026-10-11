@@ -406,6 +406,140 @@ int main(int argc,char**argv) {
       search.Restore();
       Pass("previously unmapped sibling maps with inspected path/identity under live guard");
     }
+    // Native export-only dependencies: no normal/delay descriptor names the
+    // forwarded module. Resolve the inert export, never a plugin factory.
+    const struct ForwardCase {
+      const char* kind; const char* target; bool denied; bool ambiguous;
+    } forward_cases[] = {
+      {"forward_legacy_name","libeay32.legacy_tls_fixture",true,false},
+      {"forward_legacy_ordinal","libeay32.#209",true,false},
+      {"forward_ssleay_ordinal","ssleay32.#209",true,false},
+      {"forward_indirect","forward_helper.forwarded_probe",true,false},
+      {"forward_clean_name","forward_clean.fixture_value",false,false},
+      {"forward_clean_ordinal","forward_clean.#209",false,false},
+      {"forward_explicit_dll","forward_clean.dll.fixture_value",false,true},
+      {"forward_multi_dot","forward.clean.fixture_value",false,true}
+    };
+    for (const auto& test : forward_cases) {
+      Case c(work,test.kind,vendor,good);
+      Copy(fixtures/"forwarders"/(std::string("fixture_")+test.kind+".dll"),c.original);
+      const auto directory=c.original.parent_path();
+      const bool indirect=std::string(test.kind)=="forward_indirect";
+      const bool ssleay=std::string(test.kind)=="forward_ssleay_ordinal";
+      const bool multi=std::string(test.kind)=="forward_multi_dot";
+      std::vector<fs::path> siblings;
+      if(test.denied) {
+        const auto stub=directory/(ssleay ? "ssleay32.dll" : "libeay32.dll");
+        Copy(ssleay ? fixtures/"forwarders/ssleay32.dll" : fixtures/"libeay32.dll",stub);
+        siblings.push_back(stub);
+        if(indirect) {const auto helper=directory/"forward_helper.dll";
+          Copy(fixtures/"forwarders/forward_helper.dll",helper);siblings.push_back(helper);}
+      } else if(multi) {
+        for(const auto* name : {"forward.dll","forward.clean.dll"}) {
+          const auto path=directory/name;Copy(fixtures/"forwarders"/name,path);siblings.push_back(path);
+        }
+      } else {
+        const auto helper=directory/"forward_clean.dll";
+        Copy(fixtures/"forwarders/forward_clean.dll",helper);siblings.push_back(helper);
+      }
+      const auto raw=Read(c.original);
+      const std::vector<unsigned char> bytes(raw.begin(),raw.end());
+      const auto declared=ReadWin32PeImports(bytes);
+      Require(declared.parsed && declared.forwarders==std::vector<std::string>{test.target},
+              "MSVC fixture did not emit the exact intended forwarder string");
+      for(const auto& item : declared.modules)
+        Require(item.name!="libeay32.dll" && item.name!="ssleay32.dll" &&
+                    item.name.find("forward")==std::string::npos,
+                "forwarder fixture unexpectedly has an ordinary dependency import");
+      const auto original_before=Hash(c.original);
+      std::vector<std::string> sibling_hashes;
+      for(const auto& path : siblings) sibling_hashes.push_back(Hash(path));
+      ScopedSearchDirectory search(directory);
+      wxDynamicLibrary lib;
+      RegisterPluginPresentationLoader(nullptr);
+      for(const auto& path : siblings)
+        Require(GetModuleHandleW(path.filename().c_str())==nullptr,"forwarder sibling preloaded before guard");
+      if(test.denied || test.ambiguous) {
+        {OriginalPluginTlsGuard guard(W(c.original));
+          Require(guard.Refusal().find(test.ambiguous ? "Unsupported plugin export forwarder grammar" :
+                      "TLS export forwarder")!=std::string::npos,"wrong forwarded-graph refusal");
+          Require(SharingDenied(c.original,GENERIC_WRITE) && SharingDenied(c.original,DELETE),
+                  "forwarder refusal did not hold inspected original");
+          if(indirect) Require(SharingDenied(siblings.back(),GENERIC_WRITE) &&
+                                  SharingDenied(siblings.back(),DELETE),"forwarded sibling was not held");
+          c.Events("");
+        }
+        for(int attempt=0;attempt<2;++attempt) {
+          Require(LoadPluginWithPresentationFallback(lib,W(c.original),{})==PluginModuleLoadOutcome::LoadFailed,
+                  "declared forwarder crossed original load boundary");
+          Require(!lib.IsLoaded(),"refused forwarder original is mapped");c.Events("");
+          for(const auto& path : siblings)
+            Require(GetModuleHandleW(path.filename().c_str())==nullptr,"refused forwarded sibling reached DllMain");
+        }
+        fallback_adapter=c.adapter;RegisterPluginPresentationLoader(CallbackCleanRefusal);
+        Require(LoadPluginWithPresentationFallback(lib,W(c.original),[](const wxString&){return true;})==PluginModuleLoadOutcome::LoadFailed,
+                "clean adapter refusal bypassed forwarder guard");
+        Require(!lib.IsLoaded(),"forwarder original mapped after adapter refusal");
+        c.Events("attach\ndetach\n");fs::remove(c.events);RegisterPluginPresentationLoader(nullptr);
+      }
+      // Direct denied-basename controls explicitly preload their private inert
+      // stub, avoiding the earlier fixtures' application-directory duplicate.
+      wxDynamicLibrary stub;
+      if(test.denied) Require(stub.Load(W(siblings.front())),"private inert forwarded TLS stub load");
+      const auto exercise = [&](bool guarded) {
+        std::vector<BY_HANDLE_FILE_INFORMATION> inspected;
+        for(const auto& path : siblings) inspected.push_back(FileIdentity(path));
+        Require(lib.Load(W(c.original)),"harmless forwarder original load");
+        c.Events("attach\n");
+        const auto proc=GetProcAddress(reinterpret_cast<HMODULE>(lib.GetLibHandle()),"forwarded_probe");
+        Require(proc!=nullptr,"native forwarded export resolution failed");
+        HMODULE owner=nullptr;
+        Require(GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+                    reinterpret_cast<LPCWSTR>(proc),&owner)!=0,"native forwarder target owner");
+        wchar_t mapped_path[32768]{};const auto n=GetModuleFileNameW(owner,mapped_path,32768);
+        Require(n && n<32768,"native forwarder mapped path");
+        const fs::path actual(mapped_path);
+        const auto mapped_identity=FileIdentity(actual);
+        bool matched=false;
+        for(std::size_t i=0;i<siblings.size();++i)
+          if(_wcsicmp(actual.lexically_normal().c_str(),siblings[i].lexically_normal().c_str())==0)
+            matched=SameFile(mapped_identity,inspected[i]) && Hash(actual)==sibling_hashes[i];
+        Require(matched,"forwarded target resolved outside exact private sibling identity");
+        const auto value=reinterpret_cast<int (__cdecl*)()>(proc)();
+        if(test.ambiguous)
+          Require(multi ? (value==310 || value==409) : (value==209 || value==210),
+                  "ambiguous native probe selected no prepared harmless symbol");
+        else Require(value==209,"native simple named/ordinal forwarder returned wrong fixture value");
+        std::cout<<"Native forwarder target: "<<test.target<<" -> "<<actual.u8string()
+                 <<"; value="<<value<<"; volume="<<mapped_identity.dwVolumeSerialNumber
+                 <<"; file-index="<<mapped_identity.nFileIndexHigh<<":"<<mapped_identity.nFileIndexLow
+                 <<"; sha256="<<Hash(actual)<<"; guarded="<<guarded<<"\n";
+        if(guarded) {
+          for(const auto& path : {c.original,siblings.front()})
+            Require(SharingDenied(path,GENERIC_WRITE) && SharingDenied(path,DELETE),
+                    "forwarder inspection lock disappeared during resolution");
+        }
+        const bool marked=!test.denied || indirect;
+        c.Events(marked ? "attach\nforward-target-attach\n" : "attach\n");
+        Require(UnloadPluginModuleChecked(lib),"native forwarded original unload");
+        c.Events(marked ? "attach\nforward-target-attach\ndetach\nforward-target-detach\n" : "attach\ndetach\n");
+      };
+      if(!test.denied && !test.ambiguous) {
+        OriginalPluginTlsGuard guard(W(c.original));
+        Require(guard.Refusal().empty(),"benign forwarder graph refused: "+guard.Refusal());
+        for(const auto& path : {c.original,siblings.front()})
+          Require(SharingDenied(path,GENERIC_WRITE) && SharingDenied(path,DELETE),"benign forwarded file not held");
+        Require(GetModuleHandleW(siblings.front().filename().c_str())==nullptr,"inspection mapped forwarded target");
+        exercise(true);
+      } else exercise(false);  // Loadability/grammar comparison only; no policy relaxation.
+      if(test.denied) Require(UnloadPluginModuleChecked(stub),"private forwarded stub cleanup");
+      for(std::size_t i=0;i<siblings.size();++i) {
+        Require(GetModuleHandleW(siblings[i].filename().c_str())==nullptr,"forwarded sibling remained mapped");
+        Require(Writable(siblings[i]) && Hash(siblings[i])==sibling_hashes[i],"forwarded sibling changed or lock leaked");
+      }
+      Require(Writable(c.original) && Hash(c.original)==original_before,"forwarded original changed or lock leaked");
+      search.Restore();Pass(test.kind);
+    }
     {Case c(work,"injected-invalid-module-handle",vendor,good);Copy(good,c.original);
       wxDynamicLibrary lib;
       void* reserved=VirtualAlloc(nullptr,65536,MEM_RESERVE,PAGE_NOACCESS);
@@ -431,7 +565,7 @@ int main(int argc,char**argv) {
       Pass("injected invalid-handle refusal retains ownership");
     }
     NeverLoadedVendor();Require(Hash(vendor)==OriginalOChartsSha256,"vendor input changed");
-    std::ofstream report(argv[6]);report<<"{\"status\":\"passed\",\"checks\":"<<passed<<",\"vendorExecuted\":false,\"pluginFactoryExecuted\":false,\"invalidHandleFaultInjected\":true,\"unmappedSiblingGuardControl\":true,\"productAcceptance\":false}\n";
+    std::ofstream report(argv[6]);report<<"{\"status\":\"passed\",\"checks\":"<<passed<<",\"vendorExecuted\":false,\"pluginFactoryExecuted\":false,\"invalidHandleFaultInjected\":true,\"unmappedSiblingGuardControl\":true,\"exportForwarderControls\":true,\"forwarderGrammarProbes\":true,\"productAcceptance\":false}\n";
     std::cout<<"PASS "<<passed<<" native loader groups; no vendor or plugin factory execution\n";return 0;
   } catch(const std::exception& error) {std::cerr<<"FAIL "<<error.what()<<"\n";return 1;}
 }

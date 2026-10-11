@@ -54,7 +54,7 @@ Bytes Image(const std::vector<std::string>& normal = {},
 }
 void Reject(const Bytes& b, const char* context, const char* expected = "") {
   const auto result = ReadWin32PeImports(b);
-  Check(!result.parsed && result.modules.empty() && !result.error.empty(), context);
+  Check(!result.parsed && result.modules.empty() && result.forwarders.empty() && !result.error.empty(), context);
   if (*expected) Check(result.error == expected, "Wrong rejection boundary");
 }
 void Tests() {
@@ -225,7 +225,7 @@ void Tests() {
   // oracle for unrelated fields; every rejection must discard partial names.
   for (std::size_t at = 0; at < valid.size(); ++at) {
     b = valid; b[at] ^= 0xff; result = ReadWin32PeImports(b);
-    Check(result.parsed ? result.error.empty() : (!result.error.empty() && result.modules.empty()), "Inconsistent mutation result");
+    Check(result.parsed ? result.error.empty() : (!result.error.empty() && result.modules.empty() && result.forwarders.empty()), "Inconsistent mutation result");
   }
 }
 }

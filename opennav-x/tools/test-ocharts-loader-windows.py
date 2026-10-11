@@ -29,6 +29,8 @@ INPUTS = (
     'tests/windows_ocharts_loader/indirect_dependency.cpp',
     'tests/windows_ocharts_loader/unmapped_dependency.cpp',
     'tests/windows_ocharts_loader/legacy_dependency.cpp',
+    'tests/windows_ocharts_loader/forward_dependency.cpp',
+    'tests/win32_pe_forwarders_test.cpp',
     'tests/windows_ocharts_loader/loader_test.cpp',
     'tests/windows_ocharts_loader/inputs.lock.json',
     'tools/test-ocharts-loader-windows.py',
@@ -37,7 +39,9 @@ INPUTS = (
 )
 VARIANTS = ('good', 'no_bind', 'no_status', 'no_create', 'no_destroy',
             'legacy_normal', 'legacy_delay', 'indirect_legacy', 'indirect_clean',
-            'indirect_unmapped')
+            'indirect_unmapped', 'forward_legacy_name', 'forward_legacy_ordinal',
+            'forward_ssleay_ordinal', 'forward_indirect', 'forward_clean_name',
+            'forward_clean_ordinal', 'forward_explicit_dll', 'forward_multi_dot')
 
 
 def identity(path):
@@ -104,6 +108,8 @@ def main():
               'gaps': ['real adapter OpenCPN import ABI and renderer integration',
                        'full app Standard/Safe selection and plugin lifecycle',
                        'genuine loaded-module unload refusal; fault test uses a reserved non-module address',
+                       'forwarder grammar beyond the supported single-separator subset; native probes do not relax policy',
+                       'declared local graph only; external loader roots, arbitrary dynamic/helper loads and general module identity',
                        'encrypted-chart rendering, licensing and physical hardware']}
     lock = json.loads((ROOT / 'tests/windows_ocharts_loader/inputs.lock.json').read_text())
     scratch = ROOT / 'build/windows-ocharts-loader-guards'
@@ -140,13 +146,19 @@ def main():
         report['runtime'] = api.stage_native_runtime(client, wx,
             ('wxbase32u_vc14x.dll', 'wxmsw32u_core_vc14x.dll'))
         fixtures = client.parent
+        api.run([fixtures / 'win32_pe_forwarders_test.exe'], evidence / 'native-pe-forwarders.log', timeout=60)
+        report['peForwarderExecutable'] = identity(fixtures / 'win32_pe_forwarders_test.exe')
         report['fixtures'] = {}
         for name in VARIANTS:
-            fixture = fixtures / ('fixture_' + name + '.dll')
-            report['fixtures'][fixture.name] = dict(identity(fixture), pe=require_win32_dll(fixture))
+            relative = ('forwarders/' if name.startswith('forward_') else '') + 'fixture_' + name + '.dll'
+            fixture = fixtures / relative
+            report['fixtures'][relative] = dict(identity(fixture), pe=require_win32_dll(fixture))
         stub = fixtures / 'libeay32.dll'
         report['fixtures'][stub.name] = dict(identity(stub), pe=require_win32_dll(stub))
-        for name in ('helper_legacy.dll', 'helper_clean.dll', 'unmapped/helper_unmapped.dll'):
+        for name in ('helper_legacy.dll', 'helper_clean.dll', 'unmapped/helper_unmapped.dll',
+                     'forwarders/ssleay32.dll', 'forwarders/forward_clean.dll',
+                     'forwarders/forward.dll', 'forwarders/forward.clean.dll',
+                     'forwarders/forward_helper.dll'):
             helper = fixtures / name
             report['fixtures'][name] = dict(identity(helper), pe=require_win32_dll(helper))
         junction_original = scratch / 'original-junction'
@@ -162,13 +174,16 @@ def main():
         api.run([client, vendor, fixtures, work, junction_original, junction_adapter,
                  evidence / 'native-tests.json'], evidence / 'native-tests.log', timeout=120)
         native = json.loads((evidence / 'native-tests.json').read_text())
-        if native != {'status': 'passed', 'checks': 43, 'vendorExecuted': False,
+        if native != {'status': 'passed', 'checks': 51, 'vendorExecuted': False,
                       'pluginFactoryExecuted': False, 'invalidHandleFaultInjected': True,
-                      'unmappedSiblingGuardControl': True, 'productAcceptance': False}:
+                      'unmappedSiblingGuardControl': True, 'exportForwarderControls': True,
+                      'forwarderGrammarProbes': True, 'productAcceptance': False}:
             raise ValueError('Native guard receipt is incomplete or changed')
         report['native'] = native
         if identity(client) != report['executable'] or identity(vendor) != report['vendorInput']:
             raise ValueError('Executable or read-only vendor input changed during tests')
+        if identity(fixtures / 'win32_pe_forwarders_test.exe') != report['peForwarderExecutable']:
+            raise ValueError('Native pure forwarder test executable changed during tests')
         for name, item in report['fixtures'].items():
             if identity(fixtures / name) != {k: item[k] for k in ('bytes', 'sha256')}:
                 raise ValueError('Fixture changed: ' + name)
