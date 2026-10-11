@@ -158,6 +158,38 @@ explicitly unexecuted until the combined Windows gate.
 | `CandidateRestored` | After unsuccessful startup closes normally, inspect and restore that candidate's own commissioning transaction, preserving reviewed current user state, while the candidate is still selected. | Change the pointer back through the exact guarded rollback transaction. |
 | `FallbackCommissioned` | With the previous generation selected again, perform a new inventory/commissioning/audit/approval over its current profile and complete actual loader trees. Its baseline must equal the just-restored candidate profile. | Create the exact fallback application process once. |
 
+### Concrete previous-generation restoration
+
+`SignedUpdatePreviousRestore.ps1` now implements the first operation through the
+existing `commission-read-only.ps1` engine. `Inspect-SignedUpdatePreviousRestore`
+requires a fresh live operation-event store and the exact prepared transaction
+selected in its binding. It verifies the currently selected owned generation,
+context and physical installed root before retaining the real engine inspection.
+`Invoke-SignedUpdatePreviousRestore` requires that inspection and its exact
+reviewed current-INI hash. Substantive user-setting changes require the existing
+independently reviewed session-preservation proposal; they cannot be erased by
+restoring an old baseline automatically.
+
+The real Restore runs under the installation transaction lock. After the engine
+returns, the operation reacquires shared profile exclusion and independently
+checks its completion, restored profile bytes and permissions, complete profile
+and plugin trees, returned quarantine files, absence of the active commissioning
+marker and unchanged selected generation/state/ownership. Only then does it
+derive and append `PreviousRestored` to the live store. Failure after starting
+Restore poisons that store and retains the installed denial marker; even an
+actually completed restoration cannot publish a success event after failed
+postchecks or journal persistence.
+
+The portable suite passed 49 assertions across 11 actual temporary-file
+transactions against the integrated store. It copies the exact transaction
+scripts and substitutes only unsupported Windows identity/ACL/mutex/handle
+boundaries; Restore and preservation/journal logic are real. It is registered
+only in the portable signed-session gate. Native Windows 5.1 x86/x64 remains
+required and unperformed for this operation. The engine still uses DOS paths,
+and its profile-lock release/reacquisition leaves a checked gap: this is not
+continuous namespace custody. The operation is not connected to product
+startup and cannot install, create/terminate a process or grant launch authority.
+
 A healthy successor ends after receipt 2; it does not need a fictitious rollback.
 Receipt 4 ends the fallback branch. The in-memory session permits no additional
 transition. Refused requests leave it unchanged. Copies returned to the caller

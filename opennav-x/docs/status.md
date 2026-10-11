@@ -1,5 +1,21 @@
 # SKAGER status — 2026-10-11
 
+## Real previous-generation restoration integrated
+
+Commit `b6f2667b` integrates the signed-session operation with the real existing
+InspectRestore/Restore engine. It requires exact current inspection and, for
+changed settings, the existing independent preservation proposal. It verifies
+actual restored profile/plugin files and permissions, selected generation and
+marker removal before publishing `PreviousRestored`. Failed postchecks or journal
+persistence leave denial in place and poison the live store even when Restore
+itself completed. The combined focused check passed 49 assertions across 11
+temporary-file transactions against store source SHA-256
+`83928135ce3196565a7cedb322508edfccda5d12f38e83f28c62c5bb65105a92`.
+The portable signed-session gate now includes this check. It uses explicit
+unsupported-Windows adapters; native Windows behavior is still pending. This
+operation supplies no install/spawn authority and is not product-wired. See the
+[operation contract](installer/signed-update-session-contract.md#concrete-previous-generation-restoration).
+
 ## Physical signed-store path correction
 
 The source batch now binds installed arming's transaction lock, owner/state

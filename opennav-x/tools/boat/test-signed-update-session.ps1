@@ -112,3 +112,8 @@ Write-Output ('Signed update session: '+$checks+' pure contract checks passed; n
 & (Join-Path $PSScriptRoot 'test-signed-update-operations.ps1')
 & (Join-Path $PSScriptRoot 'test-signed-update-session-store.ps1')
 & (Join-Path $PSScriptRoot 'test-installed-signed-update-store.ps1')
+if([Environment]::OSVersion.Platform -ne [PlatformID]::Win32NT){
+  # Real temporary-file transactions with explicit unsupported-native adapters.
+  # Windows must not silently use those adapters as physical custody evidence.
+  & (Join-Path $PSScriptRoot 'test-signed-update-previous-restore.ps1') -PortableContracts
+}
