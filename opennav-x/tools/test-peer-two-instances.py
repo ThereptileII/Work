@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Fail-closed harness contracts; no application, display or peer is launched."""
 import importlib.util
+import ctypes
 import hashlib
 import json
 from pathlib import Path
@@ -18,6 +19,58 @@ spec.loader.exec_module(peer)
 
 
 class PeerTwoContracts(unittest.TestCase):
+    def failure_ui(self, title='OpenCPN', caption='Existing instance is too busy'):
+        def native_class(handle, buffer, length):
+            buffer.value = {1: '#32770', 2: 'Static', 3: 'Edit'}[handle]
+            return len(buffer.value)
+        return types.SimpleNamespace(C=ctypes,
+            windows=Mock(return_value=[(1, 123, title)]),
+            children=Mock(return_value=[(2, caption), (3, 'editable private text')]),
+            GetClassNameW=native_class, IsWindowEnabled=lambda handle: handle != 1)
+
+    def test_failure_observes_owned_modal_and_missing_diagnostics_without_input(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            profile = Path(temporary)
+            (profile / 'opencpn.log').write_bytes(b'')
+            process = Mock(pid=123)
+            process.poll.return_value = None
+            ui = self.failure_ui()
+            result = peer.windows_startup_failure(process, profile, ui)
+            self.assertIsNone(result['exit_code_before_cleanup'])
+            self.assertEqual(result['files']['opencpn.log']['bytes'], 0)
+            self.assertEqual(result['diagnostic_error'], 'FileNotFoundError')
+            self.assertEqual(result['windows'][0]['class'], '#32770')
+            self.assertFalse(result['windows'][0]['enabled'])
+            self.assertEqual(len(result['windows'][0]['controls']), 1)
+            self.assertNotIn('editable private text', json.dumps(result))
+            process.terminate.assert_not_called()
+            ui.windows.assert_called_once_with(123)
+
+    def test_failure_state_redacts_secrets_and_keeps_diagnostic_allowlist(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            profile = Path(temporary)
+            secret = peer.SECRETS[0].decode()
+            diagnostic = {'build_commit': secret, 'publication_monotonic_ms': 42,
+                          'runtime': {'ui_update': {'ticks': 3}}, 'private': 'discarded'}
+            path = profile / 'opennav-diagnostics.json'
+            path.write_text(json.dumps(diagnostic))
+            original = path.read_bytes()
+            process = Mock(pid=123); process.poll.return_value = None
+            result = peer.windows_startup_failure(process, profile, self.failure_ui(secret, secret))
+            self.assertNotIn(secret, json.dumps(result))
+            self.assertNotIn('discarded', json.dumps(result))
+            self.assertEqual(result['diagnostic']['ui_ticks'], 3)
+            self.assertEqual(path.read_bytes(), original)
+            path.write_text('{invalid')
+            self.assertEqual(peer.windows_startup_failure(process, profile, self.failure_ui())['diagnostic_error'], 'JSONDecodeError')
+
+    def test_unready_live_process_still_fails_at_original_deadline(self):
+        process = Mock(pid=123); process.poll.return_value = None
+        with tempfile.TemporaryDirectory() as temporary, \
+             patch.object(peer.time, 'monotonic', side_effect=[0, 0, 75]), \
+             patch.object(peer.time, 'sleep'), self.assertRaisesRegex(RuntimeError, 'did not finish startup'):
+            peer.wait_ready(process, Path(temporary))
+
     def retained_fixture(self):
         temporary = tempfile.TemporaryDirectory()
         self.addCleanup(temporary.cleanup)

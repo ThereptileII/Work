@@ -82,6 +82,52 @@ def redact(content):
     return content
 
 
+def windows_startup_failure(process, profile, ui):
+    """Read owned windows and bounded startup state before terminating a failure.
+
+    No window activation, messages, input, profile writes or retry. Log output
+    can remain buffered until normal exit, so a zero-byte log is not a stack.
+    """
+    clean = lambda value: redact(value.encode('utf-8')).decode('utf-8')
+    state = {'pid': process.pid, 'exit_code_before_cleanup': process.poll(),
+             'files': {}, 'windows': []}
+    for name in ('opencpn.log', 'opennav-diagnostics.json', 'opennav-startup.state', 'startcheck.dat'):
+        try:
+            state['files'][name] = {'bytes': (profile / name).stat().st_size}
+        except OSError as error:
+            state['files'][name] = {'error': type(error).__name__}
+    try:
+        path = profile / 'opennav-diagnostics.json'
+        with path.open('rb') as stream:
+            raw = stream.read(1024 * 1024 + 1)
+        if len(raw) > 1024 * 1024:
+            raise ValueError('Diagnostic exceeds failure observation bound')
+        data = json.loads(raw)
+        scalar = lambda value: clean(value) if isinstance(value, str) else value if value is None or type(value) in (int, float) else 'invalid scalar'
+        state['diagnostic'] = {
+            'build_commit': scalar(data.get('build_commit')),
+            'publication_monotonic_ms': scalar(data.get('publication_monotonic_ms')),
+            'ui_ticks': scalar(data.get('runtime', {}).get('ui_update', {}).get('ticks'))}
+    except (OSError, ValueError, TypeError, AttributeError) as error:
+        state['diagnostic_error'] = type(error).__name__
+    for handle, owner, title in ui.windows(process.pid)[:16]:
+        if owner != process.pid:
+            raise ValueError('Failure window observation changed owner')
+        native_class = ui.C.create_unicode_buffer(128)
+        ui.GetClassNameW(handle, native_class, len(native_class))
+        window = {'title': clean(title), 'class': native_class.value,
+                  'enabled': bool(ui.IsWindowEnabled(handle)), 'controls': []}
+        for child, caption in ui.children(handle)[:64]:
+            child_class = ui.C.create_unicode_buffer(128)
+            ui.GetClassNameW(child, child_class, len(child_class))
+            # Read only cached static/button captions, never editable fields.
+            if child_class.value.casefold() in ('static', 'button'):
+                window['controls'].append({'class': child_class.value,
+                    'caption': clean(caption), 'enabled': bool(ui.IsWindowEnabled(child))})
+        state['windows'].append(window)
+    return state
+
+
 def require_build(diagnostic, expected):
     if diagnostic.get("build_commit") != expected:
         raise AssertionError("running binary does not match the exact product commit")
@@ -256,6 +302,16 @@ def run(args):
             report["result"] = "PASS"
         except BaseException as error:
             report["error"] = repr(error)
+            if os.name == "nt":
+                # Observe while both owned processes still exist. Cleanup below
+                # must retain the original gate failure even if observation fails.
+                report['windows_failure_state'] = []
+                for process, profile, *_ in processes:
+                    try:
+                        state = windows_startup_failure(process, profile, load('windows-ui'))
+                    except Exception as observation_error:
+                        state = {'pid': process.pid, 'observation_error': type(observation_error).__name__}
+                    report['windows_failure_state'].append(state)
             raise
         finally:
             for process, *_ in processes:
