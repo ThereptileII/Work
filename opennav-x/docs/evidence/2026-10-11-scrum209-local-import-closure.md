@@ -15,8 +15,13 @@ Focused portable checks: `python3 tools/test-win32-pe-imports.py` passed
 tools/test-win32-pe-imports.py --sanitize --cxx clang++` passed the same 9,366
 checks with ASan/UBSan; LeakSanitizer itself cannot run under this host's
 ptrace environment. Python syntax and `git diff --check` passed. The normal
-and indirect native DLL fixtures are prepared but have **not** yet run under
-MSVC; the native receipt requires 42 groups.
+and indirect native DLL fixtures passed **42 groups** under native MSVC Win32
+in [focused run 38146240771](https://github.com/ThereptileII/Work/actions/runs/38146240771)
+for exact source commit `840e1932fd2531f508d43459c89d39bce98fb496`.
+The retained `summary.json` SHA-256 is
+`f4595833dff7417459908f2623c30b81ef12701160d5f7c288111f4bbde8034e`.
+All 20 source receipts match that source checkout after accounting for Windows
+CRLF checkout conversion. The receipt explicitly sets product acceptance false.
 
 Independent source review found an extension-less import alias that the first
 walk would miss: `helper` may resolve as `helper.dll`. The guard now normalizes
@@ -26,7 +31,9 @@ delay import negatives plus an alias deduplication check cover this correction.
 The test-only `libeay32.dll` is an inert locally compiled symbol stub, not
 OpenSSL. The new indirect fixture chain is original → sibling helper → that
 stub, with a benign sibling-control variant. No target boat, real vendor DLL,
-network or production application was executed for this slice.
+network or production application was executed for this slice. The benign
+native helper is preloaded to control DLL search resolution; these checks do
+not prove a first dependency mapping while its inspection handle is held.
 
 Limits: the observed sibling graph is not a complete Windows loader graph.
 Application, PATH, already mapped, SxS/manifest, KnownDLL and API-set choices;

@@ -53,8 +53,11 @@ Local preparation evidence: Python syntax passed, and the exact cached archive
 was read with the real extraction function: only its 2,088,960-byte DLL was
 extracted, its accepted hash matched, and its PE header verified as I386/PE32.
 The native project now has 42 groups, including two direct/delay and two
-same-directory indirect-import controls. Those additions are **prepared, not run** until a native workflow
-receipt exists. No CI dispatch or boat action was performed in this task.
+same-directory indirect-import controls. They passed native MSVC Win32 in
+[run 38146240771](https://github.com/ThereptileII/Work/actions/runs/38146240771)
+at `840e1932fd2531f508d43459c89d39bce98fb496`. The receipt retains source,
+fixture and runtime hashes and explicitly sets product acceptance false.
+No boat action was performed.
 
 Remaining product gates: actual package/adapter import ABI, full application
 Standard/Safe selection, real plugin lifecycle, encrypted-chart rendering,
@@ -72,12 +75,14 @@ refusal, even while the stub is already mapped. The test checks original bytes
 and lock release afterward. No real obsolete TLS library or vendor code is
 executed. Source receipts now include both guard headers and the PE reader;
 fixture receipts include the stub and both importing modules. These new native
-controls are prepared but not run. They do not exercise actual OpenCPN root
+controls passed in the focused run above. They do not exercise actual OpenCPN root
 discovery, dependency resolution, helpers or arbitrary dynamic loads.
 
 The indirect controls add an original DLL importing a locally built helper.
 One helper imports the harmless legacy-name stub; the other is benign. The
-original has no direct legacy import. The first must be refused before its
-DllMain; the second must remain loadable while the guard holds the inspected
-files. This tests the same-directory path only, not general Windows loader
-search order or plugin helper processes.
+original has no direct legacy import. The first is refused before its DllMain;
+the second remains loadable while the guard holds the inspected files. The
+benign helper is already mapped for deterministic search resolution, so this
+does not establish first dependency mapping under the held handle. This tests
+the same-directory path only, not general Windows loader search order or plugin
+helper processes.

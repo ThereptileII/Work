@@ -140,10 +140,12 @@ cycles, repeated names, malformed/missing siblings and the node bound. The
 native harmless load controls in
 `tests/windows_ocharts_loader` additionally compare successful unguarded loads
 against refusal before original DllMain, repeated loads, clean adapter fallback
-and lock lifetime. Native checks are prepared, not executed locally.
+and lock lifetime. The 42 native MSVC Win32 groups passed at source commit
+`840e1932` in [focused run 38146240771](https://github.com/ThereptileII/Work/actions/runs/38146240771);
+the source evidence records their exact scope and remaining loader limitations.
 
-Before acceptance, run the focused MSVC Win32 loader gate and then the exact
-integrated native candidate with default per-user, configured, portable and
+Before acceptance, qualify the exact integrated native candidate with default
+per-user, configured, portable and
 app-local roots; initial/reload and successful/refused adapter paths; existing
 supported plugins and OpenCPN unloadable diagnostics; observed normal/delay/
 transitive/dynamic/helper identities; TLS/certificate failure behavior; and
