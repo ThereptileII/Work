@@ -35,6 +35,9 @@ foreach ($HostArchitecture in @(
         throw "Signed-update custody contracts failed: Windows PowerShell 5.1 $($HostArchitecture.Name)"
     }
 }
+# The content inspector has no launch authority. Native NTFS identity and
+# reparse behavior still matter, so exercise its bounded files on Windows.
+Check 'boat/test-signed-update-artifacts.py'
 # Run the same thirteen compiled components only after immutable input restore.
 # The runner verifies the original manifest and each fixed executable against the
 # restore receipt, rebasing paths while keeping producer/harness identities distinct.
