@@ -6,6 +6,7 @@ hash checks do not authenticate remote provenance or provision/activate a broker
 Use a separate install copy; ordinary launcher-only producer outputs stay intact.
 """
 import argparse
+from contextlib import contextmanager
 import hashlib
 import importlib.util
 import json
@@ -42,7 +43,7 @@ def prepare_outputs(install):
     return install, binary, record
 
 
-def source_inventory(module, goroot, cache, modules, reference):
+def source_inventory(module, goroot, cache, modules, reference, *, graph_root=None):
     """Reuse the launcher inventory rules, without downloading or archiving again."""
     inventory = launcher.Inventory()
     tracked = launcher.run(['git', 'ls-files', '-z', '--', 'tools/update-verifier',
@@ -66,7 +67,7 @@ def source_inventory(module, goroot, cache, modules, reference):
             raise ValueError('Replaced or unresolved broker module refused')
         if item.get('Main'):
             mains += 1
-            if item['Path'] != launcher.MAIN_MODULE or Path(item.get('Dir', '')).resolve() != module.resolve():
+            if item['Path'] != launcher.MAIN_MODULE or Path(item.get('Dir', '')).resolve() != (graph_root or module).resolve():
                 raise ValueError('Unexpected broker main module')
             continue
         path = item.get('Path')
@@ -75,6 +76,8 @@ def source_inventory(module, goroot, cache, modules, reference):
                 item.get('Sum') != expected['sum'] or item.get('GoModSum') != expected['goModSum']):
             raise ValueError('Broker module graph differs from retained launcher source')
         seen.add(path)
+        if not all(isinstance(item.get(key), str) and item[key] for key in ('Dir', 'GoMod')):
+            raise ValueError('Audited broker cache locations unavailable')
         inventory.tree(launcher.module_cache_source(item['Dir'], cache), expected['sourcePrefix'])
         inventory.add(launcher.module_cache_source(item['GoMod'], cache),
                       'module-locks/' + path + '@' + item['Version'] + '.mod')
@@ -87,8 +90,9 @@ def source_inventory(module, goroot, cache, modules, reference):
     return inventory
 
 
-def check_source(inventory, descriptor):
-    """Bind the existing complete archive to actual current build inputs."""
+@contextmanager
+def retained_source(descriptor):
+    """Read only the bounded, hash-bound existing source archive."""
     archive = launcher.plain_path(descriptor['archive'], 'Retained updater source archive')
     if launcher.digest(archive) != descriptor['sha256']:
         raise ValueError('Retained updater source archive changed')
@@ -96,7 +100,6 @@ def check_source(inventory, descriptor):
         entries = source.infolist()
         names = [item.filename for item in entries]
         if (len(names) != len(set(names)) or len(names) > launcher.MAX_FILES + 1 or
-                set(names) != set(inventory.files) | {'SOURCE_REFERENCE.json', 'provisioning/go.sum'} or
                 any(item.file_size > (MAX_REFERENCE_BYTES if item.filename == 'SOURCE_REFERENCE.json' else launcher.MAX_FILE_BYTES)
                     or item.flag_bits & 1 for item in entries) or
                 sum(item.file_size for item in entries) > launcher.MAX_SOURCE_BYTES + MAX_REFERENCE_BYTES):
@@ -113,6 +116,54 @@ def check_source(inventory, descriptor):
             if type(record['bytes']) is not int or record['bytes'] != source.getinfo(name).file_size:
                 raise ValueError('Retained source size differs')
             updater._digest(record['sha256'])
+        yield source, files
+
+
+def audit_inputs(descriptor, module):
+    inputs = {}
+    with retained_source(descriptor) as (source, files):
+        for name, member in (('go.mod', 'project/tools/update-verifier/go.mod'),
+                             ('go.sum', 'provisioning/go.sum')):
+            if member not in files:
+                raise ValueError('Retained offline audit inputs unavailable')
+            data = source.read(member)
+            if hashlib.sha256(data).hexdigest() != files[member]['sha256']:
+                raise ValueError('Retained offline audit input hash differs')
+            inputs[name] = data
+    if inputs['go.mod'] != launcher.plain_path(module / 'go.mod', 'Committed broker module').read_bytes():
+        raise ValueError('Retained audit module differs from committed module')
+    return inputs
+
+
+def compare_graphs(actual, audited, module, audit):
+    def graph(items, main_directory):
+        result = set()
+        mains = 0
+        for item in items:
+            if item.get('Replace') or item.get('Error'):
+                raise ValueError('Replaced or unresolved broker module refused')
+            if item.get('Main'):
+                mains += 1
+                if item.get('Path') != launcher.MAIN_MODULE or Path(item.get('Dir', '')).resolve() != main_directory.resolve():
+                    raise ValueError('Unexpected broker graph main module')
+                continue
+            key = (item.get('Path'), item.get('Version'))
+            if not all(isinstance(value, str) and value for value in key) or key in result:
+                raise ValueError('Invalid or duplicate broker graph module')
+            result.add(key)
+        if mains != 1:
+            raise ValueError('One broker graph main module required')
+        return result
+    if graph(actual, module) != graph(audited, audit):
+        raise ValueError('Offline audit graph differs from committed module graph')
+
+
+def check_source(inventory, descriptor):
+    """Bind the existing complete archive to actual current build inputs."""
+    with retained_source(descriptor) as (source, files):
+        if set(files) != set(inventory.files) | {'provisioning/go.sum'}:
+            raise ValueError('Retained updater source archive inventory differs')
+        for name, record in files.items():
             with source.open(name) as content:
                 if hashlib.file_digest(content, 'sha256').hexdigest() != record['sha256']:
                     raise ValueError('Retained source member hash differs')
@@ -197,17 +248,34 @@ def package(install, commit, go):
         raise ValueError('Selected broker compiler is outside pinned GOROOT')
     if (goroot / 'VERSION').read_text(encoding='utf-8').splitlines()[0] != launcher.GO_VERSION:
         raise ValueError('Broker compiler and source version differ')
-    environment.update(GOROOT=str(goroot), GOMODCACHE=str(cache))
-    launcher.run([go, 'mod', 'verify'], module, environment)
-    modules = launcher.json_stream(launcher.run([go, 'list', '-mod=readonly', '-m', '-json', 'all'], module, environment))
-    inventory = source_inventory(module, goroot, cache, modules, descriptor['reference'])
-    check_source(inventory, descriptor)
+    environment.update(GOROOT=str(goroot), GOMODCACHE=str(cache), GOPROXY='off', GOSUMDB='off')
+    # The committed go.sum can intentionally omit sums for unused transitive
+    # modules. The launcher retained its complete private provisioning go.sum;
+    # audit that exact graph offline rather than guessing cache paths or writing
+    # checksums into the product checkout.
+    actual_modules = launcher.json_stream(launcher.run([go, 'list', '-mod=readonly', '-m', '-json', 'all'], module, environment))
+    inputs = audit_inputs(descriptor, module)
     with tempfile.TemporaryDirectory(prefix='.broker-build-', dir=install) as temporary:
         staging = Path(temporary)
+        audit = staging / 'source-audit'
+        audit.mkdir()
+        for name, data in inputs.items():
+            with (audit / name).open('xb') as target:
+                target.write(data)
+        offline = dict(environment, GOPROXY='off', GOSUMDB='off')
+        launcher.run([go, 'mod', 'verify'], audit, offline)
+        modules = launcher.json_stream(launcher.run([go, 'list', '-mod=readonly', '-m', '-json', 'all'], audit, offline))
+        compare_graphs(actual_modules, modules, module, audit)
+        if any((audit / name).read_bytes() != data for name, data in inputs.items()):
+            raise ValueError('Offline audit inputs changed')
+        inventory = source_inventory(module, goroot, cache, modules, descriptor['reference'], graph_root=audit)
+        check_source(inventory, descriptor)
         binary = staging / BINARY
         launcher.run([go, 'build', '-mod=readonly', '-trimpath', '-buildvcs=true', '-ldflags=-H=windowsgui',
                       '-o', str(binary), './cmd/skager-update-broker'], module, environment)
-        launcher.run([go, 'mod', 'verify'], module, environment)
+        launcher.run([go, 'mod', 'verify'], audit, offline)
+        if any((audit / name).read_bytes() != data for name, data in inputs.items()):
+            raise ValueError('Offline audit inputs changed')
         launcher.require_clean_sources('Product sources changed during broker packaging')
         check_source(inventory, descriptor)
         if updater.verify_updater_package(install, commit) != descriptor:

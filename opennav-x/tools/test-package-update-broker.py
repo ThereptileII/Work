@@ -69,6 +69,11 @@ class BrokerProducerTests(unittest.TestCase):
         self.modules = [{'Main': True, 'Path': launcher.MAIN_MODULE, 'Dir': str(self.module)},
                         {'Path': 'public.example/dependency', 'Version': 'v1.0.0', 'Sum': checksum,
                          'GoModSum': checksum, 'Dir': str(self.dependency), 'GoMod': str(self.dependency / 'go.mod')}]
+        # Actual go list from a committed module can omit unused transitive
+        # module sums and cache locations. The retained full provisioning sum
+        # resolves them only in the separate offline audit module.
+        self.actual_modules = [dict(self.modules[0]), {'Path': 'public.example/dependency', 'Version': 'v1.0.0'}]
+        self.audit_directory = None
         self.install = self.root / 'broker-install'
         self.install.mkdir()
         self.archive = self.install / producer.updater.SOURCE_RELATIVE
@@ -80,7 +85,8 @@ class BrokerProducerTests(unittest.TestCase):
         with mock.patch.object(producer, 'ROOT', self.repo), mock.patch.object(launcher, 'run', side_effect=self.fake_run):
             inventory = producer.source_inventory(self.module, self.goroot, self.cache, self.modules, self.reference)
         provision = self.root / 'provisioning-go.sum'
-        provision.write_bytes(b'locked provisioning checksum\n')
+        self.provision_sum = b'locked provisioning checksum\n'
+        provision.write_bytes(self.provision_sum)
         inventory.add(provision, 'provisioning/go.sum')
         inventory.write(self.archive, self.reference)
         pe32(self.install / 'skager-start.exe')
@@ -122,11 +128,22 @@ class BrokerProducerTests(unittest.TestCase):
                                'GOMOD': str(self.module / 'go.mod'), 'GOMODCACHE': str(self.cache)})
         self.assertEqual(environment['GOROOT'], str(self.goroot))
         self.assertEqual(environment['GOMODCACHE'], str(self.cache))
+        self.assertEqual(environment['GOPROXY'], 'off')
+        self.assertEqual(environment['GOSUMDB'], 'off')
         if command[1:3] == ['mod', 'verify']:
+            self.assertEqual(Path(directory).name, 'source-audit')
             return 'all modules verified'
         if command[1] == 'list':
-            return '\n'.join(json.dumps(item) for item in self.modules)
+            if Path(directory) == self.module:
+                return '\n'.join(json.dumps(item) for item in self.actual_modules)
+            self.audit_directory = Path(directory)
+            self.assertEqual(self.audit_directory.name, 'source-audit')
+            self.assertEqual((self.audit_directory / 'go.mod').read_bytes(), (self.module / 'go.mod').read_bytes())
+            self.assertEqual((self.audit_directory / 'go.sum').read_bytes(), self.provision_sum)
+            audited = [dict(item, Dir=str(directory)) if item.get('Main') else item for item in self.modules]
+            return '\n'.join(json.dumps(item) for item in audited)
         if command[1] == 'build':
+            self.assertEqual(Path(directory), self.module)
             self.assertEqual(command[-1], './cmd/skager-update-broker')
             for flag in ('-mod=readonly', '-trimpath', '-buildvcs=true', '-ldflags=-H=windowsgui'):
                 self.assertIn(flag, command)
@@ -166,6 +183,61 @@ class BrokerProducerTests(unittest.TestCase):
         self.assertFalse((self.install / 'update-trust.json').exists())
         with self.assertRaisesRegex(ValueError, 'overwrite'):
             self.package()
+
+    def test_missing_optional_committed_graph_metadata_uses_bound_offline_audit(self):
+        self.assertNotIn('Sum', self.actual_modules[1])
+        self.assertNotIn('GoModSum', self.actual_modules[1])
+        self.assertNotIn('Dir', self.actual_modules[1])
+        committed_sum = (self.module / 'go.sum').read_bytes()
+        result = self.package()
+        self.assertEqual(result['sourceBundle'], self.launcher_record['sourceBundle'])
+        self.assertEqual((self.module / 'go.sum').read_bytes(), committed_sum)
+        self.assertIsNotNone(self.audit_directory)
+        self.assertFalse(self.audit_directory.exists())
+
+    def test_private_audit_graph_version_drift_refuses(self):
+        self.actual_modules[1]['Version'] = 'v2.0.0'
+        with self.assertRaisesRegex(ValueError, 'audit graph differs'):
+            self.package()
+        self.assertFalse(any(command[1] == 'build' for command in self.events))
+
+    def test_private_audit_input_mutation_during_build_refuses(self):
+        self.on_build = lambda: (self.audit_directory / 'go.sum').write_bytes(b'changed')
+        with self.assertRaisesRegex(ValueError, 'audit inputs changed'):
+            self.package()
+        self.assertFalse((self.install / producer.BINARY).exists())
+
+    def test_missing_audited_cache_location_refuses_without_fallback(self):
+        del self.modules[1]['Dir']
+        with self.assertRaisesRegex(ValueError, 'Audited broker cache locations unavailable'):
+            self.package()
+        self.assertFalse(any(command[1:3] == ['mod', 'download'] for command in self.events))
+
+    def test_audit_checksum_absence_refuses_without_fallback(self):
+        del self.modules[1]['GoModSum']
+        with self.assertRaisesRegex(ValueError, 'module graph differs'):
+            self.package()
+        self.assertFalse(any(command[1] == 'build' for command in self.events))
+
+    def test_current_module_must_match_retained_audit_module(self):
+        (self.module / 'go.mod').write_bytes(b'changed module')
+        with self.assertRaisesRegex(ValueError, 'audit module differs'):
+            self.package()
+        self.assertFalse(any(command[1:3] == ['mod', 'verify'] for command in self.events))
+
+    def test_retained_provisioning_checksum_tamper_refuses_before_audit(self):
+        with zipfile.ZipFile(self.archive) as source:
+            contents = {name: source.read(name) for name in source.namelist()}
+        value = contents['provisioning/go.sum']
+        contents['provisioning/go.sum'] = bytes([value[0] ^ 1]) + value[1:]
+        with zipfile.ZipFile(self.archive, 'w') as source:
+            for name, data in contents.items():
+                source.writestr(name, data)
+        self.launcher_record['sourceBundle']['sha256'] = launcher.digest(self.archive)
+        self.record_path.write_text(json.dumps(self.launcher_record))
+        with self.assertRaisesRegex(ValueError, 'offline audit input hash differs'):
+            self.package()
+        self.assertFalse(any(command[1:3] == ['mod', 'verify'] for command in self.events))
 
     def test_default_trust_refuses_before_build(self):
         (self.install / 'update-trust.json').write_text('{}')
@@ -249,7 +321,7 @@ class BrokerProducerTests(unittest.TestCase):
             source.writestr('unexpected', b'unexpected')
         self.launcher_record['sourceBundle']['sha256'] = launcher.digest(self.archive)
         self.record_path.write_text(json.dumps(self.launcher_record))
-        with self.assertRaisesRegex(ValueError, 'archive inventory differs'):
+        with self.assertRaisesRegex(ValueError, 'source file declarations differ'):
             self.package()
 
     def test_archive_member_hash_refuses_self_consistent_outer_hash(self):
