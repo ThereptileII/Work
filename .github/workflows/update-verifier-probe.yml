@@ -246,8 +246,11 @@ jobs:
           @{commit=$env:GITHUB_SHA;run=$env:GITHUB_RUN_ID;attempt=$env:GITHUB_RUN_ATTEMPT;powerShell=$PSVersionTable.PSVersion.ToString();processBits=([IntPtr]::Size*8);os=[Environment]::OSVersion.VersionString;inputs=$Inputs;passed=$true;applicationBuild=$false;productAcceptance=$false;boatAcceptance=$false} | ConvertTo-Json -Depth 5 | Out-File "$Evidence/receipt.json" -Encoding utf8
       - name: Exercise the same supervisor under Windows PowerShell 5.1 x86
         if: always()
-        shell: C:\Windows\SysWOW64\WindowsPowerShell\v1.0\powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File {0}
+        shell: powershell
         run: |
+          $ErrorActionPreference = 'Stop'
+          $Driver = Join-Path $env:RUNNER_TEMP 'skager-image-owner-x86.ps1'
+          @'
           $ErrorActionPreference = 'Stop'
           $Evidence = 'opennav-x/evidence/local/native-update-image-owner-x86'
           New-Item -ItemType Directory -Force $Evidence | Out-Null
@@ -265,6 +268,9 @@ jobs:
             $Inputs[$Path] = (Get-FileHash -LiteralPath (Join-Path 'opennav-x' $Path) -Algorithm SHA256).Hash.ToLowerInvariant()
           }
           @{commit=$env:GITHUB_SHA;run=$env:GITHUB_RUN_ID;attempt=$env:GITHUB_RUN_ATTEMPT;powerShell=$PSVersionTable.PSVersion.ToString();processBits=([IntPtr]::Size*8);os=[Environment]::OSVersion.VersionString;inputs=$Inputs;passed=$true;applicationBuild=$false;productAcceptance=$false;boatAcceptance=$false} | ConvertTo-Json -Depth 5 | Out-File "$Evidence/receipt.json" -Encoding utf8
+          '@ | Set-Content -LiteralPath $Driver -Encoding UTF8
+          & "$env:WINDIR/SysWOW64/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -NonInteractive -ExecutionPolicy Bypass -File $Driver
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
