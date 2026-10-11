@@ -1,0 +1,398 @@
+{
+  "run_id": 38167390164,
+  "attempt": 1,
+  "candidate": "6445d67e27c6b6f4254849556efea28248204711",
+  "run_url": "https://github.com/ThereptileII/Work/actions/runs/38167390164",
+  "run_conclusion": "failure",
+  "scope": "Audit of previously downloaded native fixture evidence only; no rerun, download, build or product acceptance",
+  "jobs": [
+    {
+      "id": 114552679184,
+      "name": "Windows PowerShell 5.1 supervised image ownership",
+      "conclusion": "failure",
+      "url": "https://github.com/ThereptileII/Work/actions/runs/38167390164/job/114552679184"
+    },
+    {
+      "id": 114552679528,
+      "name": "Native Win32 ordinary image ownership",
+      "conclusion": "success",
+      "url": "https://github.com/ThereptileII/Work/actions/runs/38167390164/job/114552679528"
+    },
+    {
+      "id": 114552680134,
+      "name": "Focused actual Lifecycle startup diagnostics",
+      "conclusion": "skipped",
+      "url": "https://github.com/ThereptileII/Work/actions/runs/38167390164/job/114552680134"
+    },
+    {
+      "id": 114552680164,
+      "name": "Native startup update interactions",
+      "conclusion": "skipped",
+      "url": "https://github.com/ThereptileII/Work/actions/runs/38167390164/job/114552680164"
+    },
+    {
+      "id": 114552680621,
+      "name": "Native Win32 owned-file acquisition",
+      "conclusion": "skipped",
+      "url": "https://github.com/ThereptileII/Work/actions/runs/38167390164/job/114552680621"
+    },
+    {
+      "id": 114552709390,
+      "name": "verify",
+      "conclusion": "skipped",
+      "url": "https://github.com/ThereptileII/Work/actions/runs/38167390164/job/114552709390"
+    }
+  ],
+  "archives": [
+    {
+      "id": 11712727661,
+      "name": "native-update-image-owner-6445d67e27c6b6f4254849556efea28248204711",
+      "bytes": 1463,
+      "sha256": "95b796a8bc582f31cba18633b4953e68b61f309c4b0599d503a1c0faff3b735e",
+      "api_digest_matches": true,
+      "all_crc_pass": true,
+      "members": [
+        {
+          "name": "native-update-image-owner/owner.log",
+          "bytes": 8276,
+          "crc32": "38f9edca",
+          "sha256": "9a0ba8d8dc2b8da3d8e7c8787307df2d4dbbf820705e0babe244db00b3c140a3"
+        }
+      ]
+    },
+    {
+      "id": 11712403646,
+      "name": "native-ordinary-image-owner-6445d67e27c6b6f4254849556efea28248204711",
+      "bytes": 2494,
+      "sha256": "2d93189e17a32385b6a314234103aa46b5ae1bffb3d37581e30d4c82a47ad00e",
+      "api_digest_matches": true,
+      "all_crc_pass": true,
+      "members": [
+        {
+          "name": "tests.json",
+          "bytes": 10942,
+          "crc32": "b8456b8f",
+          "sha256": "2a9111c1077f52638549eab84471670e878f77e7496d8b8754c87af088a141d7"
+        },
+        {
+          "name": "receipt.json",
+          "bytes": 2896,
+          "crc32": "92be2c2d",
+          "sha256": "bf8be73fd97f6dc3cb4c0ddb47fcd86c1c576e5658943278ac8b71cf1a62c93d"
+        }
+      ]
+    }
+  ],
+  "go": {
+    "job_id": 114552679528,
+    "conclusion": "success",
+    "toolchain": "go version go1.27.1 windows/amd64",
+    "test_arch": "386",
+    "command": "go test -count=1 -json ./launcher -run ^TestNativeOrdinary",
+    "event_count": 52,
+    "action_counts": {
+      "start": 1,
+      "run": 12,
+      "output": 26,
+      "pass": 13
+    },
+    "required_tests": [
+      "TestNativeOrdinaryActualCreator",
+      "TestNativeOrdinaryPhysicalCustodyBeforeResume",
+      "TestNativeOrdinaryWrongHashAndHardlinkRefuse",
+      "TestNativeOrdinarySuspendedRefusalCleanup",
+      "TestNativeOrdinaryNameAndEnvironmentBounds",
+      "TestNativeOrdinarySubstRemapAfterAcquire",
+      "TestNativeOrdinaryDOSApplicationBounds",
+      "TestNativeOrdinarySelectedApplicationCorruptionRefuses",
+      "TestNativeOrdinaryWrongSuspendedImageRefuses"
+    ],
+    "all_required_pass": true,
+    "test_passes_including_subtests": 12,
+    "top_level_test_passes": 10,
+    "passed_tests": [
+      "TestNativeOrdinaryDOSApplicationBounds",
+      "TestNativeOrdinarySelectedApplicationCorruptionRefuses",
+      "TestNativeOrdinaryWrongSuspendedImageRefuses",
+      "TestNativeOrdinaryChild",
+      "TestNativeOrdinaryActualCreator",
+      "TestNativeOrdinaryPhysicalCustodyBeforeResume",
+      "TestNativeOrdinaryWrongHashAndHardlinkRefuse/hash",
+      "TestNativeOrdinaryWrongHashAndHardlinkRefuse/hardlink",
+      "TestNativeOrdinaryWrongHashAndHardlinkRefuse",
+      "TestNativeOrdinarySuspendedRefusalCleanup",
+      "TestNativeOrdinaryNameAndEnvironmentBounds",
+      "TestNativeOrdinarySubstRemapAfterAcquire"
+    ],
+    "package_passes": 1,
+    "skipped_tests": 0,
+    "failed_tests": 0,
+    "source_hashes": [
+      {
+        "path": "opennav-x/tools/update-verifier/launcher/bootstrap.go",
+        "git_bytes": 2805,
+        "git_sha256": "1eb22e2a4ca7fe7792e21b4d465d9642818d308731ba68946c5ff2aa7343fd98",
+        "native_crlf_bytes": 2884,
+        "native_crlf_sha256": "c172ef876147acaefc20fe20cb2c226aa68b03a1b287ef7efa75e61acc2cdb03",
+        "receipt_sha256": "c172ef876147acaefc20fe20cb2c226aa68b03a1b287ef7efa75e61acc2cdb03",
+        "matches": true
+      },
+      {
+        "path": "opennav-x/tools/update-verifier/launcher/bootstrap_test.go",
+        "git_bytes": 3932,
+        "git_sha256": "86734fbc490f467f306bf7c1c9efbd01cf1e7ac344f3d81603377435a785f342",
+        "native_crlf_bytes": 4028,
+        "native_crlf_sha256": "6ebf9dcda427b750c9a48455cb0d78a76b4a8d41d4bac63a470847a01d763e20",
+        "receipt_sha256": "6ebf9dcda427b750c9a48455cb0d78a76b4a8d41d4bac63a470847a01d763e20",
+        "matches": true
+      },
+      {
+        "path": "opennav-x/tools/update-verifier/launcher/launcher.go",
+        "git_bytes": 20916,
+        "git_sha256": "696f4e10d0417bdf6fb6fcdbd7eba76b2e323616775632ed42d9ca84b7e4421e",
+        "native_crlf_bytes": 21442,
+        "native_crlf_sha256": "1280698b2da3fbd4272facf181f20333c467874f85d6127b08d90b97f4d92d69",
+        "receipt_sha256": "1280698b2da3fbd4272facf181f20333c467874f85d6127b08d90b97f4d92d69",
+        "matches": true
+      },
+      {
+        "path": "opennav-x/tools/update-verifier/launcher/launcher_test.go",
+        "git_bytes": 23212,
+        "git_sha256": "05188d790fed8a2e58a84b44bc696214b14b10315d1fc7103ec049699dcecf25",
+        "native_crlf_bytes": 23846,
+        "native_crlf_sha256": "90da011f19550cd5f62551b079ef68cf169c90d6e2414b0c895461b58ae40634",
+        "receipt_sha256": "90da011f19550cd5f62551b079ef68cf169c90d6e2414b0c895461b58ae40634",
+        "matches": true
+      },
+      {
+        "path": "opennav-x/tools/update-verifier/launcher/native_other.go",
+        "git_bytes": 269,
+        "git_sha256": "25fc7941f21121f009116d56276b38c7599cd0cb14b860edef3bf804ffdb6393",
+        "native_crlf_bytes": 281,
+        "native_crlf_sha256": "557b1614747b6cccef6b5e81f148137fb23fa23150ba96173ab0d8319b431ae0",
+        "receipt_sha256": "557b1614747b6cccef6b5e81f148137fb23fa23150ba96173ab0d8319b431ae0",
+        "matches": true
+      },
+      {
+        "path": "opennav-x/tools/update-verifier/launcher/native_windows.go",
+        "git_bytes": 12133,
+        "git_sha256": "02004b44e3cf601a55e433df6fd5b117de2702d9207a3443481c1184063b6e02",
+        "native_crlf_bytes": 12521,
+        "native_crlf_sha256": "3fae145cdb92064256ac4fec7c74320b5ee06932347f90ea8605ff63af5c165e",
+        "receipt_sha256": "3fae145cdb92064256ac4fec7c74320b5ee06932347f90ea8605ff63af5c165e",
+        "matches": true
+      },
+      {
+        "path": "opennav-x/tools/update-verifier/launcher/native_windows_test.go",
+        "git_bytes": 7544,
+        "git_sha256": "a1e52aa46b4e6347a533d9286d1d0a5d8e2b1f0459f490b20fff00a1525f9eb5",
+        "native_crlf_bytes": 7793,
+        "native_crlf_sha256": "f60548fa4226d5bdb2cc01efc1b727cef741ebe5913ad658c318ef643d029fd7",
+        "receipt_sha256": "f60548fa4226d5bdb2cc01efc1b727cef741ebe5913ad658c318ef643d029fd7",
+        "matches": true
+      },
+      {
+        "path": "opennav-x/tools/update-verifier/launcher/ordinary_application_windows_test.go",
+        "git_bytes": 3094,
+        "git_sha256": "869351b10db40ac7bb1e604fa888b581e5f4307d751d38b2180579a6e845b8ff",
+        "native_crlf_bytes": 3184,
+        "native_crlf_sha256": "5d8aaeb4f55c4ffc187017fc4612814f13237d248be21177a748f1601d77a4c9",
+        "receipt_sha256": "5d8aaeb4f55c4ffc187017fc4612814f13237d248be21177a748f1601d77a4c9",
+        "matches": true
+      },
+      {
+        "path": "opennav-x/tools/update-verifier/launcher/ordinary_creator.go",
+        "git_bytes": 1578,
+        "git_sha256": "6a9eb316f0d1b1c29cf0f2ae0e873e81ea03abec95481ba42068bbe598347901",
+        "native_crlf_bytes": 1633,
+        "native_crlf_sha256": "5a96edc11e969155f941f8d54b22609dad1bebd6fb544307e460c92f5b2b9e80",
+        "receipt_sha256": "5a96edc11e969155f941f8d54b22609dad1bebd6fb544307e460c92f5b2b9e80",
+        "matches": true
+      },
+      {
+        "path": "opennav-x/tools/update-verifier/launcher/ordinary_creator_test.go",
+        "git_bytes": 6088,
+        "git_sha256": "3d4a82974c087d032a863e9b46cd4243bd613d5a2761889ea9b2457370634229",
+        "native_crlf_bytes": 6238,
+        "native_crlf_sha256": "daa3dba0f6129630953e5bcdeeb4503ec82d2fd67cb11448bebb0e2026aacbe5",
+        "receipt_sha256": "daa3dba0f6129630953e5bcdeeb4503ec82d2fd67cb11448bebb0e2026aacbe5",
+        "matches": true
+      },
+      {
+        "path": "opennav-x/tools/update-verifier/launcher/ordinary_native_windows.go",
+        "git_bytes": 17542,
+        "git_sha256": "e835257f7482c29f45eb0882f482ffcc67d517a5823d760ef194119c76475697",
+        "native_crlf_bytes": 17987,
+        "native_crlf_sha256": "43cabe642e6f1cff58e678d443e236151cdde97ed16311882b2f3dbb57e08119",
+        "receipt_sha256": "43cabe642e6f1cff58e678d443e236151cdde97ed16311882b2f3dbb57e08119",
+        "matches": true
+      },
+      {
+        "path": "opennav-x/tools/update-verifier/launcher/ordinary_native_windows_test.go",
+        "git_bytes": 10573,
+        "git_sha256": "37fd23fa34578bcc997537a266b3d18547e90d248ad1b1b1f03d94451a759fef",
+        "native_crlf_bytes": 10879,
+        "native_crlf_sha256": "e2f1e4b9aa127f77eec8b5ff6197f6fd28633b8a5e513c4bd3580b07c8ba1c13",
+        "receipt_sha256": "e2f1e4b9aa127f77eec8b5ff6197f6fd28633b8a5e513c4bd3580b07c8ba1c13",
+        "matches": true
+      },
+      {
+        "path": "opennav-x/tools/update-verifier/launcher/ordinary_subst_windows_test.go",
+        "git_bytes": 5061,
+        "git_sha256": "e98bb97c54c19fa24b0350e477950363e9f747bcdea674d75bcb98369fb22f19",
+        "native_crlf_bytes": 5203,
+        "native_crlf_sha256": "feb0fe3ff076a0d34f7cf28f6c1fe56f3596beed72c84bae8476421a03ff073f",
+        "receipt_sha256": "feb0fe3ff076a0d34f7cf28f6c1fe56f3596beed72c84bae8476421a03ff073f",
+        "matches": true
+      },
+      {
+        "path": "opennav-x/tools/update-verifier/launcher/pe.go",
+        "git_bytes": 906,
+        "git_sha256": "1c183830b8a3b76e2f0490177c3adb26bcd72b87935f761c482339a8f9129c9a",
+        "native_crlf_bytes": 933,
+        "native_crlf_sha256": "5652411de36f35d9b1a9d9fc1b9fd02c5e8d7eeedd57e22fe51dbec721a972b5",
+        "receipt_sha256": "5652411de36f35d9b1a9d9fc1b9fd02c5e8d7eeedd57e22fe51dbec721a972b5",
+        "matches": true
+      },
+      {
+        "path": "opennav-x/tools/update-verifier/launcher/prelaunch_boundary_test.go",
+        "git_bytes": 6327,
+        "git_sha256": "998e5e1d0b8ab8fb55ea8656ec0d8d0a0311fcd9a5391485bf0a97e4891c7a0d",
+        "native_crlf_bytes": 6493,
+        "native_crlf_sha256": "c3454b4556aa651c4aa3b7e038b4b5df908ea746d55afd03748feeed3540e4ca",
+        "receipt_sha256": "c3454b4556aa651c4aa3b7e038b4b5df908ea746d55afd03748feeed3540e4ca",
+        "matches": true
+      },
+      {
+        "path": "opennav-x/tools/update-verifier/launcher/progress.go",
+        "git_bytes": 2008,
+        "git_sha256": "6f7db310cdad35abcd4a348adfe2f7c61a6ab9447049f55daeefbd4cbe1dec1e",
+        "native_crlf_bytes": 2080,
+        "native_crlf_sha256": "11ba48169a45f0a924650551eba8f3be46dbf0015c9db16f5c43771372d6e3c9",
+        "receipt_sha256": "11ba48169a45f0a924650551eba8f3be46dbf0015c9db16f5c43771372d6e3c9",
+        "matches": true
+      },
+      {
+        "path": "opennav-x/tools/update-verifier/launcher/progress_test.go",
+        "git_bytes": 4375,
+        "git_sha256": "7768c763ebe6d88e8b63201d167642b83b1f0ae1a3186f0feffb11fc2efa5eaf",
+        "native_crlf_bytes": 4489,
+        "native_crlf_sha256": "b3c5aaa96cbd1169068b84645295f714c9faff423ec91215dca2ca70b9c01582",
+        "receipt_sha256": "b3c5aaa96cbd1169068b84645295f714c9faff423ec91215dca2ca70b9c01582",
+        "matches": true
+      },
+      {
+        "path": "opennav-x/tools/update-verifier/launcher/provision.go",
+        "git_bytes": 2970,
+        "git_sha256": "ddb2d4a00086272264c2e73f1ad03c5710a0ad257dac7c13fa9dedd4bf951801",
+        "native_crlf_bytes": 3059,
+        "native_crlf_sha256": "7bc57a52cbddffd7aaaffb4ab451925f3a6cd29648100e2416f22ba5cf109eeb",
+        "receipt_sha256": "7bc57a52cbddffd7aaaffb4ab451925f3a6cd29648100e2416f22ba5cf109eeb",
+        "matches": true
+      },
+      {
+        "path": "opennav-x/tools/update-verifier/launcher/records.go",
+        "git_bytes": 11331,
+        "git_sha256": "4878e4242bb40361e98d6af68911d1c9f2950b44577ff8f823cbfc48cdc28504",
+        "native_crlf_bytes": 11622,
+        "native_crlf_sha256": "0902f8e246dc53afd353301fc2e19888fed412e861b9e157add148170a6fd449",
+        "receipt_sha256": "0902f8e246dc53afd353301fc2e19888fed412e861b9e157add148170a6fd449",
+        "matches": true
+      },
+      {
+        "path": "opennav-x/tools/update-verifier/launcher/records_test.go",
+        "git_bytes": 7306,
+        "git_sha256": "2da20e0f780eaf924fff0d4c07b28130644e11c99dd83fc030519af382d6c75d",
+        "native_crlf_bytes": 7504,
+        "native_crlf_sha256": "e449d5ba9d85154683948f1fcf6361a48def17a1dfaa74b62ee19d8d8861ccba",
+        "receipt_sha256": "e449d5ba9d85154683948f1fcf6361a48def17a1dfaa74b62ee19d8d8861ccba",
+        "matches": true
+      }
+    ],
+    "application_build": false,
+    "product_acceptance": false,
+    "boat_acceptance": false
+  },
+  "powershell": {
+    "job_id": 114552679184,
+    "conclusion": "failure",
+    "default_ps51_step": "Created correct held-image child after SUBST remap, then first owner.Close failed live-child",
+    "recorded_pass_lines": 57,
+    "first_close_source_line": 146,
+    "health_assertion_source_line": 161,
+    "health_assertion_reached": false,
+    "normal_close_qualification_passed": false,
+    "x86_step": "Custom shell rejected extensionless -File temporary path before harness execution",
+    "x86_harness_executed": false,
+    "suspended_matrix_step": "skipped",
+    "source_identity_limit": "Exact checkout commit verified in API/job log. No PowerShell success receipt/native source-hash record was emitted; listed CRLF hashes are expected from Git only.",
+    "expected_source_hashes_only": [
+      {
+        "path": "opennav-x/installer/windows/UpdateTransaction.ps1",
+        "git_sha256": "335e6d4e04075fbf9475b70d08e71013ab0be9c10841e2a22dcb834a5014dd29",
+        "expected_windows_crlf_sha256": "9bbf18e649d86d36ba42e6169510b75016a1aba1705b30d506ceb7f11e6e451c",
+        "native_hash_recorded": false
+      },
+      {
+        "path": "opennav-x/tools/test-native-update-image-owner.ps1",
+        "git_sha256": "b83ff71f1f80e60b3bd78451706075ce17c3782b6ebf2dedf176113ae11c76b3",
+        "expected_windows_crlf_sha256": "a8bf2928d80d28073e7cc974c6a6900ee9835ee9920cc3e82cce6d1f860058e9",
+        "native_hash_recorded": false
+      },
+      {
+        "path": ".github/workflows/update-verifier-probe.yml",
+        "git_sha256": "a52fff0137ad141f6058b7fee900499005b74562e4301c7c40d670bbfe6c6c92",
+        "expected_windows_crlf_sha256": "47def79c0ce4090e027c13d69d56fb00c3f25697e07d7867064da43c62cb7c0f",
+        "native_hash_recorded": false
+      }
+    ],
+    "fixture_visibility_cause": "Unproven; coordinator investigation is separate",
+    "product_acceptance": false
+  },
+  "raw_record_count": 7,
+  "raw_total_bytes": 179635,
+  "raw_records": [
+    {
+      "path": "raw/artifacts-api.json",
+      "bytes": 1529,
+      "sha256": "240f7f3125b352f18fc16bdce3922e87cd1bd2d5dbba83eb37ff4446d8d9c95a"
+    },
+    {
+      "path": "raw/go/receipt.json",
+      "bytes": 2896,
+      "sha256": "bf8be73fd97f6dc3cb4c0ddb47fcd86c1c576e5658943278ac8b71cf1a62c93d"
+    },
+    {
+      "path": "raw/go/tests.json",
+      "bytes": 10942,
+      "sha256": "2a9111c1077f52638549eab84471670e878f77e7496d8b8754c87af088a141d7"
+    },
+    {
+      "path": "raw/job.log",
+      "bytes": 135361,
+      "sha256": "a7f9391c2b7ca1bf70b2e8c220f78ddd7f9701c9543fe2244be7ffa19800e75b"
+    },
+    {
+      "path": "raw/jobs-api.json",
+      "bytes": 8530,
+      "sha256": "8263471750e7ecf168bff1829467f328b4075080f0c637aa8e3d66d495cfc749"
+    },
+    {
+      "path": "raw/powershell/native-update-image-owner/owner.log",
+      "bytes": 8276,
+      "sha256": "9a0ba8d8dc2b8da3d8e7c8787307df2d4dbbf820705e0babe244db00b3c140a3"
+    },
+    {
+      "path": "raw/run-api.json",
+      "bytes": 12101,
+      "sha256": "573b69041029adbf1c63f337b033069792e1c7fb16187a86308cdeb865de4335"
+    }
+  ],
+  "limits": [
+    "Go selected native fixture pass does not qualify PowerShell owner or full application/update lifecycle.",
+    "The original first-Close failure is preserved without attributing its cause.",
+    "PowerShell x86 runtime behavior was not exercised.",
+    "Four other jobs and the suspended-only matrix step were skipped, not passed.",
+    "Later driver/fixture fixes require their own exact-revision native evidence."
+  ]
+}
