@@ -59,6 +59,14 @@ directory when creating that mutex, so two ordinary processes in the same
 logon session cannot be the independent-profile test claimed by the earlier
 harness. Portable mode bypasses that upstream single-instance branch while
 `--configdir` still isolates navigation files and peer credentials. Both live
+processes use their own profile for data; the portable process also starts
+with that profile as its working directory. In pinned OpenCPN 5.12.4,
+`AbstractPlatform::NormalizePath` makes portable resource paths relative to
+`PrivateDataDir`; launching from the CI checkout instead left bundled tide
+data unresolved and blocked startup on OpenCPN's missing-harmonics modal.
+The native gate now preserves the upstream portable path convention rather
+than dismissing that warning.
+Both live
 processes must pass the unchanged listener, persistence, secret-output and
 exact-build assertions; the portable peer closes first. The report records
 each launch mode and argument list. This is concurrent ordinary-plus-portable

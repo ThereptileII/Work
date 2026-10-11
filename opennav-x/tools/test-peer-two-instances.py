@@ -31,6 +31,9 @@ class PeerTwoContracts(unittest.TestCase):
                                     str(second), '--no_opengl', '--xnav'])
         self.assertNotIn('--xnav-preview', portable)
         self.assertNotIn('--portable', ordinary)
+        self.assertIsNone(peer.launch_working_directory(first))
+        self.assertEqual(peer.launch_working_directory(second, portable=True),
+                         str(second))
 
     def failure_ui(self, title='OpenCPN', caption='Existing instance is too busy'):
         def native_class(handle, buffer, length):

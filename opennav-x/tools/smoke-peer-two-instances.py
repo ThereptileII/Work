@@ -228,6 +228,13 @@ def launch_plan(platform):
     return ((1, False), (2, platform == "nt"))
 
 
+def launch_working_directory(profile, *, portable=False):
+    # Upstream portable NormalizePath stores bundled resources relative to
+    # PrivateDataDir. With an external --configdir, that is this profile, so
+    # the process must start there for its tide/chart paths to resolve.
+    return str(profile) if portable else None
+
+
 def run(args):
     exe, build = args.exe.resolve(strict=True), args.build.resolve(strict=True)
     harness = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
@@ -284,7 +291,9 @@ def run(args):
                 stderr = evidence / f"peer-two-{index}.stderr.log"
                 command = launch_arguments(exe, profile, portable=portable)
                 with stdout.open("wb") as out, stderr.open("wb") as err:
-                    process = subprocess.Popen(command, env=env, stdout=out, stderr=err)
+                    process = subprocess.Popen(
+                        command, env=env, stdout=out, stderr=err,
+                        cwd=launch_working_directory(profile, portable=portable))
                 processes.append((process, profile, boundary, expected, stdout, stderr))
                 report["profiles"].append({"index": index, "pid": process.pid,
                                            "profile": str(profile),

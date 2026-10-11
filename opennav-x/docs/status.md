@@ -23,13 +23,22 @@ first-run setup dialog was visibly open, but the first post-canvas diagnostic
 snapshot had no setup controls; the test attempted to resolve those controls
 before their next publication. The development harness now waits only for a
 newer diagnostic tick from the same witnessed dialog, and still refuses partial,
-ambiguous or missing controls without clicking. Ten focused startup and fourteen
-peer-contract tests pass locally; native recheck is pending. These are
+ambiguous or missing controls without clicking. Eleven focused startup and
+fourteen peer-contract tests pass locally. The next exact-byte native retest,
+[`38140234560`](https://github.com/ThereptileII/Work/actions/runs/38140234560),
+passed the corrected first-run step but exposed a different harness failure:
+the second portable process remained alive behind OpenCPN's missing tide/current
+harmonics modal. Its startup log showed portable resource paths made relative
+to its explicit profile while the process inherited the CI checkout working
+directory. The peer harness now starts that portable process in its own profile,
+matching the pinned upstream path convention; the new native recheck is pending.
+These are
 diagnostic retests, not new product builds or release qualification. Subsequent
-SCRUM-317 route-label decluttering and SCRUM-209 read-only module-observation
-changes remain on the development branch for the next combined build. License,
-notice and About/attribution launch-blocker work is being developed in
-separate worktrees. No Production promotion or physical command is involved.
+SCRUM-317 route-label decluttering, SCRUM-209 read-only module observation,
+SCRUM-59 license inventory, SCRUM-57 packaged notice/source gate and SCRUM-60
+About/attribution changes remain on the development branch for the next
+combined build; none has native package acceptance yet. No Production
+promotion or physical command is involved.
 
 ## Current Staging qualification — correction batch not yet built
 
