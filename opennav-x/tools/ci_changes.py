@@ -56,7 +56,7 @@ windows_chart_units.py ocharts_cmake_path_probe.py ocharts_compile_probe_inputs.
 prepare-test-profile.py prepare-stock-review-desktop.py build-installer-prior-fixture.py
 extract-peer-buffer.py fetch-st4000-oracle.py soak-runtime.py
 collect-zoom-evidence.py openssl_loaded.py win32-pe-import-probe.cpp
-win32_plugin_inventory.py
+win32_plugin_inventory.py plugin-guard-owned-trust.ps1
 '''.split())
 DOC_FILES = frozenset('''
 README.md AGENTS.md FIRST_TASK.md PROJECT_GOAL.md START_HERE.md
