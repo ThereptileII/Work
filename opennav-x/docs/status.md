@@ -1,5 +1,33 @@
 # SKAGER status — 2026-10-12
 
+## Authenticated protected staging joined in source
+
+Source commit `3d0b68d3` joins real `PrepareUpdateSet` and retained Recovery
+extraction to the new distinct-principal Windows store and authenticated local
+pipe. The operation accepts no caller paths or execution commands, reserves a
+durable unique ID, reads protected registration, remeasures the exact stock
+OpenCPN baseline and writes only authenticated installed app/docs files.
+Artifact cleanup must succeed before its staging receipt; final owner/namespace
+failures withhold a successful response. Its sole result is
+**staged-awaiting-qualification**, never installation or startup success.
+
+Combined-root focused checks passed **37 top-level test groups and 118 subcases**
+across extraction, broker operation, protocol and storage. Windows/x86 host test
+and service-command compilation, plus Windows-targeted vet, passed; these are
+**compile/static checks, not native execution**. The independent bounded Codex
+review found an interface ID-length mismatch, corrected before integration.
+Storage additionally rejects unsafe physical ancestor permissions and caps
+durable candidate entries rather than silently deleting partial evidence.
+
+This service is not provisioned, packaged, activated or used by the installed
+launcher. Native service/ACL/IPC qualification, authenticated provisioning and
+trust initialization, actual installation/loader custody, interrupted staging
+recovery and exact-source Windows/boat update acceptance remain unfinished.
+No full application build, CI dispatch, boat deployment, visual/endurance suite
+or hardware command was performed. SCRUM-311 remains In Progress. See
+[source evidence](evidence/scrum311-protected-staging-source-20261012/README.md)
+and the [staging boundary](installer/signed-update-session-contract.md#protected-candidate-staging--source-increment-not-enabled-updater).
+
 ## Independent acquisition review and one-attempt cleanup
 
 Claude Opus 5 completed the requested independent read-only review of 11 exact

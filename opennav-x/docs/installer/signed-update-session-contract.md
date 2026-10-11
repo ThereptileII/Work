@@ -187,12 +187,80 @@ Five new combined-root tests and nine subcases pass, including a signed server
 offer change during acquisition, invalid/old Recovery, Setup failure, cancellation
 and independent cleanup failures. Windows/x86 compilation is not native execution.
 
-These APIs authenticate and identify acquisition material. They do not extract,
-install, commission, authenticate a broker peer or provide continuous loader
-custody. The product caller now uses the acquisition set, but does not supply
+The acquisition APIs authenticate and identify material. The separately added
+`PreparedUpdateSet.StageRecovery` below performs bounded extraction; neither
+operation installs, commissions or provides continuous loader custody.
+The product caller now uses the acquisition set, but does not supply
 signed-session authority or prove Setup's embedded manifest from its sidecar.
 Exact newly built archive/Setup correspondence and installed native/boat updater
 behavior remain required gates; isolated fixture results cannot substitute for them.
+
+## Protected candidate staging — source increment, not enabled updater
+
+`PreparedUpdateSet.StageRecovery` can be called only on the original live set
+returned by actual authenticated acquisition. A private owner-bound seal binds
+the exact artifacts, consent, policy and Recovery identity. Forged/copied sets,
+changed public fields and closed artifacts refuse. It rereads the retained
+signed outer ZIP, complete inventory, CRC, product identity and exact Lifecycle
+sidecar before streaming files. Only the manifest's installed app/docs set is
+sent, in lexical order; the portable marker, profile, sidecar and inventory are
+not installed files. Every sink call must consume the exact verified length
+synchronously. Sink failure, cancellation, incomplete consumption, changed bytes
+or identity returns no successful identity. A caller-defined sink is not custody
+authority. The production joining code uses the concrete store below.
+
+The new `brokerhost` operation and `cmd/skager-update-broker` are **source-only**:
+the existing launcher and package producer do not enable this service. The SCM
+own-process service must run as `NT SERVICE\SkagerUpdateBroker`. There is no
+interactive/elevated console fallback, arbitrary root or service CLI installer.
+Its fixed executable location uses Windows' actual ProgramFilesX86 KnownFolder
+plus `SKAGER\UpdateBroker\skager-update-broker.exe`. The protected data location
+uses actual ProgramData plus `SKAGER\UpdateBroker`; environment variables and
+client requests cannot redirect either root.
+
+The operation consumes only `prepare-and-stage`, exact update consent and a
+fresh 16-byte request ID encoded as 32 lowercase hex characters. Actual local
+pipe token/process identity selects `registrations/<SID>.json` in the protected
+store. That registration supplies installed version/commit, stock OpenCPN path
+and independent update trust/origins. Its bounded JSON rejects duplicate, unknown,
+case-aliased and trailing fields. The measured stock executable must match the
+existing independently qualified 5.12.4/x86 hash and pinned upstream commit.
+It is read and hashed through a retained single-link file handle that denies
+write/delete sharing; physical NTFS ancestor handles and DOS-resolution
+corroboration remain held through the operation. No executable is run to discover
+its version.
+
+An exclusive durable CREATE_NEW candidate reservation occurs before acquisition.
+The broker's private trust/artifact paths must already exist and pass the
+existing verifier's protection checks; staging never initializes lost trust or
+adopts a cache. One fresh real `PrepareUpdateSet` then supplies both artifacts
+and `StageRecovery` streams to the concrete protected candidate. The store is
+revalidated around acquisition, extraction, cleanup and sealing. Both artifact
+cleanup attempts must succeed before a bounded staging receipt is published.
+Owners are released and final validation passes before a success response.
+Failures return fixed redacted refusal and no successful result. Partial
+reservations remain protected and cannot be retried with the same ID; there is
+no wildcard deletion or eviction. Recovery/reconciliation is still required.
+
+The only successful state is **staged-awaiting-qualification**. It is neither
+installation nor readiness, launch, startup success or a healthy receipt. The
+operation has no candidate-code execution, selected-generation mutation,
+elevated Lifecycle call, user-plugin/PATH import or actuator path. A receipt
+after a later close/namespace failure still describes only staged bytes; it
+cannot authorize downstream execution. Transport request replay memory is not
+durable authority; the protected candidate reservation provides ID non-reuse.
+
+Originally protected provisioning is mandatory: inspecting today's DACL cannot
+exclude handles acquired before protection. Actual native service identity,
+cross-account process/token query rights, IPC, creation-time ACLs, namespace
+behavior and integrated extraction require Windows qualification. The fixed DOS
+verifier paths are corroborated under the distinct broker account; their DOS
+namespace is not claimed continuously pinned. Missing/ambiguous setup refuses.
+Service shutdown cancels and drains work; an undrained timeout exits the own
+process without closing owners concurrently with the active handler. Authenticated
+service provisioning/upgrade/removal, launcher activation, full loader dependency
+custody, actual installation and exact-source Windows/boat update qualification
+remain separate unfinished SCRUM-311 gates.
 
 ## Shared commissioning profile exclusion
 
