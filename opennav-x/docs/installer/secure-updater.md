@@ -18,7 +18,7 @@ Escape, close, timeout and Later continue startup; no second prompt appears in
 that session. The first choice is latched, including queued repeated clicks.
 
 During acquisition a separate native progress window provides Cancel. Cancelling
-this phase aborts verification/download, discards the prepared artifact and
+this phase aborts verification/download, discards both prepared artifacts and
 continues the current application. The progress process must confirm completion
 before the installer starts. Cancellation never kills an executing installer.
 
@@ -28,6 +28,16 @@ offer requires fresh consent on a later startup. Release versions must increase:
 the existing policy rejects a different commit with equal version precedence.
 Staging/Production delivery and beta/stable metadata channels are separate
 concepts; this implementation does not promote or publish a release.
+
+Installed Update Now uses `PrepareUpdateSet`: one refreshed authenticated offer
+supplies both Recovery and Setup. Recovery is acquired and its inventoried exact
+Lifecycle manifest sidecar verified before Setup is downloaded. A missing sidecar
+refuses preparation; it is never replaced by the outer archive hash. Both retained
+read-only handles survive the existing installer operation, including a timed-out
+child until its exit. Independent cleanup errors are retained. This acquisition
+contract does not authenticate Setup's embedded manifest or enable the separate
+signed commissioning/broker path; see the
+[exact identity boundary](signed-update-session-contract.md#authenticated-recovery-and-exact-installer-identity).
 
 ## Trust and retained state
 

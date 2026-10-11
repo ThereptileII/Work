@@ -1,5 +1,19 @@
 # SKAGER status — 2026-10-11
 
+## Installed updater acquires one authenticated artifact set
+
+Commit `7f9ca7d3` wires `PrepareUpdateSet` into the actual installed launcher's
+Update Now preparation. One fresh signed check and exact consent supply both
+Recovery and Setup; Recovery's exact Lifecycle sidecar is required before Setup
+download. Both read-only owners remain held through the existing operation and
+timeout handling, with independent cleanup failures preserved. The combined-root
+focused check passed five new tests and nine subcases; the isolated broader
+preparation/launcher regression and Windows/x86 compile checks also passed.
+No native execution, signed broker authority or Setup embedded-manifest proof is
+inferred. Protected-from-creation loader custody and actual creator-bound denial
+remain required source work before full updater qualification. See the
+[acquisition contract](installer/signed-update-session-contract.md#authenticated-recovery-and-exact-installer-identity).
+
 ## Chart forecast value restored in source
 
 Commit `ef724724` restores the forecast speed/direction to the expanded chart
@@ -7,6 +21,8 @@ forecast box after per-arrow values were removed (SCRUM-360). The value is
 explicitly located at the vessel using assessed real Live/Aging position and
 actual forecast coverage; missing position/coverage remains unavailable. Forecast
 time, stale/source and advisory labels remain separate from measured wind.
+Amendment `fba4d604` suppresses the overlay when its mandatory forecast marker
+cannot fit, so narrow viewports cannot show anonymous forecast arrows.
 The existing forecast-view suite passed 670 assertions, including nine added
 cases; changed overlay syntax passed. The larger integration unit's syntax check
 stopped at the existing missing `shapefil.h` dependency. Combined native build and

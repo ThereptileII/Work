@@ -148,11 +148,31 @@ Lifecycle binding. `DeclaredPayloadSHA256` is an authenticated declaration,
 because payload.zip is not contained in Recovery. It is not a verified payload
 download. Keep the artifact handle alive through separately authorized use.
 
+The installed launcher's actual `Run` preparation now calls `PrepareUpdateSet`
+(`7f9ca7d3`). After the user's Update Now choice, it performs one fresh
+authenticated check against the exact confirmed policy, validates both artifact
+origins, then acquires Recovery before Setup. Both downloads use that same
+authenticated policy; a later server offer cannot mix their identities. The set
+requires `LifecycleManifestAvailable` before downloading Setup. An older Recovery
+without the exact sidecar therefore refuses preparation, preserving the existing
+preparation-failure startup behavior rather than inventing a manifest identity.
+
+The preparation owns both read-only artifact handles and the derived Recovery
+identity until the existing installer/launcher operation finishes. Installer
+timeout retains both handles until that exact child exits. Failure/cancellation
+and caller cleanup attempt both independent releases and preserve cleanup
+failures. Existing `PrepareUpdate` and `PrepareRecovery` APIs remain available;
+neither an arbitrary archive nor a caller-provided policy can enter this set.
+Five new combined-root tests and nine subcases pass, including a signed server
+offer change during acquisition, invalid/old Recovery, Setup failure, cancellation
+and independent cleanup failures. Windows/x86 compilation is not native execution.
+
 These APIs authenticate and identify acquisition material. They do not extract,
-install, commission, launch, authenticate a broker peer or provide continuous
-loader custody. No product caller currently enables this path. Exact newly
-built archive/Setup correspondence and installed native/boat updater behavior
-remain required gates; isolated fixture results cannot substitute for them.
+install, commission, authenticate a broker peer or provide continuous loader
+custody. The product caller now uses the acquisition set, but does not supply
+signed-session authority or prove Setup's embedded manifest from its sidecar.
+Exact newly built archive/Setup correspondence and installed native/boat updater
+behavior remain required gates; isolated fixture results cannot substitute for them.
 
 ## Shared commissioning profile exclusion
 
