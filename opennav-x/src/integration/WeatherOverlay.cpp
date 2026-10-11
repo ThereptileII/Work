@@ -211,6 +211,21 @@ void DrawWeatherOverlay(ocpnDC &dc, ViewPort &vp, ChartCanvas &canvas) {
     dc.SetFont(old_font); dc.SetTextForeground(old_ink); dc.SetBrush(brush); dc.SetPen(pen);
   };
   const auto display = weather::DisplayState(snapshot, now);
+  // Never paint anonymous arrows: the mandatory prefix must fit even when
+  // the expanded provenance line needs an ellipsis. Use DrawBadge's font,
+  // inner/outer padding and close-target reservation before any arrows render.
+  const wxString mandatory = display == weather::ForecastDisplay::Unavailable
+      ? "FORECAST WIND UNAVAILABLE"
+      : display == weather::ForecastDisplay::Stale ? "STALE FORECAST" : "FORECAST";
+  dc.SetFont(ui::UiFontWeight(canvas, 10, 600));
+  wxCoord marker_width = 0, marker_height = 0;
+  dc.GetTextExtent(mandatory + wxString::FromUTF8("\xE2\x80\xA6"),
+                   &marker_width, &marker_height);
+  dc.SetFont(old_font);
+  if (vp.pix_width < marker_width + 4 * canvas.FromDIP(8) + canvas.FromDIP(28)) {
+    restore();
+    return;
+  }
   if (display == weather::ForecastDisplay::Unavailable) {
     DrawBadge(dc, canvas, vp, mode,
               {"FORECAST WIND UNAVAILABLE", W(weather::UnavailableReason(snapshot, now))}, true,
