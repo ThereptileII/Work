@@ -231,6 +231,12 @@ required. Coverage includes complete candidate/fallback order, identity and sour
 mismatch, restored-baseline continuity, missing proof, reused approval, replay,
 skipped steps, unknown fields, expiry and unchanged-on-refusal behavior.
 
+`tools/qualify-staging-windows.ps1` also invokes that entry point under both
+native Windows PowerShell 5.1 x64 and x86 during Staging qualification and
+retained-package retests. Each host must succeed; logs are retained in
+`evidence/local/signed-update-custody/`. This wiring adds no installation or
+application launch behavior and is not evidence that the native checks passed.
+
 The 2026-10-11 helper integration onto monorepo `bf68b355` takes only the product
 helper/contract deltas from `43972f2b` and `09e2d055`, plus the negative fixtures
 from `e738891d`; it excludes their workflow changes and unrelated ancestors.

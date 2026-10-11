@@ -11,6 +11,30 @@ function Check([string]$Script, [string[]]$Arguments = @()) {
     & python (Join-Path $PSScriptRoot $Script) @Arguments
     if ($LASTEXITCODE -ne 0) { throw "Staging qualification failed: $Script" }
 }
+# These helpers use only inert records and disposable temporary files. Exercise
+# real NTFS/ACL/share semantics in both Windows PowerShell 5.1 architectures,
+# including retained-package retests, without granting update or launch authority.
+if ([Environment]::OSVersion.Platform -ne [PlatformID]::Win32NT -or
+    -not [Environment]::Is64BitOperatingSystem) {
+    throw 'Signed-update custody qualification requires native 64-bit Windows'
+}
+$NativeSystem = if ([Environment]::Is64BitProcess) { 'System32' } else { 'Sysnative' }
+$SignedUpdateEvidence = Join-Path $Root 'evidence/local/signed-update-custody'
+New-Item -ItemType Directory -Path $SignedUpdateEvidence -Force | Out-Null
+foreach ($HostArchitecture in @(
+    @{ Name = 'x64'; Directory = $NativeSystem },
+    @{ Name = 'x86'; Directory = 'SysWOW64' }
+)) {
+    $PowerShell = Join-Path $env:WINDIR ($HostArchitecture.Directory + '/WindowsPowerShell/v1.0/powershell.exe')
+    if (-not (Test-Path -LiteralPath $PowerShell -PathType Leaf)) {
+        throw "Required Windows PowerShell host missing: $($HostArchitecture.Name)"
+    }
+    & $PowerShell -NoProfile -NonInteractive -File (Join-Path $PSScriptRoot 'boat/test-signed-update-session.ps1') 2>&1 |
+        Tee-Object -FilePath (Join-Path $SignedUpdateEvidence ($HostArchitecture.Name + '.log'))
+    if ($LASTEXITCODE -ne 0) {
+        throw "Signed-update custody contracts failed: Windows PowerShell 5.1 $($HostArchitecture.Name)"
+    }
+}
 # Run the same thirteen compiled components only after immutable input restore.
 # The runner verifies the original manifest and each fixed executable against the
 # restore receipt, rebasing paths while keeping producer/harness identities distinct.
