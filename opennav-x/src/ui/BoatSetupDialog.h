@@ -1,5 +1,6 @@
 #pragma once
 #include "application/BoatSetup.h"
+#include "application/AboutNotices.h"
 #include "application/NavigationObjects.h"
 #include "ui/Theme.h"
 #include <wx/gdicmn.h>
@@ -10,6 +11,7 @@ namespace opennav::ui {
 struct BoatSetupActions {
   std::function<application::CommandResult(const application::BoatSetupDraft&)> save;
   std::function<std::vector<std::string>()> sensors;
+  std::function<application::AboutNoticeText()> known_limitations;
 };
 // Physical outer bounds, including window chrome, kept on the parent's display.
 wxRect BoatSetupDialogBounds(const wxRect& work_area, const wxRect& parent,

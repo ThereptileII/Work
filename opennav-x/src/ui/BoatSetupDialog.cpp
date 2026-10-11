@@ -42,6 +42,23 @@ class BoatSetupDialog final : public wxDialog {
     content_ = new wxBoxSizer(wxVERTICAL);
     body_->SetSizer(content_);
     layout->Add(body_, 1, wxEXPAND | wxALL, FromDIP(24));
+    notices_=new wxPanel(this,wxID_ANY);
+    notices_->SetBackgroundColour(Colour(Theme(mode_).background));
+    auto* notices_layout=new wxBoxSizer(wxVERTICAL);
+    auto* notices_title=new wxStaticText(notices_,wxID_ANY,"Known limitations");
+    notices_title->SetFont(UiFont(*this,22,true));
+    notices_title->SetForegroundColour(Colour(Theme(mode_).primary));
+    notices_layout->Add(notices_title,0,wxEXPAND|wxBOTTOM,FromDIP(16));
+    notice_reader_=new wxTextCtrl(notices_,wxID_ANY,wxEmptyString,wxDefaultPosition,
+        wxDefaultSize,wxTE_MULTILINE|wxTE_READONLY|wxTE_WORDWRAP|wxBORDER_NONE);
+    notice_reader_->SetName("Setup known limitations text");
+    notice_reader_->SetFont(UiFont(*this,13));
+    notice_reader_->SetForegroundColour(Colour(Theme(mode_).primary));
+    notice_reader_->SetBackgroundColour(Colour(Theme(mode_).background));
+    notices_layout->Add(notice_reader_,1,wxEXPAND);
+    notices_->SetSizer(notices_layout);
+    layout->Add(notices_,1,wxEXPAND|wxALL,FromDIP(24));
+    notices_->Hide();
     error_ = new wxStaticText(this, wxID_ANY, wxEmptyString);
     error_->SetForegroundColour(Colour(Theme(mode_).alarm));
     layout->Add(error_, 0, wxEXPAND | wxLEFT | wxRIGHT, FromDIP(24));
@@ -55,8 +72,12 @@ class BoatSetupDialog final : public wxDialog {
       return button;
     };
     add("Later", [this](wxCommandEvent&) { Dismiss(); }, ButtonRole::Quiet);
-    back_ = add("Back", [this](wxCommandEvent&) { if(Capture()) { --step_; Build(); } }, ButtonRole::Normal);
+    back_ = add("Back", [this](wxCommandEvent&) {
+      if(reading_notices_) { CloseNotices(); return; }
+      if(Capture()) { --step_; Build(); }
+    }, ButtonRole::Normal);
     next_ = add("Continue", [this](wxCommandEvent&) {
+      if(reading_notices_) return;
       if (!Capture()) return;
       if (step_ < 5) { ++step_; Build(); return; }
       const auto result = actions_.save ? actions_.save(draft_) : application::CommandResult{false,"Profile storage unavailable"};
@@ -74,11 +95,38 @@ class BoatSetupDialog final : public wxDialog {
     SetSize(bounds);
     Bind(wxEVT_CLOSE_WINDOW, [this](wxCloseEvent&) { Dismiss(); });
     Bind(wxEVT_CHAR_HOOK, [this](wxKeyEvent& event) {
-      if(event.GetKeyCode()==WXK_ESCAPE) Dismiss(); else event.Skip();
+      if(reading_notices_ && (event.GetKeyCode()==WXK_ESCAPE ||
+          (event.AltDown() && event.GetKeyCode()==WXK_LEFT))) CloseNotices();
+      else if(event.GetKeyCode()==WXK_ESCAPE) Dismiss(); else event.Skip();
     });
     Build();
   }
  private:
+  void LimitationsLink() {
+    auto* link=new XNavButton(body_,wxID_ANY,"Read known limitations","Read known limitations");
+    link->SetLightMode(mode_);link->SetMinSize(FromDIP(wxSize(260,72)));
+    link->SetSuiteLink("Packaged guidance for this evaluation build",XNavIcon::Info);
+    link->Bind(wxEVT_BUTTON,[this,link](wxCommandEvent&) {
+      return_focus_=link;
+      const auto notice=actions_.known_limitations?actions_.known_limitations():
+          application::AboutNoticeText{false,"The packaged known-limitations document is unavailable. Restore or repair this SKAGER package to read docs/KNOWN_LIMITATIONS.md."};
+      auto text=wxString::FromUTF8(notice.text);
+      if(text.empty())text="The packaged known-limitations document could not be read. Restore or repair this SKAGER package to read docs/KNOWN_LIMITATIONS.md.";
+      notice_reader_->ChangeValue(text);
+      notice_reader_->SetInsertionPoint(0);
+      // Keep the original controls alive: viewing guidance must not capture,
+      // validate, discard or save even an incomplete draft.
+      reading_notices_=true;body_->Hide();notices_->Show();
+      back_->SetLabel("Return to setup");back_->Enable();next_->Disable();
+      Layout();notice_reader_->SetFocus();
+    });
+    content_->Add(link,0,wxEXPAND|wxBOTTOM,FromDIP(14));
+  }
+  void CloseNotices() {
+    reading_notices_=false;notices_->Hide();body_->Show();
+    back_->SetLabel("Back");back_->Enable(step_>0);next_->Enable();Layout();
+    if(return_focus_)return_focus_->SetFocus();
+  }
   void Label(const std::string& text, int size = 13, bool bold = false) {
     auto* label = new wxStaticText(body_, wxID_ANY, wxString::FromUTF8(text));
     label->SetFont(UiFont(*this,size,bold));
@@ -134,6 +182,9 @@ class BoatSetupDialog final : public wxDialog {
     Label("BOAT SETUP · "+std::to_string(step_+1)+" OF 6",11,true);
     Label(steps[step_],26,true);
     if(step_==0) {
+      Label("Beta evaluation",15,true);
+      Label("This is a beta evaluation build. Setup completion does not establish navigation readiness. You remain responsible for safe navigation: keep a lookout and verify charts, position, depth and local conditions using appropriate independent sources.");
+      LimitationsLink();
       Label("Review your boat's assumptions. Leave unknown values blank. Blank safety depth preserves the current OpenCPN setting. Changes are saved only at the final step.");
       Field(0,"Vessel name",draft_.vessel_name);
       Field(1,"Draft · metres",application::SettingNumber(draft_.settings.hazard.draft_m));
@@ -167,6 +218,8 @@ class BoatSetupDialog final : public wxDialog {
       Label(draft_.settings.pilot.permit_control ? "An existing control permission is configured. It is preserved; setup grants no runtime enablement." : "Autopilot control permission: OFF.");
       Label(draft_.settings.pilot.name.empty() ? "Autopilot identity: Unconfigured" : "Configured autopilot identity: "+draft_.settings.pilot.name);
       Label("Detection is not approval. Live identity, feedback, transport and acknowledgement gates still apply outside setup.");
+      Label("SmartNav advice never steers. Pilot control starts disabled for each session and needs separate explicit enablement on supported, verified hardware. Unsupported control modes and autonomous steering are unavailable.");
+      LimitationsLink();
     } else {
       for(const auto& line:application::BoatSetupSummary(draft_))Label(line);
       Label("Sensor check",15,true);Sensors();
@@ -179,9 +232,10 @@ class BoatSetupDialog final : public wxDialog {
   application::BoatSetupDraft draft_; BoatSetupActions actions_; LightMode mode_;
   double original_safety_;
   int step_=0; wxScrolledWindow* body_; wxBoxSizer* content_; wxStaticText* error_;
+  wxPanel* notices_=nullptr;wxTextCtrl* notice_reader_=nullptr;wxWindow* return_focus_=nullptr;
   XNavButton *back_,*next_; std::array<wxTextCtrl*,5> fields_{};
   XNavChoiceField *scale_=nullptr,*layout_=nullptr;
-  bool dirty_=false, dismissing_=false;
+  bool dirty_=false, dismissing_=false, reading_notices_=false;
 };
 }
 wxDialog* ShowBoatSetupDialog(wxWindow& parent, application::BoatSetupDraft draft,

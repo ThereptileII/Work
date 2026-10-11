@@ -50,6 +50,17 @@ hardware output policy and all existing identity/feedback gates remain intact.
 Configured capacity/reserve are assumptions, not battery observations.
 Completing setup is not passage-readiness certification.
 
+The first vessel step discloses beta evaluation and the operator's navigation
+responsibility. The Helm control step explains session enablement and unavailable
+autonomous steering without altering the existing pilot permission. Both provide
+**Read known limitations**, a themed, read-only panel within the same window.
+It reads only the running package's `../docs/KNOWN_LIMITATIONS.md`, using the
+bounded packaged-document reader. Missing/unreadable guidance is explicit.
+Opening the panel keeps the draft controls alive, including incomplete text;
+it neither validates nor saves them. Return to setup, Escape and Alt-Left return
+to the same step. Later retains the existing draft-discard behavior. Reading
+guidance does not record legal acceptance or grant hardware permission.
+
 ## Verification boundary
 
 Focused tests exercise new/old/interrupted/unknown progress policy, missing and

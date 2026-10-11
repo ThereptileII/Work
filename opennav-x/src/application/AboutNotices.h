@@ -5,13 +5,14 @@
 #include <utility>
 
 namespace opennav::application {
-enum class AboutNotice { Sources, Components, SkagerLicense, OpenCpnLicense };
+enum class AboutNotice { Sources, Components, SkagerLicense, OpenCpnLicense, KnownLimitations };
 inline const char *AboutNoticeFile(AboutNotice notice) {
   switch (notice) {
     case AboutNotice::Sources: return "SOURCE_AND_LICENSES.md";
     case AboutNotice::Components: return "THIRD_PARTY_NOTICES.md";
     case AboutNotice::SkagerLicense: return "licenses/SKAGER-COPYING.txt";
     case AboutNotice::OpenCpnLicense: return "licenses/OpenCPN/COPYING.gplv2";
+    case AboutNotice::KnownLimitations: return "KNOWN_LIMITATIONS.md";
   }
   return "";
 }

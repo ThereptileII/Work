@@ -1581,6 +1581,11 @@ void Shell::ShowBoatSetup(bool explicit_reset) {
   draft.vessel_name=actions_.vessel_name ? actions_.vessel_name() : "";
   if(actions_.chart_safety_depth_m) draft.safety_depth_m=actions_.chart_safety_depth_m();
   BoatSetupActions setup;
+  const auto executable=platform::PathFromUtf8(
+      wxStandardPaths::Get().GetExecutablePath().ToStdString(wxConvUTF8));
+  setup.known_limitations=[executable] {
+    return application::ReadAboutNotice(executable,application::AboutNotice::KnownLimitations);
+  };
   const std::weak_ptr<int> lifetime=context_lifetime_;
   setup.sensors=[this,lifetime] {
     if(lifetime.expired()) return std::vector<std::string>{"Live sensor check unavailable"};

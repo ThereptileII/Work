@@ -16,7 +16,8 @@ int main() {
   assert(!ReadAboutNotice(executable,AboutNotice::Sources).available);
   // The same package layout is retained by the installer and portable ZIP.
   for(auto notice:{AboutNotice::Sources,AboutNotice::Components,
-                   AboutNotice::SkagerLicense,AboutNotice::OpenCpnLicense}) {
+                   AboutNotice::SkagerLicense,AboutNotice::OpenCpnLicense,
+                   AboutNotice::KnownLimitations}) {
     const auto file=docs/AboutNoticeFile(notice);
     {std::ofstream out(file,std::ios::binary);out<<"Packaged UTF-8 notice: båt\n";}
     const auto read=ReadAboutNotice(executable,notice);
