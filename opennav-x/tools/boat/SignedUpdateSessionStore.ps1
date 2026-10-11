@@ -98,6 +98,15 @@ public static class SignedUpdateStoreNative {
       Check(h,false);var stream=new FileStream(h,FileAccess.ReadWrite,4096,false);h=null;return stream;
     }finally{if(h!=null)h.Dispose();Marshal.FreeHGlobal(memory);}
   }
+  public static FileStream InstallationLock(string path){
+    // OPEN_ALWAYS uses the same exclusive lock as installed maintenance/startup.
+    // OPEN_REPARSE_POINT plus Check refuses substituted links and hardlinks.
+    SafeFileHandle h=CreateFile(path,0xC0000000,0,IntPtr.Zero,4,0x00200000,IntPtr.Zero);
+    try{
+      if(h.IsInvalid)throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());
+      Check(h,false);var stream=new FileStream(h,FileAccess.ReadWrite,4096,false);h=null;return stream;
+    }finally{if(h!=null)h.Dispose();}
+  }
   public static void Check(SafeFileHandle h,bool directory){
     Info i;if(h.IsClosed||h.IsInvalid||!GetFileInformationByHandle(h,out i))throw new IOException("Custody handle lost.");
     if((i.Attributes&0x400)!=0 || ((i.Attributes&0x10)!=0)!=directory || (!directory&&i.Links!=1))throw new IOException("Reparse/type/hardlink refused.");
@@ -173,11 +182,71 @@ function New-SignedStoreFile([string]$Path,[string]$Sid) {
   }
   return [SignedUpdateStoreNative]::CreateJournal($Path,$acl.GetSecurityDescriptorBinaryForm())
 }
+function Enter-SignedInstallationRoot([string]$Root) {
+  return ,([SignedUpdateStoreNative]::PinDirectories($Root))
+}
+function Open-SignedInstallationLock([string]$Root) {
+  return [SignedUpdateStoreNative]::InstallationLock((Join-Path $Root 'transaction.lock'))
+}
+function Assert-SignedInstallationHandle($Stream,[string]$Sid='') {
+  [SignedUpdateStoreNative]::Check($Stream.SafeFileHandle,$false)
+  if($Sid){Assert-SignedStoreAcl $Stream.SafeFileHandle $Sid $false}
+}
+function Read-SignedInstallationRecord([string]$Path) {
+  $stream=[IO.File]::Open($Path,[IO.FileMode]::Open,[IO.FileAccess]::Read,[IO.FileShare]::Read)
+  try {
+    Assert-SignedInstallationHandle $stream
+    if($stream.Length -lt 1 -or $stream.Length -gt 32768){throw 'Installed arming record exceeds bound.'}
+    $bytes=[byte[]]::new([int]$stream.Length);$offset=0
+    while($offset -lt $bytes.Length){$n=$stream.Read($bytes,$offset,$bytes.Length-$offset);if($n -le 0){throw 'Incomplete installed arming record.'};$offset+=$n}
+    return ConvertFrom-SignedStoreJson $bytes
+  } finally {$stream.Dispose()}
+}
+function Enter-SignedInstallationBarrier([string]$Root,$Binding,$Owner) {
+  $pins=@();$lock=$null;$stream=$null
+  try {
+    $pins=Enter-SignedInstallationRoot $Root
+    $lock=Open-SignedInstallationLock $Root
+    $rootOwner=Read-SignedInstallationRecord (Join-Path $Root 'owner.json')
+    $state=Read-SignedInstallationRecord (Join-Path $Root 'state.json')
+    if($rootOwner.owner -cne 'OpenNavX.Alpha1.SideBySide.1' -or
+       $state.owner -cne $rootOwner.owner -or ($state.schema -isnot [int] -and $state.schema -isnot [long]) -or $state.schema -ne 1 -or
+       $state.current -cne $Binding.previous.generation){throw 'Signed arming requires the exact selected owned installation.'}
+    $path=Join-Path $Root 'signed-update-armed.jsonl'
+    # This root marker is a durable DENIAL, never an approval or resumable token.
+    # CreateNew atomically refuses any abandoned marker, including empty bytes.
+    $stream=New-SignedStoreFile $path $Owner.sid
+    $barrier=@{root=$Root;path=$path;stream=$stream;pins=$pins;lock=$lock;owner=$Owner;length=0;digest=('0'*64)}
+    $body=[pscustomobject][ordered]@{schema=1;owner='SKAGER.SignedUpdateBarrier.1';session=$Binding.session;bindingSha256=(Get-SignedUpdateReceiptHash $Binding);previousGeneration=$Binding.previous.generation;createdUnix=(Get-SignedStoreNow)}
+    $bytes=[byte[]]((Get-SignedStoreBytes $body)+10)
+    Write-SignedStoreFrame $barrier $bytes
+    $barrier.length=$bytes.Length;$barrier.digest=Get-SignedStoreDigest $bytes
+    Assert-SignedInstallationBarrier $barrier
+    return $barrier
+  } catch {
+    if($stream){$stream.Dispose()};if($lock){$lock.Dispose()};foreach($pin in $pins){$pin.Dispose()}
+    # Never erase a successfully created marker after partial/failed arming.
+    throw
+  }
+}
+function Assert-SignedInstallationBarrier($Barrier) {
+  foreach($pin in $Barrier.pins){[SignedUpdateStoreNative]::Check($pin,$true)}
+  Assert-SignedInstallationHandle $Barrier.stream $Barrier.owner.sid
+  $bytes=Read-SignedStoreHeldBytes $Barrier
+  if($bytes.Length -ne $Barrier.length -or (Get-SignedStoreDigest $bytes) -cne $Barrier.digest){throw 'Installed signed-update barrier changed.'}
+}
+function Close-SignedInstallationBarrier($Barrier) {
+  try {$Barrier.stream.Dispose()} finally {
+    try {if($Barrier.lock){$Barrier.lock.Dispose()}} finally {foreach($pin in $Barrier.pins){$pin.Dispose()}}
+  }
+  # Deliberately no delete, disarm or disk-resume operation.
+}
 function Assert-SignedStoreNative($Store) {
   foreach($pin in $Store.pins){[SignedUpdateStoreNative]::Check($pin,$true)}
   [SignedUpdateStoreNative]::Check($Store.stream.SafeFileHandle,$false)
   Assert-SignedStoreAcl $Store.pins[-1] $Store.owner.sid $true
   Assert-SignedStoreAcl $Store.stream.SafeFileHandle $Store.owner.sid $false
+  if($Store.ContainsKey('installationBarrier') -and $Store.installationBarrier){Assert-SignedInstallationBarrier $Store.installationBarrier}
 }
 function Write-SignedStoreFrame($Store,[byte[]]$Bytes) {
   # One append contains BOTH complete state and its current head; there is no
@@ -210,19 +279,23 @@ function Get-SignedStoreLive([string]$Handle) {
   if(-not $script:SignedUpdateStores.ContainsKey($Handle)){throw 'No exclusive live signed-update custody. Disk records cannot resume it.'}
   return $script:SignedUpdateStores[$Handle]
 }
-function New-SignedUpdateStore([string]$Directory,[byte[]]$BindingJson,[switch]$OperationEvents) {
+function New-SignedUpdateStore([string]$Directory,[byte[]]$BindingJson,[switch]$OperationEvents,[string]$InstallationRoot='') {
   $binding=ConvertFrom-SignedStoreJson $BindingJson
   $session=New-SignedUpdateSession $binding (Get-SignedStoreNow)
   $operations=$null
   if($OperationEvents){$operations=New-SignedUpdateOperationSession $binding $session.lastUnix;$session=$operations.session}
   $owner=Get-SignedStoreOwner
-  $pins=Enter-SignedStoreDirectory $Directory $owner
-  $stream=$null
+  $pins=@();$stream=$null;$barrier=$null
   try {
+    # The private journal's strict directory ACL is unchanged. Installed arming
+    # additionally publishes a protected root barrier while holding maintenance's
+    # transaction lock, BEFORE any journal mutation, restoration or installation.
+    if($InstallationRoot){$barrier=Enter-SignedInstallationBarrier $InstallationRoot $binding $owner}
+    $pins=Enter-SignedStoreDirectory $Directory $owner
     $path=Join-Path $Directory 'signed-update-armed.jsonl'
     # CreateNew refuses missing-custodian leftovers, including corrupt/empty files.
     $stream=New-SignedStoreFile $path $owner.sid
-    $store=@{directory=$Directory;path=$path;stream=$stream;pins=$pins;owner=$owner;ownerSha256=(Get-SignedUpdateReceiptHash $owner);session=$session;operations=$operations;poisoned=$false;length=0;digest=('0'*64)}
+    $store=@{directory=$Directory;path=$path;stream=$stream;pins=$pins;installationBarrier=$barrier;owner=$owner;ownerSha256=(Get-SignedUpdateReceiptHash $owner);session=$session;operations=$operations;poisoned=$false;length=0;digest=('0'*64)}
     Assert-SignedStoreNative $store
     $frame=[pscustomobject][ordered]@{schema=1;owner=$owner;sequence=0;previousFrameSha256=('0'*64);state=$session}
     if($OperationEvents){$frame.schema=2;$frame.state=$operations}
@@ -231,10 +304,15 @@ function New-SignedUpdateStore([string]$Directory,[byte[]]$BindingJson,[switch]$
     $store.length=$bytes.Length;$store.digest=Get-SignedStoreDigest $bytes
     $null=Assert-SignedStoreCurrent $store
     $handle=[guid]::NewGuid().ToString('N')
+    # Installed entry points now see the durable marker and deny. The full future
+    # broker must supply its separately authenticated operation path; this API
+    # supplies no exception to ordinary maintenance or application startup.
+    if($barrier -and $barrier.lock){$barrier.lock.Dispose();$barrier.lock=$null}
     $script:SignedUpdateStores.Add($handle,$store)
     return $handle
   } catch {
     if($stream){$stream.Dispose()};foreach($pin in $pins){$pin.Dispose()}
+    if($barrier){Close-SignedInstallationBarrier $barrier}
     # Preserve any created marker, even on initial write failure.
     throw
   }
@@ -277,6 +355,10 @@ function Write-SignedStoreTransition($Store,$NextSession,$Operations) {
 function Close-SignedUpdateStore([string]$Handle) {
   $store=Get-SignedStoreLive $Handle
   $store.poisoned=$true
-  try {$store.stream.Dispose()}finally{foreach($pin in $store.pins){$pin.Dispose()};$script:SignedUpdateStores.Remove($Handle)}
+  try {$store.stream.Dispose()}finally{
+    try {foreach($pin in $store.pins){$pin.Dispose()}} finally {
+      try {if($store.installationBarrier){Close-SignedInstallationBarrier $store.installationBarrier}} finally {$script:SignedUpdateStores.Remove($Handle)}
+    }
+  }
   # Intentionally leave armed evidence. No disarm/delete/resume API exists.
 }

@@ -28,6 +28,51 @@ installer/spawn hooks, selected-directory policy or interrupted-update recovery.
 Those integrations must reject missing/abandoned custody once armed, including
 ordinary startup; the current product does not yet call this store.
 
+### Installed armed-session denial boundary
+
+Installed arming uses the explicit `-InstallationRoot` option on
+`New-SignedUpdateStore`. The private journal directory remains separate and
+retains its original protected ACL requirement. While holding the installation's
+existing exclusive `transaction.lock`, the store checks the owned root and
+selected previous generation, then atomically creates and flushes
+`<InstallationRoot>/signed-update-armed.jsonl` with its protected owner/SYSTEM
+file ACL **before** creating the private journal. The store retains that root
+file and opened ancestor handles; current-store checks also verify the held
+marker bytes. The maintenance lock is released only after initial arming is
+durable. Any later refusal, partial write or close leaves the root marker in
+place. There is no delete, disarm, reopen, resume or bypass API.
+
+The installed launcher, supervisor and mutating Lifecycle entry points reserve
+that exact root filename. Any present leaf, including empty/corrupt bytes or a
+directory, denies ordinary startup and maintenance. Lookup uncertainty also
+denies; the implementation must prove leaf absence rather than interpret a
+failed `File.Exists`/`Test-Path` as permission. Checks at the existing lock and
+creation boundaries narrow races but do not claim to pin absence or authenticate
+a broker. Marker contents are never parsed into launch or rollback authority.
+Normal installations with proven absent markers keep their existing behavior.
+Fresh-install/preflight checks may separately prove a missing root component
+under checked existing ancestors. They do not authorize mutation of an existing
+root: after root creation, strict marker-absence checks run before and under
+`transaction.lock`, before ownership, recovery or installed state writes.
+
+The option without an installation root remains an inert/private store API; it
+does not arm installed entry points or authorize a product operation. The
+installed option itself supplies **only denial and persistence**, not proof of
+the previous commit/package/image, reviewed commissioning, restored user data,
+source approval or permission to perform a stage. The future trusted broker must
+independently verify those identities and use its own authenticated operation
+path; the ordinary entry points deliberately have no exception for it yet.
+The four-stage broker and actual restoration/installation/spawn hooks below
+remain required. No live signed update is enabled by this increment.
+
+`test-installed-signed-update-store.ps1` is included in the existing signed-session
+gate. Portable execution covers actual temporary-file persistence, ordering,
+lock conflict, malformed ownership, selected-generation mismatch and injected
+root/journal write failures, with explicit substitutions for unsupported Windows
+handle/ACL operations. Native ACL/path and combined installed entry-point
+qualification remain pending for the changed source; earlier image-owner passes
+do not qualify this additional boundary.
+
 ## Four transitions
 
 | Receipt | Required real operation before recording it | Operation that may follow only through the still-unimplemented native boundary |

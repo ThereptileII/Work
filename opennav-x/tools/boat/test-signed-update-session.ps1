@@ -111,3 +111,4 @@ Write-Output ('Signed update session: '+$checks+' pure contract checks passed; n
 # substitutions are explicitly reported and cannot qualify that boundary.
 & (Join-Path $PSScriptRoot 'test-signed-update-operations.ps1')
 & (Join-Path $PSScriptRoot 'test-signed-update-session-store.ps1')
+& (Join-Path $PSScriptRoot 'test-installed-signed-update-store.ps1')
