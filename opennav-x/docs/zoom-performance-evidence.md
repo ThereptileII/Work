@@ -8,6 +8,27 @@ thresholds. The three Jira comments through 2026-10-11 do not establish a
 remaining hang cause. `ZoomCanvas` / `DoZoomCanvas` / `Full_INIT` are investigation
 locations, not a diagnosis.
 
+## Source-confirmed route-card omission
+
+The `5dd795be` source applies the scale hierarchy to standalone waypoint names
+and online AIS names, but `DrawChartRouteLabel` still draws prepared XNav route
+name cards at every scale. The bounded correction consumes these owned cards
+without drawing at 1:150,000 and wider. Returning success is intentional: the
+upstream caller must not replace a suppressed card with the stock name. Markers,
+route geometry, active-route state, chart objects and custom/ineligible names
+retain their existing behavior. Raster/texture caches remain available when
+zooming back in; this change does not eliminate label preparation or change
+conservative label bounds.
+
+`python tools/test-route-label-declutter.py` executes the production draw
+function with recording software/OpenGL seams. Its 58 checks cover threshold
+boundaries, zoom-out/in restoration, unavailable scale, preserved texture
+ownership, and ineligible/missing-cache stock fallback. The unchanged source
+fails the threshold assertion. The four passive collector tests also pass.
+These are headless source checks, not driver/rendering or performance evidence.
+The route-card omission does not establish the cause of the reported hang;
+the native/physical measurements below remain necessary.
+
 ## Short reproducible capture
 
 1. Use an explicitly authorized desktop test session with the exact installed

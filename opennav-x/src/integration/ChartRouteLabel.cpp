@@ -1,5 +1,6 @@
 #include "integration/ChartRouteLabel.h"
 #include "integration/ChartRouteLabelRaster.h"
+#include "application/ChartDeclutter.h"
 #include "ui/Controls.h"
 #include "model/route.h"
 #include "model/route_point.h"
@@ -59,6 +60,13 @@ bool PrepareChartRouteLabel(ChartCanvas& canvas, RoutePoint& point, int ordinal)
 bool DrawChartRouteLabel(ocpnDC& dc, ChartCanvas& canvas, RoutePoint& point,
                          int x, int y, bool prepared) {
   auto* cache=point.m_skagerLabel.get();
+  // A prepared card is an XNav-owned secondary name, just like standalone
+  // waypoint and online AIS labels. Consume it at wide scales so callers do
+  // not fall back to the stock name. Retain its cache for zooming back in;
+  // ineligible/custom names still follow the existing stock cleanup path.
+  const auto* vp=canvas.GetpVP();
+  if(prepared && cache && vp && !application::ShowSecondaryLabels(
+      application::ChartDetailForScale(vp->chart_scale))) return true;
   if(dc.GetDC()) {
     if(!prepared || !cache)return false;
     dc.DrawBitmap(cache->bitmap,x+cache->origin.x,y+cache->origin.y,true);
