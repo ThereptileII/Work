@@ -212,3 +212,34 @@ acquisition and creation and exercise the full supervisor/health/cleanup path:
 replacement bytes must never run, and a legitimate child must remain positively
 identifiable. No path-string relaxation, approval flag or class-only owner can
 substitute for that integration and native evidence.
+
+
+## Retained PowerShell supervisor image owner (native qualification pending)
+
+The SCRUM-311 increment selected in comment 11318 adds an actual native image
+owner to `Start-SupervisedGeneration`, its authenticated health checks and normal
+cleanup. It pins physical NTFS ancestry and a single-link expected-hash image,
+creates through held-derived `GLOBALROOT` image/CWD paths with `CREATE_SUSPENDED`
+and no inherited handles, and checks the returned process's native name and raw
+creation identity plus retained metadata before resuming. The native name is
+corroboration of the pinned path, not a mapped-section file-ID query. DOS audit
+record paths remain unchanged. Existing protocol-only direct `Receive` fixtures
+cannot write a known-good receipt without a live creator owner.
+
+Versioned native-v1 pending identity never reinterprets old UTC ticks. Current-host
+refusal before the actual native creation call preserves safe prior rollback;
+creation/resume/lost-return/persistence uncertainty and interrupted armed or
+historical attempted records retain evidence and refuse automatic fallback.
+Fresh interrupted cleanup only restricts normal signaling using recorded
+PID/FILETIME and newly acquired native image identity; it cannot restore past
+custody or confer commissioning authority.
+
+Both focused portable PowerShell checks pass and compile the exact embedded C#.
+The dedicated native alias-remap/health/normal/interrupted-close and uncertainty
+fixtures are prepared but **not run**. Go ordinary/fallback creation, Lifecycle
+self-test, helper/script/initial-launch selection, actual OpenCPN `GLOBALROOT`
+loader/CWD compatibility, DLL/plugin/environment/profile closure and the full
+commissioning broker remain outside this increment. It excludes arbitrary
+same-token injection and kernel compromise. No full custody, signed update,
+product or boat acceptance is claimed. [Exact boundary, local evidence and native
+recipe](../evidence/scrum311-native-launch-identity-20261011/README.md).

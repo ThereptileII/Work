@@ -35,7 +35,7 @@ try {
   Check ((Resolve-UpdatePendingRecovery $read $read.previous.generation) -ceq 'retain-previous') 'Interrupted precommit must retain previous.'
   Check ((Resolve-UpdatePendingRecovery $read $read.candidate.generation) -ceq 'restore-previous') 'Interrupted publication must restore previous.'
   Check ((Resolve-UpdatePendingRecovery $read ('c'*32)) -ceq 'manual-recovery') 'Unrelated generation must require manual recovery.'
-  $read.attempts=1; $read.session='d'*32
+  $read.attempts=1; $read.session='d'*32; $read.nativeLaunchV1='armed'
   Write-UpdatePendingRecord $path $read
   Check ((Read-UpdatePendingRecord $path).attempts -eq 1) 'Consumed attempt was not durable.'
   Check ((Resolve-UpdatePendingRecovery $read $read.candidate.generation) -ceq 'restore-previous') 'Interrupted launch must never silently accept candidate.'
@@ -362,6 +362,8 @@ Start-Sleep -Seconds 10
       Check ($passed -eq $success) ('Unexpected phase result: '+$case+'; receiver: '+$session.server.FailureReason+'; child: '+(ClientFailure $session))
       if ($success) {
         Check ($session.server.Phase -ceq 'healthy' -and $session.server.VerifiedFrame -ceq $ready) 'Only final exact READY plus EOF may establish health.'
+        Reject { Write-UpdateKnownGoodReceipt (Join-Path $fixture ($case+'.receipt')) $pending.candidate $session $executable }
+        Check (-not (Test-Path -LiteralPath (Join-Path $fixture ($case+'.receipt')))) 'Direct protocol fixture without native creator owner wrote a known-good receipt.'
       } else {
         Check ($null -eq $session.server.VerifiedFrame -and $null -eq $session.server.VerifiedHash) 'Intermediate/rejected phase became health proof.'
         Reject { Write-UpdateKnownGoodReceipt (Join-Path $fixture ($case+'.receipt')) $pending.candidate $session $executable }
@@ -474,11 +476,33 @@ class InertStartupFixture {
     $marker=Join-Path $candidate.directory 'app/fixture-launches'
     if (Test-Path -LiteralPath $marker) { Remove-Item -LiteralPath $marker }
     $pending=StageFixturePending
-    $pending.attempts=1; $pending.session=[guid]::NewGuid().ToString('N')
+    $pending.attempts=1; $pending.session=[guid]::NewGuid().ToString('N'); $pending.nativeLaunchV1='armed'
     Write-UpdatePendingRecord (Join-Path $install 'update-pending.json') $pending
-    Check ((Invoke-UpdateSupervision $install 'RecoverPending' $pending.transaction) -ceq 'previous-restored') 'Interrupted candidate did not restore previous.'
+    Reject { Invoke-UpdateSupervision $install 'RecoverPending' $pending.transaction }
+    Check (Test-Path -LiteralPath (Join-Path $install 'update-pending.json')) 'Uncertain creation lost pending evidence.'
+    Check ((Get-SupervisedInstallState $install).current -ceq ('a'*32)) 'Uncertain creation changed selected generation.'
+    # Disposable fixture reset only: production recovery deliberately blocks.
+    Remove-Item -LiteralPath (Join-Path $install 'update-pending.json')
+    FixtureJson (Join-Path $install 'state.json') @{owner='OpenNavX.Alpha1.SideBySide.1';schema=1;current=('b'*32);previous=''}
     Check (-not (Test-Path -LiteralPath $marker)) 'Interrupted recovery launched candidate again.'
-    Write-Host 'PASS: native interrupted recovery restores previous without any candidate launch.'
+    Write-Host 'PASS: uncertain interrupted creation refuses rollback and retains evidence without launching candidate.'
+
+    # Actual owner acquisition succeeds; unsupported native arguments refuse
+    # BEFORE CreateProcess. The real supervisor catch must still restore prior.
+    $candidate=FixtureGeneration 'a' (CompileInertApplication 'a' $true 60000)
+    $pending=StageFixturePending
+    $savedStarter=${function:Start-SupervisedGeneration}
+    try {
+      function Start-SupervisedGeneration($Generation,$Session) {
+        $request=New-Object Diagnostics.ProcessStartInfo
+        $request.FileName=$Generation.executable;$request.WorkingDirectory=Join-Path $Generation.directory 'app'
+        $request.UseShellExecute=$false;$request.RedirectStandardOutput=$true
+        return $Session.server.StartOwned($request,$Generation.identity.executableSha256)
+      }
+      Check ((Invoke-UpdateSupervision $install 'LaunchPending' $pending.transaction) -ceq 'previous-restored') 'Pre-create owner argument refusal blocked safe prior rollback.'
+      Check (@(Get-Process -Name opencpn -ErrorAction SilentlyContinue).Count -eq 0) 'Pre-create argument refusal created a child.'
+      Write-Host 'PASS: actual acquired owner pre-create refusal preserves proven-no-create rollback.'
+    } finally { Set-Item -LiteralPath Function:Start-SupervisedGeneration -Value $savedStarter }
 
     $candidate=FixtureGeneration 'a' (CompileInertApplication 'a' $true 60000)
     $pending=StageFixturePending
@@ -496,6 +520,46 @@ class InertStartupFixture {
     StopInertFixtureApplications
     Check ((Invoke-UpdateSupervision $install 'RecoverPending' $pending.transaction) -ceq 'previous-restored') 'Recovery failed after inert process was independently closed.'
     Write-Host 'PASS: native failed graceful close preserves live process, selected generation and pending recovery; later recovery restores previous.'
+
+    # The real creator succeeds but its caller loses the returned Process.
+    # Owner state must deny rollback even though $process stays null in PS.
+    $candidate=FixtureGeneration 'a' (CompileInertApplication 'a' $true 60000)
+    $pending=StageFixturePending
+    $savedStarter=${function:Start-SupervisedGeneration}
+    try {
+      function Start-SupervisedGeneration($Generation,$Session) {
+        $created=& $savedStarter $Generation $Session
+        try { throw 'Injected lost managed return after native resume.' }
+        finally { $created.Dispose() }
+      }
+      Reject { Invoke-UpdateSupervision $install 'LaunchPending' $pending.transaction }
+      Check ((Get-SupervisedInstallState $install).current -ceq ('a'*32)) 'Lost native creator return triggered rollback.'
+      Check ((Read-UpdatePendingRecord (Join-Path $install 'update-pending.json')).nativeLaunchV1 -ceq 'armed') 'Lost native creator return lost armed evidence.'
+      Check (@(Get-Process -Name opencpn -ErrorAction SilentlyContinue).Count -eq 1) 'Lost native creator return forcibly closed or retried candidate.'
+    } finally {
+      Set-Item -LiteralPath Function:Start-SupervisedGeneration -Value $savedStarter
+      StopInertFixtureApplications
+    }
+    # Disposable fixture reset after the deliberately blocked recovery.
+    Remove-Item -LiteralPath (Join-Path $install 'update-pending.json')
+    FixtureJson (Join-Path $install 'state.json') @{owner='OpenNavX.Alpha1.SideBySide.1';schema=1;current=('b'*32);previous=''}
+    Write-Host 'PASS: lost managed return after native resume preserves pending/live child and never falls back.'
+
+    $candidate=FixtureGeneration 'a' (CompileInertApplication 'a' $true 60000)
+    $pending=StageFixturePending
+    $savedPendingWriter=${function:Write-UpdatePendingRecord}
+    try {
+      function Write-UpdatePendingRecord([string]$Path,$Record) {
+        if ($Record.nativeLaunchV1 -ceq 'running') { throw 'Injected native identity persistence refusal.' }
+        & $savedPendingWriter $Path $Record
+      }
+      Reject { Invoke-UpdateSupervision $install 'LaunchPending' $pending.transaction }
+      Check ((Get-SupervisedInstallState $install).current -ceq ('a'*32)) 'Failed post-create persistence triggered rollback.'
+      $retained=Read-UpdatePendingRecord (Join-Path $install 'update-pending.json')
+      Check ($retained.nativeLaunchV1 -ceq 'armed') 'Failed post-create persistence lost armed recovery evidence.'
+      Check (@(Get-Process -Name opencpn -ErrorAction SilentlyContinue).Count -eq 1) 'Uncertain persistence forcibly closed or retried the candidate.'
+      Write-Host 'PASS: actual native creation followed by identity-persistence refusal retains live candidate/pending and never falls back.'
+    } finally { Set-Item -LiteralPath Function:Write-UpdatePendingRecord -Value $savedPendingWriter }
   } finally { StopInertFixtureApplications }
 } finally {
   if (Test-Path -LiteralPath $fixture) { Remove-Item -LiteralPath $fixture -Recurse -Force }

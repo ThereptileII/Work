@@ -311,3 +311,29 @@ journal above models denial/restoration ordering, but the native broker must sti
 prove uninterrupted no-spawn custody and validate the actual partial transaction.
 No callback, state-handle release, generic approval flag or bootstrap guard
 relaxation was added.
+
+
+## Native supervisor image owner increment (2026-10-11)
+
+`UpdateTransaction.ps1` now contains a reusable retained image/physical-ancestry
+owner used by the real PowerShell supervisor's creation, authenticated health and
+normal-cleanup path. This establishes a bounded native image/CWD predicate;
+it supplies no receipt-reducer approval, launch authorization or full
+`nativeCustodyQualified` assertion. It uses suspended native creation and checks
+identity before resume, rather than validating after user code can execute.
+Original DOS record validation and all startup protocol checks remain in place;
+known-good receipt creation additionally requires that live creator owner.
+
+Distinct `nativeLaunchV1`/`processCreationFileTimeV1` fields retain uncertainty
+across interruption without changing the meaning of historical
+`processStartTicks`. An attempted historical or armed native record refuses
+automatic recovery; current-host positively pre-create refusal may still take
+the existing guarded rollback. Fresh interrupted checks only restrict normal
+close and are not reconstructed historical custody.
+
+Portable policy/source-compilation checks pass. Actual Windows creation/CWD,
+alias-remap, health and cleanup fixtures remain pending. Go ordinary/fallback,
+Lifecycle self-test, helper/script/shortcut roots and loader/profile/environment
+custody are not covered here; the authenticated four-stage commissioning and
+mutation/restoration owner is still required. [Evidence and exact remaining
+native checks](../evidence/scrum311-native-launch-identity-20261011/README.md).

@@ -159,7 +159,6 @@ function Assert-UpdateBootstrapExpectation([string]$InstallationRoot,[string]$Ex
 }
 function Start-SupervisedGeneration($Generation,$Session) {
   Assert-NoUpdateApplication
-  if ((Get-UpdateFileHash $Generation.executable) -cne $Generation.identity.executableSha256) { throw 'Executable changed before launch.' }
   $start=New-Object Diagnostics.ProcessStartInfo
   $start.FileName=$Generation.executable; $start.Arguments='--xnav'
   $start.WorkingDirectory=Join-Path $Generation.directory 'app'; $start.UseShellExecute=$false
@@ -169,25 +168,27 @@ function Start-SupervisedGeneration($Generation,$Session) {
   # Ordinary installed XNav startup: no alternate profile, demo, hardware, or
   # connection arguments. The application's declared output contract and
   # explicit configuration/session gates remain active.
-  return [Diagnostics.Process]::Start($start)
+  return $Session.server.StartOwned($start,$Generation.identity.executableSha256)
 }
-function Stop-SupervisedProcess([Diagnostics.Process]$Process,[string]$Executable,[string]$StartTicks='') {
-  if ($Process.HasExited) { return }
-  if ($StartTicks -and $Process.StartTime.ToUniversalTime().Ticks.ToString() -cne $StartTicks) { throw 'Candidate PID was reused; no process was signaled.' }
-  if (-not [string]::Equals([IO.Path]::GetFullPath($Process.MainModule.FileName),[IO.Path]::GetFullPath($Executable),[StringComparison]::OrdinalIgnoreCase)) { throw 'Candidate process image changed; no process was signaled.' }
-  $null=$Process.CloseMainWindow()
-  if (-not $Process.WaitForExit(10000)) { throw 'Candidate is still running. Close it before recovery; no forced termination or rollback was performed.' }
+function Stop-SupervisedProcess([Diagnostics.Process]$Process,[string]$Executable,[string]$StartTicks='',$Session=$null) {
+  # The executable/tick arguments retain the public calling shape but never
+  # substitute for the actual creator's retained kernel handles.
+  if (-not $Session -or $Session.server -isnot [Skager.UpdateStartupPipe]) { throw 'No native creator ownership; no process was signaled.' }
+  $Session.server.CloseOwned($Process,10000)
 }
 function Stop-InterruptedUpdateCandidate([string]$InstallationRoot,$Pending) {
+  if ($Pending.attempts -eq 1 -and (-not $Pending.PSObject.Properties['nativeLaunchV1'] -or $Pending.nativeLaunchV1 -cne 'running')) {
+    throw 'Interrupted launch has no confirmed native-v1 creation identity; pending evidence retained for manual recovery.'
+  }
+  Initialize-UpdatePipeType
   $candidatePath=Get-UpdateOwnedPath (Join-Path (Join-Path $InstallationRoot 'generations') $Pending.candidate.generation) 'app/opencpn.exe'
-  # Include the spawn-before-PID-persist crash window. Only the exact candidate
-  # image may be asked to close; other OpenCPN processes merely block recovery.
   foreach ($process in @(Get-Process -Name opencpn -ErrorAction SilentlyContinue)) {
     try {
-      if ([string]::Equals([IO.Path]::GetFullPath($process.MainModule.FileName),$candidatePath,[StringComparison]::OrdinalIgnoreCase)) {
-        Stop-SupervisedProcess $process $candidatePath
+      if ($Pending.attempts -eq 1) {
+        $null=[Skager.UpdateImageOwner]::CloseInterrupted($process,$candidatePath,$Pending.candidate.executableSha256,[int]$Pending.processId,[long]$Pending.processCreationFileTimeV1,10000)
       }
-    } finally { $process.Dispose() }
+    } catch { throw 'Interrupted candidate identity/normal closure could not be established; pending evidence retained.' }
+    finally { $process.Dispose() }
   }
   Assert-NoUpdateApplication
 }
@@ -217,7 +218,7 @@ function Invoke-UpdateSupervision([string]$InstallationRoot,[string]$Action,[str
   $state=Get-SupervisedInstallState $InstallationRoot
   $lockPath=Assert-UpdateRecordPath (Join-Path $InstallationRoot 'transaction.lock')
   $lock=[IO.File]::Open($lockPath,[IO.FileMode]::OpenOrCreate,[IO.FileAccess]::ReadWrite,[IO.FileShare]::None)
-  $session=$null; $process=$null; $rollback=$null
+  $session=$null; $process=$null; $rollback=$null; $creationRecorded=$false
   try {
     Assert-UpdateTransactionLock $InstallationRoot $lock
     $state=Get-SupervisedInstallState $InstallationRoot
@@ -253,7 +254,9 @@ function Invoke-UpdateSupervision([string]$InstallationRoot,[string]$Action,[str
         Write-UpdatePendingRecord (Join-Path $InstallationRoot 'update-pending.json') $pending
         $process=Start-SupervisedGeneration $generation $session
         $pending.processId=$process.Id; $pending.processStartTicks=$process.StartTime.ToUniversalTime().Ticks.ToString()
+        $pending.processCreationFileTimeV1=$session.server.OwnedCreationFileTime.ToString(); $pending.nativeLaunchV1='running'
         Write-UpdatePendingRecord (Join-Path $InstallationRoot 'update-pending.json') $pending
+        $creationRecorded=$true
         if (-not (Wait-UpdateStartupSuccess $pending $session $process $generation.executable)) { throw ('Candidate startup health was not authenticated. Receiver: '+$session.server.FailureReason) }
         $known=Get-UpdateKnownGoodPath $InstallationRoot $generation.identity
         $null=New-Item -ItemType Directory -Path ([IO.Path]::GetDirectoryName($known)) -Force
@@ -262,13 +265,16 @@ function Invoke-UpdateSupervision([string]$InstallationRoot,[string]$Action,[str
         return 'candidate-qualified'
       } catch {
         Write-Warning ('Supervised candidate failed: '+$_.Exception.Message)
-        if ($process) { Stop-SupervisedProcess $process $generation.executable $pending.processStartTicks }
+        if ($session -and ($session.server.UncertainCreation -or ($session.server.NativeCreationAttempted -and (-not $process -or -not $creationRecorded)))) {
+          throw 'Native candidate creation outcome was not durably confirmed; no fallback or rollback, pending evidence retained.'
+        }
+        if ($process) { Stop-SupervisedProcess $process $generation.executable $pending.processStartTicks $session }
         Assert-NoUpdateApplication
         $rollback=$pending
       }
     } else { throw 'Unknown supervision action.' }
   } catch {
-    if ($Action -ceq 'QualifyCurrent' -and $process) { Stop-SupervisedProcess $process $generation.executable }
+    if ($Action -ceq 'QualifyCurrent' -and $process) { Stop-SupervisedProcess $process $generation.executable '' $session }
     throw
   } finally {
     if ($session) { $session.server.Dispose() }

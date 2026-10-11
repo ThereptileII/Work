@@ -17,6 +17,18 @@ function Assert-UpdatePendingRecord($Record) {
       ($Record.attempts -isnot [int] -and $Record.attempts -isnot [long]) -or $Record.attempts -notin @(0,1) -or $Record.session -isnot [string] -or
       $Record.session -cnotmatch '^(|[a-f0-9]{32})$' -or
       (($Record.attempts -eq 0) -ne ($Record.session -ceq ''))) { throw 'Unknown or invalid pending update record.' }
+  # Distinct native-v1 fields never reinterpret historical UTC tick strings.
+  # Legacy records remain readable; an attempted legacy launch cannot grant the
+  # new cleanup predicate and requires explicit recovery attention.
+  if ($Record.PSObject.Properties['nativeLaunchV1']) {
+    if ($Record.nativeLaunchV1 -isnot [string] -or $Record.nativeLaunchV1 -cnotmatch '^(none|armed|running)$' -or
+        -not $Record.PSObject.Properties['processCreationFileTimeV1'] -or $Record.processCreationFileTimeV1 -isnot [string] -or
+        $Record.processCreationFileTimeV1 -cnotmatch '^(|[1-9][0-9]{0,17})$' -or
+        (($Record.nativeLaunchV1 -ceq 'running') -ne ($Record.processCreationFileTimeV1 -cne '')) -or
+        ($Record.nativeLaunchV1 -ceq 'none' -and $Record.attempts -ne 0) -or
+        ($Record.nativeLaunchV1 -cne 'none' -and $Record.attempts -ne 1) -or
+        ($Record.nativeLaunchV1 -ceq 'running' -and (-not $Record.PSObject.Properties['processId'] -or ($Record.processId -isnot [int] -and $Record.processId -isnot [long]) -or $Record.processId -lt 1 -or $Record.processId -gt [int]::MaxValue))) { throw 'Invalid native launch recovery identity.' }
+  } elseif ($Record.PSObject.Properties['processCreationFileTimeV1']) { throw 'Unversioned native launch recovery identity.' }
   Assert-UpdateIdentity $Record.candidate
   Assert-UpdateIdentity $Record.previous
   if ($Record.candidate.generation -ceq $Record.previous.generation) { throw 'Candidate and recovery generation must differ.' }
@@ -25,7 +37,7 @@ function New-UpdatePendingRecord($Candidate, $Previous) {
   Assert-UpdateIdentity $Candidate
   Assert-UpdateIdentity $Previous
   $record = [pscustomobject]@{schema=1; owner='SKAGER.UpdateStartup.1'; transaction=[guid]::NewGuid().ToString('N');
-    candidate=$Candidate; previous=$Previous; attempts=0; session=''; processId=0; processStartTicks=''}
+    candidate=$Candidate; previous=$Previous; attempts=0; session=''; processId=0; processStartTicks=''; nativeLaunchV1='none'; processCreationFileTimeV1=''}
   Assert-UpdatePendingRecord $record
   return $record
 }
@@ -85,6 +97,208 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Microsoft.Win32.SafeHandles;
 namespace Skager {
+ public sealed class UpdateImageOwner : IDisposable {
+  const uint Read=0x80000000, Attributes=0x80, Directory=0x10, Reparse=0x400;
+  const uint OpenReparse=0x00200000, Backup=0x02000000;
+  sealed class Pin {
+   public SafeFileHandle Handle; public string Native; public Info Identity; public bool IsDirectory;
+  }
+  [StructLayout(LayoutKind.Sequential,Pack=4)] struct Info {
+   public uint Attributes; public long Created, Accessed, Written;
+   public uint Volume, SizeHigh, SizeLow, Links, IndexHigh, IndexLow;
+  }
+  [StructLayout(LayoutKind.Sequential,CharSet=CharSet.Unicode)] struct Startup {
+   public uint Size; public string Reserved, Desktop, Title;
+   public uint X,Y,XSize,YSize,XChars,YChars,Fill,Flags;
+   public ushort Show,ReservedSize; public IntPtr ReservedBytes,Input,Output,Error;
+  }
+  [StructLayout(LayoutKind.Sequential)] struct Child { public IntPtr Process,Thread; public uint Pid,Tid; }
+  [DllImport("kernel32.dll",CharSet=CharSet.Unicode,SetLastError=true)]
+  static extern SafeFileHandle CreateFile(string name,uint access,uint share,IntPtr security,uint disposition,uint flags,IntPtr template);
+  [DllImport("kernel32.dll",SetLastError=true)] static extern bool GetFileInformationByHandle(SafeFileHandle handle,out Info info);
+  [DllImport("kernel32.dll",CharSet=CharSet.Unicode,SetLastError=true)]
+  static extern uint GetFinalPathNameByHandle(SafeFileHandle handle,StringBuilder path,uint length,uint flags);
+  [DllImport("kernel32.dll",CharSet=CharSet.Unicode,SetLastError=true)]
+  static extern bool GetVolumeInformationByHandleW(SafeFileHandle handle,StringBuilder label,uint labelSize,out uint serial,out uint maximum,out uint flags,StringBuilder fs,uint fsSize);
+  [DllImport("kernel32.dll",CharSet=CharSet.Unicode,SetLastError=true)]
+  static extern bool CreateProcessW(string application,StringBuilder command,IntPtr processSecurity,IntPtr threadSecurity,bool inherit,uint flags,IntPtr environment,string directory,ref Startup startup,out Child child);
+  [DllImport("kernel32.dll",CharSet=CharSet.Unicode,SetLastError=true)]
+  static extern bool QueryFullProcessImageNameW(IntPtr process,uint flags,StringBuilder path,ref uint length);
+  [DllImport("kernel32.dll",SetLastError=true)] static extern bool GetProcessTimes(IntPtr process,out long created,out long exited,out long kernel,out long user);
+  [DllImport("kernel32.dll",SetLastError=true)] static extern uint ResumeThread(IntPtr thread);
+  [DllImport("kernel32.dll",SetLastError=true)] static extern bool TerminateProcess(IntPtr process,uint code);
+  [DllImport("kernel32.dll",SetLastError=true)] static extern uint WaitForSingleObject(IntPtr handle,uint timeout);
+  [DllImport("kernel32.dll")] static extern bool CloseHandle(IntPtr handle);
+  readonly System.Collections.Generic.List<Pin> pins=new System.Collections.Generic.List<Pin>();
+  FileStream image; IntPtr child=IntPtr.Zero; bool disposed, mayHaveRun;
+  public string OriginalImage { get; private set; }
+  public string NativeImage { get; private set; }
+  public string Hash { get; private set; }
+  public int ProcessId { get; private set; }
+  public long CreationFileTime { get; private set; }
+  public bool CreationAttempted { get; private set; }
+  public bool StartSucceeded { get; private set; }
+  string directory;
+  static IOException Failure(string operation) { return new IOException(operation+" refused (Win32 "+Marshal.GetLastWin32Error()+")."); }
+  static bool Equal(string a,string b) { return String.Equals(a,b,StringComparison.OrdinalIgnoreCase); }
+  static bool EqualNative(string a,string b) { return String.Equals(a,b,StringComparison.Ordinal); }
+  static string Native(SafeFileHandle handle) {
+   var value=new StringBuilder(32768); uint count=GetFinalPathNameByHandle(handle,value,(uint)value.Capacity,2);
+   if(count==0 || count>=(uint)value.Capacity) throw Failure("Native file identity");
+   return value.ToString().TrimEnd('\\');
+  }
+  static string NativeProcess(IntPtr handle) {
+   var value=new StringBuilder(32768); uint count=(uint)value.Capacity;
+   if(!QueryFullProcessImageNameW(handle,1,value,ref count) || count==0) throw Failure("Native process identity");
+   return value.ToString();
+  }
+  static long Created(IntPtr handle) {
+   long created,exited,kernel,user;
+   if(!GetProcessTimes(handle,out created,out exited,out kernel,out user) || created<=0) throw Failure("Process creation identity");
+   return created;
+  }
+  static Info Metadata(SafeFileHandle handle) {
+   Info value; if(!GetFileInformationByHandle(handle,out value)) throw Failure("Held file metadata"); return value;
+  }
+  static bool Same(Info a,Info b) { return a.Volume==b.Volume && a.IndexHigh==b.IndexHigh && a.IndexLow==b.IndexLow; }
+  static string Physical(string path) { return @"\\?\GLOBALROOT"+path+(System.Text.RegularExpressions.Regex.IsMatch(path,@"^\\Device\\HarddiskVolume[0-9]+$")?"\\":""); }
+  Pin Open(string path,bool isDirectory) {
+   var handle=CreateFile(Physical(path),isDirectory?Attributes:Read,isDirectory?3u:1u,IntPtr.Zero,3,OpenReparse|(isDirectory?Backup:0u),IntPtr.Zero);
+   if(handle.IsInvalid) { handle.Dispose(); throw Failure("Image ancestry acquisition"); }
+   try {
+    var info=Metadata(handle);
+    if((info.Attributes&Reparse)!=0 || ((info.Attributes&Directory)!=0)!=isDirectory || (!isDirectory && info.Links!=1) || !Equal(Native(handle),path)) throw new IOException("Image ancestry is redirected or ambiguous.");
+    var pin=new Pin { Handle=handle,Native=Native(handle),Identity=info,IsDirectory=isDirectory };pins.Add(pin);return pin;
+   } catch { handle.Dispose();throw; }
+  }
+  UpdateImageOwner() { }
+  public static UpdateImageOwner Acquire(string executable,string workingDirectory,string expectedHash) {
+   if(Environment.OSVersion.Platform!=PlatformID.Win32NT) throw new PlatformNotSupportedException("Native image custody requires Windows.");
+   if(expectedHash==null || !System.Text.RegularExpressions.Regex.IsMatch(expectedHash,"^[a-f0-9]{64}$")) throw new ArgumentException("Invalid image hash.");
+   string full=Path.GetFullPath(executable), parent=Path.GetFullPath(workingDirectory).TrimEnd('\\');
+   if(!System.Text.RegularExpressions.Regex.IsMatch(full,@"^[A-Za-z]:\\") || full.IndexOf(':',2)>=0 || full.IndexOf('/')>=0 || !Equal(Path.GetDirectoryName(full),parent)) throw new ArgumentException("Image requires its absolute local parent directory.");
+   var owner=new UpdateImageOwner();
+   try {
+    // Resolve the input drive once. Then leave the mutable DOS namespace and
+    // pin every physical ancestor, including those above a SUBST drive root.
+    using(var root=CreateFile(full.Substring(0,3),Attributes,3,IntPtr.Zero,3,Backup|OpenReparse,IntPtr.Zero)) {
+     if(root.IsInvalid) throw Failure("Input drive root");
+     var rootInfo=Metadata(root);string rootNative=Native(root);
+     if((rootInfo.Attributes&(Directory|Reparse))!=Directory) throw new IOException("Input drive root is redirected.");
+     var match=System.Text.RegularExpressions.Regex.Match(rootNative,@"^\\Device\\HarddiskVolume[0-9]+(?=\\|$)");
+     if(!match.Success) throw new IOException("Only a local physical NTFS volume is supported.");
+     string native=rootNative+"\\"+full.Substring(3);
+     string nativeParent=native.Substring(0,native.LastIndexOf('\\'));
+     string walk=match.Value;
+     var volume=owner.Open(walk,true);
+     uint serial,maximum,flags;var label=new StringBuilder(261);var fs=new StringBuilder(261);
+     if(!GetVolumeInformationByHandleW(volume.Handle,label,261,out serial,out maximum,out flags,fs,261) || fs.ToString()!="NTFS") throw new IOException("Image custody requires native NTFS.");
+     bool foundRoot=Equal(walk,rootNative) && Same(volume.Identity,rootInfo);
+     foreach(string part in nativeParent.Substring(walk.Length).Split(new[]{'\\'},StringSplitOptions.RemoveEmptyEntries)) {
+      if(part=="." || part==".." || part.EndsWith(".",StringComparison.Ordinal) || part.EndsWith(" ",StringComparison.Ordinal)) throw new IOException("Ambiguous image ancestry.");
+      walk+="\\"+part;var pin=owner.Open(walk,true);walk=pin.Native;
+      if(pin.Identity.Volume!=volume.Identity.Volume) throw new IOException("Image ancestry crossed volumes.");
+      if(Equal(walk,rootNative) && Same(pin.Identity,rootInfo)) foundRoot=true;
+     }
+     if(!foundRoot) throw new IOException("Input root changed while acquiring physical ancestry.");
+     var file=owner.Open(walk+"\\"+Path.GetFileName(full),false);
+     if(file.Identity.Volume!=volume.Identity.Volume || file.Identity.SizeHigh!=0 || file.Identity.SizeLow==0 || file.Identity.SizeLow>536870912) throw new IOException("Unsupported image size or volume.");
+     owner.OriginalImage=full;owner.NativeImage=file.Native;owner.directory=walk;
+     owner.image=new FileStream(file.Handle,FileAccess.Read,8192,false);
+     using(var sha=SHA256.Create()) owner.Hash=BitConverter.ToString(sha.ComputeHash(owner.image)).Replace("-","").ToLowerInvariant();
+     if(owner.Hash!=expectedHash) throw new IOException("Held executable hash changed before launch.");
+     owner.Validate();return owner;
+    }
+   } catch { owner.Dispose();throw; }
+  }
+  public void Validate() {
+   if(disposed) throw new ObjectDisposedException("UpdateImageOwner");
+   foreach(var pin in pins) {
+    var current=Metadata(pin.Handle);
+    if(!Same(current,pin.Identity) || (current.Attributes&Reparse)!=0 || ((current.Attributes&Directory)!=0)!=pin.IsDirectory || !EqualNative(Native(pin.Handle),pin.Native) ||
+       (!pin.IsDirectory && (current.Links!=1 || current.SizeHigh!=pin.Identity.SizeHigh || current.SizeLow!=pin.Identity.SizeLow))) throw new IOException("Held executable ancestry changed.");
+   }
+  }
+  public Process Start(ProcessStartInfo start) {
+   if(CreationAttempted || disposed) throw new InvalidOperationException("Image owner is one-use.");
+   if(start.UseShellExecute || start.RedirectStandardInput || start.RedirectStandardOutput || start.RedirectStandardError || !String.IsNullOrEmpty(start.UserName) ||
+      !Equal(Path.GetFullPath(start.FileName),OriginalImage) || !Equal(Path.GetFullPath(start.WorkingDirectory).TrimEnd('\\'),Path.GetDirectoryName(OriginalImage))) throw new ArgumentException("Unsupported native creation request.");
+   Validate();
+   var variables=new System.Collections.Generic.List<string>();
+   foreach(System.Collections.DictionaryEntry item in start.EnvironmentVariables) {
+    string key=(string)item.Key,value=(string)item.Value;
+    if(key.IndexOf('\0')>=0 || key.IndexOf('=')>=0 || value==null || value.IndexOf('\0')>=0) throw new ArgumentException("Unsupported process environment.");
+    variables.Add(key+"="+value);
+   }
+   variables.Sort(StringComparer.OrdinalIgnoreCase);
+   IntPtr environment=Marshal.StringToHGlobalUni(String.Join("\0",variables.ToArray())+"\0\0");
+   IntPtr thread=IntPtr.Zero;Process process=null;
+   try {
+    var info=new Startup { Size=(uint)Marshal.SizeOf(typeof(Startup)) };Child result;
+    var command=new StringBuilder("\""+Physical(NativeImage)+"\""+(String.IsNullOrEmpty(start.Arguments)?"":" "+start.Arguments));
+    // Refusal state is armed BEFORE the native call. An exception is never
+    // treated as evidence that no child existed or as permission to rollback.
+    CreationAttempted=true;
+    if(!CreateProcessW(Physical(NativeImage),command,IntPtr.Zero,IntPtr.Zero,false,0x404u|(start.CreateNoWindow?0x08000000u:0u),environment,Physical(directory),ref info,out result)) throw Failure("Suspended image creation");
+    child=result.Process;thread=result.Thread;ProcessId=checked((int)result.Pid);CreationFileTime=Created(child);
+    Validate();
+    if(!EqualNative(NativeProcess(child),NativeImage) || WaitForSingleObject(child,0)!=258) throw new IOException("Suspended child does not match held image.");
+    process=Process.GetProcessById(ProcessId);
+    if(Created(process.Handle)!=CreationFileTime || !EqualNative(NativeProcess(process.Handle),NativeImage)) throw new IOException("Suspended process handle identity changed.");
+    // After this call starts, even a failing/ambiguous result may have run.
+    // Never terminate that child as if it were still an inert suspended one.
+    mayHaveRun=true;
+    if(ResumeThread(thread)!=1) throw Failure("Primary-thread resume");
+    StartSucceeded=true;return process;
+   } catch {
+    try {
+     if(child!=IntPtr.Zero && !mayHaveRun) {
+      // This owner created this still-suspended child. Only this inert case
+      // permits termination; an uncertain result still denies all fallback.
+      if(!TerminateProcess(child,126) || WaitForSingleObject(child,10000)!=0) throw new IOException("Suspended child cleanup uncertain; recovery requires attention.");
+     }
+    } finally { if(process!=null) process.Dispose(); }
+    throw;
+   } finally { if(thread!=IntPtr.Zero) CloseHandle(thread);Marshal.FreeHGlobal(environment); }
+  }
+  public bool Matches(Process process,string original,string expectedHash) {
+   try {
+    Validate();return StartSucceeded && child!=IntPtr.Zero && process.Id==ProcessId && Equal(original,OriginalImage) && expectedHash==Hash &&
+      WaitForSingleObject(child,0)==258 && Created(child)==CreationFileTime && Created(process.Handle)==CreationFileTime && EqualNative(NativeProcess(child),NativeImage) && EqualNative(NativeProcess(process.Handle),NativeImage);
+   } catch { return false; }
+  }
+  public void AssertOwnedImage(string original,string expectedHash) {
+   Validate();
+   if(!StartSucceeded || child==IntPtr.Zero || !Equal(Path.GetFullPath(original),OriginalImage) || expectedHash!=Hash ||
+      WaitForSingleObject(child,0)!=258 || Created(child)!=CreationFileTime || !EqualNative(NativeProcess(child),NativeImage)) throw new IOException("No live owned image identity.");
+  }
+  public void Close(Process process,int timeout) {
+   Validate();
+   if(!StartSucceeded || child==IntPtr.Zero || process.Id!=ProcessId || Created(child)!=CreationFileTime) throw new IOException("No owned child to close.");
+   if(WaitForSingleObject(child,0)==0) return; // Exit observed on our original kernel handle.
+   if(!Matches(process,OriginalImage,Hash)) throw new IOException("Owned child identity changed; no process was signaled.");
+   process.CloseMainWindow();
+   if(WaitForSingleObject(child,(uint)timeout)!=0) throw new IOException("Owned child remains live; no forced termination or rollback.");
+  }
+  public static bool CloseInterrupted(Process process,string executable,string expectedHash,int recordedPid,long recordedCreation,int timeout) {
+   if(process.Id!=recordedPid || recordedCreation<=0) return false;
+   using(var owner=Acquire(executable,Path.GetDirectoryName(executable),expectedHash)) {
+    // A fresh invocation cannot recreate historical ownership. These native
+    // checks only restrict which recorded process may receive normal close.
+    IntPtr handle=process.Handle;
+    if(Created(handle)!=recordedCreation || WaitForSingleObject(handle,0)!=258 || !EqualNative(NativeProcess(handle),owner.NativeImage)) return false;
+    owner.Validate();process.CloseMainWindow();
+    if(WaitForSingleObject(handle,(uint)timeout)!=0) throw new IOException("Interrupted candidate remains live; recovery blocked.");
+    return true;
+   }
+  }
+  public void Dispose() {
+   if(disposed) return;disposed=true;
+   if(child!=IntPtr.Zero) { CloseHandle(child);child=IntPtr.Zero; }
+   if(image!=null) image.Dispose();
+   for(int i=pins.Count-1;i>=0;i--) pins[i].Handle.Dispose();pins.Clear();
+  }
+ }
  public sealed class UpdateStartupPipe : IDisposable {
   [DllImport("advapi32.dll", CharSet=CharSet.Unicode, SetLastError=true)]
   static extern bool ConvertStringSecurityDescriptorToSecurityDescriptor(string s, uint r, out IntPtr p, out uint n);
@@ -98,9 +312,27 @@ namespace Skager {
   readonly System.Threading.Tasks.Task connection;
   readonly DateTime created = DateTime.UtcNow;
   bool consumed;
+  UpdateImageOwner imageOwner;
+  public long OwnedCreationFileTime { get { if(imageOwner==null || !imageOwner.StartSucceeded) throw new InvalidOperationException("No owned launch.");return imageOwner.CreationFileTime; } }
+  public bool NativeCreationAttempted { get { return imageOwner!=null && imageOwner.CreationAttempted; } }
+  public bool UncertainCreation { get { return imageOwner!=null && imageOwner.CreationAttempted && !imageOwner.StartSucceeded; } }
+  public Process StartOwned(ProcessStartInfo start,string expectedHash) {
+   if(imageOwner!=null) throw new InvalidOperationException("Startup image already acquired.");
+   imageOwner=UpdateImageOwner.Acquire(start.FileName,start.WorkingDirectory,expectedHash);
+   return imageOwner.Start(start);
+  }
+  public void CloseOwned(Process process,int timeout) {
+   if(imageOwner==null) throw new InvalidOperationException("No native image owner; no process was signaled.");
+   imageOwner.Close(process,timeout);
+  }
   public string VerifiedFrame { get; private set; }
   public string VerifiedImage { get; private set; }
   public string VerifiedHash { get; private set; }
+  public string VerifiedNativeImage { get; private set; }
+  public void AssertOwnedImage(string original,string expectedHash) {
+   if(imageOwner==null) throw new IOException("No native creator ownership for receipt.");
+   imageOwner.AssertOwnedImage(original,expectedHash);
+  }
   public string FailureReason { get; private set; }
   public string Phase { get; private set; }
   bool Reject(string reason) { FailureReason=reason; return false; }
@@ -129,12 +361,14 @@ namespace Skager {
   static string Hash(string path) {
    using(var file=File.OpenRead(path)) using(var sha=SHA256.Create()) return BitConverter.ToString(sha.ComputeHash(file)).Replace("-","").ToLowerInvariant();
   }
-  static bool SameLiveProcess(Process process,long ticks) {
+  bool SameLiveProcess(Process process,long ticks) {
+   if(imageOwner!=null) return imageOwner.Matches(process,imageOwner.OriginalImage,imageOwner.Hash);
    using(var fresh=Process.GetProcessById(process.Id)) {
     return !process.HasExited && !fresh.HasExited && fresh.StartTime.ToUniversalTime().Ticks==ticks;
    }
   }
-  static bool ExactProcess(Process process,long ticks,string image,string hash) {
+  bool ExactProcess(Process process,long ticks,string image,string hash) {
+   if(imageOwner!=null) return imageOwner.Matches(process,Path.GetFullPath(image),hash);
    try {
     using(var fresh=Process.GetProcessById(process.Id)) {
      return !process.HasExited && !fresh.HasExited && fresh.StartTime.ToUniversalTime().Ticks==ticks &&
@@ -155,7 +389,7 @@ namespace Skager {
    long deadline=timeoutMs;
    string stage="process-before-connect";
    try {
-    long ticks=process.StartTime.ToUniversalTime().Ticks;
+    long ticks=imageOwner==null ? process.StartTime.ToUniversalTime().Ticks : DateTime.FromFileTimeUtc(imageOwner.CreationFileTime).Ticks;
     // The loader need not have initialized MainModule immediately after
     // CreateProcess. Bind live PID/start time now; require full image/hash
     // identity after its pipe connection, before reading any receipt bytes.
@@ -190,6 +424,7 @@ namespace Skager {
       if(terminal=="cancel") { Phase="cancelled";return Reject("human-cancelled"); }
       Phase="healthy";
       VerifiedFrame=expected; VerifiedImage=Path.GetFullPath(image); VerifiedHash=hash;
+      if(imageOwner!=null) VerifiedNativeImage=imageOwner.NativeImage;
       return true;
      }
      for(int i=0;i<count;i++) {
@@ -224,7 +459,7 @@ namespace Skager {
     return Reject(stage+":"+error.GetType().Name+":0x"+error.HResult.ToString("X8"));
    } finally { pipe.Dispose(); }
   }
-  public void Dispose() { pipe.Dispose(); }
+  public void Dispose() { try { pipe.Dispose(); } finally { if(imageOwner!=null) imageOwner.Dispose(); } }
  }
 }
 '@
@@ -255,6 +490,12 @@ function New-UpdateStartupSession($Record) {
   if ($Record.attempts -ne 0) { throw 'An update candidate gets one startup attempt; recovery never retries it automatically.' }
   $session = New-UpdateHealthSession $Record.candidate $Record.transaction
   $Record.attempts = 1
+  # New callers arm a durable refusal state before the native creation call.
+  if (-not $Record.PSObject.Properties['nativeLaunchV1']) {
+    $Record | Add-Member -NotePropertyName nativeLaunchV1 -NotePropertyValue 'none'
+    $Record | Add-Member -NotePropertyName processCreationFileTimeV1 -NotePropertyValue ''
+  }
+  $Record.nativeLaunchV1 = 'armed'
   $Record.session = $session.session
   # The caller must durably write this modified record before process creation.
   return $session
@@ -298,6 +539,7 @@ function Write-UpdateKnownGoodReceipt([string]$Path, $Identity, $Session, [strin
       $Session.server.VerifiedFrame -cne (Get-UpdateReadyFrame $Identity $Session) -or
       $Session.server.VerifiedHash -cne $Identity.executableSha256 -or
       -not [string]::Equals($Session.server.VerifiedImage,$ExecutablePath,[StringComparison]::OrdinalIgnoreCase)) { throw 'No authenticated live startup proof for this generation.' }
+  $Session.server.AssertOwnedImage($ExecutablePath,$Identity.executableSha256)
   $record = [pscustomobject]@{schema=1; owner='SKAGER.KnownGoodStartup.1'; identity=$Identity; session=$Session.session;
     confirmedUtc=[DateTime]::UtcNow.ToString('o'); protocol='SKAGER-UPDATE-READY/1'}
   $bytes = [Text.Encoding]::UTF8.GetBytes(($record | ConvertTo-Json -Depth 6 -Compress))

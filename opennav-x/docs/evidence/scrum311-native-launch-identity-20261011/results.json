@@ -1,0 +1,34 @@
+{
+  "baseCommit": "c63dee40445f4b084468e3076c7d33a90eea118a",
+  "utc": "2026-10-11T18:19:16.366678+00:00",
+  "platform": "Linux",
+  "runtime": "PowerShell 7.6.6",
+  "scope": "Portable policy and exact embedded C# compilation only; Win32 creation/health/cleanup pending.",
+  "runs": [
+    {
+      "name": "transaction-policy",
+      "arguments": [
+        "-NoProfile",
+        "-NonInteractive",
+        "-File",
+        "opennav-x/tools/test-update-transaction.ps1"
+      ],
+      "exitCode": 0,
+      "sha256": "a0240c3f26fe2dd69f445a3106414ad643a73b9a98e6206996ebd44a8e65bf85",
+      "nativeExecuted": false
+    },
+    {
+      "name": "image-owner-policy",
+      "arguments": [
+        "-NoProfile",
+        "-NonInteractive",
+        "-File",
+        "opennav-x/tools/test-native-update-image-owner.ps1",
+        "-PolicyOnly"
+      ],
+      "exitCode": 0,
+      "sha256": "6b5824062944f22be4740e1b0d16726eb62447263c28d09b3ce822a53f963177",
+      "nativeExecuted": false
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+PASS: Production transaction source parses
+PASS: One exact embedded native source selected
+PASS: Exact embedded owner compiles without invoking Win32
+PASS: Durable armed launch refuses automatic recovery
+PASS: Historical attempted record remains readable but cannot authorize native cleanup
+PASS: Running record without PID explicitly refused
+PASS: Malformed native creation identity refused
+PASS: Malformed native creation identity refused
+PASS: Malformed native creation identity refused
+PASS: Malformed native creation identity refused
+PASS: Malformed native creation identity refused
+SKIP: native creation/alias/health/cleanup require Windows; portable compilation is not native qualification.
