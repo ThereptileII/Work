@@ -42,6 +42,7 @@ verify-skager-pe-brand.py verify-ocharts-adapter-package.py
 '''.split())
 HELPER_TOOLS = frozenset('''
 ci_changes.py staging_build_inputs.py github_release_delivery.py production-qualification.py
+secret_scanning.py secret-scanner.lock.json secret-scanner.toml
 fetch_ci_inputs.py qualify-staging-windows.ps1 retest-staging-windows.py
 staging_composition.py staging-composition-request.json staging-installer-retest.json
 staging-publication-request.json
@@ -231,10 +232,23 @@ def main() -> int:
     parser.add_argument('--staging-request', action='store_true', help='Honor exact HEAD trailer only on a Staging push')
     parser.add_argument('--github-output', type=Path)
     args = parser.parse_args()
+    audit = None
+    if args.github_output:
+        # Existing Staging entrypoint: audit even docs/helper-only selections.
+        # Historical matches remain unreviewed, so this bridge is report-only.
+        # Qualification must run secret_scanning.py without --report-only.
+        from secret_scanning import audit_repository, ScanError
+        try:
+            audit = audit_repository(args.repo)
+        except ScanError as error:
+            print(str(error))
+            return 2
     requested = args.staging_request and staging_build_requested(
         args.repo, args.head, os.environ.get('GITHUB_EVENT_NAME', ''), os.environ.get('GITHUB_REF', ''))
     result = select(args.repo, args.base, args.head, args.layout,
                     merge_base=args.merge_base, force_product=args.force_product or requested)
+    if audit is not None:
+        result['secretScan'] = audit
     print(json.dumps(result, indent=2, ensure_ascii=True))
     if args.github_output:
         with args.github_output.open('a', encoding='utf-8') as output:
