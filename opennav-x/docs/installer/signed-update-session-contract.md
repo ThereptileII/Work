@@ -57,6 +57,16 @@ another root's absent marker for that held image. Other Go lookups capture the
 drive once before checking physical ancestry and the fixed leaf. PowerShell
 checks likewise resolve their own physical drive for each lookup; per-call
 resolution alone is not proof of identity binding to a previously held image.
+The boat direct launcher (`InteractiveJob.ps1`), startup launcher and
+commissioning restart broker also retain the existing native image owner via
+`InstalledLaunchBarrier.ps1`. Their final marker lookup derives its root from
+that retained native image and exact managed-generation suffix, then corroborates
+the original requested image spelling. Checks precede actual process creation
+and both restart permit publication and ALLOW. The installed custody module is
+executed from the same bounded held bytes whose ownership hash was verified.
+These restrictions preserve existing creator paths and do not grant signed
+preparation authority or continuously pin absence. Portable focused checks pass;
+native fixtures and actual-entry integration remain qualification gates.
 Normal installations with proven absent markers keep their existing behavior.
 Fresh-install/preflight checks may separately prove a missing root component
 under checked existing ancestors. They do not authorize mutation of an existing

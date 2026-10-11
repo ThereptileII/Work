@@ -1,4 +1,22 @@
-# SKAGER status — 2026-10-11
+# SKAGER status — 2026-10-12
+
+## Direct boat launch and restart deny armed installations
+
+Commit `6004c3db` adds the missing restriction at the actual direct application
+launch, startup-launcher creation and commissioning restart permit/ALLOW paths.
+The shared helper retains the existing native image/ancestor owner, checks the
+fixed marker under that held image's physical managed root, and rejects a
+changed requested image alias. The installed custody module is imported from
+bounded, held, hash-verified bytes; it is not reopened after hashing.
+
+The combined-root focused helper passed **39 portable checks**. The isolated
+increment also passed 44 existing startup checks, 309 restart checks, 26 broker
+fixture checks and eight qualifier tests. Native inert-file/SUBST cases are
+registered but **not executed**; current composition requires their exact-source
+native evidence rather than accepting portable results. These remain point-in-time
+absence checks, not continuous namespace custody, no-child proof or signed
+broker authority. No boat launch, application build or hardware command was
+performed for this increment.
 
 ## Installed updater acquires one authenticated artifact set
 
