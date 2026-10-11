@@ -106,6 +106,15 @@ the reader's 128 MiB limit refuse the original load. The ordinary OpenCPN
 unloadable-plugin path receives the failure, with the detailed refusal logged.
 No plugin/profile file is rewritten or deleted. This runs for all discovered
 original paths without copying the upstream configuration resolver into Setup.
+It now also walks a bounded same-directory import graph: for each declared
+normal or delay dependency with a simple basename, a sibling DLL is read when
+present, its handle stays open across the original load, and its imports are
+checked recursively. Extension-less names resolve to `.dll` before sibling
+lookup; repeated imports/cycles are deduplicated. The walk refuses
+unsupported path names, unreadable or redirected siblings, malformed x86 PE,
+more than 256 unique import names or 256 MiB of inspected bytes. A missing
+sibling is explicitly outside this local graph, not evidence that the Windows
+loader will not resolve that name elsewhere.
 
 The private presentation adapter retains its separate compiled exact-byte
 identity/lock/compatibility gate. Successful adapter selection does not execute
@@ -115,7 +124,8 @@ optional/delay and import-free plugin metadata remains permitted by this
 narrow policy; passing it is not a statement of plugin compatibility or trust.
 
 This is **partial enforcement**, not closure of SCRUM-209. It does not traverse
-transitive imports, inspect dynamically selected DLLs or executable helpers,
+imports resolved outside the original plugin's directory, dynamically selected
+DLLs or executable helpers,
 validate manifests/export forwarders, or prove loaded-module identities. It
 does not stop previously mapped code or provide a hostile-filesystem sandbox;
 path/ancestor redirection and filesystem replacement semantics need separate
@@ -125,7 +135,9 @@ observer retain their distinct existing scope.
 
 Focused portable checks exercise the actual reader and policy for normal and
 both delay formats, aliases, malformed/foreign inputs, ordinary controls and
-unchanged input bytes. The native harmless load controls in
+unchanged input bytes. The local graph tests cover two-hop indirect TLS imports,
+cycles, repeated names, malformed/missing siblings and the node bound. The
+native harmless load controls in
 `tests/windows_ocharts_loader` additionally compare successful unguarded loads
 against refusal before original DllMain, repeated loads, clean adapter fallback
 and lock lifetime. Native checks are prepared, not executed locally.

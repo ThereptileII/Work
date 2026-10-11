@@ -13,6 +13,13 @@ extern "C" __declspec(dllexport) int __cdecl exercise_legacy_import() {
 }
 #endif
 
+#ifdef INDIRECT_IMPORT
+extern "C" __declspec(dllimport) int __cdecl indirect_fixture();
+extern "C" __declspec(dllexport) int __cdecl exercise_indirect_import() {
+  return indirect_fixture();
+}
+#endif
+
 namespace {
 skager::ocharts::BindingState binding;
 void Event(const char* text) {

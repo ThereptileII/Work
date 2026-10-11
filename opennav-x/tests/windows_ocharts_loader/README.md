@@ -52,8 +52,8 @@ the disposable runner scratch directory.
 Local preparation evidence: Python syntax passed, and the exact cached archive
 was read with the real extraction function: only its 2,088,960-byte DLL was
 extracted, its accepted hash matched, and its PE header verified as I386/PE32.
-The native project now has 40 groups, including two direct/delay import refusal
-controls. Those additions are **prepared, not run** until a native workflow
+The native project now has 42 groups, including two direct/delay and two
+same-directory indirect-import controls. Those additions are **prepared, not run** until a native workflow
 receipt exists. No CI dispatch or boat action was performed in this task.
 
 Remaining product gates: actual package/adapter import ABI, full application
@@ -74,3 +74,10 @@ executed. Source receipts now include both guard headers and the PE reader;
 fixture receipts include the stub and both importing modules. These new native
 controls are prepared but not run. They do not exercise actual OpenCPN root
 discovery, dependency resolution, helpers or arbitrary dynamic loads.
+
+The indirect controls add an original DLL importing a locally built helper.
+One helper imports the harmless legacy-name stub; the other is benign. The
+original has no direct legacy import. The first must be refused before its
+DllMain; the second must remain loadable while the guard holds the inspected
+files. This tests the same-directory path only, not general Windows loader
+search order or plugin helper processes.

@@ -251,6 +251,51 @@ int main(int argc,char**argv) {
       Require(Hash(c.original)==before && Writable(c.original),"refusal changed original or leaked file lock");
       RegisterPluginPresentationLoader(nullptr);Pass(kind);
     }
+    // The entry DLL itself has no denied TLS import. Only its locally built
+    // sibling dependency imports the harmless legacy-name stub.
+    for (const auto* kind : {"indirect_legacy", "indirect_clean"}) {
+      const bool denied=std::string(kind)=="indirect_legacy";
+      Case c(work,kind,vendor,good);
+      Copy(fixtures/(std::string("fixture_")+kind+".dll"),c.original);
+      const auto helper=c.original.parent_path()/(denied ? "helper_legacy.dll" : "helper_clean.dll");
+      Copy(fixtures/helper.filename(),helper);
+      if(denied) Copy(fixtures/"libeay32.dll",c.original.parent_path()/"libeay32.dll");
+      const auto before=Hash(c.original),helper_before=Hash(helper);
+      const auto raw=Read(c.original);
+      const std::vector<unsigned char> bytes(raw.begin(),raw.end());
+      Require(RefuseLegacyPluginTlsImports(bytes).empty(),"entry DLL has a direct TLS import");
+      wxDynamicLibrary lib;RegisterPluginPresentationLoader(nullptr);
+      if(denied) {
+        Require(LoadPluginWithPresentationFallback(lib,W(c.original),{})==PluginModuleLoadOutcome::LoadFailed,
+                "indirect legacy import crossed original load boundary");
+        Require(!lib.IsLoaded(),"indirect legacy original is mapped");c.Events("");
+      }
+      // Windows may resolve an already loaded dependency before searching the
+      // original's directory. Pin only these inert local controls for a
+      // loadability comparison; the production guard still reads disk bytes.
+      wxDynamicLibrary stub;
+      if(denied) Require(stub.Load(W(c.original.parent_path()/"libeay32.dll")),"indirect stub loads");
+      wxDynamicLibrary dependency;Require(dependency.Load(W(helper)),"indirect helper loads");
+      if(denied) {
+        Require(lib.Load(W(c.original)),"unguarded indirect control loads");
+        Require(UnloadPluginModuleChecked(lib),"unguarded indirect control unloads");
+        c.Events("attach\ndetach\n");fs::remove(c.events);
+        Require(LoadPluginWithPresentationFallback(lib,W(c.original),{})==PluginModuleLoadOutcome::LoadFailed,
+                "mapped indirect legacy helper bypassed disk guard");
+        Require(!lib.IsLoaded(),"indirect legacy original mapped after refusal");c.Events("");
+      } else {
+        Require(LoadPluginWithPresentationFallback(lib,W(c.original),{})==PluginModuleLoadOutcome::Loaded,
+                "benign local dependency refused or failed to load");
+        c.Events("attach\n");
+        Require(UnloadPluginModuleChecked(lib),"benign indirect control unloads");
+        c.Events("attach\ndetach\n");
+      }
+      Require(UnloadPluginModuleChecked(dependency),"indirect helper cleanup");
+      if(denied) Require(UnloadPluginModuleChecked(stub),"indirect stub cleanup");
+      Require(Hash(c.original)==before && Hash(helper)==helper_before &&
+                  Writable(c.original) && Writable(helper),"indirect guard changed input or leaked lock");
+      Pass(kind);
+    }
     {Case c(work,"injected-invalid-module-handle",vendor,good);Copy(good,c.original);
       wxDynamicLibrary lib;
       void* reserved=VirtualAlloc(nullptr,65536,MEM_RESERVE,PAGE_NOACCESS);

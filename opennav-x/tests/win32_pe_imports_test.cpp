@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iostream>
 #include <iterator>
+#include <map>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -96,6 +97,62 @@ void Tests() {
       Check(result.modules[i + normal.size()].name == delayed[i] && result.modules[i + normal.size()].delayed, "Delay import changed");
   }
   Check(ReadWin32PeImports(Image()).parsed, "Import-free image refused");
+  // The production local-closure policy must reach indirect imports while
+  // keeping absent siblings explicitly outside this narrow proof.
+  using opennav::integration::PluginTlsLocalModule;
+  using opennav::integration::RefuseLegacyPluginLocalTlsClosure;
+  const auto closure = [](const Bytes& root, const std::map<std::string, Bytes>& files,
+                          unsigned* reads = nullptr) {
+    return RefuseLegacyPluginLocalTlsClosure(root, [&](const std::string& name) {
+      if (reads) ++*reads;
+      const auto found = files.find(name);
+      return found == files.end() ? PluginTlsLocalModule{} :
+             PluginTlsLocalModule{true, found->second, {}};
+    });
+  };
+  Check(closure(Image({"helper.dll"}), {{"helper.dll", Image({"libeay32.dll"})}})
+            .find("TLS import") != std::string::npos,
+        "Indirect normal legacy TLS import admitted");
+  Check(closure(Image({"helper"}), {{"helper.dll", Image({"libeay32.dll"})}})
+            .find("TLS import") != std::string::npos,
+        "Extensionless indirect normal import bypassed local DLL");
+  Check(closure(Image({}, {"helper"}), {{"helper.dll", Image({"libeay32.dll"})}})
+            .find("TLS import") != std::string::npos,
+        "Extensionless indirect delay import bypassed local DLL");
+  Check(closure(Image({"helper.dll"}), {{"helper.dll", Image({}, {"ssleay32.dll"})}})
+            .find("delay import") != std::string::npos,
+        "Indirect delayed legacy TLS import admitted");
+  Check(closure(Image({"helper.dll"}), {{"helper.dll", Image({"nested.dll"})},
+                                         {"nested.dll", Image({"libeay32.dll"})}})
+            .find("TLS import") != std::string::npos,
+        "Two-hop local legacy TLS import admitted");
+  Check(closure(Image({"helper.dll"}), {{"helper.dll", Image({"KERNEL32.dll"})}}).empty(),
+        "Benign local dependency refused");
+  unsigned reads = 0;
+  Check(closure(Image({"helper.dll", "helper.dll"}),
+                {{"helper.dll", Image({"helper.dll"})}}, &reads).empty() && reads == 1,
+        "Repeated or cyclic local import was re-read");
+  reads = 0;
+  Check(closure(Image({"helper", "helper.dll"}),
+                {{"helper.dll", Image({})}}, &reads).empty() && reads == 1,
+        "Extensionless and explicit DLL alias was inspected twice");
+  reads = 0;
+  Check(closure(Image({"absent.dll"}), {}, &reads).empty() && reads == 1,
+        "Missing sibling incorrectly treated as inspected closure");
+  Check(!closure(Image({"helper.dll"}), {{"helper.dll", Bytes(64)}}).empty(),
+        "Malformed local dependency admitted");
+  Check(!RefuseLegacyPluginLocalTlsClosure(Image({"helper.dll"}),
+      [](const std::string&) { return PluginTlsLocalModule{false, {}, "Unreadable sibling"}; }).empty(),
+      "Unreadable local dependency admitted");
+  Check(!closure(Image({"relative/helper.dll"}), {}).empty(),
+        "Qualified import module admitted to sibling-only closure");
+  std::map<std::string, Bytes> chain;
+  for (unsigned i = 0; i < 257; ++i)
+    chain.emplace("node" + std::to_string(i) + ".dll",
+                  Image(i == 256 ? std::vector<std::string>{} :
+                        std::vector<std::string>{"node" + std::to_string(i + 1) + ".dll"}));
+  Check(closure(Image({"node0.dll"}), chain).find("node budget") != std::string::npos,
+        "Unbounded local dependency walk admitted");
   auto b = Image(); Put(b, 0xf4, 0);
   Check(ReadWin32PeImports(b).parsed, "Absent directory entries refused");
   b = Image({"libeay32.dll", "libeay32.dll"}, {"ssleay32.dll"});
