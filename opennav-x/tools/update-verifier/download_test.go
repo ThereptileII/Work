@@ -78,6 +78,54 @@ func TestDownloadArtifactRetainsVerifiedReadOnlyFile(t *testing.T) {
 	assertDownloadDirectoryEmpty(t, dir)
 }
 
+func TestVerifiedArtifactFailedCloseDoesNotRemoveReplacement(t *testing.T) {
+	dir := t.TempDir()
+	retainedPath := filepath.Join(dir, "retained.exe")
+	if err := os.WriteFile(retainedPath, []byte("inert retained bytes"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	retained, err := openDownloadedArtifact(retainedPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { retained.Close() })
+	blocked := filepath.Join(dir, "cleanup.exe")
+	if err := os.Mkdir(blocked, 0700); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(blocked, "inert"), []byte("block removal"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	// Separating the retained file and cleanup spelling forces a real removal
+	// failure on either OS. This tests one-use cleanup, not namespace custody.
+	artifact := &VerifiedArtifact{file: retained, path: blocked}
+	firstErr := artifact.Close()
+	if !errors.Is(firstErr, ErrArtifactCleanup) || artifact.file != nil {
+		t.Fatalf("failed removal did not close the handle and retain refusal: %v", firstErr)
+	}
+	if _, err := artifact.Read(make([]byte, 1)); !errors.Is(err, os.ErrClosed) {
+		t.Fatal("failed cleanup retained a readable handle")
+	}
+	if err := os.Remove(filepath.Join(blocked, "inert")); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Remove(blocked); err != nil {
+		t.Fatal(err)
+	}
+	replacement := []byte("later unrelated file")
+	if err := os.WriteFile(blocked, replacement, 0600); err != nil {
+		t.Fatal(err)
+	}
+	for attempt := 0; attempt < 2; attempt++ {
+		if err := artifact.Close(); err != firstErr {
+			t.Fatalf("repeated Close changed its original cleanup result: %v", err)
+		}
+		if got, err := os.ReadFile(blocked); err != nil || string(got) != string(replacement) {
+			t.Fatalf("repeated Close deleted or changed the replacement: %v", err)
+		}
+	}
+}
+
 func TestDownloadRejectsMalformedDeclarationsBeforeNetwork(t *testing.T) {
 	var calls atomic.Int32
 	server := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) { calls.Add(1) }))

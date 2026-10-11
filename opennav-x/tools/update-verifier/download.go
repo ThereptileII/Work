@@ -29,8 +29,10 @@ var downloadSegment = regexp.MustCompile(`^[A-Za-z0-9][A-Za-z0-9._-]*$`)
 var ErrArtifactCleanup = errors.New("artifact cleanup failed")
 
 // VerifiedArtifact owns a temporary file and a retained read-only handle. Close
-// releases the handle and removes the file. Do not copy this value or call Close
-// concurrently with its other methods. No method authorizes installation.
+// releases the handle and attempts file removal once. Repeated Close returns
+// the original cleanup result without touching the path again. Do not copy this
+// value or call Close concurrently with its other methods. No method authorizes
+// installation.
 //
 // The caller must protect the directory and all its ancestors against untrusted
 // writes, including rename/reparse attacks, throughout acquisition and use.
@@ -40,9 +42,10 @@ var ErrArtifactCleanup = errors.New("artifact cleanup failed")
 // custody: keep this object alive through any separately authorized launch, and
 // qualify Windows sharing and execution behavior on native Windows.
 type VerifiedArtifact struct {
-	file    *os.File
-	path    string
-	removed bool
+	file     *os.File
+	path     string
+	closed   bool
+	closeErr error
 }
 
 func (a *VerifiedArtifact) Path() string { return a.path }
@@ -66,22 +69,21 @@ func (a *VerifiedArtifact) Seek(offset int64, whence int) (int64, error) {
 }
 
 func (a *VerifiedArtifact) Close() error {
-	if a.removed {
-		return nil
+	if a.closed {
+		return a.closeErr
 	}
-	var closeErr error
+	a.closed = true
 	if a.file != nil {
 		err := a.file.Close()
 		a.file = nil
 		if err != nil {
-			closeErr = errors.Join(ErrArtifactCleanup, errors.New("artifact handle close failed"))
+			a.closeErr = errors.Join(ErrArtifactCleanup, errors.New("artifact handle close failed"))
 		}
 	}
 	if err := os.Remove(a.path); err != nil && !errors.Is(err, os.ErrNotExist) {
-		return errors.Join(closeErr, ErrArtifactCleanup)
+		a.closeErr = errors.Join(a.closeErr, ErrArtifactCleanup)
 	}
-	a.removed = true
-	return closeErr
+	return a.closeErr
 }
 
 // DownloadArtifact acquires an artifact from an already authenticated, parsed
