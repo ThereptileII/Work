@@ -1,0 +1,34 @@
+{
+  "status": "completed",
+  "model": "claude-opus-5",
+  "observedModels": [
+    "claude-opus-5"
+  ],
+  "claudeVersion": "2.1.292 (Claude Code)",
+  "baseCommit": "a95208a9d2e57a1d75e752e11ddd434146675a63",
+  "files": {
+    "opennav-x/docs/installer/signed-update-session-contract.md": "2ddd692568a818aae777ed88b0d14fce1ba33cf06506c5b89dcede517cf9a307",
+    "opennav-x/installer/windows/Lifecycle.ps1": "65bb2d75a4d17d2a6ea06c7c6ea7f68e94a88051b030350cb2fc09bed78a5f4a",
+    "opennav-x/installer/windows/UpdateSupervisor.ps1": "605426dbdfb91279086f630f84bdae22c3c6faf6d8f23ecdeafbbb15afe3413a",
+    "opennav-x/installer/windows/UpdateTransaction.ps1": "12af16157e41bdfb117b7ad54ee40ec7cd8392851c19943204c004f88b23be32",
+    "opennav-x/tools/boat/SignedUpdateOperations.ps1": "f110f54b02bae58f15abd4307198f745646921c296f3de3d05ab74245010302b",
+    "opennav-x/tools/boat/SignedUpdateSession.ps1": "dab3d3cd3e6f8f3ea2033915ae4d5bcd36bdeaa2944dd6f3358048c8988f41cc",
+    "opennav-x/tools/boat/SignedUpdateSessionStore.ps1": "3106d3dd3143338a14253f798dbd8d2f62052cf8f414e5704cbde0ae61fbb2aa",
+    "opennav-x/tools/boat/test-installed-signed-update-store.ps1": "7cd4e9d57a24fc10a128f8ba7694980290b5a28585c1f1cdeca808ac9d4661a4",
+    "opennav-x/tools/test-signed-update-armed-barrier.ps1": "635cf98cc1b25fae5c22ce7dea7d606bc0a50ebe72ce2e9d654abe0d9d01f62d",
+    "opennav-x/tools/update-verifier/launcher/armed_barrier.go": "f566742711572e5c2fe81cbe6e3716e446d28a98fb33860a81301a518191ef89",
+    "opennav-x/tools/update-verifier/launcher/armed_barrier_test.go": "4174c9452faaa531f28150cb7f063e1c85adda434101e22393e0f3cee749a8cf",
+    "opennav-x/tools/update-verifier/launcher/armed_barrier_windows.go": "06362b6855c64a0e4e723911aabd7fa3fc2760f49e746cf70f4f249300f3acfc",
+    "opennav-x/tools/update-verifier/launcher/launcher.go": "299240dce36bd5345bc4023574709877ad4e7d434ff632d95515f48c4bb12d4c",
+    "opennav-x/tools/update-verifier/launcher/native_windows.go": "2f2803806406f06d7eab777c89560816525cd1252824e3b1ec90dfe7ada556da",
+    "opennav-x/tools/update-verifier/launcher/ordinary_creator.go": "6a9eb316f0d1b1c29cf0f2ae0e873e81ea03abec95481ba42068bbe598347901",
+    "opennav-x/tools/update-verifier/launcher/ordinary_native_windows.go": "e835257f7482c29f45eb0882f482ffcc67d517a5823d760ef194119c76475697",
+    "opennav-x/tools/update-verifier/launcher/records.go": "4878e4242bb40361e98d6af68911d1c9f2950b44577ff8f823cbfc48cdc28504"
+  },
+  "durationMs": 293380,
+  "sourceChangedAfterCapture": false,
+  "reviewScope": "Immutable selected working-tree bytes; not an integrated commit or native acceptance.",
+  "childSpecialistResults": "Started, but not returned before parent budget ended; no child conclusions accepted.",
+  "powerShellSnapshotCommit": "3ed41d9b2483b80b7cd91ffd49f60767d1173be8",
+  "powerShellFinalComparedCommit": "e1ac0bedcdd46ad73f728f05e8cd5c645633e395"
+}
