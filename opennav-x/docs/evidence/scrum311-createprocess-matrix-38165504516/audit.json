@@ -1,0 +1,323 @@
+{
+  "schema": 1,
+  "candidate": "afa5fbcf33cbf93f0f6c3f74fd72acf0b22086bf",
+  "runId": 38165504516,
+  "jobId": 114547116715,
+  "runAttempt": 1,
+  "runConclusion": "failure",
+  "jobConclusion": "failure",
+  "matrixStatus": "observed",
+  "productionOwnerStart": "failed Win32 87 before resume",
+  "artifactId": 11712011315,
+  "archiveBytes": 3289,
+  "archiveSha256": "d0e1146430356760dfa20df40f5478eddfd77928311645a19c9c839226e3b177",
+  "apiDigest": "sha256:d0e1146430356760dfa20df40f5478eddfd77928311645a19c9c839226e3b177",
+  "zipEntries": 3,
+  "allMemberCrcClean": true,
+  "sourceChecks": [
+    {
+      "path": "opennav-x/installer/windows/UpdateTransaction.ps1",
+      "gitBytes": 38682,
+      "gitSha256": "312685e4402c20efded897cb607ae8126643f43a8af34d6684b0494e1ffd4ca4",
+      "nativeBytes": 39245,
+      "nativeSha256": "65a15a315f9f166eb79bd9427bec2e8daac2d1ca09c5438d8ed79004f5bad470",
+      "verifiedTransformation": "LF to CRLF"
+    },
+    {
+      "path": "opennav-x/tools/diagnose-native-update-createprocess.ps1",
+      "gitBytes": 18020,
+      "gitSha256": "d6ed35941c46dfbbb7863a88bed690a46cd62f85157486beb88962e7eb30f4ed",
+      "nativeBytes": 18256,
+      "nativeSha256": "3355db96a514326b4a8fc57a48cb9cc49ac272a930dcdad1929508a26809e20e",
+      "verifiedTransformation": "LF to CRLF"
+    }
+  ],
+  "embeddedNativeSource": {
+    "bytesUtf8": 26100,
+    "sha256": "efca2e84f6ce5bbd9b2837dd339cc47189c68fa7f6052beb02921771dfc057e4",
+    "verifiedTransformation": "production LF-to-CRLF source, exact here-string body excluding delimiter newlines"
+  },
+  "rows": [
+    {
+      "name": "dos-app_inherited-cwd_owner-unicode",
+      "application": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\SkagerCreateProcessDiagnostic-cda512195dd4414cbc6572701da4f3e6\\A\\app\\marker.exe",
+      "applicationUtf16Length": 119,
+      "directory": null,
+      "directoryIsNull": true,
+      "directoryUtf16Length": null,
+      "commandUtf16Length": 121,
+      "environment": "owner",
+      "flags": 1028,
+      "created": true,
+      "win32Error": 0,
+      "pid": 6792,
+      "nativeImage": "\\Device\\HarddiskVolume4\\Users\\runneradmin\\AppData\\Local\\Temp\\SkagerCreateProcessDiagnostic-cda512195dd4414cbc6572701da4f3e6\\A\\app\\marker.exe",
+      "nativeImageMatches": true,
+      "cleanupConfirmed": true,
+      "failure": null
+    },
+    {
+      "name": "dos-app_dos-cwd_owner-unicode",
+      "application": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\SkagerCreateProcessDiagnostic-cda512195dd4414cbc6572701da4f3e6\\A\\app\\marker.exe",
+      "applicationUtf16Length": 119,
+      "directory": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\SkagerCreateProcessDiagnostic-cda512195dd4414cbc6572701da4f3e6\\A\\app",
+      "directoryIsNull": false,
+      "directoryUtf16Length": 108,
+      "commandUtf16Length": 121,
+      "environment": "owner",
+      "flags": 1028,
+      "created": true,
+      "win32Error": 0,
+      "pid": 2980,
+      "nativeImage": "\\Device\\HarddiskVolume4\\Users\\runneradmin\\AppData\\Local\\Temp\\SkagerCreateProcessDiagnostic-cda512195dd4414cbc6572701da4f3e6\\A\\app\\marker.exe",
+      "nativeImageMatches": true,
+      "cleanupConfirmed": true,
+      "failure": null
+    },
+    {
+      "name": "dos-app_globalroot-cwd_owner-unicode",
+      "application": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\SkagerCreateProcessDiagnostic-cda512195dd4414cbc6572701da4f3e6\\A\\app\\marker.exe",
+      "applicationUtf16Length": 119,
+      "directory": "\\\\?\\GLOBALROOT\\Device\\HarddiskVolume4\\Users\\runneradmin\\AppData\\Local\\Temp\\SkagerCreateProcessDiagnostic-cda512195dd4414cbc6572701da4f3e6\\A\\app",
+      "directoryIsNull": false,
+      "directoryUtf16Length": 143,
+      "commandUtf16Length": 121,
+      "environment": "owner",
+      "flags": 1028,
+      "created": true,
+      "win32Error": 0,
+      "pid": 5592,
+      "nativeImage": "\\Device\\HarddiskVolume4\\Users\\runneradmin\\AppData\\Local\\Temp\\SkagerCreateProcessDiagnostic-cda512195dd4414cbc6572701da4f3e6\\A\\app\\marker.exe",
+      "nativeImageMatches": true,
+      "cleanupConfirmed": true,
+      "failure": null
+    },
+    {
+      "name": "globalroot-app_inherited-cwd_owner-unicode",
+      "application": "\\\\?\\GLOBALROOT\\Device\\HarddiskVolume4\\Users\\runneradmin\\AppData\\Local\\Temp\\SkagerCreateProcessDiagnostic-cda512195dd4414cbc6572701da4f3e6\\A\\app\\marker.exe",
+      "applicationUtf16Length": 154,
+      "directory": null,
+      "directoryIsNull": true,
+      "directoryUtf16Length": null,
+      "commandUtf16Length": 156,
+      "environment": "owner",
+      "flags": 1028,
+      "created": false,
+      "win32Error": 87,
+      "pid": 0,
+      "nativeImage": null,
+      "nativeImageMatches": false,
+      "cleanupConfirmed": true,
+      "failure": null
+    },
+    {
+      "name": "globalroot-app_dos-cwd_owner-unicode",
+      "application": "\\\\?\\GLOBALROOT\\Device\\HarddiskVolume4\\Users\\runneradmin\\AppData\\Local\\Temp\\SkagerCreateProcessDiagnostic-cda512195dd4414cbc6572701da4f3e6\\A\\app\\marker.exe",
+      "applicationUtf16Length": 154,
+      "directory": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\SkagerCreateProcessDiagnostic-cda512195dd4414cbc6572701da4f3e6\\A\\app",
+      "directoryIsNull": false,
+      "directoryUtf16Length": 108,
+      "commandUtf16Length": 156,
+      "environment": "owner",
+      "flags": 1028,
+      "created": false,
+      "win32Error": 87,
+      "pid": 0,
+      "nativeImage": null,
+      "nativeImageMatches": false,
+      "cleanupConfirmed": true,
+      "failure": null
+    },
+    {
+      "name": "globalroot-app_globalroot-cwd_owner-unicode",
+      "application": "\\\\?\\GLOBALROOT\\Device\\HarddiskVolume4\\Users\\runneradmin\\AppData\\Local\\Temp\\SkagerCreateProcessDiagnostic-cda512195dd4414cbc6572701da4f3e6\\A\\app\\marker.exe",
+      "applicationUtf16Length": 154,
+      "directory": "\\\\?\\GLOBALROOT\\Device\\HarddiskVolume4\\Users\\runneradmin\\AppData\\Local\\Temp\\SkagerCreateProcessDiagnostic-cda512195dd4414cbc6572701da4f3e6\\A\\app",
+      "directoryIsNull": false,
+      "directoryUtf16Length": 143,
+      "commandUtf16Length": 156,
+      "environment": "owner",
+      "flags": 1028,
+      "created": false,
+      "win32Error": 87,
+      "pid": 0,
+      "nativeImage": null,
+      "nativeImageMatches": false,
+      "cleanupConfirmed": true,
+      "failure": null
+    },
+    {
+      "name": "inherited-env_unicode-flag",
+      "application": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\SkagerCreateProcessDiagnostic-cda512195dd4414cbc6572701da4f3e6\\A\\app\\marker.exe",
+      "applicationUtf16Length": 119,
+      "directory": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\SkagerCreateProcessDiagnostic-cda512195dd4414cbc6572701da4f3e6\\A\\app",
+      "directoryIsNull": false,
+      "directoryUtf16Length": 108,
+      "commandUtf16Length": 121,
+      "environment": "inherited",
+      "flags": 1028,
+      "created": true,
+      "win32Error": 0,
+      "pid": 4952,
+      "nativeImage": "\\Device\\HarddiskVolume4\\Users\\runneradmin\\AppData\\Local\\Temp\\SkagerCreateProcessDiagnostic-cda512195dd4414cbc6572701da4f3e6\\A\\app\\marker.exe",
+      "nativeImageMatches": true,
+      "cleanupConfirmed": true,
+      "failure": null
+    },
+    {
+      "name": "inherited-env_suspended-only",
+      "application": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\SkagerCreateProcessDiagnostic-cda512195dd4414cbc6572701da4f3e6\\A\\app\\marker.exe",
+      "applicationUtf16Length": 119,
+      "directory": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\SkagerCreateProcessDiagnostic-cda512195dd4414cbc6572701da4f3e6\\A\\app",
+      "directoryIsNull": false,
+      "directoryUtf16Length": 108,
+      "commandUtf16Length": 121,
+      "environment": "inherited",
+      "flags": 4,
+      "created": true,
+      "win32Error": 0,
+      "pid": 3120,
+      "nativeImage": "\\Device\\HarddiskVolume4\\Users\\runneradmin\\AppData\\Local\\Temp\\SkagerCreateProcessDiagnostic-cda512195dd4414cbc6572701da4f3e6\\A\\app\\marker.exe",
+      "nativeImageMatches": true,
+      "cleanupConfirmed": true,
+      "failure": null
+    },
+    {
+      "name": "minimal-unicode",
+      "application": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\SkagerCreateProcessDiagnostic-cda512195dd4414cbc6572701da4f3e6\\A\\app\\marker.exe",
+      "applicationUtf16Length": 119,
+      "directory": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\SkagerCreateProcessDiagnostic-cda512195dd4414cbc6572701da4f3e6\\A\\app",
+      "directoryIsNull": false,
+      "directoryUtf16Length": 108,
+      "commandUtf16Length": 121,
+      "environment": "minimal",
+      "flags": 1028,
+      "created": true,
+      "win32Error": 0,
+      "pid": 3908,
+      "nativeImage": "\\Device\\HarddiskVolume4\\Users\\runneradmin\\AppData\\Local\\Temp\\SkagerCreateProcessDiagnostic-cda512195dd4414cbc6572701da4f3e6\\A\\app\\marker.exe",
+      "nativeImageMatches": true,
+      "cleanupConfirmed": true,
+      "failure": null
+    },
+    {
+      "name": "owner-unicode_no-window",
+      "application": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\SkagerCreateProcessDiagnostic-cda512195dd4414cbc6572701da4f3e6\\A\\app\\marker.exe",
+      "applicationUtf16Length": 119,
+      "directory": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\SkagerCreateProcessDiagnostic-cda512195dd4414cbc6572701da4f3e6\\A\\app",
+      "directoryIsNull": false,
+      "directoryUtf16Length": 108,
+      "commandUtf16Length": 121,
+      "environment": "owner",
+      "flags": 134218756,
+      "created": true,
+      "win32Error": 0,
+      "pid": 7912,
+      "nativeImage": "\\Device\\HarddiskVolume4\\Users\\runneradmin\\AppData\\Local\\Temp\\SkagerCreateProcessDiagnostic-cda512195dd4414cbc6572701da4f3e6\\A\\app\\marker.exe",
+      "nativeImageMatches": true,
+      "cleanupConfirmed": true,
+      "failure": null
+    }
+  ],
+  "successfulRows": 7,
+  "refusedGlobalrootApplicationArgv0Rows": 3,
+  "allRowsSuspended": true,
+  "resumeAttempted": false,
+  "allRowsCleanupConfirmed": true,
+  "allAliasStackStatesMatch": true,
+  "aliasAudits": [
+    {
+      "operation": "add",
+      "alias": "Z:",
+      "ownedTarget": "\\??\\C:\\Users\\runneradmin\\AppData\\Local\\Temp\\SkagerCreateProcessDiagnostic-cda512195dd4414cbc6572701da4f3e6\\A",
+      "targets": [
+        "\\??\\C:\\Users\\runneradmin\\AppData\\Local\\Temp\\SkagerCreateProcessDiagnostic-cda512195dd4414cbc6572701da4f3e6\\A"
+      ],
+      "win32Error": 0
+    },
+    {
+      "operation": "add",
+      "alias": "Z:",
+      "ownedTarget": "\\??\\C:\\Users\\runneradmin\\AppData\\Local\\Temp\\SkagerCreateProcessDiagnostic-cda512195dd4414cbc6572701da4f3e6\\B",
+      "targets": [
+        "\\??\\C:\\Users\\runneradmin\\AppData\\Local\\Temp\\SkagerCreateProcessDiagnostic-cda512195dd4414cbc6572701da4f3e6\\B",
+        "\\??\\C:\\Users\\runneradmin\\AppData\\Local\\Temp\\SkagerCreateProcessDiagnostic-cda512195dd4414cbc6572701da4f3e6\\A"
+      ],
+      "win32Error": 0
+    },
+    {
+      "operation": "remove-exact",
+      "alias": "Z:",
+      "ownedTarget": "\\??\\C:\\Users\\runneradmin\\AppData\\Local\\Temp\\SkagerCreateProcessDiagnostic-cda512195dd4414cbc6572701da4f3e6\\B",
+      "targets": [
+        "\\??\\C:\\Users\\runneradmin\\AppData\\Local\\Temp\\SkagerCreateProcessDiagnostic-cda512195dd4414cbc6572701da4f3e6\\A"
+      ],
+      "win32Error": 0
+    },
+    {
+      "operation": "remove-exact",
+      "alias": "Z:",
+      "ownedTarget": "\\??\\C:\\Users\\runneradmin\\AppData\\Local\\Temp\\SkagerCreateProcessDiagnostic-cda512195dd4414cbc6572701da4f3e6\\A",
+      "targets": [],
+      "win32Error": 2
+    },
+    {
+      "operation": "final-original-absence",
+      "alias": "Z:",
+      "targets": [],
+      "win32Error": 2
+    }
+  ],
+  "fixtureCleanupConfirmed": true,
+  "applicationAndArgv0VariedTogether": true,
+  "singleParameterCauseEstablished": false,
+  "productionAcceptance": false,
+  "productAcceptance": false,
+  "boatAcceptance": false,
+  "rawRecords": [
+    {
+      "source": "supplied original run-api.json",
+      "retained": "raw/run-api.json",
+      "bytes": 12095,
+      "sha256": "027c6162b130046c77a3324649dd28cd384e4c9a4a36227d602b6289c69963f8"
+    },
+    {
+      "source": "supplied original job-api.json",
+      "retained": "raw/job-api.json",
+      "bytes": 2265,
+      "sha256": "b4c34ecff204495a75f2b3651adba201120817bd09dd1c31cd49b79102ff0ff6"
+    },
+    {
+      "source": "supplied original artifacts-api.json",
+      "retained": "raw/artifacts-api.json",
+      "bytes": 779,
+      "sha256": "4d162e92a14029f7ce957be2526c2cfd4b59675a5d24e2d422948cba69ec83de"
+    },
+    {
+      "source": "supplied original job.log",
+      "retained": "raw/job.log",
+      "bytes": 52035,
+      "sha256": "79ec66096896e55b3185fed410fe3adea1f570bf88f350f1488ba1c6579cbeb4"
+    },
+    {
+      "source": "artifact member native-update-createprocess/diagnostic.json",
+      "retained": "raw/native-update-createprocess/diagnostic.json",
+      "bytes": 16736,
+      "sha256": "5a470d4e737071f97ec51978f725951e63ead38f5c50dddb5ee355ee604b1a97"
+    },
+    {
+      "source": "artifact member native-update-image-owner/owner.log",
+      "retained": "raw/native-update-image-owner/owner.log",
+      "bytes": 2876,
+      "sha256": "8d59a94110542c9f3ff74e9d6bf7739f706c7117f5d82429b44dd3ae2b0e7cd2"
+    },
+    {
+      "source": "artifact member native-update-createprocess.log",
+      "retained": "raw/native-update-createprocess.log",
+      "bytes": 1716,
+      "sha256": "656e6edfc2c4624d751229069c08c0747f67beee33d9603e3878e695f666c5c6"
+    }
+  ],
+  "rawTotalBytes": 88502,
+  "originalArtifactDownloadedAgain": false
+}

@@ -1,0 +1,11 @@
+OBSERVED: dos-app_inherited-cwd_owner-unicode created=True Win32=0 cleanup=True
+OBSERVED: dos-app_dos-cwd_owner-unicode created=True Win32=0 cleanup=True
+OBSERVED: dos-app_globalroot-cwd_owner-unicode created=True Win32=0 cleanup=True
+OBSERVED: globalroot-app_inherited-cwd_owner-unicode created=False Win32=87 cleanup=True
+OBSERVED: globalroot-app_dos-cwd_owner-unicode created=False Win32=87 cleanup=True
+OBSERVED: globalroot-app_globalroot-cwd_owner-unicode created=False Win32=87 cleanup=True
+OBSERVED: inherited-env_unicode-flag created=True Win32=0 cleanup=True
+OBSERVED: inherited-env_suspended-only created=True Win32=0 cleanup=True
+OBSERVED: minimal-unicode created=True Win32=0 cleanup=True
+OBSERVED: owner-unicode_no-window created=True Win32=0 cleanup=True
+OBSERVED ONLY: ten bounded rows; no resumed child and no product acceptance.
