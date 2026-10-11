@@ -317,7 +317,7 @@ relaxation was added.
 
 `UpdateTransaction.ps1` now contains a reusable retained image/physical-ancestry
 owner used by the real PowerShell supervisor's creation, authenticated health and
-normal-cleanup path. This establishes a bounded native image/CWD predicate;
+normal-cleanup path. This implements a bounded native image/CWD predicate;
 it supplies no receipt-reducer approval, launch authorization or full
 `nativeCustodyQualified` assertion. It uses suspended native creation and checks
 identity before resume, rather than validating after user code can execute.
@@ -331,9 +331,15 @@ automatic recovery; current-host positively pre-create refusal may still take
 the existing guarded rollback. Fresh interrupted checks only restrict normal
 close and are not reconstructed historical custody.
 
-Portable policy/source-compilation checks pass. Actual Windows creation/CWD,
-alias-remap, health and cleanup fixtures remain pending. Go ordinary/fallback,
+Portable policy/source-compilation checks pass. Native run
+[38163791374](https://github.com/ThereptileII/Work/actions/runs/38163791374)
+passed acquired image/ancestor protections, then refused actual creation with
+Win32 87 before resume. The physical application/CWD and other parameters need
+the bounded suspended-only diagnostic; no cause or creation acceptance is inferred.
+Actual Windows creation, alias-remap launch, health and cleanup remain pending.
+The separate [ordinary Go creator increment](../evidence/scrum311-held-ordinary-image-20261011/README.md)
+covers ordinary/fallback source paths, with Linux/cross-compile evidence only.
 Lifecycle self-test, helper/script/shortcut roots and loader/profile/environment
-custody are not covered here; the authenticated four-stage commissioning and
+custody remain outside these increments; the authenticated four-stage commissioning and
 mutation/restoration owner is still required. [Evidence and exact remaining
 native checks](../evidence/scrum311-native-launch-identity-20261011/README.md).
