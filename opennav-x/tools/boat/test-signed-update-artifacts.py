@@ -187,14 +187,27 @@ class ArtifactTests(unittest.TestCase):
         with self.assertRaises(m.Refused):
             f.run()
 
-    def test_linked_ancestor_and_same_file_alias_refused(self):
+    def symlink_or_explicit_skip(self, link, target, directory=False):
+        try:
+            link.symlink_to(target, target_is_directory=directory)
+        except OSError as error:
+            # Windows requires Developer Mode or SeCreateSymbolicLinkPrivilege.
+            # An unavailable fixture is NOT evidence that the validator refused
+            # a real link. Keep these cases separate from the remaining checks.
+            if os.name == "nt" and getattr(error, "winerror", None) == 1314:
+                self.skipTest("Native symlink fixture unavailable: Windows privilege 1314; link refusal unqualified")
+            raise
+
+    def test_linked_ancestor_refused(self):
         f = Fixture(self.root)
         linked = self.root / "linked"
-        linked.symlink_to(self.root, target_is_directory=True)
+        self.symlink_or_explicit_skip(linked, self.root, directory=True)
         f.paths["profile"]["path"] = str(linked / "profile")
         with self.assertRaises(m.Refused):
             f.run()
         linked.unlink()
+
+    def test_same_file_alias_and_missing_record_field_refused(self):
         f = Fixture(self.root)
         f.paths["profile"]["path"] = f.paths["inputProfile"]["path"]
         with self.assertRaises(m.Refused):
@@ -203,15 +216,21 @@ class ArtifactTests(unittest.TestCase):
         with self.assertRaises(m.Refused):
             f.run()
 
-    def test_links_empty_oversized_unsupported_file(self):
+    def test_file_symlink_refused(self):
+        f = Fixture(self.root)
+        original, other = self.root / "profile", self.root / "other"
+        self.symlink_or_explicit_skip(other, original)
+        desc = {"path": str(other), "sourcePath": "C:\\test\\file", "sha256": f.sha("profile")}
+        with ExitStack() as stack, self.assertRaises(m.Refused):
+            m.Snapshot(desc, m.PROFILE_LIMIT, stack)
+
+    def test_hardlink_empty_oversized_unsupported_file(self):
         f = Fixture(self.root)
         original = self.root / "profile"
-        for kind in ("symlink", "hardlink", "empty", "oversized", "directory"):
+        for kind in ("hardlink", "empty", "oversized", "directory"):
             with self.subTest(kind=kind):
                 other = self.root / "other"
-                if kind == "symlink":
-                    other.symlink_to(original)
-                elif kind == "hardlink":
+                if kind == "hardlink":
                     os.link(original, other)
                 elif kind == "directory":
                     other.mkdir()
@@ -220,7 +239,7 @@ class ArtifactTests(unittest.TestCase):
                 desc = {"path": str(other), "sourcePath": "C:\\test\\file", "sha256": m.digest(original.read_bytes())}
                 try:
                     with ExitStack() as stack, self.assertRaises(m.Refused):
-                        m.Snapshot(desc, 16, stack)
+                        m.Snapshot(desc, 16 if kind == "oversized" else m.PROFILE_LIMIT, stack)
                 finally:
                     other.rmdir() if kind == "directory" else other.unlink()
 
@@ -230,12 +249,27 @@ class ArtifactTests(unittest.TestCase):
                 f = Fixture(self.root)
                 with ExitStack() as stack:
                     snap = m.Snapshot(f.paths["profile"], m.PROFILE_LIMIT, stack)
-                    if replace:
-                        replacement = self.root / "replacement"
-                        replacement.write_bytes(snap.data)  # Same bytes, different inode.
-                        os.replace(replacement, snap.path)
-                    else:
-                        snap.path.write_bytes(b"x" * len(snap.data))
+                    try:
+                        if replace:
+                            replacement = self.root / "replacement"
+                            replacement.write_bytes(snap.data)  # Same bytes, different inode.
+                            os.replace(replacement, snap.path)
+                        else:
+                            snap.path.write_bytes(b"x" * len(snap.data))
+                    except OSError as error:
+                        # CRT sharing can prevent an attack while the read-only
+                        # descriptor is retained. Do not call that an observed
+                        # replacement, or mask ACL/path/unrelated I/O failures.
+                        if os.name != "nt" or getattr(error, "winerror", None) not in (32, 33):
+                            raise
+                        self.assertEqual(snap.path.read_bytes(), snap.data)
+                        self.assertEqual(m.identity(snap.path.lstat()), snap.initial)
+                        snap.recheck()
+                        if replace:
+                            self.assertEqual(replacement.read_bytes(), snap.data)
+                        print("Windows sharing prevented " + ("replacement" if replace else "write") +
+                              "; unchanged original rechecked; post-mutation refusal not exercised")
+                        continue
                     with self.assertRaises(m.Refused):
                         snap.recheck()
 

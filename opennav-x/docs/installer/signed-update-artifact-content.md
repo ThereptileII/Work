@@ -102,7 +102,7 @@ From `opennav-x`, run:
 python3 tools/boat/test-signed-update-artifacts.py
 ```
 
-Ten test methods pass on Linux using only disposable temporary files. They
+Twelve test methods pass on Linux using only disposable temporary files. They
 cover all twelve changed/missing artifact cases, re-pinned candidate/profile/
 chain mismatches, stale/future reviews, unsupported hashes and schemas,
 duplicate/invalid/oversized JSON, unsafe source paths, linked ancestors,
@@ -110,3 +110,13 @@ hardlinks, file aliases, empty/oversized/nonregular files, same-byte replacement
 and in-place mutation. The positive control also verifies that all artifact
 bytes remain unchanged and that success explicitly denies launch authority.
 PowerShell and native Windows checks remain pending; no runtime was downloaded.
+
+The two symlink tests are separate: Windows error 1314 (missing symbolic-link
+privilege) reports an explicit skipped fixture, not a passed refusal. Alias,
+hardlink, missing-field and remaining file checks still execute. Other fixture
+creation errors fail. If Windows rejects replacement/write with sharing or
+lock violation 32/33 while the read descriptor is open, the mutation test
+requires the original bytes and identity to remain unchanged and its recheck
+to succeed. It reports prevention rather than an observed mutation/refusal.
+Every successful mutation must still be rejected. No other error is accepted
+as prevention; native symlink qualification remains open when those cases skip.
