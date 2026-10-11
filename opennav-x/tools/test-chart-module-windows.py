@@ -56,6 +56,7 @@ def main():
         'src/integration/OChartsModuleLoader.h','src/integration/PluginPresentationFallback.h',
         'src/integration/OriginalPluginTlsGuard.h',
         'src/integration/Win32PluginTlsImports.h',
+        'src/integration/PluginTlsBytePolicy.h',
         'src/integration/Win32PeImports.h',
         'tests/windows_ocharts_loader/indirect_dependency.cpp',
         'src/integration/SkagerOChartsPackage.h.in','src/integration/OpenCPN.cmake',

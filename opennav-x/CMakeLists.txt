@@ -246,6 +246,7 @@ endif()
 
 if(OPENNAV_BUILD_TESTS)
   enable_testing()
+  include(cmake/PluginTlsTests.cmake)
   add_executable(chart_name_typography_test tests/chart_name_typography_test.cpp)
   target_include_directories(chart_name_typography_test PRIVATE src)
   target_compile_features(chart_name_typography_test PRIVATE cxx_std_17)

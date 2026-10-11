@@ -21,6 +21,7 @@ INPUTS = (
     'src/integration/PluginPresentationFallback.h',
     'src/integration/OriginalPluginTlsGuard.h',
     'src/integration/Win32PluginTlsImports.h',
+    'src/integration/PluginTlsBytePolicy.h',
     'src/integration/Win32PeImports.h',
     'src/plugin-adapters/ChartPresentationBindingV1.h',
     'src/plugin-adapters/ocharts/BindingState.h',
@@ -32,6 +33,7 @@ INPUTS = (
     'tests/windows_ocharts_loader/forward_dependency.cpp',
     'tests/windows_ocharts_loader/forwarder_fixtures.py',
     'tests/win32_pe_forwarders_test.cpp',
+    'tests/plugin_tls_byte_policy_test.cpp',
     'tests/windows_ocharts_loader/loader_test.cpp',
     'tests/windows_ocharts_loader/inputs.lock.json',
     'tools/test-ocharts-loader-windows.py',
@@ -155,6 +157,9 @@ def main():
         fixtures = client.parent
         api.run([fixtures / 'win32_pe_forwarders_test.exe'], evidence / 'native-pe-forwarders.log', timeout=60)
         report['peForwarderExecutable'] = identity(fixtures / 'win32_pe_forwarders_test.exe')
+        byte_policy = fixtures / 'plugin_tls_byte_policy_test.exe'
+        report['pluginTlsBytePolicyExecutable'] = identity(byte_policy)
+        api.run([byte_policy], evidence / 'native-plugin-tls-byte-policy.log', timeout=60)
         report['fixtures'] = {}
         for name in VARIANTS:
             relative = ('forwarders/' if name.startswith('forward_') else '') + 'fixture_' + name + '.dll'
@@ -191,6 +196,8 @@ def main():
             raise ValueError('Executable or read-only vendor input changed during tests')
         if identity(fixtures / 'win32_pe_forwarders_test.exe') != report['peForwarderExecutable']:
             raise ValueError('Native pure forwarder test executable changed during tests')
+        if identity(byte_policy) != report['pluginTlsBytePolicyExecutable']:
+            raise ValueError('Native TLS byte-policy test executable changed during tests')
         for name, item in report['fixtures'].items():
             if identity(fixtures / name) != {k: item[k] for k in ('bytes', 'sha256')}:
                 raise ValueError('Fixture changed: ' + name)

@@ -18,6 +18,12 @@ target_include_directories(ocharts_loader_test PRIVATE "${OPENNAV_ROOT}/src" "${
 target_link_libraries(ocharts_loader_test PRIVATE ${wxWidgets_LIBRARIES})
 add_executable(win32_pe_forwarders_test ../win32_pe_forwarders_test.cpp)
 target_include_directories(win32_pe_forwarders_test PRIVATE "${OPENNAV_ROOT}/src")
+add_executable(plugin_tls_byte_policy_test ../plugin_tls_byte_policy_test.cpp)
+target_include_directories(plugin_tls_byte_policy_test PRIVATE
+  "${OPENNAV_ROOT}/src" "${PICOSHA2_DIR}")
+target_compile_features(plugin_tls_byte_policy_test PRIVATE cxx_std_17)
+target_compile_options(plugin_tls_byte_policy_test PRIVATE /utf-8 /W4)
+set_property(TARGET plugin_tls_byte_policy_test PROPERTY MSVC_RUNTIME_LIBRARY MultiThreadedDLL)
 add_library(legacy_dependency SHARED legacy_dependency.cpp)
 set_target_properties(legacy_dependency PROPERTIES OUTPUT_NAME libeay32)
 file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/legacy-ordinal.def" "EXPORTS\n  legacy_tls_fixture @209\n")
