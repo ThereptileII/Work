@@ -4,11 +4,14 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import stat
 import struct
 import subprocess
 import sys
 import tempfile
+from types import SimpleNamespace
 import unittest
+from unittest.mock import patch
 
 import win32_plugin_inventory as api
 
@@ -57,6 +60,59 @@ class InventoryTests(unittest.TestCase):
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(pe(normal, delayed) if data is None else data)
         return path
+
+    def windows_executable_stats(self):
+        path = self.file('fixture.exe')
+        info = path.stat()
+        fields = ('st_dev', 'st_ino', 'st_mode', 'st_nlink', 'st_size', 'st_mtime_ns', 'st_ctime_ns')
+        before = SimpleNamespace(**{key: getattr(info, key) for key in fields})
+        before.st_mode |= 0o111
+        opened = SimpleNamespace(**vars(before))
+        opened.st_mode &= ~0o111
+        opened.st_ctime_ns += 1000
+        return path, before, opened
+
+    def test_windows_executable_stat_sources_keep_separate_baselines(self):
+        path, before, opened = self.windows_executable_stats()
+        real_stat = Path.stat
+        with patch.object(Path, 'stat', lambda p, **kw: before if p == path else real_stat(p, **kw)), \
+                patch.object(api.os, 'fstat', return_value=opened):
+            captured_path, data, stamp = api.read_file(path)
+        self.assertEqual(captured_path, path)
+        self.assertEqual(data, path.read_bytes())
+        self.assertEqual(stamp, api.stamp(before))
+
+    def test_windows_stat_source_metadata_mutation_still_refused(self):
+        for source in ('path', 'descriptor'):
+            for field in ('st_ctime_ns', 'st_mode'):
+                with self.subTest(source=source, field=field):
+                    path, before, opened = self.windows_executable_stats()
+                    after_path = SimpleNamespace(**vars(before))
+                    after_opened = SimpleNamespace(**vars(opened))
+                    changed = after_path if source == 'path' else after_opened
+                    setattr(changed, field, getattr(changed, field) ^ 1)
+                    real_stat = Path.stat
+                    calls = 0
+                    def fstat(_):
+                        nonlocal calls
+                        calls += 1
+                        return opened if calls == 1 else after_opened
+                    def path_stat(p, **kw):
+                        return (after_path if calls == 2 else before) if p == path else real_stat(p, **kw)
+                    with patch.object(Path, 'stat', path_stat), patch.object(api.os, 'fstat', side_effect=fstat):
+                        with self.assertRaisesRegex(ValueError, 'changed during read'):
+                            api.read_file(path)
+
+    def test_windows_stat_common_identity_mismatch_refused_on_open(self):
+        for field in ('st_dev', 'st_ino', 'st_nlink', 'st_size', 'st_mtime_ns', 'st_mode'):
+            with self.subTest(field=field):
+                path, before, opened = self.windows_executable_stats()
+                setattr(opened, field, stat.S_IFDIR | 0o600 if field == 'st_mode' else getattr(opened, field) + 1)
+                real_stat = Path.stat
+                with patch.object(Path, 'stat', lambda p, **kw: before if p == path else real_stat(p, **kw)), \
+                        patch.object(api.os, 'fstat', return_value=opened):
+                    with self.assertRaisesRegex(ValueError, 'changed before read'):
+                        api.read_file(path)
 
     def run_inventory(self, roots, directories=(), **kwargs):
         before = {str(p): hashlib.sha256(p.read_bytes()).hexdigest()

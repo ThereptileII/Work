@@ -40,7 +40,15 @@ def plain_path(value, directory=False):
 
 
 def stamp(info):
-    return (info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns, info.st_ctime_ns)
+    return (info.st_dev, info.st_ino, info.st_mode, info.st_nlink,
+            info.st_size, info.st_mtime_ns, info.st_ctime_ns)
+
+
+def common_stamp(info):
+    # On Windows, path and descriptor stat can disagree on ctime semantics and
+    # suffix-derived execute bits. Compare those only within each stat source.
+    return (info.st_dev, info.st_ino, stat.S_IFMT(info.st_mode), info.st_nlink,
+            info.st_size, info.st_mtime_ns)
 
 
 def read_file(value, byte_budget=MAX_FILE):
@@ -51,11 +59,11 @@ def read_file(value, byte_budget=MAX_FILE):
     descriptor = os.open(path, os.O_RDONLY | getattr(os, 'O_NOFOLLOW', 0) | getattr(os, 'O_NONBLOCK', 0))
     with os.fdopen(descriptor, 'rb') as stream:
         opened = os.fstat(stream.fileno())
-        if not stat.S_ISREG(opened.st_mode) or stamp(opened) != stamp(before):
+        if not stat.S_ISREG(opened.st_mode) or common_stamp(opened) != common_stamp(before):
             raise ValueError('File changed before read: ' + str(path))
         data = stream.read(MAX_FILE + 1)
         after = os.fstat(stream.fileno())
-    if len(data) != before.st_size or stamp(after) != stamp(before) or stamp(plain_path(path).stat()) != stamp(before):
+    if len(data) != before.st_size or stamp(after) != stamp(opened) or stamp(plain_path(path).stat()) != stamp(before):
         raise ValueError('File changed during read: ' + str(path))
     return path, data, stamp(before)
 

@@ -5,8 +5,11 @@ import importlib.util
 import json
 import os
 from pathlib import Path
+import stat
 import tempfile
+from types import SimpleNamespace
 import unittest
+from unittest.mock import patch
 
 spec = importlib.util.spec_from_file_location("artifacts", Path(__file__).with_name("signed_update_artifacts.py"))
 m = importlib.util.module_from_spec(spec)
@@ -100,6 +103,73 @@ class ArtifactTests(unittest.TestCase):
         self.assertIs(result["launchAuthorized"], False)
         self.assertIs(result["nativeCustodyQualified"], False)
         self.assertEqual(before, {p.name: p.read_bytes() for p in self.root.iterdir()})
+
+    def windows_executable_stats(self):
+        path = self.root / "fixture.exe"
+        data = b"inert executable fixture"
+        path.write_bytes(data)
+        info = path.lstat()
+        fields = ("st_dev", "st_ino", "st_mode", "st_nlink", "st_size", "st_mtime_ns", "st_ctime_ns")
+        before = SimpleNamespace(**{key: getattr(info, key) for key in fields})
+        before.st_mode |= 0o111
+        opened = copy.copy(before)
+        opened.st_mode &= ~0o111
+        opened.st_ctime_ns += 1000
+        descriptor = {"path": str(path), "sourcePath": "C:\\test\\fixture.exe", "sha256": m.digest(data)}
+        return path, descriptor, before, opened
+
+    def test_windows_executable_stat_sources_keep_separate_baselines(self):
+        path, descriptor, before, opened = self.windows_executable_stats()
+        real_lstat = Path.lstat
+        with patch.object(Path, "lstat", lambda p: before if p == path else real_lstat(p)), \
+                patch.object(m.os, "fstat", return_value=opened), ExitStack() as stack:
+            snap = m.Snapshot(descriptor, m.EXE_LIMIT, stack)
+            snap.recheck()
+            self.assertEqual(snap.data, path.read_bytes())
+
+    def test_windows_stat_source_metadata_mutation_still_refused(self):
+        for source in ("path", "descriptor"):
+            for field in ("st_ctime_ns", "st_mode"):
+                with self.subTest(source=source, field=field):
+                    path, descriptor, before, opened = self.windows_executable_stats()
+                    real_lstat = Path.lstat
+                    with patch.object(Path, "lstat", lambda p: before if p == path else real_lstat(p)), \
+                            patch.object(m.os, "fstat", return_value=opened), ExitStack() as stack:
+                        snap = m.Snapshot(descriptor, m.EXE_LIMIT, stack)
+                        changed = before if source == "path" else opened
+                        setattr(changed, field, getattr(changed, field) ^ 1)
+                        with self.assertRaisesRegex(m.Refused, "replaced or changed"):
+                            snap.recheck()
+
+    def test_windows_stat_common_identity_mismatch_refused_on_open(self):
+        for field in ("st_dev", "st_ino", "st_nlink", "st_size", "st_mtime_ns", "st_mode"):
+            with self.subTest(field=field):
+                path, descriptor, before, opened = self.windows_executable_stats()
+                setattr(opened, field, stat.S_IFDIR | 0o600 if field == "st_mode" else getattr(opened, field) + 1)
+                real_lstat = Path.lstat
+                with patch.object(Path, "lstat", lambda p: before if p == path else real_lstat(p)), \
+                        patch.object(m.os, "fstat", return_value=opened), ExitStack() as stack:
+                    with self.assertRaisesRegex(m.Refused, "replaced during open"):
+                        m.Snapshot(descriptor, m.EXE_LIMIT, stack)
+
+    def test_windows_stat_source_mutation_during_final_read_refused(self):
+        for source in ("path", "descriptor"):
+            for field in ("st_ctime_ns", "st_mode"):
+                with self.subTest(source=source, field=field):
+                    path, descriptor, before, opened = self.windows_executable_stats()
+                    real_lstat = Path.lstat
+                    with patch.object(Path, "lstat", lambda p: before if p == path else real_lstat(p)), \
+                            patch.object(m.os, "fstat", return_value=opened), ExitStack() as stack:
+                        snap = m.Snapshot(descriptor, m.EXE_LIMIT, stack)
+                        read = snap.read
+                        def mutate_after_read():
+                            data = read()
+                            changed = before if source == "path" else opened
+                            setattr(changed, field, getattr(changed, field) ^ 1)
+                            return data
+                        with patch.object(snap, "read", side_effect=mutate_after_read):
+                            with self.assertRaisesRegex(m.Refused, "changed during final read"):
+                                snap.recheck()
 
     def test_each_artifact_changed_or_missing(self):
         for key in m.RECORDS + m.RAW:

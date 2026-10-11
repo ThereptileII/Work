@@ -104,6 +104,14 @@ def identity(info):
             info.st_size, info.st_mtime_ns, info.st_ctime_ns)
 
 
+def common_identity(info):
+    # Windows path stat can report birth time as ctime and infer execute bits
+    # from the suffix; descriptor stat reports change time and no suffix bits.
+    # Retain those fields in each source's separate baseline for all rechecks.
+    return (info.st_dev, info.st_ino, stat.S_IFMT(info.st_mode), info.st_nlink,
+            info.st_size, info.st_mtime_ns)
+
+
 class Snapshot:
     """Hold and recheck a regular-file snapshot, without any mutation API."""
     def __init__(self, descriptor, limit, stack):
@@ -123,7 +131,9 @@ class Snapshot:
         fd = os.open(self.path, flags)
         stack.callback(os.close, fd)
         self.fd, self.initial = fd, identity(before)
-        require(identity(os.fstat(fd)) == self.initial, "Artifact replaced during open")
+        opened = os.fstat(fd)
+        require(common_identity(opened) == common_identity(before), "Artifact replaced during open")
+        self.opened_initial = identity(opened)
         self.sha256 = descriptor["sha256"]
         self.data = self.read()
         self.recheck()
@@ -154,10 +164,10 @@ class Snapshot:
     def recheck(self):
         require(self.check_ancestors() == self.ancestors and
                 identity(self.path.lstat()) == self.initial and
-                identity(os.fstat(self.fd)) == self.initial, "Artifact replaced or changed during inspection")
+                identity(os.fstat(self.fd)) == self.opened_initial, "Artifact replaced or changed during inspection")
         self.read()
         require(identity(self.path.lstat()) == self.initial and
-                identity(os.fstat(self.fd)) == self.initial and self.check_ancestors() == self.ancestors,
+                identity(os.fstat(self.fd)) == self.opened_initial and self.check_ancestors() == self.ancestors,
                 "Artifact changed during final read")
 
 
