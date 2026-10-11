@@ -1,0 +1,6 @@
+Exception: /home/standard/Projects/X-nav-worktrees/updater-createprocess-diagnostic-20261011/opennav-x/tools/diagnose-native-update-createprocess.ps1:124
+Line |
+ 124 |  … ajor -ne 5){throw 'Exact repository, GitHub-hosted native Windows CI  …
+     |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     | Exact repository, GitHub-hosted native Windows CI and Windows PowerShell
+     | 5.1 required.

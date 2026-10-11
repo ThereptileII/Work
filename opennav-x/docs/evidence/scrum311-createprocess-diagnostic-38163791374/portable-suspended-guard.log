@@ -1,0 +1,2 @@
+PASS: absent CREATE_SUSPENDED refused before any owner reflection/native call.
+PASS: object CWD boundary preserves NULL; string boundary converts NULL to empty.

@@ -1,0 +1,249 @@
+Windows PowerShell 5.1 supervised image ownership	Set up job	﻿2026-10-11T18:26:08.6843839Z Current runner version: '2.337.0'
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T18:26:08.6886573Z ##[group]Runner Image Provisioner
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T18:26:08.6887399Z Hosted Compute Agent
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T18:26:08.6887932Z Version: 20261002.596
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T18:26:08.6888526Z Commit: c3d12f3313a95f25162a1503be624f3b0617f8c0
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T18:26:08.6889190Z Build Date: 2026-10-02T22:28:27Z
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T18:26:08.6889833Z Worker ID: {144d224d-9ba4-4b32-be73-db4ac4450dfd}
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T18:26:08.6890496Z Region: eastus2
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T18:26:08.6890968Z Cloud: Azure
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T18:26:08.6891459Z ##[endgroup]
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T18:26:08.6892740Z ##[group]Operating System
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T18:26:08.6893397Z Microsoft Windows Server 2022
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T18:26:08.6893981Z 10.0.20348
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T18:26:08.6894433Z Datacenter
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T18:26:08.6894931Z ##[endgroup]
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T18:26:08.6895421Z ##[group]Runner Image
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T18:26:08.6895944Z Image: windows-2022
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T18:26:08.6896455Z Version: 20261004.326.1
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T18:26:08.6897493Z Included Software: https://github.com/actions/runner-images/blob/win22/20261004.326/images/windows/Windows2022-Readme.md
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T18:26:08.6899364Z Image Release: https://github.com/actions/runner-images/releases/tag/win22%2F20261004.326
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T18:26:08.6900305Z ##[endgroup]
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T18:26:08.6901339Z ##[group]GITHUB_TOKEN Permissions
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T18:26:08.6903110Z Contents: read
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T18:26:08.6903729Z Metadata: read
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T18:26:08.6904231Z ##[endgroup]
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T18:26:08.6906307Z Secret source: Actions
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T18:26:08.6907200Z Cache mode: write
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T18:26:08.6907889Z Prepare workflow directory
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T18:26:08.7329136Z Prepare all required actions
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T18:26:08.7376608Z Getting action download info
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T18:26:08.9186725Z Download action repository 'actions/checkout@11d5960a326750d5838078e36cf38b85af677262' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T18:26:09.1241459Z Download action repository 'actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+Windows PowerShell 5.1 supervised image ownership	Set up job	2026-10-11T18:26:09.4857743Z Complete job name: Windows PowerShell 5.1 supervised image ownership
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	﻿2026-10-11T18:26:09.6892255Z ##[group]Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:09.6893538Z with:
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:09.6893975Z   repository: ThereptileII/Work
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:09.6898116Z   token: ***
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:09.6898550Z   ssh-strict: true
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:09.6898964Z   ssh-user: git
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:09.6899380Z   persist-credentials: true
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:09.6899836Z   clean: true
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:09.6900247Z   sparse-checkout-cone-mode: true
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:09.6900734Z   fetch-depth: 1
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:09.6901134Z   fetch-tags: false
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:09.6901542Z   show-progress: true
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:09.6901962Z   lfs: false
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:09.6902333Z   submodules: false
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:09.6902760Z   set-safe-directory: true
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:09.6903659Z   allow-unsafe-pr-checkout: false
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:09.6904485Z ##[endgroup]
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:09.8403096Z Syncing repository: ThereptileII/Work
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:09.8405388Z ##[group]Getting Git version info
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:09.8406097Z Working directory is 'D:\a\Work\Work'
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:09.9339509Z [command]"C:\Program Files\Git\bin\git.exe" version
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:10.2564935Z git version 2.56.0.windows.1
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:10.2609009Z ##[endgroup]
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:10.2627339Z Temporarily overriding HOME='D:\a\_temp\2827e2c5-eef4-40ac-ab01-33198a41cd6f' before making global git config changes
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:10.2629266Z Adding repository directory to the temporary git global config as a safe directory
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:10.2637781Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\Work\Work
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:10.3166414Z Deleting the contents of 'D:\a\Work\Work'
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:10.3171719Z ##[group]Initializing the repository
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:10.3180434Z [command]"C:\Program Files\Git\bin\git.exe" init D:\a\Work\Work
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:10.3941627Z Initialized empty Git repository in D:/a/Work/Work/.git/
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:10.3980903Z [command]"C:\Program Files\Git\bin\git.exe" remote add origin https://github.com/ThereptileII/Work
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:10.4514259Z ##[endgroup]
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:10.4515696Z ##[group]Disabling automatic garbage collection
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:10.4523048Z [command]"C:\Program Files\Git\bin\git.exe" config --local gc.auto 0
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:10.4804094Z ##[endgroup]
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:10.4805700Z ##[group]Setting up auth
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:10.4815182Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:10.5104406Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:11.8014904Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:11.8342192Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:12.2926673Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:12.3226672Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:12.7918126Z [command]"C:\Program Files\Git\bin\git.exe" config --local http.https://github.com/.extraheader "AUTHORIZATION: basic ***"
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:12.8238824Z ##[endgroup]
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:12.8239794Z ##[group]Fetching the repository
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:12.8253652Z [command]"C:\Program Files\Git\bin\git.exe" -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +01ac92a64dc90d2f0521bd50d6f1088da4a6f04b:refs/remotes/origin/codex/source-batch-20261011
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:16.1822861Z From https://github.com/ThereptileII/Work
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:16.1827169Z  * [new ref]         01ac92a64dc90d2f0521bd50d6f1088da4a6f04b -> origin/codex/source-batch-20261011
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:16.1856068Z ##[endgroup]
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:16.1856736Z ##[group]Determining the checkout info
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:16.1859321Z ##[endgroup]
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:16.1868421Z [command]"C:\Program Files\Git\bin\git.exe" sparse-checkout disable
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:16.2281594Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all extensions.worktreeConfig
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:16.2570913Z ##[group]Checking out the ref
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:16.2579299Z [command]"C:\Program Files\Git\bin\git.exe" checkout --progress --force -B codex/source-batch-20261011 refs/remotes/origin/codex/source-batch-20261011
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:17.3194574Z Updating files:  32% (2405/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:17.3402024Z Updating files:  33% (2464/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:17.3651827Z Updating files:  34% (2539/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:17.3837165Z Updating files:  35% (2614/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:17.4056471Z Updating files:  36% (2688/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:17.4242796Z Updating files:  37% (2763/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:17.4403496Z Updating files:  38% (2838/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:17.4632783Z Updating files:  39% (2912/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:17.4793675Z Updating files:  40% (2987/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:17.5013527Z Updating files:  41% (3062/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:17.5136386Z Updating files:  42% (3136/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:17.5312943Z Updating files:  43% (3211/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:17.5535950Z Updating files:  44% (3286/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:17.5733543Z Updating files:  45% (3360/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:17.6025052Z Updating files:  46% (3435/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:17.6201327Z Updating files:  47% (3510/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:17.6396962Z Updating files:  48% (3584/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:17.6581275Z Updating files:  49% (3659/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:17.6786598Z Updating files:  50% (3733/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:17.7060019Z Updating files:  51% (3808/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:17.7250121Z Updating files:  52% (3883/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:17.7368773Z Updating files:  53% (3957/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:17.7493944Z Updating files:  54% (4032/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:17.7736793Z Updating files:  55% (4107/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:17.7994633Z Updating files:  56% (4181/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:17.8292047Z Updating files:  57% (4256/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:17.8442533Z Updating files:  58% (4331/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:17.8562142Z Updating files:  59% (4405/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:17.8681747Z Updating files:  60% (4480/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:17.8803909Z Updating files:  61% (4555/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:17.9033717Z Updating files:  62% (4629/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:17.9285931Z Updating files:  63% (4704/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:17.9498146Z Updating files:  64% (4779/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:17.9764242Z Updating files:  65% (4853/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:17.9924615Z Updating files:  66% (4928/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:18.0170463Z Updating files:  67% (5003/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:18.0604082Z Updating files:  68% (5077/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:18.0846631Z Updating files:  69% (5152/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:18.1304107Z Updating files:  70% (5227/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:18.1565128Z Updating files:  71% (5301/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:18.1846265Z Updating files:  72% (5376/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:18.2158485Z Updating files:  73% (5451/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:18.2480906Z Updating files:  74% (5525/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:18.2888677Z Updating files:  75% (5600/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:18.3099108Z Updating files:  76% (5675/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:18.3371074Z Updating files:  76% (5708/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:18.3764700Z Updating files:  77% (5749/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:18.3978974Z Updating files:  78% (5824/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:18.4201378Z Updating files:  79% (5899/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:18.4461607Z Updating files:  80% (5973/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:18.4597913Z Updating files:  81% (6048/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:18.4710479Z Updating files:  82% (6123/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:18.4862812Z Updating files:  83% (6197/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:18.5149563Z Updating files:  84% (6272/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:18.5283359Z Updating files:  85% (6347/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:18.5420110Z Updating files:  86% (6421/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:18.5612706Z Updating files:  87% (6496/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:18.5753274Z Updating files:  88% (6571/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:18.5892375Z Updating files:  89% (6645/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:18.6040585Z Updating files:  90% (6720/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:18.6178204Z Updating files:  91% (6795/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:18.6330880Z Updating files:  92% (6869/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:18.6486587Z Updating files:  93% (6944/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:18.6625062Z Updating files:  94% (7019/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:18.6785559Z Updating files:  95% (7093/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:18.6941510Z Updating files:  96% (7168/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:18.7090366Z Updating files:  97% (7243/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:18.7231455Z Updating files:  98% (7317/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:18.7491588Z Updating files:  99% (7392/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:18.7492481Z Updating files: 100% (7466/7466)
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:18.7492959Z Updating files: 100% (7466/7466), done.
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:18.7689850Z Switched to a new branch 'codex/source-batch-20261011'
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:18.7716034Z branch 'codex/source-batch-20261011' set up to track 'origin/codex/source-batch-20261011'.
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:18.7901990Z ##[endgroup]
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:18.8275980Z [command]"C:\Program Files\Git\bin\git.exe" log -1 --format=%H
+Windows PowerShell 5.1 supervised image ownership	Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:18.8537233Z 01ac92a64dc90d2f0521bd50d6f1088da4a6f04b
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	﻿2026-10-11T18:26:18.8888943Z ##[group]Run $ErrorActionPreference = 'Stop'
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T18:26:18.8889453Z ^[[36;1m$ErrorActionPreference = 'Stop'^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T18:26:18.8889887Z ^[[36;1m$Evidence = 'opennav-x/evidence/local/native-update-image-owner'^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T18:26:18.8890410Z ^[[36;1mNew-Item -ItemType Directory -Force $Evidence | Out-Null^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T18:26:18.8891246Z ^[[36;1mif ($PSVersionTable.PSVersion.Major -ne 5) { throw 'Windows PowerShell 5.1 required.' }^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T18:26:18.8891727Z ^[[36;1mtry {^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T18:26:18.8892180Z ^[[36;1m  & ./opennav-x/tools/test-native-update-image-owner.ps1 *>&1 | Tee-Object "$Evidence/owner.log"^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T18:26:18.8892802Z ^[[36;1m} catch { $_ | Out-File "$Evidence/owner.log" -Append; throw }^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T18:26:18.8893219Z ^[[36;1mif ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T18:26:18.8893530Z ^[[36;1mtry {^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T18:26:18.8893951Z ^[[36;1m  & ./opennav-x/tools/test-update-transaction.ps1 *>&1 | Tee-Object "$Evidence/transaction.log"^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T18:26:18.8894597Z ^[[36;1m} catch { $_ | Out-File "$Evidence/transaction.log" -Append; throw }^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T18:26:18.8895027Z ^[[36;1mif ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T18:26:18.8895343Z ^[[36;1m$Inputs = @{}^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T18:26:18.8896342Z ^[[36;1mforeach ($Path in @('installer/windows/UpdateTransaction.ps1','installer/windows/UpdateSupervisor.ps1','tools/test-native-update-image-owner.ps1','tools/test-update-transaction.ps1','tools/fixtures/update-image-marker.cs')) {^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T18:26:18.8897722Z ^[[36;1m  $Inputs[$Path] = (Get-FileHash -LiteralPath (Join-Path 'opennav-x' $Path) -Algorithm SHA256).Hash.ToLowerInvariant()^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T18:26:18.8898304Z ^[[36;1m}^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T18:26:18.8899822Z ^[[36;1m@{commit=$env:GITHUB_SHA;run=$env:GITHUB_RUN_ID;attempt=$env:GITHUB_RUN_ATTEMPT;powerShell=$PSVersionTable.PSVersion.ToString();processBits=([IntPtr]::Size*8);os=[Environment]::OSVersion.VersionString;inputs=$Inputs;passed=$true;applicationBuild=$false;productAcceptance=$false;boatAcceptance=$false} | ConvertTo-Json -Depth 5 | Out-File "$Evidence/receipt.json" -Encoding utf8^[[0m
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T18:26:18.9007704Z shell: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.EXE -command ". '{0}'"
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T18:26:18.9008284Z ##[endgroup]
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T18:26:22.6685212Z PASS: Production transaction source parses
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T18:26:22.7140319Z PASS: One exact embedded native source selected
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T18:26:23.6619288Z PASS: Exact embedded owner compiles without invoking Win32
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T18:26:23.8441160Z PASS: Durable armed launch refuses automatic recovery
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T18:26:24.5332793Z PASS: Historical attempted record remains readable but cannot authorize native cleanup
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T18:26:24.5395904Z PASS: Running record without PID explicitly refused
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T18:26:24.5429017Z PASS: Malformed native creation identity refused
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T18:26:24.5447149Z PASS: Malformed native creation identity refused
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T18:26:24.5465358Z PASS: Malformed native creation identity refused
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T18:26:24.5482382Z PASS: Malformed native creation identity refused
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T18:26:24.5499523Z PASS: Malformed native creation identity refused
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T18:26:26.3303781Z PASS: Disposable multi-link image created
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T18:26:26.3600392Z PASS: Actual acquired multi-link image refused
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T18:26:26.3654756Z PASS: Replacement marker has genuinely different bytes
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T18:26:26.5188648Z PASS: Retained image denies concurrent write access
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T18:26:26.5314388Z PASS: Physical ancestor above SUBST root cannot be renamed while held
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T18:26:26.6436797Z D:\a\Work\Work\opennav-x\tools\test-native-update-image-owner.ps1 : Exception calling "Start" with "1" argument(s): 
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T18:26:26.6437922Z "Suspended image creation refused (Win32 87)."
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T18:26:26.6438563Z At D:\a\_temp\f8f7d9a5-0c3d-404c-a688-5e416b58ae79.ps1:7 char:3
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T18:26:26.6514164Z +   & ./opennav-x/tools/test-native-update-image-owner.ps1 *>&1 | Tee-O ...
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T18:26:26.6517577Z +   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T18:26:26.6518240Z     + CategoryInfo          : NotSpecified: (:) [test-native-update-image-owner.ps1], MethodInvocationException
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T18:26:26.6519069Z     + FullyQualifiedErrorId : IOException,test-native-update-image-owner.ps1
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T18:26:26.6519761Z  
+Windows PowerShell 5.1 supervised image ownership	Exercise held images and inert supervised children only	2026-10-11T18:26:26.6858681Z ##[error]Process completed with exit code 1.
+Windows PowerShell 5.1 supervised image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	﻿2026-10-11T18:26:26.7078507Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+Windows PowerShell 5.1 supervised image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T18:26:26.7079086Z with:
+Windows PowerShell 5.1 supervised image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T18:26:26.7079459Z   name: native-update-image-owner-01ac92a64dc90d2f0521bd50d6f1088da4a6f04b
+Windows PowerShell 5.1 supervised image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T18:26:26.7079969Z   path: opennav-x/evidence/local/native-update-image-owner
+Windows PowerShell 5.1 supervised image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T18:26:26.7080326Z   if-no-files-found: error
+Windows PowerShell 5.1 supervised image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T18:26:26.7080578Z   retention-days: 90
+Windows PowerShell 5.1 supervised image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T18:26:26.7080828Z   compression-level: 6
+Windows PowerShell 5.1 supervised image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T18:26:26.7081061Z   overwrite: false
+Windows PowerShell 5.1 supervised image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T18:26:26.7081288Z   include-hidden-files: false
+Windows PowerShell 5.1 supervised image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T18:26:26.7081535Z ##[endgroup]
+Windows PowerShell 5.1 supervised image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T18:26:26.9119517Z (node:5660) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+Windows PowerShell 5.1 supervised image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T18:26:26.9120876Z (Use `node --trace-deprecation ...` to show where the warning was created)
+Windows PowerShell 5.1 supervised image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T18:26:26.9181577Z With the provided path, there will be 1 file uploaded
+Windows PowerShell 5.1 supervised image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T18:26:26.9187958Z Artifact name is valid!
+Windows PowerShell 5.1 supervised image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T18:26:26.9190279Z Root directory input is valid!
+Windows PowerShell 5.1 supervised image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T18:26:27.1418201Z Beginning upload of artifact content to blob storage
+Windows PowerShell 5.1 supervised image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T18:26:27.1612271Z (node:5660) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+Windows PowerShell 5.1 supervised image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T18:26:27.2022829Z Uploaded bytes 942
+Windows PowerShell 5.1 supervised image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T18:26:27.2235512Z Finished uploading artifact content to blob storage!
+Windows PowerShell 5.1 supervised image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T18:26:27.2236932Z SHA256 digest of uploaded artifact zip is 5a7dfb93328928a8ac996528a78d468b3f608412285e4c423d847a418550aef3
+Windows PowerShell 5.1 supervised image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T18:26:27.2240318Z Finalizing artifact upload
+Windows PowerShell 5.1 supervised image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T18:26:27.4105426Z Artifact native-update-image-owner-01ac92a64dc90d2f0521bd50d6f1088da4a6f04b.zip successfully finalized. Artifact ID 11711267075
+Windows PowerShell 5.1 supervised image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T18:26:27.4108387Z Artifact native-update-image-owner-01ac92a64dc90d2f0521bd50d6f1088da4a6f04b has been successfully uploaded! Final size is 942 bytes. Artifact ID is 11711267075
+Windows PowerShell 5.1 supervised image ownership	Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02	2026-10-11T18:26:27.4118065Z Artifact download URL: https://github.com/ThereptileII/Work/actions/runs/38163791374/artifacts/11711267075
+Windows PowerShell 5.1 supervised image ownership	Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	﻿2026-10-11T18:26:27.4435601Z Post job cleanup.
+Windows PowerShell 5.1 supervised image ownership	Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:27.6269708Z [command]"C:\Program Files\Git\bin\git.exe" version
+Windows PowerShell 5.1 supervised image ownership	Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:27.6537435Z git version 2.56.0.windows.1
+Windows PowerShell 5.1 supervised image ownership	Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:27.6607806Z Temporarily overriding HOME='D:\a\_temp\5896466f-e8c4-4db7-a849-087f30adae0d' before making global git config changes
+Windows PowerShell 5.1 supervised image ownership	Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:27.6609581Z Adding repository directory to the temporary git global config as a safe directory
+Windows PowerShell 5.1 supervised image ownership	Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:27.6621018Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\Work\Work
+Windows PowerShell 5.1 supervised image ownership	Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:27.6967107Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+Windows PowerShell 5.1 supervised image ownership	Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:27.7385792Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+Windows PowerShell 5.1 supervised image ownership	Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:28.2461663Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+Windows PowerShell 5.1 supervised image ownership	Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:28.2727015Z http.https://github.com/.extraheader
+Windows PowerShell 5.1 supervised image ownership	Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:28.2761538Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all http.https://github.com/.extraheader
+Windows PowerShell 5.1 supervised image ownership	Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:28.3045017Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+Windows PowerShell 5.1 supervised image ownership	Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:28.7755646Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+Windows PowerShell 5.1 supervised image ownership	Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262	2026-10-11T18:26:28.8043278Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+Windows PowerShell 5.1 supervised image ownership	Complete job	﻿2026-10-11T18:26:29.2906134Z Cleaning up orphan processes
+Windows PowerShell 5.1 supervised image ownership	Complete job	2026-10-11T18:26:29.2940540Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@11d5960a326750d5838078e36cf38b85af677262, actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

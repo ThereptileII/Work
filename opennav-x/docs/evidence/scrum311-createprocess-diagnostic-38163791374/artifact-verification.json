@@ -1,0 +1,23 @@
+{
+  "runId": 38163791374,
+  "jobId": 114542010715,
+  "candidate": "01ac92a64dc90d2f0521bd50d6f1088da4a6f04b",
+  "conclusion": "failure",
+  "artifactId": 11711267075,
+  "zipBytes": 942,
+  "apiDigest": "sha256:5a7dfb93328928a8ac996528a78d468b3f608412285e4c423d847a418550aef3",
+  "zipSha256": "5a7dfb93328928a8ac996528a78d468b3f608412285e4c423d847a418550aef3",
+  "apiDigestMatches": true,
+  "allMemberCrc32Passed": true,
+  "members": [
+    {
+      "name": "owner.log",
+      "bytes": 2876,
+      "crc32": "3f184298",
+      "sha256": "699c986d0783f0f0abab54539948457a5d6e4cf6d4bff7fe0e42222498f5c838"
+    }
+  ],
+  "observedPassLinesBeforeFailure": 16,
+  "failedBeforeResume": true,
+  "localReadOnlyProductionSourceSha256": "312685e4402c20efded897cb607ae8126643f43a8af34d6684b0494e1ffd4ca4"
+}
