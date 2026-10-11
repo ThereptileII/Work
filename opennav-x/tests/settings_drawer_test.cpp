@@ -443,12 +443,14 @@ private:
           unavailable->Destroy();
         }
         Check(!Find(panel_,"AUTO") && !Find(panel_,"STBY"),"preferences cannot execute physical controls");
-        for(const auto *label:{"Installation & recovery","Updates","Backups","About & licenses","Run vessel setup"}) {
+        for(const auto *label:{"Installation & recovery","Updates","Export settings backup","Import settings backup","Run vessel setup"}) {
           auto *unavailable=Find(panel_,label);
           Check(unavailable && !unavailable->IsEnabled(),"unavailable System capability is disabled");
           wxCommandEvent event(wxEVT_BUTTON,unavailable->GetId());event.SetEventObject(unavailable);
           unavailable->GetEventHandler()->ProcessEvent(event);
         }
+        Check(Find(panel_,"About & licenses") && Find(panel_,"About & licenses")->IsEnabled(),
+              "packaged About and license viewer is available");
         wxTheApp->Yield(true);
         Check(advanced_==1 && navigations_==2 && diagnostics_==0 && plugins_==0,
               "unavailable System rows cannot delegate actions");

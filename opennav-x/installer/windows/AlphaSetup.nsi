@@ -116,7 +116,7 @@ Function SourcePage
   Call CheckSource
   nsDialogs::Create 1018
   Pop $0
-  ${NSD_CreateLabel} 0 0 100% 28u "Select the original installed OpenCPN application. Setup verifies its exact version and files before making installation changes."
+  ${NSD_CreateLabel} 0 0 100% 28u "OpenCPN must be installed separately. Select its original application. Setup verifies the exact version and files before making changes."
   Pop $0
   ${NSD_CreateText} 0 35u 78% 14u "$StockPath"
   Pop $StockControl
@@ -136,7 +136,7 @@ Function SourcePage
   ${NSD_CB_AddString} $ActionControl "Update"
   ${NSD_CB_AddString} $ActionControl "Repair"
   ${NSD_CB_SelectString} $ActionControl "$Action"
-  ${NSD_CreateLabel} 0 145u 100% 25u "SKAGER installs for this Windows user. Your original OpenCPN application stays available."
+  ${NSD_CreateLabel} 0 145u 100% 25u "Built on OpenCPN, with thanks to its developers. SKAGER installs for this Windows user; original OpenCPN stays available."
   Pop $0
   nsDialogs::Show
 FunctionEnd

@@ -28,6 +28,7 @@ XNavSettingsDrawer::XNavSettingsDrawer(wxWindow &owner, SettingsDrawerActions ac
   Build();
 }
 void XNavSettingsDrawer::Open(const wxRect &workspace) {
+  if (about_) Select(section_);
   Present(workspace);
   if (!IsShown()) return;
   // Root reopening must replace a remembered offscreen child before resetting
@@ -49,6 +50,7 @@ void XNavSettingsDrawer::Select(SettingsSection section) {
     display_draft_ = actions_.display ? actions_.display() : display_applied_;
     display_dirty_ = false;
   }
+  about_=false;notice_title_.clear();notice_text_.clear();
   section_=section;
   Build();
 }
@@ -62,7 +64,15 @@ void XNavSettingsDrawer::Update(const ProductState &state,LightMode mode) {
     if(layout_field_)layout_field_->SetLightMode(mode);
     for(auto *b:tabs_buttons_)b->SetLightMode(mode);
     for(const auto &choice:light_buttons_)choice.first->SetSelected(choice.second==mode);
-    tabs_->SetBackgroundColour(Colour(Theme(mode).background));
+    if(tabs_)tabs_->SetBackgroundColour(Colour(Theme(mode).background));
+    for(auto *copy:about_copy_) {
+      copy->SetBackgroundColour(Colour(Theme(mode).background));
+      copy->SetForegroundColour(Colour(Theme(mode).secondary));
+    }
+    if(notice_reader_) {
+      notice_reader_->SetBackgroundColour(Colour(Theme(mode).background));
+      notice_reader_->SetForegroundColour(Colour(Theme(mode).primary));
+    }
     if(light_track_) {
       light_track_->SetBackgroundColour(Colour(Theme(mode).surface));
       light_track_->Refresh(false);
@@ -316,8 +326,12 @@ void XNavSettingsDrawer::Button(const wxString &label,std::function<void()> acti
 }
 void XNavSettingsDrawer::Build() {
   ClearBody();tabs_buttons_.clear();buttons_.clear();light_buttons_.clear();copies_.clear();
+  about_copy_.clear();notice_reader_=nullptr;tabs_=nullptr;
   scale_field_=nullptr;layout_field_=nullptr;display_message_=nullptr;light_track_=nullptr;
   fields_.fill(nullptr);input_frames_.clear();field_containers_.clear();field_captions_.clear();message_=nullptr;
+  if(about_) { AboutForm();ApplyScale();body_->Layout();body_->FitInside();return; }
+  SetHeading("PREFERENCES","A helm of your own",false);
+  on_back={};
   tabs_=new wxPanel(body_,wxID_ANY);tabs_->SetLabel(wxEmptyString);
   tabs_->SetBackgroundColour(Colour(Theme(light_).background));
   tabs_->SetMinSize(FromDIP(wxSize(300,79)));
@@ -434,7 +448,7 @@ void XNavSettingsDrawer::Build() {
       Link("Plugins","OpenCPN adapters and plugin settings",XNavIcon::Layers,actions_.plugins);
       Link("Help & guides","Basic help; guides unavailable",XNavIcon::Info,
            [this]{Select(SettingsSection::Help);});
-      Link("About & licenses","Version above; license viewer unavailable",XNavIcon::Info,{});
+      Link("About & licenses","Versions, notices and OpenCPN",XNavIcon::Info,[this]{ShowAbout();});
       Link("Run vessel setup","Setup wizard unavailable; use Vessel tab",XNavIcon::Boat,{});
       Page("Interface & recovery","Legacy, Safe Mode, restart and diagnostics",XNavIcon::Shield,ProductPage::System);
       Link("Advanced / Legacy Settings",actions_.advanced
@@ -449,9 +463,84 @@ void XNavSettingsDrawer::Build() {
         p.Text("Legacy and Safe keep the same navigation profile.",0,88,12,p.c.secondary,false,width);});
       Link("Diagnostics","Inspect this build and its source health",XNavIcon::Settings,actions_.diagnostics);
       Link("Advanced OpenCPN settings","Existing charts, connections and preferences",XNavIcon::Settings,actions_.advanced);
+      Link("About & licenses","Build information and third-party notices",XNavIcon::Info,[this]{ShowAbout();});
       break;
   }
   ApplyScale();
   body_->Layout();body_->FitInside();
+}
+void XNavSettingsDrawer::AboutCopy(const wxString &text) {
+  auto *copy=new wxStaticText(body_,wxID_ANY,text);
+  copy->SetFont(UiFont(*this,13));
+  copy->SetForegroundColour(Colour(Theme(light_).secondary));
+  copy->SetBackgroundColour(Colour(Theme(light_).background));
+  copy->Wrap(FromDIP(300));
+  content_->Add(copy,0,wxEXPAND|wxBOTTOM,FromDIP(16));
+  about_copy_.push_back(copy);
+}
+void XNavSettingsDrawer::ShowAbout() {
+  about_=true;notice_title_.clear();notice_text_.clear();Build();
+  if(!buttons_.empty())buttons_.front()->SetFocus();
+  body_->Scroll(0,0);
+}
+void XNavSettingsDrawer::ShowNotice(application::AboutNotice notice,const wxString &title) {
+  const auto result=actions_.read_notice ? actions_.read_notice(notice) :
+      application::AboutNoticeText{false,"Packaged notices are unavailable in this build. Restore or repair the SKAGER package."};
+  notice_title_=title;notice_text_=wxString::FromUTF8(result.text);
+  if(notice_text_.empty())notice_text_="This packaged notice could not be read as UTF-8 text. Open the notices folder to inspect the original file.";
+  Build();
+  if(notice_reader_)notice_reader_->SetFocus();
+  body_->Scroll(0,0);
+}
+void XNavSettingsDrawer::AboutForm() {
+  SetHeading("ABOUT & LICENSES",notice_title_.empty()?wxString(application::brand::Name):notice_title_,true);
+  on_back=[this] {
+    if(!notice_title_.empty())ShowAbout();
+    else {
+      Select(section_);
+      if(!tabs_buttons_.empty())tabs_buttons_[static_cast<std::size_t>(section_)]->SetFocus();
+      body_->Scroll(0,0);
+    }
+  };
+  if(!notice_title_.empty()) {
+    notice_reader_=new wxTextCtrl(body_,wxID_ANY,notice_text_,wxDefaultPosition,
+        FromDIP(wxSize(300,360)),wxTE_MULTILINE|wxTE_READONLY|wxTE_WORDWRAP|wxBORDER_NONE);
+    notice_reader_->SetName("Packaged notice text");
+    notice_reader_->SetFont(UiFont(*this,13));
+    notice_reader_->SetBackgroundColour(Colour(Theme(light_).background));
+    notice_reader_->SetForegroundColour(Colour(Theme(light_).primary));
+    content_->Add(notice_reader_,1,wxEXPAND|wxBOTTOM,FromDIP(16));
+    Button("Back to About & licenses",[this]{ShowAbout();});
+    return;
+  }
+  AboutCopy(wxString(application::brand::Name)+" "+wxString::FromUTF8(application::Version));
+  AboutCopy("Built on OpenCPN, the open-source chartplotter and navigation project. Thank you to the OpenCPN developers and contributors.");
+  AboutCopy("OpenCPN is a separately installed prerequisite. SKAGER adds its own interface and integration; stock OpenCPN remains available in Legacy Mode.");
+  const auto web=[this](const std::string &url) {
+    if(!actions_.open_about_url || !actions_.open_about_url(url)) {
+      notice_title_="OpenCPN link";
+      notice_text_="The browser could not be opened. You can copy this address:\n\n"+wxString::FromUTF8(url);
+      Build();if(notice_reader_)notice_reader_->SetFocus();body_->Scroll(0,0);
+    }
+  };
+  Link("OpenCPN project","opencpn.org — opens your browser",XNavIcon::Info,[web]{web("https://opencpn.org/");});
+  Link("OpenCPN source","github.com/OpenCPN/OpenCPN",XNavIcon::Info,[web]{web("https://github.com/OpenCPN/OpenCPN");});
+  Link("Source & license information","Exact package source references and notices",XNavIcon::Info,
+       [this]{ShowNotice(application::AboutNotice::Sources,"Source & licenses");});
+  Link("Third-party notices","Packaged component notices",XNavIcon::Info,
+       [this]{ShowNotice(application::AboutNotice::Components,"Third-party notices");});
+  Link("SKAGER license","Read the packaged license",XNavIcon::Info,
+       [this]{ShowNotice(application::AboutNotice::SkagerLicense,"SKAGER license");});
+  Link("OpenCPN license","Read the packaged OpenCPN GPL v2 text",XNavIcon::Info,
+       [this]{ShowNotice(application::AboutNotice::OpenCpnLicense,"OpenCPN license");});
+  Link("Open notices folder","All packaged library notices",XNavIcon::Layers,[this]{
+    const auto result=actions_.open_notices_folder?actions_.open_notices_folder():
+        application::CommandResult{false,"The packaged notices folder is unavailable in this build."};
+    if(!result.ok) {
+      notice_title_="Packaged notices";notice_text_=wxString::FromUTF8(result.message);
+      Build();if(notice_reader_)notice_reader_->SetFocus();body_->Scroll(0,0);
+    }
+  });
+  AboutCopy("Chart-provider licenses remain separate. The packaged notices describe this build; this page does not grant additional rights or imply OpenCPN endorsement.");
 }
 } // namespace opennav::ui

@@ -6,6 +6,7 @@
 #include "application/Brand.h"
 #include "application/SkagerBrandAsset.h"
 #include "ui/SkagerWordmark.h"
+#include "platform/PortableProfile.h"
 
 #include "smartnav/Advisories.h"
 #include "vessel/DisplayItems.h"
@@ -21,6 +22,8 @@
 #include <wx/popupwin.h>
 #include <wx/sizer.h>
 #include <wx/textctrl.h>
+#include <wx/stdpaths.h>
+#include <wx/utils.h>
 #ifdef __WXMSW__
 #include <windows.h>
 #endif
@@ -1620,6 +1623,26 @@ void Shell::ShowSettings() {
     if(actions_.navigation.plugin_settings)
       actions.plugins = [this] { ShowNavigation(); actions_.navigation.plugin_settings(); };
     actions.diagnostics = [this] { ShowPage(PreviewPage::Diagnostics); };
+    const auto executable=platform::PathFromUtf8(
+        wxStandardPaths::Get().GetExecutablePath().ToStdString(wxConvUTF8));
+    actions.read_notice=[executable](application::AboutNotice notice) {
+      return application::ReadAboutNotice(executable,notice);
+    };
+    actions.open_about_url=[](const std::string &url) {
+      // Keep this surface limited to the official project and source links.
+      if(url!="https://opencpn.org/" && url!="https://github.com/OpenCPN/OpenCPN")return false;
+      return wxLaunchDefaultBrowser(wxString::FromUTF8(url));
+    };
+    actions.open_notices_folder=[executable] {
+      const auto docs=application::AboutDocsDirectory(executable);
+      const auto path=docs/"licenses";
+      std::error_code error;
+      if(docs.empty() || !std::filesystem::is_directory(path,error) || error)
+        return application::CommandResult{false,"The packaged docs/licenses folder is missing. Restore or repair this SKAGER package to read its notices."};
+      if(!wxLaunchDefaultApplication(wxString::FromUTF8(platform::PathUtf8(path))))
+        return application::CommandResult{false,"The file manager could not be opened. The packaged notices are in:\n\n"+platform::PathUtf8(path)};
+      return application::CommandResult{true,{}};
+    };
     actions.fullscreen = [this] { frame_.ShowFullScreen(!frame_.IsFullScreen()); };
     actions.theme = [this](LightMode mode) { SetLight(mode); };
     actions.boat_setup = [this] { ShowBoatSetup(true); };

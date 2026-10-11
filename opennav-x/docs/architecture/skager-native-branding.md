@@ -16,7 +16,7 @@ size. The source artwork and asset provenance belong to the separate asset/insta
 | Legacy menu and CLI help | `patches/opencpn-5.12.4-xnav.patch`: SKAGER menu and interface help; menu lookup follows the caption. `--xnav`, `--legacy`, `--safe-mode` remain unchanged. |
 | Settings System, Help and recovery | `src/ui/SettingsDrawer.cpp`, `ProductPanel.cpp`, `ProductSettings.cpp`: SKAGER headings, version line, restart and chart-style labels. |
 | Drawer, context and overlay windows | `src/ui/Drawer.cpp`, `FloatingSurface.h`, `ContextCard.cpp`, `Branding.h`: SKAGER native window titles while existing automation selectors stay stable. |
-| Diagnostics and About route | `src/integration/PreviewDiagnostics.cpp`, `src/ui/PreviewPanel.cpp`: SKAGER build/mode identity. Existing OpenCPN attribution remains. The About & licenses viewer is still explicitly unavailable; this copy change does not implement it. |
+| Diagnostics and About route | `src/integration/PreviewDiagnostics.cpp`, `src/ui/PreviewPanel.cpp`: SKAGER build/mode identity. `src/ui/SettingsDrawer.cpp` adds the SCRUM-60 About & licenses child page from System and Help, credits OpenCPN contributors and identifies stock OpenCPN as a separately installed prerequisite. Official project/source links open only on activation. Packaged notices are selectable, read-only text. |
 | Alerts and equipment status | `src/application/Alerts.cpp`, `PilotPresentation.cpp`, `src/ui/AlertDrawer.cpp`, `PilotSettings.cpp`, `src/integration/OpenCPNPilot.cpp`: SKAGER copy; unchanged status-only and acknowledgement limits. |
 | Chart presentation status | `src/integration/ChartPresentation.cpp`, `src/ui/ChartPresentationDrawer.cpp`: SKAGER visible status and preference hint; saved `XNav` style value unchanged. |
 | Recording and exported diagnostics | `src/ui/CommissioningPanel.cpp`, `FieldReportPanel.cpp`, `src/diagnostics/Recorder.cpp`, `FieldReport.cpp`: SKAGER file-filter captions, report heading, suggested ZIP filename and mode label. Existing recording format/extension unchanged. |
@@ -25,6 +25,17 @@ size. The source artwork and asset provenance belong to the separate asset/insta
 | New temporary anchor marks | `src/integration/NavigationObjects.cpp`: SKAGER description visible through OpenCPN. Cleanup still recognizes both exact historical OpenNav descriptions and preserves repurposed/shared marks. Existing saved user data is not rewritten. |
 
 ## Intentional compatibility identities
+
+The About reader resolves only the running executable's sibling `../docs`
+directory: both the portable ZIP and versioned installer payload retain `app/`
+and `docs/`. It reads `SOURCE_AND_LICENSES.md`, `THIRD_PARTY_NOTICES.md`,
+`licenses/SKAGER-COPYING.txt`, and `licenses/OpenCPN/COPYING.gplv2`; the notices
+folder action exposes the remaining packaged library notices. Missing, empty,
+oversized or unreadable files produce a repair message, without a working-directory
+or another-installation fallback. The SCRUM-57 inventory supplies the generated
+third-party notice index. Markdown is displayed as text and does not execute
+links or embedded content. Chart-provider licenses remain separate. This UI
+does not qualify the legal/source set, installer or native Windows behavior.
 
 Internal `opennav` namespaces, `XNav` classes, CLI switches, configuration paths
 and values, diagnostic JSON keys/enums, recording/calibration/settings wire

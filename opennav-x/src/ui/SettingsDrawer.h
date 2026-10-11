@@ -3,6 +3,7 @@
 #include "ui/ProductPanel.h"
 #include "ui/ChoiceField.h"
 #include "application/DisplayPreferences.h"
+#include "application/AboutNotices.h"
 #include <array>
 #include <wx/stattext.h>
 #include <wx/textctrl.h>
@@ -19,6 +20,9 @@ struct SettingsDrawerActions {
   std::function<application::Settings()> settings;
   std::function<application::CommandResult(const application::Settings &,
                                            const std::string &, double)> save_vessel;
+  std::function<application::AboutNoticeText(application::AboutNotice)> read_notice;
+  std::function<bool(const std::string &)> open_about_url;
+  std::function<application::CommandResult()> open_notices_folder;
 };
 // UI form and navigation only. The save callback owns validated profile writes;
 // this drawer has no protocol or actuator methods.
@@ -42,6 +46,10 @@ private:
   void DisplayForm();
   void SaveDisplay();
   void ApplyScale();
+  void ShowAbout();
+  void AboutForm();
+  void AboutCopy(const wxString &);
+  void ShowNotice(application::AboutNotice, const wxString &);
   SettingsDrawerActions actions_;
   ProductState state_;
   SettingsSection section_ = SettingsSection::Vessel;
@@ -67,5 +75,9 @@ private:
   wxStaticText *display_message_ = nullptr;
   XNavChoiceField *scale_field_ = nullptr;
   XNavChoiceField *layout_field_ = nullptr;
+  bool about_ = false;
+  wxString notice_title_, notice_text_;
+  std::vector<wxStaticText *> about_copy_;
+  wxTextCtrl *notice_reader_ = nullptr;
 };
 } // namespace opennav::ui
