@@ -40,6 +40,10 @@ clearance claim. Focused source/notice and real-scanner tests passed, but these
 newer commits have no integrated native package result and do not clear final
 license, checkout-secret, plugin dependency-closure or updater commissioning
 gates.
+The peer-containment CLI also now emits a fixed failure diagnostic rather than
+printing an exception chain that could contain test credentials (`c0ee37c1`).
+All 19 focused peer-harness tests pass, including subprocess stderr checks;
+SCRUM-212's product/native acceptance remains open.
 
 ## Exact-byte Staging native retest passed; replacement source is not built
 
