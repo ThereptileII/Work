@@ -1,0 +1,191 @@
+{
+  "comparison_author_model": "GPT-6.1 Sol",
+  "scope": "Evidence-only comparison; no new review, build, native run, network request or source snapshot copied",
+  "completed_reviews": [
+    {
+      "name": "native-application-spelling-security",
+      "kind": "security",
+      "model": "claude-opus-5",
+      "claudeVersion": "2.1.292 (Claude Code)",
+      "baseCommit": "afa5fbcf33cbf93f0f6c3f74fd72acf0b22086bf",
+      "files": {
+        "opennav-x/installer/windows/UpdateTransaction.ps1": "312685e4402c20efded897cb607ae8126643f43a8af34d6684b0494e1ffd4ca4",
+        "opennav-x/tools/diagnose-native-update-createprocess.ps1": "d6ed35941c46dfbbb7863a88bed690a46cd62f85157486beb88962e7eb30f4ed"
+      },
+      "scope": "selected working-tree bytes; not full-repository or test acceptance",
+      "status": "completed",
+      "observedModels": [
+        "claude-opus-5"
+      ],
+      "durationMs": 177928,
+      "costUsd": 0.6353549999999999,
+      "sourceChangedAfterCapture": false,
+      "receipt_sha256": "ad81ee7a4884d8ea13bcd49497c62a757f944ae65746986386666d3c3b69d72b",
+      "review_sha256": "feb4a4402e47669d6925276466c025bb562f7463ec2701cb1da1168ef47014eb"
+    },
+    {
+      "name": "native-creation-independent-debugging",
+      "kind": "debugging",
+      "model": "claude-opus-5",
+      "claudeVersion": "2.1.292 (Claude Code)",
+      "baseCommit": "25bb19e45ab68c5040bb66314d3bc0ed4b654da0",
+      "files": {
+        "opennav-x/docs/evidence/scrum311-createprocess-matrix-38165504516/raw/native-update-createprocess/diagnostic.json": "5a470d4e737071f97ec51978f725951e63ead38f5c50dddb5ee355ee604b1a97",
+        "opennav-x/installer/windows/UpdateTransaction.ps1": "312685e4402c20efded897cb607ae8126643f43a8af34d6684b0494e1ffd4ca4",
+        "opennav-x/tools/diagnose-native-update-createprocess.ps1": "d6ed35941c46dfbbb7863a88bed690a46cd62f85157486beb88962e7eb30f4ed"
+      },
+      "scope": "selected working-tree bytes; not full-repository or test acceptance",
+      "status": "completed",
+      "observedModels": [
+        "claude-opus-5"
+      ],
+      "durationMs": 549930,
+      "costUsd": 1.8391137499999999,
+      "sourceChangedAfterCapture": true,
+      "receipt_sha256": "79c88af214ff1bf33696f7886bb967e77da0e823e6234f66035840db1638c057",
+      "review_sha256": "f85bf2ad56a03271a60894cd4bfa54c353677dbd04e93fc5dbdc71f3482f1620"
+    },
+    {
+      "name": "plugin-forwarder-approved-security",
+      "kind": "security",
+      "model": "claude-opus-5",
+      "claudeVersion": "2.1.292 (Claude Code)",
+      "baseCommit": "afa5fbcf33cbf93f0f6c3f74fd72acf0b22086bf",
+      "files": {
+        "opennav-x/src/integration/OriginalPluginTlsGuard.h": "45c5406546eecde0ed961ffcb94302c7f2cfc8299f9aa38bcd15976861067e74",
+        "opennav-x/src/integration/PluginPresentationFallback.h": "937cc11264d9c08da9a16a0798253f57a2aaac85270e56135d32b71dd26cb797",
+        "opennav-x/src/integration/Win32PeImports.h": "f35fd4b4e0bb5d9508dd473857876eb2cfb7db4d9466cf46bb58ba424f2fb85f",
+        "opennav-x/src/integration/Win32PluginTlsImports.h": "3c1297c6c8686e5bf709dde3606aa94b51bc616356f732df23184fd509b37e9d",
+        "opennav-x/tests/win32_pe_imports_test.cpp": "6ab382bcbbdeb31c4f929e9b5df8ed53589714f880409130072e8488c288aa3f"
+      },
+      "scope": "selected working-tree bytes; not full-repository or test acceptance",
+      "status": "completed",
+      "observedModels": [
+        "claude-opus-5"
+      ],
+      "durationMs": 558845,
+      "costUsd": 2.00916375,
+      "sourceChangedAfterCapture": false,
+      "receipt_sha256": "22d5de37b3eca4b6ae698be3d5a2f9da546c640beef4c316b82780e549693843",
+      "review_sha256": "c6accd7be7656431ae20f4a7af296fa7600ff9f05a986c6dade03434ef67650f"
+    }
+  ],
+  "native17": {
+    "run_id": 38166517938,
+    "job_id": 114550099612,
+    "attempt": 1,
+    "candidate": "3d13f1e93f40099df20cc75edb8d77755b9a270a",
+    "run_url": "https://github.com/ThereptileII/Work/actions/runs/38166517938",
+    "job_url": "https://github.com/ThereptileII/Work/actions/runs/38166517938/job/114550099612",
+    "run_conclusion": "failure",
+    "job_conclusion": "failure",
+    "diagnostic_step_conclusion": "success",
+    "owner_step_conclusion": "failure",
+    "artifact_id": 11712027529,
+    "artifact_bytes": 3860,
+    "artifact_sha256": "fc1044be9e58f9e77f1f7fef9cf7e199b04fcf2b7140e53dee89a250e56ac0ed",
+    "all_members_crc_pass": true,
+    "members": [
+      {
+        "name": "native-update-image-owner/owner.log",
+        "bytes": 2876,
+        "crc32": "f07afc14",
+        "sha256": "bf98e575d067ad81fb02d1d86a5090c1f6d71ffa17b63f84de4be973a7b7f898"
+      },
+      {
+        "name": "native-update-createprocess/diagnostic.json",
+        "bytes": 29394,
+        "crc32": "4da88f3a",
+        "sha256": "e8601be05731753dcc55f6fa4f6e4b9d1ba5e8ca1cef287256ed229673f3488f"
+      },
+      {
+        "name": "native-update-createprocess.log",
+        "bytes": 2818,
+        "crc32": "25d637a4",
+        "sha256": "bf83c9976e9d36f3e2bee621c856cd72f00a5b2b1b53838c8795b1be3faaa434"
+      }
+    ],
+    "source_checks": [
+      {
+        "path": "opennav-x/installer/windows/UpdateTransaction.ps1",
+        "candidate_git_bytes_sha256": "312685e4402c20efded897cb607ae8126643f43a8af34d6684b0494e1ffd4ca4",
+        "candidate_native_crlf_sha256": "65a15a315f9f166eb79bd9427bec2e8daac2d1ca09c5438d8ed79004f5bad470",
+        "native_recorded_sha256": "65a15a315f9f166eb79bd9427bec2e8daac2d1ca09c5438d8ed79004f5bad470",
+        "frozen_review_sha256": "312685e4402c20efded897cb607ae8126643f43a8af34d6684b0494e1ffd4ca4",
+        "candidate_matches_frozen_review": true
+      },
+      {
+        "path": "opennav-x/tools/diagnose-native-update-createprocess.ps1",
+        "candidate_git_bytes_sha256": "1de8ffe2017d17f5b015f6d6ccf9d3ebb6825c34dc3fba8dd004585bc985fd9d",
+        "candidate_native_crlf_sha256": "017f5c08de101446bdfe2bd2d5ffcdcfec6471091246c1af932a394f2f578d12",
+        "native_recorded_sha256": "017f5c08de101446bdfe2bd2d5ffcdcfec6471091246c1af932a394f2f578d12",
+        "frozen_review_sha256": "d6ed35941c46dfbbb7863a88bed690a46cd62f85157486beb88962e7eb30f4ed",
+        "candidate_matches_frozen_review": false
+      }
+    ],
+    "counts": {
+      "dos": {
+        "rows": 8,
+        "created": 8,
+        "error87": 0
+      },
+      "globalroot": {
+        "rows": 5,
+        "created": 0,
+        "error87": 5
+      },
+      "guid": {
+        "rows": 4,
+        "created": 0,
+        "error87": 4
+      }
+    },
+    "all_rows_suspended": true,
+    "resume_attempted": false,
+    "all_successes_match_held_native_image": true,
+    "all_rows_cleanup_confirmed": true,
+    "fixture_cleanup_confirmed": true,
+    "original_alias_absence_confirmed": true,
+    "guid_identity_reopened_and_matched": true,
+    "guid_namespace_link_pinned": false,
+    "product_acceptance": false
+  },
+  "source_capture_limits": {
+    "ten_row_json_still_matches_capture": true,
+    "native17_production_matches_capture": true,
+    "native17_diagnostic_differs_from_capture": true,
+    "changed_diagnostic_requires_revalidation": true,
+    "later_source_changes_are_not_covered_by_frozen_reviews": true,
+    "row2_source_citations_match_frozen_debug_review_hashes": true
+  },
+  "native_forwarder_prior_gate": {
+    "run_id": 38164763565,
+    "candidate": "b8d6dc059deedf3c061681558406a37fd82e7b0b",
+    "reader_checks": 17496,
+    "loader_groups": 51,
+    "gate_passed": true,
+    "general_loader_or_product_acceptance": false
+  },
+  "module_name_fix": {
+    "commit": "4afa74fada6e18c1f073966a6974b2382937720d",
+    "portable_import_checks": 9885,
+    "portable_forwarder_checks": 17602,
+    "native_case_sensitive_bypass_proven": false,
+    "changed_header_native_qualification_pending": true,
+    "coordinator_expanded_53_group_native_gate_pending": true
+  },
+  "review_disposition_limits": {
+    "original_image_row2_equivalence_rejected": true,
+    "original_image_fallback_rejected": true,
+    "guid_remedy_failed_in_native17": true,
+    "single_held_image_dos_application_with_physical_argv0_cwd": "supported candidate; real-owner qualification pending",
+    "pure_function_failure_claim_proven": false,
+    "no_process_object_ever_existed_claim_proven": false,
+    "reparse_policy_relaxed": false,
+    "memory_384_mib": "estimated PE-buffer upper exposure; no reproduced crash or measured peak; qualification open"
+  },
+  "input_roots": {
+    "coordinator_reviews": "/home/standard/Projects/X-nav-worktrees/source-batch-20261011/.reviews",
+    "retained_native17": "/home/standard/Projects/X-nav-worktrees/source-batch-20261011/opennav-x/evidence/local/native-owner-38166517938"
+  }
+}
