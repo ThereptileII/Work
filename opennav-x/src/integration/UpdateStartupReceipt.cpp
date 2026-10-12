@@ -145,8 +145,14 @@ unsigned __stdcall SendReceipt(void* argument) noexcept {
     lock.unlock();
     const auto pipe_name = std::wstring(L"\\\\.\\pipe\\") +
         std::wstring(name.begin(), name.end());
-    const Handle pipe{CreateFileW(pipe_name.c_str(), GENERIC_WRITE, 0, nullptr,
-                                 OPEN_EXISTING, FILE_FLAG_OVERLAPPED, nullptr)};
+    // Request only client data-write/query/synchronization rights. GENERIC_WRITE
+    // also maps FILE_APPEND_DATA to CREATE_PIPE_INSTANCE on a named pipe, which
+    // the protected broker receiver deliberately does not grant to clients.
+    const Handle pipe{CreateFileW(
+        pipe_name.c_str(), FILE_WRITE_DATA | READ_CONTROL | SYNCHRONIZE, 0,
+        nullptr, OPEN_EXISTING,
+        FILE_FLAG_OVERLAPPED | SECURITY_SQOS_PRESENT | SECURITY_IDENTIFICATION,
+        nullptr)};
     if (pipe.value != INVALID_HANDLE_VALUE) {
       const auto deadline = std::chrono::steady_clock::now() + std::chrono::minutes(8);
       for (;;) {

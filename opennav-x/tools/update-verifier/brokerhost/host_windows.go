@@ -145,7 +145,7 @@ func (h *serviceHost) Execute(args []string, changes <-chan svc.ChangeRequest, s
 	status <- current
 	done := make(chan error, 1)
 	canClose = false
-	go func() { done <- brokerpipe.Serve(ctx, e.handle) }()
+	go func() { done <- brokerpipe.Serve(ctx, e.handleNativeStaging) }()
 	stop := func() (bool, uint32) {
 		cancel()
 		canClose = h.stop(done, status)
@@ -177,6 +177,30 @@ func (h *serviceHost) Execute(args []string, changes <-chan svc.ChangeRequest, s
 			}
 		}
 	}
+}
+
+// Retain actual authenticated connection/process/token custody for the whole
+// staging operation, not only its initial public Peer metadata. A late native
+// identity/disconnect failure refuses the response; durable staged bytes remain
+// reserved and cannot turn that uncertainty into launch or retry authority.
+func (e *engine) handleNativeStaging(ctx context.Context, peer brokerpipe.Peer, request brokerpipe.Request) (brokerpipe.Result, error) {
+	capability, err := brokerpipe.AuthorizePeer(ctx, peer)
+	if err != nil {
+		return brokerpipe.Result{}, errStageRefused
+	}
+	var result brokerpipe.Result
+	err = capability.WithPeer(ctx, func(identity brokerpipe.PeerIdentity) error {
+		if identity.Peer != peer {
+			return errStageRefused
+		}
+		var operationErr error
+		result, operationErr = e.handle(ctx, peer, request)
+		return operationErr
+	})
+	if err != nil {
+		return brokerpipe.Result{}, errStageRefused
+	}
+	return result, nil
 }
 
 func (h *serviceHost) stop(done <-chan error, status chan<- svc.Status) bool {
