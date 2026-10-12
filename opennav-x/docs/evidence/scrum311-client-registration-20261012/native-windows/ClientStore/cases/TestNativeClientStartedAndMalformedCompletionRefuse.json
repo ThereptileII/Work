@@ -1,0 +1,15 @@
+{
+    "schema":  1,
+    "group":  "ClientStore",
+    "name":  "TestNativeClientStartedAndMalformedCompletionRefuse",
+    "selection":  "^TestNativeClientStartedAndMalformedCompletionRefuse$",
+    "runMarkers":  1,
+    "passMarkers":  1,
+    "executableSha256":  "11dbefa80a78ddd231c9f3409daa2657f1d4028802d33e7b39e1ff4f7ea782b3",
+    "exitCode":  0,
+    "os":  "Microsoft Windows NT 10.0.22631.0",
+    "timedOut":  false,
+    "groupReceipt":  "C:\\XNav\\ComponentChecks\\client-registration-3404a8d2-bd9c05c7\\ClientStore\\receipt.json",
+    "executionLog":  "C:\\XNav\\ComponentChecks\\client-registration-3404a8d2-bd9c05c7\\ClientStore\\tests-stdout.log",
+    "caseLog":  "TestNativeClientStartedAndMalformedCompletionRefuse.log"
+}

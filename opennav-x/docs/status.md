@@ -1,5 +1,34 @@
 # SKAGER status — 2026-10-12
 
+## Approved client registration and retained trust corrections integrated
+
+Product source `3404a8d2` joins the independently approved request to stopped-only
+native registration before service readiness. Original approval bytes, protected
+state and completion evidence remain bound together; partial/existing enrollment
+is refused. The retained reader now distinguishes an expired original bootstrap
+anchor from currently validated rotated trust. Cleanup failures and uncertain
+publication remain explicit, and corresponding-source producers require the
+new runtime members. Contract documentation is recorded in `7f542766`.
+
+Combined focused Linux race checks pass **117 top-level / 352 nested tests** with
+zero failures and zero skips. Four delegated package suites pass **68 tests**;
+the integrated tested inputs match exactly. Windows/x86 inert test compilation
+passes. With runner `bd9c05c7`, **14 top-level / 2 nested inert Windows tests pass
+natively on the boat**, with zero failures/skips. Exact member hashes and native
+PowerShell parsing pass. The initial transfer timeout and failed missing-file
+preflight are retained; the compressed transfer subsequently passed. The original
+OpenCPN remained responsive and no owned test process remained. These checks do
+not modify the running boat installation/profile or qualify actual privileged
+enrollment, installed application custody, MSVC/application behavior or release.
+[Exact source hashes, checks, review and remaining boundaries](evidence/scrum311-client-registration-20261012/README.md)
+are recorded. SCRUM-311 stays In Progress. The new nine-file Claude comparison
+awaits exact-scope transfer consent; no additional private source was sent.
+No full application build, CI dispatch, release or physical command occurred.
+
+The SCRUM-209 plugin-loader ownership repair and shared model layout are now
+recorded in [focused evidence](evidence/scrum209-plugin-custody-20261012/README.md).
+Native MSVC loader and installed dependency-closure qualification remain open.
+
 ## Native machine enrollment source joined; inert boat policy checks pass
 
 `c185300d18e81b317358e172d04a1ee7e412689e` joins independently pinned signed

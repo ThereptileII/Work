@@ -1,0 +1,2 @@
+=== RUN   TestNativeClientSIDRequiresCanonicalActualUser
+--- PASS: TestNativeClientSIDRequiresCanonicalActualUser (0.00s)

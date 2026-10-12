@@ -1,0 +1,5 @@
+{
+  "exitCode": 0,
+  "stdout": "{\"applicationProcessId\":1852,\"applicationResponding\":true,\"testProcessesRemaining\":0,\"applicationProfileServiceHardwareChanges\":\"NONE\"}\n",
+  "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\n"
+}

@@ -1,0 +1,15 @@
+{
+    "schema":  1,
+    "group":  "ClientRequest",
+    "name":  "TestClientServiceArgumentsRefuseBeforeNativeStart",
+    "selection":  "^TestClientServiceArgumentsRefuseBeforeNativeStart$",
+    "runMarkers":  1,
+    "passMarkers":  1,
+    "executableSha256":  "c46b8e4e69c82a795099ef3c6458adf88cbc9af41254c5ea17f78641332c1206",
+    "exitCode":  0,
+    "os":  "Microsoft Windows NT 10.0.22631.0",
+    "timedOut":  false,
+    "groupReceipt":  "C:\\XNav\\ComponentChecks\\client-registration-3404a8d2-bd9c05c7\\ClientRequest\\receipt.json",
+    "executionLog":  "C:\\XNav\\ComponentChecks\\client-registration-3404a8d2-bd9c05c7\\ClientRequest\\tests-stdout.log",
+    "caseLog":  "TestClientServiceArgumentsRefuseBeforeNativeStart.log"
+}

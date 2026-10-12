@@ -1,0 +1,6 @@
+{
+  "status": "FAILED before test execution",
+  "command": "scp three executables and runner to fresh temporary stage",
+  "reason": "55-second transport deadline expired; incomplete files are not accepted",
+  "subsequentPreflight": "FAILED because runner did not arrive; native-preflight.json preserved"
+}

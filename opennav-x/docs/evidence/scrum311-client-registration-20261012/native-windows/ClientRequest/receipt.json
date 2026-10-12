@@ -1,0 +1,51 @@
+{
+    "schema":  1,
+    "group":  "ClientRequest",
+    "executable":  "C:\\XNav\\ComponentChecks\\client-registration-3404a8d2-bd9c05c7\\client-request.test.exe",
+    "executableSha256":  "c46b8e4e69c82a795099ef3c6458adf88cbc9af41254c5ea17f78641332c1206",
+    "expectedCases":  [
+                          "TestClientRequestNativeReadonlyCustody",
+                          "TestClientRequestDescriptorExcludesClientAndBrokerMutation",
+                          "TestClientRequestNativeRefusesOperatorConsoleFallback",
+                          "TestClientServiceArgumentsRefuseBeforeNativeStart"
+                      ],
+    "selection":  "^(TestClientRequestNativeReadonlyCustody|TestClientRequestDescriptorExcludesClientAndBrokerMutation|TestClientRequestNativeRefusesOperatorConsoleFallback|TestClientServiceArgumentsRefuseBeforeNativeStart)$",
+    "status":  "passed",
+    "failure":  null,
+    "startedUtc":  "2026-10-12T04:30:25.6413118Z",
+    "os":  "Microsoft Windows NT 10.0.22631.0",
+    "os64":  true,
+    "process64":  true,
+    "powershellVersion":  "5.1.22621.5624",
+    "listing":  {
+                    "arguments":  [
+                                      "-test.list=^(TestClientRequestNativeReadonlyCustody|TestClientRequestDescriptorExcludesClientAndBrokerMutation|TestClientRequestNativeRefusesOperatorConsoleFallback|TestClientServiceArgumentsRefuseBeforeNativeStart)$"
+                                  ],
+                    "processId":  7740,
+                    "startedUtc":  "2026-10-12T04:30:25.6607820Z",
+                    "exitCode":  0,
+                    "timedOut":  false,
+                    "error":  null,
+                    "stdout":  "C:\\XNav\\ComponentChecks\\client-registration-3404a8d2-bd9c05c7\\ClientRequest\\list-stdout.log",
+                    "stderr":  "C:\\XNav\\ComponentChecks\\client-registration-3404a8d2-bd9c05c7\\ClientRequest\\list-stderr.log",
+                    "elapsedMilliseconds":  437
+                },
+    "execution":  {
+                      "arguments":  [
+                                        "-test.run=^(TestClientRequestNativeReadonlyCustody|TestClientRequestDescriptorExcludesClientAndBrokerMutation|TestClientRequestNativeRefusesOperatorConsoleFallback|TestClientServiceArgumentsRefuseBeforeNativeStart)$",
+                                        "-test.count=1",
+                                        "-test.v",
+                                        "-test.timeout=90s"
+                                    ],
+                      "processId":  3336,
+                      "startedUtc":  "2026-10-12T04:30:26.1495152Z",
+                      "exitCode":  0,
+                      "timedOut":  false,
+                      "error":  null,
+                      "stdout":  "C:\\XNav\\ComponentChecks\\client-registration-3404a8d2-bd9c05c7\\ClientRequest\\tests-stdout.log",
+                      "stderr":  "C:\\XNav\\ComponentChecks\\client-registration-3404a8d2-bd9c05c7\\ClientRequest\\tests-stderr.log",
+                      "elapsedMilliseconds":  50
+                  },
+    "scope":  "Exact inert native fixtures only; no application/service/profile/network/physical output; not enrollment or release qualification",
+    "completedUtc":  "2026-10-12T04:30:26.4203340Z"
+}

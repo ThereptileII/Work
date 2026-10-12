@@ -1,0 +1,8 @@
+{
+  "archiveSha256": "9d733b4ff539d1d236b2b7847b0e542f03e02c2c1f2ce77ff5e1ad688bd3c349",
+  "archiveBytes": 22047518,
+  "exitCode": 0,
+  "stdout": "",
+  "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\n",
+  "durationSeconds": 33.795
+}

@@ -1,0 +1,5 @@
+{
+  "exitCode": 1,
+  "stdout": "",
+  "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\nResolve-Path : Cannot find path \n'C:\\XNav\\ComponentChecks\\client-registration-3404a8d2-bd9c05c7\\test-native-client-registration.ps1' because it does \nnot exist.\nAt \nC:\\WINDOWS\\system32\\WindowsPowerShell\\v1.0\\Modules\\Microsoft.PowerShell.Utility\\Microsoft.PowerShell.Utility.psm1:106 \nchar:36\n+ ...     $pathsToProcess += Resolve-Path -LiteralPath $LiteralPath | Forea ...\n+                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n    + CategoryInfo          : ObjectNotFound: (C:\\XNav\\Compone...egistration.ps1:String) [Resolve-Path], ItemNotFoundE \n   xception\n    + FullyQualifiedErrorId : PathNotFound,Microsoft.PowerShell.Commands.ResolvePathCommand\n \n"
+}

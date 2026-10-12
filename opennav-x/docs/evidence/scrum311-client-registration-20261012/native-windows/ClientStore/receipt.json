@@ -1,0 +1,56 @@
+{
+    "schema":  1,
+    "group":  "ClientStore",
+    "executable":  "C:\\XNav\\ComponentChecks\\client-registration-3404a8d2-bd9c05c7\\client-store.test.exe",
+    "executableSha256":  "11dbefa80a78ddd231c9f3409daa2657f1d4028802d33e7b39e1ff4f7ea782b3",
+    "expectedCases":  [
+                          "TestNativeClientRegistrationFinalDescriptorsAbsentStateAndCompletionReadback",
+                          "TestNativeClientPartialCreationRetainsStartedMarkerAndRefusesRetry",
+                          "TestNativeClientCompleteRefusesMissingOrUnsafeChannel",
+                          "TestNativeClientCompletedBytesTamperingAndHardLinksRefuse",
+                          "TestNativeClientExistingRegistrationNeverTruncatedOrAdopted",
+                          "TestNativeClientStartedAndMalformedCompletionRefuse",
+                          "TestNativeClientExistingSIDTreeNeverAdopted",
+                          "TestNativeClientSIDRequiresCanonicalActualUser",
+                          "TestNativeClientCancellationDuringCommittedMarkerRemainsReadableAfterReopen"
+                      ],
+    "selection":  "^(TestNativeClientRegistrationFinalDescriptorsAbsentStateAndCompletionReadback|TestNativeClientPartialCreationRetainsStartedMarkerAndRefusesRetry|TestNativeClientCompleteRefusesMissingOrUnsafeChannel|TestNativeClientCompletedBytesTamperingAndHardLinksRefuse|TestNativeClientExistingRegistrationNeverTruncatedOrAdopted|TestNativeClientStartedAndMalformedCompletionRefuse|TestNativeClientExistingSIDTreeNeverAdopted|TestNativeClientSIDRequiresCanonicalActualUser|TestNativeClientCancellationDuringCommittedMarkerRemainsReadableAfterReopen)$",
+    "status":  "passed",
+    "failure":  null,
+    "startedUtc":  "2026-10-12T04:30:22.7339046Z",
+    "os":  "Microsoft Windows NT 10.0.22631.0",
+    "os64":  true,
+    "process64":  true,
+    "powershellVersion":  "5.1.22621.5624",
+    "listing":  {
+                    "arguments":  [
+                                      "-test.list=^(TestNativeClientRegistrationFinalDescriptorsAbsentStateAndCompletionReadback|TestNativeClientPartialCreationRetainsStartedMarkerAndRefusesRetry|TestNativeClientCompleteRefusesMissingOrUnsafeChannel|TestNativeClientCompletedBytesTamperingAndHardLinksRefuse|TestNativeClientExistingRegistrationNeverTruncatedOrAdopted|TestNativeClientStartedAndMalformedCompletionRefuse|TestNativeClientExistingSIDTreeNeverAdopted|TestNativeClientSIDRequiresCanonicalActualUser|TestNativeClientCancellationDuringCommittedMarkerRemainsReadableAfterReopen)$"
+                                  ],
+                    "processId":  1660,
+                    "startedUtc":  "2026-10-12T04:30:22.7515682Z",
+                    "exitCode":  0,
+                    "timedOut":  false,
+                    "error":  null,
+                    "stdout":  "C:\\XNav\\ComponentChecks\\client-registration-3404a8d2-bd9c05c7\\ClientStore\\list-stdout.log",
+                    "stderr":  "C:\\XNav\\ComponentChecks\\client-registration-3404a8d2-bd9c05c7\\ClientStore\\list-stderr.log",
+                    "elapsedMilliseconds":  285
+                },
+    "execution":  {
+                      "arguments":  [
+                                        "-test.run=^(TestNativeClientRegistrationFinalDescriptorsAbsentStateAndCompletionReadback|TestNativeClientPartialCreationRetainsStartedMarkerAndRefusesRetry|TestNativeClientCompleteRefusesMissingOrUnsafeChannel|TestNativeClientCompletedBytesTamperingAndHardLinksRefuse|TestNativeClientExistingRegistrationNeverTruncatedOrAdopted|TestNativeClientStartedAndMalformedCompletionRefuse|TestNativeClientExistingSIDTreeNeverAdopted|TestNativeClientSIDRequiresCanonicalActualUser|TestNativeClientCancellationDuringCommittedMarkerRemainsReadableAfterReopen)$",
+                                        "-test.count=1",
+                                        "-test.v",
+                                        "-test.timeout=90s"
+                                    ],
+                      "processId":  5036,
+                      "startedUtc":  "2026-10-12T04:30:23.1013336Z",
+                      "exitCode":  0,
+                      "timedOut":  false,
+                      "error":  null,
+                      "stdout":  "C:\\XNav\\ComponentChecks\\client-registration-3404a8d2-bd9c05c7\\ClientStore\\tests-stdout.log",
+                      "stderr":  "C:\\XNav\\ComponentChecks\\client-registration-3404a8d2-bd9c05c7\\ClientStore\\tests-stderr.log",
+                      "elapsedMilliseconds":  296
+                  },
+    "scope":  "Exact inert native fixtures only; no application/service/profile/network/physical output; not enrollment or release qualification",
+    "completedUtc":  "2026-10-12T04:30:23.6683113Z"
+}

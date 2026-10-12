@@ -1,0 +1,23 @@
+=== RUN   TestNativeClientRegistrationFinalDescriptorsAbsentStateAndCompletionReadback
+--- PASS: TestNativeClientRegistrationFinalDescriptorsAbsentStateAndCompletionReadback (0.05s)
+=== RUN   TestNativeClientPartialCreationRetainsStartedMarkerAndRefusesRetry
+--- PASS: TestNativeClientPartialCreationRetainsStartedMarkerAndRefusesRetry (0.03s)
+=== RUN   TestNativeClientCompleteRefusesMissingOrUnsafeChannel
+=== RUN   TestNativeClientCompleteRefusesMissingOrUnsafeChannel/missing
+=== RUN   TestNativeClientCompleteRefusesMissingOrUnsafeChannel/wrong-acl
+--- PASS: TestNativeClientCompleteRefusesMissingOrUnsafeChannel (0.04s)
+    --- PASS: TestNativeClientCompleteRefusesMissingOrUnsafeChannel/missing (0.02s)
+    --- PASS: TestNativeClientCompleteRefusesMissingOrUnsafeChannel/wrong-acl (0.02s)
+=== RUN   TestNativeClientCompletedBytesTamperingAndHardLinksRefuse
+--- PASS: TestNativeClientCompletedBytesTamperingAndHardLinksRefuse (0.04s)
+=== RUN   TestNativeClientExistingRegistrationNeverTruncatedOrAdopted
+--- PASS: TestNativeClientExistingRegistrationNeverTruncatedOrAdopted (0.02s)
+=== RUN   TestNativeClientStartedAndMalformedCompletionRefuse
+--- PASS: TestNativeClientStartedAndMalformedCompletionRefuse (0.03s)
+=== RUN   TestNativeClientExistingSIDTreeNeverAdopted
+--- PASS: TestNativeClientExistingSIDTreeNeverAdopted (0.01s)
+=== RUN   TestNativeClientSIDRequiresCanonicalActualUser
+--- PASS: TestNativeClientSIDRequiresCanonicalActualUser (0.00s)
+=== RUN   TestNativeClientCancellationDuringCommittedMarkerRemainsReadableAfterReopen
+--- PASS: TestNativeClientCancellationDuringCommittedMarkerRemainsReadableAfterReopen (0.04s)
+PASS

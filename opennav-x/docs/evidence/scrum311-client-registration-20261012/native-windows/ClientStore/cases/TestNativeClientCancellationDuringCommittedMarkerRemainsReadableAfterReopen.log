@@ -1,0 +1,3 @@
+=== RUN   TestNativeClientCancellationDuringCommittedMarkerRemainsReadableAfterReopen
+--- PASS: TestNativeClientCancellationDuringCommittedMarkerRemainsReadableAfterReopen (0.04s)
+PASS

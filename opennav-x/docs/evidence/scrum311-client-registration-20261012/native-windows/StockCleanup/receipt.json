@@ -1,0 +1,48 @@
+{
+    "schema":  1,
+    "group":  "StockCleanup",
+    "executable":  "C:\\XNav\\ComponentChecks\\client-registration-3404a8d2-bd9c05c7\\stock-cleanup.test.exe",
+    "executableSha256":  "4257ad296060c793cff30725eb2ab3e212e71ca9d68ddda050496ca3a9bd3221",
+    "expectedCases":  [
+                          "TestNativeStockCloseFailureIsRetained"
+                      ],
+    "selection":  "^(TestNativeStockCloseFailureIsRetained)$",
+    "status":  "passed",
+    "failure":  null,
+    "startedUtc":  "2026-10-12T04:30:28.2933471Z",
+    "os":  "Microsoft Windows NT 10.0.22631.0",
+    "os64":  true,
+    "process64":  true,
+    "powershellVersion":  "5.1.22621.5624",
+    "listing":  {
+                    "arguments":  [
+                                      "-test.list=^(TestNativeStockCloseFailureIsRetained)$"
+                                  ],
+                    "processId":  900,
+                    "startedUtc":  "2026-10-12T04:30:28.3245724Z",
+                    "exitCode":  0,
+                    "timedOut":  false,
+                    "error":  null,
+                    "stdout":  "C:\\XNav\\ComponentChecks\\client-registration-3404a8d2-bd9c05c7\\StockCleanup\\list-stdout.log",
+                    "stderr":  "C:\\XNav\\ComponentChecks\\client-registration-3404a8d2-bd9c05c7\\StockCleanup\\list-stderr.log",
+                    "elapsedMilliseconds":  486
+                },
+    "execution":  {
+                      "arguments":  [
+                                        "-test.run=^(TestNativeStockCloseFailureIsRetained)$",
+                                        "-test.count=1",
+                                        "-test.v",
+                                        "-test.timeout=90s"
+                                    ],
+                      "processId":  10556,
+                      "startedUtc":  "2026-10-12T04:30:28.8748600Z",
+                      "exitCode":  0,
+                      "timedOut":  false,
+                      "error":  null,
+                      "stdout":  "C:\\XNav\\ComponentChecks\\client-registration-3404a8d2-bd9c05c7\\StockCleanup\\tests-stdout.log",
+                      "stderr":  "C:\\XNav\\ComponentChecks\\client-registration-3404a8d2-bd9c05c7\\StockCleanup\\tests-stderr.log",
+                      "elapsedMilliseconds":  35
+                  },
+    "scope":  "Exact inert native fixtures only; no application/service/profile/network/physical output; not enrollment or release qualification",
+    "completedUtc":  "2026-10-12T04:30:29.1150845Z"
+}

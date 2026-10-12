@@ -1,0 +1,6 @@
+=== RUN   TestNativeClientCompleteRefusesMissingOrUnsafeChannel
+=== RUN   TestNativeClientCompleteRefusesMissingOrUnsafeChannel/missing
+=== RUN   TestNativeClientCompleteRefusesMissingOrUnsafeChannel/wrong-acl
+--- PASS: TestNativeClientCompleteRefusesMissingOrUnsafeChannel (0.04s)
+    --- PASS: TestNativeClientCompleteRefusesMissingOrUnsafeChannel/missing (0.02s)
+    --- PASS: TestNativeClientCompleteRefusesMissingOrUnsafeChannel/wrong-acl (0.02s)

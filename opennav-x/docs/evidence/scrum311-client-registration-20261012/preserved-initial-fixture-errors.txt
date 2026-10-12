@@ -1,0 +1,7 @@
+Authority fixture initial compile (before a3787493):
+repository/inputs_identity_test.go:58:36: cannot use "00" (untyped string constant) as metadata.HexBytes value in assignment
+Repaired test fixture to []byte{0}; subsequent package checks passed.
+
+Native request fixture initial compile (before a4bdb92b):
+brokerenroll/client_request_windows_test.go:115:233: undefined: windows.FILE_DELETE_CHILD
+Repaired fixture constant to documented 0x40; subsequent Windows/386 compilation passed. Native execution was not implied.

@@ -1,0 +1,43 @@
+[
+  {
+    "name": "affected-linux-race",
+    "command": [
+      "/tmp/skager-go-1.27.1/go/bin/go",
+      "test",
+      "-race",
+      "-count=1",
+      "-json",
+      "./repository",
+      "./brokerregistration",
+      "./brokerhost",
+      "./brokerstore",
+      "./brokerenroll",
+      "./cmd/skager-update-provisioner"
+    ],
+    "exitCode": 0,
+    "durationSeconds": 27.929,
+    "topLevelPass": 115,
+    "nestedPass": 349,
+    "failures": 0,
+    "skips": 0
+  },
+  {
+    "name": "actual-rotated-trust-linux-race",
+    "command": [
+      "/tmp/skager-go-1.27.1/go/bin/go",
+      "test",
+      "-race",
+      "-count=1",
+      "-json",
+      "-run",
+      "^Test(RetainedRegistrationUsesRotatedRootAfterOriginalAnchorExpires|VerifierReferenceClockIsPerCallAndDefaultsToRealTime)$",
+      "."
+    ],
+    "exitCode": 0,
+    "durationSeconds": 7.848,
+    "topLevelPass": 2,
+    "nestedPass": 3,
+    "failures": 0,
+    "skips": 0
+  }
+]

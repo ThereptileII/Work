@@ -1,0 +1,5 @@
+{
+  "exitCode": 0,
+  "stdout": "{\"archiveHash\":\"PASS\",\"hashes\":\"PASS\",\"files\":[\"client-request.test.exe\",\"test-native-client-registration.ps1\",\"client-store.test.exe\",\"stock-cleanup.test.exe\"],\"powerShellParse\":\"PASS\",\"application\":true}\n",
+  "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\n"
+}

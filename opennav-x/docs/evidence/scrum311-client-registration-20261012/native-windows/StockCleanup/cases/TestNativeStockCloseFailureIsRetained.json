@@ -1,0 +1,15 @@
+{
+    "schema":  1,
+    "group":  "StockCleanup",
+    "name":  "TestNativeStockCloseFailureIsRetained",
+    "selection":  "^TestNativeStockCloseFailureIsRetained$",
+    "runMarkers":  1,
+    "passMarkers":  1,
+    "executableSha256":  "4257ad296060c793cff30725eb2ab3e212e71ca9d68ddda050496ca3a9bd3221",
+    "exitCode":  0,
+    "os":  "Microsoft Windows NT 10.0.22631.0",
+    "timedOut":  false,
+    "groupReceipt":  "C:\\XNav\\ComponentChecks\\client-registration-3404a8d2-bd9c05c7\\StockCleanup\\receipt.json",
+    "executionLog":  "C:\\XNav\\ComponentChecks\\client-registration-3404a8d2-bd9c05c7\\StockCleanup\\tests-stdout.log",
+    "caseLog":  "TestNativeStockCloseFailureIsRetained.log"
+}

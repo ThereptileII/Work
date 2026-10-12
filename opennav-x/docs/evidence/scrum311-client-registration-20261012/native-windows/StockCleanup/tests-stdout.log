@@ -1,0 +1,3 @@
+=== RUN   TestNativeStockCloseFailureIsRetained
+--- PASS: TestNativeStockCloseFailureIsRetained (0.00s)
+PASS

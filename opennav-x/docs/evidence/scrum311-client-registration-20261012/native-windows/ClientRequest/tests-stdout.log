@@ -1,0 +1,9 @@
+=== RUN   TestClientRequestNativeReadonlyCustody
+--- PASS: TestClientRequestNativeReadonlyCustody (0.02s)
+=== RUN   TestClientRequestDescriptorExcludesClientAndBrokerMutation
+--- PASS: TestClientRequestDescriptorExcludesClientAndBrokerMutation (0.00s)
+=== RUN   TestClientRequestNativeRefusesOperatorConsoleFallback
+--- PASS: TestClientRequestNativeRefusesOperatorConsoleFallback (0.00s)
+=== RUN   TestClientServiceArgumentsRefuseBeforeNativeStart
+--- PASS: TestClientServiceArgumentsRefuseBeforeNativeStart (0.00s)
+PASS

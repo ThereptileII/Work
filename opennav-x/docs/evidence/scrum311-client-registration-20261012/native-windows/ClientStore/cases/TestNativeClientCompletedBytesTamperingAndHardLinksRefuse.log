@@ -1,0 +1,2 @@
+=== RUN   TestNativeClientCompletedBytesTamperingAndHardLinksRefuse
+--- PASS: TestNativeClientCompletedBytesTamperingAndHardLinksRefuse (0.04s)
