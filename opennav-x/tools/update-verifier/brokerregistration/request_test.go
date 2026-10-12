@@ -284,3 +284,105 @@ func TestRetainedApprovedIdentityOutlivesOriginalAnchorExpiry(t *testing.T) {
 		t.Fatal("retained identity bypassed request approval pin")
 	}
 }
+
+func requestWithExactTrust(t *testing.T, trust []byte, pin string, last bool) []byte {
+	t.Helper()
+	var r Request
+	if err := json.Unmarshal(approvedFixture(t), &r); err != nil {
+		t.Fatal(err)
+	}
+	r.TrustConfiguration = json.RawMessage(`"TRUST_PLACEHOLDER"`)
+	r.TrustConfigSHA256 = pin
+	if last {
+		// Match the real producer: all other fields are encoded first and the
+		// exact trust file bytes are appended as the final field.
+		r.TrustConfiguration = nil
+		raw, err := json.Marshal(r)
+		if err != nil {
+			t.Fatal(err)
+		}
+		raw = bytes.Replace(raw, []byte(`"trustConfiguration":null,`), nil, 1)
+		raw = append(raw[:len(raw)-1], []byte(`,"trustConfiguration":`)...)
+		raw = append(raw, trust...)
+		return append(raw, '}', '\n')
+	}
+	raw, err := json.Marshal(r)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return bytes.Replace(raw, []byte(`"TRUST_PLACEHOLDER"`), trust, 1)
+}
+
+func TestApprovedRequestPreservesExactTrustFileWhitespace(t *testing.T) {
+	var original Request
+	if err := json.Unmarshal(approvedFixture(t), &original); err != nil {
+		t.Fatal(err)
+	}
+	var pretty bytes.Buffer
+	if err := json.Indent(&pretty, original.TrustConfiguration, "", "  "); err != nil {
+		t.Fatal(err)
+	}
+	for name, trust := range map[string][]byte{
+		"committed-style newline": append(bytes.Clone(original.TrustConfiguration), '\n'),
+		"leading":                 append([]byte(" \t\r\n"), original.TrustConfiguration...),
+		"pretty both sides":       append(append([]byte("\n\t"), pretty.Bytes()...), []byte("\r\n \t")...),
+	} {
+		for _, last := range []bool{false, true} {
+			t.Run(name+map[bool]string{false: "/middle", true: "/producer-last"}[last], func(t *testing.T) {
+				raw := requestWithExactTrust(t, trust, digest(trust), last)
+				for _, retained := range []bool{false, true} {
+					var parsed Request
+					var err error
+					if retained {
+						parsed, err = ParseRetainedApprovedRequest(raw, digest(raw))
+					} else {
+						parsed, err = ParseApprovedRequest(raw, digest(raw), fixtureNow)
+					}
+					if err != nil || !bytes.Equal(parsed.TrustConfiguration, trust) || digest(parsed.TrustConfiguration) != parsed.TrustConfigSHA256 {
+						t.Fatalf("exact trust file bytes lost (retained=%v): %v", retained, err)
+					}
+					parsed.TrustConfiguration[0] = '!'
+					if !bytes.Equal(parsed.OriginalBytes(), raw) {
+						t.Fatal("returned trust aliases retained original request")
+					}
+				}
+			})
+		}
+	}
+}
+
+func TestExactTrustFieldSpanRefusesGuessedWhitespaceAndInvalidBytes(t *testing.T) {
+	var r Request
+	if err := json.Unmarshal(approvedFixture(t), &r); err != nil {
+		t.Fatal(err)
+	}
+	trust := append(bytes.Clone(r.TrustConfiguration), '\n')
+	valid := requestWithExactTrust(t, trust, digest(trust), true)
+	cases := map[string][]byte{
+		"partial whitespace pin": requestWithExactTrust(t, append([]byte(" "), trust...), digest(trust), true),
+		"unicode whitespace":     requestWithExactTrust(t, append([]byte("\u00a0"), trust...), digest(append([]byte("\u00a0"), trust...)), true),
+		"overbound span":         requestWithExactTrust(t, append(bytes.Repeat([]byte(" "), MaxTrustConfigurationBytes), trust...), digest(append(bytes.Repeat([]byte(" "), MaxTrustConfigurationBytes), trust...)), true),
+		"duplicate trust":        bytes.Replace(valid, []byte(`,"trustConfiguration":`), []byte(`,"trustConfiguration":{},"trustConfiguration":`), 1),
+		"malformed":              valid[:len(valid)-2],
+		"changed file":           bytes.Replace(valid, []byte(`"channel":"beta"`), []byte(`"channel":"stable"`), 1),
+	}
+	for name, raw := range cases {
+		t.Run(name, func(t *testing.T) {
+			if _, err := ParseApprovedRequest(raw, digest(raw), fixtureNow); err == nil {
+				t.Fatal("invalid exact trust span accepted")
+			}
+			if _, err := ParseRetainedApprovedRequest(raw, digest(raw)); err == nil {
+				t.Fatal("retained parser accepted invalid exact trust span")
+			}
+		})
+	}
+	if _, err := ParseApprovedRequest(append(bytes.Clone(valid), ' '), digest(valid), fixtureNow); err == nil {
+		t.Fatal("exact trust recovery bypassed whole request approval")
+	}
+	// Ordinary pretty request framing never becomes part of a canonical pin.
+	framed := requestWithExactTrust(t, append(append([]byte(" \n"), r.TrustConfiguration...), '\t'), digest(r.TrustConfiguration), false)
+	parsed, err := ParseApprovedRequest(framed, digest(framed), fixtureNow)
+	if err != nil || !bytes.Equal(parsed.TrustConfiguration, r.TrustConfiguration) {
+		t.Fatal("canonical request compatibility changed", err)
+	}
+}

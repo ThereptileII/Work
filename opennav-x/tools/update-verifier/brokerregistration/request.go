@@ -155,7 +155,11 @@ func parseApprovedRequest(raw []byte, independentlyApprovedSHA256 string, valida
 			return refused()
 		}
 	}
-	if !localStockPath(r.Stock.Path) || r.Stock.Identity() != StockBaseline() || len(r.TrustConfiguration) > MaxTrustConfigurationBytes || digest(r.TrustConfiguration) != r.TrustConfigSHA256 {
+	if !localStockPath(r.Stock.Path) || r.Stock.Identity() != StockBaseline() {
+		return refused()
+	}
+	r.TrustConfiguration, err = exactTrustConfiguration(data, r.TrustConfiguration, r.TrustConfigSHA256)
+	if err != nil {
 		return refused()
 	}
 	r.trust, err = validateTrust(r.TrustConfiguration)
@@ -165,6 +169,60 @@ func parseApprovedRequest(raw []byte, independentlyApprovedSHA256 string, valida
 	r.RequestSHA256 = independentlyApprovedSHA256
 	r.original = data
 	return r, nil
+}
+
+// RawMessage excludes value-surrounding whitespace. Preserve canonical requests
+// first; otherwise recover the single complete field span from the independently
+// approved request. The producer writes trust last, immediately after the colon,
+// so that span includes the original file's leading/trailing JSON whitespace.
+// Never trim, rewrite, or search whitespace variants to manufacture a pin match.
+// The caller has already enforced strict unique keys, syntax and request bounds.
+func exactTrustConfiguration(data, decoded []byte, pin string) ([]byte, error) {
+	if len(decoded) <= MaxTrustConfigurationBytes && digest(decoded) == pin {
+		return bytes.Clone(decoded), nil
+	}
+	d := json.NewDecoder(bytes.NewReader(data))
+	if token, err := d.Token(); err != nil || token != json.Delim('{') {
+		return nil, errors.New("trust field object required")
+	}
+	for d.More() {
+		key, err := d.Token()
+		if err != nil {
+			return nil, err
+		}
+		colon := skipJSONWhitespace(data, int(d.InputOffset()))
+		if colon >= len(data) || data[colon] != ':' {
+			return nil, errors.New("trust field separator required")
+		}
+		var value json.RawMessage
+		if err := d.Decode(&value); err != nil {
+			return nil, err
+		}
+		if key == "trustConfiguration" {
+			end := skipJSONWhitespace(data, int(d.InputOffset()))
+			if end >= len(data) || data[end] != ',' && data[end] != '}' {
+				return nil, errors.New("trust field terminator required")
+			}
+			span := data[colon+1 : end]
+			if len(span) > MaxTrustConfigurationBytes || digest(span) != pin {
+				return nil, errors.New("exact approved trust field bytes required")
+			}
+			return bytes.Clone(span), nil
+		}
+	}
+	return nil, errors.New("trust field missing")
+}
+
+func skipJSONWhitespace(data []byte, offset int) int {
+	for offset < len(data) {
+		switch data[offset] {
+		case ' ', '\t', '\r', '\n':
+			offset++
+		default:
+			return offset
+		}
+	}
+	return offset
 }
 
 func digest(data []byte) string { sum := sha256.Sum256(data); return hex.EncodeToString(sum[:]) }

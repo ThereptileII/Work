@@ -78,8 +78,7 @@ func produce(ctx context.Context, in Input, stockCheck func(string) error) (resu
 		return empty, fmt.Errorf("observed stock refused: %w", err)
 	}
 	trust, err := readBoundedRegular(ctx, in.TrustConfig, brokerregistration.MaxTrustConfigurationBytes)
-	if err != nil ||
-		!bytes.Equal(bytes.TrimSpace(trust), trust) || digest(trust) != in.ApprovedTrustSHA256 {
+	if err != nil || digest(trust) != in.ApprovedTrustSHA256 {
 		return empty, errors.Join(errors.New("trust bytes differ from independent approval"), err)
 	}
 	source, err := os.Open(in.SourceArchive)
@@ -110,7 +109,8 @@ func produce(ctx context.Context, in Input, stockCheck func(string) error) (resu
 			ExecutableSHA256: stock.ExecutableSHA256, UpstreamCommit: stock.UpstreamCommit},
 		TrustConfiguration: append([]byte(nil), trust...), TrustConfigSHA256: in.ApprovedTrustSHA256}
 	// encoding/json compacts RawMessage values. Assemble the last field without
-	// changing any independently pinned bytes inside trustConfiguration.
+	// changing any independently pinned trustConfiguration bytes, including its
+	// leading/trailing JSON whitespace. The parser recovers this exact field span.
 	raw, err := json.Marshal(struct {
 		Schema            int                          `json:"schema"`
 		Purpose           string                       `json:"purpose"`

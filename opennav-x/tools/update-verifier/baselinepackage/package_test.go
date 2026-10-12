@@ -344,3 +344,88 @@ func TestRefusesSourceChangedAfterOutput(t *testing.T) {
 		t.Fatal("failed handoff should retain request for review", err)
 	}
 }
+
+func TestProducePreservesApprovedTrustFileBytes(t *testing.T) {
+	for _, mode := range []string{"newline", "leading", "pretty both sides"} {
+		t.Run(mode, func(t *testing.T) {
+			f := newFixture(t)
+			trust, err := os.ReadFile(f.in.TrustConfig)
+			if err != nil {
+				t.Fatal(err)
+			}
+			switch mode {
+			case "newline":
+				trust = append(trust, '\n')
+			case "leading":
+				trust = append([]byte(" \t\r\n"), trust...)
+			case "pretty both sides":
+				trust = append(append([]byte("\n\t"), trust...), []byte("\r\n \t")...)
+			}
+			if err := os.WriteFile(f.in.TrustConfig, trust, 0600); err != nil {
+				t.Fatal(err)
+			}
+			f.in.ApprovedTrustSHA256 = digest(trust)
+			result, err := produce(context.Background(), f.in, func(string) error { return nil })
+			if err != nil {
+				t.Fatal(err)
+			}
+			raw, err := os.ReadFile(result.RequestPath)
+			if err != nil {
+				t.Fatal(err)
+			}
+			initial, err := brokerregistration.ParseApprovedRequest(raw, result.RequestSHA256, time.Now().UTC())
+			if err != nil {
+				t.Fatal(err)
+			}
+			retained, err := brokerregistration.ParseRetainedApprovedRequest(raw, result.RequestSHA256)
+			if err != nil {
+				t.Fatal(err)
+			}
+			for _, request := range []brokerregistration.Request{initial, retained} {
+				if !bytes.Equal(request.TrustConfiguration, trust) || request.TrustConfigSHA256 != f.in.ApprovedTrustSHA256 {
+					t.Fatal("handoff changed approved trust bytes or pin")
+				}
+			}
+			unchanged, err := os.ReadFile(f.in.TrustConfig)
+			if err != nil || !bytes.Equal(unchanged, trust) {
+				t.Fatal("producer rewrote original trust", err)
+			}
+		})
+	}
+}
+
+func TestProduceRefusesInvalidOrChangedExactTrustBeforePublication(t *testing.T) {
+	for _, mode := range []string{"unapproved newline", "duplicate", "malformed", "non-JSON whitespace"} {
+		t.Run(mode, func(t *testing.T) {
+			f := newFixture(t)
+			trust, err := os.ReadFile(f.in.TrustConfig)
+			if err != nil {
+				t.Fatal(err)
+			}
+			switch mode {
+			case "unapproved newline":
+				trust = append(trust, '\n')
+			case "duplicate":
+				trust = append([]byte(`{"schema":1,`), trust[1:]...)
+			case "malformed":
+				trust = trust[:len(trust)-1]
+			case "non-JSON whitespace":
+				trust = append([]byte("\u00a0"), trust...)
+			}
+			if mode != "unapproved newline" {
+				f.in.ApprovedTrustSHA256 = digest(trust)
+			}
+			if err := os.WriteFile(f.in.TrustConfig, trust, 0600); err != nil {
+				t.Fatal(err)
+			}
+			if _, err := produce(context.Background(), f.in, func(string) error { return nil }); err == nil {
+				t.Fatal("invalid or changed exact trust accepted")
+			}
+			for _, name := range []string{ArchiveName, RequestName} {
+				if _, err := os.Stat(filepath.Join(f.in.OutputDirectory, name)); !errors.Is(err, os.ErrNotExist) {
+					t.Fatal("refused trust published output", err)
+				}
+			}
+		})
+	}
+}
