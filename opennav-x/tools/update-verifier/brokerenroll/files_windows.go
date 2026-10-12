@@ -106,6 +106,7 @@ type enrollmentPin struct {
 	file          bool
 	length        int64
 	ancestor      enrollmentAncestorLocation
+	programData   *enrollmentProgramDataGuard
 }
 
 // These closed categories expose no actual filesystem spelling. Components are
@@ -140,6 +141,7 @@ type enrollmentAncestorLocation struct {
 type nativeEnrollmentFiles struct {
 	mu                   sync.Mutex
 	pins                 []*enrollmentPin
+	programDataGuards    []*enrollmentProgramDataGuard
 	imagePath            string
 	fence                *os.File
 	fencePin             *enrollmentPin
@@ -330,6 +332,10 @@ func (f *nativeEnrollmentFiles) Close() error {
 		}
 	}
 	f.pins = nil
+	for i := len(f.programDataGuards) - 1; i >= 0; i-- {
+		f.closeErr = errors.Join(f.closeErr, f.programDataGuards[i].Close())
+	}
+	f.programDataGuards = nil
 	if f.closeErr != nil {
 		f.closeErr = errors.Join(ErrCleanup, f.closeErr)
 	}
@@ -414,7 +420,17 @@ func (p *enrollmentPin) check() error {
 	} else if info.FileAttributes&windows.FILE_ATTRIBUTE_DIRECTORY == 0 {
 		return errors.New("held enrollment directory required")
 	}
-	if err := enrollmentSecurity(p.handle, p.descriptor, p.allowAdds, p.broker); err != nil {
+	permitProgramDataMetadata := false
+	if p.programData != nil {
+		if p.descriptor != nil || !p.allowAdds {
+			return errors.New("ProgramData custody cannot relax protected enrollment policy")
+		}
+		if err := p.programData.check(p); err != nil {
+			return err
+		}
+		permitProgramDataMetadata = true
+	}
+	if err := enrollmentSecurityPolicy(p.handle, p.descriptor, p.allowAdds, p.broker, permitProgramDataMetadata); err != nil {
 		return p.ancestorDiagnostic(err)
 	}
 	if p.dos != "" {
@@ -446,11 +462,15 @@ func (p *enrollmentPin) check() error {
 }
 
 func enrollmentSecurity(handle windows.Handle, expected *windows.SECURITY_DESCRIPTOR, allowAdds bool, broker string) error {
+	return enrollmentSecurityPolicy(handle, expected, allowAdds, broker, false)
+}
+
+func enrollmentSecurityPolicy(handle windows.Handle, expected *windows.SECURITY_DESCRIPTOR, allowAdds bool, broker string, permitProgramDataMetadata bool) error {
 	actual, err := windows.GetSecurityInfo(handle, windows.SE_FILE_OBJECT, windows.OWNER_SECURITY_INFORMATION|windows.DACL_SECURITY_INFORMATION)
 	if err != nil {
 		return err
 	}
-	return enrollmentSecurityDescriptor(actual, expected, allowAdds, broker)
+	return enrollmentSecurityDescriptorPolicy(actual, expected, allowAdds, broker, permitProgramDataMetadata)
 }
 
 // enrollmentAncestorMutationError retains only observations from the exact
@@ -478,6 +498,10 @@ func (*enrollmentAncestorMutationError) Error() string {
 }
 
 func enrollmentSecurityDescriptor(actual, expected *windows.SECURITY_DESCRIPTOR, allowAdds bool, broker string) error {
+	return enrollmentSecurityDescriptorPolicy(actual, expected, allowAdds, broker, false)
+}
+
+func enrollmentSecurityDescriptorPolicy(actual, expected *windows.SECURITY_DESCRIPTOR, allowAdds bool, broker string, permitProgramDataMetadata bool) error {
 	if actual == nil {
 		return errors.New("enrollment security descriptor required")
 	}
@@ -530,6 +554,9 @@ func enrollmentSecurityDescriptor(actual, expected *windows.SECURITY_DESCRIPTOR,
 		runtime.KeepAlive(expected)
 	} else {
 		mask := uint32(windows.DELETE|windows.WRITE_DAC|windows.WRITE_OWNER|windows.GENERIC_ALL|windows.GENERIC_WRITE|windows.FILE_WRITE_ATTRIBUTES|windows.FILE_WRITE_EA) | 0x40
+		if allowAdds && permitProgramDataMetadata {
+			mask &^= windows.FILE_WRITE_ATTRIBUTES | windows.FILE_WRITE_EA
+		}
 		if !allowAdds {
 			mask |= windows.FILE_WRITE_DATA | windows.FILE_APPEND_DATA
 		}
@@ -583,6 +610,15 @@ func (f *nativeEnrollmentFiles) pinDirectoryAtAncestor(path, physical, dos strin
 		pin.physical, err = enrollmentPhysicalPath(h)
 		if err != nil {
 			return nil, err
+		}
+	}
+	if sd == nil && allowAdds {
+		pin.programData, err = enrollmentOpenProgramDataGuard(pin)
+		if err != nil {
+			return nil, err
+		}
+		if pin.programData != nil {
+			f.programDataGuards = append(f.programDataGuards, pin.programData)
 		}
 	}
 	if err := pin.check(); err != nil {
