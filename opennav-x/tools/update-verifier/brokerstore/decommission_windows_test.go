@@ -3,6 +3,7 @@ package brokerstore
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"os"
 	"path/filepath"
@@ -159,5 +160,148 @@ func TestNativeDecommissionInventoryRefusesOtherClientPartialAndChangedDigest(t 
 				t.Fatal("preflight created terminal evidence", err)
 			}
 		})
+	}
+}
+
+func TestNativeDecommissionQualifiedOriginalInventorySurvivesTerminalFence(t *testing.T) {
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	s, previous, view, _, raw := nativeBaselineViewFixture(t)
+	baseline, err := s.MaterializeApprovedBaselineReadOnlyFresh(context.Background(), previous, raw, registrationDigest(raw))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err = baseline.Close(); err != nil {
+		t.Fatal(err)
+	}
+	if err = previous.Close(); err != nil {
+		t.Fatal(err)
+	}
+	opener := &nativeGenerationReopenFixtureStore{view}
+	generation, evidence, err := opener.openReadOnlyGeneration(context.Background(), view.sid.String(), stageA)
+	if err != nil {
+		t.Fatal(err)
+	}
+	record, err := validateGenerationReopenEvidence(evidence, view.sid.String(), stageA)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err = generation.close(); err != nil {
+		t.Fatal(err)
+	}
+	n := view.nativeStore
+	journalBackend, err := createNativeExecutionJournal(context.Background(), n, view.sid.String(), stageA)
+	if err != nil {
+		t.Fatal(err)
+	}
+	journal := journalBackend.(*nativeExecutionJournal)
+	ids, err := journal.identities()
+	if err != nil {
+		t.Fatal(err)
+	}
+	origin := executionJournalOrigin{Schema: 1, Purpose: "protected-execution-facts", ExecutionID: stageA, ClientSID: view.sid.String(), Generation: stageA, GenerationPurpose: record.Purpose, OriginalCompletion: evidence.completion, CompletionSHA256: registrationDigest(evidence.completion), Identities: ids}
+	fence, err := json.Marshal(origin)
+	if err != nil {
+		t.Fatal(err)
+	}
+	facts := append(append([]byte(nil), fence...), '\n')
+	if err = journal.initialize(context.Background(), fence, facts); err != nil {
+		t.Fatal(err)
+	}
+	if err = journal.close(); err != nil {
+		t.Fatal(err)
+	}
+	archiveBackend, err := createNativeExecutionProfileBackup(context.Background(), n, view.sid.String(), stageA)
+	if err != nil {
+		t.Fatal(err)
+	}
+	archive := archiveBackend.(*nativeExecutionProfileBackup)
+	archiveIDs, err := archive.identities()
+	if err != nil {
+		t.Fatal(err)
+	}
+	archiveOrigin, err := json.Marshal(executionProfileBackupOrigin{1, "protected-execution-profile-backup", fence, archiveIDs})
+	if err != nil {
+		t.Fatal(err)
+	}
+	archiveMarker := append(archiveOrigin, '\n')
+	if err = archive.initialize(context.Background(), archiveMarker); err != nil {
+		t.Fatal(err)
+	}
+	nativeCompleteProfileBackup(t, archive, archiveMarker)
+	if err = archive.close(); err != nil {
+		t.Fatal(err)
+	}
+	sd, err := descriptor(n.broker, nil, false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	registration, err := readCompletedRegistration(n.registrations, view.sid.String(), sd)
+	if err != nil {
+		t.Fatal(err)
+	}
+	binding := decommissionTestBinding()
+	binding.ClientSID = view.sid.String()
+	binding.RegistrationSHA256 = registrationDigest(registration)
+	d, err := openDecommissionInventoryWithOpeners(context.Background(), n, binding, decommissionInventoryOpeners{opener.openReadOnlyGeneration, nil})
+	if err != nil {
+		t.Fatal("actual qualified inventory refused", err)
+	}
+	defer d.close()
+	if len(d.extraFiles) == 0 || len(d.owners) < 2 {
+		t.Fatal("known metadata silently tolerated without original readers")
+	}
+	if err = d.commit(context.Background()); err != nil {
+		t.Fatal(err)
+	}
+	if err = n.check(); !errors.Is(err, ErrDecommissioned) {
+		t.Fatal("ordinary access resumed", err)
+	}
+	if err = d.check(); err != nil {
+		t.Fatal("private original qualified custody lost", err)
+	}
+	// Unknown child in the retained private generation registry is still refused.
+	path := physical(n.registrations.name + `\` + view.sid.String() + ".generations" + `\unknown.json`)
+	if err = os.WriteFile(path, []byte("unknown"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	if err = d.check(); err == nil {
+		t.Fatal("new unknown registry metadata silently tolerated")
+	}
+}
+
+func TestNativeDecommissionOriginalSignedStageSealInventory(t *testing.T) {
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	_, candidate, wrapper := nativeStageSealFixture(t)
+	if err := candidate.Seal(context.Background(), []byte("inert staged receipt\n")); err != nil {
+		t.Fatal(err)
+	}
+	if err := candidate.Close(); err != nil {
+		t.Fatal(err)
+	}
+	n := wrapper.nativeStore
+	sd, err := descriptor(n.broker, nil, false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	raw, err := readCompletedRegistration(n.registrations, candidate.clientSID, sd)
+	if err != nil {
+		t.Fatal(err)
+	}
+	binding := decommissionTestBinding()
+	binding.ClientSID = candidate.clientSID
+	binding.GenerationID = candidate.stageID
+	binding.RegistrationSHA256 = registrationDigest(raw)
+	d, err := openDecommissionInventoryWithOpeners(context.Background(), n, binding, decommissionInventoryOpeners{wrapper.openReadOnlyGeneration, wrapper.openStageSeal})
+	if err != nil {
+		t.Fatal("original signed stage inventory refused", err)
+	}
+	defer d.close()
+	if err = d.commit(context.Background()); err != nil {
+		t.Fatal(err)
+	}
+	if err = d.check(); err != nil {
+		t.Fatal("attached original stage custody lost after fence", err)
 	}
 }

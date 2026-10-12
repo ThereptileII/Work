@@ -3,7 +3,10 @@ package brokerstore
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
+	"fmt"
+	"reflect"
 	"strings"
 	"testing"
 )
@@ -153,11 +156,11 @@ func TestDecommissionBindingBoundsAndSingletonInventory(t *testing.T) {
 	}
 	sid := binding.ClientSID
 	for _, names := range [][]string{nil, {sid + ".json"}, {sid + ".once", sid + ".once"}, {sid + ".once", sid + ".json", "foreign.once"}, {sid + ".once", strings.ToLower(sid) + ".json"}, {sid + ".once", "foreign.json"}} {
-		if decommissionInventoryNames(names, sid) == nil {
+		if _, err := classifyDecommissionInventory(names, sid, ""); err == nil {
 			t.Fatalf("ambiguous inventory accepted: %q", names)
 		}
 	}
-	if err := decommissionInventoryNames([]string{sid + ".json", sid + ".once"}, sid); err != nil {
+	if _, err := classifyDecommissionInventory([]string{sid + ".json", sid + ".once"}, sid, ""); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -266,5 +269,150 @@ func TestDecommissionRequiresNativeCapabilityAndPoisonsFailedReceipt(t *testing.
 	}
 	if err = s.Validate(); !errors.Is(err, ErrDecommissioned) {
 		t.Fatal("ordinary store recovered", err)
+	}
+}
+
+func TestDecommissionQualifiedInventoryStrictKnownPairs(t *testing.T) {
+	sid := decommissionTestBinding().ClientSID
+	names := []string{sid + ".once", sid + ".json", sid + "." + stageA + ".baseline.once", sid + ".launch-parents.once", sid + ".launch-parents.json", sid + ".generations", sid + ".execution." + stageA + ".once", sid + ".execution." + stageA + ".journal", sid + ".profile." + stageA + ".once", sid + ".profile." + stageA + ".backup", sid + ".stage." + stageA + ".once", sid + ".stage." + stageA + ".json"}
+	inventory, err := classifyDecommissionInventory(names, sid, stageA)
+	if err != nil || !inventory.deployed || len(inventory.executions) != 1 || len(inventory.profiles) != 1 || len(inventory.stages) != 1 {
+		t.Fatal("qualified exact inventory refused", err)
+	}
+	for i := range names {
+		copy := append([]string(nil), names...)
+		copy = append(copy[:i], copy[i+1:]...)
+		if _, err := classifyDecommissionInventory(copy, sid, stageA); err == nil {
+			t.Fatal("partial owned inventory accepted", i)
+		}
+	}
+	for _, extra := range []string{sid + ".unknown", sid + ".execution." + stageA + ".other", strings.ToLower(sid) + ".json", "S-1-5-21-1-2-3-1002.json", sid + "." + strings.Repeat("b", 32) + ".baseline.once"} {
+		if _, err := classifyDecommissionInventory(append(append([]string(nil), names...), extra), sid, stageA); err == nil {
+			t.Fatal("foreign/aliased/unknown entry accepted", extra)
+		}
+	}
+}
+func TestDecommissionReceiptCopyJSONAndEvidenceRefuseWithoutOriginal(t *testing.T) {
+	m := &decommissionTestStore{}
+	s := &Store{backend: m}
+	defer s.Close()
+	owner, err := s.CommitDecommission(context.Background(), decommissionTestBinding(), func(context.Context) error { return nil })
+	if err != nil {
+		t.Fatal(err)
+	}
+	hash, err := owner.EvidenceSHA256(context.Background())
+	if err != nil || hash != registrationDigest(decommissionBytes(owner.Binding())) {
+		t.Fatal("exact original fence digest lost", err)
+	}
+	copied := new(Decommission)
+	reflect.ValueOf(copied).Elem().Set(reflect.ValueOf(owner).Elem())
+	for _, invalid := range []*Decommission{nil, {}, copied} {
+		if err := invalid.Validate(context.Background()); err == nil {
+			t.Fatal("non-original receipt accepted")
+		}
+		if digest, err := invalid.EvidenceSHA256(context.Background()); err == nil || digest != "" {
+			t.Fatal("non-original evidence accepted")
+		}
+	}
+	if err = copied.Close(); err == nil || m.closes != 0 {
+		t.Fatal("copied receipt closed original custody", err)
+	}
+	if _, err = json.Marshal(owner); err == nil {
+		t.Fatal("receipt serialized")
+	}
+	if err = json.Unmarshal([]byte(`{}`), new(Decommission)); err == nil {
+		t.Fatal("receipt deserialized")
+	}
+	if err = owner.Validate(context.Background()); err != nil {
+		t.Fatal("copy/serialization attempt revoked original", err)
+	}
+}
+
+type decommissionTestReaderBackend struct {
+	validations, closes int
+	closeFault          error
+}
+
+func (b *decommissionTestReaderBackend) validate([]byte, []byte) error {
+	b.validations++
+	return ErrDecommissioned
+}
+func (b *decommissionTestReaderBackend) close() error { b.closes++; return b.closeFault }
+func decommissionTestReader(s *Store, sid string) (*ExecutionJournalReader, *decommissionTestReaderBackend) {
+	backend := &decommissionTestReaderBackend{}
+	reader := &ExecutionJournalReader{state: &executionJournalReaderState{store: s, origin: executionJournalOrigin{ClientSID: sid}, backend: backend}}
+	return reader, backend
+}
+func TestDecommissionOriginalReceiptReaderDrainAndStoreShutdown(t *testing.T) {
+	for _, explicit := range []bool{false, true} {
+		t.Run(fmt.Sprint(explicit), func(t *testing.T) {
+			m := &decommissionTestStore{}
+			s := &Store{backend: m}
+			binding := decommissionTestBinding()
+			reader, backend := decommissionTestReader(s, binding.ClientSID)
+			s.journalReaders = append(s.journalReaders, reader)
+			owner, err := s.CommitDecommission(context.Background(), binding, func(context.Context) error { return nil })
+			if err != nil {
+				t.Fatal(err)
+			}
+			if explicit {
+				if err = owner.CloseExecutionJournalReader(context.Background(), reader); err != nil {
+					t.Fatal(err)
+				}
+			}
+			if err = s.Close(); err != nil {
+				t.Fatal("successful terminal shutdown relabeled uncertain", err)
+			}
+			if backend.closes != 1 || backend.validations != 0 {
+				t.Fatalf("ordinary validation invoked or cleanup repeated: %+v", backend)
+			}
+			if err = reader.Close(); err != nil {
+				t.Fatal("terminal drain not shared/idempotent", err)
+			}
+		})
+	}
+}
+func TestDecommissionReaderDrainRefusesDifferentOrPoisonedCustody(t *testing.T) {
+	for _, fault := range []string{"other-store", "other-client", "zero-receipt", "copied-receipt", "poisoned-receipt", "poisoned-reader", "backend-close"} {
+		t.Run(fault, func(t *testing.T) {
+			m := &decommissionTestStore{}
+			s := &Store{backend: m}
+			binding := decommissionTestBinding()
+			owner, err := s.CommitDecommission(context.Background(), binding, func(context.Context) error { return nil })
+			if err != nil {
+				t.Fatal(err)
+			}
+			reader, backend := decommissionTestReader(s, binding.ClientSID)
+			switch fault {
+			case "other-store":
+				reader.state.store = &Store{backend: &decommissionTestStore{}}
+			case "other-client":
+				reader.state.origin.ClientSID = "S-1-5-21-1-2-3-1001"
+			case "zero-receipt":
+				owner = &Decommission{}
+			case "copied-receipt":
+				copied := new(Decommission)
+				reflect.ValueOf(copied).Elem().Set(reflect.ValueOf(owner).Elem())
+				owner = copied
+			case "poisoned-receipt":
+				owner.poisoned = true
+			case "poisoned-reader":
+				reader.state.failure = testFault
+			case "backend-close":
+				backend.closeFault = testFault
+			}
+			err = owner.CloseExecutionJournalReader(context.Background(), reader)
+			if err == nil {
+				t.Fatal("uncertain/foreign reader drained successfully")
+			}
+			if fault == "backend-close" {
+				if backend.closes != 1 || !errors.Is(err, testFault) {
+					t.Fatal("native closure uncertainty lost", err)
+				}
+			} else if backend.closes != 0 {
+				t.Fatal("invalid receipt released original reader")
+			}
+			s.Close()
+		})
 	}
 }

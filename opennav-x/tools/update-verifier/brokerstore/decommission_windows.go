@@ -3,9 +3,11 @@ package brokerstore
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"io"
 	"os"
+	"reflect"
 
 	"golang.org/x/sys/windows"
 )
@@ -42,6 +44,12 @@ type nativeDecommission struct {
 	marker                       *nativeFile
 	completed, attempted, closed bool
 	closeErr                     error
+	baseline                     string
+	rootInventory                decommissionRootInventory
+	extraFiles                   []decommissionCustodyFile
+	extraPins                    map[*nativePin]diskIdentity
+	extraInventories             map[*nativePin]map[string]bool
+	owners                       []func() error
 }
 
 func (n *nativeStore) singletonRegistration(ctx context.Context, sid, digest string) (resultErr error) {
@@ -65,24 +73,34 @@ func (n *nativeStore) prepareDecommission(ctx context.Context, binding Decommiss
 	return openDecommissionInventory(ctx, n, binding)
 }
 func (d *nativeDecommission) inventory() error {
-	entries, err := boundedEntries(d.store.registrations, 2)
+	entries, err := boundedEntries(d.store.registrations, maxExecutionNamespaceFiles)
 	if err != nil {
 		return err
 	}
 	names := make([]string, 0, len(entries))
 	for _, entry := range entries {
 		names = append(names, entry.Name())
-		if entry.IsDir() {
-			return errors.New("registration directory is not owned completed evidence")
+		if entry.IsDir() != (entry.Name() == d.binding.ClientSID+".generations") {
+			return errors.New("protected evidence type differs from fixed schema")
 		}
 	}
-	return decommissionInventoryNames(names, d.binding.ClientSID)
+	classified, err := classifyDecommissionInventory(names, d.binding.ClientSID, d.baseline)
+	if err != nil {
+		return err
+	}
+	if d.rootInventory.names != nil && !reflect.DeepEqual(classified.names, d.rootInventory.names) {
+		return errors.New("original protected root inventory changed")
+	}
+	return nil
 }
 
 // This private helper is also used by inert native fixtures; the public native
 // capability separately validates the canonical actual client account. Both
 // original files remain held without write/delete sharing until owner cleanup.
-func openDecommissionInventory(ctx context.Context, n *nativeStore, binding DecommissionBinding) (result *nativeDecommission, resultErr error) {
+func openDecommissionInventory(ctx context.Context, n *nativeStore, binding DecommissionBinding) (*nativeDecommission, error) {
+	return openDecommissionInventoryWithOpeners(ctx, n, binding, decommissionInventoryOpeners{n.openReadOnlyGeneration, n.openStageSeal})
+}
+func openDecommissionInventoryWithOpeners(ctx context.Context, n *nativeStore, binding DecommissionBinding, openers decommissionInventoryOpeners) (result *nativeDecommission, resultErr error) {
 	if err := ctx.Err(); err != nil {
 		return nil, err
 	}
@@ -96,9 +114,6 @@ func openDecommissionInventory(ctx context.Context, n *nativeStore, binding Deco
 			resultErr = errors.Join(resultErr, d.close())
 		}
 	}()
-	if err := d.inventory(); err != nil {
-		return nil, err
-	}
 	sd, err := descriptor(n.broker, nil, false)
 	if err != nil {
 		return nil, err
@@ -118,6 +133,32 @@ func openDecommissionInventory(ctx context.Context, n *nativeStore, binding Deco
 	digest, err := completedRegistrationDigest(d.expected[0], binding.ClientSID)
 	if err != nil || digest != binding.RegistrationSHA256 || registrationDigest(d.expected[1]) != digest {
 		return nil, errors.New("original completed registration digest differs")
+	}
+	entries, err := boundedEntries(n.registrations, maxExecutionNamespaceFiles)
+	if err != nil {
+		return nil, err
+	}
+	names := make([]string, 0, len(entries))
+	for _, entry := range entries {
+		names = append(names, entry.Name())
+	}
+	if len(names) > 2 {
+		var envelope baselineRegistrationEnvelope
+		if json.Unmarshal(d.expected[1], &envelope) != nil {
+			return nil, errors.New("original approved registration required")
+		}
+		request, err := validateBaselineRegistration(d.expected[1], d.expected[0], binding.ClientSID, envelope.ApprovedRequestSHA256)
+		if err != nil {
+			return nil, err
+		}
+		d.baseline = request.Installed.Generation
+	}
+	d.rootInventory, err = classifyDecommissionInventory(names, binding.ClientSID, d.baseline)
+	if err != nil {
+		return nil, err
+	}
+	if err = d.retainOwnedInventory(ctx, openers); err != nil {
+		return nil, err
 	}
 	if err = d.inventory(); err != nil {
 		return nil, err
@@ -205,6 +246,25 @@ func (d *nativeDecommission) custody() error {
 			return err
 		}
 	}
+	for pin, id := range d.extraPins {
+		if err := pin.check(); err != nil {
+			return err
+		}
+		actual, err := fileIdentity(pin.handle)
+		if err != nil || actual != id {
+			return errors.Join(errors.New("original inventory full directory identity differs"), err)
+		}
+	}
+	for pin, names := range d.extraInventories {
+		if err := exactGenerationEntries(pin, names); err != nil {
+			return err
+		}
+	}
+	for _, held := range d.extraFiles {
+		if err := held.check(); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 func (d *nativeDecommission) commit(ctx context.Context) error {
@@ -269,5 +329,9 @@ func (d *nativeDecommission) close() error {
 		d.closeErr = errors.Join(d.closeErr, d.evidence[i].Close())
 	}
 	d.evidence = nil
+	for i := len(d.owners) - 1; i >= 0; i-- {
+		d.closeErr = errors.Join(d.closeErr, d.owners[i]())
+	}
+	d.owners = nil
 	return d.closeErr
 }

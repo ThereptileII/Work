@@ -54,6 +54,7 @@ type decommissionBackend interface {
 // be reconstructed from the marker or a caller JSON receipt. Binding returns a
 // value copy for an independently owned maintenance conversation to compare.
 type Decommission struct {
+	self             *Decommission
 	mu               sync.Mutex
 	store            *Store
 	backend          decommissionBackend
@@ -63,13 +64,13 @@ type Decommission struct {
 }
 
 func (d *Decommission) Binding() DecommissionBinding {
-	if d == nil {
+	if d == nil || d.self != d {
 		return DecommissionBinding{}
 	}
 	return d.binding
 }
 func (d *Decommission) Validate(ctx context.Context) error {
-	if d == nil || d.store == nil || d.backend == nil || ctx == nil {
+	if d == nil || d.self != d || d.store == nil || d.backend == nil || ctx == nil {
 		return ErrClosed
 	}
 	runtime.LockOSThread()
@@ -94,8 +95,11 @@ func (d *Decommission) Validate(ctx context.Context) error {
 
 // Close releases custody only; it never removes or resets the terminal fence.
 func (d *Decommission) Close() error {
-	if d == nil || d.backend == nil {
+	if d == nil {
 		return nil
+	}
+	if d.self != d || d.backend == nil {
+		return ErrNativeRequired
 	}
 	d.mu.Lock()
 	defer d.mu.Unlock()
@@ -191,27 +195,13 @@ func (s *Store) CommitDecommission(ctx context.Context, binding DecommissionBind
 		return nil, err
 	}
 	d := &Decommission{store: s, backend: native, binding: binding}
+	d.self = d
 	s.decommissions = append(s.decommissions, d)
 	if err = native.commit(ctx); err != nil {
 		d.poisoned = true
 		return nil, err
 	}
 	return d, nil
-}
-
-func decommissionInventoryNames(names []string, sid string) error {
-	if len(names) != 2 {
-		return errors.New("terminal service action requires exactly one complete registration")
-	}
-	wanted := map[string]bool{sid + ".once": false, sid + ".json": false}
-	for _, name := range names {
-		seen, ok := wanted[name]
-		if !ok || seen {
-			return errors.New("extra, ambiguous or duplicate registration entry")
-		}
-		wanted[name] = true
-	}
-	return nil
 }
 
 // publishDecommission owns the irreversible boundary. Once CREATE_NEW is
@@ -234,4 +224,94 @@ func publishDecommission(ctx context.Context, create func() (candidateFile, erro
 		return file, err
 	}
 	return file, nil
+}
+
+// EvidenceSHA256 exposes comparison data only after validating the same original
+// completed writer. It never parses or adopts a persistent fence as authority.
+func (d *Decommission) EvidenceSHA256(ctx context.Context) (string, error) {
+	if err := d.Validate(ctx); err != nil {
+		return "", err
+	}
+	return registrationDigest(decommissionBytes(d.binding)), nil
+}
+func (*Decommission) MarshalJSON() ([]byte, error) { return nil, ErrNativeRequired }
+func (*Decommission) UnmarshalJSON([]byte) error   { return ErrNativeRequired }
+
+// CloseExecutionJournalReader releases only a clean same-client reader from this
+// original Store, after private terminal inventory revalidation. Ordinary reader
+// validation remains unchanged and therefore refuses the terminal store. A
+// poisoned reader/receipt never gains a cleanup-success claim through this API.
+func (d *Decommission) CloseExecutionJournalReader(ctx context.Context, reader *ExecutionJournalReader) error {
+	if d == nil || d.self != d || d.store == nil || ctx == nil {
+		return ErrNativeRequired
+	}
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	d.store.mu.Lock()
+	defer d.store.mu.Unlock()
+	d.mu.Lock()
+	defer d.mu.Unlock()
+	return d.closeExecutionJournalReaderLocked(ctx, reader)
+}
+
+// Store.mu and receipt.mu are held, before Store.closed is set.
+func (d *Decommission) closeExecutionJournalReaderLocked(ctx context.Context, reader *ExecutionJournalReader) error {
+	if d.self != d || d.closed || d.poisoned || d.backend == nil || d.store.closed.Load() || ctx.Err() != nil || reader == nil || reader.state == nil {
+		return ErrNativeRequired
+	}
+	r := reader.state
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	if r.store != d.store || r.origin.ClientSID != d.binding.ClientSID {
+		return ErrNativeRequired
+	}
+	if r.closed {
+		return r.closeErr
+	}
+	if r.failure != nil {
+		return r.failure
+	}
+	if err := d.backend.check(); err != nil {
+		d.poisoned = true
+		return err
+	}
+	r.closed = true
+	r.closeErr = r.backend.close()
+	if r.closeErr != nil {
+		r.closeErr = errors.Join(ErrExecutionJournalUncertain, r.closeErr)
+	}
+	return r.closeErr
+}
+
+// Successful terminal shutdown drains retained clean readers while the original
+// receipt and store lock still exist. Failed/closed custody takes the ordinary
+// uncertainty-preserving cleanup path; it never fabricates successful release.
+func (s *Store) drainDecommissionReadersLocked() error {
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	for _, d := range s.decommissions {
+		if d == nil || d.self != d {
+			continue
+		}
+		d.mu.Lock()
+		if d.closed || d.poisoned || d.backend == nil {
+			d.mu.Unlock()
+			continue
+		}
+		var result error
+		for _, reader := range s.journalReaders {
+			if reader == nil || reader.state == nil {
+				continue
+			}
+			reader.state.mu.Lock()
+			closed := reader.state.closed
+			reader.state.mu.Unlock()
+			if !closed {
+				result = errors.Join(result, d.closeExecutionJournalReaderLocked(context.Background(), reader))
+			}
+		}
+		d.mu.Unlock()
+		return result
+	}
+	return nil
 }

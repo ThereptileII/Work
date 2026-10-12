@@ -224,10 +224,12 @@ func (s *Store) Close() error {
 	s.closeMu.Lock()
 	defer s.closeMu.Unlock()
 	s.mu.Lock()
-	if s.closed.Swap(true) {
+	if s.closed.Load() {
 		s.mu.Unlock()
 		return s.closeErr
 	}
+	terminalDrainErr := s.drainDecommissionReadersLocked()
+	s.closed.Store(true)
 	children := s.candidates
 	s.candidates = nil
 	registrations := s.registrations
@@ -245,7 +247,7 @@ func (s *Store) Close() error {
 	journals := s.journals
 	s.journals = nil
 	s.mu.Unlock()
-	var result error
+	result := terminalDrainErr
 	for _, d := range decommissions {
 		result = errors.Join(result, d.Close())
 	}
