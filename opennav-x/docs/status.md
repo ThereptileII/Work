@@ -1,6 +1,33 @@
 # SKAGER status — 2026-10-12
 
-## Manual rollback endpoint joined; native confirmation pending
+## Protected mode startup joined; native maintenance repairs pending
+
+Component run [38281497298](https://github.com/ThereptileII/Work/actions/runs/38281497298)
+for exact `ea3c2bffa493915bf48b68834d6c1cc508ffb44c` passed Linux and native
+startup interactions. Windows recorded **703 top-level + 2756 nested passes,
+2 top-level failures and 12 top-level skips**. The earlier physical-image and
+profile-DACL repairs no longer fail. Remaining failures were closed maintenance
+capability error ordering and an inaccessible-directory fixture whose read was
+still permitted. Fresh SCM enrollment remained skipped after the prerequisite
+failure. [Original artifact and failures](evidence/scrum311-startup-native-repairs-20261012/manual-maintenance-native-run.json)
+are preserved. `c8a4ab50` moves the original lifetime check before backend
+readiness and independently establishes real ACL denial under a private,
+privilege-disabled test token; it does not change the process primary token or
+weaken production directory observations. Native confirmation is pending.
+
+`32a15f7f` binds closed XNav/Legacy/Safe modes through protected selected startup;
+qualification stays XNav and recovery modes skip only the update offer.
+`025a0451` publishes three fixed shortcuts through the same approved baseline
+launcher with independent retained link identities and partial-publication
+evidence. Joined focused Linux race checks passed **21 top-level + 77 nested
+cases**, no failures/skips. Native mode/link execution is pending.
+
+`da4bb0be` refuses old LocalAppData Lifecycle mutation when the fixed protected
+service, registry or machine namespace is present or uncertain. Diagnostics
+remain read-only. Historical installer fixtures must run before fresh fixed SCM
+enrollment; the service is never deleted to make an old-layout test pass.
+Protected setup migration, repair and uninstall remain explicit integration
+gates, not covered by historical installer results.
 
 The running broker now joins a separate, bounded manual-selection endpoint to
 its existing Store/operation lock. It requires the original elevated operator,
@@ -18,7 +45,7 @@ acceptance. [Recorded checks](evidence/scrum311-startup-native-repairs-20261012/
 
 Independent inspection confirmed the older installer must not be joined by
 blindly adding a provisioner call: its LocalAppData shortcut ownership/repair
-path conflicts with the protected shortcut. Protected Legacy/Safe startup and
+path conflicts with the protected shortcut. Protected in-app mode restart and
 owned install/repair/uninstall integration remain open. No full application
 build or boat modification is claimed; SCRUM-311 remains In Progress.
 

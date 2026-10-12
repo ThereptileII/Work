@@ -3,6 +3,9 @@
 # production has no caller-supplied path, switch or injectable absence value.
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+if ([Environment]::OSVersion.Platform -ne [PlatformID]::Win32NT) {
+  throw 'The actual Windows Lifecycle filesystem contract requires native Windows.'
+}
 $engine = Join-Path $PSScriptRoot '../installer/windows/Lifecycle.ps1'
 $parseErrors = @()
 $ast = [Management.Automation.Language.Parser]::ParseFile($engine, [ref]$null, [ref]$parseErrors)

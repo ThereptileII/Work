@@ -1,0 +1,40 @@
+{
+  "schema": 1,
+  "productAcceptance": false,
+  "scope": "Native updater component contracts; not installed protected application acceptance",
+  "commit": "ea3c2bffa493915bf48b68834d6c1cc508ffb44c",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/38281497298",
+  "result": "failure",
+  "linux": "pass",
+  "nativeStartupInteractions": "pass",
+  "windows": {
+    "pass_top": 703,
+    "pass_nested": 2756,
+    "skip_top": 12,
+    "fail_top": 2
+  },
+  "failedCases": [
+    {
+      "package": "example.com/opennav-update-verifier/brokerpipe",
+      "test": "TestMaintenanceOperatorActualNativeTokenAndLifetime"
+    },
+    {
+      "package": "example.com/opennav-update-verifier/launcher",
+      "test": "TestNativeMaintenanceBarrierInaccessibleLegacyRootRefuses"
+    }
+  ],
+  "freshSCMEnrollment": "skipped after prerequisite failure; not accepted",
+  "historicalInstallerTransactions": {
+    "result": "pass",
+    "checks": 47,
+    "scope": "inert historical-layout fixture; not protected lifecycle"
+  },
+  "retainedArtifact": {
+    "id": 11761817196,
+    "name": "update-verifier-windows-2022-386-ea3c2bffa493915bf48b68834d6c1cc508ffb44c",
+    "sizeBytes": 169548,
+    "sha256": "cd3ec749d1f01d3cc891998aa0992595c4a214f580648b7be163395d12016ef5"
+  },
+  "failedLogSha256": "9a66f17549cf27f5d3b62cfbf435b896ddce9254b981f3c824bffc5fab53cf0c",
+  "repairStatus": "Independent bounded native-lifetime ordering and inaccessible-directory fixture investigation in progress. Failed evidence preserved. No boat or full application build."
+}

@@ -4,6 +4,17 @@ This is component evidence, not an accepted installed updater or Staging release
 The exact failed native run is retained in [failed-native-run.json](failed-native-run.json).
 Jira remains the backlog; SCRUM-311 and the packaged security gates remain open.
 
+Latest component run [38281497298](https://github.com/ThereptileII/Work/actions/runs/38281497298)
+on exact `ea3c2bffa493915bf48b68834d6c1cc508ffb44c` passed Linux and native
+startup interactions. Windows passed 703 top-level plus 2756 nested tests, failed
+two top-level tests and skipped twelve. Fresh SCM enrollment was skipped, not
+accepted. The downloaded original artifact and failures are recorded separately
+in [manual-maintenance-native-run.json](manual-maintenance-native-run.json).
+Historical installer transactions passed 47 inert checks; these do not establish
+protected installation acceptance. `c8a4ab50` repairs permanent capability
+revocation ordering and strengthens the actual inaccessible-directory fixture
+without changing primary-token privileges. Native confirmation remains pending.
+
 ## Integrated source
 
 - `f97c747a` adds authenticated selected-executor update offers and the protected

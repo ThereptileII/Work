@@ -174,6 +174,32 @@ Native rights, actual transport, installed lifecycle and recovery acceptance rem
 required. This source join does not qualify repair/uninstall or migrate the older
 LocalAppData installer layout.
 
+### Closed ordinary modes and installation ownership
+
+The optional `startupMode` field accepts only `legacy` or `safe`; omission is
+canonical XNav. Explicit empty/XNav, aliases, duplicate fields and arbitrary
+arguments refuse. The mode is bound to the request, each applicable command,
+report and final ordinary process. Candidate qualification always stays XNav.
+Legacy/Safe selected startup bypasses the offer only, retaining the qualified
+history, original image and current cold-profile gates.
+
+The initial publisher creates fixed `Skager.lnk`, `Skager Legacy.lnk` and
+`Skager Safe Mode.lnk` through the same approved baseline image. Only the closed
+`--broker-start=<generation>[:legacy|:safe]` arguments differ. All destinations
+are checked before publication; any existing Legacy/Safe entry refuses rather
+than being adopted. The normal link retains its exact original byte backup.
+A synced `publication.json` records independent original/staged identities and
+hashes before non-replacing renames. Three moves are not atomic. Failure retains
+evidence and uncertain state; it never authorizes automatic retry or cleanup.
+
+The historical user-owned Lifecycle must refuse modification if any fixed
+protected service, registry or machine namespace is present or ambiguous,
+including partial enrollment. It cannot repair/uninstall protected ownership.
+Read-only Diagnostics remain available. Native historical fixtures run before
+fixed SCM enrollment; no service removal/reset is permitted to hide a collision.
+Protected repair, decommission and migration require their own owner-scoped
+transactions and acceptance; quiesce and manual selection do not authorize them.
+
 ### Release acceptance
 
 - Native Windows execution of the joined service/provider/relay/restore path.

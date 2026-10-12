@@ -9,7 +9,7 @@ $ast=[Management.Automation.Language.Parser]::ParseFile((Join-Path $PSScriptRoot
 if ($parseErrors) { throw ($parseErrors | Out-String) }
 . (Join-Path $PSScriptRoot '../installer/windows/UpdateTransaction.ps1')
 $Action='Repair'
-foreach ($name in @('Log','Hash','PlainPath','RelativePath','ReadJson','Assert-LifecycleMutation','AtomicJson','Generation','ReadState','ReadGeneration','ShellGroups','ShortcutGroup','ShortcutNames','ShortcutSpec','AssertShortcut','AssertShellOwnership','RemoveShortcutGroup','PublishShell','RemoveShell','Failure','Recover')) {
+foreach ($name in @('Log','Hash','PlainPath','RelativePath','ReadJson','Get-ProtectedBrokerObservation','Assert-NoProtectedBrokerEnrollment','Assert-LifecycleMutation','AtomicJson','Generation','ReadState','ReadGeneration','ShellGroups','ShortcutGroup','ShortcutNames','ShortcutSpec','AssertShortcut','AssertShellOwnership','RemoveShortcutGroup','PublishShell','RemoveShell','Failure','Recover')) {
   $nodes=@($ast.FindAll({param($n) $n -is [Management.Automation.Language.FunctionDefinitionAst] -and $n.Name -eq $name},$true))
   if ($nodes.Count -ne 1) { throw "Expected one actual engine function: $name" }
   . ([scriptblock]::Create($nodes[0].Extent.Text))
