@@ -65,12 +65,14 @@ type executionSelectionFact struct {
 }
 
 type executionSelectionAttempt struct {
-	begin    executionSelectionBegin
-	head     string
-	terminal string
-	state    string
-	consumed bool
-	recovery *executionSelectionRecovery
+	begin          executionSelectionBegin
+	head           string
+	terminal       string
+	state          string
+	consumed       bool
+	recovery       *executionSelectionRecovery
+	manual         *executionManualRollbackBegin
+	health, closed string
 }
 
 type executionSelectedVersion struct {
@@ -104,6 +106,9 @@ func parseExecutionSelectionAttempt(sid, executionID, generation, completion, ge
 	}
 	if purpose.Purpose == "broker-selected-recovery-v1" {
 		return parseExecutionSelectionRecovery(sid, executionID, generation, completion, generationPurpose, journalDigest, facts)
+	}
+	if purpose.Purpose == "broker-manual-rollback-v1" {
+		return parseExecutionManualRollback(sid, executionID, generation, completion, generationPurpose, journalDigest, facts)
 	}
 	if exactExecutionRecord(facts[0].original, &result.begin) != nil {
 		return refuse()
@@ -175,6 +180,12 @@ func parseExecutionSelectionAttempt(sid, executionID, generation, completion, ge
 			return refuse()
 		}
 		state = step.Step
+		if state == "healthy" {
+			result.health = step.EvidenceSHA256
+		}
+		if state == "selected" {
+			result.closed = step.EvidenceSHA256
+		}
 		if step.Step == "spawn-consumed" || step.Step == "fallback-spawn-consumed" {
 			result.consumed = true
 		}
@@ -330,6 +341,8 @@ func foldExecutionSelection(attempts []executionSelectionAttempt, baselineGenera
 	current := ""
 	consumed := 0
 	selectedAtHead := map[string]string{}
+	qualifiedAtHead := map[string]executionSelectionAttempt{}
+	headOrder := map[string]int{}
 	for {
 		next, exists := byParent[current]
 		if !exists {
@@ -338,8 +351,18 @@ func foldExecutionSelection(attempts []executionSelectionAttempt, baselineGenera
 		if consumed >= 128 || (current != "" && next.begin.PreviousGeneration != selected.generation) {
 			return executionSelectedVersion{}, nil, errExecutionSelection
 		}
-		if next.terminal == "selected" && next.recovery == nil {
+		if next.terminal == "selected" && next.recovery == nil && next.manual == nil {
 			selected = executionSelectedVersion{next.begin.Generation, next.begin.CompletionSHA256, next.head, releasepolicy.Installed{Version: next.begin.Version, Commit: next.begin.Commit}}
+			qualifiedAtHead[next.head] = next
+		} else if current != "" && next.terminal == "manual-selected" && next.manual != nil {
+			// Only an original successful qualifier already reached BEFORE this
+			// edge may be selected. A later/unrelated qualifier, recovery label,
+			// manual record or completed generation alone cannot qualify a target.
+			ancestor, exists := qualifiedAtHead[next.manual.QualifiedHeadSHA256]
+			if !exists || !manualRollbackQualified(ancestor, next.manual) || next.begin.Generation == selected.generation {
+				return executionSelectedVersion{}, nil, errExecutionSelection
+			}
+			selected = executionSelectedVersion{next.begin.Generation, next.begin.CompletionSHA256, next.head, ancestorInstalled(ancestor)}
 		} else if current != "" && (next.terminal == "rolled-back" || (next.terminal == "restored-no-spawn" && next.recovery != nil)) {
 			// Recovery advances history only; selected bytes/version/completion
 			// remain exactly those independently qualified by the chain.
@@ -349,6 +372,7 @@ func foldExecutionSelection(attempts []executionSelectionAttempt, baselineGenera
 		}
 		current = next.head
 		selectedAtHead[current] = selected.generation
+		headOrder[current] = consumed
 		consumed++
 	}
 	if consumed != len(byParent) {
@@ -362,6 +386,14 @@ func foldExecutionSelection(attempts []executionSelectionAttempt, baselineGenera
 		if parent != "" {
 			generation, reachable := selectedAtHead[parent]
 			if !reachable || a.begin.PreviousGeneration != generation {
+				return executionSelectedVersion{}, nil, errExecutionSelection
+			}
+		}
+		if a.manual != nil {
+			ancestor, exists := qualifiedAtHead[a.manual.QualifiedHeadSHA256]
+			ancestorOrder, ancestorReached := headOrder[a.manual.QualifiedHeadSHA256]
+			parentOrder, parentReached := headOrder[parent]
+			if !exists || !ancestorReached || !parentReached || ancestorOrder > parentOrder || !manualRollbackQualified(ancestor, a.manual) {
 				return executionSelectedVersion{}, nil, errExecutionSelection
 			}
 		}
