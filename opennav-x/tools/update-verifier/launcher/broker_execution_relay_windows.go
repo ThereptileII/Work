@@ -24,7 +24,7 @@ func acquireNativeRelayImage(spec processSpec) (ordinaryImage, error) {
 	return acquireNativePinnedBrokerImage(name, spec.expectedImageHash)
 }
 func brokerRelayEnvironment(values []string, c brokerpipe.ExecutionCommand) ([]uint16, error) {
-	if c.Phase != brokerpipe.RelaySelectedExecutor || brokerExecutionPayload(c, c.StageID) != nil {
+	if (c.Phase != brokerpipe.RelaySelectedExecutor && c.Phase != brokerpipe.RelayStartupExecutor) || brokerExecutionPayload(c, c.StageID) != nil {
 		return nil, errBrokerExecutionRefused
 	}
 	return ordinaryEnvironment(values)
@@ -37,7 +37,11 @@ func (image *nativeOrdinaryImage) createBrokerRelay(c brokerpipe.ExecutionComman
 	if err != nil {
 		return nil, err
 	}
-	// The new launcher makes a fresh start-current request. No path, command,
+	// The new launcher makes a fresh current or startup-offer request. No path, command,
 	// qualification environment or inherited pipe handles cross this boundary.
-	return image.createBrokerFixedChild(attributes, environment, "--broker-current="+c.ApplicationGeneration)
+	argument := "--broker-current=" + c.ApplicationGeneration
+	if c.Phase == brokerpipe.RelayStartupExecutor {
+		argument = "--broker-offer=" + c.ApplicationGeneration
+	}
+	return image.createBrokerFixedChild(attributes, environment, argument)
 }

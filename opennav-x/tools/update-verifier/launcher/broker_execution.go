@@ -100,11 +100,11 @@ func brokerExecutionLauncher(programFiles, sid, generation string) (string, erro
 	return strings.TrimSuffix(application, "opencpn.exe") + "skager-start.exe", nil
 }
 func brokerExecutionPayload(command brokerpipe.ExecutionCommand, stage string) error {
-	if command.StageID != stage || !generationPattern.MatchString(stage) {
+	if command.StageID != stage || !generationPattern.MatchString(stage) || command.OfferVersion != "" || command.OfferCommit != "" || command.OfferPolicySHA256 != "" || command.PromptBytes != 0 || command.PromptSHA256 != "" {
 		return errBrokerExecutionRefused
 	}
 	switch command.Phase {
-	case brokerpipe.RelaySelectedExecutor, brokerpipe.SpawnCurrent, brokerpipe.ObserveCurrent, brokerpipe.CloseCurrent:
+	case brokerpipe.RelaySelectedExecutor, brokerpipe.RelayStartupExecutor, brokerpipe.SpawnCurrent, brokerpipe.ObserveCurrent, brokerpipe.CloseCurrent:
 		if !generationPattern.MatchString(command.ApplicationGeneration) || command.HealthPipe != "" || command.HealthChallenge != "" {
 			return errBrokerExecutionRefused
 		}
@@ -175,10 +175,13 @@ func (a *brokerExecutionActions) handle(ctx context.Context, c brokerpipe.Execut
 	if a.relay.consumed && c.Phase != brokerpipe.FinishExecution {
 		return result, errBrokerExecutionRefused
 	}
+	if c.Phase == brokerpipe.RelayStartupExecutor && (a.request.Operation != "start-selected" || a.candidate.consumed || a.fallback.consumed || a.current.consumed) {
+		return result, errBrokerExecutionRefused
+	}
 	// Admission can qualify or terminally relay, but cannot create an ordinary
 	// current application inside the same qualification/admission conversation.
 	current := c.Phase == brokerpipe.SpawnCurrent || c.Phase == brokerpipe.ObserveCurrent || c.Phase == brokerpipe.CloseCurrent
-	if c.Phase != brokerpipe.FinishExecution && c.Phase != brokerpipe.RelaySelectedExecutor && ((a.request.Operation == "start-current") != current) {
+	if c.Phase != brokerpipe.FinishExecution && c.Phase != brokerpipe.RelaySelectedExecutor && c.Phase != brokerpipe.RelayStartupExecutor && ((a.request.Operation == "start-current") != current) {
 		return result, errBrokerExecutionRefused
 	}
 	if c.Phase == brokerpipe.FinishExecution {
@@ -190,7 +193,7 @@ func (a *brokerExecutionActions) handle(ctx context.Context, c brokerpipe.Execut
 	}
 	role := &a.candidate
 	switch c.Phase {
-	case brokerpipe.RelaySelectedExecutor:
+	case brokerpipe.RelaySelectedExecutor, brokerpipe.RelayStartupExecutor:
 		role = &a.relay
 	case brokerpipe.SpawnCurrent, brokerpipe.ObserveCurrent, brokerpipe.CloseCurrent:
 		role = &a.current
@@ -198,7 +201,7 @@ func (a *brokerExecutionActions) handle(ctx context.Context, c brokerpipe.Execut
 		role = &a.fallback
 	}
 	switch c.Phase {
-	case brokerpipe.RelaySelectedExecutor, brokerpipe.SpawnCurrent, brokerpipe.SpawnCandidate, brokerpipe.SpawnFallback:
+	case brokerpipe.RelaySelectedExecutor, brokerpipe.RelayStartupExecutor, brokerpipe.SpawnCurrent, brokerpipe.SpawnCandidate, brokerpipe.SpawnFallback:
 		// Normal and qualification are distinct conversations. Even a completed
 		// close cannot convert a qualification child into an ordinary session, or
 		// clear the application's already-latched qualification output fence.

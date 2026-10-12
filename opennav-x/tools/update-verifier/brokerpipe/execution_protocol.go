@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"strings"
 	"unicode/utf8"
+
+	"example.com/opennav-update-verifier/releasepolicy"
 )
 
 // ExecutionPipeName is fixed and separate from the unchanged staging protocol.
@@ -23,6 +25,8 @@ const (
 	// and report values are never independent selection or commissioning proof.
 	// RelaySelectedExecutor creates only a fresh fixed selected launcher; it is not selection authority.
 	RelaySelectedExecutor ExecutionPhase = "relay-selected-executor"
+	RelayStartupExecutor  ExecutionPhase = "relay-startup-executor"
+	OfferUpdate           ExecutionPhase = "offer-update"
 	SpawnCurrent          ExecutionPhase = "spawn-current"
 	ObserveCurrent        ExecutionPhase = "observe-current"
 	CloseCurrent          ExecutionPhase = "close-current"
@@ -39,7 +43,7 @@ const (
 
 func validExecutionPhase(p ExecutionPhase) bool {
 	switch p {
-	case InspectPrevious, RestorePrevious, CommissionCandidate, RelaySelectedExecutor, SpawnCurrent, ObserveCurrent, CloseCurrent, SpawnCandidate, ObserveCandidate, CloseCandidate, CommissionFallback, SpawnFallback, ObserveFallback, CloseFallback, RestoreProfile, FinishExecution:
+	case InspectPrevious, RestorePrevious, CommissionCandidate, RelaySelectedExecutor, RelayStartupExecutor, OfferUpdate, SpawnCurrent, ObserveCurrent, CloseCurrent, SpawnCandidate, ObserveCandidate, CloseCandidate, CommissionFallback, SpawnFallback, ObserveFallback, CloseFallback, RestoreProfile, FinishExecution:
 		return true
 	}
 	return false
@@ -48,9 +52,12 @@ func validExecutionPhase(p ExecutionPhase) bool {
 // ExecutionRequest names a proposed conversation and protected stage lookup.
 // Its identifiers are data, never consent, durable one-use or launch authority.
 // Operation is exactly execute-session (qualification), start-current (normal
-// selected startup), or start-selected (approved-baseline startup admission).
+// selected startup), start-selected (approved-baseline startup admission), or
+// offer-current (a signed offer for the actual selected original executor).
 // The host inspects original protected history before choosing qualification or
-// terminal relay for start-selected. No intent confers authorization.
+// terminal relay for start-selected. offer-current only presents a signed offer
+// and finishes; staging and ordinary startup require distinct fresh conversations.
+// No intent confers authorization.
 // It accepts no command, path, trust configuration or caller-selected pipe.
 type ExecutionRequest struct {
 	Schema    int    `json:"schema"`
@@ -74,6 +81,11 @@ type ExecutionCommand struct {
 	ApplicationGeneration string         `json:"applicationGeneration"`
 	HealthPipe            string         `json:"healthPipe"`
 	HealthChallenge       string         `json:"healthChallenge"`
+	OfferVersion          string         `json:"offerVersion"`
+	OfferCommit           string         `json:"offerCommit"`
+	OfferPolicySHA256     string         `json:"offerPolicySha256"`
+	PromptBytes           int64          `json:"promptBytes"`
+	PromptSHA256          string         `json:"promptSha256"`
 }
 
 // ExecutionDirective is the entire server-selected business payload. Generation
@@ -83,10 +95,13 @@ type ExecutionCommand struct {
 // are data: the host must own the actual health endpoint/child and corroborate it.
 // The transport, not this directive, supplies session/sequence/challenge fields.
 type ExecutionDirective struct {
-	Phase                 ExecutionPhase
-	ApplicationGeneration string
-	HealthPipe            string
-	HealthChallenge       string
+	Phase                                        ExecutionPhase
+	ApplicationGeneration                        string
+	HealthPipe                                   string
+	HealthChallenge                              string
+	OfferVersion, OfferCommit, OfferPolicySHA256 string
+	PromptBytes                                  int64
+	PromptSHA256                                 string
 }
 
 func validExecutionDirective(d ExecutionDirective, stageID string) bool {
@@ -94,6 +109,13 @@ func validExecutionDirective(d ExecutionDirective, stageID string) bool {
 		return false
 	}
 	if d.ApplicationGeneration != "" && !id32.MatchString(d.ApplicationGeneration) {
+		return false
+	}
+	if d.Phase == OfferUpdate {
+		_, err := releasepolicy.ParseSemVer(d.OfferVersion)
+		return err == nil && len(d.OfferVersion) <= 128 && commit40.MatchString(d.OfferCommit) && hex64.MatchString(d.OfferPolicySHA256) && d.PromptBytes > 0 && d.PromptBytes <= 512<<20 && hex64.MatchString(d.PromptSHA256) && d.ApplicationGeneration == stageID && d.HealthPipe == "" && d.HealthChallenge == ""
+	}
+	if d.OfferVersion != "" || d.OfferCommit != "" || d.OfferPolicySHA256 != "" || d.PromptBytes != 0 || d.PromptSHA256 != "" {
 		return false
 	}
 	switch d.Phase {
@@ -109,7 +131,7 @@ func validExecutionDirective(d ExecutionDirective, stageID string) bool {
 		}
 	}
 	switch d.Phase {
-	case RelaySelectedExecutor, SpawnCurrent, ObserveCurrent, CloseCurrent:
+	case RelaySelectedExecutor, RelayStartupExecutor, SpawnCurrent, ObserveCurrent, CloseCurrent:
 		return id32.MatchString(d.ApplicationGeneration) && d.HealthPipe == "" && d.HealthChallenge == ""
 	case SpawnCandidate, ObserveCandidate, SpawnFallback, ObserveFallback:
 		return id32.MatchString(d.ApplicationGeneration) && strings.HasPrefix(d.HealthPipe, "Skager.Update.") && id32.MatchString(strings.TrimPrefix(d.HealthPipe, "Skager.Update.")) && hex64.MatchString(d.HealthChallenge)
@@ -118,7 +140,7 @@ func validExecutionDirective(d ExecutionDirective, stageID string) bool {
 	}
 }
 func (c ExecutionCommand) directive() ExecutionDirective {
-	return ExecutionDirective{c.Phase, c.ApplicationGeneration, c.HealthPipe, c.HealthChallenge}
+	return ExecutionDirective{Phase: c.Phase, ApplicationGeneration: c.ApplicationGeneration, HealthPipe: c.HealthPipe, HealthChallenge: c.HealthChallenge, OfferVersion: c.OfferVersion, OfferCommit: c.OfferCommit, OfferPolicySHA256: c.OfferPolicySHA256, PromptBytes: c.PromptBytes, PromptSHA256: c.PromptSHA256}
 }
 
 // ExecutionObservation is untrusted report data. Even reported-complete proves
@@ -141,7 +163,7 @@ type ExecutionHandler func(context.Context, Peer, ExecutionRequest, *ExecutionSe
 type ExecutionClientHandler func(context.Context, ExecutionCommand) (ExecutionObservation, error)
 
 func validExecutionRequest(q ExecutionRequest) bool {
-	return q.Schema == 1 && (q.Operation == "execute-session" || q.Operation == "start-current" || q.Operation == "start-selected") && id32.MatchString(q.RequestID) && id32.MatchString(q.StageID)
+	return q.Schema == 1 && (q.Operation == "execute-session" || q.Operation == "start-current" || q.Operation == "start-selected" || q.Operation == "offer-current") && id32.MatchString(q.RequestID) && id32.MatchString(q.StageID)
 }
 func encodeExecutionRequest(q ExecutionRequest) ([]byte, error) {
 	if !validExecutionRequest(q) {
@@ -172,7 +194,7 @@ func decodeExecutionRequest(raw []byte) (ExecutionRequest, error) {
 	return q, nil
 }
 
-var executionEnvelopeKeys = []string{"schema", "kind", "requestId", "stageId", "sessionId", "sequence", "challenge", "phase", "applicationGeneration", "healthPipe", "healthChallenge"}
+var executionEnvelopeKeys = []string{"schema", "kind", "requestId", "stageId", "sessionId", "sequence", "challenge", "phase", "applicationGeneration", "healthPipe", "healthChallenge", "offerVersion", "offerCommit", "offerPolicySha256", "promptBytes", "promptSha256"}
 
 func validExecutionEnvelope(c ExecutionCommand, kind string) bool {
 	return c.Schema == 1 && c.Kind == kind && id32.MatchString(c.RequestID) && id32.MatchString(c.StageID) && id32.MatchString(c.SessionID) && c.Sequence > 0 && c.Sequence <= maxExecutionPhases && id32.MatchString(c.Challenge) && validExecutionDirective(c.directive(), c.StageID)

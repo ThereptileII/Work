@@ -325,7 +325,7 @@ func (b *nativeBrokerExecutionBackend) spawn(ctx context.Context, c brokerpipe.E
 		return nil, errBrokerExecutionRefused
 	}
 	executable, err := brokerExecutionApplication(b.programFiles, b.user.sid, c.ApplicationGeneration)
-	if c.Phase == brokerpipe.RelaySelectedExecutor {
+	if c.Phase == brokerpipe.RelaySelectedExecutor || c.Phase == brokerpipe.RelayStartupExecutor {
 		executable, err = brokerExecutionLauncher(b.programFiles, b.user.sid, c.ApplicationGeneration)
 	}
 	if err != nil {
@@ -352,7 +352,7 @@ func (b *nativeBrokerExecutionBackend) spawn(ctx context.Context, c brokerpipe.E
 	}
 	spec := processSpec{executable: executable, directory: path.Dir(executable), expectedImageHash: measured}
 	acquire := acquireNativeOrdinaryImage
-	if c.Phase == brokerpipe.RelaySelectedExecutor {
+	if c.Phase == brokerpipe.RelaySelectedExecutor || c.Phase == brokerpipe.RelayStartupExecutor {
 		acquire = acquireNativeRelayImage
 	}
 	acquired, err := acquire(spec)
@@ -381,7 +381,7 @@ func (b *nativeBrokerExecutionBackend) spawn(ctx context.Context, c brokerpipe.E
 	if err != nil || attributes == nil {
 		return nil, errors.Join(errBrokerExecutionRefused, err)
 	}
-	if c.Phase == brokerpipe.RelaySelectedExecutor {
+	if c.Phase == brokerpipe.RelaySelectedExecutor || c.Phase == brokerpipe.RelayStartupExecutor {
 		owner.child, err = owner.image.createBrokerRelay(c, attributes)
 	} else if c.Phase == brokerpipe.SpawnCurrent {
 		owner.child, err = owner.image.createBrokerCurrent(c, attributes)

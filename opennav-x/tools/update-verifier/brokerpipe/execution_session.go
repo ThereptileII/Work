@@ -157,7 +157,7 @@ func (s *ExecutionSession) ExchangeCommand(ctx context.Context, directive Execut
 			return err
 		}
 		p.sequence++
-		command := ExecutionCommand{Schema: 1, Kind: "command", RequestID: p.request.RequestID, StageID: p.request.StageID, SessionID: p.sessionID, Sequence: p.sequence, Challenge: challenge, Phase: phase, ApplicationGeneration: directive.ApplicationGeneration, HealthPipe: directive.HealthPipe, HealthChallenge: directive.HealthChallenge}
+		command := ExecutionCommand{Schema: 1, Kind: "command", RequestID: p.request.RequestID, StageID: p.request.StageID, SessionID: p.sessionID, Sequence: p.sequence, Challenge: challenge, Phase: phase, ApplicationGeneration: directive.ApplicationGeneration, HealthPipe: directive.HealthPipe, HealthChallenge: directive.HealthChallenge, OfferVersion: directive.OfferVersion, OfferCommit: directive.OfferCommit, OfferPolicySHA256: directive.OfferPolicySHA256, PromptBytes: directive.PromptBytes, PromptSHA256: directive.PromptSHA256}
 		raw, err := json.Marshal(command)
 		if err != nil {
 			return err

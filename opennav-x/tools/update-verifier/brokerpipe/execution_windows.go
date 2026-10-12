@@ -199,7 +199,7 @@ func serveExecutionOne(parent context.Context, h windows.Handle, handler Executi
 // services only exact server-issued phases. Handler observations are untrusted
 // data, never proof of effects. Nil means a matching finish/close was observed and
 // its acknowledgement sent; no transaction/health/launch/selection success. Callers
-// must obey ctx. Only start-current has bounded preconnection BUSY handoff
+// must obey ctx. Current and offer startup have bounded preconnection BUSY handoff
 // readiness; initial missing still refuses. No connected request/effect is replayed.
 func CallExecution(ctx context.Context, request ExecutionRequest, handler ExecutionClientHandler) (resultErr error) {
 	if ctx == nil || ctx.Err() != nil || handler == nil {
@@ -212,7 +212,7 @@ func CallExecution(ctx context.Context, request ExecutionRequest, handler Execut
 	ctx, cancel := context.WithTimeout(ctx, operationTimeout)
 	defer cancel()
 	open := openExecutionPipe
-	if request.Operation == "start-current" {
+	if request.Operation == "start-current" || request.Operation == "offer-current" {
 		open = openExecutionCurrentPipe
 	}
 	h, err := open(ctx)
