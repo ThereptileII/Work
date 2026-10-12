@@ -490,6 +490,9 @@ jobs:
           python3 opennav-x/tools/test-peer-buffer.py > opennav-x/evidence/local/peer-buffer-linux.log 2>&1
       - name: Build integrated application and run regressions without exceptions
         run: bash opennav-x/tools/build-integration-linux.sh
+      - name: Bound actual core chart raster observation and Standard fallback
+        run: |
+          python3 opennav-x/tools/test-chart-render-observation.py --source opennav-x/build/integration-source --core-only --output opennav-x/evidence/local/chart-render-observation > opennav-x/evidence/local/chart-render-observation-linux.log 2>&1
       - name: Run shared offline boat-feedback components on Linux
         shell: bash
         run: |
