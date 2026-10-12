@@ -12,6 +12,8 @@ import (
 	"runtime"
 	"strings"
 	"testing"
+
+	"example.com/opennav-update-verifier/baselineevidence"
 )
 
 type recoverySinkFunc func(context.Context, string, io.Reader, int64, string) error
@@ -20,10 +22,17 @@ func (f recoverySinkFunc) WriteFile(ctx context.Context, name string, r io.Reade
 	return f(ctx, name, r, size, digest)
 }
 
+func (f recoverySinkFunc) WriteEvidence(context.Context, string, []byte, string) error { return nil }
+func (f recoverySinkFunc) CompleteRecoveryEvidence(context.Context, baselineevidence.Identity) error {
+	return nil
+}
+
 // Disposable file IO only: this fixture makes no protected-root custody claim.
 type recoveryFileSink struct {
-	root  string
-	names []string
+	root          string
+	names         []string
+	evidenceNames []string
+	identity      RecoveryIdentity
 }
 
 func (s *recoveryFileSink) WriteFile(ctx context.Context, name string, r io.Reader, size int64, digest string) error {
@@ -48,9 +57,38 @@ func (s *recoveryFileSink) WriteFile(ctx context.Context, name string, r io.Read
 	return nil
 }
 
+func (s *recoveryFileSink) WriteEvidence(ctx context.Context, name string, raw []byte, digest string) error {
+	if name != "FILE_SHA256.json" && name != "installer/package.json" {
+		return errors.New("unexpected evidence")
+	}
+	if err := s.WriteFile(ctx, name, strings.NewReader(string(raw)), int64(len(raw)), digest); err != nil {
+		return err
+	}
+	s.names = s.names[:len(s.names)-1]
+	s.evidenceNames = append(s.evidenceNames, name)
+	return nil
+}
+func (s *recoveryFileSink) CompleteRecoveryEvidence(ctx context.Context, identity baselineevidence.Identity) error {
+	if err := ctx.Err(); err != nil {
+		return err
+	}
+	s.identity = identity
+	return nil
+}
+
 func prepareStageFixture(t *testing.T) (*recoveryFixture, *PreparedUpdateSet) {
 	t.Helper()
 	f := newRecoveryFixture(t, true)
+	// Preserve noncanonical valid whitespace to detect any reserialization.
+	f.entries["installer/package.json"] = append([]byte(" \n"), f.entries["installer/package.json"]...)
+	inventory := map[string]string{}
+	for name, raw := range f.entries {
+		if name != "FILE_SHA256.json" {
+			inventory[name] = recoveryDigest(raw)
+		}
+	}
+	f.entries["FILE_SHA256.json"] = append(recoveryJSON(t, inventory), []byte("\n ")...)
+	f.publish(t, recoveryArchive(t, f.entries, nil))
 	offer := f.check(t)
 	p, err := prepareUpdateSet(context.Background(), f.config, f.observed, offer.Consent, f.client)
 	if err != nil {
@@ -70,6 +108,13 @@ func TestStageRecoveryWritesExactAuthenticatedInstalledPayload(t *testing.T) {
 	}
 	var expected []string
 	for _, name := range recoveryNames(f.entries) {
+		if name == "FILE_SHA256.json" || name == "installer/package.json" {
+			got, err := os.ReadFile(filepath.Join(sink.root, filepath.FromSlash(name)))
+			if err != nil || string(got) != string(f.entries[name]) {
+				t.Fatalf("original evidence bytes differ: %s: %v", name, err)
+			}
+			continue
+		}
 		if !(strings.HasPrefix(name, "app/") || strings.HasPrefix(name, "docs/")) || name == "app/OPENNAV_PORTABLE_PREVIEW" {
 			if _, err := os.Stat(filepath.Join(sink.root, filepath.FromSlash(name))); !errors.Is(err, os.ErrNotExist) {
 				t.Fatalf("non-payload member staged: %s", name)
@@ -81,6 +126,9 @@ func TestStageRecoveryWritesExactAuthenticatedInstalledPayload(t *testing.T) {
 		if err != nil || string(got) != string(f.entries[name]) {
 			t.Fatalf("actual staged bytes differ: %s: %v", name, err)
 		}
+	}
+	if sink.identity != identity || !reflect.DeepEqual(sink.evidenceNames, []string{"FILE_SHA256.json", "installer/package.json"}) {
+		t.Fatal("original evidence or final identity binding absent")
 	}
 	if !reflect.DeepEqual(sink.names, expected) || p.Installer.file == nil || p.Recovery.file == nil {
 		t.Fatal("wrong deterministic payload set or released acquisition owner")
@@ -228,5 +276,93 @@ func TestStageRecoveryRechecksActualRetainedBytes(t *testing.T) {
 	}))
 	if err == nil || identity != (RecoveryIdentity{}) || calls != 0 {
 		t.Fatal("staging trusted cached hashes after actual retained bytes changed")
+	}
+}
+
+// A payload-only sink cannot silently discard original sidecar evidence.
+type payloadOnlyRecoverySink struct{ calls int }
+
+func (s *payloadOnlyRecoverySink) WriteFile(context.Context, string, io.Reader, int64, string) error {
+	s.calls++
+	return nil
+}
+
+type recoveryEvidenceFaultSink struct {
+	recoverySinkFunc
+	writeEvidence func(context.Context, string, []byte, string) error
+	complete      func(context.Context, baselineevidence.Identity) error
+}
+
+func (s recoveryEvidenceFaultSink) WriteEvidence(ctx context.Context, name string, raw []byte, hash string) error {
+	return s.writeEvidence(ctx, name, raw, hash)
+}
+func (s recoveryEvidenceFaultSink) CompleteRecoveryEvidence(ctx context.Context, identity baselineevidence.Identity) error {
+	return s.complete(ctx, identity)
+}
+
+func TestStageRecoveryRequiresOriginalEvidenceCompletion(t *testing.T) {
+	f, p := prepareStageFixture(t)
+	payloadOnly := &payloadOnlyRecoverySink{}
+	if identity, err := p.StageRecovery(context.Background(), payloadOnly); err == nil || identity != (RecoveryIdentity{}) || payloadOnly.calls != 0 {
+		t.Fatal("payload-only sink accepted")
+	}
+	for _, scenario := range []string{"inventory-failure", "manifest-failure", "completion-failure", "cancel-inventory", "cancel-manifest", "cancel-completion", "sink-mutates-owned-copy"} {
+		t.Run(scenario, func(t *testing.T) {
+			ctx, cancel := context.WithCancel(context.Background())
+			defer cancel()
+			var names []string
+			completed := false
+			sink := recoveryEvidenceFaultSink{
+				recoverySinkFunc: func(ctx context.Context, name string, r io.Reader, size int64, hash string) error {
+					_, err := io.Copy(io.Discard, r)
+					return err
+				},
+				writeEvidence: func(ctx context.Context, name string, raw []byte, hash string) error {
+					names = append(names, name)
+					if string(raw) != string(f.entries[name]) || recoveryDigest(raw) != hash {
+						t.Fatal("lost exact original")
+					}
+					if scenario == "inventory-failure" && name == "FILE_SHA256.json" || scenario == "manifest-failure" && name == "installer/package.json" {
+						return errors.New("private evidence path")
+					}
+					if scenario == "cancel-inventory" && name == "FILE_SHA256.json" || scenario == "cancel-manifest" && name == "installer/package.json" {
+						cancel()
+					}
+					if scenario == "sink-mutates-owned-copy" {
+						raw[0] ^= 1
+					}
+					return nil
+				},
+				complete: func(ctx context.Context, identity baselineevidence.Identity) error {
+					completed = true
+					if !reflect.DeepEqual(names, []string{"FILE_SHA256.json", "installer/package.json"}) || identity != p.RecoveryIdentity {
+						t.Fatal("completion before originals or changed identity")
+					}
+					if scenario == "completion-failure" {
+						return errors.New("private completion path")
+					}
+					if scenario == "cancel-completion" {
+						cancel()
+					}
+					return nil
+				},
+			}
+			identity, err := p.StageRecovery(ctx, sink)
+			if scenario == "sink-mutates-owned-copy" {
+				if err != nil || identity != p.RecoveryIdentity {
+					t.Fatal("sink copy mutation changed original identity")
+				}
+				return
+			}
+			if err == nil || identity != (RecoveryIdentity{}) || strings.Contains(err.Error(), "private") {
+				t.Fatalf("evidence failure leaked identity/detail: %v", err)
+			}
+			if strings.HasPrefix(scenario, "cancel-") && !errors.Is(err, context.Canceled) {
+				t.Fatal("lost evidence cancellation")
+			}
+			if (scenario == "inventory-failure" || scenario == "manifest-failure" || scenario == "cancel-inventory" || scenario == "cancel-manifest") && completed {
+				t.Fatal("completed after evidence failure")
+			}
+		})
 	}
 }

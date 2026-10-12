@@ -10,6 +10,7 @@ import (
 	"sort"
 	"strings"
 
+	"example.com/opennav-update-verifier/baselineevidence"
 	"example.com/opennav-update-verifier/releasepolicy"
 )
 
@@ -20,6 +21,17 @@ import (
 // Implementing this interface alone does not establish protected custody.
 type RecoverySink interface {
 	WriteFile(context.Context, string, io.Reader, int64, string) error
+}
+
+// RecoveryEvidenceSink retains the exact authenticated original sidecars alongside
+// payload, then verifies their identity and complete payload membership. These
+// methods alone authenticate no publisher or grant execution authority.
+// StageRecovery requires this extension; RecoverySink remains the payload-only
+// interface used by initial approved-baseline import.
+type RecoveryEvidenceSink interface {
+	RecoverySink
+	WriteEvidence(context.Context, string, []byte, string) error
+	CompleteRecoveryEvidence(context.Context, baselineevidence.Identity) error
 }
 
 // This private, owner-bound seal is created only after real authenticated
@@ -52,7 +64,8 @@ func (p *PreparedUpdateSet) recoveryStageValid() bool {
 // StageRecovery rechecks the retained authenticated Recovery ZIP and all inner
 // identities, requiring the exact Lifecycle manifest sidecar. It streams only
 // that manifest's app/docs payload set, in lexical path order, excluding the
-// portable marker. No profile, installer sidecar or inventory is staged.
+// portable marker, and preserves exact original FILE_SHA256.json and
+// installer/package.json bytes as evidence. No profile is staged.
 //
 // It selects no OS destination and grants no execution, broker or commissioning
 // authority. In particular, a sidecar is not Setup embedded-resource proof.
@@ -66,6 +79,10 @@ func (p *PreparedUpdateSet) StageRecovery(ctx context.Context, sink RecoverySink
 	}
 	if err := ctx.Err(); err != nil {
 		return empty, err
+	}
+	evidence, ok := sink.(RecoveryEvidenceSink)
+	if !ok {
+		return empty, errors.New("exact original recovery evidence sink required")
 	}
 	binding := p.stage
 	contents, err := readRecoveryContents(ctx, binding.recovery, binding.policy)
@@ -115,6 +132,38 @@ func (p *PreparedUpdateSet) StageRecovery(ctx context.Context, sink RecoverySink
 		if closeErr != nil || stream.count != size || n != 0 || eof != io.EOF || hex.EncodeToString(stream.digest.Sum(nil)) != contents.inventory[name] {
 			return empty, errors.New("recovery staging member length, hash or CRC differs")
 		}
+	}
+	for _, original := range []struct {
+		name   string
+		raw    []byte
+		digest string
+	}{
+		{"FILE_SHA256.json", contents.inventoryBytes, contents.identity.InventorySHA256},
+		{"installer/package.json", contents.packageBytes, contents.identity.LifecycleManifestSHA256},
+	} {
+		if err := ctx.Err(); err != nil {
+			return empty, err
+		}
+		// Pass an owned copy: a sink must never mutate the authenticated parser's
+		// retained bytes or affect the next evidence write.
+		if err := evidence.WriteEvidence(ctx, original.name, append([]byte(nil), original.raw...), original.digest); err != nil {
+			if canceled := ctx.Err(); canceled != nil {
+				return empty, canceled
+			}
+			return empty, errors.New("recovery staging evidence sink refused")
+		}
+	}
+	if err := ctx.Err(); err != nil {
+		return empty, err
+	}
+	if !p.recoveryStageValid() {
+		return empty, errors.New("acquisition set changed during recovery staging")
+	}
+	if err := evidence.CompleteRecoveryEvidence(ctx, contents.identity); err != nil {
+		if canceled := ctx.Err(); canceled != nil {
+			return empty, canceled
+		}
+		return empty, errors.New("recovery staging evidence binding refused")
 	}
 	if err := ctx.Err(); err != nil {
 		return empty, err

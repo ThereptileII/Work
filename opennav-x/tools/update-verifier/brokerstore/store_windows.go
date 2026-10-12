@@ -624,7 +624,7 @@ func (c *nativeCandidate) create(relative string) (candidateFile, error) {
 	if err := c.check(); err != nil {
 		return nil, err
 	}
-	if relative != ReceiptFilename {
+	if relative != ReceiptFilename && !baselineEvidenceName(relative) {
 		if err := memberPath(relative); err != nil {
 			return nil, err
 		}
@@ -781,4 +781,55 @@ func (n *nativeStore) close() error {
 		n.lock = nil
 	}
 	return result
+}
+
+// candidateInventory enumerates each retained physical directory, refusing any
+// payload/evidence entry not created by this candidate. The separately owned
+// private acquisition lease is the sole fixed namespace exception.
+func (c *nativeCandidate) candidateInventory(names []string, acquisition bool) error {
+	if err := c.check(); err != nil {
+		return err
+	}
+	expected := map[string]map[string]bool{}
+	for name := range c.directories {
+		expected[name] = map[string]bool{}
+	}
+	if expected[""] == nil {
+		return errors.New("candidate root unavailable")
+	}
+	for name := range c.directories {
+		if name == "" {
+			continue
+		}
+		parent, child := splitBaselineName(name)
+		if expected[parent] == nil {
+			return errors.New("candidate directory parent absent")
+		}
+		expected[parent][child] = true
+	}
+	for _, name := range names {
+		parent, child := splitBaselineName(name)
+		if expected[parent] == nil || expected[parent][child] {
+			return errors.New("candidate namespace collision")
+		}
+		expected[parent][child] = true
+	}
+	if acquisition {
+		expected[""][acquisitionDirectory] = true
+	}
+	for name, wanted := range expected {
+		entries, err := boundedEntries(c.directories[name], len(wanted)+1)
+		if err != nil {
+			return err
+		}
+		if len(entries) != len(wanted) {
+			return errors.New("candidate namespace has missing or additional entries")
+		}
+		for _, entry := range entries {
+			if !wanted[entry.Name()] {
+				return errors.New("candidate namespace has alias or unknown entry")
+			}
+		}
+	}
+	return c.check()
 }

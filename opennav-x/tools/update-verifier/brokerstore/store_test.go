@@ -61,6 +61,17 @@ func (m *memoryCandidate) create(name string) (candidateFile, error) {
 	m.files[name] = f
 	return f, nil
 }
+func (m *memoryCandidate) candidateInventory(names []string, _ bool) error {
+	if len(names) != len(m.files) {
+		return testFault
+	}
+	for _, name := range names {
+		if m.files[name] == nil {
+			return testFault
+		}
+	}
+	return m.fault
+}
 func (m *memoryCandidate) close() error { m.closes++; return m.closeFault }
 
 type memoryFile struct {
@@ -203,10 +214,10 @@ func TestConcurrentStoreCloseWaitsForOriginalCleanup(t *testing.T) {
 
 func TestPayloadAndSeal(t *testing.T) {
 	_, c, m := testCandidate(t)
-	for _, name := range []string{"app/skager.exe", "app/plugins/plugin.dll", "docs/NOTICE.txt"} {
-		if e := write(c, name, "payload"); e != nil {
-			t.Fatal(e)
-		}
+	f := baselineData(t)
+	writeCandidateEvidence(t, c, f)
+	if err := c.CompleteRecoveryEvidence(context.Background(), f.identity); err != nil {
+		t.Fatal(err)
 	}
 	receipt := []byte(`{"stage":"bound by caller"}`)
 	if e := c.Seal(context.Background(), receipt); e != nil {
@@ -293,10 +304,12 @@ func TestCustodyFailurePoisons(t *testing.T) {
 }
 func TestSealRehashesHeldBytes(t *testing.T) {
 	_, c, m := testCandidate(t)
-	if e := write(c, "app/a", "old"); e != nil {
-		t.Fatal(e)
+	f := baselineData(t)
+	writeCandidateEvidence(t, c, f)
+	if err := c.CompleteRecoveryEvidence(context.Background(), f.identity); err != nil {
+		t.Fatal(err)
 	}
-	m.files["app/a"].data = []byte("new")
+	m.files["app/opencpn.exe"].data[0] ^= 1
 	if e := c.Seal(context.Background(), []byte("receipt")); e == nil {
 		t.Fatal("changed held bytes accepted")
 	}
@@ -347,11 +360,14 @@ func TestOperationBounds(t *testing.T) {
 }
 func TestCancellationDuringHeldRehash(t *testing.T) {
 	_, c, m := testCandidate(t)
-	if e := write(c, "app/a", "payload"); e != nil {
-		t.Fatal(e)
+	f := baselineData(t)
+	writeCandidateEvidence(t, c, f)
+	if err := c.CompleteRecoveryEvidence(context.Background(), f.identity); err != nil {
+		t.Fatal(err)
 	}
 	ctx, cancel := context.WithCancel(context.Background())
-	m.files["app/a"].onRead = cancel
+	defer cancel()
+	m.files["app/opencpn.exe"].onRead = cancel
 	if e := c.Seal(ctx, []byte("receipt")); !errors.Is(e, context.Canceled) {
 		t.Fatal(e)
 	}

@@ -18,6 +18,8 @@ import (
 	"strings"
 	"sync"
 	"sync/atomic"
+
+	"example.com/opennav-update-verifier/baselineevidence"
 )
 
 const (
@@ -88,6 +90,8 @@ type Candidate struct {
 	closed, poisoned, sealed bool
 	closeErr                 error
 	acquisition              *Acquisition
+	recoveryEvidence         *baselineevidence.Identity
+	recoveryMembers          map[string]fileRecord
 }
 
 func validHex(s string, n int) bool {
@@ -283,6 +287,9 @@ func (c *Candidate) WriteFile(ctx context.Context, relative string, content io.R
 			c.poisoned = true
 		}
 	}()
+	if c.recoveryEvidence != nil {
+		return errors.New("recovery evidence already completed")
+	}
 	if ctx == nil || content == nil || length < 0 || length > MaxFileBytes || !validHex(digest, 64) || len(c.files) >= MaxFiles || length > MaxPayloadBytes-c.bytes {
 		return errors.New("invalid or exhausted candidate write bounds")
 	}
@@ -301,6 +308,10 @@ func (c *Candidate) WriteFile(ctx context.Context, relative string, content io.R
 		return err
 	}
 	c.bytes += length
+	if c.recoveryMembers == nil {
+		c.recoveryMembers = map[string]fileRecord{}
+	}
+	c.recoveryMembers[relative] = fileRecord{file: file, length: length, digest: digest}
 	return nil
 }
 
@@ -372,7 +383,8 @@ func verifyFile(ctx context.Context, store *Store, file candidateFile, length in
 	return file.check(length)
 }
 
-// Seal writes only the fixed receipt, after at least one complete payload file.
+// Seal writes only the fixed receipt after complete original recovery evidence
+// and exact payload membership have been bound and rechecked through held files.
 // The broker must bind its own receipt schema to the authenticated preparation;
 // this storage boundary treats receipt bytes as opaque, never launch authority.
 func (c *Candidate) Seal(ctx context.Context, receipt []byte) (err error) {
@@ -394,13 +406,11 @@ func (c *Candidate) Seal(ctx context.Context, receipt []byte) (err error) {
 	if err = ctx.Err(); err != nil {
 		return err
 	}
-	for _, entry := range c.files {
-		if err = ctx.Err(); err != nil {
-			return err
-		}
-		if err = verifyFile(ctx, c.store, entry.file, entry.length, entry.digest); err != nil {
-			return err
-		}
+	if c.recoveryEvidence == nil {
+		return errors.New("complete bound original recovery evidence required")
+	}
+	if err = c.validateRecoveryEvidence(ctx, *c.recoveryEvidence); err != nil {
+		return err
 	}
 	file, err := c.backend.create(ReceiptFilename)
 	if err != nil {

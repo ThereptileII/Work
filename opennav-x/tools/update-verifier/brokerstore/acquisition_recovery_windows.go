@@ -97,7 +97,11 @@ func openRecoveryCandidate(n *nativeStore, stage string) (result *nativeCandidat
 		return nil, errors.New("candidate crossed physical volume")
 	}
 	pin.security = expected
-	c := &nativeCandidate{store: n, pins: []*nativePin{pin}, directories: map[string]*nativePin{"": pin}, securityDir: expected, stageID: stage, client: user.String()}
+	fileSD, err := descriptor(n.broker, user, false)
+	if err != nil {
+		return nil, err
+	}
+	c := &nativeCandidate{store: n, pins: []*nativePin{pin}, directories: map[string]*nativePin{"": pin}, securityDir: expected, securityFile: fileSD, stageID: stage, client: user.String()}
 	ok = true
 	return c, nil
 }
@@ -130,7 +134,7 @@ func (n *nativeStore) reconcileCandidate(stage string) (resultErr error) {
 		return err
 	}
 	defer func() { resultErr = errors.Join(resultErr, c.close()) }()
-	entries, err := boundedEntries(c.directories[""], 4)
+	entries, err := boundedEntries(c.directories[""], 6)
 	if err != nil {
 		return err
 	}
@@ -138,6 +142,13 @@ func (n *nativeStore) reconcileCandidate(stage string) (resultErr error) {
 	for _, entry := range entries {
 		switch entry.Name() {
 		case "app", "docs", ReceiptFilename: // Payload/receipt are never deleted or adopted here.
+		case "FILE_SHA256.json", "installer":
+			// Only exact original sidecar objects may coexist with a lease. They
+			// remain inert; reconciliation never deletes, adopts or parses them as
+			// acquisition authority. Unknown installer contents still refuse.
+			if err = c.checkRecoveryEvidenceResidue(entry.Name()); err != nil {
+				return err
+			}
 		case acquisitionDirectory:
 			hasLease = true
 		default:
