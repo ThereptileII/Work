@@ -73,6 +73,11 @@ func (g *InstalledGeneration) TransitionReadOnly(ctx context.Context) (result *R
 	defer g.store.mu.Unlock()
 	g.mu.Lock()
 	defer g.mu.Unlock()
+	return g.transitionReadOnlyLocked(ctx)
+}
+
+// Caller holds Store.mu and generation.mu.
+func (g *InstalledGeneration) transitionReadOnlyLocked(ctx context.Context) (result *ReadOnlyGeneration, resultErr error) {
 	if err := g.ready(); err != nil {
 		return nil, err
 	}
@@ -135,6 +140,8 @@ func (r *ReadOnlyGeneration) Validate() error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	g := r.generation
+	g.store.mu.Lock()
+	defer g.store.mu.Unlock()
 	g.mu.Lock()
 	defer g.mu.Unlock()
 	if err := r.ready(); err != nil {
@@ -153,6 +160,8 @@ func (r *ReadOnlyGeneration) Completion() (GenerationCompletion, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	g := r.generation
+	g.store.mu.Lock()
+	defer g.store.mu.Unlock()
 	g.mu.Lock()
 	defer g.mu.Unlock()
 	if err := r.ready(); err != nil {
@@ -171,6 +180,8 @@ func (r *ReadOnlyGeneration) OpenMember(relative string) (*GenerationReadHandle,
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	g := r.generation
+	g.store.mu.Lock()
+	defer g.store.mu.Unlock()
 	g.mu.Lock()
 	defer g.mu.Unlock()
 	if err := r.ready(); err != nil {
@@ -197,6 +208,8 @@ func (h *GenerationReadHandle) Identity() (GenerationMemberIdentity, error) {
 		return GenerationMemberIdentity{}, ErrClosed
 	}
 	g := h.owner.generation
+	g.store.mu.Lock()
+	defer g.store.mu.Unlock()
 	g.mu.Lock()
 	defer g.mu.Unlock()
 	if h.closed {
@@ -215,6 +228,8 @@ func (h *GenerationReadHandle) ReadAt(p []byte, offset int64) (int, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	g := h.owner.generation
+	g.store.mu.Lock()
+	defer g.store.mu.Unlock()
 	g.mu.Lock()
 	defer g.mu.Unlock()
 	if h.closed {
@@ -254,6 +269,8 @@ func (h *GenerationReadHandle) Close() error {
 		return nil
 	}
 	g := h.owner.generation
+	g.store.mu.Lock()
+	defer g.store.mu.Unlock()
 	g.mu.Lock()
 	defer g.mu.Unlock()
 	if !h.closed {

@@ -74,6 +74,17 @@ func (s *Store) MaterializeApprovedBaselineFresh(ctx context.Context, previous *
 	if s.closed.Load() {
 		return nil, ErrClosed
 	}
+	if previous != nil && previous.store == s && s.hasLiveGenerationLocked(previous.record.ClientSID) {
+		return nil, ErrGenerationHistoryRequiresReadOnly
+	}
+	return s.materializeApprovedBaselineFreshLocked(ctx, previous, rawRequest, approvedSHA, nil)
+}
+
+// Caller holds Store.mu; onMutation runs immediately before permanent reservation.
+func (s *Store) materializeApprovedBaselineFreshLocked(ctx context.Context, previous *InstalledBaseline, rawRequest []byte, approvedSHA string, onMutation func()) (result *ApprovedBaselineGeneration, resultErr error) {
+	if s.closed.Load() {
+		return nil, ErrClosed
+	}
 	if ctx == nil || previous == nil || previous.store != s {
 		return nil, errors.New("live same-store completed approved baseline required")
 	}
@@ -125,7 +136,7 @@ func (s *Store) MaterializeApprovedBaselineFresh(ctx context.Context, previous *
 	defer func() {
 		if resultErr != nil {
 			g.failure = errors.Join(g.failure, resultErr)
-			resultErr = errors.Join(resultErr, g.Close())
+			resultErr = errors.Join(resultErr, g.closeLocked())
 		}
 	}()
 	sourceDirs, sourceFiles, origin, err := b.baselineSource(previous.record.Members)
@@ -141,6 +152,9 @@ func (s *Store) MaterializeApprovedBaselineFresh(ctx context.Context, previous *
 	originRaw, err := json.Marshal(g.record)
 	if err != nil || len(originRaw) > maxGenerationRecordBytes {
 		return nil, errors.New("bounded baseline view origin required")
+	}
+	if onMutation != nil {
+		onMutation()
 	}
 	if err = b.reserve(ctx, originRaw); err != nil {
 		return nil, err
@@ -263,6 +277,8 @@ func (b *ApprovedBaselineGeneration) Completion() (ApprovedBaselineCompletion, e
 	g := b.generation
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+	g.store.mu.Lock()
+	defer g.store.mu.Unlock()
 	g.mu.Lock()
 	defer g.mu.Unlock()
 	if err := g.ready(); err != nil {
@@ -312,6 +328,8 @@ func (b *ReadOnlyApprovedBaselineGeneration) Completion() (ApprovedBaselineCompl
 	g := b.owner.generation
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+	g.store.mu.Lock()
+	defer g.store.mu.Unlock()
 	g.mu.Lock()
 	defer g.mu.Unlock()
 	if err := b.owner.ready(); err != nil {

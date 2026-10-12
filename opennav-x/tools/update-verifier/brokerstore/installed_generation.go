@@ -99,6 +99,17 @@ func (s *Store) MaterializeCandidateFresh(ctx context.Context, previous *Install
 	if s.closed.Load() {
 		return nil, ErrClosed
 	}
+	if candidate != nil && candidate.store == s && s.hasLiveGenerationLocked(candidate.clientSID) {
+		return nil, ErrGenerationHistoryRequiresReadOnly
+	}
+	return s.materializeCandidateFreshLocked(ctx, previous, candidate, nil)
+}
+
+// Caller holds Store.mu; onMutation runs immediately before permanent reservation.
+func (s *Store) materializeCandidateFreshLocked(ctx context.Context, previous *InstalledBaseline, candidate *Candidate, onMutation func()) (result *InstalledGeneration, resultErr error) {
+	if s.closed.Load() {
+		return nil, ErrClosed
+	}
 	if ctx == nil || previous == nil || candidate == nil || previous.store != s || candidate.store != s {
 		return nil, errors.New("live same-store approved baseline and candidate required")
 	}
@@ -172,7 +183,7 @@ func (s *Store) MaterializeCandidateFresh(ctx context.Context, previous *Install
 	defer func() {
 		if resultErr != nil {
 			g.failure = errors.Join(g.failure, resultErr)
-			resultErr = errors.Join(resultErr, g.Close())
+			resultErr = errors.Join(resultErr, g.closeLocked())
 		}
 	}()
 	// Consuming the source before reservation prevents retry after any attempted
@@ -188,6 +199,9 @@ func (s *Store) MaterializeCandidateFresh(ctx context.Context, previous *Install
 	origin, err := json.Marshal(g.record)
 	if err != nil || len(origin) > maxGenerationRecordBytes {
 		return nil, errors.New("bounded generation origin required")
+	}
+	if onMutation != nil {
+		onMutation()
 	}
 	if err = b.reserve(ctx, origin); err != nil {
 		return nil, err
@@ -376,6 +390,8 @@ func (g *InstalledGeneration) ready() error {
 func (g *InstalledGeneration) Validate() (err error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+	g.store.mu.Lock()
+	defer g.store.mu.Unlock()
 	g.mu.Lock()
 	defer g.mu.Unlock()
 	if err := g.ready(); err != nil {
@@ -394,6 +410,8 @@ func (g *InstalledGeneration) Validate() (err error) {
 func (g *InstalledGeneration) Completion() (GenerationCompletion, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+	g.store.mu.Lock()
+	defer g.store.mu.Unlock()
 	g.mu.Lock()
 	defer g.mu.Unlock()
 	if err := g.ready(); err != nil {
@@ -422,6 +440,8 @@ func (g *InstalledGeneration) completionRecord() (GenerationCompletion, error) {
 // Close retains the first failure and cleanup result and drains exactly once.
 // No partial or completed namespace is deleted or made reusable.
 func (g *InstalledGeneration) Close() error {
+	g.store.mu.Lock()
+	defer g.store.mu.Unlock()
 	g.mu.Lock()
 	defer g.mu.Unlock()
 	return g.closeLocked()
