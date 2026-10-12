@@ -473,6 +473,13 @@ jobs:
           sudo mk-build-deps --install --remove --tool='apt-get -y --no-install-recommends' opennav-x/upstream/OpenCPN/ci/control
           sudo locale-gen sv_SE.UTF-8 en_US.UTF-8
           mkdir -p "$HOME/.opencpn"
+      - name: Preserve native route drafts across modal focus changes
+        run: |
+          mkdir -p opennav-x/evidence/local
+          python3 opennav-x/tools/test-route-focus.py --upstream opennav-x/upstream/OpenCPN --output opennav-x/build/route-focus-regression > opennav-x/evidence/local/route-focus-linux.log 2>&1
+      - name: Preserve enlarged route selection at native canvas DPI
+        run: |
+          python3 opennav-x/tools/test-route-hit-dpi.py --upstream opennav-x/upstream/OpenCPN --output opennav-x/build/route-hit-dpi-regression > opennav-x/evidence/local/route-hit-dpi-linux.log 2>&1
       - name: Reject untrusted public downloads using actual pinned Downloader
         run: |
           mkdir -p opennav-x/evidence/local

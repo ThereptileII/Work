@@ -87,6 +87,7 @@ def source_inventory(root, commit):
                          'patches/opencpn-5.12.4-ais-transport.patch',
                          'patches/opencpn-5.12.4-chart-presentation.patch',
                          'patches/opencpn-5.12.4-route-focus.patch',
+                         'patches/opencpn-5.12.4-route-hit-dpi.patch',
                          'patches/opencpn-5.12.4-maintained-curl.patch',
                          'patches/opencpn-5.12.4-download-trust.patch',
                          'patches/opencpn-5.12.4-wxcurl-trust.patch',

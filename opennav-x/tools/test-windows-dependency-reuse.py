@@ -204,6 +204,7 @@ class SameJobReuseReceiptTests(unittest.TestCase):
             "tools/windows-curl-import-layout.cmake",
             "tools/test-curl-source-preflight.ps1",
             "patches/opencpn-5.12.4-route-focus.patch",
+            "patches/opencpn-5.12.4-route-hit-dpi.patch",
             "evidence/local/windows-curl-source-preflight/source-analysis.json",
             "evidence/local/windows-curl-source-preflight/test1119.stderr.txt",
             "build/dependency-downloads/zlib-1.3.2.tar.gz",

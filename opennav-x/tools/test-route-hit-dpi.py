@@ -58,12 +58,8 @@ def main():
                       and any(isinstance(t, ast.Name) and t.id == 'patches'
                               for t in node.targets))
     patches = [node.right.value for node in assignment.value.elts]
-    # Root integrates shared build/source registration separately. The runner
-    # works before and after that integration, applying the new patch once.
-    if patches.count(PATCH) > 1:
-        raise SystemExit('Duplicate route hit DPI patch registration')
-    if PATCH not in patches:
-        patches.append(PATCH)
+    if patches.count(PATCH) != 1:
+        raise SystemExit('Route hit DPI patch missing or duplicated in actual build')
     for patch in patches:
         if args.unpatched and patch == PATCH:
             continue
