@@ -15,13 +15,16 @@ import (
 var hostTestFailure = errors.New("injected native failure")
 
 type hostTestFixture struct {
-	run      *executionHostRun
-	facts    []executionSelectionFact
-	events   []string
-	fail     string
-	report   brokerpipe.ExecutionObservation
-	children [2]*hostTestChild
-	resolved string
+	run         *executionHostRun
+	facts       []executionSelectionFact
+	events      []string
+	fail        string
+	report      brokerpipe.ExecutionObservation
+	children    [2]*hostTestChild
+	resolved    string
+	afterSpawn  func(int)
+	afterHealth func(int)
+	afterExit   func(int)
 }
 type hostTestJournal struct{ f *hostTestFixture }
 
@@ -110,14 +113,24 @@ func (c hostTestConversation) ExchangeCommand(ctx context.Context, d brokerpipe.
 			return brokerpipe.ExecutionObservation{}, errors.New("creator reached before durable consumption")
 		}
 	}
+	if c.f.afterSpawn != nil && (d.Phase == brokerpipe.SpawnCandidate || d.Phase == brokerpipe.SpawnFallback) {
+		index := 0
+		if d.Phase == brokerpipe.SpawnFallback {
+			index = 1
+		}
+		c.f.afterSpawn(index)
+	}
 	return c.f.report, ctx.Err()
 }
 
 type hostTestChild struct {
-	f        *hostTestFixture
-	index    int
-	observed bool
-	closed   bool
+	f          *hostTestFixture
+	index      int
+	bound      bool
+	exited     bool
+	closeCalls int
+	observed   bool
+	closed     bool
 }
 
 func (c *hostTestChild) Environment(context.Context) (map[string]string, error) {
@@ -127,12 +140,26 @@ func (c *hostTestChild) Environment(context.Context) (map[string]string, error) 
 	}
 	return map[string]string{"SKAGER_UPDATE_GENERATION": g, "SKAGER_UPDATE_QUALIFY_PROFILE": "1", "SKAGER_UPDATE_PIPE": "Skager.Update." + strings.Repeat("a", 32), "SKAGER_UPDATE_CHALLENGE": strings.Repeat("b", 64)}, nil
 }
+func (c *hostTestChild) BindSpawn(ctx context.Context, report brokerpipe.ExecutionObservation) error {
+	c.f.events = append(c.f.events, "bind-spawn-native")
+	if c.f.fail == "bind-spawn" || report != c.f.report {
+		return hostTestFailure
+	}
+	c.bound = true
+	return ctx.Err()
+}
 func (c *hostTestChild) Observe(context.Context) (string, error) {
 	c.f.events = append(c.f.events, "observe-native")
+	if !c.bound {
+		return "", hostTestFailure
+	}
 	if (c.index == 0 && strings.HasPrefix(c.f.fail, "health")) || (c.index == 1 && c.f.fail == "health+fallback-health") {
 		return "", hostTestFailure
 	}
 	c.observed = true
+	if c.f.afterHealth != nil {
+		c.f.afterHealth(c.index)
+	}
 	return strings.Repeat("c", 64), nil
 }
 func (c *hostTestChild) ValidateHealthy(context.Context) error {
@@ -146,9 +173,19 @@ func (c *hostTestChild) WaitClosed(context.Context) (string, error) {
 	if c.f.fail == "teardown" {
 		return "", hostTestFailure
 	}
+	if !c.bound {
+		return "", hostTestFailure
+	}
+	c.exited = true
+	if c.f.afterExit != nil {
+		c.f.afterExit(c.index)
+	}
 	return strings.Repeat("f", 64), nil
 }
 func (c *hostTestChild) Close() error {
+	if !c.closed {
+		c.closeCalls++
+	}
 	c.closed = true
 	if c.f.fail == "child-close" {
 		return hostTestFailure
@@ -168,6 +205,15 @@ func newHostTestFixture(root bool) *hostTestFixture {
 			return hostTestFailure
 		}
 		return ctx.Err()
+	}
+	f.run.validateCleanup = f.run.validate
+	f.run.validateRecovery = f.run.validate
+	f.run.prepareRestore = func(_ context.Context, child executionHostChild) error {
+		c, ok := child.(*hostTestChild)
+		if !ok || !c.exited || c.closed || f.fail == "prepare-restore" {
+			return hostTestFailure
+		}
+		return nil
 	}
 	f.run.commission = func(ctx context.Context, fallback bool) (string, error) {
 		f.events = append(f.events, "commission-native")
@@ -223,7 +269,7 @@ func TestExecutionHostNativeEffectsPrecedeDurableSelection(t *testing.T) {
 			if f.parsed(t, root).terminal != "selected" || f.resolved != "selected" || !f.children[0].closed {
 				t.Fatal("missing actual completion")
 			}
-			want := []string{"append:begin", "release", "commission-native", "append:commissioned", "append:spawn-consumed", "command:spawn-candidate", "command:observe-candidate", "observe-native", "append:healthy", "command:close-candidate", "closed-native", "append:selected", "resolve-native", "command:finish"}
+			want := []string{"append:begin", "release", "commission-native", "append:commissioned", "append:spawn-consumed", "command:spawn-candidate", "bind-spawn-native", "observe-native", "append:healthy", "command:close-candidate", "closed-native", "append:selected", "resolve-native", "command:finish"}
 			if !reflect.DeepEqual(f.events, want) {
 				t.Fatalf("effect order %v", f.events)
 			}
@@ -276,7 +322,7 @@ func TestExecutionHostFallbackRequiresNativeCloseRestoreAndHealth(t *testing.T) 
 	}
 }
 func TestExecutionHostFailureBoundariesRemainPending(t *testing.T) {
-	for _, failure := range []string{"custody", "append:begin", "profile", "release", "commission", "append:commissioned", "prepare", "append:spawn-consumed", "command:spawn-candidate", "command:observe-candidate", "append:healthy", "command:close-candidate", "append:selected", "resolve", "command:finish", "journal-close", "profile-close"} {
+	for _, failure := range []string{"custody", "append:begin", "profile", "release", "commission", "append:commissioned", "prepare", "append:spawn-consumed", "command:spawn-candidate", "bind-spawn", "append:healthy", "command:close-candidate", "append:selected", "resolve", "command:finish", "journal-close", "profile-close"} {
 		t.Run(failure, func(t *testing.T) {
 			f := newHostTestFixture(true)
 			f.fail = failure
@@ -352,6 +398,162 @@ func TestExecutionHostPreparationPrecedesNativeProfileCapture(t *testing.T) {
 				}
 			} else if err != nil {
 				t.Fatal(err)
+			}
+		})
+	}
+}
+
+func TestExecutionHostPolicyOutageAfterSpawnOrHealthRestoresRetainedFallback(t *testing.T) {
+	for _, boundary := range []string{"spawn", "health", "closed"} {
+		t.Run(boundary, func(t *testing.T) {
+			f := newHostTestFixture(false)
+			outage := errors.New("signed policy unavailable")
+			offline := false
+			f.run.validate = func(ctx context.Context) error {
+				if offline {
+					return outage
+				}
+				return ctx.Err()
+			}
+			if boundary == "spawn" {
+				f.afterSpawn = func(index int) {
+					if index == 0 {
+						offline = true
+					}
+				}
+			} else if boundary == "health" {
+				f.afterHealth = func(index int) {
+					if index == 0 {
+						offline = true
+					}
+				}
+			}
+			if boundary == "closed" {
+				f.afterExit = func(index int) {
+					if index == 0 {
+						offline = true
+					}
+				}
+			}
+			if err := f.run.execute(context.Background()); err != nil {
+				t.Fatal(err)
+			}
+			if !offline || f.resolved != "rolled-back" || f.parsed(t, false).terminal != "rolled-back" {
+				t.Fatal("offline recovery did not select the retained predecessor", f.events)
+			}
+			for _, child := range f.children {
+				if child == nil || !child.exited || child.closeCalls != 1 {
+					t.Fatal("actual child was not drained once", child)
+				}
+			}
+			seen := strings.Join(f.events, ",")
+			if (boundary != "closed" && strings.Contains(seen, "append:healthy")) || strings.Contains(seen, "append:selected") || strings.Contains(seen, "command:observe-") {
+				t.Fatal("unavailable policy published candidate or redundant client health command", seen)
+			}
+			if !strings.Contains(seen, "command:close-candidate,closed-native,append:candidate-closed,restore-native,append:profile-restored") {
+				t.Fatal("fallback preceded definite exit/restoration", seen)
+			}
+		})
+	}
+}
+
+func TestExecutionHostOutageCannotSkipCleanupOrAuthorizeRecovery(t *testing.T) {
+	for _, failure := range []string{"teardown", "command:close-candidate", "child-close", "prepare-restore", "recovery-custody"} {
+		t.Run(failure, func(t *testing.T) {
+			f := newHostTestFixture(false)
+			outage := errors.New("signed policy unavailable")
+			offline := false
+			f.afterHealth = func(int) { offline = true }
+			f.run.validate = func(ctx context.Context) error {
+				if offline {
+					return outage
+				}
+				return ctx.Err()
+			}
+			f.fail = failure
+			if failure == "recovery-custody" {
+				f.run.validateRecovery = func(context.Context) error { return hostTestFailure }
+			}
+			err := f.run.execute(context.Background())
+			if !errors.Is(err, errExecutionHostUncertain) || !errors.Is(err, hostTestFailure) {
+				t.Fatal("cleanup/recovery failure hidden", err)
+			}
+			count := 0
+			for _, event := range f.events {
+				if event == "command:close-candidate" {
+					count++
+				}
+			}
+			if count != 1 || f.children[1] != nil || f.resolved != "" || f.children[0].closeCalls != 1 {
+				t.Fatal("close retried, failure selected or fallback invented", f.events)
+			}
+		})
+	}
+}
+
+func TestExecutionHostFallbackFailureDrainsOnceWithoutCurrentPolicy(t *testing.T) {
+	f := newHostTestFixture(false)
+	f.fail = "health+fallback-health"
+	outage := errors.New("signed policy unavailable")
+	offline := false
+	f.afterSpawn = func(index int) {
+		if index == 1 {
+			offline = true
+		}
+	}
+	f.run.validate = func(ctx context.Context) error {
+		if offline {
+			return outage
+		}
+		return ctx.Err()
+	}
+	if err := f.run.execute(context.Background()); !errors.Is(err, hostTestFailure) || !errors.Is(err, errExecutionHostUncertain) {
+		t.Fatal(err)
+	}
+	count := 0
+	for _, event := range f.events {
+		if event == "command:close-fallback" {
+			count++
+		}
+	}
+	if !offline || count != 1 || f.children[1] == nil || !f.children[1].exited || f.children[1].closeCalls != 1 || f.resolved != "" {
+		t.Fatal("failed fallback escaped actual cleanup or became selected", f.events)
+	}
+}
+
+func TestExecutionHostSpawnBindingFailureCannotRestoreOrObserve(t *testing.T) {
+	f := newHostTestFixture(false)
+	f.fail = "bind-spawn"
+	if err := f.run.execute(context.Background()); !errors.Is(err, errExecutionHostUncertain) || !errors.Is(err, hostTestFailure) {
+		t.Fatal(err)
+	}
+	seen := strings.Join(f.events, ",")
+	if !strings.Contains(seen, "command:spawn-candidate,bind-spawn-native,command:close-candidate,closed-native") || strings.Contains(seen, "observe-native") || strings.Contains(seen, "restore-native") || f.children[1] != nil {
+		t.Fatal("uncorroborated spawn gained health/restoration or escaped close attempt", seen)
+	}
+}
+
+func TestExecutionHostCancelledCleanupDoesNotDetachOrLiftCustody(t *testing.T) {
+	for _, failure := range []string{"cancel", "cleanup-custody"} {
+		t.Run(failure, func(t *testing.T) {
+			f := newHostTestFixture(false)
+			ctx, cancel := context.WithCancel(context.Background())
+			defer cancel()
+			if failure == "cancel" {
+				f.afterSpawn = func(int) { cancel() }
+			} else {
+				f.fail = "health"
+				f.run.validateCleanup = func(context.Context) error { return hostTestFailure }
+			}
+			err := f.run.execute(ctx)
+			if !errors.Is(err, errExecutionHostUncertain) {
+				t.Fatal(err)
+			}
+			if failure == "cancel" && !errors.Is(err, context.Canceled) {
+				t.Fatal("cancellation hidden", err)
+			}
+			if strings.Contains(strings.Join(f.events, ","), "command:close-") || f.children[1] != nil || f.resolved != "" {
+				t.Fatal("cleanup silently lifted cancelled/invalid authority", f.events)
 			}
 		})
 	}
