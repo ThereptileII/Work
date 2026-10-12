@@ -126,6 +126,14 @@ func TestNativeFreshEnrollmentServiceSmoke(t *testing.T) {
 		}
 	})
 	if err := initializeService(ctx, files); err != nil {
+		var mutation *serviceMutationError
+		if errors.As(err, &mutation) {
+			// Observations from the same held descriptor that refused enrollment;
+			// no ACL reread, path, username or additional authority is involved.
+			t.Logf("held machine mutation rejection: role=%s ancestor=%d ownerSID=%s aceSID=%s mask=0x%08x flags=0x%02x mutation=0x%08x",
+				mutation.location.role, mutation.location.ancestor, mutation.ownerSID, mutation.aceSID,
+				mutation.mask, mutation.flags, mutation.mutation)
+		}
 		t.Fatal("real stopped-only initialize-store/verify-store refused; fixed state retained for review:", err)
 	}
 	// verify-store above rereads completion as the actual broker principal. An

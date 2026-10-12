@@ -80,9 +80,52 @@ func trustedServiceOwner(s string) bool {
 	return s == "S-1-5-18" || s == "S-1-5-32-544" || s == "S-1-5-80-956008885-3418522649-1831038044-1853292631-2271478464"
 }
 
+type serviceSecurityRole uint8
+
+const (
+	serviceSecurityUnspecified serviceSecurityRole = iota
+	serviceSecurityManager
+	serviceSecurityRegistryAncestor
+	serviceSecurityInitialService
+)
+
+func (r serviceSecurityRole) String() string {
+	switch r {
+	case serviceSecurityManager:
+		return "sc-manager"
+	case serviceSecurityRegistryAncestor:
+		return "registry-ancestor"
+	case serviceSecurityInitialService:
+		return "initial-service"
+	default:
+		return "unspecified"
+	}
+}
+
+type serviceSecurityLocation struct {
+	role serviceSecurityRole
+	// One-based index in the fixed held registry ancestry; zero otherwise.
+	ancestor uint32
+}
+
+// Private facts from the descriptor already inspected on the original handle.
+// Error deliberately exposes no additional machine or principal information.
+type serviceMutationError struct {
+	location         serviceSecurityLocation
+	ownerSID, aceSID string
+	mask, mutation   uint32
+	flags            byte
+}
+
+func (*serviceMutationError) Error() string { return "untrusted machine mutation permission" }
+
 // Unknown ACE layouts fail closed. Deny ACEs do not grant mutation and need no
 // interpretation; allowed generic rights are included in the mutation mask.
 func serviceDescriptorSafe(sd *windows.SECURITY_DESCRIPTOR, mutation uint32) error {
+	return serviceDescriptorSafeAt(sd, mutation, serviceSecurityLocation{})
+}
+
+func serviceDescriptorSafeAt(sd *windows.SECURITY_DESCRIPTOR, mutation uint32, location serviceSecurityLocation) error {
 	if sd == nil {
 		return errors.New("machine security descriptor unavailable")
 	}
@@ -110,18 +153,19 @@ func serviceDescriptorSafe(sd *windows.SECURITY_DESCRIPTOR, mutation uint32) err
 			return errors.New("invalid machine ACE SID")
 		}
 		if ace.Header.AceFlags&windows.INHERIT_ONLY_ACE == 0 && uint32(ace.Mask)&mutation != 0 && !trustedServiceOwner(sid.String()) {
-			return errors.New("untrusted machine mutation permission")
+			return &serviceMutationError{location: location, ownerSID: owner.String(), aceSID: sid.String(),
+				mask: uint32(ace.Mask), mutation: mutation, flags: ace.Header.AceFlags}
 		}
 	}
 	return nil
 }
 
-func safeServiceHandle(h windows.Handle, kind windows.SE_OBJECT_TYPE, mutation uint32) error {
+func safeServiceHandle(h windows.Handle, kind windows.SE_OBJECT_TYPE, mutation uint32, location serviceSecurityLocation) error {
 	sd, err := windows.GetSecurityInfo(h, kind, windows.OWNER_SECURITY_INFORMATION|windows.DACL_SECURITY_INFORMATION)
 	if err != nil {
 		return err
 	}
-	return serviceDescriptorSafe(sd, mutation)
+	return serviceDescriptorSafeAt(sd, mutation, location)
 }
 
 func (n *nativeServiceBackend) checkMachine() error {
@@ -129,11 +173,11 @@ func (n *nativeServiceBackend) checkMachine() error {
 		return err
 	}
 	mutation := uint32(windows.DELETE | windows.WRITE_DAC | windows.WRITE_OWNER | windows.GENERIC_ALL | windows.GENERIC_WRITE)
-	if err := safeServiceHandle(n.scm, windows.SE_SERVICE, mutation|windows.GENERIC_EXECUTE|windows.SC_MANAGER_CREATE_SERVICE|windows.SC_MANAGER_LOCK|windows.SC_MANAGER_MODIFY_BOOT_CONFIG); err != nil {
+	if err := safeServiceHandle(n.scm, windows.SE_SERVICE, mutation|windows.GENERIC_EXECUTE|windows.SC_MANAGER_CREATE_SERVICE|windows.SC_MANAGER_LOCK|windows.SC_MANAGER_MODIFY_BOOT_CONFIG, serviceSecurityLocation{role: serviceSecurityManager}); err != nil {
 		return err
 	}
 	for i, h := range n.registry {
-		if err := safeServiceHandle(h, windows.SE_REGISTRY_KEY, mutation|windows.KEY_SET_VALUE|windows.KEY_CREATE_SUB_KEY|windows.KEY_CREATE_LINK); err != nil {
+		if err := safeServiceHandle(h, windows.SE_REGISTRY_KEY, mutation|windows.KEY_SET_VALUE|windows.KEY_CREATE_SUB_KEY|windows.KEY_CREATE_LINK, serviceSecurityLocation{role: serviceSecurityRegistryAncestor, ancestor: uint32(i + 1)}); err != nil {
 			return err
 		}
 		name, err := nativeRegistryName(h)
@@ -196,7 +240,7 @@ func (n *nativeServiceBackend) create(image string) error {
 		return err
 	}
 	mutation := uint32(windows.SERVICE_CHANGE_CONFIG | windows.SERVICE_START | windows.SERVICE_STOP | windows.SERVICE_PAUSE_CONTINUE | windows.DELETE | windows.WRITE_DAC | windows.WRITE_OWNER | windows.GENERIC_ALL | windows.GENERIC_WRITE | windows.GENERIC_EXECUTE)
-	if err := safeServiceHandle(n.service, windows.SE_SERVICE, mutation); err != nil {
+	if err := safeServiceHandle(n.service, windows.SE_SERVICE, mutation, serviceSecurityLocation{role: serviceSecurityInitialService}); err != nil {
 		return err
 	}
 	s, err := n.status()

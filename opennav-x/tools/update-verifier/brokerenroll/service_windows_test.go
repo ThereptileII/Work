@@ -3,11 +3,106 @@
 package brokerenroll
 
 import (
+	"errors"
 	"testing"
 	"unsafe"
 
 	"golang.org/x/sys/windows"
 )
+
+func TestServiceMutationDiagnosticPreservesOriginalDescriptorAndBoundary(t *testing.T) {
+	sd, err := windows.SecurityDescriptorFromString("O:SYD:P(A;;0xf003f;;;SY)(A;CI;0x2;;;AU)")
+	if err != nil {
+		t.Fatal(err)
+	}
+	mutation := uint32(windows.DELETE | windows.WRITE_DAC | windows.WRITE_OWNER | windows.SC_MANAGER_CREATE_SERVICE)
+	for _, boundary := range []struct {
+		location serviceSecurityLocation
+		name     string
+	}{
+		{serviceSecurityLocation{role: serviceSecurityManager}, "sc-manager"},
+		{serviceSecurityLocation{role: serviceSecurityRegistryAncestor, ancestor: 4}, "registry-ancestor"},
+		{serviceSecurityLocation{role: serviceSecurityInitialService}, "initial-service"},
+	} {
+		refusal := serviceDescriptorSafeAt(sd, mutation, boundary.location)
+		var observed *serviceMutationError
+		if !errors.As(errors.Join(refusal, errors.New("fixture cleanup")), &observed) ||
+			refusal.Error() != "untrusted machine mutation permission" || observed.location != boundary.location ||
+			observed.location.role.String() != boundary.name || observed.ownerSID != "S-1-5-18" ||
+			observed.aceSID != "S-1-5-11" || observed.mask != 2 || observed.flags != windows.CONTAINER_INHERIT_ACE || observed.mutation != mutation {
+			t.Fatal("original descriptor rejection facts or sanitized error changed", refusal)
+		}
+	}
+	for _, sddl := range []string{
+		"O:SYD:P(A;;0xf003f;;;SY)(A;;0x20015;;;AU)",
+		"O:SYD:P(A;;0xf003f;;;SY)(A;CIIO;0x2;;;AU)",
+		"O:SYD:P(A;;0xf003f;;;SY)(D;;0x2;;;AU)",
+	} {
+		accepted, err := windows.SecurityDescriptorFromString(sddl)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err := serviceDescriptorSafeAt(accepted, mutation, serviceSecurityLocation{role: serviceSecurityManager}); err != nil {
+			t.Fatal("diagnostic changed existing acceptance", err)
+		}
+	}
+	badOwner, err := windows.SecurityDescriptorFromString("O:AUD:P(A;;0x2;;;AU)")
+	if err != nil {
+		t.Fatal(err)
+	}
+	refusal := serviceDescriptorSafeAt(badOwner, mutation, serviceSecurityLocation{role: serviceSecurityManager})
+	var observed *serviceMutationError
+	if refusal == nil || errors.As(refusal, &observed) || refusal.Error() != "trusted machine owner required" {
+		t.Fatal("owner failure incorrectly relabeled as observed ACE rejection", refusal)
+	}
+}
+
+func TestServiceManagerAndServiceMutationRightsRemainDistinct(t *testing.T) {
+	common := uint32(windows.DELETE | windows.WRITE_DAC | windows.WRITE_OWNER | windows.GENERIC_ALL | windows.GENERIC_WRITE | windows.GENERIC_EXECUTE)
+	manager := common | windows.SC_MANAGER_CREATE_SERVICE | windows.SC_MANAGER_LOCK | windows.SC_MANAGER_MODIFY_BOOT_CONFIG
+	service := common | windows.SERVICE_CHANGE_CONFIG | windows.SERVICE_START | windows.SERVICE_STOP | windows.SERVICE_PAUSE_CONTINUE
+	for _, test := range []struct {
+		name     string
+		role     serviceSecurityRole
+		mutation uint32
+		mask     string
+		refuse   bool
+	}{
+		{"manager-query-lock", serviceSecurityManager, manager, "0x10", false},
+		{"service-start", serviceSecurityInitialService, service, "0x10", true},
+		{"manager-lock", serviceSecurityManager, manager, "0x8", true},
+		{"service-enumerate-dependents", serviceSecurityInitialService, service, "0x8", false},
+		{"manager-connect", serviceSecurityManager, manager, "0x1", false},
+		{"manager-enumerate", serviceSecurityManager, manager, "0x4", false},
+		{"manager-read-control", serviceSecurityManager, manager, "0x20000", false},
+		{"manager-local-default", serviceSecurityManager, manager, "0x20015", false},
+		{"manager-create", serviceSecurityManager, manager, "0x2", true},
+		{"manager-boot-config", serviceSecurityManager, manager, "0x20", true},
+		{"manager-delete", serviceSecurityManager, manager, "0x10000", true},
+		{"manager-write-dacl", serviceSecurityManager, manager, "0x40000", true},
+		{"manager-write-owner", serviceSecurityManager, manager, "0x80000", true},
+		{"manager-generic-write", serviceSecurityManager, manager, "GW", true},
+		{"manager-generic-execute", serviceSecurityManager, manager, "GX", true},
+		{"manager-generic-all", serviceSecurityManager, manager, "GA", true},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			sd, err := windows.SecurityDescriptorFromString("O:SYD:P(A;;0xf003f;;;SY)(A;;" + test.mask + ";;;AU)")
+			if err != nil {
+				t.Fatal(err)
+			}
+			refusal := serviceDescriptorSafeAt(sd, test.mutation, serviceSecurityLocation{role: test.role})
+			if (refusal != nil) != test.refuse {
+				t.Fatal("object-specific mutation policy changed", refusal)
+			}
+			if test.refuse {
+				var observed *serviceMutationError
+				if !errors.As(refusal, &observed) || observed.location.role != test.role || observed.mutation != test.mutation {
+					t.Fatal("object-specific rejection diagnostic changed", refusal)
+				}
+			}
+		})
+	}
+}
 
 // Inert descriptor parsing only. These tests never open SCM, create a service,
 // change machine security, run a child or qualify native enrollment.
@@ -22,7 +117,7 @@ func TestServiceCreationDescriptorRejectsUntrustedMutation(t *testing.T) {
 			t.Fatal(err)
 		}
 		if err := serviceDescriptorSafe(sd, mutation); err != nil {
-			t.Fatalf("safe SCM default rights rejected: %v", err)
+			t.Fatalf("safe service default rights rejected: %v", err)
 		}
 	}
 	for _, sddl := range []string{
