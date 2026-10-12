@@ -105,7 +105,12 @@ func (e *engine) handleNativeCurrentExecution(ctx context.Context, peer brokerpi
 		}
 		return stock.validate()
 	}
-	run := &executionCurrentHostRun{generation: selected.selected.generation, conversation: session, validate: validate, beforeSpawn: h.beforeSpawn, corroborate: h.corroborate}
+	start, err := e.applications.reserve(ctx, peer.SID, selected.selected.generation)
+	if err != nil {
+		return errors.Join(errExecutionCurrentRefused, err)
+	}
+	run := &executionCurrentHostRun{generation: selected.selected.generation, conversation: session, validate: validate, beforeSpawn: h.beforeSpawn, corroborate: h.corroborate, retain: start.retain}
+	defer func() { start.finish(run.consumed) }()
 	return run.execute(ctx)
 }
 func (h *nativeExecutionCurrentHost) validate(ctx context.Context) error {
@@ -197,6 +202,22 @@ func (c *nativeExecutionCurrentChild) Validate(ctx context.Context, report broke
 		return p.check()
 	})
 }
+
+// Transfer only after native birth corroboration and the completed conversation.
+// The process pointer owns the original process/token handles; no PID lookup,
+// generation reopening, or request-scoped peer/selected custody survives here.
+func (c *nativeExecutionCurrentChild) Retain(ctx context.Context) (executionApplicationOwner, error) {
+	if c == nil || c.closed || c.process == nil || c.host == nil || ctx == nil || ctx.Err() != nil || c.process.identity.sid != c.host.identity.ClientSID {
+		return nil, errors.Join(errExecutionApplicationOwner, contextError(ctx))
+	}
+	owner := &nativeExecutionApplicationOwner{process: c.process, identity: c.host.identity}
+	if _, err := owner.observe(ctx); err != nil {
+		return nil, err
+	}
+	c.process = nil // the same handles now belong exclusively to owner
+	return owner, nil
+}
+
 func (c *nativeExecutionCurrentChild) Close() error {
 	if c == nil {
 		return nil

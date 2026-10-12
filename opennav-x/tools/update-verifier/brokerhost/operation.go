@@ -63,8 +63,9 @@ type engine struct {
 	// The actual native service supplies this protected-history resolver. Private
 	// portable staging fixtures can omit it; production never derives current
 	// version from the original registration or a materialization receipt.
-	selected func(context.Context, registration) (selectedExecutionOwner, error)
-	busy     sync.Mutex
+	selected     func(context.Context, registration) (selectedExecutionOwner, error)
+	busy         sync.Mutex
+	applications executionApplicationOwners // protected by busy; service-local original process custody
 }
 
 // No receipt in this operation authorizes launch. It records authenticated

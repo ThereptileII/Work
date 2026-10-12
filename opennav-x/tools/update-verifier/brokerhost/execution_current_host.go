@@ -12,7 +12,8 @@ var errExecutionCurrentUncertain = errors.New("ordinary startup outcome uncertai
 
 type executionCurrentHostChild interface {
 	Validate(context.Context, brokerpipe.ExecutionObservation) error
-	Close() error // Release retained handles only; never signal the ordinary app.
+	Retain(context.Context) (executionApplicationOwner, error) // Transfer the same native process/token, never reopen by PID.
+	Close() error                                              // Release untransferred handles only; never signal the ordinary app.
 }
 
 // Private fault seams. Production assembles this exclusively from native selected
@@ -23,11 +24,12 @@ type executionCurrentHostRun struct {
 	validate            func(context.Context) error
 	beforeSpawn         func(context.Context) error
 	corroborate         func(context.Context, brokerpipe.ExecutionObservation) (executionCurrentHostChild, error)
+	retain              func(context.Context, executionApplicationOwner) error
 	attempted, consumed bool
 }
 
 func (r *executionCurrentHostRun) execute(ctx context.Context) (resultErr error) {
-	if r == nil || ctx == nil || !requestPattern.MatchString(r.generation) || r.conversation == nil || r.validate == nil || r.beforeSpawn == nil || r.corroborate == nil || r.attempted {
+	if r == nil || ctx == nil || !requestPattern.MatchString(r.generation) || r.conversation == nil || r.validate == nil || r.beforeSpawn == nil || r.corroborate == nil || r.retain == nil || r.attempted {
 		return errExecutionCurrentRefused
 	}
 	r.attempted = true
@@ -78,7 +80,20 @@ func (r *executionCurrentHostRun) execute(ctx context.Context) (resultErr error)
 	}
 	// There is no qualification environment, READY health claim, profile mutation,
 	// selected fact or updater commit. Normal plugin/navigation/output semantics
-	// belong to this new ordinary application; it remains alive after handle drain.
-	_, err = r.conversation.ExchangeCommand(ctx, brokerpipe.ExecutionDirective{Phase: brokerpipe.FinishExecution})
-	return err
+	// belong to this new ordinary application; original query custody outlives
+	// this conversation without keeping its peer/session alive.
+	if _, err = r.conversation.ExchangeCommand(ctx, brokerpipe.ExecutionDirective{Phase: brokerpipe.FinishExecution}); err != nil {
+		return err
+	}
+	owner, err := child.Retain(ctx)
+	if err != nil || owner == nil {
+		if owner != nil {
+			err = errors.Join(err, owner.Close())
+		}
+		return errors.Join(errExecutionCurrentRefused, err)
+	}
+	if err = r.retain(ctx, owner); err != nil {
+		return errors.Join(err, owner.Close())
+	}
+	return nil
 }
