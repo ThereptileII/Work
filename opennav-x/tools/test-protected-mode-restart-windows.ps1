@@ -53,7 +53,7 @@ public static class ProtectedRestartFixtureNative {
       IntPtr security, uint disposition, uint flags, IntPtr template);
   [DllImport("kernel32.dll", SetLastError=true)]
   static extern bool GetFileInformationByHandle(SafeFileHandle handle, out Info info);
-  [StructLayout(LayoutKind.Sequential)] struct FileDisposition { [MarshalAs(UnmanagedType.Bool)] public bool DeleteFile; }
+  [StructLayout(LayoutKind.Sequential)] struct FileDisposition { [MarshalAs(UnmanagedType.U1)] public bool DeleteFile; }
   [DllImport("kernel32.dll", SetLastError=true)]
   static extern bool SetFileInformationByHandle(SafeFileHandle handle, int kind,
       ref FileDisposition disposition, uint size);
@@ -131,7 +131,7 @@ public static class ProtectedRestartFixtureNative {
   }
   public static void DeleteHeldFile(SafeFileHandle handle) {
     var disposition=new FileDisposition { DeleteFile=true };
-    if (!SetFileInformationByHandle(handle,4,ref disposition,4))
+    if (!SetFileInformationByHandle(handle,4,ref disposition,1))
       throw new Win32Exception(Marshal.GetLastWin32Error(),"Exact owned-file disposition refused");
   }
 }
