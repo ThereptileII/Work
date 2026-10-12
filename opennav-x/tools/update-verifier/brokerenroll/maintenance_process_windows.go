@@ -123,9 +123,6 @@ func (p *nativeMaintenanceProcess) live() error {
 		return errors.Join(errors.New("actual maintenance process image differs from retained protected image"), err)
 	}
 	actualImage := windows.UTF16ToString(image[:length])
-	if !strings.EqualFold(actualImage, p.image.physical) {
-		return errors.New("actual maintenance process image path differs")
-	}
 	if _, err := enrollmentPhysicalParts(actualImage); err != nil {
 		return err
 	}
@@ -140,9 +137,13 @@ func (p *nativeMaintenanceProcess) live() error {
 		return err
 	}
 	info, id, queryErr := enrollmentInfo(handle)
+	physical, physicalErr := enrollmentPhysicalPath(handle)
 	closeErr = enrollmentCleanup(windows.CloseHandle(handle))
-	if queryErr != nil || closeErr != nil || id != p.image.id || info.CreationTime != p.image.info.CreationTime || info.FileAttributes&windows.FILE_ATTRIBUTE_REPARSE_POINT != 0 {
-		return errors.Join(errors.New("actual process image native identity differs"), queryErr, closeErr)
+	// Process creation can retain an 8.3 spelling whereas the original image
+	// handle reports its normalized long name. Compare the opened, canonical
+	// physical path AND full native identity; a spelling alone is never proof.
+	if queryErr != nil || physicalErr != nil || closeErr != nil || !strings.EqualFold(physical, p.image.physical) || id != p.image.id || info.CreationTime != p.image.info.CreationTime || info.FileAttributes&windows.FILE_ATTRIBUTE_REPARSE_POINT != 0 {
+		return errors.Join(errors.New("actual process image native identity differs"), queryErr, physicalErr, closeErr)
 	}
 	state, err = windows.WaitForSingleObject(p.handle, 0)
 	if err != nil || state != uint32(windows.WAIT_TIMEOUT) {
