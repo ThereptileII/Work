@@ -31,10 +31,22 @@ This grants creation and EA/attribute writes. The role diagnostic in
 [38295243035](https://github.com/ThereptileII/Work/actions/runs/38295243035), helper
 `b0f5f82a5327748d3ac746574d5645ecbe2e901b`, identifies `data-root`, component 1,
 `allowAdds=true`: the actual ProgramData ancestor. It still refused before service
-initialization. A bounded original-child custody correction is being implemented;
+initialization. A bounded original-child custody correction is now implemented;
 shared system ACLs are not changed. Both enrollment and the broker's own store
 need the correction, so its next native gate must build fresh same-commit
 components instead of qualifying the old retained broker.
+`8efc6bd5` and `6fc293d3` retain an existing, nonempty Common Start Menu path
+beneath the actual Windows ProgramData location. Every affected observation
+rechecks original file identities and parent bindings before permitting only
+ProgramData EA/attribute writes. Delete, child-delete, ACL/owner mutation and
+generic write permissions remain rejected; SKAGER's own directories retain
+their strict policy. No shared Windows ACL is modified. Focused Linux checks
+and Windows/x86 vet and compilation passed. The native NTFS proof and fresh
+same-commit SCM enrollment remain pending. The explicit corresponding-source
+closure now includes both guards, the terminal-decommission implementation and
+the operator diagnostics, so missing source members cannot silently pass packaging.
+All 76 focused package checks passed with the completed closure. Independent
+combined review found no further concrete custody or selected-source omission.
 The preceding helper-only
 PowerShell failure remains preserved. [Separate attempts](evidence/scrum311-startup-native-repairs-20261012/retained-scm-attempts.json).
 No full application rebuild or boat change has occurred.

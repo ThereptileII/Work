@@ -13,6 +13,8 @@ BUILD_RECIPE = ('CGO_ENABLED=0 GOOS=windows GOARCH=386 GO386=sse2 go build '
 REQUIRED_SOURCES = frozenset(broker.REGISTRATION_SOURCES | {broker.PREFIX + name for name in (
     'cmd/skager-update-provisioner/main.go',
     'cmd/skager-update-provisioner/operator_maintenance.go',
+    'cmd/skager-update-provisioner/operator_decommission.go',
+    'cmd/skager-update-provisioner/operator_selected_diagnostics.go',
     'cmd/skager-update-provisioner/operator_manual_rollback.go', 'go.mod', 'go.sum')} | {
         'project/LICENSE', 'project/tools/package-update-launcher.py',
         'project/tools/package-update-broker.py', 'project/tools/package-update-provisioner.py',
