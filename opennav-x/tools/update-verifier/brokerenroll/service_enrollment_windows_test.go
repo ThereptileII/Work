@@ -110,6 +110,13 @@ func TestNativeFreshEnrollmentServiceSmoke(t *testing.T) {
 	artifact := releasepolicy.Artifact{Path: "bootstrap/" + enrollmentImageName, SHA256: wantSHA, Bytes: stat.Size()}
 	files, err := createFreshFiles(ctx, file, artifact)
 	if err != nil {
+		var mutation *enrollmentAncestorMutationError
+		if errors.As(err, &mutation) {
+			// Same held descriptor observation, not a pathname ACL reread.
+			// These facts diagnose helper refusal; they qualify no product.
+			t.Logf("held ancestor mutation rejection: ownerSID=%s aceSID=%s aceSIDValid=%t mask=0x%08x flags=0x%02x",
+				mutation.ownerSID, mutation.aceSID, mutation.aceSIDValid, mutation.mask, mutation.flags)
+		}
 		t.Fatal("fresh native files refused; fixed state retained for review:", err)
 	}
 	t.Cleanup(func() {

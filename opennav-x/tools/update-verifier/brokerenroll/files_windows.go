@@ -423,6 +423,20 @@ func enrollmentSecurity(handle windows.Handle, expected *windows.SECURITY_DESCRI
 	return enrollmentSecurityDescriptor(actual, expected, allowAdds, broker)
 }
 
+// enrollmentAncestorMutationError retains only observations from the exact
+// descriptor already inspected on the original native handle. Public errors
+// stay sanitized; the opted-in native smoke may inspect these private fields.
+type enrollmentAncestorMutationError struct {
+	ownerSID, aceSID string
+	aceSIDValid      bool
+	mask             uint32
+	flags            byte
+}
+
+func (*enrollmentAncestorMutationError) Error() string {
+	return "untrusted enrollment ancestor mutation"
+}
+
 func enrollmentSecurityDescriptor(actual, expected *windows.SECURITY_DESCRIPTOR, allowAdds bool, broker string) error {
 	if actual == nil {
 		return errors.New("enrollment security descriptor required")
@@ -491,8 +505,14 @@ func enrollmentSecurityDescriptor(actual, expected *windows.SECURITY_DESCRIPTOR,
 				return errors.New("unsupported enrollment ancestor ACE")
 			}
 			sid := (*windows.SID)(unsafe.Pointer(&ace.SidStart))
-			if !sid.IsValid() || !trusted(sid.String()) && uint32(ace.Mask)&mask != 0 {
-				return errors.New("untrusted enrollment ancestor mutation")
+			valid := sid.IsValid()
+			if !valid || !trusted(sid.String()) && uint32(ace.Mask)&mask != 0 {
+				observedSID := ""
+				if valid {
+					observedSID = sid.String()
+				}
+				return &enrollmentAncestorMutationError{ownerSID: owner.String(), aceSID: observedSID,
+					aceSIDValid: valid, mask: uint32(ace.Mask), flags: ace.Header.AceFlags}
 			}
 		}
 	}
