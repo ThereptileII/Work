@@ -70,6 +70,39 @@ func TestNativeArmedBarrierUsesRequestedManagedAppRoot(t *testing.T) {
 	}
 }
 
+func TestNativeArmedBarrierShortNameAliasRetainsPhysicalLeaf(t *testing.T) {
+	root := filepath.Join(t.TempDir(), "Original Installation With Long Name")
+	if err := os.Mkdir(root, 0700); err != nil {
+		t.Fatal(err)
+	}
+	pointer, err := windows.UTF16PtrFromString(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	buffer := make([]uint16, 32768)
+	n, err := windows.GetShortPathName(pointer, &buffer[0], uint32(len(buffer)))
+	if err != nil || n == 0 || n >= uint32(len(buffer)) {
+		t.Fatalf("native short-name lookup: length=%d error=%v", n, err)
+	}
+	alias := windows.UTF16ToString(buffer[:n])
+	if strings.EqualFold(alias, root) {
+		t.Skip("fixture volume does not allocate DOS short names; ordinary path tests remain required")
+	}
+	for _, spelling := range []string{root, alias} {
+		if err := (nativePlatform{}).armedUpdateAbsent(spelling); err != nil {
+			t.Fatal("original absent physical leaf refused through alias:", err)
+		}
+	}
+	if err := os.WriteFile(filepath.Join(root, armedUpdateMarker), nil, 0600); err != nil {
+		t.Fatal(err)
+	}
+	for _, spelling := range []string{root, alias} {
+		if !errors.Is((nativePlatform{}).armedUpdateAbsent(spelling), errArmedUpdateBarrier) {
+			t.Fatal("short-name alias concealed the original armed marker")
+		}
+	}
+}
+
 func nativeArmedOtherSubstTarget(t *testing.T) string {
 	t.Helper()
 	other := t.TempDir()

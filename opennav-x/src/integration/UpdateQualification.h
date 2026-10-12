@@ -44,7 +44,8 @@ class QualifiedConfigLoadOwner final {
   friend bool CompleteQualifiedConfigLoad(std::unique_ptr<QualifiedConfigLoadOwner>, const std::wstring&) noexcept;
 };
 // These hooks surround the actual wxFileConfig constructor and LoadMyConfig.
-// No profile is edited; deny-write custody ends before normal wx Flush/writes.
+// No profile is edited. The load pin ends after observation; qualification-only
+// MyConfig suppresses disk commits while ordinary startup keeps normal wx saves.
 std::unique_ptr<QualifiedConfigLoadOwner> BeginQualifiedConfigLoad(const std::wstring& actual_path);
 void ObserveQualifiedConfigConstructor(const std::wstring& actual_path) noexcept;
 bool CompleteQualifiedConfigLoad(std::unique_ptr<QualifiedConfigLoadOwner> owner,

@@ -24,12 +24,20 @@ func (nativePlatform) armedUpdateAbsent(root string) error {
 }
 
 func nativeArmedCapturedDriveAbsent(drive nativeOrdinaryDirectory, canonical string) error {
-	physicalRoot := drive.name
-	if len(canonical) > 3 {
-		physicalRoot += `\` + strings.ReplaceAll(canonical[3:], "/", `\`)
+	canonical, err := localPath(canonical)
+	if err != nil {
+		return errors.Join(errArmedUpdateBarrier, err)
 	}
-	_, parents, err := physicalAncestors(physicalRoot + `\` + armedUpdateMarker)
-	if err != nil || len(parents) > 256 {
+	// A DOS component may be an 8.3 alias. Resolve each child beneath the
+	// previously captured physical parent, then retain its actual normalized
+	// name. Comparing the complete unresolved DOS suffix to a normalized NT
+	// name incorrectly rejects legitimate Windows profile aliases.
+	_, parents, err := physicalAncestors(drive.name + `\` + armedUpdateMarker)
+	var children []string
+	if len(canonical) > 3 {
+		children = strings.Split(canonical[3:], "/")
+	}
+	if err != nil || len(parents)+len(children) > 256 {
 		return errors.Join(errArmedUpdateBarrier, errors.New("armed barrier physical ancestry unavailable or outside bound"))
 	}
 	pins := make([]nativeOrdinaryDirectory, 0, len(parents))
@@ -62,7 +70,36 @@ func nativeArmedCapturedDriveAbsent(drive nativeOrdinaryDirectory, canonical str
 	if !driveMatched {
 		return errors.Join(errArmedUpdateBarrier, errors.New("armed barrier drive is outside physical ancestry"))
 	}
-	return nativeArmedPhysicalLeafAbsent(physicalRoot)
+	physicalRoot := drive.name
+	for _, component := range children {
+		pin, err := openNativeArmedDirectory(physicalWin32(physicalRoot + `\` + component))
+		if err != nil {
+			return errors.Join(errArmedUpdateBarrier, err)
+		}
+		pins = append(pins, pin)
+		separator := strings.LastIndex(pin.name, `\`)
+		if separator < 0 || !strings.EqualFold(pin.name[:separator], physicalRoot) ||
+			pin.info.VolumeSerialNumber != drive.info.VolumeSerialNumber {
+			return errors.Join(errArmedUpdateBarrier, errors.New("armed barrier child escaped its held physical parent"))
+		}
+		physicalRoot = pin.name
+	}
+	validate := func() error {
+		for _, pin := range pins {
+			var current windows.ByHandleFileInformation
+			name, err := nativePhysicalName(pin.handle)
+			if err != nil || windows.GetFileInformationByHandle(pin.handle, &current) != nil ||
+				!sameNativeIdentity(current, pin.info) || !strings.EqualFold(strings.TrimSuffix(name, `\`), pin.name) ||
+				current.FileAttributes&(windows.FILE_ATTRIBUTE_DIRECTORY|windows.FILE_ATTRIBUTE_REPARSE_POINT) != windows.FILE_ATTRIBUTE_DIRECTORY {
+				return errors.Join(errArmedUpdateBarrier, errors.New("armed barrier held ancestry changed"), err)
+			}
+		}
+		return nil
+	}
+	if err := validate(); err != nil {
+		return err
+	}
+	return errors.Join(nativeArmedPhysicalLeafAbsent(physicalRoot), validate())
 }
 
 func openNativeArmedDirectory(name string) (nativeOrdinaryDirectory, error) {

@@ -201,6 +201,8 @@ func (e *engine) handleNativeExecutionRequest(ctx context.Context, peer brokerpi
 	switch request.Operation {
 	case "start-selected":
 		return e.handleNativeStartupExecution(ctx, peer, request, session)
+	case "offer-current":
+		return e.handleNativeOfferExecution(ctx, peer, request, session)
 	case "execute-session":
 		providers, closeProviders := nativeExecutionProviders(adapter.Store)
 		defer func() { resultErr = errors.Join(resultErr, closeProviders()) }()

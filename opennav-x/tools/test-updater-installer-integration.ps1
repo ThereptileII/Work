@@ -40,6 +40,7 @@ if ($Fixture -or $Registry -or $FailurePoint -or $UpdateTransaction) { throw 'Fi
 $Fixture=Join-Path ([IO.Path]::GetTempPath()) ('SkagerLifecycleTest-'+[guid]::NewGuid().ToString('N'))
 $Registry='HKCU:\Software\SkagerLifecycleTests\'+[guid]::NewGuid().ToString('N')
 $Root=Join-Path $Fixture 'installation';$Programs=Join-Path $Fixture 'Programs'
+$Action='Rollback'
 $SessionLog=New-Object 'Collections.Generic.List[string]';$Checks=0
 $DiagnosticDirectory=Join-Path $PSScriptRoot '../build/updater-native'
 $null=[IO.Directory]::CreateDirectory($DiagnosticDirectory)

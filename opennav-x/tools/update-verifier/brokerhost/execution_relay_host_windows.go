@@ -13,7 +13,18 @@ import (
 // lookup only. The new launcher is independently corroborated against the held
 // selected executor image, and must authenticate a fresh start-current session.
 func relaySelectedExecutionNative(ctx context.Context, peer *brokerpipe.PeerCapability, selected *nativeSelectedExecution, conversation executionHostConversation) (resultErr error) {
-	if ctx == nil || peer == nil || selected == nil || conversation == nil {
+	return relayExecutionNative(ctx, peer, selected, conversation, brokerpipe.RelaySelectedExecutor)
+}
+
+// Ordinary shortcut startup checks for an update once. Qualification and recovery
+// retain the terminal relay above so completing an update never opens another offer.
+func relayStartupExecutionNative(ctx context.Context, peer *brokerpipe.PeerCapability, selected *nativeSelectedExecution, conversation executionHostConversation) error {
+	return relayExecutionNative(ctx, peer, selected, conversation, brokerpipe.RelayStartupExecutor)
+}
+
+func relayExecutionNative(ctx context.Context, peer *brokerpipe.PeerCapability, selected *nativeSelectedExecution, conversation executionHostConversation, phase brokerpipe.ExecutionPhase) (resultErr error) {
+	if ctx == nil || peer == nil || selected == nil || conversation == nil ||
+		(phase != brokerpipe.RelaySelectedExecutor && phase != brokerpipe.RelayStartupExecutor) {
 		return errExecutionCurrentRefused
 	}
 	if err := errors.Join(selected.validate(), peer.Validate(ctx)); err != nil {
@@ -30,7 +41,7 @@ func relaySelectedExecutionNative(ctx context.Context, peer *brokerpipe.PeerCapa
 		return errExecutionCurrentRefused
 	}
 	report, err := conversation.ExchangeCommand(ctx, brokerpipe.ExecutionDirective{
-		Phase: brokerpipe.RelaySelectedExecutor, ApplicationGeneration: selected.selected.generation})
+		Phase: phase, ApplicationGeneration: selected.selected.generation})
 	if err != nil {
 		return err
 	}

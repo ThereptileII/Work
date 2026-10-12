@@ -22,14 +22,18 @@ const maxTrustBytes = 576 << 10
 func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer cancel()
-	if err := run(ctx, os.Args[1:], func(path string) ([]byte, error) { return readInput(path, brokerregistration.MaxRequestBytes) }, brokerenroll.Run); err != nil {
+	if err := runWithActivation(ctx, os.Args[1:], func(path string) ([]byte, error) { return readInput(path, brokerregistration.MaxRequestBytes) }, brokerenroll.Run, brokerenroll.RunAndActivateStartup); err != nil {
 		fmt.Fprintln(os.Stderr, "SKAGER machine broker provisioning did not complete. Preserve partial state for operator recovery; do not reset or retry automatically.")
 		os.Exit(1)
 	}
-	fmt.Println("SKAGER provisioning completed and the machine broker remains stopped.")
+	fmt.Println("SKAGER provisioning completed. Startup activation occurs only when explicitly requested.")
 }
 
 func run(ctx context.Context, args []string, read func(string) ([]byte, error), enroll func(context.Context, brokerenroll.Request) error) error {
+	return runWithActivation(ctx, args, read, enroll, nil)
+}
+
+func runWithActivation(ctx context.Context, args []string, read func(string) ([]byte, error), enroll, activate func(context.Context, brokerenroll.Request) error) error {
 	if ctx == nil || ctx.Err() != nil || read == nil || enroll == nil {
 		return errors.New("live operator invocation required")
 	}
@@ -43,6 +47,7 @@ func run(ctx context.Context, args []string, read func(string) ([]byte, error), 
 	trust := flags.String("trust-config-sha256", "", "independently approved exact public trust SHA-256")
 	clientPath := flags.String("client-registration-request", "", "optional exact separately approved public client request; requires approved-installed-baseline.zip in artifact-directory")
 	clientSHA := flags.String("client-registration-request-sha256", "", "separately authenticated exact client request SHA-256")
+	startup := flags.String("activate-startup", "", "explicit true: publish approved client startup and activate the newly enrolled broker")
 	// flag accepts duplicate options by default. Refuse ambiguous operator pins,
 	// aliases and positional/unknown arguments before opening any input file.
 	seen := map[string]bool{}
@@ -63,13 +68,23 @@ func run(ctx context.Context, args []string, read func(string) ([]byte, error), 
 			}
 		}
 	}
-	if flags.Parse(args) != nil || flags.NArg() != 0 || (len(seen) != 6 && len(seen) != 8) ||
+	expected := 6
+	if seen["client-registration-request"] || seen["client-registration-request-sha256"] {
+		expected += 2
+	}
+	if seen["activate-startup"] {
+		expected++
+	}
+	if flags.Parse(args) != nil || flags.NArg() != 0 || len(seen) != expected ||
 		*trustPath == "" || *cache == "" || *artifacts == "" || !pin(*policy) || !pin(*provisioner) || !pin(*trust) {
 		return errors.New("complete independently approved operator inputs required")
 	}
 	hasClient := seen["client-registration-request"] || seen["client-registration-request-sha256"]
 	if hasClient && (!seen["client-registration-request"] || !seen["client-registration-request-sha256"] || *clientPath == "" || !pin(*clientSHA)) {
 		return errors.New("client request requires paired independent exact approval")
+	}
+	if seen["activate-startup"] && (*startup != "true" || !hasClient || activate == nil) {
+		return errors.New("startup activation requires explicit true and independently approved client registration")
 	}
 	data, err := read(*trustPath)
 	if err != nil || len(data) == 0 || len(data) > maxTrustBytes {
@@ -82,7 +97,11 @@ func run(ctx context.Context, args []string, read func(string) ([]byte, error), 
 			return errors.New("bounded separately approved public client request required")
 		}
 	}
-	return enroll(ctx, brokerenroll.Request{TrustConfiguration: data, BootstrapCacheDir: *cache,
+	selected := enroll
+	if seen["activate-startup"] {
+		selected = activate
+	}
+	return selected(ctx, brokerenroll.Request{TrustConfiguration: data, BootstrapCacheDir: *cache,
 		ArtifactDirectory: *artifacts, PolicySHA256: *policy, ProvisionerSHA256: *provisioner, TrustConfigSHA256: *trust,
 		ClientRegistrationRequest: client, ApprovedClientRequestSHA256: *clientSHA})
 }

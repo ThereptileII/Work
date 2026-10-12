@@ -129,7 +129,7 @@ func (e *engine) handleNativeStartupExecution(ctx context.Context, peer brokerpi
 		if err = validate(); err != nil {
 			return false, err
 		}
-		if err = relaySelectedExecutionNative(ctx, capability, selected, session); err != nil {
+		if err = relayStartupExecutionNative(ctx, capability, selected, session); err != nil {
 			return false, err
 		}
 		if err = errors.Join(validate(), selected.validate()); err != nil {
