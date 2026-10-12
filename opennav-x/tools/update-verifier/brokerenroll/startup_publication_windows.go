@@ -375,6 +375,31 @@ func startupDuplicateFile(handle windows.Handle) (*os.File, error) {
 	return os.NewFile(uintptr(duplicate), "owned duplicate startup read"), nil
 }
 
+// Called only after our successful non-replacing native rename. NTFS tunneling
+// may transfer a recently vacated destination's creation time to the moved file:
+// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/fltkernel/nf-fltkernel-fltgettunneledname
+// Corroborate the retained handle, original volume/file ID, exact destination,
+// descriptor, type, link count, length and bytes before rebinding its path and
+// creation time. Ordinary enrollmentPin.check remains strict; a reopened path
+// never supplies replacement identity or trusted bytes.
+func startupRebindRenamedPin(ctx context.Context, pin *enrollmentPin, physical, dos, sha string) error {
+	if pin == nil || !pin.file || physical == "" || dos == "" {
+		return errors.New("original startup rename custody required")
+	}
+	info, id, err := enrollmentInfo(pin.handle)
+	if err != nil || id != pin.id || info.VolumeSerialNumber != pin.info.VolumeSerialNumber {
+		return errors.Join(errors.New("renamed startup native file identity changed"), err)
+	}
+	rebound := *pin
+	rebound.physical, rebound.dos = physical, dos
+	rebound.info.CreationTime = info.CreationTime
+	if err := startupHashPin(ctx, &rebound, sha); err != nil {
+		return err
+	}
+	*pin = rebound
+	return nil
+}
+
 // No path or command is supplied by callers of the public enrollment API.
 func startupPublishRenames(ctx context.Context, owner *nativeStartupPublication, menu, recovery *enrollmentPin) error {
 	if err := ctx.Err(); err != nil {
@@ -395,8 +420,9 @@ func startupPublishRenames(ctx context.Context, owner *nativeStartupPublication,
 		if err := windows.MoveFileEx(dest, backup, windows.MOVEFILE_WRITE_THROUGH); err != nil {
 			return errors.Join(ErrStartupUncertain, err)
 		}
-		owner.original.physical = backupPhysical
-		owner.original.dos = filepath.Join(recovery.dos, startupShortcutName)
+		if err := startupRebindRenamedPin(ctx, owner.original, backupPhysical, filepath.Join(recovery.dos, startupShortcutName), owner.originalSHA); err != nil {
+			return errors.Join(ErrStartupUncertain, err)
+		}
 		if err := owner.files.Check(); err != nil {
 			return errors.Join(ErrStartupUncertain, err)
 		}
@@ -410,7 +436,11 @@ func startupPublishRenames(ctx context.Context, owner *nativeStartupPublication,
 	if err := windows.MoveFileEx(pending, dest, windows.MOVEFILE_WRITE_THROUGH); err != nil {
 		return errors.Join(ErrStartupUncertain, err)
 	}
-	owner.link.physical = destination
-	owner.link.dos = filepath.Join(menu.dos, startupShortcutName)
+	if err := startupRebindRenamedPin(ctx, owner.link, destination, filepath.Join(menu.dos, startupShortcutName), owner.linkSHA); err != nil {
+		return errors.Join(ErrStartupUncertain, err)
+	}
+	if err := owner.files.Check(); err != nil {
+		return errors.Join(ErrStartupUncertain, err)
+	}
 	return nil
 }

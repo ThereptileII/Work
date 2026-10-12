@@ -104,13 +104,14 @@ func startupNativeFixture(t *testing.T) (*nativeStartupPublication, *enrollmentP
 		t.Fatal(err)
 	}
 	sid := user.User.Sid.String()
+	// TempDir cleanup runs after the native owners have closed (Cleanup is LIFO).
+	path := t.TempDir()
 	files := &nativeEnrollmentFiles{}
 	t.Cleanup(func() {
 		if err := files.Close(); err != nil {
 			t.Errorf("native owners close: %v", err)
 		}
 	})
-	path := t.TempDir()
 	parent, err := files.pinDirectory(path, "", path, nil, false, sid)
 	if err != nil {
 		t.Fatal(err)
@@ -157,6 +158,7 @@ func TestNativeStartupPublicationPreservesOriginalIdentityAndOtherLinks(t *testi
 		t.Fatal(err)
 	}
 	owner.linkSHA = digest(next)
+	pendingID := owner.link.id
 	if err := startupPublishRenames(context.Background(), owner, menu, recovery); err != nil {
 		t.Fatal(err)
 	}
@@ -171,8 +173,15 @@ func TestNativeStartupPublicationPreservesOriginalIdentityAndOtherLinks(t *testi
 			}
 		})
 	}
-	if owner.original.id != originalID || legacy.id != legacyID || safe.id != safeID {
+	if owner.link.id != pendingID || owner.original.id != originalID || legacy.id != legacyID || safe.id != safeID {
 		t.Fatal("actual original physical IDs changed")
+	}
+	// A successful explicit rename rebind must not relax later creation-time
+	// validation on the ordinary retained pin.
+	altered := *owner.link
+	altered.info.CreationTime.LowDateTime ^= 1
+	if err := altered.check(); err == nil {
+		t.Fatal("ordinary native pin accepted changed creation time")
 	}
 	if _, err := os.Stat(filepath.Join(recovery.dos, "pending.lnk")); !os.IsNotExist(err) {
 		t.Fatal("staging link still exists", err)
@@ -181,6 +190,43 @@ func TestNativeStartupPublicationPreservesOriginalIdentityAndOtherLinks(t *testi
 		t.Fatal("existing recovery adopted")
 	}
 }
+
+func TestNativeStartupRenameRebindingRefusesSubstitution(t *testing.T) {
+	owner, menu, recovery, sd := startupNativeFixture(t)
+	raw := []byte("SAME-INERT-BYTES-DIFFERENT-NATIVE-FILE")
+	pending, err := startupWriteFile(context.Background(), owner.files, recovery, "pending.lnk", raw, sd, true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	foreign, err := startupWriteFile(context.Background(), owner.files, recovery, "foreign.lnk", raw, sd, true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	physical := menu.physical + `\` + startupShortcutName
+	dos := filepath.Join(menu.dos, startupShortcutName)
+	source, _ := windows.UTF16PtrFromString(enrollmentPhysical(foreign.physical))
+	destination, _ := windows.UTF16PtrFromString(enrollmentPhysical(physical))
+	if err := windows.MoveFileEx(source, destination, windows.MOVEFILE_WRITE_THROUGH); err != nil {
+		t.Fatal(err)
+	}
+	before := *pending
+	if err := startupRebindRenamedPin(context.Background(), pending, physical, dos, digest(raw)); err == nil {
+		t.Fatal("same-byte substituted destination adopted")
+	}
+	if pending.physical != before.physical || pending.dos != before.dos || pending.info != before.info || pending.id != before.id || pending.handle != before.handle {
+		t.Fatal("failed rename rebind mutated original custody")
+	}
+	if err := startupHashPin(context.Background(), pending, digest(raw)); err != nil {
+		t.Fatal("original pending file lost", err)
+	}
+	// A foreign retained handle cannot supply the original pin's identity either.
+	forged := before
+	forged.handle = foreign.handle
+	if err := startupRebindRenamedPin(context.Background(), &forged, physical, dos, digest(raw)); err == nil {
+		t.Fatal("substituted retained handle adopted")
+	}
+}
+
 func TestNativeStartupPublicationRefusesUnknownDestinationAndCancellation(t *testing.T) {
 	for _, mode := range []string{"unknown-destination", "canceled"} {
 		t.Run(mode, func(t *testing.T) {

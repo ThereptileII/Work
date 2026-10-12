@@ -12,10 +12,13 @@ import (
 	"golang.org/x/sys/windows"
 )
 
-// Use the actual system ShellLink class factory, not HKCU COM class activation,
-// scripts, WScript or Save(path). Persist only into an in-memory native stream;
-// the publication code exclusively creates and durably writes exact bytes.
-var startupShellFactory = windows.NewLazySystemDLL("shell32.dll").NewProc("DllGetClassObject")
+// Windows hosts CLSID_ShellLink in windows.storage.dll. Resolve its class
+// factory only in the Windows system directory, without consulting HKCU/HKCR
+// COM registration. Persist only into an in-memory native stream; publication
+// exclusively creates and durably writes exact bytes. See Microsoft's documented
+// ShellLink InProcServer32 identity:
+// https://learn.microsoft.com/en-us/troubleshoot/windows-client/shell-experience/application-shortcuts-show-blank-icons
+var startupShellFactory = windows.NewLazySystemDLL("windows.storage.dll").NewProc("DllGetClassObject")
 var startupMemoryStream = windows.NewLazySystemDLL("ole32.dll").NewProc("CreateStreamOnHGlobal")
 var startupUninitialize = windows.NewLazySystemDLL("ole32.dll").NewProc("CoUninitialize")
 
@@ -57,6 +60,9 @@ func startupLinkBytes(target, arguments, working string) ([]byte, error) {
 	linkIID, _ := windows.GUIDFromString("{000214F9-0000-0000-C000-000000000046}")
 	persistIID, _ := windows.GUIDFromString("{00000109-0000-0000-C000-000000000046}")
 	var factory, link, persist, stream *startupCOM
+	if err := startupShellFactory.Find(); err != nil {
+		return nil, fmt.Errorf("system ShellLink class factory unavailable: %w", err)
+	}
 	hr, _, _ := startupShellFactory.Call(uintptr(unsafe.Pointer(&clsid)), uintptr(unsafe.Pointer(&classIID)), uintptr(unsafe.Pointer(&factory)))
 	if int32(hr) < 0 || factory == nil {
 		return nil, fmt.Errorf("system ShellLink class factory unavailable HRESULT %#x", uint32(hr))
