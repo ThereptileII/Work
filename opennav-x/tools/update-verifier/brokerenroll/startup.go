@@ -15,10 +15,12 @@ var ErrStartupUncertain = errors.New("protected broker startup publication or ac
 
 // RunAndActivateStartup is an explicit operator installation step. Unlike Run,
 // it requires approved client registration for the ACTUAL current user, publishes
-// that user's normal SKAGER shortcut to the original protected baseline launcher,
+// that user's three fixed SKAGER shortcuts to the same protected baseline launcher,
 // preserves an existing normal shortcut outside the SKAGER menu, and explicitly
 // activates the original service only after stopped registration and file checks.
-// Legacy/Safe and all other shortcuts remain untouched. The installer must join
+// Existing Legacy/Safe destinations refuse publication; unrelated links remain
+// untouched. Three non-replacing moves are not atomic; partial recovery evidence
+// never authorizes automatic retry or rollback. The installer must join
 // its distinct protected-layout rollback contract; this API does not run it or
 // grant selection, commissioning, healthy startup or ordinary application launch.
 func RunAndActivateStartup(ctx context.Context, req Request) error {

@@ -5,6 +5,7 @@ package brokerenroll
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"os"
 	"path/filepath"
@@ -24,7 +25,21 @@ func TestNativeStartupShellLinkPersistsFixedProtectedArguments(t *testing.T) {
 	if err := os.WriteFile(target, []byte("INERT-NOT-EXECUTABLE"), 0600); err != nil {
 		t.Fatal(err)
 	}
-	arguments := "--broker-start=" + strings.Repeat("b", 32)
+	for _, tc := range []struct {
+		mode   startupShortcutMode
+		suffix string
+	}{{startupNormal, ""}, {startupLegacy, ":legacy"}, {startupSafe, ":safe"}} {
+		t.Run(tc.suffix, func(t *testing.T) {
+			arguments, err := tc.mode.arguments(strings.Repeat("b", 32))
+			if err != nil || arguments != "--broker-start="+strings.Repeat("b", 32)+tc.suffix {
+				t.Fatalf("fixed broker arguments %q %v", arguments, err)
+			}
+			startupAssertPersistedLink(t, target, arguments)
+		})
+	}
+}
+func startupAssertPersistedLink(t *testing.T, target, arguments string) {
+	t.Helper()
 	raw, err := startupLinkBytes(target, arguments, filepath.Dir(target))
 	if err != nil {
 		t.Fatal(err)
@@ -272,6 +287,220 @@ func TestNativeStartupPublicationRefusesUnknownDestinationAndCancellation(t *tes
 			}
 			if err := startupHashPin(context.Background(), owner.link, digest(next)); err != nil {
 				t.Fatal("pending bytes not retained", err)
+			}
+		})
+	}
+}
+
+func startupThreeLinkFixture(t *testing.T) (*nativeStartupPublication, *enrollmentPin, *enrollmentPin, *windows.SECURITY_DESCRIPTOR) {
+	t.Helper()
+	owner, menu, recovery, sd := startupNativeFixture(t)
+	ctx := context.Background()
+	var err error
+	owner.original, err = startupWriteFile(ctx, owner.files, menu, "Skager.lnk", []byte("ORIGINAL-NORMAL"), sd, true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	owner.originalSHA = digest([]byte("ORIGINAL-NORMAL"))
+	if _, err := startupWriteFile(ctx, owner.files, recovery, "original.lnk.bytes", []byte("ORIGINAL-NORMAL"), sd, false); err != nil {
+		t.Fatal(err)
+	}
+	owner.additional = []*nativeStartupPublication{
+		{files: owner.files, clientSID: owner.clientSID, mode: startupLegacy},
+		{files: owner.files, clientSID: owner.clientSID, mode: startupSafe},
+	}
+	for _, child := range append([]*nativeStartupPublication{owner}, owner.additional...) {
+		spec, err := child.mode.spec()
+		if err != nil {
+			t.Fatal(err)
+		}
+		raw := []byte("INERT-LINK-" + spec.name)
+		child.link, err = startupWriteFile(ctx, owner.files, recovery, spec.pending, raw, sd, true)
+		if err != nil {
+			t.Fatal(err)
+		}
+		child.linkSHA = digest(raw)
+	}
+	manifest, err := startupPublicationManifest(owner)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var evidence struct {
+		Schema int
+		Links  []struct {
+			Name     string
+			Pending  string
+			Original *struct {
+				FileID   enrollmentFileID
+				Creation windows.Filetime
+				SHA256   string
+			}
+			New struct {
+				FileID   enrollmentFileID
+				Creation windows.Filetime
+				SHA256   string
+			}
+		}
+	}
+	if err := json.Unmarshal(manifest, &evidence); err != nil {
+		t.Fatal(err)
+	}
+	if evidence.Schema != 1 || len(evidence.Links) != 3 {
+		t.Fatal("missing three-link recovery evidence")
+	}
+	for i, child := range append([]*nativeStartupPublication{owner}, owner.additional...) {
+		if evidence.Links[i].New.FileID != child.link.id || evidence.Links[i].New.Creation != child.link.info.CreationTime || evidence.Links[i].New.SHA256 != child.linkSHA {
+			t.Fatal("new identity/hash evidence differs")
+		}
+		if i == 0 {
+			if evidence.Links[i].Original == nil || evidence.Links[i].Original.FileID != owner.original.id || evidence.Links[i].Original.Creation != owner.original.info.CreationTime || evidence.Links[i].Original.SHA256 != owner.originalSHA {
+				t.Fatal("original evidence lost")
+			}
+		} else if evidence.Links[i].Original != nil {
+			t.Fatal("non-normal original adopted")
+		}
+	}
+	if _, err := startupWriteFile(ctx, owner.files, recovery, "publication.json", manifest, sd, false); err != nil {
+		t.Fatal(err)
+	}
+	return owner, menu, recovery, sd
+}
+func TestNativeStartupPublishesAllThreeRetainedIdentities(t *testing.T) {
+	owner, menu, recovery, _ := startupThreeLinkFixture(t)
+	children := append([]*nativeStartupPublication{owner}, owner.additional...)
+	ids := []enrollmentFileID{children[0].link.id, children[1].link.id, children[2].link.id}
+	originalID := owner.original.id
+	if err := startupPublishAllRenames(context.Background(), owner, menu, recovery); err != nil {
+		t.Fatal(err)
+	}
+	if err := owner.Check(context.Background()); err != nil {
+		t.Fatal(err)
+	}
+	for i, child := range children {
+		spec, _ := child.mode.spec()
+		if child.link.id != ids[i] || child.link.physical != menu.physical+`\`+spec.name {
+			t.Fatal("published native identity lost")
+		}
+		if err := startupHashPin(context.Background(), child.link, child.linkSHA); err != nil {
+			t.Fatal(err)
+		}
+		if _, err := os.Stat(filepath.Join(recovery.dos, spec.pending)); !os.IsNotExist(err) {
+			t.Fatal("pending still present", err)
+		}
+	}
+	if owner.original.id != originalID || owner.original.physical != recovery.physical+`\Skager.lnk` {
+		t.Fatal("normal original identity lost")
+	}
+}
+func TestNativeStartupAllPreflightRefusesExistingModeTargets(t *testing.T) {
+	for _, name := range []string{"Skager Legacy.lnk", "Skager Safe Mode.lnk"} {
+		t.Run(name, func(t *testing.T) {
+			owner, menu, recovery, sd := startupThreeLinkFixture(t)
+			foreign, err := startupWriteFile(context.Background(), owner.files, menu, name, []byte("OLD-LOCALAPPDATA-LINK"), sd, true)
+			if err != nil {
+				t.Fatal(err)
+			}
+			originalID := owner.original.id
+			if err := startupPublishAllRenames(context.Background(), owner, menu, recovery); err == nil {
+				t.Fatal("existing mode target adopted")
+			}
+			if owner.original.id != originalID || owner.original.physical != menu.physical+`\Skager.lnk` {
+				t.Fatal("normal moved before all targets passed")
+			}
+			if err := startupHashPin(context.Background(), foreign, digest([]byte("OLD-LOCALAPPDATA-LINK"))); err != nil {
+				t.Fatal(err)
+			}
+			for _, child := range append([]*nativeStartupPublication{owner}, owner.additional...) {
+				spec, _ := child.mode.spec()
+				if child.link.physical != recovery.physical+`\`+spec.pending {
+					t.Fatal("pending link moved")
+				}
+				if err := startupHashPin(context.Background(), child.link, child.linkSHA); err != nil {
+					t.Fatal(err)
+				}
+			}
+		})
+	}
+}
+func TestNativeStartupPartialPublicationRetainsIndependentEvidence(t *testing.T) {
+	owner, menu, recovery, sd := startupThreeLinkFixture(t)
+	children := append([]*nativeStartupPublication{owner}, owner.additional...)
+	var foreign *enrollmentPin
+	err := startupPublishSequence(context.Background(), func(mode startupShortcutMode) error { return startupPreflightDestination(children[int(mode)], menu) }, func(mode startupShortcutMode) error {
+		if mode == startupLegacy {
+			var err error
+			foreign, err = startupWriteFile(context.Background(), owner.files, menu, "Skager Legacy.lnk", []byte("LATE-UNKNOWN-DESTINATION"), sd, true)
+			if err != nil {
+				return err
+			}
+		}
+		if err := startupPreflightDestination(children[int(mode)], menu); err != nil {
+			return err
+		}
+		return startupPublishRenames(context.Background(), children[int(mode)], menu, recovery)
+	})
+	if !errors.Is(err, ErrStartupUncertain) {
+		t.Fatalf("partial publication not uncertain: %v", err)
+	}
+	if owner.link.physical != menu.physical+`\Skager.lnk` || owner.original.physical != recovery.physical+`\Skager.lnk` {
+		t.Fatal("normal publication/backup evidence lost")
+	}
+	for _, child := range children {
+		if err := startupHashPin(context.Background(), child.link, child.linkSHA); err != nil {
+			t.Fatal(err)
+		}
+	}
+	for _, child := range owner.additional {
+		spec, _ := child.mode.spec()
+		if child.link.physical != recovery.physical+`\`+spec.pending {
+			t.Fatal("later pending moved after refusal")
+		}
+	}
+	if foreign == nil {
+		t.Fatal("late collision not exercised")
+	}
+	if err := startupHashPin(context.Background(), foreign, digest([]byte("LATE-UNKNOWN-DESTINATION"))); err != nil {
+		t.Fatal("foreign destination overwritten", err)
+	}
+	if raw, err := os.ReadFile(filepath.Join(recovery.dos, "original.lnk.bytes")); err != nil || !bytes.Equal(raw, []byte("ORIGINAL-NORMAL")) {
+		t.Fatal("original exact byte evidence lost", err)
+	}
+	if _, err := os.Stat(filepath.Join(recovery.dos, "publication.json")); err != nil {
+		t.Fatal("manifest lost", err)
+	}
+}
+
+func TestNativeStartupModePreflightRefusesAmbiguousEntries(t *testing.T) {
+	for _, kind := range []string{"empty-file", "directory", "reparse"} {
+		t.Run(kind, func(t *testing.T) {
+			owner, menu, _, _ := startupNativeFixture(t)
+			child := &nativeStartupPublication{files: owner.files, clientSID: owner.clientSID, mode: startupSafe}
+			path := filepath.Join(menu.dos, "Skager Safe Mode.lnk")
+			switch kind {
+			case "empty-file":
+				if err := os.WriteFile(path, nil, 0600); err != nil {
+					t.Fatal(err)
+				}
+			case "directory":
+				if err := os.Mkdir(path, 0700); err != nil {
+					t.Fatal(err)
+				}
+			case "reparse":
+				target := filepath.Join(menu.dos, "inert-target")
+				if err := os.WriteFile(target, []byte("INERT"), 0600); err != nil {
+					t.Fatal(err)
+				}
+				p, _ := windows.UTF16PtrFromString(path)
+				q, _ := windows.UTF16PtrFromString(target)
+				if err := windows.CreateSymbolicLink(p, q, 0); err != nil {
+					t.Fatal("elevated inert reparse fixture unavailable", err)
+				}
+			}
+			if err := startupPreflightDestination(child, menu); err == nil {
+				t.Fatal("ambiguous mode target accepted")
+			}
+			if child.original != nil {
+				t.Fatal("ambiguous mode target adopted")
 			}
 		})
 	}
