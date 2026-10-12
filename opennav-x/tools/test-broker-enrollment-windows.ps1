@@ -69,7 +69,7 @@ $env:GOTOOLCHAIN = 'local'
 $env:GOWORK = 'off'
 Push-Location $module
 try {
-    & go test -count=1 -v ./brokerenroll -run '^(TestNativeFreshEnrollmentServiceSmoke|TestServiceMutationDiagnosticPreservesOriginalDescriptorAndBoundary|TestServiceManagerAndServiceMutationRightsRemainDistinct|TestServiceRegistryCreatorOwnerTemplateIsNotPrincipalAuthority)$'
+    & go test -count=1 -v ./brokerenroll -run '^(TestNativeFreshEnrollmentServiceSmoke|TestServiceMutationDiagnosticPreservesOriginalDescriptorAndBoundary|TestServiceManagerAndServiceMutationRightsRemainDistinct|TestServiceRegistryCreatorOwnerTemplateIsNotPrincipalAuthority|TestServiceNeverStartedIsFreshOnlyAndNotCompletion|TestServiceNeverStartedAfterEitherStartWithholdsFollowupAndActivation|TestServiceInitialStateDiagnosticPreservesReadAndQueryFailure)$'
     if ($LASTEXITCODE -ne 0) { throw 'Native fresh enrollment acceptance failed; fixed machine state retained for review' }
 } finally {
     Pop-Location

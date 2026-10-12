@@ -93,3 +93,17 @@ are not additional privileged installation attempts.
 A successful retained test would cover this helper's provisioning path against
 the original broker, not a newly compiled provisioner. Final same-commit component
 production and installed startup/update qualification remain required.
+
+## Fresh service versus completed initialization
+
+The original exclusive `CreateService` readback and the single read before its
+first start may report STOPPED with Win32 exit 1077 (`ERROR_SERVICE_NEVER_STARTED`).
+[MS-SCMR requires that code before a start attempt](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-scmr/cf94d915-b4e1-40e5-872b-a9cb3ad09b46).
+Only those two fresh-state checks accept 0 or 1077, still requiring zero accepted
+controls and zero service-specific error. They confer no completed-run authority.
+Every post-start completion, verification, registration and activation retains
+the existing zero-exit rule. There is no retry, existing-service adoption or
+process-exit inference from a STOPPED PID. Native read failures retain their
+original cause and same-read numeric status for the explicit smoke diagnostic.
+The original `38301585978` log did not emit those values; 1077 is a documented
+contract correction, not a claimed observation from that failed run.
