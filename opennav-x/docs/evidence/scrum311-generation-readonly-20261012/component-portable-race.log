@@ -1,0 +1,94 @@
+=== RUN   TestGenerationReadOnlyTransfersOriginalsAndRevokesWriter
+--- PASS: TestGenerationReadOnlyTransfersOriginalsAndRevokesWriter (0.06s)
+=== RUN   TestGenerationReadOnlyFailedTransitionDrainsOnceWithoutRetry
+=== RUN   TestGenerationReadOnlyFailedTransitionDrainsOnceWithoutRetry/cancel-before
+=== RUN   TestGenerationReadOnlyFailedTransitionDrainsOnceWithoutRetry/writer-close
+=== RUN   TestGenerationReadOnlyFailedTransitionDrainsOnceWithoutRetry/after-close
+=== RUN   TestGenerationReadOnlyFailedTransitionDrainsOnceWithoutRetry/after-reopen
+=== RUN   TestGenerationReadOnlyFailedTransitionDrainsOnceWithoutRetry/tampered-reopen
+=== RUN   TestGenerationReadOnlyFailedTransitionDrainsOnceWithoutRetry/cancel-partial
+--- PASS: TestGenerationReadOnlyFailedTransitionDrainsOnceWithoutRetry (0.21s)
+    --- PASS: TestGenerationReadOnlyFailedTransitionDrainsOnceWithoutRetry/cancel-before (0.03s)
+    --- PASS: TestGenerationReadOnlyFailedTransitionDrainsOnceWithoutRetry/writer-close (0.03s)
+    --- PASS: TestGenerationReadOnlyFailedTransitionDrainsOnceWithoutRetry/after-close (0.04s)
+    --- PASS: TestGenerationReadOnlyFailedTransitionDrainsOnceWithoutRetry/after-reopen (0.03s)
+    --- PASS: TestGenerationReadOnlyFailedTransitionDrainsOnceWithoutRetry/tampered-reopen (0.03s)
+    --- PASS: TestGenerationReadOnlyFailedTransitionDrainsOnceWithoutRetry/cancel-partial (0.03s)
+=== RUN   TestGenerationReadOnlyOwnerRevocationBoundsAndPoison
+=== RUN   TestGenerationReadOnlyOwnerRevocationBoundsAndPoison/writer-close
+=== RUN   TestGenerationReadOnlyOwnerRevocationBoundsAndPoison/readonly-close
+=== RUN   TestGenerationReadOnlyOwnerRevocationBoundsAndPoison/store-close
+=== RUN   TestGenerationReadOnlyOwnerRevocationBoundsAndPoison/tamper
+=== RUN   TestGenerationReadOnlyOwnerRevocationBoundsAndPoison/check-fault
+=== RUN   TestGenerationReadOnlyOwnerRevocationBoundsAndPoison/cleanup-fault
+--- PASS: TestGenerationReadOnlyOwnerRevocationBoundsAndPoison (0.26s)
+    --- PASS: TestGenerationReadOnlyOwnerRevocationBoundsAndPoison/writer-close (0.04s)
+    --- PASS: TestGenerationReadOnlyOwnerRevocationBoundsAndPoison/readonly-close (0.04s)
+    --- PASS: TestGenerationReadOnlyOwnerRevocationBoundsAndPoison/store-close (0.04s)
+    --- PASS: TestGenerationReadOnlyOwnerRevocationBoundsAndPoison/tamper (0.04s)
+    --- PASS: TestGenerationReadOnlyOwnerRevocationBoundsAndPoison/check-fault (0.05s)
+    --- PASS: TestGenerationReadOnlyOwnerRevocationBoundsAndPoison/cleanup-fault (0.05s)
+=== RUN   TestGenerationCopiesExactOriginalsAndSeparateCandidateOrigin
+--- PASS: TestGenerationCopiesExactOriginalsAndSeparateCandidateOrigin (0.06s)
+=== RUN   TestGenerationRefusesInvalidLiveAuthorityBeforeReservation
+=== RUN   TestGenerationRefusesInvalidLiveAuthorityBeforeReservation/other-store
+=== RUN   TestGenerationRefusesInvalidLiveAuthorityBeforeReservation/cancelled
+=== RUN   TestGenerationRefusesInvalidLiveAuthorityBeforeReservation/uncompleted-baseline
+=== RUN   TestGenerationRefusesInvalidLiveAuthorityBeforeReservation/sealed
+=== RUN   TestGenerationRefusesInvalidLiveAuthorityBeforeReservation/no-acquisition
+=== RUN   TestGenerationRefusesInvalidLiveAuthorityBeforeReservation/unclean-acquisition
+=== RUN   TestGenerationRefusesInvalidLiveAuthorityBeforeReservation/wrong-slot
+=== RUN   TestGenerationRefusesInvalidLiveAuthorityBeforeReservation/wrong-artifact
+=== RUN   TestGenerationRefusesInvalidLiveAuthorityBeforeReservation/wrong-version
+=== RUN   TestGenerationRefusesInvalidLiveAuthorityBeforeReservation/missing-helper
+=== RUN   TestGenerationRefusesInvalidLiveAuthorityBeforeReservation/tampered-source
+--- PASS: TestGenerationRefusesInvalidLiveAuthorityBeforeReservation (0.19s)
+    --- PASS: TestGenerationRefusesInvalidLiveAuthorityBeforeReservation/other-store (0.02s)
+    --- PASS: TestGenerationRefusesInvalidLiveAuthorityBeforeReservation/cancelled (0.01s)
+    --- PASS: TestGenerationRefusesInvalidLiveAuthorityBeforeReservation/uncompleted-baseline (0.02s)
+    --- PASS: TestGenerationRefusesInvalidLiveAuthorityBeforeReservation/sealed (0.02s)
+    --- PASS: TestGenerationRefusesInvalidLiveAuthorityBeforeReservation/no-acquisition (0.01s)
+    --- PASS: TestGenerationRefusesInvalidLiveAuthorityBeforeReservation/unclean-acquisition (0.01s)
+    --- PASS: TestGenerationRefusesInvalidLiveAuthorityBeforeReservation/wrong-slot (0.02s)
+    --- PASS: TestGenerationRefusesInvalidLiveAuthorityBeforeReservation/wrong-artifact (0.02s)
+    --- PASS: TestGenerationRefusesInvalidLiveAuthorityBeforeReservation/wrong-version (0.02s)
+    --- PASS: TestGenerationRefusesInvalidLiveAuthorityBeforeReservation/missing-helper (0.02s)
+    --- PASS: TestGenerationRefusesInvalidLiveAuthorityBeforeReservation/tampered-source (0.02s)
+=== RUN   TestGenerationFailurePreservesReservationAndNoRetry
+=== RUN   TestGenerationFailurePreservesReservationAndNoRetry/reserve
+=== RUN   TestGenerationFailurePreservesReservationAndNoRetry/tree
+=== RUN   TestGenerationFailurePreservesReservationAndNoRetry/copy
+=== RUN   TestGenerationFailurePreservesReservationAndNoRetry/identities
+=== RUN   TestGenerationFailurePreservesReservationAndNoRetry/inventory
+=== RUN   TestGenerationFailurePreservesReservationAndNoRetry/publish
+=== RUN   TestGenerationFailurePreservesReservationAndNoRetry/source-changed
+=== RUN   TestGenerationFailurePreservesReservationAndNoRetry/copy-sync
+--- PASS: TestGenerationFailurePreservesReservationAndNoRetry (0.21s)
+    --- PASS: TestGenerationFailurePreservesReservationAndNoRetry/reserve (0.02s)
+    --- PASS: TestGenerationFailurePreservesReservationAndNoRetry/tree (0.03s)
+    --- PASS: TestGenerationFailurePreservesReservationAndNoRetry/copy (0.02s)
+    --- PASS: TestGenerationFailurePreservesReservationAndNoRetry/identities (0.02s)
+    --- PASS: TestGenerationFailurePreservesReservationAndNoRetry/inventory (0.03s)
+    --- PASS: TestGenerationFailurePreservesReservationAndNoRetry/publish (0.03s)
+    --- PASS: TestGenerationFailurePreservesReservationAndNoRetry/source-changed (0.03s)
+    --- PASS: TestGenerationFailurePreservesReservationAndNoRetry/copy-sync (0.02s)
+=== RUN   TestGenerationCancellationCommitAndUncertainty
+=== RUN   TestGenerationCancellationCommitAndUncertainty/after-reserve
+=== RUN   TestGenerationCancellationCommitAndUncertainty/after-commit
+=== RUN   TestGenerationCancellationCommitAndUncertainty/uncertain
+--- PASS: TestGenerationCancellationCommitAndUncertainty (0.09s)
+    --- PASS: TestGenerationCancellationCommitAndUncertainty/after-reserve (0.02s)
+    --- PASS: TestGenerationCancellationCommitAndUncertainty/after-commit (0.03s)
+    --- PASS: TestGenerationCancellationCommitAndUncertainty/uncertain (0.03s)
+=== RUN   TestGenerationOwnerRevalidatesBytesAndStoreDrainsOnce
+=== RUN   TestGenerationOwnerRevalidatesBytesAndStoreDrainsOnce/tamper
+=== RUN   TestGenerationOwnerRevalidatesBytesAndStoreDrainsOnce/extra
+=== RUN   TestGenerationOwnerRevalidatesBytesAndStoreDrainsOnce/close-failure
+=== RUN   TestGenerationOwnerRevalidatesBytesAndStoreDrainsOnce/store-close
+--- PASS: TestGenerationOwnerRevalidatesBytesAndStoreDrainsOnce (0.13s)
+    --- PASS: TestGenerationOwnerRevalidatesBytesAndStoreDrainsOnce/tamper (0.03s)
+    --- PASS: TestGenerationOwnerRevalidatesBytesAndStoreDrainsOnce/extra (0.04s)
+    --- PASS: TestGenerationOwnerRevalidatesBytesAndStoreDrainsOnce/close-failure (0.03s)
+    --- PASS: TestGenerationOwnerRevalidatesBytesAndStoreDrainsOnce/store-close (0.03s)
+PASS
+ok  	example.com/opennav-update-verifier/brokerstore	2.238s

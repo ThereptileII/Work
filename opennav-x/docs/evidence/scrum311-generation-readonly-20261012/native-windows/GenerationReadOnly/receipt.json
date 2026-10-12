@@ -1,0 +1,50 @@
+{
+    "schema":  1,
+    "group":  "GenerationReadOnly",
+    "executable":  "C:\\XNav\\ComponentChecks\\generation-readonly-fcec6f21\\brokerstore.test.exe",
+    "executableSha256":  "6f9d715ecc2eac3a3a2757a05a32b1148dca59389ea546a4fe7298898f78f820",
+    "expectedCases":  [
+                          "TestNativeGenerationReadOnlyMapsImageAndPreservesOriginalCustody",
+                          "TestNativeGenerationReadOnlyCancellationGapRetainsCompletedBytes",
+                          "TestNativeGenerationReadOnlyRefusesChangedOriginalBeforeTransfer"
+                      ],
+    "selection":  "^(TestNativeGenerationReadOnlyMapsImageAndPreservesOriginalCustody|TestNativeGenerationReadOnlyCancellationGapRetainsCompletedBytes|TestNativeGenerationReadOnlyRefusesChangedOriginalBeforeTransfer)$",
+    "status":  "passed",
+    "failure":  null,
+    "startedUtc":  "2026-10-12T09:09:47.2434911Z",
+    "os":  "Microsoft Windows NT 10.0.22631.0",
+    "os64":  true,
+    "process64":  true,
+    "powershellVersion":  "5.1.22621.5624",
+    "listing":  {
+                    "arguments":  [
+                                      "-test.list=^(TestNativeGenerationReadOnlyMapsImageAndPreservesOriginalCustody|TestNativeGenerationReadOnlyCancellationGapRetainsCompletedBytes|TestNativeGenerationReadOnlyRefusesChangedOriginalBeforeTransfer)$"
+                                  ],
+                    "processId":  8416,
+                    "startedUtc":  "2026-10-12T09:09:47.2751658Z",
+                    "exitCode":  0,
+                    "timedOut":  false,
+                    "error":  null,
+                    "stdout":  "C:\\XNav\\ComponentChecks\\generation-readonly-fcec6f21\\GenerationReadOnly\\list-stdout.log",
+                    "stderr":  "C:\\XNav\\ComponentChecks\\generation-readonly-fcec6f21\\GenerationReadOnly\\list-stderr.log",
+                    "elapsedMilliseconds":  381
+                },
+    "execution":  {
+                      "arguments":  [
+                                        "-test.run=^(TestNativeGenerationReadOnlyMapsImageAndPreservesOriginalCustody|TestNativeGenerationReadOnlyCancellationGapRetainsCompletedBytes|TestNativeGenerationReadOnlyRefusesChangedOriginalBeforeTransfer)$",
+                                        "-test.count=1",
+                                        "-test.v",
+                                        "-test.timeout=90s"
+                                    ],
+                      "processId":  7420,
+                      "startedUtc":  "2026-10-12T09:09:47.7029661Z",
+                      "exitCode":  0,
+                      "timedOut":  false,
+                      "error":  null,
+                      "stdout":  "C:\\XNav\\ComponentChecks\\generation-readonly-fcec6f21\\GenerationReadOnly\\tests-stdout.log",
+                      "stderr":  "C:\\XNav\\ComponentChecks\\generation-readonly-fcec6f21\\GenerationReadOnly\\tests-stderr.log",
+                      "elapsedMilliseconds":  4226
+                  },
+    "scope":  "Exact inert native fixtures only; no application/service/profile/network/physical output; not enrollment or release qualification",
+    "completedUtc":  "2026-10-12T09:09:52.1864839Z"
+}

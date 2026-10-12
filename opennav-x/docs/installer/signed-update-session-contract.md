@@ -425,6 +425,30 @@ retain loader/process custody through authenticated readiness, and preserve the
 real restoration/commissioning sequence for candidate and fallback. The older
 per-user Lifecycle mutation path cannot stand in for that integration.
 
+### One-way read-only generation transfer
+
+`InstalledGeneration.TransitionReadOnly` now closes each original data writer
+and opens a distinct read-only native file object. Retained metadata anchors,
+physical parent identities and original creation-time protection span the gap;
+the anchor is not claimed to be a write fence. Protected-at-birth broker/SYSTEM
+mutation rights and serialized store writers supply that boundary. The transition
+also transfers original private history, reservation and completion files. Exact
+IDs, contents, descriptors and inventory are rechecked before and after transfer.
+
+The original writer is permanently revoked. A live `ReadOnlyGeneration` supplies
+bounded, revocable member reads and informational identities, with no raw native
+handle or executable path. Store/original-owner closure revokes all views. A
+failed transition poisons/drains once, retaining cleanup uncertainty and completed
+bytes; it cannot be retried or reconstructed from a completion receipt.
+
+[Native component evidence](../evidence/scrum311-generation-readonly-20261012/README.md)
+proves actual image-mapping/read-execute compatibility and new write/delete
+refusal on temporary objects, not an application launch. The immutable snapshot
+of sibling history is still too restrictive to retain an older loading owner
+through later generation publication. Authenticated history evolution and the
+initial approved baseline public view remain necessary, along with the actual
+private selection/interactive commissioning/startup/fallback transaction.
+
 ## Inactive broker package prerequisite
 
 `tools/package-update-broker.py` is a native-Windows-only producer for the fixed

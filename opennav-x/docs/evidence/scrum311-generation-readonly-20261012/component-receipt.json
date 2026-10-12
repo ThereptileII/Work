@@ -1,0 +1,32 @@
+{
+  "base": "eb40327e23a2d7eed6f2071401c6690a088d3d3c",
+  "portable": {
+    "command": "go test -race -count=1 -v ./brokerstore -run ^TestGeneration",
+    "exit": 0,
+    "topLevelPassed": 8,
+    "nestedPassed": 38,
+    "log": "/home/standard/Projects/.tmp/generation-readonly-20261012/portable-race.log"
+  },
+  "windows386": {
+    "command": "GOOS=windows GOARCH=386 CGO_ENABLED=0 go test -c -o brokerstore.test.exe ./brokerstore",
+    "exit": 0,
+    "nativeExecuted": false,
+    "log": "/home/standard/Projects/.tmp/generation-readonly-20261012/windows-386-compile.log",
+    "binary": "/home/standard/Projects/.tmp/generation-readonly-20261012/brokerstore.test.exe",
+    "sha256": "6f9d715ecc2eac3a3a2757a05a32b1148dca59389ea546a4fe7298898f78f820"
+  },
+  "sourceSHA256": {
+    "opennav-x/tools/update-verifier/brokerstore/installed_generation.go": "3c1820262e69776c5438dc9179a609be33f79e65fb1d1f193a53c881024e08cd",
+    "opennav-x/tools/update-verifier/brokerstore/installed_generation_windows.go": "c361dcdc476eb7d338596300d09a7418905c7e0a529ef02bdde201508adc9d4f",
+    "opennav-x/tools/update-verifier/brokerstore/generation_readonly.go": "8319e7360cc3eff3d25bbf55baee4605ac5ca43ce6dce4096412c02318b53342",
+    "opennav-x/tools/update-verifier/brokerstore/generation_readonly_windows.go": "91671ecda3a0932c93e8d808e20372dbe61dd86b21fd2593207813a8ee305d9a",
+    "opennav-x/tools/update-verifier/brokerstore/generation_readonly_test.go": "8842520f2333072be8e480be5d40d1638a5d1b52c23e1ef417b9e663afae960d",
+    "opennav-x/tools/update-verifier/brokerstore/generation_readonly_windows_test.go": "e6f1c034c87a453f0a427e209dfba779c70f6cab8e7bb179faceaaaca50555be"
+  },
+  "limits": [
+    "Not selection or launch authority",
+    "Existing strict sibling inventory requires separate authenticated parent-history evolution",
+    "Temporary native fixtures bypass actual broker principal and fixed ProgramFiles discovery; execution pending"
+  ],
+  "commit": "fcec6f21433543f3e4f92f84fd451ca7f28e0436"
+}

@@ -1,5 +1,35 @@
 # SKAGER status — 2026-10-12
 
+## Current increment: native read-only generation custody passes
+
+Source `bb2dde1b` (isolated `fcec6f21`) adds the actual one-way writer-to-read-only
+transition for completed protected generations. Original file identities, bytes,
+descriptors and private creation history remain retained; failure consumes the
+attempt and preserves completed evidence. Revocable member reads expose no native
+writer handle or caller-selected execution path. Linux focused generation race
+passed **8 top-level + 38 nested**; Windows/x86 component compilation and
+**3 top-level + 3 nested native fixtures passed**, zero fail/skip. The native PE
+fixture mapped a copied test image without executing it, verified read/execute
+compatibility and write/delete refusal, and covered actual close-gap cancellation
+and changed-original rejection.
+[Exact source and native read-only evidence](evidence/scrum311-generation-readonly-20261012/README.md).
+
+The earlier existing-writable-mapping stock hypothesis was tested against native
+Windows: initial stock custody refused with a sharing violation while the mapping
+remained live. **3 exact inert stock fixtures passed**, zero skips. No metadata
+bypass was reproduced and no unnecessary production rehash patch was added.
+[Exact stock fixture and evidence](evidence/scrum311-native-stock-integrity-20261012/README.md).
+OpenCPN PID1852 remained responsive and no owned fixture process remained.
+
+SCRUM-311 remains In Progress. The initial approved baseline needs a protected
+public loading view; retained previous/candidate owners need authenticated sibling
+history evolution. Actual selected/pending state, interactive executor binding,
+commissioning/restoration, one-use creation and authenticated healthy/fallback
+remain incomplete. Component success is not an integrated MSVC/installed update
+qualification. No full app build, release, product/profile change, visual/endurance
+run or physical command occurred in this increment. Earlier sections below retain
+their original revision and scope.
+
 ## Protected update generation copy joined; independent review recorded
 
 Product source `ac96ef54` joins the signed candidate's fresh protected application

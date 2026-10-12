@@ -1,0 +1,9 @@
+{
+  "sourceCommit": "3235f8513bf87511880dc8abdfb63b0d87499ffc",
+  "testRevision": "3235f8513bf87511880dc8abdfb63b0d87499ffc",
+  "files": {
+    "brokerstore.test.exe": "6f9d715ecc2eac3a3a2757a05a32b1148dca59389ea546a4fe7298898f78f820",
+    "runner.ps1": "17bab2fe6237adc2994dae803181ae5a7d6b7ca9a387365b29b9dec2e2de2e45"
+  },
+  "remote": "C:\\XNav\\ComponentChecks\\generation-readonly-fcec6f21"
+}

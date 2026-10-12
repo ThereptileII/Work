@@ -1,0 +1,2 @@
+=== RUN   TestNativeGenerationReadOnlyCancellationGapRetainsCompletedBytes
+--- PASS: TestNativeGenerationReadOnlyCancellationGapRetainsCompletedBytes (0.47s)

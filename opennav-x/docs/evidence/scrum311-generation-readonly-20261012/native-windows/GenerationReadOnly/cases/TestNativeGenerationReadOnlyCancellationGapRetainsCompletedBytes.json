@@ -1,0 +1,15 @@
+{
+    "schema":  1,
+    "group":  "GenerationReadOnly",
+    "name":  "TestNativeGenerationReadOnlyCancellationGapRetainsCompletedBytes",
+    "selection":  "^TestNativeGenerationReadOnlyCancellationGapRetainsCompletedBytes$",
+    "runMarkers":  1,
+    "passMarkers":  1,
+    "executableSha256":  "6f9d715ecc2eac3a3a2757a05a32b1148dca59389ea546a4fe7298898f78f820",
+    "exitCode":  0,
+    "os":  "Microsoft Windows NT 10.0.22631.0",
+    "timedOut":  false,
+    "groupReceipt":  "C:\\XNav\\ComponentChecks\\generation-readonly-fcec6f21\\GenerationReadOnly\\receipt.json",
+    "executionLog":  "C:\\XNav\\ComponentChecks\\generation-readonly-fcec6f21\\GenerationReadOnly\\tests-stdout.log",
+    "caseLog":  "TestNativeGenerationReadOnlyCancellationGapRetainsCompletedBytes.log"
+}

@@ -1,0 +1,9 @@
+=== RUN   TestNativeGenerationReadOnlyRefusesChangedOriginalBeforeTransfer
+=== RUN   TestNativeGenerationReadOnlyRefusesChangedOriginalBeforeTransfer/payload
+=== RUN   TestNativeGenerationReadOnlyRefusesChangedOriginalBeforeTransfer/private-history
+=== RUN   TestNativeGenerationReadOnlyRefusesChangedOriginalBeforeTransfer/extra-namespace
+--- PASS: TestNativeGenerationReadOnlyRefusesChangedOriginalBeforeTransfer (1.25s)
+    --- PASS: TestNativeGenerationReadOnlyRefusesChangedOriginalBeforeTransfer/payload (0.42s)
+    --- PASS: TestNativeGenerationReadOnlyRefusesChangedOriginalBeforeTransfer/private-history (0.42s)
+    --- PASS: TestNativeGenerationReadOnlyRefusesChangedOriginalBeforeTransfer/extra-namespace (0.41s)
+PASS

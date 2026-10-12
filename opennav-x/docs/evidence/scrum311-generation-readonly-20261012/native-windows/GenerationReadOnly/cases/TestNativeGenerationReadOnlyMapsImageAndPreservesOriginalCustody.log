@@ -1,0 +1,2 @@
+=== RUN   TestNativeGenerationReadOnlyMapsImageAndPreservesOriginalCustody
+--- PASS: TestNativeGenerationReadOnlyMapsImageAndPreservesOriginalCustody (2.46s)
