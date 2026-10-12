@@ -11,8 +11,9 @@ import (
 )
 
 // ServeMaintenance is an independent fixed local endpoint on the actual SCM
-// broker. It accepts only an elevated original operator; handlers still enforce
-// protected client history, original application exit and profile invariants.
+// broker. It accepts only an elevated original operator. Mutating handlers
+// separately enforce protected history, original application exit and profile
+// invariants; read-only diagnostics still hold original selected history.
 // Refusal discloses no filesystem path, registry value or internal error.
 func ServeMaintenance(ctx context.Context, handler MaintenanceHandler) error {
 	if ctx == nil || handler == nil {

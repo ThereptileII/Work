@@ -7,7 +7,7 @@ import (
 )
 
 func maintenanceFixture() MaintenanceRequest {
-	return MaintenanceRequest{1, ManualRollback, strings.Repeat("a", 32), strings.Repeat("b", 64), strings.Repeat("c", 32), strings.Repeat("d", 64)}
+	return MaintenanceRequest{Schema: 1, Operation: ManualRollback, RequestID: strings.Repeat("a", 32), ExpectedSelectedHeadSHA256: strings.Repeat("b", 64), TargetGeneration: strings.Repeat("c", 32), TargetCompletionSHA256: strings.Repeat("d", 64)}
 }
 func TestMaintenanceProtocolStrictBindings(t *testing.T) {
 	q := maintenanceFixture()
@@ -24,7 +24,7 @@ func TestMaintenanceProtocolStrictBindings(t *testing.T) {
 			t.Fatal("unbound maintenance request accepted")
 		}
 	}
-	r := MaintenanceResult{1, q.RequestID, "manual-selected", q.TargetGeneration, q.TargetCompletionSHA256, strings.Repeat("e", 64)}
+	r := MaintenanceResult{Schema: 1, RequestID: q.RequestID, State: "manual-selected", Generation: q.TargetGeneration, CompletionSHA256: q.TargetCompletionSHA256, SelectedHeadSHA256: strings.Repeat("e", 64)}
 	b, _ := json.Marshal(r)
 	if _, err := decodeMaintenanceResult(b, q); err != nil {
 		t.Fatal(err)
