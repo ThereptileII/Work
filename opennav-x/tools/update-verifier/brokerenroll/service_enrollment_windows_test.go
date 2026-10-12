@@ -7,6 +7,7 @@ import (
 	"crypto/sha256"
 	"debug/pe"
 	"encoding/hex"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -39,7 +40,7 @@ func TestNativeFreshEnrollmentServiceSmoke(t *testing.T) {
 		os.Getenv("GITHUB_REPOSITORY") != "ThereptileII/Work" ||
 		!enrollmentSmokeRun.MatchString(os.Getenv("GITHUB_RUN_ID")) ||
 		!enrollmentSmokeCommit.MatchString(os.Getenv("GITHUB_SHA")) ||
-		os.Getenv("SKAGER_ENROLLMENT_PRODUCER_COMMIT") != os.Getenv("GITHUB_SHA") {
+		!enrollmentSmokeProducerMatches() {
 		t.Fatal("disposable same-commit GitHub-hosted Windows runner identity required")
 	}
 	if err := enrollmentOperator(); err != nil {
@@ -128,6 +129,84 @@ func TestNativeFreshEnrollmentServiceSmoke(t *testing.T) {
 		t.Fatal("created stopped service readback:", err)
 	}
 	t.Log("actual fresh files, stopped zero-exit initialize-store and broker-principal verify-store, fixed service configuration/DACL/SID passed")
+}
+
+// A narrowly selected helper-only retest keeps the original compiled broker and
+// current test revision distinct. The PowerShell entry reauthenticates the exact
+// artifact digest and original successful producer steps through GitHub before
+// this fixture. A caller-supplied commit or mere environment switch is not enough.
+func enrollmentSmokeProducerMatches() bool {
+	producer := os.Getenv("SKAGER_ENROLLMENT_PRODUCER_COMMIT")
+	if !enrollmentSmokeCommit.MatchString(producer) {
+		return false
+	}
+	if producer == os.Getenv("GITHUB_SHA") {
+		return os.Getenv("SKAGER_ENROLLMENT_RETAINED_PRODUCER") == ""
+	}
+	if os.Getenv("SKAGER_ENROLLMENT_RETAINED_PRODUCER") != "SCRUM-311-retained-original-broker" || !enrollmentSmokeCommit.MatchString(producer) {
+		return false
+	}
+	path := filepath.Join(os.Getenv("GITHUB_WORKSPACE"), "opennav-x", "tools", "retained-broker-enrollment-selection.json")
+	raw, err := os.ReadFile(path)
+	if err != nil || len(raw) > 4096 {
+		return false
+	}
+	var selection struct {
+		Schema         int    `json:"schema"`
+		Repository     string `json:"repository"`
+		RunID          string `json:"runId"`
+		RunAttempt     string `json:"runAttempt"`
+		HeadSHA        string `json:"headSha"`
+		JobID          string `json:"jobId"`
+		ArtifactID     string `json:"artifactId"`
+		ArtifactName   string `json:"artifactName"`
+		ArtifactDigest string `json:"artifactDigest"`
+	}
+	decoder := json.NewDecoder(strings.NewReader(string(raw)))
+	decoder.DisallowUnknownFields()
+	if decoder.Decode(&selection) != nil || decoder.Decode(&struct{}{}) != io.EOF {
+		return false
+	}
+	return selection.Schema == 1 && selection.Repository == "ThereptileII/Work" && selection.HeadSHA == producer &&
+		enrollmentSmokeRun.MatchString(selection.RunID) && enrollmentSmokeRun.MatchString(selection.RunAttempt) &&
+		enrollmentSmokeRun.MatchString(selection.JobID) && enrollmentSmokeRun.MatchString(selection.ArtifactID) &&
+		selection.ArtifactName == "update-verifier-windows-2022-386-"+producer &&
+		regexp.MustCompile(`^sha256:[0-9a-f]{64}$`).MatchString(selection.ArtifactDigest)
+}
+
+func TestNativeEnrollmentRetestKeepsProducerAndHelperDistinct(t *testing.T) {
+	workspace := t.TempDir()
+	tools := filepath.Join(workspace, "opennav-x", "tools")
+	if err := os.MkdirAll(tools, 0700); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("GITHUB_WORKSPACE", workspace)
+	t.Setenv("GITHUB_SHA", strings.Repeat("a", 40))
+	t.Setenv("SKAGER_ENROLLMENT_PRODUCER_COMMIT", strings.Repeat("a", 40))
+	t.Setenv("SKAGER_ENROLLMENT_RETAINED_PRODUCER", "")
+	if !enrollmentSmokeProducerMatches() {
+		t.Fatal("ordinary exact-commit fixture refused")
+	}
+	t.Setenv("SKAGER_ENROLLMENT_PRODUCER_COMMIT", strings.Repeat("b", 40))
+	if enrollmentSmokeProducerMatches() {
+		t.Fatal("different producer accepted without separate retained opt-in")
+	}
+	t.Setenv("SKAGER_ENROLLMENT_RETAINED_PRODUCER", "SCRUM-311-retained-original-broker")
+	if enrollmentSmokeProducerMatches() {
+		t.Fatal("environment declaration replaced original committed selection")
+	}
+	selection := fmt.Sprintf(`{"schema":1,"repository":"ThereptileII/Work","runId":"1","runAttempt":"1","headSha":"%s","jobId":"2","artifactId":"3","artifactName":"update-verifier-windows-2022-386-%s","artifactDigest":"sha256:%s"}`, strings.Repeat("b", 40), strings.Repeat("b", 40), strings.Repeat("c", 64))
+	path := filepath.Join(tools, "retained-broker-enrollment-selection.json")
+	if err := os.WriteFile(path, []byte(selection), 0600); err != nil {
+		t.Fatal(err)
+	}
+	if !enrollmentSmokeProducerMatches() {
+		t.Fatal("separate helper refused its exact original committed selection")
+	}
+	t.Setenv("SKAGER_ENROLLMENT_PRODUCER_COMMIT", strings.Repeat("d", 40))
+	if enrollmentSmokeProducerMatches() {
+		t.Fatal("different original producer substituted")
+	}
 }
 
 func enrollmentSmokeAbsent() error {

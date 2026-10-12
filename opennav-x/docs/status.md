@@ -1,26 +1,40 @@
 # SKAGER status — 2026-10-12
 
-## Native protected restart passes; remaining component blocker is static analysis
+## Native component producers pass; SCM helper path repair remains pending
 
-Exact component run [38287535018](https://github.com/ThereptileII/Work/actions/runs/38287535018)
+Exact focused component run [38288556379](https://github.com/ThereptileII/Work/actions/runs/38288556379)
+on `4dcee9b15922e62ea43a97e003e1278eead71b2f` passed both platform functional
+jobs' test steps, Windows static analysis, exact-source packaging, native launcher,
+broker/provisioner/baseline production, retained operator-kit packaging, startup
+transactions and historical installer checks. Its Linux job succeeded. The Windows
+job failed **before invoking the fresh SCM enrollment fixture**: the relative
+log/script path resolved beneath the module directory. This is neither a native
+service acceptance pass nor an observed product crash. The signing step was
+skipped. The original run remains failed.
+
+The selected helper repair uses absolute workspace paths. A separate SCM-only
+workflow authenticates the original failed run, exact successful producer steps,
+job/attempt, artifact identity and SHA-256, safely extracts only the existing
+broker installation and re-verifies its original package/source identity. It
+rechecks provenance before privileged fixture effects. Original product commit
+and later helper commit are recorded separately; no component is rebuilt or
+relabeled. Normal Staging gates are unchanged. [Retained-test contract](installer/retained-broker-enrollment.md).
+Native service acceptance remains pending. No full application rebuild or boat
+change has occurred.
+
+Earlier exact component run [38287535018](https://github.com/ThereptileII/Work/actions/runs/38287535018)
 on `c75c3519f4ac1ee2732e8c38f0fc63334943cdf5` passed Linux (**569 top-level +
 2556 nested**) and Windows functional contracts (**729 top-level + 2799 nested,
-12 top-level skips, no failures**). The inaccessible-directory fixture now
-establishes its actual native denial and passes. Native MSVC protected/ordinary
-restart and startup interaction jobs passed; the five protected routing cases
-include all three modes, a fenced environment and a missing companion. The
-fixture held the original parent alive before release and removed its exact
-owned inert namespace successfully. [Original downloaded evidence](evidence/scrum311-startup-native-repairs-20261012/protected-routing-native-run.json).
+12 top-level skips, no failures**), plus independent native MSVC protected/ordinary
+restart and popup interaction jobs. Its `go vet` failure and skipped packaging/SCM
+remain preserved in [the original evidence](evidence/scrum311-startup-native-repairs-20261012/protected-routing-native-run.json).
+The test-only `c9023127` repair passed the replacement run's native Windows vet.
 
-The Windows job then failed `go vet` on an older stock mapping fixture's stored
-`uintptr` conversion. `c9023127` replaces that test-only conversion with a native
-same-process mapped-byte write; focused Windows/x86 vet and test compilation
-passed. Production checks and integrity/refusal assertions are unchanged.
-Native packaging and fresh SCM enrollment were skipped after the vet failure,
-so neither is accepted. A focused verifier-only replacement will retain those
-gates without repeating independent passing C++/popup jobs. The default full
-Staging workflow retains every existing gate. No full application rebuild or
-boat change has occurred.
+`eef4ca5b` adds a bounded read-only selected-history diagnostic under the original
+broker lock, protected registration and elevated peer. It reports selected
+qualification/closed-history data, not mutation authority or the internal reason
+for a metadata-check outcome. Focused Linux and Windows/x86 compilation passed;
+actual installed endpoint acceptance remains pending.
 
 ## Private updater handoff joins ready for native verification
 

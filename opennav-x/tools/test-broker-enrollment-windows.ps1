@@ -6,7 +6,8 @@ param(
     [Parameter(Mandatory = $true)][string]$Install,
     [Parameter(Mandatory = $true)][string]$ExpectedCommit,
     [Parameter(Mandatory = $true)][string]$RunnerEnvironment,
-    [Parameter(Mandatory = $true)][switch]$ConfirmDisposableHostedRunner
+    [Parameter(Mandatory = $true)][switch]$ConfirmDisposableHostedRunner,
+    [string]$RetainedProducerReceipt
 )
 
 $ErrorActionPreference = 'Stop'
@@ -14,10 +15,20 @@ if (-not $ConfirmDisposableHostedRunner -or
     $env:GITHUB_ACTIONS -cne 'true' -or $env:RUNNER_OS -cne 'Windows' -or
     $RunnerEnvironment -cne 'github-hosted' -or
     $env:GITHUB_REPOSITORY -cne 'ThereptileII/Work' -or
-    $ExpectedCommit -cne $env:GITHUB_SHA -or
     $ExpectedCommit -cnotmatch '^[0-9a-f]{40}$' -or
     $env:GITHUB_RUN_ID -cnotmatch '^[1-9][0-9]*$') {
     throw 'Explicit same-commit disposable GitHub-hosted Windows fixture required'
+}
+
+$checkoutCommit = $ExpectedCommit
+if ($RetainedProducerReceipt) {
+    $checkoutCommit = $env:GITHUB_SHA
+    $selection = Join-Path $PSScriptRoot 'retained-broker-enrollment-selection.json'
+    & python -c 'import sys; from pathlib import Path; sys.path.insert(0,sys.argv[1]); from retained_broker_enrollment import validate_receipt; from github_release_delivery import GitHub,read_json; s=read_json(Path(sys.argv[2])); r=validate_receipt(GitHub(s["repository"]),s,Path(sys.argv[3]),sys.argv[4]); assert r["headSha"] == sys.argv[5]' $PSScriptRoot $selection $RetainedProducerReceipt $checkoutCommit $ExpectedCommit
+    if ($LASTEXITCODE -ne 0) { throw 'Actual original retained producer authentication refused' }
+    $env:SKAGER_ENROLLMENT_RETAINED_PRODUCER = 'SCRUM-311-retained-original-broker'
+} elseif ($ExpectedCommit -cne $env:GITHUB_SHA) {
+    throw 'Same-commit producer required without independently authenticated retained selection'
 }
 
 $module = Join-Path $PSScriptRoot 'update-verifier'
@@ -33,8 +44,8 @@ if (-not (Test-Path -LiteralPath $brokerPath -PathType Leaf) -or
     throw 'Retained same-commit broker producer outputs required'
 }
 $head = (& git -C (Join-Path $PSScriptRoot '..') rev-parse HEAD).Trim()
-if ($LASTEXITCODE -ne 0 -or $head -cne $ExpectedCommit) {
-    throw 'Fixture checkout differs from retained broker producer commit'
+if ($LASTEXITCODE -ne 0 -or $head -cne $checkoutCommit) {
+    throw 'Fixture checkout differs from its actual helper commit'
 }
 
 # Existing source-package verifier checks exact Go build identity, Win32 GUI PE,

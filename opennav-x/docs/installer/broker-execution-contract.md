@@ -246,3 +246,23 @@ transactions and acceptance; quiesce and manual selection do not authorize them.
 
 No Production/public release, design review, endurance run or physical command is
 authorized by this source integration. See the [integration evidence](../evidence/scrum311-execution-integration-20261012/README.md).
+
+
+### Read-only selected-history diagnostics
+
+The separately elevated fixed maintenance operation `selected-history` is data
+only. It uses the same original protected store, operation lock, registered peer
+and selected-chain acquisition as manual maintenance, without opening the user
+profile or changing selection. The JSON response includes the selected generation,
+completion/head hashes, exact version/commit, original qualification and closure
+hashes and an inventory hash. Up to 16 ancestor generation/completion pairs are
+returned per page (at most 128 journals). Page zero starts a fresh observation;
+subsequent pages must supply both original selected-head and inventory hashes.
+Any changed/ambiguous/pending chain refuses. Every page needs a fresh request ID.
+
+An operator invokes `--maintenance=selected-history --request-id=<32 hex> --page=0`
+on the authenticated provisioner; continuation also supplies
+`--expected-selected-head-sha256=<head> --inventory-sha256=<inventory>`. This does
+not grant rollback/decommission authority or prove the broker's internal metadata
+fetch result. JSON cannot reconstruct retained native owners. Installed acceptance
+must still observe the actual launcher/application/offer and original exits.
