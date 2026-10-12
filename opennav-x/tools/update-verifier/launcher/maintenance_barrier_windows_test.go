@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/binary"
 	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -250,7 +251,7 @@ func TestNativeMaintenanceBarrierInaccessibleLegacyRootRefuses(t *testing.T) {
 	// retained parent remains accessible so the test reaches legacy-root denial.
 	parent, err := openNativeArmedDirectory(local)
 	if err != nil {
-		t.Fatal("fixture parent became inaccessible", err)
+		t.Fatal("fixture parent became inaccessible", err, maintenanceBarrierDirectoryProbe(local))
 	}
 	if err := windows.CloseHandle(parent.handle); err != nil {
 		t.Fatal(err)
@@ -379,9 +380,11 @@ func TestNativeMaintenanceBarrierCancellationAndLostOriginalCustodyRefuse(t *tes
 	}
 }
 
-// Duplicate only this test process token, disable privileges on the duplicate,
-// and retain it for a single locked-thread fixture. No original token privilege,
-// production grant, service, installation or profile is changed.
+// Duplicate only this test process token, disable all but directory traversal
+// on the duplicate, and retain it for a single locked-thread fixture. The
+// normalized physical parent lookup can traverse private CI ancestors. No
+// original token privilege, production grant, service, installation or profile
+// is changed.
 func maintenanceBarrierUnprivilegedToken(t *testing.T) windows.Token {
 	t.Helper()
 	var existing windows.Token
@@ -414,6 +417,18 @@ func maintenanceBarrierUnprivilegedToken(t *testing.T) windows.Token {
 	if err = windows.AdjustTokenPrivileges(token, true, nil, 0, nil, nil); err != nil {
 		t.Fatal("fixture privilege disable", err)
 	}
+	var traverse windows.LUID
+	traverseName, err := windows.UTF16PtrFromString("SeChangeNotifyPrivilege")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err = windows.LookupPrivilegeValue(nil, traverseName, &traverse); err != nil {
+		t.Fatal("fixture traversal privilege lookup", err)
+	}
+	onlyTraverse := windows.Tokenprivileges{PrivilegeCount: 1, Privileges: [1]windows.LUIDAndAttributes{{Luid: traverse, Attributes: windows.SE_PRIVILEGE_ENABLED}}}
+	if err = windows.AdjustTokenPrivileges(token, false, &onlyTraverse, 0, nil, nil); err != nil {
+		t.Fatal("fixture traversal privilege enable", err)
+	}
 	// Inspect the actual duplicate, rather than relying on adjustment success.
 	var needed uint32
 	err = windows.GetTokenInformation(token, windows.TokenPrivileges, nil, 0, &needed)
@@ -429,10 +444,48 @@ func maintenanceBarrierUnprivilegedToken(t *testing.T) windows.Token {
 	if uint64(privileges.PrivilegeCount) > uint64(used-4)/uint64(unsafe.Sizeof(windows.LUIDAndAttributes{})) {
 		t.Fatal("fixture privilege query bound")
 	}
+	traverseEnabled := false
 	for _, privilege := range privileges.AllPrivileges() {
-		if privilege.Attributes&windows.SE_PRIVILEGE_ENABLED != 0 {
-			t.Fatal("fixture duplicate retained enabled privilege")
+		if privilege.Attributes&windows.SE_PRIVILEGE_ENABLED == 0 {
+			continue
 		}
+		if privilege.Luid != traverse || traverseEnabled {
+			t.Fatal("fixture duplicate retained non-traversal enabled privilege")
+		}
+		traverseEnabled = true
+	}
+	if !traverseEnabled {
+		t.Fatal("fixture duplicate lacks enabled traversal privilege")
 	}
 	return token
+}
+
+// The production directory opener intentionally returns a generic refusal for
+// an ambiguous handle. Keep the fixture's failed native stage visible without
+// changing production refusal or using a privileged observer.
+func maintenanceBarrierDirectoryProbe(name string) string {
+	pointer, err := windows.UTF16PtrFromString(name)
+	if err != nil {
+		return fmt.Sprintf("path: %v", err)
+	}
+	handle, err := windows.CreateFile(pointer, windows.FILE_LIST_DIRECTORY|windows.FILE_READ_ATTRIBUTES,
+		windows.FILE_SHARE_READ|windows.FILE_SHARE_WRITE, nil, windows.OPEN_EXISTING,
+		windows.FILE_FLAG_BACKUP_SEMANTICS|windows.FILE_FLAG_OPEN_REPARSE_POINT, 0)
+	if err != nil {
+		return fmt.Sprintf("open: %v", err)
+	}
+	defer windows.CloseHandle(handle)
+	buffer := make([]uint16, 32768)
+	n, err := windows.GetFinalPathNameByHandle(handle, &buffer[0], uint32(len(buffer)), 2)
+	if err != nil || n == 0 || n >= uint32(len(buffer)) {
+		return fmt.Sprintf("normalized physical name: length=%d error=%v", n, err)
+	}
+	if _, err = nativePhysicalName(handle); err != nil {
+		return fmt.Sprintf("physical name policy: %v", err)
+	}
+	var info windows.ByHandleFileInformation
+	if err = windows.GetFileInformationByHandle(handle, &info); err != nil {
+		return fmt.Sprintf("file information: %v", err)
+	}
+	return fmt.Sprintf("all native stages succeeded; attributes=%#x", info.FileAttributes)
 }
