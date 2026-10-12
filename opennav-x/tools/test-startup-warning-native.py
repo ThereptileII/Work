@@ -125,6 +125,10 @@ def main():
              ROOT / 'installer/windows/UpdateTransaction.ps1',
              ROOT / 'src/integration/UpdateStartupReceipt.cpp',
              ROOT / 'src/integration/UpdateStartupReceipt.h',
+             ROOT / 'src/integration/UpdateQualification.cpp',
+             ROOT / 'src/integration/UpdateQualification.h',
+             ROOT / 'src/platform/windows/UpdateQualificationNative.cpp',
+             ROOT / 'src/platform/windows/UpdateQualificationNative.h',
              ROOT / 'src/integration/OpenNavBuild.h.in',
              ROOT / 'tests/update_startup_receipt_tests.cpp',
              ROOT / 'tests/update_startup_receipt_native_test.cpp']

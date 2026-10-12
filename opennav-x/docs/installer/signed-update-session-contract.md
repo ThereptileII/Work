@@ -2,6 +2,32 @@
 
 ## Native execution boundary — integration in progress
 
+The actual native staging engine now obtains its installed version/commit from
+retained selected-execution history, rather than the initial registration's
+version. A baseline registration by itself is not healthy selection. Closed
+transaction facts require commissioned → consumed spawn → observed health →
+selected order; rollback retains the actual previously selected identity.
+Missing roots, forks and all unresolved attempts refuse staging. Every captured
+journal and the selected generation remain held through the operation. Complete
+client-namespace re-enumeration detects new attempts or uncertain partials before
+reservation/materialization and before reporting success. The engine transaction
+mutex must also be shared by future execution/recovery writers; the inventory
+binding is not a lock or an externally supplied authority.
+
+The read-only journal API cannot resume append after service restart. A fresh,
+authenticated recovery link for a pre-spawn abandoned attempt remains required;
+never delete its reservation or infer that an absent reply means no child was
+created. These source changes deliberately do not enable execution until the
+actual host commissioning, one-use creator, health commit and restore flow join.
+
+Qualified application startup now observes the real fixed-profile MyConfig
+constructor and LoadMyConfig boundary. Its original INI hash and full physical
+identities precede READY. The INI read lock closes before normal wx writes;
+ancestor read handles remain held. A dedicated lifetime latch suppresses core
+marine-data sends/TX/upload paths during qualification; arbitrary plugin OS
+output still requires the separate loader/commissioning gate. Windows fixture
+execution remains pending; cross-compilation is not native acceptance.
+
 The current Go broker retains an actual authenticated pipe/process/token/logon
 capability throughout staging. A separate fixed duplex execution endpoint binds
 the interactive executor to the original protected `app/skager-start.exe` image.

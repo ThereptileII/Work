@@ -33,7 +33,8 @@ patches = [root / 'patches/opencpn-5.12.4-xnav.patch',
            root / 'patches/opencpn-5.12.4-wxcurl-trust.patch',
            root / 'patches/opencpn-5.12.4-peer-response-buffer.patch',
            root / 'patches/opencpn-5.12.4-peer-unavailable.patch',
-           root / 'patches/opencpn-5.12.4-pilot-serial.patch']
+           root / 'patches/opencpn-5.12.4-pilot-serial.patch',
+           root / 'patches/opencpn-5.12.4-update-qualification.patch']
 def apply(patch, *options, env=None):
     # The identical LF byte stream must be used for check, mutation and index
     # verification, including Windows checkouts with core.autocrlf enabled.

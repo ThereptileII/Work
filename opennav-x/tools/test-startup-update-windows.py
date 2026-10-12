@@ -320,6 +320,8 @@ def main():
         'tests/startup_update_tests.cpp', 'tests/startup_update_dialog_test.cpp',
         'tests/update_startup_receipt_tests.cpp', 'tests/update_startup_receipt_native_test.cpp',
         'src/integration/UpdateStartupReceipt.cpp', 'src/integration/OpenNavBuild.h.in',
+        'src/integration/UpdateQualification.cpp',
+        'src/platform/windows/UpdateQualificationNative.cpp',
         'installer/windows/UpdateTransaction.ps1', 'cmake/StartupUpdate.cmake',
         'src/platform/windows/StartupUpdatePrompt.cpp',
         'src/application/StartupUpdate.cpp', 'src/ui/StartupUpdateDialog.cpp',

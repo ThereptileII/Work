@@ -51,11 +51,20 @@ type stockOwner interface {
 	io.Closer
 	validate() error
 }
+type selectedExecutionOwner interface {
+	installed() releasepolicy.Installed
+	validate() error
+	Close() error
+}
 type engine struct {
 	store   storage
 	observe func(context.Context, registration) (releasepolicy.OpenCpn, stockOwner, error)
 	prepare func(context.Context, verifier.PrepareConfig, releasepolicy.OpenCpn, verifier.ConsentIdentity, candidate) (acquisition, error)
-	busy    sync.Mutex
+	// The actual native service supplies this protected-history resolver. Private
+	// portable staging fixtures can omit it; production never derives current
+	// version from the original registration or a materialization receipt.
+	selected func(context.Context, registration) (selectedExecutionOwner, error)
+	busy     sync.Mutex
 }
 
 // No receipt in this operation authorizes launch. It records authenticated
@@ -105,6 +114,21 @@ func (e *engine) handle(ctx context.Context, peer brokerpipe.Peer, request broke
 	if err != nil {
 		return brokerpipe.Result{}, err
 	}
+	installed := releasepolicy.Installed{Version: r.Installed.Version, Commit: r.Installed.Commit}
+	var selected selectedExecutionOwner
+	if e.selected != nil {
+		selected, err = e.selected(ctx, r)
+		if selected != nil {
+			defer func() { resultErr = errors.Join(resultErr, selected.Close()) }()
+		}
+		if err != nil || selected == nil {
+			return brokerpipe.Result{}, errStageRefused
+		}
+		if err = selected.validate(); err != nil {
+			return brokerpipe.Result{}, err
+		}
+		installed = selected.installed()
+	}
 	baseline, err := e.store.openBaseline(ctx, r)
 	if baseline != nil {
 		defer func() {
@@ -135,6 +159,11 @@ func (e *engine) handle(ctx context.Context, peer brokerpipe.Peer, request broke
 			resultErr = errors.Join(resultErr, stock.Close())
 		}
 	}()
+	if selected != nil {
+		if err := selected.validate(); err != nil {
+			return brokerpipe.Result{}, err
+		}
+	}
 	// CREATE_NEW reserves this exact request ID durably before network activity.
 	// Failure leaves a protected partial candidate; the ID is never reused.
 	stage, err := e.store.begin(request.RequestID, peer.SID)
@@ -149,7 +178,9 @@ func (e *engine) handle(ctx context.Context, peer brokerpipe.Peer, request broke
 	if err := e.store.Validate(); err != nil {
 		return brokerpipe.Result{}, err
 	}
-	prepared, err := e.prepare(ctx, r.configuration(stateDir, artifactDir), observed, request.Consent, stage)
+	config := r.configuration(stateDir, artifactDir)
+	config.Installed = installed
+	prepared, err := e.prepare(ctx, config, observed, request.Consent, stage)
 	if err != nil || prepared == nil {
 		if prepared != nil {
 			_ = prepared.Close()
@@ -194,6 +225,11 @@ func (e *engine) handle(ctx context.Context, peer brokerpipe.Peer, request broke
 	}
 	if err := baseline.Validate(); err != nil {
 		return brokerpipe.Result{}, err
+	}
+	if selected != nil {
+		if err := selected.validate(); err != nil {
+			return brokerpipe.Result{}, err
+		}
 	}
 	// Copy only from the still-held approved baseline and reserved candidate.
 	// The completed protected generation is not a selected installation or launch
@@ -275,6 +311,11 @@ func (e *engine) handle(ctx context.Context, peer brokerpipe.Peer, request broke
 	}
 	if err := e.store.Validate(); err != nil {
 		return brokerpipe.Result{}, err
+	}
+	if selected != nil {
+		if err := selected.validate(); err != nil {
+			return brokerpipe.Result{}, err
+		}
 	}
 	return brokerpipe.Result{Schema: 1, RequestID: request.RequestID, State: stagedState, StageID: request.RequestID,
 		Version: request.Consent.Version, Commit: request.Consent.Commit}, nil
