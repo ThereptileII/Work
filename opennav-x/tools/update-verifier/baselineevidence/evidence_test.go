@@ -343,3 +343,155 @@ func TestValidateRefusesMissingExtraOrTamperedObservedHelpers(t *testing.T) {
 		})
 	}
 }
+
+func commissioningEvidenceFixture(t *testing.T) evidenceFixture {
+	t.Helper()
+	f, _ := helperEvidenceFixture(t) // Both reserved contracts coexist independently.
+	var inventory map[string]string
+	if err := json.Unmarshal(f.inventory, &inventory); err != nil {
+		t.Fatal(err)
+	}
+	for _, name := range commissioningFixtureNames() {
+		raw := []byte("\xef\xbb\xbf# inert original " + name + "\r\n ")
+		inventory[name] = digest(raw)
+		f.observed[name] = digest(raw)
+	}
+	f.inventory = fixtureJSON(t, inventory)
+	f.expected.InventorySHA256 = digest(f.inventory)
+	return f
+}
+func commissioningFixtureNames() []string {
+	return []string{
+		"installer/commissioning-v1/commission-read-only.ps1",
+		"installer/commissioning-v1/verify-commissioning-launch.ps1",
+		"installer/commissioning-v1/Commissioning.ps1",
+		"installer/commissioning-v1/Preparation.ps1",
+		"installer/commissioning-v1/Common.ps1",
+		"installer/commissioning-v1/CommissioningProfileLock.cs",
+		"installer/commissioning-v1/InstalledResourceReview.ps1",
+		"installer/commissioning-v1/CommissioningBaseline.ps1",
+		"installer/commissioning-v1/ColdBaseline.ps1",
+		"installer/commissioning-v1/RestartCommissioningPolicy.ps1",
+		"installer/commissioning-v1/RestartAuiPersistence.ps1",
+		"installer/commissioning-v1/RestartDashboardPersistence.ps1",
+	}
+}
+
+func TestCommissioningHelpersExactIndependentContracts(t *testing.T) {
+	for _, present := range []bool{false, true} {
+		f, _ := helperEvidenceFixture(t)
+		if present {
+			f = commissioningEvidenceFixture(t)
+		}
+		var inventory map[string]string
+		if err := DecodeInventory(f.inventory, &inventory); err != nil {
+			t.Fatal(err)
+		}
+		helpers, err := CommissioningHelpers(inventory)
+		if err != nil || (len(helpers) == 12) != present || (!present && helpers != nil) {
+			t.Fatal("commissioning presence differs", err)
+		}
+		engine, err := EngineHelpers(inventory)
+		if err != nil || len(engine) != 3 {
+			t.Fatal("engine contract changed", err)
+		}
+		if present {
+			for i, expected := range commissioningFixtureNames() {
+				if helpers[i] != expected || !IsCommissioningHelper(expected) {
+					t.Fatal("exact stable commissioning closure differs")
+				}
+			}
+			helpers[0] = "mutated"
+			again, err := CommissioningHelpers(inventory)
+			if err != nil || again[0] != commissioningFixtureNames()[0] {
+				t.Fatal("returned names alias shared state", err)
+			}
+		}
+	}
+}
+
+func TestCommissioningInventoryRefusesRepinnedPartialAliasUnknownAndDigest(t *testing.T) {
+	for _, scenario := range []string{"one-missing", "only-one", "alias", "parent-alias", "directory-alias", "unknown", "nested", "directory-file", "digest"} {
+		t.Run(scenario, func(t *testing.T) {
+			f := commissioningEvidenceFixture(t)
+			var inventory map[string]string
+			if err := json.Unmarshal(f.inventory, &inventory); err != nil {
+				t.Fatal(err)
+			}
+			first := commissioningFixtureNames()[0]
+			switch scenario {
+			case "one-missing":
+				delete(inventory, first)
+			case "only-one":
+				for _, name := range commissioningFixtureNames()[1:] {
+					delete(inventory, name)
+				}
+			case "alias", "parent-alias", "directory-alias":
+				alias := "installer/commissioning-v1/Commission-read-only.ps1"
+				if scenario == "parent-alias" {
+					alias = "Installer/commissioning-v1/commission-read-only.ps1"
+				}
+				if scenario == "directory-alias" {
+					alias = "installer/Commissioning-v1/commission-read-only.ps1"
+				}
+				inventory[alias] = inventory[first]
+				delete(inventory, first)
+			case "unknown":
+				inventory["installer/commissioning-v1/Other.ps1"] = digest([]byte("extra"))
+			case "nested":
+				inventory[first+"/child"] = digest([]byte("nested"))
+			case "directory-file":
+				inventory["installer/commissioning-v1"] = digest([]byte("file"))
+			case "digest":
+				inventory[first] = strings.Repeat("A", 64)
+			}
+			if helpers, err := CommissioningHelpers(inventory); err == nil || helpers != nil {
+				t.Fatal("invalid commissioning namespace recognized")
+			}
+			f.inventory = fixtureJSON(t, inventory)
+			f.expected.InventorySHA256 = digest(f.inventory)
+			var decoded map[string]string
+			if DecodeInventory(f.inventory, &decoded) == nil {
+				t.Fatal("invalid repinned inventory accepted")
+			}
+			if _, _, err := Validate(context.Background(), f.inventory, f.manifest, f.product, f.observed, f.expected); err == nil {
+				t.Fatal("repinning bypassed commissioning contract")
+			}
+		})
+	}
+}
+
+func TestValidateCommissioningRequiresExactObservedOriginals(t *testing.T) {
+	for _, scenario := range []string{"complete", "missing", "changed", "extra", "alias"} {
+		t.Run(scenario, func(t *testing.T) {
+			f := commissioningEvidenceFixture(t)
+			first := commissioningFixtureNames()[0]
+			switch scenario {
+			case "missing":
+				delete(f.observed, first)
+			case "changed":
+				f.observed[first] = digest([]byte("normalized or changed"))
+			case "extra":
+				f.observed["installer/commissioning-v1/Other.ps1"] = digest([]byte("extra"))
+			case "alias":
+				f.observed[strings.ToUpper(first)] = f.observed[first]
+				delete(f.observed, first)
+			}
+			identity, payload, err := Validate(context.Background(), f.inventory, f.manifest, f.product, f.observed, f.expected)
+			if scenario != "complete" {
+				if err == nil {
+					t.Fatal("nonexact observed originals accepted")
+				}
+				return
+			}
+			if err != nil || len(payload) != len(f.observed) || identity.LifecycleManifestSHA256 != digest(f.manifest) {
+				t.Fatal("exact closure or original identity lost", err)
+			}
+			for name, hash := range f.observed {
+				if payload[name] != hash {
+					t.Fatal("original digest lost")
+				}
+			}
+		})
+	}
+}

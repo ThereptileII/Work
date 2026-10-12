@@ -21,9 +21,9 @@ type candidateInventoryBackend interface {
 	candidateInventory(names []string, acquisition bool) error
 }
 
-// WriteEvidence creates only the two fixed original recovery sidecars and three
-// fixed execution helpers using the
-// same exclusive, retained native file custody as payload. It never serializes
+// WriteEvidence creates only the two fixed original recovery sidecars and
+// inventoried engine/commissioning-v1 helpers using the same exclusive, retained
+// native file custody as payload. It never serializes
 // a replacement inventory or manifest. Supplied hashes authenticate nothing by
 // themselves; StageRecovery supplies bytes from its live signed acquisition.
 func (c *Candidate) WriteEvidence(ctx context.Context, name string, raw []byte, digest string) (err error) {

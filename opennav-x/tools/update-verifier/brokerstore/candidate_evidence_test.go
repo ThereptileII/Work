@@ -15,7 +15,7 @@ func writeCandidateEvidence(t *testing.T, c *Candidate, f baselineFixtureData) {
 	t.Helper()
 	for name, raw := range f.payload {
 		var err error
-		if baselineevidence.IsEngineHelper(name) {
+		if baselineevidence.IsEngineHelper(name) || baselineevidence.IsCommissioningHelper(name) {
 			err = c.WriteEvidence(context.Background(), name, raw, digest(string(raw)))
 		} else {
 			err = c.WriteFile(context.Background(), name, bytes.NewReader(raw), int64(len(raw)), digest(string(raw)))
@@ -306,6 +306,48 @@ func TestCandidateEvidenceCancellationAndCompletionFreeze(t *testing.T) {
 			}
 			if m.files[ReceiptFilename] != nil {
 				t.Fatal("receipt after evidence failure")
+			}
+		})
+	}
+}
+
+func TestCandidateCommissioningHelpersExactSetAndRetainedHashes(t *testing.T) {
+	for _, scenario := range []string{"complete", "missing", "tampered", "extra", "alias", "tamper-after-complete"} {
+		t.Run(scenario, func(t *testing.T) {
+			_, c, m := testCandidate(t)
+			f := baselineCommissioningData(t)
+			if scenario == "missing" {
+				delete(f.payload, "installer/commissioning-v1/RestartDashboardPersistence.ps1")
+			}
+			if scenario == "tampered" {
+				f.payload["installer/commissioning-v1/Commissioning.ps1"] = []byte("changed original")
+			}
+			writeCandidateEvidence(t, c, f)
+			if scenario == "extra" || scenario == "alias" {
+				name := "installer/commissioning-v1/extra.ps1"
+				if scenario == "alias" {
+					name = "installer/commissioning-v1/commissioning.ps1"
+				}
+				if err := c.WriteEvidence(context.Background(), name, []byte("extra"), digest("extra")); err == nil {
+					t.Fatal("nonfixed helper accepted")
+				}
+			}
+			err := c.CompleteRecoveryEvidence(context.Background(), f.identity)
+			if scenario != "complete" && scenario != "tamper-after-complete" {
+				if err == nil || m.files[ReceiptFilename] != nil {
+					t.Fatal("incomplete or changed helpers completed")
+				}
+				return
+			}
+			if err != nil {
+				t.Fatal(err)
+			}
+			if scenario == "tamper-after-complete" {
+				m.files["installer/commissioning-v1/Preparation.ps1"].data[0] ^= 1
+			}
+			err = c.Seal(context.Background(), []byte("opaque receipt"))
+			if (err != nil) != (scenario == "tamper-after-complete") {
+				t.Fatal("seal did not recheck exact helper originals", err)
 			}
 		})
 	}

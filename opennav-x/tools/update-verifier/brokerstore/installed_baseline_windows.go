@@ -532,7 +532,7 @@ func (b *nativeInstalledBaseline) openMembers(members map[string]baselineMember,
 		if name == "" || name == "@user" || name == "@installed" {
 			continue
 		}
-		if name != "app" && name != "docs" && name != "installer" && name != "installer/engine" {
+		if name != "app" && name != "docs" && name != "installer" && name != "installer/engine" && name != "installer/commissioning-v1" {
 			if err := memberPath(name); err != nil {
 				return result, err
 			}

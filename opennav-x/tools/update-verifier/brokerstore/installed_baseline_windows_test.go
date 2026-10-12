@@ -303,3 +303,73 @@ func TestNativeInstalledBaselinePublicOpenRefusesOperatorConsole(t *testing.T) {
 		t.Fatal("operator console accepted:", err)
 	}
 }
+
+func TestNativeInstalledBaselineCommissioningHelpersExactNamespace(t *testing.T) {
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	for _, scenario := range []string{"complete", "missing", "tampered", "extra", "alias", "hardlink"} {
+		t.Run(scenario, func(t *testing.T) {
+			s, r, b, _ := nativeBaselineFixture(t)
+			f := baselineCommissioningData(t)
+			if scenario == "missing" {
+				delete(f.payload, "installer/commissioning-v1/RestartDashboardPersistence.ps1")
+			}
+			writeBaseline(t, r, f)
+			err := r.Complete(context.Background(), f.identity)
+			if scenario == "missing" {
+				if err == nil {
+					t.Fatal("missing native helper completed")
+				}
+				return
+			}
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err := r.Close(); err != nil {
+				t.Fatal(err)
+			}
+			file := filepath.Join(b.dos, "installer", "commissioning-v1", "Commissioning.ps1")
+			switch scenario {
+			case "tampered":
+				if err := os.WriteFile(file, []byte("changed"), 0600); err != nil {
+					t.Fatal(err)
+				}
+			case "extra":
+				if err := os.WriteFile(filepath.Join(filepath.Dir(file), "extra.ps1"), []byte("extra"), 0600); err != nil {
+					t.Fatal(err)
+				}
+			case "alias":
+				if err := os.Rename(file, filepath.Join(filepath.Dir(file), "commissioning.ps1")); err != nil {
+					t.Fatal(err)
+				}
+			case "hardlink":
+				if err := os.Link(file, filepath.Join(filepath.Dir(b.dos), "outside-helper-link")); err != nil {
+					t.Fatal(err)
+				}
+			}
+			opened, err := s.OpenInstalledBaseline(context.Background(), b.client, stageA, registrationTestApproval, f.expected)
+			if scenario == "complete" {
+				if err != nil {
+					t.Fatal("exact commissioning namespace could not reopen", err)
+				}
+				defer opened.Close()
+				if err := opened.Validate(); err != nil {
+					t.Fatal(err)
+				}
+				for name, expected := range f.payload {
+					path := filepath.Join(b.dos, filepath.FromSlash(name))
+					raw, err := os.ReadFile(path)
+					if err != nil || string(raw) != string(expected) {
+						t.Fatal("original bytes differ", name, err)
+					}
+					if err := nativeAttemptFile(t, path, windows.GENERIC_WRITE); !errors.Is(err, windows.ERROR_SHARING_VIOLATION) {
+						t.Fatal("reader failed to retain custody", err)
+					}
+				}
+			} else if err == nil {
+				opened.Close()
+				t.Fatal("changed native helper namespace accepted")
+			}
+		})
+	}
+}

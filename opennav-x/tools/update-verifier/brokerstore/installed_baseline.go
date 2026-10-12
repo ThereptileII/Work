@@ -232,7 +232,7 @@ func baselineMatches(i baselineevidence.Identity, e brokerregistration.Installed
 	return i.Version == e.Version && i.Commit == e.Commit && i.ExecutableSHA256 == e.ExecutableSHA256 && i.ProductBuildSHA256 == e.ProductBuildSHA256 && i.InventorySHA256 == e.InventorySHA256 && i.LifecycleManifestAvailable && i.LifecycleManifestSHA256 == e.PackageSHA256
 }
 func baselineEvidenceName(name string) bool {
-	return baselineSidecarName(name) || baselineevidence.IsEngineHelper(name)
+	return baselineSidecarName(name) || baselineevidence.IsEngineHelper(name) || baselineevidence.IsCommissioningHelper(name)
 }
 func baselineSidecarName(name string) bool {
 	return name == "FILE_SHA256.json" || name == "installer/package.json"
@@ -286,7 +286,7 @@ func (r *InstalledBaseline) WriteFile(ctx context.Context, name string, source i
 }
 
 // WriteEvidence retains exact original bytes only for the two fixed sidecars and
-// three fixed execution helpers. Their hashes keep their original meanings; package
+// fixed engine and commissioning-v1 helpers. Their hashes keep their original meanings; package
 // means the original Lifecycle manifest, never Recovery ZIP or payload.zip.
 func (r *InstalledBaseline) WriteEvidence(ctx context.Context, name string, raw []byte, digest string) error {
 	data := bytes.Clone(raw)

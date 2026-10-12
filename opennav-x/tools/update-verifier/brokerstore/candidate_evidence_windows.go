@@ -8,7 +8,7 @@ import (
 )
 
 // checkRecoveryEvidenceResidue recognizes only the fixed original sidecars and
-// engine helper namespace for acquisition reconciliation. This is not completion/adoption or
+// fixed execution helper namespaces for acquisition reconciliation. This is not completion/adoption or
 // semantic evidence validation; incomplete candidates keep their reservation.
 func (c *nativeCandidate) checkRecoveryEvidenceResidue(name string) (resultErr error) {
 	parent := c.directories[""]
@@ -30,7 +30,7 @@ func (c *nativeCandidate) checkRecoveryEvidenceResidue(name string) (resultErr e
 	if dir.info.VolumeSerialNumber != parent.info.VolumeSerialNumber {
 		return errors.New("candidate evidence directory crossed volumes")
 	}
-	entries, err := boundedEntries(dir, 2)
+	entries, err := boundedEntries(dir, 3)
 	if err != nil {
 		return err
 	}
@@ -41,7 +41,9 @@ func (c *nativeCandidate) checkRecoveryEvidenceResidue(name string) (resultErr e
 		case "package.json":
 			err = c.checkRecoveryEvidenceFile(dir, "package.json")
 		case "engine":
-			err = c.checkRecoveryEngineResidue(dir)
+			err = c.checkRecoveryHelpersResidue(dir, "engine", 3, baselineevidence.IsEngineHelper)
+		case "commissioning-v1":
+			err = c.checkRecoveryHelpersResidue(dir, "commissioning-v1", 12, baselineevidence.IsCommissioningHelper)
 		default:
 			return errors.New("unknown installer evidence residue")
 		}
@@ -52,23 +54,23 @@ func (c *nativeCandidate) checkRecoveryEvidenceResidue(name string) (resultErr e
 	return c.check()
 }
 
-func (c *nativeCandidate) checkRecoveryEngineResidue(parent *nativePin) (resultErr error) {
-	name := parent.name + `\engine`
+func (c *nativeCandidate) checkRecoveryHelpersResidue(parent *nativePin, component string, limit int, recognizes func(string) bool) (resultErr error) {
+	name := parent.name + `\` + component
 	dir, err := openPin(physical(name), name, c.securityDir)
 	if err != nil {
 		return err
 	}
 	defer func() { resultErr = errors.Join(resultErr, windows.CloseHandle(dir.handle)) }()
 	if dir.info.VolumeSerialNumber != parent.info.VolumeSerialNumber {
-		return errors.New("candidate engine directory crossed volumes")
+		return errors.New("candidate execution helper directory crossed volumes")
 	}
-	entries, err := boundedEntries(dir, 3)
+	entries, err := boundedEntries(dir, limit)
 	if err != nil {
 		return err
 	}
 	for _, entry := range entries {
-		if !baselineevidence.IsEngineHelper("installer/engine/" + entry.Name()) {
-			return errors.New("unknown engine helper residue")
+		if !recognizes("installer/" + component + "/" + entry.Name()) {
+			return errors.New("unknown execution helper residue")
 		}
 		if err := c.checkRecoveryEvidenceFile(dir, entry.Name()); err != nil {
 			return err

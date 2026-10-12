@@ -156,8 +156,8 @@ func parseRecoveryContents(ctx context.Context, r io.ReaderAt, size int64, polic
 			return empty, errors.New("unsupported recovery member")
 		}
 		name := strings.TrimPrefix(f.Name, recoveryPrefix)
-		if baselineevidence.IsEngineHelper(name) && (f.UncompressedSize64 == 0 || f.UncompressedSize64 > uint64(maxRecoveryInventory)) {
-			return empty, errors.New("original installer engine size bound")
+		if (baselineevidence.IsEngineHelper(name) || baselineevidence.IsCommissioningHelper(name)) && (f.UncompressedSize64 == 0 || f.UncompressedSize64 > uint64(maxRecoveryInventory)) {
+			return empty, errors.New("original execution helper size bound")
 		}
 		key := strings.ToLower(name)
 		if aliases[key] {

@@ -9,6 +9,7 @@ import (
 	"strings"
 	"testing"
 
+	"example.com/opennav-update-verifier/baselineevidence"
 	"golang.org/x/sys/windows"
 )
 
@@ -195,6 +196,113 @@ func TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue(t *t
 			}
 			if raw, err := os.ReadFile(physical(root + `\FILE_SHA256.json`)); err != nil || string(raw) != "partial inert original" {
 				t.Fatal("reconciliation changed original residue", err)
+			}
+		})
+	}
+}
+
+func TestNativeCandidateCommissioningOriginalCustodyAndSeal(t *testing.T) {
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	c, n := nativeEvidenceCandidate(t)
+	f := baselineCommissioningData(t)
+	writeCandidateEvidence(t, c, f)
+	if err := c.CompleteRecoveryEvidence(context.Background(), f.identity); err != nil {
+		t.Fatal(err)
+	}
+	originals := map[string][]byte{"FILE_SHA256.json": f.inventory, "installer/package.json": f.manifest}
+	for name, raw := range f.payload {
+		originals[name] = raw
+	}
+	for name, expected := range originals {
+		path := physical(n.directories[""].name + `\` + strings.ReplaceAll(name, "/", `\`))
+		raw, err := os.ReadFile(path)
+		if err != nil || !bytes.Equal(raw, expected) {
+			t.Fatal("original bytes differ", err)
+		}
+		for _, access := range []uint32{windows.GENERIC_WRITE, windows.DELETE} {
+			if err := nativeAttemptFile(t, path, access); !errors.Is(err, windows.ERROR_SHARING_VIOLATION) {
+				t.Fatalf("original evidence custody not retained: %v", err)
+			}
+		}
+	}
+	if err := c.Seal(context.Background(), []byte("opaque receipt")); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestNativeCandidateCommissioningReconciliationPreservesExactResidue(t *testing.T) {
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	for _, scenario := range []string{"complete", "partial", "empty", "unknown", "alias", "hardlink", "wrong-type"} {
+		t.Run(scenario, func(t *testing.T) {
+			n, _ := nativeAcquisitionFixture(t)
+			write := func(name string) {
+				f, err := n.create(name)
+				if err != nil {
+					t.Fatal(err)
+				}
+				if _, err := f.Write([]byte("inert partial original")); err != nil {
+					t.Fatal(err)
+				}
+				if err := f.Sync(); err != nil {
+					t.Fatal(err)
+				}
+				if err := f.Close(); err != nil {
+					t.Fatal(err)
+				}
+			}
+			write("FILE_SHA256.json")
+			write("installer/package.json")
+			root := n.directories[""].name
+			relative := "installer/commissioning-v1/Commissioning.ps1"
+			path := physical(root + `\installer\commissioning-v1\Commissioning.ps1`)
+			if scenario == "empty" {
+				dir, err := n.newDirectory(n.directories["installer"], "commissioning-v1")
+				if err != nil {
+					t.Fatal(err)
+				}
+				n.directories["installer/commissioning-v1"] = dir
+			} else if scenario == "complete" {
+				f := baselineCommissioningData(t)
+				// Retain both complete reserved subtrees under installer.
+				for name := range f.payload {
+					if baselineevidence.IsEngineHelper(name) || baselineevidence.IsCommissioningHelper(name) {
+						write(name)
+					}
+				}
+			} else {
+				write(relative)
+			}
+			switch scenario {
+			case "unknown":
+				if err := os.WriteFile(physical(root+`\installer\commissioning-v1\extra.ps1`), []byte("extra"), 0600); err != nil {
+					t.Fatal(err)
+				}
+			case "alias":
+				if err := os.Rename(path, physical(root+`\installer\commissioning-v1\commissioning.ps1`)); err != nil {
+					t.Fatal(err)
+				}
+			case "hardlink":
+				if err := os.Link(path, physical(root+`\outside-commissioning-link`)); err != nil {
+					t.Fatal(err)
+				}
+			case "wrong-type":
+				if err := os.Remove(path); err != nil {
+					t.Fatal(err)
+				}
+				if err := os.Mkdir(path, 0700); err != nil {
+					t.Fatal(err)
+				}
+			}
+			err := n.checkRecoveryEvidenceResidue("installer")
+			inert := scenario == "complete" || scenario == "partial" || scenario == "empty"
+			if (err == nil) != inert {
+				t.Fatal("wrong residue decision", scenario, err)
+			}
+			raw, err := os.ReadFile(physical(root + `\FILE_SHA256.json`))
+			if err != nil || string(raw) != "inert partial original" {
+				t.Fatal("residue changed", err)
 			}
 		})
 	}

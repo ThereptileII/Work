@@ -278,6 +278,62 @@ func EngineHelpers(inventory map[string]string) ([]string, error) {
 	return []string{"installer/engine/Lifecycle.ps1", "installer/engine/UpdateSupervisor.ps1", "installer/engine/UpdateTransaction.ps1"}, nil
 }
 
+// commissioningHelpersV1 is the exact audited module closure. Keeping the
+// commissioning namespace distinct preserves the original NSIS helper contract.
+var commissioningHelpersV1 = [...]string{
+	"installer/commissioning-v1/commission-read-only.ps1",
+	"installer/commissioning-v1/verify-commissioning-launch.ps1",
+	"installer/commissioning-v1/Commissioning.ps1",
+	"installer/commissioning-v1/Preparation.ps1",
+	"installer/commissioning-v1/Common.ps1",
+	"installer/commissioning-v1/CommissioningProfileLock.cs",
+	"installer/commissioning-v1/InstalledResourceReview.ps1",
+	"installer/commissioning-v1/CommissioningBaseline.ps1",
+	"installer/commissioning-v1/ColdBaseline.ps1",
+	"installer/commissioning-v1/RestartCommissioningPolicy.ps1",
+	"installer/commissioning-v1/RestartAuiPersistence.ps1",
+	"installer/commissioning-v1/RestartDashboardPersistence.ps1",
+}
+
+// IsCommissioningHelper recognizes only the exact commissioning-v1 originals.
+// Recognition and retention grant no commissioning or execution authority.
+func IsCommissioningHelper(name string) bool {
+	for _, expected := range commissioningHelpersV1 {
+		if name == expected {
+			return true
+		}
+	}
+	return false
+}
+
+// CommissioningHelpers checks the reserved commissioning-v1 namespace and
+// returns a fresh stable list of its exact twelve members. Historical absence
+// remains valid data only. Partial sets, aliases, unknown members and invalid
+// digests refuse independently of the installer/engine helper contract.
+func CommissioningHelpers(inventory map[string]string) ([]string, error) {
+	if len(inventory) >= maxRecoveryFiles {
+		return nil, errors.New("recovery inventory member bound")
+	}
+	count := 0
+	for name, hash := range inventory {
+		folded := strings.ToLower(name)
+		if folded != "installer/commissioning-v1" && !strings.HasPrefix(folded, "installer/commissioning-v1/") {
+			continue
+		}
+		if !IsCommissioningHelper(name) || !recoveryHash.MatchString(hash) {
+			return nil, errors.New("unknown or invalid original commissioning helper")
+		}
+		count++
+	}
+	if count == 0 {
+		return nil, nil
+	}
+	if count != len(commissioningHelpersV1) {
+		return nil, errors.New("original commissioning helper set incomplete")
+	}
+	return append([]string(nil), commissioningHelpersV1[:]...), nil
+}
+
 // DecodeInventory checks the bounded strict original inventory. It does not
 // authenticate its contents; callers must bind original bytes independently.
 func DecodeInventory(raw []byte, inventory *map[string]string) error {
@@ -300,7 +356,10 @@ func DecodeInventory(raw []byte, inventory *map[string]string) error {
 			}
 		}
 	}
-	_, err := EngineHelpers(*inventory)
+	if _, err := EngineHelpers(*inventory); err != nil {
+		return err
+	}
+	_, err := CommissioningHelpers(*inventory)
 	return err
 }
 
@@ -368,8 +427,9 @@ func CheckRecoveryEvidence(ctx context.Context, inventoryRaw, packageRaw, produc
 // Validate binds exact original sidecars and measured installed payload members
 // to independently approved evidence pins. The original inventory may also name
 // recovery profile/launcher members, which are not installed payload. When all
-// three original execution helpers are inventoried, their exact measured bytes
-// must also be retained. Their presence alone grants no execution authority. Approval,
+// three original engine helpers or twelve commissioning-v1 originals are
+// inventoried, their exact measured bytes must also be retained. Their presence
+// alone grants no execution authority. Approval,
 // custody and current running identity remain separate caller obligations.
 func Validate(ctx context.Context, inventoryRaw, packageRaw, productRaw []byte, observed map[string]string, expected brokerregistration.Installed) (Identity, map[string]string, error) {
 	var empty Identity
@@ -399,7 +459,7 @@ func Validate(ctx context.Context, inventoryRaw, packageRaw, productRaw []byte, 
 	}
 	payload := map[string]string{}
 	for name, hash := range inventory {
-		if ((strings.HasPrefix(name, "app/") || strings.HasPrefix(name, "docs/")) && name != "app/OPENNAV_PORTABLE_PREVIEW") || IsEngineHelper(name) {
+		if ((strings.HasPrefix(name, "app/") || strings.HasPrefix(name, "docs/")) && name != "app/OPENNAV_PORTABLE_PREVIEW") || IsEngineHelper(name) || IsCommissioningHelper(name) {
 			payload[name] = hash
 		}
 	}

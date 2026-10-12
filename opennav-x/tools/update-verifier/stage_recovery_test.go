@@ -58,7 +58,7 @@ func (s *recoveryFileSink) WriteFile(ctx context.Context, name string, r io.Read
 }
 
 func (s *recoveryFileSink) WriteEvidence(ctx context.Context, name string, raw []byte, digest string) error {
-	if name != "FILE_SHA256.json" && name != "installer/package.json" && !baselineevidence.IsEngineHelper(name) {
+	if name != "FILE_SHA256.json" && name != "installer/package.json" && !baselineevidence.IsEngineHelper(name) && !baselineevidence.IsCommissioningHelper(name) {
 		return errors.New("unexpected evidence")
 	}
 	if err := s.WriteFile(ctx, name, strings.NewReader(string(raw)), int64(len(raw)), digest); err != nil {
@@ -83,6 +83,11 @@ func prepareStageFixture(t *testing.T, engine ...bool) (*recoveryFixture, *Prepa
 	f.entries["installer/package.json"] = append([]byte(" \n"), f.entries["installer/package.json"]...)
 	if len(engine) > 0 && engine[0] {
 		for name, raw := range recoveryEngineFixture() {
+			f.entries[name] = raw
+		}
+	}
+	if len(engine) > 1 && engine[1] {
+		for name, raw := range recoveryCommissioningFixture() {
 			f.entries[name] = raw
 		}
 	}
@@ -431,6 +436,77 @@ func TestStageRecoveryRequiresOriginalEvidenceCompletion(t *testing.T) {
 			}
 			if (scenario == "inventory-failure" || scenario == "manifest-failure" || scenario == "cancel-inventory" || scenario == "cancel-manifest") && completed {
 				t.Fatal("completed after evidence failure")
+			}
+		})
+	}
+}
+
+func recoveryCommissioningFixture() map[string][]byte {
+	return map[string][]byte{
+		"installer/commissioning-v1/commission-read-only.ps1":        []byte("\xef\xbb\xbf# inert commission-read-only.ps1\r\n "),
+		"installer/commissioning-v1/verify-commissioning-launch.ps1": []byte("\xef\xbb\xbf# inert verify-commissioning-launch.ps1\r\n "),
+		"installer/commissioning-v1/Commissioning.ps1":               []byte("\xef\xbb\xbf# inert Commissioning.ps1\r\n "),
+		"installer/commissioning-v1/Preparation.ps1":                 []byte("\xef\xbb\xbf# inert Preparation.ps1\r\n "),
+		"installer/commissioning-v1/Common.ps1":                      []byte("\xef\xbb\xbf# inert Common.ps1\r\n "),
+		"installer/commissioning-v1/CommissioningProfileLock.cs":     []byte("\xef\xbb\xbf# inert CommissioningProfileLock.cs\r\n "),
+		"installer/commissioning-v1/InstalledResourceReview.ps1":     []byte("\xef\xbb\xbf# inert InstalledResourceReview.ps1\r\n "),
+		"installer/commissioning-v1/CommissioningBaseline.ps1":       []byte("\xef\xbb\xbf# inert CommissioningBaseline.ps1\r\n "),
+		"installer/commissioning-v1/ColdBaseline.ps1":                []byte("\xef\xbb\xbf# inert ColdBaseline.ps1\r\n "),
+		"installer/commissioning-v1/RestartCommissioningPolicy.ps1":  []byte("\xef\xbb\xbf# inert RestartCommissioningPolicy.ps1\r\n "),
+		"installer/commissioning-v1/RestartAuiPersistence.ps1":       []byte("\xef\xbb\xbf# inert RestartAuiPersistence.ps1\r\n "),
+		"installer/commissioning-v1/RestartDashboardPersistence.ps1": []byte("\xef\xbb\xbf# inert RestartDashboardPersistence.ps1\r\n "),
+	}
+}
+
+func TestStageRecoveryRetainsOriginalCommissioningBeforeCompletion(t *testing.T) {
+	f, p := prepareStageFixture(t, true, true)
+	sink := &recoveryFileSink{root: t.TempDir()}
+	identity, err := p.StageRecovery(context.Background(), sink)
+	if err != nil || identity != p.RecoveryIdentity || sink.identity != identity || len(sink.evidenceNames) != 17 {
+		t.Fatal("commissioning originals missing before completion", err)
+	}
+	for name, raw := range recoveryCommissioningFixture() {
+		stored, err := os.ReadFile(filepath.Join(sink.root, filepath.FromSlash(name)))
+		if err != nil || string(stored) != string(raw) || string(stored) != string(f.entries[name]) {
+			t.Fatal("commissioning original changed", name, err)
+		}
+	}
+	for _, name := range sink.names {
+		if baselineevidence.IsCommissioningHelper(name) {
+			t.Fatal("commissioning helper installed as app/docs")
+		}
+	}
+}
+
+func TestStageRecoveryCommissioningSinkFailureNeverCompletes(t *testing.T) {
+	for _, scenario := range []string{"refuse", "cancel"} {
+		t.Run(scenario, func(t *testing.T) {
+			_, p := prepareStageFixture(t, true, true)
+			ctx, cancel := context.WithCancel(context.Background())
+			defer cancel()
+			complete := false
+			sink := recoveryEvidenceFaultSink{
+				recoverySinkFunc: func(_ context.Context, _ string, r io.Reader, _ int64, _ string) error {
+					_, err := io.Copy(io.Discard, r)
+					return err
+				},
+				writeEvidence: func(_ context.Context, name string, _ []byte, _ string) error {
+					if baselineevidence.IsCommissioningHelper(name) {
+						if scenario == "cancel" {
+							cancel()
+						}
+						return errors.New("commissioning destination refused")
+					}
+					return nil
+				},
+				complete: func(context.Context, baselineevidence.Identity) error { complete = true; return nil },
+			}
+			identity, err := p.StageRecovery(ctx, sink)
+			if err == nil || identity != (RecoveryIdentity{}) || complete {
+				t.Fatal("failed commissioning write completed")
+			}
+			if scenario == "cancel" && !errors.Is(err, context.Canceled) {
+				t.Fatal("cancellation lost", err)
 			}
 		})
 	}

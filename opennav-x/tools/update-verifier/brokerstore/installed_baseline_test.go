@@ -165,6 +165,9 @@ func (b *memoryBaseline) identities(m map[string]baselineMember) (map[string]dis
 		if baselineevidence.IsEngineHelper(name) {
 			dirs["installer/engine"] = baselineTestID(7)
 		}
+		if baselineevidence.IsCommissioningHelper(name) {
+			dirs["installer/commissioning-v1"] = baselineTestID(8)
+		}
 	}
 	sort.Strings(names)
 	for i, name := range names {
@@ -235,7 +238,7 @@ func writeBaseline(t *testing.T, r *InstalledBaseline, f baselineFixtureData) {
 	for _, name := range names {
 		raw := f.payload[name]
 		var err error
-		if baselineevidence.IsEngineHelper(name) {
+		if baselineevidence.IsEngineHelper(name) || baselineevidence.IsCommissioningHelper(name) {
 			err = r.WriteEvidence(context.Background(), name, raw, digest(string(raw)))
 		} else {
 			err = r.WriteFile(context.Background(), name, bytes.NewReader(raw), int64(len(raw)), digest(string(raw)))
@@ -624,4 +627,102 @@ func (r *blockedBaselineReader) Read(p []byte) (int, error) {
 	<-r.release
 	p[0] = 'x'
 	return 1, nil
+}
+
+func baselineCommissioningData(t *testing.T) baselineFixtureData {
+	t.Helper()
+	f := baselineEngineData(t)
+	var inventory map[string]string
+	if err := json.Unmarshal(f.inventory, &inventory); err != nil {
+		t.Fatal(err)
+	}
+	for _, name := range []string{
+		"installer/commissioning-v1/commission-read-only.ps1",
+		"installer/commissioning-v1/verify-commissioning-launch.ps1",
+		"installer/commissioning-v1/Commissioning.ps1",
+		"installer/commissioning-v1/Preparation.ps1",
+		"installer/commissioning-v1/Common.ps1",
+		"installer/commissioning-v1/CommissioningProfileLock.cs",
+		"installer/commissioning-v1/InstalledResourceReview.ps1",
+		"installer/commissioning-v1/CommissioningBaseline.ps1",
+		"installer/commissioning-v1/ColdBaseline.ps1",
+		"installer/commissioning-v1/RestartCommissioningPolicy.ps1",
+		"installer/commissioning-v1/RestartAuiPersistence.ps1",
+		"installer/commissioning-v1/RestartDashboardPersistence.ps1",
+	} {
+		f.payload[name] = []byte("\xef\xbb\xbf# inert original " + name + "\r\n ")
+		inventory[name] = digest(string(f.payload[name]))
+	}
+	var err error
+	f.inventory, err = json.Marshal(inventory)
+	if err != nil {
+		t.Fatal(err)
+	}
+	f.expected.InventorySHA256 = digest(string(f.inventory))
+	observed := map[string]string{}
+	for name, raw := range f.payload {
+		observed[name] = digest(string(raw))
+	}
+	f.identity, _, err = baselineevidence.Validate(context.Background(), f.inventory, f.manifest, f.payload["docs/PRODUCT_BUILD.json"], observed, f.expected)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return f
+}
+
+func TestInstalledBaselineCommissioningHelpersBindCompletionAndRetainedRead(t *testing.T) {
+	for _, scenario := range []string{"complete", "missing", "tampered", "extra", "alias", "tamper-after-complete"} {
+		t.Run(scenario, func(t *testing.T) {
+			s, r, b, _ := baselineOwner(t)
+			defer s.Close()
+			f := baselineCommissioningData(t)
+			if scenario == "missing" {
+				delete(f.payload, "installer/commissioning-v1/RestartDashboardPersistence.ps1")
+			}
+			if scenario == "tampered" {
+				f.payload["installer/commissioning-v1/Commissioning.ps1"] = []byte("changed original")
+			}
+			writeBaseline(t, r, f)
+			if scenario == "extra" || scenario == "alias" {
+				name := "installer/commissioning-v1/extra.ps1"
+				if scenario == "alias" {
+					name = "installer/commissioning-v1/commissioning.ps1"
+				}
+				if err := r.WriteEvidence(context.Background(), name, []byte("extra"), digest("extra")); err == nil {
+					t.Fatal("nonfixed helper accepted")
+				}
+			}
+			err := r.Complete(context.Background(), f.identity)
+			if scenario != "complete" && scenario != "tamper-after-complete" {
+				if err == nil || b.completed {
+					t.Fatal("incomplete or tampered engine helper set completed")
+				}
+				return
+			}
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err := r.Close(); err != nil {
+				t.Fatal(err)
+			}
+			if scenario == "tamper-after-complete" {
+				b.files["installer/commissioning-v1/Preparation.ps1"].data[0] ^= 1
+			}
+			opened, err := s.OpenInstalledBaseline(context.Background(), registrationTestSID, stageA, registrationTestApproval, f.expected)
+			if scenario == "tamper-after-complete" {
+				if err == nil {
+					t.Fatal("retained reader accepted changed helper")
+				}
+				return
+			}
+			if err != nil || opened.Validate() != nil {
+				t.Fatal("exact helper set could not be reopened", err)
+			}
+			for name, raw := range f.payload {
+				if !bytes.Equal(b.files[name].data, raw) {
+					t.Fatal("original helper bytes reconstructed")
+				}
+			}
+		})
+	}
 }

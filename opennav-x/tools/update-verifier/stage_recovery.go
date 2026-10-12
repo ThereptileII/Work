@@ -156,7 +156,7 @@ func (p *PreparedUpdateSet) StageRecovery(ctx context.Context, sink RecoverySink
 			return empty, errors.New("recovery staging evidence sink refused")
 		}
 	}
-	if err := copyRecoveryEngine(ctx, contents, evidence); err != nil {
+	if err := copyRecoveryHelpers(ctx, contents, evidence); err != nil {
 		if canceled := ctx.Err(); canceled != nil {
 			return empty, canceled
 		}
@@ -183,23 +183,28 @@ func (p *PreparedUpdateSet) StageRecovery(ctx context.Context, sink RecoverySink
 	return contents.identity, nil
 }
 
-// copyRecoveryEngine reads the fixed original ZIP members afresh through their
+// copyRecoveryHelpers reads the fixed original ZIP members afresh through their
 // retained source owner. Bounds, hash and ZIP CRC are checked before a sink sees
 // bytes. It grants no execution authority and does not reconstruct a script.
-func copyRecoveryEngine(ctx context.Context, contents recoveryContents, sink interface {
+func copyRecoveryHelpers(ctx context.Context, contents recoveryContents, sink interface {
 	WriteEvidence(context.Context, string, []byte, string) error
 }) error {
 	names, err := baselineevidence.EngineHelpers(contents.inventory)
 	if err != nil {
 		return err
 	}
+	commissioning, err := baselineevidence.CommissioningHelpers(contents.inventory)
+	if err != nil {
+		return err
+	}
+	names = append(names, commissioning...)
 	for _, name := range names {
 		if err := ctx.Err(); err != nil {
 			return err
 		}
 		raw, err := recoveryMemberBytes(contents.files[name], maxRecoveryInventory)
 		if err != nil || len(raw) == 0 || recoveryDigest(raw) != contents.inventory[name] {
-			return errors.New("original installer engine bytes differ")
+			return errors.New("original execution helper bytes differ")
 		}
 		if err := ctx.Err(); err != nil {
 			return err

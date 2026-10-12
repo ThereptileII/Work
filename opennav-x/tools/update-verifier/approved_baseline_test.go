@@ -515,3 +515,88 @@ func TestImportApprovedBaselineCancellationDuringArchiveRead(t *testing.T) {
 		t.Fatalf("archive cancellation identity lost: %v", err)
 	}
 }
+
+func TestImportApprovedBaselinePreservesInventoriedCommissioning(t *testing.T) {
+	f := newApprovedBaselineFixture(t, func(entries map[string][]byte) {
+		for name, raw := range recoveryCommissioningFixture() {
+			entries[name] = raw
+		}
+	})
+	sink := newApprovedBaselineSink()
+	identity, err := importFixture(context.Background(), f, sink)
+	if err != nil || len(sink.files) != 4 || len(sink.evidence) != 14 {
+		t.Fatalf("exact original helpers missing: %v", err)
+	}
+	observed := map[string]string{}
+	for name, raw := range sink.files {
+		observed[name] = recoveryDigest(raw)
+	}
+	for name, raw := range recoveryCommissioningFixture() {
+		if !bytes.Equal(sink.evidence[name], raw) {
+			t.Fatalf("original helper reserialized: %s", name)
+		}
+		observed[name] = recoveryDigest(sink.evidence[name])
+	}
+	retained, members, err := baselineevidence.Validate(context.Background(), sink.evidence["FILE_SHA256.json"], sink.evidence["installer/package.json"], sink.files["docs/PRODUCT_BUILD.json"], observed, f.installed)
+	if err != nil || retained != identity || len(members) != 16 {
+		t.Fatalf("helper bytes not bound to original approval: %v", err)
+	}
+	for _, scenario := range []string{"refused", "canceled"} {
+		t.Run(scenario, func(t *testing.T) {
+			ctx, cancel := context.WithCancel(context.Background())
+			defer cancel()
+			failedSink := newApprovedBaselineSink()
+			failedSink.onEvidence = func(name string) error {
+				if baselineevidence.IsCommissioningHelper(name) {
+					if scenario == "canceled" {
+						cancel()
+					}
+					return errors.New("helper refused")
+				}
+				return nil
+			}
+			identity, err := importFixture(ctx, f, failedSink)
+			if err == nil || identity != (RecoveryIdentity{}) {
+				t.Fatal("failed helper returned baseline identity")
+			}
+			if scenario == "canceled" && !errors.Is(err, context.Canceled) {
+				t.Fatal("helper cancellation lost")
+			}
+		})
+	}
+}
+
+func TestImportApprovedBaselineRefusesCommissioningNamespaceAndBytes(t *testing.T) {
+	for _, scenario := range []string{"partial", "unknown", "alias", "empty", "oversize", "changed-after-inventory"} {
+		t.Run(scenario, func(t *testing.T) {
+			first := "installer/commissioning-v1/Commissioning.ps1"
+			f := newApprovedBaselineFixture(t, func(entries map[string][]byte) {
+				for name, raw := range recoveryCommissioningFixture() {
+					entries[name] = raw
+				}
+				switch scenario {
+				case "partial":
+					delete(entries, first)
+				case "unknown":
+					entries["installer/commissioning-v1/Other.ps1"] = []byte("unknown")
+				case "alias":
+					entries["installer/commissioning-v1/commissioning.ps1"] = entries[first]
+					delete(entries, first)
+				case "empty":
+					entries[first] = nil
+				case "oversize":
+					entries[first] = bytes.Repeat([]byte{'x'}, int(maxRecoveryInventory)+1)
+				}
+			})
+			if scenario == "changed-after-inventory" {
+				f.entries[first] = []byte("changed original, same approved inventory")
+				f.archive = recoveryArchive(t, f.entries, nil)
+			}
+			sink := newApprovedBaselineSink()
+			identity, err := importFixture(context.Background(), f, sink)
+			if err == nil || identity != (RecoveryIdentity{}) || len(sink.files) != 0 || len(sink.evidence) != 0 {
+				t.Fatal("invalid original commissioning namespace reached sink", err)
+			}
+		})
+	}
+}
