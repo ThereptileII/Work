@@ -12,6 +12,7 @@ type freshCreation interface {
 	createRoot() error
 	createCandidates() error
 	createRegistrations() error
+	createUsers() error
 	complete() error
 	close() error
 }
@@ -24,6 +25,7 @@ func initializeFresh(creation freshCreation) (resultErr error) {
 		creation.createRoot, creation.check,
 		creation.createCandidates, creation.check,
 		creation.createRegistrations, creation.check,
+		creation.createUsers, creation.check,
 		creation.complete, creation.check,
 	} {
 		if err := step(); err != nil {

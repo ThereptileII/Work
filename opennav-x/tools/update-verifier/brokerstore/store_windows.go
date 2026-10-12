@@ -22,15 +22,15 @@ type nativePin struct {
 	ancestor *ancestorPolicy
 }
 type nativeStore struct {
-	mu                              sync.Mutex
-	beginMu                         sync.Mutex
-	broker                          *windows.SID
-	rootDOS                         string
-	pins                            []*nativePin
-	protected                       map[string]*nativePin
-	root, candidates, registrations *nativePin
-	lock                            *nativeStoreLock
-	failed, closed                  bool
+	mu                                     sync.Mutex
+	beginMu                                sync.Mutex
+	broker                                 *windows.SID
+	rootDOS                                string
+	pins                                   []*nativePin
+	protected                              map[string]*nativePin
+	root, candidates, registrations, users *nativePin
+	lock                                   *nativeStoreLock
+	failed, closed                         bool
 }
 type nativeCandidate struct {
 	store                     *nativeStore
@@ -435,6 +435,10 @@ func Open(root string) (result *Store, resultErr error) {
 	if err != nil {
 		return nil, err
 	}
+	n.users, err = n.existingChild(n.root, "users", sd)
+	if err != nil {
+		return nil, err
+	}
 	if err = n.check(); err != nil {
 		return nil, err
 	}
@@ -678,48 +682,20 @@ func (f *nativeFile) check(length int64) error {
 	}
 	return checkSecurity(f.pin.handle, f.pin.security)
 }
-func (n *nativeStore) registration(client string) (result []byte, resultErr error) {
+func (n *nativeStore) registration(client string) ([]byte, error) {
+	if err := n.check(); err != nil {
+		return nil, err
+	}
 	sid, err := clientSID(client, n.broker)
 	if err != nil {
 		return nil, err
 	}
-	name := n.registrations.name + `\` + sid.String() + ".json"
-	pointer, err := windows.UTF16PtrFromString(physical(name))
-	if err != nil {
-		return nil, err
-	}
-	handle, err := windows.CreateFile(pointer, windows.GENERIC_READ|windows.READ_CONTROL, windows.FILE_SHARE_READ, nil, windows.OPEN_EXISTING, windows.FILE_FLAG_OPEN_REPARSE_POINT, 0)
-	if err != nil {
-		return nil, err
-	}
-	file := os.NewFile(uintptr(handle), physical(name))
-	defer func() {
-		if err := file.Close(); err != nil {
-			result = nil
-			resultErr = errors.Join(resultErr, err)
-		}
-	}()
 	sd, err := descriptor(n.broker, nil, false)
 	if err != nil {
 		return nil, err
 	}
-	var info windows.ByHandleFileInformation
-	if err = windows.GetFileInformationByHandle(handle, &info); err != nil {
-		return nil, err
-	}
-	length := int64(uint64(info.FileSizeHigh)<<32 | uint64(info.FileSizeLow))
-	if length <= 0 || length > MaxRegistrationBytes {
-		return nil, errors.New("registration outside bound")
-	}
-	held := &nativeFile{File: file, pin: &nativePin{handle: handle, name: name, info: info, security: sd}, parent: n.registrations}
-	if err = held.check(length); err != nil {
-		return nil, err
-	}
-	data, err := io.ReadAll(io.LimitReader(file, MaxRegistrationBytes+1))
-	if err != nil || int64(len(data)) != length {
-		return nil, errors.New("held registration read changed")
-	}
-	if err = held.check(length); err != nil {
+	data, err := readCompletedRegistration(n.registrations, sid.String(), sd)
+	if err != nil {
 		return nil, err
 	}
 	if err = n.check(); err != nil {
@@ -727,6 +703,7 @@ func (n *nativeStore) registration(client string) (result []byte, resultErr erro
 	}
 	return data, nil
 }
+
 func (n *nativeStore) verifierDirectories(client, channel string) (string, string, error) {
 	sid, err := clientSID(client, n.broker)
 	if err != nil {

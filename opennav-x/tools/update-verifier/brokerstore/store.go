@@ -58,14 +58,15 @@ type candidateFile interface {
 }
 
 // Store retains native root and ancestor handles. Close never deletes an
-// abandoned candidate or resets its persistent CREATE_NEW stage reservation.
+// abandoned candidate or registration, or resets their permanent reservations.
 type Store struct {
-	mu         sync.Mutex
-	closeMu    sync.Mutex
-	backend    storeBackend
-	closed     atomic.Bool
-	closeErr   error
-	candidates []*Candidate
+	mu            sync.Mutex
+	closeMu       sync.Mutex
+	backend       storeBackend
+	closed        atomic.Bool
+	closeErr      error
+	candidates    []*Candidate
+	registrations []*Registration
 }
 type fileRecord struct {
 	file   candidateFile
@@ -216,8 +217,13 @@ func (s *Store) Close() error {
 	}
 	children := s.candidates
 	s.candidates = nil
+	registrations := s.registrations
+	s.registrations = nil
 	s.mu.Unlock()
 	var result error
+	for _, r := range registrations {
+		result = errors.Join(result, r.Close())
+	}
 	for _, c := range children {
 		result = errors.Join(result, c.Close())
 	}

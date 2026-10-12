@@ -7,10 +7,10 @@ import (
 )
 
 type recordingFreshCreation struct {
-	events                                               []string
-	failAt                                               int
-	fault, cleanup                                       error
-	reserved, root, candidates, registrations, completed bool
+	events                                                      []string
+	failAt                                                      int
+	fault, cleanup                                              error
+	reserved, root, candidates, registrations, users, completed bool
 }
 
 func (c *recordingFreshCreation) step(name string) error {
@@ -53,8 +53,15 @@ func (c *recordingFreshCreation) createRegistrations() error {
 	c.registrations = true
 	return nil
 }
+func (c *recordingFreshCreation) createUsers() error {
+	if err := c.step("users"); err != nil {
+		return err
+	}
+	c.users = true
+	return nil
+}
 func (c *recordingFreshCreation) complete() error {
-	if !(c.reserved && c.root && c.candidates && c.registrations) {
+	if !(c.reserved && c.root && c.candidates && c.registrations && c.users) {
 		panic("completion before validated tree")
 	}
 	if err := c.step("complete-sync"); err != nil {
@@ -73,7 +80,7 @@ func TestFreshCreationReservationAndCompletionOrdering(t *testing.T) {
 	if err := initializeFresh(c); err != nil {
 		t.Fatal(err)
 	}
-	want := []string{"check", "absent", "check", "reserve-sync", "check", "root", "check", "candidates", "check", "registrations", "check", "complete-sync", "check", "close"}
+	want := []string{"check", "absent", "check", "reserve-sync", "check", "root", "check", "candidates", "check", "registrations", "check", "users", "check", "complete-sync", "check", "close"}
 	if !reflect.DeepEqual(c.events, want) {
 		t.Fatalf("operations = %v; want %v", c.events, want)
 	}
@@ -85,7 +92,7 @@ func TestFreshCreationReservationAndCompletionOrdering(t *testing.T) {
 func TestFreshCreationEveryFaultStopsAndRetainsStateAndCleanupError(t *testing.T) {
 	fault := errors.New("injected operation failure")
 	cleanup := errors.New("uncertain handle cleanup")
-	for failure := 1; failure <= 13; failure++ {
+	for failure := 1; failure <= 15; failure++ {
 		c := &recordingFreshCreation{failAt: failure, fault: fault, cleanup: cleanup}
 		err := initializeFresh(c)
 		if !errors.Is(err, fault) || !errors.Is(err, cleanup) {
@@ -94,7 +101,7 @@ func TestFreshCreationEveryFaultStopsAndRetainsStateAndCleanupError(t *testing.T
 		if len(c.events) != failure+1 || c.events[len(c.events)-1] != "close" {
 			t.Fatalf("fault %d continued: %v", failure, c.events)
 		}
-		if c.reserved != (failure > 4) || c.root != (failure > 6) || c.candidates != (failure > 8) || c.registrations != (failure > 10) || c.completed != (failure > 12) {
+		if c.reserved != (failure > 4) || c.root != (failure > 6) || c.candidates != (failure > 8) || c.registrations != (failure > 10) || c.users != (failure > 12) || c.completed != (failure > 14) {
 			t.Fatalf("fault %d erased or prematurely committed durable state: %+v", failure, c)
 		}
 	}

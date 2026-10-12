@@ -64,7 +64,7 @@ func TestNativeFreshInitializationFinalCreationDescriptorsAndFenceRetry(t *testi
 	if err != nil || string(contents) != initializationCompleted {
 		t.Fatalf("completed fence: %q %v", contents, err)
 	}
-	for _, relative := range []string{"UpdateBroker", `UpdateBroker\candidates`, `UpdateBroker\registrations`} {
+	for _, relative := range []string{"UpdateBroker", `UpdateBroker\candidates`, `UpdateBroker\registrations`, `UpdateBroker\users`} {
 		pin, err := openPin(filepath.Join(parentPath, relative), "", c.directorySD)
 		if err != nil {
 			t.Fatalf("final at-creation descriptor %s: %v", relative, err)
@@ -101,23 +101,28 @@ func TestNativeFreshInitializationFinalCreationDescriptorsAndFenceRetry(t *testi
 }
 
 func TestNativeCompletedFenceRequiresCompleteExistingTree(t *testing.T) {
-	parentPath := filepath.Join(t.TempDir(), "protected-parent")
-	c := freshFixture(t, parentPath, true)
-	if err := initializeFresh(c); err != nil {
-		t.Fatal(err)
-	}
-	if err := os.Remove(filepath.Join(parentPath, "UpdateBroker", "registrations")); err != nil {
-		t.Fatal(err)
-	}
-	check := freshFixture(t, parentPath, false)
-	if err := check.validateCompleted(); err == nil {
-		t.Fatal("completed fence accepted missing required child")
-	}
-	if err := check.close(); err != nil {
-		t.Fatal(err)
-	}
-	if _, err := os.Stat(filepath.Join(parentPath, "UpdateBroker", "registrations")); !errors.Is(err, os.ErrNotExist) {
-		t.Fatalf("validation repaired missing child: %v", err)
+	for _, missing := range []string{"registrations", "users"} {
+		t.Run(missing, func(t *testing.T) {
+			parentPath := filepath.Join(t.TempDir(), "protected-parent")
+			c := freshFixture(t, parentPath, true)
+			if err := initializeFresh(c); err != nil {
+				t.Fatal(err)
+			}
+			missingPath := filepath.Join(parentPath, "UpdateBroker", missing)
+			if err := os.Remove(missingPath); err != nil {
+				t.Fatal(err)
+			}
+			check := freshFixture(t, parentPath, false)
+			if err := check.validateCompleted(); err == nil {
+				t.Fatal("completed fence accepted missing required child")
+			}
+			if err := check.close(); err != nil {
+				t.Fatal(err)
+			}
+			if _, err := os.Stat(missingPath); !errors.Is(err, os.ErrNotExist) {
+				t.Fatalf("validation repaired missing child: %v", err)
+			}
+		})
 	}
 }
 

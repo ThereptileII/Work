@@ -20,7 +20,7 @@ const (
 )
 
 // InitializeFresh creates only the fixed actual KnownFolder ProgramData/SKAGER/
-// UpdateBroker root, candidates and registrations. It requires the actual,
+// UpdateBroker root, candidates, registrations and users. It requires the actual,
 // non-impersonated SkagerUpdateBroker process token; Admin/SYSTEM are not substitutes.
 //
 // Caller preconditions: SKAGER must ALREADY have been independently provisioned
@@ -52,7 +52,7 @@ func InitializeFresh() error {
 // requires the same actual broker token and independently provisioned parent
 // preconditions as InitializeFresh; it does not authenticate provisioning history
 // or establish startup health. The exact completed fence and exact existing
-// root/candidates/registrations must all be held and validated. Nothing is created,
+// root/candidates/registrations/users must all be held and validated. Nothing is created,
 // adopted, repaired or reset; a partial initialization requires operator review.
 func ValidateInitialization() (resultErr error) {
 	runtime.LockOSThread()
@@ -75,7 +75,7 @@ func (c *nativeFreshCreation) validateCompleted() error {
 	}
 	c.root = root
 	root.dos = filepath.Join(c.parent.dos, "UpdateBroker")
-	for _, name := range []string{"candidates", "registrations"} {
+	for _, name := range []string{"candidates", "registrations", "users"} {
 		if _, err := c.existingDirectory(root, name); err != nil {
 			return err
 		}
@@ -329,6 +329,10 @@ func (c *nativeFreshCreation) createCandidates() error {
 }
 func (c *nativeFreshCreation) createRegistrations() error {
 	_, err := c.newDirectory(c.root, "registrations")
+	return err
+}
+func (c *nativeFreshCreation) createUsers() error {
+	_, err := c.newDirectory(c.root, "users")
 	return err
 }
 func (c *nativeFreshCreation) complete() error {
