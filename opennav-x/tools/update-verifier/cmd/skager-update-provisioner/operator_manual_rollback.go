@@ -28,6 +28,9 @@ func manualRollbackRequested(args []string) bool {
 }
 
 func runMaintenanceDispatch(ctx context.Context, args []string, read func(string) ([]byte, error), maintain maintenanceOpener) error {
+	if decommissionRequested(args) {
+		return runDecommission(ctx, args, read, openDecommissionNative, launcher.CallDecommissionNative, os.Stdout)
+	}
 	if selectedHistoryRequested(args) {
 		return runSelectedHistory(ctx, args, launcher.CallMaintenanceNative, os.Stdout)
 	}

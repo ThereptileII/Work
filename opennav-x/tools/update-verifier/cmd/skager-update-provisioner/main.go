@@ -28,13 +28,20 @@ func main() {
 		os.Exit(1)
 	}
 	if maintenance {
-		if manualRollbackRequested(os.Args[1:]) {
-			return // The bound manual-selection result was already emitted.
+		if reportMaintenanceCompletion(os.Args[1:], os.Stdout) != nil {
+			os.Exit(1)
 		}
-		fmt.Println("SKAGER broker stop and original process exit verified. Application/profile recovery, repair and uninstall have not been performed.")
 		return
 	}
 	fmt.Println("SKAGER provisioning completed. Startup activation occurs only when explicitly requested.")
+}
+
+func reportMaintenanceCompletion(args []string, output io.Writer) error {
+	if manualRollbackRequested(args) || selectedHistoryRequested(args) || decommissionRequested(args) {
+		return nil // The operation already emitted its one bound JSON result.
+	}
+	_, err := fmt.Fprintln(output, "SKAGER broker stop and original process exit verified. Application/profile recovery, repair and uninstall have not been performed.")
+	return err
 }
 
 func run(ctx context.Context, args []string, read func(string) ([]byte, error), enroll func(context.Context, brokerenroll.Request) error) error {

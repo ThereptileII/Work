@@ -1,0 +1,136 @@
+package main
+
+import (
+	"bytes"
+	"context"
+	"crypto/sha256"
+	"encoding/hex"
+	"encoding/json"
+	"errors"
+	"flag"
+	"io"
+	"strings"
+
+	"example.com/opennav-update-verifier/brokerenroll"
+	"example.com/opennav-update-verifier/brokerpipe"
+	"example.com/opennav-update-verifier/brokerregistration"
+)
+
+const decommissionService = "decommission-service"
+
+type decommissionOwner interface {
+	Check(context.Context) error
+	BindDecommission(context.Context, *brokerpipe.DecommissionWitness) error
+	Decommission(context.Context) (brokerenroll.DecommissionResult, error)
+	Close() error
+}
+
+type decommissionOpener func(context.Context, brokerenroll.MaintenanceRequest) (decommissionOwner, error)
+type decommissionCaller func(context.Context, brokerpipe.MaintenanceRequest) (*brokerpipe.DecommissionWitness, error)
+
+func openDecommissionNative(ctx context.Context, request brokerenroll.MaintenanceRequest) (decommissionOwner, error) {
+	owner, err := brokerenroll.OpenDecommissionMaintenance(ctx, request)
+	if owner == nil {
+		return nil, err
+	}
+	return owner, err
+}
+
+func decommissionRequested(args []string) bool {
+	for i, arg := range args {
+		name, value, inline := strings.Cut(arg, "=")
+		if name == "--maintenance" && ((inline && value == decommissionService) || (!inline && i+1 < len(args) && args[i+1] == decommissionService)) {
+			return true
+		}
+	}
+	return false
+}
+
+// This explicit elevated operator invocation owns the original service BEFORE
+// asking that same broker to publish its terminal fence. No file/profile effect
+// follows service shutdown. The native witness is never reconstructed from JSON.
+func runDecommission(ctx context.Context, args []string, read func(string) ([]byte, error), open decommissionOpener, call decommissionCaller, output io.Writer) (resultErr error) {
+	refused := errors.New("service decommission unverified; preserve all state; no automatic retry")
+	defer func() {
+		if resultErr != nil {
+			resultErr = refused
+		}
+	}()
+	if ctx == nil || ctx.Err() != nil || read == nil || open == nil || call == nil || output == nil {
+		return refused
+	}
+	flags := flag.NewFlagSet("skager-update-provisioner service decommission", flag.ContinueOnError)
+	flags.SetOutput(io.Discard)
+	action := flags.String("maintenance", "", "explicit service-only terminal decommission")
+	broker := flags.String("broker-sha256", "", "independently approved installed broker hash")
+	clientPath := flags.String("client-registration-request", "", "original independently approved request file")
+	clientSHA := flags.String("client-registration-request-sha256", "", "independently approved original request hash")
+	requestID := flags.String("request-id", "", "fresh exact request ID")
+	head := flags.String("expected-selected-head-sha256", "", "observed original selected head")
+	seen := map[string]bool{}
+	for i := 0; i < len(args); i++ {
+		if !strings.HasPrefix(args[i], "--") {
+			return refused
+		}
+		name, _, inline := strings.Cut(strings.TrimPrefix(args[i], "--"), "=")
+		if flags.Lookup(name) == nil || seen[name] {
+			return refused
+		}
+		seen[name] = true
+		if !inline {
+			i++
+			if i >= len(args) || strings.HasPrefix(args[i], "--") {
+				return refused
+			}
+		}
+	}
+	if flags.Parse(args) != nil || flags.NArg() != 0 || len(seen) != 6 || *action != decommissionService || !pin(*broker) || !pin(*clientSHA) || !pin(*head) || !manualRollbackID(*requestID) || *clientPath == "" {
+		return refused
+	}
+	raw, err := read(*clientPath)
+	if err != nil || len(raw) < 1 || len(raw) > brokerregistration.MaxRequestBytes {
+		return refused
+	}
+	raw = bytes.Clone(raw)
+	hash := sha256.Sum256(raw)
+	if hex.EncodeToString(hash[:]) != *clientSHA || ctx.Err() != nil {
+		return refused
+	}
+	owner, err := open(ctx, brokerenroll.MaintenanceRequest{ApprovedBrokerSHA256: *broker,
+		ClientRegistrationRequest: raw, ApprovedClientRequestSHA256: *clientSHA})
+	if owner != nil {
+		defer func() { resultErr = errors.Join(resultErr, owner.Close()) }()
+	}
+	if err != nil || owner == nil {
+		return refused
+	}
+	if err = owner.Check(ctx); err != nil {
+		return refused
+	}
+	witness, err := call(ctx, brokerpipe.MaintenanceRequest{Schema: 1, Operation: brokerpipe.PrepareDecommission,
+		RequestID: *requestID, ExpectedSelectedHeadSHA256: *head})
+	if witness != nil {
+		defer func() { resultErr = errors.Join(resultErr, witness.Close()) }()
+	}
+	if err != nil || witness == nil || ctx.Err() != nil {
+		return refused
+	}
+	if err = owner.BindDecommission(ctx, witness); err != nil {
+		return refused
+	}
+	result, err := owner.Decommission(ctx)
+	if err != nil || result.Service != brokerenroll.ServiceMarkedForRemoval {
+		return refused
+	}
+	// Close all original native owners before reporting a successful service-only
+	// action. Neither this result nor SCM deletion grants later cleanup authority.
+	if err = errors.Join(owner.Close(), witness.Close()); err != nil {
+		return refused
+	}
+	return json.NewEncoder(output).Encode(struct {
+		Schema    int    `json:"schema"`
+		RequestID string `json:"requestId"`
+		State     string `json:"state"`
+		Service   string `json:"service"`
+	}{1, *requestID, "service-decommissioned", result.Service})
+}
