@@ -1,0 +1,201 @@
+diff --git a/model/include/model/select.h b/model/include/model/select.h
+--- a/model/include/model/select.h
++++ b/model/include/model/select.h
+@@ -48,8 +48,13 @@
+   const bool show_nav_objects;
+   const double scale;
+   const double chart_scale;
+-  SelectCtx(bool s, double _scale, double _chart_scale)
+-      : show_nav_objects(s), scale(_scale), chart_scale(_chart_scale) {}
++  // Physical canvas pixels per DIP, used only by an enlarged route target.
++  // The default preserves existing/plugin three-argument queries.
++  const double route_hit_dip_scale;
++  SelectCtx(bool s, double _scale, double _chart_scale,
++            double _route_hit_dip_scale = 1.0)
++      : show_nav_objects(s), scale(_scale), chart_scale(_chart_scale),
++        route_hit_dip_scale(_route_hit_dip_scale) {}
+ };
+ 
+ class Select {
+diff --git a/model/src/select.cpp b/model/src/select.cpp
+--- a/model/src/select.cpp
++++ b/model/src/select.cpp
+@@ -22,6 +22,7 @@
+  ***************************************************************************
+  */
+ 
++#include <cmath>
+ #include <wx/list.h>
+ #include <wx/gdicmn.h>
+ 
+@@ -511,8 +512,15 @@
+ }
+ 
+ void Select::CalcSelectRadius(SelectCtx &ctx, int selection_type) {
+-  const float scale = selection_type == SELTYPE_ROUTESEGMENT
+-                          ? routeSegmentScale : 1.f;
++  double scale = selection_type == SELTYPE_ROUTESEGMENT
++                     ? routeSegmentScale : 1.f;
++  // pixelRadius is configured in raw pixels by native initialization. Only
++  // XNav's enlarged route target follows the querying canvas's DIP scale;
++  // Legacy and every other selectable type keep their original radius.
++  if (selection_type == SELTYPE_ROUTESEGMENT && routeSegmentScale > 1.f &&
++      std::isfinite(ctx.route_hit_dip_scale) && ctx.route_hit_dip_scale >= 1.0 &&
++      ctx.route_hit_dip_scale <= 4.0)
++    scale *= ctx.route_hit_dip_scale;
+   selectRadius = pixelRadius * scale / (ctx.scale * 1852 * 60);
+ }
+ 
+diff --git a/gui/src/chcanv.cpp b/gui/src/chcanv.cpp
+--- a/gui/src/chcanv.cpp
++++ b/gui/src/chcanv.cpp
+@@ -3960,7 +3960,8 @@
+   //  Handle the AIS Rollover Window first
+   bool showAISRollover = false;
+   if (g_pAIS && g_pAIS->GetNumTargets() && m_bShowAIS) {
+-    SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue());
++    SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue(),
++                  FromDIP(100) * m_displayScale / 100.0);
+     SelectItem *pFind = pSelectAIS->FindSelection(
+         ctx, m_cursor_lat, m_cursor_lon, SELTYPE_AISTARGET);
+     if (pFind) {
+@@ -4022,7 +4023,8 @@
+     //    Get a list of all selectable sgements, and search for the first
+     //    visible segment as the rollover target.
+ 
+-    SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue());
++    SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue(),
++                  FromDIP(100) * m_displayScale / 100.0);
+     SelectableItemList SelList = pSelect->FindSelectionList(
+         ctx, m_cursor_lat, m_cursor_lon, SELTYPE_ROUTESEGMENT);
+     wxSelectableItemListNode *node = SelList.GetFirst();
+@@ -4165,7 +4167,8 @@
+     }
+   } else {
+     //    Is the cursor still in select radius, and not timed out?
+-    SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue());
++    SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue(),
++                  FromDIP(100) * m_displayScale / 100.0);
+     if (!pSelect->IsSelectableSegmentSelected(ctx, m_cursor_lat, m_cursor_lon,
+                                               m_pRolloverRouteSeg))
+       showRouteRollover = false;
+@@ -4202,7 +4205,8 @@
+     //    Get a list of all selectable sgements, and search for the first
+     //    visible segment as the rollover target.
+ 
+-    SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue());
++    SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue(),
++                  FromDIP(100) * m_displayScale / 100.0);
+     SelectableItemList SelList = pSelect->FindSelectionList(
+         ctx, m_cursor_lat, m_cursor_lon, SELTYPE_TRACKSEGMENT);
+     wxSelectableItemListNode *node = SelList.GetFirst();
+@@ -4316,7 +4320,8 @@
+     }
+   } else {
+     //    Is the cursor still in select radius, and not timed out?
+-    SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue());
++    SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue(),
++                  FromDIP(100) * m_displayScale / 100.0);
+     if (!pSelect->IsSelectableSegmentSelected(ctx, m_cursor_lat, m_cursor_lon,
+                                               m_pRolloverTrackSeg))
+       showTrackRollover = false;
+@@ -7553,7 +7558,8 @@
+   m_pFoundPoint = NULL;
+ 
+   SelectItem *pFind = NULL;
+-  SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue());
++  SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue(),
++                  FromDIP(100) * m_displayScale / 100.0);
+   SelectableItemList SelList = pSelect->FindSelectionList(
+       ctx, m_cursor_lat, m_cursor_lon, SELTYPE_ROUTEPOINT);
+   wxSelectableItemListNode *node = SelList.GetFirst();
+@@ -7969,7 +7975,8 @@
+   }
+ 
+   //      Get all the selectable things at the cursor
+-  SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue());
++  SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue(),
++                  FromDIP(100) * m_displayScale / 100.0);
+   pFindAIS = pSelectAIS->FindSelection(ctx, slat, slon, SELTYPE_AISTARGET);
+   pFindRP = pSelect->FindSelection(ctx, slat, slon, SELTYPE_ROUTEPOINT);
+   pFindRouteSeg = pSelect->FindSelection(ctx, slat, slon, SELTYPE_ROUTESEGMENT);
+@@ -8004,7 +8011,8 @@
+     Route *pSelectedVizRoute = NULL;
+ 
+     // There is at least one routepoint, so get the whole list
+-    SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue());
++    SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue(),
++                  FromDIP(100) * m_displayScale / 100.0);
+     SelectableItemList SelList =
+         pSelect->FindSelectionList(ctx, slat, slon, SELTYPE_ROUTEPOINT);
+     wxSelectableItemListNode *node = SelList.GetFirst();
+@@ -8097,7 +8105,8 @@
+   // routes But call the popup handler with identifier appropriate to the type
+   if (pFindRouteSeg)  // there is at least one select item
+   {
+-    SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue());
++    SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue(),
++                  FromDIP(100) * m_displayScale / 100.0);
+     SelectableItemList SelList =
+         pSelect->FindSelectionList(ctx, slat, slon, SELTYPE_ROUTESEGMENT);
+ 
+@@ -8138,7 +8147,8 @@
+ 
+   if (pFindTrackSeg) {
+     m_pSelectedTrack = NULL;
+-    SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue());
++    SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue(),
++                  FromDIP(100) * m_displayScale / 100.0);
+     SelectableItemList SelList =
+         pSelect->FindSelectionList(ctx, slat, slon, SELTYPE_TRACKSEGMENT);
+ 
+@@ -8171,7 +8181,8 @@
+       IDX_entry *pIDX_best_candidate;
+ 
+       SelectItem *pFind = NULL;
+-      SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue());
++      SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue(),
++                  FromDIP(100) * m_displayScale / 100.0);
+       SelectableItemList SelList = pSelectTC->FindSelectionList(
+           ctx, m_cursor_lat, m_cursor_lon, SELTYPE_CURRENTPOINT);
+ 
+@@ -8320,7 +8331,8 @@
+     GetCanvasPixPoint(x * g_current_monitor_dip_px_ratio,
+                       y * g_current_monitor_dip_px_ratio, zlat, zlon);
+ 
+-    SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue());
++    SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue(),
++                  FromDIP(100) * m_displayScale / 100.0);
+     if (m_bShowAIS) {
+       SelectItem *pFindAIS;
+       pFindAIS = pSelectAIS->FindSelection(ctx, zlat, zlon, SELTYPE_AISTARGET);
+@@ -8799,7 +8811,8 @@
+   if (event.Dragging()) {
+     // in touch screen mode ensure the finger/cursor is on the selected point's
+     // radius to allow dragging
+-    SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue());
++    SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue(),
++                  FromDIP(100) * m_displayScale / 100.0);
+     if (g_btouch) {
+       if (m_pRoutePointEditTarget && !m_bIsInRadius) {
+         SelectItem *pFind = NULL;
+@@ -9492,7 +9505,8 @@
+ 
+       //      Check to see if there is a route or AIS target under the cursor
+       //      If so, start the rollover timer which creates the popup
+-      SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue());
++      SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue(),
++                  FromDIP(100) * m_displayScale / 100.0);
+       bool b_start_rollover = false;
+       if (g_pAIS && g_pAIS->GetNumTargets() && m_bShowAIS) {
+         SelectItem *pFind = pSelectAIS->FindSelection(
+@@ -10986,7 +11000,8 @@
+   if (!opennav::IsXNav() || m_routeState || m_bMeasure_Active) return false;
+   const double slat = m_cursor_lat, slon = m_cursor_lon;
+   if (std::isnan(slat) || std::isnan(slon)) return false;
+-  SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue());
++  SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue(),
++                  FromDIP(100) * m_displayScale / 100.0);
+   // Squared screen distance from the pointer; ties keep a stable order.
+   const auto distance = [this, event_x, event_y](double lat, double lon) {
+     wxPoint p;
