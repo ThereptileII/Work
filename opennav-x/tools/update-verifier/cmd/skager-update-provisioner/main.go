@@ -14,6 +14,7 @@ import (
 	"strings"
 
 	"example.com/opennav-update-verifier/brokerenroll"
+	"example.com/opennav-update-verifier/brokerregistration"
 )
 
 const maxTrustBytes = 576 << 10
@@ -21,11 +22,11 @@ const maxTrustBytes = 576 << 10
 func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer cancel()
-	if err := run(ctx, os.Args[1:], readTrust, brokerenroll.Run); err != nil {
+	if err := run(ctx, os.Args[1:], func(path string) ([]byte, error) { return readInput(path, brokerregistration.MaxRequestBytes) }, brokerenroll.Run); err != nil {
 		fmt.Fprintln(os.Stderr, "SKAGER machine broker provisioning did not complete. Preserve partial state for operator recovery; do not reset or retry automatically.")
 		os.Exit(1)
 	}
-	fmt.Println("SKAGER machine broker initialized and left stopped. Client registration and installed updates are not enabled by this command.")
+	fmt.Println("SKAGER provisioning completed and the machine broker remains stopped.")
 }
 
 func run(ctx context.Context, args []string, read func(string) ([]byte, error), enroll func(context.Context, brokerenroll.Request) error) error {
@@ -40,6 +41,8 @@ func run(ctx context.Context, args []string, read func(string) ([]byte, error), 
 	policy := flags.String("policy-sha256", "", "independently approved exact bootstrap policy SHA-256")
 	provisioner := flags.String("provisioner-sha256", "", "independently authenticated final provisioner SHA-256")
 	trust := flags.String("trust-config-sha256", "", "independently approved exact public trust SHA-256")
+	clientPath := flags.String("client-registration-request", "", "optional exact separately approved public client request")
+	clientSHA := flags.String("client-registration-request-sha256", "", "separately authenticated exact client request SHA-256")
 	// flag accepts duplicate options by default. Refuse ambiguous operator pins,
 	// aliases and positional/unknown arguments before opening any input file.
 	seen := map[string]bool{}
@@ -60,16 +63,28 @@ func run(ctx context.Context, args []string, read func(string) ([]byte, error), 
 			}
 		}
 	}
-	if flags.Parse(args) != nil || flags.NArg() != 0 || len(seen) != 6 ||
+	if flags.Parse(args) != nil || flags.NArg() != 0 || (len(seen) != 6 && len(seen) != 8) ||
 		*trustPath == "" || *cache == "" || *artifacts == "" || !pin(*policy) || !pin(*provisioner) || !pin(*trust) {
 		return errors.New("complete independently approved operator inputs required")
+	}
+	hasClient := seen["client-registration-request"] || seen["client-registration-request-sha256"]
+	if hasClient && (!seen["client-registration-request"] || !seen["client-registration-request-sha256"] || *clientPath == "" || !pin(*clientSHA)) {
+		return errors.New("client request requires paired independent exact approval")
 	}
 	data, err := read(*trustPath)
 	if err != nil || len(data) == 0 || len(data) > maxTrustBytes {
 		return errors.New("bounded public trust configuration required")
 	}
+	var client []byte
+	if hasClient {
+		client, err = read(*clientPath)
+		if err != nil || len(client) < 1 || len(client) > brokerregistration.MaxRequestBytes {
+			return errors.New("bounded separately approved public client request required")
+		}
+	}
 	return enroll(ctx, brokerenroll.Request{TrustConfiguration: data, BootstrapCacheDir: *cache,
-		ArtifactDirectory: *artifacts, PolicySHA256: *policy, ProvisionerSHA256: *provisioner, TrustConfigSHA256: *trust})
+		ArtifactDirectory: *artifacts, PolicySHA256: *policy, ProvisionerSHA256: *provisioner, TrustConfigSHA256: *trust,
+		ClientRegistrationRequest: client, ApprovedClientRequestSHA256: *clientSHA})
 }
 
 func pin(value string) bool {
@@ -85,8 +100,12 @@ func pin(value string) bool {
 }
 
 func readTrust(path string) (_ []byte, resultErr error) {
+	return readInput(path, maxTrustBytes)
+}
+
+func readInput(path string, bound int64) (_ []byte, resultErr error) {
 	before, err := os.Lstat(path)
-	if err != nil || !before.Mode().IsRegular() || before.Size() < 1 || before.Size() > maxTrustBytes {
+	if err != nil || !before.Mode().IsRegular() || before.Size() < 1 || before.Size() > bound {
 		return nil, errors.New("bounded regular public trust file required")
 	}
 	f, err := os.Open(path)
@@ -102,9 +121,9 @@ func readTrust(path string) (_ []byte, resultErr error) {
 	if err != nil || !os.SameFile(before, held) {
 		return nil, errors.New("public trust input changed")
 	}
-	data, err := io.ReadAll(io.LimitReader(f, maxTrustBytes+1))
+	data, err := io.ReadAll(io.LimitReader(f, bound+1))
 	after, statErr := f.Stat()
-	if err != nil || statErr != nil || len(data) < 1 || len(data) > maxTrustBytes ||
+	if err != nil || statErr != nil || len(data) < 1 || int64(len(data)) > bound ||
 		!os.SameFile(held, after) || held.Size() != after.Size() || !held.ModTime().Equal(after.ModTime()) {
 		return nil, errors.New("public trust input changed or exceeded bound")
 	}

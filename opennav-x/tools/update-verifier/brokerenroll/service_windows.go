@@ -323,6 +323,29 @@ func (n *nativeServiceBackend) start(mode string) error {
 	return windows.StartService(n.service, 1, &p)
 }
 
+func (n *nativeServiceBackend) startClientRegistration(sid, approvedSHA string) error {
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	if !validPin(approvedSHA) || validateClientSIDNative(sid) != nil {
+		return errors.New("exact independently approved client service arguments required")
+	}
+	if err := serviceCaller(); err != nil {
+		return err
+	}
+	values := []string{"register-client", sid, approvedSHA}
+	var arguments [3]*uint16
+	for i, value := range values {
+		p, err := windows.UTF16PtrFromString(value)
+		if err != nil {
+			return err
+		}
+		arguments[i] = p
+	}
+	// This uses the same exclusively created, checked, retained service handle.
+	// Never append a path, normally start, announce Running or retry SCM refusal.
+	return windows.StartService(n.service, uint32(len(arguments)), &arguments[0])
+}
+
 func (n *nativeServiceBackend) status() (serviceState, error) {
 	var s windows.SERVICE_STATUS_PROCESS
 	var used uint32

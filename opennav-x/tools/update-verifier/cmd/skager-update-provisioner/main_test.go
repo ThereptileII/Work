@@ -9,10 +9,80 @@ import (
 	"testing"
 
 	"example.com/opennav-update-verifier/brokerenroll"
+	"example.com/opennav-update-verifier/brokerregistration"
 )
 
 func operatorArgs() []string {
 	return []string{"--trust-config", "public-trust.json", "--bootstrap-cache", "protected-cache", "--artifact-directory", "protected-artifacts", "--policy-sha256", strings.Repeat("a", 64), "--provisioner-sha256", strings.Repeat("b", 64), "--trust-config-sha256", strings.Repeat("c", 64)}
+}
+
+func TestOptionalClientRequestPreservesSeparateApproval(t *testing.T) {
+	args := append(operatorArgs(), "--client-registration-request", "approved-client.json", "--client-registration-request-sha256", strings.Repeat("d", 64))
+	reads := []string{}
+	enrolls := 0
+	err := run(context.Background(), args, func(path string) ([]byte, error) { reads = append(reads, path); return []byte(path), nil }, func(_ context.Context, r brokerenroll.Request) error {
+		enrolls++
+		if string(r.ClientRegistrationRequest) != "approved-client.json" || r.ApprovedClientRequestSHA256 != strings.Repeat("d", 64) {
+			t.Fatal("separate approval or exact request input lost")
+		}
+		return nil
+	})
+	if err != nil || enrolls != 1 || len(reads) != 2 || reads[0] != "public-trust.json" || reads[1] != "approved-client.json" {
+		t.Fatalf("err=%v reads=%v enrolls=%d", err, reads, enrolls)
+	}
+}
+
+func TestIncompleteClientOptionsNeverReadOrEnroll(t *testing.T) {
+	for _, extra := range [][]string{
+		{"--client-registration-request", "client.json"},
+		{"--client-registration-request-sha256", strings.Repeat("d", 64)},
+		{"--client-registration-request=", "--client-registration-request-sha256", strings.Repeat("d", 64)},
+		{"--client-registration-request", "client.json", "--client-registration-request-sha256", strings.Repeat("D", 64)},
+		{"--client-registration-request", "client.json", "--client-registration-request-sha256", strings.Repeat("d", 64), "--client-registration-request", "other.json"},
+	} {
+		calls := 0
+		err := run(context.Background(), append(operatorArgs(), extra...), func(string) ([]byte, error) { calls++; return nil, nil }, func(context.Context, brokerenroll.Request) error { calls++; return nil })
+		if err == nil || calls != 0 {
+			t.Fatalf("invalid options had effects: %v %d", err, calls)
+		}
+	}
+}
+
+func TestClientRequestReadFailureNeverEnrolls(t *testing.T) {
+	for _, fault := range []string{"error", "empty", "oversize"} {
+		t.Run(fault, func(t *testing.T) {
+			enrolls := 0
+			err := run(context.Background(), append(operatorArgs(), "--client-registration-request", "client.json", "--client-registration-request-sha256", strings.Repeat("d", 64)), func(path string) ([]byte, error) {
+				if path == "public-trust.json" {
+					return []byte("trust"), nil
+				}
+				switch fault {
+				case "error":
+					return nil, errors.New("private input")
+				case "oversize":
+					return make([]byte, brokerregistration.MaxRequestBytes+1), nil
+				default:
+					return nil, nil
+				}
+			}, func(context.Context, brokerenroll.Request) error { enrolls++; return nil })
+			if err == nil || enrolls != 0 || strings.Contains(err.Error(), "private input") {
+				t.Fatalf("err=%v enrolls=%d", err, enrolls)
+			}
+		})
+	}
+}
+
+func TestClientInputReaderHasSeparateRequestBound(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "client.json")
+	if err := os.WriteFile(path, make([]byte, maxTrustBytes+1), 0600); err != nil {
+		t.Fatal(err)
+	}
+	if b, err := readInput(path, brokerregistration.MaxRequestBytes); err != nil || len(b) != maxTrustBytes+1 {
+		t.Fatalf("request bound: %d %v", len(b), err)
+	}
+	if _, err := readTrust(path); err == nil {
+		t.Fatal("trust bound broadened")
+	}
 }
 
 func TestExplicitOperatorInputs(t *testing.T) {

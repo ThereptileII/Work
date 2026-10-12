@@ -53,6 +53,14 @@ func initializeServiceWith(ctx context.Context, files enrollmentFiles, open func
 	if image == "" {
 		return errors.New("held broker image required")
 	}
+	var sid, approvedSHA string
+	client, hasClient := files.(clientRequestFiles)
+	if hasClient {
+		sid, approvedSHA = client.clientRegistration()
+		if (sid != "" || approvedSHA != "") && (!canonicalClientSID(sid) || !validPin(approvedSHA)) {
+			return errors.New("held approved client request binding required")
+		}
+	}
 	b, err := open()
 	if err != nil {
 		return err
@@ -80,6 +88,12 @@ func initializeServiceWith(ctx context.Context, files enrollmentFiles, open func
 		if files.ImagePath() != image {
 			return errors.New("held broker image spelling changed")
 		}
+		if hasClient {
+			actualSID, actualSHA := client.clientRegistration()
+			if actualSID != sid || actualSHA != approvedSHA {
+				return errors.New("held client request binding changed")
+			}
+		}
 		return b.check(image)
 	}
 	if err := check(); err != nil {
@@ -104,6 +118,31 @@ func initializeServiceWith(ctx context.Context, files enrollmentFiles, open func
 		}
 		waitCtx, cancel := context.WithTimeout(ctx, serviceInitializationLimit)
 		err := waitServiceStopped(waitCtx, b, check, poll)
+		cancel()
+		if err != nil {
+			return err
+		}
+	}
+	if sid != "" {
+		registration, ok := b.(clientRegistrationService)
+		if !ok {
+			return errors.New("retained stopped client registration backend required")
+		}
+		if err := check(); err != nil {
+			return err
+		}
+		s, err := b.status()
+		if err != nil || !serviceCompleted(s) {
+			return errors.New("client registration requires successfully stopped service")
+		}
+		if err := check(); err != nil {
+			return err
+		}
+		if err := registration.startClientRegistration(sid, approvedSHA); err != nil {
+			return err
+		}
+		waitCtx, cancel := context.WithTimeout(ctx, serviceInitializationLimit)
+		err = waitServiceStopped(waitCtx, b, check, poll)
 		cancel()
 		if err != nil {
 			return err

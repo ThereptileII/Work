@@ -108,13 +108,16 @@ type enrollmentPin struct {
 }
 
 type nativeEnrollmentFiles struct {
-	mu        sync.Mutex
-	pins      []*enrollmentPin
-	imagePath string
-	fence     *os.File
-	fencePin  *enrollmentPin
-	closed    bool
-	closeErr  error
+	mu                   sync.Mutex
+	pins                 []*enrollmentPin
+	imagePath            string
+	fence                *os.File
+	fencePin             *enrollmentPin
+	closed               bool
+	closeErr             error
+	data                 *enrollmentPin
+	clientAttempted      bool
+	clientSID, clientSHA string
 }
 
 // createFreshFiles requires an independently authenticated provisioner before
@@ -189,6 +192,7 @@ func createFreshFiles(ctx context.Context, source io.Reader, artifact releasepol
 	if err != nil {
 		return nil, err
 	}
+	files.data = data
 	if err := files.createFence(data, fenceSD); err != nil {
 		return nil, err
 	}

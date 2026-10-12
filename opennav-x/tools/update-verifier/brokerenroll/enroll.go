@@ -1,6 +1,7 @@
 // Package brokerenroll provisions the fixed machine broker through an explicit
-// independently authenticated operator invocation. It does not enroll clients,
-// launch an application, install an application update or authenticate itself.
+// independently authenticated operator invocation. Optional client registration
+// requires a separate exact approved request. It never launches an application,
+// installs an application update or authenticates itself.
 package brokerenroll
 
 import (
@@ -13,6 +14,7 @@ import (
 	"time"
 
 	verifier "example.com/opennav-update-verifier"
+	"example.com/opennav-update-verifier/brokerregistration"
 	"example.com/opennav-update-verifier/releasepolicy"
 	"example.com/opennav-update-verifier/repository"
 )
@@ -46,6 +48,12 @@ type Request struct {
 	PolicySHA256       string
 	ProvisionerSHA256  string
 	TrustConfigSHA256  string
+	// ClientRegistrationRequest is optional. Its exact original bytes and SHA
+	// must be independently approved, rather than hashing a client declaration
+	// or consulting mutable installed state to manufacture approval. Its original
+	// trust bytes/channel must equal the approved bootstrap trust above.
+	ClientRegistrationRequest   []byte
+	ApprovedClientRequestSHA256 string
 }
 
 type enrollmentFiles interface {
@@ -65,13 +73,15 @@ type operations struct {
 	acquire         func(context.Context, releasepolicy.Artifact, string, string) (acquiredBroker, error)
 	create          func(context.Context, io.Reader, releasepolicy.Artifact) (enrollmentFiles, error)
 	initialize      func(context.Context, enrollmentFiles) error
+	validateClient  func(string) error
 }
 
 // Run verifies the distinct signed bootstrap and exact broker artifact, creates
 // fresh protected fixed machine locations and a stopped virtual-account service,
 // and invokes its bounded stopped-only initialization/validation. Success is
-// local machine creation only: it is not client registration, installed update
-// authorization, application startup health or release qualification.
+// local machine creation and, when separately requested, stopped-only client
+// registration. It is not installed update authorization, application startup
+// health or release qualification.
 // Existing or partial machine objects are retained and refused, never adopted.
 // Normal application startup never calls Run. Non-Windows platforms refuse.
 func Run(ctx context.Context, req Request) error {
@@ -81,8 +91,9 @@ func Run(ctx context.Context, req Request) error {
 		acquire: func(ctx context.Context, a releasepolicy.Artifact, origin, directory string) (acquiredBroker, error) {
 			return verifier.DownloadArtifact(ctx, a, origin, directory)
 		},
-		create:     createFreshFiles,
-		initialize: initializeService,
+		create:         createFreshFiles,
+		initialize:     initializeService,
+		validateClient: validateClientSIDNative,
 	})
 }
 
@@ -107,6 +118,18 @@ func run(ctx context.Context, req Request, op operations) (resultErr error) {
 	trust, err := repository.ValidateTrust(trustBytes, time.Now().UTC())
 	if err != nil {
 		return errors.New("approved private beta trust configuration required")
+	}
+	var client *brokerregistration.Request
+	if len(req.ClientRegistrationRequest) != 0 || req.ApprovedClientRequestSHA256 != "" {
+		parsed, err := brokerregistration.ParseApprovedRequest(req.ClientRegistrationRequest, req.ApprovedClientRequestSHA256, time.Now().UTC())
+		if err != nil || parsed.TrustConfigSHA256 != req.TrustConfigSHA256 ||
+			!bytes.Equal(parsed.TrustConfiguration, trustBytes) || parsed.Trust().Channel != trust.Channel {
+			return errors.New("separately approved client request must share exact bootstrap trust")
+		}
+		if op.validateClient == nil || op.validateClient(parsed.ClientSID) != nil {
+			return errors.New("canonical actual client account required")
+		}
+		client = &parsed
 	}
 	if op.holdDirectories == nil || op.verify == nil || op.acquire == nil || op.create == nil || op.initialize == nil {
 		return errors.New("native enrollment operations required")
@@ -184,6 +207,25 @@ func run(ctx context.Context, req Request, op operations) (resultErr error) {
 		}
 		return errors.Join(errors.New("retained fresh machine files changed or interrupted"), resultErr)
 	}
+	if client != nil {
+		publisher, ok := files.(clientRequestFiles)
+		if !ok {
+			return errors.New("fresh client request custody required")
+		}
+		if err := publisher.publishClientRequest(ctx, client.OriginalBytes(), client.ClientSID, client.RequestSHA256); err != nil {
+			if errors.Is(err, ErrCleanup) {
+				resultErr = ErrCleanup
+			}
+			return errors.Join(errors.New("fresh protected client request publication refused"), resultErr)
+		}
+		sid, approvedSHA := publisher.clientRegistration()
+		if ctx.Err() != nil || sid != client.ClientSID || approvedSHA != client.RequestSHA256 {
+			return errors.New("retained approved client request binding changed or interrupted")
+		}
+		if err := files.Check(); err != nil {
+			return errors.Join(errors.New("retained client request custody refused"), enrollmentCleanupResult(err))
+		}
+	}
 	if err := op.initialize(ctx, files); err != nil {
 		if errors.Is(err, ErrCleanup) {
 			resultErr = ErrCleanup
@@ -210,3 +252,10 @@ func validPin(value string) bool {
 	return err == nil && hex.EncodeToString(decoded) == value
 }
 func digest(value []byte) string { sum := sha256.Sum256(value); return hex.EncodeToString(sum[:]) }
+
+func enrollmentCleanupResult(err error) error {
+	if errors.Is(err, ErrCleanup) {
+		return ErrCleanup
+	}
+	return nil
+}
