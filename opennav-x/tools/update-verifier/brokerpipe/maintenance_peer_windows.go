@@ -133,10 +133,50 @@ func maintenancePrimaryToken(token windows.Token, expectedSID string, identity P
 	if err != nil {
 		return proof, err
 	}
-	member, err := token.IsMember(admin)
+	member, err := maintenanceEnabledAdminGroup(token, admin)
 	if err != nil || !member {
 		return proof, errors.Join(ErrRefused, err)
 	}
 	proof.tokenID, proof.logon = stats.TokenID, stats.AuthenticationID
 	return proof, nil
+}
+
+// CheckTokenMembership requires an impersonation token. Inspect the actual
+// primary token groups instead, with a fixed bound before any allocation.
+func maintenanceEnabledAdminGroup(token windows.Token, admin *windows.SID) (bool, error) {
+	if admin == nil || !admin.IsValid() {
+		return false, ErrRefused
+	}
+	var needed uint32
+	err := windows.GetTokenInformation(token, windows.TokenGroups, nil, 0, &needed)
+	const maxTokenGroupsBytes = 64 << 10
+	if !errors.Is(err, windows.ERROR_INSUFFICIENT_BUFFER) || needed < uint32(unsafe.Sizeof(windows.Tokengroups{})) || needed > maxTokenGroupsBytes {
+		return false, ErrRefused
+	}
+	buffer := make([]byte, needed)
+	var used uint32
+	if err := windows.GetTokenInformation(token, windows.TokenGroups, &buffer[0], needed, &used); err != nil || used < uint32(unsafe.Sizeof(windows.Tokengroups{})) || used > needed {
+		return false, errors.Join(ErrRefused, err)
+	}
+	groups := (*windows.Tokengroups)(unsafe.Pointer(&buffer[0]))
+	const offset = unsafe.Offsetof(windows.Tokengroups{}.Groups)
+	const entrySize = unsafe.Sizeof(windows.SIDAndAttributes{})
+	if groups.GroupCount == 0 || uint64(groups.GroupCount) > uint64(used-uint32(offset))/uint64(entrySize) {
+		return false, ErrRefused
+	}
+	return maintenanceAdminGroupEnabled(groups.AllGroups(), admin), nil
+}
+
+func maintenanceAdminGroupEnabled(groups []windows.SIDAndAttributes, admin *windows.SID) bool {
+	found := false
+	for _, group := range groups {
+		if group.Sid == nil || !group.Sid.IsValid() || !group.Sid.Equals(admin) {
+			continue
+		}
+		if found || group.Attributes&windows.SE_GROUP_ENABLED == 0 || group.Attributes&windows.SE_GROUP_USE_FOR_DENY_ONLY != 0 {
+			return false
+		}
+		found = true
+	}
+	return found
 }

@@ -12,6 +12,56 @@ import (
 	"golang.org/x/sys/windows"
 )
 
+// Independent fixture expectation from the actual process token's group flags;
+// it deliberately does not call the production bounded group reader.
+func currentProcessHasEnabledAdmin(t *testing.T) bool {
+	t.Helper()
+	admin, err := windows.CreateWellKnownSid(windows.WinBuiltinAdministratorsSid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	groups, err := windows.GetCurrentProcessToken().GetTokenGroups()
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, group := range groups.AllGroups() {
+		if group.Sid != nil && group.Sid.IsValid() && group.Sid.Equals(admin) &&
+			group.Attributes&windows.SE_GROUP_ENABLED != 0 &&
+			group.Attributes&windows.SE_GROUP_USE_FOR_DENY_ONLY == 0 {
+			return true
+		}
+	}
+	return false
+}
+
+func TestMaintenanceAdminGroupFlags(t *testing.T) {
+	admin, err := windows.CreateWellKnownSid(windows.WinBuiltinAdministratorsSid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	users, err := windows.CreateWellKnownSid(windows.WinBuiltinUsersSid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, test := range []struct {
+		name   string
+		groups []windows.SIDAndAttributes
+		want   bool
+	}{
+		{"enabled", []windows.SIDAndAttributes{{Sid: admin, Attributes: windows.SE_GROUP_ENABLED}}, true},
+		{"deny-only", []windows.SIDAndAttributes{{Sid: admin, Attributes: windows.SE_GROUP_ENABLED | windows.SE_GROUP_USE_FOR_DENY_ONLY}}, false},
+		{"disabled", []windows.SIDAndAttributes{{Sid: admin}}, false},
+		{"different", []windows.SIDAndAttributes{{Sid: users, Attributes: windows.SE_GROUP_ENABLED}}, false},
+		{"duplicate", []windows.SIDAndAttributes{{Sid: admin, Attributes: windows.SE_GROUP_ENABLED}, {Sid: admin, Attributes: windows.SE_GROUP_ENABLED}}, false},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			if got := maintenanceAdminGroupEnabled(test.groups, admin); got != test.want {
+				t.Fatalf("admin group result = %v, want %v", got, test.want)
+			}
+		})
+	}
+}
+
 func TestMaintenanceOperatorActualNativeTokenAndLifetime(t *testing.T) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -32,16 +82,8 @@ func TestMaintenanceOperatorActualNativeTokenAndLifetime(t *testing.T) {
 	f = actualNativePeerFixture(t)
 	identity = nativePeerEvidence(f.process)
 	used = false
-	admin, err := windows.CreateWellKnownSid(windows.WinBuiltinAdministratorsSid)
-	if err != nil {
-		t.Fatal(err)
-	}
-	member, err := windows.GetCurrentProcessToken().IsMember(admin)
-	if err != nil {
-		t.Fatal(err)
-	}
-	want := member && windows.GetCurrentProcessToken().IsElevated()
-	err = f.cap.WithMaintenanceOperator(f.ctx, identity.SID, callback)
+	want := currentProcessHasEnabledAdmin(t) && windows.GetCurrentProcessToken().IsElevated()
+	err := f.cap.WithMaintenanceOperator(f.ctx, identity.SID, callback)
 	if want && (err != nil || !used) {
 		t.Fatal("actual elevated administrator process refused", err)
 	}
@@ -98,15 +140,7 @@ func TestMaintenanceOperatorSessionAndPostUseDisconnect(t *testing.T) {
 	}); err == nil || used {
 		t.Fatal("different session reached maintenance callback")
 	}
-	admin, err := windows.CreateWellKnownSid(windows.WinBuiltinAdministratorsSid)
-	if err != nil {
-		t.Fatal(err)
-	}
-	member, err := windows.GetCurrentProcessToken().IsMember(admin)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if !windows.GetCurrentProcessToken().IsElevated() || !member {
+	if !windows.GetCurrentProcessToken().IsElevated() || !currentProcessHasEnabledAdmin(t) {
 		return
 	}
 	f = actualNativePeerFixture(t)
