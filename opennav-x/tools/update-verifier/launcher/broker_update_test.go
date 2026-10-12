@@ -22,6 +22,19 @@ func updateCommand(q brokerpipe.ExecutionRequest, p brokerpipe.ExecutionPhase) b
 	}
 	return c
 }
+
+func TestBrokerUpdatePromptFailureCannotBecomeLater(t *testing.T) {
+	for _, code := range []uint32{0, 10, 1, 2, 0xc0000005, ^uint32(0)} {
+		now, err := brokerUpdatePromptResult(code)
+		if code == 0 || code == 10 {
+			if err != nil || now != (code == 10) {
+				t.Fatalf("explicit prompt choice %d: now=%v err=%v", code, now, err)
+			}
+		} else if now || !errors.Is(err, errBrokerExecutionUncertain) {
+			t.Fatalf("failed/crashed prompt became Later/Now: %d now=%v err=%v", code, now, err)
+		}
+	}
+}
 func TestBrokerUpdateNowStagesAfterFinishAndDrain(t *testing.T) {
 	var order []string
 	var offerID string

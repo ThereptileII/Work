@@ -30,6 +30,20 @@ type brokerOfferActions struct {
 	failure            error
 }
 
+// The actual native prompt returns 0 only for Later and 10 only for Update Now.
+// Initialization/parse failure, a crash, or an unknown result is not consent to
+// continue startup and must not silently become the Later path.
+func brokerUpdatePromptResult(code uint32) (bool, error) {
+	switch code {
+	case 0:
+		return false, nil
+	case 10:
+		return true, nil
+	default:
+		return false, errBrokerExecutionUncertain
+	}
+}
+
 func validBrokerOffer(c brokerpipe.ExecutionCommand, generation string) bool {
 	_, err := releasepolicy.ParseSemVer(c.OfferVersion)
 	return c.Phase == brokerpipe.OfferUpdate && c.ApplicationGeneration == generation && c.HealthPipe == "" && c.HealthChallenge == "" && err == nil && len(c.OfferVersion) <= 128 && commitPattern.MatchString(c.OfferCommit) && hashPattern.MatchString(c.OfferPolicySHA256) && c.PromptBytes > 0 && c.PromptBytes <= 512<<20 && hashPattern.MatchString(c.PromptSHA256)

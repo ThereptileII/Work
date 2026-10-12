@@ -187,5 +187,5 @@ func (b *nativeBrokerExecutionBackend) promptUpdate(ctx context.Context, c broke
 	if err = errors.Join(b.check(ctx), image.recheck()); err != nil {
 		return false, err
 	}
-	return code == 10, nil
+	return brokerUpdatePromptResult(code)
 }
