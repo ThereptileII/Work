@@ -1,5 +1,20 @@
 # SKAGER status — 2026-10-12
 
+## Latest component result — one native fixture remains
+
+Exact component run [38283605275](https://github.com/ThereptileII/Work/actions/runs/38283605275)
+on `cfca0a9855d87b430083f5b25513f1ba187d4596` passed Linux and native startup
+interactions. Windows recorded **724 top-level + 2780 nested passes, one
+top-level failure and 12 top-level skips**. The original maintenance-capability
+revocation test now passes. The remaining inaccessible-directory test fails its
+parent-access premise under its private privilege-disabled token; native denial
+has not yet been established. Production directory checks remain unchanged.
+Fresh SCM enrollment was skipped after that failure. Historical installer
+transactions passed 47 inert checks; these do not qualify protected maintenance.
+[Original evidence](evidence/scrum311-startup-native-repairs-20261012/closed-modes-native-run.json)
+is retained separately from the earlier runs. The boat's existing application
+has not been replaced. No full application rebuild is claimed.
+
 ## Protected mode startup joined; native maintenance repairs pending
 
 Component run [38281497298](https://github.com/ThereptileII/Work/actions/runs/38281497298)

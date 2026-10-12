@@ -1,0 +1,37 @@
+{
+  "schema": 1,
+  "productAcceptance": false,
+  "scope": "Native updater component contracts; not installed protected application acceptance",
+  "commit": "cfca0a9855d87b430083f5b25513f1ba187d4596",
+  "run": "https://github.com/ThereptileII/Work/actions/runs/38283605275",
+  "result": "failure",
+  "linux": "pass",
+  "nativeStartupInteractions": "pass",
+  "windows": {
+    "pass_top": 724,
+    "pass_nested": 2780,
+    "skip_top": 12,
+    "fail_top": 1
+  },
+  "failedCases": [
+    {
+      "package": "example.com/opennav-update-verifier/launcher",
+      "test": "TestNativeMaintenanceBarrierInaccessibleLegacyRootRefuses",
+      "failure": "Fixture parent became inaccessible after activating a private privilege-disabled impersonation token; denial premise not established."
+    }
+  ],
+  "freshSCMEnrollment": "skipped after prerequisite failure; not accepted",
+  "historicalInstallerTransactions": {
+    "result": "pass",
+    "checks": 47,
+    "scope": "inert historical-layout fixture; not protected lifecycle"
+  },
+  "retainedArtifact": {
+    "id": 11761934641,
+    "name": "update-verifier-windows-2022-386-cfca0a9855d87b430083f5b25513f1ba187d4596",
+    "sizeBytes": 170223,
+    "sha256": "fdd7ff1b5059bf153f1f6cf4b6d716600cac76c3a31e3a6fa3d2337dd3b0f5cc"
+  },
+  "logSha256": "830a171159678cf7047b4c3b1b72e23829bdf552172c0e98d84ae36f0d88dcee",
+  "repairStatus": "Bounded test-only token/physical-parent investigation in progress; no weakening of production refusals. Earlier original lifetime revocation case no longer fails. No full application build or boat mutation."
+}
