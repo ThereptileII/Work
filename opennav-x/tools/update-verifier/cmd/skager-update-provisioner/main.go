@@ -41,7 +41,7 @@ func run(ctx context.Context, args []string, read func(string) ([]byte, error), 
 	policy := flags.String("policy-sha256", "", "independently approved exact bootstrap policy SHA-256")
 	provisioner := flags.String("provisioner-sha256", "", "independently authenticated final provisioner SHA-256")
 	trust := flags.String("trust-config-sha256", "", "independently approved exact public trust SHA-256")
-	clientPath := flags.String("client-registration-request", "", "optional exact separately approved public client request")
+	clientPath := flags.String("client-registration-request", "", "optional exact separately approved public client request; requires approved-installed-baseline.zip in artifact-directory")
 	clientSHA := flags.String("client-registration-request-sha256", "", "separately authenticated exact client request SHA-256")
 	// flag accepts duplicate options by default. Refuse ambiguous operator pins,
 	// aliases and positional/unknown arguments before opening any input file.

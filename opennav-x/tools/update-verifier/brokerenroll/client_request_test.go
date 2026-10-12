@@ -31,11 +31,31 @@ func approvedClientFixture(t *testing.T, trust []byte) []byte {
 
 type clientFilesFixture struct {
 	*testFiles
-	raw       []byte
-	sid, sha  string
-	publishes int
-	fault     error
-	hook      func()
+	raw               []byte
+	sid, sha          string
+	publishes         int
+	fault             error
+	hook              func()
+	baseline          []byte
+	baselinePublishes int
+	baselineFault     error
+	baselineHook      func()
+}
+
+func (f *clientFilesFixture) publishClientBaseline(ctx context.Context, source ApprovedClientBaseline, sid string) error {
+	f.baselinePublishes++
+	if f.closed || ctx.Err() != nil || f.publishes != 1 || f.baselinePublishes != 1 || f.sid != sid {
+		panic("lost fresh baseline publication order or custody")
+	}
+	var copy bytes.Buffer
+	if _, err := copyClientBaseline(ctx, &copy, source); err != nil {
+		return err
+	}
+	f.baseline = copy.Bytes()
+	if f.baselineHook != nil {
+		f.baselineHook()
+	}
+	return f.baselineFault
 }
 
 func (f *clientFilesFixture) publishClientRequest(ctx context.Context, raw []byte, sid, sha string) error {
@@ -55,6 +75,7 @@ func TestEnrollmentApprovedClientRequestRetainsExactOriginal(t *testing.T) {
 	f := newEnrollmentFixture(t)
 	f.req.ClientRegistrationRequest = approvedClientFixture(t, f.req.TrustConfiguration)
 	f.req.ApprovedClientRequestSHA256 = digest(f.req.ClientRegistrationRequest)
+	baseline := clientBaselineOperations(t, f)
 	original := bytes.Clone(f.req.ClientRegistrationRequest)
 	client := &clientFilesFixture{testFiles: f.files}
 	f.op.validateClient = func(sid string) error {
@@ -79,7 +100,7 @@ func TestEnrollmentApprovedClientRequestRetainsExactOriginal(t *testing.T) {
 		return p, raw, err
 	}
 	f.op.initialize = func(ctx context.Context, files enrollmentFiles) error {
-		if files != client || client.closed || !bytes.Equal(client.raw, original) || client.sid != inertClientSID || client.sha != digest(original) || client.publishes != 1 {
+		if files != client || client.closed || !bytes.Equal(client.raw, original) || client.sid != inertClientSID || client.sha != digest(original) || client.publishes != 1 || client.baselinePublishes != 1 || baseline.closed || !bytes.Equal(client.baseline, baseline.Bytes()) {
 			t.Fatal("SCM lost independently approved original bytes or owner")
 		}
 		return nil
@@ -87,7 +108,7 @@ func TestEnrollmentApprovedClientRequestRetainsExactOriginal(t *testing.T) {
 	if err := run(context.Background(), f.req, f.op); err != nil {
 		t.Fatal(err)
 	}
-	if !client.closed || !f.broker.closed || !f.inputs.closed {
+	if !client.closed || !f.broker.closed || !f.inputs.closed || !baseline.closed {
 		t.Fatal("owners not drained")
 	}
 }
@@ -98,6 +119,7 @@ func TestEnrollmentClientApprovalRefusesBeforeEffects(t *testing.T) {
 			f := newEnrollmentFixture(t)
 			f.req.ClientRegistrationRequest = approvedClientFixture(t, f.req.TrustConfiguration)
 			f.req.ApprovedClientRequestSHA256 = digest(f.req.ClientRegistrationRequest)
+			clientBaselineOperations(t, f)
 			f.op.validateClient = func(string) error { return nil }
 			switch fault {
 			case "missing-hash":
@@ -139,6 +161,7 @@ func TestEnrollmentClientPublicationFailureWithholdsSCM(t *testing.T) {
 			f := newEnrollmentFixture(t)
 			f.req.ClientRegistrationRequest = approvedClientFixture(t, f.req.TrustConfiguration)
 			f.req.ApprovedClientRequestSHA256 = digest(f.req.ClientRegistrationRequest)
+			clientBaselineOperations(t, f)
 			f.op.validateClient = func(string) error { return nil }
 			client := &clientFilesFixture{testFiles: f.files}
 			ctx, cancel := context.WithCancel(context.Background())
@@ -178,6 +201,9 @@ type clientServiceFilesFixture struct {
 
 func (*clientServiceFilesFixture) publishClientRequest(context.Context, []byte, string, string) error {
 	panic("SCM must not publish")
+}
+func (*clientServiceFilesFixture) publishClientBaseline(context.Context, ApprovedClientBaseline, string) error {
+	panic("SCM must not publish baseline")
 }
 func (f *clientServiceFilesFixture) clientRegistration() (string, string) { return f.sid, f.sha }
 

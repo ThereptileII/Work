@@ -45,6 +45,11 @@ func clientRequestDescriptor(broker string, directory bool) (*windows.SECURITY_D
 func (f *nativeEnrollmentFiles) clientRegistration() (string, string) {
 	f.mu.Lock()
 	defer f.mu.Unlock()
+	if f.clientAttempted && !f.clientBaselineReady {
+		// A partial client handoff must fail SCM's binding validation, rather
+		// than looking like the supported no-client enrollment path.
+		return "", "incomplete baseline publication"
+	}
 	return f.clientSID, f.clientSHA
 }
 
@@ -88,6 +93,7 @@ func (f *nativeEnrollmentFiles) publishClientRequest(ctx context.Context, raw []
 	if err != nil {
 		return err
 	}
+	f.clientParent = parent
 	file, pin, err := f.newFile(parent, sid+".json", fileSD)
 	if err != nil {
 		return err

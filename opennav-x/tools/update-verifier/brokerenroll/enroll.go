@@ -1,7 +1,7 @@
 // Package brokerenroll provisions the fixed machine broker through an explicit
 // independently authenticated operator invocation. Optional client registration
-// requires a separate exact approved request. It never launches an application,
-// installs an application update or authenticates itself.
+// requires a separate exact approved request and its authenticated baseline.
+// It never launches an application, installs an update or authenticates itself.
 package brokerenroll
 
 import (
@@ -52,6 +52,8 @@ type Request struct {
 	// must be independently approved, rather than hashing a client declaration
 	// or consulting mutable installed state to manufacture approval. Its original
 	// trust bytes/channel must equal the approved bootstrap trust above.
+	// It also requires approved-installed-baseline.zip in ArtifactDirectory,
+	// authenticated by the installed identity pins in the exact approved request.
 	ClientRegistrationRequest   []byte
 	ApprovedClientRequestSHA256 string
 }
@@ -68,12 +70,14 @@ type acquiredBroker interface {
 }
 
 type operations struct {
-	holdDirectories func(string, string) (io.Closer, error)
-	verify          func(verifier.BrokerBootstrapRequest) (releasepolicy.BrokerBootstrapPolicy, []byte, error)
-	acquire         func(context.Context, releasepolicy.Artifact, string, string) (acquiredBroker, error)
-	create          func(context.Context, io.Reader, releasepolicy.Artifact) (enrollmentFiles, error)
-	initialize      func(context.Context, enrollmentFiles) error
-	validateClient  func(string) error
+	holdDirectories  func(string, string) (io.Closer, error)
+	verify           func(verifier.BrokerBootstrapRequest) (releasepolicy.BrokerBootstrapPolicy, []byte, error)
+	acquire          func(context.Context, releasepolicy.Artifact, string, string) (acquiredBroker, error)
+	create           func(context.Context, io.Reader, releasepolicy.Artifact) (enrollmentFiles, error)
+	initialize       func(context.Context, enrollmentFiles) error
+	validateClient   func(string) error
+	openBaseline     func(context.Context, string) (ApprovedClientBaseline, error)
+	validateBaseline func(context.Context, []byte, string, ApprovedClientBaseline) error
 }
 
 // Run verifies the distinct signed bootstrap and exact broker artifact, creates
@@ -91,9 +95,11 @@ func Run(ctx context.Context, req Request) error {
 		acquire: func(ctx context.Context, a releasepolicy.Artifact, origin, directory string) (acquiredBroker, error) {
 			return verifier.DownloadArtifact(ctx, a, origin, directory)
 		},
-		create:         createFreshFiles,
-		initialize:     initializeService,
-		validateClient: validateClientSIDNative,
+		create:           createFreshFiles,
+		initialize:       initializeService,
+		validateClient:   validateClientSIDNative,
+		openBaseline:     openClientBaselineInputNative,
+		validateBaseline: validateApprovedClientBaseline,
 	})
 }
 
@@ -130,6 +136,9 @@ func run(ctx context.Context, req Request, op operations) (resultErr error) {
 			return errors.New("canonical actual client account required")
 		}
 		client = &parsed
+		if op.openBaseline == nil || op.validateBaseline == nil {
+			return errors.New("approved installed baseline operations required")
+		}
 	}
 	if op.holdDirectories == nil || op.verify == nil || op.acquire == nil || op.create == nil || op.initialize == nil {
 		return errors.New("native enrollment operations required")
@@ -149,6 +158,32 @@ func run(ctx context.Context, req Request, op operations) (resultErr error) {
 			resultErr = errors.Join(resultErr, ErrCleanup)
 		}
 	}()
+	var baseline ApprovedClientBaseline
+	if client != nil {
+		baseline, err = op.openBaseline(ctx, req.ArtifactDirectory)
+		if baseline != nil {
+			defer func() {
+				if baseline.Close() != nil {
+					resultErr = errors.Join(resultErr, ErrCleanup)
+				}
+			}()
+		}
+		if err != nil || baseline == nil {
+			return errors.Join(errors.New("retained protected approved baseline required"), enrollmentCleanupResult(err))
+		}
+		if err := baseline.Validate(); err != nil {
+			return errors.Join(errors.New("approved baseline custody refused"), enrollmentCleanupResult(err))
+		}
+		if baseline.Size() < 1 || baseline.Size() > maxClientBaselineBytes {
+			return errors.New("bounded approved baseline required")
+		}
+		if err := op.validateBaseline(ctx, client.OriginalBytes(), client.RequestSHA256, baseline); err != nil {
+			return errors.Join(errors.New("baseline differs from independently approved installed identity"), enrollmentCleanupResult(err))
+		}
+		if err := baseline.Validate(); err != nil || ctx.Err() != nil {
+			return errors.Join(errors.New("approved baseline custody changed or interrupted"), enrollmentCleanupResult(err))
+		}
+	}
 	_, raw, err := op.verify(verifier.BrokerBootstrapRequest{
 		MetadataURL: trust.MetadataURL, TrustedRoot: bytes.Clone(trust.BootstrapRoot),
 		CacheDir: req.BootstrapCacheDir, Channel: trust.Channel, ArtifactOrigin: trust.ArtifactOrigin,
@@ -218,12 +253,21 @@ func run(ctx context.Context, req Request, op operations) (resultErr error) {
 			}
 			return errors.Join(errors.New("fresh protected client request publication refused"), resultErr)
 		}
+		if ctx.Err() != nil {
+			return errors.New("client baseline publication interrupted")
+		}
+		if err := publisher.publishClientBaseline(ctx, baseline, client.ClientSID); err != nil {
+			return errors.Join(errors.New("fresh protected client baseline publication refused"), enrollmentCleanupResult(err))
+		}
 		sid, approvedSHA := publisher.clientRegistration()
 		if ctx.Err() != nil || sid != client.ClientSID || approvedSHA != client.RequestSHA256 {
 			return errors.New("retained approved client request binding changed or interrupted")
 		}
 		if err := files.Check(); err != nil {
 			return errors.Join(errors.New("retained client request custody refused"), enrollmentCleanupResult(err))
+		}
+		if err := baseline.Validate(); err != nil {
+			return errors.Join(errors.New("retained approved baseline custody refused"), enrollmentCleanupResult(err))
 		}
 	}
 	if err := op.initialize(ctx, files); err != nil {
@@ -240,6 +284,11 @@ func run(ctx context.Context, req Request, op operations) (resultErr error) {
 			resultErr = ErrCleanup
 		}
 		return errors.Join(errors.New("broker enrollment completion uncertain"), resultErr)
+	}
+	if baseline != nil {
+		if err := baseline.Validate(); err != nil {
+			return errors.Join(errors.New("approved baseline completion custody uncertain"), enrollmentCleanupResult(err))
+		}
 	}
 	return nil
 }

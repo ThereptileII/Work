@@ -10,6 +10,7 @@ import (
 // They neither reopen an installed enrollment nor add caller-selected paths.
 type clientRequestFiles interface {
 	publishClientRequest(context.Context, []byte, string, string) error
+	publishClientBaseline(context.Context, ApprovedClientBaseline, string) error
 	clientRegistration() (sid, approvedSHA256 string)
 }
 

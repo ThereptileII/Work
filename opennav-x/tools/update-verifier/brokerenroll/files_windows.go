@@ -118,6 +118,9 @@ type nativeEnrollmentFiles struct {
 	data                 *enrollmentPin
 	clientAttempted      bool
 	clientSID, clientSHA string
+	clientParent         *enrollmentPin
+	baselineAttempted    bool
+	clientBaselineReady  bool
 }
 
 // createFreshFiles requires an independently authenticated provisioner before
