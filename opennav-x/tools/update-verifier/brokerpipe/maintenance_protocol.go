@@ -14,6 +14,7 @@ import (
 const MaintenancePipeName = `\\.\pipe\SkagerUpdateBroker.maintenance.v1`
 const ManualRollback = "manual-rollback"
 const SelectedHistory = "selected-history"
+const PrepareDecommission = "prepare-decommission"
 
 const selectedHistoryPageSize = 16
 
@@ -34,20 +35,25 @@ type MaintenanceAncestor struct {
 	CompletionSHA256 string `json:"completionSha256"`
 }
 type MaintenanceResult struct {
-	Schema                    int                    `json:"schema"`
-	RequestID                 string                 `json:"requestId"`
-	State                     string                 `json:"state"`
-	Generation                string                 `json:"generation"`
-	CompletionSHA256          string                 `json:"completionSha256"`
-	SelectedHeadSHA256        string                 `json:"selectedHeadSha256"`
-	Version                   string                 `json:"version,omitempty"`
-	Commit                    string                 `json:"commit,omitempty"`
-	QualificationSHA256       string                 `json:"qualificationSha256,omitempty"`
-	QualificationClosedSHA256 string                 `json:"qualificationClosedSha256,omitempty"`
-	InventorySHA256           string                 `json:"inventorySha256,omitempty"`
-	Page                      *int                   `json:"page,omitempty"`
-	NextPage                  *int                   `json:"nextPage,omitempty"`
-	Ancestors                 *[]MaintenanceAncestor `json:"ancestors,omitempty"`
+	ClientSID                    string                 `json:"clientSid,omitempty"`
+	RegistrationSHA256           string                 `json:"registrationSha256,omitempty"`
+	CurrentProfileSHA256         string                 `json:"currentProfileSha256,omitempty"`
+	CurrentProfileIdentitySHA256 string                 `json:"currentProfileIdentitySha256,omitempty"`
+	FenceSHA256                  string                 `json:"fenceSha256,omitempty"`
+	Schema                       int                    `json:"schema"`
+	RequestID                    string                 `json:"requestId"`
+	State                        string                 `json:"state"`
+	Generation                   string                 `json:"generation"`
+	CompletionSHA256             string                 `json:"completionSha256"`
+	SelectedHeadSHA256           string                 `json:"selectedHeadSha256"`
+	Version                      string                 `json:"version,omitempty"`
+	Commit                       string                 `json:"commit,omitempty"`
+	QualificationSHA256          string                 `json:"qualificationSha256,omitempty"`
+	QualificationClosedSHA256    string                 `json:"qualificationClosedSha256,omitempty"`
+	InventorySHA256              string                 `json:"inventorySha256,omitempty"`
+	Page                         *int                   `json:"page,omitempty"`
+	NextPage                     *int                   `json:"nextPage,omitempty"`
+	Ancestors                    *[]MaintenanceAncestor `json:"ancestors,omitempty"`
 }
 type MaintenanceHandler func(context.Context, Peer, MaintenanceRequest) (MaintenanceResult, error)
 
@@ -56,6 +62,8 @@ func validMaintenanceRequest(q MaintenanceRequest) bool {
 		return false
 	}
 	switch q.Operation {
+	case PrepareDecommission:
+		return q.Page == nil && q.InventorySHA256 == "" && q.TargetGeneration == "" && q.TargetCompletionSHA256 == "" && hex64.MatchString(q.ExpectedSelectedHeadSHA256)
 	case ManualRollback:
 		return q.Page == nil && q.InventorySHA256 == "" && hex64.MatchString(q.ExpectedSelectedHeadSHA256) && id32.MatchString(q.TargetGeneration) && hex64.MatchString(q.TargetCompletionSHA256)
 	case SelectedHistory:
@@ -87,6 +95,9 @@ func decodeMaintenanceRequest(raw []byte) (q MaintenanceRequest, err error) {
 		return q, ErrRefused
 	}
 	fields := []string{"schema", "operation", "requestId", "expectedSelectedHeadSha256", "targetGeneration", "targetCompletionSha256"}
+	if probe.Operation == PrepareDecommission {
+		fields = []string{"schema", "operation", "requestId", "expectedSelectedHeadSha256"}
+	}
 	if probe.Operation == SelectedHistory {
 		fields = []string{"schema", "operation", "requestId", "page"}
 		var continuation struct {
@@ -109,6 +120,12 @@ func decodeMaintenanceRequest(raw []byte) (q MaintenanceRequest, err error) {
 }
 func validMaintenanceResult(r MaintenanceResult, q MaintenanceRequest) bool {
 	if !validMaintenanceRequest(q) || r.Schema != 1 || r.RequestID != q.RequestID {
+		return false
+	}
+	if q.Operation == PrepareDecommission {
+		return validDecommissionResult(r, q)
+	}
+	if !emptyDecommissionResult(r) {
 		return false
 	}
 	if q.Operation == ManualRollback {
@@ -140,6 +157,9 @@ func decodeMaintenanceResult(raw []byte, q MaintenanceRequest) (r MaintenanceRes
 		return r, ErrRefused
 	}
 	fields := []string{"schema", "requestId", "state", "generation", "completionSha256", "selectedHeadSha256"}
+	if q.Operation == PrepareDecommission {
+		fields = append(fields, "clientSid", "registrationSha256", "currentProfileSha256", "currentProfileIdentitySha256", "fenceSha256")
+	}
 	if q.Operation == SelectedHistory {
 		fields = append(fields, "version", "commit", "qualificationSha256", "qualificationClosedSha256", "inventorySha256", "page", "ancestors")
 		var probe struct {
