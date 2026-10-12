@@ -1,0 +1,20 @@
+{
+  "sourceCommit": "e227d0c30299a636e0fe6c3b3a83c9c89f62e1f4",
+  "command": [
+    "/tmp/skager-go-1.27.1/go/bin/go",
+    "test",
+    "-json",
+    "-race",
+    "-count=1",
+    "./brokerhost",
+    "./brokerstore"
+  ],
+  "exitCode": 0,
+  "elapsedSeconds": 6.071,
+  "testPassEvents": 143,
+  "topLevelTestsPassed": 34,
+  "failureEvents": 0,
+  "skipEvents": 0,
+  "nativeWindowsExecution": false,
+  "fullApplicationBuild": false
+}

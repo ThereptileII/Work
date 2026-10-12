@@ -81,13 +81,67 @@ with the same approved declaration; omission cannot erase it. Existing metadata
 and artifacts remain immutable. The operator repository stays private; this
 change does not publish a release or open public access.
 
+## Fresh native store initialization
+
+`brokerstore.InitializeFresh` now implements fixed native store creation, separate
+from `Open`. It accepts no root, SID, trust bytes or registration arguments. Only
+the actual, non-impersonated `NT SERVICE\SkagerUpdateBroker` process may call it;
+Administrator and SYSTEM are not substitutes. The thread remains locked through
+token checks, creation and handle cleanup.
+
+The actual KnownFolder `ProgramData/SKAGER` parent must already have been
+independently protected **at original creation**. Current ACL checks cannot prove
+that history or exclude previously acquired writable handles. This API neither
+creates nor adopts/repairs that parent. It holds and checks the complete physical
+drive/NTFS/ProgramData/SKAGER ancestry, corroborates the fixed DOS path, rejects
+unsafe owner/ACL/reparse/volume identities, and verifies parent add-file and
+add-directory access before consuming initialization.
+
+Before creating any broker directory it exclusively creates
+`ProgramData/SKAGER/UpdateBroker.initialized` with the final exact broker/SYSTEM
+descriptor and synchronizes a bounded **started** record. It then creates only
+`UpdateBroker`, `candidates` and `registrations`, each with its final descriptor
+from first exposure. Exact held-tree validation precedes the synchronized
+**completed** record. Existing roots or fences are never adopted, truncated,
+deleted or reset. Every failed attempt retains its fence and partial namespace;
+deleting the broker root does not permit retry. This permanent fence is distinct
+from the existing reopenable lifetime `store.lock`.
+
+`ValidateInitialization` is read-only. It requires the same actual broker and
+independently provisioned parent, an exact protected completed fence, and all
+three exact existing directories. Missing/started/corrupt evidence refuses;
+validation never repairs missing children. Non-Windows APIs refuse with
+`ErrNativeRequired`.
+
+The native service accepts exactly these **SCM start arguments**:
+
+| Arguments | Result |
+| --- | --- |
+| `SkagerUpdateBroker` | Validate local completion, then normal protected `Open` and serving |
+| `SkagerUpdateBroker initialize-store` | Fresh creation only, then stop before `Running` or opening the request pipe |
+
+Executable command-line arguments remain forbidden. Missing, extra, aliased or
+unknown SCM arguments refuse. Context cancellation is checked before and after
+the bounded synchronous creator; it does not interrupt a creation step. The
+future authenticated provisioner must verify terminal service state/exit result
+and local completion, not interpret `StartService` success as readiness.
+
+Completion is durable before handle cleanup. A subsequent close error or
+cancellation may report failure while retaining completed local state. That
+record establishes local creation only: **not** authenticated enrollment, a
+client registration, installation/loader custody, healthy application startup or
+authority to execute an update. Normal validation releases its owners before
+`Open` reacquires them; continuous installation custody is not claimed here.
+
 ## Remaining installation boundary
 
 An independently authenticated initial verifier/provisioner must still exist
-before elevation. The actual native service enrollment, protected root creation,
-service-principal initialization, installation/loader custody, launcher handoff,
+before elevation. Authenticated native service enrollment, independent parent
+provisioning, protected client registration, installation/loader custody, launcher handoff,
 healthy-start receipt, recovery and full installed Windows/boat update sequence
-remain required. None is supplied by this declaration. No service is activated,
+remain required. Fresh store creation is implemented in source but has not passed
+native Windows execution or actual enrolled-service qualification. None of these
+missing authorities is supplied by the declaration. No service is activated,
 hardware control enabled or application/profile changed by its focused tests.
 
 See [private repository operations](staging-update-repository.md) and

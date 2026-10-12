@@ -1,5 +1,22 @@
 # SKAGER status — 2026-10-12
 
+## Fresh broker creation and stopped-only SCM initialization integrated
+
+`50227181` adds actual broker-principal-only creation of the fixed protected store
+under an independently protected-at-creation machine parent. A permanent parent
+fence is synchronized before any child creation; partial attempts remain consumed.
+`e227d0c3` joins explicit SCM initialization to a stopped-only path and requires
+completed creation evidence before normal service startup. Independent Codex review
+identified the partial-tree completion gap during implementation; the completed
+fence and exact-tree validation address it. Combined affected Linux checks pass
+**34 top-level tests / 143 pass events including nested cases**, with race detection,
+zero failures and zero skips. Windows/x86 component and test compilation plus vet
+pass; **native execution remains pending**. [Source, review and focused evidence](evidence/scrum311-fresh-initialization-20261012/README.md)
+do not qualify privileged enrollment, client registration or installed updates.
+No full application build, boat change, service activation or physical command
+occurred. SCRUM-311 remains In Progress. The expanded Claude comparison remains
+pending exact-scope external-transfer approval; no additional source was sent.
+
 ## Purpose-bound broker policy publisher and reader integrated
 
 Source `75a770b1` separates the machine broker declaration from ordinary app

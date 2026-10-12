@@ -1,0 +1,89 @@
+{
+  "sourceCommit": "e227d0c30299a636e0fe6c3b3a83c9c89f62e1f4",
+  "files": [
+    {
+      "path": "opennav-x/tools/update-verifier/brokerhost/host_windows.go",
+      "bytes": 4779,
+      "sha256": "de2114ee0db667162efbb7b43e607c84565223a21b71cf34ac4ba211ae2b0f44"
+    },
+    {
+      "path": "opennav-x/tools/update-verifier/brokerhost/initialization.go",
+      "bytes": 1165,
+      "sha256": "8c46b000322c54a2035f0454024c807c2202d7970cdcf9367140f13568368efd"
+    },
+    {
+      "path": "opennav-x/tools/update-verifier/brokerhost/initialization_test.go",
+      "bytes": 3372,
+      "sha256": "5b58dbc124667a8c10853f553cd8c805539f168133a8816e1e1f18a3e8dd998b"
+    },
+    {
+      "path": "opennav-x/tools/update-verifier/brokerhost/initialization_windows_test.go",
+      "bytes": 1334,
+      "sha256": "847d9f474a8c408d594ca3cb29f76738056b58dccfb2a2455f24beae5b7feb1c"
+    },
+    {
+      "path": "opennav-x/tools/update-verifier/brokerstore/initialize.go",
+      "bytes": 951,
+      "sha256": "e26f2ab0871b5a1129514772630e2a2542a467dc4cf236f4fa572837965b5e0c"
+    },
+    {
+      "path": "opennav-x/tools/update-verifier/brokerstore/initialize_other.go",
+      "bytes": 323,
+      "sha256": "effb9d5319d3d8ab3bcda26f393e3052024609f22000ef3ad6a057d69d416ec3"
+    },
+    {
+      "path": "opennav-x/tools/update-verifier/brokerstore/initialize_other_test.go",
+      "bytes": 340,
+      "sha256": "f7c441c4f2605a22f21dc057fb0fefa92374fd1121a2ceb5ace59e3f4a27c299"
+    },
+    {
+      "path": "opennav-x/tools/update-verifier/brokerstore/initialize_test.go",
+      "bytes": 3249,
+      "sha256": "346b3580bc22201c251fa5622f85fdd74d7b0459c9b52a347844ba57714ec721"
+    },
+    {
+      "path": "opennav-x/tools/update-verifier/brokerstore/initialize_windows.go",
+      "bytes": 14493,
+      "sha256": "3f958b414565f6263f59b54ddf4d9eb4fe478a74d301426b62a8e9f3c5445dd9"
+    },
+    {
+      "path": "opennav-x/tools/update-verifier/brokerstore/initialize_windows_test.go",
+      "bytes": 8325,
+      "sha256": "e811ac60af0698a0801069dd3d367571ae4e1910df844f5ed70a0d0bfa48e9f2"
+    }
+  ],
+  "results": [
+    {
+      "path": "opennav-x/docs/evidence/scrum311-fresh-initialization-20261012/README.md",
+      "bytes": 3948,
+      "sha256": "f61432654f438f54c5e5eb6c96af4d6b3f1eb445965d623ccc30a3fa49325d4f"
+    },
+    {
+      "path": "opennav-x/docs/evidence/scrum311-fresh-initialization-20261012/linux-result.json",
+      "bytes": 425,
+      "sha256": "161aa6fd107d9e5ebeb849e4b4a5ebb18d9d4155b96034c19f5191a9a505775c"
+    },
+    {
+      "path": "opennav-x/docs/evidence/scrum311-fresh-initialization-20261012/linux-tests.jsonl",
+      "bytes": 135374,
+      "sha256": "fe3bd5b71ab0c367becd741438c0b9f7e431a6fc993d5d6994118e7251be62eb"
+    },
+    {
+      "path": "opennav-x/docs/evidence/scrum311-fresh-initialization-20261012/linux-tests.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "opennav-x/docs/evidence/scrum311-fresh-initialization-20261012/windows-cross-result.json",
+      "bytes": 1239,
+      "sha256": "2de24d854fd0cde5c1fb566a8949ba622ce750d32359315d1ec4ace512574b1b"
+    },
+    {
+      "path": "opennav-x/docs/evidence/scrum311-fresh-initialization-20261012/windows-cross.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "claudeReviewOfTheseBytes": false,
+  "nativeWindowsExecution": false
+}
