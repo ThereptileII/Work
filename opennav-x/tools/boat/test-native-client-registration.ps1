@@ -2,7 +2,7 @@ param(
     [Parameter(Mandatory=$true)][string]$TestExecutable,
     [Parameter(Mandatory=$true)][ValidatePattern('^[a-f0-9]{64}$')][string]$ExpectedSha256,
     [Parameter(Mandatory=$true)][string]$EvidenceDirectory,
-    [Parameter(Mandatory=$true)][ValidateSet('ClientStore','ClientRequest','StockCleanup','StockIntegrity','InstalledBaseline','ClientBaseline','EngineEvidence','CommissioningEvidence','LaunchRoot','Generation','GenerationReadOnly','GenerationBaseline','GenerationHistory')][string]$Group
+    [Parameter(Mandatory=$true)][ValidateSet('ClientStore','ClientRequest','StockCleanup','StockIntegrity','InstalledBaseline','ClientBaseline','EngineEvidence','CommissioningEvidence','LaunchRoot','Generation','GenerationReadOnly','GenerationBaseline','GenerationHistory','GenerationExecutor')][string]$Group
 )
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
@@ -17,6 +17,11 @@ if ([Environment]::OSVersion.Platform -ne [PlatformID]::Win32NT) {
 if ($ExpectedSha256 -cnotmatch '^[a-f0-9]{64}$') { throw 'Exact lowercase test SHA-256 required' }
 
 switch ($Group) {
+    'GenerationExecutor' {
+        # Only this fixture's original creator handles may terminate the copied,
+        # suspended test image. No entrypoint is resumed or product is launched.
+        $CaseNames = @('TestNativeGenerationExecutorMatchesOnlyRetainedOriginalSuspendedImage')
+    }
     'CommissioningEvidence' {
         $CaseNames = @(
             'TestNativeCandidateCommissioningOriginalCustodyAndSeal',
