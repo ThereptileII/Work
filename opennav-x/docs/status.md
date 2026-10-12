@@ -1,5 +1,27 @@
 # SKAGER status — 2026-10-12
 
+## Native protected restart passes; remaining component blocker is static analysis
+
+Exact component run [38287535018](https://github.com/ThereptileII/Work/actions/runs/38287535018)
+on `c75c3519f4ac1ee2732e8c38f0fc63334943cdf5` passed Linux (**569 top-level +
+2556 nested**) and Windows functional contracts (**729 top-level + 2799 nested,
+12 top-level skips, no failures**). The inaccessible-directory fixture now
+establishes its actual native denial and passes. Native MSVC protected/ordinary
+restart and startup interaction jobs passed; the five protected routing cases
+include all three modes, a fenced environment and a missing companion. The
+fixture held the original parent alive before release and removed its exact
+owned inert namespace successfully. [Original downloaded evidence](evidence/scrum311-startup-native-repairs-20261012/protected-routing-native-run.json).
+
+The Windows job then failed `go vet` on an older stock mapping fixture's stored
+`uintptr` conversion. `c9023127` replaces that test-only conversion with a native
+same-process mapped-byte write; focused Windows/x86 vet and test compilation
+passed. Production checks and integrity/refusal assertions are unchanged.
+Native packaging and fresh SCM enrollment were skipped after the vet failure,
+so neither is accepted. A focused verifier-only replacement will retain those
+gates without repeating independent passing C++/popup jobs. The default full
+Staging workflow retains every existing gate. No full application rebuild or
+boat change has occurred.
+
 ## Private updater handoff joins ready for native verification
 
 `9ba7bb93` preserves the independently approved trust file byte-for-byte through

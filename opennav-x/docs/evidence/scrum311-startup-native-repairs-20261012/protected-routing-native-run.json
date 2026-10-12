@@ -1,0 +1,256 @@
+{
+  "schema": 1,
+  "scope": "component-only; not installed updater or product acceptance",
+  "runId": 38287535018,
+  "runUrl": "https://github.com/ThereptileII/Work/actions/runs/38287535018",
+  "commit": "c75c3519f4ac1ee2732e8c38f0fc63334943cdf5",
+  "conclusion": "failure",
+  "artifacts": [
+    {
+      "id": 11763692687,
+      "bytes": 173480,
+      "sha256": "f189242c5c817b4dfcb3769234f0d9dddf7ec16c914c5070d4cc6a156d4f52e6",
+      "members": [
+        {
+          "path": "installer-fixture-SkagerLifecycleTest-0848eab7e8c94a7e9383cc686caa428d-bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb-client.log",
+          "bytes": 605,
+          "sha256": "5d1336e41013c34cab94c2c90722f68aa53f85232d527e87dc1979cb7fd41783"
+        },
+        {
+          "path": "installer-fixture-SkagerLifecycleTest-0848eab7e8c94a7e9383cc686caa428d.jsonl",
+          "bytes": 1213,
+          "sha256": "d20b3cb3d4c5a4da262cdce67f94c6a834459e04b06de630d66eac811045b5c8"
+        },
+        {
+          "path": "installer-transaction-tests.log",
+          "bytes": 11068,
+          "sha256": "8abf1f11243aba1720d0c5a5a97c4981e64d5506c9724bc25e50aa8596211d92"
+        },
+        {
+          "path": "transaction-tests.log",
+          "bytes": 21102,
+          "sha256": "a98afccdfd1920557d38c57d93ce86cf3fc6252cdd405f58c0d731b9874a7396"
+        },
+        {
+          "path": "verifier-tests.json",
+          "bytes": 3560258,
+          "sha256": "af1cb07d34231f624ca51654e978abf20ae3a4747a56cdb4029c82668fbfa0d3"
+        }
+      ]
+    },
+    {
+      "id": 11764232166,
+      "bytes": 192361,
+      "sha256": "f63ecb3cf65ba074cc890cbb5dd6f9f6566225ef371ed6fb3fb9732c9f18b525",
+      "members": [
+        {
+          "path": "verifier-tests.json",
+          "bytes": 3158968,
+          "sha256": "ac4b1742ceec3b585060b928cfacdf8600bd596e4dae3a22c8e1f28ade9e1cd1"
+        }
+      ]
+    },
+    {
+      "id": 11763343851,
+      "bytes": 14421,
+      "sha256": "66af814a48ef0a4cc148880154f80bba74835a9a0ee277d552e50b7833773439",
+      "members": [
+        {
+          "path": "restart-component-evidence/commissioning-restart-native.json",
+          "bytes": 48436,
+          "sha256": "e77961d61dad605e59ac2da2cbd49977905164cd0e948a7f2dd93d31e81d6157"
+        },
+        {
+          "path": "restart-component-evidence/protected-mode-restart-native.json",
+          "bytes": 1604,
+          "sha256": "07b771f8884f2d206bace828211e40f45808188a4ecb7d56b73ca74a800ccfa2"
+        },
+        {
+          "path": "restart-component-evidence/native-process-tests.log",
+          "bytes": 1216,
+          "sha256": "0dd1f4e0687ba53943edef57c7d1938b5f668693fd322cb6af923e7cab91d6fb"
+        },
+        {
+          "path": "restart-component-evidence/protected-mode-tests.log",
+          "bytes": 200,
+          "sha256": "ce549349bb90434b65f0ebb36802d3a6a9922be251f96a05f71ce2db0f98edbd"
+        },
+        {
+          "path": "restart-component-evidence/protected-restart-8440a7490a3f4afb9c8fda572e06a6ee-fenced-environment/parent-armed.txt",
+          "bytes": 8,
+          "sha256": "ad31b3504fbfade1fd58ab898739748fe4f766f8091fd7ee36d08e98aae0a56b"
+        },
+        {
+          "path": "restart-component-evidence/protected-restart-8440a7490a3f4afb9c8fda572e06a6ee-fenced-environment/parent-fast-exit.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "restart-component-evidence/protected-restart-8440a7490a3f4afb9c8fda572e06a6ee-fenced-environment/target-mode.txt",
+          "bytes": 6,
+          "sha256": "f087baeba04a4a478554d4a6704be580409a95c47781a436f7c7dd73f0a7b5f7"
+        },
+        {
+          "path": "restart-component-evidence/protected-restart-8440a7490a3f4afb9c8fda572e06a6ee-legacy/parent-armed.txt",
+          "bytes": 8,
+          "sha256": "3d514ee8e806ec05b24275bddbc4fbbe44b2e3226a4d394a260b3bf9325b4f0c"
+        },
+        {
+          "path": "restart-component-evidence/protected-restart-8440a7490a3f4afb9c8fda572e06a6ee-legacy/parent-release.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "restart-component-evidence/protected-restart-8440a7490a3f4afb9c8fda572e06a6ee-legacy/protected-launcher-args.txt",
+          "bytes": 78,
+          "sha256": "51f5e8d47fc7815dc26cfb08f355338f901386b547eb46e852a384e0a722d246"
+        },
+        {
+          "path": "restart-component-evidence/protected-restart-8440a7490a3f4afb9c8fda572e06a6ee-legacy/target-mode.txt",
+          "bytes": 8,
+          "sha256": "7afd211fc716ef659617533e15999039c2bdbcffcf5e730f92bbb6878192a9a1"
+        },
+        {
+          "path": "restart-component-evidence/protected-restart-8440a7490a3f4afb9c8fda572e06a6ee-missing-companion/parent-armed.txt",
+          "bytes": 8,
+          "sha256": "17a23a83a1869dcbbe964d5e3bcd603e2455555e5e43f284b47a849dd7227443"
+        },
+        {
+          "path": "restart-component-evidence/protected-restart-8440a7490a3f4afb9c8fda572e06a6ee-missing-companion/parent-fast-exit.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "restart-component-evidence/protected-restart-8440a7490a3f4afb9c8fda572e06a6ee-missing-companion/target-mode.txt",
+          "bytes": 6,
+          "sha256": "f087baeba04a4a478554d4a6704be580409a95c47781a436f7c7dd73f0a7b5f7"
+        },
+        {
+          "path": "restart-component-evidence/protected-restart-8440a7490a3f4afb9c8fda572e06a6ee-safe/parent-armed.txt",
+          "bytes": 8,
+          "sha256": "d6a7ee742403ef280d0afaa6efcb82e7683a544d8fde5144da4e90f996773b17"
+        },
+        {
+          "path": "restart-component-evidence/protected-restart-8440a7490a3f4afb9c8fda572e06a6ee-safe/parent-release.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "restart-component-evidence/protected-restart-8440a7490a3f4afb9c8fda572e06a6ee-safe/protected-launcher-args.txt",
+          "bytes": 76,
+          "sha256": "13b54820a5aeead1a71e45ca8a4cfde3d026773211dc483697d44715ae61fb9f"
+        },
+        {
+          "path": "restart-component-evidence/protected-restart-8440a7490a3f4afb9c8fda572e06a6ee-safe/target-mode.txt",
+          "bytes": 11,
+          "sha256": "fca3c7db9add185b1e8c5a2d34cf8a9b35cb5f7f1785bbf8215bfc633445268f"
+        },
+        {
+          "path": "restart-component-evidence/protected-restart-8440a7490a3f4afb9c8fda572e06a6ee-xnav/parent-armed.txt",
+          "bytes": 9,
+          "sha256": "a5b2926ce0d09279c12096d27a954e93a94e7587dc87ed7002503ee4f1978e4a"
+        },
+        {
+          "path": "restart-component-evidence/protected-restart-8440a7490a3f4afb9c8fda572e06a6ee-xnav/parent-release.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "restart-component-evidence/protected-restart-8440a7490a3f4afb9c8fda572e06a6ee-xnav/protected-launcher-args.txt",
+          "bytes": 71,
+          "sha256": "531402a433c68f4b673ab06375158472f6431b3731f0b6ae736a50db6b78e8df"
+        },
+        {
+          "path": "restart-component-evidence/protected-restart-8440a7490a3f4afb9c8fda572e06a6ee-xnav/target-mode.txt",
+          "bytes": 6,
+          "sha256": "f087baeba04a4a478554d4a6704be580409a95c47781a436f7c7dd73f0a7b5f7"
+        },
+        {
+          "path": "commissioning-restart/Testing/Temporary/CTestCostData.txt",
+          "bytes": 128,
+          "sha256": "2570805a2f846dad92f76694d8a0ba9eed644a013f99640b3147a971aa4a1246"
+        },
+        {
+          "path": "commissioning-restart/Testing/Temporary/LastTest.log",
+          "bytes": 2493,
+          "sha256": "3f1b50d99c1be3d96659fe20e633a69b1a54a35fa32f7523be1e25851d05603a"
+        }
+      ]
+    }
+  ],
+  "tests": {
+    "windows": {
+      "topLevel": {
+        "pass": 729,
+        "skip": 12
+      },
+      "nested": {
+        "pass": 2799
+      }
+    },
+    "linux": {
+      "topLevel": {
+        "pass": 569
+      },
+      "nested": {
+        "pass": 2556
+      }
+    }
+  },
+  "nativeStaticAnalysis": {
+    "state": "failed",
+    "diagnostic": "brokerhost/stock_windows_test.go:95:23: possible misuse of unsafe.Pointer"
+  },
+  "freshSCMEnrollment": "skipped after prerequisite failure; not accepted",
+  "fullApplicationBuild": false,
+  "boatModified": false,
+  "nativeOrdinaryCommissioningRestart": {
+    "status": "passed",
+    "scenarios": 24,
+    "checks": 384
+  },
+  "nativeProtectedRestart": {
+    "generation": "8440a7490a3f4afb9c8fda572e06a6ee",
+    "status": "passed",
+    "schema": 1,
+    "cases": [
+      {
+        "argument": "--broker-current=8440a7490a3f4afb9c8fda572e06a6ee",
+        "case": "xnav",
+        "armed": true,
+        "mode": "--xnav",
+        "parentPid": 3520
+      },
+      {
+        "argument": "--broker-current=8440a7490a3f4afb9c8fda572e06a6ee:legacy",
+        "case": "legacy",
+        "armed": true,
+        "mode": "--legacy",
+        "parentPid": 984
+      },
+      {
+        "argument": "--broker-current=8440a7490a3f4afb9c8fda572e06a6ee:safe",
+        "case": "safe",
+        "armed": true,
+        "mode": "--safe-mode",
+        "parentPid": 760
+      },
+      {
+        "argument": null,
+        "case": "fenced-environment",
+        "armed": false,
+        "mode": "--xnav",
+        "parentPid": 2092
+      },
+      {
+        "argument": null,
+        "case": "missing-companion",
+        "armed": false,
+        "mode": "--xnav",
+        "parentPid": 7984
+      }
+    ],
+    "fixedNamespaceRemoved": true
+  },
+  "nativeStartupInteractions": "passed"
+}
