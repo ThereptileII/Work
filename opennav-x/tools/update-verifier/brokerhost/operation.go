@@ -11,6 +11,7 @@ import (
 	verifier "example.com/opennav-update-verifier"
 	"example.com/opennav-update-verifier/brokerpipe"
 	"example.com/opennav-update-verifier/brokerregistration"
+	"example.com/opennav-update-verifier/brokerstore"
 	"example.com/opennav-update-verifier/releasepolicy"
 )
 
@@ -28,12 +29,18 @@ type storage interface {
 	VerifierDirectories(string, string) (string, string, error)
 	openBaseline(context.Context, registration) (baselineOwner, error)
 	begin(string, string) (candidate, error)
+	materialize(context.Context, baselineOwner, candidate) (generationOwner, error)
 }
 
 // The concrete owner retains the approved, birth-protected payload. This does
 // not authorize launch or prove the currently running per-user installation.
 type baselineOwner interface {
 	Validate() error
+	Close() error
+}
+type generationOwner interface {
+	Validate() error
+	Completion() (brokerstore.GenerationCompletion, error)
 	Close() error
 }
 type acquisition interface {
@@ -54,14 +61,15 @@ type engine struct {
 // No receipt in this operation authorizes launch. It records authenticated
 // bytes staged for later qualification, not installed state or startup success.
 type stagingReceipt struct {
-	Schema                int                          `json:"schema"`
-	State                 string                       `json:"state"`
-	RequestID             string                       `json:"requestId"`
-	ClientSID             string                       `json:"clientSid"`
-	Consent               verifier.ConsentIdentity     `json:"consent"`
-	Recovery              verifier.RecoveryIdentity    `json:"recovery"`
-	Installed             brokerregistration.Installed `json:"installed"`
-	ApprovedRequestSHA256 string                       `json:"approvedRequestSha256"`
+	Schema                int                              `json:"schema"`
+	State                 string                           `json:"state"`
+	RequestID             string                           `json:"requestId"`
+	ClientSID             string                           `json:"clientSid"`
+	Consent               verifier.ConsentIdentity         `json:"consent"`
+	Recovery              verifier.RecoveryIdentity        `json:"recovery"`
+	Installed             brokerregistration.Installed     `json:"installed"`
+	ApprovedRequestSHA256 string                           `json:"approvedRequestSha256"`
+	Materialized          brokerstore.GenerationCompletion `json:"materialized"`
 }
 
 var errStageRefused = errors.New("protected update staging refused")
@@ -130,14 +138,14 @@ func (e *engine) handle(ctx context.Context, peer brokerpipe.Peer, request broke
 	// CREATE_NEW reserves this exact request ID durably before network activity.
 	// Failure leaves a protected partial candidate; the ID is never reused.
 	stage, err := e.store.begin(request.RequestID, peer.SID)
-	if err != nil || stage == nil {
-		return brokerpipe.Result{}, errStageRefused
-	}
 	defer func() {
 		if stage != nil {
 			resultErr = errors.Join(resultErr, stage.Close())
 		}
 	}()
+	if err != nil || stage == nil {
+		return brokerpipe.Result{}, errStageRefused
+	}
 	if err := e.store.Validate(); err != nil {
 		return brokerpipe.Result{}, err
 	}
@@ -187,14 +195,64 @@ func (e *engine) handle(ctx context.Context, peer brokerpipe.Peer, request broke
 	if err := baseline.Validate(); err != nil {
 		return brokerpipe.Result{}, err
 	}
+	// Copy only from the still-held approved baseline and reserved candidate.
+	// The completed protected generation is not a selected installation or launch
+	// authority. Its durable evidence may remain after an error; cleanup
+	// uncertainty withholds a successful staging result.
+	generation, err := e.store.materialize(ctx, baseline, stage)
+	defer func() {
+		if generation != nil {
+			resultErr = errors.Join(resultErr, generation.Close())
+		}
+	}()
+	if err != nil || generation == nil {
+		return brokerpipe.Result{}, errStageRefused
+	}
+	if err := ctx.Err(); err != nil {
+		return brokerpipe.Result{}, err
+	}
+	if err := generation.Validate(); err != nil {
+		return brokerpipe.Result{}, err
+	}
+	completion, err := generation.Completion()
+	if err != nil {
+		return brokerpipe.Result{}, err
+	}
+	if completion.Schema != 1 || completion.ClientSID != peer.SID || completion.Generation != request.RequestID ||
+		completion.PreviousGeneration != r.Installed.Generation || completion.PolicySHA256 != request.Consent.PolicySHA256 ||
+		completion.Identity != identity || !hashPattern.MatchString(completion.PreviousCompletionSHA256) ||
+		!hashPattern.MatchString(completion.CompletionSHA256) || !hashPattern.MatchString(completion.RecoverySHA256) ||
+		!hashPattern.MatchString(completion.InstallerSHA256) {
+		return brokerpipe.Result{}, errStageRefused
+	}
+	if err := baseline.Validate(); err != nil {
+		return brokerpipe.Result{}, err
+	}
+	if err := stock.validate(); err != nil {
+		return brokerpipe.Result{}, err
+	}
+	if err := e.store.Validate(); err != nil {
+		return brokerpipe.Result{}, err
+	}
+	closeErr = generation.Close()
+	generation = nil
+	if closeErr != nil {
+		return brokerpipe.Result{}, closeErr
+	}
+	if err := ctx.Err(); err != nil {
+		return brokerpipe.Result{}, err
+	}
 	closeErr = baseline.Close()
 	baseline = nil
 	if closeErr != nil {
 		return brokerpipe.Result{}, closeErr
 	}
-	receipt, err := json.Marshal(stagingReceipt{Schema: 2, State: stagedState, RequestID: request.RequestID,
+	if err := ctx.Err(); err != nil {
+		return brokerpipe.Result{}, err
+	}
+	receipt, err := json.Marshal(stagingReceipt{Schema: 3, State: stagedState, RequestID: request.RequestID,
 		ClientSID: peer.SID, Consent: request.Consent, Recovery: identity,
-		Installed: r.Installed, ApprovedRequestSHA256: r.ApprovedRequestSHA256})
+		Installed: r.Installed, ApprovedRequestSHA256: r.ApprovedRequestSHA256, Materialized: completion})
 	if err != nil {
 		return brokerpipe.Result{}, err
 	}

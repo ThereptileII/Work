@@ -18,8 +18,12 @@ import (
 type storeAdapter struct{ *brokerstore.Store }
 
 func (s storeAdapter) openBaseline(ctx context.Context, r registration) (baselineOwner, error) {
-	return s.OpenInstalledBaseline(ctx, r.ClientSID, r.Installed.Generation,
+	baseline, err := s.OpenInstalledBaseline(ctx, r.ClientSID, r.Installed.Generation,
 		r.ApprovedRequestSHA256, r.Installed)
+	if baseline == nil {
+		return nil, err
+	}
+	return baseline, err
 }
 
 func (s storeAdapter) begin(id, sid string) (candidate, error) {
@@ -28,6 +32,23 @@ func (s storeAdapter) begin(id, sid string) (candidate, error) {
 		return nil, err
 	}
 	return c, nil
+}
+
+func (s storeAdapter) materialize(ctx context.Context, previous baselineOwner, stage candidate) (generationOwner, error) {
+	baseline, ok := previous.(*brokerstore.InstalledBaseline)
+	if !ok || baseline == nil {
+		return nil, errors.New("native retained installed baseline required")
+	}
+	native, ok := stage.(*brokerstore.Candidate)
+	if !ok || native == nil {
+		return nil, errors.New("native reserved candidate required")
+	}
+	generation, err := s.MaterializeCandidateFresh(ctx, baseline, native)
+	if generation == nil {
+		return nil, err
+	}
+	// Preserve even an owner returned with an error so handle drains it.
+	return generation, err
 }
 
 // Run is exclusively an SCM service entry point. It has no arbitrary-root,
