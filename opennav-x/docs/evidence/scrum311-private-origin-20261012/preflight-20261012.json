@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "scope": "read-only private HTTPS transport preflight; not product or service acceptance",
+  "helperImplementationCommits": [
+    "a5210139",
+    "ab44ee41"
+  ],
+  "deterministicTestsPassed": 11,
+  "pinnedInputsAcceptedBeforeTransport": true,
+  "liveTransportResult": {
+    "schema": 1,
+    "status": "refused",
+    "transportOnly": true
+  },
+  "liveServeStatus": {},
+  "localOriginProcessObserved": false,
+  "remoteAccessChanged": false,
+  "privateKeyRead": false,
+  "signedOfferPublished": false,
+  "httpsAccepted": false,
+  "nativeInstalledUpdaterAccepted": false
+}

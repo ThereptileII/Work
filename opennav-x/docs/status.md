@@ -18,6 +18,18 @@ The original run remains failed, signing is skipped, and no native service or
 product acceptance is claimed. Boat installation and remote access are unchanged.
 [Original run evidence](evidence/scrum311-startup-native-repairs-20261012/fresh-component-scm-run.json).
 
+## Private HTTPS preflight available; origin activation still pending
+
+The read-only preflight pins the approved public trust configuration and original
+public root, uses direct certificate-checked HTTPS, refuses redirects/proxies and
+writes exclusive sanitized transport-only evidence. Its 11 deterministic tests
+pass. Original input checks pass, but the live request refuses. Current read-only
+Tailscale Serve status is `{}` and no loopback origin process is observed, so
+previous loopback evidence is not current HTTPS availability. The earlier
+account-owner Serve setup remains pending; no network configuration or keys were
+changed. Hosted-runner tailnet access and actual B0/B1 installed startup tests
+remain separate open gates. [Current observations](evidence/scrum311-private-origin-20261012/preflight-20261012.json).
+
 ## Native ProgramData proof passes; corrected cleanup-error fixture awaits native gate
 
 Fresh component gate [38297499754](https://github.com/ThereptileII/Work/actions/runs/38297499754)
