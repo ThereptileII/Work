@@ -3,14 +3,16 @@
 #include "platform/windows/ProtectedRestartPolicy.h"
 #include "platform/windows/WindowsArguments.h"
 
+// Keep Windows SDK prerequisites before the KnownFolder GUID declarations.
+#include <windows.h>
+#include <shlobj.h>
+#include <knownfolders.h>
+
 #include <cstring>
 #include <cwchar>
 #include <filesystem>
-#include <knownfolders.h>
 #include <memory>
-#include <shlobj.h>
 #include <stdexcept>
-#include <windows.h>
 
 namespace opennav::platform {
 namespace {
