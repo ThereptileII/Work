@@ -483,7 +483,7 @@ func (g *nativeInstalledGeneration) loadSiblings() error {
 			return err
 		}
 		canonical, err := json.Marshal(record)
-		if err != nil || !bytes.Equal(raw, canonical) || record.Schema != 1 || record.Purpose != "signed-candidate-generation" || record.ClientSID != g.client || record.Generation != stage || !record.Acquisition.valid() || registrationDigest(record.PreviousCompletion) != record.PreviousCompletionSHA256 {
+		if err != nil || !bytes.Equal(raw, canonical) || record.Schema != 1 || record.ClientSID != g.client || record.Generation != stage || validateGenerationPurpose(record) != nil {
 			return errors.New("generation original completion invalid")
 		}
 		originRecord := record

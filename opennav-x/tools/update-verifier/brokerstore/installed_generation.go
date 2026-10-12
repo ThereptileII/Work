@@ -36,6 +36,7 @@ type GenerationCompletion struct {
 type generationRecord struct {
 	Schema                   int                       `json:"schema"`
 	Purpose                  string                    `json:"purpose"`
+	ApprovedBaseline         *generationBaselineOrigin `json:"approvedBaseline,omitempty"`
 	ClientSID                string                    `json:"clientSid"`
 	Generation               string                    `json:"generation"`
 	PreviousCompletion       []byte                    `json:"previousCompletion"`
@@ -288,6 +289,11 @@ func (g *InstalledGeneration) names() []string {
 }
 
 func (g *InstalledGeneration) validateContents(ctx context.Context) error {
+	if g.record.ApprovedBaseline != nil || g.record.Purpose == approvedBaselineGenerationPurpose {
+		if err := validateApprovedBaselineGeneration(g.record); err != nil {
+			return err
+		}
+	}
 	if err := g.backend.check(); err != nil {
 		return err
 	}
@@ -403,6 +409,9 @@ func (g *InstalledGeneration) Completion() (GenerationCompletion, error) {
 	return g.completionRecord()
 }
 func (g *InstalledGeneration) completionRecord() (GenerationCompletion, error) {
+	if g.record.Purpose != "signed-candidate-generation" || g.record.ApprovedBaseline != nil {
+		return GenerationCompletion{}, errors.New("signed candidate completion required")
+	}
 	var previous baselineRecord
 	if err := json.Unmarshal(g.record.PreviousCompletion, &previous); err != nil {
 		return GenerationCompletion{}, err
