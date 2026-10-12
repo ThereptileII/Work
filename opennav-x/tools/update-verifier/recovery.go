@@ -7,15 +7,14 @@ import (
 	"crypto/sha256"
 	"encoding/binary"
 	"encoding/hex"
-	"encoding/json"
 	"errors"
 	"io"
 	"net/http"
 	"regexp"
 	"sort"
 	"strings"
-	"unicode/utf8"
 
+	"example.com/opennav-update-verifier/baselineevidence"
 	"example.com/opennav-update-verifier/releasepolicy"
 )
 
@@ -30,17 +29,7 @@ const maxRecoveryInventory = int64(4) << 20
 // Older recovery layouts lack Lifecycle's exact package.json. Its hash is
 // available only with the inventoried installer/package.json sidecar, and is
 // never inferred from the executable, a serialization or the outer ZIP hash.
-type RecoveryIdentity struct {
-	Version                    string
-	Commit                     string
-	ExecutableSHA256           string
-	ProductBuildSHA256         string
-	InventorySHA256            string
-	LifecycleManifestAvailable bool
-	LifecycleManifestSHA256    string
-	// Declared by the authenticated manifest; payload.zip is not in Recovery.
-	DeclaredPayloadSHA256 string
-}
+type RecoveryIdentity = baselineevidence.Identity
 
 // PreparedRecovery owns the retained authenticated ZIP handle. Close every
 // result, and retain it through any separately authorized use. The inherited
@@ -119,9 +108,10 @@ func readRecoveryIdentity(ctx context.Context, artifact *VerifiedArtifact, polic
 }
 
 type recoveryContents struct {
-	identity  RecoveryIdentity
-	files     map[string]*zip.File
-	inventory map[string]string
+	identity                     RecoveryIdentity
+	files                        map[string]*zip.File
+	inventory                    map[string]string
+	inventoryBytes, packageBytes []byte
 }
 
 func readRecoveryContents(ctx context.Context, artifact *VerifiedArtifact, policy releasepolicy.Policy) (recoveryContents, error) {
@@ -138,10 +128,17 @@ func readRecoveryContents(ctx context.Context, artifact *VerifiedArtifact, polic
 	if err := copyVerifiedDownload(ctx, io.NewSectionReader(r, 0, info.Size()), io.Discard, policy.Recovery); err != nil {
 		return empty, err
 	}
-	if err := recoveryZIPDirectory(r, info.Size()); err != nil {
+	return parseRecoveryContents(ctx, r, info.Size(), policy)
+}
+
+// Private parser shared by authenticated acquisition and purpose-bound approved
+// import. Callers must establish their distinct authority before reaching it.
+func parseRecoveryContents(ctx context.Context, r io.ReaderAt, size int64, policy releasepolicy.Policy) (recoveryContents, error) {
+	var empty recoveryContents
+	if err := recoveryZIPDirectory(r, size); err != nil {
 		return empty, err
 	}
-	z, err := zip.NewReader(r, info.Size())
+	z, err := zip.NewReader(r, size)
 	if err != nil {
 		return empty, errors.New("invalid recovery ZIP")
 	}
@@ -183,7 +180,7 @@ func readRecoveryContents(ctx context.Context, artifact *VerifiedArtifact, polic
 		return empty, err
 	}
 	var inventory map[string]string
-	if err := strictRecoveryJSON(inventoryBytes, &inventory); err != nil || len(inventory) != len(files)-1 {
+	if err := baselineevidence.DecodeInventory(inventoryBytes, &inventory); err != nil || len(inventory) != len(files)-1 {
 		return empty, errors.New("recovery inventory is incomplete or invalid")
 	}
 	for name, f := range files {
@@ -203,31 +200,16 @@ func readRecoveryContents(ctx context.Context, artifact *VerifiedArtifact, polic
 	if err != nil {
 		return empty, err
 	}
-	var product recoveryProduct
-	if err := strictRecoveryJSON(productBytes, &product); err != nil {
-		return empty, errors.New("invalid recovery product record")
-	}
-	if product.Version != policy.Version || product.Commit != policy.Commit || product.TestFixtures == nil || *product.TestFixtures ||
-		product.BuildPurpose != "INSTALLED PRODUCT" || product.UpdateStartupHealth != 1 || product.CommissioningRestartProtocol != 1 ||
-		!recoveryHash.MatchString(product.ExecutableSHA256) || !recoveryHash.MatchString(product.RestartHelperSHA256) || !recoveryHash.MatchString(product.StartupLauncherSHA256) ||
-		inventory["app/opencpn.exe"] != product.ExecutableSHA256 || inventory["app/opennav-restart.exe"] != product.RestartHelperSHA256 || inventory["app/skager-start.exe"] != product.StartupLauncherSHA256 ||
-		!((product.OutputPolicy == "status-only" && product.ManualControlContract == 0) || (product.OutputPolicy == "manual-commissioning" && product.ManualControlContract == 1)) {
-		return empty, errors.New("recovery product identity differs or is unsupported")
-	}
-	identity := RecoveryIdentity{Version: product.Version, Commit: product.Commit, ExecutableSHA256: product.ExecutableSHA256,
-		ProductBuildSHA256: recoveryDigest(productBytes), InventorySHA256: recoveryDigest(inventoryBytes)}
+	var manifest []byte
 	if f := files["installer/package.json"]; f != nil {
-		manifest, err := recoveryMemberBytes(f, maxRecoveryInventory)
+		manifest, err = recoveryMemberBytes(f, maxRecoveryInventory)
 		if err != nil {
 			return empty, err
 		}
-		payload, err := validateRecoveryPackage(manifest, policy, inventory)
-		if err != nil {
-			return empty, err
-		}
-		identity.LifecycleManifestAvailable = true
-		identity.LifecycleManifestSHA256 = recoveryDigest(manifest)
-		identity.DeclaredPayloadSHA256 = payload
+	}
+	identity, err := baselineevidence.CheckRecoveryEvidence(ctx, inventoryBytes, manifest, productBytes, inventory, policy)
+	if err != nil {
+		return empty, err
 	}
 	if _, ok := files["package.json"]; ok {
 		return empty, errors.New("unsupported recovery installer manifest layout")
@@ -235,7 +217,7 @@ func readRecoveryContents(ctx context.Context, artifact *VerifiedArtifact, polic
 	if err := ctx.Err(); err != nil {
 		return empty, err
 	}
-	return recoveryContents{identity: identity, files: files, inventory: inventory}, nil
+	return recoveryContents{identity: identity, files: files, inventory: inventory, inventoryBytes: inventoryBytes, packageBytes: manifest}, nil
 }
 
 type recoveryReaderAt struct {
@@ -379,190 +361,4 @@ func recoveryMemberHash(f *zip.File) (string, error) {
 func recoveryDigest(data []byte) string {
 	sum := sha256.Sum256(data)
 	return hex.EncodeToString(sum[:])
-}
-
-type recoveryProduct struct {
-	Version                      string          `json:"version"`
-	Commit                       string          `json:"commit"`
-	TestFixtures                 *bool           `json:"test_fixtures"`
-	BuildPurpose                 string          `json:"build_purpose"`
-	OutputPolicy                 string          `json:"xnav_hardware_output_policy"`
-	ManualControlContract        int             `json:"xnav_manual_control_contract"`
-	ExecutableSHA256             string          `json:"executable_sha256"`
-	RestartHelperSHA256          string          `json:"restart_helper_sha256"`
-	CommissioningRestartProtocol int             `json:"commissioning_restart_protocol"`
-	UpdateStartupHealth          int             `json:"update_startup_health"`
-	StartupLauncherSHA256        string          `json:"startup_launcher_sha256"`
-	UpdateTrust                  json.RawMessage `json:"update_trust,omitempty"` // provenance only, never a trust input
-}
-
-// Reject duplicate/case-folded keys and trailing data before typed decoding.
-// Struct decoding is also checked for exact key spelling, not Go's case aliases.
-func strictRecoveryJSON(data []byte, target interface{}) error {
-	if !utf8.Valid(data) {
-		return errors.New("invalid recovery UTF-8")
-	}
-	d := json.NewDecoder(bytes.NewReader(data))
-	d.UseNumber()
-	if err := recoveryJSONValue(d, 0); err != nil {
-		return err
-	}
-	if _, err := d.Token(); err != io.EOF {
-		return errors.New("trailing recovery JSON")
-	}
-	if _, ok := target.(*recoveryProduct); ok {
-		var fields map[string]json.RawMessage
-		if err := json.Unmarshal(data, &fields); err != nil {
-			return err
-		}
-		keys := []string{"version", "commit", "test_fixtures", "build_purpose", "xnav_hardware_output_policy", "xnav_manual_control_contract", "executable_sha256", "restart_helper_sha256", "commissioning_restart_protocol", "update_startup_health", "startup_launcher_sha256"}
-		for _, key := range keys {
-			if value, ok := fields[key]; !ok || bytes.Equal(bytes.TrimSpace(value), []byte("null")) {
-				return errors.New("missing exact recovery product field")
-			}
-		}
-		if len(fields) != len(keys) {
-			if _, ok := fields["update_trust"]; !ok || len(fields) != len(keys)+1 {
-				return errors.New("unknown recovery product field")
-			}
-		}
-	}
-	d = json.NewDecoder(bytes.NewReader(data))
-	d.DisallowUnknownFields()
-	return d.Decode(target)
-}
-
-type recoveryPackage struct {
-	Schema           int                          `json:"schema"`
-	Version          string                       `json:"version"`
-	Commit           string                       `json:"commit"`
-	PayloadSHA256    string                       `json:"payloadSha256"`
-	SupportedOpenCpn []map[string]json.RawMessage `json:"supportedOpenCpn"`
-	Files            []map[string]json.RawMessage `json:"files"`
-	Qualification    string                       `json:"qualification"`
-}
-
-func validateRecoveryPackage(data []byte, policy releasepolicy.Policy, inventory map[string]string) (string, error) {
-	var p recoveryPackage
-	if err := strictRecoveryJSON(data, &p); err != nil {
-		return "", errors.New("invalid recovery installer manifest")
-	}
-	var fields map[string]json.RawMessage
-	if err := json.Unmarshal(data, &fields); err != nil || !recoveryExactKeys(fields, []string{"schema", "version", "commit", "payloadSha256", "supportedOpenCpn", "files", "qualification"}, nil) ||
-		p.Schema != 1 || p.Version != policy.Version || p.Commit != policy.Commit || !recoveryHash.MatchString(p.PayloadSHA256) ||
-		(p.Qualification != "candidate" && p.Qualification != "accepted") || len(p.Files) == 0 || len(p.Files) > maxRecoveryFiles || len(p.SupportedOpenCpn) != len(policy.SupportedOpenCpn) {
-		return "", errors.New("recovery installer manifest identity differs")
-	}
-	seen := map[string]bool{}
-	for _, entry := range p.Files {
-		if !recoveryExactKeys(entry, []string{"path", "sha256"}, nil) {
-			return "", errors.New("invalid installer file record")
-		}
-		var path, hash string
-		if json.Unmarshal(entry["path"], &path) != nil || json.Unmarshal(entry["sha256"], &hash) != nil || !safeRecoveryPath(path) ||
-			!(strings.HasPrefix(path, "app/") || strings.HasPrefix(path, "docs/")) || path == "app/OPENNAV_PORTABLE_PREVIEW" ||
-			seen[strings.ToLower(path)] || !recoveryHash.MatchString(hash) || inventory[path] != hash {
-			return "", errors.New("installer files differ from authenticated recovery")
-		}
-		seen[strings.ToLower(path)] = true
-	}
-	for name := range inventory {
-		if (strings.HasPrefix(name, "app/") || strings.HasPrefix(name, "docs/")) && name != "app/OPENNAV_PORTABLE_PREVIEW" && !seen[strings.ToLower(name)] {
-			return "", errors.New("installer file inventory incomplete")
-		}
-	}
-	identities := map[releasepolicy.OpenCpn]bool{}
-	for _, entry := range p.SupportedOpenCpn {
-		if !recoveryExactKeys(entry, []string{"version", "arch", "executableSha256", "upstreamCommit"}, []string{"qualification", "integrationPackage", "qualificationCommit", "qualificationRun", "qualificationEvidence", "stockSetupSha256"}) {
-			return "", errors.New("invalid installer OpenCPN identity")
-		}
-		var c releasepolicy.OpenCpn
-		for key, value := range entry {
-			var s string
-			if json.Unmarshal(value, &s) != nil || len(s) > 2048 {
-				return "", errors.New("invalid installer compatibility field")
-			}
-			switch key {
-			case "version":
-				c.Version = s
-			case "arch":
-				c.Arch = s
-			case "executableSha256":
-				c.ExecutableSHA256 = s
-			case "upstreamCommit":
-				c.UpstreamCommit = s
-			}
-		}
-		if identities[c] {
-			return "", errors.New("duplicate installer OpenCPN identity")
-		}
-		identities[c] = true
-	}
-	for _, c := range policy.SupportedOpenCpn {
-		if !identities[c] {
-			return "", errors.New("installer compatibility differs from signed policy")
-		}
-	}
-	return p.PayloadSHA256, nil
-}
-
-func recoveryExactKeys(fields map[string]json.RawMessage, required, optional []string) bool {
-	allowed := map[string]bool{}
-	for _, key := range required {
-		value, ok := fields[key]
-		if !ok || bytes.Equal(bytes.TrimSpace(value), []byte("null")) {
-			return false
-		}
-		allowed[key] = true
-	}
-	for _, key := range optional {
-		allowed[key] = true
-	}
-	for key, value := range fields {
-		if !allowed[key] || bytes.Equal(bytes.TrimSpace(value), []byte("null")) {
-			return false
-		}
-	}
-	return true
-}
-func recoveryJSONValue(d *json.Decoder, depth int) error {
-	if depth > 12 {
-		return errors.New("recovery JSON nesting bound")
-	}
-	tok, err := d.Token()
-	if err != nil {
-		return err
-	}
-	delim, ok := tok.(json.Delim)
-	if !ok {
-		return nil
-	}
-	switch delim {
-	case '{':
-		seen := map[string]bool{}
-		for d.More() {
-			token, err := d.Token()
-			if err != nil {
-				return err
-			}
-			key, ok := token.(string)
-			if !ok || len(key) == 0 || len(key) > 240 || seen[strings.ToLower(key)] {
-				return errors.New("ambiguous recovery JSON key")
-			}
-			seen[strings.ToLower(key)] = true
-			if err := recoveryJSONValue(d, depth+1); err != nil {
-				return err
-			}
-		}
-	case '[':
-		for d.More() {
-			if err := recoveryJSONValue(d, depth+1); err != nil {
-				return err
-			}
-		}
-	default:
-		return errors.New("invalid recovery JSON delimiter")
-	}
-	_, err = d.Token()
-	return err
 }
