@@ -28,6 +28,9 @@ func main() {
 		os.Exit(1)
 	}
 	if maintenance {
+		if manualRollbackRequested(os.Args[1:]) {
+			return // The bound manual-selection result was already emitted.
+		}
 		fmt.Println("SKAGER broker stop and original process exit verified. Application/profile recovery, repair and uninstall have not been performed.")
 		return
 	}

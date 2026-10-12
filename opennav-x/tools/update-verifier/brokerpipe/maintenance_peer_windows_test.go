@@ -12,6 +12,27 @@ import (
 	"golang.org/x/sys/windows"
 )
 
+func TestMaintenanceOperatorCheckedCannotExtendOriginalContext(t *testing.T) {
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	if !currentProcessHasEnabledAdmin(t) || !windows.GetCurrentProcessToken().IsElevated() {
+		return // Other native cases require refusal for a filtered token.
+	}
+	f := actualNativePeerFixture(t)
+	ctx, cancel := context.WithCancel(f.ctx)
+	defer cancel()
+	err := f.cap.WithMaintenanceOperatorChecked(ctx, nativePeerEvidence(f.process).SID, func(_ PeerIdentity, check func(context.Context) error) error {
+		cancel()
+		if err := check(context.Background()); !errors.Is(err, context.Canceled) {
+			t.Fatal("a fresh context extended canceled operator scope", err)
+		}
+		return nil
+	})
+	if !errors.Is(err, context.Canceled) {
+		t.Fatal("original scope cancellation was hidden", err)
+	}
+}
+
 // Independent fixture expectation from the actual process token's group flags;
 // it deliberately does not call the production bounded group reader.
 func currentProcessHasEnabledAdmin(t *testing.T) bool {

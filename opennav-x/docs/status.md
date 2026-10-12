@@ -1,5 +1,27 @@
 # SKAGER status — 2026-10-12
 
+## Manual rollback endpoint joined; native confirmation pending
+
+The running broker now joins a separate, bounded manual-selection endpoint to
+its existing Store/operation lock. It requires the original elevated operator,
+exact selected-history pins, retained original application exit, unchanged stock
+compatibility and a frozen CURRENT profile. It never launches an application or
+restores historical navigation data. The one-shot operator client restores its
+temporary folder-query ACL before releasing ordinary query custody. Normal
+startup remains query-only. [Contract and explicit cleanup limits](installer/broker-execution-contract.md#explicit-manual-selection-and-retained-ordinary-application).
+
+Joined focused Linux race checks passed **42 top-level + 181 nested cases** in
+four packages, with no failures/skips; Windows/x86 host, pipe, launcher and
+provisioner test binaries compiled. The four affected packaging suites passed
+**64 cases**. These are focused source checks, not native Windows or installed
+acceptance. [Recorded checks](evidence/scrum311-startup-native-repairs-20261012/manual-maintenance-source-checks.json).
+
+Independent inspection confirmed the older installer must not be joined by
+blindly adding a provisioner call: its LocalAppData shortcut ownership/repair
+path conflicts with the protected shortcut. Protected Legacy/Safe startup and
+owned install/repair/uninstall integration remain open. No full application
+build or boat modification is claimed; SCRUM-311 remains In Progress.
+
 ## Protected startup/Now source joined; exact native component failures isolated
 
 Latest component run [38267062370](https://github.com/ThereptileII/Work/actions/runs/38267062370)

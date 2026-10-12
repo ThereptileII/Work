@@ -1,0 +1,37 @@
+{
+  "schema": 1,
+  "scope": "joined manual-maintenance source checks; not native or installed acceptance",
+  "integratedDependencyHead": "3d943756",
+  "rootWorkingChanges": "maintenance protocol/native endpoint, host wiring, checked original folder-token query, source closure and documentation",
+  "linuxFocusedRace": {
+    "packages": ["brokerhost", "brokerpipe", "launcher", "cmd/skager-update-provisioner"],
+    "topPassed": 42,
+    "nestedPassed": 181,
+    "packagePassed": 4,
+    "failed": 0,
+    "skipped": 0,
+    "logSha256": "614996902d35324b7c010a020d497fba46a92da0e3c3d066e07f37026c71ab51"
+  },
+  "windows386TestCrossCompile": {
+    "brokerhost": "passed",
+    "brokerpipe": "passed",
+    "launcher": "passed",
+    "provisioner": "passed",
+    "nativeExecution": "pending"
+  },
+  "packaging": {
+    "test-package-update-broker.py": 33,
+    "test-provisioner-package.py": 14,
+    "test-package-update-provisioner.py": 10,
+    "test_baseline_handoff_package.py": 7
+  },
+  "review": {
+    "temporaryFolderTokenMask": "0x0c = TOKEN_QUERY | TOKEN_IMPERSONATE; ordinary query remains unchanged",
+    "maskCorrection": "independent review caught 0x18 QUERY_SOURCE confusion before integration; named native constant agreement is compile-time checked",
+    "cleanup": "folder owner closes before query owner; exact temporary descriptor and original native identity required; cancellation does not skip restoration",
+    "limitations": "abrupt client exit cannot run cleanup; restoring a token DACL cannot revoke existing handles; no native compare-and-set DACL API"
+  },
+  "fullApplicationBuilt": false,
+  "boatChanged": false,
+  "installedUpdaterAccepted": false
+}

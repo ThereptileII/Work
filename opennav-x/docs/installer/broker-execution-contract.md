@@ -112,6 +112,68 @@ boundaries. The command closes retained owners and performs no application,
 profile, shortcut, registry or protected-store mutation beyond stopping the
 verified broker. Native Windows acceptance is still required.
 
+### Explicit manual selection and retained ordinary application
+
+Manual rollback is a different operation on the running protected broker:
+
+```
+--maintenance=manual-rollback
+--request-id <fresh-32-lowercase-hex-id>
+--expected-selected-head-sha256 <exact-current-head>
+--target-generation <retained-32-lowercase-hex-generation>
+--target-completion-sha256 <exact-ancestor-completion>
+```
+
+The separate fixed `SkagerUpdateBroker.maintenance.v1` pipe accepts bounded,
+strict data-only records. It authenticates the actual SCM server and the original
+interactive operator's elevated primary token, including an enabled, non-deny-only
+Administrators group. The host obtains the expected client SID from protected
+registration. Callers cannot supply a filesystem root, another client's identity,
+an executable or a profile restoration command. A request is sent once. Loss of
+the completion means the outcome is unverified, not permission to repeat it.
+
+After normal selected startup, the service retains the SAME corroborated original
+application process/token handles. A PID lookup or missing process-name scan cannot
+establish exit. Live or uncertain predecessors refuse maintenance; missing custody
+after service restart also refuses. A signalled original process remains retained
+until the maintenance transaction consumes the observation. The bounded per-client
+tracker and every maintenance operation share the engine lock. Drained service
+shutdown releases query handles without signalling an ordinary application.
+
+The host checks stock compatibility, current registration, original child exit,
+legacy armed-marker denial and absence of other known profile writers. The native
+transaction freezes CURRENT navigation data, reopens an exact qualified ancestor,
+and appends a fresh permanent manual-selection journal. It neither restores a
+historical profile nor resets metadata floors. Historical qualification is explicitly
+historical; it is not fresh compatibility testing of the ancestor against today's
+profile. No application starts and no hardware command is sent by this transaction.
+The returned JSON is published only after protected selected-history readback and
+successful closure. A partial reservation or failed readback remains uncertain.
+
+The legacy armed-marker observation is denial-only. Repeated absence checks do not
+prove a marker never briefly appeared between checks. Original token-derived folder
+lookup must succeed; a service-user folder or caller-selected path is not a fallback.
+Windows requires `TOKEN_QUERY | TOKEN_IMPERSONATE` for the original token's
+known-folder query. Only the explicit elevated operator client temporarily changes
+the already validated fixed service ACE from query-only to those two rights on
+its SAME retained primary token. Ordinary startup keeps query-only access. No
+token duplication, privilege adjustment or thread impersonation is performed.
+The service opens an owned folder-query token from the SAME retained process
+handle and proves its TokenID/logon against the retained query token. It closes
+that handle within the checked callback. The client restores the exact original
+query-only descriptor before releasing its query owner, including on cancellation;
+observed descriptor/identity drift refuses a blind restore and never reports
+successful completion. These are original token-object access rights, not a
+filesystem authority or an alternate operator identity.
+An abrupt operator-client exit cannot run in-process cleanup: a widened ACE can
+remain on a shared primary token, and restoring its DACL cannot revoke handles
+already opened by the fixed trusted service. This is not crash-proof revocation;
+the grant itself never substitutes for broker authentication or transaction
+authorization. Ordinary user startup never enters this grant interval.
+Native rights, actual transport, installed lifecycle and recovery acceptance remain
+required. This source join does not qualify repair/uninstall or migrate the older
+LocalAppData installer layout.
+
 ### Release acceptance
 
 - Native Windows execution of the joined service/provider/relay/restore path.
@@ -122,8 +184,9 @@ verified broker. Native Windows acceptance is still required.
   admission and Update Now. The initial operator path is explicitly selected by
   `--activate-startup=true`, requires the actual approved current-user identity,
   and activates only the original newly provisioned service after registration.
-  Existing installed Setup still uses the earlier supervisor; protected repair,
-  manual rollback and decommission require their own authenticated lifecycle.
+  Existing installed Setup still uses the earlier supervisor; protected repair
+  and decommission remain separate integration work. Joined manual selection
+  requires native and installed acceptance before it is considered available.
 - Exact build-selected sound-command serialization and additional legitimate
   startup profile normalization; new directories/navigation migrations are not
   licensed for automatic deletion or overwrite.

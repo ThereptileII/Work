@@ -77,6 +77,9 @@ func (p *PeerCapability) WithMaintenanceOperatorChecked(ctx context.Context, exp
 				return ErrRefused
 			}
 			defer checking.Store(false)
+			if err := ctx.Err(); err != nil {
+				return err // A supplied context cannot extend the original scope.
+			}
 			if err := p.state.checkLocked(checkCtx); err != nil {
 				return err
 			}

@@ -17,12 +17,20 @@ func TestMaintenanceOperatorLocationActualOriginalTokenAndCallbackLifetime(t *te
 	identity := nativePeerEvidence(f.process)
 	used := false
 	want := currentProcessHasEnabledAdmin(t) && windows.GetCurrentProcessToken().IsElevated()
-	expected, locationErr := f.process.retainedToken.KnownFolderPath(windows.FOLDERID_LocalAppData, 0)
-	// An elevated native acceptance run must prove this retained token actually
-	// has usable folder-query rights. Do not mask rights failure with a service-
-	// user lookup, token rights workaround, or a skipped assertion.
-	if want && (locationErr != nil || expected == "") {
-		t.Fatal("original operator token cannot resolve LocalAppData", locationErr)
+	var expected string
+	if want {
+		// Independently open the documented folder-query access from the SAME
+		// original process handle, never a service-user or PID/path substitute.
+		var folderToken windows.Token
+		if err := windows.OpenProcessToken(f.process.handle, windows.TOKEN_QUERY|windows.TOKEN_IMPERSONATE, &folderToken); err != nil {
+			t.Fatal("original operator folder token cannot be opened", err)
+		}
+		var locationErr error
+		expected, locationErr = folderToken.KnownFolderPath(windows.FOLDERID_LocalAppData, 0)
+		closeErr := folderToken.Close()
+		if locationErr != nil || closeErr != nil || expected == "" {
+			t.Fatal("original operator token cannot resolve LocalAppData", locationErr, closeErr)
+		}
 	}
 	callbackFailure := errors.New("inert location callback fault")
 	err := f.cap.WithMaintenanceOperatorLocation(f.ctx, identity.SID, func(actual PeerIdentity, location string) error {

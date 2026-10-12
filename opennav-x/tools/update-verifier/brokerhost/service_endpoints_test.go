@@ -111,3 +111,46 @@ func TestBrokerEndpointsUnexpectedReturnOrPanicDrainsPeer(t *testing.T) {
 		})
 	}
 }
+
+func TestBrokerMaintenanceEndpointDrainsEveryOwnerAndPreservesFailure(t *testing.T) {
+	fault := errors.New("maintenance cleanup failed")
+	started := make(chan struct{}, 2)
+	cancelled := make(chan struct{}, 2)
+	release := make(chan struct{})
+	peer := func(ctx context.Context) error {
+		started <- struct{}{}
+		<-ctx.Done()
+		cancelled <- struct{}{}
+		<-release
+		return ctx.Err()
+	}
+	done := make(chan error, 1)
+	go func() {
+		done <- serveBrokerEndpoints(context.Background(), peer, peer, func(context.Context) error {
+			<-started
+			<-started
+			return fault
+		})
+	}()
+	for range 2 {
+		select {
+		case <-cancelled:
+		case <-time.After(5 * time.Second):
+			t.Fatal("maintenance failure did not cancel all peers")
+		}
+	}
+	select {
+	case err := <-done:
+		t.Fatal("released service while a protected endpoint retained owners", err)
+	default:
+	}
+	close(release)
+	if err := <-done; !errors.Is(err, fault) {
+		t.Fatal("lost maintenance failure", err)
+	}
+	called := false
+	endpoint := func(context.Context) error { called = true; return nil }
+	if serveBrokerEndpoints(context.Background(), endpoint, endpoint, nil) == nil || called {
+		t.Fatal("nil maintenance endpoint started other endpoints")
+	}
+}

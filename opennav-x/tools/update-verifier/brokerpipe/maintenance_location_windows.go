@@ -14,8 +14,9 @@ import (
 // to the bounded elevated-operator callback. It never substitutes the service
 // user's folder or request data. The callback must obey ctx and must not reenter
 // this capability. The location grants no filesystem or maintenance authority.
-// Original token folder-query failure (including insufficient retained-token
-// rights or an unavailable user hive) refuses without acquiring extra rights.
+// The explicit maintenance client temporarily lends only this service the
+// documented folder-query rights. Ordinary launchers remain query-only. An
+// unavailable original token/user hive refuses without a fallback identity.
 func (p *PeerCapability) WithMaintenanceOperatorLocation(ctx context.Context, expectedSID string, use func(PeerIdentity, string) error) error {
 	if use == nil {
 		return ErrRefused
@@ -32,7 +33,7 @@ func (p *PeerCapability) WithMaintenanceOperatorLocationChecked(ctx context.Cont
 	if use == nil {
 		return ErrRefused
 	}
-	return p.WithMaintenanceOperatorChecked(ctx, expectedSID, func(identity PeerIdentity, check func(context.Context) error) error {
+	return p.WithMaintenanceOperatorChecked(ctx, expectedSID, func(identity PeerIdentity, check func(context.Context) error) (callbackErr error) {
 		// WithMaintenanceOperator already holds the capability lock and checked the
 		// retained original native token; inspecting it here must not reacquire that
 		// lock or obtain a token from a new process/PID lookup.
@@ -40,7 +41,15 @@ func (p *PeerCapability) WithMaintenanceOperatorLocationChecked(ctx context.Cont
 		if native == nil || native.client == nil || native.client.retainedToken == 0 {
 			return ErrRefused
 		}
-		location, err := native.client.retainedToken.KnownFolderPath(windows.FOLDERID_LocalAppData, 0)
+		folderToken, err := openMaintenanceFolderToken(native, identity, expectedSID)
+		if err != nil {
+			return err
+		}
+		defer func() { callbackErr = errors.Join(callbackErr, folderToken.Close()) }()
+		if err := check(ctx); err != nil {
+			return err
+		}
+		location, err := folderToken.KnownFolderPath(windows.FOLDERID_LocalAppData, 0)
 		if err != nil || location == "" {
 			return errors.Join(ErrRefused, err)
 		}
@@ -51,7 +60,10 @@ func (p *PeerCapability) WithMaintenanceOperatorLocationChecked(ctx context.Cont
 			return err
 		}
 		useErr := use(identity, location, check)
-		current, locationErr := native.client.retainedToken.KnownFolderPath(windows.FOLDERID_LocalAppData, 0)
+		if err := check(ctx); err != nil {
+			return errors.Join(useErr, err)
+		}
+		current, locationErr := folderToken.KnownFolderPath(windows.FOLDERID_LocalAppData, 0)
 		if locationErr != nil || !strings.EqualFold(current, location) {
 			locationErr = errors.Join(ErrRefused, locationErr)
 		}

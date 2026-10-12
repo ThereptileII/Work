@@ -143,6 +143,13 @@ func (h *serviceHost) Execute(args []string, changes <-chan svc.ChangeRequest, s
 		}}
 	ctx, cancel := context.WithCancel(h.ctx)
 	defer cancel()
+	defer func() {
+		// Only drained endpoints permit releasing ordinary-app query custody.
+		// Releasing it never stops or signals the application itself.
+		if canClose {
+			h.result = errors.Join(h.result, e.closeApplicationOwners())
+		}
+	}()
 	current := svc.Status{State: svc.Running, Accepts: svc.AcceptStop | svc.AcceptShutdown}
 	// Pipe authentication independently requires the SCM running identity.
 	status <- current
@@ -151,7 +158,8 @@ func (h *serviceHost) Execute(args []string, changes <-chan svc.ChangeRequest, s
 	go func() {
 		done <- serveBrokerEndpoints(ctx,
 			func(ctx context.Context) error { return brokerpipe.Serve(ctx, e.handleNativeStaging) },
-			func(ctx context.Context) error { return brokerpipe.ServeExecution(ctx, e.handleNativeExecutionRequest) })
+			func(ctx context.Context) error { return brokerpipe.ServeExecution(ctx, e.handleNativeExecutionRequest) },
+			func(ctx context.Context) error { return brokerpipe.ServeMaintenance(ctx, e.handleNativeMaintenance) })
 	}()
 	stop := func() (bool, uint32) {
 		cancel()
