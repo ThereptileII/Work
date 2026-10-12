@@ -52,12 +52,16 @@ type profileCaptureSource interface {
 	close() error
 }
 type profileCaptureArchive interface {
-	Write(context.Context, io.Reader, int64, string) error
-	Complete(context.Context) error
 	ReadAt(context.Context, []byte, int64) (int, error)
 	Validate(context.Context) error
 	Snapshot(context.Context) (brokerstore.ExecutionProfileBackupSnapshot, error)
 	Close() error
+}
+
+type profileCaptureArchiveWriter interface {
+	profileCaptureArchive
+	Write(context.Context, io.Reader, int64, string) error
+	Complete(context.Context) error
 }
 
 // ExecutionProfileCapture owns the fixed native full profile and its completed
@@ -73,14 +77,16 @@ type profileCaptureState struct {
 	manifest          profileCaptureManifest
 	original          []byte
 	released, closed  bool
+	reopened          bool
 	restoreAttempted  bool
 	failure, closeErr error
 	inspections       []*ExecutionProfileRestoreInspection
 }
 type ExecutionProfileCaptureSnapshot struct {
-	OriginalManifest         []byte
-	ManifestSHA256           string
-	Archive                  brokerstore.ExecutionProfileBackupSnapshot
+	OriginalManifest []byte
+	ManifestSHA256   string
+	Archive          brokerstore.ExecutionProfileBackupSnapshot
+	// Reopening original data never establishes historical qualification release.
 	ReleasedForQualification bool
 }
 
@@ -215,7 +221,7 @@ func profileArchiveReader(source profileCaptureSource, raw []byte) (io.Reader, e
 	binary.BigEndian.PutUint64(prefix[:], uint64(len(raw)))
 	return io.MultiReader(append([]io.Reader{bytes.NewReader(prefix[:]), bytes.NewReader(raw)}, readers...)...), nil
 }
-func completeProfileCapture(ctx context.Context, source profileCaptureSource, archive profileCaptureArchive, journal brokerstore.ExecutionJournalSnapshot) (result *ExecutionProfileCapture, resultErr error) {
+func completeProfileCapture(ctx context.Context, source profileCaptureSource, archive profileCaptureArchiveWriter, journal brokerstore.ExecutionJournalSnapshot) (result *ExecutionProfileCapture, resultErr error) {
 	p := &profileCaptureState{owner: ctx, source: source, archive: archive}
 	defer func() {
 		if resultErr != nil {
@@ -305,7 +311,7 @@ func (p *ExecutionProfileCapture) Snapshot(ctx context.Context) (result Executio
 		s.failure = err
 		return result, err
 	}
-	return ExecutionProfileCaptureSnapshot{bytes.Clone(s.original), captureDigest(s.original), archive, s.released}, nil
+	return ExecutionProfileCaptureSnapshot{bytes.Clone(s.original), captureDigest(s.original), archive, s.released && !s.reopened}, nil
 }
 
 // Evidence binds retained original capture/storage facts. It does not prove
