@@ -1,7 +1,8 @@
 param(
     [Parameter(Mandatory=$true)][string]$TestExecutable,
     [Parameter(Mandatory=$true)][ValidatePattern('^[a-f0-9]{64}$')][string]$ExpectedSha256,
-    [Parameter(Mandatory=$true)][string]$EvidenceDirectory
+    [Parameter(Mandatory=$true)][string]$EvidenceDirectory,
+    [switch]$CleanupErrorOnly
 )
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
@@ -21,6 +22,9 @@ $OriginalTemp, $OriginalTmp = $env:TEMP, $env:TMP
 try {
     $env:TEMP, $env:TMP = $Scratch.FullName, $Scratch.FullName
     $Selection = '^TestNativeStoreLifetimeLock(ExcludesOtherOwnerAndReacquires|ExcludesAnotherProcess|RefusesUnsafeExistingObjects|RechecksHeldMetadataAndReleasesAfterCleanupError)$'
+    if ($CleanupErrorOnly) {
+        $Selection = '^TestNativeStoreLifetimeLockRechecksHeldMetadataAndReleasesAfterCleanupError$'
+    }
     # Windows PowerShell 5.1 splits bare dotted native arguments differently.
     # Keep every Go flag in the string array used by both PowerShell versions.
     $Arguments = @("-test.run=$Selection", '-test.count=1', '-test.v', '-test.timeout=90s')
