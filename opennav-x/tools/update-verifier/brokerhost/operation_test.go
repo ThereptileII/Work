@@ -17,20 +17,7 @@ import (
 const testSID = "S-1-5-21-100-200-300-1001"
 
 func testRegistration() []byte {
-	r := registration{Schema: 1, ClientSID: testSID}
-	r.Installed.Version = "0.2.0-beta.1"
-	r.Installed.Commit = strings.Repeat("a", 40)
-	r.Stock.Path = `C:\Program Files (x86)\OpenCPN\opencpn.exe`
-	r.Stock.Version = stockBaseline.Version
-	r.Stock.Arch = stockBaseline.Arch
-	r.Stock.ExecutableSHA256 = stockBaseline.ExecutableSHA256
-	r.Stock.UpstreamCommit = stockBaseline.UpstreamCommit
-	r.Trust.BootstrapRoot = json.RawMessage(`{"signed":{},"signatures":[]}`)
-	r.Trust.MetadataURL = "https://updates.invalid/metadata/"
-	r.Trust.ArtifactOrigin = "https://updates.invalid"
-	r.Trust.Channel = "beta"
-	b, _ := json.Marshal(r)
-	return b
+	return testProtectedClientRegistration()
 }
 func testRequest() brokerpipe.Request {
 	return brokerpipe.Request{Schema: 1, Operation: "prepare-and-stage", RequestID: strings.Repeat("b", 32),

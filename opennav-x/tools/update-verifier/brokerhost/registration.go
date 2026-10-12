@@ -7,13 +7,14 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
-	"net/url"
 	"regexp"
 	"strings"
+	"time"
 	"unicode/utf8"
 
 	verifier "example.com/opennav-update-verifier"
 	"example.com/opennav-update-verifier/brokerpipe"
+	"example.com/opennav-update-verifier/brokerregistration"
 	"example.com/opennav-update-verifier/releasepolicy"
 )
 
@@ -26,11 +27,7 @@ var requestPattern = regexp.MustCompile(`^[0-9a-f]{32}$`)
 
 // This is the independently validated stock baseline, not a server-supplied
 // allowlist. A future baseline needs separate qualification and a source change.
-var stockBaseline = releasepolicy.OpenCpn{
-	Version: "5.12.4", Arch: "x86",
-	ExecutableSHA256: "7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c",
-	UpstreamCommit:   "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
-}
+var stockBaseline = brokerregistration.StockBaseline()
 
 // Only the store's protected, SID-selected registration supplies these values.
 // A UI/pipe request cannot choose a path, origin, installed version or trust root.
@@ -57,12 +54,28 @@ type registration struct {
 }
 
 func parseRegistration(data []byte, peerSID string) (registration, error) {
+	return parseRegistrationAt(data, peerSID, time.Now().UTC())
+}
+
+// protectedRegistration contains the exact original operator-approved request.
+// []byte uses bounded JSON base64 encoding to preserve every original request
+// and trust byte; embedding RawMessage would compact those bytes on marshaling.
+// There is no second mutable installed/trust declaration to reconcile.
+type protectedRegistration struct {
+	Schema                int    `json:"schema"`
+	ClientSID             string `json:"clientSid"`
+	ApprovedRequestSHA256 string `json:"approvedRequestSha256"`
+	ApprovedRequest       []byte `json:"approvedRequest"`
+}
+
+func parseRegistrationAt(data []byte, peerSID string, now time.Time) (registration, error) {
 	var r registration
 	if len(data) == 0 || len(data) > 1<<20 || !utf8.Valid(data) || peerSID == "" {
 		return r, errors.New("invalid protected registration")
 	}
-	// Reject duplicate keys even inside bootstrap metadata. The TUF verifier
-	// remains responsible for signatures and trust semantics, independently.
+	// The protected-store reader separately requires completed native creation
+	// evidence. Neither this envelope nor a self-selected hash authenticates the
+	// original operator. That independent approval remains a writer precondition.
 	d := json.NewDecoder(bytes.NewReader(data))
 	d.UseNumber()
 	if err := uniqueJSON(d, 0); err != nil {
@@ -72,31 +85,43 @@ func parseRegistration(data []byte, peerSID string) (registration, error) {
 		return r, errors.New("trailing protected registration JSON")
 	}
 	var top map[string]json.RawMessage
-	if json.Unmarshal(data, &top) != nil || !exactKeys(top, "schema", "clientSid", "installed", "stock", "updateTrust") ||
-		!exactObject(top["installed"], "version", "commit") ||
-		!exactObject(top["stock"], "path", "version", "arch", "executableSha256", "upstreamCommit") ||
-		!exactObject(top["updateTrust"], "bootstrapRoot", "metadataUrl", "artifactOrigin", "channel") {
+	if json.Unmarshal(data, &top) != nil || !exactKeys(top, "schema", "clientSid", "approvedRequestSha256", "approvedRequest") {
 		return r, errors.New("protected registration fields differ")
 	}
 	d = json.NewDecoder(bytes.NewReader(data))
 	d.DisallowUnknownFields()
-	if d.Decode(&r) != nil || r.Schema != 1 || r.ClientSID != peerSID ||
-		!commitPattern.MatchString(r.Installed.Commit) {
+	var envelope protectedRegistration
+	if d.Decode(&envelope) != nil || envelope.Schema != 2 || envelope.ClientSID != peerSID {
 		return registration{}, errors.New("protected registration identity differs")
 	}
-	if _, err := releasepolicy.ParseSemVer(r.Installed.Version); err != nil || len(r.Installed.Version) > 128 {
-		return registration{}, errors.New("invalid protected installed version")
+	encoded, err := json.Marshal(envelope.ApprovedRequest)
+	if err != nil || !bytes.Equal(encoded, top["approvedRequest"]) {
+		return registration{}, errors.New("exact protected request base64 required")
 	}
-	if r.observedDeclaration() != stockBaseline || !localStockPath(r.Stock.Path) {
-		return registration{}, errors.New("unsupported protected OpenCPN registration")
+	request, err := brokerregistration.ParseApprovedRequest(envelope.ApprovedRequest, envelope.ApprovedRequestSHA256, now)
+	if err != nil || request.ClientSID != peerSID {
+		return registration{}, errors.New("protected approved request identity differs")
 	}
-	if (r.Trust.Channel != "beta" && r.Trust.Channel != "stable") ||
-		len(r.Trust.BootstrapRoot) == 0 || len(r.Trust.BootstrapRoot) > 512<<10 ||
-		bytes.Equal(bytes.TrimSpace(r.Trust.BootstrapRoot), []byte("null")) ||
-		!trustedURL(r.Trust.MetadataURL, false) || !trustedURL(r.Trust.ArtifactOrigin, true) {
-		return registration{}, errors.New("invalid protected update trust configuration")
-	}
-	return r, nil
+	return registrationFromApproved(request), nil
+}
+
+// Values come only from the already parsed exact approved request. Evidence
+// remains in its protected envelope, not a mutable per-user installation record.
+func registrationFromApproved(request brokerregistration.Request) registration {
+	r := registration{Schema: 2, ClientSID: request.ClientSID}
+	r.Installed.Version = request.Installed.Version
+	r.Installed.Commit = request.Installed.Commit
+	r.Stock.Path = request.Stock.Path
+	r.Stock.Version = request.Stock.Version
+	r.Stock.Arch = request.Stock.Arch
+	r.Stock.ExecutableSHA256 = request.Stock.ExecutableSHA256
+	r.Stock.UpstreamCommit = request.Stock.UpstreamCommit
+	trust := request.Trust()
+	r.Trust.BootstrapRoot = trust.BootstrapRoot
+	r.Trust.MetadataURL = trust.MetadataURL
+	r.Trust.ArtifactOrigin = trust.ArtifactOrigin
+	r.Trust.Channel = trust.Channel
+	return r
 }
 
 func (r registration) observedDeclaration() releasepolicy.OpenCpn {
@@ -111,13 +136,6 @@ func (r registration) configuration(state, artifacts string) verifier.PrepareCon
 		Installed:        releasepolicy.Installed{Version: r.Installed.Version, Commit: r.Installed.Commit},
 		OpenCpnAllowlist: []releasepolicy.OpenCpn{stockBaseline},
 	}
-}
-
-func trustedURL(value string, origin bool) bool {
-	u, err := url.Parse(value)
-	return err == nil && len(value) <= 2048 && u.Scheme == "https" && u.Hostname() != "" &&
-		u.User == nil && u.RawQuery == "" && u.Fragment == "" && !u.ForceQuery &&
-		!strings.ContainsAny(value, "\r\n\\#") && (!origin || (u.Path == "" && u.RawPath == ""))
 }
 
 func localStockPath(value string) bool {
@@ -143,11 +161,6 @@ func localStockPath(value string) bool {
 		}
 	}
 	return strings.EqualFold(parts[len(parts)-1], "opencpn.exe")
-}
-
-func exactObject(data []byte, keys ...string) bool {
-	var m map[string]json.RawMessage
-	return json.Unmarshal(data, &m) == nil && exactKeys(m, keys...)
 }
 
 func exactKeys(m map[string]json.RawMessage, keys ...string) bool {
@@ -183,10 +196,11 @@ func uniqueJSON(d *json.Decoder, depth int) error {
 				return err
 			}
 			name, ok := key.(string)
-			if !ok || seen[name] {
+			folded := strings.ToLower(name)
+			if !ok || seen[folded] {
 				return errors.New("duplicate JSON field")
 			}
-			seen[name] = true
+			seen[folded] = true
 			if err := uniqueJSON(d, depth+1); err != nil {
 				return err
 			}
