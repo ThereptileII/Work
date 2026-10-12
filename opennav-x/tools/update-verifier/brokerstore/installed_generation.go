@@ -63,8 +63,9 @@ type generationBackend interface {
 }
 
 // InstalledGeneration owns a fresh ProgramFilesX86 launch view and its private
-// permanent completion evidence. No public reopen, adoption, selection or launch
-// API exists. Present ACLs do not prove historical creation. Existing client
+// permanent completion evidence. OpenReadOnlyGeneration reopens only completed
+// protected originals; no adoption, selection or launch authority is granted.
+// Present ACLs do not prove historical creation. Existing client
 // parents require their original private completed creation record and full
 // physical identities. Previous lineage refers to the approved initial baseline,
 // not an assertion that this is the immediately selected or healthy generation.

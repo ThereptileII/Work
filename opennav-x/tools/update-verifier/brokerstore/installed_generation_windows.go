@@ -470,51 +470,64 @@ func (g *nativeInstalledGeneration) loadSiblings() error {
 		if !validHex(stage, 32) || !names[stage+".json"] || stage == g.stage {
 			return errors.New("generation registry alias, partial or reused ID")
 		}
-		marker, err := g.hold(g.registry, name, 1024)
-		if err != nil {
+		if _, err := g.loadSibling(stage); err != nil {
 			return err
 		}
-		raw, err := g.hold(g.registry, stage+".json", maxGenerationRecordBytes)
-		if err != nil {
-			return err
-		}
-		var record generationRecord
-		if err = json.Unmarshal(raw, &record); err != nil {
-			return err
-		}
-		canonical, err := json.Marshal(record)
-		if err != nil || !bytes.Equal(raw, canonical) || record.Schema != 1 || record.ClientSID != g.client || record.Generation != stage || validateGenerationPurpose(record) != nil {
-			return errors.New("generation original completion invalid")
-		}
-		originRecord := record
-		originRecord.Directories = nil
-		originRecord.Members = map[string]baselineMember{}
-		originRaw, err := json.Marshal(originRecord)
-		if err != nil {
-			return err
-		}
-		digest, err := generationMarkerDigest(marker, g.client, stage, registrationDigest(originRaw))
-		if err != nil || digest != registrationDigest(raw) {
-			return errors.Join(errors.New("generation original completion unbound"), err)
-		}
-		for key, id := range g.parentIDs {
-			if record.Directories[key] != id {
-				return errors.New("generation parent creation lineage differs")
-			}
-		}
-		p, err := g.openParent(g.generations, stage, g.tree.securityDir)
-		if err != nil {
-			return err
-		}
-		if g.pins[p] != record.Directories[""] {
-			return errors.New("generation sibling full root identity differs")
-		}
-		g.siblings[stage] = p
 	}
 	if len(g.siblings)*2 != len(entries) {
 		return errors.New("unknown generation private namespace")
 	}
 	return g.parentInventory(false)
+}
+
+// loadSibling retains only an original completed sibling with its exact private
+// marker/record binding and full public root ID. Callers establish the bounded
+// whole namespace and must never pass their own generation here.
+func (g *nativeInstalledGeneration) loadSibling(stage string) ([]byte, error) {
+	if !validHex(stage, 32) || stage == g.stage || g.siblings[stage] != nil {
+		return nil, errors.New("distinct exact original sibling required")
+	}
+	marker, err := g.hold(g.registry, stage+".once", 1024)
+	if err != nil {
+		return nil, err
+	}
+	raw, err := g.hold(g.registry, stage+".json", maxGenerationRecordBytes)
+	if err != nil {
+		return nil, err
+	}
+	var record generationRecord
+	if err = json.Unmarshal(raw, &record); err != nil {
+		return nil, err
+	}
+	canonical, err := json.Marshal(record)
+	if err != nil || !bytes.Equal(raw, canonical) || record.Schema != 1 || record.ClientSID != g.client || record.Generation != stage || validateGenerationPurpose(record) != nil {
+		return nil, errors.New("generation original completion invalid")
+	}
+	originRecord := record
+	originRecord.Directories = nil
+	originRecord.Members = map[string]baselineMember{}
+	originRaw, err := json.Marshal(originRecord)
+	if err != nil {
+		return nil, err
+	}
+	digest, err := generationMarkerDigest(marker, g.client, stage, registrationDigest(originRaw))
+	if err != nil || digest != registrationDigest(raw) {
+		return nil, errors.Join(errors.New("generation original completion unbound"), err)
+	}
+	for key, id := range g.parentIDs {
+		if record.Directories[key] != id {
+			return nil, errors.New("generation parent creation lineage differs")
+		}
+	}
+	p, err := g.openParent(g.generations, stage, g.tree.securityDir)
+	if err != nil {
+		return nil, err
+	}
+	if g.pins[p] != record.Directories[""] {
+		return nil, errors.New("generation sibling full root identity differs")
+	}
+	g.siblings[stage] = p
+	return raw, nil
 }
 func (g *nativeInstalledGeneration) reserve(ctx context.Context, origin []byte) error {
 	g.creationContext = ctx
