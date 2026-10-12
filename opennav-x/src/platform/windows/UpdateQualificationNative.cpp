@@ -1,3 +1,9 @@
+// Full 128-bit file identity requires the Windows 8 API declarations. Keep
+// this minimum local to the native custody TU; there is no legacy-ID fallback.
+#if !defined(_WIN32_WINNT) || _WIN32_WINNT < 0x0602
+#undef _WIN32_WINNT
+#define _WIN32_WINNT 0x0602
+#endif
 #include "platform/windows/UpdateQualificationNative.h"
 #ifndef NOMINMAX
 #define NOMINMAX
@@ -121,7 +127,9 @@ struct Directory {
   Handle handle;
   Identity identity;
   explicit Directory(const std::wstring& p) : path(p),
-      handle(CreateFileW(p.c_str(),FILE_READ_ATTRIBUTES|SYNCHRONIZE,FILE_SHARE_READ|FILE_SHARE_WRITE,
+      // Attribute-only opens do not establish the read/share-delete constraint
+      // needed to exclude directory renames. Retain a real directory read.
+      handle(CreateFileW(p.c_str(),FILE_LIST_DIRECTORY|FILE_READ_ATTRIBUTES|SYNCHRONIZE,FILE_SHARE_READ|FILE_SHARE_WRITE,
                         nullptr,OPEN_EXISTING,FILE_FLAG_BACKUP_SEMANTICS|FILE_FLAG_OPEN_REPARSE_POINT,nullptr)),
       identity(Inspect(handle.value,true)) {
     auto final=FinalPath(handle.value);
