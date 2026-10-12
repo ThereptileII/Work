@@ -1,0 +1,109 @@
+{
+  "sourceCommit": "75a770b1d16bb0d23768005d75a25cd3f98f1952",
+  "files": [
+    {
+      "path": "opennav-x/tools/update-verifier/bootstrap_repository_integration_test.go",
+      "sha256": "f3dd36900eea8c2b0fb415347d7c7de30ed779dceebc71188e5c95c0c64b5690",
+      "bytes": 7793
+    },
+    {
+      "path": "opennav-x/tools/update-verifier/broker_bootstrap.go",
+      "sha256": "3894428388f877a9f722e4597f366f8809623ccc763e1d5bad93a5a9ea65d16d",
+      "bytes": 5498
+    },
+    {
+      "path": "opennav-x/tools/update-verifier/broker_bootstrap_test.go",
+      "sha256": "5ee5bf34ef8f0475c124d6fe1b6c932f139514ef6ccda35194437357600da470",
+      "bytes": 14685
+    },
+    {
+      "path": "opennav-x/tools/update-verifier/cmd/skager-repository/main.go",
+      "sha256": "f9cf4e9a322a669a75a1f7d9b2ea41dab620097cba71632b9696b926d066c1d5",
+      "bytes": 4907
+    },
+    {
+      "path": "opennav-x/tools/update-verifier/cmd/skager-repository/main_test.go",
+      "sha256": "9a84d3fa4f13c2b3ed525bc580d03193ef5948d8e853d025926b9f03dd657c77",
+      "bytes": 2881
+    },
+    {
+      "path": "opennav-x/tools/update-verifier/releasepolicy/broker_bootstrap.go",
+      "sha256": "24fb7f8630baf41ab10b8a27f5e2c31f74977bc503a71fe52b13ccad0fbae9fd",
+      "bytes": 7920
+    },
+    {
+      "path": "opennav-x/tools/update-verifier/releasepolicy/broker_bootstrap_test.go",
+      "sha256": "a0f6c8cf94313bc2fb3589659237bfddd0b0eaa6e56a56edcc8116dd7e78f685",
+      "bytes": 13361
+    },
+    {
+      "path": "opennav-x/tools/update-verifier/repository/broker_bootstrap.go",
+      "sha256": "97cf04fadf0694a42a2fb68d3aa6899700682ade2773a14865c546966d2e4a01",
+      "bytes": 5653
+    },
+    {
+      "path": "opennav-x/tools/update-verifier/repository/broker_bootstrap_test.go",
+      "sha256": "2b358f54b5ba8333607277b48576b675e2b2bae81a4f95d25901b9182f03d674",
+      "bytes": 12490
+    },
+    {
+      "path": "opennav-x/tools/update-verifier/repository/repository.go",
+      "sha256": "3ca03d5d2d900ccdb873e9eb0f41c271914af361ed68cda6d554a04cee82a129",
+      "bytes": 15978
+    },
+    {
+      "path": "opennav-x/tools/update-verifier/verifier.go",
+      "sha256": "06da52dca7718e3a2aed57b22766d40d0129233b5faf01f26b272c8588faecb6",
+      "bytes": 7587
+    }
+  ],
+  "results": [
+    {
+      "path": "README.md",
+      "sha256": "e680065bb307f4ba70eb30d9e3f8fc0a6884300ac2fd18b077fc303830f63fb6",
+      "bytes": 4701
+    },
+    {
+      "path": "linux-result.json",
+      "sha256": "2e48d99c36f5da7a70d3754e5d1863b8f14e1451facb8adeba574a0298c4d66a",
+      "bytes": 1348
+    },
+    {
+      "path": "linux-tests.jsonl",
+      "sha256": "5a77c6b59b23b9f87859d88a27821502dd7f67be2d8ff43a4ca3c4e86d47e36c",
+      "bytes": 431304
+    },
+    {
+      "path": "linux-tests.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "negative-control-result.json",
+      "sha256": "be39b1b0d74af3ecf6fdfdac06708a9bec83c683137c4fbb81c32c35baeec82b",
+      "bytes": 712
+    },
+    {
+      "path": "negative-control.jsonl",
+      "sha256": "68f48d1b54176a73b0d3dd398f04f832974314da8af8deeceda096586ce9a900",
+      "bytes": 4519
+    },
+    {
+      "path": "negative-control.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "windows-cross-compile.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "windows-cross-result.json",
+      "sha256": "fbb7d77a7a8790af035e64235af10f89c93b68bfc3f391bf48a292d360f26e1a",
+      "bytes": 1016
+    }
+  ],
+  "claudeReviewOfTheseBytes": false,
+  "nativeWindowsExecution": false
+}

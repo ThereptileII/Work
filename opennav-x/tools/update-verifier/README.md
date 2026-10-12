@@ -7,6 +7,15 @@ consent and transactional installed-generation recovery. See the current
 dependency graph and original probe results do not by themselves qualify this
 integrated updater. No production trust root or update endpoint is provisioned.
 
+## Broker bootstrap declaration
+
+Current SCRUM-311 source also has a separate, verify-only
+`VerifyBrokerBootstrap` API and explicit operator publication for a
+purpose-bound broker declaration. It requires independent policy, provisioner
+and public-configuration pins; it does not enroll or execute a broker. See the
+[bootstrap boundary](../../docs/installer/broker-bootstrap-policy.md). The
+ordinary application `Verify` target restriction remains unchanged.
+
 ## Original probe evidence
 
 This is an isolated, verify-only feasibility probe. It does not provision a production root, name a production endpoint, select an installer, download an executable package, or integrate with the current installer. `Verify` requires a caller-provided trusted root and durable protected metadata cache, refreshes all top-level TUF metadata, checks the selected channel's target, and returns only verified bytes plus version and commit from signed target metadata. The placeholder Go module path denotes this boundary.

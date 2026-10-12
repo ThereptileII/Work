@@ -1,0 +1,43 @@
+{
+  "sourceCommit": "75a770b1d16bb0d23768005d75a25cd3f98f1952",
+  "command": [
+    "/tmp/skager-go-1.27.1/go/bin/go",
+    "test",
+    "-json",
+    "-count=1",
+    "-run",
+    "TestBrokerBootstrap|TestBootstrapCLI|TestSignedRepository|TestInvalidMetadata|TestRollbackAndMissing|TestUnsignedIdentity|TestSignedIdentityAndSize|TestTransportDeadline|TestSignedCustomIdentity|TestCustomIdentityJSON|TestVerifiedRelease|TestSignedMetadataAndTamper|TestPartialPublication|TestInputTamper|TestSymlinkAndConcurrent",
+    ".",
+    "./releasepolicy",
+    "./repository",
+    "./cmd/skager-repository"
+  ],
+  "toolchain": "go version go1.27.1 linux/amd64",
+  "seconds": 18.53,
+  "exitCode": 0,
+  "testEvents": {
+    "pass": 438,
+    "fail": 0,
+    "skip": 0
+  },
+  "topLevelPassed": 37,
+  "packages": [
+    {
+      "package": "example.com/opennav-update-verifier/cmd/skager-repository",
+      "status": "pass"
+    },
+    {
+      "package": "example.com/opennav-update-verifier/releasepolicy",
+      "status": "pass"
+    },
+    {
+      "package": "example.com/opennav-update-verifier",
+      "status": "pass"
+    },
+    {
+      "package": "example.com/opennav-update-verifier/repository",
+      "status": "pass"
+    }
+  ],
+  "scope": "Focused affected components and unchanged ordinary-reader regressions; not full application/native Windows/boat acceptance"
+}

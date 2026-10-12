@@ -1,5 +1,22 @@
 # SKAGER status — 2026-10-12
 
+## Purpose-bound broker policy publisher and reader integrated
+
+Source `75a770b1` separates the machine broker declaration from ordinary app
+updates, using the existing signed TUF repository and independent exact policy,
+provisioner and public-config pins. Explicit operator publication retains original
+bytes and a separate version floor across app upgrades and interrupted attempts.
+Independent Codex review found two publication-collision defects; both were fixed
+and rechecked. Focused affected Linux checks pass **37 groups / 438 test pass
+events including nested cases**, with no failures or skips. A deliberately removed
+preflight makes both new collision regressions fail, as expected. Actual
+publisher-to-reader TLS integration, Windows/386 component compilation and vet
+pass. [Exact source, results, review and negative control](evidence/scrum311-bootstrap-policy-20261012/README.md)
+do not qualify native Windows or installation. Initial privileged verifier trust,
+protected service enrollment and actual installed update handoff remain open.
+No full application build, boat change or physical command occurred. SCRUM-311
+remains In Progress; expanded Claude review still awaits exact-scope transfer consent.
+
 ## Focused TLS policy wiring verified; boat compiler unavailable
 
 At product source `eede2fe9`, the actual portable CMake target and registered

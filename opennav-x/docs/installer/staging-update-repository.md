@@ -148,6 +148,13 @@ skager-repository publish --repository /private/operator/repository \
 
 ## Publication and recovery
 
+Broker enrollment has a separate purpose-bound target and independent operator
+approval pin. It cannot be inferred from the application target or its
+qualification. The optional paired publication flags, strict reader contract,
+retained floor and still-missing privileged installation boundary are documented
+in [broker bootstrap policy](broker-bootstrap-policy.md). Ordinary publication
+retains an approved bootstrap target; it never silently removes one.
+
 The [software incident runbook](release-incident-runbook.md) gives the operator
 decision tree, evidence collection and stop/resume criteria for interruption,
 expiry, wrong candidates and suspected signing compromise. Exercise it with the

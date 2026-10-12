@@ -1,0 +1,39 @@
+{
+  "sourceCommit": "75a770b1d16bb0d23768005d75a25cd3f98f1952",
+  "results": [
+    {
+      "command": [
+        "/tmp/skager-go-1.27.1/go/bin/go",
+        "test",
+        "-c",
+        "-o",
+        "/home/standard/Projects/.tmp/skager-bootstrap-publisher/bootstrap-reader-windows-386.test.exe",
+        "."
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "/tmp/skager-go-1.27.1/go/bin/go",
+        "build",
+        "-o",
+        "/home/standard/Projects/.tmp/skager-bootstrap-publisher/bootstrap-repository-windows-386.exe",
+        "./cmd/skager-repository"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "/tmp/skager-go-1.27.1/go/bin/go",
+        "vet",
+        ".",
+        "./releasepolicy",
+        "./repository",
+        "./cmd/skager-repository"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "nativeExecution": false,
+  "scope": "Linux-hosted Windows/386 component compile and vet only; operator mutations remain Linux-only; no full app build or Windows acceptance"
+}
