@@ -54,6 +54,7 @@ REGISTRATION_SOURCES = frozenset(PREFIX + name for name in (
     'brokerstore/generation_readonly.go', 'brokerstore/generation_readonly_windows.go',
     'brokerstore/generation_baseline.go', 'brokerstore/generation_baseline_windows.go',
     'brokerstore/generation_history.go', 'brokerstore/generation_history_windows.go',
+    'brokerstore/generation_executor.go', 'brokerstore/generation_executor_windows.go',
     'brokerenroll/enroll.go', 'brokerenroll/files.go', 'brokerenroll/files_other.go',
     'brokerenroll/files_windows.go', 'brokerenroll/applications_windows.go',
     'brokerenroll/service.go', 'brokerenroll/service_other.go',
