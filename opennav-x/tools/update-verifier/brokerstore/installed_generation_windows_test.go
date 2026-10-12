@@ -252,6 +252,8 @@ func TestNativeGenerationRetainedDescriptorInventoryAndPrivateBytesRefuseMutatio
 				}
 				// Mutate the actual fixture directory through an owner-authorized handle;
 				// retained validation must compare its original final descriptor exactly.
+				// Request READ_CONTROL as well as WRITE_DAC: corroborating the actual
+				// changed DACL requires a security read through this same handle.
 				acl, _, e := sd.DACL()
 				if e != nil {
 					t.Fatal(e)
@@ -260,12 +262,23 @@ func TestNativeGenerationRetainedDescriptorInventoryAndPrivateBytesRefuseMutatio
 				if e != nil {
 					t.Fatal(e)
 				}
-				handle, e := windows.CreateFile(path, windows.WRITE_DAC, windows.FILE_SHARE_READ|windows.FILE_SHARE_WRITE|windows.FILE_SHARE_DELETE, nil, windows.OPEN_EXISTING, windows.FILE_FLAG_BACKUP_SEMANTICS|windows.FILE_FLAG_OPEN_REPARSE_POINT, 0)
+				handle, e := windows.CreateFile(path, windows.READ_CONTROL|windows.WRITE_DAC, windows.FILE_SHARE_READ|windows.FILE_SHARE_WRITE|windows.FILE_SHARE_DELETE, nil, windows.OPEN_EXISTING, windows.FILE_FLAG_BACKUP_SEMANTICS|windows.FILE_FLAG_OPEN_REPARSE_POINT, 0)
 				if e != nil {
 					t.Fatal(e)
 				}
-				err = windows.SetSecurityInfo(handle, windows.SE_FILE_OBJECT, windows.DACL_SECURITY_INFORMATION|windows.PROTECTED_DACL_SECURITY_INFORMATION, nil, nil, acl, nil)
-				err = errors.Join(err, windows.CloseHandle(handle))
+				setErr := windows.SetSecurityInfo(handle, windows.SE_FILE_OBJECT, windows.DACL_SECURITY_INFORMATION|windows.PROTECTED_DACL_SECURITY_INFORMATION, nil, nil, acl, nil)
+				var readbackErr error
+				if setErr == nil {
+					readbackErr = checkSecurity(handle, sd)
+				}
+				closeErr := windows.CloseHandle(handle)
+				if setErr != nil {
+					t.Fatalf("SetSecurityInfo actual descriptor mutation: %v (close: %v)", setErr, closeErr)
+				}
+				if readbackErr != nil {
+					t.Fatalf("actual mutated descriptor readback: %v (close: %v)", readbackErr, closeErr)
+				}
+				err = closeErr
 			}
 			if err != nil {
 				t.Fatal(err)
