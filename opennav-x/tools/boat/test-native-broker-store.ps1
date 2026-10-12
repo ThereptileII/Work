@@ -21,7 +21,10 @@ $OriginalTemp, $OriginalTmp = $env:TEMP, $env:TMP
 try {
     $env:TEMP, $env:TMP = $Scratch.FullName, $Scratch.FullName
     $Selection = '^TestNativeStoreLifetimeLock(ExcludesOtherOwnerAndReacquires|ExcludesAnotherProcess|RefusesUnsafeExistingObjects|RechecksHeldMetadataAndReleasesAfterCleanupError)$'
-    & $Executable.FullName "-test.run=$Selection" -test.count=1 -test.v -test.timeout=90s 2>&1 |
+    # Windows PowerShell 5.1 splits bare dotted native arguments differently.
+    # Keep every Go flag in the string array used by both PowerShell versions.
+    $Arguments = @("-test.run=$Selection", '-test.count=1', '-test.v', '-test.timeout=90s')
+    & $Executable.FullName @Arguments 2>&1 |
         Tee-Object -FilePath (Join-Path $Evidence.FullName 'native-tests.log')
     $TestExit = $LASTEXITCODE
     [ordered]@{
