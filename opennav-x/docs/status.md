@@ -1,5 +1,29 @@
 # SKAGER status — 2026-10-12
 
+## Website work resumed in parallel; owner-private preview available
+
+The owner's 2026-10-12 instruction supersedes the earlier software-first website
+hold. Isolated website implementation `c447e80e` adds product/features/pricing,
+installation, searchable help, OpenCPN/source information and review-draft beta
+and privacy pages within the existing Django architecture. Web-only CI
+[38306803251](https://github.com/ThereptileII/Work/actions/runs/38306803251)
+on `16934d4e` passes **38 PostgreSQL/authentication/page tests**, checks and
+migration forward/reverse/reapply. No native application rebuild was requested.
+
+The [owner-private preview](https://skager-beta-launch-preview.swedishcountrysideli.chatgpt.site)
+contains 20 generated informational pages. It requires owner ChatGPT sign-in;
+the local desktop/phone menu and search smoke passed, while deployed post-login
+owner review remains pending. Public payments/downloads, account collection and
+ticket uploads stay closed. The illustration is labelled; real release imagery,
+commerce/portal, deployment operations and qualified legal/security acceptance
+remain separate Jira work. [Exact source and evidence](evidence/web-private-preview-20261012/README.md).
+
+Concurrent updater test-helper `d01a2618` adds initial protected B0 admission
+observation with eight focused inert tests passing. This is not native admission
+or full updater acceptance; private HTTPS and independently approved disposable
+Windows inputs remain prerequisites. The component qualification below is
+unchanged, and no boat state was changed by this increment.
+
 ## Fresh same-commit Windows and Linux updater component gates pass
 
 Combined run [38302791125](https://github.com/ThereptileII/Work/actions/runs/38302791125)
