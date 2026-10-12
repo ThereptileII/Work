@@ -18,7 +18,8 @@ import (
 
 // BaselineSink retains original evidence separately from installed app/docs.
 // WriteEvidence must synchronously retain exact bytes under exclusive protected
-// custody, verify resulting bytes, and accept only the two documented paths.
+// custody, verify resulting bytes, and accept only the two original sidecars and
+// the three fixed inventoried installer engine helper paths.
 // Implementing this interface alone establishes no filesystem custody.
 type BaselineSink interface {
 	RecoverySink
@@ -61,7 +62,7 @@ func importApprovedBaselineAt(ctx context.Context, rawRequest []byte, independen
 	}
 	observed := map[string]string{}
 	for name, hash := range contents.inventory {
-		if (strings.HasPrefix(name, "app/") || strings.HasPrefix(name, "docs/")) && name != "app/OPENNAV_PORTABLE_PREVIEW" {
+		if ((strings.HasPrefix(name, "app/") || strings.HasPrefix(name, "docs/")) && name != "app/OPENNAV_PORTABLE_PREVIEW") || baselineevidence.IsEngineHelper(name) {
 			observed[name] = hash
 		}
 	}
@@ -75,6 +76,11 @@ func importApprovedBaselineAt(ctx context.Context, rawRequest []byte, independen
 	}
 	sort.Strings(names)
 	for _, name := range names {
+		// Helpers are not installed app/docs payload; preserve their original
+		// bytes separately below through the exact evidence namespace.
+		if baselineevidence.IsEngineHelper(name) {
+			continue
+		}
 		if err := ctx.Err(); err != nil {
 			return empty, err
 		}
@@ -114,6 +120,9 @@ func importApprovedBaselineAt(ctx context.Context, rawRequest []byte, independen
 		if err := sink.WriteEvidence(ctx, e.name, bytes.Clone(e.raw), e.hash); err != nil {
 			return empty, err
 		}
+	}
+	if err := copyRecoveryEngine(ctx, contents, sink); err != nil {
+		return empty, errors.Join(err, ctx.Err())
 	}
 	if err := ctx.Err(); err != nil {
 		return empty, err

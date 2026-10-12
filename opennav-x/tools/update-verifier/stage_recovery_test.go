@@ -58,7 +58,7 @@ func (s *recoveryFileSink) WriteFile(ctx context.Context, name string, r io.Read
 }
 
 func (s *recoveryFileSink) WriteEvidence(ctx context.Context, name string, raw []byte, digest string) error {
-	if name != "FILE_SHA256.json" && name != "installer/package.json" {
+	if name != "FILE_SHA256.json" && name != "installer/package.json" && !baselineevidence.IsEngineHelper(name) {
 		return errors.New("unexpected evidence")
 	}
 	if err := s.WriteFile(ctx, name, strings.NewReader(string(raw)), int64(len(raw)), digest); err != nil {
@@ -76,11 +76,16 @@ func (s *recoveryFileSink) CompleteRecoveryEvidence(ctx context.Context, identit
 	return nil
 }
 
-func prepareStageFixture(t *testing.T) (*recoveryFixture, *PreparedUpdateSet) {
+func prepareStageFixture(t *testing.T, engine ...bool) (*recoveryFixture, *PreparedUpdateSet) {
 	t.Helper()
 	f := newRecoveryFixture(t, true)
 	// Preserve noncanonical valid whitespace to detect any reserialization.
 	f.entries["installer/package.json"] = append([]byte(" \n"), f.entries["installer/package.json"]...)
+	if len(engine) > 0 && engine[0] {
+		for name, raw := range recoveryEngineFixture() {
+			f.entries[name] = raw
+		}
+	}
 	inventory := map[string]string{}
 	for name, raw := range f.entries {
 		if name != "FILE_SHA256.json" {
@@ -96,6 +101,70 @@ func prepareStageFixture(t *testing.T) (*recoveryFixture, *PreparedUpdateSet) {
 	}
 	t.Cleanup(func() { p.Close() })
 	return f, p
+}
+
+// Distinct non-executable fixture bytes preserve BOM/CRLF and whitespace. These
+// are never run and cannot be mistaken for an installer helper implementation.
+func recoveryEngineFixture() map[string][]byte {
+	return map[string][]byte{
+		"installer/engine/Lifecycle.ps1":         []byte("\xef\xbb\xbf# INERT lifecycle fixture\r\n"),
+		"installer/engine/UpdateSupervisor.ps1":  []byte("# INERT supervisor fixture\r\n\r\n"),
+		"installer/engine/UpdateTransaction.ps1": []byte("# INERT transaction fixture\n "),
+	}
+}
+
+func TestStageRecoveryRetainsOriginalEngineBeforeCompletion(t *testing.T) {
+	f, p := prepareStageFixture(t, true)
+	sink := &recoveryFileSink{root: t.TempDir()}
+	identity, err := p.StageRecovery(context.Background(), sink)
+	if err != nil || identity != p.RecoveryIdentity || sink.identity != identity || len(sink.evidenceNames) != 5 {
+		t.Fatalf("original engine completion missing: %v", err)
+	}
+	for name, raw := range recoveryEngineFixture() {
+		got, err := os.ReadFile(filepath.Join(sink.root, filepath.FromSlash(name)))
+		if err != nil || string(got) != string(raw) || string(got) != string(f.entries[name]) {
+			t.Fatalf("original helper bytes changed: %s: %v", name, err)
+		}
+	}
+	for _, name := range sink.names {
+		if baselineevidence.IsEngineHelper(name) {
+			t.Fatal("engine incorrectly installed as app/docs payload")
+		}
+	}
+}
+
+func TestStageRecoveryEngineSinkFailureNeverCompletes(t *testing.T) {
+	_, p := prepareStageFixture(t, true)
+	for _, scenario := range []string{"refused", "canceled"} {
+		t.Run(scenario, func(t *testing.T) {
+			ctx, cancel := context.WithCancel(context.Background())
+			defer cancel()
+			complete := false
+			sink := recoveryEvidenceFaultSink{
+				recoverySinkFunc: func(_ context.Context, _ string, r io.Reader, _ int64, _ string) error {
+					_, err := io.Copy(io.Discard, r)
+					return err
+				},
+				writeEvidence: func(_ context.Context, name string, _ []byte, _ string) error {
+					if baselineevidence.IsEngineHelper(name) {
+						if scenario == "canceled" {
+							cancel()
+						}
+						return errors.New("private engine destination")
+					}
+					return nil
+				},
+				complete: func(context.Context, baselineevidence.Identity) error { complete = true; return nil },
+			}
+			identity, err := p.StageRecovery(ctx, sink)
+			if err == nil || identity != (RecoveryIdentity{}) || complete || strings.Contains(err.Error(), "private") {
+				t.Fatalf("failed helper supplied completion or detail: %v", err)
+			}
+			if scenario == "canceled" && !errors.Is(err, context.Canceled) {
+				t.Fatal("engine cancellation lost")
+			}
+		})
+	}
 }
 
 func TestStageRecoveryWritesExactAuthenticatedInstalledPayload(t *testing.T) {

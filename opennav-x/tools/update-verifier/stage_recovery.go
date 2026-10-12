@@ -23,8 +23,9 @@ type RecoverySink interface {
 	WriteFile(context.Context, string, io.Reader, int64, string) error
 }
 
-// RecoveryEvidenceSink retains the exact authenticated original sidecars alongside
-// payload, then verifies their identity and complete payload membership. These
+// RecoveryEvidenceSink retains the exact authenticated original sidecars and any
+// inventoried installer engine helpers alongside payload, then verifies their
+// identity and complete retained membership. These
 // methods alone authenticate no publisher or grant execution authority.
 // StageRecovery requires this extension; RecoverySink remains the payload-only
 // interface used by initial approved-baseline import.
@@ -65,7 +66,9 @@ func (p *PreparedUpdateSet) recoveryStageValid() bool {
 // identities, requiring the exact Lifecycle manifest sidecar. It streams only
 // that manifest's app/docs payload set, in lexical path order, excluding the
 // portable marker, and preserves exact original FILE_SHA256.json and
-// installer/package.json bytes as evidence. No profile is staged.
+// installer/package.json bytes and the fixed inventoried installer engine helpers
+// as evidence. No profile is staged. Historical archives without engine helpers
+// supply no helper execution authority.
 //
 // It selects no OS destination and grants no execution, broker or commissioning
 // authority. In particular, a sidecar is not Setup embedded-resource proof.
@@ -153,6 +156,12 @@ func (p *PreparedUpdateSet) StageRecovery(ctx context.Context, sink RecoverySink
 			return empty, errors.New("recovery staging evidence sink refused")
 		}
 	}
+	if err := copyRecoveryEngine(ctx, contents, evidence); err != nil {
+		if canceled := ctx.Err(); canceled != nil {
+			return empty, canceled
+		}
+		return empty, errors.New("recovery staging engine evidence refused")
+	}
 	if err := ctx.Err(); err != nil {
 		return empty, err
 	}
@@ -172,6 +181,34 @@ func (p *PreparedUpdateSet) StageRecovery(ctx context.Context, sink RecoverySink
 		return empty, errors.New("acquisition set changed during recovery staging")
 	}
 	return contents.identity, nil
+}
+
+// copyRecoveryEngine reads the fixed original ZIP members afresh through their
+// retained source owner. Bounds, hash and ZIP CRC are checked before a sink sees
+// bytes. It grants no execution authority and does not reconstruct a script.
+func copyRecoveryEngine(ctx context.Context, contents recoveryContents, sink interface {
+	WriteEvidence(context.Context, string, []byte, string) error
+}) error {
+	names, err := baselineevidence.EngineHelpers(contents.inventory)
+	if err != nil {
+		return err
+	}
+	for _, name := range names {
+		if err := ctx.Err(); err != nil {
+			return err
+		}
+		raw, err := recoveryMemberBytes(contents.files[name], maxRecoveryInventory)
+		if err != nil || len(raw) == 0 || recoveryDigest(raw) != contents.inventory[name] {
+			return errors.New("original installer engine bytes differ")
+		}
+		if err := ctx.Err(); err != nil {
+			return err
+		}
+		if err := sink.WriteEvidence(ctx, name, raw, contents.inventory[name]); err != nil {
+			return err
+		}
+	}
+	return ctx.Err()
 }
 
 type recoveryStageReader struct {

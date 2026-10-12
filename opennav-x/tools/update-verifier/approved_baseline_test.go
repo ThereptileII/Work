@@ -152,6 +152,56 @@ func TestImportApprovedBaselineRetainsExactEvidenceAndPayload(t *testing.T) {
 	}
 }
 
+func TestImportApprovedBaselinePreservesInventoriedEngine(t *testing.T) {
+	f := newApprovedBaselineFixture(t, func(entries map[string][]byte) {
+		for name, raw := range recoveryEngineFixture() {
+			entries[name] = raw
+		}
+	})
+	sink := newApprovedBaselineSink()
+	identity, err := importFixture(context.Background(), f, sink)
+	if err != nil || len(sink.files) != 4 || len(sink.evidence) != 5 {
+		t.Fatalf("exact original helpers missing: %v", err)
+	}
+	observed := map[string]string{}
+	for name, raw := range sink.files {
+		observed[name] = recoveryDigest(raw)
+	}
+	for name, raw := range recoveryEngineFixture() {
+		if !bytes.Equal(sink.evidence[name], raw) {
+			t.Fatalf("original helper reserialized: %s", name)
+		}
+		observed[name] = recoveryDigest(sink.evidence[name])
+	}
+	retained, members, err := baselineevidence.Validate(context.Background(), sink.evidence["FILE_SHA256.json"], sink.evidence["installer/package.json"], sink.files["docs/PRODUCT_BUILD.json"], observed, f.installed)
+	if err != nil || retained != identity || len(members) != 7 {
+		t.Fatalf("helper bytes not bound to original approval: %v", err)
+	}
+	for _, scenario := range []string{"refused", "canceled"} {
+		t.Run(scenario, func(t *testing.T) {
+			ctx, cancel := context.WithCancel(context.Background())
+			defer cancel()
+			failedSink := newApprovedBaselineSink()
+			failedSink.onEvidence = func(name string) error {
+				if baselineevidence.IsEngineHelper(name) {
+					if scenario == "canceled" {
+						cancel()
+					}
+					return errors.New("helper refused")
+				}
+				return nil
+			}
+			identity, err := importFixture(ctx, f, failedSink)
+			if err == nil || identity != (RecoveryIdentity{}) {
+				t.Fatal("failed helper returned baseline identity")
+			}
+			if scenario == "canceled" && !errors.Is(err, context.Canceled) {
+				t.Fatal("helper cancellation lost")
+			}
+		})
+	}
+}
+
 func TestImportApprovedBaselineRejectsUnapprovedOrMalformedSource(t *testing.T) {
 	cases := map[string]func(map[string][]byte){
 		"missing package":    func(e map[string][]byte) { delete(e, "installer/package.json") },
