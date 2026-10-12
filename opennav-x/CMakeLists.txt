@@ -327,6 +327,10 @@ if(OPENNAV_BUILD_TESTS)
   add_executable(ais_health_tests tests/ais_health_tests.cpp)
   target_link_libraries(ais_health_tests PRIVATE opennav_vessel)
   add_test(NAME ais_report_health COMMAND ais_health_tests)
+  add_executable(ais_connection_diagnostics_tests tests/ais_connection_diagnostics_tests.cpp)
+  target_include_directories(ais_connection_diagnostics_tests PRIVATE src)
+  target_compile_features(ais_connection_diagnostics_tests PRIVATE cxx_std_17)
+  add_test(NAME ais_connection_owned_diagnostics COMMAND ais_connection_diagnostics_tests)
   add_executable(online_ais_tests tests/online_ais_tests.cpp)
   target_link_libraries(online_ais_tests PRIVATE opennav_ais)
   add_test(NAME online_ais_cache_and_precedence COMMAND online_ais_tests)
@@ -445,6 +449,10 @@ if(OPENNAV_BUILD_TESTS)
   target_link_libraries(installed_resources_tests PRIVATE opennav_integration)
   add_test(NAME installed_resource_defaults COMMAND installed_resources_tests)
   find_package(Python3 REQUIRED COMPONENTS Interpreter)
+  add_test(NAME ais_connection_binding_contract COMMAND ${Python3_EXECUTABLE}
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/ais_connection_binding_tests.py)
+  add_test(NAME ais_connection_native_collector_contract COMMAND ${Python3_EXECUTABLE}
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/ais_connection_collector_tests.py)
   add_test(NAME ais_provider_fixture_header_cleanup COMMAND ${Python3_EXECUTABLE}
     "${CMAKE_CURRENT_SOURCE_DIR}/tests/ais_transport/header_cleanup_tests.py")
   add_test(NAME hardware_output_package_policy COMMAND ${Python3_EXECUTABLE}
