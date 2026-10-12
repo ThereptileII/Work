@@ -174,6 +174,27 @@ Native rights, actual transport, installed lifecycle and recovery acceptance rem
 required. This source join does not qualify repair/uninstall or migrate the older
 LocalAppData installer layout.
 
+### Protected in-app mode restart
+
+A native Windows restart corroborates the actual process image, the requested
+image and the independently opened process-reported native image by retained
+physical identities, including canonical handling of 8.3 path spellings.
+Native ProgramFilesX86 ancestry and both same-generation companions remain held
+through helper creation. A protected application dispatches only its canonical
+sibling `skager-start.exe --broker-current=<generation>[:legacy|:safe]`, never a
+direct application restart. Exactly one closed mode argument is accepted; extra
+profile, portable or arbitrary arguments refuse. The broker still owns selected
+history and the original exited application capability. The helper's PID wait
+provides scheduling only, not authority.
+
+Protected restarts refuse an armed/invalid commissioning binding and any current
+commissioning or `SKAGER_UPDATE_*` environment key. No qualification fence is
+stripped. The original qualification-output latch also refuses at CompleteRestart
+after startup has removed the original environment flag. Ordinary portable and
+commissioning routing retain their existing argument/helper behavior. Focused
+portable policy/lifecycle checks pass; native compile/runtime and installed
+mode switching remain separate gates.
+
 ### Closed ordinary modes and installation ownership
 
 The optional `startupMode` field accepts only `legacy` or `safe`; omission is
