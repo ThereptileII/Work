@@ -7,10 +7,23 @@ same clean commit as this checkout:
 python tools/package-protected-operator-kit.py --source-install C:\producer\launcher-install --output C:\delivery\protected-operator-kit.zip --commit <exact-40-lowercase-hex-commit>
 ```
 
-The output must be new, outside the source install, with an existing plain parent
+When the same native run already produced the complete launcher → broker →
+provisioner → baseline-handoff install, add
+`--components-install C:\producer\broker-install`. This read-only reuse mode
+invokes **no producer or compiler**. It verifies the existing three components
+with the existing package verifiers, requires their launcher/source closure to
+match the original launcher install exactly, copies only fixed component
+binaries/records into the private stage, and retains the already-copied shared
+source archive with the same verified hash. Both original installs' file
+identities, sizes, hashes and exact inventories are checked before and after.
+Unknown entries, links, mixed commits or changed original objects refuse. The
+option never discovers an install or silently falls back to rebuilding.
+
+The output must be new, outside either source install, with an existing plain parent
 directory. The producer verifies and copies the original launcher closure into a
 private install, builds the broker, provisioner and baseline handoff with the
-existing fixed producers, and verifies their exact dependency/source chain. It
+existing fixed producers unless explicit verified components are supplied, and
+verifies their exact dependency/source chain. It
 rechecks the unchanged original launcher files before and after production.
 Neither the original launcher nor the application install is modified.
 

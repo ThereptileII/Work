@@ -76,9 +76,11 @@ class OperatorKitTests(unittest.TestCase):
             stack.enter_context(mock.patch.object(entry.broker_producer.launcher, 'is_native_windows', return_value=True))
             for producer, component in zip((entry.broker_producer, entry.provisioner_producer, entry.handoff_producer),
                                            entry.COMPONENTS):
-                stack.enter_context(mock.patch.object(producer, 'package', side_effect=self.build(component)))
+                build = AssertionError('Reuse mode must never invoke a producer') if overrides.get('components') else self.build(component)
+                stack.enter_context(mock.patch.object(producer, 'package', side_effect=build))
             return entry.package(overrides.get('source', self.source), overrides.get('output', self.output),
-                                 overrides.get('commit', self.commit), 'inert-go')
+                                 overrides.get('commit', self.commit), 'inert-go',
+                                 components_install=overrides.get('components'))
 
     def test_exact_deterministic_inventory_chain_and_immutable_original(self):
         original = entry._source_snapshot(self.source, self.commit)
@@ -110,6 +112,100 @@ class OperatorKitTests(unittest.TestCase):
         second = self.root / 'second.zip'
         self.package(output=second)
         self.assertEqual(self.output.read_bytes(), second.read_bytes())
+
+    def component_install(self):
+        path = self.root / 'original-components'
+        shutil.copytree(self.full_install, path)
+        return path
+
+    def test_reuse_verified_components_never_builds_and_preserves_both_originals(self):
+        components = self.component_install()
+        original = entry._source_snapshot(self.source, self.commit)
+        before = entry._components_snapshot(components, self.commit, original)
+        self.package()
+        self.events.clear()
+        reused = self.root / 'reused.zip'
+        self.package(components=components, output=reused)
+        self.assertEqual(self.events, [])
+        self.assertEqual(reused.read_bytes(), self.output.read_bytes())
+        self.assertEqual(entry._source_snapshot(self.source, self.commit), original)
+        self.assertEqual(entry._components_snapshot(components, self.commit, original), before)
+
+    def test_reuse_component_commit_mismatch_and_extra_entries_refuse(self):
+        components = self.component_install()
+        record = components / entry.COMPONENTS[0].record_relative
+        original = record.read_bytes()
+        data = json.loads(original)
+        data['productCommit'] = 'b' * 40
+        record.write_text(json.dumps(data))
+        with self.assertRaises(ValueError):
+            self.package(components=components)
+        record.write_bytes(original)
+        extra = components / 'profile.ini'
+        extra.write_bytes(b'INERT-UNRELATED-STATE')
+        with self.assertRaisesRegex(ValueError, 'Unexpected'):
+            self.package(components=components)
+        self.assertEqual(self.events, [])
+        self.assertFalse(self.output.exists())
+
+    def test_reuse_requires_original_launcher_and_archive_bytes(self):
+        components = self.component_install()
+        for name in ('skager-start.exe', entry.updater.SOURCE_RELATIVE):
+            path = components / name
+            original = path.read_bytes()
+            path.write_bytes(original + b'CHANGED')
+            with self.subTest(name=name), self.assertRaises(ValueError):
+                self.package(components=components)
+            path.write_bytes(original)
+        self.assertFalse(self.output.exists())
+
+    def test_reuse_valid_same_commit_alternate_launcher_is_not_exact_original(self):
+        components = self.component_install()
+        binary = components / 'skager-start.exe'
+        binary.write_bytes(binary.read_bytes() + b'INERT-PE-OVERLAY')
+        path = components / 'opennav/third-party/updater/build.json'
+        record = json.loads(path.read_bytes())
+        record['binary']['sha256'] = hashlib.sha256(binary.read_bytes()).hexdigest()
+        path.write_text(json.dumps(record))
+        # Same commit and a valid individual chain still cannot substitute for
+        # the separately supplied original launcher producer's exact bytes.
+        entry._verify_components(components, self.commit, entry.updater.verify_updater_package(self.source, self.commit))
+        with self.assertRaisesRegex(ValueError, 'exact original launcher/source'):
+            self.package(components=components)
+        self.assertEqual(self.events, [])
+        self.assertFalse(self.output.exists())
+
+    def test_reuse_component_mutation_or_replacement_during_transfer_refuses(self):
+        components = self.component_install()
+        copy = entry._copy_component_files
+        path = components / entry.COMPONENTS[-1].binary
+        original = path.read_bytes()
+        for identical in (False, True):
+            def change(source, install, snapshot):
+                copy(source, install, snapshot)
+                replacement = self.root / 'replacement-component.exe'
+                replacement.write_bytes(original if identical else original + b'CHANGED')
+                os.replace(replacement, path)
+            with self.subTest(identical=identical), mock.patch.object(entry, '_copy_component_files', side_effect=change):
+                with self.assertRaises(ValueError):
+                    self.package(components=components)
+            path.write_bytes(original)
+        self.assertFalse(self.output.exists())
+        self.assertEqual(self.events, [])
+
+    def test_reuse_components_links_and_output_overlap_refuse(self):
+        components = self.component_install()
+        linked = self.root / 'linked-components'
+        linked.symlink_to(components, target_is_directory=True)
+        with self.assertRaisesRegex(ValueError, 'link'):
+            self.package(components=linked)
+        with self.assertRaisesRegex(ValueError, 'separate'):
+            self.package(components=components, output=components / 'kit.zip')
+        path = components / entry.COMPONENTS[0].binary
+        os.link(path, self.root / 'hardlinked-component.exe')
+        with self.assertRaisesRegex(ValueError, 'single-link'):
+            self.package(components=components)
+        self.assertFalse(self.output.exists())
 
     def test_native_gate_before_source_reads_or_builds(self):
         with mock.patch.object(entry.broker_producer.launcher, 'is_native_windows', return_value=False), \

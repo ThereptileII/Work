@@ -41,8 +41,10 @@ REFERENCE = 'opennav/third-party/updater/SOURCE_REFERENCE.json'
 MANIFEST = 'SHA256SUMS.json'
 MAX_LICENSE_BYTES = 1 << 20
 MAX_KIT_BYTES = 768 << 20
-PAYLOAD_LIMITS = {component.binary: updater.MAX_BINARY_BYTES for component in COMPONENTS}
-PAYLOAD_LIMITS.update({component.record_relative: updater.MAX_RECORD_BYTES for component in COMPONENTS})
+COMPONENT_LIMITS = {component.binary: updater.MAX_BINARY_BYTES for component in COMPONENTS}
+COMPONENT_LIMITS.update({component.record_relative: updater.MAX_RECORD_BYTES for component in COMPONENTS})
+COMPONENT_INSTALL_LIMITS = {**updater.TRANSFER_FILES, **COMPONENT_LIMITS}
+PAYLOAD_LIMITS = dict(COMPONENT_LIMITS)
 PAYLOAD_LIMITS.update({updater.SOURCE_RELATIVE: updater.MAX_ARCHIVE_BYTES,
                        LICENSE: MAX_LICENSE_BYTES, REFERENCE: broker.MAX_SOURCE_RECORD})
 
@@ -62,19 +64,19 @@ def _snapshot(root, limits):
     return result
 
 
-def _source_snapshot(source, commit):
+def _source_snapshot(source, commit, limits=updater.TRANSFER_FILES):
     descriptor = updater.verify_updater_package(source, commit)
     # The existing transfer API also enforces this exact original producer tree.
     # Recheck its inventory after builds, so added state cannot go unnoticed.
-    allowed = set(updater.TRANSFER_FILES)
-    allowed |= {parent.as_posix() for name in updater.TRANSFER_FILES
+    allowed = set(limits)
+    allowed |= {parent.as_posix() for name in limits
                 for parent in Path(name).parents if parent != Path('.')}
     for current, directories, files in os.walk(source, followlinks=False):
         for name in directories + files:
             child = updater._plain(Path(current) / name)
             if child.relative_to(source).as_posix() not in allowed:
-                raise ValueError('Unexpected original launcher producer entry')
-    return descriptor, _snapshot(source, updater.TRANSFER_FILES)
+                raise ValueError('Unexpected producer install entry')
+    return descriptor, _snapshot(source, limits)
 
 
 def _verify_components(install, commit, expected):
@@ -83,6 +85,40 @@ def _verify_components(install, commit, expected):
         descriptor = verify(install, commit)
         if any(descriptor[key] != expected[key] for key in ('path', 'sha256', 'reference')):
             raise ValueError('Operator component corresponding source differs')
+
+
+def _components_snapshot(source, commit, original):
+    current = _source_snapshot(source, commit, COMPONENT_INSTALL_LIMITS)
+    _verify_components(source, commit, original[0])
+    for name in updater.TRANSFER_FILES:
+        identity, checksum = current[1][name]
+        original_identity, original_checksum = original[1][name]
+        if identity[2] != original_identity[2] or checksum != original_checksum:
+            raise ValueError('Components require the exact original launcher/source closure')
+    return current
+
+
+def _copy_component_files(source, install, snapshot):
+    # The shared source archive was already copied from the original launcher;
+    # components_snapshot binds it to the exact same bytes in this producer.
+    for name, limit in COMPONENT_LIMITS.items():
+        source_path = broker._regular(source / name, limit)
+        target = updater._plain(install / name, allow_missing=True)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        remaining = snapshot[1][name][0][2]
+        with source_path.open('rb') as original, target.open('xb') as output:
+            while remaining:
+                data = original.read(min(1 << 20, remaining))
+                if not data:
+                    raise ValueError('Component producer truncated during transfer')
+                output.write(data)
+                remaining -= len(data)
+            if original.read(1):
+                raise ValueError('Component producer grew during transfer')
+            output.flush()
+            os.fsync(output.fileno())
+        if updater._hash(target) != snapshot[1][name][1]:
+            raise ValueError('Component producer changed during transfer')
 
 
 def _source_documents(install, descriptor):
@@ -151,7 +187,7 @@ def _write_archive(install, archive, manifest):
                     raise ValueError('Operator kit ZIP payload hash differs')
 
 
-def package(source_install, output, commit, go='go'):
+def package(source_install, output, commit, go='go', *, components_install=None):
     if not broker_producer.launcher.is_native_windows():
         raise ValueError('Protected operator kit production requires native Windows')
     if not isinstance(commit, str) or not updater.COMMIT.fullmatch(commit):
@@ -163,13 +199,30 @@ def package(source_install, output, commit, go='go'):
     if not output.parent.is_dir():
         raise ValueError('Existing plain operator kit output parent required')
     original = _source_snapshot(source, commit)
+    components = None
+    if components_install is not None:
+        components_install = updater._plain(components_install)
+        if output.is_relative_to(components_install):
+            raise ValueError('Operator kit output must be separate from component producer')
+        components = _components_snapshot(components_install, commit, original)
+
+    def check_originals():
+        if _source_snapshot(source, commit) != original:
+            raise ValueError('Operator kit original launcher producer changed')
+        if components is not None and _components_snapshot(components_install, commit, original) != components:
+            raise ValueError('Original component producer changed')
+
     with tempfile.TemporaryDirectory(prefix='.protected-operator-kit-', dir=output.parent) as temporary:
         stage = Path(temporary)
         install = stage / 'install'
         install.mkdir()
         descriptor = updater.copy_verified_updater_package(source, install, commit)
-        for producer in (broker_producer, provisioner_producer, handoff_producer):
-            producer.package(install, commit, go)
+        if components is None:
+            for producer in (broker_producer, provisioner_producer, handoff_producer):
+                producer.package(install, commit, go)
+        else:
+            _copy_component_files(components_install, install, components)
+            check_originals()
         _verify_components(install, commit, descriptor)
         _source_documents(install, descriptor)
         before = _snapshot(install, PAYLOAD_LIMITS)
@@ -181,16 +234,18 @@ def package(source_install, output, commit, go='go'):
         archive = stage / 'operator-kit.zip'
         _write_archive(install, archive, manifest)
         _verify_components(install, commit, descriptor)
-        if _snapshot(install, PAYLOAD_LIMITS) != before or _source_snapshot(source, commit) != original:
-            raise ValueError('Operator kit or original launcher producer changed')
+        if _snapshot(install, PAYLOAD_LIMITS) != before:
+            raise ValueError('Operator kit payload changed')
+        check_originals()
         updater._plain(output, allow_missing=True)
         # Same-volume exclusive publication refuses a racing output; never
         # overwrite it or retry. The private staging link is then removed.
         os.link(archive, output)
         result = {'schema': 1, 'productCommit': commit, 'bytes': archive.stat().st_size,
                   'sha256': updater._hash(archive)}
-        if updater._hash(output) != result['sha256'] or _source_snapshot(source, commit) != original:
-            raise ValueError('Published operator kit or original launcher producer changed')
+        if updater._hash(output) != result['sha256']:
+            raise ValueError('Published operator kit changed')
+        check_originals()
     return result
 
 
@@ -200,9 +255,12 @@ def main():
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--commit', required=True)
     parser.add_argument('--go', default='go')
+    parser.add_argument('--components-install', type=Path,
+                        help='Read-only exact same-commit three-component producer install; skips all builds')
     args = parser.parse_args()
     try:
-        result = package(args.source_install, args.output, args.commit, args.go)
+        result = package(args.source_install, args.output, args.commit, args.go,
+                         components_install=args.components_install)
     except (ValueError, OSError, KeyError, zipfile.BadZipFile, subprocess.SubprocessError) as error:
         raise SystemExit(str(error)) from error
     print(json.dumps(result, indent=2))
