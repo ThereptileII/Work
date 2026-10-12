@@ -1,5 +1,26 @@
 # SKAGER status — 2026-10-12
 
+## Original installer helpers retained through signed acquisition and storage
+
+Source `aa3e6bfe` now preserves the three exact NSIS helper snapshots in Recovery,
+then copies and validates their original bytes through signed staging and approved
+baseline import into protected candidate/installed custody. Missing, partial,
+aliased, tampered or foreign helper sets refuse; historical no-helper evidence
+supplies no execution authority. The broker/provisioner source closure also
+requires every actual imported production member.
+
+Focused checks passed **48 top-level + 229 nested Linux Go tests**, **25 receipt
+tests**, and **68 delegated source-package tests** (the latter session-reported,
+without a retained raw logfile). Windows/x86 component compilation passed.
+With runner `700e5dfd`, **5 top-level + 22 nested native inert tests passed**;
+OpenCPN PID 1852 stayed responsive and no owned test process remained.
+[Exact source, raw logs and native receipts](evidence/scrum311-engine-preservation-20261012/README.md)
+record the scope and prior failed fixture. This does not complete the real update,
+rollback/interactive launch, provisioning or healthy-start path. SCRUM-311 remains
+In Progress. No full application build, CI, product installation/profile change or
+physical output occurred. Claude's nine-file comparison still awaits exact-scope
+transfer consent. Earlier evidence retains its original revision and scope.
+
 ## Protected installed baseline source joined; inert native checks pass
 
 Production source `67665e18` joins fresh operator publication of the independently

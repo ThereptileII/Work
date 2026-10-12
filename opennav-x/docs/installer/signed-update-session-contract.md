@@ -219,6 +219,24 @@ synchronously. Sink failure, cancellation, incomplete consumption, changed bytes
 or identity returns no successful identity. A caller-defined sink is not custody
 authority. The production joining code uses the concrete store below.
 
+The original two sidecars are now retained separately through
+`RecoveryEvidenceSink`, which must complete original evidence binding before
+sealing. The three fixed `installer/engine/{Lifecycle.ps1,UpdateSupervisor.ps1,
+UpdateTransaction.ps1}` members are preserved when inventoried. NSIS and Recovery
+receive the same fresh pre-compilation snapshots; post-compilation validation
+refuses changed bytes. ZIP helper members are nonempty and bounded to 4 MiB each.
+The shared validator admits either historical zero helpers or the complete exact
+three-member set, and binds every present helper digest to retained observations.
+No helper is installed as app/docs or regenerated. Candidate/installed native
+namespace and reopen checks preserve this exact distinction. Reconciliation
+recognizes only fixed inert residue, including partial helpers, without adoption
+or deletion. Historical zero-helper evidence cannot authorize helper execution.
+These producer/custody checks neither prove Setup embedded bytes independently
+nor supply signing, provisioning, installation, transaction or launch authority.
+[Source and focused native/component evidence](../evidence/scrum311-engine-preservation-20261012/README.md)
+record the implementation and remaining gates.
+
+
 The new `brokerhost` operation and `cmd/skager-update-broker` are **source-only**:
 the existing launcher and package producer do not enable this service. The SCM
 own-process service must run as `NT SERVICE\SkagerUpdateBroker`. There is no

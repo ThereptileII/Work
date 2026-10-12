@@ -1,0 +1,55 @@
+=== RUN   TestNativeCandidateEvidenceOriginalCustodyAndSeal
+--- PASS: TestNativeCandidateEvidenceOriginalCustodyAndSeal (0.16s)
+=== RUN   TestNativeCandidateEvidenceExactResidueNamespace
+=== RUN   TestNativeCandidateEvidenceExactResidueNamespace/unknown-installer-member
+=== RUN   TestNativeCandidateEvidenceExactResidueNamespace/case-alias
+=== RUN   TestNativeCandidateEvidenceExactResidueNamespace/file-directory
+=== RUN   TestNativeCandidateEvidenceExactResidueNamespace/extra-payload
+--- PASS: TestNativeCandidateEvidenceExactResidueNamespace (0.17s)
+    --- PASS: TestNativeCandidateEvidenceExactResidueNamespace/unknown-installer-member (0.04s)
+    --- PASS: TestNativeCandidateEvidenceExactResidueNamespace/case-alias (0.04s)
+    --- PASS: TestNativeCandidateEvidenceExactResidueNamespace/file-directory (0.04s)
+    --- PASS: TestNativeCandidateEvidenceExactResidueNamespace/extra-payload (0.04s)
+=== RUN   TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue
+=== RUN   TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue/originals
+=== RUN   TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue/empty-installer
+=== RUN   TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue/unknown-member
+=== RUN   TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue/alias-member
+=== RUN   TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue/hardlink
+=== RUN   TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue/wrong-type
+=== RUN   TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue/engine-complete
+=== RUN   TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue/engine-partial
+=== RUN   TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue/engine-empty
+=== RUN   TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue/engine-unknown
+=== RUN   TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue/engine-alias
+=== RUN   TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue/engine-hardlink
+=== RUN   TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue/engine-wrong-type
+--- PASS: TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue (0.26s)
+    --- PASS: TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue/originals (0.03s)
+    --- PASS: TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue/empty-installer (0.01s)
+    --- PASS: TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue/unknown-member (0.02s)
+    --- PASS: TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue/alias-member (0.02s)
+    --- PASS: TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue/hardlink (0.02s)
+    --- PASS: TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue/wrong-type (0.02s)
+    --- PASS: TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue/engine-complete (0.03s)
+    --- PASS: TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue/engine-partial (0.02s)
+    --- PASS: TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue/engine-empty (0.02s)
+    --- PASS: TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue/engine-unknown (0.02s)
+    --- PASS: TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue/engine-alias (0.02s)
+    --- PASS: TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue/engine-hardlink (0.02s)
+    --- PASS: TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue/engine-wrong-type (0.02s)
+=== RUN   TestNativeInstalledBaselineFreshCompletionRetainsExactBytesAndReadCustody
+--- PASS: TestNativeInstalledBaselineFreshCompletionRetainsExactBytesAndReadCustody (0.23s)
+=== RUN   TestNativeInstalledBaselineEngineHelpersExactNamespace
+=== RUN   TestNativeInstalledBaselineEngineHelpersExactNamespace/missing
+=== RUN   TestNativeInstalledBaselineEngineHelpersExactNamespace/tampered
+=== RUN   TestNativeInstalledBaselineEngineHelpersExactNamespace/extra
+=== RUN   TestNativeInstalledBaselineEngineHelpersExactNamespace/alias
+=== RUN   TestNativeInstalledBaselineEngineHelpersExactNamespace/hardlink
+--- PASS: TestNativeInstalledBaselineEngineHelpersExactNamespace (0.81s)
+    --- PASS: TestNativeInstalledBaselineEngineHelpersExactNamespace/missing (0.14s)
+    --- PASS: TestNativeInstalledBaselineEngineHelpersExactNamespace/tampered (0.17s)
+    --- PASS: TestNativeInstalledBaselineEngineHelpersExactNamespace/extra (0.17s)
+    --- PASS: TestNativeInstalledBaselineEngineHelpersExactNamespace/alias (0.17s)
+    --- PASS: TestNativeInstalledBaselineEngineHelpersExactNamespace/hardlink (0.16s)
+PASS

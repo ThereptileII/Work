@@ -1,0 +1,52 @@
+{
+    "schema":  1,
+    "group":  "EngineEvidence",
+    "executable":  "C:\\XNav\\ComponentChecks\\engine-700e5dfd\\brokerstore.test.exe",
+    "executableSha256":  "a63dcc4c81e3ea9072996a677e93437ddce0f94d86ef6fafa6f3ba0a3296577a",
+    "expectedCases":  [
+                          "TestNativeCandidateEvidenceOriginalCustodyAndSeal",
+                          "TestNativeCandidateEvidenceExactResidueNamespace",
+                          "TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue",
+                          "TestNativeInstalledBaselineFreshCompletionRetainsExactBytesAndReadCustody",
+                          "TestNativeInstalledBaselineEngineHelpersExactNamespace"
+                      ],
+    "selection":  "^(TestNativeCandidateEvidenceOriginalCustodyAndSeal|TestNativeCandidateEvidenceExactResidueNamespace|TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue|TestNativeInstalledBaselineFreshCompletionRetainsExactBytesAndReadCustody|TestNativeInstalledBaselineEngineHelpersExactNamespace)$",
+    "status":  "passed",
+    "failure":  null,
+    "startedUtc":  "2026-10-12T05:43:34.2249227Z",
+    "os":  "Microsoft Windows NT 10.0.22631.0",
+    "os64":  true,
+    "process64":  true,
+    "powershellVersion":  "5.1.22621.5624",
+    "listing":  {
+                    "arguments":  [
+                                      "-test.list=^(TestNativeCandidateEvidenceOriginalCustodyAndSeal|TestNativeCandidateEvidenceExactResidueNamespace|TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue|TestNativeInstalledBaselineFreshCompletionRetainsExactBytesAndReadCustody|TestNativeInstalledBaselineEngineHelpersExactNamespace)$"
+                                  ],
+                    "processId":  11476,
+                    "startedUtc":  "2026-10-12T05:43:34.2517270Z",
+                    "exitCode":  0,
+                    "timedOut":  false,
+                    "error":  null,
+                    "stdout":  "C:\\XNav\\ComponentChecks\\engine-700e5dfd\\EngineEvidence\\list-stdout.log",
+                    "stderr":  "C:\\XNav\\ComponentChecks\\engine-700e5dfd\\EngineEvidence\\list-stderr.log",
+                    "elapsedMilliseconds":  368
+                },
+    "execution":  {
+                      "arguments":  [
+                                        "-test.run=^(TestNativeCandidateEvidenceOriginalCustodyAndSeal|TestNativeCandidateEvidenceExactResidueNamespace|TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue|TestNativeInstalledBaselineFreshCompletionRetainsExactBytesAndReadCustody|TestNativeInstalledBaselineEngineHelpersExactNamespace)$",
+                                        "-test.count=1",
+                                        "-test.v",
+                                        "-test.timeout=90s"
+                                    ],
+                      "processId":  5192,
+                      "startedUtc":  "2026-10-12T05:43:34.6717385Z",
+                      "exitCode":  0,
+                      "timedOut":  false,
+                      "error":  null,
+                      "stdout":  "C:\\XNav\\ComponentChecks\\engine-700e5dfd\\EngineEvidence\\tests-stdout.log",
+                      "stderr":  "C:\\XNav\\ComponentChecks\\engine-700e5dfd\\EngineEvidence\\tests-stderr.log",
+                      "elapsedMilliseconds":  1666
+                  },
+    "scope":  "Exact inert native fixtures only; no application/service/profile/network/physical output; not enrollment or release qualification",
+    "completedUtc":  "2026-10-12T05:43:36.5885771Z"
+}

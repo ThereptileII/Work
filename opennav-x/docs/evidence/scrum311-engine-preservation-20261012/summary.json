@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "sourceCommit": "aa3e6bfeb88dba981fa88465b5b28816428ca609",
+  "runnerCommit": "700e5dfd38c744c68ce5343265c6eac594e22a2d",
+  "linuxGo": {
+    "topLevelPassed": 48,
+    "nestedPassed": 229,
+    "failed": 0,
+    "skipped": 0
+  },
+  "pythonReceipt": {
+    "passed": 25,
+    "rawLogRetained": true
+  },
+  "pythonSourceClosure": {
+    "passed": 68,
+    "rawLogRetained": false,
+    "source": "Delegated tool-session results; not a fabricated raw logfile."
+  },
+  "windowsInert": {
+    "topLevelPassed": 5,
+    "nestedPassed": 22,
+    "failed": 0,
+    "skipped": 0,
+    "executableSha256": "a63dcc4c81e3ea9072996a677e93437ddce0f94d86ef6fafa6f3ba0a3296577a"
+  },
+  "qualification": "Component evidence only. No full application/MSVC, provisioning, real update/rollback/launch, install/profile, or release acceptance."
+}

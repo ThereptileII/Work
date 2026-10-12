@@ -1,0 +1,15 @@
+{
+    "schema":  1,
+    "group":  "EngineEvidence",
+    "name":  "TestNativeCandidateEvidenceExactResidueNamespace",
+    "selection":  "^TestNativeCandidateEvidenceExactResidueNamespace$",
+    "runMarkers":  1,
+    "passMarkers":  1,
+    "executableSha256":  "a63dcc4c81e3ea9072996a677e93437ddce0f94d86ef6fafa6f3ba0a3296577a",
+    "exitCode":  0,
+    "os":  "Microsoft Windows NT 10.0.22631.0",
+    "timedOut":  false,
+    "groupReceipt":  "C:\\XNav\\ComponentChecks\\engine-700e5dfd\\EngineEvidence\\receipt.json",
+    "executionLog":  "C:\\XNav\\ComponentChecks\\engine-700e5dfd\\EngineEvidence\\tests-stdout.log",
+    "caseLog":  "TestNativeCandidateEvidenceExactResidueNamespace.log"
+}

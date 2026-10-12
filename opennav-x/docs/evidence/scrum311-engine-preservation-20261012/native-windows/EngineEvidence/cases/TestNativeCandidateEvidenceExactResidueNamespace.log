@@ -1,0 +1,10 @@
+=== RUN   TestNativeCandidateEvidenceExactResidueNamespace
+=== RUN   TestNativeCandidateEvidenceExactResidueNamespace/unknown-installer-member
+=== RUN   TestNativeCandidateEvidenceExactResidueNamespace/case-alias
+=== RUN   TestNativeCandidateEvidenceExactResidueNamespace/file-directory
+=== RUN   TestNativeCandidateEvidenceExactResidueNamespace/extra-payload
+--- PASS: TestNativeCandidateEvidenceExactResidueNamespace (0.17s)
+    --- PASS: TestNativeCandidateEvidenceExactResidueNamespace/unknown-installer-member (0.04s)
+    --- PASS: TestNativeCandidateEvidenceExactResidueNamespace/case-alias (0.04s)
+    --- PASS: TestNativeCandidateEvidenceExactResidueNamespace/file-directory (0.04s)
+    --- PASS: TestNativeCandidateEvidenceExactResidueNamespace/extra-payload (0.04s)

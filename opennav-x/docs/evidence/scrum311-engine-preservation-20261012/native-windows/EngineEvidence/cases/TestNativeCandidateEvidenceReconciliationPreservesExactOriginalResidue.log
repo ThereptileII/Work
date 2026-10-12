@@ -1,0 +1,28 @@
+=== RUN   TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue
+=== RUN   TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue/originals
+=== RUN   TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue/empty-installer
+=== RUN   TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue/unknown-member
+=== RUN   TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue/alias-member
+=== RUN   TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue/hardlink
+=== RUN   TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue/wrong-type
+=== RUN   TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue/engine-complete
+=== RUN   TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue/engine-partial
+=== RUN   TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue/engine-empty
+=== RUN   TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue/engine-unknown
+=== RUN   TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue/engine-alias
+=== RUN   TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue/engine-hardlink
+=== RUN   TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue/engine-wrong-type
+--- PASS: TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue (0.26s)
+    --- PASS: TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue/originals (0.03s)
+    --- PASS: TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue/empty-installer (0.01s)
+    --- PASS: TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue/unknown-member (0.02s)
+    --- PASS: TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue/alias-member (0.02s)
+    --- PASS: TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue/hardlink (0.02s)
+    --- PASS: TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue/wrong-type (0.02s)
+    --- PASS: TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue/engine-complete (0.03s)
+    --- PASS: TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue/engine-partial (0.02s)
+    --- PASS: TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue/engine-empty (0.02s)
+    --- PASS: TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue/engine-unknown (0.02s)
+    --- PASS: TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue/engine-alias (0.02s)
+    --- PASS: TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue/engine-hardlink (0.02s)
+    --- PASS: TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue/engine-wrong-type (0.02s)
