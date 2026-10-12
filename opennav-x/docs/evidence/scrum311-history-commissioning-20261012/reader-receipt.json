@@ -1,0 +1,63 @@
+{
+  "base": "1f0b440c8dc5ee88f641623a11e2d2c254ef22d6",
+  "branch": "codex/commissioning-reader-20261012",
+  "commit": "30d99bd7569204daa6eb9c1ddcfb6c3d4441d574",
+  "counts": {
+    "portable-race.jsonl": {
+      "example.com/opennav-update-verifier": {
+        "fail_package": 1
+      },
+      "example.com/opennav-update-verifier/baselineevidence": {
+        "pass_nested": 45,
+        "pass_package": 1,
+        "pass_top": 11
+      },
+      "example.com/opennav-update-verifier/brokerstore": {
+        "pass_nested": 93,
+        "pass_package": 1,
+        "pass_top": 19
+      }
+    },
+    "verifier-race-fixed.jsonl": {
+      "example.com/opennav-update-verifier": {
+        "pass_nested": 134,
+        "pass_package": 1,
+        "pass_top": 29
+      }
+    }
+  },
+  "evidence": {
+    "brokerstore-windows386-command.json": "b77a56e2ae0fdfffbc17a882af17fb7fb3ff89c87ba4794722f47b858613b246",
+    "brokerstore-windows386.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "brokerstore.test.exe": "d185a80ae0599373cbc6353b2fafc7eaee8f673b4a60accf18eb6fd6b8d78516",
+    "portable-command.json": "2d4d35eaa09d2dd7511e23a70fa4ef4f27b1171f7c48c23958851240a606de4f",
+    "portable-race.jsonl": "c57357542e079b8fae30d6e4e1260c42eb1680cb4e5bc1c5ca3220387ab5163a",
+    "verifier-race-fixed-command.json": "b9a2f712666e4524805bc920292d112a7a33c099b6de97557f409e5ffe8a8d77",
+    "verifier-race-fixed.jsonl": "cfcef7dc13b3bf721a7d98f21673157076b9d76ff5b15a0a1dfc1dd1d807ac08",
+    "verifier-windows386-command.json": "8a463e9d1606fd341cf4eba8f5b3e9e6753f6b0ba310121ff3df0488aa1d09fe",
+    "verifier-windows386.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "verifier.test.exe": "f9bf1fa91a5e4f90f3b1f93eb822113016f8ae067672626e385c068e22ec7259"
+  },
+  "limits": [
+    "raw-byte retention only; no commissioning execution, general-profile policy, selected/healthy or launch authority",
+    "Windows/x86 compiled only; no native execution",
+    "initial verifier fixture-only compile failure preserved; only that package rerun after int cast fix"
+  ],
+  "source": {
+    "opennav-x/tools/update-verifier/approved_baseline.go": "c117c74ef74787e0b153e15d4c66b55c89830e8b02f9097b7e7b4ee09183d9fd",
+    "opennav-x/tools/update-verifier/approved_baseline_test.go": "2246bf80e742d9c60757d4b27d639a613a459e6d531de1c30a13a8afe8a43f90",
+    "opennav-x/tools/update-verifier/baselineevidence/evidence.go": "f91655ed59f2f3cdbf1b90bfeba97c84adff347af11f5b9a7846c8d76c7a8766",
+    "opennav-x/tools/update-verifier/baselineevidence/evidence_test.go": "f68b1af02343028daaa136729435de6d6e2c8070f91e99b3bb8ae7793e0f7de3",
+    "opennav-x/tools/update-verifier/brokerstore/candidate_evidence.go": "88d314bf500e9a0a2131ba260ab9338146cd7a01decdde0c29fab2ed07277e12",
+    "opennav-x/tools/update-verifier/brokerstore/candidate_evidence_test.go": "b935bfe7df18b48d6d3b59e09ea83f3347a51c676525752852babaed524f4ab9",
+    "opennav-x/tools/update-verifier/brokerstore/candidate_evidence_windows.go": "b085e114aedbdea58323129086a5227350c6c228e45312b3271746edace0e094",
+    "opennav-x/tools/update-verifier/brokerstore/candidate_evidence_windows_test.go": "7b426ffaecc0bb42307c0de60a411704c8f44fb48c72bb791ccdc6c6478620e8",
+    "opennav-x/tools/update-verifier/brokerstore/installed_baseline.go": "524199d10559577a5cac9aae346853cc1d27a7f527746187dd1c1172fef617d1",
+    "opennav-x/tools/update-verifier/brokerstore/installed_baseline_test.go": "cff5ba72f598fe8f6d9e49ed8ac10bee0ac45b89d5ff2149a18ce9c7904a0dd0",
+    "opennav-x/tools/update-verifier/brokerstore/installed_baseline_windows.go": "97cb8af93fd2ac8b68fd010ad3187f4c555243b61ca9f5d9d7a53e278824ad8f",
+    "opennav-x/tools/update-verifier/brokerstore/installed_baseline_windows_test.go": "cee09d419d6842de6dd8aad0f367fcb90cbcf655e50c0d431dfda146377dc8c2",
+    "opennav-x/tools/update-verifier/recovery.go": "81ddf14718d992b5c409c219e96956be18f6d1e6420028db1a7f865f61472cb7",
+    "opennav-x/tools/update-verifier/stage_recovery.go": "78bba0e9840f4686fc896aacd29a1da66c02b9c53e2ee7b46b1638658d25f297",
+    "opennav-x/tools/update-verifier/stage_recovery_test.go": "ee38c653235d9f7dee6ae46ffa1abd55c642dd3aa83fa261ce05303ce15d7828"
+  }
+}

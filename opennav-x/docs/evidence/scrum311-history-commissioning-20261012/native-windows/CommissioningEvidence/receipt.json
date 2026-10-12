@@ -1,0 +1,50 @@
+{
+    "schema":  1,
+    "group":  "CommissioningEvidence",
+    "executable":  "C:\\XNav\\ComponentChecks\\history-commissioning-8ee7e633\\brokerstore.test.exe",
+    "executableSha256":  "c99060dc341530323c7bef15e5f7a7c4133324d8f2aa55152c0f5ec3988c0e08",
+    "expectedCases":  [
+                          "TestNativeCandidateCommissioningOriginalCustodyAndSeal",
+                          "TestNativeCandidateCommissioningReconciliationPreservesExactResidue",
+                          "TestNativeInstalledBaselineCommissioningHelpersExactNamespace"
+                      ],
+    "selection":  "^(TestNativeCandidateCommissioningOriginalCustodyAndSeal|TestNativeCandidateCommissioningReconciliationPreservesExactResidue|TestNativeInstalledBaselineCommissioningHelpersExactNamespace)$",
+    "status":  "passed",
+    "failure":  null,
+    "startedUtc":  "2026-10-12T09:46:56.7291842Z",
+    "os":  "Microsoft Windows NT 10.0.22631.0",
+    "os64":  true,
+    "process64":  true,
+    "powershellVersion":  "5.1.22621.5624",
+    "listing":  {
+                    "arguments":  [
+                                      "-test.list=^(TestNativeCandidateCommissioningOriginalCustodyAndSeal|TestNativeCandidateCommissioningReconciliationPreservesExactResidue|TestNativeInstalledBaselineCommissioningHelpersExactNamespace)$"
+                                  ],
+                    "processId":  6512,
+                    "startedUtc":  "2026-10-12T09:46:56.7557980Z",
+                    "exitCode":  0,
+                    "timedOut":  false,
+                    "error":  null,
+                    "stdout":  "C:\\XNav\\ComponentChecks\\history-commissioning-8ee7e633\\CommissioningEvidence\\list-stdout.log",
+                    "stderr":  "C:\\XNav\\ComponentChecks\\history-commissioning-8ee7e633\\CommissioningEvidence\\list-stderr.log",
+                    "elapsedMilliseconds":  60
+                },
+    "execution":  {
+                      "arguments":  [
+                                        "-test.run=^(TestNativeCandidateCommissioningOriginalCustodyAndSeal|TestNativeCandidateCommissioningReconciliationPreservesExactResidue|TestNativeInstalledBaselineCommissioningHelpersExactNamespace)$",
+                                        "-test.count=1",
+                                        "-test.v",
+                                        "-test.timeout=90s"
+                                    ],
+                      "processId":  4440,
+                      "startedUtc":  "2026-10-12T09:46:56.8634083Z",
+                      "exitCode":  0,
+                      "timedOut":  false,
+                      "error":  null,
+                      "stdout":  "C:\\XNav\\ComponentChecks\\history-commissioning-8ee7e633\\CommissioningEvidence\\tests-stdout.log",
+                      "stderr":  "C:\\XNav\\ComponentChecks\\history-commissioning-8ee7e633\\CommissioningEvidence\\tests-stderr.log",
+                      "elapsedMilliseconds":  2401
+                  },
+    "scope":  "Exact inert native fixtures only; no application/service/profile/network/physical output; not enrollment or release qualification",
+    "completedUtc":  "2026-10-12T09:46:59.4826977Z"
+}

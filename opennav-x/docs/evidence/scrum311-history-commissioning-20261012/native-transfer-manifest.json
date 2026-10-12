@@ -1,0 +1,9 @@
+{
+  "sourceCommit": "8ee7e6338001384d9b1c037e93003d6b67271286",
+  "testRevision": "8ee7e6338001384d9b1c037e93003d6b67271286",
+  "files": {
+    "brokerstore.test.exe": "c99060dc341530323c7bef15e5f7a7c4133324d8f2aa55152c0f5ec3988c0e08",
+    "runner.ps1": "7708653e3dc96de8648c2b8c5cc2c7de965035c4befe3dca91d0b81d98e622bd"
+  },
+  "remote": "C:\\XNav\\ComponentChecks\\history-commissioning-8ee7e633"
+}

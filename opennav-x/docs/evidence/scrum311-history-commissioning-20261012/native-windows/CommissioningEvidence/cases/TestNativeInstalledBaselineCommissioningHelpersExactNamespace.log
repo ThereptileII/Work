@@ -1,0 +1,15 @@
+=== RUN   TestNativeInstalledBaselineCommissioningHelpersExactNamespace
+=== RUN   TestNativeInstalledBaselineCommissioningHelpersExactNamespace/complete
+=== RUN   TestNativeInstalledBaselineCommissioningHelpersExactNamespace/missing
+=== RUN   TestNativeInstalledBaselineCommissioningHelpersExactNamespace/tampered
+=== RUN   TestNativeInstalledBaselineCommissioningHelpersExactNamespace/extra
+=== RUN   TestNativeInstalledBaselineCommissioningHelpersExactNamespace/alias
+=== RUN   TestNativeInstalledBaselineCommissioningHelpersExactNamespace/hardlink
+--- PASS: TestNativeInstalledBaselineCommissioningHelpersExactNamespace (1.76s)
+    --- PASS: TestNativeInstalledBaselineCommissioningHelpersExactNamespace/complete (0.41s)
+    --- PASS: TestNativeInstalledBaselineCommissioningHelpersExactNamespace/missing (0.22s)
+    --- PASS: TestNativeInstalledBaselineCommissioningHelpersExactNamespace/tampered (0.27s)
+    --- PASS: TestNativeInstalledBaselineCommissioningHelpersExactNamespace/extra (0.28s)
+    --- PASS: TestNativeInstalledBaselineCommissioningHelpersExactNamespace/alias (0.28s)
+    --- PASS: TestNativeInstalledBaselineCommissioningHelpersExactNamespace/hardlink (0.29s)
+PASS

@@ -1,0 +1,19 @@
+{
+  "cwd": "/home/standard/Projects/X-nav-worktrees/commissioning-reader-20261012/opennav-x/tools/update-verifier",
+  "argv": [
+    "/tmp/skager-go-1.27.1/go/bin/go",
+    "test",
+    "-c",
+    "-o",
+    "/home/standard/Projects/.tmp/commissioning-reader-20261012/verifier.test.exe",
+    "."
+  ],
+  "environment": {
+    "GOPROXY": "off",
+    "GOTOOLCHAIN": "local",
+    "GOTMPDIR": "/home/standard/Projects/.tmp/skager-bootstrap-publisher",
+    "GOOS": "windows",
+    "GOARCH": "386",
+    "CGO_ENABLED": "0"
+  }
+}

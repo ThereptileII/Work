@@ -1,5 +1,26 @@
 # SKAGER status — 2026-10-12
 
+## Atomic history and commissioning source retention pass joined Windows checks
+
+Integrated source `8ee7e633` uses atomic read-only candidate materialization in
+the actual broker adapter. Retained live generation histories adopt only the
+exact newly published successor; uncertain publication revokes affected owners.
+Recovery production and readers retain the exact twelve original commissioning
+files in a separate versioned namespace, preserving the three-engine contract.
+Joined Linux race: **20 top-level + 123 nested passed**; exact native Windows/x86
+component: **6 top-level + 19 nested passed**, no failures/skips. Producer and
+fixed source-package suites passed **35** and **12** tests respectively.
+[Exact original logs, source/binary receipts and limits](evidence/scrum311-history-commissioning-20261012/README.md)
+retain the isolated reader's initial fixture compile failure and corrected run.
+
+SCRUM-311 remains In Progress. Actual protected selected/pending state, interactive
+execution, general-profile commissioning, one-use spawn, authenticated healthy
+commit and restore/fallback remain unfinished. The next source work binds the
+live authenticated executor to the exact retained launcher and reopens completed
+generations without adopting paths or receipts. No installed product/profile,
+service or physical output changed; OpenCPN PID1852 stayed responsive. No full
+application build, design or endurance run occurred.
+
 ## Approved initial baseline loading view passes native component checks
 
 Source `d3d653ba` (isolated `de86d6fa`) adds a fresh protected public copy of the

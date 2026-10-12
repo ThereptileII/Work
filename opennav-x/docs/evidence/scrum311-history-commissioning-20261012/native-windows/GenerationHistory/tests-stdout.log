@@ -1,0 +1,19 @@
+=== RUN   TestNativeGenerationHistoryRetainedOwnersSurviveMixedPublications
+=== RUN   TestNativeGenerationHistoryRetainedOwnersSurviveMixedPublications/baseline-first
+=== RUN   TestNativeGenerationHistoryRetainedOwnersSurviveMixedPublications/candidate-first
+--- PASS: TestNativeGenerationHistoryRetainedOwnersSurviveMixedPublications (3.22s)
+    --- PASS: TestNativeGenerationHistoryRetainedOwnersSurviveMixedPublications/baseline-first (1.66s)
+    --- PASS: TestNativeGenerationHistoryRetainedOwnersSurviveMixedPublications/candidate-first (1.56s)
+=== RUN   TestNativeGenerationHistoryRefusesUnknownNamespaceAndWriterInterleave
+=== RUN   TestNativeGenerationHistoryRefusesUnknownNamespaceAndWriterInterleave/private-extra
+=== RUN   TestNativeGenerationHistoryRefusesUnknownNamespaceAndWriterInterleave/public-extra
+=== RUN   TestNativeGenerationHistoryRefusesUnknownNamespaceAndWriterInterleave/writer-candidate
+=== RUN   TestNativeGenerationHistoryRefusesUnknownNamespaceAndWriterInterleave/writer-baseline
+--- PASS: TestNativeGenerationHistoryRefusesUnknownNamespaceAndWriterInterleave (2.66s)
+    --- PASS: TestNativeGenerationHistoryRefusesUnknownNamespaceAndWriterInterleave/private-extra (0.65s)
+    --- PASS: TestNativeGenerationHistoryRefusesUnknownNamespaceAndWriterInterleave/public-extra (0.65s)
+    --- PASS: TestNativeGenerationHistoryRefusesUnknownNamespaceAndWriterInterleave/writer-candidate (0.68s)
+    --- PASS: TestNativeGenerationHistoryRefusesUnknownNamespaceAndWriterInterleave/writer-baseline (0.67s)
+=== RUN   TestNativeGenerationHistoryCancelledSuccessorBlocksAllRetainedOwners
+--- PASS: TestNativeGenerationHistoryCancelledSuccessorBlocksAllRetainedOwners (1.10s)
+PASS

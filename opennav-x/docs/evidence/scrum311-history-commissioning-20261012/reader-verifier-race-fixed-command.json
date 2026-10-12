@@ -1,0 +1,18 @@
+{
+  "cwd": "/home/standard/Projects/X-nav-worktrees/commissioning-reader-20261012/opennav-x/tools/update-verifier",
+  "argv": [
+    "/tmp/skager-go-1.27.1/go/bin/go",
+    "test",
+    "-race",
+    "-count=1",
+    "-json",
+    ".",
+    "-run",
+    "Test(StageRecovery|ImportApprovedBaseline|RetainedBaselineEvidence|PrepareRecovery|RecoveryUsesRetained)"
+  ],
+  "environment": {
+    "GOPROXY": "off",
+    "GOTOOLCHAIN": "local",
+    "GOTMPDIR": "/home/standard/Projects/.tmp/skager-bootstrap-publisher"
+  }
+}

@@ -1,0 +1,17 @@
+test_actual_bad_build_identity_even_with_matching_record_and_hash (__main__.BrokerPackageTests.test_actual_bad_build_identity_even_with_matching_record_and_hash) ... ok
+test_decorative_overlay_unsupported_inline_and_ambiguous_markers (__main__.BrokerPackageTests.test_decorative_overlay_unsupported_inline_and_ambiguous_markers) ... ok
+test_duplicate_json_and_bounded_build_info (__main__.BrokerPackageTests.test_duplicate_json_and_bounded_build_info) ... ok
+test_exact_descriptor_and_no_mutation (__main__.BrokerPackageTests.test_exact_descriptor_and_no_mutation) ... ok
+test_forged_record_metadata_cannot_replace_embedded_info (__main__.BrokerPackageTests.test_forged_record_metadata_cannot_replace_embedded_info) ... ok
+test_imported_module_members_are_hash_checked (__main__.BrokerPackageTests.test_imported_module_members_are_hash_checked) ... ok
+test_missing_renamed_linked_or_oversized_binary_and_record (__main__.BrokerPackageTests.test_missing_renamed_linked_or_oversized_binary_and_record) ... ok
+test_mixed_commit_schema_recipe_and_source_descriptor (__main__.BrokerPackageTests.test_mixed_commit_schema_recipe_and_source_descriptor) ... ok
+test_source_alias_links_duplicates_unsafe_paths_and_budgets (__main__.BrokerPackageTests.test_source_alias_links_duplicates_unsafe_paths_and_budgets) ... ok
+test_source_main_host_inventory_reference_and_member_bytes (__main__.BrokerPackageTests.test_source_main_host_inventory_reference_and_member_bytes) ... ok
+test_trimpath_rejects_anomalous_ldflags_metadata (__main__.BrokerPackageTests.test_trimpath_rejects_anomalous_ldflags_metadata) ... ok
+test_wrong_architecture_subsystem_and_binary_bytes (__main__.BrokerPackageTests.test_wrong_architecture_subsystem_and_binary_bytes) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 5.831s
+
+OK

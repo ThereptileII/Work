@@ -1,0 +1,33 @@
+=== RUN   TestNativeCandidateCommissioningOriginalCustodyAndSeal
+--- PASS: TestNativeCandidateCommissioningOriginalCustodyAndSeal (0.42s)
+=== RUN   TestNativeCandidateCommissioningReconciliationPreservesExactResidue
+=== RUN   TestNativeCandidateCommissioningReconciliationPreservesExactResidue/complete
+=== RUN   TestNativeCandidateCommissioningReconciliationPreservesExactResidue/partial
+=== RUN   TestNativeCandidateCommissioningReconciliationPreservesExactResidue/empty
+=== RUN   TestNativeCandidateCommissioningReconciliationPreservesExactResidue/unknown
+=== RUN   TestNativeCandidateCommissioningReconciliationPreservesExactResidue/alias
+=== RUN   TestNativeCandidateCommissioningReconciliationPreservesExactResidue/hardlink
+=== RUN   TestNativeCandidateCommissioningReconciliationPreservesExactResidue/wrong-type
+--- PASS: TestNativeCandidateCommissioningReconciliationPreservesExactResidue (0.18s)
+    --- PASS: TestNativeCandidateCommissioningReconciliationPreservesExactResidue/complete (0.07s)
+    --- PASS: TestNativeCandidateCommissioningReconciliationPreservesExactResidue/partial (0.02s)
+    --- PASS: TestNativeCandidateCommissioningReconciliationPreservesExactResidue/empty (0.02s)
+    --- PASS: TestNativeCandidateCommissioningReconciliationPreservesExactResidue/unknown (0.02s)
+    --- PASS: TestNativeCandidateCommissioningReconciliationPreservesExactResidue/alias (0.02s)
+    --- PASS: TestNativeCandidateCommissioningReconciliationPreservesExactResidue/hardlink (0.02s)
+    --- PASS: TestNativeCandidateCommissioningReconciliationPreservesExactResidue/wrong-type (0.02s)
+=== RUN   TestNativeInstalledBaselineCommissioningHelpersExactNamespace
+=== RUN   TestNativeInstalledBaselineCommissioningHelpersExactNamespace/complete
+=== RUN   TestNativeInstalledBaselineCommissioningHelpersExactNamespace/missing
+=== RUN   TestNativeInstalledBaselineCommissioningHelpersExactNamespace/tampered
+=== RUN   TestNativeInstalledBaselineCommissioningHelpersExactNamespace/extra
+=== RUN   TestNativeInstalledBaselineCommissioningHelpersExactNamespace/alias
+=== RUN   TestNativeInstalledBaselineCommissioningHelpersExactNamespace/hardlink
+--- PASS: TestNativeInstalledBaselineCommissioningHelpersExactNamespace (1.76s)
+    --- PASS: TestNativeInstalledBaselineCommissioningHelpersExactNamespace/complete (0.41s)
+    --- PASS: TestNativeInstalledBaselineCommissioningHelpersExactNamespace/missing (0.22s)
+    --- PASS: TestNativeInstalledBaselineCommissioningHelpersExactNamespace/tampered (0.27s)
+    --- PASS: TestNativeInstalledBaselineCommissioningHelpersExactNamespace/extra (0.28s)
+    --- PASS: TestNativeInstalledBaselineCommissioningHelpersExactNamespace/alias (0.28s)
+    --- PASS: TestNativeInstalledBaselineCommissioningHelpersExactNamespace/hardlink (0.29s)
+PASS

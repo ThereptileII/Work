@@ -1,0 +1,6 @@
+=== RUN   TestNativeGenerationHistoryRetainedOwnersSurviveMixedPublications
+=== RUN   TestNativeGenerationHistoryRetainedOwnersSurviveMixedPublications/baseline-first
+=== RUN   TestNativeGenerationHistoryRetainedOwnersSurviveMixedPublications/candidate-first
+--- PASS: TestNativeGenerationHistoryRetainedOwnersSurviveMixedPublications (3.22s)
+    --- PASS: TestNativeGenerationHistoryRetainedOwnersSurviveMixedPublications/baseline-first (1.66s)
+    --- PASS: TestNativeGenerationHistoryRetainedOwnersSurviveMixedPublications/candidate-first (1.56s)

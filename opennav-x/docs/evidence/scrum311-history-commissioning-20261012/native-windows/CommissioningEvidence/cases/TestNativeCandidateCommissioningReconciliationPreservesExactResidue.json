@@ -1,0 +1,15 @@
+{
+    "schema":  1,
+    "group":  "CommissioningEvidence",
+    "name":  "TestNativeCandidateCommissioningReconciliationPreservesExactResidue",
+    "selection":  "^TestNativeCandidateCommissioningReconciliationPreservesExactResidue$",
+    "runMarkers":  1,
+    "passMarkers":  1,
+    "executableSha256":  "c99060dc341530323c7bef15e5f7a7c4133324d8f2aa55152c0f5ec3988c0e08",
+    "exitCode":  0,
+    "os":  "Microsoft Windows NT 10.0.22631.0",
+    "timedOut":  false,
+    "groupReceipt":  "C:\\XNav\\ComponentChecks\\history-commissioning-8ee7e633\\CommissioningEvidence\\receipt.json",
+    "executionLog":  "C:\\XNav\\ComponentChecks\\history-commissioning-8ee7e633\\CommissioningEvidence\\tests-stdout.log",
+    "caseLog":  "TestNativeCandidateCommissioningReconciliationPreservesExactResidue.log"
+}

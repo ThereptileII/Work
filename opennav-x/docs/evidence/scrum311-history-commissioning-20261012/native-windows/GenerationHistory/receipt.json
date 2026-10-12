@@ -1,0 +1,50 @@
+{
+    "schema":  1,
+    "group":  "GenerationHistory",
+    "executable":  "C:\\XNav\\ComponentChecks\\history-commissioning-8ee7e633\\brokerstore.test.exe",
+    "executableSha256":  "c99060dc341530323c7bef15e5f7a7c4133324d8f2aa55152c0f5ec3988c0e08",
+    "expectedCases":  [
+                          "TestNativeGenerationHistoryRetainedOwnersSurviveMixedPublications",
+                          "TestNativeGenerationHistoryRefusesUnknownNamespaceAndWriterInterleave",
+                          "TestNativeGenerationHistoryCancelledSuccessorBlocksAllRetainedOwners"
+                      ],
+    "selection":  "^(TestNativeGenerationHistoryRetainedOwnersSurviveMixedPublications|TestNativeGenerationHistoryRefusesUnknownNamespaceAndWriterInterleave|TestNativeGenerationHistoryCancelledSuccessorBlocksAllRetainedOwners)$",
+    "status":  "passed",
+    "failure":  null,
+    "startedUtc":  "2026-10-12T09:46:46.4903327Z",
+    "os":  "Microsoft Windows NT 10.0.22631.0",
+    "os64":  true,
+    "process64":  true,
+    "powershellVersion":  "5.1.22621.5624",
+    "listing":  {
+                    "arguments":  [
+                                      "-test.list=^(TestNativeGenerationHistoryRetainedOwnersSurviveMixedPublications|TestNativeGenerationHistoryRefusesUnknownNamespaceAndWriterInterleave|TestNativeGenerationHistoryCancelledSuccessorBlocksAllRetainedOwners)$"
+                                  ],
+                    "processId":  9756,
+                    "startedUtc":  "2026-10-12T09:46:46.5172151Z",
+                    "exitCode":  0,
+                    "timedOut":  false,
+                    "error":  null,
+                    "stdout":  "C:\\XNav\\ComponentChecks\\history-commissioning-8ee7e633\\GenerationHistory\\list-stdout.log",
+                    "stderr":  "C:\\XNav\\ComponentChecks\\history-commissioning-8ee7e633\\GenerationHistory\\list-stderr.log",
+                    "elapsedMilliseconds":  433
+                },
+    "execution":  {
+                      "arguments":  [
+                                        "-test.run=^(TestNativeGenerationHistoryRetainedOwnersSurviveMixedPublications|TestNativeGenerationHistoryRefusesUnknownNamespaceAndWriterInterleave|TestNativeGenerationHistoryCancelledSuccessorBlocksAllRetainedOwners)$",
+                                        "-test.count=1",
+                                        "-test.v",
+                                        "-test.timeout=90s"
+                                    ],
+                      "processId":  4800,
+                      "startedUtc":  "2026-10-12T09:46:47.0127388Z",
+                      "exitCode":  0,
+                      "timedOut":  false,
+                      "error":  null,
+                      "stdout":  "C:\\XNav\\ComponentChecks\\history-commissioning-8ee7e633\\GenerationHistory\\tests-stdout.log",
+                      "stderr":  "C:\\XNav\\ComponentChecks\\history-commissioning-8ee7e633\\GenerationHistory\\tests-stderr.log",
+                      "elapsedMilliseconds":  7005
+                  },
+    "scope":  "Exact inert native fixtures only; no application/service/profile/network/physical output; not enrollment or release qualification",
+    "completedUtc":  "2026-10-12T09:46:54.2446503Z"
+}

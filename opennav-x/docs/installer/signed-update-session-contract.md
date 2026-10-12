@@ -425,6 +425,28 @@ retain loader/process custody through authenticated readiness, and preserve the
 real restoration/commissioning sequence for candidate and fallback. The older
 per-user Lifecycle mutation path cannot stand in for that integration.
 
+### Atomic live generation history and commissioning source closure
+
+`Store.MaterializeCandidateReadOnlyFresh` and
+`Store.MaterializeApprovedBaselineReadOnlyFresh` retain the Store lease through
+fresh publication, the one-way native writer-to-reader transfer, preparation of
+independent original successor history handles, installation and final validation.
+All public generation/member operations use Store-before-generation locking.
+The actual native staging adapter uses the candidate read-only API. Historical
+writer-returning APIs refuse before mutation when same-client owners remain live.
+Unknown namespaces still refuse; post-reservation uncertainty poisons affected
+owners and preserves durable evidence. No directory rescan adopts new authority.
+
+`installer/commissioning-v1` is an exact zero-or-twelve historical inventory
+contract. Current package producers require all twelve original commissioning
+sources before NSIS, check their original hashes afterward and before Recovery
+publication, and bind them into the inventory/archive/checksums. Import, staging
+and native stores retain them separately from the unchanged exact three engine
+helpers. A retained source closure alone grants no commissioning, profile-policy,
+selected, spawn or healthy-start authority; in particular it does not generalize
+the existing boat-specific COM8/profile policy. See the
+[joined exact native evidence](../evidence/scrum311-history-commissioning-20261012/README.md).
+
 ### One-way read-only generation transfer
 
 `InstalledGeneration.TransitionReadOnly` now closes each original data writer
