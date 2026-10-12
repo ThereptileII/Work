@@ -149,9 +149,18 @@ func checkSecurity(handle windows.Handle, expected *windows.SECURITY_DESCRIPTOR)
 type ancestorPolicy struct {
 	trusted         map[string]bool
 	forbidChildAdds bool
+	programData     *programDataGuard
 }
 
 func checkAncestor(handle windows.Handle, policy *ancestorPolicy) error {
+	if policy.programData != nil {
+		if policy.forbidChildAdds {
+			return errors.New("ProgramData guard cannot waive protected parent policy")
+		}
+		if err := policy.programData.check(handle); err != nil {
+			return err
+		}
+	}
 	sd, err := windows.GetSecurityInfo(handle, windows.SE_FILE_OBJECT, windows.OWNER_SECURITY_INFORMATION|windows.DACL_SECURITY_INFORMATION)
 	if err != nil {
 		return err
@@ -173,6 +182,11 @@ func checkAncestorDescriptor(sd *windows.SECURITY_DESCRIPTOR, policy *ancestorPo
 	}
 	const fileDeleteChild uint32 = 0x40
 	dangerous := uint32(windows.DELETE|windows.WRITE_DAC|windows.WRITE_OWNER|windows.GENERIC_ALL|windows.GENERIC_WRITE|windows.FILE_WRITE_ATTRIBUTES|windows.FILE_WRITE_EA) | fileDeleteChild
+	if policy.programData != nil && !policy.forbidChildAdds {
+		// The retained original nonempty child is checked by checkAncestor before
+		// this narrow waiver. No other mutation right or ancestor is relaxed.
+		dangerous &^= windows.FILE_WRITE_ATTRIBUTES | windows.FILE_WRITE_EA
+	}
 	if policy.forbidChildAdds {
 		dangerous |= windows.FILE_WRITE_DATA | windows.FILE_APPEND_DATA
 	} // FILE_ADD_FILE/SUBDIRECTORY
@@ -245,7 +259,7 @@ func physical(name string) string {
 func sameIdentity(a, b windows.ByHandleFileInformation) bool {
 	return a.VolumeSerialNumber == b.VolumeSerialNumber && a.FileIndexHigh == b.FileIndexHigh && a.FileIndexLow == b.FileIndexLow && a.CreationTime == b.CreationTime
 }
-func openPin(path, expected string, security *windows.SECURITY_DESCRIPTOR) (*nativePin, error) {
+func openPin(path, expected string, security *windows.SECURITY_DESCRIPTOR) (result *nativePin, resultErr error) {
 	pointer, err := windows.UTF16PtrFromString(path)
 	if err != nil {
 		return nil, err
@@ -262,7 +276,7 @@ func openPin(path, expected string, security *windows.SECURITY_DESCRIPTOR) (*nat
 	ok := false
 	defer func() {
 		if !ok {
-			windows.CloseHandle(handle)
+			resultErr = errors.Join(resultErr, windows.CloseHandle(handle))
 		}
 	}()
 	if err = windows.GetFileInformationByHandle(handle, &pin.info); err != nil {
@@ -286,7 +300,7 @@ func openPin(path, expected string, security *windows.SECURITY_DESCRIPTOR) (*nat
 	ok = true
 	return pin, nil
 }
-func (pin *nativePin) check() error {
+func (pin *nativePin) checkIdentityOnly() error {
 	var current windows.ByHandleFileInformation
 	if err := windows.GetFileInformationByHandle(pin.handle, &current); err != nil {
 		return err
@@ -295,13 +309,19 @@ func (pin *nativePin) check() error {
 	if err != nil || name != pin.name || !sameIdentity(pin.info, current) || current.FileAttributes&(windows.FILE_ATTRIBUTE_DIRECTORY|windows.FILE_ATTRIBUTE_REPARSE_POINT) != windows.FILE_ATTRIBUTE_DIRECTORY {
 		return errors.New("held physical directory changed")
 	}
+	return nil
+}
+func (pin *nativePin) check() (resultErr error) {
+	if err := pin.checkIdentityOnly(); err != nil {
+		return err
+	}
 	if pin.ancestor != nil {
-		if err = checkAncestor(pin.handle, pin.ancestor); err != nil {
+		if err := checkAncestor(pin.handle, pin.ancestor); err != nil {
 			return err
 		}
 	}
 	if pin.security != nil {
-		if err = checkSecurity(pin.handle, pin.security); err != nil {
+		if err := checkSecurity(pin.handle, pin.security); err != nil {
 			return err
 		}
 	}
@@ -310,7 +330,7 @@ func (pin *nativePin) check() error {
 		if err != nil {
 			return err
 		}
-		defer windows.CloseHandle(probe.handle)
+		defer func() { resultErr = errors.Join(resultErr, windows.CloseHandle(probe.handle)) }()
 		if !sameIdentity(pin.info, probe.info) {
 			return errors.New("fixed DOS directory resolves to another identity")
 		}
@@ -405,6 +425,15 @@ func Open(root string) (result *Store, resultErr error) {
 		n.pins = append(n.pins, pin)
 		if expected == nil {
 			pin.ancestor = ancestor
+			if i == len(all)-3 { // The actual fixed KnownFolder ProgramData, not a drive or arbitrary ancestor.
+				pin.dos = programData
+				guard, retained, err := fixedProgramDataGuard(pin, programData)
+				if err != nil {
+					return nil, err
+				}
+				n.pins = append(n.pins, retained...)
+				pin.ancestor = &ancestorPolicy{trusted: trusted, programData: guard}
+			}
 			// The fixed SKAGER parent is provisioned, not a general ProgramData child.
 			if i == len(all)-2 {
 				pin.ancestor = &ancestorPolicy{trusted: trusted, forbidChildAdds: true}

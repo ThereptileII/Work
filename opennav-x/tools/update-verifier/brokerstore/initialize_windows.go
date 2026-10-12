@@ -123,7 +123,7 @@ func prepareFreshCreation(creationRights bool) (result *nativeFreshCreation, res
 	if err != nil {
 		return nil, err
 	}
-	if err = creation.holdParent(parentDOS, trusted, creationRights); err != nil {
+	if err = creation.holdParent(parentDOS, programData, trusted, creationRights); err != nil {
 		return nil, err
 	}
 	ready = true
@@ -139,7 +139,7 @@ type nativeFreshCreation struct {
 	fenceLength         int64
 }
 
-func (c *nativeFreshCreation) holdParent(parentDOS string, trusted map[string]bool, creationRights bool) error {
+func (c *nativeFreshCreation) holdParent(parentDOS, programData string, trusted map[string]bool, creationRights bool) error {
 	ancestor := &ancestorPolicy{trusted: trusted}
 	drive, err := openPin(parentDOS[:3], "", nil)
 	if err != nil {
@@ -181,6 +181,15 @@ func (c *nativeFreshCreation) holdParent(parentDOS string, trusted map[string]bo
 		}
 		c.pins = append(c.pins, pin)
 		pin.ancestor = ancestor
+		if i == len(all)-2 { // Actual KnownFolder ProgramData, immediately before the fixed SKAGER parent.
+			pin.dos = programData
+			guard, retained, err := fixedProgramDataGuard(pin, programData)
+			if err != nil {
+				return err
+			}
+			c.pins = append(c.pins, retained...)
+			pin.ancestor = &ancestorPolicy{trusted: trusted, programData: guard}
+		}
 		if i == len(all)-1 {
 			pin.ancestor = &ancestorPolicy{trusted: trusted, forbidChildAdds: true}
 			pin.dos = parentDOS
