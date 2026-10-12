@@ -104,6 +104,61 @@ func TestServiceManagerAndServiceMutationRightsRemainDistinct(t *testing.T) {
 	}
 }
 
+// Descriptor-only fixtures; they do not create keys or claim a child's actual
+// inherited ACL. Native enrollment must check each original descendant itself.
+func TestServiceRegistryCreatorOwnerTemplateIsNotPrincipalAuthority(t *testing.T) {
+	mutation := uint32(windows.DELETE | windows.WRITE_DAC | windows.WRITE_OWNER | windows.GENERIC_ALL | windows.GENERIC_WRITE |
+		windows.KEY_SET_VALUE | windows.KEY_CREATE_SUB_KEY | windows.KEY_CREATE_LINK)
+	template := "O:BAD:P(A;;KA;;;SY)(A;CI;KA;;;CO)"
+	parse := func(sddl string) *windows.SECURITY_DESCRIPTOR {
+		t.Helper()
+		sd, err := windows.SecurityDescriptorFromString(sddl)
+		if err != nil {
+			t.Fatal(err)
+		}
+		return sd
+	}
+	for index := uint32(1); index <= 5; index++ {
+		if err := serviceDescriptorSafeAt(parse(template), mutation, serviceSecurityLocation{role: serviceSecurityRegistryAncestor, ancestor: index}); err != nil {
+			t.Fatal("exact registry inheritance template refused", err)
+		}
+	}
+	for _, location := range []serviceSecurityLocation{
+		{}, {role: serviceSecurityManager}, {role: serviceSecurityInitialService},
+		{role: serviceSecurityRole(255), ancestor: 1},
+		{role: serviceSecurityRegistryAncestor}, {role: serviceSecurityRegistryAncestor, ancestor: 6},
+	} {
+		if err := serviceDescriptorSafeAt(parse(template), mutation, location); err == nil {
+			t.Fatal("registry inheritance template transferred to another object context")
+		}
+	}
+	registry := serviceSecurityLocation{role: serviceSecurityRegistryAncestor, ancestor: 1}
+	for _, sddl := range []string{
+		"O:BAD:P(A;;KA;;;SY)(A;;KA;;;CO)",
+		"O:BAD:P(A;;KA;;;SY)(A;OI;KA;;;CO)",
+		"O:BAD:P(A;;KA;;;SY)(A;CIOI;KA;;;CO)",
+		"O:BAD:P(A;;KA;;;SY)(A;CINP;KA;;;CO)",
+		"O:BAD:P(A;;KA;;;SY)(A;CIID;KA;;;CO)",
+		"O:BAD:P(A;;KA;;;SY)(A;CI;0xd0026;;;CO)",
+		"O:BAD:P(A;;KA;;;SY)(A;CI;GA;;;CO)",
+		"O:BAD:P(A;;KA;;;SY)(A;CI;KA;;;CG)",
+		"O:BAD:P(A;;KA;;;SY)(A;CI;KA;;;S-1-3-4)",
+		// Materialized effective child grant to an untrusted real creator.
+		"O:BAD:P(A;;KA;;;SY)(A;CI;KA;;;CO)(A;ID;KA;;;AU)",
+		// The template cannot hide a separate untrusted parent create grant.
+		"O:BAD:P(A;;KA;;;SY)(A;CI;KA;;;CO)(A;;0x4;;;AU)",
+		"O:COD:P(A;;KA;;;SY)(A;CI;KA;;;CO)",
+		"O:AUD:P(A;;KA;;;SY)(A;CI;KA;;;CO)",
+	} {
+		if err := serviceDescriptorSafeAt(parse(sddl), mutation, registry); err == nil {
+			t.Fatal("altered template, untrusted creator/create grant or owner accepted", sddl)
+		}
+	}
+	if trustedServiceOwner("S-1-3-0") || trustedServiceOwner("S-1-3-4") {
+		t.Fatal("generic creator or current-owner SID became a trusted owner/principal")
+	}
+}
+
 // Inert descriptor parsing only. These tests never open SCM, create a service,
 // change machine security, run a child or qualify native enrollment.
 func TestServiceCreationDescriptorRejectsUntrustedMutation(t *testing.T) {

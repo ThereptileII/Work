@@ -152,6 +152,16 @@ func serviceDescriptorSafeAt(sd *windows.SECURITY_DESCRIPTOR, mutation uint32, l
 		if !sid.IsValid() {
 			return errors.New("invalid machine ACE SID")
 		}
+		// CREATOR OWNER is an inheritance placeholder, replaced with the
+		// actual creator SID in an effective child ACE, not a trusted principal:
+		// https://learn.microsoft.com/windows/win32/secauthz/ace-inheritance-rules
+		// Recognize only the observed registry template on the four fixed HKLM
+		// ancestors or the new service key. Each child's own owner and effective
+		// ACL must still pass this validator; no parent create right is implied.
+		if location.role == serviceSecurityRegistryAncestor && location.ancestor >= 1 && location.ancestor <= 5 &&
+			sid.String() == "S-1-3-0" && ace.Header.AceFlags == windows.CONTAINER_INHERIT_ACE && uint32(ace.Mask) == windows.KEY_ALL_ACCESS {
+			continue
+		}
 		if ace.Header.AceFlags&windows.INHERIT_ONLY_ACE == 0 && uint32(ace.Mask)&mutation != 0 && !trustedServiceOwner(sid.String()) {
 			return &serviceMutationError{location: location, ownerSID: owner.String(), aceSID: sid.String(),
 				mask: uint32(ace.Mask), mutation: mutation, flags: ace.Header.AceFlags}
