@@ -1,0 +1,8 @@
+[
+  {
+    "directory": "/home/standard/Projects/X-nav-worktrees/scrum209-native-byte-policy-20261012/opennav-x/build/plugin-tls-byte-policy-cmake-20261012",
+    "command": "/usr/bin/c++ -I/home/standard/Projects/X-nav-worktrees/scrum209-native-byte-policy-20261012/opennav-x/cmake/../src -I/home/standard/Projects/X-nav-worktrees/source-batch-20261011/opennav-x/build/integration-source/libs/picosha2 -o CMakeFiles/plugin_tls_byte_policy_test.dir/tests/plugin_tls_byte_policy_test.cpp.o -c /home/standard/Projects/X-nav-worktrees/scrum209-native-byte-policy-20261012/opennav-x/tests/plugin_tls_byte_policy_test.cpp",
+    "file": "/home/standard/Projects/X-nav-worktrees/scrum209-native-byte-policy-20261012/opennav-x/tests/plugin_tls_byte_policy_test.cpp",
+    "output": "/home/standard/Projects/X-nav-worktrees/scrum209-native-byte-policy-20261012/opennav-x/build/plugin-tls-byte-policy-cmake-20261012/CMakeFiles/plugin_tls_byte_policy_test.dir/tests/plugin_tls_byte_policy_test.cpp.o"
+  }
+]

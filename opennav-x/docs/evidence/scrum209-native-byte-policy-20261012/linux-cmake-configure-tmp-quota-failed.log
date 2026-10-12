@@ -1,0 +1,36 @@
+-- The CXX compiler identification is unknown
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - failed
+-- Check for working CXX compiler: /usr/bin/c++
+-- Check for working CXX compiler: /usr/bin/c++ - broken
+CMake Error at /home/standard/Projects/X-nav/.local/sysroot/usr/share/cmake/Modules/CMakeTestCXXCompiler.cmake:71 (message):
+  The C++ compiler
+
+    "/usr/bin/c++"
+
+  is not able to compile a simple test program.
+
+  It fails with the following output:
+
+    Change Dir: '/home/standard/Projects/X-nav-worktrees/scrum209-native-byte-policy-20261012/opennav-x/build/plugin-tls-byte-policy-cmake-20261012/CMakeFiles/CMakeScratch/TryCompile-lNQLpS'
+
+    Run Build Command(s): /home/standard/Projects/X-nav/.local/sysroot/usr/bin/ninja -v cmTC_d5d4b
+    [1/2] /usr/bin/c++    -o CMakeFiles/cmTC_d5d4b.dir/testCXXCompiler.cxx.o -c /home/standard/Projects/X-nav-worktrees/scrum209-native-byte-policy-20261012/opennav-x/build/plugin-tls-byte-policy-cmake-20261012/CMakeFiles/CMakeScratch/TryCompile-lNQLpS/testCXXCompiler.cxx
+    FAILED: [code=1] CMakeFiles/cmTC_d5d4b.dir/testCXXCompiler.cxx.o
+    /usr/bin/c++    -o CMakeFiles/cmTC_d5d4b.dir/testCXXCompiler.cxx.o -c /home/standard/Projects/X-nav-worktrees/scrum209-native-byte-policy-20261012/opennav-x/build/plugin-tls-byte-policy-cmake-20261012/CMakeFiles/CMakeScratch/TryCompile-lNQLpS/testCXXCompiler.cxx
+    /home/standard/Projects/X-nav-worktrees/scrum209-native-byte-policy-20261012/opennav-x/build/plugin-tls-byte-policy-cmake-20261012/CMakeFiles/CMakeScratch/TryCompile-lNQLpS/testCXXCompiler.cxx:4:21: fatal error: error closing /tmp/ccUlHVta.s: Disk quota exceeded
+        4 | int main(){return 0;}
+          |                     ^
+    compilation terminated.
+    ninja: build stopped: subcommand failed.
+
+
+
+
+
+  CMake will not be able to correctly generate this project.
+Call Stack (most recent call first):
+  CMakeLists.txt:2 (project)
+
+
+-- Configuring incomplete, errors occurred!

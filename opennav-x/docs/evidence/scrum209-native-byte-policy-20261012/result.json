@@ -1,0 +1,98 @@
+{
+  "schema": 1,
+  "issue": "SCRUM-209",
+  "source_commit": "eede2fe90c1ccc31123bd7fdcf5c728763c3cc6f",
+  "observed_date": "2026-10-12",
+  "host_alias": "boat",
+  "host_is_64bit_os": true,
+  "test": "opennav-x/tests/plugin_tls_byte_policy_test.cpp",
+  "required_architecture": "x86",
+  "result": "BLOCKED_NATIVE_MSVC_UNAVAILABLE",
+  "component_query": {
+    "executable": "C:\\Program Files (x86)\\Microsoft Visual Studio\\Installer\\vswhere.exe",
+    "arguments": [
+      "-products",
+      "*",
+      "-requires",
+      "Microsoft.VisualStudio.Component.VC.Tools.x86.x64",
+      "-format",
+      "json"
+    ],
+    "stdout": [],
+    "ssh_exit_code": 0
+  },
+  "all_products_query": {
+    "arguments": [
+      "-products",
+      "*",
+      "-all",
+      "-format",
+      "json"
+    ],
+    "ssh_exit_code": 0,
+    "registered_products": [
+      {
+        "instanceId": "94966a0d",
+        "installationPath": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\BuildTools",
+        "installationVersion": "16.11.36128.20",
+        "productId": "Microsoft.VisualStudio.Product.BuildTools",
+        "displayName": "Visual Studio Build Tools 2019",
+        "isComplete": true,
+        "isLaunchable": true,
+        "isRebootRequired": false
+      }
+    ]
+  },
+  "compiler_file_search": {
+    "roots": [
+      "C:\\Program Files\\Microsoft Visual Studio",
+      "C:\\Program Files (x86)\\Microsoft Visual Studio"
+    ],
+    "recursive_filters": [
+      "vcvarsall.bat",
+      "cl.exe"
+    ],
+    "stdout_matches": []
+  },
+  "application_pid1852_present_after_probe": true,
+  "compiler": null,
+  "compiler_architecture": null,
+  "executable_sha256": null,
+  "compile_attempted": false,
+  "execution_attempted": false,
+  "execution_stdout": null,
+  "source_transfer_attempted": false,
+  "private_windows_workspace_created": false,
+  "no_install_or_crosscompile_attempted": true,
+  "local_source_manifest": [
+    {
+      "path": "opennav-x/tests/plugin_tls_byte_policy_test.cpp",
+      "bytes": 5840,
+      "sha256": "320d514d729ff26add84f74d0da6fd0f540ba14f1d84c64aa8a48237b0016776",
+      "matches_source_commit": true,
+      "transferred": false
+    },
+    {
+      "path": "opennav-x/src/integration/PluginTlsBytePolicy.h",
+      "bytes": 682,
+      "sha256": "146b2d294748e557e69f720cd548e307361ad478d3f758e6d1a7d2a6ac0d0173",
+      "matches_source_commit": true,
+      "transferred": false
+    },
+    {
+      "path": "opennav-x/src/integration/Win32PluginTlsImports.h",
+      "bytes": 8145,
+      "sha256": "16aff5921a2dd7ebb1b2b68c5a4c8118ee8c4ba2c78a96d1e30221e6ddac89f1",
+      "matches_source_commit": true,
+      "transferred": false
+    },
+    {
+      "path": "opennav-x/src/integration/Win32PeImports.h",
+      "bytes": 9068,
+      "sha256": "f35fd4b4e0bb5d9508dd473857876eb2cfb7db4d9466cf46bb58ba424f2fb85f",
+      "matches_source_commit": true,
+      "transferred": false
+    }
+  ],
+  "scope_limit": "Toolchain discovery only. This is not a native test pass, plugin-load proof, product acceptance, or release qualification."
+}

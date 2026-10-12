@@ -1,0 +1,109 @@
+{
+  "schema": 1,
+  "issue": "SCRUM-209",
+  "source_commit": "eede2fe90c1ccc31123bd7fdcf5c728763c3cc6f",
+  "observed_date": "2026-10-12",
+  "platform": "Linux",
+  "target": "plugin_tls_byte_policy_test",
+  "registered_ctest_case": "plugin_tls_known_obsolete_bytes",
+  "result": "PASS",
+  "assertions": 241,
+  "selected_test_count": 1,
+  "configure_exit_code": 0,
+  "build_exit_code": 0,
+  "ctest_exit_code": 0,
+  "full_build_or_suite_run": false,
+  "ui_components": false,
+  "runtime_test_fixtures": false,
+  "pilot_loopback_tests": false,
+  "new_download_or_install": false,
+  "dependency_source": "existing local cache; FETCHCONTENT_FULLY_DISCONNECTED=ON and explicit RapidJSON/picosha2 paths",
+  "source_manifest": [
+    {
+      "path": "opennav-x/CMakeLists.txt",
+      "bytes": 39357,
+      "sha256": "6ba14345c6d53cf4568dec32afd6c98926709d50d135d9d463f80872f042c2b2",
+      "matches_source_commit": true
+    },
+    {
+      "path": "opennav-x/cmake/PluginTlsTests.cmake",
+      "bytes": 2204,
+      "sha256": "e3ed20ff05dcc3f918d2103989a382f6d613dd5b22cbfc5b6fe85c09be80a582",
+      "matches_source_commit": true
+    },
+    {
+      "path": "opennav-x/cmake/AisJson.cmake",
+      "bytes": 1884,
+      "sha256": "9d5c4342c9a2cba43920660998a7b4e1a8ae84fd7c23497919c83812f6f40378",
+      "matches_source_commit": true
+    },
+    {
+      "path": "opennav-x/tests/windows_ocharts_loader/inputs.lock.json",
+      "bytes": 1163,
+      "sha256": "156ee587b620f8f8adccf8cb58c7df4c0c7676c1aa8325e07898efb0b40cf840",
+      "matches_source_commit": true
+    },
+    {
+      "path": "opennav-x/tests/plugin_tls_byte_policy_test.cpp",
+      "bytes": 5840,
+      "sha256": "320d514d729ff26add84f74d0da6fd0f540ba14f1d84c64aa8a48237b0016776",
+      "matches_source_commit": true
+    },
+    {
+      "path": "opennav-x/src/integration/PluginTlsBytePolicy.h",
+      "bytes": 682,
+      "sha256": "146b2d294748e557e69f720cd548e307361ad478d3f758e6d1a7d2a6ac0d0173",
+      "matches_source_commit": true
+    },
+    {
+      "path": "opennav-x/src/integration/Win32PluginTlsImports.h",
+      "bytes": 8145,
+      "sha256": "16aff5921a2dd7ebb1b2b68c5a4c8118ee8c4ba2c78a96d1e30221e6ddac89f1",
+      "matches_source_commit": true
+    },
+    {
+      "path": "opennav-x/src/integration/Win32PeImports.h",
+      "bytes": 9068,
+      "sha256": "f35fd4b4e0bb5d9508dd473857876eb2cfb7db4d9466cf46bb58ba424f2fb85f",
+      "matches_source_commit": true
+    }
+  ],
+  "picosha2": {
+    "cache_path": "/home/standard/Projects/X-nav-worktrees/source-batch-20261011/opennav-x/build/integration-source/libs/picosha2/picosha2.h",
+    "bytes": 13017,
+    "sha256": "9df7a5696f37981f75ad1b7854cc833176ae48debf3ee4bfc024fe9dfc8b8624",
+    "matches_source_locked_pin": true
+  },
+  "executable": {
+    "path": "/home/standard/Projects/X-nav-worktrees/scrum209-native-byte-policy-20261012/opennav-x/build/plugin-tls-byte-policy-cmake-20261012/plugin_tls_byte_policy_test",
+    "bytes": 237432,
+    "sha256": "d71bc984b4d4aba3677c219abf8467f82dd72a20860e1b4fb703e2bfabe64304",
+    "format": "ELF",
+    "elf_class": 2,
+    "machine": 62
+  },
+  "toolchain": {
+    "cmake": {
+      "version_stdout": "cmake version 4.4.3\n\nCMake suite maintained and supported by Kitware (kitware.com/cmake).\n",
+      "path": "/home/standard/Projects/X-nav/.local/sysroot/usr/bin/cmake",
+      "sha256": "d4d49ade081c102d0e236aeda537659f20c55af6090d81de20d37920f98ce86c"
+    },
+    "ctest": {
+      "version_stdout": "ctest version 4.4.3\n\nCMake suite maintained and supported by Kitware (kitware.com/cmake).\n",
+      "path": "/home/standard/Projects/X-nav/.local/sysroot/usr/bin/ctest",
+      "sha256": "bb32d2d6fc66f4e519ab6f95d95de1ec33c970969b5ed71dbaf4259510a602ba"
+    },
+    "ninja": {
+      "version_stdout": "1.13.2\n",
+      "path": "/home/standard/Projects/X-nav/.local/sysroot/usr/bin/ninja",
+      "sha256": "386e7381e7664302b9add6890de5f09a37513bb8c1d034210ac757332898f5ab"
+    },
+    "compiler": {
+      "path": "/usr/bin/c++",
+      "sha256": "f04191f6a7b2cd7d9a62e1745872b8a6088791e5af6955488c69c9b2c4668bc9",
+      "version_stdout": "c++ (GCC) 16.2.1 20260810\nCopyright (C) 2026 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n",
+      "target": "x86_64-pc-linux-gnu"
+    }
+  },
+  "scope_limit": "Actual Linux CMake target and CTest wiring pass only. Native MSVC x86 compilation/execution remains blocked and is not replaced by this result."
+}
