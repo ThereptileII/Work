@@ -18,6 +18,17 @@ The original run remains failed, signing is skipped, and no native service or
 product acceptance is claimed. Boat installation and remote access are unchanged.
 [Original run evidence](evidence/scrum311-startup-native-repairs-20261012/fresh-component-scm-run.json).
 
+The bounded retained-only diagnostic [38300951246](https://github.com/ThereptileII/Work/actions/runs/38300951246)
+authenticated the original `0ddb649f` broker and invoked the real fixture with
+helper `21ad7b27`. It identifies the same held refusal as registry ancestor 1
+(`HKLM SYSTEM`), BUILTIN Administrators owner, `S-1-3-0` CREATOR OWNER allow ACE,
+mask `0x000f003f`, flags `0x02`. This is specific evidence for investigating Windows
+registry inheritance-template semantics; it is not permission to trust that SID
+as an owner/principal or change system ACLs. The next correction must remain
+registry-specific and retain actual descendant owner/ACL checks. No full component
+or application rebuild was needed for this observation.
+[Retained diagnostic evidence](evidence/scrum311-startup-native-repairs-20261012/retained-machine-acl-run.json).
+
 ## Private HTTPS preflight available; origin activation still pending
 
 The read-only preflight pins the approved public trust configuration and original
