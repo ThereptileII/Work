@@ -1614,9 +1614,12 @@ diff --git a/libs/s52plib/src/s52plib.h b/libs/s52plib/src/s52plib.h
 +      }
      }
    }
-@@ -6053,4 +6086,8 @@
+@@ -6053,4 +6086,11 @@
    GetPointPixSingle(rzRules, rzRules->obj->y, rzRules->obj->x, &point);
    RenderRasterSymbol(rzRules, found->second, point, 0);
++  if (m_presentationRasterSubmitted && m_presentationObservation &&
++      rzRules->obj->Primitive_type == GEO_POINT && !rzRules->LUP)
++    m_presentationObservation->Unavailable(rzRules->obj);
 +  if (m_presentationRasterSubmitted && m_presentationObservation &&
 +      rzRules->obj->Primitive_type == GEO_POINT && rzRules->LUP)
 +    m_presentationObservation->Record(rzRules->obj, rzRules->LUP->RCID,
@@ -1666,26 +1669,12 @@ diff --git a/libs/s52plib/src/s52plib.h b/libs/s52plib/src/s52plib.h
      m_last_Region = Region;
  
 -    return *m_pCloneBM;
-+  #ifdef SKAGER_OCHARTS_ADAPTER
++#ifdef SKAGER_OCHARTS_ADAPTER
 +  skager_observation.Complete();
 +#endif
 +  return *m_pCloneBM;
  
  #if 0
-@@ -1914,5 +1923,5 @@
-         dc_clone.SelectObject( *m_pCloneBM );
- 
--        #ifdef ocpnUSE_DIBSECTION
-+      #ifdef ocpnUSE_DIBSECTION
-         ocpnMemDC memdc, dc_org;
-         #else
-@@ -1938,5 +1947,5 @@
-             wxColour nodat_sub = nodat;
- 
--            #ifdef ocpnUSE_ocpnBitmap
-+          #ifdef ocpnUSE_ocpnBitmap
-             nodat_sub = wxColour( nodat.Blue(), nodat.Green(), nodat.Red() );
-             #endif
 @@ -2021,4 +2030,10 @@
                            const wxRegion &Region, bool b_use_stencil )
  {
@@ -1701,7 +1690,7 @@ diff --git a/libs/s52plib/src/s52plib.h b/libs/s52plib/src/s52plib.h
  #endif    //GL
  
 -    return true;
-+  #ifdef SKAGER_OCHARTS_ADAPTER
++#ifdef SKAGER_OCHARTS_ADAPTER
 +  skager_observation.Complete();
 +#endif
 +  return true;

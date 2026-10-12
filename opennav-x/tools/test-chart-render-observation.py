@@ -49,14 +49,18 @@ def check_wiring(source, private):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--source', type=Path, required=True)
-    parser.add_argument('--private-source', type=Path, required=True)
+    mode = parser.add_mutually_exclusive_group(required=True)
+    mode.add_argument('--private-source', type=Path)
+    mode.add_argument('--core-only', action='store_true',
+                      help='Explicitly test core only; no private-adapter claim.')
     parser.add_argument('--output', type=Path, required=True)
     args = parser.parse_args()
     args.output.mkdir(parents=True, exist_ok=True)
     receipts = []
-    for name, source, guard, private in [
-            ('core', args.source, 'OPENNAV_X', False),
-            ('private', args.private_source, 'SKAGER_OCHARTS_ADAPTER', True)]:
+    sources = [('core', args.source, 'OPENNAV_X', False)]
+    if not args.core_only:
+        sources.append(('private', args.private_source, 'SKAGER_OCHARTS_ADAPTER', True))
+    for name, source, guard, private in sources:
         cpp = check_wiring(source, private)
         methods = ''.join(loader.function(cpp, signature) for signature in (
             'int s52plib::RenderSY(', 'void s52plib::RenderPresentationCaLightPoint('))
@@ -80,6 +84,7 @@ def main():
     (args.output / 'receipt.json').write_text(json.dumps({
         'helperSha256': sha(ROOT / 'src/integration/ChartRenderObservation.h'),
         'fixtureSha256': sha(ROOT / 'tests/chart_render_observation_test.cpp'),
+        'mode': 'core-only' if args.core_only else 'paired-core-private',
         'runs': receipts,
         'limits': 'Real dispatch with inert alias/projection/painter seams; no native canvas, GPU readback, private DLL or boat execution.'
     }, indent=2) + '\n')

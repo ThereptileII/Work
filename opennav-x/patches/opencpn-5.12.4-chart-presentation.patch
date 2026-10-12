@@ -4744,9 +4744,12 @@ diff --git a/gui/src/glChartCanvas.cpp b/gui/src/glChartCanvas.cpp
 +      }
      }
    }
-@@ -6088,4 +6121,8 @@
+@@ -6088,4 +6121,11 @@
    GetPointPixSingle(rzRules, rzRules->obj->y, rzRules->obj->x, &point);
    RenderRasterSymbol(rzRules, found->second, point, 0);
++  if (m_presentationRasterSubmitted && m_presentationObservation &&
++      rzRules->obj->Primitive_type == GEO_POINT && !rzRules->LUP)
++    m_presentationObservation->Unavailable(rzRules->obj);
 +  if (m_presentationRasterSubmitted && m_presentationObservation &&
 +      rzRules->obj->Primitive_type == GEO_POINT && rzRules->LUP)
 +    m_presentationObservation->Record(rzRules->obj, rzRules->LUP->RCID,

@@ -169,6 +169,29 @@ int main() try {
     Check(Available(text) == submit);
     if (submit) Check(text.find("CA light point: XNLIT013") != std::string::npos);
   }
+  // The same selected LIGHTS already has a valid actual SY observation. A
+  // subsequent CA raster submission must not leave that partial record usable
+  // when its lookup metadata is missing.
+  for (bool missing_lookup : {false, true}) {
+    Object light; std::memcpy(light.FeatureName, "LIGHTS", 7);
+    ObjRazRules light_node{&light, &lup}; CaInventory inventory;
+    library.m_presentationCaLights = &inventory;
+    {
+      ChartRenderObservationScope<s52plib> scope(observations, &library, view, true);
+      library.RenderSY(&light_node, &rules);
+      if (missing_lookup) light_node.LUP = nullptr;
+      library.RenderPresentationCaLightPoint(&light_node);
+      light_node.LUP = &lup;
+      scope.Complete();
+    }
+    observations.BeginQuery(view, true); observations.Select(&light, &light);
+    text = observations.Describe(&light);
+    Check(Available(text) == !missing_lookup);
+    if (!missing_lookup) {
+      Check(text.find("Resolved SY:") != std::string::npos);
+      Check(text.find("CA light point:") != std::string::npos);
+    }
+  }
   // Missing raster, vector-only and aborted scopes remain unavailable.
   library.dictionary.clear();
   {
