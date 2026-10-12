@@ -463,7 +463,9 @@ func TestNativeStoreLifetimeLockRechecksHeldMetadataAndReleasesAfterCleanupError
 		windows.CloseHandle(lock.handle)
 		t.Fatal(err)
 	}
-	root.handle = windows.InvalidHandle // Inject an unambiguous ancestor-close error, never a reusable stale handle.
+	// InvalidHandle (-1) is also the current-process pseudo-handle; closing it
+	// may succeed. Null is invalid and cannot alias a reusable closed handle.
+	root.handle = 0
 	store := &Store{backend: &nativeStore{pins: []*nativePin{root}, lock: lock}}
 	firstClose := store.Close()
 	if !errors.Is(firstClose, windows.ERROR_INVALID_HANDLE) {
