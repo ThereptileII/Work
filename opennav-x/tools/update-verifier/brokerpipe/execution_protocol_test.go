@@ -12,7 +12,7 @@ func executionTestRequest() ExecutionRequest {
 }
 func executionTestCommand() ExecutionCommand {
 	q := executionTestRequest()
-	return ExecutionCommand{1, "command", q.RequestID, q.StageID, strings.Repeat("c", 32), 1, strings.Repeat("d", 32), InspectPrevious}
+	return ExecutionCommand{Schema: 1, Kind: "command", RequestID: q.RequestID, StageID: q.StageID, SessionID: strings.Repeat("c", 32), Sequence: 1, Challenge: strings.Repeat("d", 32), Phase: InspectPrevious}
 }
 func executionTestObservation() ExecutionObservation {
 	return ExecutionObservation{Status: "reported-complete", EvidenceSHA256: strings.Repeat("e", 64)}
@@ -158,5 +158,108 @@ func TestExecutionClientSequenceAndClose(t *testing.T) {
 	finish.Challenge = strings.Repeat("f", 32)
 	if validExecutionClosingFrame(closeRaw, finish, "closed") {
 		t.Fatal("other finish accepted")
+	}
+}
+
+func executionTestDirective(phase ExecutionPhase) ExecutionDirective {
+	d := ExecutionDirective{Phase: phase}
+	switch phase {
+	case SpawnCandidate, ObserveCandidate:
+		d.ApplicationGeneration = executionTestRequest().StageID
+		d.HealthPipe = "Skager.Update." + strings.Repeat("f", 32)
+		d.HealthChallenge = strings.Repeat("1", 64)
+	case SpawnFallback, ObserveFallback:
+		d.ApplicationGeneration = strings.Repeat("f", 32)
+		d.HealthPipe = "Skager.Update." + strings.Repeat("2", 32)
+		d.HealthChallenge = strings.Repeat("3", 64)
+	}
+	return d
+}
+func TestExecutionCommandClosedGenerationAndHealthPayload(t *testing.T) {
+	for _, phase := range []ExecutionPhase{SpawnCandidate, ObserveCandidate, SpawnFallback, ObserveFallback} {
+		t.Run(string(phase), func(t *testing.T) {
+			command := executionTestCommand()
+			directive := executionTestDirective(phase)
+			command.Phase = phase
+			command.ApplicationGeneration = directive.ApplicationGeneration
+			command.HealthPipe = directive.HealthPipe
+			command.HealthChallenge = directive.HealthChallenge
+			raw, _ := json.Marshal(command)
+			got, err := decodeExecutionCommand(raw, "command")
+			if err != nil || got != command {
+				t.Fatal("closed directive refused", err)
+			}
+			report, err := encodeExecutionReport(command, executionTestObservation())
+			if err != nil {
+				t.Fatal(err)
+			}
+			if _, err := decodeExecutionReport(report, command); err != nil {
+				t.Fatal("exact payload echo refused", err)
+			}
+			for _, name := range []string{"no-generation", "uppercase-generation", "wrong-lineage", "no-pipe", "raw-pipe-path", "pipe-alias", "pipe-suffix", "no-challenge", "short-challenge", "payload-replaced"} {
+				t.Run(name, func(t *testing.T) {
+					c := command
+					switch name {
+					case "no-generation":
+						c.ApplicationGeneration = ""
+					case "uppercase-generation":
+						c.ApplicationGeneration = strings.Repeat("B", 32)
+					case "wrong-lineage":
+						if phase == SpawnCandidate || phase == ObserveCandidate {
+							c.ApplicationGeneration = strings.Repeat("f", 32)
+						} else {
+							c.ApplicationGeneration = c.StageID
+						}
+					case "no-pipe":
+						c.HealthPipe = ""
+					case "raw-pipe-path":
+						c.HealthPipe = `\\.\pipe\` + c.HealthPipe
+					case "pipe-alias":
+						c.HealthPipe = strings.ToLower(c.HealthPipe)
+					case "pipe-suffix":
+						c.HealthPipe += ".extra"
+					case "no-challenge":
+						c.HealthChallenge = ""
+					case "short-challenge":
+						c.HealthChallenge = strings.Repeat("1", 63)
+					case "payload-replaced":
+						c.HealthChallenge = strings.Repeat("4", 64)
+					}
+					c.Kind = "report"
+					b, _ := json.Marshal(executionReport{c, executionTestObservation()})
+					if _, err := decodeExecutionReport(b, command); err == nil {
+						t.Fatal("altered payload report accepted")
+					}
+				})
+			}
+		})
+	}
+	for _, phase := range []ExecutionPhase{InspectPrevious, RestorePrevious, CommissionCandidate, CloseCandidate, CommissionFallback, CloseFallback, RestoreProfile, FinishExecution} {
+		t.Run("no-health-"+string(phase), func(t *testing.T) {
+			d := ExecutionDirective{Phase: phase}
+			if !validExecutionDirective(d, executionTestRequest().StageID) {
+				t.Fatal("no-payload phase refused")
+			}
+			d.HealthPipe = "Skager.Update." + strings.Repeat("a", 32)
+			if validExecutionDirective(d, executionTestRequest().StageID) {
+				t.Fatal("health accepted outside spawn/observe")
+			}
+			d.HealthPipe = ""
+			d.HealthChallenge = strings.Repeat("b", 64)
+			if validExecutionDirective(d, executionTestRequest().StageID) {
+				t.Fatal("challenge accepted outside spawn/observe")
+			}
+		})
+	}
+	finish := ExecutionDirective{Phase: FinishExecution, ApplicationGeneration: executionTestRequest().StageID}
+	if validExecutionDirective(finish, executionTestRequest().StageID) {
+		t.Fatal("finish accepted business payload")
+	}
+	for _, phase := range []ExecutionPhase{CommissionCandidate, CloseCandidate, CommissionFallback, CloseFallback} {
+		d := ExecutionDirective{Phase: phase, ApplicationGeneration: executionTestRequest().StageID}
+		want := phase == CommissionCandidate || phase == CloseCandidate
+		if validExecutionDirective(d, executionTestRequest().StageID) != want {
+			t.Fatal("optional generation lineage ignored", phase)
+		}
 	}
 }

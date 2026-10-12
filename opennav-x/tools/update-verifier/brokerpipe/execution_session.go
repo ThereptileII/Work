@@ -117,11 +117,19 @@ func (s *ExecutionSession) BindExecutorImage(ctx context.Context, image *brokers
 	return nil
 }
 
-// Exchange issues exactly one finite server-selected phase with a fresh challenge.
-// A report must match the entire envelope, and unsolicited/trailing bytes refuse.
-// Report status is data even for finish: native host corroboration and durable
+// Exchange is the no-payload phase convenience API. Spawn/observe require
+// ExchangeCommand with all closed generation/health fields and refuse here.
+func (s *ExecutionSession) Exchange(ctx context.Context, phase ExecutionPhase) (ExecutionObservation, error) {
+	return s.ExchangeCommand(ctx, ExecutionDirective{Phase: phase})
+}
+
+// ExchangeCommand issues exactly one finite server-selected directive with a new
+// transport challenge. Reports must echo its entire envelope and closed payload.
+// Do not enter while holding a peer/generation/store lifetime lock. Unsolicited
+// or trailing bytes refuse. Status is data even for finish: native host evidence,
 // one-use spawn/selection/restore/health decisions remain separate obligations.
-func (s *ExecutionSession) Exchange(ctx context.Context, phase ExecutionPhase) (observation ExecutionObservation, resultErr error) {
+func (s *ExecutionSession) ExchangeCommand(ctx context.Context, directive ExecutionDirective) (observation ExecutionObservation, resultErr error) {
+	phase := directive.Phase
 	if s == nil || s.state == nil {
 		return observation, ErrRefused
 	}
@@ -133,7 +141,7 @@ func (s *ExecutionSession) Exchange(ctx context.Context, phase ExecutionPhase) (
 	if err := p.ready(ctx); err != nil {
 		return observation, err
 	}
-	if !p.bound || !validExecutionPhase(phase) || p.sequence >= maxExecutionPhases {
+	if !p.bound || !validExecutionDirective(directive, p.request.StageID) || p.sequence >= maxExecutionPhases {
 		return observation, p.fail(ErrRefused)
 	}
 	phaseCtx, cancel := context.WithTimeout(ctx, executionPhaseTimeout)
@@ -149,7 +157,7 @@ func (s *ExecutionSession) Exchange(ctx context.Context, phase ExecutionPhase) (
 			return err
 		}
 		p.sequence++
-		command := ExecutionCommand{Schema: 1, Kind: "command", RequestID: p.request.RequestID, StageID: p.request.StageID, SessionID: p.sessionID, Sequence: p.sequence, Challenge: challenge, Phase: phase}
+		command := ExecutionCommand{Schema: 1, Kind: "command", RequestID: p.request.RequestID, StageID: p.request.StageID, SessionID: p.sessionID, Sequence: p.sequence, Challenge: challenge, Phase: phase, ApplicationGeneration: directive.ApplicationGeneration, HealthPipe: directive.HealthPipe, HealthChallenge: directive.HealthChallenge}
 		raw, err := json.Marshal(command)
 		if err != nil {
 			return err

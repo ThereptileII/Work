@@ -111,7 +111,7 @@ func TestExecutionSessionNativeMintAndBindingBoundary(t *testing.T) {
 	if s.BindExecutorImage(context.Background(), nil) == nil {
 		t.Fatal("nil image accepted")
 	}
-	if _, err := s.Exchange(context.Background(), SpawnCandidate); !errors.Is(err, ErrRefused) {
+	if _, err := s.ExchangeCommand(context.Background(), executionTestDirective(SpawnCandidate)); !errors.Is(err, ErrRefused) {
 		t.Fatal("unbound execution accepted")
 	}
 	if len(c.commands) != 0 || a.closes != 1 {
@@ -129,7 +129,7 @@ func TestExecutionSessionExplicitPhasesAndDataOnlyFinish(t *testing.T) {
 	s, a, c := executionTestSession(t)
 	bindExecutionTestSession(t, s)
 	for _, phase := range []ExecutionPhase{InspectPrevious, CommissionCandidate, CommissionCandidate, ObserveCandidate, CloseCandidate, CommissionFallback, ObserveFallback, RestoreProfile, FinishExecution} {
-		observation, err := s.Exchange(context.Background(), phase)
+		observation, err := s.ExchangeCommand(context.Background(), executionTestDirective(phase))
 		if err != nil {
 			t.Fatal(phase, err)
 		}
@@ -153,7 +153,7 @@ func TestExecutionSessionExplicitPhasesAndDataOnlyFinish(t *testing.T) {
 	if s.finishHandlerScope() != nil {
 		t.Fatal("explicit transport finish refused")
 	}
-	if _, err := s.Exchange(context.Background(), SpawnCandidate); err == nil {
+	if _, err := s.ExchangeCommand(context.Background(), executionTestDirective(SpawnCandidate)); err == nil {
 		t.Fatal("phase after finish accepted")
 	}
 	copy := *s
@@ -229,14 +229,17 @@ func TestExecutionSessionCloseCancelsAndJoinsPhase(t *testing.T) {
 	c.started = started
 	c.block = true
 	phaseDone := make(chan error, 1)
-	go func() { _, err := s.Exchange(context.Background(), ObserveCandidate); phaseDone <- err }()
+	go func() {
+		_, err := s.ExchangeCommand(context.Background(), executionTestDirective(ObserveCandidate))
+		phaseDone <- err
+	}()
 	select {
 	case <-started:
 	case <-time.After(time.Second):
 		t.Fatal("phase not entered")
 	}
 	// Concurrent server phases refuse rather than queuing behind an old challenge.
-	if _, err := s.Exchange(context.Background(), SpawnCandidate); err == nil {
+	if _, err := s.ExchangeCommand(context.Background(), executionTestDirective(SpawnCandidate)); err == nil {
 		t.Fatal("concurrent phase accepted")
 	}
 	closeDone := make(chan error, 1)
@@ -330,8 +333,23 @@ func TestExecutionHandlerReturnAndPanicRevokeBeforeCleanup(t *testing.T) {
 			if a.closes != 1 {
 				t.Fatal("capability not revoked immediately at handler boundary")
 			}
-			if _, err := s.Exchange(context.Background(), SpawnCandidate); err == nil {
+			if _, err := s.ExchangeCommand(context.Background(), executionTestDirective(SpawnCandidate)); err == nil {
 				t.Fatal("escaped session remained live")
+			}
+		})
+	}
+}
+
+func TestExecutionSpawnObserveRefuseBarePhase(t *testing.T) {
+	for _, phase := range []ExecutionPhase{SpawnCandidate, ObserveCandidate, SpawnFallback, ObserveFallback} {
+		t.Run(string(phase), func(t *testing.T) {
+			s, a, c := executionTestSession(t)
+			bindExecutionTestSession(t, s)
+			if _, err := s.Exchange(context.Background(), phase); err == nil {
+				t.Fatal("bare spawn/observe accepted")
+			}
+			if len(c.commands) != 0 || a.closes != 1 {
+				t.Fatal("invalid directive escaped native boundary")
 			}
 		})
 	}

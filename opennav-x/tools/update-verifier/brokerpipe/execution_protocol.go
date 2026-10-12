@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"strings"
 	"unicode/utf8"
 )
 
@@ -50,14 +51,59 @@ type ExecutionRequest struct {
 // envelope is minted by the serving transport, never by an execution handler.
 // The host supplies actual workflow order and independently authorizes effects.
 type ExecutionCommand struct {
-	Schema    int            `json:"schema"`
-	Kind      string         `json:"kind"`
-	RequestID string         `json:"requestId"`
-	StageID   string         `json:"stageId"`
-	SessionID string         `json:"sessionId"`
-	Sequence  uint32         `json:"sequence"`
-	Challenge string         `json:"challenge"`
-	Phase     ExecutionPhase `json:"phase"`
+	Schema                int            `json:"schema"`
+	Kind                  string         `json:"kind"`
+	RequestID             string         `json:"requestId"`
+	StageID               string         `json:"stageId"`
+	SessionID             string         `json:"sessionId"`
+	Sequence              uint32         `json:"sequence"`
+	Challenge             string         `json:"challenge"`
+	Phase                 ExecutionPhase `json:"phase"`
+	ApplicationGeneration string         `json:"applicationGeneration"`
+	HealthPipe            string         `json:"healthPipe"`
+	HealthChallenge       string         `json:"healthChallenge"`
+}
+
+// ExecutionDirective is the entire server-selected business payload. Generation
+// is a canonical lookup identifier, never a path or selection authority. Only
+// spawn/observe carry the fixed startup-health pipe name/challenge. Those values
+// are data: the host must own the actual health endpoint/child and corroborate it.
+// The transport, not this directive, supplies session/sequence/challenge fields.
+type ExecutionDirective struct {
+	Phase                 ExecutionPhase
+	ApplicationGeneration string
+	HealthPipe            string
+	HealthChallenge       string
+}
+
+func validExecutionDirective(d ExecutionDirective, stageID string) bool {
+	if !validExecutionPhase(d.Phase) || !id32.MatchString(stageID) {
+		return false
+	}
+	if d.ApplicationGeneration != "" && !id32.MatchString(d.ApplicationGeneration) {
+		return false
+	}
+	switch d.Phase {
+	case FinishExecution:
+		return d.ApplicationGeneration == "" && d.HealthPipe == "" && d.HealthChallenge == ""
+	case CommissionCandidate, SpawnCandidate, ObserveCandidate, CloseCandidate:
+		if d.ApplicationGeneration != "" && d.ApplicationGeneration != stageID {
+			return false
+		}
+	case CommissionFallback, SpawnFallback, ObserveFallback, CloseFallback:
+		if d.ApplicationGeneration != "" && d.ApplicationGeneration == stageID {
+			return false
+		}
+	}
+	switch d.Phase {
+	case SpawnCandidate, ObserveCandidate, SpawnFallback, ObserveFallback:
+		return id32.MatchString(d.ApplicationGeneration) && strings.HasPrefix(d.HealthPipe, "Skager.Update.") && id32.MatchString(strings.TrimPrefix(d.HealthPipe, "Skager.Update.")) && hex64.MatchString(d.HealthChallenge)
+	default:
+		return d.HealthPipe == "" && d.HealthChallenge == ""
+	}
+}
+func (c ExecutionCommand) directive() ExecutionDirective {
+	return ExecutionDirective{c.Phase, c.ApplicationGeneration, c.HealthPipe, c.HealthChallenge}
 }
 
 // ExecutionObservation is untrusted report data. Even reported-complete proves
@@ -111,10 +157,10 @@ func decodeExecutionRequest(raw []byte) (ExecutionRequest, error) {
 	return q, nil
 }
 
-var executionEnvelopeKeys = []string{"schema", "kind", "requestId", "stageId", "sessionId", "sequence", "challenge", "phase"}
+var executionEnvelopeKeys = []string{"schema", "kind", "requestId", "stageId", "sessionId", "sequence", "challenge", "phase", "applicationGeneration", "healthPipe", "healthChallenge"}
 
 func validExecutionEnvelope(c ExecutionCommand, kind string) bool {
-	return c.Schema == 1 && c.Kind == kind && id32.MatchString(c.RequestID) && id32.MatchString(c.StageID) && id32.MatchString(c.SessionID) && c.Sequence > 0 && c.Sequence <= maxExecutionPhases && id32.MatchString(c.Challenge) && validExecutionPhase(c.Phase)
+	return c.Schema == 1 && c.Kind == kind && id32.MatchString(c.RequestID) && id32.MatchString(c.StageID) && id32.MatchString(c.SessionID) && c.Sequence > 0 && c.Sequence <= maxExecutionPhases && id32.MatchString(c.Challenge) && validExecutionDirective(c.directive(), c.StageID)
 }
 func decodeExecutionCommand(raw []byte, kind string) (ExecutionCommand, error) {
 	var c ExecutionCommand
