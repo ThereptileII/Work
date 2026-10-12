@@ -1,0 +1,220 @@
+//go:build windows
+
+package brokerenroll
+
+import (
+	"context"
+	"crypto/sha256"
+	"debug/pe"
+	"encoding/hex"
+	"errors"
+	"fmt"
+	"io"
+	"os"
+	"path/filepath"
+	"regexp"
+	"strings"
+	"testing"
+	"time"
+
+	"example.com/opennav-update-verifier/releasepolicy"
+	"golang.org/x/sys/windows"
+)
+
+const enrollmentSmokeOptIn = "SCRUM-311-disposable-hosted-enrollment"
+
+var enrollmentSmokeCommit = regexp.MustCompile(`^[0-9a-f]{40}$`)
+var enrollmentSmokeRun = regexp.MustCompile(`^[1-9][0-9]*$`)
+
+// This is deliberately absent from the ordinary component test run. A separate
+// explicitly opted-in job on a disposable GitHub-hosted Windows machine may
+// consume the retained, verified same-commit broker producer. It creates the
+// fixed real machine namespace and service once, never deletes or adopts them.
+func TestNativeFreshEnrollmentServiceSmoke(t *testing.T) {
+	if os.Getenv("SKAGER_ENROLLMENT_NATIVE_OPT_IN") != enrollmentSmokeOptIn {
+		t.Skip("real machine enrollment requires explicit disposable CI fixture opt-in")
+	}
+	if os.Getenv("GITHUB_ACTIONS") != "true" || os.Getenv("RUNNER_OS") != "Windows" ||
+		os.Getenv("SKAGER_ENROLLMENT_RUNNER_ENVIRONMENT") != "github-hosted" ||
+		os.Getenv("GITHUB_REPOSITORY") != "ThereptileII/Work" ||
+		!enrollmentSmokeRun.MatchString(os.Getenv("GITHUB_RUN_ID")) ||
+		!enrollmentSmokeCommit.MatchString(os.Getenv("GITHUB_SHA")) ||
+		os.Getenv("SKAGER_ENROLLMENT_PRODUCER_COMMIT") != os.Getenv("GITHUB_SHA") {
+		t.Fatal("disposable same-commit GitHub-hosted Windows runner identity required")
+	}
+	if err := enrollmentOperator(); err != nil {
+		t.Fatal("actual elevated non-impersonated enrollment operator required:", err)
+	}
+	if err := enrollmentSmokeAbsent(); err != nil {
+		t.Fatal("fixed machine enrollment namespace is not fresh:", err)
+	}
+
+	path := os.Getenv("SKAGER_ENROLLMENT_BROKER_PATH")
+	workspace := os.Getenv("GITHUB_WORKSPACE")
+	expectedPath := filepath.Join(workspace, "opennav-x", "build", "updater-native", "broker-install", enrollmentImageName)
+	if workspace == "" || !filepath.IsAbs(workspace) || filepath.Base(path) != enrollmentImageName ||
+		!filepath.IsAbs(path) || filepath.Clean(path) != path || !strings.EqualFold(path, expectedPath) {
+		t.Fatal("retained producer broker path must be absolute and exact")
+	}
+	file, err := os.Open(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() {
+		if err := file.Close(); err != nil {
+			t.Error("retained producer handle close:", err)
+		}
+	})
+	var info windows.ByHandleFileInformation
+	if err := windows.GetFileInformationByHandle(windows.Handle(file.Fd()), &info); err != nil ||
+		info.FileAttributes&(windows.FILE_ATTRIBUTE_DIRECTORY|windows.FILE_ATTRIBUTE_REPARSE_POINT) != 0 || info.NumberOfLinks != 1 {
+		t.Fatal("retained producer must be a single-link ordinary broker file:", err)
+	}
+	wantSHA := os.Getenv("SKAGER_ENROLLMENT_BROKER_SHA256")
+	if len(wantSHA) != sha256.Size*2 || strings.ToLower(wantSHA) != wantSHA {
+		t.Fatal("independent retained producer SHA-256 required")
+	}
+	if _, err := hex.DecodeString(wantSHA); err != nil {
+		t.Fatal("invalid retained producer SHA-256:", err)
+	}
+	stat, err := file.Stat()
+	if err != nil || stat.Size() <= 0 || stat.Size() > maxBrokerBytes {
+		t.Fatal("bounded retained producer broker required:", err)
+	}
+	image, err := pe.NewFile(file)
+	if err != nil {
+		t.Fatal("retained producer is not PE:", err)
+	}
+	optional, ok := image.OptionalHeader.(*pe.OptionalHeader32)
+	if image.Machine != pe.IMAGE_FILE_MACHINE_I386 || !ok || optional.Subsystem != 2 {
+		t.Fatal("retained producer must be the Win32 GUI broker")
+	}
+	if _, err := file.Seek(0, io.SeekStart); err != nil {
+		t.Fatal(err)
+	}
+	hash := sha256.New()
+	if _, err := io.Copy(hash, file); err != nil || hex.EncodeToString(hash.Sum(nil)) != wantSHA {
+		t.Fatal("retained producer bytes differ from verified producer record:", err)
+	}
+	if _, err := file.Seek(0, io.SeekStart); err != nil {
+		t.Fatal(err)
+	}
+	// Recheck immediately before the first privileged create. The creator also
+	// uses exclusive native creation and refuses any existing fixed child.
+	if err := enrollmentSmokeAbsent(); err != nil {
+		t.Fatal("fixed machine namespace changed before creation:", err)
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	artifact := releasepolicy.Artifact{Path: "bootstrap/" + enrollmentImageName, SHA256: wantSHA, Bytes: stat.Size()}
+	files, err := createFreshFiles(ctx, file, artifact)
+	if err != nil {
+		t.Fatal("fresh native files refused; fixed state retained for review:", err)
+	}
+	t.Cleanup(func() {
+		if err := files.Close(); err != nil {
+			t.Error("enrollment file handles close:", err)
+		}
+	})
+	if err := initializeService(ctx, files); err != nil {
+		t.Fatal("real stopped-only initialize-store/verify-store refused; fixed state retained for review:", err)
+	}
+	// verify-store above rereads completion as the actual broker principal. An
+	// elevated test process cannot substitute an administrator read for that gate.
+	if err := files.Check(); err != nil {
+		t.Fatal("retained created files changed:", err)
+	}
+	if err := enrollmentSmokeServiceReadback(files.ImagePath()); err != nil {
+		t.Fatal("created stopped service readback:", err)
+	}
+	t.Log("actual fresh files, stopped zero-exit initialize-store and broker-principal verify-store, fixed service configuration/DACL/SID passed")
+}
+
+func enrollmentSmokeAbsent() error {
+	code, err := windows.KnownFolderPath(windows.FOLDERID_ProgramFilesX86, 0)
+	if err != nil {
+		return err
+	}
+	data, err := windows.KnownFolderPath(windows.FOLDERID_ProgramData, 0)
+	if err != nil {
+		return err
+	}
+	for _, path := range []string{
+		filepath.Join(code, "SKAGER"),
+		filepath.Join(code, "SKAGER", "Applications"),
+		filepath.Join(code, "SKAGER", "UpdateBroker"),
+		filepath.Join(code, "SKAGER", "UpdateBroker", enrollmentImageName),
+		filepath.Join(data, "SKAGER"),
+		filepath.Join(data, "SKAGER", enrollmentFenceName),
+		filepath.Join(data, "SKAGER", "UpdateBroker.initialized"),
+		filepath.Join(data, "SKAGER", "UpdateBroker"),
+	} {
+		if _, err := os.Lstat(path); err == nil {
+			return fmt.Errorf("fixed path already exists: %s", path)
+		} else if !errors.Is(err, os.ErrNotExist) {
+			return err
+		}
+	}
+	scm, err := windows.OpenSCManager(nil, nil, windows.SC_MANAGER_CONNECT)
+	if err != nil {
+		return err
+	}
+	defer windows.CloseServiceHandle(scm)
+	name, _ := windows.UTF16PtrFromString(serviceName)
+	service, err := windows.OpenService(scm, name, windows.SERVICE_QUERY_STATUS)
+	if err == nil {
+		_ = windows.CloseServiceHandle(service)
+		return errors.New("fixed broker service already exists")
+	}
+	if !errors.Is(err, windows.ERROR_SERVICE_DOES_NOT_EXIST) {
+		return err
+	}
+	key, _ := windows.UTF16PtrFromString(`SYSTEM\CurrentControlSet\Services\` + serviceName)
+	var registry windows.Handle
+	err = windows.RegOpenKeyEx(windows.HKEY_LOCAL_MACHINE, key, 0, windows.KEY_READ, &registry)
+	if err == nil {
+		_ = windows.RegCloseKey(registry)
+		return errors.New("fixed broker service registry key already exists")
+	}
+	if !errors.Is(err, windows.ERROR_FILE_NOT_FOUND) {
+		return err
+	}
+	return nil
+}
+
+func enrollmentSmokeServiceReadback(image string) (result error) {
+	native, err := newServiceBackend()
+	if err != nil {
+		return err
+	}
+	n := native.(*nativeServiceBackend)
+	defer func() { result = errors.Join(result, n.close()) }()
+	name, _ := windows.UTF16PtrFromString(serviceName)
+	n.service, err = windows.OpenService(n.scm, name, windows.SERVICE_QUERY_CONFIG|windows.SERVICE_QUERY_STATUS|windows.READ_CONTROL)
+	if err != nil {
+		return err
+	}
+	if err := n.holdRegistry(`SYSTEM\CurrentControlSet\Services\` + serviceName); err != nil {
+		return err
+	}
+	expectedSID, err := enrollmentBrokerSID()
+	if err != nil {
+		return err
+	}
+	actualSID, _, _, err := windows.LookupSID("", serviceAccount)
+	if err != nil || actualSID == nil || !actualSID.Equals(expectedSID) {
+		return errors.New("actual created broker service SID differs")
+	}
+	n.expected, err = windows.SecurityDescriptorFromString("D:P(A;;0xf01ff;;;SY)(A;;0xf01ff;;;BA)(A;;0x20005;;;AU)(A;;0x20005;;;" + actualSID.String() + ")")
+	if err != nil {
+		return err
+	}
+	if err := n.check(image); err != nil {
+		return err
+	}
+	s, err := n.status()
+	if err != nil || !serviceCompleted(s) {
+		return errors.Join(errors.New("created broker is not stopped with zero exit"), err)
+	}
+	return nil
+}
