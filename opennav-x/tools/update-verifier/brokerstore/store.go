@@ -67,6 +67,7 @@ type Store struct {
 	closeErr      error
 	candidates    []*Candidate
 	registrations []*Registration
+	baselines     []*InstalledBaseline
 }
 type fileRecord struct {
 	file   candidateFile
@@ -219,8 +220,13 @@ func (s *Store) Close() error {
 	s.candidates = nil
 	registrations := s.registrations
 	s.registrations = nil
+	baselines := s.baselines
+	s.baselines = nil
 	s.mu.Unlock()
 	var result error
+	for _, b := range baselines {
+		result = errors.Join(result, b.Close())
+	}
 	for _, r := range registrations {
 		result = errors.Join(result, r.Close())
 	}
