@@ -100,7 +100,7 @@ func (r *recordingRegistration) close() error {
 
 type registrationMemoryStore struct {
 	*memoryStore
-	creation *recordingRegistration
+	creation registrationBackend
 	prepares int
 }
 
@@ -270,10 +270,14 @@ type registrationFileFixture struct {
 	events         []string
 	failAt         int
 	short, corrupt bool
+	onEvent        func(string)
 }
 
 func (f *registrationFileFixture) step(name string) error {
 	f.events = append(f.events, name)
+	if f.onEvent != nil {
+		f.onEvent(name)
+	}
 	if len(f.events) == f.failAt {
 		return testFault
 	}
@@ -357,5 +361,115 @@ func TestRegistrationWriteFlushSameHandleReadbackAndEveryIOFault(t *testing.T) {
 	f := &registrationFileFixture{data: []byte("started")}
 	if err := writeRegistrationBytes(context.Background(), f, 7, []byte("done!!!"), func() error { return nil }); err != nil || string(f.data) != "done!!!" {
 		t.Fatalf("marker overwrite: %q %v", f.data, err)
+	}
+}
+
+type committingRegistration struct {
+	*recordingRegistration
+	marker            *registrationFileFixture
+	cancelAfterCommit context.CancelFunc
+}
+
+func (b *committingRegistration) complete(ctx context.Context, raw []byte) error {
+	marker := registrationMarker(registrationTestSID, "beta", registrationTestApproval, registrationDigest(raw), true)
+	if err := publishRegistrationCompletion(ctx, b.marker, int64(len(b.marker.data)), marker, b.check); err != nil {
+		return err
+	}
+	b.completed = true
+	if b.cancelAfterCommit != nil {
+		b.cancelAfterCommit()
+	}
+	return nil
+}
+func TestRegistrationCompletionCommitIgnoresCancellationDuringAndAfterPublication(t *testing.T) {
+	for _, point := range []string{"write", "sync", "read", "after-commit"} {
+		t.Run(point, func(t *testing.T) {
+			ctx, cancel := context.WithCancel(context.Background())
+			defer cancel()
+			marker := &registrationFileFixture{data: registrationMarker(registrationTestSID, "beta", registrationTestApproval, "", false)}
+			b := &committingRegistration{recordingRegistration: &recordingRegistration{}, marker: marker}
+			if point == "after-commit" {
+				b.cancelAfterCommit = cancel
+			} else {
+				marker.onEvent = func(event string) {
+					if event == point {
+						cancel()
+					}
+				}
+			}
+			s := &Store{backend: &registrationMemoryStore{memoryStore: &memoryStore{}, creation: b}}
+			r, err := s.BeginRegistrationFresh(ctx, registrationTestSID, "beta", registrationTestApproval)
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer s.Close()
+			raw := []byte(`{"approved":"committed"}`)
+			if err = r.Complete(ctx, raw); err != nil {
+				t.Fatalf("durable commit relabeled failed after %s cancellation: %v", point, err)
+			}
+			if !errors.Is(ctx.Err(), context.Canceled) || !r.completed || r.poisoned {
+				t.Fatalf("committed owner state: cancelled=%v completed=%v poisoned=%v", ctx.Err(), r.completed, r.poisoned)
+			}
+			if got, err := completedRegistrationDigest(marker.data, registrationTestSID); err != nil || got != registrationDigest(raw) {
+				t.Fatalf("committed evidence differs: %q %v", got, err)
+			}
+			if _, _, err = r.VerifierDirectories(); err != nil {
+				t.Fatalf("successful committed owner poisoned: %v", err)
+			}
+		})
+	}
+}
+func TestRegistrationCompletionPrecommitCancellationAndPublicationUncertainty(t *testing.T) {
+	started := registrationMarker(registrationTestSID, "beta", registrationTestApproval, "", false)
+	raw := []byte(`{"approved":"exact"}`)
+	completed := registrationMarker(registrationTestSID, "beta", registrationTestApproval, registrationDigest(raw), true)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	before := &registrationFileFixture{data: append([]byte(nil), started...)}
+	before.onEvent = func(event string) {
+		if event == "seek" {
+			cancel()
+		}
+	}
+	if err := publishRegistrationCompletion(ctx, before, int64(len(started)), completed, func() error { return nil }); !errors.Is(err, context.Canceled) || errors.Is(err, ErrRegistrationUncertain) {
+		t.Fatalf("precommit cancellation classification: %v", err)
+	}
+	if !bytes.Equal(before.data, started) {
+		t.Fatal("precommit cancellation published marker")
+	}
+	if _, err := completedRegistrationDigest(before.data, registrationTestSID); err == nil {
+		t.Fatal("precommit cancellation became readable completion")
+	}
+	// A custody failure AFTER a successful write/flush may coexist with valid
+	// completed evidence. Preserve the underlying cause and never claim rollback.
+	file := &registrationFileFixture{data: append([]byte(nil), started...)}
+	checks := 0
+	check := func() error {
+		checks++
+		if checks == 2 {
+			return testFault
+		}
+		return nil
+	}
+	err := publishRegistrationCompletion(context.Background(), file, int64(len(started)), completed, check)
+	if !errors.Is(err, ErrRegistrationUncertain) || !errors.Is(err, testFault) {
+		t.Fatalf("postpublication uncertainty lost: %v", err)
+	}
+	if got, parseErr := completedRegistrationDigest(file.data, registrationTestSID); parseErr != nil || got != registrationDigest(raw) {
+		t.Fatalf("expected potentially durable completion evidence: %q %v", got, parseErr)
+	}
+	for _, kind := range []string{"write", "sync", "read"} {
+		t.Run(kind, func(t *testing.T) {
+			f := &registrationFileFixture{data: append([]byte(nil), started...)}
+			f.onEvent = func(event string) {
+				if event == kind {
+					f.failAt = len(f.events)
+				}
+			}
+			err := publishRegistrationCompletion(context.Background(), f, int64(len(started)), completed, func() error { return nil })
+			if !errors.Is(err, ErrRegistrationUncertain) || !errors.Is(err, testFault) {
+				t.Fatalf("%s publication failure not uncertain: %v", kind, err)
+			}
+		})
 	}
 }

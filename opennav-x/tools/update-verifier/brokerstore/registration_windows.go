@@ -224,7 +224,15 @@ func (r *nativeRegistration) complete(ctx context.Context, raw []byte) error {
 		return errors.New("registration completion marker width differs")
 	}
 	// Publish completion only after exact JSON and initialized tree validation.
-	return writeRegistrationBytes(ctx, r.marker, r.markerLength, completed, r.checkTree)
+	// Cancellation is checked immediately before this irrevocable final section.
+	// Actual I/O/custody failures thereafter retain an uncertain durable result.
+	check := func() error {
+		if err := r.check(); err != nil {
+			return err
+		}
+		return r.registration.check(int64(len(raw)))
+	}
+	return publishRegistrationCompletion(ctx, r.marker, r.markerLength, completed, check)
 }
 func (r *nativeRegistration) close() error {
 	if r.closed {

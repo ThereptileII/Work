@@ -363,3 +363,48 @@ func TestNativeClientSIDRequiresCanonicalActualUser(t *testing.T) {
 		}
 	}
 }
+
+type cancelNativeRegistrationWrite struct {
+	candidateFile
+	cancel context.CancelFunc
+}
+
+func (f cancelNativeRegistrationWrite) Write(data []byte) (int, error) {
+	n, err := f.candidateFile.Write(data)
+	f.cancel()
+	return n, err
+}
+func TestNativeClientCancellationDuringCommittedMarkerRemainsReadableAfterReopen(t *testing.T) {
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	n, r := nativeRegistrationFixture(t)
+	if err := beginRegistration(context.Background(), r); err != nil {
+		t.Fatal(err)
+	}
+	createNativeTestChannel(t, r)
+	raw := []byte(`{"approved":"native-commit-cancellation"}`)
+	var err error
+	r.registration, err = createRegistrationFile(n.registrations, r.client+".json", r.fileSD)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err = writeRegistrationBytes(context.Background(), r.registration, 0, raw, r.check); err != nil {
+		t.Fatal(err)
+	}
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	completed := registrationMarker(r.client, r.channel, r.approved, registrationDigest(raw), true)
+	if err = publishRegistrationCompletion(ctx, cancelNativeRegistrationWrite{candidateFile: r.marker, cancel: cancel}, r.markerLength, completed, r.check); err != nil {
+		t.Fatalf("native durable completion relabeled cancelled: %v", err)
+	}
+	if !errors.Is(ctx.Err(), context.Canceled) {
+		t.Fatal("fixture did not cancel during final publication")
+	}
+	if err = r.close(); err != nil {
+		t.Fatal(err)
+	}
+	got, err := readCompletedRegistration(n.registrations, r.client, r.fileSD)
+	if err != nil || !bytes.Equal(got, raw) {
+		t.Fatalf("reopened completion after cancellation: %q %v", got, err)
+	}
+}

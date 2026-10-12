@@ -15,6 +15,11 @@ import (
 const registrationMarkerHeader = "SKAGER-client-registration-v1"
 const maxRegistrationMarkerBytes = 1024
 
+// ErrRegistrationUncertain means final completion publication was attempted but
+// an I/O or custody check failed. Valid completed evidence may already be durable.
+// Preserve every object; this error never authorizes retry, adoption or reset.
+var ErrRegistrationUncertain = errors.New("client registration publication uncertain")
+
 // This optional native capability does not add registration creation to ordinary
 // staging backends. It accepts identities, never caller-selected storage paths.
 type registrationStoreBackend interface {
@@ -153,7 +158,11 @@ func (r *Registration) VerifierDirectories() (state, artifacts string, resultErr
 // channel directory has appeared with the broker's exact security descriptor.
 // The completed permanent marker binds the approved request and registration
 // SHA-256. Readers refuse started/partial markers or mismatched registration bytes.
-// There is one attempt; failures retain state and require explicit operator review.
+// Cancellation refuses before final marker publication. Once that bounded final
+// publication begins, successful durable completion remains success even if the
+// context is cancelled. ErrRegistrationUncertain reports an actual publication
+// I/O/custody failure: completed evidence may already be durable. There is one
+// attempt; every failure retains state and requires explicit operator review.
 // Close must release writer custody before ReadRegistration can open the evidence.
 func (r *Registration) Complete(ctx context.Context, rawRegistration []byte) (resultErr error) {
 	runtime.LockOSThread()
@@ -186,9 +195,8 @@ func (r *Registration) Complete(ctx context.Context, rawRegistration []byte) (re
 	if err := r.backend.complete(ctx, data); err != nil {
 		return err
 	}
-	if err := ctx.Err(); err != nil {
-		return err
-	}
+	// The backend owns the irrevocable publication boundary. A later context
+	// cancellation cannot relabel successfully committed persistent evidence.
 	r.completed = true
 	return nil
 }
@@ -231,9 +239,9 @@ func registrationDigest(data []byte) string {
 	return hex.EncodeToString(sum[:])
 }
 
-// writeRegistrationBytes verifies writes and flushes against the same retained
-// file. The fixed state check brackets every mutation and verified readback.
-func writeRegistrationBytes(ctx context.Context, file candidateFile, before int64, data []byte, check func() error) error {
+// prepareRegistrationWrite checks cancellation and retained custody immediately
+// before a write; the caller determines whether publication is irrevocable.
+func prepareRegistrationWrite(ctx context.Context, file candidateFile, before int64, check func() error) error {
 	if err := ctx.Err(); err != nil {
 		return err
 	}
@@ -246,9 +254,31 @@ func writeRegistrationBytes(ctx context.Context, file candidateFile, before int6
 	if _, err := file.Seek(0, io.SeekStart); err != nil {
 		return err
 	}
-	if err := ctx.Err(); err != nil {
+	return ctx.Err()
+}
+
+func writeRegistrationBytes(ctx context.Context, file candidateFile, before int64, data []byte, check func() error) error {
+	if err := prepareRegistrationWrite(ctx, file, before, check); err != nil {
 		return err
 	}
+	return writeRegistrationContents(ctx, file, data, check)
+}
+
+// publishRegistrationCompletion checks every precondition, including cancellation,
+// before entering the bounded irrevocable write/flush/readback section. Once its
+// write is attempted, cancellation is ignored; actual failures are uncertain
+// because the completed exact marker may already have reached durable storage.
+func publishRegistrationCompletion(ctx context.Context, file candidateFile, before int64, data []byte, check func() error) error {
+	if err := prepareRegistrationWrite(ctx, file, before, check); err != nil {
+		return err
+	}
+	if err := writeRegistrationContents(context.WithoutCancel(ctx), file, data, check); err != nil {
+		return errors.Join(ErrRegistrationUncertain, err)
+	}
+	return nil
+}
+
+func writeRegistrationContents(ctx context.Context, file candidateFile, data []byte, check func() error) error {
 	n, err := file.Write(data)
 	if err != nil {
 		return err
