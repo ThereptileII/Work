@@ -5,7 +5,8 @@
 namespace opennav::integration {
 class RecoveryStore {
 public:
-  explicit RecoveryStore(const wxString &directory);
+  // Read-only qualification still honors existing crash evidence and Safe Mode.
+  explicit RecoveryStore(const wxString &directory, bool read_only = false);
   bool RequiresSafe() const { return failed_ || RecoveryRequired(record_); }
   bool BeginXNav();
   void ObserveHealthy(bool deferred_ready, vessel::Time now);
@@ -21,6 +22,7 @@ private:
   wxString path_;
   RecoveryRecord record_;
   bool failed_ = false, attempt_ = false;
+  const bool read_only_;
   unsigned launch_failures_ = 0;
   bool previous_unfinished_ = false;
   std::optional<vessel::Time> healthy_since_;

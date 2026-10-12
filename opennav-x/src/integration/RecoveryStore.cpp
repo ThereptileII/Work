@@ -5,7 +5,8 @@
 #include <wx/filename.h>
 #include <wx/log.h>
 namespace opennav::integration {
-RecoveryStore::RecoveryStore(const wxString &directory) {
+RecoveryStore::RecoveryStore(const wxString &directory, bool read_only)
+    : read_only_(read_only) {
   path_ = wxFileName(directory, "opennav-startup.state").GetFullPath();
   try {
     const auto path = std::filesystem::u8path(path_.ToStdString(wxConvUTF8));
@@ -29,7 +30,7 @@ RecoveryStore::RecoveryStore(const wxString &directory) {
       wxLogWarning("SKAGER startup recovery: previous SKAGER startup did not "
                    "finish; consecutive failures %u",
                    record_.failed_starts);
-      Save();
+      if (!read_only_) Save();
     }
     if (RecoveryRequired(record_))
       reason_ = "Two SKAGER startups did not finish. Safe Mode prevents another "
@@ -42,6 +43,7 @@ RecoveryStore::RecoveryStore(const wxString &directory) {
   }
 }
 bool RecoveryStore::Save() {
+  if (read_only_) return false;
   wxTempFile file(path_);
   if (!file.IsOpened() ||
       !file.Write(wxString::FromUTF8(EncodeRecovery(record_)), wxConvUTF8) ||
@@ -57,6 +59,10 @@ bool RecoveryStore::Save() {
 bool RecoveryStore::BeginXNav() {
   if (RequiresSafe())
     return false;
+  if (read_only_) {
+    attempt_ = true;
+    return true;
+  }
   record_.pending = true;
   attempt_ = Save();
   return attempt_;
@@ -69,7 +75,9 @@ void RecoveryStore::ObserveHealthy(bool ready, vessel::Time now) {
   if (now - *healthy_since_ < std::chrono::seconds(30))
     return;
   record_ = {};
-  if (Save()) {
+  // Keep the real deferred-ready/30-second health checkpoint in qualification;
+  // only its profile persistence is suppressed.
+  if (read_only_ || Save()) {
     attempt_ = false;
     wxLogMessage("SKAGER startup healthy after 30 seconds of normal "
                  "application processing");
@@ -79,6 +87,10 @@ void RecoveryStore::ObserveHealthy(bool ready, vessel::Time now) {
 void RecoveryStore::CleanClose() {
   if (!attempt_)
     return;
+  if (read_only_) {
+    attempt_ = false;
+    return;
+  }
   record_ = {};
   if (Save()) {
     attempt_ = false;
@@ -86,6 +98,7 @@ void RecoveryStore::CleanClose() {
   }
 }
 bool RecoveryStore::Retry() {
+  if (read_only_) return false;
   // Preserve the prior record as diagnostic evidence before resetting it.
   try {
     const auto p = std::filesystem::u8path(path_.ToStdString(wxConvUTF8));

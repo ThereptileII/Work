@@ -45,7 +45,7 @@ diff --git a/gui/src/navutil.cpp b/gui/src/navutil.cpp
  #include <wx/wxprec.h>
  
  #ifdef __MINGW32__
-@@ -398,7 +401,13 @@
+@@ -398,10 +401,26 @@
  
  MyConfig::MyConfig(const wxString &LocalFileName)
      : wxFileConfig(_T (""), _T (""), LocalFileName, _T (""),
@@ -55,11 +55,37 @@ diff --git a/gui/src/navutil.cpp b/gui/src/navutil.cpp
 +  // The wx base constructor has just read this exact file while native custody
 +  // was already held by OnInit; corroborate the real constructor argument.
 +  opennav::integration::ObserveQualifiedConfigConstructor(LocalFileName.ToStdWstring());
++  // wxFileConfig destruction calls its own Flush, so disable autosave as well
++  // as suppressing virtual Flush calls during qualification. Reads stay real.
++  if (opennav::integration::QualificationProfileRequired()) DisableAutoSave();
 +#endif
 +}
  
  MyConfig::~MyConfig() {}
  
++bool MyConfig::Flush(bool bCurrentOnly) {
++#ifdef OPENNAV_X
++  if (opennav::integration::QualificationProfileRequired()) return true;
++#endif
++  return wxFileConfig::Flush(bCurrentOnly);
++}
++
+ int MyConfig::LoadMyConfig() {
+   int display_width, display_height;
+   display_width = g_monitor_info[g_current_monitor].width;
+@@ -2065,6 +2084,12 @@
+ }
+ 
+ void MyConfig::UpdateSettings() {
++#ifdef OPENNAV_X
++  // Qualification observes normal startup with the original profile, without
++  // regenerating configuration groups or persisting startup/UI defaults.
++  if (opennav::integration::QualificationProfileRequired()) return;
++#endif
++
+   //  Temporarily suppress logging of trivial non-fatal wxLogSysError() messages
+   //  provoked by Android security...
+ #ifdef __ANDROID__
 diff --git a/model/src/comm_drv_n0183_serial.cpp b/model/src/comm_drv_n0183_serial.cpp
 --- a/model/src/comm_drv_n0183_serial.cpp
 +++ b/model/src/comm_drv_n0183_serial.cpp
@@ -318,3 +344,13 @@ diff --git a/model/src/plugin_loader.cpp b/model/src/plugin_loader.cpp
    wxLogMessage(wxString("PluginLoader: Loading PlugIn: ") + plugin_file);
  
    if (plugin_file.empty()) {
+diff --git a/gui/include/gui/navutil.h b/gui/include/gui/navutil.h
+--- a/gui/include/gui/navutil.h
++++ b/gui/include/gui/navutil.h
+@@ -177,5 +177,6 @@
+   MyConfig(const wxString &LocalFileName);
+   ~MyConfig();
+ 
++  bool Flush(bool bCurrentOnly = false) override;
+   int LoadMyConfig();
+   void LoadS57Config();

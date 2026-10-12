@@ -297,7 +297,8 @@ bool HideLegacyToolbar(const void* toolbar) { return IsXNav() && toolbar == g_Ma
 
 bool CheckStartupRecovery() {
   recovery = std::make_unique<integration::RecoveryStore>(
-      g_BasePlatform->GetPrivateDataDir());
+      g_BasePlatform->GetPrivateDataDir(),
+      integration::QualificationProfileRequired());
   recovery_safe = recovery->RequiresSafe() && !flags.legacy;
   if (recovery_safe)
     wxLogWarning("SKAGER automatic Safe Mode: %s",
@@ -385,7 +386,8 @@ void SelectMode(wxFileConfig& config, bool upstream_safe) {
     recovery_safe = true;
     safe_mode::set_mode(true);
   }
-  if (diagnostic_directory.empty() && IsXNav()) {
+  if (!integration::QualificationProfileRequired() &&
+      diagnostic_directory.empty() && IsXNav()) {
     const auto folder =
         wxFileName(g_BasePlatform->GetPrivateDataDir(), "opennav-logs")
             .GetFullPath();
@@ -468,7 +470,8 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
   if (!SetSkagerTaskbarIdentity(frame))
     wxLogWarning("SKAGER taskbar identity could not be set");
 #endif
-  settings = std::make_unique<integration::SettingsStore>(config, fresh_setup_profile);
+  settings = std::make_unique<integration::SettingsStore>(
+      config, fresh_setup_profile && !integration::QualificationProfileRequired());
   marine = std::make_unique<integration::MarineBridge>();
   auto configure_sources = [] {
     if (pilots) pilots->live.Enable(false, vessel::Clock::now());
@@ -937,7 +940,8 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
                                     const smartnav::EnergyPrediction &energy,
                                     const std::string &page) mutable {
     const auto now=vessel::Clock::now();
-    if (diagnostic_directory.empty() || now - last < std::chrono::seconds(1))
+    if (integration::QualificationProfileRequired() ||
+        diagnostic_directory.empty() || now - last < std::chrono::seconds(1))
       return;
     last=now;
     XNAV_TEST_UI_TRACE("snapshot.begin");
