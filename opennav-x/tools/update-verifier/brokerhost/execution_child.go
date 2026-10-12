@@ -76,7 +76,7 @@ func PrepareExecutionChildNative(ctx context.Context, executor *brokerpipe.PeerC
 	if err := profile.ValidateBeforeLaunch(ctx); err != nil {
 		return nil, err
 	}
-	identity, err := image.Identity(ctx)
+	identity, err := validateExecutionCapability(ctx, image)
 	if err != nil {
 		return nil, err
 	}

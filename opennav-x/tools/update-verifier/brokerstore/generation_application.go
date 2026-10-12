@@ -3,10 +3,13 @@ package brokerstore
 import (
 	"context"
 	"errors"
+	"io"
 	"runtime"
 )
 
 const generationApplicationMember = "app/opencpn.exe"
+const generationQualificationMember = "app/update-qualification.json"
+const maxGenerationQualificationBytes = 4096
 
 type generationApplicationBackend interface {
 	matchApplicationProcess(context.Context, uint32, uint64) error
@@ -66,6 +69,57 @@ func (image *GenerationApplicationImage) Identity(ctx context.Context) (Generati
 		return empty, err
 	}
 	return GenerationApplicationIdentity{g.record.ClientSID, g.record.Generation, g.record.Identity.Commit, m.SHA256}, nil
+}
+
+// QualificationBytes returns copied original capability evidence from the fixed
+// retained generation sidecar. It cannot qualify a caller-supplied path or bytes,
+// and grants no health, commissioning, selected-chain or spawn authority.
+// Historical producers lacking this original member deliberately refuse.
+func (image *GenerationApplicationImage) QualificationBytes(ctx context.Context) (result []byte, resultErr error) {
+	before, err := image.Identity(ctx)
+	if err != nil {
+		return nil, err
+	}
+	member, err := image.owner.OpenMember(generationQualificationMember)
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		resultErr = errors.Join(resultErr, member.Close())
+		if resultErr != nil {
+			result = nil
+		}
+	}()
+	identity, err := member.Identity()
+	if err != nil {
+		return nil, err
+	}
+	if identity.RelativePath != generationQualificationMember || identity.Length <= 0 || identity.Length > maxGenerationQualificationBytes {
+		return nil, errors.New("bounded original qualification sidecar required")
+	}
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+	original := make([]byte, int(identity.Length)+1)
+	n, readErr := member.ReadAt(original, 0)
+	if readErr != nil && !errors.Is(readErr, io.EOF) {
+		return nil, readErr
+	}
+	if int64(n) != identity.Length || registrationDigest(original[:n]) != identity.SHA256 {
+		return nil, errors.New("qualification sidecar original length/digest changed")
+	}
+	afterMember, err := member.Identity()
+	if err != nil || afterMember != identity {
+		return nil, errors.Join(errors.New("qualification sidecar original identity changed"), err)
+	}
+	after, err := image.Identity(ctx)
+	if err != nil || after != before {
+		return nil, errors.Join(errors.New("qualification application original identity changed"), err)
+	}
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+	return original[:n], nil
 }
 
 // MatchesProcess requires native-derived PID/creation evidence from a retained
