@@ -238,7 +238,7 @@ func TestNativeInstalledBaselineDescriptorClientReadExecuteOnly(t *testing.T) {
 			t.Fatal(err)
 		}
 		const mutation uint32 = windows.GENERIC_WRITE | windows.GENERIC_ALL | windows.DELETE | windows.WRITE_DAC | windows.WRITE_OWNER | windows.FILE_WRITE_DATA | windows.FILE_APPEND_DATA | windows.FILE_WRITE_EA | windows.FILE_WRITE_ATTRIBUTES | 0x40
-		if ace.Mask&mutation != 0 || ace.Mask&windows.FILE_GENERIC_READ != windows.FILE_GENERIC_READ || ace.Mask&windows.FILE_GENERIC_EXECUTE != windows.FILE_GENERIC_EXECUTE {
+		if uint32(ace.Mask)&mutation != 0 || ace.Mask&windows.FILE_GENERIC_READ != windows.FILE_GENERIC_READ || ace.Mask&windows.FILE_GENERIC_EXECUTE != windows.FILE_GENERIC_EXECUTE {
 			t.Fatalf("client rights %x", ace.Mask)
 		}
 	}
