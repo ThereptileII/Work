@@ -1,0 +1,2 @@
+=== RUN   TestNativeGenerationBaselineCopiesApprovedOriginalsToReadonlyPublicView
+--- PASS: TestNativeGenerationBaselineCopiesApprovedOriginalsToReadonlyPublicView (0.66s)

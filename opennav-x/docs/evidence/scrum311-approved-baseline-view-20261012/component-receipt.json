@@ -1,0 +1,43 @@
+{
+  "base": "3235f8513bf87511880dc8abdfb63b0d87499ffc",
+  "commit": "de86d6fa541d02f2255bc22a90116d116f5413e0",
+  "worktree": "/home/standard/Projects/X-nav-worktrees/generation-baseline-20261012",
+  "portable": {
+    "command": "go test -race -count=1 -v ./brokerstore -run '^TestGeneration'",
+    "exit": 0,
+    "topLevelPassed": 12,
+    "nestedPassed": 65,
+    "newBaselineTopLevelPassed": 4,
+    "newBaselineNestedPassed": 27,
+    "log": "/home/standard/Projects/.tmp/generation-baseline-20261012/portable-race.log",
+    "initialFailureLog": "/home/standard/Projects/.tmp/generation-baseline-20261012/portable-race-initial-failure.log",
+    "repair": "Bound shared copy helper to actual retained baseline backend; initial nil backend caused panic before completion."
+  },
+  "windows386": {
+    "command": "GOOS=windows GOARCH=386 CGO_ENABLED=0 go test -c -o brokerstore.test.exe ./brokerstore",
+    "exit": 0,
+    "log": "/home/standard/Projects/.tmp/generation-baseline-20261012/windows-386-final-compile.log",
+    "binary": "/home/standard/Projects/.tmp/generation-baseline-20261012/brokerstore.test.exe",
+    "sha256": "f5ea9aba6515a9b78f342e82659cae7c013d9d7cec1a7f182d67b523e769c200",
+    "nativeExecuted": false
+  },
+  "nativeExactCases": [
+    "TestNativeGenerationBaselineCopiesApprovedOriginalsToReadonlyPublicView",
+    "TestNativeGenerationBaselineAndCandidateRegistryCoexistWithStrictPurposes",
+    "TestNativeGenerationBaselineRefusesRegistrationMutationAndPartialDestination"
+  ],
+  "sourceSHA256": {
+    "opennav-x/tools/update-verifier/brokerstore/generation_baseline.go": "6050af054b3963d6ef80be644c1aae80576da3ba6149b69596a01d4d4329260e",
+    "opennav-x/tools/update-verifier/brokerstore/generation_baseline_windows.go": "68ecc52b6cc29ff1047704f7ad91ca52a56d07cb96bacbde8f901a5095564a68",
+    "opennav-x/tools/update-verifier/brokerstore/generation_baseline_test.go": "df9c6c6fb6a50ec19b0836f1bf169cb2b4a1ad29874506c4d42140136bc5bff2",
+    "opennav-x/tools/update-verifier/brokerstore/generation_baseline_windows_test.go": "946a86573d78f9d54d34683669d1ceee212c7da918722ba5620ad48dea07561e",
+    "opennav-x/tools/update-verifier/brokerstore/installed_generation.go": "2059cecee0985d91e3cffbf3f5b35e7cc4b415ff48ee2865fdd5bb5c312109d7",
+    "opennav-x/tools/update-verifier/brokerstore/installed_generation_windows.go": "e38ad409b6bb79b5f772cb6931f2ac8674ac93da27f4721eb9865579837bcb14"
+  },
+  "limits": [
+    "No selection/launch/health or commissioning authority",
+    "Existing strict live sibling snapshots await separate authenticated history evolution",
+    "Native temporary fixtures bypass actual service principal and fixed ProgramFiles discovery; native execution pending",
+    "Three original engine helpers are not a complete commissioning closure"
+  ]
+}

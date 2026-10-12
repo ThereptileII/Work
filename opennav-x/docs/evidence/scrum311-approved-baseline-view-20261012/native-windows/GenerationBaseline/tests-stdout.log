@@ -1,0 +1,17 @@
+=== RUN   TestNativeGenerationBaselineCopiesApprovedOriginalsToReadonlyPublicView
+--- PASS: TestNativeGenerationBaselineCopiesApprovedOriginalsToReadonlyPublicView (0.66s)
+=== RUN   TestNativeGenerationBaselineAndCandidateRegistryCoexistWithStrictPurposes
+--- PASS: TestNativeGenerationBaselineAndCandidateRegistryCoexistWithStrictPurposes (0.82s)
+=== RUN   TestNativeGenerationBaselineRefusesRegistrationMutationAndPartialDestination
+=== RUN   TestNativeGenerationBaselineRefusesRegistrationMutationAndPartialDestination/registration-bytes
+=== RUN   TestNativeGenerationBaselineRefusesRegistrationMutationAndPartialDestination/registration-marker
+=== RUN   TestNativeGenerationBaselineRefusesRegistrationMutationAndPartialDestination/partial-view
+=== RUN   TestNativeGenerationBaselineRefusesRegistrationMutationAndPartialDestination/unknown-purpose
+=== RUN   TestNativeGenerationBaselineRefusesRegistrationMutationAndPartialDestination/mixed-purpose
+--- PASS: TestNativeGenerationBaselineRefusesRegistrationMutationAndPartialDestination (1.86s)
+    --- PASS: TestNativeGenerationBaselineRefusesRegistrationMutationAndPartialDestination/registration-bytes (0.18s)
+    --- PASS: TestNativeGenerationBaselineRefusesRegistrationMutationAndPartialDestination/registration-marker (0.18s)
+    --- PASS: TestNativeGenerationBaselineRefusesRegistrationMutationAndPartialDestination/partial-view (0.50s)
+    --- PASS: TestNativeGenerationBaselineRefusesRegistrationMutationAndPartialDestination/unknown-purpose (0.50s)
+    --- PASS: TestNativeGenerationBaselineRefusesRegistrationMutationAndPartialDestination/mixed-purpose (0.50s)
+PASS

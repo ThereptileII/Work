@@ -1,0 +1,24 @@
+=== RUN   TestGenerationBaselineCopiesOriginalsWithDistinctProvenanceAndReadonlyLifetime
+--- FAIL: TestGenerationBaselineCopiesOriginalsWithDistinctProvenanceAndReadonlyLifetime (0.07s)
+panic: runtime error: invalid memory address or nil pointer dereference [recovered, repanicked]
+[signal SIGSEGV: segmentation violation code=0x1 addr=0x18 pc=0xa2e395]
+
+goroutine 6 [running]:
+testing.tRunner.func1.2({0x10179b8, 0x10b7770})
+	/tmp/skager-go-1.27.1/go/src/testing/testing.go:2123 +0x419
+testing.tRunner.func1()
+	/tmp/skager-go-1.27.1/go/src/testing/testing.go:2126 +0x65f
+panic({0x10179b8?, 0x10b7770?})
+	/tmp/skager-go-1.27.1/go/src/runtime/panic.go:859 +0x125
+example.com/opennav-update-verifier/brokerstore.(*Candidate).copyFile(0xc00020b0e0, {0x1077eb8, 0xc000329278}, {0x10788d8, 0xc000430180}, {0x7721521a6e40, 0xc000029200}, 0x3bc, {0xc000231940, 0x40})
+	/home/standard/Projects/X-nav-worktrees/generation-baseline-20261012/opennav-x/tools/update-verifier/brokerstore/store.go:368 +0xab5
+example.com/opennav-update-verifier/brokerstore.(*Store).MaterializeApprovedBaselineFresh(0xc00020c820, {0x1077e48, 0x10ee000}, 0xc00014ba00, {0xc0001a9800, 0xb13, 0xc00}, {0xc00035e6c0, 0x40})
+	/home/standard/Projects/X-nav-worktrees/generation-baseline-20261012/opennav-x/tools/update-verifier/brokerstore/generation_baseline.go:178 +0x2991
+example.com/opennav-update-verifier/brokerstore.TestGenerationBaselineCopiesOriginalsWithDistinctProvenanceAndReadonlyLifetime(0xc00015e6c8)
+	/home/standard/Projects/X-nav-worktrees/generation-baseline-20261012/opennav-x/tools/update-verifier/brokerstore/generation_baseline_test.go:137 +0x19e
+testing.tRunner(0xc00015e6c8, 0x107aaa0)
+	/tmp/skager-go-1.27.1/go/src/testing/testing.go:2193 +0x21d
+created by testing.(*T).Run in goroutine 1
+	/tmp/skager-go-1.27.1/go/src/testing/testing.go:2258 +0xb13
+FAIL	example.com/opennav-update-verifier/brokerstore	0.107s
+FAIL

@@ -449,6 +449,29 @@ through later generation publication. Authenticated history evolution and the
 initial approved baseline public view remain necessary, along with the actual
 private selection/interactive commissioning/startup/fallback transaction.
 
+### Approved initial baseline public loading view
+
+`Store.MaterializeApprovedBaselineFresh` now derives a fresh public generation
+from a live same-Store completed initial baseline and its exact independently
+approved request. The native factory additionally retains the fixed completed
+protected registration and marker; caller-supplied request/hash alone are not
+authority. Original sidecars, product evidence, all three engine helpers and
+full source/destination physical identities remain bound to the copy.
+
+`ApprovedBaselineCompletion` and `ReadOnlyApprovedBaselineGeneration` preserve
+distinct operator-approved provenance. No policy, Recovery or Setup hash is
+invented for the baseline. Existing signed-candidate serialization is unchanged;
+strict sibling dispatch refuses mixed or unknown provenance. Original copies
+can transition through the same one-way read-only lifetime and outlive the
+private source owner.
+
+[Exact source and native component evidence](../evidence/scrum311-approved-baseline-view-20261012/README.md)
+prove copied-file/read-execute custody and refusals on temporary objects. This
+does not commission or startup-qualify the first protected previous version.
+Authenticated live sibling-history evolution and the actual protected
+selection/interactive commissioning/healthy/fallback transaction remain open;
+the three helpers alone are not the complete commissioning engine closure.
+
 ## Inactive broker package prerequisite
 
 `tools/package-update-broker.py` is a native-Windows-only producer for the fixed

@@ -1,0 +1,2 @@
+=== RUN   TestNativeGenerationBaselineAndCandidateRegistryCoexistWithStrictPurposes
+--- PASS: TestNativeGenerationBaselineAndCandidateRegistryCoexistWithStrictPurposes (0.82s)

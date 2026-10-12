@@ -1,0 +1,50 @@
+{
+    "schema":  1,
+    "group":  "GenerationBaseline",
+    "executable":  "C:\\XNav\\ComponentChecks\\generation-baseline-de86d6fa\\brokerstore.test.exe",
+    "executableSha256":  "f5ea9aba6515a9b78f342e82659cae7c013d9d7cec1a7f182d67b523e769c200",
+    "expectedCases":  [
+                          "TestNativeGenerationBaselineCopiesApprovedOriginalsToReadonlyPublicView",
+                          "TestNativeGenerationBaselineAndCandidateRegistryCoexistWithStrictPurposes",
+                          "TestNativeGenerationBaselineRefusesRegistrationMutationAndPartialDestination"
+                      ],
+    "selection":  "^(TestNativeGenerationBaselineCopiesApprovedOriginalsToReadonlyPublicView|TestNativeGenerationBaselineAndCandidateRegistryCoexistWithStrictPurposes|TestNativeGenerationBaselineRefusesRegistrationMutationAndPartialDestination)$",
+    "status":  "passed",
+    "failure":  null,
+    "startedUtc":  "2026-10-12T09:26:03.9661866Z",
+    "os":  "Microsoft Windows NT 10.0.22631.0",
+    "os64":  true,
+    "process64":  true,
+    "powershellVersion":  "5.1.22621.5624",
+    "listing":  {
+                    "arguments":  [
+                                      "-test.list=^(TestNativeGenerationBaselineCopiesApprovedOriginalsToReadonlyPublicView|TestNativeGenerationBaselineAndCandidateRegistryCoexistWithStrictPurposes|TestNativeGenerationBaselineRefusesRegistrationMutationAndPartialDestination)$"
+                                  ],
+                    "processId":  6460,
+                    "startedUtc":  "2026-10-12T09:26:03.9887506Z",
+                    "exitCode":  0,
+                    "timedOut":  false,
+                    "error":  null,
+                    "stdout":  "C:\\XNav\\ComponentChecks\\generation-baseline-de86d6fa\\GenerationBaseline\\list-stdout.log",
+                    "stderr":  "C:\\XNav\\ComponentChecks\\generation-baseline-de86d6fa\\GenerationBaseline\\list-stderr.log",
+                    "elapsedMilliseconds":  396
+                },
+    "execution":  {
+                      "arguments":  [
+                                        "-test.run=^(TestNativeGenerationBaselineCopiesApprovedOriginalsToReadonlyPublicView|TestNativeGenerationBaselineAndCandidateRegistryCoexistWithStrictPurposes|TestNativeGenerationBaselineRefusesRegistrationMutationAndPartialDestination)$",
+                                        "-test.count=1",
+                                        "-test.v",
+                                        "-test.timeout=90s"
+                                    ],
+                      "processId":  7420,
+                      "startedUtc":  "2026-10-12T09:26:04.4466472Z",
+                      "exitCode":  0,
+                      "timedOut":  false,
+                      "error":  null,
+                      "stdout":  "C:\\XNav\\ComponentChecks\\generation-baseline-de86d6fa\\GenerationBaseline\\tests-stdout.log",
+                      "stderr":  "C:\\XNav\\ComponentChecks\\generation-baseline-de86d6fa\\GenerationBaseline\\tests-stderr.log",
+                      "elapsedMilliseconds":  3380
+                  },
+    "scope":  "Exact inert native fixtures only; no application/service/profile/network/physical output; not enrollment or release qualification",
+    "completedUtc":  "2026-10-12T09:26:08.0503954Z"
+}

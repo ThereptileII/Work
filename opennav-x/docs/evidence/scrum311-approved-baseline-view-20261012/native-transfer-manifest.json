@@ -1,0 +1,9 @@
+{
+  "sourceCommit": "d3d653ba920ad15ee71844eaf0fc8d0670059b30",
+  "testRevision": "d3d653ba920ad15ee71844eaf0fc8d0670059b30",
+  "files": {
+    "brokerstore.test.exe": "f5ea9aba6515a9b78f342e82659cae7c013d9d7cec1a7f182d67b523e769c200",
+    "runner.ps1": "e69576fe3fc565bde9ac08ece3087d0d830367ad1425d2a3785c2cc0771f6cdd"
+  },
+  "remote": "C:\\XNav\\ComponentChecks\\generation-baseline-de86d6fa"
+}

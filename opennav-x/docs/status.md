@@ -1,5 +1,26 @@
 # SKAGER status — 2026-10-12
 
+## Approved initial baseline loading view passes native component checks
+
+Source `d3d653ba` (isolated `de86d6fa`) adds a fresh protected public copy of the
+live completed approved baseline, with original protected registration evidence,
+all original sidecars/helpers, full physical IDs and distinct typed provenance.
+Its read-only loading custody survives private-source closure. Focused Linux
+generation race passed **12 top-level + 65 nested**; Windows/x86 component compile
+and **3 top-level + 5 nested native fixtures passed**, no final failures/skips.
+The initial copy-helper panic, source repair and exact corrected evidence are
+[retained](evidence/scrum311-approved-baseline-view-20261012/README.md).
+
+SCRUM-311 remains In Progress. Live sibling-history evolution, actual protected
+selected/pending state, interactive executor/commissioning, one-use creation and
+authenticated healthy/fallback are incomplete. This does not qualify a selected
+previous version or the full installed updater. The separate manual retained
+plugin qualification workflow (`0bbb54a2`, documented in `e4496989`) is wired but
+has not run against a new producer. Full MSVC application and installed/boat
+gates remain pending. No full app build/release, installed product/profile change,
+visual/endurance run or physical command occurred. OpenCPN PID1852 remained
+responsive. Earlier sections retain their original revision and scope.
+
 ## Current increment: native read-only generation custody passes
 
 Source `bb2dde1b` (isolated `fcec6f21`) adds the actual one-way writer-to-read-only
