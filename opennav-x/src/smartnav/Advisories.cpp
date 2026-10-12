@@ -96,24 +96,27 @@ NavigationAdvice Advise(const vessel::VesselState &s,
         if (std::isfinite(seconds))
           event.seconds_from_now = seconds;
       }
-      advice.events.push_back(event);
       if (i + 1 < r->remaining_steps.size() && moving && course &&
           r->remaining_steps[i + 1].distance_from_previous_nm > 0 &&
           Course(r->remaining_steps[i + 1].course_true_deg)) {
         const auto incoming =
             i == 0 ? s.navigation.cog_deg.value : step.course_true_deg;
         if (Course(incoming)) {
-          event.kind = EventKind::Turn;
-          event.title = "Planned course change";
           event.course_true_deg = r->remaining_steps[i + 1].course_true_deg;
           event.course_change_deg = Turn(*event.course_true_deg, *incoming);
-          event.detail =
-              i == 0
-                  ? "From your current course over ground; advisory only"
-                  : "Between planned route courses; advisory only";
-          if (std::abs(*event.course_change_deg) >= 1.0)
-            advice.events.push_back(std::move(event));
         }
+      }
+      // Keep a computed zero/small change on the waypoint too. An absent Turn
+      // event can mean unavailable input and must never imply straight ahead.
+      advice.events.push_back(event);
+      if (event.course_change_deg && std::abs(*event.course_change_deg) >= 1.0) {
+        event.kind = EventKind::Turn;
+        event.title = "Planned course change";
+        event.detail =
+            i == 0
+                ? "From your current course over ground; advisory only"
+                : "Between planned route courses; advisory only";
+        advice.events.push_back(std::move(event));
       }
     }
   }

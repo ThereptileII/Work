@@ -19,6 +19,9 @@ struct AdvisoryEvent {
   EventKind kind = EventKind::Waypoint;
   Severity severity = Severity::Information;
   std::string identity, title, detail, source;
+  // A Waypoint carries both course fields when its maneuver was computed,
+  // including zero/sub-degree changes which do not produce a separate Turn.
+  // Missing fields mean unavailable input, never a straight-course assertion.
   std::optional<double> seconds_from_now, distance_nm, course_true_deg,
       course_change_deg;
   vessel::Time observed_at{};

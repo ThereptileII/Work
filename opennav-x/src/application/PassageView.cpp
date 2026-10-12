@@ -60,14 +60,17 @@ PassageView PresentPassage(const vessel::VesselState &state,
           point.seconds = Nonnegative(event.seconds_from_now);
           if (event.kind == smartnav::EventKind::Destination)
             view.seconds = point.seconds;
-        } else if (event.kind == smartnav::EventKind::Turn) {
+        }
+        if (event.kind == smartnav::EventKind::Waypoint ||
+            event.kind == smartnav::EventKind::Turn) {
           if (event.course_change_deg &&
               std::isfinite(*event.course_change_deg) &&
-              std::abs(*event.course_change_deg) <= 180)
+              std::abs(*event.course_change_deg) <= 180 &&
+              event.course_true_deg && std::isfinite(*event.course_true_deg) &&
+              *event.course_true_deg >= 0 && *event.course_true_deg < 360) {
             point.turn_deg = event.course_change_deg;
-          if (event.course_true_deg && std::isfinite(*event.course_true_deg) &&
-              *event.course_true_deg >= 0 && *event.course_true_deg < 360)
             point.course_true_deg = event.course_true_deg;
+          }
         }
       }
       view.points.push_back(std::move(point));
@@ -88,6 +91,12 @@ NextTurnView PresentNextTurn(const PassageView &passage) {
   if (!passage.active || !passage.current || passage.points.empty()) return view;
   const auto &next = passage.points.front();
   if (next.name.empty() || !next.distance_nm) return view;
+  const bool last = passage.points.size() == 1;
+  if (!last && (!next.turn_deg || !std::isfinite(*next.turn_deg) ||
+                std::abs(*next.turn_deg) > 180 || !next.course_true_deg ||
+                !std::isfinite(*next.course_true_deg) ||
+                *next.course_true_deg < 0 || *next.course_true_deg >= 360))
+    return view;
   view.visible = true;
   std::string upper;
   for (std::size_t i = 0; i < next.name.size(); ++i) {
@@ -100,7 +109,6 @@ NextTurnView PresentNextTurn(const PassageView &passage) {
     for (std::size_t at = upper.find(from); at != std::string::npos; at = upper.find(from, at + 2))
       upper.replace(at, 2, to);
   view.eyebrow = "NEXT \xC2\xB7 " + upper;
-  const bool last = passage.points.size() == 1;
   char buffer[64];
   if (last) {
     view.headline = "Arrival";

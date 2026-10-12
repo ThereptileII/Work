@@ -22,7 +22,8 @@ PassageView PresentPassage(const vessel::VesselState &state,
                            vessel::Time now);
 // SCRUM-362: the prototype's next-turn card ("NEXT · LÅNGHOLMEN / Starboard
 // 32° / 0.7 nm · in 7 min · new course 075°"), derived only from a current
-// passage view. Not visible without a current active route.
+// passage view. Not visible without a current active route or, before the
+// destination, a computed maneuver. Missing course data never means straight.
 struct NextTurnView {
   bool visible = false;
   std::string eyebrow, headline, detail;  // UTF-8.
