@@ -2,8 +2,10 @@
 
 This describes the joined implementation, not an accepted installed updater.
 Jira remains the backlog. The historical [startup updater](secure-updater.md)
-still describes the existing user-owned launcher; its normal shortcut/Update Now
-path has not yet been replaced by the protected execution path below.
+still describes the existing user-owned installed launcher. Protected normal
+shortcut activation and Update Now are now joined in source, but the installed
+Setup/maintenance lifecycle has not yet switched to that path or passed its
+native service and boat acceptance.
 
 ## Actual service boundary
 
@@ -84,8 +86,12 @@ Cancellation, broken peer custody and ambiguous storage failures remain failures
 - Native execution of the bounded fresh-pipe handoff correction; the source
   waits only after actual busy-pipe evidence and authenticates the actual server
   before sending bytes, without connected replay.
-- Protected normal-shortcut/startup admission and Update Now integration;
-  existing installed user flow still uses the earlier supervisor.
+- Native/installed qualification of joined protected normal-shortcut/startup
+  admission and Update Now. The initial operator path is explicitly selected by
+  `--activate-startup=true`, requires the actual approved current-user identity,
+  and activates only the original newly provisioned service after registration.
+  Existing installed Setup still uses the earlier supervisor; protected repair,
+  manual rollback and decommission require their own authenticated lifecycle.
 - Exact build-selected sound-command serialization and additional legitimate
   startup profile normalization; new directories/navigation migrations are not
   licensed for automatic deletion or overwrite.

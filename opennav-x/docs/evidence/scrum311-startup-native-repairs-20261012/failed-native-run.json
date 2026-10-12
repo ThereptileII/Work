@@ -1,0 +1,65 @@
+{
+  "schema": 1,
+  "run": "https://github.com/ThereptileII/Work/actions/runs/38261504482",
+  "commit": "daf9c3a4bca883f91a818b5eedf9c7c8ba7b6074",
+  "scope": "component-only; not protected installed service or whole application acceptance",
+  "jobs": {
+    "linux": "success",
+    "nativeStartupInteractions": "success",
+    "windows": "failure"
+  },
+  "goTestCounts": {
+    "top_pass": 624,
+    "nested_pass": 2535,
+    "top_skip": 9,
+    "top_fail": 8,
+    "nested_fail": 12
+  },
+  "failedCases": [
+    "TestNativeStartupShellLinkPersistsFixedProtectedArguments",
+    "TestNativeStartupPublicationPreservesOriginalIdentityAndOtherLinks/new-normal",
+    "TestNativeExecutionProfileCaptureReopenInspectionOnly",
+    "TestNativeExecutionProfileCaptureReopenAncestryAndMutationRefuse/rebound-parent",
+    "TestNativeExecutionProfileCaptureReopenAncestryAndMutationRefuse/hardlink-current",
+    "TestNativeExecutionProfileCaptureReopenAncestryAndMutationRefuse/archive-mutation",
+    "TestNativeExecutionProfileCaptureReopenAncestryAndMutationRefuse",
+    "TestNativeExecutionProfileCaptureEntireTreeLocksAndReleasedInspection",
+    "TestNativeExecutionProfileCaptureMutationWatchAndMetadataRefuse/namespace-add",
+    "TestNativeExecutionProfileCaptureMutationWatchAndMetadataRefuse/security",
+    "TestNativeExecutionProfileCaptureMutationWatchAndMetadataRefuse/full-id",
+    "TestNativeExecutionProfileCaptureMutationWatchAndMetadataRefuse",
+    "TestNativeExecutionProfileCaptureHardlinksStreamsAndCancellationRefuse/hardlink",
+    "TestNativeExecutionProfileCaptureHardlinksStreamsAndCancellationRefuse/named-stream",
+    "TestNativeExecutionProfileCaptureHardlinksStreamsAndCancellationRefuse/cancelled",
+    "TestNativeExecutionProfileCaptureHardlinksStreamsAndCancellationRefuse",
+    "TestNativeStartupPublicationPreservesOriginalIdentityAndOtherLinks",
+    "TestNativeStartupPublicationRefusesUnknownDestinationAndCancellation/unknown-destination",
+    "TestNativeStartupPublicationRefusesUnknownDestinationAndCancellation/canceled",
+    "TestNativeStartupPublicationRefusesUnknownDestinationAndCancellation"
+  ],
+  "retainedArtifacts": [
+    {
+      "name": "installer-fixture-SkagerLifecycleTest-762240f8cdae4066baa6ce5f01aed256.jsonl",
+      "bytes": 1016,
+      "sha256": "9d05c4a4d781b62ea297f503662586697e4a51cdad7a8ab3ae20415d3bdb3073"
+    },
+    {
+      "name": "installer-transaction-tests.log",
+      "bytes": 2386,
+      "sha256": "ca6005cc767ee346f7855ce3e9620746af15488b37b15f8505937ba28e305005"
+    },
+    {
+      "name": "transaction-tests.log",
+      "bytes": 20002,
+      "sha256": "7fc85c432d9b20c78802a3dc290581c8af1452076dfa6d7285035214ddfc8822"
+    },
+    {
+      "name": "verifier-tests.json",
+      "bytes": 3207512,
+      "sha256": "798a6d870cbe49190dc8008a4bdd4720685c139b96d27b40f4bb60f3db0b65fc"
+    }
+  ],
+  "sourceRepairsAcceptedNatively": false,
+  "combinedCandidateBuilt": false,
+  "boatChanged": false
+}

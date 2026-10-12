@@ -1,5 +1,28 @@
 # SKAGER status — 2026-10-12
 
+## Protected startup/Now source joined; exact native component failures isolated
+
+Source through `7e3c5e09` joins authenticated normal-startup/update offers, the
+protected prompt/Now path and explicit initial operator startup activation.
+Unknown/crashed prompt exits now refuse rather than masquerading as Later.
+Staging also requires the existing native private-chart plugin-loader gate.
+
+Exact component run [38261504482](https://github.com/ThereptileII/Work/actions/runs/38261504482)
+on `daf9c3a4` passed Linux and the native startup interaction harness, but Windows
+component verification failed: **624 top-level + 2535 nested passed; 8 top-level
++ 12 nested failed; 9 top-level skipped**. The failures isolate initial profile
+watch notifications and native shortcut factory/publication. A separate installer
+fixture omitted the required installation root; the production guard correctly
+refused it. `3abc9bd4` changes watch arming/complete validation without ignoring
+events, `c8b5a89b` repairs native shortcut factory/rename custody, and `b92eaaa5`
+fixes the stale installer fixture call. Replacement native evidence remains pending.
+
+The older installed lifecycle has not yet joined protected enrollment and
+repair/rollback/uninstall. Actual protected service operation, combined package
+security/lifecycle and exact boat acceptance remain open. No combined Staging
+application build or boat change is claimed. See [source, failed native evidence
+and remaining acceptance](evidence/scrum311-startup-native-repairs-20261012/README.md).
+
 ## Protected startup admission joined; normal installed updater remains open
 
 Source `b2b92829` joins the initial-only approved-baseline startup gateway,
