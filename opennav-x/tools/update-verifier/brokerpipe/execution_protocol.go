@@ -47,8 +47,10 @@ func validExecutionPhase(p ExecutionPhase) bool {
 
 // ExecutionRequest names a proposed conversation and protected stage lookup.
 // Its identifiers are data, never consent, durable one-use or launch authority.
-// Operation is exactly execute-session (qualification) or start-current (normal
-// selected startup). The host dispatches intent; neither confers authorization.
+// Operation is exactly execute-session (qualification), start-current (normal
+// selected startup), or start-selected (approved-baseline startup admission).
+// The host inspects original protected history before choosing qualification or
+// terminal relay for start-selected. No intent confers authorization.
 // It accepts no command, path, trust configuration or caller-selected pipe.
 type ExecutionRequest struct {
 	Schema    int    `json:"schema"`
@@ -139,7 +141,7 @@ type ExecutionHandler func(context.Context, Peer, ExecutionRequest, *ExecutionSe
 type ExecutionClientHandler func(context.Context, ExecutionCommand) (ExecutionObservation, error)
 
 func validExecutionRequest(q ExecutionRequest) bool {
-	return q.Schema == 1 && (q.Operation == "execute-session" || q.Operation == "start-current") && id32.MatchString(q.RequestID) && id32.MatchString(q.StageID)
+	return q.Schema == 1 && (q.Operation == "execute-session" || q.Operation == "start-current" || q.Operation == "start-selected") && id32.MatchString(q.RequestID) && id32.MatchString(q.StageID)
 }
 func encodeExecutionRequest(q ExecutionRequest) ([]byte, error) {
 	if !validExecutionRequest(q) {

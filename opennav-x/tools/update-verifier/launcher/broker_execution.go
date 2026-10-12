@@ -54,6 +54,9 @@ type brokerExecutionActions struct {
 	failure, closeErr                   error
 }
 
+func brokerStartupArgument(args []string) (string, bool, error) {
+	return brokerIntentArgument(args, "--broker-start")
+}
 func brokerExecutionArgument(args []string) (string, bool, error) {
 	return brokerIntentArgument(args, "--broker-execute")
 }
@@ -136,7 +139,7 @@ func runBrokerExecution(ctx context.Context, stage string, backend brokerExecuti
 	return runBrokerExecutionIntent(ctx, stage, "execute-session", backend, call)
 }
 func runBrokerExecutionIntent(ctx context.Context, stage, operation string, backend brokerExecutionBackend, call func(context.Context, brokerpipe.ExecutionRequest, brokerpipe.ExecutionClientHandler) error) (resultErr error) {
-	if ctx == nil || ctx.Err() != nil || !generationPattern.MatchString(stage) || backend == nil || call == nil || (operation != "execute-session" && operation != "start-current") {
+	if ctx == nil || ctx.Err() != nil || !generationPattern.MatchString(stage) || backend == nil || call == nil || (operation != "execute-session" && operation != "start-current" && operation != "start-selected") {
 		return errors.Join(errBrokerExecutionRefused, contextErrorBroker(ctx))
 	}
 	var nonce [16]byte
@@ -172,6 +175,8 @@ func (a *brokerExecutionActions) handle(ctx context.Context, c brokerpipe.Execut
 	if a.relay.consumed && c.Phase != brokerpipe.FinishExecution {
 		return result, errBrokerExecutionRefused
 	}
+	// Admission can qualify or terminally relay, but cannot create an ordinary
+	// current application inside the same qualification/admission conversation.
 	current := c.Phase == brokerpipe.SpawnCurrent || c.Phase == brokerpipe.ObserveCurrent || c.Phase == brokerpipe.CloseCurrent
 	if c.Phase != brokerpipe.FinishExecution && c.Phase != brokerpipe.RelaySelectedExecutor && ((a.request.Operation == "start-current") != current) {
 		return result, errBrokerExecutionRefused

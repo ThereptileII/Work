@@ -68,6 +68,12 @@ type services struct {
 // operational wait budget is bounded; guardian lifetime intentionally is not.
 // Native Windows process, ACL, image-sharing and recovery tests remain required.
 func Run(ctx context.Context, arguments []string) error {
+	if stage, matched, err := brokerStartupArgument(arguments); matched {
+		if err != nil {
+			return err
+		}
+		return runBrokerStartupNative(ctx, stage)
+	}
 	if stage, matched, err := brokerCurrentArgument(arguments); matched {
 		if err != nil {
 			return err
