@@ -65,6 +65,12 @@ target_include_directories(S52PLIB PRIVATE "${OPENNAV_ROOT}/src")
 if(WIN32)
   target_link_libraries(S52PLIB PRIVATE opennav_chart_name_alpha)
 endif()
+# PlugInContainer's owned inspection member changes its C++ layout. The shared
+# model interface must publish this narrow definition/include to EVERY reader,
+# including headless model fixtures; OPENNAV_X remains source-scoped below.
+# Otherwise plugin_loader.cpp and other model units disagree about the class.
+target_compile_definitions(_OCPN_MODEL INTERFACE SKAGER_PLUGIN_CUSTODY=1)
+target_include_directories(_OCPN_MODEL INTERFACE "${OPENNAV_ROOT}/src")
 # Preserve normal plugin preferences while upstream Safe Mode blocks loading.
 # Limit this additional definition to the one affected model translation unit.
 set_property(SOURCE "${CMAKE_SOURCE_DIR}/model/src/plugin_loader.cpp"

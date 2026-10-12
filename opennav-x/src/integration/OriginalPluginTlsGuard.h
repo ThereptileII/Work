@@ -8,7 +8,8 @@
 
 namespace opennav::integration {
 // Hold a read-only, non-write/non-delete-shared handle across the original
-// LoadLibrary call. No profile/plugin mutation, DLL execution or dependency
+// module lifetime, including forwarded exports, declared delay loads and
+// detach callbacks. No profile/plugin mutation, DLL execution or dependency
 // search is performed by the inspection. This is not a hostile-filesystem or
 // complete Windows loader security boundary (see the architecture document).
 class OriginalPluginTlsGuard {

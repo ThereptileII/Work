@@ -8,6 +8,11 @@
 #endif
 
 namespace opennav::integration {
+#ifndef _WIN32
+// Model-only/non-Windows builds keep upstream loading. This complete empty type
+// allows the container's out-of-line destructor to own the same nullable slot.
+class OriginalPluginTlsGuard {};
+#endif
 enum class PluginModuleLoadOutcome { Loaded, LoadFailed, UnloadFailed };
 
 inline bool UnloadPluginModuleChecked(wxDynamicLibrary &library) {
@@ -27,13 +32,22 @@ inline bool UnloadPluginModuleChecked(wxDynamicLibrary &library) {
   return true;
 }
 
+inline bool UnloadPluginModuleChecked(
+    wxDynamicLibrary &library, PluginModuleInspectionCustody &custody) {
+  if (!UnloadPluginModuleChecked(library)) return false;
+  // File protection remains during FreeLibrary, including detach callbacks.
+  custody.reset();
+  return true;
+}
+
 // Keep the original discovery/profile/helper identity. A refused private
 // adapter may fall back only after it has completely left the destination.
 // LoadFailed deliberately returns to OpenCPN's ordinary error/blacklist path.
 inline PluginModuleLoadOutcome LoadPluginWithPresentationFallback(
     wxDynamicLibrary &library, const wxString &original,
-    const PluginCompatibilityCheck &compatible) {
-  if (!UnloadPluginModuleChecked(library))
+    const PluginCompatibilityCheck &compatible,
+    PluginModuleInspectionCustody &custody) {
+  if (!UnloadPluginModuleChecked(library, custody))
     return PluginModuleLoadOutcome::UnloadFailed;
   if (TryPluginPresentationLoader(library, original, compatible))
     return library.IsLoaded() ? PluginModuleLoadOutcome::Loaded
@@ -43,14 +57,17 @@ inline PluginModuleLoadOutcome LoadPluginWithPresentationFallback(
   // This central original-load branch is shared by discovery, reload and a
   // clean adapter refusal. External/configured plugin roots need no duplicate
   // installer path resolver. The private adapter has its own exact-byte gate.
-  OriginalPluginTlsGuard tls_guard(original);
-  if (!tls_guard.Refusal().empty()) {
+  auto tls_guard = std::make_unique<OriginalPluginTlsGuard>(original);
+  if (!tls_guard->Refusal().empty()) {
     wxLogWarning("SKAGER: refusing plugin %s: %s", original,
-                 wxString::FromUTF8(tls_guard.Refusal().c_str()));
+                 wxString::FromUTF8(tls_guard->Refusal().c_str()));
     return PluginModuleLoadOutcome::LoadFailed;
   }
 #endif
-  return library.Load(original) ? PluginModuleLoadOutcome::Loaded
-                                : PluginModuleLoadOutcome::LoadFailed;
+  if (!library.Load(original)) return PluginModuleLoadOutcome::LoadFailed;
+#ifdef _WIN32
+  custody = std::move(tls_guard);
+#endif
+  return PluginModuleLoadOutcome::Loaded;
 }
 }

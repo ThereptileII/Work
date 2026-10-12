@@ -2174,14 +2174,15 @@ diff --git a/model/src/plugin_loader.cpp b/model/src/plugin_loader.cpp
  
  #include <algorithm>
  #include <set>
-@@ -1530,8 +1533,18 @@
+@@ -1530,8 +1533,19 @@
        PluginStatus::Unmanaged;  // Status is updated later, if necessary
  
    // load the library
 +#ifdef OPENNAV_X
 +  const auto load_outcome = opennav::integration::LoadPluginWithPresentationFallback(
 +      pic->m_library, plugin_file,
-+      [this](const wxString& path) { return CheckPluginCompatibility(path); });
++      [this](const wxString& path) { return CheckPluginCompatibility(path); },
++      pic->m_skagerTlsCustody);
 +  if (load_outcome == opennav::integration::PluginModuleLoadOutcome::UnloadFailed) {
 +    wxLogWarning("SKAGER: previous or rejected plugin module could not unload");
 +    return nullptr;
@@ -4782,3 +4783,89 @@ diff --git a/gui/src/glChartCanvas.cpp b/gui/src/glChartCanvas.cpp
 +  bool m_presentationRasterSubmitted = false;
  #endif
    int S52_load_Plib(const wxString &PLib, bool b_forceLegacy, bool allowCwdOverride = true);
+diff --git a/model/include/model/plugin_loader.h b/model/include/model/plugin_loader.h
+--- a/model/include/model/plugin_loader.h
++++ b/model/include/model/plugin_loader.h
+@@ -34,6 +34,12 @@
+ #include <wx/dynlib.h>
+ 
+ #include "config.h"
++#if defined(OPENNAV_X) && !defined(SKAGER_PLUGIN_CUSTODY)
++#error "SKAGER plugin custody must propagate through the shared model interface"
++#endif
++#ifdef SKAGER_PLUGIN_CUSTODY
++#include "integration/PluginPresentationLoader.h"
++#endif
+ 
+ #include "model/catalog_parser.h"
+ #include "model/plugin_blacklist.h"
+@@ -98,9 +104,17 @@
+ public:
+   PlugInContainer();
+ 
++#ifdef SKAGER_PLUGIN_CUSTODY
++  ~PlugInContainer();
++#else
+   ~PlugInContainer() = default;
++#endif
+ 
+   opencpn_plugin* m_pplugin;
++#ifdef SKAGER_PLUGIN_CUSTODY
++  // Destroyed after the library; ordinary unload explicitly releases it last.
++  opennav::integration::PluginModuleInspectionCustody m_skagerTlsCustody;
++#endif
+   wxDynamicLibrary m_library;
+   destroy_t* m_destroy_fn;
+ };
+diff --git a/model/src/plugin_loader.cpp b/model/src/plugin_loader.cpp
+--- a/model/src/plugin_loader.cpp
++++ b/model/src/plugin_loader.cpp
+@@ -236,6 +236,20 @@
+ 
+ PlugInContainer::PlugInContainer()
+     : PlugInData(), m_pplugin(nullptr), m_library(), m_destroy_fn(nullptr) {}
++#ifdef SKAGER_PLUGIN_CUSTODY
++PlugInContainer::~PlugInContainer() {
++  if (!opennav::integration::UnloadPluginModuleChecked(m_library,
++                                                      m_skagerTlsCustody)) {
++    // An uncertain unload must not release inspection protection or retry from
++    // wxDynamicLibrary's destructor. Intentionally retain the module and pins
++    // until process exit; never reuse this destination or pretend it unloaded.
++    wxLogError("SKAGER: plugin unload uncertain; retaining module protection until exit");
++    m_library.Detach();
++    (void)m_skagerTlsCustody.release();
++  }
++}
++#endif
++
+ 
+ PlugInData::PlugInData()
+     : m_has_setup_options(false),
+@@ -663,7 +677,13 @@
+         pic->m_destroy_fn = nullptr;
+         pic->m_pplugin = nullptr;
+         pic->m_init_state = false;
++#ifdef SKAGER_PLUGIN_CUSTODY
++        if (!opennav::integration::UnloadPluginModuleChecked(
++                pic->m_library, pic->m_skagerTlsCustody))
++          wxLogError("SKAGER: disabled plugin module could not unload");
++#else
+         if (pic->m_library.IsLoaded()) pic->m_library.Unload();
++#endif
+       }
+ 
+       //  Check to see if the plugin just processed has an associated catalog
+@@ -847,7 +867,13 @@
+ 
+       bret = DeactivatePlugIn(pic);
+       if (pic->m_pplugin) pic->m_destroy_fn(pic->m_pplugin);
++#ifdef SKAGER_PLUGIN_CUSTODY
++      if (!opennav::integration::UnloadPluginModuleChecked(
++              pic->m_library, pic->m_skagerTlsCustody))
++        wxLogError("SKAGER: deactivated plugin module could not unload");
++#else
+       if (pic->m_library.IsLoaded()) pic->m_library.Unload();
++#endif
+       pic->m_pplugin = nullptr;
+       pic->m_init_state = false;
+       pic->m_has_setup_options = false;

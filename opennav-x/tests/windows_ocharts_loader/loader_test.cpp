@@ -199,7 +199,7 @@ int main(int argc,char**argv) {
       c.Events("");NeverLoadedVendor();Pass(mode);
     }
     {Case c(work,"actual-worker-thread",vendor,good);OChartsModuleResult r;
-      std::thread worker([&]{wxDynamicLibrary lib;r=LoadOChartsModule(lib,c.request,c.Compatible());});worker.join();
+      std::thread worker([&]{PluginModuleInspectionCustody custody; wxDynamicLibrary lib;r=LoadOChartsModule(lib,c.request,c.Compatible());});worker.join();
       Require(!r.loaded && !r.applicable && c.compatibility_calls==0,"actual worker bypassed main-thread guard");c.Events("");Pass("actual worker thread");}
     {Case c(work,"wrong-original-hash",vendor,good);Flip(c.original);Refused(c,"original plugin identity is unsupported",0);}
     {Case c(work,"wrong-adapter-hash",vendor,good);c.request.adapter_sha256=std::string(64,'0');Refused(c,"private adapter is missing or changed",0);}
@@ -224,14 +224,14 @@ int main(int argc,char**argv) {
       Require(!r.loaded && r.reason=="plugin changed during qualification" && !library.IsLoaded(),"post-compatibility identity not rechecked");
       c.Events("");NeverLoadedVendor();Pass(c.dir.filename().string().c_str());
     }
-    {Case c(work,"compatibility-refused",vendor,good);wxDynamicLibrary lib;int calls=0;
+    {Case c(work,"compatibility-refused",vendor,good);PluginModuleInspectionCustody custody; wxDynamicLibrary lib;int calls=0;
       auto r=LoadOChartsModule(lib,c.request,[&](const wxString& p){++calls;Require(p==c.request.adapter,"compatibility path");return false;});
       Require(!r.loaded && r.reason=="private adapter ABI is incompatible" && calls==1 && !lib.IsLoaded(),"compatibility refusal");c.Events("");Pass("compatibility refused");}
-    {Case c(work,"compatibility-missing",vendor,good);wxDynamicLibrary lib;
+    {Case c(work,"compatibility-missing",vendor,good);PluginModuleInspectionCustody custody; wxDynamicLibrary lib;
       auto r=LoadOChartsModule(lib,c.request,{});Require(!r.loaded && r.reason=="private adapter ABI is incompatible" && !lib.IsLoaded(),"missing compatibility callback");c.Events("");Pass("compatibility missing");}
     {Case c(work,"invalid-pe-after-exact-hash",vendor,good);{std::ofstream f(c.adapter,std::ios::binary|std::ios::trunc);f<<"not a DLL";}
       c.request.adapter_sha256=Hash(c.adapter);c.request.adapter_bytes=fs::file_size(c.adapter);
-      wxDynamicLibrary lib;auto r=LoadOChartsModule(lib,c.request,[](const wxString&){return true;});
+      PluginModuleInspectionCustody custody; wxDynamicLibrary lib;auto r=LoadOChartsModule(lib,c.request,[](const wxString&){return true;});
       Require(!r.loaded && r.reason=="private adapter did not load" && !lib.IsLoaded(),"LoadLibrary failure did not refuse");c.Events("");Pass("invalid PE load refused");}
     {Case c(work,"over-capacity-utf8-resource",vendor,good);
       c.request.resources="C:\\"+wxString(wxUniChar(0x00e5),2048);
@@ -245,35 +245,35 @@ int main(int argc,char**argv) {
       Case c(work,wxString(mode).ToStdString(),vendor,good);c.Mode(mode);
       Refused(c,"private adapter returned invalid pre-initialization state",1,entered+"status\ndetach\n");
     }
-    {Case c(work,"bound-success",vendor,good);wxDynamicLibrary lib;
+    {Case c(work,"bound-success",vendor,good);PluginModuleInspectionCustody custody; wxDynamicLibrary lib;
       auto r=LoadOChartsModule(lib,c.request,c.Compatible());
       Require(r.loaded && r.applicable && r.reason.empty() && lib.IsLoaded() && c.compatibility_calls==1,"qualified fake adapter did not load");
       c.Events(entered+"status\n");NeverLoadedVendor();Require(Writable(c.original),"explicit locks survived function return");
       auto second=LoadOChartsModule(lib,c.request,c.Compatible());
       Require(!second.loaded && second.reason=="destination module is already loaded" && c.compatibility_calls==1 && lib.IsLoaded(),"loaded module was replaced");
-      Require(UnloadPluginModuleChecked(lib),"successful module unload");c.Events(entered+"status\ndetach\n");Pass("single bound module and lock lifetime");}
+      Require(UnloadPluginModuleChecked(lib,custody),"successful module unload");c.Events(entered+"status\ndetach\n");Pass("single bound module and lock lifetime");}
     // From here on, originals are locally built harmless fixtures, never vendor bytes.
     {Case c(work,"callback-and-fallback",vendor,good);Copy(good,c.original);
-      wxDynamicLibrary lib;RegisterPluginPresentationLoader(nullptr);
+      PluginModuleInspectionCustody custody; wxDynamicLibrary lib;RegisterPluginPresentationLoader(nullptr);
       Require(!TryPluginPresentationLoader(lib,W(c.original),{}),"null callback must be inactive");
-      Require(LoadPluginWithPresentationFallback(lib,W(c.original),{})==PluginModuleLoadOutcome::Loaded && lib.IsLoaded(),"actual null-hook original fallback");
-      Require(LoadPluginWithPresentationFallback(lib,W(c.dir/"missing.dll"),{})==PluginModuleLoadOutcome::LoadFailed && !lib.IsLoaded(),"failed original load after prior module cleanup");
+      Require(LoadPluginWithPresentationFallback(lib,W(c.original),{},custody)==PluginModuleLoadOutcome::Loaded && lib.IsLoaded(),"actual null-hook original fallback");
+      Require(LoadPluginWithPresentationFallback(lib,W(c.dir/"missing.dll"),{},custody)==PluginModuleLoadOutcome::LoadFailed && !lib.IsLoaded(),"failed original load after prior module cleanup");
       c.Events("attach\ndetach\n");
       fs::remove(c.events);fallback_adapter=c.adapter;callback_calls=0;
       RegisterPluginPresentationLoader(CallbackLoad);
-      Require(LoadPluginWithPresentationFallback(lib,W(c.original),[](const wxString&){return true;})==PluginModuleLoadOutcome::Loaded,"forwarded callback load");
+      Require(LoadPluginWithPresentationFallback(lib,W(c.original),[](const wxString&){return true;},custody)==PluginModuleLoadOutcome::Loaded,"forwarded callback load");
       Require(callback_calls==1 && lib.IsLoaded(),"forwarded callback/module count");
-      Require(UnloadPluginModuleChecked(lib),"benign callback unload");c.Events("attach\ndetach\n");
+      Require(UnloadPluginModuleChecked(lib,custody),"benign callback unload");c.Events("attach\ndetach\n");
       fs::remove(c.events);RegisterPluginPresentationLoader(CallbackCleanRefusal);
-      Require(LoadPluginWithPresentationFallback(lib,W(c.original),[](const wxString&){return true;})==PluginModuleLoadOutcome::Loaded,
+      Require(LoadPluginWithPresentationFallback(lib,W(c.original),[](const wxString&){return true;},custody)==PluginModuleLoadOutcome::Loaded,
               "clean rejected adapter did not allow original fallback");
       Require(callback_calls==2 && lib.IsLoaded(),"clean rejection forwarding count");
       c.Events("attach\ndetach\nattach\n");
-      Require(UnloadPluginModuleChecked(lib),"clean fallback fixture cleanup");c.Events("attach\ndetach\nattach\ndetach\n");
+      Require(UnloadPluginModuleChecked(lib,custody),"clean fallback fixture cleanup");c.Events("attach\ndetach\nattach\ndetach\n");
       fs::remove(c.events);RegisterPluginPresentationLoader(CallbackResidue);
-      Require(LoadPluginWithPresentationFallback(lib,W(c.original),[](const wxString&){return true;})==PluginModuleLoadOutcome::UnloadFailed,"residual module did not block fallback");
+      Require(LoadPluginWithPresentationFallback(lib,W(c.original),[](const wxString&){return true;},custody)==PluginModuleLoadOutcome::UnloadFailed,"residual module did not block fallback");
       Require(callback_calls==3 && lib.IsLoaded(),"residue ownership lost");c.Events("attach\n");
-      Require(UnloadPluginModuleChecked(lib),"residual benign module cleanup");c.Events("attach\ndetach\n");
+      Require(UnloadPluginModuleChecked(lib,custody),"residual benign module cleanup");c.Events("attach\ndetach\n");
       RegisterPluginPresentationLoader(nullptr);Pass("actual null/forwarded callback and residue-safe fallback");}
     // These DLLs are locally built inert controls, with one real import from a
     // locally built libeay32.dll stub. Verify the guard, not a missing-DLL error.
@@ -287,21 +287,21 @@ int main(int argc,char**argv) {
       const auto policy=RefuseLegacyPluginTlsImports(bytes);
       Require(policy.find(std::string(kind)=="legacy_delay" ? "delay import" : "TLS import")!=std::string::npos,
               "fixture lacks intended native import metadata");
-      wxDynamicLibrary lib;RegisterPluginPresentationLoader(nullptr);
+      PluginModuleInspectionCustody custody; wxDynamicLibrary lib;RegisterPluginPresentationLoader(nullptr);
       // Control: these exact harmless bytes are loadable without the guard.
       // Explicitly preload the stub because normal LoadLibrary does not add the
       // original's directory to the dependency search path.
       wxDynamicLibrary dependency;Require(dependency.Load(W(c.original.parent_path()/"libeay32.dll")),"stub loads");
       Require(lib.Load(W(c.original)),"unguarded control loads");
-      Require(UnloadPluginModuleChecked(lib),"unguarded control unloads");
+      Require(UnloadPluginModuleChecked(lib,custody),"unguarded control unloads");
       c.Events("attach\ndetach\n");fs::remove(c.events);
       for (int attempt=0;attempt<2;++attempt) {
-        Require(LoadPluginWithPresentationFallback(lib,W(c.original),{})==PluginModuleLoadOutcome::LoadFailed,
+        Require(LoadPluginWithPresentationFallback(lib,W(c.original),{},custody)==PluginModuleLoadOutcome::LoadFailed,
                 "legacy import crossed original load boundary");
         Require(!lib.IsLoaded(),"refused original is mapped");c.Events("");
       }
       fallback_adapter=c.adapter;RegisterPluginPresentationLoader(CallbackCleanRefusal);
-      Require(LoadPluginWithPresentationFallback(lib,W(c.original),[](const wxString&){return true;})==PluginModuleLoadOutcome::LoadFailed,
+      Require(LoadPluginWithPresentationFallback(lib,W(c.original),[](const wxString&){return true;},custody)==PluginModuleLoadOutcome::LoadFailed,
               "clean adapter refusal bypassed TLS guard");
       Require(!lib.IsLoaded(),"legacy original mapped after adapter refusal");
       c.Events("attach\ndetach\n");
@@ -321,9 +321,9 @@ int main(int argc,char**argv) {
       const auto raw=Read(c.original);
       const std::vector<unsigned char> bytes(raw.begin(),raw.end());
       Require(RefuseLegacyPluginTlsImports(bytes).empty(),"entry DLL has a direct TLS import");
-      wxDynamicLibrary lib;RegisterPluginPresentationLoader(nullptr);
+      PluginModuleInspectionCustody custody; wxDynamicLibrary lib;RegisterPluginPresentationLoader(nullptr);
       if(denied) {
-        Require(LoadPluginWithPresentationFallback(lib,W(c.original),{})==PluginModuleLoadOutcome::LoadFailed,
+        Require(LoadPluginWithPresentationFallback(lib,W(c.original),{},custody)==PluginModuleLoadOutcome::LoadFailed,
                 "indirect legacy import crossed original load boundary");
         Require(!lib.IsLoaded(),"indirect legacy original is mapped");c.Events("");
       }
@@ -335,16 +335,16 @@ int main(int argc,char**argv) {
       wxDynamicLibrary dependency;Require(dependency.Load(W(helper)),"indirect helper loads");
       if(denied) {
         Require(lib.Load(W(c.original)),"unguarded indirect control loads");
-        Require(UnloadPluginModuleChecked(lib),"unguarded indirect control unloads");
+        Require(UnloadPluginModuleChecked(lib,custody),"unguarded indirect control unloads");
         c.Events("attach\ndetach\n");fs::remove(c.events);
-        Require(LoadPluginWithPresentationFallback(lib,W(c.original),{})==PluginModuleLoadOutcome::LoadFailed,
+        Require(LoadPluginWithPresentationFallback(lib,W(c.original),{},custody)==PluginModuleLoadOutcome::LoadFailed,
                 "mapped indirect legacy helper bypassed disk guard");
         Require(!lib.IsLoaded(),"indirect legacy original mapped after refusal");c.Events("");
       } else {
-        Require(LoadPluginWithPresentationFallback(lib,W(c.original),{})==PluginModuleLoadOutcome::Loaded,
+        Require(LoadPluginWithPresentationFallback(lib,W(c.original),{},custody)==PluginModuleLoadOutcome::Loaded,
                 "benign local dependency refused or failed to load");
         c.Events("attach\n");
-        Require(UnloadPluginModuleChecked(lib),"benign indirect control unloads");
+        Require(UnloadPluginModuleChecked(lib,custody),"benign indirect control unloads");
         c.Events("attach\ndetach\n");
       }
       Require(UnloadPluginModuleChecked(dependency),"indirect helper cleanup");
@@ -368,7 +368,7 @@ int main(int argc,char**argv) {
       Require(GetModuleHandleW(L"helper_unmapped.dll")==nullptr,"first-map helper was preloaded");
       const auto original_before=Hash(c.original),helper_before=Hash(helper);
       ScopedSearchDirectory search(c.original.parent_path());
-      wxDynamicLibrary lib;
+      PluginModuleInspectionCustody custody; wxDynamicLibrary lib;
       {
         OriginalPluginTlsGuard guard(W(c.original));
         Require(guard.Refusal().empty(),"first-map benign graph refused: "+guard.Refusal());
@@ -397,7 +397,7 @@ int main(int argc,char**argv) {
                  <<"; volume="<<inspected.dwVolumeSerialNumber
                  <<"; file-index="<<inspected.nFileIndexHigh<<":"<<inspected.nFileIndexLow
                  <<"; sha256="<<helper_before<<"\n";
-        Require(UnloadPluginModuleChecked(lib),"first-map original unload");
+        Require(UnloadPluginModuleChecked(lib,custody),"first-map original unload");
         Require(GetModuleHandleW(L"helper_unmapped.dll")==nullptr,"first-map helper leaked after original unload");
         c.Events("attach\ndetach\n");
       }
@@ -459,7 +459,7 @@ int main(int argc,char**argv) {
       std::vector<std::string> sibling_hashes;
       for(const auto& path : siblings) sibling_hashes.push_back(Hash(path));
       ScopedSearchDirectory search(directory);
-      wxDynamicLibrary lib;
+      PluginModuleInspectionCustody custody; wxDynamicLibrary lib;
       RegisterPluginPresentationLoader(nullptr);
       for(const auto& path : siblings)
         Require(GetModuleHandleW(path.filename().c_str())==nullptr,"forwarder sibling preloaded before guard");
@@ -474,14 +474,14 @@ int main(int argc,char**argv) {
           c.Events("");
         }
         for(int attempt=0;attempt<2;++attempt) {
-          Require(LoadPluginWithPresentationFallback(lib,W(c.original),{})==PluginModuleLoadOutcome::LoadFailed,
+          Require(LoadPluginWithPresentationFallback(lib,W(c.original),{},custody)==PluginModuleLoadOutcome::LoadFailed,
                   "declared forwarder crossed original load boundary");
           Require(!lib.IsLoaded(),"refused forwarder original is mapped");c.Events("");
           for(const auto& path : siblings)
             Require(GetModuleHandleW(path.filename().c_str())==nullptr,"refused forwarded sibling reached DllMain");
         }
         fallback_adapter=c.adapter;RegisterPluginPresentationLoader(CallbackCleanRefusal);
-        Require(LoadPluginWithPresentationFallback(lib,W(c.original),[](const wxString&){return true;})==PluginModuleLoadOutcome::LoadFailed,
+        Require(LoadPluginWithPresentationFallback(lib,W(c.original),[](const wxString&){return true;},custody)==PluginModuleLoadOutcome::LoadFailed,
                 "clean adapter refusal bypassed forwarder guard");
         Require(!lib.IsLoaded(),"forwarder original mapped after adapter refusal");
         c.Events("attach\ndetach\n");fs::remove(c.events);RegisterPluginPresentationLoader(nullptr);
@@ -493,7 +493,16 @@ int main(int argc,char**argv) {
       const auto exercise = [&](bool guarded) {
         std::vector<BY_HANDLE_FILE_INFORMATION> inspected;
         for(const auto& path : siblings) inspected.push_back(FileIdentity(path));
-        Require(lib.Load(W(c.original)),"harmless forwarder original load");
+        if(guarded) {
+          Require(LoadPluginWithPresentationFallback(lib,W(c.original),{},custody)==PluginModuleLoadOutcome::Loaded,
+                  "actual benign forwarder fallback load");
+          Require(static_cast<bool>(custody),"actual fallback did not retain import inspection");
+          for(const auto& path : {c.original,siblings.front()})
+            Require(SharingDenied(path,GENERIC_WRITE) && SharingDenied(path,DELETE),
+                    "actual fallback released a not-yet-mapped forwarded file");
+          Require(GetModuleHandleW(siblings.front().filename().c_str())==nullptr,
+                  "benign forwarded dependency mapped before export lookup");
+        } else Require(lib.Load(W(c.original)),"harmless unguarded forwarder original load");
         c.Events("attach\n");
         SetLastError(ERROR_SUCCESS);
         const auto proc=GetProcAddress(reinterpret_cast<HMODULE>(lib.GetLibHandle()),"forwarded_probe");
@@ -535,16 +544,12 @@ int main(int argc,char**argv) {
         }
         const bool marked=!test.denied || indirect;
         c.Events(marked ? "attach\nforward-target-attach\n" : "attach\n");
-        Require(UnloadPluginModuleChecked(lib),"native forwarded original unload");
+        Require(UnloadPluginModuleChecked(lib,custody),"native forwarded original unload");
         c.Events(marked ? "attach\nforward-target-attach\ndetach\nforward-target-detach\n" : "attach\ndetach\n");
       };
       if(!test.denied && !test.ambiguous) {
-        OriginalPluginTlsGuard guard(W(c.original));
-        Require(guard.Refusal().empty(),"benign forwarder graph refused: "+guard.Refusal());
-        for(const auto& path : {c.original,siblings.front()})
-          Require(SharingDenied(path,GENERIC_WRITE) && SharingDenied(path,DELETE),"benign forwarded file not held");
-        Require(GetModuleHandleW(siblings.front().filename().c_str())==nullptr,"inspection mapped forwarded target");
-        exercise(true);
+        exercise(true);  // Production fallback owns custody; no manually outer guard.
+        Require(!custody,"checked unload retained completed import custody");
       } else exercise(false);  // Loadability/grammar comparison only; no policy relaxation.
       if(test.denied) Require(UnloadPluginModuleChecked(stub),"private forwarded stub cleanup");
       for(std::size_t i=0;i<siblings.size();++i) {
@@ -555,7 +560,7 @@ int main(int argc,char**argv) {
       search.Restore();Pass(test.kind);
     }
     {Case c(work,"injected-invalid-module-handle",vendor,good);Copy(good,c.original);
-      wxDynamicLibrary lib;
+      PluginModuleInspectionCustody custody; wxDynamicLibrary lib;
       void* reserved=VirtualAlloc(nullptr,65536,MEM_RESERVE,PAGE_NOACCESS);
       Require(reserved!=nullptr,"reserve non-module address for fault injection");
       struct Cleanup {
@@ -566,14 +571,18 @@ int main(int argc,char**argv) {
           VirtualFree(address,0,MEM_RELEASE);
         }
       } cleanup{lib,reserved};
+      custody=std::make_unique<OriginalPluginTlsGuard>(W(c.original));
+      Require(custody->Refusal().empty(),"invalid-handle control guard unavailable");
       const auto invalid=reinterpret_cast<wxDllType>(reserved);lib.Attach(invalid);
       SetLastError(ERROR_SUCCESS);
-      Require(!UnloadPluginModuleChecked(lib),"injected invalid HMODULE unexpectedly unloaded");
+      Require(!UnloadPluginModuleChecked(lib,custody),"injected invalid HMODULE unexpectedly unloaded");
       const auto error=GetLastError();
       Require(lib.IsLoaded() && lib.GetLibHandle()==invalid,"failed unload lost ownership");
-      Require(LoadPluginWithPresentationFallback(lib,W(c.original),{})==PluginModuleLoadOutcome::UnloadFailed,
+      Require(LoadPluginWithPresentationFallback(lib,W(c.original),{},custody)==PluginModuleLoadOutcome::UnloadFailed,
               "injected unload refusal reached original fallback");
       Require(lib.GetLibHandle()==invalid,"fallback refusal lost invalid-handle ownership");
+      Require(custody && SharingDenied(c.original,GENERIC_WRITE) && SharingDenied(c.original,DELETE),
+              "failed unload released retained inspection custody");
       c.Events("");
       std::cout<<"Injected invalid-handle FreeLibrary error: "<<error<<"\n";
       Pass("injected invalid-handle refusal retains ownership");
