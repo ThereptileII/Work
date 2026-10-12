@@ -67,7 +67,7 @@ func metadataResponseLimit(u *url.URL) int64 {
 		return 16 << 10
 	case strings.HasSuffix(name, "snapshot.json"):
 		return 2 << 20
-	case strings.Contains(u.Path, "/targets/releases/"):
+	case strings.Contains(u.Path, "/targets/releases/"), strings.Contains(u.Path, "/targets/bootstrap/"):
 		return maxTargetBytes
 	default:
 		return 5 << 20
@@ -129,23 +129,55 @@ func Verify(req Request) (Release, []byte, error) {
 
 // Only tests inject a client, to trust their local TLS certificate.
 func verifyWithClient(req Request, deadline time.Time, injected *http.Client) (Release, []byte, error) {
-	var empty Release
-	u, err := url.Parse(req.MetadataURL)
-	if err != nil || u == nil || u.Scheme != "https" || u.Host == "" || u.User != nil || u.RawQuery != "" || u.Fragment != "" {
-		return empty, nil, errors.New("metadata URL must be absolute HTTPS without credentials or query")
-	}
-	if req.Channel != "beta" && req.Channel != "stable" {
-		return empty, nil, errors.New("unknown release channel")
-	}
-	if req.CacheDir == "" || len(req.TrustedRoot) == 0 {
-		return empty, nil, errors.New("trusted root and durable cache required")
+	var release Release
+	if _, err := validateTUFRequest(req); err != nil {
+		return Release{}, nil, err
 	}
 	if req.TargetPath != "releases/"+req.Channel+".json" {
-		return empty, nil, errors.New("target path must match selected channel")
+		return Release{}, nil, errors.New("target path must match selected channel")
+	}
+	data, err := verifyTargetWithClient(req, deadline, injected, false, func(custom []byte) error {
+		var err error
+		release, err = parseReleaseIdentity(custom)
+		if err != nil {
+			return fmt.Errorf("signed release identity: %w", err)
+		}
+		if release.Channel != req.Channel || release.Version == "" || len(release.Version) > 128 || !commitPattern.MatchString(release.Commit) {
+			return errors.New("invalid signed release identity")
+		}
+		return nil
+	})
+	if err != nil {
+		return Release{}, nil, err
+	}
+	return release, data, nil
+}
+
+func validateTUFRequest(req Request) (*url.URL, error) {
+	u, err := url.Parse(req.MetadataURL)
+	if err != nil || u == nil || u.Scheme != "https" || u.Host == "" || u.User != nil || u.RawQuery != "" || u.Fragment != "" {
+		return nil, errors.New("metadata URL must be absolute HTTPS without credentials or query")
+	}
+	if req.Channel != "beta" && req.Channel != "stable" {
+		return nil, errors.New("unknown release channel")
+	}
+	if req.CacheDir == "" || len(req.TrustedRoot) == 0 {
+		return nil, errors.New("trusted root and durable cache required")
+	}
+	return u, nil
+}
+
+// verifyTargetWithClient is shared only by the two purpose-specific entry points.
+// They select the exact path and validate their own signed custom identity before
+// go-tuf downloads and verifies any target bytes. It grants no artifact authority.
+func verifyTargetWithClient(req Request, deadline time.Time, injected *http.Client, rejectRedirects bool, validateIdentity func([]byte) error) ([]byte, error) {
+	u, err := validateTUFRequest(req)
+	if err != nil {
+		return nil, err
 	}
 	cfg, err := config.New(strings.TrimRight(req.MetadataURL, "/"), req.TrustedRoot)
 	if err != nil {
-		return empty, nil, err
+		return nil, err
 	}
 	cfg.LocalMetadataDir = filepath.Join(req.CacheDir, "metadata")
 	cfg.LocalTargetsDir = filepath.Join(req.CacheDir, "targets")
@@ -169,6 +201,9 @@ func verifyWithClient(req Request, deadline time.Time, injected *http.Client) (R
 	budget.Store(32 << 20)
 	client.Transport = deadlineTransport{base: base, deadline: deadline, remaining: budget}
 	client.CheckRedirect = func(next *http.Request, via []*http.Request) error {
+		if rejectRedirects {
+			return errors.New("bootstrap metadata and target redirects prohibited")
+		}
 		if next.URL.Scheme != "https" || next.URL.Host != u.Host || len(via) >= 5 {
 			return errors.New("metadata redirect outside HTTPS origin")
 		}
@@ -177,38 +212,34 @@ func verifyWithClient(req Request, deadline time.Time, injected *http.Client) (R
 		return nil
 	}
 	if err := cfg.SetDefaultFetcherHTTPClient(client); err != nil {
-		return empty, nil, err
+		return nil, err
 	}
 	if err := cfg.SetDefaultFetcherRetry(time.Millisecond*100, 1); err != nil {
-		return empty, nil, err
+		return nil, err
 	}
 	up, err := updater.New(cfg)
 	if err != nil {
-		return empty, nil, fmt.Errorf("trusted root: %w", err)
+		return nil, fmt.Errorf("trusted root: %w", err)
 	}
 	if err := up.Refresh(); err != nil {
-		return empty, nil, fmt.Errorf("TUF refresh: %w", err)
+		return nil, fmt.Errorf("TUF refresh: %w", err)
 	}
 	target, err := up.GetTargetInfo(req.TargetPath)
 	if err != nil || target == nil {
-		return empty, nil, fmt.Errorf("target metadata: %w", err)
+		return nil, fmt.Errorf("target metadata: %w", err)
 	}
 	if target.Length < 0 || target.Length > maxTargetBytes {
-		return empty, nil, errors.New("target exceeds size limit")
+		return nil, errors.New("target exceeds size limit")
 	}
 	if target.Custom == nil {
-		return empty, nil, errors.New("target has no signed release identity")
+		return nil, errors.New("target has no signed release identity")
 	}
-	release, err := parseReleaseIdentity(*target.Custom)
-	if err != nil {
-		return empty, nil, fmt.Errorf("signed release identity: %w", err)
-	}
-	if release.Channel != req.Channel || release.Version == "" || len(release.Version) > 128 || !commitPattern.MatchString(release.Commit) {
-		return empty, nil, errors.New("invalid signed release identity")
+	if err := validateIdentity(*target.Custom); err != nil {
+		return nil, err
 	}
 	_, data, err := up.DownloadTarget(target, "", "")
 	if err != nil {
-		return empty, nil, fmt.Errorf("target verification: %w", err)
+		return nil, fmt.Errorf("target verification: %w", err)
 	}
-	return release, data, nil
+	return data, nil
 }
