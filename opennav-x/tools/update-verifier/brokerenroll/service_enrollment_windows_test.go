@@ -15,6 +15,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"syscall"
 	"testing"
 	"time"
 
@@ -126,6 +127,14 @@ func TestNativeFreshEnrollmentServiceSmoke(t *testing.T) {
 		}
 	})
 	if err := initializeService(ctx, files); err != nil {
+		var initial *serviceInitialStateError
+		if errors.As(err, &initial) {
+			var queryCode syscall.Errno
+			_ = errors.As(initial.cause, &queryCode)
+			t.Logf("held initial service status rejection: phase=%s statusAvailable=%t queryErrorCode=%d state=%d processID=%d win32Exit=%d serviceExit=%d controls=0x%08x",
+				initial.phase, initial.cause == nil, uint32(queryCode), initial.state.state, initial.state.processID,
+				initial.state.win32Exit, initial.state.serviceExit, initial.state.controls)
+		}
 		var mutation *serviceMutationError
 		if errors.As(err, &mutation) {
 			// Observations from the same held descriptor that refused enrollment;

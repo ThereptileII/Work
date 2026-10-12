@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"reflect"
+	"strings"
 	"testing"
 	"time"
 )
@@ -84,6 +85,78 @@ func runServiceFixture(ctx context.Context, f *serviceFilesFixture, b *serviceFi
 	return initializeServiceWith(ctx, f, func() (serviceBackend, error) { return b, nil }, poll)
 }
 func inertServicePoll(context.Context) error { return nil }
+
+func TestServiceNeverStartedIsFreshOnlyAndNotCompletion(t *testing.T) {
+	initial := serviceState{state: serviceStopped, win32Exit: serviceNeverStarted, processID: 123}
+	if !serviceInitiallyStopped(initial) || serviceCompleted(initial) {
+		t.Fatal("never-started initial status confused with successful initialization")
+	}
+	for _, bad := range []serviceState{
+		{state: 4}, {state: serviceStartPending}, {state: serviceStopPending}, {state: 7}, {},
+		{state: serviceStopped, win32Exit: 1}, {state: serviceStopped, win32Exit: serviceNeverStarted, serviceExit: 1},
+		{state: serviceStopped, win32Exit: serviceNeverStarted, controls: 1},
+	} {
+		if serviceInitiallyStopped(bad) {
+			t.Fatal("unsafe initial service status accepted", bad)
+		}
+	}
+	f := &serviceFilesFixture{image: "held"}
+	b := &serviceFixture{states: []serviceState{initial}}
+	if err := runServiceFixture(context.Background(), f, b, inertServicePoll); err != nil ||
+		!reflect.DeepEqual(b.events, []string{"create", "initialize-store", "verify-store", "close"}) {
+		t.Fatal("original fresh never-started status prevented bounded initialization", err, b.events)
+	}
+}
+
+func TestServiceNeverStartedAfterEitherStartWithholdsFollowupAndActivation(t *testing.T) {
+	for _, failedMode := range []string{"initialize-store", "verify-store"} {
+		t.Run(failedMode, func(t *testing.T) {
+			f := &clientServiceFilesFixture{serviceFilesFixture: &serviceFilesFixture{image: "held"}, sid: inertClientSID, sha: strings.Repeat("a", 64)}
+			states := []serviceState{{state: serviceStopped, win32Exit: serviceNeverStarted}}
+			if failedMode == "verify-store" {
+				states = append(states, serviceState{state: serviceStopped})
+			}
+			states = append(states, serviceState{state: serviceStopped, win32Exit: serviceNeverStarted})
+			b := &clientServiceFixture{serviceFixture: &serviceFixture{states: states}}
+			activated := 0
+			err := initializeServiceWithCompletion(context.Background(), f, func() (serviceBackend, error) { return b, nil }, inertServicePoll,
+				func(context.Context, enrollmentFiles, serviceBackend) error { activated++; return nil })
+			want := []string{"create", "initialize-store", "close"}
+			if failedMode == "verify-store" {
+				want = []string{"create", "initialize-store", "verify-store", "close"}
+			}
+			if err == nil || activated != 0 || b.closes != 1 || !reflect.DeepEqual(b.events, want) {
+				t.Fatal("post-start never-started status permitted retry, registration or activation", err, b.events)
+			}
+		})
+	}
+}
+
+func TestServiceInitialStateDiagnosticPreservesReadAndQueryFailure(t *testing.T) {
+	state := serviceState{state: serviceStopped, processID: 123, win32Exit: 5, serviceExit: 6, controls: 7}
+	for _, phase := range []serviceInitialPhase{serviceInitialCreated, serviceInitialBeforeStart} {
+		for _, cause := range []error{nil, errServiceFixture} {
+			refusal := &serviceInitialStateError{phase: phase, state: state, cause: cause}
+			var observed *serviceInitialStateError
+			want := "new service was not stopped"
+			if phase == serviceInitialBeforeStart {
+				want = "new service must remain stopped"
+			}
+			if !errors.As(errors.Join(refusal, errors.New("fixture cleanup")), &observed) || observed.state != state || observed.phase != phase ||
+				observed.cause != cause || refusal.Error() != want || (cause != nil && !errors.Is(refusal, cause)) {
+				t.Fatal("original initial service status/query error or sanitized text lost")
+			}
+		}
+	}
+	files := &serviceFilesFixture{image: "held"}
+	backend := &serviceFixture{failure: "status"}
+	refusal := runServiceFixture(context.Background(), files, backend, inertServicePoll)
+	var observed *serviceInitialStateError
+	if !errors.As(refusal, &observed) || observed.phase != serviceInitialBeforeStart || !errors.Is(refusal, errServiceFixture) ||
+		!reflect.DeepEqual(backend.events, []string{"create", "close"}) {
+		t.Fatal("failed original pre-first-start query reached a start or lost cause", refusal, backend.events)
+	}
+}
 
 func TestServiceEnrollmentOnlyInitializesAndIndependentlyVerifies(t *testing.T) {
 	f := &serviceFilesFixture{image: "fixed-held-image"}

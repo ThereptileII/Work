@@ -254,8 +254,8 @@ func (n *nativeServiceBackend) create(image string) error {
 		return err
 	}
 	s, err := n.status()
-	if err != nil || !serviceCompleted(s) {
-		return errors.New("new service was not stopped")
+	if err != nil || !serviceInitiallyStopped(s) {
+		return &serviceInitialStateError{phase: serviceInitialCreated, state: s, cause: err}
 	}
 	broker, _, _, err := windows.LookupSID("", serviceAccount)
 	if err != nil || broker == nil || !strings.HasPrefix(broker.String(), "S-1-5-80-") {

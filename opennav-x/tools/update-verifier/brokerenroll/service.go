@@ -24,8 +24,40 @@ const (
 	serviceStopped             = 1
 	serviceStartPending        = 2
 	serviceStopPending         = 3
+	serviceNeverStarted        = 1077 // ERROR_SERVICE_NEVER_STARTED
 	serviceInitializationLimit = 60 * time.Second
 )
+
+type serviceInitialPhase uint8
+
+const (
+	serviceInitialCreated serviceInitialPhase = iota
+	serviceInitialBeforeStart
+)
+
+func (p serviceInitialPhase) String() string {
+	if p == serviceInitialBeforeStart {
+		return "before-first-start"
+	}
+	return "after-exclusive-create"
+}
+
+// Same-read numeric status facts; no process ID is interpreted as exit proof.
+// A query failure remains unwrap-able without changing the public refusal text.
+type serviceInitialStateError struct {
+	phase serviceInitialPhase
+	state serviceState
+	cause error
+}
+
+func (e *serviceInitialStateError) Error() string {
+	if e.phase == serviceInitialBeforeStart {
+		return "new service must remain stopped"
+	}
+	return "new service was not stopped"
+}
+
+func (e *serviceInitialStateError) Unwrap() error { return e.cause }
 
 func initializeService(ctx context.Context, files enrollmentFiles) error {
 	return initializeServiceWith(ctx, files, newServiceBackend, servicePoll)
@@ -106,8 +138,8 @@ func initializeServiceWithCompletion(ctx context.Context, files enrollmentFiles,
 		return err
 	}
 	s, err := b.status()
-	if err != nil || !serviceCompleted(s) {
-		return errors.New("new service must remain stopped")
+	if err != nil || !serviceInitiallyStopped(s) {
+		return &serviceInitialStateError{phase: serviceInitialBeforeStart, state: s, cause: err}
 	}
 	// Each invocation is bounded and stopped-only. The second independently
 	// rereads the durable creation fence as the real non-impersonated broker.
@@ -164,6 +196,13 @@ func initializeServiceWithCompletion(ctx context.Context, files enrollmentFiles,
 		return complete(ctx, files, b)
 	}
 	return nil
+}
+
+// Only the exclusive original CreateService readback and the single pre-first-
+// start readback use this predicate. MS-SCMR 3.1.4.7 requires 1077 when no start
+// has been attempted since boot. It cannot qualify any post-start completion.
+func serviceInitiallyStopped(s serviceState) bool {
+	return s.state == serviceStopped && (s.win32Exit == 0 || s.win32Exit == serviceNeverStarted) && s.serviceExit == 0 && s.controls == 0
 }
 
 func serviceCompleted(s serviceState) bool {
