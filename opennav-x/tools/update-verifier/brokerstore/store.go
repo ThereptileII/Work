@@ -85,6 +85,7 @@ type Candidate struct {
 	bytes                    int64
 	closed, poisoned, sealed bool
 	closeErr                 error
+	acquisition              *Acquisition
 }
 
 func validHex(s string, n int) bool {
@@ -200,6 +201,7 @@ func (s *Store) Validate() error {
 	}
 	return s.backend.check()
 }
+
 // Close drains owned handles once. Concurrent and repeated callers wait for and
 // receive the original cleanup result, including any retained uncertainty.
 func (s *Store) Close() error {
@@ -401,6 +403,7 @@ func (c *Candidate) Seal(ctx context.Context, receipt []byte) (err error) {
 	c.sealed = true
 	return nil
 }
+
 // Close releases owned handles once and retains the original cleanup result.
 // It does not remove the durable stage reservation or authorize its reuse.
 func (c *Candidate) Close() error {
@@ -411,6 +414,9 @@ func (c *Candidate) Close() error {
 	}
 	c.closed = true
 	var result error
+	if c.acquisition != nil {
+		result = errors.Join(result, c.acquisition.closeLocked())
+	}
 	for _, entry := range c.files {
 		result = errors.Join(result, entry.file.Close())
 	}

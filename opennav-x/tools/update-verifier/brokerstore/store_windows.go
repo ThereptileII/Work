@@ -38,6 +38,7 @@ type nativeCandidate struct {
 	directories               map[string]*nativePin
 	securityDir, securityFile *windows.SECURITY_DESCRIPTOR
 	closed                    bool
+	stageID, client           string
 }
 type nativeFile struct {
 	*os.File
@@ -319,7 +320,7 @@ func (pin *nativePin) check() error {
 // Open accepts only the actual machine ProgramData/SKAGER/UpdateBroker layout.
 // Provisioning must create every protected existing node with its final SD,
 // before exposing it to clients. Open never repairs, adopts or resets ACLs.
-func Open(root string) (*Store, error) {
+func Open(root string) (result *Store, resultErr error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	broker, _, _, err := windows.LookupSID("", BrokerAccount)
@@ -350,7 +351,7 @@ func Open(root string) (*Store, error) {
 	ok := false
 	defer func() {
 		if !ok {
-			n.close()
+			resultErr = errors.Join(resultErr, n.close())
 		}
 	}()
 	drive, err := openPin(wanted[:3], "", nil)
@@ -435,6 +436,9 @@ func Open(root string) (*Store, error) {
 		return nil, err
 	}
 	if err = n.check(); err != nil {
+		return nil, err
+	}
+	if err = n.reconcileAcquisitions(); err != nil {
 		return nil, err
 	}
 	ok = true
@@ -547,7 +551,7 @@ func (n *nativeStore) begin(stage, client string) (candidateBackend, error) {
 	if err := n.candidateCapacity(); err != nil {
 		return nil, err
 	}
-	c := &nativeCandidate{store: n, directories: map[string]*nativePin{}, securityDir: directorySD, securityFile: fileSD}
+	c := &nativeCandidate{store: n, stageID: stage, client: client, directories: map[string]*nativePin{}, securityDir: directorySD, securityFile: fileSD}
 	ok := false
 	defer func() {
 		if !ok {
