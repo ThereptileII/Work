@@ -35,7 +35,7 @@ func TestEnrollmentCodeDescriptorDoesNotGrantUserMutation(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	sd, err := windows.SecurityDescriptorFromString("O:BAD:P(A;OICI;FA;;;SY)(A;OICI;FA;;;BA)(A;OICI;FRFX;;;AU)(A;OICI;FRFX;;;" + sid.String() + ")")
+	sd, err := enrollmentCodeDescriptor(sid, true)
 	if err != nil {
 		t.Fatal(err)
 	}

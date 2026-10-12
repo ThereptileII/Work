@@ -165,7 +165,11 @@ func createFreshFiles(ctx context.Context, source io.Reader, artifact releasepol
 	if err != nil {
 		return nil, err
 	}
-	codeSD, err := windows.SecurityDescriptorFromString("O:BAD:P(A;OICI;FA;;;SY)(A;OICI;FA;;;BA)(A;OICI;FRFX;;;AU)(A;OICI;FRFX;;;" + broker.String() + ")")
+	codeSD, err := enrollmentCodeDescriptor(broker, true)
+	if err != nil {
+		return nil, err
+	}
+	applicationsSD, err := enrollmentApplicationsDescriptor(broker)
 	if err != nil {
 		return nil, err
 	}
@@ -173,7 +177,7 @@ func createFreshFiles(ctx context.Context, source io.Reader, artifact releasepol
 	if err != nil {
 		return nil, err
 	}
-	fileSD, err := windows.SecurityDescriptorFromString("O:BAD:P(A;;FA;;;SY)(A;;FA;;;BA)(A;;FRFX;;;AU)(A;;FRFX;;;" + broker.String() + ")")
+	fileSD, err := enrollmentCodeDescriptor(broker, false)
 	if err != nil {
 		return nil, err
 	}
@@ -202,11 +206,23 @@ func createFreshFiles(ctx context.Context, source io.Reader, artifact releasepol
 	if err := ctx.Err(); err != nil {
 		return nil, err
 	}
-	code, err := files.newDirectory(codeParent, "SKAGER", codeSD, "")
+	codeRoot, err := files.newDirectory(codeParent, "SKAGER", codeSD, "")
 	if err != nil {
 		return nil, err
 	}
-	code, err = files.newDirectory(code, "UpdateBroker", codeSD, "")
+	// Applications is a fresh sibling of immutable broker code. Retain its
+	// exact physical/DOS/security pin in files.pins before completing the fence;
+	// no existing launch root is ever adopted or retrofitted.
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+	if _, err := files.newDirectory(codeRoot, "Applications", applicationsSD, broker.String()); err != nil {
+		return nil, err
+	}
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+	code, err := files.newDirectory(codeRoot, "UpdateBroker", codeSD, "")
 	if err != nil {
 		return nil, err
 	}
@@ -219,7 +235,8 @@ func createFreshFiles(ctx context.Context, source io.Reader, artifact releasepol
 	if err := ctx.Err(); err != nil {
 		return nil, err
 	}
-	// This completion describes only files, never service enrollment/readiness.
+	// This completion covers the fresh code, launch-view root and data fence,
+	// never service readiness, generation selection or application launch.
 	if _, err := files.fence.Seek(0, io.SeekStart); err != nil {
 		return nil, err
 	}
