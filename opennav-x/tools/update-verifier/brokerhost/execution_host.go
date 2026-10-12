@@ -13,6 +13,14 @@ import (
 var errExecutionHostRefused = errors.New("protected execution refused")
 var errExecutionHostUncertain = errors.New("protected execution requires recovery; no automatic retry")
 
+// Admission may establish the independently approved baseline only. It cannot
+// become an update when another transaction appears between inspection and the
+// qualifier acquiring its operation lock. Existing selections require a fresh
+// explicit update intent or an ordinary selected-start conversation.
+func executionQualificationIntentAllowed(operation string, initial bool) bool {
+	return operation == "execute-session" || (operation == "start-selected" && initial)
+}
+
 // These private interfaces are implemented by retained native owners. They are
 // fault seams, not exported receipt constructors or production caller callbacks.
 // A profile provider must retain the complete original backup, independently

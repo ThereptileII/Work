@@ -53,7 +53,7 @@ type nativeExecutionHost struct {
 // revokes the native peer/session at the handler boundary. No public request or
 // registration version supplies selection, commissioning or spawn permission.
 func (e *engine) handleNativeExecution(ctx context.Context, peer brokerpipe.Peer, request brokerpipe.ExecutionRequest, session *brokerpipe.ExecutionSession, providers executionHostProviders) (resultErr error) {
-	if e == nil || ctx == nil || ctx.Err() != nil || session == nil || providers.capture == nil || providers.commission == nil || providers.authorize == nil || e.observe == nil || request.Schema != 1 || request.Operation != "execute-session" || !requestPattern.MatchString(request.RequestID) || !requestPattern.MatchString(request.StageID) {
+	if e == nil || ctx == nil || ctx.Err() != nil || session == nil || providers.capture == nil || providers.commission == nil || providers.authorize == nil || e.observe == nil || request.Schema != 1 || !executionQualificationIntentAllowed(request.Operation, true) || !requestPattern.MatchString(request.RequestID) || !requestPattern.MatchString(request.StageID) {
 		return errExecutionHostRefused
 	}
 	adapter, ok := e.store.(storeAdapter)
@@ -126,6 +126,9 @@ func (e *engine) handleNativeExecution(ctx context.Context, peer brokerpipe.Peer
 		return err
 	}
 	initial := len(entries) == 0
+	if !executionQualificationIntentAllowed(request.Operation, initial) {
+		return errExecutionHostRefused
+	}
 	if initial {
 		// Registration produces provenance only. Only an explicit fresh baseline
 		// qualification with an empty exact history may establish the first root.
@@ -455,6 +458,26 @@ func (h *nativeExecutionHost) resolve(ctx context.Context, terminal string) (res
 		return errExecutionHostRefused
 	}
 	if err = selected.validate(); err != nil {
+		return err
+	}
+	// Close the complete profile archive BEFORE starting the fresh launcher.
+	// Closing validates the original archive and may hash a large profile; that
+	// work must not consume the new launcher's bounded pipe-handoff budget or
+	// retain cold profile pins into ordinary startup. The reopened selected head
+	// and original peer remain live and independently checked below. Close is
+	// idempotent, so outer failure cleanup retains the same original owners.
+	for i := len(h.cold) - 1; i >= 0; i-- {
+		if err = h.cold[i].Close(); err != nil {
+			return err
+		}
+	}
+	if h.profile == nil {
+		return errExecutionHostRefused
+	}
+	if err = h.profile.Close(); err != nil {
+		return err
+	}
+	if err = errors.Join(selected.validate(), h.peer.Validate(ctx)); err != nil {
 		return err
 	}
 	// The qualification child remains permanently restricted. Ordinary operation
