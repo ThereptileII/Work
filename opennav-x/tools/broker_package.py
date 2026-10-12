@@ -25,11 +25,31 @@ MAX_SOURCE_FILES = 50000
 MAX_SOURCE_MEMBER = 32 << 20
 MAX_SOURCE_TOTAL = 512 << 20
 PREFIX = 'project/tools/update-verifier/'
-REQUIRED_SOURCES = {PREFIX + name for name in ('cmd/skager-update-broker/main.go',
-    'brokerhost/host_windows.go', 'brokerhost/operation.go', 'brokerhost/registration.go',
-    'brokerhost/stock_windows.go')} | {'project/tools/package-update-broker.py',
-                                     'project/tools/broker_package.py',
-                                     'project/tools/updater_package.py'}
+# Both executables retain the same registration/enrollment source closure. The
+# fixed lists detect omitted members even if an archive's own manifest omits
+# them too; hashing only the members that remain cannot establish completeness.
+REGISTRATION_SOURCES = frozenset(PREFIX + name for name in (
+    'brokerhost/host_other.go', 'brokerhost/host_windows.go',
+    'brokerhost/initialization.go', 'brokerhost/operation.go', 'brokerhost/registration.go',
+    'brokerhost/client_registration.go', 'brokerhost/client_registration_other.go',
+    'brokerhost/client_registration_windows.go', 'brokerhost/registration_start.go',
+    'brokerhost/stock_cleanup.go', 'brokerhost/stock_windows.go',
+    'brokerregistration/request.go',
+    'brokerstore/store.go', 'brokerstore/store_other.go', 'brokerstore/store_windows.go',
+    'brokerstore/store_lock_windows.go', 'brokerstore/acquisition.go',
+    'brokerstore/acquisition_journal.go', 'brokerstore/acquisition_windows.go',
+    'brokerstore/acquisition_recovery_windows.go', 'brokerstore/initialize.go',
+    'brokerstore/initialize_other.go', 'brokerstore/initialize_windows.go',
+    'brokerstore/registration.go', 'brokerstore/registration_windows.go',
+    'brokerenroll/enroll.go', 'brokerenroll/files.go', 'brokerenroll/files_other.go',
+    'brokerenroll/files_windows.go', 'brokerenroll/service.go', 'brokerenroll/service_other.go',
+    'brokerenroll/service_windows.go', 'brokerenroll/client_request.go',
+    'brokerenroll/client_request_other.go', 'brokerenroll/client_request_windows.go'))
+REQUIRED_SOURCES = REGISTRATION_SOURCES | {
+    PREFIX + 'cmd/skager-update-broker/main.go', PREFIX + 'go.mod', PREFIX + 'go.sum',
+    'project/LICENSE', 'project/tools/package-update-launcher.py',
+    'project/tools/package-update-broker.py', 'project/tools/broker_package.py',
+    'project/tools/updater_package.py'}
 
 
 class Component(NamedTuple):
@@ -46,7 +66,7 @@ class Component(NamedTuple):
 
 
 BROKER = Component('Broker', BINARY, RECORD_RELATIVE, 'cmd/skager-update-broker',
-                   BUILD_RECIPE, 2, frozenset(REQUIRED_SOURCES), PREFIX + 'brokerhost/',
+                   BUILD_RECIPE, 2, frozenset(REQUIRED_SOURCES), PREFIX,
                    ('-ldflags=-H=windowsgui',))
 
 

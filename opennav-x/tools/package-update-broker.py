@@ -56,8 +56,7 @@ def source_inventory(module, goroot, cache, modules, reference, *, graph_root=No
                 'tools/broker_package.py', 'tools/package-update-provisioner.py', 'tools/provisioner_package.py',
                 'tools/updater_package.py', 'tools/update-verifier/go.mod',
                 'tools/update-verifier/go.sum', 'tools/update-verifier/cmd/skager-update-broker/main.go'}
-    if component != broker.BROKER:
-        required |= {name.removeprefix('project/') for name in component.required_sources}
+    required |= {name.removeprefix('project/') for name in component.required_sources}
     if not required.issubset(tracked):
         raise ValueError('Committed complete broker source and dependency locks required')
     for name in tracked:

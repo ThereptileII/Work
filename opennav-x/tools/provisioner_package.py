@@ -10,11 +10,8 @@ BINARY = 'skager-update-provisioner.exe'
 RECORD_RELATIVE = 'opennav/third-party/update-provisioner/build.json'
 BUILD_RECIPE = ('CGO_ENABLED=0 GOOS=windows GOARCH=386 GO386=sse2 go build '
                 '-mod=readonly -trimpath -buildvcs=true ./cmd/skager-update-provisioner')
-REQUIRED_SOURCES = frozenset({broker.PREFIX + name for name in (
-    'cmd/skager-update-provisioner/main.go', 'brokerenroll/enroll.go',
-    'brokerenroll/files.go', 'brokerenroll/files_windows.go', 'brokerenroll/files_other.go',
-    'brokerenroll/service.go', 'brokerenroll/service_windows.go', 'brokerenroll/service_other.go',
-    'go.mod', 'go.sum')} | {
+REQUIRED_SOURCES = frozenset(broker.REGISTRATION_SOURCES | {broker.PREFIX + name for name in (
+    'cmd/skager-update-provisioner/main.go', 'go.mod', 'go.sum')} | {
         'project/LICENSE', 'project/tools/package-update-launcher.py',
         'project/tools/package-update-broker.py', 'project/tools/package-update-provisioner.py',
         'project/tools/broker_package.py', 'project/tools/provisioner_package.py',

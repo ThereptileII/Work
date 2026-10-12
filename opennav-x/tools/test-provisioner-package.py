@@ -167,19 +167,41 @@ class ProvisionerPackageTests(unittest.TestCase):
             record['sourceBundle'] = copy.deepcopy(bundle)
             path.write_text(json.dumps(record))
         self.record['sourceBundle'] = bundle
-        self.record['brokerPrerequisite'] = broker.broker_prerequisite(self.app, self.commit)
+        # Rebind only the record hash so malformed source reaches the verifier
+        # under test; do not verify or execute a prerequisite in this mutator.
+        self.record['brokerPrerequisite']['buildRecord']['sha256'] = updater._hash(self.app / broker.RECORD_RELATIVE)
         self.record_write()
 
     def test_required_provisioner_main_and_packaging_source_cannot_be_omitted(self):
-        name = broker.PREFIX + 'brokerenroll/enroll.go'
-        def omit(contents):
-            contents.pop(name)
-            reference = json.loads(contents['SOURCE_REFERENCE.json'])
-            reference['files'].pop(name)
-            contents['SOURCE_REFERENCE.json'] = json.dumps(reference).encode()
-        self.rewrite_source(omit)
-        with self.assertRaisesRegex(ValueError, 'sources missing'):
-            self.verify()
+        with zipfile.ZipFile(self.app / updater.SOURCE_RELATIVE) as source:
+            original = {name: source.read(name) for name in source.namelist()}
+        for name in sorted(provisioner.REQUIRED_SOURCES | broker.REQUIRED_SOURCES):
+            with self.subTest(omitted=name):
+                def omit(contents):
+                    contents.pop(name)
+                    reference = json.loads(contents['SOURCE_REFERENCE.json'])
+                    reference['files'].pop(name)
+                    contents['SOURCE_REFERENCE.json'] = json.dumps(reference).encode()
+                self.rewrite_source(omit)
+                try:
+                    with self.assertRaisesRegex(ValueError, 'sources missing'):
+                        self.verify()
+                finally:
+                    self.rewrite_source(lambda contents: contents.update(original))
+
+    def test_imported_registration_members_are_hash_checked(self):
+        with zipfile.ZipFile(self.app / updater.SOURCE_RELATIVE) as source:
+            original = {name: source.read(name) for name in source.namelist()}
+        for name in (broker.PREFIX + 'brokerregistration/request.go',
+                     broker.PREFIX + 'brokerstore/registration_windows.go',
+                     broker.PREFIX + 'brokerenroll/client_request_windows.go'):
+            with self.subTest(tampered=name):
+                self.rewrite_source(lambda contents: contents.update({name: b'X' * len(contents[name])}))
+                try:
+                    with self.assertRaisesRegex(ValueError, 'bytes differ'):
+                        self.verify()
+                finally:
+                    self.rewrite_source(lambda contents: contents.update(original))
 
     def test_any_archived_module_go_bytes_are_hash_checked(self):
         # The producer fixture has the complete module. Add an unrelated Go

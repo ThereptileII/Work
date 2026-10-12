@@ -41,6 +41,8 @@ class BrokerProducerTests(unittest.TestCase):
                         'tools/provisioner_package.py', 'tools/updater_package.py',
                         'tools/update-verifier/go.mod', 'tools/update-verifier/go.sum',
                         'tools/update-verifier/cmd/skager-update-broker/main.go']
+        self.tracked = sorted(set(self.tracked) | {
+            name.removeprefix('project/') for name in producer.broker.REQUIRED_SOURCES})
         for name in self.tracked:
             path = self.repo / name
             path.parent.mkdir(parents=True, exist_ok=True)
@@ -269,6 +271,23 @@ class BrokerProducerTests(unittest.TestCase):
         self.tracked.remove('tools/updater_package.py')
         with self.assertRaisesRegex(ValueError, 'complete broker source'):
             self.package()
+
+    def test_missing_mandatory_production_source_refuses_before_build(self):
+        for name in sorted(producer.broker.REQUIRED_SOURCES):
+            if not name.endswith('.go'):
+                continue
+            with self.subTest(omitted=name):
+                tracked = name.removeprefix('project/')
+                self.tracked.remove(tracked)
+                self.events.clear()
+                try:
+                    with self.assertRaisesRegex(ValueError, 'complete broker source'):
+                        self.package()
+                    self.assertFalse(any(command[1] == 'build' for command in self.events))
+                    self.assertFalse((self.install / producer.BINARY).exists())
+                    self.assertFalse((self.install / producer.RECORD_RELATIVE).exists())
+                finally:
+                    self.tracked.append(tracked)
 
     def test_trimpath_metadata_omits_linker_flags_and_gui_is_observed(self):
         self.assertNotIn('-ldflags=', self.info)

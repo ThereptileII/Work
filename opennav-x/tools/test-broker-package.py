@@ -110,6 +110,18 @@ class BrokerPackageTests(unittest.TestCase):
         self.record['buildInfo'] = broker.BINARY + ': ' + version + '\n' + ''.join('\t' + line + '\n' for line in module.splitlines())
         self.write_record()
 
+    def rewrite_source(self, transform):
+        with zipfile.ZipFile(self.archive) as source:
+            contents = {name: source.read(name) for name in source.namelist()}
+        transform(contents)
+        with zipfile.ZipFile(self.archive, 'w') as source:
+            for name, data in contents.items():
+                source.writestr(name, data)
+        self.updater_record['sourceBundle']['sha256'] = sha(self.archive.read_bytes())
+        self.record['sourceBundle'] = copy.deepcopy(self.updater_record['sourceBundle'])
+        (self.archive.parent / 'build.json').write_text(json.dumps(self.updater_record))
+        self.write_record()
+
     def write_record(self):
         self.record_path.write_text(json.dumps(self.record))
 
@@ -190,10 +202,11 @@ class BrokerPackageTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'oversized'): self.verify()
 
     def test_source_main_host_inventory_reference_and_member_bytes(self):
-        for name in broker.REQUIRED_SOURCES:
-            data = self.sources.pop(name); self.write_source()
-            with self.assertRaisesRegex(ValueError, 'sources missing'): self.verify()
-            self.sources[name] = data
+        for name in sorted(broker.REQUIRED_SOURCES):
+            with self.subTest(omitted=name):
+                data = self.sources.pop(name); self.write_source()
+                with self.assertRaisesRegex(ValueError, 'sources missing'): self.verify()
+                self.sources[name] = data
         bad = copy.deepcopy(self.reference); bad['productCommit'] = 'b' * 40; self.write_source(bad)
         with self.assertRaisesRegex(ValueError, 'identity|reference differs'): self.verify()
         self.write_source()
@@ -207,6 +220,20 @@ class BrokerPackageTests(unittest.TestCase):
         self.record['sourceBundle'] = copy.deepcopy(self.updater_record['sourceBundle'])
         (self.archive.parent / 'build.json').write_text(json.dumps(self.updater_record)); self.write_record()
         with self.assertRaisesRegex(ValueError, 'bytes differ'): self.verify()
+
+    def test_imported_module_members_are_hash_checked(self):
+        # The last member is deliberately outside the fixed required list. All
+        # retained Go source bytes must be checked, including imported packages.
+        extra = broker.PREFIX + 'another/imported.go'
+        self.sources[extra] = b'package another\n'
+        for name in (broker.PREFIX + 'brokerregistration/request.go',
+                     broker.PREFIX + 'brokerstore/registration_windows.go',
+                     broker.PREFIX + 'brokerenroll/client_request_windows.go', extra):
+            with self.subTest(tampered=name):
+                self.write_source()
+                self.rewrite_source(lambda contents: contents.update({name: b'X' * len(contents[name])}))
+                with self.assertRaisesRegex(ValueError, 'bytes differ'):
+                    self.verify()
 
     def test_source_alias_links_duplicates_unsafe_paths_and_budgets(self):
         name = next(iter(broker.REQUIRED_SOURCES))

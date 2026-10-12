@@ -147,11 +147,20 @@ class ProvisionerProducerTests(unittest.TestCase):
 
     def test_missing_provisioner_source_refuses_before_build(self):
         f = self.fixture
-        f.tracked.remove('tools/update-verifier/cmd/skager-update-provisioner/main.go')
-        with self.assertRaisesRegex(ValueError, 'complete broker source'):
-            self.package()
-        self.assertFalse(any(c[1] == 'build' for c in f.events))
-        self.assert_unpublished()
+        for name in sorted(provisioner.REQUIRED_SOURCES):
+            if not name.endswith('.go'):
+                continue
+            with self.subTest(omitted=name):
+                tracked = name.removeprefix('project/')
+                f.tracked.remove(tracked)
+                f.events.clear()
+                try:
+                    with self.assertRaisesRegex(ValueError, 'complete broker source'):
+                        self.package()
+                    self.assertFalse(any(c[1] == 'build' for c in f.events))
+                    self.assert_unpublished()
+                finally:
+                    f.tracked.append(tracked)
 
     def test_changed_valid_broker_record_during_build_refuses(self):
         self.fixture.on_build = lambda: self.broker_record_path.write_text(json.dumps(self.broker_record, indent=2))
