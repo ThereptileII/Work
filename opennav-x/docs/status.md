@@ -1,5 +1,19 @@
 # SKAGER status — 2026-10-12
 
+## Read-only AIS attribution source path integrated
+
+`092c51c6` joins an explicit opt-in owned connection diagnostic, strict portable
+validator and actual read-only native Windows collector. Three registered focused
+Linux CTest cases pass: **153 C++ checks, 31 validator tests and 23 inert collector
+tests**. Independent Codex review and root integration corrected address, parser,
+handle ownership, output cleanup, tuple ambiguity and deadline defects before
+accepting this source increment. [Exact source, corrections and bounded evidence](evidence/scrum227-readonly-attribution-20261012/README.md)
+do not qualify native Windows, actual installed module closure or live boat
+attribution. The result explicitly grants no filtering authority and leaves the
+inert-only WFP guard unchanged. No full application build or boat change occurred;
+SCRUM-227/16 remain In Progress. Claude has not reviewed this AIS increment; the
+expanded private broker review still awaits exact-scope transfer consent.
+
 ## Fresh broker creation and stopped-only SCM initialization integrated
 
 `50227181` adds actual broker-principal-only creation of the fixed protected store

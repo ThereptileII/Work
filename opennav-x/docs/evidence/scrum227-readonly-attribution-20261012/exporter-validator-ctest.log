@@ -1,0 +1,36 @@
+UpdateCTestConfiguration  from :/home/standard/Projects/.tmp/skager-ais-attribution-20261012/cmake/DartConfiguration.tcl
+Test project /home/standard/Projects/.tmp/skager-ais-attribution-20261012/cmake
+Constructing a list of tests
+Done constructing a list of tests
+Updating test list for fixtures
+Added 0 tests to meet fixture requirements
+Checking test dependency graph...
+Checking test dependency graph end
+test 20
+    Start 20: ais_connection_owned_diagnostics
+
+20: Test command: /home/standard/Projects/.tmp/skager-ais-attribution-20261012/cmake/ais_connection_diagnostics_tests
+20: Working Directory: /home/standard/Projects/.tmp/skager-ais-attribution-20261012/cmake
+20: Test timeout computed to be: 10000000
+20: 153 AIS connection diagnostic checks passed
+1/2 Test #20: ais_connection_owned_diagnostics ...   Passed    0.00 sec
+test 60
+    Start 60: ais_connection_binding_contract
+
+60: Test command: /usr/bin/python3.14 "/home/standard/Projects/X-nav-worktrees/source-batch-20261011/opennav-x/tests/ais_connection_binding_tests.py"
+60: Working Directory: /home/standard/Projects/.tmp/skager-ais-attribution-20261012/cmake
+60: Test timeout computed to be: 10000000
+60: ...............................
+60: ----------------------------------------------------------------------
+60: Ran 31 tests in 0.399s
+60: 
+60: OK
+2/2 Test #60: ais_connection_binding_contract ....   Passed    0.55 sec
+
+The following tests passed:
+	ais_connection_owned_diagnostics
+	ais_connection_binding_contract
+
+100% tests passed out of 2
+
+Total Test time (real) =   0.56 sec

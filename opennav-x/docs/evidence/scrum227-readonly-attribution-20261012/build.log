@@ -1,0 +1,6 @@
+Change Dir: '/home/standard/Projects/.tmp/skager-ais-attribution-20261012/cmake'
+
+Run Build Command(s): /home/standard/Projects/X-nav/.local/sysroot/usr/bin/ninja -v ais_connection_diagnostics_tests
+[1/2] /usr/bin/c++  -I/home/standard/Projects/X-nav-worktrees/source-batch-20261011/opennav-x/src  -MD -MT CMakeFiles/ais_connection_diagnostics_tests.dir/tests/ais_connection_diagnostics_tests.cpp.o -MF CMakeFiles/ais_connection_diagnostics_tests.dir/tests/ais_connection_diagnostics_tests.cpp.o.d -o CMakeFiles/ais_connection_diagnostics_tests.dir/tests/ais_connection_diagnostics_tests.cpp.o -c /home/standard/Projects/X-nav-worktrees/source-batch-20261011/opennav-x/tests/ais_connection_diagnostics_tests.cpp
+[2/2] : && /usr/bin/c++  -Wl,--dependency-file=CMakeFiles/ais_connection_diagnostics_tests.dir/link.d CMakeFiles/ais_connection_diagnostics_tests.dir/tests/ais_connection_diagnostics_tests.cpp.o -o ais_connection_diagnostics_tests   && :
+

@@ -1,0 +1,13 @@
+{
+  "build": [
+    "/home/standard/Projects/X-nav/.local/sysroot/usr/bin/cmake",
+    "--build",
+    "/home/standard/Projects/.tmp/skager-ais-attribution-20261012/cmake",
+    "--target",
+    "ais_connection_diagnostics_tests",
+    "--verbose"
+  ],
+  "exit_code": 0,
+  "configure_exit_code": 0,
+  "orchestrator_note": "Configure succeeded; initial recorder changed dictionary during iteration before build. Build executed once by corrected recorder."
+}

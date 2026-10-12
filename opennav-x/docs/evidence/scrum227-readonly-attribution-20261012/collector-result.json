@@ -1,0 +1,24 @@
+{
+  "source_commit": "092c51c643c2356dc572705c1fcbc617b5487af5",
+  "command": [
+    "/home/standard/Projects/X-nav/.local/sysroot/usr/bin/ctest",
+    "--test-dir",
+    "/home/standard/Projects/.tmp/skager-ais-attribution-20261012/cmake",
+    "-R",
+    "^ais_connection_native_collector_contract$",
+    "-V",
+    "--output-on-failure"
+  ],
+  "exit_code": 0,
+  "files": {
+    "opennav-x/CMakeLists.txt": "a40d531e624978476d558fcbe23969541e4d76af53deb833ff07ba892c76bd83",
+    "opennav-x/src/ais/ConnectionDiagnostics.h": "169c652472bde7fb06ac034bceb4a5a677e59f2dd0a6e497921cacc484fd1632",
+    "opennav-x/src/integration/OpenCPNIntegration.cpp": "2ef47f691134d90998138fc2fe33b68ecad58772545e8c68c8ece4e7c3f69958",
+    "opennav-x/tests/ais_connection_diagnostics_tests.cpp": "7791da4f91bf7a5cc57d4732fc9ebbc3fa2ff7db70e1fd32849da15daeca44c3",
+    "opennav-x/tools/ais_connection_binding.py": "1d80a8a371c6adcc547b6b6cca9aae375701da19d67cdcddfebfcb5efe818372",
+    "opennav-x/tests/ais_connection_binding_tests.py": "9ab28e48eb141136fb81c1b159fbe5b51639f7cb8eb4d057e8d778a48a790dad",
+    "opennav-x/tools/collect-ais-connection.py": "180bce6a991c0c218570e55d50e83b720140c7206e164d2d4edb1473ca3d6312",
+    "opennav-x/tests/ais_connection_collector_tests.py": "55941df2de908abc48d866bcb0aac66d193b95ecb11a5c76462a4185cafb8a81"
+  },
+  "scope": "Portable inert collector checks only; native Windows execution, application build and boat changes not performed"
+}

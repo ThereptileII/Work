@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/home/standard/Projects/X-nav/.local/sysroot/usr/bin/ctest",
+    "--test-dir",
+    "/home/standard/Projects/.tmp/skager-ais-attribution-20261012/cmake",
+    "-R",
+    "^ais_connection_(owned_diagnostics|binding_contract)$",
+    "-V",
+    "--output-on-failure"
+  ],
+  "exit_code": 0,
+  "source_commit": "733ad47b1879e466014676b221bfa16fc904c78e",
+  "cmake_registration": "uncommitted integration registration",
+  "scope": "Only owned exporter and strict offline validator; no full application build or native execution"
+}

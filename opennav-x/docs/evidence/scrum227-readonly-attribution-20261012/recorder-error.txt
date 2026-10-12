@@ -1,0 +1,1 @@
+Initial configure returned0. The local log recorder then raised RuntimeError: dictionary changed size during iteration before building. The corrected recorder built the selected C++ target once. This was an orchestration error, not a product/configure/test failure; no evidence is suppressed.

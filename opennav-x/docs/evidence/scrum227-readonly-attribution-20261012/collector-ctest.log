@@ -1,0 +1,27 @@
+UpdateCTestConfiguration  from :/home/standard/Projects/.tmp/skager-ais-attribution-20261012/cmake/DartConfiguration.tcl
+Test project /home/standard/Projects/.tmp/skager-ais-attribution-20261012/cmake
+Constructing a list of tests
+Done constructing a list of tests
+Updating test list for fixtures
+Added 0 tests to meet fixture requirements
+Checking test dependency graph...
+Checking test dependency graph end
+test 61
+    Start 61: ais_connection_native_collector_contract
+
+61: Test command: /usr/bin/python3.14 "/home/standard/Projects/X-nav-worktrees/source-batch-20261011/opennav-x/tests/ais_connection_collector_tests.py"
+61: Working Directory: /home/standard/Projects/.tmp/skager-ais-attribution-20261012/cmake
+61: Test timeout computed to be: 10000000
+61: .......................
+61: ----------------------------------------------------------------------
+61: Ran 23 tests in 0.168s
+61: 
+61: OK
+1/1 Test #61: ais_connection_native_collector_contract ...   Passed    0.34 sec
+
+The following tests passed:
+	ais_connection_native_collector_contract
+
+100% tests passed out of 1
+
+Total Test time (real) =   0.35 sec
