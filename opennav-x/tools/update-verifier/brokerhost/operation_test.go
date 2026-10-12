@@ -54,6 +54,7 @@ type stageFixture struct {
 	release        chan struct{}
 	validations    int
 	failValidation int
+	nilStage       bool
 }
 
 func (f *stageFixture) record(event string) error {
@@ -91,6 +92,9 @@ func (f *stageFixture) begin(id, sid string) (candidate, error) {
 		return nil, errors.New("reservation refused")
 	}
 	f.reserved[id] = true
+	if f.nilStage {
+		return nil, nil
+	}
 	return fakeStage{f}, nil
 }
 
@@ -138,7 +142,11 @@ func fixtureEngine(f *stageFixture) *engine {
 			}
 			return stockBaseline, fakeStock{f}, nil
 		},
-		prepare: func(_ context.Context, c verifier.PrepareConfig, o releasepolicy.OpenCpn, consent verifier.ConsentIdentity) (acquisition, error) {
+		prepare: func(_ context.Context, c verifier.PrepareConfig, o releasepolicy.OpenCpn, consent verifier.ConsentIdentity, stage candidate) (acquisition, error) {
+			reserved, ok := stage.(fakeStage)
+			if !ok || reserved.f != f {
+				return nil, errors.New("preparation did not receive reserved candidate")
+			}
 			if c.StateDirectory != "protected-state" || c.ArtifactDirectory != "protected-artifacts" || c.ArtifactOrigin != "https://updates.invalid" ||
 				c.Installed.Version != "0.2.0-beta.1" || !reflect.DeepEqual(c.OpenCpnAllowlist, []releasepolicy.OpenCpn{stockBaseline}) || o != stockBaseline {
 				return nil, errors.New("configuration not from protected registration")
@@ -210,6 +218,18 @@ func TestStagingOperationRejectsReplayBeforeAcquisition(t *testing.T) {
 	}
 	if contains(f.events, "prepare") || contains(f.events, "extract") || contains(f.events, "seal") {
 		t.Fatal("replay reached acquisition")
+	}
+}
+
+func TestStagingOperationRequiresReservedCandidate(t *testing.T) {
+	f := newFixture()
+	f.nilStage = true
+	result, err := fixtureEngine(f).handle(context.Background(), testPeer(), testRequest())
+	if result != (brokerpipe.Result{}) || err != errStageRefused {
+		t.Fatalf("missing candidate accepted: %+v %v", result, err)
+	}
+	if contains(f.events, "prepare") || contains(f.events, "extract") || contains(f.events, "seal") {
+		t.Fatal("missing reserved owner reached acquisition or published a receipt")
 	}
 }
 

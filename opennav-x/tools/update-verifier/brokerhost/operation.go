@@ -38,7 +38,7 @@ type stockOwner interface {
 type engine struct {
 	store   storage
 	observe func(context.Context, registration) (releasepolicy.OpenCpn, stockOwner, error)
-	prepare func(context.Context, verifier.PrepareConfig, releasepolicy.OpenCpn, verifier.ConsentIdentity) (acquisition, error)
+	prepare func(context.Context, verifier.PrepareConfig, releasepolicy.OpenCpn, verifier.ConsentIdentity, candidate) (acquisition, error)
 	busy    sync.Mutex
 }
 
@@ -105,8 +105,8 @@ func (e *engine) handle(ctx context.Context, peer brokerpipe.Peer, request broke
 	// CREATE_NEW reserves this exact request ID durably before network activity.
 	// Failure leaves a protected partial candidate; the ID is never reused.
 	stage, err := e.store.begin(request.RequestID, peer.SID)
-	if err != nil {
-		return brokerpipe.Result{}, err
+	if err != nil || stage == nil {
+		return brokerpipe.Result{}, errStageRefused
 	}
 	defer func() {
 		if stage != nil {
@@ -116,7 +116,7 @@ func (e *engine) handle(ctx context.Context, peer brokerpipe.Peer, request broke
 	if err := e.store.Validate(); err != nil {
 		return brokerpipe.Result{}, err
 	}
-	prepared, err := e.prepare(ctx, r.configuration(stateDir, artifactDir), observed, request.Consent)
+	prepared, err := e.prepare(ctx, r.configuration(stateDir, artifactDir), observed, request.Consent, stage)
 	if err != nil || prepared == nil {
 		if prepared != nil {
 			_ = prepared.Close()

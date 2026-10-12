@@ -74,8 +74,15 @@ func (h *serviceHost) Execute(args []string, changes <-chan svc.ChangeRequest, s
 		}
 	}()
 	e := &engine{store: storeAdapter{store}, observe: observeStock,
-		prepare: func(ctx context.Context, c verifier.PrepareConfig, stock releasepolicy.OpenCpn, consent verifier.ConsentIdentity) (acquisition, error) {
-			p, err := verifier.PrepareUpdateSet(ctx, c, stock, consent)
+		prepare: func(ctx context.Context, c verifier.PrepareConfig, stock releasepolicy.OpenCpn, consent verifier.ConsentIdentity, stage candidate) (acquisition, error) {
+			// Only the same newly reserved native candidate can own acquisition.
+			// Neither a caller-selected directory nor a reconstructed receipt can
+			// replace its protected lease and retained native artifact owners.
+			native, ok := stage.(*brokerstore.Candidate)
+			if !ok || native == nil {
+				return nil, errors.New("native reserved candidate required")
+			}
+			p, err := verifier.PrepareBrokerUpdateSet(ctx, c, stock, consent, native)
 			if err != nil {
 				return nil, err
 			}
