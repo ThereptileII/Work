@@ -31,6 +31,7 @@ type nativeStore struct {
 	root, candidates, registrations, users *nativePin
 	lock                                   *nativeStoreLock
 	failed, closed                         bool
+	decommissioned                         bool
 }
 type nativeCandidate struct {
 	store                     *nativeStore
@@ -419,6 +420,9 @@ func Open(root string) (result *Store, resultErr error) {
 	}
 	n.root.dos = wanted
 	n.protected[""] = n.root
+	if err = decommissionAbsent(n.root); err != nil {
+		return nil, err
+	}
 	lockSD, err := descriptor(broker, nil, false)
 	if err != nil {
 		return nil, err
@@ -475,10 +479,28 @@ func (n *nativeStore) check() (err error) {
 		return ErrPoisoned
 	}
 	defer func() {
-		if err != nil {
+		if err != nil && !errors.Is(err, ErrDecommissioned) {
 			n.failed = true
 		}
 	}()
+	if n.decommissioned {
+		return ErrDecommissioned
+	}
+	if err = decommissionAbsent(n.root); err != nil {
+		n.decommissioned = true
+		return err
+	}
+	return n.checkCustodyLocked()
+}
+
+// Caller holds n.mu; only the original terminal writer bypasses absence.
+func (n *nativeStore) checkCustodyLocked() (err error) {
+	if n.closed {
+		return ErrClosed
+	}
+	if n.failed {
+		return ErrPoisoned
+	}
 	if err = currentBroker(n.broker); err != nil {
 		return err
 	}
@@ -540,6 +562,9 @@ func (n *nativeStore) candidateCapacity() (resultErr error) {
 func (n *nativeStore) begin(stage, client string) (candidateBackend, error) {
 	n.beginMu.Lock()
 	defer n.beginMu.Unlock()
+	if err := n.check(); err != nil {
+		return nil, err
+	}
 	sid, err := clientSID(client, n.broker)
 	if err != nil {
 		return nil, err
@@ -705,6 +730,9 @@ func (n *nativeStore) registration(client string) ([]byte, error) {
 }
 
 func (n *nativeStore) verifierDirectories(client, channel string) (string, string, error) {
+	if err := n.check(); err != nil {
+		return "", "", err
+	}
 	sid, err := clientSID(client, n.broker)
 	if err != nil {
 		return "", "", err
