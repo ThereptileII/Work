@@ -1,0 +1,29 @@
+=== RUN   TestNativeAcquisitionReadOnlyHandoffAndHandleDeletion
+--- PASS: TestNativeAcquisitionReadOnlyHandoffAndHandleDeletion (0.03s)
+=== RUN   TestNativeAcquisitionStartupReconcilesIndexedCrashBoundaries
+=== RUN   TestNativeAcquisitionStartupReconcilesIndexedCrashBoundaries/owned-partial
+=== RUN   TestNativeAcquisitionStartupReconcilesIndexedCrashBoundaries/delete-intent
+=== RUN   TestNativeAcquisitionStartupReconcilesIndexedCrashBoundaries/deleted-before-completion
+--- PASS: TestNativeAcquisitionStartupReconcilesIndexedCrashBoundaries (0.09s)
+    --- PASS: TestNativeAcquisitionStartupReconcilesIndexedCrashBoundaries/owned-partial (0.03s)
+    --- PASS: TestNativeAcquisitionStartupReconcilesIndexedCrashBoundaries/delete-intent (0.03s)
+    --- PASS: TestNativeAcquisitionStartupReconcilesIndexedCrashBoundaries/deleted-before-completion (0.03s)
+=== RUN   TestNativeAcquisitionStartupRefusesUnindexedAndMismatchedResidue
+=== RUN   TestNativeAcquisitionStartupRefusesUnindexedAndMismatchedResidue/unindexed
+=== RUN   TestNativeAcquisitionStartupRefusesUnindexedAndMismatchedResidue/creation-gap
+=== RUN   TestNativeAcquisitionStartupRefusesUnindexedAndMismatchedResidue/second-slot-identity
+=== RUN   TestNativeAcquisitionStartupRefusesUnindexedAndMismatchedResidue/wrong-acl
+=== RUN   TestNativeAcquisitionStartupRefusesUnindexedAndMismatchedResidue/hardlink
+=== RUN   TestNativeAcquisitionStartupRefusesUnindexedAndMismatchedResidue/unknown-extra
+--- PASS: TestNativeAcquisitionStartupRefusesUnindexedAndMismatchedResidue (0.14s)
+    --- PASS: TestNativeAcquisitionStartupRefusesUnindexedAndMismatchedResidue/unindexed (0.02s)
+    --- PASS: TestNativeAcquisitionStartupRefusesUnindexedAndMismatchedResidue/creation-gap (0.02s)
+    --- PASS: TestNativeAcquisitionStartupRefusesUnindexedAndMismatchedResidue/second-slot-identity (0.03s)
+    --- PASS: TestNativeAcquisitionStartupRefusesUnindexedAndMismatchedResidue/wrong-acl (0.02s)
+    --- PASS: TestNativeAcquisitionStartupRefusesUnindexedAndMismatchedResidue/hardlink (0.02s)
+    --- PASS: TestNativeAcquisitionStartupRefusesUnindexedAndMismatchedResidue/unknown-extra (0.02s)
+=== RUN   TestNativeAcquisitionWrongBytesAndCleanupFailureRetained
+--- PASS: TestNativeAcquisitionWrongBytesAndCleanupFailureRetained (0.02s)
+=== RUN   TestNativeAcquisitionFileIDShape
+--- PASS: TestNativeAcquisitionFileIDShape (0.00s)
+PASS

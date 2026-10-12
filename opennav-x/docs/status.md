@@ -1,5 +1,23 @@
 # SKAGER status — 2026-10-12
 
+## Broker-owned acquisition and indexed cleanup joined
+
+`ce226959`, `07ad7922` and `663b8c0d` connect the actual broker to a durable private
+acquisition lease, native retained artifact owners and acquisition-only startup
+cleanup. Unknown or mismatched residue refuses readiness; candidate payloads and
+request IDs are never adopted or reused. Storage passes 7 focused Linux groups;
+the verifier and affected existing paths pass 12. The host handoff passes 6 groups
+plus 13 fault subcases with race detection. Five native Windows groups plus nine
+nested cases pass on the boat PC using inert temporary files. Joined Windows/386
+component compilation passes; no full application rebuild was needed.
+
+[Exact source, preserved fixture failure and native evidence](evidence/scrum311-broker-acquisition-20261012/README.md)
+separate this result from unfinished actual service-principal/provisioning,
+installation custody and installed update acceptance. Independent Codex review
+found no concrete integration defect. Claude's expanded review still awaits
+exact-scope private-source transfer consent. The installed application/profile,
+remote access and vessel controls were not changed.
+
 ## Guarded lighthouse information helper integrated
 
 `8e074bf7` adds narrowly guarded chart-position Info and bounded read-only

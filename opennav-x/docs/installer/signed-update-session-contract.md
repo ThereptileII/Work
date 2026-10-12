@@ -248,10 +248,11 @@ physical identity, protected descriptor, volume, regular-file type, single link
 and zero length. A matching surviving file is a synchronization object only;
 it grants no candidate adoption, cleanup or launch authority. Close attempts all
 child/ancestor cleanup before releasing the lock last. This excludes concurrent
-store instances but does not implement crash/orphan reconciliation.
+store instances. The acquisition-only reconciliation described below runs under
+this lock; the lock itself grants no recovery authority.
 The broker's private trust/artifact paths must already exist and pass the
 existing verifier's protection checks; staging never initializes lost trust or
-adopts a cache. One fresh real `PrepareUpdateSet` then supplies both artifacts
+adopts a cache. One fresh real `PrepareBrokerUpdateSet` then supplies both artifacts
 and `StageRecovery` streams to the concrete protected candidate. The store is
 revalidated around acquisition, extraction, cleanup and sealing. Both artifact
 cleanup attempts must succeed before a bounded staging receipt is published.
@@ -264,7 +265,42 @@ children drain. These semantics release handles, not durable reservations, and
 do not classify abandoned candidates or authorize their deletion/reuse.
 Failures return fixed redacted refusal and no successful result. Partial
 reservations remain protected and cannot be retried with the same ID; there is
-no wildcard deletion or eviction. Recovery/reconciliation is still required.
+no wildcard deletion or eviction. Candidate payload recovery/adoption remains
+separate from the narrowly indexed disposable-artifact cleanup below.
+
+### Broker-owned acquisition and interrupted-download cleanup
+
+The actual broker passes the same newly reserved concrete native `Candidate` to
+`PrepareBrokerUpdateSet`; a caller-selected directory or reconstructed receipt
+cannot replace it. `BeginAcquisition` creates a private `.acquisition/lease.jsonl`
+before metadata networking. After one authenticated check, exact consent and
+both installed-origin checks, the lease binds policy hash, version, commit and
+both signed artifact sizes/hashes. Fixed `recovery.zip` and `setup.exe` slots are
+created under broker/SYSTEM-only protection before receiving bytes. Recovery's
+exact Lifecycle sidecar is verified before Setup is acquired.
+
+The bounded canonical journal records creation intent, actual full native file
+identity and deletion intent/completion. Stage, client, parent and acquisition
+directory identities remain bound throughout. The actual writer is replaced by
+a read-only data handle with retained deletion custody; the borrowed reader must
+not be closed or removed independently. Cleanup deletes through that verified
+native handle and retains all close/deletion uncertainty across repeated drains.
+
+Actual store startup inspects only indexed fixed acquisition slots under its
+exclusive lifetime lock. It opens and validates both present artifact owners
+before deleting either. Matching indexed partial files may be deleted; an
+already absent file requires prior durable delete intent. Unknown files,
+creation without durable actual identity, altered ACLs, hardlinks, mismatched
+identities or uncertain journals refuse readiness. There is no recursive sweep,
+payload deletion, candidate adoption, request-ID reuse or execution. Completed
+lease journals remain inert tombstones and reservations still count toward the
+existing cap.
+
+Focused native temporary-file fixtures cover these primitives, including three
+interrupted states and six refusal cases. They use the current test account and
+do not establish actual service-account/ProgramData startup, privileged
+provisioning, authenticated installed acquisition or updater acceptance. See
+[exact source and component evidence](../evidence/scrum311-broker-acquisition-20261012/README.md).
 
 The only successful state is **staged-awaiting-qualification**. It is neither
 installation nor readiness, launch, startup success or a healthy receipt. The
