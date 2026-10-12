@@ -148,7 +148,7 @@ function Qualify([string]$Id) {
     $generation=Get-SupervisedGeneration $Root $Id;$expectedHash=$generation.identity.executableSha256
     $phase='receiver-create';$session=New-UpdateHealthSession $generation.identity
     Diagnostic $phase @{generation=$Id;elapsedMs=$clock.ElapsedMilliseconds;receiverTimeoutMs=30000;deliberateClientDelayMs=6000;clientConnectTimeoutMs=5000;clientHoldMs=10000}
-    $phase='process-start';$process=Start-SupervisedGeneration $generation $session
+    $phase='process-start';$process=Start-SupervisedGeneration $generation $session $Root
     $null=$process.get_Handle();$ticks=$process.StartTime.ToUniversalTime().Ticks
     Diagnostic $phase @{generation=$Id;elapsedMs=$clock.ElapsedMilliseconds;pid=$process.Id;startedUtcTicks=$ticks;executableSha256=$expectedHash}
     $phase='authenticated-receive'

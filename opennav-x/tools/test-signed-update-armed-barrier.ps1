@@ -82,6 +82,51 @@ foreach ($ambiguous in @('', 'relative', 'C:fixture', 'C:\', '\\server\share\ins
   Reject { [ArmedBarrierProbe]::Check($ambiguous,$true) } 'Ambiguous installation root denies before lookup'
   Check ([ArmedBarrierProbe]::Seen.Count -eq 0) 'Ambiguous root made no attribute queries'
 }
+# Exercise the exact installer fixture caller and production starter together.
+# Stop at the application-discovery seam, after the real marker restriction,
+# so this regression uses no native APIs, child processes or installed paths.
+$tokens=$null;$errors=$null
+$integration=[Management.Automation.Language.Parser]::ParseFile((Join-Path $PSScriptRoot 'test-updater-installer-integration.ps1'),[ref]$tokens,[ref]$errors)
+Check ($errors.Count -eq 0) 'Native installer fixture parses'
+$qualify=@($integration.FindAll({param($node) $node -is [Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -ceq 'Qualify'},$false))
+$starter=@($trees.UpdateSupervisor.FindAll({param($node) $node -is [Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -ceq 'Start-SupervisedGeneration'},$false))
+Check ($qualify.Count -eq 1 -and $starter.Count -eq 1) 'Exact fixture caller and production starter selected'
+& {
+  param($QualifyDefinition,$StarterDefinition,[string]$Installation)
+  $Root=$Installation;$script:capturedRoot='';$script:applicationChecks=0
+  function Get-SupervisedGeneration([string]$InstallationRoot,[string]$Id) {
+    return [pscustomobject]@{identity=[pscustomobject]@{generation=$Id;executableSha256=('a'*64)}}
+  }
+  function New-UpdateHealthSession($Identity) {
+    $server=[pscustomobject]@{FailureReason=$null}
+    $server | Add-Member -MemberType ScriptMethod -Name Dispose -Value { }
+    return [pscustomobject]@{server=$server}
+  }
+  function Diagnostic([string]$Phase,$Details) { }
+  function Assert-NoSignedUpdateArmed([string]$InstallationRoot) {
+    $script:capturedRoot=$InstallationRoot
+    [ArmedBarrierProbe]::Check($InstallationRoot,$false)
+  }
+  function Assert-NoUpdateApplication {
+    $script:applicationChecks++
+    throw 'INERT: application discovery seam reached.'
+  }
+  . ([scriptblock]::Create($StarterDefinition.Extent.Text))
+  . ([scriptblock]::Create($QualifyDefinition.Extent.Text))
+  foreach ($present in @($false,$true)) {
+    $script:capturedRoot='';$script:applicationChecks=0
+    [ArmedBarrierProbe]::Values[$Installation+'\signed-update-armed.jsonl']=$(if($present){0}else{-2})
+    $failure=''
+    try { Qualify ('b'*32) } catch { $failure=$_.Exception.Message }
+    Check ($script:capturedRoot -ceq $Installation) 'Installer qualification passes its exact root to production startup restriction'
+    if($present) {
+      Check ($failure -match 'Signed update session is armed' -and $script:applicationChecks -eq 0) 'Armed installer fixture refuses before application discovery'
+    } else {
+      Check ($failure -ceq 'INERT: application discovery seam reached.' -and $script:applicationChecks -eq 1) 'Absent installer marker reaches application discovery with a nonempty root'
+    }
+  }
+} $qualify[0] $starter[0] $root
+[ArmedBarrierProbe]::Values[$leaf]=-2
 if ($PolicyOnly -or -not $windows) {
   Write-Host ('PASS: '+$count+' portable checks. SKIP: native presence, entry and transaction-lock gates require Windows; no native APIs invoked.')
   exit 0
