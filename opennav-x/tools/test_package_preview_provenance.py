@@ -7,9 +7,11 @@ product self-test is invoked. Component byte validation has its own fixtures.
 import argparse
 import ast
 import base64
+import hashlib
 import json
 from pathlib import Path
 import sys
+import tempfile
 import unittest
 from unittest.mock import Mock, patch
 
@@ -57,6 +59,54 @@ def arguments(extra=(), omit=()):
 
 
 class PackagingProvenanceTests(unittest.TestCase):
+    def qualification_boundary(self, actual, directory):
+        # Execute the actual producer boundary, without loading any application
+        # or invoking packaging's Windows-only startup. This tests what a bad
+        # executable self-test can cause the packager to publish.
+        guard = next(node for node in TREE.body if isinstance(node, ast.If) and
+                     any(isinstance(value, ast.Constant) and value.value == 'update_qualified_config'
+                         for value in ast.walk(node.test)))
+        writer = next(node for node in TREE.body if isinstance(node, ast.Expr) and
+                      any(isinstance(value, ast.Constant) and value.value == 'update-qualification.json'
+                          for value in ast.walk(node)))
+        execute([guard, writer], {'actual': actual, 'app': directory, 'commit': 'a' * 40,
+                                 'hashlib': hashlib, 'json': json})
+
+    def test_qualification_evidence_binds_the_copied_executable(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            app = Path(temporary)
+            executable = b'owned copied executable bytes'
+            (app / 'opencpn.exe').write_bytes(executable)
+            self.qualification_boundary({key: 1 for key in (
+                'update_qualified_config', 'update_qualified_core_output',
+                'update_qualified_plugins_deferred')}, app)
+            raw = (app / 'update-qualification.json').read_bytes()
+            record = json.loads(raw)
+            self.assertEqual(record['executableSha256'], hashlib.sha256(executable).hexdigest())
+            self.assertEqual(record['commit'], 'a' * 40)
+            self.assertEqual(record['pluginPolicy'], 'deferred-until-ordinary-start')
+            self.assertEqual(raw, json.dumps(record, separators=(',', ':')).encode('utf-8'))
+
+    def test_unqualified_executable_cannot_publish_evidence(self):
+        keys = ('update_qualified_config', 'update_qualified_core_output',
+                'update_qualified_plugins_deferred')
+        with tempfile.TemporaryDirectory() as temporary:
+            app = Path(temporary)
+            (app / 'opencpn.exe').write_bytes(b'copied image')
+            for key in keys:
+                for invalid in (None, False, True, 0, 2, '1', 1.0):
+                    with self.subTest(key=key, invalid=invalid):
+                        actual = dict.fromkeys(keys, 1)
+                        actual[key] = invalid
+                        with self.assertRaises(SystemExit):
+                            self.qualification_boundary(actual, app)
+                        self.assertFalse((app / 'update-qualification.json').exists())
+                actual = dict.fromkeys(keys, 1)
+                del actual[key]
+                with self.assertRaises(SystemExit):
+                    self.qualification_boundary(actual, app)
+                self.assertFalse((app / 'update-qualification.json').exists())
+
     def test_required_identity_and_archive_cli(self):
         args = arguments()
         self.assertEqual(parse_visual_studio_catalog_base64(args.runtime_vs_catalog_base64), {})

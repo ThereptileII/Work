@@ -1,0 +1,57 @@
+{
+  "upstream": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "checks": [
+    {
+      "patch": "opencpn-5.12.4-xnav.patch",
+      "exit": 0
+    },
+    {
+      "patch": "opencpn-5.12.4-regression-tests.patch",
+      "exit": 0
+    },
+    {
+      "patch": "opencpn-5.12.4-ais-transport.patch",
+      "exit": 0
+    },
+    {
+      "patch": "opencpn-5.12.4-chart-presentation.patch",
+      "exit": 0
+    },
+    {
+      "patch": "opencpn-5.12.4-route-focus.patch",
+      "exit": 0
+    },
+    {
+      "patch": "opencpn-5.12.4-route-hit-dpi.patch",
+      "exit": 0
+    },
+    {
+      "patch": "opencpn-5.12.4-maintained-curl.patch",
+      "exit": 0
+    },
+    {
+      "patch": "opencpn-5.12.4-download-trust.patch",
+      "exit": 0
+    },
+    {
+      "patch": "opencpn-5.12.4-wxcurl-trust.patch",
+      "exit": 0
+    },
+    {
+      "patch": "opencpn-5.12.4-peer-response-buffer.patch",
+      "exit": 0
+    },
+    {
+      "patch": "opencpn-5.12.4-peer-unavailable.patch",
+      "exit": 0
+    },
+    {
+      "patch": "opencpn-5.12.4-pilot-serial.patch",
+      "exit": 0
+    },
+    {
+      "patch": "opencpn-5.12.4-update-qualification.patch",
+      "exit": 0
+    }
+  ]
+}

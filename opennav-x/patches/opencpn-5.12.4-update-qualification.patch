@@ -278,3 +278,29 @@ diff --git a/model/src/garmin_wrapper.cpp b/model/src/garmin_wrapper.cpp
    int ret_val = 0;
  
    int route_number = 1;
+diff --git a/model/src/plugin_loader.cpp b/model/src/plugin_loader.cpp
+--- a/model/src/plugin_loader.cpp
++++ b/model/src/plugin_loader.cpp
+@@ -27,6 +27,9 @@
+ #include "integration/PluginPresentationFallback.h"
+ #endif
+ 
++#ifdef SKAGER_UPDATE_QUALIFICATION
++#include "integration/UpdateQualification.h"
++#endif
+ #include <algorithm>
+ #include <set>
+ #include <sstream>
+@@ -1495,6 +1498,12 @@
+ 
+ PlugInContainer* PluginLoader::LoadPlugIn(const wxString& plugin_file,
+                                           PlugInContainer* pic) {
++#ifdef SKAGER_UPDATE_QUALIFICATION
++  // Third-party constructors and helpers can bypass core marine-output APIs.
++  // Defer ALL plugin code in this restricted update-health process. Ordinary
++  // startup is unchanged; no plugin preference/file is edited or quarantined.
++  if (opennav::integration::QualificationOutputSuppressed()) return nullptr;
++#endif
+   wxLogMessage(wxString("PluginLoader: Loading PlugIn: ") + plugin_file);
+ 
+   if (plugin_file.empty()) {

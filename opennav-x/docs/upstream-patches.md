@@ -1843,3 +1843,22 @@ until exit, with an explicit log, rather than retrying silently. See the
 [exact source and bounded evidence](evidence/scrum209-plugin-custody-20261012/README.md).
 Full patched-source syntax and nine actual portable fallback checks pass;
 updated native loader execution and integrated/package gates remain pending.
+
+### SCRUM-311 qualified startup plugin deferral — 2026-10-12
+
+The separately versioned `opencpn-5.12.4-update-qualification.patch` is now the
+13th patch in the actual integration recipe. Its model-side
+`PluginLoader::LoadPlugIn` boundary checks the lifetime qualification output
+latch **before** loading any plugin library, factory or helper. This closes
+plugin code bypass of core output suppression during restricted updater health
+qualification. Ordinary startup without the qualification flag retains normal
+plugin behavior; no plugin preference, file, chart database or stock presentation
+resource is changed. Legacy remains unchanged in ordinary operation.
+
+The integration self-test reports the three implemented qualification
+capabilities; packaging binds them to the exact executable in an original owned
+sidecar. All 13 patches apply against pinned upstream
+`37fd0cddb7334fe489e9f18aa163977a9c5c84f7` in a temporary index without modifying
+the upstream checkout. Native MSVC/plugin and installed application gates remain
+pending. Plugin-provided/encrypted charts are unavailable in this restricted
+qualification process; it cannot stand in for ordinary chart/plugin acceptance.

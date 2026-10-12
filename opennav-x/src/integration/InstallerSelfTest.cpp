@@ -57,8 +57,14 @@ int RunInstallerSelfTest() {
   report["test_fixtures"] = TestFixturesEnabled();
 #ifdef __WXMSW__
   report["update_startup_health"] = 1;
+  report["update_qualified_config"] = 1;
+  report["update_qualified_core_output"] = 1;
+  report["update_qualified_plugins_deferred"] = 1;
 #else
   report["update_startup_health"] = 0;
+  report["update_qualified_config"] = 0;
+  report["update_qualified_core_output"] = 0;
+  report["update_qualified_plugins_deferred"] = 0;
 #endif
   report["xnav_hardware_output_policy"] = wxString::FromUTF8(HardwareOutputPolicy().data());
   report["xnav_manual_control_contract"] = PilotManualSerialEnabled() ? 1 : 0;

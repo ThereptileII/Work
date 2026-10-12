@@ -1,0 +1,2 @@
+error: patch failed: model/src/plugin_loader.cpp:24
+error: model/src/plugin_loader.cpp: patch does not apply

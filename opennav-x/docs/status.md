@@ -1,5 +1,31 @@
 # SKAGER status — 2026-10-12
 
+## Updater executable qualification and interactive execution joined in source
+
+Source through `d2c0a287` integrates exact linked pre-spawn recovery history,
+original executable capability validation, the authenticated interactive
+executor, restricted broker process/token query access, and an explicit native
+fixed-profile fixture in the disposable Windows startup harness. The executor
+consumes each launch role before native creation and retains the original child;
+lost conversation never retries or enters ordinary startup. Qualification
+intentionally suppresses core outputs and defers all plugins for that process.
+Normal selected startup needs its separate nonqualification path; changing a
+live qualification process into normal operation is not permitted.
+
+The package producer now requires those capabilities from the actual executable
+self-test and binds its fixed sidecar to the copied executable. All 13 upstream
+patches apply in order to the pinned OpenCPN revision. Focused package tests pass;
+new native profile, service-token and execution checks remain pending.
+This is source integration, not a qualified product or release.
+
+SCRUM-311 remains In Progress. Actual service execution/selected commit,
+protected full-profile backup/restoration, initial baseline qualification,
+ordinary startup/shortcuts and exact Windows/boat acceptance are unfinished.
+The latest full pipeline `38143022102` compiled the Windows application and
+installer but failed later regression qualification. No combined replacement
+build, installed boat/profile/service change, design/endurance run or physical
+command has occurred in this increment.
+
 ## Restart originals, permanent journals and interactive peer checks pass
 
 Source `43a9cdb6` joins original protected generation reopening and permanent

@@ -1029,3 +1029,58 @@ Lifecycle self-test, helper/script/shortcut roots and loader/profile/environment
 custody remain outside these increments; the authenticated four-stage commissioning and
 mutation/restoration owner is still required. [Evidence and exact remaining
 native checks](../evidence/scrum311-native-launch-identity-20261011/README.md).
+
+## Protected execution and qualification producer — 2026-10-12
+
+Actual broker staging now derives installed eligibility from the retained,
+nonforking healthy execution history rather than initial registration alone.
+Every captured journal, registration and selected generation remains retained;
+the complete execution namespace is rechecked at staging boundaries. A new or
+partial execution reservation invalidates an older captured selection. Staging,
+execution and recovery must use the same engine serialization boundary.
+
+A fresh recovery journal may link an abandoned **pre-spawn** attempt only by its
+exact original journal hash, client, generation, completion and previous head.
+Cold/no-spawn and independently verified profile restoration must precede those
+facts. Recovery advances history, never fabricates health or selection. Consumed
+spawn uncertainty cannot use this branch. A recovered unqualified baseline still
+requires a fresh actual healthy qualification.
+
+The interactive launcher has an explicit authenticated broker-execution entry.
+It consumes each role before acquiring its fixed original generation image and
+creates only its own suspended direct child. Original image, native creation,
+user/session/logon and narrow query-access checks precede the single resume.
+Graceful close addresses only that retained child; failure or lost conversation
+does not authorize retry, PID/name termination or mutable ordinary fallback.
+Inspection, commissioning and restoration are still unavailable until their
+real operations are integrated; a reported status never supplies their proof.
+
+The fixed broker account receives process query/synchronize rights and
+`TOKEN_QUERY` only. Existing descriptor ownership/ACE bytes are preserved and
+checked. Primary token objects can be shared across processes: the read-only
+token metadata grant persists for that object's lifetime. Closing an owner is
+not revocation of its ACE or already-open broker handles. No impersonation,
+token duplication/adjustment, debug privilege or broad-group grant is added.
+Actual service-account access remains a native acceptance gate.
+
+Before arming startup health, the broker requires the original retained
+`app/update-qualification.json`, strictly canonical and bound to the exact
+generation commit and executable SHA-256. Packaging emits it only after the
+actual executable self-test reports configuration protocol 1, core output
+suppression 1 and plugin deferral. Historical/malformed/mismatched capabilities
+refuse. This record is provenance, not healthy-start or commissioning authority.
+
+Qualified startup suppresses core outputs and skips **all** plugin library load
+and factory execution for the entire process. No plugin preference, file or
+quarantine is changed. Encrypted/plugin-provided charts can therefore be absent
+in this restricted process; its READY cannot qualify ordinary plugin/chart
+compatibility. Ordinary selected startup must be independently authorized and
+strip qualification fields before creating a new process. Never clear the
+suppression latch in a running process or reuse qualification mode for every
+Later/offline launch. Existing boat-specific COM8 commissioning is unchanged.
+
+The disposable native fixture now explicitly runs actual wx configuration
+read/Flush and retained ancestor rename checks in the Windows startup harness.
+It refuses existing profiles and non-GitHub-hosted environments and retains its
+fresh test profile. Passing that fixture does not qualify the installed app,
+protected full-profile backup, actual service transaction, recovery or boat.

@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "checkedBaseSourceCommit": "d2c0a287c9b6244f224613cc92791bbe8ba2d19c",
+  "sourceManifest": "source-manifest.json",
+  "scope": "joined focused portable selection/capability/executor/query checks and Windows x86 launcher compile; not native execution or product/release acceptance",
+  "race": {
+    "topLevelPassed": 28,
+    "nestedPassed": 126,
+    "failed": 0,
+    "skipped": 0
+  },
+  "windowsCompile": {
+    "architecture": "386",
+    "binarySha256": "8c278df34cbfa28cd902848221246d8a21183db574e103546b53ef6f8fe8322d",
+    "executed": false
+  },
+  "fullApplicationBuild": false,
+  "boatModified": false,
+  "physicalCommands": false
+}

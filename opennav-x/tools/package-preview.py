@@ -165,6 +165,17 @@ if (actual.get('passed') is not True or actual.get('test_fixtures') is not False
         actual.get('version') != product_version or actual.get('profile_initialized') is not False or
         actual.get('plugins_loaded') is not False or actual.get('update_startup_health') != 1):
     raise SystemExit('Packaged executable is not the exact verified fixture-free product')
+if any(type(actual.get(key)) is not int or actual[key] != 1 for key in (
+        'update_qualified_config', 'update_qualified_core_output', 'update_qualified_plugins_deferred')):
+    raise SystemExit('Packaged executable lacks qualified update profile/output/plugin capabilities')
+# Owned package evidence only: the broker must retain this original alongside
+# the actual image and corroborate native CONFIG/READY. Never trust a caller copy.
+(app / 'update-qualification.json').write_text(json.dumps({
+    'schema': 1, 'purpose': 'skager-qualified-update-v1', 'commit': commit,
+    'executableSha256': hashlib.sha256((app / 'opencpn.exe').read_bytes()).hexdigest(),
+    'configurationProtocol': 1, 'coreOutputSuppression': 1,
+    'pluginPolicy': 'deferred-until-ordinary-start'
+}, separators=(',', ':')), encoding='utf-8')
 if helper_checked.returncode != 0 or len(helper_checked.stdout) > 4096 or helper_checked.stderr:
     raise SystemExit('Packaged restart helper capability query failed')
 try:

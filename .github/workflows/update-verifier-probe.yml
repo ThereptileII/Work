@@ -21,6 +21,10 @@ on:
       - .github/workflows/update-verifier-probe.yml
   workflow_dispatch:
     inputs:
+      startup_only:
+        description: Run only focused native startup and fresh-profile qualification checks
+        type: boolean
+        default: false
       owned_files_only:
         description: Run only the native owned-file hardlink boundary test
         type: boolean
@@ -40,7 +44,7 @@ permissions:
 
 jobs:
   verify:
-    if: ${{ !inputs.owned_files_only && !inputs.image_owner_only && github.ref != 'refs/heads/skager-updater-lifecycle' }}
+    if: ${{ !inputs.owned_files_only && !inputs.image_owner_only && !inputs.startup_only && github.ref != 'refs/heads/skager-updater-lifecycle' }}
     timeout-minutes: 20
     strategy:
       matrix:
@@ -159,7 +163,7 @@ jobs:
           if-no-files-found: error
 
   startup-popup:
-    if: ${{ !inputs.owned_files_only && !inputs.image_owner_only && github.ref != 'refs/heads/skager-updater-lifecycle' }}
+    if: ${{ !inputs.owned_files_only && !inputs.image_owner_only && (inputs.startup_only || github.ref != 'refs/heads/skager-updater-lifecycle') }}
     name: Native startup update interactions
     runs-on: windows-2022
     timeout-minutes: 25
@@ -168,11 +172,13 @@ jobs:
       - name: Build only the startup model and native popup
         run: python opennav-x/tools/test-startup-update-windows.py --evidence opennav-x/build/startup-update-native-evidence
       - name: Exact upstream navigation warning and authenticated startup phases
+        if: ${{ !inputs.startup_only }}
         run: python opennav-x/tools/test-startup-warning-native.py --evidence opennav-x/build/startup-warning-native-evidence
       - name: Native first-start setup and settings backup transactions
+        if: ${{ !inputs.startup_only }}
         run: python opennav-x/tools/test-staging-settings-windows.py --evidence opennav-x/build/staging-settings-native-evidence
       - name: Native updater shortcut preservation
-        if: always()
+        if: ${{ always() && !inputs.startup_only }}
         shell: powershell
         run: ./opennav-x/tools/test-installer-shortcuts.ps1
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -186,7 +192,7 @@ jobs:
           if-no-files-found: error
 
   lifecycle-only:
-    if: ${{ !inputs.owned_files_only && !inputs.image_owner_only && github.ref == 'refs/heads/skager-updater-lifecycle' }}
+    if: ${{ !inputs.owned_files_only && !inputs.image_owner_only && !inputs.startup_only && github.ref == 'refs/heads/skager-updater-lifecycle' }}
     name: Focused actual Lifecycle startup diagnostics
     runs-on: windows-2022
     timeout-minutes: 5
@@ -211,7 +217,7 @@ jobs:
           if-no-files-found: error
 
   owned-files-only:
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.owned_files_only && !inputs.image_owner_only }}
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.owned_files_only && !inputs.image_owner_only && !inputs.startup_only }}
     name: Native Win32 owned-file acquisition
     runs-on: windows-2022
     timeout-minutes: 8
@@ -243,7 +249,7 @@ jobs:
           if-no-files-found: error
 
   supervisor-owner:
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.image_owner_only && !inputs.owned_files_only }}
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.image_owner_only && !inputs.owned_files_only && !inputs.startup_only }}
     name: Windows PowerShell 5.1 supervised image ownership
     runs-on: windows-2022
     timeout-minutes: 12
@@ -320,7 +326,7 @@ jobs:
           retention-days: 90
 
   ordinary-owner:
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.image_owner_only && !inputs.owned_files_only }}
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.image_owner_only && !inputs.owned_files_only && !inputs.startup_only }}
     name: Native Win32 ordinary image ownership
     runs-on: windows-2022
     timeout-minutes: 12

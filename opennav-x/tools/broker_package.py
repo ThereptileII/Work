@@ -39,6 +39,7 @@ REGISTRATION_SOURCES = frozenset(PREFIX + name for name in (
     'brokerhost/execution_child_windows.go', 'brokerhost/execution_child_profile.go',
     'brokerhost/execution_child_profile_other.go', 'brokerhost/execution_child_profile_windows.go',
     'brokerhost/execution_selection.go', 'brokerhost/execution_selection_windows.go',
+    'brokerhost/execution_capability.go',
     'brokerhost/client_registration.go', 'brokerhost/client_registration_other.go',
     'brokerhost/client_registration_windows.go', 'brokerhost/client_baseline_windows.go',
     'brokerhost/registration_start.go',

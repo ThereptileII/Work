@@ -1,0 +1,182 @@
+{
+  ".github/workflows/update-verifier-probe.yml": {
+    "bytes": 22223,
+    "sha256": "f92cb822ae8555480278bc550c500f6140b7e714e39b2cf27a98b85e50f9cd76"
+  },
+  "opennav-x/docs/installer/signed-update-session-contract.md": {
+    "bytes": 73614,
+    "sha256": "d49aa73e1fbbe8c14dd23a09eedcd93ac1213a37cbb70d5047a44934f430fd12"
+  },
+  "opennav-x/docs/status.md": {
+    "bytes": 414522,
+    "sha256": "d03cb36614fcbad2c93ea2e79e381bcac22325a6f3ab139230bfae54aa558293"
+  },
+  "opennav-x/docs/upstream-patches.md": {
+    "bytes": 117938,
+    "sha256": "0032aefdde875cddbf3a94e2231875423309db193bd56cede7c5cf395463b3d6"
+  },
+  "opennav-x/patches/opencpn-5.12.4-update-qualification.patch": {
+    "bytes": 11083,
+    "sha256": "628acea34fb40daf89a8d47afdf2a1430557f3afa29bc0dd27c70db5157b3feb"
+  },
+  "opennav-x/src/integration/InstallerSelfTest.cpp": {
+    "bytes": 4255,
+    "sha256": "88d230ddb4d142612142d5fea73d3e61da5d544d47408ba539df7f5f7c8ffbc8"
+  },
+  "opennav-x/src/integration/OpenCPN.cmake": {
+    "bytes": 35937,
+    "sha256": "80a1d86e57f4973f768d383dadaec3731562f78de14cad6a6151ae3b030239aa"
+  },
+  "opennav-x/src/integration/UpdateQualification.cpp": {
+    "bytes": 3816,
+    "sha256": "dfc7a019ec5cce32450559720f81e213cb1a731cbead87419e6b44d4e53f90dd"
+  },
+  "opennav-x/src/platform/windows/UpdateQualificationNative.cpp": {
+    "bytes": 10364,
+    "sha256": "48a655eac97c36aa21801e7ef2e84ed69c111cc1f2b0f944b788756095dfd473"
+  },
+  "opennav-x/tools/broker_package.py": {
+    "bytes": 18544,
+    "sha256": "cb4ce74100853971026beb0ccb76301c87c6e62c515c983ee7e8531989bff513"
+  },
+  "opennav-x/tools/package-preview.py": {
+    "bytes": 19012,
+    "sha256": "1648b543aae913e0a5c93bee8b3e1f423e347a1ff6f6473a8f0b9e91c2575340"
+  },
+  "opennav-x/tools/test-startup-update-windows.py": {
+    "bytes": 23214,
+    "sha256": "3244d0d4d0767c5e8eb4d43465adad4e0a7bb42b7da5fe98ec14b583d77bba1a"
+  },
+  "opennav-x/tools/test_package_preview_provenance.py": {
+    "bytes": 8697,
+    "sha256": "86ee12ecee6caf17bef507e35a4c6ce22d14c5e65f14f366c09f8036ddd192c0"
+  },
+  "opennav-x/tools/update-verifier/brokerhost/execution_capability.go": {
+    "bytes": 3050,
+    "sha256": "dcb6d473cb58593d9715dcfdf46211606b39f2379d0886b19d6ae02bff737880"
+  },
+  "opennav-x/tools/update-verifier/brokerhost/execution_capability_test.go": {
+    "bytes": 6127,
+    "sha256": "959f0e32d07d978a49856484d4861178af7a7afbe3bc1ece712a81bc42e4f652"
+  },
+  "opennav-x/tools/update-verifier/brokerhost/execution_child.go": {
+    "bytes": 12097,
+    "sha256": "b4a801c47eefed990dbe607dbc6ddb453bc932815877e26de8b451af1cfc8374"
+  },
+  "opennav-x/tools/update-verifier/brokerhost/execution_child_other.go": {
+    "bytes": 377,
+    "sha256": "69a0428d9b67569b053c33fdf72258b8c2479b96ed939a2d2ecfcd027bd80108"
+  },
+  "opennav-x/tools/update-verifier/brokerhost/execution_child_profile.go": {
+    "bytes": 4821,
+    "sha256": "546104b40ff9eeb7f483e7007600b183ebc915aea28ce57b21a15bc7836eb27a"
+  },
+  "opennav-x/tools/update-verifier/brokerhost/execution_child_profile_other.go": {
+    "bytes": 249,
+    "sha256": "a8484ad350dc9413be450244b8218fe4a7360293c4d40be029f292839eb9e146"
+  },
+  "opennav-x/tools/update-verifier/brokerhost/execution_child_profile_windows.go": {
+    "bytes": 8305,
+    "sha256": "6744ad0ac80c22a7fe46247b6b00be14394eb8b522ff6543bda3556a4b1395fc"
+  },
+  "opennav-x/tools/update-verifier/brokerhost/execution_child_test.go": {
+    "bytes": 15153,
+    "sha256": "e954f1f9f1bcf1fd783859015173eff453c9087c21cf6982ca6c4622a72a3287"
+  },
+  "opennav-x/tools/update-verifier/brokerhost/execution_child_windows.go": {
+    "bytes": 19185,
+    "sha256": "307df484ee744321d2bdda918835ab60e74fb51afe1ca8069619550474e16c40"
+  },
+  "opennav-x/tools/update-verifier/brokerhost/execution_child_windows_test.go": {
+    "bytes": 11622,
+    "sha256": "2f4e077ef1205346c8c206d806f1d8e4c4e94052f38edd2d3da9fd90258b0512"
+  },
+  "opennav-x/tools/update-verifier/brokerhost/execution_selection.go": {
+    "bytes": 17069,
+    "sha256": "2c025b4cadfbc101af246839a978780c988446b34ecdc802e046edf96667b6a7"
+  },
+  "opennav-x/tools/update-verifier/brokerhost/execution_selection_test.go": {
+    "bytes": 28725,
+    "sha256": "71a6d53180b48fdbf49a13c92a6b58bc269298c79cc3543362d7017be5d02d0b"
+  },
+  "opennav-x/tools/update-verifier/brokerhost/execution_selection_windows.go": {
+    "bytes": 5700,
+    "sha256": "dd17b8fa8344f1b03bc65fc4f3fdd1e934197e861e1fcf43bf5e0a0b4af52d5a"
+  },
+  "opennav-x/tools/update-verifier/brokerstore/execution_journal_reopen.go": {
+    "bytes": 13665,
+    "sha256": "145a98ed244bc46e6ba9ff2f1b0b6b0bfa305bb6d4a511328de771630b02bbcb"
+  },
+  "opennav-x/tools/update-verifier/brokerstore/execution_journal_reopen_test.go": {
+    "bytes": 14153,
+    "sha256": "5dde95fe706649d3cb8d717ee97b1b2d7e35b705da31dd6e5f971a5196170255"
+  },
+  "opennav-x/tools/update-verifier/brokerstore/execution_journal_reopen_windows.go": {
+    "bytes": 6195,
+    "sha256": "db14421846e55245ff72fb94e4d191978375857b0c48535bc26505964c6733e0"
+  },
+  "opennav-x/tools/update-verifier/brokerstore/execution_journal_reopen_windows_test.go": {
+    "bytes": 10222,
+    "sha256": "7d17d5f0c9f1b71a2507fb749aba4e2db030595f52acd20b727aa927accbc4ee"
+  },
+  "opennav-x/tools/update-verifier/brokerstore/generation_application.go": {
+    "bytes": 5868,
+    "sha256": "37e8ac77b26572fb2bc5c55f18d75124919e05586f4f5dd8a6eab8420ac9fabc"
+  },
+  "opennav-x/tools/update-verifier/brokerstore/generation_application_test.go": {
+    "bytes": 9813,
+    "sha256": "1c7808ccca1411e13bd0a1a70d23965dd32ed65f9038c97e915169e319f6aab2"
+  },
+  "opennav-x/tools/update-verifier/brokerstore/generation_application_windows.go": {
+    "bytes": 2474,
+    "sha256": "e288afbbf91e036647c00d39749a3f9741a0d5907ef5500dee2955139c8c6793"
+  },
+  "opennav-x/tools/update-verifier/brokerstore/generation_application_windows_test.go": {
+    "bytes": 3472,
+    "sha256": "30d0e2420e8339877ed41f125ad0e697f3ce949cce6fecd46ef1c8d979d363c3"
+  },
+  "opennav-x/tools/update-verifier/launcher/broker_execution.go": {
+    "bytes": 9109,
+    "sha256": "4a7bcc099a458a8dd3ecda77d86d96b643c12f511145d88f7ab1eba0e0ae2de4"
+  },
+  "opennav-x/tools/update-verifier/launcher/broker_execution_other.go": {
+    "bytes": 154,
+    "sha256": "bc201d0ab87373158c638983b62e6374ded99061698fdfa2be04c44db34e1d63"
+  },
+  "opennav-x/tools/update-verifier/launcher/broker_execution_other_test.go": {
+    "bytes": 328,
+    "sha256": "fc6cd5b71ffa1b0886dc945022684956eb9af68728ccbb0894951e878b7d7784"
+  },
+  "opennav-x/tools/update-verifier/launcher/broker_execution_test.go": {
+    "bytes": 13502,
+    "sha256": "b41a0543986ff09d42a7c567d0bebc2d0e3d901ffc06982619d33963df3df6fa"
+  },
+  "opennav-x/tools/update-verifier/launcher/broker_execution_windows.go": {
+    "bytes": 19858,
+    "sha256": "cc0ec5c0eacd309aee031a3929e56efc4780d379f1b07bd49a14996a3cfce357"
+  },
+  "opennav-x/tools/update-verifier/launcher/broker_execution_windows_test.go": {
+    "bytes": 4826,
+    "sha256": "bde4784f938a4e487e7692e3e5dde67efafa6565671b086fc1c3b78ad6688034"
+  },
+  "opennav-x/tools/update-verifier/launcher/broker_query_access.go": {
+    "bytes": 2634,
+    "sha256": "5a43ad942227b5ce47b729644812e2f673b0b27b7b9300eb561e9248fcfe07b2"
+  },
+  "opennav-x/tools/update-verifier/launcher/broker_query_access_test.go": {
+    "bytes": 4380,
+    "sha256": "57f08769a51ded8e1af8aa3192a1b4961ace28c88acf1f8e7338f925a1104c9c"
+  },
+  "opennav-x/tools/update-verifier/launcher/broker_query_access_windows.go": {
+    "bytes": 16973,
+    "sha256": "9227abd4c803d7d75739b5e27488fa8ec2255dd7b065b34907ffbdd7ccafdf5d"
+  },
+  "opennav-x/tools/update-verifier/launcher/broker_query_access_windows_test.go": {
+    "bytes": 2474,
+    "sha256": "718381112875be7d7971de6f53d04ae0db7d0d34d9fbfdad7efd98c05f50e08c"
+  },
+  "opennav-x/tools/update-verifier/launcher/launcher.go": {
+    "bytes": 21888,
+    "sha256": "8f8e30b37aad39664d991a8120e97c1e2cc3b1d8eafd05dc72f79aa2d2585ac9"
+  }
+}
