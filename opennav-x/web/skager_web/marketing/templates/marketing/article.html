@@ -1,0 +1,35 @@
+{% extends 'marketing/base.html' %}
+{% block title %}{{ article.title }} — SKAGER Support{% endblock %}
+{% block description %}{{ article.summary }}{% endblock %}
+{% block content %}
+<div class="content-shell container">
+  <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="{% url 'marketing:home' %}">Home</a> <span aria-hidden="true">/</span> <a href="{% url 'marketing:support' %}">Support</a> <span aria-hidden="true">/</span> <span aria-current="page">{{ article.title }}</span></nav>
+  <header class="page-intro">
+    <p class="eyebrow">{{ article.category }}</p>
+    <h1>{{ article.title }}</h1>
+    <p class="lead">{{ article.summary }}</p>
+    <p class="meta">{{ article.applies_to }}</p>
+  </header>
+  <div class="article-layout">
+    <aside class="article-nav" aria-label="Related guidance">
+      <h2 class="section-heading">Useful next steps</h2>
+      <ul>
+        <li><a href="{% url 'marketing:installation' %}">Installation guide</a></li>
+        <li><a href="{% url 'marketing:support' %}">All support articles</a></li>
+        <li><a href="{% url 'marketing:open_source' %}">Open source and licenses</a></li>
+      </ul>
+      <p class="meta">Use the guidance for your exact release. The public beta is still being qualified.</p>
+    </aside>
+    <article class="article-body prose">
+      {% for section in article.sections %}
+      <section class="page-section">
+        <h2>{{ section.title }}</h2>
+        {% if section.body %}<p>{{ section.body }}</p>{% endif %}
+        {% if section.bullets %}<ul>{% for bullet in section.bullets %}<li>{{ bullet }}</li>{% endfor %}</ul>{% endif %}
+      </section>
+      {% endfor %}
+      <p><a class="text-link" href="{% url 'marketing:support' %}">Back to the support library</a></p>
+    </article>
+  </div>
+</div>
+{% endblock %}

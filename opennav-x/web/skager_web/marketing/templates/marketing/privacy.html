@@ -1,0 +1,52 @@
+{% extends 'marketing/base.html' %}
+{% block title %}Privacy — review draft — SKAGER{% endblock %}
+{% block description %}The SKAGER website preview's privacy boundaries and the unresolved privacy details required before accounts, payments or support uploads open.{% endblock %}
+{% block content %}
+<div class="content-shell container">
+  <header class="page-intro">
+    <p class="eyebrow">Review draft · not a final privacy notice</p>
+    <h1>Privacy, with clear boundaries.</h1>
+    <p class="lead">Collect only what a service needs. Keep vessel and navigation information out of marketing analytics.</p>
+  </header>
+  <div class="notice">
+    <h2>This preview does not collect new accounts or payments</h2>
+    <p>Registration, checkout, support ticket submission and diagnostic uploads are not enabled here. This page is a review draft. The operator, contact details, service providers and retention arrangements must be confirmed before public services open.</p>
+  </div>
+  <div class="prose">
+    <section class="page-section">
+      <h2>Browsing and support search</h2>
+      <p>The preview includes no analytics or advertising trackers. Support search uses the words you enter to find articles and places the query in the page address. That address may appear in browser history and ordinary server request logs. Leave passwords, API keys, personal details and vessel information out of searches.</p>
+      <p>A hosting service may process request metadata such as IP address, request time and browser information. The actual hosting and security-log behavior, access controls and retention must be documented before public hosting. This draft does not promise that visiting a website produces no logs.</p>
+    </section>
+    <section class="page-section">
+      <h2>Cookies and external links</h2>
+      <p>No analytics or advertising cookies are added by these preview pages. Any future account service must explain the security or session cookies it uses and their lifetime. Optional tracking must not be introduced without the required notice and choices.</p>
+      <p>Links to OpenCPN and other external resources take you to their websites, which have their own privacy practices.</p>
+    </section>
+    <section class="page-section">
+      <h2>Local navigation data and diagnostics</h2>
+      <p>Reading this website does not upload your OpenCPN profile, chart files, vessel position or marine-network data. Navigation position and vessel telemetry must not become marketing analytics.</p>
+      <p>Where available in the application, exporting a field diagnostic bundle is a deliberate local action and does not upload it. Review the file before sharing it through a future verified support route. An explicitly selected recording may contain device names or navigation information and needs separate care.</p>
+      <p><a href="{% url 'marketing:article' 'diagnostics-and-privacy' %}">Prepare a private problem report</a>.</p>
+    </section>
+    <section class="page-section">
+      <h2>Before accounts, payments and support open</h2>
+      <p>The final notice must identify the operator responsible for personal data and a working privacy contact. It must describe the actual service rather than assuming that an account or payment provider handles every responsibility.</p>
+      <ul>
+        <li>Account details: which identifiers and contact details are needed, why they are used and who can access them.</li>
+        <li>Orders and payment references: the selected provider, the information SKAGER receives and the applicable transaction-record requirements.</li>
+        <li>Support reports and attachments: what can be submitted, how private information is reduced and how access is controlled.</li>
+        <li>Logs and diagnostics: their purpose, contents, storage location and any optional upload consent.</li>
+        <li>Vendors and processors: their roles, service locations, any international transfers and the required contractual review.</li>
+        <li>Retention and deletion: concrete periods or justified criteria for each data category, backups and legal records.</li>
+        <li>Privacy requests: verified routes for applicable access, correction, export, deletion, objection and complaint rights.</li>
+      </ul>
+    </section>
+    <section class="page-section">
+      <h2>Review still required</h2>
+      <p>Controller identity, contact details, lawful grounds, vendors, retention periods and request procedures remain unresolved. This draft does not claim GDPR compliance or legal approval. Qualified legal review and a check against the deployed service are required before the final notice is published and data collection begins.</p>
+    </section>
+    <p><a class="text-link" href="{% url 'marketing:beta_terms' %}">Beta terms review draft</a> · <a href="{% url 'marketing:open_source' %}">Open source and licenses</a></p>
+  </div>
+</div>
+{% endblock %}

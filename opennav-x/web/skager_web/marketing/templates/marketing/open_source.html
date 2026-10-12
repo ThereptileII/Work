@@ -1,0 +1,30 @@
+{% extends 'marketing/base.html' %}
+{% block title %}Open source and licenses — SKAGER{% endblock %}
+{% block description %}OpenCPN attribution, open-source license rights and SKAGER's version-specific source delivery commitment.{% endblock %}
+{% block content %}
+<div class="content-shell container">
+  <header class="page-intro">
+    <p class="eyebrow">Built on shared work</p>
+    <h1>Open source, with credit where it belongs.</h1>
+    <p class="lead">SKAGER builds on OpenCPN and the work of its contributors. Applicable open-source rights remain part of the product.</p>
+  </header>
+  <div class="prose">
+    <section class="page-section">
+      <h2>Thank you, OpenCPN</h2>
+      <p><a href="https://opencpn.org/">OpenCPN</a> provides the underlying chartplotter and navigation foundation. It is installed separately from SKAGER. SKAGER is an independent product; use of OpenCPN and this credit do not imply endorsement by the OpenCPN project.</p>
+      <p>Explore the <a href="https://github.com/OpenCPN/OpenCPN">official OpenCPN source repository</a> and the <a href="https://github.com/OpenCPN/OpenCPN/tree/37fd0cddb7334fe489e9f18aa163977a9c5c84f7">OpenCPN 5.12.4 baseline used by this beta</a>.</p>
+    </section>
+    <section class="page-section">
+      <h2>Your license rights remain</h2>
+      <p>SKAGER and its dependencies include GPL and other licensed components. Applicable license texts, copyright notices and third-party notices must accompany qualified releases. Paid beta access and service terms do not remove rights granted by those open-source licenses.</p>
+      <p>Chart-provider licenses remain separate. Licensed private charts are not bundled with SKAGER.</p>
+    </section>
+    <section class="page-section">
+      <h2>Source that matches your release</h2>
+      <p>Each qualified public release will provide version-specific links to its corresponding source and notice package, tied to the software actually released. These links will be available independently of paid account access. The official upstream repository alone does not supply SKAGER's corresponding source.</p>
+      <div class="notice"><h3>Source publication is a release gate</h3><p>Public downloads remain closed. This preview does not announce a SKAGER release or offer an invented source archive. The exact source mapping, notice package and required compliance review must be complete before public release.</p></div>
+    </section>
+    <p><a class="text-link" href="{% url 'marketing:article' 'licensing-and-source' %}">Read the licensing support article</a> · <a href="{% url 'marketing:beta_terms' %}">Beta terms review draft</a></p>
+  </div>
+</div>
+{% endblock %}
