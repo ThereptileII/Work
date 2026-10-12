@@ -1,0 +1,12 @@
+{
+  "schema": 1,
+  "compiledSourceCommit": "c185300d18e81b317358e172d04a1ee7e412689e",
+  "runnerCommit": "a5d7b613d2d57a0956139f951ed9e73afb310d44",
+  "runnerSHA256": "485aaf2d9554510b7ec5f91e1bddf5aa451a4a1343fe5b5b7f7f7144d403b85b",
+  "testExecutableSHA256": "43d2d3549373af8eb2b4a5ac2754d4a7d15761eb4a706aeb056d3a5381f9cb00",
+  "testExecutableBytes": 15013376,
+  "nativeExecution": "only nine allowlisted inert SID/descriptor/path/config/refusal tests",
+  "realMachineProvisioning": false,
+  "exitCode": 1,
+  "seconds": 2.588
+}

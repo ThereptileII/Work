@@ -119,12 +119,14 @@ The native service accepts exactly these **SCM start arguments**:
 | --- | --- |
 | `SkagerUpdateBroker` | Validate local completion, then normal protected `Open` and serving |
 | `SkagerUpdateBroker initialize-store` | Fresh creation only, then stop before `Running` or opening the request pipe |
+| `SkagerUpdateBroker verify-store` | Read-only durable completion validation as the broker, then stop before `Running` or opening the request pipe |
 
 Executable command-line arguments remain forbidden. Missing, extra, aliased or
 unknown SCM arguments refuse. Context cancellation is checked before and after
-the bounded synchronous creator; it does not interrupt a creation step. The
-future authenticated provisioner must verify terminal service state/exit result
-and local completion, not interpret `StartService` success as readiness.
+the bounded synchronous operation; it does not interrupt a creation step. The
+native provisioner verifies terminal stopped service state/exit result for both
+initialization and the separate durable completion check. `StartService` success
+alone is never readiness.
 
 Completion is durable before handle cleanup. A subsequent close error or
 cancellation may report failure while retaining completed local state. That
@@ -133,14 +135,79 @@ client registration, installation/loader custody, healthy application startup or
 authority to execute an update. Normal validation releases its owners before
 `Open` reacquires them; continuous installation custody is not claimed here.
 
+## Explicit native machine provisioner
+
+`cmd/skager-update-provisioner` now calls the concrete `brokerenroll.Run` path:
+
+1. Copy the bounded public trust configuration and compare its independent
+   SHA-256 before network or machine mutation; reuse the operator repository's
+   strict private-beta trust/root/OpenCPN-baseline validation.
+2. Require an elevated non-impersonated administrator and retain current
+   protected physical NTFS ancestry for the existing operator bootstrap cache
+   and acquisition directories. Their history and the initial executable's
+   authentication remain independent prerequisites.
+3. Call the existing real `VerifyBrokerBootstrap` with all independent pins.
+   Parse only its exact approved target bytes, then acquire the signed exact
+   broker artifact with `DownloadArtifact`. The enrollment broker cap is 64 MiB.
+4. Exclusively create actual KnownFolder `ProgramData/SKAGER` and
+   `ProgramFilesX86/SKAGER/UpdateBroker`, with final protective descriptors at
+   creation. Ordinary add-only access on the preexisting ProgramData parent does
+   not permit adoption: a pre-created SKAGER child always refuses. Reparse,
+   alias, untrusted deletion/ACL/metadata mutation, link and volume substitutions
+   refuse. Every new fixed namespace remains on failure.
+5. Synchronize a permanent `ProgramData/SKAGER/UpdateBroker.enrollment` started
+   file before creating code. Copy and re-hash the exact bounded image into an
+   exclusively created protected file, then retain its read-only native owner.
+   File completion records only local code/parent creation, not service health.
+6. Exclusively create the fixed demand-start own-process SCM service under
+   `NT SERVICE\SkagerUpdateBroker`, with the exact quoted fixed image path.
+   `CreateServiceW` has no security-descriptor argument: its documented default
+   protects configuration/start/stop/delete/security mutation while stopped.
+   Validate actual initial protection, then apply and verify the exact tightened
+   DACL **before any start**. Do not claim the final DACL existed at creation.
+   Authenticated users retain query/read rights needed by `brokerpipe.Call`;
+   ordinary callers cannot control, reconfigure or delete the service.
+7. Invoke only `initialize-store` and then `verify-store`, each with a bounded
+   60-second wait for stopped state, zero exit codes and no accepted controls.
+   Hold original code/input/SCM/registry owners throughout. Neither invocation
+   announces Running or opens a request pipe. Leave the service stopped.
+
+The outer operation is capped at 30 minutes. The existing signed-bootstrap reader
+has its own 30-second network deadline; cancellation is checked before subsequent
+acquisition/mutation, rather than abandoning verification in a background thread.
+Native input/image handle cleanup failures preserve `ErrCleanup` through fixed
+redacted messages. Close releases owners only; it does not delete any partial
+machine objects. Service STOPPED/PID fields are not process-exit proof. If a second
+start races process drainage, refuse and retain state; there is no blind retry.
+
+The CLI requires all six explicit, nonduplicated inputs: `--trust-config`,
+`--bootstrap-cache`, `--artifact-directory`, `--policy-sha256`,
+`--provisioner-sha256` and `--trust-config-sha256`. No environment-derived pins,
+adjacent self-described manifest or checkbox authenticates first execution.
+This is an operator-only component, **not** a currently qualified execution guide
+or an automatic installer/application-startup action. Do not run it on the boat
+until independent final executable/publisher/loader authentication and native
+disposable-machine qualification have passed. Signing delivery remains disabled
+as documented in [code signing](code-signing.md).
+
+`package-update-provisioner.py` produces a fixed Go 1.27.1 Win32 console PE beside
+same-commit verified launcher and broker copies. Its strict verifier checks the
+actual embedded metadata, console subsystem, fixed recipe, exact broker binary
+and build-record prerequisite hashes, and complete corresponding-source closure.
+The producer order is launcher → broker → provisioner, from one clean commit.
+These local checks bind bytes/source, not original producer or publisher trust;
+the scripts never execute/elevate the output or activate a service. No OpenCPN
+binary is bundled into this prerequisite component.
+
 ## Remaining installation boundary
 
-An independently authenticated initial verifier/provisioner must still exist
-before elevation. Authenticated native service enrollment, independent parent
-provisioning, protected client registration, installation/loader custody, launcher handoff,
+The first final provisioner must still be independently authenticated before
+elevation. Machine parent/service provisioning now has a concrete source path;
+actual native qualification and authenticated first execution remain unaccepted.
+Protected client registration, installation/loader custody, launcher handoff,
 healthy-start receipt, recovery and full installed Windows/boat update sequence
-remain required. Fresh store creation is implemented in source but has not passed
-native Windows execution or actual enrolled-service qualification. None of these
+remain required. Machine/store creation is implemented in source but has not
+passed native Windows execution or actual enrolled-service qualification. None of these
 missing authorities is supplied by the declaration. No service is activated,
 hardware control enabled or application/profile changed by its focused tests.
 

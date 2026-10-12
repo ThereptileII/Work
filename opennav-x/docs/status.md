@@ -1,5 +1,34 @@
 # SKAGER status — 2026-10-12
 
+## Native machine enrollment source joined; inert boat policy checks pass
+
+`c185300d18e81b317358e172d04a1ee7e412689e` joins independently pinned signed
+bootstrap verification and retained broker acquisition to actual fresh protected
+KnownFolder creation, fixed virtual-account SCM enrollment and stopped-only
+initialization/verification. The fixed producer/verifier binds the provisioner to
+same-commit launcher/broker prerequisites and corresponding source. Existing or
+partial machine state refuses; startup does not invoke this operator component.
+Independent Codex review corrected cleanup-error classification before integration.
+
+Affected Linux race checks pass **32 top-level tests / 138 pass events including
+nested cases**; **81 inert packaging tests** pass. Windows/x86 component/test
+cross-compilation and vet pass. With runner `a5d7b613`, **nine exact allowlisted
+Windows-only inert policy tests pass natively on the boat**. The initial runner
+attempt was blocked before execution by PowerShell's script policy; the same
+reviewed bytes then ran with a process-only policy, without changing machine
+policy. The original OpenCPN process remained responsive. [Exact commits,
+results and limitations](evidence/scrum311-native-enrollment-20261012/README.md)
+are retained, including the failed initial attempt.
+
+These native checks do not create directories/services through the provisioner,
+start a broker, modify the application/profile or send hardware commands. Actual
+privileged enrollment, independently authenticated first execution, protected
+client registration, installation/loader custody, installed update handoff and
+Windows/boat release qualification remain open. No full application build or CI
+dispatch occurred. SCRUM-311 stays In Progress. The completed earlier Claude
+acquisition review remains distinct; the expanded private broker review awaits
+exact-scope external-transfer consent and has not run.
+
 ## Read-only AIS attribution source path integrated
 
 `092c51c6` joins an explicit opt-in owned connection diagnostic, strict portable

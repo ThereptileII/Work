@@ -1,0 +1,127 @@
+{
+  "schema": 1,
+  "sourceCommit": "c185300d18e81b317358e172d04a1ee7e412689e",
+  "nativeExecution": false,
+  "fullApplicationBuild": false,
+  "commands": [
+    {
+      "name": "focused-linux-race",
+      "arguments": [
+        "/tmp/skager-go-1.27.1/go/bin/go",
+        "test",
+        "-race",
+        "-json",
+        "./brokerenroll",
+        "./brokerhost",
+        "./cmd/skager-update-provisioner",
+        "-count=1"
+      ],
+      "environmentOverrides": {},
+      "exitCode": 0,
+      "seconds": 5.027,
+      "testPassEvents": 138,
+      "topLevelTests": 32,
+      "testFailures": 0,
+      "testSkips": 0
+    },
+    {
+      "name": "native-386-enrollment-tests-compile",
+      "arguments": [
+        "/tmp/skager-go-1.27.1/go/bin/go",
+        "test",
+        "-c",
+        "-o",
+        "/home/standard/Projects/.tmp/skager-native-enrollment-20261012/enrollment.test.exe",
+        "./brokerenroll"
+      ],
+      "environmentOverrides": {
+        "GOOS": "windows",
+        "GOARCH": "386",
+        "GO386": "sse2",
+        "CGO_ENABLED": "0"
+      },
+      "exitCode": 0,
+      "seconds": 1.753
+    },
+    {
+      "name": "native-386-host-tests-compile",
+      "arguments": [
+        "/tmp/skager-go-1.27.1/go/bin/go",
+        "test",
+        "-c",
+        "-o",
+        "/home/standard/Projects/.tmp/skager-native-enrollment-20261012/brokerhost.test.exe",
+        "./brokerhost"
+      ],
+      "environmentOverrides": {
+        "GOOS": "windows",
+        "GOARCH": "386",
+        "GO386": "sse2",
+        "CGO_ENABLED": "0"
+      },
+      "exitCode": 0,
+      "seconds": 1.518
+    },
+    {
+      "name": "native-386-provisioner-component-compile",
+      "arguments": [
+        "/tmp/skager-go-1.27.1/go/bin/go",
+        "build",
+        "-mod=readonly",
+        "-trimpath",
+        "-buildvcs=true",
+        "-o",
+        "/home/standard/Projects/.tmp/skager-native-enrollment-20261012/skager-update-provisioner.exe",
+        "./cmd/skager-update-provisioner"
+      ],
+      "environmentOverrides": {
+        "GOOS": "windows",
+        "GOARCH": "386",
+        "GO386": "sse2",
+        "CGO_ENABLED": "0"
+      },
+      "exitCode": 0,
+      "seconds": 2.88
+    },
+    {
+      "name": "native-386-broker-component-compile",
+      "arguments": [
+        "/tmp/skager-go-1.27.1/go/bin/go",
+        "build",
+        "-mod=readonly",
+        "-trimpath",
+        "-buildvcs=true",
+        "-ldflags=-H=windowsgui",
+        "-o",
+        "/home/standard/Projects/.tmp/skager-native-enrollment-20261012/skager-update-broker.exe",
+        "./cmd/skager-update-broker"
+      ],
+      "environmentOverrides": {
+        "GOOS": "windows",
+        "GOARCH": "386",
+        "GO386": "sse2",
+        "CGO_ENABLED": "0"
+      },
+      "exitCode": 0,
+      "seconds": 1.563
+    },
+    {
+      "name": "native-386-affected-vet",
+      "arguments": [
+        "/tmp/skager-go-1.27.1/go/bin/go",
+        "vet",
+        "./brokerenroll",
+        "./brokerhost",
+        "./cmd/skager-update-provisioner"
+      ],
+      "environmentOverrides": {
+        "GOOS": "windows",
+        "GOARCH": "386",
+        "GO386": "sse2",
+        "CGO_ENABLED": "0"
+      },
+      "exitCode": 0,
+      "seconds": 0.552
+    }
+  ]
+}

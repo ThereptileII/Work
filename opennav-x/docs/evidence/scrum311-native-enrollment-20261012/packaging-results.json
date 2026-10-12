@@ -1,0 +1,62 @@
+{
+  "schema": 1,
+  "sourceCommit": "c185300d18e81b317358e172d04a1ee7e412689e",
+  "inertTestsOnly": true,
+  "commands": [
+    {
+      "test": "test-package-update-launcher.py",
+      "exitCode": 0,
+      "seconds": 0.292,
+      "summary": [
+        "----------------------------------------------------------------------",
+        "Ran 16 tests in 0.134s",
+        "",
+        "OK"
+      ]
+    },
+    {
+      "test": "test-package-update-broker.py",
+      "exitCode": 0,
+      "seconds": 0.875,
+      "summary": [
+        "----------------------------------------------------------------------",
+        "Ran 31 tests in 0.626s",
+        "",
+        "OK"
+      ]
+    },
+    {
+      "test": "test-broker-package.py",
+      "exitCode": 0,
+      "seconds": 0.278,
+      "summary": [
+        "----------------------------------------------------------------------",
+        "Ran 11 tests in 0.113s",
+        "",
+        "OK"
+      ]
+    },
+    {
+      "test": "test-package-update-provisioner.py",
+      "exitCode": 0,
+      "seconds": 0.635,
+      "summary": [
+        "----------------------------------------------------------------------",
+        "Ran 10 tests in 0.455s",
+        "",
+        "OK"
+      ]
+    },
+    {
+      "test": "test-provisioner-package.py",
+      "exitCode": 0,
+      "seconds": 1.019,
+      "summary": [
+        "----------------------------------------------------------------------",
+        "Ran 13 tests in 0.862s",
+        "",
+        "OK"
+      ]
+    }
+  ]
+}

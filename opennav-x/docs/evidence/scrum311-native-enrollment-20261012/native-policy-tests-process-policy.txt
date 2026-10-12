@@ -1,0 +1,33 @@
+=== RUN   TestEnrollmentSIDBeforeServiceCreation
+--- PASS: TestEnrollmentSIDBeforeServiceCreation (0.00s)
+=== RUN   TestEnrollmentPhysicalPaths
+--- PASS: TestEnrollmentPhysicalPaths (0.00s)
+=== RUN   TestEnrollmentCodeDescriptorDoesNotGrantUserMutation
+--- PASS: TestEnrollmentCodeDescriptorDoesNotGrantUserMutation (0.00s)
+=== RUN   TestEnrollmentAncestorMutationRefusals
+--- PASS: TestEnrollmentAncestorMutationRefusals (0.00s)
+=== RUN   TestServiceCreationDescriptorRejectsUntrustedMutation
+--- PASS: TestServiceCreationDescriptorRejectsUntrustedMutation (0.00s)
+=== RUN   TestFinalServiceDescriptorIsExactAndQueryOnly
+--- PASS: TestFinalServiceDescriptorIsExactAndQueryOnly (0.00s)
+=== RUN   TestServiceRegistryRequiresExactResolvedControlSetAncestry
+--- PASS: TestServiceRegistryRequiresExactResolvedControlSetAncestry (0.00s)
+=== RUN   TestServiceRejectsNormalOrAliasedStartBeforeSCMCall
+--- PASS: TestServiceRejectsNormalOrAliasedStartBeforeSCMCall (0.00s)
+=== RUN   TestServiceConfigurationStringsStayInsideReturnedBuffer
+--- PASS: TestServiceConfigurationStringsStayInsideReturnedBuffer (0.00s)
+PASS
+{
+    "schema":  1,
+    "executableSha256":  "43d2d3549373af8eb2b4a5ac2754d4a7d15761eb4a706aeb056d3a5381f9cb00",
+    "selection":  "^Test(EnrollmentSIDBeforeServiceCreation|EnrollmentPhysicalPaths|EnrollmentCodeDescriptorDoesNotGrantUserMutation|EnrollmentAncestorMutationRefusals|ServiceCreationDescriptorRejectsUntrustedMutation|FinalServiceDescriptorIsExactAndQueryOnly|ServiceRegistryRequiresExactResolvedControlSetAncestry|ServiceRejectsNormalOrAliasedStartBeforeSCMCall|ServiceConfigurationStringsStayInsideReturnedBuffer)$",
+    "exitCode":  0,
+    "os64":  true,
+    "powershellVersion":  "5.1.22621.5624",
+    "scope":  "Native inert acquisition, lock or enrollment policy only; no application, service provisioning, profile or hardware operation"
+}
+{"Id":1852,"Responding":true}
+
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
