@@ -71,6 +71,7 @@ type Store struct {
 	registrations []*Registration
 	baselines     []*InstalledBaseline
 	generations   []*InstalledGeneration
+	journals      []*ExecutionJournal
 }
 type fileRecord struct {
 	file   candidateFile
@@ -231,8 +232,13 @@ func (s *Store) Close() error {
 	s.baselines = nil
 	generations := s.generations
 	s.generations = nil
+	journals := s.journals
+	s.journals = nil
 	s.mu.Unlock()
 	var result error
+	for _, j := range journals {
+		result = errors.Join(result, j.Close())
+	}
 	for _, g := range generations {
 		result = errors.Join(result, g.Close())
 	}
