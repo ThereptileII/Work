@@ -492,6 +492,43 @@ func (o *nativeBrokerExecutionChild) information() brokerExecutionChildInfo {
 
 var brokerExecutionPostMessage = windows.NewLazySystemDLL("user32.dll").NewProc("PostMessageW")
 
+// Only an original creator handle can establish exit. A PID or reported close
+// never supplies this proof; an unowned/changed creator is refused even if its
+// handle is signaled. The caller separately revalidates image/root custody.
+func brokerExecutionOriginalExited(child *nativeOrdinaryChild, expected uint64) (bool, error) {
+	if child == nil || !child.owned || expected == 0 {
+		return false, errBrokerExecutionRefused
+	}
+	created, err := child.rawIdentity()
+	if err != nil || filetimeValue(created) != expected {
+		return false, errors.Join(errBrokerExecutionUncertain, err)
+	}
+	status, err := windows.WaitForSingleObject(child.process, 0)
+	if err != nil {
+		return false, err
+	}
+	switch status {
+	case windows.WAIT_OBJECT_0:
+		return true, nil
+	case uint32(windows.WAIT_TIMEOUT):
+		return false, nil
+	}
+	return false, errBrokerExecutionUncertain
+}
+
+// Exit can race a live token/window check. Revalidate custody and the original
+// retained process before accepting closure; never reopen by PID or retry close.
+func (o *nativeBrokerExecutionChild) closeFailure(ctx context.Context, cause error) (brokerExecutionChildInfo, error) {
+	if err := o.guardImage(ctx); err != nil {
+		return brokerExecutionChildInfo{}, errors.Join(cause, err)
+	}
+	exited, err := brokerExecutionOriginalExited(o.child, o.created)
+	if err == nil && exited {
+		return o.information(), nil
+	}
+	return brokerExecutionChildInfo{}, errors.Join(cause, err)
+}
+
 func (o *nativeBrokerExecutionChild) closeApplication(ctx context.Context) (brokerExecutionChildInfo, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -513,10 +550,10 @@ func (o *nativeBrokerExecutionChild) closeApplication(ctx context.Context) (brok
 		return brokerExecutionChildInfo{}, errBrokerExecutionRefused
 	}
 	if err = o.queryAccess.Validate(ctx); err != nil {
-		return brokerExecutionChildInfo{}, err
+		return o.closeFailure(ctx, err)
 	}
 	if err = o.liveIdentity(ctx); err != nil {
-		return brokerExecutionChildInfo{}, err
+		return o.closeFailure(ctx, err)
 	}
 	found := false
 	var callbackErr error
@@ -550,10 +587,10 @@ func (o *nativeBrokerExecutionChild) closeApplication(ctx context.Context) (brok
 	enumErr := windows.EnumWindows(callback, nil)
 	runtime.KeepAlive(callback)
 	if callbackErr != nil {
-		return brokerExecutionChildInfo{}, callbackErr
+		return o.closeFailure(ctx, callbackErr)
 	}
 	if enumErr != nil || !found {
-		return brokerExecutionChildInfo{}, errors.Join(errBrokerExecutionUncertain, enumErr)
+		return o.closeFailure(ctx, errors.Join(errBrokerExecutionUncertain, enumErr))
 	}
 	deadline := time.Now().Add(brokerExecutionCloseBudget)
 	for time.Now().Before(deadline) {
@@ -571,7 +608,7 @@ func (o *nativeBrokerExecutionChild) closeApplication(ctx context.Context) (brok
 			return brokerExecutionChildInfo{}, errBrokerExecutionUncertain
 		}
 		if err = o.liveIdentity(ctx); err != nil {
-			return brokerExecutionChildInfo{}, err
+			return o.closeFailure(ctx, err)
 		}
 	}
 	return brokerExecutionChildInfo{}, errBrokerExecutionUncertain
