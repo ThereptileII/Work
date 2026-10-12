@@ -38,7 +38,7 @@ type nativeExecutionCurrentHost struct {
 // Root wires explicit startup routing; never infer a current request by retrying
 // a failed update handler or catching its selection/authorization errors.
 func (e *engine) handleNativeCurrentExecution(ctx context.Context, peer brokerpipe.Peer, q brokerpipe.ExecutionRequest, session *brokerpipe.ExecutionSession, providers executionCurrentHostProviders) (resultErr error) {
-	if e == nil || ctx == nil || ctx.Err() != nil || session == nil || providers.authorize == nil || providers.prepare == nil || e.observe == nil || q.Schema != 1 || q.Operation != "start-current" || !requestPattern.MatchString(q.RequestID) || !requestPattern.MatchString(q.StageID) {
+	if e == nil || ctx == nil || ctx.Err() != nil || session == nil || providers.authorize == nil || providers.prepare == nil || e.observe == nil || !q.StartupMode.Valid() || q.Schema != 1 || q.Operation != "start-current" || !requestPattern.MatchString(q.RequestID) || !requestPattern.MatchString(q.StageID) {
 		return errExecutionCurrentRefused
 	}
 	adapter, ok := e.store.(storeAdapter)
@@ -109,7 +109,7 @@ func (e *engine) handleNativeCurrentExecution(ctx context.Context, peer brokerpi
 	if err != nil {
 		return errors.Join(errExecutionCurrentRefused, err)
 	}
-	run := &executionCurrentHostRun{generation: selected.selected.generation, conversation: session, validate: validate, beforeSpawn: h.beforeSpawn, corroborate: h.corroborate, retain: start.retain}
+	run := &executionCurrentHostRun{generation: selected.selected.generation, mode: q.StartupMode, conversation: session, validate: validate, beforeSpawn: h.beforeSpawn, corroborate: h.corroborate, retain: start.retain}
 	defer func() { start.finish(run.consumed) }()
 	return run.execute(ctx)
 }

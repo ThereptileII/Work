@@ -79,6 +79,10 @@ func runBrokerCurrentNative(ctx context.Context, stage string) error {
 	return runBrokerIntentNative(ctx, stage, "start-current")
 }
 func runBrokerIntentNative(ctx context.Context, stage, operation string) (resultErr error) {
+	generation, mode, err := brokerStartupMode(stage)
+	if err != nil || (operation == "execute-session" && mode != brokerpipe.StartupXNav) {
+		return errBrokerExecutionRefused
+	}
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	backend, err := newNativeBrokerExecutionBackend(ctx)
@@ -86,7 +90,7 @@ func runBrokerIntentNative(ctx context.Context, stage, operation string) (result
 		return err
 	}
 	defer func() { resultErr = errors.Join(resultErr, backend.close()) }()
-	return runBrokerExecutionIntent(ctx, stage, operation, backend, brokerpipe.CallExecution)
+	return runBrokerExecutionModeIntent(ctx, generation, operation, mode, backend, brokerpipe.CallExecution)
 }
 func newNativeBrokerExecutionBackend(ctx context.Context) (result *nativeBrokerExecutionBackend, resultErr error) {
 	if ctx == nil || ctx.Err() != nil {
@@ -275,8 +279,8 @@ func (image *nativeOrdinaryImage) createBrokerExecution(c brokerpipe.ExecutionCo
 	return image.createBrokerChild(attributes, environment)
 }
 
-// Environment is constructed only by the two private normal/qualification
-// producers. Application, arguments and working directory remain fixed here.
+// Qualification always uses its fixed XNav argument. Ordinary current startup
+// maps its separately bound closed mode in createBrokerCurrent.
 func (image *nativeOrdinaryImage) createBrokerChild(attributes *windows.SecurityAttributes, environment []uint16) (*nativeOrdinaryChild, error) {
 	return image.createBrokerFixedChild(attributes, environment, "--xnav")
 }

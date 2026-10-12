@@ -20,6 +20,7 @@ type executionCurrentHostChild interface {
 // history, image-bound fresh session and retained actual child process/token.
 type executionCurrentHostRun struct {
 	generation          string
+	mode                brokerpipe.StartupMode
 	conversation        executionHostConversation
 	validate            func(context.Context) error
 	beforeSpawn         func(context.Context) error
@@ -29,7 +30,7 @@ type executionCurrentHostRun struct {
 }
 
 func (r *executionCurrentHostRun) execute(ctx context.Context) (resultErr error) {
-	if r == nil || ctx == nil || !requestPattern.MatchString(r.generation) || r.conversation == nil || r.validate == nil || r.beforeSpawn == nil || r.corroborate == nil || r.retain == nil || r.attempted {
+	if r == nil || ctx == nil || !r.mode.Valid() || !requestPattern.MatchString(r.generation) || r.conversation == nil || r.validate == nil || r.beforeSpawn == nil || r.corroborate == nil || r.retain == nil || r.attempted {
 		return errExecutionCurrentRefused
 	}
 	r.attempted = true
@@ -52,7 +53,7 @@ func (r *executionCurrentHostRun) execute(ctx context.Context) (resultErr error)
 	if err := r.beforeSpawn(ctx); err != nil {
 		return err
 	}
-	spawn := brokerpipe.ExecutionDirective{Phase: brokerpipe.SpawnCurrent, ApplicationGeneration: r.generation}
+	spawn := brokerpipe.ExecutionDirective{Phase: brokerpipe.SpawnCurrent, StartupMode: r.mode, ApplicationGeneration: r.generation}
 	report, err := r.conversation.ExchangeCommand(ctx, spawn)
 	if err != nil {
 		return err
@@ -67,7 +68,7 @@ func (r *executionCurrentHostRun) execute(ctx context.Context) (resultErr error)
 	if err = r.validate(ctx); err != nil {
 		return err
 	}
-	observe := brokerpipe.ExecutionDirective{Phase: brokerpipe.ObserveCurrent, ApplicationGeneration: r.generation}
+	observe := brokerpipe.ExecutionDirective{Phase: brokerpipe.ObserveCurrent, StartupMode: r.mode, ApplicationGeneration: r.generation}
 	report, err = r.conversation.ExchangeCommand(ctx, observe)
 	if err != nil {
 		return err

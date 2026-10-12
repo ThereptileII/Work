@@ -8,7 +8,7 @@ import (
 )
 
 func executionTestRequest() ExecutionRequest {
-	return ExecutionRequest{1, "execute-session", strings.Repeat("a", 32), strings.Repeat("b", 32)}
+	return ExecutionRequest{Schema: 1, Operation: "execute-session", RequestID: strings.Repeat("a", 32), StageID: strings.Repeat("b", 32)}
 }
 func executionTestCommand() ExecutionCommand {
 	q := executionTestRequest()

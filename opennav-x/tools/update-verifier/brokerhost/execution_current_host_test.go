@@ -26,7 +26,7 @@ func (c currentHostConversation) ExchangeCommand(ctx context.Context, d brokerpi
 	if d.HealthPipe != "" || d.HealthChallenge != "" {
 		return brokerpipe.ExecutionObservation{}, errors.New("normal creator received qualification environment")
 	}
-	if d.Phase != brokerpipe.FinishExecution && d.ApplicationGeneration != c.f.run.generation {
+	if d.Phase != brokerpipe.FinishExecution && (d.ApplicationGeneration != c.f.run.generation || d.StartupMode != c.f.run.mode) {
 		return brokerpipe.ExecutionObservation{}, errors.New("client stage substituted for selection")
 	}
 	if d.Phase == brokerpipe.SpawnCurrent && !c.f.run.consumed {
@@ -259,5 +259,47 @@ func TestExecutionCurrentHostRetentionTracksConsumedOutcome(t *testing.T) {
 				}
 			}
 		})
+	}
+}
+
+func TestExecutionCurrentHostClosedModesShareSelectedOwnership(t *testing.T) {
+	for _, mode := range []brokerpipe.StartupMode{brokerpipe.StartupXNav, brokerpipe.StartupLegacy, brokerpipe.StartupSafe} {
+		f := newCurrentHostFixture()
+		f.run.mode = mode
+		if err := f.run.execute(context.Background()); err != nil {
+			t.Fatal("mode bypassed or lost normal gates", mode, err)
+		}
+		if f.retained == nil || !f.child.transferred {
+			t.Fatal("ordinary original not retained")
+		}
+	}
+	f := newCurrentHostFixture()
+	f.run.mode = "--legacy"
+	if err := f.run.execute(context.Background()); err == nil || len(f.events) != 0 {
+		t.Fatal("arbitrary mode reached normal gates")
+	}
+}
+
+func TestExecutionCurrentHostRecoveryModesCannotBypassSelectedOrColdGates(t *testing.T) {
+	for _, mode := range []brokerpipe.StartupMode{brokerpipe.StartupLegacy, brokerpipe.StartupSafe} {
+		for _, failure := range []string{"selection", "pending", "baseline-unqualified", "armed", "prepare"} {
+			f := newCurrentHostFixture()
+			f.run.mode = mode
+			f.fail = failure
+			if err := f.run.execute(context.Background()); err == nil {
+				t.Fatal("recovery mode bypassed original gate", mode, failure)
+			}
+			if f.retained != nil || f.child != nil {
+				t.Fatal("recovery mode created ordinary child")
+			}
+			for _, event := range f.events {
+				if strings.HasPrefix(event, "command:") {
+					t.Fatal("refusal transmitted creator command", event)
+				}
+			}
+			if err := f.run.execute(context.Background()); err == nil {
+				t.Fatal("failed recovery mode retried")
+			}
+		}
 	}
 }

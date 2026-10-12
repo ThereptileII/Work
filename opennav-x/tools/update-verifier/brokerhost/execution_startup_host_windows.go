@@ -18,7 +18,7 @@ import (
 // qualification/current attempt is reinterpreted as permission for another flow.
 func (e *engine) handleNativeStartupExecution(ctx context.Context, peer brokerpipe.Peer, request brokerpipe.ExecutionRequest, session *brokerpipe.ExecutionSession) (resultErr error) {
 	if e == nil || ctx == nil || ctx.Err() != nil || session == nil || e.observe == nil ||
-		request.Schema != 1 || request.Operation != "start-selected" || !requestPattern.MatchString(request.RequestID) || !requestPattern.MatchString(request.StageID) {
+		!request.StartupMode.Valid() || request.Schema != 1 || request.Operation != "start-selected" || !requestPattern.MatchString(request.RequestID) || !requestPattern.MatchString(request.StageID) {
 		return errExecutionHostRefused
 	}
 	adapter, ok := e.store.(storeAdapter)
@@ -129,7 +129,14 @@ func (e *engine) handleNativeStartupExecution(ctx context.Context, peer brokerpi
 		if err = validate(); err != nil {
 			return false, err
 		}
-		if err = relayStartupExecutionNative(ctx, capability, selected, session); err != nil {
+		if request.StartupMode == brokerpipe.StartupXNav {
+			err = relayStartupExecutionNative(ctx, capability, selected, session)
+		} else {
+			// Legacy/Safe are ordinary selected recovery modes. Skip only the offer;
+			// the original selected history and all native current gates remain required.
+			err = relaySelectedExecutionNative(ctx, capability, selected, session, request.StartupMode)
+		}
+		if err != nil {
 			return false, err
 		}
 		if err = errors.Join(validate(), selected.validate()); err != nil {

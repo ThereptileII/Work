@@ -39,7 +39,11 @@ func (image *nativeOrdinaryImage) createBrokerRelay(c brokerpipe.ExecutionComman
 	}
 	// The new launcher makes a fresh current or startup-offer request. No path, command,
 	// qualification environment or inherited pipe handles cross this boundary.
-	argument := "--broker-current=" + c.ApplicationGeneration
+	intent, err := brokerModeIntent(c.ApplicationGeneration, c.StartupMode)
+	if err != nil {
+		return nil, err
+	}
+	argument := "--broker-current=" + intent
 	if c.Phase == brokerpipe.RelayStartupExecutor {
 		argument = "--broker-offer=" + c.ApplicationGeneration
 	}

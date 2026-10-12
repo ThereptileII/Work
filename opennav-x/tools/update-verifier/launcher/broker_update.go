@@ -46,7 +46,7 @@ func brokerUpdatePromptResult(code uint32) (bool, error) {
 
 func validBrokerOffer(c brokerpipe.ExecutionCommand, generation string) bool {
 	_, err := releasepolicy.ParseSemVer(c.OfferVersion)
-	return c.Phase == brokerpipe.OfferUpdate && c.ApplicationGeneration == generation && c.HealthPipe == "" && c.HealthChallenge == "" && err == nil && len(c.OfferVersion) <= 128 && commitPattern.MatchString(c.OfferCommit) && hashPattern.MatchString(c.OfferPolicySHA256) && c.PromptBytes > 0 && c.PromptBytes <= 512<<20 && hashPattern.MatchString(c.PromptSHA256)
+	return c.StartupMode == brokerpipe.StartupXNav && c.Phase == brokerpipe.OfferUpdate && c.ApplicationGeneration == generation && c.HealthPipe == "" && c.HealthChallenge == "" && err == nil && len(c.OfferVersion) <= 128 && commitPattern.MatchString(c.OfferCommit) && hashPattern.MatchString(c.OfferPolicySHA256) && c.PromptBytes > 0 && c.PromptBytes <= 512<<20 && hashPattern.MatchString(c.PromptSHA256)
 }
 func (a *brokerOfferActions) handle(ctx context.Context, c brokerpipe.ExecutionCommand) (o brokerpipe.ExecutionObservation, resultErr error) {
 	a.mu.Lock()

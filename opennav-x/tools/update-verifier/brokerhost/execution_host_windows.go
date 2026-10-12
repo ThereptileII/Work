@@ -41,6 +41,7 @@ type nativeExecutionHost struct {
 	journal            *brokerstore.ExecutionJournal
 	inventory          string
 	executionID        string
+	startupMode        brokerpipe.StartupMode
 	begin              executionSelectionBegin
 	stock              stockOwner
 	profile            executionHostProfile
@@ -53,7 +54,7 @@ type nativeExecutionHost struct {
 // revokes the native peer/session at the handler boundary. No public request or
 // registration version supplies selection, commissioning or spawn permission.
 func (e *engine) handleNativeExecution(ctx context.Context, peer brokerpipe.Peer, request brokerpipe.ExecutionRequest, session *brokerpipe.ExecutionSession, providers executionHostProviders) (resultErr error) {
-	if e == nil || ctx == nil || ctx.Err() != nil || session == nil || providers.capture == nil || providers.commission == nil || providers.authorize == nil || e.observe == nil || request.Schema != 1 || !executionQualificationIntentAllowed(request.Operation, true) || !requestPattern.MatchString(request.RequestID) || !requestPattern.MatchString(request.StageID) {
+	if e == nil || ctx == nil || ctx.Err() != nil || session == nil || providers.capture == nil || providers.commission == nil || providers.authorize == nil || e.observe == nil || !request.StartupMode.Valid() || (request.Operation != "start-selected" && request.StartupMode != brokerpipe.StartupXNav) || request.Schema != 1 || !executionQualificationIntentAllowed(request.Operation, true) || !requestPattern.MatchString(request.RequestID) || !requestPattern.MatchString(request.StageID) {
 		return errExecutionHostRefused
 	}
 	adapter, ok := e.store.(storeAdapter)
@@ -70,7 +71,7 @@ func (e *engine) handleNativeExecution(ctx context.Context, peer brokerpipe.Peer
 	defer e.busy.Unlock()
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	h := &nativeExecutionHost{ctx: ctx, store: adapter.Store, peer: capability, conversation: session, executionID: request.RequestID, providers: providers}
+	h := &nativeExecutionHost{ctx: ctx, store: adapter.Store, peer: capability, conversation: session, executionID: request.RequestID, startupMode: request.StartupMode, providers: providers}
 	defer func() {
 		// Cleanup failure does not undo a durable terminal. A later fresh read may
 		// establish it; this handler never retries a consumed operation.
@@ -484,7 +485,7 @@ func (h *nativeExecutionHost) resolve(ctx context.Context, terminal string) (res
 	// always uses a new selected launcher and a new start-current conversation;
 	// never clear qualification flags or let the old executor create the new
 	// application's ordinary child in this already-used session.
-	return relaySelectedExecutionNative(ctx, h.peer, selected, h.conversation)
+	return relaySelectedExecutionNative(ctx, h.peer, selected, h.conversation, h.startupMode)
 }
 
 // Retain the independently corroborated ORIGINAL child immediately after the

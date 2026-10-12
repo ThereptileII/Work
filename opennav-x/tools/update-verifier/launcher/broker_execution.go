@@ -77,10 +77,36 @@ func brokerIntentArgument(args []string, prefix string) (string, bool, error) {
 		return "", true, errBrokerExecutionRefused
 	}
 	id := strings.TrimPrefix(args[0], prefix+"=")
-	if !generationPattern.MatchString(id) {
+	if prefix == "--broker-start" || prefix == "--broker-current" {
+		if _, _, err := brokerStartupMode(id); err != nil {
+			return "", true, err
+		}
+	} else if !generationPattern.MatchString(id) {
 		return "", true, errBrokerExecutionRefused
 	}
 	return id, true, nil
+}
+
+// A sole canonical argument carries closed mode data, never extra process args.
+func brokerStartupMode(value string) (string, brokerpipe.StartupMode, error) {
+	generation, suffix, hasMode := strings.Cut(value, ":")
+	mode := brokerpipe.StartupMode(suffix)
+	if !generationPattern.MatchString(generation) || !mode.Valid() || (hasMode && mode == brokerpipe.StartupXNav) {
+		return "", "", errBrokerExecutionRefused
+	}
+	return generation, mode, nil
+}
+func brokerModeIntent(generation string, mode brokerpipe.StartupMode) (string, error) {
+	if !generationPattern.MatchString(generation) || !mode.Valid() {
+		return "", errBrokerExecutionRefused
+	}
+	if mode != brokerpipe.StartupXNav {
+		generation += ":" + string(mode)
+	}
+	return generation, nil
+}
+func brokerNormalPhase(p brokerpipe.ExecutionPhase) bool {
+	return p == brokerpipe.RelaySelectedExecutor || p == brokerpipe.RelayStartupExecutor || p == brokerpipe.SpawnCurrent || p == brokerpipe.ObserveCurrent || p == brokerpipe.CloseCurrent
 }
 func brokerExecutionApplication(programFiles, sid, generation string) (string, error) {
 	if !brokerregistration.IsCanonicalUserSID(sid) || !generationPattern.MatchString(generation) {
@@ -100,7 +126,7 @@ func brokerExecutionLauncher(programFiles, sid, generation string) (string, erro
 	return strings.TrimSuffix(application, "opencpn.exe") + "skager-start.exe", nil
 }
 func brokerExecutionPayload(command brokerpipe.ExecutionCommand, stage string) error {
-	if command.StageID != stage || !generationPattern.MatchString(stage) || command.OfferVersion != "" || command.OfferCommit != "" || command.OfferPolicySHA256 != "" || command.PromptBytes != 0 || command.PromptSHA256 != "" {
+	if !command.StartupMode.Valid() || (!brokerNormalPhase(command.Phase) && command.StartupMode != brokerpipe.StartupXNav) || (command.Phase == brokerpipe.RelayStartupExecutor && command.StartupMode != brokerpipe.StartupXNav) || command.StageID != stage || !generationPattern.MatchString(stage) || command.OfferVersion != "" || command.OfferCommit != "" || command.OfferPolicySHA256 != "" || command.PromptBytes != 0 || command.PromptSHA256 != "" {
 		return errBrokerExecutionRefused
 	}
 	switch command.Phase {
@@ -138,15 +164,18 @@ func brokerExecutionPayload(command brokerpipe.ExecutionCommand, stage string) e
 func runBrokerExecution(ctx context.Context, stage string, backend brokerExecutionBackend, call func(context.Context, brokerpipe.ExecutionRequest, brokerpipe.ExecutionClientHandler) error) (resultErr error) {
 	return runBrokerExecutionIntent(ctx, stage, "execute-session", backend, call)
 }
-func runBrokerExecutionIntent(ctx context.Context, stage, operation string, backend brokerExecutionBackend, call func(context.Context, brokerpipe.ExecutionRequest, brokerpipe.ExecutionClientHandler) error) (resultErr error) {
-	if ctx == nil || ctx.Err() != nil || !generationPattern.MatchString(stage) || backend == nil || call == nil || (operation != "execute-session" && operation != "start-current" && operation != "start-selected") {
+func runBrokerExecutionIntent(ctx context.Context, stage, operation string, backend brokerExecutionBackend, call func(context.Context, brokerpipe.ExecutionRequest, brokerpipe.ExecutionClientHandler) error) error {
+	return runBrokerExecutionModeIntent(ctx, stage, operation, brokerpipe.StartupXNav, backend, call)
+}
+func runBrokerExecutionModeIntent(ctx context.Context, stage, operation string, mode brokerpipe.StartupMode, backend brokerExecutionBackend, call func(context.Context, brokerpipe.ExecutionRequest, brokerpipe.ExecutionClientHandler) error) (resultErr error) {
+	if !mode.Valid() || (operation == "execute-session" && mode != brokerpipe.StartupXNav) || ctx == nil || ctx.Err() != nil || !generationPattern.MatchString(stage) || backend == nil || call == nil || (operation != "execute-session" && operation != "start-current" && operation != "start-selected") {
 		return errors.Join(errBrokerExecutionRefused, contextErrorBroker(ctx))
 	}
 	var nonce [16]byte
 	if _, err := rand.Read(nonce[:]); err != nil {
 		return err
 	}
-	actions := &brokerExecutionActions{request: brokerpipe.ExecutionRequest{Schema: 1, Operation: operation, RequestID: hex.EncodeToString(nonce[:]), StageID: stage}, backend: backend}
+	actions := &brokerExecutionActions{request: brokerpipe.ExecutionRequest{Schema: 1, Operation: operation, RequestID: hex.EncodeToString(nonce[:]), StageID: stage, StartupMode: mode}, backend: backend}
 	defer func() { resultErr = errors.Join(resultErr, actions.close()) }()
 	// An authenticated transport finish is not transaction acceptance. Failure or
 	// lost conversation never enters legacy startup or retries any consumed role.
@@ -169,7 +198,7 @@ func (a *brokerExecutionActions) handle(ctx context.Context, c brokerpipe.Execut
 			a.failure = errors.Join(a.failure, resultErr)
 		}
 	}()
-	if c.Schema != 1 || c.Kind != "command" || c.RequestID != a.request.RequestID || brokerExecutionPayload(c, a.request.StageID) != nil {
+	if (brokerNormalPhase(c.Phase) && c.StartupMode != a.request.StartupMode) || c.Schema != 1 || c.Kind != "command" || c.RequestID != a.request.RequestID || brokerExecutionPayload(c, a.request.StageID) != nil {
 		return result, errBrokerExecutionRefused
 	}
 	if a.relay.consumed && c.Phase != brokerpipe.FinishExecution {
@@ -229,7 +258,7 @@ func (a *brokerExecutionActions) handle(ctx context.Context, c brokerpipe.Execut
 		}
 		return info.report()
 	case brokerpipe.ObserveCurrent, brokerpipe.ObserveCandidate, brokerpipe.ObserveFallback:
-		if role.child == nil || role.observed || role.closeAttempted || c.ApplicationGeneration != role.command.ApplicationGeneration || c.HealthPipe != role.command.HealthPipe || c.HealthChallenge != role.command.HealthChallenge {
+		if role.child == nil || role.observed || role.closeAttempted || c.ApplicationGeneration != role.command.ApplicationGeneration || c.HealthPipe != role.command.HealthPipe || c.HealthChallenge != role.command.HealthChallenge || c.StartupMode != role.command.StartupMode {
 			return result, errBrokerExecutionRefused
 		}
 		role.observed = true
@@ -239,7 +268,7 @@ func (a *brokerExecutionActions) handle(ctx context.Context, c brokerpipe.Execut
 		}
 		return info.report()
 	case brokerpipe.CloseCurrent, brokerpipe.CloseCandidate, brokerpipe.CloseFallback:
-		if role.child == nil || role.closeAttempted || (c.ApplicationGeneration != "" && c.ApplicationGeneration != role.command.ApplicationGeneration) {
+		if role.child == nil || role.closeAttempted || (c.ApplicationGeneration != "" && c.ApplicationGeneration != role.command.ApplicationGeneration) || c.StartupMode != role.command.StartupMode {
 			return result, errBrokerExecutionRefused
 		}
 		role.closeAttempted = true

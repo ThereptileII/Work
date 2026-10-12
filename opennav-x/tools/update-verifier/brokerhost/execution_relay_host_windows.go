@@ -12,18 +12,18 @@ import (
 // executor's actual session is already image-bound; its report supplies a PID
 // lookup only. The new launcher is independently corroborated against the held
 // selected executor image, and must authenticate a fresh start-current session.
-func relaySelectedExecutionNative(ctx context.Context, peer *brokerpipe.PeerCapability, selected *nativeSelectedExecution, conversation executionHostConversation) (resultErr error) {
-	return relayExecutionNative(ctx, peer, selected, conversation, brokerpipe.RelaySelectedExecutor)
+func relaySelectedExecutionNative(ctx context.Context, peer *brokerpipe.PeerCapability, selected *nativeSelectedExecution, conversation executionHostConversation, mode brokerpipe.StartupMode) (resultErr error) {
+	return relayExecutionNative(ctx, peer, selected, conversation, brokerpipe.RelaySelectedExecutor, mode)
 }
 
 // Ordinary shortcut startup checks for an update once. Qualification and recovery
 // retain the terminal relay above so completing an update never opens another offer.
 func relayStartupExecutionNative(ctx context.Context, peer *brokerpipe.PeerCapability, selected *nativeSelectedExecution, conversation executionHostConversation) error {
-	return relayExecutionNative(ctx, peer, selected, conversation, brokerpipe.RelayStartupExecutor)
+	return relayExecutionNative(ctx, peer, selected, conversation, brokerpipe.RelayStartupExecutor, brokerpipe.StartupXNav)
 }
 
-func relayExecutionNative(ctx context.Context, peer *brokerpipe.PeerCapability, selected *nativeSelectedExecution, conversation executionHostConversation, phase brokerpipe.ExecutionPhase) (resultErr error) {
-	if ctx == nil || peer == nil || selected == nil || conversation == nil ||
+func relayExecutionNative(ctx context.Context, peer *brokerpipe.PeerCapability, selected *nativeSelectedExecution, conversation executionHostConversation, phase brokerpipe.ExecutionPhase, mode brokerpipe.StartupMode) (resultErr error) {
+	if !mode.Valid() || (phase == brokerpipe.RelayStartupExecutor && mode != brokerpipe.StartupXNav) || ctx == nil || peer == nil || selected == nil || conversation == nil ||
 		(phase != brokerpipe.RelaySelectedExecutor && phase != brokerpipe.RelayStartupExecutor) {
 		return errExecutionCurrentRefused
 	}
@@ -41,7 +41,7 @@ func relayExecutionNative(ctx context.Context, peer *brokerpipe.PeerCapability, 
 		return errExecutionCurrentRefused
 	}
 	report, err := conversation.ExchangeCommand(ctx, brokerpipe.ExecutionDirective{
-		Phase: phase, ApplicationGeneration: selected.selected.generation})
+		Phase: phase, StartupMode: mode, ApplicationGeneration: selected.selected.generation})
 	if err != nil {
 		return err
 	}

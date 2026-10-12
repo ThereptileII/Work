@@ -14,6 +14,32 @@ import (
 const ExecutionPipeName = `\\.\pipe\SkagerUpdateBroker.execution.v1`
 const maxExecutionPhases = 32
 
+// StartupMode is closed routing data for ordinary selected startup. The zero
+// value is canonical XNav, preserving the original wire representation. Neither
+// recovery mode changes registration, profile paths or qualification authority.
+type StartupMode string
+
+const (
+	StartupXNav   StartupMode = ""
+	StartupLegacy StartupMode = "legacy"
+	StartupSafe   StartupMode = "safe"
+)
+
+func (m StartupMode) Valid() bool { return m == StartupXNav || m == StartupLegacy || m == StartupSafe }
+
+func normalExecutionPhase(p ExecutionPhase) bool {
+	return p == RelaySelectedExecutor || p == RelayStartupExecutor || p == SpawnCurrent || p == ObserveCurrent || p == CloseCurrent
+}
+func executionModeMatches(q ExecutionRequest, d ExecutionDirective) bool {
+	if !q.StartupMode.Valid() || !d.StartupMode.Valid() {
+		return false
+	}
+	if normalExecutionPhase(d.Phase) {
+		return q.StartupMode == d.StartupMode
+	}
+	return d.StartupMode == StartupXNav
+}
+
 type ExecutionPhase string
 
 const (
@@ -60,10 +86,11 @@ func validExecutionPhase(p ExecutionPhase) bool {
 // No intent confers authorization.
 // It accepts no command, path, trust configuration or caller-selected pipe.
 type ExecutionRequest struct {
-	Schema    int    `json:"schema"`
-	Operation string `json:"operation"`
-	RequestID string `json:"requestId"`
-	StageID   string `json:"stageId"`
+	Schema      int         `json:"schema"`
+	Operation   string      `json:"operation"`
+	RequestID   string      `json:"requestId"`
+	StageID     string      `json:"stageId"`
+	StartupMode StartupMode `json:"startupMode,omitempty"`
 }
 
 // ExecutionCommand is a finite server request. The session/challenge/sequence
@@ -78,6 +105,7 @@ type ExecutionCommand struct {
 	Sequence              uint32         `json:"sequence"`
 	Challenge             string         `json:"challenge"`
 	Phase                 ExecutionPhase `json:"phase"`
+	StartupMode           StartupMode    `json:"startupMode,omitempty"`
 	ApplicationGeneration string         `json:"applicationGeneration"`
 	HealthPipe            string         `json:"healthPipe"`
 	HealthChallenge       string         `json:"healthChallenge"`
@@ -96,6 +124,7 @@ type ExecutionCommand struct {
 // The transport, not this directive, supplies session/sequence/challenge fields.
 type ExecutionDirective struct {
 	Phase                                        ExecutionPhase
+	StartupMode                                  StartupMode
 	ApplicationGeneration                        string
 	HealthPipe                                   string
 	HealthChallenge                              string
@@ -105,7 +134,7 @@ type ExecutionDirective struct {
 }
 
 func validExecutionDirective(d ExecutionDirective, stageID string) bool {
-	if !validExecutionPhase(d.Phase) || !id32.MatchString(stageID) {
+	if !validExecutionPhase(d.Phase) || !id32.MatchString(stageID) || !d.StartupMode.Valid() || (!normalExecutionPhase(d.Phase) && d.StartupMode != StartupXNav) || (d.Phase == RelayStartupExecutor && d.StartupMode != StartupXNav) {
 		return false
 	}
 	if d.ApplicationGeneration != "" && !id32.MatchString(d.ApplicationGeneration) {
@@ -140,7 +169,7 @@ func validExecutionDirective(d ExecutionDirective, stageID string) bool {
 	}
 }
 func (c ExecutionCommand) directive() ExecutionDirective {
-	return ExecutionDirective{Phase: c.Phase, ApplicationGeneration: c.ApplicationGeneration, HealthPipe: c.HealthPipe, HealthChallenge: c.HealthChallenge, OfferVersion: c.OfferVersion, OfferCommit: c.OfferCommit, OfferPolicySHA256: c.OfferPolicySHA256, PromptBytes: c.PromptBytes, PromptSHA256: c.PromptSHA256}
+	return ExecutionDirective{Phase: c.Phase, StartupMode: c.StartupMode, ApplicationGeneration: c.ApplicationGeneration, HealthPipe: c.HealthPipe, HealthChallenge: c.HealthChallenge, OfferVersion: c.OfferVersion, OfferCommit: c.OfferCommit, OfferPolicySHA256: c.OfferPolicySHA256, PromptBytes: c.PromptBytes, PromptSHA256: c.PromptSHA256}
 }
 
 // ExecutionObservation is untrusted report data. Even reported-complete proves
@@ -163,7 +192,7 @@ type ExecutionHandler func(context.Context, Peer, ExecutionRequest, *ExecutionSe
 type ExecutionClientHandler func(context.Context, ExecutionCommand) (ExecutionObservation, error)
 
 func validExecutionRequest(q ExecutionRequest) bool {
-	return q.Schema == 1 && (q.Operation == "execute-session" || q.Operation == "start-current" || q.Operation == "start-selected" || q.Operation == "offer-current") && id32.MatchString(q.RequestID) && id32.MatchString(q.StageID)
+	return q.StartupMode.Valid() && ((q.Operation == "start-current" || q.Operation == "start-selected") || q.StartupMode == StartupXNav) && q.Schema == 1 && (q.Operation == "execute-session" || q.Operation == "start-current" || q.Operation == "start-selected" || q.Operation == "offer-current") && id32.MatchString(q.RequestID) && id32.MatchString(q.StageID)
 }
 func encodeExecutionRequest(q ExecutionRequest) ([]byte, error) {
 	if !validExecutionRequest(q) {
@@ -177,7 +206,15 @@ func executionObject(raw []byte, keys []string) error {
 	}
 	fields, err := exactObject(raw, keys, false)
 	if err != nil {
-		return err
+		fields, err = exactObject(raw, append(append([]string(nil), keys...), "startupMode"), false)
+		if err != nil {
+			return err
+		}
+		// There is one canonical representation per mode. Explicit empty/XNav,
+		// null, numeric, escaped or mixed-case mode values never gain an alias.
+		if !bytes.Equal(fields["startupMode"], []byte(`"legacy"`)) && !bytes.Equal(fields["startupMode"], []byte(`"safe"`)) {
+			return ErrRefused
+		}
 	}
 	for _, value := range fields {
 		if bytes.Equal(bytes.TrimSpace(value), []byte("null")) {
@@ -261,7 +298,7 @@ type executionClientSequence struct {
 }
 
 func (s *executionClientSequence) accept(c ExecutionCommand) error {
-	if s.finished || !validExecutionEnvelope(c, "command") || c.RequestID != s.request.RequestID || c.StageID != s.request.StageID || c.Sequence != s.next+1 {
+	if s.finished || !validExecutionEnvelope(c, "command") || c.RequestID != s.request.RequestID || c.StageID != s.request.StageID || c.Sequence != s.next+1 || !executionModeMatches(s.request, c.directive()) {
 		return ErrRefused
 	}
 	if s.session != "" && c.SessionID != s.session {

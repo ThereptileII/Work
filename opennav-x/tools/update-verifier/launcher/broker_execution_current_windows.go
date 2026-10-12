@@ -17,10 +17,25 @@ func brokerCurrentEnvironment(values []string, c brokerpipe.ExecutionCommand) ([
 	}
 	return ordinaryEnvironment(values)
 }
+func brokerCurrentArgumentForMode(mode brokerpipe.StartupMode) (string, error) {
+	switch mode {
+	case brokerpipe.StartupXNav:
+		return "--xnav", nil
+	case brokerpipe.StartupLegacy:
+		return "--legacy", nil
+	case brokerpipe.StartupSafe:
+		return "--safe-mode", nil
+	}
+	return "", errBrokerExecutionRefused
+}
 func (image *nativeOrdinaryImage) createBrokerCurrent(c brokerpipe.ExecutionCommand, attributes *windows.SecurityAttributes) (*nativeOrdinaryChild, error) {
 	environment, err := brokerCurrentEnvironment(os.Environ(), c)
 	if err != nil {
 		return nil, err
 	}
-	return image.createBrokerChild(attributes, environment)
+	argument, err := brokerCurrentArgumentForMode(c.StartupMode)
+	if err != nil {
+		return nil, err
+	}
+	return image.createBrokerFixedChild(attributes, environment, argument)
 }
