@@ -6,9 +6,25 @@ on:
   pull_request:
     paths:
       - opennav-x/tools/update-verifier/**
+      - opennav-x/tools/package-update-launcher.py
+      - opennav-x/tools/updater_package.py
+      - opennav-x/tools/test-package-update-launcher.py
+      - opennav-x/tools/test-updater-package.py
+      - opennav-x/tools/broker_package.py
+      - opennav-x/tools/package-update-broker.py
+      - opennav-x/tools/test-broker-package.py
+      - opennav-x/tools/test-package-update-broker.py
+      - opennav-x/tools/provisioner_package.py
+      - opennav-x/tools/package-update-provisioner.py
+      - opennav-x/tools/test-provisioner-package.py
+      - opennav-x/tools/test-package-update-provisioner.py
       - .github/workflows/update-verifier-probe.yml
   workflow_dispatch:
     inputs:
+      startup_only:
+        description: Run only focused native startup and fresh-profile qualification checks
+        type: boolean
+        default: false
       owned_files_only:
         description: Run only the native owned-file hardlink boundary test
         type: boolean
@@ -28,7 +44,7 @@ permissions:
 
 jobs:
   verify:
-    if: ${{ !inputs.owned_files_only && !inputs.image_owner_only && github.ref != 'refs/heads/skager-updater-lifecycle' }}
+    if: ${{ !inputs.owned_files_only && !inputs.image_owner_only && !inputs.startup_only && github.ref != 'refs/heads/skager-updater-lifecycle' }}
     timeout-minutes: 20
     strategy:
       matrix:
@@ -60,7 +76,9 @@ jobs:
         shell: python
         run: |
           import subprocess, sys
-          for script in ('../test-package-update-launcher.py', '../test-updater-package.py'):
+          for script in ('../test-package-update-launcher.py', '../test-updater-package.py',
+                         '../test-package-update-broker.py', '../test-broker-package.py',
+                         '../test-package-update-provisioner.py', '../test-provisioner-package.py'):
               subprocess.run([sys.executable, script], check=True, timeout=60)
       - name: Compile native launcher with exact dependency sources
         if: runner.os == 'Windows'
@@ -98,6 +116,28 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python ../test-compiled-recovery.py
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Compile inactive broker against the exact launcher source closure
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          New-Item -ItemType Directory -Path ../../build/updater-native/broker-install | Out-Null
+          python ../updater_package.py --source-install ../../build/updater-native/install --install ../../build/updater-native/broker-install --commit $env:GITHUB_SHA
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python ../package-update-broker.py --install ../../build/updater-native/broker-install --commit $env:GITHUB_SHA
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -c "import os,sys; from pathlib import Path; sys.path.insert(0,'..'); from broker_package import verify_broker_package; verify_broker_package(Path('../../build/updater-native/broker-install'), os.environ['GITHUB_SHA'])"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      # Produce the inactive operator tool beside the already-built same-commit
+      # launcher/broker closure. Verification never executes or elevates it.
+      # Keep it separate from the installed product; enrollment stays explicit.
+      - name: Compile inactive provisioner against the retained native prerequisites
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          python ../package-update-provisioner.py --install ../../build/updater-native/broker-install --commit $env:GITHUB_SHA
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -c "import os,sys; from pathlib import Path; sys.path.insert(0,'..'); from provisioner_package import verify_provisioner_package; verify_provisioner_package(Path('../../build/updater-native/broker-install'), os.environ['GITHUB_SHA'])"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Native authenticated startup and interruption records
         if: always() && runner.os == 'Windows'
         shell: powershell
@@ -123,7 +163,7 @@ jobs:
           if-no-files-found: error
 
   startup-popup:
-    if: ${{ !inputs.owned_files_only && !inputs.image_owner_only && github.ref != 'refs/heads/skager-updater-lifecycle' }}
+    if: ${{ !inputs.owned_files_only && !inputs.image_owner_only && (inputs.startup_only || github.ref != 'refs/heads/skager-updater-lifecycle') }}
     name: Native startup update interactions
     runs-on: windows-2022
     timeout-minutes: 25
@@ -132,11 +172,13 @@ jobs:
       - name: Build only the startup model and native popup
         run: python opennav-x/tools/test-startup-update-windows.py --evidence opennav-x/build/startup-update-native-evidence
       - name: Exact upstream navigation warning and authenticated startup phases
+        if: ${{ !inputs.startup_only }}
         run: python opennav-x/tools/test-startup-warning-native.py --evidence opennav-x/build/startup-warning-native-evidence
       - name: Native first-start setup and settings backup transactions
+        if: ${{ !inputs.startup_only }}
         run: python opennav-x/tools/test-staging-settings-windows.py --evidence opennav-x/build/staging-settings-native-evidence
       - name: Native updater shortcut preservation
-        if: always()
+        if: ${{ always() && !inputs.startup_only }}
         shell: powershell
         run: ./opennav-x/tools/test-installer-shortcuts.ps1
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -150,7 +192,7 @@ jobs:
           if-no-files-found: error
 
   lifecycle-only:
-    if: ${{ !inputs.owned_files_only && !inputs.image_owner_only && github.ref == 'refs/heads/skager-updater-lifecycle' }}
+    if: ${{ !inputs.owned_files_only && !inputs.image_owner_only && !inputs.startup_only && github.ref == 'refs/heads/skager-updater-lifecycle' }}
     name: Focused actual Lifecycle startup diagnostics
     runs-on: windows-2022
     timeout-minutes: 5
@@ -175,7 +217,7 @@ jobs:
           if-no-files-found: error
 
   owned-files-only:
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.owned_files_only && !inputs.image_owner_only }}
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.owned_files_only && !inputs.image_owner_only && !inputs.startup_only }}
     name: Native Win32 owned-file acquisition
     runs-on: windows-2022
     timeout-minutes: 8
@@ -207,7 +249,7 @@ jobs:
           if-no-files-found: error
 
   supervisor-owner:
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.image_owner_only && !inputs.owned_files_only }}
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.image_owner_only && !inputs.owned_files_only && !inputs.startup_only }}
     name: Windows PowerShell 5.1 supervised image ownership
     runs-on: windows-2022
     timeout-minutes: 12
@@ -284,7 +326,7 @@ jobs:
           retention-days: 90
 
   ordinary-owner:
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.image_owner_only && !inputs.owned_files_only }}
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.image_owner_only && !inputs.owned_files_only && !inputs.startup_only }}
     name: Native Win32 ordinary image ownership
     runs-on: windows-2022
     timeout-minutes: 12

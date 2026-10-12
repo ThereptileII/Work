@@ -7,6 +7,10 @@ on:
       - .github/workflows/**
   workflow_dispatch:
     inputs:
+      private_staging_trust:
+        description: Select the committed private-Staging update trust for this candidate
+        type: boolean
+        default: false
       extended_tests:
         description: Run additional functional scenarios for this staging candidate
         type: boolean
@@ -153,6 +157,12 @@ jobs:
                          "test-smoke-pilot-policy.py"):
               subprocess.run([sys.executable, "opennav-x/tools/" + script],
                              check=True, timeout=120)
+      - name: Verify explicit private-Staging trust workflow dataflow
+        shell: python
+        run: |
+          import subprocess, sys
+          subprocess.run([sys.executable, '-m', 'pip', 'install', 'PyYAML==6.0.3'], check=True, timeout=120)
+          subprocess.run([sys.executable, 'opennav-x/tools/test-private-staging-trust-workflow.py'], check=True, timeout=120)
       - name: Verify corresponding-source archive structure and integrity
         run: |
           python opennav-x/tools/test-source-package.py
@@ -463,6 +473,13 @@ jobs:
           sudo mk-build-deps --install --remove --tool='apt-get -y --no-install-recommends' opennav-x/upstream/OpenCPN/ci/control
           sudo locale-gen sv_SE.UTF-8 en_US.UTF-8
           mkdir -p "$HOME/.opencpn"
+      - name: Preserve native route drafts across modal focus changes
+        run: |
+          mkdir -p opennav-x/evidence/local
+          python3 opennav-x/tools/test-route-focus.py --upstream opennav-x/upstream/OpenCPN --output opennav-x/build/route-focus-regression > opennav-x/evidence/local/route-focus-linux.log 2>&1
+      - name: Preserve enlarged route selection at native canvas DPI
+        run: |
+          python3 opennav-x/tools/test-route-hit-dpi.py --upstream opennav-x/upstream/OpenCPN --output opennav-x/build/route-hit-dpi-regression > opennav-x/evidence/local/route-hit-dpi-linux.log 2>&1
       - name: Reject untrusted public downloads using actual pinned Downloader
         run: |
           mkdir -p opennav-x/evidence/local
@@ -473,6 +490,9 @@ jobs:
           python3 opennav-x/tools/test-peer-buffer.py > opennav-x/evidence/local/peer-buffer-linux.log 2>&1
       - name: Build integrated application and run regressions without exceptions
         run: bash opennav-x/tools/build-integration-linux.sh
+      - name: Bound actual core chart raster observation and Standard fallback
+        run: |
+          python3 opennav-x/tools/test-chart-render-observation.py --source opennav-x/build/integration-source --core-only --output opennav-x/evidence/local/chart-render-observation > opennav-x/evidence/local/chart-render-observation-linux.log 2>&1
       - name: Run shared offline boat-feedback components on Linux
         shell: bash
         run: |
@@ -706,7 +726,25 @@ jobs:
       - name: Stage exact qualified startup updater and retained dependency source
         run: python opennav-x/tools/updater_package.py --source-install opennav-x/build/updater-qualified/install --install opennav-x/build/production-install --commit $env:GITHUB_SHA
       - name: Package fixture-free recovery before desktop qualification
-        run: ./opennav-x/tools/package-preview-windows.ps1 -DeferRuntimeQualification
+        env:
+          SKAGER_PRIVATE_STAGING_TRUST: ${{ github.event_name == 'workflow_dispatch' && inputs.private_staging_trust && 'true' || 'false' }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if ($env:SKAGER_PRIVATE_STAGING_TRUST -cnotin @('true', 'false')) { throw 'Invalid private-Staging trust selection' }
+          $TrustArguments = @{}
+          if ($env:SKAGER_PRIVATE_STAGING_TRUST -ceq 'true') {
+            $TrustConfig = 'opennav-x/installer/windows/staging-update-trust.json'
+            $TrustValidator = 'opennav-x/build/updater-qualified/skager-repository.exe'
+            $TrustRecord = 'opennav-x/build/updater-qualified/skager-repository.json'
+            foreach ($Required in @($TrustConfig, $TrustValidator, $TrustRecord)) {
+              if (-not (Test-Path -LiteralPath $Required -PathType Leaf)) { throw ('Required private-Staging trust input missing: ' + $Required) }
+            }
+            # The wrapper binds the validator record to this commit/hash;
+            # select_update_trust binds committed public bytes and verifies them.
+            $TrustArguments = @{ UpdateTrustConfig = $TrustConfig; UpdateTrustValidator = $TrustValidator }
+          }
+          & ./opennav-x/tools/package-preview-windows.ps1 -DeferRuntimeQualification @TrustArguments
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Compile exact installer without running its desktop qualification yet
         env:
           OPENNAV_ARTIFACT_TOKEN: ${{ github.token }}
