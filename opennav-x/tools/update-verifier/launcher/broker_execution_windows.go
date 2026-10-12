@@ -73,6 +73,12 @@ type nativeBrokerExecutionBackend struct {
 }
 
 func runBrokerExecutionNative(ctx context.Context, stage string) (resultErr error) {
+	return runBrokerIntentNative(ctx, stage, "execute-session")
+}
+func runBrokerCurrentNative(ctx context.Context, stage string) error {
+	return runBrokerIntentNative(ctx, stage, "start-current")
+}
+func runBrokerIntentNative(ctx context.Context, stage, operation string) (resultErr error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	backend, err := newNativeBrokerExecutionBackend(ctx)
@@ -80,7 +86,7 @@ func runBrokerExecutionNative(ctx context.Context, stage string) (resultErr erro
 		return err
 	}
 	defer func() { resultErr = errors.Join(resultErr, backend.close()) }()
-	return runBrokerExecution(ctx, stage, backend, brokerpipe.CallExecution)
+	return runBrokerExecutionIntent(ctx, stage, operation, backend, brokerpipe.CallExecution)
 }
 func newNativeBrokerExecutionBackend(ctx context.Context) (result *nativeBrokerExecutionBackend, resultErr error) {
 	if ctx == nil || ctx.Err() != nil {
@@ -272,12 +278,17 @@ func (image *nativeOrdinaryImage) createBrokerExecution(c brokerpipe.ExecutionCo
 // Environment is constructed only by the two private normal/qualification
 // producers. Application, arguments and working directory remain fixed here.
 func (image *nativeOrdinaryImage) createBrokerChild(attributes *windows.SecurityAttributes, environment []uint16) (*nativeOrdinaryChild, error) {
+	return image.createBrokerFixedChild(attributes, environment, "--xnav")
+}
+
+// argument comes only from fixed private normal/qualification/relay producers.
+func (image *nativeOrdinaryImage) createBrokerFixedChild(attributes *windows.SecurityAttributes, environment []uint16, argument string) (*nativeOrdinaryChild, error) {
 	physical := physicalWin32(image.name)
 	application, err := windows.UTF16PtrFromString(image.application)
 	if err != nil {
 		return nil, err
 	}
-	command, err := windows.UTF16FromString(windows.ComposeCommandLine([]string{physical, "--xnav"}))
+	command, err := windows.UTF16FromString(windows.ComposeCommandLine([]string{physical, argument}))
 	if err != nil || len(command) > 32767 {
 		return nil, errBrokerExecutionRefused
 	}
@@ -314,6 +325,9 @@ func (b *nativeBrokerExecutionBackend) spawn(ctx context.Context, c brokerpipe.E
 		return nil, errBrokerExecutionRefused
 	}
 	executable, err := brokerExecutionApplication(b.programFiles, b.user.sid, c.ApplicationGeneration)
+	if c.Phase == brokerpipe.RelaySelectedExecutor {
+		executable, err = brokerExecutionLauncher(b.programFiles, b.user.sid, c.ApplicationGeneration)
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -336,7 +350,12 @@ func (b *nativeBrokerExecutionBackend) spawn(ctx context.Context, c brokerpipe.E
 	if err != nil || closeErr != nil {
 		return nil, errors.Join(err, closeErr)
 	}
-	acquired, err := acquireNativeOrdinaryImage(processSpec{executable: executable, directory: path.Dir(executable), expectedImageHash: measured})
+	spec := processSpec{executable: executable, directory: path.Dir(executable), expectedImageHash: measured}
+	acquire := acquireNativeOrdinaryImage
+	if c.Phase == brokerpipe.RelaySelectedExecutor {
+		acquire = acquireNativeRelayImage
+	}
+	acquired, err := acquire(spec)
 	if err != nil {
 		return nil, err
 	}
@@ -362,7 +381,9 @@ func (b *nativeBrokerExecutionBackend) spawn(ctx context.Context, c brokerpipe.E
 	if err != nil || attributes == nil {
 		return nil, errors.Join(errBrokerExecutionRefused, err)
 	}
-	if c.Phase == brokerpipe.SpawnCurrent {
+	if c.Phase == brokerpipe.RelaySelectedExecutor {
+		owner.child, err = owner.image.createBrokerRelay(c, attributes)
+	} else if c.Phase == brokerpipe.SpawnCurrent {
 		owner.child, err = owner.image.createBrokerCurrent(c, attributes)
 	} else {
 		owner.child, err = owner.image.createBrokerExecution(c, attributes)

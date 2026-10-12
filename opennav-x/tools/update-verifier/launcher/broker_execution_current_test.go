@@ -13,6 +13,7 @@ import (
 
 func TestBrokerExecutionCurrentNormalFlowLeavesApplicationAlive(t *testing.T) {
 	a, backend := brokerExecutionFixture()
+	a.request.Operation = "start-current"
 	defer a.close()
 	for _, phase := range []brokerpipe.ExecutionPhase{brokerpipe.SpawnCurrent, brokerpipe.ObserveCurrent, brokerpipe.FinishExecution} {
 		report, err := a.handle(context.Background(), brokerExecutionCommand(a, phase))
@@ -48,9 +49,11 @@ func TestBrokerExecutionCurrentAndQualificationCannotMixEvenAfterClose(t *testin
 				}
 				t.Run(name, func(t *testing.T) {
 					a, backend := brokerExecutionFixture()
+					a.request.Operation = "start-current"
 					defer a.close()
 					first, next, closePhase := brokerpipe.SpawnCurrent, qualification, brokerpipe.CloseCurrent
 					if !normalFirst {
+						a.request.Operation = "execute-session"
 						first, next, closePhase = qualification, brokerpipe.SpawnCurrent, brokerpipe.CloseCandidate
 						if qualification == brokerpipe.SpawnFallback {
 							closePhase = brokerpipe.CloseFallback
@@ -79,6 +82,7 @@ func TestBrokerExecutionCurrentCloseConsumesRoleAndRequiresOriginalBinding(t *te
 	for _, mode := range []string{"repeated-spawn", "repeated-observe", "wrong-observe-generation", "wrong-close-generation", "repeated-close"} {
 		t.Run(mode, func(t *testing.T) {
 			a, backend := brokerExecutionFixture()
+			a.request.Operation = "start-current"
 			defer a.close()
 			if _, err := a.handle(context.Background(), brokerExecutionCommand(a, brokerpipe.SpawnCurrent)); err != nil {
 				t.Fatal(err)
@@ -121,6 +125,7 @@ func TestBrokerExecutionCurrentRefusesQualificationOrUnsafePayloadBeforeCreator(
 	for _, mode := range []string{"no-generation", "uppercase", "path", "health-pipe", "health-challenge", "both-health"} {
 		t.Run(mode, func(t *testing.T) {
 			a, backend := brokerExecutionFixture()
+			a.request.Operation = "start-current"
 			defer a.close()
 			command := brokerExecutionCommand(a, brokerpipe.SpawnCurrent)
 			switch mode {
@@ -151,6 +156,7 @@ func TestBrokerExecutionCurrentConsumesFailuresAndLostConversationNeverFallback(
 	for _, mode := range []string{"create", "observe", "close"} {
 		t.Run(mode, func(t *testing.T) {
 			a, backend := brokerExecutionFixture()
+			a.request.Operation = "start-current"
 			defer a.close()
 			fault := errors.New(mode)
 			backend.onSpawn = func() {
@@ -189,7 +195,7 @@ func TestBrokerExecutionCurrentConsumesFailuresAndLostConversationNeverFallback(
 		})
 	}
 	_, backend := brokerExecutionFixture()
-	err := runBrokerExecution(context.Background(), strings.Repeat("2", 32), backend, func(ctx context.Context, q brokerpipe.ExecutionRequest, h brokerpipe.ExecutionClientHandler) error {
+	err := runBrokerExecutionIntent(context.Background(), strings.Repeat("2", 32), "start-current", backend, func(ctx context.Context, q brokerpipe.ExecutionRequest, h brokerpipe.ExecutionClientHandler) error {
 		a := &brokerExecutionActions{request: q}
 		if _, err := h(ctx, brokerExecutionCommand(a, brokerpipe.SpawnCurrent)); err != nil {
 			t.Fatal(err)
@@ -202,6 +208,7 @@ func TestBrokerExecutionCurrentConsumesFailuresAndLostConversationNeverFallback(
 }
 func TestBrokerExecutionCurrentConcurrentSpawnCreatesOnce(t *testing.T) {
 	a, backend := brokerExecutionFixture()
+	a.request.Operation = "start-current"
 	defer a.close()
 	var group sync.WaitGroup
 	for i := 0; i < 8; i++ {

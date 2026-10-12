@@ -46,28 +46,34 @@ type brokerExecutionRole struct {
 	child                              brokerExecutionChild
 }
 type brokerExecutionActions struct {
-	mu                           sync.Mutex
-	request                      brokerpipe.ExecutionRequest
-	backend                      brokerExecutionBackend
-	candidate, fallback, current brokerExecutionRole
-	finished, closed             bool
-	failure, closeErr            error
+	mu                                  sync.Mutex
+	request                             brokerpipe.ExecutionRequest
+	backend                             brokerExecutionBackend
+	candidate, fallback, current, relay brokerExecutionRole
+	finished, closed                    bool
+	failure, closeErr                   error
 }
 
 func brokerExecutionArgument(args []string) (string, bool, error) {
+	return brokerIntentArgument(args, "--broker-execute")
+}
+func brokerCurrentArgument(args []string) (string, bool, error) {
+	return brokerIntentArgument(args, "--broker-current")
+}
+func brokerIntentArgument(args []string, prefix string) (string, bool, error) {
 	matched := false
 	for _, arg := range args {
-		if strings.HasPrefix(arg, "--broker-execute") {
+		if strings.HasPrefix(arg, prefix) {
 			matched = true
 		}
 	}
 	if !matched {
 		return "", false, nil
 	}
-	if len(args) != 1 || !strings.HasPrefix(args[0], "--broker-execute=") {
+	if len(args) != 1 || !strings.HasPrefix(args[0], prefix+"=") {
 		return "", true, errBrokerExecutionRefused
 	}
-	id := strings.TrimPrefix(args[0], "--broker-execute=")
+	id := strings.TrimPrefix(args[0], prefix+"=")
 	if !generationPattern.MatchString(id) {
 		return "", true, errBrokerExecutionRefused
 	}
@@ -83,12 +89,19 @@ func brokerExecutionApplication(programFiles, sid, generation string) (string, e
 	}
 	return localPath(strings.TrimRight(root, "/") + "/SKAGER/Applications/" + sid + "/generations/" + generation + "/app/opencpn.exe")
 }
+func brokerExecutionLauncher(programFiles, sid, generation string) (string, error) {
+	application, err := brokerExecutionApplication(programFiles, sid, generation)
+	if err != nil {
+		return "", err
+	}
+	return strings.TrimSuffix(application, "opencpn.exe") + "skager-start.exe", nil
+}
 func brokerExecutionPayload(command brokerpipe.ExecutionCommand, stage string) error {
 	if command.StageID != stage || !generationPattern.MatchString(stage) {
 		return errBrokerExecutionRefused
 	}
 	switch command.Phase {
-	case brokerpipe.SpawnCurrent, brokerpipe.ObserveCurrent, brokerpipe.CloseCurrent:
+	case brokerpipe.RelaySelectedExecutor, brokerpipe.SpawnCurrent, brokerpipe.ObserveCurrent, brokerpipe.CloseCurrent:
 		if !generationPattern.MatchString(command.ApplicationGeneration) || command.HealthPipe != "" || command.HealthChallenge != "" {
 			return errBrokerExecutionRefused
 		}
@@ -120,14 +133,17 @@ func brokerExecutionPayload(command brokerpipe.ExecutionCommand, stage string) e
 	return nil
 }
 func runBrokerExecution(ctx context.Context, stage string, backend brokerExecutionBackend, call func(context.Context, brokerpipe.ExecutionRequest, brokerpipe.ExecutionClientHandler) error) (resultErr error) {
-	if ctx == nil || ctx.Err() != nil || !generationPattern.MatchString(stage) || backend == nil || call == nil {
+	return runBrokerExecutionIntent(ctx, stage, "execute-session", backend, call)
+}
+func runBrokerExecutionIntent(ctx context.Context, stage, operation string, backend brokerExecutionBackend, call func(context.Context, brokerpipe.ExecutionRequest, brokerpipe.ExecutionClientHandler) error) (resultErr error) {
+	if ctx == nil || ctx.Err() != nil || !generationPattern.MatchString(stage) || backend == nil || call == nil || (operation != "execute-session" && operation != "start-current") {
 		return errors.Join(errBrokerExecutionRefused, contextErrorBroker(ctx))
 	}
 	var nonce [16]byte
 	if _, err := rand.Read(nonce[:]); err != nil {
 		return err
 	}
-	actions := &brokerExecutionActions{request: brokerpipe.ExecutionRequest{Schema: 1, Operation: "execute-session", RequestID: hex.EncodeToString(nonce[:]), StageID: stage}, backend: backend}
+	actions := &brokerExecutionActions{request: brokerpipe.ExecutionRequest{Schema: 1, Operation: operation, RequestID: hex.EncodeToString(nonce[:]), StageID: stage}, backend: backend}
 	defer func() { resultErr = errors.Join(resultErr, actions.close()) }()
 	// An authenticated transport finish is not transaction acceptance. Failure or
 	// lost conversation never enters legacy startup or retries any consumed role.
@@ -153,6 +169,13 @@ func (a *brokerExecutionActions) handle(ctx context.Context, c brokerpipe.Execut
 	if c.Schema != 1 || c.Kind != "command" || c.RequestID != a.request.RequestID || brokerExecutionPayload(c, a.request.StageID) != nil {
 		return result, errBrokerExecutionRefused
 	}
+	if a.relay.consumed && c.Phase != brokerpipe.FinishExecution {
+		return result, errBrokerExecutionRefused
+	}
+	current := c.Phase == brokerpipe.SpawnCurrent || c.Phase == brokerpipe.ObserveCurrent || c.Phase == brokerpipe.CloseCurrent
+	if c.Phase != brokerpipe.FinishExecution && c.Phase != brokerpipe.RelaySelectedExecutor && ((a.request.Operation == "start-current") != current) {
+		return result, errBrokerExecutionRefused
+	}
 	if c.Phase == brokerpipe.FinishExecution {
 		a.finished = true
 		if err := a.closeLocked(); err != nil {
@@ -162,17 +185,22 @@ func (a *brokerExecutionActions) handle(ctx context.Context, c brokerpipe.Execut
 	}
 	role := &a.candidate
 	switch c.Phase {
+	case brokerpipe.RelaySelectedExecutor:
+		role = &a.relay
 	case brokerpipe.SpawnCurrent, brokerpipe.ObserveCurrent, brokerpipe.CloseCurrent:
 		role = &a.current
 	case brokerpipe.SpawnFallback, brokerpipe.ObserveFallback, brokerpipe.CloseFallback:
 		role = &a.fallback
 	}
 	switch c.Phase {
-	case brokerpipe.SpawnCurrent, brokerpipe.SpawnCandidate, brokerpipe.SpawnFallback:
+	case brokerpipe.RelaySelectedExecutor, brokerpipe.SpawnCurrent, brokerpipe.SpawnCandidate, brokerpipe.SpawnFallback:
 		// Normal and qualification are distinct conversations. Even a completed
 		// close cannot convert a qualification child into an ordinary session, or
 		// clear the application's already-latched qualification output fence.
-		if (role == &a.current && (a.candidate.consumed || a.fallback.consumed)) || (role != &a.current && a.current.consumed) {
+		if role == &a.relay && a.current.consumed {
+			return result, errBrokerExecutionRefused
+		}
+		if role != &a.relay && ((role == &a.current && (a.candidate.consumed || a.fallback.consumed)) || (role != &a.current && a.current.consumed)) {
 			return result, errBrokerExecutionRefused
 		}
 		if role.consumed || a.current.child != nil || a.candidate.child != nil || a.fallback.child != nil {
@@ -224,7 +252,7 @@ func (a *brokerExecutionActions) closeLocked() error {
 		return a.closeErr
 	}
 	a.closed = true
-	for _, role := range []*brokerExecutionRole{&a.current, &a.candidate, &a.fallback} {
+	for _, role := range []*brokerExecutionRole{&a.current, &a.candidate, &a.fallback, &a.relay} {
 		if role.child != nil {
 			a.closeErr = errors.Join(a.closeErr, role.child.close())
 			role.child = nil

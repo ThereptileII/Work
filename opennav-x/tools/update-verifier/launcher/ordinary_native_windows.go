@@ -131,11 +131,16 @@ func acquireNativeOrdinaryImage(spec processSpec) (ordinaryImage, error) {
 	if err != nil || !strings.EqualFold(path.Dir(name), directory) || !strings.EqualFold(path.Base(name), "opencpn.exe") {
 		return nil, errors.New("ordinary application image/directory mismatch")
 	}
+	return acquireNativePinnedBrokerImage(name, spec.expectedImageHash)
+}
+
+// Private custody mechanism; its two factories each enforce a fixed executable name.
+func acquireNativePinnedBrokerImage(name, expected string) (ordinaryImage, error) {
 	file, err := openNativeRead(name)
 	if err != nil {
 		return nil, err
 	}
-	owner := &nativeOrdinaryImage{file: file, expected: spec.expectedImageHash}
+	owner := &nativeOrdinaryImage{file: file, expected: expected}
 	ok := false
 	defer func() {
 		if !ok {
