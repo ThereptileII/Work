@@ -255,6 +255,16 @@ class BindingTests(unittest.TestCase):
         self.evidence['observation_before']['remote']['port'] = 80
         self.refused()
 
+    def test_ipv4_zero_network_local_is_refused_even_with_matching_samples(self):
+        for ip in ('0.0.0.0', '0.1.2.3', '0.255.255.255'):
+            with self.subTest(ip=ip):
+                self.evidence, self.expected = fixture()
+                for key in ('observation_before', 'observation_after'):
+                    self.evidence[key]['local']['address'] = address(ip)
+                for key in ('tcp_before', 'tcp_after'):
+                    self.evidence[key][0]['local']['address'] = address(ip)
+                self.refused()
+
     def test_ipv6_scope_mapped_and_link_local_rules(self):
         self.evidence, self.expected = fixture(True)
         self.evidence['observation_before']['local'].update(address=address('fe80::1'), scope=0)
@@ -337,6 +347,32 @@ class JsonAndCliTests(unittest.TestCase):
         evidence['schema'] = 1.0
         with self.assertRaises(binding.EvidenceError):
             binding.validate(evidence, expected, NOW)
+
+    def test_full_diagnostic_has_dedicated_four_mib_read_cap(self):
+        raw = b' ' * binding.MAX_EVIDENCE_BYTES + b'{"latitude":-20.5}'
+        result = binding.strict_json_loads(raw, limit=binding.MAX_DIAGNOSTICS_BYTES,
+                                           allow_floats=True)
+        self.assertEqual(result, {'latitude': -20.5})
+        for allow in (False, True):
+            with self.assertRaises(binding.EvidenceError):
+                binding.strict_json_loads(b'{}', limit=binding.MAX_DIAGNOSTICS_BYTES + 1,
+                                           allow_floats=allow)
+        with self.assertRaises(binding.EvidenceError):
+            binding.strict_json_loads(raw, limit=binding.MAX_DIAGNOSTICS_BYTES)
+        self.path.write_bytes(raw)
+        with self.assertRaises(binding.EvidenceError):
+            binding.read_json(self.path)
+        with self.assertRaises(binding.EvidenceError):
+            binding.read_json(self.path, limit=binding.MAX_DIAGNOSTICS_BYTES)
+        with self.assertRaises(binding.EvidenceError):
+            binding.strict_json_loads(b' ' * (binding.MAX_DIAGNOSTICS_BYTES + 1),
+                                       limit=binding.MAX_DIAGNOSTICS_BYTES,
+                                       allow_floats=True)
+        # The larger raw report budget must not relax structural/string limits.
+        with self.assertRaises(binding.EvidenceError):
+            binding.strict_json_loads(json.dumps({'x': 'a' * (binding.MAX_STRING + 1)}),
+                                       limit=binding.MAX_DIAGNOSTICS_BYTES,
+                                       allow_floats=True)
 
     def test_expected_preflight_refuses_unreviewable_shapes(self):
         _, expected = fixture()

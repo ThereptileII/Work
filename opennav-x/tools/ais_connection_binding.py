@@ -19,6 +19,7 @@ import unicodedata
 
 MAX_EVIDENCE_BYTES = 1024 * 1024
 MAX_EXPECTED_BYTES = 128 * 1024
+MAX_DIAGNOSTICS_BYTES = 4 * 1024 * 1024
 MAX_DEPTH = 12
 MAX_NODES = 50000
 MAX_STRING = 1024
@@ -156,7 +157,7 @@ def _address(family, value, scope, public=False):
     _integer(scope)
     raw = bytes.fromhex(value)
     if family == 'ipv4':
-        _require(raw[4:] == bytes(12) and scope == 0)
+        _require(raw[4:] == bytes(12) and scope == 0 and raw[0] != 0)
         addr = ipaddress.IPv4Address(raw[:4])
     else:
         addr = ipaddress.IPv6Address(raw)
@@ -340,8 +341,9 @@ def strict_json_loads(raw, limit=MAX_EVIDENCE_BYTES, *, allow_floats=False):
     """
     try:
         _require(type(raw) in (bytes, str))
-        _require(type(limit) is int and 0 < limit <= MAX_EVIDENCE_BYTES)
         _require(type(allow_floats) is bool)
+        maximum = MAX_DIAGNOSTICS_BYTES if allow_floats else MAX_EVIDENCE_BYTES
+        _require(type(limit) is int and 0 < limit <= maximum)
         if type(raw) is str:
             _require(len(raw) <= limit)
             raw = raw.encode('utf-8', errors='strict')
