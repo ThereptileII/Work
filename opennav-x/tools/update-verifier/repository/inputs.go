@@ -182,6 +182,20 @@ func endpoint(raw string, origin bool) bool {
 	return e == nil && len(raw) <= 2048 && u.Scheme == "https" && u.Hostname() != "" && u.User == nil && u.RawQuery == "" && !u.ForceQuery && u.Fragment == "" && u.RawPath == "" && u.Opaque == "" && !strings.ContainsAny(raw, "#\\\r\n\t ") && (!origin || u.Path == "")
 }
 func rootMetadata(data []byte, now time.Time) (*metadata.Metadata[metadata.RootType], error) {
+	root, err := rootMetadataIdentity(data)
+	if err != nil {
+		return nil, err
+	}
+	if root.Signed.IsExpired(now) {
+		return nil, errors.New("expired operator root")
+	}
+	return root, nil
+}
+
+// rootMetadataIdentity validates the original anchor's identity and signatures,
+// without mistaking its historical expiry for the current retained root's expiry.
+// The verifier remains responsible for current root/metadata freshness and floors.
+func rootMetadataIdentity(data []byte) (*metadata.Metadata[metadata.RootType], error) {
 	if len(data) == 0 || len(data) > 512<<10 {
 		return nil, errors.New("root size refused")
 	}
@@ -197,8 +211,8 @@ func rootMetadata(data []byte, now time.Time) (*metadata.Metadata[metadata.RootT
 	if _, e = trustedmetadata.New(data); e != nil {
 		return nil, errors.New("root signature refused")
 	}
-	if root.Signed.Version != 1 || !root.Signed.ConsistentSnapshot || root.Signed.IsExpired(now) || len(root.Signed.Keys) != 4 || len(root.Signed.Roles) != 4 {
-		return nil, errors.New("unsupported or expired operator root")
+	if root.Signed.Version != 1 || !root.Signed.ConsistentSnapshot || root.Signed.Expires.IsZero() || len(root.Signed.Keys) != 4 || len(root.Signed.Roles) != 4 {
+		return nil, errors.New("unsupported operator root identity")
 	}
 	if len(root.UnrecognizedFields) != 0 || len(root.Signed.UnrecognizedFields) != 0 {
 		return nil, errors.New("root extension refused")
@@ -231,15 +245,38 @@ func rootMetadata(data []byte, now time.Time) (*metadata.Metadata[metadata.RootT
 	return root, nil
 }
 func ValidateTrust(data []byte, now time.Time) (Trust, error) {
+	t, root, err := validateTrustIdentity(data)
+	if err != nil {
+		return t, err
+	}
+	if root.Signed.IsExpired(now) {
+		return t, errors.New("expired operator root")
+	}
+	return t, nil
+}
+
+// ValidateTrustIdentity validates the complete original public trust identity,
+// including exact schema, signature, keys, endpoints and compatibility policy.
+// It deliberately does not require the ORIGINAL bootstrap anchor to remain
+// unexpired. Only an already-established protected registration/state may use
+// this path: it does not authorize fresh enrollment, state initialization, root
+// adoption or rollback-floor reset. The actual verifier must validate the current
+// retained root and metadata at its real clock, preserving durable rotation/floors.
+func ValidateTrustIdentity(data []byte) (Trust, error) {
+	t, _, err := validateTrustIdentity(data)
+	return t, err
+}
+
+func validateTrustIdentity(data []byte) (Trust, *metadata.Metadata[metadata.RootType], error) {
 	var t Trust
 	if e := decode(data, &t); e != nil {
-		return t, e
+		return t, nil, e
 	}
 	if t.Schema != 1 || t.Channel != "beta" || !endpoint(t.MetadataURL, false) || !endpoint(t.ArtifactOrigin, true) || len(t.LocalCompatibilityAllowlist) != 1 || t.LocalCompatibilityAllowlist[0] != stock {
-		return t, errors.New("private beta trust configuration refused")
+		return t, nil, errors.New("private beta trust configuration refused")
 	}
-	_, e := rootMetadata(t.BootstrapRoot, now)
-	return t, e
+	root, e := rootMetadataIdentity(t.BootstrapRoot)
+	return t, root, e
 }
 
 // Selection is a separately reviewed root-operator handoff. Its SHA256 is an

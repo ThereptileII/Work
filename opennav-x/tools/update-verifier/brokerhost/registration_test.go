@@ -2,12 +2,17 @@ package brokerhost
 
 import (
 	"bytes"
+	"crypto"
+	"crypto/ed25519"
+	"crypto/sha256"
 	"encoding/json"
 	"strings"
 	"testing"
 	"time"
 
 	"example.com/opennav-update-verifier/brokerregistration"
+	"github.com/sigstore/sigstore/pkg/signature"
+	"github.com/theupdateframework/go-tuf/v2/metadata"
 )
 
 func TestProtectedRegistrationRejectsAmbiguousAndUnapprovedInput(t *testing.T) {
@@ -74,7 +79,7 @@ func TestProtectedRegistrationUsesFixedLocalStockContract(t *testing.T) {
 func TestProtectedRegistrationPreservesExactOriginalEvidence(t *testing.T) {
 	valid := testRegistration()
 	raw := mutateProtectedClientRequest(valid, func(raw []byte) []byte { return append(append([]byte("\n "), raw...), '\n') })
-	parsed, err := parseRegistrationAt(raw, testSID, clientRegistrationTestNow)
+	parsed, err := parseRegistration(raw, testSID)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -86,8 +91,11 @@ func TestProtectedRegistrationPreservesExactOriginalEvidence(t *testing.T) {
 	if envelope.ApprovedRequest[0] != '\n' || clientRequestDigest(envelope.ApprovedRequest) != envelope.ApprovedRequestSHA256 {
 		t.Fatal("original approved bytes were compacted or identity lost")
 	}
-	if _, err = parseRegistrationAt(raw, testSID, time.Date(2037, 1, 1, 0, 0, 0, 0, time.UTC)); err == nil {
-		t.Fatal("expired approved public root accepted at read")
+	if _, err = brokerregistration.ParseApprovedRequest(envelope.ApprovedRequest, envelope.ApprovedRequestSHA256, time.Date(2037, 1, 1, 0, 0, 0, 0, time.UTC)); err == nil {
+		t.Fatal("expired original root authorized fresh enrollment")
+	}
+	if _, err = brokerregistration.ParseRetainedApprovedRequest(envelope.ApprovedRequest, envelope.ApprovedRequestSHA256); err != nil {
+		t.Fatalf("retained original identity was incorrectly coupled to anchor expiry: %v", err)
 	}
 }
 
@@ -99,7 +107,7 @@ func TestProtectedRegistrationRejectsFormerSchema1Record(t *testing.T) {
 	}
 	legacy := registrationFromApproved(approved)
 	legacy.Schema = 1
-	if _, err = parseRegistrationAt(clientFixtureJSON(legacy), testSID, clientRegistrationTestNow); err == nil {
+	if _, err = parseRegistration(clientFixtureJSON(legacy), testSID); err == nil {
 		t.Fatal("formerly accepted schema1 declaration bypassed original approved evidence")
 	}
 }
@@ -125,9 +133,50 @@ func TestProtectedRegistrationRequiresCanonicalBase64Evidence(t *testing.T) {
 	} {
 		t.Run(name, func(t *testing.T) {
 			fields["approvedRequest"] = encoded
-			if _, err := parseRegistrationAt(clientFixtureJSON(fields), testSID, clientRegistrationTestNow); err == nil {
+			if _, err := parseRegistration(clientFixtureJSON(fields), testSID); err == nil {
 				t.Fatal("noncanonical protected evidence encoding accepted")
 			}
 		})
+	}
+}
+
+func TestProtectedRegistrationReaderUsesRetainedIdentityAfterAnchorExpiry(t *testing.T) {
+	var request brokerregistration.Request
+	if err := json.Unmarshal(testApprovedClientRequest(), &request); err != nil {
+		t.Fatal(err)
+	}
+	var trust map[string]json.RawMessage
+	if err := json.Unmarshal(request.TrustConfiguration, &trust); err != nil {
+		t.Fatal(err)
+	}
+	root, err := metadata.Root().FromBytes(trust["bootstrapRoot"])
+	if err != nil {
+		t.Fatal(err)
+	}
+	root.Signed.Expires = time.Now().UTC().Add(-time.Hour)
+	root.Signatures = nil
+	// Same inert deterministic test signer as the original host fixture.
+	seed := sha256.Sum256([]byte("INERT HOST CLIENT REGISTRATION TEST ONLY root"))
+	signer, err := signature.LoadSigner(ed25519.NewKeyFromSeed(seed[:]), crypto.Hash(0))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err = root.Sign(signer); err != nil {
+		t.Fatal(err)
+	}
+	trust["bootstrapRoot"], err = root.ToBytes(false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	request.TrustConfiguration = clientFixtureJSON(trust)
+	request.TrustConfigSHA256 = clientRequestDigest(request.TrustConfiguration)
+	original := clientFixtureJSON(request)
+	pin := clientRequestDigest(original)
+	if _, err = brokerregistration.ParseApprovedRequest(original, pin, time.Now().UTC()); err == nil {
+		t.Fatal("expired anchor authorized initial enrollment")
+	}
+	protected := clientFixtureJSON(protectedRegistration{Schema: 2, ClientSID: testSID, ApprovedRequestSHA256: pin, ApprovedRequest: original})
+	if _, err = parseRegistration(protected, testSID); err != nil {
+		t.Fatalf("protected reader blocked retained identity after anchor expiry: %v", err)
 	}
 }

@@ -131,6 +131,9 @@ func TestApprovedRequestRejectsAmbiguousJSONAndUnknownFields(t *testing.T) {
 			if _, err := ParseApprovedRequest(raw, digest(raw), fixtureNow); err == nil {
 				t.Fatal("ambiguous or invalid request accepted")
 			}
+			if _, err := ParseRetainedApprovedRequest(raw, digest(raw)); err == nil {
+				t.Fatal("retained identity bypassed strict JSON contract")
+			}
 		})
 	}
 }
@@ -166,6 +169,9 @@ func TestApprovedRequestRejectsUnapprovedIdentityAndPaths(t *testing.T) {
 			}
 			if _, err = ParseApprovedRequest(raw, digest(raw), fixtureNow); err == nil {
 				t.Fatal("invalid identity accepted")
+			}
+			if _, err = ParseRetainedApprovedRequest(raw, digest(raw)); err == nil {
+				t.Fatal("retained identity bypassed approved evidence contract")
 			}
 		})
 	}
@@ -255,6 +261,26 @@ func TestApprovedRequestValidatesOriginalFullTrustConfiguration(t *testing.T) {
 			if _, err = ParseApprovedRequest(raw, digest(raw), fixtureNow); err == nil {
 				t.Fatal("invalid public trust accepted despite separate request approval")
 			}
+			if _, err = ParseRetainedApprovedRequest(raw, digest(raw)); err == nil {
+				t.Fatal("retained identity bypassed original public trust validation")
+			}
 		})
+	}
+}
+
+func TestRetainedApprovedIdentityOutlivesOriginalAnchorExpiry(t *testing.T) {
+	raw := approvedFixture(t)
+	if _, err := ParseApprovedRequest(raw, digest(raw), fixtureNow.Add(25*time.Hour)); err == nil {
+		t.Fatal("expired original root authorized fresh enrollment")
+	}
+	retained, err := ParseRetainedApprovedRequest(raw, digest(raw))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !bytes.Equal(retained.OriginalBytes(), raw) || retained.RequestSHA256 != digest(raw) || digest(retained.TrustConfiguration) != retained.TrustConfigSHA256 {
+		t.Fatal("retained identity changed original approval or trust bytes")
+	}
+	if _, err = ParseRetainedApprovedRequest(raw, strings.Repeat("0", 64)); err == nil {
+		t.Fatal("retained identity bypassed request approval pin")
 	}
 }

@@ -9,7 +9,6 @@ import (
 	"io"
 	"regexp"
 	"strings"
-	"time"
 	"unicode/utf8"
 
 	verifier "example.com/opennav-update-verifier"
@@ -53,10 +52,6 @@ type registration struct {
 	} `json:"updateTrust"`
 }
 
-func parseRegistration(data []byte, peerSID string) (registration, error) {
-	return parseRegistrationAt(data, peerSID, time.Now().UTC())
-}
-
 // protectedRegistration contains the exact original operator-approved request.
 // []byte uses bounded JSON base64 encoding to preserve every original request
 // and trust byte; embedding RawMessage would compact those bytes on marshaling.
@@ -68,7 +63,7 @@ type protectedRegistration struct {
 	ApprovedRequest       []byte `json:"approvedRequest"`
 }
 
-func parseRegistrationAt(data []byte, peerSID string, now time.Time) (registration, error) {
+func parseRegistration(data []byte, peerSID string) (registration, error) {
 	var r registration
 	if len(data) == 0 || len(data) > 1<<20 || !utf8.Valid(data) || peerSID == "" {
 		return r, errors.New("invalid protected registration")
@@ -98,7 +93,10 @@ func parseRegistrationAt(data []byte, peerSID string, now time.Time) (registrati
 	if err != nil || !bytes.Equal(encoded, top["approvedRequest"]) {
 		return registration{}, errors.New("exact protected request base64 required")
 	}
-	request, err := brokerregistration.ParseApprovedRequest(envelope.ApprovedRequest, envelope.ApprovedRequestSHA256, now)
+	// Original approval identity outlives the bootstrap anchor's expiry after
+	// rotation. Current retained root/metadata expiry and floors are enforced by
+	// the actual verifier; reading this record never initializes or resets state.
+	request, err := brokerregistration.ParseRetainedApprovedRequest(envelope.ApprovedRequest, envelope.ApprovedRequestSHA256)
 	if err != nil || request.ClientSID != peerSID {
 		return registration{}, errors.New("protected approved request identity differs")
 	}

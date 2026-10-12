@@ -96,10 +96,27 @@ func (r Request) Trust() repository.Trust {
 // It performs no network or filesystem action, SID lookup, installed-byte
 // observation, signature creation, service registration or executable launch.
 func ParseApprovedRequest(raw []byte, independentlyApprovedSHA256 string, now time.Time) (Request, error) {
+	if now.IsZero() {
+		return Request{}, errors.New("live initial registration clock required")
+	}
+	return parseApprovedRequest(raw, independentlyApprovedSHA256, func(data []byte) (repository.Trust, error) { return repository.ValidateTrust(data, now) })
+}
+
+// ParseRetainedApprovedRequest validates an original approved request read ONLY
+// from completed protected registration evidence. All byte/pin/schema/signature
+// checks remain required. The original bootstrap anchor may have expired after
+// durable root rotation; the actual verifier must check current retained root and
+// metadata expiry and rollback floors. This identity-only path cannot authorize
+// initial operator enrollment, native creation, state reset or trust migration.
+func ParseRetainedApprovedRequest(raw []byte, independentlyApprovedSHA256 string) (Request, error) {
+	return parseApprovedRequest(raw, independentlyApprovedSHA256, repository.ValidateTrustIdentity)
+}
+
+func parseApprovedRequest(raw []byte, independentlyApprovedSHA256 string, validateTrust func([]byte) (repository.Trust, error)) (Request, error) {
 	refused := func() (Request, error) {
 		return Request{}, errors.New("independently approved client registration refused")
 	}
-	if len(raw) == 0 || len(raw) > MaxRequestBytes || !utf8.Valid(raw) || !hex64.MatchString(independentlyApprovedSHA256) || now.IsZero() {
+	if len(raw) == 0 || len(raw) > MaxRequestBytes || !utf8.Valid(raw) || !hex64.MatchString(independentlyApprovedSHA256) {
 		return refused()
 	}
 	data := bytes.Clone(raw)
@@ -141,7 +158,7 @@ func ParseApprovedRequest(raw []byte, independentlyApprovedSHA256 string, now ti
 	if !localStockPath(r.Stock.Path) || r.Stock.Identity() != StockBaseline() || len(r.TrustConfiguration) > MaxTrustConfigurationBytes || digest(r.TrustConfiguration) != r.TrustConfigSHA256 {
 		return refused()
 	}
-	r.trust, err = repository.ValidateTrust(r.TrustConfiguration, now)
+	r.trust, err = validateTrust(r.TrustConfiguration)
 	if err != nil {
 		return refused()
 	}

@@ -149,7 +149,7 @@ func (o clientOwnerFixture) Complete(ctx context.Context, raw []byte) error {
 	if err := ctx.Err(); err != nil {
 		return err
 	}
-	if _, err := parseRegistrationAt(raw, testSID, clientRegistrationTestNow); err != nil {
+	if _, err := parseRegistration(raw, testSID); err != nil {
 		return err
 	}
 	o.f.completed = bytes.Clone(raw)
@@ -245,7 +245,7 @@ func TestClientRegistrationEveryFaultRefusesAndDrainsOwnedHandles(t *testing.T) 
 			if fault == "owner-close" || fault == "stock-close" || fault == "store-close" || fault == "check-8" {
 				// A valid completed record may still be read later. This outcome
 				// never authorizes a second creation attempt or automatic adoption.
-				if _, err := parseRegistrationAt(f.completed, testSID, clientRegistrationTestNow); err != nil {
+				if _, err := parseRegistration(f.completed, testSID); err != nil {
 					t.Fatal(err)
 				}
 			}
@@ -291,7 +291,7 @@ func TestClientRegistrationCompletedHandoffSurvivesLateCancellation(t *testing.T
 			if err := f.run(ctx); err != nil {
 				t.Fatalf("late cancellation reclassified committed registration: %v", err)
 			}
-			if _, err := parseRegistrationAt(f.completed, testSID, clientRegistrationTestNow); err != nil {
+			if _, err := parseRegistration(f.completed, testSID); err != nil {
 				t.Fatal(err)
 			}
 		})
@@ -314,7 +314,7 @@ func TestClientRegistrationClassifiesPublicationAndCleanupUncertainty(t *testing
 			if at == "publication" && !errors.Is(err, brokerstore.ErrRegistrationUncertain) {
 				t.Fatal("native uncertainty identity discarded")
 			}
-			if _, err := parseRegistrationAt(f.completed, testSID, clientRegistrationTestNow); err != nil {
+			if _, err := parseRegistration(f.completed, testSID); err != nil {
 				t.Fatal(err)
 			}
 		})
