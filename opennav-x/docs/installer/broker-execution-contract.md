@@ -1,0 +1,100 @@
+# Protected updater execution — SCRUM-311
+
+This describes the joined implementation, not an accepted installed updater.
+Jira remains the backlog. The historical [startup updater](secure-updater.md)
+still describes the existing user-owned launcher; its normal shortcut/Update Now
+path has not yet been replaced by the protected execution path below.
+
+## Actual service boundary
+
+The SCM broker serves both fixed staging and execution endpoints from the same
+protected Store and operation lock. A terminal endpoint cancels its sibling;
+both must drain before Store custody is released. A joined cancellation/cleanup
+error is not a successful stop. An undrained SCM shutdown retains owners until
+the own-process service exits.
+
+Execution intent is explicit: `start-selected` admits the independently approved
+baseline executor. Empty history permits initial qualification after a second
+locked empty-history check; complete history permits only terminal relay to the
+selected executor. Pending/forked history refuses. `execute-session` qualifies a proposed generation;
+`start-current` starts the independently selected version. Request IDs and stage
+IDs are lookup data, never selection or launch authority. The original native
+executor image, interactive token/session/logon, protected registration and
+nonforking completed selection history must agree before any command.
+
+An empty original history permits only explicit qualification of the independently
+approved initial baseline. Registration alone does not select it. A signed
+candidate requires the original completed generation stage seal and receipt,
+exact consent/full policy/Setup/Recovery identities, and current signed-offer
+eligibility against the actual selected predecessor. The live selected inventory
+admits only the current transaction's newly reserved journal pair.
+
+## Qualification and selection
+
+1. Reserve a fresh one-use execution journal and capture the entire fixed
+   ProgramData OpenCPN profile into its protected immutable original archive.
+2. Commission nonmutating qualification against the original configuration and
+   exact application-image capability. Retain native cold profile ancestry.
+3. Record consumed spawn intent before the interactive creator is called.
+4. Treat the reported PID only as a lookup. Independently open the actual process,
+   verify birth, direct parent, token/session/logon and held original image,
+   and retain its SYNCHRONIZE handle before waiting for health.
+5. Authenticate the actual health-pipe peer as that SAME original child. Normal
+   main-thread readiness, CONFIG provenance, minimum lifetime and receipt/EOF
+   checks remain required. The launcher's redundant Observe command is not used.
+6. Close/drain the original child and record selection only with current policy
+   eligibility and original transaction custody still valid. Close the writer,
+   reopen the actual protected history and verify the resulting selected head.
+7. Relay to a fresh fixed selected launcher. Independently corroborate its native
+   process and original executor image. It must authenticate a new `start-current`
+   conversation before creating an ordinary application.
+
+Qualification's core-output and third-party-plugin restrictions last for its
+whole process. They are never cleared in place. A fresh ordinary selected process
+uses normal OpenCPN configuration, plugin and navigation semantics. Local ordinary
+startup does not require a reachable update server.
+
+## Failed startup and offline recovery
+
+New candidate launch and selection require current eligibility. Teardown and
+recovery instead retain original peer, Store, generation, journal, profile and
+previously qualified predecessor authority. A network outage cannot revoke the
+ability to stop the original child and recover that predecessor.
+
+Every consumed child receives at most one bounded close attempt. Actual original
+exit must be observed before retaining restoration authority. A client report,
+hash, PID lookup after custody is lost, successful transmission or arbitrary
+absence scan cannot grant overwrite permission.
+
+The restore provider checks the entire cold current profile against the original
+archive. It durably records a bound restore intent before its first write.
+Automatic writes cover only existing INI/log files and reviewed exact pinned
+startup changes. Unknown navigation, connection, pilot, plugin, ACL, namespace or
+unreviewed configuration changes refuse before effects. Partial effects retain
+the original archive and permanent pending state; no blind retry occurs.
+
+After verified restoration, the original selected predecessor must independently
+pass commissioning, restricted startup health and actual close/drain before a
+rolled-back terminal is recorded. The selected history is reopened again.
+Cancellation, broken peer custody and ambiguous storage failures remain failures.
+
+## Remaining acceptance boundaries
+
+- Native Windows execution of the joined service/provider/relay/restore path.
+- Native execution of the bounded fresh-pipe handoff correction; the source
+  waits only after actual busy-pipe evidence and authenticates the actual server
+  before sending bytes, without connected replay.
+- Protected normal-shortcut/startup admission and Update Now integration;
+  existing installed user flow still uses the earlier supervisor.
+- Exact build-selected sound-command serialization and additional legitimate
+  startup profile normalization; new directories/navigation migrations are not
+  licensed for automatic deletion or overwrite.
+- Service-restart recovery: the actual Store/host readonly original archive opener
+  is joined and permits inspection only. A serialized journal
+  cannot recreate a process-local original closed-child handle or resume a
+  partially attempted restore.
+- Actual provisioning/SCM principal access, full Windows application/package and
+  installer lifecycle, packaged security gates, and exact candidate boat tests.
+
+No Production/public release, design review, endurance run or physical command is
+authorized by this source integration. See the [integration evidence](../evidence/scrum311-execution-integration-20261012/README.md).

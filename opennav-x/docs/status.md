@@ -1,5 +1,46 @@
 # SKAGER status — 2026-10-12
 
+## Protected startup admission joined; normal installed updater remains open
+
+Source `b2b92829` joins the initial-only approved-baseline startup gateway,
+authenticated read-only original profile-archive reopening and bounded fresh
+launcher pipe handoff. Profile archive validation/closure and cold-profile pin
+release happen before the fresh launcher starts. Joined focused Linux race:
+**65 top-level + 287 nested passed**, zero failures/skips. Windows/x86 service
+component compiles; native execution remains pending. Fixed package source
+completeness suite: **12 passed**. [Exact evidence and limits](evidence/scrum311-startup-admission-20261012/README.md).
+
+Normal installed shortcut activation and protected Update Now are now the active
+parallel integration tasks. Existing installed default still uses the historical
+user-owned supervisor. No combined Staging candidate, whole-product Windows or
+boat acceptance is claimed. Reopened archives cannot recreate original child
+exit authority after service restart. SCRUM-311 remains In Progress.
+
+## Native updater service joined; end-user and native acceptance remain open
+
+Source `aafae707` integrates completed profile capture/restoration, explicit
+selected-launcher relay/current startup, and both actual SCM service endpoints.
+It independently binds the original child before health-pipe observation and
+uses retained teardown/recovery authority when the update server becomes
+unavailable. Candidate launch/selection still require current signed eligibility.
+Focused joined Linux race: **54 top-level + 217 nested passed**, no failures/skips;
+actual joined Windows/x86 brokerhost compilation passed. These are component
+checks, not native service/product acceptance. [Evidence and open boundaries](evidence/scrum311-execution-integration-20261012/README.md).
+
+Review caught a fresh-launcher pipe handoff race; its bounded preconnection
+correction is in progress. Installed normal shortcuts and Update Now still enter
+the previous user-owned supervisor path. Protected startup admission, original
+archive host reopening/service-restart recovery, remaining legitimate profile
+mutations, actual SCM access, packaged security qualification and exact Windows/
+boat lifecycle remain open. No combined full candidate, boat change, physical
+command, design review or endurance run has started.
+
+The previously pending C++ fresh-profile fixture now passes exact native Windows
+run [38244815589](https://github.com/ThereptileII/Work/actions/runs/38244815589),
+revision `63f79bcb`. Its original downloaded summary/logs are retained in the
+linked evidence. It is separate from the newer Go service source and does not
+qualify the whole updater. SCRUM-311 stays In Progress.
+
 ## Qualification plugin bookkeeping repaired; native fixture rerun pending
 
 The candidate-entry plugin guard now runs before OpenCPN can create a persistent

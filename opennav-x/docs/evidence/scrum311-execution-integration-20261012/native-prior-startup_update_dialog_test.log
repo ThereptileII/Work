@@ -1,0 +1,106 @@
+SCENARIO Later
+PASS real startup dialog owns a modal loop
+PASS startup popup needs no application frame
+PASS interaction is consumed once
+PASS dialog received its scheduled input
+PASS dialog returns expected consent choice
+PASS native choice produces expected application state
+PASS repeated model activation cannot create another choice
+PASS same session cannot reopen a completed popup
+PASS late check cannot reopen a completed popup
+SCENARIO Update Now
+PASS real startup dialog owns a modal loop
+PASS startup popup needs no application frame
+PASS interaction is consumed once
+PASS dialog received its scheduled input
+PASS dialog returns expected consent choice
+PASS accepted choice preserves exact presented identity
+PASS native choice produces expected application state
+PASS repeated model activation cannot create another choice
+PASS same session cannot reopen a completed popup
+PASS late check cannot reopen a completed popup
+SCENARIO Escape
+PASS real startup dialog owns a modal loop
+PASS startup popup needs no application frame
+PASS interaction is consumed once
+PASS dialog received its scheduled input
+PASS dialog returns expected consent choice
+PASS native choice produces expected application state
+PASS repeated model activation cannot create another choice
+PASS same session cannot reopen a completed popup
+PASS late check cannot reopen a completed popup
+SCENARIO Window close
+PASS real startup dialog owns a modal loop
+PASS startup popup needs no application frame
+PASS interaction is consumed once
+PASS dialog received its scheduled input
+PASS dialog returns expected consent choice
+PASS native choice produces expected application state
+PASS repeated model activation cannot create another choice
+PASS same session cannot reopen a completed popup
+PASS late check cannot reopen a completed popup
+SCENARIO Initial Return is Later
+PASS real startup dialog owns a modal loop
+PASS startup popup needs no application frame
+PASS interaction is consumed once
+PASS initial focus is the safe Later choice
+PASS dialog received its scheduled input
+PASS dialog returns expected consent choice
+PASS native choice produces expected application state
+PASS repeated model activation cannot create another choice
+PASS same session cannot reopen a completed popup
+PASS late check cannot reopen a completed popup
+SCENARIO Queued repeated Update Now
+PASS real startup dialog owns a modal loop
+PASS startup popup needs no application frame
+PASS interaction is consumed once
+PASS dialog received its scheduled input
+PASS dialog returns expected consent choice
+PASS accepted choice preserves exact presented identity
+PASS native choice produces expected application state
+PASS repeated model activation cannot create another choice
+PASS same session cannot reopen a completed popup
+PASS late check cannot reopen a completed popup
+SCENARIO First accepted command wins
+PASS real startup dialog owns a modal loop
+PASS startup popup needs no application frame
+PASS interaction is consumed once
+PASS dialog received its scheduled input
+PASS dialog returns expected consent choice
+PASS accepted choice preserves exact presented identity
+PASS native choice produces expected application state
+PASS repeated model activation cannot create another choice
+PASS same session cannot reopen a completed popup
+PASS late check cannot reopen a completed popup
+SCENARIO First Later command wins
+PASS real startup dialog owns a modal loop
+PASS startup popup needs no application frame
+PASS interaction is consumed once
+PASS dialog received its scheduled input
+PASS dialog returns expected consent choice
+PASS native choice produces expected application state
+PASS repeated model activation cannot create another choice
+PASS same session cannot reopen a completed popup
+PASS late check cannot reopen a completed popup
+SCENARIO Native pointer Update Now
+PASS real startup dialog owns a modal loop
+PASS startup popup needs no application frame
+PASS interaction is consumed once
+PASS OS pointer move injected
+PASS real startup dialog owns a modal loop
+PASS startup popup needs no application frame
+PASS interaction is consumed once
+PASS OS pointer press injected
+PASS real startup dialog owns a modal loop
+PASS startup popup needs no application frame
+PASS interaction is consumed once
+PASS OS pointer release injected
+PASS OS pointer press reached the actual Update Now button
+PASS dialog received its scheduled input
+PASS dialog returns expected consent choice
+PASS accepted choice preserves exact presented identity
+PASS native choice produces expected application state
+PASS repeated model activation cannot create another choice
+PASS same session cannot reopen a completed popup
+PASS late check cannot reopen a completed popup
+PASS 96 startup update interaction checks

@@ -3,6 +3,12 @@
 Implementation contract for SCRUM-23, SCRUM-25 and SCRUM-26. Jira remains the
 backlog. This document describes the implementation, not release acceptance.
 
+The protected SCM execution path is now joined in source; its distinct current
+contract and remaining normal-launcher/Update Now integration gates are recorded
+in [protected broker execution](broker-execution-contract.md). The historical
+installed supervisor flow described below is not evidence that the new protected
+updater is accepted or reachable from the normal installed shortcut.
+
 ## Startup and consent
 
 The installed SKAGER shortcut starts `skager-start.exe`. Legacy and Safe

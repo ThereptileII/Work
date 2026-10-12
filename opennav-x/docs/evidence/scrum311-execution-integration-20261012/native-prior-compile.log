@@ -1,0 +1,64 @@
+MSBuild version 17.14.60+43b635718 for .NET Framework
+
+  1>Checking Build System
+  Building Custom Rule D:/a/Work/Work/opennav-x/tests/startup_update/CMakeLists.txt
+  startup_update_tests.cpp
+  StartupUpdate.cpp
+  Generating Code...
+  startup_update_tests.vcxproj -> D:\a\Work\Work\opennav-x\build\startup-update-native-evidence\build\Release\startup_update_tests.exe
+MSBuild version 17.14.60+43b635718 for .NET Framework
+
+  Building Custom Rule D:/a/Work/Work/opennav-x/tests/startup_update/CMakeLists.txt
+  startup_update_dialog_test.cpp
+  StartupUpdate.cpp
+  StartupUpdateDialog.cpp
+  Controls.cpp
+  VesselState.cpp
+  Generating Code...
+D:\a\Work\Work\opennav-x\src\ui\Controls.cpp(643,15): warning C4456: declaration of 'inset' hides previous local declaration [D:\a\Work\Work\opennav-x\build\startup-update-native-evidence\build\startup_update_dialog_test.vcxproj]
+      D:\a\Work\Work\opennav-x\src\ui\Controls.cpp(599,13):
+      see declaration of 'inset'
+  
+  startup_update_dialog_test.vcxproj -> D:\a\Work\Work\opennav-x\build\startup-update-native-evidence\build\Release\startup_update_dialog_test.exe
+MSBuild version 17.14.60+43b635718 for .NET Framework
+
+  Building Custom Rule D:/a/Work/Work/opennav-x/tests/startup_update/CMakeLists.txt
+  update_startup_receipt_tests.cpp
+  UpdateStartupReceipt.cpp
+  UpdateQualification.cpp
+  UpdateQualificationNative.cpp
+  Generating Code...
+  update_startup_receipt_tests.vcxproj -> D:\a\Work\Work\opennav-x\build\startup-update-native-evidence\build\Release\update_startup_receipt_tests.exe
+MSBuild version 17.14.60+43b635718 for .NET Framework
+
+  Building Custom Rule D:/a/Work/Work/opennav-x/tests/startup_update/CMakeLists.txt
+  update_startup_receipt_native_test.cpp
+D:\a\Work\Work\opennav-x\tests\update_startup_receipt_native_test.cpp(14,30): warning C4996: 'getenv': This function or variable may be unsafe. Consider using _dupenv_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details. [D:\a\Work\Work\opennav-x\build\startup-update-native-evidence\build\update_startup_receipt_native_test.vcxproj]
+D:\a\Work\Work\opennav-x\tests\update_startup_receipt_native_test.cpp(23,55): warning C4996: '_wgetenv': This function or variable may be unsafe. Consider using _wdupenv_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details. [D:\a\Work\Work\opennav-x\build\startup-update-native-evidence\build\update_startup_receipt_native_test.vcxproj]
+  UpdateStartupReceipt.cpp
+  UpdateQualification.cpp
+  UpdateQualificationNative.cpp
+  Generating Code...
+  update_startup_receipt_native_test.vcxproj -> D:\a\Work\Work\opennav-x\build\startup-update-native-evidence\build\Release\update_startup_receipt_native_test.exe
+MSBuild version 17.14.60+43b635718 for .NET Framework
+
+  Building Custom Rule D:/a/Work/Work/opennav-x/tests/startup_update/CMakeLists.txt
+  StartupUpdatePrompt.cpp
+  StartupUpdate.cpp
+  StartupUpdateDialog.cpp
+  Controls.cpp
+D:\a\Work\Work\opennav-x\src\ui\Controls.cpp(643,15): warning C4456: declaration of 'inset' hides previous local declaration [D:\a\Work\Work\opennav-x\build\startup-update-native-evidence\build\skager-update-prompt.vcxproj]
+      D:\a\Work\Work\opennav-x\src\ui\Controls.cpp(599,13):
+      see declaration of 'inset'
+  
+  VesselState.cpp
+  Generating Code...
+  skager-update-prompt.vcxproj -> D:\a\Work\Work\opennav-x\build\startup-update-native-evidence\build\Release\skager-update-prompt.exe
+MSBuild version 17.14.60+43b635718 for .NET Framework
+
+  Building Custom Rule D:/a/Work/Work/opennav-x/tests/startup_update/CMakeLists.txt
+  update_qualification_native_test.cpp
+  UpdateQualification.cpp
+  UpdateQualificationNative.cpp
+  Generating Code...
+  update_qualification_native_test.vcxproj -> D:\a\Work\Work\opennav-x\build\startup-update-native-evidence\build\Release\update_qualification_native_test.exe

@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "sourceCommit": "b2b9282983c508f9562a3f62c8d9fa94ba58b2ce",
+  "scope": "joined component startup admission, archive reopen and pipe handoff; not installed product acceptance",
+  "race": {
+    "pass-top": 65,
+    "pass-nested": 287,
+    "pass-package": 3
+  },
+  "windows386Compile": {
+    "exitCode": 0,
+    "binarySha256": "01cbb5cf28a79cdbf9e93f3aa4047e957224448b479f09978f064b7a4eb0ff57",
+    "nativeRun": false
+  },
+  "sourceSha256": {
+    "opennav-x/tools/update-verifier/brokerhost/execution_host.go": "ae9fddc62f37f88ca0a90a16bff1442bd58870ece852e49d03aeecd094fcb24d",
+    "opennav-x/tools/update-verifier/brokerhost/execution_host_windows.go": "c133a860d7e14c6c1f35b6a423fbf013255783ab5fde33f9d9b5a8a75f29b6ed",
+    "opennav-x/tools/update-verifier/brokerhost/host_windows.go": "038144658134b6922bc0e2d3ee0b7fec0900b99340a0f3c582f162597623fe6b",
+    "opennav-x/tools/update-verifier/brokerhost/execution_startup_host_windows.go": "12dd9d9a6fde9ad7973342c53c241096e5b86f7862626615e2852dd3c197c48e",
+    "opennav-x/tools/update-verifier/brokerhost/execution_startup_intent_test.go": "8ced1f0f19fb5c3a0e9b8dfbf9ef7d1cb33f9e2268a2e7ff753fd06e533f0d5d",
+    "opennav-x/tools/update-verifier/brokerhost/execution_profile_capture_reopen.go": "6bcdf46ad439318fd06cb41aede3df9fc3884d5bd40c6f873707528db50f62aa",
+    "opennav-x/tools/update-verifier/brokerhost/execution_profile_capture_reopen_windows.go": "79a4699a8e2adfbc3342c51b1e5d74c39e0e039eb9c23e7f19698984f586a366",
+    "opennav-x/tools/update-verifier/brokerpipe/io_windows.go": "b717b6099f8a148be632653547d58f81fdb5241ceecd374c01e172a318101e90",
+    "opennav-x/tools/update-verifier/brokerpipe/execution_windows.go": "f0fdf53c35f917f8a4d6bd2d3b1ff65eec8dc9938b7103686988a9fac8eedf3b",
+    "opennav-x/tools/update-verifier/launcher/broker_start_windows.go": "9343a955dfda352a871534241f2f1e588097dddcd180ec880ee841a668e3a103",
+    "opennav-x/tools/broker_package.py": "6713916f8b36d05d88b9beb22a6ef8861a791f58495129855fdf9baf8f3ebc5a"
+  },
+  "evidenceSha256": {
+    "joined-startup.jsonl": "be053fb39a202aef962488def67472ed15f24df0294e207ff070ec504cd52765",
+    "joined-startup.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "joined-startup-windows386.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "joined-startup-windows386.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "remaining": [
+    "normal installed shortcut activation",
+    "protected Update Now flow",
+    "native Windows joined service execution",
+    "full-profile failed-start recovery",
+    "packaged security",
+    "full installer lifecycle",
+    "exact candidate boat gate"
+  ]
+}

@@ -1,0 +1,10 @@
+PASS actual sender + authenticated receiver: healthy
+PASS actual sender + authenticated receiver: no-marker
+PASS actual sender + authenticated receiver: interrupted
+PASS actual sender + authenticated receiver: invalid-request
+PASS actual sender + authenticated receiver: wrong-expected-commit
+PASS actual sender + authenticated receiver: warning-agree
+PASS actual sender + authenticated receiver: warning-cancel
+PASS actual sender + authenticated receiver: warning-timeout
+PASS actual sender + authenticated receiver: warning-no-checkpoint
+PASS actual sender + authenticated receiver: warning-fast

@@ -1,0 +1,11 @@
+-- Selecting Windows SDK version 10.0.26100.0 to target Windows 10.0.20348.
+-- The CXX compiler identification is MSVC 19.44.35229.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x86/cl.exe - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found wxWidgets: debug;D:/a/Work/Work/opennav-x/build/startup-update-sdk/wx/lib/vc14x_dll/wxmsw32ud_core.lib;optimized;D:/a/Work/Work/opennav-x/build/startup-update-sdk/wx/lib/vc14x_dll/wxmsw32u_core.lib;debug;D:/a/Work/Work/opennav-x/build/startup-update-sdk/wx/lib/vc14x_dll/wxbase32ud.lib;optimized;D:/a/Work/Work/opennav-x/build/startup-update-sdk/wx/lib/vc14x_dll/wxbase32u.lib;debug;D:/a/Work/Work/opennav-x/build/startup-update-sdk/wx/lib/vc14x_dll/wxpngd.lib;optimized;D:/a/Work/Work/opennav-x/build/startup-update-sdk/wx/lib/vc14x_dll/wxpng.lib;debug;D:/a/Work/Work/opennav-x/build/startup-update-sdk/wx/lib/vc14x_dll/wxtiffd.lib;optimized;D:/a/Work/Work/opennav-x/build/startup-update-sdk/wx/lib/vc14x_dll/wxtiff.lib;debug;D:/a/Work/Work/opennav-x/build/startup-update-sdk/wx/lib/vc14x_dll/wxjpegd.lib;optimized;D:/a/Work/Work/opennav-x/build/startup-update-sdk/wx/lib/vc14x_dll/wxjpeg.lib;debug;D:/a/Work/Work/opennav-x/build/startup-update-sdk/wx/lib/vc14x_dll/wxzlibd.lib;optimized;D:/a/Work/Work/opennav-x/build/startup-update-sdk/wx/lib/vc14x_dll/wxzlib.lib;debug;D:/a/Work/Work/opennav-x/build/startup-update-sdk/wx/lib/vc14x_dll/wxregexud.lib;optimized;D:/a/Work/Work/opennav-x/build/startup-update-sdk/wx/lib/vc14x_dll/wxregexu.lib;debug;D:/a/Work/Work/opennav-x/build/startup-update-sdk/wx/lib/vc14x_dll/wxexpatd.lib;optimized;D:/a/Work/Work/opennav-x/build/startup-update-sdk/wx/lib/vc14x_dll/wxexpat.lib;gdiplus;msimg32;winmm;comctl32;uuid;oleacc;uxtheme;rpcrt4;shlwapi;version;wsock32 (found suitable version "3.2.8", minimum required is "3.2") found components: core base png tiff jpeg zlib regex expat
+-- Configuring done (12.0s)
+-- Generating done (0.1s)
+-- Build files have been written to: D:/a/Work/Work/opennav-x/build/startup-update-native-evidence/build
