@@ -1,5 +1,23 @@
 # SKAGER status — 2026-10-12
 
+## Actual native service enrollment passes with corrected helper
+
+Retained native run [38302376379](https://github.com/ThereptileII/Work/actions/runs/38302376379)
+on helper `c4fec9c5bf0db8aba88b0e307cf256027c7923aa` succeeds with the exact
+original `0ddb649f` broker. Downloaded artifact and provenance hashes are verified.
+All 7 selected top-level tests and 18 nested cases pass, including actual fresh
+file/service creation, stopped zero-exit `initialize-store`, broker-principal
+stopped zero-exit `verify-store` and fixed service configuration/DACL/SID readback.
+The registry-template and fresh-before-first-start corrections preserve system
+ACLs and strict post-start zero-exit checks. Failed original runs remain preserved.
+
+This qualifies the retained broker with the corrected enrollment helper, not a
+newly compiled provisioner or installed application updater. One combined fresh
+same-commit component production is next; full OpenCPN rebuilding and boat changes
+remain deferred until prerequisites are ready. Actual B0/B1 registration, protected
+startup and no-update/Later/Now/offline qualification still await their separate
+operator/HTTPS gates. [Verified native evidence](evidence/scrum311-startup-native-repairs-20261012/retained-native-enrollment-pass.json).
+
 ## Fresh native components pass; actual SCM permission refusal under investigation
 
 Replacement component run [38298416414](https://github.com/ThereptileII/Work/actions/runs/38298416414)

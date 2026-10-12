@@ -1,0 +1,34 @@
+{
+  "schema": 1,
+  "run": 38302376379,
+  "url": "https://github.com/ThereptileII/Work/actions/runs/38302376379",
+  "conclusion": "success",
+  "helperCommit": "c4fec9c5bf0db8aba88b0e307cf256027c7923aa",
+  "retainedBrokerCommit": "0ddb649ffaa06c8b6e1fc313fa6a087edf9914dd",
+  "originalProducerConclusion": "failure preserved",
+  "job": 114988161081,
+  "topLevelPassed": 7,
+  "nestedPassed": 18,
+  "failed": 0,
+  "actualFreshFiles": "passed",
+  "originalExclusiveServiceCreation": "passed",
+  "actualBrokerInitializeStoreStoppedZeroExit": "passed",
+  "actualBrokerPrincipalVerifyStoreStoppedZeroExit": "passed",
+  "fixedServiceConfigurationDaclSidReadback": "passed",
+  "newInertSecurityAndLifecycleRegressions": "passed",
+  "archive": {
+    "id": 11771566590,
+    "bytes": 1916,
+    "sha256": "529b65bab9dfc1d30cfd16f3f82d50cd0b08e6ececb0e18cbe0e05791bda2a40",
+    "downloadedAndVerified": true
+  },
+  "log": {
+    "bytes": 34454,
+    "sha256": "834d8dad40b84019f1d2ef64a3332130c942c736005bcec086c1b734b90abe8f"
+  },
+  "fullApplicationBuild": false,
+  "boatChanged": false,
+  "installedApplicationUpdaterAccepted": false,
+  "newCompiledProvisionerAccepted": false,
+  "scope": "exact retained broker with corrected enrollment helper; final same-commit component production and installed B0/B1 startup phases remain required"
+}
