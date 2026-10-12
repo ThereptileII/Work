@@ -151,3 +151,25 @@ startup and failure restoration, packaged networking/plugin/sharing gates,
 installer lifecycle and exact candidate boat tests are still required. No full
 application rebuild, boat/profile/service change, design review, endurance run,
 physical hardware command or Production/public release occurred in this batch.
+
+## Closed-mode replacement result
+
+[Run 38283605275](https://github.com/ThereptileII/Work/actions/runs/38283605275)
+on exact `cfca0a9855d87b430083f5b25513f1ba187d4596` passed Linux and native
+startup interactions. Windows passed 724 top-level and 2780 nested cases, failed
+one top-level inaccessible-directory fixture and skipped 12 top-level cases.
+The fixture failed its parent-access premise, before proving the child ACL denial;
+this is not product acceptance. The original maintenance lifetime revocation case
+now passes. Original downloaded artifact identity/hash is preserved in
+[closed-modes-native-run.json](closed-modes-native-run.json). Fresh SCM enrollment
+was skipped. The historical installer passed 47 inert checks, not protected
+maintenance. Earlier failed evidence remains unchanged.
+
+`17792d5f` keeps only traversal privilege in a private fixture token, independently
+verifies that list and preserves native parent-access/child-denial/refusal checks.
+`fe9bf9cf`/`1e6bd0e3` join protected C++ mode restart and Windows SDK prerequisites.
+Portable routing/sanitizer, ordinary lifecycle, commissioning protocol (886
+checks) and qualification checks passed in the isolated implementation worktree;
+these do not substitute for native MSVC or installed acceptance. The next bounded
+component run exercises the actual restart code using inert companions and the
+existing ordinary/commissioning scenarios before any full application build.

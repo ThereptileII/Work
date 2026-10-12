@@ -1,5 +1,30 @@
 # SKAGER status — 2026-10-12
 
+## Protected restart and retained operator delivery joined
+
+`fe9bf9cf` routes installed XNav/Legacy/Safe restarts through the corroborated
+same-generation broker launcher. Original qualification fences remain latched;
+commissioning markers cannot divert a protected restart into the old helper path.
+Independent review found no further concrete issue in that bounded path. Native
+MSVC compilation and actual inert companion dispatch are pending.
+
+`17792d5f` corrects the inaccessible-directory fixture's private token to retain
+only directory traversal privilege and verifies its actual privilege list. The
+parent-access, child ACCESS_DENIED and production-refusal assertions remain;
+this is not a native pass until the replacement run confirms them.
+
+`60ffef92`/`2c97d643` package an inactive operator kit from the same-commit
+launcher and already-produced native broker/provisioner/baseline components.
+The reuse path performs no compiler invocation or rebuild fallback. Sixteen
+focused packaging tests passed; native packaging remains pending. The kit is
+separate from the normal product and must be paired with its independently
+authenticated same-commit recovery/launcher prerequisite. It grants no enrollment
+or mutation authority. [Operator delivery contract](../tools/protected-operator-kit.md).
+
+Protected repair/decommission and the actual installed no-update/Later/Now/
+offline sequence remain open; neither component checks nor old-layout installer
+checks close those acceptance gates. The existing boat installation is unchanged.
+
 ## Latest component result — one native fixture remains
 
 Exact component run [38283605275](https://github.com/ThereptileII/Work/actions/runs/38283605275)
@@ -26,7 +51,7 @@ capability error ordering and an inaccessible-directory fixture whose read was
 still permitted. Fresh SCM enrollment remained skipped after the prerequisite
 failure. [Original artifact and failures](evidence/scrum311-startup-native-repairs-20261012/manual-maintenance-native-run.json)
 are preserved. `c8a4ab50` moves the original lifetime check before backend
-readiness and independently establishes real ACL denial under a private,
+readiness and attempts to establish real ACL denial under a private,
 privilege-disabled test token; it does not change the process primary token or
 weaken production directory observations. Native confirmation is pending.
 
