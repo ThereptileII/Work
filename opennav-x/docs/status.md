@@ -15,7 +15,15 @@ watch notifications and native shortcut factory/publication. A separate installe
 fixture omitted the required installation root; the production guard correctly
 refused it. `3abc9bd4` changes watch arming/complete validation without ignoring
 events, `c8b5a89b` repairs native shortcut factory/rename custody, and `b92eaaa5`
-fixes the stale installer fixture call. Replacement native evidence remains pending.
+fixes the stale installer fixture call. Replacement component run
+[38264329533](https://github.com/ThereptileII/Work/actions/runs/38264329533) on
+`307b66bc` passed Linux and native startup interactions. Windows now has **631
+top-level + 2548 nested passed; 2 top-level + 2 nested failed; 9 top-level skipped**.
+Remaining failures concern short/long shortcut-path expectations and the fixture's
+security mutation. The installer fixture reached authenticated child reception,
+then failed because it omitted the production `CreatedRoot` initializer.
+`e87229ca`, `182e5a99` and `ca368ac4` repair these fixture cases without changing
+production guards; replacement native validation remains pending.
 
 The older installed lifecycle has not yet joined protected enrollment and
 repair/rollback/uninstall. Actual protected service operation, combined package

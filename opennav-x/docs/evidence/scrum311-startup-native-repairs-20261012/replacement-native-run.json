@@ -1,0 +1,61 @@
+{
+  "schema": 1,
+  "run": "https://github.com/ThereptileII/Work/actions/runs/38264329533",
+  "commit": "307b66bc786f57584ea18cf8a6c7f7dfd240da11",
+  "scope": "component-only; not installed protected updater or combined application acceptance",
+  "jobs": {
+    "linux": "success",
+    "nativeStartupInteractions": "success",
+    "windows": "failure"
+  },
+  "goTestCounts": {
+    "top_pass": 631,
+    "nested_pass": 2548,
+    "top_skip": 9,
+    "top_fail": 2,
+    "nested_fail": 2
+  },
+  "failedCases": [
+    "TestNativeStartupShellLinkPersistsFixedProtectedArguments/target",
+    "TestNativeStartupShellLinkPersistsFixedProtectedArguments",
+    "TestNativeExecutionProfileCaptureMutationWatchAndMetadataRefuse/security",
+    "TestNativeExecutionProfileCaptureMutationWatchAndMetadataRefuse"
+  ],
+  "installerFailure": "Extracted fixture omitted production CreatedRoot initializer; wrong-transaction path failed before its intended rejection. Authenticated inert child reception and clean process exit passed.",
+  "downloadedArtifact": {
+    "id": 11754231575,
+    "name": "update-verifier-windows-2022-386-307b66bc786f57584ea18cf8a6c7f7dfd240da11",
+    "bytes": 154899,
+    "sha256": "d229bb10e5d81dcba78f371d5d3da1d35d30fa93c353b94ed846f4f5fd274e54"
+  },
+  "retainedArtifacts": [
+    {
+      "name": "installer-fixture-SkagerLifecycleTest-d5424fc4c7184bf6bc0dbf502ede6ac7-bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb-client.log",
+      "bytes": 605,
+      "sha256": "8a69fa1b7a3be162e2d9f82848fbf4e8b0088093a4717c017dd77cebf2c5177e"
+    },
+    {
+      "name": "installer-fixture-SkagerLifecycleTest-d5424fc4c7184bf6bc0dbf502ede6ac7.jsonl",
+      "bytes": 1645,
+      "sha256": "704d4f949cc625c9f3745dbab8aab09561ea65f656a4bcd31cf0a223ef009158"
+    },
+    {
+      "name": "installer-transaction-tests.log",
+      "bytes": 4240,
+      "sha256": "2375bb5c3ccbf27cdc3f10112efa99505019e9ff6f515e289500e261bd5261a9"
+    },
+    {
+      "name": "transaction-tests.log",
+      "bytes": 20848,
+      "sha256": "f339ad04be042c29734a38053e993c728c9ccba5b2ce1944069c5036e6f1d682"
+    },
+    {
+      "name": "verifier-tests.json",
+      "bytes": 3198832,
+      "sha256": "a0e6957087f32863022d6cea59f223151a3de72ecc942f10004ad39087324966"
+    }
+  ],
+  "replacementRepairsAcceptedNatively": false,
+  "combinedCandidateBuilt": false,
+  "boatChanged": false
+}

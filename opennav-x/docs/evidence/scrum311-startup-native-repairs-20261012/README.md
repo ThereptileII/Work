@@ -66,6 +66,33 @@ used exact source `daf9c3a4bca883f91a818b5eedf9c7c8ba7b6074`:
   initial hypothesis, not the established cause; it does not justify changing
   the production guard.
 
+## Replacement component run
+
+[Run 38264329533](https://github.com/ThereptileII/Work/actions/runs/38264329533)
+used exact source `307b66bc786f57584ea18cf8a6c7f7dfd240da11`. Linux and native
+startup interactions passed. Native component results improved to **631 top-level
+and 2548 nested passed; 2 top-level and 2 nested failed; 9 top-level skipped**.
+Original artifact hashes and exact failures are in
+[replacement-native-run.json](replacement-native-run.json). The prior failed
+record remains unchanged.
+
+The remaining shortcut assertion compared `RUNNER~1` with Windows' expanded
+`runneradmin` target. `e87229ca` obtains the independently expected long path from
+Win32 and retains exact target, arguments and working-directory assertions.
+`182e5a99` repairs the security-mutation fixture: it changes a captured directory
+DACL, independently observes that change and still requires capture refusal.
+The captured ordinary file correctly denies write sharing; production remains
+unchanged. `ca368ac4` restores actual safe top-level Lifecycle initializers in
+the extracted fixture. Its portable regression reproduces the omitted
+`CreatedRoot` failure and verifies the intended wrong-transaction refusal,
+byte-identical selected/pending records and lock release after the repair.
+
+The next native component run also explicitly opts into fresh fixed-name service
+creation on a disposable hosted runner using the same-commit retained broker.
+This tests real SCM principal/store initialization without changing the boat or
+launching the navigation application. Fixture source/compilation alone is not a
+native service pass. Replacement native execution of these repairs is pending.
+
 ## Remaining installed acceptance
 
 The ordinary installed Setup still uses the older per-user lifecycle. It has not
