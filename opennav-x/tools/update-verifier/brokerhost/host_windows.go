@@ -43,7 +43,7 @@ func (s storeAdapter) materialize(ctx context.Context, previous baselineOwner, s
 	if !ok || native == nil {
 		return nil, errors.New("native reserved candidate required")
 	}
-	generation, err := s.MaterializeCandidateFresh(ctx, baseline, native)
+	generation, err := s.MaterializeCandidateReadOnlyFresh(ctx, baseline, native)
 	if generation == nil {
 		return nil, err
 	}
