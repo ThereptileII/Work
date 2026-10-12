@@ -24,21 +24,30 @@ func maintenanceOperatorNative(sid string) error {
 }
 
 type nativeMaintenanceBackend struct {
-	service   nativeServiceBackend
-	files     *nativeEnrollmentFiles
-	image     *enrollmentPin
-	clientSID string
-	brokerSID string
-	bound     *nativeMaintenanceProcess
+	service      nativeServiceBackend
+	files        *nativeEnrollmentFiles
+	image        *enrollmentPin
+	clientSID    string
+	brokerSID    string
+	bound        *nativeMaintenanceProcess
+	decommission bool
 }
 
 func openMaintenanceNative(ctx context.Context, authority maintenanceAuthority) (result maintenanceBackend, resultErr error) {
+	return openMaintenanceNativeMode(ctx, authority, false)
+}
+
+func openDecommissionNative(ctx context.Context, authority maintenanceAuthority) (maintenanceBackend, error) {
+	return openMaintenanceNativeMode(ctx, authority, true)
+}
+
+func openMaintenanceNativeMode(ctx context.Context, authority maintenanceAuthority, decommission bool) (result maintenanceBackend, resultErr error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	if err := maintenanceOperatorNative(authority.client.ClientSID); err != nil {
 		return nil, err
 	}
-	n := &nativeMaintenanceBackend{files: &nativeEnrollmentFiles{}, clientSID: authority.client.ClientSID}
+	n := &nativeMaintenanceBackend{files: &nativeEnrollmentFiles{}, clientSID: authority.client.ClientSID, decommission: decommission}
 	defer func() {
 		if resultErr != nil {
 			resultErr = errors.Join(resultErr, n.close())
@@ -49,8 +58,8 @@ func openMaintenanceNative(ctx context.Context, authority maintenanceAuthority) 
 		return nil, err
 	}
 	n.brokerSID = broker.String()
-	// Observation and STOP only. No CREATE/START/CHANGE_CONFIG/DELETE/WRITE_DAC
-	// service rights, privilege enablement or broad filesystem ACLs are acquired.
+	// No CREATE/START/WRITE_DAC service rights, privilege enablement or broad
+	// filesystem ACLs are acquired. Ordinary maintenance remains STOP-only.
 	n.service.scm, err = windows.OpenSCManager(nil, nil, windows.SC_MANAGER_CONNECT|windows.READ_CONTROL)
 	if err != nil {
 		return nil, err
@@ -61,7 +70,11 @@ func openMaintenanceNative(ctx context.Context, authority maintenanceAuthority) 
 		}
 	}
 	name, _ := windows.UTF16PtrFromString(serviceName)
-	n.service.service, err = windows.OpenService(n.service.scm, name, windows.SERVICE_QUERY_CONFIG|windows.SERVICE_QUERY_STATUS|windows.SERVICE_STOP|windows.READ_CONTROL)
+	rights := uint32(windows.SERVICE_QUERY_CONFIG | windows.SERVICE_QUERY_STATUS | windows.SERVICE_STOP | windows.READ_CONTROL)
+	if decommission {
+		rights |= windows.SERVICE_CHANGE_CONFIG | windows.DELETE
+	}
+	n.service.service, err = windows.OpenService(n.service.scm, name, rights)
 	if err != nil {
 		return nil, err
 	}

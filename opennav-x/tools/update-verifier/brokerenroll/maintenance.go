@@ -48,10 +48,11 @@ type maintenanceProcess interface {
 	close() error
 }
 type maintenanceOperations struct {
-	authenticate func(string) error
-	open         func(context.Context, maintenanceAuthority) (maintenanceBackend, error)
-	poll         func(context.Context) error
-	limit        time.Duration
+	authenticate     func(string) error
+	open             func(context.Context, maintenanceAuthority) (maintenanceBackend, error)
+	openDecommission func(context.Context, maintenanceAuthority) (maintenanceBackend, error)
+	poll             func(context.Context) error
+	limit            time.Duration
 }
 
 // MaintenanceOwner retains original SCM, process/token, protected image and
@@ -66,19 +67,23 @@ type maintenanceOperations struct {
 // No service database lock is claimed: it has no effect since Windows Vista.
 // https://learn.microsoft.com/en-us/windows/win32/api/winsvc/nf-winsvc-lockservicedatabase
 type MaintenanceOwner struct {
-	self          *MaintenanceOwner
-	mu            sync.Mutex
-	authority     maintenanceAuthority
-	op            maintenanceOperations
-	backend       maintenanceBackend
-	process       maintenanceProcess
-	pid           uint32
-	stopAttempted bool
-	dispatched    bool
-	quiescent     bool
-	failed        bool
-	closed        bool
-	closeErr      error
+	self             *MaintenanceOwner
+	mu               sync.Mutex
+	authority        maintenanceAuthority
+	op               maintenanceOperations
+	backend          maintenanceBackend
+	process          maintenanceProcess
+	pid              uint32
+	stopAttempted    bool
+	dispatched       bool
+	quiescent        bool
+	failed           bool
+	closed           bool
+	closeErr         error
+	decommission     bool
+	disableAttempted bool
+	deleteAttempted  bool
+	fence            decommissionFence
 }
 
 // OpenMaintenance observes only the exact existing normal-running broker as
@@ -94,7 +99,15 @@ func OpenMaintenance(ctx context.Context, req MaintenanceRequest) (*MaintenanceO
 }
 
 func openMaintenanceWith(ctx context.Context, req MaintenanceRequest, op maintenanceOperations) (result *MaintenanceOwner, resultErr error) {
-	if ctx == nil || ctx.Err() != nil || !validPin(req.ApprovedBrokerSHA256) || op.authenticate == nil || op.open == nil || op.poll == nil || op.limit <= 0 || op.limit > maintenanceStopLimit {
+	return openMaintenanceModeWith(ctx, req, op, false)
+}
+
+func openMaintenanceModeWith(ctx context.Context, req MaintenanceRequest, op maintenanceOperations, decommission bool) (result *MaintenanceOwner, resultErr error) {
+	open := op.open
+	if decommission {
+		open = op.openDecommission
+	}
+	if ctx == nil || ctx.Err() != nil || !validPin(req.ApprovedBrokerSHA256) || op.authenticate == nil || open == nil || op.poll == nil || op.limit <= 0 || op.limit > maintenanceStopLimit {
 		return nil, errors.New("live independently approved native maintenance inputs required")
 	}
 	// This is a new independently approved operator invocation. An expired
@@ -108,14 +121,14 @@ func openMaintenanceWith(ctx context.Context, req MaintenanceRequest, op mainten
 	if err := op.authenticate(client.ClientSID); err != nil {
 		return nil, err
 	}
-	m := &MaintenanceOwner{authority: maintenanceAuthority{brokerSHA: req.ApprovedBrokerSHA256, client: client}, op: op}
+	m := &MaintenanceOwner{authority: maintenanceAuthority{brokerSHA: req.ApprovedBrokerSHA256, client: client}, op: op, decommission: decommission}
 	m.self = m
 	defer func() {
 		if resultErr != nil {
 			resultErr = errors.Join(resultErr, m.Close())
 		}
 	}()
-	m.backend, err = op.open(ctx, m.authority)
+	m.backend, err = open(ctx, m.authority)
 	if err != nil || m.backend == nil {
 		return nil, errors.Join(errors.New("retained original maintenance service required"), err)
 	}
@@ -209,6 +222,13 @@ func (m *MaintenanceOwner) Quiesce(ctx context.Context) (resultErr error) {
 	}
 	m.mu.Lock()
 	defer m.mu.Unlock()
+	if m.decommission {
+		return errors.New("decommission requires disable and original fence before STOP")
+	}
+	return m.quiesceLocked(ctx)
+}
+
+func (m *MaintenanceOwner) quiesceLocked(ctx context.Context) (resultErr error) {
 	if m.stopAttempted || m.closed || m.failed {
 		return errors.New("maintenance stop already consumed or owner revoked")
 	}
@@ -268,10 +288,18 @@ func (m *MaintenanceOwner) Close() error {
 	}
 	m.mu.Lock()
 	defer m.mu.Unlock()
+	return m.closeLocked()
+}
+
+func (m *MaintenanceOwner) closeLocked() error {
 	if m.closed {
 		return m.closeErr
 	}
 	m.closed = true
+	if m.fence != nil {
+		m.closeErr = errors.Join(m.closeErr, m.fence.Close())
+		m.fence = nil
+	}
 	if m.process != nil {
 		m.closeErr = errors.Join(m.closeErr, m.process.close())
 		m.process = nil

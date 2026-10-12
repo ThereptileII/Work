@@ -13,3 +13,6 @@ func maintenanceOperatorNative(string) error {
 func openMaintenanceNative(context.Context, maintenanceAuthority) (maintenanceBackend, error) {
 	return nil, errors.New("retained native Windows service/process maintenance required")
 }
+func openDecommissionNative(context.Context, maintenanceAuthority) (maintenanceBackend, error) {
+	return nil, errors.New("retained native Windows decommission service required")
+}
