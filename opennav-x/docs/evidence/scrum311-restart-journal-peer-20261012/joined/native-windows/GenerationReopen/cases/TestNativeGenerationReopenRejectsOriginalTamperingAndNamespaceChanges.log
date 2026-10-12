@@ -1,0 +1,24 @@
+=== RUN   TestNativeGenerationReopenRejectsOriginalTamperingAndNamespaceChanges
+=== RUN   TestNativeGenerationReopenRejectsOriginalTamperingAndNamespaceChanges/missing-completion
+=== RUN   TestNativeGenerationReopenRejectsOriginalTamperingAndNamespaceChanges/incomplete-marker
+=== RUN   TestNativeGenerationReopenRejectsOriginalTamperingAndNamespaceChanges/private-record-bytes
+=== RUN   TestNativeGenerationReopenRejectsOriginalTamperingAndNamespaceChanges/member-bytes
+=== RUN   TestNativeGenerationReopenRejectsOriginalTamperingAndNamespaceChanges/member-physical-id
+=== RUN   TestNativeGenerationReopenRejectsOriginalTamperingAndNamespaceChanges/parent-physical-id
+=== RUN   TestNativeGenerationReopenRejectsOriginalTamperingAndNamespaceChanges/private-extra
+=== RUN   TestNativeGenerationReopenRejectsOriginalTamperingAndNamespaceChanges/public-extra
+=== RUN   TestNativeGenerationReopenRejectsOriginalTamperingAndNamespaceChanges/member-extra
+=== RUN   TestNativeGenerationReopenRejectsOriginalTamperingAndNamespaceChanges/helper-hardlink
+=== RUN   TestNativeGenerationReopenRejectsOriginalTamperingAndNamespaceChanges/case-alias
+--- PASS: TestNativeGenerationReopenRejectsOriginalTamperingAndNamespaceChanges (5.70s)
+    --- PASS: TestNativeGenerationReopenRejectsOriginalTamperingAndNamespaceChanges/missing-completion (0.49s)
+    --- PASS: TestNativeGenerationReopenRejectsOriginalTamperingAndNamespaceChanges/incomplete-marker (0.54s)
+    --- PASS: TestNativeGenerationReopenRejectsOriginalTamperingAndNamespaceChanges/private-record-bytes (0.50s)
+    --- PASS: TestNativeGenerationReopenRejectsOriginalTamperingAndNamespaceChanges/member-bytes (0.57s)
+    --- PASS: TestNativeGenerationReopenRejectsOriginalTamperingAndNamespaceChanges/member-physical-id (0.50s)
+    --- PASS: TestNativeGenerationReopenRejectsOriginalTamperingAndNamespaceChanges/parent-physical-id (0.51s)
+    --- PASS: TestNativeGenerationReopenRejectsOriginalTamperingAndNamespaceChanges/private-extra (0.49s)
+    --- PASS: TestNativeGenerationReopenRejectsOriginalTamperingAndNamespaceChanges/public-extra (0.53s)
+    --- PASS: TestNativeGenerationReopenRejectsOriginalTamperingAndNamespaceChanges/member-extra (0.54s)
+    --- PASS: TestNativeGenerationReopenRejectsOriginalTamperingAndNamespaceChanges/helper-hardlink (0.52s)
+    --- PASS: TestNativeGenerationReopenRejectsOriginalTamperingAndNamespaceChanges/case-alias (0.53s)

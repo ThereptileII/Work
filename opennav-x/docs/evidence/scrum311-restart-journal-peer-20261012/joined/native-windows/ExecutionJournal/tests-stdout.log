@@ -1,0 +1,15 @@
+=== RUN   TestNativeExecutionJournalFreshProtectionReadbackAndPermanentReplayRefusal
+--- PASS: TestNativeExecutionJournalFreshProtectionReadbackAndPermanentReplayRefusal (0.03s)
+=== RUN   TestNativeExecutionJournalMutationIdentityAndCancellationRefuse
+=== RUN   TestNativeExecutionJournalMutationIdentityAndCancellationRefuse/bytes
+=== RUN   TestNativeExecutionJournalMutationIdentityAndCancellationRefuse/full-file-id
+=== RUN   TestNativeExecutionJournalMutationIdentityAndCancellationRefuse/full-parent-id
+=== RUN   TestNativeExecutionJournalMutationIdentityAndCancellationRefuse/cancel-before-append
+--- PASS: TestNativeExecutionJournalMutationIdentityAndCancellationRefuse (0.07s)
+    --- PASS: TestNativeExecutionJournalMutationIdentityAndCancellationRefuse/bytes (0.02s)
+    --- PASS: TestNativeExecutionJournalMutationIdentityAndCancellationRefuse/full-file-id (0.02s)
+    --- PASS: TestNativeExecutionJournalMutationIdentityAndCancellationRefuse/full-parent-id (0.02s)
+    --- PASS: TestNativeExecutionJournalMutationIdentityAndCancellationRefuse/cancel-before-append (0.02s)
+=== RUN   TestNativeExecutionJournalPartialCreationNeverDeletesOrAdopts
+--- PASS: TestNativeExecutionJournalPartialCreationNeverDeletesOrAdopts (0.02s)
+PASS

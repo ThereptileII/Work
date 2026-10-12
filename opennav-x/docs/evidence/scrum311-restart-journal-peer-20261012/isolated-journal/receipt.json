@@ -1,0 +1,55 @@
+{
+  "schema": 1,
+  "sourceCommit": "10504c7b7936b9faa373cbdead8d2e980772fa63",
+  "baseCommit": "86c398976a58067d3221ff6bb0233fec15c8c7b2",
+  "sourceManifestSha256": "f03346a38feefd511369039008a7f195d2516b944dcfc4625a12afa86496adf1",
+  "binary": {
+    "path": "/home/standard/Projects/.tmp/execution-journal-20261012/brokerstore-windows-386-reviewed.test.exe",
+    "sha256": "5acc6df304941c6511cb52933c86cfd2bf675ca442760d166595f1073cca27d4",
+    "size": 15803392
+  },
+  "toolchain": {
+    "go": "/tmp/skager-go-1.27.1/go/bin/go",
+    "sha256": "30969f97169d7f43fe6a085873d75613adc21e30818a8c61d95bd27275df4624"
+  },
+  "commands": {
+    "portable": "GOTOOLCHAIN=local GOPROXY=off GOTMPDIR=/home/standard/Projects/.tmp/go-tmp /tmp/skager-go-1.27.1/go/bin/go test -race ./brokerstore -run '^TestExecutionJournal' -count=1 -json",
+    "crossCompile": "GOTOOLCHAIN=local GOPROXY=off GOTMPDIR=/home/standard/Projects/.tmp/go-tmp GOOS=windows GOARCH=386 CGO_ENABLED=0 /tmp/skager-go-1.27.1/go/bin/go test -c ./brokerstore -o /home/standard/Projects/.tmp/execution-journal-20261012/brokerstore-windows-386-reviewed.test.exe",
+    "pendingNative": ".\\brokerstore-windows-386-reviewed.test.exe -test.run '^TestNativeExecutionJournal' -test.v -test.count=1"
+  },
+  "portableResult": {
+    "topLevelPassed": 9,
+    "nestedPassed": 43,
+    "failed": 0,
+    "skipped": 0,
+    "seconds": 4.579
+  },
+  "initialFailure": "Baseline fixture omitted old-file registration before readonly transition; nil-pointer panic. Test setup corrected. Initial failed log retained; no assertions weakened.",
+  "nativeExecuted": false,
+  "nativeFixtureNames": [
+    "TestNativeExecutionJournalFreshProtectionReadbackAndPermanentReplayRefusal",
+    "TestNativeExecutionJournalMutationIdentityAndCancellationRefuse",
+    "TestNativeExecutionJournalPartialCreationNeverDeletesOrAdopts"
+  ],
+  "expectedNativeCases": {
+    "topLevel": 3,
+    "nested": 4
+  },
+  "limits": {
+    "facts": 64,
+    "factBytes": 65536,
+    "fenceBytes": 25165824,
+    "journalBytes": 33554432,
+    "journalPairs": 128,
+    "namespaceEntries": 4096
+  },
+  "scope": "Native fixed protected execution fact storage. Facts/snapshots are not selected state, health, one-use launch permission, installed qualification or replay authority. No public disk reopening/adoption. Native fixtures are inert temporary current-user mechanics, not the actual broker principal/fixed ProgramData authorization.",
+  "logs": {
+    "portable-tests-initial.jsonl": "9a5706ead72bade140b751d94b407f817c303a6e4a31dfd472aaf3ca3f07f504",
+    "portable-tests-final.jsonl": "23bcf3424b6372f8f7cf488eee84e429fe812d3c38cd5cf02b42bca33f0d51dd",
+    "portable-tests-reviewed.jsonl": "7b113d0bf84a23d56b94d9dc734695faf13bc2e4b5267d1f42280106cf9e5794",
+    "windows-crosscompile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "windows-crosscompile-reviewed.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "windows-build-info.txt": "e252c93053ab5845f7c633adce0033b48e99645aea0f319adcd96da4ac413691"
+  }
+}

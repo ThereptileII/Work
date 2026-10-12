@@ -1,0 +1,34 @@
+{
+  "commit": "b24bb051eadee9851bf199682dd0051cf96d6835",
+  "base": "86c39897",
+  "worktree": "/home/standard/Projects/X-nav-worktrees/generation-reopen-20261012",
+  "source_manifest": "/home/standard/Projects/.tmp/generation-reopen-20261012/source-sha256.txt",
+  "source_manifest_sha256": "f4ac5abb0b00dafbdc91d3b3aede3ee12340c735f9399f64783bff3bdb11a669",
+  "source_files": 193,
+  "binary": "/home/standard/Projects/.tmp/generation-reopen-20261012/brokerstore-windows386.test.exe",
+  "binary_sha256": "0fe9e9fd9cf37a58b9c8664e2b0b9389eb3baf1d26c71290c2f69965ce0f2716",
+  "native_execution": "NOT RUN; pending coordinator",
+  "focused_race": {
+    "command": "GOPROXY=off GOTOOLCHAIN=local GOTMPDIR=/home/standard/Projects/.tmp/skager-bootstrap-publisher /tmp/skager-go-1.27.1/go/bin/go test -race -json ./brokerstore -run 'TestGeneration(Reopen|History|Baseline|ReadOnly)' -count=1",
+    "top_level_pass": 16,
+    "nested_pass": 103,
+    "fail": 0,
+    "skip": 0,
+    "output": "/home/standard/Projects/.tmp/generation-reopen-20261012/focused-third.json"
+  },
+  "windows386_compile_output": "/home/standard/Projects/.tmp/generation-reopen-20261012/windows386-compile.log",
+  "preserved_failed_attempt": "/home/standard/Projects/.tmp/generation-reopen-20261012/focused-second.json",
+  "native_tests": [
+    "TestNativeGenerationReopenAfterStoreCloseRetainsBothPurposes",
+    "TestNativeGenerationReopenRejectsOriginalTamperingAndNamespaceChanges",
+    "TestNativeGenerationReopenMissingOrCancelledNeverCreatesEvidence"
+  ],
+  "native_expected_top_level": 3,
+  "native_expected_nested": 14,
+  "limits": [
+    "No native execution by subagent",
+    "No selected/pending/launch/commissioning/health authority",
+    "Original private baseline completion/marker and parent/root IDs retained; copied public generation payload fully revalidated; private baseline payload not reopened",
+    "Existing writable mappings/continuous loader custody beyond retained readonly file/hash checks are not newly claimed"
+  ]
+}

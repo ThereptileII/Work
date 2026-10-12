@@ -1,0 +1,14 @@
+{
+  "arguments": [
+    "/tmp/skager-go-1.27.1/go/bin/go",
+    "test",
+    "-race",
+    "-json",
+    "./brokerstore",
+    "-run",
+    "Test(Generation(Reopen|History)|ExecutionJournal)",
+    "-count=1"
+  ],
+  "exitCode": 0,
+  "elapsedSeconds": 16.87202338001225
+}

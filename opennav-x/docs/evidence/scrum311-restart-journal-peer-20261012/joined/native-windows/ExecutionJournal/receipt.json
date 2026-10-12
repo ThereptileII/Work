@@ -1,0 +1,50 @@
+{
+    "schema":  1,
+    "group":  "ExecutionJournal",
+    "executable":  "C:\\XNav\\ComponentChecks\\reopen-journal-43a9cdb6\\brokerstore.test.exe",
+    "executableSha256":  "3a9609c0af441f027421e9573b6329e8f5bfd0d4b88ba59334bc76feda920014",
+    "expectedCases":  [
+                          "TestNativeExecutionJournalFreshProtectionReadbackAndPermanentReplayRefusal",
+                          "TestNativeExecutionJournalMutationIdentityAndCancellationRefuse",
+                          "TestNativeExecutionJournalPartialCreationNeverDeletesOrAdopts"
+                      ],
+    "selection":  "^(TestNativeExecutionJournalFreshProtectionReadbackAndPermanentReplayRefusal|TestNativeExecutionJournalMutationIdentityAndCancellationRefuse|TestNativeExecutionJournalPartialCreationNeverDeletesOrAdopts)$",
+    "status":  "passed",
+    "failure":  null,
+    "startedUtc":  "2026-10-12T10:16:54.1801067Z",
+    "os":  "Microsoft Windows NT 10.0.22631.0",
+    "os64":  true,
+    "process64":  true,
+    "powershellVersion":  "5.1.22621.5624",
+    "listing":  {
+                    "arguments":  [
+                                      "-test.list=^(TestNativeExecutionJournalFreshProtectionReadbackAndPermanentReplayRefusal|TestNativeExecutionJournalMutationIdentityAndCancellationRefuse|TestNativeExecutionJournalPartialCreationNeverDeletesOrAdopts)$"
+                                  ],
+                    "processId":  10056,
+                    "startedUtc":  "2026-10-12T10:16:54.2073734Z",
+                    "exitCode":  0,
+                    "timedOut":  false,
+                    "error":  null,
+                    "stdout":  "C:\\XNav\\ComponentChecks\\reopen-journal-43a9cdb6\\ExecutionJournal\\list-stdout.log",
+                    "stderr":  "C:\\XNav\\ComponentChecks\\reopen-journal-43a9cdb6\\ExecutionJournal\\list-stderr.log",
+                    "elapsedMilliseconds":  61
+                },
+    "execution":  {
+                      "arguments":  [
+                                        "-test.run=^(TestNativeExecutionJournalFreshProtectionReadbackAndPermanentReplayRefusal|TestNativeExecutionJournalMutationIdentityAndCancellationRefuse|TestNativeExecutionJournalPartialCreationNeverDeletesOrAdopts)$",
+                                        "-test.count=1",
+                                        "-test.v",
+                                        "-test.timeout=90s"
+                                    ],
+                      "processId":  1744,
+                      "startedUtc":  "2026-10-12T10:16:54.3152359Z",
+                      "exitCode":  0,
+                      "timedOut":  false,
+                      "error":  null,
+                      "stdout":  "C:\\XNav\\ComponentChecks\\reopen-journal-43a9cdb6\\ExecutionJournal\\tests-stdout.log",
+                      "stderr":  "C:\\XNav\\ComponentChecks\\reopen-journal-43a9cdb6\\ExecutionJournal\\tests-stderr.log",
+                      "elapsedMilliseconds":  157
+                  },
+    "scope":  "Exact inert native fixtures only; no application/service/profile/network/physical output; not enrollment or release qualification",
+    "completedUtc":  "2026-10-12T10:16:54.6799850Z"
+}

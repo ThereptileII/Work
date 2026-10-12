@@ -1,0 +1,17 @@
+=== RUN   TestNativePeerCapabilityProcessAndLogonRefusals
+=== RUN   TestNativePeerCapabilityProcessAndLogonRefusals/closed-process
+=== RUN   TestNativePeerCapabilityProcessAndLogonRefusals/creation-mismatch
+=== RUN   TestNativePeerCapabilityProcessAndLogonRefusals/pid-reuse
+=== RUN   TestNativePeerCapabilityProcessAndLogonRefusals/logon-mismatch
+=== RUN   TestNativePeerCapabilityProcessAndLogonRefusals/closed-token
+=== RUN   TestNativePeerCapabilityProcessAndLogonRefusals/signaled-handle
+=== RUN   TestNativePeerCapabilityProcessAndLogonRefusals/unsolicited-bytes
+--- PASS: TestNativePeerCapabilityProcessAndLogonRefusals (0.00s)
+    --- PASS: TestNativePeerCapabilityProcessAndLogonRefusals/closed-process (0.00s)
+    --- PASS: TestNativePeerCapabilityProcessAndLogonRefusals/creation-mismatch (0.00s)
+    --- PASS: TestNativePeerCapabilityProcessAndLogonRefusals/pid-reuse (0.00s)
+    --- PASS: TestNativePeerCapabilityProcessAndLogonRefusals/logon-mismatch (0.00s)
+    --- PASS: TestNativePeerCapabilityProcessAndLogonRefusals/closed-token (0.00s)
+    --- PASS: TestNativePeerCapabilityProcessAndLogonRefusals/signaled-handle (0.00s)
+    --- PASS: TestNativePeerCapabilityProcessAndLogonRefusals/unsolicited-bytes (0.00s)
+PASS

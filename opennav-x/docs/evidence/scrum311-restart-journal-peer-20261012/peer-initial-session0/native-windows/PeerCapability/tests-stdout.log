@@ -1,0 +1,27 @@
+=== RUN   TestNativePeerCapabilityActualIdentityAndDisconnect
+    peer_capability_windows_test.go:93: broker staging request refused or incomplete
+--- FAIL: TestNativePeerCapabilityActualIdentityAndDisconnect (0.00s)
+=== RUN   TestNativePeerCapabilityProcessAndLogonRefusals
+=== RUN   TestNativePeerCapabilityProcessAndLogonRefusals/closed-process
+    peer_capability_windows_test.go:126: broker staging request refused or incomplete
+=== RUN   TestNativePeerCapabilityProcessAndLogonRefusals/creation-mismatch
+    peer_capability_windows_test.go:126: broker staging request refused or incomplete
+=== RUN   TestNativePeerCapabilityProcessAndLogonRefusals/pid-reuse
+    peer_capability_windows_test.go:126: broker staging request refused or incomplete
+=== RUN   TestNativePeerCapabilityProcessAndLogonRefusals/logon-mismatch
+    peer_capability_windows_test.go:126: broker staging request refused or incomplete
+=== RUN   TestNativePeerCapabilityProcessAndLogonRefusals/closed-token
+    peer_capability_windows_test.go:126: broker staging request refused or incomplete
+=== RUN   TestNativePeerCapabilityProcessAndLogonRefusals/signaled-handle
+    peer_capability_windows_test.go:126: broker staging request refused or incomplete
+=== RUN   TestNativePeerCapabilityProcessAndLogonRefusals/unsolicited-bytes
+    peer_capability_windows_test.go:126: broker staging request refused or incomplete
+--- FAIL: TestNativePeerCapabilityProcessAndLogonRefusals (0.00s)
+    --- FAIL: TestNativePeerCapabilityProcessAndLogonRefusals/closed-process (0.00s)
+    --- FAIL: TestNativePeerCapabilityProcessAndLogonRefusals/creation-mismatch (0.00s)
+    --- FAIL: TestNativePeerCapabilityProcessAndLogonRefusals/pid-reuse (0.00s)
+    --- FAIL: TestNativePeerCapabilityProcessAndLogonRefusals/logon-mismatch (0.00s)
+    --- FAIL: TestNativePeerCapabilityProcessAndLogonRefusals/closed-token (0.00s)
+    --- FAIL: TestNativePeerCapabilityProcessAndLogonRefusals/signaled-handle (0.00s)
+    --- FAIL: TestNativePeerCapabilityProcessAndLogonRefusals/unsolicited-bytes (0.00s)
+FAIL

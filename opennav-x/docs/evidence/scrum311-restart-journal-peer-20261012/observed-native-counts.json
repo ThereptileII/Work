@@ -1,0 +1,26 @@
+{
+  "joined/GenerationReopen": {
+    "passTop": 3,
+    "passNested": 14,
+    "failTop": 0,
+    "skip": 0
+  },
+  "joined/ExecutionJournal": {
+    "passTop": 3,
+    "passNested": 4,
+    "failTop": 0,
+    "skip": 0
+  },
+  "peer-initial-session0/PeerCapability": {
+    "passTop": 0,
+    "passNested": 0,
+    "failTop": 2,
+    "skip": 0
+  },
+  "peer-interactive/PeerCapabilityInteractive": {
+    "passTop": 2,
+    "passNested": 7,
+    "failTop": 0,
+    "skip": 0
+  }
+}

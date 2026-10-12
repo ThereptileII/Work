@@ -1,0 +1,9 @@
+{"ImportPath":"example.com/opennav-update-verifier/brokerstore [example.com/opennav-update-verifier/brokerstore.test]","Action":"build-output","Output":"# example.com/opennav-update-verifier/brokerstore [example.com/opennav-update-verifier/brokerstore.test]\n"}
+{"ImportPath":"example.com/opennav-update-verifier/brokerstore [example.com/opennav-update-verifier/brokerstore.test]","Action":"build-output","Output":"brokerstore/generation_reopen.go:251:16: undefined: splitBaselineName\n"}
+{"ImportPath":"example.com/opennav-update-verifier/brokerstore [example.com/opennav-update-verifier/brokerstore.test]","Action":"build-output","Output":"brokerstore/generation_reopen.go:254:16: undefined: splitBaselineName\n"}
+{"ImportPath":"example.com/opennav-update-verifier/brokerstore [example.com/opennav-update-verifier/brokerstore.test]","Action":"build-output","Output":"brokerstore/generation_reopen_test.go:88:16: undefined: splitBaselineName\n"}
+{"ImportPath":"example.com/opennav-update-verifier/brokerstore [example.com/opennav-update-verifier/brokerstore.test]","Action":"build-output","Output":"brokerstore/generation_reopen_test.go:91:16: undefined: splitBaselineName\n"}
+{"ImportPath":"example.com/opennav-update-verifier/brokerstore [example.com/opennav-update-verifier/brokerstore.test]","Action":"build-fail"}
+{"Time":"2026-10-12T12:00:54.266365085+02:00","Action":"start","Package":"example.com/opennav-update-verifier/brokerstore"}
+{"Time":"2026-10-12T12:00:54.26644656+02:00","Action":"output","Package":"example.com/opennav-update-verifier/brokerstore","Output":"FAIL\texample.com/opennav-update-verifier/brokerstore [build failed]\n","OutputType":"frame"}
+{"Time":"2026-10-12T12:00:54.266475877+02:00","Action":"fail","Package":"example.com/opennav-update-verifier/brokerstore","Elapsed":0,"FailedBuild":"example.com/opennav-update-verifier/brokerstore [example.com/opennav-update-verifier/brokerstore.test]"}

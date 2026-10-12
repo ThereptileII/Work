@@ -1,0 +1,16 @@
+{
+  "cwd": "/home/standard/Projects/X-nav-worktrees/pipe-peer-custody-20261012/opennav-x/tools/update-verifier",
+  "argv": [
+    "/tmp/skager-go-1.27.1/go/bin/go",
+    "test",
+    "-race",
+    "-count=1",
+    "-json",
+    "./brokerpipe"
+  ],
+  "environment": {
+    "GOTOOLCHAIN": "local",
+    "GOPROXY": "off",
+    "GOTMPDIR": "/home/standard/Projects/.tmp/skager-bootstrap-publisher"
+  }
+}

@@ -1,0 +1,15 @@
+{
+    "schema":  1,
+    "group":  "PeerCapability",
+    "name":  "TestNativePeerCapabilityActualIdentityAndDisconnect",
+    "selection":  "^TestNativePeerCapabilityActualIdentityAndDisconnect$",
+    "runMarkers":  1,
+    "passMarkers":  0,
+    "executableSha256":  "db384667b7403d40583e6f5f783c3121dd90d7ad4682fdf0c8fb7339148f84ed",
+    "exitCode":  1,
+    "os":  "Microsoft Windows NT 10.0.22631.0",
+    "timedOut":  false,
+    "groupReceipt":  "C:\\XNav\\ComponentChecks\\peer-capability-c7f019f5\\PeerCapability\\receipt.json",
+    "executionLog":  "C:\\XNav\\ComponentChecks\\peer-capability-c7f019f5\\PeerCapability\\tests-stdout.log",
+    "caseLog":  "TestNativePeerCapabilityActualIdentityAndDisconnect.log"
+}

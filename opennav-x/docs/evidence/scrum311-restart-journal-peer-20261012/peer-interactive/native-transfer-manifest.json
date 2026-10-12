@@ -1,0 +1,10 @@
+{
+  "sourceCommit": "43a9cdb6",
+  "testRevision": "42235684b4c9cfe6bb595f1ae44605185baa74bf",
+  "files": {
+    "brokerpipe.test.exe": "db384667b7403d40583e6f5f783c3121dd90d7ad4682fdf0c8fb7339148f84ed",
+    "runner.ps1": "2c4ba26e683f04e76862cd689cfe36d9d99322e15c1369da34d679fd0a61284e",
+    "peer-session.ps1": "0e3f934826403485704304b19a2407cdb3be29aa79de5ee0ab95dfe2ff03cabd"
+  },
+  "remote": "C:\\XNav\\ComponentChecks\\peer-capability-c7f019f5-interactive"
+}

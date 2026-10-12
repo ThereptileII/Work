@@ -1,0 +1,35 @@
+{
+  "base": "86c39897",
+  "branch": "codex/pipe-peer-custody-20261012",
+  "commit": "42235684b4c9cfe6bb595f1ae44605185baa74bf",
+  "dependency_note": "Four exact generation_executor Go files applied; base tools/broker_package.py preserved on dependency-only cherry-pick conflict. Coordinator already owns original dependency and closure.",
+  "dependency_original": "b1bed3d4",
+  "evidence": {
+    "brokerpipe-race-command.json": "db68c05a0baa491858927678526deff447bc13d695ab5ae337aa8688b3a2bc74",
+    "brokerpipe-race.jsonl": "736aa58b38f85a35a28b784ed357c6484ca84a6044b07a06fb6793878e9ceda6",
+    "brokerpipe-windows386-command.json": "be4df4291618b53c5e342ac57379401d950f296ac925b9cc3baf7fd5811d4fc0",
+    "brokerpipe-windows386.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "brokerpipe.test.exe": "db384667b7403d40583e6f5f783c3121dd90d7ad4682fdf0c8fb7339148f84ed"
+  },
+  "limits": [
+    "No native execution; Windows/x86 component compile only",
+    "Native fixture uses uniquely named temporary pipe and current test process/token; SCM checker private bypass, no broker/launcher qualification",
+    "Current staging protocol unchanged; unsolicited client bytes still refuse, actual duplex protocol and host execution/selection/health join remain separate",
+    "Capability identity and image binding alone grant no selected-chain, consent, profile commissioning or launch authority"
+  ],
+  "local_compilation_dependency": "281a90ee1e097fa322c40b23629665c415a68ede",
+  "race_counts": {
+    "pass_nested": 31,
+    "pass_package": 1,
+    "pass_top": 14
+  },
+  "source": {
+    "opennav-x/tools/update-verifier/brokerpipe/identity_windows.go": "d823f83784ea74d74261f5b74b5c12eff83dbd0f5a20fd50e9280391de042f95",
+    "opennav-x/tools/update-verifier/brokerpipe/native_windows.go": "dfb16065fbd6601e9fcc83c476e84054dd8bbab4f3d460792eac9cc12ebc9fce",
+    "opennav-x/tools/update-verifier/brokerpipe/peer_capability.go": "313a1d9571f673991d92ba111a8eff3a2b38844a21b3bcd86bad02872e83c1aa",
+    "opennav-x/tools/update-verifier/brokerpipe/peer_capability_test.go": "fc0793073990ae5f54e69eb2291f66a56c8d81438e48bc0c9f24e38dd2e0b551",
+    "opennav-x/tools/update-verifier/brokerpipe/peer_capability_windows.go": "541eda0656c324559a401d8a34c9b1323eb35820bf3fac3d18699da60600ffd9",
+    "opennav-x/tools/update-verifier/brokerpipe/peer_capability_windows_test.go": "01568b55a8e0d0c18b2a58626deade5cd2d813471aaaf26052580481615ec2ad",
+    "opennav-x/tools/update-verifier/brokerpipe/protocol.go": "3de850b6baa5750da53d3d241929d2ddeacaf8471b6c631b8a592818463287c2"
+  }
+}

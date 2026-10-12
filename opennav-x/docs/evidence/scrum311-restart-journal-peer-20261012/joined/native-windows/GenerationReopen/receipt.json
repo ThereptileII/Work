@@ -1,0 +1,50 @@
+{
+    "schema":  1,
+    "group":  "GenerationReopen",
+    "executable":  "C:\\XNav\\ComponentChecks\\reopen-journal-43a9cdb6\\brokerstore.test.exe",
+    "executableSha256":  "3a9609c0af441f027421e9573b6329e8f5bfd0d4b88ba59334bc76feda920014",
+    "expectedCases":  [
+                          "TestNativeGenerationReopenAfterStoreCloseRetainsBothPurposes",
+                          "TestNativeGenerationReopenRejectsOriginalTamperingAndNamespaceChanges",
+                          "TestNativeGenerationReopenMissingOrCancelledNeverCreatesEvidence"
+                      ],
+    "selection":  "^(TestNativeGenerationReopenAfterStoreCloseRetainsBothPurposes|TestNativeGenerationReopenRejectsOriginalTamperingAndNamespaceChanges|TestNativeGenerationReopenMissingOrCancelledNeverCreatesEvidence)$",
+    "status":  "passed",
+    "failure":  null,
+    "startedUtc":  "2026-10-12T10:16:42.7213302Z",
+    "os":  "Microsoft Windows NT 10.0.22631.0",
+    "os64":  true,
+    "process64":  true,
+    "powershellVersion":  "5.1.22621.5624",
+    "listing":  {
+                    "arguments":  [
+                                      "-test.list=^(TestNativeGenerationReopenAfterStoreCloseRetainsBothPurposes|TestNativeGenerationReopenRejectsOriginalTamperingAndNamespaceChanges|TestNativeGenerationReopenMissingOrCancelledNeverCreatesEvidence)$"
+                                  ],
+                    "processId":  10136,
+                    "startedUtc":  "2026-10-12T10:16:42.7470896Z",
+                    "exitCode":  0,
+                    "timedOut":  false,
+                    "error":  null,
+                    "stdout":  "C:\\XNav\\ComponentChecks\\reopen-journal-43a9cdb6\\GenerationReopen\\list-stdout.log",
+                    "stderr":  "C:\\XNav\\ComponentChecks\\reopen-journal-43a9cdb6\\GenerationReopen\\list-stderr.log",
+                    "elapsedMilliseconds":  433
+                },
+    "execution":  {
+                      "arguments":  [
+                                        "-test.run=^(TestNativeGenerationReopenAfterStoreCloseRetainsBothPurposes|TestNativeGenerationReopenRejectsOriginalTamperingAndNamespaceChanges|TestNativeGenerationReopenMissingOrCancelledNeverCreatesEvidence)$",
+                                        "-test.count=1",
+                                        "-test.v",
+                                        "-test.timeout=90s"
+                                    ],
+                      "processId":  2056,
+                      "startedUtc":  "2026-10-12T10:16:43.2226194Z",
+                      "exitCode":  0,
+                      "timedOut":  false,
+                      "error":  null,
+                      "stdout":  "C:\\XNav\\ComponentChecks\\reopen-journal-43a9cdb6\\GenerationReopen\\tests-stdout.log",
+                      "stderr":  "C:\\XNav\\ComponentChecks\\reopen-journal-43a9cdb6\\GenerationReopen\\tests-stderr.log",
+                      "elapsedMilliseconds":  8438
+                  },
+    "scope":  "Exact inert native fixtures only; no application/service/profile/network/physical output; not enrollment or release qualification",
+    "completedUtc":  "2026-10-12T10:16:51.9070838Z"
+}

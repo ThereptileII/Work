@@ -1,5 +1,26 @@
 # SKAGER status — 2026-10-12
 
+## Restart originals, permanent journals and interactive peer checks pass
+
+Source `43a9cdb6` joins original protected generation reopening and permanent
+execution journals. Focused Linux race: **18 top-level + 107 nested passed**.
+Exact native Windows/x86: generation reopening **3 top-level + 14 nested**, journal
+**3 top-level + 4 nested passed**, no failures/skips. The existing interactive-peer
+binary passed **2 top-level + 7 nested** after the original session-0 refusal was
+preserved and the SAME bytes were dispatched in desktop session 1; its temporary
+limited-user task was removed. [Exact evidence and scope](evidence/scrum311-restart-journal-peer-20261012/README.md).
+
+Actual staging now retains its native peer across the operation (`204de84b`).
+Closed execution commands bind exact generation and startup-health fields
+(`264efdf1`, isolated `463f80dd`); portable component race passed **27 top-level +
+133 nested**, Windows/x86 component compiled, native transport fixtures pending.
+C++ Windows startup-health least-rights changes require the integrated MSVC gate.
+
+SCRUM-311 remains In Progress: protected selection/pending, general-profile
+commissioning, consumed child spawn, actual healthy commit and restoration/
+fallback integration remain unfinished. No full application build, installed
+product/profile/service change, design/endurance run or physical command occurred.
+
 ## Original interactive launcher image passes native identity check
 
 Source `b1bed3d4` binds a sealed executor-image capability to the fixed retained

@@ -1,0 +1,9 @@
+=== RUN   TestNativeGenerationReopenMissingOrCancelledNeverCreatesEvidence
+=== RUN   TestNativeGenerationReopenMissingOrCancelledNeverCreatesEvidence/absent-parents
+=== RUN   TestNativeGenerationReopenMissingOrCancelledNeverCreatesEvidence/absent-generation
+=== RUN   TestNativeGenerationReopenMissingOrCancelledNeverCreatesEvidence/cancelled
+--- PASS: TestNativeGenerationReopenMissingOrCancelledNeverCreatesEvidence (0.77s)
+    --- PASS: TestNativeGenerationReopenMissingOrCancelledNeverCreatesEvidence/absent-parents (0.16s)
+    --- PASS: TestNativeGenerationReopenMissingOrCancelledNeverCreatesEvidence/absent-generation (0.47s)
+    --- PASS: TestNativeGenerationReopenMissingOrCancelledNeverCreatesEvidence/cancelled (0.13s)
+PASS

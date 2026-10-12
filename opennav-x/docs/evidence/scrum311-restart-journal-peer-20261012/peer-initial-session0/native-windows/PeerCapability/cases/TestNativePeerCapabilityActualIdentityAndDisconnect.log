@@ -1,0 +1,3 @@
+=== RUN   TestNativePeerCapabilityActualIdentityAndDisconnect
+    peer_capability_windows_test.go:93: broker staging request refused or incomplete
+--- FAIL: TestNativePeerCapabilityActualIdentityAndDisconnect (0.00s)

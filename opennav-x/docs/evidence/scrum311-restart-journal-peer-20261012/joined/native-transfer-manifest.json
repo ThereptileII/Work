@@ -1,0 +1,9 @@
+{
+  "sourceCommit": "43a9cdb6",
+  "testRevision": "43a9cdb6",
+  "files": {
+    "brokerstore.test.exe": "3a9609c0af441f027421e9573b6329e8f5bfd0d4b88ba59334bc76feda920014",
+    "runner.ps1": "2c4ba26e683f04e76862cd689cfe36d9d99322e15c1369da34d679fd0a61284e"
+  },
+  "remote": "C:\\XNav\\ComponentChecks\\reopen-journal-43a9cdb6"
+}

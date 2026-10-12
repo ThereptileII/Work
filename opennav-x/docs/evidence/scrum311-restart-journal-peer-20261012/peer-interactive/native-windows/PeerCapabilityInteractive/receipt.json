@@ -1,0 +1,49 @@
+{
+    "schema":  1,
+    "group":  "PeerCapability",
+    "executable":  "C:\\XNav\\ComponentChecks\\peer-capability-c7f019f5-interactive\\brokerpipe.test.exe",
+    "executableSha256":  "db384667b7403d40583e6f5f783c3121dd90d7ad4682fdf0c8fb7339148f84ed",
+    "expectedCases":  [
+                          "TestNativePeerCapabilityActualIdentityAndDisconnect",
+                          "TestNativePeerCapabilityProcessAndLogonRefusals"
+                      ],
+    "selection":  "^(TestNativePeerCapabilityActualIdentityAndDisconnect|TestNativePeerCapabilityProcessAndLogonRefusals)$",
+    "status":  "passed",
+    "failure":  null,
+    "startedUtc":  "2026-10-12T10:14:18.0221006Z",
+    "os":  "Microsoft Windows NT 10.0.22631.0",
+    "os64":  true,
+    "process64":  true,
+    "powershellVersion":  "5.1.22621.5624",
+    "listing":  {
+                    "arguments":  [
+                                      "-test.list=^(TestNativePeerCapabilityActualIdentityAndDisconnect|TestNativePeerCapabilityProcessAndLogonRefusals)$"
+                                  ],
+                    "processId":  8608,
+                    "startedUtc":  "2026-10-12T10:14:18.0553149Z",
+                    "exitCode":  0,
+                    "timedOut":  false,
+                    "error":  null,
+                    "stdout":  "C:\\XNav\\ComponentChecks\\peer-capability-c7f019f5-interactive\\PeerCapabilityInteractive\\list-stdout.log",
+                    "stderr":  "C:\\XNav\\ComponentChecks\\peer-capability-c7f019f5-interactive\\PeerCapabilityInteractive\\list-stderr.log",
+                    "elapsedMilliseconds":  500
+                },
+    "execution":  {
+                      "arguments":  [
+                                        "-test.run=^(TestNativePeerCapabilityActualIdentityAndDisconnect|TestNativePeerCapabilityProcessAndLogonRefusals)$",
+                                        "-test.count=1",
+                                        "-test.v",
+                                        "-test.timeout=90s"
+                                    ],
+                      "processId":  10048,
+                      "startedUtc":  "2026-10-12T10:14:18.6093089Z",
+                      "exitCode":  0,
+                      "timedOut":  false,
+                      "error":  null,
+                      "stdout":  "C:\\XNav\\ComponentChecks\\peer-capability-c7f019f5-interactive\\PeerCapabilityInteractive\\tests-stdout.log",
+                      "stderr":  "C:\\XNav\\ComponentChecks\\peer-capability-c7f019f5-interactive\\PeerCapabilityInteractive\\tests-stderr.log",
+                      "elapsedMilliseconds":  53
+                  },
+    "scope":  "Exact inert native fixtures only; no application/service/profile/network/physical output; not enrollment or release qualification",
+    "completedUtc":  "2026-10-12T10:14:18.8206510Z"
+}

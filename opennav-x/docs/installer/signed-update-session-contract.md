@@ -1,5 +1,36 @@
 # Signed boat update session contract (SCRUM-311)
 
+## Native execution boundary — integration in progress
+
+The current Go broker retains an actual authenticated pipe/process/token/logon
+capability throughout staging. A separate fixed duplex execution endpoint binds
+the interactive executor to the original protected `app/skager-start.exe` image.
+Each command has a server-generated session, sequence and challenge; generation
+and startup-health fields form a closed payload and must be echoed exactly.
+Reports remain untrusted observations. A clean conversation does not commit an
+update, authorize a child or establish successful application startup.
+
+Protected generation reopen retains original completed registration/baseline and
+generation records, complete physical file identities, readonly member bytes and
+sibling history. Permanent broker-private execution journals reserve each attempt
+before its first fact, append with flush/readback and preserve all uncertain
+partials. Neither an initial baseline view nor a journal's `health-observed` label
+selects a healthy version. `PreviousGeneration` in generation materialization is
+the original registered baseline, not the currently selected predecessor.
+
+The actual host must establish selection from its authenticated healthy-commit
+history; consume a durable spawn attempt before requesting process creation;
+corroborate the actual direct child, loaded configuration and health endpoint;
+and restore the verified profile before a separately commissioned fallback.
+An absent result or lost conversation must never grant another spawn.
+Those complete installed transaction hooks remain unfinished and disabled.
+
+[Exact restart/journal/peer component evidence](../evidence/scrum311-restart-journal-peer-20261012/README.md)
+retains native successes and the original session-0 fixture refusal. Native
+component tests do not replace the integrated MSVC, installed lifecycle or boat
+gates. The C++ sender now requests only write-data/read-control/synchronize and
+identification-level SQOS; its Windows branch still requires native validation.
+
 This contract covers a **pure receipt model**, a separately qualified
 non-resumable journal store, authenticated acquisition and concrete restoration
 components. It is not an enabled boat update path.

@@ -1,0 +1,15 @@
+{
+    "schema":  1,
+    "group":  "ExecutionJournal",
+    "name":  "TestNativeExecutionJournalMutationIdentityAndCancellationRefuse",
+    "selection":  "^TestNativeExecutionJournalMutationIdentityAndCancellationRefuse$",
+    "runMarkers":  1,
+    "passMarkers":  1,
+    "executableSha256":  "3a9609c0af441f027421e9573b6329e8f5bfd0d4b88ba59334bc76feda920014",
+    "exitCode":  0,
+    "os":  "Microsoft Windows NT 10.0.22631.0",
+    "timedOut":  false,
+    "groupReceipt":  "C:\\XNav\\ComponentChecks\\reopen-journal-43a9cdb6\\ExecutionJournal\\receipt.json",
+    "executionLog":  "C:\\XNav\\ComponentChecks\\reopen-journal-43a9cdb6\\ExecutionJournal\\tests-stdout.log",
+    "caseLog":  "TestNativeExecutionJournalMutationIdentityAndCancellationRefuse.log"
+}

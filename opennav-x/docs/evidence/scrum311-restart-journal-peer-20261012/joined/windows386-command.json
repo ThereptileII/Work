@@ -1,0 +1,12 @@
+{
+  "arguments": [
+    "/tmp/skager-go-1.27.1/go/bin/go",
+    "test",
+    "-c",
+    "-o",
+    "/home/standard/Projects/.tmp/reopen-journal-joined-20261012/brokerstore.test.exe",
+    "./brokerstore"
+  ],
+  "exitCode": 0,
+  "elapsedSeconds": 4.324607388000004
+}
