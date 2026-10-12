@@ -185,7 +185,10 @@ func serveOne(parent context.Context, h windows.Handle, handler Handler, replay 
 	if server.check() != nil || client.live() != nil {
 		return
 	}
-	ctx, stop := context.WithTimeout(parent, operationTimeout)
+	operation, stop := context.WithTimeout(parent, operationTimeout)
+	peer := Peer{SID: client.token.sid, SessionID: client.token.session, ProcessID: client.pid}
+	ctx, capability := withPeerCapability(operation, nativePeerEvidence(client), &nativePeerCapability{pipe: h, client: client, checkServer: server.check})
+	defer capability.Close()
 	// One bounded watcher is joined before the retained process/pipe is closed.
 	// It cancels a cooperative handler when the actual caller exits/disconnects,
 	// or sends an unsolicited second request while staging is in progress.
@@ -212,8 +215,7 @@ func serveOne(parent context.Context, h windows.Handle, handler Handler, replay 
 		}
 	}()
 	defer func() { stop(); <-watcherDone }()
-	peer := Peer{SID: client.token.sid, SessionID: client.token.session, ProcessID: client.pid}
-	result, e := replay.invoke(ctx, handler, peer, request)
+	result, e := invokeAuthenticatedHandler(ctx, capability, replay, handler, peer, request)
 	// Stop/join the watcher before the response acknowledgement is permitted.
 	// Its cancellation would otherwise mistake the valid ack for a second request.
 	close(watcherStop)

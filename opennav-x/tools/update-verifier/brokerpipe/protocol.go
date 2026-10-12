@@ -54,7 +54,9 @@ type Result struct {
 
 // Peer is derived from the actual pipe token and a retained live process. It is
 // never decoded from JSON. SessionID is the Windows terminal-services session;
-// the backend also compares the token authentication LUID (logon session).
+// the backend also compares the token authentication LUID (logon session). These
+// public fields alone grant no execution authority; AuthorizePeer requires the
+// live native context capability.
 type Peer struct {
 	SID       string
 	SessionID uint32
@@ -62,6 +64,7 @@ type Peer struct {
 }
 
 // Handler must independently authorize Peer against protected registration,
+// and execution joins must additionally obtain/revalidate AuthorizePeer(ctx, Peer).
 // persist RequestID before mutation, obey ctx, and return only completed stage
 // results. Serve's replay reservation lasts until Serve exits, not across SCM
 // restarts. Durable replay protection belongs to the broker store. No handler

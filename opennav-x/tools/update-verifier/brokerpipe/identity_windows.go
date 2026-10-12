@@ -61,10 +61,11 @@ func tokenInfo(t windows.Token) (tokenIdentity, error) {
 }
 
 type processIdentity struct {
-	handle  windows.Handle
-	pid     uint32
-	created windows.Filetime
-	token   tokenIdentity
+	handle        windows.Handle
+	pid           uint32
+	created       windows.Filetime
+	token         tokenIdentity
+	retainedToken windows.Token
 }
 
 func openProcess(pid uint32) (*processIdentity, error) {
@@ -86,8 +87,8 @@ func openProcess(pid uint32) (*processIdentity, error) {
 		p.close()
 		return nil, e
 	}
+	p.retainedToken = token
 	p.token, e = tokenInfo(token)
-	_ = token.Close()
 	if e != nil {
 		p.close()
 		return nil, e
@@ -99,13 +100,17 @@ func openProcess(pid uint32) (*processIdentity, error) {
 	return p, nil
 }
 func (p *processIdentity) close() {
+	if p != nil && p.retainedToken != 0 {
+		_ = p.retainedToken.Close()
+		p.retainedToken = 0
+	}
 	if p != nil && p.handle != 0 {
 		_ = windows.CloseHandle(p.handle)
 		p.handle = 0
 	}
 }
 func (p *processIdentity) live() error {
-	if p == nil || p.handle == 0 {
+	if p == nil || p.handle == 0 || p.retainedToken == 0 {
 		return ErrRefused
 	}
 	state, e := windows.WaitForSingleObject(p.handle, 0)
@@ -114,6 +119,21 @@ func (p *processIdentity) live() error {
 	}
 	var c, x, k, u windows.Filetime
 	if windows.GetProcessTimes(p.handle, &c, &x, &k, &u) != nil || c != p.created {
+		return ErrRefused
+	}
+	// Retain the originally authenticated token and also inspect the current
+	// primary token. A live process/PID alone must not hide a different logon.
+	original, err := tokenInfo(p.retainedToken)
+	if err != nil || original != p.token {
+		return ErrRefused
+	}
+	var current windows.Token
+	if windows.OpenProcessToken(p.handle, windows.TOKEN_QUERY, &current) != nil {
+		return ErrRefused
+	}
+	actual, infoErr := tokenInfo(current)
+	closeErr := current.Close()
+	if infoErr != nil || closeErr != nil || actual != p.token {
 		return ErrRefused
 	}
 	return nil
