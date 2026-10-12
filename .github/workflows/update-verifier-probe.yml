@@ -138,6 +138,13 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python -c "import os,sys; from pathlib import Path; sys.path.insert(0,'..'); from provisioner_package import verify_provisioner_package; verify_provisioner_package(Path('../../build/updater-native/broker-install'), os.environ['GITHUB_SHA'])"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Actual fresh broker enrollment on disposable Windows
+        if: runner.os == 'Windows'
+        working-directory: ${{ github.workspace }}
+        shell: powershell
+        run: |
+          & ./opennav-x/tools/test-broker-enrollment-windows.ps1 -Install ./opennav-x/build/updater-native/broker-install -ExpectedCommit $env:GITHUB_SHA -RunnerEnvironment '${{ runner.environment }}' -ConfirmDisposableHostedRunner *>&1 | Tee-Object -FilePath ./opennav-x/build/updater-native/enrollment-service-tests.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Native authenticated startup and interruption records
         if: always() && runner.os == 'Windows'
         shell: powershell
