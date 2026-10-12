@@ -1,0 +1,6 @@
+test_changed_producer_fact_log_or_input_refuses_reuse (__main__.SameJobReuseReceiptTests.test_changed_producer_fact_log_or_input_refuses_reuse) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.139s
+
+OK

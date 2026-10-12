@@ -1,0 +1,26 @@
+{
+  "sourceCommit": "36bcd5a762245396b1c9414aeac6c4b240faea9c",
+  "upstreamCommit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "sourceSha256": {
+    "opennav-x/patches/opencpn-5.12.4-route-focus.patch": "b9e7e110c991f804d80c46e40811f8baf73536ca3a8170aaaa9fdd17667fc142",
+    "opennav-x/patches/opencpn-5.12.4-route-hit-dpi.patch": "4f4ce3695c955f18ae992db60ab3e604c85319f96dfb91fc958d4cbd7cab2cd6",
+    "opennav-x/tools/test-route-focus.py": "0f2a6acd3f5a1bb73d9dc7f260eb89a91a68f80c32a4c91d0a4c853c5a1b0f57",
+    "opennav-x/tools/test-route-hit-dpi.py": "780925212f538336b8d27b7eaf42c100ed13be0e5ac53e70179fecbd29d1e5a3",
+    "opennav-x/tests/route_focus_tests.cpp": "7f4e5a463c6dc9f933b2ae8ab3c39626e6cd6b5a59a2178bd4c84ae6364c4617",
+    "opennav-x/tests/route_hit_dpi_tests.cpp": "8b8d98f04416f5111ce4884f77b1410587580fb22ff1929002db50127f889128",
+    ".github/workflows/opennav-baseline.yml": "cf86c6c4294d812c1f8f7bd00a690e3da11616cdcb48293e098ddbe1daccc860",
+    "opennav-x/tools/prepare-integration.py": "3ec110a5f4887011bcb6edf0c67077311e5b2837d55767307c9ae08ec9d9ee3c",
+    "opennav-x/tools/source_package.py": "5802bd943afdfc8ac3ce9c1d9b662e99c444daaa366f01d7d9e7fbe53b01fb0c",
+    "opennav-x/tools/windows_dependency_reuse.py": "08e014603f91bced2a96482c6af7a02b3d9587d32450b8c5d7954da367915844"
+  },
+  "result": {
+    "focusDesktopAssertions": 250,
+    "focusMacTimerAssertions": 250,
+    "selectionAssertions": 295,
+    "sourceArchiveTests": 1,
+    "dependencyInputTamperTests": 1
+  },
+  "nativeWindowsAcceptance": false,
+  "boatAcceptance": false,
+  "fullApplicationBuild": false
+}

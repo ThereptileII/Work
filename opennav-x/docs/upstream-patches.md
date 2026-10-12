@@ -1,5 +1,22 @@
 # Direct OpenCPN Upstream Modifications
 
+## Route completion policy and query DPI — SCRUM-298
+
+`opencpn-5.12.4-route-focus.patch` replaces eight temporary focus-policy
+assignments in the native chart canvas with scoped restoration. Mouse/touch
+reuse, route append/insert and great-circle dialogs, keyboard menus and
+right-click/long-press menus preserve the original caller policy. XNav remains
+explicit Finish/Cancel; normal Legacy focus completion is retained. No naming,
+geometry or storage API changes are introduced.
+
+`opencpn-5.12.4-route-hit-dpi.patch` adds a defaulted, internal selection-context
+scale and supplies actual physical pixels per DIP at the 15 canvas query sites.
+Only the existing enlarged XNav route-segment radius consumes it. It preserves
+upstream projection, mark/track/AIS behavior, Legacy and existing three-argument
+queries; no public plugin header or ABI is changed. Both patch files are bound
+by build, source and dependency inventories. [Focused evidence](evidence/scrum298-route-interactions-20261012/README.md)
+does not replace native wx/Windows and boat acceptance.
+
 ## Actual serial pilot boundary — SCRUM-313
 
 The tenth reviewed patch file, `patches/opencpn-5.12.4-pilot-serial.patch`,

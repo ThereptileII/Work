@@ -1,0 +1,12 @@
+route-focus regression: native popup must restore the caller's explicit completion policy
+Traceback (most recent call last):
+  File "/home/standard/Projects/X-nav-worktrees/scrum298-route-naming-audit-20261012/opennav-x/tools/test-route-focus.py", line 101, in <module>
+    main()
+    ~~~~^^
+  File "/home/standard/Projects/X-nav-worktrees/scrum298-route-naming-audit-20261012/opennav-x/tools/test-route-focus.py", line 97, in main
+    subprocess.run([str(executable)], check=True)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.14/subprocess.py", line 578, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['/home/standard/Projects/X-nav-worktrees/scrum298-route-naming-audit-20261012/opennav-x/evidence/local/route-focus-checks/original/route-focus-desktop']' returned non-zero exit status 1.

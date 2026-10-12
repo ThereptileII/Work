@@ -1,0 +1,11 @@
+ReceiptTests (unittest.loader._FailedTest.ReceiptTests) ... ERROR
+
+======================================================================
+ERROR: ReceiptTests (unittest.loader._FailedTest.ReceiptTests)
+----------------------------------------------------------------------
+AttributeError: module '__main__' has no attribute 'ReceiptTests'
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+FAILED (errors=1)

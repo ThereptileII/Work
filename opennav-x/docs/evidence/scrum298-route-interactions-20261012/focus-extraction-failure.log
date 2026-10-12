@@ -1,0 +1,38 @@
+In file included from /home/standard/Projects/X-nav-worktrees/scrum298-route-naming-audit-20261012/opennav-x/tests/route_focus_tests.cpp:128:
+/home/standard/Projects/X-nav-worktrees/scrum298-route-naming-audit-20261012/opennav-x/evidence/local/route-focus-checks/expanded/production-route-focus.h: In member function ‘void ChartCanvas::ReuseMouse()’:
+/home/standard/Projects/X-nav-worktrees/scrum298-route-naming-audit-20261012/opennav-x/evidence/local/route-focus-checks/expanded/production-route-focus.h:112:38: error: ‘frp’ was not declared in this scope
+  112 |             ShowMarkPropertiesDialog(frp);
+      |                                      ^~~
+/home/standard/Projects/X-nav-worktrees/scrum298-route-naming-audit-20261012/opennav-x/evidence/local/route-focus-checks/expanded/production-route-focus.h:112:13: error: ‘ShowMarkPropertiesDialog’ was not declared in this scope
+  112 |             ShowMarkPropertiesDialog(frp);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~
+/home/standard/Projects/X-nav-worktrees/scrum298-route-naming-audit-20261012/opennav-x/evidence/local/route-focus-checks/expanded/production-route-focus.h:113:20: error: return-statement with a value, in function returning ‘void’ [-fpermissive]
+  113 |             return true;
+      |                    ^~~~
+/home/standard/Projects/X-nav-worktrees/scrum298-route-naming-audit-20261012/opennav-x/evidence/local/route-focus-checks/expanded/production-route-focus.h:110:13: error: unused variable ‘pNearbyPoint’ [-Werror=unused-variable]
+  110 | RoutePoint *pNearbyPoint=&nearby, *pMousePoint=nullptr; Route *tail=nullptr;
+      |             ^~~~~~~~~~~~
+/home/standard/Projects/X-nav-worktrees/scrum298-route-naming-audit-20261012/opennav-x/evidence/local/route-focus-checks/expanded/production-route-focus.h:110:36: error: unused variable ‘pMousePoint’ [-Werror=unused-variable]
+  110 | RoutePoint *pNearbyPoint=&nearby, *pMousePoint=nullptr; Route *tail=nullptr;
+      |                                    ^~~~~~~~~~~
+/home/standard/Projects/X-nav-worktrees/scrum298-route-naming-audit-20261012/opennav-x/evidence/local/route-focus-checks/expanded/production-route-focus.h:110:64: error: unused variable ‘tail’ [-Werror=unused-variable]
+  110 | RoutePoint *pNearbyPoint=&nearby, *pMousePoint=nullptr; Route *tail=nullptr;
+      |                                                                ^~~~
+cc1plus: all warnings being treated as errors
+Traceback (most recent call last):
+  File "/home/standard/Projects/X-nav-worktrees/scrum298-route-naming-audit-20261012/opennav-x/tools/test-route-focus.py", line 127, in <module>
+    main()
+    ~~~~^^
+  File "/home/standard/Projects/X-nav-worktrees/scrum298-route-naming-audit-20261012/opennav-x/tools/test-route-focus.py", line 119, in main
+    subprocess.run([os.environ.get('CXX', 'c++'), '-std=c++17', '-O2',
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                    '-Wall', '-Wextra', '-Werror', '-Wno-unused-parameter', *defines,
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                    '-I' + str(output), str(ROOT / 'tests/route_focus_tests.cpp'),
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                    '-o', str(executable)], check=True)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.14/subprocess.py", line 578, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['c++', '-std=c++17', '-O2', '-Wall', '-Wextra', '-Werror', '-Wno-unused-parameter', '-I/home/standard/Projects/X-nav-worktrees/scrum298-route-naming-audit-20261012/opennav-x/evidence/local/route-focus-checks/expanded', '/home/standard/Projects/X-nav-worktrees/scrum298-route-naming-audit-20261012/opennav-x/tests/route_focus_tests.cpp', '-o', '/home/standard/Projects/X-nav-worktrees/scrum298-route-naming-audit-20261012/opennav-x/evidence/local/route-focus-checks/expanded/route-focus-desktop']' returned non-zero exit status 1.

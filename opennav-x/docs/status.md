@@ -1,5 +1,18 @@
 # SKAGER status — 2026-10-12
 
+## Route draft completion and DPI selection fixes integrated
+
+`e5ac8b37` preserves XNav's explicit Finish/Cancel policy across native modal
+chart interactions; focus loss can no longer overwrite that policy and bypass
+the naming step. `3a11990e` scales enlarged route-segment targets using the
+querying canvas's actual physical DPI. Legacy and other selectable objects keep
+their existing radii. `36bcd5a7` registers both patches in CI, build/source and
+dependency inventories. Combined focused checks pass: 250 desktop plus 250 macOS
+timer assertions, 295 selection assertions, and two affected packaging/input
+tests. [Evidence and preserved fixture failures](evidence/scrum298-route-interactions-20261012/README.md)
+separate these results from pending native Windows/boat interaction acceptance.
+No full application build or boat application/profile change occurred.
+
 ## Broker-owned acquisition and indexed cleanup joined
 
 `ce226959`, `07ad7922` and `663b8c0d` connect the actual broker to a durable private
