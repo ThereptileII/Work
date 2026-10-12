@@ -1,0 +1,60 @@
+{
+  "schema": 1,
+  "run": "https://github.com/ThereptileII/Work/actions/runs/38267062370",
+  "commit": "abce9b3233f975f34964900165caee796bf1dd13",
+  "scope": "component only; not combined application or installed protected updater acceptance",
+  "jobs": {
+    "linux": "success",
+    "nativeStartupInteractions": "success",
+    "windows": "failure"
+  },
+  "goTestCounts": {
+    "top_pass": 643,
+    "nested_pass": 2595,
+    "top_skip": 11,
+    "top_fail": 2,
+    "nested_fail": 1
+  },
+  "failedCases": [
+    "TestNativeMaintenanceProcessRetainsActualIdentityWithoutSCM",
+    "TestNativeExecutionProfileCaptureMutationWatchAndMetadataRefuse/security",
+    "TestNativeExecutionProfileCaptureMutationWatchAndMetadataRefuse"
+  ],
+  "actualFreshSCMEnrollment": "skipped after prerequisite contract failure; not accepted",
+  "installerTransactions": "success",
+  "downloadedArtifact": {
+    "id": 11755143357,
+    "name": "update-verifier-windows-2022-386-abce9b3233f975f34964900165caee796bf1dd13",
+    "bytes": 159790,
+    "sha256": "f2170f4daac11273e6f334ffda0b01ca2b4c6a1db3865fd6d52cf5e6c6670ebc"
+  },
+  "retainedArtifacts": [
+    {
+      "name": "installer-fixture-SkagerLifecycleTest-21214082f4ea47f79a9fb5b61c9628ac-bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb-client.log",
+      "bytes": 613,
+      "sha256": "4c4af23050d8a85a8f959c4da0f4e0ad327429bd6a437e542b5311badb687f24"
+    },
+    {
+      "name": "installer-fixture-SkagerLifecycleTest-21214082f4ea47f79a9fb5b61c9628ac.jsonl",
+      "bytes": 1215,
+      "sha256": "1ed1f055189034de5b6835031369c8ecae456796a207298d2bd86dca0b68be7d"
+    },
+    {
+      "name": "installer-transaction-tests.log",
+      "bytes": 11072,
+      "sha256": "1c88e9bd8e525fa3ef2155b15a9747be754f15d4f7a631d54f18d6991761f1e3"
+    },
+    {
+      "name": "transaction-tests.log",
+      "bytes": 21102,
+      "sha256": "a98afccdfd1920557d38c57d93ce86cf3fc6252cdd405f58c0d731b9874a7396"
+    },
+    {
+      "name": "verifier-tests.json",
+      "bytes": 3262799,
+      "sha256": "f4c83e28dd9945f76125cdcb3be680ae526d12b5341a13853b72a6d8a1871b83"
+    }
+  ],
+  "combinedCandidateBuilt": false,
+  "boatChanged": false
+}

@@ -93,7 +93,38 @@ This tests real SCM principal/store initialization without changing the boat or
 launching the navigation application. Fixture source/compilation alone is not a
 native service pass. Replacement native execution of these repairs is pending.
 
-## Remaining installed acceptance
+## Maintenance component run and handoff producer
+
+[Run 38267062370](https://github.com/ThereptileII/Work/actions/runs/38267062370)
+used exact source `abce9b3233f975f34964900165caee796bf1dd13`. Linux and native
+startup interactions passed. Authenticated startup/interruption records and
+installer interrupted/history transactions also passed. The Windows component
+suite passed 643 top-level and 2595 nested cases, with 2 top-level and 1 nested
+failures, and 11 top-level skips. See [original artifact and member hashes](maintenance-native-run.json).
+Actual fresh SCM enrollment was skipped after the prerequisite failure.
+
+The actual maintenance process path comparison refused before completing image
+binding. Windows can report the original short spelling while the retained file
+handle reports its normalized name. `200a2832` opens the process-reported native
+path and requires its canonical physical path, full file ID, creation time and
+non-reparse status to match the original retained image; current process/token/
+birth and live checks remain. Native confirmation remains pending.
+
+The profile security test still failed in `SetSecurityInfo`, before production
+validation. `560ec201` adds READ_CONTROL to its test-only WRITE_DAC handle and
+corroborates actual protected DACL ACE bytes before the unchanged original
+metadata/refusal assertions. This is a proposed fixture repair, not a proven
+native pass or a change to production guards.
+
+`ea4273d2`/`750af80b` join the initial baseline handoff producer. It preserves the
+approved recovery ZIP byte-for-byte, compares the extracted tree, validates the
+strict original client request and importer, bounds reads, checks cancellation,
+propagates close errors and reads back output bytes. The output request digest
+needs separate approval. Focused Linux producer checks and Windows/x86
+cross-compilation passed; protected output-directory provenance, native producer
+execution and actual enrollment/installed lifecycle remain separate gates.
+
+## Remaining installed acceptance (unchanged)
 
 The ordinary installed Setup still uses the older per-user lifecycle. It has not
 yet joined the new protected operator enrollment, maintenance and uninstall

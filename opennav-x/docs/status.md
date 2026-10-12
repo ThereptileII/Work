@@ -2,6 +2,25 @@
 
 ## Protected startup/Now source joined; exact native component failures isolated
 
+Latest component run [38267062370](https://github.com/ThereptileII/Work/actions/runs/38267062370)
+on `abce9b32` passed Linux, native startup interactions, authenticated startup/
+interruption records and installer interrupted/history transactions. Windows
+component verification passed **643 top-level + 2595 nested cases**, with **2
+top-level + 1 nested failures and 11 top-level skips**. The remaining failures
+are maintenance process image-path binding and the profile DACL mutation fixture.
+Actual fresh SCM enrollment was skipped after the prerequisite failure and has
+not passed. [Original downloaded evidence](evidence/scrum311-startup-native-repairs-20261012/maintenance-native-run.json)
+is retained separately from earlier failures.
+
+`200a2832` compares the process-reported image through its opened canonical
+physical path and full native identity, retaining strict original image custody.
+`560ec201` gives the test-only DACL mutator read/control rights and independently
+corroborates its mutation before requiring production refusal. Native confirmation
+of both repairs remains pending. `ea4273d2`/`750af80b` add the operator baseline
+handoff producer: exact approved recovery ZIP copy, bounded validation and separate
+request approval. Its focused Linux checks passed; this is neither enrollment nor
+installed updater acceptance.
+
 Source through `7e3c5e09` joins authenticated normal-startup/update offers, the
 protected prompt/Now path and explicit initial operator startup activation.
 Unknown/crashed prompt exits now refuse rather than masquerading as Later.
