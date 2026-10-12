@@ -31,6 +31,10 @@ on:
       - .github/workflows/update-verifier-probe.yml
   workflow_dispatch:
     inputs:
+      verifier_only:
+        description: Run verifier, native package and enrollment gates only; retain separate restart/UI evidence
+        type: boolean
+        default: false
       startup_only:
         description: Run only focused native startup and fresh-profile qualification checks
         type: boolean
@@ -54,7 +58,7 @@ permissions:
 
 jobs:
   verify:
-    if: ${{ !inputs.owned_files_only && !inputs.image_owner_only && !inputs.startup_only && github.ref != 'refs/heads/skager-updater-lifecycle' }}
+    if: ${{ inputs.verifier_only || (!inputs.owned_files_only && !inputs.image_owner_only && !inputs.startup_only && github.ref != 'refs/heads/skager-updater-lifecycle') }}
     timeout-minutes: 20
     strategy:
       matrix:
@@ -70,6 +74,10 @@ jobs:
     env:
       GOARCH: ${{ matrix.arch }}
     steps:
+      - name: Refuse incompatible focused verifier selections
+        if: ${{ inputs.verifier_only && (inputs.owned_files_only || inputs.image_owner_only || inputs.startup_only || inputs.diagnose_image_creation) }}
+        shell: python
+        run: raise SystemExit('verifier_only cannot be combined with other focused inputs')
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
         with:
@@ -210,7 +218,7 @@ jobs:
           if-no-files-found: error
 
   mode-restart:
-    if: ${{ !inputs.owned_files_only && !inputs.image_owner_only && !inputs.startup_only && github.ref != 'refs/heads/skager-updater-lifecycle' }}
+    if: ${{ !inputs.verifier_only && !inputs.owned_files_only && !inputs.image_owner_only && !inputs.startup_only && github.ref != 'refs/heads/skager-updater-lifecycle' }}
     name: Native protected mode routing and ordinary restart
     runs-on: windows-2022
     timeout-minutes: 20
@@ -249,7 +257,7 @@ jobs:
           if-no-files-found: warn
 
   startup-popup:
-    if: ${{ !inputs.owned_files_only && !inputs.image_owner_only && (inputs.startup_only || github.ref != 'refs/heads/skager-updater-lifecycle') }}
+    if: ${{ !inputs.verifier_only && !inputs.owned_files_only && !inputs.image_owner_only && (inputs.startup_only || github.ref != 'refs/heads/skager-updater-lifecycle') }}
     name: Native startup update interactions
     runs-on: windows-2022
     timeout-minutes: 25
@@ -278,7 +286,7 @@ jobs:
           if-no-files-found: error
 
   lifecycle-only:
-    if: ${{ !inputs.owned_files_only && !inputs.image_owner_only && !inputs.startup_only && github.ref == 'refs/heads/skager-updater-lifecycle' }}
+    if: ${{ !inputs.verifier_only && !inputs.owned_files_only && !inputs.image_owner_only && !inputs.startup_only && github.ref == 'refs/heads/skager-updater-lifecycle' }}
     name: Focused actual Lifecycle startup diagnostics
     runs-on: windows-2022
     timeout-minutes: 5
@@ -303,7 +311,7 @@ jobs:
           if-no-files-found: error
 
   owned-files-only:
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.owned_files_only && !inputs.image_owner_only && !inputs.startup_only }}
+    if: ${{ !inputs.verifier_only && github.event_name == 'workflow_dispatch' && inputs.owned_files_only && !inputs.image_owner_only && !inputs.startup_only }}
     name: Native Win32 owned-file acquisition
     runs-on: windows-2022
     timeout-minutes: 8
@@ -335,7 +343,7 @@ jobs:
           if-no-files-found: error
 
   supervisor-owner:
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.image_owner_only && !inputs.owned_files_only && !inputs.startup_only }}
+    if: ${{ !inputs.verifier_only && github.event_name == 'workflow_dispatch' && inputs.image_owner_only && !inputs.owned_files_only && !inputs.startup_only }}
     name: Windows PowerShell 5.1 supervised image ownership
     runs-on: windows-2022
     timeout-minutes: 12
@@ -412,7 +420,7 @@ jobs:
           retention-days: 90
 
   ordinary-owner:
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.image_owner_only && !inputs.owned_files_only && !inputs.startup_only }}
+    if: ${{ !inputs.verifier_only && github.event_name == 'workflow_dispatch' && inputs.image_owner_only && !inputs.owned_files_only && !inputs.startup_only }}
     name: Native Win32 ordinary image ownership
     runs-on: windows-2022
     timeout-minutes: 12
