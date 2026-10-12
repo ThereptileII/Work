@@ -100,7 +100,7 @@ add-directory access before consuming initialization.
 Before creating any broker directory it exclusively creates
 `ProgramData/SKAGER/UpdateBroker.initialized` with the final exact broker/SYSTEM
 descriptor and synchronizes a bounded **started** record. It then creates only
-`UpdateBroker`, `candidates` and `registrations`, each with its final descriptor
+`UpdateBroker`, `candidates`, `registrations` and `users`, each with its final descriptor
 from first exposure. Exact held-tree validation precedes the synchronized
 **completed** record. Existing roots or fences are never adopted, truncated,
 deleted or reset. Every failed attempt retains its fence and partial namespace;
@@ -109,7 +109,7 @@ from the existing reopenable lifetime `store.lock`.
 
 `ValidateInitialization` is read-only. It requires the same actual broker and
 independently provisioned parent, an exact protected completed fence, and all
-three exact existing directories. Missing/started/corrupt evidence refuses;
+four exact existing directories. Missing/started/corrupt evidence refuses;
 validation never repairs missing children. Non-Windows APIs refuse with
 `ErrNativeRequired`.
 
@@ -120,6 +120,7 @@ The native service accepts exactly these **SCM start arguments**:
 | `SkagerUpdateBroker` | Validate local completion, then normal protected `Open` and serving |
 | `SkagerUpdateBroker initialize-store` | Fresh creation only, then stop before `Running` or opening the request pipe |
 | `SkagerUpdateBroker verify-store` | Read-only durable completion validation as the broker, then stop before `Running` or opening the request pipe |
+| `SkagerUpdateBroker register-client <SID> <approved SHA-256>` | Read only the fixed protected original request, validate independent approval, initialize one fresh client, then stop before `Running` or opening the request pipe |
 
 Executable command-line arguments remain forbidden. Missing, extra, aliased or
 unknown SCM arguments refuse. Context cancellation is checked before and after
@@ -167,10 +168,13 @@ authority to execute an update. Normal validation releases its owners before
    DACL **before any start**. Do not claim the final DACL existed at creation.
    Authenticated users retain query/read rights needed by `brokerpipe.Call`;
    ordinary callers cannot control, reconfigure or delete the service.
-7. Invoke only `initialize-store` and then `verify-store`, each with a bounded
+7. Invoke `initialize-store` and then `verify-store`, each with a bounded
    60-second wait for stopped state, zero exit codes and no accepted controls.
    Hold original code/input/SCM/registry owners throughout. Neither invocation
-   announces Running or opens a request pipe. Leave the service stopped.
+   announces Running or opens a request pipe. If an independently approved client
+   request was supplied, invoke the separate stopped `register-client` operation
+   through the same retained service handle and validate its terminal result.
+   Leave the service stopped.
 
 The outer operation is capped at 30 minutes. The existing signed-bootstrap reader
 has its own 30-second network deadline; cancellation is checked before subsequent
@@ -199,14 +203,79 @@ These local checks bind bytes/source, not original producer or publisher trust;
 the scripts never execute/elevate the output or activate a service. No OpenCPN
 binary is bundled into this prerequisite component.
 
+## Independently approved fresh client registration
+
+Source revisions `129b0a64`, `910fd664`, `95cbe96e`, `55c743fd`, `24e137e9`,
+`e7fabf9b`, `988b90d9`, `d0b8931f` and `b8913374` add a concrete, inactive
+source path. These revisions do not establish native installation acceptance.
+
+The provisioner optionally accepts a paired `--client-registration-request` and
+`--client-registration-request-sha256`. The latter is a separately authenticated
+operator approval of the original bounded request bytes, not an adjacent
+self-hash. Approval contains the actual canonical user SID, exact installed
+identity declarations, stock OpenCPN tuple/path and complete original public
+trust configuration. Its purpose is exactly `client-registration`; duplicate,
+case-aliased, extra, missing, null, invalid or unbounded fields refuse. The
+request's trust bytes/hash/channel must match the enrolled bootstrap exactly.
+Before network or machine mutation the native path resolves the SID as a real
+user. Declared installed hashes are not physical installation or loader proof.
+LocalAppData state, client self-reports and a request cannot authenticate their
+own approval or establish the initial provisioner's publisher identity.
+
+Only the retained **fresh** machine enrollment may create
+`ProgramData/SKAGER/ClientRegistrationRequests/<SID>.json`. Directory and file use
+final protected Administrator/SYSTEM write and broker read/traverse descriptors
+from creation; ordinary clients have no ACE. `CREATE_NEW`, synchronized original
+bytes and readback precede reopening with retained read-only, no-write/no-delete
+sharing custody. Partial namespace is preserved and refused, never adopted or
+reset. This is not an API to add clients to an existing machine enrollment.
+
+The retained SCM owner sends only `register-client`, SID and separately approved
+hash. No request pathname or alternate service is accepted. The actual native
+broker reader verifies its process/effective principal, absence of impersonation,
+fixed KnownFolder ancestry, exact protection, physical file identity, bounds,
+original hash and SID. It returns owned original bytes. The stopped service
+entry reparses approval and calls `RegisterApprovedClientNative` before any
+`Running` state or request pipe. Fresh approval still requires an unexpired
+bootstrap root. Administrator/SYSTEM console execution is not a broker fallback.
+
+The broker reserves a permanent SID-specific `.once` fence before creating a
+fresh protected user/trust/artifact tree. Final channel state remains absent
+until the real verifier initializes it. The exact original approved request is
+stored in strict schema 2 with `clientSid`, `approvedRequestSha256` and canonical
+base64 `approvedRequest`; it is not replaced by mutable parallel declarations.
+A synchronized completed fence binds approval and protected JSON hashes. Readers
+require completed evidence; old schema 1 is rejected because no accepted native
+producer wrote it. Existing or partial client state is never silently adopted,
+repaired or retried. The writer is closed before a protected read is possible.
+
+Cancellation is checked immediately before the irreversible bounded publication.
+Once durable completion succeeds, late cancellation does not turn success into
+failure. Actual publication or subsequent custody/close failure may already have
+retained completed state: `ErrRegistrationUncertain` /
+`ErrClientRegistrationUncertain` require explicit operator review, never blind
+retry, deletion or trust-floor reset. Stock observation/probe cleanup failures
+retain `ErrStockCleanup`; repeated close returns the cached outcome.
+
+A completed protected read validates the original anchor's schema, signatures,
+keys, exact bytes and identity without requiring that **historical** root to stay
+unexpired after rotation. `ParseRetainedApprovedRequest` / `ValidateTrustIdentity`
+are identity-only paths, not enrollment authorization. Current retained root and
+metadata expiry, signature verification and durable rollback floors remain the
+real verifier's responsibility at its current clock. Missing/corrupt retained
+state refuses; reading registration never initializes or resets it.
+
 ## Remaining installation boundary
 
 The first final provisioner must still be independently authenticated before
 elevation. Machine parent/service provisioning now has a concrete source path;
 actual native qualification and authenticated first execution remain unaccepted.
-Protected client registration, installation/loader custody, launcher handoff,
-healthy-start receipt, recovery and full installed Windows/boat update sequence
-remain required. Machine/store creation is implemented in source but has not
+Fresh protected client registration now has the source path above; its actual
+native principal/ACL/SCM qualification remains required. Independently
+authenticated installed-byte/loader custody, launcher handoff, healthy-start
+receipt, recovery and the full installed Windows/boat update sequence remain
+required. Existing-enrollment/client migration is not implemented by the fresh
+path and must not be simulated by deleting recovery fences. Machine/store creation is implemented in source but has not
 passed native Windows execution or actual enrolled-service qualification. None of these
 missing authorities is supplied by the declaration. No service is activated,
 hardware control enabled or application/profile changed by its focused tests.
