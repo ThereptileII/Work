@@ -24,16 +24,18 @@ func (p *PeerCapability) WithMaintenanceOperator(ctx context.Context, expectedCl
 	}
 	p.state.mu.Lock()
 	defer p.state.mu.Unlock()
-	native := maintenanceNativePeer(p.state.backend)
-	if native == nil {
-		return ErrRefused // Portable/private backends cannot grant operator authority.
-	}
 	// A maintenance callback must never inherit the pipe-identification thread's
 	// impersonation. Keep the checked service thread throughout this use.
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	if err := p.state.checkLocked(ctx); err != nil {
 		return err
+	}
+	// Observe permanent revocation before rejecting an active-input wrapper.
+	// Backend shape or readiness cannot mask Close or a prior native failure.
+	native := maintenanceNativePeer(p.state.backend)
+	if native == nil {
+		return ErrRefused // Portable/private backends cannot grant operator authority.
 	}
 	if err := maintenanceOperatorToken(native, p.state.identity, expectedClientSID); err != nil {
 		p.state.failure = errors.Join(ErrPeerRevoked, err)

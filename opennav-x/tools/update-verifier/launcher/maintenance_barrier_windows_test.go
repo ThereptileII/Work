@@ -1,13 +1,16 @@
 package launcher
 
 import (
+	"bytes"
 	"context"
 	"encoding/binary"
 	"errors"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
+	"unsafe"
 
 	"golang.org/x/sys/windows"
 )
@@ -171,6 +174,9 @@ func TestNativeMaintenanceBarrierSubstRemapCannotReplaceOriginalDirectory(t *tes
 }
 
 func TestNativeMaintenanceBarrierInaccessibleLegacyRootRefuses(t *testing.T) {
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+
 	local := t.TempDir()
 	old := filepath.Join(local, "OpenNavXAlpha1")
 	if err := os.Mkdir(old, 0700); err != nil {
@@ -218,11 +224,42 @@ func TestNativeMaintenanceBarrierInaccessibleLegacyRootRefuses(t *testing.T) {
 	if err = windows.SetSecurityInfo(control, windows.SE_FILE_OBJECT, windows.DACL_SECURITY_INFORMATION|windows.PROTECTED_DACL_SECURITY_INFORMATION, nil, nil, deniedACL, nil); err != nil {
 		t.Fatal("inert root ACL denial", err)
 	}
-	// Independently verify the actual legacy-directory query fails; successful
-	// mutation alone would not establish an inaccessible fixture.
+	// Independently read back the exact deny DACL. A successful setter alone is
+	// insufficient, and backup semantics can bypass a DACL under a privileged CI
+	// executor. Only a private duplicate is changed; the primary token is untouched.
+	applied, err := windows.GetSecurityInfo(control, windows.SE_FILE_OBJECT, windows.DACL_SECURITY_INFORMATION)
+	if err != nil {
+		t.Fatal("inert root security readback", err)
+	}
+	appliedACL, appliedErr := brokerQueryACLBytes(applied)
+	expectedACL, expectedErr := brokerQueryACLBytes(denied)
+	appliedControl, _, controlErr := applied.Control()
+	if appliedErr != nil || expectedErr != nil || controlErr != nil || appliedControl&windows.SE_DACL_PROTECTED == 0 || !bytes.Equal(appliedACL, expectedACL) {
+		t.Fatal("fixture protected deny DACL differs", appliedErr, expectedErr, controlErr)
+	}
+	fixtureToken := maintenanceBarrierUnprivilegedToken(t)
+	if err = windows.SetThreadToken(nil, fixtureToken); err != nil {
+		t.Fatal("fixture token activation", err)
+	}
+	defer func() {
+		if err := windows.RevertToSelf(); err != nil {
+			t.Error("fixture token revert", err)
+		}
+	}()
+	// The production observer has no generic impersonation gate. Confirm the
+	// retained parent remains accessible so the test reaches legacy-root denial.
+	parent, err := openNativeArmedDirectory(local)
+	if err != nil {
+		t.Fatal("fixture parent became inaccessible", err)
+	}
+	if err := windows.CloseHandle(parent.handle); err != nil {
+		t.Fatal(err)
+	}
 	if probe, queryErr := openNativeArmedDirectory(old); queryErr == nil {
 		windows.CloseHandle(probe.handle)
 		t.Fatal("fixture legacy directory remained queryable")
+	} else if !errors.Is(queryErr, windows.ERROR_ACCESS_DENIED) {
+		t.Fatal("fixture did not establish native ACL denial", queryErr)
 	}
 	if err = b.Validate(context.Background()); !errors.Is(err, errArmedUpdateBarrier) {
 		t.Fatal("inaccessible legacy directory treated as absence", err)
@@ -340,4 +377,62 @@ func TestNativeMaintenanceBarrierCancellationAndLostOriginalCustodyRefuse(t *tes
 			}
 		})
 	}
+}
+
+// Duplicate only this test process token, disable privileges on the duplicate,
+// and retain it for a single locked-thread fixture. No original token privilege,
+// production grant, service, installation or profile is changed.
+func maintenanceBarrierUnprivilegedToken(t *testing.T) windows.Token {
+	t.Helper()
+	var existing windows.Token
+	err := windows.OpenThreadToken(windows.CurrentThread(), windows.TOKEN_QUERY, true, &existing)
+	if err == nil {
+		existing.Close()
+		t.Fatal("fixture inherited impersonation")
+	}
+	if !errors.Is(err, windows.ERROR_NO_TOKEN) {
+		t.Fatal(err)
+	}
+	var primary windows.Token
+	if err = windows.OpenProcessToken(windows.CurrentProcess(), windows.TOKEN_QUERY|windows.TOKEN_DUPLICATE, &primary); err != nil {
+		t.Fatal(err)
+	}
+	defer func() {
+		if err := primary.Close(); err != nil {
+			t.Error("fixture primary query close", err)
+		}
+	}()
+	var token windows.Token
+	if err = windows.DuplicateTokenEx(primary, windows.TOKEN_QUERY|windows.TOKEN_ADJUST_PRIVILEGES|windows.TOKEN_IMPERSONATE, nil, windows.SecurityImpersonation, windows.TokenImpersonation, &token); err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() {
+		if err := token.Close(); err != nil {
+			t.Error("fixture token close", err)
+		}
+	})
+	if err = windows.AdjustTokenPrivileges(token, true, nil, 0, nil, nil); err != nil {
+		t.Fatal("fixture privilege disable", err)
+	}
+	// Inspect the actual duplicate, rather than relying on adjustment success.
+	var needed uint32
+	err = windows.GetTokenInformation(token, windows.TokenPrivileges, nil, 0, &needed)
+	if !errors.Is(err, windows.ERROR_INSUFFICIENT_BUFFER) || needed < 4 || needed > 64<<10 {
+		t.Fatal("fixture privilege query size", needed, err)
+	}
+	buffer := make([]byte, needed)
+	var used uint32
+	if err = windows.GetTokenInformation(token, windows.TokenPrivileges, &buffer[0], needed, &used); err != nil || used < 4 || used > needed {
+		t.Fatal("fixture privilege query", err)
+	}
+	privileges := (*windows.Tokenprivileges)(unsafe.Pointer(&buffer[0]))
+	if uint64(privileges.PrivilegeCount) > uint64(used-4)/uint64(unsafe.Sizeof(windows.LUIDAndAttributes{})) {
+		t.Fatal("fixture privilege query bound")
+	}
+	for _, privilege := range privileges.AllPrivileges() {
+		if privilege.Attributes&windows.SE_PRIVILEGE_ENABLED != 0 {
+			t.Fatal("fixture duplicate retained enabled privilege")
+		}
+	}
+	return token
 }

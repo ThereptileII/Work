@@ -220,3 +220,41 @@ func TestMaintenanceOperatorCheckedLeaseRefusesCancellationOtherThreadAndLostTok
 		t.Fatal("checker remained live after callback returned")
 	}
 }
+
+func TestMaintenanceOperatorClosedCapabilityRevocationPrecedesBackendReadiness(t *testing.T) {
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	for _, kind := range []string{"native", "wrapped", "active-input", "missing-native"} {
+		t.Run(kind, func(t *testing.T) {
+			f := actualNativePeerFixture(t)
+			identity := nativePeerEvidence(f.process)
+			incoming := &atomic.Bool{}
+			switch kind {
+			case "wrapped":
+				f.cap.state.backend = &executionNativePeer{native: f.backend}
+			case "active-input":
+				incoming.Store(true)
+				f.cap.state.backend = &executionNativePeer{native: f.backend, incoming: incoming}
+			case "missing-native":
+				f.cap.state.backend = &executionNativePeer{}
+			}
+			if err := f.cap.Close(); err != nil {
+				t.Fatal(err)
+			}
+			used := false
+			callback := func(PeerIdentity) error { used = true; return nil }
+			for _, ctx := range []context.Context{f.ctx, context.Background()} {
+				if err := f.cap.WithMaintenanceOperator(ctx, identity.SID, callback); !errors.Is(err, ErrPeerRevoked) || used {
+					t.Fatal("closed capability lost revocation", kind, err)
+				}
+			}
+			incoming.Store(false)
+			if err := f.cap.WithMaintenanceOperator(f.ctx, identity.SID, callback); !errors.Is(err, ErrPeerRevoked) || used {
+				t.Fatal("readiness change revived closed capability", err)
+			}
+			if err := f.cap.WithMaintenanceOperatorChecked(f.ctx, identity.SID, func(PeerIdentity, func(context.Context) error) error { used = true; return nil }); !errors.Is(err, ErrPeerRevoked) || used {
+				t.Fatal("closed capability lent maintenance checker", err)
+			}
+		})
+	}
+}
