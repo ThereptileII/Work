@@ -87,6 +87,67 @@ try {
   Check ($Action -ceq 'installer-action-sentinel') 'Dot-sourcing supervisor changed Lifecycle action.'
   $install=Join-Path $fixture 'installation'
   $null=New-Item -ItemType Directory -Path $install
+  # Execute the real lifecycle body with the native fixture's exact production
+  # initializer selector. Only native/shell boundaries are inert; state, pending
+  # validation and exclusive locking use disposable files on both platforms.
+  & {
+    param([string]$Base,[string]$Installer,[string]$FixtureScript)
+    $errors=$null
+    $lifecycle=[Management.Automation.Language.Parser]::ParseFile((Join-Path $Installer 'Lifecycle.ps1'),[ref]$null,[ref]$errors)
+    Check ($errors.Count -eq 0) 'Lifecycle source parses for initializer regression.'
+    $fixtureAst=[Management.Automation.Language.Parser]::ParseFile($FixtureScript,[ref]$null,[ref]$errors)
+    Check ($errors.Count -eq 0) 'Native lifecycle fixture parses for initializer regression.'
+    $selector=@($fixtureAst.FindAll({param($node) $node -is [Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -ceq 'Get-LifecycleFixtureInitializers'},$false))
+    Check ($selector.Count -eq 1) 'One exact native fixture initializer selector is required.'
+    . ([scriptblock]::Create($selector[0].Extent.Text))
+    foreach ($unsafeInitializer in @('$Unexpected=[IO.File]::Delete("unused")', '$Unexpected=New-Object IO.FileStream("unused",[IO.FileMode]::Create)')) {
+      $unsafeAst=[Management.Automation.Language.Parser]::ParseInput(($unsafeInitializer+"`nfunction Sentinel { }"),[ref]$null,[ref]$errors)
+      Check ($errors.Count -eq 0) 'Unsafe initializer probe parses without execution.'
+      Reject { @(Get-LifecycleFixtureInitializers $unsafeAst) | Out-Null }
+    }
+    $Root=$Base;$Registry=Join-Path $Base 'unused-registry';$Programs=Join-Path $Base 'unused-programs'
+    foreach ($definition in @(Get-LifecycleFixtureInitializers $lifecycle)) { . ([scriptblock]::Create($definition.Extent.Text)) }
+    Check ($Root -ceq $Base -and $Registry -ceq (Join-Path $Base 'unused-registry') -and $Programs -ceq (Join-Path $Base 'unused-programs')) 'Production user-path initializers are never evaluated.'
+    foreach ($definition in @($lifecycle.EndBlock.Statements | Where-Object { $_ -is [Management.Automation.Language.FunctionDefinitionAst] })) { . ([scriptblock]::Create($definition.Extent.Text)) }
+    # Restrict every portable path to this newly created fixture. Native armed
+    # marker and shell/process checks have their separate authoritative gates.
+    function PlainPath([string]$Path) {
+      $full=[IO.Path]::GetFullPath($Path)
+      if ($full -cne $Base -and -not $full.StartsWith($Base+[IO.Path]::DirectorySeparatorChar,[StringComparison]::Ordinal)) { throw 'Portable lifecycle path escaped its fixture.' }
+      return $full
+    }
+    function ShellGroups { }
+    function Assert-NoSignedUpdateArmed([string]$InstallationRoot,[bool]$AllowMissingRoot=$false) { }
+    function AssertShellOwnership { }
+    function AssertClosed { }
+    function Assert-LifecycleMutation { }
+    $Action='Rollback';$Report='';$UpdateTransaction='d'*32;$PackageDirectory=''
+    $null=[IO.Directory]::CreateDirectory($Root)
+    $stockPath=Join-Path $Root 'stock-sentinel';[IO.File]::WriteAllText($stockPath,'untouched stock',$Utf8)
+    $pending=NewRecord;$pending.transaction='e'*32
+    $state=@{owner=$Owner;schema=1;stock=@{path=$stockPath;sha256=(Hash $stockPath)};current=$pending.candidate.generation;previous=$pending.previous.generation}
+    foreach ($item in @(@{name='owner.json';value=@{owner=$Owner}},@{name='state.json';value=$state},@{name='update-pending.json';value=$pending})) {
+      [IO.File]::WriteAllText((Join-Path $Root $item.name),($item.value | ConvertTo-Json -Depth 12),$Utf8)
+    }
+    $statePath=Join-Path $Root 'state.json';$pendingPath=Join-Path $Root 'update-pending.json'
+    $beforeState=Hash $statePath;$beforePending=Hash $pendingPath
+    $transaction=@($lifecycle.EndBlock.Statements | Where-Object { $_ -is [Management.Automation.Language.TryStatementAst] })
+    Check ($transaction.Count -eq 1) 'One exact lifecycle transaction body is required.'
+    # The production exit belongs to its process entrypoint; a mismatch must
+    # throw before reaching it. Every preceding body statement is unchanged.
+    $body=@($transaction[0].Body.Statements)
+    Check ($body[-1] -is [Management.Automation.Language.ExitStatementAst] -and $body[-1].Extent.Text -ceq 'exit 0') 'Lifecycle process exit remains outside the portable body invocation.'
+    $failure=''
+    try { . ([scriptblock]::Create(($body[0..($body.Count-2)] | ForEach-Object { $_.Extent.Text }) -join "`n")) }
+    catch { $failure=$_.Exception.Message }
+    finally { if($TransactionLock){$TransactionLock.Dispose()} }
+    Check ($failure -ceq 'Supervised transaction changed or is unavailable.') ('Wrong transaction reaches its real refusal after lifecycle initialization: '+$failure)
+    Check ((Hash $statePath) -ceq $beforeState -and (Hash $pendingPath) -ceq $beforePending) 'Wrong transaction preserves selected state and pending evidence byte-for-byte.'
+    Check (-not (Test-Path -LiteralPath (Join-Path $Root 'transaction.json')) -and -not (Test-Path -LiteralPath (Join-Path $Root 'update-history'))) 'Wrong transaction creates no rollback journal or finalized history.'
+    $probe=[IO.File]::Open((Join-Path $Root 'transaction.lock'),[IO.FileMode]::Open,[IO.FileAccess]::ReadWrite,[IO.FileShare]::None)
+    $probe.Dispose()
+    Write-Host 'PASS: exact lifecycle fixture state, wrong-transaction refusal, byte-preserved pending/state, and released disposable lock.'
+  } (Join-Path $fixture 'lifecycle-initializers') (Split-Path $module -Parent) (Join-Path $PSScriptRoot 'test-updater-installer-integration.ps1')
   function FixtureJson([string]$Path,$Value) { [IO.File]::WriteAllText($Path,($Value|ConvertTo-Json -Depth 12)) }
   function FixtureGeneration([char]$Digit,[string]$Executable='') {
     $id=([string]$Digit)*32

@@ -1,6 +1,7 @@
 # Native disposable coverage of the actual Lifecycle transaction block. The
 # production entrypoint's real user paths are never evaluated. Only its exact
-# function definitions and final try/catch/finally execute with fixture roots.
+# safe state initializers, function definitions and final try/catch/finally
+# execute with fixture roots.
 param([switch]$Worker,[string]$Fixture='', [string]$Registry='',
       [string]$FailurePoint='', [string]$UpdateTransaction='')
 Set-StrictMode -Version Latest
@@ -14,10 +15,30 @@ if ($errors) { throw ($errors | Out-String) }
 $functions=@($ast.EndBlock.Statements | Where-Object { $_ -is [Management.Automation.Language.FunctionDefinitionAst] })
 $transactions=@($ast.EndBlock.Statements | Where-Object { $_ -is [Management.Automation.Language.TryStatementAst] })
 if ($functions.Count -lt 1 -or $transactions.Count -ne 1) { throw 'Unexpected Lifecycle AST; review the isolated execution boundary.' }
+function Get-LifecycleFixtureInitializers($LifecycleAst) {
+  $firstFunction=@($LifecycleAst.EndBlock.Statements | Where-Object { $_ -is [Management.Automation.Language.FunctionDefinitionAst] })[0]
+  foreach ($statement in $LifecycleAst.EndBlock.Statements) {
+    if ($statement.Extent.StartOffset -ge $firstFunction.Extent.StartOffset) { break }
+    if ($statement -isnot [Management.Automation.Language.AssignmentStatementAst]) { continue }
+    if ($statement.Left.Extent.Text -cnotmatch '^\$[A-Za-z][A-Za-z0-9_]*$') { throw 'Unexpected Lifecycle initializer target.' }
+    # These production values address actual user installation/shell paths.
+    # The fixture supplies its own roots; never evaluate their initializers.
+    if ($statement.Left.VariablePath.UserPath -in @('Root','Registry','Programs')) { continue }
+    $value=$statement.Right
+    $safe=$value -is [Management.Automation.Language.CommandExpressionAst] -and
+      ($value.Expression -is [Management.Automation.Language.ConstantExpressionAst] -or
+       ($value.Expression -is [Management.Automation.Language.VariableExpressionAst] -and
+        $value.Expression.VariablePath.UserPath -in @('null','false','true')))
+    if (-not $safe -and $value.Extent.Text -cnotmatch '^New-Object System\.(Text\.UTF8Encoding\(\$false\)|Collections\.Generic\.List\[string\])$') {
+      throw 'Unexpected Lifecycle initializer expression; review the isolated execution boundary.'
+    }
+    $statement
+  }
+}
+$initializers=@(Get-LifecycleFixtureInitializers $ast)
+foreach ($definition in $initializers) { . ([scriptblock]::Create($definition.Extent.Text)) }
 . (Join-Path $PSScriptRoot '../installer/windows/UpdateSupervisor.ps1')
 foreach ($definition in $functions) { . ([scriptblock]::Create($definition.Extent.Text)) }
-$Owner='OpenNavX.Alpha1.SideBySide.1'
-$Utf8=New-Object Text.UTF8Encoding($false)
 if ($Worker) {
   # Reject a hand-written invocation which could bind actual installation or
   # registry paths. The parent alone creates this uniquely named fixture.
@@ -29,8 +50,6 @@ if ($Worker) {
   $Root=Join-Path $Fixture 'installation';$Programs=Join-Path $Fixture 'Programs'
   $Action='Rollback';$OpenCpn='';$PackageDirectory='';$ManifestSha256='';$Report=Join-Path $Fixture 'worker-result.json'
   $ShortcutModes='';$SummaryPath='';$SupervisedUpdate=$false
-  $SessionLog=New-Object 'Collections.Generic.List[string]'
-  $TransactionLock=$null;$OwnsRoot=$false;$LastStartupHealth=0;$RecoveredSupervised=$false
   # Unmodified engine control flow, including failure injection, exit codes,
   # exclusive lock, self-test, publication, pending guard and finalization.
   & ([scriptblock]::Create($transactions[0].Extent.Text))
@@ -41,7 +60,7 @@ $Fixture=Join-Path ([IO.Path]::GetTempPath()) ('SkagerLifecycleTest-'+[guid]::Ne
 $Registry='HKCU:\Software\SkagerLifecycleTests\'+[guid]::NewGuid().ToString('N')
 $Root=Join-Path $Fixture 'installation';$Programs=Join-Path $Fixture 'Programs'
 $Action='Rollback'
-$SessionLog=New-Object 'Collections.Generic.List[string]';$Checks=0
+$Checks=0
 $DiagnosticDirectory=Join-Path $PSScriptRoot '../build/updater-native'
 $null=[IO.Directory]::CreateDirectory($DiagnosticDirectory)
 $DiagnosticPath=Join-Path $DiagnosticDirectory ('installer-fixture-'+[IO.Path]::GetFileName($Fixture)+'.jsonl')
@@ -245,8 +264,10 @@ try {
   Reject {Pending $candidate $old} 'Pending creation refuses an unqualified previous generation'
   Qualify $old
   $record=Pending $candidate $old
+  $stateBefore=Hash (Join-Path $Root 'state.json');$pendingBefore=Hash (Join-Path $Root 'update-pending.json')
   $bad=RunLifecycle -Transaction ('d'*32) -Expected 1
   Check ($bad.error -match 'transaction changed' -and (ReadState).current -ceq $candidate -and (Test-Path (Join-Path $Root 'update-pending.json'))) 'Wrong transaction cannot roll back or erase pending evidence'
+  Check ((Hash (Join-Path $Root 'state.json')) -ceq $stateBefore -and (Hash (Join-Path $Root 'update-pending.json')) -ceq $pendingBefore) 'Wrong transaction preserves selected state and pending evidence byte-for-byte'
   $null=RunLifecycle -Transaction $record.transaction
   CheckRestored $old $record
   # Candidate corruption cannot prevent restoration of the independently
