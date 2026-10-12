@@ -1,0 +1,27 @@
+{
+  "scope": "Actual patched LoadPluginCandidate prefix before wxDateTime with inert wx/log/stamp seams; not whole DLL/plugin acceptance",
+  "patchedPluginLoaderSha256": "12457d5cfa34dec322e74f5c8ef1d6c256ba6fa85dcde3366ed7803728142c32",
+  "cases": [
+    {
+      "case": "qualified",
+      "returncode": 0,
+      "expectedReturncode": 0,
+      "sourceSha256": "9ff6ffc0259d22ef36d87ec091f29908a1e826108ef12f1a5f8e57f7092d52fc",
+      "binarySha256": "ec87a2bfd46d6039e5bb6e78cedc0c307685c39d07806e0ed97e7cbaa842106e"
+    },
+    {
+      "case": "ordinary",
+      "returncode": 0,
+      "expectedReturncode": 0,
+      "sourceSha256": "9ff6ffc0259d22ef36d87ec091f29908a1e826108ef12f1a5f8e57f7092d52fc",
+      "binarySha256": "412dcf696de46e75a870db75029d46404b6bf2a2cbed4387fec36fbde4ae68a9"
+    },
+    {
+      "case": "negative-control",
+      "returncode": 1,
+      "expectedReturncode": 1,
+      "sourceSha256": "24f20fed9a8d33034732cbfeb229a26a110860ad64c90ebc6ba1b79359e90ea0",
+      "binarySha256": "772a0e1ed61b82ee0f4730b645a18ae4cf17942a066642bbf8cfe70c4dcc4f75"
+    }
+  ]
+}

@@ -1862,3 +1862,14 @@ sidecar. All 13 patches apply against pinned upstream
 the upstream checkout. Native MSVC/plugin and installed application gates remain
 pending. Plugin-provided/encrypted charts are unavailable in this restricted
 qualification process; it cannot stand in for ordinary chart/plugin acceptance.
+
+### Qualification plugin candidate bookkeeping — 2026-10-12
+
+The update-qualification hook now also guards `PluginLoader::LoadPluginCandidate`
+before `CreateLoadStamp` or candidate discovery bookkeeping. Guarding only
+`LoadPlugIn` deferred the module but left a crash marker that broke the next
+ordinary start. Direct low-level callers remain guarded; ordinary startup and
+stock plugin preference semantics are unchanged. Exact pinned-source prefix
+behavior, negative control and all13 patch application are recorded in
+[evidence](evidence/scrum311-plugin-deferral-20261012/README.md). Packaged native
+plugin compatibility and actual updater acceptance remain separate gates.

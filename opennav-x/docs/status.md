@@ -1,5 +1,19 @@
 # SKAGER status — 2026-10-12
 
+## Qualification plugin bookkeeping repaired; native fixture rerun pending
+
+The candidate-entry plugin guard now runs before OpenCPN can create a persistent
+crash/load stamp. A focused compiled probe of the actual patched upstream prefix
+passes restricted and ordinary discovery behavior; removing the guard fails its
+negative control. All 13 pinned patches apply. [Evidence and scope](evidence/scrum311-plugin-deferral-20261012/README.md).
+
+Focused Windows run `38243098619` on `175449f6` failed compiling the inert native
+profile fixture (wx/Win32 header ordering), rather than crashing the application.
+The header repair is integrated as `fae99f9c`; MSVC rerun remains pending.
+The service execution transaction and full-profile restoration are still being
+joined. SCRUM-311 and packaged security/Windows/boat gates remain open; no
+combined candidate or installed boat state changed in this increment.
+
 ## Updater executable qualification and interactive execution joined in source
 
 Source through `d2c0a287` integrates exact linked pre-spawn recovery history,

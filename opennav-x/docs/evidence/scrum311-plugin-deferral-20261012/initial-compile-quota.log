@@ -1,0 +1,9 @@
+/home/standard/Projects/.tmp/updater-execution-joined-20261012/plugin-deferral/qualified.cpp: In member function ‘bool PluginLoader::LoadPluginCandidate(const wxString&, bool)’:
+/home/standard/Projects/.tmp/updater-execution-joined-20261012/plugin-deferral/qualified.cpp:34:45: warning: unused parameter ‘load_enabled’ [-Wunused-parameter]
+   34 |                                        bool load_enabled) {
+      |                                        ~~~~~^~~~~~~~~~~~
+/home/standard/Projects/.tmp/updater-execution-joined-20261012/plugin-deferral/qualified.cpp: At global scope:
+/home/standard/Projects/.tmp/updater-execution-joined-20261012/plugin-deferral/qualified.cpp:77:1: fatal error: error writing to /tmp/ccJLUT5R.s: Disk quota exceeded
+   77 | }
+      | ^
+compilation terminated.

@@ -291,7 +291,21 @@ diff --git a/model/src/plugin_loader.cpp b/model/src/plugin_loader.cpp
  #include <algorithm>
  #include <set>
  #include <sstream>
-@@ -1495,6 +1498,12 @@
+@@ -492,6 +495,13 @@
+ bool PluginLoader::LoadPluginCandidate(const wxString& file_name,
+                                        bool load_enabled) {
++#ifdef SKAGER_UPDATE_QUALIFICATION
++  // Stop before candidate bookkeeping: even a deferred module must not leave
++  // a persistent load stamp which ordinary startup would treat as a crash.
++  // Keep the lower loader guard for callers which bypass candidate discovery.
++  if (opennav::integration::QualificationOutputSuppressed()) return false;
++#endif
++
+   wxString plugin_file = wxFileName(file_name).GetFullName();
+   wxLogMessage("Checking plugin candidate: %s", file_name.mb_str().data());
+ 
+   wxString plugin_loadstamp = wxFileName(file_name).GetName();
+@@ -1495,6 +1505,12 @@
  
  PlugInContainer* PluginLoader::LoadPlugIn(const wxString& plugin_file,
                                            PlugInContainer* pic) {

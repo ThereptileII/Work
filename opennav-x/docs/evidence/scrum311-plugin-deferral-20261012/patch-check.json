@@ -1,0 +1,93 @@
+[
+  {
+    "patch": "opencpn-5.12.4-xnav.patch",
+    "sha256": "fcd48cbe93d1ff34a1c6692cab95798247f60064ce7156a5eace321426f8c92e",
+    "returncode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "patch": "opencpn-5.12.4-regression-tests.patch",
+    "sha256": "3ef13652b8f3717d836883d2fbb7a18f35dbd2ca1162ac991fe339e61392dff1",
+    "returncode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "patch": "opencpn-5.12.4-ais-transport.patch",
+    "sha256": "ee6689b8943284347fadca9564892b31db4c43db2a007412ac3fdc2072d07fd7",
+    "returncode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "patch": "opencpn-5.12.4-chart-presentation.patch",
+    "sha256": "c4fd5aff2937b4b58bab5af8f8062c961c0de8257669a8f8cc2445f88af1ae22",
+    "returncode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "patch": "opencpn-5.12.4-route-focus.patch",
+    "sha256": "b9e7e110c991f804d80c46e40811f8baf73536ca3a8170aaaa9fdd17667fc142",
+    "returncode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "patch": "opencpn-5.12.4-route-hit-dpi.patch",
+    "sha256": "4f4ce3695c955f18ae992db60ab3e604c85319f96dfb91fc958d4cbd7cab2cd6",
+    "returncode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "patch": "opencpn-5.12.4-maintained-curl.patch",
+    "sha256": "dafa1fec0a69e3a1195db726c2cb26ceeb7535b5e25476ac2e4658d910f44e48",
+    "returncode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "patch": "opencpn-5.12.4-download-trust.patch",
+    "sha256": "04763cb038ad088a722e76d4f85bde7e356489b697a373458195336d4278412b",
+    "returncode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "patch": "opencpn-5.12.4-wxcurl-trust.patch",
+    "sha256": "72344ee526ade009ec5c5db68a19019efaba8b7579d0ab03e8b784202148825e",
+    "returncode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "patch": "opencpn-5.12.4-peer-response-buffer.patch",
+    "sha256": "c335f361766a6982c3d096e93f7c149179deb33134668e110111ac4980064e15",
+    "returncode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "patch": "opencpn-5.12.4-peer-unavailable.patch",
+    "sha256": "5bf1c2ae4b09043ce18151f766aebd2b881b993f352000e34399de7e8b36b6d3",
+    "returncode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "patch": "opencpn-5.12.4-pilot-serial.patch",
+    "sha256": "7db46c9770dc1937e8e659976bdb41be7f8b2e0b7ec55a4997eea83cc74542be",
+    "returncode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "patch": "opencpn-5.12.4-update-qualification.patch",
+    "sha256": "4bdf4f18d232c6d02c7cd25564c5e2008212209849e5b8876121a60ab7ed6634",
+    "returncode": 0,
+    "stdout": "",
+    "stderr": ""
+  }
+]

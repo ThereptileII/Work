@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "commit": "d3d5a8df96980aba1a072f71528974d3bfa557e6",
+  "base": "fa119f13a7245a69277096c286d23db3c1dbaf63",
+  "scope": "test translation-unit include ordering only; no fixture-body/CMake/product/policy change",
+  "source": {
+    "path": "/home/standard/Projects/X-nav-worktrees/qualification-wx-headers-20261012/opennav-x/tests/update_qualification_native_test.cpp",
+    "bytes": 8234,
+    "sha256": "9a272b4289b586cec049346cbfff69c3f7e5a333c4ee43927147a3a387056fca"
+  },
+  "preservedNativeFailure": {
+    "run": "38243098619",
+    "path": "/home/standard/Projects/.tmp/updater-execution-joined-20261012/native-header-failure/failed.log",
+    "sha256": "263e9939e3f438cbda5cfb1b61a4be32dbb404bf1d5f0f5aeb97e375b2e8b06e",
+    "diagnostics": [
+      "WindowsSDK10.0.26100.0 winsock2.h C2375 conflicting winsock.h definitions",
+      "wx3.2.8 msw/init.h41,47 wxCmdLineArgType missing"
+    ]
+  },
+  "focusedChecks": [
+    "PASS git diff --check",
+    "PASS entire fixture namespace/body byte-identical to base",
+    "PASS wx/wx.h then wx/fileconf.h before direct Windows/shlobj headers matches existing tests/startup_warning/warning_native.cpp"
+  ],
+  "compileLimit": "No wx-config, wx header SDK or MinGW cross compiler present locally. Native MSVC compile and inert fixture execution remain pending; no local native compile/pass claimed."
+}

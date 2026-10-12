@@ -1,0 +1,4 @@
+/home/standard/Projects/.tmp/updater-execution-joined-20261012/plugin-deferral/negative-control.cpp: In member function ‘bool PluginLoader::LoadPluginCandidate(const wxString&, bool)’:
+/home/standard/Projects/.tmp/updater-execution-joined-20261012/plugin-deferral/negative-control.cpp:34:45: warning: unused parameter ‘load_enabled’ [-Wunused-parameter]
+   34 |                                        bool load_enabled) {
+      |                                        ~~~~~^~~~~~~~~~~~

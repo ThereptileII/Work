@@ -1,0 +1,7 @@
+{
+  "baseCommit": "fae99f9c2fbac3d422e3bd331cd01e82ce4a6a71",
+  "files": {
+    "opennav-x/patches/opencpn-5.12.4-update-qualification.patch": "4bdf4f18d232c6d02c7cd25564c5e2008212209849e5b8876121a60ab7ed6634",
+    "opennav-x/tests/update_qualification_native_test.cpp": "9a272b4289b586cec049346cbfff69c3f7e5a333c4ee43927147a3a387056fca"
+  }
+}
