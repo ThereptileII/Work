@@ -51,6 +51,7 @@ type executionHostRun struct {
 	commission   func(context.Context, bool) (string, error)
 	prepare      func(context.Context, bool) (executionHostChild, error)
 	resolve      func(context.Context, string) error
+	prepareRestore func(context.Context, executionHostChild) error
 	attempted    bool
 	consumed     [2]bool
 }
@@ -235,6 +236,13 @@ func (r *executionHostRun) execute(ctx context.Context) (resultErr error) {
 		closed, err := r.drain(ctx, child, false)
 		if err != nil {
 			return errors.Join(qualifyErr, err)
+		}
+		// Retain native proof of the authenticated original child's actual exit
+		// before releasing its creator/observer handles. A report is insufficient.
+		if r.prepareRestore != nil {
+			if err = r.prepareRestore(ctx, child); err != nil {
+				return errors.Join(qualifyErr, err)
+			}
 		}
 		if err = child.Close(); err != nil {
 			return err
