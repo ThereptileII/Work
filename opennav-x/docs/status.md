@@ -1,5 +1,19 @@
 # SKAGER status — 2026-10-12
 
+## Native ProgramData proof passes; cleanup-error fixture correction pending
+
+Fresh component gate [38297499754](https://github.com/ThereptileII/Work/actions/runs/38297499754)
+on `0d888edcf2866416108d62f06f16a050aae0aea7` passed Linux (**598 top-level +
+2601 nested**, no failures). Windows passed **775 top-level + 2857 nested**,
+with 13 top-level skips and one failed cleanup-error fixture. Actual retained-child
+NTFS reparse/removal prevention, actual ProgramData known-folder capture and the
+broker-store guard tests passed. The failing test supplied `windows.InvalidHandle`
+to `CloseHandle`, but that value aliases the current-process pseudo handle and
+did not produce the intended error. Correct the fixture, retain its cleanup-error
+and idempotence assertions, and rerun the fresh component gate. Production guards
+are not relaxed. Component packaging and SCM enrollment were skipped after the
+failure; no native service/product acceptance is claimed. [Original evidence](evidence/scrum311-startup-native-repairs-20261012/programdata-guard-native-run.json).
+
 ## Native component producers pass; SCM ancestor permissions remain blocked
 
 Exact focused component run [38288556379](https://github.com/ThereptileII/Work/actions/runs/38288556379)

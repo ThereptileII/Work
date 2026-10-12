@@ -1,0 +1,42 @@
+{
+  "schema": 1,
+  "scope": "fresh component gate; no application or boat acceptance",
+  "commit": "0d888edcf2866416108d62f06f16a050aae0aea7",
+  "run": 38297499754,
+  "url": "https://github.com/ThereptileII/Work/actions/runs/38297499754",
+  "conclusion": "failure",
+  "linux": {
+    "job": 114972028598,
+    "conclusion": "success",
+    "topLevelPassed": 598,
+    "nestedPassed": 2601,
+    "failed": 0
+  },
+  "windows": {
+    "job": 114972028126,
+    "conclusion": "failure",
+    "topLevelPassed": 775,
+    "nestedPassed": 2857,
+    "topLevelSkipped": 13,
+    "topLevelFailed": 1,
+    "failure": "TestEnrollmentProgramDataGuardClosePreservesUncertainty",
+    "failureLocation": "brokerenroll/programdata_guard_windows_test.go:17",
+    "observation": "windows.InvalidHandle aliases the current-process pseudo handle; CloseHandle did not produce the fixture's intended cleanup error",
+    "nativeRetainedChildReparseAndRemovalProof": "passed",
+    "nativeActualProgramDataKnownFolderCustody": "passed",
+    "nativeBrokerStoreProgramDataGuard": "passed",
+    "componentProduction": "skipped after functional test failure",
+    "freshScmEnrollment": "skipped after functional test failure",
+    "artifact": {
+      "id": 11768929938,
+      "bytes": 179792,
+      "sha256": "ba28ffa81aac1a9ab3bd601dc3e8ced83407dee6685a29bd21bb9bde1ef0d181"
+    }
+  },
+  "reference": "https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-getcurrentprocess",
+  "productionGuardRelaxedForTest": false,
+  "fullApplicationBuild": false,
+  "boatChanged": false,
+  "nativeServiceAcceptance": false,
+  "nativeProductAcceptance": false
+}
