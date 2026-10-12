@@ -18,16 +18,18 @@ import (
 )
 
 // Reuse the actual verifier's local TLS/signature fixture and durable state.
-// Root expiry uses the real clock throughout: no validator receives a backdated
-// clock, and no production expiry, rollback or network verification is bypassed.
+// A private per-call test clock advances through fixed forward phases. Actual
+// signatures, expiry checks, TLS transport deadlines and durable floors stay live.
 func TestRetainedRegistrationUsesRotatedRootAfterOriginalAnchorExpires(t *testing.T) {
 	f := newFixture(t)
+	initial := time.Date(2030, 1, 1, 0, 0, 0, 0, time.UTC)
+	phase := initial
 	original, err := metadata.Root().FromBytes(f.root)
 	if err != nil {
 		t.Fatal(err)
 	}
 	original.Signed.ConsistentSnapshot = true
-	original.Signed.Expires = time.Now().UTC().Add(3 * time.Second)
+	original.Signed.Expires = initial.Add(time.Hour)
 	original.Signatures = nil
 	sign(t, original, f.keys["root"])
 	f.root = bytesOf(t, original)
@@ -37,7 +39,7 @@ func TestRetainedRegistrationUsesRotatedRootAfterOriginalAnchorExpires(t *testin
 		t.Fatal(err)
 	}
 	rotated.Signed.Version = 2
-	rotated.Signed.Expires = original.Signed.Expires.Add(3 * time.Second)
+	rotated.Signed.Expires = initial.Add(2 * time.Hour)
 	rotated.Signatures = nil
 	sign(t, rotated, f.keys["root"])
 	rotatedBytes := bytesOf(t, rotated)
@@ -56,6 +58,24 @@ func TestRetainedRegistrationUsesRotatedRootAfterOriginalAnchorExpires(t *testin
 		if err != nil {
 			t.Fatal(err)
 		}
+		timestamp, err := metadata.Timestamp().FromBytes(f.files["/timestamp.json"])
+		if err != nil {
+			t.Fatal(err)
+		}
+		// Re-sign the existing fixture roles for the same fixed test timeline.
+		// Their existing version links and target hashes remain unchanged.
+		targets.Signed.Expires = initial.Add(24 * time.Hour)
+		targets.Signatures = nil
+		sign(t, targets, f.keys["targets"])
+		snapshot.Signed.Expires = initial.Add(24 * time.Hour)
+		snapshot.Signatures = nil
+		sign(t, snapshot, f.keys["snapshot"])
+		timestamp.Signed.Expires = initial.Add(24 * time.Hour)
+		timestamp.Signatures = nil
+		sign(t, timestamp, f.keys["timestamp"])
+		f.files["/targets.json"] = bytesOf(t, targets)
+		f.files["/snapshot.json"] = bytesOf(t, snapshot)
+		f.files["/timestamp.json"] = bytesOf(t, timestamp)
 		f.files["/"+strconv.FormatInt(snapshot.Signed.Version, 10)+".snapshot.json"] = f.files["/snapshot.json"]
 		f.files["/"+strconv.FormatInt(targets.Signed.Version, 10)+".targets.json"] = f.files["/targets.json"]
 		f.files["/targets/releases/"+digest(policyRaw)+".beta.json"] = policyRaw
@@ -70,7 +90,7 @@ func TestRetainedRegistrationUsesRotatedRootAfterOriginalAnchorExpires(t *testin
 	if err != nil {
 		t.Fatal(err)
 	}
-	approved, err := brokerregistration.ParseApprovedRequest(requestRaw, digest(requestRaw), time.Now().UTC())
+	approved, err := brokerregistration.ParseApprovedRequest(requestRaw, digest(requestRaw), phase)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -80,14 +100,14 @@ func TestRetainedRegistrationUsesRotatedRootAfterOriginalAnchorExpires(t *testin
 	if err = InitializeState(state, config); err != nil {
 		t.Fatal(err)
 	}
-	refresh := func() error { _, err := verifyReleaseInState(state, config, f.server.Client()); return err }
+	refresh := func() error { _, err := verifyReleaseInStateAt(state, config, f.server.Client(), phase); return err }
 	if err = refresh(); err != nil {
 		t.Fatal(err)
 	}
 	// The original approved anchor expires while the already-verified current
 	// root remains valid. Removing the remote chain must not reset retained trust.
-	time.Sleep(time.Until(original.Signed.Expires) + 20*time.Millisecond)
-	if _, err = brokerregistration.ParseApprovedRequest(requestRaw, digest(requestRaw), time.Now().UTC()); err == nil {
+	phase = original.Signed.Expires.Add(time.Minute)
+	if _, err = brokerregistration.ParseApprovedRequest(requestRaw, digest(requestRaw), phase); err == nil {
 		t.Fatal("expired original anchor authorized fresh enrollment")
 	}
 	retained, err := brokerregistration.ParseRetainedApprovedRequest(requestRaw, digest(requestRaw))
@@ -110,8 +130,8 @@ func TestRetainedRegistrationUsesRotatedRootAfterOriginalAnchorExpires(t *testin
 		t.Fatal("retained identity bypassed durable timestamp rollback floor")
 	}
 	publish(2)
-	// Current retained root expiry still fails under the actual verifier clock.
-	time.Sleep(time.Until(rotated.Signed.Expires) + 20*time.Millisecond)
+	// Current retained root expiry still fails through the same TUF verifier.
+	phase = rotated.Signed.Expires.Add(time.Minute)
 	if err = refresh(); err == nil {
 		t.Fatal("expired CURRENT retained root accepted")
 	}
@@ -136,5 +156,64 @@ func TestRetainedRegistrationUsesRotatedRootAfterOriginalAnchorExpires(t *testin
 	}
 	if err = InitializeState(state, config); err == nil {
 		t.Fatal("expired state allowed trust reinitialization")
+	}
+}
+
+func TestVerifierReferenceClockIsPerCallAndDefaultsToRealTime(t *testing.T) {
+	for _, entry := range []string{"target", "release", "state"} {
+		t.Run(entry, func(t *testing.T) {
+			f := newFixture(t)
+			initial := time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC)
+			root, err := metadata.Root().FromBytes(f.root)
+			if err != nil {
+				t.Fatal(err)
+			}
+			root.Signed.Expires = initial.Add(24 * time.Hour)
+			root.Signatures = nil
+			sign(t, root, f.keys["root"])
+			f.root = bytesOf(t, root)
+			f.files["/1.root.json"] = f.root
+			f.publish(t, 1, "beta", policyBytes(t, signedPolicyFixture()), false)
+			config := TrustConfig{BootstrapRoot: f.root, MetadataURL: f.server.URL, Channel: "beta"}
+			state := filepath.Join(t.TempDir(), "protected")
+			if entry == "state" {
+				if err = InitializeState(state, config); err != nil {
+					t.Fatal(err)
+				}
+			}
+			check := func(override bool) error {
+				deadline := time.Now().Add(maxOperationTime)
+				switch entry {
+				case "target":
+					if override {
+						_, _, err = verifyWithClientAt(f.request("beta"), deadline, f.server.Client(), initial)
+					} else {
+						_, _, err = verifyWithClient(f.request("beta"), deadline, f.server.Client())
+					}
+				case "release":
+					if override {
+						_, err = verifyReleaseWithClientAt(f.request("beta"), deadline, f.server.Client(), initial)
+					} else {
+						_, err = verifyReleaseWithClient(f.request("beta"), deadline, f.server.Client())
+					}
+				case "state":
+					if override {
+						_, err = verifyReleaseInStateAt(state, config, f.server.Client(), initial)
+					} else {
+						_, err = verifyReleaseInState(state, config, f.server.Client())
+					}
+				}
+				return err
+			}
+			if err = check(true); err != nil {
+				t.Fatalf("explicit test reference clock failed: %v", err)
+			}
+			if err = check(false); err == nil {
+				t.Fatal("default production path inherited an expired-root test clock")
+			}
+			if err = check(true); err != nil {
+				t.Fatalf("real-clock refusal contaminated later independent test clock: %v", err)
+			}
+		})
 	}
 }

@@ -17,7 +17,11 @@ func VerifyRelease(req Request) (releasepolicy.Policy, error) {
 
 // A transport override exists only for the package's local signed TLS fixtures.
 func verifyReleaseWithClient(req Request, deadline time.Time, client *http.Client) (releasepolicy.Policy, error) {
-	identity, data, err := verifyWithClient(req, deadline, client)
+	return verifyReleaseWithClientAt(req, deadline, client, time.Time{})
+}
+
+func verifyReleaseWithClientAt(req Request, deadline time.Time, client *http.Client, referenceTime time.Time) (releasepolicy.Policy, error) {
+	identity, data, err := verifyWithClientAt(req, deadline, client, referenceTime)
 	if err != nil {
 		return releasepolicy.Policy{}, err
 	}

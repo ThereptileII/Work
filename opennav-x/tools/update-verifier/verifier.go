@@ -129,6 +129,12 @@ func Verify(req Request) (Release, []byte, error) {
 
 // Only tests inject a client, to trust their local TLS certificate.
 func verifyWithClient(req Request, deadline time.Time, injected *http.Client) (Release, []byte, error) {
+	return verifyWithClientAt(req, deadline, injected, time.Time{})
+}
+
+// referenceTime is a per-call test clock only. Production wrappers leave it zero
+// so go-tuf selects its real clock; transport deadlines are always independent.
+func verifyWithClientAt(req Request, deadline time.Time, injected *http.Client, referenceTime time.Time) (Release, []byte, error) {
 	var release Release
 	if _, err := validateTUFRequest(req); err != nil {
 		return Release{}, nil, err
@@ -136,7 +142,7 @@ func verifyWithClient(req Request, deadline time.Time, injected *http.Client) (R
 	if req.TargetPath != "releases/"+req.Channel+".json" {
 		return Release{}, nil, errors.New("target path must match selected channel")
 	}
-	data, err := verifyTargetWithClient(req, deadline, injected, false, func(custom []byte) error {
+	data, err := verifyTargetWithClientAt(req, deadline, injected, false, func(custom []byte) error {
 		var err error
 		release, err = parseReleaseIdentity(custom)
 		if err != nil {
@@ -146,7 +152,7 @@ func verifyWithClient(req Request, deadline time.Time, injected *http.Client) (R
 			return errors.New("invalid signed release identity")
 		}
 		return nil
-	})
+	}, referenceTime)
 	if err != nil {
 		return Release{}, nil, err
 	}
@@ -171,6 +177,10 @@ func validateTUFRequest(req Request) (*url.URL, error) {
 // They select the exact path and validate their own signed custom identity before
 // go-tuf downloads and verifies any target bytes. It grants no artifact authority.
 func verifyTargetWithClient(req Request, deadline time.Time, injected *http.Client, rejectRedirects bool, validateIdentity func([]byte) error) ([]byte, error) {
+	return verifyTargetWithClientAt(req, deadline, injected, rejectRedirects, validateIdentity, time.Time{})
+}
+
+func verifyTargetWithClientAt(req Request, deadline time.Time, injected *http.Client, rejectRedirects bool, validateIdentity func([]byte) error, referenceTime time.Time) ([]byte, error) {
 	u, err := validateTUFRequest(req)
 	if err != nil {
 		return nil, err
@@ -220,6 +230,11 @@ func verifyTargetWithClient(req Request, deadline time.Time, injected *http.Clie
 	up, err := updater.New(cfg)
 	if err != nil {
 		return nil, fmt.Errorf("trusted root: %w", err)
+	}
+	if !referenceTime.IsZero() {
+		// go-tuf documents this hook for tests. No exported API or production
+		// caller supplies a clock override, and all expiry checks still run.
+		up.UnsafeSetRefTime(referenceTime)
 	}
 	if err := up.Refresh(); err != nil {
 		return nil, fmt.Errorf("TUF refresh: %w", err)

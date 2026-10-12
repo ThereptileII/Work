@@ -161,6 +161,10 @@ func ValidateState(directory string, c TrustConfig) error {
 }
 
 func verifyReleaseInState(directory string, c TrustConfig, client *http.Client) (releasepolicy.Policy, error) {
+	return verifyReleaseInStateAt(directory, c, client, time.Time{})
+}
+
+func verifyReleaseInStateAt(directory string, c TrustConfig, client *http.Client, referenceTime time.Time) (releasepolicy.Policy, error) {
 	var empty releasepolicy.Policy
 	want, err := trustIdentity(c)
 	if err != nil {
@@ -248,7 +252,7 @@ func verifyReleaseInState(directory string, c TrustConfig, client *http.Client) 
 		return empty, err
 	}
 	req := Request{MetadataURL: c.MetadataURL, TrustedRoot: root, CacheDir: stage, Channel: c.Channel, TargetPath: "releases/" + c.Channel + ".json"}
-	policy, verifyErr := verifyReleaseWithClient(req, time.Now().Add(maxOperationTime), client)
+	policy, verifyErr := verifyReleaseWithClientAt(req, time.Now().Add(maxOperationTime), client, referenceTime)
 	// go-tuf persists each role only after signature/chain verification. Keep
 	// newer root/timestamp versions even when later snapshot/target/download fails;
 	// otherwise a failed request could undo an observed rollback floor.
