@@ -31,6 +31,10 @@ on:
       - .github/workflows/update-verifier-probe.yml
   workflow_dispatch:
     inputs:
+      retained_enrollment_only:
+        description: Rerun only fresh SCM enrollment using the exact committed original component selection
+        type: boolean
+        default: false
       verifier_only:
         description: Run verifier, native package and enrollment gates only; retain separate restart/UI evidence
         type: boolean
@@ -58,7 +62,7 @@ permissions:
 
 jobs:
   verify:
-    if: ${{ inputs.verifier_only || (!inputs.owned_files_only && !inputs.image_owner_only && !inputs.startup_only && github.ref != 'refs/heads/skager-updater-lifecycle') }}
+    if: ${{ !inputs.retained_enrollment_only && (inputs.verifier_only || (!inputs.owned_files_only && !inputs.image_owner_only && !inputs.startup_only && github.ref != 'refs/heads/skager-updater-lifecycle')) }}
     timeout-minutes: 20
     strategy:
       matrix:
@@ -203,7 +207,9 @@ jobs:
         working-directory: ${{ github.workspace }}
         shell: powershell
         run: |
-          & ./opennav-x/tools/test-broker-enrollment-windows.ps1 -Install ./opennav-x/build/updater-native/broker-install -ExpectedCommit $env:GITHUB_SHA -RunnerEnvironment '${{ runner.environment }}' -ConfirmDisposableHostedRunner *>&1 | Tee-Object -FilePath ./opennav-x/build/updater-native/enrollment-service-tests.log
+          $tools = Join-Path $env:GITHUB_WORKSPACE 'opennav-x/tools'
+          $build = Join-Path $env:GITHUB_WORKSPACE 'opennav-x/build/updater-native'
+          & (Join-Path $tools 'test-broker-enrollment-windows.ps1') -Install (Join-Path $build 'broker-install') -ExpectedCommit $env:GITHUB_SHA -RunnerEnvironment '${{ runner.environment }}' -ConfirmDisposableHostedRunner *>&1 | Tee-Object -FilePath (Join-Path $build 'enrollment-service-tests.log')
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Signing boundary without certificates or private keys
         shell: pwsh
@@ -218,7 +224,7 @@ jobs:
           if-no-files-found: error
 
   mode-restart:
-    if: ${{ !inputs.verifier_only && !inputs.owned_files_only && !inputs.image_owner_only && !inputs.startup_only && github.ref != 'refs/heads/skager-updater-lifecycle' }}
+    if: ${{ !inputs.retained_enrollment_only && (!inputs.verifier_only && !inputs.owned_files_only && !inputs.image_owner_only && !inputs.startup_only && github.ref != 'refs/heads/skager-updater-lifecycle') }}
     name: Native protected mode routing and ordinary restart
     runs-on: windows-2022
     timeout-minutes: 20
@@ -257,7 +263,7 @@ jobs:
           if-no-files-found: warn
 
   startup-popup:
-    if: ${{ !inputs.verifier_only && !inputs.owned_files_only && !inputs.image_owner_only && (inputs.startup_only || github.ref != 'refs/heads/skager-updater-lifecycle') }}
+    if: ${{ !inputs.retained_enrollment_only && (!inputs.verifier_only && !inputs.owned_files_only && !inputs.image_owner_only && (inputs.startup_only || github.ref != 'refs/heads/skager-updater-lifecycle')) }}
     name: Native startup update interactions
     runs-on: windows-2022
     timeout-minutes: 25
@@ -286,7 +292,7 @@ jobs:
           if-no-files-found: error
 
   lifecycle-only:
-    if: ${{ !inputs.verifier_only && !inputs.owned_files_only && !inputs.image_owner_only && !inputs.startup_only && github.ref == 'refs/heads/skager-updater-lifecycle' }}
+    if: ${{ !inputs.retained_enrollment_only && (!inputs.verifier_only && !inputs.owned_files_only && !inputs.image_owner_only && !inputs.startup_only && github.ref == 'refs/heads/skager-updater-lifecycle') }}
     name: Focused actual Lifecycle startup diagnostics
     runs-on: windows-2022
     timeout-minutes: 5
@@ -311,7 +317,7 @@ jobs:
           if-no-files-found: error
 
   owned-files-only:
-    if: ${{ !inputs.verifier_only && github.event_name == 'workflow_dispatch' && inputs.owned_files_only && !inputs.image_owner_only && !inputs.startup_only }}
+    if: ${{ !inputs.retained_enrollment_only && (!inputs.verifier_only && github.event_name == 'workflow_dispatch' && inputs.owned_files_only && !inputs.image_owner_only && !inputs.startup_only) }}
     name: Native Win32 owned-file acquisition
     runs-on: windows-2022
     timeout-minutes: 8
@@ -343,7 +349,7 @@ jobs:
           if-no-files-found: error
 
   supervisor-owner:
-    if: ${{ !inputs.verifier_only && github.event_name == 'workflow_dispatch' && inputs.image_owner_only && !inputs.owned_files_only && !inputs.startup_only }}
+    if: ${{ !inputs.retained_enrollment_only && (!inputs.verifier_only && github.event_name == 'workflow_dispatch' && inputs.image_owner_only && !inputs.owned_files_only && !inputs.startup_only) }}
     name: Windows PowerShell 5.1 supervised image ownership
     runs-on: windows-2022
     timeout-minutes: 12
@@ -420,7 +426,7 @@ jobs:
           retention-days: 90
 
   ordinary-owner:
-    if: ${{ !inputs.verifier_only && github.event_name == 'workflow_dispatch' && inputs.image_owner_only && !inputs.owned_files_only && !inputs.startup_only }}
+    if: ${{ !inputs.retained_enrollment_only && (!inputs.verifier_only && github.event_name == 'workflow_dispatch' && inputs.image_owner_only && !inputs.owned_files_only && !inputs.startup_only) }}
     name: Native Win32 ordinary image ownership
     runs-on: windows-2022
     timeout-minutes: 12
@@ -465,3 +471,49 @@ jobs:
           path: opennav-x/build/updater-ordinary-image
           if-no-files-found: error
           retention-days: 90
+
+  retained-enrollment:
+    if: ${{ inputs.retained_enrollment_only }}
+    name: Native SCM with original retained broker
+    permissions:
+      contents: read
+      actions: read
+    runs-on: windows-2022
+    timeout-minutes: 15
+    env:
+      GOARCH: '386'
+      GOTOOLCHAIN: local
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Refuse conflicting retained enrollment selections
+        if: ${{ inputs.verifier_only || inputs.startup_only || inputs.owned_files_only || inputs.image_owner_only || inputs.diagnose_image_creation }}
+        shell: python
+        run: raise SystemExit('retained_enrollment_only cannot be combined with other focused inputs')
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+        with:
+          go-version-file: opennav-x/tools/update-verifier/go.mod
+          cache-dependency-path: opennav-x/tools/update-verifier/go.sum
+      - name: Authenticate and reuse exact original native component bytes
+        shell: powershell
+        run: |
+          $tools = Join-Path $env:GITHUB_WORKSPACE 'opennav-x/tools'
+          $build = Join-Path $env:GITHUB_WORKSPACE 'opennav-x/build/updater-native'
+          python (Join-Path $tools 'retained_broker_enrollment.py') --selection (Join-Path $tools 'retained-broker-enrollment-selection.json') --output (Join-Path $build 'broker-install') --receipt (Join-Path $build 'retained-broker-provenance.json')
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Actual fresh native service enrollment without a broker rebuild
+        shell: powershell
+        run: |
+          $tools = Join-Path $env:GITHUB_WORKSPACE 'opennav-x/tools'
+          $build = Join-Path $env:GITHUB_WORKSPACE 'opennav-x/build/updater-native'
+          $selection = Get-Content -LiteralPath (Join-Path $tools 'retained-broker-enrollment-selection.json') -Raw | ConvertFrom-Json
+          & (Join-Path $tools 'test-broker-enrollment-windows.ps1') -Install (Join-Path $build 'broker-install') -ExpectedCommit $selection.headSha -RunnerEnvironment '${{ runner.environment }}' -ConfirmDisposableHostedRunner -RetainedProducerReceipt (Join-Path $build 'retained-broker-provenance.json') *>&1 | Tee-Object -FilePath (Join-Path $build 'enrollment-service-tests.log')
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: retained-broker-enrollment-${{ github.sha }}-run${{ github.run_id }}-attempt${{ github.run_attempt }}
+          path: |
+            opennav-x/build/updater-native/retained-broker-provenance.json
+            opennav-x/build/updater-native/enrollment-service-tests.log
+          if-no-files-found: error
