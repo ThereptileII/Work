@@ -7,6 +7,7 @@ not prove publisher authenticity, reproducibility or native service qualificatio
 import hashlib
 import json
 from pathlib import PurePosixPath
+from typing import NamedTuple
 import re
 import stat
 import struct
@@ -29,6 +30,26 @@ REQUIRED_SOURCES = {PREFIX + name for name in ('cmd/skager-update-broker/main.go
     'brokerhost/stock_windows.go')} | {'project/tools/package-update-broker.py',
                                      'project/tools/broker_package.py',
                                      'project/tools/updater_package.py'}
+
+
+class Component(NamedTuple):
+    """Fixed source-defined component identity; never a caller-selected helper."""
+    name: str
+    binary: str
+    record_relative: str
+    command: str
+    recipe: str
+    subsystem: int
+    required_sources: frozenset
+    source_prefix: str
+    linker_args: tuple = ()
+
+
+BROKER = Component('Broker', BINARY, RECORD_RELATIVE, 'cmd/skager-update-broker',
+                   BUILD_RECIPE, 2, frozenset(REQUIRED_SOURCES), PREFIX + 'brokerhost/',
+                   ('-ldflags=-H=windowsgui',))
+
+
 MAGIC = b'\xff Go buildinf:'
 START = bytes.fromhex('3077af0c9274080241e1c107e6d618e6')
 END = bytes.fromhex('f932433186182072008242104116d8f2')
@@ -56,7 +77,7 @@ def _inline_string(data, offset, limit):
     raise ValueError('Unsupported or oversized inline Go build string')
 
 
-def _embedded_info(binary):
+def _embedded_info(binary, component=BROKER):
     """Pinned Go >=1.18 inline format, scoped to PE's mapped writable data.
 
     Section selection follows pinned debug/buildinfo.peExe.DataStart; no whole
@@ -77,9 +98,9 @@ def _embedded_info(binary):
         optional = source.read(optional_size)
         if (machine != 0x14c or not 1 <= count <= 96 or optional_size < 70 or
                 len(optional) != optional_size or struct.unpack_from('<H', optional)[0] != 0x10b or
-                struct.unpack_from('<H', optional, 68)[0] != 2 or
+                struct.unpack_from('<H', optional, 68)[0] != component.subsystem or
                 not characteristics & 2 or characteristics & 0x2000):
-            raise ValueError('Broker must use Windows GUI Win32 x86 PE32 executable format')
+            raise ValueError(component.name + ' must use Windows ' + ('GUI' if component.subsystem == 2 else 'console') + ' Win32 x86 PE32 executable format')
         table = source.read(count * 40)
         if len(table) != count * 40:
             raise ValueError('Truncated broker PE section table')
@@ -109,14 +130,14 @@ def _embedded_info(binary):
     return version.decode('utf-8'), framed[16:-16].decode('utf-8')
 
 
-def _build_info(binary, declared, commit, reference):
+def _build_info(binary, declared, commit, reference, component=BROKER):
     if not isinstance(declared, str) or len(declared.encode('utf-8')) > MAX_BUILD_INFO:
         raise ValueError('Broker buildInfo missing or oversized')
-    version, module = _embedded_info(binary)
+    version, module = _embedded_info(binary, component)
     if version != updater.GO_VERSION or not module.endswith('\n'):
         raise ValueError('Broker actual Go compiler identity mismatch')
     lines = module.splitlines()
-    expected = BINARY + ': ' + version + '\n' + ''.join('\t' + line + '\n' for line in lines)
+    expected = component.binary + ': ' + version + '\n' + ''.join('\t' + line + '\n' for line in lines)
     # Windows subprocess text mode normalizes CRLF before writing the record.
     if declared != expected:
         raise ValueError('Broker buildInfo differs from actual embedded executable metadata')
@@ -144,17 +165,19 @@ def _build_info(binary, declared, commit, reference):
                 'CGO_ENABLED': '0', 'GOARCH': '386',
                 'GOOS': 'windows', 'GO386': 'sse2', 'vcs': 'git',
                 'vcs.revision': commit, 'vcs.modified': 'false'}
+    if component != BROKER and set(settings) != set(required) | {'vcs.time'}:
+        raise ValueError('Provisioner actual Go build settings differ from fixed recipe')
     # Pinned Go omits -ldflags with -trimpath (cmd/go/internal/load/pkg.go).
-    # GUI identity comes from the actual PE subsystem plus the declared recipe.
+    # Component identity comes from the PE subsystem and fixed declared recipe.
     if ('-ldflags' in settings or
-            paths != [updater.MAIN_MODULE + '/cmd/skager-update-broker'] or
+            paths != [updater.MAIN_MODULE + '/' + component.command] or
             mains != [[updater.MAIN_MODULE, '(devel)', '']] or
             any(settings.get(k) != v for k, v in required.items()) or
             not re.fullmatch(r'\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ', settings.get('vcs.time', ''))):
         raise ValueError('Broker actual Go build settings do not match pinned product recipe')
 
 
-def _source_contents(archive, reference):
+def _source_contents(archive, reference, component=BROKER):
     with zipfile.ZipFile(archive) as source:
         entries = source.infolist()
         if not 1 <= len(entries) <= MAX_SOURCE_FILES + 1:
@@ -189,39 +212,63 @@ def _source_contents(archive, reference):
             if type(item['bytes']) is not int or item['bytes'] != names[name].file_size:
                 raise ValueError('Broker source inventory size mismatch')
             updater._digest(item['sha256'])
-        if not REQUIRED_SOURCES <= set(files):
+        if not component.required_sources <= set(files):
             raise ValueError('Actual tracked broker main/host sources missing from archive')
-        checked = REQUIRED_SOURCES | {n for n in files if n.startswith(PREFIX + 'brokerhost/') and n.endswith('.go')}
+        checked = component.required_sources | {n for n in files if n.startswith(component.source_prefix) and n.endswith('.go')}
         for name in checked:
             data = source.read(name)  # Bounded above; ZipFile also verifies CRC.
             if not data or hashlib.sha256(data).hexdigest() != files[name]['sha256']:
                 raise ValueError('Archived broker source bytes differ from inventory')
 
 
-def verify_broker_package(app, commit):
-    """Return the unchanged source-package descriptor for exact broker bytes.
+def _verify_component_package(app, commit, component, *, prerequisite=None):
+    """Return the unchanged source-package descriptor for exact component bytes.
 
     This is opt-in packaging validation, not installation/SCM/trust authority.
     The caller authenticates successful same-revision remote production first.
     """
     descriptor = updater.verify_updater_package(app, commit)
     app = updater._plain(app)
-    record_path = _regular(app / RECORD_RELATIVE, updater.MAX_RECORD_BYTES)
+    record_path = _regular(app / component.record_relative, updater.MAX_RECORD_BYTES)
     record = json.loads(record_path.read_text(encoding='utf-8'), object_pairs_hook=updater._unique)
-    updater._keys(record, ('schema', 'productCommit', 'goVersion', 'binary', 'sourceBundle', 'buildInfo', 'build'))
+    keys = ('schema', 'productCommit', 'goVersion', 'binary', 'sourceBundle', 'buildInfo', 'build')
+    updater._keys(record, keys + (('brokerPrerequisite',) if prerequisite is not None else ()))
+    if prerequisite is not None and record['brokerPrerequisite'] != prerequisite:
+        raise ValueError('Provisioner broker prerequisite descriptor changed')
     if (type(record['schema']) is not int or record['schema'] != 1 or record['productCommit'] != commit or
-            record['goVersion'] != updater.GO_VERSION or record['build'] != BUILD_RECIPE):
+            record['goVersion'] != updater.GO_VERSION or record['build'] != component.recipe):
         raise ValueError('Broker package commit/compiler/build recipe mismatch')
     updater._keys(record['binary'], ('path', 'sha256'))
     updater._keys(record['sourceBundle'], ('archive', 'path', 'sha256', 'reference'))
     updater._reference(record['sourceBundle']['reference'], commit)
     expected_bundle = {**descriptor, 'archive': updater.SOURCE_RELATIVE}
-    if record['binary']['path'] != BINARY or record['sourceBundle'] != expected_bundle:
+    if record['binary']['path'] != component.binary or record['sourceBundle'] != expected_bundle:
         raise ValueError('Broker requires fixed binary and exact updater source descriptor')
-    binary = _regular(app / BINARY, updater.MAX_BINARY_BYTES)
+    binary = _regular(app / component.binary, updater.MAX_BINARY_BYTES)
     archive = _regular(descriptor['archive'], updater.MAX_ARCHIVE_BYTES)
     if updater._hash(binary) != updater._digest(record['binary']['sha256']):
         raise ValueError('Broker executable changed after production')
-    _build_info(binary, record['buildInfo'], commit, descriptor['reference'])
-    _source_contents(archive, descriptor['reference'])
+    _build_info(binary, record['buildInfo'], commit, descriptor['reference'], component)
+    _source_contents(archive, descriptor['reference'], component)
     return descriptor
+
+
+def verify_broker_package(app, commit):
+    """Verify the fixed GUI SCM broker without installing or activating it."""
+    return _verify_component_package(app, commit, BROKER)
+
+
+def broker_prerequisite(app, commit):
+    """Bind a verified native prerequisite; hashes do not authenticate execution."""
+    app = updater._plain(app)
+
+    def snapshot():
+        return {'binary': {'path': BINARY,
+                           'sha256': updater._hash(_regular(app / BINARY, updater.MAX_BINARY_BYTES))},
+                'buildRecord': {'path': RECORD_RELATIVE,
+                                'sha256': updater._hash(_regular(app / RECORD_RELATIVE, updater.MAX_RECORD_BYTES))}}
+    before = snapshot()
+    verify_broker_package(app, commit)
+    if snapshot() != before:
+        raise ValueError('Broker prerequisite changed during verification')
+    return before

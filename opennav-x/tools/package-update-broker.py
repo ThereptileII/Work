@@ -20,6 +20,7 @@ import tempfile
 import zipfile
 
 import updater_package as updater
+import broker_package as broker
 
 ROOT = Path(__file__).resolve().parent.parent
 _spec = importlib.util.spec_from_file_location('_broker_launcher_producer', ROOT / 'tools/package-update-launcher.py')
@@ -32,27 +33,31 @@ BUILD_RECIPE = ('CGO_ENABLED=0 GOOS=windows GOARCH=386 GO386=sse2 go build '
 MAX_REFERENCE_BYTES = 16 << 20
 
 
-def prepare_outputs(install):
+def prepare_outputs(install, component=broker.BROKER):
     install = launcher.plain_path(install, 'Broker install copy')
     if not install.is_dir():
         raise ValueError('Existing verified launcher install copy required')
-    binary = launcher.plain_path(install / BINARY, 'Broker binary output')
-    record = launcher.plain_path(install / RECORD_RELATIVE, 'Broker build record output')
+    binary = launcher.plain_path(install / component.binary, component.name + ' binary output')
+    record = launcher.plain_path(install / component.record_relative, component.name + ' build record output')
     if binary.exists() or record.parent.exists():
         raise ValueError('Refusing to overwrite existing broker outputs')
     return install, binary, record
 
 
-def source_inventory(module, goroot, cache, modules, reference, *, graph_root=None):
+def source_inventory(module, goroot, cache, modules, reference, *, graph_root=None, component=broker.BROKER):
     """Reuse the launcher inventory rules, without downloading or archiving again."""
     inventory = launcher.Inventory()
     tracked = launcher.run(['git', 'ls-files', '-z', '--', 'tools/update-verifier',
                             'tools/package-update-launcher.py', 'tools/package-update-broker.py',
-                            'tools/broker_package.py', 'tools/updater_package.py', 'LICENSE'], ROOT).split('\0')
+                            'tools/broker_package.py', 'tools/package-update-provisioner.py',
+                            'tools/provisioner_package.py', 'tools/updater_package.py', 'LICENSE'], ROOT).split('\0')
     tracked = [name for name in tracked if name]
     required = {'LICENSE', 'tools/package-update-launcher.py', 'tools/package-update-broker.py',
-                'tools/broker_package.py', 'tools/updater_package.py', 'tools/update-verifier/go.mod',
+                'tools/broker_package.py', 'tools/package-update-provisioner.py', 'tools/provisioner_package.py',
+                'tools/updater_package.py', 'tools/update-verifier/go.mod',
                 'tools/update-verifier/go.sum', 'tools/update-verifier/cmd/skager-update-broker/main.go'}
+    if component != broker.BROKER:
+        required |= {name.removeprefix('project/') for name in component.required_sources}
     if not required.issubset(tracked):
         raise ValueError('Committed complete broker source and dependency locks required')
     for name in tracked:
@@ -174,7 +179,7 @@ def check_source(inventory, descriptor):
                     raise ValueError('Actual broker build input differs from retained source')
 
 
-def build_info(text, commit):
+def build_info(text, commit, component=broker.BROKER):
     if not isinstance(text, str) or len(text) > 65536:
         raise ValueError('Broker Go build identity unavailable')
     lines = text.splitlines()
@@ -196,20 +201,20 @@ def build_info(text, commit):
             if key in settings:
                 raise ValueError('Duplicate broker Go build setting')
             settings[key] = value
-    # Go 1.27.1 intentionally omits -ldflags from metadata under -trimpath.
-    # The fixed recipe supplies it; the PE subsystem below verifies its effect.
+    # Go 1.27.1 omits -ldflags under -trimpath. Fixed source-defined recipes
+    # and observed PE subsystem distinguish GUI broker from console provisioner.
     required = {'-buildmode': 'exe', '-compiler': 'gc', '-trimpath': 'true',
                 'CGO_ENABLED': '0', 'GOARCH': '386', 'GOOS': 'windows', 'GO386': 'sse2',
                 'vcs': 'git', 'vcs.revision': commit, 'vcs.modified': 'false'}
-    if (paths != [launcher.MAIN_MODULE + '/cmd/skager-update-broker'] or
+    if (paths != [launcher.MAIN_MODULE + '/' + component.command] or
             any(settings.get(key) != value for key, value in required.items()) or
             '-ldflags' in settings or
             not re.fullmatch(r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z', settings.get('vcs.time', ''))):
         raise ValueError('Actual broker Go build identity differs from selected source')
-    return BINARY + ': ' + launcher.GO_VERSION + '\n' + '\n'.join(lines[1:]) + '\n'
+    return component.binary + ': ' + launcher.GO_VERSION + '\n' + '\n'.join(lines[1:]) + '\n'
 
 
-def validate_broker_pe(path):
+def validate_component_pe(path, component=broker.BROKER):
     launcher.validate_pe32(path)
     with path.open('rb') as binary:
         binary.seek(60)
@@ -221,15 +226,16 @@ def validate_broker_pe(path):
     optional_size = struct.unpack_from('<H', header, 20)[0]
     if optional_size < 70 or offset + 24 + optional_size > path.stat().st_size:
         raise ValueError('Invalid broker PE optional header size')
-    if struct.unpack_from('<H', header, 92)[0] != 2:
-        raise ValueError('Broker must use the Windows GUI PE subsystem')
+    if struct.unpack_from('<H', header, 92)[0] != component.subsystem:
+        raise ValueError(component.name + ' must use the Windows ' + ('GUI' if component.subsystem == 2 else 'console') + ' PE subsystem')
 
 
-def package(install, commit, go):
+def _package_component(install, commit, go, *, component, prerequisite=None):
     if not launcher.is_native_windows():
-        raise ValueError('Broker packaging requires native Windows')
-    install, final_binary, final_record = prepare_outputs(install)
+        raise ValueError(component.name + ' packaging requires native Windows')
+    install, final_binary, final_record = prepare_outputs(install, component)
     descriptor = updater.verify_updater_package(install, commit)
+    prerequisite_record = prerequisite(install, commit) if prerequisite is not None else None
     if launcher.run(['git', 'rev-parse', 'HEAD'], ROOT).strip() != commit:
         raise ValueError('Broker source is not the selected product commit')
     launcher.require_clean_sources('Before broker packaging')
@@ -268,28 +274,39 @@ def package(install, commit, go):
         compare_graphs(actual_modules, modules, module, audit)
         if any((audit / name).read_bytes() != data for name, data in inputs.items()):
             raise ValueError('Offline audit inputs changed')
-        inventory = source_inventory(module, goroot, cache, modules, descriptor['reference'], graph_root=audit)
+        inventory = source_inventory(module, goroot, cache, modules, descriptor['reference'], graph_root=audit, component=component)
         check_source(inventory, descriptor)
-        binary = staging / BINARY
-        launcher.run([go, 'build', '-mod=readonly', '-trimpath', '-buildvcs=true', '-ldflags=-H=windowsgui',
-                      '-o', str(binary), './cmd/skager-update-broker'], module, environment)
+        binary = staging / component.binary
+        launcher.run([go, 'build', '-mod=readonly', '-trimpath', '-buildvcs=true', *component.linker_args,
+                      '-o', str(binary), './' + component.command], module, environment)
         launcher.run([go, 'mod', 'verify'], audit, offline)
         if any((audit / name).read_bytes() != data for name, data in inputs.items()):
             raise ValueError('Offline audit inputs changed')
+        validate_component_pe(binary, component)
+        info = build_info(launcher.run([go, 'version', '-m', str(binary)], module, environment), commit, component)
         launcher.require_clean_sources('Product sources changed during broker packaging')
+        if launcher.run(['git', 'rev-parse', 'HEAD'], ROOT).strip() != commit:
+            raise ValueError('Component source commit changed during build')
         check_source(inventory, descriptor)
         if updater.verify_updater_package(install, commit) != descriptor:
             raise ValueError('Launcher source closure changed during broker build')
-        validate_broker_pe(binary)
-        info = build_info(launcher.run([go, 'version', '-m', str(binary)], module, environment), commit)
+        if prerequisite is not None and prerequisite(install, commit) != prerequisite_record:
+            raise ValueError('Provisioner broker prerequisite changed during build')
+        if component != broker.BROKER:
+            # Observe mapped embedded metadata, not merely compiler text output.
+            broker._regular(binary, updater.MAX_BINARY_BYTES)
+            broker._build_info(binary, info, commit, descriptor['reference'], component)
+            broker._source_contents(descriptor['archive'], descriptor['reference'], component)
         source_bundle = {'archive': updater.SOURCE_RELATIVE, 'path': descriptor['path'],
                          'sha256': descriptor['sha256'], 'reference': descriptor['reference']}
         record = {'schema': 1, 'productCommit': commit, 'goVersion': launcher.GO_VERSION,
-                  'binary': {'path': BINARY, 'sha256': launcher.digest(binary)},
-                  'sourceBundle': source_bundle, 'buildInfo': info, 'build': BUILD_RECIPE}
+                  'binary': {'path': component.binary, 'sha256': launcher.digest(binary)},
+                  'sourceBundle': source_bundle, 'buildInfo': info, 'build': component.recipe}
+        if prerequisite_record is not None:
+            record['brokerPrerequisite'] = prerequisite_record
         record_file = staging / 'build.json'
         record_file.write_text(json.dumps(record, indent=2) + '\n', encoding='utf-8')
-        prepare_outputs(install)
+        prepare_outputs(install, component)
         # Exclusive hard links cannot replace racing outputs. Preserve any
         # partial publication as refusal evidence rather than silently retrying.
         launcher.plain_path(final_record.parent.parent, 'Broker record parent').mkdir(parents=True, exist_ok=True)
@@ -299,6 +316,16 @@ def package(install, commit, go):
         if launcher.digest(final_binary) != record['binary']['sha256'] or final_record.read_bytes() != record_file.read_bytes():
             raise ValueError('Published broker bytes changed')
         return record
+
+
+def package(install, commit, go):
+    """Produce only the fixed GUI SCM broker."""
+    return _package_component(install, commit, go, component=broker.BROKER)
+
+
+def validate_broker_pe(path):
+    """Preserve the broker-only GUI validation entry point."""
+    validate_component_pe(path, broker.BROKER)
 
 
 def main():

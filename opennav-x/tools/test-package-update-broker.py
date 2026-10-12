@@ -37,7 +37,8 @@ class BrokerProducerTests(unittest.TestCase):
         self.repo = self.root / 'repo'
         self.module = self.repo / 'tools/update-verifier'
         self.tracked = ['LICENSE', 'tools/package-update-launcher.py', 'tools/package-update-broker.py',
-                        'tools/broker_package.py', 'tools/updater_package.py',
+                        'tools/broker_package.py', 'tools/package-update-provisioner.py',
+                        'tools/provisioner_package.py', 'tools/updater_package.py',
                         'tools/update-verifier/go.mod', 'tools/update-verifier/go.sum',
                         'tools/update-verifier/cmd/skager-update-broker/main.go']
         for name in self.tracked:
@@ -255,6 +256,14 @@ class BrokerProducerTests(unittest.TestCase):
         self.tracked.remove('tools/broker_package.py')
         with self.assertRaisesRegex(ValueError, 'complete broker source'):
             self.package()
+
+    def test_missing_provisioner_scripts_refuse_incomplete_source_closure(self):
+        for name in ('tools/package-update-provisioner.py', 'tools/provisioner_package.py'):
+            with self.subTest(name=name):
+                self.tracked.remove(name)
+                with self.assertRaisesRegex(ValueError, 'complete broker source'):
+                    self.package()
+                self.tracked.append(name)
 
     def test_missing_imported_updater_helper_refuses(self):
         self.tracked.remove('tools/updater_package.py')
