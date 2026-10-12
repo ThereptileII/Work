@@ -18,6 +18,7 @@ type memoryProfileBackup struct {
 	events                     []string
 	closes                     int
 	closeFault                 error
+	readFault                  error
 	cancel                     context.CancelFunc
 }
 
@@ -87,7 +88,11 @@ func (b *memoryProfileBackup) readAt(dst []byte, offset int64) (int, error) {
 	if b.readCancel != nil {
 		b.readCancel()
 	}
-	return bytes.NewReader(b.data).ReadAt(dst, offset)
+	n, err := bytes.NewReader(b.data).ReadAt(dst, offset)
+	if b.readFault != nil {
+		return n, errors.Join(err, b.readFault)
+	}
+	return n, err
 }
 func (b *memoryProfileBackup) close() error {
 	b.closes++
@@ -192,12 +197,15 @@ func TestExecutionProfileBackupStreamsOriginalsAndReopensReadOnly(t *testing.T) 
 	if b.backup.closes != 1 {
 		t.Fatal("store failed to drain backup exactly once")
 	}
-	s, r, _, want := profileReaderFixture(t)
+	s, r, reopened, want := profileReaderFixture(t)
 	defer s.Close()
 	got := make([]byte, len(want)+1)
 	n, err := r.ReadAt(context.Background(), got, 0)
-	if !errors.Is(err, io.EOF) || !bytes.Equal(got[:n], want) {
+	if err != io.EOF || !bytes.Equal(got[:n], want) {
 		t.Fatal("original read-only archive bytes changed", err)
+	}
+	if err = r.Validate(context.Background()); err != nil || reopened.backup.closes != 0 {
+		t.Fatal("pure EOF revoked read custody", err)
 	}
 	copy := *r
 	if err = copy.Close(); err != nil {
@@ -208,6 +216,30 @@ func TestExecutionProfileBackupStreamsOriginalsAndReopensReadOnly(t *testing.T) 
 	}
 	if _, err = json.Marshal(r); !errors.Is(err, ErrNativeRequired) {
 		t.Fatal("serialized capability accepted", err)
+	}
+}
+func TestExecutionProfileBackupEOFWithIntegrityFailureDrainsOnce(t *testing.T) {
+	s, r, b, raw := profileReaderFixture(t)
+	b.backup.readFault = testFault
+	n, err := r.ReadAt(context.Background(), make([]byte, len(raw)+1), 0)
+	if n != len(raw) || !errors.Is(err, io.EOF) || !errors.Is(err, testFault) || !errors.Is(err, ErrExecutionProfileBackupUncertain) {
+		t.Fatal("EOF hid the post-read integrity failure", n, err)
+	}
+	if b.backup.closes != 1 {
+		t.Fatal("integrity failure did not drain exactly once", b.backup.closes)
+	}
+	if _, err = r.ReadAt(context.Background(), make([]byte, 1), 0); !errors.Is(err, ErrClosed) {
+		t.Fatal("read retried a revoked owner", err)
+	}
+	if err = r.Validate(context.Background()); !errors.Is(err, ErrClosed) {
+		t.Fatal("integrity failure left owner valid", err)
+	}
+	first := r.Close()
+	if !errors.Is(first, testFault) || !errors.Is(first, ErrExecutionProfileBackupUncertain) || r.Close() != first {
+		t.Fatal("integrity failure cleanup was not cached", first)
+	}
+	if err = s.Close(); !errors.Is(err, testFault) || !errors.Is(err, ErrExecutionProfileBackupUncertain) || b.backup.closes != 1 {
+		t.Fatal("store cleanup lost the failure or retried close", err, b.backup.closes)
 	}
 }
 func TestExecutionProfileBackupPreconditionsRefuseBeforeReservation(t *testing.T) {

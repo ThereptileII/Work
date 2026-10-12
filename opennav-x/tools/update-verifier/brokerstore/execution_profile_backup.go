@@ -455,7 +455,7 @@ func (p *executionProfileBackupState) readAt(ctx context.Context, dst []byte, of
 		return 0, p.fail(err)
 	}
 	n, resultErr = p.backend.readAt(dst, offset)
-	if resultErr != nil && !errors.Is(resultErr, io.EOF) {
+	if resultErr != nil && resultErr != io.EOF {
 		return n, p.fail(resultErr)
 	}
 	if err := errors.Join(ctx.Err(), p.owner.Err(), p.journalReady(ctx)); err != nil {

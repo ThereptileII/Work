@@ -360,6 +360,11 @@ func (b *nativeExecutionProfileBackup) readAt(dst []byte, offset int64) (int, er
 		return 0, err
 	}
 	n, err := b.pair.journal.ReadAt(dst, offset)
-	return n, errors.Join(err, b.metadata(b.marker, b.size))
+	if metadataErr := b.metadata(b.marker, b.size); metadataErr != nil {
+		return n, errors.Join(err, metadataErr)
+	}
+	// Preserve exact EOF only when both custody checks succeeded. A joined EOF
+	// and integrity error must poison the public owner rather than end a read.
+	return n, err
 }
 func (b *nativeExecutionProfileBackup) close() error { return b.pair.close() }
