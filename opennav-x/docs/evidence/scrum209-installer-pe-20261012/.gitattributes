@@ -1,0 +1,8 @@
+# Retain original receipt, transport and log bytes on every checkout.
+source-manifest.json -text
+receipt.json -text
+native.json -text
+retry-native.json -text
+native-check.ps1 -text
+tests-stdout.log -text
+tests-stderr.log -text

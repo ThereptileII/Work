@@ -1,0 +1,9 @@
+{
+  "commit": "87fe6c5dad6ba0875bb13f48bfbb01a6a0e70001",
+  "files": {
+    "opennav-x/installer/windows/Lifecycle.ps1": "b4284a432d8b34842e87c31f66478a587974333573a5af93e60b99fca470c6fb",
+    "opennav-x/tools/test-installer-pe.ps1": "170507753ecba6db6362879100cebba930f801bd89566841b2ab118554383373"
+  },
+  "archiveSha256": "89144f7fa569bf002683dd7a3cb35d0e375535eee5d09f2ea542efca93207b03",
+  "scope": "Inert parser fixtures only; never invoke Lifecycle entry point"
+}

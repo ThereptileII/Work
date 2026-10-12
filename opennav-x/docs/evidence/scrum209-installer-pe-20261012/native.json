@@ -1,0 +1,6 @@
+{
+  "exitCode": 1,
+  "stdout": "",
+  "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\nThe command line is too long.\n",
+  "elapsedSeconds": 1.653
+}

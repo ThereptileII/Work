@@ -1,0 +1,17 @@
+{
+  "schema": 1,
+  "isolatedSourceCommit": "3414f67e46532932db1fe41b53fc1c92a3cb5b06",
+  "integratedSourceCommit": "87fe6c5dad6ba0875bb13f48bfbb01a6a0e70001",
+  "sourceBytesEqualAcrossCommits": true,
+  "transferredArchiveHashAndExactTwoMemberSourceClosureVerified": true,
+  "verificationScope": "Read-only comparison of existing evidence and Git source; no test rerun",
+  "retainedEvidenceSha256": {
+    "source-manifest.json": "58fe3fe5c7ef4d479994768157c7f88142e77a0f17574d5b608a76d4a1877ae1",
+    "receipt.json": "a12931411a08bc3f8fd4adaa4cedb1397f3794d0ab0b0a89c546e520456dc72a",
+    "native.json": "632d70b3ff38e4facb801af8f7271f555a3640e23b4431a5875a64a46e4681a4",
+    "retry-native.json": "1d5287ba3aa97c7093b1cbc4c4351383b9ab0cc345c6d262e2fd34eefdaf6413",
+    "native-check.ps1": "ad90e7b54ae66a808ccfaeb39d7ce242560aa56c50c72a17270d3a944247b292",
+    "tests-stdout.log": "e056dc3ba76c846cfd5d7a3b41b926abd3584ff2501b613bc90a7aad30d2f0a7",
+    "tests-stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

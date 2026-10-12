@@ -1,0 +1,20 @@
+﻿{
+    "schema":  1,
+    "sourceCommit":  "87fe6c5dad6ba0875bb13f48bfbb01a6a0e70001",
+    "status":  "passed",
+    "host":  "Native Windows PowerShell x86",
+    "os":  "Microsoft Windows NT 10.0.22631.0",
+    "processId":  7368,
+    "startedUtc":  "2026-10-12T05:23:08.0389696Z",
+    "exitCode":  0,
+    "timedOut":  false,
+    "sourceHashesVerified":  true,
+    "nativeParsePassed":  true,
+    "scope":  "Actual installer PE helpers imported by AST; inert temporary PE fixtures only; no install/profile/service/application operation",
+    "navigation":  [
+                       {
+                           "Id":  1852,
+                           "Responding":  true
+                       }
+                   ]
+}
