@@ -4570,3 +4570,212 @@ diff --git a/gui/src/glChartCanvas.cpp b/gui/src/glChartCanvas.cpp
  
    if (m_pParentCanvas->m_Compass && m_pParentCanvas->m_bShowCompassWin &&
        g_bShowCompassWin)
+--- a/gui/include/gui/s57chart.h
++++ b/gui/include/gui/s57chart.h
+@@ -118,4 +118,8 @@
+  * - Object queries: Allows for detailed queries of chart objects
+  */
++#ifdef OPENNAV_X
++#include "integration/ChartRenderObservation.h"
++#endif
++
+ class s57chart : public ChartBase {
+ public:
+@@ -286,4 +290,7 @@
+ 
+ protected:
++#ifdef OPENNAV_X
++  opennav::integration::ChartRenderObservation m_presentationObservation;
++#endif
+   void AssembleLineGeometry(void);
+ 
+--- a/gui/src/s57chart.cpp
++++ b/gui/src/s57chart.cpp
+@@ -1589,4 +1589,10 @@
+                                       const OCPNRegion &RectRegion,
+                                       const LLRegion &Region, bool b_overlay) {
++#ifdef OPENNAV_X
++  opennav::integration::ChartRenderObservationScope<s52plib> skager_observation(
++      m_presentationObservation, ps52plib, opennav::integration::ChartRenderObservation::View::Capture(VPoint, ps52plib ? ps52plib->GetStateHash() : 0, VPoint.tilt, VPoint.ref_scale, VPoint.b_FullScreenQuilt, VPoint.b_MercatorProjectionOverride),
++      ps52plib && ps52plib->PresentationCaLightsEnabled());
++#endif
++
+   if (!m_RAZBuilt) return false;
+ 
+@@ -1703,4 +1709,7 @@
+   //      CALLGRIND_STOP_INSTRUMENTATION
+ 
++#endif
++#ifdef OPENNAV_X
++  skager_observation.Complete();
+ #endif
+   return true;
+@@ -1956,4 +1965,10 @@
+                                       const OCPNRegion &Region,
+                                       bool b_overlay) {
++#ifdef OPENNAV_X
++  opennav::integration::ChartRenderObservationScope<s52plib> skager_observation(
++      m_presentationObservation, ps52plib, opennav::integration::ChartRenderObservation::View::Capture(VPoint, ps52plib ? ps52plib->GetStateHash() : 0, VPoint.tilt, VPoint.ref_scale, VPoint.b_FullScreenQuilt, VPoint.b_MercatorProjectionOverride),
++      ps52plib && ps52plib->PresentationCaLightsEnabled());
++#endif
++
+   SetVPParms(VPoint);
+ 
+@@ -2036,8 +2051,17 @@
+   m_last_Region = Region;
+ 
++#ifdef OPENNAV_X
++  skager_observation.Complete();
++#endif
+   return true;
+ }
+ 
+ bool s57chart::RenderViewOnDC(wxMemoryDC &dc, const ViewPort &VPoint) {
++#ifdef OPENNAV_X
++  opennav::integration::ChartRenderObservationScope<s52plib> skager_observation(
++      m_presentationObservation, ps52plib, opennav::integration::ChartRenderObservation::View::Capture(VPoint, ps52plib ? ps52plib->GetStateHash() : 0, VPoint.tilt, VPoint.ref_scale, VPoint.b_FullScreenQuilt, VPoint.b_MercatorProjectionOverride),
++      ps52plib && ps52plib->PresentationCaLightsEnabled());
++#endif
++
+   //    CALLGRIND_START_INSTRUMENTATION
+ 
+@@ -2059,4 +2083,7 @@
+   pDIB->SelectIntoDC(dc);
+ 
++#ifdef OPENNAV_X
++  skager_observation.Complete();
++#endif
+   return bnew_view;
+ 
+@@ -4739,4 +4766,9 @@
+                                                     ViewPort *VPoint,
+                                                     int selection_mask) {
++#ifdef OPENNAV_X
++  m_presentationObservation.BeginQuery(opennav::integration::ChartRenderObservation::View::Capture((*VPoint), ps52plib ? ps52plib->GetStateHash() : 0, (*VPoint).tilt, (*VPoint).ref_scale, (*VPoint).b_FullScreenQuilt, (*VPoint).b_MercatorProjectionOverride),
++      ps52plib && ps52plib->PresentationCaLightsEnabled());
++#endif
++
+   ListOfObjRazRules *ret_ptr = new ListOfObjRazRules;
+   std::vector<ObjRazRules *> selected_rules;
+@@ -4851,4 +4883,7 @@
+   for (std::size_t i = 0; i < selected_rules.size(); ++i) {
+     ret_ptr->Append(selected_rules[i]);
++#ifdef OPENNAV_X
++    m_presentationObservation.Select(selected_rules[i]->obj, selected_rules[i]->obj);
++#endif
+   }
+ 
+@@ -5616,4 +5651,9 @@
+        node = node->GetPrevious()) {
+     ObjRazRules *current = node->GetData();
++#ifdef OPENNAV_X
++    // Only the actual query-selected object, bound to its completed render.
++    if (ps52plib && ps52plib->PresentationCaLightsEnabled())
++      ret_val << wxString::FromUTF8(m_presentationObservation.Describe(current->obj).c_str());
++#endif
+     positionString.Clear();
+     objText.Clear();
+--- a/libs/s52plib/src/s52plib.cpp
++++ b/libs/s52plib/src/s52plib.cpp
+@@ -3060,4 +3060,7 @@
+                                  float rot_angle) {
+ 
++#ifdef OPENNAV_X
++  m_presentationRasterSubmitted = false;
++#endif
+   double scale_factor = 1.0;
+ 
+@@ -3393,4 +3396,7 @@
+         // Perform the actual drawing.
+         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
++#ifdef OPENNAV_X
++        m_presentationRasterSubmitted = true;
++#endif
+ 
+         // Restore the per-object transform to Identity Matrix
+@@ -3462,6 +3468,12 @@
+         wxMemoryDC result_dc(result);
+ 
+-        m_pdc->Blit(r.x - pivot_x, r.y - pivot_y, b_width, b_height, &result_dc,
++#ifdef OPENNAV_X
++      m_presentationRasterSubmitted =
++          m_pdc->Blit(r.x - pivot_x, r.y - pivot_y, b_width, b_height, &result_dc,
+                     0, 0, wxCOPY, false);
++#else
++      m_pdc->Blit(r.x - pivot_x, r.y - pivot_y, b_width, b_height, &result_dc,
++                    0, 0, wxCOPY, false);
++#endif
+ 
+         result_dc.SelectObject(wxNullBitmap);
+@@ -3474,6 +3486,12 @@
+ 
+       //      Blit it into the target dc, with mask
++#ifdef OPENNAV_X
++      m_presentationRasterSubmitted =
++          m_pdc->Blit(r.x - pivot_x, r.y - pivot_y, bmp.GetWidth(), bmp.GetHeight(),
++                  &mdc, 0, 0, wxCOPY, true);
++#else
+       m_pdc->Blit(r.x - pivot_x, r.y - pivot_y, bmp.GetWidth(), bmp.GetHeight(),
+                   &mdc, 0, 0, wxCOPY, true);
++#endif
+ 
+       mdc.SelectObject(wxNullBitmap);
+@@ -3587,7 +3605,22 @@
+     if (paintRule->definition.SYDF == 'V') {
+       RenderHPGL(rzRules, paintRule, r, angle, m_ChartScaleFactorExp);
++#ifdef OPENNAV_X
++      if (m_presentationObservation && rzRules->obj->Primitive_type == GEO_POINT)
++        m_presentationObservation->Unavailable(rzRules->obj);
++#endif
+     } else {
+-      if (paintRule->definition.SYDF == 'R')
++      if (paintRule->definition.SYDF == 'R') {
+         RenderRasterSymbol(rzRules, paintRule, r, angle);
++#ifdef OPENNAV_X
++        if (m_presentationRasterSubmitted && m_presentationObservation &&
++            rzRules->obj->Primitive_type == GEO_POINT && !rzRules->LUP)
++          m_presentationObservation->Unavailable(rzRules->obj);
++        if (m_presentationRasterSubmitted && m_presentationObservation &&
++            rzRules->obj->Primitive_type == GEO_POINT && rzRules->LUP)
++          m_presentationObservation->Record(rzRules->obj, rzRules->LUP->RCID,
++              int(rzRules->LUP->TNAM), rules->razRule->name.SYNM,
++              paintRule->name.SYNM, false);
++#endif
++      }
+     }
+   }
+@@ -6088,4 +6121,8 @@
+   GetPointPixSingle(rzRules, rzRules->obj->y, rzRules->obj->x, &point);
+   RenderRasterSymbol(rzRules, found->second, point, 0);
++  if (m_presentationRasterSubmitted && m_presentationObservation &&
++      rzRules->obj->Primitive_type == GEO_POINT && rzRules->LUP)
++    m_presentationObservation->Record(rzRules->obj, rzRules->LUP->RCID,
++        int(rzRules->LUP->TNAM), name, found->second->name.SYNM, true);
+ }
+ #endif
+--- a/libs/s52plib/src/s52plib.h
++++ b/libs/s52plib/src/s52plib.h
+@@ -31,4 +31,5 @@
+ #ifdef OPENNAV_X
+ #include "integration/ChartCaLightPoint.h"
++#include "integration/ChartRenderObservation.h"
+ #endif
+ 
+@@ -372,4 +373,10 @@
+ #ifdef OPENNAV_X
+   bool PresentationCaLightsEnabled() const { return m_presentationLightSymbols; }
++  opennav::integration::ChartRenderObservation* SetPresentationObservation(
++      opennav::integration::ChartRenderObservation* observation) {
++    auto* previous = m_presentationObservation;
++    m_presentationObservation = observation;
++    return previous;
++  }
+   opennav::integration::CaLightPointInventory* SetPresentationCaLights(
+       opennav::integration::CaLightPointInventory* inventory) {
+@@ -460,4 +467,6 @@
+   opennav::integration::CaLightPointInventory* m_presentationCaLights = nullptr;
+   void RenderPresentationCaLightPoint(ObjRazRules* rzRules);
++  opennav::integration::ChartRenderObservation* m_presentationObservation = nullptr;
++  bool m_presentationRasterSubmitted = false;
+ #endif
+   int S52_load_Plib(const wxString &PLib, bool b_forceLegacy, bool allowCwdOverride = true);

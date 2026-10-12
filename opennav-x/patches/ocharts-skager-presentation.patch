@@ -1545,3 +1545,212 @@ diff --git a/libs/s52plib/src/s52plib.h b/libs/s52plib/src/s52plib.h
          paintRule = found->second;
      }
  #endif
+--- a/libs/s52plib/src/s52plib.cpp
++++ b/libs/s52plib/src/s52plib.cpp
+@@ -3028,4 +3028,7 @@
+                                  float rot_angle) {
+ 
++#ifdef SKAGER_OCHARTS_ADAPTER
++  m_presentationRasterSubmitted = false;
++#endif
+   double scale_factor = 1.0;
+ 
+@@ -3360,4 +3363,7 @@
+         // Perform the actual drawing.
+         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
++#ifdef SKAGER_OCHARTS_ADAPTER
++        m_presentationRasterSubmitted = true;
++#endif
+ 
+         // Restore the per-object transform to Identity Matrix
+@@ -3429,6 +3435,12 @@
+         wxMemoryDC result_dc(result);
+ 
+-        m_pdc->Blit(r.x - pivot_x, r.y - pivot_y, b_width, b_height, &result_dc,
++#ifdef SKAGER_OCHARTS_ADAPTER
++      m_presentationRasterSubmitted =
++          m_pdc->Blit(r.x - pivot_x, r.y - pivot_y, b_width, b_height, &result_dc,
+                     0, 0, wxCOPY, false);
++#else
++      m_pdc->Blit(r.x - pivot_x, r.y - pivot_y, b_width, b_height, &result_dc,
++                    0, 0, wxCOPY, false);
++#endif
+ 
+         result_dc.SelectObject(wxNullBitmap);
+@@ -3441,6 +3453,12 @@
+ 
+       //      Blit it into the target dc, with mask
++#ifdef SKAGER_OCHARTS_ADAPTER
++      m_presentationRasterSubmitted =
++          m_pdc->Blit(r.x - pivot_x, r.y - pivot_y, bmp.GetWidth(), bmp.GetHeight(),
++                  &mdc, 0, 0, wxCOPY, true);
++#else
+       m_pdc->Blit(r.x - pivot_x, r.y - pivot_y, bmp.GetWidth(), bmp.GetHeight(),
+                   &mdc, 0, 0, wxCOPY, true);
++#endif
+ 
+       mdc.SelectObject(wxNullBitmap);
+@@ -3554,7 +3572,22 @@
+     if (paintRule->definition.SYDF == 'V') {
+       RenderHPGL(rzRules, paintRule, r, angle, m_ChartScaleFactorExp);
++#ifdef SKAGER_OCHARTS_ADAPTER
++      if (m_presentationObservation && rzRules->obj->Primitive_type == GEO_POINT)
++        m_presentationObservation->Unavailable(rzRules->obj);
++#endif
+     } else {
+-      if (paintRule->definition.SYDF == 'R')
++      if (paintRule->definition.SYDF == 'R') {
+         RenderRasterSymbol(rzRules, paintRule, r, angle);
++#ifdef SKAGER_OCHARTS_ADAPTER
++        if (m_presentationRasterSubmitted && m_presentationObservation &&
++            rzRules->obj->Primitive_type == GEO_POINT && !rzRules->LUP)
++          m_presentationObservation->Unavailable(rzRules->obj);
++        if (m_presentationRasterSubmitted && m_presentationObservation &&
++            rzRules->obj->Primitive_type == GEO_POINT && rzRules->LUP)
++          m_presentationObservation->Record(rzRules->obj, rzRules->LUP->RCID,
++              int(rzRules->LUP->TNAM), rules->razRule->name.SYNM,
++              paintRule->name.SYNM, false);
++#endif
++      }
+     }
+   }
+@@ -6053,4 +6086,8 @@
+   GetPointPixSingle(rzRules, rzRules->obj->y, rzRules->obj->x, &point);
+   RenderRasterSymbol(rzRules, found->second, point, 0);
++  if (m_presentationRasterSubmitted && m_presentationObservation &&
++      rzRules->obj->Primitive_type == GEO_POINT && rzRules->LUP)
++    m_presentationObservation->Record(rzRules->obj, rzRules->LUP->RCID,
++        int(rzRules->LUP->TNAM), name, found->second->name.SYNM, true);
+ }
+ #endif
+--- a/libs/s52plib/src/s52plib.h
++++ b/libs/s52plib/src/s52plib.h
+@@ -31,4 +31,5 @@
+ #ifdef SKAGER_OCHARTS_ADAPTER
+ #include "integration/ChartCaLightPoint.h"
++#include "integration/ChartRenderObservation.h"
+ #endif
+ 
+@@ -359,4 +360,10 @@
+ #ifdef SKAGER_OCHARTS_ADAPTER
+   bool PresentationCaLightsEnabled() const { return m_presentationLightSymbols; }
++  opennav::integration::ChartRenderObservation* SetPresentationObservation(
++      opennav::integration::ChartRenderObservation* observation) {
++    auto* previous = m_presentationObservation;
++    m_presentationObservation = observation;
++    return previous;
++  }
+   opennav::integration::CaLightPointInventory* SetPresentationCaLights(
+       opennav::integration::CaLightPointInventory* inventory) {
+@@ -447,4 +454,6 @@
+   opennav::integration::CaLightPointInventory* m_presentationCaLights = nullptr;
+   void RenderPresentationCaLightPoint(ObjRazRules* rzRules);
++  opennav::integration::ChartRenderObservation* m_presentationObservation = nullptr;
++  bool m_presentationRasterSubmitted = false;
+ #endif
+   int S52_load_Plib(const wxString &PLib, bool b_forceLegacy, bool allowCwdOverride = true);
+--- a/src/eSENCChart.cpp
++++ b/src/eSENCChart.cpp
+@@ -1856,4 +1856,10 @@
+ wxBitmap &eSENCChart::RenderRegionView(const PlugIn_ViewPort& VPoint, const wxRegion &Region)
+ {
++#ifdef SKAGER_OCHARTS_ADAPTER
++  opennav::integration::ChartRenderObservationScope<s52plib> skager_observation(
++      m_presentationObservation, ps52plib, opennav::integration::ChartRenderObservation::View::Capture(VPoint, ps52plib ? ps52plib->GetStateHash() : 0),
++      ps52plib && ps52plib->PresentationCaLightsEnabled());
++#endif
++
+     #if 1
+     SetVPParms( VPoint );
+@@ -1896,5 +1902,8 @@
+     m_last_Region = Region;
+ 
+-    return *m_pCloneBM;
++  #ifdef SKAGER_OCHARTS_ADAPTER
++  skager_observation.Complete();
++#endif
++  return *m_pCloneBM;
+ 
+ #if 0
+@@ -1914,5 +1923,5 @@
+         dc_clone.SelectObject( *m_pCloneBM );
+ 
+-        #ifdef ocpnUSE_DIBSECTION
++      #ifdef ocpnUSE_DIBSECTION
+         ocpnMemDC memdc, dc_org;
+         #else
+@@ -1938,5 +1947,5 @@
+             wxColour nodat_sub = nodat;
+ 
+-            #ifdef ocpnUSE_ocpnBitmap
++          #ifdef ocpnUSE_ocpnBitmap
+             nodat_sub = wxColour( nodat.Blue(), nodat.Green(), nodat.Red() );
+             #endif
+@@ -2021,4 +2030,10 @@
+                           const wxRegion &Region, bool b_use_stencil )
+ {
++#ifdef SKAGER_OCHARTS_ADAPTER
++  opennav::integration::ChartRenderObservationScope<s52plib> skager_observation(
++      m_presentationObservation, ps52plib, opennav::integration::ChartRenderObservation::View::Capture(VPoint, ps52plib ? ps52plib->GetStateHash() : 0),
++      ps52plib && ps52plib->PresentationCaLightsEnabled());
++#endif
++
+ 
+ #ifdef ocpnUSE_GL
+@@ -2213,5 +2228,8 @@
+ #endif    //GL
+ 
+-    return true;
++  #ifdef SKAGER_OCHARTS_ADAPTER
++  skager_observation.Complete();
++#endif
++  return true;
+ }
+ 
+@@ -6737,4 +6755,9 @@
+ 
+ {
++#ifdef SKAGER_OCHARTS_ADAPTER
++  m_presentationObservation.BeginQuery(opennav::integration::ChartRenderObservation::View::Capture((*VPoint), ps52plib ? ps52plib->GetStateHash() : 0),
++      ps52plib && ps52plib->PresentationCaLightsEnabled());
++#endif
++
+     ViewPort cvp = CreateCompatibleViewport( *VPoint );
+     PrepareForRender(&cvp, ps52plib);
+@@ -6845,4 +6868,7 @@
+ 
+ 
++#ifdef SKAGER_OCHARTS_ADAPTER
++        m_presentationObservation.Select(cobj, pObj);
++#endif
+         obj_list->Append(cobj);
+     }
+@@ -7417,4 +7443,9 @@
+     for( ListOfPI_S57Obj::Node *node = obj_list->GetLast(); node; node = node->GetPrevious() ) {
+         PI_S57Obj *current = node->GetData();
++#ifdef SKAGER_OCHARTS_ADAPTER
++    // Only the actual query-selected object, bound to its completed render.
++    if (ps52plib && ps52plib->PresentationCaLightsEnabled())
++      ret_val << wxString::FromUTF8(m_presentationObservation.Describe(current).c_str());
++#endif
+         positionString.Clear();
+         objText.Clear();
+--- a/src/eSENCChart.h
++++ b/src/eSENCChart.h
+@@ -127,4 +127,8 @@
+ // ----------------------------------------------------------------------------
+ 
++#ifdef SKAGER_OCHARTS_ADAPTER
++#include "integration/ChartRenderObservation.h"
++#endif
++
+ #ifndef __ANDROID__
+ class  eSENCChart : public PlugInChartBaseExtendedPlus2
+@@ -256,4 +260,7 @@
+ 
+ protected:
++#ifdef SKAGER_OCHARTS_ADAPTER
++  opennav::integration::ChartRenderObservation m_presentationObservation;
++#endif
+ //    Methods
+       PI_InitReturn     CreateHeaderDataFromeSENC(void);
