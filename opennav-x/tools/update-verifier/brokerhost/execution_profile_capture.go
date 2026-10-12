@@ -19,7 +19,7 @@ import (
 const maxProfileManifestBytes = 8 << 20
 
 var ErrExecutionProfileCaptureRefused = errors.New("native entire-profile capture custody refused")
-var ErrExecutionProfileRestoreReviewRequired = errors.New("profile differs from retained original; independently approved restoration required")
+var ErrExecutionProfileRestoreReviewRequired = errors.New("profile changes exceed the closed automatic startup restore policy; review required")
 
 type profileCaptureEntry struct {
 	Path       string `json:"path"`
@@ -63,7 +63,7 @@ type profileCaptureArchive interface {
 // ExecutionProfileCapture owns the fixed native full profile and its completed
 // broker-private original archive. It is neither commissioning nor launch/health
 // authority. Original owner/group/DACL, attributes and times are retained; audit
-// descriptors are never replaced or synthesized by this nonmutating provider.
+// descriptors are never replaced or synthesized by capture/in-place restoration.
 type ExecutionProfileCapture struct{ state *profileCaptureState }
 type profileCaptureState struct {
 	mu                sync.Mutex
@@ -73,6 +73,7 @@ type profileCaptureState struct {
 	manifest          profileCaptureManifest
 	original          []byte
 	released, closed  bool
+	restoreAttempted  bool
 	failure, closeErr error
 	inspections       []*ExecutionProfileRestoreInspection
 }
@@ -477,14 +478,11 @@ func (p *ExecutionProfileCapture) VerifyRestoredOriginal(ctx context.Context) (r
 	return nil
 }
 
-// RestoreOriginal currently corroborates a no-op only. A changed-profile apply
-// requires an independently approved closed change policy, a retained native
-// owned-child termination proof, and this stable writer-excluded current tree.
-// It must derive bytes/relative names from the protected original archive, retain
-// current (possibly wx-replaced) full IDs through mutation, preserve unsupported
-// metadata rather than invent it, and refuse every unreviewed extra change.
-// This entry point must not be represented as automatic restoration completed
-// when it returns ErrExecutionProfileRestoreReviewRequired.
+// RestoreOriginal is the no-proof compatibility inspection: only an unchanged
+// original can succeed here. Actual changed-profile restoration uses the private
+// restoreOriginalNative boundary with native original-child teardown, closed
+// source-derived startup policy, writable current custody and durable intent.
+// A public call/client report cannot mint that authority or authorize an overwrite.
 func (p *ExecutionProfileCapture) RestoreOriginal(ctx context.Context) error {
 	return p.VerifyRestoredOriginal(ctx)
 }

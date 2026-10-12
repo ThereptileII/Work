@@ -74,6 +74,9 @@ func captureProfileTreeNative(ctx context.Context) (profileCaptureSource, error)
 	return captureProfileTreePath(ctx, filepath.Join(root, "opencpn"), true)
 }
 func captureProfileFile(name string, directory bool) (*os.File, error) {
+	return captureProfileFileMode(name, directory, false)
+}
+func captureProfileFileMode(name string, directory, writable bool) (*os.File, error) {
 	p, err := windows.UTF16PtrFromString(name)
 	if err != nil {
 		return nil, err
@@ -85,6 +88,12 @@ func captureProfileFile(name string, directory bool) (*os.File, error) {
 		access = windows.FILE_LIST_DIRECTORY | windows.FILE_READ_ATTRIBUTES | windows.READ_CONTROL
 		share |= windows.FILE_SHARE_WRITE
 		flags |= windows.FILE_FLAG_BACKUP_SEMANTICS
+	}
+	if writable {
+		access |= windows.FILE_WRITE_ATTRIBUTES
+		if !directory {
+			access |= windows.GENERIC_WRITE
+		}
 	}
 	h, err := windows.CreateFile(p, access, share, nil, windows.OPEN_EXISTING, flags, 0)
 	if err != nil {
@@ -279,7 +288,10 @@ func profileDirectoryNames(member *nativeProfileCaptureMember) (names []string, 
 
 // Private path seam is solely for inert native fixtures. Production always uses
 // fixed KnownFolder ProgramData/opencpn after same-Store backup reservation.
-func captureProfileTreePath(ctx context.Context, path string, checkProcesses bool) (result profileCaptureSource, resultErr error) {
+func captureProfileTreePath(ctx context.Context, path string, checkProcesses bool) (profileCaptureSource, error) {
+	return captureProfileTreePathMode(ctx, path, checkProcesses, false)
+}
+func captureProfileTreePathMode(ctx context.Context, path string, checkProcesses, writable bool) (result profileCaptureSource, resultErr error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	if ctx == nil {
@@ -374,7 +386,7 @@ func captureProfileTreePath(ctx context.Context, path string, checkProcesses boo
 			return nil, err
 		}
 		directory := attributes&windows.FILE_ATTRIBUTE_DIRECTORY != 0
-		file, err := captureProfileFile(`\\?\GLOBALROOT`+name, directory)
+		file, err := captureProfileFileMode(`\\?\GLOBALROOT`+name, directory, writable && (directory || relative == "opencpn.ini" || relative == "opencpn.log"))
 		if err != nil {
 			return nil, err
 		}
