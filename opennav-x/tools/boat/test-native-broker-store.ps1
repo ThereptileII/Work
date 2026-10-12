@@ -2,13 +2,18 @@ param(
     [Parameter(Mandatory=$true)][string]$TestExecutable,
     [Parameter(Mandatory=$true)][ValidatePattern('^[a-f0-9]{64}$')][string]$ExpectedSha256,
     [Parameter(Mandatory=$true)][string]$EvidenceDirectory,
-    [switch]$CleanupErrorOnly
+    [switch]$CleanupErrorOnly,
+    [switch]$AcquisitionOnly
 )
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 
-# Only the bounded store-lock fixtures run. They use disposable directories and
-# an inert copy of this test executable, never the application or SCM service.
+# Only bounded store-lock or acquisition fixtures run. They use disposable
+# directories and inert test executable children, never an application, service,
+# user profile or equipment. AcquisitionOnly selects the five parent groups.
+if ($CleanupErrorOnly -and $AcquisitionOnly) {
+    throw 'CleanupErrorOnly and AcquisitionOnly are mutually exclusive'
+}
 $Executable = Get-Item -LiteralPath $TestExecutable -Force
 if ($Executable.PSIsContainer -or ($Executable.Attributes -band [IO.FileAttributes]::ReparsePoint)) {
     throw 'Plain retained test executable required'
@@ -22,7 +27,9 @@ $OriginalTemp, $OriginalTmp = $env:TEMP, $env:TMP
 try {
     $env:TEMP, $env:TMP = $Scratch.FullName, $Scratch.FullName
     $Selection = '^TestNativeStoreLifetimeLock(ExcludesOtherOwnerAndReacquires|ExcludesAnotherProcess|RefusesUnsafeExistingObjects|RechecksHeldMetadataAndReleasesAfterCleanupError)$'
-    if ($CleanupErrorOnly) {
+    if ($AcquisitionOnly) {
+        $Selection = '^TestNativeAcquisition'
+    } elseif ($CleanupErrorOnly) {
         $Selection = '^TestNativeStoreLifetimeLockRechecksHeldMetadataAndReleasesAfterCleanupError$'
     }
     # Windows PowerShell 5.1 splits bare dotted native arguments differently.
@@ -38,7 +45,7 @@ try {
         exitCode = $TestExit
         os64 = [Environment]::Is64BitOperatingSystem
         powershellVersion = $PSVersionTable.PSVersion.ToString()
-        scope = 'Native lock primitive only; no application, service, profile or hardware operation'
+        scope = 'Native inert acquisition or lock primitive only; no application, service, profile or hardware operation'
     } | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath (Join-Path $Evidence.FullName 'receipt.json') -Encoding UTF8
     if ($TestExit -ne 0) { throw ('Native fixture failed: ' + $TestExit) }
 } finally {
