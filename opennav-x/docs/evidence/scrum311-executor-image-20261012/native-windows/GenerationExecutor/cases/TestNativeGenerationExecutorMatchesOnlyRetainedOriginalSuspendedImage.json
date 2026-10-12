@@ -1,0 +1,15 @@
+{
+    "schema":  1,
+    "group":  "GenerationExecutor",
+    "name":  "TestNativeGenerationExecutorMatchesOnlyRetainedOriginalSuspendedImage",
+    "selection":  "^TestNativeGenerationExecutorMatchesOnlyRetainedOriginalSuspendedImage$",
+    "runMarkers":  1,
+    "passMarkers":  1,
+    "executableSha256":  "523ad80f99e0a18b58ce02d169ca880131f6b1f41871cfbb140076e096f03829",
+    "exitCode":  0,
+    "os":  "Microsoft Windows NT 10.0.22631.0",
+    "timedOut":  false,
+    "groupReceipt":  "C:\\XNav\\ComponentChecks\\generation-executor-605b0bea\\GenerationExecutor\\receipt.json",
+    "executionLog":  "C:\\XNav\\ComponentChecks\\generation-executor-605b0bea\\GenerationExecutor\\tests-stdout.log",
+    "caseLog":  "TestNativeGenerationExecutorMatchesOnlyRetainedOriginalSuspendedImage.log"
+}

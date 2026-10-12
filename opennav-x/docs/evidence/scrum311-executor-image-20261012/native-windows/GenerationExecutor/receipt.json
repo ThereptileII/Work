@@ -1,0 +1,48 @@
+{
+    "schema":  1,
+    "group":  "GenerationExecutor",
+    "executable":  "C:\\XNav\\ComponentChecks\\generation-executor-605b0bea\\brokerstore.test.exe",
+    "executableSha256":  "523ad80f99e0a18b58ce02d169ca880131f6b1f41871cfbb140076e096f03829",
+    "expectedCases":  [
+                          "TestNativeGenerationExecutorMatchesOnlyRetainedOriginalSuspendedImage"
+                      ],
+    "selection":  "^(TestNativeGenerationExecutorMatchesOnlyRetainedOriginalSuspendedImage)$",
+    "status":  "passed",
+    "failure":  null,
+    "startedUtc":  "2026-10-12T09:55:04.4453649Z",
+    "os":  "Microsoft Windows NT 10.0.22631.0",
+    "os64":  true,
+    "process64":  true,
+    "powershellVersion":  "5.1.22621.5624",
+    "listing":  {
+                    "arguments":  [
+                                      "-test.list=^(TestNativeGenerationExecutorMatchesOnlyRetainedOriginalSuspendedImage)$"
+                                  ],
+                    "processId":  8976,
+                    "startedUtc":  "2026-10-12T09:55:04.4720353Z",
+                    "exitCode":  0,
+                    "timedOut":  false,
+                    "error":  null,
+                    "stdout":  "C:\\XNav\\ComponentChecks\\generation-executor-605b0bea\\GenerationExecutor\\list-stdout.log",
+                    "stderr":  "C:\\XNav\\ComponentChecks\\generation-executor-605b0bea\\GenerationExecutor\\list-stderr.log",
+                    "elapsedMilliseconds":  427
+                },
+    "execution":  {
+                      "arguments":  [
+                                        "-test.run=^(TestNativeGenerationExecutorMatchesOnlyRetainedOriginalSuspendedImage)$",
+                                        "-test.count=1",
+                                        "-test.v",
+                                        "-test.timeout=90s"
+                                    ],
+                      "processId":  8988,
+                      "startedUtc":  "2026-10-12T09:55:04.9499711Z",
+                      "exitCode":  0,
+                      "timedOut":  false,
+                      "error":  null,
+                      "stdout":  "C:\\XNav\\ComponentChecks\\generation-executor-605b0bea\\GenerationExecutor\\tests-stdout.log",
+                      "stderr":  "C:\\XNav\\ComponentChecks\\generation-executor-605b0bea\\GenerationExecutor\\tests-stderr.log",
+                      "elapsedMilliseconds":  5160
+                  },
+    "scope":  "Exact inert native fixtures only; no application/service/profile/network/physical output; not enrollment or release qualification",
+    "completedUtc":  "2026-10-12T09:55:10.3705092Z"
+}

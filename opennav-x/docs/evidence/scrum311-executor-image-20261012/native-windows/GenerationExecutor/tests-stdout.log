@@ -1,0 +1,3 @@
+=== RUN   TestNativeGenerationExecutorMatchesOnlyRetainedOriginalSuspendedImage
+--- PASS: TestNativeGenerationExecutorMatchesOnlyRetainedOriginalSuspendedImage (5.11s)
+PASS

@@ -1,0 +1,9 @@
+{
+  "sourceCommit": "605b0bea6374dc6a59f426d225639fe4d69e1efc",
+  "testRevision": "605b0bea6374dc6a59f426d225639fe4d69e1efc",
+  "files": {
+    "brokerstore.test.exe": "523ad80f99e0a18b58ce02d169ca880131f6b1f41871cfbb140076e096f03829",
+    "runner.ps1": "ee4f2dd88b297cccd68e901bdcd4a6a63e58a29363811388d30c32b39940744d"
+  },
+  "remote": "C:\\XNav\\ComponentChecks\\generation-executor-605b0bea"
+}

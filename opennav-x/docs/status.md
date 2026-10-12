@@ -1,5 +1,24 @@
 # SKAGER status — 2026-10-12
 
+## Original interactive launcher image passes native identity check
+
+Source `b1bed3d4` binds a sealed executor-image capability to the fixed retained
+`app/skager-start.exe`. Actual native process creation identity, image path and
+full physical file ID must agree with original read-only custody. Focused race
+**3 top-level + 5 nested passed**; exact native Windows/x86 **1 fixture passed**.
+The fixture creates a copied test image suspended, never resumes its entrypoint,
+then terminates/drains only its own original creator handles.
+[Exact source/native evidence](evidence/scrum311-executor-image-20261012/README.md)
+records the limits. The actual approved SCM registration path now publishes the
+initial baseline loading view after private registration writers close (`d18df036`);
+its Windows/x86 host component compiled, actual SCM enrollment remains pending.
+
+This is not executor-session, selection, commissioning, spawn, healthy-start or
+restore acceptance. Authenticated pipe capability, protected generation reopen
+and durable operation journal source are being integrated before the actual
+execution transaction. SCRUM-311 remains In Progress; no combined full build or
+installed updater/boat qualification has occurred.
+
 ## Atomic history and commissioning source retention pass joined Windows checks
 
 Integrated source `8ee7e633` uses atomic read-only candidate materialization in

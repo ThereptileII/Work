@@ -465,11 +465,9 @@ bytes; it cannot be retried or reconstructed from a completion receipt.
 
 [Native component evidence](../evidence/scrum311-generation-readonly-20261012/README.md)
 proves actual image-mapping/read-execute compatibility and new write/delete
-refusal on temporary objects, not an application launch. The immutable snapshot
-of sibling history is still too restrictive to retain an older loading owner
-through later generation publication. Authenticated history evolution and the
-initial approved baseline public view remain necessary, along with the actual
-private selection/interactive commissioning/startup/fallback transaction.
+refusal on temporary objects, not an application launch. The later atomic live
+history API above replaces that increment's fixed-sibling limitation. Actual
+private selection/interactive commissioning/startup/fallback remains necessary.
 
 ### Approved initial baseline public loading view
 
@@ -490,9 +488,26 @@ private source owner.
 [Exact source and native component evidence](../evidence/scrum311-approved-baseline-view-20261012/README.md)
 prove copied-file/read-execute custody and refusals on temporary objects. This
 does not commission or startup-qualify the first protected previous version.
-Authenticated live sibling-history evolution and the actual protected
-selection/interactive commissioning/healthy/fallback transaction remain open;
-the three helpers alone are not the complete commissioning engine closure.
+The actual approved SCM registration path now materializes the initial read-only
+baseline view after private registration writers close; post-registration failure
+is explicitly uncertain and never permits retry or deletion of permanent records.
+Atomic history evolution and the twelve-file commissioning source closure are
+recorded above. The actual protected selection/interactive commissioning/healthy/
+fallback transaction remains open; copied source does not grant its authority.
+
+### Original interactive executor image
+
+`ReadOnlyGeneration.ExecutorImage` and its approved-baseline wrapper mint a sealed
+`GenerationExecutorImage` only for the fixed original `app/skager-start.exe`.
+There is no constructor from path, hash, receipt or native handle. Native process
+comparison requires live process/original creation FILETIME, actual physical image
+path and full file ID matching the retained original. Generation custody is checked
+before/after; owner/Store closure revokes the capability. The authenticated pipe
+layer must independently derive and retain its actual process/pipe/token/logon
+identity. A caller-supplied PID/creation or successful image comparison alone
+grants no session, commissioning, selected, spawn or healthy-start authority.
+[Exact native component evidence](../evidence/scrum311-executor-image-20261012/README.md)
+uses a never-resumed suspended copied test PE, not the installed application.
 
 ## Inactive broker package prerequisite
 
