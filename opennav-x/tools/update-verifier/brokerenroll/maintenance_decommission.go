@@ -3,6 +3,8 @@ package brokerenroll
 import (
 	"context"
 	"errors"
+
+	"example.com/opennav-update-verifier/brokerpipe"
 )
 
 // DecommissionResult reports the bounded SCM effect after every retained owner
@@ -43,6 +45,21 @@ func OpenDecommissionMaintenance(ctx context.Context, req MaintenanceRequest) (*
 		poll:             servicePoll,
 		limit:            maintenanceStopLimit,
 	}, true)
+}
+
+// BindDecommission consumes the sealed native broker witness. On a refused
+// binding it closes the witness; on success the owner closes it.
+// Snapshot is comparison data; only the witness's retained live peer/process
+// Check can authorize the first SCM effect. A caller-supplied JSON response or
+// asserted success cannot construct a witness.
+func (m *MaintenanceOwner) BindDecommission(ctx context.Context, witness *brokerpipe.DecommissionWitness) error {
+	if witness == nil {
+		return errors.New("original native broker decommission witness required")
+	}
+	if err := bindDecommissionFenceWith(m, ctx, witness, witness.Snapshot().ClientSID); err != nil {
+		return errors.Join(err, witness.Close())
+	}
+	return nil
 }
 
 func bindDecommissionFenceWith(m *MaintenanceOwner, ctx context.Context, fence decommissionFence, clientSID string) (resultErr error) {
