@@ -26,6 +26,8 @@ func (s storeAdapter) begin(id, sid string) (candidate, error) {
 
 // Run is exclusively an SCM service entry point. It has no arbitrary-root,
 // interactive/elevated console fallback, trust initialization or install command.
+// An explicit SCM initialize-store start performs only native fresh-store creation
+// and stops; it never serves requests or announces service readiness.
 // Provisioning of the account, fixed files and protected registrations is a
 // separate authenticated installer operation; missing setup fails closed.
 func Run(ctx context.Context) error {
@@ -50,8 +52,16 @@ type serviceHost struct {
 
 func (h *serviceHost) Execute(args []string, changes <-chan svc.ChangeRequest, status chan<- svc.Status) (bool, uint32) {
 	status <- svc.Status{State: svc.StartPending, WaitHint: 10000}
-	if len(args) != 1 || args[0] != ServiceName {
-		h.result = errors.New("unexpected broker service arguments")
+	initialized, err := initializeServiceStart(h.ctx, args, brokerstore.InitializeFresh)
+	if err != nil {
+		h.result = err
+		return false, 1
+	}
+	if initialized {
+		return false, 0
+	}
+	if err := brokerstore.ValidateInitialization(); err != nil {
+		h.result = errors.New("completed broker initialization required")
 		return false, 1
 	}
 	programData, err := windows.KnownFolderPath(windows.FOLDERID_ProgramData, 0)
