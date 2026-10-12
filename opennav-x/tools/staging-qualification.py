@@ -9,6 +9,7 @@ from release_manifest import create
 
 REQUIRED_JOBS = ('contracts', 'boat-maintenance', 'native-restart-transport',
                  'native-restart-broker', 'native-restart-window', 'native-stock-welcome',
+                 'native-private-chart-loader',
                  'linux-integration', 'windows-integration', 'windows-qualification', 'application-abi', 'stock-prerequisite', 'updater-contracts')
 
 

@@ -865,7 +865,7 @@ jobs:
           }
   publish-staging:
     name: Record versioned Staging Release
-    needs: [contracts, boat-maintenance, native-restart-transport, native-restart-broker, native-restart-window, native-stock-welcome, linux-integration, windows-integration, windows-qualification, application-abi, stock-prerequisite, updater-contracts]
+    needs: [contracts, boat-maintenance, native-restart-transport, native-restart-broker, native-restart-window, native-stock-welcome, native-private-chart-loader, linux-integration, windows-integration, windows-qualification, application-abi, stock-prerequisite, updater-contracts]
     runs-on: ubuntu-24.04
     permissions:
       contents: write
