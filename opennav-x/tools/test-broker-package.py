@@ -228,7 +228,12 @@ class BrokerPackageTests(unittest.TestCase):
         self.sources[extra] = b'package another\n'
         for name in (broker.PREFIX + 'brokerregistration/request.go',
                      broker.PREFIX + 'brokerstore/registration_windows.go',
-                     broker.PREFIX + 'brokerenroll/client_request_windows.go', extra):
+                     broker.PREFIX + 'brokerenroll/client_request_windows.go',
+                     broker.PREFIX + 'approved_baseline.go',
+                     broker.PREFIX + 'baselineevidence/evidence.go',
+                     broker.PREFIX + 'brokerhost/client_baseline_windows.go',
+                     broker.PREFIX + 'brokerstore/installed_baseline_windows.go',
+                     broker.PREFIX + 'brokerenroll/client_baseline_windows.go', extra):
             with self.subTest(tampered=name):
                 self.write_source()
                 self.rewrite_source(lambda contents: contents.update({name: b'X' * len(contents[name])}))

@@ -31,13 +31,11 @@ var stockBaseline = brokerregistration.StockBaseline()
 // Only the store's protected, SID-selected registration supplies these values.
 // A UI/pipe request cannot choose a path, origin, installed version or trust root.
 type registration struct {
-	Schema    int    `json:"schema"`
-	ClientSID string `json:"clientSid"`
-	Installed struct {
-		Version string `json:"version"`
-		Commit  string `json:"commit"`
-	} `json:"installed"`
-	Stock struct {
+	Schema                int                          `json:"schema"`
+	ClientSID             string                       `json:"clientSid"`
+	Installed             brokerregistration.Installed `json:"installed"`
+	ApprovedRequestSHA256 string                       `json:"-"`
+	Stock                 struct {
 		Path             string `json:"path"`
 		Version          string `json:"version"`
 		Arch             string `json:"arch"`
@@ -106,9 +104,8 @@ func parseRegistration(data []byte, peerSID string) (registration, error) {
 // Values come only from the already parsed exact approved request. Evidence
 // remains in its protected envelope, not a mutable per-user installation record.
 func registrationFromApproved(request brokerregistration.Request) registration {
-	r := registration{Schema: 2, ClientSID: request.ClientSID}
-	r.Installed.Version = request.Installed.Version
-	r.Installed.Commit = request.Installed.Commit
+	r := registration{Schema: 2, ClientSID: request.ClientSID,
+		Installed: request.Installed, ApprovedRequestSHA256: request.RequestSHA256}
 	r.Stock.Path = request.Stock.Path
 	r.Stock.Version = request.Stock.Version
 	r.Stock.Arch = request.Stock.Arch

@@ -10,6 +10,7 @@ import (
 
 	verifier "example.com/opennav-update-verifier"
 	"example.com/opennav-update-verifier/brokerpipe"
+	"example.com/opennav-update-verifier/brokerregistration"
 	"example.com/opennav-update-verifier/releasepolicy"
 )
 
@@ -25,7 +26,15 @@ type storage interface {
 	Validate() error
 	ReadRegistration(string) ([]byte, error)
 	VerifierDirectories(string, string) (string, string, error)
+	openBaseline(context.Context, registration) (baselineOwner, error)
 	begin(string, string) (candidate, error)
+}
+
+// The concrete owner retains the approved, birth-protected payload. This does
+// not authorize launch or prove the currently running per-user installation.
+type baselineOwner interface {
+	Validate() error
+	Close() error
 }
 type acquisition interface {
 	StageRecovery(context.Context, verifier.RecoverySink) (verifier.RecoveryIdentity, error)
@@ -45,12 +54,14 @@ type engine struct {
 // No receipt in this operation authorizes launch. It records authenticated
 // bytes staged for later qualification, not installed state or startup success.
 type stagingReceipt struct {
-	Schema    int                       `json:"schema"`
-	State     string                    `json:"state"`
-	RequestID string                    `json:"requestId"`
-	ClientSID string                    `json:"clientSid"`
-	Consent   verifier.ConsentIdentity  `json:"consent"`
-	Recovery  verifier.RecoveryIdentity `json:"recovery"`
+	Schema                int                          `json:"schema"`
+	State                 string                       `json:"state"`
+	RequestID             string                       `json:"requestId"`
+	ClientSID             string                       `json:"clientSid"`
+	Consent               verifier.ConsentIdentity     `json:"consent"`
+	Recovery              verifier.RecoveryIdentity    `json:"recovery"`
+	Installed             brokerregistration.Installed `json:"installed"`
+	ApprovedRequestSHA256 string                       `json:"approvedRequestSha256"`
 }
 
 var errStageRefused = errors.New("protected update staging refused")
@@ -84,6 +95,20 @@ func (e *engine) handle(ctx context.Context, peer brokerpipe.Peer, request broke
 	}
 	r, err := parseRegistration(data, peer.SID)
 	if err != nil {
+		return brokerpipe.Result{}, err
+	}
+	baseline, err := e.store.openBaseline(ctx, r)
+	if baseline != nil {
+		defer func() {
+			if baseline != nil {
+				resultErr = errors.Join(resultErr, baseline.Close())
+			}
+		}()
+	}
+	if err != nil || baseline == nil {
+		return brokerpipe.Result{}, errStageRefused
+	}
+	if err = baseline.Validate(); err != nil {
 		return brokerpipe.Result{}, err
 	}
 	stateDir, artifactDir, err := e.store.VerifierDirectories(peer.SID, r.Trust.Channel)
@@ -138,6 +163,9 @@ func (e *engine) handle(ctx context.Context, peer brokerpipe.Peer, request broke
 	if !validRecovery(identity, request.Consent) {
 		return brokerpipe.Result{}, errStageRefused
 	}
+	if err := baseline.Validate(); err != nil {
+		return brokerpipe.Result{}, err
+	}
 	if err := stock.validate(); err != nil {
 		return brokerpipe.Result{}, err
 	}
@@ -156,8 +184,17 @@ func (e *engine) handle(ctx context.Context, peer brokerpipe.Peer, request broke
 	if err := e.store.Validate(); err != nil {
 		return brokerpipe.Result{}, err
 	}
-	receipt, err := json.Marshal(stagingReceipt{Schema: 1, State: stagedState, RequestID: request.RequestID,
-		ClientSID: peer.SID, Consent: request.Consent, Recovery: identity})
+	if err := baseline.Validate(); err != nil {
+		return brokerpipe.Result{}, err
+	}
+	closeErr = baseline.Close()
+	baseline = nil
+	if closeErr != nil {
+		return brokerpipe.Result{}, closeErr
+	}
+	receipt, err := json.Marshal(stagingReceipt{Schema: 2, State: stagedState, RequestID: request.RequestID,
+		ClientSID: peer.SID, Consent: request.Consent, Recovery: identity,
+		Installed: r.Installed, ApprovedRequestSHA256: r.ApprovedRequestSHA256})
 	if err != nil {
 		return brokerpipe.Result{}, err
 	}

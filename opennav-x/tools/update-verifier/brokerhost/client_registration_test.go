@@ -195,8 +195,23 @@ func (f *clientRegistrationFixture) operations() clientRegistrationOperations {
 			}
 			return f.record("validate-trust")
 		},
+		baseline: func(_ context.Context, store clientRegistrationStore, request brokerregistration.Request) (baselineOwner, error) {
+			if store != f || request.RequestSHA256 != clientRequestDigest(f.original) || request.Installed.Generation != strings.Repeat("b", 32) {
+				return nil, errors.New("baseline not bound to exact approved registration")
+			}
+			err := f.record("baseline-import")
+			if f.fail == "nil-baseline" {
+				return nil, nil
+			}
+			return clientBaselineFixture{f}, err
+		},
 	}
 }
+
+type clientBaselineFixture struct{ f *clientRegistrationFixture }
+
+func (b clientBaselineFixture) Validate() error { return b.f.record("baseline-validate") }
+func (b clientBaselineFixture) Close() error    { return b.f.record("baseline-close") }
 func newClientRegistrationFixture() *clientRegistrationFixture {
 	return &clientRegistrationFixture{original: testApprovedClientRequest()}
 }
@@ -209,7 +224,7 @@ func TestClientRegistrationInitializesAndValidatesBeforeCompletion(t *testing.T)
 	if err := f.run(context.Background()); err != nil {
 		t.Fatal(err)
 	}
-	expected := []string{"open", "check", "observe", "check", "begin", "check", "directories", "check", "initialize", "check", "validate-trust", "check", "stock-validate", "check", "complete", "owner-close", "stock-close", "check", "store-close"}
+	expected := []string{"open", "check", "observe", "check", "begin", "check", "directories", "check", "initialize", "check", "validate-trust", "baseline-import", "baseline-validate", "check", "stock-validate", "check", "complete", "baseline-close", "owner-close", "stock-close", "check", "store-close"}
 	if !reflect.DeepEqual(f.events, expected) {
 		t.Fatalf("incorrect custody/initialization order: %v", f.events)
 	}
@@ -223,7 +238,7 @@ func TestClientRegistrationInitializesAndValidatesBeforeCompletion(t *testing.T)
 }
 
 func TestClientRegistrationEveryFaultRefusesAndDrainsOwnedHandles(t *testing.T) {
-	for _, fault := range []string{"open", "check", "observe", "begin", "directories", "initialize", "validate-trust", "stock-validate", "complete", "owner-close", "stock-close", "store-close", "check-2", "check-3", "check-4", "check-5", "check-6", "check-7", "check-8"} {
+	for _, fault := range []string{"open", "check", "observe", "begin", "directories", "initialize", "validate-trust", "baseline-import", "baseline-validate", "baseline-close", "nil-baseline", "stock-validate", "complete", "owner-close", "stock-close", "store-close", "check-2", "check-3", "check-4", "check-5", "check-6", "check-7", "check-8"} {
 		t.Run(fault, func(t *testing.T) {
 			f := newClientRegistrationFixture()
 			f.fail = fault
@@ -239,17 +254,17 @@ func TestClientRegistrationEveryFaultRefusesAndDrainsOwnedHandles(t *testing.T) 
 			if contains(f.events, "begin") && !contains(f.events, "owner-close") {
 				t.Fatal("registration owner not drained")
 			}
-			if fault != "complete" && fault != "owner-close" && fault != "stock-close" && fault != "store-close" && fault != "check-8" && len(f.completed) != 0 {
+			if fault != "complete" && fault != "baseline-close" && fault != "owner-close" && fault != "stock-close" && fault != "store-close" && fault != "check-8" && len(f.completed) != 0 {
 				t.Fatal("failed preparation published completed evidence")
 			}
-			if fault == "owner-close" || fault == "stock-close" || fault == "store-close" || fault == "check-8" {
+			if fault == "baseline-close" || fault == "owner-close" || fault == "stock-close" || fault == "store-close" || fault == "check-8" {
 				// A valid completed record may still be read later. This outcome
 				// never authorizes a second creation attempt or automatic adoption.
 				if _, err := parseRegistration(f.completed, testSID); err != nil {
 					t.Fatal(err)
 				}
 			}
-			for _, closeEvent := range []string{"owner-close", "stock-close", "store-close"} {
+			for _, closeEvent := range []string{"baseline-close", "owner-close", "stock-close", "store-close"} {
 				count := 0
 				for _, event := range f.events {
 					if event == closeEvent {
@@ -265,7 +280,7 @@ func TestClientRegistrationEveryFaultRefusesAndDrainsOwnedHandles(t *testing.T) 
 }
 
 func TestClientRegistrationWithholdsCompletionOnCancellation(t *testing.T) {
-	for _, at := range []string{"open", "observe", "begin", "directories", "initialize", "validate-trust", "stock-validate"} {
+	for _, at := range []string{"open", "observe", "begin", "directories", "initialize", "validate-trust", "baseline-import", "baseline-validate", "stock-validate"} {
 		t.Run(at, func(t *testing.T) {
 			f := newClientRegistrationFixture()
 			ctx, cancel := context.WithCancel(context.Background())
@@ -282,7 +297,7 @@ func TestClientRegistrationWithholdsCompletionOnCancellation(t *testing.T) {
 }
 
 func TestClientRegistrationCompletedHandoffSurvivesLateCancellation(t *testing.T) {
-	for _, at := range []string{"complete", "owner-close", "stock-close", "store-close"} {
+	for _, at := range []string{"complete", "baseline-close", "owner-close", "stock-close", "store-close"} {
 		t.Run(at, func(t *testing.T) {
 			f := newClientRegistrationFixture()
 			ctx, cancel := context.WithCancel(context.Background())
@@ -299,7 +314,7 @@ func TestClientRegistrationCompletedHandoffSurvivesLateCancellation(t *testing.T
 }
 
 func TestClientRegistrationClassifiesPublicationAndCleanupUncertainty(t *testing.T) {
-	for _, at := range []string{"publication", "owner-close", "stock-close", "store-close", "check-8"} {
+	for _, at := range []string{"publication", "baseline-close", "owner-close", "stock-close", "store-close", "check-8"} {
 		t.Run(at, func(t *testing.T) {
 			f := newClientRegistrationFixture()
 			if at == "publication" {

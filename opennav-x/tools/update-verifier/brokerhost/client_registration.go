@@ -39,6 +39,7 @@ type clientRegistrationOperations struct {
 	observe    func(context.Context, registration) (releasepolicy.OpenCpn, stockOwner, error)
 	initialize func(string, verifier.TrustConfig) error
 	validate   func(string, verifier.TrustConfig) error
+	baseline   func(context.Context, clientRegistrationStore, brokerregistration.Request) (baselineOwner, error)
 }
 
 func registerApprovedClient(ctx context.Context, raw []byte, independentlyApprovedSHA256 string, now time.Time, op clientRegistrationOperations) (resultErr error) {
@@ -48,7 +49,7 @@ func registerApprovedClient(ctx context.Context, raw []byte, independentlyApprov
 			resultErr = errors.Join(ErrClientRegistrationUncertain, resultErr)
 		}
 	}()
-	if ctx == nil || ctx.Err() != nil || op.open == nil || op.observe == nil || op.initialize == nil || op.validate == nil {
+	if ctx == nil || ctx.Err() != nil || op.open == nil || op.observe == nil || op.initialize == nil || op.validate == nil || op.baseline == nil {
 		return errors.New("live native approved client registration required")
 	}
 	ctx, cancel := context.WithTimeout(ctx, clientRegistrationLimit)
@@ -140,6 +141,23 @@ func registerApprovedClient(ctx context.Context, raw []byte, independentlyApprov
 	if err = op.validate(state, config.Trust); err != nil {
 		return err
 	}
+	baseline, err := op.baseline(ctx, store, request)
+	if baseline != nil {
+		defer func() {
+			if baseline != nil {
+				resultErr = errors.Join(resultErr, baseline.Close())
+			}
+		}()
+	}
+	if err != nil {
+		return err
+	}
+	if baseline == nil {
+		return errors.New("retained native approved installed baseline required")
+	}
+	if err = baseline.Validate(); err != nil {
+		return err
+	}
 	if err = check(); err != nil {
 		return err
 	}
@@ -156,7 +174,12 @@ func registerApprovedClient(ctx context.Context, raw []byte, independentlyApprov
 	// Release retained writers before reporting success. A late close/custody
 	// failure may retain durable completion and is explicitly uncertain; it
 	// never permits retry, deletion or automatic trust/registration repair.
-	closeErr := owner.Close()
+	closeErr := baseline.Close()
+	baseline = nil
+	if closeErr != nil {
+		return closeErr
+	}
+	closeErr = owner.Close()
 	owner = nil
 	if closeErr != nil {
 		return closeErr

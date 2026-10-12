@@ -17,6 +17,11 @@ import (
 
 type storeAdapter struct{ *brokerstore.Store }
 
+func (s storeAdapter) openBaseline(ctx context.Context, r registration) (baselineOwner, error) {
+	return s.OpenInstalledBaseline(ctx, r.ClientSID, r.Installed.Generation,
+		r.ApprovedRequestSHA256, r.Installed)
+}
+
 func (s storeAdapter) begin(id, sid string) (candidate, error) {
 	c, err := s.Begin(id, sid)
 	if err != nil {

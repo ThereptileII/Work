@@ -57,5 +57,6 @@ func RegisterApprovedClientNative(ctx context.Context, originalRequest []byte, i
 		observe:    observeStock,
 		initialize: verifier.InitializeState,
 		validate:   verifier.ValidateState,
+		baseline:   importClientBaselineNative,
 	})
 }

@@ -194,7 +194,12 @@ class ProvisionerPackageTests(unittest.TestCase):
             original = {name: source.read(name) for name in source.namelist()}
         for name in (broker.PREFIX + 'brokerregistration/request.go',
                      broker.PREFIX + 'brokerstore/registration_windows.go',
-                     broker.PREFIX + 'brokerenroll/client_request_windows.go'):
+                     broker.PREFIX + 'brokerenroll/client_request_windows.go',
+                     broker.PREFIX + 'approved_baseline.go',
+                     broker.PREFIX + 'baselineevidence/evidence.go',
+                     broker.PREFIX + 'brokerhost/client_baseline_windows.go',
+                     broker.PREFIX + 'brokerstore/installed_baseline_windows.go',
+                     broker.PREFIX + 'brokerenroll/client_baseline_windows.go'):
             with self.subTest(tampered=name):
                 self.rewrite_source(lambda contents: contents.update({name: b'X' * len(contents[name])}))
                 try:

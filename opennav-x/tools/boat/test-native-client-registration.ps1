@@ -2,7 +2,7 @@ param(
     [Parameter(Mandatory=$true)][string]$TestExecutable,
     [Parameter(Mandatory=$true)][ValidatePattern('^[a-f0-9]{64}$')][string]$ExpectedSha256,
     [Parameter(Mandatory=$true)][string]$EvidenceDirectory,
-    [Parameter(Mandatory=$true)][ValidateSet('ClientStore','ClientRequest','StockCleanup')][string]$Group
+    [Parameter(Mandatory=$true)][ValidateSet('ClientStore','ClientRequest','StockCleanup','InstalledBaseline','ClientBaseline')][string]$Group
 )
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
@@ -43,6 +43,24 @@ switch ($Group) {
     'StockCleanup' {
         $Group = 'StockCleanup'
         $CaseNames = @('TestNativeStockCloseFailureIsRetained')
+    }
+    'InstalledBaseline' {
+        $CaseNames = @(
+            'TestNativeInstalledBaselineFreshCompletionRetainsExactBytesAndReadCustody',
+            'TestNativeInstalledBaselineReservationRejectsPartialAndRetry',
+            'TestNativeInstalledBaselineReaderRejectsNamespaceAdditionReplacementAndHardlink',
+            'TestNativeInstalledBaselineDescriptorClientReadExecuteOnly',
+            'TestNativeInstalledBaselinePublicOpenRefusesOperatorConsole'
+        )
+    }
+    'ClientBaseline' {
+        $CaseNames = @(
+            'TestClientBaselineNativeReadAtCustody',
+            'TestClientBaselineNativeCachedCloseFailure',
+            'TestClientBaselineNativeHardlinkRefusal',
+            'TestClientBaselineNativeRefusesOperatorConsoleFallback',
+            'TestClientBaselinePartialPublicationCannotLookLikeNoClient'
+        )
     }
 }
 $Selection = '^(' + ($CaseNames -join '|') + ')$'

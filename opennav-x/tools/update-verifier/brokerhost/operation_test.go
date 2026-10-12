@@ -11,6 +11,7 @@ import (
 
 	verifier "example.com/opennav-update-verifier"
 	"example.com/opennav-update-verifier/brokerpipe"
+	"example.com/opennav-update-verifier/brokerregistration"
 	"example.com/opennav-update-verifier/releasepolicy"
 )
 
@@ -65,6 +66,21 @@ func (f *stageFixture) ReadRegistration(sid string) ([]byte, error) {
 	}
 	return f.registration, f.record("registration")
 }
+func (f *stageFixture) openBaseline(_ context.Context, r registration) (baselineOwner, error) {
+	if r.ClientSID != testSID || r.Installed.Generation != strings.Repeat("b", 32) || r.Installed.InventorySHA256 != strings.Repeat("f", 64) || !hashPattern.MatchString(r.ApprovedRequestSHA256) {
+		return nil, errors.New("unapproved baseline identity")
+	}
+	err := f.record("baseline-open")
+	if f.fail == "nil-baseline" {
+		return nil, nil
+	}
+	return fakeBaseline{f}, err
+}
+
+type fakeBaseline struct{ f *stageFixture }
+
+func (b fakeBaseline) Validate() error { return b.f.record("baseline-validate") }
+func (b fakeBaseline) Close() error    { return b.f.record("baseline-close") }
 func (f *stageFixture) VerifierDirectories(sid, channel string) (string, string, error) {
 	if sid != testSID || channel != "beta" {
 		return "", "", errors.New("unexpected directories")
@@ -159,7 +175,7 @@ func TestStagingOperationOrdersCleanupBeforeReceipt(t *testing.T) {
 	if err != nil || result.State != stagedState || result.StageID != testRequest().RequestID {
 		t.Fatalf("result=%+v err=%v", result, err)
 	}
-	want := []string{"validate", "registration", "directories", "observe", "reserve", "validate", "prepare", "validate", "extract", "stock-validate", "validate", "artifact-close", "validate", "seal", "stage-close", "stock-close", "validate"}
+	want := []string{"validate", "registration", "baseline-open", "baseline-validate", "directories", "observe", "reserve", "validate", "prepare", "validate", "extract", "baseline-validate", "stock-validate", "validate", "artifact-close", "validate", "baseline-validate", "baseline-close", "seal", "stage-close", "stock-close", "validate"}
 	if !reflect.DeepEqual(f.events, want) {
 		t.Fatalf("events %v", f.events)
 	}
@@ -167,12 +183,20 @@ func TestStagingOperationOrdersCleanupBeforeReceipt(t *testing.T) {
 	if json.Unmarshal(f.receipt, &receipt) != nil || receipt.State != stagedState || receipt.ClientSID != testSID || receipt.Consent != testRequest().Consent || receipt.Recovery != testRecovery(testRequest().Consent) {
 		t.Fatal("receipt does not bind exact peer, consent and inner identity")
 	}
+	var original protectedRegistration
+	if json.Unmarshal(f.registration, &original) != nil {
+		t.Fatal("bad fixture original")
+	}
+	request, err := brokerregistration.ParseRetainedApprovedRequest(original.ApprovedRequest, original.ApprovedRequestSHA256)
+	if err != nil || receipt.Schema != 2 || receipt.Installed != request.Installed || receipt.ApprovedRequestSHA256 != request.RequestSHA256 {
+		t.Fatal("receipt lost measured baseline approval identity")
+	}
 	// The receipt/result explicitly remain staging evidence, never install or
 	// launch success; no callback in this operation can execute candidate code.
 }
 
 func TestStagingOperationFaultsWithholdSuccess(t *testing.T) {
-	for _, fault := range []string{"validate", "registration", "directories", "observe", "reserve", "prepare", "extract", "identity", "stock-validate", "artifact-close", "seal", "stage-close", "stock-close"} {
+	for _, fault := range []string{"validate", "registration", "baseline-open", "baseline-validate", "baseline-close", "nil-baseline", "directories", "observe", "reserve", "prepare", "extract", "identity", "stock-validate", "artifact-close", "seal", "stage-close", "stock-close"} {
 		t.Run(fault, func(t *testing.T) {
 			f := newFixture()
 			f.fail = fault
