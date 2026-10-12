@@ -1,13 +1,116 @@
 package brokerhost
 
 import (
+	"bytes"
 	"errors"
+	"io"
 	"os"
 	"path/filepath"
 	"testing"
+	"unsafe"
 
 	"golang.org/x/sys/windows"
 )
+
+// Exercise an existing writable mapping of a private disposable file. A new
+// deny-write handle is not assumed to revoke views created before observation.
+// No application or installed file is opened, mapped, or executed by this test.
+func TestNativeStockExistingMappingIntegrity(t *testing.T) {
+	name := filepath.Join(t.TempDir(), "stock-integrity.dat")
+	original := bytes.Repeat([]byte{0x41}, 4096)
+	if err := os.WriteFile(name, original, 0600); err != nil {
+		t.Fatal(err)
+	}
+	p, err := windows.UTF16PtrFromString(name)
+	if err != nil {
+		t.Fatal(err)
+	}
+	writer, err := windows.CreateFile(p, windows.GENERIC_READ|windows.GENERIC_WRITE,
+		windows.FILE_SHARE_READ|windows.FILE_SHARE_WRITE|windows.FILE_SHARE_DELETE,
+		nil, windows.OPEN_EXISTING, windows.FILE_ATTRIBUTE_NORMAL, 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	mapping, err := windows.CreateFileMapping(writer, nil, windows.PAGE_READWRITE, 0, 0, nil)
+	if err != nil {
+		_ = windows.CloseHandle(writer)
+		t.Fatal(err)
+	}
+	defer func() {
+		if err := windows.CloseHandle(mapping); err != nil {
+			t.Error(err)
+		}
+	}()
+	view, err := windows.MapViewOfFile(mapping, windows.FILE_MAP_WRITE, 0, 0, uintptr(len(original)))
+	if err != nil {
+		_ = windows.CloseHandle(writer)
+		t.Fatal(err)
+	}
+	defer func() {
+		if err := windows.UnmapViewOfFile(view); err != nil {
+			t.Error(err)
+		}
+	}()
+	if err = windows.CloseHandle(writer); err != nil {
+		t.Fatal(err)
+	}
+	h, err := openStock(name, false)
+	if errors.Is(err, windows.ERROR_SHARING_VIOLATION) {
+		t.Log("existing writable mapping prevents initial stock custody")
+		return
+	}
+	if err != nil {
+		t.Fatal(err)
+	}
+	owner := &nativeStock{file: os.NewFile(uintptr(h), "stock-integrity-fixture"), path: name}
+	defer func() {
+		if err := owner.Close(); err != nil {
+			t.Error(err)
+		}
+	}()
+	if err = windows.GetFileInformationByHandle(h, &owner.info); err != nil {
+		t.Fatal(err)
+	}
+	owner.physical, err = stockPhysical(h)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err = owner.validate(); err != nil {
+		t.Fatalf("unchanged fixture refused: %v", err)
+	}
+	probe, err := windows.CreateFile(p, windows.GENERIC_WRITE,
+		windows.FILE_SHARE_READ|windows.FILE_SHARE_WRITE|windows.FILE_SHARE_DELETE,
+		nil, windows.OPEN_EXISTING, windows.FILE_ATTRIBUTE_NORMAL, 0)
+	if err == nil {
+		_ = windows.CloseHandle(probe)
+		t.Fatal("retained stock unexpectedly permits a new writer")
+	}
+	if !errors.Is(err, windows.ERROR_SHARING_VIOLATION) {
+		t.Fatalf("new writer refusal not corroborated: %v", err)
+	}
+	if err = os.Remove(name); !errors.Is(err, windows.ERROR_SHARING_VIOLATION) {
+		t.Fatalf("held stock delete: %v", err)
+	}
+	// The address is from MapViewOfFile above and remains mapped until cleanup.
+	unsafe.Slice((*byte)(unsafe.Pointer(view)), len(original))[0] = 0x42
+	if err = windows.FlushViewOfFile(view, uintptr(len(original))); err != nil {
+		t.Fatal(err)
+	}
+	actual := make([]byte, len(original))
+	if n, err := owner.file.ReadAt(actual, 0); err != nil && !errors.Is(err, io.EOF) || n != len(actual) || actual[0] != 0x42 {
+		t.Fatalf("mapped byte change was not observed through held stock: bytes=%d err=%v", n, err)
+	}
+	var info windows.ByHandleFileInformation
+	if err = windows.GetFileInformationByHandle(h, &info); err != nil {
+		t.Fatal(err)
+	}
+	t.Logf("mapped change keeps identity=%v size=%v timestamp=%v", sameStock(owner.info, info),
+		owner.info.FileSizeHigh == info.FileSizeHigh && owner.info.FileSizeLow == info.FileSizeLow,
+		owner.info.LastWriteTime == info.LastWriteTime)
+	if err := owner.validate(); err == nil {
+		t.Fatal("changed mapped stock bytes validated as unchanged")
+	}
+}
 
 // This exercises the actual stock directory-open helper on disposable paths;
 // it does not qualify service provisioning or complete stock namespace custody.
