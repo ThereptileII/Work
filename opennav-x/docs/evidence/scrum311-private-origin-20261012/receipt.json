@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "sourceCommit": "18a6296a88b20e5f38c9dfe8889de01414daf3bf",
+  "serverSourceSha256": "6b2dcfa3c521d2fd8395b713c056c6bbab7de917be7c5d1f38707ffe47cfd21c",
+  "host": "omarchy.tail5878fc.ts.net",
+  "bind": "127.0.0.1:8765",
+  "rootProbe": {
+    "path": "/1.root.json",
+    "httpStatus": 200,
+    "bytes": 1577,
+    "sha256": "a041ec78891a5e3d8896385ed939b691a32ed0ec11e291fb25de773754515d57",
+    "redirect": false
+  },
+  "tailscale": {
+    "actualHostnameMatchesSelected": true,
+    "backendState": "Running",
+    "serveConfigBefore": {},
+    "funnelConfigBefore": {},
+    "serveConfigAfterAttempt": {},
+    "setupResponse": "Serve is not enabled on your tailnet; account-owner authorization required"
+  },
+  "httpsAccepted": false,
+  "signedOfferPublished": false,
+  "privateKeyRead": false,
+  "remoteAccessChanged": false,
+  "recordType": "curated observed tool results; not a raw transcript",
+  "scope": "private Staging loopback origin only; no public access or installed update acceptance"
+}

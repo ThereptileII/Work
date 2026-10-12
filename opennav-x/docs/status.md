@@ -28,7 +28,12 @@ conversion. No private signing keys were accessed or regenerated. See
 
 This corrects the earlier investigation's missing-input finding: real retained
 public trust already existed, although it had not been committed as a package
-input. HTTPS activation, signed offer publication, authenticated privileged
+input. The existing loopback-only origin now serves the exact retained public
+root. Actual Tailscale activation reports that the tailnet owner must first
+enable private HTTPS Serve; its mapping remains empty. The owner step is pending,
+and this is not HTTPS acceptance or a persistent deployment. See
+[activation observations](evidence/scrum311-private-origin-20261012/README.md).
+HTTPS activation, signed offer publication, authenticated privileged
 enrollment, installation/loader custody, orphan recovery and exact-package
 Windows/boat acceptance remain open. No full application build, CI dispatch,
 public push, service activation or physical command occurred.
