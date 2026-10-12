@@ -27,9 +27,14 @@ bytes, rechecked provenance and actually invoked the native fixture. It refused
 initialization. Follow-up [38293693131](https://github.com/ThereptileII/Work/actions/runs/38293693131)
 on helper `dcef6f6b569ca2907b14a9db8082f89a99a33ecd` observed the original held
 descriptor: SYSTEM owner, BUILTIN Users allow ACE, mask `0x116`, flags `0x02`.
-This grants creation and EA/attribute writes; its ancestor role and policy branch
-were not yet recorded. The fixture still refused before service initialization.
-The security policy remains unchanged while that precise boundary is investigated.
+This grants creation and EA/attribute writes. The role diagnostic in
+[38295243035](https://github.com/ThereptileII/Work/actions/runs/38295243035), helper
+`b0f5f82a5327748d3ac746574d5645ecbe2e901b`, identifies `data-root`, component 1,
+`allowAdds=true`: the actual ProgramData ancestor. It still refused before service
+initialization. A bounded original-child custody correction is being implemented;
+shared system ACLs are not changed. Both enrollment and the broker's own store
+need the correction, so its next native gate must build fresh same-commit
+components instead of qualifying the old retained broker.
 The preceding helper-only
 PowerShell failure remains preserved. [Separate attempts](evidence/scrum311-startup-native-repairs-20261012/retained-scm-attempts.json).
 No full application rebuild or boat change has occurred.
@@ -47,6 +52,23 @@ broker lock, protected registration and elevated peer. It reports selected
 qualification/closed-history data, not mutation authority or the internal reason
 for a metadata-check outcome. Focused Linux and Windows/x86 compilation passed;
 actual installed endpoint acceptance remains pending.
+
+## Service-only terminal decommission source joined
+
+`b0f5f82a5327748d3ac746574d5645ecbe2e901b` joins the explicit elevated operator
+action to exact singleton deployed inventory, the original authenticated broker
+witness and the original retained SCM/process owner. It permanently fences new
+startup, disables the same service, proves its clean stop and marks it for
+removal. Code, profiles, charts, histories, shortcuts, backups and trust floors
+remain preserved. It reports `marked-for-removal`, never observed SCM absence or
+full uninstall. A prior structured-output bug is fixed: selected-history and
+decommission JSON no longer receive unrelated trailing completion text.
+
+Focused checks across six Linux packages passed; Windows/x86 vet and the joined
+provisioner test compilation passed. Independent review found no concrete defect
+in corrected inventory/stage custody, witness lifetime or terminal reader drain.
+Actual native installed decommission, protected repair and full uninstall remain
+pending. [Bounded contract](installer/protected-service-decommission.md).
 
 ## Private updater handoff joins ready for native verification
 

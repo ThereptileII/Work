@@ -50,6 +50,29 @@
       "ancestorRoleObserved": false,
       "initializeServiceInvoked": false,
       "policyRelaxed": false
+    },
+    {
+      "helperCommit": "b0f5f82a5327748d3ac746574d5645ecbe2e901b",
+      "run": 38295243035,
+      "job": 114964636258,
+      "conclusion": "failure",
+      "originalArtifactAuthentication": "passed",
+      "beforeEffectReauthentication": "passed",
+      "nativeFixtureInvoked": true,
+      "failure": "createFreshFiles: untrusted enrollment ancestor mutation",
+      "heldDescriptorObservation": {
+        "ancestorRole": "data-root",
+        "component": 1,
+        "allowAdds": true,
+        "ownerSID": "S-1-5-18",
+        "aceSID": "S-1-5-32-545",
+        "aceSIDValid": true,
+        "mask": "0x00000116",
+        "flags": "0x02"
+      },
+      "ancestorRoleObserved": true,
+      "initializeServiceInvoked": false,
+      "policyRelaxed": false
     }
   ],
   "nativeServiceAcceptance": false,
