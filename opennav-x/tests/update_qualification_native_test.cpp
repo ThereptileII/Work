@@ -2,10 +2,13 @@
 // A fresh fixed profile is retained on failure/success for evidence; disposable
 // runner disposal cleans it. Never adopt, modify or delete an existing profile.
 #include "platform/windows/UpdateQualificationNative.h"
-#include <windows.h>
-#include <shlobj.h>
+// Match the working native wx fixture: initialize wx declarations before
+// direct Win32 headers (including its Winsock 2 wrapper and command-line types).
+#include <wx/wx.h>
 #include <wx/fileconf.h>
 #include <wx/init.h>
+#include <windows.h>
+#include <shlobj.h>
 #include <cstdlib>
 #include <iostream>
 #include <stdexcept>
