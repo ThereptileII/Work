@@ -70,14 +70,15 @@ type acquiredBroker interface {
 }
 
 type operations struct {
-	holdDirectories  func(string, string) (io.Closer, error)
-	verify           func(verifier.BrokerBootstrapRequest) (releasepolicy.BrokerBootstrapPolicy, []byte, error)
-	acquire          func(context.Context, releasepolicy.Artifact, string, string) (acquiredBroker, error)
-	create           func(context.Context, io.Reader, releasepolicy.Artifact) (enrollmentFiles, error)
-	initialize       func(context.Context, enrollmentFiles) error
-	validateClient   func(string) error
-	openBaseline     func(context.Context, string) (ApprovedClientBaseline, error)
-	validateBaseline func(context.Context, []byte, string, ApprovedClientBaseline) error
+	holdDirectories   func(string, string) (io.Closer, error)
+	verify            func(verifier.BrokerBootstrapRequest) (releasepolicy.BrokerBootstrapPolicy, []byte, error)
+	acquire           func(context.Context, releasepolicy.Artifact, string, string) (acquiredBroker, error)
+	create            func(context.Context, io.Reader, releasepolicy.Artifact) (enrollmentFiles, error)
+	initialize        func(context.Context, enrollmentFiles) error
+	initializeStartup func(context.Context, enrollmentFiles, *brokerregistration.Request, ApprovedClientBaseline) error
+	validateClient    func(string) error
+	openBaseline      func(context.Context, string) (ApprovedClientBaseline, error)
+	validateBaseline  func(context.Context, []byte, string, ApprovedClientBaseline) error
 }
 
 // Run verifies the distinct signed bootstrap and exact broker artifact, creates
@@ -89,7 +90,11 @@ type operations struct {
 // Existing or partial machine objects are retained and refused, never adopted.
 // Normal application startup never calls Run. Non-Windows platforms refuse.
 func Run(ctx context.Context, req Request) error {
-	return run(ctx, req, operations{
+	return run(ctx, req, nativeOperations())
+}
+
+func nativeOperations() operations {
+	return operations{
 		holdDirectories: holdOperatorDirectories,
 		verify:          verifier.VerifyBrokerBootstrap,
 		acquire: func(ctx context.Context, a releasepolicy.Artifact, origin, directory string) (acquiredBroker, error) {
@@ -100,7 +105,7 @@ func Run(ctx context.Context, req Request) error {
 		validateClient:   validateClientSIDNative,
 		openBaseline:     openClientBaselineInputNative,
 		validateBaseline: validateApprovedClientBaseline,
-	})
+	}
 }
 
 func run(ctx context.Context, req Request, op operations) (resultErr error) {
@@ -270,11 +275,23 @@ func run(ctx context.Context, req Request, op operations) (resultErr error) {
 			return errors.Join(errors.New("retained approved baseline custody refused"), enrollmentCleanupResult(err))
 		}
 	}
-	if err := op.initialize(ctx, files); err != nil {
+	initialize := func() error {
+		if op.initializeStartup != nil {
+			if client == nil || baseline == nil {
+				return errors.New("explicit startup requires original approved client baseline")
+			}
+			return op.initializeStartup(ctx, files, client, baseline)
+		}
+		return op.initialize(ctx, files)
+	}
+	if err := initialize(); err != nil {
 		if errors.Is(err, ErrCleanup) {
 			resultErr = ErrCleanup
 		}
-		return errors.Join(errors.New("stopped broker service initialization refused"), resultErr)
+		if errors.Is(err, ErrStartupUncertain) {
+			resultErr = errors.Join(resultErr, ErrStartupUncertain)
+		}
+		return errors.Join(errors.New("broker service provisioning refused"), resultErr)
 	}
 	if ctx.Err() != nil {
 		return errors.New("broker enrollment completion uncertain")

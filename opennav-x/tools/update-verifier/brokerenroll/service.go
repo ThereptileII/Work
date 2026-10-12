@@ -43,6 +43,12 @@ func servicePoll(ctx context.Context) error {
 }
 
 func initializeServiceWith(ctx context.Context, files enrollmentFiles, open func() (serviceBackend, error), poll func(context.Context) error) (resultErr error) {
+	return initializeServiceWithCompletion(ctx, files, open, poll, nil)
+}
+
+// complete is private and reached only after original stopped registration on
+// this same freshly created retained SCM handle. It cannot adopt an existing service.
+func initializeServiceWithCompletion(ctx context.Context, files enrollmentFiles, open func() (serviceBackend, error), poll func(context.Context) error, complete func(context.Context, enrollmentFiles, serviceBackend) error) (resultErr error) {
 	if ctx == nil || ctx.Err() != nil || files == nil || open == nil || poll == nil {
 		return errors.New("live native enrollment custody required")
 	}
@@ -148,7 +154,16 @@ func initializeServiceWith(ctx context.Context, files enrollmentFiles, open func
 			return err
 		}
 	}
-	return check()
+	if err := check(); err != nil {
+		return err
+	}
+	if complete != nil {
+		if sid == "" {
+			return errors.New("startup completion requires stopped original client registration")
+		}
+		return complete(ctx, files, b)
+	}
+	return nil
 }
 
 func serviceCompleted(s serviceState) bool {

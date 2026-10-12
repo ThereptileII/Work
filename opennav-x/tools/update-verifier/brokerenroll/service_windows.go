@@ -25,6 +25,9 @@ type nativeServiceBackend struct {
 	registry                     []windows.Handle
 	registryPaths, registryNames []string
 	expected                     *windows.SECURITY_DESCRIPTOR
+	expectedStart                uint32
+	activationAttempted          bool
+	image                        string
 }
 
 func serviceCaller() error {
@@ -184,7 +187,7 @@ func (n *nativeServiceBackend) create(image string) error {
 	var err error
 	// Exclusive SCM name creation refuses existing/deletion-pending services.
 	// Every subsequent failure retains this service and any partial disk state.
-	n.service, err = windows.CreateService(n.scm, name, name, windows.SERVICE_QUERY_CONFIG|windows.SERVICE_QUERY_STATUS|windows.SERVICE_START|windows.READ_CONTROL|windows.WRITE_DAC,
+	n.service, err = windows.CreateService(n.scm, name, name, windows.SERVICE_QUERY_CONFIG|windows.SERVICE_QUERY_STATUS|windows.SERVICE_START|windows.SERVICE_CHANGE_CONFIG|windows.READ_CONTROL|windows.WRITE_DAC,
 		windows.SERVICE_WIN32_OWN_PROCESS, windows.SERVICE_DEMAND_START, windows.SERVICE_ERROR_NORMAL, quoted, nil, nil, nil, account, nil)
 	if err != nil {
 		return err
@@ -216,6 +219,7 @@ func (n *nativeServiceBackend) create(image string) error {
 	if err := windows.SetSecurityInfo(n.service, windows.SE_SERVICE, windows.DACL_SECURITY_INFORMATION|windows.PROTECTED_DACL_SECURITY_INFORMATION, nil, nil, acl, nil); err != nil {
 		return err
 	}
+	n.image = image
 	return n.check(image)
 }
 
@@ -254,7 +258,7 @@ func (n *nativeServiceBackend) check(image string) error {
 	if imageErr != nil || accountErr != nil || groupErr != nil || dependenciesErr != nil {
 		return errors.New("service configuration strings outside bound")
 	}
-	if config.ServiceType != windows.SERVICE_WIN32_OWN_PROCESS || config.StartType != windows.SERVICE_DEMAND_START || config.ErrorControl != windows.SERVICE_ERROR_NORMAL ||
+	if config.ServiceType != windows.SERVICE_WIN32_OWN_PROCESS || config.StartType != n.startType() || config.ErrorControl != windows.SERVICE_ERROR_NORMAL ||
 		imageName != `"`+image+`"` || !strings.EqualFold(account, serviceAccount) || group != "" || dependencies != "" {
 		return errors.New("service configuration differs")
 	}
@@ -446,4 +450,43 @@ func fixedRegistryName(path, name string, held []string) bool {
 		return len(held) >= 4 && strings.EqualFold(name, held[3]+`\`+serviceName)
 	}
 	return false
+}
+
+// Only the explicit original-enrollment completion path can call this private
+// capability. Run never calls it; start(mode) still rejects normal activation.
+func (n *nativeServiceBackend) startType() uint32 {
+	if n.expectedStart == 0 {
+		return windows.SERVICE_DEMAND_START
+	}
+	return n.expectedStart
+}
+func (n *nativeServiceBackend) activateNormal() error {
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	if n.activationAttempted {
+		return errors.New("normal service activation already consumed")
+	}
+	n.activationAttempted = true
+	if err := serviceCaller(); err != nil {
+		return err
+	}
+	if n.service == 0 || n.expected == nil || n.startType() != windows.SERVICE_DEMAND_START || n.image == "" {
+		return errors.New("original demand-start service required")
+	}
+	if err := n.check(n.image); err != nil {
+		return err
+	}
+	s, err := n.status()
+	if err != nil || !serviceCompleted(s) {
+		return errors.Join(errors.New("original service must be stopped before activation"), err)
+	}
+	if err := windows.ChangeServiceConfig(n.service, windows.SERVICE_NO_CHANGE, windows.SERVICE_AUTO_START, windows.SERVICE_NO_CHANGE, nil, nil, nil, nil, nil, nil, nil); err != nil {
+		return err
+	}
+	n.expectedStart = windows.SERVICE_AUTO_START
+	if err := n.check(n.image); err != nil {
+		return err
+	}
+	// The caller also checks retained file custody before and after.
+	return windows.StartService(n.service, 0, nil)
 }
