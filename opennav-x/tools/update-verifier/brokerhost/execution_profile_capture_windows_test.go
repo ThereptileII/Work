@@ -141,6 +141,10 @@ func TestNativeExecutionProfileCaptureMutationWatchAndMetadataRefuse(t *testing.
 					t.Fatal(err)
 				}
 			case "security":
+				// The retained file is intentionally opened without write sharing.
+				// Change a held directory's DACL instead: directories allow write
+				// sharing for namespace observation, and its security remains in
+				// the same frozen capture metadata and subtree watch.
 				user, err := windows.GetCurrentProcessToken().GetTokenUser()
 				if err != nil {
 					t.Fatal(err)
@@ -153,11 +157,11 @@ func TestNativeExecutionProfileCaptureMutationWatchAndMetadataRefuse(t *testing.
 				if err != nil {
 					t.Fatal(err)
 				}
-				pointer, err := windows.UTF16PtrFromString(filepath.Join(root, "opencpn.ini"))
+				pointer, err := windows.UTF16PtrFromString(filepath.Join(root, "navigation"))
 				if err != nil {
 					t.Fatal(err)
 				}
-				h, err := windows.CreateFile(pointer, windows.WRITE_DAC, windows.FILE_SHARE_READ|windows.FILE_SHARE_WRITE|windows.FILE_SHARE_DELETE, nil, windows.OPEN_EXISTING, windows.FILE_FLAG_OPEN_REPARSE_POINT, 0)
+				h, err := windows.CreateFile(pointer, windows.WRITE_DAC, windows.FILE_SHARE_READ|windows.FILE_SHARE_WRITE, nil, windows.OPEN_EXISTING, windows.FILE_FLAG_OPEN_REPARSE_POINT|windows.FILE_FLAG_BACKUP_SEMANTICS, 0)
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -165,6 +169,20 @@ func TestNativeExecutionProfileCaptureMutationWatchAndMetadataRefuse(t *testing.
 				closeErr := windows.CloseHandle(h)
 				if setErr != nil || closeErr != nil {
 					t.Fatal(setErr, closeErr)
+				}
+				found := false
+				for _, member := range source.members {
+					if member.entry.Path == "navigation" {
+						found = true
+						actual, err := profileMemberMetadata(member.file, member.entry.Path, true)
+						if err != nil || actual.Security == member.entry.Security {
+							t.Fatal("directory DACL mutation not independently observed", err)
+						}
+						break
+					}
+				}
+				if !found {
+					t.Fatal("held navigation directory missing")
 				}
 			case "full-id":
 				source.members[len(source.members)-1].entry.Identity = "forged original full identity"
