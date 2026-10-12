@@ -3,6 +3,7 @@ package brokerhost
 import (
 	"bytes"
 	"context"
+	"encoding/binary"
 	"errors"
 	"os"
 	"path/filepath"
@@ -33,6 +34,13 @@ func nativeProfileCaptureFixture(t *testing.T) (string, *nativeProfileCapture) {
 	}
 	source, err := captureProfileTreePath(context.Background(), root, false)
 	if err != nil {
+		var watch *nativeProfileWatchDiagnostic
+		if errors.As(err, &watch) {
+			t.Logf("inert profile watch: stage=%s bytes=%d malformed=%t cause=%v notifications=%d", watch.stage, watch.bytes, watch.malformed, watch.cause, len(watch.notifications))
+			for _, event := range watch.notifications {
+				t.Logf("inert profile notification: action=%d name=%q", event.action, event.name)
+			}
+		}
 		t.Fatal(err)
 	}
 	b := source.(*nativeProfileCapture)
@@ -42,6 +50,23 @@ func nativeProfileCaptureFixture(t *testing.T) (string, *nativeProfileCapture) {
 		}
 	})
 	return root, b
+}
+func TestNativeProfileWatchNotificationDecode(t *testing.T) {
+	// A single FILE_NOTIFY_INFORMATION record for an inert test member.
+	buf := make([]byte, 12+len("test.ini")*2)
+	binary.LittleEndian.PutUint32(buf[4:], windows.FILE_ACTION_MODIFIED)
+	binary.LittleEndian.PutUint32(buf[8:], uint32(len(buf)-12))
+	for index, char := range "test.ini" {
+		binary.LittleEndian.PutUint16(buf[12+index*2:], uint16(char))
+	}
+	events, malformed := profileWatchNotifications(buf)
+	if malformed || len(events) != 1 || events[0].action != windows.FILE_ACTION_MODIFIED || events[0].name != "test.ini" {
+		t.Fatalf("notification decoded incorrectly: %+v malformed=%t", events, malformed)
+	}
+	binary.LittleEndian.PutUint32(buf[8:], uint32(len(buf)))
+	if _, malformed = profileWatchNotifications(buf); !malformed {
+		t.Fatal("out-of-bounds notification name accepted")
+	}
 }
 func nativeCompleteCapture(t *testing.T, source *nativeProfileCapture) (*ExecutionProfileCapture, *memoryProfileCaptureArchive) {
 	t.Helper()

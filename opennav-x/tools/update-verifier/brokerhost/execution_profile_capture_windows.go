@@ -30,7 +30,55 @@ type nativeProfileCaptureWatch struct {
 	buffer          [64 << 10]byte
 	pending, closed bool
 	closeErr        error
+	phase           string
 }
+
+// Diagnostics remain private: Error never prints profile member names. Only
+// inert native fixture tests inspect notifications to identify unexpected I/O.
+type nativeProfileWatchNotification struct {
+	action uint32
+	name   string
+}
+type nativeProfileWatchDiagnostic struct {
+	stage         string
+	bytes         uint32
+	notifications []nativeProfileWatchNotification
+	malformed     bool
+	cause         error
+}
+
+func (d *nativeProfileWatchDiagnostic) Error() string {
+	return "profile changed during frozen native custody"
+}
+func (d *nativeProfileWatchDiagnostic) Unwrap() error { return d.cause }
+
+func profileWatchNotifications(buffer []byte) (events []nativeProfileWatchNotification, malformed bool) {
+	for offset := 0; offset < len(buffer); {
+		if len(buffer)-offset < 12 {
+			return events, true
+		}
+		next := binary.LittleEndian.Uint32(buffer[offset:])
+		action := binary.LittleEndian.Uint32(buffer[offset+4:])
+		nameBytes := binary.LittleEndian.Uint32(buffer[offset+8:])
+		if nameBytes%2 != 0 || uint64(nameBytes) > uint64(len(buffer)-offset-12) {
+			return events, true
+		}
+		units := make([]uint16, nameBytes/2)
+		for index := range units {
+			units[index] = binary.LittleEndian.Uint16(buffer[offset+12+index*2:])
+		}
+		events = append(events, nativeProfileWatchNotification{action: action, name: windows.UTF16ToString(units)})
+		if next == 0 {
+			return events, offset+12+int(nameBytes) > len(buffer)
+		}
+		if next < 12+nameBytes || next%4 != 0 || uint64(next) >= uint64(len(buffer)-offset) {
+			return events, true
+		}
+		offset += int(next)
+	}
+	return events, true
+}
+
 type nativeProfileCapture struct {
 	fixed, physical string
 	ancestors       []executionProfilePin
@@ -201,7 +249,7 @@ func startProfileWatch(physical string) (result *nativeProfileCaptureWatch, resu
 	if err != nil {
 		return nil, err
 	}
-	w := &nativeProfileCaptureWatch{handle: h}
+	w := &nativeProfileCaptureWatch{handle: h, phase: "watch"}
 	defer func() {
 		if resultErr != nil {
 			resultErr = errors.Join(resultErr, w.close(false))
@@ -221,6 +269,9 @@ func startProfileWatch(physical string) (result *nativeProfileCaptureWatch, resu
 	return w, nil
 }
 func (w *nativeProfileCaptureWatch) check() error {
+	return w.checkAt("check")
+}
+func (w *nativeProfileCaptureWatch) checkAt(stage string) error {
 	if w == nil || w.closed || !w.pending {
 		return ErrExecutionProfileCaptureRefused
 	}
@@ -230,7 +281,15 @@ func (w *nativeProfileCaptureWatch) check() error {
 		return nil
 	}
 	// A notification, overflow, completed zero-byte read or I/O failure all refuse.
-	return errors.Join(errors.New("profile changed during frozen native custody"), err)
+	diagnostic := &nativeProfileWatchDiagnostic{stage: w.phase + "/" + stage, bytes: count, cause: err}
+	if err == nil && count > 0 {
+		if count <= uint32(len(w.buffer)) {
+			diagnostic.notifications, diagnostic.malformed = profileWatchNotifications(w.buffer[:count])
+		} else {
+			diagnostic.malformed = true
+		}
+	}
+	return diagnostic
 }
 func (w *nativeProfileCaptureWatch) close(strict bool) error {
 	if w == nil {
@@ -361,6 +420,7 @@ func captureProfileTreePathMode(ctx context.Context, path string, checkProcesses
 	if err != nil {
 		return nil, err
 	}
+	b.watch.phase = "initial capture"
 	pending := []string{"."}
 	known := map[string]bool{}
 	var total int64
@@ -432,6 +492,7 @@ func captureProfileTreePathMode(ctx context.Context, path string, checkProcesses
 	if err = b.validate(ctx, true); err != nil {
 		return nil, err
 	}
+	b.watch.phase = "frozen custody"
 	return b, nil
 }
 func (b *nativeProfileCapture) originals() ([]profileCaptureEntry, []string) {
@@ -485,7 +546,7 @@ func (b *nativeProfileCapture) validate(ctx context.Context, frozen bool) error 
 	if !b.frozen {
 		return ErrExecutionProfileCaptureRefused
 	}
-	if err := b.watch.check(); err != nil {
+	if err := b.watch.checkAt("validate begin"); err != nil {
 		return err
 	}
 	if b.checkProcesses {
@@ -535,7 +596,7 @@ func (b *nativeProfileCapture) validate(ctx context.Context, frozen bool) error 
 	if len(observed) != len(expected) {
 		return errors.New("original profile member disappeared")
 	}
-	return errors.Join(b.watch.check(), ctx.Err())
+	return errors.Join(b.watch.checkAt("validate end"), ctx.Err())
 }
 func (b *nativeProfileCapture) release(ctx context.Context) error {
 	runtime.LockOSThread()
