@@ -1,5 +1,22 @@
 # SKAGER status — 2026-10-12
 
+## Private updater handoff joins ready for native verification
+
+`9ba7bb93` preserves the independently approved trust file byte-for-byte through
+the baseline producer and initial/retained request parsers, including its final
+newline. It does not trim, replace the approved digest or guess whitespace
+variants. Focused Linux race checks and Windows/x86 cross-compilation passed;
+native producer acceptance remains pending.
+
+`2c65f1df` joins the private origin's fixed broker-bootstrap route/artifact names
+and paired, independently approved bootstrap policy/hash options in the existing
+keyring publisher. Eight origin and twelve keyring tests passed without real
+keys, signing or publication. Direct private HTTPS and the installed sequence
+remain unaccepted. `d3ba0ff3` adds an inert native protected-restart fixture;
+independent review identified wait-proof and owned-cleanup gaps which are being
+corrected before component CI. No full application rebuild or boat change has
+occurred in this increment.
+
 ## Protected restart and retained operator delivery joined
 
 `fe9bf9cf` routes installed XNav/Legacy/Safe restarts through the corroborated
