@@ -9,6 +9,7 @@ import (
 	"io"
 	"runtime"
 	"sort"
+	"strings"
 
 	"example.com/opennav-update-verifier/baselineevidence"
 	"example.com/opennav-update-verifier/brokerregistration"
@@ -20,7 +21,8 @@ type candidateInventoryBackend interface {
 	candidateInventory(names []string, acquisition bool) error
 }
 
-// WriteEvidence creates only the two fixed original recovery sidecars using the
+// WriteEvidence creates only the two fixed original recovery sidecars and three
+// fixed execution helpers using the
 // same exclusive, retained native file custody as payload. It never serializes
 // a replacement inventory or manifest. Supplied hashes authenticate nothing by
 // themselves; StageRecovery supplies bytes from its live signed acquisition.
@@ -47,16 +49,18 @@ func (c *Candidate) WriteEvidence(ctx context.Context, name string, raw []byte, 
 	if c.names == nil {
 		return errors.New("candidate namespace unavailable")
 	}
-	if name == "installer/package.json" {
-		if old, ok := c.names["installer"]; ok && (old != "installer" || c.fileNames["installer"]) {
-			return errors.New("candidate evidence parent collision")
+	parts := strings.Split(name, "/")
+	for i := range parts {
+		current := strings.Join(parts[:i+1], "/")
+		key := strings.ToLower(current)
+		if old, ok := c.names[key]; ok && (old != current || c.fileNames[key] || i == len(parts)-1) {
+			return errors.New("candidate evidence duplicate, alias or parent collision")
 		}
-		c.names["installer"] = "installer"
+		c.names[key] = current
+		if i == len(parts)-1 {
+			c.fileNames[key] = true
+		}
 	}
-	if _, ok := c.names[name]; ok {
-		return errors.New("candidate evidence duplicate")
-	}
-	c.names[name], c.fileNames[name] = name, true
 	owned := bytes.Clone(raw)
 	file, err := c.backend.create(name)
 	if err != nil {
@@ -160,7 +164,7 @@ func (c *Candidate) validateRecoveryEvidence(ctx context.Context, identity basel
 			return err
 		}
 		names = append(names, name)
-		if !baselineEvidenceName(name) {
+		if !baselineSidecarName(name) {
 			observed[name] = entry.digest
 		}
 	}

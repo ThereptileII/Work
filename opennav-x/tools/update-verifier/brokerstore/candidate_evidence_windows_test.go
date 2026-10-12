@@ -34,12 +34,16 @@ func TestNativeCandidateEvidenceOriginalCustodyAndSeal(t *testing.T) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	c, n := nativeEvidenceCandidate(t)
-	f := baselineData(t)
+	f := baselineEngineData(t)
 	writeCandidateEvidence(t, c, f)
 	if err := c.CompleteRecoveryEvidence(context.Background(), f.identity); err != nil {
 		t.Fatal(err)
 	}
-	for name, expected := range map[string][]byte{"FILE_SHA256.json": f.inventory, "installer/package.json": f.manifest} {
+	originals := map[string][]byte{"FILE_SHA256.json": f.inventory, "installer/package.json": f.manifest}
+	for name, raw := range f.payload {
+		originals[name] = raw
+	}
+	for name, expected := range originals {
 		path := physical(n.directories[""].name + `\` + strings.ReplaceAll(name, "/", `\`))
 		raw, err := os.ReadFile(path)
 		if err != nil || !bytes.Equal(raw, expected) {
@@ -96,7 +100,7 @@ func TestNativeCandidateEvidenceExactResidueNamespace(t *testing.T) {
 func TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue(t *testing.T) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	for _, scenario := range []string{"originals", "empty-installer", "unknown-member", "alias-member", "hardlink", "wrong-type"} {
+	for _, scenario := range []string{"originals", "empty-installer", "unknown-member", "alias-member", "hardlink", "wrong-type", "engine-complete", "engine-partial", "engine-empty", "engine-unknown", "engine-alias", "engine-hardlink", "engine-wrong-type"} {
 		t.Run(scenario, func(t *testing.T) {
 			native, _ := nativeAcquisitionFixture(t)
 			writeOriginal := func(name string) {
@@ -125,6 +129,21 @@ func TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue(t *t
 				writeOriginal("installer/package.json")
 			}
 			root := native.directories[""].name
+			if strings.HasPrefix(scenario, "engine-") {
+				if scenario == "engine-empty" {
+					dir, err := native.newDirectory(native.directories["installer"], "engine")
+					if err != nil {
+						t.Fatal(err)
+					}
+					native.directories["installer/engine"] = dir
+				} else {
+					writeOriginal("installer/engine/Lifecycle.ps1")
+					if scenario == "engine-complete" {
+						writeOriginal("installer/engine/UpdateSupervisor.ps1")
+						writeOriginal("installer/engine/UpdateTransaction.ps1")
+					}
+				}
+			}
 			switch scenario {
 			case "unknown-member":
 				if err := os.WriteFile(physical(root+`\installer\unexpected`), []byte("extra"), 0600); err != nil {
@@ -145,10 +164,29 @@ func TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue(t *t
 				if err := os.Mkdir(physical(root+`\installer\package.json`), 0700); err != nil {
 					t.Fatal(err)
 				}
+			case "engine-unknown":
+				if err := os.WriteFile(physical(root+`\installer\engine\extra.ps1`), []byte("extra"), 0600); err != nil {
+					t.Fatal(err)
+				}
+			case "engine-alias":
+				if err := os.Rename(physical(root+`\installer\engine\Lifecycle.ps1`), physical(root+`\installer\engine\lifecycle.ps1`)); err != nil {
+					t.Fatal(err)
+				}
+			case "engine-hardlink":
+				if err := os.Link(physical(root+`\installer\engine\Lifecycle.ps1`), physical(root+`\outside-helper-link`)); err != nil {
+					t.Fatal(err)
+				}
+			case "engine-wrong-type":
+				if err := os.Remove(physical(root + `\installer\engine\Lifecycle.ps1`)); err != nil {
+					t.Fatal(err)
+				}
+				if err := os.Mkdir(physical(root+`\installer\engine\Lifecycle.ps1`), 0700); err != nil {
+					t.Fatal(err)
+				}
 			}
 			inventoryErr := native.checkRecoveryEvidenceResidue("FILE_SHA256.json")
 			manifestErr := native.checkRecoveryEvidenceResidue("installer")
-			if scenario == "originals" || scenario == "empty-installer" {
+			if scenario == "originals" || scenario == "empty-installer" || scenario == "engine-complete" || scenario == "engine-partial" || scenario == "engine-empty" {
 				if inventoryErr != nil || manifestErr != nil {
 					t.Fatal(inventoryErr, manifestErr)
 				}

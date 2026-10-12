@@ -62,6 +62,7 @@ func TestNativeInstalledBaselineFreshCompletionRetainsExactBytesAndReadCustody(t
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	s, r, b, f := nativeBaselineFixture(t)
+	f = baselineEngineData(t)
 	if _, err := os.Stat(filepath.Join(b.dos, baselineRecordFilename)); !errors.Is(err, os.ErrNotExist) {
 		t.Fatal("premature completion evidence:", err)
 	}
@@ -75,7 +76,7 @@ func TestNativeInstalledBaselineFreshCompletionRetainsExactBytesAndReadCustody(t
 	if _, err := s.OpenInstalledBaseline(context.Background(), b.client, stageA, registrationTestApproval, f.expected); !errors.Is(err, windows.ERROR_SHARING_VIOLATION) {
 		t.Fatal("live writer unexpectedly reopenable:", err)
 	}
-	for _, name := range []string{"app/opencpn.exe", "FILE_SHA256.json", "installer/package.json"} {
+	for _, name := range []string{"app/opencpn.exe", "FILE_SHA256.json", "installer/package.json", "installer/engine/Lifecycle.ps1", "installer/engine/UpdateSupervisor.ps1", "installer/engine/UpdateTransaction.ps1"} {
 		for _, access := range []uint32{windows.GENERIC_WRITE, windows.DELETE} {
 			if err := nativeAttemptFile(t, filepath.Join(b.dos, filepath.FromSlash(name)), access); !errors.Is(err, windows.ERROR_SHARING_VIOLATION) {
 				t.Fatalf("writer custody %s access %d: %v", name, access, err)
@@ -92,7 +93,7 @@ func TestNativeInstalledBaselineFreshCompletionRetainsExactBytesAndReadCustody(t
 	if err := opened.Validate(); err != nil {
 		t.Fatal(err)
 	}
-	for _, name := range []string{"app/opencpn.exe", "FILE_SHA256.json", "installer/package.json"} {
+	for _, name := range []string{"app/opencpn.exe", "FILE_SHA256.json", "installer/package.json", "installer/engine/Lifecycle.ps1", "installer/engine/UpdateSupervisor.ps1", "installer/engine/UpdateTransaction.ps1"} {
 		path := filepath.Join(b.dos, filepath.FromSlash(name))
 		if err := nativeAttemptFile(t, path, windows.GENERIC_READ); err != nil {
 			t.Fatal("readonly sibling read denied:", err)
@@ -108,6 +109,57 @@ func TestNativeInstalledBaselineFreshCompletionRetainsExactBytesAndReadCustody(t
 	}
 	if err := nativeAttemptFile(t, filepath.Join(b.dos, "app", "opencpn.exe"), windows.GENERIC_WRITE); err != nil {
 		t.Fatal("reader leaked write exclusion:", err)
+	}
+}
+
+func TestNativeInstalledBaselineEngineHelpersExactNamespace(t *testing.T) {
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	for _, scenario := range []string{"missing", "tampered", "extra", "alias", "hardlink"} {
+		t.Run(scenario, func(t *testing.T) {
+			s, r, b, _ := nativeBaselineFixture(t)
+			f := baselineEngineData(t)
+			if scenario == "missing" {
+				delete(f.payload, "installer/engine/UpdateTransaction.ps1")
+			}
+			writeBaseline(t, r, f)
+			err := r.Complete(context.Background(), f.identity)
+			if scenario == "missing" {
+				if err == nil {
+					t.Fatal("missing native helper completed")
+				}
+				return
+			}
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err := r.Close(); err != nil {
+				t.Fatal(err)
+			}
+			file := filepath.Join(b.dos, "installer", "engine", "Lifecycle.ps1")
+			switch scenario {
+			case "tampered":
+				if err := os.WriteFile(file, []byte("changed"), 0600); err != nil {
+					t.Fatal(err)
+				}
+			case "extra":
+				if err := os.WriteFile(filepath.Join(filepath.Dir(file), "extra.ps1"), []byte("extra"), 0600); err != nil {
+					t.Fatal(err)
+				}
+			case "alias":
+				if err := os.Rename(file, filepath.Join(filepath.Dir(file), "lifecycle.ps1")); err != nil {
+					t.Fatal(err)
+				}
+			case "hardlink":
+				if err := os.Link(file, filepath.Join(filepath.Dir(b.dos), "outside-helper-link")); err != nil {
+					t.Fatal(err)
+				}
+			}
+			if opened, err := s.OpenInstalledBaseline(context.Background(), b.client, stageA, registrationTestApproval, f.expected); err == nil {
+				opened.Close()
+				t.Fatal("changed native helper namespace accepted")
+			}
+		})
 	}
 }
 func TestNativeInstalledBaselineReservationRejectsPartialAndRetry(t *testing.T) {
