@@ -6,16 +6,26 @@ BASE_DIR = Path(__file__).resolve().parents[2]
 INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
+    "django.contrib.staticfiles",
     "skager_web.accounts",
     "skager_web.core",
+    "skager_web.marketing",
 ]
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "skager_web.marketing.middleware.MarketingSecurityHeaders",
 ]
 ROOT_URLCONF = "skager_web.urls"
+TEMPLATES = [{
+    "BACKEND": "django.template.backends.django.DjangoTemplates",
+    "DIRS": [],
+    "APP_DIRS": True,
+    "OPTIONS": {"context_processors": ["django.template.context_processors.request"]},
+}]
+STATIC_URL = "/static/"
 USE_TZ = True
 TIME_ZONE = "UTC"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

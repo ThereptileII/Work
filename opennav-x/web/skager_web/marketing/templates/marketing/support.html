@@ -10,17 +10,18 @@
   </header>
   <section class="page-section" aria-labelledby="search-heading">
     <h2 id="search-heading" class="section-heading">Search the support library</h2>
-    <form method="get" action="{% url 'marketing:support' %}" role="search">
+    <form method="get" action="{% url 'marketing:support' %}" role="search"{% if not query %} data-help-search{% endif %}>
       <label for="support-query">What do you need help with?</label>
       <input id="support-query" type="search" name="q" value="{{ query }}" maxlength="120" placeholder="Try installation, AIS or stale data" aria-describedby="support-search-hint">
       <button class="button" type="submit">Search articles</button>
       <p id="support-search-hint" class="meta">Search article titles and text. Leave out passwords, API keys and personal information.</p>
     </form>
     {% if query %}<p role="status">{{ articles|length }} result{{ articles|length|pluralize }} for “{{ query }}”. <a href="{% url 'marketing:support' %}">Show all articles</a></p>{% endif %}
+    <p data-search-status role="status" hidden></p>
   </section>
   <div class="help-list">
     {% for article in articles %}
-    <article class="help-item">
+    <article class="help-item" data-search="{{ article.search_text }}">
       <p class="eyebrow">{{ article.category }}</p>
       <h2><a href="{% url 'marketing:article' article.slug %}">{{ article.title }}</a></h2>
       <p>{{ article.summary }}</p>
@@ -30,6 +31,7 @@
     <div class="notice"><h2>No matching articles</h2><p>Try a shorter phrase such as “charts”, “update” or “OpenCPN”. You can also <a href="{% url 'marketing:support' %}">browse the full library</a>.</p></div>
     {% endfor %}
   </div>
+  <p class="notice" data-search-empty hidden>No matching articles. Try a shorter phrase such as “charts” or “AIS”.</p>
   <aside class="notice page-section" aria-labelledby="support-status-heading">
     <h2 id="support-status-heading">This is a support preview</h2>
     <p>Public payments and downloads remain closed. Ticket submission and file uploads are not enabled here. No report is sent from these pages.</p>

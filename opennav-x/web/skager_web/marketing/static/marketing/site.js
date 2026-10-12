@@ -19,6 +19,7 @@
           if (matches) shown += 1;
         });
         empty.hidden = shown !== 0;
+        status.hidden = false;
         status.textContent = `${shown} guide${shown === 1 ? '' : 's'} ${terms.length ? 'found' : 'available'}.`;
       };
       search.addEventListener('submit', (event) => {
