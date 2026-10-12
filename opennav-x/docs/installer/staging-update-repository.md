@@ -72,6 +72,20 @@ never by modifying installed ownership records. Keep its exact bytes unchanged
 across the bootstrap and successor: installer provisioning retains a configuration
 hash and refuses silent trust migration. Never package test fixture roots.
 
+The selected private-Staging envelope is now committed at
+`installer/windows/staging-update-trust.json`, unchanged from the existing
+operator repository. Its SHA-256 is
+`4cd61f55731732a06c4e303506f29bc5f46d8bde9c296ae76680d2dee4d27826`.
+The repository attribute disables text conversion for this file. The current
+source validator reauthenticated its root signature, expiry, distinct roles,
+stock allowlist and retained operator-state hash without accessing signing keys.
+The original retained root and re-exported root have different whitespace and
+separate hashes; their parsed signed metadata is identical. See
+[public-only provenance](../evidence/scrum311-private-trust-selection-20261012/README.md).
+This selects a private test trust input; it does not activate HTTPS, publish
+metadata, enable the broker or qualify Production root-key custody. Default
+packages remain unconfigured unless the explicit Staging selector is requested.
+
 ## Reviewed selection and policy
 
 Supply a local directory containing the unchanged retained `RELEASE.json`,

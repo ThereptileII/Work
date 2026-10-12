@@ -1,0 +1,2 @@
+# Preserve the reviewed public trust envelope byte-for-byte on Windows checkout.
+/opennav-x/installer/windows/staging-update-trust.json -text

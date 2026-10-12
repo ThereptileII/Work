@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "scope": "private Staging only; no HTTPS/publication/installed broker acceptance",
+  "selectedConfigCommit": "110e61f78a1b39d4461eeef31d923b610c7f3bc5",
+  "configSha256": "4cd61f55731732a06c4e303506f29bc5f46d8bde9c296ae76680d2dee4d27826",
+  "configBytes": 2726,
+  "historicalReceipt": "opennav-x/docs/evidence/2026-10-06-staging-batch/private-origin.json",
+  "originalRootSha256": "a041ec78891a5e3d8896385ed939b691a32ed0ec11e291fb25de773754515d57",
+  "reExportedRootSha256": "f07d7527759953cc5c1be06a0770e85d63344d55a7c8e3460b73b90397d3bed0",
+  "rootParsedEqual": true,
+  "operatorComponent": {
+    "sourceCommit": "5c6e7d766eb12e1ede4e312d5a689541c96db5e3",
+    "sha256": "ff92904c909a0fd9b3c7ec97de82bef12f9f2c4fd2c3261e2d97d12b93221ff4",
+    "goVersion": "go1.27.1",
+    "platform": "linux/amd64",
+    "vcsModified": false,
+    "networkForBuild": false
+  },
+  "validation": {
+    "publicExportAndRetainedState": "PASS",
+    "rootSignatureAndExpiry": "PASS",
+    "stockTupleAndDistinctRoles": "PASS",
+    "exactConfigBytes": "PASS",
+    "autocrlfTrueCheckout": "PASS"
+  },
+  "privateKeyRead": false,
+  "applicationBuild": false
+}
