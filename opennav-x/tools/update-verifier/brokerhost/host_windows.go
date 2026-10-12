@@ -7,6 +7,7 @@ import (
 	"time"
 
 	verifier "example.com/opennav-update-verifier"
+	"example.com/opennav-update-verifier/brokerenroll"
 	"example.com/opennav-update-verifier/brokerpipe"
 	"example.com/opennav-update-verifier/brokerstore"
 	"example.com/opennav-update-verifier/releasepolicy"
@@ -26,9 +27,9 @@ func (s storeAdapter) begin(id, sid string) (candidate, error) {
 
 // Run is exclusively an SCM service entry point. It has no arbitrary-root,
 // interactive/elevated console fallback, trust initialization or install command.
-// Explicit SCM initialize-store / verify-store starts perform only native
-// fresh-store creation / read-only durable completion validation
-// and stops; it never serves requests or announces service readiness.
+// Explicit SCM initialize-store / verify-store / register-client starts perform
+// only fixed native initialization, completion validation or independently
+// approved client registration, then stop without announcing readiness.
 // Provisioning of the account, fixed files and protected registrations is a
 // separate authenticated installer operation; missing setup fails closed.
 func Run(ctx context.Context) error {
@@ -53,6 +54,18 @@ type serviceHost struct {
 
 func (h *serviceHost) Execute(args []string, changes <-chan svc.ChangeRequest, status chan<- svc.Status) (bool, uint32) {
 	status <- svc.Status{State: svc.StartPending, WaitHint: 10000}
+	// The operator selects only SID + independently approved request hash. Read
+	// original bounded bytes from the fixed native protected namespace, then
+	// revalidate and register as the actual broker before Running or any pipe.
+	registered, err := registerClientServiceStart(h.ctx, args,
+		brokerenroll.ReadApprovedClientRequestNative, RegisterApprovedClientNative)
+	if err != nil {
+		h.result = err
+		return false, 1
+	}
+	if registered {
+		return false, 0
+	}
 	initialized, err := initializeServiceStart(h.ctx, args, brokerstore.InitializeFresh, brokerstore.ValidateInitialization)
 	if err != nil {
 		h.result = err
