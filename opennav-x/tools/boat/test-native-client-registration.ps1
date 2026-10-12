@@ -2,7 +2,7 @@ param(
     [Parameter(Mandatory=$true)][string]$TestExecutable,
     [Parameter(Mandatory=$true)][ValidatePattern('^[a-f0-9]{64}$')][string]$ExpectedSha256,
     [Parameter(Mandatory=$true)][string]$EvidenceDirectory,
-    [Parameter(Mandatory=$true)][ValidateSet('ClientStore','ClientRequest','StockCleanup','InstalledBaseline','ClientBaseline')][string]$Group
+    [Parameter(Mandatory=$true)][ValidateSet('ClientStore','ClientRequest','StockCleanup','InstalledBaseline','ClientBaseline','EngineEvidence')][string]$Group
 )
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
@@ -17,6 +17,15 @@ if ([Environment]::OSVersion.Platform -ne [PlatformID]::Win32NT) {
 if ($ExpectedSha256 -cnotmatch '^[a-f0-9]{64}$') { throw 'Exact lowercase test SHA-256 required' }
 
 switch ($Group) {
+    'EngineEvidence' {
+        $CaseNames = @(
+            'TestNativeCandidateEvidenceOriginalCustodyAndSeal',
+            'TestNativeCandidateEvidenceExactResidueNamespace',
+            'TestNativeCandidateEvidenceReconciliationPreservesExactOriginalResidue',
+            'TestNativeInstalledBaselineFreshCompletionRetainsExactBytesAndReadCustody',
+            'TestNativeInstalledBaselineEngineHelpersExactNamespace'
+        )
+    }
     'ClientStore' {
         $Group = 'ClientStore'
         $CaseNames = @(
