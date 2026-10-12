@@ -35,6 +35,7 @@ Add-Type -TypeDefinition @'
 using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using Microsoft.Win32.SafeHandles;
 public static class ProtectedRestartFixtureNative {
   const uint Invalid = 0xffffffff;
@@ -52,6 +53,13 @@ public static class ProtectedRestartFixtureNative {
       IntPtr security, uint disposition, uint flags, IntPtr template);
   [DllImport("kernel32.dll", SetLastError=true)]
   static extern bool GetFileInformationByHandle(SafeFileHandle handle, out Info info);
+  [StructLayout(LayoutKind.Sequential)] struct FileDisposition { [MarshalAs(UnmanagedType.Bool)] public bool DeleteFile; }
+  [DllImport("kernel32.dll", SetLastError=true)]
+  static extern bool SetFileInformationByHandle(SafeFileHandle handle, int kind,
+      ref FileDisposition disposition, uint size);
+  [DllImport("kernel32.dll", SetLastError=true)]
+  static extern bool ReadFile(SafeFileHandle handle, byte[] buffer, uint size,
+      out uint read, IntPtr overlapped);
   public static bool Absent(string path) {
     if (GetFileAttributesW(path) != Invalid) return false;
     int error = Marshal.GetLastWin32Error();
@@ -90,6 +98,42 @@ public static class ProtectedRestartFixtureNative {
   public static string PathIdentity(string path, bool directory) {
     using(var handle=Open(path,directory)) return Identity(handle,directory);
   }
+  public static SafeFileHandle HoldOwnedFile(string path) {
+    var handle=CreateFileW(path,0x80010000u,1,IntPtr.Zero,3,0x00200000u,IntPtr.Zero);
+    if (handle.IsInvalid) { int error=Marshal.GetLastWin32Error(); handle.Dispose();
+      throw new Win32Exception(error,"Exclusive owned-file delete handle refused"); }
+    try { Identity(handle,false); return handle; }
+    catch { handle.Dispose(); throw; }
+  }
+  public static string HeldFileIdentity(SafeFileHandle handle) { return Identity(handle,false); }
+  public static string HeldFileDigest(SafeFileHandle handle) {
+    Info info;
+    if (!GetFileInformationByHandle(handle,out info))
+      throw new Win32Exception(Marshal.GetLastWin32Error(),"Owned-file size unavailable");
+    ulong remaining=((ulong)info.SizeHigh<<32)|info.SizeLow;
+    if (remaining==0 || remaining>32u*1024u*1024u)
+      throw new InvalidOperationException("Bounded owned fixture file required");
+    using(var hash=SHA256.Create()) {
+      var buffer=new byte[65536];
+      while (remaining!=0) {
+        uint requested=(uint)Math.Min((ulong)buffer.Length,remaining), read;
+        if (!ReadFile(handle,buffer,requested,out read,IntPtr.Zero) || read!=requested)
+          throw new Win32Exception(Marshal.GetLastWin32Error(),"Owned-file read changed");
+        hash.TransformBlock(buffer,0,(int)read,buffer,0);
+        remaining-=read;
+      }
+      uint extra;
+      if (!ReadFile(handle,buffer,1,out extra,IntPtr.Zero) || extra!=0)
+        throw new InvalidOperationException("Owned fixture file grew during verification");
+      hash.TransformFinalBlock(new byte[0],0,0);
+      return BitConverter.ToString(hash.Hash).Replace("-","").ToLowerInvariant();
+    }
+  }
+  public static void DeleteHeldFile(SafeFileHandle handle) {
+    var disposition=new FileDisposition { DeleteFile=true };
+    if (!SetFileInformationByHandle(handle,4,ref disposition,4))
+      throw new Win32Exception(Marshal.GetLastWin32Error(),"Exact owned-file disposition refused");
+  }
 }
 '@
 
@@ -97,6 +141,15 @@ function Require([bool]$condition, [string]$message) {
     if (-not $condition) { throw $message }
 }
 function Digest([string]$path) { return (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLowerInvariant() }
+function DeleteOwnedFile([string]$path, $record) {
+    $handle = [ProtectedRestartFixtureNative]::HoldOwnedFile($path)
+    try {
+        Require ([ProtectedRestartFixtureNative]::HeldFileIdentity($handle) -ceq $record.id -and
+            [ProtectedRestartFixtureNative]::HeldFileDigest($handle) -ceq $record.sha -and
+            [ProtectedRestartFixtureNative]::HeldFileIdentity($handle) -ceq $record.id) 'Owned fixture executable changed before deletion'
+        [ProtectedRestartFixtureNative]::DeleteHeldFile($handle)
+    } finally { $handle.Dispose() }
+}
 function Probe([string]$path, [string]$argument, [string]$contract) {
     $start = New-Object Diagnostics.ProcessStartInfo
     $start.FileName = $path
@@ -214,7 +267,7 @@ try {
         $case = Join-Path $Evidence ("protected-restart-$generation-$name")
         [ProtectedRestartFixtureNative]::CreateNew($case)
         [IO.File]::WriteAllText((Join-Path $case 'target-mode.txt'), $mode)
-        [IO.File]::WriteAllText((Join-Path $case 'parent-fast-exit.txt'), '')
+        if (-not $allow) { [IO.File]::WriteAllText((Join-Path $case 'parent-fast-exit.txt'), '') }
         $start = New-Object Diagnostics.ProcessStartInfo
         $start.FileName = Join-Path $app 'opencpn.exe'
         $start.Arguments = '--parent'
@@ -223,13 +276,20 @@ try {
         if ($fenced) { $start.EnvironmentVariables['SKAGER_UPDATE_QUALIFY_PROFILE'] = '1' }
         $parent = [Diagnostics.Process]::Start($start)
         try {
-            Require ($parent.WaitForExit(15000) -and $parent.ExitCode -eq 0) "$name`: inert parent did not exit normally"
             $receipt = Join-Path $case 'parent-armed.txt'
             WaitMarker $receipt
             $lines = [IO.File]::ReadAllLines($receipt)
             Require ($lines.Count -eq 2 -and $lines[0] -ceq $(if($allow){'yes'}else{'no'}) -and
                 $lines[1] -ceq [string]$parent.Id) "$name`: actual restart decision differs"
             $marker = Join-Path $case 'protected-launcher-args.txt'
+            if ($allow) {
+                # Keep the original image alive long enough to observe the
+                # helper's wait, rather than relying on a scheduling race.
+                Start-Sleep -Milliseconds 600
+                Require (-not $parent.HasExited -and -not [IO.File]::Exists($marker)) "$name`: launcher started before original parent release"
+                [IO.File]::WriteAllText((Join-Path $case 'parent-release.txt'), '')
+            }
+            Require ($parent.WaitForExit(15000) -and $parent.ExitCode -eq 0) "$name`: inert parent did not exit normally"
             if ($allow) {
                 WaitMarker $marker
                 $arguments = [IO.File]::ReadAllLines($marker)
@@ -256,7 +316,7 @@ try {
     $launcher = Join-Path $app 'skager-start.exe'
     Require ([ProtectedRestartFixtureNative]::PathIdentity($launcher,$false) -ceq $files['skager-start.exe'].id -and
         (Digest $launcher) -ceq $files['skager-start.exe'].sha) 'Owned launcher changed before missing-companion case'
-    [IO.File]::Delete($launcher)
+    DeleteOwnedFile $launcher $files['skager-start.exe']
     $files.Remove('skager-start.exe')
     RunCase 'missing-companion' '--xnav' '' $false $false
 
@@ -282,7 +342,9 @@ try {
         Require (@(Compare-Object -ReferenceObject $actual -DifferenceObject $expected).Count -eq 0) 'Unknown child in fixed fixture namespace; refuse cleanup'
     }
     [IO.File]::WriteAllText($report, (@{schema=1;status='routing-validated';generation=$generation;cases=$results.ToArray()} | ConvertTo-Json -Depth 6))
-    foreach ($name in @('opencpn.exe','opennav-restart.exe')) { [IO.File]::Delete((Join-Path $app $name)) }
+    foreach ($name in @('opencpn.exe','opennav-restart.exe')) {
+        DeleteOwnedFile (Join-Path $app $name) $files[$name]
+    }
     for ($index=$directories.Count-1; $index -ge 0; $index--) {
         $entry=$held[$index]
         Require ([ProtectedRestartFixtureNative]::HeldIdentity($entry.handle) -ceq $entry.id) 'Held fixture directory drifted during cleanup'
