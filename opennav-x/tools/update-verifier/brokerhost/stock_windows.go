@@ -27,6 +27,8 @@ type nativeStock struct {
 	path     string
 	physical string
 	parents  []stockPin
+	closed   bool
+	closeErr error
 }
 
 func observeStock(ctx context.Context, r registration) (_ releasepolicy.OpenCpn, _ stockOwner, resultErr error) {
@@ -36,7 +38,7 @@ func observeStock(ctx context.Context, r registration) (_ releasepolicy.OpenCpn,
 	owner := &nativeStock{path: r.Stock.Path}
 	defer func() {
 		if resultErr != nil {
-			_ = owner.Close()
+			resultErr = errors.Join(resultErr, owner.Close())
 		}
 	}()
 	h, err := openStock(r.Stock.Path, false)
@@ -45,8 +47,7 @@ func observeStock(ctx context.Context, r registration) (_ releasepolicy.OpenCpn,
 	}
 	owner.file = os.NewFile(uintptr(h), "retained-stock-opencpn")
 	if owner.file == nil {
-		_ = windows.CloseHandle(h)
-		return releasepolicy.OpenCpn{}, nil, errors.New("stock file owner unavailable")
+		return releasepolicy.OpenCpn{}, nil, errors.Join(errors.New("stock file owner unavailable"), stockCleanup(windows.CloseHandle(h)))
 	}
 	if windows.GetFileInformationByHandle(h, &owner.info) != nil || !stockFileInfo(owner.info) {
 		return releasepolicy.OpenCpn{}, nil, errors.New("stock image is not a plain single-link bounded file")
@@ -147,7 +148,7 @@ func sameStock(a, b windows.ByHandleFileInformation) bool {
 		a.CreationTime == b.CreationTime && a.FileAttributes == b.FileAttributes && a.NumberOfLinks == b.NumberOfLinks
 }
 func (s *nativeStock) validate() error {
-	if s == nil || s.file == nil {
+	if s == nil || s.closed || s.file == nil {
 		return errors.New("retained stock owner required")
 	}
 	var info windows.ByHandleFileInformation
@@ -168,17 +169,22 @@ func (s *nativeStock) validate() error {
 	if err != nil {
 		return errors.New("stock DOS resolution unavailable")
 	}
-	defer windows.CloseHandle(h)
-	physical, err := stockPhysical(h)
-	if err != nil || !strings.EqualFold(physical, s.physical) || windows.GetFileInformationByHandle(h, &info) != nil || !sameStock(s.info, info) {
-		return errors.New("stock DOS resolution differs from retained image")
-	}
-	return nil
+	return checkAndCloseStockProbe(func() error {
+		physical, err := stockPhysical(h)
+		if err != nil || !strings.EqualFold(physical, s.physical) || windows.GetFileInformationByHandle(h, &info) != nil || !sameStock(s.info, info) {
+			return errors.New("stock DOS resolution differs from retained image")
+		}
+		return nil
+	}, func() error { return windows.CloseHandle(h) })
 }
 func (s *nativeStock) Close() error {
 	if s == nil {
 		return nil
 	}
+	if s.closed {
+		return s.closeErr
+	}
+	s.closed = true
 	var errs []error
 	if s.file != nil {
 		errs = append(errs, s.file.Close())
@@ -188,5 +194,6 @@ func (s *nativeStock) Close() error {
 		errs = append(errs, windows.CloseHandle(p.handle))
 	}
 	s.parents = nil
-	return errors.Join(errs...)
+	s.closeErr = stockCleanup(errors.Join(errs...))
+	return s.closeErr
 }
