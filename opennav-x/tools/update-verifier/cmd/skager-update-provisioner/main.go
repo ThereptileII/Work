@@ -22,9 +22,14 @@ const maxTrustBytes = 576 << 10
 func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer cancel()
-	if err := runWithActivation(ctx, os.Args[1:], func(path string) ([]byte, error) { return readInput(path, brokerregistration.MaxRequestBytes) }, brokerenroll.Run, brokerenroll.RunAndActivateStartup); err != nil {
-		fmt.Fprintln(os.Stderr, "SKAGER machine broker provisioning did not complete. Preserve partial state for operator recovery; do not reset or retry automatically.")
+	maintenance, err := runOperator(ctx, os.Args[1:], func(path string) ([]byte, error) { return readInput(path, brokerregistration.MaxRequestBytes) }, brokerenroll.Run, brokerenroll.RunAndActivateStartup, openMaintenanceNative)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "SKAGER operator operation did not complete. Preserve partial state for operator recovery; do not reset or retry automatically.")
 		os.Exit(1)
+	}
+	if maintenance {
+		fmt.Println("SKAGER broker stop and original process exit verified. Application/profile recovery, repair and uninstall have not been performed.")
+		return
 	}
 	fmt.Println("SKAGER provisioning completed. Startup activation occurs only when explicitly requested.")
 }

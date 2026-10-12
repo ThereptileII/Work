@@ -82,6 +82,38 @@ Cancellation, broken peer custody and ambiguous storage failures remain failures
 
 ## Remaining acceptance boundaries
 
+### Explicit operator maintenance prerequisite
+
+The provisioner now accepts a separate, exclusive operation:
+
+```
+--maintenance=quiesce-maintenance
+--broker-sha256 <independently-approved-installed-broker-hash>
+--client-registration-request <original-approved-request-file>
+--client-registration-request-sha256 <independently-approved-request-hash>
+```
+
+This is not an application startup option. The final operator tool and its
+loader chain must be authenticated before elevation. It retains the fixed
+original SCM service/configuration/security, protected image/request and actual
+broker process/token/creation identity. Only one bounded STOP attempt is allowed;
+both SCM stopped/zero-exit and the retained original process's zero exit must be
+observed. Restart, changed custody, cancellation, timeout and cleanup uncertainty
+remain failures. It never auto-starts a stopped service to invent drain evidence.
+Initial approval uses the live trust clock; an expired bootstrap anchor refuses
+without resetting floors or substituting caller bytes for completed registration.
+
+**Quiescence is not repair, rollback or uninstall authorization.** Ordinary
+application processes intentionally survive a successful startup conversation.
+Stopping this broker therefore does not prove the application closed or its
+profile is cold. Protected history/armed operations, original child/profile
+ownership and the actual maintenance mutation transaction remain separate open
+boundaries. The command closes retained owners and performs no application,
+profile, shortcut, registry or protected-store mutation beyond stopping the
+verified broker. Native Windows acceptance is still required.
+
+### Release acceptance
+
 - Native Windows execution of the joined service/provider/relay/restore path.
 - Native execution of the bounded fresh-pipe handoff correction; the source
   waits only after actual busy-pipe evidence and authenticates the actual server
