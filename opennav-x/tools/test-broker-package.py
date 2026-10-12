@@ -222,18 +222,11 @@ class BrokerPackageTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'bytes differ'): self.verify()
 
     def test_imported_module_members_are_hash_checked(self):
-        # The last member is deliberately outside the fixed required list. All
+        # The extra member is deliberately outside the fixed required list. All
         # retained Go source bytes must be checked, including imported packages.
         extra = broker.PREFIX + 'another/imported.go'
         self.sources[extra] = b'package another\n'
-        for name in (broker.PREFIX + 'brokerregistration/request.go',
-                     broker.PREFIX + 'brokerstore/registration_windows.go',
-                     broker.PREFIX + 'brokerenroll/client_request_windows.go',
-                     broker.PREFIX + 'approved_baseline.go',
-                     broker.PREFIX + 'baselineevidence/evidence.go',
-                     broker.PREFIX + 'brokerhost/client_baseline_windows.go',
-                     broker.PREFIX + 'brokerstore/installed_baseline_windows.go',
-                     broker.PREFIX + 'brokerenroll/client_baseline_windows.go', extra):
+        for name in sorted(broker.REGISTRATION_SOURCES | {extra}):
             with self.subTest(tampered=name):
                 self.write_source()
                 self.rewrite_source(lambda contents: contents.update({name: b'X' * len(contents[name])}))

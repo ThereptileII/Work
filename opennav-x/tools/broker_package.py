@@ -29,18 +29,24 @@ PREFIX = 'project/tools/update-verifier/'
 # fixed lists detect omitted members even if an archive's own manifest omits
 # them too; hashing only the members that remain cannot establish completeness.
 REGISTRATION_SOURCES = frozenset(PREFIX + name for name in (
-    'approved_baseline.go', 'baselineevidence/evidence.go',
+    'approved_baseline.go', 'artifact.go', 'broker_bootstrap.go', 'broker_download.go',
+    'download.go', 'download_portable.go', 'download_windows.go', 'identity.go',
+    'prepare.go', 'recovery.go', 'release.go', 'stage_recovery.go', 'state.go',
+    'state_unix.go', 'state_windows.go', 'verifier.go', 'baselineevidence/evidence.go',
     'brokerhost/host_other.go', 'brokerhost/host_windows.go',
     'brokerhost/initialization.go', 'brokerhost/operation.go', 'brokerhost/registration.go',
     'brokerhost/client_registration.go', 'brokerhost/client_registration_other.go',
     'brokerhost/client_registration_windows.go', 'brokerhost/client_baseline_windows.go',
     'brokerhost/registration_start.go',
     'brokerhost/stock_cleanup.go', 'brokerhost/stock_windows.go',
+    'brokerpipe/identity_windows.go', 'brokerpipe/io_windows.go',
+    'brokerpipe/native_other.go', 'brokerpipe/native_windows.go', 'brokerpipe/protocol.go',
     'brokerregistration/request.go',
     'brokerstore/store.go', 'brokerstore/store_other.go', 'brokerstore/store_windows.go',
     'brokerstore/store_lock_windows.go', 'brokerstore/acquisition.go',
     'brokerstore/acquisition_journal.go', 'brokerstore/acquisition_windows.go',
     'brokerstore/acquisition_recovery_windows.go', 'brokerstore/initialize.go',
+    'brokerstore/candidate_evidence.go', 'brokerstore/candidate_evidence_windows.go',
     'brokerstore/initialize_other.go', 'brokerstore/initialize_windows.go',
     'brokerstore/registration.go', 'brokerstore/registration_windows.go',
     'brokerstore/installed_baseline.go', 'brokerstore/installed_baseline_windows.go',
@@ -49,7 +55,11 @@ REGISTRATION_SOURCES = frozenset(PREFIX + name for name in (
     'brokerenroll/service_windows.go', 'brokerenroll/client_request.go',
     'brokerenroll/client_request_other.go', 'brokerenroll/client_request_windows.go',
     'brokerenroll/client_baseline.go', 'brokerenroll/client_baseline_other.go',
-    'brokerenroll/client_baseline_windows.go'))
+    'brokerenroll/client_baseline_windows.go',
+    'releasepolicy/broker_bootstrap.go', 'releasepolicy/evaluate.go',
+    'releasepolicy/policy.go', 'releasepolicy/semver.go',
+    'repository/broker_bootstrap.go', 'repository/inputs.go',
+    'repository/lock_linux.go', 'repository/lock_other.go', 'repository/repository.go'))
 REQUIRED_SOURCES = REGISTRATION_SOURCES | {
     PREFIX + 'cmd/skager-update-broker/main.go', PREFIX + 'go.mod', PREFIX + 'go.sum',
     'project/LICENSE', 'project/tools/package-update-launcher.py',
