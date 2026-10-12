@@ -1,5 +1,17 @@
 # SKAGER status — 2026-10-12
 
+## Focused TLS policy wiring verified; boat compiler unavailable
+
+At product source `eede2fe9`, the actual portable CMake target and registered
+CTest case pass 241 known-obsolete-TLS byte-policy checks. Only that component
+was built and tested, using existing offline dependencies. Read-only discovery
+on the boat found registered Visual Studio Build Tools but no installed MSVC
+C++ component, `cl.exe` or `vcvarsall.bat`; native compilation/execution did not
+occur. PID 1852 remained present and no application/profile change occurred.
+[Exact inputs, commands, failures and scope](evidence/scrum209-native-byte-policy-20261012/README.md)
+are retained in `2b9a60b4`. Native CI and complete installed dependency-closure
+qualification remain required; this is not a Windows pass or new candidate.
+
 ## Route draft completion and DPI selection fixes integrated
 
 `e5ac8b37` preserves XNav's explicit Finish/Cancel policy across native modal

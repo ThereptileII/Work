@@ -310,6 +310,16 @@ after a later close/namespace failure still describes only staged bytes; it
 cannot authorize downstream execution. Transport request replay memory is not
 durable authority; the protected candidate reservation provides ID non-reuse.
 
+The current protected registration binds installed version/commit, not an
+installation root, selected previous generation or retained destination owner.
+Returning a StageID after closing the candidate cannot reconstruct that custody.
+The existing per-user Lifecycle and supervisor refuse armed mutation/launch;
+their CurrentUser DPAPI health proof cannot be adopted by the non-impersonated
+broker account. The missing installation bridge must establish those native
+bindings through authenticated provisioning and retain the original owners.
+Neither invoking per-user Lifecycle as the service nor adding a general armed
+exception supplies that authority. SCRUM-311 remains open for this integration.
+
 Originally protected provisioning is mandatory: inspecting today's DACL cannot
 exclude handles acquired before protection. Actual native service identity,
 cross-account process/token query rights, IPC, creation-time ACLs, namespace
