@@ -18,6 +18,9 @@ on:
       - opennav-x/tools/package-update-provisioner.py
       - opennav-x/tools/test-provisioner-package.py
       - opennav-x/tools/test-package-update-provisioner.py
+      - opennav-x/tools/baseline_handoff_package.py
+      - opennav-x/tools/package-baseline-handoff.py
+      - opennav-x/tools/test_baseline_handoff_package.py
       - .github/workflows/update-verifier-probe.yml
   workflow_dispatch:
     inputs:
@@ -78,7 +81,8 @@ jobs:
           import subprocess, sys
           for script in ('../test-package-update-launcher.py', '../test-updater-package.py',
                          '../test-package-update-broker.py', '../test-broker-package.py',
-                         '../test-package-update-provisioner.py', '../test-provisioner-package.py'):
+                         '../test-package-update-provisioner.py', '../test-provisioner-package.py',
+                         '../test_baseline_handoff_package.py'):
               subprocess.run([sys.executable, script], check=True, timeout=60)
       - name: Compile native launcher with exact dependency sources
         if: runner.os == 'Windows'
@@ -137,6 +141,14 @@ jobs:
           python ../package-update-provisioner.py --install ../../build/updater-native/broker-install --commit $env:GITHUB_SHA
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python -c "import os,sys; from pathlib import Path; sys.path.insert(0,'..'); from provisioner_package import verify_provisioner_package; verify_provisioner_package(Path('../../build/updater-native/broker-install'), os.environ['GITHUB_SHA'])"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Compile inactive baseline handoff against retained native prerequisites
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          python ../package-baseline-handoff.py --install ../../build/updater-native/broker-install --commit $env:GITHUB_SHA
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -c "import os,sys; from pathlib import Path; sys.path.insert(0,'..'); from baseline_handoff_package import verify_baseline_handoff_package; verify_baseline_handoff_package(Path('../../build/updater-native/broker-install'), os.environ['GITHUB_SHA'])"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Actual fresh broker enrollment on disposable Windows
         if: runner.os == 'Windows'
