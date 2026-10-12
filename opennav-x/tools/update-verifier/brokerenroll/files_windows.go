@@ -70,7 +70,7 @@ func enrollmentOperator() error {
 	var thread windows.Token
 	err := windows.OpenThreadToken(windows.CurrentThread(), windows.TOKEN_QUERY, true, &thread)
 	if err == nil {
-		return errors.Join(errors.New("impersonated enrollment refused"), thread.Close())
+		return errors.Join(errors.New("impersonated enrollment refused"), enrollmentCleanup(thread.Close()))
 	}
 	if !errors.Is(err, windows.ERROR_NO_TOKEN) {
 		return errors.New("non-impersonated enrollment token required")
@@ -276,7 +276,17 @@ func (f *nativeEnrollmentFiles) Close() error {
 		}
 	}
 	f.pins = nil
+	if f.closeErr != nil {
+		f.closeErr = errors.Join(ErrCleanup, f.closeErr)
+	}
 	return f.closeErr
+}
+
+func enrollmentCleanup(err error) error {
+	if err == nil {
+		return nil
+	}
+	return errors.Join(ErrCleanup, err)
 }
 
 func enrollmentPhysicalPath(handle windows.Handle) (string, error) {
@@ -370,7 +380,7 @@ func (p *enrollmentPin) check() error {
 		}
 		_, actualID, identityErr := enrollmentInfo(h)
 		actualName, nameErr := enrollmentPhysicalPath(h)
-		closeErr := windows.CloseHandle(h)
+		closeErr := enrollmentCleanup(windows.CloseHandle(h))
 		if identityErr != nil || nameErr != nil || actualID != p.id || actualName != p.physical {
 			return errors.Join(errors.New("fixed enrollment DOS path resolution changed"), identityErr, nameErr, closeErr)
 		}
@@ -642,7 +652,7 @@ func (f *nativeEnrollmentFiles) newFile(parent *enrollmentPin, component string,
 		err = pin.check()
 	}
 	if err != nil {
-		return nil, nil, errors.Join(err, file.Close())
+		return nil, nil, errors.Join(err, enrollmentCleanup(file.Close()))
 	}
 	return file, pin, nil
 }
@@ -655,7 +665,7 @@ func (f *nativeEnrollmentFiles) createImage(ctx context.Context, parent *enrollm
 	writerOpen := true
 	defer func() {
 		if writerOpen {
-			resultErr = errors.Join(resultErr, file.Close())
+			resultErr = errors.Join(resultErr, enrollmentCleanup(file.Close()))
 		}
 	}()
 	if err := copyEnrollmentImage(ctx, file, source, artifact); err != nil {
@@ -670,7 +680,7 @@ func (f *nativeEnrollmentFiles) createImage(ctx context.Context, parent *enrollm
 	}
 	// The new parent was protected from its first exposure. Closing the writer
 	// and reopening read-only cannot expose these bytes to an untrusted writer.
-	closeErr := file.Close()
+	closeErr := enrollmentCleanup(file.Close())
 	writerOpen = false
 	if closeErr != nil {
 		return closeErr
