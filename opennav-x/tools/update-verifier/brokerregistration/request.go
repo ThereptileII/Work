@@ -155,6 +155,10 @@ func digest(data []byte) string { sum := sha256.Sum256(data); return hex.EncodeT
 // Only canonical account-domain user SID syntax is accepted. This excludes
 // SYSTEM, builtins, service/capability SIDs and well-known identities; it does not
 // establish existence or SidTypeUser. The native writer must resolve that fact.
+// IsCanonicalUserSID checks bounded account-domain SID syntax only. It does not
+// establish existence or SidTypeUser; native creation must resolve the account.
+func IsCanonicalUserSID(value string) bool { return canonicalUserSID(value) }
+
 func canonicalUserSID(value string) bool {
 	parts := strings.Split(value, "-")
 	if len(parts) != 8 || strings.Join(parts[:4], "-") != "S-1-5-21" {
