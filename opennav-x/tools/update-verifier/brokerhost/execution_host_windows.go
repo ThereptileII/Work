@@ -33,6 +33,7 @@ type nativeExecutionHost struct {
 	ctx                context.Context
 	store              *brokerstore.Store
 	peer               *brokerpipe.PeerCapability
+	conversation       *brokerpipe.ExecutionSession
 	registration       registration
 	registrationDigest string
 	selected           *nativeSelectedExecution
@@ -69,7 +70,7 @@ func (e *engine) handleNativeExecution(ctx context.Context, peer brokerpipe.Peer
 	defer e.busy.Unlock()
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	h := &nativeExecutionHost{ctx: ctx, store: adapter.Store, peer: capability, executionID: request.RequestID, providers: providers}
+	h := &nativeExecutionHost{ctx: ctx, store: adapter.Store, peer: capability, conversation: session, executionID: request.RequestID, providers: providers}
 	defer func() {
 		// Cleanup failure does not undo a durable terminal. A later fresh read may
 		// establish it; this handler never retries a consumed operation.
@@ -224,7 +225,9 @@ func (e *engine) handleNativeExecution(ctx context.Context, peer brokerpipe.Peer
 	if err = h.validate(ctx); err != nil {
 		return err
 	}
-	run := &executionHostRun{begin: h.begin, journal: h.journal, conversation: session, validate: h.validate, commission: h.commission, prepare: h.prepare, resolve: h.resolve}
+	run := &executionHostRun{begin: h.begin, journal: h.journal, conversation: session,
+		validate: h.validate, validateCleanup: h.validateRecovery, validateRecovery: h.validateRecovery,
+		commission: h.commission, prepare: h.prepare, resolve: h.resolve, prepareRestore: h.prepareRestore}
 	run.capture = func(ctx context.Context) (executionHostProfile, error) {
 		profile, err := providers.capture(ctx, h.store, h.journal)
 		h.profile = profile
@@ -270,6 +273,22 @@ func executionHostApplication(ctx context.Context, g *brokerstore.ReopenedGenera
 }
 
 func (h *nativeExecutionHost) validate(ctx context.Context) error {
+	return h.validateState(ctx, true, true)
+}
+
+// Cleanup and recovery retain native transaction/predecessor custody. They do
+// not need a still-reachable update server to stop the original child or restore
+// the independently qualified previous version. New candidate launch/selection
+// always uses validate, including current signed-offer eligibility.
+func (h *nativeExecutionHost) validateRecovery(ctx context.Context) error {
+	return h.validateState(ctx, true, false)
+}
+
+// Restore holds the profile owner's own mutex while validating retained native
+// authority. Avoid recursively taking that mutex. Original peer, generation,
+// archive and journal authority remain required; current network policy is
+// deliberately separate from retained cleanup/recovery authority.
+func (h *nativeExecutionHost) validateState(ctx context.Context, inspectProfile, currentPolicy bool) error {
 	if ctx == nil || ctx.Err() != nil {
 		return errors.Join(errExecutionHostRefused, contextError(ctx))
 	}
@@ -321,7 +340,7 @@ func (h *nativeExecutionHost) validate(ctx context.Context) error {
 	if err = executionHostInventory(h.registration.ClientSID, h.executionID, h.inventory, entries, enumerationErr, own); err != nil {
 		return err
 	}
-	if h.profile != nil {
+	if inspectProfile && h.profile != nil {
 		if err = h.profile.Validate(ctx); err != nil {
 			return err
 		}
@@ -340,13 +359,19 @@ func (h *nativeExecutionHost) validate(ctx context.Context) error {
 	if err = h.peer.Validate(ctx); err != nil {
 		return err
 	}
-	if err = h.providers.authorize(ctx, h.target, h.selected); err != nil {
-		return err
+	if currentPolicy {
+		if err = h.providers.authorize(ctx, h.target, h.selected); err != nil {
+			return err
+		}
 	}
 	return ctx.Err()
 }
 func (h *nativeExecutionHost) commission(ctx context.Context, fallback bool) (string, error) {
-	if err := h.validate(ctx); err != nil {
+	validate := h.validate
+	if fallback {
+		validate = h.validateRecovery
+	}
+	if err := validate(ctx); err != nil {
 		return "", err
 	}
 	generation := h.target
@@ -374,7 +399,7 @@ func (h *nativeExecutionHost) commission(ctx context.Context, fallback bool) (st
 	if err = cold.ValidateBeforeLaunch(ctx); err != nil {
 		return "", err
 	}
-	return digest, h.validate(ctx)
+	return digest, validate(ctx)
 }
 func (h *nativeExecutionHost) prepare(ctx context.Context, fallback bool) (executionHostChild, error) {
 	if len(h.cold) == 0 {
@@ -429,12 +454,21 @@ func (h *nativeExecutionHost) resolve(ctx context.Context, terminal string) (res
 	if terminal == "rolled-back" && (h.selected == nil || selected.selected.completion != h.selected.selected.completion || selected.selected.installed != h.selected.selected.installed) {
 		return errExecutionHostRefused
 	}
-	return selected.validate()
+	if err = selected.validate(); err != nil {
+		return err
+	}
+	// The qualification child remains permanently restricted. Ordinary operation
+	// always uses a new selected launcher and a new start-current conversation;
+	// never clear qualification flags or let the old executor create the new
+	// application's ordinary child in this already-used session.
+	return relaySelectedExecutionNative(ctx, h.peer, selected, h.conversation)
 }
 
-// Retain a duplicate of the AUTHENTICATED original child process. Observer
-// failure closes its pipe/query handles, but cannot erase this independent exit
-// observation. If authentication never succeeded, teardown/fallback refuses.
+// Retain the independently corroborated ORIGINAL child immediately after the
+// creator reports a spawn. A report supplies only a lookup; native parent/token,
+// creation and held application-image custody establish identity. Later health
+// pipe authentication must identify this same original process. Observer failure
+// cannot erase its independent exit observation.
 type executionHostChildBackend struct {
 	executionChildBackend
 	native  *nativeExecutionChild
@@ -449,16 +483,12 @@ func (b *executionHostChildBackend) authenticate(ctx context.Context) (time.Dura
 		return 0, err
 	}
 	child := b.native.child
-	if child == nil || b.process != 0 {
+	if child == nil || b.process == 0 || b.pid == 0 || b.created == 0 || child.pid != b.pid || child.created != b.created {
 		return 0, errExecutionHostRefused
 	}
 	if err = child.check(); err != nil {
 		return 0, err
 	}
-	if err = windows.DuplicateHandle(windows.CurrentProcess(), child.handle, windows.CurrentProcess(), &b.process, windows.SYNCHRONIZE, false, 0); err != nil {
-		return 0, err
-	}
-	b.pid, b.created = child.pid, child.created
 	return age, nil
 }
 

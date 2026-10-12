@@ -38,7 +38,7 @@ type nativeExecutionCurrentHost struct {
 // Root wires explicit startup routing; never infer a current request by retrying
 // a failed update handler or catching its selection/authorization errors.
 func (e *engine) handleNativeCurrentExecution(ctx context.Context, peer brokerpipe.Peer, q brokerpipe.ExecutionRequest, session *brokerpipe.ExecutionSession, providers executionCurrentHostProviders) (resultErr error) {
-	if e == nil || ctx == nil || ctx.Err() != nil || session == nil || providers.authorize == nil || providers.prepare == nil || e.observe == nil || q.Schema != 1 || q.Operation != "execute-session" || !requestPattern.MatchString(q.RequestID) || !requestPattern.MatchString(q.StageID) {
+	if e == nil || ctx == nil || ctx.Err() != nil || session == nil || providers.authorize == nil || providers.prepare == nil || e.observe == nil || q.Schema != 1 || q.Operation != "start-current" || !requestPattern.MatchString(q.RequestID) || !requestPattern.MatchString(q.StageID) {
 		return errExecutionCurrentRefused
 	}
 	adapter, ok := e.store.(storeAdapter)

@@ -148,7 +148,11 @@ func (h *serviceHost) Execute(args []string, changes <-chan svc.ChangeRequest, s
 	status <- current
 	done := make(chan error, 1)
 	canClose = false
-	go func() { done <- brokerpipe.Serve(ctx, e.handleNativeStaging) }()
+	go func() {
+		done <- serveBrokerEndpoints(ctx,
+			func(ctx context.Context) error { return brokerpipe.Serve(ctx, e.handleNativeStaging) },
+			func(ctx context.Context) error { return brokerpipe.ServeExecution(ctx, e.handleNativeExecutionRequest) })
+	}()
 	stop := func() (bool, uint32) {
 		cancel()
 		canClose = h.stop(done, status)
@@ -182,6 +186,32 @@ func (h *serviceHost) Execute(args []string, changes <-chan svc.ChangeRequest, s
 	}
 }
 
+// Dispatch explicit protocol intent on the same protected Store/operation lock.
+// A failed qualification is never reinterpreted as permission for current startup.
+// Providers are private per-session owners and are drained before the session
+// and its retained native peer can be released by the serving transport.
+func (e *engine) handleNativeExecutionRequest(ctx context.Context, peer brokerpipe.Peer, request brokerpipe.ExecutionRequest, session *brokerpipe.ExecutionSession) (resultErr error) {
+	if e == nil {
+		return errExecutionHostRefused
+	}
+	adapter, ok := e.store.(storeAdapter)
+	if !ok || adapter.Store == nil {
+		return errExecutionHostRefused
+	}
+	switch request.Operation {
+	case "execute-session":
+		providers, closeProviders := nativeExecutionProviders(adapter.Store)
+		defer func() { resultErr = errors.Join(resultErr, closeProviders()) }()
+		return e.handleNativeExecution(ctx, peer, request, session, providers)
+	case "start-current":
+		providers, closeProviders := nativeExecutionCurrentProviders()
+		defer func() { resultErr = errors.Join(resultErr, closeProviders()) }()
+		return e.handleNativeCurrentExecution(ctx, peer, request, session, providers)
+	default:
+		return errExecutionHostRefused
+	}
+}
+
 // Retain actual authenticated connection/process/token custody for the whole
 // staging operation, not only its initial public Peer metadata. A late native
 // identity/disconnect failure refuses the response; durable staged bytes remain
@@ -212,7 +242,8 @@ func (h *serviceHost) stop(done <-chan error, status chan<- svc.Status) bool {
 	defer timer.Stop()
 	select {
 	case err := <-done:
-		if err != nil && !errors.Is(err, context.Canceled) {
+		// Joined cancellation + owner/cleanup failure is not a clean shutdown.
+		if err != nil && err != context.Canceled {
 			h.result = errors.New("broker shutdown refused")
 			return true
 		}

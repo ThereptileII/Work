@@ -149,9 +149,12 @@ func parseExecutionSelectionAttempt(sid, executionID, generation, completion, ge
 		case "candidate-closed":
 			expectedKind = brokerstore.ExecutionTeardown
 			allowed = !root && (state == "spawn-consumed" || state == "healthy")
-		case "profile-restored":
+		case "profile-restore-intent":
 			expectedKind = brokerstore.ExecutionRestoration
 			allowed = state == "candidate-closed"
+		case "profile-restored":
+			expectedKind = brokerstore.ExecutionRestoration
+			allowed = state == "candidate-closed" || state == "profile-restore-intent"
 		case "fallback-commissioned":
 			target = b.PreviousGeneration
 			allowed = state == "profile-restored"
