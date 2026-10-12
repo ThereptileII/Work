@@ -1,0 +1,50 @@
+{
+    "schema":  1,
+    "group":  "StockIntegrity",
+    "executable":  "C:\\XNav\\ComponentChecks\\stock-before-eda928e2\\brokerhost.test.exe",
+    "executableSha256":  "edc7395886942916a2a804f8493701308673d883f30968c29e04fb886cf31c9f",
+    "expectedCases":  [
+                          "TestNativeStockExistingMappingIntegrity",
+                          "TestNativeStockDirectoryRenamePin",
+                          "TestNativeStockCloseFailureIsRetained"
+                      ],
+    "selection":  "^(TestNativeStockExistingMappingIntegrity|TestNativeStockDirectoryRenamePin|TestNativeStockCloseFailureIsRetained)$",
+    "status":  "passed",
+    "failure":  null,
+    "startedUtc":  "2026-10-12T09:03:58.0829200Z",
+    "os":  "Microsoft Windows NT 10.0.22631.0",
+    "os64":  true,
+    "process64":  true,
+    "powershellVersion":  "5.1.22621.5624",
+    "listing":  {
+                    "arguments":  [
+                                      "-test.list=^(TestNativeStockExistingMappingIntegrity|TestNativeStockDirectoryRenamePin|TestNativeStockCloseFailureIsRetained)$"
+                                  ],
+                    "processId":  10276,
+                    "startedUtc":  "2026-10-12T09:03:58.1055954Z",
+                    "exitCode":  0,
+                    "timedOut":  false,
+                    "error":  null,
+                    "stdout":  "C:\\XNav\\ComponentChecks\\stock-before-eda928e2\\StockIntegrity\\list-stdout.log",
+                    "stderr":  "C:\\XNav\\ComponentChecks\\stock-before-eda928e2\\StockIntegrity\\list-stderr.log",
+                    "elapsedMilliseconds":  538
+                },
+    "execution":  {
+                      "arguments":  [
+                                        "-test.run=^(TestNativeStockExistingMappingIntegrity|TestNativeStockDirectoryRenamePin|TestNativeStockCloseFailureIsRetained)$",
+                                        "-test.count=1",
+                                        "-test.v",
+                                        "-test.timeout=90s"
+                                    ],
+                      "processId":  6512,
+                      "startedUtc":  "2026-10-12T09:03:58.7032178Z",
+                      "exitCode":  0,
+                      "timedOut":  false,
+                      "error":  null,
+                      "stdout":  "C:\\XNav\\ComponentChecks\\stock-before-eda928e2\\StockIntegrity\\tests-stdout.log",
+                      "stderr":  "C:\\XNav\\ComponentChecks\\stock-before-eda928e2\\StockIntegrity\\tests-stderr.log",
+                      "elapsedMilliseconds":  45
+                  },
+    "scope":  "Exact inert native fixtures only; no application/service/profile/network/physical output; not enrollment or release qualification",
+    "completedUtc":  "2026-10-12T09:03:59.0112384Z"
+}

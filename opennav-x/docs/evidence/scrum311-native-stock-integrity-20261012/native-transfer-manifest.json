@@ -1,0 +1,9 @@
+{
+  "sourceCommit": "eda928e2fee715ad3ec01e95db9e984426cac633",
+  "testRevision": "eda928e2fee715ad3ec01e95db9e984426cac633",
+  "files": {
+    "brokerhost.test.exe": "edc7395886942916a2a804f8493701308673d883f30968c29e04fb886cf31c9f",
+    "runner.ps1": "49a13a3f3061f130d33c984d08ff9e913120ab825c61724f44cc97519e4b5b8e"
+  },
+  "remote": "C:\\XNav\\ComponentChecks\\stock-before-eda928e2"
+}

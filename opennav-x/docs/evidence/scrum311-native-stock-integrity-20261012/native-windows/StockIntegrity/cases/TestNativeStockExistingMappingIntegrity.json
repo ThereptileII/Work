@@ -1,0 +1,15 @@
+{
+    "schema":  1,
+    "group":  "StockIntegrity",
+    "name":  "TestNativeStockExistingMappingIntegrity",
+    "selection":  "^TestNativeStockExistingMappingIntegrity$",
+    "runMarkers":  1,
+    "passMarkers":  1,
+    "executableSha256":  "edc7395886942916a2a804f8493701308673d883f30968c29e04fb886cf31c9f",
+    "exitCode":  0,
+    "os":  "Microsoft Windows NT 10.0.22631.0",
+    "timedOut":  false,
+    "groupReceipt":  "C:\\XNav\\ComponentChecks\\stock-before-eda928e2\\StockIntegrity\\receipt.json",
+    "executionLog":  "C:\\XNav\\ComponentChecks\\stock-before-eda928e2\\StockIntegrity\\tests-stdout.log",
+    "caseLog":  "TestNativeStockExistingMappingIntegrity.log"
+}

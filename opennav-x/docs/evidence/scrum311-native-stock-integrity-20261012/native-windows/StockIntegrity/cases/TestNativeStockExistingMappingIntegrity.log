@@ -1,0 +1,3 @@
+=== RUN   TestNativeStockExistingMappingIntegrity
+    stock_windows_test.go:59: existing writable mapping prevents initial stock custody
+--- PASS: TestNativeStockExistingMappingIntegrity (0.01s)

@@ -1,0 +1,3 @@
+TestNativeStockExistingMappingIntegrity
+TestNativeStockDirectoryRenamePin
+TestNativeStockCloseFailureIsRetained

@@ -1,0 +1,22 @@
+{
+  "README.md": "3a32eafa27ed91a5de6c4b82f87496138ccc5f9c5c82cab48d17d54c3538441d",
+  "native-StockIntegrity.json": "d9fb412d6830e1854806745f2f02cc63d3f6880f2d8d86a14310e91a539503c9",
+  "native-after.json": "87c9714eafdd73ccf6e0da91dc981064e77f098c81c5b8cd9c849ea1bdb7c4a3",
+  "native-preflight.json": "1ac7fbd2181267b94bb4d9e50a289989f752329dcc2747a7cdafa7b0844126d7",
+  "native-results-pack.json": "2d68ce546f8cc01c509ce5a01edbf510b75307030e329a226035e71510fc646a",
+  "native-retrieval.json": "77810fe670a78ef34ee76bd4806dbb63c6e8f0be5f93e2e0ccb0339442755391",
+  "native-stage.json": "b415cced119eb7f5e5571da15bb1e5f719d0eec4005664c4fd978c8a629a5ae6",
+  "native-transfer-manifest.json": "e12157ff447423884d0ce27439203457793e247eaad41ceb5c7126f2d07306bc",
+  "native-transfer.json": "6c27645ceb7ee1bd768c06f5e0149fd41ffc2c2795d05979c5c4ab06643d880e",
+  "native-windows/StockIntegrity/cases/TestNativeStockCloseFailureIsRetained.json": "0ae54430e51a31e26fac87ade8508d785a01f90f081264c37551b08dedd3838f",
+  "native-windows/StockIntegrity/cases/TestNativeStockCloseFailureIsRetained.log": "808b91e5ed5491f10887ba2c14fa3294278de0694e97ebfa9c14cf88fd5486e6",
+  "native-windows/StockIntegrity/cases/TestNativeStockDirectoryRenamePin.json": "e4552f4fb2bde3f3f9ec01b3d8f50bd777a4b96b846bbe953c226320825370bd",
+  "native-windows/StockIntegrity/cases/TestNativeStockDirectoryRenamePin.log": "99919168a771edf3b30500ff9436921b28ff0fef23e74647508528b47e225b2e",
+  "native-windows/StockIntegrity/cases/TestNativeStockExistingMappingIntegrity.json": "e658c407b009c89c0a3f1523fc21f07e299245e0ea33eed34060ed6f4cf9528c",
+  "native-windows/StockIntegrity/cases/TestNativeStockExistingMappingIntegrity.log": "87c96f0c041015936c697dc2148a4b7f9669c4c8aa6c92160a88c55a03159a8a",
+  "native-windows/StockIntegrity/list-stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "native-windows/StockIntegrity/list-stdout.log": "bae9124ae026c9feb4b6770477593149576885a05361940b0d45e44f47d7b60c",
+  "native-windows/StockIntegrity/receipt.json": "b8498565c05d0c9076cb8f8b9f5bcd0d045b3b99b015f34e89f59158490695fb",
+  "native-windows/StockIntegrity/tests-stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "native-windows/StockIntegrity/tests-stdout.log": "0e515c2864a686013b0b4bed955141eb1ea910e97c08bfb262487d64d75ede68"
+}
