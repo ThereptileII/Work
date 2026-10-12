@@ -107,3 +107,71 @@ uses inert files and injected read-only import results. Actual Windows capture,
 artifact audit, independently pinned native runner execution, production
 PluginHandler routing/ABI and installed/boat acceptance remain pending. This
 capture is neither a distribution nor a qualification pass.
+
+## Separate manual retained-input qualification
+
+The capture-only increment above remains unchanged. SCRUM-209/211 now also has
+a separate, manually dispatched
+[`skager-plugin-download-retained.yml`](../../../.github/workflows/skager-plugin-download-retained.yml)
+workflow. It consumes an existing capture on a disposable GitHub-hosted
+`windows-2022` runner in `ThereptileII/Work`; it does not rebuild the application
+or add automatic qualification to `opennav-baseline.yml`.
+
+All four dispatch inputs are mandatory:
+
+| Input | Required value |
+| --- | --- |
+| `producer_run` | Exact positive decimal `opennav-baseline` producer run ID |
+| `producer_attempt` | Exact positive decimal producer attempt |
+| `producer_commit` | Exact lowercase 40-character producer commit SHA |
+| `inventory_sha256` | Independently reviewed lowercase 64-character SHA256 of that capture's `inventory.json` |
+
+The independent reviewer must inspect the actual captured SDK origins, runtime
+imports and closed inventory before supplying `inventory_sha256`. Neither the
+capture's generated `inventorySha256` nor GitHub's artifact digest supplies this
+approval. Maintained TLS bytes remain bound to the authenticated dependency
+bundle; wx/libarchive origin review remains necessary before the external pin.
+
+The workflow checks out `producer_commit` and requires clean tracked source.
+The producer commit must contain the same workflow recipe as the dispatch
+revision: authenticated GitHub contents at `GITHUB_WORKFLOW_SHA` must equal the
+workflow's Git blob in that checkout. Git source and actual checkout hashes are
+recorded separately to account for ordinary Windows line endings. A capture
+whose source predates this workflow, or contains a different recipe, refuses.
+
+GitHub API metadata must identify the exact repository, baseline workflow,
+completed run attempt and unique `windows-integration` job with matching commit.
+Both named production-build and retained-input-capture steps must have completed
+successfully. Missing, ambiguous, skipped, failed or cancelled prerequisite
+steps refuse. A later producer-job failure is retained as such; it is not
+relabeled a successful overall build or qualification.
+
+Only the unique, unexpired
+`plugin-guard-inputs-<commit>-run<run>-attempt<attempt>` artifact is selected.
+Its API identity, workflow-run identity, bounded size and SHA256 digest must
+match the downloaded archive. Extraction requires a fresh directory and a
+bounded, closed capture projection; unsafe paths, aliases, links, unexpected
+members and incomplete capture metadata refuse. The externally supplied
+inventory pin then binds the exact candidate and retained files. Capture
+producer/run/attempt/Win32 fields, capture-helper hash and authenticated
+dependency authority must also match before any native probe runs.
+
+After authenticating and restoring the existing selected dependency SDK, the
+workflow invokes the actual `test-ocharts-loader-windows.py` native loader
+fixtures and `test-plugin-download-guard-windows.py` PluginHandler/Downloader
+source-slice probe. The latter independently reprobes the maintained SDK and
+compiles only its narrow native probes using the retained inputs and an explicit
+patch tool. Transport credentials are absent from the native probe step.
+
+The evidence artifact retains input authority, the authentication script,
+capture/inventory metadata, dependency provenance and available native logs and
+results. Authentication failures retain a failed authority receipt, including
+failures before extraction; successful input authentication reports
+`inputs-authenticated-not-qualified`. Artifact names bind both the producer
+selection and the qualification run/attempt.
+
+This is source wiring only. Actual manual dispatch and native results remain
+pending. Even a successful run qualifies the native loader fixtures and
+PluginHandler source slice only: production routing/ABI, the full installed
+application and plugin lifecycle, encrypted-chart behavior, same-package
+product gates and boat acceptance still require their existing evidence.
