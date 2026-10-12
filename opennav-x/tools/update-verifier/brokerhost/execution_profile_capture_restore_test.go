@@ -138,10 +138,13 @@ func memoryRestoreEntries(s *memoryProfileCaptureSource) {
 	}
 }
 func profileRestoreFixture(t *testing.T) (*ExecutionProfileCapture, *memoryProfileRestoreSource, *memoryProfileRestoreAuthority, *memoryProfileCaptureArchive, *[]string) {
+	return profileRestoreFixtureINI(t, restoreINIOriginal, restoreINICurrent)
+}
+func profileRestoreFixtureINI(t *testing.T, originalINI, currentINI string) (*ExecutionProfileCapture, *memoryProfileRestoreSource, *memoryProfileRestoreAuthority, *memoryProfileCaptureArchive, *[]string) {
 	t.Helper()
 	events := []string{}
 	old := profileCaptureTestSource()
-	old.files["opencpn.ini"] = []byte(restoreINIOriginal)
+	old.files["opencpn.ini"] = []byte(originalINI)
 	old.files["opencpn.log"] = []byte("original operational log\n")
 	old.entries = append(old.entries, profileCaptureEntry{Path: "opencpn.log", Identity: "original-log-id", Attributes: 32, Created: 1, LastAccess: 2, LastWrite: 3, Security: "original owner/group/DACL"})
 	memoryRestoreEntries(old)
@@ -157,7 +160,7 @@ func profileRestoreFixture(t *testing.T) (*ExecutionProfileCapture, *memoryProfi
 	for name, raw := range old.files {
 		now.files[name] = bytes.Clone(raw)
 	}
-	now.files["opencpn.ini"] = []byte(restoreINICurrent)
+	now.files["opencpn.ini"] = []byte(currentINI)
 	now.files["opencpn.log"] = append(now.files["opencpn.log"], []byte("startup and close\n")...)
 	memoryRestoreEntries(now)
 	for i := range now.entries {
@@ -278,6 +281,135 @@ func TestExecutionProfileRestorePartialEffectsRemainUncertain(t *testing.T) {
 			first := p.Close()
 			if first == nil || p.Close() != first || current.closes != 1 || archive.closes != 1 {
 				t.Fatal("cleanup not cached", first)
+			}
+		})
+	}
+}
+
+// Real version-change source path (pinned37fd): ocpn_app.cpp1444-1447 calls
+// SetUpgradeOptions. OCPNPlatform.cpp1522-1555 forces CompatOS*, Audio booleans
+// and ToolbarX; GL-capable upgrade633-646 forces the exact8 graphics values.
+// navutil.cpp2076-2077,2145,2162-2170,2234,2381-2383 persists them, then2617
+// Flush commits. These customized prior settings are legitimate; no connection,
+// route, pilot or plugin setting is changed by the reviewed fixture.
+const restoreForcedINIOriginal = `[Settings]
+;retain original owner comment
+ConfigVersionString=Version 5.12.3 Build old
+NavMessageShown=0
+CompatOS=prior-custom-platform
+CompatOsVersion=prior-custom-version
+CmdSoundString=original-custom-command-never-executed
+ToolbarX=137
+OpenGL=0
+UseAcceleratedPanning=0
+GPUTextureCompression=0
+GPUTextureCompressionCaching=0
+GPUTextureDimension=1024
+GPUTextureMemSize=128
+PolygonSmoothing=0
+LineSmoothing=0
+UnreviewedSetting=unchanged
+[Settings/Audio]
+bAIS_GCPA_AlertAudio=0
+bAIS_SART_AlertAudio=0
+bAIS_DSC_AlertAudio=0
+bAnchorAlertAudio=0
+[Connections]
+COM8=OUTPUT;pilot-binding
+[PlugIns]
+Pilot=enabled
+[Routes]
+Current=voyage
+[Settings/NMEADataSource]
+DataConnections=original-output
+`
+const restoreForcedINICurrent = `[Settings]
+;retain original owner comment
+ConfigVersionString=Version 5.12.4 Build new
+NavMessageShown=1
+CompatOS=
+CompatOsVersion=
+CmdSoundString=original-custom-command-never-executed
+ToolbarX=-1
+OpenGL=1
+UseAcceleratedPanning=1
+GPUTextureCompression=1
+GPUTextureCompressionCaching=1
+GPUTextureDimension=512
+GPUTextureMemSize=64
+PolygonSmoothing=1
+LineSmoothing=1
+UnreviewedSetting=unchanged
+[Settings/Audio]
+bAIS_GCPA_AlertAudio=1
+bAIS_SART_AlertAudio=1
+bAIS_DSC_AlertAudio=1
+bAnchorAlertAudio=0
+[Connections]
+COM8=OUTPUT;pilot-binding
+[PlugIns]
+Pilot=enabled
+[Routes]
+Current=voyage
+[Settings/NMEADataSource]
+DataConnections=original-output
+`
+
+func TestExecutionProfileRestoreForcedUpgradeSettingsOriginalBytes(t *testing.T) {
+	p, current, a, archive, events := profileRestoreFixtureINI(t, restoreForcedINIOriginal, restoreForcedINICurrent)
+	originalArchive := bytes.Clone(archive.raw)
+	digest, err := p.restoreOriginalNative(context.Background(), a)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if digest != profileTreeDigest(p.state.manifest.Entries) || !bytes.Equal(current.files["opencpn.ini"], []byte(restoreForcedINIOriginal)) || !bytes.Equal(archive.raw, originalArchive) || strings.Join(*events, ",") != "inspect,intent,apply" {
+		t.Fatal("customized original settings/backup/order not preserved")
+	}
+	if err = p.Close(); err != nil {
+		t.Fatal(err)
+	}
+}
+func TestExecutionProfileRestoreForcedSettingsRejectUnexpectedValuesAndAliases(t *testing.T) {
+	for _, tc := range []struct{ name, from, to string }{
+		{"compat-not-reset", "CompatOS=\n", "CompatOS=another-platform\n"},
+		{"compat-version-not-reset", "CompatOsVersion=\n", "CompatOsVersion=another-version\n"},
+		{"toolbar-not-forced", "ToolbarX=-1", "ToolbarX=0"},
+		{"opengl-not-forced", "OpenGL=1", "OpenGL=2"},
+		{"panning-not-forced", "UseAcceleratedPanning=1", "UseAcceleratedPanning=2"},
+		{"texture-not-forced", "GPUTextureCompression=1", "GPUTextureCompression=2"},
+		{"texture-cache-not-forced", "GPUTextureCompressionCaching=1", "GPUTextureCompressionCaching=2"},
+		{"texture-dimension-not-forced", "GPUTextureDimension=512", "GPUTextureDimension=2048"},
+		{"texture-memory-not-forced", "GPUTextureMemSize=64", "GPUTextureMemSize=256"},
+		{"polygon-not-forced", "PolygonSmoothing=1", "PolygonSmoothing=true"},
+		{"line-not-forced", "LineSmoothing=1", "LineSmoothing=enabled"},
+		{"ais-audio-not-forced", "bAIS_GCPA_AlertAudio=1", "bAIS_GCPA_AlertAudio=true"},
+		{"sart-audio-not-forced", "bAIS_SART_AlertAudio=1", "bAIS_SART_AlertAudio=2"},
+		{"dsc-audio-not-forced", "bAIS_DSC_AlertAudio=1", "bAIS_DSC_AlertAudio=yes"},
+		{"anchor-audio-still-unreviewed", "bAnchorAlertAudio=0", "bAnchorAlertAudio=1"},
+		{"sound-command-serialization-unproven", "CmdSoundString=original-custom-command-never-executed", "CmdSoundString=PowerShell unproven-serialized-default"},
+		{"field-case-alias", "CompatOS=", "compatos="},
+		{"audio-field-case-alias", "bAIS_GCPA_AlertAudio=1", "bais_gcpa_alertaudio=1"},
+		{"group-case-alias", "[Settings/Audio]", "[Settings/audio]"},
+		{"unknown-key", "UnreviewedSetting=unchanged", "UnreviewedSetting=changed"},
+		{"pilot-binding", "COM8=OUTPUT;pilot-binding", "COM8=INPUT;pilot-binding"},
+		{"pilot-plugin", "Pilot=enabled", "Pilot=disabled"},
+		{"route-data", "Current=voyage", "Current=other-voyage"},
+		{"comments-preserved", ";retain original owner comment", ";unreviewed changed comment"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			changed := strings.Replace(restoreForcedINICurrent, tc.from, tc.to, 1)
+			if changed == restoreForcedINICurrent {
+				t.Fatal("fixture replacement missing")
+			}
+			p, current, a, archive, events := profileRestoreFixtureINI(t, restoreForcedINIOriginal, changed)
+			defer p.Close()
+			before := bytes.Clone(current.files["opencpn.ini"])
+			backup := bytes.Clone(archive.raw)
+			if _, err := p.restoreOriginalNative(context.Background(), a); !errors.Is(err, ErrExecutionProfileRestoreReviewRequired) {
+				t.Fatal("unreviewed value/alias accepted", err)
+			}
+			if current.writes != 0 || !bytes.Equal(before, current.files["opencpn.ini"]) || !bytes.Equal(backup, archive.raw) || strings.Contains(strings.Join(*events, ","), "intent") {
+				t.Fatal("closed-policy refusal overwrote originals/current bytes")
 			}
 		})
 	}

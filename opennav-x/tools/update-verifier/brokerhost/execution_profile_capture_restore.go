@@ -55,22 +55,50 @@ type profileRestoreFactory interface {
 	inspectWritable(context.Context) (profileRestoreSource, error)
 }
 
-// Startup policy source: pinned OpenCPN 37fd0cddb7334fe489e9f18aa163977a9c5c84f7,
-// gui/src/ocpn_app.cpp:1937-1957 sets "n_NavMessageShown = 1" and
-// "g_config_version_string = vs"; gui/src/navutil.cpp:2078,2081 persists only
-// those two reviewed Settings keys here. UpdateSettings writes many other keys:
-// their changes are deliberately NOT automatically approved by this policy.
-// model/src/base_platform.cpp:671-679 rotates an old log above 1,000,000 bytes;
-// such rotation/new/missing files refuse. model/src/logger.cpp:83-84 opens
-// std::fstream::out | std::fstream::app; only exact-prefix log append is allowed.
-// Qualification's plugin-loader guard runs before plugin load stamps, and core
-// outputs are suppressed; these guarantees do not authorize nav/config changes.
+// Pinned startup policy: OpenCPN37fd0cddb7334fe489e9f18aa163977a9c5c84f7.
+// ocpn_app.cpp:1937-1957 sets NavMessageShown=1 and ConfigVersionString.
+// OCPNPlatform.cpp:1495-1555 (version change) resets CompatOS/CompatOsVersion
+// to empty, the three AIS-specific audio booleans to true and ToolbarX=-1.
+// OCPNPlatform.cpp:633-646 (GL-capable upgrade) forces OpenGL plus seven GL
+// defaults below. navutil.cpp:2076-2081,2145,2162-2170,2234,2381-2383 persists
+// these reviewed values. Later toolbar.cpp:433-457 recalculated coordinates,
+// canvas geometry/default normalization and all other startup writes REFUSE.
+// CmdSoundString is not admitted yet: SoundConfig.cmake:10-28 selects a build-
+// dependent command; its actual Windows INI serialization must be pinned first.
+// base_platform.cpp:671-679 rotates logs above1,000,000 bytes (refused here);
+// logger.cpp:83-84 opens out|app, so only exact original-prefix append is allowed.
+// No navigation/connection/pilot/plugin fields are approved by these changes.
+func automaticStartupINIValues() map[string]string {
+	// Fresh private map; callers cannot mutate a global policy or supply values.
+	return map[string]string{
+		"/Settings/ConfigVersionString":          "", // separately checked version shape
+		"/Settings/NavMessageShown":              "1",
+		"/Settings/CompatOS":                     "",
+		"/Settings/CompatOsVersion":              "",
+		"/Settings/ToolbarX":                     "-1",
+		"/Settings/OpenGL":                       "1",
+		"/Settings/UseAcceleratedPanning":        "1",
+		"/Settings/GPUTextureCompression":        "1",
+		"/Settings/GPUTextureCompressionCaching": "1",
+		"/Settings/GPUTextureDimension":          "512",
+		"/Settings/GPUTextureMemSize":            "64",
+		"/Settings/PolygonSmoothing":             "1",
+		"/Settings/LineSmoothing":                "1",
+		"/Settings/Audio/bAIS_GCPA_AlertAudio":   "1",
+		"/Settings/Audio/bAIS_SART_AlertAudio":   "1",
+		"/Settings/Audio/bAIS_DSC_AlertAudio":    "1",
+	}
+}
 func automaticProfileINI(raw []byte) (map[string]string, []string, error) {
 	if len(raw) > maxAutomaticProfileFileBytes || !utf8.Valid(raw) || bytes.ContainsRune(raw, 0) {
 		return nil, nil, ErrExecutionProfileRestoreReviewRequired
 	}
 	raw = bytes.TrimPrefix(raw, []byte{0xef, 0xbb, 0xbf})
 	values := map[string]string{}
+	canonicalKeys := map[string]string{}
+	for key := range automaticStartupINIValues() {
+		canonicalKeys[strings.ToLower(key)] = key
+	}
 	known := map[string]bool{}
 	sections := map[string]bool{}
 	var fixed []string
@@ -111,13 +139,12 @@ func automaticProfileINI(raw []byte) (map[string]string, []string, error) {
 			return nil, nil, ErrExecutionProfileRestoreReviewRequired
 		}
 		known[lower] = true
-		switch lower {
-		case "/settings/configversionstring", "/settings/navmessageshown":
-			if path != "/Settings/ConfigVersionString" && path != "/Settings/NavMessageShown" {
+		if canonical, ok := canonicalKeys[lower]; ok {
+			if path != canonical {
 				return nil, nil, ErrExecutionProfileRestoreReviewRequired
 			}
 			values[path] = value
-		default:
+		} else {
 			fixed = append(fixed, "entry:"+path+"="+value)
 		}
 	}
@@ -141,6 +168,7 @@ func automaticINIChanges(original, current []byte) error {
 			return ErrExecutionProfileRestoreReviewRequired
 		}
 	}
+	forced := automaticStartupINIValues()
 	for key, value := range after {
 		if old, ok := before[key]; ok && old == value {
 			continue
@@ -160,7 +188,10 @@ func automaticINIChanges(original, current []byte) error {
 				}
 			}
 		default:
-			return ErrExecutionProfileRestoreReviewRequired
+			expected, ok := forced[key]
+			if !ok || value != expected {
+				return ErrExecutionProfileRestoreReviewRequired
+			}
 		}
 	}
 	return nil
