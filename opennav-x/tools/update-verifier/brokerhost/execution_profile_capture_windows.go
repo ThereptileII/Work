@@ -416,11 +416,6 @@ func captureProfileTreePathMode(ctx context.Context, path string, checkProcesses
 	if err = windows.GetVolumeInformationByHandle(b.ancestors[len(b.ancestors)-1].handle, nil, 0, &serial, &component, &flags, &fs[0], uint32(len(fs))); err != nil || windows.UTF16ToString(fs[:]) != "NTFS" {
 		return nil, errors.Join(errors.New("native profile requires physical NTFS custody"), err)
 	}
-	b.watch, err = startProfileWatch(b.physical)
-	if err != nil {
-		return nil, err
-	}
-	b.watch.phase = "initial capture"
 	pending := []string{"."}
 	known := map[string]bool{}
 	var total int64
@@ -489,6 +484,16 @@ func captureProfileTreePathMode(ctx context.Context, path string, checkProcesses
 		}
 		return b.members[i].entry.Path < b.members[j].entry.Path
 	})
+	// The first walk is only a candidate snapshot. Opening and enumerating its
+	// members can complete pending directory metadata writes; watching that walk
+	// makes those writes indistinguishable from external profile changes. Arm the
+	// watch after retaining all member handles, then recheck the entire snapshot
+	// under the watch before accepting custody. Any event from that point refuses.
+	b.watch, err = startProfileWatch(b.physical)
+	if err != nil {
+		return nil, err
+	}
+	b.watch.phase = "initial capture"
 	if err = b.validate(ctx, true); err != nil {
 		return nil, err
 	}
