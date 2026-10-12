@@ -37,7 +37,7 @@ func runOperator(ctx context.Context, args []string, read func(string) ([]byte, 
 	for _, arg := range args {
 		name, _, _ := strings.Cut(arg, "=")
 		if name == "--maintenance" {
-			return true, runMaintenance(ctx, args, read, maintain)
+			return true, runMaintenanceDispatch(ctx, args, read, maintain)
 		}
 	}
 	return false, runWithActivation(ctx, args, read, enroll, activate)
