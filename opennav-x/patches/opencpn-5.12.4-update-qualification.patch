@@ -1,0 +1,280 @@
+diff --git a/gui/src/ocpn_app.cpp b/gui/src/ocpn_app.cpp
+--- a/gui/src/ocpn_app.cpp
++++ b/gui/src/ocpn_app.cpp
+@@ -26,6 +26,9 @@
+ #include "integration/OpenCPNIntegration.h"
+ #include "integration/InstallerSelfTest.h"
+ #include "integration/UpdateStartupReceipt.h"
++#endif
++#ifdef OPENNAV_X
++#include "integration/UpdateQualification.h"
+ #endif
+ #include "config.h"
+ 
+@@ -1419,9 +1422,20 @@
+   }
+ 
+   //      Open/Create the Config Object
++#ifdef OPENNAV_X
++  auto qualified_config = opennav::integration::BeginQualifiedConfigLoad(
++      g_Platform->GetConfigFileName().ToStdWstring());
++  if (opennav::integration::QualificationProfileRequired() && !qualified_config)
++    return false;
++#endif
+   pConfig = g_Platform->GetConfigObject();
+   InitBaseConfig(pConfig);
+   pConfig->LoadMyConfig();
++#ifdef OPENNAV_X
++  if (!opennav::integration::CompleteQualifiedConfigLoad(std::move(qualified_config),
++          g_Platform->GetConfigFileName().ToStdWstring()) ||
++      !opennav::integration::NotifyUpdateConfigLoaded()) return false;
++#endif
+ #ifdef OPENNAV_X
+   opennav::SelectMode(*pConfig, safe_mode::get_mode());
+ #endif
+diff --git a/gui/src/navutil.cpp b/gui/src/navutil.cpp
+--- a/gui/src/navutil.cpp
++++ b/gui/src/navutil.cpp
+@@ -23,6 +23,9 @@
+  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+  **************************************************************************/
+ 
++#ifdef OPENNAV_X
++#include "integration/UpdateQualification.h"
++#endif
+ #include <wx/wxprec.h>
+ 
+ #ifdef __MINGW32__
+@@ -398,7 +401,13 @@
+ 
+ MyConfig::MyConfig(const wxString &LocalFileName)
+     : wxFileConfig(_T (""), _T (""), LocalFileName, _T (""),
+-                   wxCONFIG_USE_LOCAL_FILE) {}
++                   wxCONFIG_USE_LOCAL_FILE) {
++#ifdef OPENNAV_X
++  // The wx base constructor has just read this exact file while native custody
++  // was already held by OnInit; corroborate the real constructor argument.
++  opennav::integration::ObserveQualifiedConfigConstructor(LocalFileName.ToStdWstring());
++#endif
++}
+ 
+ MyConfig::~MyConfig() {}
+ 
+diff --git a/model/src/comm_drv_n0183_serial.cpp b/model/src/comm_drv_n0183_serial.cpp
+--- a/model/src/comm_drv_n0183_serial.cpp
++++ b/model/src/comm_drv_n0183_serial.cpp
+@@ -23,6 +23,9 @@
+  *  Implement comm_drv_n0183_serial.h
+  */
+ 
++#ifdef SKAGER_UPDATE_QUALIFICATION
++#include "integration/UpdateQualification.h"
++#endif
+ // For compilers that support precompilation, includes "wx.h".
+ #include <wx/wxprec.h>
+ 
+@@ -142,6 +145,9 @@
+ 
+ bool CommDriverN0183Serial::SendMessage(std::shared_ptr<const NavMsg> msg,
+                                         std::shared_ptr<const NavAddr> addr) {
++#ifdef SKAGER_UPDATE_QUALIFICATION
++  if (opennav::integration::QualificationOutputSuppressed()) return false;
++#endif
+   auto msg_0183 = std::dynamic_pointer_cast<const Nmea0183Msg>(msg);
+   wxString sentence(msg_0183->payload.c_str());
+ 
+diff --git a/model/src/comm_drv_n0183_net.cpp b/model/src/comm_drv_n0183_net.cpp
+--- a/model/src/comm_drv_n0183_net.cpp
++++ b/model/src/comm_drv_n0183_net.cpp
+@@ -23,6 +23,9 @@
+  *  Implement comm_drv_n0183_net.h.
+  */
+ 
++#ifdef SKAGER_UPDATE_QUALIFICATION
++#include "integration/UpdateQualification.h"
++#endif
+ #ifdef __MSVC__
+ #include "winsock2.h"
+ #include <wx/msw/winundef.h>
+@@ -362,6 +365,9 @@
+ 
+ bool CommDriverN0183Net::SendMessage(std::shared_ptr<const NavMsg> msg,
+                                      std::shared_ptr<const NavAddr> addr) {
++#ifdef SKAGER_UPDATE_QUALIFICATION
++  if (opennav::integration::QualificationOutputSuppressed()) return false;
++#endif
+   auto msg_0183 = std::dynamic_pointer_cast<const Nmea0183Msg>(msg);
+   std::string payload(msg_0183->payload);
+   if (!ocpn::endswith(payload, "\r\n")) payload += "\r\n";
+@@ -498,6 +504,9 @@
+ }
+ 
+ bool CommDriverN0183Net::SendSentenceNetwork(const wxString& payload) {
++#ifdef SKAGER_UPDATE_QUALIFICATION
++  if (opennav::integration::QualificationOutputSuppressed()) return false;
++#endif
+   if (m_txenter)
+     return false;  // do not allow recursion, could happen with non-blocking
+                    // sockets
+diff --git a/model/src/comm_drv_n2k_serial.cpp b/model/src/comm_drv_n2k_serial.cpp
+--- a/model/src/comm_drv_n2k_serial.cpp
++++ b/model/src/comm_drv_n2k_serial.cpp
+@@ -23,6 +23,9 @@
+  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+  **************************************************************************/
+ 
++#ifdef SKAGER_UPDATE_QUALIFICATION
++#include "integration/UpdateQualification.h"
++#endif
+ // For compilers that support precompilation, includes "wx.h".
+ #include <wx/wxprec.h>
+ 
+@@ -375,6 +378,9 @@
+ 
+ bool CommDriverN2KSerial::SendMessage(std::shared_ptr<const NavMsg> msg,
+                                       std::shared_ptr<const NavAddr> addr) {
++#ifdef SKAGER_UPDATE_QUALIFICATION
++  if (opennav::integration::QualificationOutputSuppressed()) return false;
++#endif
+   if (m_closing) return false;
+ 
+ #ifndef ANDROID
+@@ -443,6 +449,9 @@
+ bool CommDriverN2KSerial::SendPilotMessage(std::shared_ptr<const NavMsg> msg,
+     std::shared_ptr<const NavAddr> addr, uint64_t epoch, uint64_t* ticket) {
+   if (ticket) *ticket = 0;
++#ifdef SKAGER_UPDATE_QUALIFICATION
++  if (opennav::integration::QualificationOutputSuppressed()) return false;
++#endif
+ #ifndef ANDROID
+   auto n2k = std::dynamic_pointer_cast<const Nmea2000Msg>(msg);
+   auto destination = std::dynamic_pointer_cast<const NavAddr2000>(addr);
+@@ -636,6 +645,9 @@
+ }
+ 
+ int CommDriverN2KSerial::SetTXPGN(int pgn) {
++#ifdef SKAGER_UPDATE_QUALIFICATION
++  if (opennav::integration::QualificationOutputSuppressed()) return -1;
++#endif
+   //  Enable PGN message
+   unsigned char request_enable[] = {0x47, 0x00, 0x00, 0x00,  // pgn
+                                     0x00, 0x01, 0xFF, 0xFF, 0xFF, 0xFF};
+diff --git a/model/src/comm_drv_n2k_net.cpp b/model/src/comm_drv_n2k_net.cpp
+--- a/model/src/comm_drv_n2k_net.cpp
++++ b/model/src/comm_drv_n2k_net.cpp
+@@ -23,6 +23,9 @@
+  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+  **************************************************************************/
+ 
++#ifdef SKAGER_UPDATE_QUALIFICATION
++#include "integration/UpdateQualification.h"
++#endif
+ #include <iomanip>
+ #include <sstream>
+ 
+@@ -504,6 +507,9 @@
+ 
+ bool CommDriverN2KNet::SendMessage(std::shared_ptr<const NavMsg> msg,
+                                    std::shared_ptr<const NavAddr> addr) {
++#ifdef SKAGER_UPDATE_QUALIFICATION
++  if (opennav::integration::QualificationOutputSuppressed()) return false;
++#endif
+   auto msg_n2k = std::dynamic_pointer_cast<const Nmea2000Msg>(msg);
+   auto dest_addr_n2k = std::static_pointer_cast<const NavAddr2000>(addr);
+   return SendN2KNetwork(msg_n2k, dest_addr_n2k);
+@@ -1859,6 +1865,9 @@
+ }
+ 
+ bool CommDriverN2KNet::PrepareForTX() {
++#ifdef SKAGER_UPDATE_QUALIFICATION
++  if (opennav::integration::QualificationOutputSuppressed()) return false;
++#endif
+   // We need to determine several items before TX operations can commence.
+   // 1.  Is the gateway configured at my ip present, and if so, which of
+   //     the two supported gateways is it?  (YDEN-type, or Actisense-type.
+@@ -1921,6 +1930,9 @@
+ 
+ bool CommDriverN2KNet::SendN2KNetwork(std::shared_ptr<const Nmea2000Msg>& msg,
+                                       std::shared_ptr<const NavAddr2000> addr) {
++#ifdef SKAGER_UPDATE_QUALIFICATION
++  if (opennav::integration::QualificationOutputSuppressed()) return false;
++#endif
+   PrepareForTX();
+ 
+   std::vector<std::vector<unsigned char>> out_data = GetTxVector(msg, addr);
+@@ -1942,6 +1954,9 @@
+ 
+ bool CommDriverN2KNet::SendSentenceNetwork(
+     std::vector<std::vector<unsigned char>> payload) {
++#ifdef SKAGER_UPDATE_QUALIFICATION
++  if (opennav::integration::QualificationOutputSuppressed()) return false;
++#endif
+   if (m_txenter)
+     return false;  // do not allow recursion, could happen with non-blocking
+                    // sockets
+diff --git a/model/src/comm_n0183_output.cpp b/model/src/comm_n0183_output.cpp
+--- a/model/src/comm_n0183_output.cpp
++++ b/model/src/comm_n0183_output.cpp
+@@ -23,6 +23,9 @@
+  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+  **************************************************************************/
+ 
++#ifdef SKAGER_UPDATE_QUALIFICATION
++#include "integration/UpdateQualification.h"
++#endif
+ // For compilers that support precompilation, includes "wx.h".
+ #include <wx/wxprec.h>
+ 
+@@ -371,6 +374,9 @@
+ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
+                          bool bsend_waypoints, Multiplexer& multiplexer,
+                          N0183DlgCtx dlg_ctx) {
++#ifdef SKAGER_UPDATE_QUALIFICATION
++  if (opennav::integration::QualificationOutputSuppressed()) return -1;
++#endif
+   int ret_val = 0;
+ 
+   ConnectionParams params_save;
+@@ -880,6 +886,9 @@
+ 
+ int SendWaypointToGPS_N0183(RoutePoint* prp, const wxString& com_name,
+                             Multiplexer& multiplexer, N0183DlgCtx dlg_ctx) {
++#ifdef SKAGER_UPDATE_QUALIFICATION
++  if (opennav::integration::QualificationOutputSuppressed()) return -1;
++#endif
+   int ret_val = 0;
+ 
+   ConnectionParams params_save;
+diff --git a/model/src/garmin_wrapper.cpp b/model/src/garmin_wrapper.cpp
+--- a/model/src/garmin_wrapper.cpp
++++ b/model/src/garmin_wrapper.cpp
+@@ -19,6 +19,9 @@
+ 
+  */
+ 
++#ifdef SKAGER_UPDATE_QUALIFICATION
++#include "integration/UpdateQualification.h"
++#endif
+ #include "config.h"
+ 
+ #include "model/garmin_wrapper.h"
+@@ -91,6 +94,9 @@
+ 
+ int Garmin_GPS_SendWaypoints(const wxString &port_name,
+                              RoutePointList *wplist) {
++#ifdef SKAGER_UPDATE_QUALIFICATION
++  if (opennav::integration::QualificationOutputSuppressed()) return -1;
++#endif
+   int ret_val = 0;
+ 
+   int nPoints = wplist->GetCount();
+@@ -241,6 +247,9 @@
+ 
+ int Garmin_GPS_SendRoute(const wxString &port_name, Route *pr,
+                          N0183DlgCtx dlg_ctx) {
++#ifdef SKAGER_UPDATE_QUALIFICATION
++  if (opennav::integration::QualificationOutputSuppressed()) return -1;
++#endif
+   int ret_val = 0;
+ 
+   int route_number = 1;

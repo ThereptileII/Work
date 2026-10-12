@@ -29,9 +29,10 @@ bool Hex(const std::string& value, std::size_t count) {
 
 void UpdateStartupReceiptState::Capture(
     const std::string& pipe, const std::string& generation,
-    const std::string& challenge, const std::string& compiled_commit) {
+    const std::string& challenge, const std::string& compiled_commit, bool qualified_profile) {
   if (captured_) return;
   captured_ = true;
+  qualified_ = qualified_profile;
   constexpr char prefix[] = "Skager.Update.";
   constexpr auto prefix_size = sizeof(prefix) - 1;
   if (pipe.size() != prefix_size + 32 || pipe.compare(0, prefix_size, prefix) ||
@@ -42,12 +43,33 @@ void UpdateStartupReceiptState::Capture(
                 " " + challenge + "\n"};
 }
 
+std::optional<UpdateStartupReceiptEnvelope> UpdateStartupReceiptState::ConfigLoaded(
+    const QualifiedConfigObservation& observation) {
+  if (!qualified_ || configured_ || warning_ != Warning::None || !envelope_) {
+    envelope_.reset();
+    return {};
+  }
+  const auto fields = EncodeQualifiedConfigObservation(observation);
+  if (!fields) { envelope_.reset(); return {}; }
+  auto config = *envelope_;
+  config.message.replace(0, std::string("SKAGER-UPDATE-READY/1").size(), "SKAGER-UPDATE-CONFIG/1");
+  config.message.pop_back();
+  config.message += " " + *fields + "\n";
+  config.terminal = false;
+  configured_ = true;
+  ready_since_.reset();
+  last_observed_.reset();
+  checkpoint_ = false;
+  return config;
+}
+
 std::optional<UpdateStartupReceiptEnvelope>
 UpdateStartupReceiptState::NavigationWarning(bool waiting, bool accepted) {
   ready_since_.reset();
   last_observed_.reset();
   checkpoint_ = false;
   if (!envelope_) return {};
+  if (qualified_ && !configured_) { envelope_.reset(); return {}; }
   if ((waiting && (accepted || warning_ != Warning::None)) ||
       (!waiting && warning_ != Warning::Waiting)) {
     warning_ = Warning::Invalid;
@@ -80,7 +102,7 @@ void UpdateStartupReceiptState::ObserveReady(bool ready, Time now) {
 void UpdateStartupReceiptState::RecoveryCheckpointReached() { checkpoint_ = true; }
 
 std::optional<UpdateStartupReceiptEnvelope> UpdateStartupReceiptState::TakeReady() {
-  if (warning_ == Warning::Waiting || warning_ == Warning::Cancelled ||
+  if ((qualified_ && !configured_) || warning_ == Warning::Waiting || warning_ == Warning::Cancelled ||
       warning_ == Warning::Invalid || !checkpoint_ || !ready_since_ || !last_observed_ ||
       *last_observed_ - *ready_since_ < std::chrono::seconds(30)) return {};
   auto result = std::move(envelope_);
@@ -102,8 +124,9 @@ struct Handle {
 };
 
 // One bounded FIFO and one worker for the entire supervised startup. This
-// preserves WAIT -> CONTINUE -> READY ordering even when the user accepts at
-// once. Only owned bytes cross threads; no wx object or mutable UI is retained.
+// preserves CONFIG (qualified only) -> WAIT -> CONTINUE -> READY ordering,
+// including immediate acceptance. Only owned bytes cross threads; no wx object
+// or mutable UI is retained.
 struct StartupTransport {
   std::mutex mutex;
   std::condition_variable changed;
@@ -176,22 +199,23 @@ unsigned __stdcall SendReceipt(void* argument) noexcept {
   return 0;
 }
 
-void SendEnvelope(std::optional<UpdateStartupReceiptEnvelope> envelope) {
-  if (!envelope) return;
+bool SendEnvelope(std::optional<UpdateStartupReceiptEnvelope> envelope) {
+  if (!envelope) return false;
   static const auto state = std::make_shared<StartupTransport>();
   std::lock_guard<std::mutex> lock(state->mutex);
-  if (state->closed || state->submitted >= 3) return;
+  if (state->closed || state->submitted >= (QualificationProfileRequired() ? 4u : 3u)) return false;
   state->queued.push_back(std::move(*envelope));
   ++state->submitted;
   if (!state->started) {
     auto owned = std::make_unique<std::shared_ptr<StartupTransport>>(state);
     const auto thread = _beginthreadex(nullptr, 0, &SendReceipt, owned.get(), 0, nullptr);
-    if (!thread) { state->closed = true; state->queued.clear(); return; }
+    if (!thread) { state->closed = true; state->queued.clear(); return false; }
     state->started = true;
     owned.release();
     CloseHandle(reinterpret_cast<HANDLE>(thread));
   }
   state->changed.notify_one();
+  return true;
 }
 
 void SendReadyReceipt() { SendEnvelope(Receipt().TakeReady()); }
@@ -227,6 +251,7 @@ std::string Ascii(const EnvironmentField& field) {
 #endif
 
 void CaptureUpdateStartupReceipt() noexcept {
+  CaptureUpdateQualificationFlag();
 #ifdef _WIN32
   const auto pipe = ReadEnvironment(L"SKAGER_UPDATE_PIPE");
   const auto generation = ReadEnvironment(L"SKAGER_UPDATE_GENERATION");
@@ -237,10 +262,26 @@ void CaptureUpdateStartupReceipt() noexcept {
   const bool challenge_cleared = ClearEnvironment(L"SKAGER_UPDATE_CHALLENGE");
   try {
     if (pipe_cleared && generation_cleared && challenge_cleared)
-      Receipt().Capture(Ascii(pipe), Ascii(generation), Ascii(challenge), OPENNAV_BUILD_COMMIT);
+      Receipt().Capture(Ascii(pipe), Ascii(generation), Ascii(challenge), OPENNAV_BUILD_COMMIT, QualificationProfileRequired());
     else
-      Receipt().Capture({}, {}, {}, {});
+      Receipt().Capture({}, {}, {}, {}, QualificationProfileRequired());
   } catch (...) {}
+#endif
+}
+
+bool NotifyUpdateConfigLoaded() noexcept {
+  if (!QualificationProfileRequired()) return true;
+#ifdef _WIN32
+  try {
+    const auto observation = LoadedQualifiedConfigObservation();
+    if (!observation) return false;
+    auto envelope = Receipt().ConfigLoaded(*observation);
+    if (!envelope) return false;
+    // Queueing is not receiver acceptance or health authority.
+    return SendEnvelope(std::move(envelope));
+  } catch (...) { return false; }
+#else
+  return false;
 #endif
 }
 
@@ -256,7 +297,7 @@ void NotifyUpdateNavigationWarning(bool waiting, bool accepted) noexcept {
 void ObserveUpdateStartupHealth(bool ready, UpdateStartupReceiptState::Time now) noexcept {
 #ifdef _WIN32
   try {
-    Receipt().ObserveReady(ready, now);
+    Receipt().ObserveReady(ready && QualifiedProfileObserved(), now);
     SendReadyReceipt();
   } catch (...) {}
 #else

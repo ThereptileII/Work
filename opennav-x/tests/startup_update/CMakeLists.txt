@@ -17,6 +17,13 @@ add_executable(update_startup_receipt_tests ../update_startup_receipt_tests.cpp
   ../../src/integration/UpdateStartupReceipt.cpp)
 set(fixture_targets startup_update_tests startup_update_dialog_test update_startup_receipt_tests)
 if(WIN32)
+  # Explicit target only: never add_test against the machine's fixed profile.
+  # The executable refuses an existing profile and non-disposable CI runtime.
+  add_executable(update_qualification_native_test ../update_qualification_native_test.cpp
+    ../../src/integration/UpdateQualification.cpp
+    ../../src/platform/windows/UpdateQualificationNative.cpp)
+  target_link_libraries(update_qualification_native_test PRIVATE ${wxWidgets_LIBRARIES} bcrypt shell32 ole32)
+  list(APPEND fixture_targets update_qualification_native_test)
   add_executable(update_startup_receipt_native_test ../update_startup_receipt_native_test.cpp
     ../../src/integration/UpdateStartupReceipt.cpp)
   add_executable(skager-update-prompt WIN32 ../../src/platform/windows/StartupUpdatePrompt.cpp
@@ -49,3 +56,13 @@ add_test(NAME startup_update_policy COMMAND startup_update_tests)
 add_test(NAME startup_update_dialog COMMAND startup_update_dialog_test)
 add_test(NAME update_startup_receipt_policy COMMAND update_startup_receipt_tests)
 set_tests_properties(startup_update_policy startup_update_dialog update_startup_receipt_policy PROPERTIES TIMEOUT 30)
+
+foreach(target update_startup_receipt_tests update_startup_receipt_native_test startup_warning_native)
+  if(TARGET ${target})
+    target_sources(${target} PRIVATE ../../src/integration/UpdateQualification.cpp)
+    if(WIN32)
+      target_sources(${target} PRIVATE ../../src/platform/windows/UpdateQualificationNative.cpp)
+      target_link_libraries(${target} PRIVATE bcrypt shell32 ole32)
+    endif()
+  endif()
+endforeach()

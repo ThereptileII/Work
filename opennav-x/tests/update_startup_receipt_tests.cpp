@@ -53,6 +53,36 @@ int main() {
       Require(!state.TakeReady(), "Invalid request must never become a receipt");
     }
 
+    const opennav::integration::QualifiedConfigObservation config{
+        std::string(16,'1'),std::string(32,'2'),std::string(16,'3'),
+        std::string(16,'4'),std::string(32,'5'),std::string(16,'6'),std::string(64,'7')};
+    UpdateStartupReceiptState qualified;
+    qualified.Capture(pipe, generation, challenge, compiled_commit, true);
+    Ready(qualified);
+    Require(!qualified.TakeReady(), "Qualified startup cannot become READY without actual CONFIG");
+    const auto observation = qualified.ConfigLoaded(config);
+    Require(observation && !observation->terminal && observation->message ==
+        "SKAGER-UPDATE-CONFIG/1 " + generation + " " + compiled_commit + " " + challenge + " " +
+        *opennav::integration::EncodeQualifiedConfigObservation(config) + "\n" && observation->message.size() < 512,
+        "CONFIG exact bounded full identities and original bytes hash");
+    Require(!qualified.TakeReady(), "CONFIG resets any pre-load synthetic health/checkpoint");
+    const auto qualified_wait = qualified.NavigationWarning(true, false);
+    const auto qualified_continue = qualified.NavigationWarning(false, true);
+    Require(qualified_wait && qualified_continue, "CONFIG precedes preserved modal protocol");
+    Ready(qualified);
+    Require(bool(qualified.TakeReady()), "Qualified CONFIG WAIT CONTINUE READY sequence retained");
+    for (int invalid = 0; invalid < 3; ++invalid) {
+      UpdateStartupReceiptState refused;
+      refused.Capture(pipe, generation, challenge, compiled_commit, true);
+      auto altered = config;
+      if (invalid == 0) altered.file_id[0] = 'A';
+      if (invalid == 1) refused.NavigationWarning(true, false);
+      if (invalid == 2) Require(bool(refused.ConfigLoaded(config)), "First config valid");
+      Require(!refused.ConfigLoaded(altered), "Malformed, late or repeated CONFIG poisons receipt");
+      Ready(refused);
+      Require(!refused.TakeReady(), "Refused CONFIG never yields READY");
+    }
+
     UpdateStartupReceiptState state;
     state.Capture(pipe, generation, challenge, compiled_commit);
     state.Capture(pipe, generation, challenge, std::string(40, 'e'));

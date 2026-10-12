@@ -19,6 +19,7 @@
 #include "integration/PreviewResources.h"
 #include "integration/RecoveryStore.h"
 #include "integration/UpdateStartupReceipt.h"
+#include "integration/UpdateQualification.h"
 #include "integration/RoutePassWatch.h"
 #include "integration/RuntimeDiagnostics.h"
 #include "integration/SettingsStore.h"
@@ -814,7 +815,7 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
       });
   actions.route_creating=[&frame]{return frame.GetPrimaryCanvas()->m_routeState>0;};
   pilots = std::make_unique<PilotServices>([] {
-    return (integration::PilotLoopbackTestsEnabled() || integration::PilotManualSerialEnabled()) && pilots && !pilots->was_demo && !restart &&
+    return !integration::QualificationOutputSuppressed() && (integration::PilotLoopbackTestsEnabled() || integration::PilotManualSerialEnabled()) && pilots && !pilots->was_demo && !restart &&
            (!commissioning || commissioning->AllowsHardwareControl());
   });
   pilots->was_demo = demo;

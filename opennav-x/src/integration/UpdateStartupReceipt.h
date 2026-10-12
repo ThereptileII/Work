@@ -3,6 +3,7 @@
 #include <chrono>
 #include <optional>
 #include <string>
+#include "integration/UpdateQualification.h"
 
 namespace opennav::integration {
 struct UpdateStartupReceiptEnvelope {
@@ -18,7 +19,9 @@ class UpdateStartupReceiptState final {
  public:
   using Time = std::chrono::steady_clock::time_point;
   void Capture(const std::string& pipe, const std::string& generation,
-               const std::string& challenge, const std::string& compiled_commit);
+               const std::string& challenge, const std::string& compiled_commit,
+               bool qualified_profile = false);
+  std::optional<UpdateStartupReceiptEnvelope> ConfigLoaded(const QualifiedConfigObservation& observation);
   // Called only around the actual upstream modal on the application thread.
   std::optional<UpdateStartupReceiptEnvelope> NavigationWarning(bool waiting, bool accepted);
   void ObserveReady(bool xnav_ui_ready, Time now);
@@ -30,6 +33,7 @@ class UpdateStartupReceiptState final {
   Warning warning_ = Warning::None;
   bool captured_ = false;
   bool checkpoint_ = false;
+  bool qualified_ = false, configured_ = false;
   std::optional<UpdateStartupReceiptEnvelope> envelope_;
   std::optional<Time> ready_since_, last_observed_;
 };
@@ -38,6 +42,9 @@ class UpdateStartupReceiptState final {
 // plugins/child launches; all three environment fields are removed even when
 // malformed or the eventual mode is Legacy/Safe. Non-Windows entry points no-op.
 void CaptureUpdateStartupReceipt() noexcept;
+// Called after the actual qualified config owner completes and releases INI.
+// No external/caller-provided observation can be supplied here.
+bool NotifyUpdateConfigLoaded() noexcept;
 // No auto-consent: report entering/leaving the actual OpenCPN warning only.
 // A waiting or cancelled warning can never acknowledge successful startup.
 void NotifyUpdateNavigationWarning(bool waiting, bool accepted) noexcept;

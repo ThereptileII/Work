@@ -30,3 +30,13 @@ foreach(target startup_warning_native update_startup_receipt_tests update_startu
     target_compile_options(${target} PRIVATE /utf-8 /W4)
   endif()
 endforeach()
+
+foreach(target update_startup_receipt_tests update_startup_receipt_native_test startup_warning_native)
+  if(TARGET ${target})
+    target_sources(${target} PRIVATE ../../src/integration/UpdateQualification.cpp)
+    if(WIN32)
+      target_sources(${target} PRIVATE ../../src/platform/windows/UpdateQualificationNative.cpp)
+      target_link_libraries(${target} PRIVATE bcrypt shell32 ole32)
+    endif()
+  endif()
+endforeach()

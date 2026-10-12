@@ -44,7 +44,7 @@ target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/Navigati
   "${OPENNAV_ROOT}/src/integration/SettingsStore.cpp"
   "${OPENNAV_ROOT}/src/integration/RecoveryStore.cpp"
   "${OPENNAV_ROOT}/src/integration/UpdateStartupReceipt.cpp")
-target_link_libraries(${PACKAGE_NAME} PRIVATE opennav_marine)
+target_link_libraries(${PACKAGE_NAME} PRIVATE opennav_marine opennav_update_qualification)
 set(OPENNAV_BUILD_COMMIT "$ENV{GITHUB_SHA}")
 if(NOT OPENNAV_BUILD_COMMIT)
   execute_process(COMMAND git rev-parse HEAD WORKING_DIRECTORY "${OPENNAV_ROOT}"
@@ -70,6 +70,9 @@ endif()
 # including headless model fixtures; OPENNAV_X remains source-scoped below.
 # Otherwise plugin_loader.cpp and other model units disagree about the class.
 target_compile_definitions(_OCPN_MODEL INTERFACE SKAGER_PLUGIN_CUSTODY=1)
+# Every actual model send/upload path shares the GUI process restriction latch.
+# The definition changes no model class layout or ordinary upstream behavior.
+target_compile_definitions(_OCPN_MODEL INTERFACE SKAGER_UPDATE_QUALIFICATION=1)
 target_include_directories(_OCPN_MODEL INTERFACE "${OPENNAV_ROOT}/src")
 # Preserve normal plugin preferences while upstream Safe Mode blocks loading.
 # Limit this additional definition to the one affected model translation unit.
@@ -81,7 +84,7 @@ set_property(SOURCE "${CMAKE_SOURCE_DIR}/model/src/plugin_loader.cpp"
 # consumer (including upstream headless fixtures) needs its real implementation.
 # LINK_ONLY keeps integration compile flags/includes out of the model and its
 # consumers; the unregistered callback retains ordinary upstream loading.
-target_link_libraries(_model_src INTERFACE "$<LINK_ONLY:opennav_integration>")
+target_link_libraries(_model_src INTERFACE "$<LINK_ONLY:opennav_integration>" "$<LINK_ONLY:opennav_update_qualification>")
 # Bound untrusted Signal K before the upstream recursive parser, not only after
 # the driver has already decoded it. The pristine build has no OpenNav include.
 set_property(SOURCE "${CMAKE_SOURCE_DIR}/model/src/comm_drv_signalk_net.cpp"
