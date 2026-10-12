@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"runtime"
+	"time"
 	"unsafe"
 
 	"golang.org/x/sys/windows"
@@ -127,4 +128,93 @@ func openFixedPipe(ctx context.Context, pipeName string) (windows.Handle, error)
 		return 0, errors.Join(ErrUnavailable, e)
 	}
 	return h, nil
+}
+
+const executionCurrentReadinessBudget = 5 * time.Second
+
+var executionWaitNamedPipe = windows.NewLazySystemDLL("kernel32.dll").NewProc("WaitNamedPipeW")
+
+// Only start-current may await phase-zero handoff from an occupied original
+// conversation. Staging and qualification retain immediate busy/missing refusal.
+// No bytes have been written; once connected CallExecution verifies the actual
+// SCM/process/token server before publication and never reconnects/replays.
+func openExecutionCurrentPipe(ctx context.Context) (windows.Handle, error) {
+	return openExecutionCurrentReady(ctx, ExecutionPipeName, nil)
+}
+
+// Endpoint selection remains private: production supplies only ExecutionPipeName.
+// observed is a private inert-fixture notification AFTER real native errors; it
+// supplies no readiness/trust decision and production never installs it.
+func openExecutionCurrentReady(ctx context.Context, pipeName string, observed func(error)) (windows.Handle, error) {
+	if ctx == nil || ctx.Err() != nil {
+		return 0, ErrRefused
+	}
+	budget, cancel := context.WithTimeout(ctx, executionCurrentReadinessBudget)
+	defer cancel()
+	name, err := windows.UTF16PtrFromString(pipeName)
+	if err != nil {
+		return 0, err
+	}
+	h, err := openFixedPipe(budget, pipeName)
+	if !errors.Is(err, windows.ERROR_PIPE_BUSY) {
+		return h, err
+	}
+	if observed != nil {
+		observed(windows.ERROR_PIPE_BUSY)
+	}
+	deadline, _ := budget.Deadline()
+	for {
+		if err := budget.Err(); err != nil {
+			return 0, errors.Join(ErrUnavailable, err)
+		}
+		remaining := time.Until(deadline)
+		milliseconds := remaining / time.Millisecond
+		if milliseconds < 1 {
+			return 0, errors.Join(ErrUnavailable, context.DeadlineExceeded)
+		}
+		if milliseconds > 100 {
+			milliseconds = 100
+		}
+		available, _, waitErr := executionWaitNamedPipe.Call(uintptr(unsafe.Pointer(name)), uintptr(milliseconds))
+		runtime.KeepAlive(name)
+		if err := budget.Err(); err != nil {
+			return 0, errors.Join(ErrUnavailable, err)
+		}
+		if available != 0 {
+			h, err = openFixedPipe(budget, pipeName)
+			if err == nil {
+				if e := budget.Err(); e != nil {
+					return 0, errors.Join(ErrUnavailable, e, windows.CloseHandle(h))
+				}
+				return h, nil
+			}
+			if errors.Is(err, windows.ERROR_PIPE_BUSY) {
+				continue
+			} // availability was consumed by another opener
+		} else {
+			err = waitErr
+		}
+		switch {
+		case errors.Is(err, windows.ERROR_SEM_TIMEOUT):
+			// Kernel readiness waits are sliced so cancellation is checked <=100ms.
+			continue
+		case errors.Is(err, windows.ERROR_FILE_NOT_FOUND):
+			// Allowed only AFTER actual BUSY: the old FIRST instance may have closed
+			// before the fresh one exists. This <=25ms cancellable backoff prevents a
+			// spin; elapsed time is NOT readiness evidence. Only successful CreateFile
+			// and subsequent native server verification can establish the connection.
+			if observed != nil {
+				observed(windows.ERROR_FILE_NOT_FOUND)
+			}
+			timer := time.NewTimer(25 * time.Millisecond)
+			select {
+			case <-budget.Done():
+				timer.Stop()
+				return 0, errors.Join(ErrUnavailable, budget.Err())
+			case <-timer.C:
+			}
+		default:
+			return 0, errors.Join(ErrUnavailable, err)
+		}
+	}
 }
