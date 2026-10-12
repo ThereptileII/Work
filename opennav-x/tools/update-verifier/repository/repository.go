@@ -24,13 +24,14 @@ import (
 )
 
 type state struct {
-	Schema          int    `json:"schema"`
-	ConfigSHA256    string `json:"configSha256"`
-	Version         int64  `json:"version"`
-	ProductVersion  string `json:"productVersion"`
-	ProductCommit   string `json:"productCommit"`
-	PolicySHA256    string `json:"policySha256"`
-	SelectionSHA256 string `json:"selectionSha256"`
+	Schema          int                   `json:"schema"`
+	ConfigSHA256    string                `json:"configSha256"`
+	Version         int64                 `json:"version"`
+	ProductVersion  string                `json:"productVersion"`
+	ProductCommit   string                `json:"productCommit"`
+	PolicySHA256    string                `json:"policySha256"`
+	SelectionSHA256 string                `json:"selectionSha256"`
+	BrokerBootstrap *brokerBootstrapState `json:"brokerBootstrap,omitempty"`
 }
 
 func sign[T metadata.Roles](m *metadata.Metadata[T], key ed25519.PrivateKey) ([]byte, error) {
@@ -252,6 +253,14 @@ func load(directory string, now time.Time) (Trust, state, *metadata.Metadata[met
 	if e != nil || decode(raw, &s) != nil || s.Schema != 1 || s.ConfigSHA256 != checksum(config) || s.Version < 0 || s.Version == math.MaxInt64 {
 		return fail()
 	}
+	if s.BrokerBootstrap != nil {
+		if s.Version == 0 {
+			return fail()
+		}
+		if _, e = retainedBootstrap(s.BrokerBootstrap, t, s.ConfigSHA256); e != nil {
+			return fail()
+		}
+	}
 	root, e := rootMetadata(t.BootstrapRoot, now)
 	if e != nil {
 		return fail()
@@ -361,6 +370,10 @@ func Publish(directory, assets string, selection, policy []byte, selectionSHA st
 	return publish(directory, assets, selection, policy, selectionSHA, keys, now, nil)
 }
 func publish(directory, assets string, selection, policy []byte, selectionSHA string, keys Keys, now time.Time, checkpoint func(string) error) (int64, error) {
+	return publishBatch(directory, assets, selection, policy, selectionSHA, nil, "", keys, now, checkpoint)
+}
+
+func publishBatch(directory, assets string, selection, policy []byte, selectionSHA string, bootstrap []byte, bootstrapSHA string, keys Keys, now time.Time, checkpoint func(string) error) (int64, error) {
 	if e := requireOperator(); e != nil {
 		return 0, e
 	}
@@ -388,6 +401,13 @@ func publish(directory, assets string, selection, policy []byte, selectionSHA st
 			return 0, errors.New("product downgrade or same-version replacement refused")
 		}
 	}
+	bootstrapPolicy, nextBootstrap, bootstrapCopies, e := selectBootstrap(directory, assets, bootstrap, bootstrapSHA, s, trust, p)
+	if e != nil {
+		return 0, e
+	}
+	// Reserve bootstrap declaration and floor together with the app floor. An
+	// omitted input never clears a retained or partially published declaration.
+	s.BrokerBootstrap = nextBootstrap
 	// Reserve durable counter/product floor before exposing signed metadata. A
 	// failed attempt consumes a version; a retry must advance rather than reset it.
 	s.Version++
@@ -412,6 +432,11 @@ func publish(directory, assets string, selection, policy []byte, selectionSHA st
 			return 0, e
 		}
 	}
+	for _, entry := range bootstrapCopies {
+		if e = copyArtifact(entry.source, entry.dest, entry.artifact); e != nil {
+			return 0, e
+		}
+	}
 	targets := metadata.Targets(now.Add(7 * 24 * time.Hour))
 	targets.Signed.Version = s.Version
 	target, e := metadata.TargetFile().FromBytes("releases/beta.json", policy, "sha256")
@@ -425,6 +450,23 @@ func publish(directory, assets string, selection, policy []byte, selectionSHA st
 	}{"beta", p.Version, p.Commit}))
 	target.Custom = &custom
 	targets.Signed.Targets["releases/beta.json"] = target
+	var bootstrapTargetPath string
+	if nextBootstrap != nil {
+		bootstrapTargetPath, e = releasepolicy.BrokerBootstrapTargetPath(bootstrapPolicy.Channel)
+		if e != nil {
+			return 0, e
+		}
+		bt, err := metadata.TargetFile().FromBytes(bootstrapTargetPath, nextBootstrap.Policy, "sha256")
+		if err != nil {
+			return 0, err
+		}
+		identity := json.RawMessage(jsonBytes(releasepolicy.BrokerBootstrapIdentity{
+			Purpose: bootstrapPolicy.Purpose, Channel: bootstrapPolicy.Channel, Version: bootstrapPolicy.Version,
+			Commit: bootstrapPolicy.Commit, TrustConfigSHA256: bootstrapPolicy.TrustConfigSHA256,
+		}))
+		bt.Custom = &identity
+		targets.Signed.Targets[bootstrapTargetPath] = bt
+	}
 	targetBytes, e := sign(targets, keys["targets"])
 	if e != nil {
 		return 0, e
@@ -444,6 +486,15 @@ func publish(directory, assets string, selection, policy []byte, selectionSHA st
 		return 0, e
 	}
 	public := filepath.Join(directory, "public")
+	if nextBootstrap != nil {
+		name := filepath.Join(public, "targets", filepath.FromSlash(path.Dir(bootstrapTargetPath)), nextBootstrap.SHA256+"."+path.Base(bootstrapTargetPath))
+		if e = mkdir(filepath.Dir(name)); e != nil {
+			return 0, e
+		}
+		if e = atomic(name, nextBootstrap.Policy, false); e != nil {
+			return 0, e
+		}
+	}
 	for _, file := range []struct {
 		name string
 		data []byte

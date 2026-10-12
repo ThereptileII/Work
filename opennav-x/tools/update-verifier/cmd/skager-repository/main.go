@@ -53,6 +53,7 @@ func run(args []string, out io.Writer) error {
 	fs := flag.NewFlagSet(command, flag.ContinueOnError)
 	fs.SetOutput(io.Discard)
 	var repo, config, metadataURL, origin, assets, policy, selection, pin, keyFile string
+	var bootstrapPolicy, bootstrapPin string
 	var keyStdin bool
 	switch command {
 	case "validate-trust":
@@ -69,6 +70,8 @@ func run(args []string, out io.Writer) error {
 		fs.StringVar(&policy, "policy", "", "")
 		fs.StringVar(&selection, "selection", "", "")
 		fs.StringVar(&pin, "selection-sha256", "", "")
+		fs.StringVar(&bootstrapPolicy, "broker-bootstrap-policy", "", "")
+		fs.StringVar(&bootstrapPin, "broker-bootstrap-policy-sha256", "", "")
 	default:
 		return errors.New("unsupported command")
 	}
@@ -79,6 +82,9 @@ func run(args []string, out io.Writer) error {
 	}
 	if e := fs.Parse(args[1:]); e != nil || fs.NArg() != 0 {
 		return errors.New("arguments refused")
+	}
+	if (bootstrapPolicy == "") != (bootstrapPin == "") {
+		return errors.New("bootstrap policy and independent approval pin must be supplied together")
 	}
 	now := time.Now().UTC()
 	if command == "validate-trust" {
@@ -142,7 +148,16 @@ func run(args []string, out io.Writer) error {
 	if e != nil {
 		return e
 	}
-	v, e := repository.Publish(repo, assets, s, p, pin, keys, now)
+	var v int64
+	if bootstrapPolicy == "" {
+		v, e = repository.Publish(repo, assets, s, p, pin, keys, now)
+	} else {
+		b, err := plainRead(bootstrapPolicy, 32768)
+		if err != nil {
+			return err
+		}
+		v, e = repository.PublishWithBrokerBootstrap(repo, assets, s, p, pin, b, bootstrapPin, keys, now)
+	}
 	if e != nil {
 		return e
 	}

@@ -81,3 +81,16 @@ func TestPublicValidatorCLI(t *testing.T) {
 		t.Fatal("implicit signing key input accepted")
 	}
 }
+
+func TestBootstrapCLIRequiresPairedFlagsBeforeReadingKeys(t *testing.T) {
+	for _, flags := range [][]string{
+		{"--broker-bootstrap-policy", "missing.json"},
+		{"--broker-bootstrap-policy-sha256", "not-a-pin"},
+	} {
+		var out bytes.Buffer
+		args := append([]string{"publish", "--repository", "missing", "--keys-file", "missing-private-input"}, flags...)
+		if e := run(args, &out); e == nil || e.Error() != "bootstrap policy and independent approval pin must be supplied together" || out.Len() != 0 {
+			t.Fatal("partial bootstrap arguments reached key handling or emitted output")
+		}
+	}
+}
