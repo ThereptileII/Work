@@ -29,6 +29,18 @@ registry-specific and retain actual descendant owner/ACL checks. No full compone
 or application rebuild was needed for this observation.
 [Retained diagnostic evidence](evidence/scrum311-startup-native-repairs-20261012/retained-machine-acl-run.json).
 
+Retained-only [38301585978](https://github.com/ThereptileII/Work/actions/runs/38301585978)
+on helper `4dd56a93` passes the registry-template, descriptor-diagnostic and
+SCM/service-rights matrices (3 top-level and 16 nested checks), original component
+authentication, machine/initial-service ACL checks and exclusive service creation.
+It then refuses `new service was not stopped` before first start. The log does
+not emit returned status fields. Microsoft's SCM protocol requires exit code
+1077 before any start attempt; the implementation incorrectly applies a completed
+zero-exit predicate at both fresh-service checks. A fresh-only distinction and
+same-read refusal diagnostic are selected, keeping all post-start completion
+checks strict. This remains a failed run, not native service acceptance.
+[Original evidence](evidence/scrum311-startup-native-repairs-20261012/retained-registry-template-run.json).
+
 ## Private HTTPS preflight available; origin activation still pending
 
 The read-only preflight pins the approved public trust configuration and original

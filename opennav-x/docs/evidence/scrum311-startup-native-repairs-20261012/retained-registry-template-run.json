@@ -1,0 +1,32 @@
+{
+  "schema": 1,
+  "run": 38301585978,
+  "url": "https://github.com/ThereptileII/Work/actions/runs/38301585978",
+  "conclusion": "failure",
+  "helperCommit": "4dd56a938e86605530b6f5f4294bf800f204411e",
+  "retainedBrokerCommit": "0ddb649ffaa06c8b6e1fc313fa6a087edf9914dd",
+  "job": 114985529752,
+  "originalComponentAuthentication": "passed",
+  "newInertTopLevelPassed": 3,
+  "newInertNestedPassed": 16,
+  "freshFiles": "passed",
+  "machineAndInitialServiceAclValidation": "passed",
+  "exclusiveServiceCreation": "passed",
+  "freshScmEnrollment": "refused before first start",
+  "failure": "new service was not stopped",
+  "originalStatusFields": "not emitted; do not claim observed 1077",
+  "freshStatusContract": "MS-SCMR specifies1077 before any start; private fresh-only predicate and same-read diagnostics selected; all post-start zero-exit checks must remain strict",
+  "normativeReference": "https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-scmr/cf94d915-b4e1-40e5-872b-a9cb3ad09b46",
+  "log": {
+    "bytes": 33571,
+    "sha256": "0654224f0c542f0ff850d544b56448b6732b99a15a7c967327b19626dd5694cf"
+  },
+  "artifact": {
+    "id": 11771155765,
+    "bytes": 1760,
+    "sha256": "ac6f8ddca311f6e396af0288d844ad664d9d1c4e90d80d080d0ed3d4ef95c8e0"
+  },
+  "fullApplicationBuild": false,
+  "nativeProductAcceptance": false,
+  "boatChanged": false
+}
