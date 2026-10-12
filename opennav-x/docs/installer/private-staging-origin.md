@@ -39,8 +39,17 @@ The fixed path allowlist matches repository output exactly:
 - `timestamp.json`, served without caching;
 - numbered `N.root.json`, `N.targets.json`, `N.snapshot.json`;
 - `targets/releases/<64-lowercase-hex-sha256>.beta.json`;
+- `targets/bootstrap/<64-lowercase-hex-sha256>.broker-beta.json`;
 - `artifacts/<40-lowercase-hex-commit>/<fixed-artifact-name>` for the five names
-  in the repository tool's reviewed selection contract.
+  in the repository tool's reviewed application selection contract, plus
+  `skager-update-broker.exe` and `skager-update-provisioner.exe`.
+
+The bootstrap policy uses the application's existing `SKAGER-Beta2-source.zip`
+and `SOURCE_AND_LICENSES.md` corresponding-source and notice artifacts. Other
+source or notice filenames are not served, even if a policy declares them.
+Unhashed bootstrap aliases, other channels and additional executables remain
+outside this allowlist. Bootstrap publication does not enroll or activate a
+broker, approve operator pins, or establish installed application qualification.
 
 The numbered metadata, hash-named policy and commit-named artifacts are immutable
 publication inputs; the helper does not modify or re-sign them. The publisher
@@ -84,6 +93,9 @@ loopback clients against temporary repositories and cover GET/HEAD, binary
 integrity, atomic timestamp replacement, retained old metadata, forbidden
 paths/hosts/methods/framing, no error reflection or logs, symlinks/hardlinks/FIFOs,
 ancestor substitution, size limits, slow-header deadlines, bounded concurrency
-stalled download/write deadlines, bind failure, and recovery after timeout. They do not deploy a service or contact Tailscale.
+stalled download/write deadlines, bind failure, and recovery after timeout.
+Bootstrap routes also cover exact binary/source responses and refusal of
+aliases, extra files, linked files and oversized metadata. Tests do not deploy
+a service or contact Tailscale.
 Actual tailnet HTTPS reachability and the installed updater sequence remain
 separate integration gates.

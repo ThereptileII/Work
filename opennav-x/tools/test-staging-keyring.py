@@ -112,6 +112,81 @@ class Tests(unittest.TestCase):
         self.assertNotIn('root-secret', repr((args, keys)))
         self.assertEqual(args[-3:], ['--selection-sha256', 'a' * 64, '--keys-stdin'])
 
+    def test_bootstrap_pair_is_forwarded_exactly_without_root_secret_or_creation(self):
+        store = self.publish_store()
+        args = copy.copy(self.publish)
+        args.broker_bootstrap_policy = str(Path(self.temp.name) / 'reviewed-bootstrap.json')
+        args.broker_bootstrap_policy_sha256 = 'b' * 64
+        keyring.operate(args, store, self.tool, lambda _: self.fail('Generated during publish'))
+        self.assertEqual(store.loads, ['1', '2', '3'])
+        self.assertEqual(store.creates, [])
+        command, keys = self.tool.calls[0]
+        self.assertEqual(command, ['publish', '--repository', self.repo, '--assets', self.temp.name,
+            '--policy', self.publish.policy, '--selection', self.publish.selection,
+            '--selection-sha256', self.publish.selection_sha256,
+            '--broker-bootstrap-policy', args.broker_bootstrap_policy,
+            '--broker-bootstrap-policy-sha256', args.broker_bootstrap_policy_sha256, '--keys-stdin'])
+        self.assertEqual(set(keys), {'targets', 'snapshot', 'timestamp'})
+
+    def test_partial_or_malformed_bootstrap_pair_refuses_before_secret_load(self):
+        for policy, pin in [(None, 'b' * 64), (self.publish.policy, None), ('', 'b' * 64),
+                            ('relative.json', 'b' * 64), (self.publish.policy, ''),
+                            (self.publish.policy, 'B' * 64), (self.publish.policy, 'b' * 63)]:
+            store = self.publish_store()
+            args = copy.copy(self.publish)
+            args.broker_bootstrap_policy = policy
+            args.broker_bootstrap_policy_sha256 = pin
+            with self.subTest(policy=policy, pin=pin), self.assertRaises(keyring.Refused):
+                keyring.operate(args, store, self.tool)
+            self.assertEqual(store.loads, [])
+            self.assertEqual(store.creates, [])
+        self.assertEqual(self.tool.calls, [])
+
+    def test_cli_duplicate_unknown_abbreviated_and_partial_flags_refuse_before_store(self):
+        self.publish_store()
+        argv = ['--tool', '/reviewed/tool', '--tool-sha256', 'f' * 64, 'publish',
+                '--repository', self.repo, '--assets', self.temp.name, '--policy', self.publish.policy,
+                '--selection', self.publish.selection, '--selection-sha256', 'a' * 64]
+        paired = ['--broker-bootstrap-policy', self.publish.policy,
+                  '--broker-bootstrap-policy-sha256', 'b' * 64]
+        invalid = [argv + paired[:2], argv + paired[2:],
+                   argv + paired + ['--broker-bootstrap-policy', self.publish.policy],
+                   argv + paired + ['--broker-bootstrap-policy-sha256=' + 'b' * 64],
+                   argv + ['--selection-sha256', 'a' * 64],
+                   argv[:4] + ['--tool', '/reviewed/tool'] + argv[4:],
+                   argv + ['--broker-bootstrap-policy-sha', 'b' * 64],
+                   argv + ['--arbitrary-extra', 'SECRET-MUST-NOT-PRINT'],
+                   argv[:2] + ['--tool-sha', 'f' * 64] + argv[4:]]
+        for args in invalid:
+            with self.subTest(args=args), patch.object(keyring, 'SecretStore') as store, \
+                    patch.object(keyring, 'PinnedTool') as tool, \
+                    patch.object(keyring.resource, 'setrlimit') as limits, \
+                    contextlib.redirect_stderr(io.StringIO()) as err, contextlib.redirect_stdout(io.StringIO()) as out:
+                self.assertEqual(keyring.main(args), 1)
+                store.assert_not_called()
+                tool.assert_not_called()
+                limits.assert_not_called()
+                self.assertEqual(err.getvalue(), keyring.FAILURE + '\n')
+                self.assertEqual(out.getvalue(), '')
+
+    def test_cli_accepts_exact_bootstrap_pair_and_passes_only_online_roles(self):
+        store = self.publish_store()
+        argv = ['--tool', '/reviewed/tool', '--tool-sha256', 'f' * 64, 'publish',
+                '--repository', self.repo, '--assets', self.temp.name, '--policy', self.publish.policy,
+                '--selection', self.publish.selection, '--selection-sha256', 'a' * 64,
+                '--broker-bootstrap-policy=' + self.publish.policy, '--broker-bootstrap-policy-sha256', 'b' * 64]
+        with patch.object(keyring, 'SecretStore', return_value=store), \
+                patch.object(keyring, 'PinnedTool', return_value=self.tool), \
+                patch.object(keyring, 'custody_lock', return_value=contextlib.nullcontext()), \
+                patch.object(keyring.resource, 'setrlimit'), contextlib.redirect_stdout(io.StringIO()) as out:
+            self.assertEqual(keyring.main(argv), 0)
+            self.assertEqual(out.getvalue(), 'Private Staging repository published.\n')
+        self.assertEqual(store.loads, ['1', '2', '3'])
+        command, keys = self.tool.calls[0]
+        self.assertEqual(command[-5:], ['--broker-bootstrap-policy', self.publish.policy,
+            '--broker-bootstrap-policy-sha256', 'b' * 64, '--keys-stdin'])
+        self.assertEqual(set(keys), {'targets', 'snapshot', 'timestamp'})
+
     def test_locked_duplicate_partial_misbound_and_unknown_state_rejected_before_load(self):
         store = self.publish_store()
         variants = []

@@ -89,6 +89,21 @@ to the signed root, authenticating selected local bytes, validating policy and
 qualification records, monotonic versions and atomic publication. The helper
 does not bypass those checks or deploy any hosting service.
 
+To include the reviewed broker bootstrap policy in that same publication, add
+both `--broker-bootstrap-policy /reviewed/broker-beta-policy.json` and
+`--broker-bootstrap-policy-sha256 REVIEWED_BOOTSTRAP_POLICY_SHA256` to the
+`publish` invocation. The digest must be the independently approved exact
+policy-byte digest. The wrapper forwards both values to the existing repository
+command; it does not calculate an approval, replace the application selection,
+or enroll or execute either bootstrap component. The repository command checks
+the approved policy and its exact component/source/notice bytes before signing
+and publication.
+
+Supplying only one bootstrap option, an invalid digest, an unknown or
+abbreviated option, or any duplicate named option refuses before keyring access
+or repository execution. Omitting both bootstrap options preserves ordinary
+application-only publication.
+
 Use the existing repository tool directly for public-root/config export and
 `validate-trust`; those read-only operations need no keyring access.
 
@@ -121,8 +136,9 @@ Service, create real signing keys, run a repository subprocess or alter services
 They cover exact role envelopes, root exclusion during publication, fixed scope,
 canonical seeds, distinctness, partial/duplicate/locked/wrong-repository state,
 no replacement or prompt invocation, pinned-file refusal, subprocess timeout,
-redaction, state retention and argument/environment isolation. The GI parameter
-shape can be checked locally without connecting to a store. Actual keyring
+redaction, state retention, argument/environment isolation and paired bootstrap
+forwarding/refusals. The GI parameter shape can be checked locally without
+connecting to a store. Actual keyring
 backend behavior and the coordinator's first real initialization remain
 explicit operational gates.
 

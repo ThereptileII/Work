@@ -93,6 +93,66 @@ class Tests(unittest.TestCase):
         self.assertEqual(self.request(server, '/timestamp.json')[2], b'{"timestamp":2}')
         self.assertEqual(self.request(server, '/1.snapshot.json')[0], 200)
 
+    def test_bootstrap_target_and_exact_shared_artifact_contract(self):
+        target = '/targets/bootstrap/' + HASH + '.broker-beta.json'
+        payloads = {target: b'{"purpose":"machine-update-broker-enrollment"}'}
+        for name in ('skager-update-broker.exe', 'skager-update-provisioner.exe',
+                     'SKAGER-Beta2-source.zip', 'SOURCE_AND_LICENSES.md'):
+            payloads['/artifacts/' + COMMIT + '/' + name] = b'INERT-PUBLISHED-' + name.encode()
+        for path, data in payloads.items():
+            self.write(path[1:], data)
+        server = self.start()
+        for path, expected in payloads.items():
+            with self.subTest(path=path):
+                status, headers, actual = self.request(server, path)
+                self.assertEqual(status, 200)
+                self.assertEqual(actual, expected)
+                self.assertEqual(int(headers['Content-Length']), len(expected))
+                self.assertNotIn('Location', headers)
+                self.assertIn('immutable', headers['Cache-Control'])
+                status, headers, actual = self.request(server, path, 'HEAD')
+                self.assertEqual(status, 200)
+                self.assertEqual(int(headers['Content-Length']), len(expected))
+                self.assertEqual(actual, b'')
+
+        rejected = ['/targets/bootstrap/broker-beta.json',
+                    '/targets/bootstrap/' + HASH.upper() + '.broker-beta.json',
+                    '/targets/bootstrap/' + HASH[:-1] + '.broker-beta.json',
+                    '/targets/bootstrap/' + HASH + '.broker-stable.json',
+                    '/targets/bootstrap/' + HASH + '.beta.json',
+                    '/targets/bootstrap/' + HASH + '.broker-beta.json/extra',
+                    '/targets/bootstrap/' + HASH + '.broker-beta.json?approval=fake']
+        for name in ('SKAGER-UPDATE-BROKER.EXE', 'skager-update-broker.exe.config',
+                     'skager-baseline-package.exe', 'broker-source.zip', 'notices.txt'):
+            self.write('artifacts/' + COMMIT + '/' + name, b'INERT-UNAPPROVED-NAME')
+            rejected.append('/artifacts/' + COMMIT + '/' + name)
+        for path in rejected:
+            with self.subTest(path=path):
+                status, headers, body = self.request(server, path)
+                self.assertEqual(status, 404)
+                self.assertEqual(body, b'')
+                self.assertNotIn('Location', headers)
+
+    def test_bootstrap_routes_retain_native_link_and_size_refusal(self):
+        target = 'targets/bootstrap/' + HASH + '.broker-beta.json'
+        leaf = self.write(target, b'INERT')
+        server = self.start()
+        outside = Path(self.temp.name) / 'outside'
+        outside.write_bytes(b'PRIVATE-DO-NOT-SERVE')
+        leaf.unlink()
+        leaf.symlink_to(outside)
+        self.assertEqual(self.request(server, '/' + target)[0], 404)
+        leaf.unlink()
+        os.link(outside, leaf)
+        self.assertEqual(self.request(server, '/' + target)[0], 404)
+        leaf.unlink()
+        self.write(target, b'x' * ((1 << 20) + 1))
+        self.assertEqual(self.request(server, '/' + target)[0], 404)
+        binary = self.write('artifacts/' + COMMIT + '/skager-update-broker.exe', b'INERT')
+        binary.unlink()
+        binary.symlink_to(outside)
+        self.assertEqual(self.request(server, '/artifacts/' + COMMIT + '/skager-update-broker.exe')[0], 404)
+
     def test_only_allowlisted_paths_no_reflection_or_logs(self):
         (self.root / 'state.json').write_text('PRIVATE-STATE')
         self.write('state.json', b'PRIVATE-STATE')

@@ -19,9 +19,11 @@ ARTIFACTS = (
     'SKAGER-Beta2-Release-Notes.md', 'SKAGER-Beta2-Setup.exe',
     'SKAGER-Beta2-Portable-Recovery.zip', 'SKAGER-Beta2-source.zip',
     'SOURCE_AND_LICENSES.md',
+    'skager-update-broker.exe', 'skager-update-provisioner.exe',
 )
 PATH = re.compile(r'/(?:timestamp\.json|[1-9][0-9]{0,18}\.(?:root|targets|snapshot)\.json|'
-                  r'targets/releases/[0-9a-f]{64}\.beta\.json|artifacts/[0-9a-f]{40}/(?:' +
+                  r'targets/releases/[0-9a-f]{64}\.beta\.json|'
+                  r'targets/bootstrap/[0-9a-f]{64}\.broker-beta\.json|artifacts/[0-9a-f]{40}/(?:' +
                   '|'.join(re.escape(name) for name in ARTIFACTS) + r'))\Z')
 HOST = re.compile(r'(?=.{1,253}\Z)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+'
                   r'[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\Z')

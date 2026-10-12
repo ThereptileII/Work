@@ -250,9 +250,17 @@ def delegate(args):
     require(args.command == 'publish' and os.path.isdir(repository) and PIN.fullmatch(args.selection_sha256))
     existing = open_plain(repository, os.O_RDONLY | os.O_DIRECTORY)
     os.close(existing)
+    bootstrap = getattr(args, 'broker_bootstrap_policy', None)
+    bootstrap_sha = getattr(args, 'broker_bootstrap_policy_sha256', None)
+    require((bootstrap is None) == (bootstrap_sha is None))
+    paired = []
+    if bootstrap is not None:
+        require(isinstance(bootstrap_sha, str) and PIN.fullmatch(bootstrap_sha))
+        paired = ['--broker-bootstrap-policy', absolute(bootstrap),
+                  '--broker-bootstrap-policy-sha256', bootstrap_sha]
     return ['publish'] + common + ['--assets', absolute(args.assets), '--policy', absolute(args.policy),
                                   '--selection', absolute(args.selection), '--selection-sha256',
-                                  args.selection_sha256, '--keys-stdin']
+                                  args.selection_sha256] + paired + ['--keys-stdin']
 
 
 def operate(args, store, tool, generate=secrets.token_bytes):
@@ -278,21 +286,36 @@ def operate(args, store, tool, generate=secrets.token_bytes):
         keys.clear()
 
 
+class Once(argparse.Action):
+    """Ambiguous operator approvals refuse even when repeated values agree."""
+    def __call__(self, parser, namespace, values, option_string=None):
+        seen = getattr(namespace, '_seen_options', set())
+        require(self.dest not in seen)
+        seen.add(self.dest)
+        namespace._seen_options = seen
+        setattr(namespace, self.dest, values)
+
+
 def main(argv=None):
     # Parser failures never echo a supplied value that might accidentally contain a secret.
     class Parser(argparse.ArgumentParser):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **dict(kwargs, allow_abbrev=False))
+
         def error(self, message):
             raise Refused(FAILURE)
     parser = Parser(description=__doc__)
-    parser.add_argument('--tool', required=True)
-    parser.add_argument('--tool-sha256', required=True)
+    parser.add_argument('--tool', required=True, action=Once)
+    parser.add_argument('--tool-sha256', required=True, action=Once)
     commands = parser.add_subparsers(dest='command', required=True, parser_class=Parser)
     initialize = commands.add_parser('initialize')
-    initialize.add_argument('--repository', required=True)
-    initialize.add_argument('--origin', required=True)
+    initialize.add_argument('--repository', required=True, action=Once)
+    initialize.add_argument('--origin', required=True, action=Once)
     publish = commands.add_parser('publish')
     for option in ('repository', 'assets', 'policy', 'selection', 'selection-sha256'):
-        publish.add_argument('--' + option, required=True)
+        publish.add_argument('--' + option, required=True, action=Once)
+    publish.add_argument('--broker-bootstrap-policy', action=Once)
+    publish.add_argument('--broker-bootstrap-policy-sha256', action=Once)
     try:
         require(sys.platform == 'linux')
         args = parser.parse_args(argv)
