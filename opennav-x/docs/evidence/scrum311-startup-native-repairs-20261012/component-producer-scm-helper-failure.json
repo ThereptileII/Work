@@ -1,0 +1,63 @@
+{
+  "schema": 1,
+  "scope": "component evidence only; not installed updater, product or boat acceptance",
+  "runId": 38288556379,
+  "runAttempt": 1,
+  "runUrl": "https://github.com/ThereptileII/Work/actions/runs/38288556379",
+  "commit": "4dcee9b15922e62ea43a97e003e1278eead71b2f",
+  "originalConclusion": "failure",
+  "linux": {
+    "jobConclusion": "success",
+    "passedTopLevel": 569,
+    "passedNested": 2556,
+    "artifactId": 11763568781,
+    "bytes": 191804,
+    "sha256": "99d815bde5a1b3c0e85923169c85b685d6c1e03cd2a7ecdf9a5ad01c4b3119fa"
+  },
+  "windows": {
+    "jobConclusion": "failure",
+    "passedTopLevel": 729,
+    "passedNested": 2799,
+    "skippedTopLevel": 12,
+    "failedTests": 0,
+    "countSource": "original native job log go test JSON rows",
+    "jobId": 114942735900,
+    "failedStep": "Actual fresh broker enrollment on disposable Windows",
+    "fixtureInvoked": false,
+    "failure": "Tee-Object relative log path resolved beneath module directory before fixture invocation",
+    "passedSteps": [
+      "functional contracts",
+      "go vet ./...",
+      "source package rules",
+      "native launcher compile",
+      "read-only trust validator build",
+      "retained launcher verification",
+      "native broker compile",
+      "native provisioner compile",
+      "native baseline compile",
+      "operator kit packaging",
+      "startup transactions",
+      "historical installer transactions",
+      "old lifecycle protected guard"
+    ],
+    "skippedSteps": [
+      "secret-free Ed25519 signatures"
+    ]
+  },
+  "originalWindowsArtifact": {
+    "artifactId": 11765096578,
+    "bytes": 614711767,
+    "sha256": "a27b920c52ed848d83d1f7c21de22ad4dce241100a4b47021d5844b60cdac850",
+    "localDownloadDigestVerified": true,
+    "originalBrokerPackageVerified": true
+  },
+  "operatorKit": {
+    "artifactId": 11765470814,
+    "bytes": 159310316,
+    "outerArtifactSha256": "303dd5bcaa0c1dd7e494d3dcb873ce49894856a16649ede49bba7bf61dd61d3f"
+  },
+  "nativeServiceAcceptance": false,
+  "installedFourPhaseAcceptance": false,
+  "applicationBuild": false,
+  "boatChanged": false
+}

@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 """Transport and ZIP refusal tests; never enroll a service or execute an image."""
 import copy
+import json
+import os
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
 import zipfile
 
 import retained_broker_enrollment as subject
@@ -37,6 +40,28 @@ class GitHubFixture:
 
 
 class RetainedProducerTests(unittest.TestCase):
+    def test_file_cli_reauthenticates_exact_producer_without_inline_code(self):
+        with tempfile.TemporaryDirectory() as directory:
+            selection = Path(directory)/'selection.json'
+            selection.write_text(json.dumps(SELECTION))
+            args = ['retained_broker_enrollment.py', '--selection', str(selection),
+                    '--receipt', str(Path(directory)/'receipt.json'), '--validate-only',
+                    '--expected-producer-commit', SELECTION['headSha']]
+            with patch.dict(os.environ, GITHUB_REPOSITORY=subject.REPO, GITHUB_SHA='c'*40), \
+                 patch('sys.argv', args), patch.object(subject, 'GitHub'), \
+                 patch.object(subject, 'validate_receipt', return_value={}) as validate, \
+                 patch.object(subject, 'fetch') as fetch, patch('builtins.print'):
+                subject.main()
+                self.assertEqual(validate.call_args.args[1], SELECTION)
+                self.assertEqual(validate.call_args.args[3], 'c'*40)
+                fetch.assert_not_called()
+            args[-1] = 'd'*40
+            with patch.dict(os.environ, GITHUB_REPOSITORY=subject.REPO, GITHUB_SHA='c'*40), \
+                 patch('sys.argv', args), patch.object(subject, 'validate_receipt') as validate:
+                with self.assertRaises(ValueError):
+                    subject.main()
+                validate.assert_not_called()
+
     def test_original_failure_is_preserved(self):
         result = subject.authenticate(GitHubFixture(), SELECTION)
         self.assertEqual(result['originalConclusion'], 'failure')

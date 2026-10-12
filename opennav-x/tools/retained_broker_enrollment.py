@@ -146,11 +146,22 @@ def validate_receipt(gh, selection, receipt, helper_commit):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--selection', type=Path, required=True)
-    parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--output', type=Path)
     parser.add_argument('--receipt', type=Path, required=True)
+    parser.add_argument('--validate-only', action='store_true')
+    parser.add_argument('--expected-producer-commit')
     args = parser.parse_args()
     require(os.environ.get('GITHUB_REPOSITORY') == REPO, 'Actual CI repository differs')
-    result = fetch(GitHub(REPO), read_json(args.selection), args.output, args.receipt, os.environ.get('GITHUB_SHA', ''))
+    selection = read_json(args.selection)
+    helper = os.environ.get('GITHUB_SHA', '')
+    if args.validate_only:
+        require(args.output is None and args.expected_producer_commit == selection['headSha'],
+                'Exact original producer required for receipt validation')
+        result = validate_receipt(GitHub(REPO), selection, args.receipt, helper)
+    else:
+        require(args.output is not None and args.expected_producer_commit is None,
+                'Fresh retained output required for download')
+        result = fetch(GitHub(REPO), selection, args.output, args.receipt, helper)
     print(json.dumps(result, sort_keys=True))
 
 

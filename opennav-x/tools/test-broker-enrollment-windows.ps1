@@ -24,7 +24,7 @@ $checkoutCommit = $ExpectedCommit
 if ($RetainedProducerReceipt) {
     $checkoutCommit = $env:GITHUB_SHA
     $selection = Join-Path $PSScriptRoot 'retained-broker-enrollment-selection.json'
-    & python -c 'import sys; from pathlib import Path; sys.path.insert(0,sys.argv[1]); from retained_broker_enrollment import validate_receipt; from github_release_delivery import GitHub,read_json; s=read_json(Path(sys.argv[2])); r=validate_receipt(GitHub(s["repository"]),s,Path(sys.argv[3]),sys.argv[4]); assert r["headSha"] == sys.argv[5]' $PSScriptRoot $selection $RetainedProducerReceipt $checkoutCommit $ExpectedCommit
+    & python (Join-Path $PSScriptRoot 'retained_broker_enrollment.py') --selection $selection --receipt $RetainedProducerReceipt --validate-only --expected-producer-commit $ExpectedCommit
     if ($LASTEXITCODE -ne 0) { throw 'Actual original retained producer authentication refused' }
     $env:SKAGER_ENROLLMENT_RETAINED_PRODUCER = 'SCRUM-311-retained-original-broker'
 } elseif ($ExpectedCommit -cne $env:GITHUB_SHA) {
