@@ -21,6 +21,13 @@ on:
       - opennav-x/tools/baseline_handoff_package.py
       - opennav-x/tools/package-baseline-handoff.py
       - opennav-x/tools/test_baseline_handoff_package.py
+      - opennav-x/tools/package-protected-operator-kit.py
+      - opennav-x/tools/test-package-protected-operator-kit.py
+      - opennav-x/tools/test-protected-mode-restart-windows.ps1
+      - opennav-x/src/platform/windows/WindowsPlatformIntegration.cpp
+      - opennav-x/src/platform/windows/ProtectedRestartPolicy.h
+      - opennav-x/tests/commissioning-restart/**
+      - opennav-x/tests/protected_restart_policy_tests.cpp
       - .github/workflows/update-verifier-probe.yml
   workflow_dispatch:
     inputs:
@@ -82,7 +89,8 @@ jobs:
           for script in ('../test-package-update-launcher.py', '../test-updater-package.py',
                          '../test-package-update-broker.py', '../test-broker-package.py',
                          '../test-package-update-provisioner.py', '../test-provisioner-package.py',
-                         '../test_baseline_handoff_package.py'):
+                         '../test_baseline_handoff_package.py',
+                         '../test-package-protected-operator-kit.py'):
               subprocess.run([sys.executable, script], check=True, timeout=60)
       - name: Compile native launcher with exact dependency sources
         if: runner.os == 'Windows'
@@ -150,6 +158,18 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python -c "import os,sys; from pathlib import Path; sys.path.insert(0,'..'); from baseline_handoff_package import verify_baseline_handoff_package; verify_baseline_handoff_package(Path('../../build/updater-native/broker-install'), os.environ['GITHUB_SHA'])"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Package retained operator tools without rebuilding native components
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          python ../package-protected-operator-kit.py --source-install ../../build/updater-native/install --components-install ../../build/updater-native/broker-install --output ../../build/updater-native/protected-operator-kit.zip --commit $env:GITHUB_SHA
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: runner.os == 'Windows'
+        with:
+          name: protected-operator-kit-${{ github.sha }}
+          path: opennav-x/build/updater-native/protected-operator-kit.zip
+          if-no-files-found: error
       - name: Native authenticated startup and interruption records
         if: always() && runner.os == 'Windows'
         shell: powershell
@@ -188,6 +208,45 @@ jobs:
           name: update-verifier-${{ matrix.os }}-${{ matrix.arch }}-${{ github.sha }}
           path: opennav-x/build/updater-native
           if-no-files-found: error
+
+  mode-restart:
+    if: ${{ !inputs.owned_files_only && !inputs.image_owner_only && !inputs.startup_only && github.ref != 'refs/heads/skager-updater-lifecycle' }}
+    name: Native protected mode routing and ordinary restart
+    runs-on: windows-2022
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Compile only actual restart code and marker-only processes
+        shell: powershell
+        run: |
+          cmake -S opennav-x/tests/commissioning-restart -B opennav-x/build/commissioning-restart -G "Visual Studio 17 2022" -A Win32
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cmake --build opennav-x/build/commissioning-restart --config Release --parallel 2
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Run closed protected routing and native marker contracts
+        shell: powershell
+        run: |
+          ctest --test-dir opennav-x/build/commissioning-restart -C Release --output-on-failure
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Run existing ordinary and commissioning native restart scenarios
+        shell: powershell
+        run: |
+          New-Item -ItemType Directory -Path opennav-x/build/restart-component-evidence -Force | Out-Null
+          & ./opennav-x/tools/test-commissioning-restart-windows.ps1 -Binaries opennav-x/build/commissioning-restart/Release -Evidence opennav-x/build/restart-component-evidence *>&1 | Tee-Object -FilePath opennav-x/build/restart-component-evidence/native-process-tests.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Verify actual protected routing with inert companions only
+        shell: powershell
+        run: |
+          & ./opennav-x/tools/test-protected-mode-restart-windows.ps1 -Binaries opennav-x/build/commissioning-restart/Release -Evidence opennav-x/build/restart-component-evidence -RunnerEnvironment '${{ runner.environment }}' -ConfirmDisposableHostedRunner *>&1 | Tee-Object -FilePath opennav-x/build/restart-component-evidence/protected-mode-tests.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: restart-component-${{ github.sha }}
+          path: |
+            opennav-x/build/restart-component-evidence
+            opennav-x/build/commissioning-restart/Testing/Temporary
+          if-no-files-found: warn
 
   startup-popup:
     if: ${{ !inputs.owned_files_only && !inputs.image_owner_only && (inputs.startup_only || github.ref != 'refs/heads/skager-updater-lifecycle') }}
