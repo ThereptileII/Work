@@ -1454,6 +1454,12 @@ bool PrepareClose(wxFileConfig& config) {
 
 void CompleteRestart() {
   if (!restart) return;
+  // Startup removes the qualification environment flag. Its original latched
+  // restriction must survive here; a mode request never makes it ordinary.
+  if (integration::QualificationOutputSuppressed()) {
+    wxLogError("SKAGER restart refused during update qualification.");
+    return;
+  }
   auto args = profile_arguments;
   args.push_back(restart_safe ? "--safe-mode" : *restart == InterfaceMode::XNav ? "--xnav" : "--legacy");
   if (!platform::RestartAfterExit(executable, args)) {

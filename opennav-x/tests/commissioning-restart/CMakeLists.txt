@@ -18,10 +18,14 @@ add_executable(opennav-restart ${OPENNAV_SOURCE}/src/platform/windows/RestartHel
 target_link_libraries(opennav-restart PRIVATE restart_guard)
 add_executable(opencpn marker_process.cpp
   ${OPENNAV_SOURCE}/src/platform/windows/WindowsPlatformIntegration.cpp)
-target_link_libraries(opencpn PRIVATE restart_guard)
+target_link_libraries(opencpn PRIVATE restart_guard shell32 ole32 uuid)
 add_executable(commissioning_restart_tests ${OPENNAV_SOURCE}/tests/commissioning_restart_tests.cpp)
 target_link_libraries(commissioning_restart_tests PRIVATE restart_guard)
 add_executable(marker_publication_tests marker_publication_tests.cpp)
 enable_testing()
 add_test(NAME portable_wire_contract COMMAND commissioning_restart_tests)
 add_test(NAME fixture_marker_publication COMMAND marker_publication_tests)
+
+add_executable(protected_restart_policy_tests ${OPENNAV_SOURCE}/tests/protected_restart_policy_tests.cpp)
+target_include_directories(protected_restart_policy_tests PRIVATE ${OPENNAV_SOURCE}/src)
+add_test(NAME protected_restart_routing_contract COMMAND protected_restart_policy_tests)
