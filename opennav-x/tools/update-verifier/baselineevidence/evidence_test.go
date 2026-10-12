@@ -164,3 +164,182 @@ func TestValidateRejectsPortableMarkerCaseAliasInManifest(t *testing.T) {
 		t.Fatal("portable marker case alias became installed payload")
 	}
 }
+
+func helperEvidenceFixture(t *testing.T) (evidenceFixture, map[string][]byte) {
+	t.Helper()
+	f := newEvidenceFixture(t)
+	originals := map[string][]byte{
+		"installer/engine/Lifecycle.ps1":         []byte("\xef\xbb\xbf# exact Lifecycle snapshot\r\n"),
+		"installer/engine/UpdateSupervisor.ps1":  []byte("# exact Supervisor snapshot\r\n"),
+		"installer/engine/UpdateTransaction.ps1": []byte("# exact Transaction snapshot\r\n"),
+	}
+	var inventory map[string]string
+	if err := json.Unmarshal(f.inventory, &inventory); err != nil {
+		t.Fatal(err)
+	}
+	for name, raw := range originals {
+		inventory[name] = digest(raw)
+		f.observed[name] = digest(raw)
+	}
+	f.inventory = fixtureJSON(t, inventory)
+	f.expected.InventorySHA256 = digest(f.inventory)
+	return f, originals
+}
+
+func TestEngineHelpersExactHistoricalAndCompleteContracts(t *testing.T) {
+	historical := newEvidenceFixture(t)
+	var inventory map[string]string
+	if err := DecodeInventory(historical.inventory, &inventory); err != nil {
+		t.Fatal(err)
+	}
+	helpers, err := EngineHelpers(inventory)
+	if err != nil || len(helpers) != 0 {
+		t.Fatal("historical inventory fabricated execution helpers", err)
+	}
+	f, _ := helperEvidenceFixture(t)
+	if err := DecodeInventory(f.inventory, &inventory); err != nil {
+		t.Fatal(err)
+	}
+	helpers, err = EngineHelpers(inventory)
+	expected := []string{"installer/engine/Lifecycle.ps1", "installer/engine/UpdateSupervisor.ps1", "installer/engine/UpdateTransaction.ps1"}
+	if err != nil || len(helpers) != len(expected) {
+		t.Fatal("complete helper set refused", err)
+	}
+	for i, name := range expected {
+		if helpers[i] != name || !IsEngineHelper(name) {
+			t.Fatal("helper order or exact recognition differs")
+		}
+	}
+	helpers[0] = "changed"
+	again, err := EngineHelpers(inventory)
+	if err != nil || again[0] != expected[0] {
+		t.Fatal("returned helper names alias shared state")
+	}
+	for _, name := range []string{"installer/engine/lifecycle.ps1", "Installer/engine/Lifecycle.ps1", "installer/Engine/Lifecycle.ps1", "installer/engine/Other.ps1", "installer/engine/Lifecycle.ps1/child", "installer/engine", "app/Lifecycle.ps1"} {
+		if IsEngineHelper(name) {
+			t.Fatalf("nonexact helper recognized: %s", name)
+		}
+	}
+}
+
+func TestValidateRetainsExactOriginalHelperDigests(t *testing.T) {
+	f, originals := helperEvidenceFixture(t)
+	identity, payload, err := Validate(context.Background(), f.inventory, f.manifest, f.product, f.observed, f.expected)
+	if err != nil || len(payload) != 7 || identity.InventorySHA256 != f.expected.InventorySHA256 {
+		t.Fatal("full helper evidence refused", err)
+	}
+	for name, raw := range originals {
+		if payload[name] != digest(raw) {
+			t.Fatalf("exact original helper digest changed: %s", name)
+		}
+		normalized := bytes.ReplaceAll(bytes.TrimPrefix(raw, []byte{0xef, 0xbb, 0xbf}), []byte("\r\n"), []byte("\n"))
+		if payload[name] == digest(normalized) {
+			t.Fatal("normalized helper bytes substituted")
+		}
+	}
+	// Helper snapshots are outside Lifecycle's app/docs installation manifest;
+	// original manifest bytes and all existing identity fields retain their meaning.
+	if identity.LifecycleManifestSHA256 != digest(f.manifest) || identity.ProductBuildSHA256 != digest(f.product) || identity.ExecutableSHA256 != f.expected.ExecutableSHA256 {
+		t.Fatal("helper retention reinterpreted existing identities")
+	}
+	payload["installer/engine/Lifecycle.ps1"] = "changed"
+	if f.observed["installer/engine/Lifecycle.ps1"] != digest(originals["installer/engine/Lifecycle.ps1"]) {
+		t.Fatal("returned helper payload aliases observations")
+	}
+}
+
+func TestEngineHelperInventoryRefusesPartialAliasAndUnknownEvenWhenRepinned(t *testing.T) {
+	for _, scenario := range []string{"one-missing", "two-missing", "case-alias", "parent-case-alias", "engine-case-alias", "unknown-member", "nested-member", "engine-file", "invalid-digest"} {
+		t.Run(scenario, func(t *testing.T) {
+			f, _ := helperEvidenceFixture(t)
+			var inventory map[string]string
+			if err := json.Unmarshal(f.inventory, &inventory); err != nil {
+				t.Fatal(err)
+			}
+			switch scenario {
+			case "one-missing":
+				delete(inventory, "installer/engine/Lifecycle.ps1")
+			case "two-missing":
+				delete(inventory, "installer/engine/Lifecycle.ps1")
+				delete(inventory, "installer/engine/UpdateTransaction.ps1")
+			case "case-alias":
+				hash := inventory["installer/engine/Lifecycle.ps1"]
+				delete(inventory, "installer/engine/Lifecycle.ps1")
+				inventory["installer/engine/lifecycle.ps1"] = hash
+			case "parent-case-alias":
+				hash := inventory["installer/engine/Lifecycle.ps1"]
+				delete(inventory, "installer/engine/Lifecycle.ps1")
+				inventory["Installer/engine/Lifecycle.ps1"] = hash
+			case "engine-case-alias":
+				hash := inventory["installer/engine/Lifecycle.ps1"]
+				delete(inventory, "installer/engine/Lifecycle.ps1")
+				inventory["installer/Engine/Lifecycle.ps1"] = hash
+			case "unknown-member":
+				inventory["installer/engine/Unknown.ps1"] = digest([]byte("unknown"))
+			case "nested-member":
+				inventory["installer/engine/extra/file.ps1"] = digest([]byte("unknown"))
+			case "engine-file":
+				inventory["installer/engine"] = digest([]byte("file instead of directory"))
+			case "invalid-digest":
+				inventory["installer/engine/Lifecycle.ps1"] = strings.Repeat("A", 64)
+			}
+			f.inventory = fixtureJSON(t, inventory)
+			f.expected.InventorySHA256 = digest(f.inventory)
+			if helpers, err := EngineHelpers(inventory); err == nil || helpers != nil {
+				t.Fatal("unsafe helper namespace accepted directly")
+			}
+			var decoded map[string]string
+			if err := DecodeInventory(f.inventory, &decoded); err == nil {
+				t.Fatal("unsafe helper namespace accepted by full inventory")
+			}
+			// Use a full observed inventory and updated pin to isolate schema consistency
+			// from missing observations or independent original hash mismatches.
+			policy := releasepolicy.Policy{Version: f.expected.Version, Commit: f.expected.Commit, SupportedOpenCpn: []releasepolicy.OpenCpn{brokerregistration.StockBaseline()}}
+			if identity, err := CheckRecoveryEvidence(context.Background(), f.inventory, f.manifest, f.product, inventory, policy); err == nil || identity != (Identity{}) {
+				t.Fatal("signed recovery schema admitted unsafe helper namespace")
+			}
+			if identity, payload, err := Validate(context.Background(), f.inventory, f.manifest, f.product, f.observed, f.expected); err == nil || identity != (Identity{}) || payload != nil {
+				t.Fatal("approved helper schema accepted after repinning")
+			}
+		})
+	}
+}
+
+func TestValidateRefusesMissingExtraOrTamperedObservedHelpers(t *testing.T) {
+	for _, scenario := range []string{"missing-one", "missing-all", "tampered-original", "extra-helper", "observed-case-alias", "changed-inventory-original", "canceled"} {
+		t.Run(scenario, func(t *testing.T) {
+			f, originals := helperEvidenceFixture(t)
+			ctx, cancel := context.WithCancel(context.Background())
+			defer cancel()
+			switch scenario {
+			case "missing-one":
+				delete(f.observed, "installer/engine/Lifecycle.ps1")
+			case "missing-all":
+				for name := range originals {
+					delete(f.observed, name)
+				}
+			case "tampered-original":
+				raw := bytes.Clone(originals["installer/engine/Lifecycle.ps1"])
+				raw[len(raw)-1] ^= 1
+				f.observed["installer/engine/Lifecycle.ps1"] = digest(raw)
+			case "extra-helper":
+				f.observed["installer/engine/Unknown.ps1"] = digest([]byte("extra"))
+			case "observed-case-alias":
+				hash := f.observed["installer/engine/Lifecycle.ps1"]
+				delete(f.observed, "installer/engine/Lifecycle.ps1")
+				f.observed["installer/engine/lifecycle.ps1"] = hash
+			case "changed-inventory-original":
+				f.inventory = append(f.inventory, '\n')
+			case "canceled":
+				cancel()
+			}
+			identity, payload, err := Validate(ctx, f.inventory, f.manifest, f.product, f.observed, f.expected)
+			if err == nil || identity != (Identity{}) || payload != nil {
+				t.Fatal("incomplete, changed or extra observed helper accepted")
+			}
+			if scenario == "canceled" && !errors.Is(err, context.Canceled) {
+				t.Fatal("helper validation lost cancellation")
+			}
+		})
+	}
+}

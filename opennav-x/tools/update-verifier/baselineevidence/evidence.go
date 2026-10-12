@@ -240,6 +240,44 @@ func recoveryJSONValue(d *json.Decoder, depth int) error {
 	return err
 }
 
+// IsEngineHelper recognizes only the exact original NSIS execution-helper
+// snapshot paths. Recognition establishes no provenance or launch authority.
+func IsEngineHelper(name string) bool {
+	switch name {
+	case "installer/engine/Lifecycle.ps1", "installer/engine/UpdateSupervisor.ps1", "installer/engine/UpdateTransaction.ps1":
+		return true
+	}
+	return false
+}
+
+// EngineHelpers checks the reserved installer/engine namespace and returns its
+// three exact members in stable order. Historical inventories without helpers
+// remain valid evidence but supply no helper or launch authority. A partial set,
+// case alias, unknown reserved member or invalid helper digest always refuses.
+func EngineHelpers(inventory map[string]string) ([]string, error) {
+	if len(inventory) >= maxRecoveryFiles {
+		return nil, errors.New("recovery inventory member bound")
+	}
+	count := 0
+	for name, hash := range inventory {
+		folded := strings.ToLower(name)
+		if folded != "installer/engine" && !strings.HasPrefix(folded, "installer/engine/") {
+			continue
+		}
+		if !IsEngineHelper(name) || !recoveryHash.MatchString(hash) {
+			return nil, errors.New("unknown or invalid original execution helper")
+		}
+		count++
+	}
+	if count == 0 {
+		return nil, nil
+	}
+	if count != 3 {
+		return nil, errors.New("original execution helper set incomplete")
+	}
+	return []string{"installer/engine/Lifecycle.ps1", "installer/engine/UpdateSupervisor.ps1", "installer/engine/UpdateTransaction.ps1"}, nil
+}
+
 // DecodeInventory checks the bounded strict original inventory. It does not
 // authenticate its contents; callers must bind original bytes independently.
 func DecodeInventory(raw []byte, inventory *map[string]string) error {
@@ -262,7 +300,8 @@ func DecodeInventory(raw []byte, inventory *map[string]string) error {
 			}
 		}
 	}
-	return nil
+	_, err := EngineHelpers(*inventory)
+	return err
 }
 
 // CheckRecoveryEvidence checks schemas and full observed inventory against exact
@@ -328,7 +367,9 @@ func CheckRecoveryEvidence(ctx context.Context, inventoryRaw, packageRaw, produc
 
 // Validate binds exact original sidecars and measured installed payload members
 // to independently approved evidence pins. The original inventory may also name
-// recovery profile/launcher members, which are not installed payload. Approval,
+// recovery profile/launcher members, which are not installed payload. When all
+// three original execution helpers are inventoried, their exact measured bytes
+// must also be retained. Their presence alone grants no execution authority. Approval,
 // custody and current running identity remain separate caller obligations.
 func Validate(ctx context.Context, inventoryRaw, packageRaw, productRaw []byte, observed map[string]string, expected brokerregistration.Installed) (Identity, map[string]string, error) {
 	var empty Identity
@@ -358,7 +399,7 @@ func Validate(ctx context.Context, inventoryRaw, packageRaw, productRaw []byte, 
 	}
 	payload := map[string]string{}
 	for name, hash := range inventory {
-		if (strings.HasPrefix(name, "app/") || strings.HasPrefix(name, "docs/")) && name != "app/OPENNAV_PORTABLE_PREVIEW" {
+		if ((strings.HasPrefix(name, "app/") || strings.HasPrefix(name, "docs/")) && name != "app/OPENNAV_PORTABLE_PREVIEW") || IsEngineHelper(name) {
 			payload[name] = hash
 		}
 	}
