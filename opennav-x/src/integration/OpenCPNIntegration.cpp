@@ -25,6 +25,7 @@
 #include "integration/ChartPresentation.h"
 #include "integration/OChartsPresentation.h"
 #include "integration/OnlineAis.h"
+#include "ais/ConnectionDiagnostics.h"
 #include "integration/OnlineAisOverlay.h"
 #include "integration/OnlineWeather.h"
 #include "integration/WeatherOverlay.h"
@@ -975,6 +976,35 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
       health["accepted"] = wxString::Format("%llu", static_cast<unsigned long long>(copy.health.accepted));
       health["rejected"] = wxString::Format("%llu", static_cast<unsigned long long>(copy.health.rejected));
       health["reconnects"] = wxString::Format("%llu", static_cast<unsigned long long>(copy.health.reconnects));
+      wxString connection_diagnostics;
+      if (wxGetEnv("SKAGER_AIS_CONNECTION_DIAGNOSTICS", &connection_diagnostics) &&
+          ais::ConnectionDiagnosticsEnabled(connection_diagnostics.ToStdString(wxConvUTF8))) {
+        const auto diagnostic = ais::ReadConnectionDiagnostic(copy.connection, copy.health, now);
+        auto &observation = health["connection_observation"];
+        observation["schema"] = 1;
+        observation["source"] = "AISSTREAM_ONLINE";
+        observation["available"] = diagnostic.observation.has_value();
+        observation["reason"] = wxString::FromUTF8(ais::ConnectionDiagnosticReasonName(diagnostic.reason));
+        observation["process_id"] = wxGetProcessId();
+        // Wall UTC is the diagnostic read time, not a refreshed capture time.
+        observation["observed_utc"] = wxString::FromUTF8(
+            weather::gribstream::FormatUtc(std::chrono::system_clock::now()));
+        if (diagnostic.observation) {
+          const auto &value = *diagnostic.observation;
+          observation["family"] = wxString::FromUTF8(value.family);
+          observation["generation"] = wxString::FromUTF8(value.generation);
+          observation["captured_monotonic_ns"] = wxString::FromUTF8(value.captured_monotonic_ns);
+          observation["observed_monotonic_ns"] = wxString::FromUTF8(value.observed_monotonic_ns);
+          observation["age_ms"] = wxString::FromUTF8(value.age_ms);
+          const auto endpoint = [](wxJSONValue &out, const ais::DiagnosticEndpoint &in) {
+            out["address"] = wxString::FromUTF8(in.address);
+            out["port"] = static_cast<int>(in.port);
+            out["scope"] = static_cast<unsigned long>(in.scope);
+          };
+          endpoint(observation["local"], value.local);
+          endpoint(observation["remote"], value.remote);
+        }
+      }
     }
     if (online_weather) {
       // Credential-free: presence flag and provider status text only.
