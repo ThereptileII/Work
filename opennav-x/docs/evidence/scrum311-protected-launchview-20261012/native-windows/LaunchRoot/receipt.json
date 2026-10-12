@@ -1,0 +1,49 @@
+{
+    "schema":  1,
+    "group":  "LaunchRoot",
+    "executable":  "C:\\XNav\\ComponentChecks\\launchroot-601dc155\\brokerenroll.test.exe",
+    "executableSha256":  "bc21eee3a2935e18f8da34cb5dee3fc46c8d709b9c83f51f206a707b673efcb5",
+    "expectedCases":  [
+                          "TestEnrollmentApplicationsAndCodeNativeAccessPolicy",
+                          "TestEnrollmentApplicationsFreshNativePinAndNoAdoption"
+                      ],
+    "selection":  "^(TestEnrollmentApplicationsAndCodeNativeAccessPolicy|TestEnrollmentApplicationsFreshNativePinAndNoAdoption)$",
+    "status":  "passed",
+    "failure":  null,
+    "startedUtc":  "2026-10-12T06:07:50.6119715Z",
+    "os":  "Microsoft Windows NT 10.0.22631.0",
+    "os64":  true,
+    "process64":  true,
+    "powershellVersion":  "5.1.22621.5624",
+    "listing":  {
+                    "arguments":  [
+                                      "-test.list=^(TestEnrollmentApplicationsAndCodeNativeAccessPolicy|TestEnrollmentApplicationsFreshNativePinAndNoAdoption)$"
+                                  ],
+                    "processId":  252,
+                    "startedUtc":  "2026-10-12T06:07:50.6371729Z",
+                    "exitCode":  0,
+                    "timedOut":  false,
+                    "error":  null,
+                    "stdout":  "C:\\XNav\\ComponentChecks\\launchroot-601dc155\\LaunchRoot\\list-stdout.log",
+                    "stderr":  "C:\\XNav\\ComponentChecks\\launchroot-601dc155\\LaunchRoot\\list-stderr.log",
+                    "elapsedMilliseconds":  424
+                },
+    "execution":  {
+                      "arguments":  [
+                                        "-test.run=^(TestEnrollmentApplicationsAndCodeNativeAccessPolicy|TestEnrollmentApplicationsFreshNativePinAndNoAdoption)$",
+                                        "-test.count=1",
+                                        "-test.v",
+                                        "-test.timeout=90s"
+                                    ],
+                      "processId":  8172,
+                      "startedUtc":  "2026-10-12T06:07:51.1033406Z",
+                      "exitCode":  0,
+                      "timedOut":  false,
+                      "error":  null,
+                      "stdout":  "C:\\XNav\\ComponentChecks\\launchroot-601dc155\\LaunchRoot\\tests-stdout.log",
+                      "stderr":  "C:\\XNav\\ComponentChecks\\launchroot-601dc155\\LaunchRoot\\tests-stderr.log",
+                      "elapsedMilliseconds":  41
+                  },
+    "scope":  "Exact inert native fixtures only; no application/service/profile/network/physical output; not enrollment or release qualification",
+    "completedUtc":  "2026-10-12T06:07:51.3692188Z"
+}

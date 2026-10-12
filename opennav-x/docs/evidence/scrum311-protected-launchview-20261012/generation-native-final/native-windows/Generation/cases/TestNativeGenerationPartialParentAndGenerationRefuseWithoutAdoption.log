@@ -1,0 +1,12 @@
+=== RUN   TestNativeGenerationPartialParentAndGenerationRefuseWithoutAdoption
+=== RUN   TestNativeGenerationPartialParentAndGenerationRefuseWithoutAdoption/existing-client-without-record
+=== RUN   TestNativeGenerationPartialParentAndGenerationRefuseWithoutAdoption/partial-parent-marker
+=== RUN   TestNativeGenerationPartialParentAndGenerationRefuseWithoutAdoption/partial-generation-marker
+=== RUN   TestNativeGenerationPartialParentAndGenerationRefuseWithoutAdoption/unknown-public-generation
+=== RUN   TestNativeGenerationPartialParentAndGenerationRefuseWithoutAdoption/unknown-private-record
+--- PASS: TestNativeGenerationPartialParentAndGenerationRefuseWithoutAdoption (2.18s)
+    --- PASS: TestNativeGenerationPartialParentAndGenerationRefuseWithoutAdoption/existing-client-without-record (0.28s)
+    --- PASS: TestNativeGenerationPartialParentAndGenerationRefuseWithoutAdoption/partial-parent-marker (0.28s)
+    --- PASS: TestNativeGenerationPartialParentAndGenerationRefuseWithoutAdoption/partial-generation-marker (0.55s)
+    --- PASS: TestNativeGenerationPartialParentAndGenerationRefuseWithoutAdoption/unknown-public-generation (0.52s)
+    --- PASS: TestNativeGenerationPartialParentAndGenerationRefuseWithoutAdoption/unknown-private-record (0.54s)

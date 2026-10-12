@@ -1,0 +1,3 @@
+=== RUN   TestNativeGenerationCompletedParentRecordBindsPhysicalIdentity
+--- PASS: TestNativeGenerationCompletedParentRecordBindsPhysicalIdentity (0.51s)
+FAIL

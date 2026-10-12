@@ -1,0 +1,22 @@
+[
+  {
+    "script": "test-package-update-broker.py",
+    "exitCode": 0,
+    "elapsedSeconds": 4.03
+  },
+  {
+    "script": "test-broker-package.py",
+    "exitCode": 0,
+    "elapsedSeconds": 2.018
+  },
+  {
+    "script": "test-package-update-provisioner.py",
+    "exitCode": 0,
+    "elapsedSeconds": 2.37
+  },
+  {
+    "script": "test-provisioner-package.py",
+    "exitCode": 0,
+    "elapsedSeconds": 6.483
+  }
+]

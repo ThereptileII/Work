@@ -1,0 +1,15 @@
+{
+    "schema":  1,
+    "group":  "LaunchRoot",
+    "name":  "TestEnrollmentApplicationsFreshNativePinAndNoAdoption",
+    "selection":  "^TestEnrollmentApplicationsFreshNativePinAndNoAdoption$",
+    "runMarkers":  1,
+    "passMarkers":  1,
+    "executableSha256":  "bc21eee3a2935e18f8da34cb5dee3fc46c8d709b9c83f51f206a707b673efcb5",
+    "exitCode":  0,
+    "os":  "Microsoft Windows NT 10.0.22631.0",
+    "timedOut":  false,
+    "groupReceipt":  "C:\\XNav\\ComponentChecks\\launchroot-601dc155\\LaunchRoot\\receipt.json",
+    "executionLog":  "C:\\XNav\\ComponentChecks\\launchroot-601dc155\\LaunchRoot\\tests-stdout.log",
+    "caseLog":  "TestEnrollmentApplicationsFreshNativePinAndNoAdoption.log"
+}

@@ -1,5 +1,40 @@
 # SKAGER status — 2026-10-12
 
+## Protected update generation copy joined; independent review recorded
+
+Product source `ac96ef54` joins the signed candidate's fresh protected application
+view and actual host call before staging completion. Original sidecars and the
+three execution helpers are preserved; authenticated original parent identities
+support subsequent fresh generations. No generation is selected or launched.
+
+Final joined race checks passed **14 top-level + 64 nested cases**, with no
+failures/skips. Enrollment race checks passed **19 top-level + 67 nested**;
+**68 source-package tests** passed with retained raw logs. Windows/x86 component
+test compilation passed. Native inert boat checks passed **2 top-level + 4 nested**
+for the application-root boundary and **4 top-level + 11 nested** for generation
+copy/history/mutation behavior. Two prior native fixture failures and their
+test-only corrections (`f8fce3e5`, `d2a45ee7`) are preserved. Production security
+validation was not relaxed. OpenCPN PID 1852 remained responsive; its installed
+application/profile and physical controls were untouched.
+[Exact source, checks, failure history and native receipts](evidence/scrum311-protected-launchview-20261012/README.md)
+record the limited scope.
+
+The user approved the exact nine-file Claude transfer. The attempted review hit
+Anthropic's weekly limit before returning findings; reset is October 15 at 06:00
+Stockholm time. No automatic retry or expanded payload was used. The independent
+GPT-6.1 Sol fallback found no confirmed defect in that frozen scope. One native
+mapped-file custody hypothesis remains unproven and tracked in SCRUM-311; three
+subsequently changed source files are explicitly excluded from frozen acceptance.
+[Review comparison and failed-attempt receipt](evidence/scrum311-client-registration-20261012/review-comparison.md)
+are retained. Earlier sections describe their original dates/revisions, including
+then-pending consent; this paragraph records the current review state.
+
+SCRUM-311 stays In Progress. Actual pending/selection/spawn, read-only loader
+custody, interactive launch, profile restoration/commissioning, authenticated
+healthy-start and installed update/fallback qualification remain open. No full
+application build, CI dispatch, product deployment, release, visual/endurance
+suite or physical command occurred for this increment.
+
 ## Original installer helpers retained through signed acquisition and storage
 
 Source `aa3e6bfe` now preserves the three exact NSIS helper snapshots in Recovery,

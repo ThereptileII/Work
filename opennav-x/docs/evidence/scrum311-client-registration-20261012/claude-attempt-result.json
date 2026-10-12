@@ -1,0 +1,12 @@
+{
+  "status": "failed",
+  "apiErrorStatus": 429,
+  "apiError": "usage_limit_reached",
+  "providerResult": "You've hit your weekly limit \u00b7 resets Oct 15, 4am (UTC)",
+  "reviewCompleted": false,
+  "subagentsSpawned": 0,
+  "tokens": 0,
+  "costUsd": 0,
+  "exactScopeConsent": "User approved nine-file snapshot and Anthropic destination in conversation",
+  "noAutomaticRetry": true
+}

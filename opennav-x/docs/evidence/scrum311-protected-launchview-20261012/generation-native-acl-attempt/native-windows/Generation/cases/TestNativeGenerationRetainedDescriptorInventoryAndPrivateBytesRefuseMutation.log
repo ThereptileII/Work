@@ -1,0 +1,15 @@
+=== RUN   TestNativeGenerationRetainedDescriptorInventoryAndPrivateBytesRefuseMutation
+=== RUN   TestNativeGenerationRetainedDescriptorInventoryAndPrivateBytesRefuseMutation/additional-member
+=== RUN   TestNativeGenerationRetainedDescriptorInventoryAndPrivateBytesRefuseMutation/additional-root
+=== RUN   TestNativeGenerationRetainedDescriptorInventoryAndPrivateBytesRefuseMutation/helper-hardlink
+=== RUN   TestNativeGenerationRetainedDescriptorInventoryAndPrivateBytesRefuseMutation/private-record-bytes
+=== RUN   TestNativeGenerationRetainedDescriptorInventoryAndPrivateBytesRefuseMutation/parent-physical-id
+=== RUN   TestNativeGenerationRetainedDescriptorInventoryAndPrivateBytesRefuseMutation/directory-descriptor
+    installed_generation_windows_test.go:279: actual mutated descriptor readback: unexpected DACL inheritance control (close: <nil>)
+--- FAIL: TestNativeGenerationRetainedDescriptorInventoryAndPrivateBytesRefuseMutation (2.51s)
+    --- PASS: TestNativeGenerationRetainedDescriptorInventoryAndPrivateBytesRefuseMutation/additional-member (0.42s)
+    --- PASS: TestNativeGenerationRetainedDescriptorInventoryAndPrivateBytesRefuseMutation/additional-root (0.42s)
+    --- PASS: TestNativeGenerationRetainedDescriptorInventoryAndPrivateBytesRefuseMutation/helper-hardlink (0.40s)
+    --- PASS: TestNativeGenerationRetainedDescriptorInventoryAndPrivateBytesRefuseMutation/private-record-bytes (0.44s)
+    --- PASS: TestNativeGenerationRetainedDescriptorInventoryAndPrivateBytesRefuseMutation/parent-physical-id (0.41s)
+    --- FAIL: TestNativeGenerationRetainedDescriptorInventoryAndPrivateBytesRefuseMutation/directory-descriptor (0.42s)

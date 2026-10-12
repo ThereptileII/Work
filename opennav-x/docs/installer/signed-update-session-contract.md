@@ -399,6 +399,32 @@ real update/fallback transaction qualification remain required. SCRUM-311 and
 release acceptance stay open; passing inert helpers cannot arm Lifecycle,
 substitute broker account custody for per-user DPAPI proof, or authorize launch.
 
+## Protected application materialization boundary
+
+The executable application view is separate from the private broker metadata:
+`ProgramFilesX86/SKAGER/Applications/<SID>/generations/<StageID>`. Fresh machine
+enrollment creates the fixed `Applications` boundary with final protected
+Administrator/SYSTEM/broker mutation and authenticated-user read/traverse rights.
+It does not broaden the broker executable's permissions or expose private
+ProgramData ancestors. A missing or previously unproven boundary is not repaired
+by normal startup.
+
+Materialization takes the **live retained** authenticated candidate and original
+approved baseline, not paths or reconstructed receipts. It copies only the
+complete original Recovery payload, inventory, manifest and execution helpers
+into fresh protected objects. The signed-candidate completion binds its policy,
+Recovery and Setup identities separately from the original operator approval;
+these hashes are not interchangeable. Partial attempts remain reserved. The
+broker operation performs the copy before releasing baseline/candidate custody.
+
+This completion describes copied application bytes. It does **not** select a
+generation, alter the real profile, commission hardware, authorize a child, or
+prove healthy startup. The interactive transaction must still persist pending
+state before selection, consume spawn authority before suspended creation,
+retain loader/process custody through authenticated readiness, and preserve the
+real restoration/commissioning sequence for candidate and fallback. The older
+per-user Lifecycle mutation path cannot stand in for that integration.
+
 ## Inactive broker package prerequisite
 
 `tools/package-update-broker.py` is a native-Windows-only producer for the fixed

@@ -1,0 +1,9 @@
+{
+  "sourceCommit": "ac96ef54",
+  "testRevision": "256da46c7791472ce933d7a29237924ec319a513",
+  "files": {
+    "brokerstore.test.exe": "acf83695a2ffe34c2e8a8a743ad1823ea6ee266262f7ce7f44f74d131987aa1d",
+    "runner.ps1": "cc309da8acf4cf231c0578bc7b152baddd824d49297dde10009b0c199012fae6"
+  },
+  "remote": "C:\\XNav\\ComponentChecks\\generation-ac96ef54"
+}

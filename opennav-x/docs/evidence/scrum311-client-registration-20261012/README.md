@@ -108,9 +108,11 @@ hashes, a protected record, an operator declaration and source checks are not th
 authorities. Schema 1 is not adopted; older native completed registrations had no
 accepted producer. No old source or package is relabelled by these checks.
 
-Claude's new expanded source review remains pending exact-scope transfer consent.
-The earlier completed acquisition review is separate evidence and is not credited
-for this increment. No new private source was sent to Anthropic.
+The user subsequently approved the exact nine-file Claude transfer. The attempt
+failed before review with the provider's weekly usage limit; it is not a completed
+review. The independent Sol fallback and current-source comparison are recorded in
+[review-comparison.md](review-comparison.md). The earlier completed acquisition
+review remains separate evidence and is not credited for this increment.
 
 No full application build, CI dispatch, public push, release, installed
 application/profile change, visual/endurance suite or physical command occurred

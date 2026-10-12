@@ -1,0 +1,32 @@
+=== RUN   TestNativeGenerationCopiesOriginalHelpersAndAuthenticatedParentsSupportSuccessors
+--- PASS: TestNativeGenerationCopiesOriginalHelpersAndAuthenticatedParentsSupportSuccessors (0.80s)
+=== RUN   TestNativeGenerationPartialParentAndGenerationRefuseWithoutAdoption
+=== RUN   TestNativeGenerationPartialParentAndGenerationRefuseWithoutAdoption/existing-client-without-record
+=== RUN   TestNativeGenerationPartialParentAndGenerationRefuseWithoutAdoption/partial-parent-marker
+=== RUN   TestNativeGenerationPartialParentAndGenerationRefuseWithoutAdoption/partial-generation-marker
+=== RUN   TestNativeGenerationPartialParentAndGenerationRefuseWithoutAdoption/unknown-public-generation
+=== RUN   TestNativeGenerationPartialParentAndGenerationRefuseWithoutAdoption/unknown-private-record
+--- PASS: TestNativeGenerationPartialParentAndGenerationRefuseWithoutAdoption (2.14s)
+    --- PASS: TestNativeGenerationPartialParentAndGenerationRefuseWithoutAdoption/existing-client-without-record (0.27s)
+    --- PASS: TestNativeGenerationPartialParentAndGenerationRefuseWithoutAdoption/partial-parent-marker (0.27s)
+    --- PASS: TestNativeGenerationPartialParentAndGenerationRefuseWithoutAdoption/partial-generation-marker (0.57s)
+    --- PASS: TestNativeGenerationPartialParentAndGenerationRefuseWithoutAdoption/unknown-public-generation (0.52s)
+    --- PASS: TestNativeGenerationPartialParentAndGenerationRefuseWithoutAdoption/unknown-private-record (0.51s)
+=== RUN   TestNativeGenerationRetainedDescriptorInventoryAndPrivateBytesRefuseMutation
+=== RUN   TestNativeGenerationRetainedDescriptorInventoryAndPrivateBytesRefuseMutation/additional-member
+=== RUN   TestNativeGenerationRetainedDescriptorInventoryAndPrivateBytesRefuseMutation/additional-root
+=== RUN   TestNativeGenerationRetainedDescriptorInventoryAndPrivateBytesRefuseMutation/helper-hardlink
+=== RUN   TestNativeGenerationRetainedDescriptorInventoryAndPrivateBytesRefuseMutation/private-record-bytes
+=== RUN   TestNativeGenerationRetainedDescriptorInventoryAndPrivateBytesRefuseMutation/parent-physical-id
+=== RUN   TestNativeGenerationRetainedDescriptorInventoryAndPrivateBytesRefuseMutation/directory-descriptor
+    installed_generation_windows_test.go:271: Access is denied.
+--- FAIL: TestNativeGenerationRetainedDescriptorInventoryAndPrivateBytesRefuseMutation (2.46s)
+    --- PASS: TestNativeGenerationRetainedDescriptorInventoryAndPrivateBytesRefuseMutation/additional-member (0.43s)
+    --- PASS: TestNativeGenerationRetainedDescriptorInventoryAndPrivateBytesRefuseMutation/additional-root (0.42s)
+    --- PASS: TestNativeGenerationRetainedDescriptorInventoryAndPrivateBytesRefuseMutation/helper-hardlink (0.42s)
+    --- PASS: TestNativeGenerationRetainedDescriptorInventoryAndPrivateBytesRefuseMutation/private-record-bytes (0.38s)
+    --- PASS: TestNativeGenerationRetainedDescriptorInventoryAndPrivateBytesRefuseMutation/parent-physical-id (0.40s)
+    --- FAIL: TestNativeGenerationRetainedDescriptorInventoryAndPrivateBytesRefuseMutation/directory-descriptor (0.40s)
+=== RUN   TestNativeGenerationCompletedParentRecordBindsPhysicalIdentity
+--- PASS: TestNativeGenerationCompletedParentRecordBindsPhysicalIdentity (0.51s)
+FAIL

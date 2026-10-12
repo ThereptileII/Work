@@ -1,0 +1,13 @@
+=== RUN   TestEnrollmentApplicationsAndCodeNativeAccessPolicy
+=== RUN   TestEnrollmentApplicationsAndCodeNativeAccessPolicy/SKAGER-parent
+=== RUN   TestEnrollmentApplicationsAndCodeNativeAccessPolicy/UpdateBroker-directory
+=== RUN   TestEnrollmentApplicationsAndCodeNativeAccessPolicy/broker-image
+=== RUN   TestEnrollmentApplicationsAndCodeNativeAccessPolicy/Applications
+--- PASS: TestEnrollmentApplicationsAndCodeNativeAccessPolicy (0.00s)
+    --- PASS: TestEnrollmentApplicationsAndCodeNativeAccessPolicy/SKAGER-parent (0.00s)
+    --- PASS: TestEnrollmentApplicationsAndCodeNativeAccessPolicy/UpdateBroker-directory (0.00s)
+    --- PASS: TestEnrollmentApplicationsAndCodeNativeAccessPolicy/broker-image (0.00s)
+    --- PASS: TestEnrollmentApplicationsAndCodeNativeAccessPolicy/Applications (0.00s)
+=== RUN   TestEnrollmentApplicationsFreshNativePinAndNoAdoption
+--- PASS: TestEnrollmentApplicationsFreshNativePinAndNoAdoption (0.00s)
+PASS

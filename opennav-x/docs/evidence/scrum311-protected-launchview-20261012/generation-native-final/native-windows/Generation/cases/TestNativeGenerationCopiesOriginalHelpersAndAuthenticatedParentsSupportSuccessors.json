@@ -1,0 +1,15 @@
+{
+    "schema":  1,
+    "group":  "Generation",
+    "name":  "TestNativeGenerationCopiesOriginalHelpersAndAuthenticatedParentsSupportSuccessors",
+    "selection":  "^TestNativeGenerationCopiesOriginalHelpersAndAuthenticatedParentsSupportSuccessors$",
+    "runMarkers":  1,
+    "passMarkers":  1,
+    "executableSha256":  "4e79f5ad864e83571051f6845843fa1bf962fd62340ee81d04e47d6caab13777",
+    "exitCode":  0,
+    "os":  "Microsoft Windows NT 10.0.22631.0",
+    "timedOut":  false,
+    "groupReceipt":  "C:\\XNav\\ComponentChecks\\generation-final-dca7394d\\Generation\\receipt.json",
+    "executionLog":  "C:\\XNav\\ComponentChecks\\generation-final-dca7394d\\Generation\\tests-stdout.log",
+    "caseLog":  "TestNativeGenerationCopiesOriginalHelpersAndAuthenticatedParentsSupportSuccessors.log"
+}

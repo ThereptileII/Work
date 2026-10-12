@@ -1,0 +1,9 @@
+{
+  "sourceCommit": "dca7394da991d8e7c47f7b8f0ab0c50d83bc895e",
+  "testRevision": "dca7394da991d8e7c47f7b8f0ab0c50d83bc895e",
+  "files": {
+    "brokerstore.test.exe": "4e79f5ad864e83571051f6845843fa1bf962fd62340ee81d04e47d6caab13777",
+    "runner.ps1": "cc309da8acf4cf231c0578bc7b152baddd824d49297dde10009b0c199012fae6"
+  },
+  "remote": "C:\\XNav\\ComponentChecks\\generation-final-dca7394d"
+}

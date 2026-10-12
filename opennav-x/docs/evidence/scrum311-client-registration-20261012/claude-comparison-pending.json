@@ -1,5 +1,5 @@
 {
-  "status": "PENDING exact-scope external-transfer consent; NOT INVOKED",
+  "status": "USER APPROVED exact nine-file transfer; INVOKED; FAILED before review: Anthropic weekly usage limit",
   "destination": "Anthropic through scoped read-only claude-review wrapper",
   "files": {
     "opennav-x/tools/update-verifier/brokerregistration/request.go": "dbbe62494d20e043ce15f79ef75cb037c47ad4502e6445bd29b87eb84a251fc9",
@@ -12,5 +12,36 @@
     "opennav-x/tools/update-verifier/brokerhost/client_registration.go": "931f9496989229fc1069e9de06b926879e0be2d4572ff41cd20a44dd56465bd8",
     "opennav-x/tools/update-verifier/brokerhost/client_registration_windows.go": "9870be55e5205ca32ccf845628982fefe4997ba4851c4bf013cc3b230550e99d"
   },
-  "question": "Independently investigate concrete correctness/security defects in retained client registration, trust rotation, native stock custody/cleanup and cancellation/commit semantics. Cite file and line; distinguish confirmed defects from hypotheses and missing context. Do not assume local conclusions; no tests or edits. Codex will compare findings and make final decisions."
+  "question": "Independently investigate concrete correctness/security defects in retained client registration, trust rotation, native stock custody/cleanup and cancellation/commit semantics. Cite file and line; distinguish confirmed defects from hypotheses and missing context. Do not assume local conclusions; no tests or edits. Codex will compare findings and make final decisions.",
+  "invocation": {
+    "requestedModel": "claude-opus-5",
+    "claudeVersion": "2.1.292",
+    "frozenCommit": "2df69903ff554ae03269951268f6eb37ee69c638",
+    "apiErrorStatus": 429,
+    "apiError": "usage_limit_reached",
+    "reset": "2026-10-15T04:00:00Z",
+    "findingsReturned": false,
+    "automaticRetry": false,
+    "fallback": "Completed independent GPT-6.1 Sol review of same frozen nine files; no confirmed actionable defect"
+  },
+  "currentSourceComparison": {
+    "sourceCommit": "f8fce3e5a2a2a87ca3352a9cef4a2905abbc1133",
+    "files": {
+      "opennav-x/tools/update-verifier/brokerregistration/request.go": "dbbe62494d20e043ce15f79ef75cb037c47ad4502e6445bd29b87eb84a251fc9",
+      "opennav-x/tools/update-verifier/repository/inputs.go": "05491554c9636349dff37e4935791400b4af2f39a40aec24297eceb1184fa792",
+      "opennav-x/tools/update-verifier/state.go": "c7f16781744972d3c56bc92a1f5ef076d4fd6371286a30719843c44d5708ad1d",
+      "opennav-x/tools/update-verifier/brokerhost/registration.go": "6dbe53b712c40cc4fc7513671eb95f3acd5ed771c8db72cec786c08203b15ea4",
+      "opennav-x/tools/update-verifier/brokerhost/stock_windows.go": "aa500a7a03bb0227a9e60cf8637652e2a2aba3becad124a5bf21cdf52d180982",
+      "opennav-x/tools/update-verifier/brokerhost/stock_cleanup.go": "efdf07ea6f13555614e2ee543b6fdc9495e15be7f3b178180b5394ff8531cae8",
+      "opennav-x/tools/update-verifier/brokerhost/stock_cleanup_test.go": "38201c8e2e84bd4b2298f1909bf75f99cb6fe83ba8f2e53e309fae81f6151a07",
+      "opennav-x/tools/update-verifier/brokerhost/client_registration.go": "f4812ec4be8151297af44134bbc9b779fd1c2decb97d975ee2bd4bacec665cd0",
+      "opennav-x/tools/update-verifier/brokerhost/client_registration_windows.go": "84bf2128f540b97cdfd76c58d5cba4482f88e866edb75542ffdf819c22f77cf7"
+    },
+    "changedFiles": [
+      "opennav-x/tools/update-verifier/brokerhost/registration.go",
+      "opennav-x/tools/update-verifier/brokerhost/client_registration.go",
+      "opennav-x/tools/update-verifier/brokerhost/client_registration_windows.go"
+    ],
+    "scope": "Hash comparison only; frozen review does not qualify changed code"
+  }
 }

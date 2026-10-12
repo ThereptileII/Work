@@ -1,0 +1,20 @@
+{
+  "kind": "security",
+  "model": "claude-opus-5",
+  "claudeVersion": "2.1.292 (Claude Code)",
+  "baseCommit": "2df69903ff554ae03269951268f6eb37ee69c638",
+  "files": {
+    "opennav-x/tools/update-verifier/brokerhost/client_registration.go": "931f9496989229fc1069e9de06b926879e0be2d4572ff41cd20a44dd56465bd8",
+    "opennav-x/tools/update-verifier/brokerhost/client_registration_windows.go": "9870be55e5205ca32ccf845628982fefe4997ba4851c4bf013cc3b230550e99d",
+    "opennav-x/tools/update-verifier/brokerhost/registration.go": "4f29c7a76766253b1e0892edfd62da011984110c4c63efb93e57929bc92d9834",
+    "opennav-x/tools/update-verifier/brokerhost/stock_cleanup.go": "efdf07ea6f13555614e2ee543b6fdc9495e15be7f3b178180b5394ff8531cae8",
+    "opennav-x/tools/update-verifier/brokerhost/stock_cleanup_test.go": "38201c8e2e84bd4b2298f1909bf75f99cb6fe83ba8f2e53e309fae81f6151a07",
+    "opennav-x/tools/update-verifier/brokerhost/stock_windows.go": "aa500a7a03bb0227a9e60cf8637652e2a2aba3becad124a5bf21cdf52d180982",
+    "opennav-x/tools/update-verifier/brokerregistration/request.go": "dbbe62494d20e043ce15f79ef75cb037c47ad4502e6445bd29b87eb84a251fc9",
+    "opennav-x/tools/update-verifier/repository/inputs.go": "05491554c9636349dff37e4935791400b4af2f39a40aec24297eceb1184fa792",
+    "opennav-x/tools/update-verifier/state.go": "c7f16781744972d3c56bc92a1f5ef076d4fd6371286a30719843c44d5708ad1d"
+  },
+  "scope": "selected working-tree bytes; not full-repository or test acceptance",
+  "status": "failed",
+  "error": "Claude did not complete successfully; inspect private events/stderr (no automatic retry)"
+}

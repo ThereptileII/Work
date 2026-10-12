@@ -1,0 +1,10 @@
+{
+  "topLevelPasses": 4,
+  "nestedPasses": 11,
+  "failures": 0,
+  "skips": 0,
+  "rootFixtureCommit": "d2a45ee7542e9f0b1234c25c3c0c66559b21c302",
+  "compiledFixtureSource": "dca7394da991d8e7c47f7b8f0ab0c50d83bc895e",
+  "testSha256": "4e79f5ad864e83571051f6845843fa1bf962fd62340ee81d04e47d6caab13777",
+  "scope": "Inert temporary native Windows fixture mechanics, not privileged installed enrollment or application qualification"
+}

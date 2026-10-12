@@ -1,0 +1,2 @@
+=== RUN   TestNativeGenerationCopiesOriginalHelpersAndAuthenticatedParentsSupportSuccessors
+--- PASS: TestNativeGenerationCopiesOriginalHelpersAndAuthenticatedParentsSupportSuccessors (0.80s)

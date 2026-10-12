@@ -1,0 +1,9 @@
+{
+  "sourceCommit": "644625029baa360f704f20ddc94b6256a3b77fb9",
+  "testRevision": "644625029baa360f704f20ddc94b6256a3b77fb9",
+  "files": {
+    "brokerstore.test.exe": "0cd1b38be7050045c59361cf2efa23f7e469209dc0a8874dfed19978b5220cd2",
+    "runner.ps1": "cc309da8acf4cf231c0578bc7b152baddd824d49297dde10009b0c199012fae6"
+  },
+  "remote": "C:\\XNav\\ComponentChecks\\generation-acl-64462502"
+}

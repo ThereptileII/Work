@@ -1,0 +1,9 @@
+{
+  "sourceCommit": "601dc155",
+  "testRevision": "2e8e79b88a6df852f3a7ac320c8fed7cf280b26b",
+  "files": {
+    "brokerenroll.test.exe": "bc21eee3a2935e18f8da34cb5dee3fc46c8d709b9c83f51f206a707b673efcb5",
+    "runner.ps1": "3e930c6a42a4024e9eb1d3042b50fc79321b9e10b2fd2d1405f5e90f580bb991"
+  },
+  "remote": "C:\\XNav\\ComponentChecks\\launchroot-601dc155"
+}

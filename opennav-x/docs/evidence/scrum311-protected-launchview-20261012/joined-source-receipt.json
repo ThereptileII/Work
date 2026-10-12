@@ -1,0 +1,20 @@
+{
+  "sourceCommit": "ac96ef54",
+  "storeSource": "256da46c7791472ce933d7a29237924ec319a513",
+  "hostSource": "fe0f7812937d287501266d2fa3136bcf717b7a6d",
+  "hashes": {
+    "brokerstore/acquisition.go": "1f4e099ae2f1bc3185f2dfb1adbbd9d7b49a24b40d86ffe18df76096bd4ae6a0",
+    "brokerstore/store.go": "1d8d3638de1fd1383f33e68f06d0cfa445dc28e0411dd76e8b9d0537f484fbf2",
+    "brokerstore/installed_generation.go": "cd282ff482d7d814ea815038041ac8a3a2de95fdcfc32364b779ac5f06f15ada",
+    "brokerstore/installed_generation_windows.go": "d22405b9be72ad8aaba0bf676f91af6a0ebc354ae3e805bc7322d51c12815ac5",
+    "brokerstore/installed_generation_test.go": "996b38fa71a69ebf30e8603adb143dd13bfbd75bed7ad6563857eab0615ce19d",
+    "brokerstore/installed_generation_windows_test.go": "a8407b9285b33d8ef959f5e9d167dfc6dcb73f71d8db247207e17c87463d7e37",
+    "brokerhost/host_windows.go": "e175626454257e6ebe0b57bc8577615fda65219691ab043e644f3262329a890e",
+    "brokerhost/operation.go": "9bf70f244ae0117a5096d19f93d75d3237c19aab6303ed82ad5334c7cb180264",
+    "brokerhost/operation_test.go": "be4c5e0647c9ffdf32bb1ac0c4768e585767541f0a77d8feae879b821b0d64c8",
+    "brokerhost/materialize_windows_test.go": "1305509c4503ccea6e4c658f137d41cc57e7b060330c7ba5181139f873cafdaa"
+  },
+  "joinedCommand": "GOTOOLCHAIN=local GOPROXY=off GOTMPDIR=/home/standard/Projects/.tmp/go-tmp /tmp/skager-go-1.27.1/go/bin/go test -race -count=1 -json ./brokerstore ./brokerhost -run '^(TestGeneration|TestStagingOperation|TestMaterialization)'",
+  "joinedExitCode": 0,
+  "nativeInitial": "failed directory-descriptor mutation; retained separately"
+}

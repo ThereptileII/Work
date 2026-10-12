@@ -1,0 +1,51 @@
+{
+    "schema":  1,
+    "group":  "Generation",
+    "executable":  "C:\\XNav\\ComponentChecks\\generation-acl-64462502\\brokerstore.test.exe",
+    "executableSha256":  "0cd1b38be7050045c59361cf2efa23f7e469209dc0a8874dfed19978b5220cd2",
+    "expectedCases":  [
+                          "TestNativeGenerationCopiesOriginalHelpersAndAuthenticatedParentsSupportSuccessors",
+                          "TestNativeGenerationPartialParentAndGenerationRefuseWithoutAdoption",
+                          "TestNativeGenerationRetainedDescriptorInventoryAndPrivateBytesRefuseMutation",
+                          "TestNativeGenerationCompletedParentRecordBindsPhysicalIdentity"
+                      ],
+    "selection":  "^(TestNativeGenerationCopiesOriginalHelpersAndAuthenticatedParentsSupportSuccessors|TestNativeGenerationPartialParentAndGenerationRefuseWithoutAdoption|TestNativeGenerationRetainedDescriptorInventoryAndPrivateBytesRefuseMutation|TestNativeGenerationCompletedParentRecordBindsPhysicalIdentity)$",
+    "status":  "failed",
+    "failure":  "Native fixture execution did not complete successfully",
+    "startedUtc":  "2026-10-12T07:23:48.7653775Z",
+    "os":  "Microsoft Windows NT 10.0.22631.0",
+    "os64":  true,
+    "process64":  true,
+    "powershellVersion":  "5.1.22621.5624",
+    "listing":  {
+                    "arguments":  [
+                                      "-test.list=^(TestNativeGenerationCopiesOriginalHelpersAndAuthenticatedParentsSupportSuccessors|TestNativeGenerationPartialParentAndGenerationRefuseWithoutAdoption|TestNativeGenerationRetainedDescriptorInventoryAndPrivateBytesRefuseMutation|TestNativeGenerationCompletedParentRecordBindsPhysicalIdentity)$"
+                                  ],
+                    "processId":  4368,
+                    "startedUtc":  "2026-10-12T07:23:48.7958076Z",
+                    "exitCode":  0,
+                    "timedOut":  false,
+                    "error":  null,
+                    "stdout":  "C:\\XNav\\ComponentChecks\\generation-acl-64462502\\Generation\\list-stdout.log",
+                    "stderr":  "C:\\XNav\\ComponentChecks\\generation-acl-64462502\\Generation\\list-stderr.log",
+                    "elapsedMilliseconds":  378
+                },
+    "execution":  {
+                      "arguments":  [
+                                        "-test.run=^(TestNativeGenerationCopiesOriginalHelpersAndAuthenticatedParentsSupportSuccessors|TestNativeGenerationPartialParentAndGenerationRefuseWithoutAdoption|TestNativeGenerationRetainedDescriptorInventoryAndPrivateBytesRefuseMutation|TestNativeGenerationCompletedParentRecordBindsPhysicalIdentity)$",
+                                        "-test.count=1",
+                                        "-test.v",
+                                        "-test.timeout=90s"
+                                    ],
+                      "processId":  3588,
+                      "startedUtc":  "2026-10-12T07:23:49.2267513Z",
+                      "exitCode":  1,
+                      "timedOut":  false,
+                      "error":  null,
+                      "stdout":  "C:\\XNav\\ComponentChecks\\generation-acl-64462502\\Generation\\tests-stdout.log",
+                      "stderr":  "C:\\XNav\\ComponentChecks\\generation-acl-64462502\\Generation\\tests-stderr.log",
+                      "elapsedMilliseconds":  6042
+                  },
+    "scope":  "Exact inert native fixtures only; no application/service/profile/network/physical output; not enrollment or release qualification",
+    "completedUtc":  "2026-10-12T07:23:55.4072219Z"
+}

@@ -1,0 +1,15 @@
+{
+    "schema":  1,
+    "group":  "Generation",
+    "name":  "TestNativeGenerationRetainedDescriptorInventoryAndPrivateBytesRefuseMutation",
+    "selection":  "^TestNativeGenerationRetainedDescriptorInventoryAndPrivateBytesRefuseMutation$",
+    "runMarkers":  1,
+    "passMarkers":  0,
+    "executableSha256":  "0cd1b38be7050045c59361cf2efa23f7e469209dc0a8874dfed19978b5220cd2",
+    "exitCode":  1,
+    "os":  "Microsoft Windows NT 10.0.22631.0",
+    "timedOut":  false,
+    "groupReceipt":  "C:\\XNav\\ComponentChecks\\generation-acl-64462502\\Generation\\receipt.json",
+    "executionLog":  "C:\\XNav\\ComponentChecks\\generation-acl-64462502\\Generation\\tests-stdout.log",
+    "caseLog":  "TestNativeGenerationRetainedDescriptorInventoryAndPrivateBytesRefuseMutation.log"
+}

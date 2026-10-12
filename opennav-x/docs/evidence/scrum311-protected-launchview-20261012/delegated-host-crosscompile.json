@@ -1,0 +1,10 @@
+{
+  "host_commit": "fe0f7812937d287501266d2fa3136bcf717b7a6d",
+  "dependency_original_commit": "256da46c",
+  "dependency_local_cherry_pick": "a6a85347",
+  "command": "GOTOOLCHAIN=local GOPROXY=off GOTMPDIR=/home/standard/Projects/.tmp/go-tmp GOOS=windows GOARCH=386 CGO_ENABLED=0 /tmp/skager-go-1.27.1/go/bin/go test -c ./brokerhost -o /home/standard/Projects/.tmp/broker-host-materialize-20261012/brokerhost-windows-386.test.exe",
+  "exit_code": 0,
+  "artifact_bytes": 19277824,
+  "artifact_sha256": "a0857178a58a0133be98ef23b3f6d222a657fae9de9c4b96f462869c00522e1d",
+  "native_execution": false
+}
