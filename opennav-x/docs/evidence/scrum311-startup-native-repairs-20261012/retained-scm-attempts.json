@@ -1,0 +1,58 @@
+{
+  "schema": 1,
+  "scope": "native retained broker service enrollment only; no product acceptance",
+  "originalProductCommit": "4dcee9b15922e62ea43a97e003e1278eead71b2f",
+  "originalProducerRun": 38288556379,
+  "originalProducerConclusion": "failure",
+  "attempts": [
+    {
+      "helperCommit": "991cac762d116b182ea6cde427bd9ec71d0bbf70",
+      "run": 38292291353,
+      "conclusion": "failure",
+      "originalArtifactAuthentication": "passed",
+      "nativeFixtureInvoked": false,
+      "observation": "PowerShell5 inline Python provenance check emitted Traceback before native fixture; full exception was truncated by Stop preference",
+      "isolatedReproduction": "PowerShell Legacy argument handling strips embedded double quotes; inert NameError reproduced locally",
+      "artifact": {
+        "id": 11766397913,
+        "bytes": 523,
+        "sha256": "353d7816cec37412aa5cd63a07aa3ba230f3aff7116eef681023df38b304a9b7"
+      }
+    },
+    {
+      "helperCommit": "718b65c0d24e0b00f5bc1e89d6be9b0bd9ce1099",
+      "run": 38292790551,
+      "job": 114956626644,
+      "conclusion": "failure",
+      "originalArtifactAuthentication": "passed",
+      "beforeEffectReauthentication": "passed",
+      "nativeFixtureInvoked": true,
+      "failure": "createFreshFiles: untrusted enrollment ancestor mutation",
+      "initializeServiceInvoked": false,
+      "policyRelaxed": false
+    },
+    {
+      "helperCommit": "dcef6f6b569ca2907b14a9db8082f89a99a33ecd",
+      "run": 38293693131,
+      "job": 114959574730,
+      "conclusion": "failure",
+      "originalArtifactAuthentication": "passed",
+      "beforeEffectReauthentication": "passed",
+      "nativeFixtureInvoked": true,
+      "failure": "createFreshFiles: untrusted enrollment ancestor mutation",
+      "heldDescriptorObservation": {
+        "ownerSID": "S-1-5-18",
+        "aceSID": "S-1-5-32-545",
+        "aceSIDValid": true,
+        "mask": "0x00000116",
+        "flags": "0x02"
+      },
+      "ancestorRoleObserved": false,
+      "initializeServiceInvoked": false,
+      "policyRelaxed": false
+    }
+  ],
+  "nativeServiceAcceptance": false,
+  "fullApplicationBuild": false,
+  "boatChanged": false
+}

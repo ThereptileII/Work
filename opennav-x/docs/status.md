@@ -1,6 +1,6 @@
 # SKAGER status — 2026-10-12
 
-## Native component producers pass; SCM helper path repair remains pending
+## Native component producers pass; SCM ancestor permissions remain blocked
 
 Exact focused component run [38288556379](https://github.com/ThereptileII/Work/actions/runs/38288556379)
 on `4dcee9b15922e62ea43a97e003e1278eead71b2f` passed both platform functional
@@ -19,8 +19,20 @@ broker installation and re-verifies its original package/source identity. It
 rechecks provenance before privileged fixture effects. Original product commit
 and later helper commit are recorded separately; no component is rebuilt or
 relabeled. Normal Staging gates are unchanged. [Retained-test contract](installer/retained-broker-enrollment.md).
-Native service acceptance remains pending. No full application rebuild or boat
-change has occurred.
+Native service acceptance remains pending. The separate retained run
+[38292790551](https://github.com/ThereptileII/Work/actions/runs/38292790551)
+on helper `718b65c0d24e0b00f5bc1e89d6be9b0bd9ce1099` authenticated the original
+bytes, rechecked provenance and actually invoked the native fixture. It refused
+`createFreshFiles` with `untrusted enrollment ancestor mutation`, before service
+initialization. Follow-up [38293693131](https://github.com/ThereptileII/Work/actions/runs/38293693131)
+on helper `dcef6f6b569ca2907b14a9db8082f89a99a33ecd` observed the original held
+descriptor: SYSTEM owner, BUILTIN Users allow ACE, mask `0x116`, flags `0x02`.
+This grants creation and EA/attribute writes; its ancestor role and policy branch
+were not yet recorded. The fixture still refused before service initialization.
+The security policy remains unchanged while that precise boundary is investigated.
+The preceding helper-only
+PowerShell failure remains preserved. [Separate attempts](evidence/scrum311-startup-native-repairs-20261012/retained-scm-attempts.json).
+No full application rebuild or boat change has occurred.
 
 Earlier exact component run [38287535018](https://github.com/ThereptileII/Work/actions/runs/38287535018)
 on `c75c3519f4ac1ee2732e8c38f0fc63334943cdf5` passed Linux (**569 top-level +
