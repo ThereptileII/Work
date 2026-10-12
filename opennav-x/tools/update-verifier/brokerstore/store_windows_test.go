@@ -463,10 +463,13 @@ func TestNativeStoreLifetimeLockRechecksHeldMetadataAndReleasesAfterCleanupError
 		windows.CloseHandle(lock.handle)
 		t.Fatal(err)
 	}
+	root.handle = windows.InvalidHandle // The fixture no longer owns the closed real handle.
 	// InvalidHandle (-1) is also the current-process pseudo-handle; closing it
-	// may succeed. Null is invalid and cannot alias a reusable closed handle.
-	root.handle = 0
-	store := &Store{backend: &nativeStore{pins: []*nativePin{root}, lock: lock}}
+	// may succeed. Inject null only into a separate pin, leaving fixture cleanup
+	// disarmed and never passing a reusable closed handle to production cleanup.
+	failedPin := *root
+	failedPin.handle = 0
+	store := &Store{backend: &nativeStore{pins: []*nativePin{&failedPin}, lock: lock}}
 	firstClose := store.Close()
 	if !errors.Is(firstClose, windows.ERROR_INVALID_HANDLE) {
 		t.Fatalf("cleanup error lost: %v", firstClose)
