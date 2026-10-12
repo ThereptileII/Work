@@ -10,6 +10,7 @@ import (
 	"runtime"
 	"strings"
 	"testing"
+	"unsafe"
 
 	"golang.org/x/sys/windows"
 )
@@ -269,7 +270,7 @@ func TestNativeGenerationRetainedDescriptorInventoryAndPrivateBytesRefuseMutatio
 				setErr := windows.SetSecurityInfo(handle, windows.SE_FILE_OBJECT, windows.DACL_SECURITY_INFORMATION|windows.PROTECTED_DACL_SECURITY_INFORMATION, nil, nil, acl, nil)
 				var readbackErr error
 				if setErr == nil {
-					readbackErr = checkSecurity(handle, sd)
+					readbackErr = nativeGenerationMutatedDACL(handle, acl)
 				}
 				closeErr := windows.CloseHandle(handle)
 				if setErr != nil {
@@ -289,6 +290,42 @@ func TestNativeGenerationRetainedDescriptorInventoryAndPrivateBytesRefuseMutatio
 		})
 	}
 }
+
+// SetSecurityInfo can set AUTO_INHERITED on the actual descriptor. This
+// test-only readback corroborates the requested protected ACL mutation without
+// substituting that normalized control for the original retained descriptor.
+func nativeGenerationMutatedDACL(handle windows.Handle, expected *windows.ACL) error {
+	actual, err := windows.GetSecurityInfo(handle, windows.SE_FILE_OBJECT, windows.DACL_SECURITY_INFORMATION)
+	if err != nil {
+		return err
+	}
+	control, _, err := actual.Control()
+	const required = windows.SE_DACL_PRESENT | windows.SE_DACL_PROTECTED
+	if err != nil || control&required != required || control&(windows.SE_DACL_DEFAULTED|windows.SE_DACL_AUTO_INHERIT_REQ) != 0 {
+		return errors.New("mutated DACL must remain present, protected and nondefaulted")
+	}
+	acl, _, err := actual.DACL()
+	if err != nil || acl == nil || expected == nil || acl.AceCount != expected.AceCount {
+		return errors.New("actual mutated DACL entry count differs")
+	}
+	for i := uint32(0); i < uint32(acl.AceCount); i++ {
+		var ace, want *windows.ACCESS_ALLOWED_ACE
+		if err := windows.GetAce(acl, i, &ace); err != nil {
+			return err
+		}
+		if err := windows.GetAce(expected, i, &want); err != nil {
+			return err
+		}
+		size := int(ace.Header.AceSize)
+		if size < int(unsafe.Sizeof(windows.ACE_HEADER{})) || size != int(want.Header.AceSize) || !bytes.Equal(unsafe.Slice((*byte)(unsafe.Pointer(ace)), size), unsafe.Slice((*byte)(unsafe.Pointer(want)), size)) {
+			return errors.New("actual mutated DACL ACE bytes differ")
+		}
+	}
+	runtime.KeepAlive(actual)
+	runtime.KeepAlive(expected)
+	return nil
+}
+
 func TestNativeGenerationCompletedParentRecordBindsPhysicalIdentity(t *testing.T) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
