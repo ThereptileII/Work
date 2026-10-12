@@ -409,47 +409,14 @@ func verifyFile(ctx context.Context, store *Store, file candidateFile, length in
 	return file.check(length)
 }
 
-// Seal writes only the fixed receipt after complete original recovery evidence
-// and exact payload membership have been bound and rechecked through held files.
+// Seal writes the fixed receipt after complete original recovery evidence and
+// exact payload membership have been bound and rechecked through held files.
+// Materialized candidates also require an independently reopened same-Store
+// generation and a fresh durable seal binding the original receipt file identity.
 // The broker must bind its own receipt schema to the authenticated preparation;
 // this storage boundary treats receipt bytes as opaque, never launch authority.
-func (c *Candidate) Seal(ctx context.Context, receipt []byte) (err error) {
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
-	c.mu.Lock()
-	defer c.mu.Unlock()
-	if err = c.ready(); err != nil {
-		return err
-	}
-	defer func() {
-		if err != nil {
-			c.poisoned = true
-		}
-	}()
-	if ctx == nil || len(receipt) == 0 || len(receipt) > MaxReceiptBytes || len(c.files) == 0 {
-		return errors.New("nonempty complete payload and bounded receipt required")
-	}
-	if err = ctx.Err(); err != nil {
-		return err
-	}
-	if c.recoveryEvidence == nil {
-		return errors.New("complete bound original recovery evidence required")
-	}
-	if err = c.validateRecoveryEvidence(ctx, *c.recoveryEvidence); err != nil {
-		return err
-	}
-	file, err := c.backend.create(ReceiptFilename)
-	if err != nil {
-		return err
-	}
-	digest := sha256.Sum256(receipt)
-	expected := hex.EncodeToString(digest[:])
-	c.files = append(c.files, fileRecord{file: file, length: int64(len(receipt)), digest: expected})
-	if err = c.copyFile(ctx, file, strings.NewReader(string(receipt)), int64(len(receipt)), expected); err != nil {
-		return err
-	}
-	c.sealed = true
-	return nil
+func (c *Candidate) Seal(ctx context.Context, receipt []byte) error {
+	return c.sealStage(ctx, receipt)
 }
 
 // Close releases owned handles once and retains the original cleanup result.
