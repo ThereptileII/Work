@@ -37,8 +37,8 @@ ancestors. The config is limited to 576 KiB, the original root and response to
 1 MiB, headers to 8 KiB/32 fields/2 KiB per line. Duplicate JSON keys and
 duplicate HTTP headers refuse. DNS resolution has a five-second wait (a timed-out
 resolver cannot initiate an HTTP request); all candidate addresses share a
-five-second connect/TLS deadline; response reads share a ten-second deadline
-after the request. Input
+five-second connect/TLS deadline; the single request send is limited to five
+seconds; response reads share a ten-second deadline after the request. Input
 handles, bytes and path identities are checked again after the request, including
 on request refusal. The evidence directory must be fresh with an existing plain
 parent; `result.json` is exclusively created and never overwritten. Failures

@@ -74,7 +74,7 @@ class ProbeTests(unittest.TestCase):
         self.assertEqual(sock.sent, (f'GET /1.root.json HTTP/1.1\r\nHost: {self.host}\r\n'
                                       'Accept: application/json\r\nCache-Control: no-cache\r\n'
                                       'Connection: close\r\n\r\n').encode())
-        self.assertTrue(sock.timeouts)
+        self.assertEqual(sock.timeouts[0], 5)  # sendall has its own bound.
 
     def test_default_connection_uses_selected_host_and_system_tls(self):
         raw, wrapped = mock.Mock(), mock.Mock()
@@ -111,6 +111,7 @@ class ProbeTests(unittest.TestCase):
 
     def test_duplicate_json_and_ambiguous_endpoints_refuse(self):
         bad = [self.config.replace(b'"schema": 1', b'"schema": 1, "schema": 1'),
+               self.config.replace(b'"version": 1', b'"version": true'),
                self.config.replace(self.host.encode(), b'OTHER.ts.net', 1),
                self.config.replace(self.host.encode(), (self.host + ':443').encode()),
                self.config.replace(self.host.encode(), (self.host + '/other').encode()),
@@ -134,12 +135,24 @@ class ProbeTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.run_probe(lambda *_: b'X' * len(self.root))
 
+    def test_header_limit_counts_header_not_prefetched_body(self):
+        header = b'HTTP/1.1 200 OK\r\nContent-Length: ' + str(len(self.root)).encode() + b'\r\n\r\n'
+        with mock.patch.object(probe, 'MAX_HEADER', len(header)):
+            self.assertEqual(probe.fetch_root(self.host, len(self.root),
+                                              connector=lambda _: Socket(header + self.root)), self.root)
+
     def test_original_inputs_are_rechecked_after_request(self):
         def changed_root(*unused):
             self.root_path.write_bytes(self.root + b' ')
             return self.root
         with self.assertRaises(ValueError):
             self.run_probe(changed_root)
+
+    def test_unrelated_ancestor_directory_activity_is_not_input_tampering(self):
+        def unrelated(*unused):
+            (self.base / 'unrelated-file').write_bytes(b'not an approved input')
+            return self.root
+        self.assertEqual(self.run_probe(unrelated)['status'], 'passed')
 
     def test_symlink_input_refuses_and_no_fetch(self):
         alias = self.base / 'alias.json'

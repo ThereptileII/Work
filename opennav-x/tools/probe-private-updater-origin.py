@@ -47,9 +47,20 @@ def strict_json(data):
                       parse_constant=lambda _: (_ for _ in ()).throw(ValueError(REFUSAL)))
 
 
+def canonical_json(value):
+    return json.dumps(value, sort_keys=True, separators=(',', ':'), ensure_ascii=False)
+
+
 def identity(info):
     return (info.st_dev, info.st_ino, info.st_mode, info.st_size, info.st_mtime_ns,
             info.st_ctime_ns, info.st_nlink, getattr(info, 'st_file_attributes', 0))
+
+
+def path_identity(info):
+    # Directory size/mtime/ctime/link count can change when unrelated entries
+    # are created. Retain physical ancestry and type, not incidental contents.
+    return (info.st_dev, info.st_ino, stat.S_IFMT(info.st_mode),
+            bool(getattr(info, 'st_file_attributes', 0) & 0x400))
 
 
 def plain_chain(path):
@@ -62,7 +73,7 @@ def plain_chain(path):
         info = entry.lstat()
         require(not stat.S_ISLNK(info.st_mode) and
                 not (getattr(info, 'st_file_attributes', 0) & 0x400))
-        observed.append((entry, identity(info)))
+        observed.append((entry, path_identity(info)))
     return observed
 
 
@@ -71,8 +82,9 @@ class PinnedInput:
         require(isinstance(approved_sha, str) and HEX.fullmatch(approved_sha))
         self.path = Path(path)
         self.chain = plain_chain(self.path)
-        before = self.chain[0][1]
+        before = identity(self.path.lstat())
         require(stat.S_ISREG(before[2]) and before[6] == 1 and 0 < before[3] <= limit)
+        self.file_identity = before
         self.file = self.path.open('rb')
         try:
             require(identity(os.fstat(self.file.fileno())) == before)
@@ -87,7 +99,8 @@ class PinnedInput:
     def check(self):
         self.file.seek(0)
         require(self.file.read(len(self.bytes) + 1) == self.bytes and
-                identity(os.fstat(self.file.fileno())) == self.chain[0][1] and
+                identity(os.fstat(self.file.fileno())) == self.file_identity and
+                identity(self.path.lstat()) == self.file_identity and
                 plain_chain(self.path) == self.chain)
 
     def close(self):
@@ -101,7 +114,8 @@ def selected_host(config, root):
             type(value['schema']) is int and value['schema'] == 1 and value['channel'] == 'beta')
     original = strict_json(root)
     require(type(original) is dict and set(original) == {'signatures', 'signed'} and
-            value['bootstrapRoot'] == original and type(original['signed']) is dict and
+            canonical_json(value['bootstrapRoot']) == canonical_json(original) and
+            type(original['signed']) is dict and
             original['signed'].get('_type') == 'root')
     url = value['metadataUrl']
     require(type(url) is str and type(value['artifactOrigin']) is str and
@@ -167,14 +181,18 @@ def fetch_root(host, expected_size, connector=verified_connection):
     with connector(host) as connection:
         request = ('GET /1.root.json HTTP/1.1\r\nHost: ' + host +
                    '\r\nAccept: application/json\r\nCache-Control: no-cache\r\nConnection: close\r\n\r\n')
+        connection.settimeout(5)
         connection.sendall(request.encode('ascii'))
         deadline = time.monotonic() + 10
         response = bytearray()
         while b'\r\n\r\n' not in response:
             block = receive(connection, deadline, min(4096, MAX_HEADER + 1 - len(response)))
-            require(block and len(response) + len(block) <= MAX_HEADER)
+            require(block)
             response.extend(block)
+            if b'\r\n\r\n' not in response:
+                require(len(response) <= MAX_HEADER)
         head, body = bytes(response).split(b'\r\n\r\n', 1)
+        require(len(head) + 4 <= MAX_HEADER)
         lines = head.split(b'\r\n')
         require(re.fullmatch(rb'HTTP/1\.1 200 [\x20-\x7e]{1,64}', lines[0]) and
                 1 <= len(lines) - 1 <= MAX_HEADERS)
@@ -241,7 +259,7 @@ def main(argv=None, fetch=fetch_root):
         evidence = Path(args.evidence)
         require(not evidence.exists() and not evidence.is_symlink())
         parent = plain_chain(evidence.parent)
-        require(stat.S_ISDIR(parent[0][1][2]))
+        require(parent[0][1][2] == stat.S_IFDIR)
         evidence.mkdir(mode=0o700)
         output = evidence / 'result.json'
         result = probe(args.config, args.config_sha256, args.original_root, args.original_root_sha256, fetch)
