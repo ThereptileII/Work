@@ -276,20 +276,71 @@ metadata expiry, signature verification and durable rollback floors remain the
 real verifier's responsibility at its current clock. Missing/corrupt retained
 state refuses; reading registration never initializes or resets it.
 
+## Protected installed baseline joined to fresh registration (2026-10-12)
+
+Production source `67665e18` adds actual operator publication, authenticated
+baseline import and retained native installed-store custody. The optional client
+request requires `approved-installed-baseline.zip` in the protected operator
+artifact directory. Before network or mutation, the real importer validates every
+original authenticated member against the independently approved request and the
+same bootstrap trust/channel. A local self-hash or an administrator-editable
+request cannot authorize itself. The first provisioner's publisher and execution
+must still be independently authenticated.
+
+Fresh retained enrollment publishes only the fixed paired
+`ClientRegistrationRequests/<SID>.json` and `<SID>.baseline.zip`, with final
+Administrator/SYSTEM-write and broker-read descriptors at creation, `CREATE_NEW`,
+bounded copy, synchronization and readback. Physical read-only custody denying
+write/delete remains retained through the stopped SCM operation. Partial
+publication is permanent refusal; missing ZIP cannot silently become no-client
+enrollment. `OpenApprovedClientBaselineNative` accepts only the fixed SID namespace
+as the actual non-impersonated broker, with retained physical ancestry and file
+identity; it accepts no caller path or operator-console fallback.
+
+Before registration completes, the broker imports exactly the approved manifest's
+app/docs payload into fresh `UpdateBroker/users/<SID>/installed/<generation>`.
+`FILE_SHA256.json` and `installer/package.json` keep their exact original bytes;
+recovery launcher/profile/root extras and the portable marker are excluded from
+installed payload. `Installed.PackageSHA256` binds the original Lifecycle package
+manifest, not an outer ZIP or reserialization. The shared `baselineevidence`
+validator preserves those meanings for import and later reads.
+
+A durable started fence precedes installed-tree creation. Final payload protection
+is broker/SYSTEM full access and client read/execute at creation; retained native
+handles reject reparses, hardlinks, additions, replacement and aliases. Completion
+binds approval, exact original evidence/payload hashes and creation identities,
+then writes the permanent completed fence. Baseline completion and validation
+precede registration completion; all owners stay retained through that boundary.
+Successful durable completion survives late cancellation. Actual I/O/custody or
+close failure may leave valid durable completion and reports uncertainty requiring
+operator review, never automatic retry, deletion or adoption.
+
+The host's staging eligibility now opens and retains this completed baseline using
+the original approved installed pins. That owner and its informational directory
+do not select a generation or authorize launch. Actual privileged provisioner/SCM
+execution remains unqualified. Focused Linux results are **131 top-level + 477
+nested** passing component checks; **68 Python packaging tests** passed in the
+reported session. Windows/x86 component compilation and **10 top-level + 6 nested
+native inert tests** passed. The original test compilation failure, test-only
+`f2a9e051` repair and local collector failure are preserved in the
+[exact evidence record](../evidence/scrum311-installed-baseline-20261012/README.md).
+
 ## Remaining installation boundary
 
 The first final provisioner must still be independently authenticated before
 elevation. Machine parent/service provisioning now has a concrete source path;
 actual native qualification and authenticated first execution remain unaccepted.
-Fresh protected client registration now has the source path above; its actual
-native principal/ACL/SCM qualification remains required. Independently
-authenticated installed-byte/loader custody, launcher handoff, healthy-start
-receipt, recovery and the full installed Windows/boat update sequence remain
-required. Existing-enrollment/client migration is not implemented by the fresh
-path and must not be simulated by deleting recovery fences. Machine/store creation is implemented in source but has not
-passed native Windows execution or actual enrolled-service qualification. None of these
-missing authorities is supplied by the declaration. No service is activated,
-hardware control enabled or application/profile changed by its focused tests.
+Fresh protected client registration and installed-baseline import now have the
+source paths above. Their inert native fixtures pass; actual broker
+principal/ACL/SCM provisioning and enrolled-service execution remain unqualified.
+The protected baseline does not establish the old running installation or full
+loader custody. A real transaction, interactive launcher handoff, commissioning,
+healthy-start handshake, recovery and the full installed Windows/boat sequence
+remain required. Existing-enrollment/client migration is not implemented by the
+fresh path and must not be simulated by deleting recovery fences. None of these
+missing authorities is supplied by the declaration or passing inert fixtures.
+No service is activated, hardware control enabled or application/profile changed
+by these focused tests.
 
 See [private repository operations](staging-update-repository.md) and
 [secure updater](secure-updater.md). Native Windows remains mandatory for

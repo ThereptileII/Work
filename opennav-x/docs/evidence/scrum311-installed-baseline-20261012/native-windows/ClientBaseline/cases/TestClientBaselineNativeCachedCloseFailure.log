@@ -1,0 +1,2 @@
+=== RUN   TestClientBaselineNativeCachedCloseFailure
+--- PASS: TestClientBaselineNativeCachedCloseFailure (0.00s)

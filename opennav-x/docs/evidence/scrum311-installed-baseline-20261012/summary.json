@@ -1,0 +1,57 @@
+{
+  "schema": 1,
+  "productionSource": "67665e18779d5d76e3fa101c742872219df14cad",
+  "windowsTestOnlyFix": "f2a9e0515fc8c10f6c3115122c13eecad1579267",
+  "productionInputsUnchangedByTestFix": true,
+  "linux": {
+    "componentRace": {
+      "topLevelPass": 111,
+      "nestedPass": 364,
+      "raw": "portable-race.jsonl"
+    },
+    "importerSignedRecovery": {
+      "topLevelPass": 20,
+      "nestedPass": 113,
+      "raw": "approved-baseline-integrated-67665e18.jsonl"
+    },
+    "total": {
+      "topLevelPass": 131,
+      "nestedPass": 477,
+      "fail": 0,
+      "skip": 0
+    }
+  },
+  "pythonPackaging": {
+    "tests": 68,
+    "exit": 0,
+    "seconds": 12.51,
+    "provenance": "coordinator-reported session 46334; no raw logfile retained; no rerun"
+  },
+  "windowsNative": {
+    "InstalledBaseline": {
+      "topLevelPass": 5,
+      "nestedPass": 6
+    },
+    "ClientBaseline": {
+      "topLevelPass": 5,
+      "nestedPass": 0
+    },
+    "fail": 0,
+    "skip": 0,
+    "os": "Windows 10.0.22631",
+    "openCPN": {
+      "pid": 1852,
+      "respondingBeforeAndAfter": true
+    },
+    "ownedTestProcessesRemaining": 0
+  },
+  "collector": {
+    "originalSession": 40502,
+    "exit": 1,
+    "failurePreserved": "collector-failure.txt",
+    "localExtractionCorrected": true,
+    "nativeTestsRerun": false
+  },
+  "scope": "inert component evidence only; no privileged enrollment, real update transaction, interactive launch, commissioning, healthy handshake or release acceptance",
+  "evidenceCopiedWithoutRerun": true
+}

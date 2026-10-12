@@ -1,0 +1,52 @@
+{
+    "schema":  1,
+    "group":  "ClientBaseline",
+    "executable":  "C:\\XNav\\ComponentChecks\\baseline-67665e18-f2a9e051\\brokerenroll.test.exe",
+    "executableSha256":  "56c600bc70b7954e8fd2322ebb61126a48fc6aa4b244c20a916df41a4df55160",
+    "expectedCases":  [
+                          "TestClientBaselineNativeReadAtCustody",
+                          "TestClientBaselineNativeCachedCloseFailure",
+                          "TestClientBaselineNativeHardlinkRefusal",
+                          "TestClientBaselineNativeRefusesOperatorConsoleFallback",
+                          "TestClientBaselinePartialPublicationCannotLookLikeNoClient"
+                      ],
+    "selection":  "^(TestClientBaselineNativeReadAtCustody|TestClientBaselineNativeCachedCloseFailure|TestClientBaselineNativeHardlinkRefusal|TestClientBaselineNativeRefusesOperatorConsoleFallback|TestClientBaselinePartialPublicationCannotLookLikeNoClient)$",
+    "status":  "passed",
+    "failure":  null,
+    "startedUtc":  "2026-10-12T05:13:47.7823134Z",
+    "os":  "Microsoft Windows NT 10.0.22631.0",
+    "os64":  true,
+    "process64":  true,
+    "powershellVersion":  "5.1.22621.5624",
+    "listing":  {
+                    "arguments":  [
+                                      "-test.list=^(TestClientBaselineNativeReadAtCustody|TestClientBaselineNativeCachedCloseFailure|TestClientBaselineNativeHardlinkRefusal|TestClientBaselineNativeRefusesOperatorConsoleFallback|TestClientBaselinePartialPublicationCannotLookLikeNoClient)$"
+                                  ],
+                    "processId":  10404,
+                    "startedUtc":  "2026-10-12T05:13:47.8102879Z",
+                    "exitCode":  0,
+                    "timedOut":  false,
+                    "error":  null,
+                    "stdout":  "C:\\XNav\\ComponentChecks\\baseline-67665e18-f2a9e051\\ClientBaseline\\list-stdout.log",
+                    "stderr":  "C:\\XNav\\ComponentChecks\\baseline-67665e18-f2a9e051\\ClientBaseline\\list-stderr.log",
+                    "elapsedMilliseconds":  401
+                },
+    "execution":  {
+                      "arguments":  [
+                                        "-test.run=^(TestClientBaselineNativeReadAtCustody|TestClientBaselineNativeCachedCloseFailure|TestClientBaselineNativeHardlinkRefusal|TestClientBaselineNativeRefusesOperatorConsoleFallback|TestClientBaselinePartialPublicationCannotLookLikeNoClient)$",
+                                        "-test.count=1",
+                                        "-test.v",
+                                        "-test.timeout=90s"
+                                    ],
+                      "processId":  6112,
+                      "startedUtc":  "2026-10-12T05:13:48.2558732Z",
+                      "exitCode":  0,
+                      "timedOut":  false,
+                      "error":  null,
+                      "stdout":  "C:\\XNav\\ComponentChecks\\baseline-67665e18-f2a9e051\\ClientBaseline\\tests-stdout.log",
+                      "stderr":  "C:\\XNav\\ComponentChecks\\baseline-67665e18-f2a9e051\\ClientBaseline\\tests-stderr.log",
+                      "elapsedMilliseconds":  63
+                  },
+    "scope":  "Exact inert native fixtures only; no application/service/profile/network/physical output; not enrollment or release qualification",
+    "completedUtc":  "2026-10-12T05:13:48.5481081Z"
+}

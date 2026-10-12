@@ -1,0 +1,2 @@
+# example.com/opennav-update-verifier/brokerstore [example.com/opennav-update-verifier/brokerstore.test]
+brokerstore/installed_baseline_windows_test.go:241:6: invalid operation: ace.Mask & mutation (mismatched types "golang.org/x/sys/windows".ACCESS_MASK and uint32)

@@ -310,8 +310,15 @@ after a later close/namespace failure still describes only staged bytes; it
 cannot authorize downstream execution. Transport request replay memory is not
 durable authority; the protected candidate reservation provides ID non-reuse.
 
-The current protected registration binds installed version/commit, not an
-installation root, selected previous generation or retained destination owner.
+Production source `67665e18` joins the original independently approved registration
+to a concrete protected initial baseline. Fresh retained operator enrollment
+publishes the fixed SID request and baseline ZIP; the stopped service authenticates
+and imports the exact manifest app/docs payload before registration completion.
+`brokerstore.OpenInstalledBaseline` validates the completed creation record,
+original sidecars/product bytes, independently approved installed pins and exact
+physical namespace. The host retains that read owner through candidate staging.
+This replaces the earlier version/commit-only installed baseline boundary; it
+does not establish a selected previous generation or transaction destination owner.
 Returning a StageID after closing the candidate cannot reconstruct that custody.
 The existing per-user Lifecycle and supervisor refuse armed mutation/launch;
 their CurrentUser DPAPI health proof cannot be adopted by the non-impersonated
@@ -331,6 +338,48 @@ process without closing owners concurrently with the active handler. Authenticat
 service provisioning/upgrade/removal, launcher activation, full loader dependency
 custody, actual installation and exact-source Windows/boat update qualification
 remain separate unfinished SCRUM-311 gates.
+
+## Authenticated initial installed baseline — source and inert component evidence
+
+The initial baseline path is fixed to
+`ProgramData/SKAGER/UpdateBroker/users/<SID>/installed/<generation>`. A permanent
+reservation precedes fresh creation; existing/partial trees are never adopted,
+deleted or repaired. Final payload descriptors grant only broker/SYSTEM mutation
+and approved client read/execute. Native owners retain every directory/member,
+check exact namespace and creation identity, and refuse additions, replacement,
+reparse points, hardlinks and aliases. The completed marker binds the independently
+approved request and exact durable completion record; close errors are retained.
+Late cancellation after successful durable publication cannot mean non-commit.
+A real publication/custody failure may be uncertain even if valid durable bytes
+exist and must not trigger automatic retry or rollback.
+
+`ImportApprovedBaseline` reparses the exact original request against the separately
+authenticated approval hash and streams only the original manifest's app/docs
+payload, excluding the portable marker. Original `FILE_SHA256.json`,
+`installer/package.json` and product evidence keep their original byte identity.
+Shared `baselineevidence.Validate` checks these semantics during import and
+retained reads. `Installed.PackageSHA256` means the original Lifecycle package
+manifest hash; archive copy hashes and a declared payload hash cannot silently
+replace it. Recovery launcher/profile/root members do not become installed
+payload. Mutable LocalAppData state is neither approval nor proof of the running
+application. The stopped `register-client` path takes only SID and approval hash,
+returns before `Running` or pipe announcement, and has no caller-selected path.
+
+[Exact source and component evidence](../evidence/scrum311-installed-baseline-20261012/README.md)
+records production `67665e18`, test-only Windows mask fix `f2a9e051`, **131 top-level
++ 477 nested Linux component passes**, **68 session-reported Python packaging
+passes**, Windows/x86 component compilation, and **10 top-level + 6 nested native
+inert passes**. Both original compiler and local evidence-extraction failures are
+preserved; correcting local extraction did not rerun native tests. The running
+OpenCPN process stayed responsive; no owned test process remained.
+
+This increment provides no selected/pending generation transition, successor
+promotion, interactive user-side authenticated baseline/launch handoff,
+commissioning or healthy-start handshake. A baseline directory is informational,
+not launch authority. Actual privileged first execution/SCM provisioning and
+real update/fallback transaction qualification remain required. SCRUM-311 and
+release acceptance stay open; passing inert helpers cannot arm Lifecycle,
+substitute broker account custody for per-user DPAPI proof, or authorize launch.
 
 ## Inactive broker package prerequisite
 

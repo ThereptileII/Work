@@ -1,0 +1,3 @@
+=== RUN   TestClientBaselinePartialPublicationCannotLookLikeNoClient
+--- PASS: TestClientBaselinePartialPublicationCannotLookLikeNoClient (0.00s)
+PASS

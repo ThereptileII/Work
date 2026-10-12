@@ -1,0 +1,10 @@
+{
+  "sourceCommit": "67665e18779d5d76e3fa101c742872219df14cad",
+  "testRevision": "f2a9e0515fc8c10f6c3115122c13eecad1579267",
+  "files": {
+    "brokerstore.test.exe": "46eee7ecdc061998e09d62a4b5c927a3fea2875d768a7f06469feb467596382c",
+    "brokerenroll.test.exe": "56c600bc70b7954e8fd2322ebb61126a48fc6aa4b244c20a916df41a4df55160",
+    "runner.ps1": "a2828a52c875e1363f43ee8dd3ee5d712a9c35e6407ee22d4ea18522a3fd8fdf"
+  },
+  "remote": "C:\\XNav\\ComponentChecks\\baseline-67665e18-f2a9e051"
+}

@@ -1,0 +1,52 @@
+{
+    "schema":  1,
+    "group":  "InstalledBaseline",
+    "executable":  "C:\\XNav\\ComponentChecks\\baseline-67665e18-f2a9e051\\brokerstore.test.exe",
+    "executableSha256":  "46eee7ecdc061998e09d62a4b5c927a3fea2875d768a7f06469feb467596382c",
+    "expectedCases":  [
+                          "TestNativeInstalledBaselineFreshCompletionRetainsExactBytesAndReadCustody",
+                          "TestNativeInstalledBaselineReservationRejectsPartialAndRetry",
+                          "TestNativeInstalledBaselineReaderRejectsNamespaceAdditionReplacementAndHardlink",
+                          "TestNativeInstalledBaselineDescriptorClientReadExecuteOnly",
+                          "TestNativeInstalledBaselinePublicOpenRefusesOperatorConsole"
+                      ],
+    "selection":  "^(TestNativeInstalledBaselineFreshCompletionRetainsExactBytesAndReadCustody|TestNativeInstalledBaselineReservationRejectsPartialAndRetry|TestNativeInstalledBaselineReaderRejectsNamespaceAdditionReplacementAndHardlink|TestNativeInstalledBaselineDescriptorClientReadExecuteOnly|TestNativeInstalledBaselinePublicOpenRefusesOperatorConsole)$",
+    "status":  "passed",
+    "failure":  null,
+    "startedUtc":  "2026-10-12T05:13:43.9066860Z",
+    "os":  "Microsoft Windows NT 10.0.22631.0",
+    "os64":  true,
+    "process64":  true,
+    "powershellVersion":  "5.1.22621.5624",
+    "listing":  {
+                    "arguments":  [
+                                      "-test.list=^(TestNativeInstalledBaselineFreshCompletionRetainsExactBytesAndReadCustody|TestNativeInstalledBaselineReservationRejectsPartialAndRetry|TestNativeInstalledBaselineReaderRejectsNamespaceAdditionReplacementAndHardlink|TestNativeInstalledBaselineDescriptorClientReadExecuteOnly|TestNativeInstalledBaselinePublicOpenRefusesOperatorConsole)$"
+                                  ],
+                    "processId":  5916,
+                    "startedUtc":  "2026-10-12T05:13:43.9273921Z",
+                    "exitCode":  0,
+                    "timedOut":  false,
+                    "error":  null,
+                    "stdout":  "C:\\XNav\\ComponentChecks\\baseline-67665e18-f2a9e051\\InstalledBaseline\\list-stdout.log",
+                    "stderr":  "C:\\XNav\\ComponentChecks\\baseline-67665e18-f2a9e051\\InstalledBaseline\\list-stderr.log",
+                    "elapsedMilliseconds":  396
+                },
+    "execution":  {
+                      "arguments":  [
+                                        "-test.run=^(TestNativeInstalledBaselineFreshCompletionRetainsExactBytesAndReadCustody|TestNativeInstalledBaselineReservationRejectsPartialAndRetry|TestNativeInstalledBaselineReaderRejectsNamespaceAdditionReplacementAndHardlink|TestNativeInstalledBaselineDescriptorClientReadExecuteOnly|TestNativeInstalledBaselinePublicOpenRefusesOperatorConsole)$",
+                                        "-test.count=1",
+                                        "-test.v",
+                                        "-test.timeout=90s"
+                                    ],
+                      "processId":  9816,
+                      "startedUtc":  "2026-10-12T05:13:44.3884664Z",
+                      "exitCode":  0,
+                      "timedOut":  false,
+                      "error":  null,
+                      "stdout":  "C:\\XNav\\ComponentChecks\\baseline-67665e18-f2a9e051\\InstalledBaseline\\tests-stdout.log",
+                      "stderr":  "C:\\XNav\\ComponentChecks\\baseline-67665e18-f2a9e051\\InstalledBaseline\\tests-stderr.log",
+                      "elapsedMilliseconds":  1182
+                  },
+    "scope":  "Exact inert native fixtures only; no application/service/profile/network/physical output; not enrollment or release qualification",
+    "completedUtc":  "2026-10-12T05:13:45.7952656Z"
+}

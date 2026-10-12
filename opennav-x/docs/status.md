@@ -1,5 +1,34 @@
 # SKAGER status — 2026-10-12
 
+## Protected installed baseline source joined; inert native checks pass
+
+Production source `67665e18` joins fresh operator publication of the independently
+approved baseline ZIP, strict original-evidence import, permanent protected
+installed-store completion and retained host staging custody. Registration cannot
+complete before the baseline; missing/partial/existing state refuses without
+adoption or reset. Original manifest/inventory/product pins keep their exact
+meanings. This does not attest an older running LocalAppData installation or
+supply transaction, selection or launch authority.
+
+Combined final Linux component checks passed **131 top-level + 477 nested tests**
+with zero failures/skips. Four Python packaging suites passed **68 tests** in the
+recorded coordinator session; no raw Python logfile was retained. Windows/x86
+broker/provisioner compilation passed at `67665e18`. The initial brokerstore test
+compile failure is retained; test-only mask correction `f2a9e051` passed without
+changing production bytes. **10 top-level + 6 nested native inert tests passed**
+on Windows 10.0.22631 with zero failures/skips. The evidence collector's later
+local extraction failure is also retained; recognizing ZIP directory entries
+fixed retrieval without rerunning tests. Existing OpenCPN PID 1852 stayed
+responsive, with no owned test process left.
+
+[Exact source receipts, raw logs, failure history and boundaries](evidence/scrum311-installed-baseline-20261012/README.md)
+are recorded. Actual privileged provisioning/first execution, a real
+update/fallback transaction, interactive launch handoff, commissioning and the
+healthy-start handshake remain open. SCRUM-311 remains In Progress; these inert
+checks do not accept the release. No full application build, CI dispatch, service
+activation, application/profile change or physical command occurred in this
+increment. Earlier records below retain their original revision and scope.
+
 ## Approved client registration and retained trust corrections integrated
 
 Product source `3404a8d2` joins the independently approved request to stopped-only

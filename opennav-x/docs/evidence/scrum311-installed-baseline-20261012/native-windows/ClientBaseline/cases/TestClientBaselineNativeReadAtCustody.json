@@ -1,0 +1,15 @@
+{
+    "schema":  1,
+    "group":  "ClientBaseline",
+    "name":  "TestClientBaselineNativeReadAtCustody",
+    "selection":  "^TestClientBaselineNativeReadAtCustody$",
+    "runMarkers":  1,
+    "passMarkers":  1,
+    "executableSha256":  "56c600bc70b7954e8fd2322ebb61126a48fc6aa4b244c20a916df41a4df55160",
+    "exitCode":  0,
+    "os":  "Microsoft Windows NT 10.0.22631.0",
+    "timedOut":  false,
+    "groupReceipt":  "C:\\XNav\\ComponentChecks\\baseline-67665e18-f2a9e051\\ClientBaseline\\receipt.json",
+    "executionLog":  "C:\\XNav\\ComponentChecks\\baseline-67665e18-f2a9e051\\ClientBaseline\\tests-stdout.log",
+    "caseLog":  "TestClientBaselineNativeReadAtCustody.log"
+}

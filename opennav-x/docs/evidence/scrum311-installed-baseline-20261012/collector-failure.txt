@@ -1,0 +1,17 @@
+Collector failure provenance: coordinator-reported raw tool-result transcription.
+Original session: 40502; collector exit: 1.
+Collector: run-inert-native.py, line 59.
+Traceback endpoint:
+    assert p.suffix in ('.json','.log') and member.file_size<4*1024*1024
+    AssertionError
+
+All eight remote stage/transfer/preflight/test-group/after/pack/retrieval operations
+returned exit 0. Native tests had already completed successfully.
+Compress-Archive emitted zero-byte directory entries with a trailing backslash;
+ZipInfo.is_dir() did not recognize these. The collector's suffix assertion refused
+those entries. Local extraction was corrected to recognize these directory entries.
+No tests or remote actions were rerun. Downloaded archive hash matched the native
+results-pack stdout; extracted member bytes were retained unchanged.
+Original collector source SHA256: 78e57560d269da51445ca90213e1d83993090f129fefa8bc392106f4ead39298
+Original downloaded archive SHA256: 570210a86769e09cff04ab276b4902e5e4767117793760e35a8ca845a77b0415
+The collector source/archive remain local; binaries and duplicate ZIPs are omitted.

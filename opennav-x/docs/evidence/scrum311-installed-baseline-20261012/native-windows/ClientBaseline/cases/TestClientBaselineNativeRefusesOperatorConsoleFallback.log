@@ -1,0 +1,2 @@
+=== RUN   TestClientBaselineNativeRefusesOperatorConsoleFallback
+--- PASS: TestClientBaselineNativeRefusesOperatorConsoleFallback (0.00s)

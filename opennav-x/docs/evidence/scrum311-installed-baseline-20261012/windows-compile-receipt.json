@@ -1,0 +1,102 @@
+{
+  "commit": "67665e18779d5d76e3fa101c742872219df14cad",
+  "goVersion": "go version go1.27.1 linux/amd64",
+  "environment": {
+    "GOOS": "windows",
+    "GOARCH": "386",
+    "CGO_ENABLED": "0",
+    "GOTOOLCHAIN": "local",
+    "GOPROXY": "off",
+    "GOTMPDIR": "/home/standard/Projects/.tmp/skager-bootstrap-publisher"
+  },
+  "commands": [
+    {
+      "name": "production-build",
+      "command": [
+        "/tmp/skager-go-1.27.1/go/bin/go",
+        "build",
+        "-o",
+        "/home/standard/Projects/.tmp/baseline-joined-67665e18/windows-x86/",
+        "./cmd/skager-update-broker",
+        "./cmd/skager-update-provisioner"
+      ],
+      "exit": 0,
+      "seconds": 3.132,
+      "log": "/home/standard/Projects/.tmp/baseline-joined-67665e18/production-build.log"
+    },
+    {
+      "name": "brokerstore-compile",
+      "command": [
+        "/tmp/skager-go-1.27.1/go/bin/go",
+        "test",
+        "-c",
+        "-o",
+        "/home/standard/Projects/.tmp/baseline-joined-67665e18/windows-x86/brokerstore.test.exe",
+        "./brokerstore"
+      ],
+      "exit": 1,
+      "seconds": 0.286,
+      "log": "/home/standard/Projects/.tmp/baseline-joined-67665e18/brokerstore-compile.log"
+    },
+    {
+      "name": "brokerenroll-compile",
+      "command": [
+        "/tmp/skager-go-1.27.1/go/bin/go",
+        "test",
+        "-c",
+        "-o",
+        "/home/standard/Projects/.tmp/baseline-joined-67665e18/windows-x86/brokerenroll.test.exe",
+        "./brokerenroll"
+      ],
+      "exit": 0,
+      "seconds": 5.473,
+      "log": "/home/standard/Projects/.tmp/baseline-joined-67665e18/brokerenroll-compile.log"
+    },
+    {
+      "name": "brokerstore-compile-repaired",
+      "sourceRevision": "f2a9e0515fc8c10f6c3115122c13eecad1579267",
+      "command": [
+        "/tmp/skager-go-1.27.1/go/bin/go",
+        "test",
+        "-c",
+        "-o",
+        "/home/standard/Projects/.tmp/baseline-joined-67665e18/windows-x86/brokerstore.test.exe",
+        "./brokerstore"
+      ],
+      "exit": 0,
+      "seconds": 2.158,
+      "log": "/home/standard/Projects/.tmp/baseline-joined-67665e18/brokerstore-compile-repaired-f2a9e051.log"
+    }
+  ],
+  "nativeExecution": false,
+  "fullApplicationBuild": false,
+  "sourceReceipt": "/home/standard/Projects/.tmp/baseline-joined-67665e18/windows-source-inputs.json",
+  "sourceInputSHA256": "618ae5a2651ebd4fb33379aaf089cbea34e79da122d0a08b71820f580bf2dc8c",
+  "productionInputSHA256": "107d7eb2063d8fb035232f66cf91e11e8477db5b9e906d01ad1549cee84be40a",
+  "artifacts": {
+    "/home/standard/Projects/.tmp/baseline-joined-67665e18/windows-x86/brokerenroll.test.exe": {
+      "bytes": 15609856,
+      "sha256": "56c600bc70b7954e8fd2322ebb61126a48fc6aa4b244c20a916df41a4df55160"
+    },
+    "/home/standard/Projects/.tmp/baseline-joined-67665e18/windows-x86/brokerstore.test.exe": {
+      "bytes": 13667328,
+      "sha256": "46eee7ecdc061998e09d62a4b5c927a3fea2875d768a7f06469feb467596382c"
+    },
+    "/home/standard/Projects/.tmp/baseline-joined-67665e18/windows-x86/skager-update-broker.exe": {
+      "bytes": 17035776,
+      "sha256": "4ad4c560d8c511e0b06279a779f627d0f1d09b27858fda75046ffbcf553cbad7"
+    },
+    "/home/standard/Projects/.tmp/baseline-joined-67665e18/windows-x86/skager-update-provisioner.exe": {
+      "bytes": 16416768,
+      "sha256": "4015fc80bfb6bbfdcf7b1b2474d5790ecd65d22cd10312953cedfdb141ab2efa"
+    }
+  },
+  "postCompileCommit": "f2a9e0515fc8c10f6c3115122c13eecad1579267",
+  "postCompileStatus": "",
+  "repairedTestSourceRevision": "f2a9e0515fc8c10f6c3115122c13eecad1579267",
+  "repairedTestSourceReceipt": "/home/standard/Projects/.tmp/baseline-joined-67665e18/windows-source-inputs-f2a9e051.json",
+  "repairedTestSourceInputSHA256": "c25d38a8ccd5ae3edb07583551626f45a7b7de72b9a0ff9d6779525dce249458",
+  "productionInputsUnchanged": true,
+  "postRepairCompileCommit": "f2a9e0515fc8c10f6c3115122c13eecad1579267",
+  "postRepairCompileStatus": ""
+}

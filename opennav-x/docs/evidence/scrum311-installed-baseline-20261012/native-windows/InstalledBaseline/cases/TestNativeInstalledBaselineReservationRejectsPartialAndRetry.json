@@ -1,0 +1,15 @@
+{
+    "schema":  1,
+    "group":  "InstalledBaseline",
+    "name":  "TestNativeInstalledBaselineReservationRejectsPartialAndRetry",
+    "selection":  "^TestNativeInstalledBaselineReservationRejectsPartialAndRetry$",
+    "runMarkers":  1,
+    "passMarkers":  1,
+    "executableSha256":  "46eee7ecdc061998e09d62a4b5c927a3fea2875d768a7f06469feb467596382c",
+    "exitCode":  0,
+    "os":  "Microsoft Windows NT 10.0.22631.0",
+    "timedOut":  false,
+    "groupReceipt":  "C:\\XNav\\ComponentChecks\\baseline-67665e18-f2a9e051\\InstalledBaseline\\receipt.json",
+    "executionLog":  "C:\\XNav\\ComponentChecks\\baseline-67665e18-f2a9e051\\InstalledBaseline\\tests-stdout.log",
+    "caseLog":  "TestNativeInstalledBaselineReservationRejectsPartialAndRetry.log"
+}

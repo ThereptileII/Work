@@ -1,0 +1,14 @@
+=== RUN   TestNativeInstalledBaselineReaderRejectsNamespaceAdditionReplacementAndHardlink
+=== RUN   TestNativeInstalledBaselineReaderRejectsNamespaceAdditionReplacementAndHardlink/extra-file
+=== RUN   TestNativeInstalledBaselineReaderRejectsNamespaceAdditionReplacementAndHardlink/extra-directory
+=== RUN   TestNativeInstalledBaselineReaderRejectsNamespaceAdditionReplacementAndHardlink/replaced-file
+=== RUN   TestNativeInstalledBaselineReaderRejectsNamespaceAdditionReplacementAndHardlink/replaced-directory
+=== RUN   TestNativeInstalledBaselineReaderRejectsNamespaceAdditionReplacementAndHardlink/hardlink
+=== RUN   TestNativeInstalledBaselineReaderRejectsNamespaceAdditionReplacementAndHardlink/descriptor
+--- PASS: TestNativeInstalledBaselineReaderRejectsNamespaceAdditionReplacementAndHardlink (0.88s)
+    --- PASS: TestNativeInstalledBaselineReaderRejectsNamespaceAdditionReplacementAndHardlink/extra-file (0.18s)
+    --- PASS: TestNativeInstalledBaselineReaderRejectsNamespaceAdditionReplacementAndHardlink/extra-directory (0.14s)
+    --- PASS: TestNativeInstalledBaselineReaderRejectsNamespaceAdditionReplacementAndHardlink/replaced-file (0.13s)
+    --- PASS: TestNativeInstalledBaselineReaderRejectsNamespaceAdditionReplacementAndHardlink/replaced-directory (0.14s)
+    --- PASS: TestNativeInstalledBaselineReaderRejectsNamespaceAdditionReplacementAndHardlink/hardlink (0.14s)
+    --- PASS: TestNativeInstalledBaselineReaderRejectsNamespaceAdditionReplacementAndHardlink/descriptor (0.14s)
