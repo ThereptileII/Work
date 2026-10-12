@@ -19,6 +19,7 @@ target_link_libraries(opennav-restart PRIVATE restart_guard)
 add_executable(opencpn marker_process.cpp
   ${OPENNAV_SOURCE}/src/platform/windows/WindowsPlatformIntegration.cpp)
 target_link_libraries(opencpn PRIVATE restart_guard shell32 ole32 uuid)
+add_executable(protected_launcher_marker protected_launcher_marker.cpp)
 add_executable(commissioning_restart_tests ${OPENNAV_SOURCE}/tests/commissioning_restart_tests.cpp)
 target_link_libraries(commissioning_restart_tests PRIVATE restart_guard)
 add_executable(marker_publication_tests marker_publication_tests.cpp)
