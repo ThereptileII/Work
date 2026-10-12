@@ -62,16 +62,17 @@ type candidateFile interface {
 // Store retains native root and ancestor handles. Close never deletes an
 // abandoned candidate or registration, or resets their permanent reservations.
 type Store struct {
-	mu            sync.Mutex
-	closeMu       sync.Mutex
-	backend       storeBackend
-	closed        atomic.Bool
-	closeErr      error
-	candidates    []*Candidate
-	registrations []*Registration
-	baselines     []*InstalledBaseline
-	generations   []*InstalledGeneration
-	journals      []*ExecutionJournal
+	mu             sync.Mutex
+	closeMu        sync.Mutex
+	backend        storeBackend
+	closed         atomic.Bool
+	closeErr       error
+	candidates     []*Candidate
+	registrations  []*Registration
+	baselines      []*InstalledBaseline
+	generations    []*InstalledGeneration
+	journals       []*ExecutionJournal
+	journalReaders []*ExecutionJournalReader
 }
 type fileRecord struct {
 	file   candidateFile
@@ -232,10 +233,15 @@ func (s *Store) Close() error {
 	s.baselines = nil
 	generations := s.generations
 	s.generations = nil
+	journalReaders := s.journalReaders
+	s.journalReaders = nil
 	journals := s.journals
 	s.journals = nil
 	s.mu.Unlock()
 	var result error
+	for _, r := range journalReaders {
+		result = errors.Join(result, r.Close())
+	}
 	for _, j := range journals {
 		result = errors.Join(result, j.Close())
 	}
