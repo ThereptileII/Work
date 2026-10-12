@@ -219,14 +219,32 @@ func TestNativeFreshOperationsRefuseOrdinaryPrincipal(t *testing.T) {
 func TestNativeFreshBrokerCheckRefusesSelfImpersonation(t *testing.T) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var impersonation windows.Token
-	if err := windows.DuplicateTokenEx(windows.GetCurrentProcessToken(), windows.TOKEN_QUERY|windows.TOKEN_IMPERSONATE, nil, windows.SecurityImpersonation, windows.TokenImpersonation, &impersonation); err != nil {
+	// DuplicateTokenEx requires a real token handle with TOKEN_DUPLICATE;
+	// GetCurrentProcessToken is a query-only pseudo-handle for supported APIs.
+	var source windows.Token
+	if err := windows.OpenProcessToken(windows.CurrentProcess(), windows.TOKEN_DUPLICATE|windows.TOKEN_QUERY, &source); err != nil {
 		t.Fatal(err)
 	}
-	defer impersonation.Close()
-	user, err := windows.GetCurrentProcessToken().GetTokenUser()
+	defer func() {
+		if err := source.Close(); err != nil {
+			t.Error(err)
+		}
+	}()
+	var impersonation windows.Token
+	if err := windows.DuplicateTokenEx(source, windows.TOKEN_QUERY|windows.TOKEN_IMPERSONATE, nil, windows.SecurityImpersonation, windows.TokenImpersonation, &impersonation); err != nil {
+		t.Fatal(err)
+	}
+	defer func() {
+		if err := impersonation.Close(); err != nil {
+			t.Error(err)
+		}
+	}()
+	user, err := source.GetTokenUser()
 	if err != nil {
 		t.Fatal(err)
+	}
+	if err = currentBroker(user.User.Sid); err != nil {
+		t.Fatalf("unimpersonated fixture principal precondition: %v", err)
 	}
 	if err = windows.SetThreadToken(nil, impersonation); err != nil {
 		t.Fatal(err)

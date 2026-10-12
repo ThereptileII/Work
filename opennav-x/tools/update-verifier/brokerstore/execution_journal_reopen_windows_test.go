@@ -210,7 +210,9 @@ func TestNativeExecutionJournalReopenRefusesOriginalMutationAndFork(t *testing.T
 				if err != nil {
 					t.Fatal(err)
 				}
-				handle, err := windows.CreateFile(pointer, windows.WRITE_DAC, windows.FILE_SHARE_READ|windows.FILE_SHARE_WRITE|windows.FILE_SHARE_DELETE, nil, windows.OPEN_EXISTING, windows.FILE_FLAG_OPEN_REPARSE_POINT, 0)
+				// Retain security-read rights for the protected DACL update and actual
+				// readback, matching the native generation mutation fixture.
+				handle, err := windows.CreateFile(pointer, windows.READ_CONTROL|windows.WRITE_DAC, windows.FILE_SHARE_READ|windows.FILE_SHARE_WRITE|windows.FILE_SHARE_DELETE, nil, windows.OPEN_EXISTING, windows.FILE_FLAG_OPEN_REPARSE_POINT, 0)
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -223,9 +225,14 @@ func TestNativeExecutionJournalReopenRefusesOriginalMutationAndFork(t *testing.T
 				if err == nil {
 					err = windows.SetSecurityInfo(handle, windows.SE_FILE_OBJECT, windows.DACL_SECURITY_INFORMATION|windows.PROTECTED_DACL_SECURITY_INFORMATION, nil, nil, acl, nil)
 				}
+				if err == nil {
+					// Confirm the intended changed ACE bytes on the real file before
+					// asking the original-custody reader to refuse that descriptor.
+					err = nativeGenerationMutatedDACL(handle, acl)
+				}
 				closeErr := windows.CloseHandle(handle)
 				if err != nil || closeErr != nil {
-					t.Fatal(err, closeErr)
+					t.Fatal("actual descriptor mutation/readback", err, closeErr)
 				}
 			}
 			owner, _, _, err := openNativeExecutionJournal(context.Background(), n, n.broker.String(), stageA)
