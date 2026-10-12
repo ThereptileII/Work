@@ -80,10 +80,11 @@ func (d *decommissionFixture) markRemoval(context.Context) error {
 }
 
 type decommissionFenceFixture struct {
-	events *[]string
-	checks int
-	closes int
-	failAt int
+	events     *[]string
+	checks     int
+	closes     int
+	failAt     int
+	closeFault bool
 }
 
 func (w *decommissionFenceFixture) Check(ctx context.Context, pid uint32, birth uint64) error {
@@ -98,6 +99,9 @@ func (w *decommissionFenceFixture) Check(ctx context.Context, pid uint32, birth 
 func (w *decommissionFenceFixture) Close() error {
 	*w.events = append(*w.events, "close-fence")
 	w.closes++
+	if w.closeFault {
+		return errors.New("original broker witness close uncertain")
+	}
 	return nil
 }
 
@@ -216,6 +220,26 @@ func TestDecommissionOwnerCannotBeCopiedOrUsedByOrdinaryMaintenance(t *testing.T
 	defer ordinary.Close()
 	if _, err := ordinary.Decommission(context.Background()); err == nil || f.stops != 0 {
 		t.Fatal("STOP-only owner gained decommission authority")
+	}
+}
+
+func TestDecommissionCloseUncertaintySuppressesMarkedResult(t *testing.T) {
+	d := newDecommissionFixture(t)
+	owner, err := openMaintenanceModeWith(context.Background(), d.req, d.op, true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	w := &decommissionFenceFixture{events: &d.events, closeFault: true}
+	if err := bindDecommissionFenceWith(owner, context.Background(), w, inertClientSID); err != nil {
+		t.Fatal(err)
+	}
+	result, err := owner.Decommission(context.Background())
+	if result != (DecommissionResult{}) || !errors.Is(err, ErrMaintenanceUncertain) || !errors.Is(err, ErrCleanup) ||
+		!d.marked || d.disables != 1 || d.stops != 1 || d.deletes != 1 || w.closes != 1 || d.process.closes != 1 || d.closes != 1 {
+		t.Fatal("close uncertainty falsely reported successful service removal", result, err, d.events)
+	}
+	if owner.Close() == nil || w.closes != 1 || d.process.closes != 1 || d.closes != 1 {
+		t.Fatal("close uncertainty did not persist without replay")
 	}
 }
 
