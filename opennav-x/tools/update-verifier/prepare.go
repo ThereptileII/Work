@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"io"
 	"net/http"
 	"strings"
 
@@ -62,13 +63,18 @@ type PreparedUpdate struct {
 // The sidecar does not independently prove Setup's embedded manifest or grant
 // installer, commissioning, broker or launch authority. Keep BOTH artifacts
 // alive throughout separately authorized use; do not copy or close concurrently.
+// Broker sets also retain their acquisition lease, releasing it after both
+// artifact owners and preserving any cleanup uncertainty.
 type PreparedUpdateSet struct {
-	Policy           releasepolicy.Policy
-	Consent          ConsentIdentity
-	Installer        *VerifiedArtifact
-	Recovery         *VerifiedArtifact
-	RecoveryIdentity RecoveryIdentity
-	stage            *recoveryStageBinding
+	Policy              releasepolicy.Policy
+	Consent             ConsentIdentity
+	Installer           *VerifiedArtifact
+	Recovery            *VerifiedArtifact
+	RecoveryIdentity    RecoveryIdentity
+	stage               *recoveryStageBinding
+	acquisition         io.Closer
+	acquisitionClosed   bool
+	acquisitionCloseErr error
 }
 
 func (p *PreparedUpdateSet) Close() error {
@@ -82,7 +88,13 @@ func (p *PreparedUpdateSet) Close() error {
 	if p.Recovery != nil {
 		recoveryErr = p.Recovery.Close()
 	}
-	return errors.Join(installerErr, recoveryErr)
+	if p.acquisition != nil && !p.acquisitionClosed {
+		p.acquisitionClosed = true
+		if err := p.acquisition.Close(); err != nil {
+			p.acquisitionCloseErr = errors.Join(ErrArtifactCleanup, err)
+		}
+	}
+	return errors.Join(installerErr, recoveryErr, p.acquisitionCloseErr)
 }
 
 func (p *PreparedUpdate) Close() error {

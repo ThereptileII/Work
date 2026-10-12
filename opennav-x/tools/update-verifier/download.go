@@ -29,8 +29,10 @@ var downloadSegment = regexp.MustCompile(`^[A-Za-z0-9][A-Za-z0-9._-]*$`)
 var ErrArtifactCleanup = errors.New("artifact cleanup failed")
 
 // VerifiedArtifact owns a temporary file and a retained read-only handle. Close
-// releases the handle and attempts file removal once. Repeated Close returns
-// the original cleanup result without touching the path again. Do not copy this
+// releases its owner and attempts file removal once. Broker acquisitions retain
+// a native managed owner; their read-only file is borrowed and must not be closed
+// or removed independently. Repeated Close returns the original cleanup result
+// without touching the path again. Do not copy this
 // value or call Close concurrently with its other methods. No method authorizes
 // installation.
 //
@@ -42,10 +44,11 @@ var ErrArtifactCleanup = errors.New("artifact cleanup failed")
 // custody: keep this object alive through any separately authorized launch, and
 // qualify Windows sharing and execution behavior on native Windows.
 type VerifiedArtifact struct {
-	file     *os.File
-	path     string
-	closed   bool
-	closeErr error
+	file          *os.File
+	path          string
+	closed        bool
+	closeErr      error
+	managedCloser io.Closer
 }
 
 func (a *VerifiedArtifact) Path() string { return a.path }
@@ -73,6 +76,13 @@ func (a *VerifiedArtifact) Close() error {
 		return a.closeErr
 	}
 	a.closed = true
+	if a.managedCloser != nil {
+		if err := a.managedCloser.Close(); err != nil {
+			a.closeErr = errors.Join(ErrArtifactCleanup, err)
+		}
+		a.file = nil
+		return a.closeErr
+	}
 	if a.file != nil {
 		err := a.file.Close()
 		a.file = nil
