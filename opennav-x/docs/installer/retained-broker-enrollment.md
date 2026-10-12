@@ -66,3 +66,30 @@ Other ancestor policies remain unchanged.
 Implementation and native acceptance are separate. The original retained
 failures above remain failures; the selected correction requires actual native
 attribute/reparse/share-denial tests and fresh same-source service enrollment.
+
+## Registry inheritance-template semantics
+
+Retained-only run [38300951246](https://github.com/ThereptileII/Work/actions/runs/38300951246)
+used original broker `0ddb649f` from fresh producer run `38298416414` and helper
+`21ad7b27`. Authentication and fresh files passed. The same held `HKLM SYSTEM`
+descriptor then refused an Administrators-owned registry key's `S-1-3-0` allow
+ACE, flags `0x02`, mask `0x000f003f`. This is the standard CREATOR OWNER
+inheritance template, not an actual untrusted token principal. Microsoft describes
+[replacement with a descendant owner SID](https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/understand-security-identifiers)
+and [effective versus template inheritance](https://learn.microsoft.com/en-us/windows/win32/secauthz/ace-inheritance-rules).
+
+The correction recognizes only that exact allow ACE/SID/CI-only/KEY_ALL_ACCESS
+combination, only on the four fixed retained machine registry ancestors or the
+fresh service registry key (indices 1–5). Actual descriptor ownership must already
+be trusted. It does not trust CREATOR OWNER as an owner or principal, and does
+not transfer to SCM/service descriptors, other creator/owner SIDs, masks or flags.
+Every other effective ACE and each retained descendant still receives its own
+owner, mutation and exact registry-name checks. A materialized untrusted creator
+SID or separate untrusted child-creation right still refuses. No machine ACL is
+modified. The focused native retest also executes the inert template/diagnostic
+and manager-versus-service rights matrices before the actual SCM fixture; these
+are not additional privileged installation attempts.
+
+A successful retained test would cover this helper's provisioning path against
+the original broker, not a newly compiled provisioner. Final same-commit component
+production and installed startup/update qualification remain required.
