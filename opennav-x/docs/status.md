@@ -1,5 +1,23 @@
 # SKAGER status — 2026-10-12
 
+## Fresh native components pass; actual SCM permission refusal under investigation
+
+Replacement component run [38298416414](https://github.com/ThereptileII/Work/actions/runs/38298416414)
+on exact `0ddb649ffaa06c8b6e1fc313fa6a087edf9914dd` passes Linux (**598 top-level +
+2601 nested**) and native Windows functional tests (**776 top-level + 2857 nested,
+13 top-level skips, no failures**), including the corrected cleanup-error fixture.
+Windows vet, source packaging, all native component producers, authenticated
+startup/interruption records and historical installer transactions pass.
+Actual fresh native file enrollment now succeeds. The separate real SCM fixture
+then refuses `untrusted machine mutation permission` during service initialization;
+the original log does not identify the rejected SCM/registry/service object or
+ACE. Two independent source reviews agree that relaxing permissions now would
+be unproven. Same-held-descriptor diagnostic evidence is the selected next step,
+reusing the retained exact component bytes rather than rebuilding OpenCPN.
+The original run remains failed, signing is skipped, and no native service or
+product acceptance is claimed. Boat installation and remote access are unchanged.
+[Original run evidence](evidence/scrum311-startup-native-repairs-20261012/fresh-component-scm-run.json).
+
 ## Native ProgramData proof passes; corrected cleanup-error fixture awaits native gate
 
 Fresh component gate [38297499754](https://github.com/ThereptileII/Work/actions/runs/38297499754)

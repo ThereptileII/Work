@@ -1,11 +1,11 @@
 {
   "schema": 1,
   "repository": "ThereptileII/Work",
-  "runId": "38288556379",
+  "runId": "38298416414",
   "runAttempt": "1",
-  "headSha": "4dcee9b15922e62ea43a97e003e1278eead71b2f",
-  "jobId": "114942735900",
-  "artifactId": "11765096578",
-  "artifactName": "update-verifier-windows-2022-386-4dcee9b15922e62ea43a97e003e1278eead71b2f",
-  "artifactDigest": "sha256:a27b920c52ed848d83d1f7c21de22ad4dce241100a4b47021d5844b60cdac850"
+  "headSha": "0ddb649ffaa06c8b6e1fc313fa6a087edf9914dd",
+  "jobId": "114975077262",
+  "artifactId": "11769733286",
+  "artifactName": "update-verifier-windows-2022-386-0ddb649ffaa06c8b6e1fc313fa6a087edf9914dd",
+  "artifactDigest": "sha256:239f733f6b52d16e69f44bc8ca8cffd074ebdd4e416b3bdf711c7c2c9fb98603"
 }

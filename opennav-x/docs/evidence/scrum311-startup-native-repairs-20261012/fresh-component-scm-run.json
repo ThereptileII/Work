@@ -1,0 +1,56 @@
+{
+  "schema": 1,
+  "scope": "fresh native component production; no full application or boat acceptance",
+  "commit": "0ddb649ffaa06c8b6e1fc313fa6a087edf9914dd",
+  "run": 38298416414,
+  "url": "https://github.com/ThereptileII/Work/actions/runs/38298416414",
+  "conclusion": "failure",
+  "linux": {
+    "job": 114975076875,
+    "conclusion": "success",
+    "topLevelPassed": 598,
+    "nestedPassed": 2601,
+    "failed": 0
+  },
+  "windows": {
+    "job": 114975077262,
+    "conclusion": "failure",
+    "functionalTopLevelPassed": 776,
+    "functionalNestedPassed": 2857,
+    "functionalTopLevelSkipped": 13,
+    "functionalFailed": 0,
+    "correctedCleanupErrorFixture": "passed",
+    "vet": "passed",
+    "sourcePackaging": "passed",
+    "nativeComponentProducers": "passed",
+    "startupTransactions": "passed",
+    "historicalInstallerTransactions": "passed",
+    "freshNativeFiles": "passed",
+    "freshScmEnrollment": "failed",
+    "failure": "untrusted machine mutation permission",
+    "failureLocation": "brokerenroll/service_enrollment_windows_test.go:129",
+    "rejectedObjectAndAce": "not identified by original log; original held descriptor diagnostic required before policy changes",
+    "signing": "skipped after SCM failure",
+    "artifact": {
+      "id": 11769733286,
+      "bytes": 615358209,
+      "sha256": "239f733f6b52d16e69f44bc8ca8cffd074ebdd4e416b3bdf711c7c2c9fb98603"
+    }
+  },
+  "logs": {
+    "windows-job.log": {
+      "bytes": 4454939,
+      "sha256": "897a3d5e75faf60a189d059a7559f405dd5d04a27c85d5dd47890a971122217e",
+      "source": "original completed GitHub Actions job log"
+    },
+    "linux-job.log": {
+      "bytes": 3632693,
+      "sha256": "2ea26a9bec607eca442f4187d0ac5950acc60315a87d6c84bd448873a4498526",
+      "source": "original completed GitHub Actions job log"
+    }
+  },
+  "fullApplicationBuild": false,
+  "boatChanged": false,
+  "nativeServiceAcceptance": false,
+  "nativeProductAcceptance": false
+}
