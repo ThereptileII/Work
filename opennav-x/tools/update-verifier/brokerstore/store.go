@@ -70,6 +70,7 @@ type Store struct {
 	candidates    []*Candidate
 	registrations []*Registration
 	baselines     []*InstalledBaseline
+	generations   []*InstalledGeneration
 }
 type fileRecord struct {
 	file   candidateFile
@@ -83,6 +84,8 @@ type Candidate struct {
 	mu                       sync.Mutex
 	store                    *Store
 	backend                  candidateBackend
+	stageID, clientSID       string
+	materialized             bool
 	files                    []fileRecord
 	names                    map[string]string
 	fileNames                map[string]bool
@@ -154,7 +157,7 @@ func (s *Store) Begin(stageID, clientSID string) (*Candidate, error) {
 	if err != nil {
 		return nil, err
 	}
-	c := &Candidate{store: s, backend: backend, names: map[string]string{}, fileNames: map[string]bool{}}
+	c := &Candidate{store: s, backend: backend, stageID: stageID, clientSID: clientSID, names: map[string]string{}, fileNames: map[string]bool{}}
 	s.candidates = append(s.candidates, c)
 	return c, nil
 }
@@ -226,8 +229,13 @@ func (s *Store) Close() error {
 	s.registrations = nil
 	baselines := s.baselines
 	s.baselines = nil
+	generations := s.generations
+	s.generations = nil
 	s.mu.Unlock()
 	var result error
+	for _, g := range generations {
+		result = errors.Join(result, g.Close())
+	}
 	for _, b := range baselines {
 		result = errors.Join(result, b.Close())
 	}

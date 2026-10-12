@@ -156,7 +156,7 @@ func (a *Acquisition) Create(slot ArtifactSlot) (*Artifact, error) {
 		c.poisoned = true
 		return nil, err
 	}
-	f := &Artifact{acquisition: a, backend: b, spec: spec}
+	f := &Artifact{acquisition: a, backend: b, spec: spec, slot: slot}
 	a.artifacts = append(a.artifacts, f)
 	return f, nil
 }
@@ -187,6 +187,7 @@ func (a *Acquisition) closeLocked() error {
 // Never close it independently. Close deletes via its verified native handle,
 // then closes custody and retains all cleanup errors. Path is diagnostic only.
 type Artifact struct {
+	slot           ArtifactSlot
 	acquisition    *Acquisition
 	backend        artifactBackend
 	spec           ArtifactSpec
