@@ -42,6 +42,7 @@ type nativeInstalledGeneration struct {
 	members                                         map[string]*nativeBaselineFile
 	siblings                                        map[string]*nativePin
 	completed, closed                               bool
+	readOnlyAttempted                               bool
 	closeErr                                        error
 }
 
@@ -789,7 +790,7 @@ func (g *nativeInstalledGeneration) close() error {
 	g.closed = true
 	seen := map[*nativeBaselineFile]bool{}
 	for _, held := range g.held {
-		if !seen[held.file] {
+		if held.file != nil && !seen[held.file] {
 			g.closeErr = errors.Join(g.closeErr, held.file.Close())
 			seen[held.file] = true
 		}

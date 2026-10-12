@@ -68,16 +68,17 @@ type generationBackend interface {
 // physical identities. Previous lineage refers to the approved initial baseline,
 // not an assertion that this is the immediately selected or healthy generation.
 type InstalledGeneration struct {
-	mu       sync.Mutex
-	store    *Store
-	backend  generationBackend
-	record   generationRecord
-	files    map[string]candidateFile
-	raw      []byte
-	complete bool
-	closed   bool
-	failure  error
-	closeErr error
+	mu                    sync.Mutex
+	store                 *Store
+	backend               generationBackend
+	record                generationRecord
+	files                 map[string]candidateFile
+	raw                   []byte
+	complete              bool
+	transferred, readOnly bool
+	closed                bool
+	failure               error
+	closeErr              error
 }
 
 // MaterializeCandidateFresh copies only a live frozen recovery payload, exact
@@ -374,6 +375,9 @@ func (g *InstalledGeneration) Validate() (err error) {
 	if err := g.ready(); err != nil {
 		return err
 	}
+	if g.transferred {
+		return ErrGenerationTransferred
+	}
 	err = g.validateContents(registrationContext{Context: context.Background(), store: g.store})
 	if err != nil {
 		g.failure = errors.Join(g.failure, err)
@@ -389,10 +393,16 @@ func (g *InstalledGeneration) Completion() (GenerationCompletion, error) {
 	if err := g.ready(); err != nil {
 		return GenerationCompletion{}, err
 	}
+	if g.transferred {
+		return GenerationCompletion{}, ErrGenerationTransferred
+	}
 	if err := g.validateContents(registrationContext{Context: context.Background(), store: g.store}); err != nil {
 		g.failure = errors.Join(g.failure, err)
 		return GenerationCompletion{}, err
 	}
+	return g.completionRecord()
+}
+func (g *InstalledGeneration) completionRecord() (GenerationCompletion, error) {
 	var previous baselineRecord
 	if err := json.Unmarshal(g.record.PreviousCompletion, &previous); err != nil {
 		return GenerationCompletion{}, err
@@ -405,6 +415,9 @@ func (g *InstalledGeneration) Completion() (GenerationCompletion, error) {
 func (g *InstalledGeneration) Close() error {
 	g.mu.Lock()
 	defer g.mu.Unlock()
+	return g.closeLocked()
+}
+func (g *InstalledGeneration) closeLocked() error {
 	if g.closed {
 		return g.closeErr
 	}
