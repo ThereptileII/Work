@@ -68,11 +68,25 @@ func TestNativeStartupShellLinkPersistsFixedProtectedArguments(t *testing.T) {
 	if err := startupCOMCall(persist, 5, uintptr(unsafe.Pointer(stream))); err != nil {
 		t.Fatal(err)
 	}
+	// IShellLink.GetPath expands an existing target's 8.3 components even with
+	// SLGP_RAWPATH. The hosted runner's TempDir can contain RUNNER~1. Derive the
+	// expected long path independently from Win32 rather than weakening the
+	// assertion to a suffix, basename or case-insensitive string comparison.
+	targetUTF16, err := windows.UTF16PtrFromString(target)
+	if err != nil {
+		t.Fatal(err)
+	}
+	longTarget := make([]uint16, 32768)
+	n, err := windows.GetLongPathName(targetUTF16, &longTarget[0], uint32(len(longTarget)))
+	if err != nil || n == 0 || n >= uint32(len(longTarget)) {
+		t.Fatalf("independent native long target unavailable: length=%d err=%v", n, err)
+	}
+	expectedTarget := windows.UTF16ToString(longTarget[:n])
 	for _, field := range []struct {
 		name   string
 		method int
 		want   string
-	}{{"target", 3, target}, {"arguments", 10, arguments}, {"working-directory", 8, filepath.Dir(target)}} {
+	}{{"target", 3, expectedTarget}, {"arguments", 10, arguments}, {"working-directory", 8, filepath.Dir(target)}} {
 		// COM methods run on this retained original apartment thread, before t.Run
 		// starts an assertion-only goroutine.
 		buffer := make([]uint16, 32768)
