@@ -276,3 +276,330 @@ func TestExecutionSelectionInventoryDetectsNewAttemptsAndPartials(t *testing.T) 
 		t.Fatal("duplicate attempt accepted")
 	}
 }
+
+// These fixtures model retained native facts only. They do not establish cold
+// process state, profile restoration, or authority to author a recovery.
+func selectionPrefix(t *testing.T, attempt executionSelectionAttempt, facts []executionSelectionFact, count int) executionSelectionAttempt {
+	t.Helper()
+	purpose := string(brokerstore.GenerationPurposeSignedCandidate)
+	if attempt.begin.PreviousHeadSHA256 == "" {
+		purpose = string(brokerstore.GenerationPurposeApprovedBaseline)
+	}
+	originals := make([]string, count)
+	for i := range originals {
+		originals[i] = string(facts[i].original)
+	}
+	a, err := parseExecutionSelectionAttempt(testSID, attempt.begin.ExecutionID, attempt.begin.Generation, attempt.begin.CompletionSHA256, purpose, executionOriginalDigest(selectionBytes(t, originals)), facts[:count])
+	if err != nil {
+		t.Fatal(err)
+	}
+	return a
+}
+
+func selectionRecoveryFixture(t *testing.T, prior executionSelectionAttempt, count int) (executionSelectionAttempt, []executionSelectionFact) {
+	t.Helper()
+	id := strings.Repeat("e", 32)
+	if prior.begin.ExecutionID == id {
+		id = strings.Repeat("f", 32)
+	}
+	r := executionSelectionRecovery{
+		Schema: 1, Purpose: "broker-selected-recovery-v1", ExecutionID: id, ClientSID: prior.begin.ClientSID,
+		Generation: prior.begin.Generation, CompletionSHA256: prior.begin.CompletionSHA256,
+		PreviousGeneration: prior.begin.PreviousGeneration, PreviousHeadSHA256: prior.begin.PreviousHeadSHA256,
+		PriorExecutionID: prior.begin.ExecutionID, PriorJournalSHA256: prior.head,
+	}
+	facts := []executionSelectionFact{{brokerstore.ExecutionPreparation, selectionBytes(t, r)}}
+	for _, step := range []struct {
+		name string
+		kind brokerstore.ExecutionFactKind
+	}{
+		{"cold-no-spawn", brokerstore.ExecutionTeardown}, {"profile-restored", brokerstore.ExecutionRestoration},
+		{"restored-no-spawn", brokerstore.ExecutionRestoration},
+	} {
+		facts = append(facts, executionSelectionFact{step.kind, selectionBytes(t, executionSelectionStep{1, "broker-selected-recovery-step-v1", id, step.name, r.Generation, strings.Repeat("9", 64)})})
+	}
+	facts = facts[:count]
+	purpose := string(brokerstore.GenerationPurposeSignedCandidate)
+	if r.PreviousHeadSHA256 == "" {
+		purpose = string(brokerstore.GenerationPurposeApprovedBaseline)
+	}
+	originals := make([]string, len(facts))
+	for i, f := range facts {
+		originals[i] = string(f.original)
+	}
+	a, err := parseExecutionSelectionAttempt(testSID, id, r.Generation, r.CompletionSHA256, purpose, executionOriginalDigest(selectionBytes(t, originals)), facts)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return a, facts
+}
+
+func TestExecutionSelectionRecoveryPreservesSelectedBytesAndAdvancesOnlyHistory(t *testing.T) {
+	root, _ := selectionFixture(t, nil, false)
+	candidate, facts := selectionFixture(t, &root, false)
+	for _, count := range []int{1, 2} {
+		t.Run([]string{"", "before commissioning", "after commissioning"}[count], func(t *testing.T) {
+			prior := selectionPrefix(t, candidate, facts, count)
+			originalHead := prior.head
+			recovery, _ := selectionRecoveryFixture(t, prior, 4)
+			selected, pending, err := foldExecutionSelection([]executionSelectionAttempt{recovery, root, prior}, root.begin.Generation)
+			if err != nil || len(pending) != 0 || selected.generation != root.begin.Generation || selected.completion != root.begin.CompletionSHA256 ||
+				selected.installed.Version != root.begin.Version || selected.installed.Commit != root.begin.Commit || selected.head != recovery.head || prior.head != originalHead || prior.terminal != "" {
+				t.Fatal("recovery changed selected bytes or original journal", selected, pending, err)
+			}
+			// A successor binds the recovery's history head, not the abandoned
+			// candidate's journal or the old healthy head.
+			successor, successorFacts := selectionFixture(t, &root, false)
+			var begin executionSelectionBegin
+			if err := json.Unmarshal(successorFacts[0].original, &begin); err != nil {
+				t.Fatal(err)
+			}
+			begin.ExecutionID, begin.Generation = strings.Repeat("7", 32), strings.Repeat("8", 32)
+			begin.PreviousHeadSHA256 = recovery.head
+			successorFacts[0].original = selectionBytes(t, begin)
+			for i := 1; i < len(successorFacts); i++ {
+				var step executionSelectionStep
+				if err := json.Unmarshal(successorFacts[i].original, &step); err != nil {
+					t.Fatal(err)
+				}
+				step.ExecutionID, step.Generation = begin.ExecutionID, begin.Generation
+				successorFacts[i].original = selectionBytes(t, step)
+			}
+			successor.begin = begin
+			successor = selectionPrefix(t, successor, successorFacts, len(successorFacts))
+			selected, pending, err = foldExecutionSelection([]executionSelectionAttempt{prior, successor, recovery, root}, root.begin.Generation)
+			if err != nil || len(pending) != 0 || selected.generation != begin.Generation || selected.head != successor.head {
+				t.Fatal("fresh independently healthy successor unavailable", selected, pending, err)
+			}
+		})
+	}
+}
+
+func TestExecutionSelectionRecoveryRootRequiresFreshHealthyQualification(t *testing.T) {
+	qualified, facts := selectionFixture(t, nil, false)
+	prior := selectionPrefix(t, qualified, facts, 2)
+	recovery, _ := selectionRecoveryFixture(t, prior, 4)
+	selected, pending, err := foldExecutionSelection([]executionSelectionAttempt{prior, recovery}, prior.begin.Generation)
+	if !errors.Is(err, errExecutionSelection) || len(pending) != 0 || selected != (executionSelectedVersion{}) {
+		t.Fatal("root recovery invented qualification", selected, pending, err)
+	}
+	// A fresh root identity must independently repeat commissioning, consumed
+	// spawn and healthy selection. Recovery occupies no root selection slot.
+	freshFacts := append([]executionSelectionFact(nil), facts...)
+	var begin executionSelectionBegin
+	if err := json.Unmarshal(freshFacts[0].original, &begin); err != nil {
+		t.Fatal(err)
+	}
+	begin.ExecutionID = strings.Repeat("6", 32)
+	freshFacts[0].original = selectionBytes(t, begin)
+	for i := 1; i < len(freshFacts); i++ {
+		var step executionSelectionStep
+		if err := json.Unmarshal(freshFacts[i].original, &step); err != nil {
+			t.Fatal(err)
+		}
+		step.ExecutionID = begin.ExecutionID
+		freshFacts[i].original = selectionBytes(t, step)
+	}
+	fresh := qualified
+	fresh.begin = begin
+	for count := 1; count <= len(freshFacts); count++ {
+		a := selectionPrefix(t, fresh, freshFacts, count)
+		selected, pending, err = foldExecutionSelection([]executionSelectionAttempt{recovery, a, prior}, prior.begin.Generation)
+		if count < len(freshFacts) {
+			if err == nil || len(pending) != 1 || selected.generation != "" {
+				t.Fatal("retry root prefix invented qualification", count, selected, pending, err)
+			}
+		} else if err != nil || len(pending) != 0 || selected.generation != prior.begin.Generation || selected.head != a.head {
+			t.Fatal("fresh actual qualification unavailable", selected, pending, err)
+		}
+	}
+}
+
+func TestExecutionSelectionRecoveryPartialRemainsPending(t *testing.T) {
+	root, _ := selectionFixture(t, nil, false)
+	candidate, facts := selectionFixture(t, &root, false)
+	prior := selectionPrefix(t, candidate, facts, 2)
+	for count := 1; count < 4; count++ {
+		recovery, _ := selectionRecoveryFixture(t, prior, count)
+		selected, pending, err := foldExecutionSelection([]executionSelectionAttempt{root, recovery, prior}, root.begin.Generation)
+		if !errors.Is(err, errExecutionSelection) || len(pending) != 2 || selected.generation != root.begin.Generation || selected.head != root.head {
+			t.Fatal("incomplete recovery hid original pending attempt", count, selected, pending, err)
+		}
+	}
+}
+
+func TestExecutionSelectionRecoveryRefusesConsumedOrMismatchedLinks(t *testing.T) {
+	root, _ := selectionFixture(t, nil, false)
+	candidate, facts := selectionFixture(t, &root, false)
+	prior := selectionPrefix(t, candidate, facts, 2)
+	recovery, _ := selectionRecoveryFixture(t, prior, 4)
+	for _, tc := range []struct {
+		name   string
+		change func(*executionSelectionAttempt, *executionSelectionAttempt)
+	}{
+		{"unknown prior", func(_ *executionSelectionAttempt, r *executionSelectionAttempt) {
+			r.recovery.PriorExecutionID = strings.Repeat("9", 32)
+		}},
+		{"wrong original digest", func(_ *executionSelectionAttempt, r *executionSelectionAttempt) {
+			r.recovery.PriorJournalSHA256 = strings.Repeat("0", 64)
+		}},
+		{"wrong sid", func(_ *executionSelectionAttempt, r *executionSelectionAttempt) { r.recovery.ClientSID += "-1" }},
+		{"wrong generation", func(_ *executionSelectionAttempt, r *executionSelectionAttempt) {
+			r.recovery.Generation = strings.Repeat("9", 32)
+		}},
+		{"wrong completion", func(_ *executionSelectionAttempt, r *executionSelectionAttempt) {
+			r.recovery.CompletionSHA256 = strings.Repeat("9", 64)
+		}},
+		{"wrong previous generation", func(_ *executionSelectionAttempt, r *executionSelectionAttempt) {
+			r.recovery.PreviousGeneration = strings.Repeat("9", 32)
+		}},
+		{"wrong selected head", func(_ *executionSelectionAttempt, r *executionSelectionAttempt) {
+			r.recovery.PreviousHeadSHA256 = strings.Repeat("9", 64)
+		}},
+		{"consumed flag", func(p *executionSelectionAttempt, _ *executionSelectionAttempt) { p.consumed = true }},
+		{"nested recovery", func(p *executionSelectionAttempt, _ *executionSelectionAttempt) {
+			p.recovery = &executionSelectionRecovery{}
+		}},
+		{"terminal prior", func(p *executionSelectionAttempt, _ *executionSelectionAttempt) { p.terminal = "selected" }},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			p, r := prior, recovery
+			copy := *recovery.recovery
+			r.recovery = &copy
+			tc.change(&p, &r)
+			if _, _, err := foldExecutionSelection([]executionSelectionAttempt{root, p, r}, root.begin.Generation); err == nil {
+				t.Fatal("unsafe recovery linked")
+			}
+		})
+	}
+	// Every valid ordinary state at or after consumed create is excluded,
+	// including healthy uncertainty and each rollback/fallback prefix.
+	for _, rollback := range []bool{false, true} {
+		a, f := selectionFixture(t, &root, rollback)
+		for count := 3; count <= len(f); count++ {
+			p := selectionPrefix(t, a, f, count)
+			r, _ := selectionRecoveryFixture(t, p, 4)
+			if _, _, err := foldExecutionSelection([]executionSelectionAttempt{root, p, r}, root.begin.Generation); err == nil {
+				t.Fatal("consumed ordinary chain became no-spawn abort", rollback, count, p.state)
+			}
+		}
+	}
+	fork := candidate
+	fork.begin.ExecutionID, fork.head = strings.Repeat("8", 32), strings.Repeat("8", 64)
+	for _, tc := range []struct {
+		name     string
+		attempts []executionSelectionAttempt
+	}{
+		{"missing prior", []executionSelectionAttempt{root, recovery}},
+		{"duplicate recovery", []executionSelectionAttempt{root, prior, recovery, recovery}},
+		{"old healthy head fork", []executionSelectionAttempt{root, prior, recovery, fork}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			if _, _, err := foldExecutionSelection(tc.attempts, root.begin.Generation); err == nil {
+				t.Fatal("forked recovery history accepted")
+			}
+		})
+	}
+	other := recovery
+	copy := *recovery.recovery
+	other.recovery = &copy
+	other.begin.ExecutionID, other.head = strings.Repeat("f", 32), strings.Repeat("f", 64)
+	other.recovery.ExecutionID = other.begin.ExecutionID
+	if _, _, err := foldExecutionSelection([]executionSelectionAttempt{root, prior, recovery, other}, root.begin.Generation); err == nil {
+		t.Fatal("two fresh recovery journals targeted the same original")
+	}
+	partial, _ := selectionRecoveryFixture(t, prior, 2)
+	if _, _, err := foldExecutionSelection([]executionSelectionAttempt{root, prior, partial, other}, root.begin.Generation); err == nil {
+		t.Fatal("partial recovery was superseded by another recovery")
+	}
+	otherPrior := prior
+	otherPrior.begin.ExecutionID, otherPrior.head = strings.Repeat("7", 32), strings.Repeat("7", 64)
+	other.recovery.PriorExecutionID, other.recovery.PriorJournalSHA256 = otherPrior.begin.ExecutionID, otherPrior.head
+	if _, _, err := foldExecutionSelection([]executionSelectionAttempt{root, prior, recovery, otherPrior, other}, root.begin.Generation); err == nil {
+		t.Fatal("overlapping recoveries forked the same selected head")
+	}
+	unreachablePrior := prior
+	unreachablePrior.begin.PreviousHeadSHA256 = strings.Repeat("6", 64)
+	unreachableRecovery, _ := selectionRecoveryFixture(t, unreachablePrior, 4)
+	if _, _, err := foldExecutionSelection([]executionSelectionAttempt{root, unreachablePrior, unreachableRecovery}, root.begin.Generation); err == nil {
+		t.Fatal("unreachable recovery history accepted")
+	}
+}
+
+func TestExecutionSelectionRecoveryExactClosedSchemaAndOrder(t *testing.T) {
+	root, _ := selectionFixture(t, nil, false)
+	candidate, candidateFacts := selectionFixture(t, &root, false)
+	prior := selectionPrefix(t, candidate, candidateFacts, 1)
+	recovery, facts := selectionRecoveryFixture(t, prior, 4)
+	parse := func(f []executionSelectionFact) error {
+		_, err := parseExecutionSelectionAttempt(testSID, recovery.begin.ExecutionID, recovery.begin.Generation, recovery.begin.CompletionSHA256,
+			string(brokerstore.GenerationPurposeSignedCandidate), recovery.head, f)
+		return err
+	}
+	for _, tc := range []struct {
+		name   string
+		change func([]executionSelectionFact) []executionSelectionFact
+	}{
+		{"missing cold proof", func(f []executionSelectionFact) []executionSelectionFact { return append(f[:1:1], f[2:]...) }},
+		{"restore before cold", func(f []executionSelectionFact) []executionSelectionFact { f[1], f[2] = f[2], f[1]; return f }},
+		{"duplicate step", func(f []executionSelectionFact) []executionSelectionFact { return append(f[:2:2], f[1:]...) }},
+		{"step after terminal", func(f []executionSelectionFact) []executionSelectionFact { return append(f, f[3]) }},
+		{"wrong native fact kind", func(f []executionSelectionFact) []executionSelectionFact {
+			f[1].kind = brokerstore.ExecutionHealthObserved
+			return f
+		}},
+		{"health key in origin", func(f []executionSelectionFact) []executionSelectionFact {
+			f[0].original = append(append([]byte(nil), f[0].original[:len(f[0].original)-1]...), []byte(",\"healthy\":true}")...)
+			return f
+		}},
+		{"duplicate origin key", func(f []executionSelectionFact) []executionSelectionFact {
+			f[0].original = append(append([]byte(nil), f[0].original[:len(f[0].original)-1]...), []byte(",\"schema\":1}")...)
+			return f
+		}},
+		{"transaction step purpose", func(f []executionSelectionFact) []executionSelectionFact {
+			f[1].original = []byte(strings.ReplaceAll(string(f[1].original), "broker-selected-recovery-step-v1", "broker-selected-step-v1"))
+			return f
+		}},
+		{"wrong target", func(f []executionSelectionFact) []executionSelectionFact {
+			var step executionSelectionStep
+			_ = json.Unmarshal(f[2].original, &step)
+			step.Generation = root.begin.Generation
+			f[2].original = selectionBytes(t, step)
+			return f
+		}},
+		{"bad evidence hash", func(f []executionSelectionFact) []executionSelectionFact {
+			var step executionSelectionStep
+			_ = json.Unmarshal(f[2].original, &step)
+			step.EvidenceSHA256 = ""
+			f[2].original = selectionBytes(t, step)
+			return f
+		}},
+		{"self recovery", func(f []executionSelectionFact) []executionSelectionFact {
+			var r executionSelectionRecovery
+			_ = json.Unmarshal(f[0].original, &r)
+			r.PriorExecutionID = r.ExecutionID
+			f[0].original = selectionBytes(t, r)
+			return f
+		}},
+		{"missing original hash", func(f []executionSelectionFact) []executionSelectionFact {
+			var r executionSelectionRecovery
+			_ = json.Unmarshal(f[0].original, &r)
+			r.PriorJournalSHA256 = ""
+			f[0].original = selectionBytes(t, r)
+			return f
+		}},
+		{"mixed root lineage", func(f []executionSelectionFact) []executionSelectionFact {
+			var r executionSelectionRecovery
+			_ = json.Unmarshal(f[0].original, &r)
+			r.PreviousGeneration = ""
+			f[0].original = selectionBytes(t, r)
+			return f
+		}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			if err := parse(tc.change(append([]executionSelectionFact(nil), facts...))); !errors.Is(err, errExecutionSelection) {
+				t.Fatal("unsafe schema/order accepted", err)
+			}
+		})
+	}
+}
