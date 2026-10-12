@@ -1,0 +1,162 @@
+diff --git a/gui/src/chcanv.cpp b/gui/src/chcanv.cpp
+--- a/gui/src/chcanv.cpp
++++ b/gui/src/chcanv.cpp
+@@ -339,6 +339,24 @@
+ static int mouse_y;
+ static bool mouse_leftisdown;
+ 
++namespace {
++// A modal chart interaction must preserve its caller's completion policy.
++// XNav finishes explicitly; Legacy normally finishes on canvas focus loss.
++class RouteFinishFocusGuard {
++ public:
++  explicit RouteFinishFocusGuard(bool &finishOnFocusLoss)
++      : flag_(finishOnFocusLoss), previous_(finishOnFocusLoss) {
++    flag_ = false;
++  }
++  ~RouteFinishFocusGuard() { flag_ = previous_; }
++  RouteFinishFocusGuard(const RouteFinishFocusGuard &) = delete;
++  RouteFinishFocusGuard &operator=(const RouteFinishFocusGuard &) = delete;
++ private:
++  bool &flag_;
++  const bool previous_;
++};
++}  // namespace
++
+ bool g_brouteCreating;
+ 
+ bool g_bShowTrackPointTime;
+@@ -2779,13 +2797,13 @@
+       // parent_frame->SwitchKBFocus( this );
+       break;
+ 
+-    case WXK_MENU:
++    case WXK_MENU: {
+       int x, y;
+       event.GetPosition(&x, &y);
+-      m_FinishRouteOnKillFocus = false;
++      RouteFinishFocusGuard routeFocusGuard(m_FinishRouteOnKillFocus);
+       CallPopupMenu(x, y);
+-      m_FinishRouteOnKillFocus = true;
+       break;
++    }
+ 
+     case WXK_ALT:
+       m_modkeys |= wxMOD_ALT;
+@@ -8320,11 +8338,10 @@
+                     " a unique number?");
+             }
+             // Avoid route finish on focus change for message dialog
+-            m_FinishRouteOnKillFocus = false;
++            RouteFinishFocusGuard routeFocusGuard(m_FinishRouteOnKillFocus);
+             int dlg_return =
+                 OCPNMessageBox(this, msg, _("OpenCPN Route Create"),
+                                (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
+-            m_FinishRouteOnKillFocus = true;
+             if (dlg_return == wxID_YES) {
+               if (noname) {
+                 if (m_pMouseRoute) {
+@@ -8356,7 +8373,7 @@
+ 
+               if (procede) {
+                 int dlg_return;
+-                m_FinishRouteOnKillFocus = false;
++                RouteFinishFocusGuard routeFocusGuard(m_FinishRouteOnKillFocus);
+                 if (m_routeState ==
+                     1) {  // first point in new route, preceeding route to be
+                           // added?  Not touch case
+@@ -8372,7 +8389,6 @@
+                     dlg_return = OCPNMessageBox(
+                         this, dmsg, _("OpenCPN Route Create"),
+                         (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
+-                    m_FinishRouteOnKillFocus = true;
+ 
+                     if (dlg_return == wxID_YES) {
+                       inserting = true;  // part of the other route will be
+@@ -8393,7 +8409,6 @@
+                     dlg_return = OCPNMessageBox(
+                         this, dmsg, _("OpenCPN Route Create"),
+                         (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
+-                    m_FinishRouteOnKillFocus = true;
+ 
+                     if (dlg_return == wxID_YES) {
+                       appending = true;  // part of the other route will be
+@@ -8451,7 +8466,7 @@
+                   << _("Would you like include the Great Circle routing points "
+                        "for this leg?");
+ 
+-              m_FinishRouteOnKillFocus = false;
++              RouteFinishFocusGuard routeFocusGuard(m_FinishRouteOnKillFocus);
+               m_disable_edge_pan = true;  // This helps on OS X if MessageBox
+                                           // does not fully capture mouse
+ 
+@@ -8459,7 +8474,6 @@
+                                           wxYES_NO | wxNO_DEFAULT);
+ 
+               m_disable_edge_pan = false;
+-              m_FinishRouteOnKillFocus = true;
+ 
+               if (answer == wxID_YES) {
+                 RoutePoint *gcPoint;
+@@ -8908,12 +8922,10 @@
+             !pNearbyPoint->m_bIsInLayer && pNearbyPoint->IsVisible()) {
+           int dlg_return;
+ #ifndef __WXOSX__
+-          m_FinishRouteOnKillFocus =
+-              false;  // Avoid route finish on focus change for message dialog
++          RouteFinishFocusGuard routeFocusGuard(m_FinishRouteOnKillFocus);  // Avoid route finish on focus change for message dialog
+           dlg_return = OCPNMessageBox(
+               this, _("Use nearby waypoint?"), _("OpenCPN Route Create"),
+               (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
+-          m_FinishRouteOnKillFocus = true;
+ #else
+           dlg_return = wxID_YES;
+ #endif
+@@ -8936,7 +8948,7 @@
+ 
+             if (procede) {
+               int dlg_return;
+-              m_FinishRouteOnKillFocus = false;
++              RouteFinishFocusGuard routeFocusGuard(m_FinishRouteOnKillFocus);
+               if (m_routeState == 1) {  // first point in new route, preceeding
+                                         // route to be added?  touch case
+ 
+@@ -8951,7 +8963,6 @@
+                   dlg_return =
+                       OCPNMessageBox(this, dmsg, _("OpenCPN Route Create"),
+                                      (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
+-                  m_FinishRouteOnKillFocus = true;
+ 
+                   if (dlg_return == wxID_YES) {
+                     inserting = true;  // part of the other route will be
+@@ -8971,7 +8982,6 @@
+                   dlg_return =
+                       OCPNMessageBox(this, dmsg, _("OpenCPN Route Create"),
+                                      (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
+-                  m_FinishRouteOnKillFocus = true;
+ 
+                   if (dlg_return == wxID_YES) {
+                     appending = true;  // part of the other route will be
+@@ -9027,10 +9037,9 @@
+                      "for this leg?");
+ 
+ #ifndef __WXOSX__
+-            m_FinishRouteOnKillFocus = false;
++            RouteFinishFocusGuard routeFocusGuard(m_FinishRouteOnKillFocus);
+             int answer = OCPNMessageBox(this, msg, _("OpenCPN Route Create"),
+                                         wxYES_NO | wxNO_DEFAULT);
+-            m_FinishRouteOnKillFocus = true;
+ #else
+             int answer = wxID_NO;
+ #endif
+@@ -9915,9 +9924,8 @@
+     }
+ 
+     ret = true;
+-    m_FinishRouteOnKillFocus = false;
++    RouteFinishFocusGuard routeFocusGuard(m_FinishRouteOnKillFocus);
+     CallPopupMenu(mx, my);
+-    m_FinishRouteOnKillFocus = true;
+   }  // Right down
+ 
+   return ret;

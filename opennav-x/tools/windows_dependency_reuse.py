@@ -32,6 +32,7 @@ PATCHES = (
     "opencpn-5.12.4-regression-tests.patch",
     "opencpn-5.12.4-ais-transport.patch",
     "opencpn-5.12.4-chart-presentation.patch",
+    "opencpn-5.12.4-route-focus.patch",
     "opencpn-5.12.4-maintained-curl.patch",
     "opencpn-5.12.4-download-trust.patch",
     "opencpn-5.12.4-wxcurl-trust.patch",
