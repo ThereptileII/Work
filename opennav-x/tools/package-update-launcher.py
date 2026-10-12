@@ -247,11 +247,13 @@ def package(install, commit, go):
         raise ValueError('Go source version and compiler disagree')
     tracked = run(['git', 'ls-files', '-z', '--', 'tools/update-verifier', 'tools/package-update-launcher.py',
                    'tools/package-update-broker.py', 'tools/broker_package.py', 'tools/package-update-provisioner.py',
-                   'tools/provisioner_package.py', 'tools/updater_package.py', 'LICENSE'], ROOT).split('\0')
+                   'tools/provisioner_package.py', 'tools/baseline_handoff_package.py',
+                   'tools/package-baseline-handoff.py', 'tools/updater_package.py', 'LICENSE'], ROOT).split('\0')
     tracked = [name for name in tracked if name]
     required = {'LICENSE', 'tools/package-update-launcher.py', 'tools/package-update-broker.py',
                 'tools/broker_package.py', 'tools/package-update-provisioner.py',
-                'tools/provisioner_package.py', 'tools/updater_package.py', 'tools/update-verifier/go.mod', 'tools/update-verifier/go.sum'}
+                'tools/provisioner_package.py', 'tools/baseline_handoff_package.py',
+                'tools/package-baseline-handoff.py', 'tools/updater_package.py', 'tools/update-verifier/go.mod', 'tools/update-verifier/go.sum'}
     if not required.issubset(tracked):
         raise ValueError('Exact launcher source, dependency locks, build recipe and license must be committed')
     inventory = Inventory()

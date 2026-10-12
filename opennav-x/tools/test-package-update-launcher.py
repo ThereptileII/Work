@@ -210,6 +210,12 @@ class PackageTests(unittest.TestCase):
     def test_missing_provisioner_verifier_source_is_refused(self):
         self.package_fixture(omitted_source='tools/provisioner_package.py')
 
+    def test_missing_baseline_handoff_producer_source_is_refused(self):
+        self.package_fixture(omitted_source='tools/package-baseline-handoff.py')
+
+    def test_missing_baseline_handoff_verifier_source_is_refused(self):
+        self.package_fixture(omitted_source='tools/baseline_handoff_package.py')
+
     def test_missing_imported_updater_helper_is_refused(self):
         self.package_fixture(omitted_source='tools/updater_package.py')
 
@@ -219,7 +225,8 @@ class PackageTests(unittest.TestCase):
         module.mkdir(parents=True)
         tracked = ['LICENSE', 'tools/package-update-launcher.py', 'tools/package-update-broker.py',
                    'tools/broker_package.py', 'tools/package-update-provisioner.py',
-                        'tools/provisioner_package.py', 'tools/updater_package.py', 'tools/update-verifier/go.mod',
+                        'tools/provisioner_package.py', 'tools/baseline_handoff_package.py',
+                        'tools/package-baseline-handoff.py', 'tools/updater_package.py', 'tools/update-verifier/go.mod',
                    'tools/update-verifier/go.sum', 'tools/update-verifier/cmd/skager-start/main.go']
         if omitted_source is not None:
             tracked.remove(omitted_source)

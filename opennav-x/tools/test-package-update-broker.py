@@ -38,7 +38,8 @@ class BrokerProducerTests(unittest.TestCase):
         self.module = self.repo / 'tools/update-verifier'
         self.tracked = ['LICENSE', 'tools/package-update-launcher.py', 'tools/package-update-broker.py',
                         'tools/broker_package.py', 'tools/package-update-provisioner.py',
-                        'tools/provisioner_package.py', 'tools/updater_package.py',
+                        'tools/provisioner_package.py', 'tools/baseline_handoff_package.py',
+                        'tools/package-baseline-handoff.py', 'tools/updater_package.py',
                         'tools/update-verifier/go.mod', 'tools/update-verifier/go.sum',
                         'tools/update-verifier/cmd/skager-update-broker/main.go']
         self.tracked = sorted(set(self.tracked) | {
@@ -271,6 +272,14 @@ class BrokerProducerTests(unittest.TestCase):
         self.tracked.remove('tools/updater_package.py')
         with self.assertRaisesRegex(ValueError, 'complete broker source'):
             self.package()
+
+    def test_missing_baseline_handoff_scripts_refuse_incomplete_source_closure(self):
+        for name in ('tools/package-baseline-handoff.py', 'tools/baseline_handoff_package.py'):
+            with self.subTest(name=name):
+                self.tracked.remove(name)
+                with self.assertRaisesRegex(ValueError, 'complete broker source'):
+                    self.package()
+                self.tracked.append(name)
 
     def test_missing_mandatory_production_source_refuses_before_build(self):
         for name in sorted(producer.broker.REQUIRED_SOURCES):
