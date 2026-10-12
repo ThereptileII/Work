@@ -30,6 +30,13 @@ namespace OpenNavX {
     public sealed class ResizeInfo {
       public WindowInfo Before,Restored,After;public Rect MonitorBounds,WorkArea;public bool RestoreRequested;
     }
+    public sealed class ChartTextRow {
+      public long Handle;public string Text;public bool Visible;
+    }
+    public sealed class ChartObservation {
+      public long SurfaceHandle;public ChartTextRow[] Rows;
+      public bool IncludesHiddenDetails=true;public bool ResolvedRendererSymbolObserved=false;
+    }
     public sealed class SelectionRow {
       public long Handle;public string Label;public int Top,Left;
       public bool Enabled,Visible,DirectChild;
@@ -47,6 +54,7 @@ namespace OpenNavX {
     [DllImport("user32.dll")] private static extern bool EnumChildWindows(IntPtr parent,EnumCallback callback,IntPtr parameter);
     [DllImport("user32.dll")] private static extern bool EnumWindows(EnumCallback callback,IntPtr parameter);
     [DllImport("user32.dll",CharSet=CharSet.Unicode)] private static extern int GetWindowTextW(IntPtr window,StringBuilder text,int maximum);
+    [DllImport("user32.dll",CharSet=CharSet.Unicode)] private static extern int GetWindowTextLengthW(IntPtr window);
     [DllImport("user32.dll",CharSet=CharSet.Unicode)] private static extern int GetClassNameW(IntPtr window,StringBuilder text,int maximum);
     [DllImport("user32.dll")] private static extern uint GetWindowThreadProcessId(IntPtr window,out uint process);
     [DllImport("user32.dll")] private static extern IntPtr GetForegroundWindow();
@@ -123,6 +131,8 @@ namespace OpenNavX {
       switch(title) {
         case "SKAGER chart layers":return SameLabels(directLabels,"Layers") && SameLabels(headingLabels);
         case "Chart presentation":return SameLabels(directLabels) && SameLabels(headingLabels,"Close");
+        case "SKAGER chart context":return SameLabels(directLabels,"Go to","Waypoint","Measure","Info") && SameLabels(headingLabels,"Close");
+        case "SKAGER chart information":return SameLabels(directLabels) && SameLabels(headingLabels,"Close");
         case "SKAGER chart tools":return SameLabels(directLabels,"Measure","Waypoint","+","\u2212");
         case "SKAGER chart orientation":return SameLabels(directLabels,"North") || SameLabels(directLabels,"Course");
         case "SKAGER follow boat":return SameLabels(directLabels,"Follow boat");
@@ -158,7 +168,7 @@ namespace OpenNavX {
         try {
           if(!IsWindowVisible(h) || IsIconic(h) || GetWindow(h,4)!=frame || Owner(h)!=(uint)pid || IsChild(frame,h))return true;
           var title=Text(h);
-          if(title!="SKAGER chart layers" && title!="Chart presentation" && title!="SKAGER chart tools" && title!="SKAGER chart orientation" && title!="SKAGER follow boat" && title!="SKAGER passage" && title!="SKAGER vessel traffic" && title!="SKAGER preferences" && title!="SKAGER anchor watch" && title!="SKAGER autopilot" && title!="SKAGER alerts" && title!="SKAGER source health")return true;
+          if(title!="SKAGER chart context" && title!="SKAGER chart information" && title!="SKAGER chart layers" && title!="Chart presentation" && title!="SKAGER chart tools" && title!="SKAGER chart orientation" && title!="SKAGER follow boat" && title!="SKAGER passage" && title!="SKAGER vessel traffic" && title!="SKAGER preferences" && title!="SKAGER anchor watch" && title!="SKAGER autopilot" && title!="SKAGER alerts" && title!="SKAGER source health")return true;
           var direct=DirectLabels(h,pid);var heading=new List<string>();
           foreach(var child in Children(h))if(GetParent(child)==h && Owner(child)==(uint)pid)
             foreach(var label in DirectLabels(child,pid))if(label=="Close" || label=="Back")heading.Add(label);
@@ -170,7 +180,7 @@ namespace OpenNavX {
                signature=IsPrototypeSurface(title,direct,heading.ToArray());
           if(!unique || !enabled || !sameDpi || !size || !contained || !signature)
             throw new InvalidOperationException(String.Format("Owned prototype surface {0} refused: unique={1}, enabled={2}, dpi={3}, size={4}, contained={5}, signature={6}.",title,unique,enabled,sameDpi,size,contained,signature));
-          if((title=="Chart presentation" || title=="SKAGER passage" || title=="SKAGER vessel traffic" || title=="SKAGER preferences" || title=="SKAGER anchor watch" || title=="SKAGER autopilot" || title=="SKAGER alerts" || title=="SKAGER source health") && ++drawers>1)throw new InvalidOperationException("More than one prototype sheet is visible.");
+          if((title=="SKAGER chart context" || title=="SKAGER chart information" || title=="Chart presentation" || title=="SKAGER passage" || title=="SKAGER vessel traffic" || title=="SKAGER preferences" || title=="SKAGER anchor watch" || title=="SKAGER autopilot" || title=="SKAGER alerts" || title=="SKAGER source health") && ++drawers>1)throw new InvalidOperationException("More than one prototype sheet is visible.");
           Array.Sort(direct,StringComparer.Ordinal);heading.Sort(StringComparer.Ordinal);
           result.Add(new SurfaceInfo{Handle=h.ToInt64(),Title=title,Signature=String.Join("|",direct)+"/"+String.Join("|",heading.ToArray()),Dpi=dpi,Bounds=rect});
           return true;
@@ -352,6 +362,7 @@ namespace OpenNavX {
     }
     public static string[] ActionLabels(string action) {
       switch(action) {
+        case "ChartContextInfo":return new string[]{"Info"};
         case "Menu":return new string[]{"Menu"};case "Navigation":return new string[]{"Navigation"};
         case "Routes":return new string[]{"Routes"};case "Waypoints":return new string[]{"Waypoints"};
         case "AIS":return new string[]{"AIS targets"};case "Instruments":return new string[]{"Vessel instruments"};
@@ -372,6 +383,7 @@ namespace OpenNavX {
     public static string ActionContext(string action) {
       ActionLabels(action); // Unknown actions have no context, even without a window.
       switch(action) {
+        case "ChartContextInfo":return "SKAGER chart context";
         case "Layers":return "SKAGER chart layers";case "RevealChartPalettePreference":case "ChartPalettePreferences":return "Chart presentation";
         case "Display":return "SKAGER product page: Settings";
         case "ToggleFullscreen":return "SKAGER product page: Display";
@@ -482,7 +494,101 @@ namespace OpenNavX {
       }
       throw new InvalidOperationException("Palette reveal bound exceeded; target not clicked.");
     }
+    private static IntPtr ChartSurface(IntPtr frame,int pid,string title) {
+      var info=AssertFrame(frame,pid);AssertCapture(frame,pid,info);IntPtr result=IntPtr.Zero;
+      if(info.Shell!="prototype")throw new InvalidOperationException("Installed prototype chart surface required.");
+      foreach(var surface in info.Surfaces)if(surface.Title==title) {
+        if(result!=IntPtr.Zero)throw new InvalidOperationException("Ambiguous chart surface.");
+        result=new IntPtr(surface.Handle);
+      }
+      if(result==IntPtr.Zero)throw new InvalidOperationException("Open the exact chart-position context or information drawer manually first.");
+      return result;
+    }
+    private static IntPtr ResolveChartInfoButton(IntPtr frame,int pid) {
+      var surface=ChartSurface(frame,pid,"SKAGER chart context");var matches=new List<IntPtr>();
+      foreach(var child in Children(surface))if(GetParent(child)==surface && Owner(child)==(uint)pid &&
+          Class(child)!="Static" && Text(child)=="Info" && IsWindowEnabled(child))matches.Add(child);
+      if(matches.Count!=1 || !Contains(Bounds(surface),Bounds(matches[0])))
+        throw new InvalidOperationException("Unique direct chart-position Info control required.");
+      return matches[0];
+    }
+    // Pure output policy: preserve every section and hidden detail; never select
+    // the first object or infer class/symbol identity from its name or pixels.
+    public static ChartTextRow[] ValidateChartText(ChartTextRow[] rows) {
+      if(rows==null || rows.Length<1 || rows.Length>2048)throw new InvalidOperationException("Bounded chart text rows required.");
+      var handles=new HashSet<long>();long total=0;
+      foreach(var row in rows) {
+        if(row==null || row.Handle<=0 || !handles.Add(row.Handle) || row.Text==null || row.Text.Length>1048576)
+          throw new InvalidOperationException("Ambiguous or oversized chart text row.");
+        foreach(char value in row.Text)if(value=='\0' || (Char.IsControl(value) && value!='\r' && value!='\n' && value!='\t'))
+          throw new InvalidOperationException("Malformed chart text refused.");
+        total+=row.Text.Length;
+        if(total>4194304)throw new InvalidOperationException("Chart text exceeds the private observation bound.");
+      }
+      return rows;
+    }
+    private static string ChartText(IntPtr window) {
+      int length=GetWindowTextLengthW(window);
+      if(length<0 || length>1048576)throw new InvalidOperationException("Chart text length unavailable or oversized.");
+      var text=new StringBuilder(length+1);int read=GetWindowTextW(window,text,text.Capacity);
+      if(read!=length || GetWindowTextLengthW(window)!=length)throw new InvalidOperationException("Chart text changed or was truncated.");
+      return text.ToString();
+    }
+    public static bool ChartInformationAvailable(IntPtr frame,int pid) {
+      var info=AssertFrame(frame,pid);AssertCapture(frame,pid,info);
+      foreach(var surface in info.Surfaces)if(surface.Title=="SKAGER chart information")return true;
+      return false;
+    }
+    public static ChartObservation ReadChartInformation(IntPtr frame,int pid) {
+      var surface=ChartSurface(frame,pid,"SKAGER chart information");var direct=new List<IntPtr>();
+      foreach(var child in Children(surface))if(GetParent(child)==surface)direct.Add(child);
+      // Drawer.cpp creates precisely one heading panel and one scroll body.
+      if(direct.Count!=2)throw new InvalidOperationException("Exact chart drawer heading/body required.");
+      IntPtr heading=IntPtr.Zero,body=IntPtr.Zero;
+      foreach(var panel in direct) {
+        if(DirectLabels(panel,pid).Length==1 && DirectLabels(panel,pid)[0]=="Close") {
+          if(heading!=IntPtr.Zero)throw new InvalidOperationException("Ambiguous chart heading.");heading=panel;
+        } else {if(body!=IntPtr.Zero)throw new InvalidOperationException("Ambiguous chart body.");body=panel;}
+      }
+      if(heading==IntPtr.Zero || body==IntPtr.Zero || !Contains(Bounds(surface),Bounds(body)))
+        throw new InvalidOperationException("Exact chart drawer body unavailable.");
+      var rows=new List<ChartTextRow>();var handles=new List<IntPtr>();var controls=new List<IntPtr>();Exception failure=null;int count=0;long total=0;
+      // Unlike Children(), include hidden Static details created by the actual
+      // drawer. No arbitrary app/window text or edit fields are read.
+      EnumChildWindows(body,delegate(IntPtr child,IntPtr unused){try {
+        if(++count>4096 || Owner(child)!=(uint)pid || GetParent(child)!=body)
+          throw new InvalidOperationException("Unexpected nested chart body control.");
+        controls.Add(child);var kind=Class(child);
+        if(kind=="Static") {
+          if(rows.Count>=2048)throw new InvalidOperationException("Chart text row bound exceeded.");
+          var text=ChartText(child);total+=text.Length;
+          if(total>4194304)throw new InvalidOperationException("Chart text exceeds the private observation bound.");
+          handles.Add(child);rows.Add(new ChartTextRow{Handle=child.ToInt64(),Text=text,Visible=IsWindowVisible(child)});
+        } else {
+          var label=Text(child);
+          if(label!="Show all chart details" && label!="Hide chart details")
+            throw new InvalidOperationException("Unexpected chart body input.");
+        }
+        return true;
+      }catch(Exception error){failure=error;return false;}},IntPtr.Zero);
+      if(failure!=null)throw new InvalidOperationException("Chart text observation refused.",failure);
+      ValidateChartText(rows.ToArray());
+      if(ChartSurface(frame,pid,"SKAGER chart information")!=surface)throw new InvalidOperationException("Chart information surface changed.");
+      var currentControls=new List<IntPtr>();
+      EnumChildWindows(body,delegate(IntPtr child,IntPtr unused){currentControls.Add(child);return currentControls.Count<=4096;},IntPtr.Zero);
+      if(currentControls.Count!=controls.Count)throw new InvalidOperationException("Chart body inventory changed during observation.");
+      for(int i=0;i<controls.Count;i++)if(currentControls[i]!=controls[i])throw new InvalidOperationException("Chart body control replaced during observation.");
+      for(int i=0;i<handles.Count;i++)if(Owner(handles[i])!=(uint)pid || GetParent(handles[i])!=body || Class(handles[i])!="Static" ||
+          ChartText(handles[i])!=rows[i].Text || IsWindowVisible(handles[i])!=rows[i].Visible)
+        throw new InvalidOperationException("Chart information changed during observation.");
+      return new ChartObservation{SurfaceHandle=surface.ToInt64(),Rows=rows.ToArray()};
+    }
     public static void Click(IntPtr frame,int pid,string action) {
+      if(action=="ChartInfoRead"){ReadChartInformation(frame,pid);return;}
+      if(action=="ChartContextInfo") {
+        var target=ResolveChartInfoButton(frame,pid);
+        ClickReviewedButton(frame,pid,target,delegate{return ResolveChartInfoButton(frame,pid);},true);return;
+      }
       if(action=="RevealChartPalettePreference"){RevealChartPalettePreference(frame,pid);return;}
       if(action=="Layers" || action=="ChartPalettePreferences") {
         var target=ResolvePaletteNavigation(frame,pid,action);

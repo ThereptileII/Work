@@ -1,7 +1,7 @@
 # Read-only vessel/UI review. No application launch or equipment commands.
 . (Join-Path $PSScriptRoot 'Common.ps1')
 function Get-WindowReviewActions {
-  return @('Capture','Resize1280x800','Menu','Navigation','Routes','Waypoints','AIS','Instruments','Advice','PilotView','Anchor','Settings','Sources','Display','ToggleFullscreen','ToggleOrientation','Route','Energy','Diagnostics','System','Alerts','Escape','CyclePalette','ZoomIn','ZoomOut','Center','PanRight','PageUp','PageDown','SelectFirstVisibleWaypoint','SelectFirstVisibleAis','Layers','ChartPalettePreferences','RevealChartPalettePreference')
+  return @('ChartContextInfo','ChartInfoRead','Capture','Resize1280x800','Menu','Navigation','Routes','Waypoints','AIS','Instruments','Advice','PilotView','Anchor','Settings','Sources','Display','ToggleFullscreen','ToggleOrientation','Route','Energy','Diagnostics','System','Alerts','Escape','CyclePalette','ZoomIn','ZoomOut','Center','PanRight','PageUp','PageDown','SelectFirstVisibleWaypoint','SelectFirstVisibleAis','Layers','ChartPalettePreferences','RevealChartPalettePreference')
 }
 function Convert-WindowReviewChart($Data,[string]$Commit,[datetime]$Written,[datetime]$Now) {
   if($Commit -cnotmatch '^[a-f0-9]{40}$' -or $Written -gt $Now -or ($Now-$Written).TotalSeconds -gt 5 -or $Data.build_commit -cne $Commit -or
@@ -163,21 +163,33 @@ function Invoke-WindowReview($Job) {
       $null=Read-WindowReview $Job;$process.Refresh()
       Assert-WindowReviewProcess $process $Job $review.launch ([Diagnostics.Process]::GetCurrentProcess().SessionId)
       if($process.MainWindowHandle -ne $frame){throw 'Reviewed main window changed.'}
-      $selection=$null
+      $selection=$null;$chartInformation=$null
       switch($Job.reviewAction) {
         'Capture' {}
+        'ChartInfoRead' {$chartInformation=[OpenNavX.ReviewWindowNative]::ReadChartInformation($frame,$process.Id)}
         'Resize1280x800' {$resize=[OpenNavX.ReviewWindowNative]::Resize1280x800($frame,$process.Id)}
         'Escape' {[OpenNavX.ReviewWindowNative]::Escape($frame,$process.Id)}
         'PanRight' {Invoke-WindowReviewPan $frame $process.Id $Job.workspace $Job.buildCommit}
         {$_ -cin @('SelectFirstVisibleWaypoint','SelectFirstVisibleAis')} {$selection=Invoke-WindowReviewSelection $frame $process.Id $Job.reviewAction $Job.workspace $Job.buildCommit}
         default {[OpenNavX.ReviewWindowNative]::Click($frame,$process.Id,$Job.reviewAction)}
       }
+      if($Job.reviewAction -ceq 'ChartContextInfo') {
+        # Observe only the resulting owned drawer; no retry of the sole Info input.
+        $deadline=[datetime]::UtcNow.AddSeconds(3)
+        do {
+          if([OpenNavX.ReviewWindowNative]::ChartInformationAvailable($frame,$process.Id)) {
+            $chartInformation=[OpenNavX.ReviewWindowNative]::ReadChartInformation($frame,$process.Id);break
+          }
+          Start-Sleep -Milliseconds 100
+        } while([datetime]::UtcNow -lt $deadline)
+        if(-not $chartInformation){throw 'No chart information observed after the single Info input.'}
+      }
       $after=Save-WindowReviewImage $frame $process.Id (Join-Path $directory 'after.png')
       return @{status='passed';action='ReviewWindow';reviewAction=$Job.reviewAction;utc=[datetime]::UtcNow.ToString('o');processId=$process.Id;
         buildCommit=$Job.buildCommit;generation=$Job.generation;executableSha256=$Job.executableSha256;launchResultSha256=$Job.launchResultSha256;
         reviewHelperSha256=$Job.reviewHelperSha256;nativeHelperSha256=$Job.nativeHelperSha256;
-        before=$before;after=$after;resize=$resize;nativeWindow=$after.window;selection=$selection;pages=@([OpenNavX.ReviewWindowNative]::VisiblePageLabels($frame));
-        inputMethod='Targeted reviewed HWND mouse messages, focused-HWND Escape or exact-canvas Right arrow; no global input';readOnly=$true;actionsSent=$(if($Job.reviewAction -ceq 'Capture'){0}else{1});review='Private native pixels require human per-step visual review; no feature acceptance inferred.'}
+        before=$before;after=$after;resize=$resize;nativeWindow=$after.window;selection=$selection;chartInformation=$chartInformation;pages=@([OpenNavX.ReviewWindowNative]::VisiblePageLabels($frame));
+        inputMethod='Targeted reviewed HWND mouse messages, focused-HWND Escape or exact-canvas Right arrow; no global input';readOnly=$true;actionsSent=$(if($Job.reviewAction -cin @('Capture','ChartInfoRead')){0}else{1});review='Private native pixels require human per-step visual review; no feature acceptance inferred.'}
     } finally {$null=[OpenNavX.ReviewWindowNative]::SetThreadDpiAwarenessContext($oldDpi)}
   } finally {$process.Dispose()}
 }

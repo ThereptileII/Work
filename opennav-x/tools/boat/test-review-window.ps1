@@ -144,9 +144,9 @@ foreach($field in @('Id','Path','SessionId','MainWindowHandle','HasExited','Star
 }
 Pass 'All pointer labels resolve to actual current source controls' {
   $root=[IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..').Replace('\',[IO.Path]::DirectorySeparatorChar))
-  $source='';foreach($name in @('Shell.cpp','ProductPanel.cpp','ProductSettings.cpp','ChartPresentationDrawer.cpp','Theme.h')){$source+=[IO.File]::ReadAllText((Join-Path $root ('src/ui/'+$name)))}
+  $source='';foreach($name in @('Shell.cpp','ProductPanel.cpp','ProductSettings.cpp','ChartPresentationDrawer.cpp','ContextCard.cpp','Theme.h')){$source+=[IO.File]::ReadAllText((Join-Path $root ('src/ui/'+$name)))}
   $source+=[IO.File]::ReadAllText((Join-Path $root 'src/integration/OpenCPNIntegration.cpp'))
-  foreach($action in Get-WindowReviewActions | Where-Object {$_ -cnotin @('Capture','Resize1280x800','Escape','PanRight','SelectFirstVisibleWaypoint','SelectFirstVisibleAis')}) {
+  foreach($action in Get-WindowReviewActions | Where-Object {$_ -cnotin @('Capture','ChartInfoRead','Resize1280x800','Escape','PanRight','SelectFirstVisibleWaypoint','SelectFirstVisibleAis')}) {
     foreach($label in [OpenNavX.ReviewWindowNative]::ActionLabels($action)) {
       if(-not $source.Contains('"'+$label+'"')){throw ('Reviewed label absent from source: '+$label)}
     }
@@ -281,5 +281,60 @@ Pass 'Dynamic selection grammar matches the reviewed page/source boundaries' {
   foreach($literal in @('"Lost"','"Position doubtful"','"Active"','"Inactive"','"Active distress beacon"','"Distress beacon testing"')) {
     if(-not $bridge.Contains($literal)){throw 'Actual AIS status grammar changed; review selection boundaries'}
   }
+}
+Pass 'Exact chart-position context signature identifies Info without authorizing other actions' {
+ if(-not [OpenNavX.ReviewWindowNative]::IsPrototypeSurface('SKAGER chart context',@('Go to','Waypoint','Measure','Info'),@('Close'))){throw 'Actual chart context rejected.'}
+ if([OpenNavX.ReviewWindowNative]::ActionLabels('ChartContextInfo')[0] -cne 'Info' -or
+    [OpenNavX.ReviewWindowNative]::ActionContext('ChartContextInfo') -cne 'SKAGER chart context'){throw 'Info target scope changed.'}
+}
+foreach($title in @('SKAGER AIS context','SKAGER waypoint context','SKAGER chart information','Chart position')) {
+ Pass ('Info cannot identify another context '+$title) {
+  if([OpenNavX.ReviewWindowNative]::IsPrototypeSurface($title,@('Go to','Waypoint','Measure','Info'),@('Close'))){throw 'Wrong context accepted.'}
+ }
+}
+foreach($labels in @(@('Info'),@('Go to','Waypoint','Measure','Info','Info'),@('Go to','Waypoint','Measure','INFO'),@('Go to','Waypoint','Measure','Info','AUTO'))) {
+ Pass 'Incomplete ambiguous or extra chart context controls refuse' {
+  if([OpenNavX.ReviewWindowNative]::IsPrototypeSurface('SKAGER chart context',$labels,@('Close'))){throw 'Ambiguous chart context accepted.'}
+ }
+}
+Pass 'Chart information capture requires the exact Close-only drawer signature' {
+ if(-not [OpenNavX.ReviewWindowNative]::IsPrototypeSurface('SKAGER chart information',@(),@('Close'))){throw 'Information drawer rejected.'}
+ foreach($heading in @(@('Back'),@('Close','Back'),@('Close','Close'))) {
+  if([OpenNavX.ReviewWindowNative]::IsPrototypeSurface('SKAGER chart information',@(),$heading)){throw 'Wrong drawer heading accepted.'}
+ }
+ if([OpenNavX.ReviewWindowNative]::IsPrototypeSurface('SKAGER chart information',@('Info'),@('Close'))){throw 'Unexpected direct action accepted.'}
+}
+function ChartRow([long]$Handle,[string]$Text,[bool]$Visible=$true) {
+ $row=New-Object OpenNavX.ReviewWindowNative+ChartTextRow
+ $row.Handle=$Handle;$row.Text=$Text;$row.Visible=$Visible;return $row
+}
+Pass 'Private observation preserves multiple co-located classes and hidden technical details unchanged' {
+ $rows=@((ChartRow 1 'Light'),(ChartRow 2 "Light (LIGHTS)`nCATLIT`t1`nOBJNAM`tÅland" $false),
+         (ChartRow 3 'Landmark'),(ChartRow 4 "Landmark (LNDMRK)`nNATCON`t3" $false))
+ $result=[OpenNavX.ReviewWindowNative]::ValidateChartText($rows)
+ if($result.Count -ne 4 -or $result[1].Text -cne $rows[1].Text -or $result[1].Visible -or $result[3].Text -cne $rows[3].Text){throw 'Actual details were selected, lost or changed.'}
+}
+foreach($rows in @(@(),@($null),@((ChartRow 0 'Light')),@((ChartRow 1 'A'),(ChartRow 1 'B')),
+ @((ChartRow 1 ("LIGHTS"+[char]0+'AUTO'))),@((ChartRow 1 ("LIGHTS"+[char]1))),@((ChartRow 1 ('x'*1048577))))) {
+ Refuse 'Malformed duplicate or oversized chart text fails closed' {[OpenNavX.ReviewWindowNative]::ValidateChartText($rows)}
+}
+Refuse 'Missing chart text is unavailable rather than invented' {
+ $row=ChartRow 1 'Light';$row.GetType().GetField('Text').SetValue($row,$null);[OpenNavX.ReviewWindowNative]::ValidateChartText(@($row))
+}
+Refuse 'Chart text row count is bounded' {[OpenNavX.ReviewWindowNative]::ValidateChartText((New-Object 'OpenNavX.ReviewWindowNative+ChartTextRow[]' 2049))}
+Refuse 'Total chart text is bounded independently of individual rows' {
+ [OpenNavX.ReviewWindowNative]::ValidateChartText(@((ChartRow 1 ('x'*1048576)),(ChartRow 2 ('x'*1048576)),(ChartRow 3 ('x'*1048576)),(ChartRow 4 ('x'*1048576)),(ChartRow 5 'x')))
+}
+Pass 'Empty text and section boundaries remain available without invented chart identity' {
+ $result=[OpenNavX.ReviewWindowNative]::ValidateChartText(@((ChartRow 1 ''),(ChartRow 2 'No chart object information was supplied for this position.')))
+ if($result[0].Text -cne '' -or $result.Count -ne 2){throw 'Empty observation was synthesized.'}
+}
+Refuse 'Center context opener is unavailable without source-proven overlay and measurement exclusion' {
+ $value=CopyValue $job;$value.reviewAction='ChartContextAtCenter';Assert-WindowReviewPolicy $value $installed $build $launch $request $now
+}
+Refuse 'Text-only observer cannot resolve a pointer label' {[OpenNavX.ReviewWindowNative]::ActionLabels('ChartInfoRead')}
+Pass 'Pure chart result explicitly leaves renderer-symbol proof unresolved' {
+ $result=New-Object OpenNavX.ReviewWindowNative+ChartObservation
+ if(-not $result.IncludesHiddenDetails -or $result.ResolvedRendererSymbolObserved){throw 'Chart descriptions claim resolved renderer evidence.'}
 }
 [pscustomobject]@{status='passed';count=$checks.Count;checks=@($checks);nativeInteropCompiled=$true;nativeActionsExecuted=$false;boatAccess=$false;hardwareCommands=$false} | ConvertTo-Json -Depth 5
