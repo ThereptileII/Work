@@ -86,7 +86,13 @@ func (p pipeIO) Write(b []byte) (int, error) {
 
 const clientPipeRights = windows.FILE_READ_DATA | windows.FILE_WRITE_DATA | windows.FILE_READ_ATTRIBUTES | windows.FILE_WRITE_ATTRIBUTES | windows.READ_CONTROL | windows.SYNCHRONIZE
 
-func newPipe(sid string) (windows.Handle, error) {
+func newPipe(sid string) (windows.Handle, error) { return newFixedPipe(PipeName, sid) }
+func newExecutionPipe(sid string) (windows.Handle, error) {
+	return newFixedPipe(ExecutionPipeName, sid)
+}
+
+// Only fixed in-package protocol endpoints call this helper.
+func newFixedPipe(pipeName, sid string) (windows.Handle, error) {
 	// IU may connect, but cannot create another server instance: no GA/GW nor
 	// FILE_APPEND_DATA (= FILE_CREATE_PIPE_INSTANCE) is granted to clients.
 	sd, e := windows.SecurityDescriptorFromString("O:" + sid + "D:P(A;;GA;;;" + sid + ")(A;;GA;;;SY)(A;;0x00120183;;;IU)")
@@ -94,7 +100,7 @@ func newPipe(sid string) (windows.Handle, error) {
 		return 0, e
 	}
 	sa := windows.SecurityAttributes{Length: uint32(unsafe.Sizeof(windows.SecurityAttributes{})), SecurityDescriptor: sd}
-	name, e := windows.UTF16PtrFromString(PipeName)
+	name, e := windows.UTF16PtrFromString(pipeName)
 	if e != nil {
 		return 0, e
 	}
@@ -102,11 +108,15 @@ func newPipe(sid string) (windows.Handle, error) {
 	runtime.KeepAlive(sd)
 	return h, e
 }
-func openPipe(ctx context.Context) (windows.Handle, error) {
+func openPipe(ctx context.Context) (windows.Handle, error) { return openFixedPipe(ctx, PipeName) }
+func openExecutionPipe(ctx context.Context) (windows.Handle, error) {
+	return openFixedPipe(ctx, ExecutionPipeName)
+}
+func openFixedPipe(ctx context.Context, pipeName string) (windows.Handle, error) {
 	if ctx == nil || ctx.Err() != nil {
 		return 0, ErrRefused
 	}
-	name, e := windows.UTF16PtrFromString(PipeName)
+	name, e := windows.UTF16PtrFromString(pipeName)
 	if e != nil {
 		return 0, e
 	}

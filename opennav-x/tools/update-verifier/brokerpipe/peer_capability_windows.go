@@ -15,7 +15,11 @@ type nativePeerCapability struct {
 	checkServer func() error
 }
 
-func (p *nativePeerCapability) check() error {
+func (p *nativePeerCapability) check() error { return p.checkInput(false) }
+
+// Staging always supplies false. Only the separate execution session arms input
+// while its own bounded reader consumes one exact challenged report.
+func (p *nativePeerCapability) checkInput(allowInput bool) error {
 	if p == nil || p.pipe == 0 || p.pipe == windows.InvalidHandle || p.client == nil || p.checkServer == nil {
 		return ErrRefused
 	}
@@ -31,10 +35,7 @@ func (p *nativePeerCapability) check() error {
 	}
 	var available uint32
 	ok, _, _ := peekPipe.Call(uintptr(p.pipe), 0, 0, 0, uintptr(unsafe.Pointer(&available)), 0)
-	// Current staging transport permits exactly one request. A future reviewed
-	// duplex protocol must explicitly replace both this check and the watcher;
-	// unsolicited bytes cannot silently turn this capability into a new protocol.
-	if ok == 0 || available != 0 {
+	if ok == 0 || (!allowInput && available != 0) {
 		return ErrRefused
 	}
 	return p.client.live()
