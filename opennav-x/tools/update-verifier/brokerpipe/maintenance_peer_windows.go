@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"runtime"
+	"sync/atomic"
 	"unsafe"
 
 	"golang.org/x/sys/windows"
@@ -53,6 +54,43 @@ func (p *PeerCapability) WithMaintenanceOperator(ctx context.Context, expectedCl
 		}
 	}
 	return errors.Join(useErr, checkErr)
+}
+
+// WithMaintenanceOperatorChecked lends a checker only for this callback on its
+// original locked OS thread. The checker is deliberately not a transferable
+// capability: it refuses after return, on another thread, or during concurrent
+// use. Call it immediately before each durable maintenance fact.
+func (p *PeerCapability) WithMaintenanceOperatorChecked(ctx context.Context, expectedClientSID string, use func(PeerIdentity, func(context.Context) error) error) error {
+	if use == nil {
+		return ErrRefused
+	}
+	return p.WithMaintenanceOperator(ctx, expectedClientSID, func(identity PeerIdentity) error {
+		native := maintenanceNativePeer(p.state.backend) // capability mutex is held
+		thread := windows.GetCurrentThreadId()
+		var active, checking atomic.Bool
+		active.Store(true)
+		defer active.Store(false)
+		check := func(checkCtx context.Context) error {
+			// Check lease and thread before touching the mutex-protected state. The
+			// outer callback owns the mutex and pins this goroutine to the thread.
+			if !active.Load() || windows.GetCurrentThreadId() != thread || !checking.CompareAndSwap(false, true) {
+				return ErrRefused
+			}
+			defer checking.Store(false)
+			if err := p.state.checkLocked(checkCtx); err != nil {
+				return err
+			}
+			if err := maintenanceOperatorToken(native, identity, expectedClientSID); err != nil {
+				p.state.failure = errors.Join(ErrPeerRevoked, err)
+				return p.state.failure
+			}
+			return p.state.checkLocked(checkCtx)
+		}
+		if err := check(ctx); err != nil {
+			return err
+		}
+		return errors.Join(use(identity, check), check(ctx))
+	})
 }
 
 func maintenanceNativePeer(backend peerCapabilityBackend) *nativePeerCapability {

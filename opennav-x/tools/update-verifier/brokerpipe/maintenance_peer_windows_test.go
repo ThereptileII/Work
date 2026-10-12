@@ -155,3 +155,47 @@ func TestMaintenanceOperatorSessionAndPostUseDisconnect(t *testing.T) {
 		t.Fatal("disconnected peer survived post-use check", err)
 	}
 }
+
+func TestMaintenanceOperatorCheckedLeaseRefusesCancellationOtherThreadAndLostToken(t *testing.T) {
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	f := actualNativePeerFixture(t)
+	if !currentProcessHasEnabledAdmin(t) || !windows.GetCurrentProcessToken().IsElevated() {
+		return
+	}
+	identity := nativePeerEvidence(f.process)
+	var escaped func(context.Context) error
+	used, durableEffect := false, false
+	err := f.cap.WithMaintenanceOperatorChecked(f.ctx, identity.SID, func(got PeerIdentity, check func(context.Context) error) error {
+		used, escaped = true, check
+		if got != identity || check(f.ctx) != nil {
+			t.Fatal("live original-thread checker refused elevated operator")
+		}
+		crossThread := make(chan error, 1)
+		go func() { crossThread <- check(f.ctx) }()
+		if err := <-crossThread; !errors.Is(err, ErrRefused) {
+			t.Fatal("checker escaped to another OS thread", err)
+		}
+		short, cancel := context.WithCancel(f.ctx)
+		cancel()
+		if err := check(short); !errors.Is(err, context.Canceled) {
+			t.Fatal("canceled checker could authorize an effect", err)
+		}
+		// Lose only the fixture's retained query handle, never change the
+		// shared process token or its enabled groups on the CI runner.
+		if err := f.process.retainedToken.Close(); err != nil {
+			t.Fatal(err)
+		}
+		f.process.retainedToken = 0
+		if check(f.ctx) == nil {
+			durableEffect = true
+		}
+		return nil
+	})
+	if !used || durableEffect || err == nil {
+		t.Fatal("lost original token was not refused before durable effect", used, durableEffect, err)
+	}
+	if escaped == nil || !errors.Is(escaped(f.ctx), ErrRefused) {
+		t.Fatal("checker remained live after callback returned")
+	}
+}

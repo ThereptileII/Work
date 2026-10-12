@@ -19,3 +19,18 @@ func TestMaintenanceOperatorRefusesPortableAndForgedCapabilities(t *testing.T) {
 		t.Fatal("unowned context granted maintenance operator")
 	}
 }
+
+func TestMaintenanceOperatorCheckedRefusesPortableAndForgedCapabilities(t *testing.T) {
+	ctx, cap, _, identity := privatePeerFixture(t)
+	defer cap.Close()
+	used := false
+	callback := func(PeerIdentity, func(context.Context) error) error { used = true; return nil }
+	for _, candidate := range []*PeerCapability{nil, {}, cap} {
+		if err := candidate.WithMaintenanceOperatorChecked(ctx, identity.SID, callback); err == nil || used {
+			t.Fatal("portable or forged capability lent a maintenance checker")
+		}
+	}
+	if err := cap.WithMaintenanceOperatorChecked(context.Background(), identity.SID, callback); err == nil || used {
+		t.Fatal("unowned context lent a maintenance checker")
+	}
+}

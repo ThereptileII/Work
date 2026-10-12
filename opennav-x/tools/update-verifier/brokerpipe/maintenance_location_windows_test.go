@@ -1,6 +1,7 @@
 package brokerpipe
 
 import (
+	"context"
 	"errors"
 	"runtime"
 	"strings"
@@ -44,5 +45,30 @@ func TestMaintenanceOperatorLocationActualOriginalTokenAndCallbackLifetime(t *te
 	used = false
 	if err = f.cap.WithMaintenanceOperatorLocation(f.ctx, identity.SID, func(PeerIdentity, string) error { used = true; return nil }); !errors.Is(err, ErrPeerRevoked) || used {
 		t.Fatal("closed capability supplied operator location", err)
+	}
+}
+
+func TestMaintenanceOperatorLocationCheckedExpiresAfterCallback(t *testing.T) {
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	f := actualNativePeerFixture(t)
+	if !currentProcessHasEnabledAdmin(t) || !windows.GetCurrentProcessToken().IsElevated() {
+		return
+	}
+	identity := nativePeerEvidence(f.process)
+	var escaped func(context.Context) error
+	used := false
+	err := f.cap.WithMaintenanceOperatorLocationChecked(f.ctx, identity.SID, func(got PeerIdentity, location string, check func(context.Context) error) error {
+		used, escaped = true, check
+		if got != identity || location == "" || check(f.ctx) != nil {
+			t.Fatal("live operator location checker refused")
+		}
+		return nil
+	})
+	if err != nil || !used {
+		t.Fatal("elevated native location checker did not complete", err)
+	}
+	if escaped == nil || !errors.Is(escaped(f.ctx), ErrRefused) {
+		t.Fatal("location checker remained usable after callback")
 	}
 }

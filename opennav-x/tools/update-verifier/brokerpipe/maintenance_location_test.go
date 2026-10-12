@@ -22,3 +22,18 @@ func TestMaintenanceOperatorLocationRefusesForgedPortableAndUnownedScope(t *test
 		t.Fatal("missing location callback accepted")
 	}
 }
+
+func TestMaintenanceOperatorLocationCheckedRefusesPortableAndUnownedScope(t *testing.T) {
+	ctx, cap, _, identity := privatePeerFixture(t)
+	defer cap.Close()
+	used := false
+	callback := func(PeerIdentity, string, func(context.Context) error) error { used = true; return nil }
+	for _, candidate := range []*PeerCapability{nil, {}, cap} {
+		if err := candidate.WithMaintenanceOperatorLocationChecked(ctx, identity.SID, callback); err == nil || used {
+			t.Fatal("forged/portable capability supplied operator location checker")
+		}
+	}
+	if err := cap.WithMaintenanceOperatorLocationChecked(context.Background(), identity.SID, callback); err == nil || used {
+		t.Fatal("unowned context supplied operator location checker")
+	}
+}

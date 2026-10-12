@@ -8,3 +8,8 @@ import "context"
 func (p *PeerCapability) WithMaintenanceOperator(context.Context, string, func(PeerIdentity) error) error {
 	return ErrRefused
 }
+
+// WithMaintenanceOperatorChecked has no authority outside an actual native peer.
+func (p *PeerCapability) WithMaintenanceOperatorChecked(context.Context, string, func(PeerIdentity, func(context.Context) error) error) error {
+	return ErrRefused
+}
