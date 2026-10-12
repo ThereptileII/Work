@@ -621,6 +621,39 @@ function PeRvaOffset([byte[]]$Bytes, $Sections, [long]$Rva, [long]$Length) {
   }
   throw 'PE RVA does not map to a section.'
 }
+function PeModuleName([string]$Name) {
+  if ($Name -cnotmatch '^[A-Za-z0-9_.+-]+$' -or $Name.StartsWith('.') -or
+      $Name.EndsWith('.') -or $Name.Contains('..')) { throw "Invalid PE import module name: $Name" }
+  # Match the original-plugin guard and Windows basename resolution. An
+  # explicit extension (.drv/.exe included) is preserved; only no extension
+  # means .dll. Never turn a qualified import into a filesystem path.
+  if (-not $Name.Contains('.')) { $Name += '.dll' }
+  return $Name.ToLowerInvariant()
+}
+function PeForwarderModule([string]$Target) {
+  # Deliberately the same conservative grammar as PluginTlsForwarderModule:
+  # module.symbol or module.#1..65535. Multiple separators/explicit .dll are
+  # unsupported here, not a claim that Windows considers the image invalid.
+  $dot = $Target.IndexOf('.')
+  if ($dot -le 0 -or $dot -eq $Target.Length - 1 -or $Target.IndexOf('.', $dot + 1) -ge 0) {
+    throw "Unsupported PE export forwarder grammar: $Target"
+  }
+  $symbol = $Target.Substring($dot + 1)
+  if ($symbol.StartsWith('#')) {
+    $digits = $symbol.Substring(1)
+    # Bound before conversion, allowing leading zeroes as the plugin guard does.
+    [long]$ordinal = 0
+    foreach ($digit in $digits.ToCharArray()) {
+      if ($digit -lt '0' -or $digit -gt '9' -or $ordinal -gt 6553) {
+        throw 'Unsupported PE export forwarder ordinal.'
+      }
+      $ordinal = $ordinal * 10 + ([int]$digit - [int][char]'0')
+      if ($ordinal -gt 65535) { throw 'Unsupported PE export forwarder ordinal.' }
+    }
+    if (-not $digits.Length -or $ordinal -eq 0) { throw 'Unsupported PE export forwarder ordinal.' }
+  }
+  return (PeModuleName $Target.Substring(0, $dot))
+}
 function PeImportName([byte[]]$Bytes, $Sections, [long]$Rva) {
   $start = PeRvaOffset $Bytes $Sections $Rva 1
   $end = $start
@@ -628,9 +661,7 @@ function PeImportName([byte[]]$Bytes, $Sections, [long]$Rva) {
   if ($end -eq $start -or $end -ge $Bytes.Length -or $end -ge $start + 256) { throw 'Invalid PE import name.' }
   $null = PeRvaOffset $Bytes $Sections $Rva ($end - $start + 1)
   $name = [Text.Encoding]::ASCII.GetString($Bytes, $start, $end - $start)
-  if ($name -cnotmatch '^[A-Za-z0-9_.+-]+$' -or $name.StartsWith('.') -or
-      $name.EndsWith('.') -or $name.Contains('..')) { throw "Invalid PE import module name: $name" }
-  return $name.ToLowerInvariant()
+  return (PeModuleName $name)
 }
 function GetPeImports([string]$Path) {
   $file = Get-Item -LiteralPath $Path -ErrorAction Stop
@@ -677,6 +708,8 @@ function GetPeImports([string]$Path) {
     $sections += $section
   }
   $imports = New-Object 'System.Collections.Generic.HashSet[string]' ([StringComparer]::OrdinalIgnoreCase)
+  $declarations = 0
+  [long]$nameBytes = 0
   foreach ($directory in @(@{index=1; size=20}, @{index=13; size=32})) {
     $entry = $optional + 96 + 8 * $directory.index
     $rva = [long](PeU32 $bytes $entry)
@@ -701,9 +734,54 @@ function GetPeImports([string]$Path) {
         if ($attributes -eq 0) { $nameRva -= [long](PeU32 $bytes ($optional + 28)) }
       }
       if ($nameRva -le 0) { throw "Invalid PE import name RVA: $Path" }
-      $null = $imports.Add((PeImportName $bytes $sections $nameRva))
+      $declarations++
+      if ($declarations -gt 4096) { throw "PE import descriptor budget exceeded: $Path" }
+      $name = PeImportName $bytes $sections $nameRva
+      $nameBytes += $name.Length
+      if ($nameBytes -gt 1048576) { throw "PE declaration name budget exceeded: $Path" }
+      $null = $imports.Add($name)
     }
     if (-not $terminated) { throw "Unterminated PE import directory: $Path" }
+  }
+  # A forwarded export declares another dependency even without an import
+  # descriptor. Read only bounded raw-backed metadata, never execute a module.
+  $exportRva = [long](PeU32 $bytes ($optional + 96))
+  $exportSize = [long](PeU32 $bytes ($optional + 100))
+  if ($exportRva -ne 0 -or $exportSize -ne 0) {
+    if ($exportRva -eq 0 -or $exportSize -lt 40 -or $exportSize -gt 1048576 -or
+        $exportRva + $exportSize -gt 4294967296) { throw "Invalid PE export directory: $Path" }
+    $base = PeRvaOffset $bytes $sections $exportRva $exportSize
+    $exportEnd = $exportRva + $exportSize
+    $entries = [long](PeU32 $bytes ($base + 20))
+    if ($entries -gt 65536) { throw "PE export address table budget exceeded: $Path" }
+    if ($entries -gt 0) {
+      $eat = PeRvaOffset $bytes $sections ([long](PeU32 $bytes ($base + 28))) ($entries * 4)
+      $forwarders = 0
+      for ([long]$i = 0; $i -lt $entries; $i++) {
+        $target = [long](PeU32 $bytes ($eat + $i * 4))
+        # Holes and ordinary code/data exports declare no dependency. This
+        # scanner does not pretend to validate executable export targets.
+        if ($target -lt $exportRva -or $target -ge $exportEnd) { continue }
+        $forwarders++
+        if ($forwarders -gt 4096) { throw "PE export forwarder budget exceeded: $Path" }
+        $start = PeRvaOffset $bytes $sections $target 1
+        $length = 0
+        while ($true) {
+          if ($target + $length -ge $exportEnd) { throw "PE export forwarder crosses directory boundary: $Path" }
+          if ($length -ge 4096) { throw "Empty or oversized PE export forwarder: $Path" }
+          $value = $bytes[$start + $length]
+          if ($value -eq 0) { break }
+          if ($value -lt 32 -or $value -gt 126) { throw "Non-ASCII PE export forwarder: $Path" }
+          $length++
+        }
+        if ($length -eq 0) { throw "Empty or oversized PE export forwarder: $Path" }
+        $null = PeRvaOffset $bytes $sections $target ($length + 1)
+        $nameBytes += $length
+        if ($nameBytes -gt 1048576) { throw "PE declaration name budget exceeded: $Path" }
+        $forwarder = [Text.Encoding]::ASCII.GetString($bytes, $start, $length)
+        $null = $imports.Add((PeForwarderModule $forwarder))
+      }
+    }
   }
   return @($imports)
 }

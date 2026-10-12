@@ -8,7 +8,7 @@ $tokens = $null; $errors = $null
 $ast = [Management.Automation.Language.Parser]::ParseFile($source, [ref]$tokens, [ref]$errors)
 if ($errors.Count) { throw 'Lifecycle.ps1 does not parse.' }
 $names = @('Hash','PlainPath','RelativePath','PeU16','PeU32','PeMachine','PeRvaOffset',
-  'PeImportName','GetPeImports','GetCandidateSystemX86','AssertCandidateTlsRuntime')
+  'PeModuleName','PeForwarderModule','PeImportName','GetPeImports','GetCandidateSystemX86','AssertCandidateTlsRuntime')
 $definitions = @($ast.FindAll({
   param($node)
   $node -is [Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -in $names
@@ -107,6 +107,34 @@ function NewPe([string]$Path, [string]$Import = '', [bool]$Delay = $false) {
   }
   [IO.File]::WriteAllBytes($Path, $bytes)
 }
+function NewPeForwarders([string]$Path, [string[]]$Targets) {
+  NewPe $Path
+  [byte[]]$bytes = [IO.File]::ReadAllBytes($Path)
+  # Independent inert export directory within .rdata. The EAT may be outside
+  # the export directory in PE, but the forwarder string AND NUL must be inside.
+  SetU32 $bytes 0xf8 0x1200; SetU32 $bytes 0xfc 0x200
+  SetU32 $bytes 0x414 $Targets.Count; SetU32 $bytes 0x41c 0x1240
+  $next = 0x480
+  for ($i = 0; $i -lt $Targets.Count; $i++) {
+    SetU32 $bytes (0x440 + 4 * $i) ($next + 0xe00)
+    $raw = [Text.Encoding]::ASCII.GetBytes($Targets[$i] + [char]0)
+    [Array]::Copy($raw, 0, $bytes, $next, $raw.Length)
+    $next += $raw.Length
+  }
+  [IO.File]::WriteAllBytes($Path, $bytes)
+}
+function NewPeExportBudget([string]$Path, [int]$Entries, [string]$Target) {
+  NewPeForwarders $Path @('kernel32.ExitProcess')
+  [byte[]]$original = [IO.File]::ReadAllBytes($Path)
+  [byte[]]$bytes = New-Object byte[] 0x10000
+  [Array]::Copy($original, $bytes, $original.Length)
+  SetU32 $bytes 0x180 0xfe00; SetU32 $bytes 0x188 0xfe00
+  SetU32 $bytes 0xfc 0xfc00; SetU32 $bytes 0x414 $Entries
+  for ($i = 0; $i -lt $Entries; $i++) { SetU32 $bytes (0x440 + 4 * $i) 0x8e00 }
+  $raw = [Text.Encoding]::ASCII.GetBytes($Target + [char]0)
+  [Array]::Copy($raw, 0, $bytes, 0x8000, $raw.Length)
+  [IO.File]::WriteAllBytes($Path, $bytes)
+}
 function RequireFailure([scriptblock]$Action, [string]$Pattern) {
   $failed = $false
   try { & $Action }
@@ -174,6 +202,113 @@ try {
   NewPe (Join-Path $app 'helper.drv') 'libeay32.dll'
   RequireFailure { AssertCandidateTlsRuntime (Join-Path $temp 'stage') } 'Unsupported legacy TLS runtime dependency in candidate: import libeay32.dll'
   Remove-Item -LiteralPath (Join-Path $app 'helper.drv')
+  # Extensionless declarations resolve to .dll, for both import directories.
+  # Keep an explicit .drv/.exe extension unchanged (covered above).
+  $helperDll = Join-Path $plugins 'helper.dll'
+  foreach ($delay in @($false, $true)) {
+    NewPe $plugin 'HeLpEr' $delay
+    NewPe $helperDll 'kernel32.dll'
+    if (@(GetPeImports $plugin) -notcontains 'helper.dll') { throw 'Extensionless import was not normalized.' }
+    AssertCandidateTlsRuntime (Join-Path $temp 'stage')
+    NewPe $helperDll 'ssleay32' $delay
+    RequireFailure { AssertCandidateTlsRuntime (Join-Path $temp 'stage') } 'Unsupported legacy TLS runtime dependency in candidate: import ssleay32.dll'
+  }
+  Remove-Item -LiteralPath $helperDll
+  # Actual export-directory declarations, not merely direct parser calls:
+  # maintained forwarders (including decorated symbols/ordinals) remain usable.
+  foreach ($target in @('KERNEL32.ExitProcess', 'kernel32.#1', 'kernel32.#65535', 'kernel32.#00001', 'kernel32.?Decorated@@YAXXZ')) {
+    NewPeForwarders $plugin @($target)
+    if (@(GetPeImports $plugin) -notcontains 'kernel32.dll') { throw "Forwarder module was not normalized: $target" }
+    AssertCandidateTlsRuntime (Join-Path $temp 'stage')
+  }
+  foreach ($target in @('libeay32.SSL_new', 'SSLEAY32.#1')) {
+    NewPeForwarders $plugin @($target)
+    RequireFailure { AssertCandidateTlsRuntime (Join-Path $temp 'stage') } 'Unsupported legacy TLS runtime dependency in candidate: import (libeay32|ssleay32).dll'
+  }
+  NewPeForwarders $plugin @('missing-forwarder.Run')
+  RequireFailure { AssertCandidateTlsRuntime (Join-Path $temp 'stage') } 'Missing app-local PE import missing-forwarder.dll'
+  # A plugin declares its helper through a forwarder; the full candidate walk
+  # also queues DLLs independently. A non-DLL helper below is reached through
+  # an ordinary executable import and itself declares a legacy forwarder.
+  NewPeForwarders $plugin @('HeLpEr.Run')
+  if (@(GetPeImports $plugin) -notcontains 'helper.dll') { throw 'Local helper forwarder was omitted.' }
+  NewPe $helperDll 'libeay32.dll'
+  $helperHash = Hash $helperDll
+  RequireFailure { AssertCandidateTlsRuntime (Join-Path $temp 'stage') } 'Unsupported legacy TLS runtime dependency in candidate: import libeay32.dll'
+  if ((Hash $helperDll) -cne $helperHash) { throw 'Forwarder rejection changed retained helper bytes.' }
+  NewPeForwarders $helperDll @('kernel32.ExitProcess')
+  AssertCandidateTlsRuntime (Join-Path $temp 'stage')
+  $script:fixtureHashes[$helperDll] = '2bede6f2840cfe0a4e88d5c3fa648c170509c9ceed438c7e8440340541ca0446'
+  RequireFailure { AssertCandidateTlsRuntime (Join-Path $temp 'stage') } 'Known obsolete TLS runtime in candidate: OpenSSL 3.0.5'
+  $script:fixtureHashes.Clear()
+  Remove-Item -LiteralPath $helperDll
+  NewPe $exe 'helper.drv'
+  NewPeForwarders (Join-Path $app 'helper.drv') @('libeay32.SSL_new')
+  NewPe $plugin 'kernel32.dll'
+  RequireFailure { AssertCandidateTlsRuntime (Join-Path $temp 'stage') } 'Unsupported legacy TLS runtime dependency in candidate: import libeay32.dll'
+  Remove-Item -LiteralPath (Join-Path $app 'helper.drv')
+  NewPe $exe 'kernel32.dll'
+  # Ambiguous grammar is unsupported, just as in the original-plugin guard;
+  # malformed ordinals and qualified modules must not reach filesystem lookup.
+  foreach ($target in @('kernel32.dll.ExitProcess', 'kernel32.Symbol.More', 'kernel32', '.Symbol', 'kernel32.', 'kernel32.#', 'kernel32.#0', 'kernel32.#65536', 'kernel32.#-1', 'kernel32.#1x', 'C:\kernel32.Symbol', '../kernel32.Symbol')) {
+    NewPeForwarders $plugin @($target)
+    RequireFailure { GetPeImports $plugin } '(Unsupported PE export forwarder|Invalid PE import module name)'
+  }
+  # Holes and nonforwarded export RVAs declare no additional module.
+  NewPeForwarders $plugin @('kernel32.ExitProcess', 'kernel32.ExitProcess')
+  [byte[]]$exports = [IO.File]::ReadAllBytes($plugin)
+  SetU32 $exports 0x440 0; SetU32 $exports 0x444 0x1000
+  [IO.File]::WriteAllBytes($plugin, $exports)
+  if (@(GetPeImports $plugin).Count -ne 0) { throw 'Ordinary exports were mistaken for dependencies.' }
+  AssertCandidateTlsRuntime (Join-Path $temp 'stage')
+  # The EAT itself need not be inside the export directory. Only a target RVA
+  # within that directory denotes a forwarder, including its terminating NUL.
+  NewPeForwarders $plugin @('kernel32.ExitProcess')
+  [byte[]]$exports = [IO.File]::ReadAllBytes($plugin)
+  SetU32 $exports 0x41c 0x1140; SetU32 $exports 0x340 0x1280
+  [IO.File]::WriteAllBytes($plugin, $exports)
+  AssertCandidateTlsRuntime (Join-Path $temp 'stage')
+  # Refuse malformed directory/EAT extents without relaxing any prior import
+  # fixtures. Mutation closures each start from an independent valid image.
+  foreach ($case in @(
+      @{message='Invalid PE export directory'; mutate={ param($b) SetU32 $b 0xf8 0 }},
+      @{message='Invalid PE export directory'; mutate={ param($b) SetU32 $b 0xfc 39 }},
+      @{message='Invalid PE export directory'; mutate={ param($b) SetU32 $b 0xfc 1048577 }},
+      @{message='PE RVA points beyond raw section data'; mutate={ param($b) SetU32 $b 0xfc 0x201 }},
+      @{message='PE export address table budget exceeded'; mutate={ param($b) SetU32 $b 0x414 65537 }},
+      @{message='PE RVA does not map'; mutate={ param($b) SetU32 $b 0x41c 0x2000 }},
+      @{message='PE RVA points beyond raw section data'; mutate={ param($b) SetU32 $b 0x414 2; SetU32 $b 0x41c 0x13fc }},
+      @{message='Empty or oversized PE export forwarder'; mutate={ param($b) $b[0x480] = 0 }},
+      @{message='Non-ASCII PE export forwarder'; mutate={ param($b) $b[0x480] = 0x80 }},
+      @{message='PE export forwarder crosses directory boundary'; mutate={ param($b) SetU32 $b 0xfc (0x80 + 20) }}
+    )) {
+    NewPeForwarders $plugin @('kernel32.ExitProcess')
+    [byte[]]$exports = [IO.File]::ReadAllBytes($plugin)
+    & ($case.mutate) $exports
+    [IO.File]::WriteAllBytes($plugin, $exports)
+    RequireFailure { GetPeImports $plugin } $case.message
+  }
+  NewPeExportBudget $plugin 4097 'kernel32.ExitProcess'
+  RequireFailure { GetPeImports $plugin } 'PE export forwarder budget exceeded'
+  NewPeExportBudget $plugin 4096 ('kernel32.' + ('A' * 248))
+  RequireFailure { GetPeImports $plugin } 'PE declaration name budget exceeded'
+  NewPeExportBudget $plugin 1 ('kernel32.' + ('A' * 4087))
+  RequireFailure { GetPeImports $plugin } 'Empty or oversized PE export forwarder'
+  # Import descriptor count is bounded before deduplication, too. Many repeated
+  # declarations must not buy an unbounded parser walk or evade the name budget.
+  NewPe $plugin
+  [byte[]]$original = [IO.File]::ReadAllBytes($plugin)
+  [byte[]]$manyImports = New-Object byte[] 0x20000
+  [Array]::Copy($original, $manyImports, $original.Length)
+  SetU32 $manyImports 0x180 0x1fe00; SetU32 $manyImports 0x188 0x1fe00
+  SetU32 $manyImports 0x100 0x1100; SetU32 $manyImports 0x104 (4098 * 20)
+  for ($i = 0; $i -lt 4097; $i++) { SetU32 $manyImports (0x300 + 20 * $i + 12) 0x18e00 }
+  $rawName = [Text.Encoding]::ASCII.GetBytes('kernel32.dll' + [char]0)
+  [Array]::Copy($rawName, 0, $manyImports, 0x18000, $rawName.Length)
+  [IO.File]::WriteAllBytes($plugin, $manyImports)
+  RequireFailure { GetPeImports $plugin } 'PE import descriptor budget exceeded'
+  Write-Output 'Installer extensionless and export forwarder policy fixtures passed.'
+  NewPe $plugin 'kernel32.dll'
   # SCRUM-334: a retained third-party plugin binary that is not an x86 image
   # cannot be loaded by the 32-bit host, so it is skipped for import scanning
   # instead of aborting the installation. rtlsdr_pi ships such a file.
