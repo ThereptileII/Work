@@ -7,7 +7,6 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
-	"unsafe"
 
 	"golang.org/x/sys/windows"
 )
@@ -91,8 +90,14 @@ func TestNativeStockExistingMappingIntegrity(t *testing.T) {
 	if err = os.Remove(name); !errors.Is(err, windows.ERROR_SHARING_VIOLATION) {
 		t.Fatalf("held stock delete: %v", err)
 	}
-	// The address is from MapViewOfFile above and remains mapped until cleanup.
-	unsafe.Slice((*byte)(unsafe.Pointer(view)), len(original))[0] = 0x42
+	// Mutate the same retained writable mapping through the native address API,
+	// without converting a stored uintptr into a Go pointer. No process is opened:
+	// the pseudo-handle addresses only this fixture's own mapped memory.
+	replacement := byte(0x42)
+	var written uintptr
+	if err = windows.WriteProcessMemory(windows.CurrentProcess(), view, &replacement, 1, &written); err != nil || written != 1 {
+		t.Fatalf("retained mapped byte mutation failed: bytes=%d err=%v", written, err)
+	}
 	if err = windows.FlushViewOfFile(view, uintptr(len(original))); err != nil {
 		t.Fatal(err)
 	}
