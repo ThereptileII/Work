@@ -28,7 +28,7 @@ func TestSCMInitializationDispatch(t *testing.T) {
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			calls := 0
-			handled, err := initializeServiceStart(context.Background(), tc.args, func() error { calls++; return nil })
+			handled, err := initializeServiceStart(context.Background(), tc.args, func() error { calls++; return nil }, nil)
 			if handled != tc.handled || (err != nil) != tc.wantErr || calls != tc.calls {
 				t.Fatalf("handled=%v err=%v calls=%d; want handled=%v error=%v calls=%d", handled, err, calls, tc.handled, tc.wantErr, tc.calls)
 			}
@@ -40,13 +40,13 @@ func TestSCMInitializationRefusal(t *testing.T) {
 	args := []string{ServiceName, "initialize-store"}
 	t.Run("native failure is redacted", func(t *testing.T) {
 		calls := 0
-		handled, err := initializeServiceStart(context.Background(), args, func() error { calls++; return errors.New("private fixture path") })
+		handled, err := initializeServiceStart(context.Background(), args, func() error { calls++; return errors.New("private fixture path") }, nil)
 		if !handled || err == nil || calls != 1 || strings.Contains(err.Error(), "private fixture path") {
 			t.Fatalf("initialization failure was not retained and redacted: handled=%v err=%v calls=%d", handled, err, calls)
 		}
 	})
 	t.Run("missing native creator", func(t *testing.T) {
-		handled, err := initializeServiceStart(context.Background(), args, nil)
+		handled, err := initializeServiceStart(context.Background(), args, nil, nil)
 		if !handled || err == nil {
 			t.Fatalf("missing creator accepted: handled=%v err=%v", handled, err)
 		}
@@ -60,7 +60,7 @@ func TestSCMInitializationRefusal(t *testing.T) {
 				selected = []string{ServiceName}
 			}
 			calls := 0
-			_, err := initializeServiceStart(ctx, selected, func() error { calls++; return nil })
+			_, err := initializeServiceStart(ctx, selected, func() error { calls++; return nil }, nil)
 			if err == nil || calls != 0 {
 				t.Fatalf("cancelled start invoked creator: err=%v calls=%d", err, calls)
 			}
@@ -68,7 +68,7 @@ func TestSCMInitializationRefusal(t *testing.T) {
 	}
 	t.Run("nil context", func(t *testing.T) {
 		calls := 0
-		_, err := initializeServiceStart(nil, args, func() error { calls++; return nil })
+		_, err := initializeServiceStart(nil, args, func() error { calls++; return nil }, nil)
 		if err == nil || calls != 0 {
 			t.Fatalf("nil context invoked creator: err=%v calls=%d", err, calls)
 		}
@@ -77,7 +77,7 @@ func TestSCMInitializationRefusal(t *testing.T) {
 		ctx, cancel := context.WithCancel(context.Background())
 		defer cancel()
 		calls := 0
-		handled, err := initializeServiceStart(ctx, args, func() error { calls++; cancel(); return nil })
+		handled, err := initializeServiceStart(ctx, args, func() error { calls++; cancel(); return nil }, nil)
 		if !handled || err == nil || calls != 1 {
 			t.Fatalf("interrupted initialization accepted: handled=%v err=%v calls=%d", handled, err, calls)
 		}

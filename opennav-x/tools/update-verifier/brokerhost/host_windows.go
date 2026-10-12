@@ -26,7 +26,8 @@ func (s storeAdapter) begin(id, sid string) (candidate, error) {
 
 // Run is exclusively an SCM service entry point. It has no arbitrary-root,
 // interactive/elevated console fallback, trust initialization or install command.
-// An explicit SCM initialize-store start performs only native fresh-store creation
+// Explicit SCM initialize-store / verify-store starts perform only native
+// fresh-store creation / read-only durable completion validation
 // and stops; it never serves requests or announces service readiness.
 // Provisioning of the account, fixed files and protected registrations is a
 // separate authenticated installer operation; missing setup fails closed.
@@ -52,7 +53,7 @@ type serviceHost struct {
 
 func (h *serviceHost) Execute(args []string, changes <-chan svc.ChangeRequest, status chan<- svc.Status) (bool, uint32) {
 	status <- svc.Status{State: svc.StartPending, WaitHint: 10000}
-	initialized, err := initializeServiceStart(h.ctx, args, brokerstore.InitializeFresh)
+	initialized, err := initializeServiceStart(h.ctx, args, brokerstore.InitializeFresh, brokerstore.ValidateInitialization)
 	if err != nil {
 		h.result = err
 		return false, 1
