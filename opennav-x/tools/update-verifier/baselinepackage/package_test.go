@@ -281,3 +281,66 @@ func TestObservedStockRejectsWrongBytesAndLinkedPath(t *testing.T) {
 		t.Fatal("linked stock path accepted")
 	}
 }
+
+type endlessReader struct{ total int64 }
+
+func (r *endlessReader) Read(p []byte) (int, error) {
+	for i := range p {
+		p[i] = 'x'
+	}
+	r.total += int64(len(p))
+	return len(p), nil
+}
+
+func TestBoundedDigestStopsGrowingInputAndCancellation(t *testing.T) {
+	r := &endlessReader{}
+	if _, n, err := boundedDigest(context.Background(), r, 5); err == nil || n != 6 || r.total != 6 {
+		t.Fatalf("growing reader consumed beyond declared size: count=%d consumed=%d error=%v", n, r.total, err)
+	}
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+	r = &endlessReader{}
+	if _, _, err := boundedDigest(ctx, r, 5); !errors.Is(err, context.Canceled) || r.total != 0 {
+		t.Fatalf("cancelled read continued: consumed=%d error=%v", r.total, err)
+	}
+}
+
+func TestRefusesOversizedTrustFile(t *testing.T) {
+	f := newFixture(t)
+	file, err := os.OpenFile(f.in.TrustConfig, os.O_WRONLY, 0600)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := file.Truncate(int64(brokerregistration.MaxTrustConfigurationBytes) + 1); err != nil {
+		t.Fatal(err)
+	}
+	if err := file.Close(); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := produce(context.Background(), f.in, func(string) error { return nil }); err == nil {
+		t.Fatal("oversized trust file accepted")
+	}
+}
+
+func TestRefusesSourceChangedAfterOutput(t *testing.T) {
+	f := newFixture(t)
+	checks := 0
+	_, err := produce(context.Background(), f.in, func(string) error {
+		checks++
+		if checks == 2 {
+			file, openErr := os.OpenFile(f.in.SourceArchive, os.O_WRONLY, 0600)
+			if openErr != nil {
+				return openErr
+			}
+			_, writeErr := file.WriteAt([]byte("bad!"), 30)
+			return errors.Join(writeErr, file.Close())
+		}
+		return nil
+	})
+	if err == nil || checks != 2 {
+		t.Fatalf("changed retained source accepted: checks=%d error=%v", checks, err)
+	}
+	if _, err := os.Stat(filepath.Join(f.in.OutputDirectory, RequestName)); err != nil {
+		t.Fatal("failed handoff should retain request for review", err)
+	}
+}

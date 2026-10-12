@@ -52,7 +52,7 @@ func Produce(ctx context.Context, in Input) (Result, error) {
 	return produce(ctx, in, observeStock)
 }
 
-func produce(ctx context.Context, in Input, stockCheck func(string) error) (Result, error) {
+func produce(ctx context.Context, in Input, stockCheck func(string) error) (result Result, resultErr error) {
 	var empty Result
 	if ctx == nil || ctx.Err() != nil || stockCheck == nil ||
 		in.SourceArchive == "" || in.BaselineTree == "" || in.TrustConfig == "" || in.StockPath == "" || in.OutputDirectory == "" ||
@@ -77,16 +77,21 @@ func produce(ctx context.Context, in Input, stockCheck func(string) error) (Resu
 	if err := stockCheck(in.StockPath); err != nil {
 		return empty, fmt.Errorf("observed stock refused: %w", err)
 	}
-	trust, err := os.ReadFile(in.TrustConfig)
-	if err != nil || len(trust) == 0 || len(trust) > brokerregistration.MaxTrustConfigurationBytes ||
+	trust, err := readBoundedRegular(ctx, in.TrustConfig, brokerregistration.MaxTrustConfigurationBytes)
+	if err != nil ||
 		!bytes.Equal(bytes.TrimSpace(trust), trust) || digest(trust) != in.ApprovedTrustSHA256 {
-		return empty, errors.New("trust bytes differ from independent approval")
+		return empty, errors.Join(errors.New("trust bytes differ from independent approval"), err)
 	}
 	source, err := os.Open(in.SourceArchive)
 	if err != nil {
 		return empty, err
 	}
-	defer source.Close()
+	defer func() {
+		if err := source.Close(); err != nil {
+			result = Result{}
+			resultErr = errors.Join(resultErr, err)
+		}
+	}()
 	info, err := source.Stat()
 	if err != nil || !info.Mode().IsRegular() || info.Size() < 22 || info.Size() > maxArchiveBytes {
 		return empty, errors.New("bounded regular source archive required")
@@ -136,19 +141,7 @@ func produce(ctx context.Context, in Input, stockCheck func(string) error) (Resu
 		return empty, err
 	}
 	// Recheck the actual final archive, not merely the source or copied hash.
-	final, err := os.Open(archivePath)
-	if err != nil {
-		return empty, err
-	}
-	if err := hashReader(ctx, final, info.Size(), in.ApprovedSourceSHA256); err != nil {
-		final.Close()
-		return empty, fmt.Errorf("final source bytes differ: %w", err)
-	}
-	if _, err = verifier.ImportApprovedBaseline(ctx, raw, requestSHA, final, info.Size(), validationSink{}); err != nil {
-		final.Close()
-		return empty, fmt.Errorf("final baseline importer refused: %w", err)
-	}
-	if err := final.Close(); err != nil {
+	if err := validateFinalArchive(ctx, archivePath, info.Size(), in.ApprovedSourceSHA256, raw, requestSHA); err != nil {
 		return empty, err
 	}
 	if err := compareTree(ctx, source, info.Size(), in.BaselineTree); err != nil {
@@ -157,10 +150,60 @@ func produce(ctx context.Context, in Input, stockCheck func(string) error) (Resu
 	if err := stockCheck(in.StockPath); err != nil {
 		return empty, fmt.Errorf("stock changed during handoff: %w", err)
 	}
-	if err := writeExclusive(requestPath, raw); err != nil {
+	if err := writeExclusive(ctx, requestPath, raw); err != nil {
 		return empty, err
 	}
+	// A successful handoff requires the retained original source to remain the
+	// exact approved bytes after both outputs have been durably read back.
+	if err := hashReader(ctx, source, info.Size(), in.ApprovedSourceSHA256); err != nil {
+		return empty, fmt.Errorf("source changed after output: %w", err)
+	}
+	if last, err := source.Stat(); err != nil || !last.Mode().IsRegular() || last.Size() != info.Size() {
+		return empty, errors.Join(errors.New("source size changed after output"), err)
+	}
 	return Result{ArchivePath: archivePath, RequestPath: requestPath, RequestSHA256: requestSHA}, nil
+}
+
+func readBoundedRegular(ctx context.Context, path string, max int64) (data []byte, resultErr error) {
+	if ctx == nil || ctx.Err() != nil || max < 1 {
+		return nil, errors.New("live bounded input required")
+	}
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer func() { resultErr = errors.Join(resultErr, file.Close()) }()
+	info, err := file.Stat()
+	if err != nil || !info.Mode().IsRegular() || info.Size() < 1 || info.Size() > max {
+		return nil, errors.Join(errors.New("bounded regular input required"), err)
+	}
+	data, err = io.ReadAll(io.LimitReader(contextReader{ctx, file}, max+1))
+	if err != nil || int64(len(data)) != info.Size() || len(data) == 0 || int64(len(data)) > max {
+		return nil, errors.Join(errors.New("bounded input changed during read"), err)
+	}
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
+func validateFinalArchive(ctx context.Context, path string, size int64, sourceSHA string, request []byte, requestSHA string) (resultErr error) {
+	final, err := os.Open(path)
+	if err != nil {
+		return err
+	}
+	defer func() { resultErr = errors.Join(resultErr, final.Close()) }()
+	info, err := final.Stat()
+	if err != nil || !info.Mode().IsRegular() || info.Size() != size {
+		return errors.Join(errors.New("final archive length differs"), err)
+	}
+	if err := hashReader(ctx, final, size, sourceSHA); err != nil {
+		return fmt.Errorf("final source bytes differ: %w", err)
+	}
+	if _, err := verifier.ImportApprovedBaseline(ctx, request, requestSHA, final, size, validationSink{}); err != nil {
+		return fmt.Errorf("final baseline importer refused: %w", err)
+	}
+	return nil
 }
 
 func pinOK(s string) bool {
@@ -176,7 +219,7 @@ func pinOK(s string) bool {
 }
 func digest(b []byte) string { s := sha256.Sum256(b); return hex.EncodeToString(s[:]) }
 
-func observeStock(path string) error {
+func observeStock(path string) (resultErr error) {
 	if err := plainExisting(path); err != nil {
 		return err
 	}
@@ -184,12 +227,18 @@ func observeStock(path string) error {
 	if err != nil {
 		return err
 	}
-	defer f.Close()
+	defer func() { resultErr = errors.Join(resultErr, f.Close()) }()
 	info, err := f.Stat()
 	if err != nil || !info.Mode().IsRegular() || info.Size() < 1 || info.Size() > maxArchiveBytes {
 		return errors.New("bounded regular stock executable required")
 	}
-	return hashReader(context.Background(), f, info.Size(), brokerregistration.StockBaseline().ExecutableSHA256)
+	if err := hashReader(context.Background(), f, info.Size(), brokerregistration.StockBaseline().ExecutableSHA256); err != nil {
+		return err
+	}
+	if last, err := f.Stat(); err != nil || !last.Mode().IsRegular() || last.Size() != info.Size() {
+		return errors.Join(errors.New("stock executable size changed"), err)
+	}
+	return nil
 }
 
 func plainExisting(path string) error {
@@ -297,15 +346,13 @@ func compareTree(ctx context.Context, source io.ReaderAt, size int64, root strin
 		}
 		reader, err := member.Open()
 		if err != nil {
-			input.Close()
-			return err
+			return errors.Join(err, input.Close())
 		}
-		a, b := sha256.New(), sha256.New()
-		na, ea := io.Copy(a, input)
-		nb, eb := io.Copy(b, reader)
+		left, na, ea := boundedDigest(ctx, input, int64(member.UncompressedSize64))
+		right, nb, eb := boundedDigest(ctx, reader, int64(member.UncompressedSize64))
 		closeErr := errors.Join(input.Close(), reader.Close())
-		if ea != nil || eb != nil || closeErr != nil || na != nb || uint64(na) != member.UncompressedSize64 || !equalHash(a.Sum(nil), b.Sum(nil)) {
-			return errors.New("baseline tree differs from source archive")
+		if ea != nil || eb != nil || closeErr != nil || na != nb || uint64(na) != member.UncompressedSize64 || !bytes.Equal(left, right) {
+			return errors.Join(errors.New("baseline tree differs from source archive"), ea, eb, closeErr)
 		}
 		return nil
 	})
@@ -318,7 +365,32 @@ func compareTree(ctx context.Context, source io.ReaderAt, size int64, root strin
 	return nil
 }
 
-func equalHash(a, b []byte) bool { return hex.EncodeToString(a) == hex.EncodeToString(b) }
+type contextReader struct {
+	ctx context.Context
+	io.Reader
+}
+
+func (r contextReader) Read(p []byte) (int, error) {
+	if err := r.ctx.Err(); err != nil {
+		return 0, err
+	}
+	return r.Reader.Read(p)
+}
+
+func boundedDigest(ctx context.Context, source io.Reader, size int64) ([]byte, int64, error) {
+	if ctx == nil || source == nil || size < 0 || size > maxArchiveBytes {
+		return nil, 0, errors.New("bounded source required")
+	}
+	h := sha256.New()
+	n, err := io.CopyBuffer(h, io.LimitReader(contextReader{ctx, source}, size+1), make([]byte, 64<<10))
+	if err != nil || n != size {
+		return nil, n, errors.Join(errors.New("bounded source length or read differs"), err)
+	}
+	if err := ctx.Err(); err != nil {
+		return nil, n, err
+	}
+	return h.Sum(nil), n, nil
+}
 
 func checkOutput(in Input) error {
 	root, err := filepath.Abs(in.OutputDirectory)
@@ -381,8 +453,8 @@ func copyExclusive(ctx context.Context, source io.ReaderAt, size int64, path, wa
 	return out.Sync()
 }
 
-func writeExclusive(path string, raw []byte) (resultErr error) {
-	out, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0600)
+func writeExclusive(ctx context.Context, path string, raw []byte) (resultErr error) {
+	out, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE|os.O_EXCL, 0600)
 	if err != nil {
 		return err
 	}
@@ -390,7 +462,17 @@ func writeExclusive(path string, raw []byte) (resultErr error) {
 	if n, err := out.Write(raw); err != nil || n != len(raw) {
 		return errors.Join(io.ErrShortWrite, err)
 	}
-	return out.Sync()
+	if err := out.Sync(); err != nil {
+		return err
+	}
+	info, err := out.Stat()
+	if err != nil || !info.Mode().IsRegular() || info.Size() != int64(len(raw)) {
+		return errors.Join(errors.New("final request length differs"), err)
+	}
+	if err := hashReader(ctx, out, int64(len(raw)), digest(raw)); err != nil {
+		return fmt.Errorf("final request bytes differ: %w", err)
+	}
+	return nil
 }
 
 type validationSink struct{}
