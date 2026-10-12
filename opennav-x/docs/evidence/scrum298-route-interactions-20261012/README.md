@@ -41,8 +41,9 @@ patch registration.
 - `reuse-corrected.log`: one directly affected dependency-input tamper test
   passes, including the new patch input.
 - Agent controls reproduce the original focus overwrite and 125% selection
-  failure without their respective fixes. The original focus control is retained
-  here. Selection control evidence is added separately when transferred.
+  failure without their respective fixes. Both failing controls are retained
+  here as `original-focus-control.log` and `original-hit-control.log`; the latter
+  was also reproduced against the root combined patch inventory.
 
 Failures are preserved: `focus-extraction-failure.log` is an initial fixture
 extraction error, corrected before the expanded checks; `reuse.log` is the root
