@@ -1,0 +1,18 @@
+=== RUN   TestNativeStoreLifetimeLockExcludesOtherOwnerAndReacquires
+--- PASS: TestNativeStoreLifetimeLockExcludesOtherOwnerAndReacquires (0.01s)
+=== RUN   TestNativeStoreLifetimeLockExcludesAnotherProcess
+--- PASS: TestNativeStoreLifetimeLockExcludesAnotherProcess (0.04s)
+=== RUN   TestNativeStoreLifetimeLockRefusesUnsafeExistingObjects
+=== RUN   TestNativeStoreLifetimeLockRefusesUnsafeExistingObjects/directory
+=== RUN   TestNativeStoreLifetimeLockRefusesUnsafeExistingObjects/nonempty
+=== RUN   TestNativeStoreLifetimeLockRefusesUnsafeExistingObjects/hardlink
+=== RUN   TestNativeStoreLifetimeLockRefusesUnsafeExistingObjects/wrong_DACL
+--- PASS: TestNativeStoreLifetimeLockRefusesUnsafeExistingObjects (0.03s)
+    --- PASS: TestNativeStoreLifetimeLockRefusesUnsafeExistingObjects/directory (0.00s)
+    --- PASS: TestNativeStoreLifetimeLockRefusesUnsafeExistingObjects/nonempty (0.01s)
+    --- PASS: TestNativeStoreLifetimeLockRefusesUnsafeExistingObjects/hardlink (0.01s)
+    --- PASS: TestNativeStoreLifetimeLockRefusesUnsafeExistingObjects/wrong_DACL (0.01s)
+=== RUN   TestNativeStoreLifetimeLockRechecksHeldMetadataAndReleasesAfterCleanupError
+    store_windows_test.go:470: cleanup error lost: <nil>
+--- FAIL: TestNativeStoreLifetimeLockRechecksHeldMetadataAndReleasesAfterCleanupError (0.01s)
+FAIL

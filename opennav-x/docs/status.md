@@ -1,5 +1,38 @@
 # SKAGER status — 2026-10-12
 
+## Store lifetime lock — focused native checks passed
+
+The protected native store lock in `7c2ceed4` passes four distinct Windows test
+groups plus four nested refusal subcases across retained results. The original
+three passing groups were not rerun. The cleanup group exposed two fixture-only
+errors: an injected process pseudo-handle did not fail, then fixture cleanup
+double-closed the replacement null handle. Both failures are retained; separate
+pin ownership fixes the fixture without changing production bytes or weakening
+assertions. The final failed-only native retry passes.
+[Exact-artifact evidence](evidence/scrum311-store-lock-native-20261012/README.md)
+separates this component result from service/update qualification. No application
+build, installed application/profile change, service activation or hardware
+command occurred. Authenticated provisioning, installation/loader custody,
+orphan recovery and exact-package Windows/boat acceptance remain open.
+
+## Existing private Staging trust selected
+
+`110e61f7` commits the unchanged existing operator public configuration after
+hash/provenance, root-signature, expiry, retained-state and stock-tuple checks.
+`49264c91` joins it to the explicit manual `private_staging_trust` packaging
+option, default off; push builds remain unconfigured. Nine focused workflow
+tests plus three affected existing policy checks pass in the isolated source.
+The selected public bytes remain identical under Windows-style checkout
+conversion. No private signing keys were accessed or regenerated. See
+[selection and preserved provenance refusal](evidence/scrum311-private-trust-selection-20261012/README.md).
+
+This corrects the earlier investigation's missing-input finding: real retained
+public trust already existed, although it had not been committed as a package
+input. HTTPS activation, signed offer publication, authenticated privileged
+enrollment, installation/loader custody, orphan recovery and exact-package
+Windows/boat acceptance remain open. No full application build, CI dispatch,
+public push, service activation or physical command occurred.
+
 ## Broker cleanup retains uncertainty
 
 `4fc0704e` fixes two reproduced owner-close defects: repeated close no longer
@@ -31,8 +64,8 @@ separate source implementation, component compilation and native qualification.
 
 No application build, CI dispatch, boat deployment, service activation or
 physical command occurred. The installed boat application remains unchanged.
-Approved public bootstrap trust/origins, privileged provisioning identity,
-installation/loader custody, orphan recovery and exact-package Windows/boat
+Public trust is now explicitly selected as recorded above; HTTPS activation,
+privileged provisioning identity, installation/loader custody, orphan recovery and exact-package Windows/boat
 acceptance remain open under SCRUM-311; this is not a ready updater or release.
 
 ## Native directory-custody failure corrected

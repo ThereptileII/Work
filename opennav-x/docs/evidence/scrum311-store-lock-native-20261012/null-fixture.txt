@@ -1,0 +1,4 @@
+=== RUN   TestNativeStoreLifetimeLockRechecksHeldMetadataAndReleasesAfterCleanupError
+    store_windows_test.go:255: The handle is invalid.
+--- FAIL: TestNativeStoreLifetimeLockRechecksHeldMetadataAndReleasesAfterCleanupError (0.01s)
+FAIL

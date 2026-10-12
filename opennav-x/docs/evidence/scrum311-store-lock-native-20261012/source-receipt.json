@@ -1,0 +1,80 @@
+{
+  "schema": 1,
+  "productionLockCommit": "7c2ceed495529d58c4038a3e153f6da8c2acdf28",
+  "integratedFixtureCommit": "1f4559725f0377aa3690bf30ce704dcde6ef46fd",
+  "isolatedFixtureCommit": "aa4b7d5467e4cd035a515d30d46e1d68e0bacf94",
+  "files": [
+    {
+      "path": "opennav-x/tools/update-verifier/brokerstore/store.go",
+      "sha256": "0ff4210f460edf1a28dbfc148fe156c9b1a5a76e8bab0b4306cc87cd73b6fe56"
+    },
+    {
+      "path": "opennav-x/tools/update-verifier/brokerstore/store_windows.go",
+      "sha256": "7c0f9183a079e3674bdd4456d90882d92f5993aaa392d2212159aad432ef7ae0"
+    },
+    {
+      "path": "opennav-x/tools/update-verifier/brokerstore/store_lock_windows.go",
+      "sha256": "f015f54817f908504b2cf52b5733f83a82a52ba98162528980bc77606149d395"
+    },
+    {
+      "path": "opennav-x/tools/update-verifier/brokerstore/store_windows_test.go",
+      "sha256": "57df74309d02e2c11b56247c49b1cb4c4c4016fceca8955f0502473ea148a6b8"
+    }
+  ],
+  "nativeRuns": [
+    {
+      "id": "original",
+      "nativeReceipt": {
+        "schema": 1,
+        "executableSha256": "080a61e8073ada4826ed11b4bd12dde1d3e1c7243f574508efeb990b56ee742e",
+        "selection": "^TestNativeStoreLifetimeLock(ExcludesOtherOwnerAndReacquires|ExcludesAnotherProcess|RefusesUnsafeExistingObjects|RechecksHeldMetadataAndReleasesAfterCleanupError)$",
+        "exitCode": 1,
+        "os64": true,
+        "powershellVersion": "5.1.22621.5624",
+        "scope": "Native lock primitive only; no application, service, profile or hardware operation"
+      },
+      "rawLogSha256": "c271907729ca71a4c9d4cb3c443d98fb0a7e8249d8715175de704ad1d28625ca",
+      "rawReceiptSha256": "95282f34673cbf111eb902c90003e1f65936e195748ecf5b238fd5de907e1047",
+      "transcriptSha256": "32ec8dc2c13ea3d76d9d7842166b82c8ea2a14dcbc78d9f81fcd1ba48243baab"
+    },
+    {
+      "id": "null-fixture",
+      "nativeReceipt": {
+        "schema": 1,
+        "executableSha256": "2716b89ae1f30028a6029484cfa9f78ce4c41ebcb945dd199f7ec18a9d5a5080",
+        "selection": "^TestNativeStoreLifetimeLockRechecksHeldMetadataAndReleasesAfterCleanupError$",
+        "exitCode": 1,
+        "os64": true,
+        "powershellVersion": "5.1.22621.5624",
+        "scope": "Native lock primitive only; no application, service, profile or hardware operation"
+      },
+      "rawLogSha256": "20b7ff0cdd9f57a842e0db162879371689d68c0d8d0460debae0fd70ecbd2c89",
+      "rawReceiptSha256": "5ed0303aadf3f54981073696d9ff048901d5901ae2d76e515ecaefa7aeb2803f",
+      "transcriptSha256": "c537abde2b2cc7432c19e7e0cad8dbda8925fac46159b0e16a1ac9cef40951fb"
+    },
+    {
+      "id": "bookkeeping-fixture",
+      "nativeReceipt": {
+        "schema": 1,
+        "executableSha256": "064e7268a1fd45c8f248dbe8cc29d5972d23571a77bf8853199a8849d63c35bf",
+        "selection": "^TestNativeStoreLifetimeLockRechecksHeldMetadataAndReleasesAfterCleanupError$",
+        "exitCode": 0,
+        "os64": true,
+        "powershellVersion": "5.1.22621.5624",
+        "scope": "Native lock primitive only; no application, service, profile or hardware operation"
+      },
+      "rawLogSha256": "d19a6f717558e00eaaabea93a0328c58018ed01467d4e4611362154857267dde",
+      "rawReceiptSha256": "7bddfbffc1ed61783fc867ebf380a1b9151512d1dc6ef6ccebbabc8d0027766e",
+      "transcriptSha256": "9ed5664d3b8b056c58fe61ff4e9e78b1b6ba67334248ab32e7d989837008e5e5"
+    }
+  ],
+  "distinctAcceptedGroups": 4,
+  "nestedAcceptedSubcases": 4,
+  "singlePassingSuiteInvocation": false,
+  "embeddedVcsRevision": false,
+  "applicationBuild": false,
+  "serviceQualification": false,
+  "installedApplicationChanged": false,
+  "physicalCommand": false,
+  "claudeReview": "not executed; expanded private-source consent pending"
+}

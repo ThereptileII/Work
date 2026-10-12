@@ -1,0 +1,3 @@
+=== RUN   TestNativeStoreLifetimeLockRechecksHeldMetadataAndReleasesAfterCleanupError
+--- PASS: TestNativeStoreLifetimeLockRechecksHeldMetadataAndReleasesAfterCleanupError (0.01s)
+PASS

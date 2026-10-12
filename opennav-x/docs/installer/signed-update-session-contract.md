@@ -241,6 +241,14 @@ corroboration remain held through the operation. No executable is run to discove
 its version.
 
 An exclusive durable CREATE_NEW candidate reservation occurs before acquisition.
+The native store additionally retains a protected `store.lock` data-access handle
+with no sharing for its entire lifetime, acquired after actual root validation
+and before candidate/registration traversal. Every validation rechecks its exact
+physical identity, protected descriptor, volume, regular-file type, single link
+and zero length. A matching surviving file is a synchronization object only;
+it grants no candidate adoption, cleanup or launch authority. Close attempts all
+child/ancestor cleanup before releasing the lock last. This excludes concurrent
+store instances but does not implement crash/orphan reconciliation.
 The broker's private trust/artifact paths must already exist and pass the
 existing verifier's protection checks; staging never initializes lost trust or
 adopts a cache. One fresh real `PrepareUpdateSet` then supplies both artifacts

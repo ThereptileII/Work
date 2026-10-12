@@ -86,6 +86,14 @@ This selects a private test trust input; it does not activate HTTPS, publish
 metadata, enable the broker or qualify Production root-key custody. Default
 packages remain unconfigured unless the explicit Staging selector is requested.
 
+The `SKAGER Staging` manual workflow has a `private_staging_trust` boolean,
+default `false`; push-triggered packages never select it. Setting it to `true`
+passes only the fixed committed config and the existing same-run native
+`skager-repository.exe` validator/record to the package wrapper. Missing inputs,
+wrong commit/hash, invalid public trust or packaging failure refuse the package.
+The bootstrap and its strictly newer successor must both explicitly select the
+same configuration; this option does not migrate an existing trust identity.
+
 ## Reviewed selection and policy
 
 Supply a local directory containing the unchanged retained `RELEASE.json`,
