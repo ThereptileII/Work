@@ -4,6 +4,7 @@ import argparse
 import importlib.util
 import json
 import os
+import re
 from pathlib import Path
 import subprocess
 import sys
@@ -11,6 +12,16 @@ import time
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE_COMMIT = '0123456789012345678901234567890123456789'
+QUALIFICATION_TARGET = 'update_qualification_native_test'
+FIXTURE_TARGETS = (
+    'startup_update_tests', 'startup_update_dialog_test', 'update_startup_receipt_tests',
+    'update_startup_receipt_native_test', 'skager-update-prompt', QUALIFICATION_TARGET)
+QUALIFICATION_SUCCESS_LINES = (
+    'PASS own fresh INI ancestor rename refused while retained, succeeds after close; '
+    'full ID and normal writes preserved',
+    'PASS inert fixed-profile native custody + actual wx read/Flush boundary; '
+    'fresh fixture retained for disposable-runner evidence; no installed app/health/boat qualification')
+
 
 RECEIPT_HARNESS = r'''
 param([string]$Module,[string]$Worker,[string]$Evidence,[string]$Commit)
@@ -298,6 +309,51 @@ def test_prompt(client, evidence):
                 child.communicate()
 
 
+def fixture_source_paths(root):
+    paths = [root / name for name in (
+        'tools/test-startup-update-windows.py', 'tools/test-windows-changed-units.py',
+        'tools/windows-wx.lock.json', 'tests/startup_update/CMakeLists.txt',
+        'tests/startup_update_tests.cpp', 'tests/startup_update_dialog_test.cpp',
+        'tests/update_startup_receipt_tests.cpp', 'tests/update_startup_receipt_native_test.cpp',
+        'tests/update_qualification_native_test.cpp',
+        'src/integration/UpdateStartupReceipt.cpp', 'src/integration/OpenNavBuild.h.in',
+        'src/integration/UpdateQualification.cpp',
+        'src/platform/windows/UpdateQualificationNative.cpp',
+        'installer/windows/UpdateTransaction.ps1', 'cmake/StartupUpdate.cmake',
+        'src/platform/windows/StartupUpdatePrompt.cpp',
+        'src/application/StartupUpdate.cpp', 'src/ui/StartupUpdateDialog.cpp',
+        'src/ui/Controls.cpp', 'src/vessel/VesselState.cpp')]
+    paths += sorted((root / 'src').rglob('*.h'))
+    return paths
+
+
+def run_qualification_fixture(api, client, evidence, report):
+    """Run the CREATE_NEW fixed-profile fixture once; retain failures, never clean it."""
+    log = evidence / (QUALIFICATION_TARGET + '.log')
+    result = report['qualifiedProfileFixture'] = {
+        'status': 'failed', 'log': log.name,
+        'executable': report['executables'][QUALIFICATION_TARGET],
+        'scope': 'disposable fresh fixed-profile custody, actual wx load/Flush and ancestor release; '
+                 'no installed application health or product acceptance',
+        'nativeProductAcceptance': False,
+    }
+    if api.record(client) != result['executable']:
+        raise ValueError('Qualification fixture executable changed before replay')
+    api.run([client], log, timeout=60)
+    output = log.read_text(encoding='utf-8')
+    lines = output.splitlines()
+    observations = [line for line in lines if line.startswith('PASS original CONFIG identity ')]
+    pattern = ('PASS original CONFIG identity ' + ' '.join(
+        '[0-9a-f]{' + str(size) + '}' for size in (16, 32, 16, 16, 32, 16, 64)))
+    if (len(observations) != 1 or not re.fullmatch(pattern, observations[0])
+            or any(lines.count(line) != 1 for line in QUALIFICATION_SUCCESS_LINES)
+            or any(re.match(r'^FAIL\b', line) for line in lines)):
+        raise ValueError('Qualification fixture did not complete its actual native checks')
+    if api.record(client) != result['executable']:
+        raise ValueError('Qualification fixture executable changed during replay')
+    result.update(status='passed', originalConfigObservation=observations[0].split()[4:])
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--evidence', type=Path, required=True)
@@ -314,24 +370,12 @@ def main():
         'changed_units', ROOT / 'tools/test-windows-changed-units.py')
     api = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(api)
-    paths = [ROOT / name for name in (
-        'tools/test-startup-update-windows.py', 'tools/test-windows-changed-units.py',
-        'tools/windows-wx.lock.json', 'tests/startup_update/CMakeLists.txt',
-        'tests/startup_update_tests.cpp', 'tests/startup_update_dialog_test.cpp',
-        'tests/update_startup_receipt_tests.cpp', 'tests/update_startup_receipt_native_test.cpp',
-        'src/integration/UpdateStartupReceipt.cpp', 'src/integration/OpenNavBuild.h.in',
-        'src/integration/UpdateQualification.cpp',
-        'src/platform/windows/UpdateQualificationNative.cpp',
-        'installer/windows/UpdateTransaction.ps1', 'cmake/StartupUpdate.cmake',
-        'src/platform/windows/StartupUpdatePrompt.cpp',
-        'src/application/StartupUpdate.cpp', 'src/ui/StartupUpdateDialog.cpp',
-        'src/ui/Controls.cpp', 'src/vessel/VesselState.cpp')]
-    paths += sorted((ROOT / 'src').rglob('*.h'))
+    paths = fixture_source_paths(ROOT)
     sources = {str(p.relative_to(ROOT)): api.record(p) for p in paths}
     report = {
         'status': 'failed',
-        'scope': 'isolated model, installed prompt and receipt sender/receiver; no installer, product, '
-                 'network, boat or visual-design acceptance',
+        'scope': 'isolated model, installed prompt, receipt sender/receiver and fresh-profile native '
+                 'config custody; no installer, installed app health, product, network, boat or visual-design acceptance',
         'commit': subprocess.check_output(
             ['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
         'receiptFixtureCompiledCommit': FIXTURE_COMMIT,
@@ -353,17 +397,16 @@ def main():
                  '-DwxWidgets_LIB_DIR:PATH=' + (wx / 'lib/vc14x_dll').as_posix(),
                  '-DwxWidgets_CONFIGURATION=mswu'], evidence / 'configure.log')
         api.run(['cmake', '--build', build, '--config', 'Release', '--target',
-                 'startup_update_tests', 'startup_update_dialog_test', 'update_startup_receipt_tests',
-                 'update_startup_receipt_native_test', 'skager-update-prompt', '--parallel', '2'],
+                 *FIXTURE_TARGETS, '--parallel', '2'],
                 evidence / 'compile.log', timeout=180)
         clients = {name: build / ('Release/' + name + '.exe') for name in
-                   ('startup_update_tests', 'startup_update_dialog_test', 'update_startup_receipt_tests',
-                    'update_startup_receipt_native_test', 'skager-update-prompt')}
+                   FIXTURE_TARGETS}
         report['executables'] = {name: api.record(path) for name, path in clients.items()}
         report['runtime'] = api.stage_native_runtime(clients['startup_update_dialog_test'], wx,
             ('wxbase32u_vc14x.dll', 'wxmsw32u_core_vc14x.dll'))
+        run_qualification_fixture(api, clients[QUALIFICATION_TARGET], evidence, report)
         for name, client in clients.items():
-            if name in ('update_startup_receipt_native_test', 'skager-update-prompt'):
+            if name in ('update_startup_receipt_native_test', 'skager-update-prompt', QUALIFICATION_TARGET):
                 continue
             api.run([client], evidence / (name + '.log'), timeout=60)
             if api.record(client) != report['executables'][name]:
