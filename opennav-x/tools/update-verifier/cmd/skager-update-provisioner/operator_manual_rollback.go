@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"example.com/opennav-update-verifier/brokerpipe"
+	"example.com/opennav-update-verifier/launcher"
 )
 
 type maintenanceCaller func(context.Context, brokerpipe.MaintenanceRequest) (brokerpipe.MaintenanceResult, error)
@@ -28,7 +29,7 @@ func manualRollbackRequested(args []string) bool {
 
 func runMaintenanceDispatch(ctx context.Context, args []string, read func(string) ([]byte, error), maintain maintenanceOpener) error {
 	if manualRollbackRequested(args) {
-		return runManualRollback(ctx, args, brokerpipe.CallMaintenance, os.Stdout)
+		return runManualRollback(ctx, args, launcher.CallMaintenanceNative, os.Stdout)
 	}
 	return runMaintenance(ctx, args, read, maintain)
 }
