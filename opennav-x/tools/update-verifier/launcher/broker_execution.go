@@ -46,12 +46,12 @@ type brokerExecutionRole struct {
 	child                              brokerExecutionChild
 }
 type brokerExecutionActions struct {
-	mu                  sync.Mutex
-	request             brokerpipe.ExecutionRequest
-	backend             brokerExecutionBackend
-	candidate, fallback brokerExecutionRole
-	finished, closed    bool
-	failure, closeErr   error
+	mu                           sync.Mutex
+	request                      brokerpipe.ExecutionRequest
+	backend                      brokerExecutionBackend
+	candidate, fallback, current brokerExecutionRole
+	finished, closed             bool
+	failure, closeErr            error
 }
 
 func brokerExecutionArgument(args []string) (string, bool, error) {
@@ -88,6 +88,10 @@ func brokerExecutionPayload(command brokerpipe.ExecutionCommand, stage string) e
 		return errBrokerExecutionRefused
 	}
 	switch command.Phase {
+	case brokerpipe.SpawnCurrent, brokerpipe.ObserveCurrent, brokerpipe.CloseCurrent:
+		if !generationPattern.MatchString(command.ApplicationGeneration) || command.HealthPipe != "" || command.HealthChallenge != "" {
+			return errBrokerExecutionRefused
+		}
 	case brokerpipe.SpawnCandidate, brokerpipe.ObserveCandidate, brokerpipe.SpawnFallback, brokerpipe.ObserveFallback:
 		if !generationPattern.MatchString(command.ApplicationGeneration) || !strings.HasPrefix(command.HealthPipe, "Skager.Update.") || !generationPattern.MatchString(strings.TrimPrefix(command.HealthPipe, "Skager.Update.")) || !hashPattern.MatchString(command.HealthChallenge) {
 			return errBrokerExecutionRefused
@@ -158,12 +162,20 @@ func (a *brokerExecutionActions) handle(ctx context.Context, c brokerpipe.Execut
 	}
 	role := &a.candidate
 	switch c.Phase {
+	case brokerpipe.SpawnCurrent, brokerpipe.ObserveCurrent, brokerpipe.CloseCurrent:
+		role = &a.current
 	case brokerpipe.SpawnFallback, brokerpipe.ObserveFallback, brokerpipe.CloseFallback:
 		role = &a.fallback
 	}
 	switch c.Phase {
-	case brokerpipe.SpawnCandidate, brokerpipe.SpawnFallback:
-		if role.consumed || a.candidate.child != nil || a.fallback.child != nil {
+	case brokerpipe.SpawnCurrent, brokerpipe.SpawnCandidate, brokerpipe.SpawnFallback:
+		// Normal and qualification are distinct conversations. Even a completed
+		// close cannot convert a qualification child into an ordinary session, or
+		// clear the application's already-latched qualification output fence.
+		if (role == &a.current && (a.candidate.consumed || a.fallback.consumed)) || (role != &a.current && a.current.consumed) {
+			return result, errBrokerExecutionRefused
+		}
+		if role.consumed || a.current.child != nil || a.candidate.child != nil || a.fallback.child != nil {
 			return result, errBrokerExecutionRefused
 		}
 		// The local attempt is consumed before acquiring an image or entering the
@@ -180,7 +192,7 @@ func (a *brokerExecutionActions) handle(ctx context.Context, c brokerpipe.Execut
 			return result, errors.Join(errBrokerExecutionUncertain, err)
 		}
 		return info.report()
-	case brokerpipe.ObserveCandidate, brokerpipe.ObserveFallback:
+	case brokerpipe.ObserveCurrent, brokerpipe.ObserveCandidate, brokerpipe.ObserveFallback:
 		if role.child == nil || role.observed || role.closeAttempted || c.ApplicationGeneration != role.command.ApplicationGeneration || c.HealthPipe != role.command.HealthPipe || c.HealthChallenge != role.command.HealthChallenge {
 			return result, errBrokerExecutionRefused
 		}
@@ -190,7 +202,7 @@ func (a *brokerExecutionActions) handle(ctx context.Context, c brokerpipe.Execut
 			return result, errors.Join(errBrokerExecutionUncertain, err)
 		}
 		return info.report()
-	case brokerpipe.CloseCandidate, brokerpipe.CloseFallback:
+	case brokerpipe.CloseCurrent, brokerpipe.CloseCandidate, brokerpipe.CloseFallback:
 		if role.child == nil || role.closeAttempted || (c.ApplicationGeneration != "" && c.ApplicationGeneration != role.command.ApplicationGeneration) {
 			return result, errBrokerExecutionRefused
 		}
@@ -212,7 +224,7 @@ func (a *brokerExecutionActions) closeLocked() error {
 		return a.closeErr
 	}
 	a.closed = true
-	for _, role := range []*brokerExecutionRole{&a.candidate, &a.fallback} {
+	for _, role := range []*brokerExecutionRole{&a.current, &a.candidate, &a.fallback} {
 		if role.child != nil {
 			a.closeErr = errors.Join(a.closeErr, role.child.close())
 			role.child = nil

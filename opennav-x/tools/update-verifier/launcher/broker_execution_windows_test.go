@@ -103,6 +103,13 @@ func TestNativeBrokerExecutionOldArmedRootIsOnlyExactDenial(t *testing.T) {
 // only original creator handles to abort/drain. It does not exercise an actual
 // broker grant, interactive token, startup-health producer or product launch.
 func TestNativeBrokerExecutionSuspendedCreatorRetainsOriginalImage(t *testing.T) {
+	a, _ := brokerExecutionFixture()
+	brokerExecutionSuspendedCreator(t, func(image *nativeOrdinaryImage) (*nativeOrdinaryChild, error) {
+		return image.createBrokerExecution(brokerExecutionCommand(a, brokerpipe.SpawnCandidate), nil)
+	})
+}
+func brokerExecutionSuspendedCreator(t *testing.T, create func(*nativeOrdinaryImage) (*nativeOrdinaryChild, error)) {
+	t.Helper()
 	spec, receipt := ordinaryNativeFixture(t)
 	acquired, err := acquireNativeOrdinaryImage(spec)
 	if err != nil {
@@ -110,8 +117,7 @@ func TestNativeBrokerExecutionSuspendedCreatorRetainsOriginalImage(t *testing.T)
 	}
 	image := acquired.(*nativeOrdinaryImage)
 	defer image.Close()
-	a, _ := brokerExecutionFixture()
-	child, err := image.createBrokerExecution(brokerExecutionCommand(a, brokerpipe.SpawnCandidate), nil)
+	child, err := create(image)
 	if err != nil {
 		t.Fatal(err)
 	}

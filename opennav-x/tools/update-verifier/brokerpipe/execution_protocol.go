@@ -18,20 +18,26 @@ const (
 	InspectPrevious     ExecutionPhase = "inspect-previous"
 	RestorePrevious     ExecutionPhase = "restore-previous"
 	CommissionCandidate ExecutionPhase = "commission-candidate"
-	SpawnCandidate      ExecutionPhase = "spawn-candidate"
-	ObserveCandidate    ExecutionPhase = "observe-candidate"
-	CloseCandidate      ExecutionPhase = "close-candidate"
-	CommissionFallback  ExecutionPhase = "commission-fallback"
-	SpawnFallback       ExecutionPhase = "spawn-fallback"
-	ObserveFallback     ExecutionPhase = "observe-fallback"
-	CloseFallback       ExecutionPhase = "close-fallback"
-	RestoreProfile      ExecutionPhase = "restore-profile"
-	FinishExecution     ExecutionPhase = "finish"
+	// Current phases are normal selected startup: no health/qualification fields.
+	// The host must retain actual selected custody before issuing them; generation
+	// and report values are never independent selection or commissioning proof.
+	SpawnCurrent       ExecutionPhase = "spawn-current"
+	ObserveCurrent     ExecutionPhase = "observe-current"
+	CloseCurrent       ExecutionPhase = "close-current"
+	SpawnCandidate     ExecutionPhase = "spawn-candidate"
+	ObserveCandidate   ExecutionPhase = "observe-candidate"
+	CloseCandidate     ExecutionPhase = "close-candidate"
+	CommissionFallback ExecutionPhase = "commission-fallback"
+	SpawnFallback      ExecutionPhase = "spawn-fallback"
+	ObserveFallback    ExecutionPhase = "observe-fallback"
+	CloseFallback      ExecutionPhase = "close-fallback"
+	RestoreProfile     ExecutionPhase = "restore-profile"
+	FinishExecution    ExecutionPhase = "finish"
 )
 
 func validExecutionPhase(p ExecutionPhase) bool {
 	switch p {
-	case InspectPrevious, RestorePrevious, CommissionCandidate, SpawnCandidate, ObserveCandidate, CloseCandidate, CommissionFallback, SpawnFallback, ObserveFallback, CloseFallback, RestoreProfile, FinishExecution:
+	case InspectPrevious, RestorePrevious, CommissionCandidate, SpawnCurrent, ObserveCurrent, CloseCurrent, SpawnCandidate, ObserveCandidate, CloseCandidate, CommissionFallback, SpawnFallback, ObserveFallback, CloseFallback, RestoreProfile, FinishExecution:
 		return true
 	}
 	return false
@@ -66,7 +72,8 @@ type ExecutionCommand struct {
 
 // ExecutionDirective is the entire server-selected business payload. Generation
 // is a canonical lookup identifier, never a path or selection authority. Only
-// spawn/observe carry the fixed startup-health pipe name/challenge. Those values
+// qualification spawn/observe carry the fixed health pipe name/challenge. Normal
+// current phases require a generation and forbid all health fields. Those values
 // are data: the host must own the actual health endpoint/child and corroborate it.
 // The transport, not this directive, supplies session/sequence/challenge fields.
 type ExecutionDirective struct {
@@ -96,6 +103,8 @@ func validExecutionDirective(d ExecutionDirective, stageID string) bool {
 		}
 	}
 	switch d.Phase {
+	case SpawnCurrent, ObserveCurrent, CloseCurrent:
+		return id32.MatchString(d.ApplicationGeneration) && d.HealthPipe == "" && d.HealthChallenge == ""
 	case SpawnCandidate, ObserveCandidate, SpawnFallback, ObserveFallback:
 		return id32.MatchString(d.ApplicationGeneration) && strings.HasPrefix(d.HealthPipe, "Skager.Update.") && id32.MatchString(strings.TrimPrefix(d.HealthPipe, "Skager.Update.")) && hex64.MatchString(d.HealthChallenge)
 	default:

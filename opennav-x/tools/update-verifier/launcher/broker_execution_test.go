@@ -67,6 +67,8 @@ func brokerExecutionFixture() (*brokerExecutionActions, *memoryBrokerExecutionBa
 func brokerExecutionCommand(a *brokerExecutionActions, phase brokerpipe.ExecutionPhase) brokerpipe.ExecutionCommand {
 	c := brokerpipe.ExecutionCommand{Schema: 1, Kind: "command", RequestID: a.request.RequestID, StageID: a.request.StageID, SessionID: strings.Repeat("3", 32), Sequence: 1, Challenge: strings.Repeat("4", 32), Phase: phase}
 	switch phase {
+	case brokerpipe.SpawnCurrent, brokerpipe.ObserveCurrent, brokerpipe.CloseCurrent:
+		c.ApplicationGeneration = strings.Repeat("8", 32)
 	case brokerpipe.SpawnCandidate, brokerpipe.ObserveCandidate, brokerpipe.CloseCandidate:
 		c.ApplicationGeneration = a.request.StageID
 	case brokerpipe.SpawnFallback, brokerpipe.ObserveFallback, brokerpipe.CloseFallback:

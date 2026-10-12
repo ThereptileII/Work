@@ -262,6 +262,16 @@ func brokerExecutionEnvironment(values []string, c brokerpipe.ExecutionCommand) 
 // and accepts only the separately prepared narrow process security attributes.
 // Ordinary creation still uses its unchanged default security policy.
 func (image *nativeOrdinaryImage) createBrokerExecution(c brokerpipe.ExecutionCommand, attributes *windows.SecurityAttributes) (*nativeOrdinaryChild, error) {
+	environment, err := brokerExecutionEnvironment(os.Environ(), c)
+	if err != nil {
+		return nil, err
+	}
+	return image.createBrokerChild(attributes, environment)
+}
+
+// Environment is constructed only by the two private normal/qualification
+// producers. Application, arguments and working directory remain fixed here.
+func (image *nativeOrdinaryImage) createBrokerChild(attributes *windows.SecurityAttributes, environment []uint16) (*nativeOrdinaryChild, error) {
 	physical := physicalWin32(image.name)
 	application, err := windows.UTF16PtrFromString(image.application)
 	if err != nil {
@@ -272,10 +282,6 @@ func (image *nativeOrdinaryImage) createBrokerExecution(c brokerpipe.ExecutionCo
 		return nil, errBrokerExecutionRefused
 	}
 	directory, err := windows.UTF16PtrFromString(physical[:strings.LastIndex(physical, `\`)])
-	if err != nil {
-		return nil, err
-	}
-	environment, err := brokerExecutionEnvironment(os.Environ(), c)
 	if err != nil {
 		return nil, err
 	}
@@ -356,7 +362,11 @@ func (b *nativeBrokerExecutionBackend) spawn(ctx context.Context, c brokerpipe.E
 	if err != nil || attributes == nil {
 		return nil, errors.Join(errBrokerExecutionRefused, err)
 	}
-	owner.child, err = owner.image.createBrokerExecution(c, attributes)
+	if c.Phase == brokerpipe.SpawnCurrent {
+		owner.child, err = owner.image.createBrokerCurrent(c, attributes)
+	} else {
+		owner.child, err = owner.image.createBrokerExecution(c, attributes)
+	}
 	if err != nil {
 		return nil, err
 	}

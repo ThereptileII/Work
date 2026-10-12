@@ -263,3 +263,60 @@ func TestExecutionCommandClosedGenerationAndHealthPayload(t *testing.T) {
 		}
 	}
 }
+
+func TestExecutionCurrentNormalDirectiveClosedGenerationWithoutHealth(t *testing.T) {
+	for _, phase := range []ExecutionPhase{SpawnCurrent, ObserveCurrent, CloseCurrent} {
+		t.Run(string(phase), func(t *testing.T) {
+			for _, generation := range []string{executionTestRequest().StageID, strings.Repeat("9", 32)} {
+				command := executionTestCommand()
+				command.Phase, command.ApplicationGeneration = phase, generation
+				raw, _ := json.Marshal(command)
+				if got, err := decodeExecutionCommand(raw, "command"); err != nil || got != command {
+					t.Fatal("normal generation refused", err)
+				}
+				encoded, err := encodeExecutionReport(command, executionTestObservation())
+				if err != nil {
+					t.Fatal(err)
+				}
+				if _, err = decodeExecutionReport(encoded, command); err != nil {
+					t.Fatal(err)
+				}
+				altered := command
+				altered.Kind = "report"
+				altered.ApplicationGeneration = strings.Repeat("8", 32)
+				wrong, _ := json.Marshal(executionReport{altered, executionTestObservation()})
+				if _, err = decodeExecutionReport(wrong, command); err == nil {
+					t.Fatal("normal report switched original generation")
+				}
+			}
+			for _, mode := range []string{"no-generation", "uppercase", "path", "health-pipe", "health-challenge", "both-health", "unknown-selected-field"} {
+				t.Run(mode, func(t *testing.T) {
+					command := executionTestCommand()
+					command.Phase, command.ApplicationGeneration = phase, strings.Repeat("9", 32)
+					switch mode {
+					case "no-generation":
+						command.ApplicationGeneration = ""
+					case "uppercase":
+						command.ApplicationGeneration = strings.Repeat("A", 32)
+					case "path":
+						command.ApplicationGeneration = "../current"
+					case "health-pipe":
+						command.HealthPipe = "Skager.Update." + strings.Repeat("6", 32)
+					case "health-challenge":
+						command.HealthChallenge = strings.Repeat("7", 64)
+					case "both-health":
+						command.HealthPipe = "Skager.Update." + strings.Repeat("6", 32)
+						command.HealthChallenge = strings.Repeat("7", 64)
+					}
+					raw, _ := json.Marshal(command)
+					if mode == "unknown-selected-field" {
+						raw = []byte(strings.Replace(string(raw), `"schema":1`, `"schema":1,"selected":true`, 1))
+					}
+					if _, err := decodeExecutionCommand(raw, "command"); err == nil {
+						t.Fatal("unsafe normal command accepted")
+					}
+				})
+			}
+		})
+	}
+}
