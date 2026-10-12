@@ -1,5 +1,16 @@
 # SKAGER status — 2026-10-12
 
+## Guarded lighthouse information helper integrated
+
+`8e074bf7` adds narrowly guarded chart-position Info and bounded read-only
+chart-information observation. The isolated helper passed 285 portable checks
+and compiled its C# source; root reviewed the change before integration. Native
+UI execution and identification of the actual northern lighthouse remain open.
+An operator must first open the intended chart-position context; no guessed
+center/menu command was added. Normal chart details do not prove the resolved
+conditional renderer symbol. See the [helper evidence and limitations](evidence/scrum308-chart-info-helper-20261012/README.md).
+No application build, boat/profile change or physical command occurred.
+
 ## Store lifetime lock — focused native checks passed
 
 The protected native store lock in `7c2ceed4` passes four distinct Windows test
