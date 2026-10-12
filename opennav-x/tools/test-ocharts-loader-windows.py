@@ -99,9 +99,12 @@ def main():
     api = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(api)
     repository = Path(subprocess.check_output(['git', 'rev-parse', '--show-toplevel'], cwd=ROOT, text=True).strip()).resolve()
-    workflow = repository / '.github/workflows/skager-ocharts-loader.yml'
     if repository != ROOT and ROOT != repository / 'opennav-x':
         raise ValueError('Unexpected repository layout')
+    workflow_name = os.environ.get('GITHUB_WORKFLOW_REF', '').partition('/.github/workflows/')[2].split('@', 1)[0]
+    if not workflow_name or Path(workflow_name).name != workflow_name or not workflow_name.endswith(('.yml', '.yaml')):
+        raise ValueError('Missing or invalid actual workflow reference')
+    workflow = repository / '.github/workflows' / workflow_name
     sources = {name: identity(ROOT / name) for name in INPUTS}
     sources[os.path.relpath(workflow, ROOT).replace('\\', '/')] = identity(workflow)
     report = {'status': 'failed', 'scope': 'actual native loader/lock/hash/bind/status/fallback mechanics',
