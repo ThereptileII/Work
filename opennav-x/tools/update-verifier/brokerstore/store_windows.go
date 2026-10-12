@@ -29,6 +29,7 @@ type nativeStore struct {
 	pins                            []*nativePin
 	protected                       map[string]*nativePin
 	root, candidates, registrations *nativePin
+	lock                            *nativeStoreLock
 	failed, closed                  bool
 }
 type nativeCandidate struct {
@@ -417,6 +418,14 @@ func Open(root string) (*Store, error) {
 	}
 	n.root.dos = wanted
 	n.protected[""] = n.root
+	lockSD, err := descriptor(broker, nil, false)
+	if err != nil {
+		return nil, err
+	}
+	n.lock, err = acquireStoreLock(n.root, lockSD)
+	if err != nil {
+		return nil, err
+	}
 	n.candidates, err = n.existingChild(n.root, "candidates", sd)
 	if err != nil {
 		return nil, err
@@ -470,7 +479,10 @@ func (n *nativeStore) check() (err error) {
 			return err
 		}
 	}
-	return nil
+	if n.lock == nil {
+		return errors.New("native store lifetime lock unavailable")
+	}
+	return n.lock.check()
 }
 
 // candidateCapacity counts all durable entries, including abandoned/foreign
@@ -781,5 +793,11 @@ func (n *nativeStore) close() error {
 		result = errors.Join(result, windows.CloseHandle(n.pins[i].handle))
 	}
 	n.pins = nil
+	// Release synchronization last, after all children (Store.Close) and every
+	// root/ancestor handle have been attempted, including error paths.
+	if n.lock != nil {
+		result = errors.Join(result, windows.CloseHandle(n.lock.handle))
+		n.lock = nil
+	}
 	return result
 }

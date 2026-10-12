@@ -1,13 +1,16 @@
 package brokerstore
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"golang.org/x/sys/windows"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 	"unsafe"
 )
 
@@ -216,5 +219,266 @@ func TestAncestorMutationPolicy(t *testing.T) {
 				t.Fatalf("accepted=%v want=%v: %v", err == nil, tc.ok, err)
 			}
 		})
+	}
+}
+
+func storeLockFixture(t *testing.T) (*nativePin, *windows.SECURITY_DESCRIPTOR) {
+	t.Helper()
+	user, err := windows.GetCurrentProcessToken().GetTokenUser()
+	if err != nil {
+		t.Fatal(err)
+	}
+	directorySD, err := descriptor(user.User.Sid, nil, true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	fileSD, err := descriptor(user.User.Sid, nil, false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	name := filepath.Join(t.TempDir(), "protected-lock-root")
+	pointer, err := windows.UTF16PtrFromString(name)
+	if err != nil {
+		t.Fatal(err)
+	}
+	attributes := windows.SecurityAttributes{Length: uint32(unsafe.Sizeof(windows.SecurityAttributes{})), SecurityDescriptor: directorySD}
+	if err = windows.CreateDirectory(pointer, &attributes); err != nil {
+		t.Fatal(err)
+	}
+	root, err := openPin(name, "", directorySD)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() {
+		if root.handle != windows.InvalidHandle {
+			if err := windows.CloseHandle(root.handle); err != nil {
+				t.Error(err)
+			}
+		}
+	})
+	return root, fileSD
+}
+
+func TestNativeStoreLifetimeLockExcludesOtherOwnerAndReacquires(t *testing.T) {
+	root, sd := storeLockFixture(t)
+	lock, err := acquireStoreLock(root, sd)
+	if err != nil {
+		t.Fatal(err)
+	}
+	closed := false
+	defer func() {
+		if !closed {
+			windows.CloseHandle(lock.handle)
+		}
+	}()
+	other, err := acquireStoreLock(root, sd)
+	if other != nil {
+		windows.CloseHandle(other.handle)
+		t.Fatal("second owner acquired store lock")
+	}
+	if !errors.Is(err, windows.ERROR_SHARING_VIOLATION) {
+		t.Fatalf("want sharing violation, got %v", err)
+	}
+	if err = lock.check(); err != nil {
+		t.Fatal(err)
+	}
+	if err = windows.CloseHandle(lock.handle); err != nil {
+		t.Fatal(err)
+	}
+	closed = true
+	next, err := acquireStoreLock(root, sd)
+	if err != nil {
+		t.Fatal("reacquire existing protected synchronization file:", err)
+	}
+	defer windows.CloseHandle(next.handle)
+	if !sameIdentity(lock.info, next.info) {
+		t.Fatal("reacquisition replaced the durable synchronization file")
+	}
+}
+
+// Only the parent fixture selects this inert test-binary child; no service or
+// product is started, and this helper does not bypass Open's broker principal.
+func TestNativeStoreLockChild(t *testing.T) {
+	name := os.Getenv("SKAGER_STORE_LOCK_TEST_ROOT")
+	if name == "" {
+		return
+	}
+	user, err := windows.GetCurrentProcessToken().GetTokenUser()
+	if err != nil {
+		t.Fatal(err)
+	}
+	dirSD, err := descriptor(user.User.Sid, nil, true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	fileSD, err := descriptor(user.User.Sid, nil, false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	root, err := openPin(name, "", dirSD)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer windows.CloseHandle(root.handle)
+	lock, err := acquireStoreLock(root, fileSD)
+	if os.Getenv("SKAGER_STORE_LOCK_TEST_MODE") == "busy" {
+		if lock != nil {
+			windows.CloseHandle(lock.handle)
+			t.Fatal("cross-process lock acquired while held")
+		}
+		if !errors.Is(err, windows.ERROR_SHARING_VIOLATION) {
+			t.Fatalf("cross-process refusal: %v", err)
+		}
+		return
+	}
+	if os.Getenv("SKAGER_STORE_LOCK_TEST_MODE") != "acquire" {
+		t.Fatal("unexpected inert fixture mode")
+	}
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err = lock.check(); err != nil {
+		windows.CloseHandle(lock.handle)
+		t.Fatal(err)
+	}
+	if err = windows.CloseHandle(lock.handle); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestNativeStoreLifetimeLockExcludesAnotherProcess(t *testing.T) {
+	root, sd := storeLockFixture(t)
+	lock, err := acquireStoreLock(root, sd)
+	if err != nil {
+		t.Fatal(err)
+	}
+	closed := false
+	defer func() {
+		if !closed {
+			windows.CloseHandle(lock.handle)
+		}
+	}()
+	executable, err := os.Executable()
+	if err != nil {
+		t.Fatal(err)
+	}
+	run := func(mode string) {
+		t.Helper()
+		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+		defer cancel()
+		command := exec.CommandContext(ctx, executable, "-test.run=^TestNativeStoreLockChild$", "-test.count=1")
+		command.Env = append(os.Environ(), "SKAGER_STORE_LOCK_TEST_ROOT="+physical(root.name), "SKAGER_STORE_LOCK_TEST_MODE="+mode)
+		if out, err := command.CombinedOutput(); err != nil {
+			t.Fatalf("inert lock child %s: %v %s", mode, err, out)
+		}
+	}
+	run("busy")
+	if err = windows.CloseHandle(lock.handle); err != nil {
+		t.Fatal(err)
+	}
+	closed = true
+	run("acquire")
+}
+
+func TestNativeStoreLifetimeLockRefusesUnsafeExistingObjects(t *testing.T) {
+	for _, kind := range []string{"directory", "nonempty", "hardlink", "wrong DACL"} {
+		t.Run(kind, func(t *testing.T) {
+			root, sd := storeLockFixture(t)
+			name := physical(root.name + `\` + storeLockFilename)
+			if kind == "directory" {
+				if err := os.Mkdir(name, 0700); err != nil {
+					t.Fatal(err)
+				}
+			} else {
+				lock, err := acquireStoreLock(root, sd)
+				if err != nil {
+					t.Fatal(err)
+				}
+				if err = windows.CloseHandle(lock.handle); err != nil {
+					t.Fatal(err)
+				}
+				switch kind {
+				case "nonempty":
+					if err = os.WriteFile(name, []byte("not synchronization state"), 0600); err != nil {
+						t.Fatal(err)
+					}
+				case "hardlink":
+					if err = os.Link(name, physical(root.name+`\other-lock-name`)); err != nil {
+						t.Fatal(err)
+					}
+				case "wrong DACL":
+					user, err := windows.GetCurrentProcessToken().GetTokenUser()
+					if err != nil {
+						t.Fatal(err)
+					}
+					wrong, err := windows.SecurityDescriptorFromString("O:" + user.User.Sid.String() + "D:P(A;;FA;;;" + user.User.Sid.String() + ")")
+					if err != nil {
+						t.Fatal(err)
+					}
+					acl, _, err := wrong.DACL()
+					if err != nil {
+						t.Fatal(err)
+					}
+					if err = windows.SetNamedSecurityInfo(name, windows.SE_FILE_OBJECT, windows.DACL_SECURITY_INFORMATION|windows.PROTECTED_DACL_SECURITY_INFORMATION, nil, nil, acl, nil); err != nil {
+						t.Fatal(err)
+					}
+				}
+			}
+			lock, err := acquireStoreLock(root, sd)
+			if lock != nil {
+				windows.CloseHandle(lock.handle)
+				t.Fatal("unsafe synchronization object accepted")
+			}
+			if err == nil {
+				t.Fatal("unsafe lock refusal missing")
+			}
+		})
+	}
+}
+
+func TestNativeStoreLifetimeLockRechecksHeldMetadataAndReleasesAfterCleanupError(t *testing.T) {
+	root, sd := storeLockFixture(t)
+	lock, err := acquireStoreLock(root, sd)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var written uint32
+	if err = windows.WriteFile(lock.handle, []byte{1}, &written, nil); err != nil || written != 1 {
+		windows.CloseHandle(lock.handle)
+		t.Fatalf("inert lock mutation: %d %v", written, err)
+	}
+	if err = lock.check(); err == nil {
+		windows.CloseHandle(lock.handle)
+		t.Fatal("held nonzero synchronization file not refused")
+	}
+	if _, err = windows.SetFilePointer(lock.handle, 0, nil, windows.FILE_BEGIN); err != nil {
+		windows.CloseHandle(lock.handle)
+		t.Fatal(err)
+	}
+	if err = windows.SetEndOfFile(lock.handle); err != nil {
+		windows.CloseHandle(lock.handle)
+		t.Fatal(err)
+	}
+	if err = windows.CloseHandle(root.handle); err != nil {
+		windows.CloseHandle(lock.handle)
+		t.Fatal(err)
+	}
+	root.handle = windows.InvalidHandle // Inject an unambiguous ancestor-close error, never a reusable stale handle.
+	store := &Store{backend: &nativeStore{pins: []*nativePin{root}, lock: lock}}
+	firstClose := store.Close()
+	if !errors.Is(firstClose, windows.ERROR_INVALID_HANDLE) {
+		t.Fatalf("cleanup error lost: %v", firstClose)
+	}
+	if again := store.Close(); again != firstClose {
+		t.Fatalf("completed cleanup error not retained: %v", again)
+	}
+	// Only metadata on this released fixed file is inspected here; a new owner
+	// must subsequently run the complete protected-root acquisition again.
+	file, err := os.OpenFile(physical(lock.name), os.O_RDWR, 0)
+	if err != nil {
+		t.Fatal("lock not released after ancestor cleanup error:", err)
+	}
+	if err = file.Close(); err != nil {
+		t.Fatal(err)
 	}
 }
