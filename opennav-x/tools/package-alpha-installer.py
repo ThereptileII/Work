@@ -11,6 +11,8 @@ import subprocess
 import zipfile
 from hardware_output_policy import require_product_output_policy
 from product_version import read_product_version, windows_product_version
+from installer_package_receipt import (retain_installer_package,
+    snapshot_installer_helpers, validate_installer_helpers)
 ROOT = Path(__file__).resolve().parents[1]
 p=argparse.ArgumentParser()
 p.add_argument('--preview',type=Path,required=True)
@@ -55,20 +57,24 @@ package={'schema':1,'version':version,'commit':commit,
 record=a.output/'package.json';record.write_text(json.dumps(package,indent=2)+'\n',encoding='utf-8')
 compiler=Path(os.environ.get('ProgramFiles(x86)','C:/Program Files (x86)'))/'NSIS/makensis.exe'
 if not compiler.exists(): raise SystemExit('Native NSIS compiler missing')
+# NSIS and Recovery consume the same fresh snapshots, never later reconstructed
+# source helpers. This is producer input binding, not independent Setup extraction.
+engine_hashes=snapshot_installer_helpers(ROOT/'installer/windows', a.output)
+engine=a.output.resolve()/'engine'
 setup=a.output/'SKAGER-Beta2-Setup.exe'
 subprocess.run([str(compiler),'/V3',f'/DOUTPUT={setup.resolve()}',
                f'/DPRODUCT_VERSION={version}',
                '/DPRODUCT_VERSION_NUMERIC='+'.'.join(map(str,windows_product_version(version))),
                f'/DPACKAGE={a.output.resolve()}',
-               f'/DENGINE={ROOT / "installer/windows/Lifecycle.ps1"}',
-               f'/DUPDATE_TRANSACTION={ROOT / "installer/windows/UpdateTransaction.ps1"}',
-               f'/DUPDATE_SUPERVISOR={ROOT / "installer/windows/UpdateSupervisor.ps1"}',
+               f'/DENGINE={engine / "Lifecycle.ps1"}',
+               f'/DUPDATE_TRANSACTION={engine / "UpdateTransaction.ps1"}',
+               f'/DUPDATE_SUPERVISOR={engine / "UpdateSupervisor.ps1"}',
                f'/DBRAND_ICON={ROOT / "resources/branding/skager.ico"}',
                '/DMANIFEST_SHA256='+hashlib.sha256(record.read_bytes()).hexdigest(),
                str(ROOT/'installer/windows/AlphaSetup.nsi')],check=True)
+validate_installer_helpers(a.output, engine_hashes)
 (setup.with_suffix('.exe.sha256')).write_text(hashlib.sha256(setup.read_bytes()).hexdigest()+'  '+setup.name+'\n')
 # Retain the exact NSIS-embedded manifest only after payload/Setup generation.
 # It lives outside app/docs, avoiding an inner payload/manifest hash cycle.
-from installer_package_receipt import retain_installer_package
-retain_installer_package(preview, a.output, commit, version, manifest['supportedOpenCpn'])
+retain_installer_package(preview, a.output, commit, version, manifest['supportedOpenCpn'], engine_hashes)
 print(setup)

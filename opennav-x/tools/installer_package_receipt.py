@@ -33,6 +33,8 @@ SIDECAR = 'installer/package.json'
 INVENTORY = 'FILE_SHA256.json'
 MARKER = 'app/OPENNAV_PORTABLE_PREVIEW'
 PREFIX = 'SKAGER-Beta2-Portable-Recovery'
+ENGINE_HELPERS = ('Lifecycle.ps1', 'UpdateTransaction.ps1', 'UpdateSupervisor.ps1')
+MAX_ENGINE = 4 * 1024 * 1024
 COMPAT_REQUIRED = {'version', 'arch', 'executableSha256', 'upstreamCommit'}
 COMPAT_OPTIONAL = {'qualification', 'integrationPackage', 'qualificationCommit',
                    'qualificationRun', 'qualificationEvidence', 'stockSetupSha256'}
@@ -314,6 +316,57 @@ def _write(path, raw):
         os.fsync(output.fileno())
 
 
+def validate_installer_helpers(installer, expected):
+    """Check fixed producer snapshots, not extracted Setup or publisher trust."""
+    installer = _local(installer, True)
+    if not isinstance(expected, dict) or set(expected) != set(ENGINE_HELPERS):
+        raise ValueError('Exact producer helper snapshot hashes required')
+    for digest in expected.values():
+        _hex(digest)
+    engine = _local(installer / 'engine', True)
+    if {child.name for child in engine.iterdir()} != set(ENGINE_HELPERS):
+        raise ValueError('Exact fixed installer helper namespace required')
+    result = {}
+    for name in ENGINE_HELPERS:
+        path = _local(engine / name)
+        if not 1 <= _plain(path).st_size <= MAX_ENGINE:
+            raise ValueError('Bounded nonempty installer helper required')
+        result[name] = _read(path, MAX_ENGINE)
+    if result != expected:
+        raise ValueError('Installer helper snapshot changed')
+    return result
+
+
+def snapshot_installer_helpers(source, installer):
+    """Snapshot exact source bytes before NSIS into a fresh fixed output subtree.
+
+    The recipe must pass these snapshots to NSIS and revalidate after compilation.
+    This binds producer inputs only, without extraction or first-execution proof.
+    """
+    source = _local(source, True)
+    installer = _local(installer, True)
+    names = {name.casefold(): name for name in ENGINE_HELPERS}
+    if any(child.name.casefold() in names and child.name != names[child.name.casefold()]
+           for child in source.iterdir()):
+        raise ValueError('Case-aliased source helper refused')
+    if any(child.name.casefold() == 'engine' for child in installer.iterdir()):
+        raise ValueError('Fresh installer helper snapshot directory required')
+    original = {}
+    for name in ENGINE_HELPERS:
+        raw = _read(_local(source / name), MAX_ENGINE, collect=True)
+        if not raw:
+            raise ValueError('Nonempty source helper required')
+        original[name] = raw
+    engine = installer / 'engine'
+    engine.mkdir()
+    hashes = {}
+    for name, raw in original.items():
+        _write(engine / name, raw)
+        hashes[name] = hashlib.sha256(raw).hexdigest()
+    validate_installer_helpers(installer, hashes)
+    return hashes
+
+
 def _publish(replacements, sidecar_directory, staged_sidecar, stage):
     installed = []
     backups = []
@@ -351,10 +404,11 @@ def _publish(replacements, sidecar_directory, staged_sidecar, stage):
         raise
 
 
-def retain_installer_package(recovery, installer, commit, version, supported_opencpn):
-    """Validate generated inputs and add exact package.json outside app/docs.
+def retain_installer_package(recovery, installer, commit, version, supported_opencpn, engine_hashes):
+    """Add exact package.json and the fixed actual NSIS helper snapshots.
 
-    Requires successful Setup production by the caller. No signature/launch
+    Requires successful Setup production using these snapshots, with their hashes
+    retained by the producer before compilation. No signature/launch
     authority is created: the final signed outer Recovery hash must authenticate
     this sidecar at consumption. Returns only content-binding diagnostics.
     """
@@ -364,6 +418,11 @@ def retain_installer_package(recovery, installer, commit, version, supported_ope
         raise ValueError('Separate exact Recovery and installer roots required')
     commit = _hex(commit, 40)
     version = validate_product_version(version)
+    validate_installer_helpers(installer, engine_hashes)
+    engines = {f'installer/engine/{name}': _read(installer / 'engine' / name, MAX_ENGINE, collect=True)
+               for name in ENGINE_HELPERS}
+    if {name.rsplit('/', 1)[1]: hashlib.sha256(raw).hexdigest() for name, raw in engines.items()} != engine_hashes:
+        raise ValueError('Installer helpers changed while reading snapshots')
     record = _local(installer / 'package.json')
     payload = _local(installer / 'payload.zip')
     setup = _local(installer / 'SKAGER-Beta2-Setup.exe')
@@ -405,6 +464,7 @@ def retain_installer_package(recovery, installer, commit, version, supported_ope
         raise ValueError('Original Recovery archive differs from actual files')
     new_manifest = dict(original_manifest)
     new_manifest[SIDECAR] = hashlib.sha256(raw).hexdigest()
+    new_manifest.update({name: hashlib.sha256(body).hexdigest() for name, body in engines.items()})
     manifest_raw = (json.dumps(new_manifest, indent=2) + '\n').encode('utf-8')
     if len(manifest_raw) > MAX_METADATA:
         raise ValueError('Updated Recovery inventory exceeds bound')
@@ -414,13 +474,17 @@ def retain_installer_package(recovery, installer, commit, version, supported_ope
         sidecar = stage / 'installer'
         sidecar.mkdir()
         _write(sidecar / 'package.json', raw)
+        (sidecar / 'engine').mkdir()
+        for name, body in engines.items():
+            _write(sidecar / 'engine' / name.rsplit('/', 1)[1], body)
         staged_manifest = stage / INVENTORY
         _write(staged_manifest, manifest_raw)
         staged_archive = stage / archive.name
         final_files = dict(actual, **{INVENTORY: hashlib.sha256(manifest_raw).hexdigest(), SIDECAR: hashlib.sha256(raw).hexdigest()})
+        final_files.update({name: hashlib.sha256(body).hexdigest() for name, body in engines.items()})
         with zipfile.ZipFile(staged_archive, 'x', zipfile.ZIP_DEFLATED, compresslevel=6, allowZip64=False) as output:
             for name, digest in sorted(final_files.items()):
-                source = staged_manifest if name == INVENTORY else sidecar / 'package.json' if name == SIDECAR else recovery / name
+                source = staged_manifest if name == INVENTORY else sidecar / Path(name).relative_to('installer') if name.startswith('installer/') else recovery / name
                 with output.open(PREFIX + '/' + name, 'w') as member:
                     if _read(source, MAX_FILE, target=member) != digest:
                         raise ValueError('Recovery changed while staging archive')
@@ -429,6 +493,7 @@ def retain_installer_package(recovery, installer, commit, version, supported_ope
         new_archive_hash = _read(staged_archive, MAX_ARCHIVE)
         staged_checksum = stage / checksum.name
         _write(staged_checksum, (new_archive_hash + '  ' + archive.name + '\n').encode('ascii'))
+        validate_installer_helpers(installer, engine_hashes)
         if (_tree(recovery) != actual or _read(record, MAX_METADATA, collect=True) != raw
                 or _read(payload, MAX_ARCHIVE) != package['payloadSha256']
                 or _read(setup) != setup_hash or _read(setup_checksum, 1024, collect=True) != setup_checksum_raw
@@ -439,6 +504,7 @@ def retain_installer_package(recovery, installer, commit, version, supported_ope
         completed = True
         return {'packageSha256': hashlib.sha256(raw).hexdigest(), 'payloadSha256': package['payloadSha256'],
                 'recoverySha256': new_archive_hash, 'setupSha256': setup_hash, 'commit': commit, 'version': version,
+                'engineSha256': dict(engine_hashes),
                 'appDocsUnchanged': True, 'launchAuthority': False}
     finally:
         # On failed publication retain staged/original records for inspection;

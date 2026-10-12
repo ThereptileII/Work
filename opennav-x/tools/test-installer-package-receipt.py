@@ -7,7 +7,9 @@ import os
 from pathlib import Path
 import stat
 import struct
+import sys
 import tempfile
+import types
 import unittest
 from unittest import mock
 import warnings
@@ -41,6 +43,13 @@ class Receipt(unittest.TestCase):
         self.installer = self.root / 'beta-installer'
         self.recovery.mkdir()
         self.installer.mkdir()
+        self.helper_source = self.root / 'source/installer/windows'
+        self.helper_source.mkdir(parents=True)
+        self.helpers = {name: b'\xef\xbb\xbf# inert producer fixture; never executed\r\n# ' + name.encode() + b'\r\n'
+                        for name in receipt.ENGINE_HELPERS}
+        for name, raw in self.helpers.items():
+            (self.helper_source / name).write_bytes(raw)
+        self.engine_hashes = receipt.snapshot_installer_helpers(self.helper_source, self.installer)
         self.files = {
             'app/opencpn.exe': pe(), 'app/opennav-restart.exe': b'inert restart helper',
             'app/skager-start.exe': b'inert startup launcher', 'app/plugins/inert_pi.dll': b'inert DLL bytes; never loaded',
@@ -102,7 +111,7 @@ class Receipt(unittest.TestCase):
         self.checksum.write_text(sha(self.archive.read_bytes()) + '  ' + self.archive.name + '\n')
 
     def finish(self):
-        return receipt.retain_installer_package(self.recovery, self.installer, COMMIT, VERSION, self.selected_compatibility)
+        return receipt.retain_installer_package(self.recovery, self.installer, COMMIT, VERSION, self.selected_compatibility, self.engine_hashes)
 
     def snapshot(self):
         return {p.relative_to(self.root).as_posix(): p.read_bytes() for p in self.root.rglob('*')
@@ -119,14 +128,20 @@ class Receipt(unittest.TestCase):
         before = {name: (self.recovery / name).read_bytes() for name in self.files}
         payload = self.payload.read_bytes()
         package = (self.installer / 'package.json').read_bytes()
+        setup = self.setup.read_bytes()
         result = self.finish()
         self.assertEqual((self.recovery / receipt.SIDECAR).read_bytes(), package)
         self.assertEqual(self.payload.read_bytes(), payload)
         self.assertEqual((self.installer / 'package.json').read_bytes(), package)
+        self.assertEqual(self.setup.read_bytes(), setup)
         for name, raw in before.items():
             self.assertEqual((self.recovery / name).read_bytes(), raw)
         manifest = json.loads((self.recovery / receipt.INVENTORY).read_bytes())
-        self.assertEqual(manifest, {**{name: sha(raw) for name, raw in before.items()}, receipt.SIDECAR: sha(package)})
+        engines = {'installer/engine/' + name: sha(raw) for name, raw in self.helpers.items()}
+        self.assertEqual(manifest, {**{name: sha(raw) for name, raw in before.items()}, receipt.SIDECAR: sha(package), **engines})
+        for name, raw in self.helpers.items():
+            self.assertEqual((self.recovery / 'installer/engine' / name).read_bytes(), raw)
+            self.assertEqual((self.installer / 'engine' / name).read_bytes(), raw)
         with zipfile.ZipFile(self.archive) as archive:
             self.assertIsNone(archive.testzip())
             self.assertEqual(set(archive.namelist()), {receipt.PREFIX + '/' + name for name in manifest} | {receipt.PREFIX + '/' + receipt.INVENTORY})
@@ -139,6 +154,7 @@ class Receipt(unittest.TestCase):
         self.assertEqual(self.checksum.read_text(), sha(self.archive.read_bytes()) + '  ' + self.archive.name + '\n')
         self.assertEqual(result['packageSha256'], sha(package))
         self.assertEqual(result['payloadSha256'], sha(payload))
+        self.assertEqual(result['engineSha256'], self.engine_hashes)
         self.assertTrue(result['appDocsUnchanged'])
         self.assertFalse(result['launchAuthority'])
         with self.assertRaises(ValueError):
@@ -297,7 +313,7 @@ class Receipt(unittest.TestCase):
         alias = self.root / 'linked'
         alias.symlink_to(self.recovery, target_is_directory=True)
         with self.assertRaises(ValueError):
-            receipt.retain_installer_package(alias, self.installer, COMMIT, VERSION, self.selected_compatibility)
+            receipt.retain_installer_package(alias, self.installer, COMMIT, VERSION, self.selected_compatibility, self.engine_hashes)
         alias.unlink()
         (self.recovery / 'empty-link').symlink_to(outside, target_is_directory=True)
         self.refuses_unchanged()
@@ -323,6 +339,124 @@ class Receipt(unittest.TestCase):
         self.refuses_unchanged()
         self.setup.unlink()
         self.refuses_unchanged()
+
+    def test_helper_snapshot_missing_empty_changed_alias_extra_and_links_refuse(self):
+        engine = self.installer / 'engine'
+        path = engine / 'Lifecycle.ps1'
+        for kind in ['missing', 'empty', 'changed', 'alias', 'extra', 'symlink', 'hardlink']:
+            with self.subTest(kind=kind):
+                path.unlink()
+                if kind in {'alias', 'extra'}:
+                    path.write_bytes(self.helpers[path.name])
+                    (engine / ('LIFECYCLE.ps1' if kind == 'alias' else 'unexpected.ps1')).write_bytes(b'extra')
+                elif kind == 'symlink':
+                    path.symlink_to(self.helper_source / path.name)
+                elif kind == 'hardlink':
+                    os.link(self.helper_source / path.name, path)
+                elif kind != 'missing':
+                    path.write_bytes(b'' if kind == 'empty' else b'mutated after NSIS')
+                self.refuses_unchanged()
+                for child in engine.iterdir():
+                    child.unlink()
+                for name, raw in self.helpers.items():
+                    (engine / name).write_bytes(raw)
+
+    def test_helper_snapshot_requires_original_exact_hash_set_and_bound(self):
+        original = self.engine_hashes
+        for bad in [{}, dict(original, unexpected='a' * 64), dict(original, **{'Lifecycle.ps1': '0' * 64})]:
+            with self.subTest(hashes=bad):
+                self.engine_hashes = bad
+                self.refuses_unchanged()
+        self.engine_hashes = original
+        with mock.patch.object(receipt, 'MAX_ENGINE', 4):
+            self.refuses_unchanged()
+
+    def test_source_snapshot_refuses_missing_alias_and_preexisting_namespace(self):
+        source = self.helper_source
+        lifecycle = source / 'Lifecycle.ps1'
+        lifecycle.unlink()
+        output = self.root / 'missing-output'
+        output.mkdir()
+        with self.assertRaises(OSError):
+            receipt.snapshot_installer_helpers(source, output)
+        self.assertFalse((output / 'engine').exists())
+        lifecycle.write_bytes(self.helpers[lifecycle.name])
+        alias = source / 'LIFECYCLE.ps1'
+        alias.write_bytes(b'alias')
+        with self.assertRaises(ValueError):
+            receipt.snapshot_installer_helpers(source, output)
+        alias.unlink()
+        (output / 'Engine').mkdir()
+        with self.assertRaises(ValueError):
+            receipt.snapshot_installer_helpers(source, output)
+
+    def test_late_helper_mutation_refuses_publication(self):
+        read = receipt._read
+        def change(path, *args, **kwargs):
+            value = read(path, *args, **kwargs)
+            if Path(path).name == self.archive.name and Path(path).parent.name.startswith('.installer-receipt-'):
+                (self.installer / 'engine/Lifecycle.ps1').write_bytes(b'late mutation')
+            return value
+        archive = self.archive.read_bytes()
+        with mock.patch.object(receipt, '_read', change), self.assertRaises(ValueError):
+            self.finish()
+        self.assertEqual(self.archive.read_bytes(), archive)
+        self.assertFalse((self.recovery / 'installer').exists())
+
+    def run_recipe_with_inert_compiler(self, mutation=None):
+        # Execute the real producer recipe with a data-only NSIS stand-in. No
+        # compiler/app/script is run. Inspect its actual /D inputs at invocation.
+        source_root = self.root / 'source'
+        (self.helper_source / 'compatibility.json').write_text(json.dumps({
+            'openNavVersion': VERSION, 'supportedOpenCpn': self.selected_compatibility}))
+        (self.recovery / 'docs/SKAGER-Beta2-Release-Notes.md').write_bytes(b'fixture release notes')
+        self.original_recovery()
+        output = self.root / 'compiled-installer'
+        program_files = self.root / 'program-files'
+        compiler = program_files / 'NSIS/makensis.exe'
+        compiler.parent.mkdir(parents=True)
+        compiler.write_bytes(b'inert compiler path fixture; never executed')
+        fake_os = types.ModuleType('os')
+        fake_os.__dict__.update(vars(os))
+        fake_os.name = 'nt'
+        fake_os.environ = dict(os.environ, GITHUB_SHA=COMMIT, **{'ProgramFiles(x86)': str(program_files)})
+        calls = []
+        def compile_setup(arguments, **kwargs):
+            if arguments[0] != str(compiler):
+                return
+            calls.append(arguments)
+            defines = dict(arg[2:].split('=', 1) for arg in arguments if arg.startswith('/D'))
+            for define, name in [('ENGINE', 'Lifecycle.ps1'), ('UPDATE_TRANSACTION', 'UpdateTransaction.ps1'),
+                                 ('UPDATE_SUPERVISOR', 'UpdateSupervisor.ps1')]:
+                self.assertEqual(Path(defines[define]), output / 'engine' / name)
+                self.assertEqual(Path(defines[define]).read_bytes(), self.helpers[name])
+            Path(defines['OUTPUT']).write_bytes(b'inert compiled Setup; never executed')
+            if mutation:
+                mutation(output)
+        recipe = Path(__file__).with_name('package-alpha-installer.py')
+        with mock.patch.dict(sys.modules, {'os': fake_os}), \
+                mock.patch.object(sys, 'argv', [str(recipe), '--preview', str(self.recovery), '--output', str(output)]), \
+                mock.patch('product_version.read_product_version', return_value=VERSION), \
+                mock.patch('subprocess.run', side_effect=compile_setup), mock.patch('builtins.print'):
+            exec(compile(recipe.read_bytes(), str(recipe), 'exec'), {'__file__': str(source_root / 'tools/package-alpha-installer.py')})
+        self.assertEqual(len(calls), 1)
+        return output
+
+    def test_real_recipe_passes_exact_snapshots_and_retains_them_after_source_changes(self):
+        def change_source(_):
+            (self.helper_source / 'Lifecycle.ps1').write_bytes(b'new source after compiler input')
+        output = self.run_recipe_with_inert_compiler(change_source)
+        for name, raw in self.helpers.items():
+            self.assertEqual((output / 'engine' / name).read_bytes(), raw)
+            self.assertEqual((self.recovery / 'installer/engine' / name).read_bytes(), raw)
+
+    def test_real_recipe_refuses_helper_mutation_after_compiler(self):
+        def mutate(output):
+            (output / 'engine/UpdateTransaction.ps1').write_bytes(b'mutated compiler input')
+        with self.assertRaisesRegex(ValueError, 'snapshot changed'):
+            self.run_recipe_with_inert_compiler(mutate)
+        self.assertFalse((self.recovery / 'installer').exists())
+        self.assertFalse((self.root / 'compiled-installer/SKAGER-Beta2-Setup.exe.sha256').exists())
 
     def test_staging_write_failure_preserves_all_original_outputs(self):
         with mock.patch.object(receipt, '_write', side_effect=OSError('injected disk full')):
