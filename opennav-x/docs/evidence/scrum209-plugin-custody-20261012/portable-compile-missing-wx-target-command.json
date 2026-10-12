@@ -1,0 +1,16 @@
+[
+  "/usr/bin/c++",
+  "-std=c++17",
+  "-I/home/standard/Projects/X-nav-worktrees/source-batch-20261011/opennav-x/src",
+  "-I/home/standard/Projects/X-nav/.local/sysroot/usr/include/wx-3.2",
+  "-I/home/standard/Projects/X-nav/.local/sysroot/usr/lib/wx/include/gtk3-unicode-3.2",
+  "-DWXUSINGDLL",
+  "-D__WXGTK3__",
+  "-D_FILE_OFFSET_BITS=64",
+  "/home/standard/Projects/.tmp/skager-plugin-custody-20261012/portable-fallback-smoke.cpp",
+  "/home/standard/Projects/X-nav-worktrees/source-batch-20261011/opennav-x/src/integration/PluginPresentationLoader.cpp",
+  "-L/home/standard/Projects/X-nav/.local/sysroot/usr/lib",
+  "-lwx_baseu-3.2",
+  "-o",
+  "/home/standard/Projects/.tmp/skager-plugin-custody-20261012/portable-fallback-smoke"
+]

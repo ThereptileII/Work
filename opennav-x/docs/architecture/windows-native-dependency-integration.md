@@ -170,3 +170,21 @@ transitive/dynamic/helper identities; TLS/certificate failure behavior; and
 install/update/repair/rollback/uninstall preservation. Broader loader enforcement
 and native/boat acceptance remain open. This source change does not qualify the
 frozen Staging artifact or authorize public beta.
+
+
+### Original-module inspection custody (SCRUM-209, 2026-10-12)
+
+The original-load fallback transfers its inspected-file owner to the OpenCPN
+plugin container. Custody now spans later factory-export forwarding, declared
+delay imports and checked unload/detach callbacks. File protection ends only
+after successful checked module unload. Failed unloading retains the module and
+pins; destruction of an uncertain container deliberately keeps them until process
+exit and logs the uncertainty. This does not enforce arbitrary dynamic loads or
+prove a complete Windows dependency closure.
+
+Container layout uses a narrow `SKAGER_PLUGIN_CUSTODY` usage requirement on the
+shared model interface, consistently visible to model, GUI and headless readers.
+It must not depend on source-local `OPENNAV_X`. Pristine builds keep their original
+layout/destructor. [Source, independent review, focused Linux probes and pending
+native cases](../evidence/scrum209-plugin-custody-20261012/README.md) distinguish
+this repair from earlier native evidence, which is not relabelled.

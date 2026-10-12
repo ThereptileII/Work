@@ -1,0 +1,36 @@
+{
+  "sourceCommit": "4f98ce2838cbe04274ada36e2876b906b783441d",
+  "pinnedUpstreamCommit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "sourceInputs": {
+    "opennav-x/patches/opencpn-5.12.4-chart-presentation.patch": "c4fd5aff2937b4b58bab5af8f8062c961c0de8257669a8f8cc2445f88af1ae22",
+    "opennav-x/src/integration/OpenCPN.cmake": "10c0e9d0c0cd5abe964e1c2c80c427f27fc9c44ee8b54a5b6729e9f9758d0bbf",
+    "opennav-x/src/integration/OriginalPluginTlsGuard.h": "17da69af26c9b5299a2b669a15fdd204bdf839f470ecbfbd77f27c8e478194ce",
+    "opennav-x/src/integration/PluginPresentationFallback.h": "805658e2936653975bd3b5479bdd3049eb2d0ece4bae110e6b89bc7fda633d07",
+    "opennav-x/src/integration/PluginPresentationLoader.h": "8431fb2811852220631fda99bec5970bd33766a0bda71478e7e919632f6f2d82",
+    "opennav-x/tests/windows_ocharts_loader/loader_test.cpp": "a6ac448bad1d29d44a61f1a47fdbb8b1f410c2ef66504d0ff3ebb8e2c32f2200"
+  },
+  "patchChain": [
+    "xnav",
+    "regression-tests",
+    "ais-transport",
+    "chart-presentation",
+    "route-focus",
+    "route-hit-dpi",
+    "maintained-curl",
+    "download-trust",
+    "wxcurl-trust",
+    "peer-response-buffer",
+    "peer-unavailable",
+    "pilot-serial"
+  ],
+  "patchChainCachedApply": "PASS",
+  "reconstructedIntegratedPluginTranslationUnitSyntax": 0,
+  "pristineLayoutTranslationUnitSyntax": 0,
+  "missingSharedLayoutDefinitionNegativeControl": 1,
+  "portableActualFallbackChecks": 9,
+  "nativeWindowsFixtureExecution": "PENDING",
+  "fullIntegratedBuild": "NOT RUN",
+  "boatChanges": "NONE",
+  "compiler": "c++ (GCC) 16.2.1 20260810",
+  "configurationProvenance": "Syntax-only checks reuse cached production-linux generated include/configuration and dependency flags from a previous application build. This is not a current integrated application build or Windows qualification."
+}

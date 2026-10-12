@@ -1,0 +1,5 @@
+In file included from /home/standard/Projects/X-nav/.local/sysroot/usr/include/wx-3.2/wx/string.h:24,
+                 from /home/standard/Projects/.tmp/skager-plugin-custody-20261012/portable-fallback-smoke.cpp:1:
+/home/standard/Projects/X-nav/.local/sysroot/usr/include/wx-3.2/wx/defs.h:62:13: error: #error "No Target! You should use wx-config program for compilation flags!"
+   62 | #           error "No Target! You should use wx-config program for compilation flags!"
+      |             ^~~~~

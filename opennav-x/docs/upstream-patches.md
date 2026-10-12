@@ -1828,3 +1828,18 @@ registration includes the new 241-check byte-policy test. Its direct portable
 compile passed; CMake/CTest configuration and native execution of this new
 increment remain pending. This exact-byte refusal does not qualify unknown
 versions or establish complete loader closure.
+
+
+### SCRUM-209 original-plugin lifetime repair — 2026-10-12
+
+`opencpn-5.12.4-chart-presentation.patch` now adds container-owned inspection
+custody in `model/include/model/plugin_loader.h` and an out-of-line destructor
+plus checked unload calls in `model/src/plugin_loader.cpp`. The existing fallback
+hook transfers ownership instead of ending it before factory lookup. The shared
+model CMake interface propagates `SKAGER_PLUGIN_CUSTODY` to every container reader;
+source-local `OPENNAV_X` alone cannot select its layout. Pristine builds retain
+the default destructor/layout. Failed final unload retains the module and pins
+until exit, with an explicit log, rather than retrying silently. See the
+[exact source and bounded evidence](evidence/scrum209-plugin-custody-20261012/README.md).
+Full patched-source syntax and nine actual portable fallback checks pass;
+updated native loader execution and integrated/package gates remain pending.

@@ -1,0 +1,8 @@
+In file included from /home/standard/Projects/.tmp/skager-plugin-custody-20261012/model/src/plugin_loader.cpp:72:
+/home/standard/Projects/.tmp/skager-plugin-custody-20261012/model/include/model/plugin_loader.h:38:2: error: #error "SKAGER plugin custody must propagate through the shared model interface"
+   38 | #error "SKAGER plugin custody must propagate through the shared model interface"
+      |  ^~~~~
+/home/standard/Projects/.tmp/skager-plugin-custody-20261012/model/src/plugin_loader.cpp: In member function ‘PlugInContainer* PluginLoader::LoadPlugIn(const wxString&, PlugInContainer*)’:
+/home/standard/Projects/.tmp/skager-plugin-custody-20261012/model/src/plugin_loader.cpp:1568:12: error: ‘class PlugInContainer’ has no member named ‘m_skagerTlsCustody’
+ 1568 |       pic->m_skagerTlsCustody);
+      |            ^~~~~~~~~~~~~~~~~~
