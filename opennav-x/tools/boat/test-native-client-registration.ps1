@@ -2,7 +2,7 @@ param(
     [Parameter(Mandatory=$true)][string]$TestExecutable,
     [Parameter(Mandatory=$true)][ValidatePattern('^[a-f0-9]{64}$')][string]$ExpectedSha256,
     [Parameter(Mandatory=$true)][string]$EvidenceDirectory,
-    [Parameter(Mandatory=$true)][ValidateSet('ClientStore','ClientRequest','StockCleanup','StockIntegrity','InstalledBaseline','ClientBaseline','EngineEvidence','CommissioningEvidence','LaunchRoot','Generation','GenerationReadOnly','GenerationBaseline','GenerationHistory','GenerationExecutor')][string]$Group
+    [Parameter(Mandatory=$true)][ValidateSet('ClientStore','ClientRequest','StockCleanup','StockIntegrity','InstalledBaseline','ClientBaseline','EngineEvidence','CommissioningEvidence','LaunchRoot','Generation','GenerationReadOnly','GenerationBaseline','GenerationHistory','GenerationExecutor','PeerCapability')][string]$Group
 )
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
@@ -17,6 +17,14 @@ if ([Environment]::OSVersion.Platform -ne [PlatformID]::Win32NT) {
 if ($ExpectedSha256 -cnotmatch '^[a-f0-9]{64}$') { throw 'Exact lowercase test SHA-256 required' }
 
 switch ($Group) {
+    'PeerCapability' {
+        # Disposable uniquely named pipes and this test process/token only.
+        # Private SCM bypass is not installed service or executor qualification.
+        $CaseNames = @(
+            'TestNativePeerCapabilityActualIdentityAndDisconnect',
+            'TestNativePeerCapabilityProcessAndLogonRefusals'
+        )
+    }
     'GenerationExecutor' {
         # Only this fixture's original creator handles may terminate the copied,
         # suspended test image. No entrypoint is resumed or product is launched.
