@@ -118,18 +118,108 @@ function Test-ExactRepairPackage($Previous, $Package, [string]$ManifestHash) {
     $Previous.packageSha256 -ceq $ManifestHash -and $Previous.commit -ceq $Package.commit -and
     $Previous.version -ceq $Package.version
 }
+function Get-ProtectedBrokerObservation {
+  # This is an absence probe, not an ownership or adoption check. Only fixed
+  # machine objects count; a missing service alone does not clear partial files.
+  # Any inaccessible/ambiguous observation throws and therefore refuses writes.
+  if (-not ('SkagerLegacyBrokerObservation' -as [type])) {
+    Add-Type -TypeDefinition @'
+using System;
+using System.ComponentModel;
+using System.IO;
+using System.Runtime.InteropServices;
+using Microsoft.Win32;
+
+public static class SkagerLegacyBrokerObservation {
+  const uint SC_MANAGER_CONNECT = 0x0001;
+  const uint SERVICE_QUERY_STATUS = 0x0004;
+  const uint INVALID_ATTRIBUTES = 0xffffffff;
+  const uint FILE_ATTRIBUTE_DIRECTORY = 0x10;
+  const uint FILE_ATTRIBUTE_REPARSE_POINT = 0x400;
+  [DllImport("advapi32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+  static extern IntPtr OpenSCManager(string machine, string database, uint access);
+  [DllImport("advapi32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+  static extern IntPtr OpenService(IntPtr manager, string name, uint access);
+  [DllImport("advapi32.dll", SetLastError = true)]
+  [return: MarshalAs(UnmanagedType.Bool)]
+  static extern bool CloseServiceHandle(IntPtr handle);
+  [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+  static extern uint GetFileAttributes(string path);
+
+  static void Close(IntPtr handle) {
+    if (handle != IntPtr.Zero && !CloseServiceHandle(handle))
+      throw new Win32Exception(Marshal.GetLastWin32Error());
+  }
+  static bool ServicePresent() {
+    IntPtr manager = OpenSCManager(null, null, SC_MANAGER_CONNECT);
+    if (manager == IntPtr.Zero) throw new Win32Exception(Marshal.GetLastWin32Error());
+    try {
+      IntPtr service = OpenService(manager, "SkagerUpdateBroker", SERVICE_QUERY_STATUS);
+      if (service == IntPtr.Zero) {
+        int error = Marshal.GetLastWin32Error();
+        if (error == 1060) return false; // ERROR_SERVICE_DOES_NOT_EXIST only.
+        throw new Win32Exception(error);
+      }
+      try { return true; }
+      finally { Close(service); }
+    } finally { Close(manager); }
+  }
+  static bool RegistryPresent() {
+    using (RegistryKey machine = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64))
+    using (RegistryKey service = machine.OpenSubKey(@"SYSTEM\CurrentControlSet\Services\SkagerUpdateBroker", false))
+      return service != null;
+  }
+  static bool FixedChildPresent(Environment.SpecialFolder folder) {
+    string root = Environment.GetFolderPath(folder);
+    if (String.IsNullOrEmpty(root) || root.Length < 3 || root[1] != ':' ||
+        root[2] != '\\' || !Path.IsPathRooted(root))
+      throw new InvalidOperationException("Fixed Windows machine folder unavailable");
+    // A redirected or unreadable ancestor could hide a protected namespace.
+    for (string parent = root; parent != null; parent = Path.GetDirectoryName(parent)) {
+      uint attributes = GetFileAttributes(parent);
+      if (attributes == INVALID_ATTRIBUTES)
+        throw new Win32Exception(Marshal.GetLastWin32Error());
+      if ((attributes & FILE_ATTRIBUTE_DIRECTORY) == 0 ||
+          (attributes & FILE_ATTRIBUTE_REPARSE_POINT) != 0)
+        throw new InvalidOperationException("Fixed Windows machine ancestry is ambiguous");
+    }
+    uint child = GetFileAttributes(Path.Combine(root, "SKAGER"));
+    if (child != INVALID_ATTRIBUTES) return true; // Includes partial/reparse namespace.
+    int error = Marshal.GetLastWin32Error();
+    if (error == 2 || error == 3) return false; // Only definite absence.
+    throw new Win32Exception(error);
+  }
+  public static bool Present() {
+    return ServicePresent() || RegistryPresent() ||
+      FixedChildPresent(Environment.SpecialFolder.CommonApplicationData) ||
+      FixedChildPresent(Environment.SpecialFolder.ProgramFilesX86);
+  }
+}
+'@ -ErrorAction Stop
+  }
+  return [SkagerLegacyBrokerObservation]::Present()
+}
+function Assert-NoProtectedBrokerEnrollment {
+  $present = Get-ProtectedBrokerObservation
+  if ($present -isnot [bool] -or $present) {
+    throw 'Fixed protected SKAGER broker namespace is present or uncertain; old Lifecycle mutation is refused.'
+  }
+}
 function Assert-LifecycleMutation {
+  Assert-NoProtectedBrokerEnrollment
   Assert-NoSignedUpdateArmed $Root
 }
 function AtomicJson([string]$Path, $Value) {
-  Assert-NoSignedUpdateArmed $Root ($Action -eq 'Preflight')
+  if ($Action -in @('Preflight','Diagnostics')) { Assert-NoSignedUpdateArmed $Root ($Action -eq 'Preflight') }
+  else { Assert-LifecycleMutation }
   $null = PlainPath $Path
   $temp = $Path + '.' + [guid]::NewGuid().ToString('N') + '.tmp'
   $bytes = $Utf8.GetBytes(($Value | ConvertTo-Json -Depth 16))
   try {
     $file = New-Object IO.FileStream($temp, [IO.FileMode]::CreateNew, [IO.FileAccess]::Write, [IO.FileShare]::None)
     try { $file.Write($bytes, 0, $bytes.Length); $file.Flush($true) } finally { $file.Dispose() }
-    Assert-NoSignedUpdateArmed $Root ($Action -eq 'Preflight')
+    if ($Action -in @('Preflight','Diagnostics')) { Assert-NoSignedUpdateArmed $Root ($Action -eq 'Preflight') }
+    else { Assert-LifecycleMutation }
     # Windows PowerShell 5.1 converts $null to an empty string for this .NET
     # string parameter; File.Replace rejects that as an invalid backup path.
     if (Test-Path -LiteralPath $Path) { [IO.File]::Replace($temp, $Path, [System.Management.Automation.Language.NullString]::Value) }
@@ -870,13 +960,14 @@ try {
   }
   $Root = PlainPath $Root
   foreach ($group in @(ShellGroups)) { $null = PlainPath $group }
+  if ($Action -ne 'Diagnostics') { Assert-NoProtectedBrokerEnrollment }
   $state = ReadState
   if ((Test-Path -LiteralPath $Root) -and -not $state -and -not (Test-Path -LiteralPath (Join-Path $Root 'owner.json'))) { throw 'Existing directory is not a SKAGER-owned installation.' }
   if (Test-Path -LiteralPath (Join-Path $Root 'owner.json')) {
     if ((ReadJson (Join-Path $Root 'owner.json')).owner -ne $Owner) { throw 'Unknown root ownership.' }
     $OwnsRoot = $true
   }
-  AssertShellOwnership
+  if ($Action -ne 'Diagnostics') { AssertShellOwnership }
   if ($Action -eq 'Repair' -and -not $PackageDirectory -and $state) {
     $installed = ReadGeneration $state.current
     $PackageDirectory = Join-Path (Generation $state.current) 'maintenance'
@@ -941,6 +1032,7 @@ try {
     AtomicJson (PlainPath $Report) $result
     Log 'Installation diagnostics written; no navigation coordinates or raw data collected.'
   } else {
+    Assert-NoProtectedBrokerEnrollment
     AssertClosed
     if (-not $state -and $Action -notin @('Install','Update')) { throw 'No installed SKAGER generation for this action.' }
     if (Test-Path -LiteralPath $Registry) {
