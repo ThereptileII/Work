@@ -35,6 +35,16 @@ MARKER = 'app/OPENNAV_PORTABLE_PREVIEW'
 PREFIX = 'SKAGER-Beta2-Portable-Recovery'
 ENGINE_HELPERS = ('Lifecycle.ps1', 'UpdateTransaction.ps1', 'UpdateSupervisor.ps1')
 MAX_ENGINE = 4 * 1024 * 1024
+COMMISSIONING_SUBTREE = 'commissioning-v1'
+COMMISSIONING_HELPERS = (
+    'commission-read-only.ps1', 'verify-commissioning-launch.ps1',
+    'Commissioning.ps1', 'Preparation.ps1', 'Common.ps1',
+    'CommissioningProfileLock.cs', 'InstalledResourceReview.ps1',
+    'CommissioningBaseline.ps1', 'ColdBaseline.ps1',
+    'RestartCommissioningPolicy.ps1', 'RestartAuiPersistence.ps1',
+    'RestartDashboardPersistence.ps1',
+)
+MAX_COMMISSIONING = 4 * 1024 * 1024
 COMPAT_REQUIRED = {'version', 'arch', 'executableSha256', 'upstreamCommit'}
 COMPAT_OPTIONAL = {'qualification', 'integrationPackage', 'qualificationCommit',
                    'qualificationRun', 'qualificationEvidence', 'stockSetupSha256'}
@@ -367,6 +377,74 @@ def snapshot_installer_helpers(source, installer):
     return hashes
 
 
+def _commissioning_namespace(installer, required):
+    # Reserve the versioned commissioning namespace; do not silently ignore a
+    # partial, differently cased, or additional version alongside the fixed one.
+    names = {child.name for child in installer.iterdir()
+             if child.name.casefold().startswith('commissioning-')}
+    if names != ({COMMISSIONING_SUBTREE} if required else set()):
+        raise ValueError('Exact fresh commissioning snapshot namespace required')
+
+
+def validate_commissioning_helpers(installer, expected):
+    """Validate all 12 retained source originals against precompile hashes.
+
+    These are Recovery execution sources, not additional NSIS-embedded helpers.
+    Their hashes bind bytes only: no COM8 policy execution, launch authority,
+    startup health, or native commissioning acceptance is established here.
+    Each original is nonempty and bounded to 4 MiB; existing Recovery archive,
+    expanded-byte, file-count and metadata limits still apply to the result.
+    """
+    installer = _local(installer, True)
+    if not isinstance(expected, dict) or set(expected) != set(COMMISSIONING_HELPERS):
+        raise ValueError('Exact producer commissioning snapshot hashes required')
+    for digest in expected.values():
+        _hex(digest)
+    _commissioning_namespace(installer, True)
+    subtree = _local(installer / COMMISSIONING_SUBTREE, True)
+    if {child.name for child in subtree.iterdir()} != set(COMMISSIONING_HELPERS):
+        raise ValueError('Exact fixed commissioning helper namespace required')
+    result = {}
+    for name in COMMISSIONING_HELPERS:
+        path = _local(subtree / name)
+        if not 1 <= _plain(path).st_size <= MAX_COMMISSIONING:
+            raise ValueError('Bounded nonempty commissioning helper required')
+        result[name] = _read(path, MAX_COMMISSIONING)
+    if result != expected:
+        raise ValueError('Commissioning helper snapshot changed')
+    return result
+
+
+def snapshot_commissioning_helpers(source, installer):
+    """Retain the fixed 12 plain source files before Setup compilation.
+
+    The caller retains these original hashes through compilation and publication;
+    validation must never derive its approval from the later snapshot itself.
+    This adds no Setup embedding or execution/qualification of these sources.
+    """
+    source = _local(source, True)
+    installer = _local(installer, True)
+    names = {name.casefold(): name for name in COMMISSIONING_HELPERS}
+    if any(child.name.casefold() in names and child.name != names[child.name.casefold()]
+           for child in source.iterdir()):
+        raise ValueError('Case-aliased source commissioning helper refused')
+    _commissioning_namespace(installer, False)
+    originals = {}
+    for name in COMMISSIONING_HELPERS:
+        raw = _read(_local(source / name), MAX_COMMISSIONING, collect=True)
+        if not raw:
+            raise ValueError('Nonempty source commissioning helper required')
+        originals[name] = raw
+    subtree = installer / COMMISSIONING_SUBTREE
+    subtree.mkdir()
+    hashes = {}
+    for name, raw in originals.items():
+        _write(subtree / name, raw)
+        hashes[name] = hashlib.sha256(raw).hexdigest()
+    validate_commissioning_helpers(installer, hashes)
+    return hashes
+
+
 def _publish(replacements, sidecar_directory, staged_sidecar, stage):
     installed = []
     backups = []
@@ -404,13 +482,19 @@ def _publish(replacements, sidecar_directory, staged_sidecar, stage):
         raise
 
 
-def retain_installer_package(recovery, installer, commit, version, supported_opencpn, engine_hashes):
-    """Add exact package.json and the fixed actual NSIS helper snapshots.
+def retain_installer_package(recovery, installer, commit, version, supported_opencpn, engine_hashes,
+                             commissioning_hashes=None):
+    """Add exact package.json, NSIS helpers, and optional historical source closure.
 
     Requires successful Setup production using these snapshots, with their hashes
     retained by the producer before compilation. No signature/launch
     authority is created: the final signed outer Recovery hash must authenticate
-    this sidecar at consumption. Returns only content-binding diagnostics.
+    this sidecar at consumption. The old six-argument API deliberately permits a
+    historical package without commissioning sources only when that entire
+    namespace is absent. Current producers always supply the exact 12 precompile
+    source hashes. Partial or unpinned existing snapshots refuse; these sources
+    remain separate from the unchanged three NSIS-embedded helpers. Returns only
+    content-binding diagnostics, not commissioning/launch/health authority.
     """
     recovery = _local(recovery, True)
     installer = _local(installer, True)
@@ -423,6 +507,18 @@ def retain_installer_package(recovery, installer, commit, version, supported_ope
                for name in ENGINE_HELPERS}
     if {name.rsplit('/', 1)[1]: hashlib.sha256(raw).hexdigest() for name, raw in engines.items()} != engine_hashes:
         raise ValueError('Installer helpers changed while reading snapshots')
+    commissioning = {}
+    if commissioning_hashes is None:
+        _commissioning_namespace(installer, False)
+    else:
+        validate_commissioning_helpers(installer, commissioning_hashes)
+        commissioning = {f'installer/{COMMISSIONING_SUBTREE}/{name}':
+                         _read(installer / COMMISSIONING_SUBTREE / name, MAX_COMMISSIONING, collect=True)
+                         for name in COMMISSIONING_HELPERS}
+        if {name.rsplit('/', 1)[1]: hashlib.sha256(raw).hexdigest()
+                for name, raw in commissioning.items()} != commissioning_hashes:
+            raise ValueError('Commissioning helpers changed while reading snapshots')
+    retained_helpers = {**engines, **commissioning}
     record = _local(installer / 'package.json')
     payload = _local(installer / 'payload.zip')
     setup = _local(installer / 'SKAGER-Beta2-Setup.exe')
@@ -464,7 +560,7 @@ def retain_installer_package(recovery, installer, commit, version, supported_ope
         raise ValueError('Original Recovery archive differs from actual files')
     new_manifest = dict(original_manifest)
     new_manifest[SIDECAR] = hashlib.sha256(raw).hexdigest()
-    new_manifest.update({name: hashlib.sha256(body).hexdigest() for name, body in engines.items()})
+    new_manifest.update({name: hashlib.sha256(body).hexdigest() for name, body in retained_helpers.items()})
     manifest_raw = (json.dumps(new_manifest, indent=2) + '\n').encode('utf-8')
     if len(manifest_raw) > MAX_METADATA:
         raise ValueError('Updated Recovery inventory exceeds bound')
@@ -475,13 +571,15 @@ def retain_installer_package(recovery, installer, commit, version, supported_ope
         sidecar.mkdir()
         _write(sidecar / 'package.json', raw)
         (sidecar / 'engine').mkdir()
-        for name, body in engines.items():
-            _write(sidecar / 'engine' / name.rsplit('/', 1)[1], body)
+        if commissioning:
+            (sidecar / COMMISSIONING_SUBTREE).mkdir()
+        for name, body in retained_helpers.items():
+            _write(sidecar / Path(name).relative_to('installer'), body)
         staged_manifest = stage / INVENTORY
         _write(staged_manifest, manifest_raw)
         staged_archive = stage / archive.name
         final_files = dict(actual, **{INVENTORY: hashlib.sha256(manifest_raw).hexdigest(), SIDECAR: hashlib.sha256(raw).hexdigest()})
-        final_files.update({name: hashlib.sha256(body).hexdigest() for name, body in engines.items()})
+        final_files.update({name: hashlib.sha256(body).hexdigest() for name, body in retained_helpers.items()})
         with zipfile.ZipFile(staged_archive, 'x', zipfile.ZIP_DEFLATED, compresslevel=6, allowZip64=False) as output:
             for name, digest in sorted(final_files.items()):
                 source = staged_manifest if name == INVENTORY else sidecar / Path(name).relative_to('installer') if name.startswith('installer/') else recovery / name
@@ -494,6 +592,10 @@ def retain_installer_package(recovery, installer, commit, version, supported_ope
         staged_checksum = stage / checksum.name
         _write(staged_checksum, (new_archive_hash + '  ' + archive.name + '\n').encode('ascii'))
         validate_installer_helpers(installer, engine_hashes)
+        if commissioning_hashes is None:
+            _commissioning_namespace(installer, False)
+        else:
+            validate_commissioning_helpers(installer, commissioning_hashes)
         if (_tree(recovery) != actual or _read(record, MAX_METADATA, collect=True) != raw
                 or _read(payload, MAX_ARCHIVE) != package['payloadSha256']
                 or _read(setup) != setup_hash or _read(setup_checksum, 1024, collect=True) != setup_checksum_raw
@@ -502,10 +604,12 @@ def retain_installer_package(recovery, installer, commit, version, supported_ope
             raise ValueError('Packaging inputs changed before publication')
         _publish([(recovery / INVENTORY, staged_manifest), (archive, staged_archive), (checksum, staged_checksum)], recovery / 'installer', sidecar, stage)
         completed = True
-        return {'packageSha256': hashlib.sha256(raw).hexdigest(), 'payloadSha256': package['payloadSha256'],
-                'recoverySha256': new_archive_hash, 'setupSha256': setup_hash, 'commit': commit, 'version': version,
-                'engineSha256': dict(engine_hashes),
-                'appDocsUnchanged': True, 'launchAuthority': False}
+        result = {'packageSha256': hashlib.sha256(raw).hexdigest(), 'payloadSha256': package['payloadSha256'],
+                  'recoverySha256': new_archive_hash, 'setupSha256': setup_hash, 'commit': commit, 'version': version,
+                  'engineSha256': dict(engine_hashes), 'appDocsUnchanged': True, 'launchAuthority': False}
+        if commissioning_hashes is not None:
+            result['commissioningSha256'] = dict(commissioning_hashes)
+        return result
     finally:
         # On failed publication retain staged/original records for inspection;
         # the caller must treat any raised exception as a failed package.

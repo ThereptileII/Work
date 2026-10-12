@@ -12,7 +12,8 @@ import zipfile
 from hardware_output_policy import require_product_output_policy
 from product_version import read_product_version, windows_product_version
 from installer_package_receipt import (retain_installer_package,
-    snapshot_installer_helpers, validate_installer_helpers)
+    snapshot_installer_helpers, validate_installer_helpers,
+    snapshot_commissioning_helpers, validate_commissioning_helpers)
 ROOT = Path(__file__).resolve().parents[1]
 p=argparse.ArgumentParser()
 p.add_argument('--preview',type=Path,required=True)
@@ -60,6 +61,9 @@ if not compiler.exists(): raise SystemExit('Native NSIS compiler missing')
 # NSIS and Recovery consume the same fresh snapshots, never later reconstructed
 # source helpers. This is producer input binding, not independent Setup extraction.
 engine_hashes=snapshot_installer_helpers(ROOT/'installer/windows', a.output)
+# Separate Recovery execution-source closure; no extra NSIS embedding or boat
+# policy execution. Retain the source hashes before compilation, never re-pin.
+commissioning_hashes=snapshot_commissioning_helpers(ROOT/'tools/boat', a.output)
 engine=a.output.resolve()/'engine'
 setup=a.output/'SKAGER-Beta2-Setup.exe'
 subprocess.run([str(compiler),'/V3',f'/DOUTPUT={setup.resolve()}',
@@ -73,8 +77,10 @@ subprocess.run([str(compiler),'/V3',f'/DOUTPUT={setup.resolve()}',
                '/DMANIFEST_SHA256='+hashlib.sha256(record.read_bytes()).hexdigest(),
                str(ROOT/'installer/windows/AlphaSetup.nsi')],check=True)
 validate_installer_helpers(a.output, engine_hashes)
+validate_commissioning_helpers(a.output, commissioning_hashes)
 (setup.with_suffix('.exe.sha256')).write_text(hashlib.sha256(setup.read_bytes()).hexdigest()+'  '+setup.name+'\n')
 # Retain the exact NSIS-embedded manifest only after payload/Setup generation.
 # It lives outside app/docs, avoiding an inner payload/manifest hash cycle.
-retain_installer_package(preview, a.output, commit, version, manifest['supportedOpenCpn'], engine_hashes)
+retain_installer_package(preview, a.output, commit, version, manifest['supportedOpenCpn'], engine_hashes,
+                         commissioning_hashes=commissioning_hashes)
 print(setup)

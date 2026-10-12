@@ -19,6 +19,14 @@ import installer_package_receipt as receipt
 
 COMMIT = 'a' * 40
 VERSION = '0.4.0-beta2.4'
+COMMISSIONING_NAMES = (
+    'commission-read-only.ps1', 'verify-commissioning-launch.ps1',
+    'Commissioning.ps1', 'Preparation.ps1', 'Common.ps1',
+    'CommissioningProfileLock.cs', 'InstalledResourceReview.ps1',
+    'CommissioningBaseline.ps1', 'ColdBaseline.ps1',
+    'RestartCommissioningPolicy.ps1', 'RestartAuiPersistence.ps1',
+    'RestartDashboardPersistence.ps1',
+)
 
 
 def sha(raw):
@@ -50,6 +58,12 @@ class Receipt(unittest.TestCase):
         for name, raw in self.helpers.items():
             (self.helper_source / name).write_bytes(raw)
         self.engine_hashes = receipt.snapshot_installer_helpers(self.helper_source, self.installer)
+        self.commissioning_source = self.root / 'source/tools/boat'
+        self.commissioning_source.mkdir(parents=True)
+        self.commissioning = {name: b'\xef\xbb\xbf# inert retained source; never executed\r\n# ' + name.encode() + b'\r\n'
+                              for name in COMMISSIONING_NAMES}
+        for name, raw in self.commissioning.items():
+            (self.commissioning_source / name).write_bytes(raw)
         self.files = {
             'app/opencpn.exe': pe(), 'app/opennav-restart.exe': b'inert restart helper',
             'app/skager-start.exe': b'inert startup launcher', 'app/plugins/inert_pi.dll': b'inert DLL bytes; never loaded',
@@ -113,14 +127,21 @@ class Receipt(unittest.TestCase):
     def finish(self):
         return receipt.retain_installer_package(self.recovery, self.installer, COMMIT, VERSION, self.selected_compatibility, self.engine_hashes)
 
+    def enable_commissioning(self):
+        self.commissioning_hashes = receipt.snapshot_commissioning_helpers(self.commissioning_source, self.installer)
+
+    def finish_commissioning(self):
+        return receipt.retain_installer_package(self.recovery, self.installer, COMMIT, VERSION,
+            self.selected_compatibility, self.engine_hashes, commissioning_hashes=self.commissioning_hashes)
+
     def snapshot(self):
         return {p.relative_to(self.root).as_posix(): p.read_bytes() for p in self.root.rglob('*')
                 if p.is_file() and not any(part.startswith('.installer-receipt-') for part in p.parts)}
 
-    def refuses_unchanged(self):
+    def refuses_unchanged(self, finish=None):
         before = self.snapshot()
         with self.assertRaises((ValueError, OSError, zipfile.BadZipFile)):
-            self.finish()
+            (finish or self.finish)()
         self.assertEqual(self.snapshot(), before)
         self.assertFalse((self.recovery / receipt.SIDECAR).exists())
 
@@ -155,6 +176,8 @@ class Receipt(unittest.TestCase):
         self.assertEqual(result['packageSha256'], sha(package))
         self.assertEqual(result['payloadSha256'], sha(payload))
         self.assertEqual(result['engineSha256'], self.engine_hashes)
+        self.assertNotIn('commissioningSha256', result)  # Original six-argument API remains historical zero.
+        self.assertFalse((self.recovery / 'installer/commissioning-v1').exists())
         self.assertTrue(result['appDocsUnchanged'])
         self.assertFalse(result['launchAuthority'])
         with self.assertRaises(ValueError):
@@ -403,6 +426,143 @@ class Receipt(unittest.TestCase):
         self.assertEqual(self.archive.read_bytes(), archive)
         self.assertFalse((self.recovery / 'installer').exists())
 
+    def test_exact_twelve_commissioning_originals_roundtrip_closed_inventory(self):
+        self.assertEqual(tuple(receipt.COMMISSIONING_HELPERS), COMMISSIONING_NAMES)
+        self.enable_commissioning()
+        payload, package, setup = self.payload.read_bytes(), (self.installer / 'package.json').read_bytes(), self.setup.read_bytes()
+        result = self.finish_commissioning()
+        manifest = json.loads((self.recovery / receipt.INVENTORY).read_bytes())
+        expected = {receipt.SIDECAR, *('installer/engine/' + name for name in self.helpers),
+                    *('installer/commissioning-v1/' + name for name in COMMISSIONING_NAMES)}
+        self.assertEqual({name for name in manifest if name.startswith('installer/')}, expected)
+        for name, raw in self.commissioning.items():
+            relative = 'installer/commissioning-v1/' + name
+            self.assertEqual((self.recovery / relative).read_bytes(), raw)
+            self.assertEqual((self.installer / 'commissioning-v1' / name).read_bytes(), raw)
+            self.assertEqual(manifest[relative], sha(raw))
+        with zipfile.ZipFile(self.archive) as archive:
+            self.assertIsNone(archive.testzip())
+            self.assertEqual(set(archive.namelist()), {receipt.PREFIX + '/' + name for name in manifest} |
+                             {receipt.PREFIX + '/' + receipt.INVENTORY})
+            for name, digest in manifest.items():
+                self.assertEqual(sha(archive.read(receipt.PREFIX + '/' + name)), digest)
+        self.assertEqual(self.checksum.read_text(), sha(self.archive.read_bytes()) + '  ' + self.archive.name + '\n')
+        self.assertEqual(self.payload.read_bytes(), payload)
+        self.assertEqual((self.installer / 'package.json').read_bytes(), package)
+        self.assertEqual(self.setup.read_bytes(), setup)
+        self.assertEqual(result['commissioningSha256'], {name: sha(raw) for name, raw in self.commissioning.items()})
+        self.assertEqual(result['engineSha256'], self.engine_hashes)
+        self.assertFalse(result['launchAuthority'])
+
+    def test_historical_omission_never_ignores_existing_commissioning_namespace(self):
+        self.enable_commissioning()
+        self.refuses_unchanged()
+
+    def test_each_commissioning_member_missing_or_changed_refuses(self):
+        self.enable_commissioning()
+        subtree = self.installer / 'commissioning-v1'
+        for name, raw in self.commissioning.items():
+            for kind in ('missing', 'changed'):
+                with self.subTest(name=name, kind=kind):
+                    path = subtree / name
+                    path.unlink()
+                    if kind == 'changed': path.write_bytes(b'changed after precompile pin')
+                    self.refuses_unchanged(self.finish_commissioning)
+                    path.write_bytes(raw)
+
+    def test_commissioning_requires_original_complete_hashes_and_bound(self):
+        self.enable_commissioning()
+        original = self.commissioning_hashes
+        for bad in [{}, dict(original, extra='a' * 64),
+                    {name: digest for name, digest in original.items() if name != 'Common.ps1'},
+                    dict(original, **{'Common.ps1': '0' * 64})]:
+            with self.subTest(hashes=bad):
+                self.commissioning_hashes = bad
+                self.refuses_unchanged(self.finish_commissioning)
+        self.commissioning_hashes = original
+        with mock.patch.object(receipt, 'MAX_COMMISSIONING', 4):
+            self.refuses_unchanged(self.finish_commissioning)
+
+    def test_commissioning_alias_extra_empty_link_and_namespace_refusals(self):
+        self.enable_commissioning()
+        subtree = self.installer / 'commissioning-v1'
+        path = subtree / 'Common.ps1'
+        for kind in ('alias', 'extra', 'empty', 'symlink', 'hardlink', 'directory'):
+            with self.subTest(kind=kind):
+                path.unlink()
+                if kind in {'alias', 'extra'}:
+                    path.write_bytes(self.commissioning[path.name])
+                    (subtree / ('COMMON.ps1' if kind == 'alias' else 'unexpected.ps1')).write_bytes(b'extra')
+                elif kind == 'symlink': path.symlink_to(self.commissioning_source / path.name)
+                elif kind == 'hardlink': os.link(self.commissioning_source / path.name, path)
+                elif kind == 'directory': path.mkdir()
+                else: path.write_bytes(b'')
+                self.refuses_unchanged(self.finish_commissioning)
+                for child in subtree.iterdir():
+                    child.rmdir() if child.is_dir() else child.unlink()
+                for name, raw in self.commissioning.items(): (subtree / name).write_bytes(raw)
+        for name in ('Commissioning-v1', 'commissioning-v2'):
+            with self.subTest(namespace=name):
+                extra = self.installer / name; extra.mkdir()
+                self.refuses_unchanged(self.finish_commissioning)
+                extra.rmdir()
+        alias = self.installer / 'Commissioning-v1'
+        subtree.rename(alias)
+        self.refuses_unchanged(self.finish_commissioning)
+        alias.rename(subtree)
+        retained = self.root / 'held-commissioning'
+        subtree.rename(retained)
+        subtree.symlink_to(retained, target_is_directory=True)
+        self.refuses_unchanged(self.finish_commissioning)
+        subtree.unlink()
+        retained.rename(subtree)
+
+    def test_commissioning_source_missing_alias_and_links_refuse_before_snapshot(self):
+        output = self.root / 'snapshot-output'; output.mkdir()
+        path = self.commissioning_source / 'Common.ps1'
+        for kind in ('missing', 'alias', 'symlink', 'hardlink'):
+            with self.subTest(kind=kind):
+                path.unlink()
+                if kind == 'alias': (self.commissioning_source / 'COMMON.ps1').write_bytes(b'alias')
+                elif kind == 'symlink': path.symlink_to(self.helper_source / 'Lifecycle.ps1')
+                elif kind == 'hardlink': os.link(self.helper_source / 'Lifecycle.ps1', path)
+                with self.assertRaises((ValueError, OSError)):
+                    receipt.snapshot_commissioning_helpers(self.commissioning_source, output)
+                self.assertFalse((output / 'commissioning-v1').exists())
+                if path.exists() or path.is_symlink(): path.unlink()
+                alias = self.commissioning_source / 'COMMON.ps1'
+                if alias.exists(): alias.unlink()
+                path.write_bytes(self.commissioning[path.name])
+        linked = self.root / 'linked-boat'; linked.symlink_to(self.commissioning_source, target_is_directory=True)
+        with self.assertRaises(ValueError): receipt.snapshot_commissioning_helpers(linked, output)
+        for name in ('commissioning-v1', 'Commissioning-v1', 'commissioning-v2'):
+            with self.subTest(preexisting=name):
+                extra = output / name; extra.mkdir()
+                with self.assertRaises(ValueError): receipt.snapshot_commissioning_helpers(self.commissioning_source, output)
+                extra.rmdir()
+
+    def test_late_commissioning_mutation_refuses_publication(self):
+        self.enable_commissioning()
+        read = receipt._read
+        def change(path, *args, **kwargs):
+            value = read(path, *args, **kwargs)
+            if Path(path).name == self.archive.name and Path(path).parent.name.startswith('.installer-receipt-'):
+                (self.installer / 'commissioning-v1/Common.ps1').write_bytes(b'late mutation')
+            return value
+        archive = self.archive.read_bytes()
+        with mock.patch.object(receipt, '_read', change), self.assertRaises(ValueError): self.finish_commissioning()
+        self.assertEqual(self.archive.read_bytes(), archive)
+        self.assertFalse((self.recovery / 'installer').exists())
+
+    def test_commissioning_publication_failure_restores_prior_outputs(self):
+        self.enable_commissioning()
+        rename = Path.rename
+        def fail_staged(source, target):
+            if source.name == self.archive.name and source.parent.name.startswith('.installer-receipt-'):
+                raise OSError('injected publication failure')
+            return rename(source, target)
+        with mock.patch.object(Path, 'rename', fail_staged): self.refuses_unchanged(self.finish_commissioning)
+
     def run_recipe_with_inert_compiler(self, mutation=None):
         # Execute the real producer recipe with a data-only NSIS stand-in. No
         # compiler/app/script is run. Inspect its actual /D inputs at invocation.
@@ -430,6 +590,9 @@ class Receipt(unittest.TestCase):
                                  ('UPDATE_SUPERVISOR', 'UpdateSupervisor.ps1')]:
                 self.assertEqual(Path(defines[define]), output / 'engine' / name)
                 self.assertEqual(Path(defines[define]).read_bytes(), self.helpers[name])
+            self.assertEqual({child.name for child in (output / 'commissioning-v1').iterdir()}, set(COMMISSIONING_NAMES))
+            for name, raw in self.commissioning.items():
+                self.assertEqual((output / 'commissioning-v1' / name).read_bytes(), raw)
             Path(defines['OUTPUT']).write_bytes(b'inert compiled Setup; never executed')
             if mutation:
                 mutation(output)
@@ -455,6 +618,21 @@ class Receipt(unittest.TestCase):
             (output / 'engine/UpdateTransaction.ps1').write_bytes(b'mutated compiler input')
         with self.assertRaisesRegex(ValueError, 'snapshot changed'):
             self.run_recipe_with_inert_compiler(mutate)
+        self.assertFalse((self.recovery / 'installer').exists())
+        self.assertFalse((self.root / 'compiled-installer/SKAGER-Beta2-Setup.exe.sha256').exists())
+
+    def test_real_recipe_retains_commissioning_originals_after_source_changes(self):
+        def change_source(_):
+            (self.commissioning_source / 'Common.ps1').write_bytes(b'new source after precompile snapshot')
+        output = self.run_recipe_with_inert_compiler(change_source)
+        for name, raw in self.commissioning.items():
+            self.assertEqual((output / 'commissioning-v1' / name).read_bytes(), raw)
+            self.assertEqual((self.recovery / 'installer/commissioning-v1' / name).read_bytes(), raw)
+
+    def test_real_recipe_refuses_commissioning_mutation_after_compiler(self):
+        def mutate(output):
+            (output / 'commissioning-v1/Common.ps1').write_bytes(b'mutated after compiler')
+        with self.assertRaisesRegex(ValueError, 'snapshot changed'): self.run_recipe_with_inert_compiler(mutate)
         self.assertFalse((self.recovery / 'installer').exists())
         self.assertFalse((self.root / 'compiled-installer/SKAGER-Beta2-Setup.exe.sha256').exists())
 
