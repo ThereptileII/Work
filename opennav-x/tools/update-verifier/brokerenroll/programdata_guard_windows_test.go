@@ -11,9 +11,11 @@ import (
 )
 
 func TestEnrollmentProgramDataGuardClosePreservesUncertainty(t *testing.T) {
-	g := &enrollmentProgramDataGuard{children: []enrollmentGuardDirectory{{handle: windows.InvalidHandle}}}
+	// NULL is invalid for CloseHandle; InvalidHandle (-1) is also the current
+	// process pseudo-handle, whose close has no effect rather than failing.
+	g := &enrollmentProgramDataGuard{children: []enrollmentGuardDirectory{{handle: windows.Handle(0)}}}
 	err := g.Close()
-	if err == nil || !errors.Is(err, ErrCleanup) || g.Close() != err {
+	if err == nil || !errors.Is(err, ErrCleanup) || !errors.Is(err, windows.ERROR_INVALID_HANDLE) || g.Close() != err {
 		t.Fatal("original guard cleanup uncertainty not retained idempotently")
 	}
 	if err := g.check(&enrollmentPin{}); err == nil {
