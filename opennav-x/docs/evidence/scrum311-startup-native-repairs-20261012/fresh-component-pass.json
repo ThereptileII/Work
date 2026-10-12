@@ -1,0 +1,107 @@
+{
+  "schema": 1,
+  "scope": "fresh exact-commit native updater components; not full application or installed updater acceptance",
+  "commit": "4966e8ad47da13f84bc6a341d4fbd1ef01dec0b8",
+  "run": 38302791125,
+  "url": "https://github.com/ThereptileII/Work/actions/runs/38302791125",
+  "conclusion": "success",
+  "platforms": {
+    "linux": {
+      "job": 114989531960,
+      "conclusion": "success",
+      "functionalTopLevelPassed": 601,
+      "functionalNestedPassed": 2603,
+      "functionalTopLevelSkipped": 0,
+      "functionalFailed": 0,
+      "startedAt": "2026-10-12T20:13:26Z",
+      "completedAt": "2026-10-12T20:14:45Z"
+    },
+    "windows": {
+      "job": 114989531699,
+      "conclusion": "success",
+      "functionalTopLevelPassed": 782,
+      "functionalNestedPassed": 2875,
+      "functionalTopLevelSkipped": 13,
+      "functionalFailed": 0,
+      "startedAt": "2026-10-12T20:13:26Z",
+      "completedAt": "2026-10-12T20:29:29Z"
+    }
+  },
+  "logs": {
+    "linux-job.log": {
+      "bytes": 3638828,
+      "sha256": "c6d944159cdd640e763c5f83788153deced12a4e0c2d8b6ac861a0763ee065e1",
+      "source": "original completed GitHub Actions job log"
+    },
+    "windows-job.log": {
+      "bytes": 4491437,
+      "sha256": "6a80edf50ff7676c5fa13ad993ca72a565869c366d052e239819f60a2aefc511",
+      "source": "original completed GitHub Actions job log"
+    }
+  },
+  "artifacts": [
+    {
+      "id": 11772210616,
+      "name": "update-verifier-windows-2022-386-4966e8ad47da13f84bc6a341d4fbd1ef01dec0b8",
+      "bytes": 615389168,
+      "sha256": "ae2a2fea2c2b3de582bb5d47700df83cc159f425f7a2e71aafcb482d3f5c45cf",
+      "downloadedAndVerified": false
+    },
+    {
+      "id": 11771900586,
+      "name": "protected-operator-kit-4966e8ad47da13f84bc6a341d4fbd1ef01dec0b8",
+      "bytes": 159583784,
+      "sha256": "b1d9a541c119f0abbbe368125667abed9ee2a6fc7da3b91b61d77646fc946316",
+      "downloadedAndVerified": true
+    },
+    {
+      "id": 11771102397,
+      "name": "update-verifier-ubuntu-24.04-amd64-4966e8ad47da13f84bc6a341d4fbd1ef01dec0b8",
+      "bytes": 198689,
+      "sha256": "da1f628e7531d85ff99d6814243afab941d0eb5f340665bd73a6b4b7ca32f721",
+      "downloadedAndVerified": false
+    }
+  ],
+  "windowsGates": {
+    "vet": "passed",
+    "exactCorrespondingSourcePackaging": "passed",
+    "nativeLauncherBrokerProvisionerBaselineProduction": "passed",
+    "retainedOperatorKitPackaging": "passed",
+    "authenticatedStartupAndInterruptionRecords": "passed",
+    "actualHistoricalInstallerTransactions": "passed",
+    "oldLifecycleProtectedOwnershipRefusal": "passed",
+    "actualFreshNativeFilesAndServiceEnrollment": "passed",
+    "actualBrokerInitializeStoreStoppedZeroExit": "passed",
+    "actualBrokerPrincipalVerifyStoreStoppedZeroExit": "passed",
+    "fixedServiceConfigurationDaclSidReadback": "passed",
+    "inertSigningBoundaries": "passed"
+  },
+  "actualFreshEnrollment": {
+    "topLevelPassed": 7,
+    "nestedPassed": 18,
+    "durationSeconds": 15.35,
+    "countsSeparateFromFunctionalSuite": true
+  },
+  "downloadedOperatorKit": {
+    "archiveArtifactId": 11771900586,
+    "name": "protected-operator-kit.zip",
+    "bytes": 159558245,
+    "sha256": "0f7be4d62d7dca5c6f81bdd046459c664d270f95f90f4c050cfe98a8af6abe02",
+    "allInnerPayloadSizesAndHashesVerified": true,
+    "executablesRunLocally": false
+  },
+  "fullApplicationBuild": false,
+  "boatChanged": false,
+  "nativeFreshComponentEnrollmentAccepted": true,
+  "installedApplicationUpdaterAccepted": false,
+  "packagedCppNetworkingSecurityAcceptance": false,
+  "productionOrPublicRelease": false,
+  "remainingGates": [
+    "private HTTPS activation and hosted Windows tailnet connectivity",
+    "genuine qualified B0/B1 application packages with identical public trust",
+    "independently approved original client registration and installed B0 initial qualification",
+    "actual installed no-update/Later/Now/offline phases then boat qualification",
+    "fresh packaged app networking/security gates SCRUM-208/209/211/212",
+    "protected repair/shortcut restoration/full uninstall SCRUM-27"
+  ]
+}

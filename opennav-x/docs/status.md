@@ -1,5 +1,29 @@
 # SKAGER status — 2026-10-12
 
+## Fresh same-commit Windows and Linux updater component gates pass
+
+Combined run [38302791125](https://github.com/ThereptileII/Work/actions/runs/38302791125)
+on exact `4966e8ad47da13f84bc6a341d4fbd1ef01dec0b8` succeeds on both platforms.
+The functional suite passes **601 top-level + 2603 nested** Linux cases and
+**782 top-level + 2875 nested** native Windows cases (13 Windows top-level skips,
+zero failures). Native launcher, broker, provisioner, baseline-handoff and operator
+kit production, exact corresponding-source checks, startup/interruption records,
+historical installer transactions and inert signing boundaries all pass.
+Fresh real SCM enrollment also passes, including both stopped zero-exit broker
+operations and fixed service configuration/DACL/SID readback. The downloaded
+operator-kit artifact and every inner payload size/hash match their original
+exact-commit manifests; no downloaded executable was run locally.
+
+This supersedes the pending fresh-component gate below. Earlier failed evidence
+remains unchanged. It does **not** qualify a full application package, real
+installed no-update/Later/Now/offline flow, networking/security issues
+SCRUM-208/209/211/212, protected full uninstall or boat deployment. Private HTTPS
+still requires account-owner activation; the expired earlier setup process was
+checked before recovering its activation link. Serve remains unconfigured and
+no public Funnel or remote-access configuration was changed. The existing boat
+installation is untouched. No full OpenCPN build, design review or endurance run
+was started. [Exact run, counts and downloaded-artifact evidence](evidence/scrum311-startup-native-repairs-20261012/fresh-component-pass.json).
+
 ## Actual native service enrollment passes with corrected helper
 
 Retained native run [38302376379](https://github.com/ThereptileII/Work/actions/runs/38302376379)
