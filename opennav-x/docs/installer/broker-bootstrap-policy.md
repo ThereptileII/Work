@@ -203,6 +203,17 @@ These local checks bind bytes/source, not original producer or publisher trust;
 the scripts never execute/elevate the output or activate a service. No OpenCPN
 binary is bundled into this prerequisite component.
 
+The reusable `update-verifier-probe.yml` gate now selects all four provisioner
+producer/verifier source/test paths for pull requests and runs both provisioner
+package suites alongside the existing launcher/broker suites. Its Windows job
+produces the inactive provisioner only after verifying the retained same-commit
+launcher and broker, in that isolated `broker-install` directory. It verifies
+exact console/build/source/prerequisite identity without running or elevating the
+provisioner. The ordinary product stages only the existing launcher install;
+this CI change does not silently enroll a machine or bundle the operator tool
+into normal startup. Native producer acceptance still requires a successful
+exact-source job; a source recipe alone is not that result.
+
 ## Independently approved fresh client registration
 
 Source revisions `129b0a64`, `910fd664`, `95cbe96e`, `55c743fd`, `24e137e9`,

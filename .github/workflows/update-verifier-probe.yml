@@ -14,6 +14,10 @@ on:
       - opennav-x/tools/package-update-broker.py
       - opennav-x/tools/test-broker-package.py
       - opennav-x/tools/test-package-update-broker.py
+      - opennav-x/tools/provisioner_package.py
+      - opennav-x/tools/package-update-provisioner.py
+      - opennav-x/tools/test-provisioner-package.py
+      - opennav-x/tools/test-package-update-provisioner.py
       - .github/workflows/update-verifier-probe.yml
   workflow_dispatch:
     inputs:
@@ -69,7 +73,8 @@ jobs:
         run: |
           import subprocess, sys
           for script in ('../test-package-update-launcher.py', '../test-updater-package.py',
-                         '../test-package-update-broker.py', '../test-broker-package.py'):
+                         '../test-package-update-broker.py', '../test-broker-package.py',
+                         '../test-package-update-provisioner.py', '../test-provisioner-package.py'):
               subprocess.run([sys.executable, script], check=True, timeout=60)
       - name: Compile native launcher with exact dependency sources
         if: runner.os == 'Windows'
@@ -117,6 +122,17 @@ jobs:
           python ../package-update-broker.py --install ../../build/updater-native/broker-install --commit $env:GITHUB_SHA
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python -c "import os,sys; from pathlib import Path; sys.path.insert(0,'..'); from broker_package import verify_broker_package; verify_broker_package(Path('../../build/updater-native/broker-install'), os.environ['GITHUB_SHA'])"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      # Produce the inactive operator tool beside the already-built same-commit
+      # launcher/broker closure. Verification never executes or elevates it.
+      # Keep it separate from the installed product; enrollment stays explicit.
+      - name: Compile inactive provisioner against the retained native prerequisites
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          python ../package-update-provisioner.py --install ../../build/updater-native/broker-install --commit $env:GITHUB_SHA
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -c "import os,sys; from pathlib import Path; sys.path.insert(0,'..'); from provisioner_package import verify_provisioner_package; verify_provisioner_package(Path('../../build/updater-native/broker-install'), os.environ['GITHUB_SHA'])"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Native authenticated startup and interruption records
         if: always() && runner.os == 'Windows'
