@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"testing"
+	"unsafe"
 
 	"example.com/opennav-update-verifier/brokerstore"
 	"golang.org/x/sys/windows"
@@ -161,14 +162,26 @@ func TestNativeExecutionProfileCaptureMutationWatchAndMetadataRefuse(t *testing.
 				if err != nil {
 					t.Fatal(err)
 				}
-				h, err := windows.CreateFile(pointer, windows.WRITE_DAC, windows.FILE_SHARE_READ|windows.FILE_SHARE_WRITE, nil, windows.OPEN_EXISTING, windows.FILE_FLAG_OPEN_REPARSE_POINT|windows.FILE_FLAG_BACKUP_SEMANTICS, 0)
+				// Protected-DACL mutation and its actual readback require both
+				// security read and write rights on this test-only handle.
+				h, err := windows.CreateFile(pointer, windows.READ_CONTROL|windows.WRITE_DAC, windows.FILE_SHARE_READ|windows.FILE_SHARE_WRITE, nil, windows.OPEN_EXISTING, windows.FILE_FLAG_OPEN_REPARSE_POINT|windows.FILE_FLAG_BACKUP_SEMANTICS, 0)
 				if err != nil {
 					t.Fatal(err)
 				}
 				setErr := windows.SetSecurityInfo(h, windows.SE_FILE_OBJECT, windows.DACL_SECURITY_INFORMATION|windows.PROTECTED_DACL_SECURITY_INFORMATION, nil, nil, acl, nil)
+				var readbackErr error
+				if setErr == nil {
+					readbackErr = nativeProfileMutatedDACL(h, acl)
+				}
 				closeErr := windows.CloseHandle(h)
-				if setErr != nil || closeErr != nil {
-					t.Fatal(setErr, closeErr)
+				if setErr != nil {
+					t.Fatalf("SetSecurityInfo actual directory DACL mutation: %v (close: %v)", setErr, closeErr)
+				}
+				if readbackErr != nil {
+					t.Fatalf("actual mutated directory DACL readback: %v (close: %v)", readbackErr, closeErr)
+				}
+				if closeErr != nil {
+					t.Fatal("directory DACL mutator close", closeErr)
 				}
 				found := false
 				for _, member := range source.members {
@@ -193,6 +206,42 @@ func TestNativeExecutionProfileCaptureMutationWatchAndMetadataRefuse(t *testing.
 		})
 	}
 }
+
+// Corroborate the requested mutation through the actual mutator handle. Windows
+// may add AUTO_INHERITED control; compare protected DACL ACE bytes here while
+// the retained production metadata still compares its original descriptor.
+func nativeProfileMutatedDACL(handle windows.Handle, expected *windows.ACL) error {
+	actual, err := windows.GetSecurityInfo(handle, windows.SE_FILE_OBJECT, windows.DACL_SECURITY_INFORMATION)
+	if err != nil {
+		return err
+	}
+	control, _, err := actual.Control()
+	const required = windows.SE_DACL_PRESENT | windows.SE_DACL_PROTECTED
+	if err != nil || control&required != required || control&(windows.SE_DACL_DEFAULTED|windows.SE_DACL_AUTO_INHERIT_REQ) != 0 {
+		return errors.New("mutated profile DACL must remain present, protected and nondefaulted")
+	}
+	acl, _, err := actual.DACL()
+	if err != nil || acl == nil || expected == nil || acl.AceCount != expected.AceCount {
+		return errors.New("actual mutated profile DACL entry count differs")
+	}
+	for i := uint32(0); i < uint32(acl.AceCount); i++ {
+		var ace, want *windows.ACCESS_ALLOWED_ACE
+		if err := windows.GetAce(acl, i, &ace); err != nil {
+			return err
+		}
+		if err := windows.GetAce(expected, i, &want); err != nil {
+			return err
+		}
+		size := int(ace.Header.AceSize)
+		if size < int(unsafe.Sizeof(windows.ACE_HEADER{})) || size != int(want.Header.AceSize) || !bytes.Equal(unsafe.Slice((*byte)(unsafe.Pointer(ace)), size), unsafe.Slice((*byte)(unsafe.Pointer(want)), size)) {
+			return errors.New("actual mutated profile DACL ACE bytes differ")
+		}
+	}
+	runtime.KeepAlive(actual)
+	runtime.KeepAlive(expected)
+	return nil
+}
+
 func TestNativeExecutionProfileCaptureHardlinksStreamsAndCancellationRefuse(t *testing.T) {
 	for _, kind := range []string{"hardlink", "named-stream", "cancelled"} {
 		t.Run(kind, func(t *testing.T) {
