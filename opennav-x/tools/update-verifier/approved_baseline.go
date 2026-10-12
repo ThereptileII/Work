@@ -53,10 +53,9 @@ func importApprovedBaselineAt(ctx context.Context, rawRequest []byte, independen
 	}
 	r := approvedBaselineReaderAt{ctx, io.NewSectionReader(source, 0, size)}
 	contents, err := parseRecoveryContents(ctx, r, size, releasepolicy.Policy{Version: request.Installed.Version, Commit: request.Installed.Commit, SupportedOpenCpn: []releasepolicy.OpenCpn{request.Stock.Identity()}})
-	if err != nil {
-		return empty, err
+	if canceled := ctx.Err(); canceled != nil {
+		return empty, canceled
 	}
-	product, err := recoveryMemberBytes(contents.files["docs/PRODUCT_BUILD.json"], 32<<10)
 	if err != nil {
 		return empty, err
 	}
@@ -66,7 +65,7 @@ func importApprovedBaselineAt(ctx context.Context, rawRequest []byte, independen
 			observed[name] = hash
 		}
 	}
-	identity, payload, err := baselineevidence.Validate(ctx, contents.inventoryBytes, contents.packageBytes, product, observed, request.Installed)
+	identity, payload, err := baselineevidence.Validate(ctx, contents.inventoryBytes, contents.packageBytes, contents.productBytes, observed, request.Installed)
 	if err != nil {
 		return empty, err
 	}

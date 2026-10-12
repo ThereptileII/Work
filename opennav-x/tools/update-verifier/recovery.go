@@ -25,7 +25,7 @@ const maxRecoveryMember = uint64(512) << 20
 const maxRecoveryInventory = int64(4) << 20
 
 // RecoveryIdentity describes actual bytes inside the authenticated recovery ZIP.
-// It is informational, not installer, commissioning or launch authority. The
+// It is informational, not installer, commissioning or launch authority.
 // Older recovery layouts lack Lifecycle's exact package.json. Its hash is
 // available only with the inventoried installer/package.json sidecar, and is
 // never inferred from the executable, a serialization or the outer ZIP hash.
@@ -100,18 +100,19 @@ func acquireRecovery(ctx context.Context, config PrepareConfig, candidate Update
 	return &PreparedRecovery{Policy: candidate.Policy, Consent: candidate.Consent, Identity: identity, Artifact: artifact}, nil
 }
 
-// No exported arbitrary-reader/artifact parser: provenance comes from the
-// authenticated check/download above. All archive reads use the retained handle.
+// This signed recovery path gets provenance from authenticated check/download
+// above and reads only its retained handle. Approved baseline import has its
+// separate purpose-bound operator approval boundary.
 func readRecoveryIdentity(ctx context.Context, artifact *VerifiedArtifact, policy releasepolicy.Policy) (RecoveryIdentity, error) {
 	contents, err := readRecoveryContents(ctx, artifact, policy)
 	return contents.identity, err
 }
 
 type recoveryContents struct {
-	identity                     RecoveryIdentity
-	files                        map[string]*zip.File
-	inventory                    map[string]string
-	inventoryBytes, packageBytes []byte
+	identity                                   RecoveryIdentity
+	files                                      map[string]*zip.File
+	inventory                                  map[string]string
+	inventoryBytes, packageBytes, productBytes []byte
 }
 
 func readRecoveryContents(ctx context.Context, artifact *VerifiedArtifact, policy releasepolicy.Policy) (recoveryContents, error) {
@@ -217,7 +218,7 @@ func parseRecoveryContents(ctx context.Context, r io.ReaderAt, size int64, polic
 	if err := ctx.Err(); err != nil {
 		return empty, err
 	}
-	return recoveryContents{identity: identity, files: files, inventory: inventory, inventoryBytes: inventoryBytes, packageBytes: manifest}, nil
+	return recoveryContents{identity: identity, files: files, inventory: inventory, inventoryBytes: inventoryBytes, packageBytes: manifest, productBytes: productBytes}, nil
 }
 
 type recoveryReaderAt struct {

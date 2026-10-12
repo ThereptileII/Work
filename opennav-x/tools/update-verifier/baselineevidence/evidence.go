@@ -243,13 +243,13 @@ func recoveryJSONValue(d *json.Decoder, depth int) error {
 // DecodeInventory checks the bounded strict original inventory. It does not
 // authenticate its contents; callers must bind original bytes independently.
 func DecodeInventory(raw []byte, inventory *map[string]string) error {
-	if len(raw) == 0 || len(raw) > maxEvidenceBytes || strictRecoveryJSON(raw, inventory) != nil || len(*inventory) == 0 || len(*inventory) >= maxRecoveryFiles {
+	if inventory == nil || len(raw) == 0 || len(raw) > maxEvidenceBytes || strictRecoveryJSON(raw, inventory) != nil || len(*inventory) == 0 || len(*inventory) >= maxRecoveryFiles {
 		return errors.New("invalid original recovery inventory")
 	}
 	aliases := map[string]bool{}
 	for name, hash := range *inventory {
 		key := strings.ToLower(name)
-		if !safeRecoveryPath(name) || name == "FILE_SHA256.json" || !recoveryHash.MatchString(hash) || aliases[key] {
+		if !safeRecoveryPath(name) || (strings.EqualFold(name, "app/OPENNAV_PORTABLE_PREVIEW") && name != "app/OPENNAV_PORTABLE_PREVIEW") || strings.EqualFold(name, "FILE_SHA256.json") || !recoveryHash.MatchString(hash) || aliases[key] {
 			return errors.New("invalid recovery inventory member")
 		}
 		aliases[key] = true
@@ -332,6 +332,15 @@ func CheckRecoveryEvidence(ctx context.Context, inventoryRaw, packageRaw, produc
 // custody and current running identity remain separate caller obligations.
 func Validate(ctx context.Context, inventoryRaw, packageRaw, productRaw []byte, observed map[string]string, expected brokerregistration.Installed) (Identity, map[string]string, error) {
 	var empty Identity
+	if ctx == nil {
+		return empty, nil, errors.New("evidence context required")
+	}
+	if err := ctx.Err(); err != nil {
+		return empty, nil, err
+	}
+	if len(inventoryRaw) == 0 || len(inventoryRaw) > maxEvidenceBytes || len(packageRaw) == 0 || len(packageRaw) > maxEvidenceBytes || len(productRaw) == 0 || len(productRaw) > 32<<10 || len(observed) >= maxRecoveryFiles {
+		return empty, nil, errors.New("approved evidence size bound")
+	}
 	if !recoveryHash.MatchString(expected.InventorySHA256) || !recoveryHash.MatchString(expected.PackageSHA256) || !recoveryHash.MatchString(expected.ProductBuildSHA256) || !recoveryHash.MatchString(expected.ExecutableSHA256) ||
 		digest(inventoryRaw) != expected.InventorySHA256 || digest(packageRaw) != expected.PackageSHA256 || digest(productRaw) != expected.ProductBuildSHA256 || len(packageRaw) == 0 {
 		return empty, nil, errors.New("approved original evidence differs")
