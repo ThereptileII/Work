@@ -1,0 +1,92 @@
+{
+  "helperSha256": "73b8bd649aeb7c2533b0eecc2c13570062547c8ffa77b2e09f282729f564b234",
+  "fixtureSha256": "fc7c785355220e9cc7f38be66101554b574eaffbeef3e6a121896a015c86582d",
+  "mode": "paired-core-private",
+  "runs": [
+    {
+      "name": "core",
+      "command": [
+        "g++",
+        "-std=c++17",
+        "-O2",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-I/home/standard/Projects/X-nav-worktrees/source-batch-20261011/opennav-x/src",
+        "-Iopennav-x/evidence/local/chart-render-joined-20261012/paired/core",
+        "-DOPENNAV_X",
+        "-DOBSERVATION_ENABLED",
+        "/home/standard/Projects/X-nav-worktrees/source-batch-20261011/opennav-x/tests/chart_render_observation_test.cpp",
+        "-o",
+        "opennav-x/evidence/local/chart-render-joined-20261012/paired/core/test"
+      ],
+      "dispatchSha256": "c9b84296222cf0cf61f39d3d69948c6c18ea27f3d17dafb0c5703f8be5517c95",
+      "sourceSha256": "0345cd2c37877e5b8d34301d235a138277c2bafade18bb4f83fc807324581ed7",
+      "stdout": "54 actual dispatch/copy/generation/bounds checks passed\n",
+      "exit": 0
+    },
+    {
+      "name": "core-standard",
+      "command": [
+        "g++",
+        "-std=c++17",
+        "-O2",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-I/home/standard/Projects/X-nav-worktrees/source-batch-20261011/opennav-x/src",
+        "-Iopennav-x/evidence/local/chart-render-joined-20261012/paired/core-standard",
+        "/home/standard/Projects/X-nav-worktrees/source-batch-20261011/opennav-x/tests/chart_render_observation_test.cpp",
+        "-o",
+        "opennav-x/evidence/local/chart-render-joined-20261012/paired/core-standard/test"
+      ],
+      "dispatchSha256": "c9b84296222cf0cf61f39d3d69948c6c18ea27f3d17dafb0c5703f8be5517c95",
+      "sourceSha256": "0345cd2c37877e5b8d34301d235a138277c2bafade18bb4f83fc807324581ed7",
+      "stdout": "7 actual dispatch/copy/generation/bounds checks passed\n",
+      "exit": 0
+    },
+    {
+      "name": "private",
+      "command": [
+        "g++",
+        "-std=c++17",
+        "-O2",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-I/home/standard/Projects/X-nav-worktrees/source-batch-20261011/opennav-x/src",
+        "-Iopennav-x/evidence/local/chart-render-joined-20261012/paired/private",
+        "-DSKAGER_OCHARTS_ADAPTER",
+        "-DOBSERVATION_ENABLED",
+        "/home/standard/Projects/X-nav-worktrees/source-batch-20261011/opennav-x/tests/chart_render_observation_test.cpp",
+        "-o",
+        "opennav-x/evidence/local/chart-render-joined-20261012/paired/private/test"
+      ],
+      "dispatchSha256": "e3c166da70a257484938f38d3d2b79c712805f086d58cea697b97251a47baf6c",
+      "sourceSha256": "8e3e44069fbb30f1cc6d3cda5e7cab060ac04f2b3215d2337ddfbd63c442b3c3",
+      "stdout": "54 actual dispatch/copy/generation/bounds checks passed\n",
+      "exit": 0
+    },
+    {
+      "name": "private-standard",
+      "command": [
+        "g++",
+        "-std=c++17",
+        "-O2",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-I/home/standard/Projects/X-nav-worktrees/source-batch-20261011/opennav-x/src",
+        "-Iopennav-x/evidence/local/chart-render-joined-20261012/paired/private-standard",
+        "/home/standard/Projects/X-nav-worktrees/source-batch-20261011/opennav-x/tests/chart_render_observation_test.cpp",
+        "-o",
+        "opennav-x/evidence/local/chart-render-joined-20261012/paired/private-standard/test"
+      ],
+      "dispatchSha256": "e3c166da70a257484938f38d3d2b79c712805f086d58cea697b97251a47baf6c",
+      "sourceSha256": "8e3e44069fbb30f1cc6d3cda5e7cab060ac04f2b3215d2337ddfbd63c442b3c3",
+      "stdout": "7 actual dispatch/copy/generation/bounds checks passed\n",
+      "exit": 0
+    }
+  ],
+  "limits": "Real dispatch with inert alias/projection/painter seams; no native canvas, GPU readback, private DLL or boat execution."
+}

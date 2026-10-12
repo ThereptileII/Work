@@ -1,0 +1,4 @@
+core: 54 actual dispatch/copy/generation/bounds checks passed
+core-standard: 7 actual dispatch/copy/generation/bounds checks passed
+private: 54 actual dispatch/copy/generation/bounds checks passed
+private-standard: 7 actual dispatch/copy/generation/bounds checks passed

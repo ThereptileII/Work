@@ -1,0 +1,25 @@
+{
+  "upstream": "c98bf5f0654a6aee52cd9a6b9fabc0d1cf8047e8",
+  "pinnedTouchedFiles": {
+    "src/chart.h": "4a688df5acfe99e6ba6d8299d9c80146e6ebbbda628a72fd98d28de28549350b",
+    "src/eSENCChart.cpp": "e42a59ff86e77d5f1d4222e35265a5f5f49dfb76eeceb81bc4b84c93e31e09cb",
+    "src/eSENCChart.h": "dd355d90eed53d29123a7b5edf04f913b9f2cd740629f7e6eba9da94de6e2732",
+    "src/o-charts_pi.cpp": "54056c0c8d6d7d32839a0aa0bff63bcfd9a117a90c81ef0e2968eed4e477652c",
+    "libs/wxcurl/src/base.cpp": "bff38a6ef64ba374232a04f67b4637b80cda9c0e90f9ee2855f0b92296a21f6c",
+    "libs/wxcurl/src/wx/curl/base.h": "634fc2b64aefdcec60d39dcb2478c387a5a334d68424a1a5d42cc4ff65ad5f91",
+    "libs/s52plib/src/DepthFont.cpp": "653ec237a5d79cd8590aa46174f13cad8a0d253ad8b804a8408efaa98b5e028c",
+    "libs/s52plib/src/DepthFont.h": "209f2ebb0cd654ae7d44a17710fd8d2f758d05c54402ce9e32fc0b6bbfc2e133",
+    "libs/s52plib/src/chartsymbols.cpp": "a88dd1739236032b23548a70e45bf9b8c649118678b36743ee5e754b47e6c208",
+    "libs/s52plib/src/chartsymbols.h": "918fc6d0729299435478caa909b47643181e012a225a32f22b84ad15e4490954",
+    "libs/s52plib/src/s52plib.cpp": "fe9be32112dfa0b8f00a83d72b3f3c67bf1134e403c357593ac9153bc3021d2f",
+    "libs/s52plib/src/s52plib.h": "1586243a5ea5c915f6bb119342ef8a6856f876e307838ed10930dfde8b4ce9d3",
+    "libs/s52plib/src/s52s57.h": "da106a80633b2e0fb9000b06f98e0b770fe23f7bde42116bcefced70fa38816a",
+    "libs/s52plib/src/s52cnsy.cpp": "9a6194f9eb488ac5f25b67ef8e96b97d27acfc5b5748bb0e18e60adb998c9e50"
+  },
+  "patches": {
+    "patches/ocharts-skager-presentation.patch": "791b3d9df273d96f02fc5d9789eed13ae628599be76d02bef2412870b91fa604",
+    "patches/ocharts-wxcurl-trust.patch": "80467467a8ae398bad5ea8e7df0e8502398abbe600f72fb81b6d1a6ef905bcb1",
+    "patches/ocharts-private-hazard-association.patch": "c7d007de282e4f0c955b41c520ad31ed597ffafd03ef08d57472d13fd8f4d4ff"
+  },
+  "scope": "All actual private patch touched originals; no full module build or proprietary chart input."
+}

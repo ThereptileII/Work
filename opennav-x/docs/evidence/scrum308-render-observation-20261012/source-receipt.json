@@ -1,0 +1,41 @@
+{
+  "sourceCommit": "0f9d509a39406bb2ca3a0a3e1012a0cc79f28b54",
+  "upstreamCommit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "sourceSha256": {
+    "src/integration/ChartRenderObservation.h": "73b8bd649aeb7c2533b0eecc2c13570062547c8ffa77b2e09f282729f564b234",
+    "tests/chart_render_observation_test.cpp": "fc7c785355220e9cc7f38be66101554b574eaffbeef3e6a121896a015c86582d",
+    "tools/test-chart-render-observation.py": "487f5955887427b5e959a83494811415c718e0461fd4439969013693aa775aed",
+    "tools/prepare-ocharts-adapter.py": "dfc2382c14b8a3c8869d35b0a432bcac5c27ed99563c50f60a0c895c7e4f4568",
+    "patches/opencpn-5.12.4-xnav.patch": "fcd48cbe93d1ff34a1c6692cab95798247f60064ce7156a5eace321426f8c92e",
+    "patches/opencpn-5.12.4-regression-tests.patch": "3ef13652b8f3717d836883d2fbb7a18f35dbd2ca1162ac991fe339e61392dff1",
+    "patches/opencpn-5.12.4-ais-transport.patch": "ee6689b8943284347fadca9564892b31db4c43db2a007412ac3fdc2072d07fd7",
+    "patches/opencpn-5.12.4-chart-presentation.patch": "1dfd460e3512e6a616f1b2593af04024ec18faf7f330afa9b0784aacec0708f6",
+    "patches/opencpn-5.12.4-route-focus.patch": "b9e7e110c991f804d80c46e40811f8baf73536ca3a8170aaaa9fdd17667fc142",
+    "patches/opencpn-5.12.4-route-hit-dpi.patch": "4f4ce3695c955f18ae992db60ab3e604c85319f96dfb91fc958d4cbd7cab2cd6",
+    "patches/opencpn-5.12.4-maintained-curl.patch": "dafa1fec0a69e3a1195db726c2cb26ceeb7535b5e25476ac2e4658d910f44e48",
+    "patches/opencpn-5.12.4-download-trust.patch": "04763cb038ad088a722e76d4f85bde7e356489b697a373458195336d4278412b",
+    "patches/opencpn-5.12.4-wxcurl-trust.patch": "72344ee526ade009ec5c5db68a19019efaba8b7579d0ab03e8b784202148825e",
+    "patches/opencpn-5.12.4-peer-response-buffer.patch": "c335f361766a6982c3d096e93f7c149179deb33134668e110111ac4980064e15",
+    "patches/opencpn-5.12.4-peer-unavailable.patch": "5bf1c2ae4b09043ce18151f766aebd2b881b993f352000e34399de7e8b36b6d3",
+    "patches/opencpn-5.12.4-pilot-serial.patch": "7db46c9770dc1937e8e659976bdb41be7f8b2e0b7ec55a4997eea83cc74542be",
+    "patches/ocharts-skager-presentation.patch": "791b3d9df273d96f02fc5d9789eed13ae628599be76d02bef2412870b91fa604"
+  },
+  "workflowSha256": "64f045366d79aa6473c17a8c4a5094a138e88c55385dbc2996547cdf07f4c109",
+  "allCorePatchesApplied": 12,
+  "allPrivatePatchesApplied": 3,
+  "assertions": {
+    "core": 54,
+    "private": 54,
+    "coreStandard": 7,
+    "privateStandard": 7
+  },
+  "negativeControl": {
+    "source": "retained actual core dispatch fixture before CA correction",
+    "executableSha256": "4a9175fd64e7632100a6ee3c5b2b4df6fbe3d252c0330ed6f83346ea47b8452b",
+    "exit": 1,
+    "expectedFailure": "render observation check 42"
+  },
+  "fullApplicationBuild": false,
+  "nativeCanvasAcceptance": false,
+  "boatLighthouseIdentified": false
+}

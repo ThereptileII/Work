@@ -1,5 +1,21 @@
 # Direct OpenCPN Upstream Modifications
 
+## Actual light raster observation — SCRUM-308
+
+The existing core/private presentation patches now record bounded, copied
+LIGHTS/LNDMRK raster submissions from final `RenderSY` and the separate CA-light
+point path. Per-chart RAII scopes bind the completed viewport/presentation state;
+the existing actual selected-object Info query consumes copied values. The
+private adapter maps its actual PI clones inside the chart owner, adding no
+cross-module raw pointer interface. Missing LUP/partial/vector-only observations
+remain unavailable; renderer success alone is not paint evidence.
+
+No lookup classification, chart geometry, symbol meaning or Standard/Legacy
+rendering is changed. The private source recipe includes the shared diagnostic
+header. [Focused source evidence](evidence/scrum308-render-observation-20261012/README.md)
+separates actual raster submission from pending native/GPU/boat validation and
+the unresolved northern lighthouse classification.
+
 ## Route completion policy and query DPI — SCRUM-298
 
 `opencpn-5.12.4-route-focus.patch` replaces eight temporary focus-policy

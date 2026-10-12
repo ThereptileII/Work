@@ -33,6 +33,15 @@ remote access and vessel controls were not changed.
 
 ## Guarded lighthouse information helper integrated
 
+`da7dddee` and `193e3130` now join actual final raster observations to core/private
+chart Info, including the CA-light bypass. Observations are bounded and copied,
+matched to chart/viewport/presentation state; partial results remain unavailable.
+Root review reproduced and fixed a partial-CA diagnostic defect. All 12 core and
+3 private patches apply together; 122 paired dispatch/copy/bounds assertions
+pass. `59152587` registers explicit core-only Linux CI checks. [Renderer evidence](evidence/scrum308-render-observation-20261012/README.md)
+does not qualify native canvas/GPU/private-DLL execution or identify the actual
+northern lighthouse; those gates remain open.
+
 `8e074bf7` adds narrowly guarded chart-position Info and bounded read-only
 chart-information observation. The isolated helper passed 285 portable checks
 and compiled its C# source; root reviewed the change before integration. Native
