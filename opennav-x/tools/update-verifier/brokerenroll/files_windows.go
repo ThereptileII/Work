@@ -105,6 +105,36 @@ type enrollmentPin struct {
 	broker        string
 	file          bool
 	length        int64
+	ancestor      enrollmentAncestorLocation
+}
+
+// These closed categories expose no actual filesystem spelling. Components are
+// counted from one below the drive root; zero denotes the drive root itself.
+type enrollmentAncestorRole uint8
+
+const (
+	enrollmentAncestorUnspecified enrollmentAncestorRole = iota
+	enrollmentAncestorDriveRoot
+	enrollmentAncestorInstallRoot
+	enrollmentAncestorDataRoot
+)
+
+func (r enrollmentAncestorRole) String() string {
+	switch r {
+	case enrollmentAncestorDriveRoot:
+		return "drive-root"
+	case enrollmentAncestorInstallRoot:
+		return "install-root"
+	case enrollmentAncestorDataRoot:
+		return "data-root"
+	default:
+		return "unspecified"
+	}
+}
+
+type enrollmentAncestorLocation struct {
+	role      enrollmentAncestorRole
+	component uint32
 }
 
 type nativeEnrollmentFiles struct {
@@ -157,11 +187,11 @@ func createFreshFiles(ctx context.Context, source io.Reader, artifact releasepol
 	if err != nil {
 		return nil, err
 	}
-	codeParent, err := files.holdAncestry(programFiles, false)
+	codeParent, err := files.holdAncestryRole(programFiles, false, enrollmentAncestorInstallRoot)
 	if err != nil {
 		return nil, err
 	}
-	dataParent, err := files.holdAncestry(programData, true)
+	dataParent, err := files.holdAncestryRole(programData, true, enrollmentAncestorDataRoot)
 	if err != nil {
 		return nil, err
 	}
@@ -385,7 +415,7 @@ func (p *enrollmentPin) check() error {
 		return errors.New("held enrollment directory required")
 	}
 	if err := enrollmentSecurity(p.handle, p.descriptor, p.allowAdds, p.broker); err != nil {
-		return err
+		return p.ancestorDiagnostic(err)
 	}
 	if p.dos != "" {
 		pointer, err := windows.UTF16PtrFromString(p.dos)
@@ -431,6 +461,16 @@ type enrollmentAncestorMutationError struct {
 	aceSIDValid      bool
 	mask             uint32
 	flags            byte
+	allowAdds        bool
+	ancestor         enrollmentAncestorLocation
+}
+
+func (p *enrollmentPin) ancestorDiagnostic(err error) error {
+	var observed *enrollmentAncestorMutationError
+	if errors.As(err, &observed) {
+		observed.ancestor = p.ancestor
+	}
+	return err
 }
 
 func (*enrollmentAncestorMutationError) Error() string {
@@ -512,7 +552,7 @@ func enrollmentSecurityDescriptor(actual, expected *windows.SECURITY_DESCRIPTOR,
 					observedSID = sid.String()
 				}
 				return &enrollmentAncestorMutationError{ownerSID: owner.String(), aceSID: observedSID,
-					aceSIDValid: valid, mask: uint32(ace.Mask), flags: ace.Header.AceFlags}
+					aceSIDValid: valid, mask: uint32(ace.Mask), flags: ace.Header.AceFlags, allowAdds: allowAdds}
 			}
 		}
 	}
@@ -521,6 +561,10 @@ func enrollmentSecurityDescriptor(actual, expected *windows.SECURITY_DESCRIPTOR,
 }
 
 func (f *nativeEnrollmentFiles) pinDirectory(path, physical, dos string, sd *windows.SECURITY_DESCRIPTOR, allowAdds bool, broker string) (*enrollmentPin, error) {
+	return f.pinDirectoryAtAncestor(path, physical, dos, sd, allowAdds, broker, enrollmentAncestorLocation{})
+}
+
+func (f *nativeEnrollmentFiles) pinDirectoryAtAncestor(path, physical, dos string, sd *windows.SECURITY_DESCRIPTOR, allowAdds bool, broker string, ancestor enrollmentAncestorLocation) (*enrollmentPin, error) {
 	pointer, err := windows.UTF16PtrFromString(path)
 	if err != nil {
 		return nil, err
@@ -529,7 +573,7 @@ func (f *nativeEnrollmentFiles) pinDirectory(path, physical, dos string, sd *win
 	if err != nil {
 		return nil, err
 	}
-	pin := &enrollmentPin{handle: h, physical: physical, dos: dos, descriptor: sd, allowAdds: allowAdds, broker: broker}
+	pin := &enrollmentPin{handle: h, physical: physical, dos: dos, descriptor: sd, allowAdds: allowAdds, broker: broker, ancestor: ancestor}
 	f.pins = append(f.pins, pin)
 	pin.info, pin.id, err = enrollmentInfo(h)
 	if err != nil {
@@ -548,10 +592,14 @@ func (f *nativeEnrollmentFiles) pinDirectory(path, physical, dos string, sd *win
 }
 
 func (f *nativeEnrollmentFiles) holdAncestry(dos string, data bool) (*enrollmentPin, error) {
+	return f.holdAncestryRole(dos, data, enrollmentAncestorUnspecified)
+}
+
+func (f *nativeEnrollmentFiles) holdAncestryRole(dos string, data bool, role enrollmentAncestorRole) (*enrollmentPin, error) {
 	if len(dos) < 4 || filepath.Clean(dos) != dos || dos[1:3] != `:\` || !((dos[0] >= 'A' && dos[0] <= 'Z') || (dos[0] >= 'a' && dos[0] <= 'z')) || strings.ContainsAny(dos[3:], ":/\x00") {
 		return nil, errors.New("fixed local KnownFolder spelling required")
 	}
-	drive, err := f.pinDirectory(dos[:3], "", dos[:3], nil, true, "")
+	drive, err := f.pinDirectoryAtAncestor(dos[:3], "", dos[:3], nil, true, "", enrollmentAncestorLocation{role: enrollmentAncestorDriveRoot})
 	if err != nil {
 		return nil, err
 	}
@@ -567,13 +615,13 @@ func (f *nativeEnrollmentFiles) holdAncestry(dos string, data bool) (*enrollment
 	name := drive.physical
 	currentDOS := dos[:2]
 	parent := drive
-	for _, part := range strings.Split(dos[3:], `\`) {
+	for index, part := range strings.Split(dos[3:], `\`) {
 		if part == "" || part == "." || part == ".." || strings.HasSuffix(part, ".") || strings.HasSuffix(part, " ") {
 			return nil, errors.New("ambiguous KnownFolder ancestry")
 		}
 		name += `\` + part
 		currentDOS += `\` + part
-		parent, err = f.pinDirectory(enrollmentPhysical(name), name, currentDOS, nil, data, "")
+		parent, err = f.pinDirectoryAtAncestor(enrollmentPhysical(name), name, currentDOS, nil, data, "", enrollmentAncestorLocation{role: role, component: uint32(index + 1)})
 		if err != nil {
 			return nil, err
 		}
