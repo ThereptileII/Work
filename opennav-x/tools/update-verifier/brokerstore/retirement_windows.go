@@ -54,6 +54,7 @@ type nativeRetirementPreparation struct {
 	binding                                          DecommissionBinding
 	original                                         *nativeDecommission
 	generationParent                                 *nativePin
+	generationSecurity                               *windows.SECURITY_DESCRIPTOR
 	registrationOnce, registrationJSON, generationID diskIdentity
 	closed, transferred                              bool
 }
@@ -114,9 +115,13 @@ func (n *nativeStore) prepareRetirementWithOpeners(ctx context.Context, binding 
 		return nil, errors.New("retirement of generation history is unsupported")
 	}
 	root := g.tree.directories[""]
-	if root == nil || g.generations == nil || root.name != g.generations.name+`\`+binding.GenerationID {
+	if root == nil || g.generations == nil || g.tree.securityDir == nil || root.name != g.generations.name+`\`+binding.GenerationID {
 		return nil, errors.New("original selected generation directory unavailable")
 	}
+	// The original generation reader has already constructed and checked this
+	// descriptor against the actual selected directory. Retain that exact policy
+	// through the read-to-DELETE handoff instead of resolving the client again.
+	p.generationSecurity = g.tree.securityDir
 	for i, file := range d.evidence {
 		id, err := fileIdentity(file.pin.handle)
 		if err != nil {
@@ -183,6 +188,24 @@ func (p *nativeRetirementPreparation) commit(ctx context.Context) (retirementBac
 	if p == nil || p.closed || p.transferred || ctx == nil || ctx.Err() != nil {
 		return nil, ErrClosed
 	}
+	// The production entry point always resolves a distinct real client user
+	// before DELETE acquisition. Only the inert temporary native fixture below
+	// enters the common handoff with its already checked directory descriptor.
+	client, err := clientSID(p.binding.ClientSID, p.store.broker)
+	if err != nil {
+		return nil, err
+	}
+	selectedSD, err := descriptor(p.store.broker, client, true)
+	if err != nil {
+		return nil, err
+	}
+	return p.commitWithSelectedDescriptor(ctx, selectedSD)
+}
+
+func (p *nativeRetirementPreparation) commitWithSelectedDescriptor(ctx context.Context, selectedSD *windows.SECURITY_DESCRIPTOR) (retirementBackend, error) {
+	if p == nil || p.closed || p.transferred || ctx == nil || ctx.Err() != nil || selectedSD == nil {
+		return nil, ErrClosed
+	}
 	if err := p.check(); err != nil {
 		return nil, err
 	}
@@ -204,14 +227,6 @@ func (p *nativeRetirementPreparation) commit(ctx context.Context) (retirementBac
 	if err != nil {
 		return r, err
 	}
-	client, err := clientSID(p.binding.ClientSID, p.store.broker)
-	if err != nil {
-		return r, err
-	}
-	clientDir, err := descriptor(p.store.broker, client, true)
-	if err != nil {
-		return r, err
-	}
 	items := []struct {
 		parent *nativePin
 		name   string
@@ -221,7 +236,7 @@ func (p *nativeRetirementPreparation) commit(ctx context.Context) (retirementBac
 	}{
 		{p.store.registrations, p.binding.ClientSID + ".once", p.registrationOnce, false, privateFile},
 		{p.store.registrations, p.binding.ClientSID + ".json", p.registrationJSON, false, privateFile},
-		{r.generationParent, p.binding.GenerationID, p.generationID, true, clientDir},
+		{r.generationParent, p.binding.GenerationID, p.generationID, true, selectedSD},
 	}
 	for i, item := range items {
 		r.objects[i], err = openRetirementObject(item.parent, item.name, item.id, item.dir, item.sd)

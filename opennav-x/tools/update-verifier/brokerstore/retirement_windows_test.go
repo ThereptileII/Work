@@ -170,15 +170,37 @@ func TestNativeRetirementCompletedOriginalRegistrationAndSelectedGeneration(t *t
 	if err = p.check(); err != nil {
 		t.Fatal(err)
 	}
+	if rejected, err := p.commit(context.Background()); err == nil || rejected != nil {
+		t.Fatal("production retirement accepted identical fixture broker/client SID", err)
+	}
+	if _, err := os.Stat(filepath.Join(n.rootDOS, decommissionFilename)); !errors.Is(err, os.ErrNotExist) {
+		t.Fatal("principal refusal published terminal marker", err)
+	}
 	if err = selected.close(); err != nil {
 		t.Fatal("selected owner did not drain", err)
 	}
-	owner, err := p.commit(context.Background())
+	owner, err := p.commitWithSelectedDescriptor(context.Background(), p.generationSecurity)
+	// Commit can return an owner together with an error after DELETE acquisition;
+	// even a failed fixture must release the retained parent and partial handles.
+	var r *nativeRetirement
+	if owner != nil {
+		var ok bool
+		r, ok = owner.(*nativeRetirement)
+		if !ok {
+			t.Fatal("unexpected native retirement owner")
+		}
+		defer func() {
+			if closeErr := r.close(); closeErr != nil {
+				t.Error("retirement owner close", closeErr)
+			}
+		}()
+	}
 	if err != nil {
 		t.Fatal("actual original retirement", err)
 	}
-	r := owner.(*nativeRetirement)
-	defer r.close()
+	if r == nil {
+		t.Fatal("completed native retirement lacked original owner")
+	}
 	if err = r.check(); err != nil {
 		t.Fatal("original recovery evidence", err)
 	}
