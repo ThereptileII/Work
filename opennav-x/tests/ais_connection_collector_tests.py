@@ -409,7 +409,7 @@ class OutputLifetimeTests(unittest.TestCase):
         native = collector.NativeWindows.__new__(collector.NativeWindows)
         native.handles, native.closed, native.marked, native.identity_calls = [], False, [], 0
         native.w = types.SimpleNamespace(HANDLE=ctypes.c_void_p)
-        state = {'late': False}
+        state = {'late': False, 'replace': False, 'delete_inode': None}
         def check():
             if state['late']:
                 raise collector.CollectorError()
@@ -433,10 +433,10 @@ class OutputLifetimeTests(unittest.TestCase):
             self.assertEqual(info_class, 4)
             self.assertEqual(size, 1)
             self.assertIn(handle, native.handles)
-            # Emulate handle-bound deletion: a replacement namespace occupant
-            # cannot be deleted by marking the retained original file handle.
-            if actual.exists() and actual.stat().st_ino == os.fstat(handle).st_ino:
-                ORIGINAL_UNLINK(actual)
+            # Windows keeps deletion pending until the final open handle closes.
+            # POSIX unlink works here; Windows may reject this open file, so
+            # model the pending disposition and apply it in drain below.
+            state['delete_inode'] = os.fstat(handle).st_ino
             return True
         native.kernel = types.SimpleNamespace(CreateFileW=create, DuplicateHandle=duplicate,
             CloseHandle=close, GetCurrentProcess=lambda: -1, SetFileInformationByHandle=disposition)
@@ -445,8 +445,9 @@ class OutputLifetimeTests(unittest.TestCase):
             native.identity_calls += 1
             if mode == 'identity' or (mode == 'replace' and native.identity_calls == 3):
                 if mode == 'replace':
-                    ORIGINAL_UNLINK(actual)
-                    actual.write_bytes(b'REPLACEMENT-FIXTURE')
+                    # Simulate a later namespace occupant after handles drain;
+                    # the retained original handle must never delete it.
+                    state['replace'] = True
                 raise collector.CollectorError()
             stat = os.fstat(handle)
             return (1, stat.st_ino, 0, 0, 1, stat.st_size, 123, 0)
@@ -454,6 +455,13 @@ class OutputLifetimeTests(unittest.TestCase):
         original_close = native.close
         def drain():
             original_close()
+            if state['replace']:
+                ORIGINAL_UNLINK(actual)
+                actual.write_bytes(b'REPLACEMENT-FIXTURE')
+            if (state['delete_inode'] is not None and not state['replace'] and
+                    actual.exists() and
+                    actual.stat().st_ino == state['delete_inode']):
+                ORIGINAL_UNLINK(actual)
             native.closed = True
         native.close = drain
         return native
