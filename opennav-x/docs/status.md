@@ -18,8 +18,11 @@ at`d24c6b2f` passes52 inert checks and proves a gap: the sibling-only plugin
 inspection accepts an application-directory helper which imports a harmless
 legacy-name stub. This is a reproduced security coverage failure, not product
 acceptance. A shared two-root walk and55-group native refusal/compatible-mapping
-fixture are implemented with focused portable checks passing; native execution
-remains pending before the next coherent application candidate.
+fixture now passes exact native run[38422671169](https://github.com/ThereptileII/Work/actions/runs/38422671169)
+at`e27f60cd`:55 loader groups,17,602 forwarder checks and278 byte-policy checks.
+All27 source identities and the downloaded artifact digest/CRC are verified.
+[Original receipts and scope](evidence/scrum209-two-root-native-20261013/README.md).
+Broader loader and integrated product qualification remain open.
 The separately reviewed post-publication shortcut binding is integrated; actual
 protected restoration, repair and full uninstall remain open. No Jira product
 issue is closed by these component results; boat, design and endurance tests

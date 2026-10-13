@@ -1,0 +1,683 @@
+{
+  "status": "passed",
+  "scope": "actual native loader/lock/hash/bind/status/fallback mechanics",
+  "candidate": "e27f60cdd1b92e6ec69abebc18595a1b27654ff8",
+  "sources": {
+    "src/integration/OChartsModuleLoader.cpp": {
+      "bytes": 7868,
+      "sha256": "3d0afe5241f42b7acb0e6f702c1258b9afaa02bb81be0102d2584d3cca24ed47"
+    },
+    "src/integration/OChartsModuleLoader.h": {
+      "bytes": 1296,
+      "sha256": "38cdda23e1a8c9c516b5b53b9a5ee8d76285adf520395418332bf51327690896"
+    },
+    "src/integration/PluginPresentationLoader.cpp": {
+      "bytes": 427,
+      "sha256": "a06d7e0d430172ab4e829416bcb882a27300a6d857dd2858c859280832cd1df4"
+    },
+    "src/integration/PluginPresentationLoader.h": {
+      "bytes": 1047,
+      "sha256": "1af8e8e798ea9e56d623c76cf78f2891f3fdea93e9bf034e78acf78c0bbc45d5"
+    },
+    "src/integration/PluginPresentationFallback.h": {
+      "bytes": 2952,
+      "sha256": "4e6c2df19c63986ba3bc1d032580406e09770f1c9792b3746be8ed5cd4528d72"
+    },
+    "src/integration/OriginalPluginTlsGuard.h": {
+      "bytes": 6556,
+      "sha256": "c56f8b2edcf5c9e4ac73966df773d6b445fa32908cc0c054310d506382ec1efa"
+    },
+    "src/integration/Win32PluginTlsImports.h": {
+      "bytes": 10044,
+      "sha256": "e911c018c801b512dc8df2b08fa39fd792fd483d1c00ab784edeb917b9817fe7"
+    },
+    "src/integration/PluginTlsBytePolicy.h": {
+      "bytes": 701,
+      "sha256": "d77ab196b9f46fe948d41c211b2c3a54a95fcd4cc4f0af01d5741da15df3cfec"
+    },
+    "src/integration/Win32PeImports.h": {
+      "bytes": 9261,
+      "sha256": "c990283d2f822d9ecc4fcacd942d2871376d521b21742346c9169d24be2bb336"
+    },
+    "src/plugin-adapters/ChartPresentationBindingV1.h": {
+      "bytes": 3172,
+      "sha256": "b19186376a4aa357ba7625d2e7c26d3ad4a526d120ea61d36a857f52f3266dde"
+    },
+    "src/plugin-adapters/ocharts/BindingState.h": {
+      "bytes": 4088,
+      "sha256": "c10e46310dc72621d3fac2ac272ed282aab1feb5c565db412ebb2c23062fc870"
+    },
+    "tests/windows_ocharts_loader/CMakeLists.txt": {
+      "bytes": 8338,
+      "sha256": "bb8593929062aaf337e13f8266ebfb8db99d3012a1a05eb4be9d35f225643435"
+    },
+    "tests/windows_ocharts_loader/fixture.cpp": {
+      "bytes": 4267,
+      "sha256": "6c139e401473d04397bcf27de25d7b42be615a83607ab2a451e5203ba9bde06e"
+    },
+    "tests/windows_ocharts_loader/indirect_dependency.cpp": {
+      "bytes": 329,
+      "sha256": "877f5dabb1004a589fa921d99e4f99e7fa1862d5d997f664f7a710f3d353958c"
+    },
+    "tests/windows_ocharts_loader/crossroot_dependency.cpp": {
+      "bytes": 259,
+      "sha256": "55edd03e47d1563db5c3120196bb6962b2133ea703cb39ad3a56a360c6b188ef"
+    },
+    "tests/windows_ocharts_loader/unmapped_dependency.cpp": {
+      "bytes": 159,
+      "sha256": "b8182f35447feb347fa17661e2b461e789f5e39474871e095d00a13b20f44ad9"
+    },
+    "tests/windows_ocharts_loader/legacy_dependency.cpp": {
+      "bytes": 161,
+      "sha256": "224533908d09c37fd8bed85ac3b1a55fed0b1f0c32211e055370a34bf99a238d"
+    },
+    "tests/windows_ocharts_loader/forward_dependency.cpp": {
+      "bytes": 1080,
+      "sha256": "3c57112af69cc5e98d259344af189b212e1133586144aaa7bb67baa79b2f93a3"
+    },
+    "tests/windows_ocharts_loader/forwarder_fixtures.py": {
+      "bytes": 13311,
+      "sha256": "cb144c4bfd4e32f6b355fc3175845743c0c28ff8960769c6918dc368c816e431"
+    },
+    "tests/win32_pe_forwarders_test.cpp": {
+      "bytes": 11160,
+      "sha256": "414a5f91b5c1f5fe043400de6bbe694451ff0779a44b046b7b45665542eeb8b1"
+    },
+    "tests/plugin_tls_byte_policy_test.cpp": {
+      "bytes": 8286,
+      "sha256": "f82f53f34704e9c9dd7d7f45515295c6cefe9295038d328ec3f2a9b1fa5eef67"
+    },
+    "tests/windows_ocharts_loader/loader_test.cpp": {
+      "bytes": 49149,
+      "sha256": "4dfd26c8432dd9d4296bfdc5ef20dbd1d1d20f6c82d98ec59925ca1acf767299"
+    },
+    "tests/windows_ocharts_loader/inputs.lock.json": {
+      "bytes": 1183,
+      "sha256": "7520333aba2a38f2bca5f4316a5faa8b229dbbb057e84dc1a57e8882bc53feae"
+    },
+    "tools/test-ocharts-loader-windows.py": {
+      "bytes": 14059,
+      "sha256": "f51cab9b164c8cdcea7b80339e41b1c10e0d6328f429f45ee0045412e136e0a8"
+    },
+    "tools/test-windows-changed-units.py": {
+      "bytes": 37232,
+      "sha256": "f7a3084410a11700bb06670222b71d78c9bcc1f417599dcb030c71a56714b180"
+    },
+    "tools/windows-wx.lock.json": {
+      "bytes": 1017,
+      "sha256": "2fb563c4de7819d4b10d7a567e59510cd033c3b9cb55ce4ebb654964da60267f"
+    },
+    "../.github/workflows/skager-ocharts-loader.yml": {
+      "bytes": 3490,
+      "sha256": "3dbb11ef46d3dfb87499f2bc58f31e54b038d59458e2a3917b9678723f4e8032"
+    }
+  },
+  "nativeProductAcceptance": false,
+  "vendorExecuted": false,
+  "pluginFactoryExecuted": false,
+  "gaps": [
+    "real adapter OpenCPN import ABI and renderer integration",
+    "full app Standard/Safe selection and plugin lifecycle",
+    "genuine loaded-module unload refusal; fault test uses a reserved non-module address",
+    "forwarder grammar beyond the supported single-separator subset; native probes do not relax policy",
+    "declared plugin/application graph only; system/PATH/redirected or preloaded modules, arbitrary dynamic/helper loads and general module identity",
+    "encrypted-chart rendering, licensing and physical hardware"
+  ],
+  "wxLock": {
+    "version": "3.2.8",
+    "abi": "vc14x x86 DLL",
+    "provenance": "Downloaded from official wxWidgets release over HTTPS, hashes recorded 2026-09-21",
+    "archives": [
+      {
+        "file": "wxMSW-3.2.8_vc14x_Dev.7z",
+        "url": "https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.8/wxMSW-3.2.8_vc14x_Dev.7z",
+        "sha256": "2d1469322e89293e351260954f0575a18629a78d53a39e0545b1594f221f5810",
+        "bytes": 33824019
+      },
+      {
+        "file": "wxWidgets-3.2.8-headers.7z",
+        "url": "https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.8/wxWidgets-3.2.8-headers.7z",
+        "sha256": "996041908057574ee3836a5f5e03f40858ffc61011231f19a5e87297b74b74e2",
+        "bytes": 1454469
+      },
+      {
+        "file": "wxMSW-3.2.8_vc14x_ReleaseDLL.7z",
+        "url": "https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.8/wxMSW-3.2.8_vc14x_ReleaseDLL.7z",
+        "sha256": "a1a9b44932c9f3a6c309956535128cbd6a259200b1bfa150e8c108525204a014",
+        "bytes": 3781947
+      }
+    ]
+  },
+  "vendorInput": {
+    "bytes": 2088960,
+    "sha256": "99edcfd4419d606ef5c3fd554759e853cfda1fe4f38c05e26266f335a5a5b875"
+  },
+  "vendorPe": {
+    "machine": "I386",
+    "optionalHeader": "PE32",
+    "dll": true
+  },
+  "picosha2": {
+    "bytes": 13017,
+    "sha256": "9df7a5696f37981f75ad1b7854cc833176ae48debf3ee4bfc024fe9dfc8b8624"
+  },
+  "fixtureGeneration": {
+    "status": "passed",
+    "construction": "bounded reserved export metadata",
+    "nativeLoadability": "not established by construction",
+    "fixtures": [
+      {
+        "fixture": "fixture_forward_legacy_name.dll",
+        "target": "libeay32.legacy_tls_fixture",
+        "beforeSha256": "584b170ccb8aaa570e41df3709e5e6ec2f354702cd426502783d13d81424f8ab",
+        "afterSha256": "10af16f4796b64ba4f49800ee4fdf9b09fc325a05e0df30894809aa5c4fe90d3",
+        "bytes": 16384,
+        "eatFileOffset": 9108,
+        "reservationFileOffset": 9188,
+        "reservationBytes": 121,
+        "forwarderRva": 14333,
+        "forwarderNulInsideExportDirectory": true,
+        "onlyReservedMetadataChanged": true,
+        "allOtherBytesAndFileSizeUnchanged": true,
+        "written": true
+      },
+      {
+        "fixture": "fixture_forward_legacy_ordinal.dll",
+        "target": "libeay32.#209",
+        "beforeSha256": "e4f8d4ea12a697e0847239c3317a27b3489f297e7a383902f65060ca503b9f1e",
+        "afterSha256": "7cc5d0eed338d14483a2c9dfde95ae9da806f6326b31e7fd1fb5e3032e633a72",
+        "bytes": 16384,
+        "eatFileOffset": 9108,
+        "reservationFileOffset": 9191,
+        "reservationBytes": 121,
+        "forwarderRva": 14336,
+        "forwarderNulInsideExportDirectory": true,
+        "onlyReservedMetadataChanged": true,
+        "allOtherBytesAndFileSizeUnchanged": true,
+        "written": true
+      },
+      {
+        "fixture": "fixture_forward_ssleay_ordinal.dll",
+        "target": "ssleay32.#209",
+        "beforeSha256": "3f54bad8a00c0c54db2dd32246acaa7d9356b96521c74cffe94cb4d51699e4f3",
+        "afterSha256": "4a4983219e5bd50382fd99f8f5fc1d183bc45f070e14afd76a94e82b155acb46",
+        "bytes": 16384,
+        "eatFileOffset": 9108,
+        "reservationFileOffset": 9191,
+        "reservationBytes": 121,
+        "forwarderRva": 14336,
+        "forwarderNulInsideExportDirectory": true,
+        "onlyReservedMetadataChanged": true,
+        "allOtherBytesAndFileSizeUnchanged": true,
+        "written": true
+      },
+      {
+        "fixture": "fixture_forward_indirect.dll",
+        "target": "forward_helper.forwarded_probe",
+        "beforeSha256": "accaf422e60b2d3dd5d1aed5d21dfb8db90136e0017e7ddacb697ce4826dadde",
+        "afterSha256": "fbffc01b14293796a7c914f37f070b722872d9a0f59793e79a97bede153eabdd",
+        "bytes": 16384,
+        "eatFileOffset": 9108,
+        "reservationFileOffset": 9185,
+        "reservationBytes": 121,
+        "forwarderRva": 14330,
+        "forwarderNulInsideExportDirectory": true,
+        "onlyReservedMetadataChanged": true,
+        "allOtherBytesAndFileSizeUnchanged": true,
+        "written": true
+      },
+      {
+        "fixture": "fixture_forward_clean_name.dll",
+        "target": "forward_clean.fixture_value",
+        "beforeSha256": "1d976df9482a7efe8ac56d96777cba77f386c5c26dfe78ea3343bc3ede433b05",
+        "afterSha256": "525970fd2d1463f4b24855e14687ae533d491f83a8fb80906d9a43074b1bbce9",
+        "bytes": 16384,
+        "eatFileOffset": 9108,
+        "reservationFileOffset": 9187,
+        "reservationBytes": 121,
+        "forwarderRva": 14332,
+        "forwarderNulInsideExportDirectory": true,
+        "onlyReservedMetadataChanged": true,
+        "allOtherBytesAndFileSizeUnchanged": true,
+        "written": true
+      },
+      {
+        "fixture": "fixture_forward_clean_ordinal.dll",
+        "target": "forward_clean.#209",
+        "beforeSha256": "3f698ee95efd1344dfd3994067b193877d06c47a6a869880d77caaa38973f4b8",
+        "afterSha256": "a9c01c42a9f7e8aed6ad13cf2039d458a0c7683b991da01fda2cf2aa23a33746",
+        "bytes": 16384,
+        "eatFileOffset": 9108,
+        "reservationFileOffset": 9190,
+        "reservationBytes": 121,
+        "forwarderRva": 14335,
+        "forwarderNulInsideExportDirectory": true,
+        "onlyReservedMetadataChanged": true,
+        "allOtherBytesAndFileSizeUnchanged": true,
+        "written": true
+      },
+      {
+        "fixture": "fixture_forward_explicit_dll.dll",
+        "target": "forward_clean.dll.fixture_value",
+        "beforeSha256": "929bef75657a9f12821f700960992f6546ac5f558cb90adbba1a6c40d72bdb73",
+        "afterSha256": "8b5d610c1dac4381a27d57d05b6b419d21f7093294784181f26403062c69210e",
+        "bytes": 16384,
+        "eatFileOffset": 9108,
+        "reservationFileOffset": 9189,
+        "reservationBytes": 121,
+        "forwarderRva": 14334,
+        "forwarderNulInsideExportDirectory": true,
+        "onlyReservedMetadataChanged": true,
+        "allOtherBytesAndFileSizeUnchanged": true,
+        "written": true
+      },
+      {
+        "fixture": "fixture_forward_multi_dot.dll",
+        "target": "forward.clean.fixture_value",
+        "beforeSha256": "9078de17c7d2386147d12243f9ca33b588e01f4db57c802e7f88e3df4a9ec26a",
+        "afterSha256": "4c5b35bfde8da18d3fb4f93556f864052b51c04a5601ec23c863c4cce1b8db6d",
+        "bytes": 16384,
+        "eatFileOffset": 9108,
+        "reservationFileOffset": 9186,
+        "reservationBytes": 121,
+        "forwarderRva": 14331,
+        "forwarderNulInsideExportDirectory": true,
+        "onlyReservedMetadataChanged": true,
+        "allOtherBytesAndFileSizeUnchanged": true,
+        "written": true
+      },
+      {
+        "fixture": "forward_helper.dll",
+        "target": "libeay32.#209",
+        "beforeSha256": "f6085f6e8b6317741fcae4816de22a20992e0dcfd7c8351a3b0cf82ca262fac5",
+        "afterSha256": "9490a08b01d8f5f060d10007c3209527a24264f23e12808353714962077ccc99",
+        "bytes": 9216,
+        "eatFileOffset": 6528,
+        "reservationFileOffset": 6569,
+        "reservationBytes": 121,
+        "forwarderRva": 9666,
+        "forwarderNulInsideExportDirectory": true,
+        "onlyReservedMetadataChanged": true,
+        "allOtherBytesAndFileSizeUnchanged": true,
+        "written": true
+      }
+    ]
+  },
+  "executable": {
+    "bytes": 233472,
+    "sha256": "102b6419434b8584cb976f61ed957e08d2e4dfb4e561d61149819841fb6e2c09"
+  },
+  "runtime": {
+    "wxbase32u_vc14x.dll": {
+      "source": "D:\\a\\Work\\Work\\opennav-x\\build\\windows-ocharts-loader-guards\\sdk\\wx\\lib\\vc14x_dll\\wxbase32u_vc14x.dll",
+      "bytes": 2523136,
+      "sha256": "0aa3800ac7981091f46a45342620e169d158790a6f55e96ca86e772ef567f338"
+    },
+    "wxmsw32u_core_vc14x.dll": {
+      "source": "D:\\a\\Work\\Work\\opennav-x\\build\\windows-ocharts-loader-guards\\sdk\\wx\\lib\\vc14x_dll\\wxmsw32u_core_vc14x.dll",
+      "bytes": 7467008,
+      "sha256": "beadbd9824a90d54e25f899afb9cf45611e7f74c9e0a0ceb6531e0bf6d21bdc3"
+    },
+    "concrt140.dll": {
+      "source": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Redist\\MSVC\\14.44.35112\\x86\\Microsoft.VC143.CRT\\concrt140.dll",
+      "bytes": 259688,
+      "sha256": "a2b04c69868b08a600518ebbad1661d38de4dd0e0a8e638c22d4641d410e50b1"
+    },
+    "msvcp140.dll": {
+      "source": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Redist\\MSVC\\14.44.35112\\x86\\Microsoft.VC143.CRT\\msvcp140.dll",
+      "bytes": 447616,
+      "sha256": "97e71a3c697fb1ab3af777db39009e4602525e8c3aff0837ecc7031cba188165"
+    },
+    "msvcp140_1.dll": {
+      "source": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Redist\\MSVC\\14.44.35112\\x86\\Microsoft.VC143.CRT\\msvcp140_1.dll",
+      "bytes": 33896,
+      "sha256": "01a58552686d0c6b9fd67a7ac81169fc0013aedf59a8efdc611f94907489a31c"
+    },
+    "msvcp140_2.dll": {
+      "source": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Redist\\MSVC\\14.44.35112\\x86\\Microsoft.VC143.CRT\\msvcp140_2.dll",
+      "bytes": 294992,
+      "sha256": "2a5365e03cc6e78b408dfca81537f3734bf3d7cf9cc13ae33204dfbc641dbe43"
+    },
+    "msvcp140_atomic_wait.dll": {
+      "source": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Redist\\MSVC\\14.44.35112\\x86\\Microsoft.VC143.CRT\\msvcp140_atomic_wait.dll",
+      "bytes": 47240,
+      "sha256": "c4a2bae74e008a5bb2445f9078c14df9dcb03267248dfa64e7d04cdc8af5208e"
+    },
+    "msvcp140_codecvt_ids.dll": {
+      "source": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Redist\\MSVC\\14.44.35112\\x86\\Microsoft.VC143.CRT\\msvcp140_codecvt_ids.dll",
+      "bytes": 30824,
+      "sha256": "a5cbecfd9b8892ec9a60e30fef7ef2158032c6d91efdfbaca87c082bcd48bfa9"
+    },
+    "vccorlib140.dll": {
+      "source": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Redist\\MSVC\\14.44.35112\\x86\\Microsoft.VC143.CRT\\vccorlib140.dll",
+      "bytes": 287360,
+      "sha256": "89ed5a6877a87ec3ec9fe4a0fb14dc950599f0b67318e746084a0c333a6c865f"
+    },
+    "vcruntime140.dll": {
+      "source": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Redist\\MSVC\\14.44.35112\\x86\\Microsoft.VC143.CRT\\vcruntime140.dll",
+      "bytes": 91216,
+      "sha256": "a9d7732a3c3de09f0601a7fa2555093dcb49f08e2fc62a86091461f0f38393ed"
+    },
+    "vcruntime140_threads.dll": {
+      "source": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Redist\\MSVC\\14.44.35112\\x86\\Microsoft.VC143.CRT\\vcruntime140_threads.dll",
+      "bytes": 36000,
+      "sha256": "bb2b1d16187562376fc888059e2cbbf26c5404f6a4bb7197d1d01b970f199667"
+    }
+  },
+  "peForwarderExecutable": {
+    "bytes": 98816,
+    "sha256": "8318daca216cc8a1bb1de31b53a9a42b94a3eaee8365aa520ad8c68c5a7dc903"
+  },
+  "pluginTlsBytePolicyExecutable": {
+    "bytes": 133120,
+    "sha256": "27092db0a8a3fe6b21cbf06f80e8f7fdc6909d691c7ca2bf637c79f08de8c1ed"
+  },
+  "fixtures": {
+    "fixture_good.dll": {
+      "bytes": 16384,
+      "sha256": "92ef68977d8b364385bd75a6b4f9640ce2e00bd349dc5bb6374b81b4f6ff33e0",
+      "pe": {
+        "machine": "I386",
+        "optionalHeader": "PE32",
+        "dll": true
+      }
+    },
+    "fixture_no_bind.dll": {
+      "bytes": 14848,
+      "sha256": "3ef80711708f8e1a400bc472d4858a9adf5b71eeee05c0568bda71ad8afb355a",
+      "pe": {
+        "machine": "I386",
+        "optionalHeader": "PE32",
+        "dll": true
+      }
+    },
+    "fixture_no_status.dll": {
+      "bytes": 15360,
+      "sha256": "309595827a3463ec1bb2ff21731cebe28bc08967b2f3ba0b7c350f79c63d1b9e",
+      "pe": {
+        "machine": "I386",
+        "optionalHeader": "PE32",
+        "dll": true
+      }
+    },
+    "fixture_no_create.dll": {
+      "bytes": 16384,
+      "sha256": "ff000bca4f8ddc47ffdc99dbe2b6ec677fab4b58c96c25e160a532541588a0cd",
+      "pe": {
+        "machine": "I386",
+        "optionalHeader": "PE32",
+        "dll": true
+      }
+    },
+    "fixture_no_destroy.dll": {
+      "bytes": 16384,
+      "sha256": "aac98dec75f1185aab5bf3582a1f738c334df80c6b78beb5c9577f9e2b47e9c4",
+      "pe": {
+        "machine": "I386",
+        "optionalHeader": "PE32",
+        "dll": true
+      }
+    },
+    "fixture_legacy_normal.dll": {
+      "bytes": 16384,
+      "sha256": "c6c4dedcb68a68b633aa60cad30627a682277f9c20e67026f5f32f9fec43413f",
+      "pe": {
+        "machine": "I386",
+        "optionalHeader": "PE32",
+        "dll": true
+      }
+    },
+    "fixture_legacy_delay.dll": {
+      "bytes": 18944,
+      "sha256": "6939ac9e88c1d2bf9d80265afd0c62a98ad3e4b0e76835d71657afbf23b088d8",
+      "pe": {
+        "machine": "I386",
+        "optionalHeader": "PE32",
+        "dll": true
+      }
+    },
+    "fixture_indirect_legacy.dll": {
+      "bytes": 16384,
+      "sha256": "2225d9473446c4a00833ea6679ed58949bfd82893367efc685edfe8b11caa3d4",
+      "pe": {
+        "machine": "I386",
+        "optionalHeader": "PE32",
+        "dll": true
+      }
+    },
+    "fixture_indirect_clean.dll": {
+      "bytes": 16384,
+      "sha256": "8ac7b0abdc96c261190043ec7d43e3dfaafb069e20e490704cb2cf5901995170",
+      "pe": {
+        "machine": "I386",
+        "optionalHeader": "PE32",
+        "dll": true
+      }
+    },
+    "fixture_indirect_unmapped.dll": {
+      "bytes": 16384,
+      "sha256": "197b668a64049119c12712ee27c90cc33ff17d322f96aa534884228d919e2085",
+      "pe": {
+        "machine": "I386",
+        "optionalHeader": "PE32",
+        "dll": true
+      }
+    },
+    "fixture_indirect_external.dll": {
+      "bytes": 16384,
+      "sha256": "d7a698379215174079065e53db187a921b50e8bb62564fbbc37908e024efe31e",
+      "pe": {
+        "machine": "I386",
+        "optionalHeader": "PE32",
+        "dll": true
+      }
+    },
+    "fixture_indirect_cross.dll": {
+      "bytes": 16384,
+      "sha256": "0814f19cfb6c3f1879e5e84bdb89fd275cfd794d8b34f73e27bf9169a30b77cc",
+      "pe": {
+        "machine": "I386",
+        "optionalHeader": "PE32",
+        "dll": true
+      }
+    },
+    "forwarders/fixture_forward_legacy_name.dll": {
+      "bytes": 16384,
+      "sha256": "10af16f4796b64ba4f49800ee4fdf9b09fc325a05e0df30894809aa5c4fe90d3",
+      "pe": {
+        "machine": "I386",
+        "optionalHeader": "PE32",
+        "dll": true
+      }
+    },
+    "forwarders/fixture_forward_legacy_ordinal.dll": {
+      "bytes": 16384,
+      "sha256": "7cc5d0eed338d14483a2c9dfde95ae9da806f6326b31e7fd1fb5e3032e633a72",
+      "pe": {
+        "machine": "I386",
+        "optionalHeader": "PE32",
+        "dll": true
+      }
+    },
+    "forwarders/fixture_forward_ssleay_ordinal.dll": {
+      "bytes": 16384,
+      "sha256": "4a4983219e5bd50382fd99f8f5fc1d183bc45f070e14afd76a94e82b155acb46",
+      "pe": {
+        "machine": "I386",
+        "optionalHeader": "PE32",
+        "dll": true
+      }
+    },
+    "forwarders/fixture_forward_indirect.dll": {
+      "bytes": 16384,
+      "sha256": "fbffc01b14293796a7c914f37f070b722872d9a0f59793e79a97bede153eabdd",
+      "pe": {
+        "machine": "I386",
+        "optionalHeader": "PE32",
+        "dll": true
+      }
+    },
+    "forwarders/fixture_forward_clean_name.dll": {
+      "bytes": 16384,
+      "sha256": "525970fd2d1463f4b24855e14687ae533d491f83a8fb80906d9a43074b1bbce9",
+      "pe": {
+        "machine": "I386",
+        "optionalHeader": "PE32",
+        "dll": true
+      }
+    },
+    "forwarders/fixture_forward_clean_ordinal.dll": {
+      "bytes": 16384,
+      "sha256": "a9c01c42a9f7e8aed6ad13cf2039d458a0c7683b991da01fda2cf2aa23a33746",
+      "pe": {
+        "machine": "I386",
+        "optionalHeader": "PE32",
+        "dll": true
+      }
+    },
+    "forwarders/fixture_forward_explicit_dll.dll": {
+      "bytes": 16384,
+      "sha256": "8b5d610c1dac4381a27d57d05b6b419d21f7093294784181f26403062c69210e",
+      "pe": {
+        "machine": "I386",
+        "optionalHeader": "PE32",
+        "dll": true
+      }
+    },
+    "forwarders/fixture_forward_multi_dot.dll": {
+      "bytes": 16384,
+      "sha256": "4c5b35bfde8da18d3fb4f93556f864052b51c04a5601ec23c863c4cce1b8db6d",
+      "pe": {
+        "machine": "I386",
+        "optionalHeader": "PE32",
+        "dll": true
+      }
+    },
+    "libeay32.dll": {
+      "bytes": 9216,
+      "sha256": "c8bbbf8d4d865be25cdfd26ce3004995cc3522d86d6ca4f5855325a53fe31424",
+      "pe": {
+        "machine": "I386",
+        "optionalHeader": "PE32",
+        "dll": true
+      }
+    },
+    "helper_legacy.dll": {
+      "bytes": 9216,
+      "sha256": "73c486b09ffe7f772c780a059ac1ad92bd29d108abf4b578e4507c3681daf04d",
+      "pe": {
+        "machine": "I386",
+        "optionalHeader": "PE32",
+        "dll": true
+      }
+    },
+    "helper_clean.dll": {
+      "bytes": 9216,
+      "sha256": "318bf3ba5ed918dc12792f717ef33ba5e017436c31f7a00bd47a956ed9ad45ea",
+      "pe": {
+        "machine": "I386",
+        "optionalHeader": "PE32",
+        "dll": true
+      }
+    },
+    "helper_external.dll": {
+      "bytes": 9216,
+      "sha256": "7f8db09b39d5c34ce65b8a665a483a4afd9a01c0e02282884ededbb0765893dd",
+      "pe": {
+        "machine": "I386",
+        "optionalHeader": "PE32",
+        "dll": true
+      }
+    },
+    "helper_cross_host.dll": {
+      "bytes": 9216,
+      "sha256": "a09e026076b724846f9bf74aaf287da119a8e47589fdbcc196e82808ba4e7f86",
+      "pe": {
+        "machine": "I386",
+        "optionalHeader": "PE32",
+        "dll": true
+      }
+    },
+    "crossroot/helper_cross.dll": {
+      "bytes": 9216,
+      "sha256": "5cd380ba839d0db893c904ea153b3f63034374662077e3f783080cb897fde282",
+      "pe": {
+        "machine": "I386",
+        "optionalHeader": "PE32",
+        "dll": true
+      }
+    },
+    "unmapped/helper_unmapped.dll": {
+      "bytes": 9216,
+      "sha256": "f4202d0de199738946b3540624b11f663d3d6e5a75be182878157a12de81dce1",
+      "pe": {
+        "machine": "I386",
+        "optionalHeader": "PE32",
+        "dll": true
+      }
+    },
+    "forwarders/ssleay32.dll": {
+      "bytes": 9216,
+      "sha256": "fce65f0203d9a333d7e5b479af89a358f138cc48eaa835d6073b52c0b460e5f4",
+      "pe": {
+        "machine": "I386",
+        "optionalHeader": "PE32",
+        "dll": true
+      }
+    },
+    "forwarders/forward_clean.dll": {
+      "bytes": 9216,
+      "sha256": "94f88a60947e937141191fc4d31fdffac22fb60d0c1ddc083e0a6411673cd278",
+      "pe": {
+        "machine": "I386",
+        "optionalHeader": "PE32",
+        "dll": true
+      }
+    },
+    "forwarders/forward.dll": {
+      "bytes": 9216,
+      "sha256": "baf681e32b7a7e18d85d32b5fe58283656619ddd1715fe2c940618dc01538224",
+      "pe": {
+        "machine": "I386",
+        "optionalHeader": "PE32",
+        "dll": true
+      }
+    },
+    "forwarders/forward.clean.dll": {
+      "bytes": 9216,
+      "sha256": "985e46b4b34ea103914596698242c7a281bd6126a8e20a9c88b9c44aafcec304",
+      "pe": {
+        "machine": "I386",
+        "optionalHeader": "PE32",
+        "dll": true
+      }
+    },
+    "forwarders/forward_helper.dll": {
+      "bytes": 9216,
+      "sha256": "9490a08b01d8f5f060d10007c3209527a24264f23e12808353714962077ccc99",
+      "pe": {
+        "machine": "I386",
+        "optionalHeader": "PE32",
+        "dll": true
+      }
+    }
+  },
+  "native": {
+    "status": "passed",
+    "checks": 55,
+    "vendorExecuted": false,
+    "pluginFactoryExecuted": false,
+    "invalidHandleFaultInjected": true,
+    "unmappedSiblingGuardControl": true,
+    "exportForwarderControls": true,
+    "forwarderGrammarProbes": true,
+    "applicationDirectoryClosure": {
+      "legacyRefusedBeforeInitialization": true,
+      "cleanSiblingCannotMaskHost": true,
+      "crossRootChainRefused": true,
+      "benignFirstMappingIdentity": true,
+      "custodyThroughUnload": true
+    },
+    "productAcceptance": false
+  }
+}

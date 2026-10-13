@@ -197,7 +197,7 @@ installer lifecycle acceptance remain open. No vendor factory, chart, boat or
 physical operation is part of this gate.
 
 
-## SCRUM-209 application-directory closure (2026-10-13, native pending)
+## SCRUM-209 application-directory closure (2026-10-13, native passed)
 
 Historical run38393906703 atd24c6b2f passed52 inert observation groups and
 confirmed that the former sibling-only guard accepted a neutral application-
@@ -221,4 +221,6 @@ current directory and DLL-directory state remain unchanged in these new groups.
 These controls compile the actual two-root guard. They do not assert that both
 inspected candidates would execute, qualify system/PATH/preloaded/SxS resolution
 or dynamic/helper-process loading, or qualify a real OpenCPN/plugin installation.
-Native execution is pending until an exact-commit run and receipt are recorded.
+All55 groups pass at`e27f60cd` in[native run38422671169](https://github.com/ThereptileII/Work/actions/runs/38422671169).
+[Original authenticated receipts](../../docs/evidence/scrum209-two-root-native-20261013/README.md)
+retain exact source, artifact and scope; product acceptance remains false.

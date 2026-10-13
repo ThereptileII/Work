@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "issue": "SCRUM-209",
+  "candidateCommit": "e27f60cdd1b92e6ec69abebc18595a1b27654ff8",
+  "implementationCommit": "1d7c1873",
+  "runId": 38422671169,
+  "runAttempt": 1,
+  "runUrl": "https://github.com/ThereptileII/Work/actions/runs/38422671169",
+  "conclusion": "success",
+  "artifact": {
+    "id": 11827371351,
+    "sha256": "bf30eecfe2aa6b3436c651aaedbe2183cd8d63808c8fe66faa642de4564278cc",
+    "digestMatchesLiveGitHub": true,
+    "zipCrc": "passed"
+  },
+  "sourceIdentitiesChecked": 27,
+  "nativeLoaderGroups": 55,
+  "nativeForwarderChecks": 17602,
+  "nativeTlsBytePolicyChecks": 278,
+  "portableImportChecks": 9916,
+  "portableTlsBytePolicyChecks": 278,
+  "portableSanitizers": "ASan/UBSan/leak detection passed",
+  "nativeProductAcceptance": false,
+  "broaderLoaderClosureAccepted": false,
+  "files": {
+    "original-native-summary.json": "4972c18f1ea19c09d0cf8a9a7fb56d1fa16f55d27335893e820b3119dfd8e908",
+    "original-native-tests.json": "b760627e0c6d76b7758af886f0f77f46e7d872d09ae968ba67205fa675b952d4"
+  }
+}
