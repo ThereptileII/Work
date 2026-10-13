@@ -2,25 +2,25 @@
 
 ## SDK consumer verification passes; plugin closure correction in progress
 
-The full replacement run[38386718400](https://github.com/ThereptileII/Work/actions/runs/38386718400)
+The full replacement run [38386718400](https://github.com/ThereptileII/Work/actions/runs/38386718400)
 failed before application compilation at its authenticated SDK compatibility
 check. Linux integration and native updater/prerequisite gates passed, but no
 new installer or recovery package was qualified. The reviewed producer-specific
 consumer correction subsequently passed native verified-reuse
-run[38393796503](https://github.com/ThereptileII/Work/actions/runs/38393796503)
-at`853cb5b3`, in80.45seconds without an application build. Downloaded evidence
+run [38393796503](https://github.com/ThereptileII/Work/actions/runs/38393796503)
+at `853cb5b3`, in 80.45 seconds without an application build. Downloaded evidence
 matches the live GitHub artifact digest and ZIP CRC. Application consumption
 and installed runtime qualification remain open.
 
 The independent native observation
-run[38393906703](https://github.com/ThereptileII/Work/actions/runs/38393906703)
-at`d24c6b2f` passes52 inert checks and proves a gap: the sibling-only plugin
+run [38393906703](https://github.com/ThereptileII/Work/actions/runs/38393906703)
+at `d24c6b2f` passes 52 inert checks and proves a gap: the sibling-only plugin
 inspection accepts an application-directory helper which imports a harmless
 legacy-name stub. This is a reproduced security coverage failure, not product
-acceptance. A shared two-root walk and55-group native refusal/compatible-mapping
-fixture now passes exact native run[38422671169](https://github.com/ThereptileII/Work/actions/runs/38422671169)
-at`e27f60cd`:55 loader groups,17,602 forwarder checks and278 byte-policy checks.
-All27 source identities and the downloaded artifact digest/CRC are verified.
+acceptance. A shared two-root walk and 55-group native refusal/compatible-mapping
+fixture now passes exact native run [38422671169](https://github.com/ThereptileII/Work/actions/runs/38422671169)
+at `e27f60cd`: 55 loader groups, 17,602 forwarder checks and 278 byte-policy checks.
+All 27 source identities and the downloaded artifact digest/CRC are verified.
 [Original receipts and scope](evidence/scrum209-two-root-native-20261013/README.md).
 Broader loader and integrated product qualification remain open.
 The separately reviewed post-publication shortcut binding is integrated; actual
@@ -793,7 +793,7 @@ At product source `eede2fe9`, the actual portable CMake target and registered
 CTest case pass 241 known-obsolete-TLS byte-policy checks. Only that component
 was built and tested, using existing offline dependencies. Read-only discovery
 on the boat found registered Visual Studio Build Tools but no installed MSVC
-C++ component, `cl.exe` or `vcvarsall.bat`; native compilation/execution did not
+C++ component, `cl.exe` or `vcvarsall.bat `; native compilation/execution did not
 occur. PID 1852 remained present and no application/profile change occurred.
 [Exact inputs, commands, failures and scope](evidence/scrum209-native-byte-policy-20261012/README.md)
 are retained in `2b9a60b4`. Native CI and complete installed dependency-closure

@@ -32,7 +32,7 @@ jobs:
         run: |
           set -o pipefail
           mkdir -p ../../build/startup-restoration
-          go test -count=1 -json ./brokerenroll -run 'Test.*(Startup|Binding|Decommission|Restoration)' | tee ../../build/startup-restoration/tests.json
+          go test -count=1 -json ./brokerenroll ./cmd/skager-update-provisioner -run 'Test.*(Startup|Binding|Decommission|Restoration)' | tee ../../build/startup-restoration/tests.json
       - name: Require actual execution of the selected binding controls
         shell: python
         run: |
@@ -41,7 +41,10 @@ jobs:
           events = [json.loads(line) for line in Path('opennav-x/build/startup-restoration/tests.json').read_text().splitlines()]
           passed = {event.get('Test') for event in events if event.get('Action') == 'pass'}
           required = {'TestApprovedStartupPublicationRequiresIndependentExactBinding',
-                      'TestApprovedStartupPublicationRejectsSubstitutedOrPartialObjects'}
+                      'TestApprovedStartupPublicationRejectsSubstitutedOrPartialObjects',
+                      'TestOperatorDecommissionPublicationArgumentsRefuseBeforeAnyRead',
+                      'TestOperatorDecommissionExplicitStartupBindsSameOwnerBeforeMutation',
+                      'TestOperatorDecommissionStartupFaultsNeverFallBackRetryOrReportSuccess'}
           if os.environ['RUNNER_OS'] == 'Windows':
               required |= {'TestNativeCompletedBindingAfterThreeMoves',
                            'TestNativeBindingRecordsExistingMenuDescriptor',
