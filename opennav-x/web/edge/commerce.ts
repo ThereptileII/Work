@@ -10,6 +10,8 @@ const SESSION = /^cs_test_[A-Za-z0-9]{8,200}$/;
 const INTENT = /^pi_[A-Za-z0-9]{8,200}$/;
 const CHARGE = /^ch_[A-Za-z0-9]{8,200}$/;
 const EVENT = /^evt_[A-Za-z0-9]{8,200}$/;
+const PROMOTION = /^promo_[A-Za-z0-9]{8,200}$/;
+const CODE = /^[A-Za-z0-9]{1,64}$/;
 const TYPES = new Set(['checkout.session.completed', 'checkout.session.expired',
   'checkout.session.async_payment_succeeded', 'checkout.session.async_payment_failed', 'charge.refunded']);
 type Json = Record<string, any>;
@@ -20,7 +22,8 @@ export type CommerceContext = {
   fetch?: typeof fetch;
   now?: () => number;
 };
-type Configuration = { key: string; secret: string; price: string; origin: string; coupons: string[] };
+type Configuration = { key: string; secret: string; price: string; origin: string; coupons: string[];
+  promotions: string[]; selectedPromotion?: string | null };
 
 class BoundaryError extends Error {
   constructor() { super('Stripe test operation unavailable'); }
@@ -42,8 +45,56 @@ function configuration(ctx: CommerceContext): Configuration {
   requireValue(/^https:\/\/(?=.{1,253}$)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z](?:[a-z0-9-]{0,61}[a-z0-9])?$/.test(origin));
   const coupons = (env.STRIPE_TEST_ALLOWED_COUPON_IDS ?? '').split(',').map(value => value.trim()).filter(Boolean);
   requireValue(coupons.length <= 100 && coupons.every(value => /^[A-Za-z0-9_-]{1,128}$/.test(value)));
+  const promotions = (env.STRIPE_TEST_ALLOWED_PROMOTION_IDS ?? '').split(',').map(value => value.trim()).filter(Boolean);
+  requireValue(promotions.length <= 100 && promotions.every(value => PROMOTION.test(value)));
   return { key: env.STRIPE_TEST_SECRET_KEY!, secret: env.STRIPE_TEST_WEBHOOK_SECRET!,
-    price: env.STRIPE_TEST_PRICE_ID!, origin, coupons: [...new Set(coupons)] };
+    price: env.STRIPE_TEST_PRICE_ID!, origin, coupons: [...new Set(coupons)],
+    promotions: [...new Set(promotions)] };
+}
+
+async function discountCode(req: Request): Promise<string | null> {
+  if (!req.body) return null;
+  requireValue(req.headers.get('Content-Type')?.split(';')[0].toLowerCase() === 'application/json');
+  const length = req.headers.get('Content-Length');
+  if (length !== null) requireValue(/^[0-9]{1,4}$/.test(length) && Number(length) <= 1024);
+  const body = strictJson(await boundedBytes(req.body, 1024));
+  requireValue(Object.keys(body).every(key => key === 'discountCode'));
+  if (body.discountCode === undefined || body.discountCode === null || body.discountCode === '') return null;
+  requireValue(typeof body.discountCode === 'string' && CODE.test(body.discountCode));
+  return body.discountCode;
+}
+
+async function approvedPromotion(ctx: CommerceContext, config: Configuration, code: string): Promise<Json | null> {
+  const query = new URLSearchParams({ code, active: 'true', limit: '10' });
+  const list = await stripeRequest(ctx, config, `promotion_codes?${query}`, 'GET');
+  requireValue(list.object === 'list' && list.has_more === false && Array.isArray(list.data)
+    && list.data.length <= 10);
+  // A code with customer-specific or ambiguous matches is never applied to an
+  // unrelated account; this beta has no Stripe customer binding.
+  if (list.data.length !== 1) return null;
+  const promotion = list.data[0]; const coupon = promotion?.coupon;
+  const now = Math.floor((ctx.now?.() ?? Date.now()) / 1000);
+  if (!object(promotion) || !object(coupon) || promotion.object !== 'promotion_code'
+    || !PROMOTION.test(promotion.id) || !config.promotions.includes(promotion.id)
+    || promotion.livemode !== false || promotion.active !== true || promotion.customer !== null
+    || typeof promotion.code !== 'string' || promotion.code.toLowerCase() !== code.toLowerCase()
+    || !object(promotion.restrictions) || promotion.restrictions.first_time_transaction !== false
+    || promotion.restrictions.minimum_amount !== null
+    || (promotion.expires_at !== null && (!integer(promotion.expires_at) || promotion.expires_at <= now))
+    || (promotion.max_redemptions !== null && (!integer(promotion.max_redemptions)
+      || !integer(promotion.times_redeemed) || promotion.times_redeemed >= promotion.max_redemptions))
+    || coupon.object !== 'coupon' || coupon.livemode !== false || coupon.valid !== true
+    || !config.coupons.includes(coupon.id)
+    || coupon.applies_to != null
+    || (coupon.redeem_by !== null && (!integer(coupon.redeem_by) || coupon.redeem_by <= now))
+    || (coupon.max_redemptions !== null && (!integer(coupon.max_redemptions)
+      || !integer(coupon.times_redeemed) || coupon.times_redeemed >= coupon.max_redemptions))) return null;
+  const percent = typeof coupon.percent_off === 'number' && Number.isFinite(coupon.percent_off)
+    && coupon.percent_off > 0 && coupon.percent_off <= 100 && coupon.amount_off === null;
+  const amount = coupon.percent_off === null && integer(coupon.amount_off)
+    && coupon.amount_off > 0 && coupon.currency === 'usd';
+  if (!percent && !amount) return null;
+  return { promotion_id: promotion.id, coupon_id: coupon.id };
 }
 
 async function boundedBytes(stream: ReadableStream<Uint8Array> | null, maximum: number): Promise<Uint8Array> {
@@ -190,7 +241,8 @@ export function confirmedCheckout(session: Json, config: Configuration, orderId:
   if (totals.amount_discount > 0) {
     const coupon = session.discounts[0]?.coupon;
     requireValue(session.discounts.length === 1 && object(coupon) && coupon.object === 'coupon'
-      && coupon.livemode === false && config.coupons.includes(coupon.id));
+      && coupon.livemode === false && config.coupons.includes(coupon.id)
+      && (!config.selectedPromotion || session.discounts[0]?.promotion_code === config.selectedPromotion));
     let expected = -1;
     if (typeof coupon.percent_off === 'number' && Number.isFinite(coupon.percent_off)
       && coupon.percent_off > 0 && coupon.percent_off <= 100 && coupon.amount_off === null) {
@@ -291,7 +343,10 @@ async function webhook(req: Request, ctx: CommerceContext, config: Configuration
         return reply(200, { received: true });
       }
       const boundConfig = { ...config, price: binding.price_id,
-        coupons: config.coupons.filter(id => binding.allowed_coupon_ids.includes(id)) };
+        coupons: binding.selected_coupon_id ? [binding.selected_coupon_id] : [],
+        selectedPromotion: binding.promotion_id };
+      requireValue(!binding.selected_coupon_id || config.coupons.includes(binding.selected_coupon_id));
+      requireValue(!binding.promotion_id || config.promotions.includes(binding.promotion_id));
       const session = await stripeRequest(ctx, boundConfig,
         `checkout/sessions/${item.id}?expand%5B%5D=line_items&expand%5B%5D=discounts.coupon`, 'GET');
       const confirmed = confirmedCheckout(session, boundConfig, item.client_reference_id, item.id);
@@ -316,8 +371,14 @@ export async function handleCommerce(req: Request, ctx: CommerceContext): Promis
   try {
     const account = await ctx.getAccount(req);
     if (!account || !UUID.test(account.id)) return reply(401, { error: 'Sign in required' });
+    let code: string | null;
+    try { code = await discountCode(req); }
+    catch { return reply(400, { error: 'Invalid discount code' }); }
+    const promotion = code ? await approvedPromotion(ctx, config, code) : null;
+    if (code && !promotion) return reply(400, { error: 'Invalid discount code' });
     const order = await ctx.rpc('commerce_reserve_checkout', { p_account_id: account.id,
-      p_price_id: config.price, p_allowed_coupon_ids: config.coupons });
+      p_price_id: config.price, p_allowed_coupon_ids: config.coupons,
+      p_promotion_id: promotion?.promotion_id ?? null, p_selected_coupon_id: promotion?.coupon_id ?? null });
     requireValue(UUID.test(order.order_id));
     if (order.session_id && order.checkout_url) {
       requireValue(SESSION.test(order.session_id));
@@ -327,7 +388,8 @@ export async function handleCommerce(req: Request, ctx: CommerceContext): Promis
       'line_items[0][price]': config.price, 'line_items[0][quantity]': '1',
       client_reference_id: order.order_id, 'metadata[order_id]': order.order_id,
       success_url: config.origin + '/checkout/test/success/',
-      cancel_url: config.origin + '/checkout/test/cancel/', allow_promotion_codes: 'true' });
+      cancel_url: config.origin + '/checkout/test/cancel/', allow_promotion_codes: 'false' });
+    if (promotion) form.set('discounts[0][promotion_code]', promotion.promotion_id);
     const session = await stripeRequest(ctx, config, 'checkout/sessions', 'POST', form);
     sessionIdentity(session, order.order_id);
     requireValue(session.status === 'open' && ['hosted', 'hosted_page'].includes(session.ui_mode));

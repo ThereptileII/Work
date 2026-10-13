@@ -13,6 +13,11 @@ create table skager_private.commerce_orders (
   currency text not null default 'USD' check (currency = 'USD'),
   price_id text not null check (price_id ~ '^price_[A-Za-z0-9]{8,128}$'),
   allowed_coupon_ids text[] not null default '{}',
+  promotion_id text check (promotion_id ~ '^promo_[A-Za-z0-9]{8,200}$'),
+  selected_coupon_id text,
+  check ((promotion_id is null and selected_coupon_id is null) or
+    (promotion_id is not null and selected_coupon_id is not null
+      and selected_coupon_id = any(allowed_coupon_ids))),
   status text not null default 'pending' check (status in ('pending','fulfilled','refunded','suspended','expired','failed')),
   created_at timestamptz not null default now()
 );
@@ -141,13 +146,17 @@ create trigger commerce_entitlement_guard before insert or update or delete on s
 create trigger commerce_effect_immutable before update or delete on skager_private.commerce_effects
   for each row execute function skager_private.commerce_immutable();
 
-create function public.commerce_reserve_checkout(p_account_id uuid, p_price_id text, p_allowed_coupon_ids text[])
+create function public.commerce_reserve_checkout(p_account_id uuid, p_price_id text,
+  p_allowed_coupon_ids text[], p_promotion_id text, p_selected_coupon_id text)
 returns jsonb language plpgsql security definer set search_path = pg_catalog as $$
 declare item skager_private.commerce_orders; binding skager_private.commerce_bindings;
 begin
   if p_account_id is null or p_price_id !~ '^price_[A-Za-z0-9]{8,128}$'
     or cardinality(p_allowed_coupon_ids) > 100 or p_allowed_coupon_ids is null
-    or exists(select 1 from unnest(p_allowed_coupon_ids) x where x is null or x !~ '^[A-Za-z0-9_-]{1,128}$') then
+    or exists(select 1 from unnest(p_allowed_coupon_ids) x where x is null or x !~ '^[A-Za-z0-9_-]{1,128}$')
+    or ((p_promotion_id is null) <> (p_selected_coupon_id is null))
+    or (p_promotion_id is not null and (p_promotion_id !~ '^promo_[A-Za-z0-9]{8,200}$'
+      or p_selected_coupon_id <> all(p_allowed_coupon_ids))) then
     raise exception 'Invalid checkout configuration' using errcode = '22023';
   end if;
   perform pg_advisory_xact_lock(hashtextextended(p_account_id::text, 36));
@@ -156,10 +165,12 @@ begin
     where account_id = p_account_id and status = 'pending' and created_at < now() - interval '23 hours';
   select * into item from skager_private.commerce_orders where account_id = p_account_id
     and status = 'pending' and price_id = p_price_id and allowed_coupon_ids = p_allowed_coupon_ids
+    and promotion_id is not distinct from p_promotion_id
+    and selected_coupon_id is not distinct from p_selected_coupon_id
     order by created_at limit 1 for update;
   if not found then
-    insert into skager_private.commerce_orders(account_id, price_id, allowed_coupon_ids)
-      values(p_account_id, p_price_id, p_allowed_coupon_ids) returning * into item;
+    insert into skager_private.commerce_orders(account_id, price_id, allowed_coupon_ids,promotion_id,selected_coupon_id)
+      values(p_account_id, p_price_id, p_allowed_coupon_ids,p_promotion_id,p_selected_coupon_id) returning * into item;
   end if;
   select * into binding from skager_private.commerce_bindings where order_id = item.id;
   return jsonb_build_object('order_id',item.id,'session_id',binding.session_id,'checkout_url',binding.checkout_url);
@@ -212,7 +223,8 @@ begin
   select * into binding from skager_private.commerce_bindings where order_id = p_order_id;
   if not found then return jsonb_build_object('state','pending'); end if;
   if binding.session_id <> p_session_id then return jsonb_build_object('state','rejected'); end if;
-  return jsonb_build_object('state','bound','price_id',item.price_id,'allowed_coupon_ids',item.allowed_coupon_ids);
+  return jsonb_build_object('state','bound','price_id',item.price_id,
+    'selected_coupon_id',item.selected_coupon_id,'promotion_id',item.promotion_id);
 end;
 $$;
 
@@ -275,6 +287,9 @@ begin
     or (p_checkout->>'tax_minor')::bigint is distinct from 0::bigint
     or total is null or discount is null or total < 0 or total > 2000 or discount < 0 or discount > 2000
     or total + discount <> 2000 or not (coupons <@ item.allowed_coupon_ids)
+    or (item.selected_coupon_id is null and cardinality(coupons) <> 0)
+    or (item.selected_coupon_id is not null and
+      (cardinality(coupons) <> 1 or coupons[1] <> item.selected_coupon_id))
     or cardinality(coupons) > 1 or (discount > 0 and cardinality(coupons) <> 1)
     or (discount = 0 and cardinality(coupons) <> 0)
     or not ((total > 0 and p_checkout->>'payment_status' = 'paid' and intent is not null and intent ~ '^pi_[A-Za-z0-9]{8,200}$')
@@ -364,13 +379,13 @@ end;
 $$;
 revoke all on function skager_private.commerce_immutable(),skager_private.commerce_order_guard(),skager_private.commerce_event_guard(),
   skager_private.commerce_entitlement_guard() from public,anon,authenticated,service_role;
-revoke all on function public.commerce_reserve_checkout(uuid,text,text[]),
+revoke all on function public.commerce_reserve_checkout(uuid,text,text[],text,text),
   public.commerce_bind_checkout(uuid,uuid,text,text), public.commerce_receive_event(text,text,text,bigint,text,text),
   public.commerce_checkout_binding(uuid,text),public.commerce_reject_event(text,text),
   public.commerce_close_checkout(text,text,uuid,text),public.commerce_apply_checkout(text,text,jsonb),
   public.commerce_apply_refund(text,text,text,text,bigint,bigint),public.commerce_portal_access(uuid)
   from public,anon,authenticated;
-grant execute on function public.commerce_reserve_checkout(uuid,text,text[]),
+grant execute on function public.commerce_reserve_checkout(uuid,text,text[],text,text),
   public.commerce_bind_checkout(uuid,uuid,text,text),public.commerce_receive_event(text,text,text,bigint,text,text),
   public.commerce_checkout_binding(uuid,text),public.commerce_reject_event(text,text),
   public.commerce_close_checkout(text,text,uuid,text),public.commerce_apply_checkout(text,text,jsonb),

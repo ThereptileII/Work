@@ -14,7 +14,8 @@ declare
   two_digest text := repeat('b',64);
 begin
   insert into auth.users(id) values(account_one),(account_two);
-  first_order := (public.commerce_reserve_checkout(account_one,'price_12345678',array['full100'])->>'order_id')::uuid;
+  first_order := (public.commerce_reserve_checkout(account_one,'price_12345678',array['full100'],
+    'promo_12345678','full100')->>'order_id')::uuid;
   if first_order is null then raise exception 'reservation failed'; end if;
   perform public.commerce_bind_checkout(account_one,first_order,'cs_test_00000001',
     'https://checkout.stripe.com/c/pay/cs_test_00000001#test');
@@ -56,7 +57,8 @@ begin
 
   -- Refund arrives before its checkout completion. The first application must
   -- create a terminal refunded entitlement without any active interval.
-  second_order := (public.commerce_reserve_checkout(account_two,'price_12345678',array['full100'])->>'order_id')::uuid;
+  second_order := (public.commerce_reserve_checkout(account_two,'price_12345678',array['full100'],
+    null,null)->>'order_id')::uuid;
   perform public.commerce_bind_checkout(account_two,second_order,'cs_test_00000002',
     'https://checkout.stripe.com/c/pay/cs_test_00000002#test');
   perform public.commerce_receive_event('evt_00000002',two_digest,'charge.refunded',

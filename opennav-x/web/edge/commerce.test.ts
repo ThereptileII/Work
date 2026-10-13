@@ -8,7 +8,7 @@ const sessionId = 'cs_test_12345678';
 const priceId = 'price_12345678';
 const intentId = 'pi_12345678';
 const secret = 'whsec_1234567890abcdef';
-const config = { price: priceId, coupons: ['full100'], key: 'sk_test_1234567890abcdef',
+const config = { price: priceId, coupons: ['full100'], promotions: ['promo_12345678'], key: 'sk_test_1234567890abcdef',
   secret, origin: 'https://beta.skager.app' };
 const raw = (value: unknown) => new TextEncoder().encode(JSON.stringify(value));
 
@@ -19,7 +19,7 @@ function session(discount = 0): Record<string, any> {
     ui_mode: 'hosted', currency: 'usd', amount_subtotal: 2000, amount_total: total,
     payment_status: total ? 'paid' : 'no_payment_required', payment_intent: total ? intentId : null,
     total_details: { amount_discount: discount, amount_tax: 0, amount_shipping: 0 },
-    discounts: discount ? [{ coupon: { object: 'coupon', id: 'full100', livemode: false,
+    discounts: discount ? [{ promotion_code: 'promo_12345678', coupon: { object: 'coupon', id: 'full100', livemode: false,
       percent_off: discount * 100 / 2000, amount_off: null } }] : [],
     line_items: { object: 'list', has_more: false, data: [{ quantity: 1, currency: 'usd',
       amount_subtotal: 2000, amount_total: total, amount_discount: discount, amount_tax: 0,
@@ -57,6 +57,11 @@ test('confirmed full coupon gives active-equivalent zero payment evidence', () =
 
 test('paid checkout requires the bound price, exact total, and provider payment', () => {
   assert.equal(confirmedCheckout(session(), config, order, sessionId).total_minor, 2000);
+  assert.equal(confirmedCheckout(session(500), { ...config, selectedPromotion: 'promo_12345678' },
+    order, sessionId).total_minor, 1500);
+  const wrongPromotion = session(500); wrongPromotion.discounts[0].promotion_code = 'promo_othercode';
+  assert.throws(() => confirmedCheckout(wrongPromotion,
+    { ...config, selectedPromotion: 'promo_12345678' }, order, sessionId));
   assert.throws(() => confirmedCheckout({ ...session(), amount_total: 1999 }, config, order, sessionId));
   const wrongPrice = session(); wrongPrice.line_items.data[0].price.id = 'price_elsewhere';
   assert.throws(() => confirmedCheckout(wrongPrice, config, order, sessionId));
@@ -78,7 +83,8 @@ test('checkout start binds authenticated account and returns only hosted URL', a
   const ctx = {
     env: { STRIPE_TEST_CHECKOUT_ENABLED: 'true', STRIPE_TEST_SECRET_KEY: config.key,
       STRIPE_TEST_WEBHOOK_SECRET: secret, STRIPE_TEST_PRICE_ID: priceId,
-      STRIPE_TEST_RETURN_ORIGIN: config.origin, STRIPE_TEST_ALLOWED_COUPON_IDS: 'full100' },
+      STRIPE_TEST_RETURN_ORIGIN: config.origin, STRIPE_TEST_ALLOWED_COUPON_IDS: 'full100',
+      STRIPE_TEST_ALLOWED_PROMOTION_IDS: 'promo_12345678' },
     getAccount: async () => ({ id: order }),
     rpc: async (name: string, args: any) => {
       calls.push([name, args]);
@@ -89,6 +95,7 @@ test('checkout start binds authenticated account and returns only hosted URL', a
     fetch: async (url: string, init: RequestInit) => {
       assert.equal(url, 'https://api.stripe.com/v1/checkout/sessions');
       assert.equal((init.body as URLSearchParams).get('client_reference_id'), order);
+      assert.equal((init.body as URLSearchParams).get('allow_promotion_codes'), 'false');
       return new Response(JSON.stringify({ ...session(), status: 'open',
         url: `https://checkout.stripe.com/c/pay/${sessionId}#test` }),
         { status: 200, headers: { 'Content-Type': 'application/json' } });
@@ -104,19 +111,75 @@ test('checkout start binds authenticated account and returns only hosted URL', a
   assert.equal(denied?.status, 403);
 });
 
+test('only an approved active exact promotion reaches Checkout creation', async () => {
+  const promotion = { object: 'promotion_code', id: 'promo_12345678', code: 'FREE100',
+    active: true, livemode: false, customer: null, expires_at: null, max_redemptions: null,
+    restrictions: { first_time_transaction: false, minimum_amount: null },
+    coupon: { object: 'coupon', id: 'full100', livemode: false, valid: true,
+      percent_off: 100, amount_off: null, redeem_by: null, max_redemptions: null } };
+  const base = { env: { STRIPE_TEST_CHECKOUT_ENABLED: 'true', STRIPE_TEST_SECRET_KEY: config.key,
+    STRIPE_TEST_WEBHOOK_SECRET: secret, STRIPE_TEST_PRICE_ID: priceId,
+    STRIPE_TEST_RETURN_ORIGIN: config.origin, STRIPE_TEST_ALLOWED_COUPON_IDS: 'full100',
+    STRIPE_TEST_ALLOWED_PROMOTION_IDS: 'promo_12345678' }, getAccount: async () => ({ id: order }) };
+  async function start(code: string, candidates: any[]) {
+    const visited: string[] = []; const calls: Array<[string, any]> = [];
+    const ctx = { ...base, rpc: async (name: string, args: any) => {
+      calls.push([name, args]);
+      if (name === 'commerce_reserve_checkout') return { order_id: order };
+      if (name === 'commerce_bind_checkout') return { state: 'bound' };
+      throw Error(name);
+    }, fetch: async (url: string, init: RequestInit) => {
+      visited.push(url);
+      if (url.includes('/promotion_codes?')) return new Response(JSON.stringify({ object: 'list',
+        has_more: false, data: candidates }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+      assert.equal((init.body as URLSearchParams).get('allow_promotion_codes'), 'false');
+      assert.equal((init.body as URLSearchParams).get('discounts[0][promotion_code]'), 'promo_12345678');
+      return new Response(JSON.stringify({ ...session(2000), status: 'open',
+        url: `https://checkout.stripe.com/c/pay/${sessionId}#test` }),
+        { status: 200, headers: { 'Content-Type': 'application/json' } });
+    } };
+    const response = await handleCommerce(new Request('https://beta.skager.app/api/checkout/start', {
+      method: 'POST', headers: { Origin: config.origin, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ discountCode: code }) }), ctx);
+    return { response, visited, calls };
+  }
+  for (const [code, candidates] of [
+    ['NOPE', []], ['FREE100', [{ ...promotion, active: false }]],
+    ['FREE100', [{ ...promotion, id: 'promo_unapproved' }]],
+    ['FREE100', [{ ...promotion, expires_at: 1 }]],
+    ['FREE100', [{ ...promotion, coupon: { ...promotion.coupon, valid: false } }]],
+    ['FREE100', [promotion, promotion]]
+  ] as [string, any[]][]) {
+    const result = await start(code, candidates);
+    assert.equal(result.response?.status, 400);
+    assert.equal(result.visited.length, 1);
+    assert.equal(result.calls.length, 0);
+  }
+  const valid = await start('FREE100', [promotion]);
+  assert.equal(valid.response?.status, 200);
+  assert.equal(valid.visited.length, 2);
+  assert.equal(valid.calls[0][1].p_promotion_id, 'promo_12345678');
+  assert.equal(valid.calls[0][1].p_selected_coupon_id, 'full100');
+  const malformed = await start('FREE 100', [promotion]);
+  assert.equal(malformed.response?.status, 400);
+  assert.equal(malformed.visited.length, 0);
+});
+
 test('signed zero-total completion reaches one verified apply call', async () => {
   const calls: Array<[string, any]> = [];
   const { bytes, header } = signed(event(session(2000)));
   const ctx = {
     env: { STRIPE_TEST_CHECKOUT_ENABLED: 'true', STRIPE_TEST_SECRET_KEY: config.key,
       STRIPE_TEST_WEBHOOK_SECRET: secret, STRIPE_TEST_PRICE_ID: priceId,
-      STRIPE_TEST_RETURN_ORIGIN: config.origin, STRIPE_TEST_ALLOWED_COUPON_IDS: 'full100' },
+      STRIPE_TEST_RETURN_ORIGIN: config.origin, STRIPE_TEST_ALLOWED_COUPON_IDS: 'full100',
+      STRIPE_TEST_ALLOWED_PROMOTION_IDS: 'promo_12345678' },
     getAccount: async () => null,
     now: () => 1_700_000_000_000,
     rpc: async (name: string, args: any) => {
       calls.push([name, args]);
       if (name === 'commerce_receive_event') return { state: 'received' };
-      if (name === 'commerce_checkout_binding') return { state: 'bound', price_id: priceId, allowed_coupon_ids: ['full100'] };
+      if (name === 'commerce_checkout_binding') return { state: 'bound', price_id: priceId,
+        selected_coupon_id: 'full100', promotion_id: 'promo_12345678' };
       if (name === 'commerce_apply_checkout') return { state: 'applied' };
       throw Error(name);
     },

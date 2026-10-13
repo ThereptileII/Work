@@ -10,6 +10,10 @@ normal exact-origin and double-submit CSRF checks for the checkout start route.
 The webhook instead authenticates Stripe's timestamped HMAC over bounded raw
 bytes. The commerce module also independently checks the start route's exact
 Origin. Only `POST /api/checkout/start` requires a signed-in Supabase subject.
+The start request may contain JSON `{ "discountCode": "FREE100" }`; an absent
+body or empty code uses the full price. Codes contain 1–64 ASCII letters or
+digits. An invalid code returns a generic 400 before an order or Checkout
+session is created.
 
 The context has `env`, `getAccount(request)`, `rpc(name, args)`, and optional
 `fetch`. `getAccount` must return the authenticated Supabase `auth.users.id`,
@@ -20,18 +24,21 @@ infer completion from query parameters.
 
 Configuration keys are `STRIPE_TEST_CHECKOUT_ENABLED=true`,
 `STRIPE_TEST_SECRET_KEY`, `STRIPE_TEST_WEBHOOK_SECRET`, `STRIPE_TEST_PRICE_ID`,
-`STRIPE_TEST_RETURN_ORIGIN`, and a comma-separated
-`STRIPE_TEST_ALLOWED_COUPON_IDS`. The configured price must be the one-time
+`STRIPE_TEST_RETURN_ORIGIN`, comma-separated
+`STRIPE_TEST_ALLOWED_COUPON_IDS`, and comma-separated
+`STRIPE_TEST_ALLOWED_PROMOTION_IDS`. The configured price must be the one-time
 USD 20.00 test price. The origin must be the exact beta web origin, such as
 `https://beta.skager.app`, without a trailing slash. Stripe's webhook endpoint
 must use the pinned API version in `commerce.ts` and deliver the five event
-types admitted there. A coupon ID on the allowlist is still subject to the
-provider's eligibility rules; the verified session must show its actual
-discount before fulfillment. Because hosted promotion-code entry cannot limit
-what a customer types to this local allowlist, an unapproved Stripe coupon can
-create a charge that this boundary refuses to fulfill. Configure the Stripe
-test account so customer-facing promotion codes map only to approved coupons,
-and reconcile rejected sessions before offering this flow publicly.
+types admitted there. The server searches Stripe's active promotion codes for
+the entered code and accepts exactly one active, unexpired, unrestricted
+promotion ID and coupon ID on both local allowlists. Customer-specific,
+product-restricted, minimum-amount, and first-transaction promotions are
+rejected. It places that promotion ID on the Checkout session. Hosted
+promotion-code entry is disabled, and each order binds its selected promotion
+and coupon before payment. A completed session must show that same promotion,
+coupon, and exact amount before fulfillment. Stripe still decides final
+redemption eligibility and may reject a code at Checkout creation or payment.
 
 `commerce.sql` creates private orders, immutable session bindings, webhook
 receipts, settlements, refund markers, entitlements, and append-only effects
