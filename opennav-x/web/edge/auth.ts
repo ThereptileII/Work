@@ -14,7 +14,7 @@ const INVALID =
   "The code could not be verified. Request a new code and try again.";
 const tokenPattern = /^[a-f0-9]{64}$/;
 const uuidPattern =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 export function readCookie(request: Request, name: string): string {
   const matches = (request.headers.get("cookie") || "").split(";").map((s) =>
     s.trim()
@@ -77,37 +77,162 @@ function mutationAllowed(request: Request): boolean {
     /^[a-f0-9]{64}$/.test(csrf) &&
     equal(csrf, request.headers.get("x-csrf-token") || "");
 }
-async function body(request: Request): Promise<Record<string, unknown>> {
+/** Reject duplicate keys and non-finite numbers instead of JSON.parse's last-key wins. */
+function strictJson(text: string): unknown {
+  let i = 0;
+  const fail = (): never => {
+    throw new Error("invalid JSON");
+  };
+  const whitespace = () => {
+    while (i < text.length && /[ \t\r\n]/.test(text[i])) i++;
+  };
+  function string(): string {
+    const start = i++;
+    while (i < text.length) {
+      const c = text[i++];
+      if (c === '"') {
+        try {
+          return JSON.parse(text.slice(start, i));
+        } catch {
+          return fail();
+        }
+      }
+      if (c === "\\") {
+        if (i >= text.length) fail();
+        i++;
+      } else if (c.charCodeAt(0) < 32) fail();
+    }
+    return fail();
+  }
+  function value(depth: number): unknown {
+    if (depth > 32) fail();
+    whitespace();
+    if (text[i] === '"') return string();
+    if (text[i] === "{") {
+      i++;
+      whitespace();
+      const out: Record<string, unknown> = Object.create(null);
+      if (text[i] === "}") {
+        i++;
+        return out;
+      }
+      while (true) {
+        if (text[i] !== '"') fail();
+        const key = string();
+        whitespace();
+        if (text[i++] !== ":" || Object.hasOwn(out, key)) fail();
+        out[key] = value(depth + 1);
+        whitespace();
+        const next = text[i++];
+        if (next === "}") return out;
+        if (next !== ",") fail();
+        whitespace();
+      }
+    }
+    if (text[i] === "[") {
+      i++;
+      whitespace();
+      const out: unknown[] = [];
+      if (text[i] === "]") {
+        i++;
+        return out;
+      }
+      while (true) {
+        out.push(value(depth + 1));
+        whitespace();
+        const next = text[i++];
+        if (next === "]") return out;
+        if (next !== ",") fail();
+      }
+    }
+    for (
+      const [literal, parsed] of [["true", true], ["false", false], [
+        "null",
+        null,
+      ]] as const
+    ) {
+      if (text.startsWith(literal, i)) {
+        i += literal.length;
+        return parsed;
+      }
+    }
+    const number = /^-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?/.exec(
+      text.slice(i),
+    );
+    if (!number) return fail();
+    i += number[0].length;
+    const parsed = Number(number[0]);
+    if (!Number.isFinite(parsed)) fail();
+    return parsed;
+  }
+  const parsed = value(0);
+  whitespace();
+  if (i !== text.length) fail();
+  return parsed;
+}
+async function readJson(
+  message: Request | Response,
+  max: number,
+): Promise<Record<string, unknown>> {
   if (
-    request.headers.get("content-type")?.split(";")[0].trim().toLowerCase() !==
+    message.headers.get("content-type")?.split(";")[0].trim().toLowerCase() !==
       "application/json"
-  ) throw new Error("invalid request");
-  // Bound even chunked bodies; never include their content in exceptions.
-  const reader = request.body?.getReader();
-  if (!reader) throw new Error("invalid request");
+  ) throw new Error("invalid JSON response");
+  const encoding = message.headers.get("content-encoding");
+  if (encoding && encoding.toLowerCase() !== "identity") {
+    throw new Error("invalid JSON encoding");
+  }
+  const declared = message.headers.get("content-length");
+  if (declared && (!/^\d+$/.test(declared) || Number(declared) > max)) {
+    throw new Error("invalid JSON size");
+  }
+  const reader = message.body?.getReader();
+  if (!reader) throw new Error("invalid JSON body");
   let total = 0;
   const chunks: Uint8Array[] = [];
   while (true) {
     const item = await reader.read();
     if (item.done) break;
     total += item.value.length;
-    if (total > 2048) {
+    if (total > max) {
       await reader.cancel();
-      throw new Error("invalid request");
+      throw new Error("invalid JSON size");
     }
     chunks.push(item.value);
   }
   const data = new Uint8Array(total);
   let offset = 0;
-  for (const part of chunks) {
-    data.set(part, offset);
-    offset += part.length;
+  for (const chunk of chunks) {
+    data.set(chunk, offset);
+    offset += chunk.length;
   }
-  const parsed = JSON.parse(new TextDecoder().decode(data));
+  const parsed = strictJson(
+    new TextDecoder("utf-8", { fatal: true, ignoreBOM: true }).decode(data),
+  );
   if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
-    throw new Error("invalid request");
+    throw new Error("invalid JSON shape");
   }
-  return parsed;
+  return parsed as Record<string, unknown>;
+}
+function canonicalId(value: unknown): value is string {
+  return typeof value === "string" && uuidPattern.test(value) &&
+    value !== "00000000-0000-0000-0000-000000000000";
+}
+function confirmedTimestamp(value: unknown): boolean {
+  if (typeof value !== "string") return false;
+  const parts =
+    /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.\d{1,6})?(?:Z|[+-](?:[01]\d|2[0-3]):[0-5]\d)$/
+      .exec(value);
+  if (!parts) return false;
+  const [, year, month, day, hour, minute, second] = parts.map(Number);
+  const stamp = Date.parse(value);
+  return month >= 1 && month <= 12 && day >= 1 &&
+    day <= new Date(Date.UTC(year, month, 0)).getUTCDate() && hour <= 23 &&
+    minute <= 59 && second <= 59 && Number.isFinite(stamp) && stamp > 0 &&
+    stamp <= Date.now();
+}
+async function body(request: Request): Promise<Record<string, unknown>> {
+  return await readJson(request, 2048);
 }
 async function provider(
   ctx: AuthContext,
@@ -116,14 +241,11 @@ async function provider(
   accessToken?: string,
 ): Promise<Record<string, unknown> | null> {
   const base = new URL(ctx.env.SUPABASE_URL || "");
-  if (
-    base.protocol !== "https:" || !base.hostname.endsWith(".supabase.co") ||
-    base.username || base.password || base.search || base.hash ||
-    (base.pathname !== "/" && base.pathname !== "")
-  ) return null;
+  if (base.href !== "https://kelwgubkuvditalsbqpr.supabase.co/") return null;
   const headers: Record<string, string> = {
     "apikey": ctx.env.SUPABASE_ANON_KEY || "",
     "content-type": "application/json",
+    "accept-encoding": "identity",
   };
   if (!headers.apikey) return null;
   if (path === "invite") {
@@ -138,11 +260,11 @@ async function provider(
     redirect: "error",
     signal: AbortSignal.timeout(8000),
   });
-  if (!result.ok) return null;
-  const parsed = await result.json();
-  return parsed && typeof parsed === "object" && !Array.isArray(parsed)
-    ? parsed as Record<string, unknown>
-    : null;
+  if (
+    !result.ok || result.redirected ||
+    (result.url && result.url !== new URL(`/auth/v1/${path}`, base).href)
+  ) return null;
+  return await readJson(result, 65536);
 }
 function row(value: unknown): Record<string, unknown> | null {
   const found = Array.isArray(value) ? value[0] : value;
@@ -162,7 +284,7 @@ export async function getAccount(
       await ctx.rpc("skager_auth_session_get", { p_hash: await hash(raw) }),
     );
     if (
-      !found || typeof found.id !== "string" || !uuidPattern.test(found.id) ||
+      !found || !canonicalId(found.id) ||
       typeof found.email !== "string" || !invited(email(found.email), ctx)
     ) return null;
     return { id: found.id, email: email(found.email) };
@@ -218,20 +340,25 @@ export async function handleAuth(
     }
     const data = await body(request);
     const pending = readCookie(request, CHALLENGE);
-    const ipHash = await hash(ctx.clientIp || "unknown-ingress-global");
+    const ipHash = ctx.clientIp ? await hash(ctx.clientIp) : null;
     if (route !== "/api/auth/verify") {
       const address = email(data.email);
       const challenge = randomToken();
-      const keys = [
-        "send:ip:" + ipHash,
-        "send:email:" + await hash(address),
-        "send:global",
-      ];
-      const allowed = await ctx.rpc("skager_auth_throttle", {
-        p_keys: keys,
-        p_limit: 5,
+      const globalAllowed = await ctx.rpc("skager_auth_throttle", {
+        p_keys: ["send:global"],
+        p_limit: 20,
         p_seconds: 900,
       });
+      const keys = [
+        "send:email:" + await hash(address),
+        ...(ipHash ? ["send:ip:" + ipHash] : []),
+      ];
+      const allowed = globalAllowed === true &&
+        await ctx.rpc("skager_auth_throttle", {
+          p_keys: keys,
+          p_limit: 5,
+          p_seconds: 900,
+        });
       // Every begin response is identical, including denied invitations/provider errors.
       if (
         allowed === true && invited(address, ctx) &&
@@ -267,8 +394,8 @@ export async function handleAuth(
     ) return response({ error: INVALID }, 400);
     const allowed = await ctx.rpc("skager_auth_throttle", {
       p_keys: [
-        "verify:ip:" + ipHash,
         "verify:challenge:" + await hash(pending),
+        ...(ipHash ? ["verify:ip:" + ipHash] : []),
       ],
       p_limit: 10,
       p_seconds: 900,
@@ -294,9 +421,10 @@ export async function handleAuth(
     }
     const user = await provider(ctx, "user", undefined, verified.access_token);
     if (
-      !user || typeof user.id !== "string" || !uuidPattern.test(user.id) ||
-      email(user.email) !== challenge.email ||
-      typeof user.email_confirmed_at !== "string"
+      !user || !canonicalId(user.id) || user.email !== challenge.email ||
+      user.aud !== "authenticated" || user.role !== "authenticated" ||
+      user.is_anonymous !== false ||
+      !confirmedTimestamp(user.email_confirmed_at)
     ) return response({ error: INVALID }, 400, [cookie(CHALLENGE, "", 0)]);
     const session = randomToken();
     const old = readCookie(request, SESSION);

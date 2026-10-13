@@ -25,8 +25,13 @@ allowlist. Empty denies everyone, including previously logged-in accounts.
 Supabase supplies `SUPABASE_URL`, `SUPABASE_ANON_KEY` and
 `SUPABASE_SERVICE_ROLE_KEY` only to the backend. The service key is used by the
 coordinator's `ctx.rpc` implementation and the fixed `/auth/v1/invite` request,
-never by clients. The provider URL must
-be an HTTPS `*.supabase.co` origin. Custom provider domains are not supported.
+never by clients. The provider URL is pinned exactly to `https://kelwgubkuvditalsbqpr.supabase.co`.
+Other project origins and custom domains are refused before transmitting keys.
+Provider responses are capped at 64 KiB, require uncompressed JSON, reject
+redirects, duplicate keys, non-finite numbers and invalid UTF-8. Request JSON is
+capped at 2 KiB and uses the same strict parser. Canonical user proof requires a
+nonzero lowercase UUID, exact intended email, authenticated role/audience,
+`is_anonymous:false` and a valid confirmation timestamp no later than now.
 
 `handleAuth(request, ctx)` returns a response for `/api/auth/session` (GET), and
 `/api/auth/login`, `/signup`, `/recover`, `/verify`, `/logout` (POST), otherwise
@@ -46,8 +51,7 @@ checks these requirements itself, including direct Edge Function requests.
 `ctx` supplies `env`, `rpc(name,args)`, optional `fetch` for tests and optional
 `clientIp`. The IP MUST come from authenticated, trusted Cloudflare ingress
 metadata. Never copy caller-controlled `X-Forwarded-For`/`CF-Connecting-IP` at
-the publicly reachable Edge Function. An absent trusted IP uses a shared global
-bucket. The Worker/Edge router must authenticate its proxy metadata independently
+the publicly reachable Edge Function. An absent trusted IP omits the IP bucket; email and global limits still apply. The Worker/Edge router must authenticate its proxy metadata independently
 of CSRF. The auth module never reads forwarding headers.
 
 ## Storage and bounds
@@ -70,10 +74,10 @@ verified login. At most five sessions are retained per subject. Logout deletes
 the server record and pending challenge and expires both cookies. OTP/provider
 tokens exist only in request memory, with no persistence or serialization.
 
-DB throttles enforce five sends per fifteen minutes for each email, trusted IP,
-and the entire private beta; this intentionally conservative global cap protects
-the small friend test. Verify is limited to ten per IP/challenge per fifteen
-minutes. Atomic limits do not rely on process memory. Expired rows are pruned
+DB throttles enforce five sends per fifteen minutes for each email and each
+provided trusted IP, plus a separate twenty-send global cap. Verify is limited
+to ten per challenge and, when available, per trusted IP per fifteen minutes.
+No invented shared IP bucket constrains all friends to the single-IP limit. Atomic limits do not rely on process memory. Expired rows are pruned
 on subsequent creates/throttle calls. A DB/provider failure fails closed for
 verification and account lookup. Responses and exceptions never expose upstream
 bodies or secrets, and this module logs nothing.
