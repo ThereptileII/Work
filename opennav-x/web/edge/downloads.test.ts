@@ -36,8 +36,12 @@ function fixture(options: any = {}) {
     getAccount: async () => { calls.accounts++; return options.account === undefined ? { id: accountId } : options.account; },
     rpc: async (name: string, args: any) => {
       calls.rpc.push([name, args]);
+      if (name === 'skager_auth_throttle') {
+        if (options.throttleError) throw Error(secret);
+        return Object.hasOwn(options, 'throttle') ? options.throttle : true;
+      }
       if (options.rpc) return options.rpc(calls.rpc.length);
-      return { entitlement: options.entitlement === undefined ? entitlement : options.entitlement, orders: [] };
+      return { entitlement: options.entitlement === undefined ? entitlement : options.entitlement, orders: options.orders ?? [] };
     },
     fetch: async (target: string, init: RequestInit) => {
       calls.provider.push([target, init]);
@@ -147,7 +151,7 @@ test('each supported artifact signs only its immutable server object with privat
     assert.equal(link.origin, SUPABASE_ORIGIN); assert.equal(link.pathname, new URL(target).pathname);
     assert.equal(link.searchParams.get('download'), artifact.name);
     assert.equal(data.sha256, artifact.sha256); assert.equal(data.bytes, artifact.bytes);
-    assert.equal(calls.accounts, 2); assert.equal(calls.rpc.length, 2);
+    assert.equal(calls.accounts, 2); assert.equal(calls.rpc.length, 3);
     assert.match(response!.headers.get('Cache-Control')!, /private, no-store/);
     assert.equal(response!.headers.get('Referrer-Policy'), 'no-referrer');
     assert.equal(JSON.stringify(data).includes(secret), false);
@@ -193,7 +197,7 @@ test('provider URL, token binding, expiry and redirect failures are generic and 
     const response = await handle(request('POST', selection), ctx);
     assert.equal(response?.status, 503);
     assert.equal(await response?.text(), '{"error":"Downloads are temporarily unavailable. Please try again."}');
-    assert.equal(calls.rpc.length, 1);
+    assert.equal(calls.rpc.length, 2);
     assert.equal(JSON.stringify([...response!.headers]).includes(secret), false);
   }
 });
@@ -239,5 +243,32 @@ test('Storage request and stalled response body both stop at the bounded deadlin
       assert.equal(response?.status, 503);
       assert.equal((await response?.text())?.includes('token='), false);
     } finally { mock.timers.reset(); }
+  }
+});
+
+test('only selected signing consumes its verified account quota; denial and uncertain limits never reach Storage', async () => {
+  const handle = createDownloadHandler([release]);
+  for (const options of [{ throttle: false }, { throttle: 'true' }, { throttle: null },
+    { throttle: {} }, { throttle: undefined }, { throttleError: true }]) {
+    const { ctx, calls } = fixture(options);
+    const response = await handle(request('POST', selection), ctx);
+    assert.equal(response?.status, options.throttle === false ? 429 : 503);
+    assert.deepEqual(calls.provider, []);
+    assert.deepEqual(calls.rpc, [
+      ['commerce_portal_access', { p_account_id: accountId }],
+      ['skager_auth_throttle', { p_keys: ['download:account:' + accountId], p_limit: 10, p_seconds: 60 }],
+    ]);
+    assert.equal((await response?.text())?.includes(secret), false);
+  }
+  for (const amount_minor of [0, 2000]) {
+    const { ctx, calls } = fixture({ throttle: true, orders: [{ status: 'fulfilled', amount_minor }] });
+    assert.equal((await handle(request('POST', selection), ctx))?.status, 200);
+    assert.deepEqual(calls.rpc.map(([name]) => name), ['commerce_portal_access', 'skager_auth_throttle', 'commerce_portal_access']);
+  }
+  for (const input of [request(), request('POST', JSON.stringify({ releaseId: 'unknown', artifactId: 'source' }))]) {
+    const { ctx, calls } = fixture();
+    await handle(input, ctx);
+    assert.equal(calls.rpc.some(([name]) => name === 'skager_auth_throttle'), false);
+    assert.deepEqual(calls.provider, []);
   }
 });

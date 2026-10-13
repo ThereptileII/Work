@@ -1,5 +1,5 @@
 /** SCRUM-42: private staging downloads. No release is enabled by default. */
-import { csrfValid, PUBLIC_ORIGIN, SUPABASE_ORIGIN } from './platform.ts';
+import { csrfValid, SUPABASE_ORIGIN } from './platform.ts';
 import type { Context } from './platform.ts';
 import { strictJson } from './commerce.ts';
 
@@ -44,7 +44,7 @@ function snapshot(catalog: readonly DownloadRelease[]): readonly DownloadRelease
     requireValue(typeof release.sourceCommit === 'string' && /^[0-9a-f]{40}$/.test(release.sourceCommit)
       && typeof release.version === 'string' && /^[0-9A-Za-z][0-9A-Za-z.+_-]{0,63}$/.test(release.version)
       && release.channel === 'staging' && object(release.qualification)
-      && typeof release.qualification.record === 'string'
+      && typeof release.qualification.record === 'string' && release.qualification.record.length <= 256
       && /^docs\/evidence\/[a-z0-9_/-]+\.(?:json|md)$/.test(release.qualification.record)
       && !release.qualification.record.includes('//') && typeof release.qualification.sha256 === 'string'
       && SHA256.test(release.qualification.sha256)
@@ -200,6 +200,11 @@ export function createDownloadHandler(reviewedCatalog: readonly DownloadRelease[
       const release = catalog.find(item => item.id === selection.releaseId);
       const artifact = release?.artifacts.find(item => item.id === selection.artifactId);
       if (!release || !artifact) return reply({ error: 'Download unavailable.' }, 404);
+      const allowed = await ctx.rpc('skager_auth_throttle', {
+        p_keys: ['download:account:' + denied], p_limit: 10, p_seconds: 60,
+      });
+      requireValue(typeof allowed === 'boolean');
+      if (!allowed) return reply({ error: 'Too many download requests. Please try again shortly.' }, 429);
       const link = await sign(ctx, release, artifact);
       const revoked = await access(request, ctx);
       if (typeof revoked !== 'string') return reply({ error: revoked === 401 ? 'Sign in required.' : 'Active beta access required.' }, revoked);

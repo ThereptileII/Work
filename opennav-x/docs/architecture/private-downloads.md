@@ -31,6 +31,15 @@ well as the router. An unknown server selection is 404. A successful response is
 `{url,expiresAt,releaseId,artifactId,name,bytes,sha256}`, with an ISO expiry time.
 The same current subject and entitlement are checked again after Storage returns;
 logout, refund, suspension, account changes or uncertainty withhold the bearer.
+Only a valid selected signing request consumes the existing atomic
+`skager_auth_throttle` quota: `download:account:{verifiedSubject}`, ten requests
+per sixty seconds. Only boolean `true` authorizes Storage; `false` returns 429,
+and malformed results or database errors return 503 without a Storage call.
+Listings, unknown selections and rejected access do not consume this signing
+quota. No SQL is changed. The separate key cannot consume auth send/verify
+counters, but the existing function shares its table, expiry cleanup and advisory
+lock with authentication. Signing traffic can contend with auth; actual database
+concurrency/load qualification remains outstanding.
 
 ## Reviewed source catalog and object custody
 
@@ -112,6 +121,11 @@ This increment's tests use synthetic catalog entries, tokens and Storage replies
 They do not qualify a package or real signed URL. Actual private Storage setup,
 object custody, native release qualification, download/expiry/refund behavior,
 privacy/egress handling and independent combined integration review remain gates.
+Before enabling a nonempty catalog, verify actual Storage URL expiry, attachment
+headers and private/CDN cache behavior against immutable uploaded bytes. The
+API's no-store response headers do not establish the artifact server's cache
+policy, and synthetic mocks establish neither live TTL enforcement nor object
+immutability.
 Auth/checkout/portal/download access must remain off until separately authorized.
 Public download/catalog publication still requires the owner's explicit GO.
 
