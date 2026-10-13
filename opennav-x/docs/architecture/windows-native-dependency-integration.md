@@ -106,19 +106,26 @@ the reader's 128 MiB limit refuse the original load. The ordinary OpenCPN
 unloadable-plugin path receives the failure, with the detailed refusal logged.
 No plugin/profile file is rewritten or deleted. This runs for all discovered
 original paths without copying the upstream configuration resolver into Setup.
-The current bounded declared-import/forwarder walk inspects both the original
-plugin directory and the actual host executable directory. The latter is
-obtained from `GetModuleFileNameW(nullptr)`, not inferred from the plugin path.
-Both candidates are inspected even when a same-name sibling exists; one shared
-queue traverses chains alternating between the two roots. Candidate handles and
-native directory identities remain retained through original-module custody.
+The current bounded declared-import/forwarder walk inspects the original
+plugin directory, the actual host executable directory and the existing
+`PluginPaths::Libdirs()` roots supplied by the common upstream load hook. The
+host directory comes from `GetModuleFileNameW(nullptr)`. OpenCPN itself prepends
+Libdirs to PATH and recursively discovers nested plugins, so a nested plugin's
+declared helper may resolve from a plugin base outside the original two roots.
+Every existing root candidate is inspected even when another root has that
+basename; one shared queue traverses chains crossing all these roots. Candidate
+handles and native directory identities remain retained through original-module custody.
 Extension-less names resolve to `.dll`; case-folded names plus directory
 identity deduplicate repeated declarations and cycles. The walk refuses
 unsupported names, unreadable or redirected candidates, malformed x86 PE and
 more than256 directory/basename probes (including missing files) or256MiB
-of inspected bytes. Missing candidates are outside these two roots,
-not evidence that Windows cannot resolve them elsewhere. No process-wide DLL
-search setting, loader flag, original discovery path or file is changed.
+of inspected bytes. The root handoff itself is bounded before additional opens.
+Absent additional plugin directories are skipped without creation; inaccessible
+or invalid existing directories refuse. Missing candidates are outside the
+inspected current roots, not evidence that Windows cannot resolve them elsewhere.
+No arbitrary inherited PATH directories are adopted as inspection roots. No
+process-wide DLL search setting, loader flag, original discovery path or file
+is changed.
 
 The private presentation adapter retains its separate compiled exact-byte
 identity/lock/compatibility gate. Successful adapter selection does not execute
@@ -128,7 +135,7 @@ optional/delay and import-free plugin metadata remains permitted by this
 narrow policy; passing it is not a statement of plugin compatibility or trust.
 
 This is **partial enforcement**, not closure of SCRUM-209. It does not traverse
-system/PATH/redirected or already mapped dependencies, dynamically selected
+system/other-PATH/redirected or already mapped dependencies, dynamically selected
 DLLs or executable helpers, validate activation manifests, or prove arbitrary
 loaded-module identities. Declared export forwarders retain the separately
 documented conservative grammar and PE bounds. It
@@ -166,6 +173,16 @@ The bounded string-query repair then passed the exact-revision run above;
 the failed attempt remains retained without being interpreted as a product
 loader failure. Source and native receipts are linked from
 [the scope record](../evidence/2026-10-11-scrum209-local-import-closure.md).
+
+The new Libdirs handoff and nested-plugin controls are source changes awaiting
+native execution. The prepared 58-group fixture retains the verified 55-group
+two-root controls and adds an inert nested-plugin baseline admitted without
+Libdirs, fixed refusal before original initialization (including a clean sibling
+mask), and a benign root-only first mapping with exact path/native identity/hash
+and fallback-owned locks through unload. Only the disposable fixture prefixes
+PATH to reproduce upstream behavior and restores it exactly; production adds no
+search-setting change. Absent user-root preservation is checked too. This is not
+integrated installed-product acceptance or arbitrary PATH/dynamic enforcement.
 
 Before acceptance, qualify the exact integrated native candidate with default
 per-user, configured, portable and

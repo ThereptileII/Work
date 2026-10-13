@@ -77,7 +77,18 @@ add_library(helper_unmapped SHARED unmapped_dependency.cpp)
 # Keep this unique helper out of the executable/application directory.
 set_target_properties(helper_unmapped PROPERTIES
   RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/unmapped")
-foreach(variant IN ITEMS good no_bind no_status no_create no_destroy legacy_normal legacy_delay indirect_legacy indirect_clean indirect_unmapped indirect_external indirect_cross forward_legacy_name forward_legacy_ordinal forward_ssleay_ordinal forward_indirect forward_clean_name forward_clean_ordinal forward_explicit_dll forward_multi_dot)
+# Unique declared-root controls stay outside the EXE directory. The runner
+# copies them into a disposable plugin base and loads a nested original through
+# the same PATH arrangement used by upstream setLoadPath().
+add_library(helper_declared_legacy SHARED indirect_dependency.cpp)
+target_compile_definitions(helper_declared_legacy PRIVATE INDIRECT_LEGACY)
+target_link_libraries(helper_declared_legacy PRIVATE legacy_dependency)
+add_library(helper_declared_clean SHARED indirect_dependency.cpp)
+foreach(target IN ITEMS helper_declared_legacy helper_declared_clean)
+  set_target_properties(${target} PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/declared")
+endforeach()
+foreach(variant IN ITEMS good no_bind no_status no_create no_destroy legacy_normal legacy_delay indirect_legacy indirect_clean indirect_unmapped indirect_external indirect_cross indirect_declared_legacy indirect_declared_clean forward_legacy_name forward_legacy_ordinal forward_ssleay_ordinal forward_indirect forward_clean_name forward_clean_ordinal forward_explicit_dll forward_multi_dot)
   add_library(fixture_${variant} SHARED fixture.cpp)
   target_include_directories(fixture_${variant} PRIVATE "${OPENNAV_ROOT}/src")
   if(variant MATCHES "^legacy_")
@@ -120,7 +131,7 @@ foreach(variant IN ITEMS good no_bind no_status no_create no_destroy legacy_norm
   file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/${variant}.def" "${exports}")
   target_sources(fixture_${variant} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/${variant}.def")
 endforeach()
-foreach(target IN ITEMS ocharts_loader_test win32_pe_forwarders_test fixture_good fixture_no_bind fixture_no_status fixture_no_create fixture_no_destroy fixture_legacy_normal fixture_legacy_delay fixture_indirect_legacy fixture_indirect_clean fixture_indirect_unmapped fixture_indirect_external fixture_indirect_cross legacy_dependency helper_legacy helper_clean helper_external helper_cross helper_cross_host helper_unmapped ssleay_dependency forward_clean forward_first forward_dotted forward_helper fixture_forward_legacy_name fixture_forward_legacy_ordinal fixture_forward_ssleay_ordinal fixture_forward_indirect fixture_forward_clean_name fixture_forward_clean_ordinal fixture_forward_explicit_dll fixture_forward_multi_dot)
+foreach(target IN ITEMS ocharts_loader_test win32_pe_forwarders_test fixture_good fixture_no_bind fixture_no_status fixture_no_create fixture_no_destroy fixture_legacy_normal fixture_legacy_delay fixture_indirect_legacy fixture_indirect_clean fixture_indirect_unmapped fixture_indirect_external fixture_indirect_cross fixture_indirect_declared_legacy fixture_indirect_declared_clean legacy_dependency helper_legacy helper_clean helper_external helper_cross helper_cross_host helper_unmapped helper_declared_legacy helper_declared_clean ssleay_dependency forward_clean forward_first forward_dotted forward_helper fixture_forward_legacy_name fixture_forward_legacy_ordinal fixture_forward_ssleay_ordinal fixture_forward_indirect fixture_forward_clean_name fixture_forward_clean_ordinal fixture_forward_explicit_dll fixture_forward_multi_dot)
   target_compile_features(${target} PRIVATE cxx_std_17)
   target_compile_options(${target} PRIVATE /utf-8 /W4)
   set_property(TARGET ${target} PROPERTY MSVC_RUNTIME_LIBRARY MultiThreadedDLL)

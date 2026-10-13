@@ -2174,7 +2174,7 @@ diff --git a/model/src/plugin_loader.cpp b/model/src/plugin_loader.cpp
  
  #include <algorithm>
  #include <set>
-@@ -1530,8 +1533,19 @@
+@@ -1530,8 +1533,20 @@
        PluginStatus::Unmanaged;  // Status is updated later, if necessary
  
    // load the library
@@ -2182,7 +2182,8 @@ diff --git a/model/src/plugin_loader.cpp b/model/src/plugin_loader.cpp
 +  const auto load_outcome = opennav::integration::LoadPluginWithPresentationFallback(
 +      pic->m_library, plugin_file,
 +      [this](const wxString& path) { return CheckPluginCompatibility(path); },
-+      pic->m_skagerTlsCustody);
++      pic->m_skagerTlsCustody,
++      PluginPaths::GetInstance()->Libdirs());
 +  if (load_outcome == opennav::integration::PluginModuleLoadOutcome::UnloadFailed) {
 +    wxLogWarning("SKAGER: previous or rejected plugin module could not unload");
 +    return nullptr;

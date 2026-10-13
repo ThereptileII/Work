@@ -1801,14 +1801,19 @@ The existing `model/src/plugin_loader.cpp` presentation-fallback hook now also
 runs a Windows-only legacy TLS dependency refusal immediately before loading
 the original plugin. It inspects declared normal/delay imports and bounded
 export forwarders, following candidates in both the original plugin directory
-and the actual executable directory in one bounded graph while retaining
-inspection handles. Candidate identity includes the directory identity; a clean
+and the actual executable directory, plus the actual `PluginPaths::Libdirs()`
+roots now supplied by the common upstream hook, in one bounded graph while
+retaining inspection handles. Candidate identity includes the directory identity; a clean
 sibling cannot hide an unsafe application-directory copy. The256-probe bound
 counts missing as well as present directory/basename candidates. Unsupported ambiguous forwarder spellings fail closed.
 This bounded graph does not establish general loader resolution or dynamic/helper
 dependency closure. The hook already covers initial/reload discovery
-and ordinary fallback from every upstream plugin root. No additional upstream
-patch, root-selection change or pristine Legacy mutation is introduced. See
+and ordinary fallback from every upstream plugin root. This small hook argument
+closes a separate declared-helper gap: upstream prepends Libdirs to PATH while
+recursive discovery can select a plugin below one of those roots. Absent
+additional roots are skipped without creation; inaccessible existing roots
+refuse. No arbitrary inherited PATH root, upstream discovery/search-setting
+change or pristine Legacy mutation is introduced. See
 [the precise partial enforcement boundary and pending native gates](architecture/windows-native-dependency-integration.md#original-plugin-pre-load-refusal).
 
 The bounded forwarder extension passed all 51 native Win32 loader groups and

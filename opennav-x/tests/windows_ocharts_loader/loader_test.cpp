@@ -13,6 +13,7 @@
 #include <stdexcept>
 #include <thread>
 #include <vector>
+#include <utility>
 
 namespace fs=std::filesystem;
 using namespace opennav::integration;
@@ -94,6 +95,48 @@ struct ScopedSearchDirectory {
     restored=true;
   }
 };
+// Match upstream setLoadPath() only inside this disposable fixture process.
+// Keep arbitrary inherited PATH entries out of the production guard handoff.
+std::pair<bool,std::wstring> PathEnvironment() {
+  wchar_t value[32768]{};
+  SetLastError(ERROR_SUCCESS);
+  const auto count=GetEnvironmentVariableW(L"PATH",value,32768);
+  const auto error=GetLastError();
+  Require(count<32768,"fixture PATH exceeds bounded query");
+  Require(count || error==ERROR_SUCCESS || error==ERROR_ENVVAR_NOT_FOUND,"read fixture PATH");
+  return {error!=ERROR_ENVVAR_NOT_FOUND,std::wstring(value,count)};
+}
+struct ScopedPluginPath {
+  std::pair<bool,std::wstring> previous=PathEnvironment();
+  bool restored=false;
+  explicit ScopedPluginPath(const fs::path& root) {
+    const auto next=root.wstring()+L";"+previous.second;
+    Require(next.size()<32767,"fixture PATH prefix exceeds environment bound");
+    Require(SetEnvironmentVariableW(L"PATH",next.c_str())!=0,"set disposable plugin-root PATH");
+  }
+  ~ScopedPluginPath() {
+    if(!restored) SetEnvironmentVariableW(L"PATH",previous.first ? previous.second.c_str() : nullptr);
+  }
+  void Restore() {
+    Require(SetEnvironmentVariableW(L"PATH",previous.first ? previous.second.c_str() : nullptr)!=0,
+            "restore disposable plugin-root PATH");
+    Require(PathEnvironment()==previous,"plugin-root PATH did not restore exactly");
+    restored=true;
+  }
+};
+void MappedFileMatches(const fs::path& expected,const BY_HANDLE_FILE_INFORMATION& identity,
+                       const std::string& hash) {
+  const auto mapped=GetModuleHandleW(expected.filename().c_str());
+  Require(mapped!=nullptr,"declared-root dependency was not mapped");
+  wchar_t name[32768]{};
+  const auto count=GetModuleFileNameW(mapped,name,32768);
+  Require(count && count<32768,"declared-root mapped path unavailable");
+  const fs::path actual(name);
+  Require(_wcsicmp(actual.lexically_normal().c_str(),expected.lexically_normal().c_str())==0 &&
+              SameFile(identity,FileIdentity(actual)) && Hash(actual)==hash,
+          "declared-root mapped module differs from retained path/identity/hash");
+  std::cout<<"Declared-root mapped helper: "<<actual.u8string()<<"; sha256="<<hash<<"\n";
+}
 void NeverLoadedVendor() {
   Require(GetModuleHandleW(L"o-charts_pi.dll")==nullptr,"vendor DLL must never be loaded by mechanics tests");
 }
@@ -512,6 +555,113 @@ int main(int argc,char**argv) {
       NeverLoadedVendor();
       Pass("benign application-directory first mapping matches retained identity through unload");
     }
+    // Upstream recursively discovers nested plugins and prepends Libdirs to
+    // PATH. The helper below exists only in that explicitly declared root,
+    // outside both the selected plugin directory and the executable directory.
+    for(const char* mode : {"unsafe-root", "clean-sibling", "benign-root"}) {
+      const bool benign=std::string(mode)=="benign-root";
+      Case c(work,std::string("declared-plugin-root-")+mode,vendor,good);
+      const auto root=c.dir/"plugin-base";
+      c.original=root/"nested/fixture_pi.dll";
+      Copy(fixtures/(benign ? "fixture_indirect_declared_clean.dll" : "fixture_indirect_declared_legacy.dll"),c.original);
+      Env(L"SKAGER_LOADER_ORIGINAL",c.original);
+      const auto helper=root/(benign ? "helper_declared_clean.dll" : "helper_declared_legacy.dll");
+      Copy(fixtures/"declared"/helper.filename(),helper);
+      Require(!fs::exists(fixtures/helper.filename()) &&
+                  !fs::exists(c.original.parent_path()/helper.filename()),
+              "declared helper must exist outside executable and selected plugin directories");
+      fs::path sibling;
+      if(std::string(mode)=="clean-sibling") {
+        sibling=c.original.parent_path()/helper.filename();
+        Copy(fixtures/"declared/helper_declared_clean.dll",sibling);
+      }
+      Require(GetModuleHandleW(helper.filename().c_str())==nullptr &&
+                  GetModuleHandleW(L"libeay32.dll")==nullptr,"declared-root control was preloaded");
+      const auto original_before=Hash(c.original),helper_before=Hash(helper);
+      const auto sibling_before=sibling.empty() ? std::string{} : Hash(sibling);
+      const auto expected=FileIdentity(helper);
+      const auto working_directory=fs::current_path();
+      const auto dll_directory=CurrentDllDirectory();
+      Require(dll_directory.empty(),"declared-root control requires default DLL search");
+      ScopedPluginPath search(root);
+      // This exact historical two-root seam deliberately omits upstream roots.
+      // Its harmless loadability control proves the new case is an admission
+      // boundary, rather than an unreachable file arrangement.
+      if(!benign) {
+        PluginModuleInspectionCustody empty;
+        wxDynamicLibrary control;
+        {
+          OriginalPluginTlsGuard historical(W(c.original));
+          Require(historical.Refusal().empty(),"historical two-root control unexpectedly refused");
+          Require(control.Load(W(c.original)),"inert declared-root baseline must be loadable");
+          MappedFileMatches(helper,expected,helper_before);
+          c.Events("attach\n");
+          Require(UnloadPluginModuleChecked(control,empty),"inert declared-root baseline unload");
+        }
+        Require(GetModuleHandleW(helper.filename().c_str())==nullptr &&
+                    GetModuleHandleW(L"libeay32.dll")==nullptr,"baseline leaked declared-root module");
+        c.Events("attach\ndetach\n");
+        Require(fs::remove(c.events),"clear completed baseline lifecycle evidence");
+      }
+      // This list models the authoritative Libdirs handoff. A fresh installation
+      // may also list an absent user root; the guard must not create or adopt it.
+      const auto absent=c.dir/"absent-plugin-root";
+      const std::vector<std::string> roots{W(root).ToStdString(),W(absent).ToStdString()};
+      {
+        OriginalPluginTlsGuard oversized(W(c.original),std::vector<std::string>(255,W(root).ToStdString()));
+        Require(oversized.Refusal().find("node budget")!=std::string::npos && Writable(c.original),
+                "unbounded root handoff reached original inspection open");
+        OriginalPluginTlsGuard relative(W(c.original),{"relative-plugin-root"});
+        Require(!relative.Refusal().empty(),"relative plugin-root handoff admitted");
+      }
+      {
+        OriginalPluginTlsGuard guard(W(c.original),roots);
+        Require(benign ? guard.Refusal().empty() :
+                    guard.Refusal().find("Unsupported legacy TLS import: libeay32.dll")!=std::string::npos,
+                "declared-root policy differs: "+guard.Refusal());
+        for(const auto& locked : {c.original,helper})
+          Require(SharingDenied(locked,GENERIC_WRITE) && SharingDenied(locked,DELETE),
+                  "declared-root source/helper custody missing before mapping");
+        if(!sibling.empty())
+          Require(SharingDenied(sibling,GENERIC_WRITE) && SharingDenied(sibling,DELETE),
+                  "clean duplicate sibling was not retained");
+        Require(GetModuleHandleW(helper.filename().c_str())==nullptr,"inspection executed declared helper");
+        c.Events("");
+      }
+      Require(Writable(c.original) && Writable(helper),"direct guard leaked declared-root custody");
+      PluginModuleInspectionCustody custody;
+      wxDynamicLibrary lib;
+      RegisterPluginPresentationLoader(nullptr);
+      const auto result=LoadPluginWithPresentationFallback(lib,W(c.original),{},custody,roots);
+      if(benign) {
+        Require(result==PluginModuleLoadOutcome::Loaded && custody,"benign declared-root fallback refused");
+        MappedFileMatches(helper,expected,helper_before);
+        for(const auto& locked : {c.original,helper})
+          Require(SharingDenied(locked,GENERIC_WRITE) && SharingDenied(locked,DELETE),
+                  "actual fallback lost declared-root custody after mapping");
+        const auto probe=lib.GetSymbol("exercise_indirect_import");
+        Require(probe && reinterpret_cast<int (__cdecl*)()>(probe)()==209,"benign declared helper probe");
+        c.Events("attach\n");
+        Require(UnloadPluginModuleChecked(lib,custody) && !custody,"declared-root fallback unload/custody");
+        c.Events("attach\ndetach\n");
+      } else {
+        Require(result==PluginModuleLoadOutcome::LoadFailed && !lib.IsLoaded() && !custody,
+                "unsafe declared-root graph reached original initialization");
+        c.Events("");
+      }
+      Require(GetModuleHandleW(helper.filename().c_str())==nullptr &&
+                  GetModuleHandleW(L"libeay32.dll")==nullptr,"declared-root dependency leaked after refusal/unload");
+      Require(Writable(c.original) && Writable(helper) && Hash(c.original)==original_before &&
+                  Hash(helper)==helper_before,"declared-root inputs changed or locks leaked");
+      if(!sibling.empty())
+        Require(Writable(sibling) && Hash(sibling)==sibling_before,"declared duplicate sibling changed");
+      Require(!fs::exists(absent),"inspection created an absent upstream root");
+      search.Restore();
+      Require(fs::current_path()==working_directory && CurrentDllDirectory()==dll_directory,
+              "declared-root fixture changed other search state");
+      NeverLoadedVendor();
+      Pass((std::string("explicit upstream plugin-root declared closure: ")+mode).c_str());
+    }
     // Native export-only dependencies: no normal/delay descriptor names the
     // forwarded module. Resolve the inert export, never a plugin factory.
     const struct ForwardCase {
@@ -694,7 +844,7 @@ int main(int argc,char**argv) {
       Pass("injected invalid-handle refusal retains ownership");
     }
     NeverLoadedVendor();Require(Hash(vendor)==OriginalOChartsSha256,"vendor input changed");
-    std::ofstream report(argv[6]);report<<"{\"status\":\"passed\",\"checks\":"<<passed<<",\"vendorExecuted\":false,\"pluginFactoryExecuted\":false,\"invalidHandleFaultInjected\":true,\"unmappedSiblingGuardControl\":true,\"exportForwarderControls\":true,\"forwarderGrammarProbes\":true,\"applicationDirectoryClosure\":{\"legacyRefusedBeforeInitialization\":true,\"cleanSiblingCannotMaskHost\":true,\"crossRootChainRefused\":true,\"benignFirstMappingIdentity\":true,\"custodyThroughUnload\":true},\"productAcceptance\":false}\n";
+    std::ofstream report(argv[6]);report<<"{\"status\":\"passed\",\"checks\":"<<passed<<",\"vendorExecuted\":false,\"pluginFactoryExecuted\":false,\"invalidHandleFaultInjected\":true,\"unmappedSiblingGuardControl\":true,\"exportForwarderControls\":true,\"forwarderGrammarProbes\":true,\"applicationDirectoryClosure\":{\"legacyRefusedBeforeInitialization\":true,\"cleanSiblingCannotMaskHost\":true,\"crossRootChainRefused\":true,\"benignFirstMappingIdentity\":true,\"custodyThroughUnload\":true},\"declaredPluginRoots\":{\"unsafeRefusedBeforeInitialization\":true,\"cleanSiblingCannotMaskRoot\":true,\"benignFirstMappingIdentity\":true,\"custodyThroughUnload\":true,\"absentRootPreserved\":true},\"productAcceptance\":false}\n";
     std::cout<<"PASS "<<passed<<" native loader groups; no vendor or plugin factory execution\n";return 0;
   } catch(const std::exception& error) {std::cerr<<"FAIL "<<error.what()<<"\n";return 1;}
 }

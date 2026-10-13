@@ -1,6 +1,8 @@
 #pragma once
 #include "integration/PluginPresentationLoader.h"
 #include <wx/dynlib.h>
+#include <string>
+#include <vector>
 #ifdef _WIN32
 #include <wx/msw/wrapwin.h>
 #include <wx/log.h>
@@ -43,10 +45,16 @@ inline bool UnloadPluginModuleChecked(
 // Keep the original discovery/profile/helper identity. A refused private
 // adapter may fall back only after it has completely left the destination.
 // LoadFailed deliberately returns to OpenCPN's ordinary error/blacklist path.
+// Production supplies actual PluginPaths::Libdirs(), not inherited PATH. The
+// empty default preserves isolated two-root controls and non-Windows callers.
 inline PluginModuleLoadOutcome LoadPluginWithPresentationFallback(
     wxDynamicLibrary &library, const wxString &original,
     const PluginCompatibilityCheck &compatible,
-    PluginModuleInspectionCustody &custody) {
+    PluginModuleInspectionCustody &custody,
+    const std::vector<std::string> &plugin_roots = {}) {
+#ifndef _WIN32
+  (void)plugin_roots;
+#endif
   if (!UnloadPluginModuleChecked(library, custody))
     return PluginModuleLoadOutcome::UnloadFailed;
   if (TryPluginPresentationLoader(library, original, compatible))
@@ -57,7 +65,7 @@ inline PluginModuleLoadOutcome LoadPluginWithPresentationFallback(
   // This central original-load branch is shared by discovery, reload and a
   // clean adapter refusal. External/configured plugin roots need no duplicate
   // installer path resolver. The private adapter has its own exact-byte gate.
-  auto tls_guard = std::make_unique<OriginalPluginTlsGuard>(original);
+  auto tls_guard = std::make_unique<OriginalPluginTlsGuard>(original, plugin_roots);
   if (!tls_guard->Refusal().empty()) {
     wxLogWarning("SKAGER: refusing plugin %s: %s", original,
                  wxString::FromUTF8(tls_guard->Refusal().c_str()));

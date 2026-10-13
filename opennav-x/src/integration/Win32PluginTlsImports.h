@@ -94,11 +94,11 @@ struct PluginTlsClosureLimits {
 // Inspect one bounded declarative import/forwarder graph over all supplied
 // directories. For EVERY declared basename, inspect each root candidate even
 // when another root contains that name. Imports from any found file reenter
-// this same queue, so plugin -> host -> plugin chains cannot escape inspection.
+// this same queue, so chains crossing plugin, host and upstream roots are checked.
 // Root identities must identify the actual directories, not their aliases.
 // `read_candidate(index, basename)` must read and hold each found file across
 // the module lifetime. No Windows search-order selection or complete loader
-// closure is claimed: other directories, preloaded modules, SxS, dynamic loads
+// closure is claimed: other PATH directories, preloaded modules, SxS, dynamic loads
 // and child processes remain outside this declared-candidate graph.
 template <typename ReadCandidate, typename InspectBytes>
 std::string RefuseLegacyPluginTlsClosure(

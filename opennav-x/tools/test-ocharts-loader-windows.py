@@ -19,6 +19,7 @@ INPUTS = (
     'src/integration/PluginPresentationLoader.cpp',
     'src/integration/PluginPresentationLoader.h',
     'src/integration/PluginPresentationFallback.h',
+    'patches/opencpn-5.12.4-chart-presentation.patch',
     'src/integration/OriginalPluginTlsGuard.h',
     'src/integration/Win32PluginTlsImports.h',
     'src/integration/PluginTlsBytePolicy.h',
@@ -43,7 +44,8 @@ INPUTS = (
 )
 VARIANTS = ('good', 'no_bind', 'no_status', 'no_create', 'no_destroy',
             'legacy_normal', 'legacy_delay', 'indirect_legacy', 'indirect_clean',
-            'indirect_unmapped', 'indirect_external', 'indirect_cross', 'forward_legacy_name', 'forward_legacy_ordinal',
+            'indirect_unmapped', 'indirect_external', 'indirect_cross',
+            'indirect_declared_legacy', 'indirect_declared_clean', 'forward_legacy_name', 'forward_legacy_ordinal',
             'forward_ssleay_ordinal', 'forward_indirect', 'forward_clean_name',
             'forward_clean_ordinal', 'forward_explicit_dll', 'forward_multi_dot')
 
@@ -116,7 +118,7 @@ def main():
                        'full app Standard/Safe selection and plugin lifecycle',
                        'genuine loaded-module unload refusal; fault test uses a reserved non-module address',
                        'forwarder grammar beyond the supported single-separator subset; native probes do not relax policy',
-                       'declared plugin/application graph only; system/PATH/redirected or preloaded modules, arbitrary dynamic/helper loads and general module identity',
+                       'declared plugin/application/upstream-Libdirs graph only; system/other-PATH/redirected or preloaded modules, arbitrary dynamic/helper loads and general module identity',
                        'encrypted-chart rendering, licensing and physical hardware']}
     lock = json.loads((ROOT / 'tests/windows_ocharts_loader/inputs.lock.json').read_text())
     scratch = ROOT / 'build/windows-ocharts-loader-guards'
@@ -173,6 +175,7 @@ def main():
         report['fixtures'][stub.name] = dict(identity(stub), pe=require_win32_dll(stub))
         for name in ('helper_legacy.dll', 'helper_clean.dll', 'helper_external.dll',
                      'helper_cross_host.dll', 'crossroot/helper_cross.dll', 'unmapped/helper_unmapped.dll',
+                     'declared/helper_declared_legacy.dll', 'declared/helper_declared_clean.dll',
                      'forwarders/ssleay32.dll', 'forwarders/forward_clean.dll',
                      'forwarders/forward.dll', 'forwarders/forward.clean.dll',
                      'forwarders/forward_helper.dll'):
@@ -191,7 +194,7 @@ def main():
         api.run([client, vendor, fixtures, work, junction_original, junction_adapter,
                  evidence / 'native-tests.json'], evidence / 'native-tests.log', timeout=120)
         native = json.loads((evidence / 'native-tests.json').read_text())
-        if native != {'status': 'passed', 'checks': 55, 'vendorExecuted': False,
+        if native != {'status': 'passed', 'checks': 58, 'vendorExecuted': False,
                       'pluginFactoryExecuted': False, 'invalidHandleFaultInjected': True,
                       'unmappedSiblingGuardControl': True, 'exportForwarderControls': True,
                       'forwarderGrammarProbes': True,
@@ -199,6 +202,10 @@ def main():
                           'legacyRefusedBeforeInitialization': True,
                           'cleanSiblingCannotMaskHost': True, 'crossRootChainRefused': True,
                           'benignFirstMappingIdentity': True, 'custodyThroughUnload': True},
+                      'declaredPluginRoots': {
+                          'unsafeRefusedBeforeInitialization': True,
+                          'cleanSiblingCannotMaskRoot': True, 'benignFirstMappingIdentity': True,
+                          'custodyThroughUnload': True, 'absentRootPreserved': True},
                       'productAcceptance': False}:
             raise ValueError('Native guard receipt is incomplete or changed')
         report['native'] = native

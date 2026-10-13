@@ -11,11 +11,18 @@ namespace opennav::integration {
 // module lifetime, including forwarded exports, declared delay loads and
 // detach callbacks. No profile/plugin mutation, DLL execution or dependency
 // search-order mutation is performed by inspection. Declared candidates in the
-// original plugin and executable directories share one walk. This is not a
-// hostile-filesystem or complete Windows loader security boundary (see docs).
+// original plugin, executable and actual upstream plugin roots share one walk.
+// This is not a hostile-filesystem or complete Windows loader security boundary.
 class OriginalPluginTlsGuard {
  public:
-  explicit OriginalPluginTlsGuard(const wxString& path) {
+  explicit OriginalPluginTlsGuard(const wxString& path,
+      const std::vector<std::string>& plugin_roots = {}) {
+    // Upstream passes its actual Libdirs(), never the process PATH. Bound that
+    // handoff before allocating/opening any additional directory candidates.
+    if (plugin_roots.size() > PluginTlsClosureLimits{}.max_nodes - 2) {
+      refusal_ = "Plugin import closure node budget exceeded";
+      return;
+    }
     file_ = CreateFileW(path.wc_str(), GENERIC_READ, FILE_SHARE_READ, nullptr,
                         OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
     if (file_ == INVALID_HANDLE_VALUE) {
@@ -45,14 +52,22 @@ class OriginalPluginTlsGuard {
         refusal_ = "Cannot identify host executable for import inspection";
         return;
       }
-      const std::vector<wxString> directories{
+      std::vector<wxString> requested{
           wxFileName(path).GetPath(),
           wxFileName(wxString(executable.data(), length)).GetPath()};
+      for (const auto& directory : plugin_roots)
+        requested.push_back(wxFileName::DirName(wxString(directory)).GetPath());
+      std::vector<wxString> directories;
       std::vector<std::string> identities;
-      for (const auto& directory : directories) {
+      for (std::size_t index = 0; index < requested.size(); ++index) {
         std::string identity;
-        refusal_ = IdentifyDirectory(directory, identity);
+        refusal_ = IdentifyDirectory(requested[index], identity, index >= 2);
         if (!refusal_.empty()) return;
+        // Libdirs may include a currently absent user plugin directory. There
+        // is no existing candidate to inspect there; do not create it. This
+        // does not claim exclusion of later filesystem additions.
+        if (identity.empty()) continue;
+        directories.push_back(requested[index]);
         identities.push_back(std::move(identity));
       }
       refusal_ = RefuseLegacyPluginTlsClosure(bytes, identities,
@@ -79,8 +94,10 @@ class OriginalPluginTlsGuard {
       throw;
     }
   }
-  std::string IdentifyDirectory(const wxString& directory, std::string& identity) {
-    if (directory.empty()) return "Cannot identify plugin import directory";
+  std::string IdentifyDirectory(const wxString& directory, std::string& identity,
+                                bool permit_missing) {
+    if (directory.empty() || !wxFileName::DirName(directory).IsAbsolute())
+      return "Cannot identify absolute plugin import directory";
     // Follow a directory alias only to obtain its actual identity. Keeping this
     // read-attributes handle also prevents write/delete sharing on that directory
     // while custody lasts; ancestors and hostile filesystem races remain outside
@@ -88,8 +105,13 @@ class OriginalPluginTlsGuard {
     HANDLE handle = CreateFileW(directory.wc_str(), FILE_READ_ATTRIBUTES,
                                 FILE_SHARE_READ, nullptr, OPEN_EXISTING,
                                 FILE_FLAG_BACKUP_SEMANTICS, nullptr);
-    if (handle == INVALID_HANDLE_VALUE)
+    if (handle == INVALID_HANDLE_VALUE) {
+      const auto error = GetLastError();
+      if (permit_missing &&
+          (error == ERROR_FILE_NOT_FOUND || error == ERROR_PATH_NOT_FOUND))
+        return {};
       return "Cannot open plugin import directory for inspection";
+    }
     KeepHandle(handle);
     BY_HANDLE_FILE_INFORMATION information{};
     if (!GetFileInformationByHandle(handle, &information) ||

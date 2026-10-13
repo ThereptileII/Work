@@ -122,6 +122,23 @@ void MultiRootTests() {
             PluginTlsLocalModule{false, {}, "Unreadable host candidate"};
       }, [](const Bytes&) { return std::string{}; });
   Check(unreadable == "Unreadable host candidate", "Clean sibling masked host read error");
+  // Upstream's Libdirs can resolve a declared helper outside both the selected
+  // nested plugin directory and the host. All roots still share one queue.
+  const std::vector<std::string> upstream_roots{"nested-plugin", "host", "user-plugin-base", "app-plugin-base"};
+  Check(walk(Image({"shared.dll"}), {{{2, "shared.dll"}, Image({"libeay32.dll"})}},
+             {}, nullptr, upstream_roots).find("TLS import") != std::string::npos,
+        "Declared helper in upstream plugin base escaped inspection");
+  Check(walk(Image({"shared.dll"}), {{{2, "shared.dll"}, Image()}},
+             {}, nullptr, upstream_roots).empty(), "Benign upstream-only helper refused");
+  Check(walk(Image({"shared.dll"}), {{{0, "shared.dll"}, Image()},
+                                     {{2, "shared.dll"}, Image({"next.dll"})},
+                                     {{3, "next.dll"}, Image({}, {"ssleay32.dll"})}},
+             {}, nullptr, upstream_roots).find("delay import") != std::string::npos,
+        "Clean sibling masked chain crossing two upstream plugin roots");
+  reads.clear();
+  Check(walk(Image({"shared.dll", "SHARED.DLL"}), {}, {}, &reads,
+             {"nested-plugin", "host", "same-base", "same-base"}).empty() && reads.size() == 3,
+        "Repeated upstream directory identity repeated missing-candidate probes");
   // Small injected budgets prove shared accounting without allocating 256 MiB.
   reads.clear();
   Check(walk(Image({"one.dll", "two.dll"}), {}, {3, 256u * 1024u * 1024u}, &reads)

@@ -123,6 +123,14 @@ void Tests() {
           "Benign multi-root normal/delay/forwarder candidates refused");
     }
     inspected = reads = 0;
+    Check(!RefuseLegacyPluginTlsClosure(Image("helper.dll"),
+        {"nested-plugin", "host", "upstream-plugin-base"},
+        [&](std::size_t index, const std::string&) {
+          ++reads;
+          return PluginTlsLocalModule{true, index == 2 ? marked : clean, {}};
+        }, policy).empty(), "Known obsolete upstream-root bytes escaped policy");
+    Check(inspected == 4 && reads == 3, "Upstream-root hash inspection skipped a candidate");
+    inspected = reads = 0;
     Check(!RefuseLegacyPluginTlsClosure(Image("helper.dll"), {"plugin", "host"},
         [&](std::size_t index, const std::string& name) {
           ++reads;
