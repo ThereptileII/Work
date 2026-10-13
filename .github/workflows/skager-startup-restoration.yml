@@ -52,6 +52,7 @@ jobs:
                       'TestRetirementOriginalHandoffAndTerminalReceipt',
                       'TestRetirementRefusesGuardAndChangedIdentityBeforeCommit',
                       'TestRetirementBackendFailureKeepsOriginalOwnerForDrain',
+                      'TestRetirementCommitAndConcurrentStoreCloseDrainOriginalReceiptOnce',
                       'TestProtectedUninstallProtocolCannotDowngradeToFenceOnly',
                       'TestProtectedUninstallHandoffAndCompletionFaults',
                       'TestOperatorProtectedUninstallRequiresRetirementBeforeServiceEffects',
@@ -74,7 +75,7 @@ jobs:
           module = 'example.com/opennav-update-verifier/'
           retirement = {test for package, test in passed_cases if package == module + 'brokerstore' and test.startswith('TestRetirement')}
           protected = {(package, test) for package, test in passed_cases if test.startswith(('TestProtectedUninstall', 'TestOperatorProtectedUninstall'))}
-          if len(retirement) < 3 or len(protected) < 5:
+          if len(retirement) < 4 or len(protected) < 5:
               raise SystemExit('Protected retirement case minimum not met')
           if os.environ['RUNNER_OS'] == 'Windows':
               native = {test for package, test in passed_cases if package == module + 'brokerstore' and test.startswith('TestNativeRetirement')}
