@@ -1,0 +1,4 @@
+interface:
+  display_name: "SKAGER Test"
+  short_description: "Run focused checks and retest retained SKAGER bytes"
+  default_prompt: "Use $skager-test to choose focused checks and record exact SKAGER test evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "SKAGER Build"
+  short_description: "Select builds and reuse verified SKAGER outputs"
+  default_prompt: "Use $skager-build to select the necessary build work for this SKAGER change."
