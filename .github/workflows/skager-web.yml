@@ -68,7 +68,7 @@ jobs:
       - name: PostgreSQL integrity and authentication tests
         run: |
           set -o pipefail
-          python manage.py test skager_web.core.tests skager_web.accounts.tests skager_web.marketing.tests --noinput 2>&1 | tee evidence/ci/tests.log
+          python manage.py test skager_web.core.tests skager_web.accounts.tests skager_web.marketing.tests skager_web.payments.tests skager_web.boats.tests --noinput 2>&1 | tee evidence/ci/tests.log
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
