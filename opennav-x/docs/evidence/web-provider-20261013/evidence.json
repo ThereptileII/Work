@@ -15,17 +15,18 @@
   },
   "providers": {
     "supabaseEdge": {
-      "sourceIdentifierPrefix": "0492",
+      "sourceSha256": "0492c12db66726e0699750a00c164de99d2b0e57d0948a9329fd20dbd88a7664",
       "sourceBytes": 47842,
       "fullPredeployByteEquality": "verified by operator",
       "deploymentUi": "success",
-      "previousDeploymentIdentifierPrefix": "c27a",
+      "previousSourceSha256": "c27a5c890e40525bc0e4418c5e5bbf0abbe28b7f87b0dc5792b6824b5e8cf2fc",
       "previousDeploymentAvailableForRollback": true,
       "directHealth": {"httpStatus": 200, "ready": false},
       "directSession": {"httpStatus": 200, "account": null, "csrfPresent": true}
     },
     "cloudflareFrontend": {
-      "frontendIdentifier": "86ff492495",
+      "sourceSha256": "86ff2ae9ce56fa94f80999edc172327545daff1b08c2667662d85af75a63cc66",
+      "sourceBytes": 492495,
       "activeDeploymentIdentifier": "07a6061a",
       "activeTrafficPercent": 100,
       "runtimeDate": "2026-10-13",
@@ -35,6 +36,17 @@
     },
     "stripeTestMode": {
       "productAndUsd20Price": "verified",
+      "fullDiscountCoupon": {
+        "verified": true,
+        "code": "SKAGERFRIENDS",
+        "couponId": "xecg4vnM",
+        "promotionId": "promo_1UQB86IqaIVnHG13BVLPyLWW",
+        "discountPercent": 100,
+        "duration": "once",
+        "productRestriction": "SKAGER only",
+        "maximumUses": 25,
+        "configurationOnlyNoEntitlementGranted": true
+      },
       "liveCheckoutOrPaymentTested": false
     }
   },
@@ -53,9 +65,28 @@
     "privateFunctions": 4,
     "policies": 0,
     "triggers": 7,
-    "providerUiExposedApiSchemas": ["public", "graphql"],
+    "providerUiExposedApiSchemas": ["public", "graphql_public"],
     "providerUiPrivateSchemaUnchecked": true,
     "liveApiSessionSchemasEstablishedByCatalog": false
+  },
+  "followUpDeployment": {
+    "sourceCommit": "3d87570441cb8d9375f73f2763033291c26b022e",
+    "ci": {
+      "run": "https://github.com/ThereptileII/Work/actions/runs/38453173061",
+      "conclusion": "success",
+      "artifactId": 11841632190,
+      "artifactSha256": "ca4f51f8d8aa68c50f79f714338869c4c2ffd964f0968c6bbd2ae7a2421b83db",
+      "django": {"passed": 88, "failed": 0},
+      "edge": {"passed": 51, "failed": 0, "skipped": 0},
+      "postgresSqlAndMigrations": "passed"
+    },
+    "cloudflareFrontend": {
+      "deploymentIdentifier": "99f572ea",
+      "status": "Active Latest",
+      "sourceSha256": "0b5887f161fdb500bedb760bd78381032efb45dd24151480d8a65b01f62cc898",
+      "sourceBytes": 492638
+    },
+    "supabaseEdgeSourceSha256": "0492c12db66726e0699750a00c164de99d2b0e57d0948a9329fd20dbd88a7664"
   },
   "remaining": {
     "betaOriginSessionHttp503": "unresolved",
