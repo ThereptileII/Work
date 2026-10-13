@@ -62,20 +62,22 @@ type candidateFile interface {
 // Store retains native root and ancestor handles. Close never deletes an
 // abandoned candidate or registration, or resets their permanent reservations.
 type Store struct {
-	mu                    sync.Mutex
-	closeMu               sync.Mutex
-	backend               storeBackend
-	closed                atomic.Bool
-	closeErr              error
-	candidates            []*Candidate
-	registrations         []*Registration
-	baselines             []*InstalledBaseline
-	generations           []*InstalledGeneration
-	journals              []*ExecutionJournal
-	journalReaders        []*ExecutionJournalReader
-	profileBackups        []*executionProfileBackupState
-	decommissionAttempted bool
-	decommissions         []*Decommission
+	mu                     sync.Mutex
+	closeMu                sync.Mutex
+	backend                storeBackend
+	closed                 atomic.Bool
+	closeErr               error
+	candidates             []*Candidate
+	registrations          []*Registration
+	baselines              []*InstalledBaseline
+	generations            []*InstalledGeneration
+	journals               []*ExecutionJournal
+	journalReaders         []*ExecutionJournalReader
+	profileBackups         []*executionProfileBackupState
+	decommissionAttempted  bool
+	decommissions          []*Decommission
+	retirementPreparations []*RetirementPreparation
+	retirements            []*Retirement
 }
 type fileRecord struct {
 	file   candidateFile
@@ -241,6 +243,10 @@ func (s *Store) Close() error {
 	profileBackups := s.profileBackups
 	decommissions := s.decommissions
 	s.decommissions = nil
+	preparations := s.retirementPreparations
+	s.retirementPreparations = nil
+	retirements := s.retirements
+	s.retirements = nil
 	s.profileBackups = nil
 	journalReaders := s.journalReaders
 	s.journalReaders = nil
@@ -248,6 +254,12 @@ func (s *Store) Close() error {
 	s.journals = nil
 	s.mu.Unlock()
 	result := terminalDrainErr
+	for _, preparation := range preparations {
+		result = errors.Join(result, preparation.Close())
+	}
+	for _, retirement := range retirements {
+		result = errors.Join(result, retirement.Close())
+	}
 	for _, d := range decommissions {
 		result = errors.Join(result, d.Close())
 	}

@@ -49,6 +49,7 @@ func (d *nativeDecommission) retainOwnedInventory(ctx context.Context, openers d
 		current = d.baseline
 	}
 	generations := map[string]*nativeReopenedGeneration{}
+	d.opened = generations
 	records := map[string][]byte{}
 	openGeneration := func(stage string) (*nativeReopenedGeneration, error) {
 		if g := generations[stage]; g != nil {
