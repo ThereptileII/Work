@@ -1,0 +1,4 @@
+interface:
+  display_name: "SKAGER Jira"
+  short_description: "Coordinate SKAGER Jira work with live evidence"
+  default_prompt: "Use $skager-jira to inspect the live SCRUM board and coordinate the requested work with evidence."
