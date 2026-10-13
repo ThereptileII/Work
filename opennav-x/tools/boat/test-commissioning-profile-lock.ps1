@@ -86,7 +86,9 @@ try {
   $second.Dispose();$second=$null
   Refuse {[IO.Directory]::Move($profile,$profile+'-moved')} 'Held physical profile directory cannot be replaced'
   $candidate=Join-Path $profile 'candidate.ini';[IO.File]::WriteAllBytes($candidate,$bytes)
-  [IO.File]::Replace($candidate,$ini,$null)
+  $backup=Join-Path $profile 'opencpn-before-replace.ini'
+  [IO.File]::Replace($candidate,$ini,$backup)
+  Require ([Convert]::ToBase64String([IO.File]::ReadAllBytes($backup)) -ceq [Convert]::ToBase64String($bytes)) 'Held replacement retains exact original backup bytes'
   Denied-InertChild $profile 'replaced-ini'
   Require ((Get-Acl -LiteralPath $profile).Sddl -ceq $acl) 'Exclusion changes no profile directory permissions'
   $drive=@(90..68|ForEach-Object {[string][char]$_+':'}|Where-Object {-not [IO.Directory]::Exists($_+'\')}|Select-Object -First 1)[0]
