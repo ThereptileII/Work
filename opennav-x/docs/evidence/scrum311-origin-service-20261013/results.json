@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "observed_at": "2026-10-13T17:41:20.834213+00:00",
+  "source_commit": "688538675f60be29c1cb1759afb8a6f7a5768b4d",
+  "source_service_commit": "ff4e830102b994ca2ad507bb41085d764c1f81df",
+  "script_sha256": "198242e4f7635ace9ca831ae394becd1838e8428704a50b511506604e72fa8ad",
+  "installed_unit_sha256": "8868b1a892fb2784b582ed2e6904897534a0ecaef13c9768bd2b3954d0c05e3e",
+  "public_root_sha256": "a041ec78891a5e3d8896385ed939b691a32ed0ec11e291fb25de773754515d57",
+  "public_root_length": 1577,
+  "checks": {
+    "unit_validation": true,
+    "user_unit_enabled": true,
+    "active_running": true,
+    "linger_enabled": true,
+    "loopback_root_matches": true,
+    "tailnet_certificate_checked_https_root_matches": true,
+    "controlled_process_failure_recovered": true,
+    "post_recovery_https_root_matches": true
+  },
+  "recovery": {
+    "before_pid": 172054,
+    "after_pid": 172394,
+    "restarts": 1,
+    "bounded_seconds": 15
+  },
+  "scope": "Private origin availability only; no installed B0/B1 updater or product acceptance",
+  "unchanged": [
+    "Tailscale Serve route",
+    "public root bytes",
+    "boat installation",
+    "boat profile",
+    "physical hardware output"
+  ],
+  "not_performed": [
+    "system reboot",
+    "public exposure",
+    "installed no-update/Later/Now/offline acceptance"
+  ]
+}
