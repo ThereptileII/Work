@@ -1800,8 +1800,11 @@ PluginHandler, package/installer and release acceptance remain required.
 The existing `model/src/plugin_loader.cpp` presentation-fallback hook now also
 runs a Windows-only legacy TLS dependency refusal immediately before loading
 the original plugin. It inspects declared normal/delay imports and bounded
-export forwarders, following eligible same-directory sibling DLLs while retaining
-inspection handles. Unsupported ambiguous forwarder spellings fail closed.
+export forwarders, following candidates in both the original plugin directory
+and the actual executable directory in one bounded graph while retaining
+inspection handles. Candidate identity includes the directory identity; a clean
+sibling cannot hide an unsafe application-directory copy. The256-probe bound
+counts missing as well as present directory/basename candidates. Unsupported ambiguous forwarder spellings fail closed.
 This bounded graph does not establish general loader resolution or dynamic/helper
 dependency closure. The hook already covers initial/reload discovery
 and ordinary fallback from every upstream plugin root. No additional upstream

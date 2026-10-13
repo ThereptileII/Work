@@ -115,7 +115,8 @@ native directory identities remain retained through original-module custody.
 Extension-less names resolve to `.dll`; case-folded names plus directory
 identity deduplicate repeated declarations and cycles. The walk refuses
 unsupported names, unreadable or redirected candidates, malformed x86 PE and
-exhausted node/byte budgets. Missing candidates are outside these two roots,
+more than256 directory/basename probes (including missing files) or256MiB
+of inspected bytes. Missing candidates are outside these two roots,
 not evidence that Windows cannot resolve them elsewhere. No process-wide DLL
 search setting, loader flag, original discovery path or file is changed.
 
