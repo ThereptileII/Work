@@ -32,6 +32,96 @@ or TLS itself and is not public hosting software. Loopback is a transport
 boundary, not authorization against other processes already on this machine.
 The selected repository remains an operator-owned trusted publication directory.
 
+## Persistent operator user service
+
+For the selected private origin on this operator machine, install the
+[version-controlled user unit](../../tools/systemd/skager-staging-origin.service)
+only after its pinned script and repository have been checked. The unit runs as
+the `standard` user, never as root. It invokes `/usr/bin/python3` on
+a hash-pinned, versioned copy of `tools/staging-origin.py`, selects
+`/home/standard/.local/share/skager-staging/repository` and requires the exact
+`omarchy.tail5878fc.ts.net` Host on loopback port 8765. It does not start or
+configure Tailscale Serve. The script's fixed allowlist, absence of directory
+listings and refusal of private repository files remain the HTTP boundary.
+
+From the integrated checkout at
+`/home/standard/Projects/X-nav-worktrees/source-batch-20261011`, run as
+`standard` (the only repository file read is the public root; never inspect or
+copy the repository's private key material):
+
+```sh
+set -euo pipefail
+source=/home/standard/Projects/X-nav-worktrees/source-batch-20261011/opennav-x/tools/staging-origin.py
+unit=/home/standard/Projects/X-nav-worktrees/source-batch-20261011/opennav-x/tools/systemd/skager-staging-origin.service
+repository=/home/standard/.local/share/skager-staging/repository
+sha=198242e4f7635ace9ca831ae394becd1838e8428704a50b511506604e72fa8ad
+printf '%s  %s\n' "$sha" "$source" | sha256sum --check --status
+printf '%s  %s\n' a041ec78891a5e3d8896385ed939b691a32ed0ec11e291fb25de773754515d57 "$repository/public/1.root.json" | sha256sum --check --status
+test -d "$repository/public"
+copydir=/home/standard/.local/lib/skager-staging-origin/$sha
+install -d -m 0700 "$copydir" /home/standard/.config/systemd/user
+if test -e "$copydir/staging-origin.py"; then
+  cmp -s "$source" "$copydir/staging-origin.py"
+else
+  install -m 0400 "$source" "$copydir/staging-origin.py"
+fi
+printf '%s  %s\n' "$sha" "$copydir/staging-origin.py" | sha256sum --check --status
+install -m 0600 "$unit" /home/standard/.config/systemd/user/skager-staging-origin.service
+systemd-analyze --user verify /home/standard/.config/systemd/user/skager-staging-origin.service
+systemctl --user daemon-reload
+systemctl --user enable --now skager-staging-origin.service
+```
+
+`ProtectSystem=strict` and `ProtectHome=read-only` leave the selected public
+repository and copied script readable while denying service writes; Python
+bytecode writes are disabled. The host must support these user-service mount
+restrictions. If it does not, leave the service stopped and review the unit on
+that host; do not silently drop the read-only boundary. The unit retries a
+failed process after five seconds, at most three starts in sixty seconds. It
+does not restart a clean operator stop. For service continuity after logout or
+reboot, an administrator should verify `loginctl show-user standard -p Linger`
+and run `loginctl enable-linger standard` if it reports `Linger=no`.
+
+Check the running user unit and the loopback response before relying on the
+existing private HTTPS proxy:
+
+```sh
+systemctl --user is-active skager-staging-origin.service
+set -o pipefail
+curl --fail --silent --show-error --header 'Host: omarchy.tail5878fc.ts.net' \
+  http://127.0.0.1:8765/1.root.json | sha256sum
+```
+
+The root digest must be
+`a041ec78891a5e3d8896385ed939b691a32ed0ec11e291fb25de773754515d57`.
+From the intended tailnet client, verify the already configured HTTPS endpoint
+and compare the same root digest:
+
+```sh
+set -o pipefail
+curl --proto '=https' --fail --silent --show-error \
+  https://omarchy.tail5878fc.ts.net/1.root.json | sha256sum
+```
+
+A local response alone does not prove tailnet access or installed-updater
+acceptance.
+
+On failure, inspect `systemctl --user status skager-staging-origin.service`
+and `journalctl --user -u skager-staging-origin.service`; the helper emits no
+request log or secrets. Check only the selected paths, pinned hashes and port
+availability. After correcting the cause, reset the unit's failed state and
+restart it, then repeat both response checks:
+
+```sh
+systemctl --user reset-failed skager-staging-origin.service
+systemctl --user restart skager-staging-origin.service
+```
+
+If the source script changes, review and pin the new bytes in a new versioned
+copy and unit; do not redirect this unit to a mutable checkout. Running
+`systemctl --user stop skager-staging-origin.service` stops the origin without
+changing Tailscale Serve.
+
 ## Published-file boundary
 
 The fixed path allowlist matches repository output exactly:

@@ -1,0 +1,18 @@
+[Unit]
+Description=SKAGER private Staging update origin (loopback only)
+StartLimitIntervalSec=60s
+StartLimitBurst=3
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 /home/standard/.local/lib/skager-staging-origin/198242e4f7635ace9ca831ae394becd1838e8428704a50b511506604e72fa8ad/staging-origin.py --repository /home/standard/.local/share/skager-staging/repository --host omarchy.tail5878fc.ts.net --port 8765
+Restart=on-failure
+RestartSec=5s
+WorkingDirectory=/
+Environment=PYTHONDONTWRITEBYTECODE=1
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=read-only
+
+[Install]
+WantedBy=default.target
