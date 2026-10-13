@@ -1,5 +1,7 @@
 name: SKAGER AIS collector fixture portability
 on:
+  push:
+    branches: [codex/ais-native-collector-fix-20261013]
   workflow_dispatch:
 permissions:
   contents: read
