@@ -13,10 +13,17 @@ pass. [Original failure and replacement evidence](evidence/scrum27-native-restor
 This is component acceptance, not a completed installed repair/uninstall or
 private-channel B0/B1 exercise.
 
-Two source-backed prerequisites are being corrected before another full app
-build: include the actual OpenCPN plugin search roots in declared-dependency
-inspection, and let the existing same-version installer mechanics validate the
-exact trust-enabled package without mistaking it for protected updater acceptance.
+The actual OpenCPN plugin-root handoff now passes focused native Win32 run
+[38439761709](https://github.com/ThereptileII/Work/actions/runs/38439761709) at
+`fd9c6a005893ebb5eae1c6f91ec6e3ec762d77f1`: 58 distinct loader groups with no
+group skips, 17,602 forwarder checks and 282 byte-policy checks. The downloaded
+artifact digest/ZIP CRC and all 28 source identities are verified. Nested-root
+legacy refusal, clean-sibling masking refusal, benign first mapping and custody
+through unload pass; this is component evidence, not full SCRUM-209 acceptance.
+The separate resource-only job was conditionally skipped.
+[Authenticated results and remaining scope](evidence/scrum209-libdirs-native-20261013/results.json).
+The existing same-version installer mechanics still need to validate the exact
+trust-enabled package without mistaking it for protected updater acceptance.
 The protected installed-updater driver also needs to observe the real ProgramData
 profile and its initialized navigation store. Full product and boat gates remain
 open. In parallel, the private website's Supabase function-prefix routing defect
