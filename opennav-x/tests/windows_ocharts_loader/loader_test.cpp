@@ -406,6 +406,84 @@ int main(int argc,char**argv) {
       search.Restore();
       Pass("previously unmapped sibling maps with inspected path/identity under live guard");
     }
+    // Observe the deliberate local-graph coverage limit using harmless code:
+    // plugin -> neutral helper in the executable directory -> no-TLS legacy
+    // basename stub. No resolver/search override or production-policy change.
+    {Case c(work,"external-application-directory-resolution",vendor,good);
+      Copy(fixtures/"fixture_indirect_external.dll",c.original);
+      wchar_t executable_path[32768]{};
+      const auto executable_count=GetModuleFileNameW(nullptr,executable_path,32768);
+      Require(executable_count && executable_count<32768,"external control executable path");
+      const auto application=fs::path(executable_path).parent_path();
+      const auto helper=application/"helper_external.dll",stub=application/"libeay32.dll";
+      Require(fs::equivalent(application,fixtures),"external control fixture/executable directory mismatch");
+      Require(fs::exists(helper) && fs::exists(stub),"external control inert application dependencies missing");
+      Require(!fs::exists(c.original.parent_path()/helper.filename()) &&
+                  !fs::exists(c.original.parent_path()/stub.filename()),
+              "external dependencies must be absent beside plugin");
+      Require(GetModuleHandleW(helper.filename().c_str())==nullptr &&
+                  GetModuleHandleW(stub.filename().c_str())==nullptr,
+              "external control dependencies were already mapped");
+      const auto dll_directory=CurrentDllDirectory();
+      const auto working_directory=fs::current_path();
+      Require(dll_directory.empty(),"external control requires unchanged default DLL search");
+      const auto original_before=Hash(c.original),helper_before=Hash(helper),stub_before=Hash(stub);
+      const auto helper_identity=FileIdentity(helper),stub_identity=FileIdentity(stub);
+      const auto raw=Read(c.original),helper_raw=Read(helper);
+      const auto declared=ReadWin32PeImports(std::vector<unsigned char>(raw.begin(),raw.end()));
+      const auto helper_declared=ReadWin32PeImports(std::vector<unsigned char>(helper_raw.begin(),helper_raw.end()));
+      Require(declared.parsed && helper_declared.parsed,"external control PE metadata unreadable");
+      bool imports_helper=false,imports_legacy=false;
+      for(const auto& item : declared.modules) {
+        if(item.name=="helper_external.dll") imports_helper=true;
+        Require(item.name!="libeay32.dll" && item.name!="ssleay32.dll",
+                "external root must not directly import legacy basename");
+      }
+      for(const auto& item : helper_declared.modules)
+        if(item.name=="libeay32.dll") imports_legacy=true;
+      Require(imports_helper && imports_legacy,"external control did not encode intended two-hop graph");
+      RegisterPluginPresentationLoader(nullptr);
+      PluginModuleInspectionCustody custody; wxDynamicLibrary lib;
+      Require(LoadPluginWithPresentationFallback(lib,W(c.original),{},custody)==PluginModuleLoadOutcome::Loaded,
+              "external control local-only guard behavior changed; investigate rather than relaxing policy");
+      Require(custody && SharingDenied(c.original,GENERIC_WRITE) && SharingDenied(c.original,DELETE),
+              "external control did not retain actual original inspection custody");
+      for(const auto& expected : {helper,stub}) {
+        const auto mapped=GetModuleHandleW(expected.filename().c_str());
+        Require(mapped!=nullptr,"external control dependency did not first-map");
+        wchar_t mapped_path[32768]{};
+        const auto count=GetModuleFileNameW(mapped,mapped_path,32768);
+        Require(count && count<32768,"external control mapped dependency path");
+        const fs::path actual(mapped_path);
+        const bool is_helper=expected==helper;
+        const auto inspected=is_helper ? helper_identity : stub_identity;
+        const auto expected_hash=is_helper ? helper_before : stub_before;
+        Require(_wcsicmp(actual.lexically_normal().c_str(),expected.lexically_normal().c_str())==0 &&
+                    SameFile(inspected,FileIdentity(actual)) && Hash(actual)==expected_hash,
+                "external dependency resolved outside exact inert application file identity");
+        std::cout<<"External-resolution observation: "<<actual.u8string()
+                 <<"; volume="<<inspected.dwVolumeSerialNumber
+                 <<"; file-index="<<inspected.nFileIndexHigh<<":"<<inspected.nFileIndexLow
+                 <<"; sha256="<<expected_hash<<"; local-graph-guard-accepted=true\n";
+      }
+      const auto probe=lib.GetSymbol("exercise_indirect_import");
+      Require(probe && reinterpret_cast<int (__cdecl*)()>(probe)()==209,
+              "external control inert helper/stub chain did not execute expected constant");
+      c.Events("attach\n");
+      Require(UnloadPluginModuleChecked(lib,custody) && !custody,
+              "external control original unload/custody cleanup failed");
+      Require(GetModuleHandleW(helper.filename().c_str())==nullptr &&
+                  GetModuleHandleW(stub.filename().c_str())==nullptr,
+              "external control dependencies remained mapped after unload");
+      c.Events("attach\ndetach\n");
+      Require(Writable(c.original) && Hash(c.original)==original_before &&
+                  Hash(helper)==helper_before && Hash(stub)==stub_before,
+              "external control changed bytes or retained original lock");
+      Require(fs::current_path()==working_directory && CurrentDllDirectory()==dll_directory,
+              "external control changed process DLL search state");
+      NeverLoadedVendor();
+      Pass("observed inert application-directory dependency outside guarded local graph");
+    }
     // Native export-only dependencies: no normal/delay descriptor names the
     // forwarded module. Resolve the inert export, never a plugin factory.
     const struct ForwardCase {
@@ -588,7 +666,7 @@ int main(int argc,char**argv) {
       Pass("injected invalid-handle refusal retains ownership");
     }
     NeverLoadedVendor();Require(Hash(vendor)==OriginalOChartsSha256,"vendor input changed");
-    std::ofstream report(argv[6]);report<<"{\"status\":\"passed\",\"checks\":"<<passed<<",\"vendorExecuted\":false,\"pluginFactoryExecuted\":false,\"invalidHandleFaultInjected\":true,\"unmappedSiblingGuardControl\":true,\"exportForwarderControls\":true,\"forwarderGrammarProbes\":true,\"productAcceptance\":false}\n";
+    std::ofstream report(argv[6]);report<<"{\"status\":\"passed\",\"checks\":"<<passed<<",\"vendorExecuted\":false,\"pluginFactoryExecuted\":false,\"invalidHandleFaultInjected\":true,\"unmappedSiblingGuardControl\":true,\"exportForwarderControls\":true,\"forwarderGrammarProbes\":true,\"externalResolutionObservation\":{\"guardAccepted\":true,\"helperFromApplicationDirectory\":true,\"legacyStubFromApplicationDirectory\":true,\"outsideInspectedLocalGraph\":true,\"productAcceptance\":false},\"productAcceptance\":false}\n";
     std::cout<<"PASS "<<passed<<" native loader groups; no vendor or plugin factory execution\n";return 0;
   } catch(const std::exception& error) {std::cerr<<"FAIL "<<error.what()<<"\n";return 1;}
 }

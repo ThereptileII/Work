@@ -42,7 +42,7 @@ INPUTS = (
 )
 VARIANTS = ('good', 'no_bind', 'no_status', 'no_create', 'no_destroy',
             'legacy_normal', 'legacy_delay', 'indirect_legacy', 'indirect_clean',
-            'indirect_unmapped', 'forward_legacy_name', 'forward_legacy_ordinal',
+            'indirect_unmapped', 'indirect_external', 'forward_legacy_name', 'forward_legacy_ordinal',
             'forward_ssleay_ordinal', 'forward_indirect', 'forward_clean_name',
             'forward_clean_ordinal', 'forward_explicit_dll', 'forward_multi_dot')
 
@@ -170,7 +170,7 @@ def main():
             report['fixtures'][relative] = dict(identity(fixture), pe=require_win32_dll(fixture))
         stub = fixtures / 'libeay32.dll'
         report['fixtures'][stub.name] = dict(identity(stub), pe=require_win32_dll(stub))
-        for name in ('helper_legacy.dll', 'helper_clean.dll', 'unmapped/helper_unmapped.dll',
+        for name in ('helper_legacy.dll', 'helper_clean.dll', 'helper_external.dll', 'unmapped/helper_unmapped.dll',
                      'forwarders/ssleay32.dll', 'forwarders/forward_clean.dll',
                      'forwarders/forward.dll', 'forwarders/forward.clean.dll',
                      'forwarders/forward_helper.dll'):
@@ -189,10 +189,15 @@ def main():
         api.run([client, vendor, fixtures, work, junction_original, junction_adapter,
                  evidence / 'native-tests.json'], evidence / 'native-tests.log', timeout=120)
         native = json.loads((evidence / 'native-tests.json').read_text())
-        if native != {'status': 'passed', 'checks': 51, 'vendorExecuted': False,
+        if native != {'status': 'passed', 'checks': 52, 'vendorExecuted': False,
                       'pluginFactoryExecuted': False, 'invalidHandleFaultInjected': True,
                       'unmappedSiblingGuardControl': True, 'exportForwarderControls': True,
-                      'forwarderGrammarProbes': True, 'productAcceptance': False}:
+                      'forwarderGrammarProbes': True,
+                      'externalResolutionObservation': {
+                          'guardAccepted': True, 'helperFromApplicationDirectory': True,
+                          'legacyStubFromApplicationDirectory': True,
+                          'outsideInspectedLocalGraph': True, 'productAcceptance': False},
+                      'productAcceptance': False}:
             raise ValueError('Native guard receipt is incomplete or changed')
         report['native'] = native
         if identity(client) != report['executable'] or identity(vendor) != report['vendorInput']:
