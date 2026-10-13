@@ -1,0 +1,287 @@
+name: SKAGER retained native plugin qualification
+on:
+  workflow_dispatch:
+    inputs:
+      producer_run:
+        description: Exact opennav-baseline producer run ID
+        required: true
+        type: string
+      producer_attempt:
+        description: Exact producer attempt
+        required: true
+        type: string
+      producer_commit:
+        description: Exact 40-character producer commit
+        required: true
+        type: string
+      inventory_sha256:
+        description: Independently reviewed inventory.json SHA256 (never auto-generated here)
+        required: true
+        type: string
+permissions:
+  contents: read
+  actions: read
+env:
+  PYTHONUTF8: '1'
+  PRODUCER_RUN: ${{ inputs.producer_run }}
+  PRODUCER_ATTEMPT: ${{ inputs.producer_attempt }}
+  PRODUCER_COMMIT: ${{ inputs.producer_commit }}
+  INVENTORY_SHA256: ${{ inputs.inventory_sha256 }}
+concurrency:
+  group: retained-plugin-${{ inputs.producer_run }}-${{ inputs.producer_attempt }}
+  cancel-in-progress: false
+jobs:
+  native-plugin-retained:
+    # SCRUM-209/211: source-slice/native fixture qualification only. This job
+    # never rebuilds the application or grants installed-package acceptance.
+    runs-on: windows-2022
+    timeout-minutes: 40
+    steps:
+      - name: Require explicit immutable producer selection and reviewed pin
+        shell: python {0}
+        run: |
+          import os, re
+          for name, pattern in [('PRODUCER_RUN', r'[1-9][0-9]{0,19}'), ('PRODUCER_ATTEMPT', r'[1-9][0-9]{0,19}'), ('PRODUCER_COMMIT', r'[a-f0-9]{40}'), ('INVENTORY_SHA256', r'[a-f0-9]{64}')]:
+              if not re.fullmatch(pattern, os.environ[name]):
+                  raise ValueError('Explicit canonical input required: ' + name)
+          if os.environ['GITHUB_REPOSITORY'] != 'ThereptileII/Work':
+              raise ValueError('Repository differs')
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ inputs.producer_commit }}
+          persist-credentials: false
+      - name: Preserve native Perl before installing the curl test host
+        shell: pwsh
+        run: |
+          $NativePerl = (Get-Command perl.exe -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source
+          "SKAGER_NATIVE_PERL=$NativePerl" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      - uses: msys2/setup-msys2@66cd2cce69caa17b53920067426061ca1de3a884
+        id: curl_msys
+        with:
+          msystem: MSYS
+          update: false
+          install: perl patch
+          path-type: inherit
+          cache: false
+      - name: Select explicit curl test Perl
+        shell: pwsh
+        env:
+          SKAGER_MSYS_ROOT: ${{ steps.curl_msys.outputs.msys2-location }}
+        run: |
+          $TestPerl = Join-Path $env:SKAGER_MSYS_ROOT 'usr/bin/perl.exe'
+          $Patch = Join-Path $env:SKAGER_MSYS_ROOT 'usr/bin/patch.exe'
+          if (-not (Test-Path -LiteralPath $TestPerl -PathType Leaf)) { throw 'MSYS2 curl test Perl missing' }
+          if (-not (Test-Path -LiteralPath $Patch -PathType Leaf)) { throw 'Explicit native patch tool missing' }
+          "SKAGER_CURL_TEST_PERL=$TestPerl" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "SKAGER_PLUGIN_PATCH=$Patch" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      - name: Fetch pinned upstream source for the narrow production slice
+        shell: pwsh
+        run: |
+          git clone --depth 1 --branch Release_5.12.4 https://github.com/OpenCPN/OpenCPN.git opennav-x/upstream/OpenCPN
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Authenticate selected immutable dependency SDK
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python opennav-x/tools/fetch_ci_inputs.py dependencies --selection opennav-x/tools/windows-dependency-bundle.lock.json --output dependency-bundle --provenance dependency-provenance.json
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Restore authenticated dependency inputs
+        shell: pwsh
+        run: |
+          python opennav-x/tools/windows_dependency_bundle.py restore --root opennav-x --bundle "$env:GITHUB_WORKSPACE/dependency-bundle" --provenance "$env:GITHUB_WORKSPACE/dependency-provenance.json"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Authenticate exact retained producer artifact and reviewed inventory
+        shell: python {0}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # BEGIN RETAINED_PLUGIN_AUTH
+          import base64, hashlib, importlib.util, json, os, re, shutil, stat, subprocess, sys, tempfile, zipfile
+          from pathlib import Path, PurePosixPath
+          sys.path.insert(0, str(Path('opennav-x/tools').resolve()))
+          from github_release_delivery import GitHub, decimal, file_hash, sha
+          from release_manifest import require
+          import windows_dependency_receipt as receipt
+
+          MAX_BYTES = 3 * 1024 ** 3
+          PRODUCTION = 'Compile fixture-free product and run installed security and unit checks'
+          CAPTURE = 'Retain exact plugin-download SDK inputs for no-rebuild qualification'
+
+          def authenticate_workflow(gh, workflow_sha, path):
+              # The loader runner retains this file as its actual workflow.
+              # Refuse older/different recipes rather than mislabel their bytes.
+              sha(workflow_sha)
+              document = gh.api(f'{gh.base}/contents/{path.as_posix()}?ref={workflow_sha}')
+              require(document.get('type') == 'file' and document.get('encoding') == 'base64' and
+                      type(document.get('size')) is int and 0 < document['size'] <= 1024 ** 2,
+                      'Bounded dispatch workflow source required')
+              raw = base64.b64decode(document['content'].replace('\n', ''), validate=True)
+              source = subprocess.check_output(['git', 'show', 'HEAD:' + path.as_posix()])
+              require(len(raw) == document['size'] and raw == source,
+                      'Producer must contain the exact dispatch workflow recipe')
+              # Git blob equality preserves exact source without confusing
+              # ordinary Windows checkout line endings with another recipe.
+              return {'gitSha256': hashlib.sha256(raw).hexdigest(), 'checkoutSha256': file_hash(path)}
+
+          def authenticate(gh, run_id, attempt, commit):
+              decimal(run_id); decimal(attempt); sha(commit)
+              run = gh.api(f'{gh.base}/actions/runs/{run_id}/attempts/{attempt}')
+              require(str(run.get('id')) == run_id and str(run.get('run_attempt')) == attempt and
+                      run.get('head_sha') == commit and run.get('path') == '.github/workflows/opennav-baseline.yml' and
+                      run.get('event') in {'push', 'workflow_dispatch'} and run.get('status') == 'completed' and
+                      run.get('head_repository', {}).get('full_name') == gh.repo, 'Producer workflow/attempt/source differs')
+              jobs = gh.pages(f'{gh.base}/actions/runs/{run_id}/attempts/{attempt}/jobs')
+              jobs = [job for job in jobs if job.get('name') == 'windows-integration']
+              require(len(jobs) == 1, 'Missing or ambiguous producer job')
+              job = jobs[0]
+              require(job.get('status') == 'completed' and str(job.get('run_id')) == run_id and
+                      job.get('head_sha') == commit and
+                      ('run_attempt' not in job or str(job['run_attempt']) == attempt),
+                      'Producer job identity differs')
+              # GitHub's attempt-specific endpoint binds the attempt; its job
+              # schema does not require a redundant run_attempt field.
+              for name in (PRODUCTION, CAPTURE):
+                  steps = [step for step in job.get('steps', []) if step.get('name') == name]
+                  require(len(steps) == 1 and steps[0].get('status') == 'completed' and
+                          steps[0].get('conclusion') == 'success', 'Producer prerequisite did not pass: ' + name)
+              name = f'plugin-guard-inputs-{commit}-run{run_id}-attempt{attempt}'
+              artifacts = []
+              for page in range(1, 101):
+                  listing = gh.api(f'{gh.base}/actions/runs/{run_id}/artifacts?per_page=100&page={page}')
+                  entries = listing.get('artifacts')
+                  require(isinstance(entries, list), 'Invalid artifact list')
+                  artifacts.extend(item for item in entries if item.get('name') == name)
+                  if len(entries) < 100:
+                      break
+              else:
+                  raise ValueError('Artifact pagination limit exceeded')
+              require(len(artifacts) == 1, 'Missing or ambiguous exact retained artifact')
+              artifact_id = decimal(str(artifacts[0].get('id')))
+              artifact = gh.api(f'{gh.base}/actions/artifacts/{artifact_id}')
+              require(str(artifact.get('id')) == artifact_id and artifact.get('name') == name and
+                      artifact.get('expired') is False and
+                      re.fullmatch(r'sha256:[a-f0-9]{64}', artifact.get('digest', '')) and
+                      type(artifact.get('size_in_bytes')) is int and 0 < artifact['size_in_bytes'] <= MAX_BYTES and
+                      str(artifact.get('workflow_run', {}).get('id')) == run_id and
+                      artifact.get('workflow_run', {}).get('head_sha') == commit, 'Retained artifact authority differs')
+              return {'schema': 1, 'repository': gh.repo, 'producerRun': run_id, 'producerAttempt': attempt,
+                      'producerCommit': commit, 'producerJobConclusion': job.get('conclusion'),
+                      'producerRunConclusion': run.get('conclusion'), 'artifactId': artifact_id,
+                      'artifactName': name, 'artifactDigest': artifact['digest']}
+
+          def unpack(archive, destination):
+              require(not destination.exists() and not destination.is_symlink(), 'Fresh retained directory required')
+              with zipfile.ZipFile(archive) as stream:
+                  entries = stream.infolist()
+                  require(0 < len(entries) <= 20003 and sum(item.file_size for item in entries) <= MAX_BYTES,
+                          'Retained ZIP exceeds bounds')
+                  seen = set()
+                  for item in entries:
+                      name = item.orig_filename
+                      require(name == item.filename and '\\' not in name and not item.is_dir(), 'Noncanonical ZIP member')
+                      parts = name.split('/')
+                      require(all(part and part not in {'.', '..'} and part.rstrip(' .') == part and
+                                  not re.search(r'[\x00-\x1f<>:"|?*]', part) and
+                                  part.split('.')[0].upper() not in {'CON','PRN','AUX','NUL',*[f'COM{i}' for i in range(1,10)],*[f'LPT{i}' for i in range(1,10)]}
+                                  for part in parts), 'Unsafe ZIP path')
+                      require(not PurePosixPath(name).is_absolute() and name.casefold() not in seen, 'Aliased ZIP member')
+                      seen.add(name.casefold())
+                      require(stat.S_IFMT(item.external_attr >> 16) in {0, stat.S_IFREG} and not item.flag_bits & 1,
+                              'Linked, special or encrypted ZIP member')
+                      require(name in {'plugin-guard-inputs/inventory.json', 'plugin-guard-inputs/capture.json',
+                                       'opennav-x/evidence/local/plugin-guard-capture.log'} or
+                              name.startswith('plugin-guard-inputs/data/'), 'Unexpected retained artifact member')
+                      require(item.file_size <= 256 * 1024 ** 2, 'Retained member exceeds bounds')
+                  require({'plugin-guard-inputs/inventory.json', 'plugin-guard-inputs/capture.json',
+                           'opennav-x/evidence/local/plugin-guard-capture.log'} <= seen, 'Retained capture incomplete')
+                  require(all('/'.join(name.split('/')[:i]) not in seen for name in seen
+                              for i in range(1, len(name.split('/')))), 'ZIP file/directory collision')
+                  destination.mkdir()
+                  for item in entries:
+                      target = destination.joinpath(*item.filename.split('/'))
+                      target.parent.mkdir(parents=True, exist_ok=True)
+                      with stream.open(item) as source, target.open('xb') as output:
+                          shutil.copyfileobj(source, output)
+
+          def verify_capture(capture, authority, pin, helper_sha256, dependency_authority):
+              producer = capture.get('producer', {})
+              require(type(capture.get('schema')) is int and capture['schema'] == 1 and
+                      capture.get('status') == 'captured-not-qualified' and
+                      capture.get('candidateCommit') == authority['producerCommit'] and
+                      producer.get('commit') == authority['producerCommit'] and
+                      producer.get('runId') == authority['producerRun'] and
+                      producer.get('runAttempt') == authority['producerAttempt'] and
+                      producer.get('job') == 'windows-integration' and producer.get('architecture') == 'Win32' and
+                      capture.get('helperSha256') == helper_sha256 and capture.get('inventorySha256') == pin and
+                      capture.get('dependencyAuthority') == dependency_authority and
+                      capture.get('requiresIndependentInventoryPin') is True and
+                      all(capture.get(key) is False for key in ('nativeAcceptance', 'productAcceptance', 'boatAcceptance')),
+                      'Capture source/producer/dependency identity differs')
+
+          def main():
+              run_id, attempt, commit, pin = (os.environ[key] for key in
+                  ('PRODUCER_RUN', 'PRODUCER_ATTEMPT', 'PRODUCER_COMMIT', 'INVENTORY_SHA256'))
+              evidence = Path('opennav-x/evidence/local/retained-plugin-auth'); evidence.mkdir(parents=True)
+              shutil.copyfile(__file__, evidence / 'authenticate-inputs.py')
+              authority = dict(schema=1, status='failed', phase='source-identity', producerRun=run_id,
+                  producerAttempt=attempt, producerCommit=commit, independentlyApprovedInventorySha256=pin,
+                  workflowRef=os.environ['GITHUB_WORKFLOW_REF'], workflowSha=os.environ['GITHUB_WORKFLOW_SHA'],
+                  qualificationRun=os.environ['GITHUB_RUN_ID'], qualificationAttempt=os.environ['GITHUB_RUN_ATTEMPT'],
+                  productAcceptance=False, boatAcceptance=False)
+              try:
+                  require(re.fullmatch(r'[a-f0-9]{64}', pin), 'Independent inventory pin required')
+                  require(subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip() == commit,
+                          'Exact producer checkout required')
+                  subprocess.run(['git', 'diff', '--exit-code', 'HEAD', '--', '.'], check=True)
+                  gh = GitHub('ThereptileII/Work')
+                  authority['workflowSource'] = authenticate_workflow(gh, os.environ['GITHUB_WORKFLOW_SHA'],
+                      Path('.github/workflows/skager-plugin-download-retained.yml'))
+                  authority['phase'] = 'producer-artifact-authority'
+                  authority.update(authenticate(gh, run_id, attempt, commit))
+                  authority['phase'] = 'artifact-download-extraction'
+                  destination = Path('retained-plugin-inputs')
+                  with tempfile.TemporaryDirectory(prefix='retained-plugin-') as temporary:
+                      archive = Path(temporary) / 'artifact.zip'
+                      with archive.open('xb') as output:
+                          gh._run(['api', f"{gh.base}/actions/artifacts/{authority['artifactId']}/zip"], output=output)
+                      require(archive.stat().st_size <= MAX_BYTES and
+                              'sha256:' + file_hash(archive) == authority['artifactDigest'], 'Downloaded artifact digest differs')
+                      unpack(archive, destination)
+                  authority['phase'] = 'reviewed-inventory-source-dependency-binding'
+                  spec = importlib.util.spec_from_file_location('native_plugin_guard', 'opennav-x/tools/test-plugin-download-guard-windows.py')
+                  runner = importlib.util.module_from_spec(spec); spec.loader.exec_module(runner)
+                  root = destination / 'plugin-guard-inputs'
+                  data = runner.retained_inputs(root / 'data', root / 'inventory.json', pin, commit)
+                  expected, dependency_authority = runner.module('native_ais', 'test-ais-runtime-windows.py').dependency_inputs(
+                      Path('opennav-x').resolve(), Path('dependency-bundle').resolve(), Path('dependency-provenance.json').resolve())
+                  runner.bind_tls(data, expected)
+                  verify_capture(receipt._read_json(root / 'capture.json'), authority, pin,
+                                 file_hash(Path('opennav-x/tools/retain-plugin-guard-inputs.py')), dependency_authority)
+                  authority.update(status='inputs-authenticated-not-qualified', phase='input-authentication-complete')
+              finally:
+                  (evidence / 'authority.json').write_text(json.dumps(authority, indent=2) + '\n', encoding='utf-8')
+
+          if __name__ == '__main__':
+              main()
+          # END RETAINED_PLUGIN_AUTH
+      - name: Run actual native loader and PluginHandler download qualification
+        shell: pwsh
+        run: |
+          if ($env:GH_TOKEN -or $env:GITHUB_TOKEN) { throw 'Native probes must not inherit transport credentials' }
+          python opennav-x/tools/test-ocharts-loader-windows.py --evidence opennav-x/evidence/local/retained-ocharts-loader
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python opennav-x/tools/test-plugin-download-guard-windows.py --dependency-bundle "$env:GITHUB_WORKSPACE/dependency-bundle" --dependency-bundle-provenance "$env:GITHUB_WORKSPACE/dependency-provenance.json" --retained-root "$env:GITHUB_WORKSPACE/retained-plugin-inputs/plugin-guard-inputs/data" --retained-inputs "$env:GITHUB_WORKSPACE/retained-plugin-inputs/plugin-guard-inputs/inventory.json" --retained-inputs-sha256 "$env:INVENTORY_SHA256" --candidate-commit "$env:PRODUCER_COMMIT" --upstream opennav-x/upstream/OpenCPN --patch-program "$env:SKAGER_PLUGIN_PATCH" --output opennav-x/evidence/local/retained-plugin-download
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: retained-plugin-qualification-${{ inputs.producer_commit }}-producer${{ inputs.producer_run }}-attempt${{ inputs.producer_attempt }}-run${{ github.run_id }}-attempt${{ github.run_attempt }}
+          path: |
+            opennav-x/evidence/local
+            retained-plugin-inputs/plugin-guard-inputs/inventory.json
+            retained-plugin-inputs/plugin-guard-inputs/capture.json
+            retained-plugin-inputs/opennav-x/evidence/local/plugin-guard-capture.log
+            dependency-provenance.json
+          if-no-files-found: error
+          retention-days: 90
