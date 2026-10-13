@@ -1,4 +1,31 @@
-# SKAGER status — 2026-10-12
+# SKAGER status — 2026-10-13
+
+## Owner-private web experience and Supabase/Stripe foundations
+
+Exact web source `52d07f404a7c6c6257382e46ea09bb38ae5cf9cc` passes
+[web-only CI 38355728110](https://github.com/ThereptileII/Work/actions/runs/38355728110):
+**88 tests** on PostgreSQL 18.6, Django checks, migration drift and fresh/reverse/
+reapply migrations. This adds the owner-requested cinematic homepage, default-off
+Supabase identity verification, test-only Stripe checkout/webhook verification
+and private owner-scoped Boat storage. It does not qualify a native application.
+
+The [owner-private preview](https://skager-beta-launch-preview.swedishcountrysideli.chatgpt.site)
+has been updated and verified after owner authentication. Desktop 1280×800 and
+mobile 390×844 local checks pass; day/night, pause, static fallback and menu/Escape
+were exercised. The scene is expressly illustrative, with no real boat telemetry.
+The owner's original web brief is retained unchanged. Future My Boat cloud work
+is captured in Jira SCRUM-369 and is not presented as delivered functionality.
+
+Supabase now has an empty private schema with anonymous/authenticated namespace
+access revoked; new public signups are disabled and email confirmation remains
+required. Application migrations, backend deployment and real account/session/
+recovery flows are not yet connected. Stripe sandbox contains a single SKAGER
+USD 20 one-time test product; no checkout/payment/refund or entitlement was
+created. No real keys were fetched, placed in Git or included in the static
+export. Local environment and web credential/key paths are ignored by Git.
+Public accounts, payments and downloads remain closed. No boat state or native
+package changed. Private updater HTTPS activation remains deferred by the owner.
+[Exact source, verification and limits](evidence/web-experience-20261013/README.md).
 
 ## Website work resumed in parallel; owner-private preview available
 

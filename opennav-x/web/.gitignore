@@ -2,3 +2,11 @@
 .venv/
 __pycache__/
 *.py[cod]
+
+# Server credentials and local signing material are never website source/assets.
+secrets/
+credentials/
+*.key
+*.pem
+*.p12
+*.pfx

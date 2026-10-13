@@ -4,3 +4,9 @@
 *.bin
 *.elf
 *.map
+
+# Local secrets stay outside version control; examples must contain placeholders only.
+.env
+.env.*
+!.env.example
+!.env.sample
