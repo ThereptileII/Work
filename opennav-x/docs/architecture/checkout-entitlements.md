@@ -1,7 +1,7 @@
 # Beta checkout and entitlements
 
 The beta commerce boundary is deliberately closed to Stripe **TEST** mode. A
-server-side flag, a `sk_test_` secret, a `whsec_` webhook secret, one `price_`
+server-side flag, a `rk_test_` restricted key (or existing `sk_test_` secret), a `whsec_` webhook secret, one `price_`
 ID, and an exact HTTPS return origin are required before either route exists.
 No payment secret or service-role credential belongs in the browser. The Edge
 router invokes `handleCommerce(request, context)` for
@@ -31,14 +31,39 @@ USD 20.00 test price. The origin must be the exact beta web origin, such as
 `https://beta.skager.app`, without a trailing slash. Stripe's webhook endpoint
 must use the pinned API version in `commerce.ts` and deliver the five event
 types admitted there. The server searches Stripe's active promotion codes for
-the entered code and accepts exactly one active, unexpired, unrestricted
-promotion ID and coupon ID on both local allowlists. Customer-specific,
-product-restricted, minimum-amount, and first-transaction promotions are
-rejected. It places that promotion ID on the Checkout session. Hosted
+the entered code and accepts exactly one active, unexpired promotion whose
+promotion ID and coupon ID are on both local allowlists. Customer-specific,
+minimum-amount, and first-transaction promotions are rejected. It authenticates
+the configured Price to derive its product ID and separately retrieves the
+Coupon with `expand[]=applies_to`. The coupon must explicitly apply to exactly
+that product; missing, unrestricted, empty, wrong-product and multi-product
+applicability are refused. The Price must be active and both resources TEST-only;
+the existing one-time USD 20 terms remain required. It places that promotion ID on the Checkout session. Hosted
 promotion-code entry is disabled, and each order binds its selected promotion
 and coupon before payment. A completed session must show that same promotion,
 coupon, and exact amount before fulfillment. Stripe still decides final
 redemption eligibility and may reject a code at Checkout creation or payment.
+
+The pinned `2026-09-30.endive` [PromotionCode schema](https://docs.stripe.com/api/promotion_codes/object?api-version=2026-09-30.endive&query=promotion)
+uses `promotion.type=coupon` and an expandable `promotion.coupon` ID.
+The [Checkout Session discount wrapper](https://docs.stripe.com/api/checkout/sessions/object?api-version=2026-09-30.endive&query=discounts)
+still uses direct `coupon` and `promotion_code` fields; it is distinct from the
+generic Discount object's `source.coupon`. [Coupon product applicability](https://docs.stripe.com/api/coupons/object?api-version=2026-09-30.endive&query=applies_to)
+is not returned by default, so absence cannot establish its scope. Settlement
+re-fetches the bound promotion-to-coupon relationship, Price and scoped Coupon,
+then verifies the completed session's IDs, product and amounts. A promotion-only
+wrapper with `coupon:null` requires that authenticated relationship. Embedded
+coupon fields alone never establish applicability. Redemption availability is
+checked at creation; a completed bound session can settle after the last
+permitted redemption, later expiry or inactivity, or Price archival.
+
+A dedicated SKAGER sandbox and restricted TEST key remain deployment gates.
+The source requires Checkout Sessions write/read plus Promotion Codes, Prices,
+Coupons and Charges read; no Product read call or refund/capture/write-management
+API is used. Stripe [restricted keys](https://docs.stripe.com/keys) use `rk_test_`
+in sandbox mode. A separate product or endpoint in a shared sandbox does not
+isolate unrelated refund-event ingestion. Keep checkout disabled until dedicated
+scope, actual key permissions and live TEST flows are verified.
 
 `commerce.sql` creates private orders, immutable session bindings, webhook
 receipts, settlements, refund markers, entitlements, and append-only effects

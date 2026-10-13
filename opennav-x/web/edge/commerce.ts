@@ -38,7 +38,7 @@ const reply = (status: number, value: Json) => new Response(JSON.stringify(value
 function configuration(ctx: CommerceContext): Configuration {
   const env = ctx.env;
   requireValue(env.STRIPE_TEST_CHECKOUT_ENABLED === 'true');
-  requireValue(/^sk_test_[A-Za-z0-9]{16,256}$/.test(env.STRIPE_TEST_SECRET_KEY ?? ''));
+  requireValue(/^(?:sk|rk)_test_[A-Za-z0-9]{16,256}$/.test(env.STRIPE_TEST_SECRET_KEY ?? ''));
   requireValue(/^whsec_[A-Za-z0-9]{16,256}$/.test(env.STRIPE_TEST_WEBHOOK_SECRET ?? ''));
   requireValue(/^price_[A-Za-z0-9]{8,128}$/.test(env.STRIPE_TEST_PRICE_ID ?? ''));
   const origin = env.STRIPE_TEST_RETURN_ORIGIN ?? '';
@@ -72,29 +72,51 @@ async function approvedPromotion(ctx: CommerceContext, config: Configuration, co
   // A code with customer-specific or ambiguous matches is never applied to an
   // unrelated account; this beta has no Stripe customer binding.
   if (list.data.length !== 1) return null;
-  const promotion = list.data[0]; const coupon = promotion?.coupon;
+  const promotion = list.data[0];
   const now = Math.floor((ctx.now?.() ?? Date.now()) / 1000);
-  if (!object(promotion) || !object(coupon) || promotion.object !== 'promotion_code'
+  if (!object(promotion) || promotion.object !== 'promotion_code'
     || !PROMOTION.test(promotion.id) || !config.promotions.includes(promotion.id)
     || promotion.livemode !== false || promotion.active !== true || promotion.customer !== null
+    || (promotion.customer_account !== null && promotion.customer_account !== undefined)
+    || !object(promotion.promotion) || promotion.promotion.type !== 'coupon'
+    || typeof promotion.promotion.coupon !== 'string' || !config.coupons.includes(promotion.promotion.coupon)
     || typeof promotion.code !== 'string' || promotion.code.toLowerCase() !== code.toLowerCase()
     || !object(promotion.restrictions) || promotion.restrictions.first_time_transaction !== false
     || promotion.restrictions.minimum_amount !== null
     || (promotion.expires_at !== null && (!integer(promotion.expires_at) || promotion.expires_at <= now))
     || (promotion.max_redemptions !== null && (!integer(promotion.max_redemptions)
-      || !integer(promotion.times_redeemed) || promotion.times_redeemed >= promotion.max_redemptions))
-    || coupon.object !== 'coupon' || coupon.livemode !== false || coupon.valid !== true
-    || !config.coupons.includes(coupon.id)
-    || coupon.applies_to != null
+      || !integer(promotion.times_redeemed) || promotion.times_redeemed >= promotion.max_redemptions))) return null;
+  const coupon = await applicableCoupon(ctx, config, promotion.promotion.coupon, true);
+  if (!coupon) return null;
+  return { promotion_id: promotion.id, coupon_id: coupon.id };
+}
+
+async function applicableCoupon(ctx: CommerceContext, config: Configuration,
+                                couponId: string, available: boolean): Promise<Json | null> {
+  requireValue(config.coupons.includes(couponId) && /^[A-Za-z0-9_-]{1,128}$/.test(couponId));
+  requireValue(/^price_[A-Za-z0-9]{8,128}$/.test(config.price));
+  const price = await stripeRequest(ctx, config, `prices/${config.price}`, 'GET');
+  if (price.object !== 'price' || price.id !== config.price || price.livemode !== false
+    || price.currency !== 'usd' || price.unit_amount !== 2000 || price.type !== 'one_time'
+    || price.recurring !== null || typeof price.product !== 'string' || !/^prod_[A-Za-z0-9]{8,128}$/.test(price.product)
+    || (available && price.active !== true)) return null;
+  // applies_to is includable. Absence never establishes product applicability.
+  const coupon = await stripeRequest(ctx, config, `coupons/${couponId}?expand%5B%5D=applies_to`, 'GET');
+  if (coupon.object !== 'coupon' || coupon.id !== couponId || coupon.livemode !== false
+    || !object(coupon.applies_to) || !Array.isArray(coupon.applies_to.products)
+    || coupon.applies_to.products.length !== 1 || coupon.applies_to.products[0] !== price.product) return null;
+  const now = Math.floor((ctx.now?.() ?? Date.now()) / 1000);
+  // Redemption availability belongs to creation, not historical settlement.
+  if (available && (coupon.valid !== true
     || (coupon.redeem_by !== null && (!integer(coupon.redeem_by) || coupon.redeem_by <= now))
     || (coupon.max_redemptions !== null && (!integer(coupon.max_redemptions)
-      || !integer(coupon.times_redeemed) || coupon.times_redeemed >= coupon.max_redemptions))) return null;
+      || !integer(coupon.times_redeemed) || coupon.times_redeemed >= coupon.max_redemptions)))) return null;
   const percent = typeof coupon.percent_off === 'number' && Number.isFinite(coupon.percent_off)
     && coupon.percent_off > 0 && coupon.percent_off <= 100 && coupon.amount_off === null;
   const amount = coupon.percent_off === null && integer(coupon.amount_off)
     && coupon.amount_off > 0 && coupon.currency === 'usd';
   if (!percent && !amount) return null;
-  return { promotion_id: promotion.id, coupon_id: coupon.id };
+  return coupon;
 }
 
 async function boundedBytes(stream: ReadableStream<Uint8Array> | null, maximum: number): Promise<Uint8Array> {
@@ -218,7 +240,8 @@ function checkoutUrl(value: unknown, sessionId: string): string {
 }
 
 /** Normalize only finalized provider evidence. No account IDs come from Stripe metadata. */
-export function confirmedCheckout(session: Json, config: Configuration, orderId: string, sessionId: string): Json {
+export function confirmedCheckout(session: Json, config: Configuration, orderId: string, sessionId: string,
+                                  couponEvidence?: Json): Json {
   sessionIdentity(session, orderId);
   requireValue(session.id === sessionId && session.status === 'complete'
     && ['hosted', 'hosted_page'].includes(session.ui_mode));
@@ -239,10 +262,17 @@ export function confirmedCheckout(session: Json, config: Configuration, orderId:
   requireValue(Array.isArray(session.discounts) && session.discounts.length <= 1);
   const coupons: string[] = [];
   if (totals.amount_discount > 0) {
-    const coupon = session.discounts[0]?.coupon;
+    const discount = session.discounts[0]; const coupon = couponEvidence;
     requireValue(session.discounts.length === 1 && object(coupon) && coupon.object === 'coupon'
       && coupon.livemode === false && config.coupons.includes(coupon.id)
-      && (!config.selectedPromotion || session.discounts[0]?.promotion_code === config.selectedPromotion));
+      && object(coupon.applies_to) && Array.isArray(coupon.applies_to.products)
+      && coupon.applies_to.products.length === 1 && coupon.applies_to.products[0] === price.product
+      && typeof price.product === 'string' && /^prod_[A-Za-z0-9]{8,128}$/.test(price.product)
+      && typeof config.selectedPromotion === 'string' && PROMOTION.test(config.selectedPromotion)
+      && discount?.promotion_code === config.selectedPromotion
+      && (discount.coupon === null || discount.coupon === coupon.id
+        || (object(discount.coupon) && discount.coupon.object === 'coupon'
+          && discount.coupon.livemode === false && discount.coupon.id === coupon.id)));
     let expected = -1;
     if (typeof coupon.percent_off === 'number' && Number.isFinite(coupon.percent_off)
       && coupon.percent_off > 0 && coupon.percent_off <= 100 && coupon.amount_off === null) {
@@ -349,7 +379,18 @@ async function webhook(req: Request, ctx: CommerceContext, config: Configuration
       requireValue(!binding.promotion_id || config.promotions.includes(binding.promotion_id));
       const session = await stripeRequest(ctx, boundConfig,
         `checkout/sessions/${item.id}?expand%5B%5D=line_items&expand%5B%5D=discounts.coupon`, 'GET');
-      const confirmed = confirmedCheckout(session, boundConfig, item.client_reference_id, item.id);
+      let couponEvidence: Json | undefined;
+      if (binding.selected_coupon_id) {
+        requireValue(typeof binding.promotion_id === 'string' && PROMOTION.test(binding.promotion_id));
+        const promotion = await stripeRequest(ctx, boundConfig, `promotion_codes/${binding.promotion_id}`, 'GET');
+        requireValue(promotion.object === 'promotion_code' && promotion.id === binding.promotion_id
+          && promotion.livemode === false && object(promotion.promotion) && promotion.promotion.type === 'coupon'
+          && promotion.promotion.coupon === binding.selected_coupon_id);
+        const coupon = await applicableCoupon(ctx, boundConfig, binding.selected_coupon_id, false);
+        requireValue(coupon);
+        couponEvidence = coupon!;
+      }
+      const confirmed = confirmedCheckout(session, boundConfig, item.client_reference_id, item.id, couponEvidence);
       requireValue(confirmed.total_minor === item.amount_total && confirmed.payment_status === item.payment_status);
       await ctx.rpc('commerce_apply_checkout', { p_event_id: event.event_id, p_digest: event.digest,
         p_checkout: confirmed });
