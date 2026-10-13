@@ -9,8 +9,15 @@
     "conclusion": "success",
     "artifactId": 11840810685,
     "artifactSha256": "b4c435a7a4becfa1d155bbcf5e271d7c15736e78745baddf8e18e1d5ea25c01b",
-    "django": {"passed": 88, "failed": 0},
-    "edge": {"passed": 45, "failed": 0, "skipped": 0},
+    "django": {
+      "passed": 88,
+      "failed": 0
+    },
+    "edge": {
+      "passed": 45,
+      "failed": 0,
+      "skipped": 0
+    },
     "postgresSqlAndMigrations": "passed"
   },
   "providers": {
@@ -21,8 +28,15 @@
       "deploymentUi": "success",
       "previousSourceSha256": "c27a5c890e40525bc0e4418c5e5bbf0abbe28b7f87b0dc5792b6824b5e8cf2fc",
       "previousDeploymentAvailableForRollback": true,
-      "directHealth": {"httpStatus": 200, "ready": false},
-      "directSession": {"httpStatus": 200, "account": null, "csrfPresent": true}
+      "directHealth": {
+        "httpStatus": 200,
+        "ready": false
+      },
+      "directSession": {
+        "httpStatus": 200,
+        "account": null,
+        "csrfPresent": true
+      }
     },
     "cloudflareFrontend": {
       "sourceSha256": "86ff2ae9ce56fa94f80999edc172327545daff1b08c2667662d85af75a63cc66",
@@ -65,7 +79,10 @@
     "privateFunctions": 4,
     "policies": 0,
     "triggers": 7,
-    "providerUiExposedApiSchemas": ["public", "graphql_public"],
+    "providerUiExposedApiSchemas": [
+      "public",
+      "graphql_public"
+    ],
     "providerUiPrivateSchemaUnchecked": true,
     "liveApiSessionSchemasEstablishedByCatalog": false
   },
@@ -76,8 +93,15 @@
       "conclusion": "success",
       "artifactId": 11841632190,
       "artifactSha256": "ca4f51f8d8aa68c50f79f714338869c4c2ffd964f0968c6bbd2ae7a2421b83db",
-      "django": {"passed": 88, "failed": 0},
-      "edge": {"passed": 51, "failed": 0, "skipped": 0},
+      "django": {
+        "passed": 88,
+        "failed": 0
+      },
+      "edge": {
+        "passed": 51,
+        "failed": 0,
+        "skipped": 0
+      },
       "postgresSqlAndMigrations": "passed"
     },
     "cloudflareFrontend": {
@@ -89,10 +113,59 @@
     "supabaseEdgeSourceSha256": "0492c12db66726e0699750a00c164de99d2b0e57d0948a9329fd20dbd88a7664"
   },
   "remaining": {
-    "betaOriginSessionHttp503": "unresolved",
-    "authenticationFlagsAndCredentials": "unset",
+    "betaOriginSessionHttp503": "resolved by proxyCorrection; historical failure retained",
+    "authenticationFlags": "explicitly off",
+    "credentials": "unset",
     "customSmtp": "required; owner choice pending",
+    "isolatedStripeTestScope": "required before webhook configuration; current scope contains unrelated products",
+    "restrictedTestKeysAndCouponProviderSchema": "source correction selected SCRUM-36/37",
     "liveCheckoutPaymentAndDownload": "not tested",
     "publicSignupPaymentAndDownloads": "closed"
+  },
+  "proxyCorrection": {
+    "sourceCommit": "839ea17f76dc631b46a4a70d9b164e1f70d26b69",
+    "ci": {
+      "run": "https://github.com/ThereptileII/Work/actions/runs/38454462943",
+      "conclusion": "success",
+      "artifactId": 11840734310,
+      "artifactBytes": 5478,
+      "artifactSha256": "3652722b2a706b86cb4682f710e8f9acaa8294a17d4c586de99571a6fec6722d",
+      "djangoPassed": 88,
+      "edgePassed": 56,
+      "postgresSqlAndMigrations": "passed"
+    },
+    "workerd": {
+      "version": "1.20261013.1",
+      "binarySha256": "707605d9b34230f74656edd05d59e1a055ed9abd33786b8b9cc9e45e8ab8b704",
+      "offlineGroupsPassed": 6,
+      "original503Reproduced": true,
+      "cause": "unsupported redirect:error option",
+      "fix": "manual mode with explicit all-3xx refusal"
+    },
+    "cloudflareFrontend": {
+      "deploymentIdentifier": "e18a9fb4",
+      "status": "Active Latest",
+      "sourceBytes": 492723,
+      "sourceSha256": "0a71e211d4cf3aca04162838abc1dccdffde3cb8c2a29d795f5dd9469a72aac2",
+      "fullPredeployByteEquality": true
+    },
+    "supabaseBundleUnchanged": true,
+    "browserSessionStatus": 200,
+    "loginFormRendered": true,
+    "unauthenticatedPortalReturnedToLogin": true,
+    "commandLineHttpProbe": {
+      "status": 403,
+      "json": false,
+      "applicationBehaviorProven": false
+    },
+    "nonSecretSettingsSaved": 8,
+    "featureFlags": {
+      "auth": false,
+      "checkout": false,
+      "portal": false
+    },
+    "secretsEntered": false,
+    "invitationEmailsEntered": false,
+    "realLoginOrCheckoutPassed": false
   }
 }

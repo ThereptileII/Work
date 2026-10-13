@@ -22,8 +22,8 @@ had deployment `07a6061a` active at 100%, with runtime dated 2026-10-13.
 Direct Edge `/health` returned HTTP 200 with
 `ready=false`; direct `/session` returned HTTP 200 with no account and CSRF
 present. The beta origin and `/login` returned HTTP 200, while the beta
-origin `/session` returned HTTP 503. That routing/session failure is unresolved
-in this evidence.
+origin `/session` returned HTTP 503. That original failed observation is retained;
+the later correction and observed result follow below.
 
 A later diagnostic source revision, `3d87570441cb8d9375f73f2763033291c26b022e`,
 passed [web CI run 38453173061](https://github.com/ThereptileII/Work/actions/runs/38453173061):
@@ -48,13 +48,57 @@ zero policies, and seven triggers. Provider UI showed `public` and `graphql_publ
 as exposed API schemas and `skager_private` unchecked. The catalog query alone
 did not establish the live API session's exposed-schema setting.
 
-Authentication flags and credentials remain unset. Custom SMTP is required,
-pending the owner's choice. The USD 20 Stripe **test-mode** product and price
+At that checkpoint authentication flags and credentials were unset. Custom SMTP
+remains required, pending the owner's choice. The USD 20 Stripe **test-mode** product and price
 were verified. A test-mode 100% coupon (`SKAGERFRIENDS`, coupon `xecg4vnM`,
 promotion `promo_1UQB86IqaIVnHG13BVLPyLWW`) was created and verified for
 SKAGER only, duration once, maximum 25 uses. It is configuration only; no
 entitlement was granted. No live Checkout or payment was exercised. Public signup,
 payment, and downloads remain closed.
+
+## Verified proxy correction and remaining provider gates
+
+Exact source `839ea17f76dc631b46a4a70d9b164e1f70d26b69` passes
+[web CI 38454462943](https://github.com/ThereptileII/Work/actions/runs/38454462943):
+88 Django/PostgreSQL and 56 Edge tests, no failures, and real disposable SQL and
+migration checks. Artifact `11840734310` (5,478 bytes) SHA-256
+`3652722b2a706b86cb4682f710e8f9acaa8294a17d4c586de99571a6fec6722d`
+matches the downloaded ZIP. Independently, six offline groups in actual
+`workerd@1.20261013.1` pass with the unchanged Worker module and a local upstream
+stub. The original deployed module reproduced the immediate HTTP 503: this
+runtime rejects `redirect: 'error'`. The correction uses supported `manual`
+mode and refuses every 3xx without forwarding its body, location or cookies.
+Tests cover successful secure session cookies and 301/302/303/307/308 refusal,
+with exactly one upstream request. Only static failure phases enter logs.
+
+The 492,723-byte frontend SHA-256
+`0a71e211d4cf3aca04162838abc1dccdffde3cb8c2a29d795f5dd9469a72aac2`
+was read back in full and matched before deployment. Cloudflare `e18a9fb4` is
+Active Latest. The Supabase server bundle remains byte-identical to the earlier
+`0492c12d…` bundle; no SQL was reapplied. A real Chrome request to
+`https://beta.skager.app/api/auth/session` now returns HTTP 200 and the sign-in
+form renders. Opening the unauthenticated portal returns to login. A separate
+unauthenticated command-line probe received non-JSON HTTP 403 before any
+application result could be established; it does not prove backend refusals or
+webhook delivery. No bot/security protection was disabled to change that result.
+
+Eight non-secret backend settings were saved and their provider digests read
+back: auth, checkout and portal flags are explicitly **false**; environment is
+`staging`, price is the verified USD 20 price, return origin is the exact beta
+origin, and coupon/promotion allowlists contain the two IDs above. No secret key,
+webhook secret, SMTP credential or friend email was entered. The empty invitation
+allowlist continues to deny general access.
+
+Review before activating commerce found two source/provider mismatches: restricted
+TEST keys (`rk_test_`) are rejected by current source, and the pinned Stripe
+PromotionCode schema differs from its test fixtures. The SKAGER-only coupon is
+also not yet supported by the current applicability check. These corrections are
+selected under SCRUM-36/37. The existing Stripe sandbox also serves unrelated
+products, so no broad webhook was added: unrelated refund data could reach the
+unmatched-refund store despite entitlement ownership checks. Isolated test scope,
+credential setup, email delivery, real login, checkout, coupon reconciliation,
+refund, and cross-account portal acceptance remain pending. Configuration and
+source tests are not completed end-to-end acceptance.
 
 [`evidence.json`](evidence.json) gives the structured observations and source
 links. It contains no provider credentials, customer identifiers, session

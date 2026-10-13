@@ -1,5 +1,32 @@
 # SKAGER status — 2026-10-13
 
+## Private website provider connection repaired; live login and checkout pending
+
+Source `839ea17f76dc631b46a4a70d9b164e1f70d26b69` passes
+[web-only CI 38454462943](https://github.com/ThereptileII/Work/actions/runs/38454462943)
+with **144 tests** (88 Django/PostgreSQL and 56 Edge) plus disposable SQL and
+migration checks. Six offline checks in the actual Cloudflare runtime verify
+the session proxy and redirect refusal. The original HTTP 503 was reproduced
+and corrected without reducing authentication or redirect protections.
+
+Exact frontend bytes are deployed as Cloudflare `e18a9fb4` on `beta.skager.app`;
+the Supabase server deployment and private schema have been verified. Chrome now
+receives HTTP 200 from the session endpoint and renders login; an unauthenticated
+portal visit returns to login. Auth/checkout/portal flags remain off. No account,
+checkout, payment, refund or entitlement has been created through this flow.
+
+SMTP provider/cost choice and isolated Stripe test credentials/webhook remain
+pending. The SKAGER-only 100% test coupon is configured, but provider-schema,
+restricted-key and product-applicability corrections are still being completed
+under SCRUM-36/37 before checkout is enabled. Existing Stripe scope also contains
+unrelated products; a dedicated webhook secret alone cannot isolate their data.
+Public signup, payments and downloads remain closed. These web checks provide
+no native application or boat acceptance.
+[Exact hashes, failed observations and remaining gates](evidence/web-provider-20261013/README.md).
+
+The following website entries preserve earlier checkpoints, superseded by the
+provider observations above where explicitly stated.
+
 ## Invited Staging website: Cloudflare frontend and Supabase Edge backend
 
 The owner selected a Cloudflare Free frontend at `beta.skager.app` with Supabase
