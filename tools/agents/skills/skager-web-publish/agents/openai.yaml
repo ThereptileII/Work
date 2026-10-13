@@ -1,0 +1,4 @@
+interface:
+  display_name: "SKAGER Web Publish"
+  short_description: "Publish and verify SKAGER's invited beta website"
+  default_prompt: "Use $skager-web-publish to prepare the exact beta website candidate and complete the authorized publication checks."
