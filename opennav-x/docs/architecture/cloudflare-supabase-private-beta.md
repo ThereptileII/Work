@@ -97,7 +97,18 @@ deduplication, immutable bindings, atomic effects and terminal refund behavior.
 The portal derives account IDs only from the authenticated session and scopes
 orders and boat names to that owner. Current boat storage is a name record;
 cloud telemetry, health, alerts, voyages and remote control are not delivered.
-Downloads remain unavailable pending release qualification and secure delivery.
+The private download path now has a separate, default-off handler and an empty
+reviewed release catalog. Every catalog read and link request requires a current
+session and active Staging entitlement; a link request also requires Origin/CSRF.
+The portal fetches availability from this handler instead of assuming access from
+the dashboard. Links are minted only after a user selects a qualified artifact,
+expire after sixty seconds, and are not embedded in catalog HTML. Query parameters
+are rejected at both Worker and Edge boundaries before routing can discard them.
+No bucket, release object or catalog entry is provisioned by this implementation.
+Downloads therefore remain unavailable until exact package qualification and
+private Storage custody are independently completed. See the
+[private download contract](private-downloads.md). Public distribution still
+requires the separate human GO decision.
 An active Staging entitlement is not a public distribution or payment approval,
 and does not alter installed GPL software or corresponding-source rights.
 

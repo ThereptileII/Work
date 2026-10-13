@@ -41,6 +41,9 @@ export async function handleWorker(request, transport = fetch) {
   const url = new URL(request.url);
   if (url.origin !== ORIGIN) return finish(new Response('Use beta.skager.app', { status: 421 }));
   if (url.pathname.startsWith('/api/')) {
+    if (url.pathname === '/api/portal/downloads' && url.search) return finish(new Response('{"error":"Download query parameters are not supported."}', {
+      status: 400, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
+    }));
     if (!['GET', 'POST'].includes(request.method)) return finish(new Response('Not found', { status: 404 }));
     const headers = new Headers();
     // Explicit allowlist: never relay ambient provider credentials or spoofed proxy metadata.

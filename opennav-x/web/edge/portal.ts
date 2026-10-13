@@ -97,7 +97,6 @@ export async function handlePortal(request: Request, ctx: PortalContext): Promis
         account: { email: account.email || null }, environment: "staging",
         ...commerce(access), boats: boatList(boats),
         checkoutAvailable: ctx.env.STRIPE_TEST_CHECKOUT_ENABLED === "true",
-        downloads: { available: false, reason: "Release qualification and secure download delivery are pending." },
       });
     }
     if (request.method === "GET") return json({ boats: boatList(await ctx.rpc("portal_list_boats", args)) });

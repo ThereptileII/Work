@@ -37,3 +37,28 @@ test('similar function names cannot reach the application router', async () => {
     assert.equal(response.status, 404, path);
   }
 });
+
+test('download query parameters are refused before hosted path normalization or provider calls', async () => {
+  for (const prefix of ['', '/skager-web', '/functions/v1/skager-web']) {
+    for (const method of ['GET', 'POST']) {
+      const response = await handleRequest(new Request(`https://kelwgubkuvditalsbqpr.supabase.co${prefix}/api/portal/downloads?account_id=other`, { method }), {}, async () => assert.fail('no provider call'));
+      assert.equal(response.status, 400);
+      assert.equal(response.headers.get('Cache-Control'), 'no-store');
+    }
+  }
+});
+
+test('download route stays closed without its explicit enablement; POST still requires CSRF', async () => {
+  for (const prefix of ['', '/skager-web', '/functions/v1/skager-web']) {
+    const url = `https://kelwgubkuvditalsbqpr.supabase.co${prefix}/api/portal/downloads`;
+    const transport = async () => assert.fail('disabled downloads cannot call provider');
+    const get = await handleRequest(new Request(url), {}, transport);
+    assert.equal(get.status, 404);
+    const enabled = await handleRequest(new Request(url), {
+      SKAGER_DOWNLOADS_ENABLED: 'true', PORTAL_ENABLED: 'true', STRIPE_TEST_ENVIRONMENT: 'staging',
+    }, transport);
+    assert.equal(enabled.status, 401, 'the enabled handler must still require an authenticated account');
+    const post = await handleRequest(new Request(url, { method: 'POST', body: '{}' }), {}, transport);
+    assert.equal(post.status, 403);
+  }
+});

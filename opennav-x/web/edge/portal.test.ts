@@ -61,7 +61,7 @@ test("paid and zero-total fulfillment grant identical active access; output sani
     } : [] }));
     assert.equal(data.betaAccess, "active");
     assert.equal(data.orders[0].fullyDiscounted, amount === 0);
-    assert.equal(data.downloads.available, false);
+    assert.equal(Object.hasOwn(data, "downloads"), false, "release availability comes from its independently authorized endpoint");
     assert.equal(JSON.stringify(data).includes("secret"), false);
   }
 });

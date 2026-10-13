@@ -17,6 +17,14 @@ const { handleWorker } = await import(workerURL);
 hook.deregister();
 
 const secret = 'synthetic-private-cookie-and-provider-error';
+test('download query parameters never get silently discarded or reach the backend', async () => {
+  for (const method of ['GET', 'POST']) {
+    const response = await handleWorker(new Request('https://beta.skager.app/api/portal/downloads?path=other-account', { method }), async () => assert.fail('no upstream call'));
+    assert.equal(response.status, 400);
+    assert.equal(response.headers.get('Cache-Control'), 'no-store');
+    assert.equal(response.headers.get('Referrer-Policy'), 'no-referrer');
+  }
+});
 function request() {
   return new Request('https://beta.skager.app/api/auth/session', {
     headers: { Cookie: `private=${secret}`, Authorization: `Bearer ${secret}`, 'X-Private': secret },

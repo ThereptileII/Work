@@ -1,6 +1,7 @@
 import { getAccount, handleAuth } from './auth.ts';
 import { handleCommerce } from './commerce.ts';
 import { handlePortal } from './portal.ts';
+import { handleDownloads } from './downloads.ts';
 import { bootstrapCsrf, boundedBytes, csrfValid, json, MAX_BODY, PUBLIC_ORIGIN, rpcClient } from './platform.ts';
 import type { Context, RuntimeEnv } from './platform.ts';
 
@@ -9,7 +10,9 @@ export async function handleRequest(request: Request, env: RuntimeEnv, transport
     // Hosted Edge requests reach Deno with the function-name prefix. The local
     // route tests also use the full public /functions/v1 path; accept only these
     // two exact prefixes before mapping onto the application's /api routes.
-    const path = new URL(request.url).pathname.replace(/^\/(?:functions\/v1\/)?skager-web(?=\/api\/)/, '');
+    const url = new URL(request.url);
+    const path = url.pathname.replace(/^\/(?:functions\/v1\/)?skager-web(?=\/api\/)/, '');
+    if (path === '/api/portal/downloads' && url.search) return json({ error: 'Download query parameters are not supported.' }, 400);
     if (path === '/api/health' && request.method === 'GET') return json({ service: 'skager-web', mode: 'private-beta', ready: env.SKAGER_AUTH_ENABLED === 'true' });
     if (!path.startsWith('/api/') || !['GET', 'POST'].includes(request.method)) return json({ error: 'Not found' }, 404);
     const length = request.headers.get('content-length');
@@ -26,7 +29,7 @@ export async function handleRequest(request: Request, env: RuntimeEnv, transport
     }
     const ctx: Context = { env, fetch: transport, rpc: rpcClient(env, transport), getAccount: async () => null };
     ctx.getAccount = req => getAccount(req, ctx);
-    let response = await handleAuth(request, ctx) ?? await handleCommerce(request, ctx) ?? await handlePortal(request, ctx);
+    let response = await handleAuth(request, ctx) ?? await handleCommerce(request, ctx) ?? await handlePortal(request, ctx) ?? await handleDownloads(request, ctx);
     if (!response) response = json({ error: 'Not found' }, 404);
     if (path === '/api/auth/session' && request.method === 'GET') response = await bootstrapCsrf(request, response);
     response.headers.set('Cache-Control', 'no-store');
