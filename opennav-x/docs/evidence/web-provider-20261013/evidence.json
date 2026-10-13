@@ -1,0 +1,67 @@
+{
+  "schema": 1,
+  "date": "2026-10-13",
+  "issue": "SCRUM-40",
+  "scope": "private-invited-beta-web-provider-observation",
+  "sourceCommit": "c51836f29901cba1c6c221db734a316174a53bac",
+  "ci": {
+    "run": "https://github.com/ThereptileII/Work/actions/runs/38451243615",
+    "conclusion": "success",
+    "artifactId": 11840810685,
+    "artifactSha256": "b4c435a7a4becfa1d155bbcf5e271d7c15736e78745baddf8e18e1d5ea25c01b",
+    "django": {"passed": 88, "failed": 0},
+    "edge": {"passed": 45, "failed": 0, "skipped": 0},
+    "postgresSqlAndMigrations": "passed"
+  },
+  "providers": {
+    "supabaseEdge": {
+      "sourceIdentifierPrefix": "0492",
+      "sourceBytes": 47842,
+      "fullPredeployByteEquality": "verified by operator",
+      "deploymentUi": "success",
+      "previousDeploymentIdentifierPrefix": "c27a",
+      "previousDeploymentAvailableForRollback": true,
+      "directHealth": {"httpStatus": 200, "ready": false},
+      "directSession": {"httpStatus": 200, "account": null, "csrfPresent": true}
+    },
+    "cloudflareFrontend": {
+      "frontendIdentifier": "86ff492495",
+      "activeDeploymentIdentifier": "07a6061a",
+      "activeTrafficPercent": 100,
+      "runtimeDate": "2026-10-13",
+      "betaOriginHttpStatus": 200,
+      "loginHttpStatus": 200,
+      "betaOriginSessionHttpStatus": 503
+    },
+    "stripeTestMode": {
+      "productAndUsd20Price": "verified",
+      "liveCheckoutOrPaymentTested": false
+    }
+  },
+  "catalog": {
+    "sourceSqlUnchangedFrom": "0e1ce6b356028e643edc8abb409d5c4ef1fd84b5",
+    "functionsMatched": 21,
+    "columnsMatched": 70,
+    "structuralConstraintsMatched": 25,
+    "checkAndDefaultExpressions": "semantically consistent with source SQL",
+    "comparisonQueryFalsePositives": {
+      "count": 25,
+      "cause": "connoinherit=true on 11 primary-key, 11 foreign-key, and 3 unique constraints"
+    },
+    "privateRlsTables": 11,
+    "publicServiceRpcs": 17,
+    "privateFunctions": 4,
+    "policies": 0,
+    "triggers": 7,
+    "providerUiExposedApiSchemas": ["public", "graphql"],
+    "providerUiPrivateSchemaUnchecked": true,
+    "liveApiSessionSchemasEstablishedByCatalog": false
+  },
+  "remaining": {
+    "betaOriginSessionHttp503": "unresolved",
+    "authenticationFlagsAndCredentials": "unset",
+    "customSmtp": "required; owner choice pending",
+    "liveCheckoutPaymentAndDownload": "not tested",
+    "publicSignupPaymentAndDownloads": "closed"
+  }
+}
