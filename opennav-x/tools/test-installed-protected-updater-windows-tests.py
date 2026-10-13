@@ -8,11 +8,12 @@ import json
 import os
 from pathlib import Path
 import ssl
+import sqlite3
 import tempfile
 import unittest
 import urllib.error
 import zipfile
-from contextlib import redirect_stderr
+from contextlib import closing, redirect_stderr
 from types import SimpleNamespace
 from unittest.mock import patch
 
@@ -27,6 +28,11 @@ def raw(value):
 
 def digest(value):
     return hashlib.sha256(value).hexdigest()
+
+
+def profile_observation(navigation='a'):
+    return dict(navigationStore='sqlite', navigationSha256=navigation * 64,
+                navigationDetailsSha256='a' * 64, navigationMigrationFixtureSha256='', settingsSha256=['b' * 64])
 
 
 class Tests(unittest.TestCase):
@@ -165,7 +171,7 @@ class Tests(unittest.TestCase):
             observations = iter([before, after])
             native = SimpleNamespace(history=lambda: events.append('history') or next(observations),
                 publication=lambda *args: events.append('publication'),
-                profile=lambda: events.append('profile') or {'navigationSha256': 'a' * 64},
+                profile=lambda: events.append('profile') or profile_observation(),
                 start_and_close=lambda *args: events.append('actual-start-ui-close'))
             report = {}
             driver.run_phase(prepared, phase, before['selectedHeadSha256'], None if phase == 'offline' else 'f' * 64, native, report)
@@ -182,7 +188,7 @@ class Tests(unittest.TestCase):
             if fault == 'now-parent':
                 after['ancestors'] = []
             observations = iter([before, after])
-            profiles = iter([{'navigationSha256': 'a' * 64}, {'navigationSha256': ('b' if fault == 'profile' else 'a') * 64}])
+            profiles = iter([profile_observation(), profile_observation('b' if fault == 'profile' else 'a')])
             def history():
                 events.append('history')
                 if fault == 'diagnostic':
@@ -318,6 +324,352 @@ class Tests(unittest.TestCase):
                 native.assert_not_called()
                 self.assertEqual(err.getvalue(), driver.FAILURE + '\n')
                 self.assertFalse((self.root / 'evidence').exists())
+
+
+class NavigationTests(unittest.TestCase):
+    XML = b'''<gpx xmlns="http://www.topografix.com/GPX/1/1" xmlns:opencpn="http://www.opencpn.org" version="1.1">
+      <wpt lat="50" lon="10"><name>Waypoint</name><desc>Keep &amp; preserve</desc><extensions><opencpn:guid>w</opencpn:guid></extensions></wpt>
+      <rte><name>Route</name><desc>Original route</desc><extensions><opencpn:guid>r</opencpn:guid></extensions>
+        <rtept lat="51" lon="11"><name>P1</name><time>2026-10-13T12:00:00Z</time><extensions><opencpn:guid>p1</opencpn:guid></extensions></rtept>
+        <rtept lat="52" lon="12"><name>P2</name><extensions><opencpn:guid>p2</opencpn:guid></extensions></rtept>
+      </rte>
+      <trk><name>Track</name><extensions><opencpn:guid>t</opencpn:guid></extensions><trkseg>
+        <trkpt lat="53" lon="13"><time>2026-10-13T12:02:00Z</time></trkpt>
+        <trkpt lat="54" lon="14"><time>2026-10-13T12:03:00Z</time></trkpt>
+      </trkseg></trk>
+    </gpx>'''
+
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name)
+        self.xml = self.root / 'navobj.xml'
+        self.xml.write_bytes(self.XML)
+        self.db = self.root / 'navobj.db'
+
+    def make_database(self, controlled=False):
+        # Inert schema/rows use the supported upstream tables, GUID links and
+        # point_order conventions; no application or converter is run here.
+        with closing(sqlite3.connect(self.db)) as db, db:
+            # Verbatim CreateTables SQL from pinned navobj_db.cpp:67-174.
+            db.executescript('''
+        CREATE TABLE IF NOT EXISTS tracks (
+            guid TEXT PRIMARY KEY NOT NULL,
+            name TEXT,
+            description TEXT,
+            visibility INTEGER,
+            start_string TEXT,
+            end_string TEXT,
+            width INTEGER,
+            style INTEGER,
+            color TEXT,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        );
+
+        CREATE TABLE IF NOT EXISTS trk_points (
+            track_guid TEXT NOT NULL,
+            latitude REAL NOT NULL,
+            longitude REAL NOT NULL,
+            timestamp TEXT NOT NULL,
+            point_order INTEGER,
+            FOREIGN KEY (track_guid) REFERENCES tracks(guid) ON DELETE CASCADE
+        );
+
+
+        CREATE TABLE IF NOT EXISTS track_html_links (
+            guid TEXT PRIMARY KEY,
+            track_guid TEXT NOT NULL,
+            html_link TEXT,
+            html_description TEXT,
+            html_type TEXT,
+            FOREIGN KEY (track_guid) REFERENCES tracks(guid) ON DELETE CASCADE
+        );
+
+
+        CREATE TABLE IF NOT EXISTS routes (
+            guid TEXT PRIMARY KEY NOT NULL,
+            name TEXT,
+            start_string TEXT,
+            end_string TEXT,
+            description TEXT,
+            planned_departure TEXT,
+            plan_speed REAL,
+            time_format TEXT,
+            style INTEGER,
+            width INTEGER,
+            color TEXT,
+            visibility INTEGER,
+            shared_wp_viz INTEGER,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        );
+
+
+        CREATE TABLE IF NOT EXISTS routepoints (
+            guid TEXT PRIMARY KEY NOT NULL,
+            lat REAL,
+            lon REAL,
+            Symbol TEXT,
+            Name TEXT,
+            description TEXT,
+            TideStation TEXT,
+            plan_speed REAL,
+            etd INTEGER,
+            Type TEXT,
+            Time TEXT,
+            ArrivalRadius REAL,
+            RangeRingsNumber INTEGER,
+            RangeRingsStep REAL,
+            RangeRingsStepUnits INTEGER,
+            RangeRingsVisible INTEGER,
+            RangeRingsColour TEXT,
+            ScaleMin INTEGER,
+            ScaleMax INTEGER,
+            UseScale INTEGER,
+            visibility INTEGER,
+            viz_name INTEGER,
+            shared INTEGER,
+            isolated INTEGER,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        );
+
+        CREATE TABLE IF NOT EXISTS routepoints_link (
+            route_guid TEXT,
+            point_guid TEXT,
+            point_order INTEGER,
+            PRIMARY KEY (route_guid, point_order),
+            FOREIGN KEY (route_guid) REFERENCES routes(guid) ON DELETE CASCADE
+        );
+
+        CREATE TABLE IF NOT EXISTS route_html_links (
+            guid TEXT PRIMARY KEY,
+            route_guid TEXT NOT NULL,
+            html_link TEXT,
+            html_description TEXT,
+            html_type TEXT,
+            FOREIGN KEY (route_guid) REFERENCES routes(guid) ON DELETE CASCADE
+        );
+
+        CREATE TABLE IF NOT EXISTS routepoint_html_links (
+            guid TEXT PRIMARY KEY,
+            routepoint_guid TEXT NOT NULL,
+            html_link TEXT,
+            html_description TEXT,
+            html_type TEXT,
+            FOREIGN KEY (routepoint_guid) REFERENCES routepoints(guid) ON DELETE CASCADE
+        );
+
+                    ''')
+            if controlled:
+                guids = ['ae43f488-caa5-445b-88e3-0112875a347' + str(n) for n in range(1, 6)]
+                points = [(guids[0], 56.7, 12.6, 'SIMULATED persistence mark', '', '2026-01-01T11:00:00Z', 'diamond', 1, 1),
+                          (guids[2], 56.71, 12.61, 'SIM start', '', '2026-01-01T11:01:00Z', 'diamond', 1, 0),
+                          (guids[3], 56.72, 12.63, 'SIM finish', '', '2026-01-01T11:02:00Z', 'diamond', 1, 0)]
+                route = (guids[1], 'SIMULATED persistence route', '', 1, 5)
+                links = [(guids[1], guids[2], 1), (guids[1], guids[3], 2)]
+                track = (guids[4], 'SIMULATED persistence track', '', 1)
+                trackpoints = [(guids[4], 56.68, 12.6, '2026-01-01T12:00:00Z', 0),
+                               (guids[4], 56.69, 12.61, '2026-01-01T12:01:00Z', 1)]
+            else:
+                points = [('w', 50, 10, 'Waypoint', 'Keep & preserve', '', 'circle', 1, 0),
+                          ('p1', 51, 11, 'P1', '', '2026-10-13T13:00:00+01:00', 'circle', 1, 0),
+                          ('p2', 52, 12, 'P2', '', '', 'circle', 1, 0)]
+                route = ('r', 'Route', 'Original route', 1, 5)
+                links = [('r', 'p1', 1), ('r', 'p2', 2)]
+                track = ('t', 'Track', '', 1)
+                trackpoints = [('t', 53, 13, '2026-10-13T12:02:00Z', 0), ('t', 54, 14, '2026-10-13T12:03:00Z', 1)]
+            db.executemany('INSERT INTO routepoints(guid,lat,lon,Name,description,Time,Symbol,visibility,shared) VALUES(?,?,?,?,?,?,?,?,?)', points)
+            db.execute('INSERT INTO routes(guid,name,description,visibility,plan_speed) VALUES(?,?,?,?,?)', route)
+            db.executemany('INSERT INTO routepoints_link VALUES(?,?,?)', links)
+            db.execute('INSERT INTO tracks(guid,name,description,visibility) VALUES(?,?,?,?)', track)
+            db.executemany('INSERT INTO trk_points VALUES(?,?,?,?,?)', trackpoints)
+            # Native LoadAllRoutes/LoadAllTracks do not tolerate NULL TEXT
+            # payloads even in columns whose SQL declaration permits NULL.
+            for table, columns in (('routepoints', ('TideStation', 'RangeRingsColour')),
+                                   ('routes', ('start_string', 'end_string', 'time_format', 'color')),
+                                   ('tracks', ('start_string', 'end_string', 'color'))):
+                for column in columns:
+                    db.execute('UPDATE ' + table + ' SET ' + column + "='' WHERE " + column + ' IS NULL')
+            db.execute("UPDATE routepoints SET Type='type'")
+            db.execute("UPDATE routes SET planned_departure='-1'")
+
+    def observe(self):
+        return dict(driver.navigation_observation(self.root), settingsSha256=['a' * 64])
+
+    def mutate(self, sql):
+        with closing(sqlite3.connect(self.db)) as db, db:
+            db.execute(sql)
+
+    def test_arbitrary_xml_migration_refuses_even_when_projected_navigation_matches(self):
+        before = self.observe()
+        expected = {'points': {'w': ['Waypoint', 'Keep & preserve', 50.0, 10.0, ''],
+                               'p1': ['P1', '', 51.0, 11.0, '2026-10-13T12:00:00+00:00'],
+                               'p2': ['P2', '', 52.0, 12.0, '']},
+                    'routes': {'r': ['Route', 'Original route', ['p1', 'p2']]},
+                    'tracks': {'t': ['Track', '', [[53.0, 13.0, '2026-10-13T12:02:00+00:00'],
+                                                 [54.0, 14.0, '2026-10-13T12:03:00+00:00']]]}}
+        self.assertEqual(before['navigationSha256'], driver._nav_digest(expected))
+        self.make_database()
+        self.xml.unlink()  # Actual migration removes the source XML.
+        files = {p.name: p.read_bytes() for p in self.root.iterdir()}
+        after = self.observe()
+        self.assertFalse(driver.profile_preserved(before, after))
+        self.assertEqual(after['navigationStore'], 'sqlite')
+        self.assertEqual(files, {p.name: p.read_bytes() for p in self.root.iterdir()})
+        self.assertFalse(driver.profile_preserved(after, before))
+
+    def test_exact_controlled_fixture_migration_preserves_represented_properties_read_only(self):
+        fixture = Path(__file__).resolve().parents[1] / 'tests/fixtures/mode-persistence.gpx'
+        self.xml.write_bytes(fixture.read_bytes().replace(b'\r\n', b'\n'))
+        self.assertEqual(digest(self.xml.read_bytes()), driver.CONTROLLED_XML_SHA256)
+        before = self.observe()
+        self.make_database(controlled=True)
+        self.xml.unlink()
+        files = {p.name: p.read_bytes() for p in self.root.iterdir()}
+        after = self.observe()
+        self.assertTrue(driver.profile_preserved(before, after))
+        self.assertEqual(before['navigationSha256'], driver.CONTROLLED_NAV_SHA256)
+        self.assertEqual(before['navigationMigrationFixtureSha256'], after['navigationMigrationFixtureSha256'])
+        self.assertEqual(files, {p.name: p.read_bytes() for p in self.root.iterdir()})
+
+    def test_controlled_windows_crlf_form_is_pinned_without_allowing_other_xml_changes(self):
+        fixture = Path(__file__).resolve().parents[1] / 'tests/fixtures/mode-persistence.gpx'
+        crlf = fixture.read_bytes().replace(b'\r\n', b'\n').replace(b'\n', b'\r\n')
+        self.assertEqual(digest(crlf), driver.CONTROLLED_XML_CRLF_SHA256)
+        self.xml.write_bytes(crlf)
+        before = self.observe()
+        self.make_database(controlled=True)
+        self.assertTrue(driver.profile_preserved(before, self.observe()))
+        self.db.unlink()
+        self.xml.write_bytes(crlf + b' ')
+        self.assertEqual(self.observe()['navigationMigrationFixtureSha256'], '')
+
+    def test_controlled_migration_refuses_lost_properties_links_or_changed_xml(self):
+        fixture = Path(__file__).resolve().parents[1] / 'tests/fixtures/mode-persistence.gpx'
+        self.xml.write_bytes(fixture.read_bytes())
+        before = self.observe()
+        for sql in ("UPDATE routepoints SET Symbol='circle'",
+                    "UPDATE routepoints SET shared=0 WHERE guid LIKE '%3471'",
+                    "UPDATE routepoints SET visibility=0 WHERE guid LIKE '%3471'",
+                    "UPDATE routes SET visibility=0", "UPDATE routes SET plan_speed=6",
+                    "UPDATE tracks SET visibility=0",
+                    "INSERT INTO route_html_links VALUES('link','ae43f488-caa5-445b-88e3-0112875a3472','https://inert.invalid','new','text')"):
+            with self.subTest(sql=sql):
+                self.make_database(controlled=True)
+                self.mutate(sql)
+                self.assertFalse(driver.profile_preserved(before, self.observe()))
+                self.db.unlink()
+        for xml in (fixture.read_bytes().replace(b'diamond', b'anchor', 1),
+                    fixture.read_bytes().replace(b'opencpn:', b'o:').replace(b'xmlns:opencpn=', b'xmlns:o=')):
+            self.xml.write_bytes(xml)
+            original = self.observe()
+            self.assertEqual(original['navigationMigrationFixtureSha256'], '')
+            self.make_database(controlled=True)
+            self.assertFalse(driver.profile_preserved(original, self.observe()))
+            self.db.unlink()
+
+    def test_current_database_wins_over_stale_xml_and_detects_route_point_track_changes(self):
+        for sql in ("UPDATE routes SET name='changed'", "UPDATE routepoints SET lat=lat+1 WHERE guid='p1'",
+                    "UPDATE routepoints SET description='lost details' WHERE guid='w'",
+                    "UPDATE tracks SET name='changed'", "UPDATE trk_points SET longitude=longitude+1 WHERE point_order=1",
+                    "DELETE FROM trk_points WHERE point_order=1", "DELETE FROM routepoints_link WHERE point_order=2"):
+            with self.subTest(sql=sql):
+                self.make_database()
+                before = self.observe()
+                self.mutate(sql)
+                self.assertFalse(driver.profile_preserved(before, self.observe()))
+                self.db.unlink()
+
+    def test_same_sqlite_semantics_ignore_file_layout_but_preserve_other_navigation_fields(self):
+        self.make_database()
+        before = self.observe()
+        self.mutate('VACUUM')
+        self.assertTrue(driver.profile_preserved(before, self.observe()))
+        self.mutate("UPDATE routepoints SET Symbol='changed' WHERE guid='w'")
+        self.assertFalse(driver.profile_preserved(before, self.observe()))
+
+    def test_same_database_preserves_properties_and_html_link_rows(self):
+        for sql in ("UPDATE tracks SET color='red'", "UPDATE routes SET plan_speed=7",
+                    "UPDATE routepoints SET RangeRingsNumber=3",
+                    "INSERT INTO routepoint_html_links VALUES('link','w','https://inert.invalid','original link','text')"):
+            with self.subTest(sql=sql):
+                self.make_database()
+                before = self.observe()
+                self.mutate(sql)
+                after = self.observe()
+                self.assertEqual(before['navigationSha256'], after['navigationSha256'])
+                self.assertFalse(driver.profile_preserved(before, after))
+                self.db.unlink()
+
+    def test_corrupt_unknown_or_orphaned_database_never_falls_back_to_xml(self):
+        for sql in ("CREATE VIEW unreviewed AS SELECT * FROM routepoints",
+                    "ALTER TABLE routepoints DROP COLUMN TideStation",
+                    "CREATE INDEX unreviewed ON routes(name)",
+                    "UPDATE routes SET start_string=NULL",
+                    "UPDATE routepoints_link SET point_guid='missing' WHERE point_order=1",
+                    "UPDATE routepoints_link SET point_order=3 WHERE point_order=2",
+                    "UPDATE trk_points SET point_order=0 WHERE point_order=1",
+                    "UPDATE trk_points SET track_guid='missing' WHERE point_order=0"):
+            with self.subTest(sql=sql):
+                self.make_database()
+                self.mutate(sql)
+                with self.assertRaises((ValueError, sqlite3.DatabaseError)):
+                    self.observe()
+                self.db.unlink()
+        self.db.write_bytes(b'not a sqlite database')
+        with self.assertRaises(sqlite3.DatabaseError):
+            self.observe()
+
+    def test_inflight_sidecars_symlinks_and_hardlinks_refuse_without_cleanup(self):
+        self.make_database()
+        for suffix in ('-wal', '-shm', '-journal'):
+            sidecar = self.db.with_name(self.db.name + suffix)
+            sidecar.write_bytes(b'uncertain transaction')
+            with self.subTest(suffix=suffix), self.assertRaises(ValueError):
+                self.observe()
+            self.assertEqual(sidecar.read_bytes(), b'uncertain transaction')
+            sidecar.unlink()
+        link = self.root / 'alias.db'
+        link.hardlink_to(self.db)
+        with self.assertRaises(ValueError):
+            self.observe()
+        link.unlink()
+        self.db.rename(link)
+        self.db.symlink_to(link)
+        with self.assertRaises(ValueError):
+            self.observe()
+
+    def test_xml_entities_missing_guids_nonfinite_coordinates_and_segments_refuse(self):
+        for raw_xml in (self.XML.replace(b'<gpx ', b'<!DOCTYPE gpx [<!ENTITY x "bad">]><gpx ', 1),
+                        self.XML.replace(b'<opencpn:guid>w</opencpn:guid>', b''),
+                        self.XML.replace(b'lat="50"', b'lat="nan"'),
+                        self.XML.replace(b'<opencpn:guid>p2</opencpn:guid>', b'<opencpn:guid>p1</opencpn:guid>'),
+                        self.XML.replace(b'</trkseg>', b'</trkseg><trkseg/>')):
+            self.xml.write_bytes(raw_xml)
+            with self.subTest(raw=raw_xml[:40]), self.assertRaises(ValueError):
+                self.observe()
+
+    def test_settings_and_unknown_observations_cannot_be_hidden_by_navigation_migration(self):
+        before = self.observe()
+        after = dict(before, settingsSha256=['b' * 64])
+        self.assertFalse(driver.profile_preserved(before, after))
+        for field in before:
+            bad = dict(before)
+            del bad[field]
+            with self.subTest(field=field), self.assertRaises(ValueError):
+                driver.profile_preserved(before, bad)
+
+    def test_native_observer_uses_the_same_programdata_knownfolder_as_broker(self):
+        folders = []
+        ui = SimpleNamespace(kernel=object(), declare=lambda *args: None)
+        prepared = dict(request={'clientSid': 'S-1-5-21-1-2-3-500'}, provisionerSha256='a' * 64, brokerSha256='b' * 64)
+        with patch.object(driver, 'module', return_value=ui), \
+                patch.object(driver.Native, 'folder', side_effect=lambda guid: folders.append(guid) or self.root), \
+                patch.object(driver.Native, 'actual_sid', return_value=prepared['request']['clientSid']), \
+                patch.object(driver.Native, 'pin_image'):
+            native = driver.Native(prepared, self.root / 'not-executed.exe')
+        self.assertEqual(native.profile_root, self.root / 'opencpn')
+        self.assertIn(driver.PROGRAM_DATA, folders)
+        self.assertNotIn('3eb685db-65f9-4cf6-a03a-e3ef65729f3d', folders)
 
 
 if __name__ == '__main__':

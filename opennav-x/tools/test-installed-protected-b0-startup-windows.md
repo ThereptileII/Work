@@ -26,8 +26,10 @@ The operator also preprovisions and approves the existing protected NTFS
 bootstrap cache and acquisition directories. The acquisition directory already
 contains the original `approved-installed-baseline.zip` and the approved
 trust JSON exists separately. The supported x86 OpenCPN 5.12.4 stock executable
-and an initialized current user's `opencpn` profile already exist. That profile
-has a nonempty `navobj.xml` and reviewed stable settings in `opencpn.ini`;
+and the initialized broker profile at the ProgramData known folder plus `opencpn`
+already exist. That profile
+has nonempty navigation in the active `navobj.db` or legacy `navobj.xml`, and
+reviewed stable settings in `opencpn.ini`;
 equipment and external connections are disabled. The real provisioner checks
 the protected input ancestry and creates the fixed service/files exclusively;
 the driver does not claim absence from a directory scan. An existing or partial
@@ -95,6 +97,12 @@ native phase observer. It requires actual selected-history B0 version, commit,
 generation, completion, qualification, clean qualification-close and inventory
 hashes, with no pending state or ancestor. It checks nonempty navigation and
 approved setting hashes before enrollment and after normal application close.
+The shared [phase observer's preservation contract](test-installed-protected-updater-windows.md#evidence-limits-and-failures)
+applies: database observations retain all supported row fields/links except
+import bookkeeping; XML-to-database comparison is allowed only for the exact
+existing controlled `mode-persistence.gpx` fixture and its represented fields.
+Arbitrary XML migration, stale XML beside a database, incomplete schema and
+in-flight database sidecars refuse. This driver never seeds or repairs a profile.
 `result.json` is created only in a fresh evidence directory; staged operator
 files and evidence are retained on refusal. A successful result means only this
 initial native B0 admission and scoped preservation passed. It does not qualify

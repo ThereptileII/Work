@@ -136,7 +136,7 @@ class BeforeEnrollment(phase.Native):
     """Reuse the existing actual-token and profile observer before a broker exists."""
     def __init__(self, prepared):
         self.w, self.p, self.ui, self.handles = wintypes, prepared, phase.module('windows-ui'), []
-        self.profile_root = self.folder('3eb685db-65f9-4cf6-a03a-e3ef65729f3d') / 'opencpn'
+        self.profile_root = self.folder(phase.PROGRAM_DATA) / 'opencpn'
         self.sid = self.actual_sid()
         require(self.sid == prepared['request']['clientSid'])
 
@@ -200,10 +200,10 @@ def run(prepared, pins, output, native_factory=phase.Native, preflight_factory=B
         enroll(enrollment_command(provisioner, prepared, pins['policy'], pins['provisioner'], pins['request']))
         unchanged(prepared)
         native = native_factory(prepared, provisioner)
-        require(native.profile() == profile)
+        require(phase.profile_preserved(profile, native.profile()))
         native.start_and_close('no-update', None)
         selected = qualified_b0(native.history(), prepared)
-        require(native.profile() == profile)
+        require(phase.profile_preserved(profile, native.profile()))
         publish(prepared, 'no-update', pins['timestamp'])
         unchanged(prepared)
         native.close()

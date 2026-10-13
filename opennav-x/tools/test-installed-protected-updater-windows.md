@@ -26,8 +26,12 @@ startup. The native endpoint independently authenticates the actual client and
 original protected selected history; printed diagnostic fields are observations,
 not authority to mutate anything.
 
-Use an already initialized disposable profile with a nonempty `navobj.xml` and
-explicitly approved existing stable settings in `opencpn.ini`. It must have no
+Use the broker's actual disposable profile at the Windows ProgramData known
+folder plus `opencpn` (`brokerhost/execution_child_profile_windows.go` and
+`execution_profile_capture_windows.go`), with nonempty navigation and explicitly
+approved existing stable settings in `opencpn.ini`. A current `navobj.db` takes
+precedence over `navobj.xml`; a stale XML backup cannot stand in for the database.
+It must have no
 active hardware/network equipment connections and no physical equipment attached.
 The driver never enables control or clicks equipment controls. It accepts the
 existing reviewed `status-only` or versioned `manual-commissioning` product build
@@ -141,9 +145,45 @@ not full release, installer, repair/decommission, boat, mode-switch, or standard
 acceptance. All four original results and their exact fixture/harness pins must be
 reviewed together; there is no automatic aggregate acceptance.
 
-Preservation checks compare exact before/after nonempty `navobj.xml` bytes and
-hashes of the named existing setting values. No profile contents or setting values
-are emitted. This is scoped preservation, not a claim that every profile file,
+Preservation checks compare navigation GUIDs, names, descriptions, coordinates,
+times, route waypoint order and track point order, plus hashes of the named
+existing setting values. For two XML observations the complete canonical XML
+must also agree. For two database observations all eight supported tables' row
+values and HTML links must agree, excluding only import-assigned `created_at`.
+SQLite file layout changes alone do not fail this comparison. Reads use an
+immutable read-only connection; corrupt/incomplete schemas, NULL text payloads
+unsupported by the native readers, orphaned links,
+invalid order, redirected/linked files, and any journal/WAL/SHM sidecar refuse.
+The driver never repairs, checkpoints, migrates or falls back from a current
+database to XML.
+
+XML-to-database migration is accepted only for the exact existing
+`tests/fixtures/mode-persistence.gpx` bytes (SHA-256
+`24be1789c06aa08cbca0cd470ece1fc664b8e5f74fac8bdf27b403314e5021dc`). The
+Windows CRLF checkout form is separately pinned as
+`90915745d6dae09851a6cdd5e87086b9f0152e52b6d959427b8f372bedff3627`;
+only those two known byte forms are allowed. The fixture's entire
+object set and ordered geometry must remain, with diamond symbols, the mark's
+explicit visibility/shared flags, route visibility/planned speed 5, track
+visibility and empty HTML-link tables. Other XML migrations refuse, even when a
+reduced geometry projection agrees. The observer does not seed this fixture.
+This follows the existing `profile-fixtures.py` controlled-fixture boundary; it
+does not claim preservation of arbitrary XML extensions or every importer default.
+In particular, the importer stores point `Type` as literal `type`; this scoped
+fixture comparison does not claim that GPX `WPT` text survives unchanged.
+
+The schema, nullability/defaults, primary/foreign keys and order conventions are
+pinned to OpenCPN `37fd0cddb7334fe489e9f18aa163977a9c5c84f7`
+[`model/src/navobj_db.cpp`](https://github.com/OpenCPN/OpenCPN/blob/37fd0cddb7334fe489e9f18aa163977a9c5c84f7/model/src/navobj_db.cpp):
+`CreateTables` lines 67–174, route links 1185/1262 (one-based), track insertion
+809–812/988 (zero-based), and point time/type bindings 1455–1458. Named additional
+tables, indexes, views or triggers refuse; SQLite's internal primary-key indexes
+are allowed. The portable database fixture uses the original `CreateTables` SQL,
+not a reduced schema. Native migration against the selected application remains
+required before this helper constitutes execution evidence.
+
+Only hashes and store/controlled-fixture identifiers are emitted; no profile
+contents or setting values are emitted. This is scoped preservation, not a claim that every profile file,
 plugin, chart, connection, track file, or concurrent writer was qualified. Ordinary
 startup may legitimately normalize settings; select genuinely stable settings
 through independent review. The driver does not rewrite them to obtain a pass.

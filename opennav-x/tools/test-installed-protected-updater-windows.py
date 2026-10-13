@@ -7,16 +7,20 @@ Broker diagnostics are observations, never launch or mutation authorization.
 """
 import argparse
 import configparser
+from contextlib import closing
 import ctypes
+from datetime import datetime, timezone
 import hashlib
 import importlib.util
 import json
+import math
 import os
 from pathlib import Path, PurePosixPath
 import re
 import secrets
 import socket
 import ssl
+import sqlite3
 import stat
 import subprocess
 import sys
@@ -25,6 +29,7 @@ import urllib.error
 import urllib.request
 import uuid
 import zipfile
+import xml.etree.ElementTree as ET
 
 import updater_package as updater
 from product_version import windows_product_version
@@ -32,6 +37,98 @@ from hardware_output_policy import require_product_output_policy
 
 OPT_IN = 'SCRUM-311-disposable-installed-protected-updater'
 PHASES = ('no-update', 'later', 'now', 'offline')
+PROGRAM_DATA = '62ab5d82-fdc1-4dc3-a9dd-070d1d495d97'
+NAV_LIMIT = 128 << 20
+NAV_ROWS = 250000
+NAV_TABLES = ('routepoints', 'routes', 'routepoints_link', 'tracks', 'trk_points',
+              'track_html_links', 'route_html_links', 'routepoint_html_links')
+# OpenCPN 37fd0cddb7334fe489e9f18aa163977a9c5c84f7 model/src/navobj_db.cpp:
+# CreateTables (67-174), route links (1185/1262), track ordering (809-812/988),
+# point Time binding (1458). Full table shape prevents accepting a reduced DB
+# which the actual LoadAllRoutes/LoadAllTracks readers cannot load.
+NAV_SCHEMA = {'routepoints': [('guid', 'TEXT', 1, None, 1),
+                 ('lat', 'REAL', 0, None, 0),
+                 ('lon', 'REAL', 0, None, 0),
+                 ('Symbol', 'TEXT', 0, None, 0),
+                 ('Name', 'TEXT', 0, None, 0),
+                 ('description', 'TEXT', 0, None, 0),
+                 ('TideStation', 'TEXT', 0, None, 0),
+                 ('plan_speed', 'REAL', 0, None, 0),
+                 ('etd', 'INTEGER', 0, None, 0),
+                 ('Type', 'TEXT', 0, None, 0),
+                 ('Time', 'TEXT', 0, None, 0),
+                 ('ArrivalRadius', 'REAL', 0, None, 0),
+                 ('RangeRingsNumber', 'INTEGER', 0, None, 0),
+                 ('RangeRingsStep', 'REAL', 0, None, 0),
+                 ('RangeRingsStepUnits', 'INTEGER', 0, None, 0),
+                 ('RangeRingsVisible', 'INTEGER', 0, None, 0),
+                 ('RangeRingsColour', 'TEXT', 0, None, 0),
+                 ('ScaleMin', 'INTEGER', 0, None, 0),
+                 ('ScaleMax', 'INTEGER', 0, None, 0),
+                 ('UseScale', 'INTEGER', 0, None, 0),
+                 ('visibility', 'INTEGER', 0, None, 0),
+                 ('viz_name', 'INTEGER', 0, None, 0),
+                 ('shared', 'INTEGER', 0, None, 0),
+                 ('isolated', 'INTEGER', 0, None, 0),
+                 ('created_at', 'DATETIME', 0, 'CURRENT_TIMESTAMP', 0)],
+ 'routes': [('guid', 'TEXT', 1, None, 1),
+            ('name', 'TEXT', 0, None, 0),
+            ('start_string', 'TEXT', 0, None, 0),
+            ('end_string', 'TEXT', 0, None, 0),
+            ('description', 'TEXT', 0, None, 0),
+            ('planned_departure', 'TEXT', 0, None, 0),
+            ('plan_speed', 'REAL', 0, None, 0),
+            ('time_format', 'TEXT', 0, None, 0),
+            ('style', 'INTEGER', 0, None, 0),
+            ('width', 'INTEGER', 0, None, 0),
+            ('color', 'TEXT', 0, None, 0),
+            ('visibility', 'INTEGER', 0, None, 0),
+            ('shared_wp_viz', 'INTEGER', 0, None, 0),
+            ('created_at', 'DATETIME', 0, 'CURRENT_TIMESTAMP', 0)],
+ 'routepoints_link': [('route_guid', 'TEXT', 0, None, 1),
+                      ('point_guid', 'TEXT', 0, None, 0),
+                      ('point_order', 'INTEGER', 0, None, 2)],
+ 'tracks': [('guid', 'TEXT', 1, None, 1),
+            ('name', 'TEXT', 0, None, 0),
+            ('description', 'TEXT', 0, None, 0),
+            ('visibility', 'INTEGER', 0, None, 0),
+            ('start_string', 'TEXT', 0, None, 0),
+            ('end_string', 'TEXT', 0, None, 0),
+            ('width', 'INTEGER', 0, None, 0),
+            ('style', 'INTEGER', 0, None, 0),
+            ('color', 'TEXT', 0, None, 0),
+            ('created_at', 'DATETIME', 0, 'CURRENT_TIMESTAMP', 0)],
+ 'trk_points': [('track_guid', 'TEXT', 1, None, 0),
+                ('latitude', 'REAL', 1, None, 0),
+                ('longitude', 'REAL', 1, None, 0),
+                ('timestamp', 'TEXT', 1, None, 0),
+                ('point_order', 'INTEGER', 0, None, 0)],
+ 'track_html_links': [('guid', 'TEXT', 0, None, 1),
+                      ('track_guid', 'TEXT', 1, None, 0),
+                      ('html_link', 'TEXT', 0, None, 0),
+                      ('html_description', 'TEXT', 0, None, 0),
+                      ('html_type', 'TEXT', 0, None, 0)],
+ 'route_html_links': [('guid', 'TEXT', 0, None, 1),
+                      ('route_guid', 'TEXT', 1, None, 0),
+                      ('html_link', 'TEXT', 0, None, 0),
+                      ('html_description', 'TEXT', 0, None, 0),
+                      ('html_type', 'TEXT', 0, None, 0)],
+ 'routepoint_html_links': [('guid', 'TEXT', 0, None, 1),
+                           ('routepoint_guid', 'TEXT', 1, None, 0),
+                           ('html_link', 'TEXT', 0, None, 0),
+                           ('html_description', 'TEXT', 0, None, 0),
+                           ('html_type', 'TEXT', 0, None, 0)]}
+NAV_FOREIGN_KEYS = {'routepoints': [],
+ 'routes': [],
+ 'routepoints_link': [('routes', 'route_guid', 'guid', 'NO ACTION', 'CASCADE', 'NONE')],
+ 'tracks': [],
+ 'trk_points': [('tracks', 'track_guid', 'guid', 'NO ACTION', 'CASCADE', 'NONE')],
+ 'track_html_links': [('tracks', 'track_guid', 'guid', 'NO ACTION', 'CASCADE', 'NONE')],
+ 'route_html_links': [('routes', 'route_guid', 'guid', 'NO ACTION', 'CASCADE', 'NONE')],
+ 'routepoint_html_links': [('routepoints', 'routepoint_guid', 'guid', 'NO ACTION', 'CASCADE', 'NONE')]}
+CONTROLLED_XML_SHA256 = '24be1789c06aa08cbca0cd470ece1fc664b8e5f74fac8bdf27b403314e5021dc'
+CONTROLLED_XML_CRLF_SHA256 = '90915745d6dae09851a6cdd5e87086b9f0152e52b6d959427b8f372bedff3627'
+CONTROLLED_NAV_SHA256 = '7f4fbafa24803022f4503465672d103f1492244aad5d0818bb98cb7792e31082'
 HEX = {n: re.compile('[0-9a-f]{' + str(n) + '}\\Z') for n in (32, 40, 64)}
 PREFIX = 'SKAGER-Beta2-Portable-Recovery/'
 FAILURE = 'Installed protected updater acceptance refused; preserve state and evidence. No automatic retry or cleanup.'
@@ -220,6 +317,208 @@ def unchanged(prepared):
         require(stamp(path) == identity and updater._hash(path) == digest and stamp(path) == identity)
 
 
+def profile_preserved(before, after):
+    """Compare stores; only the exact controlled fixture can cross XML→DB."""
+    for observation in (before, after):
+        keys(observation, ('navigationStore', 'navigationSha256', 'navigationDetailsSha256', 'navigationMigrationFixtureSha256', 'settingsSha256'))
+        require(observation['navigationStore'] in ('xml', 'sqlite') and isinstance(observation['settingsSha256'], list) and
+                1 <= len(observation['settingsSha256']) <= 128)
+        for digest in (observation['navigationSha256'], observation['navigationDetailsSha256'], *observation['settingsSha256']):
+            pin(digest)
+        require(observation['navigationMigrationFixtureSha256'] in ('', CONTROLLED_XML_SHA256))
+    if before['navigationStore'] == 'sqlite' and after['navigationStore'] != 'sqlite':
+        return False
+    if before['navigationSha256'] != after['navigationSha256'] or before['settingsSha256'] != after['settingsSha256']:
+        return False
+    if before['navigationStore'] != after['navigationStore']:
+        return (before['navigationMigrationFixtureSha256'] == after['navigationMigrationFixtureSha256'] == CONTROLLED_XML_SHA256 and
+                before['navigationSha256'] == CONTROLLED_NAV_SHA256)
+    return before['navigationDetailsSha256'] == after['navigationDetailsSha256']
+
+
+def _nav_text(value, required=False):
+    if value is None and not required:
+        return ''
+    require(type(value) is str and len(value) <= 1 << 20 and '\x00' not in value and (not required or 0 < len(value) <= 256))
+    return value
+
+
+def _nav_time(value):
+    value = _nav_text(value)
+    if not value:
+        return ''
+    require(len(value) <= 64)
+    parsed = datetime.fromisoformat(value.replace('Z', '+00:00'))
+    require(parsed.tzinfo is not None)
+    return parsed.astimezone(timezone.utc).isoformat()
+
+
+def _nav_position(lat, lon, when):
+    require(type(lat) in (str, int, float) and type(lon) in (str, int, float))
+    lat, lon = float(lat), float(lon)
+    require(math.isfinite(lat) and math.isfinite(lon) and -90 <= lat <= 90 and -180 <= lon <= 180)
+    return [lat if lat else 0.0, lon if lon else 0.0, _nav_time(when)]
+
+
+def _nav_digest(value):
+    raw = json.dumps(value, sort_keys=True, separators=(',', ':'), allow_nan=False).encode()
+    require(len(raw) <= NAV_LIMIT)
+    return hashlib.sha256(raw).hexdigest()
+
+
+def _xml_navigation(raw):
+    text = raw.decode('utf-8-sig')
+    require('\x00' not in text and '<!DOCTYPE' not in text.upper() and '<!ENTITY' not in text.upper())
+    root = ET.fromstring(text)
+    g, o = '{http://www.topografix.com/GPX/1/1}', '{http://www.opencpn.org}'
+    require(root.tag == g + 'gpx')
+    points, routes, tracks = {}, {}, {}
+    def identity(node):
+        values = node.findall(g + 'extensions/' + o + 'guid')
+        require(len(values) == 1)
+        return _nav_text(values[0].text, True)
+    def text(node, key):
+        values = node.findall(g + key)
+        require(len(values) <= 1)
+        return _nav_text(values[0].text if values else None)
+    def point(node):
+        guid = identity(node)
+        value = [text(node, 'name'), text(node, 'desc'), *_nav_position(node.attrib['lat'], node.attrib['lon'], text(node, 'time'))]
+        require(guid not in points or points[guid] == value)
+        points[guid] = value
+        return guid
+    for node in root.findall(g + 'wpt'):
+        point(node)
+    for node in root.findall(g + 'rte'):
+        guid = identity(node)
+        require(guid not in routes)
+        routes[guid] = [text(node, 'name'), text(node, 'desc'), [point(p) for p in node.findall(g + 'rtept')]]
+    for node in root.findall(g + 'trk'):
+        guid = identity(node)
+        require(guid not in tracks)
+        # The supported DB has no segment-boundary column. Refuse a projection
+        # that could silently hide loss of a gap between original GPX segments.
+        require(len(node.findall(g + 'trkseg')) <= 1)
+        ordered = [_nav_position(p.attrib['lat'], p.attrib['lon'], text(p, 'time'))
+                   for p in node.findall(g + 'trkseg/' + g + 'trkpt')]
+        tracks[guid] = [text(node, 'name'), text(node, 'desc'), ordered]
+    require(len(points) + len(routes) + len(tracks) + sum(len(t[2]) for t in tracks.values()) <= NAV_ROWS)
+    return {'points': points, 'routes': routes, 'tracks': tracks}
+
+
+def _sqlite_navigation(path):
+    # Immutable prevents even journal/SHM creation. Refuse every sidecar so it
+    # cannot ignore committed WAL content or observe an in-flight transaction.
+    for suffix in ('-wal', '-shm', '-journal'):
+        sidecar = path.with_name(path.name + suffix)
+        require(not sidecar.exists() and not sidecar.is_symlink())
+    deadline = time.monotonic() + 10
+    with closing(sqlite3.connect(path.as_uri() + '?mode=ro&immutable=1', uri=True, timeout=0)) as db:
+        db.set_progress_handler(lambda: int(time.monotonic() >= deadline), 1000)
+        db.execute('PRAGMA query_only=ON')
+        db.execute('PRAGMA trusted_schema=OFF')
+        require(db.execute('PRAGMA integrity_check').fetchall() == [('ok',)])
+        require(not db.execute('PRAGMA foreign_key_check').fetchall())
+        schema = db.execute("SELECT type,name,sql FROM sqlite_schema WHERE name NOT GLOB 'sqlite_*'").fetchall()
+        require({row[1] for row in schema} == set(NAV_TABLES) and
+                all(row[0] == 'table' and row[2].lstrip().upper().startswith('CREATE TABLE') for row in schema))
+        tables, details, total = {}, {}, 0
+        for table in NAV_TABLES:  # Fixed supported names; no input-derived SQL.
+            require([tuple(row[1:]) for row in db.execute('PRAGMA table_info(' + table + ')')] == NAV_SCHEMA[table])
+            require([tuple(row[2:]) for row in db.execute('PRAGMA foreign_key_list(' + table + ')')] == NAV_FOREIGN_KEYS[table])
+            cursor = db.execute('SELECT * FROM ' + table)
+            names = [column[0] for column in cursor.description]
+            rows = cursor.fetchmany(NAV_ROWS + 1)
+            total += len(rows)
+            require(total <= NAV_ROWS)
+            tables[table] = [dict(zip(names, row)) for row in rows]
+            # Native loaders construct std::string directly from TEXT values;
+            # declared nullable columns do not make a NULL payload loadable.
+            text_columns = [column[0] for column in NAV_SCHEMA[table] if column[1] in ('TEXT', 'DATETIME')]
+            for row in tables[table]:
+                for column in text_columns:
+                    require(type(row[column]) is str)
+                    _nav_text(row[column])
+            # created_at is DB bookkeeping, assigned during import. Retain all
+            # other columns/links when comparing two observations of this DB.
+            details[table] = sorted((json.dumps({k: v for k, v in row.items() if k != 'created_at'},
+                                      sort_keys=True, allow_nan=False) for row in tables[table]))
+    points, routes, tracks = {}, {}, {}
+    for row in tables['routepoints']:
+        guid = _nav_text(row['guid'], True)
+        require(guid not in points)
+        points[guid] = [_nav_text(row['Name']), _nav_text(row['description']), *_nav_position(row['lat'], row['lon'], row['Time'])]
+    for table, result in (('routes', routes), ('tracks', tracks)):
+        for row in tables[table]:
+            guid = _nav_text(row['guid'], True)
+            require(guid not in result)
+            result[guid] = [_nav_text(row['name']), _nav_text(row['description']), []]
+    links = {guid: [] for guid in routes}
+    for row in tables['routepoints_link']:
+        require(row['route_guid'] in routes and row['point_guid'] in points and type(row['point_order']) is int)
+        links[row['route_guid']].append((row['point_order'], row['point_guid']))
+    for guid, ordered in links.items():
+        ordered.sort()
+        require([p[0] for p in ordered] == list(range(1, len(ordered) + 1)))
+        routes[guid][2] = [p[1] for p in ordered]
+    track_points = {guid: [] for guid in tracks}
+    for row in tables['trk_points']:
+        require(row['track_guid'] in tracks and type(row['point_order']) is int)
+        track_points[row['track_guid']].append((row['point_order'], _nav_position(row['latitude'], row['longitude'], row['timestamp'])))
+    for guid, ordered in track_points.items():
+        ordered.sort(key=lambda p: p[0])
+        require([p[0] for p in ordered] == list(range(len(ordered))))
+        tracks[guid][2] = [p[1] for p in ordered]
+    semantic = {'points': points, 'routes': routes, 'tracks': tracks}
+    # Only properties explicitly represented in the pinned controlled GPX are
+    # migration evidence. Never discard arbitrary XML metadata/links to pass.
+    fixture = (_nav_digest(semantic) == CONTROLLED_NAV_SHA256 and
+               all(row['Symbol'] == 'diamond' for row in tables['routepoints']) and
+               all(row['visibility'] == row['shared'] == 1 for row in tables['routepoints']
+                   if row['guid'] == 'ae43f488-caa5-445b-88e3-0112875a3471') and
+               all(row['visibility'] == 1 and row['plan_speed'] == 5 for row in tables['routes']) and
+               all(row['visibility'] == 1 for row in tables['tracks']) and
+               not any(tables[table] for table in ('track_html_links', 'route_html_links', 'routepoint_html_links')))
+    return semantic, _nav_digest(details), CONTROLLED_XML_SHA256 if fixture else ''
+
+
+def navigation_observation(root):
+    """Read the active store, never a stale XML backup beside a current DB."""
+    database = root / 'navobj.db'
+    path = database if database.exists() or database.is_symlink() else root / 'navobj.xml'
+    updater._plain(path)
+    entry = path.stat()
+    require(stat.S_ISREG(entry.st_mode) and entry.st_nlink == 1 and 0 < entry.st_size <= NAV_LIMIT)
+    with path.open('rb') as held:
+        identity = stamp(path)
+        require(stat.S_ISREG(os.fstat(held.fileno()).st_mode) and path.stat().st_nlink == 1 and 0 < path.stat().st_size <= NAV_LIMIT)
+        before = hashlib.file_digest(held, 'sha256').hexdigest()
+        if path == database:
+            semantic, details, migration = _sqlite_navigation(path)
+            store = 'sqlite'
+        else:
+            held.seek(0)
+            raw = held.read(NAV_LIMIT + 1)
+            require(len(raw) <= NAV_LIMIT)
+            semantic = _xml_navigation(raw)
+            details = hashlib.sha256(ET.canonicalize(raw).encode()).hexdigest()
+            # Windows checkout may convert this text fixture to CRLF. Accept
+            # only these two exact known byte forms, never arbitrary XML edits.
+            migration = CONTROLLED_XML_SHA256 if before in (CONTROLLED_XML_SHA256, CONTROLLED_XML_CRLF_SHA256) else ''
+            store = 'xml'
+        require(any(semantic.values()))  # Empty data cannot prove preservation.
+        updater._plain(path)
+        require(stamp(path) == identity and os.fstat(held.fileno()).st_ino == path.stat().st_ino)
+        held.seek(0)
+        require(hashlib.file_digest(held, 'sha256').hexdigest() == before and updater._hash(path) == before)
+        if store == 'sqlite':
+            for suffix in ('-wal', '-shm', '-journal'):
+                sidecar = path.with_name(path.name + suffix)
+                require(not sidecar.exists() and not sidecar.is_symlink())
+    return {'navigationStore': store, 'navigationSha256': _nav_digest(semantic), 'navigationDetailsSha256': details,
+            'navigationMigrationFixtureSha256': migration}
+
+
 def stage_operator(prepared, directory):
     """Verify the kit with its exact B0 launcher prerequisite; execute nothing."""
     kit = module('package-protected-operator-kit')
@@ -374,7 +673,7 @@ def run_phase(prepared, phase, expected_head, timestamp_sha, native, report):
     else:
         require(all(after[k] == before[k] for k in ('generation', 'completionSha256', 'selectedHeadSha256', 'version', 'commit',
                                                    'qualificationSha256', 'qualificationClosedSha256', 'inventorySha256')))
-    require(native.profile() == profile)
+    require(profile_preserved(profile, native.profile()))
     native.publication(phase, timestamp_sha)
     unchanged(prepared)
     report['preservation'] = profile
@@ -391,7 +690,7 @@ class Native:
         self.query = self.ui.declare(self.ui.kernel, 'QueryFullProcessImageNameW', w.BOOL, w.HANDLE, w.DWORD, w.LPWSTR, ctypes.POINTER(w.DWORD))
         self.times = self.ui.declare(self.ui.kernel, 'GetProcessTimes', w.BOOL, w.HANDLE, *([ctypes.POINTER(w.FILETIME)] * 4))
         self.program = self.folder('7c5a40ef-a0fb-4bfc-874a-c0f2e0b9fa8e')
-        self.profile_root = self.folder('3eb685db-65f9-4cf6-a03a-e3ef65729f3d') / 'opencpn'
+        self.profile_root = self.folder(PROGRAM_DATA) / 'opencpn'
         self.sid = self.actual_sid()
         require(self.sid == prepared['request']['clientSid'])
         try:
@@ -477,11 +776,7 @@ class Native:
     def profile(self):
         self.no_existing_clients()
         root = updater._plain(self.profile_root)
-        result = {}
-        nav = root / 'navobj.xml'
-        updater._plain(nav)
-        require(nav.is_file() and 0 < nav.stat().st_size <= 128 << 20 and nav.stat().st_nlink == 1)
-        result['navigationSha256'] = updater._hash(nav)
+        result = navigation_observation(root)
         ini = updater._plain(root / 'opencpn.ini')
         require(ini.stat().st_size <= 8 << 20 and ini.stat().st_nlink == 1)
         config = configparser.RawConfigParser(strict=True, interpolation=None)

@@ -19,7 +19,8 @@ class FakeBefore:
         self.sid = prepared['request']['clientSid']
 
     def profile(self):
-        return {'navigationSha256': 'n', 'settingsSha256': ['s']}
+        return dict(navigationStore='sqlite', navigationSha256='a' * 64,
+                    navigationDetailsSha256='a' * 64, navigationMigrationFixtureSha256='', settingsSha256=['b' * 64])
 
     def pin_image(self, path, digest):
         self.pinned = (path, digest)
@@ -43,7 +44,8 @@ class FakeNative:
 
     def profile(self):
         self.events.append('profile')
-        return {'navigationSha256': 'n', 'settingsSha256': ['s']}
+        return dict(navigationStore='sqlite', navigationSha256='a' * 64,
+                    navigationDetailsSha256='a' * 64, navigationMigrationFixtureSha256='', settingsSha256=['b' * 64])
 
     def start_and_close(self, mode, before):
         self.events.append(('start', mode, before))
@@ -147,7 +149,8 @@ class InitialB0Tests(unittest.TestCase):
         class Changed(FakeNative):
             def profile(self):
                 self.events.append('profile')
-                return {'navigationSha256': 'changed', 'settingsSha256': ['s']}
+                return dict(navigationStore='sqlite', navigationSha256='c' * 64,
+                            navigationDetailsSha256='a' * 64, navigationMigrationFixtureSha256='', settingsSha256=['b' * 64])
         with self.assertRaises(ValueError):
             b0.run(self.prepared, self.pins, self.base / 'result.json', native_factory=Changed,
                    preflight_factory=FakeBefore, stage=self.stage, publish=lambda *args: None,
@@ -177,6 +180,35 @@ class InitialB0Tests(unittest.TestCase):
         with mock.patch.object(b0.phase, 'fixture', return_value={}):
             with self.assertRaises(ValueError):
                 b0.prepare(declaration, digest, '2' * 64, '3' * 64)
+
+    def test_pre_enrollment_observer_uses_actual_broker_programdata_profile(self):
+        folders = []
+        with mock.patch.object(b0.phase, 'module', return_value=None), \
+                mock.patch.object(b0.phase.Native, 'folder', side_effect=lambda guid: folders.append(guid) or self.base), \
+                mock.patch.object(b0.phase.Native, 'actual_sid', return_value=self.prepared['request']['clientSid']):
+            before = b0.BeforeEnrollment(self.prepared)
+        self.assertEqual(folders, [b0.phase.PROGRAM_DATA])
+        self.assertEqual(before.profile_root, self.base / 'opencpn')
+
+    def test_initial_b0_accepts_only_controlled_fixture_xml_to_database_migration(self):
+        xml = dict(navigationStore='xml', navigationSha256=b0.phase.CONTROLLED_NAV_SHA256,
+                   navigationDetailsSha256='c' * 64, navigationMigrationFixtureSha256=b0.phase.CONTROLLED_XML_SHA256,
+                   settingsSha256=['b' * 64])
+        database = dict(xml, navigationStore='sqlite', navigationDetailsSha256='d' * 64)
+        class Before(FakeBefore):
+            def profile(self):
+                return xml
+        class Migrated(FakeNative):
+            def __init__(self, prepared, provisioner):
+                super().__init__(prepared, provisioner)
+                self.profiles = iter((xml, database))
+            def profile(self):
+                return next(self.profiles)
+        result = b0.run(self.prepared, self.pins, self.base / 'migration-result.json',
+                        native_factory=Migrated, preflight_factory=Before, stage=self.stage,
+                        publish=lambda *args: None, enroll=lambda command: None)
+        self.assertTrue(result['nativeInitialB0Acceptance'])
+        self.assertFalse(result['nativeProductAcceptance'])
 
 
 if __name__ == '__main__':
