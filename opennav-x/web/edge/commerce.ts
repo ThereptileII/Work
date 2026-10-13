@@ -302,13 +302,16 @@ function structuralSession(item: Json): void {
   requireValue(item.object === 'checkout.session' && item.livemode === false && SESSION.test(item.id)
     && ['payment', 'setup', 'subscription'].includes(item.mode)
     && (item.client_reference_id === null || typeof item.client_reference_id === 'string')
-    && (item.metadata === null || object(item.metadata))
     && (item.currency === null || (typeof item.currency === 'string' && /^[a-z]{3}$/.test(item.currency)))
     && (item.amount_subtotal === null || (integer(item.amount_subtotal) && item.amount_subtotal >= 0))
     && (item.amount_total === null || (integer(item.amount_total) && item.amount_total >= 0))
     && ['open', 'complete', 'expired'].includes(item.status)
     && ['paid', 'unpaid', 'no_payment_required'].includes(item.payment_status)
     && (item.payment_intent === null || (typeof item.payment_intent === 'string' && INTENT.test(item.payment_intent))));
+  // Canonical references must reach the binding read before metadata rejection.
+  if (typeof item.client_reference_id !== 'string' || !UUID.test(item.client_reference_id)) {
+    requireValue(item.metadata === null || object(item.metadata));
+  }
 }
 
 async function existingBinding(ctx: CommerceContext, session: Json): Promise<Json | null> {
@@ -395,6 +398,7 @@ async function webhook(req: Request, ctx: CommerceContext, config: Configuration
         && ownedSession.amount_total === charge.amount && ownedSession.currency === charge.currency);
     }
     const binding = await existingBinding(ctx, ownedSession);
+    requireValue(ownedSession.metadata === null || object(ownedSession.metadata));
     if (!binding) return reply(200, { received: true });
     // Known owned sessions retain the strict SKAGER identity/money contract.
     // Corrupted own metadata is retryable, never silently classified as foreign.

@@ -71,7 +71,8 @@ scope, actual key permissions and live TEST flows are verified.
 Before `commerce_receive_event`, every checkout event must match the existing
 immutable local order/session binding. Signature, event version, TEST mode and
 structural fields are checked first. A canonical order reference triggers the
-binding read before inspecting SKAGER metadata or money terms. SQL `rejected`
+binding read before rejecting metadata, including malformed metadata types, or
+inspecting SKAGER money terms. SQL `rejected`
 means **unowned-or-mismatched**: the event is ignored with 200 and no receipt or
 effect. Pending, malformed or failing binding reads retry with 503 and no write.
 A structurally valid session without a canonical order reference is excluded

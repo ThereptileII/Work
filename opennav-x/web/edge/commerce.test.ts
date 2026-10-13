@@ -180,6 +180,7 @@ test('pending, unknown, malformed or failing binding reads retry all checkout ty
 
 test('known owned sessions with altered SKAGER metadata or money retry instead of being discarded as foreign', async () => {
   for (const changed of [{ ...session(), metadata: {} }, { ...session(), metadata: null },
+    { ...session(), metadata: 'not an object' }, { ...session(), metadata: [] },
     { ...session(), metadata: { order_id: 'foreign' } },
     { ...session(), amount_subtotal: 3000 }, { ...session(), currency: 'eur' }, { ...session(), mode: 'subscription' }]) {
     const result = await deliverWebhook(changed);
@@ -291,7 +292,7 @@ test('owned refund before completion invokes unchanged atomic effects and duplic
 
 test('malformed or unauthenticated shared-sandbox events still refuse before provider or database access', async () => {
   for (const invalid of [{ ...session(), livemode: true }, { ...session(), amount_total: -1 },
-    { ...session(), metadata: 'not an object' }, { ...session(), status: 'unknown' }]) {
+    { ...session(), client_reference_id: null, metadata: 'not an object' }, { ...session(), status: 'unknown' }]) {
     const result = await deliverWebhook(invalid);
     assert.equal(result.response?.status, 400);
     assert.deepEqual(result.calls, []);
