@@ -26,13 +26,13 @@ jobs:
         with:
           go-version-file: opennav-x/tools/update-verifier/go.mod
           cache-dependency-path: opennav-x/tools/update-verifier/go.sum
-      - name: Exercise original publication, native moves and decommission ordering
+      - name: Exercise original publication, native moves and protected retirement ordering
         working-directory: opennav-x/tools/update-verifier
         shell: bash
         run: |
           set -o pipefail
           mkdir -p ../../build/startup-restoration
-          go test -count=1 -json ./brokerhost ./brokerenroll ./cmd/skager-update-provisioner -run 'Test.*(Startup|Binding|Decommission|Restoration)|TestClientRegistrationWritesLegacyProtectedRecordBytes' | tee ../../build/startup-restoration/tests.json
+          go test -count=1 -json ./brokerhost ./brokerenroll ./brokerpipe ./brokerstore ./cmd/skager-update-provisioner ./launcher -run 'Test.*(Startup|Binding|Decommission|Restoration|Retirement|ProtectedUninstall)|TestClientRegistrationWritesLegacyProtectedRecordBytes' | tee ../../build/startup-restoration/tests.json
       - name: Require actual execution of the selected binding controls
         shell: python
         run: |
@@ -40,13 +40,24 @@ jobs:
           from pathlib import Path
           events = [json.loads(line) for line in Path('opennav-x/build/startup-restoration/tests.json').read_text().splitlines()]
           passed = {event.get('Test') for event in events if event.get('Action') == 'pass'}
+          passed_cases = {(event.get('Package'), event.get('Test')) for event in events
+                          if event.get('Action') == 'pass' and event.get('Test') and '/' not in event['Test']}
           required = {'TestClientRegistrationWritesLegacyProtectedRecordBytes',
                       'TestDecommissionWitnessHashesProtectedRecordInsteadOfRawRequest',
                       'TestApprovedStartupPublicationRequiresIndependentExactBinding',
                       'TestApprovedStartupPublicationRejectsSubstitutedOrPartialObjects',
                       'TestOperatorDecommissionPublicationArgumentsRefuseBeforeAnyRead',
                       'TestOperatorDecommissionExplicitStartupBindsSameOwnerBeforeMutation',
-                      'TestOperatorDecommissionStartupFaultsNeverFallBackRetryOrReportSuccess'}
+                      'TestOperatorDecommissionStartupFaultsNeverFallBackRetryOrReportSuccess',
+                      'TestRetirementOriginalHandoffAndTerminalReceipt',
+                      'TestRetirementRefusesGuardAndChangedIdentityBeforeCommit',
+                      'TestRetirementBackendFailureKeepsOriginalOwnerForDrain',
+                      'TestRetirementCommitAndConcurrentStoreCloseDrainOriginalReceiptOnce',
+                      'TestProtectedUninstallProtocolCannotDowngradeToFenceOnly',
+                      'TestProtectedUninstallHandoffAndCompletionFaults',
+                      'TestOperatorProtectedUninstallRequiresRetirementBeforeServiceEffects',
+                      'TestOperatorProtectedUninstallRetirementFailureNeverStopsOrRetries',
+                      'TestOperatorProtectedUninstallMissingStartupEvidenceRefusesBeforeReading'}
           if os.environ['RUNNER_OS'] == 'Windows':
               required |= {'TestNativeCompletedBindingAfterThreeMoves',
                            'TestNativeBindingRecordsExistingMenuDescriptor',
@@ -55,9 +66,21 @@ jobs:
                            'TestNativeStartupRestorationMovesSameObjectsAndRestoresOriginal',
                            'TestNativeStartupRestorationExcludesForeignSourceRename',
                            'TestNativeStartupRestorationRefusesCollisionsAndSubstitution',
-                           'TestNativeStartupRestorationPartialFailurePreservesRecovery'}
+                           'TestNativeStartupRestorationPartialFailurePreservesRecovery',
+                           'TestNativeRetirementOriginalIdentityCollisionCancellationAndPartialMove',
+                           'TestNativeRetirementMovesEntireOriginalDirectoryOnItsHeldVolume',
+                           'TestNativeRetirementCompletedOriginalRegistrationAndSelectedGeneration'}
           if required - passed:
               raise SystemExit('Required binding checks did not execute successfully: ' + ', '.join(sorted(required - passed)))
+          module = 'example.com/opennav-update-verifier/'
+          retirement = {test for package, test in passed_cases if package == module + 'brokerstore' and test.startswith('TestRetirement')}
+          protected = {(package, test) for package, test in passed_cases if test.startswith(('TestProtectedUninstall', 'TestOperatorProtectedUninstall'))}
+          if len(retirement) < 4 or len(protected) < 5:
+              raise SystemExit('Protected retirement case minimum not met')
+          if os.environ['RUNNER_OS'] == 'Windows':
+              native = {test for package, test in passed_cases if package == module + 'brokerstore' and test.startswith('TestNativeRetirement')}
+              if len(native) < 3:
+                  raise SystemExit('Native protected retirement case minimum not met')
       - name: Verify exact broker source closure
         shell: python
         run: |
