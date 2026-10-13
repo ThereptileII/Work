@@ -6,7 +6,10 @@ import type { Context, RuntimeEnv } from './platform.ts';
 
 export async function handleRequest(request: Request, env: RuntimeEnv, transport: typeof fetch = fetch): Promise<Response> {
   try {
-    const path = new URL(request.url).pathname.replace(/^\/functions\/v1\/skager-web/, '');
+    // Hosted Edge requests reach Deno with the function-name prefix. The local
+    // route tests also use the full public /functions/v1 path; accept only these
+    // two exact prefixes before mapping onto the application's /api routes.
+    const path = new URL(request.url).pathname.replace(/^\/(?:functions\/v1\/)?skager-web(?=\/api\/)/, '');
     if (path === '/api/health' && request.method === 'GET') return json({ service: 'skager-web', mode: 'private-beta', ready: env.SUPABASE_AUTH_ENABLED === 'true' });
     if (!path.startsWith('/api/') || !['GET', 'POST'].includes(request.method)) return json({ error: 'Not found' }, 404);
     const length = request.headers.get('content-length');
