@@ -52,6 +52,15 @@ def stamp(info):
             getattr(info, 'st_file_attributes', 0))
 
 
+def common_stamp(info):
+    # Windows path stat infers executable suffix bits and may expose birth time
+    # as ctime, while descriptor stat reports handle mode/change time. Match
+    # physical identity here, then recheck each complete source baseline below.
+    return (info.st_dev, info.st_ino, stat.S_IFMT(info.st_mode), info.st_size,
+            info.st_mtime_ns, info.st_nlink,
+            bool(getattr(info, 'st_file_attributes', 0) & 0x400))
+
+
 def plain(root, relative):
     path = receipt._plain_path(root, relative)
     if path.is_file() and path.stat().st_nlink != 1:
@@ -67,14 +76,16 @@ def record(root, relative):
     digest = hashlib.sha256()
     count = 0
     with path.open('rb') as stream:
-        if stamp(os.fstat(stream.fileno())) != stamp(before):
+        opened = os.fstat(stream.fileno())
+        if common_stamp(opened) != common_stamp(before):
             raise ValueError('Source changed before read: ' + relative)
+        opened_identity = stamp(opened)
         while block := stream.read(1024 * 1024):
             count += len(block)
             if count > before.st_size:
                 raise ValueError('Source grew during read: ' + relative)
             digest.update(block)
-        if stamp(os.fstat(stream.fileno())) != stamp(before):
+        if stamp(os.fstat(stream.fileno())) != opened_identity:
             raise ValueError('Source changed during read: ' + relative)
     if stamp(plain(root, relative).lstat()) != stamp(before) or count != before.st_size:
         raise ValueError('Source changed after read: ' + relative)
@@ -289,20 +300,25 @@ def capture(root, output, commit, expected, inspect, provenance, verify_producer
         destination.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
         item, identity = before[target]
         path = plain(root, source)
-        if stamp(path.lstat()) != identity:
+        path_before = path.lstat()
+        if stamp(path_before) != identity:
             raise ValueError('Source changed before copy: ' + source)
         digest, count = hashlib.sha256(), 0
         with path.open('rb') as source_stream, destination.open('xb') as target_stream:
-            if stamp(os.fstat(source_stream.fileno())) != identity:
+            opened = os.fstat(source_stream.fileno())
+            if common_stamp(opened) != common_stamp(path_before):
                 raise ValueError('Source replaced before copy: ' + source)
+            opened_identity = stamp(opened)
             while block := source_stream.read(1024 * 1024):
                 count += len(block)
                 if count > item['bytes']:
                     raise ValueError('Source grew during copy: ' + source)
                 digest.update(block)
                 target_stream.write(block)
-            if stamp(os.fstat(source_stream.fileno())) != identity:
+            if stamp(os.fstat(source_stream.fileno())) != opened_identity:
                 raise ValueError('Source changed during copy: ' + source)
+        if stamp(plain(root, source).lstat()) != identity:
+            raise ValueError('Source changed after copy: ' + source)
         if {'bytes': count, 'sha256': digest.hexdigest()} != item:
             raise ValueError('Copied bytes differ: ' + source)
         if record(data_root, target)[0] != item:

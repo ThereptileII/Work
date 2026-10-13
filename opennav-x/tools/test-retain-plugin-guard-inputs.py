@@ -3,6 +3,8 @@
 import importlib.util
 import json
 import os
+import stat
+import shutil
 from pathlib import Path
 import tempfile
 import unittest
@@ -13,6 +15,69 @@ spec = importlib.util.spec_from_file_location('capture_plugin_inputs', Path(__fi
 capture = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(capture)
 COMMIT = '1' * 40
+
+
+class RecordIdentityTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name)
+        self.path = self.root / 'fixture.exe'
+        self.path.write_bytes(b'inert executable')
+
+    def windows_stats(self):
+        info = self.path.lstat()
+        fields = ('st_dev', 'st_ino', 'st_mode', 'st_size', 'st_mtime_ns',
+                  'st_ctime_ns', 'st_nlink', 'st_file_attributes')
+        path = SimpleNamespace(**{n: getattr(info, n, 0) for n in fields})
+        path.st_mode |= 0o111
+        opened = SimpleNamespace(**vars(path))
+        opened.st_mode &= ~0o111
+        opened.st_ctime_ns += 1000
+        return path, opened
+
+    def test_record_distinct_stat_sources_keep_complete_baselines(self):
+        path, opened = self.windows_stats()
+        real_lstat = Path.lstat
+        with mock.patch.object(Path, 'lstat', lambda p: path if p == self.path else real_lstat(p)), \
+                mock.patch.object(capture.os, 'fstat', return_value=opened):
+            record, identity = capture.record(self.root, self.path.name)
+        self.assertEqual(identity, capture.stamp(path))
+        self.assertEqual(record['sha256'], capture.receipt._digest(self.path))
+
+    def test_record_common_identity_and_reparse_mismatch_refuse(self):
+        for field in ('st_dev', 'st_ino', 'st_size', 'st_mtime_ns', 'st_nlink',
+                      'st_mode', 'st_file_attributes'):
+            with self.subTest(field=field):
+                path, opened = self.windows_stats()
+                setattr(opened, field, stat.S_IFDIR | 0o600 if field == 'st_mode'
+                        else 0x400 if field == 'st_file_attributes' else getattr(opened, field) + 1)
+                real_lstat = Path.lstat
+                with mock.patch.object(Path, 'lstat', lambda p: path if p == self.path else real_lstat(p)), \
+                        mock.patch.object(capture.os, 'fstat', return_value=opened):
+                    with self.assertRaisesRegex(ValueError, 'Source changed before read'):
+                        capture.record(self.root, self.path.name)
+
+    def test_record_each_stat_source_metadata_mutation_refuses(self):
+        for source in ('path', 'descriptor'):
+            for field in ('st_mode', 'st_ctime_ns', 'st_file_attributes'):
+                with self.subTest(source=source, field=field):
+                    path, opened = self.windows_stats()
+                    changed_path, changed_opened = SimpleNamespace(**vars(path)), SimpleNamespace(**vars(opened))
+                    changed = changed_path if source == 'path' else changed_opened
+                    setattr(changed, field, getattr(changed, field) ^ 1)
+                    calls = 0
+                    real_lstat = Path.lstat
+                    def descriptor_stat(fd):
+                        nonlocal calls
+                        calls += 1
+                        return opened if calls == 1 else changed_opened
+                    def path_stat(p):
+                        return (changed_path if calls >= 2 else path) if p == self.path else real_lstat(p)
+                    with mock.patch.object(Path, 'lstat', path_stat), \
+                            mock.patch.object(capture.os, 'fstat', side_effect=descriptor_stat):
+                        with self.assertRaisesRegex(ValueError, 'Source changed (during|after) read'):
+                            capture.record(self.root, self.path.name)
 
 
 class CaptureTests(unittest.TestCase):
@@ -98,6 +163,50 @@ class CaptureTests(unittest.TestCase):
         self.assertFalse((self.output / 'data/inventory.json').exists())
         with self.assertRaisesRegex(ValueError, 'external reviewed hash'):
             capture.runner.retained_inputs(self.output / 'data', inventory, '0' * 64, COMMIT)
+
+    def test_capture_accepts_distinct_stable_descriptor_ctime(self):
+        real_fstat = os.fstat
+        def descriptor_stat(fd):
+            info = real_fstat(fd)
+            fields = ('st_dev', 'st_ino', 'st_mode', 'st_size', 'st_mtime_ns',
+                      'st_ctime_ns', 'st_nlink', 'st_file_attributes')
+            opened = SimpleNamespace(**{n: getattr(info, n, 0) for n in fields})
+            opened.st_mode &= ~0o111
+            opened.st_ctime_ns += 1000
+            return opened
+        with mock.patch.object(capture.os, 'fstat', side_effect=descriptor_stat):
+            self.run_capture()
+        self.assertTrue((self.output / 'inventory.json').is_file())
+
+    def test_copy_descriptor_mutation_or_replacement_refuses(self):
+        for field in ('st_ctime_ns', 'st_mode', 'st_file_attributes', 'st_ino'):
+            with self.subTest(field=field):
+                real_open, real_fstat = Path.open, os.fstat
+                copying, calls = False, 0
+                def open_path(path, mode='r', *args, **kwargs):
+                    nonlocal copying, calls
+                    if mode == 'xb' and self.output / 'data' in path.parents:
+                        copying, calls = True, 0
+                    return real_open(path, mode, *args, **kwargs)
+                def descriptor_stat(fd):
+                    nonlocal calls
+                    info = real_fstat(fd)
+                    if not copying:
+                        return info
+                    calls += 1
+                    fields = ('st_dev', 'st_ino', 'st_mode', 'st_size', 'st_mtime_ns',
+                              'st_ctime_ns', 'st_nlink', 'st_file_attributes')
+                    opened = SimpleNamespace(**{n: getattr(info, n, 0) for n in fields})
+                    if field == 'st_ino' or calls == 2:
+                        setattr(opened, field, getattr(opened, field) ^ 1)
+                    return opened
+                try:
+                    with mock.patch.object(Path, 'open', open_path), \
+                            mock.patch.object(capture.os, 'fstat', side_effect=descriptor_stat):
+                        self.refuse('Source (changed during|replaced before) copy')
+                finally:
+                    if self.output.exists():
+                        shutil.rmtree(self.output)
 
     def test_archive_selection_is_exact_with_both_imports_present(self):
         self.write(self.cache, self.cache_text.replace('/libarchive.lib', '/archive.lib').encode())
