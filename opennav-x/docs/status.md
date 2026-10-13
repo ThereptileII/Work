@@ -1,5 +1,41 @@
 # SKAGER status — 2026-10-13
 
+## Invited Staging website: Cloudflare frontend and Supabase Edge backend
+
+The owner selected a Cloudflare Free frontend at `beta.skager.app` with Supabase
+Auth, Edge Functions and private PostgreSQL, replacing the planned Django
+backend and declining the paid Containers option. The new [architecture decision](architecture/cloudflare-supabase-private-beta.md)
+defines current trust boundaries and supersedes earlier runtime selections while
+preserving their source, migrations and historical verification evidence.
+
+Exact combined web source `b730d2364430de9e706798041a2da48c544a44db` passes
+[web-only CI 38383036021](https://github.com/ThereptileII/Work/actions/runs/38383036021):
+**127 tests** (88 preserved Django/PostgreSQL and 39 Edge contract tests), plus
+real PostgreSQL commerce/security assertions, Django checks and migration
+forward/reverse/reapply. This is source/integration evidence in disposable CI,
+not evidence that the provider-backed website is deployed or works end to end.
+No native application qualification is inferred from these web checks.
+
+The implemented Edge flow supports allowlisted invitations and email OTP,
+bounded server sessions, owner-scoped portal data and test-only Stripe
+checkout/webhook settlement. A verified USD 20 TEST checkout and an approved
+100% coupon produce the same `active` **Staging** entitlement; both record zero
+real funds received. Redirects never grant access. Boat storage contains owner-scoped
+boat names only, and downloads remain unavailable. Public Supabase signups stay
+disabled; the friend allowlist and backend feature flags guard this increment.
+
+At this checkpoint, provider SQL/function/Worker deployment and beta-domain
+routing, secret bindings, code-email templates/delivery and live invited
+account/checkout/coupon/webhook/refund/portal checks remain pending. Passing CI
+and the earlier owner-private static preview do not complete those gates.
+Public accounts, live payments and downloads remain closed; no public-launch
+GO has been given. The exact build and backend contracts are under `web/edge/`
+and `web/tools/build_cloudflare_beta.py`.
+
+The entries below retain earlier evidence and its recorded limitations. The
+current website runtime decision and source qualification above supersede their
+older descriptions of the planned backend and unconnected source flow.
+
 ## Owner-private web experience and Supabase/Stripe foundations
 
 Exact web source `52d07f404a7c6c6257382e46ea09bb38ae5cf9cc` passes
