@@ -11,14 +11,47 @@ import (
 	"path/filepath"
 	"testing"
 
+	"example.com/opennav-update-verifier/brokerregistration"
 	"golang.org/x/sys/windows"
 )
 
 // Only inert temp-file owners. Production opens token-checked KnownFolders;
 // tests use the same identity checks and native handle moves in disposable dirs.
 func startupRestorationNativeFixture(t *testing.T) *nativeStartupRestoration {
+	n, _ := startupRestorationNativeFixtureMode(t, false)
+	return n
+}
+
+func startupRestorationNativeFixtureMode(t *testing.T, preparing bool) (*nativeStartupRestoration, *brokerregistration.Request) {
 	t.Helper()
 	owner, oldMenu, oldRecovery, request := startupCompletedBindingFixture(t)
+	var generations *enrollmentPin
+	if preparing {
+		// Put the publication's actual ORIGINAL launcher in an inert generation
+		// before the original publisher records its native identity. The producer
+		// closes all of its immovable pins before the consumer opens the anchor.
+		parentPath := filepath.Dir(oldRecovery.dos)
+		parent, err := owner.files.pinDirectory(parentPath, "", parentPath, nil, false, request.ClientSID)
+		if err != nil {
+			t.Fatal(err)
+		}
+		generations, err = owner.files.newDirectory(parent, "generations", oldRecovery.descriptor, request.ClientSID)
+		if err != nil {
+			t.Fatal(err)
+		}
+		generation, err := owner.files.newDirectory(generations, request.Installed.Generation, oldRecovery.descriptor, request.ClientSID)
+		if err != nil {
+			t.Fatal(err)
+		}
+		app, err := owner.files.newDirectory(generation, "app", oldRecovery.descriptor, request.ClientSID)
+		if err != nil {
+			t.Fatal(err)
+		}
+		owner.image, err = startupWriteFile(context.Background(), owner.files, app, "skager-start.exe", []byte("INERT-LAUNCHER"), oldRecovery.descriptor, false)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
 	if err := completeStartupPublicationBinding(context.Background(), owner, oldMenu, oldRecovery, request, oldRecovery.descriptor); err != nil {
 		t.Fatal(err)
 	}
@@ -51,9 +84,20 @@ func startupRestorationNativeFixture(t *testing.T) *nativeStartupRestoration {
 	if err != nil {
 		t.Fatal(err)
 	}
-	n.image, err = startupOpenFile(n.files, n.recovery, "inert-launcher.exe", false, maxBrokerBytes)
-	if err != nil {
-		t.Fatal(err)
+	if preparing {
+		parent, err := n.files.pinDirectory(generations.dos, generations.physical, generations.dos, nil, false, request.ClientSID)
+		if err != nil {
+			t.Fatal(err)
+		}
+		n.anchor, err = openStartupRetirementAnchor(context.Background(), parent, record.Generation, record.Launcher)
+		if err != nil {
+			t.Fatal(err)
+		}
+	} else {
+		n.image, err = startupOpenFile(n.files, n.recovery, "inert-launcher.exe", false, maxBrokerBytes)
+		if err != nil {
+			t.Fatal(err)
+		}
 	}
 	n.manifest, err = startupOpenFile(n.files, n.recovery, "publication.json", false, maxStartupBindingBytes)
 	if err != nil {
@@ -79,7 +123,7 @@ func startupRestorationNativeFixture(t *testing.T) *nativeStartupRestoration {
 	if err := n.preflight(context.Background()); err != nil {
 		t.Fatal(err)
 	}
-	return n
+	return n, request
 }
 
 func TestNativeStartupRestorationMovesSameObjectsAndRestoresOriginal(t *testing.T) {

@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+
+	"example.com/opennav-update-verifier/brokerpipe"
 )
 
 // ErrStartupRestorationUncertain means a retained shortcut rename was attempted.
@@ -18,6 +20,58 @@ type startupRestorationBackend interface {
 }
 
 type startupRestorationOpener func(context.Context, maintenanceAuthority, startupBindingRecord, []byte) (startupRestorationBackend, error)
+
+type preparedStartupRestorationBackend interface {
+	startupRestorationBackend
+	bindRetirement(context.Context, brokerpipe.DecommissionSnapshot) error
+}
+
+// PrepareStartupRestoration retains the ORIGINAL publication, links and launcher
+// before the broker can retire its generation. It grants no shortcut or SCM
+// mutation. Only BindDecommission's sealed uninstall witness can finalize the
+// same handles at their fixed retirement location. This is baseline-only.
+func (m *MaintenanceOwner) PrepareStartupRestoration(ctx context.Context, approved *ApprovedStartupPublication) error {
+	return prepareStartupRestorationWith(m, ctx, approved, prepareStartupRestorationNative)
+}
+
+func prepareStartupRestorationWith(m *MaintenanceOwner, ctx context.Context, approved *ApprovedStartupPublication, open startupRestorationOpener) (resultErr error) {
+	if m == nil || m.self != m {
+		return errors.New("original decommission owner required")
+	}
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	if !m.decommission || m.closed || m.failed || m.fence != nil || m.disableAttempted || m.stopAttempted || m.startupBound || m.startupPrepared {
+		return errors.New("fresh original pre-retirement startup preparation required")
+	}
+	m.startupPrepared = true
+	defer func() {
+		if resultErr != nil {
+			m.failed = true
+		}
+	}()
+	if approved == nil || open == nil {
+		return errors.New("independently approved original startup publication required")
+	}
+	parsed, err := ParseApprovedStartupPublication(approved.OriginalBytes(), approved.SHA256(), m.authority.client.OriginalBytes(), m.authority.client.RequestSHA256)
+	if err != nil {
+		return err
+	}
+	var record startupBindingRecord
+	if err := json.Unmarshal(parsed.OriginalBytes(), &record); err != nil {
+		return err
+	}
+	if err := m.check(ctx); err != nil {
+		return err
+	}
+	m.startup, err = open(ctx, m.authority, record, parsed.OriginalBytes())
+	if err != nil || m.startup == nil {
+		return errors.Join(errors.New("original move-aware startup owners required"), err)
+	}
+	if _, ok := m.startup.(preparedStartupRestorationBackend); !ok {
+		return errors.New("original move-aware startup backend required")
+	}
+	return errors.Join(m.startup.check(ctx), m.check(ctx))
+}
 
 // BindStartupRestoration binds independently approved ORIGINAL publication
 // evidence to this original decommission owner and its already-bound live broker
@@ -39,7 +93,7 @@ func bindStartupRestorationWith(m *MaintenanceOwner, ctx context.Context, approv
 	}
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	if !m.decommission || m.closed || m.failed || m.disableAttempted || m.stopAttempted || m.startupBound {
+	if !m.decommission || m.closed || m.failed || m.disableAttempted || m.stopAttempted || m.startupBound || m.startupPrepared {
 		return errors.New("fresh fenced original shortcut restoration binding required")
 	}
 	// Consume before validating/opening: a failed binding cannot be omitted to

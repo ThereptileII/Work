@@ -10,6 +10,7 @@ import (
 	"runtime"
 	"unsafe"
 
+	"example.com/opennav-update-verifier/brokerpipe"
 	"golang.org/x/sys/windows"
 )
 
@@ -28,9 +29,18 @@ type nativeStartupRestoration struct {
 	retired                                  [3]bool
 	restored, attempted                      bool
 	raw                                      []byte
+	anchor                                   *startupRetirementAnchor
 }
 
 func openStartupRestorationNative(ctx context.Context, authority maintenanceAuthority, record startupBindingRecord, raw []byte) (result startupRestorationBackend, resultErr error) {
+	return openStartupRestoration(ctx, authority, record, raw, false)
+}
+
+func prepareStartupRestorationNative(ctx context.Context, authority maintenanceAuthority, record startupBindingRecord, raw []byte) (startupRestorationBackend, error) {
+	return openStartupRestoration(ctx, authority, record, raw, true)
+}
+
+func openStartupRestoration(ctx context.Context, authority maintenanceAuthority, record startupBindingRecord, raw []byte, preparing bool) (result startupRestorationBackend, resultErr error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	n := &nativeStartupRestoration{files: &nativeEnrollmentFiles{}, clientSID: authority.client.ClientSID, record: record, raw: bytes.Clone(raw)}
@@ -75,14 +85,26 @@ func openStartupRestorationNative(ctx context.Context, authority maintenanceAuth
 	if err != nil {
 		return result, err
 	}
-	app := filepath.Join(programFiles, "SKAGER", "Applications", n.clientSID, "generations", record.Generation, "app")
-	imageParent, err := startupHoldAncestry(n.files, app, broker.String())
-	if err != nil {
-		return result, err
-	}
-	n.image, err = startupOpenFile(n.files, imageParent, "skager-start.exe", false, maxBrokerBytes)
-	if err != nil {
-		return result, err
+	generations := filepath.Join(programFiles, "SKAGER", "Applications", n.clientSID, "generations")
+	if preparing {
+		parent, err := startupHoldAncestry(n.files, generations, broker.String())
+		if err != nil {
+			return result, err
+		}
+		n.anchor, err = openStartupRetirementAnchor(ctx, parent, record.Generation, record.Launcher)
+		if err != nil {
+			return result, err
+		}
+	} else {
+		app := filepath.Join(generations, record.Generation, "app")
+		imageParent, err := startupHoldAncestry(n.files, app, broker.String())
+		if err != nil {
+			return result, err
+		}
+		n.image, err = startupOpenFile(n.files, imageParent, "skager-start.exe", false, maxBrokerBytes)
+		if err != nil {
+			return result, err
+		}
 	}
 	n.manifest, err = startupOpenFile(n.files, n.recovery, "publication.json", false, maxStartupBindingBytes)
 	if err != nil {
@@ -194,9 +216,15 @@ func (n *nativeStartupRestoration) check(ctx context.Context) error {
 			return errors.Join(errors.New("original startup directory identity differs"), err)
 		}
 	}
-	image, err := startupFileIdentity(ctx, n.image, n.record.Launcher.SHA256)
-	if err != nil || image != n.record.Launcher {
-		return errors.Join(errors.New("original startup launcher identity differs"), err)
+	if n.anchor != nil {
+		if err := n.anchor.check(ctx); err != nil {
+			return err
+		}
+	} else {
+		image, err := startupFileIdentity(ctx, n.image, n.record.Launcher.SHA256)
+		if err != nil || image != n.record.Launcher {
+			return errors.Join(errors.New("original startup launcher identity differs"), err)
+		}
 	}
 	if err := startupHashPin(ctx, n.manifest, n.record.PrepublicationSHA256); err != nil {
 		return err
@@ -343,7 +371,7 @@ func startupRenameRestorationFile(ctx context.Context, file *startupRestorationF
 func (n *nativeStartupRestoration) restore(ctx context.Context, guard func(context.Context) error) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	if n == nil || n.attempted || guard == nil {
+	if n == nil || n.attempted || guard == nil || n.anchor != nil && !n.anchor.bound {
 		return errors.New("fresh original shortcut restoration required")
 	}
 	n.attempted = true
@@ -385,5 +413,19 @@ func (n *nativeStartupRestoration) close() error {
 	if n == nil || n.files == nil {
 		return nil
 	}
-	return n.files.Close()
+	return errors.Join(n.anchor.close(), n.files.Close())
+}
+
+func (n *nativeStartupRestoration) bindRetirement(ctx context.Context, snapshot brokerpipe.DecommissionSnapshot) error {
+	if n == nil || n.anchor == nil || n.attempted {
+		return errors.New("original prepared baseline startup custody required")
+	}
+	if snapshot.ClientSID != n.clientSID || snapshot.Generation != n.record.Generation {
+		n.anchor.failed = true
+		return errors.New("original prepared baseline startup binding differs")
+	}
+	if err := n.anchor.bind(ctx, snapshot); err != nil {
+		return err
+	}
+	return n.check(ctx)
 }

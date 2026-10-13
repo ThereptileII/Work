@@ -58,7 +58,7 @@ func (m *MaintenanceOwner) BindDecommission(ctx context.Context, witness *broker
 		return errors.New("original native broker decommission witness required")
 	}
 	snapshot := witness.Snapshot()
-	if err := bindDecommissionFenceIdentityWith(m, ctx, witness, snapshot.ClientSID, snapshot.RegistrationSHA256); err != nil {
+	if err := bindDecommissionSnapshotWith(m, ctx, witness, snapshot.ClientSID, snapshot.RegistrationSHA256, &snapshot); err != nil {
 		return errors.Join(err, witness.Close())
 	}
 	return nil
@@ -78,6 +78,12 @@ func bindDecommissionFenceWith(m *MaintenanceOwner, ctx context.Context, fence d
 }
 
 func bindDecommissionFenceIdentityWith(m *MaintenanceOwner, ctx context.Context, fence decommissionFence, clientSID, registrationSHA string) (resultErr error) {
+	return bindDecommissionSnapshotWith(m, ctx, fence, clientSID, registrationSHA, nil)
+}
+
+// Only BindDecommission supplies a snapshot from the sealed native witness.
+// The private seam permits portable faults without accepting serialized proof.
+func bindDecommissionSnapshotWith(m *MaintenanceOwner, ctx context.Context, fence decommissionFence, clientSID, registrationSHA string, snapshot *brokerpipe.DecommissionSnapshot) (resultErr error) {
 	if m == nil || m.self != m {
 		return errors.New("original decommission owner required")
 	}
@@ -110,6 +116,22 @@ func bindDecommissionFenceIdentityWith(m *MaintenanceOwner, ctx context.Context,
 	if err := m.fence.Check(ctx, m.pid, birth.birth()); err != nil {
 		return err
 	}
+	if snapshot != nil && snapshot.RetirementSHA256 != "" && !m.startupPrepared {
+		return errors.New("protected uninstall requires original startup preparation before retirement")
+	}
+	if m.startupPrepared {
+		prepared, ok := m.startup.(preparedStartupRestorationBackend)
+		if !ok || snapshot == nil || !validPin(snapshot.RetirementSHA256) || snapshot.Generation != m.authority.client.Installed.Generation {
+			return errors.New("original baseline retirement witness required for prepared startup")
+		}
+		if err := prepared.bindRetirement(ctx, *snapshot); err != nil {
+			return err
+		}
+		if err := m.startupGuard(ctx); err != nil {
+			return err
+		}
+		m.startupBound = true
+	}
 	return m.check(ctx)
 }
 
@@ -123,7 +145,7 @@ func (m *MaintenanceOwner) Decommission(ctx context.Context) (result Decommissio
 	}
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	if !m.decommission || m.closed || m.failed || m.fence == nil || m.disableAttempted || m.stopAttempted || m.deleteAttempted {
+	if !m.decommission || m.closed || m.failed || m.fence == nil || m.disableAttempted || m.stopAttempted || m.deleteAttempted || m.startupPrepared && !m.startupBound {
 		return result, errors.New("fresh bound decommission attempt required")
 	}
 	defer func() {

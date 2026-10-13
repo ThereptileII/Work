@@ -40,6 +40,9 @@ func (f *refusedDecommissionOwner) Decommission(context.Context) (brokerenroll.D
 func (f *refusedDecommissionOwner) BindStartupRestoration(context.Context, *brokerenroll.ApprovedStartupPublication) error {
 	return errors.New("unexpected startup restoration")
 }
+func (f *refusedDecommissionOwner) PrepareStartupRestoration(context.Context, *brokerenroll.ApprovedStartupPublication) error {
+	return errors.New("unexpected startup preparation")
+}
 
 func TestOperatorDecommissionInvalidInputsHaveNoEffects(t *testing.T) {
 	raw := []byte("original request")
@@ -213,6 +216,7 @@ type startupDecommissionFixture struct {
 	witness                  *brokerpipe.DecommissionWitness
 	requested, fenced, bound bool
 	uninstall                bool
+	prepared                 bool
 	closed, witnessClosed    bool
 	cancel                   context.CancelFunc
 }
@@ -233,6 +237,28 @@ func (f *startupDecommissionFixture) BindDecommission(_ context.Context, witness
 		return err
 	}
 	f.fenced = true
+	if f.uninstall {
+		if !f.prepared {
+			f.t.Fatal("retirement witness preceded original startup custody")
+		}
+		if err := f.event("bind-retirement"); err != nil {
+			return err
+		}
+		f.bound = true
+	}
+	return nil
+}
+func (f *startupDecommissionFixture) PrepareStartupRestoration(_ context.Context, approved *brokerenroll.ApprovedStartupPublication) error {
+	if !f.uninstall || !f.requested || f.fenced || approved != f.approved || approved == nil {
+		f.t.Fatal("preparation lacked original publication or preceded retirement incorrectly")
+	}
+	if err := f.event("prepare-startup"); err != nil {
+		return err
+	}
+	f.prepared = true
+	if f.fault == "cancel-prepare" {
+		f.cancel()
+	}
 	return nil
 }
 func (f *startupDecommissionFixture) BindStartupRestoration(_ context.Context, approved *brokerenroll.ApprovedStartupPublication) error {
@@ -307,6 +333,9 @@ func (f *startupDecommissionFixture) run(request, publication []byte, output *by
 		expectedOperation := brokerpipe.PrepareDecommission
 		if f.uninstall {
 			expectedOperation = brokerpipe.PrepareUninstall
+			if !f.prepared {
+				f.t.Fatal("broker retirement preceded original startup preparation")
+			}
 		}
 		if q.Operation != expectedOperation || q.ExpectedSelectedHeadSHA256 != strings.Repeat("2", 64) {
 			f.t.Fatal("original terminal-fence operation or selected head changed")
@@ -414,7 +443,7 @@ func TestOperatorProtectedUninstallRequiresRetirementBeforeServiceEffects(t *tes
 	if err != nil || json.Unmarshal(output.Bytes(), &result) != nil || result["state"] != "protected-retired-service-decommissioned" || result["service"] != brokerenroll.ServiceMarkedForRemoval || result["startup"] != "original-shortcuts-restored" {
 		t.Fatalf("bad result: %s %v", output.String(), err)
 	}
-	want := []string{"read-request", "read-publication", "parse", "open", "check", "fence", "bind-fence", "bind-startup", "decommission", "close-owner", "close-witness"}
+	want := []string{"read-request", "read-publication", "parse", "open", "check", "prepare-startup", "fence", "bind-fence", "bind-retirement", "decommission", "close-owner", "close-witness"}
 	if !reflect.DeepEqual(f.events, want) {
 		t.Fatal(f.events)
 	}
@@ -425,7 +454,7 @@ func TestOperatorProtectedUninstallRetirementFailureNeverStopsOrRetries(t *testi
 	if err := f.run([]byte("request"), []byte("original publication"), &output); err == nil || output.Len() != 0 {
 		t.Fatal("retirement failure escaped")
 	}
-	want := []string{"read-request", "read-publication", "parse", "open", "check", "fence", "close-witness", "close-owner"}
+	want := []string{"read-request", "read-publication", "parse", "open", "check", "prepare-startup", "fence", "close-witness", "close-owner"}
 	if !reflect.DeepEqual(f.events, want) {
 		t.Fatalf("service effects or retry after uncertain retirement: %v", f.events)
 	}
@@ -436,5 +465,33 @@ func TestOperatorProtectedUninstallMissingStartupEvidenceRefusesBeforeReading(t 
 	var output bytes.Buffer
 	if err := f.run([]byte("request"), nil, &output); err == nil || output.Len() != 0 || len(f.events) != 0 {
 		t.Fatalf("startup ownership omitted: %v", f.events)
+	}
+}
+
+func TestOperatorProtectedUninstallPreparationAndBindingFaultsHaveNoServiceEffect(t *testing.T) {
+	for _, fault := range []string{"prepare-startup", "cancel-prepare", "bind-fence", "bind-retirement"} {
+		t.Run(fault, func(t *testing.T) {
+			f := &startupDecommissionFixture{t: t, uninstall: true, requested: true, fault: fault}
+			var output bytes.Buffer
+			if err := f.run([]byte("request"), []byte("original publication"), &output); err == nil || output.Len() != 0 {
+				t.Fatal("failed preparation/binding reported success")
+			}
+			calls := 0
+			for _, event := range f.events {
+				if event == "decommission" || event == "bind-startup" {
+					t.Fatal("failure bypassed original prepared custody", f.events)
+				}
+				if event == "fence" {
+					calls++
+				}
+			}
+			wantCalls := 1
+			if fault == "prepare-startup" || fault == "cancel-prepare" {
+				wantCalls = 0
+			}
+			if calls != wantCalls || !f.closed {
+				t.Fatal("incorrect one-shot request or owner cleanup", f.events)
+			}
+		})
 	}
 }

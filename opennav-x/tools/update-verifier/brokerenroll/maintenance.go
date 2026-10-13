@@ -85,6 +85,7 @@ type MaintenanceOwner struct {
 	deleteAttempted  bool
 	fence            decommissionFence
 	startupBound     bool
+	startupPrepared  bool
 	startup          startupRestorationBackend
 }
 
@@ -206,7 +207,7 @@ func (m *MaintenanceOwner) Check(ctx context.Context) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	err := m.check(ctx)
-	if err == nil && m.startupBound {
+	if err == nil && (m.startupBound || m.startupPrepared) {
 		if m.startup == nil {
 			err = errors.New("bound original shortcut owners missing")
 		} else {

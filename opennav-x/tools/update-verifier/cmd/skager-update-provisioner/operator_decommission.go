@@ -28,6 +28,7 @@ type decommissionOwner interface {
 	Check(context.Context) error
 	BindDecommission(context.Context, *brokerpipe.DecommissionWitness) error
 	BindStartupRestoration(context.Context, *brokerenroll.ApprovedStartupPublication) error
+	PrepareStartupRestoration(context.Context, *brokerenroll.ApprovedStartupPublication) error
 	Decommission(context.Context) (brokerenroll.DecommissionResult, error)
 	Close() error
 }
@@ -160,6 +161,14 @@ func runDecommissionWith(ctx context.Context, args []string, read func(string) (
 	if err = owner.Check(ctx); err != nil {
 		return refused
 	}
+	if *action == uninstallProtected {
+		// Retain the original launcher and all publication objects before the one
+		// broker call can move its generation. Binding the authenticated retirement
+		// witness below finalizes those SAME move-aware handles; no path reopening.
+		if err = owner.PrepareStartupRestoration(ctx, approved); err != nil || ctx.Err() != nil {
+			return refused
+		}
+	}
 	operation := brokerpipe.PrepareDecommission
 	if *action == uninstallProtected {
 		operation = brokerpipe.PrepareUninstall
@@ -175,7 +184,7 @@ func runDecommissionWith(ctx context.Context, args []string, read func(string) (
 	if err = owner.BindDecommission(ctx, witness); err != nil {
 		return refused
 	}
-	if hasPublication {
+	if hasPublication && *action == decommissionService {
 		if err = owner.BindStartupRestoration(ctx, approved); err != nil || ctx.Err() != nil {
 			return refused
 		}

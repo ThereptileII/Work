@@ -6,7 +6,11 @@ import (
 	"errors"
 	"reflect"
 	"runtime"
+	"strings"
 	"testing"
+
+	"example.com/opennav-update-verifier/brokerpipe"
+	"example.com/opennav-update-verifier/brokerregistration"
 )
 
 type startupRestorationFixture struct {
@@ -14,6 +18,181 @@ type startupRestorationFixture struct {
 	checks, moves, closes          int
 	failMove                       int
 	foreign, collision, closeFault bool
+}
+
+type preparedRestorationFixture struct {
+	*startupRestorationFixture
+	bound, bindFault bool
+	binds            int
+}
+
+func (s *preparedRestorationFixture) bindRetirement(context.Context, brokerpipe.DecommissionSnapshot) error {
+	s.binds++
+	s.d.events = append(s.d.events, "bind-retirement")
+	if s.bindFault {
+		return errors.New("same retained launcher is outside fixed retirement")
+	}
+	s.bound = true
+	return nil
+}
+func (s *preparedRestorationFixture) restore(ctx context.Context, guard func(context.Context) error) error {
+	if !s.bound {
+		return errors.New("original retirement not bound")
+	}
+	return s.startupRestorationFixture.restore(ctx, guard)
+}
+
+func prepareRestorationFixture(t *testing.T, owner *MaintenanceOwner, fixture *preparedRestorationFixture) error {
+	t.Helper()
+	approved := approvedRestorationFixture(t, owner)
+	return prepareStartupRestorationWith(owner, context.Background(), approved, func(ctx context.Context, authority maintenanceAuthority, record startupBindingRecord, raw []byte) (startupRestorationBackend, error) {
+		if record.ClientRequestSHA256 != authority.client.RequestSHA256 || digest(raw) != approved.SHA256() {
+			t.Fatal("original startup preparation lost approved identity")
+		}
+		fixture.d.events = append(fixture.d.events, "prepare-startup")
+		return fixture, nil
+	})
+}
+
+func preparedRetirementSnapshot(t *testing.T, owner *MaintenanceOwner) brokerpipe.DecommissionSnapshot {
+	t.Helper()
+	raw, err := brokerregistration.EncodeProtectedRecord(owner.authority.client)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return brokerpipe.DecommissionSnapshot{RequestID: strings.Repeat("1", 32), ClientSID: owner.authority.client.ClientSID,
+		RegistrationSHA256: digest(raw), Generation: owner.authority.client.Installed.Generation, RetirementSHA256: strings.Repeat("a", 64)}
+}
+
+func TestPreparedStartupRequiresOriginalRetirementBeforeRestorationAndSCM(t *testing.T) {
+	d := newDecommissionFixture(t)
+	owner, err := openMaintenanceModeWith(context.Background(), d.req, d.op, true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer owner.Close()
+	s := &preparedRestorationFixture{startupRestorationFixture: &startupRestorationFixture{d: d}}
+	if err := prepareRestorationFixture(t, owner, s); err != nil {
+		t.Fatal(err)
+	}
+	if err := owner.Check(context.Background()); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := owner.Decommission(context.Background()); err == nil || d.disables != 0 || s.moves != 0 || s.binds != 0 {
+		t.Fatal("unbound preparation performed namespace/SCM effects")
+	}
+	witness := &decommissionFenceFixture{events: &d.events}
+	snapshot := preparedRetirementSnapshot(t, owner)
+	if err := bindDecommissionSnapshotWith(owner, context.Background(), witness, snapshot.ClientSID, snapshot.RegistrationSHA256, &snapshot); err != nil {
+		t.Fatal(err)
+	}
+	if s.binds != 1 || s.moves != 0 || d.disables != 0 || !owner.startupBound {
+		t.Fatal("binding did not only finalize original startup custody")
+	}
+	if _, err := owner.Decommission(context.Background()); err != nil {
+		t.Fatal(err)
+	}
+	prepared, bound, lastMove, disable := -1, -1, -1, -1
+	for i, event := range d.events {
+		switch event {
+		case "prepare-startup":
+			prepared = i
+		case "bind-retirement":
+			bound = i
+		case "shortcut-move":
+			lastMove = i
+		case "disable":
+			disable = i
+		}
+	}
+	if prepared < 0 || bound <= prepared || lastMove <= bound || disable <= lastMove || s.binds != 1 || s.moves != 4 || s.closes != 1 {
+		t.Fatal("original prepared ownership or effect order lost", d.events)
+	}
+}
+
+func TestPreparedStartupRefusalsConsumeOwnerWithoutSCMOrFallback(t *testing.T) {
+	for _, fault := range []string{"no-snapshot", "service-only", "wrong-generation", "bind", "witness", "zero-native-witness", "no-preparation"} {
+		t.Run(fault, func(t *testing.T) {
+			d := newDecommissionFixture(t)
+			owner, err := openMaintenanceModeWith(context.Background(), d.req, d.op, true)
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer owner.Close()
+			s := &preparedRestorationFixture{startupRestorationFixture: &startupRestorationFixture{d: d}, bindFault: fault == "bind"}
+			if fault != "no-preparation" {
+				if err := prepareRestorationFixture(t, owner, s); err != nil {
+					t.Fatal(err)
+				}
+			}
+			witness := &decommissionFenceFixture{events: &d.events}
+			snapshot := preparedRetirementSnapshot(t, owner)
+			receipt := &snapshot
+			switch fault {
+			case "no-snapshot":
+				receipt = nil
+			case "service-only":
+				snapshot.RetirementSHA256 = ""
+			case "wrong-generation":
+				snapshot.Generation = strings.Repeat("f", 32)
+			case "witness":
+				witness.failAt = 1
+			}
+			if fault == "zero-native-witness" {
+				err = owner.BindDecommission(context.Background(), &brokerpipe.DecommissionWitness{})
+			} else {
+				err = bindDecommissionSnapshotWith(owner, context.Background(), witness, snapshot.ClientSID, snapshot.RegistrationSHA256, receipt)
+			}
+			if err == nil {
+				t.Fatal("invalid prepared retirement bound")
+			}
+			if _, err := owner.Decommission(context.Background()); err == nil || d.disables != 0 || s.moves != 0 {
+				t.Fatal("failed prepared binding bypassed by service-only decommission")
+			}
+			if err := bindRestorationFixture(t, owner, s.startupRestorationFixture); err == nil {
+				t.Fatal("failed preparation fell back to a post-retirement path opener")
+			}
+		})
+	}
+}
+
+func TestPreparedStartupMissingOrChangedOriginalNeverAcquiresFence(t *testing.T) {
+	for _, fault := range []string{"nil-approval", "open", "incomplete-backend", "foreign"} {
+		t.Run(fault, func(t *testing.T) {
+			d := newDecommissionFixture(t)
+			owner, err := openMaintenanceModeWith(context.Background(), d.req, d.op, true)
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer owner.Close()
+			s := &preparedRestorationFixture{startupRestorationFixture: &startupRestorationFixture{d: d, foreign: fault == "foreign"}}
+			approved := approvedRestorationFixture(t, owner)
+			if fault == "nil-approval" {
+				approved = nil
+			}
+			err = prepareStartupRestorationWith(owner, context.Background(), approved, func(context.Context, maintenanceAuthority, startupBindingRecord, []byte) (startupRestorationBackend, error) {
+				if fault == "open" {
+					return s, errors.New("partial original open")
+				}
+				if fault == "incomplete-backend" {
+					return s.startupRestorationFixture, nil
+				}
+				return s, nil
+			})
+			if err == nil || !owner.failed || owner.fence != nil || d.disables != 0 {
+				t.Fatal("failed original preparation was not revoked")
+			}
+			if err := prepareRestorationFixture(t, owner, s); err == nil {
+				t.Fatal("preparation retried")
+			}
+			if err := owner.Close(); err != nil {
+				t.Fatal(err)
+			}
+			if fault != "nil-approval" && s.closes != 1 {
+				t.Fatal("partial prepared owner not drained once")
+			}
+		})
+	}
 }
 
 func (s *startupRestorationFixture) check(context.Context) error {
