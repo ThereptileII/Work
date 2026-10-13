@@ -9,7 +9,7 @@ import (
 )
 
 func TestOperatorStructuredResultHasNoTrailingCompletionText(t *testing.T) {
-	for _, action := range []string{"manual-rollback", "selected-history", "decommission-service"} {
+	for _, action := range []string{"manual-rollback", "selected-history", "decommission-service", "uninstall-protected"} {
 		var output bytes.Buffer
 		if err := json.NewEncoder(&output).Encode(map[string]string{"state": action}); err != nil {
 			t.Fatal(err)

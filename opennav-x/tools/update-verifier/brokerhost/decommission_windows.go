@@ -12,9 +12,11 @@ import (
 	"example.com/opennav-update-verifier/launcher"
 )
 
-// This prepares a permanent startup fence only. The same service-local original
-// application must have exited normally; restart-lost custody refuses. The
-// current profile is frozen through publication/readback and never written. All
+// Service-only preparation publishes a permanent startup fence. The separate
+// protected uninstall retires original selected application and registration
+// custody before returning the authenticated witness; it never touches profiles.
+// The same service-local original application must have exited normally;
+// restart-lost custody refuses. The current profile is frozen through publication/readback and never written. All
 // histories, code, trust floors and the untouched stock remain recovery backup.
 func (e *engine) handlePrepareDecommission(ctx context.Context, peer brokerpipe.Peer, q brokerpipe.MaintenanceRequest) (result brokerpipe.MaintenanceResult, resultErr error) {
 	defer func() {
@@ -122,6 +124,29 @@ func (e *engine) handlePrepareDecommission(ctx context.Context, peer brokerpipe.
 			return standalone(ctx)
 		}
 		binding := brokerstore.DecommissionBinding{RequestID: q.RequestID, ClientSID: registered.ClientSID, RegistrationSHA256: registrationDigest, SelectedHeadSHA256: selected.selected.head, GenerationID: selected.selected.generation, CompletionSHA256: selected.selected.completion, ProfileSHA256: frozen.contents, ProfileIdentitySHA256: frozen.identity}
+		if q.Operation == brokerpipe.PrepareUninstall {
+			// Capture original physical identities and protected parent custody while
+			// the full selected owner still validates. Only then release its read-only
+			// generation/journal handles, which cannot coexist with DELETE custody.
+			preparation, err := adapter.Store.PrepareRetiringDecommission(ctx, binding, guard)
+			if err != nil {
+				return err
+			}
+			defer func() { callbackErr = errors.Join(callbackErr, preparation.Close()) }()
+			if err = errors.Join(preparation.Validate(ctx), guard(ctx)); err != nil {
+				return err
+			}
+			// Commit must match the previously captured original identities before the
+			// terminal fence; no pathname scan or post-fence reopening grants authority.
+			fence, retirement, err := commitPreparedRetirement(ctx, selected.Close, func(ctx context.Context) (retirementReceipt, error) {
+				return preparation.Commit(ctx, standalone)
+			}, standalone)
+			if err != nil {
+				return err
+			}
+			result = brokerpipe.MaintenanceResult{Schema: 1, RequestID: q.RequestID, State: "uninstall-prepared", Generation: binding.GenerationID, CompletionSHA256: binding.CompletionSHA256, SelectedHeadSHA256: binding.SelectedHeadSHA256, ClientSID: binding.ClientSID, RegistrationSHA256: binding.RegistrationSHA256, CurrentProfileSHA256: binding.ProfileSHA256, CurrentProfileIdentitySHA256: binding.ProfileIdentitySHA256, FenceSHA256: fence, RetirementSHA256: retirement}
+			return nil
+		}
 		receipt, err := adapter.Store.CommitDecommission(ctx, binding, guard)
 		if err != nil {
 			return err

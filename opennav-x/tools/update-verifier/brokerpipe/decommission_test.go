@@ -126,3 +126,59 @@ func TestDecommissionWitnessFailureSticky(t *testing.T) {
 		t.Fatal("poisoned owner cleanup")
 	}
 }
+
+func TestProtectedUninstallProtocolCannotDowngradeToFenceOnly(t *testing.T) {
+	q, r := decommissionFixture()
+	q.Operation = PrepareUninstall
+	r.State = "uninstall-prepared"
+	r.RetirementSHA256 = strings.Repeat("9", 64)
+	request, err := encodeMaintenanceRequest(q)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err = decodeMaintenanceRequest(request); err != nil {
+		t.Fatal(err)
+	}
+	response, _ := json.Marshal(r)
+	if _, err = decodeMaintenanceResult(response, q); err != nil {
+		t.Fatal(err)
+	}
+	backend := &decommissionWitnessFixture{}
+	witness, err := newDecommissionWitness(context.Background(), q, r, 11, 12, backend)
+	if err != nil || witness.Snapshot().RetirementSHA256 != r.RetirementSHA256 {
+		t.Fatal("retirement omitted from sealed custody", err)
+	}
+	if err = witness.Check(context.Background(), 11, 12); err != nil {
+		t.Fatal(err)
+	}
+	if err = witness.Close(); err != nil {
+		t.Fatal(err)
+	}
+	for _, mutate := range []func(*MaintenanceResult){
+		func(r *MaintenanceResult) { r.RetirementSHA256 = "" },
+		func(r *MaintenanceResult) { r.RetirementSHA256 = "invalid" },
+		func(r *MaintenanceResult) { r.State = "decommission-prepared" },
+		func(r *MaintenanceResult) { r.FenceSHA256 = "" },
+	} {
+		bad := r
+		mutate(&bad)
+		raw, _ := json.Marshal(bad)
+		if _, err := decodeMaintenanceResult(raw, q); err == nil {
+			t.Fatal("uninstall accepted incomplete retirement")
+		}
+		if _, err := newDecommissionWitness(context.Background(), q, bad, 11, 12, &decommissionWitnessFixture{}); err == nil {
+			t.Fatal("incomplete retirement constructed witness")
+		}
+	}
+	plain, _ := decommissionFixture()
+	if validMaintenanceResult(r, plain) {
+		t.Fatal("uninstall response accepted for service-only request")
+	}
+	if _, err := decodeMaintenanceResult(response, plain); err == nil {
+		t.Fatal("service-only schema expanded")
+	}
+	q.Operation = ManualRollback
+	if validMaintenanceResult(r, q) {
+		t.Fatal("uninstall response accepted by ordinary maintenance")
+	}
+}

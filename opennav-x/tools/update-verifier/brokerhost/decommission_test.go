@@ -74,3 +74,69 @@ func TestDecommissionRequestClosedForm(t *testing.T) {
 		}
 	}
 }
+
+type retirementReceiptFixture struct {
+	events *[]string
+	fault  string
+}
+
+func (r retirementReceiptFixture) event(name string) error {
+	*r.events = append(*r.events, name)
+	if r.fault == name {
+		return errors.New(name)
+	}
+	return nil
+}
+func (r retirementReceiptFixture) Validate(context.Context) error { return r.event("retired") }
+func (r retirementReceiptFixture) FenceSHA256(context.Context) (string, error) {
+	return strings.Repeat("a", 64), r.event("fence")
+}
+func (r retirementReceiptFixture) EvidenceSHA256(context.Context) (string, error) {
+	return strings.Repeat("b", 64), r.event("retirement")
+}
+func TestProtectedUninstallHandoffAndCompletionFaults(t *testing.T) {
+	for _, fault := range []string{"", "release", "cancel-release", "commit", "nil-receipt", "retired", "standalone", "fence", "retirement"} {
+		t.Run(fault, func(t *testing.T) {
+			var events []string
+			ctx, cancel := context.WithCancel(context.Background())
+			defer cancel()
+			fence, retired, err := commitPreparedRetirement(ctx, func() error {
+				events = append(events, "release")
+				if fault == "cancel-release" {
+					cancel()
+				}
+				if fault == "release" {
+					return errors.New("selected close uncertain")
+				}
+				return nil
+			}, func(context.Context) (retirementReceipt, error) {
+				events = append(events, "commit")
+				if fault == "commit" {
+					return nil, errors.New("partial retirement")
+				}
+				if fault == "nil-receipt" {
+					return nil, nil
+				}
+				return retirementReceiptFixture{&events, fault}, nil
+			}, func(context.Context) error {
+				events = append(events, "standalone")
+				if fault == "standalone" {
+					return errors.New("profile changed")
+				}
+				return nil
+			})
+			if fault == "" {
+				if err != nil || len(fence) != 64 || len(retired) != 64 || strings.Join(events, ",") != "release,commit,retired,standalone,fence,retirement,retired,standalone" {
+					t.Fatalf("%v %v", events, err)
+				}
+			} else {
+				if !errors.Is(err, brokerstore.ErrDecommissionUncertain) || fence != "" || retired != "" {
+					t.Fatalf("retirement success escaped %s: %v", fault, err)
+				}
+				if (fault == "release" || fault == "cancel-release") && strings.Contains(strings.Join(events, ","), "commit") {
+					t.Fatal("mutation after failed original reader release")
+				}
+			}
+		})
+	}
+}

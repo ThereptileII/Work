@@ -123,7 +123,7 @@ func serveMaintenanceOne(parent context.Context, h windows.Handle, handler Maint
 // An error after transmission can mean committed effects; inspect protected
 // history through a new operator action rather than repeat this request.
 func CallMaintenance(ctx context.Context, q MaintenanceRequest) (result MaintenanceResult, resultErr error) {
-	if ctx == nil || ctx.Err() != nil || q.Operation == PrepareDecommission {
+	if ctx == nil || ctx.Err() != nil || q.Operation == PrepareDecommission || q.Operation == PrepareUninstall {
 		return result, ErrRefused
 	}
 	raw, err := encodeMaintenanceRequest(q)

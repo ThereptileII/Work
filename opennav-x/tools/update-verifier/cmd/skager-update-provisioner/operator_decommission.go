@@ -17,6 +17,7 @@ import (
 )
 
 const decommissionService = "decommission-service"
+const uninstallProtected = "uninstall-protected"
 
 // Matches the existing purpose-bound publication parser. The shared input
 // reader remains bounded by MaxRequestBytes; this narrower record is checked
@@ -51,7 +52,7 @@ func openDecommissionNative(ctx context.Context, request brokerenroll.Maintenanc
 func decommissionRequested(args []string) bool {
 	for i, arg := range args {
 		name, value, inline := strings.Cut(arg, "=")
-		if name == "--maintenance" && ((inline && value == decommissionService) || (!inline && i+1 < len(args) && args[i+1] == decommissionService)) {
+		if name == "--maintenance" && ((inline && (value == decommissionService || value == uninstallProtected)) || (!inline && i+1 < len(args) && (args[i+1] == decommissionService || args[i+1] == uninstallProtected))) {
 			return true
 		}
 	}
@@ -61,7 +62,8 @@ func decommissionRequested(args []string) bool {
 // This explicit elevated operator invocation owns the original service BEFORE
 // asking that same broker to publish its terminal fence. Explicitly requested
 // original shortcut restoration binds to that SAME fenced owner before its
-// Decommission operation; no file/profile effect follows service shutdown.
+// Decommission operation. Protected uninstall first completes native retirement
+// through the same live broker; no file/profile effect follows service shutdown.
 // The native witness is never reconstructed from JSON.
 func runDecommission(ctx context.Context, args []string, read func(string) ([]byte, error), open decommissionOpener, call decommissionCaller, output io.Writer) (resultErr error) {
 	return runDecommissionWith(ctx, args, read, open, call, output, decommissionOperations{
@@ -86,7 +88,7 @@ func runDecommissionWith(ctx context.Context, args []string, read func(string) (
 	}
 	flags := flag.NewFlagSet("skager-update-provisioner service decommission", flag.ContinueOnError)
 	flags.SetOutput(io.Discard)
-	action := flags.String("maintenance", "", "explicit terminal decommission; original startup restoration requires separate paired approval")
+	action := flags.String("maintenance", "", "explicit decommission-service or uninstall-protected; optional original startup restoration requires paired approval")
 	broker := flags.String("broker-sha256", "", "independently approved installed broker hash")
 	clientPath := flags.String("client-registration-request", "", "original independently approved request file")
 	clientSHA := flags.String("client-registration-request-sha256", "", "independently approved original request hash")
@@ -116,7 +118,10 @@ func runDecommissionWith(ctx context.Context, args []string, read func(string) (
 	if hasPublication {
 		expected += 2
 	}
-	if flags.Parse(args) != nil || flags.NArg() != 0 || len(seen) != expected || *action != decommissionService || !pin(*broker) || !pin(*clientSHA) || !pin(*head) || !manualRollbackID(*requestID) || *clientPath == "" {
+	if flags.Parse(args) != nil || flags.NArg() != 0 || len(seen) != expected || (*action != decommissionService && *action != uninstallProtected) || !pin(*broker) || !pin(*clientSHA) || !pin(*head) || !manualRollbackID(*requestID) || *clientPath == "" {
+		return refused
+	}
+	if *action == uninstallProtected && !hasPublication {
 		return refused
 	}
 	if hasPublication && (!seen["original-startup-publication"] || !seen["original-startup-publication-sha256"] || *publicationPath == "" || !pin(*publicationSHA)) {
@@ -155,7 +160,11 @@ func runDecommissionWith(ctx context.Context, args []string, read func(string) (
 	if err = owner.Check(ctx); err != nil {
 		return refused
 	}
-	witness, err := call(ctx, brokerpipe.MaintenanceRequest{Schema: 1, Operation: brokerpipe.PrepareDecommission,
+	operation := brokerpipe.PrepareDecommission
+	if *action == uninstallProtected {
+		operation = brokerpipe.PrepareUninstall
+	}
+	witness, err := call(ctx, brokerpipe.MaintenanceRequest{Schema: 1, Operation: operation,
 		RequestID: *requestID, ExpectedSelectedHeadSHA256: *head})
 	if witness != nil {
 		defer func() { resultErr = errors.Join(resultErr, op.closeWitness(witness)) }()
@@ -184,11 +193,15 @@ func runDecommissionWith(ctx context.Context, args []string, read func(string) (
 	if hasPublication {
 		startup = "original-shortcuts-restored"
 	}
+	state := "service-decommissioned"
+	if *action == uninstallProtected {
+		state = "protected-retired-service-decommissioned"
+	}
 	return json.NewEncoder(output).Encode(struct {
 		Schema    int    `json:"schema"`
 		RequestID string `json:"requestId"`
 		State     string `json:"state"`
 		Service   string `json:"service"`
 		Startup   string `json:"startup,omitempty"`
-	}{1, *requestID, "service-decommissioned", result.Service, startup})
+	}{1, *requestID, state, result.Service, startup})
 }

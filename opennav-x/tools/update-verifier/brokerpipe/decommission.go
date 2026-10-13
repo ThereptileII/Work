@@ -14,6 +14,7 @@ type DecommissionSnapshot struct {
 	RequestID, ClientSID, RegistrationSHA256                        string
 	Generation, CompletionSHA256, SelectedHeadSHA256                string
 	CurrentProfileSHA256, CurrentProfileIdentitySHA256, FenceSHA256 string
+	RetirementSHA256                                                string
 	SourcePID                                                       uint32
 	SourceCreation                                                  uint64
 }
@@ -36,16 +37,17 @@ type DecommissionWitness struct {
 }
 
 func emptyDecommissionResult(r MaintenanceResult) bool {
-	return r.ClientSID == "" && r.RegistrationSHA256 == "" && r.CurrentProfileSHA256 == "" && r.CurrentProfileIdentitySHA256 == "" && r.FenceSHA256 == ""
+	return r.ClientSID == "" && r.RegistrationSHA256 == "" && r.CurrentProfileSHA256 == "" && r.CurrentProfileIdentitySHA256 == "" && r.FenceSHA256 == "" && r.RetirementSHA256 == ""
 }
 func validDecommissionResult(r MaintenanceResult, q MaintenanceRequest) bool {
-	return q.Operation == PrepareDecommission && r.State == "decommission-prepared" && r.Schema == 1 && r.RequestID == q.RequestID && r.SelectedHeadSHA256 == q.ExpectedSelectedHeadSHA256 && id32.MatchString(r.Generation) && hex64.MatchString(r.CompletionSHA256) && brokerregistration.IsCanonicalUserSID(r.ClientSID) && hex64.MatchString(r.RegistrationSHA256) && hex64.MatchString(r.CurrentProfileSHA256) && hex64.MatchString(r.CurrentProfileIdentitySHA256) && hex64.MatchString(r.FenceSHA256) && r.Version == "" && r.Commit == "" && r.QualificationSHA256 == "" && r.QualificationClosedSHA256 == "" && r.InventorySHA256 == "" && r.Page == nil && r.NextPage == nil && r.Ancestors == nil
+	terminal := q.Operation == PrepareDecommission && r.State == "decommission-prepared" && r.RetirementSHA256 == "" || q.Operation == PrepareUninstall && r.State == "uninstall-prepared" && hex64.MatchString(r.RetirementSHA256)
+	return terminal && r.Schema == 1 && r.RequestID == q.RequestID && r.SelectedHeadSHA256 == q.ExpectedSelectedHeadSHA256 && id32.MatchString(r.Generation) && hex64.MatchString(r.CompletionSHA256) && brokerregistration.IsCanonicalUserSID(r.ClientSID) && hex64.MatchString(r.RegistrationSHA256) && hex64.MatchString(r.CurrentProfileSHA256) && hex64.MatchString(r.CurrentProfileIdentitySHA256) && hex64.MatchString(r.FenceSHA256) && r.Version == "" && r.Commit == "" && r.QualificationSHA256 == "" && r.QualificationClosedSHA256 == "" && r.InventorySHA256 == "" && r.Page == nil && r.NextPage == nil && r.Ancestors == nil
 }
 func newDecommissionWitness(ctx context.Context, q MaintenanceRequest, r MaintenanceResult, pid uint32, creation uint64, b decommissionWitnessBackend) (*DecommissionWitness, error) {
 	if ctx == nil || ctx.Err() != nil || !validMaintenanceRequest(q) || !validDecommissionResult(r, q) || pid == 0 || creation == 0 || b == nil {
 		return nil, ErrRefused
 	}
-	w := &DecommissionWitness{ctx: ctx, backend: b, snapshot: DecommissionSnapshot{r.RequestID, r.ClientSID, r.RegistrationSHA256, r.Generation, r.CompletionSHA256, r.SelectedHeadSHA256, r.CurrentProfileSHA256, r.CurrentProfileIdentitySHA256, r.FenceSHA256, pid, creation}}
+	w := &DecommissionWitness{ctx: ctx, backend: b, snapshot: DecommissionSnapshot{r.RequestID, r.ClientSID, r.RegistrationSHA256, r.Generation, r.CompletionSHA256, r.SelectedHeadSHA256, r.CurrentProfileSHA256, r.CurrentProfileIdentitySHA256, r.FenceSHA256, r.RetirementSHA256, pid, creation}}
 	w.self = w
 	return w, nil
 }

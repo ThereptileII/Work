@@ -16,7 +16,7 @@ import (
 // historical version. Current data and original process-exit custody are kept
 // through committed-history readback. Missing custody after SCM restart refuses.
 func (e *engine) handleNativeMaintenance(ctx context.Context, peer brokerpipe.Peer, q brokerpipe.MaintenanceRequest) (result brokerpipe.MaintenanceResult, resultErr error) {
-	if q.Operation == brokerpipe.PrepareDecommission {
+	if q.Operation == brokerpipe.PrepareDecommission || q.Operation == brokerpipe.PrepareUninstall {
 		return e.handlePrepareDecommission(ctx, peer, q)
 	}
 	if q.Operation == brokerpipe.SelectedHistory {

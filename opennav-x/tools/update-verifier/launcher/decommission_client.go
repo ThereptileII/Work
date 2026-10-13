@@ -13,7 +13,7 @@ type decommissionClientCall func(context.Context, brokerpipe.MaintenanceRequest)
 // validation/restoration uncertainty destroys the returned native witness and
 // withholds success; a transmitted action is never automatically repeated.
 func callDecommissionWithCustody(ctx context.Context, q brokerpipe.MaintenanceRequest, prepareQuery, prepareFolder maintenanceClientPrepare, call decommissionClientCall) (witness *brokerpipe.DecommissionWitness, retErr error) {
-	if ctx == nil || ctx.Err() != nil || prepareQuery == nil || prepareFolder == nil || call == nil || q.Schema != 1 || q.Operation != brokerpipe.PrepareDecommission || !maintenanceClientHex(q.RequestID, 32) || !maintenanceClientHex(q.ExpectedSelectedHeadSHA256, 64) || q.TargetGeneration != "" || q.TargetCompletionSHA256 != "" || q.Page != nil || q.InventorySHA256 != "" {
+	if ctx == nil || ctx.Err() != nil || prepareQuery == nil || prepareFolder == nil || call == nil || q.Schema != 1 || (q.Operation != brokerpipe.PrepareDecommission && q.Operation != brokerpipe.PrepareUninstall) || !maintenanceClientHex(q.RequestID, 32) || !maintenanceClientHex(q.ExpectedSelectedHeadSHA256, 64) || q.TargetGeneration != "" || q.TargetCompletionSHA256 != "" || q.Page != nil || q.InventorySHA256 != "" {
 		return nil, errMaintenanceClient
 	}
 	defer func() {

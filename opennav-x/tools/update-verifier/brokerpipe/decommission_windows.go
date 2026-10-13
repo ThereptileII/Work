@@ -122,7 +122,7 @@ func (n *nativeDecommissionWitness) close() error {
 // process/token/image handles transfer into a nonserializable witness. A lost
 // response can mean a permanent fence; never retry or infer an absent fence.
 func CallDecommission(ctx context.Context, q MaintenanceRequest) (witness *DecommissionWitness, resultErr error) {
-	if ctx == nil || ctx.Err() != nil || q.Operation != PrepareDecommission {
+	if ctx == nil || ctx.Err() != nil || (q.Operation != PrepareDecommission && q.Operation != PrepareUninstall) {
 		return nil, ErrRefused
 	}
 	raw, err := encodeMaintenanceRequest(q)

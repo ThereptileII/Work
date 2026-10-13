@@ -119,12 +119,12 @@ func TestOperatorDecommissionRequiresOriginalServiceBeforeFenceRequest(t *testin
 }
 
 func TestDecommissionDispatchSelectsOnlyExplicitAction(t *testing.T) {
-	for _, args := range [][]string{{"--maintenance=decommission-service"}, {"--maintenance", "decommission-service"}} {
+	for _, args := range [][]string{{"--maintenance=decommission-service"}, {"--maintenance", "decommission-service"}, {"--maintenance=uninstall-protected"}, {"--maintenance", "uninstall-protected"}} {
 		if !decommissionRequested(args) {
 			t.Fatal("explicit action ignored")
 		}
 	}
-	for _, args := range [][]string{nil, {"--maintenance=uninstall"}, {"--maintenance=decommission-service-extra"}, {"--maintenance-other=decommission-service"}} {
+	for _, args := range [][]string{nil, {"--maintenance=uninstall"}, {"--maintenance=decommission-service-extra"}, {"--maintenance-other=decommission-service"}, {"--maintenance=uninstall-protected-extra"}} {
 		if decommissionRequested(args) {
 			t.Fatal("unrelated action selected")
 		}
@@ -212,6 +212,7 @@ type startupDecommissionFixture struct {
 	approved                 *brokerenroll.ApprovedStartupPublication
 	witness                  *brokerpipe.DecommissionWitness
 	requested, fenced, bound bool
+	uninstall                bool
 	closed, witnessClosed    bool
 	cancel                   context.CancelFunc
 }
@@ -278,6 +279,9 @@ func (f *startupDecommissionFixture) run(request, publication []byte, output *by
 	if f.requested {
 		args = decommissionPublicationArguments(request, publication)
 	}
+	if f.uninstall {
+		args[0] = "--maintenance=" + uninstallProtected
+	}
 	ctx, cancel := context.WithCancel(context.Background())
 	f.cancel = cancel
 	defer cancel()
@@ -300,7 +304,11 @@ func (f *startupDecommissionFixture) run(request, publication []byte, output *by
 		err := f.event("open")
 		return f, err
 	}, func(_ context.Context, q brokerpipe.MaintenanceRequest) (*brokerpipe.DecommissionWitness, error) {
-		if q.Operation != brokerpipe.PrepareDecommission || q.ExpectedSelectedHeadSHA256 != strings.Repeat("2", 64) {
+		expectedOperation := brokerpipe.PrepareDecommission
+		if f.uninstall {
+			expectedOperation = brokerpipe.PrepareUninstall
+		}
+		if q.Operation != expectedOperation || q.ExpectedSelectedHeadSHA256 != strings.Repeat("2", 64) {
 			f.t.Fatal("original terminal-fence operation or selected head changed")
 		}
 		err := f.event("fence")
@@ -395,5 +403,38 @@ func TestOperatorDecommissionStartupFaultsNeverFallBackRetryOrReportSuccess(t *t
 				t.Fatalf("SCM opened before approval or original owner leaked: %v", f.events)
 			}
 		})
+	}
+}
+
+func TestOperatorProtectedUninstallRequiresRetirementBeforeServiceEffects(t *testing.T) {
+	f := &startupDecommissionFixture{t: t, requested: true, uninstall: true}
+	var output bytes.Buffer
+	err := f.run([]byte("request"), []byte("original publication"), &output)
+	var result map[string]any
+	if err != nil || json.Unmarshal(output.Bytes(), &result) != nil || result["state"] != "protected-retired-service-decommissioned" || result["service"] != brokerenroll.ServiceMarkedForRemoval || result["startup"] != "original-shortcuts-restored" {
+		t.Fatalf("bad result: %s %v", output.String(), err)
+	}
+	want := []string{"read-request", "read-publication", "parse", "open", "check", "fence", "bind-fence", "bind-startup", "decommission", "close-owner", "close-witness"}
+	if !reflect.DeepEqual(f.events, want) {
+		t.Fatal(f.events)
+	}
+}
+func TestOperatorProtectedUninstallRetirementFailureNeverStopsOrRetries(t *testing.T) {
+	f := &startupDecommissionFixture{t: t, uninstall: true, requested: true, fault: "fence"}
+	var output bytes.Buffer
+	if err := f.run([]byte("request"), []byte("original publication"), &output); err == nil || output.Len() != 0 {
+		t.Fatal("retirement failure escaped")
+	}
+	want := []string{"read-request", "read-publication", "parse", "open", "check", "fence", "close-witness", "close-owner"}
+	if !reflect.DeepEqual(f.events, want) {
+		t.Fatalf("service effects or retry after uncertain retirement: %v", f.events)
+	}
+}
+
+func TestOperatorProtectedUninstallMissingStartupEvidenceRefusesBeforeReading(t *testing.T) {
+	f := &startupDecommissionFixture{t: t, uninstall: true}
+	var output bytes.Buffer
+	if err := f.run([]byte("request"), nil, &output); err == nil || output.Len() != 0 || len(f.events) != 0 {
+		t.Fatalf("startup ownership omitted: %v", f.events)
 	}
 }

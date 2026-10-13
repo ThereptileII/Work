@@ -31,8 +31,9 @@ including the original normal shortcut when one existed. Do not reconstruct the
 record from a current directory scan, create a replacement record or calculate
 a fresh local hash and call it independent approval.
 
-Both options are required together and are accepted only for the explicit
-`decommission-service` action. Missing/empty options, malformed/uppercase approval
+Both options are required together for explicit `decommission-service` or
+`uninstall-protected`. The service-only action keeps them optional; protected
+retirement requires the pair because omission cannot prove original absence. Missing/empty options, malformed/uppercase approval
 pins, duplicate/unknown options and conflicting arguments refuse before reading
 records or obtaining SCM ownership. The original request is read through the existing bounded reader,
 owned and checked against its separately approved original pin. The publication
