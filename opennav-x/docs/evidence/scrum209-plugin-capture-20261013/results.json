@@ -182,10 +182,13 @@
       "status": "passed"
     },
     "nativeProof": {
-      "status": "pending",
+      "status": "failed",
       "workflowCommit": "97879a1146367817ff4076caf7ff8b98a5aab02c",
-      "runId": null,
-      "scope": "Actual dumpbin/Python/inert-file metadata helper probe; no product execution or full application build"
+      "runId": 38454485025,
+      "scope": "First native helper test run failed fixture assertions; subsequent proof is recorded separately below",
+      "testsRun": 34,
+      "failureDiagnostics": 4,
+      "skipped": 2
     },
     "originalProductRevisionRelabeled": false
   },
@@ -196,11 +199,288 @@
     "failureRunMetadataSha256": "227aba48925aa7dedcae3aa8fb55b723c329068496a8a5a2620690b26f145c9a"
   },
   "acceptance": {
-    "nativeHelperProof": "pending",
+    "nativeHelperProof": "passed-scoped-helper-only",
     "nativePluginGuard": "not-run",
     "installedProduct": "not-qualified",
     "productAcceptance": false,
     "boatAcceptance": false,
     "publicAccessAuthorized": false
+  },
+  "nativeFollowups": [
+    {
+      "runId": 38454485025,
+      "attempt": 1,
+      "sourceCommit": "97879a1146367817ff4076caf7ff8b98a5aab02c",
+      "url": "https://github.com/ThereptileII/Work/actions/runs/38454485025",
+      "workflow": ".github/workflows/skager-native-python-contracts.yml",
+      "status": "failure",
+      "testsRun": 34,
+      "skipped": 2,
+      "skipReason": "Case-sensitive negative fixture is portable-host only",
+      "skippedTests": [
+        "test_archive_header_case_alias_refused",
+        "test_file_and_directory_case_aliases_refused"
+      ],
+      "artifact": {
+        "id": 11842036991,
+        "bytes": 2230,
+        "sha256": "f8a3b42711e0d8f7c466a959ef05bda7ed16406a284d21746d2142a60bead7fc",
+        "githubDigestAndLengthVerified": true,
+        "zipCRCVerified": true,
+        "members": [
+          {
+            "name": "helper-tests.log",
+            "bytes": 11567,
+            "sha256": "73f451e5da631056ef72d64d7594b664e27527deafd94e40e5b05f0584a21ff0"
+          },
+          {
+            "name": "probe.json",
+            "bytes": 91,
+            "sha256": "a10e7a4f56bd01d677f0d279941622d7b7c8b575db5bbdeff236d414514c5a79"
+          }
+        ]
+      },
+      "nativeProbe": {
+        "schema": 1,
+        "nativeHelperProbe": false,
+        "status": "not-completed",
+        "productAcceptance": false
+      },
+      "failureDiagnostics": 4,
+      "failedTestNames": [
+        "test_ambiguous_or_non_x86_compiler_refused",
+        "test_archive_selection_is_exact_with_both_imports_present",
+        "test_wrong_platform_wx_and_archive_roots_refused"
+      ],
+      "failureScope": "Windows path-separator fixture substitutions/assertions; original failure preserved"
+    },
+    {
+      "runId": 38454852384,
+      "attempt": 1,
+      "sourceCommit": "d43465a1a558d0d05f94d1589bfce490777ce2a5",
+      "url": "https://github.com/ThereptileII/Work/actions/runs/38454852384",
+      "workflow": ".github/workflows/skager-native-python-contracts.yml",
+      "status": "success",
+      "testsRun": 34,
+      "skipped": 2,
+      "skipReason": "Case-sensitive negative fixture is portable-host only",
+      "skippedTests": [
+        "test_archive_header_case_alias_refused",
+        "test_file_and_directory_case_aliases_refused"
+      ],
+      "artifact": {
+        "id": 11841644664,
+        "bytes": 2562,
+        "sha256": "0bae0cbf496d1ab74171479e1264bd98c4603dae13edf2fb2e9fb2cf3486b312",
+        "githubDigestAndLengthVerified": true,
+        "zipCRCVerified": true,
+        "members": [
+          {
+            "name": "helper-tests.log",
+            "bytes": 4419,
+            "sha256": "19d062180b985278974ab535ef6db1b072a196b4c9ca3ad5cdc6ea8cde20369b"
+          },
+          {
+            "name": "probe.json",
+            "bytes": 1721,
+            "sha256": "0ea67a838527ea9488716ae59c0b83c93751a605bd5376fd0c93642f3e6764c8"
+          },
+          {
+            "name": "probe.log",
+            "bytes": 1721,
+            "sha256": "0ea67a838527ea9488716ae59c0b83c93751a605bd5376fd0c93642f3e6764c8"
+          },
+          {
+            "name": "selection.log",
+            "bytes": 145,
+            "sha256": "289f12a4ee7744256be1d11405b5bd78fde457da3565c6d6a8cd8f4634beb54b"
+          }
+        ]
+      },
+      "nativeProbe": {
+        "schema": 1,
+        "nativeHelperProbe": true,
+        "pythonVersion": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+        "scope": "actual native path/descriptor stat and record helper only",
+        "records": [
+          {
+            "name": "dumpbin.exe",
+            "bytes": 23376,
+            "sha256": "364840933ceaf8e5d9b62c3a2b1fb66aef2f59fba854146e816751bc2f622ee5",
+            "commonIdentityMatched": true,
+            "completeBaselinesStable": true,
+            "differingStatFields": [
+              "st_mode"
+            ]
+          },
+          {
+            "name": "python.exe",
+            "bytes": 104952,
+            "sha256": "4d6f5f81a4bca11191c4c7c6b43632694d0a4ce74e068619d8fdc161d469859a",
+            "commonIdentityMatched": true,
+            "completeBaselinesStable": true,
+            "differingStatFields": [
+              "st_mode",
+              "st_ctime_ns"
+            ]
+          },
+          {
+            "name": "inert.exe",
+            "bytes": 40,
+            "sha256": "40c0f1495d2fd61afb45579f45b1dba292cfef9fd35aedbfe03cfa8300d93da5",
+            "commonIdentityMatched": true,
+            "completeBaselinesStable": true,
+            "differingStatFields": [
+              "st_mode"
+            ]
+          },
+          {
+            "name": "inert.dll",
+            "bytes": 40,
+            "sha256": "40c0f1495d2fd61afb45579f45b1dba292cfef9fd35aedbfe03cfa8300d93da5",
+            "commonIdentityMatched": true,
+            "completeBaselinesStable": true,
+            "differingStatFields": []
+          },
+          {
+            "name": "inert.txt",
+            "bytes": 40,
+            "sha256": "40c0f1495d2fd61afb45579f45b1dba292cfef9fd35aedbfe03cfa8300d93da5",
+            "commonIdentityMatched": true,
+            "completeBaselinesStable": true,
+            "differingStatFields": []
+          }
+        ],
+        "payloadExecuted": false,
+        "productAcceptance": false
+      },
+      "passed": 32,
+      "failed": 0
+    },
+    {
+      "runId": 38455446291,
+      "attempt": 1,
+      "sourceCommit": "cd8a76e7d0e2a1ab62e1277606e9ccdb4d9d6495",
+      "url": "https://github.com/ThereptileII/Work/actions/runs/38455446291",
+      "workflow": ".github/workflows/skager-native-python-contracts.yml",
+      "status": "success",
+      "testsRun": 37,
+      "skipped": 2,
+      "skipReason": "Case-sensitive negative fixture is portable-host only",
+      "skippedTests": [
+        "test_archive_header_case_alias_refused",
+        "test_file_and_directory_case_aliases_refused"
+      ],
+      "artifact": {
+        "id": 11842117998,
+        "bytes": 2642,
+        "sha256": "5cdfe81864dc5cf389e357cc6b7424ea78cef9ffd68b8b7d9fb5d8008cacfa10",
+        "githubDigestAndLengthVerified": true,
+        "zipCRCVerified": true,
+        "members": [
+          {
+            "name": "probe.log",
+            "bytes": 1721,
+            "sha256": "0ea67a838527ea9488716ae59c0b83c93751a605bd5376fd0c93642f3e6764c8"
+          },
+          {
+            "name": "helper-tests.log",
+            "bytes": 4863,
+            "sha256": "80e1cfefcb90d0fa517d52c92c34ce67d6d4d2338108081258c9cfa8364caec4"
+          },
+          {
+            "name": "probe.json",
+            "bytes": 1721,
+            "sha256": "0ea67a838527ea9488716ae59c0b83c93751a605bd5376fd0c93642f3e6764c8"
+          },
+          {
+            "name": "selection.log",
+            "bytes": 145,
+            "sha256": "289f12a4ee7744256be1d11405b5bd78fde457da3565c6d6a8cd8f4634beb54b"
+          }
+        ]
+      },
+      "nativeProbe": {
+        "schema": 1,
+        "nativeHelperProbe": true,
+        "pythonVersion": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+        "scope": "actual native path/descriptor stat and record helper only",
+        "records": [
+          {
+            "name": "dumpbin.exe",
+            "bytes": 23376,
+            "sha256": "364840933ceaf8e5d9b62c3a2b1fb66aef2f59fba854146e816751bc2f622ee5",
+            "commonIdentityMatched": true,
+            "completeBaselinesStable": true,
+            "differingStatFields": [
+              "st_mode"
+            ]
+          },
+          {
+            "name": "python.exe",
+            "bytes": 104952,
+            "sha256": "4d6f5f81a4bca11191c4c7c6b43632694d0a4ce74e068619d8fdc161d469859a",
+            "commonIdentityMatched": true,
+            "completeBaselinesStable": true,
+            "differingStatFields": [
+              "st_mode",
+              "st_ctime_ns"
+            ]
+          },
+          {
+            "name": "inert.exe",
+            "bytes": 40,
+            "sha256": "40c0f1495d2fd61afb45579f45b1dba292cfef9fd35aedbfe03cfa8300d93da5",
+            "commonIdentityMatched": true,
+            "completeBaselinesStable": true,
+            "differingStatFields": [
+              "st_mode"
+            ]
+          },
+          {
+            "name": "inert.dll",
+            "bytes": 40,
+            "sha256": "40c0f1495d2fd61afb45579f45b1dba292cfef9fd35aedbfe03cfa8300d93da5",
+            "commonIdentityMatched": true,
+            "completeBaselinesStable": true,
+            "differingStatFields": []
+          },
+          {
+            "name": "inert.txt",
+            "bytes": 40,
+            "sha256": "40c0f1495d2fd61afb45579f45b1dba292cfef9fd35aedbfe03cfa8300d93da5",
+            "commonIdentityMatched": true,
+            "completeBaselinesStable": true,
+            "differingStatFields": []
+          }
+        ],
+        "payloadExecuted": false,
+        "productAcceptance": false
+      },
+      "passed": 35,
+      "failed": 0
+    }
+  ],
+  "helperFollowup": {
+    "commit": "806b80daf221b82eca3a73d88849aa111e171b05",
+    "scope": "Allow documented system WLDAP32.dll dependency while refusing an application-local shadow; negative fixtures preserved",
+    "linuxTests": {
+      "status": "passed",
+      "captureTests": 37,
+      "runnerTests": 30
+    },
+    "nativeProofRunId": 38455446291
+  },
+  "replacementStaging": {
+    "runId": 38455915079,
+    "attempt": 1,
+    "sourceCommit": "cd8a76e7d0e2a1ab62e1277606e9ccdb4d9d6495",
+    "url": "https://github.com/ThereptileII/Work/actions/runs/38455915079",
+    "statusAtEvidenceUpdate": "pending",
+    "privateStagingTrust": true,
+    "extendedTests": false,
+    "designValidation": false,
+    "productAcceptance": false,
+    "reason": "Runtime protected retirement Go inputs changed from B0; diagnostic compiled recovery has no supported restore/package path"
   }
 }

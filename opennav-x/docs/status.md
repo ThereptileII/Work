@@ -1,5 +1,27 @@
 # SKAGER status — 2026-10-13
 
+## B0 failure preserved; native capture helper passes; replacement Staging pending
+
+Original B0 [run 38442801510](https://github.com/ThereptileII/Work/actions/runs/38442801510)
+at `2c613690` remains failed after successful fixture-free compilation: the plugin
+SDK retention helper refused `dumpbin.exe` before hashing it. Its diagnostic
+compiled archive is unpackaged/unqualified and has no supported restore path;
+the plugin artifact contains only the failure log and cannot feed retained qualification.
+
+The first native helper run `38454485025` remains failed on four fixture assertions.
+Corrected run `38454852384` passed 32 tests with two existing case-sensitive skips;
+latest [38455446291](https://github.com/ThereptileII/Work/actions/runs/38455446291)
+at `cd8a76e7` passed 35 with the same two skips and an actual native metadata probe.
+Its downloaded artifact digest/length and ZIP CRC are verified. The later system
+WLDAP32 dependency allowlist keeps local-shadow rejection. These are scoped helper
+results, not product acceptance. [Preserved evidence](evidence/scrum209-plugin-capture-20261013/results.json).
+
+One replacement private-trust [Staging run 38455915079](https://github.com/ThereptileII/Work/actions/runs/38455915079)
+is pending at exact `cd8a76e7d0e2a1ab62e1277606e9ccdb4d9d6495`, with extended and
+design tests off. Runtime retirement inputs changed from B0; the original compiled
+archive cannot substitute for this build. Installed B0/B1, full Lifecycle and boat
+acceptance remain open. Earlier blocks below retain their historical state.
+
 ## Protected retirement component passes; frozen application candidate continues
 
 The combined protected-retirement component at
