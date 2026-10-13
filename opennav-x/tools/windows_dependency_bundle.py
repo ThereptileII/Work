@@ -31,6 +31,10 @@ WORKFLOW = '.github/workflows/skager-windows-dependencies.yml'
 JOB = 'windows-dependencies'
 CONSUMER_COMPATIBILITY = 'tools/windows-dependency-consumer-compatibility.json'
 COMPATIBLE_PRODUCER = '1b25542aea3f9ab62c83c5d7a3ecdac9652f7d3e'
+COMPATIBLE_PRODUCERS = frozenset({
+    COMPATIBLE_PRODUCER,
+    '49f9f07407cbf640f6186757a3fe3582c114b895',
+})
 # Same-job application patch inventory may change without rebuilding the SDK.
 # Every exception still pins the complete original/current helper bytes.
 CONSUMER_FILES = frozenset({'tools/windows_dependency_bundle.py', 'tools/build-pristine-windows.ps1',
@@ -256,7 +260,8 @@ def _consumer_compatibility(root: Path, document: dict) -> dict:
         current[name] = {'bytes': path.stat().st_size, 'sha256': receipt._digest(path)}
     if all(current[name] == document['files'][name] for name in CONSUMER_FILES):
         return {}
-    if document['producer']['headSha'] != COMPATIBLE_PRODUCER:
+    producer = document['producer']['headSha']
+    if producer not in COMPATIBLE_PRODUCERS:
         raise ValueError('consumer correction is not approved for this producer commit')
     policy = evidence._strict_json(receipt._plain_path(root, CONSUMER_COMPATIBILITY))
     if (set(policy) != {'schemaVersion', 'entries'} or type(policy['schemaVersion']) is not int or
@@ -265,7 +270,8 @@ def _consumer_compatibility(root: Path, document: dict) -> dict:
     matches = []
     for entry in policy['entries']:
         if (not isinstance(entry, dict) or set(entry) != {'producerCommit', 'files', 'reason'} or
-                entry['producerCommit'] != COMPATIBLE_PRODUCER or
+                not isinstance(entry['producerCommit'], str) or
+                entry['producerCommit'] not in COMPATIBLE_PRODUCERS or
                 not isinstance(entry['reason'], str) or not entry['reason'] or
                 not isinstance(entry['files'], dict) or set(entry['files']) != CONSUMER_FILES):
             raise ValueError('unreviewed consumer compatibility scope')
@@ -274,7 +280,7 @@ def _consumer_compatibility(root: Path, document: dict) -> dict:
                     any(not isinstance(digest, str) or not receipt.SHA256.fullmatch(digest)
                         for digest in value.values())):
                 raise ValueError('invalid exact consumer compatibility hash')
-        if all(entry['files'][name] == {
+        if entry['producerCommit'] == producer and all(entry['files'][name] == {
                 'originalSha256': document['files'][name]['sha256'],
                 'currentSha256': current[name]['sha256']} for name in CONSUMER_FILES):
             matches.append(entry)

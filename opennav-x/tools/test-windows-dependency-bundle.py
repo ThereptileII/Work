@@ -235,8 +235,8 @@ class BundleTests(fixtures.WindowsDependencyEvidenceTests):
             with self.assertRaisesRegex(ValueError, 'Python'):
                 bundle.verify_bundle(self.root, self.output, self.authority)
 
-    def consumer_upgrade(self):
-        self.identity['headSha'] = bundle.COMPATIBLE_PRODUCER
+    def consumer_upgrade(self, producer=bundle.COMPATIBLE_PRODUCER):
+        self.identity['headSha'] = producer
         document = self.seal()
         current = {}
         records = {}
@@ -247,7 +247,7 @@ class BundleTests(fixtures.WindowsDependencyEvidenceTests):
             records[name] = {'originalSha256': document['files'][name]['sha256'],
                              'currentSha256': receipt._digest(path)}
         policy = {'schemaVersion': 1, 'entries': [{
-            'producerCommit': bundle.COMPATIBLE_PRODUCER, 'files': records,
+            'producerCommit': producer, 'files': records,
             'reason': 'owned consumer-only runtime validation correction'}]}
         self._write_json(self.root / bundle.CONSUMER_COMPATIBILITY, policy)
         return document, policy, current
@@ -299,6 +299,67 @@ class BundleTests(fixtures.WindowsDependencyEvidenceTests):
         with self.assertRaisesRegex(ValueError, 'unreviewed consumer compatibility scope'):
             bundle.verify_bundle(self.root, self.output, self.authority)
 
+    def test_selected_producer_correction_retains_sdk_and_current_helpers(self):
+        document, policy, current = self.consumer_upgrade('49f9f07407cbf640f6186757a3fe3582c114b895')
+        manifest_bytes = (self.output / 'bundle.json').read_bytes()
+        original_files = {name: (self.output / 'payload' / name).read_bytes()
+                          for name in bundle.CONSUMER_FILES}
+        shutil.rmtree(self.root / bundle.evidence.PREFIXES['openssl'])
+        bundle.restore(self.root, self.output, self.authority)
+        self.assertEqual(bundle.verify_restored(self.root, self.output, self.authority), document)
+        self.assertEqual((self.output / 'bundle.json').read_bytes(), manifest_bytes)
+        for name in bundle.CONSUMER_FILES:
+            self.assertEqual((self.root / name).read_bytes(), current[name])
+            self.assertEqual((self.output / 'payload' / name).read_bytes(), original_files[name])
+        (self.root / bundle.stage.CACHE).mkdir(parents=True)
+        bundle.stage_bundle(self.root, self.output, self.authority)
+
+    def test_selected_producer_correction_rejects_every_changed_hash_and_helper(self):
+        document, policy, current = self.consumer_upgrade('49f9f07407cbf640f6186757a3fe3582c114b895')
+        for name in sorted(bundle.CONSUMER_FILES):
+            for field in ('originalSha256', 'currentSha256'):
+                with self.subTest(helper=name, changed_hash=field):
+                    changed = json.loads(json.dumps(policy))
+                    changed['entries'][0]['files'][name][field] = 'c' * 64
+                    self._write_json(self.root / bundle.CONSUMER_COMPATIBILITY, changed)
+                    with self.assertRaisesRegex(ValueError, 'exact reviewed compatibility'):
+                        bundle.verify_bundle(self.root, self.output, self.authority)
+            self._write_json(self.root / bundle.CONSUMER_COMPATIBILITY, policy)
+            helper = self.root / name
+            helper.write_bytes(current[name] + b'# unapproved\n')
+            with self.assertRaisesRegex(ValueError, 'exact reviewed compatibility'):
+                bundle.verify_bundle(self.root, self.output, self.authority)
+            helper.write_bytes(current[name])
+
+    def test_approved_producers_cannot_borrow_each_others_hash_exceptions(self):
+        document, policy, current = self.consumer_upgrade('49f9f07407cbf640f6186757a3fe3582c114b895')
+        policy['entries'][0]['producerCommit'] = bundle.COMPATIBLE_PRODUCER
+        self._write_json(self.root / bundle.CONSUMER_COMPATIBILITY, policy)
+        with self.assertRaisesRegex(ValueError, 'exact reviewed compatibility'):
+            bundle.verify_bundle(self.root, self.output, self.authority)
+
+    def test_policy_cannot_authorize_an_unreviewed_producer(self):
+        document, policy, current = self.consumer_upgrade('b' * 40)
+        with self.assertRaisesRegex(ValueError, 'producer commit'):
+            bundle.verify_bundle(self.root, self.output, self.authority)
+
+    def test_policy_rejects_unknown_or_malformed_producer_entries(self):
+        document, policy, current = self.consumer_upgrade('49f9f07407cbf640f6186757a3fe3582c114b895')
+        for producer in ('b' * 40, [], None):
+            with self.subTest(producer=producer):
+                changed = json.loads(json.dumps(policy))
+                changed['entries'].append({**changed['entries'][0], 'producerCommit': producer})
+                self._write_json(self.root / bundle.CONSUMER_COMPATIBILITY, changed)
+                with self.assertRaisesRegex(ValueError, 'unreviewed consumer compatibility scope'):
+                    bundle.verify_bundle(self.root, self.output, self.authority)
+
+    def test_duplicate_exact_producer_hash_exceptions_are_ambiguous(self):
+        document, policy, current = self.consumer_upgrade('49f9f07407cbf640f6186757a3fe3582c114b895')
+        policy['entries'].append(json.loads(json.dumps(policy['entries'][0])))
+        self._write_json(self.root / bundle.CONSUMER_COMPATIBILITY, policy)
+        with self.assertRaisesRegex(ValueError, 'exact reviewed compatibility'):
+            bundle.verify_bundle(self.root, self.output, self.authority)
+
     def test_repository_policy_pins_current_consumer_bytes(self):
         source = Path(__file__).resolve().parent.parent
         policy = json.loads((source / bundle.CONSUMER_COMPATIBILITY).read_text())
@@ -306,15 +367,17 @@ class BundleTests(fixtures.WindowsDependencyEvidenceTests):
         matches = [entry for entry in policy['entries'] if all(
             entry['files'][name]['currentSha256'] == actual[name] for name in bundle.CONSUMER_FILES)]
         self.assertEqual(len(matches), 1)
-        self.assertEqual(matches[0]['producerCommit'], bundle.COMPATIBLE_PRODUCER)
+        self.assertEqual(matches[0]['producerCommit'], '49f9f07407cbf640f6186757a3fe3582c114b895')
 
-    def test_pinned_reuse_change_is_only_the_reviewed_application_patch(self):
+    def test_selected_producer_reuse_change_is_only_the_reviewed_application_patches(self):
         # Check both explicit checkout encodings; runtime verification never
-        # normalizes bytes. The old/new hashes must prove this exact one-line diff.
+        # normalizes bytes. The selected producer's exact diff adds two receipt
+        # entries; the original historical producer policy remains separate.
         source = Path(__file__).resolve().parent.parent
         name = 'tools/windows_dependency_reuse.py'
         data = (source / name).read_bytes().replace(b'\r\n', b'\n')
-        added = b'    "opencpn-5.12.4-pilot-serial.patch",\n'
+        added = (b'    "opencpn-5.12.4-route-focus.patch",\n'
+                 b'    "opencpn-5.12.4-route-hit-dpi.patch",\n')
         self.assertEqual(data.count(added), 1)
         policy = json.loads((source / bundle.CONSUMER_COMPATIBILITY).read_text())
         for newline in (b'\n', b'\r\n'):
@@ -322,7 +385,8 @@ class BundleTests(fixtures.WindowsDependencyEvidenceTests):
             original = data.replace(added, b'').replace(b'\n', newline)
             expected = {'originalSha256': bundle.hashlib.sha256(original).hexdigest(),
                         'currentSha256': bundle.hashlib.sha256(current).hexdigest()}
-            self.assertEqual(sum(entry['files'][name] == expected for entry in policy['entries']), 1)
+            self.assertEqual(sum(entry['producerCommit'] == '49f9f07407cbf640f6186757a3fe3582c114b895' and
+                                 entry['files'][name] == expected for entry in policy['entries']), 1)
 
     def test_live_tool_reprobe_is_required_in_orchestrator(self):
         text = Path(__file__).with_name('build-pristine-windows.ps1').read_text()

@@ -1,0 +1,796 @@
+{
+  "schemaVersion": 1,
+  "scope": "Authenticated offline SDK inventory/input-closure audit; no native reuse or application acceptance",
+  "consumerBase": "8c593d136ec9c25a5e936677af4f6d7db85cea82",
+  "artifact": {
+    "id": 11574361322,
+    "node_id": "MDg6QXJ0aWZhY3QxMTU3NDM2MTMyMg==",
+    "name": "windows-dependencies-30cd19cf526789cc1833c28313d595f41a30d0d8d1ca04e3ded1be6f362e865f-run37824634218-attempt1",
+    "size_in_bytes": 117983886,
+    "url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/11574361322",
+    "archive_download_url": "https://api.github.com/repos/ThereptileII/Work/actions/artifacts/11574361322/zip",
+    "expired": false,
+    "digest": "sha256:4cb9996c170f067850ffda07e5c9eb3906e73a21bd4c462893b19fc32775680d",
+    "created_at": "2026-10-08T19:29:23Z",
+    "updated_at": "2026-10-08T19:29:23Z",
+    "expires_at": "2027-01-06T18:29:10Z",
+    "workflow_run": {
+      "id": 37824634218,
+      "repository_id": 864043804,
+      "head_repository_id": 864043804,
+      "head_branch": "staging",
+      "head_sha": "49f9f07407cbf640f6186757a3fe3582c114b895"
+    }
+  },
+  "producerRun": {
+    "id": 37824634218,
+    "head_sha": "49f9f07407cbf640f6186757a3fe3582c114b895",
+    "path": ".github/workflows/skager-windows-dependencies.yml",
+    "run_attempt": 1,
+    "status": "completed",
+    "conclusion": "success"
+  },
+  "producerJob": {
+    "id": 113474187733,
+    "name": "windows-dependencies",
+    "status": "completed",
+    "conclusion": "success"
+  },
+  "bundleManifestSha256": "1f80abd2a2877037c34fae4d0aa31a715beb867420392cb9cfaf63ee351e857a",
+  "inputFingerprint": {
+    "abi": {
+      "abi": "x86",
+      "architecture": "Win32",
+      "curl": "8.22.0",
+      "openssl": "3.5.9",
+      "runtime": "MultiThreadedDLL (/MD)",
+      "zlib": "1.3.2"
+    },
+    "inputs": {
+      "docs/third-party/OpenSSL-3.5.9/LICENSE.txt": "7d5450cb2d142651b8afa315b5f238efc805dad827d91ba367d8516bc9d49e7a",
+      "docs/third-party/OpenSSL-3.5.9/provenance.json": "5ca5e2ee69692fdbeae2e24407c2bb618f0020c1ebf5ac26df90311b4ab0ccbf",
+      "docs/third-party/curl-8.22.0/LICENSE.txt": "82f2f4427d6545ee5aaac4f0b80428da6cc8ba41c2cf5da3a03680ec327b9681",
+      "docs/third-party/curl-8.22.0/provenance.json": "a38c255d03bbc5eac094da37ae5e02a84b487886bd85b48a1bc9999a86ac2f9f",
+      "docs/third-party/zlib-1.3.2/LICENSE.txt": "e32ff4e00d9d94930537635291da39e7e612703334bf6fde8c7f1686fe8a45a2",
+      "docs/third-party/zlib-1.3.2/provenance.json": "3f1cc37b9423fc80975bcd1bb5bf70faebc8e33b84e60d6743f6a7f32b402a7e",
+      "tools/build-curl-windows.ps1": "9c5a896c5b3ebcf5d04b92f77cdfdfb98b1f381fbac6495c8c4324c76f7ddf23",
+      "tools/build-openssl-windows.ps1": "a57a2a468999daf8ba655c2328fd645d002c184ce370ca916d99cf5cc43dabc7",
+      "tools/build-pristine-windows.ps1": "4d57a2066fd48c2bbff5c5b80bbcc9df0266cfd0ad134878699cf488614ec519",
+      "tools/build-zlib-windows.ps1": "007cb7eac7d5378af095e87218b285920abd4065d4492c1d0e5634deda9c5f22",
+      "tools/curl_package.py": "286ffca81d992270ccd6398829575305d538a889496b96e495e9e3339bb39acb",
+      "tools/openssl_package.py": "fe0c87a9146c03dcbc7a5ba2f4214ac2690d536ebfc8f639681b64da0d41e35d",
+      "tools/patch-curl-test-openssl.py": "499f27be5a3ed25a15d82d1cf9e3338257ae26dc7beb9f674dde6c13cffcc771",
+      "tools/test-curl-source-preflight.ps1": "55cfe2d1d8973489d64cb221b79e16df216a06c51496b18a0a079818fe571379",
+      "tools/test-zlib-source-verification.ps1": "0864a7f6ca6c880988f6decf5dcdca6a26693a07c7b30632d3f1d5fae27b1b16",
+      "tools/windows-curl-environment.ps1": "75779db66dbc232170f830977d5d321236f71867a41a214347283d66d813224e",
+      "tools/windows-curl-import-layout.cmake": "41fb61f6710d45bdcf98289a5d72f011ceaf378555c445dba8f9edc6bdf5c22e",
+      "tools/windows-curl.lock.json": "af38fa0c570b3ed01cda2fd4511e351c8af2bebedb254cfe9ff5fb6c6f13fe18",
+      "tools/windows-native-tool-facts.cmake": "a243fa025043111b73dced4756cfe820f089356c68692e1ff99afc327293e549",
+      "tools/windows-native-tool-facts.ps1": "909d5aca764ae461618d02a58592bf0d6f3d7a6846e4b5483aad818aa04e6cd0",
+      "tools/windows-openssl.lock.json": "dd26041ec5b5f85a76010b4e45716d8dc46c85ccb032815aab8059c49e6bc99d",
+      "tools/windows-parent-environment.ps1": "b84f945ddde6d343529446193360dd228b4c6b6ca8390fd0d35fb12a92e5f6b1",
+      "tools/windows-zlib.lock.json": "3da21aa4827871eac086c48b859fb5a50737bfc15c1e2fbe0ed81ffa15d23995",
+      "tools/windows_dependency_bundle.py": "bc2dae00aa61cd074a4b26ac7e96a1f056896ee2dc34df11edd37fa7e2a7d3a7",
+      "tools/windows_dependency_evidence.py": "cb073d5f2fc18984074fc171a10a6cdf5dc875ef418fc03c3dbc52f58f0379b5",
+      "tools/windows_dependency_receipt.py": "7755c98d421a860331a73b43929d5c3d0677a797d68dfab4b0187d0e2462a3c4",
+      "tools/windows_dependency_reuse.py": "3d24f69d94db10d1affadc35a7f2746b5d68ae43dcb9e1f2fa7e4967c7768a8c",
+      "tools/windows_dependency_stage.py": "c50166c999ccb81241fd53d83f60523b55e01ca82ff23562b9d52195821c0546",
+      "tools/windows_gettext.py": "1f86e71f42766f3c0b730ec07dd32abdfd8cdee218aa1c1d8f8b2c786754ef36"
+    },
+    "sha256": "30cd19cf526789cc1833c28313d595f41a30d0d8d1ca04e3ded1be6f362e865f",
+    "workflowSha256": "6874cc4fcd3e8c750dd52c3abcfd38edef650fee1c45c947e11a46df75ba5058"
+  },
+  "payloadFilesVerified": 295,
+  "payloadBytesVerified": 117866926,
+  "completeSourceInputComparison": [
+    {
+      "path": ".github/workflows/skager-windows-dependencies.yml",
+      "producer": {
+        "bytes": 7358,
+        "sha256": "6874cc4fcd3e8c750dd52c3abcfd38edef650fee1c45c947e11a46df75ba5058"
+      },
+      "producerGitBlobSha256": "7881056f2628ca29087bd99ba8b2600ffda06385035dab9156a5391ebf536aaf",
+      "producerCheckout": "CRLF",
+      "currentCheckout": {
+        "bytes": 7358,
+        "sha256": "6874cc4fcd3e8c750dd52c3abcfd38edef650fee1c45c947e11a46df75ba5058"
+      },
+      "unchanged": true
+    },
+    {
+      "path": "docs/third-party/OpenSSL-3.5.9/LICENSE.txt",
+      "producer": {
+        "bytes": 10175,
+        "sha256": "7d5450cb2d142651b8afa315b5f238efc805dad827d91ba367d8516bc9d49e7a"
+      },
+      "producerGitBlobSha256": "7d5450cb2d142651b8afa315b5f238efc805dad827d91ba367d8516bc9d49e7a",
+      "producerCheckout": "LF",
+      "currentCheckout": {
+        "bytes": 10175,
+        "sha256": "7d5450cb2d142651b8afa315b5f238efc805dad827d91ba367d8516bc9d49e7a"
+      },
+      "unchanged": true
+    },
+    {
+      "path": "docs/third-party/OpenSSL-3.5.9/provenance.json",
+      "producer": {
+        "bytes": 1521,
+        "sha256": "5ca5e2ee69692fdbeae2e24407c2bb618f0020c1ebf5ac26df90311b4ab0ccbf"
+      },
+      "producerGitBlobSha256": "5ca5e2ee69692fdbeae2e24407c2bb618f0020c1ebf5ac26df90311b4ab0ccbf",
+      "producerCheckout": "LF",
+      "currentCheckout": {
+        "bytes": 1521,
+        "sha256": "5ca5e2ee69692fdbeae2e24407c2bb618f0020c1ebf5ac26df90311b4ab0ccbf"
+      },
+      "unchanged": true
+    },
+    {
+      "path": "docs/third-party/curl-8.22.0/LICENSE.txt",
+      "producer": {
+        "bytes": 1088,
+        "sha256": "82f2f4427d6545ee5aaac4f0b80428da6cc8ba41c2cf5da3a03680ec327b9681"
+      },
+      "producerGitBlobSha256": "82f2f4427d6545ee5aaac4f0b80428da6cc8ba41c2cf5da3a03680ec327b9681",
+      "producerCheckout": "LF",
+      "currentCheckout": {
+        "bytes": 1088,
+        "sha256": "82f2f4427d6545ee5aaac4f0b80428da6cc8ba41c2cf5da3a03680ec327b9681"
+      },
+      "unchanged": true
+    },
+    {
+      "path": "docs/third-party/curl-8.22.0/provenance.json",
+      "producer": {
+        "bytes": 2497,
+        "sha256": "a38c255d03bbc5eac094da37ae5e02a84b487886bd85b48a1bc9999a86ac2f9f"
+      },
+      "producerGitBlobSha256": "a38c255d03bbc5eac094da37ae5e02a84b487886bd85b48a1bc9999a86ac2f9f",
+      "producerCheckout": "LF",
+      "currentCheckout": {
+        "bytes": 2497,
+        "sha256": "a38c255d03bbc5eac094da37ae5e02a84b487886bd85b48a1bc9999a86ac2f9f"
+      },
+      "unchanged": true
+    },
+    {
+      "path": "docs/third-party/zlib-1.3.2/LICENSE.txt",
+      "producer": {
+        "bytes": 1002,
+        "sha256": "e32ff4e00d9d94930537635291da39e7e612703334bf6fde8c7f1686fe8a45a2"
+      },
+      "producerGitBlobSha256": "e32ff4e00d9d94930537635291da39e7e612703334bf6fde8c7f1686fe8a45a2",
+      "producerCheckout": "LF",
+      "currentCheckout": {
+        "bytes": 1002,
+        "sha256": "e32ff4e00d9d94930537635291da39e7e612703334bf6fde8c7f1686fe8a45a2"
+      },
+      "unchanged": true
+    },
+    {
+      "path": "docs/third-party/zlib-1.3.2/provenance.json",
+      "producer": {
+        "bytes": 2176,
+        "sha256": "3f1cc37b9423fc80975bcd1bb5bf70faebc8e33b84e60d6743f6a7f32b402a7e"
+      },
+      "producerGitBlobSha256": "3f1cc37b9423fc80975bcd1bb5bf70faebc8e33b84e60d6743f6a7f32b402a7e",
+      "producerCheckout": "LF",
+      "currentCheckout": {
+        "bytes": 2176,
+        "sha256": "3f1cc37b9423fc80975bcd1bb5bf70faebc8e33b84e60d6743f6a7f32b402a7e"
+      },
+      "unchanged": true
+    },
+    {
+      "path": "tools/build-curl-windows.ps1",
+      "producer": {
+        "bytes": 28492,
+        "sha256": "9c5a896c5b3ebcf5d04b92f77cdfdfb98b1f381fbac6495c8c4324c76f7ddf23"
+      },
+      "producerGitBlobSha256": "de5a0753dda3d738e1cb22c858e8d92188c8e2b7443c56600a8b14656902657a",
+      "producerCheckout": "CRLF",
+      "currentCheckout": {
+        "bytes": 28492,
+        "sha256": "9c5a896c5b3ebcf5d04b92f77cdfdfb98b1f381fbac6495c8c4324c76f7ddf23"
+      },
+      "unchanged": true
+    },
+    {
+      "path": "tools/build-openssl-windows.ps1",
+      "producer": {
+        "bytes": 14618,
+        "sha256": "a57a2a468999daf8ba655c2328fd645d002c184ce370ca916d99cf5cc43dabc7"
+      },
+      "producerGitBlobSha256": "62d56b9d031b4f276e75074933d2fd40c1a65daf0df5b01b17bc1d2773c13bf3",
+      "producerCheckout": "CRLF",
+      "currentCheckout": {
+        "bytes": 14618,
+        "sha256": "a57a2a468999daf8ba655c2328fd645d002c184ce370ca916d99cf5cc43dabc7"
+      },
+      "unchanged": true
+    },
+    {
+      "path": "tools/build-pristine-windows.ps1",
+      "producer": {
+        "bytes": 30892,
+        "sha256": "4d57a2066fd48c2bbff5c5b80bbcc9df0266cfd0ad134878699cf488614ec519"
+      },
+      "producerGitBlobSha256": "558159819ef1e1832aa92a2ff960bff17787a99a4dfb92ca77b6fed4e9410eb5",
+      "producerCheckout": "CRLF",
+      "currentCheckout": {
+        "bytes": 31323,
+        "sha256": "25dd389f31788bf7a49cfc230bcffb3c6e61b5e9c42219b30c7564495e312344"
+      },
+      "unchanged": false
+    },
+    {
+      "path": "tools/build-zlib-windows.ps1",
+      "producer": {
+        "bytes": 17984,
+        "sha256": "007cb7eac7d5378af095e87218b285920abd4065d4492c1d0e5634deda9c5f22"
+      },
+      "producerGitBlobSha256": "2641b0b049a14985c05a1a345093e0f2aebe29a0a28c3d6351217cca316ee382",
+      "producerCheckout": "CRLF",
+      "currentCheckout": {
+        "bytes": 17984,
+        "sha256": "007cb7eac7d5378af095e87218b285920abd4065d4492c1d0e5634deda9c5f22"
+      },
+      "unchanged": true
+    },
+    {
+      "path": "tools/curl_package.py",
+      "producer": {
+        "bytes": 12766,
+        "sha256": "286ffca81d992270ccd6398829575305d538a889496b96e495e9e3339bb39acb"
+      },
+      "producerGitBlobSha256": "fa9f82a96840c277e2c95b510b66a8d8f02ab900cb1fd539c52880124963f90a",
+      "producerCheckout": "CRLF",
+      "currentCheckout": {
+        "bytes": 12766,
+        "sha256": "286ffca81d992270ccd6398829575305d538a889496b96e495e9e3339bb39acb"
+      },
+      "unchanged": true
+    },
+    {
+      "path": "tools/openssl_package.py",
+      "producer": {
+        "bytes": 9975,
+        "sha256": "fe0c87a9146c03dcbc7a5ba2f4214ac2690d536ebfc8f639681b64da0d41e35d"
+      },
+      "producerGitBlobSha256": "5bb8a1fd4f68ea80dbe4e1c49fb0d2f3fa20584d1bfa8748a0eac9fdeca64063",
+      "producerCheckout": "CRLF",
+      "currentCheckout": {
+        "bytes": 9975,
+        "sha256": "fe0c87a9146c03dcbc7a5ba2f4214ac2690d536ebfc8f639681b64da0d41e35d"
+      },
+      "unchanged": true
+    },
+    {
+      "path": "tools/patch-curl-test-openssl.py",
+      "producer": {
+        "bytes": 4942,
+        "sha256": "499f27be5a3ed25a15d82d1cf9e3338257ae26dc7beb9f674dde6c13cffcc771"
+      },
+      "producerGitBlobSha256": "73085cdf3eea9396a3a8c733973da848a085d433bc80f88c9531318eb11a9c9d",
+      "producerCheckout": "CRLF",
+      "currentCheckout": {
+        "bytes": 4942,
+        "sha256": "499f27be5a3ed25a15d82d1cf9e3338257ae26dc7beb9f674dde6c13cffcc771"
+      },
+      "unchanged": true
+    },
+    {
+      "path": "tools/test-curl-source-preflight.ps1",
+      "producer": {
+        "bytes": 19921,
+        "sha256": "55cfe2d1d8973489d64cb221b79e16df216a06c51496b18a0a079818fe571379"
+      },
+      "producerGitBlobSha256": "99de2b6f33762cba01b0e1a4d3e70501f115a5b58d7112eff42864843e9f16f6",
+      "producerCheckout": "CRLF",
+      "currentCheckout": {
+        "bytes": 19921,
+        "sha256": "55cfe2d1d8973489d64cb221b79e16df216a06c51496b18a0a079818fe571379"
+      },
+      "unchanged": true
+    },
+    {
+      "path": "tools/test-zlib-source-verification.ps1",
+      "producer": {
+        "bytes": 6776,
+        "sha256": "0864a7f6ca6c880988f6decf5dcdca6a26693a07c7b30632d3f1d5fae27b1b16"
+      },
+      "producerGitBlobSha256": "b457b5b5cc224cc669c34299b5b5078d3d4c2b2f52681729594d17dc827e18b9",
+      "producerCheckout": "CRLF",
+      "currentCheckout": {
+        "bytes": 6776,
+        "sha256": "0864a7f6ca6c880988f6decf5dcdca6a26693a07c7b30632d3f1d5fae27b1b16"
+      },
+      "unchanged": true
+    },
+    {
+      "path": "tools/windows-curl-environment.ps1",
+      "producer": {
+        "bytes": 9070,
+        "sha256": "75779db66dbc232170f830977d5d321236f71867a41a214347283d66d813224e"
+      },
+      "producerGitBlobSha256": "54f5afb3d29f5cb97f43bb86407be8d9da5f80875aa670653103f1f44f2a5742",
+      "producerCheckout": "CRLF",
+      "currentCheckout": {
+        "bytes": 9070,
+        "sha256": "75779db66dbc232170f830977d5d321236f71867a41a214347283d66d813224e"
+      },
+      "unchanged": true
+    },
+    {
+      "path": "tools/windows-curl-import-layout.cmake",
+      "producer": {
+        "bytes": 1446,
+        "sha256": "41fb61f6710d45bdcf98289a5d72f011ceaf378555c445dba8f9edc6bdf5c22e"
+      },
+      "producerGitBlobSha256": "b1bcb55ee4305a4a7b6f790fd972a930ab3b655bc4d3d8e1a46206bd05d09c50",
+      "producerCheckout": "CRLF",
+      "currentCheckout": {
+        "bytes": 1446,
+        "sha256": "41fb61f6710d45bdcf98289a5d72f011ceaf378555c445dba8f9edc6bdf5c22e"
+      },
+      "unchanged": true
+    },
+    {
+      "path": "tools/windows-curl.lock.json",
+      "producer": {
+        "bytes": 409,
+        "sha256": "af38fa0c570b3ed01cda2fd4511e351c8af2bebedb254cfe9ff5fb6c6f13fe18"
+      },
+      "producerGitBlobSha256": "e3c2f9346cc3b793bca1813840e1d81148eaaba7a202421cf0e44dcf307ed888",
+      "producerCheckout": "CRLF",
+      "currentCheckout": {
+        "bytes": 409,
+        "sha256": "af38fa0c570b3ed01cda2fd4511e351c8af2bebedb254cfe9ff5fb6c6f13fe18"
+      },
+      "unchanged": true
+    },
+    {
+      "path": "tools/windows-native-tool-facts.cmake",
+      "producer": {
+        "bytes": 940,
+        "sha256": "a243fa025043111b73dced4756cfe820f089356c68692e1ff99afc327293e549"
+      },
+      "producerGitBlobSha256": "555a61a0123281914f19f91957de9385f9b31c44ab5e4c9bc08cdf9fadbf1a7b",
+      "producerCheckout": "CRLF",
+      "currentCheckout": {
+        "bytes": 940,
+        "sha256": "a243fa025043111b73dced4756cfe820f089356c68692e1ff99afc327293e549"
+      },
+      "unchanged": true
+    },
+    {
+      "path": "tools/windows-native-tool-facts.ps1",
+      "producer": {
+        "bytes": 17733,
+        "sha256": "909d5aca764ae461618d02a58592bf0d6f3d7a6846e4b5483aad818aa04e6cd0"
+      },
+      "producerGitBlobSha256": "ecf8dc81c01591d5d35f3f25a8c9d2683eaf5e930c33e77fc0b4fabad43d9f8c",
+      "producerCheckout": "CRLF",
+      "currentCheckout": {
+        "bytes": 17733,
+        "sha256": "909d5aca764ae461618d02a58592bf0d6f3d7a6846e4b5483aad818aa04e6cd0"
+      },
+      "unchanged": true
+    },
+    {
+      "path": "tools/windows-openssl.lock.json",
+      "producer": {
+        "bytes": 805,
+        "sha256": "dd26041ec5b5f85a76010b4e45716d8dc46c85ccb032815aab8059c49e6bc99d"
+      },
+      "producerGitBlobSha256": "df596603e33a205e62e04c3418a2d6f157ea989d50936700d440c2678b40ae23",
+      "producerCheckout": "CRLF",
+      "currentCheckout": {
+        "bytes": 805,
+        "sha256": "dd26041ec5b5f85a76010b4e45716d8dc46c85ccb032815aab8059c49e6bc99d"
+      },
+      "unchanged": true
+    },
+    {
+      "path": "tools/windows-parent-environment.ps1",
+      "producer": {
+        "bytes": 1903,
+        "sha256": "b84f945ddde6d343529446193360dd228b4c6b6ca8390fd0d35fb12a92e5f6b1"
+      },
+      "producerGitBlobSha256": "d422218dcffeb36126580eeb545c4a2e66903cfd5e64fa43133e6a66a54c3091",
+      "producerCheckout": "CRLF",
+      "currentCheckout": {
+        "bytes": 1903,
+        "sha256": "b84f945ddde6d343529446193360dd228b4c6b6ca8390fd0d35fb12a92e5f6b1"
+      },
+      "unchanged": true
+    },
+    {
+      "path": "tools/windows-zlib.lock.json",
+      "producer": {
+        "bytes": 404,
+        "sha256": "3da21aa4827871eac086c48b859fb5a50737bfc15c1e2fbe0ed81ffa15d23995"
+      },
+      "producerGitBlobSha256": "9b1bc99c1ed47647744d523d65f4fb18f2a52d96aab24c85acf5c334c0dc0fb5",
+      "producerCheckout": "CRLF",
+      "currentCheckout": {
+        "bytes": 404,
+        "sha256": "3da21aa4827871eac086c48b859fb5a50737bfc15c1e2fbe0ed81ffa15d23995"
+      },
+      "unchanged": true
+    },
+    {
+      "path": "tools/windows_dependency_bundle.py",
+      "producer": {
+        "bytes": 24970,
+        "sha256": "bc2dae00aa61cd074a4b26ac7e96a1f056896ee2dc34df11edd37fa7e2a7d3a7"
+      },
+      "producerGitBlobSha256": "8c60716cb5675f7677c6ff29bbccd9d9abe26876a412c88bc14685c15a97218d",
+      "producerCheckout": "CRLF",
+      "currentCheckout": {
+        "bytes": 24970,
+        "sha256": "bc2dae00aa61cd074a4b26ac7e96a1f056896ee2dc34df11edd37fa7e2a7d3a7"
+      },
+      "unchanged": true
+    },
+    {
+      "path": "tools/windows_dependency_evidence.py",
+      "producer": {
+        "bytes": 11416,
+        "sha256": "cb073d5f2fc18984074fc171a10a6cdf5dc875ef418fc03c3dbc52f58f0379b5"
+      },
+      "producerGitBlobSha256": "9d3c6656d85f22e5e8a29761e0bc79e8ed7b95f2fa5c5c44d8ab9acb1a9942ef",
+      "producerCheckout": "CRLF",
+      "currentCheckout": {
+        "bytes": 11416,
+        "sha256": "cb073d5f2fc18984074fc171a10a6cdf5dc875ef418fc03c3dbc52f58f0379b5"
+      },
+      "unchanged": true
+    },
+    {
+      "path": "tools/windows_dependency_receipt.py",
+      "producer": {
+        "bytes": 11440,
+        "sha256": "7755c98d421a860331a73b43929d5c3d0677a797d68dfab4b0187d0e2462a3c4"
+      },
+      "producerGitBlobSha256": "74457dce87d6529773b743be4c7afa9059cd8182662dcbfebea6f8b07142d350",
+      "producerCheckout": "CRLF",
+      "currentCheckout": {
+        "bytes": 11440,
+        "sha256": "7755c98d421a860331a73b43929d5c3d0677a797d68dfab4b0187d0e2462a3c4"
+      },
+      "unchanged": true
+    },
+    {
+      "path": "tools/windows_dependency_reuse.py",
+      "producer": {
+        "bytes": 8867,
+        "sha256": "3d24f69d94db10d1affadc35a7f2746b5d68ae43dcb9e1f2fa7e4967c7768a8c"
+      },
+      "producerGitBlobSha256": "ee089aa8c3ba5998be6d5d049aa76c3e22ca4125ed12ee4cb53a33d8a19d075e",
+      "producerCheckout": "CRLF",
+      "currentCheckout": {
+        "bytes": 8951,
+        "sha256": "cfa564fac0452eebedd1f539ee5dda5711fdd2e8fadeb8a31cfca9cdb2df10d9"
+      },
+      "unchanged": false
+    },
+    {
+      "path": "tools/windows_dependency_stage.py",
+      "producer": {
+        "bytes": 8035,
+        "sha256": "c50166c999ccb81241fd53d83f60523b55e01ca82ff23562b9d52195821c0546"
+      },
+      "producerGitBlobSha256": "1c009a9bd10ef56df87bcd6912c364ac024b0640a7f5087996665a8b05140bec",
+      "producerCheckout": "CRLF",
+      "currentCheckout": {
+        "bytes": 8035,
+        "sha256": "c50166c999ccb81241fd53d83f60523b55e01ca82ff23562b9d52195821c0546"
+      },
+      "unchanged": true
+    },
+    {
+      "path": "tools/windows_gettext.py",
+      "producer": {
+        "bytes": 9960,
+        "sha256": "1f86e71f42766f3c0b730ec07dd32abdfd8cdee218aa1c1d8f8b2c786754ef36"
+      },
+      "producerGitBlobSha256": "05679f075120edc2cd82f553249a48a0ea25ab89fe12a0aa714263afd5095894",
+      "producerCheckout": "CRLF",
+      "currentCheckout": {
+        "bytes": 9960,
+        "sha256": "1f86e71f42766f3c0b730ec07dd32abdfd8cdee218aa1c1d8f8b2c786754ef36"
+      },
+      "unchanged": true
+    }
+  ],
+  "preCorrectionConsumerChanges": [
+    {
+      "path": "tools/build-pristine-windows.ps1",
+      "producer": {
+        "bytes": 30892,
+        "sha256": "4d57a2066fd48c2bbff5c5b80bbcc9df0266cfd0ad134878699cf488614ec519"
+      },
+      "producerGitBlobSha256": "558159819ef1e1832aa92a2ff960bff17787a99a4dfb92ca77b6fed4e9410eb5",
+      "producerCheckout": "CRLF",
+      "currentCheckout": {
+        "bytes": 31323,
+        "sha256": "25dd389f31788bf7a49cfc230bcffb3c6e61b5e9c42219b30c7564495e312344"
+      },
+      "unchanged": false
+    },
+    {
+      "path": "tools/windows_dependency_reuse.py",
+      "producer": {
+        "bytes": 8867,
+        "sha256": "3d24f69d94db10d1affadc35a7f2746b5d68ae43dcb9e1f2fa7e4967c7768a8c"
+      },
+      "producerGitBlobSha256": "ee089aa8c3ba5998be6d5d049aa76c3e22ca4125ed12ee4cb53a33d8a19d075e",
+      "producerCheckout": "CRLF",
+      "currentCheckout": {
+        "bytes": 8951,
+        "sha256": "cfa564fac0452eebedd1f539ee5dda5711fdd2e8fadeb8a31cfca9cdb2df10d9"
+      },
+      "unchanged": false
+    }
+  ],
+  "toolchainSha256": "1cc7c6a0b2579b14f9c04c7f0ae83a5260bc335c941db0f1ae2d5d8433b91f03",
+  "runner": {
+    "ImageOS": "win22",
+    "ImageVersion": "20261004.326.1",
+    "RUNNER_ARCH": "X64",
+    "RUNNER_OS": "Windows"
+  },
+  "nativeReprobe": "pending, not executed",
+  "applicationQualification": "pending, not executed",
+  "postCorrectionOfflineVerification": {
+    "crossCheckoutEncodingRefused": "current consumer differs without exact reviewed compatibility",
+    "authenticatedCrlfProducerCurrentConsumerPair": "passed",
+    "completeCorrectedFingerprint": "30cd19cf526789cc1833c28313d595f41a30d0d8d1ca04e3ded1be6f362e865f",
+    "completeSourceInputComparisonAfterCorrection": [
+      {
+        "path": "docs/third-party/OpenSSL-3.5.9/LICENSE.txt",
+        "producerSha256": "7d5450cb2d142651b8afa315b5f238efc805dad827d91ba367d8516bc9d49e7a",
+        "currentCrlfSha256": "7d5450cb2d142651b8afa315b5f238efc805dad827d91ba367d8516bc9d49e7a",
+        "reviewedConsumerException": false,
+        "unchanged": true
+      },
+      {
+        "path": "docs/third-party/OpenSSL-3.5.9/provenance.json",
+        "producerSha256": "5ca5e2ee69692fdbeae2e24407c2bb618f0020c1ebf5ac26df90311b4ab0ccbf",
+        "currentCrlfSha256": "5ca5e2ee69692fdbeae2e24407c2bb618f0020c1ebf5ac26df90311b4ab0ccbf",
+        "reviewedConsumerException": false,
+        "unchanged": true
+      },
+      {
+        "path": "docs/third-party/curl-8.22.0/LICENSE.txt",
+        "producerSha256": "82f2f4427d6545ee5aaac4f0b80428da6cc8ba41c2cf5da3a03680ec327b9681",
+        "currentCrlfSha256": "82f2f4427d6545ee5aaac4f0b80428da6cc8ba41c2cf5da3a03680ec327b9681",
+        "reviewedConsumerException": false,
+        "unchanged": true
+      },
+      {
+        "path": "docs/third-party/curl-8.22.0/provenance.json",
+        "producerSha256": "a38c255d03bbc5eac094da37ae5e02a84b487886bd85b48a1bc9999a86ac2f9f",
+        "currentCrlfSha256": "a38c255d03bbc5eac094da37ae5e02a84b487886bd85b48a1bc9999a86ac2f9f",
+        "reviewedConsumerException": false,
+        "unchanged": true
+      },
+      {
+        "path": "docs/third-party/zlib-1.3.2/LICENSE.txt",
+        "producerSha256": "e32ff4e00d9d94930537635291da39e7e612703334bf6fde8c7f1686fe8a45a2",
+        "currentCrlfSha256": "e32ff4e00d9d94930537635291da39e7e612703334bf6fde8c7f1686fe8a45a2",
+        "reviewedConsumerException": false,
+        "unchanged": true
+      },
+      {
+        "path": "docs/third-party/zlib-1.3.2/provenance.json",
+        "producerSha256": "3f1cc37b9423fc80975bcd1bb5bf70faebc8e33b84e60d6743f6a7f32b402a7e",
+        "currentCrlfSha256": "3f1cc37b9423fc80975bcd1bb5bf70faebc8e33b84e60d6743f6a7f32b402a7e",
+        "reviewedConsumerException": false,
+        "unchanged": true
+      },
+      {
+        "path": "tools/build-curl-windows.ps1",
+        "producerSha256": "9c5a896c5b3ebcf5d04b92f77cdfdfb98b1f381fbac6495c8c4324c76f7ddf23",
+        "currentCrlfSha256": "9c5a896c5b3ebcf5d04b92f77cdfdfb98b1f381fbac6495c8c4324c76f7ddf23",
+        "reviewedConsumerException": false,
+        "unchanged": true
+      },
+      {
+        "path": "tools/build-openssl-windows.ps1",
+        "producerSha256": "a57a2a468999daf8ba655c2328fd645d002c184ce370ca916d99cf5cc43dabc7",
+        "currentCrlfSha256": "a57a2a468999daf8ba655c2328fd645d002c184ce370ca916d99cf5cc43dabc7",
+        "reviewedConsumerException": false,
+        "unchanged": true
+      },
+      {
+        "path": "tools/build-pristine-windows.ps1",
+        "producerSha256": "4d57a2066fd48c2bbff5c5b80bbcc9df0266cfd0ad134878699cf488614ec519",
+        "currentCrlfSha256": "25dd389f31788bf7a49cfc230bcffb3c6e61b5e9c42219b30c7564495e312344",
+        "reviewedConsumerException": true,
+        "unchanged": false
+      },
+      {
+        "path": "tools/build-zlib-windows.ps1",
+        "producerSha256": "007cb7eac7d5378af095e87218b285920abd4065d4492c1d0e5634deda9c5f22",
+        "currentCrlfSha256": "007cb7eac7d5378af095e87218b285920abd4065d4492c1d0e5634deda9c5f22",
+        "reviewedConsumerException": false,
+        "unchanged": true
+      },
+      {
+        "path": "tools/curl_package.py",
+        "producerSha256": "286ffca81d992270ccd6398829575305d538a889496b96e495e9e3339bb39acb",
+        "currentCrlfSha256": "286ffca81d992270ccd6398829575305d538a889496b96e495e9e3339bb39acb",
+        "reviewedConsumerException": false,
+        "unchanged": true
+      },
+      {
+        "path": "tools/openssl_package.py",
+        "producerSha256": "fe0c87a9146c03dcbc7a5ba2f4214ac2690d536ebfc8f639681b64da0d41e35d",
+        "currentCrlfSha256": "fe0c87a9146c03dcbc7a5ba2f4214ac2690d536ebfc8f639681b64da0d41e35d",
+        "reviewedConsumerException": false,
+        "unchanged": true
+      },
+      {
+        "path": "tools/patch-curl-test-openssl.py",
+        "producerSha256": "499f27be5a3ed25a15d82d1cf9e3338257ae26dc7beb9f674dde6c13cffcc771",
+        "currentCrlfSha256": "499f27be5a3ed25a15d82d1cf9e3338257ae26dc7beb9f674dde6c13cffcc771",
+        "reviewedConsumerException": false,
+        "unchanged": true
+      },
+      {
+        "path": "tools/test-curl-source-preflight.ps1",
+        "producerSha256": "55cfe2d1d8973489d64cb221b79e16df216a06c51496b18a0a079818fe571379",
+        "currentCrlfSha256": "55cfe2d1d8973489d64cb221b79e16df216a06c51496b18a0a079818fe571379",
+        "reviewedConsumerException": false,
+        "unchanged": true
+      },
+      {
+        "path": "tools/test-zlib-source-verification.ps1",
+        "producerSha256": "0864a7f6ca6c880988f6decf5dcdca6a26693a07c7b30632d3f1d5fae27b1b16",
+        "currentCrlfSha256": "0864a7f6ca6c880988f6decf5dcdca6a26693a07c7b30632d3f1d5fae27b1b16",
+        "reviewedConsumerException": false,
+        "unchanged": true
+      },
+      {
+        "path": "tools/windows-curl-environment.ps1",
+        "producerSha256": "75779db66dbc232170f830977d5d321236f71867a41a214347283d66d813224e",
+        "currentCrlfSha256": "75779db66dbc232170f830977d5d321236f71867a41a214347283d66d813224e",
+        "reviewedConsumerException": false,
+        "unchanged": true
+      },
+      {
+        "path": "tools/windows-curl-import-layout.cmake",
+        "producerSha256": "41fb61f6710d45bdcf98289a5d72f011ceaf378555c445dba8f9edc6bdf5c22e",
+        "currentCrlfSha256": "41fb61f6710d45bdcf98289a5d72f011ceaf378555c445dba8f9edc6bdf5c22e",
+        "reviewedConsumerException": false,
+        "unchanged": true
+      },
+      {
+        "path": "tools/windows-curl.lock.json",
+        "producerSha256": "af38fa0c570b3ed01cda2fd4511e351c8af2bebedb254cfe9ff5fb6c6f13fe18",
+        "currentCrlfSha256": "af38fa0c570b3ed01cda2fd4511e351c8af2bebedb254cfe9ff5fb6c6f13fe18",
+        "reviewedConsumerException": false,
+        "unchanged": true
+      },
+      {
+        "path": "tools/windows-native-tool-facts.cmake",
+        "producerSha256": "a243fa025043111b73dced4756cfe820f089356c68692e1ff99afc327293e549",
+        "currentCrlfSha256": "a243fa025043111b73dced4756cfe820f089356c68692e1ff99afc327293e549",
+        "reviewedConsumerException": false,
+        "unchanged": true
+      },
+      {
+        "path": "tools/windows-native-tool-facts.ps1",
+        "producerSha256": "909d5aca764ae461618d02a58592bf0d6f3d7a6846e4b5483aad818aa04e6cd0",
+        "currentCrlfSha256": "909d5aca764ae461618d02a58592bf0d6f3d7a6846e4b5483aad818aa04e6cd0",
+        "reviewedConsumerException": false,
+        "unchanged": true
+      },
+      {
+        "path": "tools/windows-openssl.lock.json",
+        "producerSha256": "dd26041ec5b5f85a76010b4e45716d8dc46c85ccb032815aab8059c49e6bc99d",
+        "currentCrlfSha256": "dd26041ec5b5f85a76010b4e45716d8dc46c85ccb032815aab8059c49e6bc99d",
+        "reviewedConsumerException": false,
+        "unchanged": true
+      },
+      {
+        "path": "tools/windows-parent-environment.ps1",
+        "producerSha256": "b84f945ddde6d343529446193360dd228b4c6b6ca8390fd0d35fb12a92e5f6b1",
+        "currentCrlfSha256": "b84f945ddde6d343529446193360dd228b4c6b6ca8390fd0d35fb12a92e5f6b1",
+        "reviewedConsumerException": false,
+        "unchanged": true
+      },
+      {
+        "path": "tools/windows-zlib.lock.json",
+        "producerSha256": "3da21aa4827871eac086c48b859fb5a50737bfc15c1e2fbe0ed81ffa15d23995",
+        "currentCrlfSha256": "3da21aa4827871eac086c48b859fb5a50737bfc15c1e2fbe0ed81ffa15d23995",
+        "reviewedConsumerException": false,
+        "unchanged": true
+      },
+      {
+        "path": "tools/windows_dependency_bundle.py",
+        "producerSha256": "bc2dae00aa61cd074a4b26ac7e96a1f056896ee2dc34df11edd37fa7e2a7d3a7",
+        "currentCrlfSha256": "fb23bf009efade77e45af47dc97ac7d9d2874e65b81f9a279a7822341667597c",
+        "reviewedConsumerException": true,
+        "unchanged": false
+      },
+      {
+        "path": "tools/windows_dependency_evidence.py",
+        "producerSha256": "cb073d5f2fc18984074fc171a10a6cdf5dc875ef418fc03c3dbc52f58f0379b5",
+        "currentCrlfSha256": "cb073d5f2fc18984074fc171a10a6cdf5dc875ef418fc03c3dbc52f58f0379b5",
+        "reviewedConsumerException": false,
+        "unchanged": true
+      },
+      {
+        "path": "tools/windows_dependency_receipt.py",
+        "producerSha256": "7755c98d421a860331a73b43929d5c3d0677a797d68dfab4b0187d0e2462a3c4",
+        "currentCrlfSha256": "7755c98d421a860331a73b43929d5c3d0677a797d68dfab4b0187d0e2462a3c4",
+        "reviewedConsumerException": false,
+        "unchanged": true
+      },
+      {
+        "path": "tools/windows_dependency_reuse.py",
+        "producerSha256": "3d24f69d94db10d1affadc35a7f2746b5d68ae43dcb9e1f2fa7e4967c7768a8c",
+        "currentCrlfSha256": "cfa564fac0452eebedd1f539ee5dda5711fdd2e8fadeb8a31cfca9cdb2df10d9",
+        "reviewedConsumerException": true,
+        "unchanged": false
+      },
+      {
+        "path": "tools/windows_dependency_stage.py",
+        "producerSha256": "c50166c999ccb81241fd53d83f60523b55e01ca82ff23562b9d52195821c0546",
+        "currentCrlfSha256": "c50166c999ccb81241fd53d83f60523b55e01ca82ff23562b9d52195821c0546",
+        "reviewedConsumerException": false,
+        "unchanged": true
+      },
+      {
+        "path": "tools/windows_gettext.py",
+        "producerSha256": "1f86e71f42766f3c0b730ec07dd32abdfd8cdee218aa1c1d8f8b2c786754ef36",
+        "currentCrlfSha256": "1f86e71f42766f3c0b730ec07dd32abdfd8cdee218aa1c1d8f8b2c786754ef36",
+        "reviewedConsumerException": false,
+        "unchanged": true
+      }
+    ],
+    "actualHelperTamperRefused": [
+      "tools/build-pristine-windows.ps1",
+      "tools/windows_dependency_bundle.py",
+      "tools/windows_dependency_reuse.py"
+    ],
+    "unapprovedProducerRefused": "consumer correction is not approved for this producer commit",
+    "originalArtifactUnchanged": true,
+    "scope": "Offline exact-source compatibility/fingerprint checks only; no native restore/reprobe or application qualification"
+  },
+  "portableValidatorLimitations": [
+    {
+      "scope": "Current Linux LF-checkout package validators against native SDK bytes",
+      "result": "refused: curl certificate-generator patch or probe provenance differs",
+      "explanation": "Producer certificate-patch helper hash records exact Windows CRLF source bytes; Linux helper source uses LF. No hash was normalized or validator changed."
+    },
+    {
+      "scope": "Authenticated original-byte package validators against private extracted SDK",
+      "result": "refused: curl certificate tool differs from the verified OpenSSL producer",
+      "explanation": "Original manifests bind Windows absolute producer paths and tool bytes. Linux cannot qualify native path/tool checks. No manifest or path was rewritten."
+    }
+  ],
+  "focusedLocalChecks": [
+    {
+      "command": "python opennav-x/tools/test-windows-dependency-bundle.py",
+      "platform": "Linux",
+      "result": "passed",
+      "tests": 30,
+      "elapsedSeconds": 3.525,
+      "logSha256": "b0c6ac36efb3784a8b7bab55ad07a3d46d3d0abb070d1a3782a40126d7555f48",
+      "evidenceLog": "bundle-tests.log"
+    },
+    {
+      "command": "python opennav-x/tools/test-windows-dependency-reuse.py",
+      "platform": "Linux",
+      "result": "passed",
+      "tests": 13,
+      "elapsedSeconds": 0.584,
+      "logSha256": "b1e3bd21687e36a8e6235fc6343219d08b2089509927bf3957df8376c221d79d",
+      "evidenceLog": "same-job-reuse-tests.log"
+    }
+  ]
+}
