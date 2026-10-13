@@ -46,7 +46,11 @@ jobs:
               required |= {'TestNativeCompletedBindingAfterThreeMoves',
                            'TestNativeBindingRecordsExistingMenuDescriptor',
                            'TestNativeBindingFailureRetainsMovedEvidence',
-                           'TestNativeBindingDoesNotAdoptExistingCompletionName'}
+                           'TestNativeBindingDoesNotAdoptExistingCompletionName',
+                           'TestNativeStartupRestorationMovesSameObjectsAndRestoresOriginal',
+                           'TestNativeStartupRestorationExcludesForeignSourceRename',
+                           'TestNativeStartupRestorationRefusesCollisionsAndSubstitution',
+                           'TestNativeStartupRestorationPartialFailurePreservesRecovery'}
           if required - passed:
               raise SystemExit('Required binding checks did not execute successfully: ' + ', '.join(sorted(required - passed)))
       - name: Verify exact broker source closure
