@@ -257,6 +257,44 @@ class CaptureTests(unittest.TestCase):
         (self.root / capture.INSTALL / 'archive.dll').unlink()
         self.refuse('runtime missing')
 
+    def test_retained_b0_libcurl_system_ldap_import_closure(self):
+        # Imports observed in the retained B0 production libcurl.dll, not a
+        # claim that these inert fixture bytes are the production DLL.
+        self.dependencies['libcurl.dll'] = {
+            'api-ms-win-crt-convert-l1-1-0.dll', 'api-ms-win-crt-environment-l1-1-0.dll',
+            'api-ms-win-crt-filesystem-l1-1-0.dll', 'api-ms-win-crt-heap-l1-1-0.dll',
+            'api-ms-win-crt-math-l1-1-0.dll', 'api-ms-win-crt-multibyte-l1-1-0.dll',
+            'api-ms-win-crt-runtime-l1-1-0.dll', 'api-ms-win-crt-stdio-l1-1-0.dll',
+            'api-ms-win-crt-string-l1-1-0.dll', 'api-ms-win-crt-time-l1-1-0.dll',
+            'api-ms-win-crt-utility-l1-1-0.dll', 'crypt32.dll', 'iphlpapi.dll',
+            'kernel32.dll', 'libcrypto-3.dll', 'libssl-3.dll', 'normaliz.dll',
+            'vcruntime140.dll', 'wldap32.dll', 'ws2_32.dll', 'zlib1.dll'}
+        result = self.run_capture()
+        self.assertIn('wldap32.dll', result['runtimeImports']['libcurl.dll'])
+        inventory = json.loads((self.output / 'inventory.json').read_text())
+        self.assertNotIn('wldap32.dll', inventory['runtime'])
+
+    def test_system_ldap_import_does_not_admit_unknown_or_local_impostor(self):
+        self.dependencies['libcurl.dll'].update({'wldap32.dll', 'unapproved.dll'})
+        self.refuse('Unresolved production runtime import: unapproved.dll')
+        self.output.rmdir()
+        self.dependencies['libcurl.dll'].remove('unapproved.dll')
+        self.write(capture.INSTALL + '/WLDAP32.dll', b'local impostor')
+        self.refuse('System LDAP DLL shadowed')
+
+    def test_retained_runtime_cannot_supply_system_ldap_impostor(self):
+        self.run_capture()
+        data_root = self.output / 'data'
+        (data_root / 'runtime/wldap32.dll').write_bytes(b'retained impostor')
+        manifest = self.output / 'inventory.json'
+        data = json.loads(manifest.read_text())
+        data['runtime']['wldap32.dll'] = 'runtime/wldap32.dll'
+        data['files']['runtime/wldap32.dll'] = capture.record(data_root, 'runtime/wldap32.dll')[0]
+        manifest.write_text(json.dumps(data))
+        with self.assertRaisesRegex(ValueError, 'System LDAP DLL cannot be supplied'):
+            capture.runner.retained_inputs(data_root, manifest,
+                                           capture.receipt._digest(manifest), COMMIT)
+
     def test_unresolved_import_and_nonallowlisted_driver_refused(self):
         for dependency in ('missing.dll', 'private.drv'):
             self.dependencies['archive.dll'] = {dependency}

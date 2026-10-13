@@ -27,9 +27,6 @@ MAX_TOTAL_BYTES = 2 * 1024 * 1024 * 1024
 MAX_RUNTIME = 128
 SDK_SUFFIXES = {'.h', '.hpp', '.hxx', '.inl', '.inc', '.rc', '.manifest',
                 '.ico', '.cur', '.bmp', '.xpm', '.png', '.xml'}
-EXTRA_SYSTEM = {'comdlg32.dll', 'comctl32.dll', 'winspool.drv', 'uxtheme.dll',
-                'version.dll', 'winmm.dll', 'imm32.dll', 'oleacc.dll', 'dwmapi.dll',
-                'msimg32.dll', 'rpcrt4.dll', 'usp10.dll'}
 WX = 'build/integration-source/cache/wxWidgets-3.2.8'
 BUILD = 'build/production-windows'
 INSTALL = 'build/production-install'
@@ -223,9 +220,11 @@ def plan(root, commit, expected, inspect):
             if name in dlls or not re.fullmatch(r'[a-z0-9_.-]+\.dll', name):
                 raise ValueError('Invalid/case-aliased production DLL')
             dlls[name] = INSTALL + '/' + path.name
+    if 'wldap32.dll' in dlls:
+        raise ValueError('System LDAP DLL shadowed by production install')
     runtime, imports, runtime_bytes = {}, {}, 0
     pending = set(runner.DLLS)
-    system = native.SYSTEM_DLLS | EXTRA_SYSTEM
+    system = native.SYSTEM_DLLS | runner.PLUGIN_SYSTEM_DLLS
     while pending:
         name = min(pending)
         pending.remove(name)

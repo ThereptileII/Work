@@ -24,6 +24,9 @@ ROOT = Path(__file__).resolve().parents[1]
 INPUTS = {'curlInclude', 'curlImport', 'archiveInclude', 'archiveImport', 'wxRoot', 'wxLib'}
 DLLS = {'libcurl.dll', 'archive.dll', 'libssl-3.dll', 'libcrypto-3.dll', 'zlib1.dll',
         'wxbase32u_vc14x.dll', 'wxmsw32u_core_vc14x.dll', 'msvcp140.dll', 'vcruntime140.dll'}
+PLUGIN_SYSTEM_DLLS = {'comdlg32.dll', 'comctl32.dll', 'winspool.drv', 'uxtheme.dll',
+                      'version.dll', 'winmm.dll', 'imm32.dll', 'oleacc.dll', 'dwmapi.dll',
+                      'msimg32.dll', 'rpcrt4.dll', 'usp10.dll', 'wldap32.dll'}
 NS = {'m': 'http://schemas.microsoft.com/developer/msbuild/2003'}
 
 
@@ -68,6 +71,8 @@ def retained_inputs(root, manifest, pin, candidate):
     for name, relative in data['runtime'].items():
         if not re.fullmatch(r'[a-z0-9_.-]+\.dll', name) or Path(relative).name.lower() != name:
             raise ValueError('Invalid runtime DLL mapping')
+    if 'wldap32.dll' in data['runtime']:
+        raise ValueError('System LDAP DLL cannot be supplied by retained runtime')
     roots = list(data['inputs'].values()) + list(data['runtime'].values())
     expected = {}
     for relative in roots:
@@ -256,9 +261,7 @@ def main():
             report.setdefault('binaries', {})[name] = {'sha256': receipt._digest(binary),
                 'runtimeSha256': {dll: receipt._digest(runtime / dll) for dll in data['runtime']}}
             available = set(data['runtime'])
-            system = native.SYSTEM_DLLS | {'comdlg32.dll', 'comctl32.dll', 'winspool.drv',
-                'uxtheme.dll', 'version.dll', 'winmm.dll', 'imm32.dll', 'oleacc.dll',
-                'dwmapi.dll', 'msimg32.dll', 'rpcrt4.dll', 'usp10.dll'}
+            system = native.SYSTEM_DLLS | PLUGIN_SYSTEM_DLLS
             imports_report = {}
             for path in (binary, *sorted(runtime.glob('*.dll'))):
                 log = output / (name + '-imports-' + path.name + '.log')
