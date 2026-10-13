@@ -56,9 +56,14 @@ export async function handleWorker(request, transport = fetch) {
       const signal = AbortSignal.timeout(20000);
       failurePhase = 'upstream-request';
       const response = await transport(EDGE + url.pathname, {
-        method: request.method, headers, body, redirect: 'error',
+        // workerd supports manual/follow; explicitly refuse redirects below.
+        method: request.method, headers, body, redirect: 'manual',
         signal,
       });
+      if (response.status >= 300 && response.status < 400) {
+        await response.body?.cancel().catch(() => {});
+        throw new Error();
+      }
       failurePhase = 'response-build';
       const outputHeaders = new Headers({ 'Cache-Control': 'no-store' });
       outputHeaders.set('Content-Type', response.headers.get('content-type') || 'application/json');

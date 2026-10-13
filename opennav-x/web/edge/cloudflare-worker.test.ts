@@ -70,7 +70,7 @@ test('Worker successful session preserves cookies and fixed proxy boundaries wit
     const response = await handleWorker(request(), async (url, init) => {
       assert.equal(url, 'https://kelwgubkuvditalsbqpr.supabase.co/functions/v1/skager-web/api/auth/session');
       assert.equal(init.method, 'GET');
-      assert.equal(init.redirect, 'error');
+      assert.equal(init.redirect, 'manual');
       assert.ok(init.signal instanceof AbortSignal);
       assert.equal(init.headers.get('Cookie'), `private=${secret}`);
       assert.equal(init.headers.has('Authorization'), false);
@@ -101,3 +101,30 @@ test('Worker forwards an upstream refusal without inventing a local exception di
     assert.deepEqual(warnings, []);
   } finally { console.warn = originalWarn; }
 });
+
+for (const status of [301, 302, 303, 307, 308]) {
+  test(`Worker refuses upstream ${status} without following or forwarding its private response`, async () => {
+    const warnings: unknown[][] = [];
+    const originalWarn = console.warn;
+    console.warn = (...args) => { warnings.push(args); };
+    let calls = 0;
+    try {
+      const response = await handleWorker(request(), async (_url, init) => {
+        calls++;
+        assert.equal(init.redirect, 'manual');
+        const upstream = new Response(secret, { status, headers: {
+          Location: `https://must-not-follow.invalid/${secret}`, 'Set-Cookie': `private=${secret}`,
+        } });
+        upstream.headers.getSetCookie = () => { assert.fail('redirect cookies must not be inspected'); };
+        return upstream;
+      });
+      assert.equal(calls, 1);
+      assert.equal(response.status, 503);
+      assert.equal(await response.text(), '{"error":"The service is temporarily unavailable. Please try again."}');
+      assert.equal(response.headers.has('Location'), false);
+      assert.equal(response.headers.has('Set-Cookie'), false);
+      assert.deepEqual(warnings, [['skager-worker:upstream-request']]);
+      assert.equal(JSON.stringify([...response.headers]).includes(secret), false);
+    } finally { console.warn = originalWarn; }
+  });
+}
