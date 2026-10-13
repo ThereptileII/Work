@@ -132,8 +132,11 @@ test('last permitted coupon redemption settles after expiry, exhaustion and arch
         if (url.endsWith(`/prices/${priceId}`)) return providerReply({ ...price(), active: !exhausted });
         if (url.endsWith('/coupons/full100?expand%5B%5D=applies_to')) return providerReply({ ...coupon(discount),
           valid: !exhausted, redeem_by: exhausted ? 1 : null, times_redeemed: exhausted ? 25 : 24 });
-        if (url.endsWith('/checkout/sessions')) return providerReply({ ...session(discount), status: 'open',
-          url: `https://checkout.stripe.com/c/pay/${sessionId}` });
+        if (url.endsWith('/checkout/sessions')) {
+          assert.equal((init.body as URLSearchParams).has('allow_promotion_codes'), false);
+          assert.equal((init.body as URLSearchParams).get('discounts[0][promotion_code]'), promotionId);
+          return providerReply({ ...session(discount), status: 'open', url: `https://checkout.stripe.com/c/pay/${sessionId}` });
+        }
         if (url.includes(`/checkout/sessions/${sessionId}?`)) return providerReply(session(discount));
         throw Error('unexpected provider request');
       },
@@ -236,6 +239,7 @@ test('checkout start binds authenticated account and returns only hosted URL', a
       assert.equal(url, 'https://api.stripe.com/v1/checkout/sessions');
       assert.equal((init.body as URLSearchParams).get('client_reference_id'), order);
       assert.equal((init.body as URLSearchParams).get('allow_promotion_codes'), 'false');
+      assert.equal((init.body as URLSearchParams).has('discounts[0][promotion_code]'), false);
       return new Response(JSON.stringify({ ...session(), status: 'open',
         url: `https://checkout.stripe.com/c/pay/${sessionId}#test` }),
         { status: 200, headers: { 'Content-Type': 'application/json' } });
@@ -270,7 +274,7 @@ test('only an approved active exact promotion reaches Checkout creation', async 
         has_more: false, data: candidates }), { status: 200, headers: { 'Content-Type': 'application/json' } });
       if (url === `https://api.stripe.com/v1/prices/${priceId}`) return providerReply(selectedPrice);
       if (url === 'https://api.stripe.com/v1/coupons/full100?expand%5B%5D=applies_to') return providerReply(selectedCoupon);
-      assert.equal((init.body as URLSearchParams).get('allow_promotion_codes'), 'false');
+      assert.equal((init.body as URLSearchParams).has('allow_promotion_codes'), false);
       assert.equal((init.body as URLSearchParams).get('discounts[0][promotion_code]'), 'promo_12345678');
       return new Response(JSON.stringify({ ...session(2000), status: 'open',
         url: `https://checkout.stripe.com/c/pay/${sessionId}#test` }),

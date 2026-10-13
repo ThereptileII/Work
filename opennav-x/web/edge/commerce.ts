@@ -429,8 +429,11 @@ export async function handleCommerce(req: Request, ctx: CommerceContext): Promis
       'line_items[0][price]': config.price, 'line_items[0][quantity]': '1',
       client_reference_id: order.order_id, 'metadata[order_id]': order.order_id,
       success_url: config.origin + '/checkout/test/success/',
-      cancel_url: config.origin + '/checkout/test/cancel/', allow_promotion_codes: 'false' });
+      cancel_url: config.origin + '/checkout/test/cancel/' });
     if (promotion) form.set('discounts[0][promotion_code]', promotion.promotion_id);
+    // These parameters are mutually exclusive even with an explicit false.
+    // Without allow_promotion_codes, hosted promotion entry remains disabled.
+    else form.set('allow_promotion_codes', 'false');
     const session = await stripeRequest(ctx, config, 'checkout/sessions', 'POST', form);
     sessionIdentity(session, order.order_id);
     requireValue(session.status === 'open' && ['hosted', 'hosted_page'].includes(session.ui_mode));

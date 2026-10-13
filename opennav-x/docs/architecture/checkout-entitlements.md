@@ -43,6 +43,9 @@ promotion-code entry is disabled, and each order binds its selected promotion
 and coupon before payment. A completed session must show that same promotion,
 coupon, and exact amount before fulfillment. Stripe still decides final
 redemption eligibility and may reject a code at Checkout creation or payment.
+Discounted requests omit `allow_promotion_codes`; its default disables hosted
+entry and Stripe [does not permit it alongside `discounts`](https://github.com/stripe/stripe-node/issues/2248).
+Full-price requests retain explicit `allow_promotion_codes=false` and no discount.
 
 The pinned `2026-09-30.endive` [PromotionCode schema](https://docs.stripe.com/api/promotion_codes/object?api-version=2026-09-30.endive&query=promotion)
 uses `promotion.type=coupon` and an expandable `promotion.coupon` ID.
