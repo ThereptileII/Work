@@ -295,5 +295,50 @@
     "providerConsentAndConfiguration": "specific shared TEST event delivery still requires separate consent/configuration; dedicated scope and actual live qualification gates remain open",
     "realAccountPaymentOrEndToEndAcceptance": false,
     "publicSignupPaymentAndDownloads": "closed"
+  },
+  "privateDownloadsCandidate": {
+    "issue": "SCRUM-42",
+    "sourceCommit": "76ddba17462fcfe6884be2465e88e0e80b79b265",
+    "independentReview": "bounded backend and root integration reviewed; no source blocker found; no provider qualification",
+    "ci": {
+      "run": 38464107015,
+      "job": 115526476136,
+      "conclusion": "success",
+      "artifactId": 11848100752,
+      "artifactBytes": 6857,
+      "artifactSha256": "900622a65ec0ffc06db54b0fee66981b3ef15c2edfb930180a024f2ef0c59e69",
+      "zipMembersCrcPassed": 10,
+      "djangoPassed": 88,
+      "edgePassed": 87,
+      "failed": 0,
+      "skipped": 0,
+      "postgresSqlAndMigrations": "passed"
+    },
+    "retainedPackage": {
+      "cloudflare": {
+        "bytes": 501588,
+        "sha256": "fc2dea75860d3a4745ac489cd2cd76cb9eac885a7e3dfd1187a4ce540ebd2d6a"
+      },
+      "supabase": {
+        "bytes": 65191,
+        "sha256": "68bc5db0554fd98f18c7e8d572724c06cfa48a1402bf6fb17eb9c5335b8cc0c2"
+      },
+      "deployed": false
+    },
+    "actualStorageObservation": {
+      "supabasePlan": "Free",
+      "maximumObjectUploadMB": 50,
+      "requiredRecoveryAndSourceFit": false,
+      "bucketsCreated": 0,
+      "r2SubscriptionEnabled": false,
+      "r2OwnerActivationHandoff": "pending; recurring usage billing and terms",
+      "storageAdaptation": "pending authorized provider choice"
+    },
+    "catalogEntries": 0,
+    "accessFlags": "OFF",
+    "liveSupabaseSource": "251c88bed6063fe5212339df73caa81c48cb931f",
+    "liveCloudflareDeployment": "e18a9fb4",
+    "liveDownloadOrAccountPaymentAcceptance": false,
+    "publicAccess": "closed"
   }
 }

@@ -1,5 +1,27 @@
 # SKAGER status — 2026-10-13
 
+## Private downloads integrated; provider storage limit remains
+
+Exact web source `76ddba17462fcfe6884be2465e88e0e80b79b265` passes
+[web CI 38464107015](https://github.com/ThereptileII/Work/actions/runs/38464107015):
+**175 tests** (88 Django/PostgreSQL and 87 Edge), zero failures or skips,
+plus disposable SQL/migration checks. The authenticated portal now lists only
+reviewed qualified Staging entries and requests a fresh, short-lived download
+link after current session/entitlement and CSRF checks. The default catalog is
+empty, all access flags remain OFF, and no release is made available.
+
+Both provider bundles are packaged but **not deployed**. Live Supabase remains
+`251c88be` and Cloudflare remains `e18a9fb4`. Browser inspection confirmed the
+current Supabase Free project has a fixed **50 MB per-object** upload limit,
+which cannot hold the required Windows recovery/source packages. Cloudflare R2
+is not enabled; its activation includes recurring usage billing and terms, so
+that final step was handed to the owner. No subscription, bucket, public access
+or credential was created. Downloads require a suitable authorized storage path
+and live custody/expiry checks in addition to native release qualification.
+[Exact package and CI evidence](evidence/web-provider-20261013/README.md).
+
+## Earlier packaged checkpoint: webhook ownership filtering
+
 Newest packaged web source `662c62478ded1ea75f5646b984d5670cda36525a` passes
 [web CI 38460214097](https://github.com/ThereptileII/Work/actions/runs/38460214097):
 **157 tests** (88 Django/PostgreSQL and 69 Edge), no failures or reported skips,

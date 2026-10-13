@@ -188,3 +188,30 @@ or live end-to-end acceptance has occurred. Public access remains closed.
 [`evidence.json`](evidence.json) gives the structured observations and source
 links. It contains no provider credentials, customer identifiers, session
 material, or screenshots.
+
+## Authenticated private-download source candidate, not deployed
+
+SCRUM-42 source `76ddba17462fcfe6884be2465e88e0e80b79b265` integrates the
+reviewed default-off handler, account signing quota, router and portal. Same-head
+[CI 38464107015](https://github.com/ThereptileII/Work/actions/runs/38464107015),
+job `115526476136`, passed 88 Django/PostgreSQL and 87 Edge tests (175 total,
+zero failures or skips), plus disposable SQL/migration checks. Downloaded artifact
+`11848100752`, 6,857 bytes, SHA-256
+`900622a65ec0ffc06db54b0fee66981b3ef15c2edfb930180a024f2ef0c59e69`,
+matches the retained evidence; all ten ZIP members pass CRC validation.
+
+Exact candidate packages are 501,588-byte Cloudflare source SHA-256
+`fc2dea75860d3a4745ac489cd2cd76cb9eac885a7e3dfd1187a4ce540ebd2d6a`
+and 65,191-byte Supabase source SHA-256
+`68bc5db0554fd98f18c7e8d572724c06cfa48a1402bf6fb17eb9c5335b8cc0c2`.
+They are **not deployed**. Live backend remains `251c88be`; frontend remains
+`e18a9fb4`. Auth/checkout/portal/download access stays OFF, catalog empty.
+
+Read-only provider UI inspection confirmed the Supabase Free project's fixed
+50 MB upload limit per object. Required recovery/source packages cannot fit.
+The Cloudflare account has not enabled R2; its activation would accept recurring
+usage billing and terms. That step was handed to the owner. No subscription,
+bucket, object, credential or public access was created. The current handler's
+Supabase Storage implementation is therefore not a qualified delivery path for
+the release set. SCRUM-42 retains provider choice/adaptation, exact package
+custody, real private access, expiry/revocation and corresponding-source gates.

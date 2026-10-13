@@ -67,6 +67,24 @@ download multi-gigabyte objects to rehash them on each request, and neither the
 qualification record fields nor successful signing prove stored bytes or release
 acceptance. Historical entries retain their own original commit/version/hashes.
 
+## Observed deployment capacity — 2026-10-13
+
+The actual project's Storage Settings show Supabase Free with a fixed 50 MB
+per-object upload limit, consistent with the [provider file-limit documentation](https://supabase.com/docs/guides/storage/uploads/file-limits).
+Required Windows recovery and corresponding-source archives exceed that limit.
+The implementation's bounded metadata size is not a promise that the provider
+plan can store that object. No real catalog entry or bucket has been enabled.
+
+The existing Cloudflare account's R2 page is still at subscription activation.
+R2 Standard offers 10 GB-month storage, one million Class A and ten million
+Class B operations free per month; overage is usage-billed under its
+[pricing policy](https://developers.cloudflare.com/r2/pricing/).
+Activation requires owner acceptance of the recurring terms/billing step.
+No R2 subscription, bucket, binding or upload was created by the operator.
+Provider selection/adaptation remains in SCRUM-42; do not split archives into
+opaque chunks or expose public objects to work around this capacity blocker.
+Supabase identity, database and payment boundaries remain unchanged.
+
 ## Storage signing and limits
 
 Supabase documents [time-limited private downloads](https://supabase.com/docs/guides/storage/serving/downloads)
@@ -110,12 +128,13 @@ that Auth-key rotation does not revoke these Storage URLs.
 
 ## Integration and remaining acceptance
 
-Root owns router/frontend glue: import `handleDownloads`, reject queries before
-URL normalization, route both methods after standard CSRF processing, and load
-the dedicated authorized catalog on the Downloads page. Remove the old dashboard
-hardcoded availability claim. Render version/channel/commit and hash/length
-metadata safely; require a fresh authorized POST for each download, validate the
-pinned returned URL and expiry, and handle OFF/empty/unauthorized states honestly.
+The integrated router imports `handleDownloads`, rejects queries before URL
+normalization and routes both methods after standard CSRF processing. The portal
+loads the dedicated authorized catalog on Downloads instead of relying on a
+hardcoded dashboard availability claim. It safely renders version/channel/commit
+and hash/length metadata, requires a fresh authorized POST for each click, checks
+the pinned returned URL and expiry, and handles OFF/empty/unauthorized states.
+These source changes are packaged, not yet deployed or provider-qualified.
 
 This increment's tests use synthetic catalog entries, tokens and Storage replies.
 They do not qualify a package or real signed URL. Actual private Storage setup,
