@@ -125,19 +125,30 @@ func (p *RetirementPreparation) Commit(ctx context.Context, postSelectionGuard f
 		return nil, ErrClosed
 	}
 	p.committed = true
-	if err := errors.Join(ctx.Err(), postSelectionGuard(ctx), p.backend.check()); err != nil {
+	if err := errors.Join(ctx.Err(), postSelectionGuard(ctx)); err != nil {
 		p.failed = true
 		return nil, err
 	}
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+	// Close snapshots and drains children under this lock. Keep the native
+	// terminal operation and its receipt registration in that same interval;
+	// otherwise Close could miss a newly acquired DELETE/marker owner.
+	p.store.mu.Lock()
+	defer p.store.mu.Unlock()
+	if p.store.closed.Load() {
+		p.failed = true
+		return nil, ErrClosed
+	}
+	if err := errors.Join(ctx.Err(), p.backend.check()); err != nil {
+		p.failed = true
+		return nil, err
+	}
 	b, err := p.backend.commit(ctx)
 	if b != nil {
 		r := &Retirement{store: p.store, backend: b, binding: p.binding, poisoned: err != nil}
 		r.self = r
-		p.store.mu.Lock()
 		p.store.retirements = append(p.store.retirements, r)
-		p.store.mu.Unlock()
 		if err == nil {
 			result = r
 		}

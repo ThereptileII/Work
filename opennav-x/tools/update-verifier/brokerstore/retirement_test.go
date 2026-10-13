@@ -3,13 +3,18 @@ package brokerstore
 import (
 	"context"
 	"errors"
+	"runtime"
 	"testing"
+	"time"
 )
 
 type retirementTestStore struct {
 	memoryStore
 	prepareCount, commitCount, prepareClose, retirementClose int
 	prepareErr, commitErr, checkErr                          error
+	receiptCloseErr                                          error
+	commitEntered                                            chan struct{}
+	commitRelease                                            <-chan struct{}
 	terminal                                                 bool
 }
 
@@ -40,6 +45,10 @@ func (p *retirementTestPreparation) check() error {
 }
 func (p *retirementTestPreparation) commit(ctx context.Context) (retirementBackend, error) {
 	p.s.commitCount++
+	if p.s.commitEntered != nil {
+		close(p.s.commitEntered)
+		<-p.s.commitRelease
+	}
 	if err := ctx.Err(); err != nil {
 		return nil, err
 	}
@@ -75,7 +84,7 @@ func (r *retirementTestReceipt) close() error {
 		r.closed = true
 		r.s.retirementClose++
 	}
-	return nil
+	return r.s.receiptCloseErr
 }
 
 func TestRetirementOriginalHandoffAndTerminalReceipt(t *testing.T) {
@@ -192,5 +201,74 @@ func TestRetirementBackendFailureKeepsOriginalOwnerForDrain(t *testing.T) {
 	}
 	if sb.retirementClose != 1 || sb.prepareClose != 1 {
 		t.Fatal("partial original ownership leaked")
+	}
+}
+
+func TestRetirementCommitAndConcurrentStoreCloseDrainOriginalReceiptOnce(t *testing.T) {
+	closeFault := errors.New("retirement receipt close failure")
+	entered, release := make(chan struct{}), make(chan struct{})
+	sb := &retirementTestStore{commitEntered: entered, commitRelease: release, receiptCloseErr: closeFault}
+	s := &Store{backend: sb}
+	p, err := s.PrepareRetiringDecommission(context.Background(), decommissionTestBinding(), func(context.Context) error { return nil })
+	if err != nil {
+		t.Fatal(err)
+	}
+	commitDone := make(chan error, 1)
+	go func() {
+		_, err := p.Commit(context.Background(), func(context.Context) error { return nil })
+		commitDone <- err
+	}()
+	select {
+	case <-entered:
+	case <-time.After(5 * time.Second):
+		t.Fatal("native commit did not enter")
+	}
+	closeDone := make(chan error, 1)
+	go func() { closeDone <- s.Close() }()
+	// Close must acquire closeMu before it can wait on the Store lock held by
+	// Commit. This proves the shutdown overlaps the native operation.
+	deadline := time.After(5 * time.Second)
+	for {
+		if !s.closeMu.TryLock() {
+			break
+		}
+		s.closeMu.Unlock()
+		select {
+		case <-deadline:
+			t.Fatal("store close did not start")
+		default:
+			runtime.Gosched()
+		}
+	}
+	select {
+	case err := <-closeDone:
+		t.Fatal("close returned before native receipt registration", err)
+	default:
+	}
+	close(release)
+	select {
+	case err := <-commitDone:
+		if err != nil {
+			t.Fatal(err)
+		}
+	case <-time.After(5 * time.Second):
+		t.Fatal("commit did not complete")
+	}
+	select {
+	case err := <-closeDone:
+		if !errors.Is(err, closeFault) {
+			t.Fatal("receipt close error lost", err)
+		}
+	case <-time.After(5 * time.Second):
+		t.Fatal("close did not drain")
+	}
+	if sb.commitCount != 1 || sb.prepareClose != 1 || sb.retirementClose != 1 || sb.closes != 1 {
+		t.Fatal("original retirement owners not drained exactly once")
+	}
+	if err := s.Close(); !errors.Is(err, closeFault) {
+		t.Fatal("concurrent close error was not sticky", err)
+	}
+	if sb.retirementClose != 1 || sb.closes != 1 {
+		t.Fatal("second close drained original owners again")
 	}
 }
