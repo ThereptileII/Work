@@ -45,6 +45,14 @@ are pinned to the selected project and approved HTTPS endpoints. Secrets belong
 only in backend platform bindings; no environment values are read into the
 public build.
 
+The server's application-owned auth bindings are `SKAGER_AUTH_ENABLED` and
+`SKAGER_INVITE_EMAILS`. The flag must be exactly `true`, and the allowlist must
+contain the intended exact email addresses; missing configuration denies access.
+Supabase reserves the `SUPABASE_` prefix for injected variables, so the old custom
+auth names are ignored. Keep the vendor-injected `SUPABASE_URL`,
+`SUPABASE_ANON_KEY` and `SUPABASE_SERVICE_ROLE_KEY` unchanged and server-only.
+See [the current configuration contract](supabase-login-flow.md#server-configuration-and-routing).
+
 `web/tools/build_cloudflare_beta.py` requires an exact clean web source revision
 and a fresh output directory. It produces separate frontend and backend bundles,
 plus SHA-256 provenance in `build-info.json`. A successful build does not upload

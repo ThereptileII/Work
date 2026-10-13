@@ -1,5 +1,15 @@
 # Supabase preparation
 
+For the current Cloudflare/Supabase Edge deployment, follow the
+[architecture decision](../../../docs/architecture/cloudflare-supabase-private-beta.md)
+and [auth configuration](../../../docs/architecture/supabase-login-flow.md#server-configuration-and-routing).
+Configure application secrets as `SKAGER_AUTH_ENABLED` and `SKAGER_INVITE_EMAILS`;
+custom `SUPABASE_` names are reserved and rejected by Supabase. Keep the injected
+`SUPABASE_URL`, `SUPABASE_ANON_KEY` and `SUPABASE_SERVICE_ROLE_KEY` unchanged.
+Auth remains disabled unless the flag is exactly `true`, with an exact nonempty
+invitation allowlist. The preparation observations below remain historical;
+they do not establish current deployment or live-flow acceptance.
+
 Owner-authorized Skager project inspected through its existing Chrome session
 on 2026-10-13. Region: West EU (Ireland). No project keys are stored here.
 

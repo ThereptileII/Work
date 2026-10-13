@@ -58,12 +58,12 @@ function email(value: unknown): string {
 }
 function invited(value: string, ctx: AuthContext): boolean {
   return !!value &&
-    (ctx.env.SUPABASE_INVITE_EMAILS || "").split(",").map((s) =>
+    (ctx.env.SKAGER_INVITE_EMAILS || "").split(",").map((s) =>
       s.trim().toLowerCase()
     ).includes(value);
 }
 function enabled(ctx: AuthContext): boolean {
-  return ctx.env.SUPABASE_AUTH_ENABLED === "true";
+  return ctx.env.SKAGER_AUTH_ENABLED === "true";
 }
 function equal(a: string, b: string): boolean {
   if (a.length !== b.length) return false;

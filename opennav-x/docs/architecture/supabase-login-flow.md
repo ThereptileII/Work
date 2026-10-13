@@ -19,9 +19,15 @@ the application boundary; only configured friends are accepted.
 
 ## Server configuration and routing
 
-`SUPABASE_AUTH_ENABLED` defaults disabled and must equal `true` to allow auth.
-`SUPABASE_INVITE_EMAILS` is a comma-separated, case-normalized exact email
+`SKAGER_AUTH_ENABLED` defaults disabled and must equal `true` to allow auth.
+`SKAGER_INVITE_EMAILS` is a comma-separated, case-normalized exact email
 allowlist. Empty denies everyone, including previously logged-in accounts.
+These two application settings use `SKAGER_` because Supabase rejects custom
+secret names beginning with its reserved `SUPABASE_` prefix in both the Dashboard
+and Management API ([official secret configuration](https://supabase.com/docs/guides/functions/secrets)).
+The old `SUPABASE_AUTH_ENABLED` and `SUPABASE_INVITE_EMAILS` names are ignored;
+they cannot enable auth or supply an allowlist fallback. Set only the new names
+for an authorized invited qualification window; absence keeps access disabled.
 Supabase supplies `SUPABASE_URL`, `SUPABASE_ANON_KEY` and
 `SUPABASE_SERVICE_ROLE_KEY` only to the backend. The service key is used by the
 coordinator's `ctx.rpc` implementation and the fixed `/auth/v1/invite` request,

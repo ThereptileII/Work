@@ -34,8 +34,8 @@ function fixture() {
   };
   const ctx: AuthContext = {
     env: {
-      SUPABASE_AUTH_ENABLED: "true",
-      SUPABASE_INVITE_EMAILS: address,
+      SKAGER_AUTH_ENABLED: "true",
+      SKAGER_INVITE_EMAILS: address,
       SUPABASE_URL: "https://kelwgubkuvditalsbqpr.supabase.co",
       SUPABASE_ANON_KEY: "test-public-key",
       SUPABASE_SERVICE_ROLE_KEY: "SECRET service role",
@@ -142,6 +142,36 @@ async function begin(
   assert(res?.status === 200);
   return setCookie(res, "__Host-skager_challenge");
 }
+test("reserved legacy configuration cannot enable authentication", async () => {
+  for (const value of [undefined, "", "false", "TRUE"]) {
+    const f = fixture();
+    f.ctx.env.SKAGER_AUTH_ENABLED = value;
+    f.ctx.env.SUPABASE_AUTH_ENABLED = "true";
+    f.ctx.env.SUPABASE_INVITE_EMAILS = address;
+    assert((await handleAuth(request("login", { email: address }), f.ctx))?.status === 503);
+    same(await getAccount(request("session", undefined, `__Host-skager_session=${"a".repeat(64)}`), f.ctx), null);
+    same(f.calls.length, 0);
+    same(f.remote.length, 0);
+  }
+});
+test("SKAGER invitation allowlist is exact and has no reserved-name fallback", async () => {
+  for (const value of [undefined, "", `${address}.attacker.test`]) {
+    const f = fixture();
+    f.ctx.env.SKAGER_INVITE_EMAILS = value;
+    f.ctx.env.SUPABASE_INVITE_EMAILS = address;
+    const res = await handleAuth(request("login", { email: address }), f.ctx);
+    assert(res?.status === 200);
+    same(f.remote.length, 0);
+    same(f.challenges.size, 0);
+    same(f.sessions.size, 0);
+  }
+  const f = fixture();
+  f.ctx.env.SKAGER_INVITE_EMAILS = ` other@example.com, ${address.toUpperCase()} `;
+  await begin(f);
+  same(f.remote.map(c => c.path), ["/auth/v1/otp"]);
+  same(f.remote[0].body, { email: address, create_user: false });
+  same(f.challenges.size, 1);
+});
 test("allowlisted OTP login verifies canonical user then issues opaque bounded session", async () => {
   const f = fixture(), challenge = await begin(f);
   const res = await handleAuth(
@@ -321,13 +351,13 @@ test("disabled and revoked invitation deny existing sessions, malformed cookies 
     null,
   );
   same(f.calls.length, 0);
-  f.ctx.env.SUPABASE_AUTH_ENABLED = "false";
+  f.ctx.env.SKAGER_AUTH_ENABLED = "false";
   assert(
     (await handleAuth(request("login", { email: address }), f.ctx))?.status ===
       503,
   );
   same(await getAccount(request("session"), f.ctx), null);
-  f.ctx.env.SUPABASE_AUTH_ENABLED = "true";
+  f.ctx.env.SKAGER_AUTH_ENABLED = "true";
   const challenge = await begin(f);
   const res = await handleAuth(
     request("verify", { code: "123456" }, challenge),
@@ -335,7 +365,7 @@ test("disabled and revoked invitation deny existing sessions, malformed cookies 
   );
   assert(res);
   const session = setCookie(res, "__Host-skager_session");
-  f.ctx.env.SUPABASE_INVITE_EMAILS = "";
+  f.ctx.env.SKAGER_INVITE_EMAILS = "";
   same(await getAccount(request("session", undefined, session), f.ctx), null);
 });
 test("oversize body and DB session write failure expose no credentials and establish no session", async () => {
