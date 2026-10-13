@@ -481,6 +481,76 @@
     "extendedTests": false,
     "designValidation": false,
     "productAcceptance": false,
-    "reason": "Runtime protected retirement Go inputs changed from B0; diagnostic compiled recovery has no supported restore/package path"
+    "reason": "Runtime protected retirement Go inputs changed from B0; diagnostic compiled recovery has no supported restore/package path",
+    "operatorKitAudit": {
+      "schema": 1,
+      "runId": 38455915079,
+      "runAttempt": 1,
+      "productCommit": "cd8a76e7d0e2a1ab62e1277606e9ccdb4d9d6495",
+      "artifactId": 11843817697,
+      "artifactBytes": 159729989,
+      "artifactSha256": "06f70ad624ff23f05867aef9c76d9b67ea9c76f43a1bfb30ec4b4d2406496520",
+      "githubDigestVerified": true,
+      "outerZipCRCVerified": true,
+      "kitZipCRCVerified": true,
+      "kitSha256": "5fab828fcd4032d0d6adce630b1fdb8d8fba5d64701fbe00125cf4a954be18a3",
+      "kitBytes": 159704257,
+      "payload": {
+        "opennav/third-party/baseline-handoff/build.json": {
+          "bytes": 30184,
+          "sha256": "4fbf2a874e8c68bba6c3755ca03cbe8e78a8059529ce2a784d5edf95aa602452"
+        },
+        "opennav/third-party/update-broker/build.json": {
+          "bytes": 29824,
+          "sha256": "9544f39f1de6b10a6de12d5957feb3880c72e91712948e38e422eec9ba1fcaf4"
+        },
+        "opennav/third-party/update-provisioner/build.json": {
+          "bytes": 30182,
+          "sha256": "2f593b38d30aebeb0a071564f44ad5cea4345cb8de8e433d14a65b86e826763b"
+        },
+        "opennav/third-party/updater/LICENSE": {
+          "bytes": 15448,
+          "sha256": "1b6fd472069679f35db525ac2ffe337bbb3c5a2d5dd86cb181ed589361be32e7"
+        },
+        "opennav/third-party/updater/SOURCE_REFERENCE.json": {
+          "bytes": 5953850,
+          "sha256": "ccfb9d8472dd22387d5189f99bb1f46645a3b0246bb02fde8ccb42f50fc57604"
+        },
+        "opennav/third-party/updater/updater-source.zip": {
+          "bytes": 138798953,
+          "sha256": "30dae5552b6d7ecce46f1b7643f4ca1f412da67966a3a57a38b014e5ba365e5b"
+        },
+        "skager-baseline-package.exe": {
+          "bytes": 13199872,
+          "sha256": "477471e25cbda8cbaa3e857dc95bc706a6a545243e36e08b7b74ce7836bb5093"
+        },
+        "skager-update-broker.exe": {
+          "bytes": 19420672,
+          "sha256": "ccef24bce9f78f6f41fc0c29bf51f8757c06214ff41dedc81c3ad78721221291"
+        },
+        "skager-update-provisioner.exe": {
+          "bytes": 17119744,
+          "sha256": "6bfe93bf23ac69df888562a1072ee51900f2e8ee349195da341c03458c9cb997"
+        }
+      },
+      "manifestSha256": "e9affbf85e0b5583e5a601ab48b118dc829b73d61690e48f8aa69ebe2eb8305f",
+      "members": 10,
+      "payloadExecuted": false,
+      "productAcceptance": false,
+      "launcherPairing": "pending same-commit fixture-free recovery",
+      "componentBuildInfoVerified": true,
+      "componentPrerequisiteChainVerified": true,
+      "sourceZipCRCVerified": true,
+      "sourceMemberHashesVerified": 30718,
+      "projectSourceGitMatches": 434,
+      "sourceReferenceIdentical": true,
+      "goVersion": "go1.27.1",
+      "architecture": "windows/386 GO386=sse2 CGO_ENABLED=0",
+      "producerJobId": 115498679867,
+      "producerJobConclusion": "success",
+      "producerPackagingStepConclusion": "success",
+      "scope": "original same-commit operator tool bytes/source; no installed/product acceptance"
+    },
+    "operatorKitOriginalAuditSha256": "917c6473508ecfb2a86cc4543f34e488d819630a9a4242ff949e96e7a4556932"
   }
 }

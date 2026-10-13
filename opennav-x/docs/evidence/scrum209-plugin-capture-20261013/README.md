@@ -66,3 +66,19 @@ integration, installed private-channel B0/B1 behavior or full Lifecycle uninstal
 [results.json](results.json) retains the original producer steps, artifact hashes,
 unaltered compiled-recovery receipt and separate helper/native statuses. Subsequent
 results are appended without changing the original failed conclusions.
+
+## Same-commit operator kit retained while application qualification continues
+
+The replacement run's operator artifact `11843817697` is authenticated at exact
+`cd8a76e7`, attempt 1. Producer job `115498679867` and its packaging step passed.
+The downloaded outer ZIP is 159,729,989 bytes, SHA-256
+`06f70ad624ff23f05867aef9c76d9b67ea9c76f43a1bfb30ec4b4d2406496520`.
+GitHub digest/length, outer/inner/source ZIP integrity, all nine payload hashes,
+three Windows/386 executable build identities and their prerequisite chain pass.
+The source archive's 30,718 member hashes and 434 project files match the exact
+commit, accounting for checkout line endings. No payload was executed.
+
+This is operator-tool provenance only. Application qualification, a same-commit
+fixture-free recovery package, launcher pairing and installed acceptance remain
+pending. The structured audit is preserved under `replacementStaging` in
+[`results.json`](results.json); it does not change the original B0 failure.
