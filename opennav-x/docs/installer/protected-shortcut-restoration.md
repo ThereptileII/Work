@@ -30,15 +30,44 @@ not independent approval. Parsing establishes historical identity only. It
 does not inspect current files, prove cold application/profile state, bind a
 live broker witness, authorize restoration or grant any filesystem mutation.
 
-`MaintenanceOwner.BindStartupRestoration` now joins this independent original
-publication approval to an already-bound original `DecommissionWitness` and the
-same independently approved original client request. Binding opens the actual
+For explicit service-only decommission, `MaintenanceOwner.BindStartupRestoration`
+joins this independent original publication approval to an already-bound original
+`DecommissionWitness` and the same independently approved original client request.
+Binding opens the actual
 current user's native KnownFolders and protected original launcher; every menu,
 recovery, launcher, fixed link and optional original backup must match the approved
 volume/file ID, creation time, descriptor digest, length and content hash. The
 retained completion file must match the independently approved original bytes;
 the pre-move manifest must retain its recorded digest. Missing, foreign, changed,
 partial or colliding fixed objects refuse. Binding itself performs no move.
+
+The baseline-only `uninstall-protected` action instead calls
+`MaintenanceOwner.PrepareStartupRestoration` **before** its single broker
+retirement request. Opening the original launcher afterward would fail because
+its generation has moved. Preparation retains the original publication, menu,
+recovery, links and launcher without mutation. A private anchor holds the original
+generation, `app` directory and launcher with read access and delete sharing,
+allowing the broker's DELETE owner to rename the generation without releasing
+the launcher's original custody. Ordinary enrollment pin policy is unchanged.
+
+Only `BindDecommission` with the authenticated same-broker uninstall witness can
+finalize that anchor at `retired-<requestId>-<generation>/app/skager-start.exe`.
+It checks the same retained handles, physical IDs, descriptors and launcher bytes;
+path opens only corroborate their fixed aliases. Only the renamed generation
+root may rebind creation time for NTFS tunneling. There is no launcher reopen,
+alternative destination, adjacent-record adoption or binding retry. Preparation
+or binding failure prevents shortcut and SCM effects. After successful binding,
+the original shortcut restoration below still precedes service removal.
+
+The existing focused native workflow selects all four new composed
+retirement/restoration controls. Qualification must authenticate their actual
+PASS/no-skip events from the original artifact. The explicit required-name
+addition is retained in local `db355047` but was not published because the
+current GitHub OAuth credential lacks workflow-edit scope; no existing gate was
+removed or relaxed. Native execution of this joined correction and full installed
+uninstall acceptance remain pending; Win32 cross-compilation and inert native
+fixture source do not supply that proof. Updated/pending lineage
+and authenticated terminal cleanup remain unsupported by this baseline join.
 
 For a bound publication, `Decommission` retires the three fixed published links
 to `retired-Skager.lnk`, `retired-Skager Legacy.lnk` and
