@@ -3,10 +3,17 @@ on:
   push:
     branches: [skager-native-python-contracts]
   workflow_dispatch:
+    inputs:
+      plugin_capture_only:
+        description: Run only the focused native plugin-capture helper and stat probe
+        required: false
+        type: boolean
+        default: false
 permissions:
   contents: read
 jobs:
   geometry:
+    if: ${{ github.event_name != 'workflow_dispatch' || !inputs.plugin_capture_only }}
     runs-on: windows-2022
     timeout-minutes: 5
     steps:
@@ -20,3 +27,59 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python opennav-x/tools/test-diagnostic-geometry.py -v
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+  plugin-capture-helper:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.plugin_capture_only }}
+    runs-on: windows-2022
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Prepare focused native evidence
+        shell: pwsh
+        run: New-Item -ItemType Directory -Path (Join-Path $env:RUNNER_TEMP 'skager-plugin-capture-contracts') -ErrorAction Stop | Out-Null
+      - name: Check plugin-capture helper contracts with inert files
+        shell: pwsh
+        run: |
+          $Evidence = Join-Path $env:RUNNER_TEMP 'skager-plugin-capture-contracts'
+          python opennav-x/tools/test-retain-plugin-guard-inputs.py -v *> (Join-Path $Evidence 'helper-tests.log')
+          $Result = $LASTEXITCODE
+          Get-Content -LiteralPath (Join-Path $Evidence 'helper-tests.log')
+          if ($Result -ne 0) { exit $Result }
+      - name: Probe actual native path and descriptor metadata without executing dumpbin
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $Evidence = Join-Path $env:RUNNER_TEMP 'skager-plugin-capture-contracts'
+          $Vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
+          if (-not (Test-Path -LiteralPath $Vswhere -PathType Leaf)) { throw 'Native Visual Studio selector missing' }
+          $Installations = @(& $Vswhere -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath)
+          if ($LASTEXITCODE -ne 0 -or $Installations.Count -ne 1) { throw 'Native x86 MSVC installation missing or ambiguous' }
+          $ToolRoot = Join-Path $Installations[0] 'VC\Tools\MSVC'
+          $Versions = @(Get-ChildItem -LiteralPath $ToolRoot -Directory -ErrorAction Stop)
+          if ($Versions.Count -eq 0 -or @($Versions | Where-Object { $_.Name -notmatch '^\d+\.\d+\.\d+(?:\.\d+)?$' }).Count -ne 0) {
+            throw 'Native MSVC version directory missing or unexpected'
+          }
+          $Selected = $Versions | Sort-Object { [version]$_.Name } -Descending | Select-Object -First 1
+          $Dumpbin = Join-Path $Selected.FullName 'bin\Hostx64\x86\dumpbin.exe'
+          if (-not (Test-Path -LiteralPath $Dumpbin -PathType Leaf)) { throw 'Selected native x86 dumpbin missing' }
+          "Selected native metadata source: $Dumpbin" | Out-File -LiteralPath (Join-Path $Evidence 'selection.log') -Encoding utf8
+          python opennav-x/tools/probe-plugin-capture-stat-windows.py --dumpbin $Dumpbin --evidence (Join-Path $Evidence 'probe.json') *> (Join-Path $Evidence 'probe.log')
+          $Result = $LASTEXITCODE
+          Get-Content -LiteralPath (Join-Path $Evidence 'probe.log')
+          if ($Result -ne 0) { exit $Result }
+      - name: Preserve a truthful probe status when an earlier check refused
+        if: always()
+        shell: pwsh
+        run: |
+          $Evidence = Join-Path $env:RUNNER_TEMP 'skager-plugin-capture-contracts'
+          New-Item -ItemType Directory -Path $Evidence -Force | Out-Null
+          $Report = Join-Path $Evidence 'probe.json'
+          if (-not (Test-Path -LiteralPath $Report)) {
+            '{"schema":1,"nativeHelperProbe":false,"status":"not-completed","productAcceptance":false}' |
+              Set-Content -LiteralPath $Report -Encoding utf8
+          }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: plugin-capture-contracts-${{ github.sha }}-run${{ github.run_id }}-attempt${{ github.run_attempt }}
+          path: ${{ runner.temp }}/skager-plugin-capture-contracts
+          if-no-files-found: error
