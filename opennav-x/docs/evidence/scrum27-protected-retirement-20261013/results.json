@@ -1,0 +1,282 @@
+{
+  "schema": 1,
+  "scope": "Protected original-baseline retirement component; not installed product acceptance",
+  "status": "component-passed",
+  "issue": "SCRUM-27",
+  "sourceCommit": "cddaebbbd40bba19a4726205e5e9fdbd03c8910d",
+  "originalFailure": {
+    "schema": 1,
+    "repository": "ThereptileII/Work",
+    "runId": 38447749381,
+    "attempt": 1,
+    "headSha": "e6b5cd31f81eda72d1c5d4b4c3c7ebf06daf9f6a",
+    "workflow": ".github/workflows/skager-startup-restoration.yml",
+    "url": "https://github.com/ThereptileII/Work/actions/runs/38447749381",
+    "conclusion": "failure",
+    "artifacts": [
+      {
+        "platform": "Linux",
+        "artifactId": 11838404458,
+        "name": "startup-restoration-Linux-e6b5cd31f81eda72d1c5d4b4c3c7ebf06daf9f6a-run38447749381-attempt1",
+        "jobId": 115470469320,
+        "jobName": "Startup publication and restoration (ubuntu-24.04)",
+        "jobConclusion": "success",
+        "bytes": 20112,
+        "sha256": "336fbb0e475afe269a93106bdee2cd3ce8f7e534b9943bddf71527c3741abc26",
+        "matchesGitHubDigestAndLength": true,
+        "zipCRCVerified": true,
+        "members": [
+          {
+            "name": "tests.json",
+            "bytes": 320071,
+            "crc32": "0d16c991"
+          }
+        ],
+        "testsJSONSha256": "cbca1b78f1230f4dc0f05a67291144f8e0babbbae7fcc97c133b1855533b0a14",
+        "testOutcomesIncludingSubtests": {
+          "pass": 304,
+          "fail": 0,
+          "skip": 0
+        },
+        "topLevelTestOutcomes": {
+          "pass": 85,
+          "fail": 0,
+          "skip": 0
+        },
+        "packageOutcomes": {
+          "pass": 6,
+          "fail": 0,
+          "skip": 0
+        }
+      },
+      {
+        "platform": "Windows",
+        "artifactId": 11838672801,
+        "name": "startup-restoration-Windows-e6b5cd31f81eda72d1c5d4b4c3c7ebf06daf9f6a-run38447749381-attempt1",
+        "jobId": 115470469129,
+        "jobName": "Startup publication and restoration (windows-2022)",
+        "jobConclusion": "failure",
+        "bytes": 19847,
+        "sha256": "452d9232d498b5091e04a5fd156371ae72213b6b5a7adf5aa99ff2fb39c814bd",
+        "matchesGitHubDigestAndLength": true,
+        "zipCRCVerified": true,
+        "members": [
+          {
+            "name": "tests.json",
+            "bytes": 396105,
+            "crc32": "d770ac24"
+          }
+        ],
+        "testsJSONSha256": "daecee301a96c7f278f536bdb08caae68e1e01164efc8321765529dbde8dffc5",
+        "testOutcomesIncludingSubtests": {
+          "pass": 375,
+          "fail": 1,
+          "skip": 3
+        },
+        "topLevelTestOutcomes": {
+          "pass": 111,
+          "fail": 1,
+          "skip": 3
+        },
+        "packageOutcomes": {
+          "pass": 5,
+          "fail": 1,
+          "skip": 0
+        }
+      }
+    ],
+    "selectedNativeCases": {
+      "sha256": "e9701318082bcc4485d35778defc53177c7f1d9e669b744bab7136cf10bde310",
+      "count": 3,
+      "cases": [
+        {
+          "package": "example.com/opennav-update-verifier/brokerstore",
+          "test": "TestNativeRetirementCompletedOriginalRegistrationAndSelectedGeneration",
+          "outcome": "fail"
+        },
+        {
+          "package": "example.com/opennav-update-verifier/brokerstore",
+          "test": "TestNativeRetirementMovesEntireOriginalDirectoryOnItsHeldVolume",
+          "outcome": "pass"
+        },
+        {
+          "package": "example.com/opennav-update-verifier/brokerstore",
+          "test": "TestNativeRetirementOriginalIdentityCollisionCancellationAndPartialMove",
+          "outcome": "pass"
+        }
+      ]
+    },
+    "auditSha256": "2046f255dc89f4cb4e46bfc5fb66aac10399453858470ee93003f8f544937945"
+  },
+  "replacement": {
+    "schema": 1,
+    "repository": "ThereptileII/Work",
+    "runId": 38448552844,
+    "attempt": 1,
+    "headSha": "cddaebbbd40bba19a4726205e5e9fdbd03c8910d",
+    "workflow": ".github/workflows/skager-startup-restoration.yml",
+    "url": "https://github.com/ThereptileII/Work/actions/runs/38448552844",
+    "conclusion": "success",
+    "artifacts": [
+      {
+        "platform": "Linux",
+        "artifactId": 11839297297,
+        "name": "startup-restoration-Linux-cddaebbbd40bba19a4726205e5e9fdbd03c8910d-run38448552844-attempt1",
+        "jobId": 115473249185,
+        "jobName": "Startup publication and restoration (ubuntu-24.04)",
+        "jobConclusion": "success",
+        "bytes": 19968,
+        "sha256": "2249c3d6ea748e23113884d003b311bcf7cbb50c4fa65336f9903879029fc7e6",
+        "matchesGitHubDigestAndLength": true,
+        "zipCRCVerified": true,
+        "members": [
+          {
+            "name": "tests.json",
+            "bytes": 320092,
+            "crc32": "a3e885dc"
+          }
+        ],
+        "testsJSONSha256": "99cdae2c6ddc63cadbbf4bddeca7377856f49125628ba5ba6647f23300460066",
+        "testOutcomesIncludingSubtests": {
+          "pass": 304,
+          "fail": 0,
+          "skip": 0
+        },
+        "topLevelTestOutcomes": {
+          "pass": 85,
+          "fail": 0,
+          "skip": 0
+        },
+        "nestedSubtestOutcomes": {
+          "pass": 219,
+          "fail": 0,
+          "skip": 0
+        },
+        "packageOutcomes": {
+          "pass": 6,
+          "fail": 0,
+          "skip": 0
+        },
+        "skippedTests": []
+      },
+      {
+        "platform": "Windows",
+        "artifactId": 11839322425,
+        "name": "startup-restoration-Windows-cddaebbbd40bba19a4726205e5e9fdbd03c8910d-run38448552844-attempt1",
+        "jobId": 115473249797,
+        "jobName": "Startup publication and restoration (windows-2022)",
+        "jobConclusion": "success",
+        "bytes": 19206,
+        "sha256": "3863172e737c418033ea7c74c114de55a9b1a5e5ebefa4c8f947672bf2219c8b",
+        "matchesGitHubDigestAndLength": true,
+        "zipCRCVerified": true,
+        "members": [
+          {
+            "name": "tests.json",
+            "bytes": 395249,
+            "crc32": "c75b5ae6"
+          }
+        ],
+        "testsJSONSha256": "9ca30af43574d660aa3c32fc2bae7876608be1bcd0a99c584598b284694191c9",
+        "testOutcomesIncludingSubtests": {
+          "pass": 376,
+          "fail": 0,
+          "skip": 3
+        },
+        "topLevelTestOutcomes": {
+          "pass": 112,
+          "fail": 0,
+          "skip": 3
+        },
+        "nestedSubtestOutcomes": {
+          "pass": 264,
+          "fail": 0,
+          "skip": 0
+        },
+        "packageOutcomes": {
+          "pass": 6,
+          "fail": 0,
+          "skip": 0
+        },
+        "skippedTests": [
+          {
+            "package": "example.com/opennav-update-verifier/brokerenroll",
+            "test": "TestDecommissionExplicitAPIRequiresWindows",
+            "messages": [
+              "=== RUN   TestDecommissionExplicitAPIRequiresWindows",
+              "    maintenance_decommission_test.go:286: non-Windows boundary only",
+              "--- SKIP: TestDecommissionExplicitAPIRequiresWindows (0.00s)"
+            ]
+          },
+          {
+            "package": "example.com/opennav-update-verifier/brokerenroll",
+            "test": "TestStartupRestorationPublicNativeBoundary",
+            "messages": [
+              "=== RUN   TestStartupRestorationPublicNativeBoundary",
+              "    startup_restoration_test.go:351: portable refusal only",
+              "--- SKIP: TestStartupRestorationPublicNativeBoundary (0.00s)"
+            ]
+          },
+          {
+            "package": "example.com/opennav-update-verifier/brokerenroll",
+            "test": "TestStartupExplicitAPIRefusesNonWindows",
+            "messages": [
+              "=== RUN   TestStartupExplicitAPIRefusesNonWindows",
+              "    startup_test.go:191: non-Windows boundary only",
+              "--- SKIP: TestStartupExplicitAPIRefusesNonWindows (0.00s)"
+            ]
+          }
+        ]
+      }
+    ],
+    "selectedNativeCases": {
+      "sha256": "581927834b5910f268fffb1eba9254dfbf44492b60b048df7ed4ea66ac6581a6",
+      "count": 4,
+      "allPassed": true,
+      "cases": [
+        {
+          "package": "example.com/opennav-update-verifier/brokerstore",
+          "test": "TestNativeRetirementCompletedOriginalRegistrationAndSelectedGeneration",
+          "outcome": "pass"
+        },
+        {
+          "package": "example.com/opennav-update-verifier/brokerstore",
+          "test": "TestNativeRetirementMovesEntireOriginalDirectoryOnItsHeldVolume",
+          "outcome": "pass"
+        },
+        {
+          "package": "example.com/opennav-update-verifier/brokerstore",
+          "test": "TestNativeRetirementOriginalIdentityCollisionCancellationAndPartialMove",
+          "outcome": "pass"
+        },
+        {
+          "package": "example.com/opennav-update-verifier/brokerstore",
+          "test": "TestRetirementCommitAndConcurrentStoreCloseDrainOriginalReceiptOnce",
+          "outcome": "pass"
+        }
+      ]
+    },
+    "auditSha256": "f445f4cdf920be08577338754aa17775a401c879e930dff6c8ad891cad5dd8d0"
+  },
+  "corrections": [
+    {
+      "kind": "product",
+      "detail": "Retirement receipt registration and native commit are serialized with Store.Close; deterministic overlap test checks exactly-once drain and sticky cleanup errors."
+    },
+    {
+      "kind": "native-fixture",
+      "detail": "Temporary current-user fixture used identical broker/client principals. Production distinct real-client check remains unchanged and explicitly tested as refusing before terminal publication. The private common native handoff uses the descriptor validated by the fixture original generation reader. Returned owner cleanup is registered before handling an error."
+    }
+  ],
+  "nativeCases": "Original file identity/cancellation/collision/partial move, whole directory move preserving unknown child, completed original registration and baseline generation retirement all passed.",
+  "remainingGates": [
+    "Actual installed host, shortcut restoration and service shutdown with original protected product bytes.",
+    "Updated or pending generation ancestry; first transaction deliberately refuses it.",
+    "Authenticated bounded terminal cleanup and full installed repair/rollback/uninstall; old Lifecycle guard must not be bypassed.",
+    "Full frozen application candidate, private-channel installed B0/B1 and boat qualification remain separate."
+  ],
+  "applicationCandidateChanged": false,
+  "fullApplicationBuildTriggered": false,
+  "installedAcceptance": false,
+  "boatOperationsPerformed": false
+}

@@ -1,5 +1,39 @@
 # SKAGER status — 2026-10-13
 
+## Protected retirement component passes; frozen application candidate continues
+
+The combined protected-retirement component at
+`cddaebbbd40bba19a4726205e5e9fdbd03c8910d` passes focused Linux and native
+Win32 [run 38448552844](https://github.com/ThereptileII/Work/actions/runs/38448552844).
+Linux passes 85 top-level and 219 nested cases; Windows passes 112 top-level and
+264 nested cases, with three intentional non-Windows-boundary skips and no
+failures. Both downloaded artifacts match their original GitHub digest/length
+and pass ZIP CRC verification. [Original and replacement evidence](evidence/scrum27-protected-retirement-20261013/results.json).
+It retains original registration and baseline-generation identities through a
+read-to-DELETE handoff, moves them to protected recovery siblings, and supplies a
+distinct broker witness before shortcut restoration and service shutdown. A
+review-discovered concurrent shutdown handle leak was corrected and explicitly
+tested. The first native run `38447749381` remains failed: its temporary fixture
+used the same principal for broker and client, correctly rejected by production.
+The replacement preserves that rejection and exercises the native transaction
+with the fixture's separately validated original security descriptor.
+Updated/pending generation lineage and full installed Lifecycle cleanup remain
+unsupported; the existing maintenance guard stays in place. This component pass
+does not close SCRUM-27 or claim installed uninstall acceptance.
+
+The application candidate remains **`2c61369080c358d5ef9b8952d6f2881b52891b13`**,
+version **0.4.0-beta2.4**, in the original private-trust
+[Staging run 38442801510](https://github.com/ThereptileII/Work/actions/runs/38442801510).
+Its Linux integrated gate and native updater job have passed; Windows application
+compilation/qualification is still running at this update. The same-commit
+operator kit has been downloaded and authenticated, but is not yet paired with
+a qualified recovery package. No replacement application build was dispatched.
+The later driver-only repair `717d170d` now observes OpenCPN's actual ProgramData
+profile and bounded navigation-store migration, with 33 focused checks passed.
+Those helpers do not change or relabel the frozen candidate. Installed private
+channel B0/B1 execution and boat acceptance remain open. Web deployment still
+awaits provider access; no new Stripe secrets were saved.
+
 ## Reviewed prerequisites integrated for one trust-enabled Staging candidate
 
 The original-shortcut restoration, explicit decommission CLI and protected
