@@ -103,6 +103,45 @@ void Tests() {
     Check(!RefuseLegacyPluginLocalTlsClosure(Image("helper.dll"), lookup, policy).empty(),
           "Transitive forwarder known bytes admitted");
     Check(inspected == 3 && reads == 2, "Transitive byte policy did not inspect every node");
+    // Production's shared walk must apply this same hash decision to host
+    // candidates, even when a clean plugin sibling has the identical basename.
+    for (unsigned kind = 0; kind < 3; ++kind) {
+      const auto root = Image(kind == 2 ? "renamed" : "renamed.dll", kind);
+      inspected = reads = 0;
+      auto candidates = [&](std::size_t index, const std::string& name) {
+        ++reads;
+        Check(name == "renamed.dll", "Multi-root normal/delay/forwarder spelling changed");
+        return PluginTlsLocalModule{true, index == 0 ? clean : marked, {}};
+      };
+      Check(!RefuseLegacyPluginTlsClosure(root, {"plugin", "host"}, candidates, policy).empty(),
+            "Clean sibling masked known obsolete host bytes");
+      Check(inspected == 3 && reads == 2, "Known-byte policy skipped one root candidate");
+      Check(RefuseLegacyPluginTlsClosure(root, {"plugin", "host"},
+          [&](std::size_t, const std::string&) {
+            return PluginTlsLocalModule{true, clean, {}};
+          }, RefuseKnownObsoletePluginTlsBytes).empty(),
+          "Benign multi-root normal/delay/forwarder candidates refused");
+    }
+    inspected = reads = 0;
+    Check(!RefuseLegacyPluginTlsClosure(Image("helper.dll"), {"plugin", "host"},
+        [&](std::size_t index, const std::string& name) {
+          ++reads;
+          if (index == 1 && name == "helper.dll")
+            return PluginTlsLocalModule{true, Image("renamed", 2), {}};
+          if (index == 0 && name == "renamed.dll")
+            return PluginTlsLocalModule{true, marked, {}};
+          return PluginTlsLocalModule{};
+        }, policy).empty(), "Host forwarder to plugin-root known bytes escaped graph");
+    Check(inspected == 3 && reads == 4, "Cross-root forwarder byte policy missed candidate");
+  }
+  for (unsigned kind = 0; kind < 3; ++kind) {
+    const auto host_legacy = Image(kind == 2 ? "libeay32" : "libeay32.dll", kind);
+    Check(!RefuseLegacyPluginTlsClosure(Image("helper.dll"), {"plugin", "host"},
+        [&](std::size_t index, const std::string&) {
+          return index == 0 ? PluginTlsLocalModule{} :
+              PluginTlsLocalModule{true, host_legacy, {}};
+        }, RefuseKnownObsoletePluginTlsBytes).empty(),
+        "Host normal/delay/export-forwarder legacy declaration admitted");
   }
   unsigned reads = 0;
   const auto failed = RefuseLegacyPluginLocalTlsClosure(Image("helper.dll"),

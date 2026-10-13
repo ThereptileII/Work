@@ -10,8 +10,9 @@ namespace opennav::integration {
 // Hold a read-only, non-write/non-delete-shared handle across the original
 // module lifetime, including forwarded exports, declared delay loads and
 // detach callbacks. No profile/plugin mutation, DLL execution or dependency
-// search is performed by the inspection. This is not a hostile-filesystem or
-// complete Windows loader security boundary (see the architecture document).
+// search-order mutation is performed by inspection. Declared candidates in the
+// original plugin and executable directories share one walk. This is not a
+// hostile-filesystem or complete Windows loader security boundary (see docs).
 class OriginalPluginTlsGuard {
  public:
   explicit OriginalPluginTlsGuard(const wxString& path) {
@@ -35,29 +36,74 @@ class OriginalPluginTlsGuard {
         refusal_ = "Cannot read complete plugin for import inspection";
         return;
       }
-      const wxString directory = wxFileName(path).GetPathWithSep();
-      if (directory.empty()) {
-        refusal_ = "Cannot identify plugin import directory";
+      // Get the executable path directly; do not use the process current
+      // directory, PATH, or a plugin-supplied host location as authority.
+      std::vector<wchar_t> executable(32768);
+      const DWORD length = GetModuleFileNameW(nullptr, executable.data(),
+                                             static_cast<DWORD>(executable.size()));
+      if (!length || length >= executable.size()) {
+        refusal_ = "Cannot identify host executable for import inspection";
         return;
       }
-      refusal_ = RefuseLegacyPluginLocalTlsClosure(bytes,
-          [&](const std::string& module) { return ReadSibling(directory, module); },
-          RefuseKnownObsoletePluginTlsBytes);
+      const std::vector<wxString> directories{
+          wxFileName(path).GetPath(),
+          wxFileName(wxString(executable.data(), length)).GetPath()};
+      std::vector<std::string> identities;
+      for (const auto& directory : directories) {
+        std::string identity;
+        refusal_ = IdentifyDirectory(directory, identity);
+        if (!refusal_.empty()) return;
+        identities.push_back(std::move(identity));
+      }
+      refusal_ = RefuseLegacyPluginTlsClosure(bytes, identities,
+          [&](std::size_t index, const std::string& module) {
+            return ReadCandidate(directories[index], module);
+          }, RefuseKnownObsoletePluginTlsBytes);
     } catch (const std::exception&) {
       refusal_ = "Cannot allocate plugin import inspection";
     }
   }
   ~OriginalPluginTlsGuard() {
-    for (auto handle : siblings_) CloseHandle(handle);
+    for (auto handle : dependencies_) CloseHandle(handle);
     if (file_ != INVALID_HANDLE_VALUE) CloseHandle(file_);
   }
   OriginalPluginTlsGuard(const OriginalPluginTlsGuard&) = delete;
   OriginalPluginTlsGuard& operator=(const OriginalPluginTlsGuard&) = delete;
   const std::string& Refusal() const { return refusal_; }
  private:
-  PluginTlsLocalModule ReadSibling(const wxString& directory,
-                                   const std::string& module) {
-    const wxString candidate = directory + wxString::FromUTF8(module.c_str());
+  void KeepHandle(HANDLE handle) {
+    try {
+      dependencies_.push_back(handle);
+    } catch (...) {
+      CloseHandle(handle);
+      throw;
+    }
+  }
+  std::string IdentifyDirectory(const wxString& directory, std::string& identity) {
+    if (directory.empty()) return "Cannot identify plugin import directory";
+    // Follow a directory alias only to obtain its actual identity. Keeping this
+    // read-attributes handle also prevents write/delete sharing on that directory
+    // while custody lasts; ancestors and hostile filesystem races remain outside
+    // this policy's claimed boundary.
+    HANDLE handle = CreateFileW(directory.wc_str(), FILE_READ_ATTRIBUTES,
+                                FILE_SHARE_READ, nullptr, OPEN_EXISTING,
+                                FILE_FLAG_BACKUP_SEMANTICS, nullptr);
+    if (handle == INVALID_HANDLE_VALUE)
+      return "Cannot open plugin import directory for inspection";
+    KeepHandle(handle);
+    BY_HANDLE_FILE_INFORMATION information{};
+    if (!GetFileInformationByHandle(handle, &information) ||
+        !(information.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
+      return "Cannot identify plugin import directory";
+    identity = std::to_string(information.dwVolumeSerialNumber) + ":" +
+               std::to_string(information.nFileIndexHigh) + ":" +
+               std::to_string(information.nFileIndexLow);
+    return {};
+  }
+  PluginTlsLocalModule ReadCandidate(const wxString& directory,
+                                     const std::string& module) {
+    const wxString candidate =
+        wxFileName(directory, wxString::FromUTF8(module.c_str())).GetFullPath();
     HANDLE handle = CreateFileW(candidate.wc_str(), GENERIC_READ, FILE_SHARE_READ,
                                 nullptr, OPEN_EXISTING,
                                 FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OPEN_REPARSE_POINT,
@@ -68,12 +114,7 @@ class OriginalPluginTlsGuard {
         return {};
       return {false, {}, "Cannot inspect local plugin dependency"};
     }
-    try {
-      siblings_.push_back(handle);
-    } catch (...) {
-      CloseHandle(handle);
-      throw;
-    }
+    KeepHandle(handle);
     BY_HANDLE_FILE_INFORMATION information{};
     if (!GetFileInformationByHandle(handle, &information) ||
         (information.dwFileAttributes &
@@ -91,7 +132,7 @@ class OriginalPluginTlsGuard {
     return {true, std::move(bytes), {}};
   }
   HANDLE file_ = INVALID_HANDLE_VALUE;
-  std::vector<HANDLE> siblings_;
+  std::vector<HANDLE> dependencies_;
   std::string refusal_;
 };
 }

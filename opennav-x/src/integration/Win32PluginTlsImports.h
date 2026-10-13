@@ -2,6 +2,7 @@
 #include "integration/Win32PeImports.h"
 #include <deque>
 #include <set>
+#include <utility>
 
 namespace opennav::integration {
 // Supported forwarder grammar is deliberately narrower than Windows' loader:
@@ -85,20 +86,35 @@ inline std::string RefuseKnownObsoletePluginTlsSha256(const std::string& digest)
   return {};
 }
 
-// Inspect the bounded, declarative import/forwarder graph whose DLL basenames resolve
-// beside the original plugin. `read_local` must read and hold each found file
-// across the eventual LoadLibrary call. Missing sibling modules may resolve in
-// the application/system/PATH loader search; this function makes no claim about
-// those paths, dynamic loads or child processes.
-template <typename ReadLocal, typename InspectBytes>
-std::string RefuseLegacyPluginLocalTlsClosure(
-    const std::vector<unsigned char>& root, ReadLocal read_local,
-    InspectBytes inspect_bytes) {
-  constexpr std::size_t max_nodes = 256;
-  constexpr std::size_t max_bytes = 256u * 1024u * 1024u;
+struct PluginTlsClosureLimits {
+  std::size_t max_nodes = 256;
+  std::size_t max_bytes = 256u * 1024u * 1024u;
+};
+
+// Inspect one bounded declarative import/forwarder graph over all supplied
+// directories. For EVERY declared basename, inspect each root candidate even
+// when another root contains that name. Imports from any found file reenter
+// this same queue, so plugin -> host -> plugin chains cannot escape inspection.
+// Root identities must identify the actual directories, not their aliases.
+// `read_candidate(index, basename)` must read and hold each found file across
+// the module lifetime. No Windows search-order selection or complete loader
+// closure is claimed: other directories, preloaded modules, SxS, dynamic loads
+// and child processes remain outside this declared-candidate graph.
+template <typename ReadCandidate, typename InspectBytes>
+std::string RefuseLegacyPluginTlsClosure(
+    const std::vector<unsigned char>& root,
+    const std::vector<std::string>& root_identities, ReadCandidate read_candidate,
+    InspectBytes inspect_bytes, PluginTlsClosureLimits limits = {}) {
+  if (root_identities.empty()) return "Cannot identify plugin import roots";
+  if (root_identities.size() > limits.max_nodes)
+    return "Plugin import closure node budget exceeded";
+  for (const auto& identity : root_identities)
+    if (identity.empty()) return "Cannot identify plugin import root";
+  if (root.size() > limits.max_bytes)
+    return "Plugin import closure byte budget exceeded";
   std::deque<std::vector<unsigned char>> pending;
   pending.push_back(root);
-  std::set<std::string> seen;
+  std::set<std::pair<std::string, std::string>> seen;
   std::size_t total = root.size();
   while (!pending.empty()) {
     auto bytes = std::move(pending.front());
@@ -117,13 +133,13 @@ std::string RefuseLegacyPluginLocalTlsClosure(
     }
     for (const auto& item : declarations) {
       // PE imports conventionally name a module basename. A qualified or
-      // redirected name has no safe sibling-resolution interpretation here.
+      // redirected name has no safe root-candidate interpretation here.
       if (item.name.empty() || item.name == "." || item.name == ".." ||
           item.name.find_first_of("/\\:*?\"<>|") != std::string::npos ||
           item.name.back() == ' ' || item.name.back() == '.')
         return "Unsupported plugin import module name";
       // Win32 reserved devices remain reserved with extensions. Refuse their
-      // stems, including spaces before the first dot, before any sibling open.
+      // stems, including spaces before the first dot, before any candidate open.
       // The PE reader accepts ASCII only, excluding superscript-digit aliases.
       auto stem = item.name.substr(0, item.name.find('.'));
       while (!stem.empty() && stem.back() == ' ') stem.pop_back();
@@ -136,29 +152,46 @@ std::string RefuseLegacyPluginLocalTlsClosure(
            stem[3] >= '1' && stem[3] <= '9'))
         return "Unsupported plugin reserved module name: " + item.name;
       // LoadLibrary resolves a basename without an extension as <name>.dll.
-      // Keep the original spelling for case-sensitive sibling lookup; lowercase
-      // only the deduplication key shared by extensionless and .dll imports.
+      // Keep original spelling for lookup; lowercase only the per-directory
+      // deduplication key shared by extensionless and .dll imports.
       auto sibling = item.name;
       if (sibling.find('.') == std::string::npos) sibling += ".dll";
       auto key = sibling;
       for (auto& c : key)
         if (c >= 'A' && c <= 'Z') c = static_cast<char>(c - 'A' + 'a');
-      if (!seen.insert(key).second) continue;
-      if (seen.size() > max_nodes) return "Plugin import closure node budget exceeded";
-      auto local = read_local(sibling);
-      if (!local.error.empty()) return local.error;
-      if (!local.found) continue;
-      if (local.bytes.empty() || local.bytes.size() > max_bytes - total)
-        return "Plugin import closure byte budget exceeded";
-      total += local.bytes.size();
-      pending.push_back(std::move(local.bytes));
+      for (std::size_t index = 0; index < root_identities.size(); ++index) {
+        const auto candidate = std::make_pair(root_identities[index], key);
+        if (seen.find(candidate) != seen.end()) continue;
+        // Missing candidates consume the same node budget: absent imports must
+        // not amplify filesystem probes beyond the shared bound.
+        if (seen.size() >= limits.max_nodes)
+          return "Plugin import closure node budget exceeded";
+        seen.insert(candidate);
+        auto local = read_candidate(index, sibling);
+        if (!local.error.empty()) return local.error;
+        if (!local.found) continue;
+        if (local.bytes.empty() || local.bytes.size() > limits.max_bytes - total)
+          return "Plugin import closure byte budget exceeded";
+        total += local.bytes.size();
+        pending.push_back(std::move(local.bytes));
+      }
     }
   }
   return {};
 }
 
-// Reader-only compatibility seam. The production OriginalPluginTlsGuard always
-// supplies the retained-byte hash policy through the three-argument overload.
+// Explicit single-directory adapter retained for existing reader/policy tests.
+// Production uses the multi-root walk above with retained-byte hash inspection.
+template <typename ReadLocal, typename InspectBytes>
+std::string RefuseLegacyPluginLocalTlsClosure(
+    const std::vector<unsigned char>& root, ReadLocal read_local,
+    InspectBytes inspect_bytes) {
+  return RefuseLegacyPluginTlsClosure(root, {"local"},
+      [&](std::size_t, const std::string& module) { return read_local(module); },
+      inspect_bytes);
+}
+
+// Reader-only compatibility seam; production always supplies the byte policy.
 template <typename ReadLocal>
 std::string RefuseLegacyPluginLocalTlsClosure(
     const std::vector<unsigned char>& root, ReadLocal read_local) {

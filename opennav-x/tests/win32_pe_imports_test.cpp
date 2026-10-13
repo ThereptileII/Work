@@ -57,6 +57,92 @@ void Reject(const Bytes& b, const char* context, const char* expected = "") {
   Check(!result.parsed && result.modules.empty() && result.forwarders.empty() && !result.error.empty(), context);
   if (*expected) Check(result.error == expected, "Wrong rejection boundary");
 }
+// Both roots share a work queue and limits; the fake filesystem only supplies
+// deterministic bytes. Native tests separately establish mapping and file locks.
+void MultiRootTests() {
+  using namespace opennav::integration;
+  using Key = std::pair<std::size_t, std::string>;
+  using Files = std::map<Key, Bytes>;
+  const auto walk = [](const Bytes& root, const Files& files,
+                       PluginTlsClosureLimits limits = {},
+                       std::vector<Key>* reads = nullptr,
+                       const std::vector<std::string>& identities = {"plugin", "host"}) {
+    return RefuseLegacyPluginTlsClosure(root, identities,
+        [&](std::size_t index, const std::string& name) {
+          if (reads) reads->emplace_back(index, name);
+          const auto found = files.find({index, name});
+          return found == files.end() ? PluginTlsLocalModule{} :
+              PluginTlsLocalModule{true, found->second, {}};
+        }, [](const Bytes&) { return std::string{}; }, limits);
+  };
+  for (const bool delayed : {false, true})
+    for (const bool va : {false, true}) {
+      const auto root = delayed ? Image({}, {"helper.dll"}, va) : Image({"helper.dll"});
+      const auto before = root;
+      std::vector<Key> reads;
+      Check(walk(root, {{{1, "helper.dll"}, Image({"libeay32.dll"})}}, {}, &reads)
+                .find("TLS import") != std::string::npos,
+            "Host-only normal/delay legacy dependency escaped shared graph");
+      Check(reads == std::vector<Key>{{0, "helper.dll"}, {1, "helper.dll"}},
+            "Declared basename did not inspect both roots");
+      Check(root == before, "Shared closure modified root bytes");
+      Check(walk(root, {{{1, "helper.dll"}, Image()}}).empty(),
+            "Benign host-only dependency refused");
+      reads.clear();
+      Check(walk(root, {{{0, "helper.dll"}, Image()},
+                        {{1, "helper.dll"}, Image({}, {"ssleay32.dll"}, va)}}, {}, &reads)
+                .find("delay import") != std::string::npos && reads.size() == 2,
+            "Clean plugin sibling masked unsafe host candidate");
+    }
+  // An independent per-directory walk misses hostB's pluginC. Every found
+  // candidate must send its declarations back through both roots of one graph.
+  const Files crossing{{{0, "pluginA.dll"}, Image({"hostB.dll"})},
+                       {{1, "hostB.dll"}, Image({}, {"pluginC.dll"})},
+                       {{0, "pluginC.dll"}, Image({"libeay32.dll"})}};
+  Check(walk(Image({"pluginA.dll"}), crossing).find("TLS import") != std::string::npos,
+        "Plugin-to-host-to-plugin legacy chain escaped shared graph");
+  std::vector<Key> reads;
+  const Files cyclic{{{0, "MiXeD.dll"}, Image({"MiXeD.dll"})},
+                     {{1, "MiXeD.dll"}, Image({}, {"MIXED.DLL"})}};
+  Check(walk(Image({"MiXeD", "MIXED.DLL"}), cyclic, {}, &reads).empty() &&
+            reads == std::vector<Key>{{0, "MiXeD.dll"}, {1, "MiXeD.dll"}},
+        "Case/extension aliases or cross-root cycles were not deduplicated per root");
+  reads.clear();
+  Check(walk(Image({"helper.dll"}), {{{0, "helper.dll"}, Image()}}, {}, &reads,
+             {"same-directory", "same-directory"}).empty() && reads.size() == 1,
+        "Aliases of the same directory repeated a candidate read");
+  Check(!walk(Image({"helper.dll"}), {{{1, "helper.dll"}, Bytes(64)}}).empty(),
+        "Malformed host candidate admitted");
+  reads.clear();
+  Check(walk(Image({"absent.dll"}), {}, {}, &reads).empty() && reads.size() == 2,
+        "Missing candidate skipped another root or falsely failed inspection");
+  const auto unreadable = RefuseLegacyPluginTlsClosure(Image({"helper.dll"}),
+      {"plugin", "host"}, [](std::size_t index, const std::string&) {
+        return index == 0 ? PluginTlsLocalModule{true, Image(), {}} :
+            PluginTlsLocalModule{false, {}, "Unreadable host candidate"};
+      }, [](const Bytes&) { return std::string{}; });
+  Check(unreadable == "Unreadable host candidate", "Clean sibling masked host read error");
+  // Small injected budgets prove shared accounting without allocating 256 MiB.
+  reads.clear();
+  Check(walk(Image({"one.dll", "two.dll"}), {}, {3, 256u * 1024u * 1024u}, &reads)
+            .find("node budget") != std::string::npos && reads.size() == 3,
+        "Missing multi-root candidates escaped shared node bound");
+  reads.clear();
+  Check(walk(Image({"helper.dll"}), {{{0, "helper.dll"}, Image()},
+                                     {{1, "helper.dll"}, Image()}},
+             {256, 3 * Image().size()}, &reads).empty() && reads.size() == 2,
+        "Exact aggregate byte limit refused benign candidates");
+  Check(walk(Image({"helper.dll"}), {{{0, "helper.dll"}, Image()},
+                                     {{1, "helper.dll"}, Image()}},
+             {256, 3 * Image().size() - 1}).find("byte budget") != std::string::npos,
+        "Candidate bytes from both roots escaped shared byte bound");
+  reads.clear();
+  Check(walk(Image(), {}, {256, Image().size() - 1}, &reads).find("byte budget") !=
+            std::string::npos && reads.empty(), "Oversized root bypassed byte bound");
+  Check(!walk(Image(), {}, {}, nullptr, {}).empty() &&
+        !walk(Image(), {}, {}, nullptr, {"plugin", ""}).empty(),
+        "Missing root identity admitted");
+}
 void Tests() {
   // Exercise the production refusal policy with actual normal/delay PE bytes.
   using opennav::integration::RefuseLegacyPluginTlsImports;
@@ -279,6 +365,7 @@ void Tests() {
 int main(int argc, char** argv) {
   try {
     Tests();
+    MultiRootTests();
     std::cout << "PASS: " << checks << " deterministic Win32 import-reader checks\n";
     for (int i = 1; i < argc; ++i) {
       std::ifstream input(argv[i], std::ios::binary);
