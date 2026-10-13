@@ -692,7 +692,8 @@ try:
             report['packaged_updater']=packaged_updater.qualify(
                 install=INSTALL,setup=SETUP,stock=original,profile=profile,evidence=EVIDENCE,
                 powershell=PS,commit=product['commit'],executable_sha256=sha(ROOT/'build/production-install/opencpn.exe'),
-                ui=ui,owned=owned,inventory=inventory,navigation_matches=lambda: fixture_snapshot(profile)==expected)
+                ui=ui,owned=owned,inventory=inventory,navigation_matches=lambda: fixture_snapshot(profile)==expected,
+                product=product,source_app=ROOT/'build/developer-preview/SKAGER-Beta2-Portable-Recovery/app')
         else:
             assert args.retained_package or args.compiled_input_receipt,'Current build must support authenticated startup health'
             report['packaged_updater']={'status':'not-applicable','reason':'Retained package has no authenticated startup health support',

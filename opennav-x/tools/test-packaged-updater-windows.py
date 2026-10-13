@@ -13,6 +13,7 @@ import json
 import os
 from pathlib import Path
 import re
+import stat
 import subprocess
 import sys
 import time
@@ -60,18 +61,146 @@ def read(path):
     return json.loads(path.read_text(encoding='utf-8-sig'))
 
 
+def strict_pairs(pairs):
+    result = {}
+    for key, value in pairs:
+        assert key not in result, 'Duplicate trust/state field refuses'
+        result[key] = value
+    return result
+
+
+def bounded_plain(path, limit, directory=False):
+    for ancestor in (path, *path.parents):
+        info = ancestor.lstat()
+        assert not ancestor.is_symlink() and not (getattr(info, 'st_file_attributes', 0) & 0x400), 'Redirected trust/state object refuses'
+    info = path.stat()
+    if directory:
+        assert path.is_dir(), 'Expected original trust/state directory'
+    else:
+        assert stat.S_ISREG(info.st_mode) and info.st_nlink == 1 and 0 < info.st_size <= limit, 'Bounded original trust/state file required'
+    return info.st_dev, info.st_ino
+
+
+def public_trust_identity(raw):
+    # Go's json.RawMessage keeps this exact root-value span. Reserializing the
+    # parsed object would produce a different bootstrap identity for indented JSON.
+    text = raw.decode('utf-8')
+    decoder = json.JSONDecoder(object_pairs_hook=strict_pairs)
+    value = decoder.decode(text)
+    assert isinstance(value, dict) and isinstance(value.get('metadataUrl'), str) and value.get('channel') == 'beta'
+    cursor = text.index('{') + 1
+    root = None
+    while True:
+        while text[cursor].isspace(): cursor += 1
+        if text[cursor] == '}': break
+        key, cursor = decoder.raw_decode(text, cursor)
+        while text[cursor].isspace(): cursor += 1
+        assert text[cursor] == ':'
+        cursor += 1
+        while text[cursor].isspace(): cursor += 1
+        start = cursor
+        _, cursor = decoder.raw_decode(text, cursor)
+        if key == 'bootstrapRoot': root = text[start:cursor].encode('utf-8')
+        while text[cursor].isspace(): cursor += 1
+        if text[cursor] == '}': break
+        assert text[cursor] == ','
+        cursor += 1
+    assert root is not None
+    return {'bootstrapSha256': hashlib.sha256(root).hexdigest(), 'metadataUrl': value['metadataUrl'], 'channel': value['channel']}
+
+
+def packaged_trust_identity(app, product):
+    """Check the exact producer-selected trust without initializing or changing it."""
+    path = app / 'update-trust.json'
+    selected = product.get('update_trust')
+    if selected is None:
+        assert not path.exists() and not path.is_symlink(), 'Undeclared packaged trust refuses'
+        return {'state': 'unconfigured'}
+    assert isinstance(selected, dict) and type(selected.get('schema')) is int and selected['schema'] == 1
+    assert selected.get('productCommit') == product['commit'] and selected.get('channel') == 'beta'
+    assert selected.get('sourcePath') == 'opennav-x/installer/windows/staging-update-trust.json'
+    expected = selected.get('configSha256')
+    assert isinstance(expected, str) and re.fullmatch('[a-f0-9]{64}', expected)
+    assert selected.get('sourceSha256') == expected, 'Packaged trust differs from committed source selection'
+    bounded_plain(path, 576 << 10)
+    assert digest(path) == expected, 'Original packaged public trust changed'
+    return {'state': 'packaged-public-trust', 'configSha256': expected, **public_trust_identity(path.read_bytes())}
+
+
+def legacy_trust_observation(install, identity, *, initial=False):
+    if identity['state'] == 'unconfigured':
+        for name in ('update-trust', 'update-artifacts', 'update-trust-initialized-beta', 'update-trust-initialized-stable'):
+            path = install / name
+            assert not path.exists() and not path.is_symlink(), 'Undeclared legacy trust state refuses'
+        return {'state': 'unconfigured'}
+    # Lifecycle intentionally invokes --initialize-trust after each committed
+    # health-capable generation. Verify that original initialization, never undo it.
+    marker = install / 'update-trust-initialized-beta'
+    marker_id = bounded_plain(marker, 4096)
+    expected = json.dumps(dict(schema=1, channel='beta', configSha256=identity['configSha256']), separators=(',', ':')).encode()
+    assert marker.read_bytes() == expected, 'Original trust once marker changed'
+    roots = {name: bounded_plain(install / name, 0, directory=True) for name in
+             ('update-trust', 'update-artifacts', 'update-trust/beta')}
+    channel = install / 'update-trust/beta'
+    pending = channel / 'refresh.pending'
+    assert not pending.exists() and not pending.is_symlink(), 'Interrupted trust refresh refuses'
+    state_path = channel / 'state.json'
+    bounded_plain(state_path, 32 << 10)
+    state = json.loads(state_path.read_bytes(), object_pairs_hook=strict_pairs)
+    assert set(state) == {'schema', 'bootstrapSha256', 'metadataUrl', 'channel', 'generation', 'metadata'}
+    assert type(state['schema']) is int and state['schema'] == 1
+    assert all(state[key] == identity[key] for key in ('bootstrapSha256', 'metadataUrl', 'channel')), 'Installed trust identity differs from original public bytes'
+    assert isinstance(state['generation'], str) and re.fullmatch('[a-f0-9]{32}', state['generation'])
+    metadata = state['metadata']
+    assert isinstance(metadata, dict) and 'root.json' in metadata and 1 <= len(metadata) <= 128
+    if initial:
+        assert set(metadata) == {'root.json'} and metadata['root.json'] == identity['bootstrapSha256'], 'Initial retained metadata differs from original bootstrap bytes'
+    cache = channel / state['generation'] / 'metadata'
+    bounded_plain(cache, 0, directory=True)
+    assert {p.name for p in cache.iterdir()} == set(metadata), 'Original retained metadata inventory differs'
+    total, floors = 0, {}
+    for name, pin in metadata.items():
+        assert isinstance(name, str) and re.fullmatch('[A-Za-z0-9_%.-]+\\.json', name)
+        assert isinstance(pin, str) and re.fullmatch('[a-f0-9]{64}', pin)
+        path = cache / name
+        bounded_plain(path, 5 << 20)
+        total += path.stat().st_size
+        assert total <= 32 << 20 and digest(path) == pin, 'Retained metadata changed'
+        role = name[:-5].rsplit('.', 1)[-1]
+        if role in ('root', 'timestamp', 'snapshot', 'targets'):
+            signed = json.loads(path.read_bytes(), object_pairs_hook=strict_pairs)['signed']
+            version = signed['version']
+            assert type(version) is int and version > 0
+            floors[role] = max(floors.get(role, 0), version)
+    # Cache generations/metadata can legitimately advance after --xnav checks.
+    # Only the once marker and original store roots must retain physical identity.
+    return {'state': 'initialized-original-identity', 'markerIdentity': marker_id, 'rootIdentities': roots, 'floors': floors}
+
+
+def legacy_trust_preserved(before, after):
+    if before['state'] == 'unconfigured':
+        return before == after
+    return (all(before[key] == after[key] for key in ('state', 'markerIdentity', 'rootIdentities')) and
+            all(after['floors'].get(role, 0) >= version for role, version in before['floors'].items()))
+
+
 def qualify(*, install, setup, stock, profile, evidence, powershell, commit,
-            executable_sha256, ui, owned, inventory, navigation_matches):
+            executable_sha256, ui, owned, inventory, navigation_matches, product, source_app):
     if sys.platform != 'win32' or os.environ.get('GITHUB_ACTIONS') != 'true':
         raise RuntimeError('Real package qualification requires disposable Windows CI')
     assert install == Path(os.environ['LOCALAPPDATA']) / 'OpenNavXAlpha1'
     assert re.fullmatch('[a-f0-9]{40}', commit)
     assert re.fullmatch('[a-f0-9]{64}', executable_sha256)
     assert install.is_dir() and profile.is_dir() and setup.is_file() and stock.is_file()
+    assert product['commit'] == commit and product['executable_sha256'] == executable_sha256
+    trust_identity = packaged_trust_identity(source_app, product)
     output = evidence / 'packaged-updater.json'
     assert not output.exists(), 'Keep each qualification attempt separately'
-    report = {'status': 'running', 'scope': 'real package, same-version supervised installation and authenticated startup; no release-selection or TUF acceptance',
+    report = {'status': 'running', 'scope': 'real package, same-version supervised installation and authenticated startup; original selected legacy trust identity retained; no protected B0/B1 or signed-offer acceptance',
               'commit': commit, 'setupSha256': digest(setup), 'executableSha256': executable_sha256,
+              'trustConfiguration': {k: v for k, v in trust_identity.items() if k in ('state', 'configSha256')},
+              'legacyTrustState': 'not-verified',
+              'nativeProtectedUpdaterAcceptance': False, 'protectedUpdaterGate': 'pending-real-B0-B1',
               'testSourceSha256': digest(Path(__file__)), 'operations': [], 'checks': []}
     stock_before = inventory(stock.parent)
     initial_profile = inventory(profile)
@@ -84,7 +213,10 @@ def qualify(*, install, setup, stock, profile, evidence, powershell, commit,
         assert re.fullmatch('[a-f0-9]{32}', value['current'])
         return value
 
+    original_legacy_trust, last_legacy_trust = None, None
+
     def generation(identifier):
+        nonlocal last_legacy_trust
         assert re.fullmatch('[a-f0-9]{32}', identifier)
         directory = install / 'generations' / identifier
         record = read(directory / 'ownership.json')
@@ -92,7 +224,13 @@ def qualify(*, install, setup, stock, profile, evidence, powershell, commit,
         assert record['commit'] == commit and record['updateStartupHealth'] == 1
         require_product_output_policy({'xnav_hardware_output_policy': record['xnavHardwareOutputPolicy'],
                                        'xnav_manual_control_contract': record.get('xnavManualControlContract', 0)})
-        assert not (directory / 'app/update-trust.json').exists(), 'No product trust provisioning in this fixture'
+        assert packaged_trust_identity(directory / 'app', product) == trust_identity
+        if trust_identity['state'] == 'packaged-public-trust':
+            matches = [entry for entry in record['managedFiles'] if entry['path'] == 'app/update-trust.json']
+            assert len(matches) == 1 and matches[0]['sha256'] == trust_identity['configSha256'], 'Installed ownership does not bind original public trust'
+        observed_trust = legacy_trust_observation(install, trust_identity)
+        assert legacy_trust_preserved(original_legacy_trust, observed_trust) and legacy_trust_preserved(last_legacy_trust, observed_trust), 'Original legacy trust identity or metadata floor was reset'
+        last_legacy_trust = observed_trust
         assert digest(directory / 'app/opencpn.exe') == executable_sha256
         for path in ('app/opencpn.exe', 'app/skager-start.exe', 'UpdateSupervisor.ps1', 'UpdateTransaction.ps1', 'Lifecycle.ps1'):
             matches = [entry for entry in record['managedFiles'] if entry['path'] == path]
@@ -256,6 +394,8 @@ Write-Output 'Exact-generation DPAPI startup receipt authenticated.'
         return record
 
     try:
+        original_legacy_trust = legacy_trust_observation(install, trust_identity, initial=True)
+        last_legacy_trust = original_legacy_trust
         initial = state()['current']
         first = generation(initial)
         assert not (install / 'known-good' / (initial+'.receipt')).exists(), 'Bootstrap must establish new actual proof'
@@ -314,7 +454,10 @@ Write-Output 'Exact-generation DPAPI startup receipt authenticated.'
         audit_receipt(healthy, 'restored')
         check('Restored actual generation launches and closes cleanly with retained authenticated receipt')
         assert digest(setup) == report['setupSha256']
+        assert packaged_trust_identity(source_app, product) == trust_identity, 'Original package trust changed during qualification'
         assert navigation_matches() and inventory(stock.parent) == stock_before
+        assert legacy_trust_preserved(last_legacy_trust, legacy_trust_observation(install, trust_identity))
+        report['legacyTrustState'] = original_legacy_trust['state']
         report['status'] = 'passed'
         return report
     except BaseException as error:
