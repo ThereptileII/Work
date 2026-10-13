@@ -10,6 +10,7 @@ INSTALLED_APPS = [
     "skager_web.accounts",
     "skager_web.core",
     "skager_web.marketing",
+    "skager_web.boats",
 ]
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",

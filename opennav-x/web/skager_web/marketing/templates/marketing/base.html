@@ -4,9 +4,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#152326">
-  <title>{% block title %}SKAGER App — A clearer course{% endblock %}</title>
-  <meta name="description" content="{% block description %}A considered navigation workspace for OpenCPN. Explore SKAGER, its planned beta and the requirements before getting started.{% endblock %}">
+  <meta name="theme-color" content="#06151b">
+  <title>{% block title %}SKAGER — Navigation. Reimagined.{% endblock %}</title>
+  <meta name="description" content="{% block description %}Navigation, vessel intelligence and passage planning, built around your boat. Explore the developing SKAGER experience.{% endblock %}">
   <link rel="stylesheet" href="{% static 'marketing/site.css' %}">
   <script src="{% static 'marketing/site.js' %}" defer></script>
 </head>
@@ -17,18 +17,22 @@
       <a class="brand" href="{% url 'marketing:home' %}" aria-label="SKAGER App home"><img src="{% static 'marketing/skager-wordmark.png' %}" width="680" height="214" alt="SKAGER App"></a>
       <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-navigation" hidden><span>Menu</span><span aria-hidden="true">☰</span></button>
       <nav id="site-navigation" class="site-navigation" aria-label="Main navigation">
-        <a href="{% url 'marketing:features' %}"{% if nav_active == 'features' %} aria-current="page"{% endif %}>The experience</a>
-        <a href="{% url 'marketing:pricing' %}"{% if nav_active == 'pricing' %} aria-current="page"{% endif %}>Beta offer</a>
-        <a href="{% url 'marketing:support' %}"{% if nav_active == 'support' %} aria-current="page"{% endif %}>Help &amp; guides</a>
-        <a class="nav-cta" href="{% url 'marketing:installation' %}"{% if nav_active == 'installation' %} aria-current="page"{% endif %}>Before you start <span aria-hidden="true">↗</span></a>
+        <a href="{% url 'marketing:home' %}#product">Product</a>
+        <a href="{% url 'marketing:home' %}#smart-navigation">Smart Navigation</a>
+        <a href="{% url 'marketing:home' %}#energy">Energy</a>
+        <a href="{% url 'marketing:home' %}#weather">Weather</a>
+        <a href="{% url 'marketing:home' %}#my-boat">My Boat</a>
+        <a href="{% url 'marketing:support' %}"{% if nav_active == 'support' %} aria-current="page"{% endif %}>Support</a>
+        <a class="nav-cta" href="{% url 'marketing:pricing' %}">GET SKAGER <span aria-hidden="true">↗</span></a>
+        <a class="nav-login" href="{% url 'marketing:account' %}">LOGIN</a>
       </nav>
     </div>
   </header>
   <main id="content" tabindex="-1">{% block content %}{% endblock %}</main>
   <footer class="site-footer">
     <div class="container footer-main">
-      <div class="footer-brand"><a class="brand" href="{% url 'marketing:home' %}" aria-label="SKAGER App home"><img src="{% static 'marketing/skager-wordmark.png' %}" width="680" height="214" alt="SKAGER App" loading="lazy"></a><p>A clearer course.<br>A considered workspace for OpenCPN.</p></div>
-      <nav aria-label="Product links"><span class="eyebrow">Explore</span><a href="{% url 'marketing:features' %}">The experience</a><a href="{% url 'marketing:pricing' %}">Planned beta offer</a><a href="{% url 'marketing:downloads' %}">Download availability</a><a href="{% url 'marketing:account' %}">Account availability</a></nav>
+      <div class="footer-brand"><a class="brand" href="{% url 'marketing:home' %}" aria-label="SKAGER App home"><img src="{% static 'marketing/skager-wordmark.png' %}" width="680" height="214" alt="SKAGER App" loading="lazy"></a><p>Navigation. Reimagined.<br>Built around your boat.</p></div>
+      <nav aria-label="Product links"><span class="eyebrow">Explore</span><a href="{% url 'marketing:features' %}">Product details</a><a href="{% url 'marketing:pricing' %}">GET SKAGER</a><a href="{% url 'marketing:downloads' %}">Download availability</a><a href="{% url 'marketing:account' %}">Account availability</a></nav>
       <nav aria-label="Support and legal links"><span class="eyebrow">Good to know</span><a href="{% url 'marketing:installation' %}">Installation prerequisites</a><a href="{% url 'marketing:support' %}">Help &amp; guides</a><a href="{% url 'marketing:open_source' %}">Open source &amp; licenses</a><a href="{% url 'marketing:beta_terms' %}">Beta terms</a><a href="{% url 'marketing:privacy' %}">Privacy</a></nav>
     </div>
     <div class="container footer-bottom"><p><span class="status-mark" aria-hidden="true"></span> Public beta is closed. Qualification is in progress.</p><p>SKAGER is built on OpenCPN. OpenCPN is a separate prerequisite.</p></div>
