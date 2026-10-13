@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"example.com/opennav-update-verifier/brokerpipe"
+	"example.com/opennav-update-verifier/brokerregistration"
 )
 
 // DecommissionResult reports the bounded SCM effect after every retained owner
@@ -65,14 +66,18 @@ func (m *MaintenanceOwner) BindDecommission(ctx context.Context, witness *broker
 
 func bindDecommissionFenceWith(m *MaintenanceOwner, ctx context.Context, fence decommissionFence, clientSID string) (resultErr error) {
 	// Private fixture seam; production uses only the sealed witness snapshot.
-	requestSHA := ""
+	registrationSHA := ""
 	if m != nil && m.self == m {
-		requestSHA = m.authority.client.RequestSHA256
+		raw, err := brokerregistration.EncodeProtectedRecord(m.authority.client)
+		if err != nil {
+			return err
+		}
+		registrationSHA = digest(raw)
 	}
-	return bindDecommissionFenceIdentityWith(m, ctx, fence, clientSID, requestSHA)
+	return bindDecommissionFenceIdentityWith(m, ctx, fence, clientSID, registrationSHA)
 }
 
-func bindDecommissionFenceIdentityWith(m *MaintenanceOwner, ctx context.Context, fence decommissionFence, clientSID, requestSHA string) (resultErr error) {
+func bindDecommissionFenceIdentityWith(m *MaintenanceOwner, ctx context.Context, fence decommissionFence, clientSID, registrationSHA string) (resultErr error) {
 	if m == nil || m.self != m {
 		return errors.New("original decommission owner required")
 	}
@@ -89,8 +94,11 @@ func bindDecommissionFenceIdentityWith(m *MaintenanceOwner, ctx context.Context,
 			m.failed = true
 		}
 	}()
-	if clientSID != m.authority.client.ClientSID || requestSHA != m.authority.client.RequestSHA256 {
-		return errors.New("broker fence client differs from approved original request")
+	// The broker witness hashes the actual protected-store Schema2 wrapper,
+	// not the enclosed raw approved request. Use the ORIGINAL writer's encoder.
+	protected, err := brokerregistration.EncodeProtectedRecord(m.authority.client)
+	if err != nil || clientSID != m.authority.client.ClientSID || registrationSHA != digest(protected) {
+		return errors.Join(errors.New("broker fence protected registration differs from approved original request"), err)
 	}
 	if err := m.check(ctx); err != nil {
 		return err

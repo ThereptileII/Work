@@ -50,20 +50,13 @@ type registration struct {
 	} `json:"updateTrust"`
 }
 
-// protectedRegistration contains the exact original operator-approved request.
-// []byte uses bounded JSON base64 encoding to preserve every original request
-// and trust byte; embedding RawMessage would compact those bytes on marshaling.
-// There is no second mutable installed/trust declaration to reconcile.
-type protectedRegistration struct {
-	Schema                int    `json:"schema"`
-	ClientSID             string `json:"clientSid"`
-	ApprovedRequestSHA256 string `json:"approvedRequestSha256"`
-	ApprovedRequest       []byte `json:"approvedRequest"`
-}
+// The writer and later expected-identity comparisons share this exact envelope.
+// The reader's existing strict schema/base64/native-store requirements remain.
+type protectedRegistration = brokerregistration.ProtectedRecord
 
 func parseRegistration(data []byte, peerSID string) (registration, error) {
 	var r registration
-	if len(data) == 0 || len(data) > 1<<20 || !utf8.Valid(data) || peerSID == "" {
+	if len(data) == 0 || len(data) > brokerregistration.MaxProtectedRecordBytes || !utf8.Valid(data) || peerSID == "" {
 		return r, errors.New("invalid protected registration")
 	}
 	// The protected-store reader separately requires completed native creation

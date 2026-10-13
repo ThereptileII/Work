@@ -78,6 +78,7 @@ REGISTRATION_SOURCES = frozenset(PREFIX + name for name in (
     'brokerpipe/execution_windows.go', 'brokerpipe/execution_other.go',
     'brokerpipe/native_other.go', 'brokerpipe/native_windows.go', 'brokerpipe/protocol.go',
     'brokerregistration/request.go',
+    'brokerregistration/protected_record.go',
     'brokerstore/store.go', 'brokerstore/store_other.go', 'brokerstore/store_windows.go',
     'brokerstore/store_lock_windows.go', 'brokerstore/acquisition.go',
     'brokerstore/programdata_guard_windows.go',

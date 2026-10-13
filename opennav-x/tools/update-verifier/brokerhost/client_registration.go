@@ -2,7 +2,6 @@ package brokerhost
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"time"
 
@@ -61,7 +60,7 @@ func registerApprovedClient(ctx context.Context, raw []byte, independentlyApprov
 	if err != nil {
 		return err
 	}
-	protected, err := json.Marshal(protectedRegistration{Schema: 2, ClientSID: request.ClientSID, ApprovedRequestSHA256: request.RequestSHA256, ApprovedRequest: request.OriginalBytes()})
+	protected, err := brokerregistration.EncodeProtectedRecord(request)
 	if err != nil || len(protected) > brokerstore.MaxRegistrationBytes {
 		return errors.New("bounded protected client registration required")
 	}

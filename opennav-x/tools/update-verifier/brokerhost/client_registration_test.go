@@ -237,6 +237,28 @@ func TestClientRegistrationInitializesAndValidatesBeforeCompletion(t *testing.T)
 	}
 }
 
+func TestClientRegistrationWritesLegacyProtectedRecordBytes(t *testing.T) {
+	f := newClientRegistrationFixture()
+	f.original = append(append([]byte("\n "), f.original...), '\n')
+	if err := f.run(context.Background()); err != nil {
+		t.Fatal(err)
+	}
+	// Keep this expected shape independent of the shared encoder and alias: it
+	// describes the bytes written before the decommission identity repair.
+	legacy, err := json.Marshal(struct {
+		Schema                int    `json:"schema"`
+		ClientSID             string `json:"clientSid"`
+		ApprovedRequestSHA256 string `json:"approvedRequestSha256"`
+		ApprovedRequest       []byte `json:"approvedRequest"`
+	}{2, testSID, clientRequestDigest(f.original), f.original})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !bytes.Equal(f.completed, legacy) {
+		t.Fatal("native writer changed original protected registration wire bytes")
+	}
+}
+
 func TestClientRegistrationEveryFaultRefusesAndDrainsOwnedHandles(t *testing.T) {
 	for _, fault := range []string{"open", "check", "observe", "begin", "directories", "initialize", "validate-trust", "baseline-import", "baseline-validate", "baseline-close", "nil-baseline", "stock-validate", "complete", "owner-close", "stock-close", "store-close", "check-2", "check-3", "check-4", "check-5", "check-6", "check-7", "check-8"} {
 		t.Run(fault, func(t *testing.T) {

@@ -6,6 +6,8 @@ import (
 	"reflect"
 	"runtime"
 	"testing"
+
+	"example.com/opennav-update-verifier/brokerregistration"
 )
 
 type decommissionFixture struct {
@@ -143,6 +145,42 @@ func TestDecommissionRequiresOriginalFenceAndOrdersSingleEffects(t *testing.T) {
 	}
 	if err := owner.Close(); err != nil {
 		t.Fatal(err)
+	}
+}
+
+func TestDecommissionWitnessHashesProtectedRecordInsteadOfRawRequest(t *testing.T) {
+	d := newDecommissionFixture(t)
+	owner, err := openMaintenanceModeWith(context.Background(), d.req, d.op, true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	w := &decommissionFenceFixture{events: &d.events}
+	if err := bindDecommissionFenceIdentityWith(owner, context.Background(), w, inertClientSID, digest(d.req.ClientRegistrationRequest)); err == nil {
+		t.Fatal("raw approved request hash bound as protected registration")
+	}
+	if _, err := owner.Decommission(context.Background()); err == nil || d.disables != 0 {
+		t.Fatal("raw request hash changed SCM")
+	}
+	if err := owner.Close(); err != nil || w.closes != 1 {
+		t.Fatal("refused witness was not closed", err)
+	}
+
+	d = newDecommissionFixture(t)
+	owner, err = openMaintenanceModeWith(context.Background(), d.req, d.op, true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer owner.Close()
+	protected, err := brokerregistration.EncodeProtectedRecord(owner.authority.client)
+	if err != nil {
+		t.Fatal(err)
+	}
+	w = &decommissionFenceFixture{events: &d.events}
+	if err := bindDecommissionFenceIdentityWith(owner, context.Background(), w, inertClientSID, digest(protected)); err != nil {
+		t.Fatal("writer's protected registration hash was refused", err)
+	}
+	if d.disables != 0 {
+		t.Fatal("binding changed SCM before decommission")
 	}
 }
 
