@@ -27,6 +27,11 @@ MAX_TOTAL_BYTES = 2 * 1024 * 1024 * 1024
 MAX_RUNTIME = 128
 SDK_SUFFIXES = {'.h', '.hpp', '.hxx', '.inl', '.inc', '.rc', '.manifest',
                 '.ico', '.cur', '.bmp', '.xpm', '.png', '.xml'}
+# The locked wx 3.2.8 SDK ships these implementation includes and one selected
+# release configuration file. Keep exceptions relative to their exact tree;
+# neither arbitrary C++ sources nor configuration files are SDK inputs.
+WX_INCLUDE_FILES = {'wx/arrimpl.cpp', 'wx/listimpl.cpp', 'wx/thrimpl.cpp'}
+WX_SETUP_FILES = {'build.cfg'}
 WX = 'build/integration-source/cache/wxWidgets-3.2.8'
 BUILD = 'build/production-windows'
 INSTALL = 'build/production-install'
@@ -89,7 +94,7 @@ def record(root, relative):
     return {'bytes': count, 'sha256': digest.hexdigest()}, stamp(before)
 
 
-def tree(root, relative, suffixes):
+def tree(root, relative, suffixes, exact_files=()):
     base = plain(root, relative)
     if not base.is_dir():
         raise ValueError('Missing SDK directory: ' + relative)
@@ -110,7 +115,8 @@ def tree(root, relative, suffixes):
             selected = plain(root, name)
             if selected.is_dir():
                 pending.append(name)
-            elif selected.suffix.lower() in suffixes:
+            elif (selected.suffix.lower() in suffixes or
+                  name[len(relative) + 1:] in exact_files):
                 result.append(name)
             else:
                 raise ValueError('Unexpected SDK input type: ' + name)
@@ -196,7 +202,7 @@ def plan(root, commit, expected, inspect):
         add(stage.CACHE + '/include/' + name, 'sdk/archive/include/' + name)
     archive_target = 'sdk/archive/lib/' + Path(archive).name
     add(archive, archive_target)
-    for source in tree(root, WX + '/include', SDK_SUFFIXES):
+    for source in tree(root, WX + '/include', SDK_SUFFIXES, WX_INCLUDE_FILES):
         add(source, 'sdk/wx/include/' + source[len(WX + '/include/'):])
     wx_lib = WX + '/lib/vc14x_dll'
     children = sorted(plain(root, wx_lib).iterdir())
@@ -207,7 +213,7 @@ def plan(root, commit, expected, inspect):
         raise ValueError('Missing wx import libraries')
     for path in libraries:
         add(wx_lib + '/' + path.name, 'sdk/wx/lib/vc14x_dll/' + path.name)
-    for source in tree(root, wx_lib + '/mswu', {'.h', '.hpp', '.inl'}):
+    for source in tree(root, wx_lib + '/mswu', {'.h', '.hpp', '.inl'}, WX_SETUP_FILES):
         add(source, 'sdk/wx/lib/vc14x_dll/mswu/' + source[len(wx_lib + '/mswu/'):])
     install = plain(root, INSTALL)
     children = list(install.iterdir())

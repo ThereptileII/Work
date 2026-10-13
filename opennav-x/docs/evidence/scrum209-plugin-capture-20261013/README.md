@@ -94,3 +94,59 @@ fixture-free builds. These are the same 154 entries exercised in two builds,
 not 308 distinct feature tests. Mode-cycle/profile persistence and the Linux
 runtime probes also passed their original job steps. Native Windows compilation,
 packaging and installed acceptance remain separate, pending gates at this update.
+
+## Replacement Windows capture refused native wx SDK include files
+
+Run [38455915079, attempt 1](https://github.com/ThereptileII/Work/actions/runs/38455915079)
+at exact `cd8a76e7d0e2a1ab62e1277606e9ccdb4d9d6495` is now **failed**.
+Original native job `115506154676` completed both application compiles, installed
+security checks and both CTest suites: **146 passed, zero failed/skipped** in
+each build. Its later capture step refused:
+
+```text
+Plugin input capture refused: Unexpected SDK input type: build/integration-source/cache/wxWidgets-3.2.8/include/wx/arrimpl.cpp
+```
+
+Original capture artifact `11847718246` is 340 bytes, SHA-256
+`138e5c62af9215f68f39beede111ede97b226bef1a68770877ab4636307acf1a`.
+GitHub digest/length and ZIP CRC match; it contains only that diagnostic log,
+with no SDK inventory. Build-evidence artifact `11847343748` is 65,357,528 bytes,
+SHA-256 `d0770cd7924e969e9c7b8b8305a5b087809830fb70065f41541d5ce0df8b2bb2`;
+GitHub digest/length and all 18,103 member CRCs match, including the original
+CTest XML and capture log. These successes do not override the capture failure.
+
+The exact official archives selected by `tools/windows-wx.lock.json` were
+downloaded and checked independently. The headers archive is 1,454,469 bytes,
+SHA-256 `996041908057574ee3836a5f5e03f40858ffc61011231f19a5e87297b74b74e2`;
+its complete include tree contains 1,509 files: 1,477 `.h`, three `.cpp`, ten
+`.cur`, twelve `.ico`, two `.bmp`, three `.manifest`, one `.rc` and one `.xpm`.
+The three implementation includes are exactly `wx/arrimpl.cpp`,
+`wx/listimpl.cpp` and `wx/thrimpl.cpp`. The Dev archive is 33,824,019 bytes,
+SHA-256 `2d1469322e89293e351260954f0575a18629a78d53a39e0545b1594f221f5810`.
+It adds no include-tree files; its selected `lib/vc14x_dll/mswu` tree contains
+exactly `build.cfg`, `wx/setup.h` and `wx/msw/rcdefs.h`. The existing filter
+would also have refused `build.cfg` after the first include failure.
+
+The helper correction permits only those three exact include-relative names
+and the exact release-setup-relative `build.cfg`; global `.cpp`/`.cfg` support
+is unchanged. All four members are copied and hash-bound through the existing
+identity, mutation, reparse, hardlink and size checks. Linux focused checks:
+**39 capture tests and 30 retained-runner tests passed, zero failed/skipped**.
+The corrected filter also accepted all 1,509 actual pinned include files and
+all three actual release-setup files. Wrong-tree, nested and unknown C++ and
+configuration members still refuse. This is local helper evidence; native
+capture and downstream source-slice qualification remain pending.
+
+Compiled-recovery artifact `11847738253` is retained separately: 427,030,551
+bytes, SHA-256 `e75878e80eb476cae58bdb7cd530c7e3e5c4cd55b3bdb7d655e0516f00ac826b`.
+GitHub digest/length and outer/inner ZIP CRCs match. Its inner archive SHA-256 is
+`a03d1560b64758fa8849d986e30815aeb433083884fa1e080e1a7a9dec069109`;
+manifest SHA-256 is
+`67c992f6d3394822d4a00f829cd9c9574887556e40570ecd796882bd7cd841ca`.
+The manifest retains 16,726 files and 892,198,057 uncompressed bytes, including
+both original application installs. It contains no wx SDK cache or production
+CMake selection controls. Its receipt remains `packaging: not-run`,
+`qualification: not-run`, `trackedSourceDirty: true`. Existing tooling provides
+no supported restore path for this diagnostic archive, and the retained plugin
+workflow requires the original capture step to have succeeded. The failed run
+cannot be relabeled as qualified or used with that workflow's current recipe.

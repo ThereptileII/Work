@@ -310,6 +310,41 @@ class CaptureTests(unittest.TestCase):
         self.write(capture.WX + '/include/wx/private.key', b'private')
         self.refuse('Unexpected SDK input type')
 
+    def test_pinned_wx_implementation_includes_and_release_config_retained(self):
+        # Real names in the locked 3.2.8 headers/Dev archives. These files are
+        # SDK includes/configuration, not separately compiled source targets.
+        selected = {capture.WX + '/include/wx/' + name: 'sdk/wx/include/wx/' + name
+                    for name in ('arrimpl.cpp', 'listimpl.cpp', 'thrimpl.cpp')}
+        selected[capture.WX + '/lib/vc14x_dll/mswu/build.cfg'] = \
+            'sdk/wx/lib/vc14x_dll/mswu/build.cfg'
+        contents = {name: ('pinned SDK member ' + name).encode() for name in selected}
+        for name, content in contents.items():
+            self.write(name, content)
+        result = self.run_capture()
+        data = capture.runner.retained_inputs(self.output / 'data', self.output / 'inventory.json',
+                                             capture.receipt._digest(self.output / 'inventory.json'), COMMIT)
+        for name, target in selected.items():
+            self.assertEqual(result['sources'][target], name)
+            self.assertEqual((self.output / 'data' / target).read_bytes(), contents[name])
+            self.assertEqual(data['files'][target], capture.record(self.root, name)[0])
+
+    def test_cpp_and_cfg_exceptions_cannot_escape_exact_wx_tree(self):
+        for name in (
+                capture.WX + '/include/wx/foreign.cpp',
+                capture.WX + '/include/wx/nested/arrimpl.cpp',
+                capture.WX + '/include/arrimpl.cpp',
+                capture.stage.PREFIX['curl'] + '/include/curl/arrimpl.cpp',
+                capture.WX + '/include/wx/build.cfg',
+                capture.WX + '/lib/vc14x_dll/mswu/foreign.cfg',
+                capture.WX + '/lib/vc14x_dll/mswu/wx/build.cfg',
+                capture.WX + '/lib/vc14x_dll/mswu/wx/arrimpl.cpp',
+                capture.stage.PREFIX['curl'] + '/include/curl/build.cfg'):
+            with self.subTest(name=name):
+                path = self.write(name, b'not an approved SDK member')
+                self.refuse('Unexpected SDK input type')
+                path.unlink()
+                self.output.rmdir()
+
     def test_file_and_directory_case_aliases_refused(self):
         if os.name == 'nt':
             self.skipTest('Case-sensitive negative fixture is portable-host only')
