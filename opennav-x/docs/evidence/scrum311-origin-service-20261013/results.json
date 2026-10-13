@@ -35,5 +35,16 @@
     "system reboot",
     "public exposure",
     "installed no-update/Later/Now/offline acceptance"
-  ]
+  ],
+  "boat_read_only_transport": {
+    "observed_at": "2026-10-13T17:47:17.382690+00:00",
+    "ssh_target": "boat",
+    "http": 200,
+    "length": 1577,
+    "sha256": "a041ec78891a5e3d8896385ed939b691a32ed0ec11e291fb25de773754515d57",
+    "certificate_checked": true,
+    "application_started": false,
+    "hardware_commands": false,
+    "profile_changes": false
+  }
 }
