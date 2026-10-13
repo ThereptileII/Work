@@ -551,6 +551,35 @@
       "producerPackagingStepConclusion": "success",
       "scope": "original same-commit operator tool bytes/source; no installed/product acceptance"
     },
-    "operatorKitOriginalAuditSha256": "917c6473508ecfb2a86cc4543f34e488d819630a9a4242ff949e96e7a4556932"
+    "operatorKitOriginalAuditSha256": "917c6473508ecfb2a86cc4543f34e488d819630a9a4242ff949e96e7a4556932",
+    "linuxIntegrated": {
+      "jobId": 115498678722,
+      "conclusion": "success",
+      "completedAt": "2026-10-13T20:17:59Z",
+      "artifactId": 11845712573,
+      "outerBytes": 14630077,
+      "outerSha256": "964e3753acc1f0ec2771782abc4f5604f1f0e895aca38b423c41e7616406e8bc",
+      "zipCrc": "passed",
+      "members": 3984,
+      "suites": [
+        {
+          "report": "xnav-linux-tests.xml",
+          "sha256": "d12526cdf225a192bbbcb98f71235e8f868d9a2de666298996200d64818a6e31",
+          "tests": 154,
+          "passed": 154,
+          "failed": 0,
+          "skipped": 0
+        },
+        {
+          "report": "production-linux-tests.xml",
+          "sha256": "eb1bc47f4786a4b9e290f021674e6ace18b16d538cb1fcb5bef4b13cff4e3135",
+          "tests": 154,
+          "passed": 154,
+          "failed": 0,
+          "skipped": 0
+        }
+      ],
+      "scope": "Same 154 CTest entries passed in both fixture and fixture-free Linux builds. This does not grant native Windows or installed/boat acceptance."
+    }
   }
 }

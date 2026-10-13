@@ -82,3 +82,15 @@ This is operator-tool provenance only. Application qualification, a same-commit
 fixture-free recovery package, launcher pairing and installed acceptance remain
 pending. The structured audit is preserved under `replacementStaging` in
 [`results.json`](results.json); it does not change the original B0 failure.
+
+## Linux integrated gate passed; native product qualification still pending
+
+The same-commit Linux job `115498678722` passed. Artifact `11845712573`
+(14,630,077 bytes, SHA-256
+`964e3753acc1f0ec2771782abc4f5604f1f0e895aca38b423c41e7616406e8bc`)
+matches GitHub's digest/length and all 3,984 ZIP member CRCs. Original CTest XML
+reports contain **154 passed, zero failed/skipped** in each of the fixture and
+fixture-free builds. These are the same 154 entries exercised in two builds,
+not 308 distinct feature tests. Mode-cycle/profile persistence and the Linux
+runtime probes also passed their original job steps. Native Windows compilation,
+packaging and installed acceptance remain separate, pending gates at this update.
