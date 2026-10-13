@@ -16,7 +16,7 @@ const status = { pending: "Pending", fulfilled: "Completed", refunded: "Refunded
 export function renderAccess(data) {
   return card("BETA ACCESS", data.betaAccess === "active" ? "Active in staging." : "Your next chapter.", data.betaAccess === "active"
     ? '<p>Your staging beta entitlement is active. Paid and fully discounted orders grant the same access.</p><a class="text-link" href="/portal/downloads/">View release availability ↗</a>'
-    : '<p>No active beta access. A verified checkout must activate your entitlement. An order awaiting completion does not grant access.</p>' + (data.checkoutAvailable ? '<button class="button" id="checkout" type="button">Continue to test checkout ↗</button><p class="portal-note">Test mode only. Enter any promotion code in the hosted checkout.</p>' : '<p class="portal-note">Test checkout is currently unavailable.</p>') + '<a class="text-link" href="/pricing/">Beta pricing &amp; terms ↗</a>', "portal-access");
+    : '<p>No active beta access. A verified checkout must activate your entitlement. An order awaiting completion does not grant access.</p>' + (data.checkoutAvailable ? '<label for="discount-code">Discount code (optional)</label><input id="discount-code" name="discountCode" maxlength="64" autocomplete="off" placeholder="Your invitation code"><button class="button" id="checkout" type="button">Continue to test checkout ↗</button><p class="portal-note">Your approved discount is shown in checkout before you confirm. A full discount grants the same beta access.</p>' : '<p class="portal-note">Test checkout is currently unavailable.</p>') + '<a class="text-link" href="/pricing/">Beta pricing &amp; terms ↗</a>', "portal-access");
 }
 export function renderBoats(boats) {
   return boats.length ? `<ul class="portal-list">${boats.map(boat => `<li><strong>${esc(boat.name)}</strong><span class="portal-note">Added ${esc(date(boat.createdAt))}</span></li>`).join("")}</ul>`
@@ -71,7 +71,7 @@ if (typeof document !== "undefined") {
       document.getElementById("checkout")?.addEventListener("click", async event => {
         event.currentTarget.disabled = true;
         try {
-          const checkout = await api("/api/checkout/start", {});
+          const checkout = await api("/api/checkout/start", { discountCode: document.getElementById("discount-code")?.value.trim() || "" });
           const target = new URL(checkout.url);
           if (target.protocol !== "https:" || target.hostname !== "checkout.stripe.com") throw new Error("Checkout is unavailable. Please try again.");
           location.assign(target.href);
