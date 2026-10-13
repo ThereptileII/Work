@@ -106,15 +106,18 @@ the reader's 128 MiB limit refuse the original load. The ordinary OpenCPN
 unloadable-plugin path receives the failure, with the detailed refusal logged.
 No plugin/profile file is rewritten or deleted. This runs for all discovered
 original paths without copying the upstream configuration resolver into Setup.
-It now also walks a bounded same-directory import graph: for each declared
-normal or delay dependency with a simple basename, a sibling DLL is read when
-present, its handle stays open across the original load, and its imports are
-checked recursively. Extension-less names resolve to `.dll` before sibling
-lookup; repeated imports/cycles are deduplicated. The walk refuses
-unsupported path names, unreadable or redirected siblings, malformed x86 PE,
-more than 256 unique import names or 256 MiB of inspected bytes. A missing
-sibling is explicitly outside this local graph, not evidence that the Windows
-loader will not resolve that name elsewhere.
+The current bounded declared-import/forwarder walk inspects both the original
+plugin directory and the actual host executable directory. The latter is
+obtained from `GetModuleFileNameW(nullptr)`, not inferred from the plugin path.
+Both candidates are inspected even when a same-name sibling exists; one shared
+queue traverses chains alternating between the two roots. Candidate handles and
+native directory identities remain retained through original-module custody.
+Extension-less names resolve to `.dll`; case-folded names plus directory
+identity deduplicate repeated declarations and cycles. The walk refuses
+unsupported names, unreadable or redirected candidates, malformed x86 PE and
+exhausted node/byte budgets. Missing candidates are outside these two roots,
+not evidence that Windows cannot resolve them elsewhere. No process-wide DLL
+search setting, loader flag, original discovery path or file is changed.
 
 The private presentation adapter retains its separate compiled exact-byte
 identity/lock/compatibility gate. Successful adapter selection does not execute
@@ -124,9 +127,10 @@ optional/delay and import-free plugin metadata remains permitted by this
 narrow policy; passing it is not a statement of plugin compatibility or trust.
 
 This is **partial enforcement**, not closure of SCRUM-209. It does not traverse
-imports resolved outside the original plugin's directory, dynamically selected
-DLLs or executable helpers,
-validate manifests/export forwarders, or prove loaded-module identities. It
+system/PATH/redirected or already mapped dependencies, dynamically selected
+DLLs or executable helpers, validate activation manifests, or prove arbitrary
+loaded-module identities. Declared export forwarders retain the separately
+documented conservative grammar and PE bounds. It
 does not stop previously mapped code or provide a hostile-filesystem sandbox;
 path/ancestor redirection and filesystem replacement semantics need separate
 native qualification. Exact bytes of a known-good plugin are not an approval of

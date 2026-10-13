@@ -195,3 +195,30 @@ enforcement only; external loader roots, arbitrary dynamic/helper loads, full
 application/adapter integration, general mapped identity, TLS/certificate and
 installer lifecycle acceptance remain open. No vendor factory, chart, boat or
 physical operation is part of this gate.
+
+
+## SCRUM-209 application-directory closure (2026-10-13, native pending)
+
+Historical run38393906703 atd24c6b2f passed52 inert observation groups and
+confirmed that the former sibling-only guard accepted a neutral application-
+directory helper importing the harmless legacy-name stub. Its receipt sets
+product acceptance false; it is retained as evidence of the policy gap.
+
+The current fixture requires55 groups. Three controls require production
+refusal before original/dependency initialization: an application-only helper,
+a clean same-name plugin sibling masking an unsafe application candidate, and
+an original → plugin sibling → application helper → legacy-name chain. The
+actual original fallback must return LoadFailed, no module may map, event logs
+must remain empty, all bytes unchanged and inspection locks released afterward.
+The cross-root helper uses locally compiled inert integer functions only.
+
+A compatible application-only helper must still first-map through the actual
+production fallback. The test checks its full mapped path, volume/file identity
+and hash against the inspected file, write/delete locks while loaded, the known
+integer export, detach/unload, unchanged bytes and released handles. The process
+current directory and DLL-directory state remain unchanged in these new groups.
+
+These controls compile the actual two-root guard. They do not assert that both
+inspected candidates would execute, qualify system/PATH/preloaded/SxS resolution
+or dynamic/helper-process loading, or qualify a real OpenCPN/plugin installation.
+Native execution is pending until an exact-commit run and receipt are recorded.

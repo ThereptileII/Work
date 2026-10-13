@@ -406,83 +406,111 @@ int main(int argc,char**argv) {
       search.Restore();
       Pass("previously unmapped sibling maps with inspected path/identity under live guard");
     }
-    // Observe the deliberate local-graph coverage limit using harmless code:
-    // plugin -> neutral helper in the executable directory -> no-TLS legacy
-    // basename stub. No resolver/search override or production-policy change.
-    {Case c(work,"external-application-directory-resolution",vendor,good);
-      Copy(fixtures/"fixture_indirect_external.dll",c.original);
+    // Native refusal before DllMain, covering the historical application-only
+    // hole, a clean sibling masking the unsafe host candidate, and a chain
+    // alternating plugin and application roots. No production search override.
+    for (const char* mode : {"host-only", "clean-sibling", "cross-root"}) {
+      const bool cross=std::string(mode)=="cross-root";
+      Case c(work,std::string("application-directory-refusal-")+mode,vendor,good);
+      Copy(fixtures/(cross ? "fixture_indirect_cross.dll" : "fixture_indirect_external.dll"),c.original);
       wchar_t executable_path[32768]{};
       const auto executable_count=GetModuleFileNameW(nullptr,executable_path,32768);
-      Require(executable_count && executable_count<32768,"external control executable path");
+      Require(executable_count && executable_count<32768,"host refusal executable path");
       const auto application=fs::path(executable_path).parent_path();
-      const auto helper=application/"helper_external.dll",stub=application/"libeay32.dll";
-      Require(fs::equivalent(application,fixtures),"external control fixture/executable directory mismatch");
-      Require(fs::exists(helper) && fs::exists(stub),"external control inert application dependencies missing");
+      const auto helper=application/(cross ? "helper_cross_host.dll" : "helper_external.dll");
+      const auto stub=application/"libeay32.dll";
+      Require(fs::equivalent(application,fixtures),"host refusal fixture directory mismatch");
+      Require(fs::exists(helper) && fs::exists(stub),"inert host dependencies missing");
       Require(!fs::exists(c.original.parent_path()/helper.filename()) &&
-                  !fs::exists(c.original.parent_path()/stub.filename()),
-              "external dependencies must be absent beside plugin");
+                  !fs::exists(c.original.parent_path()/stub.filename()),"host dependency must not be a sibling");
+      fs::path sibling;
+      if(std::string(mode)=="clean-sibling") {
+        sibling=c.original.parent_path()/"helper_external.dll";
+        Copy(fixtures/"helper_clean.dll",sibling);
+      } else if(cross) {
+        sibling=c.original.parent_path()/"helper_cross.dll";
+        Copy(fixtures/"crossroot/helper_cross.dll",sibling);
+        Require(!fs::exists(application/sibling.filename()),"cross-root first helper must be sibling-only");
+      }
       Require(GetModuleHandleW(helper.filename().c_str())==nullptr &&
                   GetModuleHandleW(stub.filename().c_str())==nullptr,
-              "external control dependencies were already mapped");
+              "refusal dependencies were already mapped");
       const auto dll_directory=CurrentDllDirectory();
       const auto working_directory=fs::current_path();
-      Require(dll_directory.empty(),"external control requires unchanged default DLL search");
+      Require(dll_directory.empty(),"host refusal requires unchanged default DLL search");
       const auto original_before=Hash(c.original),helper_before=Hash(helper),stub_before=Hash(stub);
-      const auto helper_identity=FileIdentity(helper),stub_identity=FileIdentity(stub);
-      const auto raw=Read(c.original),helper_raw=Read(helper);
-      const auto declared=ReadWin32PeImports(std::vector<unsigned char>(raw.begin(),raw.end()));
-      const auto helper_declared=ReadWin32PeImports(std::vector<unsigned char>(helper_raw.begin(),helper_raw.end()));
-      Require(declared.parsed && helper_declared.parsed,"external control PE metadata unreadable");
-      bool imports_helper=false,imports_legacy=false;
-      for(const auto& item : declared.modules) {
-        if(item.name=="helper_external.dll") imports_helper=true;
-        Require(item.name!="libeay32.dll" && item.name!="ssleay32.dll",
-                "external root must not directly import legacy basename");
+      const auto sibling_before=sibling.empty() ? std::string{} : Hash(sibling);
+      {
+        OriginalPluginTlsGuard guard(W(c.original));
+        Require(guard.Refusal().find("Unsupported legacy TLS import: libeay32.dll")!=std::string::npos,
+                "host legacy graph was not refused: "+guard.Refusal());
+        for(const auto& locked : {c.original,helper})
+          Require(SharingDenied(locked,GENERIC_WRITE) && SharingDenied(locked,DELETE),
+                  "host inspection did not retain original/helper custody");
+        if(!sibling.empty())
+          Require(SharingDenied(sibling,GENERIC_WRITE) && SharingDenied(sibling,DELETE),
+                  "cross-root/duplicate sibling was not retained");
+        c.Events("");
       }
-      for(const auto& item : helper_declared.modules)
-        if(item.name=="libeay32.dll") imports_legacy=true;
-      Require(imports_helper && imports_legacy,"external control did not encode intended two-hop graph");
       RegisterPluginPresentationLoader(nullptr);
       PluginModuleInspectionCustody custody; wxDynamicLibrary lib;
-      Require(LoadPluginWithPresentationFallback(lib,W(c.original),{},custody)==PluginModuleLoadOutcome::Loaded,
-              "external control local-only guard behavior changed; investigate rather than relaxing policy");
-      Require(custody && SharingDenied(c.original,GENERIC_WRITE) && SharingDenied(c.original,DELETE),
-              "external control did not retain actual original inspection custody");
-      for(const auto& expected : {helper,stub}) {
-        const auto mapped=GetModuleHandleW(expected.filename().c_str());
-        Require(mapped!=nullptr,"external control dependency did not first-map");
-        wchar_t mapped_path[32768]{};
-        const auto count=GetModuleFileNameW(mapped,mapped_path,32768);
-        Require(count && count<32768,"external control mapped dependency path");
-        const fs::path actual(mapped_path);
-        const bool is_helper=expected==helper;
-        const auto inspected=is_helper ? helper_identity : stub_identity;
-        const auto expected_hash=is_helper ? helper_before : stub_before;
-        Require(_wcsicmp(actual.lexically_normal().c_str(),expected.lexically_normal().c_str())==0 &&
-                    SameFile(inspected,FileIdentity(actual)) && Hash(actual)==expected_hash,
-                "external dependency resolved outside exact inert application file identity");
-        std::cout<<"External-resolution observation: "<<actual.u8string()
-                 <<"; volume="<<inspected.dwVolumeSerialNumber
-                 <<"; file-index="<<inspected.nFileIndexHigh<<":"<<inspected.nFileIndexLow
-                 <<"; sha256="<<expected_hash<<"; local-graph-guard-accepted=true\n";
-      }
-      const auto probe=lib.GetSymbol("exercise_indirect_import");
-      Require(probe && reinterpret_cast<int (__cdecl*)()>(probe)()==209,
-              "external control inert helper/stub chain did not execute expected constant");
-      c.Events("attach\n");
-      Require(UnloadPluginModuleChecked(lib,custody) && !custody,
-              "external control original unload/custody cleanup failed");
+      Require(LoadPluginWithPresentationFallback(lib,W(c.original),{},custody)==PluginModuleLoadOutcome::LoadFailed,
+              "unsafe host graph reached original load");
+      Require(!lib.IsLoaded() && !custody,"refused original load retained module/custody");
       Require(GetModuleHandleW(helper.filename().c_str())==nullptr &&
                   GetModuleHandleW(stub.filename().c_str())==nullptr,
-              "external control dependencies remained mapped after unload");
-      c.Events("attach\ndetach\n");
-      Require(Writable(c.original) && Hash(c.original)==original_before &&
+              "host refusal allowed dependency initialization");
+      c.Events("");
+      Require(Writable(c.original) && Writable(helper) && Hash(c.original)==original_before &&
                   Hash(helper)==helper_before && Hash(stub)==stub_before,
-              "external control changed bytes or retained original lock");
+              "host refusal changed bytes or leaked lock");
+      if(!sibling.empty())
+        Require(Writable(sibling) && Hash(sibling)==sibling_before,"sibling changed or lock leaked");
       Require(fs::current_path()==working_directory && CurrentDllDirectory()==dll_directory,
-              "external control changed process DLL search state");
+              "host refusal changed process search state");
       NeverLoadedVendor();
-      Pass("observed inert application-directory dependency outside guarded local graph");
+      Pass((std::string("application-directory legacy refusal before initialization: ")+mode).c_str());
+    }
+    // Compatible first mapping from the application directory while the exact
+    // production fallback owns both inspected files through unload.
+    {Case c(work,"benign-application-directory-first-mapping",vendor,good);
+      Copy(fixtures/"fixture_indirect_clean.dll",c.original);
+      const auto helper=fixtures/"helper_clean.dll";
+      Require(!fs::exists(c.original.parent_path()/helper.filename()),"benign helper must be host-only");
+      Require(GetModuleHandleW(helper.filename().c_str())==nullptr,"benign host helper already mapped");
+      const auto before=Hash(c.original),helper_before=Hash(helper);
+      const auto expected=FileIdentity(helper);
+      const auto working_directory=fs::current_path();
+      const auto dll_directory=CurrentDllDirectory();
+      PluginModuleInspectionCustody custody; wxDynamicLibrary lib;
+      RegisterPluginPresentationLoader(nullptr);
+      Require(LoadPluginWithPresentationFallback(lib,W(c.original),{},custody)==PluginModuleLoadOutcome::Loaded,
+              "benign host-only graph refused");
+      Require(custody!=nullptr,"benign host graph missing inspection owner");
+      for(const auto& locked : {c.original,helper})
+        Require(SharingDenied(locked,GENERIC_WRITE) && SharingDenied(locked,DELETE),
+                "benign host graph lock did not survive load");
+      const auto mapped=GetModuleHandleW(helper.filename().c_str());
+      Require(mapped!=nullptr,"benign host dependency did not first-map");
+      wchar_t mapped_path[32768]{};
+      const auto count=GetModuleFileNameW(mapped,mapped_path,32768);
+      Require(count && count<32768,"benign mapped host path unavailable");
+      const fs::path actual(mapped_path);
+      Require(_wcsicmp(actual.lexically_normal().c_str(),helper.lexically_normal().c_str())==0 &&
+                  SameFile(expected,FileIdentity(actual)) && Hash(actual)==helper_before,
+              "benign host module differs from inspected locked identity");
+      const auto probe=lib.GetSymbol("exercise_indirect_import");
+      Require(probe && reinterpret_cast<int (__cdecl*)()>(probe)()==209,"benign host helper execution");
+      c.Events("attach\n");
+      Require(UnloadPluginModuleChecked(lib,custody) && !custody,"benign host original unload");
+      Require(GetModuleHandleW(helper.filename().c_str())==nullptr,"benign host helper leaked after unload");
+      c.Events("attach\ndetach\n");
+      Require(Writable(c.original) && Writable(helper) && Hash(c.original)==before && Hash(helper)==helper_before,
+              "benign host graph changed bytes or leaked inspection locks");
+      Require(fs::current_path()==working_directory && CurrentDllDirectory()==dll_directory,
+              "benign host mapping changed process search state");
+      NeverLoadedVendor();
+      Pass("benign application-directory first mapping matches retained identity through unload");
     }
     // Native export-only dependencies: no normal/delay descriptor names the
     // forwarded module. Resolve the inert export, never a plugin factory.
@@ -666,7 +694,7 @@ int main(int argc,char**argv) {
       Pass("injected invalid-handle refusal retains ownership");
     }
     NeverLoadedVendor();Require(Hash(vendor)==OriginalOChartsSha256,"vendor input changed");
-    std::ofstream report(argv[6]);report<<"{\"status\":\"passed\",\"checks\":"<<passed<<",\"vendorExecuted\":false,\"pluginFactoryExecuted\":false,\"invalidHandleFaultInjected\":true,\"unmappedSiblingGuardControl\":true,\"exportForwarderControls\":true,\"forwarderGrammarProbes\":true,\"externalResolutionObservation\":{\"guardAccepted\":true,\"helperFromApplicationDirectory\":true,\"legacyStubFromApplicationDirectory\":true,\"outsideInspectedLocalGraph\":true,\"productAcceptance\":false},\"productAcceptance\":false}\n";
+    std::ofstream report(argv[6]);report<<"{\"status\":\"passed\",\"checks\":"<<passed<<",\"vendorExecuted\":false,\"pluginFactoryExecuted\":false,\"invalidHandleFaultInjected\":true,\"unmappedSiblingGuardControl\":true,\"exportForwarderControls\":true,\"forwarderGrammarProbes\":true,\"applicationDirectoryClosure\":{\"legacyRefusedBeforeInitialization\":true,\"cleanSiblingCannotMaskHost\":true,\"crossRootChainRefused\":true,\"benignFirstMappingIdentity\":true,\"custodyThroughUnload\":true},\"productAcceptance\":false}\n";
     std::cout<<"PASS "<<passed<<" native loader groups; no vendor or plugin factory execution\n";return 0;
   } catch(const std::exception& error) {std::cerr<<"FAIL "<<error.what()<<"\n";return 1;}
 }

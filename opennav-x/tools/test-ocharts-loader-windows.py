@@ -28,6 +28,7 @@ INPUTS = (
     'tests/windows_ocharts_loader/CMakeLists.txt',
     'tests/windows_ocharts_loader/fixture.cpp',
     'tests/windows_ocharts_loader/indirect_dependency.cpp',
+    'tests/windows_ocharts_loader/crossroot_dependency.cpp',
     'tests/windows_ocharts_loader/unmapped_dependency.cpp',
     'tests/windows_ocharts_loader/legacy_dependency.cpp',
     'tests/windows_ocharts_loader/forward_dependency.cpp',
@@ -42,7 +43,7 @@ INPUTS = (
 )
 VARIANTS = ('good', 'no_bind', 'no_status', 'no_create', 'no_destroy',
             'legacy_normal', 'legacy_delay', 'indirect_legacy', 'indirect_clean',
-            'indirect_unmapped', 'indirect_external', 'forward_legacy_name', 'forward_legacy_ordinal',
+            'indirect_unmapped', 'indirect_external', 'indirect_cross', 'forward_legacy_name', 'forward_legacy_ordinal',
             'forward_ssleay_ordinal', 'forward_indirect', 'forward_clean_name',
             'forward_clean_ordinal', 'forward_explicit_dll', 'forward_multi_dot')
 
@@ -115,7 +116,7 @@ def main():
                        'full app Standard/Safe selection and plugin lifecycle',
                        'genuine loaded-module unload refusal; fault test uses a reserved non-module address',
                        'forwarder grammar beyond the supported single-separator subset; native probes do not relax policy',
-                       'declared local graph only; external loader roots, arbitrary dynamic/helper loads and general module identity',
+                       'declared plugin/application graph only; system/PATH/redirected or preloaded modules, arbitrary dynamic/helper loads and general module identity',
                        'encrypted-chart rendering, licensing and physical hardware']}
     lock = json.loads((ROOT / 'tests/windows_ocharts_loader/inputs.lock.json').read_text())
     scratch = ROOT / 'build/windows-ocharts-loader-guards'
@@ -170,7 +171,8 @@ def main():
             report['fixtures'][relative] = dict(identity(fixture), pe=require_win32_dll(fixture))
         stub = fixtures / 'libeay32.dll'
         report['fixtures'][stub.name] = dict(identity(stub), pe=require_win32_dll(stub))
-        for name in ('helper_legacy.dll', 'helper_clean.dll', 'helper_external.dll', 'unmapped/helper_unmapped.dll',
+        for name in ('helper_legacy.dll', 'helper_clean.dll', 'helper_external.dll',
+                     'helper_cross_host.dll', 'crossroot/helper_cross.dll', 'unmapped/helper_unmapped.dll',
                      'forwarders/ssleay32.dll', 'forwarders/forward_clean.dll',
                      'forwarders/forward.dll', 'forwarders/forward.clean.dll',
                      'forwarders/forward_helper.dll'):
@@ -189,14 +191,14 @@ def main():
         api.run([client, vendor, fixtures, work, junction_original, junction_adapter,
                  evidence / 'native-tests.json'], evidence / 'native-tests.log', timeout=120)
         native = json.loads((evidence / 'native-tests.json').read_text())
-        if native != {'status': 'passed', 'checks': 52, 'vendorExecuted': False,
+        if native != {'status': 'passed', 'checks': 55, 'vendorExecuted': False,
                       'pluginFactoryExecuted': False, 'invalidHandleFaultInjected': True,
                       'unmappedSiblingGuardControl': True, 'exportForwarderControls': True,
                       'forwarderGrammarProbes': True,
-                      'externalResolutionObservation': {
-                          'guardAccepted': True, 'helperFromApplicationDirectory': True,
-                          'legacyStubFromApplicationDirectory': True,
-                          'outsideInspectedLocalGraph': True, 'productAcceptance': False},
+                      'applicationDirectoryClosure': {
+                          'legacyRefusedBeforeInitialization': True,
+                          'cleanSiblingCannotMaskHost': True, 'crossRootChainRefused': True,
+                          'benignFirstMappingIdentity': True, 'custodyThroughUnload': True},
                       'productAcceptance': False}:
             raise ValueError('Native guard receipt is incomplete or changed')
         report['native'] = native

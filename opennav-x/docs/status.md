@@ -1,5 +1,30 @@
 # SKAGER status — 2026-10-13
 
+## SDK consumer verification passes; plugin closure correction in progress
+
+The full replacement run[38386718400](https://github.com/ThereptileII/Work/actions/runs/38386718400)
+failed before application compilation at its authenticated SDK compatibility
+check. Linux integration and native updater/prerequisite gates passed, but no
+new installer or recovery package was qualified. The reviewed producer-specific
+consumer correction subsequently passed native verified-reuse
+run[38393796503](https://github.com/ThereptileII/Work/actions/runs/38393796503)
+at`853cb5b3`, in80.45seconds without an application build. Downloaded evidence
+matches the live GitHub artifact digest and ZIP CRC. Application consumption
+and installed runtime qualification remain open.
+
+The independent native observation
+run[38393906703](https://github.com/ThereptileII/Work/actions/runs/38393906703)
+at`d24c6b2f` passes52 inert checks and proves a gap: the sibling-only plugin
+inspection accepts an application-directory helper which imports a harmless
+legacy-name stub. This is a reproduced security coverage failure, not product
+acceptance. A shared two-root walk and55-group native refusal/compatible-mapping
+fixture are implemented with focused portable checks passing; native execution
+remains pending before the next coherent application candidate.
+The separately reviewed post-publication shortcut binding is integrated; actual
+protected restoration, repair and full uninstall remain open. No Jira product
+issue is closed by these component results; boat, design and endurance tests
+have not been started for this increment.
+
 ## Native prerequisite repairs pass; full replacement candidate not yet qualified
 
 The first B0 product request [38382520660](https://github.com/ThereptileII/Work/actions/runs/38382520660)
