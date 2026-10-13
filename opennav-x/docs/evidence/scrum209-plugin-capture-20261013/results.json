@@ -1,0 +1,206 @@
+{
+  "schema": 1,
+  "issue": "SCRUM-209",
+  "scope": "Original failed B0 capture and focused helper correction; no product acceptance",
+  "productProducer": {
+    "repository": "ThereptileII/Work",
+    "sourceCommit": "2c61369080c358d5ef9b8952d6f2881b52891b13",
+    "runId": 38442801510,
+    "runAttempt": 1,
+    "workflow": ".github/workflows/opennav-baseline.yml",
+    "jobId": 115461450333,
+    "job": "windows-integration",
+    "runConclusion": "failure",
+    "jobConclusion": "failure",
+    "url": "https://github.com/ThereptileII/Work/actions/runs/38442801510"
+  },
+  "originalStepResults": [
+    {
+      "number": 15,
+      "name": "Compile fixture-free product and run installed security and unit checks",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "number": 16,
+      "name": "Check prepackage recovery retention with disposable real Git trees",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "number": 17,
+      "name": "Retain both native applications and exact tracked source before packaging",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "number": 18,
+      "name": "Upload unqualified compiled recovery before packaging can fail",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "number": 19,
+      "name": "Retain exact plugin-download SDK inputs for no-rebuild qualification",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "number": 20,
+      "name": "Preserve plugin-download SDK inventory and failed capture diagnostics",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "number": 21,
+      "name": "Resolve private chart imports in the real host without plugin initialization",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "number": 22,
+      "name": "Native public Downloader Windows trust and rejection gate",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "number": 23,
+      "name": "Exact peer response buffer on native MSVC Win32",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "number": 25,
+      "name": "Stage exact qualified startup updater and retained dependency source",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "number": 26,
+      "name": "Package fixture-free recovery before desktop qualification",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "number": 27,
+      "name": "Compile exact installer without running its desktop qualification yet",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "number": 28,
+      "name": "Seal compiled inputs before any desktop test can fail",
+      "status": "completed",
+      "conclusion": "skipped"
+    }
+  ],
+  "captureFailure": {
+    "message": "Plugin input capture refused: Source changed before read: dumpbin.exe",
+    "failedStepLogSha256": "31355eeac9ec12c4dab18c7c31ee0a4bd8622869fc4296eed0e22e2a53cd2181",
+    "failedStepLogLineNumbers": [
+      11,
+      12
+    ],
+    "boundary": "Path lstat and opened-descriptor fstat complete-stamp comparison before dumpbin hashing",
+    "exactDifferingField": "not recorded by original producer",
+    "actualToolMutationEstablished": false,
+    "productCompilationDefectEstablished": false,
+    "classification": "Retention helper/tool-file validation failure; incompatible Windows stat-source fields are the source-supported explanation"
+  },
+  "pluginArtifact": {
+    "id": 11840811376,
+    "name": "plugin-guard-inputs-2c61369080c358d5ef9b8952d6f2881b52891b13-run38442801510-attempt1",
+    "bytes": 283,
+    "sha256": "a1bb8f34901d8258cc301134f4af1c9c0539876356ec51a98e26eb2793c4d7c3",
+    "githubDigestAndLengthVerified": true,
+    "zipCRCVerified": true,
+    "members": [
+      "opennav-x/evidence/local/plugin-guard-capture.log"
+    ],
+    "inventoryPresent": false,
+    "dataPresent": false,
+    "retainedWorkflowEligible": false,
+    "eligibilityReason": "Required original capture step failed and complete inventory/data are absent"
+  },
+  "compiledRecovery": {
+    "artifactId": 11840836434,
+    "artifactName": "compiled-recovery-2c61369080c358d5ef9b8952d6f2881b52891b13-run38442801510-attempt1",
+    "outerBytes": 426988285,
+    "outerSha256": "fa0357a26605f29403bde6602cdedf5b91f8ac10345956ad44f4cc5ae201a8a7",
+    "githubDigestAndLengthVerified": true,
+    "outerZipCRCVerified": true,
+    "outerMembers": [
+      {
+        "name": "COMPILED_RECOVERY.zip",
+        "bytes": 426987295,
+        "crc32": "39881e64"
+      },
+      {
+        "name": "receipt.json",
+        "bytes": 718,
+        "crc32": "5fe2231a"
+      }
+    ],
+    "originalReceiptSha256": "7bfd0d57c96f210c78aeb348f6480730d083b8df2644ee1f06aed7cb900a36cb",
+    "originalReceipt": {
+      "schema": 1,
+      "kind": "skager-unqualified-prepackage-recovery",
+      "status": "retained",
+      "qualification": "not-run",
+      "packaging": "not-run",
+      "producer": {
+        "repository": "ThereptileII/Work",
+        "commit": "2c61369080c358d5ef9b8952d6f2881b52891b13",
+        "runId": "38442801510",
+        "runAttempt": "1",
+        "job": "windows-integration",
+        "platform": "windows-2022",
+        "architecture": "Win32"
+      },
+      "archive": "COMPILED_RECOVERY.zip",
+      "archiveSha256": "c4ff53f1441efbd2dfc69f2f452ece340ff95a31862001883ca95f343a8ca70e",
+      "manifestSha256": "30b3e58886442d079246977ba3c0767648cb13d0ea43eeb8dacc97860ccdf7bf",
+      "files": 16717,
+      "bytes": 892049537,
+      "trackedSourceDirty": true
+    },
+    "packaged": false,
+    "qualified": false,
+    "supportedReusePath": false,
+    "scope": "Unqualified prepackage diagnostic recovery. Receipt values are retained producer claims, not installed/package acceptance."
+  },
+  "helperCorrection": {
+    "isolatedCommit": "bc77234ef4074763848c84d4147fb823b40cc79e",
+    "integratedCommit": "4cbea64a01c155873319011a0bddf69cba2dfa63",
+    "behavior": "Match common physical path/descriptor identity; preserve and recheck each complete stat source baseline independently in record and copy; retain reparse, hardlink, metadata and content checks",
+    "linuxTests": {
+      "status": "passed",
+      "command": "python3 opennav-x/tools/test-retain-plugin-guard-inputs.py -q",
+      "tests": 34
+    },
+    "pythonSyntaxCheck": {
+      "status": "passed"
+    },
+    "nativeProof": {
+      "status": "pending",
+      "workflowCommit": "97879a1146367817ff4076caf7ff8b98a5aab02c",
+      "runId": null,
+      "scope": "Actual dumpbin/Python/inert-file metadata helper probe; no product execution or full application build"
+    },
+    "originalProductRevisionRelabeled": false
+  },
+  "evidenceSources": {
+    "failureAuditSha256": "70d8be4e93012bb59fac0216be2d3f39671c0c012285ca213b7919c4e2110abd",
+    "failureArtifactsMetadataSha256": "b21ac629143abbac6c1a4a2e294bcadf6aadfb820998ff8b77159afdd3a50664",
+    "failureJobMetadataSha256": "00e1d61c4284ec16261a59c1f8dc16d762e70aca76b5e352ee0c67d9f9e324fd",
+    "failureRunMetadataSha256": "227aba48925aa7dedcae3aa8fb55b723c329068496a8a5a2620690b26f145c9a"
+  },
+  "acceptance": {
+    "nativeHelperProof": "pending",
+    "nativePluginGuard": "not-run",
+    "installedProduct": "not-qualified",
+    "productAcceptance": false,
+    "boatAcceptance": false,
+    "publicAccessAuthorized": false
+  }
+}
