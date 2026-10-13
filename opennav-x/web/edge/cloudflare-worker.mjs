@@ -51,18 +51,28 @@ export async function handleWorker(request, transport = fetch) {
     let body;
     try { if (request.method === 'POST') body = await readBounded(request.body); }
     catch { return finish(new Response('Request too large', { status: 413 })); }
+    let failurePhase = 'timeout-init';
     try {
+      const signal = AbortSignal.timeout(20000);
+      failurePhase = 'upstream-request';
       const response = await transport(EDGE + url.pathname, {
         method: request.method, headers, body, redirect: 'error',
-        signal: AbortSignal.timeout(20000),
+        signal,
       });
+      failurePhase = 'response-build';
       const outputHeaders = new Headers({ 'Cache-Control': 'no-store' });
       outputHeaders.set('Content-Type', response.headers.get('content-type') || 'application/json');
+      failurePhase = 'cookie-copy';
       for (const value of response.headers.getSetCookie()) outputHeaders.append('Set-Cookie', value);
+      failurePhase = 'response-build';
       return finish(new Response(response.body, { status: response.status, headers: outputHeaders }));
-    } catch { return finish(new Response('{"error":"The service is temporarily unavailable. Please try again."}', {
-      status: 503, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
-    })); }
+    } catch {
+      // Only these static phases reach logs; never log the exception or request.
+      console.warn(`skager-worker:${failurePhase}`);
+      return finish(new Response('{"error":"The service is temporarily unavailable. Please try again."}', {
+        status: 503, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
+      }));
+    }
   }
   if (!['GET', 'HEAD'].includes(request.method)) return finish(new Response('Not found', { status: 404 }));
   if (url.pathname === '/account/' || url.pathname === '/account') {
