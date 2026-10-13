@@ -209,7 +209,10 @@ class CaptureTests(unittest.TestCase):
                         shutil.rmtree(self.output)
 
     def test_archive_selection_is_exact_with_both_imports_present(self):
-        self.write(self.cache, self.cache_text.replace('/libarchive.lib', '/archive.lib').encode())
+        selected = str(self.root / capture.stage.CACHE / 'libarchive.lib')
+        alternate = str(self.root / capture.stage.CACHE / 'archive.lib')
+        self.assertIn(selected, self.cache_text)
+        self.write(self.cache, self.cache_text.replace(selected, alternate).encode())
         result = self.run_capture()
         self.assertIn('sdk/archive/lib/archive.lib', result['sources'])
         self.assertNotIn('sdk/archive/lib/libarchive.lib', result['sources'])
@@ -223,11 +226,17 @@ class CaptureTests(unittest.TestCase):
                 self.output.rmdir()
 
     def test_wrong_platform_wx_and_archive_roots_refused(self):
+        wx_root = str(self.root / capture.WX)
+        wrong_wx_root = str(self.root / capture.stage.CACHE)
+        archive = str(self.root / capture.stage.CACHE / 'libarchive.lib')
+        header = str(self.root / capture.stage.CACHE / 'include/archive.h')
         for text in (self.cache_text.replace('=Win32', '=x64'),
                      self.cache_text.replace('=mswu', '=mswud'),
-                     self.cache_text.replace('/cache/wxWidgets-3.2.8\n', '/cache/buildwin\n'),
-                     self.cache_text.replace('/libarchive.lib', '/include/archive.h')):
+                     self.cache_text.replace('wxWidgets_ROOT_DIR:PATH=' + wx_root,
+                                             'wxWidgets_ROOT_DIR:PATH=' + wrong_wx_root),
+                     self.cache_text.replace(archive, header)):
             with self.subTest(text=text):
+                self.assertNotEqual(text, self.cache_text)
                 self.write(self.cache, text.encode())
                 self.refuse()
                 self.output.rmdir()
@@ -403,9 +412,12 @@ class CaptureTests(unittest.TestCase):
                 inspector(self.root / capture.INSTALL / 'archive.dll')
 
     def test_ambiguous_or_non_x86_compiler_refused(self):
-        self.compiler_fixture()
+        tool = self.compiler_fixture()
         path = self.root / capture.BUILD / 'CMakeFiles/3.31/CMakeCXXCompiler.cmake'
-        path.write_text(path.read_text().replace('/x86/', '/x64/'))
+        selected = str(tool.with_name('cl.exe'))
+        wrong = str(tool.parent.parent / 'x64/cl.exe')
+        self.assertIn(selected, path.read_text())
+        path.write_text(path.read_text().replace(selected, wrong))
         with self.assertRaisesRegex(ValueError, 'MSVC x86'):
             capture.dumpbin_inspector(self.root)
         self.write(capture.BUILD + '/CMakeFiles/3.30/CMakeCXXCompiler.cmake', b'old compiler')
