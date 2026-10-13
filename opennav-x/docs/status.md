@@ -1,4 +1,30 @@
-# SKAGER status — 2026-10-12
+# SKAGER status — 2026-10-13
+
+## Native prerequisite repairs pass; full replacement candidate not yet qualified
+
+The first B0 product request [38382520660](https://github.com/ThereptileII/Work/actions/runs/38382520660)
+stopped before native application compilation on two test-fixture defects, not a
+proven application crash. The Windows profile-lock fixture passed an invalid null
+backup path to `File.Replace`; subsequent junction cleanup could mask an earlier
+exception. The AIS collector fixture attempted POSIX unlink while its emulated
+Windows handles remained open. Product safety code and failure assertions are
+unchanged; original failed evidence is retained.
+
+Focused replacements pass on both platforms: [profile preservation](https://github.com/ThereptileII/Work/actions/runs/38385062815)
+on helper `4c2eb2705bc2ac13297b9267aa0eab4bf6da3242`, including actual disposable
+Windows closed-session transactions and interruptions, and [AIS collector](https://github.com/ThereptileII/Work/actions/runs/38384993606)
+on helper/workflow `bc328e191986ddb40cd828dafd714e35f8778ea5`, **23 cases per platform**.
+Downloaded original evidence artifacts match GitHub SHA-256 digests. SCRUM-370
+closes only this collector fixture defect.
+
+After owner HTTPS activation, private tailnet Serve and the pinned origin return
+certificate-checked HTTP 200 with the exact original 1577-byte root from Linux
+and the actual boat Windows PC. This supersedes earlier pending transport notes
+below. No public Funnel or remote-access changes were made. The boat application,
+profile and hardware are untouched. Transport and component passes do not qualify
+installed no-update/Later/Now/offline behavior, full uninstall, or a replacement
+application package. The reviewed fixture fixes are integrated for one replacement
+B0 request; design review and endurance remain off. [Exact focused evidence](evidence/scrum311-native-prerequisites-20261013/focused-results.json).
 
 ## Fresh same-commit Windows and Linux updater component gates pass
 

@@ -1,0 +1,123 @@
+{
+  "schema": 1,
+  "scope": "Focused native test fixture repairs and private HTTPS transport only; not application or installed updater acceptance",
+  "integratedHelperCommitBeforeEvidence": "89c92ebf4f361edee621c15ed69012d4433d4ce8",
+  "originalFailedProductRun": 38382520660,
+  "originalProductCommit": "4966e8ad47da13f84bc6a341d4fbd1ef01dec0b8",
+  "fixtureRuns": [
+    {
+      "run": 38385062815,
+      "url": "https://github.com/ThereptileII/Work/actions/runs/38385062815",
+      "commit": "4c2eb2705bc2ac13297b9267aa0eab4bf6da3242",
+      "conclusion": "success",
+      "jobs": [
+        {
+          "name": "preservation (ubuntu-24.04)",
+          "conclusion": "success"
+        },
+        {
+          "name": "preservation (windows-2022)",
+          "conclusion": "success"
+        }
+      ],
+      "artifacts": [
+        {
+          "id": 11805037169,
+          "name": "session-preservation-ubuntu-24.04-4c2eb2705bc2ac13297b9267aa0eab4bf6da3242",
+          "apiSha256": "b909d3fa5399e1a0ed69dedd389b2c0decc0f24c89947bbfb4775759f22fa2f3",
+          "downloadedAndVerified": true,
+          "logs": [
+            {
+              "name": "baseline-adoption.log",
+              "bytes": 8730,
+              "sha256": "11c4a406519c6331cacb51e45a6c0eab6a215b4bffbf1dd4850febbb3285d4f3"
+            },
+            {
+              "name": "session-preservation.log",
+              "bytes": 5168,
+              "sha256": "a2acd0776eabe3b2b3bb8aafc138384294ed1ee5013835c70af13cd437e3ee08"
+            }
+          ]
+        },
+        {
+          "id": 11804977681,
+          "name": "session-preservation-windows-2022-4c2eb2705bc2ac13297b9267aa0eab4bf6da3242",
+          "apiSha256": "156bc8754c8ecd08d7161789d85411479cb90c5a9d11c7081d2d86c32c380bfa",
+          "downloadedAndVerified": true,
+          "logs": [
+            {
+              "name": "baseline-adoption.log",
+              "bytes": 28966,
+              "sha256": "fa9791be15aa4e93b707159394442e2eee063c2a6ab12a9c04d16559fc362083"
+            },
+            {
+              "name": "session-preservation.log",
+              "bytes": 6572,
+              "sha256": "432f2df9b884f9cbeb3f9781ecbb195d2fedbf4f69bfe8a73e2ed918bb1b7a7b"
+            },
+            {
+              "name": "transaction.log",
+              "bytes": 5692,
+              "sha256": "2535a0c066c793ce3796203e9a5e71a5be46b57c2782366e1ca1516334469a79"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "run": 38384993606,
+      "url": "https://github.com/ThereptileII/Work/actions/runs/38384993606",
+      "commit": "bc328e191986ddb40cd828dafd714e35f8778ea5",
+      "conclusion": "success",
+      "jobs": [
+        {
+          "name": "collector (windows-2022)",
+          "conclusion": "success"
+        },
+        {
+          "name": "collector (ubuntu-24.04)",
+          "conclusion": "success"
+        }
+      ],
+      "artifacts": [
+        {
+          "id": 11805066561,
+          "name": "collector-fixture-windows-2022-bc328e191986ddb40cd828dafd714e35f8778ea5",
+          "apiSha256": "9ab71a17be41be6a3ba3952e69d049f3b020c5076e10d2e8120af020f0b3ee35",
+          "downloadedAndVerified": true,
+          "logs": [
+            {
+              "name": "collector.log",
+              "bytes": 3546,
+              "sha256": "40b47ec97c0f8ea7c51531fff76a44a97d24cfc9e12319638e3a6879510c9bdb"
+            }
+          ]
+        },
+        {
+          "id": 11804544262,
+          "name": "collector-fixture-ubuntu-24.04-bc328e191986ddb40cd828dafd714e35f8778ea5",
+          "apiSha256": "d8554bbf49f6485deb37679ba73eeda2a3169d23d4c62d03cd1c6a36c3d5e390",
+          "downloadedAndVerified": true,
+          "logs": [
+            {
+              "name": "collector.log",
+              "bytes": 3518,
+              "sha256": "78fc4664b41a85aceab6a499ac060a1c901173efe771a2929ddcae18a6fc0882"
+            }
+          ]
+        }
+      ],
+      "casesPassedPerPlatform": 23
+    }
+  ],
+  "privateHttps": {
+    "url": "https://omarchy.tail5878fc.ts.net",
+    "linux": "strict pinned preflight passed",
+    "boatWindows": "read-only HttpClient direct certificate-checked HTTPS passed",
+    "httpStatus": 200,
+    "rootBytes": 1577,
+    "rootSha256": "a041ec78891a5e3d8896385ed939b691a32ed0ec11e291fb25de773754515d57",
+    "configSha256": "4cd61f55731732a06c4e303506f29bc5f46d8bde9c296ae76680d2dee4d27826",
+    "scope": "transport only; no app/profile/control changes"
+  }
+}
