@@ -1,6 +1,6 @@
 # SKAGER status — 2026-10-13
 
-## Native shortcut restoration passes; remaining candidate prerequisites in progress
+## Reviewed prerequisites integrated for one trust-enabled Staging candidate
 
 The original-shortcut restoration, explicit decommission CLI and protected
 registration identity correction pass exact focused run
@@ -22,12 +22,25 @@ legacy refusal, clean-sibling masking refusal, benign first mapping and custody
 through unload pass; this is component evidence, not full SCRUM-209 acceptance.
 The separate resource-only job was conditionally skipped.
 [Authenticated results and remaining scope](evidence/scrum209-libdirs-native-20261013/results.json).
-The existing same-version installer mechanics still need to validate the exact
-trust-enabled package without mistaking it for protected updater acceptance.
-The protected installed-updater driver also needs to observe the real ProgramData
-profile and its initialized navigation store. Full product and boat gates remain
-open. In parallel, the private website's Supabase function-prefix routing defect
-is being repaired; live login/payment acceptance remains open.
+The same-version installer helper correction is integrated as `18d89c2a`, after
+8 focused trust checks, 27 completion checks and independent source review. It
+verifies Lifecycle's intentional trust initialization and retained identity;
+the initial incorrect uninitialized-state assumption was caught before a build.
+It retains all startup/update/corruption-recovery checks and explicitly leaves
+protected B0/B1 acceptance pending. One combined private-trust Staging build is
+selected with design and extended tests off. Full product and boat gates remain
+open. The separate protected driver ProgramData/navigation-store observation
+repair continues without delaying application compilation.
+
+The private origin now runs as a pinned user service with verified automatic
+failure recovery. Local and actual boat certificate-checked HTTPS responses
+match the original public root; no boat app/profile/hardware changes were made.
+[Origin service observations](evidence/scrum311-origin-service-20261013/results.json).
+The separate web routing correction at `0e1ce6b3` passes
+[CI 38439045828](https://github.com/ThereptileII/Work/actions/runs/38439045828)
+(88 Django and 42 Edge tests). Provider access, deployment and live login/payment
+acceptance remain pending; the user's private-beta configuration approval is
+recorded in Jira and does not open public access.
 
 ## SDK consumer verification passes; plugin closure correction in progress
 
