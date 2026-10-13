@@ -1,5 +1,27 @@
 # SKAGER status — 2026-10-13
 
+## Native shortcut restoration passes; remaining candidate prerequisites in progress
+
+The original-shortcut restoration, explicit decommission CLI and protected
+registration identity correction pass exact focused run
+[38438377758](https://github.com/ThereptileII/Work/actions/runs/38438377758)
+at `4843113c492792442f67296146db5669541990ad` on Linux and native Win32 Windows.
+The earlier native run `38437716546` exposed an actual Win32 rename-wrapper
+refusal. The correction uses the documented native retained-directory operation;
+the same move, collision, custody and partial-failure controls now execute and
+pass. [Original failure and replacement evidence](evidence/scrum27-native-restoration-20261013/results.json).
+This is component acceptance, not a completed installed repair/uninstall or
+private-channel B0/B1 exercise.
+
+Two source-backed prerequisites are being corrected before another full app
+build: include the actual OpenCPN plugin search roots in declared-dependency
+inspection, and let the existing same-version installer mechanics validate the
+exact trust-enabled package without mistaking it for protected updater acceptance.
+The protected installed-updater driver also needs to observe the real ProgramData
+profile and its initialized navigation store. Full product and boat gates remain
+open. In parallel, the private website's Supabase function-prefix routing defect
+is being repaired; live login/payment acceptance remains open.
+
 ## SDK consumer verification passes; plugin closure correction in progress
 
 The full replacement run [38386718400](https://github.com/ThereptileII/Work/actions/runs/38386718400)
@@ -23,8 +45,8 @@ at `e27f60cd`: 55 loader groups, 17,602 forwarder checks and 278 byte-policy che
 All 27 source identities and the downloaded artifact digest/CRC are verified.
 [Original receipts and scope](evidence/scrum209-two-root-native-20261013/README.md).
 Broader loader and integrated product qualification remain open.
-The separately reviewed post-publication shortcut binding is integrated; actual
-protected restoration, repair and full uninstall remain open. No Jira product
+The separately reviewed post-publication shortcut binding and native restoration
+are integrated and component-tested as recorded above; installed repair and full uninstall remain open. No Jira product
 issue is closed by these component results; boat, design and endurance tests
 have not been started for this increment.
 
