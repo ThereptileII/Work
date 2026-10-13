@@ -34,7 +34,10 @@ Add-Type -Path $Source
 try {
   $owner=[OpenNavX.CommissioningProfileLock]::Acquire($Profile)
   if ($Ready) {
-    [IO.File]::WriteAllText($Ready,$owner.Identity)
+    # Publish only after the private writer closes; the parent polls this name.
+    $pending=$Ready+'.pending'
+    [IO.File]::WriteAllText($pending,$owner.Identity)
+    [IO.File]::Move($pending,$Ready)
     $until=[DateTime]::UtcNow.AddSeconds(20)
     while(-not [IO.File]::Exists($ExitGate)) {
       if ([DateTime]::UtcNow -ge $until) {throw 'Inert fixture release gate expired.'}
