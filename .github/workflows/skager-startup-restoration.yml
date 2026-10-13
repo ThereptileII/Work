@@ -1,0 +1,62 @@
+name: SKAGER protected startup restoration guards
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  startup-restoration:
+    name: Startup publication and restoration (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            arch: amd64
+          - os: windows-2022
+            arch: '386'
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 8
+    env:
+      GOARCH: ${{ matrix.arch }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+        with:
+          go-version-file: opennav-x/tools/update-verifier/go.mod
+          cache-dependency-path: opennav-x/tools/update-verifier/go.sum
+      - name: Exercise original publication, native moves and decommission ordering
+        working-directory: opennav-x/tools/update-verifier
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p ../../build/startup-restoration
+          go test -count=1 -json ./brokerenroll -run 'Test.*(Startup|Binding|Decommission|Restoration)' | tee ../../build/startup-restoration/tests.json
+      - name: Require actual execution of the selected binding controls
+        shell: python
+        run: |
+          import json, os
+          from pathlib import Path
+          events = [json.loads(line) for line in Path('opennav-x/build/startup-restoration/tests.json').read_text().splitlines()]
+          passed = {event.get('Test') for event in events if event.get('Action') == 'pass'}
+          required = {'TestApprovedStartupPublicationRequiresIndependentExactBinding',
+                      'TestApprovedStartupPublicationRejectsSubstitutedOrPartialObjects'}
+          if os.environ['RUNNER_OS'] == 'Windows':
+              required |= {'TestNativeCompletedBindingAfterThreeMoves',
+                           'TestNativeBindingRecordsExistingMenuDescriptor',
+                           'TestNativeBindingFailureRetainsMovedEvidence',
+                           'TestNativeBindingDoesNotAdoptExistingCompletionName'}
+          if required - passed:
+              raise SystemExit('Required binding checks did not execute successfully: ' + ', '.join(sorted(required - passed)))
+      - name: Verify exact broker source closure
+        shell: python
+        run: |
+          import subprocess, sys
+          subprocess.run([sys.executable, 'opennav-x/tools/test-broker-package.py'], check=True, timeout=60)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: startup-restoration-${{ runner.os }}-${{ github.sha }}-run${{ github.run_id }}-attempt${{ github.run_attempt }}
+          path: opennav-x/build/startup-restoration
+          if-no-files-found: error
