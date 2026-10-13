@@ -105,7 +105,11 @@ try {
   $junction=Join-Path $root 'redirected'
   $null=New-Item -ItemType Junction -Path $junction -Target $profile
   Refuse {Open-CommissioningProfileLock $junction} 'Reparse profile ancestry is refused'
-  Remove-Item -LiteralPath $junction;$junction=$null
+  [IO.Directory]::Delete($junction)
+  Require ((-not [IO.Directory]::Exists($junction)) -and
+           [IO.Directory]::Exists($profile) -and
+           [Convert]::ToBase64String([IO.File]::ReadAllBytes($ini)) -ceq [Convert]::ToBase64String($bytes)) 'Removing fixture junction leaves original profile intact'
+  $junction=$null
   foreach($path in @('relative',('\\server\share\profile'),($profile+'\..\profile'),($profile+':stream'),($profile+'.'),(Join-Path $root 'missing'))) {
     Refuse {Open-CommissioningProfileLock $path} 'Missing, remote or ambiguous profile directory is refused'
   }
@@ -129,6 +133,6 @@ try {
     Close-InertChild $abandoned
   }
   if($drive){& $subst $drive /d}
-  if($junction -and [IO.Directory]::Exists($junction)){Remove-Item -LiteralPath $junction}
+  if($junction -and [IO.Directory]::Exists($junction)){[IO.Directory]::Delete($junction)}
   Remove-Item -LiteralPath $root -Recurse -Force
 }
