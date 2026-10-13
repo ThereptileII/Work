@@ -65,8 +65,37 @@ The source requires Checkout Sessions write/read plus Promotion Codes, Prices,
 Coupons and Charges read; no Product read call or refund/capture/write-management
 API is used. Stripe [restricted keys](https://docs.stripe.com/keys) use `rk_test_`
 in sandbox mode. A separate product or endpoint in a shared sandbox does not
-isolate unrelated refund-event ingestion. Keep checkout disabled until dedicated
+isolate unrelated provider event delivery. Keep checkout disabled until dedicated
 scope, actual key permissions and live TEST flows are verified.
+
+Before `commerce_receive_event`, every checkout event must match the existing
+immutable local order/session binding. Signature, event version, TEST mode and
+structural fields are checked first. A canonical order reference triggers the
+binding read before inspecting SKAGER metadata or money terms. SQL `rejected`
+means **unowned-or-mismatched**: the event is ignored with 200 and no receipt or
+effect. Pending, malformed or failing binding reads retry with 503 and no write.
+A structurally valid session without a canonical order reference is excluded
+because SKAGER's creator always supplies one; metadata alone never grants
+ownership. Once bound, the strict SKAGER identity/money checks still apply, and
+altered own metadata retries rather than being silently discarded. Completion
+uses the original bound price and completes its provider checks before ingestion.
+
+Refund ownership starts with an authenticated Charge retrieval, followed by the
+documented [Checkout Session PaymentIntent filter](https://docs.stripe.com/api/checkout/sessions/list?api-version=2026-09-30.endive&query=payment_intent)
+using that exact intent and `limit=2`. The result must be one unambiguous TEST
+payment session with matching intent, paid amount and currency, then match its
+immutable local binding and SKAGER metadata. Empty, multiple or paginated
+results, provider errors and pending bindings retry without inserting a receipt
+or refund marker, preserving refund-before-completion retries. After preflight,
+the existing atomic SQL refund marker, receipt deduplication and effect functions
+remain unchanged; write-RPC retries retain their original idempotency boundary.
+
+This filters persistent SKAGER application receipts and effects. It does not
+isolate Stripe's account-wide webhook transport: unrelated TEST payloads can
+still reach the Supabase handler before being discarded, and no raw payload is
+logged. It neither authorizes configuring a shared webhook nor closes the
+separate provider configuration/consent, dedicated-scope or live acceptance gates.
+Keep the candidate's checkout flag off pending that review.
 
 `commerce.sql` creates private orders, immutable session bindings, webhook
 receipts, settlements, refund markers, entitlements, and append-only effects

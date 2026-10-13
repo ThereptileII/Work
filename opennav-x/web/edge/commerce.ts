@@ -298,6 +298,35 @@ function constantEqual(left: Uint8Array, right: Uint8Array): boolean {
 }
 const hex = (bytes: ArrayBuffer): string => [...new Uint8Array(bytes)].map(value => value.toString(16).padStart(2, '0')).join('');
 
+function structuralSession(item: Json): void {
+  requireValue(item.object === 'checkout.session' && item.livemode === false && SESSION.test(item.id)
+    && ['payment', 'setup', 'subscription'].includes(item.mode)
+    && (item.client_reference_id === null || typeof item.client_reference_id === 'string')
+    && (item.metadata === null || object(item.metadata))
+    && (item.currency === null || (typeof item.currency === 'string' && /^[a-z]{3}$/.test(item.currency)))
+    && (item.amount_subtotal === null || (integer(item.amount_subtotal) && item.amount_subtotal >= 0))
+    && (item.amount_total === null || (integer(item.amount_total) && item.amount_total >= 0))
+    && ['open', 'complete', 'expired'].includes(item.status)
+    && ['paid', 'unpaid', 'no_payment_required'].includes(item.payment_status)
+    && (item.payment_intent === null || (typeof item.payment_intent === 'string' && INTENT.test(item.payment_intent))));
+}
+
+async function existingBinding(ctx: CommerceContext, session: Json): Promise<Json | null> {
+  // Our creator always supplies a canonical order UUID. A session without one
+  // cannot be ours. Metadata and current price never establish ownership.
+  if (typeof session.client_reference_id !== 'string' || !UUID.test(session.client_reference_id)) return null;
+  const binding = await ctx.rpc('commerce_checkout_binding', {
+    p_order_id: session.client_reference_id, p_session_id: session.id,
+  });
+  requireValue(object(binding));
+  // SQL deliberately does not distinguish absent orders from mismatched sessions.
+  // Both are ineligible; neither result authorizes an event receipt or effect.
+  if (binding.state === 'rejected') return null;
+  requireValue(binding.state === 'bound' && typeof binding.price_id === 'string'
+    && /^price_[A-Za-z0-9]{8,128}$/.test(binding.price_id));
+  return binding;
+}
+
 export async function verifiedEvent(raw: Uint8Array, header: string, secret: string, now: number): Promise<Json> {
   requireValue(raw.length > 0 && raw.length <= MAX_WEBHOOK_BYTES && /^[\x20-\x7e]{1,2048}$/.test(header));
   const parts = header.split(','); requireValue(parts.length <= 32);
@@ -325,10 +354,11 @@ export async function verifiedEvent(raw: Uint8Array, header: string, secret: str
   const item = event.data.object;
   if (event.type === 'charge.refunded') {
     requireValue(item.object === 'charge' && item.livemode === false && CHARGE.test(item.id)
-      && INTENT.test(item.payment_intent) && item.currency === 'usd' && item.paid === true
-      && integer(item.amount) && item.amount > 0 && item.amount <= 2000
+      && INTENT.test(item.payment_intent) && typeof item.currency === 'string'
+      && /^[a-z]{3}$/.test(item.currency) && item.paid === true
+      && integer(item.amount) && item.amount > 0
       && integer(item.amount_refunded) && item.amount_refunded > 0 && item.amount_refunded <= item.amount);
-  } else sessionIdentity(item);
+  } else structuralSession(item);
   return { event_id: event.id, event_type: event.type, created: event.created,
     digest: hex(await crypto.subtle.digest('SHA-256', raw)), object: item };
 }
@@ -344,34 +374,35 @@ async function webhook(req: Request, ctx: CommerceContext, config: Configuration
   } catch { return reply(400, { error: 'Webhook rejected' }); }
   const item = event.object;
   try {
-    const receipt = await ctx.rpc('commerce_receive_event', { p_event_id: event.event_id,
-      p_digest: event.digest, p_event_type: event.event_type, p_created: event.created,
-      p_reference: event.event_type === 'charge.refunded' ? item.id : item.client_reference_id,
-      p_provider_id: item.id });
-    if (receipt.state === 'conflict') return reply(400, { error: 'Webhook rejected' });
-    if (receipt.state !== 'received') return reply(200, { received: true });
+    let ownedSession = item;
+    let charge: Json | undefined;
     if (event.event_type === 'charge.refunded') {
-      const charge = await stripeRequest(ctx, config, `charges/${item.id}`, 'GET');
+      charge = await stripeRequest(ctx, config, `charges/${item.id}`, 'GET');
       requireValue(charge.object === 'charge' && charge.id === item.id && charge.livemode === false
-        && charge.payment_intent === item.payment_intent && charge.currency === 'usd' && charge.paid === true
+        && charge.payment_intent === item.payment_intent && charge.currency === item.currency && charge.paid === true
         && charge.amount === item.amount && integer(charge.amount_refunded)
         && charge.amount_refunded >= item.amount_refunded && charge.amount_refunded <= charge.amount);
-      await ctx.rpc('commerce_apply_refund', { p_event_id: event.event_id, p_digest: event.digest,
-        p_charge_id: charge.id, p_intent_id: charge.payment_intent, p_charged_minor: charge.amount,
-        p_refunded_minor: charge.amount_refunded });
-    } else if (event.event_type.endsWith('.expired') || event.event_type.endsWith('.async_payment_failed')) {
-      await ctx.rpc('commerce_close_checkout', { p_event_id: event.event_id, p_digest: event.digest,
-        p_order_id: item.client_reference_id, p_session_id: item.id });
-    } else if (item.status !== 'complete' || !['paid', 'no_payment_required'].includes(item.payment_status)) {
-      await ctx.rpc('commerce_reject_event', { p_event_id: event.event_id, p_digest: event.digest });
-    } else {
-      const binding = await ctx.rpc('commerce_checkout_binding', { p_order_id: item.client_reference_id,
-        p_session_id: item.id });
-      if (binding.state === 'pending') return reply(503, { error: 'Confirmation pending' });
-      if (binding.state !== 'bound') {
-        await ctx.rpc('commerce_reject_event', { p_event_id: event.event_id, p_digest: event.digest });
-        return reply(200, { received: true });
-      }
+      // Stripe's documented PaymentIntent filter links a charge to its session.
+      // Empty/ambiguous results can be a provider visibility race: retry, no writes.
+      const query = new URLSearchParams({ payment_intent: charge.payment_intent, limit: '2' });
+      const sessions = await stripeRequest(ctx, config, `checkout/sessions?${query}`, 'GET');
+      requireValue(sessions.object === 'list' && sessions.has_more === false
+        && Array.isArray(sessions.data) && sessions.data.length === 1 && object(sessions.data[0]));
+      ownedSession = sessions.data[0];
+      structuralSession(ownedSession);
+      requireValue(ownedSession.mode === 'payment' && ownedSession.status === 'complete'
+        && ownedSession.payment_status === 'paid' && ownedSession.payment_intent === charge.payment_intent
+        && ownedSession.amount_total === charge.amount && ownedSession.currency === charge.currency);
+    }
+    const binding = await existingBinding(ctx, ownedSession);
+    if (!binding) return reply(200, { received: true });
+    // Known owned sessions retain the strict SKAGER identity/money contract.
+    // Corrupted own metadata is retryable, never silently classified as foreign.
+    sessionIdentity(ownedSession);
+    let confirmed: Json | undefined;
+    if (event.event_type !== 'charge.refunded' && !event.event_type.endsWith('.expired')
+      && !event.event_type.endsWith('.async_payment_failed') && item.status === 'complete'
+      && ['paid', 'no_payment_required'].includes(item.payment_status)) {
       const boundConfig = { ...config, price: binding.price_id,
         coupons: binding.selected_coupon_id ? [binding.selected_coupon_id] : [],
         selectedPromotion: binding.promotion_id };
@@ -390,10 +421,30 @@ async function webhook(req: Request, ctx: CommerceContext, config: Configuration
         requireValue(coupon);
         couponEvidence = coupon!;
       }
-      const confirmed = confirmedCheckout(session, boundConfig, item.client_reference_id, item.id, couponEvidence);
+      confirmed = confirmedCheckout(session, boundConfig, ownedSession.client_reference_id, ownedSession.id, couponEvidence);
       requireValue(confirmed.total_minor === item.amount_total && confirmed.payment_status === item.payment_status);
+    }
+    // No receipt is attempted until ownership and all required provider reads
+    // have succeeded. Original SQL remains the atomic/idempotent effect boundary.
+    const receipt = await ctx.rpc('commerce_receive_event', { p_event_id: event.event_id,
+      p_digest: event.digest, p_event_type: event.event_type, p_created: event.created,
+      p_reference: event.event_type === 'charge.refunded' ? item.id : item.client_reference_id,
+      p_provider_id: item.id });
+    if (receipt.state === 'conflict') return reply(400, { error: 'Webhook rejected' });
+    if (receipt.state === 'applied' || receipt.state === 'rejected') return reply(200, { received: true });
+    requireValue(receipt.state === 'received');
+    if (charge) {
+      await ctx.rpc('commerce_apply_refund', { p_event_id: event.event_id, p_digest: event.digest,
+        p_charge_id: charge.id, p_intent_id: charge.payment_intent, p_charged_minor: charge.amount,
+        p_refunded_minor: charge.amount_refunded });
+    } else if (event.event_type.endsWith('.expired') || event.event_type.endsWith('.async_payment_failed')) {
+      await ctx.rpc('commerce_close_checkout', { p_event_id: event.event_id, p_digest: event.digest,
+        p_order_id: item.client_reference_id, p_session_id: item.id });
+    } else if (confirmed) {
       await ctx.rpc('commerce_apply_checkout', { p_event_id: event.event_id, p_digest: event.digest,
         p_checkout: confirmed });
+    } else {
+      await ctx.rpc('commerce_reject_event', { p_event_id: event.event_id, p_digest: event.digest });
     }
     return reply(200, { received: true });
   } catch { return reply(503, { error: 'Confirmation pending' }); }
