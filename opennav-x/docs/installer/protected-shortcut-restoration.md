@@ -52,6 +52,14 @@ is rebound only after our own successful rename to account for NTFS tunneling.
 No original normal backup means all three protected links are retired without
 creating a replacement normal shortcut. Unrelated menu entries remain untouched.
 
+The move uses `NtSetInformationFile(FileRenameInformation)` with the retained
+destination directory and a fixed relative filename, following Microsoft's
+[native rename contract](https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/ns-ntifs-_file_rename_information).
+The earlier Win32-wrapper form returned `ERROR_INVALID_PARAMETER` on the real
+Win32 Windows Server 2022 gate [38437716546](https://github.com/ThereptileII/Work/actions/runs/38437716546).
+That failed evidence remains preserved; replacing the call does not relax
+non-replacement, original-handle custody or partial-failure checks.
+
 Restoration completes before service disable, STOP and deletion marking, while
 the original broker witness is still live. The restored/retired objects remain
 under native custody and are rechecked before service deletion marking. Failed

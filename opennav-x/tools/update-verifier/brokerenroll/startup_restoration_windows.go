@@ -277,10 +277,12 @@ func (n *nativeStartupRestoration) preflight(ctx context.Context) error {
 	return n.check(ctx)
 }
 
-// FILE_RENAME_INFO is architecture-aligned on both Win32 and Win64. A zero
+// FILE_RENAME_INFORMATION is architecture-aligned on both Win32 and Win64. A zero
 // ReplaceIfExists field guarantees collision refusal. RootDirectory is the
 // original retained destination directory and FileName is one fixed component.
-// https://learn.microsoft.com/en-us/windows/win32/api/winbase/ns-winbase-file_rename_info
+// Use the native relative-directory operation: the Win32 rename wrapper refused
+// this retained-root form with ERROR_INVALID_PARAMETER on Windows Server 2022.
+// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/ns-ntifs-_file_rename_information
 func startupRenameRestorationFile(ctx context.Context, file *startupRestorationFile, destination *enrollmentPin, name, sha string) error {
 	if file == nil || file.pin == nil || destination == nil || ctx == nil {
 		return errors.New("original handle rename custody required")
@@ -306,14 +308,15 @@ func startupRenameRestorationFile(ctx context.Context, file *startupRestorationF
 		FileName        [1]uint16
 	}
 	offset := unsafe.Offsetof(renameInfo{}.FileName)
-	buffer := make([]byte, int(offset)+len(component)*2)
+	buffer := make([]byte, int(unsafe.Sizeof(renameInfo{}))+len(component)*2)
 	header := (*renameInfo)(unsafe.Pointer(&buffer[0]))
 	header.RootDirectory, header.FileNameLength = destination.handle, uint32(len(component)*2)
 	copy(unsafe.Slice((*uint16)(unsafe.Pointer(&buffer[offset])), len(component)), component)
 	if err := ctx.Err(); err != nil {
 		return err
 	}
-	if err := windows.SetFileInformationByHandle(file.pin.handle, windows.FileRenameInfo, &buffer[0], uint32(len(buffer))); err != nil {
+	var status windows.IO_STATUS_BLOCK
+	if err := windows.NtSetInformationFile(file.pin.handle, &status, &buffer[0], uint32(len(buffer)), windows.FileRenameInformation); err != nil {
 		return err
 	}
 	// Only our successful rename may rebind the original handle's path/creation.
