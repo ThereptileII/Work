@@ -1,26 +1,38 @@
 # SKAGER status — 2026-10-13
 
-## B0 failure preserved; native capture helper passes; replacement Staging pending
+## Windows compiled checks pass; SDK capture blocks packaging
 
-Original B0 [run 38442801510](https://github.com/ThereptileII/Work/actions/runs/38442801510)
-at `2c613690` remains failed after successful fixture-free compilation: the plugin
-SDK retention helper refused `dumpbin.exe` before hashing it. Its diagnostic
-compiled archive is unpackaged/unqualified and has no supported restore path;
-the plugin artifact contains only the failure log and cannot feed retained qualification.
+Frozen [Staging run 38455915079](https://github.com/ThereptileII/Work/actions/runs/38455915079)
+at `cd8a76e7d0e2a1ab62e1277606e9ccdb4d9d6495` is **failed**, after successful
+fixture and fixture-free Windows compilation/security/unit steps: the same
+**146 tests** pass in both builds, zero failures or skips. The plugin SDK capture
+then refused the legitimate wx include `wx/arrimpl.cpp`. Packaging and installed
+qualification were not reached. Linux at the same commit passes 154 CTest entries
+in each build; this does not qualify the missing Windows package.
 
-The first native helper run `38454485025` remains failed on four fixture assertions.
-Corrected run `38454852384` passed 32 tests with two existing case-sensitive skips;
-latest [38455446291](https://github.com/ThereptileII/Work/actions/runs/38455446291)
-at `cd8a76e7` passed 35 with the same two skips and an actual native metadata probe.
-Its downloaded artifact digest/length and ZIP CRC are verified. The later system
-WLDAP32 dependency allowlist keeps local-shadow rejection. These are scoped helper
-results, not product acceptance. [Preserved evidence](evidence/scrum209-plugin-capture-20261013/results.json).
+The complete locked wx headers/Dev archive inspection also identified
+`listimpl.cpp`, `thrimpl.cpp` and selected `mswu/build.cfg`. Integrated correction
+`575898e1` permits only those four exact per-root paths, retaining their hashes
+and all existing identity/mutation/size controls. Linux passes 39 capture plus
+30 runner checks; actual 1,509-file include and three-file setup trees pass.
+[Focused native run 38466239261](https://github.com/ThereptileII/Work/actions/runs/38466239261)
+is pending. No replacement full application build has been requested for this fix.
 
-One replacement private-trust [Staging run 38455915079](https://github.com/ThereptileII/Work/actions/runs/38455915079)
-is pending at exact `cd8a76e7d0e2a1ab62e1277606e9ccdb4d9d6495`, with extended and
-design tests off. Runtime retirement inputs changed from B0; the original compiled
-archive cannot substitute for this build. Installed B0/B1, full Lifecycle and boat
-acceptance remain open. Earlier blocks below retain their historical state.
+Original failed B0 `38442801510` and all subsequent failed observations remain
+preserved. Both diagnostic compiled archives lack the SDK/control custody and
+supported restore path required for qualification; re-fetching pinned archives
+cannot be relabelled as the original captured SDK. [Exact evidence](evidence/scrum209-plugin-capture-20261013/results.json).
+Installed B0/B1, complete uninstall/repair, release and boat acceptance remain open.
+
+The independently reviewed baseline uninstall join is integrated at `8a706e80`:
+retain original startup custody before retirement, authenticate the same moved
+objects, then restore shortcuts before service removal. Its first focused native
+[run 38465784927](https://github.com/ThereptileII/Work/actions/runs/38465784927)
+passes Linux but fails Windows; original failure is under investigation. No
+installed acceptance is inferred. The explicit workflow required-name patch is
+retained locally at `db355047` pending workflow-edit permission; unchanged existing
+selection already runs the new cases and their actual events remain mandatory.
+Earlier entries below preserve their historical state.
 
 ## Protected retirement component passes; frozen application candidate continues
 

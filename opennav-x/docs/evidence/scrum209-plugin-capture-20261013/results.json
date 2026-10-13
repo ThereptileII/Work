@@ -476,7 +476,7 @@
     "attempt": 1,
     "sourceCommit": "cd8a76e7d0e2a1ab62e1277606e9ccdb4d9d6495",
     "url": "https://github.com/ThereptileII/Work/actions/runs/38455915079",
-    "statusAtEvidenceUpdate": "pending",
+    "statusAtEvidenceUpdate": "failure",
     "privateStagingTrust": true,
     "extendedTests": false,
     "designValidation": false,
@@ -580,6 +580,55 @@
         }
       ],
       "scope": "Same 154 CTest entries passed in both fixture and fixture-free Linux builds. This does not grant native Windows or installed/boat acceptance."
+    },
+    "failure": {
+      "jobId": 115506154676,
+      "step": "Retain exact plugin-download SDK inputs for no-rebuild qualification",
+      "message": "Unexpected SDK input type: build/integration-source/cache/wxWidgets-3.2.8/include/wx/arrimpl.cpp",
+      "artifactId": 11847718246,
+      "artifactBytes": 340,
+      "artifactSha256": "138e5c62af9215f68f39beede111ede97b226bef1a68770877ab4636307acf1a",
+      "zipCrc": "passed",
+      "inventoryCreated": false,
+      "runtimeCompileSteps": "both passed",
+      "qualification": "not run; no original successful SDK capture"
+    },
+    "nativeCompileEvidence": {
+      "artifactId": 11847343748,
+      "artifactSha256": "d0770cd7924e969e9c7b8b8305a5b087809830fb70065f41541d5ce0df8b2bb2",
+      "zipCrc": "passed",
+      "members": 18103,
+      "fixtureTests": {
+        "passed": 146,
+        "failed": 0,
+        "skipped": 0
+      },
+      "fixtureFreeTests": {
+        "passed": 146,
+        "failed": 0,
+        "skipped": 0
+      },
+      "scope": "same 146 entries exercised twice; no package/installed/boat acceptance"
+    },
+    "compiledRecovery": {
+      "artifactId": 11847738253,
+      "bytes": 427030551,
+      "sha256": "e75878e80eb476cae58bdb7cd530c7e3e5c4cd55b3bdb7d655e0516f00ac826b",
+      "innerSha256": "a03d1560b64758fa8849d986e30815aeb433083884fa1e080e1a7a9dec069109",
+      "zipCrc": "passed",
+      "restorableThroughExistingContract": false,
+      "reason": "Original wx SDK cache and production CMake selection controls not retained; original SDK capture failed; no supported diagnostic archive restore/qualification path"
     }
+  },
+  "pinnedWxCaptureCorrection": {
+    "commit": "575898e1",
+    "isolatedCommit": "a8aeca9992c9535931da6642af185e5c76968a11",
+    "scope": "Exact per-root wx implementation includes and selected build.cfg; broad suffix/mutation/identity controls unchanged",
+    "linuxCaptureTests": 39,
+    "linuxRunnerTests": 30,
+    "realPinnedArchiveIncludeFiles": 1509,
+    "realPinnedArchiveMswuFiles": 3,
+    "nativeRunId": 38466239261,
+    "nativeStatus": "pending"
   }
 }
