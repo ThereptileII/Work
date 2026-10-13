@@ -1,6 +1,19 @@
 # SKAGER status — 2026-10-13
 
-## Private website proxy and Stripe source repaired; live account/checkout gates pending
+Newest packaged web source `662c62478ded1ea75f5646b984d5670cda36525a` passes
+[web CI 38460214097](https://github.com/ThereptileII/Work/actions/runs/38460214097):
+**157 tests** (88 Django/PostgreSQL and 69 Edge), no failures or reported skips,
+plus disposable SQL/migration checks. Downloaded original evidence matches
+GitHub's digest/length and all ten ZIP CRCs. Independently reviewed ownership
+filtering precedes webhook ingestion; SQL is unchanged. The retained backend is
+**packaged, not deployed**: live Supabase remains `251c88be` / `09728b90…`, and
+the frontend is byte-identical to Cloudflare `e18a9fb4`. Auth/checkout/portal stay
+OFF. Credentials/SMTP, specific provider consent/configuration and live TEST
+qualification remain pending; shared Stripe payloads can still reach the handler
+before discard. No account/payment/end-to-end or public launch acceptance is
+inferred. [Exact evidence and remaining gates](evidence/web-provider-20261013/README.md).
+
+## Earlier deployed checkpoint: private website proxy and Stripe source repaired; live account/checkout gates pending
 
 Source `251c88bed6063fe5212339df73caa81c48cb931f` passes
 [web-only CI 38457534904](https://github.com/ThereptileII/Work/actions/runs/38457534904)

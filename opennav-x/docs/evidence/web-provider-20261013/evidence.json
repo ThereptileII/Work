@@ -120,7 +120,8 @@
     "isolatedStripeTestScope": "required before webhook configuration; current scope contains unrelated products",
     "restrictedTestKeysAndCouponProviderSchema": "corrected and deployed in commerceCorrection; live provider qualification pending",
     "liveCheckoutPaymentAndDownload": "not tested",
-    "publicSignupPaymentAndDownloads": "closed"
+    "publicSignupPaymentAndDownloads": "closed",
+    "webhookOwnershipFilter": "source reviewed and CI passed in webhookOwnershipCandidate; packaged but not deployed; provider transport/consent and live acceptance remain open"
   },
   "proxyCorrection": {
     "sourceCommit": "839ea17f76dc631b46a4a70d9b164e1f70d26b69",
@@ -210,5 +211,89 @@
     "realLoginOrCheckoutPassed": false,
     "dedicatedStripeSandbox": "create/manage controls disabled; no live activation or unrelated product changes",
     "sharedSandboxFilter": "read-only design reviewed; not implemented or accepted"
+  },
+  "webhookOwnershipCandidate": {
+    "issue": "SCRUM-36",
+    "sourceCommit": "662c62478ded1ea75f5646b984d5670cda36525a",
+    "integratedImplementationCommits": [
+      "cff85841",
+      "662c62478ded1ea75f5646b984d5670cda36525a"
+    ],
+    "independentReview": {
+      "conclusion": "passed",
+      "reviewedIsolatedCommits": [
+        "5eb5f0e06a8fc3b51fadaa2620865592bf7eafc7",
+        "0497c63ec560e1e22ddf269a65502a83292a4872"
+      ],
+      "scope": "pre-ingestion ownership, retry/no-write preflight, historical bound price and unchanged atomic SQL boundaries"
+    },
+    "ci": {
+      "run": "https://github.com/ThereptileII/Work/actions/runs/38460214097",
+      "runId": 38460214097,
+      "runAttempt": 1,
+      "workflow": ".github/workflows/skager-web.yml",
+      "headSha": "662c62478ded1ea75f5646b984d5670cda36525a",
+      "status": "completed",
+      "conclusion": "success",
+      "producerJobId": 115513126793,
+      "producerJobName": "postgres-integrity",
+      "producerJobConclusion": "success",
+      "artifactId": 11844724305,
+      "artifactName": "skager-web-postgresql-662c62478ded1ea75f5646b984d5670cda36525a",
+      "artifactBytes": 6086,
+      "artifactSha256": "a9d063db3d8d787191d1904fd18297fa630e7581c2151d611b655f604548e85e",
+      "githubDigestMatched": true,
+      "zipCrc": "all 10 members passed",
+      "artifactScope": "CI logs; candidate bundles are separately retained",
+      "djangoPassed": 88,
+      "edgePassed": 69,
+      "totalPassed": 157,
+      "failed": 0,
+      "skipped": 0,
+      "postgresSqlAndMigrations": "passed"
+    },
+    "behavior": {
+      "ownershipBeforeReceipt": true,
+      "completionProviderPreflightBeforeReceipt": true,
+      "checkoutBinding": "immutable local order/session; rejected means unowned-or-mismatched, ignored without receipt or effect",
+      "refundBinding": "authenticated Charge -> exact PaymentIntent-filtered unique TEST paid Checkout Session -> immutable local order/session binding",
+      "preflightUncertainty": "503 with no receipt/effect attempted; empty, multiple or paginated lookup is retryable",
+      "sqlChanged": false,
+      "atomicRefundFirstAndIdempotencyBoundary": "unchanged",
+      "providerTransportIsolated": false,
+      "unrelatedTestPayloadsCanReachHandler": true,
+      "rawPayloadLoggingAdded": false
+    },
+    "retainedPackage": {
+      "sourceCommit": "662c62478ded1ea75f5646b984d5670cda36525a",
+      "packaged": true,
+      "deployed": false,
+      "cloudflareFrontend": {
+        "sourceBytes": 492723,
+        "sourceSha256": "0a71e211d4cf3aca04162838abc1dccdffde3cb8c2a29d795f5dd9469a72aac2",
+        "byteIdenticalToDeployment": "e18a9fb4",
+        "redeployed": false
+      },
+      "supabaseEdge": {
+        "sourceBytes": 52899,
+        "sourceSha256": "345b14d49db6fb9a214a66e8294f4cbb0e8e5a0bb15c1f4cdd636bf8b61149dc",
+        "status": "packaged; not deployed"
+      }
+    },
+    "currentLiveSupabaseEdge": {
+      "sourceCommit": "251c88bed6063fe5212339df73caa81c48cb931f",
+      "sourceBytes": 50491,
+      "sourceSha256": "09728b9034eade3c3cae57b1021a28c47776c8d9f6303fd791b30c84c049898b",
+      "authority": "previous operator deployment/readback; no new provider action in this evidence follow-up"
+    },
+    "featureFlags": {
+      "auth": false,
+      "checkout": false,
+      "portal": false
+    },
+    "credentialHandoff": "pending",
+    "providerConsentAndConfiguration": "specific shared TEST event delivery still requires separate consent/configuration; dedicated scope and actual live qualification gates remain open",
+    "realAccountPaymentOrEndToEndAcceptance": false,
+    "publicSignupPaymentAndDownloads": "closed"
   }
 }
