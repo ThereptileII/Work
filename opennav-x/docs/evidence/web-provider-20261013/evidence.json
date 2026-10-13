@@ -118,7 +118,7 @@
     "credentials": "unset",
     "customSmtp": "required; owner choice pending",
     "isolatedStripeTestScope": "required before webhook configuration; current scope contains unrelated products",
-    "restrictedTestKeysAndCouponProviderSchema": "source correction selected SCRUM-36/37",
+    "restrictedTestKeysAndCouponProviderSchema": "corrected and deployed in commerceCorrection; live provider qualification pending",
     "liveCheckoutPaymentAndDownload": "not tested",
     "publicSignupPaymentAndDownloads": "closed"
   },
@@ -167,5 +167,48 @@
     "secretsEntered": false,
     "invitationEmailsEntered": false,
     "realLoginOrCheckoutPassed": false
+  },
+  "commerceCorrection": {
+    "sourceCommit": "251c88bed6063fe5212339df73caa81c48cb931f",
+    "ci": {
+      "run": "https://github.com/ThereptileII/Work/actions/runs/38457534904",
+      "conclusion": "success",
+      "artifactId": 11845055319,
+      "artifactBytes": 5638,
+      "artifactSha256": "69c4e40ccead4b3abb4da674cc50fea90848ee244d2b6faa2e8cbf228db783da",
+      "djangoPassed": 88,
+      "edgePassed": 59,
+      "failed": 0,
+      "skipped": 0,
+      "postgresSqlAndMigrations": "passed"
+    },
+    "independentReview": "completed; conflicting promotion-entry flag fixed before integration; live provider limitations retained",
+    "supabaseEdge": {
+      "sourceBytes": 50491,
+      "sourceSha256": "09728b9034eade3c3cae57b1021a28c47776c8d9f6303fd791b30c84c049898b",
+      "fullPredeployByteEquality": true,
+      "fullPostdeployCodeReadbackEquality": true,
+      "deploymentUi": "recent successful update; no opaque identifier exposed",
+      "legacyGatewayJwtRequired": false
+    },
+    "cloudflareFrontend": {
+      "unchanged": true,
+      "redeployed": false,
+      "deploymentIdentifier": "e18a9fb4",
+      "sourceSha256": "0a71e211d4cf3aca04162838abc1dccdffde3cb8c2a29d795f5dd9469a72aac2"
+    },
+    "sqlChanged": false,
+    "browserSessionStatus": 200,
+    "loginFormRendered": true,
+    "featureFlags": {
+      "auth": false,
+      "checkout": false,
+      "portal": false
+    },
+    "secretsEntered": false,
+    "invitationEmailsEntered": false,
+    "realLoginOrCheckoutPassed": false,
+    "dedicatedStripeSandbox": "create/manage controls disabled; no live activation or unrelated product changes",
+    "sharedSandboxFilter": "read-only design reviewed; not implemented or accepted"
   }
 }

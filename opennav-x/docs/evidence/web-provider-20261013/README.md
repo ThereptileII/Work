@@ -90,15 +90,55 @@ webhook secret, SMTP credential or friend email was entered. The empty invitatio
 allowlist continues to deny general access.
 
 Review before activating commerce found two source/provider mismatches: restricted
-TEST keys (`rk_test_`) are rejected by current source, and the pinned Stripe
+TEST keys (`rk_test_`) were rejected by that source, and the pinned Stripe
 PromotionCode schema differs from its test fixtures. The SKAGER-only coupon is
-also not yet supported by the current applicability check. These corrections are
-selected under SCRUM-36/37. The existing Stripe sandbox also serves unrelated
+also was not supported by that applicability check. These corrections were
+selected under SCRUM-36/37 and are addressed below. The existing Stripe sandbox also serves unrelated
 products, so no broad webhook was added: unrelated refund data could reach the
 unmatched-refund store despite entitlement ownership checks. Isolated test scope,
 credential setup, email delivery, real login, checkout, coupon reconciliation,
 refund, and cross-account portal acceptance remain pending. Configuration and
 source tests are not completed end-to-end acceptance.
+
+## Reviewed Stripe source correction deployed with access still closed
+
+Exact source `251c88bed6063fe5212339df73caa81c48cb931f` passes
+[web CI 38457534904](https://github.com/ThereptileII/Work/actions/runs/38457534904):
+88 Django/PostgreSQL and 59 Edge tests, no failures or skips, plus disposable
+SQL and migration checks. Downloaded artifact `11845055319` is 5,638 bytes,
+SHA-256 `69c4e40ccead4b3abb4da674cc50fea90848ee244d2b6faa2e8cbf228db783da`;
+length, digest and ZIP CRC match. An independent source review found the
+discount/`allow_promotion_codes=false` parameter conflict; the follow-up removes
+that parameter on discounted requests and tests both outgoing request forms.
+
+The correction accepts only restricted or ordinary TEST keys, authenticates the
+pinned PromotionCode relationship and the exact configured Price/product-scoped
+Coupon, and preserves settlement for a completed bound purchase after expiry,
+exhaustion or Price archival. Provider availability checks apply at creation;
+historical completed transactions are still validated against their immutable
+order/session/coupon binding. Live keys remain refused. SQL, webhook signatures,
+session/CSRF protections and entitlement idempotency are unchanged.
+
+The new 50,491-byte Supabase server bundle has SHA-256
+`09728b9034eade3c3cae57b1021a28c47776c8d9f6303fd791b30c84c049898b`.
+Its complete editor content matched before deployment; after the dashboard
+reported the recent successful update, reopening the Code tab and copying its
+complete content matched again. No opaque deployment ID was exposed by that
+view, so none is inferred. The approved legacy gateway JWT switch remains OFF.
+The frontend is byte-identical to the deployed `e18a9fb4` bundle; no redundant
+Worker deployment or SQL migration was performed. A fresh Chrome login reload
+renders the form and `/api/auth/session` returns HTTP 200.
+
+Auth, checkout and portal remain explicitly OFF. No credentials, authorized
+tester emails, invitations, Checkout sessions, payments or entitlements were
+created. The current Stripe sandbox's Create/Manage sandbox controls were
+disabled. An account-switch inspection reached live-account activation; no
+bank/legal/account fields were entered, and the tab was returned to TEST mode.
+The dedicated test scope gate remains: a possible shared-account filter would
+need authenticated PaymentIntent-to-Checkout and local binding proof before
+event ingestion, including completion events and refund-first race tests. That
+design was reviewed only; it is neither implemented nor accepted. SMTP choice,
+credential handoff and real end-to-end acceptance are still pending.
 
 [`evidence.json`](evidence.json) gives the structured observations and source
 links. It contains no provider credentials, customer identifiers, session
