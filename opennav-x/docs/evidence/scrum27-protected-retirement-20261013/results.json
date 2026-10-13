@@ -256,7 +256,45 @@
         }
       ]
     },
-    "auditSha256": "f445f4cdf920be08577338754aa17775a401c879e930dff6c8ad891cad5dd8d0"
+    "sourceClosureChecks": [
+      {
+        "platform": "Linux",
+        "jobId": 115473249185,
+        "stepNumber": 6,
+        "stepName": "Verify exact broker source closure",
+        "conclusion": "success",
+        "testsRun": 12,
+        "result": "OK",
+        "logSHA256": "d4bdb7834c8d0aaae11c563b98e91d688e1a950f5d8851aeb00dd60b5ea246ba",
+        "summary": {
+          "summary": "2026-10-13T18:40:25.4621214Z Ran 12 tests in 5.567s",
+          "following": [
+            "2026-10-13T18:40:25.4621525Z ",
+            "2026-10-13T18:40:25.4621699Z OK"
+          ]
+        },
+        "jobUrl": "https://github.com/ThereptileII/Work/actions/runs/38448552844/job/115473249185"
+      },
+      {
+        "platform": "Windows",
+        "jobId": 115473249797,
+        "stepNumber": 6,
+        "stepName": "Verify exact broker source closure",
+        "conclusion": "success",
+        "testsRun": 12,
+        "result": "OK",
+        "logSHA256": "b9821d42792fc120b3af580968e77ec7fa89be85886077765745c8176b4258b6",
+        "summary": {
+          "summary": "2026-10-13T18:40:56.0037867Z Ran 12 tests in 4.852s",
+          "following": [
+            "2026-10-13T18:40:56.0037950Z ",
+            "2026-10-13T18:40:56.0037994Z OK"
+          ]
+        },
+        "jobUrl": "https://github.com/ThereptileII/Work/actions/runs/38448552844/job/115473249797"
+      }
+    ],
+    "auditSha256": "222b8f02a5df8678c43c34d38e661e79ff8ab9f63bcbdbf4d7b24da54d85d0ca"
   },
   "corrections": [
     {
