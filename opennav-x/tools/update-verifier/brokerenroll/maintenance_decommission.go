@@ -56,13 +56,23 @@ func (m *MaintenanceOwner) BindDecommission(ctx context.Context, witness *broker
 	if witness == nil {
 		return errors.New("original native broker decommission witness required")
 	}
-	if err := bindDecommissionFenceWith(m, ctx, witness, witness.Snapshot().ClientSID); err != nil {
+	snapshot := witness.Snapshot()
+	if err := bindDecommissionFenceIdentityWith(m, ctx, witness, snapshot.ClientSID, snapshot.RegistrationSHA256); err != nil {
 		return errors.Join(err, witness.Close())
 	}
 	return nil
 }
 
 func bindDecommissionFenceWith(m *MaintenanceOwner, ctx context.Context, fence decommissionFence, clientSID string) (resultErr error) {
+	// Private fixture seam; production uses only the sealed witness snapshot.
+	requestSHA := ""
+	if m != nil && m.self == m {
+		requestSHA = m.authority.client.RequestSHA256
+	}
+	return bindDecommissionFenceIdentityWith(m, ctx, fence, clientSID, requestSHA)
+}
+
+func bindDecommissionFenceIdentityWith(m *MaintenanceOwner, ctx context.Context, fence decommissionFence, clientSID, requestSHA string) (resultErr error) {
 	if m == nil || m.self != m {
 		return errors.New("original decommission owner required")
 	}
@@ -79,7 +89,7 @@ func bindDecommissionFenceWith(m *MaintenanceOwner, ctx context.Context, fence d
 			m.failed = true
 		}
 	}()
-	if clientSID != m.authority.client.ClientSID {
+	if clientSID != m.authority.client.ClientSID || requestSHA != m.authority.client.RequestSHA256 {
 		return errors.New("broker fence client differs from approved original request")
 	}
 	if err := m.check(ctx); err != nil {
@@ -95,9 +105,10 @@ func bindDecommissionFenceWith(m *MaintenanceOwner, ctx context.Context, fence d
 	return m.check(ctx)
 }
 
-// Decommission consumes one disable, one clean shutdown, and one deletion mark
-// in that order on the same retained SCM/process owner. Any uncertain effect
-// permanently revokes this owner; no retry, repair or cleanup is attempted.
+// Decommission first completes any bound shortcut restoration, then consumes one
+// disable, one clean shutdown, and one deletion mark on the same SCM/process owner.
+// Any uncertain effect permanently revokes this owner; no retry, repair or
+// cleanup is attempted.
 func (m *MaintenanceOwner) Decommission(ctx context.Context) (result DecommissionResult, resultErr error) {
 	if m == nil || m.self != m {
 		return result, errors.New("original decommission owner required")
@@ -130,7 +141,28 @@ func (m *MaintenanceOwner) Decommission(ctx context.Context) (result Decommissio
 	if err := m.fence.Check(ctx, m.pid, birth.birth()); err != nil {
 		return result, err
 	}
-	// Set dispatched before the first native call. A failure may occur after the
+	// Shortcut mutation requires this SAME still-live broker witness. Once bound,
+	// restoration is mandatory and cannot be bypassed by the service-only path.
+	if m.startupBound {
+		if m.startup == nil {
+			return result, errors.New("bound original shortcut owners missing")
+		}
+		if err := m.startup.check(ctx); err != nil {
+			return result, err
+		}
+		// Restoration may have durable effects even when its call returns an error.
+		m.dispatched = true
+		if err := m.startup.restore(ctx, m.startupGuard); err != nil {
+			return result, err
+		}
+		if err := m.startup.check(ctx); err != nil {
+			return result, err
+		}
+		if err := m.startupGuard(ctx); err != nil {
+			return result, err
+		}
+	}
+	// Set dispatched before the first SCM call. A failure may occur after the
 	// SCM applied the start-type change; it is never safe to infer no effect.
 	m.disableAttempted, m.dispatched = true, true
 	if err := backend.disable(ctx, m.pid); err != nil {
@@ -149,6 +181,11 @@ func (m *MaintenanceOwner) Decommission(ctx context.Context) (result Decommissio
 	// token, image, service and disabled configuration remain under m.check.
 	if err := m.check(ctx); err != nil {
 		return result, err
+	}
+	if m.startupBound {
+		if err := m.startup.check(ctx); err != nil {
+			return result, err
+		}
 	}
 	m.deleteAttempted = true
 	if err := backend.markRemoval(ctx); err != nil {

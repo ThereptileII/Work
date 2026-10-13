@@ -10,8 +10,8 @@ import (
 	"example.com/opennav-update-verifier/brokerregistration"
 )
 
-// ErrMaintenanceUncertain means the single stop attempt may have taken effect,
-// but clean service/process shutdown or retained custody was not established.
+// ErrMaintenanceUncertain means original shortcut restoration or a single SCM
+// effect may have taken effect, but completion/custody was not established.
 // Never retry, restart, recreate enrollment or reset protected state in response.
 var ErrMaintenanceUncertain = errors.New("original broker maintenance shutdown uncertain")
 
@@ -84,6 +84,8 @@ type MaintenanceOwner struct {
 	disableAttempted bool
 	deleteAttempted  bool
 	fence            decommissionFence
+	startupBound     bool
+	startup          startupRestorationBackend
 }
 
 // OpenMaintenance observes only the exact existing normal-running broker as
@@ -204,6 +206,13 @@ func (m *MaintenanceOwner) Check(ctx context.Context) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	err := m.check(ctx)
+	if err == nil && m.startupBound {
+		if m.startup == nil {
+			err = errors.New("bound original shortcut owners missing")
+		} else {
+			err = m.startup.check(ctx)
+		}
+	}
 	if err != nil {
 		m.failed = true
 		if m.dispatched {
@@ -296,6 +305,10 @@ func (m *MaintenanceOwner) closeLocked() error {
 		return m.closeErr
 	}
 	m.closed = true
+	if m.startup != nil {
+		m.closeErr = errors.Join(m.closeErr, m.startup.close())
+		m.startup = nil
+	}
 	if m.fence != nil {
 		m.closeErr = errors.Join(m.closeErr, m.fence.Close())
 		m.fence = nil

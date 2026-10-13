@@ -112,6 +112,8 @@ REGISTRATION_SOURCES = frozenset(PREFIX + name for name in (
     'brokerenroll/startup_windows.go', 'brokerenroll/startup_link_windows.go',
     'brokerenroll/startup_publication_windows.go',
     'brokerenroll/startup_binding.go', 'brokerenroll/startup_binding_windows.go',
+    'brokerenroll/startup_restoration.go', 'brokerenroll/startup_restoration_other.go',
+    'brokerenroll/startup_restoration_windows.go',
     'brokerenroll/maintenance.go', 'brokerenroll/maintenance_other.go',
     'brokerenroll/maintenance_windows.go', 'brokerenroll/maintenance_process_windows.go',
     'brokerenroll/maintenance_decommission.go', 'brokerenroll/maintenance_decommission_windows.go',
