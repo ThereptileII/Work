@@ -143,3 +143,27 @@ func TestBoundedPublicTrustFile(t *testing.T) {
 		t.Fatal("directory accepted")
 	}
 }
+
+func TestStartupRestorationInputsAreRejectedForEveryOtherOperatorAction(t *testing.T) {
+	extra := []string{"--original-startup-publication=original-private-publication", "--original-startup-publication-sha256=" + strings.Repeat("a", 64)}
+	for _, action := range []string{"", "quiesce-maintenance", "selected-history", "manual-rollback", "uninstall"} {
+		t.Run(action, func(t *testing.T) {
+			args := operatorArgs()
+			if action != "" {
+				args = []string{"--maintenance=" + action}
+			}
+			args = append(args, extra...)
+			calls := 0
+			_, err := runOperator(context.Background(), args, func(string) ([]byte, error) { calls++; return nil, nil },
+				func(context.Context, brokerenroll.Request) error { calls++; return nil },
+				func(context.Context, brokerenroll.Request) error { calls++; return nil },
+				func(context.Context, brokerenroll.MaintenanceRequest) (maintenanceOwner, error) {
+					calls++
+					return nil, nil
+				})
+			if err == nil || calls != 0 {
+				t.Fatalf("restoration inputs reached a different action: calls=%d err=%v", calls, err)
+			}
+		})
+	}
+}
