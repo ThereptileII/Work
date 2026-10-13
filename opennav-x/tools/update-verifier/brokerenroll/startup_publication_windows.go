@@ -19,14 +19,16 @@ import (
 )
 
 type nativeStartupPublication struct {
-	mode                 startupShortcutMode
-	additional           []*nativeStartupPublication
-	files                *nativeEnrollmentFiles
-	clientSID            string
-	image                *enrollmentPin
-	imageSHA             string
-	link, original       *enrollmentPin
-	linkSHA, originalSHA string
+	mode                    startupShortcutMode
+	additional              []*nativeStartupPublication
+	files                   *nativeEnrollmentFiles
+	clientSID               string
+	image                   *enrollmentPin
+	imageSHA                string
+	link, original          *enrollmentPin
+	linkSHA, originalSHA    string
+	manifest, binding       *enrollmentPin
+	manifestSHA, bindingSHA string
 }
 
 func (s *nativeStartupPublication) Check(ctx context.Context) error {
@@ -45,7 +47,7 @@ func (s *nativeStartupPublication) Check(ctx context.Context) error {
 		for _, item := range []struct {
 			pin *enrollmentPin
 			sha string
-		}{{publication.image, publication.imageSHA}, {publication.link, publication.linkSHA}, {publication.original, publication.originalSHA}} {
+		}{{publication.image, publication.imageSHA}, {publication.link, publication.linkSHA}, {publication.original, publication.originalSHA}, {publication.manifest, publication.manifestSHA}, {publication.binding, publication.bindingSHA}} {
 			if item.pin == nil {
 				continue
 			}
@@ -356,9 +358,11 @@ func publishStartupNative(ctx context.Context, original enrollmentFiles, client 
 	if err != nil {
 		return publication, err
 	}
-	if _, err := startupWriteFile(ctx, owner.files, recovery, "publication.json", manifest, sd, false); err != nil {
+	owner.manifest, err = startupWriteFile(ctx, owner.files, recovery, "publication.json", manifest, sd, false)
+	if err != nil {
 		return publication, err
 	}
+	owner.manifestSHA = digest(manifest)
 	if err := owner.files.Check(); err != nil {
 		return publication, err
 	}
@@ -376,6 +380,9 @@ func publishStartupNative(ctx context.Context, original enrollmentFiles, client 
 	}
 	if err := startupPublishAllRenames(ctx, owner, menu, recovery); err != nil {
 		return publication, err
+	}
+	if err := completeStartupPublicationBinding(ctx, owner, menu, recovery, client, sd); err != nil {
+		return publication, errors.Join(ErrStartupUncertain, err)
 	}
 	return publication, owner.Check(ctx)
 }
