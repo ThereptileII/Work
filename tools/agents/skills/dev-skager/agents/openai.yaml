@@ -1,0 +1,4 @@
+interface:
+  display_name: "SKAGER development"
+  short_description: "Develop SKAGER with lean, evidence-led delivery"
+  default_prompt: "Use $dev-skager to plan and implement a focused SKAGER change with the appropriate validation."

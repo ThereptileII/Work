@@ -78,6 +78,10 @@ test bootstrap or assertions here. Read back RLS, revoked client access,
 fixed-search-path service-role-only RPC permissions and absence of
 `skager_private` from exposed Data API schemas.
 
+An editor showing Running is pending, not success or failure. Confirm completion
+and read-only object/permission state before replaying a migration; if the outcome
+is unknown, inspect it rather than repeating non-idempotent SQL.
+
 Publish the retained server bundle as `skager-web`. The Worker forwards no
 provider Authorization header; verify the function gateway permits these
 application-authenticated requests and Stripe webhooks. Check current supported
@@ -92,6 +96,9 @@ Supply only server bindings, without printing values:
   `STRIPE_TEST_WEBHOOK_SECRET`, `STRIPE_TEST_PRICE_ID`,
   `STRIPE_TEST_RETURN_ORIGIN`, `STRIPE_TEST_ALLOWED_COUPON_IDS`,
   `STRIPE_TEST_ALLOWED_PROMOTION_IDS`.
+- Portal: `PORTAL_ENABLED` and `STRIPE_TEST_ENVIRONMENT=staging`. Portal access
+  remains unavailable unless both its flag and the exact staging environment
+  match; an enabled checkout alone does not enable the portal.
 
 Start feature flags disabled; enable only within the authorized invited live
 qualification window when required configuration is verified. Keep general

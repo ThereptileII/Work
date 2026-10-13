@@ -13,6 +13,12 @@ invitations, public launch or paid upgrades beyond the user's existing scope.
 
 ## Establish the candidate
 
+The website may live in a separate active Git worktree from the desktop candidate.
+Locate the selected web checkout and verify its HEAD; if it lacks `web/edge` or
+the current architecture decision below, do not assume the older Django runtime
+is deployed or borrow another branch's acceptance. Resolve the intended web
+revision before proceeding.
+
 Read these repository-root paths before preparing publication:
 
 - `opennav-x/docs/architecture/cloudflare-supabase-private-beta.md`: current

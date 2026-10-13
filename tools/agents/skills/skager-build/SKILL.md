@@ -7,8 +7,8 @@ description: Select and run SKAGER application builds or verified Windows depend
 
 Work from the selected SKAGER checkout, not a remembered worktree. Resolve paths
 below from its repository root. Read `AGENTS.md` and `opennav-x/AGENTS.md`, then
-the current [build contract](../../../../opennav-x/docs/build-efficiency.md) and
-[delivery policy](../../../../opennav-x/docs/delivery-workflow.md). These maintained
+`opennav-x/docs/build-efficiency.md` and
+`opennav-x/docs/delivery-workflow.md`. These maintained
 documents control scheduling; historical evidence is not current acceptance.
 
 ## Select the work
@@ -45,7 +45,7 @@ documents control scheduling; historical evidence is not current acceptance.
   compatibility policy; never normalize hashes or exempt toolchains/recipes.
   Preserve manifest-bound installed DLL/import checks and legacy TLS refusal;
   authenticating an SDK alone does not prove the application's runtime closure.
-  Read [native dependency integration](../../../../opennav-x/docs/architecture/windows-native-dependency-integration.md)
+  Read `opennav-x/docs/architecture/windows-native-dependency-integration.md`
   when changing this boundary.
 - Retain compiled outputs and identity before downstream packaging/tests, including
   the contract's separate unqualified compiled-recovery artifact. Repair helpers

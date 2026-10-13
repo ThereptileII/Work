@@ -55,9 +55,11 @@ workers return their issue, owned files, results and remaining gates.
 
 - Discover `listJiraProjectIssueTypesMetadata`, complete its pagination, and
   inspect `getJiraIssueTypeMetaWithFields` for the selected type and required
-  fields before creation. Current types are Epic, Subtask, Feature and Uppgift;
-  do not assume Bug or English Task exists. Resolve required reporter/assignee
-  account IDs and parent requirements through metadata/tools, not invented values.
+  fields before creation; reuse current session metadata until a schema change or
+  rejection warrants refreshing it. Current types are Epic, Subtask, Feature and
+  Uppgift; do not assume Bug or English Task exists. Respect connector defaults;
+  resolve account IDs only when a requested/missing reporter or assignee requires
+  it, and inspect parent requirements rather than inventing values.
 - Before editing, read current fields and editable metadata. Multi-value edits
   replace the whole value: preserve unrelated labels, components and links.
   Preserve rich bodies/media using the format actually returned; read HTML

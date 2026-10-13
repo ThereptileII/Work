@@ -7,8 +7,8 @@ description: Select and run focused SKAGER functional or helper checks, diagnose
 
 Work from the selected SKAGER checkout. Resolve paths below from its repository
 root and read `AGENTS.md`, `opennav-x/AGENTS.md`, the current
-[build contract](../../../../opennav-x/docs/build-efficiency.md) and
-[delivery policy](../../../../opennav-x/docs/delivery-workflow.md). Read the selected
+`opennav-x/docs/build-efficiency.md` and
+`opennav-x/docs/delivery-workflow.md`. Read the selected
 Jira acceptance criteria and relevant component contract before choosing checks.
 
 ## Choose evidence for the changed behavior
@@ -34,8 +34,10 @@ Jira acceptance criteria and relevant component contract before choosing checks.
 ## Diagnose a failed fixture before blaming the product
 
 Find the first causal failure in original logs and identify product, fixture,
-environment or transport scope. Preserve the failed evidence. Reproduce with the
-smallest relevant native check before requesting another full build.
+environment or transport scope. Preserve the failed evidence. When reproduction
+is needed, use the smallest relevant native check. Do not repeat an already
+discriminating log/source observation merely to get another red result before
+repair; qualify the correction at its actual boundary before a full build.
 
 For Windows file/lock fixtures, inspect the actual PowerShell/.NET behavior and
 handle lifetimes. The profile-lock fixture needs an explicit `File.Replace`
