@@ -24,7 +24,10 @@ TEMPLATES = [{
     "BACKEND": "django.template.backends.django.DjangoTemplates",
     "DIRS": [],
     "APP_DIRS": True,
-    "OPTIONS": {"context_processors": ["django.template.context_processors.request"]},
+    "OPTIONS": {"context_processors": [
+        "django.template.context_processors.request",
+        "skager_web.marketing.assets.marketing_asset_versions",
+    ]},
 }]
 STATIC_URL = "/static/"
 USE_TZ = True

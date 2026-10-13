@@ -7,8 +7,8 @@
   <meta name="theme-color" content="#06151b">
   <title>{% block title %}SKAGER — Navigation. Reimagined.{% endblock %}</title>
   <meta name="description" content="{% block description %}Navigation, vessel intelligence and passage planning, built around your boat. Explore the developing SKAGER experience.{% endblock %}">
-  <link rel="stylesheet" href="{% static 'marketing/site.css' %}">
-  <script src="{% static 'marketing/site.js' %}" defer></script>
+  <link rel="stylesheet" href="{% static 'marketing/site.css' %}?v={{ marketing_css_version }}">
+  <script src="{% static 'marketing/site.js' %}?v={{ marketing_js_version }}" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>

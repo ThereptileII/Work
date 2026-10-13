@@ -1,7 +1,7 @@
 import uuid
 
 from django.core.exceptions import PermissionDenied, ValidationError
-from django.db import IntegrityError, connection, transaction
+from django.db import DataError, IntegrityError, connection, transaction
 from django.db.models.deletion import ProtectedError
 from django.http import Http404
 from django.test import TestCase
@@ -65,7 +65,10 @@ class OwnershipServiceTests(TestCase):
 
     def test_name_constraints_also_protect_direct_database_writes(self):
         for name in ("", "   ", "x" * 81):
-            with self.subTest(name=name), self.assertRaises(IntegrityError), transaction.atomic():
+            # PostgreSQL rejects overlong varchar before the CHECK constraint;
+            # SQLite reaches the explicit length check. Both must reject it.
+            expected = DataError if connection.vendor == "postgresql" and len(name) > 80 else IntegrityError
+            with self.subTest(name=name), self.assertRaises(expected), transaction.atomic():
                 Boat.objects.create(owner=self.owner, name=name)
         boat = create_boat(account=self.owner, name="Aurora")
         with self.assertRaises(IntegrityError), transaction.atomic():
