@@ -150,3 +150,15 @@ CMake selection controls. Its receipt remains `packaging: not-run`,
 no supported restore path for this diagnostic archive, and the retained plugin
 workflow requires the original capture step to have succeeded. The failed run
 cannot be relabeled as qualified or used with that workflow's current recipe.
+
+The correction's exact integrated source
+`575898e1923cb4283bdb88eea11dc97bd21f3338` passes focused native
+[run 38466239261](https://github.com/ThereptileII/Work/actions/runs/38466239261),
+job `115533639655`: 39 tests, 37 passed and two existing portable-only
+case-sensitive fixture skips, no failures. Original artifact `11848103186`
+(2,709 bytes), SHA-256
+`220c6c33c6cad3b7380f0bd332969e70746a9311491f2dd430c436548d5daf70`,
+matches GitHub digest/length and all four member CRCs. The actual Windows stat
+probe also passes without executing inspected payloads. This qualifies the
+capture-helper correction only; no replacement full application build was
+requested while the separate joined uninstall failure is unresolved.

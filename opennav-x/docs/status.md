@@ -16,7 +16,9 @@ The complete locked wx headers/Dev archive inspection also identified
 and all existing identity/mutation/size controls. Linux passes 39 capture plus
 30 runner checks; actual 1,509-file include and three-file setup trees pass.
 [Focused native run 38466239261](https://github.com/ThereptileII/Work/actions/runs/38466239261)
-is pending. No replacement full application build has been requested for this fix.
+passes 37 tests with two existing portable-only fixture skips and the native
+metadata probe. Original artifact digest/length and all four CRCs are verified.
+No replacement full application build has been requested for this fix.
 
 Original failed B0 `38442801510` and all subsequent failed observations remain
 preserved. Both diagnostic compiled archives lack the SDK/control custody and
@@ -28,8 +30,11 @@ The independently reviewed baseline uninstall join is integrated at `8a706e80`:
 retain original startup custody before retirement, authenticate the same moved
 objects, then restore shortcuts before service removal. Its first focused native
 [run 38465784927](https://github.com/ThereptileII/Work/actions/runs/38465784927)
-passes Linux but fails Windows; original failure is under investigation. No
-installed acceptance is inferred. The explicit workflow required-name patch is
+passes Linux but fails Windows. The native directory move returns access denied
+while original descendant handles are open; delete sharing does not make this
+ancestor rename legal. This is a product sequencing defect, not an assertion to
+relax. A bounded same-broker restoration/drain/retirement correction is under
+review. The failed increment is not installed or accepted. The explicit workflow required-name patch is
 retained locally at `db355047` pending workflow-edit permission; unchanged existing
 selection already runs the new cases and their actual events remain mandatory.
 Earlier entries below preserve their historical state.

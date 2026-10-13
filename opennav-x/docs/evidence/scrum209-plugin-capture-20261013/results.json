@@ -621,7 +621,7 @@
     }
   },
   "pinnedWxCaptureCorrection": {
-    "commit": "575898e1",
+    "commit": "575898e1923cb4283bdb88eea11dc97bd21f3338",
     "isolatedCommit": "a8aeca9992c9535931da6642af185e5c76968a11",
     "scope": "Exact per-root wx implementation includes and selected build.cfg; broad suffix/mutation/identity controls unchanged",
     "linuxCaptureTests": 39,
@@ -629,6 +629,77 @@
     "realPinnedArchiveIncludeFiles": 1509,
     "realPinnedArchiveMswuFiles": 3,
     "nativeRunId": 38466239261,
-    "nativeStatus": "pending"
+    "nativeStatus": "passed",
+    "nativeEvidence": {
+      "jobId": 115533639655,
+      "artifactId": 11848103186,
+      "bytes": 2709,
+      "sha256": "220c6c33c6cad3b7380f0bd332969e70746a9311491f2dd430c436548d5daf70",
+      "zipMembers": 4,
+      "zipCrc": "passed",
+      "tests": 39,
+      "passed": 37,
+      "failed": 0,
+      "skipped": 2,
+      "skipReason": "existing case-sensitive negative fixtures portable-host only",
+      "scope": "native helper tests and actual native stat probe; no application/package acceptance",
+      "originalProbe": {
+        "schema": 1,
+        "nativeHelperProbe": true,
+        "pythonVersion": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+        "scope": "actual native path/descriptor stat and record helper only",
+        "records": [
+          {
+            "name": "dumpbin.exe",
+            "bytes": 23376,
+            "sha256": "364840933ceaf8e5d9b62c3a2b1fb66aef2f59fba854146e816751bc2f622ee5",
+            "commonIdentityMatched": true,
+            "completeBaselinesStable": true,
+            "differingStatFields": [
+              "st_mode"
+            ]
+          },
+          {
+            "name": "python.exe",
+            "bytes": 104952,
+            "sha256": "4d6f5f81a4bca11191c4c7c6b43632694d0a4ce74e068619d8fdc161d469859a",
+            "commonIdentityMatched": true,
+            "completeBaselinesStable": true,
+            "differingStatFields": [
+              "st_mode",
+              "st_ctime_ns"
+            ]
+          },
+          {
+            "name": "inert.exe",
+            "bytes": 40,
+            "sha256": "40c0f1495d2fd61afb45579f45b1dba292cfef9fd35aedbfe03cfa8300d93da5",
+            "commonIdentityMatched": true,
+            "completeBaselinesStable": true,
+            "differingStatFields": [
+              "st_mode"
+            ]
+          },
+          {
+            "name": "inert.dll",
+            "bytes": 40,
+            "sha256": "40c0f1495d2fd61afb45579f45b1dba292cfef9fd35aedbfe03cfa8300d93da5",
+            "commonIdentityMatched": true,
+            "completeBaselinesStable": true,
+            "differingStatFields": []
+          },
+          {
+            "name": "inert.txt",
+            "bytes": 40,
+            "sha256": "40c0f1495d2fd61afb45579f45b1dba292cfef9fd35aedbfe03cfa8300d93da5",
+            "commonIdentityMatched": true,
+            "completeBaselinesStable": true,
+            "differingStatFields": []
+          }
+        ],
+        "payloadExecuted": false,
+        "productAcceptance": false
+      }
+    }
   }
 }
