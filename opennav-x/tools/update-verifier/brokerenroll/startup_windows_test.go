@@ -569,10 +569,27 @@ func TestNativeStartupOriginalCustodyExcludesLateSubstitution(t *testing.T) {
 				if m == mode {
 					attempted = true
 					if err := windows.MoveFileEx(source, away, windows.MOVEFILE_WRITE_THROUGH); !errors.Is(err, windows.ERROR_SHARING_VIOLATION) {
-						return errors.New("original rename exclusion missing")
+						return errors.Join(errors.New("original rename exclusion missing"), err)
 					}
-					if err := windows.MoveFileEx(replacement, source, windows.MOVEFILE_REPLACE_EXISTING|windows.MOVEFILE_WRITE_THROUGH); !errors.Is(err, windows.ERROR_SHARING_VIOLATION) {
-						return errors.New("foreign replacement exclusion missing")
+					replacementErr := windows.MoveFileEx(replacement, source, windows.MOVEFILE_REPLACE_EXISTING|windows.MOVEFILE_WRITE_THROUGH)
+					if replacementErr == nil {
+						return errors.New("foreign replacement unexpectedly succeeded")
+					}
+					// Replacement and source-open refusal need not map to the same
+					// Win32 error. Prove non-mutation on both original handles before
+					// publication can move either original or pending shortcut.
+					t.Logf("foreign replacement refused before publication: %v", replacementErr)
+					if err := startupCheckOriginalLocation(child, menu, spec.name); err != nil {
+						return errors.Join(errors.New("replacement changed original location or identity"), err)
+					}
+					if err := startupHashPin(context.Background(), child.original, child.originalSHA); err != nil {
+						return errors.Join(errors.New("replacement changed original bytes"), err)
+					}
+					if err := startupHashPin(context.Background(), foreign, digest(foreignRaw)); err != nil {
+						return errors.Join(errors.New("replacement moved or changed foreign file"), err)
+					}
+					if err := startupRestorationAbsent(recovery, spec.name); err != nil {
+						return errors.Join(errors.New("replacement introduced a recovery file"), err)
 					}
 				}
 				return startupPublishRenames(context.Background(), children[int(m)], menu, recovery)
