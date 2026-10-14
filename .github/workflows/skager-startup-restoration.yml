@@ -135,17 +135,20 @@ jobs:
                   'TestNativeRepairColdCustodyRefusesReleasedUnwatchedOrProcessUncheckedSource']
           maintenance['.'] = ['TestBrokerCodeUpgradeSignedTargetIsolation']
           maintenance['releasepolicy'] = ['TestBrokerCodeUpgradeDistinctPurposeAndExactPair']
-          maintenance['repository'] = [
-              'TestBrokerCodeUpgradePublicationAndRetention',
-              'TestBrokerCodeUpgradeCombinedEnrollmentAndArtifactReuse',
-              'TestBrokerCodeUpgradeRefusalDoesNotReserve',
-              'TestBrokerCodeUpgradeOldPairUsesPrepublicationHistory',
-              'TestBrokerCodeUpgradeVersionChainAndConflict',
-              'TestBrokerCodeUpgradeRetainedCorruptionRefusesBeforeReservation',
-              'TestBrokerCodeUpgradeInterruptedPublicationRetainsAuthority']
-          maintenance['cmd/skager-repository'] = [
-              'TestCodeUpgradeCLIFlagsRefuseBeforePrivateKeyRead',
-              'TestCodeUpgradeCLIActualSignedPublicationAndOrdinaryRetention']
+          # Repository publication is a Linux operator tool; its native lock
+          # deliberately refuses unsupported platforms. Windows exercises consumers.
+          if os.environ['RUNNER_OS'] == 'Linux':
+              maintenance['repository'] = [
+                  'TestBrokerCodeUpgradePublicationAndRetention',
+                  'TestBrokerCodeUpgradeCombinedEnrollmentAndArtifactReuse',
+                  'TestBrokerCodeUpgradeRefusalDoesNotReserve',
+                  'TestBrokerCodeUpgradeOldPairUsesPrepublicationHistory',
+                  'TestBrokerCodeUpgradeVersionChainAndConflict',
+                  'TestBrokerCodeUpgradeRetainedCorruptionRefusesBeforeReservation',
+                  'TestBrokerCodeUpgradeInterruptedPublicationRetainsAuthority']
+              maintenance['cmd/skager-repository'] = [
+                  'TestCodeUpgradeCLIFlagsRefuseBeforePrivateKeyRead',
+                  'TestCodeUpgradeCLIActualSignedPublicationAndOrdinaryRetention']
           maintenance['brokerenroll'] = [
               'TestCodeUpgradeCustodyPurposeSequenceAndSingleEffects',
               'TestCodeUpgradeFailureNeverContinuesOrRetries',
