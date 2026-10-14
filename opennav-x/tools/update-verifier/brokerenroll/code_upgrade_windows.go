@@ -168,8 +168,14 @@ func (n *nativeCodeUpgrade) stage(ctx context.Context, broker io.Reader, helper 
 	if err != nil {
 		return err
 	}
+	if err = n.publishStageReceipt(ctx, stagedBrokerName, n.broker); err != nil {
+		return err
+	}
 	n.helper, err = n.stageImage(ctx, stagedHelperName, helper, n.policy.Bootstrap.Provisioner, imageSD, true)
 	if err != nil {
+		return err
+	}
+	if err = n.publishStageReceipt(ctx, stagedHelperName, n.helper); err != nil {
 		return err
 	}
 	n.record.Broker, err = startupFileIdentity(ctx, n.broker.pin, n.policy.Bootstrap.Broker.SHA256)
@@ -696,15 +702,18 @@ func (n *nativeCodeUpgrade) close() error {
 	return n.closeErr
 }
 
-// Original completion stays immutable. Exact absence selects original code;
-// ANY intent/reservation/successor presence requires the completed exact tuple.
+// Original completion stays immutable. Exact absence selects original code.
+// Intent requires complete successor closure or the distinct exact early abort.
 // Malformed, partial, mixed and unknown state never falls back to old code.
 func readCodeSuccessorNative(ctx context.Context, c *nativeInstalledMaintenanceAuthority, original installedCompletionRecord, originalRaw []byte, recordSD, imageSD *windows.SECURITY_DESCRIPTOR, pendingReady ...bool) (installedCompletionRecord, error) {
 	parent := c.requestParent
 	sid := c.clientSID
+	if startupRestorationAbsent(parent, sid+codeEarlyAbortSuffix) != nil {
+		return readCodeEarlyAbortNative(ctx, c, original, originalRaw, recordSD, imageSD)
+	}
 	intentAbsent := startupRestorationAbsent(parent, sid+codeIntentSuffix) == nil
 	if intentAbsent {
-		for _, suffix := range []string{codeDrainSuffix, codeReservationSuffix, codeSuccessorSuffix, codeSuccessorPairSuffix, codeSuccessorMarkerSuffix, codeStartAttemptSuffix} {
+		for _, suffix := range []string{codeDrainSuffix, codeReservationSuffix, codeSuccessorSuffix, codeSuccessorPairSuffix, codeSuccessorMarkerSuffix, codeStartAttemptSuffix, codeBrokerStageSuffix, codeHelperStageSuffix} {
 			if startupRestorationAbsent(parent, sid+suffix) != nil {
 				return original, errors.New("partial code successor state")
 			}

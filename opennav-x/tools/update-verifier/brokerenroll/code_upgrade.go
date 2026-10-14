@@ -132,6 +132,12 @@ func upgradeEnrolledCodeWith(ctx context.Context, r CodeUpgradeRequest, op codeU
 			return err
 		}
 		if err := owner.resume(ctx); err != nil {
+			if errors.Is(err, ErrCodeUpgradeAborted) {
+				if checkErr := errors.Join(ctx.Err(), source.Check(ctx), owner.check(ctx)); checkErr != nil {
+					return errors.Join(ErrCodeUpgradeUncertain, checkErr)
+				}
+				return err
+			}
 			return errors.Join(ErrCodeUpgradeUncertain, err)
 		}
 		return errors.Join(ctx.Err(), source.Check(ctx), owner.check(ctx))

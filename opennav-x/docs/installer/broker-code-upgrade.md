@@ -67,7 +67,9 @@ query/config/start/stop rights, with no service creation/deletion authority.
    completion, unchanged trust and exact allowed predecessor pair.
 2. Flush immutable protected intent before staging. Copy/hash/flush both new files
    under the retained protected code parent, with exclusive names and native
-   identity checks. Flush a reservation binding original completion/request,
+   identity checks. After each complete copy, flush a distinct intent-bound staged
+   receipt containing its full native identity before staging the next file.
+   Flush a reservation binding original completion/request,
    policy bytes/hash, original full code IDs and staged full new IDs.
 3. Disable the exact original service. Its original retained process/token/image
    must drain and exit with code zero. Flush/read back a protected clean-exit
@@ -100,6 +102,37 @@ A later broker-code generation needs an extended authenticated chain.
 
 ## Recovery and current limits
 
+Explicit resume may instead terminate an **early** transaction while the exact
+original fixed broker/helper IDs remain and the original service is AUTO_START
+and normally RUNNING. The same independently approved target, running new
+provisioner, unchanged trust and original completion remain mandatory. A
+query-only service owner retains the actual original broker process/token/image
+through authenticated registered-client history readback and exclusive durable
+`.code-upgrade.aborted.json` publication. It never stops, configures or starts a
+service, replaces/deletes a file, restages code or removes transaction evidence.
+
+Early abort accepts canonical intent alone with both stages/receipts absent,
+one complete broker stage with its exact receipt, or both complete stages with
+their exact receipts. A complete reservation is permitted only when its bytes
+equal that same intent and both receipt-bound full native IDs. Any old backup,
+drain, successor, pair, ready or normal-start-attempt namespace forbids early
+abort. Staged bytes without their original completion receipt, including legacy
+stages and genuinely partial copies, remain unprovable and refuse. A receipt
+is written only after complete copy/hash/flush; interruption between file
+creation and that receipt is deliberately not adopted. A torn intent, receipt,
+reservation or abort write also refuses.
+
+The installed reader admits original code only after rechecking the exact
+immutable abort closure, unchanged actual full original code IDs and every
+retained completed staged-file identity. Unknown/malformed state does not gain
+fallback authority. Abort restores original reader eligibility; it does not
+complete the upgrade. `ErrCodeUpgradeAborted` reaches the caller as a distinct
+non-success outcome. The retained intent/abort permanently consumes this one
+transition: neither a fresh invocation nor explicit resume can silently reset
+it or retry staging. A future authenticated transition protocol is separate.
+Actual installed SCM/IPC/customer acceptance remains unqualified by the inert
+file-closure and portable owner fixtures.
+
 Within the same live transaction, a rename failure can restore only its retained
 old/new handles to original/staged positions while the original service remains
 disabled and stopped. It does not restart old code automatically or remove any
@@ -108,7 +141,7 @@ readback/rebinding fails can leave an uncertain path; the explicit resume entry
 re-observes actual known positions instead of blindly retrying that mutation.
 
 Explicit resume reauthenticates the **same** target, new provisioner, unchanged
-trust and original completion. Native observations select one of three bounded
+trust and original completion. Native observations select its bounded
 phases. Disabled rename recovery requires the full reservation and protected
 clean-old-exit record, checks that the recorded original PID/creation identity
 has not unexpectedly survived, and retains the original service/registry/config
@@ -163,12 +196,15 @@ replaces code or runs verify-store. Clean SCM STOPPED is not process-exit proof.
 After successful start, the first actual RUNNING process is bound once and retained
 through query-only readiness/publication; process loss never rebinds a later instance.
 
-This implementation supports the four disabled rename boundaries, one fenced
+This implementation supports the early terminal abort boundaries above, the
+four disabled rename boundaries, one fenced
 normal start from an exact automatic clean-stopped successor, and terminal
 finalization of an already-running automatic successor with an absent ready
 marker. It deliberately **does not claim recovery of every phase**:
 
-- Interrupted intent/partial staging before full reservation/clean exit refuses.
+- Interrupted staging lacking exact complete-file receipts, including partial
+  copies and unprovable legacy stages, refuses; early abort covers only the
+  authenticated complete boundaries above while original code is still running.
 - A partial immutable successor/marker write whose bytes do not exactly match
   the same transaction refuses adoption; it is not silently repaired.
 - Process loss after DEMAND_START is selected for `verify-store` refuses the

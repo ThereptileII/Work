@@ -145,6 +145,18 @@ func openCodeResumeNative(ctx context.Context, p releasepolicy.BrokerCodeUpgrade
 	if err != nil {
 		return nil, err
 	}
+	if observer.service.expectedStart == windows.SERVICE_AUTO_START && maintenanceRunning(state, state.processID) &&
+		startupRestorationAbsent(c.requestParent, c.clientSID+codeDrainSuffix) == nil &&
+		startupRestorationAbsent(c.requestParent, c.clientSID+codeSuccessorSuffix) == nil {
+		// The early opener independently requires unchanged fixed original IDs,
+		// exact completed staging receipts and absence of every later boundary.
+		transferred = true // Opener/owner takes original and observer cleanup.
+		owner, err := openCodeEarlyAbortNative(ctx, c, observer, p, raw)
+		if err != nil {
+			return nil, errors.Join(err, observer.close(), c.close())
+		}
+		return owner, nil
+	}
 	if observer.service.expectedStart == windows.SERVICE_DISABLED {
 		if startupRestorationAbsent(c.requestParent, c.clientSID+codeStartAttemptSuffix) != nil {
 			return nil, errors.New("start attempt forbids disabled recovery")
