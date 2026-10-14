@@ -1,0 +1,125 @@
+{
+  "schema": 1,
+  "commit": "81cd082186d423c537717aa3877677bba357cd1d",
+  "run": {
+    "id": 38639838756,
+    "attempt": 1
+  },
+  "jobId": 116112246866,
+  "artifactId": 11928924306,
+  "artifactBytes": 1252,
+  "artifactSha256": "a1537eb9f01a1fea4d07fce526e809ce3a4b30924cdf0e9e1a8ad485b1868cb4",
+  "resultBytes": 4680,
+  "resultCrc32": "54b78383",
+  "helperWindowsCheckoutSha256": "60f2dca0e7515dd8df88697dfeb0bba949ee90798de8378e1bdbfe49f4c1beb7",
+  "state": "blocked",
+  "reason": "original-capability-child-timeout",
+  "hostDesktopProvisioning": {
+    "manualAclEdits": false,
+    "mode": "windows-managed-fresh-account-inherited-desktop",
+    "observations": {
+      "afterObservation": {
+        "checksPassed": true,
+        "desktop": {
+          "input": "Default",
+          "nativeError": null,
+          "station": "WinSta0",
+          "thread": "Default",
+          "visible": true
+        },
+        "policy": {
+          "consentPromptBehaviorAdmin": 0,
+          "enableLUA": 1,
+          "promptOnSecureDesktop": 1
+        },
+        "session": 2
+      },
+      "beforeAccount": {
+        "checksPassed": true,
+        "desktop": {
+          "input": "Default",
+          "nativeError": null,
+          "station": "WinSta0",
+          "thread": "Default",
+          "visible": true
+        },
+        "policy": {
+          "consentPromptBehaviorAdmin": 0,
+          "enableLUA": 1,
+          "promptOnSecureDesktop": 1
+        },
+        "session": 2
+      },
+      "beforeLaunch": {
+        "checksPassed": true,
+        "desktop": {
+          "input": "Default",
+          "nativeError": null,
+          "station": "WinSta0",
+          "thread": "Default",
+          "visible": true
+        },
+        "policy": {
+          "consentPromptBehaviorAdmin": 0,
+          "enableLUA": 1,
+          "promptOnSecureDesktop": 1
+        },
+        "session": 2
+      },
+      "beforeResume": {
+        "checksPassed": true,
+        "desktop": {
+          "input": "Default",
+          "nativeError": null,
+          "station": "WinSta0",
+          "thread": "Default",
+          "visible": true
+        },
+        "policy": {
+          "consentPromptBehaviorAdmin": 0,
+          "enableLUA": 1,
+          "promptOnSecureDesktop": 1
+        },
+        "session": 2
+      }
+    },
+    "original": {
+      "desktop": {
+        "input": "Default",
+        "nativeError": null,
+        "station": "WinSta0",
+        "thread": "Default",
+        "visible": true
+      },
+      "policy": {
+        "consentPromptBehaviorAdmin": 0,
+        "enableLUA": 1,
+        "promptOnSecureDesktop": 1
+      },
+      "session": 2
+    },
+    "permissionAdditionsRequested": true
+  },
+  "originalChild": {
+    "resumeAttempted": true,
+    "resumeResult": 1
+  },
+  "capabilityProgress": {
+    "channel": "actual-token-profile-file",
+    "fileBytes": 0,
+    "finalDocumentPresent": false,
+    "lastMarker": null,
+    "markerBytes": 0,
+    "markerProtocolValid": true,
+    "markerSequenceComplete": false,
+    "markers": [],
+    "reportBytes": 0
+  },
+  "cleanup": {
+    "reason": "original-process-or-handle-outcome-uncertain",
+    "state": "deferred-to-disposable-job"
+  },
+  "productInstallAttempted": false,
+  "nativeCustomerAcceptance": false,
+  "consentPromptAcceptance": false
+}

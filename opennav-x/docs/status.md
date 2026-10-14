@@ -16,6 +16,23 @@ unchanged. The superseded run's remaining Linux compilation was cancelled;
 no separate verifier-only build or dependency rebuild was selected.
 [Failure, bounded component evidence and correction](evidence/scrum311-updater-budget-20261014/README.md).
 
+## Disposable desktop provisioning remains insufficient
+
+Helper `81cd0821` uses documented Windows-managed desktop access only for the
+fresh test account. Focused checks pass **52 probe / 43 customer-helper cases**.
+Native [38639838756](https://github.com/ThereptileII/Work/actions/runs/38639838756)
+still times out without child entry markers or exit. All caller desktop/UAC
+before/after checks pass unchanged, but no child desktop report is available.
+Original artifact and source bindings verify. No unchanged probe retry is
+selected, and no product crash or customer/UAC acceptance is inferred.
+[Native evidence](evidence/scrum311-limited-managed-desktop-20261014/README.md).
+
+The separate callable installed-journey CLI is integrated as `b5c5da7f`:
+**13 CLI / 23 coordinator groups pass**. It preserves independent input and
+operator approval and performs no signing, publication or connectivity changes.
+Qualified B0/B1, original artifact authentication and a usable Windows host
+remain required before invoking it.
+
 ## Installed journey coordinator passes focused native streaming gate
 
 `e0f20d1e` / `fc76ee9e` / `03e5bcc1` join the existing approval transport and
