@@ -40,30 +40,24 @@ func TestNativeCodeUpgradeDemandAttemptExclusiveAndExactPairBound(t *testing.T) 
 			if kind == "empty" {
 				// Simulate interruption before the first write. Production's normal
 				// nonempty-file publisher must not be weakened to make this fixture.
+				// Use its same CREATE_NEW/native at-birth descriptor; applying a
+				// DACL later can retain different inheritance-control flags.
 				path := filepath.Join(c.requestParent.dos, c.clientSID+codeDemandAttemptSuffix)
-				file, e := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0600)
+				file, pin, e := files.newFile(c.requestParent, c.clientSID+codeDemandAttemptSuffix, sd)
 				if e != nil {
 					t.Fatal(e)
 				}
-				if e = file.Close(); e != nil {
+				if e = file.Sync(); e != nil {
+					file.Close()
 					t.Fatal(e)
 				}
-				owner, _, e := sd.Owner()
+				actualSD, e := windows.GetSecurityInfo(pin.handle, windows.SE_FILE_OBJECT, windows.OWNER_SECURITY_INFORMATION|windows.DACL_SECURITY_INFORMATION)
+				closeErr := file.Close()
 				if e != nil {
 					t.Fatal(e)
 				}
-				dacl, _, e := sd.DACL()
-				if e != nil {
-					t.Fatal(e)
-				}
-				if e = windows.SetNamedSecurityInfo(path, windows.SE_FILE_OBJECT,
-					windows.OWNER_SECURITY_INFORMATION|windows.DACL_SECURITY_INFORMATION|windows.PROTECTED_DACL_SECURITY_INFORMATION,
-					owner, nil, dacl, nil); e != nil {
-					t.Fatal(e)
-				}
-				actualSD, e := windows.GetNamedSecurityInfo(path, windows.SE_FILE_OBJECT, windows.OWNER_SECURITY_INFORMATION|windows.DACL_SECURITY_INFORMATION)
-				if e != nil {
-					t.Fatal(e)
+				if closeErr != nil {
+					t.Fatal(closeErr)
 				}
 				if e = enrollmentSecurityDescriptor(actualSD, sd, false, c.clientSID); e != nil {
 					t.Fatal("empty fixture descriptor differs", e)
