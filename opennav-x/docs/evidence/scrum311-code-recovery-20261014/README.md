@@ -4,6 +4,22 @@ This increment joins signed successor discovery, exact complete-pair DEMAND
 recovery and verified-original terminal abort. Customer Setup/Maintain activation
 and actual installed-service/desktop/boat acceptance remain separate and open.
 
+## Passing native retest
+
+Exact source `3039528767aa71b801a63f258e4fb3d829e21e6e` passes
+[run 38621115904](https://github.com/ThereptileII/Work/actions/runs/38621115904):
+**366 Windows x86 / 255 Linux top-level passes**, zero failures. Five existing
+explicit Windows skips remain; every one of the **113 Windows / 82 Linux**
+mandatory cases ran exactly once and passed without failed/skipped subcases.
+Original provider archive hashes, lengths, ZIP CRCs, source/run/attempt and JSON
+stream digests were checked. Receipts are retained beside this record.
+
+The corrected empty demand-attempt case passes, including actual descriptor,
+zero-length and preserved original identity checks. Native cache identity and
+missing-custody cases pass alongside the existing installed completion producer.
+Source-closure suites pass 12 broker and 14 provisioner cases. These are native
+component results, not an installed service/customer journey or release approval.
+
 ## Preserved first native failure
 
 [Run 38619809617](https://github.com/ThereptileII/Work/actions/runs/38619809617),
@@ -19,8 +35,8 @@ assertions remain; production acceptance is unchanged.
 
 Original provider archive hashes, lengths, ZIP CRCs and JSON test-stream hashes
 were verified. The original failed artifacts remain private; their sanitized
-receipt is [first-failure-receipt.json](first-failure-receipt.json). Native retest
-is required and this failed run does not qualify the increment.
+receipt is [first-failure-receipt.json](first-failure-receipt.json). This failed
+run does not qualify the increment; the exact-source retest above is separate.
 
 ## Original installed cache binding
 
@@ -33,8 +49,8 @@ automatic discovery requires a separately proven migration and remains unavailab
 See [contract](../../installer/installed-bootstrap-cache.md).
 
 Independent review checked version compatibility, borrowed-owner lifetime,
-failure ordering and native identity/ancestry. Portable focused checks and Windows
-x86 compilation passed; new native component cases still require execution.
+failure ordering and native identity/ancestry. Portable and native component
+checks pass; complete customer cache discovery and service handoff remain open.
 
 ## Scope
 
