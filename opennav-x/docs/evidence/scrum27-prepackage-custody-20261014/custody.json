@@ -1,0 +1,255 @@
+{
+  "schema": 1,
+  "issue": "SCRUM-27",
+  "observedDate": "2026-10-14",
+  "kind": "prepackage-custody-evidence",
+  "qualification": "not-run",
+  "packaging": "not-run",
+  "decision": "Focused native helper preflight, then one candidate through existing Staging workflow; no new recovery seal/fetch acceptance path.",
+  "producer": {
+    "repository": "ThereptileII/Work",
+    "commit": "faa211b568f0e79e1d1065ba3fb76c3b1e801fd6",
+    "runId": "38529654044",
+    "runAttempt": "1",
+    "job": "windows-integration",
+    "platform": "windows-2022",
+    "architecture": "Win32"
+  },
+  "originalRun": {
+    "id": 38529654044,
+    "attempt": 1,
+    "workflow": ".github/workflows/opennav-baseline.yml",
+    "event": "workflow_dispatch",
+    "headSha": "faa211b568f0e79e1d1065ba3fb76c3b1e801fd6",
+    "conclusion": "failure",
+    "url": "https://github.com/ThereptileII/Work/actions/runs/38529654044"
+  },
+  "originalJob": {
+    "id": 115743280774,
+    "name": "windows-integration",
+    "conclusion": "failure",
+    "startedAt": "2026-10-14T07:52:31Z",
+    "completedAt": "2026-10-14T08:46:11Z",
+    "url": "https://github.com/ThereptileII/Work/actions/runs/38529654044/job/115743280774",
+    "steps": [
+      {
+        "name": "Compile fixture application and run compiled security and unit checks",
+        "conclusion": "success"
+      },
+      {
+        "name": "Compile fixture-free product and run installed security and unit checks",
+        "conclusion": "success"
+      },
+      {
+        "name": "Retain both native applications and exact tracked source before packaging",
+        "conclusion": "success"
+      },
+      {
+        "name": "Upload unqualified compiled recovery before packaging can fail",
+        "conclusion": "success"
+      },
+      {
+        "name": "Resolve private chart imports in the real host without plugin initialization",
+        "conclusion": "success"
+      },
+      {
+        "name": "Native public Downloader Windows trust and rejection gate",
+        "conclusion": "success"
+      },
+      {
+        "name": "Exact peer response buffer on native MSVC Win32",
+        "conclusion": "success"
+      },
+      {
+        "name": "Stage exact qualified startup updater and retained dependency source",
+        "conclusion": "success"
+      },
+      {
+        "name": "Package fixture-free recovery before desktop qualification",
+        "conclusion": "success"
+      },
+      {
+        "name": "Compile exact installer without running its desktop qualification yet",
+        "conclusion": "failure"
+      },
+      {
+        "name": "Seal compiled inputs before any desktop test can fail",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+        "conclusion": "skipped"
+      }
+    ]
+  },
+  "recoveryArtifact": {
+    "id": 11880282958,
+    "name": "compiled-recovery-faa211b568f0e79e1d1065ba3fb76c3b1e801fd6-run38529654044-attempt1",
+    "size_in_bytes": 427230985,
+    "digest": "sha256:edd1c3398eb91aa766afefefacafa642d3e09bfb07040463f495d38f839d0333",
+    "expired": false
+  },
+  "verification": {
+    "outerSizeAndSha256": "passed",
+    "outerAndInnerCRC": "passed",
+    "innerArchiveSha256": "cd19279f8163152275dd3e56ba35fa0b9d488baecdba287faed2e33eb9581d30",
+    "manifestSha256": "254161d42f822569574e55aebd54da852f14d8e09cacc35f8050a4bf26a6fc47",
+    "allRetainedMemberSizesAndSha256": "passed",
+    "files": 16790,
+    "expandedBytes": 892845008
+  },
+  "compiledIdentity": {
+    "build/production-install/opencpn.exe": "c27483a981406b4843717d89c362aed1441a49e031da5cc410b90a5437f79465",
+    "build/production-windows/include/OpenNavBuild.h": "369aeb77194678622b63210e5f9f2d078c5d904f4ee06803457ed9ccec308732",
+    "build/xnav-install/opencpn.exe": "07e8104697652ff82dce2ab37a6da868757102281afe8617c8c526b2536969dc",
+    "build/xnav-windows/include/OpenNavBuild.h": "2ca9df5a4df34abeb31346f385cb1a51c475a50ab24ccf8dd7e9fd196eba69c8"
+  },
+  "nativeCompiledSuites": {
+    "xnav": {
+      "testCases": 146,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "production": {
+      "testCases": 146,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "sourceSummary": [
+    {
+      "prefix": "source/product",
+      "commit": "faa211b568f0e79e1d1065ba3fb76c3b1e801fd6",
+      "trackedDirty": false,
+      "entries": 8938,
+      "retentionCounts": {
+        "actual-checkout-bytes": 8938
+      },
+      "nonactual": [],
+      "changedTrackedPaths": 0
+    },
+    {
+      "prefix": "source/integrated",
+      "commit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+      "trackedDirty": true,
+      "entries": 4395,
+      "retentionCounts": {
+        "actual-checkout-bytes": 4392,
+        "gitlink-reference-only": 1,
+        "link-text-only": 2
+      },
+      "nonactual": [
+        {
+          "gitMode": "160000",
+          "headObject": "5b4e684880340a2e3c83daea6b82fdcd661e15ab",
+          "path": "flatpak/org.opencpn.OpenCPN",
+          "retained": "gitlink-reference-only"
+        },
+        {
+          "gitMode": "120000",
+          "headObject": "197ac830b32339846e31236dc3b5e30d64884d0e",
+          "linkText": "docker\\Dockerfile.alpine",
+          "path": "libs/IXWebSocket/Dockerfile",
+          "retained": "link-text-only"
+        },
+        {
+          "gitMode": "120000",
+          "headObject": "037372601566a55d13af5efcf04b00f4e8a55258",
+          "linkText": "trusted-client-crt.pem",
+          "path": "libs/IXWebSocket/test/compatibility/python/websockets/localhost.pem",
+          "retained": "link-text-only"
+        }
+      ],
+      "changedTrackedPaths": 86
+    },
+    {
+      "prefix": "source/recipe",
+      "commit": "faa211b568f0e79e1d1065ba3fb76c3b1e801fd6",
+      "trackedDirty": false,
+      "entries": 48,
+      "retentionCounts": {
+        "actual-checkout-bytes": 48
+      },
+      "nonactual": [],
+      "changedTrackedPaths": 0
+    }
+  ],
+  "retainedPrepackageEvidence": {
+    "evidence/local/windows-peer-cli-receipt.json": true,
+    "evidence/local/peer-buffer-windows.log": false,
+    "evidence/local/ais-native-runtime/report.json": true,
+    "evidence/local/downloader-trust-windows/summary.json": false,
+    "evidence/local/ocharts-private-wxcurl-trust-windows/summary.json": true
+  },
+  "absentPackageInputs": [
+    "build/beta-installer/SKAGER-Beta2-Setup.exe",
+    "build/beta-installer/payload.zip",
+    "build/beta-installer/package.json",
+    "build/developer-preview/SKAGER-Beta2-Portable-Recovery.zip",
+    "build/developer-preview/SKAGER-Beta2-source.zip"
+  ],
+  "absentSourceCaches": [
+    "build/dependency-downloads/openssl-3.5.9.tar.gz",
+    "build/dependency-downloads/curl-8.22.0.tar.xz",
+    "build/dependency-downloads/zlib-1.3.2.tar.gz",
+    "build/integration-source/cache/opennav-downloads/wxMSW-3.2.8_vc14x_ReleaseDLL.7z"
+  ],
+  "originalLockedExternalSources": [
+    {
+      "lockPath": "opennav-x/tools/windows-openssl.lock.json",
+      "version": "3.5.9",
+      "archive": "openssl-3.5.9.tar.gz",
+      "url": "https://github.com/openssl/openssl/releases/download/openssl-3.5.9/openssl-3.5.9.tar.gz",
+      "sha256": "603f5602e2eef00d77fbd429d34dcd5822bb301757a1bc9cdb24c670f1eb859a",
+      "bytes": 53279637
+    },
+    {
+      "lockPath": "opennav-x/tools/windows-curl.lock.json",
+      "version": "8.22.0",
+      "archive": "curl-8.22.0.tar.xz",
+      "url": "https://curl.se/download/curl-8.22.0.tar.xz",
+      "sha256": "f7ef3ae8a22e521f289803fe93543eb64c329b58aa73a9e224dfd915a2a5f4f7",
+      "bytes": 2953092
+    },
+    {
+      "lockPath": "opennav-x/tools/windows-zlib.lock.json",
+      "version": "1.3.2",
+      "archive": "zlib-1.3.2.tar.gz",
+      "url": "https://github.com/madler/zlib/releases/download/v1.3.2/zlib-1.3.2.tar.gz",
+      "sha256": "bb329a0a2cd0274d05519d61c667c062e06990d72e125ee2dfa8de64f0119d16",
+      "bytes": 1502830
+    },
+    {
+      "lockPath": "opennav-x/tools/windows-wx.lock.json",
+      "file": "wxMSW-3.2.8_vc14x_ReleaseDLL.7z",
+      "url": "https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.8/wxMSW-3.2.8_vc14x_ReleaseDLL.7z",
+      "sha256": "a1a9b44932c9f3a6c309956535128cbd6a259200b1bfa150e8c108525204a014",
+      "bytes": 3781947
+    }
+  ],
+  "relatedArtifactsMetadataOnly": [
+    {
+      "id": 11880806730,
+      "name": "windows-build-evidence-faa211b568f0e79e1d1065ba3fb76c3b1e801fd6-attempt1",
+      "size_in_bytes": 65380950,
+      "digest": "sha256:7b15c63c21de4dade2486930b1562b3eebe35cd4413d354df29d67c122d2683d",
+      "expired": false
+    },
+    {
+      "id": 11878535687,
+      "name": "update-verifier-windows-2022-386-faa211b568f0e79e1d1065ba3fb76c3b1e801fd6",
+      "size_in_bytes": 617085353,
+      "digest": "sha256:02cf0efc33fafa745f3276355678e11849352132db9a7227d2cb5430dbe28ea6",
+      "expired": false
+    }
+  ],
+  "limitations": [
+    "Compiled recovery is diagnostic only and was captured before updater/portable/Setup packaging.",
+    "Original Setup, installer payload, corresponding-source ZIP and final portable package bytes were not retained in this archive.",
+    "Later successful peer-buffer/public-downloader evidence is absent from prepackage recovery and belongs to the separate original build-evidence artifact.",
+    "Related artifact metadata was authenticated; their full bytes were not downloaded or qualified in this audit.",
+    "No application binary was executed, restored, rebuilt, packaged, published or accepted by this audit."
+  ]
+}
